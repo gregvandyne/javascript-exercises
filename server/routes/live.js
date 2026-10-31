@@ -76,7 +76,7 @@ const seatInfo = (s, seat) => ({ seat: seat.no, nick: seat.nick, name: s.nameMod
 
 router.post('/api/live/join', on, async (req, res) => {
   const t0 = Date.now();
-  const key = LS.ipKey(req);
+  const key = LS.joinKeys(req);
   // Every answer takes at least 150 ms, so timing says nothing about which codes exist.
   const reply = async (status, body) => { const wait = LS.JOIN_LIMITS.minMs - (Date.now() - t0); if (wait > 0) await sleep(wait); noStore(res); res.status(status).json(body); };
   const err = (status, code, extra = {}) => reply(status, { error: req.t(`live.join.${code}`), code, ...extra });

@@ -1,7 +1,9 @@
 // Oomba Live wire protocol, version 1 (docs/decisions.md "Oomba Live"; the full table is in docs/live-protocol.md).
 // Pure: no database, no sockets. parse() is the only way a message from a device becomes something the server acts on:
 // it checks the type, who may send it, every field's type and range, and the shape of game event data (numbers,
-// booleans, null and identifier tokens only: no prose can travel between players, so a game can't become a chat).
+// booleans, null and identifier tokens only). Players' events are checked again against the game's own words
+// (evVocabOk), and the host's strings against the text filter, so no prose can travel to players: a game can't
+// become a chat.
 // JSON text frames with short keys. Positions are whole numbers: x, y, z in centimetres, heading 0-255, animation index.
 
 export const V = 1;
@@ -39,8 +41,26 @@ export function evDataOk(d, depth = 0) {
   return keys.length <= 32 && keys.every(k => TOKEN_RE.test(k) && evDataOk(d[k], depth + 1));
 }
 
+/**
+ * A player's game event against the game's own vocabulary (words: a Set from Oomba.live.ready({ words })): the kind,
+ * every string and every object key longer than 2 characters must be one of the game's words. Players relay only what
+ * the game itself says, so no message a player makes up (add_me_on_snap) can reach another player. -> bool
+ */
+export function evVocabOk(kind, d, words) {
+  const w = words instanceof Set ? words : new Set(words || []);
+  if (!w.has(kind)) return false;
+  const ok = (v, depth) => {
+    if (v === null || typeof v !== 'object') return typeof v !== 'string' || w.has(v);
+    if (depth >= 2) return false;
+    if (Array.isArray(v)) return v.every(x => ok(x, depth + 1));
+    return Object.keys(v).every(k => (k.length <= 2 || w.has(k)) && ok(v[k], depth + 1));
+  };
+  return ok(d, 0);
+}
+
 /** Shared state patches (host only): plain JSON objects, nested at most 4 deep, numbers/booleans/null and short
- *  strings. The host is a teacher or grown-up, not a player, so strings are allowed here (≤ 200 characters each). */
+ *  strings (≤ 200 characters each). Strings also go through the text filter before anyone sees them (sessions.js
+ *  setState): no rude words, contact details, handles or links, the same as question text. */
 export function stateOk(d, depth = 0) {
   if (d === null || typeof d === 'boolean') return true;
   if (typeof d === 'number') return Number.isFinite(d);

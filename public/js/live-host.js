@@ -124,7 +124,8 @@ roster.addEventListener('click', e => {
 });
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || /input|textarea|select/i.test((e.target && e.target.tagName) || '')) return;
-  const k = e.key.toUpperCase();
+  // The physical key (e.code 'KeyS'), so the shortcuts work on Hebrew, Arabic, Russian... layouts too; e.key as a fallback.
+  const k = /^Key[A-Z]$/.test(e.code || '') ? e.code.slice(3) : String(e.key || '').toUpperCase();
   const b = [...document.querySelectorAll('[data-lv-act]')].find(x => !x.hidden && x.getAttribute('aria-keyshortcuts') === k);
   if (b) { e.preventDefault(); act(b.dataset.lvAct); }
 });

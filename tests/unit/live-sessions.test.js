@@ -127,7 +127,9 @@ test('the socket: host and players get their welcome, the roster, positions (one
   assert.equal(pj.p.length, 8, 'P = [seat, name, avatar, team, score, connected, ready, late]');
   a.send({ t: 'mv', p: [100, 0, 200, 64, 1] });
   const snap = await b.next('s');
-  assert.deepEqual(snap.p.find(p => p[0] === a.join.seat), [a.join.seat, 100, 0, 200, 64, 1]);
+  const row = snap.p.find(p => p[0] === a.join.seat);
+  assert.deepEqual(row.slice(0, 6), [a.join.seat, 100, 0, 200, 64, 1]);
+  assert.ok(Number.isInteger(row[6]) && row[6] >= 0 && row[6] <= 150, `each row says how old its position is (${row[6]} ms)`);
   const hs = await h.next('s'); assert.deepEqual(hs.p, snap.p, 'the same snapshot');
   // A jump faster than the game allows is put back (one teleport every 5 s is fine).
   a.send({ t: 'mv', p: [9000, 0, 9000, 0, 0] });
@@ -161,6 +163,7 @@ test('host controls: start (auto-lock), the loading barrier, countdown, next/ski
   assert.ok(cd.at > loading.at);
   const playing = await a.next('ph', m => m.phase === 'playing');
   // A game's score can rise only as fast as it allows.
+  await sleep(600);
   a.send({ t: 'sc', n: 500 }); await sleep(30); assert.equal(s.seats.get(a.join.seat).score, 500);
   a.send({ t: 'sc', n: 999999 }); await sleep(30); assert.ok(s.seats.get(a.join.seat).score < 3000);
   a.send({ t: 'it', i: 0, ok: true }); a.send({ t: 'it', i: 0, ok: false }); await sleep(30);

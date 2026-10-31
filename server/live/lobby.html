@@ -23,7 +23,7 @@
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-DEY9CBRRDIGm0Og+0Maqjxn5hJBsi2oQ5upbfYetCK7gywcURgFn61bsxc+aQ1NX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
 <script>
 /* The Oomba Live platform lobby (server/live/lobby.html; docs/live-protocol.md): shown while players wait for the host,
    for games that don't draw a lobby of their own (games that declare lobby:true load at once instead). A small meadow
@@ -114,7 +114,7 @@ if (LB && LB.view === '3d') {
   B.world({ size: 16, flat: true, clear: 13 });
   const me = L.role === 'host' ? null : B.rig(L.me && L.me.avatar ? L.me.avatar : O.avatar(), { size: 1.6 });
   if (me) scene.add(me);
-  const crowd = L.crowd(B, { auto: false });
+  const crowd = L.crowd(B, { auto: false, self: () => me });   // self: my own emotes play on my character
   BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap });
   let t = 0;
   B.run(dt => {

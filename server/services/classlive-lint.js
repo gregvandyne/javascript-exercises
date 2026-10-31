@@ -30,12 +30,25 @@ export function hasLivePack(html) {
 }
 
 const has = (s, re) => re.test(s);
+const TOKEN_RE = /^[a-z0-9_-]{1,24}$/;
+const WORDS_RE = /\bwords\s*:\s*\[([^\]]{0,4000})\]/;
+const QUOTED_RE = /["']([^"'\n]{1,40})["']/g;
+/** The game's event vocabulary: the quoted tokens of its Oomba.live.ready({ words: [...] }) (at most 64). The only
+ *  strings (and event kinds, and keys longer than 2) a player's game events may carry: anything a player sends to
+ *  other players is one of the game's own words, never something they made up. */
+export function wordsOf(html) {
+  const m = WORDS_RE.exec(String(html || ''));
+  if (!m) return [];
+  const out = [];
+  for (const q of m[1].matchAll(QUOTED_RE)) if (TOKEN_RE.test(q[1]) && !out.includes(q[1]) && out.length < 64) out.push(q[1]);
+  return out;
+}
 // const L = Oomba.live, var live = window.Oomba.live, L = O.live ... (the name a game gives the API)
 const ALIAS_RE = /\b([A-Za-z_$][\w$]{0,30})\s*=\s*(?:[A-Za-z_$][\w$]{0,30}\s*\.\s*){1,2}live\b(?!\s*[.(])/g;
 /**
  * html -> { ready, issues: [{ level: 'fail'|'warn', code }], lobby, quiz, hostView, presence, threeD, twoD }.
  * fail codes: live_pack, live_ready_call, live_no_start, live_no_report, live_raw.
- * warn codes: live_presence_unused, live_no_2d, live_text, live_text_out.
+ * warn codes: live_presence_unused, live_no_2d, live_text, live_text_out, live_no_words.
  */
 export function checkHtml(html) {
   const s = String(html || '');
@@ -58,10 +71,12 @@ export function checkHtml(html) {
   if (threeD && !twoD) warn('live_no_2d');
   if (has(s, /<textarea\b/i) || has(s, /<input\b[^>]*\btype\s*=\s*["']?(text|search|email|tel|url)\b/i) || has(s, /\bcontenteditable\b/i) || has(s, /\bprompt\s*\(/)) warn('live_text');
   if (has(s, /\.\s*(innerHTML|outerHTML)\s*[+]?=\s*[^;\n]{0,200}\b(d|data|ev|e\.d)\s*\./)) warn('live_text_out');
+  const words = wordsOf(s);
+  if (call('send', true) && !words.length) warn('live_no_words');
   return {
     ready: !issues.some(i => i.level === 'fail'), issues,
     lobby: has(s, /\blobby\s*:\s*true\b/), quiz: has(s, /\bquiz\s*:\s*true\b/), hostView: has(s, /\bhostView\s*:\s*true\b/),
-    presence, threeD, twoD,
+    presence, threeD, twoD, words,
   };
 }
 
@@ -76,5 +91,6 @@ export const LIVE_NOTES = {
   live_presence_unused: 'Declares presence but never shows the other players: use Oomba.live.crowd(B) in 3D or Oomba.live.flat() in 2D.',
   live_no_2d: 'A 3D live game with no 2D path: devices without 3D only get a map. Add <meta name="oomba-live" content="2d"> and draw a top-down view in a classic script when Oomba.live.view is \'2d\'.',
   live_text: 'Has a text box or prompt(). In a live class game nothing can be typed (the platform turns text entry off): use buttons.',
+  live_no_words: "Sends game events but declares no words: a player's events reach the others only as numbers, true/false and the game's own words. List every event kind and word the game sends in Oomba.live.ready({ words: ['kind', 'word', ...] }).",
   live_text_out: 'Writes data received from other players into the page with innerHTML. Show only your own words: build elements and set textContent from your own strings.',
 };

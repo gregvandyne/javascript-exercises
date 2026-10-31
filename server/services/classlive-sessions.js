@@ -28,6 +28,7 @@ import * as R from './classlive-results.js';
 import * as C from './classlive-check.js';
 import * as L from './lessons.js';
 import * as S from './schools.js';
+import { cleanText, personalInfo } from './textfilter.js';
 
 export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3 };
 export const PHASES = ['lobby', 'loading', 'countdown', 'playing', 'paused', 'between', 'ended'];
@@ -71,15 +72,29 @@ export function newCode() {
 
 /** The address bucket for join limits: an IPv4 address, or an IPv6 /64 (rotating inside a /64 is free). */
 export function ipKey(req) {
-  const ip = ipOf(req);
+  return keyOf(ipOf(req));
+}
+function v6Groups(ip) {
+  const [head, tail = ''] = ip.toLowerCase().split('::');
+  const h = head ? head.split(':') : [], tl = tail ? tail.split(':') : [];
+  return ip.includes('::') ? [...h, ...Array(Math.max(0, 8 - h.length - tl.length)).fill('0'), ...tl] : h;
+}
+const v6Prefix = (groups, n) => groups.slice(0, n).map(g => g.replace(/^0+(?=.)/, '')).join(':') + `::/${n * 16}`;
+/** Every bucket a join try counts against: the address's own (ipKey), and for IPv6 also its /48 and /32, so an
+ *  attacker holding a whole prefix (a /56 or /48 is routine on cloud hosts) can't spread guesses over many /64s. */
+export function joinKeys(req) {
+  const ip = ipOf(req), own = keyOf(ip);
+  if (!own.endsWith('::/64')) return [own];
+  const g = v6Groups(ip);
+  return [own, v6Prefix(g, 3), v6Prefix(g, 2)];
+}
+function keyOf(ip) {
+  ip = String(ip || '');
   const v4 = /^(?:::ffff:)?(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(ip);
   if (v4) return v4[1];
   if (ip.includes(':')) {
     // Expand :: and keep the first four groups.
-    const [head, tail = ''] = ip.toLowerCase().split('::');
-    const h = head ? head.split(':') : [], tl = tail ? tail.split(':') : [];
-    const groups = ip.includes('::') ? [...h, ...Array(Math.max(0, 8 - h.length - tl.length)).fill('0'), ...tl] : h;
-    return groups.slice(0, 4).map(g => g.replace(/^0+(?=.)/, '')).join(':') + '::/64';
+    return v6Prefix(v6Groups(ip), 4);
   }
   return ip;
 }
@@ -88,19 +103,25 @@ export function ipKey(req) {
 /** Wrong codes per address bucket per 10 minutes, all tries per 10 minutes, and the site-wide meter: more than
  *  STRICT.trigger misses a minute puts every bucket on STRICT.misses per 10 minutes for 10 minutes (logged once). */
 export const JOIN_LIMITS = { misses: 100, tries: 600, windowMs: 10 * 60e3, minMs: 150 };
+/** How many times an address bucket's limits a wider IPv6 bucket gets: a /48 (a site), a /32 (a provider). */
+const WIDE = { '/48': 2, '/32': 6 };
+const scale = key => { const m = /::(\/\d+)$/.exec(key); return (m && WIDE[m[1]]) || 1; };
+const asKeys = keys => (Array.isArray(keys) ? keys : [keys]);
 export const STRICT = { trigger: 2000, misses: 5, forMs: 10 * 60e3 };
 const meter = { win: -1, n: 0, strictUntil: 0 };
 export const _meter = meter;
 /** A join try from this bucket: -> null when it may go on, else 'slowDown'. */
-export function joinTry(key) {
-  if (!allow(`lv-try:${key}`, JOIN_LIMITS.tries, JOIN_LIMITS.windowMs)) return 'slowDown';
-  const max = meter.strictUntil > now() ? STRICT.misses : JOIN_LIMITS.misses;
-  if (rlCount(`lv-miss:${key}`) >= max) return 'slowDown';
+export function joinTry(keys) {
+  const strict = meter.strictUntil > now();
+  for (const key of asKeys(keys)) {
+    if (!allow(`lv-try:${key}`, JOIN_LIMITS.tries * scale(key), JOIN_LIMITS.windowMs)) return 'slowDown';
+    if (rlCount(`lv-miss:${key}`) >= (strict ? STRICT.misses : JOIN_LIMITS.misses) * scale(key)) return 'slowDown';
+  }
   return null;
 }
-/** A wrong code from this bucket (locked or full rooms are not misses). */
-export function joinMiss(key) {
-  allow(`lv-miss:${key}`, JOIN_LIMITS.misses, JOIN_LIMITS.windowMs);
+/** A wrong code from this bucket, or these buckets (locked or full rooms are not misses). */
+export function joinMiss(keys) {
+  for (const key of asKeys(keys)) allow(`lv-miss:${key}`, JOIN_LIMITS.misses * scale(key), JOIN_LIMITS.windowMs);
   const w = Math.floor(now() / 60e3);
   if (w !== meter.win) { meter.win = w; meter.n = 0; }
   if (++meter.n === STRICT.trigger + 1 && meter.strictUntil < now()) {
@@ -169,6 +190,8 @@ export function createSession(host, opts = {}) {
     gameId: game.id, versionId: h.versionId, setId, classId, clId, stepId,
     title: String(opts.title || game.title || '').slice(0, 80), lobbyByGame: !!check.lobby,
     cfg: { presence: { bounds: 100, maxSpeed: 12 }, maxScorePerSec: 1000, lobby: !!check.lobby, quiz: !!check.quiz, hostView: !!check.hostView, threeD: !!check.threeD, twoD: !!check.twoD },
+    // The game's own event words, read from its code (never from a device), each through the text filter.
+    words: new Set((check.words || []).filter(shownOk)),
     settings: { maxPlayers: A.maxPlayersFor(host, audience, opts.maxPlayers), locked: false, autoLock: audience === 'open' },
     phase: 'lobby', round: 0, at: t, pausedAt: 0, seq: 1, seatSeq: 0, lastActive: t,
     seats: new Map(), byUser: new Map(), nicksUsed: new Set(), banned: new Set(),
@@ -180,6 +203,18 @@ export function createSession(host, opts = {}) {
   hooks.log('info', 'live session opened', { sid: s.id, mode, audience, players: s.settings.maxPlayers });
   return { ok: true, session: s };
 }
+
+/** Text a player will see that a person (the host) chose: no rude words, contact details, handles or links. Tokens
+ *  (snake_case, kebab-case) are read as words. */
+export function shownOk(str) {
+  const v = String(str).replace(/[_-]+/g, ' ');
+  return cleanText(v, 1000).ok && !personalInfo(v);
+}
+const strings = (v, out = []) => {
+  if (typeof v === 'string') out.push(v);
+  else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { if (!Array.isArray(v)) out.push(k); strings(x, out); }
+  return out;
+};
 
 // ---------------------------------------------------------------- seats
 const seatName = (s, seat) => (s.nameMode === 'accounts' && seat.name ? seat.name : seat.nick);
@@ -480,10 +515,13 @@ export function emote(s, seat, e) {
 export function event(s, from, m) {
   if (!['lobby', 'loading', 'countdown', 'playing', 'between'].includes(s.phase)) return;
   if (!from) {
+    if (!strings(m.d, [m.k]).every(shownOk)) return;
     const msg = { t: 'ev', f: 0, k: m.k, d: m.d };
     if (m.to) toSeat(s, m.to, msg); else broadcast(s, msg, { host: false });
     return;
   }
+  // A player's event carries only the game's own words (protocol evVocabOk), whoever it goes to.
+  if (!P.evVocabOk(m.k, m.d, s.words)) return;
   const msg = { t: 'ev', f: from.no, k: m.k, d: m.d };
   if (m.to === 'host') toHost(s, msg); else broadcast(s, msg, { except: from.no });
 }
@@ -509,6 +547,7 @@ export const answer = (s, seat, m, recvAt) => Q.answer(s, io, seat, m, recvAt);
 
 /** Shared state: a JSON merge patch from the host, at most MAX.state bytes in all. -> true when applied. */
 export function setState(s, patch) {
+  if (!strings(patch).every(shownOk)) return false;
   const next = mergePatch(structuredClone(s.state), patch);
   const bytes = JSON.stringify(next).length;
   if (bytes > P.MAX.state) return false;

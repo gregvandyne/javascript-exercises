@@ -36,8 +36,8 @@ async function openRoom(page, body) {
   return (await page.locator('#lv-code').textContent()).replace(/\s/g, '');
 }
 /** A player: a fresh context (own address), /join#code, the guest card (or "Join as me"), then the play page. */
-async function player(browser, code, { viewport = { width: 420, height: 800 }, locale, init, account, reroll = false, shotName } = {}) {
-  const ctx = await browser.newContext({ viewport, ...(locale ? { locale } : {}) });
+async function player(browser, code, { viewport = { width: 420, height: 800 }, locale, colorScheme, init, account, reroll = false, shotName } = {}) {
+  const ctx = await browser.newContext({ viewport, ...(locale ? { locale } : {}), ...(colorScheme ? { colorScheme } : {}) });
   if (init) await ctx.addInitScript(init);
   const page = await ctx.newPage();
   if (account) await login(page, account.username, account.password); else await ownIp(page);
@@ -248,7 +248,7 @@ test('Hero of Sunvale live: players see each other walk in the village; the proj
   const code = await openRoom(host, { pick: `game:${gameId}` });
   const a = await player(browser, code, { viewport: { width: 900, height: 700 } });
   const b = await player(browser, code, { viewport: { width: 900, height: 700 } });
-  const w = await player(browser, code, { init: no3d });
+  const w = await player(browser, code, { init: no3d, locale: 'he-IL', colorScheme: 'dark', viewport: { width: 360, height: 740 } });
   const ready = s => s && s.ready;
   const [fa, fb] = [await liveFrame(a, ready), await liveFrame(b, ready)];
   await expect(w.locator('#lv-watch')).toBeVisible();                 // a 3D game with no 2D path: the Watch map
@@ -260,10 +260,27 @@ test('Hero of Sunvale live: players see each other walk in the village; the proj
   await expect.poll(async () => { const p = await fa.evaluate(s => Oomba.live.position(s), seatB); return Math.hypot(p.x - p0.x, p.z - p0.z) > 2; }, { timeout: 15_000 }).toBe(true);
   // B's hero is drawn in A's world (the crowd), and the solo game is untouched (A still plays its own Sunvale)
   expect(await fa.evaluate(() => Oomba.live.role)).toBe('player');
+  // My own emote reaches my own game (it plays on my hero), not only everyone else's
+  const mine = fa.evaluate(() => new Promise(r => { Oomba.live.on('emote', e => { if (e.me) r(e.name); }); }));
+  await a.locator('#lv-emotes [data-emote="0"]').click();
+  expect(await mine).toBe('wave');
   await act(host, 'start');
   await liveFrame(host, ready);
   await expect(host.frames().find(f => /\/live\/frame\//.test(f.url())).locator('#liveMeter')).toContainText(/\d/);
   await host.waitForTimeout(2000); await shot(host, 'hero-host-view'); await shot(a, 'hero-player-sees-others');
+  // The Watch map in Hebrew and the dark theme: the top five read from the right edge, light text on the dark card
+  const band = () => w.locator('#lv-watch').evaluate(c => {
+    const x = c.getContext('2d'), W = c.width, H = Math.min(c.height, Math.round(100 * (devicePixelRatio || 1))), d = x.getImageData(0, 0, W, H).data;
+    const lum = i => 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2], bg = lum((2 * W + W - 3) * 4);
+    let right = 0, left = 0, lighter = 0, darker = 0;
+    for (let y = 0; y < H; y++) for (let xx = 0; xx < W; xx++) { const i = (y * W + xx) * 4, l = lum(i); if (Math.abs(l - bg) < 60) continue; if (xx > W * 0.6) right++; else if (xx < W * 0.1) left++; if (l > bg) lighter++; else darker++; }
+    return { right, left, lighter, darker, bg };
+  });
+  await expect.poll(async () => (await band()).right, { timeout: 45_000 }).toBeGreaterThan(30);
+  const b0 = await band();
+  expect(b0.bg).toBeLessThan(80);                 // the dark card
+  expect(b0.lighter).toBeGreaterThan(b0.darker);  // readable text on it
+  await shot(w, 'hero-watch-he-dark');
   await act(host, 'end');
   for (const p of [a, b, w, host]) await p.context().close();
 });

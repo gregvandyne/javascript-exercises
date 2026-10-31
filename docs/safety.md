@@ -419,16 +419,23 @@ frame loads and every 30 seconds. Grown-ups' open rooms are capped at 30 players
 **No free text from players, anywhere.** Players press buttons. The one typed input is the 7-digit code. Names are
 one of 144 fixed, kind nickname phrases (account names only in a teacher's own class room). Emotes are 6 fixed
 animations. Game events between players (`ev`) may carry only numbers, booleans, `null` and identifier tokens
-(`[a-z0-9_-]`, 24 at most), nested at most twice, 512 bytes at most, so a game cannot become a chat (the SDK checks
-it, the server checks it again). Question sets are written by adults and pass the rude-word and personal-information
-checks. In live frames the SDK also turns text entry off at run time: `prompt()` returns null, text boxes are
+(`[a-z0-9_-]`, 24 at most), nested at most twice, 512 bytes at most; and a player's event kind and every token in it
+must be one of the game's own words, written in its code (`Oomba.live.ready({ words })`, read by the server when the
+session opens, each through the text filter). Underscore-joined messages (`add_me_on_snap`) are never relayed, so a
+game cannot become a chat (the kit checks it, the server checks it again). Question sets, and every string the host
+sends to players (shared state, host events), are written by adults and pass the rude-word and personal-information
+checks (contact words, handles and links included). In live frames the SDK also turns text entry off at run time: `prompt()` returns null, text boxes are
 read-only and contenteditable is off, also for elements added later (docs/sdk.md "Live messages").
 
 **Codes.** 7 digits, unique among open sessions, never reused within 24 hours, dead when the session ends (at most
-3 hours). Wrong guesses are limited per IPv4 address or IPv6 /64 (100 per 10 minutes), all tries too (600), and a
+3 hours; `LIVE_HOURS` can only shorten it). Wrong guesses are limited per IPv4 address or IPv6 /64 (100 per 10
+minutes), and for IPv6 also per /48 (200) and /32 (600), so holding a whole prefix buys no more guesses; all tries too
+(600 per bucket, scaled the same way), and a
 site-wide meter puts everyone on strict limits (5 per 10 minutes) for 10 minutes when more than 2,000 wrong codes
 arrive in a minute. Locked or full rooms don't count as wrong guesses. Every answer takes at least 150 ms. The code
-is never in a query string or a log: the QR and links use `/join#1234567` (a fragment the browser never sends).
+is never in a query string or a log: the QR and links use `/join#1234567` (a fragment the browser never sends), and
+the request log writes `/join/:code` and `/live/frame/:token` for paths that carry one. A frame token only loads the
+game frame: the socket refuses it as a seat credential.
 
 **The socket.** One upgrade listener routes `/api/live/ws` (and the Studio's live mic) by path. Before the upgrade:
 draining 503, flag off 404, a foreign Origin 403, more than 1,200 sockets a minute from one address 429. After it: a

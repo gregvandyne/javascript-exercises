@@ -68,7 +68,7 @@
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-DEY9CBRRDIGm0Og+0Maqjxn5hJBsi2oQ5upbfYetCK7gywcURgFn61bsxc+aQ1NX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-PoL1d2TQvVJAaM+LOoFIDiwk0wF23Ue5ASvgQgvkBEjRB/qhCQ+b0BJ93864hhig" crossorigin="anonymous"></script>
 <script>
 /* QUEST RACE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Questions on every device; a right
    answer is a gem and a dash along the race path across a 3D island to the finish flag; podium and confetti at the end.
@@ -452,7 +452,7 @@ if (QR && QR.view === '3d') {
   const me = L.role === 'host' ? null : B.rig(L.me && L.me.avatar ? L.me.avatar : O.avatar(), { size: 1.6 });
   if (me) scene.add(me);
   const ghosts = new Map();
-  const crowd = L.crowd(B, { auto: false, size: 1.6 });
+  const crowd = L.crowd(B, { auto: false, size: 1.6, self: () => me });   // self: my own emotes play on my runner
   BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap, onResize(w, h) { camera.fov = w / h < 0.8 ? 72 : 58; } });
   let yaw = 0, look = new THREE.Vector3(QR.START.x, 1, QR.START.z), t0 = 0;
   B.run(dt => {

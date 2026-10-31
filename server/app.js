@@ -53,6 +53,10 @@ export const _proxyWarning = warned;
 // Bodies from browsers are never compressed: refusing Content-Encoding closes off decompression attacks.
 const NO_INFLATE = { inflate: false };
 
+/** The path as the request log writes it: paths that carry a secret lose it (a live join code, /join/1234567, or a
+ *  live frame token, /live/frame/<token>). */
+export const logPath = p => String(p).replace(/^\/join\/[^/]+/, '/join/:code').replace(/^\/live\/frame\/[^/]+/, '/live/frame/:token');
+
 export function createApp() {
   const app = express();
   app.disable('x-powered-by');
@@ -84,8 +88,6 @@ export function createApp() {
   }
 
   // Structured request log (one JSON line per request) + timing.
-  // Paths that carry a secret are logged without it: a live join code (/join/1234567) or a live frame token.
-  const logPath = p => p.replace(/^\/join\/[^/]+/, '/join/:code').replace(/^\/live\/frame\/[^/]+/, '/live/frame/:token');
   app.use((req, res, next) => {
     const t0 = process.hrtime.bigint();
     res.on('finish', () => {

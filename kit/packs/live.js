@@ -28,7 +28,10 @@ export function define(K) {
     race: new Map(), board: [], view: '3d',
   };
   const players = new Map();   // seat -> {seat, name, avatar, team, score, connected, ready, late}
+  const emotes = new Map();    // seat -> {name, until}: the emote showing over a player (the player's own too)
+  const EMO = { wave: '\u{1F44B}', cheer: '\u{1F389}', jump: '\u2B06\uFE0F', dance: '\u{1F483}', clap: '\u{1F44F}', heart: '\u2764\uFE0F' };
   const tracks = new Map();    // seat -> [{t, x, y, z, h, a}] (the last 6 snapshots, server time)
+  const words = new Set();     // the game's event words (ready({ words })): a player's events carry only these
   const meSpec = () => { const o = O(); try { return o && o.me ? o.me() : null; } catch (e) { return null; } };
   if (solo) players.set(0, { seat: 0, name: BRB && BRB.user ? BRB.user.displayName : '', avatar: null, team: 0, score: 0, connected: true, ready: true, late: false });
   else if (init.me) players.set(S.seat, { seat: S.seat, name: init.me.name, avatar: init.me.avatar, team: init.me.team || 0, score: 0, connected: true, ready: false, late: false });
@@ -54,6 +57,7 @@ export function define(K) {
   }
   function track(seat, t, x, y, z, h, a) {
     let b = tracks.get(seat); if (!b) tracks.set(seat, b = []);
+    if (b.length && t <= b[b.length - 1].t) { const l = b[b.length - 1]; if (t === l.t) { Object.assign(l, { x, y, z, h, a }); } return; }   // never out of order
     b.push({ t, x, y, z, h, a }); if (b.length > 6) b.shift();
   }
   function onMsg(m) {
@@ -74,7 +78,8 @@ export function define(K) {
       }
       case 'pj': case 'pu': { if (!Array.isArray(m.p)) break; const had = players.has(m.p[0]); players.set(m.p[0], fromTuple(m.p)); emit(had ? 'update' : 'join', pub(players.get(m.p[0]))); break; }
       case 'pl': { const p = players.get(m.n); players.delete(m.n); tracks.delete(m.n); if (p) emit('leave', pub(p)); break; }
-      case 's': for (const r of m.p || []) if (r[0] !== S.seat || S.role === 'host') track(r[0], m.ts || now(), r[1] / 100, r[2] / 100, r[3] / 100, r[4] / 256 * TAU, r[5]); break;
+      // r[6]: how old the position was when the tick went out (ms), so each sample sits at the time the player was there
+      case 's': for (const r of m.p || []) if (r[0] !== S.seat || S.role === 'host') track(r[0], (m.ts || now()) - (+r[6] || 0), r[1] / 100, r[2] / 100, r[3] / 100, r[4] / 256 * TAU, r[5]); break;
       case 'fix': if (Array.isArray(m.p)) emit('fix', { x: m.p[0] / 100, y: m.p[1] / 100, z: m.p[2] / 100 }); break;
       case 'ph': setPhase(m.phase, m); break;
       case 'q': { const same = S.quiz && S.quiz.i === m.i; S.quiz = { i: m.i, n: m.n, q: m.q, choices: m.choices, secs: m.secs, at: m.at }; if (!same) S.answered = false; emit('question', quizPub()); break; }
@@ -85,12 +90,14 @@ export function define(K) {
       case 'race': for (const r of m.p || []) S.race.set(r[0], { prog: r[1], gems: r[2] }); emit('race', live.race()); break;
       case 'lb': S.board = (m.top || []).map(r => ({ seat: r[0], score: r[1], name: live.nameOf(r[0]) })); for (const r of m.top || []) { const p = players.get(r[0]); if (p) p.score = r[1]; } emit('leaderboard', { top: S.board, you: m.you ? { rank: m.you[0], score: m.you[1] } : null }); break;
       case 'ev': emit('event', { from: m.f, kind: m.k, data: m.d }); break;
-      case 'em': { const e = EMOTES[m.e]; if (e) { emit('emote', { from: m.f, name: e }); for (const c of crowds) c.emote(m.f, e); } break; }
+      case 'em': { const e = EMOTES[m.e]; if (e) { emotes.set(m.f, { name: e, until: perf() + 2000 }); emit('emote', { from: m.f, name: e, me: m.f === S.seat && S.role === 'player' }); for (const c of crowds) c.emote(m.f, e); } break; }
       case 'st': S.state = merge(S.state, m.d); emit('state', S.state); break;
       default: break;   // unknown messages: a newer platform than this pack
     }
   }
   const merge = (a, p) => { if (!p || typeof p !== 'object' || Array.isArray(p)) return p; const o = a && typeof a === 'object' && !Array.isArray(a) ? a : {}; for (const k of Object.keys(p)) { if (p[k] === null) delete o[k]; else o[k] = p[k] && typeof p[k] === 'object' && !Array.isArray(p[k]) ? merge(o[k], p[k]) : p[k]; } return o; };
+  // The server's rule (classlive-protocol evVocabOk): the kind, strings and keys longer than 2 are the game's words.
+  const vocabOk = (k, d) => { const ok = (v, depth) => (v === null || typeof v !== 'object' ? typeof v !== 'string' || words.has(v) : depth < 2 && (Array.isArray(v) ? v.every(x => ok(x, depth + 1)) : Object.keys(v).every(key => (key.length <= 2 || words.has(key)) && ok(v[key], depth + 1)))); return words.has(k) && ok(d, 0); };
   const quizPub = () => S.quiz && { i: S.quiz.i, n: S.quiz.n, q: S.quiz.q, choices: (S.quiz.choices || []).slice(), secs: S.quiz.secs, at: S.quiz.at, answered: S.answered };
   if (!solo) T.on(onMsg);
 
@@ -135,7 +142,7 @@ export function define(K) {
     const maxRigs = Math.min(opt.maxRigs || tier[0], tier[0]), maxSprites = opt.maxSprites == null ? tier[1] : opt.maxSprites, size = opt.size || 1.6;
     const plates = opt.nameplates !== false, platesMax = 8, plateFar = 18;
     const ents = new Map(), manual = new Map();
-    let built = 0, spin = 0, cut = 0, leader = null;
+    let built = 0, spin = 0, cut = 0, leader = null, lastBuild = -1e9;
     // the far band: one instanced capsule for every seat beyond the sprites
     const capG = new T3.CapsuleGeometry(0.3, 0.7, 2, 8), capM = B.toon('stone');
     const far = new T3.InstancedMesh(capG, capM, opt.max || 100); far.count = 0; far.frustumCulled = false; far.userData.noInk = true; scene.add(far);
@@ -178,10 +185,21 @@ export function define(K) {
       for (const e of ents.values()) if (!players.has(e.seat)) { if (e.rig) e.rig.visible = false; if (e.spr) e.spr.visible = false; if (e.plate) e.plate.visible = false; e.on = false; }
       list.sort((a, b) => a.d - b.d);
       let r = 0, s = 0, f = 0, pl = 0, made = false;
+      const t = perf();
+      // Rigs follow the nearest players: when the pool is full, the rig of a player who has been out of the near band
+      // longest (at least 2 s) is let go so a newly near player can have one. At most one rig is built every 250 ms
+      // (building one costs a few ms on a Chromebook), so a crowd changing places never stalls a frame twice.
+      const near = new Set(); { let k = 0; for (const e of list) { if (!e.on) continue; if (k++ >= maxRigs) break; near.add(e); } }
+      for (const e of ents.values()) if (e.rig && !near.has(e)) { if (!e.offAt) e.offAt = t; } else e.offAt = 0;
       for (const e of list) {
         const want = !e.on ? 0 : r < maxRigs ? 1 : s < maxSprites ? 2 : 3;
-        // at most one new rig a frame (building one costs a few ms on a Chromebook)
-        if (want === 1 && !e.rig && !made && built < maxRigs * 2) { e.rig = opt.make ? opt.make(avatarOf(e.seat), e.seat) : B.rig(avatarOf(e.seat), { size }); if (e.rig) { scene.add(e.rig); built++; made = true; } }
+        if (want === 1 && !e.rig && !made && t - lastBuild >= 250) {
+          if (built >= maxRigs * 2) {
+            let old = null; for (const x of ents.values()) if (x.rig && x.offAt && t - x.offAt > 2000 && (!old || x.offAt < old.offAt)) old = x;
+            if (old) { scene.remove(old.rig); if (old.rig.dispose) try { old.rig.dispose(); } catch (er) { /* shared parts */ } old.rig = null; old.offAt = 0; built--; }
+          }
+          if (built < maxRigs * 2) { e.rig = opt.make ? opt.make(avatarOf(e.seat), e.seat) : B.rig(avatarOf(e.seat), { size }); if (e.rig) { scene.add(e.rig); built++; made = true; lastBuild = t; } }
+        }
         const useRig = want === 1 && e.rig, useSpr = !useRig && want && want <= 2 && (e.spr || (e.spr = B.sprite(avatarOf(e.seat), { size }), scene.add(e.spr), e.spr));
         if (useRig) r++; else if (useSpr) s++;
         for (const o of [e.rig, e.spr]) { if (!o) continue; const on = o === (useRig ? e.rig : useSpr ? e.spr : null); o.visible = on; if (on) { o.position.set(e.x, e.y, e.z); o.heading = e.h; if (!o.userData.okActor) o.rotation.y = e.h; o.speed = e.a === 3 ? 0.5 : e.sp; o.air = e.a === 3; } }
@@ -199,7 +217,12 @@ export function define(K) {
       place(seat, x, y, z, h, sp) { manual.set(seat, { x, y, z, h: h || 0, sp: sp || 0, a: 0, v: 0 }); },
       free(seat) { manual.delete(seat); },
       get(seat) { const e = ents.get(seat); return e ? e.rig || e.spr : null; },
-      emote(seat, name) { const e = ents.get(seat), o = e && (e.rig && e.rig.visible ? e.rig : e.spr); if (o && o.play) o.play(name === 'wave' ? 'wave' : name === 'jump' ? 'land' : 'cheer', 1200); },
+      /** emote(seat, name): plays on that player's figure; the player's own emote plays on opt.self (the game's own rig). */
+      emote(seat, name) {
+        const e = ents.get(seat), mine = seat === S.seat && S.role === 'player' && opt.self;
+        const o = mine ? (typeof opt.self === 'function' ? opt.self() : opt.self) : e && (e.rig && e.rig.visible ? e.rig : e.spr);
+        if (o && o.play) o.play(name === 'wave' ? 'wave' : name === 'jump' ? 'land' : 'cheer', 1200);
+      },
       positions: () => [...ents.values()].filter(e => e.on).map(e => ({ seat: e.seat, x: e.x, y: e.y, z: e.z, h: e.h })),
       get leader() { return leader; },
       /** spectate(camera, dt, {height, radius}): a slow orbit round the players that cuts to the leader every 8 s (still with
@@ -219,6 +242,13 @@ export function define(K) {
     crowds.push(C3); return C3;
   }
 
+  function badge(ctx, seat, x, y, r = 18) {
+    const e = emotes.get(seat); if (!e || e.until < perf()) return false;
+    const k = Math.min(1, (e.until - perf()) / 300), save = ctx.globalAlpha;
+    ctx.globalAlpha = save * k; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = `${Math.round(r * 1.1)}px system-ui, sans-serif`;
+    ctx.fillText(EMO[e.name] || '', x, y); ctx.globalAlpha = save; ctx.textBaseline = 'alphabetic';
+    return true;
+  }
   // ---- flat(opts): the same players in 2D (top-down), for the Simple view and devices without 3D ----
   function flat(opt = {}) {
     const pics = new Map(), manual = new Map();
@@ -237,8 +267,11 @@ export function define(K) {
           const x = ox + (p.x - cx) * sc, y = oy + (p.z - cz) * sc, c = pic(p.seat);
           if (c) ctx.drawImage(c, x - r, y - r * 1.6, r * 2, r * 2); else { ctx.fillStyle = '#8fd3b0'; ctx.beginPath(); ctx.arc(x, y - r * 0.6, r * 0.7, 0, TAU); ctx.fill(); }
           if (opt.names !== false && p.name) { ctx.fillStyle = 'rgba(29,35,64,.8)'; const w = Math.min(120, ctx.measureText(p.name).width + 10); ctx.fillRect(x - w / 2, y + r * 0.5, w, 16); ctx.fillStyle = '#fff'; ctx.fillText(p.name, x, y + r * 0.5 + 12, 112); }
+          if (opt.emotes !== false) badge(ctx, p.seat, x, y - r * 1.6 - 4, r);
         }
       },
+      /** badge(ctx, seat, x, y, r): the emote a player just sent (their own too), drawn above (x, y); nothing if none. */
+      badge,
       portrait: pic,
     };
   }
@@ -254,10 +287,12 @@ export function define(K) {
     avatarOf(seat) { const p = players.get(seat); return p ? p.avatar || (seat === S.seat ? meSpec() : null) : null; },
     /** now(): the server's clock (ms), so every device counts down to the same moment. since(at): ms since then. */
     now, since: at => now() - (+at || 0),
-    /** ready({presence: {bounds, maxSpeed}, lobby, quiz, hostView, maxScorePerSec, view}): once, when the game can play. */
+    /** ready({presence: {bounds, maxSpeed}, lobby, quiz, hostView, maxScorePerSec, view, words}): once, when the game can
+     *  play. words: every event kind and string the game's send() uses (the server relays nothing else from players). */
     ready(o = {}) {
       if (S.readyOpts) return live;
       S.readyOpts = o; if (o.view === '2d') S.view = '2d';
+      if (Array.isArray(o.words)) for (const w of o.words) if (/^[a-z0-9_-]{1,24}$/.test(w) && words.size < 64) words.add(w);
       const cfg = {};
       if (o.presence) cfg.presence = { bounds: Math.max(1, Math.min(1000, +o.presence.bounds || 50)), maxSpeed: Math.max(0.5, Math.min(60, +o.presence.maxSpeed || 8)) };
       for (const k of ['lobby', 'quiz', 'hostView']) if (o[k] !== undefined) cfg[k] = !!o[k];
@@ -272,8 +307,13 @@ export function define(K) {
       if (ev === 'start' && S.started) raf(() => fn({ round: S.round, late: true }));
       return () => { subs[ev] = (subs[ev] || []).filter(f => f !== fn); };
     },
-    /** send(kind, data, {toHost, to}): a small game event to everyone else (or the host; the host: to one seat). */
-    send(kind, data, o = {}) { const m = { k: String(kind), d: data === undefined ? null : data }; if (o.toHost) m.to = 'host'; else if (S.role === 'host' && o.to) m.to = +o.to; out('ev', m); },
+    /** send(kind, data, {toHost, to}): a small game event to everyone else (or the host; the host: to one seat). A
+     *  player's kind and strings must be in ready({ words }); -> false (and a console warning) when not. */
+    send(kind, data, o = {}) {
+      const m = { k: String(kind), d: data === undefined ? null : data };
+      if (S.role === 'player' && !vocabOk(m.k, m.d)) { kit.warn(`Oomba.live.send('${m.k}'): the kind and every word must be in ready({ words: [...] }) (numbers and true/false are always fine)`); return false; }
+      if (o.toHost) m.to = 'host'; else if (S.role === 'host' && o.to) m.to = +o.to; out('ev', m); return true;
+    },
     score(n) { n = Math.floor(+n); if (!isFinite(n) || n < 0) return; const me = players.get(S.seat); if (me) me.score = Math.min(1e6, n); out('sc', { n: Math.min(1e6, n) }); },
     item(i, ok) { i = Math.floor(+i); if (!(i >= 0 && i < 200)) return; out('it', { i, ok: !!ok }); },
     setState(patch) { if (S.role !== 'host' || !patch || typeof patch !== 'object') return false; S.state = merge(S.state, JSON.parse(JSON.stringify(patch))); out('st', { d: patch }); emit('state', S.state); return true; },

@@ -38,15 +38,15 @@ removed, `4404` no session/seat, `4409` replaced by another device, `4413` messa
 | `hello` | `v: 1, tok` | all | 1 | Seat or host token. A signed-in seat's token needs that account's cookie. |
 | `rdy` | `view: '3d'|'2d'|'watch'`, host: `cfg?` | all | 2 | Send after `wel` once the frame is loaded, and again after `ph{phase:'loading'}` once the game frame is ready. Host `cfg` = the game's `Oomba.live.ready(opts)`: `{ presence?: { bounds (m, 1-1000), maxSpeed (m/s) }, lobby?, quiz?, hostView?, maxScorePerSec? }`. |
 | `mv` | `p: [x, y, z, h, a]` | player | 12 | cm (±100000), heading 0-255, anim index 0-7 (`ANIM`). Accepted in `lobby`, and in `playing` for game mode (not quiz modes). Clamped to bounds; too fast → `fix`. One jump a 5 s is allowed. |
-| `ev` | `k: /^[a-z][a-z0-9_-]{0,23}$/`, `d`, `to?` | all | 10 | `d`: numbers, booleans, `null`, tokens `/^[a-z0-9_-]{1,24}$/`, arrays/objects (token keys) depth ≤ 2, ≤ 512 B. Player `to: 'host'`; host `to: <seat>` or everyone. |
-| `sc` | `n: 0..1e6` | player | 2 | Game-reported score (not in quiz modes); rises at most `maxScorePerSec` × (Δt + 1 s). |
+| `ev` | `k: /^[a-z][a-z0-9_-]{0,23}$/`, `d`, `to?` | all | 10 | `d`: numbers, booleans, `null`, tokens `/^[a-z0-9_-]{1,24}$/`, arrays/objects (token keys) depth ≤ 2, ≤ 512 B. A player's `k`, every string and every key longer than 2 must be one of the game's words (`ready({ words })`, read from the game's code when the session opens); the host's strings must pass the text filter. Player `to: 'host'`; host `to: <seat>` or everyone. |
+| `sc` | `n: 0..1e6` | player | 2 | Game-reported score (not in quiz modes); rises at most `maxScorePerSec` × the seconds actually played since the last report (lobby, loading, countdown, pauses and the gaps between rounds count nothing). |
 | `it` | `i: 0..199, ok` | player | 4 | Game-reported item result, first report per item counts. |
 | `an` | `i, c: 0..3, e: ms` | player | 2 | Quiz answer to the open question `i`. Once. |
 | `em` | `e: 0..5` | player | 1 | `EMOTES = ['wave','cheer','jump','dance','clap','heart']`. |
 | `pi` | `c` | all | 1 | Clock ping → `po`. |
 | `fr` | `f?: 'game'|'lobby'` | all | 1 | A fresh frame token → `fr`. |
 | `h` | `a`, `n?`, `at?` | host | 5 | `start pause resume next skip lock unlock kick end`. `next`/`skip` carry the `seq` they were pressed at (stale → ignored). `kick` carries `n` (seat). |
-| `st` | `d` (merge patch) | host | 5 | Shared state, 8 KB in all; broadcast as the patch. |
+| `st` | `d` (merge patch) | host | 5 | Shared state, 8 KB in all; every string and key must pass the text filter (no rude words, contact details, handles or links), else the patch is dropped; broadcast as the patch. |
 
 Everything else (unknown types, extra fields, out of range, host types from a player) is dropped silently.
 
@@ -56,7 +56,7 @@ Everything else (unknown types, extra fields, out of range, host types from a pl
 |---|---|---|
 | `wel` | `v, role: 'player'|'host', seat, phase, seq, round, at, clock, players: [P], state, nameMode, audience, mode, title, cfg (with `threeD`, `twoD` from the live check: the page picks the Watch view), locked, max, frame, lobbyFrame?, quiz?: { q, answered }, race?: [[seat, prog, gems]]` · player: `me: { seat, name, avatar, team, score, late }` · host: `code` | `P = [seat, name, avatar, team, score, connected 0/1, ready 0/1, late 0/1]`. `name` is a nickname index (0-143) or, when `nameMode === 'accounts'`, the account's display name. `lobbyFrame` only when the game draws no lobby (`lobby:true` not declared). `answered`: a boolean for a player, a count for the host. |
 | `pj` / `pu` / `pl` | `p: P` / `p: P` / `n: seat` | Joined / changed (connected, ready, renamed) / left (removed or freed after 60 s). |
-| `s` | `k, ts, p: [[seat, x, y, z, h, a], …]` | Changed seats only, ~10 Hz (5 Hz above 40 movers), one string for everyone. Interpolate ~120 ms behind. |
+| `s` | `k, ts, p: [[seat, x, y, z, h, a, age], …]` | Changed seats only, ~10 Hz (5 Hz above 40 movers), one string for everyone. `age`: ms since that position arrived, so it was true at `ts - age` (interpolate on that, ~120 ms behind). |
 | `fix` | `p` | Your last accepted position (a move was too fast). |
 | `ph` | `phase, round, seq, at, …` | `lobby loading countdown playing paused between ended`. `countdown.at` = when play starts (server clock). `ended` carries `top: [[seat, score]×5]`. `loading` carries `locked`. |
 | `q` | `i, n, q, choices, secs, at` | A question opens at `at` (server ms); deadline `at + secs*1000 + 600`. Sent again with a new `at` after a resume. Never the answer. |

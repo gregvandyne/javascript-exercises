@@ -39,7 +39,7 @@ LS.hooks.log = keep; LSock.hooks.log = keep; UP.hooks.log = keep;
 export const liveHtml = (extra = '', { quiz = false, lobby = true } = {}) => `<!doctype html><title>t</title>
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="${KIT_VERSIONS['1.1.0']}" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="${PACK_HASH}" crossorigin="anonymous"></script>
-<script>const live = Oomba.live; live.ready({ lobby: ${lobby}, quiz: ${quiz} }); live.on('start', () => {}); live.score(1); ${extra}</script>`;
+<script>const live = Oomba.live; live.ready({ lobby: ${lobby}, quiz: ${quiz}, words: ['pick', 'red-gem', 'item', 'say', 'add_me_on_snap'] }); live.on('start', () => {}); live.score(1); ${extra}</script>`;
 
 export const boss = auth.createUser({ username: 'LiveBoss', password: 'secret123', role: 'admin' });
 export const school = S.createSchool(boss, { name: 'Live Oak' }).school;

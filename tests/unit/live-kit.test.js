@@ -63,7 +63,7 @@ test('in a session: ready sends rdy with clamped settings; the page\'s messages 
   assert.deepEqual(names, ['welcome', 'join', 'start', 'pause', 'resume', 'between', 'round', 'event', 'state', 'emote', 'leave', 'end']);
   assert.deepEqual(ev.find(e => e[0] === 'event')[1], { from: 1, kind: 'pick', data: { n: 2 } });
   assert.deepEqual(L.state, { b: 2 });
-  assert.deepEqual(ev.find(e => e[0] === 'emote')[1], { from: 1, name: 'cheer' });
+  assert.deepEqual(ev.find(e => e[0] === 'emote')[1], { from: 1, name: 'cheer', me: false });
   assert.deepEqual(ev.at(-1)[1].top, [{ seat: 1, score: 500, name: 'Brave Otter' }, { seat: 2, score: 300, name: 'Sunny Panda' }]);
   assert.equal(L.phase, 'ended');
 });

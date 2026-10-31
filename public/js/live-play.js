@@ -116,7 +116,8 @@ async function onPhase(m, first = false) {
 }
 
 function announceResult(m) {
-  if (m.none) return;
+  // A quiz game in its frame says the result itself (its own live region): saying it here too would read it twice.
+  if (m.none || (frame && !watching)) return;
   says(m.ok ? t('js.live-play.right', { points: m.points }) : t('js.live-play.wrong'));
 }
 function place(m) {
@@ -167,22 +168,46 @@ const pos = new Map(); let board = [], raceList = [], watchTimer = 0;
 function startWatch() {
   if (!watch) return;
   watch.hidden = false; stage.hidden = true; says(D.watchHint);
+  // The map frames the players themselves (not the game's whole world: Sunvale is 460 m across, which would put a whole
+  // class on one pixel), easing as they move. Colours come from the theme, text runs the page's direction, and names
+  // that would overprint another are left out (mine always shows).
+  const view2 = { cx: 0, cz: 0, span: 20 };
+  const list0 = () => (raceList.length ? raceList.slice().sort((a, b2) => b2[1] - a[1]).map(r => [r[0], r[1]]) : board);
   const draw = () => {
     const c = watch.getContext('2d'), W = watch.clientWidth || 320, H = watch.clientHeight || 320, dpr = devicePixelRatio || 1;
     if (watch.width !== Math.round(W * dpr)) { watch.width = Math.round(W * dpr); watch.height = Math.round(H * dpr); }
+    const css = getComputedStyle(document.body), rtl = (document.documentElement.dir || 'ltr') === 'rtl';
+    const bg = css.getPropertyValue('--card').trim() || '#ffffff', ink = css.getPropertyValue('--text').trim() || css.color || '#141414';
     c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
-    c.fillStyle = getComputedStyle(document.body).getPropertyValue('--card') || '#e9f5ee'; c.fillRect(0, 0, W, H);
-    const b = Math.max(10, (cfg.presence && cfg.presence.bounds) || 50), sc = Math.min(W, H) / (b * 2.2);
-    c.font = '600 12px system-ui, sans-serif'; c.textAlign = 'center'; c.direction = document.documentElement.dir || 'ltr';
-    for (const [seat, p] of pos) {
-      const pl = players.get(seat); if (!pl) continue;
-      const x = W / 2 + p[0] / 100 * sc, y = H / 2 + p[2] / 100 * sc;
-      c.fillStyle = seat === mySeat ? '#2f6bff' : '#3aa676'; c.beginPath(); c.arc(x, y, seat === mySeat ? 8 : 6, 0, Math.PI * 2); c.fill();
-      c.fillStyle = '#1d2340'; c.fillText(nm(pl.name), x, y - 10);
+    c.fillStyle = bg; c.fillRect(0, 0, W, H);
+    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+    for (const [seat, p] of pos) { if (!players.has(seat)) continue; x0 = Math.min(x0, p[0] / 100); x1 = Math.max(x1, p[0] / 100); z0 = Math.min(z0, p[2] / 100); z1 = Math.max(z1, p[2] / 100); }
+    if (x0 <= x1) {
+      const k = 0.08;
+      view2.cx += ((x0 + x1) / 2 - view2.cx) * k; view2.cz += ((z0 + z1) / 2 - view2.cz) * k;
+      view2.span += (Math.max(20, x1 - x0, z1 - z0) * 1.25 - view2.span) * k;
     }
-    const list = raceList.length ? raceList.slice().sort((a, b2) => b2[1] - a[1]).map(r => [r[0], r[1]]) : board;
-    c.textAlign = 'start'; c.font = '700 14px system-ui, sans-serif';
-    list.slice(0, 5).forEach((r, i) => { const pl = players.get(r[0]); c.fillStyle = '#1d2340'; c.fillText(`${i + 1}. ${pl ? nm(pl.name) : ''} ${r[1]}`, 10, 20 + i * 18); });
+    const top = list0().length ? 110 : 0, sc = Math.max(1, Math.min(W, H - top)) / view2.span, oy = top + (H - top) / 2;
+    c.font = '700 12px system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.direction = rtl ? 'rtl' : 'ltr';
+    const placed = [], order = [...pos].filter(([seat]) => players.has(seat)).sort((a, b2) => (a[0] === mySeat) - (b2[0] === mySeat)).reverse();
+    for (const [seat, p] of order) {
+      const pl = players.get(seat), mine = seat === mySeat;
+      const x = W / 2 + (p[0] / 100 - view2.cx) * sc, y = oy + (p[2] / 100 - view2.cz) * sc;
+      c.fillStyle = mine ? '#2f6bff' : '#3aa676'; c.beginPath(); c.arc(x, y, mine ? 8 : 6, 0, Math.PI * 2); c.fill();
+      const name = nm(pl.name), w = Math.min(120, c.measureText(name).width + 10), box = [x - w / 2, y - 27, w, 16];
+      if (!mine && placed.some(r => box[0] < r[0] + r[2] && r[0] < box[0] + box[2] && box[1] < r[1] + r[3] && r[1] < box[1] + box[3])) continue;
+      placed.push(box);
+      c.fillStyle = mine ? '#2f6bff' : 'rgba(29,35,64,.85)'; c.fillRect(box[0], box[1], box[2], box[3]);
+      c.fillStyle = '#ffffff'; c.fillText(name, x, y - 15, 112);
+    }
+    // the top five, in a card at the top that reads from the page's start edge
+    const list = list0();
+    if (list.length) {
+      c.fillStyle = bg; c.globalAlpha = 0.92; c.fillRect(0, 0, W, 104); c.globalAlpha = 1;
+      c.textAlign = 'start'; c.font = '700 14px system-ui, sans-serif'; c.fillStyle = ink;
+      const sx = rtl ? W - 10 : 10;
+      list.slice(0, 5).forEach((r, i) => { const pl = players.get(r[0]); c.fillText(`${i + 1}. ${pl ? nm(pl.name) : ''} ${r[1]}`, sx, 20 + i * 19, W - 20); });
+    }
     watchTimer = requestAnimationFrame(draw);
   };
   cancelAnimationFrame(watchTimer); draw();
