@@ -45,7 +45,7 @@ test('/live: hosts only (others go to /join); the landing posts to /api/live/ses
   assert.equal((await call('/live', { user: kid })).headers.get('location'), '/join');
   assert.equal((await call('/live', { user: mia })).headers.get('location'), '/join');
   const page = await call('/live', { user: teacher });
-  assert.equal(page.status, 200); assert.match(page.text, /data-api="\/api\/live\/sessions"/); assert.match(page.text, /value="mode:quest-race"/);
+  assert.equal(page.status, 200); assert.match(page.text, /data-api="\/api\/live\/sessions"/); assert.doesNotMatch(page.text, /value="mode:(quest-race|battle)"/);
   assert.match(page.text, /value="starter:math-8"/);
   const r = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:quest-race', set: 'starter:science', audience: 'open', maxPlayers: '20' } });
   assert.equal(r.status, 200, r.text); assert.match(r.json.redirect, /^\/live\/host\//);

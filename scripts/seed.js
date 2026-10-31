@@ -20,6 +20,12 @@ const DEMO_SLUG = 'magic-cups-demo-school';
 // The launch games, imported in this order. The home-page hero is the featured game marked "hero": true in its JSON
 // (featured=2), else the most played featured game.
 export const SEED_GAMES = ['hero-of-sunvale', 'shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek', 'swish-flick', 'loop-lab', 'beat-lanes', 'code-isle', 'quest-race', 'question-battle', 'atlas-quest'];
+// Launch games kept for live hosting code and tests but not published: hidden from every list and page, never featured,
+// and left out of the live picker (server/routes/live.js). Re-applied on every boot because the import above republishes.
+export const RETIRED_GAMES = ['quest-race', 'question-battle'];
+export function retireGames(officialId) {
+  for (const slug of RETIRED_GAMES) q.run("UPDATE games SET visibility='private', featured=0, hidden_reason='retired' WHERE slug=? AND owner_id=?", slug, officialId);
+}
 export function seed({ quiet = false } = {}) {
   const say = (...a) => { if (!quiet) console.log(...a); };
   let admin = getUserByName(config.adminUsername);
@@ -38,6 +44,7 @@ export function seed({ quiet = false } = {}) {
     const g = importGame(path.join(dir, `${f}.html`), path.join(dir, `${f}.json`), official.id);
     say(`  ✓ ${g.title}  /g/${g.slug}`);
   }
+  retireGames(official.id);
   const demo = seedDemoTeacher(admin, say);
   const bootstrapped = seedSchools(admin, config.bootstrapSchools, say);
   return { admin, official, demo, bootstrapped };
