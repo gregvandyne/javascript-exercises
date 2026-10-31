@@ -1577,3 +1577,12 @@ grown-up connections, or everyone. Every other fence around grown-up accounts st
   - Kit timers (`after`, `every`) fire inside the clock tick, not as promise callbacks, so `__brbTest.step(n)` is exact.
   - The `/kit` frame takes `?l=` and `?mode=`: the site middleware treats `?lang=` and `?theme=` as the visitor's own
     choice and redirects.
+
+## Game data packs (/vendor/data/)
+
+A game file stays under 2 MB, but some official games carry a lot of words in many languages (Atlas Quest has about 1,200 culture questions, in 13 languages). Packing every language into the game file would mean every player downloads all of them. Instead, a game can keep reviewed data in `public/vendor/data/<game>/<version>/` (for example, one file per language) and load only the one it needs at run time: a script element with `integrity` and `crossorigin="anonymous"`, so the browser checks the exact bytes.
+
+- **The frame CSP** allows `<origin>/vendor/data/` in `script-src`, next to Three.js and the Oomba Kit. The files are in the repository and reviewed like code. A user-made game can't add files there.
+- **Version folders never change** once published, because `/vendor` is served immutable with a one-year cache. New content goes in a new version folder. The game names its version and holds the `sha384` of each file.
+- **The game still works without a pack**, e.g. in English, if the file can't load.
+- The screenshot worker and `scripts/covers.js` serve these files from disk, like the other `/vendor` folders.
