@@ -491,7 +491,7 @@ function pickAt(x, y) {
   for (const [cc, d] of Object.entries(dots)) {
     const w = d.p.clone(); if (w.clone().normalize().dot(camera.position.clone().normalize()) < 0.2) continue;
     const s = project(w), rad = Math.abs(project(w.clone().add(new THREE.Vector3(0, 0.0125, 0))).y - s.y);
-    const reach = Math.max(rad + 6, under && BY[under] && under !== cc ? 10 : TOUCH ? 26 : 18);
+    const reach = under && BY[under] && under !== cc ? rad : Math.max(rad + 6, TOUCH ? 26 : 18);
     const dd = Math.hypot(s.x - x, s.y - y); if (dd < reach && dd < bd) { bd = dd; best = cc; }
   }
   if (best) return { cc: best, ll: ll || BY[best].cap };
