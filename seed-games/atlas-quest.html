@@ -816,7 +816,7 @@ const tourRegion = () => TOUR_REGIONS.find(r => COUNTRIES.some(c => c.reg === r 
 function tourQuestions() {
   const r = tourRegion(); if (!r) return [];
   return TOUR.filter(c => c.reg === r && !SAVE.tour[c.cc]).slice(0, MODES.tour.n).map(c => {
-    const q = makeQ('find', c); q.tour = true; q.why = c.fact; q.whyIcon = 'info'; return q;
+    const q = makeQ('find', c); q.tour = true; q.why = c.fact; q.whyIcon = 'spark'; q.whyLead = tr('Did you know?'); return q;
   });
 }
 function dailyQuestions() {
@@ -958,7 +958,7 @@ function answer(ok, wrongCc) {
       : q.kind === 'cap' ? tr('Not quite: {city} is the capital of {name}.', { city: w.capital, name: w.name })
       : tr('Not quite: that was {name}.', { name: w.name });
   }
-  if (q.why && (ok || !q.tour)) $('#qFeed').appendChild(el('div', 'aq-why', `${ICON(q.whyIcon || CATS[q.cat].icon)}<span>${esc(q.why)}</span>`));
+  if (q.why && (ok || !q.tour)) $('#qFeed').appendChild(el('div', 'aq-why', `${ICON(q.whyIcon || CATS[q.cat].icon)}<span>${q.whyLead ? `<b>${esc(q.whyLead)}</b> ` : ''}${esc(q.why)}</span>`));
   save(); hintRing.visible = false;
   for (const k in MARK) if (MARK[k] === 'reg' || MARK[k] === 'near') delete MARK[k];
   MARK[c.cc] = ok ? 'got' : 'hot'; drawMap();
