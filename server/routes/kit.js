@@ -21,7 +21,12 @@ const allowed = req => config.kitPreview || (req.user && req.user.role === 'admi
 const pick = (v, list, d) => (list.includes(v) ? v : d);
 /** A kit scene file with the pinned kit tag put in (and every art pack's, where the scene asks for them; the 3D scene
  *  also gets the pinned three.js import map). */
-export function sceneHtml(name) { return fs.readFileSync(path.join(DEMO_DIR, `${name}.html`), 'utf8').replace('<!--KIT-->', kitTag()).replace('<!--PACKS-->', kitPacks().map(n => kitPackTag(n)).join('\n')).replace('<!--THREE-->', threeImportMap()); }
+export function sceneHtml(name) {
+  const html = fs.readFileSync(path.join(DEMO_DIR, `${name}.html`), 'utf8');
+  // The 3D bridge is only for scenes that load three.js; a 2D scene never pays for it.
+  const packs = kitPacks().filter(n => n !== 'bridge-3d' || html.includes('<!--THREE-->'));
+  return html.replace('<!--KIT-->', kitTag()).replace('<!--PACKS-->', packs.map(n => kitPackTag(n)).join('\n')).replace('<!--THREE-->', threeImportMap());
+}
 
 router.get('/kit', (req, res) => {
   if (!allowed(req)) return res.status(404).send('Not found');
