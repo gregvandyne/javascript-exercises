@@ -892,7 +892,7 @@ function nextQuestion(first) {
   drawMap();
   if (!first) requestAnimationFrame(placeCam);
 }
-function flyTo(c, dist) { const at = TINY.has(c.cc) ? c.cap : c.lab; const span = SHAPES[c.cc] ? Math.max(SHAPES[c.cc].box[2] - SHAPES[c.cc].box[0], SHAPES[c.cc].box[3] - SHAPES[c.cc].box[1]) : 2; flyCam(at[0], at[1], dist || Math.max(1.6, Math.min(3.2, 1.45 + span / 40))); }
+function flyTo(c, dist) { const at = TINY.has(c.cc) ? c.cap : c.lab; const span = SHAPES[c.cc] ? Math.max(SHAPES[c.cc].box[2] - SHAPES[c.cc].box[0], SHAPES[c.cc].box[3] - SHAPES[c.cc].box[1]) : 2; flyCam(at[0], at[1], dist || Math.max(2.15, Math.min(3.4, 1.95 + span / 30))); }   // backed out: the country with its neighbours around it
 
 function choose(o, b) {
   const g = game, q = g.qs[g.i]; if (!q || q.answered) return;
