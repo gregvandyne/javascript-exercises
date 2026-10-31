@@ -50,13 +50,13 @@ async function toPlaying(s, h, ...players) {
   await players[0].next('ph', m => m.phase === 'playing', 6000);
 }
 
-test('eligibility: class staff of the school only (full when they teach the class), never a student, kid, guest, banned account, other-school teacher or a platform admin outside the school; families through the seam; open rooms none', () => {
+test('eligibility: class staff of the school only (full when they teach the class or are a school admin), never a student, kid, guest, banned account, other-school teacher or a platform admin outside the school; families through the seam; open rooms none', () => {
   const s = classRoom();
   const tier = u => A.controlTier(s, u);
   assert.equal(tier(teacher), 'full', 'the host teaches the class');
   assert.equal(tier(ann), 'full', 'another teacher of the class');
   assert.equal(tier(teacher2), 'limited', 'same-school teacher, not on the class: controls only');
-  assert.equal(tier(ada), 'limited', 'a school admin who does not teach the class');
+  assert.equal(tier(ada), 'full', 'a school admin of the class\'s school sees student details too, even without teaching it');
   assert.equal(tier(mia), null, 'a student of the class');
   assert.equal(tier(kid), null, 'a kid account');
   assert.equal(tier({ ...teacher2, is_guest: 1 }), null, 'a guest');
