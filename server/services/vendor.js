@@ -38,8 +38,12 @@ export function isThreeGame(html) {
 }
 
 /** What the browser must support for this game, or null for an ordinary 2D game. */
+/** A live game with a 2D path for devices without 3D (docs/kit-api.md "Live class games"). */
+export const LIVE_2D_RE = /<meta\s+name\s*=\s*["']oomba-live["']\s+content\s*=\s*["']2d["']/i;
 export function deviceNeeds(html) {
-  return isThreeGame(html) ? { webgl2: true, importmap: true } : null;
+  if (!isThreeGame(html)) return null;
+  // fallback '2d': the SDK runs the game's own 2D path instead of the "newer device" card (the game draws it).
+  return LIVE_2D_RE.test(String(html || '')) ? { webgl2: true, importmap: true, fallback: '2d' } : { webgl2: true, importmap: true };
 }
 
 const isPinnedMap = m => {

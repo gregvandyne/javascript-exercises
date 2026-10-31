@@ -57,7 +57,7 @@ const games = await import('../../server/services/games.js');
 const { runTurn, providerName } = await import('../../server/builder/agent.js');
 const { loadChat } = await import('../../server/builder/chat.js');
 const { reviewVersion } = await import('../../server/services/review.js');
-const { SYSTEM_PROMPT, THREE_D_RULES } = await import('../../server/builder/prompt.js');
+const { SYSTEM_PROMPT, THREE_D_RULES, asksForLive } = await import('../../server/builder/prompt.js');
 const { threeImportMap } = await import('../../server/services/vendor.js');
 // Every import before the first test: test.after (which closes the fake API) runs once the tests registered so far
 // are done, so a top-level await between tests would close it early when only some tests are picked.
@@ -137,6 +137,10 @@ test('3D: the fixed 3D rules block is sent only for 3D, and start_from_template 
   assert.ok(THREE_D_RULES.includes(threeImportMap()), 'the rules carry the exact pinned import map');
   for (const s of ['start_from_template', 'fit3d', '60 to 75', 'reduced-motion', 'Chromebooks', 'GLTFLoader.parse', 'InstancedMesh', 'webglcontextlost']) assert.ok(THREE_D_RULES.includes(s), s);
   assert.ok(calls[0].body.tools.some(t => t.name === 'start_from_template'));
+  // A new 3D world asks "live or closed?"; the live chip keeps "Oomba Live", so picking it sends the live rules next turn.
+  assert.match(THREE_D_RULES, /Live or closed world[\s\S]*ask_user[\s\S]*"Oomba Live"[\s\S]*closed world/);
+  assert.ok(asksForLive('🌍 Live: others join with Oomba Live'), 'the live chip turns on the live rules');
+  assert.ok(!asksForLive('🏝️ Closed: just my world'));
   assert.match(calls[1].body.system[2].text, /<current_game>[\s\S]*type="importmap"/, 'the template is the current game for the next step');
   const v = games.getVersion(games.getGame(g.id).current_version_id);
   assert.equal(v.number, 2); assert.equal(v.safety_status, 'pass', v.safety_report);

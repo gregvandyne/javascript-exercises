@@ -186,6 +186,25 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 The parent checks that each message comes from its own game frame (`event.source`), has the expected shape,
 and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`, `public/js/admin.js`).
 
+## Live messages (Oomba Live)
+
+A live frame (`/live/frame/:token`, `__BRB_INIT__.live`) makes a `MessageChannel` before the game's code runs and hands
+`port2` to the page with its first `brb:ready` (`{ title, live: 1 }` plus the port as a transfer). Everything live goes
+over that port, never over `window.postMessage`: a page the frame navigates to never has it, and the page tears a frame
+down on its second load (`public/js/live-common.js`). Games never use the port: they use `Oomba.live` (the kit's
+`live` pack); `BRB.live` is `{ v, active, init, send(t, m), on(fn) }` for the pack only.
+
+- Frame to page: `rdy {view, cfg}`, `mv {p}`, `ev {k, d, to}`, `sc {n}`, `it {i, ok}`, `an {i, c, e}`, `em {e}`, and
+  for the host's frame `st {d}`. The SDK checks each one's exact shape (game event data: numbers, booleans, null and
+  `[a-z0-9_-]{1,24}` tokens, two levels deep at most) and drops anything else with a console warning; the page checks
+  again (type, role, size) and the server a third time.
+- Page to frame: the server's messages (docs/live-protocol.md §2) without tokens, the join code or report counts, and
+  `clk {s}` (the server's time, so the frame can count down to the same moment as everyone).
+- In a live frame nothing can be typed: `prompt()` returns null, text inputs and textareas are read-only and
+  contenteditable is switched off, also for elements the game adds later (buttons, sliders and checkboxes still work).
+- `BRB.device` (3D games): `{webgl2, importmap}`. A game with `<meta name="oomba-live" content="2d">` gets no "newer
+  device" card when they are missing: it draws its own 2D view.
+
 ## How the Builder edits games
 
 The AI Builder works with these tools: `ask_user(question, options)`, `write_game(html, notes)` (a whole new version),

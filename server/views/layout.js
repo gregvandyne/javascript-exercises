@@ -20,6 +20,7 @@ import { notices, markNotified } from '../builder/turns.js';
 import { familiesOn } from '../services/family.js';
 import { madeCard, pwResetNote } from './family-made.js';
 import { seoHead, localeUrl, clip } from '../seo.js';
+import { liveOn } from '../services/classlive-sessions.js';
 
 const NAV = [
   ['home', '/', '🏠'],
@@ -164,6 +165,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
   const playNow = out ? html`<a class="btn btn-hot playnow" href="${(req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play'}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
+  // Oomba Live: "Join a game" for signed-out visitors (a class on the big screen gives them a code); wide screens only,
+  // phones get it on the home page.
+  const joinNow = out && liveOn() ? html`<a class="btn joinnow" href="/join"><span aria-hidden="true">🎟️</span> ${t('live.entry.join')}</a>` : '';
   const act = currentTab(shell, active);
   const signIn = t('layout.signIn');
   const cur = k => (k === act || (k === 'grownups' && GROWNUP_PAGES.includes(act)) ? raw('aria-current="page"') : '');
@@ -191,7 +195,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     ${langPicker(req)}
     ${themePicker(req)}
     <a class="me-btn" href="${meHref}" ${cur(grownup ? 'account' : 'me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span>${badge('me')}</a>
-    ${playNow}
+    ${joinNow}${playNow}
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
     ${shell.tabs.slice(0, -1).map(tab)}

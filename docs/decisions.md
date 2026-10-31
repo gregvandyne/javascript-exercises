@@ -1577,3 +1577,57 @@ grown-up connections, or everyone. Every other fence around grown-up accounts st
   - Kit timers (`after`, `every`) fire inside the clock tick, not as promise callbacks, so `__brbTest.step(n)` is exact.
   - The `/kit` frame takes `?l=` and `?mode=`: the site middleware treats `?lang=` and `?theme=` as the visitor's own
     choice and redirects.
+
+## Oomba Live: a live classroom platform (server, part 1)
+
+The owner asked for "live classroom mode" like Kahoot or Blooket, with players seeing each other in 3D worlds, and
+stressed that it is **a platform teachers reuse with their own games**, not one game. Full design: the Oomba Live
+design notes (`.claude/work/live-out/design-final.md`); protocol and page hooks: docs/live-protocol.md; safety:
+docs/safety.md §12; legal: docs/legal-review.md item 41.
+
+- **Platform, not a game.** A host opens a session for any live-ready game: official games, the built-in modes
+  (Quest Race, Question Battle, themselves kit games), the host's own Builder games and games shared with their
+  classes. The platform owns codes, lobby, roster, seats and reconnects, host controls, the clock, server-timed
+  questions, leaderboards, results and the gradebook. Games plug in through one kit API (`Oomba.live`, part 2).
+- **Single process, in memory.** Sessions live in `classlive-sessions.js`; only a summary is saved when one ends
+  (`live_runs`, and `live_run_scores` for a teacher's own class). The app is single-instance already; scaling sideways
+  would need routing by session id (sticky by `sid`). A restart ends every session cleanly after saving it.
+- **One upgrade listener** (`services/upgrade.js`) routes by path: `/api/studio/:id/listen` (live mic) and
+  `/api/live/ws`. Unknown paths 404 with a status-and-reason log line.
+- **`/join` is shared.** Live codes are 7 digits; class codes stay 6 characters, so the length tells them apart. The
+  live router is mounted before the Google routes and hands class codes on unchanged. With `LIVE_CLASSROOM=0` only the
+  live part goes away.
+- **Audiences** (`class`, `family`, `open`) decide who may join and which games may run; names are account names only
+  in a teacher's own class room. Grown-up open rooms: 30 players at most.
+- **Performance.** One snapshot per session per tick (10 Hz, 5 Hz above 40 movers), serialised once; slow sockets skip
+  a tick (backpressure at 64 KB); no positions in quiz phases; caps `LIVE_MAX_SESSIONS` and `LIVE_MAX_SEATS`.
+- **No column for live-readiness.** Versions never change, so `classlive-check.liveCheck(versionId)` is cached in
+  memory; nothing to backfill.
+- **The kit pack** (`live`, part 2) stays thin and forward-compatible; the wire protocol lives in the SDK and the
+  server, so it can be fixed without changing pinned pack bytes. `kit/SHIPPED.json` gains the pack only after the e2e
+  suite passes and the owner signs off.
+
+## Oomba Live, part 2: the kit API, pages, reference games
+
+- **`Oomba.live` is a new pack inside kit 1.1.0, not a 1.2.0.** The owner asked for a new minor version only if 1.1.0's
+  files were locked: they are, but `scripts/build-kit.js --packs` is the sanctioned way to add a pack beside a locked
+  version (the core and the eight locked packs are checked byte for byte; 1.0.0 untouched). A 1.2.0 would have needed a
+  core size-cap raise (72 bytes free) and a version bump across every template, test and saved-game path, for no
+  change in the core. Recorded as owner question 1; the pack goes into `kit/SHIPPED.json` with their sign-off.
+- **Frame and page talk over a `MessagePort`** made by the SDK before game code runs (docs/sdk.md "Live messages"); the
+  page re-checks every message, and a second frame load tears the frame down (a navigated page never has the port).
+- **Live-ready check, lint and Builder.** The rules live in `classlive-lint.js` (pure), shared by hosting
+  (`classlive-check.js`, cached per version), the scanner (`report.live` for games that load the pack) and the
+  Builder's lint notes. The Builder gets `LIVE RULES` (the `<!-- builder:live -->` part of docs/kit-api.md) only when
+  asked for a live class game or when the game already loads the pack, like the 3D rules, so the cached prefix stays
+  the same for everyone else. The Studio's "Make it a live class game" sends one fixed, translated message (it names
+  "Oomba Live" in every language); the mock Builder adds the pack tag and a small live block to kit games.
+- **Reference games are kit games.** Quest Race (3D island, logic and 2D in a classic script, 3D in the module) and
+  Question Battle (2D only, so it runs on anything; its podium uses portraits rather than 3D rigs) are seed games with
+  the slugs the built-in modes use. Quest Race: a right answer in the first third of the time is a full step, so a
+  perfect, quick player reaches the flag on the last question.
+- **Hero of Sunvale is the proof that an existing game adapts:** about 60 lines behind `Oomba.live.active` (presence,
+  a light blocky hero per player through `crowd({make})`, missions as `item` + a `quest` event, the host's projector a
+  camera tour with the class's village progress). Devices without 3D get the platform's Watch map (Hero has no 2D path).
+- **The platform lobby** (`server/live/lobby.html`) is a small 3D meadow with a 2D fallback, for games that don't
+  declare `lobby: true`.

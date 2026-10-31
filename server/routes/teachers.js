@@ -5,6 +5,7 @@
 // Games are listed only when they are an official launch game anyone may open now (canView for a signed-out visitor):
 // never a game a child made. The text is under teachers.* and learn.* in the locale files. Until a language has it, a
 // paragraph shows the English, marked lang="en" dir="ltr", and search engines are told the page is English only.
+import { liveOn } from '../services/classlive-sessions.js';
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
@@ -182,6 +183,10 @@ router.get('/teachers', (req, res) => {
       <ul class="lp-list">${['li1', google ? 'li2google' : 'li2', 'li3', 'li4'].map(k => el(t, 'li', `teachers.safe.${k}`))}</ul>
       <p>${tHtml(t, 'teachers.safe.links', { safety: lp(req, '/safety'), privacy: '/privacy' })}</p>
     </section>
+    ${liveOn() ? html`<section class="panel" id="live" aria-labelledby="live-h">
+      ${el(t, 'h2', 'teachers.live.h', {}, ' id="live-h"')}${el(t, 'p', 'teachers.live.p1')}
+      <ul class="lp-list">${['li1', 'li2', 'li3'].map(k => el(t, 'li', `teachers.live.${k}`))}</ul>
+    </section>` : ''}
     <section class="panel" id="uses" aria-labelledby="uses-h">
       ${el(t, 'h2', 'teachers.uses.h', {}, ' id="uses-h"')}${el(t, 'p', 'teachers.uses.p')}
       <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `teachers.uses.${k}`))}</ul>

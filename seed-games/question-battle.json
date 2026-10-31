@@ -1,0 +1,15 @@
+{
+  "slug": "question-battle",
+  "title": "Question Battle",
+  "icon": "⚡",
+  "cover": "space",
+  "category": "learning",
+  "tags": "live,quiz,class,questions,leaderboard",
+  "description": "A live class quiz: the questions on the big screen, the answers on every device, and a leaderboard after each one. Fast right answers score the most. Played alone, it is a quick practice round.",
+  "orientation": "any",
+  "players_max": 60,
+  "age_rating": "everyone",
+  "featured": false,
+  "notes": "Oomba Live reference game (built-in mode 'battle'), 2D on the Oomba Kit 1.1.0 with the live pack. Uses Oomba.live: ready({lobby, quiz, hostView}), the question / answers / reveal / result / end / emote events, quiz.answer and flat() (the lobby and the podium portraits). Test hooks: window.__brbTest.state(), answer(i).",
+  "l10n": {}
+}

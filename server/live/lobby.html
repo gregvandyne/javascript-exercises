@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="oomba-live" content="2d">
+<title>Lobby</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe8ff; font-family: var(--ok-font, system-ui, sans-serif); color: #1d2340; }
+  #view, #flat { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  [hidden] { display: none !important; }
+  .lb-banner { position: fixed; inset-inline: 0; inset-block-start: max(10px, env(safe-area-inset-top)); margin: 0 auto; width: max-content; max-width: 92vw; background: #1d2340; color: #fff; border-radius: 18px; padding: 8px 18px; font-weight: 800; font-size: clamp(16px, 4vw, 26px); text-align: center; }
+  .lb-banner:empty { display: none; }
+  .lb-stick { position: fixed; inset-block-end: 18px; inset-inline-start: 18px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.35); border: 3px solid rgba(29,35,64,.25); touch-action: none; }
+  .lb-stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(29,35,64,.55); }
+</style>
+</head>
+<body>
+<canvas id="view" aria-hidden="true" hidden></canvas>
+<canvas id="flat" aria-hidden="true" hidden></canvas>
+<p class="lb-banner" id="banner" role="status" aria-live="polite"></p>
+<div class="lb-stick" id="stick" aria-hidden="true" hidden><i></i></div>
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-DEY9CBRRDIGm0Og+0Maqjxn5hJBsi2oQ5upbfYetCK7gywcURgFn61bsxc+aQ1NX" crossorigin="anonymous"></script>
+<script>
+/* The Oomba Live platform lobby (server/live/lobby.html; docs/live-protocol.md): shown while players wait for the host,
+   for games that don't draw a lobby of their own (games that declare lobby:true load at once instead). A small meadow
+   where everyone runs around as their character and sends emotes. Logic and the 2D view here; 3D in the module. */
+(function () {
+  'use strict';
+  var O = window.Oomba, L = O.live;
+  O.strings({
+    en: { wait: 'Run around while everyone joins!', ready: 'Get ready!' }, 'en-GB': { wait: 'Run around while everyone joins!', ready: 'Get ready!' },
+    es: { wait: '¡Corre por ahí mientras llegan todos!', ready: '¡Prepárate!' }, fr: { wait: 'Cours partout pendant que les autres arrivent !', ready: 'Prépare-toi !' },
+    de: { wait: 'Lauf herum, bis alle da sind!', ready: 'Mach dich bereit!' }, it: { wait: 'Corri in giro mentre arrivano tutti!', ready: 'Preparati!' },
+    pt: { wait: 'Corra por aí enquanto todos chegam!', ready: 'Prepare-se!' }, nl: { wait: 'Ren rond terwijl iedereen binnenkomt!', ready: 'Maak je klaar!' },
+    ru: { wait: 'Побегай, пока все собираются!', ready: 'Приготовься!' }, ja: { wait: 'みんながくるまで はしりまわろう！', ready: 'よーい！' },
+    'zh-Hant': { wait: '等大家加入時到處跑跑吧！', ready: '準備！' }, he: { wait: 'רוצו מסביב בזמן שכולם מצטרפים!', ready: 'היכון!' },
+    ar: { wait: 'تجوّل حتى ينضم الجميع!', ready: 'استعد!' },
+  });
+  var $ = function (id) { return document.getElementById(id); };
+  document.documentElement.dir = O.dir || 'ltr';
+  var host = L.role === 'host', me = { x: 0, z: 0, h: 0, sp: 0 }, keys = {}, stick = { x: 0, y: 0 }, R = 12;
+  me.x = ((L.me && L.me.seat) || 0) % 5 * 2 - 4; me.z = 3;
+  $('banner').textContent = O.t('wait');
+  L.on('phase', function (e) { $('banner').textContent = e.phase === 'lobby' ? O.t('wait') : O.t('ready'); $('stick').hidden = host || e.phase !== 'lobby'; });
+  addEventListener('keydown', function (e) { keys[e.key] = true; });
+  addEventListener('keyup', function (e) { keys[e.key] = false; });
+  (function () {
+    var el = $('stick'), knob = el.firstElementChild, id = null;
+    var set = function (e) { var r = el.getBoundingClientRect(), x = (e.clientX - r.left - 60) / 50, y = (e.clientY - r.top - 60) / 50, n = Math.hypot(x, y); if (n > 1) { x /= n; y /= n; } stick.x = x; stick.y = y; knob.style.transform = 'translate(' + x * 35 + 'px,' + y * 35 + 'px)'; };
+    el.addEventListener('pointerdown', function (e) { id = e.pointerId; el.setPointerCapture(id); set(e); });
+    el.addEventListener('pointermove', function (e) { if (e.pointerId === id) set(e); });
+    var up = function () { id = null; stick.x = stick.y = 0; knob.style.transform = ''; };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  })();
+  // camYaw null: the 2D view (up the screen is -z); else away from a camera looking along (sin yaw, cos yaw)
+  function step(dt, camYaw) {
+    if (host || L.phase !== 'lobby') return;
+    var x = stick.x, y = stick.y;
+    if (keys.ArrowLeft || keys.a) x -= 1; if (keys.ArrowRight || keys.d) x += 1; if (keys.ArrowUp || keys.w) y -= 1; if (keys.ArrowDown || keys.s) y += 1;
+    var n = Math.hypot(x, y); if (n > 1) { x /= n; y /= n; }
+    var cs = Math.cos(camYaw || 0), sn = Math.sin(camYaw || 0);
+    var vx = camYaw == null ? x : -x * cs - y * sn, vz = camYaw == null ? y : x * sn - y * cs, sp = Math.hypot(vx, vz);
+    me.x += vx * 6 * dt; me.z += vz * 6 * dt; me.sp = sp; if (sp > 0.05) me.h = Math.atan2(vx, vz);
+    var d = Math.hypot(me.x, me.z); if (d > R) { me.x *= R / d; me.z *= R / d; }
+    L.move(me.x, 0, me.z, me.h, sp > 0.6 ? 'run' : sp > 0.05 ? 'walk' : 'idle');
+  }
+  var LB = window.LB = { view: L.view, me: me, step: step, started3d: false, R: R };
+  var begun = false;
+  LB.begin = function () {
+    if (begun) return; begun = true;
+    $('stick').hidden = host || L.phase !== 'lobby';
+    if (LB.view === '2d') {
+      var cv = $('flat'), ctx = cv.getContext('2d'), flat = L.flat({ me: true }), last = performance.now(); cv.hidden = false;
+      var loop = function (ts) {
+        var dt = (ts - last) / 1000; last = ts; step(Math.min(0.1, dt), null);
+        var W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+        if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var sc = Math.min(W, H) / (R * 2.6);
+        ctx.fillStyle = '#bfe8ff'; ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#9ad46c'; ctx.beginPath(); ctx.arc(W / 2, H / 2, R * 1.1 * sc, 0, Math.PI * 2); ctx.fill();
+        if (!host) flat.place(L.me ? L.me.seat : 0, me.x, me.z, me.h);
+        flat.draw(ctx, { scale: sc, ox: W / 2, oy: H / 2, r: Math.max(14, sc * 1.2) });
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    }
+    L.ready({ presence: { bounds: 15, maxSpeed: 9 }, lobby: true, view: LB.view });
+    L.on('start', function () {});
+  };
+  if (LB.view === '2d') LB.begin(); else setTimeout(function () { if (!LB.started3d) { LB.view = '2d'; LB.begin(); } }, 8000);
+  O.test({ state: function () { return { view: LB.view, me: { x: me.x, z: me.z }, others: L.players().filter(function (p) { return !p.me; }).map(function (p) { var s = L.position(p.seat); return { seat: p.seat, x: s ? s.x : null, z: s ? s.z : null }; }) }; } });
+  window.__brbTest.walk = function (x, y, ms) { stick.x = x; stick.y = y; setTimeout(function () { stick.x = stick.y = 0; }, ms || 800); };
+})();
+</script>
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
+  "integrity": {
+    "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+    "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+const LB = window.LB, O = window.Oomba, L = O.live;
+if (LB && LB.view === '3d') {
+  const canvas = document.getElementById('view'); canvas.hidden = false;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: devicePixelRatio < 1.5 });
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 16 / 9, 0.1, 300);
+  const B = O.three(THREE, { renderer, scene, camera, theme: 'meadow' });
+  B.world({ size: 16, flat: true, clear: 13 });
+  const me = L.role === 'host' ? null : B.rig(L.me && L.me.avatar ? L.me.avatar : O.avatar(), { size: 1.6 });
+  if (me) scene.add(me);
+  const crowd = L.crowd(B, { auto: false });
+  BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap });
+  let t = 0;
+  B.run(dt => {
+    t += dt; LB.step(dt, 0);
+    if (me) { me.position.set(LB.me.x, 0, LB.me.z); me.heading = LB.me.h; me.speed = LB.me.sp; }
+    crowd.update(dt);
+    if (me) { camera.position.set(LB.me.x, 6, LB.me.z - 9); camera.lookAt(LB.me.x, 1, LB.me.z); }
+    else { const a = B.reduced ? 0.6 : t * 0.1; camera.position.set(Math.sin(a) * 18, 12, Math.cos(a) * 18); camera.lookAt(0, 0.5, 0); }
+  });
+  LB.started3d = true; LB.begin();
+}
+</script>
+</body>
+</html>

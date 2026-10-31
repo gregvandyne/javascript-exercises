@@ -306,5 +306,19 @@
         "a2": "Games can be educational. Look for ones where your child solves, practises or makes something, with no ads or purchases pulling them along."
       }
     }
+  },
+  "live": {
+    "starter": {
+      "title": {
+        "math8": "Maths, ages 8-9",
+        "math10": "Maths, ages 10-11",
+        "math12": "Maths, ages 12-14"
+      },
+      "science": {
+        "9": {
+          "q": "What is the centre of an atom called?"
+        }
+      }
+    }
   }
 }

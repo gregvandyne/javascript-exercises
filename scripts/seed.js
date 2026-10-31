@@ -19,7 +19,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEMO_SLUG = 'magic-cups-demo-school';
 // The launch games, imported in this order. The home-page hero is the featured game marked "hero": true in its JSON
 // (featured=2), else the most played featured game.
-export const SEED_GAMES = ['hero-of-sunvale', 'shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek', 'swish-flick', 'loop-lab', 'beat-lanes', 'code-isle'];
+export const SEED_GAMES = ['hero-of-sunvale', 'shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek', 'swish-flick', 'loop-lab', 'beat-lanes', 'code-isle', 'quest-race', 'question-battle'];
 export function seed({ quiet = false } = {}) {
   const say = (...a) => { if (!quiet) console.log(...a); };
   let admin = getUserByName(config.adminUsername);

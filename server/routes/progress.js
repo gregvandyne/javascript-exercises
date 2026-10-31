@@ -14,6 +14,11 @@ import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
 import { classHeader, classBack, studentNotYou } from './schools.js';
 import { zoneNote } from './lessons.js';
+import { gameLiveReady } from './live.js';
+import { canHost as liveCanHost } from '../services/classlive-access.js';
+import { liveOn } from '../services/classlive-sessions.js';
+import { classRuns as liveRuns } from '../services/classlive-results.js';
+const liveHostOk = u => liveOn() && liveCanHost(u);
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -114,7 +119,11 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel">${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>✍️ ${t('progress.key.toRead')}</span></p></section>`}`;
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body, head: CSS, ...classBack(req, c) });
+  // Oomba Live: the class's recent live games (results open from here; students' scores are in the saved run).
+  const runs = liveOn() ? liveRuns(c.id, 8) : [];
+  const livePanel = runs.length ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('live.panel.title')}</h2>
+    <ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span></li>`)}</ul></section>` : '';
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${body}${livePanel}`, head: CSS, ...classBack(req, c) });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Overall (the same
@@ -232,14 +241,18 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   };
   // Teachers see the lesson as students do, with nothing that saves work; a game step gets a plain Play link (no lesson
   // tracking), so they can try the game.
+  // A live-ready game step can also be hosted live for the class (Oomba Live): its scores count for this step.
+  const hostLive = s => (s.game_id && liveHostOk(u) && gameLiveReady(games.getGame(s.game_id)) ? html`<a class="btn" href="/live?cl=${cl.id}&step=${s.id}&game=${s.game_id}">📡 ${t('live.entry.hostLive')}</a>` : '');
   const preview = s => (s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
-    : s.game_slug ? html`<div class="row"><a class="btn" href="/play/${s.game_slug}">▶ ${t('lessons.view.play', { title: s.game_title })}</a></div>` : '');
+    : s.game_slug ? html`<div class="row"><a class="btn" href="/play/${s.game_slug}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');
+  const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')
+    ? html`<form data-api="/api/live/sets/from-lesson/${l.id}"><button class="btn" type="submit">📡 ${t('live.entry.quizLesson')}</button></form>` : '';
   const late = student && L.isOpen(cl) && L.dueState(cl) === 'late' && doneN < st.length;
   const body = html`
   <div class="pagehead"><div><h1 dir="auto">${l.title}</h1>
     <p class="muted lp-meta"><span>${t('lessons.stepsN', { count: st.length })}</span>${dateChips(t, f, cl, { late })}</p></div>
     ${student ? studentNotYou(req, true) : ''}
-    ${teacher ? html`<div class="row"><a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('progress.lesson.seeProgress')}</a>${L.canEditLesson(u, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div>` : ''}</div>
+    ${teacher ? html`<div class="row">${quizLive}<a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('progress.lesson.seeProgress')}</a>${L.canEditLesson(u, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div>` : ''}</div>
   ${teacher ? html`<p class="notice">👀 ${t('lessons.view.teacherPreview')}</p>` : ''}
   ${student && st.length ? html`<div class="lessonprogress ${doneN >= st.length ? 'all' : ''}" role="status"><span>${doneN >= st.length ? `🎉 ${t('progress.student.allDone')}` : t('progress.student.doneOf', { done: doneN, total: st.length })}</span>${bar(doneN, st.length)}</div>` : ''}
   ${l.summary ? html`<div class="panel">${paras(l.summary)}</div>` : ''}

@@ -108,6 +108,7 @@ const parentMade = parseFlag(process.env.PARENT_MADE_CHILDREN, 'PARENT_MADE_CHIL
 const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANENTLY');
 const builderWebSearch = parseFlag(process.env.BUILDER_WEB_SEARCH, 'BUILDER_WEB_SEARCH');
 const sttLive = parseFlag(process.env.STT_LIVE, 'STT_LIVE', true);
+const liveClassroom = parseFlag(process.env.LIVE_CLASSROOM, 'LIVE_CLASSROOM', true);
 /** Speech to text providers (server/services/stt.js). 'mock' answers fixed words, for tests only. */
 export const STT_PROVIDERS = ['openai', 'elevenlabs', 'mock'];
 const sttProvider = String(process.env.STT_PROVIDER || 'openai').trim().toLowerCase();
@@ -146,7 +147,7 @@ export const config = {
     googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
-    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error,
+    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
@@ -182,6 +183,15 @@ export const config = {
   // records and uploads as before). STT_REALTIME_MODEL overrides the live model (stt.js has the defaults).
   sttLive: sttLive.on,
   sttRealtimeModel: process.env.STT_REALTIME_MODEL || '',
+  // Oomba Live (docs/decisions.md "Oomba Live"; server/services/classlive-*.js): live class games with join codes.
+  // LIVE_CLASSROOM=0 turns it off (live pages and the live socket answer 404, entry buttons hide; the class-code /join
+  // keeps working). Players per session (2-100; grown-ups' open rooms at most 30), open sessions and connected seats
+  // site-wide, and a session's longest life in hours (its join code dies with it).
+  liveClassroom: liveClassroom.on,
+  liveMaxPlayers: Math.min(100, Math.max(2, Math.floor(num(process.env.LIVE_MAX_PLAYERS, 60)))),
+  liveMaxSessions: Math.max(1, Math.floor(num(process.env.LIVE_MAX_SESSIONS, 60))),
+  liveMaxSeats: Math.max(2, Math.floor(num(process.env.LIVE_MAX_SEATS, 2000))),
+  liveHours: Math.min(12, Math.max(0.1, num(process.env.LIVE_HOURS, 3))),
   sttMaxSeconds: Math.min(120, Math.max(5, num(process.env.STT_MAX_SECONDS, 60))),
   sttMaxBytes: Math.min(10_000_000, Math.max(100_000, num(process.env.STT_MAX_BYTES, 1_500_000))),
   sttPerMinute: Math.max(1, num(process.env.STT_PER_MINUTE, 8)),

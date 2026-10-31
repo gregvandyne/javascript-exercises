@@ -15,11 +15,10 @@
 // - Frames that arrive before the provider is ready (the page sends from the first moment) are held in memory and sent
 //   once it is, so the first words are never lost; they count as seconds only once they reach the provider.
 import crypto from 'node:crypto';
-import { STATUS_CODES } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { config } from '../config.js';
 import { userFromRequest } from '../auth.js';
-import { isOwnOrigin } from '../site.js';
+import { attachUpgrades, refuse, originOk } from './upgrade.js';
 import * as games from './games.js';
 import { allow } from './ratelimit.js';
 import * as sttUsage from './stt-usage.js';
@@ -56,17 +55,12 @@ export function consumeFallback(liveId, userId, gameId) {
 }
 function forgetOld() { q.run('DELETE FROM stt_live WHERE until<=?', Date.now()); }
 
-function refuse(socket, status) {
-  try { socket.end(`HTTP/1.1 ${status} ${STATUS_CODES[status] || ''}\r\nConnection: close\r\nContent-Length: 0\r\nCache-Control: no-store\r\n\r\n`); } catch { /* gone */ }
-  setTimeout(() => socket.destroy(), 50).unref?.();
-}
 
 /** The checks before a socket is opened, the same as the HTTP routes (requireBuilder, loadEditable). -> { status } | { user, game } */
 export function gate(req, id) {
   if (lifecycle.draining || config.maintenance || config.movedTo) return { status: 503, why: 'closed' };
   // A WebSocket has no CORS: without this, another site could open one with the kid's cookie.
-  const origin = req.headers.origin;
-  if (!origin || origin === 'null' || !isOwnOrigin(req, origin)) return { status: 403, why: 'origin' };
+  if (!originOk(req)) return { status: 403, why: 'origin' };
   const { u: user } = userFromRequest(req);
   if (!user) return { status: 401, why: 'signed out' };
   // Grown-ups build too (requireBuilder): any real account but a guest, the same as /transcribe.
@@ -77,19 +71,22 @@ export function gate(req, id) {
   return { user, game };
 }
 
-/** Listen for live sessions on the HTTP server (server/index.js). Other upgrade requests are refused. */
-export function attachLive(server) {
-  wss = new WebSocketServer({ noServer: true, maxPayload: MAX_FRAME, perMessageDeflate: false, clientTracking: false });
-  server.on('upgrade', (req, socket, head) => {
-    socket.on('error', () => {});
-    let path; try { path = new URL(req.url, 'http://x').pathname; } catch { return refuse(socket, 400); }
-    const m = PATH.exec(path);
-    if (!m) return refuse(socket, 404);
+/** The live mic's route for the one upgrade listener (services/upgrade.js). */
+export const route = {
+  name: 'stt',
+  match: PATH,
+  handle(req, socket, head, m) {
+    if (!wss) wss = new WebSocketServer({ noServer: true, maxPayload: MAX_FRAME, perMessageDeflate: false, clientTracking: false });
     let g;
     try { g = gate(req, m[1]); } catch { return refuse(socket, 500); }
     if (g.status) { hooks.log('info', 'live mic refused', { status: g.status, why: g.why || '' }); return refuse(socket, g.status); }
     wss.handleUpgrade(req, socket, head, ws => session(ws, req, g.user, g.game));
-  });
+  },
+};
+
+/** Listen for live mic sessions only (tests; server/index.js attaches every route at once). Other upgrades: 404. */
+export function attachLive(server) {
+  attachUpgrades(server, [route]);
   return wss;
 }
 

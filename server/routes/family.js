@@ -40,6 +40,7 @@ import { cancel as cancelBuild } from '../builder/runner.js';
 import * as friends from '../services/friends.js';
 import * as games from '../services/games.js';
 import { coverArt, statusLabel } from '../views/components.js';
+import { liveOn } from '../services/classlive-sessions.js';
 
 export const router = Router();
 const isApi = req => req.originalUrl.startsWith('/api/');
@@ -52,11 +53,14 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
 const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/];
+  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
+  // Oomba Live: grown-ups host (and join) live games (routes/live.js).
+  /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
-  /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/];
+  /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/,
+  /^\/api\/live(\/[^/]+)+$/];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections
 // (the friend-code APIs; services/friends.js keeps adults and kids apart). Chat, /friends and /u/ stay closed.
 const GROWNUP_BUILDER_GET = [/^\/build$/, /^\/studio\/[^/]+$/, /^\/api\/studio\/[^/]+(\/(live|uploads\/[^/]+))?$/, /^\/family\/connections$/, /^\/api\/friends$/];
@@ -414,6 +418,8 @@ router.get('/family', grownupOnly, async (req, res) => {
   ${familyChecklist(req, { fam, kids, plan, max, sale: await familyOnSale(u) })}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
   ${yourGames}
+  ${liveOn() ? html`<section class="panel" aria-labelledby="famlive-h" id="family-live"><h2 id="famlive-h">📡 ${t('live.entry.family')}</h2>
+    <p class="muted">${t('live.entry.familyText')}</p><div class="row"><a class="btn btn-primary" href="/live">📡 ${t('live.entry.host')}</a></div></section>` : ''}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}`;
   page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });

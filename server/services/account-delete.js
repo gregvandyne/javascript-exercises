@@ -31,6 +31,7 @@ import { inAnySchool } from './schools.js';
 import * as photos from './photos.js';
 import * as shots from './shots.js';
 import { uploadDir } from '../builder/uploads.js';
+import { forgetUser as forgetLive } from './classlive-results.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -61,6 +62,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run('DELETE FROM chat_usage WHERE user_id=?', u.id);
     q.run('DELETE FROM stt_usage WHERE user_id=?', u.id);   // speech to text counts (never audio)
     q.run('DELETE FROM stt_live WHERE user_id=?', u.id);    // live speech to text session ids (never audio)
+    forgetLive(u.id);                                       // Oomba Live: scores, and anything they hosted
     // 4. chat: reports the child filed go; a message of theirs someone else reported stays, blanked, for that report
     q.run('DELETE FROM chat_reports WHERE reporter_id=?', u.id);
     q.run("UPDATE chat_messages SET body='' WHERE from_id=? AND id IN (SELECT message_id FROM chat_reports)", u.id);

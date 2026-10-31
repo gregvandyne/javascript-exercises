@@ -75,7 +75,7 @@ test('size gate: oomba-kit.js is at most 95 KB brotli, and each art pack is unde
 
 test('art packs: one pinned file per pack, SRI in KIT_PACKS and the manifest, up to date with kit/packs', async () => {
   const names = packNames();
-  assert.deepEqual(names, ['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'art-school', 'bridge-3d', 'dress', 'style-bold']);
+  assert.deepEqual(names, ['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'art-school', 'bridge-3d', 'dress', 'live', 'style-bold']);
   assert.deepEqual(Object.keys(K.KIT_PACKS).sort(), Object.keys(K.KIT_VERSIONS).sort(), 'every version lists its packs');
   assert.ok(Object.isFrozen(K.KIT_PACKS) && Object.isFrozen(K.KIT_PACKS[VERSION]));
   const m = JSON.parse(fs.readFileSync(path.join(KIT_DIR, VERSION, 'manifest.json'), 'utf8'));

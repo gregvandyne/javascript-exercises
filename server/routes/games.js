@@ -19,6 +19,9 @@ import { fileFor } from '../services/shots.js';
 import * as progress from '../services/progress.js';
 import { characterOf } from '../services/character.js';
 import fs from 'node:fs';
+import { canHost as liveCanHost } from '../services/classlive-access.js';
+import { liveOn } from '../services/classlive-sessions.js';
+import { gameReady as gameLiveReady } from '../services/classlive-check.js';
 
 export const router = Router();
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
@@ -83,6 +86,7 @@ router.get('/g/:slug', (req, res) => {
         </div>
         <div class="row actions">
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
+          ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">📡 ${t('live.entry.hostLive')}</a>` : ''}
           ${grownup ? '' : html`<button class="iconbtn" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>${t('game.report.button')}</button>`}
