@@ -1,36 +1,38 @@
 <title>Loop Lab</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
 <style>
-/* Loop Lab: a beat-making music studio (a step sequencer) for kids.
-   Layout (portrait): top bar (home / undo / redo / surprise / save / more / sound), four character tabs (Drums robot,
-   Bass bear, Melody bird, FX alien), the track tools (sound picker, volume, mute, solo), the grid of glossy squares
-   for the chosen track (8-step pages on narrow phones, 16 or 32 steps on bigger screens), a visualizer strip and the
-   bottom transport bar (Play, tempo, pattern slots A-D, song chain).
-   Short landscape screens: icon bar on the left, the grid in the middle, tabs and transport on the right.
-   Overlays: title, starter beats, my songs (save / load with a word-picker name), challenges, sticker book,
-   settings (tempo, swing, scale, key, steps), sound picker, song chain, the "Play my song" concert and Jam pads.
-   The grid itself always reads left to right (time flows that way), even in Hebrew and Arabic. */
-:root{
-  --bg1:#c9fbe6; --bg2:#8fe6d3; --bg3:#6fd3e0; --ink:#20304a; --ink2:#4f6178; --card:#ffffff; --card2:#f3fbff; --edge:#d6e9f2;
-  --drums:#ff5c8a; --drumsD:#c22d5a; --bass:#9a6bff; --bassD:#6236d1; --melody:#ffab2e; --melodyD:#c9740a; --fx:#2fc76a; --fxD:#178a44;
-  --accent:#ff7a3d; --accentD:#c9521c; --play:#2fc76a; --playD:#178a44; --stop:#ff5c6c; --stopD:#c22d3c;
-  --cell:40px; --cellH:40px; --gap:4px; --lab:40px;
-  --font:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
-  color-scheme:light;
-}
+/* Loop Lab on the Oomba Kit: a beat-making music studio (a step sequencer) for kids.
+   The kit draws the world behind everything: the "space" theme (an alien planet with moon-base domes, a ringed world,
+   ufos and satellites), with the band standing on it: Clank (the drum Oomba), Bruno the bass bear, Lulu the melody
+   duck, Blip the FX frog-alien, and the player's own avatar as the band leader. At night (the site's dark theme, and
+   always in the "Play my song" concert) the stage lights come on. This file lays out the studio on top: Ink-outlined
+   cream cards and sticker buttons in the kit's look (kit font, --ok-* day/night variables, colours from Oomba.color
+   set as --ll-* variables at start, so no colour codes here).
+   Layout (portrait): top bar (home / undo / redo / surprise / save / more / sound), four character tabs, the track
+   tools (sound picker, volume, mute, solo), the grid of squares for the chosen track (8-step pages on narrow phones,
+   16 or 32 steps on bigger screens), a visualizer strip and the bottom transport bar (Play, tempo, pattern slots A-D,
+   song chain). Short landscape screens: icon bar on the left, the grid in the middle, tabs and transport on the right.
+   Overlays: title (the kit's), starter beats, my songs, challenges, sticker book, settings, sound picker, song chain,
+   the concert and Jam pads. The grid itself always reads left to right (time flows that way), even in Hebrew and Arabic. */
+:root{--cell:40px;--cellH:40px;--gap:4px;--lab:40px}
+.ll{--ink:var(--ll-ink);--rim:var(--ll-ink);--soft:color-mix(in srgb,var(--ok-text) 66%,transparent);
+  --drums:var(--ll-coral);--drumsD:var(--ll-coralD);--bass:var(--ll-grape);--bassD:var(--ll-grapeD);--melody:var(--ll-peach);--melodyD:var(--ll-peachD);
+  --fx:var(--ll-mint);--fxD:var(--ll-mintD);--accent:var(--ll-grape);--accentD:var(--ll-grapeD);--play:var(--ll-mint);--playD:var(--ll-mintD);--stop:var(--ll-coral);--stopD:var(--ll-coralD);
+  position:fixed;inset:0;color:var(--ok-text);user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ok-night .ll{--rim:color-mix(in srgb,var(--ll-cream) 40%,transparent)}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
-  background:
-    radial-gradient(circle at 8% 12%,rgba(255,255,255,.65) 0 22px,transparent 23px),
-    radial-gradient(circle at 92% 22%,rgba(255,255,255,.45) 0 14px,transparent 15px),
-    radial-gradient(circle at 80% 88%,rgba(255,255,255,.4) 0 30px,transparent 31px),
-    radial-gradient(circle at 15% 80%,rgba(255,255,255,.35) 0 10px,transparent 11px),
-    linear-gradient(165deg,var(--bg1),var(--bg2) 55%,var(--bg3))}
-button{font-family:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid #1d5bd8;outline-offset:2px}
-button:disabled{opacity:.4;cursor:default}
+body{margin:0;overflow:hidden}
+.ll button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.ll button:focus-visible,.ll input:focus-visible,.ll [tabindex]:focus-visible,.ll summary:focus-visible{outline:3px solid var(--ok-focus);outline-offset:2px}
+.ll button:disabled{opacity:.4;cursor:default}
+.ll svg{display:block}
+.ll .ic svg,.ll .ico svg,.ll-tcard .ic svg{width:1.35em;height:1.35em}
+.ll .ic,.ll .ico,.ll-tcard .ic{display:inline-flex;align-items:center;justify-content:center;flex:none}
+.ll .art,.ll-tcard .art{display:inline-block;flex:none;line-height:0}
+.ll .art canvas,.ll-tcard .art canvas{display:block;width:100%;height:100%;object-fit:contain}
+.ll .art.em{line-height:1;font-size:1.25em;display:inline-grid;place-items:center}
+/* sticker buttons: cream, an Ink outline and a hard Ink drop that collapses when pressed */
+.icon-btn,.pill-btn,.big-btn,.chip,.toggle,.slot,.pg,.card,.tab,.lab,.part,.pad,#playBtn{border:2.5px solid var(--ll-ink)!important;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
 
 /* ---------- studio layout ---------- */
 .app{position:fixed;inset:0;display:grid;max-width:1180px;margin:0 auto;gap:6px;box-sizing:border-box;
@@ -40,111 +42,123 @@ button:disabled{opacity:.4;cursor:default}
 .app.offstage{visibility:hidden}
 .top{grid-area:top;display:flex;align-items:center;gap:6px;min-width:0}
 .top .spacer{flex:1}
-.icon-btn{width:44px;height:44px;flex:none;border:0;border-radius:14px;background:var(--card);font-size:1.3rem;display:grid;place-items:center;padding:0;
-  box-shadow:0 3px 0 rgba(20,60,80,.22)}
-.icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(20,60,80,.22)}
-.pill-btn{height:44px;border:0;border-radius:14px;background:var(--card);font-weight:600;font-size:1rem;padding:0 12px;display:flex;align-items:center;gap:6px;
-  box-shadow:0 3px 0 rgba(20,60,80,.22);white-space:nowrap;min-width:44px;justify-content:center}
-.pill-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(20,60,80,.22)}
-.pill-btn.hot{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accentD)}
+.icon-btn{width:44px;height:44px;flex:none;border-radius:14px;background:var(--ll-cream);color:var(--ll-ink);display:grid;place-items:center;padding:0;
+  box-shadow:0 3px 0 var(--ll-ink)}
+.icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ll-ink)}
+.icon-btn svg{width:26px;height:26px}
+.icon-btn .art{width:32px;height:32px}
+.pill-btn{height:44px;border-radius:14px;background:var(--ll-cream);color:var(--ll-ink);font-weight:700;font-size:1rem;padding:0 12px;display:flex;align-items:center;gap:6px;
+  box-shadow:0 3px 0 var(--ll-ink);white-space:nowrap;min-width:44px;justify-content:center}
+.pill-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ll-ink)}
+.pill-btn.hot{background:var(--ll-hot)}
 .pill-btn .lbl{overflow:hidden;text-overflow:ellipsis}
+.pill-btn svg{width:24px;height:24px;flex:none}
+.pill-btn .art{width:30px;height:30px}
 
 /* character tabs */
 .tabs{grid-area:tabs;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-.tab{position:relative;border:0;border-radius:18px;background:rgba(255,255,255,.55);padding:4px 2px 3px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:0;
-  box-shadow:0 3px 0 rgba(20,60,80,.15);min-width:0}
-.tab .face{width:40px;height:34px;display:block;transform-origin:50% 100%;will-change:transform}
-.tab .face svg{width:100%;height:100%;display:block;overflow:visible}
-.tab .tname{font-weight:600;font-size:.82rem;line-height:1.1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
-.tab[aria-selected=true]{background:var(--card);box-shadow:0 3px 0 var(--tc,#999),inset 0 0 0 3px var(--tc,#999)}
-.tab .badge{position:absolute;top:3px;right:5px;font-size:.8rem;line-height:1}
+.tab{position:relative;border-radius:18px;background:var(--ok-card);color:var(--ok-text);padding:2px 2px 3px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:0;
+  box-shadow:0 3px 0 var(--ll-ink);min-width:0}
+.tab .face{width:46px;height:38px;display:block;transform-origin:50% 100%;will-change:transform}
+.tab .face canvas,.banner .face canvas{transform:scale(1.35);transform-origin:50% 92%}
+.tab .tname{font-weight:700;font-size:.82rem;line-height:1.1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.tab[aria-selected=true]{background:var(--tcl,var(--ok-card));color:var(--ll-ink);box-shadow:0 3px 0 var(--ll-ink),inset 0 -5px 0 var(--tc)}
+.tab .badge{position:absolute;top:3px;right:5px;line-height:1;display:flex}
+.tab .badge svg{width:18px;height:18px}
 .tab.muted .face{opacity:.4}
-[data-track=drums]{--tc:var(--drums);--tcd:var(--drumsD)} [data-track=bass]{--tc:var(--bass);--tcd:var(--bassD)}
-[data-track=melody]{--tc:var(--melody);--tcd:var(--melodyD)} [data-track=fx]{--tc:var(--fx);--tcd:var(--fxD)}
+[data-track=drums]{--tc:var(--drums);--tcd:var(--drumsD);--tcl:var(--ll-coralT)} [data-track=bass]{--tc:var(--bass);--tcd:var(--bassD);--tcl:var(--ll-grapeT)}
+[data-track=melody]{--tc:var(--melody);--tcd:var(--melodyD);--tcl:var(--ll-peachT)} [data-track=fx]{--tc:var(--fx);--tcd:var(--fxD);--tcl:var(--ll-mintT)}
 
 /* track tools */
 .tools{grid-area:tools;display:flex;align-items:center;gap:6px;min-width:0}
 #kitBtn{flex:0 1 auto;min-width:0;justify-content:flex-start;margin-inline-end:auto}
-#kitBtn .ico{font-size:1.25rem}
-.vol{flex:0 1 130px;min-width:72px;height:44px;display:flex;align-items:center;gap:2px}
-.vol span{font-size:1rem}
-@media (max-width:440px){.vol span{display:none}.vol{flex:0 0 72px}.tools #kitBtn{flex:1 1 auto;padding:0 8px;gap:4px;font-size:.95rem}}
+#kitBtn .ico{width:30px;height:30px}
+.vol{flex:0 1 130px;min-width:72px;height:44px;display:flex;align-items:center;gap:2px;color:var(--ok-text)}
+.vol span{display:flex}
+.vol span svg{width:20px;height:20px}
+.tools .vol{background:var(--ok-card);border:2.5px solid var(--ll-ink);border-radius:14px;padding:0 8px;box-sizing:border-box;box-shadow:0 3px 0 var(--ll-ink)}
+@media (max-width:440px){.vol span{display:none}.vol{flex:0 0 78px}.tools #kitBtn{flex:1 1 auto;padding:0 8px;gap:4px;font-size:.95rem}}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;touch-action:none;cursor:pointer}
-input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:6px;background:linear-gradient(90deg,var(--tc,#38b6ff),#d8e6ee)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;margin-top:-10px;box-shadow:0 2px 0 rgba(0,0,0,.25),inset 0 0 0 4px var(--tc,#38b6ff)}
-input[type=range]::-moz-range-track{height:10px;border-radius:6px;background:#d8e6ee}
-input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:4px solid var(--tc,#38b6ff)}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:6px;background:linear-gradient(90deg,var(--tc,var(--ll-sky)),var(--ok-bg2));border:2px solid var(--ll-ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--ll-cream);margin-top:-11px;border:2.5px solid var(--ll-ink);box-shadow:0 2px 0 var(--ll-ink),inset 0 0 0 4px var(--tc,var(--ll-sky))}
+input[type=range]::-moz-range-track{height:10px;border-radius:6px;background:var(--ok-bg2);border:2px solid var(--ll-ink)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--ll-cream);border:3px solid var(--ll-ink)}
 .ms{font-weight:700;width:44px}
-.ms[aria-pressed=true]{background:var(--ink);color:#fff;box-shadow:0 3px 0 #000}
-#soloTrack[aria-pressed=true]{background:#ffd23f;color:var(--ink);box-shadow:0 3px 0 #c99a00}
+.ms[aria-pressed=true]{background:var(--ll-ink);color:var(--ll-cream);box-shadow:0 3px 0 var(--ll-ink)}
+#soloTrack[aria-pressed=true]{background:var(--ll-hot);color:var(--ll-ink)}
 
 /* challenge banner */
-.banner{grid-area:tools;background:var(--card);border-radius:18px;padding:6px 8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 3px 0 rgba(20,60,80,.18);min-width:0}
-.banner .goal{display:flex;gap:8px;align-items:center;font-weight:600;font-size:.98rem;line-height:1.2}
-.banner .goal .stk{font-size:1.6rem;flex:none}
+.banner{grid-area:tools;background:var(--ok-card);border:2.5px solid var(--ll-ink);border-radius:18px;padding:6px 8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 3px 0 var(--ll-ink);min-width:0}
+.banner .goal{display:flex;gap:8px;align-items:center;font-weight:700;font-size:.98rem;line-height:1.2}
+.banner .goal .stk{flex:none;width:44px;height:40px}
 .banner .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .banner .row .pill-btn{flex:1 1 auto}
-.banner .hint{font-size:.95rem;line-height:1.25;color:#7a3b00;background:#fff2d6;border-radius:12px;padding:6px 10px}
-.banner .hint.good{color:#0d5a2c;background:#dcf8e6}
+.banner .hint{font-size:.95rem;line-height:1.25;color:var(--ll-ink);background:var(--ll-peachT);border:2px solid var(--ll-ink);border-radius:12px;padding:6px 10px;display:flex;gap:6px;align-items:center}
+.banner .hint svg{width:22px;height:22px;flex:none}
+.banner .hint.good{background:var(--ll-mintT)}
 .banner.hinting .goal #goalText{display:none}
 .banner.hinting .goal .hint{flex:1}
 .transport .row{flex:1 1 auto;display:flex;gap:5px;min-width:0}
 .transport .row .pill-btn{height:52px;flex:0 0 auto}
 .transport .row #checkBtn{flex:1 1 auto;font-size:1.05rem}
 .transport .row #listenBtn .lbl,.transport .row #peekBtn .lbl{display:none}
-.transport .row #listenBtn,.transport .row #peekBtn{width:48px;font-size:1.3rem;padding:0}
+.transport .row #listenBtn,.transport .row #peekBtn{width:52px;padding:0}
 .wobble{animation:wob .45s ease}
 @keyframes wob{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}60%{transform:translateX(5px)}}
 
 /* the grid */
 .stage{grid-area:stage;position:relative;min-height:0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .board{position:relative;display:grid;grid-template-columns:var(--lab) auto;grid-template-rows:auto auto;column-gap:4px;row-gap:2px;
-  background:rgba(255,255,255,.55);border-radius:18px;padding:4px 4px 6px 4px;box-shadow:0 4px 0 rgba(20,60,80,.15);max-width:100%}
+  background:var(--ok-card);border:3px solid var(--ll-ink);border-radius:20px;padding:4px 4px 6px 4px;box-shadow:0 5px 0 var(--ll-ink);max-width:100%}
 .board.scrolly{overflow-y:auto;max-height:100%}
 .nums{grid-column:2;display:grid;grid-auto-flow:column;grid-auto-columns:var(--cell);gap:var(--gap);height:16px}
-.nums span{font-size:.72rem;line-height:16px;text-align:center;color:var(--ink2);font-weight:600}
-.nums span.beat{color:var(--ink);font-weight:700;font-size:.82rem}
+.nums span{font-size:.72rem;line-height:16px;text-align:center;color:var(--soft);font-weight:600}
+.nums span.beat{color:var(--ok-text);font-weight:800;font-size:.82rem}
 .labels{grid-column:1;grid-row:2;display:grid;grid-auto-rows:var(--cellH);gap:var(--gap)}
-.labels .lab{display:flex;align-items:center;justify-content:center;border-radius:10px;font-weight:700;font-size:.8rem;line-height:1;color:#fff;
-  background:var(--lc,#999);box-shadow:inset 0 -3px 0 rgba(0,0,0,.15);white-space:nowrap;overflow:hidden;padding:0 2px;border:0;width:100%;height:100%}
-.labels .lab .em{font-size:1.25rem}
+.labels .lab{display:flex;align-items:center;justify-content:center;border-radius:10px;font-weight:800;font-size:.8rem;line-height:1;color:var(--ll-ink);
+  background:var(--lc,var(--ll-stone));box-shadow:inset 0 -3px 0 rgba(0,0,0,.14);white-space:nowrap;overflow:hidden;padding:0 1px;width:100%;height:100%;box-sizing:border-box;border-width:2px!important}
+.labels .lab .em{font-size:1.15rem}
+.labels .lab .art{width:92%;height:92%}
 .grid{grid-column:2;grid-row:2;position:relative;display:grid;grid-auto-flow:row;grid-template-columns:repeat(var(--cols,16),var(--cell));grid-auto-rows:var(--cellH);gap:var(--gap);
   touch-action:none;outline:none;border-radius:12px}
-.cell{position:relative;border-radius:30%;background:var(--off,#e7f2f7);box-shadow:inset 0 -3px 0 rgba(0,40,70,.08);transition:transform .12s}
-.cell.bar{background:var(--off2,#d7e8f0)}
-.cell.on{background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.85) 0 12%,rgba(255,255,255,0) 34%),var(--cc,#ff5c8a);
-  box-shadow:inset 0 -4px 0 rgba(0,0,0,.18),0 2px 0 rgba(0,0,0,.12)}
-.cell.cur{box-shadow:0 0 0 3px #1d5bd8,inset 0 -3px 0 rgba(0,40,70,.08)}
-.cell.on.cur{box-shadow:0 0 0 3px #1d5bd8,inset 0 -4px 0 rgba(0,0,0,.18)}
-.cell.ghost::after{content:"";position:absolute;inset:22%;border-radius:50%;border:3px dashed var(--cc,#ff5c8a);opacity:.9}
+.cell{position:relative;border-radius:30%;background:var(--ok-bg2);box-shadow:inset 0 0 0 1.5px var(--ok-line),inset 0 -3px 0 var(--ok-line);transition:transform .12s}
+.cell.bar{background:color-mix(in srgb,var(--ok-bg2) 82%,var(--ll-stone))}
+.cell.on{background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.75) 0 10%,rgba(255,255,255,0) 26%),var(--cc,var(--ll-coral));
+  box-shadow:inset 0 0 0 2.5px var(--ll-ink),inset 0 -6px 0 rgba(0,0,0,.24)}
+.cell.cur{box-shadow:0 0 0 3px var(--ok-focus),inset 0 0 0 1.5px var(--ok-line)}
+.cell.on.cur{box-shadow:0 0 0 3px var(--ok-focus),inset 0 0 0 2.5px var(--ll-ink),inset 0 -5px 0 rgba(0,0,0,.2)}
+.cell.ghost::after{content:"";position:absolute;inset:22%;border-radius:50%;border:3px dashed var(--cc,var(--ll-coral));opacity:.95}
 .cell.hit{animation:hit .26s ease-out}
 @keyframes hit{0%{transform:scale(1)}35%{transform:scale(1.18)}100%{transform:scale(1)}}
 .playhead{position:absolute;z-index:2;top:-4px;bottom:-4px;left:-2px;width:calc(var(--cell) + 4px);border-radius:12px;pointer-events:none;
-  background:rgba(255,226,120,.16);box-shadow:0 0 0 2px rgba(255,190,40,.8),0 0 16px 4px rgba(255,190,40,.4);will-change:transform;opacity:0;transition:opacity .25s}
+  background:color-mix(in srgb,var(--ll-spark) 34%,transparent);box-shadow:0 0 0 2px var(--ll-ink),0 0 0 5px var(--ll-spark),0 0 0 7px var(--ll-ink),0 0 18px 6px color-mix(in srgb,var(--ll-spark) 60%,transparent);will-change:transform;opacity:0;transition:opacity .25s}
 .playhead.show{opacity:1}
 .pager{display:flex;align-items:center;gap:6px;justify-content:center}
-.pager .pg{min-width:56px;height:44px;border:0;border-radius:14px;background:rgba(255,255,255,.6);font-weight:700;font-size:.95rem;box-shadow:0 3px 0 rgba(20,60,80,.15);position:relative}
-.pager .pg[aria-current=true]{background:var(--card);box-shadow:0 3px 0 var(--tc,#38b6ff),inset 0 0 0 3px var(--tc,#38b6ff)}
-.pager .pg .dot{position:absolute;top:4px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:0;transition:opacity .2s}
+.pager .pg{min-width:56px;height:44px;border-radius:14px;background:color-mix(in srgb,var(--ok-card) 80%,transparent);color:var(--ok-text);font-weight:700;font-size:.95rem;box-shadow:0 3px 0 var(--ll-ink);position:relative}
+.pager .pg[aria-current=true]{background:var(--tcl,var(--ok-card));color:var(--ll-ink);box-shadow:0 3px 0 var(--ll-ink),inset 0 -4px 0 var(--tc,var(--ll-sky))}
+.pager .pg .dot{position:absolute;top:4px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--ll-spark);border:1.5px solid var(--ll-ink);opacity:0;transition:opacity .2s}
 .pager .pg.playing .dot{opacity:1}
-.viz{grid-area:viz;width:100%;height:30px;display:block;border-radius:12px;background:rgba(32,48,74,.85)}
+.viz{grid-area:viz;width:100%;height:30px;display:block;border-radius:12px;background:var(--ok-card);border:2.5px solid var(--ll-ink);box-sizing:border-box}
 
 /* transport */
 .transport{grid-area:transport;display:flex;align-items:center;gap:5px;min-width:0}
-#playBtn{flex:0 0 auto;min-width:64px;height:56px;border:0;border-radius:18px;background:var(--play);color:#fff;font-size:1.6rem;font-weight:700;box-shadow:0 5px 0 var(--playD);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 12px}
-#playBtn.on{background:var(--stop);box-shadow:0 5px 0 var(--stopD)}
-#playBtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--playD)}
+#playBtn{flex:0 0 auto;min-width:64px;height:56px;border-radius:18px;background:var(--play);color:var(--ll-ink);font-size:1.6rem;font-weight:800;box-shadow:0 5px 0 var(--ll-ink);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 12px}
+#playBtn.on{background:var(--stop)}
+#playBtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ll-ink)}
 #playBtn .lbl{font-size:1.05rem}
+#playIco{display:flex}
+#playIco svg{width:28px;height:28px}
+#playIco .sq{width:18px;height:18px;border-radius:4px;background:var(--ll-ink);display:block;margin:5px}
 #tempoBtn{flex:0 0 auto;flex-direction:column;gap:0;line-height:1;padding:0 8px;height:52px}
 #tempoBtn b{font-size:1.1rem}
-#tempoBtn small{font-size:.66rem;color:var(--ink2);font-weight:600;letter-spacing:.02em}
+#tempoBtn small{font-size:.66rem;color:var(--ll-ink);opacity:.75;font-weight:700;letter-spacing:.02em}
 .slots{flex:1 1 auto;display:flex;gap:5px;justify-content:center;min-width:0;max-width:300px;margin:0 auto}
-.slot{flex:1 1 44px;max-width:60px;min-width:44px;height:52px;border:0;border-radius:14px;background:rgba(255,255,255,.6);font-weight:700;font-size:1.3rem;box-shadow:0 3px 0 rgba(20,60,80,.15);position:relative}
-.slot[aria-pressed=true]{background:var(--card);box-shadow:0 3px 0 var(--accentD),inset 0 0 0 3px var(--accent);color:var(--accentD)}
-.slot.used::after{content:"";position:absolute;left:50%;bottom:6px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--ink2);opacity:.5}
-.slot.playing{background:#fff6cc}
+.slot{flex:1 1 44px;max-width:60px;min-width:44px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--ok-card) 80%,transparent);color:var(--ok-text);font-weight:800;font-size:1.3rem;box-shadow:0 3px 0 var(--ll-ink);position:relative}
+.slot[aria-pressed=true]{background:var(--ll-grapeT);color:var(--ll-ink);box-shadow:0 3px 0 var(--ll-ink),inset 0 -5px 0 var(--accent)}
+.slot.used::after{content:"";position:absolute;left:50%;bottom:7px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:currentColor;opacity:.55}
+.slot.playing{background:var(--ll-sparkT);color:var(--ll-ink)}
 #songBtn{height:52px}
-#songBtn[aria-pressed=true]{background:#ffd23f;box-shadow:0 3px 0 #c99a00}
+#songBtn[aria-pressed=true]{background:var(--ll-hot)}
 
 /* landscape phones: icon bar | grid | tabs + transport */
 .app.side{grid-template-columns:44px minmax(0,1fr) 176px;grid-template-rows:auto auto auto minmax(0,1fr) auto;column-gap:6px;row-gap:6px;
@@ -159,199 +173,238 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;bac
 .app.side .banner .goal{flex:1 1 auto;min-height:0;overflow:auto;align-items:flex-start;font-size:.92rem}
 .app.side .banner .goal .stk{display:none}
 .app.side .transport .row{display:contents}
-.app.side .transport #checkBtn{grid-row:1;grid-column:2/4;height:44px;font-size:.95rem;padding:0 4px}
+.app.side .transport #checkBtn{grid-row:1;grid-column:2/4;height:44px;font-size:.95rem;padding:0 4px;min-width:0}
+.app.side .transport #checkBtn .ic{display:none}
 .app.side .transport #checkBtn:only-child,.app.side .transport #listenBtn[hidden]~#checkBtn{grid-row:1/3}
 .app.side .transport #listenBtn{grid-row:2;grid-column:2;height:44px;width:44px}
 .app.side .transport #peekBtn{grid-row:2;grid-column:3;height:44px;width:44px}
-.app.side .transport{display:grid;grid-template-columns:76px 44px 44px;grid-template-rows:44px 44px 44px;gap:6px;justify-content:space-between}
+.app.side .transport{display:grid;grid-template-columns:70px 47px 47px;grid-template-rows:44px 44px 44px;gap:6px;justify-content:space-between}
 .app.side #playBtn{grid-row:1/3;grid-column:1;height:auto;min-width:0;flex-direction:column;gap:0;padding:0}
 .app.side #playBtn .lbl{font-size:.9rem}
 .app.side .slots{display:contents}
-.app.side .slot{height:44px;min-width:44px;width:44px}
+.app.side .slot{height:44px;min-width:44px;width:47px}
 .app.side .slot:nth-child(1){grid-row:1;grid-column:2} .app.side .slot:nth-child(2){grid-row:1;grid-column:3}
 .app.side .slot:nth-child(3){grid-row:2;grid-column:2} .app.side .slot:nth-child(4){grid-row:2;grid-column:3}
 .app.side #tempoBtn{grid-row:3;grid-column:1;height:44px;flex-direction:row;gap:4px}
 .app.side #songBtn{grid-row:3;grid-column:2/4;height:44px}
 .app.side .board{padding:3px;column-gap:3px}
 .app.side .tools{gap:5px}
-.app.side #kitBtn{flex:1 1 auto}
+.app.side #kitBtn{flex:1 1 auto;padding:0 6px;gap:4px;font-size:.92rem}
+.app.side #kitBtn>.ic{display:none}
 .app.side .pager.inR{grid-area:pagerR}
 
-/* ---------- overlays ---------- */
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px 10px;background:rgba(20,40,60,.45)}
-.screen.full{background:linear-gradient(165deg,var(--bg1),var(--bg2) 55%,var(--bg3))}
-.panel{position:relative;background:var(--card);border-radius:26px;padding:14px 14px 16px;width:min(100%,460px);max-height:100%;overflow:auto;box-sizing:border-box;
-  box-shadow:0 8px 0 rgba(20,60,80,.25);display:flex;flex-direction:column;align-items:stretch;gap:10px;text-align:center}
+/* ---------- overlays (cards in the kit's look) ---------- */
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px 10px;background:var(--ok-scrim)}
+.panel{position:relative;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ll-ink);border-radius:28px;padding:14px 14px 16px;width:min(100%,460px);max-height:100%;overflow:auto;box-sizing:border-box;
+  box-shadow:0 6px 0 var(--ll-ink);display:flex;flex-direction:column;align-items:stretch;gap:10px;text-align:center}
 .panel.wide{width:min(100%,720px)}
-.panel h1{margin:0;font-size:clamp(2.3rem,12vw,3.4rem);line-height:1;color:var(--accent);text-shadow:0 4px 0 var(--accentD);letter-spacing:.01em}
-.panel h1 span{color:var(--bass);text-shadow:0 4px 0 var(--bassD)}
-.panel h2{margin:0;font-size:clamp(1.4rem,6.5vw,1.9rem);line-height:1.1;color:var(--ink)}
-.panel h3{margin:4px 0 0;font-size:1rem;color:var(--ink2);text-align:start}
+.panel h2{margin:0;font-size:clamp(1.4rem,6.5vw,1.9rem);line-height:1.1;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px}
+.panel h2 .art{width:40px;height:40px}
+.panel h3{margin:4px 0 0;font-size:1rem;color:var(--soft);text-align:start}
 .panel p{margin:0;font-size:1rem;line-height:1.3}
-.panel .sub{color:var(--ink2)}
+.panel .sub{color:var(--soft)}
 .close{position:absolute;top:10px;right:10px;z-index:2}
 .panel .close + h2{padding:0 46px}
 [dir=rtl] .close{right:auto;left:10px}
-.big-btn{border:0;border-radius:20px;background:var(--play);color:#fff;font-weight:700;font-size:1.35rem;padding:10px 18px;min-height:58px;box-shadow:0 6px 0 var(--playD);display:flex;align-items:center;justify-content:center;gap:8px;line-height:1.1}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--playD)}
-.big-btn.alt{background:var(--card2);color:var(--ink);box-shadow:0 5px 0 rgba(20,60,80,.25),inset 0 0 0 2px var(--edge);font-size:1.1rem;min-height:50px}
-.big-btn.alt:active{box-shadow:0 1px 0 rgba(20,60,80,.25),inset 0 0 0 2px var(--edge)}
-.big-btn.warm{background:var(--accent);box-shadow:0 6px 0 var(--accentD)}
-.big-btn.purple{background:var(--bass);box-shadow:0 6px 0 var(--bassD)}
-.big-btn.danger{background:var(--stop);box-shadow:0 5px 0 var(--stopD);color:#fff}
+.big-btn{border-radius:20px;background:var(--play);color:var(--ll-ink);font-weight:800;font-size:1.3rem;padding:8px 18px;min-height:58px;box-shadow:0 5px 0 var(--ll-ink);display:flex;align-items:center;justify-content:center;gap:8px;line-height:1.1}
+.big-btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ll-ink)}
+.big-btn.alt{background:var(--ll-cream);font-size:1.1rem;min-height:50px}
+.big-btn.warm{background:var(--ll-hot)}
+.big-btn.purple{background:var(--ll-grapeL)}
+.big-btn.danger{background:var(--stop)}
+.big-btn svg{width:28px;height:28px;flex:none}
+.big-btn .art{width:38px;height:38px;margin:-6px 0}
 .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .btns>*{flex:1 1 150px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.chip{min-height:44px;border:0;border-radius:14px;background:var(--card2);box-shadow:inset 0 0 0 2px var(--edge);font-weight:600;font-size:1rem;padding:4px 8px;line-height:1.1}
-.chip[aria-pressed=true]{background:#fff4e6;box-shadow:inset 0 0 0 3px var(--accent);color:var(--accentD)}
-.chip small{display:block;font-size:.75rem;color:var(--ink2);font-weight:500}
+.chip{min-height:46px;border-radius:14px;background:var(--ok-bg2);color:var(--ok-text);border-color:var(--ok-line)!important;font-weight:700;font-size:1rem;padding:4px 8px;line-height:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.chip[aria-pressed=true]{background:var(--ll-grapeT);color:var(--ll-ink);border-color:var(--ll-ink)!important;box-shadow:0 3px 0 var(--ll-ink),inset 0 -4px 0 var(--accent)}
+.chip small{display:block;font-size:.75rem;opacity:.75;font-weight:600}
+.chip .krow{display:flex;align-items:center;gap:6px}
+.chip .art{width:34px;height:34px}
 .setrow{display:flex;align-items:center;gap:8px;text-align:start}
-.setrow label,.setrow .k{font-weight:600;flex:none;min-width:0}
-.tempo-big{font-size:2rem;font-weight:700;min-width:3ch;text-align:center;font-variant-numeric:tabular-nums}
-.toggle{min-height:44px;border:0;border-radius:999px;background:var(--card2);box-shadow:inset 0 0 0 2px var(--edge);font-weight:600;font-size:1rem;padding:0 16px}
-.toggle[aria-pressed=true]{background:#e2fbe9;box-shadow:inset 0 0 0 3px var(--play);color:var(--playD)}
+.setrow label,.setrow .k{font-weight:700;flex:none;min-width:0;display:flex}
+.setrow .k svg{width:24px;height:24px}
+.setrow .k .art{width:34px;height:34px}
+.tempo-big{font-size:2rem;font-weight:800;min-width:3ch;text-align:center;font-variant-numeric:tabular-nums}
+.toggle{min-height:46px;border-radius:999px;background:var(--ok-bg2);color:var(--ok-text);border-color:var(--ok-line)!important;font-weight:700;font-size:1rem;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.toggle svg{width:22px;height:22px;flex:none}
+.toggle[aria-pressed=true]{background:var(--ll-mintT);color:var(--ll-ink);border-color:var(--ll-ink)!important;box-shadow:inset 0 0 0 2px var(--play)}
+.kitset{min-height:46px;border-radius:999px}
 
-/* title */
-.title-chars{display:flex;justify-content:center;gap:6px;height:76px;align-items:flex-end}
-.title-chars .face{width:68px;height:64px;transform-origin:50% 100%}
-.title-chars svg{width:100%;height:100%;display:block;overflow:visible}
-.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.menu .big-btn{min-height:56px;font-size:1.1rem;padding:8px 10px}
+/* title (the kit's): Make music is its Play button; the other ways in sit on a card under it */
+.ll-tcard{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ll-ink);border-radius:28px;box-shadow:0 6px 0 var(--ll-ink);padding:12px 14px 14px;width:min(420px,calc(100vw - 32px));box-sizing:border-box}
+.ll-tcard .ok-p{border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0;font-weight:600}
+.ll-tcard .menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+.ll-tcard .menu .big-btn{min-height:54px;font-size:1.05rem;padding:6px 10px}
+.ll-tcard .ok-big{min-width:240px}
+.ll-tcard .keys{margin:0}
 html[lang="ja"] .big-btn,html[lang="zh-Hant"] .big-btn,html[lang="ja"] .pill-btn,html[lang="ja"] .card b{word-break:keep-all;overflow-wrap:anywhere}
-html[lang="ja"] .menu .big-btn{font-size:1rem}
-.menu .span2{grid-column:1/-1;font-size:1.45rem;min-height:64px}
+html[lang="ja"] .menu .big-btn{font-size:.95rem}
 .corner{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));z-index:3}
 [dir=rtl] .corner{right:auto;left:max(10px,env(safe-area-inset-left))}
 
 .panel .col{display:contents}
-/* short landscape screens: title, settings and toolbox use two columns so nothing scrolls */
+/* short landscape screens: settings and toolbox use two columns so nothing scrolls */
 @media (orientation:landscape) and (max-height:520px){
-  #titleScreen .panel,.panel.two{width:min(100%,780px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:16px;align-items:start}
-  #titleScreen .panel{align-items:center}
+  .panel.two{width:min(100%,780px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:16px;align-items:start}
   .panel .col{display:flex;flex-direction:column;gap:8px;min-width:0}
-  .panel .tcol{gap:4px}
   .panel.two h2,.panel.two .keys{grid-column:1/-1}
-  .title-chars{height:64px}.title-chars .face{width:58px;height:54px}
-  #titleScreen .menu .span2{min-height:56px}
+  .ll-tcard{width:min(560px,calc(100vw - 32px))}
+  .ll-tcard .menu{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .ll-tcard .menu .big-btn{flex-direction:column;gap:2px;font-size:.92rem;min-height:64px}
+  /* the kit's title: the lockup beside the menu card, so the whole card fits above the bottom edge */
+  .ok-ui .ok-title-screen{padding-top:max(10px,env(safe-area-inset-top));justify-content:flex-start}
+  .ok-ui .ok-title-screen .ok-title-block{flex-direction:row;align-items:center;justify-content:center;gap:clamp(12px,3vw,32px);max-height:none;padding:0 12px}
+  .ok-ui .ok-title-screen .ok-h1{font-size:clamp(2.6rem,19vh,5rem);margin:0}
+  .ok-ui .ok-title-screen .ll-tcard{width:min(440px,calc(100vw - 260px));padding:10px 12px 12px;gap:8px}
+  .ok-ui .ok-title-screen .ll-tcard .ok-p{font-size:.95rem}
+  .ok-ui .ok-title-screen .ll-tcard .ok-big{min-height:54px;font-size:1.45rem;margin-top:4px;min-width:200px}
+  .ok-ui .ok-title-screen .ll-tcard .menu{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .ok-ui .ok-title-screen .ll-tcard .menu .big-btn{flex-direction:row;gap:6px;min-height:46px;font-size:.95rem}
+  .ok-ui .ok-title-screen .ll-tcard .menu .big-btn .art{width:30px;height:30px}
+  /* the challenge card: the sticker beside the words and buttons */
+  #doneScreen .panel{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:18px;row-gap:8px;align-items:center;width:min(100%,640px);padding:14px 16px 16px}
+  #doneScreen .panel>*{grid-column:2}
+  #doneScreen .panel>.big-sticker{grid-column:1;grid-row:1/5;width:104px;height:104px}
+  #doneScreen .big-sticker .art{width:74px;height:74px}
+  #doneScreen .big-btn{min-height:48px;font-size:1.05rem}
 }
 /* list cards: templates, saves, challenges */
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.card{border:0;border-radius:18px;background:var(--card2);box-shadow:0 4px 0 rgba(20,60,80,.18),inset 0 0 0 2px var(--edge);padding:10px 8px;min-height:88px;
+.card{border-radius:20px;background:var(--ok-bg2);color:var(--ok-text);box-shadow:0 4px 0 var(--ll-ink);padding:8px 8px 10px;min-height:88px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;line-height:1.15}
-.card:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(20,60,80,.18),inset 0 0 0 2px var(--edge)}
-.card .em{font-size:2rem;line-height:1}
+.card:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ll-ink)}
+.card .em{width:48px;height:48px;display:flex;align-items:center;justify-content:center}
+.card .em .art{width:48px;height:48px}
 .card b{font-size:1.02rem}
-.card small{font-size:.82rem;color:var(--ink2)}
-.card.done{background:#eafbf0;box-shadow:0 4px 0 rgba(20,100,50,.2),inset 0 0 0 2px #9fe3b6}
-.card canvas{width:100%;max-width:150px;height:36px;display:block;border-radius:8px}
-.save-row{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:16px;padding:6px;box-shadow:inset 0 0 0 2px var(--edge)}
-.save-row .nm{flex:1;min-width:0;text-align:start;font-weight:600;line-height:1.15;overflow-wrap:anywhere}
-.save-row canvas{width:64px;height:34px;flex:none;border-radius:8px}
-.save-row .pill-btn{box-shadow:0 3px 0 rgba(20,60,80,.18),inset 0 0 0 2px var(--edge)}
+.card small{font-size:.82rem;color:var(--soft);display:flex;align-items:center;gap:4px;justify-content:center}
+.card small svg{width:16px;height:16px;flex:none}
+.card.done{background:var(--ll-mintT);color:var(--ll-ink)}
+.card.done small{color:var(--ll-ink)}
+.card canvas.thumb{width:100%;max-width:150px;height:36px;display:block;border-radius:8px;border:2px solid var(--ll-ink);box-sizing:border-box}
+.save-row{display:flex;align-items:center;gap:8px;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:16px;padding:6px}
+.save-row .nm{flex:1;min-width:0;text-align:start;font-weight:700;line-height:1.15;overflow-wrap:anywhere}
+.save-row canvas{width:64px;height:34px;flex:none;border-radius:8px;border:2px solid var(--ll-ink);box-sizing:border-box}
 
 /* name picker */
 .picker{display:grid;gap:8px}
-.wheel{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:6px;background:var(--card2);border-radius:16px;padding:4px;box-shadow:inset 0 0 0 2px var(--edge)}
-.wheel .w{font-weight:700;font-size:1.15rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wheel .icon-btn{width:48px;height:48px}
-.name-preview{font-size:1.35rem;font-weight:700;color:var(--bassD);min-height:1.4em;overflow-wrap:anywhere}
+.wheel{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:6px;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:16px;padding:4px}
+.wheel .w{font-weight:800;font-size:1.15rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wheel .icon-btn{width:46px;height:46px}
+.name-preview{font-size:1.35rem;font-weight:800;color:var(--ok-text);min-height:1.4em;overflow-wrap:anywhere}
 .typed{display:flex;gap:6px}
-.typed input{flex:1;min-width:0;height:48px;border-radius:14px;border:2px solid var(--edge);padding:0 12px;font:inherit;font-size:1.05rem;color:var(--ink);background:#fff;user-select:text;-webkit-user-select:text}
-.err{color:#b3261e;font-weight:600;font-size:.95rem}
+.typed input{flex:1;min-width:0;height:48px;border-radius:14px;border:2.5px solid var(--ll-ink);padding:0 12px;font:inherit;font-size:1.05rem;color:var(--ll-ink);background:var(--ll-cream);user-select:text;-webkit-user-select:text}
+.err{color:var(--ok-text);background:var(--ll-coralT);border-radius:10px;padding:4px 8px;font-weight:700;font-size:.95rem}
+.ok-night .err{color:var(--ll-ink)}
+summary{list-style:none}
+summary svg{width:22px;height:22px}
 
 /* stickers */
 .stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
-.sticker{border-radius:20px;padding:8px 4px;background:var(--card2);box-shadow:inset 0 0 0 2px var(--edge);display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.1}
-.sticker .em{font-size:2.3rem;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:0 3px 0 rgba(0,0,0,.12),inset 0 0 0 3px #fff3c4;transform:rotate(-6deg)}
-.sticker small{font-size:.78rem;font-weight:600}
-.sticker.locked .em{filter:grayscale(1);opacity:.28;transform:none}
-.sticker.locked small{color:var(--ink2);font-weight:500}
-.big-sticker{font-size:4.2rem;width:110px;height:110px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15),inset 0 0 0 6px #fff3c4;animation:pop .6s ease-out}
+.sticker{border-radius:20px;padding:8px 4px;background:var(--ok-bg2);border:2.5px solid var(--ok-line);display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.1}
+.sticker .em{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;background:var(--ll-cream);border:2.5px solid var(--ll-ink);box-shadow:0 3px 0 var(--ll-ink),inset 0 0 0 4px var(--ll-sparkT);transform:rotate(-6deg)}
+.sticker .em .art{width:46px;height:46px}
+.sticker small{font-size:.78rem;font-weight:700}
+.sticker.locked .em{filter:grayscale(1);opacity:.32;transform:none;box-shadow:none}
+.sticker.locked small{color:var(--soft);font-weight:500}
+.big-sticker{width:112px;height:112px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:var(--ll-cream);border:3px solid var(--ll-ink);box-shadow:0 5px 0 var(--ll-ink),inset 0 0 0 7px var(--ll-sparkT);animation:pop .6s ease-out;transform:rotate(-6deg)}
+.big-sticker .art{width:80px;height:80px}
 @keyframes pop{0%{transform:scale(.3) rotate(-30deg)}70%{transform:scale(1.12) rotate(6deg)}100%{transform:scale(1) rotate(-6deg)}}
+#doneScreen .panel{padding-top:20px}
 
 /* song chain */
-.chain{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:52px;background:var(--card2);border-radius:16px;padding:6px;box-shadow:inset 0 0 0 2px var(--edge)}
-.chain .part{width:44px;height:44px;border:0;border-radius:12px;font-weight:700;font-size:1.2rem;color:#fff;background:var(--pc,#ff7a3d);box-shadow:0 3px 0 rgba(0,0,0,.2);position:relative}
-.chain .part.now{outline:3px solid var(--ink);outline-offset:1px}
-.chain .empty{align-self:center;color:var(--ink2);font-size:.95rem}
+.chain{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:52px;background:var(--ok-bg2);border:2.5px solid var(--ok-line);border-radius:16px;padding:6px}
+.chain .part{width:44px;height:44px;border-radius:12px;font-weight:800;font-size:1.2rem;color:var(--ll-ink);background:var(--pc,var(--ll-peach));box-shadow:0 3px 0 var(--ll-ink);position:relative}
+.chain .part.now{outline:3px solid var(--ok-focus);outline-offset:2px}
+.chain .empty{align-self:center;color:var(--soft);font-size:.95rem}
 .adders{display:flex;gap:8px;justify-content:center}
-.adders .pill-btn{flex:1;max-width:80px;font-size:1.2rem;box-shadow:0 3px 0 rgba(0,0,0,.2);color:#fff}
+.adders .pill-btn{flex:1;max-width:80px;font-size:1.2rem}
 
-/* concert */
-.concert{position:fixed;inset:0;z-index:30;background:radial-gradient(ellipse at 50% 110%,#5b2ca8,#1b1446 60%,#0d0a26);display:flex;flex-direction:column;align-items:stretch;color:#fff;
+/* concert: the world behind at night with the band on stage; the parts and the light bars sit on top */
+.concert{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:stretch;color:var(--ll-cream);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ll-ink) 30%,transparent),transparent 30%,transparent 62%,color-mix(in srgb,var(--ll-ink) 55%,transparent));
   padding:max(10px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
-.concert .cviz{flex:1;min-height:60px;position:relative}
+.concert .cspace{flex:1;min-height:40px;position:relative}
+.concert .cviz{height:min(30vh,260px);position:relative;flex:none}
+@media (orientation:landscape) and (max-height:520px){.concert .cviz{height:15vh}.concert .ctop h2{padding:3px 14px}.concert .cparts{padding:4px 0}.concert .cbtns .big-btn{min-height:46px}}
 .concert canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.cchars{display:flex;justify-content:space-around;align-items:flex-end;gap:6px;padding:10px 0 4px}
-.cchar{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
-.cchar .face{display:block;width:min(20vw,22vh,120px);height:min(18.75vw,20.6vh,112px);transform-origin:50% 100%;will-change:transform}
-.cchar .face svg{width:100%;height:100%;display:block;overflow:visible}
-.cchar b{font-size:1rem;color:#ffe6a8}
-.cend{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:clamp(1.6rem,7vw,2.6rem);font-weight:700;color:#fff;text-shadow:0 4px 0 #5b2ca8;text-align:center;width:90%}
+.cchars{position:absolute;inset:0;pointer-events:none;z-index:1}
+.cchars .cname{position:absolute;transform:translate(-50%,0);font-weight:800;font-size:clamp(.8rem,2.2vmin,1.05rem);color:var(--ll-ink);background:var(--tcl,var(--ll-cream));border:2px solid var(--ll-ink);border-radius:999px;padding:1px 9px;box-shadow:0 2px 0 var(--ll-ink);white-space:nowrap}
+.cend{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) rotate(-2deg);font-size:clamp(1.5rem,7vw,2.4rem);font-weight:800;color:var(--ll-ink);background:var(--ll-spark);border:3px solid var(--ll-ink);box-shadow:0 5px 0 var(--ll-ink);
+  border-radius:24px;padding:8px 18px;text-align:center;width:max-content;max-width:86%}
 .cparts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px 0}
-.cpart{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;background:var(--pc);color:#fff;opacity:.55;transition:transform .2s,opacity .2s}
-.cpart.now{opacity:1;transform:scale(1.18);box-shadow:0 0 0 3px #fff}
+.cpart{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;background:var(--pc);color:var(--ll-ink);border:2.5px solid var(--ll-ink);opacity:.6;transition:transform .2s,opacity .2s;box-sizing:border-box}
+.cpart.now{opacity:1;transform:scale(1.2);box-shadow:0 0 0 3px var(--ll-cream)}
 .concert .ctop{display:flex;align-items:center;gap:8px}
-.concert .icon-btn{color:var(--ink)}
-.concert .ctop h2{flex:1;margin:0;font-size:1.25rem;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.concert .ctop h2{flex:1;margin:0;font-size:1.2rem;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--ll-ink);border-radius:999px;padding:6px 14px;box-shadow:0 3px 0 var(--ll-ink)}
 .concert .cbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.concert .cbtns .big-btn{flex:0 1 220px}
+.concert .cbtns .big-btn{flex:0 1 240px}
 
 /* jam pads */
-.jam{position:absolute;inset:0;z-index:5;background:rgba(255,255,255,.92);border-radius:20px;padding:8px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px}
+.jam{position:absolute;inset:0;z-index:5;background:var(--ok-card);border:3px solid var(--ll-ink);box-shadow:0 5px 0 var(--ll-ink);border-radius:22px;padding:8px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px}
 .jam .jtop{display:flex;align-items:center;gap:8px;justify-content:space-between}
-.jam .jtop b{font-size:1.1rem}
+.jam .jtop b{font-size:1.1rem;display:flex;align-items:center;gap:6px}
+.jam .jtop b .art{width:36px;height:36px}
 .pads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;touch-action:none}
-.pad{border:0;border-radius:20px;background:var(--pc);box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),0 4px 0 rgba(0,0,0,.15);color:#fff;font-weight:700;font-size:1.2rem;min-height:56px;transition:transform .08s}
-.pad.down{transform:scale(.94);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18),0 0 0 4px #fff,0 0 22px 6px var(--pc)}
+.pad{border-radius:20px;background:var(--pc);box-shadow:inset 0 -6px 0 rgba(0,0,0,.18),0 4px 0 var(--ll-ink);color:var(--ll-ink);font-weight:800;font-size:1.2rem;min-height:56px;transition:transform .08s}
+.pad.down{transform:scale(.94) translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18),0 1px 0 var(--ll-ink),0 0 0 5px var(--ll-cream),0 0 22px 8px var(--pc)}
 
-/* bubbles and toasts */
-.toast{position:fixed;left:50%;top:18%;transform:translate(-50%,0);z-index:40;pointer-events:none;background:#fff;color:var(--ink);font-weight:700;font-size:1.1rem;
-  padding:10px 18px;border-radius:999px;box-shadow:0 5px 0 rgba(0,0,0,.2);max-width:92%;text-align:center;animation:toast 2.2s ease forwards}
-@keyframes toast{0%{transform:translate(-50%,-10px) scale(.6);opacity:0}12%{transform:translate(-50%,0) scale(1.05);opacity:1}20%{transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0}}
-.coach{position:absolute;z-index:6;left:50%;transform:translateX(-50%);top:2px;background:var(--ink);color:#fff;font-weight:600;border-radius:16px;padding:8px 14px;font-size:1rem;
-  box-shadow:0 4px 0 rgba(0,0,0,.25);max-width:92%;text-align:center;pointer-events:none;line-height:1.2}
+/* coach bubble */
+.coach{position:absolute;z-index:6;left:50%;transform:translateX(-50%);top:2px;background:var(--ll-ink);color:var(--ll-cream);font-weight:700;border-radius:16px;padding:8px 14px;font-size:1rem;
+  box-shadow:0 4px 0 color-mix(in srgb,var(--ll-ink) 50%,transparent);max-width:92%;text-align:center;pointer-events:none;line-height:1.2;display:flex;align-items:center;gap:8px}
+.coach .art{width:38px;height:38px;margin:-6px 0}
 .kbonly{display:none}
 @media (hover:hover) and (pointer:fine){.kbonly{display:block}}
-.keys{font-size:.85rem;color:var(--ink2)}
-.keys kbd{display:inline-block;min-width:1.4em;padding:0 .35em;border-radius:6px;background:var(--card2);box-shadow:inset 0 0 0 1px var(--edge);font-family:inherit;font-weight:700;color:var(--ink)}
+.keys{font-size:.85rem;color:var(--soft)}
 
-@media (max-width:370px){.tab .tname{font-size:.74rem}#playBtn .lbl{display:none}.pill-btn{padding:0 9px}}
-@media (max-height:620px){.tab{min-height:50px}.tab .face{width:34px;height:28px}.viz{height:22px}}
-@media (min-width:900px) and (min-height:700px){.tab{min-height:70px}.tab .face{width:52px;height:44px}.tab .tname{font-size:.95rem}.viz{height:44px}}
+@media (max-width:370px){.tab .tname{font-size:.74rem}.pill-btn{padding:0 9px}}
+@media (orientation:portrait) and (max-width:700px){.app:not(.side) .stage{justify-content:flex-start;padding-top:4px}}
+@media (max-width:430px){#playBtn .lbl{display:none}#playBtn{min-width:62px;padding:0 8px}#playIco svg{width:32px;height:32px}.slot{min-width:38px;flex:1 1 40px}#tempoBtn{padding:0 7px}#songBtn{width:48px;padding:0}.transport{gap:5px}}
+.app:not(.side) .transport .row #checkBtn{min-width:0}
+@media (max-height:620px){.tab{min-height:50px}.tab .face{width:34px;height:30px}.viz{height:22px}}
+@media (min-width:900px) and (min-height:700px){.tab{min-height:72px}.tab .face{width:54px;height:48px}.tab .tname{font-size:.95rem}.viz{height:44px}}
 /* Arabic letters stay joined; Japanese and Chinese break lines between phrases. */
 html[lang="ar"] *{letter-spacing:0!important}
 html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
-@media (prefers-reduced-motion:reduce){.cell.hit{animation:none}.toast{animation:none}.big-sticker{animation:none}.wobble{animation:none}.cell{transition:none}}
+@media (prefers-reduced-motion:reduce){.cell.hit{animation:none}.big-sticker{animation:none}.wobble{animation:none}.cell{transition:none}}
+.ok-rm .ll .cell.hit,.ok-rm .ll .big-sticker,.ok-rm .ll .wobble{animation:none}.ok-rm .ll .cell{transition:none}
+</style>
+<style>
+/* the overlay layer lets taps through to the studio and the kit's title; only its open screens take them */
+.ok-ui>.ll-over{z-index:25;pointer-events:none}
+.ok-ui>.ll-over>*{pointer-events:auto}
+.ok-ui>.ok-toast{z-index:40}
 </style>
 
+<div class="ll" id="game">
 <div class="app offstage" id="app">
   <header class="top" id="top">
-    <button class="icon-btn" id="homeBtn" data-ta="home">🏠</button>
+    <button class="icon-btn" id="homeBtn" data-ta="home"><span class="ic" data-icon="home"></span></button>
     <span class="spacer"></span>
-    <button class="icon-btn" id="undoBtn" data-ta="undo">↩️</button>
-    <button class="icon-btn" id="redoBtn" data-ta="redo">↪️</button>
-    <button class="icon-btn" id="surpriseBtn" data-ta="surprise">🎲</button>
-    <button class="icon-btn" id="saveBtn" data-ta="save">💾</button>
-    <button class="icon-btn" id="moreBtn" data-ta="more">🧰</button>
-    <button class="icon-btn mute" data-ta="soundOff">🔊</button>
+    <button class="icon-btn" id="undoBtn" data-ta="undo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 13.5 4 8.5l5-5"/><path d="M4 8.5h10a5.5 5.5 0 0 1 0 11h-3.5"/></svg></span></button>
+    <button class="icon-btn" id="redoBtn" data-ta="redo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 13.5 5-5-5-5"/><path d="M20 8.5H10a5.5 5.5 0 0 0 0 11h3.5"/></svg></span></button>
+    <button class="icon-btn" id="surpriseBtn" data-ta="surprise"><span class="art" data-art="dice"></span></button>
+    <button class="icon-btn" id="saveBtn" data-ta="save"><span class="art" data-art="chest"></span></button>
+    <button class="icon-btn" id="moreBtn" data-ta="more"><span class="ic" data-icon="menu"></span></button>
+    <button class="icon-btn mute" data-ta="soundOff"></button>
   </header>
   <nav class="tabs" id="tabs" role="tablist"></nav>
   <div class="tools" id="tools">
-    <button class="pill-btn" id="kitBtn"><span class="ico">🥁</span><span class="lbl">Real drums</span><span aria-hidden="true">▾</span></button>
-    <label class="vol"><span aria-hidden="true">🔉</span><input type="range" id="vol" min="0" max="100" value="80" data-ta="volume"></label>
-    <button class="pill-btn ms" id="muteTrack" aria-pressed="false" data-ta="muteTrack">🔇</button>
-    <button class="pill-btn ms" id="soloTrack" aria-pressed="false" data-ta="soloTrack">🎧</button>
-    <button class="icon-btn" id="trackDice" data-ta="surpriseTrack">✨</button>
+    <button class="pill-btn" id="kitBtn"><span class="ico"></span><span class="lbl">Real drums</span><span class="ic" data-icon="down"></span></button>
+    <label class="vol"><span aria-hidden="true" data-icon="sound"></span><input type="range" id="vol" min="0" max="100" value="80" data-ta="volume"></label>
+    <button class="pill-btn ms" id="muteTrack" aria-pressed="false" data-ta="muteTrack"><span class="ic" data-icon="mute"></span></button>
+    <button class="pill-btn ms" id="soloTrack" aria-pressed="false" data-ta="soloTrack"><span class="ic" data-icon="speak"></span></button>
+    <button class="icon-btn" id="trackDice" data-ta="surpriseTrack"><span class="ic" data-icon="spark"></span></button>
   </div>
   <div class="banner" id="banner" hidden>
-    <div class="goal"><span class="stk" id="goalStk">💥</span><span id="goalText"></span><div class="hint" id="hintText" hidden></div></div>
+    <div class="goal"><span class="stk" id="goalStk"></span><span id="goalText"></span><div class="hint" id="hintText" hidden></div></div>
     <div class="row" id="chRow">
-      <button class="pill-btn" id="listenBtn">👂 <span class="lbl" data-t="listen">Listen</span></button>
-      <button class="pill-btn" id="peekBtn">👀 <span class="lbl" data-t="peek">Peek</span></button>
-      <button class="pill-btn hot" id="checkBtn">✅ <span class="lbl" data-t="checkIt">Check it</span></button>
+      <button class="pill-btn" id="listenBtn"><span class="ic" data-icon="sound"></span><span class="lbl" data-t="listen">Listen</span></button>
+      <button class="pill-btn" id="peekBtn"><span class="ic" data-icon="eye"></span><span class="lbl" data-t="peek">Peek</span></button>
+      <button class="pill-btn hot" id="checkBtn"><span class="ic" data-icon="check"></span><span class="lbl" data-t="checkIt">Check it</span></button>
     </div>
   </div>
   <div class="stage" id="stage">
@@ -361,79 +414,79 @@ html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
       <div class="grid" id="grid" role="grid" tabindex="0"><div class="playhead" id="playhead"></div></div>
     </div>
     <div class="pager" id="pager" dir="ltr">
-      <button class="icon-btn" id="pgPrev" data-ta="pagePrev">◀</button>
-      <span id="pgTabs" style="display:flex;gap:6px"></span>
-      <button class="icon-btn" id="pgNext" data-ta="pageNext">▶</button>
+      <button class="icon-btn" id="pgPrev" data-ta="pagePrev"><span class="ic" data-icon="left"></span></button>
+      <span id="pgTabs" class="pgtabs"></span>
+      <button class="icon-btn" id="pgNext" data-ta="pageNext"><span class="ic" data-icon="right"></span></button>
     </div>
     <div class="jam" id="jam" hidden>
-      <div class="jtop"><b data-t="jamTitle">Jam pads</b><button class="pill-btn" id="jamClose">✖ <span class="lbl" data-t="close">Close</span></button></div>
+      <div class="jtop"><b><span class="art" data-art="lulu"></span><span data-t="jamTitle">Jam pads</span></b><button class="pill-btn" id="jamClose"><span class="ic" data-icon="cross"></span><span class="lbl" data-t="close">Close</span></button></div>
       <div class="pads" id="pads" dir="ltr"></div>
     </div>
     <div class="coach" id="coach" hidden></div>
   </div>
   <canvas class="viz" id="viz" aria-hidden="true"></canvas>
   <footer class="transport" id="transport">
-    <button id="playBtn" data-ta="play"><span id="playIco">▶</span><span class="lbl" id="playLbl" data-t="play">Play</span></button>
+    <button id="playBtn" data-ta="play"><span id="playIco"></span><span class="lbl" id="playLbl" data-t="play">Play</span></button>
     <button class="pill-btn" id="tempoBtn" data-ta="settings"><b id="tempoVal">100</b><small data-t="bpm">BPM</small></button>
     <div class="slots" id="slots" role="group" data-ta="patterns"></div>
-    <button class="pill-btn" id="songBtn" aria-pressed="false" data-ta="songChain">🔗</button>
+    <button class="pill-btn" id="songBtn" aria-pressed="false" data-ta="songChain"><span class="ic" data-icon="music"></span></button>
   </footer>
 </div>
+</div>
 
-<section class="screen full" id="titleScreen">
-  <div class="panel">
-    <button class="icon-btn mute corner" data-ta="soundOff">🔊</button>
-    <div class="col tcol"><div class="title-chars" id="titleChars"></div>
-    <h1>Loop <span>Lab</span></h1>
-    <p class="sub" data-t="tagline">Tap squares, press play, make a beat!</p></div>
+<div class="ll ll-over" id="overs">
+<!-- the title is the kit's (Oomba.ui.title); this marker keeps the game's screen bookkeeping, and the menu moves onto
+     the kit's title card while it is open -->
+<section class="screen" id="titleScreen" hidden></section>
+<div id="titleMenuHome" hidden>
+  <div class="ll-tcard" id="titleMenu">
     <div class="menu">
-      <button class="big-btn span2" id="goStudio">🎛️ <span data-t="makeMusic">Make music</span></button>
-      <button class="big-btn warm" id="goTemplates">⭐ <span data-t="starters">Starter beats</span></button>
-      <button class="big-btn purple" id="goChallenges">🏆 <span data-t="challenges">Challenges</span></button>
-      <button class="big-btn alt" id="goSaves">💾 <span data-t="mySongs">My songs</span></button>
-      <button class="big-btn alt" id="goStickers">📒 <span data-t="stickers">Stickers</span></button>
+      <button class="big-btn warm" id="goTemplates"><span class="ic" data-icon="star"></span><span data-t="starters">Starter beats</span></button>
+      <button class="big-btn purple" id="goChallenges"><span class="ic" data-icon="trophy"></span><span data-t="challenges">Challenges</span></button>
+      <button class="big-btn alt" id="goSaves"><span class="art" data-art="chest"></span><span data-t="mySongs">My songs</span></button>
+      <button class="big-btn alt" id="goStickers"><span class="ic" data-icon="book"></span><span data-t="stickers">Stickers</span></button>
     </div>
     <p class="keys kbonly" id="titleKeys"></p>
   </div>
-</section>
+</div>
 
 <section class="screen" id="templatesScreen" hidden>
   <div class="panel wide">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
-    <h2 data-t="starters">Starter beats</h2>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
+    <h2><span class="ic" data-icon="star"></span><span data-t="starters">Starter beats</span></h2>
     <p class="sub" data-t="startersSub">Pick a beat, then change it any way you like.</p>
     <div class="cards" id="tplCards"></div>
-    <button class="big-btn alt" id="tplBlank">🧽 <span data-t="blankStart">Start with an empty grid</span></button>
+    <button class="big-btn alt" id="tplBlank"><span class="ic" data-icon="plus"></span><span data-t="blankStart">Start with an empty grid</span></button>
   </div>
 </section>
 
 <section class="screen" id="savesScreen" hidden>
   <div class="panel">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
-    <h2 data-t="mySongs">My songs</h2>
-    <button class="big-btn" id="saveNew">💾 <span data-t="saveMySong">Save my song</span></button>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
+    <h2><span class="art" data-art="chest"></span><span data-t="mySongs">My songs</span></h2>
+    <button class="big-btn" id="saveNew"><span class="ic" data-icon="plus"></span><span data-t="saveMySong">Save my song</span></button>
     <p class="sub" id="savesCount"></p>
-    <div id="saveList" style="display:grid;gap:8px"></div>
+    <div id="saveList" class="savelist"></div>
   </div>
 </section>
 
 <section class="screen" id="nameScreen" hidden>
   <div class="panel two">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
     <h2 data-t="nameIt">Name your song</h2>
     <div class="col">
     <div class="name-preview" id="namePreview"></div>
     <div class="picker" id="picker"></div>
     </div>
     <div class="col">
-    <button class="big-btn alt" id="nameDice">🎲 <span data-t="randomName">Mix up the name</span></button>
-    <details id="typeBox" style="text-align:start">
-      <summary style="min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer">✏️&nbsp;<span data-t="orType">Or type a song name</span></summary>
+    <button class="big-btn alt" id="nameDice"><span class="art" data-art="dice"></span><span data-t="randomName">Mix up the name</span></button>
+    <details id="typeBox" class="typebox">
+      <summary><span class="ic" data-icon="pencil"></span><span data-t="orType">Or type a song name</span></summary>
       <div class="typed"><input id="typedName" maxlength="24" autocomplete="off" spellcheck="false" enterkeyhint="done"></div>
       <p class="err" id="nameErr" hidden></p>
     </details>
     <div class="btns">
-      <button class="big-btn" id="nameSave">💾 <span data-t="save">Save</span></button>
+      <button class="big-btn" id="nameSave"><span class="ic" data-icon="check"></span><span data-t="save">Save</span></button>
     </div>
     <p class="sub" id="replaceNote" hidden></p>
     </div>
@@ -442,8 +495,8 @@ html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
 
 <section class="screen" id="challengesScreen" hidden>
   <div class="panel wide">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
-    <h2 data-t="challenges">Challenges</h2>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
+    <h2><span class="ic" data-icon="trophy"></span><span data-t="challenges">Challenges</span></h2>
     <p class="sub" id="chProgress"></p>
     <div class="cards" id="chCards"></div>
   </div>
@@ -451,8 +504,8 @@ html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
 
 <section class="screen" id="stickersScreen" hidden>
   <div class="panel wide">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
-    <h2>📒 <span data-t="stickerBook">Sticker book</span></h2>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
+    <h2><span class="ic" data-icon="book"></span><span data-t="stickerBook">Sticker book</span></h2>
     <p class="sub" id="stProgress"></p>
     <div class="stickers" id="stickerGrid"></div>
   </div>
@@ -460,24 +513,24 @@ html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
 
 <section class="screen" id="doneScreen" hidden>
   <div class="panel">
-    <div class="big-sticker" id="doneSticker">💥</div>
+    <div class="big-sticker" id="doneSticker"></div>
     <h2 data-t="youDidIt">You did it!</h2>
     <p id="doneText"></p>
     <div class="btns">
-      <button class="big-btn" id="doneNext">▶ <span data-t="nextChallenge">Next challenge</span></button>
-      <button class="big-btn alt" id="doneStay">🎛️ <span data-t="keepPlaying">Keep making music</span></button>
+      <button class="big-btn warm" id="doneNext"><span class="ic" data-icon="next"></span><span data-t="nextChallenge">Next challenge</span></button>
+      <button class="big-btn alt" id="doneStay"><span class="ic" data-icon="music"></span><span data-t="keepPlaying">Keep making music</span></button>
     </div>
-    <button class="big-btn alt" id="doneBook">📒 <span data-t="stickerBook">Sticker book</span></button>
+    <button class="big-btn alt" id="doneBook"><span class="ic" data-icon="book"></span><span data-t="stickerBook">Sticker book</span></button>
   </div>
 </section>
 
 <section class="screen" id="settingsScreen" hidden>
   <div class="panel two">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
-    <h2>🎚️ <span data-t="settingsTitle">Speed and sound</span></h2>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
+    <h2><span class="ic" data-icon="timer"></span><span data-t="settingsTitle">Speed and sound</span></h2>
     <div class="col">
-      <div class="setrow"><span class="k" aria-hidden="true">🐢</span><input type="range" id="tempoRange" min="70" max="160" step="1" data-ta="tempo"><span class="k" aria-hidden="true">🐇</span><span class="tempo-big" id="tempoBig">100</span></div>
-      <button class="toggle" id="swingBtn" aria-pressed="false">💃 <span data-t="swing">Swing</span></button>
+      <div class="setrow"><span class="k" aria-hidden="true" data-art="slow"></span><input type="range" id="tempoRange" min="70" max="160" step="1" data-ta="tempo"><span class="k" aria-hidden="true" data-art="fast"></span><span class="tempo-big" id="tempoBig">100</span></div>
+      <button class="toggle" id="swingBtn" aria-pressed="false"><span class="ic" data-icon="music"></span><span data-t="swing">Swing</span></button>
       <h3 data-t="scale">Scale</h3>
       <div class="grid2" id="scaleChips"></div>
     </div>
@@ -486,31 +539,32 @@ html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
       <div class="grid4" id="keyChips"></div>
       <h3 data-t="steps">Steps</h3>
       <div class="grid2" id="lenChips"></div>
+      <button class="toggle kitset" id="kitSettings"><span class="ic" data-icon="settings"></span><span id="kitSettingsLbl"></span></button>
     </div>
   </div>
 </section>
 
 <section class="screen" id="moreScreen" hidden>
   <div class="panel two">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
-    <h2>🧰 <span data-t="toolbox">Toolbox</span></h2>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
+    <h2><span class="ic" data-icon="menu"></span><span data-t="toolbox">Toolbox</span></h2>
     <div class="col">
     <div class="grid2">
-      <button class="big-btn warm" id="mConcert">🎤 <span data-t="playMySong">Play my song</span></button>
-      <button class="big-btn purple" id="mJam">🎹 <span data-t="jam">Jam pads</span></button>
-      <button class="big-btn alt" id="mTemplates">⭐ <span data-t="starters">Starter beats</span></button>
-      <button class="big-btn alt" id="mSaves">💾 <span data-t="mySongs">My songs</span></button>
-      <button class="big-btn alt" id="mChallenges">🏆 <span data-t="challenges">Challenges</span></button>
-      <button class="big-btn alt" id="mStickers">📒 <span data-t="stickers">Stickers</span></button>
+      <button class="big-btn warm" id="mConcert"><span class="ic" data-icon="speak"></span><span data-t="playMySong">Play my song</span></button>
+      <button class="big-btn purple" id="mJam"><span class="art" data-art="lulu"></span><span data-t="jam">Jam pads</span></button>
+      <button class="big-btn alt" id="mTemplates"><span class="ic" data-icon="star"></span><span data-t="starters">Starter beats</span></button>
+      <button class="big-btn alt" id="mSaves"><span class="art" data-art="chest"></span><span data-t="mySongs">My songs</span></button>
+      <button class="big-btn alt" id="mChallenges"><span class="ic" data-icon="trophy"></span><span data-t="challenges">Challenges</span></button>
+      <button class="big-btn alt" id="mStickers"><span class="ic" data-icon="book"></span><span data-t="stickers">Stickers</span></button>
     </div>
     </div>
     <div class="col">
     <h3 id="mPatTitle"></h3>
     <div class="grid2">
-      <button class="big-btn alt" id="mShiftL">⬅️ <span data-t="shiftLeft">Shift left</span></button>
-      <button class="big-btn alt" id="mShiftR">➡️ <span data-t="shiftRight">Shift right</span></button>
-      <button class="big-btn alt" id="mClearTrack">🧽 <span data-t="clearTrack">Clear track</span></button>
-      <button class="big-btn alt" id="mClearAll">🧹 <span data-t="clearAll">Clear pattern</span></button>
+      <button class="big-btn alt" id="mShiftL"><span class="ic" data-icon="left"></span><span data-t="shiftLeft">Shift left</span></button>
+      <button class="big-btn alt" id="mShiftR"><span class="ic" data-icon="right"></span><span data-t="shiftRight">Shift right</span></button>
+      <button class="big-btn alt" id="mClearTrack"><span class="ic" data-icon="minus"></span><span data-t="clearTrack">Clear track</span></button>
+      <button class="big-btn alt" id="mClearAll"><span class="ic" data-icon="restart"></span><span data-t="clearAll">Clear pattern</span></button>
     </div>
     <h3 data-t="copyTo">Copy this pattern to</h3>
     <div class="grid4" id="copyChips"></div>
@@ -521,27 +575,27 @@ html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
 
 <section class="screen" id="kitScreen" hidden>
   <div class="panel">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
     <h2 id="kitTitle"></h2>
     <div class="grid2" id="kitChips"></div>
-    <div class="setrow"><span class="k" aria-hidden="true">🔉</span><input type="range" id="kitVol" min="0" max="100" data-ta="volume"><span class="k" aria-hidden="true">🔊</span></div>
+    <div class="setrow"><span class="k" aria-hidden="true" data-icon="minus"></span><input type="range" id="kitVol" min="0" max="100" data-ta="volume"><span class="k" aria-hidden="true" data-icon="sound"></span></div>
   </div>
 </section>
 
 <section class="screen" id="songScreen" hidden>
   <div class="panel">
-    <button class="icon-btn close" data-close data-ta="close">✖</button>
-    <h2>🔗 <span data-t="mySongChain">My song</span></h2>
+    <button class="icon-btn close" data-close data-ta="close"><span class="ic" data-icon="cross"></span></button>
+    <h2><span class="ic" data-icon="music"></span><span data-t="mySongChain">My song</span></h2>
     <p class="sub" data-t="chainHelp">Tap A, B, C or D to add parts. Tap a part to take it out.</p>
     <div class="chain" id="chain"></div>
     <div class="adders" id="adders" dir="ltr"></div>
     <div class="grid2">
-      <button class="toggle" id="loopModeBtn" aria-pressed="true">🔁 <span data-t="loopOne">Loop one pattern</span></button>
-      <button class="toggle" id="songModeBtn" aria-pressed="false">🎼 <span data-t="playChain">Play the song</span></button>
+      <button class="toggle" id="loopModeBtn" aria-pressed="true"><span class="ic" data-icon="restart"></span><span data-t="loopOne">Loop one pattern</span></button>
+      <button class="toggle" id="songModeBtn" aria-pressed="false"><span class="ic" data-icon="music"></span><span data-t="playChain">Play the song</span></button>
     </div>
     <div class="btns">
-      <button class="big-btn alt" id="chainClear">🧽 <span data-t="clearSong">Clear song</span></button>
-      <button class="big-btn warm" id="chainConcert">🎤 <span data-t="playMySong">Play my song</span></button>
+      <button class="big-btn alt" id="chainClear"><span class="ic" data-icon="minus"></span><span data-t="clearSong">Clear song</span></button>
+      <button class="big-btn warm" id="chainConcert"><span class="ic" data-icon="speak"></span><span data-t="playMySong">Play my song</span></button>
     </div>
   </div>
 </section>
@@ -551,23 +605,31 @@ html[lang="ja"] .panel p,html[lang="zh-Hant"] .panel p{word-break:auto-phrase}
     <h2 id="confirmTitle"></h2>
     <p id="confirmText"></p>
     <div class="btns">
-      <button class="big-btn alt" id="confirmNo">↩️ <span data-t="noKeep">No, go back</span></button>
-      <button class="big-btn danger" id="confirmYes">✔ <span id="confirmYesLbl" data-t="yes">Yes</span></button>
+      <button class="big-btn alt" id="confirmNo"><span class="ic" data-icon="back"></span><span data-t="noKeep">No, go back</span></button>
+      <button class="big-btn danger" id="confirmYes"><span class="ic" data-icon="check"></span><span id="confirmYesLbl" data-t="yes">Yes</span></button>
     </div>
   </div>
 </section>
 
 <div class="concert" id="concert" hidden>
-  <div class="ctop"><button class="icon-btn mute" data-ta="soundOff">🔊</button><h2 id="concertTitle">Loop Lab</h2><button class="icon-btn" id="concertClose" data-ta="close">✖</button></div>
+  <div class="ctop"><button class="icon-btn mute" data-ta="soundOff"></button><h2 id="concertTitle">Loop Lab</h2><button class="icon-btn" id="concertClose" data-ta="close"><span class="ic" data-icon="cross"></span></button></div>
   <div class="cchars" id="cchars" dir="ltr"></div>
-  <div class="cviz"><canvas id="stageCv" aria-hidden="true"></canvas><div class="cend" id="cend" hidden data-t="theEnd">The end!</div></div>
+  <div class="cspace"><div class="cend" id="cend" hidden data-t="theEnd">The end!</div></div>
+  <div class="cviz"><canvas id="stageCv" aria-hidden="true"></canvas></div>
   <div class="cparts" id="cparts" dir="ltr"></div>
   <div class="cbtns">
-    <button class="big-btn" id="concertAgain" hidden>▶ <span data-t="playAgain">Play again</span></button>
-    <button class="big-btn alt" id="concertBack">🎛️ <span data-t="backToStudio">Back to the studio</span></button>
+    <button class="big-btn warm" id="concertAgain" hidden><span class="ic" data-icon="restart"></span><span data-t="playAgain">Play again</span></button>
+    <button class="big-btn alt" id="concertBack"><span class="ic" data-icon="music"></span><span data-t="backToStudio">Back to the studio</span></button>
   </div>
 </div>
+</div>
 
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-school.js" integrity="sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
    CONFIG: the numbers people like to change.
@@ -2441,16 +2503,112 @@ function renderOffline(song, seconds, opts) {
 }
 
 /* =====================================================================================
-   CHARACTERS: original cartoon faces drawn with inline SVG. Each one bops on its track's notes.
-   Clank the drum robot, Bruno the bass bear, Lulu the melody bird and Blip the FX alien.
+   THE KIT: the world behind everything (the "space" theme), the band, colours as CSS variables, kit art in the DOM.
+   The band: Clank the drum Oomba, Bruno the bass bear, Lulu the melody duck and Blip the FX frog-alien, kit
+   characters that bop on their track's notes (tabs, the banner, the title stage and the concert stage). The player's
+   own avatar (Oomba.avatar(): the character they made on their Me page, the Oomba mascot for guests) leads the band.
    ===================================================================================== */
-const FACES = {
-  drums: '<svg viewBox="0 0 64 60" aria-hidden="true"><line x1="32" y1="4" x2="32" y2="14" stroke="#5b6b85" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="5" r="4.5" fill="#ff5c8a"/><circle cx="8" cy="32" r="4" fill="#ff5c8a"/><circle cx="56" cy="32" r="4" fill="#ff5c8a"/><rect x="10" y="13" width="44" height="40" rx="11" fill="#a9bde0" stroke="#5b6b85" stroke-width="2.5"/><rect x="15" y="19" width="34" height="18" rx="8" fill="#eef4ff"/><circle cx="25" cy="28" r="4.5" fill="#20304a"/><circle cx="39" cy="28" r="4.5" fill="#20304a"/><circle cx="26.5" cy="26.5" r="1.5" fill="#fff"/><circle cx="40.5" cy="26.5" r="1.5" fill="#fff"/><rect x="22" y="41" width="20" height="7" rx="3.5" fill="#ff5c8a"/><line x1="27" y1="41" x2="27" y2="48" stroke="#fff" stroke-width="1.5"/><line x1="32" y1="41" x2="32" y2="48" stroke="#fff" stroke-width="1.5"/><line x1="37" y1="41" x2="37" y2="48" stroke="#fff" stroke-width="1.5"/></svg>',
-  bass: '<svg viewBox="0 0 64 60" aria-hidden="true"><circle cx="14" cy="15" r="9" fill="#a8703f"/><circle cx="50" cy="15" r="9" fill="#a8703f"/><circle cx="14" cy="15" r="4.5" fill="#e8b98f"/><circle cx="50" cy="15" r="4.5" fill="#e8b98f"/><ellipse cx="32" cy="34" rx="23" ry="22" fill="#c48a5a"/><path d="M9 32 A23 23 0 0 1 55 32" fill="none" stroke="#9a6bff" stroke-width="4"/><rect x="3" y="27" width="10" height="16" rx="4.5" fill="#9a6bff"/><rect x="51" y="27" width="10" height="16" rx="4.5" fill="#9a6bff"/><ellipse cx="32" cy="43" rx="11" ry="8.5" fill="#f0cfa8"/><ellipse cx="32" cy="39" rx="4.2" ry="3" fill="#3b2416"/><path d="M28 45 Q32 48.5 36 45" fill="none" stroke="#3b2416" stroke-width="2" stroke-linecap="round"/><circle cx="23" cy="30" r="3.4" fill="#2a1a10"/><circle cx="41" cy="30" r="3.4" fill="#2a1a10"/><circle cx="24.2" cy="28.8" r="1.1" fill="#fff"/><circle cx="42.2" cy="28.8" r="1.1" fill="#fff"/></svg>',
-  melody: '<svg viewBox="0 0 64 60" aria-hidden="true"><path d="M29 10 Q33 1 39 8" fill="none" stroke="#ff8a00" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="34" rx="22" ry="22" fill="#ffd23f"/><ellipse cx="34" cy="43" rx="13" ry="10" fill="#fff1b0"/><path d="M12 36 Q3 30 7 45 Q14 47 18 40Z" fill="#ffb21a"/><circle cx="25" cy="28" r="4" fill="#20304a"/><circle cx="41" cy="28" r="4" fill="#20304a"/><circle cx="26.3" cy="26.6" r="1.3" fill="#fff"/><circle cx="42.3" cy="26.6" r="1.3" fill="#fff"/><path d="M28 34 L37 34 L32.5 40.5Z" fill="#ff7a1a"/><circle cx="19" cy="37" r="3" fill="#ff9db5"/><circle cx="46" cy="37" r="3" fill="#ff9db5"/><path d="M53 6 L53 17" stroke="#ff7a3d" stroke-width="2.2"/><ellipse cx="50.5" cy="17.5" rx="3.2" ry="2.4" fill="#ff7a3d"/><path d="M53 6 Q57 7 58 11" fill="none" stroke="#ff7a3d" stroke-width="2.2"/></svg>',
-  fx: '<svg viewBox="0 0 64 60" aria-hidden="true"><line x1="22" y1="15" x2="16" y2="5" stroke="#1f9a52" stroke-width="3" stroke-linecap="round"/><circle cx="15" cy="4.5" r="4" fill="#ffd23f"/><line x1="42" y1="15" x2="48" y2="5" stroke="#1f9a52" stroke-width="3" stroke-linecap="round"/><circle cx="49" cy="4.5" r="4" fill="#ffd23f"/><path d="M8 36 Q8 12 32 12 Q56 12 56 36 Q56 57 32 57 Q8 57 8 36Z" fill="#5fdc8a"/><ellipse cx="32" cy="30" rx="12" ry="10" fill="#fff"/><circle cx="32" cy="31" r="6" fill="#20304a"/><circle cx="34.2" cy="28.8" r="2" fill="#fff"/><circle cx="16" cy="33" r="3.6" fill="#fff"/><circle cx="16" cy="33" r="1.8" fill="#20304a"/><circle cx="48" cy="33" r="3.6" fill="#fff"/><circle cx="48" cy="33" r="1.8" fill="#20304a"/><path d="M22 45 Q32 53 42 45" fill="none" stroke="#1f6b3a" stroke-width="2.5" stroke-linecap="round"/></svg>'
+const THEME = 'space';
+const LOOK = { biome: 'space', props: ['ufo', 'satellite', 'planet', 'rocket'] };   // the space theme's world and props
+const CAST = {
+  drums: Oomba.char({ species: 'oomba', wear: ['headphones'], colors: { base: 'sky' }, mood: 'happy' }),
+  bass: Oomba.char({ species: 'bear', wear: ['headphones'], colors: { accent: 'grape' } }),
+  melody: Oomba.char({ species: 'duck', wear: ['scarf'], colors: { base: 'spark', accent: 'coral' } }),
+  fx: Oomba.char({ species: 'frog', wear: ['glasses'], colors: { base: 'mint', accent: 'grape' } })
 };
-const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+const ME = Oomba.avatar();
+// kit art standing in for the old emoji: props, species and the cast (names -> what to draw)
+const ART = {
+  dice: 'dice', chest: 'chest', slow: 'penguin', fast: 'bunny', lulu: CAST.melody, clank: CAST.drums, bruno: CAST.bass, blip: CAST.fx,
+  // FX rows
+  meow: 'cat', croak: 'frog', quack: 'duck', tweet: 'owl', bleep: 'drone', zap: 'rocket', wobble: 'ufo', blip_fx: 'satellite', boing: 'spring',
+  // sound sets
+  electro: 'drone', toy: 'letterblock', bouncy: 'ball', deep: 'anchor', buzzy: 'bee', marimba: 'log', synth: 'satellite', animals: 'cat', robots: 'drone', toys: 'spring',
+  // stickers (challenges, then bonus)
+  st_boom: boomArt, st_snap: 'gem', st_ticktock: 'clock', st_fullkit: 'trophy', st_echo: 'cat', st_stairs: 'ladder', st_bassbounce: 'bear',
+  st_echomelody: 'duck', st_silly: 'ufo', st_songmaker: 'medal', st_firstbeat: 'coin', st_saver: 'chest', st_concert: 'planet',
+  st_explorer: 'globe', st_surprise: 'gift', st_jammer: 'satellite'
+};
+// what the kit has no picture for keeps its old emoji (drum rows, piano, flute, cowbell, pop, slide whistle)
+const ICON = (name, o) => Oomba.icon(name, o);
+/** The Big Boom sticker: a two-layer starburst in the kit's coral and spark with an Ink outline, drawn here because
+ *  the kit has no explosion picture. */
+function boomArt(px) {
+  const d = Math.min(2, window.devicePixelRatio || 1), n = Math.round(px * d), c = document.createElement('canvas'); c.width = c.height = n;
+  const g = c.getContext('2d'), m = n / 2, burst = (pts, r1, r2, rot, fill) => {
+    g.beginPath(); for (let i = 0; i < pts * 2; i++) { const a = rot + i * Math.PI / pts, r = (i % 2 ? r2 : r1) * (1 + (i % 4 === 0 ? 0.06 : 0)); g[i ? 'lineTo' : 'moveTo'](m + Math.cos(a) * r, m + Math.sin(a) * r); }
+    g.closePath(); g.fillStyle = fill; g.fill(); g.lineJoin = 'round'; g.lineWidth = Math.max(2, n * 0.045); g.strokeStyle = Oomba.color('ink'); g.stroke();
+  };
+  burst(11, n * 0.47, n * 0.27, -0.2, Oomba.color('coral'));
+  burst(8, n * 0.3, n * 0.16, 0.15, Oomba.color('spark'));
+  g.beginPath(); g.arc(m - n * 0.05, m - n * 0.05, n * 0.05, 0, Math.PI * 2); g.fillStyle = Oomba.color('cream'); g.fill();
+  return c;
+}
+let REDUCED = !!Oomba.settings.reduced;
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+/** A kit picture (prop, species or character spec: a portrait) as a <canvas> about px CSS pixels tall. */
+function artCanvas(what, px) {
+  let c = null;
+  try { c = typeof what === 'function' ? what(px) : typeof what === 'object' ? Oomba.ui.portrait(what, { size: px }) : Oomba.art.toCanvas(what, Math.round(px * DPR)); } catch (e) { c = null; }
+  if (!c) c = document.createElement('canvas');
+  c.removeAttribute('style'); c.setAttribute('aria-hidden', 'true');
+  return c;
+}
+/** A <span class="art"> holding kit art (or the old emoji when the kit has none). */
+function artEl(key, px, cls) {
+  const s = document.createElement('span'); s.className = 'art' + (cls ? ' ' + cls : ''); s.setAttribute('aria-hidden', 'true');
+  const what = ART[key] !== undefined ? ART[key] : key;
+  if (typeof what === 'string' && /\p{Extended_Pictographic}/u.test(what)) { s.className += ' em'; s.textContent = what; return s; }
+  s.appendChild(artCanvas(what, px || 48)); return s;
+}
+/** A band member's face (portrait) for the tabs and the banner; the bop spring moves the wrapper. */
+function faceEl(tr, px) { const f = document.createElement('span'); f.className = 'face'; f.appendChild(artCanvas(CAST[tr], px || 56)); const c = f.firstChild; c.style.width = '100%'; c.style.height = '100%'; c.style.objectFit = 'contain'; c.style.display = 'block'; return f; }
+const STICKER_ART = id => 'st_' + String(id).replace(/^[cb]_/, '');
+const escHtml = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+// the world: the space theme's alien planet, its props on the hills, and the band on the ground
+const WORLD = Oomba.stage({ api: 1, biome: LOOK.biome, size: [960, 540] });
+WORLD.camera.x = 0; WORLD.camera.y = -150;
+for (const [p, x, y, s] of [['ufo', -240, -330, 70], ['satellite', 250, -390, 60], ['rocket', -400, 26, 130], ['ufo', 400, 0, 60]]) WORLD.add(p, { x, y, size: s, layer: 'near' });
+const BAND = {};
+{
+  const spots = { drums: -210, bass: -95, me: 0, melody: 95, fx: 210 };
+  for (const k in spots) { const e = WORLD.add(k === 'me' ? ME : CAST[k], { x: spots[k], y: 26, size: k === 'me' ? 116 : 96 }); e.tag = 'band-' + k; BAND[k] = e; }
+}
+/** Frames the band: its feet at `frac` of the screen's height (the title: near the bottom; the concert: above the
+ *  light bars), a closer camera on tall phone screens so the band reads. */
+function placeCamera(frac) {
+  const v = WORLD.view; if (!v || !v.vh) return;
+  const tall = v.vh / v.vw, zoom = (tall > 1.4 ? 1.55 : tall > 0.9 ? 1.25 : 1) * (S.concert ? (tall > 1.4 ? 1.1 : tall < 0.6 ? 1.5 : 1.25) : 1);
+  WORLD.camera.zoom = zoom; WORLD.camera.x = 0;
+  WORLD.camera.y = 26 - (frac - 0.5) * v.vh / zoom;
+}
+function frameBand() {
+  if (S.concert) { const r = $('stageCv').getBoundingClientRect(); placeCamera(Math.max(0.4, Math.min(0.8, (r.top - (innerHeight < 520 ? 24 : 30)) / innerHeight))); }
+  else placeCamera(innerHeight > innerWidth ? 0.9 : innerHeight < 520 && titleOpen ? 0.98 : 0.86);   // short landscape title: the band below the menu card
+}
+let bandLights = [];
+/** Night and spotlights for the concert (and the dark theme); back to the theme's light otherwise. */
+function stageNight(on, ms) {
+  const night = on || Oomba.theme.mode === 'dark';
+  WORLD.toNight(night, REDUCED || ms == null ? 0 : ms);
+  if (on && !bandLights.length) bandLights = ['coral', 'sky', 'spark', 'mint', 'grape'].map((c, i) => WORLD.light({ follow: BAND[['drums', 'bass', 'me', 'melody', 'fx'][i]], radius: 120, color: Oomba.color(c, 'light'), intensity: 0.9 }));
+  if (!on && bandLights.length) { bandLights.forEach(l => { try { l.remove ? l.remove() : (l.intensity = 0); } catch (e) { /* ignore */ } }); bandLights = []; }
+}
+/** A band member hops on a note (squash and a cheer now and then), calmer with reduced motion. */
+function bandBop(k, amt) {
+  const e = BAND[k]; if (!e || REDUCED) return;
+  try { e.squash(0.75 + 0.1 * (1 - amt), 160); if (amt >= 1 && Math.random() < 0.15) e.state('cheer'); } catch (err) { /* ignore */ }
+}
+
+const C = Oomba.color, cssVars = { ink: C('ink'), cream: C('cream'), stone: C('stone', 'light'), hot: C('spark') };
+for (const r of ['coral', 'grape', 'peach', 'mint', 'sky', 'spark']) { cssVars[r] = C(r); cssVars[r + 'D'] = C(r, 'shade'); cssVars[r + 'L'] = C(r, 'light'); cssVars[r + 'T'] = C(r, 'tint'); }
+for (const k in cssVars) document.documentElement.style.setProperty('--ll-' + k, cssVars[k]);
+Oomba.ui.root().appendChild(document.getElementById('game'));
+Oomba.ui.root().appendChild(document.getElementById('overs'));
+document.querySelectorAll('[data-icon]').forEach(x => { x.insertAdjacentHTML('afterbegin', ICON(x.dataset.icon)); });
+document.querySelectorAll('[data-art]').forEach(x => { x.appendChild(artEl(x.dataset.art, 44).firstChild || document.createTextNode('')); x.classList.add('art'); });
 /** One spring per track: a hit kicks it, then it settles. Faces of that track (tab + concert) share it. */
 const Bops = {
   s: {}, els: { drums: [], bass: [], melody: [], fx: [] },
@@ -2461,7 +2619,7 @@ const Bops = {
       const s = this.s[tr]; const ay = -420 * s.y - 18 * s.vy; s.vy += ay * dt; s.y += s.vy * dt;
       if (Math.abs(s.y) < 0.05 && Math.abs(s.vy) < 0.5) { s.y = 0; s.vy = 0; }
       const sq = REDUCED ? 0 : Math.max(-0.12, Math.min(0.12, s.vy * 0.0009));
-      const tf = s.y === 0 ? '' : 'translateY(' + s.y.toFixed(1) + 'px) scale(' + (1 - sq).toFixed(3) + ',' + (1 + sq).toFixed(3) + ')';
+      const tf = s.y === 0 ? '' : 'translateY(' + Math.max(-9, Math.min(4, s.y)).toFixed(1) + 'px) scale(' + (1 - sq).toFixed(3) + ',' + (1 + sq).toFixed(3) + ')';
       if (tf !== s.last) { s.last = tf; const list = this.els[tr]; for (let i = 0; i < list.length; i++) list[i].style.transform = tf; }
     }
   }
@@ -2477,13 +2635,17 @@ const S = {
   loadedSave: -1, fast: false, concert: false, jam: false, playStep: -1, playSlot: -1, playPart: -1, rnd: makeRng((Date.now() ^ 0x5eed) >>> 0),
   data: null, dirty: false, mixDirty: true, coach: '', jamHits: 0, nameIds: [0, 0, 0], replaceMode: false, settingsRecorded: false
 };
-const ROW_COLORS = { drums: ['#ff4f7b', '#ff9233', '#ffc61a', '#2ec5f0'], fx: ['#2fc76a', '#14b8a6', '#8bcf2a', '#3f9bff'] };
+// kit colours: each drum and FX row its own role (the rows also have pictures and names, so colour is never the only clue)
+const ROW_COLORS = { drums: [C('coral'), C('peach'), C('spark'), C('sky')], fx: [C('mint'), C('sky'), C('grape'), C('peach')] };
 const DRUM_ICONS = ['🥁', '🪘', '👏', '🎩'];
 const FX_ROWS = { animals: ['meow', 'croak', 'quack', 'tweet'], robots: ['bleep', 'zap', 'wobble', 'blip'], toys: ['boing', 'cowbell', 'pop', 'slide'] };
-const FX_ICONS = { meow: '🐱', croak: '🐸', quack: '🦆', tweet: '🐦', bleep: '🤖', zap: '⚡', wobble: '🛸', blip: '📟', boing: '🪀', cowbell: '🔔', pop: '🫧', slide: '🌀' };
-const KIT_ICONS = { acoustic: '🥁', electro: '🤖', toy: '🧸', bouncy: '🏀', deep: '🌊', buzzy: '🐝', piano: '🎹', marimba: '🪵', synth: '🎛️', flute: '🌬️', animals: '🐱', robots: '🤖', toys: '🪀' };
-const SLOT_COLORS = ['#ff7a3d', '#9a6bff', '#2fc76a', '#2ec5f0'];
-const pitchColor = (midi, light) => 'hsl(' + ((((midi % 12) + 12) % 12) * 30) + ',' + (light ? '92%,58%' : '70%,52%') + ')';
+// FX rows and sound sets: kit art where the kit has a picture (ART keys), the old emoji where it has none
+const FX_ICONS = { meow: 'meow', croak: 'croak', quack: 'quack', tweet: 'tweet', bleep: 'bleep', zap: 'zap', wobble: 'wobble', blip: 'blip_fx', boing: 'boing', cowbell: '🔔', pop: '🫧', slide: '🌀' };
+const KIT_ICONS = { acoustic: '🥁', electro: 'electro', toy: 'toy', bouncy: 'bouncy', deep: 'deep', buzzy: 'buzzy', piano: '🎹', marimba: 'marimba', synth: 'synth', flute: '🌬️', animals: 'animals', robots: 'robots', toys: 'toys' };
+const SLOT_COLORS = [C('peach'), C('grape'), C('mint'), C('sky')];
+// a colour per pitch class from the kit's hues (the note name is always written on the square's row too)
+const PITCH_HUES = ['coral', 'peach', 'spark', 'mint', 'sky', 'grape'];
+const pitchColor = (midi, light) => { const pc = ((midi % 12) + 12) % 12; void light; return C(PITCH_HUES[Math.round(pc / 2) % 6]); };
 const song = () => S.song;
 const pat = () => S.song.pats[S.song.cur];
 /** Rows of the chosen track, top to bottom: { row (model row), label, em (emoji label), color, name }. */
@@ -2522,36 +2684,72 @@ function earn(id) {
   if (S.data.stickers.indexOf(id) >= 0) return false;
   S.data.stickers.push(id); persist(true);
   const b = BONUS_STICKERS.find(x => x.id === id);
-  if (b) { toast(b.sticker + ' ' + t('newSticker', { name: t('b_' + id) })); BRB.sfx.play('coin'); }
+  if (b) { toast(t('newSticker', { name: t('b_' + id) })); BRB.sfx.play('coin'); }
   return true;
 }
 
 /* =====================================================================================
    UI HELPERS
    ===================================================================================== */
-function toast(msg) {
-  const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg; if (RTL) el.dir = 'rtl';
-  document.body.appendChild(el); setTimeout(() => el.remove(), REDUCED ? 1800 : 2300);
+function toast(msg) { Oomba.ui.toast(msg, { ms: REDUCED ? 1800 : 2300 }); placeToast(); }
+/** Moves the kit's toast into the studio's free space: just above the visualizer / bottom bar in portrait, the
+ *  bottom of the right-hand column (tempo and song) on short landscape screens; overlays and the title keep the kit's place. */
+function placeToast() {
+  const tEl = Oomba.ui.root().querySelector('.ok-toast'); if (!tEl) return;
+  const st = tEl.style; st.top = ''; st.maxWidth = ''; st.left = ''; st.borderRadius = ''; st.whiteSpace = ''; st.width = ''; st.padding = ''; st.fontSize = ''; st.lineHeight = '';
+  if (S.concert || titleOpen || screenStack.length || $('app').classList.contains('offstage')) return;
+  const h = tEl.offsetHeight || 46;
+  if (S.side) {
+    const col = $('tabs').hidden ? $('banner') : $('tabs'), r = col.getBoundingClientRect(), tr = $('transport').getBoundingClientRect();
+    st.left = (r.left + r.width / 2) + 'px'; st.maxWidth = Math.max(140, r.width) + 'px'; st.width = 'max-content'; st.borderRadius = '16px'; st.whiteSpace = 'normal'; st.padding = '6px 10px'; st.fontSize = '.85rem'; st.lineHeight = '1.2';
+    const h2 = tEl.offsetHeight || h; st.top = Math.max(8, tr.bottom - h2) + 'px';   // over the tempo and song buttons, the least-used row
+  } else {
+    const v = $('viz'), anchor = !v.hidden ? v : $('transport'), r = anchor.getBoundingClientRect();
+    st.maxWidth = 'calc(100vw - 24px)'; st.top = Math.max(8, r.top - 10 - h) + 'px';
+  }
 }
 const SCREENS = ['titleScreen', 'templatesScreen', 'savesScreen', 'nameScreen', 'challengesScreen', 'stickersScreen', 'doneScreen', 'settingsScreen', 'moreScreen', 'kitScreen', 'songScreen', 'confirmScreen'];
 let screenStack = [];
 function openScreen(id) {
   if (id !== 'titleScreen') { const app = $('app'); app.classList.remove('offstage'); }
-  $(id).hidden = false; screenStack = screenStack.filter(x => x !== id); screenStack.push(id);
-  S.screen = id.replace('Screen', '');
+  if (id === 'titleScreen') { $('app').classList.add('offstage'); openTitle(); } else $(id).hidden = false; screenStack = screenStack.filter(x => x !== id); screenStack.push(id);
+  S.screen = id.replace('Screen', ''); placeToast();   // a toast already showing moves back to the kit's place above the panel
   const first = $(id).querySelector('.close, .big-btn, button'); if (first && matchMedia('(hover:hover)').matches) { try { first.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
 }
 function closeScreen(id) {
   if (!id) id = screenStack[screenStack.length - 1]; if (!id) return;
-  $(id).hidden = true; screenStack = screenStack.filter(x => x !== id);
+  $(id).hidden = true; if (id === 'titleScreen') closeTitle(); screenStack = screenStack.filter(x => x !== id);
   S.screen = screenStack.length ? screenStack[screenStack.length - 1].replace('Screen', '') : 'studio';
   if (id === 'settingsScreen') S.settingsRecorded = false;
 }
 function closeAll() { SCREENS.forEach(id => { if (id !== 'titleScreen') $(id).hidden = true; }); screenStack = screenStack.filter(x => x === 'titleScreen'); S.screen = screenStack.length ? 'title' : 'studio'; }
 function goStudio() {
-  closeAll(); $('titleScreen').hidden = true; screenStack = []; S.screen = 'studio'; $('app').classList.remove('offstage');
+  closeAll(); closeTitle(); screenStack = []; S.screen = 'studio'; $('app').classList.remove('offstage');
   layout(); renderAll();
 }
+let titleOpen = false, titleSkip = false;
+/** The kit's title screen: the Loop Lab lockup over the world, the player's avatar in the corner and the band on stage;
+ *  its Play button is "Make music", and the other ways in (starter beats, challenges, my songs, stickers) sit on a card under it. */
+function openTitle() {
+  if (titleOpen) return; titleOpen = true; S.screen = 'title';
+  Oomba.ui.title({ title: 'Loop Lab', subtitle: t('tagline'), titleHue: 'sky', hero: false, play: () => { parkMenu(); titleOpen = false; if (!titleSkip) makeMusic(); } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) { play.id = 'goStudio'; play.addEventListener('click', () => AudioOut.resume(), true); const last = play.lastChild; if (last && last.nodeType === 3) last.textContent = t('makeMusic'); else play.append(t('makeMusic')); play.setAttribute('aria-label', t('makeMusic')); }
+  parkMenu(); const card = TITLE_MENU, sub = block && block.querySelector('.ok-p');
+  if (block) { if (sub) card.prepend(sub); if (play) card.insertBefore(play.closest('.ok-cta') || play, card.querySelector('.menu')); block.appendChild(card); }
+  const corner = scr.querySelector('.ok-corner'); if (corner) { const m = btn('icon-btn mute', '', toggleMute); m.dataset.ta = 'soundOff'; corner.prepend(m); syncMute(); }
+  refreshTitle(); stageNight(false);
+}
+/** Puts the title menu back where it lives, before the kit removes its title screen. */
+let TITLE_MENU = null, TITLE_HOME = null;   // held here: the card may be detached with the kit's title screen when parked
+function parkMenu() {
+  const c = TITLE_MENU || (TITLE_MENU = $('titleMenu')), home = TITLE_HOME || (TITLE_HOME = $('titleMenuHome')); if (!c) return;
+  c.querySelectorAll('.ok-cta, .ok-p, #goStudio').forEach(x => x.remove());   // the kit's own pieces go with its title screen
+  if (c.parentElement !== home) home.appendChild(c);
+}
+/** Leaves the kit's title screen without its Play action (a menu button, a test hook). */
+function closeTitle() { if (!titleOpen) return; const b = TITLE_MENU && TITLE_MENU.querySelector('#goStudio'); if (b) { titleSkip = true; b.click(); titleSkip = false; } parkMenu(); titleOpen = false; }
 function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 function btn(cls, html, onClick) { const b = el('button', cls, html); b.type = 'button'; b.addEventListener('click', onClick); return b; }
 
@@ -2583,7 +2781,8 @@ function layout() {
   document.documentElement.style.setProperty('--gap', gap + 'px'); document.documentElement.style.setProperty('--lab', lab + 'px');
   pager.hidden = true;
   const st = $('stage').getBoundingClientRect();
-  const boardPadW = side ? 3 + 3 + lab + 3 + 1 : 4 + 4 + lab + 4 + 2, boardPadH = side ? 3 + 3 + 16 + 2 : 4 + 6 + 16 + 2;
+  // padding + the 3 px Ink outline on both sides
+  const boardPadW = (side ? 3 + 3 + lab + 3 + 1 : 4 + 4 + lab + 4 + 2) + 6, boardPadH = (side ? 3 + 3 + 16 + 2 : 4 + 6 + 16 + 2) + 6 + 5;
   const availW = st.width - boardPadW;
   let availH = st.height - boardPadH;
   const sizeFor = (ps, h) => Math.floor(Math.min(availW / ps - gap, h / rows - gap, CONFIG.maxCell));
@@ -2594,6 +2793,8 @@ function layout() {
   let size = sizeFor(ps, hForRows);
   // landscape: squares may be wider than tall to use the width (both stay >= 32)
   let cellW = size, cellH = size;
+  // phones in portrait: taller squares fill the space between the tools and the bottom bar (easier to tap, no empty gap)
+  if (!side && H > W && W < 700) cellH = Math.max(size, Math.floor(Math.min(hForRows / rows - gap, size * 1.7, 68)));
   if (side) { cellH = Math.max(32, Math.floor(Math.min(hForRows / rows - gap, CONFIG.maxCell))); cellW = Math.max(32, Math.floor(Math.min(availW / ps - gap, CONFIG.maxCell, cellH * 1.25))); }
   S.scrolly = cellH < 32; if (cellH < 32) cellH = 32; if (cellW < 32) cellW = 32;
   S.pageSize = ps; S.cell = cellW; S.cellH = cellH;
@@ -2603,6 +2804,7 @@ function layout() {
   pager.hidden = ps >= len;
   sizeViz();
   buildGrid();
+  placeToast();
 }
 
 /* =====================================================================================
@@ -2613,25 +2815,26 @@ function buildTabs() {
   const tabs = $('tabs'); tabs.innerHTML = ''; Bops.els = { drums: [], bass: [], melody: [], fx: [] };
   TRACKS.forEach(tr => {
     const b = el('button', 'tab'); b.type = 'button'; b.dataset.track = tr; b.setAttribute('role', 'tab');
-    b.innerHTML = '<span class="face">' + FACES[tr] + '</span><span class="tname"></span><span class="badge"></span>';
+    b.appendChild(faceEl(tr, 56)); b.insertAdjacentHTML('beforeend', '<span class="tname"></span><span class="badge"></span>');
     b.addEventListener('click', () => { AudioOut.resume(); if (S.tab === tr) openKit(); else selectTab(tr); });
     tabs.appendChild(b); Bops.els[tr].push(b.querySelector('.face'));
   });
-  const cc = $('cchars'); if (cc) { cc.innerHTML = ''; TRACKS.forEach(tr => { const d = el('div', 'cchar'); d.dataset.track = tr; d.innerHTML = '<span class="face">' + FACES[tr] + '</span><b>' + t('ch_' + tr) + '</b>'; cc.appendChild(d); Bops.els[tr].push(d.querySelector('.face')); }); }
+  // the concert's band stands on the kit stage (BAND), not in the DOM
 }
 function renderTabs() {
   document.querySelectorAll('.tab').forEach(b => {
     const tr = b.dataset.track, sel = tr === S.tab, aud = audibleTracks(S.song)[tr];
     b.setAttribute('aria-selected', String(sel)); b.querySelector('.tname').textContent = t('tr_' + tr);
     b.classList.toggle('muted', !aud);
-    b.querySelector('.badge').textContent = S.song.solo[tr] ? '🎧' : S.song.mute[tr] ? '🔇' : (sel && $('tools').hidden && S.challenge < 0 ? '⚙️' : '');
+    const badge = S.song.solo[tr] ? 'speak' : S.song.mute[tr] ? 'mute' : (sel && $('tools').hidden && S.challenge < 0 ? 'settings' : '');
+    const bd = b.querySelector('.badge'); if (bd.dataset.i !== badge) { bd.dataset.i = badge; bd.innerHTML = badge ? ICON(badge) : ''; }
     b.setAttribute('aria-label', t('tr_' + tr) + ' · ' + t('ch_' + tr));
   });
 }
 function renderTools() {
   const tr = S.tab, kit = S.song.kits[tr];
   $('tools').dataset.track = tr; $('app').dataset.track = tr;
-  $('kitBtn').querySelector('.ico').textContent = KIT_ICONS[kit] || '🎵';
+  const ico = $('kitBtn').querySelector('.ico'); if (ico.dataset.k !== kit) { ico.dataset.k = kit; ico.innerHTML = ''; ico.appendChild(artEl(KIT_ICONS[kit] || 'dice', 30)); }
   $('kitBtn').querySelector('.lbl').textContent = t('kit_' + kit);
   $('kitBtn').setAttribute('aria-label', t('soundsOf', { track: t('tr_' + tr) }) + ': ' + t('kit_' + kit));
   $('vol').value = Math.round(S.song.vol[tr] * 100);
@@ -2649,7 +2852,7 @@ function buildGrid() {
   const labels = $('labels'); labels.innerHTML = '';
   rows.forEach(r => {
     const b = el('button', 'lab'); b.type = 'button'; b.style.setProperty('--lc', r.color); b.tabIndex = -1;
-    b.innerHTML = r.em ? '<span class="em">' + r.em + '</span>' : r.label; b.title = r.name; b.setAttribute('aria-label', r.name);
+    if (r.em) b.appendChild(artEl(r.em, 40)); else b.textContent = r.label; b.title = r.name; b.setAttribute('aria-label', r.name);
     b.addEventListener('click', () => previewRow(r.row)); labels.appendChild(b);
   });
   // cells (reuse elements)
@@ -2693,11 +2896,11 @@ function renderSlots() {
     b.classList.toggle('playing', Player.playing && i === S.playSlot && i !== S.song.cur);
   });
   $('songBtn').setAttribute('aria-pressed', String(!!S.song.songMode));
-  $('songBtn').textContent = S.song.songMode ? '🎼' : '🔗';
+  const sm = S.song.songMode ? 'next' : 'music'; if ($('songBtn').dataset.i !== sm) { $('songBtn').dataset.i = sm; $('songBtn').innerHTML = ICON(sm); }
 }
 function renderTransport() {
   const on = Player.playing && !S.override;
-  $('playBtn').classList.toggle('on', on); $('playIco').textContent = on ? '■' : '▶';
+  $('playBtn').classList.toggle('on', on); const pi = $('playIco'); if (pi.dataset.on !== String(on)) { pi.dataset.on = String(on); pi.innerHTML = on ? '<span class="sq"></span>' : ICON('play'); }
   $('playLbl').textContent = on ? t('stop') : t('play'); $('playBtn').setAttribute('aria-label', on ? t('stop') : t('play'));
   $('tempoVal').textContent = fmtNum(S.song.bpm);
   $('undoBtn').disabled = !S.hist.undo.length; $('redoBtn').disabled = !S.hist.redo.length;
@@ -2732,6 +2935,7 @@ function onVisual(v) {
     if (showing && ev.track === S.tab && !S.override) hitCell(ev.row, v.pos.step - start);
   }
   if (kick) Bops.kick('drums', kick);
+  if (S.concert || S.screen === 'title') { if (kick) bandBop('drums', kick); for (const ev of v.notes) if (ev.track !== 'drums') bandBop(ev.track, ev.track === 'fx' ? 1 : 0.55); if (v.pos.step % 4 === 0) bandBop('me', 0.4); }
   if (S.concert) Concert.onVisual(v);
 }
 const HIT_KF = [{ transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(255,255,255,0)' }, { transform: 'scale(1.16)', boxShadow: '0 0 14px 4px var(--cc)' }, { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(255,255,255,0)' }];
@@ -2843,7 +3047,8 @@ function doSurprise(track) {
   AudioOut.resume();
   edit(() => surprise(S.song, S.song.cur, S.rnd, track));
   S.data.surprises = (S.data.surprises || 0) + 1; if (S.data.surprises >= 3) earn('surprise');
-  BRB.sfx.play('powerup'); toast('🎁 ' + t('surprised'));
+  BRB.sfx.play('powerup'); toast(t('surprised'));
+  if (!S.fast && !REDUCED) { try { Oomba.juice.pop($('surpriseBtn')); WORLD.burst('sparkle', BAND.me.x, BAND.me.y - 60, { n: 14 }); } catch (e) { /* ignore */ } }
   if (!Player.playing) startPlay();
   Bops.kick('drums', 1); Bops.kick('bass', 1); Bops.kick('melody', 1); Bops.kick('fx', 1);
 }
@@ -2873,7 +3078,7 @@ function startChallenge(n) {
 function exitChallenge() { if (S.challenge < 0) return; S.challenge = -1; S.peekUntil = 0; layout(); }
 function renderBanner() {
   const n = S.challenge; if (n < 0) return; const c = CHALLENGES[n];
-  $('goalStk').innerHTML = ''; const f = el('span', '', FACES[c.tab]); f.style.cssText = 'display:block;width:40px;height:36px'; $('goalStk').appendChild(f);
+  $('goalStk').innerHTML = ''; $('goalStk').appendChild(faceEl(c.tab, 56));
   $('goalText').textContent = t('cg_' + c.id);
   $('listenBtn').hidden = !c.target; $('peekBtn').hidden = !c.target;
 }
@@ -2898,7 +3103,7 @@ function checkChallenge() {
   if (r.ok) { completeChallenge(S.challenge); return r; }
   const vars = Object.assign({}, r.vars);
   if (vars.row) vars.row = vars.row === 'bass' ? t('r_bass') : (DRUM_ICONS[DRUM_ROW_KEYS.indexOf(vars.row)] || '') + ' ' + t('r_' + vars.row);
-  box.textContent = '💡 ' + t(r.hint, vars); box.className = 'hint'; box.hidden = false; if (RTL) box.dir = 'rtl';
+  box.innerHTML = ICON('hint') + '<span>' + escHtml(t(r.hint, vars)).replace(/🔗/g, '<span class="ic">' + ICON('music') + '</span>') + '</span>'; box.className = 'hint'; box.hidden = false; if (RTL) box.dir = 'rtl';
   const b = $('banner'); b.classList.remove('wobble'); void b.offsetWidth; if (!REDUCED) b.classList.add('wobble');
   BRB.sfx.play('hit');
   layout();
@@ -2909,13 +3114,15 @@ function completeChallenge(n) {
   earn('c_' + c.id);
   stopPlay();
   try { BRB.gameOver({ won: true }); } catch (e) { /* ignore */ }
-  BRB.sfx.play('win'); if (!S.fast) BRB.fx.confetti();
-  $('doneSticker').textContent = c.sticker;
+  BRB.sfx.play('win'); if (!S.fast && !REDUCED) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } }
+  $('doneSticker').innerHTML = ''; $('doneSticker').appendChild(artEl(STICKER_ART(c.id), 80));
+  bandBop(c.tab, 1); try { if (BAND.me) BAND.me.state('cheer'); } catch (e) { /* ignore */ }
   $('doneText').textContent = t('doneText', { name: t('c_' + c.id) });
   const next = nextChallenge(n);
   $('doneNext').hidden = next < 0;
   if (next < 0) $('doneText').textContent += ' ' + t('allDone');
   openScreen('doneScreen');
+  if (!S.fast && !REDUCED) { try { Oomba.juice.pop($('doneSticker')); } catch (e) { /* ignore */ } }
 }
 function nextChallenge(n) {
   for (let k = 1; k <= CHALLENGES.length; k++) { const m = (n + k) % CHALLENGES.length; if (S.data.stickers.indexOf('c_' + CHALLENGES[m].id) < 0) return m; }
@@ -2926,9 +3133,10 @@ function nextChallenge(n) {
 function openTemplates() {
   const box = $('tplCards'); box.innerHTML = '';
   TEMPLATES.forEach(T => {
-    const b = btn('card', '<span class="em">' + T.icon + '</span><b></b><canvas width="150" height="36"></canvas><small></small>', () => loadTemplate(T.id));
+    const b = btn('card', '<span class="em"></span><b></b><canvas class="thumb" width="150" height="36"></canvas><small></small>', () => loadTemplate(T.id));
+    b.querySelector('.em').appendChild(artEl(TPL_ART[T.id] || T.icon, 48));
     b.querySelector('b').textContent = t('tp_' + T.id); b.querySelector('small').textContent = t('tplInfo', { bpm: T.bpm });
-    box.appendChild(b); drawThumb(b.querySelector('canvas'), songFromTemplate(T.id));
+    box.appendChild(b); drawThumb(b.querySelector('canvas.thumb'), songFromTemplate(T.id));
   });
   openScreen('templatesScreen');
 }
@@ -2936,12 +3144,12 @@ function openTemplates() {
 function drawThumb(cv, sg) {
   const d = Math.min(2, window.devicePixelRatio || 1), w = cv.clientWidth || cv.width, h = cv.clientHeight || cv.height;
   cv.width = Math.round(w * d); cv.height = Math.round(h * d);
-  const c = cv.getContext('2d'); c.scale(d, d); c.fillStyle = '#20304a'; c.fillRect(0, 0, w, h);
+  const c = cv.getContext('2d'); c.scale(d, d); c.fillStyle = C('ink'); c.fillRect(0, 0, w, h);
   const p = sg.pats[0], len = sg.len, cw = w / len;
   for (let s = 0; s < len; s++) {
     for (let r = 0; r < 4; r++) if (p.drums[r][s]) { c.fillStyle = ROW_COLORS.drums[r]; c.fillRect(s * cw + 1, h - 4 - r * 4, cw - 2, 3); }
     if (p.melody[s] >= 0) { c.fillStyle = pitchColor(degreeToMidi('melody', p.melody[s], sg.scale, sg.key), true); c.fillRect(s * cw + 1, h - 20 - p.melody[s] * 1.4, cw - 2, 3); }
-    if (p.bass[s] >= 0) { c.fillStyle = '#b48cff'; c.fillRect(s * cw + 1, h - 18, cw - 2, 2); }
+    if (p.bass[s] >= 0) { c.fillStyle = C('grape', 'light'); c.fillRect(s * cw + 1, h - 18, cw - 2, 2); }
   }
 }
 function openSaves(replaceMode) {
@@ -2953,10 +3161,10 @@ function openSaves(replaceMode) {
   saves.forEach((sv, i) => {
     const row = el('div', 'save-row'); const cv = el('canvas'); cv.width = 64; cv.height = 34; row.appendChild(cv);
     const nm = el('div', 'nm'); nm.textContent = nameText(sv.n); row.appendChild(nm);
-    if (S.replaceMode) row.appendChild(btn('pill-btn hot', '♻️ <span class="lbl">' + t('replace') + '</span>', () => doSave(i)));
+    if (S.replaceMode) row.appendChild(btn('pill-btn hot', ICON('restart') + '<span class="lbl">' + escHtml(t('replace')) + '</span>', () => doSave(i)));
     else {
-      row.appendChild(btn('pill-btn hot', '▶ <span class="lbl">' + t('load') + '</span>', () => loadSave(i)));
-      const d = btn('pill-btn', '🗑️', () => confirmDelete(i)); d.setAttribute('aria-label', t('del') + ': ' + nameText(sv.n)); row.appendChild(d);
+      row.appendChild(btn('pill-btn hot', ICON('play') + '<span class="lbl">' + escHtml(t('load')) + '</span>', () => loadSave(i)));
+      const d = btn('pill-btn', ICON('cross'), () => confirmDelete(i)); d.setAttribute('aria-label', t('del') + ': ' + nameText(sv.n)); row.appendChild(d);
     }
     if (RTL) row.dir = 'rtl';
     list.appendChild(row); drawThumb(cv, decodeSong(sv.s));
@@ -2972,9 +3180,9 @@ function openNamePicker() {
   // a loaded song can be updated or saved as a new one
   const btns = $('nameSave').parentElement; btns.querySelectorAll('.extra').forEach(x => x.remove());
   if (loaded) {
-    $('nameSave').querySelector('span').textContent = t('saveChanges');
-    const b = btn('big-btn alt extra', '➕ <span>' + t('saveAsNew') + '</span>', () => doSave('new')); btns.appendChild(b);
-  } else $('nameSave').querySelector('span').textContent = t('save');
+    $('nameSave').querySelector('span[data-t]').textContent = t('saveChanges');
+    const b = btn('big-btn alt extra', ICON('plus') + '<span>' + escHtml(t('saveAsNew')) + '</span>', () => doSave('new')); btns.appendChild(b);
+  } else $('nameSave').querySelector('span[data-t]').textContent = t('save');
   openScreen('nameScreen');
 }
 function renderPicker() {
@@ -2982,8 +3190,8 @@ function renderPicker() {
   const lists = [t('nameAdj'), t('nameAnimal'), t('nameThing')];
   [0, 1, 2].forEach(k => {
     const w = el('div', 'wheel'); w.dir = 'ltr';
-    const prev = btn('icon-btn', '◀', () => { S.nameIds[k] = (S.nameIds[k] + lists[k].length - 1) % lists[k].length; $('typedName').value = ''; renderPicker(); BRB.sfx.play('click'); });
-    const next = btn('icon-btn', '▶', () => { S.nameIds[k] = (S.nameIds[k] + 1) % lists[k].length; $('typedName').value = ''; renderPicker(); BRB.sfx.play('click'); });
+    const prev = btn('icon-btn', ICON('left'), () => { S.nameIds[k] = (S.nameIds[k] + lists[k].length - 1) % lists[k].length; $('typedName').value = ''; renderPicker(); BRB.sfx.play('click'); });
+    const next = btn('icon-btn', ICON('right'), () => { S.nameIds[k] = (S.nameIds[k] + 1) % lists[k].length; $('typedName').value = ''; renderPicker(); BRB.sfx.play('click'); });
     prev.setAttribute('aria-label', '◀ ' + lists[k][S.nameIds[k]]); next.setAttribute('aria-label', lists[k][S.nameIds[k]] + ' ▶');
     const word = el('div', 'w'); word.textContent = lists[k][S.nameIds[k]]; if (RTL) word.dir = 'rtl';
     w.appendChild(prev); w.appendChild(word); w.appendChild(next); box.appendChild(w);
@@ -3012,14 +3220,14 @@ function doSave(target) {
   else { S.pendingName = n; closeScreen('nameScreen'); openSaves(true); return false; }
   S.pendingName = null; S.loadedSave = idx; persist(true);
   closeAll(); if (S.screen === 'title') goStudio();
-  toast('💾 ' + t('saved') + ' ' + nameText(n)); BRB.sfx.play('coin'); earn('saver');
+  toast(t('saved') + ' ' + nameText(n)); BRB.sfx.play('coin'); earn('saver');
   return true;
 }
 function loadSave(i) {
   const sv = S.data.saves[i]; if (!sv) return;
   exitChallenge(); stopPlay();
   setSong(decodeSong(sv.s)); S.loadedSave = i; S.page = 0;
-  goStudio(); toast('🎵 ' + t('loaded', { name: nameText(sv.n) }));
+  goStudio(); toast(t('loaded', { name: nameText(sv.n) }));
 }
 let confirmFn = null;
 function confirmDelete(i) {
@@ -3037,8 +3245,10 @@ function openChallenges() {
   let done = 0;
   CHALLENGES.forEach((c, n) => {
     const ok = S.data.stickers.indexOf('c_' + c.id) >= 0; if (ok) done++;
-    const b = btn('card' + (ok ? ' done' : ''), '<span class="em">' + c.sticker + '</span><b></b><small></small>', () => startChallenge(n));
-    b.querySelector('b').textContent = fmtNum(n + 1) + '. ' + t('c_' + c.id); b.querySelector('small').textContent = ok ? '✅ ' + t('chDone') : t('cg_' + c.id);
+    const b = btn('card' + (ok ? ' done' : ''), '<span class="em"></span><b></b><small></small>', () => startChallenge(n));
+    b.querySelector('.em').appendChild(artEl(STICKER_ART(c.id), 48));
+    b.querySelector('b').textContent = fmtNum(n + 1) + '. ' + t('c_' + c.id); const sm = b.querySelector('small');
+    if (ok) { sm.innerHTML = ICON('check'); sm.append(t('chDone')); } else sm.textContent = t('cg_' + c.id);
     box.appendChild(b);
   });
   $('chProgress').textContent = t('chProgress', { n: done, total: CHALLENGES.length });
@@ -3050,7 +3260,7 @@ function openStickers() {
     .concat(BONUS_STICKERS.map(b => ({ id: 'b_' + b.id, em: b.sticker, name: t('b_' + b.id), how: t('bh_' + b.id) })));
   all.forEach(s => {
     const got = S.data.stickers.indexOf(s.id) >= 0 || S.data.stickers.indexOf(s.id.slice(2)) >= 0; if (got) have++;
-    const d = el('div', 'sticker' + (got ? '' : ' locked'), '<span class="em">' + s.em + '</span><small></small>');
+    const d = el('div', 'sticker' + (got ? '' : ' locked'), '<span class="em"></span><small></small>'); d.querySelector('.em').appendChild(artEl(STICKER_ART(s.id), 46));
     d.querySelector('small').textContent = got ? s.name : s.how; d.title = s.name; box.appendChild(d);
   });
   $('stProgress').textContent = t('stProgress', { n: have, total: all.length });
@@ -3076,8 +3286,8 @@ function openMore() {
   $('mPatTitle').textContent = t('patternTools', { slot: 'ABCD'[S.song.cur], track: t('tr_' + S.tab) });
   const cc = $('copyChips'); cc.innerHTML = '';
   'ABCD'.split('').forEach((L, i) => {
-    const b = btn('chip', L, () => { edit(() => copyPattern(S.song, S.song.cur, i)); toast('📋 ' + t('copied', { slot: L })); closeScreen('moreScreen'); });
-    b.disabled = i === S.song.cur; b.style.color = SLOT_COLORS[i]; b.style.fontSize = '1.2rem'; b.style.fontWeight = '700'; cc.appendChild(b);
+    const b = btn('chip', L, () => { edit(() => copyPattern(S.song, S.song.cur, i)); toast(t('copied', { slot: L })); closeScreen('moreScreen'); });
+    b.disabled = i === S.song.cur; b.style.background = SLOT_COLORS[i]; b.style.color = C('ink'); b.style.fontSize = '1.2rem'; b.style.fontWeight = '800'; cc.appendChild(b);
   });
   openScreen('moreScreen');
 }
@@ -3085,16 +3295,17 @@ function openKit() {
   const tr = S.tab; $('kitTitle').textContent = t('soundsOf', { track: t('tr_' + tr) });
   const box = $('kitChips'); box.innerHTML = '';
   KIT_IDS[tr].forEach(k => {
-    const b = btn('chip', '<span style="font-size:1.5rem">' + KIT_ICONS[k] + '</span> ' + t('kit_' + k), () => {
+    const b = btn('chip', '<span class="krow"></span>', () => {
       S.hist.record(S.song); S.song.kits[tr] = k; persist(); renderTools(); if (tr === 'fx') buildGrid(); openKit(); demoKit(tr);
     });
+    const kr = b.querySelector('.krow'); kr.appendChild(artEl(KIT_ICONS[k], 34)); kr.append(t('kit_' + k));
     b.setAttribute('aria-pressed', String(S.song.kits[tr] === k)); box.appendChild(b);
   });
   // mute and solo live here too (the only place for them on small screens)
   const ms = el('div', 'grid2');
-  const m = btn('toggle', '🔇 ' + t('muteTrack'), () => { S.song.mute[tr] = !S.song.mute[tr]; S.mixDirty = true; persist(); renderTabs(); renderTools(); openKit(); });
+  const m = btn('toggle', ICON('mute') + escHtml(t('muteTrack')), () => { S.song.mute[tr] = !S.song.mute[tr]; S.mixDirty = true; persist(); renderTabs(); renderTools(); openKit(); });
   m.setAttribute('aria-pressed', String(!!S.song.mute[tr]));
-  const so = btn('toggle', '🎧 ' + t('soloTrack'), () => { S.song.solo[tr] = !S.song.solo[tr]; S.mixDirty = true; persist(); renderTabs(); renderTools(); openKit(); });
+  const so = btn('toggle', ICON('speak') + escHtml(t('soloTrack')), () => { S.song.solo[tr] = !S.song.solo[tr]; S.mixDirty = true; persist(); renderTabs(); renderTools(); openKit(); });
   so.setAttribute('aria-pressed', String(!!S.song.solo[tr]));
   ms.appendChild(m); ms.appendChild(so); box.appendChild(ms); ms.style.gridColumn = '1/-1';
   $('kitVol').value = Math.round(S.song.vol[tr] * 100); $('kitScreen').dataset.track = tr;
@@ -3112,12 +3323,12 @@ function renderChain() {
   if (!S.song.chain.length) box.appendChild(el('span', 'empty', t('chainEmpty')));
   S.song.chain.forEach((slot, k) => {
     const b = btn('part' + (Player.playing && S.song.songMode && S.playPart === k ? ' now' : ''), 'ABCD'[slot], () => { edit(() => { S.song.chain.splice(k, 1); }); renderChain(); BRB.sfx.play('click'); });
-    b.style.setProperty('--pc', SLOT_COLORS[slot]); b.setAttribute('aria-label', '✖ ' + 'ABCD'[slot]); box.appendChild(b);
+    b.style.setProperty('--pc', SLOT_COLORS[slot]); b.setAttribute('aria-label', t('del') + ' ' + 'ABCD'[slot]); box.appendChild(b);
   });
   const add = $('adders'); add.innerHTML = '';
   'ABCD'.split('').forEach((L, i) => {
     const b = btn('pill-btn', '+' + L, () => { if (S.song.chain.length >= CONFIG.maxChain) return; edit(() => { S.song.chain.push(i); }); renderChain(); BRB.sfx.play('click'); });
-    b.style.background = SLOT_COLORS[i]; b.disabled = S.song.chain.length >= CONFIG.maxChain; add.appendChild(b);
+    b.style.background = SLOT_COLORS[i]; b.style.color = C('ink'); b.disabled = S.song.chain.length >= CONFIG.maxChain; add.appendChild(b);
   });
   $('loopModeBtn').setAttribute('aria-pressed', String(!S.song.songMode));
   $('songModeBtn').setAttribute('aria-pressed', String(!!S.song.songMode));
@@ -3142,16 +3353,19 @@ function hideCoach(why) {
 /* =====================================================================================
    CONCERT ("Play my song"): the chain once, full screen, characters bopping and a visualizer.
    ===================================================================================== */
+const VIZ_COLORS = ['coral', 'peach', 'spark', 'mint', 'sky', 'grape'].map(r => C(r)), VIZ_INK = C('ink');
+// the starter beats' pictures (kit art; Video game keeps a kit icon)
+const TPL_ART = { hiphop: 'dog', pop: 'gem', rock: 'rock', lullaby: 'owl', chip: 'ufo', reggae: 'shell', march: 'banner', zoo: 'frog' };
 const Concert = {
   bars: new Float32Array(48), fft: null, cv: null, c: null, w: 0, h: 0, d: 1,
   open() {
     const sg = S.song; if (!sg.chain.length) sg.chain = [sg.cur];
-    if (sg.chain.every(i => patternEmpty(sg.pats[i]))) { toast('🤫 ' + t('emptySong')); return; }
+    if (sg.chain.every(i => patternEmpty(sg.pats[i]))) { toast(t('emptySong')); return; }
     closeAll(); stopPlay();
-    S.concert = true; $('concert').hidden = false; $('concertAgain').hidden = true; $('cend').hidden = true;
+    S.concert = true; $('concert').hidden = false; $('app').classList.add('offstage'); $('concertAgain').hidden = true; $('cend').hidden = true;
     const loaded = S.loadedSave >= 0 && S.data.saves[S.loadedSave];
     $('concertTitle').textContent = loaded ? nameText(loaded.n) : t('mySongChain');
-    this.cv = $('stageCv'); this.size(); this.parts(); this.go();
+    this.cv = $('stageCv'); this.size(); this.parts(); stageNight(true, 600); frameBand(); this.names(); placeToast(); this.go();
   },
   /** A short song plays again until the concert lasts about 16 seconds (at most 4 times through). */
   go() {
@@ -3159,11 +3373,24 @@ const Concert = {
     $('concertAgain').hidden = true; $('cend').hidden = true;
     Player.start({ songMode: true, once: true, repeats: Math.min(4, Math.max(1, Math.ceil(16 / secs))) }); this.parts();
   },
-  close() { S.concert = false; Player.stop(); $('concert').hidden = true; S.playStep = -1; renderAll(); placePlayhead(); },
+  close() { S.concert = false; Player.stop(); $('concert').hidden = true; $('app').classList.remove('offstage'); S.playStep = -1; stageNight(false, 400); frameBand(); for (const k in BAND) try { BAND[k].state('idle'); } catch (e) { /* ignore */ } renderAll(); placePlayhead(); },
   size() {
     const r = this.cv.getBoundingClientRect(); this.d = Math.min(2, window.devicePixelRatio || 1);
     this.w = Math.max(10, r.width); this.h = Math.max(10, r.height);
     this.cv.width = Math.round(this.w * this.d); this.cv.height = Math.round(this.h * this.d); this.c = this.cv.getContext('2d');
+  },
+  /** The band's names on the stage, under each player's feet (Clank, Bruno, Lulu, Blip). */
+  names() {
+    const box = $('cchars'); box.innerHTML = '';
+    TRACKS.forEach(tr => { const s = el('span', 'cname', escHtml(t('ch_' + tr))); s.dataset.track = tr; box.appendChild(s); });
+    this.placeNames();
+  },
+  placeNames() {
+    const f = WORLD.fit, cam = WORLD.camera; if (!f || !cam) return;
+    $('cchars').querySelectorAll('.cname').forEach(s => {
+      const e = BAND[s.dataset.track]; if (!e) return; const p = cam.toScreen({ x: e.x, y: e.y + 6 });
+      s.style.left = (f.offX + p.x * f.k).toFixed(1) + 'px'; s.style.top = (f.offY + p.y * f.k).toFixed(1) + 'px';
+    });
   },
   parts() {
     const box = $('cparts'); box.innerHTML = '';
@@ -3173,11 +3400,13 @@ const Concert = {
   end() {
     if (!S.concert) return;
     $('cend').hidden = false; $('concertAgain').hidden = false;
-    earn('concert'); BRB.sfx.play('win'); if (!S.fast) BRB.fx.confetti();
+    earn('concert'); BRB.sfx.play('win');
+    if (!S.fast && !REDUCED) { try { Oomba.juice.confetti(); WORLD.burst('confetti', 0, BAND.me.y - 200, { w: 700 }); for (const k in BAND) BAND[k].state('cheer'); } catch (e) { /* ignore */ } }
     S.playPart = -1; this.parts();
   },
   draw(dt) {
     if (!this.c) return;
+    this.placeNames();
     const c = this.c, w = this.w, h = this.h, n = this.bars.length; c.setTransform(this.d, 0, 0, this.d, 0, 0); c.clearRect(0, 0, w, h);
     const an = AudioOut.ok() ? AudioOut.graph.analyser : null;
     if (an) { if (!this.fft) this.fft = new Uint8Array(an.frequencyBinCount); an.getByteFrequencyData(this.fft); }
@@ -3185,10 +3414,11 @@ const Concert = {
     for (let i = 0; i < n; i++) {
       const raw = this.fft && Player.playing ? this.fft[Math.min(this.fft.length - 1, Math.floor(i * 1.6) + 1)] / 255 : 0;
       this.bars[i] += (raw - this.bars[i]) * Math.min(1, dt * 14);
-      const bh = Math.max(3, this.bars[i] * h * 0.92);
-      c.fillStyle = 'hsl(' + ((i * 360 / n + 300) % 360) + ',90%,62%)';
+      const bh = Math.max(6, Math.min(1, Math.pow(this.bars[i], 0.7) * 1.2) * (h - 4));
+      c.fillStyle = VIZ_COLORS[Math.floor(i * VIZ_COLORS.length / n)];
       const x = i * bw + bw * 0.15, y = h - bh;
       c.beginPath(); if (c.roundRect) c.roundRect(x, y, bw * 0.7, bh, Math.min(6, bw * 0.3)); else c.rect(x, y, bw * 0.7, bh); c.fill();
+      c.lineWidth = 2; c.strokeStyle = VIZ_INK; c.stroke();
     }
   }
 };
@@ -3230,18 +3460,19 @@ function drawViz(dt) {
   for (let i = 0; i < n; i++) {
     const raw = Viz.fft && Player.playing ? Viz.fft[Math.min(Viz.fft.length - 1, i * 2 + 1)] / 255 : 0;
     Viz.bars[i] += (raw - Viz.bars[i]) * Math.min(1, dt * 12);
-    const bh = Math.max(2, Viz.bars[i] * (h - 6));
-    c.fillStyle = 'hsl(' + ((i * 360 / n + 320) % 360) + ',90%,64%)';
+    const bh = Math.max(2, Math.min(1, Math.pow(Viz.bars[i], 0.7) * 1.15) * (h - 6));
+    c.fillStyle = VIZ_COLORS[Math.floor(i * VIZ_COLORS.length / n)];
     c.fillRect(i * bw + 2, (h - bh) / 2, bw - 4, bh);
   }
-  if (Player.playing && S.playStep >= 0) { const x = (S.playStep + 0.5) / S.song.len * w; c.fillStyle = 'rgba(255,255,255,.9)'; c.beginPath(); c.arc(x, h - 3, 2.5, 0, Math.PI * 2); c.fill(); }
+  if (Player.playing && S.playStep >= 0) { const x = (S.playStep + 0.5) / S.song.len * w; c.fillStyle = VIZ_INK; c.beginPath(); c.arc(x, h - 3, 2.5, 0, Math.PI * 2); c.fill(); }
 }
 
 /* =====================================================================================
    TITLE SCREEN faces: a gentle idle bob (rAF, never flashing).
    ===================================================================================== */
 let titleFaces = [];
-function buildTitle() {
+function buildTitle() { /* the kit's title screen shows the band on the stage (openTitle) */ }
+function buildTitleOld() {
   const box = $('titleChars'); box.innerHTML = ''; titleFaces = [];
   TRACKS.forEach(tr => { const f = el('span', 'face', FACES[tr]); box.appendChild(f); titleFaces.push(f); });
 }
@@ -3253,9 +3484,16 @@ function bobTitle(t) {
 /* =====================================================================================
    INPUT WIRING
    ===================================================================================== */
+/** "Make music" on the title: back to the studio with the last work (or the basic beat). */
+function makeMusic() {
+  AudioOut.resume(); exitChallenge();
+  if (!S.song || S.fromChallenge) { S.song = S.data.work ? decodeSong(S.data.work) : blankSong(); S.fromChallenge = false; }
+  goStudio(); if (!S.data.coached) showCoach('coachStart');
+}
+function toggleMute() { AudioOut.resume(); BRB.sfx.mute(); syncMute(); if (!BRB.sfx.muted) BRB.sfx.play('click'); }
 function syncMute() {
   const m = BRB.sfx.muted;
-  document.querySelectorAll('.mute').forEach(b => { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', m ? t('soundOn') : t('soundOff')); });
+  document.querySelectorAll('.mute').forEach(b => { b.innerHTML = ICON(m ? 'mute' : 'sound'); b.setAttribute('aria-label', m ? t('soundOn') : t('soundOff')); b.title = b.getAttribute('aria-label'); });
 }
 function wire() {
   const grid = $('grid');
@@ -3264,7 +3502,7 @@ function wire() {
   grid.addEventListener('contextmenu', e => e.preventDefault());
   grid.addEventListener('focus', () => { if (!drag) { S.showCursor = true; paintGrid(); } });
   grid.addEventListener('blur', () => { S.showCursor = false; paintGrid(); });
-  document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', () => { BRB.sfx.mute(); syncMute(); if (!BRB.sfx.muted) BRB.sfx.play('click'); }));
+  document.querySelectorAll('.mute').forEach(b => b.addEventListener('click', toggleMute));
   $('homeBtn').addEventListener('click', () => { stopPlay(); closeJam(); if (S.challenge >= 0) S.fromChallenge = true; exitChallenge(); openScreen('titleScreen'); refreshTitle(); });
   $('undoBtn').addEventListener('click', undo); $('redoBtn').addEventListener('click', redo);
   $('surpriseBtn').addEventListener('click', () => doSurprise());
@@ -3283,12 +3521,8 @@ function wire() {
   $('songBtn').addEventListener('click', openSong);
   $('listenBtn').addEventListener('click', listenTarget); $('peekBtn').addEventListener('click', peekTarget); $('checkBtn').addEventListener('click', checkChallenge);
   $('jamClose').addEventListener('click', closeJam);
-  // title
-  $('goStudio').addEventListener('click', () => {
-    AudioOut.resume(); exitChallenge();
-    if (!S.song || S.fromChallenge) { S.song = S.data.work ? decodeSong(S.data.work) : blankSong(); S.fromChallenge = false; }
-    goStudio(); if (!S.data.coached) showCoach('coachStart');
-  });
+  // title: "Make music" is the kit title's Play button (makeMusic)
+  $('kitSettings').addEventListener('click', () => { closeScreen('settingsScreen'); Oomba.ui.settings(); });
   $('goTemplates').addEventListener('click', () => { AudioOut.resume(); openTemplates(); });
   $('goChallenges').addEventListener('click', () => { AudioOut.resume(); openChallenges(); });
   $('goSaves').addEventListener('click', () => { AudioOut.resume(); openSaves(false); });
@@ -3327,7 +3561,7 @@ function wire() {
   document.querySelectorAll('.screen').forEach(sc => sc.addEventListener('pointerdown', e => { if (e.target === sc && sc.id !== 'titleScreen' && sc.id !== 'doneScreen') closeScreen(sc.id); }));
   addEventListener('pointerdown', () => AudioOut.resume(), { capture: true, passive: true });
   addEventListener('keydown', onKey);
-  addEventListener('resize', () => { layout(); if (S.concert) Concert.size(); });
+  addEventListener('resize', () => { layout(); if (S.concert) Concert.size(); setTimeout(frameBand, 0); });
   document.addEventListener('visibilitychange', () => { if (document.hidden && Player.playing) { if (S.concert) Concert.close(); stopPlay(); } });
   Player.onVisual = onVisual; Player.onPartEnd = () => Concert.end();
 }
@@ -3356,15 +3590,15 @@ function refreshTitle() { $('titleKeys').textContent = t('keysTitle'); }
 /* =====================================================================================
    MAIN LOOP
    ===================================================================================== */
-const GAPS = new Float32Array(600); let gapN = 0, lastNow = 0, lastPeek = false, lastMutedSeen = null;
+const GAPS = new Float32Array(600); let lastViewKey = '', gapN = 0, lastNow = 0, lastPeek = false, lastMutedSeen = null;
 function frame(now) {
   requestAnimationFrame(frame);
   const gap = lastNow ? now - lastNow : 16.7; lastNow = now; GAPS[gapN % GAPS.length] = gap; gapN++;
   const dt = Math.min(0.1, gap / 1000);
   if (!Player.manual) { Player.pump(); Player.drain(); }
   if (S.override && Player.playing && Player.sched.next >= S.overrideStop) { /* the target played twice */ setTimeout(() => { if (S.override) { endOverride(); } }, 300); S.overrideStop = 1e9; }
-  if (S.screen === 'title' && screenStack[0] === 'titleScreen') bobTitle(now / 1000);
   Bops.step(dt);
+  const vk = WORLD.view ? WORLD.view.vw + 'x' + WORLD.view.vh + (titleOpen ? 't' : '') : ''; if (vk !== lastViewKey) { lastViewKey = vk; frameBand(); }
   if (S.mixDirty || BRB.sfx.muted !== lastMutedSeen) { AudioOut.sync(S.song); S.mixDirty = false; lastMutedSeen = BRB.sfx.muted; }
   if (S.concert) Concert.draw(dt); else drawViz(dt);
   const peeking = S.peekUntil > now; if (peeking !== lastPeek) { lastPeek = peeking; paintGrid(); }
@@ -3375,9 +3609,10 @@ function frame(now) {
 function applyLanguage() {
   try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
   document.querySelectorAll('[data-t]').forEach(x => { x.textContent = t(x.dataset.t); });
+  $('kitSettingsLbl').textContent = Oomba.t('settings') + ' +';
   document.querySelectorAll('[data-ta]').forEach(x => { x.setAttribute('aria-label', t(x.dataset.ta)); x.title = t(x.dataset.ta); });
   // Right-to-left languages: panels, menus and hints read right to left; the grid, pager, pads and transport keep time flowing left to right.
-  if (RTL) document.querySelectorAll('.panel, .banner, .coach, .tools, .top, .tabs').forEach(x => { x.dir = 'rtl'; });
+  if (RTL) document.querySelectorAll('.panel, .banner, .coach, .tools, .top, .tabs, .ll-tcard').forEach(x => { x.dir = 'rtl'; });
 }
 
 /* ---------- start ---------- */
@@ -3390,6 +3625,7 @@ function boot() {
   $('moreKeys').textContent = t('keysStudio');
   gapPx = 3;
   layout(); renderAll();
+  frameBand(); stageNight(false);
   openScreen('titleScreen');
   requestAnimationFrame(frame);
 }

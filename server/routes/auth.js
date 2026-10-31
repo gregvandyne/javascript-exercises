@@ -7,6 +7,8 @@ import { avatar, notYou, makeGameBtn } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
+import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
+import { characterPanel } from '../views/character.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
@@ -292,6 +294,14 @@ router.post('/api/me/photo', auth.requireUser, rateLimit('me-photo', 10, 3600e3)
     res.status(503).json({ error: t('me.photo.errors.resting') });
   }
 });
+// ---- My Oomba character (the shared avatar): a parts spec from the kit's lists, never a picture. Guests keep the default.
+router.post('/api/me/character', auth.requireUser, rateLimit('me-character', 60, 3600e3), (req, res) => {
+  const t = req.t;
+  if (req.user.is_guest) return res.status(403).json({ error: t('me.character.guestOnly') });
+  try { const spec = saveCharacter(req.user.id, (req.body || {}).character); res.json({ ok: true, character: spec, toast: t('me.character.saved') }); }
+  catch (e) { if (e instanceof CharacterError) return res.status(400).json({ error: t('me.character.invalid'), field: e.field }); throw e; }
+});
+router.delete('/api/me/character', auth.requireUser, (req, res) => { if (!req.user.is_guest) clearCharacter(req.user.id); res.json({ ok: true }); });
 router.delete('/api/me/photo', auth.requireUser, (req, res) => { photos.removePhoto(req.user.id); res.json({ ok: true }); });
 // The picture behind /avatars/<id>: the photo for the player, their friends and admins; the emoji for everyone else.
 router.get('/avatars/:id', (req, res) => {
@@ -424,11 +434,12 @@ router.get('/me', auth.requireUser, (req, res) => {
         <div class="lookmenu" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div></section>
     </template>
   </section>
+  ${characterPanel(req)}
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
   <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
-  page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js'] });
+  page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js', '/js/character.js'] });
 });

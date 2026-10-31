@@ -5,6 +5,8 @@
 // caps (SIZE_CAPS) are enforced by tests/unit/kit-platform.test.js.
 //   node scripts/build-kit.js            refuses to touch an existing version folder (they are immutable)
 //   node scripts/build-kit.js --replace  rebuild the current version in place (refused once it is in kit/SHIPPED.json)
+//   node scripts/build-kit.js --packs    add or rebuild the packs that kit/SHIPPED.json does not lock, in a version whose
+//                                        core is locked: the core and every locked pack stay byte for byte (checked)
 // Bundling: each module becomes a function scope returning its exports (names read by importing the module in Node),
 // in dependency order. Minifying: esbuild (a pinned, build-only devDependency); without it (production installs skip
 // devDependencies) a careful comment/indent stripper here. Size is measured as brotli (what /vendor serves).
@@ -18,7 +20,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'kit/src');
 const PACKS_DIR = path.join(ROOT, 'kit/packs');
 /** Brotli caps in bytes: the core (spec: 95 KB) and each pack. */
-export const SIZE_CAPS = { core: 95 * 1024, 'art-animals': 12 * 1024, 'art-school': 12 * 1024, 'art-biomes': 8 * 1024, dress: 10 * 1024, 'style-bold': 10 * 1024 };
+export const SIZE_CAPS = { core: 95 * 1024, 'art-animals': 12 * 1024, 'art-school': 12 * 1024, 'art-biomes': 8 * 1024, 'art-biomes-2': 10 * 1024, 'art-props': 10 * 1024, dress: 10 * 1024, 'style-bold': 10 * 1024, 'bridge-3d': 14 * 1024 };
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'\.\/([\w-]+)\.js';\s*$/;
 
 export async function bundle() {
@@ -138,33 +140,8 @@ export const sri = buf => 'sha384-' + crypto.createHash('sha384').update(buf).di
 export const brotli = buf => zlib.brotliCompressSync(buf, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 } }).length;
 export const gzip = buf => zlib.gzipSync(buf, { level: 9 }).length;
 
-async function main() {
-  const replace = process.argv.includes('--replace');
-  const { VERSION } = await import(pathToFileURL(path.join(SRC, 'index.js')).href);
-  const dir = path.join(ROOT, 'public/vendor/oomba-kit', VERSION);
-  const shipped = JSON.parse(fs.readFileSync(path.join(ROOT, 'kit/SHIPPED.json'), 'utf8')).versions || {};
-  if (shipped[VERSION]) { console.error(`kit ${VERSION} has shipped (kit/SHIPPED.json): its files and hash can never change, because saved games pin them. Bump the patch version in kit/src/index.js and build that.`); process.exit(1); }
-  if (fs.existsSync(dir) && !replace) { console.error(`public/vendor/oomba-kit/${VERSION}/ exists. Version folders are immutable: bump VERSION in kit/src/index.js (or --replace while it has not shipped).`); process.exit(1); }
-  const { code, modules } = await bundle();
-  const banner = `/*! Oomba Kit ${VERSION} (api 1) | (c) Oomba Academy | fonts: Bricolage Grotesque, SIL OFL 1.1 */\n`;
-  const min = await minify(code);
-  const out = Buffer.from(banner + cssComments(min.code));
-  fs.mkdirSync(path.join(dir, 'fonts'), { recursive: true });
-  fs.writeFileSync(path.join(dir, 'oomba-kit.js'), out);
-  const F = path.join(ROOT, 'public/fonts');
-  fs.copyFileSync(path.join(F, 'bricolage-grotesque-latin-opsz-normal.woff2'), path.join(dir, 'fonts/bricolage-latin.woff2'));
-  fs.copyFileSync(path.join(F, 'bricolage-grotesque-latin-ext-opsz-normal.woff2'), path.join(dir, 'fonts/bricolage-latin-ext.woff2'));
-  fs.copyFileSync(path.join(F, 'bricolage-grotesque-OFL.txt'), path.join(dir, 'fonts/OFL.txt'));
-  fs.writeFileSync(path.join(dir, 'LICENSE'), `Oomba Kit ${VERSION}\nCopyright (c) Oomba Academy. All rights reserved.\nGames on Oomba Academy may load this file from this path. It may not be copied elsewhere.\n\nfonts/: Bricolage Grotesque, licensed under the SIL Open Font License 1.1 (fonts/OFL.txt).\n`);
-  // the art packs
-  const rows = [['core', out]];
-  fs.rmSync(path.join(dir, 'packs'), { recursive: true, force: true });
-  fs.mkdirSync(path.join(dir, 'packs'), { recursive: true });
-  for (const name of packNames()) {
-    const p = await minify(bundlePack(name, VERSION));
-    const buf = Buffer.from(`/*! Oomba Kit ${VERSION} pack ${name} | (c) Oomba Academy */\n` + p.code);
-    fs.writeFileSync(path.join(dir, 'packs', name + '.js'), buf); rows.push([name, buf]);
-  }
+/** Write manifest.json (sha384 of every file) and KIT_VERSIONS / KIT_PACKS in server/services/kit.js for a version. */
+function writeIndex(dir, VERSION) {
   const files = {};
   for (const f of ['oomba-kit.js', ...packNames().map(n => `packs/${n}.js`), 'fonts/bricolage-latin.woff2', 'fonts/bricolage-latin-ext.woff2', 'fonts/OFL.txt', 'LICENSE']) files[f] = sri(fs.readFileSync(path.join(dir, f)));
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify({ version: VERSION, api: 1, files, packs: packNames() }, null, 2) + '\n');
@@ -181,10 +158,59 @@ async function main() {
     if (pre.test(s)) s = s.replace(pre, pl); else s = s.replace(/(export const KIT_PACKS = Object\.freeze\(\{\n)/, `$1${pl}\n`);
     fs.writeFileSync(svc, s);
   }
-  console.log(`oomba-kit ${VERSION}: ${modules.length} modules, ${min.tool}`);
-  for (const [name, buf] of rows) {
-    const br = brotli(buf), cap = SIZE_CAPS[name];
-    console.log(`  ${name.padEnd(12)} ${String(buf.length).padStart(7)} B  gzip ${String(gzip(buf)).padStart(6)}  brotli ${String(br).padStart(6)} (${(br / 1024).toFixed(1)} KB${cap ? `, cap ${(cap / 1024).toFixed(0)} KB${br > cap ? ' OVER' : ''}` : ''})`);
+}
+async function buildPack(name, VERSION) {
+  const p = await minify(bundlePack(name, VERSION));
+  return Buffer.from(`/*! Oomba Kit ${VERSION} pack ${name} | (c) Oomba Academy */\n` + p.code);
+}
+const report = rows => { for (const [name, buf] of rows) { const br = brotli(buf), cap = SIZE_CAPS[name]; console.log(`  ${name.padEnd(12)} ${String(buf.length).padStart(7)} B  gzip ${String(gzip(buf)).padStart(6)}  brotli ${String(br).padStart(6)} (${(br / 1024).toFixed(1)} KB${cap ? `, cap ${(cap / 1024).toFixed(0)} KB${br > cap ? ' OVER' : ''}` : ''})`); } };
+
+async function main() {
+  const replace = process.argv.includes('--replace'), addPacks = process.argv.includes('--packs');
+  const { VERSION } = await import(pathToFileURL(path.join(SRC, 'index.js')).href);
+  const dir = path.join(ROOT, 'public/vendor/oomba-kit', VERSION);
+  const lock = JSON.parse(fs.readFileSync(path.join(ROOT, 'kit/SHIPPED.json'), 'utf8')), shipped = lock.versions || {};
+  if (addPacks) {
+    // A locked version gains packs it did not ship with; nothing it shipped changes (the core and the locked packs are
+    // checked byte for byte against the lock, never rewritten).
+    if (!fs.existsSync(dir)) { console.error(`public/vendor/oomba-kit/${VERSION}/ does not exist: build the version first.`); process.exit(1); }
+    const locked = (lock.packs || {})[VERSION] || {};
+    if (shipped[VERSION] && sri(fs.readFileSync(path.join(dir, 'oomba-kit.js'))) !== shipped[VERSION]) { console.error(`kit ${VERSION}: oomba-kit.js does not match its lock`); process.exit(1); }
+    const rows = [];
+    for (const name of packNames()) {
+      const file = path.join(dir, 'packs', name + '.js');
+      if (locked[name]) {
+        if (!fs.existsSync(file) || sri(fs.readFileSync(file)) !== locked[name]) { console.error(`kit ${VERSION} pack ${name} does not match its lock (kit/SHIPPED.json)`); process.exit(1); }
+        continue;
+      }
+      const buf = await buildPack(name, VERSION); fs.writeFileSync(file, buf); rows.push([name, buf]);
+    }
+    for (const n of Object.keys(locked)) if (!packNames().includes(n)) { console.error(`kit ${VERSION} shipped pack ${n}, which kit/packs no longer has`); process.exit(1); }
+    writeIndex(dir, VERSION);
+    console.log(`oomba-kit ${VERSION}: packs added or rebuilt (the core and ${Object.keys(locked).length} locked packs untouched)`);
+    report(rows);
+    return;
   }
+  if (shipped[VERSION]) { console.error(`kit ${VERSION} has shipped (kit/SHIPPED.json): its files and hash can never change, because saved games pin them. Bump the patch version in kit/src/index.js and build that (a new pack alone: --packs).`); process.exit(1); }
+  if (fs.existsSync(dir) && !replace) { console.error(`public/vendor/oomba-kit/${VERSION}/ exists. Version folders are immutable: bump VERSION in kit/src/index.js (or --replace while it has not shipped).`); process.exit(1); }
+  const { code, modules } = await bundle();
+  const banner = `/*! Oomba Kit ${VERSION} (api 1) | (c) Oomba Academy | fonts: Bricolage Grotesque, SIL OFL 1.1 */\n`;
+  const min = await minify(code);
+  const out = Buffer.from(banner + cssComments(min.code));
+  fs.mkdirSync(path.join(dir, 'fonts'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'oomba-kit.js'), out);
+  const F = path.join(ROOT, 'public/fonts');
+  fs.copyFileSync(path.join(F, 'bricolage-grotesque-latin-opsz-normal.woff2'), path.join(dir, 'fonts/bricolage-latin.woff2'));
+  fs.copyFileSync(path.join(F, 'bricolage-grotesque-latin-ext-opsz-normal.woff2'), path.join(dir, 'fonts/bricolage-latin-ext.woff2'));
+  fs.copyFileSync(path.join(F, 'bricolage-grotesque-OFL.txt'), path.join(dir, 'fonts/OFL.txt'));
+  fs.writeFileSync(path.join(dir, 'LICENSE'), `Oomba Kit ${VERSION}\nCopyright (c) Oomba Academy. All rights reserved.\nGames on Oomba Academy may load this file from this path. It may not be copied elsewhere.\n\nfonts/: Bricolage Grotesque, licensed under the SIL Open Font License 1.1 (fonts/OFL.txt).\n`);
+  // the art packs
+  const rows = [['core', out]];
+  fs.rmSync(path.join(dir, 'packs'), { recursive: true, force: true });
+  fs.mkdirSync(path.join(dir, 'packs'), { recursive: true });
+  for (const name of packNames()) { const buf = await buildPack(name, VERSION); fs.writeFileSync(path.join(dir, 'packs', name + '.js'), buf); rows.push([name, buf]); }
+  writeIndex(dir, VERSION);
+  console.log(`oomba-kit ${VERSION}: ${modules.length} modules, ${min.tool}`);
+  report(rows);
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(e => { console.error(e); process.exit(1); });

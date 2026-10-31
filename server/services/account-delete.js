@@ -81,7 +81,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     for (const tbl of ['google_identities', 'google_invites', 'join_requests']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
     // 10. the tombstone (8: the photo's file goes after the commit, its flag here)
     q.run(`UPDATE users SET username=?, display_name='deleted', password_hash=NULL, friend_code=NULL, bio='', banned=1, photo_at=0, avatar=?, color=?,
-      chat_enabled=0, lang='', theme='', password_short=0, made_note_seen_at=NULL, pw_reset_note_at=NULL WHERE id=?`, `deleted_${u.id}`, TOMB.avatar, TOMB.color, u.id);
+      chat_enabled=0, lang='', theme='', character_spec=NULL, password_short=0, made_note_seen_at=NULL, pw_reset_note_at=NULL WHERE id=?`, `deleted_${u.id}`, TOMB.avatar, TOMB.color, u.id);
     // 11. the old name, reserved
     q.run('INSERT INTO reserved_names(name, until) VALUES (?,?) ON CONFLICT(name) DO UPDATE SET until=excluded.until', u.username, t + RESERVE_DAYS * DAY);
     // 12. the audit (ids only, never the old name)

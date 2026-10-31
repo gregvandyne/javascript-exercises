@@ -1605,3 +1605,23 @@ addEventListener('online', () => { if (!LIVE.ctrl && !LIVE.stopped && !LIVE.hidd
 // Opened from a lesson ("build a game about..."): the idea is ready in the box; the builder presses Send.
 const ask = new URLSearchParams(location.search).get('ask');
 if (ask && !input.value) { input.value = ask.slice(0, 600); autosize(); input.focus(); history.replaceState(null, '', location.pathname); }
+
+// The theme chips over the message box (routes/studio.js themePicker): a tap puts "Use the snow theme." into the
+// message (the kit theme's own name in brackets when the language calls it something else), a second tap takes it out,
+// another chip swaps it. The builder sees and can edit the sentence before sending; it goes to the Builder as their words.
+{
+  let said = '';
+  const themeLine = b => { const id = b.dataset.theme, name = b.dataset.name || id; return t('js.studio.themeUse', { name: name.toLowerCase() === id ? name : `${name} (${id})` }); };
+  const setText = v => { input.value = v; autosize(); input.dispatchEvent(new Event('input', { bubbles: true })); };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.st-theme'); if (!b) return;
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    $$('.st-theme').forEach(x => x.setAttribute('aria-pressed', String(on && x === b)));
+    let text = input.value;
+    if (said && text.includes(said)) text = text.replace(said, '').replace(/\s{2,}/g, ' ').trim();
+    said = on ? themeLine(b) : '';
+    setText(on ? (text ? `${text}\n${said}` : said) : text);
+    input.focus();
+  });
+  $('#st-compose').addEventListener('submit', () => { said = ''; $$('.st-theme').forEach(x => x.setAttribute('aria-pressed', 'false')); });
+}

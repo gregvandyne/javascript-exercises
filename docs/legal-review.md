@@ -266,3 +266,15 @@ Owner decisions for parent-made accounts (no lawyer needed):
     - the 90-day log and its wording on the page;
     - that facts about films, shows or brands found by search don't change the copyright rules (the Builder still
       refuses to put protected characters or names in games).
+40. **The player's own Oomba character (the shared avatar).** New live privacy sentence `info.parents.stored.p4` (on
+    /parents and /privacy; `LEGAL_UPDATED` is 2026-10-30). On the Me page a child with their own account can design a
+    drawn character (species, body shape, one of 8 skin tones, hair style and colour, eyes, top and colours, one
+    accessory, and what it wears in the "Bold" look for older players). It is stored as a small list of those choices
+    (`users.character_spec`, migration 0035, never a picture, a photo, free text or a name), is given to the games the
+    child plays (`BRB.user.character`, so the hero can be "them"), and is deleted with the account. Guests cannot save
+    one (they play as the mascot). Please confirm:
+    - that a skin-tone choice on a drawn character is not "personal information" under COPPA (it describes a cartoon
+      the child chose, not the child), or whether it needs its own mention or parental notice;
+    - that passing the character to games made by other children is fine (the game sees only the choices, never who
+      made them; a game cannot send anything out of its sandbox);
+    - whether school accounts need anything extra (it is optional and off until the student designs one).

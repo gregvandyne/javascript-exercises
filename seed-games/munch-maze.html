@@ -1,61 +1,69 @@
 <title>Munch Maze</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap">
 <style>
-/* Munch Maze: a classic maze-chase game with original characters (Munch and the four Gloops) and original mazes.
-   Layout: a HUD row (pause / score / best / mute), the maze canvas, an info row (lives / level / bonus snacks)
-   and an optional on-screen D-pad. On wide screens (landscape phones, desktop) the maze sits in the middle with
-   the HUD on the left and the D-pad on the right. The script sizes the maze so a whole number of device pixels
-   makes one tile (crisp at any devicePixelRatio). Overlays: title, pause and game over. */
-:root{
-  --bg1:#2a1366; --bg2:#0c0624; --ink:#fff; --soft:#cbb9ff; --panel:#21114d; --panelEdge:#4d2c9c; --chip:#33196e;
-  --lime:#9be34f; --limeDark:#4f9c1b; --orange:#ffab40; --orangeDark:#c46f0c; --pink:#ff5fc8; --cyan:#38e1f0;
-  --font:"Fredoka","Trebuchet MS",system-ui,sans-serif;
-}
+/* Munch Maze on the Oomba Kit: a classic maze-chase game with original characters (the player's own character as
+   Munch, and the four Gloops) and original mazes. The kit draws the friendly haunted world behind the game (dusk, or
+   night in the dark theme), the title lockup, the pause screen, the icons, buttons and the type; this file lays out
+   the game's own pieces in the kit's sticker look (Cream cards, Ink edges).
+   Layout: a HUD row (pause / score / best / sound), the maze board, an info row (lives / level / bonus snacks) and an
+   optional on-screen D-pad. On wide screens (landscape phones, desktop) the maze sits in the middle with the HUD on
+   the left and the D-pad on the right. The script sizes the maze so a whole number of device pixels makes one tile
+   (crisp at any devicePixelRatio). Colours come from the kit (set as --mm-* variables at start); no fonts here. */
+.mm{position:absolute;inset:0;--rim:var(--mm-ink);--soft:color-mix(in srgb,var(--ok-text) 66%,transparent)}
+.mm-tcard{--rim:var(--mm-ink);--soft:color-mix(in srgb,var(--ok-text) 66%,transparent)}
+.ok-night .mm,.ok-night .mm-tcard{--rim:color-mix(in srgb,var(--mm-cream) 38%,transparent)}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{margin:0;overflow:hidden;font-family:var(--font);color:var(--ink);background:var(--bg2);
-  background:radial-gradient(ellipse at 50% 0%,var(--bg1),var(--bg2) 70%);
-  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-button{font-family:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+body{margin:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.mm button,.mm-tcard button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mm svg,.mm-tcard svg{display:block}
 
 /* ---------- play screen ---------- */
-.app{position:fixed;inset:0;display:grid;justify-content:center;align-content:center;gap:6px;
+.app{position:absolute;inset:0;display:grid;justify-content:center;align-content:center;gap:6px;
   padding:max(6px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
   grid-template-columns:var(--bw,340px);grid-template-areas:"hud" "board" "info" "side"}
 .app.offstage{visibility:hidden}
+.app.over .side{visibility:hidden}
+/* the HUD, the board and the side panel on their own compositor layers: the world behind and the maze repaint every
+   frame, and without this a slow device re-rasters the whole play screen each time */
+.hud,.board,.info,.side{will-change:transform}
 .hud{grid-area:hud;display:flex;align-items:center;gap:6px;min-width:0}
-.icon-btn{width:46px;height:46px;flex:none;border:0;border-radius:50%;background:var(--chip);font-size:1.3rem;display:grid;place-items:center;padding:0;
-  box-shadow:0 3px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
-.icon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
-#pauseBtn{order:0} #scoreBox{order:1} #bestBox{order:2} #muteBtn{order:3}
-.stat{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.05;background:rgba(0,0,0,.25);border-radius:14px;padding:4px 6px}
-.stat .lbl{max-width:100%;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);white-space:nowrap;overflow:hidden}
-.stat b{font-size:1.25rem;font-variant-numeric:tabular-nums;white-space:nowrap}
-#bestBox b{color:#ffe36e}
-.board{grid-area:board;position:relative;display:grid;place-items:center}
-#cv{display:block;border-radius:10px;touch-action:none;box-shadow:0 0 0 2px rgba(255,255,255,.06),0 10px 30px rgba(0,0,0,.5)}
-.info{grid-area:info;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px}
+.hud .ok-btn.ok-icon{width:46px;min-height:46px;flex:none}
+#pauseBtn{order:0} #scoreBox{order:1} #bestBox{order:2} .hud .mute{order:3}
+.stat{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.1;background:var(--ok-card);color:var(--ok-text);
+  border:2.5px solid var(--rim);border-radius:16px;padding:2px 6px 4px;box-shadow:0 3px 0 var(--mm-ink)}
+.stat .lab{max-width:100%;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--soft);white-space:nowrap;overflow:hidden}
+.stat b{font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+#bestBox{background:var(--mm-sparkTint);color:var(--mm-ink);border-color:var(--mm-ink)}
+#bestBox .lab{color:color-mix(in srgb,var(--mm-ink) 70%,transparent)}
+/* the board: an Ink-edged frame (a thick Ink edge below, like the kit's stickers) with a Cream rim around the night
+   maze. Borders, not shadows: the maze canvas repaints every frame and a shadow over the world would repaint with it. */
+.board{grid-area:board;position:relative;justify-self:center;align-self:center;border-radius:16px;padding:2px;box-sizing:border-box;
+  background:var(--mm-frame);border:3px solid var(--mm-ink);border-bottom-width:8px}
+.board::before{content:"";position:absolute;inset:0;border:2px solid var(--mm-cream);border-radius:13px;pointer-events:none}
+#cv{display:block;border-radius:10px;touch-action:none}
+.info{grid-area:info;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px}
 .info canvas{display:block}
-#levelEl{font-weight:700;font-size:1rem;color:var(--soft);white-space:nowrap}
+#livesCv,#fruitCv{background:var(--ok-card);border:2.5px solid var(--rim);border-radius:999px;padding:3px 8px;box-shadow:0 3px 0 var(--mm-ink)}
+#levelEl{font-weight:800;font-size:1rem;white-space:nowrap;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:999px;padding:2px 12px;box-shadow:0 3px 0 var(--mm-ink)}
 .side{grid-area:side;display:flex;flex-direction:column;align-items:center;gap:6px}
-.pad{display:grid;grid-template-columns:repeat(3,var(--pc,64px));grid-template-rows:repeat(3,var(--pc,64px));gap:6px}
-.pad button{border:0;border-radius:18px;background:var(--chip);font-size:calc(var(--pc,64px)*.42);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge);touch-action:none;padding:0}
-.pad button.on,.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--lime);background:#3d2380}
+.pad{display:grid;grid-template-columns:repeat(3,var(--pc,64px));grid-template-rows:repeat(3,var(--pc,64px));gap:8px}
+.pad button{border:3px solid var(--mm-ink);border-bottom-width:8px;border-radius:18px;background:var(--mm-cream);color:var(--mm-ink);touch-action:none;padding:0;
+  display:grid;place-items:center}
+.pad button svg{width:calc(var(--pc,64px)*.46);height:calc(var(--pc,64px)*.46);pointer-events:none;stroke-width:2.6}
+.pad button.on,.pad button:active{transform:translateY(4px);border-bottom-width:4px;background:var(--mm-mint)}
 .pad [data-dir=up]{grid-area:1/2} .pad [data-dir=left]{grid-area:2/1} .pad [data-dir=right]{grid-area:2/3} .pad [data-dir=down]{grid-area:3/2}
-.pad .hub{grid-area:2/2;border-radius:50%;margin:10px;background:rgba(255,255,255,.06)}
-/* Portrait phones: a wide two-row pad (tall ◀ ▶ on the sides, ▲ ▼ stacked in the middle) gives big buttons without eating maze height. */
+.pad .hub{display:none}
+/* Portrait phones: a wide two-row pad (tall left/right on the sides, up/down stacked in the middle) gives big buttons without eating maze height. */
 .app:not(.wide) .side{justify-self:stretch}
 .app:not(.wide) .pad{width:min(100%,460px);grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,var(--pc,64px))}
 .app:not(.wide) .pad [data-dir=left]{grid-area:1/1/3/2} .app:not(.wide) .pad [data-dir=right]{grid-area:1/3/3/4}
 .app:not(.wide) .pad [data-dir=up]{grid-area:1/2} .app:not(.wide) .pad [data-dir=down]{grid-area:2/2}
-.app:not(.wide) .pad .hub{display:none}
-.keys{margin:0;font-size:.9rem;color:var(--soft);text-align:center;line-height:1.35}
-.keys kbd{display:inline-block;min-width:1.4em;padding:0 .3em;border-radius:6px;background:var(--chip);box-shadow:inset 0 0 0 1px var(--panelEdge);font-family:inherit;font-weight:700;color:#fff}
-.toast{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);pointer-events:none;background:#fff;color:#2a1366;font-weight:700;font-size:1.25rem;
-  padding:8px 18px;border-radius:999px;box-shadow:0 5px 0 rgba(0,0,0,.35);white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis;animation:pop 1.6s ease forwards}
-@keyframes pop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-80%) scale(1);opacity:0}}
-.skip{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-weight:700;font-size:1rem;min-height:44px;padding:0 16px;box-shadow:inset 0 0 0 2px var(--panelEdge)}
+.keys{margin:0;font-size:.9rem;font-weight:600;text-align:center;line-height:1.6;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);border-radius:16px;
+  padding:8px 12px;box-shadow:0 3px 0 var(--mm-ink)}
+.keys kbd{display:inline-block;min-width:1.4em;padding:0 .3em;border-radius:7px;background:var(--ok-bg2);border:2px solid var(--rim);box-shadow:0 2px 0 var(--mm-ink);
+  font-family:inherit;font-weight:800;font-size:.85rem;line-height:1.35}
+.keys .nw{white-space:nowrap}
+.skip{position:absolute;right:10px;bottom:10px}
 
 /* Wide screens: HUD on the left, D-pad on the right, maze in the middle. */
 .app.wide{grid-template-columns:minmax(0,1fr) var(--bw,340px) minmax(0,1fr);grid-template-rows:1fr auto auto 1fr;column-gap:18px;row-gap:12px;
@@ -65,130 +73,155 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .app.wide .hud{flex-wrap:wrap;justify-content:center;justify-self:center;width:min(100%,210px);gap:10px}
 .app.wide .stat,.app.wide #scoreBox,.app.wide #bestBox{flex-basis:100%;order:2;padding:6px 10px}
 .app.wide .stat b{font-size:1.6rem}
-.app.wide #muteBtn{order:1}
-.app.wide .info{flex-direction:column;justify-content:flex-start;justify-self:center;gap:8px}
+.app.wide .hud .mute{order:1}
+.app.wide .info{flex-direction:column;justify-content:flex-start;justify-self:center;gap:10px}
 
-/* ---------- overlays ---------- */
-.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(8,3,26,.62)}
-.screen.title{background:radial-gradient(ellipse at 50% 0%,var(--bg1),var(--bg2) 75%)}
-.panel{position:relative;background:var(--panel);border-radius:26px;padding:14px 16px 16px;width:min(100%,440px);max-height:100%;overflow:auto;text-align:center;
-  box-shadow:0 8px 0 rgba(0,0,0,.45),inset 0 0 0 3px var(--panelEdge);display:flex;flex-direction:column;align-items:center;gap:9px}
-.panel h1{margin:0;font-size:clamp(2.2rem,11vw,3rem);line-height:1;letter-spacing:.02em;color:var(--lime);text-shadow:0 3px 0 var(--limeDark),0 0 18px rgba(155,227,79,.45)}
-.panel h1 span{color:var(--pink);text-shadow:0 3px 0 #a3247c,0 0 18px rgba(255,95,200,.45)}
-.panel h2{margin:0;font-size:clamp(1.7rem,8vw,2.2rem);line-height:1.05;color:var(--lime);text-shadow:0 3px 0 var(--limeDark)}
-.panel p{margin:0;font-size:1.02rem;line-height:1.3}
-.panel .hint{font-size:.92rem;color:var(--soft)}
-#demo{display:block;width:300px;height:84px;max-width:100%}
-.big-btn{border:0;border-radius:20px;background:var(--lime);color:#173300;font-weight:700;font-size:1.4rem;padding:10px 20px;min-height:58px;box-shadow:0 6px 0 var(--limeDark);white-space:nowrap}
-.big-btn.easy{background:var(--orange);color:#3a1d00;box-shadow:0 6px 0 var(--orangeDark)}
-.big-btn.alt{background:var(--chip);color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge);font-size:1.1rem;min-height:50px}
-.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--limeDark)}
-.big-btn.easy:active{box-shadow:0 2px 0 var(--orangeDark)}
-.big-btn.alt:active{box-shadow:0 2px 0 rgba(0,0,0,.45),inset 0 0 0 2px var(--panelEdge)}
-.btns{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap}
-.btns .big-btn{flex:1;min-width:140px;white-space:normal;line-height:1.15}
-.big-btn small{display:block;font-size:.8rem;font-weight:500;opacity:.85;line-height:1.1}
+/* ---------- Title (the kit's title screen; the game's card: the two modes, the maze picker, Play) ---------- */
+.ok-ui .ok-title-screen .ok-title-block{max-height:none}
+.mm-tcard{display:flex;flex-direction:column;align-items:center;gap:9px;width:min(460px,calc(100vw - 32px));box-sizing:border-box;background:var(--ok-card);color:var(--ok-text);
+  border:3px solid var(--mm-ink);border-radius:26px;box-shadow:0 6px 0 var(--mm-ink);padding:12px 12px 14px}
+.ok-night .mm-tcard{border-color:color-mix(in srgb,var(--mm-cream) 34%,transparent);box-shadow:0 6px 0 black}
+.ok-ui .ok-title-screen .mm-tcard .ok-p{border:0;box-shadow:none;background:none;padding:0 6px;font-size:clamp(.98rem,2.3vmin,1.15rem)}
+.ok-title-screen .mm-tcard .ok-big{margin-top:2px}
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+.mode{display:flex;align-items:center;gap:8px;min-width:0;min-height:56px;box-sizing:border-box;border:2.5px solid var(--ok-line);background:var(--ok-bg2);color:var(--ok-text);
+  border-radius:18px;padding:6px 8px;text-align:start;font:inherit;line-height:1.15}
+.mode[aria-pressed="true"]{background:var(--mm-mintTint);color:var(--mm-ink);border-color:var(--mm-ink);box-shadow:0 4px 0 var(--mm-ink)}
+.mode .mi{flex:none;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:var(--mm-cream);border:2px solid var(--mm-ink);color:var(--mm-ink)}
+.mode[aria-pressed="true"] .mi{background:var(--mm-mint)}
+.mode .mi svg{width:20px;height:20px}
+.mode .mt{min-width:0;display:flex;flex-direction:column}
+.mode .mt b{font-size:1.08rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mode .mt small{font-size:.8rem;font-weight:700;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lbl-row{font-size:.8rem;font-weight:800;color:var(--soft);letter-spacing:.05em;text-transform:uppercase;margin-bottom:-4px}
 .mazes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%}
-.mazes button{border:0;border-radius:14px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--panelEdge);padding:5px 2px 4px;min-height:44px;
-  display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:.78rem;line-height:1.05;min-width:0}
-.mazes button canvas{display:block;width:34px;height:38px}
-.mazes button .mix{font-size:1.5rem;line-height:38px;height:38px}
-.mazes button[aria-pressed=true]{background:#4a2a9e;box-shadow:inset 0 0 0 3px var(--lime)}
-.lbl-row{font-size:.85rem;font-weight:700;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:-4px}
-.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.chip{font-weight:700;background:var(--chip);border-radius:999px;padding:5px 12px;font-size:.95rem;box-shadow:inset 0 0 0 2px var(--panelEdge)}
-.chip.gold{background:#ffe36e;color:#3a2a00;box-shadow:none}
-.toggle{border:0;border-radius:999px;background:var(--chip);box-shadow:inset 0 0 0 2px var(--panelEdge);min-height:44px;padding:0 16px;font-weight:700;font-size:1rem}
-.toggle[aria-pressed=true]{box-shadow:inset 0 0 0 3px var(--lime)}
-.panel .corner{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));z-index:2}
-.score-big{font-size:2.6rem;font-weight:700;line-height:1;color:#ffe36e;font-variant-numeric:tabular-nums}
+.mazes button{border:2.5px solid var(--ok-line);border-radius:14px;background:var(--ok-bg2);color:var(--ok-text);padding:5px 2px 4px;min-height:48px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:800;font-size:.8rem;line-height:1.05;min-width:0}
+.mazes button canvas{display:block;width:28px;height:31px;border-radius:5px;border:2px solid var(--mm-ink)}
+.mazes button .mix{width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:var(--mm-cream);border:2px solid var(--mm-ink);color:var(--mm-ink)}
+.mazes button .mix svg{width:20px;height:20px}
+.mazes button span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mazes button[aria-pressed="true"]{background:var(--mm-mintTint);color:var(--mm-ink);border-color:var(--mm-ink);box-shadow:0 3px 0 var(--mm-ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.toggle{display:inline-flex;align-items:center;gap:6px;border:2.5px solid var(--ok-line);border-radius:999px;background:var(--ok-bg2);color:var(--ok-text);min-height:44px;padding:0 14px;
+  font-weight:800;font-size:.95rem}
+.toggle svg{width:22px;height:22px;flex:none}
+.toggle[aria-pressed="true"]{background:var(--mm-mintTint);color:var(--mm-ink);border-color:var(--mm-ink)}
+.hint{margin:0;font-size:.88rem;font-weight:600;color:var(--soft);text-align:center;text-wrap:balance}
 .kbonly{display:none}
 @media (hover:hover) and (pointer:fine){.kbonly{display:block}}
-@media (max-height:600px){#demo{height:60px}.panel{gap:7px;padding:12px 14px}.big-btn{min-height:52px;font-size:1.25rem}.panel .hint.intro{display:none}}
-@media (max-width:374px){.big-btn{font-size:1.2rem;padding:10px 12px}.btns .big-btn{min-width:120px}.mazes button{font-size:.7rem}}
-/* Short landscape: the title panel goes two columns so nothing scrolls. */
+
+/* ---------- chips (title, pause, results) ---------- */
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:5px;font-weight:800;background:var(--ok-bg2);color:var(--ok-text);border:2px solid var(--ok-line);border-radius:999px;padding:3px 11px;font-size:.92rem}
+.chip svg{width:1.1em;height:1.1em;flex:none}
+.chip.gold{background:var(--mm-spark);color:var(--mm-ink);border-color:var(--mm-ink);transform:rotate(-3deg)}
+
+/* ---------- Pause (the kit's pause screen, with the game's note and the arrow-buttons switch) ---------- */
+.ok-pause .mm-note{margin:-4px 0 0;font-weight:700;line-height:1.35;max-width:32ch;text-wrap:balance}
+/* the sound switch and the arrow-buttons switch share a row below the buttons */
+.mm-prow{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:300px}
+.mm-prow .ok-srow{box-sizing:border-box}
+/* Short landscape screens (phones on their side): a compact pause card that fits without scrolling: a smaller title,
+   Resume on its own row, Restart / Settings / Quit side by side, then Sound and the arrow-buttons switch in one row. */
+@media (orientation:landscape) and (max-height:520px){
+  .ok-ui .ok-pause.ok-modal{padding-top:calc(8px + env(safe-area-inset-top));padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  .ok-ui .ok-pause .ok-card{width:min(600px,100%);padding:12px 16px 14px;gap:8px;border-radius:24px}
+  .ok-ui .ok-pause .ok-h2{font-size:1.35em}
+  .ok-ui .ok-pause .mm-note{margin:-2px 0 0;font-size:.95rem;max-width:none}
+  .ok-ui .ok-pause .ok-col{max-width:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .ok-ui .ok-pause .ok-col>.ok-btn{min-height:46px;padding:0 10px;font-size:1rem;min-width:0}
+  .ok-ui .ok-pause .ok-col>.ok-go{grid-column:1/-1;min-height:52px;font-size:1.2rem}
+  .ok-ui .ok-pause .mm-prow{flex-direction:row;justify-content:center;flex-wrap:wrap;max-width:none;gap:10px 18px}
+  .ok-ui .ok-pause .mm-prow .ok-srow{width:auto;gap:10px}
+  .ok-ui .ok-pause .mm-prow .toggle{min-height:40px}
+}
+
+/* ---------- Results (a kit card: the player's character, the score, Play again / Menu) ---------- */
+.mm .ok-card{width:min(440px,100%);padding:18px 16px 16px;gap:9px}
+.mm .ok-card .ok-portrait{margin:-4px 0 -6px}
+.mm .ok-card p{margin:0;font-size:1.05rem;font-weight:600;line-height:1.3;text-wrap:balance}
+.score-big{font-size:2.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--mm-cream);-webkit-text-stroke:.14em var(--mm-ink);paint-order:stroke fill;
+  text-shadow:0 .08em 0 var(--mm-ink)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;margin-top:2px}
+.btns .ok-btn{flex:1 1 auto}
+/* Arabic letters must stay joined: no letter spacing. Japanese: break lines between phrases. */
+html[lang="ar"] .mm *,html[lang="ar"] .mm-tcard *{letter-spacing:0!important}
+html[lang="ja"] .mm p,html[lang="ja"] .mm-tcard p{word-break:auto-phrase}
+@media (orientation:portrait) and (max-height:700px){
+  .ok-ui .ok-title-screen .mm-tcard .ok-p{display:none}
+  .mm-tcard{gap:7px;padding:10px 12px 12px}
+}
+/* the title's sound button sits in the corner next to the theme button; on narrow phones the two stack in a column
+   so they stay clear of the title lockup */
+@media (max-width:440px){.ok-title-screen .ok-corner{flex-direction:column-reverse;align-items:flex-end}}
+/* Landscape (desktop, tablets, phones on their side): the title card goes two columns so nothing scrolls. */
+@media (orientation:landscape) and (min-width:700px){
+  .mm-tcard{width:min(720px,calc(100vw - 32px));display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:8px;align-items:center}
+  .mm-tcard .colL,.mm-tcard .colR{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+}
+/* Short landscape phones: smaller lockup, no badge. */
 @media (orientation:landscape) and (max-height:500px){
-  .panel.wideable{width:min(100%,720px);display:grid;grid-template-columns:1fr 1fr;align-items:center;column-gap:16px}
-  .panel.wideable .colL,.panel.wideable .colR{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+  .ok-ui .ok-title-screen{padding-top:8px}
+  .ok-ui .ok-title-screen .ok-h1{font-size:clamp(2rem,10vmin,2.6rem);margin:0}
+  .ok-ui .ok-title-screen .ok-title-block{gap:6px;padding-top:0}
+  .ok-ui .ok-title-badge{display:none}
+  .mm-tcard{width:min(720px,calc(100vw - 32px));display:grid;grid-template-columns:1fr 1fr;column-gap:14px;row-gap:6px;padding:8px 12px 10px}
+  .mm-tcard .colL,.mm-tcard .colR{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+  .ok-ui .ok-title-screen .mm-tcard .ok-p{display:none}
+  .ok-title-screen .mm-tcard .ok-big{min-height:52px;margin-top:0}
+  .mm .ok-card{width:min(640px,100%);padding:12px 16px 14px;gap:6px}
+  .mm .ok-card .ok-portrait{display:none}
 }
 .colL,.colR{display:contents}
-/* Arabic letters must stay joined: no letter spacing. Japanese: break lines between phrases. */
-html[lang="ar"] *{letter-spacing:0!important}
-html[lang="ja"] .panel p{word-break:auto-phrase}
-@media (prefers-reduced-motion:reduce){.toast{animation:none}}
+@media (max-width:374px){
+  .mode .mt b{font-size:.98rem}
+  .mazes button{font-size:.7rem}
+  .stat .lab{font-size:.66rem}
+}
+@media (prefers-reduced-motion:reduce){.chip.gold{transform:none}}
+.ok-rm .chip.gold{transform:none}
 </style>
 
+<div class="mm" id="game">
 <div class="app offstage" id="app">
   <div class="hud" id="hud">
-    <button class="icon-btn" id="pauseBtn" aria-label="Pause" data-ta="pause">⏸️</button>
-    <div class="stat" id="scoreBox"><span class="lbl" data-t="score">Score</span><b id="scoreEl">0</b></div>
-    <div class="stat" id="bestBox"><span class="lbl" data-t="best">Best</span><b id="bestEl">0</b></div>
-    <button class="icon-btn mute" id="muteBtn" aria-label="Turn sound off">🔊</button>
+    <span id="pauseSlot"></span>
+    <div class="stat" id="scoreBox"><span class="lab" data-t="score">Score</span><b id="scoreEl">0</b></div>
+    <div class="stat" id="bestBox"><span class="lab" data-t="best">Best</span><b id="bestEl">0</b></div>
+    <span id="muteSlot"></span>
   </div>
   <div class="board" id="board"><canvas id="cv" aria-label="The maze. Swipe or use the arrow keys to move Munch." data-ta="mazeAria"></canvas></div>
   <div class="info" id="info"><canvas id="livesCv" aria-label="Lives" data-ta="livesAria"></canvas><span id="levelEl">Level 1</span><canvas id="fruitCv" aria-label="Bonus snacks" data-ta="snacksAria"></canvas></div>
   <div class="side" id="side">
     <div class="pad" id="pad" role="group" aria-label="Arrow buttons" data-ta="padAria">
-      <button data-dir="up" aria-label="Up" data-ta="up">▲</button>
-      <button data-dir="left" aria-label="Left" data-ta="left">◀</button>
+      <button data-dir="up" aria-label="Up" data-ta="up"></button>
+      <button data-dir="left" aria-label="Left" data-ta="left"></button>
       <span class="hub"></span>
-      <button data-dir="right" aria-label="Right" data-ta="right">▶</button>
-      <button data-dir="down" aria-label="Down" data-ta="down">▼</button>
+      <button data-dir="right" aria-label="Right" data-ta="right"></button>
+      <button data-dir="down" aria-label="Down" data-ta="down"></button>
     </div>
-    <p class="keys kbonly" id="keysHint"><span dir="ltr"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></span> <span data-t="kOr">or</span> <span dir="ltr"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> <span data-t="kToMove">to move</span><br><kbd>P</kbd> <span data-t="kPause">pause</span> · <kbd>M</kbd> <span data-t="kSound">sound</span></p>
+    <p class="keys kbonly" id="keysHint"><span class="nw"><span dir="ltr"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></span> <span data-t="kOr">or</span></span> <span class="nw"><span dir="ltr"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> <span data-t="kToMove">to move</span></span><br><span class="nw"><kbd>P</kbd> <span data-t="kPause">pause</span></span> · <span class="nw"><kbd>M</kbd> <span data-t="kSound">sound</span></span></p>
   </div>
 </div>
 
-<section class="screen title" id="titleScreen">
-  <div class="panel wideable">
-    <div class="colL">
-      <canvas id="demo" aria-hidden="true"></canvas>
-      <h1>Munch <span>Maze</span></h1>
-      <p class="hint intro" data-t="intro">Eat every dot! Grab a Super Snack and the Gloops turn blue, so you can munch them.</p>
-      <div class="btns">
-        <button class="big-btn" id="playClassic">▶ <span data-t="play">Play</span><small data-t="classic">Classic</small></button>
-        <button class="big-btn easy" id="playEasy">🐣 <span data-t="play">Play</span><small data-t="easy">Easy</small></button>
-      </div>
-    </div>
-    <div class="colR">
-      <div class="lbl-row" data-t="maze">Maze</div>
-      <div class="mazes" id="mazePick" role="group" aria-label="Pick a maze" data-ta="pickMaze"></div>
-      <div class="chips" id="bestChips"></div>
-      <button class="toggle" id="padToggle" aria-pressed="false">🎮 Arrow buttons: Off</button>
-      <p class="hint kbonly" data-t="kbTitle">Arrows or WASD to move. P to pause. M for sound.</p>
-    </div>
-    <button class="icon-btn mute corner" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="pauseScreen" hidden>
-  <div class="panel">
-    <h2 data-t="paused">Paused</h2>
-    <p id="pauseInfo" data-t="breath">Take a breath!</p>
-    <button class="big-btn" id="resumeBtn">▶ <span data-t="keepPlaying">Keep playing</span></button>
-    <div class="btns">
-      <button class="big-btn alt" id="restartBtn">🔄 <span data-t="startOver">Start over</span></button>
-      <button class="big-btn alt" id="quitBtn">🏠 <span data-t="menu">Menu</span></button>
-    </div>
-    <button class="toggle" id="padToggle2" aria-pressed="false">🎮 Arrow buttons: Off</button>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
-  </div>
-</section>
-
-<section class="screen" id="overScreen" hidden>
-  <div class="panel">
-    <h2 id="overTitle" data-t="gameOver">Game over!</h2>
+<section class="ok-modal ok-scrim" id="overScreen" role="dialog" aria-modal="true" aria-labelledby="overTitle" hidden>
+  <div class="ok-card">
+    <div id="overHero"></div>
+    <h2 class="ok-h2" id="overTitle" data-t="gameOver">Game over!</h2>
     <p id="overSub" data-t="niceTry">Great munching!</p>
     <div class="score-big" id="overScore">0</div>
     <div class="chips" id="overChips"></div>
-    <div class="btns">
-      <button class="big-btn" id="againBtn">▶ <span data-t="playAgain">Play again</span></button>
-      <button class="big-btn alt" id="menuBtn">🏠 <span data-t="menu">Menu</span></button>
-    </div>
-    <button class="icon-btn mute" aria-label="Turn sound off">🔊</button>
+    <div class="btns" id="overBtns"></div>
   </div>
 </section>
+</div>
 
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-props.js" integrity="sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-school.js" integrity="sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
    CONFIG: change these to make the game your own!
@@ -196,6 +229,8 @@ html[lang="ja"] .panel p{word-break:auto-phrase}
 const CONFIG = {
   title: 'Munch Maze',
   saveKey: 'munch-maze-v1',
+  biome: 'spooky',             // the kit's world behind the game (the friendly haunted theme's world)
+  timeOfDay: 0.7,              // dusk (0 = noon ... 1 = night; the dark site theme is always night)
   lives: 3,                    // lives at the start of a Classic game
   extraLifeAt: 10000,          // one extra life when the score reaches this
   baseSpeed: 9,                // tiles per second at "100%" (the level tables below are percentages of this)
@@ -218,24 +253,27 @@ const CONFIG = {
   intermissionAfter: [2, 5, 9, 13, 17],   // a short funny cartoon plays after these levels
   swipeMin: 16,                // pixels a finger must slide before it counts as a swipe
   easy: { lives: 5, gloopSpeed: 0.78, frightScale: 1.6, minFright: 3, munchMin: 0.85 },
+  hero: 'me',                  // Munch is the player's own character (their Me-page avatar; the Oomba mascot for guests), or a character spec
+  heroSize: 2.8,               // Munch's height in tiles
+  superSnack: 'sweet',         // the kit prop for the Super Snacks
   // The four Gloops. corner = the tile each one wanders to in "scatter" time.
   gloops: [
-    { name: 'Zippy',  color: '#ff4f6d', dark: '#c21f45', corner: [25, -3] },   // chases Munch's tile; speeds up near the end
-    { name: 'Sneaky', color: '#ff8ad8', dark: '#c94fa3', corner: [2, -3] },    // aims 4 tiles ahead of Munch
-    { name: 'Tricky', color: '#38e1f0', dark: '#0f9fb5', corner: [27, 31] },   // uses Zippy's spot to cut Munch off
-    { name: 'Dozy',   color: '#ffab40', dark: '#cf7410', corner: [0, 31] }     // chases from far, wanders off when close
+    { name: 'Zippy',  color: '#FF6B5B', corner: [25, -3] },   // chases Munch's tile; speeds up near the end
+    { name: 'Sneaky', color: '#FF8AD8', corner: [2, -3] },    // aims 4 tiles ahead of Munch
+    { name: 'Tricky', color: '#38E1F0', corner: [27, 31] },   // uses Zippy's spot to cut Munch off
+    { name: 'Dozy',   color: '#F5A26B', corner: [0, 31] }     // chases from far, wanders off when close
   ],
-  munch: { color: '#9be34f', dark: '#4f9c1b', light: '#e0ffb0' },
-  // Bonus snacks by level (level 13 and up get the crown).
+  fright: { body: '#3F55E0', flash: '#FFFDF2' },   // frightened Gloops: blue, fading to Cream as the power runs out
+  // Bonus snacks by level (level 13 and up get the gift): each one is a kit prop.
   fruits: [
-    { id: 'cherry', name: 'Cherries', points: 100 },
-    { id: 'berry', name: 'Strawberry', points: 300 },
+    { id: 'apple', name: 'Apple', points: 100 },
+    { id: 'grapes', name: 'Grapes', points: 300 },
     { id: 'cupcake', name: 'Cupcake', points: 500 },
     { id: 'melon', name: 'Melon slice', points: 700 },
-    { id: 'star', name: 'Star cookie', points: 1000 },
-    { id: 'lolly', name: 'Lollipop', points: 2000 },
-    { id: 'icecream', name: 'Ice cream', points: 3000 },
-    { id: 'crown', name: 'Candy crown', points: 5000 }
+    { id: 'cookie', name: 'Cookie', points: 1000 },
+    { id: 'donut', name: 'Donut', points: 2000 },
+    { id: 'candycane', name: 'Candy cane', points: 3000 },
+    { id: 'gift', name: 'Gift box', points: 5000 }
   ]
 };
 
@@ -578,8 +616,8 @@ const TX = {
   hintKeys: t('hintKeys'), hintPad: t('hintPad'), hintSwipe: t('hintSwipe'),
   cartoons: [t('carChase'), t('carNap'), t('carParade')],
   munch: t('munch'), gloopNames: t('gloopNames'),
-  toastBest: t('toastBest') + ' 🏆', toastLife: t('toastLife') + ' 💚', skip: t('skip') + ' ⏭',
-  soundOn: t('soundOn'), soundOff: t('soundOff'), padOn: '🎮 ' + t('padOn'), padOff: '🎮 ' + t('padOff')
+  toastBest: t('toastBest'), toastLife: t('toastLife'), skip: t('skip'),
+  soundOn: t('soundOn'), soundOff: t('soundOff'), padOn: t('padOn'), padOff: t('padOff')
 };
 
 /* =====================================================================================
@@ -589,7 +627,7 @@ const TX = {
    ===================================================================================== */
 const MAZES = [
   { id: 'candy', name: 'Candy Lane', start: [13.5, 23], deco: 'sprinkles',
-    colors: { glow: '#ff5fc8', edge: '#ffc2ec', fill: '#3b0f4d', fill2: '#250934', dot: '#ffd9f3', snack: '#ffef6e', door: '#ffd1f0', bg: '#12051f' },
+    colors: { wall: '#FF9BD0', shade: '#D9529A', bg: '#2A1240', dot: '#FFE9F6', snack: '#FFD23F', door: '#FFFDF2' },
     rows: [
       '############################',
       '#..........................#',
@@ -624,7 +662,7 @@ const MAZES = [
       '############################'
     ] },
   { id: 'mint', name: 'Mint Caves', start: [13.5, 24], deco: 'gems',
-    colors: { glow: '#3dffc0', edge: '#c4ffeb', fill: '#0c3a44', fill2: '#06232b', dot: '#d4fff0', snack: '#fff27a', door: '#b8fff0', bg: '#03121a' },
+    colors: { wall: '#9BDDB7', shade: '#1F9D63', bg: '#0B2A2E', dot: '#E3FFF1', snack: '#FFD23F', door: '#FFFDF2' },
     rows: [
       '############################',
       '#............##............#',
@@ -659,7 +697,7 @@ const MAZES = [
       '############################'
     ] },
   { id: 'starry', name: 'Starry Swirl', start: [13.5, 20], deco: 'stars',
-    colors: { glow: '#8aa8ff', edge: '#dfe6ff', fill: '#1e1760', fill2: '#120d3d', dot: '#fff3b8', snack: '#ff9be0', door: '#ffe1a8', bg: '#070521' },
+    colors: { wall: '#C6A9F3', shade: '#6C44C0', bg: '#140F42', dot: '#FFF3C4', snack: '#FF9BD0', door: '#FFFDF2' },
     rows: [
       '############################',
       '#......##..........##......#',
@@ -1125,16 +1163,45 @@ const Engine = (() => {
 /* ENGINE:END */
 
 /* =====================================================================================
-   Helpers and saved data
+   Helpers, the kit and saved data
    ===================================================================================== */
 const $ = id => document.getElementById(id);
 const TAU = Math.PI * 2;
-let REDUCED = false; try { REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* ignore */ }
+let REDUCED = !!Oomba.settings.reduced;
 let FINE = false; try { FINE = matchMedia('(hover: hover) and (pointer: fine)').matches; } catch (e) { /* ignore */ }
 const fmt = n => fmtNum(Math.floor(n));
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
 function mix(a, b, t) { const A = hexRgb(a), B = hexRgb(b); return 'rgb(' + Math.round(A[0] + (B[0] - A[0]) * t) + ',' + Math.round(A[1] + (B[1] - A[1]) * t) + ',' + Math.round(A[2] + (B[2] - A[2]) * t) + ')'; }
+const hexMix = (a, b, t) => { const A = hexRgb(a), B = hexRgb(b); return '#' + [0, 1, 2].map(i => Math.round(A[i] + (B[i] - A[i]) * t).toString(16).padStart(2, '0')).join(''); };
+const C = (hue, step) => Oomba.color(hue, step);
+const INK = C('ink'), CREAM = C('card'), SPARK = C('spark'), MINT = C('mint'), CORAL = C('coral'), SKY = C('sky');
+const D = Oomba.draw, ART = Oomba.art.ink;
+document.title = CONFIG.title;
+for (const g of CONFIG.gloops) g.dark = hexMix(g.color, INK, 0.28);   // each Gloop's cel shade
+
+/* ---------- The kit: the haunted world behind everything, colours as CSS variables, the game's DOM in the kit's UI root ---------- */
+const cssVars = { ink: INK, cream: CREAM, spark: SPARK, sparkTint: C('spark', 'tint'), mint: MINT, mintTint: C('mint', 'tint'), frame: C('grape', 'shade') };
+for (const k in cssVars) document.documentElement.style.setProperty('--mm-' + k, cssVars[k]);
+const STAGE = Oomba.stage({ api: 1, biome: CONFIG.biome, size: [960, 540] });
+STAGE.camera.x = 0; STAGE.camera.y = -170;
+// the theme's dusk (a dark site is still night), and dusk again after a night
+STAGE.toNight = (on, ms) => STAGE.setTimeOfDay(on ? 1 : CONFIG.timeOfDay, ms);
+if (Oomba.theme.mode !== 'dark') STAGE.setTimeOfDay(CONFIG.timeOfDay, 0);
+// the haunted theme's friendly props on the right of the world (the left is where the player's character stands on the title)
+const PROPS = [];
+for (const [name, x, s] of [['pumpkin', 430, 92], ['ghost', 330, 88], ['pumpkin', 250, 58]]) {
+  try { PROPS.push(STAGE.add(name, { x, y: 32, size: s, layer: 'near', flip: name === 'ghost' })); } catch (e) { /* the art-props pack is missing: the world alone */ }
+}
+/** The props step aside while the arrow buttons are on the right of a wide play screen (no clutter by a touch control). */
+function syncProps(hide) { for (const e of PROPS) if (e) e.visible = !hide; }
+Oomba.ui.root().appendChild($('game'));
+Oomba.scene = 'title';
+/** Munch: the player's own character (their Me-page avatar; the Oomba mascot for guests), unless CONFIG names another. */
+const ME = CONFIG.hero === 'me' ? Oomba.avatar() : Oomba.char(CONFIG.hero);
+/** The kit's sounds (captions only where the kit captions); the SDK's names (click, coin, hit, lose ...) pass through. */
+function sfx(name, o) { try { Oomba.sfx(name, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } }
+Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
 
 const DEFAULT_SAVE = { v: 1, best: { classic: 0, easy: 0 }, bestLevel: { classic: 0, easy: 0 }, dots: 0, gloops: 0, games: 0, maze: 'mix', pad: false };
 let save = JSON.parse(JSON.stringify(DEFAULT_SAVE));
@@ -1158,18 +1225,17 @@ const UI = {
   mode: 'classic', paused: false,
   manual: false,            // __brbTest.manual(true): only __brbTest.step() moves time
   fast: false,              // __brbTest.skipAnimations(): no READY wait, no cartoons, instant catches
-  bestAtStart: 0, newBestShown: false, overShown: false, overTimer: 0
+  bestAtStart: 0, newBestShown: false, overShown: false, overTimer: null
 };
 let G = null;               // the running game (see Engine.newGame)
 const app = $('app'), cv = $('cv'), ctx = cv.getContext('2d');
 let DPR = 1, BT = 12, TILE = 12;          // BT: device pixels per tile (a whole number, so the maze stays crisp)
 let wallCache = null, wallFlash = null, wallKey = '';
-const dotLayer = document.createElement('canvas'), dctx = dotLayer.getContext('2d');
-let dotsKey = '';
 
 /* =====================================================================================
    Layout: fit the maze into the screen (portrait: HUD above, info + pad below; wide: HUD left, pad right)
    ===================================================================================== */
+const FRAME = 2 * (2 + 3), FRAME_Y = FRAME + 5;   // the board's padding and Ink border, both sides (FRAME_Y: plus the thicker edge below)
 // Several passes: a pass can measure the pad/HUD rows at the previous maze width; the next one settles the size.
 function layout() { layoutPass(); const before = cv.style.width; layoutPass(); if (cv.style.width !== before) layoutPass(); }
 function layoutPass() {
@@ -1182,31 +1248,31 @@ function layoutPass() {
   let avW, avH;
   if (wide) {
     // The maze is limited by height here, so give the sides whatever width is left: a bigger pad costs no maze.
-    const mazeW = 28 * Math.max(5, (H - 14) / 31);
-    const sideW = clamp((W - mazeW - 52) / 2, 190, 320);
-    app.style.setProperty('--pc', Math.round(clamp(Math.min((sideW - 12) / 3, (H - 40) / 3.4), 56, 96)) + 'px');
-    avW = W - 2 * sideW - 36 - 16; avH = H - 14;
+    const mazeW = 28 * Math.max(5, (H - 20 - FRAME_Y) / 31);
+    const sideW = clamp((W - mazeW - FRAME - 52) / 2, 190, 320);
+    app.style.setProperty('--pc', Math.round(clamp(Math.min((sideW - 16) / 3, (H - 40) / 3.4), 56, 96)) + 'px');
+    avW = W - 2 * sideW - 36 - 16 - FRAME; avH = H - 20 - FRAME_Y;
   } else {
     app.style.setProperty('--pc', Math.round(clamp(H * 0.095, 58, 84)) + 'px');
     const side = $('side'), rows = side.hidden ? 2 : 3;
-    avW = W - 16;
-    avH = H - 14 - $('hud').offsetHeight - $('info').offsetHeight - (side.hidden ? 0 : side.offsetHeight) - 6 * rows;
+    avW = W - 16 - FRAME;
+    avH = H - 20 - FRAME_Y - $('hud').offsetHeight - $('info').offsetHeight - (side.hidden ? 0 : side.offsetHeight) - 6 * rows;
   }
   const tile = Math.max(5, Math.min(avW / 28, avH / 31));
   BT = Math.max(5, Math.floor(tile * DPR));
   TILE = BT / DPR;
   cv.width = BT * 28; cv.height = BT * 31;
   cv.style.width = (BT * 28 / DPR) + 'px'; cv.style.height = (BT * 31 / DPR) + 'px';
-  app.style.setProperty('--bw', (BT * 28 / DPR) + 'px');
-  dotLayer.width = cv.width; dotLayer.height = cv.height;
-  wallKey = ''; dotsKey = '';
+  app.style.setProperty('--bw', (BT * 28 / DPR + FRAME) + 'px');
+  syncProps(wide && save.pad && UI.screen !== 'title');
   hudCache.lives = -1; hudCache.fruitLevel = -1;
 }
 
 /* =====================================================================================
-   Maze art: neon candy tubes. Each wall tile is a circle joined to its wall neighbours; drawing that
-   shape at a few shrinking radii gives a glowing outline with rounded corners for any layout.
-   Cached in an offscreen canvas (one normal, one white for the level-clear flash).
+   Maze art in the kit's Ink style: candy walls with an Ink edge and one hard cel shade on a night floor. Each wall
+   tile is a circle joined to its wall neighbours; drawing that shape at a few radii gives the outline, the shade and
+   the lit face with rounded corners for any layout. Cached in an offscreen canvas (one normal, one Cream for the
+   level-clear blink).
    ===================================================================================== */
 function wallPath(M, r) {
   const p = new Path2D();
@@ -1225,235 +1291,210 @@ function wallPath(M, r) {
 function hash(x, y, k) { let h = (x * 374761393 + y * 668265263 + k * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
 function buildWalls(M, flash) {
   const c = document.createElement('canvas'); c.width = M.W * BT; c.height = M.H * BT;
-  const x = c.getContext('2d'), col = M.colors;
+  // drawn once on the CPU (a static picture: no graphics-card work queued behind the game's first frames)
+  const x = c.getContext('2d', { willReadFrequently: true }), col = M.colors;
   x.fillStyle = col.bg; x.fillRect(0, 0, c.width, c.height);
-  const vg = x.createRadialGradient(c.width / 2, c.height * 0.45, BT, c.width / 2, c.height / 2, c.height * 0.75);
-  vg.addColorStop(0, 'rgba(255,255,255,0.07)'); vg.addColorStop(1, 'rgba(0,0,0,0.3)');
-  x.fillStyle = vg; x.fillRect(0, 0, c.width, c.height);
+  // a faint checker on the floor (two shades of the night), so the paths read as a place
+  x.fillStyle = hexMix(col.bg, CREAM, 0.035);
+  for (let ty = 0; ty < M.H; ty++) for (let tx = 0; tx < M.W; tx++) if ((tx + ty) % 2 === 0 && M.grid[ty * M.W + tx] !== Engine.T_WALL) x.fillRect(tx * BT, ty * BT, BT, BT);
   x.setTransform(BT, 0, 0, BT, 0, 0);
-  const glow = flash ? '#ffffff' : col.glow, edge = flash ? '#ffffff' : col.edge;
-  x.save(); x.shadowColor = glow; x.shadowBlur = BT * 0.8; x.fillStyle = glow; x.fill(wallPath(M, 0.43)); x.restore();
-  x.fillStyle = edge; x.fill(wallPath(M, 0.385));
-  x.fillStyle = glow; x.fill(wallPath(M, 0.345));
-  const inner = wallPath(M, 0.3);
-  const fg = x.createLinearGradient(0, 0, 0, M.H);
-  fg.addColorStop(0, flash ? '#4d3d82' : col.fill); fg.addColorStop(1, flash ? '#3a2d66' : col.fill2);
-  x.fillStyle = fg; x.fill(inner);
-  // decorations inside the walls: sprinkles, gems or tiny stars
-  x.save(); x.clip(inner);
-  const SPR = ['#ff7ad1', '#ffe36e', '#7ef0ff', '#b6ff7a', '#ffffff'];
+  const ink = Math.max(2 / BT, 0.07), rim = Math.max(1.5 / BT, 0.05);   // the Ink line (at least 2 device px) and the Cream rim
+  const lit = flash ? CREAM : col.wall, shade = flash ? C('stone', 'light') : col.shade, r = 0.33, band = 0.14;
+  x.fillStyle = CREAM; x.fill(wallPath(M, r + ink + rim));
+  x.fillStyle = INK; x.fill(wallPath(M, r + ink));
+  const inner = wallPath(M, r);
+  // the candy edge: the wall colour with its cel shade along the bottom
+  x.fillStyle = shade; x.fill(inner);
+  x.save(); x.clip(inner); x.translate(-0.04, -0.07); x.fillStyle = lit; x.fill(inner); x.restore();
+  // the face: a deep, quieter tone of the wall colour (darker towards the floor), with a thin Ink line inside the edge,
+  // so the corridors and the dots stay the brightest things on the board
+  const face = wallPath(M, r - band);
+  if (!flash) {
+    x.fillStyle = INK; x.fill(wallPath(M, r - band + Math.max(1 / BT, 0.035)));
+    x.fillStyle = hexMix(col.wall, col.bg, 0.64); x.fill(face);
+    x.save(); x.clip(face); x.translate(0.05, 0.08); x.fillStyle = hexMix(col.wall, col.bg, 0.5); x.fill(face); x.restore();
+  }
+  // decorations inside the walls: sprinkles, gems or tiny stars (kit colours)
+  x.save(); x.clip(flash ? inner : face);
+  const SPR = [CREAM, SPARK, SKY, MINT, CORAL];
   for (let ty = 0; ty < M.H; ty++) for (let tx = 0; tx < M.W; tx++) {
-    if (M.grid[ty * M.W + tx] !== Engine.T_WALL || hash(tx, ty, 1) > 0.55) continue;
+    if (M.grid[ty * M.W + tx] !== Engine.T_WALL || hash(tx, ty, 1) > 0.5) continue;
     const px = tx + 0.25 + hash(tx, ty, 2) * 0.5, py = ty + 0.25 + hash(tx, ty, 3) * 0.5, a = hash(tx, ty, 4) * Math.PI;
-    x.save(); x.translate(px, py); x.rotate(a); x.globalAlpha = flash ? 0.3 : 0.6;
-    if (M.deco === 'sprinkles') { x.fillStyle = SPR[Math.floor(hash(tx, ty, 5) * SPR.length)]; x.fillRect(-0.11, -0.035, 0.22, 0.07); }
-    else if (M.deco === 'gems') { x.fillStyle = hash(tx, ty, 5) > 0.5 ? '#9dffe0' : '#5fd6ff'; x.beginPath(); x.moveTo(0, -0.1); x.lineTo(0.07, 0); x.lineTo(0, 0.1); x.lineTo(-0.07, 0); x.closePath(); x.fill(); }
-    else { x.fillStyle = hash(tx, ty, 5) > 0.6 ? '#fff3b8' : '#c9d6ff'; x.beginPath(); for (let k = 0; k < 8; k++) { const r = k % 2 ? 0.03 : 0.1, an = k * Math.PI / 4; x.lineTo(Math.cos(an) * r, Math.sin(an) * r); } x.closePath(); x.fill(); }
+    x.save(); x.translate(px, py); x.rotate(a); x.globalAlpha = flash ? 0.25 : 0.7;
+    if (M.deco === 'sprinkles') { x.fillStyle = SPR[Math.floor(hash(tx, ty, 5) * SPR.length)]; D.rrect(x, -0.11, -0.04, 0.22, 0.08, 0.04); x.fill(); }
+    else if (M.deco === 'gems') { x.fillStyle = hash(tx, ty, 5) > 0.5 ? CREAM : C('sky', 'light'); x.beginPath(); x.moveTo(0, -0.1); x.lineTo(0.07, 0); x.lineTo(0, 0.1); x.lineTo(-0.07, 0); x.closePath(); x.fill(); }
+    else { x.fillStyle = hash(tx, ty, 5) > 0.6 ? C('spark', 'light') : CREAM; x.fill(Oomba.art.sparkPath(0, 0, 0.1)); }
     x.restore();
   }
   x.restore();
-  // the house door: a soft candy bar
-  x.fillStyle = flash ? '#ffffff' : col.door;
-  x.save(); x.shadowColor = x.fillStyle; x.shadowBlur = BT * 0.5;
-  roundRect(x, M.doorX0 - 0.1, M.doorY + 0.36, M.doorX1 - M.doorX0 + 1.2, 0.28, 0.14); x.fill(); x.restore();
+  // the house door: a Cream candy bar with an Ink edge
+  D.rrect(x, M.doorX0 - 0.1, M.doorY + 0.34, M.doorX1 - M.doorX0 + 1.2, 0.32, 0.16);
+  x.fillStyle = flash ? CREAM : col.door; x.fill(); x.lineWidth = ink; x.strokeStyle = INK; x.stroke();
   return c;
 }
-function roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
 function ensureWalls() {
-  const key = G.maze.id + ':' + BT;
+  const key = G.maze.id + ':' + BT;   // a new maze or a new tile size (a resize) draws the walls again
   if (key === wallKey) return;
-  wallKey = key; wallCache = buildWalls(G.maze, false); wallFlash = buildWalls(G.maze, true);
+  wallKey = key; wallCache = buildWalls(G.maze, false); wallFlash = null;
 }
-function ensureDots() {
-  const key = G.level + ':' + G.dotsLeft + ':' + BT + ':' + G.maze.id;
-  if (key === dotsKey) return;
-  dotsKey = key;
+/** The Cream walls of the level-clear blink, drawn the first time a maze is cleared. */
+function flashWalls() { if (!wallFlash) wallFlash = buildWalls(G.maze, true); return wallFlash; }
+/** The dots: one path, drawn straight onto the board each frame (cheaper on slow devices than keeping a dots layer
+ *  canvas up to date: a canvas changed and then copied every frame stalls their graphics). */
+function drawDots(c) {
   const M = G.maze;
-  dctx.setTransform(1, 0, 0, 1, 0, 0); dctx.clearRect(0, 0, dotLayer.width, dotLayer.height);
-  dctx.setTransform(BT, 0, 0, BT, BT / 2, BT / 2);
-  dctx.fillStyle = M.colors.dot; dctx.shadowColor = M.colors.dot; dctx.shadowBlur = BT * 0.35;
-  dctx.beginPath();
-  for (let i = 0; i < G.dots.length; i++) if (G.dots[i] === 1) { const x = i % M.W, y = (i / M.W) | 0; dctx.moveTo(x + 0.13, y); dctx.arc(x, y, 0.13, 0, TAU); }
-  dctx.fill(); dctx.shadowBlur = 0;
+  c.fillStyle = M.colors.dot; c.beginPath();
+  for (let i = 0; i < G.dots.length; i++) if (G.dots[i] === 1) { const x = i % M.W, y = (i / M.W) | 0; c.moveTo(x + 0.13, y); c.arc(x, y, 0.13, 0, TAU); }
+  c.fill();
 }
 
 /* =====================================================================================
-   Characters (all original): Munch the bouncy lime blob, and the Gloops, friendly jelly monsters
-   with googly eyes. Drawn in tile units around (x, y).
+   Characters: Munch is the player's own kit character; the Gloops are friendly jelly monsters drawn with the kit's
+   Ink grammar (Cream rim, flat fill, one hard cel shade, Ink outline, ring eyes). Drawn in tile units around (x, y).
+   Kit pictures (the character's faces, the props) are baked once per size and only copied each frame.
    ===================================================================================== */
-function drawMunch(c, x, y, o) {
-  const P = CONFIG.munch, s = o.scale || 1, R = 0.66, sq = o.squash || 0;
-  const v = Engine.DIRS[o.dir] || Engine.DIRS.left;
-  c.save(); c.translate(x, y); if (o.rot) c.rotate(o.rot); c.scale(s * (1 + sq), s * (1 - sq));
-  // little feet that take turns
-  const lift = Math.sin(o.step || 0) * 0.1;
-  c.fillStyle = P.dark;
-  c.beginPath(); c.ellipse(-0.27, 0.6 - Math.max(0, lift), 0.19, 0.11, 0, 0, TAU); c.fill();
-  c.beginPath(); c.ellipse(0.27, 0.6 - Math.max(0, -lift), 0.19, 0.11, 0, 0, TAU); c.fill();
-  // body
-  const g = c.createRadialGradient(-0.22, -0.3, 0.05, 0, 0, R);
-  g.addColorStop(0, P.light); g.addColorStop(0.5, P.color); g.addColorStop(1, P.dark);
-  c.fillStyle = g; c.beginPath(); c.arc(0, 0, R, 0, TAU); c.fill();
-  c.fillStyle = 'rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(-0.27, -0.38, 0.14, 0.075, -0.6, 0, TAU); c.fill();
-  // the face turns the way Munch is going
-  const fx = v[0] * 0.17, fy = v[1] * 0.14;
-  c.fillStyle = 'rgba(255,110,150,.45)';
-  c.beginPath(); c.ellipse(fx - 0.39, fy + 0.12, 0.1, 0.065, 0, 0, TAU); c.fill();
-  c.beginPath(); c.ellipse(fx + 0.39, fy + 0.12, 0.1, 0.065, 0, 0, TAU); c.fill();
-  const ey = fy - 0.17;
-  for (let k = -1; k <= 1; k += 2) {
-    const ex = fx + k * 0.2, wide = o.surprised;
-    c.fillStyle = '#fff'; c.beginPath(); c.ellipse(ex, ey, wide ? 0.16 : 0.14, wide ? 0.21 : 0.17, 0, 0, TAU); c.fill();
-    c.lineWidth = 0.035; c.strokeStyle = P.dark; c.stroke();
-    if (o.blink) {
-      c.fillStyle = P.color; c.beginPath(); c.ellipse(ex, ey, 0.15, 0.18, 0, 0, TAU); c.fill();
-      c.strokeStyle = '#2b1238'; c.lineWidth = 0.05; c.lineCap = 'round';
-      c.beginPath(); c.moveTo(ex - 0.11, ey); c.quadraticCurveTo(ex, ey + 0.08, ex + 0.11, ey); c.stroke();
-    } else {
-      const px = ex + v[0] * 0.05, py = ey + v[1] * 0.06 + 0.02;
-      c.fillStyle = '#2b1238'; c.beginPath(); c.arc(px, py, wide ? 0.055 : 0.075, 0, TAU); c.fill();
-      c.fillStyle = '#fff'; c.beginPath(); c.arc(px - 0.025, py - 0.025, 0.025, 0, TAU); c.fill();
-    }
+const PICS = new Map();
+/** A kit picture (a prop name, or Munch with a face) about px device pixels tall, baked once. */
+function pic(name, px, mood) {
+  const me = name === 'me';
+  // baked at a few fixed sizes only (and scaled when drawn), so a spin or a resize never bakes a new picture each frame
+  const q = me ? Math.max(48, Math.ceil(px * 1.4 / 32) * 32) : Math.max(16, Math.ceil(px / 16) * 16);
+  const key = name + '|' + (mood || '') + '|' + q;
+  let c = PICS.get(key);
+  if (!c) {
+    if (PICS.size > 160) PICS.clear();
+    try { c = me ? Oomba.art.toCanvas(ME, q, mood || '') : Oomba.art.toCanvas(name, q); } catch (e) { c = null; }
+    if (!c || !c.width) { c = document.createElement('canvas'); c.width = c.height = 1; }
+    if (me) c.crop = meCrop();
+    PICS.set(key, c);
   }
-  // mouth: opens and closes as Munch munches
-  const open = o.mouth || 0, up = v[1] < 0, my = fy + (up ? 0.12 : 0.21), mw = up ? 0.16 : 0.23;
-  if (open < 0.15 && !o.surprised) {
-    c.strokeStyle = '#5c1236'; c.lineWidth = 0.05; c.lineCap = 'round';
-    c.beginPath(); c.arc(fx, my - 0.07, mw * 0.75, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
-  } else {
-    const oo = o.surprised ? 0.6 : open;
-    c.fillStyle = '#5c1236'; c.beginPath(); c.ellipse(fx, my, o.surprised ? 0.1 : mw, 0.04 + 0.17 * oo, 0, 0, TAU); c.fill();
-    if (oo > 0.35 && !o.surprised) { c.fillStyle = '#ff7aa8'; c.beginPath(); c.ellipse(fx, my + 0.05 + 0.06 * oo, mw * 0.55, 0.05 + 0.04 * oo, 0, 0, TAU); c.fill(); }
-  }
+  return c;
+}
+/** Where the character is in its portrait (portraits keep air around the head for hats), as fractions, measured once:
+ *  Munch's size is then the character's own size, whoever the player designed. */
+let CROP = null;
+function meCrop() {
+  if (CROP) return CROP;
+  CROP = { x: 0, y: 0, w: 1, h: 1 };
+  try {
+    const src = Oomba.art.toCanvas(ME, 96, ''), w = src.width, h = src.height, d = src.getContext('2d').getImageData(0, 0, w, h).data;
+    let x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 24) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 >= 0) { const m = 2; x0 = Math.max(0, x0 - m); y0 = Math.max(0, y0 - m); x1 = Math.min(w - 1, x1 + m); y1 = Math.min(h - 1, y1 + m); CROP = { x: x0 / w, y: y0 / h, w: (x1 - x0 + 1) / w, h: (y1 - y0 + 1) / h }; }
+  } catch (e) { /* the whole portrait */ }
+  return CROP;
+}
+/** Draws a kit picture h tiles tall with its middle at (x, y) (or its feet there: o.feet), in the current tile transform. */
+function drawPic(c, name, x, y, h, o) {
+  o = o || {};
+  const t = c.getTransform(), s = Math.hypot(t.a, t.b);
+  const p = pic(name, h * s, o.mood), k = p.crop || { x: 0, y: 0, w: 1, h: 1 };
+  const sw = p.width * k.w, sh = p.height * k.h, w = h * sw / sh;
+  c.save(); c.translate(x, y);
+  if (o.rot) c.rotate(o.rot);
+  if (o.flip) c.scale(-1, 1);
+  if (o.sx || o.sy) c.scale(o.sx || 1, o.sy || 1);
+  c.drawImage(p, p.width * k.x, p.height * k.y, sw, sh, -w / 2, o.feet ? -h : -h / 2, w, h);
   c.restore();
 }
-
+const HALO = (() => { const [r, g, b] = hexRgb(C('spark', 'light')); return ['rgba(' + r + ',' + g + ',' + b + ',.75)', 'rgba(' + r + ',' + g + ',' + b + ',.32)', 'rgba(' + r + ',' + g + ',' + b + ',0)']; })();
+/** Munch: the player's character, hopping as it goes, a face that munches (open / closed), surprised when caught. */
+function drawMunch(c, x, y, o) {
+  const s = o.scale || 1, h = CONFIG.heroSize * s, v = Engine.DIRS[o.dir] || Engine.DIRS.left;
+  const hop = o.step && !REDUCED ? Math.abs(Math.sin(o.step * 0.5)) * 0.14 * s : 0;
+  const sq = o.squash || 0;
+  const mood = o.surprised ? 'surprised' : o.mood || (o.mouth > 0.5 ? 'talk' : 'happy');
+  // a soft shadow on the floor, then the character standing on it
+  if (!o.noShadow) {
+    // a soft glow behind the hero on the board, so the player always finds themselves at a glance
+    if (o.halo) { const g = c.createRadialGradient(x, y - 0.1 * s, 0.2 * s, x, y - 0.1 * s, 1.35 * s); g.addColorStop(0, HALO[0]); g.addColorStop(0.55, HALO[1]); g.addColorStop(1, HALO[2]); c.fillStyle = g; c.beginPath(); c.arc(x, y - 0.1 * s, 1.35 * s, 0, TAU); c.fill(); }
+    c.globalAlpha = 0.35; c.fillStyle = INK; c.beginPath(); c.ellipse(x, y + 0.55 * s, 0.42 * s * (1 - hop), 0.12 * s, 0, 0, TAU); c.fill(); c.globalAlpha = 1;
+  }
+  drawPic(c, 'me', x, y + 0.6 * s - hop, h, { feet: true, mood, rot: (o.rot || 0) + (REDUCED ? 0 : v[0] * 0.08), flip: o.dir === 'left', sx: 1 + sq, sy: 1 - sq });
+}
+/** The Gloop body: a dome with a wobbly, drippy hem (a Path2D in Gloop units: radius 0.64). */
+function gloopPath(R, t, id) {
+  const p = new Path2D(); p.moveTo(-R, 0); p.arc(0, -0.02, R, Math.PI, 0); p.lineTo(R, 0.47);
+  const n = 4, w = (2 * R) / n;
+  for (let i = 0; i < n; i++) {
+    const x0 = R - i * w, x1 = x0 - w, d = 0.64 + (REDUCED ? 0 : Math.sin(t * 8 + i * 1.9 + id) * 0.07);
+    p.quadraticCurveTo(x0 - w / 2, d + 0.1, x1, i === n - 1 ? 0.47 : 0.5);
+  }
+  p.closePath(); return p;
+}
 function drawGloop(c, x, y, o) {
   const s = o.scale || 1, R = 0.64;
   const v = Engine.DIRS[o.dir] || Engine.DIRS.left;
   const t = o.t || 0;
+  const sc = Math.hypot(c.getTransform().a, c.getTransform().b) * s;   // device px per Gloop unit
+  const k = { s: sc, px: sc * 1.35 };                                     // the kit's line widths for a sprite this size
   c.save(); c.translate(x, y); c.scale(s, s);
   if (o.mode !== 'eyes') {
     const fright = o.mode === 'fright';
-    const body = fright ? mix('#4a5cff', '#f4f2ff', o.white || 0) : o.color;
-    const dark = fright ? mix('#2833b5', '#bdb6ff', o.white || 0) : o.dark;
+    const body = fright ? mix(CONFIG.fright.body, CONFIG.fright.flash, o.white || 0) : o.color;
+    const dark = fright ? mix(hexMix(CONFIG.fright.body, INK, 0.3), C('stone', 'light'), o.white || 0) : o.dark;
     const wob = REDUCED ? 0 : Math.sin(t * 9 + o.id * 1.3);
     c.save(); c.scale(1 + wob * 0.035, 1 - wob * 0.035);
-    // jelly body: a dome with a wobbly, drippy hem
-    c.beginPath(); c.moveTo(-R, 0); c.arc(0, -0.02, R, Math.PI, 0); c.lineTo(R, 0.47);
-    const n = 4, w = (2 * R) / n;
-    for (let i = 0; i < n; i++) {
-      const x0 = R - i * w, x1 = x0 - w, d = 0.64 + (REDUCED ? 0 : Math.sin(t * 8 + i * 1.9 + o.id) * 0.07);
-      c.quadraticCurveTo(x0 - w / 2, d + 0.1, x1, i === n - 1 ? 0.47 : 0.5);
-    }
-    c.closePath();
-    const bg = c.createLinearGradient(0, -R, 0, 0.7); bg.addColorStop(0, body); bg.addColorStop(1, dark);
-    c.fillStyle = bg; c.fill();
-    c.fillStyle = 'rgba(255,255,255,.42)'; c.beginPath(); c.ellipse(-0.3, -0.36, 0.13, 0.08, -0.6, 0, TAU); c.fill();
-    c.beginPath(); c.arc(-0.1, -0.5, 0.035, 0, TAU); c.fill();
+    ART.sticker(c, k, gloopPath(R, t, o.id), { fill: body, shade: dark, shadeOff: 0.12, gloss: [-0.3, -0.36, 0.13, 0.08, -0.6] });
     c.restore();
-    if (fright) {   // worried face: little eyes and a wiggly mouth
-      const fc = (o.white || 0) > 0.5 ? '#ff4f6d' : '#ffffff';
+    if (fright) {   // worried face: little eyes and a wiggly mouth (Cream; Coral while fading)
+      const fc = (o.white || 0) > 0.5 ? CORAL : CREAM;
       c.fillStyle = fc; c.beginPath(); c.arc(-0.2, -0.13, 0.085, 0, TAU); c.arc(0.2, -0.13, 0.085, 0, TAU); c.fill();
-      c.strokeStyle = fc; c.lineWidth = 0.055; c.lineJoin = 'round'; c.lineCap = 'round'; c.beginPath();
+      c.strokeStyle = fc; c.lineWidth = 0.06; c.lineJoin = 'round'; c.lineCap = 'round'; c.beginPath();
       for (let i = 0; i <= 6; i++) { const px = -0.3 + i * 0.1, py = 0.18 + (i % 2 ? -0.05 : 0.04); if (i) c.lineTo(px, py); else c.moveTo(px, py); }
       c.stroke(); c.restore(); return;
     }
-    drawHat(c, o.id, t);
+    drawHat(c, k, o.id, t);
     c.fillStyle = 'rgba(255,255,255,.3)'; c.beginPath(); c.ellipse(-0.37, 0.1, 0.09, 0.055, 0, 0, TAU); c.ellipse(0.37, 0.1, 0.09, 0.055, 0, 0, TAU); c.fill();
-    c.strokeStyle = 'rgba(40,8,40,.75)'; c.lineWidth = 0.05; c.lineCap = 'round';
-    c.beginPath(); c.arc(v[0] * 0.08, 0.08 + v[1] * 0.04, 0.11, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
+    const m = new Path2D(); m.arc(v[0] * 0.08, 0.08 + v[1] * 0.04, 0.11, 0.15 * Math.PI, 0.85 * Math.PI); ART.detail(c, k, m, 1);
   }
-  // googly eyes that look where the Gloop is going (and jiggle)
+  // the kit's ring eyes (Cream with an Ink ring) that look where the Gloop is going (and jiggle)
   const ex0 = v[0] * 0.1, ey = -0.16 + v[1] * 0.07;
   const jx = REDUCED ? 0 : Math.sin(t * 17 + o.id * 2) * 0.02, jy = REDUCED ? 0 : Math.cos(t * 13 + o.id) * 0.02;
-  for (let k = -1; k <= 1; k += 2) {
-    const ex = ex0 + k * 0.22;
-    c.fillStyle = '#fff'; c.beginPath(); c.arc(ex, ey, 0.17, 0, TAU); c.fill();
-    c.lineWidth = 0.03; c.strokeStyle = 'rgba(30,10,40,.4)'; c.stroke();
-    c.fillStyle = '#1d0b2b'; c.beginPath(); c.arc(ex + v[0] * 0.07 + jx, ey + v[1] * 0.07 + jy + 0.01, 0.075, 0, TAU); c.fill();
+  for (let q = -1; q <= 1; q += 2) {
+    const ex = ex0 + q * 0.22;
+    c.beginPath(); c.arc(ex, ey, 0.155, 0, TAU); c.fillStyle = CREAM; c.fill(); c.lineWidth = Math.max(0.045, 1.4 / k.s); c.strokeStyle = INK; c.stroke();
+    c.fillStyle = INK; c.beginPath(); c.arc(ex + v[0] * 0.05 + jx, ey + v[1] * 0.05 + jy + 0.01, 0.07, 0, TAU); c.fill();
     if (o.id === 3 && o.mode !== 'eyes') {     // Dozy always looks sleepy
-      c.fillStyle = o.dark; c.beginPath(); c.arc(ex, ey, 0.18, Math.PI * 1.02, Math.PI * 1.98); c.closePath(); c.fill();
+      const lid = new Path2D(); lid.arc(ex, ey, 0.19, Math.PI * 1.02, Math.PI * 1.98); lid.closePath();
+      c.fillStyle = o.dark; c.fill(lid); ART.detail(c, k, lid, 0.8);
     }
   }
   c.restore();
 }
-/** Each Gloop's little extra: Zippy's lightning tuft, Sneaky's bow, Tricky's curly antenna, Dozy's night cap. */
-function drawHat(c, id, t) {
+/** Each Gloop's little extra (Ink-edged stickers): Zippy's lightning tuft, Sneaky's bow, Tricky's curly antenna, Dozy's night cap. */
+function drawHat(c, k, id, t) {
   c.lineJoin = 'round'; c.lineCap = 'round';
+  const st = (p, fill, shade) => ART.sticker(c, k, p, { fill, shade, shadeOff: 0.04, rim: false, line: 0.8 });
   if (id === 0) {
-    c.fillStyle = '#ffe14d'; c.strokeStyle = '#b8860b'; c.lineWidth = 0.03;
-    c.beginPath(); c.moveTo(0.06, -0.6); c.lineTo(-0.09, -0.86); c.lineTo(0.02, -0.84); c.lineTo(-0.05, -1.04); c.lineTo(0.18, -0.76); c.lineTo(0.07, -0.78); c.lineTo(0.16, -0.6); c.closePath(); c.fill(); c.stroke();
+    const p = new Path2D(); p.moveTo(0.06, -0.6); p.lineTo(-0.09, -0.86); p.lineTo(0.02, -0.84); p.lineTo(-0.05, -1.04); p.lineTo(0.18, -0.76); p.lineTo(0.07, -0.78); p.lineTo(0.16, -0.6); p.closePath();
+    st(p, SPARK, C('spark', 'shade'));
   } else if (id === 1) {
-    c.save(); c.translate(0.3, -0.58); c.rotate(0.35); c.fillStyle = '#ff3fa4';
-    c.beginPath(); c.moveTo(0, 0); c.lineTo(-0.2, -0.12); c.lineTo(-0.2, 0.12); c.closePath(); c.moveTo(0, 0); c.lineTo(0.2, -0.12); c.lineTo(0.2, 0.12); c.closePath(); c.fill();
-    c.fillStyle = '#ffd1ec'; c.beginPath(); c.arc(0, 0, 0.06, 0, TAU); c.fill(); c.restore();
+    c.save(); c.translate(0.3, -0.58); c.rotate(0.35);
+    const p = new Path2D(); p.moveTo(0, 0); p.lineTo(-0.22, -0.13); p.lineTo(-0.22, 0.13); p.closePath(); p.moveTo(0, 0); p.lineTo(0.22, -0.13); p.lineTo(0.22, 0.13); p.closePath();
+    st(p, C('grape', 'light'), C('grape')); st(Oomba.art.ink.ellipse(0, 0, 0.07, 0.07), CREAM); c.restore();
   } else if (id === 2) {
     const sway = REDUCED ? 0 : Math.sin(t * 4) * 0.06;
-    c.strokeStyle = '#0f9fb5'; c.lineWidth = 0.05; c.beginPath(); c.moveTo(0, -0.62); c.quadraticCurveTo(0.12 + sway, -0.8, 0.04 + sway, -0.95); c.stroke();
-    c.fillStyle = '#fff27a'; c.beginPath(); c.arc(0.04 + sway, -0.98, 0.08, 0, TAU); c.fill();
+    const a = new Path2D(); a.moveTo(0, -0.62); a.quadraticCurveTo(0.12 + sway, -0.8, 0.04 + sway, -0.95); ART.detail(c, k, a, 1.4);
+    st(Oomba.art.ink.ellipse(0.04 + sway, -0.98, 0.09, 0.09), C('spark', 'light'), SPARK);
   } else {
-    c.fillStyle = '#7d6bff'; c.beginPath(); c.moveTo(-0.42, -0.42); c.quadraticCurveTo(0.05, -0.95, 0.5, -0.86); c.quadraticCurveTo(0.2, -0.62, 0.4, -0.46); c.closePath(); c.fill();
-    c.fillStyle = '#fff'; c.beginPath(); c.arc(0.52, -0.86, 0.08, 0, TAU); c.fill();
+    const p = new Path2D(); p.moveTo(-0.42, -0.42); p.quadraticCurveTo(0.05, -0.95, 0.5, -0.86); p.quadraticCurveTo(0.2, -0.62, 0.4, -0.46); p.closePath();
+    st(p, C('grape'), C('grape', 'shade')); st(Oomba.art.ink.ellipse(0.52, -0.86, 0.09, 0.09), CREAM);
   }
 }
-
-/* Bonus snacks, drawn in tile units (about 1.1 tiles tall). */
-function ball(c, x, y, r, col, dark) {
-  const g = c.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r); g.addColorStop(0, '#fff'); g.addColorStop(0.25, col); g.addColorStop(1, dark);
-  c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
-}
-function drawFruit(c, kind, x, y, s) {
-  c.save(); c.translate(x, y); c.scale(s || 1, s || 1); c.lineJoin = 'round'; c.lineCap = 'round';
-  switch (CONFIG.fruits[kind].id) {
-    case 'cherry':
-      c.strokeStyle = '#3f9d2f'; c.lineWidth = 0.07; c.beginPath(); c.moveTo(-0.22, 0.1); c.quadraticCurveTo(-0.1, -0.3, 0.1, -0.5); c.moveTo(0.24, 0.16); c.quadraticCurveTo(0.2, -0.2, 0.1, -0.5); c.stroke();
-      c.fillStyle = '#5ccc3c'; c.beginPath(); c.ellipse(0.27, -0.48, 0.16, 0.07, -0.4, 0, TAU); c.fill();
-      ball(c, -0.23, 0.24, 0.24, '#ff3b5c', '#a8103a'); ball(c, 0.24, 0.3, 0.24, '#ff3b5c', '#a8103a'); break;
-    case 'berry':
-      c.fillStyle = '#ff3b5c'; c.beginPath(); c.moveTo(0, 0.56); c.bezierCurveTo(-0.6, 0.15, -0.52, -0.38, 0, -0.3); c.bezierCurveTo(0.52, -0.38, 0.6, 0.15, 0, 0.56); c.fill();
-      c.fillStyle = '#ffe36e'; for (const [px, py] of [[-0.2, -0.08], [0.18, -0.1], [0, 0.08], [-0.14, 0.24], [0.15, 0.22], [0, 0.38]]) { c.beginPath(); c.ellipse(px, py, 0.03, 0.045, 0, 0, TAU); c.fill(); }
-      c.fillStyle = '#4cc83a'; c.beginPath(); for (let k = 0; k < 10; k++) { const r = k % 2 ? 0.08 : 0.25, a = Math.PI + k * Math.PI / 9; c.lineTo(Math.cos(a) * r, -0.32 + Math.sin(a) * r * 0.6); } c.closePath(); c.fill(); break;
-    case 'cupcake':
-      c.fillStyle = '#5ec8ff'; c.beginPath(); c.moveTo(-0.38, 0.02); c.lineTo(0.38, 0.02); c.lineTo(0.27, 0.55); c.lineTo(-0.27, 0.55); c.closePath(); c.fill();
-      c.strokeStyle = '#2b8fd0'; c.lineWidth = 0.045; c.beginPath(); for (const px of [-0.18, 0, 0.18]) { c.moveTo(px * 1.2, 0.04); c.lineTo(px, 0.53); } c.stroke();
-      c.fillStyle = '#ff9bd6'; c.beginPath(); c.arc(-0.2, -0.04, 0.21, 0, TAU); c.arc(0.2, -0.04, 0.21, 0, TAU); c.arc(0, -0.24, 0.22, 0, TAU); c.fill();
-      ball(c, 0, -0.5, 0.1, '#ff3b5c', '#a8103a'); break;
-    case 'melon':
-      c.fillStyle = '#3aa845'; c.beginPath(); c.arc(0, -0.12, 0.58, 0, Math.PI); c.closePath(); c.fill();
-      c.fillStyle = '#e8ffd8'; c.beginPath(); c.arc(0, -0.12, 0.5, 0, Math.PI); c.closePath(); c.fill();
-      c.fillStyle = '#ff4f6d'; c.beginPath(); c.arc(0, -0.12, 0.44, 0, Math.PI); c.closePath(); c.fill();
-      c.fillStyle = '#2b1238'; for (const [px, py] of [[-0.22, 0.02], [0, 0.12], [0.22, 0.02], [-0.1, -0.04], [0.11, -0.04]]) { c.beginPath(); c.ellipse(px, py, 0.03, 0.05, 0, 0, TAU); c.fill(); } break;
-    case 'star':
-      c.fillStyle = '#ffd23f'; c.strokeStyle = '#d18b00'; c.lineWidth = 0.05; c.beginPath();
-      for (let k = 0; k < 10; k++) { const r = k % 2 ? 0.25 : 0.58, a = -Math.PI / 2 + k * Math.PI / 5; c.lineTo(Math.cos(a) * r, Math.sin(a) * r + 0.04); } c.closePath(); c.fill(); c.stroke();
-      c.fillStyle = '#5c3a00'; c.beginPath(); c.arc(-0.1, 0.02, 0.045, 0, TAU); c.arc(0.1, 0.02, 0.045, 0, TAU); c.fill(); break;
-    case 'lolly':
-      c.strokeStyle = '#fff'; c.lineWidth = 0.09; c.beginPath(); c.moveTo(0, 0.1); c.lineTo(0, 0.62); c.stroke();
-      c.fillStyle = '#ff6fb5'; c.beginPath(); c.arc(0, -0.14, 0.4, 0, TAU); c.fill();
-      c.strokeStyle = '#fff'; c.lineWidth = 0.07; c.beginPath(); for (let k = 0; k < 40; k++) { const a = k * 0.42, r = 0.02 + k * 0.0085; c.lineTo(Math.cos(a) * r, -0.14 + Math.sin(a) * r); } c.stroke(); break;
-    case 'icecream':
-      c.fillStyle = '#e0a35a'; c.beginPath(); c.moveTo(-0.27, 0); c.lineTo(0.27, 0); c.lineTo(0, 0.64); c.closePath(); c.fill();
-      c.strokeStyle = '#b4762f'; c.lineWidth = 0.035; c.beginPath(); c.moveTo(-0.16, 0.02); c.lineTo(0.08, 0.42); c.moveTo(0.16, 0.02); c.lineTo(-0.08, 0.42); c.stroke();
-      ball(c, -0.14, -0.1, 0.22, '#ffe1f0', '#e7a6c8'); ball(c, 0.14, -0.1, 0.22, '#9be8ff', '#4fb2d6'); ball(c, 0, -0.34, 0.21, '#ffb0d9', '#e0609f'); break;
-    default:
-      c.fillStyle = '#ffd23f'; c.strokeStyle = '#c98a00'; c.lineWidth = 0.05; c.beginPath();
-      c.moveTo(-0.46, 0.36); c.lineTo(0.46, 0.36); c.lineTo(0.48, -0.16); c.lineTo(0.24, 0.06); c.lineTo(0, -0.4); c.lineTo(-0.24, 0.06); c.lineTo(-0.48, -0.16); c.closePath(); c.fill(); c.stroke();
-      c.fillStyle = '#ff4f9a'; c.beginPath(); c.arc(0, 0.17, 0.08, 0, TAU); c.fill(); c.fillStyle = '#38e1f0'; c.beginPath(); c.arc(-0.27, 0.2, 0.06, 0, TAU); c.arc(0.27, 0.2, 0.06, 0, TAU); c.fill();
-  }
-  c.restore();
-}
+/** A bonus snack (a kit prop) about 1.15 tiles tall, its middle at (x, y). */
+function drawFruit(c, kind, x, y, s) { drawPic(c, CONFIG.fruits[kind].id, x, y, 1.15 * (s || 1)); }
 
 /* =====================================================================================
    Particles and score pop-ups (fixed pools, so no garbage while playing)
    ===================================================================================== */
-const PARTS = Array.from({ length: 200 }, () => ({ on: false, kind: 0, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, size: 0, color: '#fff', rot: 0 }));
+const PARTS = Array.from({ length: 200 }, () => ({ on: false, kind: 0, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, size: 0, color: '', rot: 0 }));
 let partNext = 0;
 function spawn(kind, x, y, vx, vy, life, size, color) {
   const p = PARTS[partNext]; partNext = (partNext + 1) % PARTS.length;
   p.on = true; p.kind = kind; p.x = x; p.y = y; p.vx = vx; p.vy = vy; p.life = life; p.max = life; p.size = size; p.color = color; p.rot = Math.random() * TAU;
 }
-const POPS = Array.from({ length: 12 }, () => ({ on: false, x: 0, y: 0, text: '', life: 0, max: 1, color: '#fff', size: 1 }));
+const POPS = Array.from({ length: 12 }, () => ({ on: false, x: 0, y: 0, text: '', life: 0, max: 1, color: '', size: 1 }));
 let popNext = 0;
 function popup(text, x, y, color, life, size) { const p = POPS[popNext]; popNext = (popNext + 1) % POPS.length; p.on = true; p.text = text; p.x = x; p.y = y; p.color = color; p.life = p.max = life || 1.2; p.size = size || 0.9; }
 function burst(x, y, n, color, speed, kind) { if (REDUCED) n = Math.ceil(n / 3); for (let i = 0; i < n; i++) { const a = Math.random() * TAU, sp = speed * (0.5 + Math.random() * 0.7); spawn(kind || 1, x, y, Math.cos(a) * sp, Math.sin(a) * sp, 0.5 + Math.random() * 0.4, 0.1 + Math.random() * 0.08, color); } }
@@ -1465,64 +1506,34 @@ function drawParticles(c, dt) {
     const k = p.life / p.max; c.globalAlpha = Math.min(1, k * 1.5);
     c.fillStyle = p.color;
     if (p.kind === 0) { c.beginPath(); c.arc(p.x, p.y, p.size * (1.6 - k * 0.6), 0, TAU); c.fill(); }           // dust puff
-    else if (p.kind === 2) {                                                                                     // star
-      c.save(); c.translate(p.x, p.y); c.rotate(p.rot); c.beginPath();
-      for (let i = 0; i < 10; i++) { const r = i % 2 ? p.size * 0.45 : p.size, a = i * Math.PI / 5; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
-      c.closePath(); c.fill(); c.restore();
+    else if (p.kind === 2) {                                                                                     // the kit's spark
+      c.save(); c.translate(p.x, p.y); c.rotate(p.rot * 0.3); const sp = Oomba.art.sparkPath(0, 0, p.size * 1.3);
+      c.fill(sp); c.lineWidth = 0.04; c.strokeStyle = INK; c.stroke(sp); c.restore();
     } else if (p.kind === 3) { c.strokeStyle = p.color; c.lineWidth = 0.08; c.beginPath(); c.arc(p.x, p.y, p.size * (2 - k * 1.6), 0, TAU); c.stroke(); }   // ring
-    else { c.beginPath(); c.arc(p.x, p.y, p.size * k, 0, TAU); c.fill(); }                                      // spark
+    else { c.beginPath(); c.arc(p.x, p.y, p.size * k, 0, TAU); c.fill(); }                                      // dot
   }
   c.globalAlpha = 1;
 }
-/** Canvas words are drawn once into a small offscreen canvas and then only copied each frame (no text layout per frame). */
-const TXT = new Map();
-const CFONT = 'Fredoka, "Trebuchet MS", system-ui, sans-serif';
-function textSprite(str, fontPx, fill, stroke, lw, bg) {
-  const key = fontPx + '|' + fill + '|' + (stroke || '') + '|' + lw + '|' + (bg || '') + '|' + str;
-  let sp = TXT.get(key);
-  if (sp) return sp;
-  if (TXT.size > 200) TXT.clear();
-  const c = document.createElement('canvas'), x = c.getContext('2d'), font = '700 ' + fontPx + 'px ' + CFONT;
-  x.font = font;
-  const tw = Math.ceil(x.measureText(str).width);
-  const w = Math.max(1, bg ? Math.ceil(tw + fontPx * 1.1) : tw + Math.ceil(lw) * 2 + 4), h = Math.max(1, Math.ceil(bg ? fontPx * 1.45 : fontPx * 1.5 + lw * 2));
-  c.width = w; c.height = h;
-  x.font = font; x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineJoin = 'round';
-  try { x.direction = RTL ? 'rtl' : 'ltr'; } catch (e) { /* ignore */ }
-  if (bg) { x.fillStyle = bg; roundRect(x, 0, 0, w, h, h / 2); x.fill(); }
-  if (stroke) { x.lineWidth = lw; x.strokeStyle = stroke; x.strokeText(str, w / 2, h / 2); }
-  x.fillStyle = fill; x.fillText(str, w / 2, bg ? h / 2 + fontPx * 0.04 : h / 2);
-  sp = { c, w, h }; TXT.set(key, sp);
-  return sp;
-}
-// When the web font arrives, redraw the words with it.
-try { document.fonts.addEventListener('loadingdone', () => TXT.clear()); } catch (e) { /* ignore */ }
-/** Text drawn in device pixels (crisp), positioned in tiles. */
-function textAt(c, str, tx, ty, size, fill, stroke) {
-  const sp = textSprite(str, Math.round(size * BT), fill, stroke, stroke ? Math.max(2, BT * 0.22) : 0, null);
-  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-  c.drawImage(sp.c, Math.round((tx + 0.5) * BT - sp.w / 2), Math.round((ty + 0.5) * BT - sp.h / 2));
-  c.restore();
-}
-function pill(c, str, tx, ty, size, fill, bg) {
-  const fs = Math.round(Math.max(size * BT, 11.5 * DPR));   // never smaller than 11.5 CSS px, even on a small phone
-  const sp = textSprite(str, fs, fill, null, 0, bg);
-  const k = Math.min(1, (28 * BT * 0.96) / sp.w), w = sp.w * k, h = sp.h * k;   // long words: shrink to fit the maze
-  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-  c.drawImage(sp.c, Math.round((tx + 0.5) * BT - w / 2), Math.round((ty + 0.5) * BT - h / 2), w, h);
+/** Words on the board in the kit's type: big ones as stickers (Ink edge, Cream rim), small ones on a Cream pill. */
+function say(c, str, x, y, size, o) {
+  o = o || {};
+  const m = c.getTransform(), k = Math.hypot(m.a, m.b), px = m.a * x + m.c * y + m.e, py = m.b * x + m.d * y + m.f;
+  const big = size * k / DPR >= 18, max = (o.max || 26) * k;
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);   // the kit's text helper works in device pixels
+  D.text(c, str, px, py, big ? { size: size * k, max, color: o.color || CREAM, rim: true, pill: false } : { size: size * k, max });
   c.restore();
 }
 
 /* =====================================================================================
    Drawing the board every frame
    ===================================================================================== */
-let caughtPopped = false, lastPhase = '', eyeSpark = 0, readyKey = '', readyLine = '';
-function frightWhite() {   // 0 = blue, 1 = white: a slow smooth fade while the power runs out
+let caughtPopped = false, lastPhase = '', eyeSpark = 0, readyKey = '', readyLine = '', munchPop = 0;
+function frightWhite() {   // 0 = blue, 1 = Cream: a slow smooth fade while the power runs out
   if (G.frightT <= 0 || G.frightT > CONFIG.blinkSeconds) return 0;
   const k = (CONFIG.blinkSeconds - G.frightT) / CONFIG.blinkPeriod;
   return 0.5 - 0.5 * Math.cos(k * TAU);
 }
-function clearFlashOn() {  // level clear: 2 slow blinks (0.4 s white, 0.4 s normal)
+function clearFlashOn() {  // level clear: 2 slow blinks (0.4 s Cream, 0.4 s normal)
   if (G.phase !== 'clear') return false;
   const p = G.phaseT - 0.8; if (p < 0 || p >= 1.6) return false;
   return Math.floor(p / 0.4) % 2 === 0;
@@ -1530,23 +1541,23 @@ function clearFlashOn() {  // level clear: 2 slow blinks (0.4 s white, 0.4 s nor
 function renderBoard(t, dt) {
   const M = G.maze;
   if (G.phase !== lastPhase) { if (G.phase === 'caught') caughtPopped = false; lastPhase = G.phase; }
-  ensureWalls(); ensureDots();
+  ensureWalls();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   if (G.phase === 'intermission') { drawIntermission(t, dt); return; }
-  ctx.drawImage(clearFlashOn() ? wallFlash : wallCache, 0, 0);
-  ctx.drawImage(dotLayer, 0, 0);
+  ctx.drawImage(clearFlashOn() ? flashWalls() : wallCache, 0, 0);
   ctx.setTransform(BT, 0, 0, BT, BT / 2, BT / 2);   // tile centres at whole numbers from here on
-  // Super Snacks: glowing gumballs that gently swell (no flashing)
-  const pulse = REDUCED ? 0 : Math.sin(t * TAU * 1.1) * 0.05;
+  drawDots(ctx);
+  // Super Snacks: the kit's sweets, gently swelling (no flashing)
+  const pulse = REDUCED ? 0 : Math.sin(t * TAU * 1.1) * 0.06;
   for (let i = 0; i < G.dots.length; i++) if (G.dots[i] === 2) {
     const x = i % M.W, y = (i / M.W) | 0;
-    ctx.globalAlpha = 0.22; ctx.fillStyle = M.colors.snack; ctx.beginPath(); ctx.arc(x, y, 0.62 + pulse * 2, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
-    ball(ctx, x, y, 0.34 + pulse, M.colors.snack, mix(M.colors.snack, '#000000', 0.45));
+    ctx.globalAlpha = 0.16; ctx.fillStyle = CREAM; ctx.beginPath(); ctx.arc(x, y, 0.7 + pulse * 2, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    drawPic(ctx, CONFIG.superSnack, x, y, 1.08, { sx: 1 + pulse, sy: 1 + pulse, rot: REDUCED ? 0 : Math.sin(t * 2 + x) * 0.15 });
   }
   // bonus snack under the house
   if (G.fruit) {
     const bob = REDUCED ? 0 : Math.sin(t * 3) * 0.08;
-    ctx.globalAlpha = 0.25; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(G.fruit.x, G.fruit.y + 0.55, 0.45, 0.12, 0, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    ctx.globalAlpha = 0.3; ctx.fillStyle = INK; ctx.beginPath(); ctx.ellipse(G.fruit.x, G.fruit.y + 0.55, 0.45, 0.12, 0, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
     drawFruit(ctx, G.fruit.kind, G.fruit.x, G.fruit.y + bob, 1.05);
   }
   // Gloops
@@ -1556,46 +1567,54 @@ function renderBoard(t, dt) {
     for (let i = G.gloops.length - 1; i >= 0; i--) {
       const g = G.gloops[i];
       if (G.phase === 'eat' && G.eaten && G.eaten.id === g.id) continue;
-      const C = CONFIG.gloops[g.id], eyes = g.state === 'eyes' || g.state === 'entering';
-      const o = { id: g.id, color: C.color, dark: C.dark, dir: g.dir, t: t + g.id, mode: eyes ? 'eyes' : g.fright ? 'fright' : 'normal', white };
+      const Cg = CONFIG.gloops[g.id], eyes = g.state === 'eyes' || g.state === 'entering';
+      const o = { id: g.id, color: Cg.color, dark: Cg.dark, dir: g.dir, t: t + g.id, mode: eyes ? 'eyes' : g.fright ? 'fright' : 'normal', white };
+      o.scale = 1.12;
       drawWrapped(g.x, g.y, (x, y) => drawGloop(ctx, x, y, o));
-      if (eyes && !REDUCED && (eyeSpark += dt) > 0.06) { eyeSpark = 0; spawn(1, g.x, g.y + 0.1, 0, 0, 0.35, 0.09, '#ffffff'); }
+      if (eyes && !REDUCED && (eyeSpark += dt) > 0.06) { eyeSpark = 0; spawn(1, g.x, g.y + 0.1, 0, 0, 0.35, 0.09, CREAM); }
     }
   }
   // Munch
   const m = G.munch;
+  munchPop = Math.max(0, munchPop - dt * 6);
   if (G.phase !== 'over') {
-    const o = { dir: m.dir, mouth: 0, step: m.travel * Math.PI * 2, squash: 0, blink: (t % 3.3) < 0.13 };
-    if (G.phase === 'play' || G.phase === 'eat') { o.mouth = m.moving ? 0.5 - 0.5 * Math.cos(m.travel * TAU) : 0.12; o.squash = m.moving && !REDUCED ? Math.sin(m.travel * TAU * 2) * 0.035 : 0; }
-    if (G.phase === 'ready') o.mouth = 0;
+    const o = { dir: m.dir, mouth: 0, step: m.travel * Math.PI * 2, squash: 0 };
+    if (G.phase === 'play' || G.phase === 'eat') {
+      o.mouth = m.moving ? 0.5 - 0.5 * Math.cos(m.travel * TAU) : 0.12;
+      o.squash = REDUCED ? 0 : (m.moving ? Math.sin(m.travel * TAU * 2) * 0.035 : 0) + munchPop * 0.08;
+      if (G.frightT > 0) o.mood = o.mouth > 0.5 ? 'talk' : 'cheer';
+    } else o.step = 0;
     let show = true;
+    if (G.phase === 'clear') o.mood = 'cheer';
     if (G.phase === 'caught') {
-      const p = G.phaseT; o.surprised = true; o.blink = false;
-      if (p > 0.5) { const k = clamp((p - 0.5) / 0.85, 0, 1); o.rot = (REDUCED ? 0 : k * k * TAU * 2.5); o.scale = 1 - k * k; }
+      const p = G.phaseT; o.surprised = true;
+      if (p > 0.5) { const k = clamp((p - 0.5) / 0.85, 0, 1); o.rot = (REDUCED ? 0 : k * k * TAU * 2.5); o.scale = Math.max(0.01, 1 - k * k); }
       if (p > 1.35) {
         show = false;
-        if (!caughtPopped) { caughtPopped = true; burst(m.x, m.y, 14, '#ffe36e', 6, 2); burst(m.x, m.y, 8, CONFIG.munch.color, 4, 2); popup(TX.oops, m.x, m.y - 1, '#ffffff', 1.1, 1); Sound.pop(); }
+        if (!caughtPopped) { caughtPopped = true; burst(m.x, m.y, 14, SPARK, 6, 2); burst(m.x, m.y, 8, MINT, 4, 1); popup(TX.oops, m.x, m.y - 1, null, 1.1, 1); Sound.pop(); }
       }
     }
+    o.halo = true;
     if (show) drawWrapped(m.x, m.y, (x, y) => drawMunch(ctx, x, y, o));
   }
   drawParticles(ctx, dt);
   // texts
-  if (G.phase === 'eat' && G.eaten) textAt(ctx, String(G.eaten.points), G.eaten.x, G.eaten.y, 0.95, '#7ef0ff', '#0a0420');
+  if (G.phase === 'eat' && G.eaten) say(ctx, fmt(G.eaten.points), G.eaten.x, G.eaten.y, 0.95);
   for (const p of POPS) {
     if (!p.on) continue; p.life -= dt; if (p.life <= 0) { p.on = false; continue; }
-    ctx.globalAlpha = Math.min(1, p.life / p.max * 2); textAt(ctx, p.text, p.x, p.y - (1 - p.life / p.max) * 0.8, p.size, p.color, '#0a0420'); ctx.globalAlpha = 1;
+    ctx.globalAlpha = Math.min(1, p.life / p.max * 2); say(ctx, p.text, p.x, p.y - (1 - p.life / p.max) * 0.8, p.size, { color: p.color }); ctx.globalAlpha = 1;
   }
+  const big = Math.max(1.25, 19 / TILE);
   if (G.phase === 'ready') {
-    pill(ctx, TX.ready, M.fruit.x, M.fruit.y, 1.05, '#ffe36e', 'rgba(10,4,32,.82)');
+    say(ctx, TX.ready, M.fruit.x, M.fruit.y, big, { color: SPARK });
     if (G.lives > 0) {
       const k = G.level + ':' + M.id;
       if (k !== readyKey) { readyKey = k; readyLine = levelMazeText(G.level, M.id); }
-      pill(ctx, readyLine, M.fruit.x, M.fruit.y + 1.9, 0.62, '#ffffff', 'rgba(10,4,32,.78)');
+      say(ctx, readyLine, M.fruit.x, M.fruit.y + 1.9, 0.62);
     }
-    if (G.score === 0 && G.level === 1) pill(ctx, FINE ? TX.hintKeys : save.pad ? TX.hintPad : TX.hintSwipe, M.fruit.x, M.fruit.y + 3.6, 0.62, '#7ef0ff', 'rgba(10,4,32,.78)');
-  } else if (G.phase === 'over') pill(ctx, TX.over, M.fruit.x, M.fruit.y, 1.05, '#ff8ad8', 'rgba(10,4,32,.85)');
-  else if (G.phase === 'clear' && G.phaseT > 0.4) pill(ctx, TX.clear, M.fruit.x, M.fruit.y, 0.95, '#9be34f', 'rgba(10,4,32,.85)');
+    if (G.score === 0 && G.level === 1) say(ctx, FINE ? TX.hintKeys : save.pad ? TX.hintPad : TX.hintSwipe, M.fruit.x, M.fruit.y + 3.5, 0.62);
+  } else if (G.phase === 'over') say(ctx, TX.over, M.fruit.x, M.fruit.y, big, { color: C('coral', 'light') });
+  else if (G.phase === 'clear' && G.phaseT > 0.4) say(ctx, TX.clear, M.fruit.x, M.fruit.y, big, { color: C('mint', 'light') });
 }
 /** Draw something, plus its twin on the other side while it is passing through a tunnel. */
 function drawWrapped(x, y, fn) { fn(x, y); if (x < 1) fn(x + 28, y); else if (x > 26) fn(x - 28, y); }
@@ -1604,56 +1623,60 @@ function drawWrapped(x, y, fn) { fn(x, y); if (x < 1) fn(x + 28, y); else if (x 
 function drawIntermission(t, dt) {
   const c = ctx, p = G.phaseT, M = G.maze;
   c.drawImage(wallCache, 0, 0);
-  c.fillStyle = 'rgba(8,3,26,.82)'; c.fillRect(0, 0, cv.width, cv.height);
+  c.globalAlpha = 0.86; c.fillStyle = M.colors.bg; c.fillRect(0, 0, cv.width, cv.height); c.globalAlpha = 1;
   c.setTransform(BT, 0, 0, BT, BT / 2, BT / 2);
   const y = 15, S = 1.5, gl = id => CONFIG.gloops[id];
   const T = t;
-  textAt(c, TX.cartoons[G.interKind], 13.5, 8.5, 1.3, '#ffe36e', '#0a0420');
-  c.strokeStyle = M.colors.glow; c.globalAlpha = 0.5; c.lineWidth = 0.12; c.beginPath(); c.moveTo(-1, y + 1.1); c.lineTo(29, y + 1.1); c.stroke(); c.globalAlpha = 1;
+  say(c, TX.cartoons[G.interKind], 13.5, 8.5, Math.max(1.3, 19 / TILE), { color: SPARK });
+  c.strokeStyle = M.colors.wall; c.globalAlpha = 0.6; c.lineWidth = 0.12; c.beginPath(); c.moveTo(-1, y + 1.1); c.lineTo(29, y + 1.1); c.stroke(); c.globalAlpha = 1;
   if (G.interKind === 0) {
     if (p < 3.8) {
       const x = 30 - p * 8.6;
       drawGloop(c, x + 3.2, y, { id: 0, color: gl(0).color, dark: gl(0).dark, dir: 'left', t: T, mode: 'normal', scale: S });
-      drawMunch(c, x, y, { dir: 'left', mouth: 0.5 - 0.5 * Math.cos(p * 14), step: p * 16, blink: false, scale: S });
+      drawMunch(c, x, y, { dir: 'left', mouth: 0.5 - 0.5 * Math.cos(p * 14), step: p * 16, scale: S, surprised: true });
     } else if (p > 4.4) {
       const k = p - 4.4, x = -6 + k * 9;
       drawGloop(c, x + 6, y, { id: 0, color: gl(0).color, dark: gl(0).dark, dir: 'right', t: T, mode: 'fright', white: 0, scale: S });
-      if (!REDUCED && Math.random() < dt * 12) spawn(1, x + 6.6, y - 0.6, -2, -2, 0.4, 0.12, '#7ef0ff');
-      drawMunch(c, x, y - 2.1, { dir: 'right', mouth: 0.5 - 0.5 * Math.cos(k * 10), step: k * 10, scale: 3.4 });
+      if (!REDUCED && Math.random() < dt * 12) spawn(1, x + 6.6, y - 0.6, -2, -2, 0.4, 0.12, C('sky', 'light'));
+      drawMunch(c, x, y - 1.2, { dir: 'right', mouth: 0.5 - 0.5 * Math.cos(k * 10), step: k * 10, scale: 2.6, mood: 'cheer' });
     }
   } else if (G.interKind === 1) {
     const dz = p < 3 ? 30 - p * 5.5 : p < 6.6 ? 13.5 : 13.5 + (p - 6.6) * 9;
     const asleep = p >= 3 && p < 6.1, hat = p >= 5.6;
     const dy = asleep && !REDUCED ? Math.sin(T * 2) * 0.08 : p >= 6.1 && p < 6.6 ? -Math.sin((p - 6.1) / 0.5 * Math.PI) * 1.2 : 0;
     drawGloop(c, dz, y + dy, { id: 3, color: gl(3).color, dark: gl(3).dark, dir: p < 3 ? 'left' : 'right', t: asleep ? 0 : T, mode: 'normal', scale: S });
-    if (asleep) { for (let i = 0; i < 3; i++) { const q = ((p * 0.7 + i / 3) % 1); c.globalAlpha = 1 - q; textAt(c, 'z', dz + 1 + q * 1.5, y - 1.6 - q * 2.2, 0.7 + q * 0.5, '#ffffff', null); } c.globalAlpha = 1; }
-    if (hat) { c.fillStyle = '#ff5fc8'; c.beginPath(); c.moveTo(dz - 0.55, y + dy - 0.85); c.lineTo(dz + 0.55, y + dy - 0.85); c.lineTo(dz + 0.08, y + dy - 2.3); c.closePath(); c.fill(); c.fillStyle = '#ffe36e'; c.beginPath(); c.arc(dz + 0.08, y + dy - 2.35, 0.2, 0, TAU); c.fill(); }
+    if (asleep) { for (let i = 0; i < 3; i++) { const q = ((p * 0.7 + i / 3) % 1); c.globalAlpha = 1 - q; say(c, 'z', dz + 1 + q * 1.5, y - 1.6 - q * 2.2, Math.max(0.7 + q * 0.5, 19 / TILE)); } c.globalAlpha = 1; }
+    if (hat) {
+      const k = { s: BT, px: BT * 2 }, hp = new Path2D(); hp.moveTo(dz - 0.55, y + dy - 0.85); hp.lineTo(dz + 0.55, y + dy - 0.85); hp.lineTo(dz + 0.08, y + dy - 2.3); hp.closePath();
+      ART.sticker(c, k, hp, { fill: C('coral', 'light'), shade: CORAL, shadeOff: 0.1 }); ART.sticker(c, k, ART.ellipse(dz + 0.08, y + dy - 2.35, 0.2, 0.2), { fill: SPARK, rim: false });
+    }
     if (p >= 3.4) {
       const mx = p < 5.2 ? -2 + (p - 3.4) * 6.8 : p < 6.6 ? 10.3 : 10.3 + (p - 6.6) * 9;
       const tip = p < 5.2 && !REDUCED ? Math.abs(Math.sin(p * 7)) * 0.25 : 0;
-      drawMunch(c, mx, y - tip, { dir: 'right', mouth: p > 6.1 ? 0.7 : 0, step: p * 9, blink: p > 4.6 && p < 5.6, scale: S });
+      drawMunch(c, mx, y - tip, { dir: 'right', mouth: 0, step: p * 9, scale: S, mood: p > 6.1 ? 'surprised' : p > 4.6 && p < 5.6 ? 'wink' : 'happy' });
     }
-    if (p >= 6.1 && p < 6.4 && !G.heartDone) { G.heartDone = true; burst(13.5, y - 1, 10, '#ff5fc8', 5, 2); }
+    if (p >= 6.1 && p < 6.4 && !G.heartDone) { G.heartDone = true; burst(13.5, y - 1, 10, C('coral', 'light'), 5, 2); }
   } else {
-    const tagSize = Math.max(0.85, 12 * DPR / BT);   // name tags never smaller than 12 CSS px; every other one sits lower so long names never touch
+    const tagSize = Math.max(0.85, 12 / TILE);   // name tags never smaller than 12 CSS px; every other one sits lower so long names never touch
     for (let i = 0; i < 5; i++) {
       const x = -2 + p * 5.6 - i * 3.2, hop = REDUCED ? 0 : Math.abs(Math.sin(p * 6 + i * 0.7)) * 0.9;
       if (x < -2 || x > 30) continue;
-      if (i === 0) drawMunch(c, x, y - hop, { dir: 'right', mouth: 0.5 + 0.5 * Math.sin(p * 6), step: p * 12, scale: S });
-      else { const C = gl(i - 1); drawGloop(c, x, y - hop, { id: i - 1, color: C.color, dark: C.dark, dir: 'right', t: T, mode: 'normal', scale: S }); }
+      if (i === 0) drawMunch(c, x, y - hop, { dir: 'right', mood: 'cheer', scale: S, noShadow: true });
+      else { const Cg = gl(i - 1); drawGloop(c, x, y - hop, { id: i - 1, color: Cg.color, dark: Cg.dark, dir: 'right', t: T, mode: 'normal', scale: S }); }
       // name tags: everyone in the parade says who they are (names in the player's language)
-      textAt(c, i === 0 ? TX.munch : TX.gloopNames[i - 1], x, y + (i % 2 ? 3.4 : 2.2), tagSize, i === 0 ? CONFIG.munch.color : gl(i - 1).color, '#0a0420');
+      say(c, i === 0 ? TX.munch : TX.gloopNames[i - 1], x, y + (i % 2 ? 3.4 : 2.2), tagSize);
     }
-    for (let i = 0; i < 4; i++) { const q = (p * 0.5 + i / 4) % 1; c.globalAlpha = 1 - q; textAt(c, i % 2 ? '♪' : '♫', 4 + i * 6.5, y - 2 - q * 4, 1, i % 2 ? '#ffe36e' : '#7ef0ff', null); }
+    for (let i = 0; i < 4; i++) { const q = (p * 0.5 + i / 4) % 1; c.globalAlpha = 1 - q; c.fillStyle = i % 2 ? SPARK : C('sky', 'light'); c.fill(Oomba.art.sparkPath(4 + i * 6.5, y - 2 - q * 4, 0.5)); }
     c.globalAlpha = 1;
   }
   drawParticles(c, dt);
 }
 
 /* =====================================================================================
-   Sound: SDK sounds for the big moments, plus a tiny original synth (gated on the SDK mute) for the
+   Sound: the kit's / SDK sounds for the big moments, plus a tiny original synth (gated on the SDK mute) for the
    munch-munch chomp, the gulp, the bonus ding and a soft background hum.
    ===================================================================================== */
+
 const Sound = (() => {
   let ac = null, master = null, hum = null, humGain = null, humType = '', alt = false, tuneGain = null;
   function init() {
@@ -1710,17 +1733,19 @@ function updateHum(t) {
   Sound.hum(kind, G ? 1 - G.dotsLeft / G.maze.total : 0, t);
 }
 
+
+
 /* =====================================================================================
    HUD
    ===================================================================================== */
 const hudCache = { score: -1, best: -1, level: -1, lives: -1, fruitLevel: -1, maze: '' };
 function currentBest() { return Math.max(save.best[G ? G.mode : UI.mode] || 0, G ? G.score : 0); }
-function paintIcons(canvas, n, size, draw) {
-  const d = Math.min(3, window.devicePixelRatio || 1);
-  canvas.width = Math.max(1, Math.round(n * size * d)); canvas.height = Math.round(size * d);
-  canvas.style.width = (n * size) + 'px'; canvas.style.height = size + 'px';
-  const c = canvas.getContext('2d'); c.setTransform(d * size, 0, 0, d * size, 0, 0); c.clearRect(0, 0, n, 1);
-  for (let i = 0; i < n; i++) { c.save(); c.translate(i + 0.5, 0.5); c.scale(0.62, 0.62); draw(c, i); c.restore(); }
+function paintIcons(canvas, n, size, gap, draw) {
+  const d = Math.min(3, window.devicePixelRatio || 1), step = size + gap;
+  canvas.width = Math.max(1, Math.round((n * step - gap) * d)); canvas.height = Math.round(size * d);
+  canvas.style.width = Math.max(1, n * step - gap) + 'px'; canvas.style.height = size + 'px';
+  const c = canvas.getContext('2d'); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < n; i++) { c.setTransform(d * size, 0, 0, d * size, d * (i * step + size / 2), d * size / 2); draw(c, i); }
 }
 function updateHud() {
   if (!G) return;
@@ -1728,25 +1753,28 @@ function updateHud() {
   const best = currentBest();
   if (best !== hudCache.best) { hudCache.best = best; $('bestEl').textContent = fmt(best); }
   if (G.level !== hudCache.level || G.maze.id !== hudCache.maze) { hudCache.level = G.level; hudCache.maze = G.maze.id; $('levelEl').textContent = t('levelN', { n: G.level }); }
-  const size = app.classList.contains('wide') ? 26 : 22;
+  const wideHud = app.classList.contains('wide'), size = wideHud ? 34 : 28;
   if (G.lives !== hudCache.lives) {
     hudCache.lives = G.lives;
-    const n = clamp(G.lives, 0, 6);
-    paintIcons($('livesCv'), Math.max(1, n), size, (c, i) => { if (i < n) drawMunch(c, 0, -0.05, { dir: 'right', mouth: 0 }); });
+    // the lives: the player's character, big and bright (a soft Spark halo behind each), in a Cream pill
+    const n = clamp(G.lives, 0, 6), ls = wideHud ? 46 : (innerWidth < 380 ? 32 : 36);
+    paintIcons($('livesCv'), Math.max(1, n), ls, 1, (c, i) => {
+      if (i >= n) return;
+      const g = c.createRadialGradient(0, 0.05, 0.1, 0, 0.05, 0.5); g.addColorStop(0, hexMix(SPARK, CREAM, 0.3)); g.addColorStop(1, 'rgba(255,255,255,0)');
+      c.fillStyle = g; c.beginPath(); c.arc(0, 0.05, 0.5, 0, TAU); c.fill();
+      drawPic(c, 'me', 0, 0.04, 1.06, { mood: 'happy' });
+    });
     $('livesCv').setAttribute('aria-label', t('livesN', { n: G.lives }));
   }
   if (G.level !== hudCache.fruitLevel) {
     hudCache.fruitLevel = G.level;
-    const max = app.classList.contains('wide') ? 7 : (innerWidth < 380 ? 5 : 6), first = Math.max(1, G.level - max + 1), n = G.level - first + 1;
-    paintIcons($('fruitCv'), n, size, (c, i) => drawFruit(c, Engine.fruitIndex(first + i), 0, 0, 0.95));
+    const max = wideHud ? 6 : (innerWidth < 380 ? 3 : 4), first = Math.max(1, G.level - max + 1), n = G.level - first + 1;
+    paintIcons($('fruitCv'), n, size, 2, (c, i) => drawPic(c, CONFIG.fruits[Engine.fruitIndex(first + i)].id, 0, 0, 0.86));
   }
   // a cheer the first time the old best is beaten
-  if (!UI.newBestShown && UI.bestAtStart > 0 && G.score > UI.bestAtStart) { UI.newBestShown = true; toast(TX.toastBest); }
+  if (!UI.newBestShown && !G.over && UI.bestAtStart > 0 && G.score > UI.bestAtStart) { UI.newBestShown = true; toast(TX.toastBest); }
 }
-function toast(text) {
-  const el = document.createElement('div'); el.className = 'toast'; el.dir = RTL ? 'rtl' : 'ltr'; el.textContent = text; $('board').appendChild(el);
-  setTimeout(() => el.remove(), 1700);
-}
+function toast(text) { try { Oomba.ui.toast(text, { ms: 1600 }); } catch (e) { /* ignore */ } }
 
 /* =====================================================================================
    Events from the engine -> sounds, sparkles, saves
@@ -1758,17 +1786,17 @@ function handleEvents() {
     const e = ev[i];
     switch (e.type) {
       case 'start': Sound.jingle(); break;
-      case 'level': dotsKey = ''; hudCache.fruitLevel = -1; removeSkip(); G.heartDone = false; break;
-      case 'dot': Sound.chomp(); if (!REDUCED && Math.random() < 0.5) spawn(1, e.x, e.y, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3, 0.3, 0.08, G.maze.colors.dot); break;
-      case 'snack': BRB.sfx.play('powerup'); burst(e.x, e.y, 10, G.maze.colors.snack, 6, 1); spawn(3, e.x, e.y, 0, 0, 0.5, 0.6, G.maze.colors.snack); break;
-      case 'eatGloop': Sound.gulp(e.chain); burst(e.x, e.y, 12, '#7ef0ff', 6, 2); break;
-      case 'fruitSpawn': Sound.ding(); spawn(3, G.maze.fruit.x, G.maze.fruit.y, 0, 0, 0.6, 0.6, '#ffffff'); break;
-      case 'fruit': BRB.sfx.play('coin'); popup(String(e.points), e.x, e.y, '#ffe36e', 1.6, 0.85); burst(e.x, e.y, 10, '#ffe36e', 5, 2); break;
-      case 'fruitGone': burst(G.maze.fruit.x, G.maze.fruit.y, 6, '#ffffff', 3, 0); break;
-      case 'extraLife': BRB.sfx.play('jump'); toast(TX.toastLife); break;
-      case 'turn': if (!REDUCED) { const v = Engine.DIRS[G.munch.dir]; spawn(0, e.x - v[0] * 0.5, e.y - v[1] * 0.5 + 0.3, -v[0] * 1.5, -v[1] * 1.5 - 0.5, 0.35, 0.16, 'rgba(255,255,255,.5)'); } break;
-      case 'caught': BRB.sfx.play('hit'); Sound.whoops(); BRB.fx.shake($('board'), 6); break;
-      case 'clear': BRB.sfx.play('win'); save.dots += G.maze.total; persist(); break;
+      case 'level': hudCache.fruitLevel = -1; removeSkip(); G.heartDone = false; break;
+      case 'dot': Sound.chomp(); munchPop = 1; if (!REDUCED && Math.random() < 0.5) spawn(1, e.x, e.y, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3, 0.3, 0.08, G.maze.colors.dot); break;
+      case 'snack': sfx('powerup'); munchPop = 1; burst(e.x, e.y, 10, G.maze.colors.snack, 6, 2); spawn(3, e.x, e.y, 0, 0, 0.5, 0.6, CREAM); break;
+      case 'eatGloop': Sound.gulp(e.chain); burst(e.x, e.y, 12, C('sky', 'light'), 6, 2); break;
+      case 'fruitSpawn': Sound.ding(); spawn(3, G.maze.fruit.x, G.maze.fruit.y, 0, 0, 0.6, 0.6, CREAM); break;
+      case 'fruit': sfx('coin'); popup(fmt(e.points), e.x, e.y, SPARK, 1.6, 0.85); burst(e.x, e.y, 10, SPARK, 5, 2); break;
+      case 'fruitGone': burst(G.maze.fruit.x, G.maze.fruit.y, 6, CREAM, 3, 0); break;
+      case 'extraLife': sfx('jump'); toast(TX.toastLife); break;
+      case 'turn': if (!REDUCED) { const v = Engine.DIRS[G.munch.dir]; spawn(0, e.x - v[0] * 0.5, e.y - v[1] * 0.5 + 0.3, -v[0] * 1.5, -v[1] * 1.5 - 0.5, 0.35, 0.16, 'rgba(255,253,242,.45)'); } break;
+      case 'caught': sfx('hit'); Sound.whoops(); if (!REDUCED) { try { Oomba.juice.shake(0.45, $('board')); } catch (err) { /* ignore */ } } break;
+      case 'clear': sfx('win'); save.dots += G.maze.total; persist(); break;
       case 'intermission': Sound.tune(); showSkip(); break;
       case 'revive': burst(G.gloops[e.id].x, G.gloops[e.id].y, 6, CONFIG.gloops[e.id].color, 3, 2); break;
       case 'over': endGame(); break;
@@ -1779,8 +1807,8 @@ function handleEvents() {
 }
 function showSkip() {
   removeSkip();
-  const b = document.createElement('button'); b.className = 'skip'; b.id = 'skipBtn'; b.textContent = TX.skip;
-  b.addEventListener('click', e => { e.stopPropagation(); skipCartoon(); });
+  const b = Oomba.ui.button(TX.skip, { kind: 'quiet', icon: 'next', onPress: () => skipCartoon() }); b.classList.add('skip'); b.id = 'skipBtn';
+  b.addEventListener('pointerdown', e => e.stopPropagation());
   $('board').appendChild(b);
 }
 function removeSkip() { const b = $('skipBtn'); if (b) b.remove(); Sound.stopTune(); }
@@ -1791,20 +1819,21 @@ function skipCartoon() { if (G && G.phase === 'intermission') { Engine.skipInter
    ===================================================================================== */
 function startGame(mode, opts) {
   opts = opts || {};
+  closeTitle(); if (UI.paused) closeKitPause();
   Sound.unlock();
   UI.mode = mode === 'easy' ? 'easy' : 'classic';
   const maze = opts.maze && (opts.maze === 'mix' || MAZES.some(m => m.id === opts.maze)) ? opts.maze : save.maze;
   G = Engine.newGame({ mode: UI.mode, maze, seed: opts.seed !== undefined ? opts.seed : (Math.random() * 4294967295) >>> 0, level: opts.level, fast: UI.fast });
-  UI.bestAtStart = save.best[UI.mode] || 0; UI.newBestShown = false; UI.overShown = false; clearTimeout(UI.overTimer);
-  UI.screen = 'play'; UI.paused = false;
+  UI.bestAtStart = save.best[UI.mode] || 0; UI.newBestShown = false; UI.overShown = false; if (UI.overTimer) { UI.overTimer(); UI.overTimer = null; }
+  UI.screen = 'play'; Oomba.scene = 'play'; UI.paused = false;
   for (const p of PARTS) p.on = false; for (const p of POPS) p.on = false;
-  $('titleScreen').hidden = true; $('overScreen').hidden = true; $('pauseScreen').hidden = true;
+  $('overScreen').hidden = true; app.classList.remove('over');
   app.classList.remove('offstage');
   for (const k in hudCache) hudCache[k] = -1;
   layout(); updateHud();
   requestAnimationFrame(() => { if (UI.screen === 'play') layout(); });   // the HUD text just changed size
   held.length = 0;
-  BRB.sfx.play('click');
+  sfx('click');
 }
 function endGame() {
   const mode = G.mode, score = G.score;
@@ -1816,99 +1845,187 @@ function endGame() {
   // Only Classic goes on the leaderboard: Easy scores run higher and would push Classic bests aside.
   if (mode === 'easy') BRB.gameOver({ won: false });
   else { BRB.score.submit(score, 'points'); BRB.gameOver({ won: false, score }); }
-  BRB.sfx.play('lose');
+  sfx('lose');
   removeSkip();
-  UI.overTimer = setTimeout(() => showOver(newBest), UI.fast ? 0 : 1400);
+  UI.overTimer = Oomba.time.real.after(UI.fast ? 0 : 1400, () => { UI.overTimer = null; showOver(newBest); });
 }
 function showOver(newBest) {
   if (!G || !G.over) return;
-  UI.screen = 'over'; UI.overShown = true;
-  $('overTitle').textContent = t(newBest ? 'newBestScore' : 'gameOver');
-  $('overSub').textContent = newBest ? t('wowBest') : (G.level > 1 ? t('reachedLevel', { n: G.level }) : t('niceTry'));
+  UI.screen = 'over'; UI.overShown = true; Oomba.scene = 'results';
+  const title = t(newBest ? 'newBestScore' : 'gameOver'), sub = newBest ? t('wowBest') : (G.level > 1 ? t('reachedLevel', { n: G.level }) : t('niceTry'));
+  $('overTitle').textContent = title; $('overSub').textContent = sub;
   $('overScore').textContent = fmt(G.score);
+  // the player's character: cheering for a new best; a sad face for a caught Munch that soon cheers up again
+  const pic = $('overHero'); pic.innerHTML = '';
+  pic.appendChild(Oomba.ui.portrait(ME, { size: 118, mood: newBest ? 'cheer' : 'sad' }));
+  if (!newBest) { const g = G; Oomba.time.real.after(UI.fast ? 0 : 900, () => { if (UI.screen === 'over' && G === g) { pic.innerHTML = ''; pic.appendChild(Oomba.ui.portrait(ME, { size: 118, mood: 'happy' })); } }); }
   const chips = $('overChips'); chips.textContent = '';
-  const add = (t, cls) => { const s = document.createElement('span'); s.className = 'chip' + (cls ? ' ' + cls : ''); s.textContent = t; chips.appendChild(s); };
-  add(t('levelN', { n: G.level }));
-  add('🏆 ' + t('chipBest', { v: fmt(save.best[G.mode]) }), newBest ? 'gold' : '');
+  const add = (text, cls, ic) => { const s = document.createElement('span'); s.className = 'chip' + (cls ? ' ' + cls : ''); if (ic) s.innerHTML = Oomba.icon(ic); s.appendChild(document.createTextNode(text)); chips.appendChild(s); };
+  add(t('levelN', { n: G.level }), '', 'flag');
+  add(t('chipBest', { v: fmt(save.best[G.mode]) }), newBest ? 'gold' : '', 'trophy');
   if (G.gloopsEaten) add(t('chipGloops', { n: G.gloopsEaten }));
   if (G.fruitsEaten.length) add(t('chipSnacks', { n: G.fruitsEaten.length }));
-  add(G.mode === 'easy' ? '🐣 ' + t('easy') : '⭐ ' + t('classic'));
-  $('overScreen').hidden = false;
-  if (newBest) BRB.fx.confetti();
-  if (FINE) setTimeout(() => { try { $('againBtn').focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 50);   // keyboard players can press Enter
+  add(G.mode === 'easy' ? t('easy') : t('classic'), '', G.mode === 'easy' ? 'heart' : 'star');
+  $('overScreen').hidden = false; app.classList.add('over');
+  Oomba.ui.announce(title + '. ' + sub);
+  if (newBest && !REDUCED) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } }
+  if (FINE) Oomba.time.real.after(50, () => { try { $('againBtn').focus({ preventScroll: true }); } catch (e) { /* ignore */ } });   // keyboard players can press Enter
 }
+/** Pause: the kit's pause screen (keep playing, start over, settings, menu = back to the title, sound), with the game's
+ *  note (level and score) and the arrow-buttons switch. */
+let pauseIgnore = false;
 function setPaused(on) {
   if (!G || UI.screen !== 'play' || G.over) return;
-  UI.paused = !!on;
-  $('pauseScreen').hidden = !UI.paused;
-  if (UI.paused) { $('pauseInfo').textContent = t('pauseInfo', { n: G.level, s: fmt(G.score) }); Sound.hum('', 0, 0); }
-  held.length = 0;
+  if (on && !UI.paused) {
+    UI.paused = true; held.length = 0; Sound.hum('', 0, 0);
+    Oomba.ui.pause().then(r => {
+      if (pauseIgnore) { pauseIgnore = false; return; }
+      UI.paused = false; held.length = 0; syncMute();
+      if (r === 'restart') startGame(UI.mode); else if (r === 'quit') quitToTitle();
+    });
+    const card = Oomba.ui.root().querySelector('.ok-pause .ok-card'); if (!card) return;
+    const h = card.querySelector('.ok-h2'), note = document.createElement('p'); note.className = 'mm-note'; note.id = 'pauseInfo';
+    note.textContent = t('breath') + ' ' + t('pauseInfo', { n: G.level, s: fmt(G.score) });
+    if (h) h.after(note);
+    const resume = card.querySelector('.ok-go'); if (resume) resume.id = 'resumeBtn';
+    const col = card.querySelector('.ok-col'), pt = padToggle('padToggle2');
+    // the kit's sound row and the arrow-buttons switch together (one row on short landscape screens)
+    const prow = document.createElement('div'); prow.className = 'mm-prow';
+    const srow = card.querySelector('.ok-srow'); if (srow) prow.append(srow);
+    prow.append(pt);
+    if (col) col.after(prow); else card.append(prow);
+    if (RTL) note.dir = 'rtl';
+    syncPadToggles();
+  } else if (!on && UI.paused) closeKitPause();
+}
+/** Closes the kit's pause screen from code (a test, P again, a restart) without acting on its result. */
+function closeKitPause() {
+  const b = Oomba.ui.root().querySelector('.ok-pause .ok-go'); UI.paused = false; held.length = 0; if (!b) return;
+  pauseIgnore = true; b.click();
 }
 function quitToTitle() {
+  if (UI.paused) closeKitPause();
   if (G && !G.over && G.score > 0) { save.dots += G.dotsEaten; persist(); }
-  G = null; UI.screen = 'title'; UI.paused = false; clearTimeout(UI.overTimer); removeSkip();
-  $('pauseScreen').hidden = true; $('overScreen').hidden = true; $('titleScreen').hidden = false;
+  G = null; UI.screen = 'title'; UI.paused = false; if (UI.overTimer) { UI.overTimer(); UI.overTimer = null; } removeSkip();
+  $('overScreen').hidden = true; app.classList.remove('over');
   app.classList.add('offstage');
   Sound.hum('', 0, 0);
-  refreshTitle();
+  openTitle();
 }
 
 /* =====================================================================================
-   Title screen: animated demo, maze picker, best scores
+   Title screen: the kit's title (the lockup, the player's character, an animated chase as the badge) and the game's
+   card: Classic / Easy, the maze picker, the arrow-buttons switch, the dots munched so far.
    ===================================================================================== */
-function refreshTitle() {
-  const box = $('mazePick');
-  if (!box.childElementCount) {
-    const opts = [{ id: 'mix', name: t('mix') }].concat(MAZES.map(m => ({ id: m.id, name: mazeShort(m.id) })));
-    for (const o of opts) {
-      const b = document.createElement('button'); b.dataset.maze = o.id; b.setAttribute('aria-pressed', 'false');
-      b.setAttribute('aria-label', o.id === 'mix' ? t('mixAria') : mazeName(o.id));
-      if (o.id === 'mix') { const s = document.createElement('span'); s.className = 'mix'; s.textContent = '🔀'; b.appendChild(s); }
-      else { const c = document.createElement('canvas'); thumb(c, Engine.MAZES.find(m => m.id === o.id)); b.appendChild(c); }
-      const l = document.createElement('span'); l.textContent = o.name; b.appendChild(l);
-      b.addEventListener('click', () => { save.maze = o.id; persist(); BRB.sfx.play('click'); refreshTitle(); });
-      box.appendChild(b);
-    }
+const iconBtn = (label, name, fn, id) => { const b = Oomba.ui.button(label, { kind: 'icon', icon: name, onPress: fn }); if (id) b.id = id; return b; };
+function muteButton() { const b = iconBtn(TX.soundOff, 'sound', () => toggleMute()); b.classList.add('mute'); return b; }
+function padToggle(id) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'toggle'; b.id = id;
+  b.innerHTML = Oomba.icon('gamepad') + '<span></span>';
+  b.addEventListener('click', togglePad);
+  return b;
+}
+function modePicker() {
+  const g = document.createElement('div'); g.className = 'modes'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', t('play'));
+  for (const m of ['classic', 'easy']) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'mode'; b.dataset.mode = m; b.id = m === 'classic' ? 'playClassic' : 'playEasy';
+    b.innerHTML = '<span class="mi">' + Oomba.icon(m === 'easy' ? 'heart' : 'star') + '</span><span class="mt"><b></b><small></small></span>';
+    b.querySelector('b').textContent = t(m);
+    b.addEventListener('click', () => { UI.mode = m; refreshTitle(); sfx('select'); });
+    b.addEventListener('dblclick', () => { UI.mode = m; const p = $('playBtn'); if (p) p.click(); });
+    g.appendChild(b);
   }
-  for (const b of box.children) b.setAttribute('aria-pressed', String(b.dataset.maze === save.maze));
-  const chips = $('bestChips'); chips.textContent = '';
-  const add = t => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = t; chips.appendChild(s); };
-  add('🏆 ' + t('chipBest', { v: fmt(save.best.classic) }));
-  if (save.best.easy) add('🐣 ' + t('chipEasyBest', { v: fmt(save.best.easy) }));
-  if (save.dots) add(t('chipDots', { n: save.dots }));
+  return g;
+}
+function mazePicker() {
+  const box = document.createElement('div'); box.className = 'mazes'; box.id = 'mazePick'; box.setAttribute('role', 'group'); box.setAttribute('aria-label', t('pickMaze'));
+  const opts = [{ id: 'mix', name: t('mix') }].concat(MAZES.map(m => ({ id: m.id, name: mazeShort(m.id) })));
+  for (const o of opts) {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.maze = o.id; b.setAttribute('aria-pressed', 'false');
+    b.setAttribute('aria-label', o.id === 'mix' ? t('mixAria') : mazeName(o.id));
+    if (o.id === 'mix') { const s = document.createElement('span'); s.className = 'mix'; s.innerHTML = Oomba.icon('swap'); b.appendChild(s); }
+    else { const c = document.createElement('canvas'); thumb(c, Engine.MAZES.find(m => m.id === o.id)); b.appendChild(c); }
+    const l = document.createElement('span'); l.textContent = o.name; b.appendChild(l);
+    b.addEventListener('click', () => { save.maze = o.id; persist(); sfx('select'); refreshTitle(); });
+    box.appendChild(b);
+  }
+  return box;
+}
+let titleOpen = false, titleSkip = false;
+function openTitle() {
+  if (titleOpen) return; titleOpen = true; UI.screen = 'title'; Oomba.scene = 'title'; syncProps(false);
+  Oomba.ui.title({ title: CONFIG.title, subtitle: t('intro'), titleHue: 'mint', hero: ME, badge: demo, play: () => { titleOpen = false; if (!titleSkip) startGame(UI.mode); } });
+  const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
+  const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
+  if (play) play.id = 'playBtn';
+  const card = document.createElement('div'); card.className = 'mm-tcard'; card.id = 'titleCard';
+  const L = document.createElement('div'); L.className = 'colL'; const R = document.createElement('div'); R.className = 'colR';
+  const sub = block && block.querySelector('.ok-p'); if (sub) L.append(sub);
+  L.append(modePicker());
+  const cta = block && block.querySelector('.ok-cta'); if (cta) L.append(cta);
+  const lbl = document.createElement('div'); lbl.className = 'lbl-row'; lbl.textContent = t('maze');
+  const row = document.createElement('div'); row.className = 'row';
+  const chips = document.createElement('div'); chips.className = 'chips'; chips.id = 'bestChips';
+  row.append(chips, padToggle('padToggle'));
+  const kb = document.createElement('p'); kb.className = 'hint kbonly'; kb.textContent = t('kbTitle');
+  R.append(lbl, mazePicker(), row, kb);
+  card.append(L, R);
+  if (RTL) card.dir = 'rtl';
+  if (block) block.append(card);
+  const corner = scr.querySelector('.ok-corner'); if (corner) corner.prepend(muteButton());
+  refreshTitle(); syncMute();
+}
+/** Leaves the kit's title screen without its Play action (a test or a restart jumping straight into play). */
+function closeTitle() { if (!titleOpen) return; const b = $('playBtn'); if (b) { titleSkip = true; b.click(); titleSkip = false; } titleOpen = false; }
+function refreshTitle() {
+  document.querySelectorAll('.mode').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.mode === UI.mode));
+    const m = b.dataset.mode, best = save.best[m] || 0;
+    b.querySelector('small').textContent = best ? t(m === 'easy' ? 'chipEasyBest' : 'chipBest', { v: fmt(best) }) : '';
+  });
+  const box = $('mazePick'); if (box) for (const b of box.children) b.setAttribute('aria-pressed', String(b.dataset.maze === save.maze));
+  const chips = $('bestChips');
+  if (chips) {
+    chips.textContent = '';
+    const add = (text, ic) => { const s = document.createElement('span'); s.className = 'chip'; if (ic) s.innerHTML = Oomba.icon(ic); s.appendChild(document.createTextNode(text)); chips.appendChild(s); };
+    add(t('chipBest', { v: fmt(save.best.classic) }), 'trophy');
+    if (save.best.easy) add(t('chipEasyBest', { v: fmt(save.best.easy) }), 'heart');
+    if (save.dots) add(t('chipDots', { n: save.dots }), 'spark');
+  }
   syncPadToggles();
 }
 function thumb(c, M) {
   const k = 2; c.width = M.W * k; c.height = M.H * k;
   const x = c.getContext('2d'); x.fillStyle = M.colors.bg; x.fillRect(0, 0, c.width, c.height);
-  x.fillStyle = M.colors.glow;
+  x.fillStyle = M.colors.wall;
   for (let i = 0; i < M.grid.length; i++) if (M.grid[i] === Engine.T_WALL) x.fillRect((i % M.W) * k, ((i / M.W) | 0) * k, k, k);
   x.fillStyle = M.colors.dot; for (let i = 0; i < M.dots.length; i++) if (M.dots[i]) x.fillRect((i % M.W) * k + 0.5, ((i / M.W) | 0) * k + 0.5, 1, 1);
 }
-const demo = $('demo'), dmx = demo.getContext('2d');
+/** The title's badge: Munch runs along a candy corridor eating dots with Zippy behind, grabs a sweet, and chases the blue Gloop back. */
+const demo = document.createElement('canvas'), dmx = demo.getContext('2d');
+demo.style.cssText = 'width:min(300px,72vw);height:auto;aspect-ratio:300/84';
 function drawDemo(t) {
   const d = Math.min(3, window.devicePixelRatio || 1), w = demo.clientWidth || 300, h = demo.clientHeight || 84;
   if (demo.width !== Math.round(w * d) || demo.height !== Math.round(h * d)) { demo.width = Math.round(w * d); demo.height = Math.round(h * d); }
   const c = dmx, s = h / 3.4, cols = w / s;      // s px per tile; a corridor 3.4 tiles tall
   c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, demo.width, demo.height);
   c.setTransform(d * s, 0, 0, d * s, 0, 0);
-  const y = 1.7;
-  c.strokeStyle = '#ff5fc8'; c.lineWidth = 0.16; c.shadowColor = '#ff5fc8'; c.shadowBlur = 8 * d;
-  roundRect(c, 0.15, 0.2, cols - 0.3, 3, 0.8); c.stroke(); c.shadowBlur = 0;
+  const y = 1.95, M = MAZES[0].colors;
+  D.rrect(c, 0.12, 0.15, cols - 0.24, 3.1, 0.8); c.fillStyle = M.bg; c.fill(); c.lineWidth = 0.32; c.strokeStyle = INK; c.stroke(); c.lineWidth = 0.18; c.strokeStyle = M.wall; c.stroke();
   const P = 9, p = REDUCED ? 2.2 : t % P, snackX = 1.6;
-  // phase A: Munch runs left eating dots with Zippy behind; phase B: snack! Zippy turns blue, Munch chases it back
+  // phase A: Munch runs left eating dots with Zippy behind; phase B: a sweet! Zippy turns blue, Munch chases it back
   let mx, gx, gMode = 'normal', mdir = 'left', gdir = 'left', eaten = false;
   if (p < 4) { mx = cols + 1 - (cols + 1 - snackX) * (p / 4); gx = mx + 2.6; }
   else { const k = p - 4; mx = snackX + k * 4.2; gx = snackX + 2.6 - Math.min(k, 0.4) * 2 + Math.max(0, k - 0.4) * 2.8; gMode = 'fright'; mdir = 'right'; gdir = k < 0.4 ? 'left' : 'right'; if (mx >= gx - 0.3) eaten = true; }
-  c.fillStyle = '#ffd9f3';
+  c.fillStyle = M.dot;
   for (let x = snackX + 1.5; x < cols - 0.5; x += 1) if (p >= 4 || x < mx - 0.3) { c.beginPath(); c.arc(x, y, 0.13, 0, TAU); c.fill(); }
-  if (p < 4) ball(c, snackX, y, 0.34 + Math.sin(t * 7) * 0.03, '#ffef6e', '#8c8333');
+  if (p < 4) drawPic(c, CONFIG.superSnack, snackX, y, 0.95, { sx: 1 + Math.sin(t * 7) * 0.04, sy: 1 + Math.sin(t * 7) * 0.04 });
   const white = gMode === 'fright' && p > 7.2 ? 0.5 - 0.5 * Math.cos((p - 7.2) / 0.6 * TAU) : 0;
-  if (!eaten) drawGloop(c, gx, y, { id: 0, color: CONFIG.gloops[0].color, dark: CONFIG.gloops[0].dark, dir: gdir, t, mode: gMode, white });
-  else if (p < 7.8) { textAt2(c, '200', (gx + mx) / 2, y - 1, d, s); drawGloop(c, cols + 1 - (cols + 1 - gx) * Math.max(0, 1 - (p - 6) * 0.8), y, { id: 0, dir: 'right', t, mode: 'eyes' }); }
-  drawMunch(c, mx, y, { dir: mdir, mouth: 0.5 - 0.5 * Math.cos(p * 12), step: p * 14, blink: (t % 3) < 0.12 });
+  const Z = CONFIG.gloops[0];
+  if (!eaten) drawGloop(c, gx, y, { id: 0, color: Z.color, dark: Z.dark, dir: gdir, t, mode: gMode, white });
+  else if (p < 7.8) { say(c, fmt(CONFIG.points.gloops[0]), (gx + mx) / 2, y - 1.05, 0.8); drawGloop(c, cols + 1 - (cols + 1 - gx) * Math.max(0, 1 - (p - 6) * 0.8), y, { id: 0, dir: 'right', t, mode: 'eyes' }); }
+  drawMunch(c, mx, y, { dir: mdir, mouth: 0.5 - 0.5 * Math.cos(p * 12), step: p * 14, mood: p >= 4 ? 'cheer' : undefined });
 }
-function textAt2(c, str, x, y, d, s) { const sp = textSprite(str, Math.round(s * 0.8 * d), '#7ef0ff', null, 0, null); c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(sp.c, Math.round(x * s * d - sp.w / 2), Math.round(y * s * d - sp.h * 0.6)); c.restore(); }
 
 /* =====================================================================================
    Controls: swipe anywhere (slide without lifting to keep steering), the optional D-pad, keys.
@@ -1917,12 +2034,23 @@ function textAt2(c, str, x, y, d, s) { const sp = textSprite(str, Math.round(s *
 const held = [];   // directions currently held down (keys / D-pad); the newest wins
 function steer(dir) { if (G && UI.screen === 'play' && !UI.paused) Engine.input(G, dir); }
 const KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', w: 'up', W: 'up', s: 'down', S: 'down', a: 'left', A: 'left', d: 'right', D: 'right' };
+// P while the kit's pause screen is open closes it again (Esc already does: the kit's own key).
+addEventListener('keydown', e => {
+  if ((e.key === 'p' || e.key === 'P') && UI.paused && UI.screen === 'play' && !e.repeat) { e.preventDefault(); e.stopPropagation(); setPaused(false); }
+}, true);
+let escClosed = false;
+addEventListener('keydown', e => { if (e.key === 'Escape' && UI.paused) escClosed = true; }, true);   // the kit's pause closes itself on Escape
 addEventListener('keydown', e => {
   const k = e.key;
-  if (k === 'm' || k === 'M') { toggleMute(); return; }
-  if (UI.screen === 'title') { if (k === 'Enter' && e.target === document.body) { e.preventDefault(); startGame('classic'); } return; }
+  if (k === 'm' || k === 'M') { if (!e.repeat) toggleMute(); return; }
+  if (UI.screen === 'title' || Oomba.ui.open) return;    // the kit's title and pause screens handle their own keys
+  if (UI.screen === 'over') { if ((k === 'Enter' || k === ' ') && document.activeElement === document.body) { e.preventDefault(); startGame(UI.mode); } return; }
   if (UI.screen !== 'play') return;
-  if (k === 'p' || k === 'P' || k === 'Escape') { e.preventDefault(); setPaused(!UI.paused); return; }
+  if (k === 'p' || k === 'P' || k === 'Escape') {
+    e.preventDefault();
+    if (k === 'Escape' && escClosed) { escClosed = false; return; }
+    if (!e.repeat) setPaused(!UI.paused); return;
+  }
   if (G && G.phase === 'intermission' && (k === 'Enter' || k === ' ')) { e.preventDefault(); skipCartoon(); return; }
   const dir = KEYS[k]; if (!dir) return;
   e.preventDefault();
@@ -1930,12 +2058,12 @@ addEventListener('keydown', e => {
   const i = held.indexOf(dir); if (i >= 0) held.splice(i, 1); held.push(dir);
   steer(dir);
 });
-addEventListener('keyup', e => { const dir = KEYS[e.key]; if (!dir) return; const i = held.indexOf(dir); if (i >= 0) held.splice(i, 1); });
+addEventListener('keyup', e => { if (e.key === 'Escape') escClosed = false; const dir = KEYS[e.key]; if (!dir) return; const i = held.indexOf(dir); if (i >= 0) held.splice(i, 1); });
 addEventListener('blur', () => { held.length = 0; });
 // swipe
 let swipe = null;
 addEventListener('pointerdown', e => {
-  if (UI.screen !== 'play' || UI.paused || e.target.closest('button,.pad')) return;
+  if (UI.screen !== 'play' || UI.paused || Oomba.ui.open || e.target.closest('button,.pad')) return;
   if (G && G.phase === 'intermission') { skipCartoon(); return; }
   swipe = { id: e.pointerId, x: e.clientX, y: e.clientY };
 });
@@ -1948,8 +2076,9 @@ addEventListener('pointermove', e => {
 }, { passive: true });
 const endSwipe = e => { if (swipe && e.pointerId === swipe.id) swipe = null; };
 addEventListener('pointerup', endSwipe); addEventListener('pointercancel', endSwipe);
-// D-pad (slide between the buttons without lifting)
+// D-pad (slide between the buttons without lifting); its pictures are the kit's arrow icons
 const pad = $('pad');
+for (const b of pad.querySelectorAll('[data-dir]')) b.innerHTML = Oomba.icon(b.dataset.dir);
 let padDir = null, padPointer = null;
 function setPad(dir) {
   if (dir === padDir) return;
@@ -1968,29 +2097,27 @@ const padUp = e => { if (e.pointerId === padPointer) { padPointer = null; setPad
 pad.addEventListener('pointerup', padUp); pad.addEventListener('pointercancel', padUp);
 pad.addEventListener('contextmenu', e => e.preventDefault());
 
-/* ---------- buttons ---------- */
+/* ---------- buttons (the kit's: Ink-edged stickers with its icons) ---------- */
 function syncMute() {
   const m = BRB.sfx.muted;
-  for (const b of document.querySelectorAll('.mute')) { b.textContent = m ? '🔇' : '🔊'; b.setAttribute('aria-label', m ? TX.soundOn : TX.soundOff); }
+  for (const b of document.querySelectorAll('.mute')) { b.innerHTML = Oomba.icon(m ? 'mute' : 'sound'); b.setAttribute('aria-label', m ? TX.soundOn : TX.soundOff); }
 }
-function toggleMute() { BRB.sfx.mute(); if (BRB.sfx.muted) Sound.hum('', 0, 0); else BRB.sfx.play('click'); syncMute(); }
+function toggleMute() { BRB.sfx.mute(); if (BRB.sfx.muted) Sound.hum('', 0, 0); else sfx('click'); syncMute(); }
 function syncPadToggles() {
-  for (const id of ['padToggle', 'padToggle2']) { const b = $(id); b.setAttribute('aria-pressed', String(!!save.pad)); b.textContent = save.pad ? TX.padOn : TX.padOff; }
+  for (const id of ['padToggle', 'padToggle2']) { const b = $(id); if (!b) continue; b.setAttribute('aria-pressed', String(!!save.pad)); b.querySelector('span').textContent = save.pad ? TX.padOn : TX.padOff; }
 }
-function togglePad() { save.pad = !save.pad; save.padChosen = true; persist(); syncPadToggles(); BRB.sfx.play('click'); if (UI.screen !== 'title') layout(); }
-for (const b of document.querySelectorAll('.mute')) b.addEventListener('click', toggleMute);
-$('padToggle').addEventListener('click', togglePad);
-$('padToggle2').addEventListener('click', togglePad);
-$('playClassic').addEventListener('click', () => startGame('classic'));
-$('playEasy').addEventListener('click', () => startGame('easy'));
-$('pauseBtn').addEventListener('click', () => { BRB.sfx.play('click'); setPaused(true); });
-$('resumeBtn').addEventListener('click', () => { BRB.sfx.play('click'); setPaused(false); });
-$('restartBtn').addEventListener('click', () => startGame(UI.mode));
-$('quitBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
-$('againBtn').addEventListener('click', () => startGame(UI.mode));
-$('menuBtn').addEventListener('click', () => { BRB.sfx.play('click'); quitToTitle(); });
+function togglePad() { save.pad = !save.pad; save.padChosen = true; persist(); syncPadToggles(); sfx('select'); if (UI.screen !== 'title') layout(); }
+$('pauseSlot').replaceWith(iconBtn(t('pause'), 'pause', () => { setPaused(true); const b = $('pauseBtn'); if (b) b.blur(); }, 'pauseBtn'));
+$('muteSlot').replaceWith(muteButton());
+{
+  const again = Oomba.ui.button(t('playAgain'), { kind: 'hot', big: true, icon: 'restart', onPress: () => startGame(UI.mode) }); again.id = 'againBtn';
+  const menu = Oomba.ui.button(t('menu'), { kind: 'quiet', icon: 'home', onPress: () => quitToTitle() }); menu.id = 'menuBtn';
+  $('overBtns').append(again, menu);
+  const m = muteButton(); m.style.cssText = 'position:absolute;top:10px;inset-inline-end:10px'; $('overScreen').querySelector('.ok-card').append(m);
+}
 document.addEventListener('visibilitychange', () => { if (document.hidden && UI.screen === 'play' && G && !G.over) setPaused(true); });
 addEventListener('resize', () => { if (UI.screen !== 'title') layout(); });
+Oomba.theme.on('change', () => { hudCache.lives = -1; hudCache.fruitLevel = -1; });
 
 /* =====================================================================================
    The main loop (requestAnimationFrame). The engine catches up in fixed steps; drawing uses real time.
@@ -2001,7 +2128,7 @@ function frame(now) {
   const gap = lastNow ? now - lastNow : 16.7; lastNow = now;
   GAPS[gapN % GAPS.length] = gap; gapN++;
   const dt = Math.min(0.1, gap / 1000), t = now / 1000;
-  if (UI.screen === 'title') { drawDemo(t); return; }
+  if (UI.screen === 'title') { if (demo.isConnected) drawDemo(t); return; }
   if (!G) return;
   if (UI.screen === 'play' && !UI.paused && !UI.manual) {
     if (held.length) Engine.input(G, held[held.length - 1]);   // holding a key or button works like a joystick
@@ -2018,17 +2145,18 @@ function applyLanguage() {
   try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
   document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
-  // Right-to-left languages: panels and hints read right to left; the maze, the D-pad and the HUD keep their places.
-  if (RTL) document.querySelectorAll('.panel, #keysHint, .stat, #levelEl').forEach(el => { el.dir = 'rtl'; });
+  // Right-to-left languages: cards and hints read right to left; the maze, the D-pad and the HUD keep their places.
+  if (RTL) document.querySelectorAll('#overScreen .ok-card, #keysHint, .stat, #levelEl').forEach(el => { el.dir = 'rtl'; });
 }
 applyLanguage();
 syncMute();
-refreshTitle();
+openTitle();
 layout();
 requestAnimationFrame(frame);
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production).
+   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's hooks
+   (setTheme, setLang, setTier ...): the game's own names below win and behave as before.
    Positions are in tiles (x = column, y = row; a whole number is the middle of a tile).
      state()            -> { screen, paused, mode, phase, level, score, high, lives, dotsLeft, totalDots, maze, mazeName,
                              munch: {x, y, dir, next, moving}, gloops: [{name, x, y, dir, mode: 'scatter'|'chase'|'frightened'|'eyes'|'house',
@@ -2047,7 +2175,7 @@ requestAnimationFrame(frame);
      placeGloop(nameOrIndex, x, y, dir) -> put a Gloop out in the maze at a tile, heading dir
      fps()              -> { median, worst, frames } rAF gaps in ms over the last ~600 frames
    ===================================================================================== */
-window.__brbTest = {
+window.__brbTest = Object.assign(window.__brbTest || {}, {
   state() {
     if (!G) return { screen: UI.screen, paused: false, mode: UI.mode, phase: null, level: 0, score: 0, high: save.best[UI.mode] || 0, lives: 0, dotsLeft: 0, munch: null, gloops: [], fruit: null, over: false };
     return {
@@ -2089,6 +2217,6 @@ window.__brbTest = {
     return { median: a[Math.floor(n / 2)] || 0, worst: a[n - 1] || 0, frames: n };
   },
   resetFps() { gapN = 0; lastNow = 0; },
-  get engine() { return Engine; }
-};
+  engine: Engine
+});
 </script>

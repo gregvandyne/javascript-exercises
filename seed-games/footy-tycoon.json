@@ -10,7 +10,7 @@
   "players_max": 4,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Saves the game in localStorage key 'footy-tycoon-v3' and the trophy wallet in 'footy-wallet-v1'; both must round-trip through the SDK storage shim so the Trophy Shop persists per user. Player rosters are original cartoon characters. Loads Google Fonts (Bungee, Nunito).",
+  "notes": "Saves the game in localStorage key 'footy-tycoon-v3' and the trophy wallet in 'footy-wallet-v1'; both must round-trip through the SDK storage shim so the Trophy Shop persists per user. Built on the Oomba Kit 1.1.0 (packs dress, art-biomes-2, art-props): the stadium world, the kit's title, pause and settings screens, icons, sounds and type. Footballers are kit characters (original cartoon kids in team shirts with their shirt numbers, not likenesses); seat one can play as the player's own Me-page character (Oomba.avatar()). The champions card hides the board so the kit's confetti fills the stadium behind it.",
   "l10n": {
     "en-GB": {
       "description": "Football meets a property-trading board game. Roll the 3D dice, buy star players and championships, score goals with Shoot cards, make trades, dodge the red card sin bin, and be the first to three ticks. Play Normal or Legends mode with 2 to 4 people, add a bot, and spend the trophies you win in the Trophy Shop.",

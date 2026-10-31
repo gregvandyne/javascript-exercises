@@ -53,7 +53,7 @@ for (const backend of ['paper', 'glaze']) {
   test(`${backend}: the core scene draws under the real frame CSP with no errors, day and night`, async ({ browser }) => {
     test.setTimeout(90_000);
     const k = await openKit(browser, { backend });
-    expect(await k.frame.evaluate(() => typeof window.Oomba === 'object' && window.Oomba.version)).toBe('1.0.0');
+    expect(await k.frame.evaluate(() => typeof window.Oomba === 'object' && window.Oomba.version)).toBe('1.1.0');
     const st = await state(k.frame);
     expect(st.backend).toBe(backend); expect(st.tier).toBe(backend === 'paper' ? 'low' : 'mid');
     const day = await pixels(k.page);

@@ -13,11 +13,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fakeWin } from '../support/kit-fake.js';
-import { createKit } from '../../kit/src/index.js';
+import { createKit, VERSION } from '../../kit/src/index.js';
 import * as animals from '../../kit/packs/art-animals.js';
 import * as school from '../../kit/packs/art-school.js';
 import * as biomes from '../../kit/packs/art-biomes.js';
 import * as dress from '../../kit/packs/dress.js';
+import * as biomes2 from '../../kit/packs/art-biomes-2.js';
+import * as props from '../../kit/packs/art-props.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const { config } = await import('../../server/config.js');
@@ -40,14 +42,14 @@ function gameWin(o) {
   doc.createElement = tag => { const e = make(tag); e.querySelector = () => make('span'); e.append = (...cs) => cs.forEach(c => e.appendChild(typeof c === 'string' ? make('#text') : c)); return e; };
   return win;
 }
-const withPacks = O => { O.__pk({ name: 'art-animals', version: '1.0.0' }, animals.define); O.__pk({ name: 'art-school', version: '1.0.0' }, school.define); O.__pk({ name: 'art-biomes', version: '1.0.0' }, biomes.define); O.__pk({ name: 'dress', version: '1.0.0' }, dress.define); return O; };
+const withPacks = O => { O.__pk({ name: 'art-animals', version: VERSION }, animals.define); O.__pk({ name: 'art-school', version: VERSION }, school.define); O.__pk({ name: 'art-biomes', version: VERSION }, biomes.define); O.__pk({ name: 'dress', version: VERSION }, dress.define); O.__pk({ name: 'art-biomes-2', version: VERSION }, biomes2.define); O.__pk({ name: 'art-props', version: VERSION }, props.define); return O; };
 
 // ---- KIT_RULES -------------------------------------------------------------------------------------------------------
 test('KIT_RULES: generated from docs/kit-api.md and the kit, up to date, and the same bytes every build', async () => {
   const a = await buildRules(), b = await buildRules();
   assert.equal(a, b, 'deterministic');
   assert.equal(fs.readFileSync(OUT, 'utf8'), fileText(a), 'server/builder/kit-rules.js is out of date: run node scripts/build-kit-rules.js');
-  assert.ok(a.length > 8000 && a.length < 28000, `${a.length} characters`);   // about 7k tokens: one cached block
+  assert.ok(a.length > 8000 && a.length < 32000, `${a.length} characters`);   // about 8k tokens: one cached block
 });
 
 test('KIT_RULES ends the cached system prompt, with the pinned kit and pack tags and every art name', () => {
@@ -74,8 +76,9 @@ test('the three example games in the rules run in the kit with only the packs th
   for (const src of examples) {
     const win = gameWin({ search: '?okDebug=1&okBackend=paper', brb: { version: 3, gameOver() {} } });
     // only the packs the example itself loads ({{PACK_TAG:name}}), so pack art used without its tag shows as a warning
-    const O = createKit(win), PK = { 'art-animals': animals, 'art-school': school, 'art-biomes': biomes, dress };
-    for (const [n, mod] of Object.entries(PK)) if (src.includes(`PACK_TAG:${n}`)) O.__pk({ name: n, version: '1.0.0' }, mod.define);
+    const O = createKit(win), PK = { 'art-animals': animals, 'art-school': school, 'art-biomes': biomes, 'art-biomes-2': biomes2, 'art-props': props, dress };
+    // dress always (the rules' document loads it in every 2D game: themes live in it)
+    for (const [n, mod] of Object.entries(PK)) if (n === 'dress' || src.includes(`PACK_TAG:${n}`)) O.__pk({ name: n, version: VERSION }, mod.define);
     new Function('Oomba', 'window', 'document', src.replace('Oomba.game({', 'Oomba.game({ autorun: false,'))(O, win, win.document);
     const T = win.__brbTest;
     T.start(); T.step(120); await new Promise(r => setImmediate(r)); T.step(120);
@@ -214,6 +217,24 @@ test('the style check goes back to the model after a version; start_from_templat
   const s = await tb.exec('start_from_template', { template: 'quiz', notes: 'A quiz' });
   assert.equal(s.ok, true); assert.match(s.forModel, /CONFIG block/); assert.match(s.forModel, /WORDS/);
   assert.ok(current(g.id).html.includes(kitTag()));
+});
+
+test('creative freedom: the rules say the builder\'s choices win, and the style check never undoes what they asked for', () => {
+  // the rule is in the cached prompt (KIT_RULES), next to "play as me"
+  assert.match(KIT_RULES, /builder's own choices always win/);
+  assert.match(KIT_RULES, /made-up creatures/); assert.match(KIT_RULES, /plain look/);
+  assert.match(KIT_RULES, /hero: 'me'/); assert.match(KIT_RULES, /Oomba\.avatar\(\)/);
+  assert.match(KIT_RULES, /Unless\s+the builder asks, never draw your own characters/);
+  // look notes reach the model as suggestions; a look the builder asked for never reaches it at all
+  const u = newUser(); const g = games.createGame(u.id, {});
+  const messy = `<title>T</title><div id="game"></div>\n${kitTag()}\n<script>\nOomba.game({ theme: 'lava jelly' }); ctx.fillStyle = '#ff00ff'; ctx.font = 'bold 20px Arial'; setTimeout(go, 9);\n</script>`;
+  const plain = toolbox({ user: u, gameId: g.id, emit() {}, state: {} }).exec('write_game', { html: messy, notes: 'x' });
+  assert.match(plain.forModel, /Look suggestion, skip it if the builder asked for this look \(raw_hex\)/);
+  assert.match(plain.forModel, /\(theme_name\)/); assert.match(plain.forModel, /choices always win/);
+  const asked = toolbox({ user: u, gameId: g.id, emit() {}, state: {}, requests: ['a lava jelly world', 'make it hot pink and use a funky font'] }).exec('write_game', { html: messy + ' ', notes: 'y' });
+  assert.doesNotMatch(asked.forModel, /\((raw_hex|font|theme_name)\)/, asked.forModel);
+  assert.match(asked.forModel, /Style \(timing\)/, 'correctness notes still go');
+  assert.deepEqual(styleTips(scanVersion(messy), 'pink, a font and a lava jelly world').map(x => x.match(/\((\w+)\)/)[1]), ['timing', 'dress_missing'], 'a bare world was not asked for: that suggestion stays');
 });
 
 test('the playtest probe turns a stuck round, nothing collected, a covered hero and an empty cover frame into problems the model reads', async () => {

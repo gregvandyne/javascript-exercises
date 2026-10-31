@@ -357,6 +357,10 @@ export const MIGRATIONS = [
   // audio or words. For the per-builder daily cap and the site-wide daily minutes cap, which survive a restart. Kept 3 days.
   ['0033_stt_usage', `CREATE TABLE IF NOT EXISTS stt_usage (day TEXT NOT NULL, user_id TEXT NOT NULL, clips INTEGER NOT NULL DEFAULT 0,
       seconds REAL NOT NULL DEFAULT 0, PRIMARY KEY(day, user_id));`],
+  // The player's own Oomba character (server/services/character.js): a small JSON parts spec from the kit's own lists
+  // (species, body, skin tone 0-7, hair, eyes, outfit, colours, one accessory, Bold wear), never a picture or a name.
+  // NULL = not designed yet (games then get the kit's default look). Deleted with the account row.
+  ['0035_character_spec', `ALTER TABLE users ADD COLUMN character_spec TEXT;`],
 ];
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');

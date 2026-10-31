@@ -325,6 +325,118 @@
         "newPw": "Contraseña nueva",
         "newPwConfirm": "Repite la contraseña nueva"
       }
+    },
+    "character": {
+      "heading": "Mi personaje Oomba",
+      "text": "Diseña tu propio personaje una vez. Los juegos en los que puedes jugar como tú lo convierten en el héroe. Es un dibujo que haces tú, nunca una foto.",
+      "guestText": "Los invitados juegan como Oomba. Crea una cuenta para diseñar tu propio personaje.",
+      "signup": "Crear una cuenta",
+      "previewLabel": "Tu personaje",
+      "styleGroup": "Ver el estilo",
+      "playful": "Divertido",
+      "bold": "Bold",
+      "boldNote": "Bold es el estilo de los juegos para mayores. Elige lo que llevas allí.",
+      "kind": "Tipo",
+      "body": "Forma del cuerpo",
+      "skin": "Tono de piel",
+      "skinLabel": "Tono de piel {n}",
+      "hair": "Pelo",
+      "hairColor": "Color de pelo",
+      "eyes": "Ojos",
+      "top": "Parte de arriba",
+      "topColor": "Color de la ropa",
+      "color": "Color",
+      "accent": "Color extra",
+      "accessory": "Extra",
+      "boldHat": "En la cabeza",
+      "boldTop": "Chaqueta",
+      "boldEyes": "Ojos en Bold",
+      "none": "Nada",
+      "save": "Guardar mi personaje",
+      "reset": "Empezar de nuevo",
+      "notSaved": "Sin guardar",
+      "saved": "¡Tu personaje está guardado! Los juegos ya pueden usarlo.",
+      "invalid": "No se pudo guardar ese personaje. Inténtalo otra vez.",
+      "guestOnly": "Crea una cuenta para guardar tu propio personaje.",
+      "names": {
+        "species": {
+          "kid": "Niño o niña",
+          "oomba": "Oomba",
+          "fox": "Zorro",
+          "bunny": "Conejo",
+          "frog": "Rana",
+          "bee": "Abeja"
+        },
+        "body": {
+          "bean": "Judía",
+          "ball": "Redondo",
+          "pear": "Pera"
+        },
+        "hair": {
+          "puffs": "Coletas",
+          "bob": "Melena corta",
+          "curls": "Rizos",
+          "spiky": "De punta",
+          "braids": "Trenzas",
+          "buzz": "Corto",
+          "long": "Largo",
+          "cap": "Gorra"
+        },
+        "hairColor": {
+          "cocoa": "Castaño",
+          "black": "Negro",
+          "blonde": "Rubio",
+          "copper": "Pelirrojo",
+          "stone": "Gris",
+          "grape": "Morado",
+          "sky": "Azul",
+          "mint": "Verde"
+        },
+        "eyes": {
+          "happy": "Feliz",
+          "surprised": "Sorprendido",
+          "determined": "Decidido",
+          "thinking": "Pensando",
+          "sleepy": "Con sueño",
+          "wink": "Guiño"
+        },
+        "top": {
+          "tee": "Camiseta",
+          "hoodie": "Sudadera",
+          "dress": "Vestido",
+          "overalls": "Peto"
+        },
+        "color": {
+          "mint": "Menta",
+          "coral": "Coral",
+          "sky": "Celeste",
+          "grape": "Uva",
+          "peach": "Melocotón",
+          "cocoa": "Cacao",
+          "stone": "Piedra",
+          "snow": "Nieve"
+        },
+        "wear": {
+          "scarf": "Bufanda",
+          "glasses": "Gafas",
+          "crown": "Corona",
+          "wizard-hat": "Sombrero de mago",
+          "backpack": "Mochila",
+          "headphones": "Auriculares"
+        },
+        "boldHat": {
+          "hood": "Capucha",
+          "visor": "Visera",
+          "headset": "Cascos con micro",
+          "helmet": "Casco",
+          "cap-back": "Gorra"
+        },
+        "boldTop": {
+          "jersey": "Camiseta deportiva",
+          "bomber": "Cazadora",
+          "techvest": "Chaleco tech"
+        }
+      }
     }
   },
   "cards": {
@@ -483,7 +595,8 @@
         "h": "Qué guardamos",
         "p1": "En las cuentas propias guardamos un nombre inventado, una contraseña (guardada de forma ilegible) y lo que su hijo o hija hace aquí: los juegos que crea, sus conversaciones con el Constructor y las imágenes o archivos que agregue, partidas guardadas, puntos, calificaciones, favoritos, amigos, mensajes del chat, una foto de perfil si sube una, y ajustes como el idioma y el tema. Al jugar como invitado guardamos un nombre inventado, partidas guardadas, puntos, calificaciones y favoritos.",
         "p2": "Una cuenta escolar es una con la que su hijo o hija entra usando una tarjeta de acceso de la escuela. La crea la escuela y le pertenece. En ella guardamos lo mismo, además del nombre real del estudiante tal como la escuela lo escribió para la lista de la clase (solo lo ven el personal de la escuela y nuestro equipo), sus clases, su progreso en las lecciones, sus respuestas escritas y los comentarios de su docente. Si su hijo o hija se une a una clase con su propia cuenta y un código de clase, la escuela guarda lo mismo para esa clase, incluido su nombre real si el docente lo escribe.",
-        "paid3": "Los planes familiares nunca ven la actividad de clase: un adulto vinculado con un estudiante solo ve los mensajes extra de la familia que usó ese estudiante."
+        "paid3": "Los planes familiares nunca ven la actividad de clase: un adulto vinculado con un estudiante solo ve los mensajes extra de la familia que usó ese estudiante.",
+        "p4": "<b>Su personaje Oomba:</b> las cuentas propias pueden diseñar un personaje dibujado que los juegos usan como héroe (forma del cuerpo, tono de piel, pelo, ojos, ropa y colores elegidos de nuestras listas). Se guarda con la cuenta solo como esas elecciones, nunca como una foto o una imagen de su hijo, y se borra con la cuenta."
       },
       "never": {
         "h": "Qué nunca recopilamos",
@@ -1338,6 +1451,27 @@
       "daily": "Ya usaste todas las grabaciones de hoy. Todavía puedes escribir tu mensaje.",
       "failed": "Lo siento, no pude convertir eso en palabras. Inténtalo otra vez o escribe tu mensaje.",
       "busy": "El ayudante de voz está ocupado ahora. Inténtalo de nuevo en un momento."
+    },
+    "themes": {
+      "heading": "Elige un mundo",
+      "current": "ahora",
+      "names": {
+        "meadow": "Pradera",
+        "beach": "Playa",
+        "jungle": "Selva",
+        "snow": "Nieve",
+        "desert": "Desierto",
+        "reef": "Arrecife",
+        "space": "Espacio",
+        "candy": "Caramelos",
+        "haunted": "Encantado",
+        "castle": "Castillo",
+        "cyber": "Cíber",
+        "stadium": "Estadio",
+        "forest": "Bosque",
+        "autumn": "Otoño",
+        "city": "Ciudad"
+      }
     }
   },
   "publish": {
@@ -2022,7 +2156,12 @@
         "noMic": "No se encontró ningún micrófono en este dispositivo.",
         "cancelled": "Grabación detenida. No se envió ni se guardó nada.",
         "failed": "Lo siento, no pude convertir eso en palabras. Inténtalo otra vez o escribe tu mensaje."
-      }
+      },
+      "themeUse": "Usa el tema {name}."
+    },
+    "character": {
+      "unsaved": "Sin guardar",
+      "saved": "¡Tu personaje está guardado!"
     }
   },
   "favorites": {

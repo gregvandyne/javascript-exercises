@@ -1,209 +1,293 @@
 <title>Hero of Sunvale</title>
 <style>
-/* ===== Hero of Sunvale: one full-screen 3D canvas, a DOM HUD on top, overlay screens and touch controls. ===== */
-:root{--ink:#1d2340;--soft:#55607a;--panel:rgba(255,255,255,.93);--gold:#ffbf1f;--gold-dark:#c98a00;--pink:#ff5c9e;--pink-dark:#c23a74;
-  --blue:#3e7bfa;--blue-dark:#2350b8;--green:#3fb950;--green-dark:#25803a;--plum:#4a2f6b;--r:22px;
-  --font:ui-rounded,"Arial Rounded MT Bold","Nunito",system-ui,"Segoe UI",sans-serif;
+/* ===== Hero of Sunvale: one full-screen 3D canvas, a DOM HUD on top, overlay screens and touch controls. =====
+   The look is the Oomba Kit's ("Oomba Ink"): Cream cards and pills with an Ink outline and a hard drop, the kit's font,
+   Spark / mint / sky / coral buttons, and the kit's day and night colours. Every colour here is a variable that the
+   KIT LOOK script (right after the kit's tags) sets from Oomba.color(...), so this sheet has no colour codes. */
+:root{--r:22px;--font:var(--ok-font,inherit);--bw:3px;
   --st:max(10px,env(safe-area-inset-top));--sl:max(10px,env(safe-area-inset-left));--sr:max(10px,env(safe-area-inset-right));--sb:max(12px,env(safe-area-inset-bottom))}
 [hidden]{display:none!important}
-html,body{height:100%;overflow:hidden;background:#9fd8ff;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-body{margin:0;font-family:var(--font);color:var(--ink)}
+html,body{height:100%;overflow:hidden;background:var(--sky-l);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+body{margin:0;font-family:var(--font);color:var(--text)}
 #view{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
 button{font-family:inherit;cursor:pointer;color:inherit}
-button:focus-visible{outline:4px solid var(--blue)!important;outline-offset:3px}
-kbd{display:inline-block;min-width:26px;padding:3px 7px;border-radius:8px;background:var(--ink);color:#fff;font:800 15px/1.2 var(--font);text-align:center}
-.fade{position:fixed;inset:0;background:#10142a;opacity:0;pointer-events:none;transition:opacity .25s linear;z-index:30}
+button:focus-visible{outline:3px solid var(--focus)!important;outline-offset:3px}
+kbd{display:inline-block;min-width:26px;padding:3px 7px;border-radius:8px;background:var(--ink);color:var(--cream);font:800 15px/1.2 var(--font);text-align:center;border:2px solid var(--ink)}
+.fade{position:fixed;inset:0;background:var(--ink);opacity:0;pointer-events:none;transition:opacity .25s linear;z-index:30}
 .fade.on{opacity:1}
-.vignette{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(ellipse at center,rgba(255,60,60,0) 55%,rgba(255,40,40,.55) 100%);transition:opacity .5s ease-out}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(ellipse at center,transparent 55%,var(--coral-a) 100%);transition:opacity .5s ease-out}
 .world-ui{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
-.wtag{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:rgba(20,26,56,.72);color:#fff;font:800 15px/1.2 var(--font);padding:4px 10px;border-radius:999px;white-space:nowrap}
-.wpop{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font:900 24px/1 var(--font);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35),0 0 10px rgba(255,210,80,.8);white-space:nowrap}
-/* HUD */
+.wtag{position:absolute;left:0;top:0;transform:translate(-50%,-100%);background:var(--cream);color:var(--ink);font:800 15px/1.2 var(--font);padding:3px 10px;border-radius:999px;white-space:nowrap;border:2px solid var(--ink);box-shadow:0 2px 0 var(--ink)}
+.wtag{transition:opacity .2s linear}
+body.bannered .wtag{opacity:0}
+.wpop{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font:900 26px/1 var(--font);color:var(--spark);white-space:nowrap;-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;text-shadow:0 3px 0 var(--ink)}
+/* HUD: kit pills (Cream, Ink outline, hard drop) */
 .hud{position:fixed;top:var(--st);left:var(--sl);right:var(--sr);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none;z-index:5;direction:ltr}
 .hud-l{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:0;max-width:52vw}
 .vitals{display:flex;align-items:center;gap:8px}
-.hearts{width:190px;height:38px;display:block;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
-.potion{pointer-events:auto;position:relative;width:52px;height:52px;flex:none;border-radius:50%;border:0;background:var(--panel);font-size:26px;line-height:1;box-shadow:0 4px 0 rgba(0,0,0,.2);display:grid;place-items:center;padding:0}
-.potion b{position:absolute;right:-4px;bottom:-4px;min-width:22px;height:22px;border-radius:11px;background:var(--pink);color:#fff;font:900 14px/22px var(--font);padding:0 5px}
+.hearts{width:190px;height:38px;display:block}
+.potion{pointer-events:auto;position:relative;width:52px;height:52px;flex:none;border-radius:50%;border:var(--bw) solid var(--edge);background:var(--card);font-size:26px;line-height:1;box-shadow:0 3px 0 var(--edge);display:grid;place-items:center;padding:0}
+.potion b{position:absolute;right:-6px;bottom:-6px;min-width:24px;height:24px;border-radius:12px;background:var(--coral);color:var(--ink);border:2px solid var(--ink);font:900 14px/20px var(--font);padding:0 5px}
 .potion.none{filter:grayscale(.8);opacity:.75}
 .pills{display:flex;gap:6px;flex-wrap:wrap}
-.pill{background:var(--panel);font:800 16px/1 var(--font);padding:7px 11px;border-radius:999px;box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
-.tracker{pointer-events:auto;display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:2px;max-width:min(46vw,340px);border:0;border-radius:16px;background:rgba(255,255,255,.9);box-shadow:0 4px 0 rgba(0,0,0,.15);padding:9px 13px;font-family:var(--font)}
-.trk-t{font:900 14px/1.2 var(--font);color:var(--gold-dark);text-transform:uppercase;letter-spacing:.3px}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--card);color:var(--text);font:800 17px/1 var(--font);padding:5px 11px 5px 6px;border-radius:999px;border:2px solid var(--edge);box-shadow:0 2px 0 var(--edge);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill svg{width:22px;height:22px;flex:none}
+.tracker{pointer-events:auto;display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:2px;max-width:min(46vw,340px);border:var(--bw) solid var(--edge);border-radius:18px;background:var(--card);color:var(--text);box-shadow:0 3px 0 var(--edge);padding:8px 13px;font-family:var(--font)}
+.trk-t{font:900 13px/1.2 var(--font);color:var(--spark-text);text-transform:uppercase;letter-spacing:.3px}
 .trk-o{font:800 16px/1.25 var(--font)}
 .trk-d{font:700 14px/1.2 var(--font);color:var(--soft)}
 .hud-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .ibtns{display:flex;gap:8px}
-.ibtn{pointer-events:auto;width:48px;height:48px;flex:none;border-radius:50%;border:0;background:var(--panel);font-size:22px;line-height:1;box-shadow:0 4px 0 rgba(0,0,0,.2);display:grid;place-items:center;padding:0}
-.ibtn:active,.potion:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
-.minimap{pointer-events:auto;width:112px;height:112px;border-radius:50%;border:4px solid rgba(255,255,255,.95);padding:0;background:#6fbf5a;box-shadow:0 4px 0 rgba(0,0,0,.2);overflow:hidden}
+.ibtn{pointer-events:auto;width:48px;height:48px;flex:none;border-radius:50%;border:var(--bw) solid var(--edge);background:var(--card);color:var(--text);font-size:22px;line-height:1;box-shadow:0 3px 0 var(--edge);display:grid;place-items:center;padding:0}
+.ibtn svg{width:26px;height:26px}
+.ibtn:active,.potion:active{transform:translateY(3px);box-shadow:0 0 0 var(--edge)}
+.minimap{pointer-events:auto;width:112px;height:112px;border-radius:50%;border:var(--bw) solid var(--edge);padding:0;background:var(--mint);box-shadow:0 3px 0 var(--edge),inset 0 0 0 3px var(--cream);overflow:hidden}
 .minimap canvas{width:100%;height:100%;display:block;border-radius:50%}
-@media (max-width:480px){.wide-only{display:none!important}.minimap{width:88px;height:88px}.hearts{width:120px;height:52px}}
+@media (max-width:480px){.hud-l{max-width:calc(100vw - var(--sl) - var(--sr) - 112px)}.tracker{max-width:100%;padding:7px 12px}.trk-o{font-size:15px}.wide-only{display:none!important}.minimap{width:88px;height:88px}.hearts{width:120px;height:52px}.pill{font-size:15px;padding:4px 9px 4px 5px}.pill svg{width:19px;height:19px}}
 .bossbar{position:fixed;top:calc(var(--st) + 4px);left:50%;transform:translateX(-50%);z-index:6;width:min(440px,60vw);text-align:center;pointer-events:none}
-.boss-name{font:900 18px/1.2 var(--font);color:#fff;text-shadow:0 2px 0 var(--plum),0 0 8px rgba(0,0,0,.5)}
-.boss-track{display:flex;gap:5px;margin-top:4px}
-.boss-track i{flex:1;height:16px;border-radius:8px;background:#a776e8;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2),0 2px 0 rgba(0,0,0,.25)}
-.boss-track i.done{background:rgba(255,255,255,.35)}
-.banner{position:fixed;left:50%;top:26%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;font:900 clamp(30px,7vw,54px)/1.1 var(--font);color:#fff;text-align:center;max-width:92vw;text-shadow:0 4px 0 var(--gold-dark),0 0 18px rgba(255,190,40,.7);opacity:0}
-.banner.show{animation:bannerIn 2.4s ease-out forwards}
-.banner.small{font-size:clamp(24px,5.5vw,40px)}
-@keyframes bannerIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}22%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+.boss-name{display:inline-block;font:900 17px/1.2 var(--font);color:var(--cream);background:var(--grape-d);border:2px solid var(--ink);border-radius:999px;padding:3px 14px;box-shadow:0 2px 0 var(--ink)}
+.boss-track{display:flex;gap:5px;margin-top:5px}
+.boss-track i{flex:1;height:16px;border-radius:8px;background:var(--grape);border:2px solid var(--ink);box-shadow:0 2px 0 var(--ink)}
+.boss-track i.done{background:var(--cream);opacity:.55}
+.banner{position:fixed;left:50%;top:26%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;font:900 clamp(30px,7vw,54px)/1.1 var(--font);color:var(--spark);text-align:center;max-width:92vw;-webkit-text-stroke:7px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);opacity:0}
+.banner.show{animation:bannerIn 2.4s cubic-bezier(.34,1.56,.64,1) forwards}
+.banner.small{font-size:clamp(24px,5.5vw,40px);-webkit-text-stroke-width:6px}
+@keyframes bannerIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.7) rotate(-4deg)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.06) rotate(-2deg)}22%{transform:translate(-50%,-50%) scale(1) rotate(-2deg)}80%{opacity:1;transform:translate(-50%,-50%) rotate(-2deg)}100%{opacity:0;transform:translate(-50%,-50%) rotate(-2deg)}}
 .toasts{position:fixed;left:var(--sl);bottom:calc(var(--sb) + 150px);z-index:8;display:flex;flex-direction:column;gap:6px;align-items:flex-start;pointer-events:none;max-width:min(70vw,420px)}
 body:not(.touch) .toasts{bottom:calc(var(--sb) + 12px)}
-.toast{background:rgba(20,26,56,.84);color:#fff;font:800 16px/1.3 var(--font);padding:9px 14px;border-radius:14px;animation:toastIn 3.2s ease-out forwards}
+.toast{background:var(--card);color:var(--text);border:2px solid var(--edge);box-shadow:0 3px 0 var(--edge);font:800 16px/1.3 var(--font);padding:8px 14px;border-radius:16px;animation:toastIn 3.2s ease-out forwards}
 @keyframes toastIn{0%{opacity:0;transform:translateY(8px)}8%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}
 .badges{position:fixed;right:var(--sr);bottom:calc(var(--sb) + 200px);z-index:8;display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
 body:not(.touch) .badges{bottom:calc(var(--sb) + 12px)}
-.badge{background:linear-gradient(#ffe066,#ffbf1f);color:#5a3b00;font:900 16px/1.3 var(--font);padding:10px 16px;border-radius:16px;box-shadow:0 4px 0 var(--gold-dark);animation:toastIn 4s ease-out forwards}
-.keyhint{position:fixed;left:50%;bottom:calc(var(--sb) + 40px);transform:translateX(-50%);z-index:7;background:var(--panel);border-radius:999px;padding:8px 16px 8px 8px;font:800 17px/1.2 var(--font);display:flex;gap:10px;align-items:center;box-shadow:0 4px 0 rgba(0,0,0,.18);pointer-events:none}
+.badge{background:var(--spark);color:var(--ink);font:900 16px/1.3 var(--font);padding:9px 16px;border-radius:16px;border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);animation:toastIn 4s ease-out forwards}
+.keyhint{position:fixed;left:50%;bottom:calc(var(--sb) + 40px);transform:translateX(-50%);z-index:7;background:var(--card);color:var(--text);border:2px solid var(--edge);border-radius:999px;padding:7px 16px 7px 7px;font:800 17px/1.2 var(--font);display:flex;gap:10px;align-items:center;box-shadow:0 3px 0 var(--edge);pointer-events:none}
+.keyhint kbd{border-color:var(--edge)}
 body.touch .keyhint{display:none!important}
 .turn-tip{display:none}
-/* Touch controls */
-#stickBase{position:fixed;width:132px;height:132px;border-radius:50%;background:rgba(255,255,255,.22);border:3px solid rgba(255,255,255,.75);display:none;z-index:6;pointer-events:none;transform:translate(-50%,-50%)}
-#stickKnob{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:rgba(255,255,255,.95);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+/* Touch controls: kit stickers (Cream discs and coloured buttons with an Ink outline and a hard drop) */
+#stickBase{position:fixed;width:132px;height:132px;border-radius:50%;background:var(--cream-a);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);display:none;z-index:6;pointer-events:none;transform:translate(-50%,-50%)}
+#stickKnob{position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:var(--mint);border:3px solid var(--ink);box-shadow:0 3px 0 var(--mint-d)}
 .tbtns{display:none}
 body.touch.playing .tbtns{display:block}
-.tbtn{position:fixed;z-index:6;border:0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff;touch-action:none;padding:0 4px;overflow:hidden;font:900 13px/1.05 var(--font);text-shadow:0 1px 0 rgba(0,0,0,.3)}
-.tbtn span{font-size:26px;line-height:1}
+.tbtn{position:fixed;z-index:6;border:3px solid var(--ink);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--ink);touch-action:none;padding:0 4px;overflow:hidden;font:900 13px/1.05 var(--font)}
+.tbtn span{font-size:26px;line-height:1;display:grid;place-items:center}
+.tbtn span svg{width:30px;height:30px}
 .tbtn b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tbtn.down{transform:translateY(4px)}
-.t-attack{right:calc(var(--sr) + 8px);bottom:calc(var(--sb) + 14px);width:88px;height:88px;background:linear-gradient(#ff8a7a,#ef4b3c);box-shadow:0 6px 0 #a8281c}
+.t-attack{right:calc(var(--sr) + 8px);bottom:calc(var(--sb) + 14px);width:88px;height:88px;background:var(--coral);box-shadow:0 6px 0 var(--ink)}
 .t-attack span{font-size:34px}
-.t-jump{right:calc(var(--sr) + 108px);bottom:calc(var(--sb) + 8px);width:68px;height:68px;background:linear-gradient(#7fb2ff,var(--blue));box-shadow:0 5px 0 var(--blue-dark)}
-.t-roll{right:calc(var(--sr) + 100px);bottom:calc(var(--sb) + 92px);width:64px;height:64px;background:linear-gradient(#a8e88a,var(--green));box-shadow:0 5px 0 var(--green-dark)}
-.t-ctx{right:calc(var(--sr) + 16px);bottom:calc(var(--sb) + 118px);width:72px;height:72px;background:linear-gradient(#ffe066,var(--gold));box-shadow:0 5px 0 var(--gold-dark);color:#5a3b00;text-shadow:none}
-.t-attack.down{box-shadow:0 2px 0 #a8281c}.t-jump.down{box-shadow:0 1px 0 var(--blue-dark)}.t-roll.down{box-shadow:0 1px 0 var(--green-dark)}.t-ctx.down{box-shadow:0 1px 0 var(--gold-dark)}
-.t-attack.charged{background:linear-gradient(#fff3a0,#ffbf1f)}
-/* Dialog */
-.dialog{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 12px);z-index:12;width:min(640px,calc(100% - 24px));background:#fff;border-radius:var(--r);box-shadow:0 8px 0 rgba(0,0,0,.14),0 18px 40px rgba(0,0,0,.25);display:flex;gap:12px;align-items:flex-start;padding:14px 14px 14px 12px}
+.t-jump{right:calc(var(--sr) + 108px);bottom:calc(var(--sb) + 8px);width:68px;height:68px;background:var(--sky);box-shadow:0 5px 0 var(--ink)}
+.t-roll{right:calc(var(--sr) + 100px);bottom:calc(var(--sb) + 92px);width:64px;height:64px;background:var(--mint);box-shadow:0 5px 0 var(--ink)}
+.t-ctx{right:calc(var(--sr) + 16px);bottom:calc(var(--sb) + 118px);width:72px;height:72px;background:var(--spark);box-shadow:0 5px 0 var(--ink)}
+.t-attack.down,.t-jump.down,.t-roll.down,.t-ctx.down{box-shadow:0 1px 0 var(--ink)}
+.t-attack.charged{background:var(--spark-l)}
+/* Dialog: a kit card with the speaker's portrait */
+.dialog{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 12px);z-index:12;width:min(640px,calc(100% - 24px));background:var(--card);color:var(--text);border:var(--bw) solid var(--edge);border-radius:var(--r);box-shadow:0 6px 0 var(--edge);display:flex;gap:12px;align-items:flex-start;padding:12px 12px 12px 10px}
 body.touch .dialog{bottom:calc(var(--sb) + 112px)}
-.dlg-portrait{flex:none;width:64px;height:64px;border-radius:50%;background:#fff3c4;display:grid;place-items:center;font-size:40px;line-height:1}
+.dlg-portrait{flex:none;width:64px;height:64px;border-radius:50%;background:var(--spark-t);border:2px solid var(--edge);display:flex;justify-content:center;align-items:center;font-size:40px;line-height:1;overflow:hidden}
+.dlg-portrait svg{width:38px;height:38px}
+.dlg-portrait canvas{display:block;flex:none;width:100%!important;height:100%!important}
 .dlg-body{flex:1;min-width:0}
-.dlg-name{font:900 16px/1.2 var(--font);color:var(--gold-dark);margin-bottom:4px}
+.dlg-name{font:900 16px/1.2 var(--font);color:var(--spark-text);margin-bottom:4px}
 .dlg-text{margin:0;font:700 18px/1.4 var(--font);min-height:2.8em}
-.dlg-next{flex:none;align-self:flex-end;min-height:48px;min-width:48px;border:0;border-radius:14px;background:linear-gradient(#ffe066,var(--gold));box-shadow:0 4px 0 var(--gold-dark);font:900 16px/1 var(--font);color:#5a3b00;padding:0 14px}
-/* Overlay screens */
-.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));z-index:20;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.08),rgba(20,30,70,.5))}
+.dlg-next{flex:none;align-self:flex-end;min-height:48px;min-width:48px;border:2px solid var(--ink);border-radius:999px;background:var(--spark);box-shadow:0 4px 0 var(--spark-d);font:800 16px/1 var(--font);color:var(--ink);padding:0 16px}
+.dlg-next:active{transform:translateY(3px);box-shadow:0 1px 0 var(--spark-d)}
+/* Overlay screens: the kit's scrim and cards */
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));z-index:20;background:radial-gradient(ellipse 80% 90% at 50% 50%,var(--scrim) 50%,var(--scrim-e))}
 .screen.clear{background:none}
-.card{background:#fff;border-radius:28px;padding:22px 20px 20px;max-width:440px;width:100%;max-height:100%;overflow:auto;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.12),0 20px 50px rgba(0,0,0,.25)}
+.card{background:var(--card);color:var(--text);border:var(--bw) solid var(--edge);border-radius:30px;padding:22px 20px 20px;max-width:440px;width:100%;max-height:100%;overflow:auto;text-align:center;box-shadow:0 8px 0 var(--edge)}
 .card.wide{max-width:640px}
-.card .emo{font-size:44px;line-height:1.1}
-h1{margin:6px 0;font:900 clamp(30px,8vw,46px)/1.05 var(--font);letter-spacing:-.5px}
-h2{margin:4px 0 12px;font:900 26px/1.15 var(--font)}
-.sub{margin:0 0 16px;color:var(--soft);font:700 17px/1.35 var(--font)}
+.card .emo{font-size:44px;line-height:1.1;display:flex;justify-content:center;align-items:flex-end;gap:4px}
+.card .emo svg{width:48px;height:48px}
+.card .emo canvas{display:block}
+h1{margin:6px 0;font:800 clamp(30px,8vw,44px)/1.05 var(--font);letter-spacing:-.5px}
+h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
+.sub{margin:0 0 16px;color:var(--soft);font:600 17px/1.4 var(--font)}
 .btns{display:flex;flex-direction:column;gap:12px;align-items:stretch}
 .btns.row{flex-direction:row;justify-content:center;flex-wrap:wrap}
-.big{font:900 22px/1.1 var(--font);color:#5a3b00;background:linear-gradient(#ffe066,#ffbf1f);border:0;border-radius:20px;padding:14px 26px;min-height:60px;box-shadow:0 7px 0 var(--gold-dark)}
-.big:active{transform:translateY(5px);box-shadow:0 2px 0 var(--gold-dark)}
+/* buttons: the kit's pills (hot = Spark, alt = sky, soft = quiet Cream) */
+.big{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:800 21px/1.1 var(--font);color:var(--ink);background:var(--spark);border:2px solid var(--ink);border-radius:999px;padding:12px 26px;min-height:60px;box-shadow:0 4px 0 var(--spark-d);transition:transform 80ms ease-out,box-shadow 80ms ease-out}
+.big svg{width:1.25em;height:1.25em;flex:none}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 var(--spark-d)}
 .big:disabled{filter:grayscale(.7);cursor:default;transform:none}
-.big.alt{background:linear-gradient(#9cc2ff,#5d93ff);color:#fff;box-shadow:0 7px 0 var(--blue-dark)}
-.big.alt:active{box-shadow:0 2px 0 var(--blue-dark)}
-.big.soft{background:#eef1f8;color:var(--ink);box-shadow:0 6px 0 #c9cfdf}
-.big.soft:active{box-shadow:0 2px 0 #c9cfdf}
-.hint{color:var(--soft);font:700 15px/1.4 var(--font);margin:14px 0 0}
-.loadbar{height:14px;border-radius:7px;background:#eef1f8;overflow:hidden;margin:6px 0 4px}
-.loadbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd23f,#ff9f1c);border-radius:7px;transition:width .2s linear}
-#titleScreen{align-items:flex-end;background:linear-gradient(rgba(20,30,70,0) 40%,rgba(20,30,70,.45))}
-#titleScreen .card{background:rgba(255,255,255,.94)}
-.logo{font:900 clamp(34px,9vw,54px)/1 var(--font);color:#ffbf1f;-webkit-text-stroke:2px #8a5200;text-shadow:0 4px 0 #8a5200;margin:4px 0 6px}
+.big.alt{background:var(--sky);color:var(--ink);box-shadow:0 4px 0 var(--sky-d)}
+.big.alt:active{box-shadow:0 1px 0 var(--sky-d)}
+.big.soft{background:var(--cream);color:var(--ink);box-shadow:0 4px 0 var(--ink);font-size:18px;min-height:52px}
+.big.soft:active{box-shadow:0 1px 0 var(--ink)}
+.hint{color:var(--soft);font:600 15px/1.4 var(--font);margin:14px 0 0}
+.loadbar{height:16px;border-radius:8px;background:var(--bg2);border:2px solid var(--edge);overflow:hidden;margin:6px 0 4px}
+.loadbar i{display:block;height:100%;width:0;background:var(--spark);border-radius:6px;transition:width .2s linear}
+/* Title: the kit's title screen (Oomba.ui.title) holds the lockup and the player's character; the game's card sits under it */
+#titleScreen{background:none;pointer-events:none}
+#titleScreen>.card,#titleScreen>.hos-tcard{display:none}
+.hos-tcard{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:min(400px,86vw);background:var(--card);color:var(--text);border:var(--bw) solid var(--edge);border-radius:28px;box-shadow:0 6px 0 var(--edge);padding:14px 16px 16px;text-align:center;font-family:var(--font)}
+.hos-tcard .sub{margin:0}
+.hos-tcard .btns{gap:10px}
+.hos-tcard .big{min-height:56px}
+.hos-tcard #loadBox .hint{margin:4px 0 0}
+.ok-title-screen.hos-title .ok-cta,.ok-title-screen.hos-title .ok-corner,.ok-title-screen.hos-title .ok-title-block>.ok-p{display:none}
+.logo{font:800 clamp(34px,9vw,54px)/1 var(--font);color:var(--spark);-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink);margin:4px 0 6px}
 /* Hero maker */
 #heroScreen{justify-content:flex-end;align-items:stretch;background:none;padding:0}
-.maker{width:min(440px,52vw);height:100%;overflow:auto;background:rgba(255,255,255,.95);padding:max(16px,env(safe-area-inset-top)) 18px max(16px,env(safe-area-inset-bottom));box-shadow:-8px 0 30px rgba(0,0,0,.18);text-align:start}
-@media (max-aspect-ratio:4/5){#heroScreen{align-items:flex-end}.maker{width:100%;height:58%;border-radius:24px 24px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18)}}
-.mrow{margin:10px 0 4px;font:900 16px/1.2 var(--font)}
+.maker{width:min(440px,52vw);height:100%;overflow:auto;background:var(--card);color:var(--text);border-inline-start:var(--bw) solid var(--edge);padding:max(16px,env(safe-area-inset-top)) 18px max(16px,env(safe-area-inset-bottom));text-align:start}
+@media (max-aspect-ratio:4/5){#heroScreen{align-items:flex-end}.maker{width:100%;height:58%;border-radius:26px 26px 0 0;border:var(--bw) solid var(--edge);border-bottom:0;padding-inline:14px}}
+.maker h2{font-size:24px;margin:0 0 4px}
+.maker h2.mkh2{margin:14px 0 6px}
+.mrow{margin:9px 0 5px;font:800 16px/1.2 var(--font)}
 .swatches{display:flex;flex-wrap:wrap;gap:8px}
-.sw{width:48px;height:48px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px #c9cfdf;padding:0}
-.sw[aria-pressed="true"]{box-shadow:0 0 0 4px var(--blue)}
-.chip{min-height:48px;padding:0 14px;border-radius:14px;border:0;background:#eef1f8;font:800 16px/1.1 var(--font);box-shadow:0 4px 0 #c9cfdf}
-.chip[aria-pressed="true"]{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-dark)}
+/* every colour group is one row: the swatches share the width (up to 46px each) instead of wrapping */
+#skinRow,#hairColorRow,#outfitRow{flex-wrap:nowrap;gap:6px;padding:4px 3px}
+.sw{position:relative;flex:0 1 46px;min-width:0;width:46px;height:auto;aspect-ratio:1;border-radius:50%;border:3px solid var(--cream);box-shadow:0 0 0 2px var(--ink);padding:0}
+/* chosen: a thick Ink ring, a Spark rim and a tick, so it is plain which one is picked */
+.sw[aria-pressed="true"]{border-color:var(--spark);box-shadow:0 0 0 3.5px var(--ink);transform:scale(1.06)}
+.sw[aria-pressed="true"]::before,.sw[aria-pressed="true"]::after{content:"";position:absolute;left:50%;top:50%;width:46%;height:46%;transform:translate(-50%,-50%);border-radius:50%}
+.sw[aria-pressed="true"]::before{background:var(--cream);border:2px solid var(--ink)}
+.sw[aria-pressed="true"]::after{width:30%;height:30%;border-radius:0;background:var(--ink);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+#hairRow{flex-wrap:nowrap;gap:6px}
+#hairRow .chip{flex:1 1 auto;min-width:0;justify-content:center;padding:0 8px;text-align:center}
+.mkextra{margin-top:12px}
+.mkbtns{display:flex;flex-direction:row-reverse;gap:10px;margin-top:14px}
+.mkbtns .big{margin:0;min-height:56px}
+.mkbtns #makerGo{flex:2 1 0;min-width:0}
+.mkbtns #makerBack{flex:1 1 0;min-width:0;min-height:56px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 15px;border-radius:999px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);font:700 16px/1.1 var(--font);box-shadow:0 3px 0 var(--ink)}
+.chip svg{width:22px;height:22px}
+.chip canvas{display:block;height:40px!important;width:auto!important;margin:-4px 0 -4px -8px}
+.chip[aria-pressed="true"]{background:var(--mint);box-shadow:0 3px 0 var(--mint-d)}
 .diffs{display:flex;flex-direction:column;gap:8px}
-.diff{display:flex;flex-direction:column;align-items:flex-start;text-align:start;min-height:56px;padding:9px 14px;border-radius:16px;border:0;background:#eef1f8;box-shadow:0 4px 0 #c9cfdf}
-.diff b{font:900 17px/1.2 var(--font)}.diff span{font:700 14px/1.3 var(--font);color:var(--soft)}
-.diff[aria-pressed="true"]{background:#dfe9ff;box-shadow:0 0 0 3px var(--blue),0 4px 0 var(--blue-dark)}
-.maker .big{width:100%;margin-top:14px}
+.diff{display:flex;flex-direction:column;align-items:flex-start;text-align:start;min-height:52px;padding:7px 14px;border-radius:18px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.diff b{font:800 17px/1.2 var(--font)}.diff span{font:600 14px/1.3 var(--font);color:var(--stone-d)}
+.diff[aria-pressed="true"]{background:var(--mint-t);border-width:3px;box-shadow:0 0 0 3px var(--mint),0 3px 0 var(--ink)}
+.maker>.big{width:100%;margin-top:14px}
 /* Settings, controls */
 .setlist{display:flex;flex-direction:column;gap:10px;text-align:start;margin-bottom:14px}
 .setrow{display:flex;flex-direction:column;gap:6px}
 .setrow>span{font:800 16px/1.2 var(--font)}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
-.seg .chip{min-height:44px;padding:0 12px;font-size:15px}
+.seg .chip{min-height:44px;padding:0 13px;font-size:15px}
 .stepper{display:flex;align-items:center;gap:10px}
 .stepper b{min-width:2ch;text-align:center;font:900 20px/1 var(--font)}
 .ctl-list{text-align:start;margin:0 0 16px;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
-.ctl-list li{font:700 16px/1.35 var(--font);background:#f4f6fb;border-radius:12px;padding:8px 12px}
+.ctl-list li{font:600 16px/1.35 var(--font);background:var(--bg2);border-radius:14px;padding:8px 12px}
 /* Map */
-.mapwrap{position:relative;width:min(84vh,92vw,620px);aspect-ratio:1;margin:0 auto 12px;border-radius:18px;overflow:hidden;box-shadow:inset 0 0 0 3px rgba(0,0,0,.1)}
+.mapwrap{position:relative;width:min(84vh,92vw,620px);aspect-ratio:1;margin:0 auto 12px;border-radius:20px;overflow:hidden;border:var(--bw) solid var(--edge)}
 .mapwrap canvas{width:100%;height:100%;display:block}
 .mapmarks{position:absolute;inset:0}
 .mk{position:absolute;transform:translate(-50%,-50%);pointer-events:none;font-size:20px;line-height:1}
-.mk-way{pointer-events:auto;width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#6c7a99;color:#fff;font-size:20px;display:grid;place-items:center;padding:0;box-shadow:0 3px 0 rgba(0,0,0,.25)}
-.mk-way.on{background:linear-gradient(#ffe066,#ffbf1f);color:#5a3b00}
-.mk-label{font:900 13px/1.1 var(--font);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.8),0 0 4px rgba(0,0,0,.6);white-space:nowrap}
+.mk-way{pointer-events:auto;width:44px;height:44px;border-radius:50%;border:3px solid var(--ink);background:var(--stone);color:var(--cream);font-size:20px;display:grid;place-items:center;padding:0;box-shadow:0 3px 0 var(--ink)}
+.mk-way.on{background:var(--spark);color:var(--ink)}
+.mk-label{font:800 13px/1.1 var(--font);color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:999px;padding:1px 6px;white-space:nowrap}
 #mapScreen .card{max-width:680px;padding:16px}
 @media (prefers-reduced-motion:reduce){.banner.show{animation:fadeOnly 2.4s linear forwards}.toast,.badge{animation:fadeOnly 3.2s linear forwards}}
 @keyframes fadeOnly{0%{opacity:0}10%{opacity:1}85%{opacity:1}100%{opacity:0}}
 /* Combat + loot (builder 2): foe health bars, knocked-out card, loot card, bag + shop */
 .hpbar{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none}
-.hpbar b{font:900 15px/1.1 var(--font);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.75),0 0 6px rgba(0,0,0,.4);white-space:nowrap}
-.hpbar i{display:block;width:58px;height:9px;border-radius:6px;background:rgba(20,26,56,.62);border:2px solid rgba(255,255,255,.9);overflow:hidden}
-.hpbar u{display:block;height:100%;width:100%;background:linear-gradient(#ffb36b,#ef6b3c);text-decoration:none;transition:width .15s linear}
-.hpbar.boss i{width:130px;height:13px}
+.hpbar b{font:800 14px/1.1 var(--font);color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.hpbar i{display:block;width:58px;height:11px;border-radius:6px;background:var(--cream);border:2px solid var(--ink);overflow:hidden}
+.hpbar u{display:block;height:100%;width:100%;background:var(--coral);text-decoration:none;transition:width .15s linear}
+.hpbar.boss i{width:130px;height:14px}
 .hearts.wobble{animation:heartWob .45s ease-out}
 @keyframes heartWob{0%{transform:none}25%{transform:rotate(-4deg) scale(1.05)}55%{transform:rotate(3deg)}80%{transform:rotate(-1deg)}100%{transform:none}}
 .fxpill{letter-spacing:.5px}
-.kocard{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:31;background:#fff;border-radius:26px;padding:20px 28px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center;max-width:min(420px,88vw);box-shadow:0 8px 0 rgba(0,0,0,.14),0 18px 40px rgba(0,0,0,.3)}
+.kocard{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:31;background:var(--card);color:var(--text);border:var(--bw) solid var(--edge);border-radius:28px;padding:18px 28px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center;max-width:min(420px,88vw);box-shadow:0 8px 0 var(--edge)}
 .kocard .emo{font-size:46px;line-height:1}
-.kocard b{font:900 23px/1.2 var(--font)}
-.kocard span{font:700 17px/1.3 var(--font);color:var(--soft)}
-.lootcard{position:fixed;left:50%;top:15%;transform:translateX(-50%);z-index:9;background:rgba(255,255,255,.96);border-radius:22px;padding:12px 16px 14px;text-align:center;width:max-content;max-width:min(560px,92vw);pointer-events:none;box-shadow:0 6px 0 var(--gold-dark),0 14px 30px rgba(0,0,0,.25)}
-.lootcard.show{animation:lootIn 4.8s ease-out forwards}
+.kocard .emo canvas{display:block}
+.kocard b{font:800 23px/1.2 var(--font)}
+.kocard span{font:600 17px/1.3 var(--font);color:var(--soft)}
+.lootcard{position:fixed;left:50%;top:15%;transform:translateX(-50%);z-index:9;background:var(--card);color:var(--text);border:var(--bw) solid var(--edge);border-radius:24px;padding:12px 16px 14px;text-align:center;width:max-content;max-width:min(560px,92vw);pointer-events:none;box-shadow:0 6px 0 var(--edge)}
+.lootcard.show{animation:lootIn 4.8s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes lootIn{0%{opacity:0;transform:translateX(-50%) scale(.8)}8%{opacity:1;transform:translateX(-50%) scale(1.04)}14%{transform:translateX(-50%) scale(1)}86%{opacity:1}100%{opacity:0}}
-.lootcard>b{display:block;font:900 23px/1.2 var(--font);color:var(--gold-dark);margin-bottom:8px}
+.lootcard>b{display:flex;align-items:center;justify-content:center;gap:6px;font:800 23px/1.2 var(--font);color:var(--spark-text);margin-bottom:8px}
+.lootcard>b svg{width:28px;height:28px}
 #lootList{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.lc{display:flex;align-items:center;gap:7px;background:#fff7d6;border-radius:999px;padding:4px 13px 4px 4px;font:800 16px/1.2 var(--font)}
-.lc i{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
-.card.bag{max-width:620px;text-align:start;background:rgba(255,255,255,.95)}
+.lc{display:flex;align-items:center;gap:7px;background:var(--spark-t);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 13px 3px 3px;font:800 16px/1.2 var(--font)}
+.lc i{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;border:2px solid var(--ink)}
+.card.bag{max-width:620px;text-align:start}
 .card.bag h2{text-align:center}
-.card.bag>.big{display:block;margin:0 auto;min-width:min(240px,100%)}
-@media (min-aspect-ratio:5/4){#bagScreen{justify-content:flex-end;background:linear-gradient(90deg,rgba(20,30,70,0) 35%,rgba(20,30,70,.35))}#bagScreen .card.bag{width:min(560px,56vw);max-height:100%}}
+.card.bag>.big{display:flex;margin:0 auto;min-width:min(240px,100%)}
+@media (min-aspect-ratio:5/4){#bagScreen{justify-content:flex-end;background:linear-gradient(90deg,transparent 35%,var(--scrim))}#bagScreen .card.bag{width:min(560px,56vw);max-height:100%}}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px;justify-content:center}
-.tab{min-height:48px;padding:0 15px;border-radius:14px;border:0;background:#eef1f8;font:900 16px/1 var(--font);box-shadow:0 4px 0 #c9cfdf}
-.tab[aria-selected="true"]{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-dark)}
-.bagstats{margin:0 0 6px;font:900 17px/1.3 var(--font);color:var(--ink);text-align:center}
-.bagmsg{min-height:1.3em;margin:0 0 8px;font:800 16px/1.3 var(--font);color:var(--green-dark);text-align:center}
+.tab{min-height:48px;padding:0 16px;border-radius:999px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);font:800 16px/1 var(--font);box-shadow:0 3px 0 var(--ink)}
+.tab[aria-selected="true"]{background:var(--sky);box-shadow:0 3px 0 var(--sky-d)}
+.bagstats{margin:0 0 6px;font:800 17px/1.3 var(--font);color:var(--text);text-align:center}
+.bagmsg{min-height:1.3em;margin:0 0 8px;font:800 16px/1.3 var(--font);color:var(--mint-text);text-align:center}
 .bagbody{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
-.bagrow>span{display:block;font:900 14px/1.2 var(--font);margin:0 0 6px;color:var(--soft);text-transform:uppercase;letter-spacing:.3px}
+.bagrow>span{display:block;font:800 13px/1.2 var(--font);margin:0 0 6px;color:var(--soft);text-transform:uppercase;letter-spacing:.3px}
 .cards{display:flex;flex-wrap:wrap;gap:8px}
-.icard{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;row-gap:1px;align-items:center;min-height:64px;flex:1 1 160px;max-width:280px;padding:8px 12px 8px 8px;border-radius:16px;border:0;background:#f4f6fb;box-shadow:0 4px 0 #d5dae6;text-align:start}
-.icard[aria-pressed="true"]{background:#fff4cc;box-shadow:0 0 0 3px var(--gold),0 4px 0 var(--gold-dark)}
-.icard i{grid-row:1/3;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:24px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
-.icard b{font:900 16px/1.15 var(--font)}
-.icard span{font:700 14px/1.25 var(--font);color:var(--soft)}
+.icard{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;row-gap:1px;align-items:center;min-height:64px;flex:1 1 160px;max-width:280px;padding:8px 12px 8px 8px;border-radius:18px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);box-shadow:0 3px 0 var(--ink);text-align:start}
+.icard[aria-pressed="true"]{background:var(--spark-t);box-shadow:0 0 0 3px var(--spark),0 3px 0 var(--ink)}
+.icard i{grid-row:1/3;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:24px;border:2px solid var(--ink)}
+.icard b{font:800 16px/1.15 var(--font)}
+.icard span{font:600 14px/1.25 var(--font);color:var(--stone-d)}
 .icard:disabled{cursor:default}
 .icard:disabled i{filter:grayscale(.3)}
-.bagempty{margin:0;color:var(--soft);font:700 15px/1.3 var(--font)}
+.bagempty{margin:0;color:var(--soft);font:600 15px/1.3 var(--font)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.tchip{background:#f4f6fb;border-radius:999px;padding:7px 13px;font:800 15px/1.2 var(--font)}
+.tchip{background:var(--bg2);border-radius:999px;padding:7px 13px;font:700 15px/1.2 var(--font)}
 @media (prefers-reduced-motion:reduce){.lootcard.show{animation:fadeOnly 4.8s linear forwards}.hearts.wobble{animation:none}}
 /* Story (builder 3): cutscene letterbox + captions, The End card */
 #cutScreen{background:none;padding:0;align-items:flex-end;justify-content:center;pointer-events:none}
-.lbox{position:fixed;left:0;right:0;height:9vh;background:#0d1024;pointer-events:none;z-index:0}
+.lbox{position:fixed;left:0;right:0;height:9vh;background:var(--ink);pointer-events:none;z-index:0}
 .lbox.top{top:0}.lbox.bot{bottom:0}
 body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badges,body.cut .bossbar,body.cut .lootcard,body.cut #stickBase{display:none!important}
-.cutcap{pointer-events:auto;position:relative;z-index:1;margin:0 12px calc(9vh + 10px);width:min(640px,calc(100% - 24px));background:rgba(255,255,255,.96);border-radius:var(--r);box-shadow:0 8px 0 rgba(0,0,0,.14),0 18px 40px rgba(0,0,0,.3);display:flex;gap:12px;align-items:flex-start;padding:12px 14px;cursor:pointer}
+.cutcap{pointer-events:auto;position:relative;z-index:1;margin:0 12px calc(9vh + 10px);width:min(640px,calc(100% - 24px));background:var(--card);color:var(--text);border:var(--bw) solid var(--edge);border-radius:var(--r);box-shadow:0 6px 0 var(--edge);display:flex;gap:12px;align-items:flex-start;padding:12px 14px;cursor:pointer}
 .cutcap .dlg-name:empty{display:none}
 .cutbtns{position:fixed;right:var(--sr);top:calc(9vh + 10px);display:flex;gap:8px;z-index:2;pointer-events:auto}
-.cutbtns .big{min-height:48px;padding:8px 16px;font-size:17px}
-.end{max-width:560px}
-.endstats{list-style:none;margin:6px 0 14px;padding:0;display:flex;flex-direction:column;gap:6px;text-align:start}
-.endstats li{display:flex;align-items:center;gap:10px;background:#fff7d6;border-radius:14px;padding:8px 12px;font:800 17px/1.25 var(--font)}
-.endstats li span{font-size:22px;line-height:1}
-.credits{margin:0 0 14px;color:var(--soft);font:700 15px/1.4 var(--font)}
-.credits p{margin:2px 0}
+.cutbtns .big{min-height:48px;padding:6px 16px;font-size:17px}
+/* The End: a compact card that fits a short laptop screen and, on a phone, sits under the top HUD (hearts, potion, pause) */
+#endScreen{padding-top:max(16px,calc(var(--st) + 98px))}
+@media (min-width:600px) and (min-height:560px){#endScreen{padding-top:max(16px,env(safe-area-inset-top))}}
+.card.end{max-width:600px;padding:18px 26px 26px}
+.end .emo{gap:0}
+.end .emo canvas{margin:0 -4px;height:84px!important;width:auto!important}
+.end h1{margin:2px 0 4px;font-size:clamp(30px,7vw,40px)}
+.end .sub{margin:0 0 10px;font-size:16px}
+.endstats{list-style:none;margin:4px 0 12px;padding:0;display:grid;grid-template-columns:1fr;gap:6px;text-align:start}
+.endstats li{display:flex;align-items:center;gap:9px;background:var(--spark-t);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:5px 12px;font:800 16px/1.25 var(--font);min-width:0}
+.endstats li span{font-size:20px;line-height:1;display:grid;place-items:center;flex:none}
+.endstats li span svg{width:22px;height:22px}
+.credits{margin:0 0 14px;color:var(--soft);font:600 14px/1.35 var(--font)}
+.credits p{margin:1px 0}
+.end .btns{gap:10px}
+.end .btns .big{min-height:54px;font-size:19px;padding:10px 20px}
+@media (min-width:600px){.endstats{grid-template-columns:1fr 1fr}.endstats li:last-child:nth-child(odd){grid-column:1/-1;justify-content:center}
+  .end .btns{flex-direction:row}.end .btns .big{flex:1 1 0;min-width:0}}
+@media (max-height:700px) and (min-width:600px){.end .emo canvas{height:68px!important}.end .credits{display:flex;flex-wrap:wrap;justify-content:center;column-gap:.5em}}
 @media (prefers-reduced-motion:reduce){.lbox{transition:none}}
 </style>
 
 <canvas id="view"></canvas>
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js" integrity="sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
+<script>
+/* KIT LOOK: the Oomba Kit's colours (by day and by night) and its font, as the CSS variables the sheet above uses, so
+   the game's own HUD, cards and buttons match every other Oomba game. They follow the site's light / dark theme. */
+(function () {
+  const O = window.Oomba; if (!O || !O.color) return;
+  const root = document.documentElement;
+  function paint() {
+    const c = (h, st) => O.color(h, st), set = (k, v) => root.style.setProperty('--' + k, v), night = O.theme.mode === 'dark';
+    const ui = O.ui.root(), cs = getComputedStyle(ui), kv = k => cs.getPropertyValue('--ok-' + k).trim();
+    set('ok-font', kv('font') || 'inherit');
+    set('ink', c('ink')); set('cream', c('cream', 'tint')); set('paper', c('cream', 'shade'));
+    set('card', kv('card')); set('text', kv('text')); set('edge', kv('edge')); set('bg2', kv('bg2')); set('focus', kv('focus'));
+    set('scrim', kv('scrim')); set('scrim-e', night ? 'rgba(10,12,12,.2)' : 'rgba(20,20,20,.08)');
+    for (const h of ['spark', 'mint', 'coral', 'sky', 'grape', 'peach', 'stone', 'cocoa']) {
+      set(h, c(h, 'base')); set(h + '-t', c(h, 'tint')); set(h + '-l', c(h, 'light')); set(h + '-d', c(h, 'shade'));
+    }
+    set('soft', night ? c('stone', 'light') : c('stone', 'shade'));
+    set('spark-text', night ? c('spark', 'base') : c('cocoa', 'base'));
+    set('mint-text', night ? c('mint', 'light') : c('mint', 'shade'));
+    set('cream-a', c('cream', 'tint') + 'B8'); set('coral-a', c('coral', 'base') + '8C');
+    root.classList.toggle('night', night);
+  }
+  paint();
+  O.theme.on('change', paint);
+  if (O.fonts && O.fonts.ready) O.fonts.ready.then(paint);
+})();
+</script>
 <div class="fade" id="fade"></div>
 <div class="vignette" id="vignette"></div>
 <div class="world-ui" id="worldUi" aria-hidden="true"></div>
@@ -218,10 +302,10 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
   </div>
   <div class="hud-r">
     <div class="ibtns">
-      <button class="ibtn" id="pauseBtn" type="button" data-i18n-aria="a.pause"><span aria-hidden="true">⏸</span></button>
+      <button class="ibtn" id="pauseBtn" type="button" data-i18n-aria="a.pause"><span aria-hidden="true" data-icon="pause"></span></button>
       <button class="ibtn" id="bagBtn" type="button" data-i18n-aria="a.bag"><span aria-hidden="true">🎒</span></button>
       <button class="ibtn wide-only" id="mapBtn" type="button" data-i18n-aria="a.map"><span aria-hidden="true">🗺️</span></button>
-      <button class="ibtn wide-only" id="soundBtn" type="button" data-i18n-aria="a.sound"><span aria-hidden="true" id="soundIcon">🔊</span></button>
+      <button class="ibtn wide-only" id="soundBtn" type="button" data-i18n-aria="a.sound"><span aria-hidden="true" id="soundIcon" data-icon="sound"></span></button>
     </div>
     <button class="minimap" id="minimap" type="button" data-i18n-aria="a.minimap"><canvas id="miniCanvas" width="128" height="128"></canvas></button>
   </div>
@@ -234,7 +318,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <div id="stickBase"><div id="stickKnob"></div></div>
 <div class="tbtns" id="tbtns">
   <button class="tbtn t-attack" id="attackBtn" type="button"><span aria-hidden="true">⚔️</span><b data-i18n="btn.attack"></b></button>
-  <button class="tbtn t-jump" id="jumpBtn" type="button"><span aria-hidden="true">⤴️</span><b data-i18n="btn.jump"></b></button>
+  <button class="tbtn t-jump" id="jumpBtn" type="button"><span aria-hidden="true" data-icon="jump"></span><b data-i18n="btn.jump"></b></button>
   <button class="tbtn t-roll" id="rollBtn" type="button"><span aria-hidden="true">💨</span><b data-i18n="btn.roll"></b></button>
   <button class="tbtn t-ctx" id="ctxBtn" type="button" hidden><span aria-hidden="true" id="ctxIcon">💬</span><b id="ctxText"></b></button>
 </div>
@@ -268,11 +352,10 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
     <div class="mrow" data-i18n="look.hair"></div><div class="swatches" id="hairRow"></div>
     <div class="mrow" data-i18n="look.hairColor"></div><div class="swatches" id="hairColorRow"></div>
     <div class="mrow" data-i18n="look.outfit"></div><div class="swatches" id="outfitRow"></div>
-    <div class="swatches" style="margin-top:12px"><button class="chip" id="randomBtn" type="button"><span aria-hidden="true">🎲 </span><span data-i18n="look.random"></span></button></div>
-    <h2 style="margin-top:16px" data-i18n="diff.h"></h2>
+    <div class="swatches mkextra"><button class="chip" id="meBtn" type="button" hidden><span aria-hidden="true" id="meBtnPic"></span><span data-i18n="look.me"></span></button><button class="chip" id="randomBtn" type="button"><span aria-hidden="true">🎲 </span><span data-i18n="look.random"></span></button></div>
+    <h2 class="mkh2" data-i18n="diff.h"></h2>
     <div class="diffs" id="diffRow"></div>
-    <button class="big" id="makerGo" type="button" data-i18n="start"></button>
-    <button class="big soft" id="makerBack" type="button" data-i18n="back"></button>
+    <div class="mkbtns"><button class="big" id="makerGo" type="button" data-i18n="start"></button><button class="big soft" id="makerBack" type="button" data-i18n="back"></button></div>
   </div>
 </section>
 
@@ -286,7 +369,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 
 <section class="screen" id="pauseScreen" role="dialog" aria-labelledby="pauseTitle" hidden>
   <div class="card">
-    <div class="emo" aria-hidden="true">⏸️</div>
+    <div class="emo" aria-hidden="true" data-icon="pause"></div>
     <h1 id="pauseTitle" data-i18n="pause.h"></h1>
     <p class="sub" data-i18n="pause.saved"></p>
     <div class="btns">
@@ -355,7 +438,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
   </div>
 </section>
 
-<div class="kocard" id="koCard" role="status" hidden><div class="emo" aria-hidden="true">💫</div><b id="koTitle"></b><span id="koText"></span></div>
+<div class="kocard" id="koCard" role="status" hidden><div class="emo" id="koPic" aria-hidden="true">💫</div><b id="koTitle"></b><span id="koText"></span></div>
 <div class="lootcard" id="lootCard" role="status" hidden><b id="lootTitle"></b><div id="lootList"></div></div>
 
 <section class="screen clear" id="cutScreen" role="dialog" aria-live="polite" hidden>
@@ -366,7 +449,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 
 <section class="screen" id="endScreen" role="dialog" aria-labelledby="endTitle" hidden>
   <div class="card end">
-    <div class="emo" aria-hidden="true">👸🐉🌻</div>
+    <div class="emo" id="endPics" aria-hidden="true">👸🐉🌻</div>
     <h1 id="endTitle" data-i18n="end.h"></h1>
     <p class="sub" id="endStory"></p>
     <ul class="endstats" id="endStats"></ul>
@@ -389,7 +472,7 @@ const I18N = {
     tryLater:'Try again later', loadFail:"The 3D world didn't load. Open the game again in a moment.", continue:'Continue', newGame:'New game',
     settings:'Settings', howTo:'How to play', back:'Back', close:'Close', yes:'Yes', no:'No', ok:'OK', next:'Next', skip:'Skip', start:"Let's go!",
     newConfirm:'Start a new adventure? Your saved adventure will be replaced.', turnPhone:'Turn your device sideways for the best view!',
-    'look.h':'Make your hero', 'look.skin':'Skin', 'look.hair':'Hair', 'look.hairColor':'Hair color', 'look.outfit':'Outfit', 'look.random':'Surprise me',
+    'look.h':'Make your hero', 'look.skin':'Skin', 'look.hair':'Hair', 'look.hairColor':'Hair color', 'look.outfit':'Outfit', 'look.random':'Surprise me', 'look.me':'My Oomba character',
     'diff.h':'How brave do you feel?', 'diff.easy':'Easy breezy', 'diff.easyDesc':'Gentle foes and lots of help', 'diff.normal':'Adventurer',
     'diff.normalDesc':'A fair fight', 'diff.brave':'Super brave', 'diff.braveDesc':'Tougher foes and faster attacks',
     'intro.1':'Sunvale is the sunniest kingdom in the world. Every summer, everyone dances at the Sunflower Festival.',
@@ -553,6 +636,7 @@ const I18N = {
     "look.hairColor": "لون الشعر",
     "look.outfit": "الملابس",
     "look.random": "فاجئني",
+    "look.me": "شخصيتي في Oomba",
     "diff.h": "ما مدى شجاعتك؟",
     "diff.easy": "سهل جدًا",
     "diff.easyDesc": "أعداء لطفاء ومساعدة كثيرة",
@@ -1021,6 +1105,7 @@ const I18N = {
     "look.hairColor": "Haarfarbe",
     "look.outfit": "Outfit",
     "look.random": "Überrasch mich",
+    "look.me": "Meine Oomba-Figur",
     "diff.h": "Wie mutig fühlst du dich?",
     "diff.easy": "Kinderleicht",
     "diff.easyDesc": "Sanfte Gegner und viel Hilfe",
@@ -1498,6 +1583,7 @@ const I18N = {
     "look.hairColor": "Color de pelo",
     "look.outfit": "Ropa",
     "look.random": "Sorpréndeme",
+    "look.me": "Mi personaje Oomba",
     "diff.h": "¿Cuánto valor tienes?",
     "diff.easy": "Facilísimo",
     "diff.easyDesc": "Enemigos suaves y mucha ayuda",
@@ -1966,6 +2052,7 @@ const I18N = {
     "look.hairColor": "Couleur",
     "look.outfit": "Tenue",
     "look.random": "Surprise !",
+    "look.me": "Mon personnage Oomba",
     "diff.h": "Tu te sens courageux comment ?",
     "diff.easy": "Tout doux",
     "diff.easyDesc": "Ennemis gentils et beaucoup d'aide",
@@ -2434,6 +2521,7 @@ const I18N = {
     "look.hairColor": "צבע שיער",
     "look.outfit": "תלבושת",
     "look.random": "הפתיעו אותי",
+    "look.me": "הדמות שלי ב־Oomba",
     "diff.h": "כמה אמיצים אתם מרגישים?",
     "diff.easy": "קליל",
     "diff.easyDesc": "אויבים עדינים והרבה עזרה",
@@ -2902,6 +2990,7 @@ const I18N = {
     "look.hairColor": "Colore capelli",
     "look.outfit": "Vestito",
     "look.random": "Sorprendimi",
+    "look.me": "Il mio personaggio Oomba",
     "diff.h": "Quanto coraggio hai?",
     "diff.easy": "Facilissimo",
     "diff.easyDesc": "Nemici gentili e tanto aiuto",
@@ -3370,6 +3459,7 @@ const I18N = {
     "look.hairColor": "かみの色",
     "look.outfit": "ふく",
     "look.random": "おまかせ",
+    "look.me": "わたしのOombaキャラ",
     "diff.h": "どれくらい ゆうきが ある?",
     "diff.easy": "らくらく",
     "diff.easyDesc": "やさしい てきと たくさんの おたすけ",
@@ -3838,6 +3928,7 @@ const I18N = {
     "look.hairColor": "Haarkleur",
     "look.outfit": "Kleren",
     "look.random": "Verras me",
+    "look.me": "Mijn Oomba-figuur",
     "diff.h": "Hoe dapper voel je je?",
     "diff.easy": "Makkie",
     "diff.easyDesc": "Lieve vijanden en veel hulp",
@@ -4306,6 +4397,7 @@ const I18N = {
     "look.hairColor": "Cor do cabelo",
     "look.outfit": "Roupa",
     "look.random": "Surpresa!",
+    "look.me": "Meu personagem Oomba",
     "diff.h": "Quanta coragem você tem?",
     "diff.easy": "Moleza",
     "diff.easyDesc": "Inimigos bonzinhos e muita ajuda",
@@ -4774,6 +4866,7 @@ const I18N = {
     "look.hairColor": "Цвет волос",
     "look.outfit": "Одежда",
     "look.random": "Удиви меня",
+    "look.me": "Мой персонаж Oomba",
     "diff.h": "Насколько ты смелый?",
     "diff.easy": "Легкотня",
     "diff.easyDesc": "Добрые враги и много помощи",
@@ -5242,6 +5335,7 @@ const I18N = {
     "look.hairColor": "髮色",
     "look.outfit": "服裝",
     "look.random": "給我驚喜",
+    "look.me": "我的 Oomba 角色",
     "diff.h": "你有多勇敢？",
     "diff.easy": "輕鬆愉快",
     "diff.easyDesc": "溫和的敵人，很多幫助",
@@ -5711,6 +5805,47 @@ function t(key, vars) {
 }
 // Until the 3D world is built, a start() from the platform is remembered and done as soon as it is ready.
 window.__brbTest = { state: () => ({ screen: 'loading', ready: false }), start(o) { window.__hosStartWanted = o || {}; return { screen: 'loading', ready: false }; } };
+// The title screen is the Oomba Kit's (Oomba.ui.title): the sticker lockup and the player's own character (their Me-page
+// avatar; the Oomba mascot for guests), with the game's card under it (tagline, the loading bar, Continue / New game /
+// Settings / How to play). It opens here, before the 3D module, so a kingdom that cannot load still says so kindly.
+// The module keeps it in step with its screen stack (titleSync): it shows while the title is the top screen.
+const HOS_TITLE = (function () {
+  const O = window.Oomba; if (!O || !O.ui || !O.ui.title) return null;
+  const home = document.getElementById('titleScreen'), card = document.createElement('div');
+  card.className = 'hos-tcard'; card.id = 'titleCard';
+  for (const id of ['tagline', 'loadBox', 'titleBtns']) { const el = document.getElementById(id); if (el) card.appendChild(el); }
+  if (DIR === 'rtl') card.dir = 'rtl';
+  home.appendChild(card);
+  const K = { open: false, card };
+  const screen = () => [...O.ui.root().querySelectorAll('.ok-title-screen.hos-title')].pop() || null;
+  /** Focus the card's first button (the kit focuses its own Play, which this game does not use). */
+  K.focus = function () {
+    setTimeout(() => {
+      if (!K.open) return;
+      const b = [...card.querySelectorAll('button')].find(x => !x.disabled && x.offsetParent !== null);
+      if (b && !card.contains(document.activeElement)) try { b.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+    }, 40);
+  };
+  K.show = function () {
+    if (K.open) { K.focus(); return; }
+    K.open = true;
+    O.ui.title({ title: t('title'), titleHue: 'spark', hero: O.avatar(), play: () => { K.open = false; home.appendChild(card); } });
+    const all = [...O.ui.root().querySelectorAll('.ok-title-screen')], scr = all.pop();
+    if (!scr) { K.open = false; return; }
+    scr.classList.add('hos-title');
+    (scr.querySelector('.ok-title-block') || scr).appendChild(card);
+    K.focus();
+  };
+  /** Close the kit's title from code (its own Play button is hidden; pressing it is the kit's way to close it). */
+  K.hide = function () {
+    if (!K.open) return;
+    K.open = false; home.appendChild(card);
+    const scr = screen(), p = scr && scr.querySelector('.ok-cta .ok-btn');
+    if (p) p.click(); else if (scr) scr.remove();
+  };
+  K.show();
+  return K;
+})();
 (function () {
   const lt = document.getElementById('loadText'); if (lt) lt.textContent = t('loading');
   // If the 3D library can't load at all (offline, a school filter), say so kindly instead of "Building…" forever.
@@ -5787,12 +5922,37 @@ const CONFIG = {
     { dpr: 0.75, shadows: false, fogNear: 35, fogFar: 90, far: 100, scatter: 80, grass: 0, flowers: 0, particles: 0.5, water: false },
   ],
 };
+// The hero's colours are the Oomba Kit's: its 8 skin tones (indexes 0-5 are the nearest to this game's first six, so
+// saved heroes keep their look; 6 and 7 are new), its hair colours and its clothes hues. Saves keep indexes as before.
+const KTOK = window.Oomba.tokens, KPAL = KTOK.palette, KHAIR = KTOK.hair;
 const LOOKS = {
-  skin: ['#ffe0bd', '#f5c99b', '#e0ac69', '#c68642', '#8d5524', '#5c3a21'],
+  skin: [0, 1, 2, 3, 5, 6, 4, 7].map(i => KTOK.skin[i]),
+  skinOrder: [0, 1, 2, 3, 6, 4, 5, 7],   // the swatches, light to dark
   hair: ['short', 'spiky', 'ponytail', 'curly'],
-  hairColor: ['#2b1b0e', '#7a4a24', '#f2cc5b', '#d2582e', '#ff7eb6', '#4aa8ff'],
-  outfit: ['#e5484d', '#3e7bfa', '#3fb950', '#9b5de5', '#ff9f1c', '#14b8a6'],
+  hairColor: [KHAIR.black, KHAIR.cocoa, KHAIR.blonde, KHAIR.copper, KPAL.coral[1], KHAIR.sky, KHAIR.grape, KHAIR.mint, KHAIR.stone],
+  outfit: [KPAL.coral[2], KPAL.sky[2], KPAL.mint[2], KPAL.grape[2], KPAL.peach[2], KPAL.mint[3], KPAL.cocoa[2], KPAL.stone[2], KPAL.snow[2]],
 };
+// The same choices as kit character fields (for portraits) and back (the player's own character as this hero).
+const LOOK_KIT = {
+  skin: [0, 1, 2, 3, 5, 6, 4, 7],
+  hair: ['buzz', 'spiky', 'braids', 'curls'],
+  hairColor: ['black', 'cocoa', 'blonde', 'copper', 'grape', 'sky', 'grape', 'mint', 'stone'],
+  outfit: ['coral', 'sky', 'mint', 'grape', 'peach', 'mint', 'cocoa', 'stone', 'snow'],
+};
+/** The player's own character (designed on their Me page; null for guests and accounts without one). */
+const MY_CHAR = (function () { try { const c = window.BRB && BRB.user && BRB.user.character; return c && typeof c === 'object' ? c : null; } catch (e) { return null; } })();
+/** That character as this game's blocky hero: skin, hair style and colour, and clothes colour (other kinds: their colour). */
+const MY_LOOK = (function (c) {
+  if (!c) return null;
+  const L = {}, kidHair = { puffs: 3, bob: 0, curls: 3, spiky: 1, braids: 2, buzz: 0, long: 2, cap: 0 }, hcol = { black: 0, cocoa: 1, blonde: 2, copper: 3, sky: 5, grape: 6, mint: 7, stone: 8 };
+  const fit = n => LOOK_KIT.outfit.indexOf(n);
+  if (c.species === 'kid') {
+    const sk = LOOK_KIT.skin.indexOf(c.skin); if (sk >= 0) L.skin = sk;
+    const h = c.hair || {}; if (kidHair[h.style] !== undefined) L.hair = kidHair[h.style]; if (hcol[h.color] !== undefined) L.hairColor = hcol[h.color];
+    const o = c.outfit || {}; if (fit(o.color) >= 0) L.outfit = fit(o.color);
+  } else if (c.colors && fit(c.colors.base) >= 0) L.outfit = fit(c.colors.base);
+  return L;
+})(MY_CHAR);
 
 /* ==== 2. helpers ==== */
 const $ = id => document.getElementById(id);
@@ -5831,9 +5991,9 @@ const DEFAULT_SET = { sound: true, music: true, quality: 'auto', camSpeed: 5, in
 const SET = Object.assign({}, DEFAULT_SET, (() => { const s = store.get(CONFIG.settingsKey); return s && typeof s === 'object' ? s : {}; })());
 try { SET.sound = !BRB.sfx.muted; } catch (e) { /* ignore */ }
 function saveSettings() { store.set(CONFIG.settingsKey, SET); }
-const calm = () => REDUCED_OS || !!SET.calm;
+const calm = () => REDUCED_OS || !!SET.calm || !!(window.Oomba && Oomba.settings.reduced);
 
-function defaultLook() { return { skin: 1, hair: 0, hairColor: 1, outfit: 1, hat: null, showHat: false }; }
+function defaultLook() { return Object.assign({ skin: 1, hair: 0, hairColor: 1, outfit: 1, hat: null, showHat: false }, MY_LOOK || {}); }
 /** A fresh adventure (the save schema from the design doc, section 10). Builders add fields under progress/flags. */
 function newSave(look, difficulty) {
   return { v: 1, look: Object.assign(defaultLook(), look || {}), difficulty: difficulty || 'normal', mission: 'm1', step: 0, progress: {}, flags: {},
@@ -5886,15 +6046,189 @@ sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.04;
 scene.add(hemi, sun, sun.target);
 const SUN_OFFSET = new THREE.Vector3(18, 40, 14);
 
-/** Materials shared by everything (few shader programs, few state changes). */
+/* ==== 4b. OOMBA KIT: the 3D bridge (kit 1.1.0, pack bridge-3d) ====
+   Oomba.three gives the world the Oomba Ink look: toon (cel) materials with a soft rim light and Ink outlines (an
+   inverted hull, the same line weight at any distance). The kingdom keeps its own sky, light, land and quality ladder
+   (governor: false); the theme is the kit's castle look (its accent and mood). */
+const OK = window.Oomba;
+const B = OK.three(THREE, { renderer, scene, camera, theme: 'castle', governor: false });
+/** A shared vertex-coloured toon material (rim: the rim light's strength; flat: keep the low-poly facets). */
+function inkMat(rim, flat) { const m = B.toon(null, { vertexColors: true, rim }); if (flat) { m.flatShading = true; m.needsUpdate = true; } return m; }
+/** Materials shared by everything (few shader programs, few state changes): the kit's toon (cel) materials with a rim
+ *  (faceted ones keep their facets), so the world has the Oomba Ink look. */
 const MAT = {
-  terrain: new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }),
-  lit: new THREE.MeshLambertMaterial({ vertexColors: true }),
-  litFlat: new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }),
+  terrain: inkMat(0.35, true),
+  lit: inkMat(1, false),
+  litFlat: inkMat(0.9, true),
   glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
-  char: new THREE.MeshLambertMaterial({ vertexColors: true }),
+  char: inkMat(1.25, false),
   blob: new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
 };
+/* Ink outlines: characters always keep theirs; buildings, rocks and trees ("detail" Ink, camera layer 1) drop it at
+   the lowest picture quality. Grass, flowers, reeds and mushrooms never get any (too small to read). */
+const INK_DETAIL = 1;
+camera.layers.enable(INK_DETAIL);
+function inkLayer(root, layer) { root.traverse(o => { if (o.userData.okInk) o.layers.set(layer); }); }
+/** Outline everything the world build made: the people, foes, crowds, sheep, chests and pickups (always), the
+ *  landmarks and the scattered trees, bushes and rocks (detail). */
+function inkWorld() {
+  const skip = new Set(['grass', 'flower', 'shroom', 'reed']);
+  for (const k of SCATTER.list) if (skip.has(k.name)) k.mesh.userData.noInk = true;
+  const list = [];
+  scene.traverse(o => { if (o.isMesh && !o.userData.okInk && !o.userData.noInk && (o.material === MAT.lit || o.material === MAT.litFlat || o.material === MAT.char) && !(hero.rig && isUnder(o, hero.rig.root))) list.push(o); });
+  for (const o of list) {
+    const scatter = SCATTER.list.some(k => k.mesh === o), detail = scatter || (!o.isInstancedMesh && o.material !== MAT.char);
+    B.outline(o, scatter ? { width: 0.85 } : { important: true, width: o.material === MAT.char ? 1 : 0.9 });
+    if (detail) inkLayer(o, INK_DETAIL);
+  }
+  heroInk();
+  // a test hook: what the kit gives this game (the bridge's materials and Ink, the kit title)
+  Object.assign(TEST_EXT, { kitLook: () => {
+    let inks = 0, heroInks = 0; scene.traverse(o => { if (o.userData.okInk) { inks++; if (hero.rig && isUnder(o, hero.rig.root)) heroInks++; } });
+    return { version: OK.version, toon: [MAT.terrain.type, MAT.lit.type, MAT.char.type], inks, heroInks, quality: B.quality, detailInk: camera.layers.isEnabled(INK_DETAIL), title: !!(HOS_TITLE && HOS_TITLE.open), theme: B.look.name };
+  } });
+}
+function isUnder(o, root) { for (let p = o; p; p = p.parent) if (p === root) return true; return false; }
+/** The hero's Ink follows its parts: looks and gear swap geometries, so the hulls are made again. */
+function heroInk() {
+  const r = hero.rig; if (!r) return;
+  const old = []; r.root.traverse(o => { if (o.userData.okInk) old.push(o); });
+  for (const o of old) o.parent.remove(o);
+  B.outline(r.root, { important: true, width: 1 });
+}
+/** The game's quality ladder drives the bridge too: 0-1 full Ink, 2 no tree Ink far away, 3 characters only. */
+function inkQuality(i) {
+  B.quality = i <= 1 ? 2 : i === 2 ? 1 : 0;
+  if (i >= 3) camera.layers.disable(INK_DETAIL); else camera.layers.enable(INK_DETAIL);
+}
+
+/* ==== 4c. OOMBA KIT: characters, icons and juice for the DOM ==== */
+const KCOL = { heart: OK.color('coral'), heartOff: OK.color('cream') + 'C0', shine: OK.color('cream') + '99', ink: OK.color('ink') };
+const ME = OK.avatar();   // the player's own character (their Me page; the Oomba mascot for guests)
+const KHUES = ['mint', 'coral', 'sky', 'grape', 'peach', 'cocoa', 'stone', 'snow'];
+function nearest(hex, list) {
+  const a = col(hex); let bi = 0, bd = 1e9;
+  for (let i = 0; i < list.length; i++) { const b = col(list[i]), d = (a.r - b.r) ** 2 + (a.g - b.g) ** 2 + (a.b - b.b) ** 2; if (d < bd) { bd = d; bi = i; } }
+  return bi;
+}
+const hueOf = hex => KHUES[nearest(hex, KHUES.map(h => OK.color(h)))];
+const hairOf = hex => { const keys = Object.keys(KHAIR); return keys[nearest(hex, keys.map(k => KHAIR[k]))]; };
+/** The hero (this game's blocky look) as a kit character for portraits; the player's own character when it is theirs. */
+function heroSpec(look) {
+  look = look || G.look;
+  if (MY_CHAR && MY_CHAR.species === 'kid' && MY_LOOK && Object.keys(MY_LOOK).every(k => look[k] === MY_LOOK[k])) return MY_CHAR;
+  return { species: 'kid', skin: LOOK_KIT.skin[look.skin] !== undefined ? LOOK_KIT.skin[look.skin] : 1, hair: { style: LOOK_KIT.hair[look.hair] || 'buzz', color: LOOK_KIT.hairColor[look.hairColor] || 'cocoa' },
+    outfit: { top: 'tee', color: LOOK_KIT.outfit[look.outfit] || 'sky' }, seed: 7 };
+}
+const NPC_HAIR = { bun: 'puffs', short: 'buzz', bald: 'buzz', braids: 'braids', long: 'long', curly: 'curls' };
+const SPEC_CACHE = {};
+/** A person of Sunvale as a kit character (from the same look as their 3D model). */
+function npcSpec(id) {
+  if (SPEC_CACHE[id]) return SPEC_CACHE[id];
+  const d = NPC_DEFS[id]; let sp = null;
+  if (d) {
+    const L = d.look, wear = [];
+    if (L.hat === 'crown' || id === 'marigold') wear.push('crown');
+    if (L.glasses) wear.push('glasses');
+    sp = { species: 'kid', skin: nearest(L.skin, KTOK.skin), hair: { style: NPC_HAIR[L.hair] || 'bob', color: hairOf(L.hairColor || '#3b2a1e') },
+      outfit: { top: L.dress ? 'dress' : L.overalls ? 'overalls' : L.hat === 'hood' ? 'hoodie' : 'tee', color: hueOf(L.dress || L.overalls || L.tabard || L.shirt) }, wear, seed: Object.keys(NPC_DEFS).indexOf(id) + 3 };
+  } else if (id === 'snarlwick') sp = { species: 'kid', skin: 0, hair: { style: 'spiky', color: 'black' }, outfit: { top: 'hoodie', color: 'grape' }, mood: 'determined', seed: 66 };
+  SPEC_CACHE[id] = sp; return sp;
+}
+/** A villager or a guard ('vil' + number) as a kit character. */
+function villagerSpec(i, guard) {
+  const HS = ['puffs', 'bob', 'curls', 'spiky', 'braids', 'buzz', 'long', 'cap'], HC = ['cocoa', 'black', 'blonde', 'copper'];
+  if (guard) return { species: 'kid', skin: (i * 3) % 8, hair: { style: 'buzz', color: HC[i % 4] }, outfit: { top: 'tee', color: 'stone' }, mood: 'determined', seed: 40 + i };
+  return { species: 'kid', skin: (i * 5) % 8, hair: { style: HS[i % 8], color: HC[(i * 3) % 4] }, outfit: { top: ['tee', 'hoodie', 'dress', 'overalls'][i % 4], color: KHUES[(i * 5) % 7] }, seed: 20 + i };
+}
+const PORTRAITS = new Map();
+/** A kit portrait canvas (cached; a copy when the cached one is already on the page). */
+function portraitOf(spec, px, mood) {
+  const key = JSON.stringify([spec, px, mood || '']);
+  let c = PORTRAITS.get(key);
+  if (!c) { try { c = OK.ui.portrait(spec, { size: px, mood }); } catch (e) { return null; } PORTRAITS.set(key, c); }
+  if (!c.isConnected) return c;
+  const d = document.createElement('canvas'); d.width = c.width; d.height = c.height; d.className = c.className; d.style.cssText = c.style.cssText; d.setAttribute('aria-hidden', 'true');
+  d.getContext('2d').drawImage(c, 0, 0); return d;
+}
+/** A square head-and-shoulders crop of a full-body kit portrait (for the round speaker badges), found from its pixels so
+ *  it frames the face whatever the hair, hat or height. */
+const HEADS = new Map();
+function headOf(spec, mood) {
+  const key = JSON.stringify([spec, mood || '']);
+  let h = HEADS.get(key);
+  if (!h) {
+    const c = portraitOf(spec, 160, mood); if (!c) return null;
+    const W = c.width, H = c.height; let d;
+    try { d = c.getContext('2d').getImageData(0, 0, W, H).data; } catch (e) { return c; }
+    const span = y => { let a = -1, b = -1; for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 24) { if (a < 0) a = x; b = x; } return [a, b]; };
+    let y0 = 0; while (y0 < H && span(y0)[0] < 0) y0++;
+    let y1 = H - 1; while (y1 > y0 && span(y1)[0] < 0) y1--;
+    if (y1 - y0 < 8) return c;
+    // the head (kit kids are about half head): a square over the top ~60% of the figure, centred on the head's middle row
+    const side = Math.max(16, Math.min(H, Math.round((y1 - y0 + 1) * 0.6))), [ma, mb] = span(Math.round(y0 + side * 0.45));
+    const cx = ma < 0 ? W / 2 : (ma + mb) / 2, top = Math.max(0, Math.round(y0 - side * 0.05));
+    h = document.createElement('canvas'); h.width = h.height = side; h.className = 'ok-portrait hos-head'; h.setAttribute('aria-hidden', 'true');
+    h.getContext('2d').drawImage(c, Math.round(cx - side / 2), top, side, side, 0, 0, side, side);
+    HEADS.set(key, h);
+  }
+  if (!h.isConnected) return h;
+  const d2 = document.createElement('canvas'); d2.width = h.width; d2.height = h.height; d2.className = h.className; d2.setAttribute('aria-hidden', 'true');
+  d2.getContext('2d').drawImage(h, 0, 0); return d2;
+}
+/** Who is speaking (an NPC id, 'hero', 'snarlwick', 'vil3', 'story') -> their kit portrait in the holder; anyone the kit
+ *  cannot draw (Cinder the dragon, the Grumblin chief) keeps their picture. A round badge (.dlg-portrait) gets the head. */
+function setPortrait(el, who, emoji, px, mood) {
+  if (!el) return;
+  let spec = null;
+  if (who === 'hero') spec = heroSpec(S.screen === 'play' ? G.look : MAKER.look || G.look);
+  else if (who === 'story') { setIcon(el, 'book'); return; }
+  else if (typeof who === 'string' && /^vil\d+$/.test(who)) spec = villagerSpec(+who.slice(3), emoji === '💂');
+  else if (who) spec = npcSpec(who);
+  const c = spec && (el.classList.contains('dlg-portrait') ? headOf(spec, mood) : portraitOf(spec, px || 112, mood));
+  if (!c) { el.textContent = emoji || ''; return; }
+  el.textContent = ''; el.appendChild(c);
+}
+const EMOJI_ICON = { '💬': 'speak', '💎': 'gem', '🔑': 'key', '🔓': 'unlock', '🪙': 'coin', '✋': 'tap' };
+/** A kit icon by name (or an emoji the kit has an icon for); anything else stays as the picture it is. */
+function setIcon(el, name) {
+  const n = EMOJI_ICON[name] || name;
+  if (OK.icons.indexOf(n) >= 0) el.innerHTML = OK.icon(n); else el.textContent = name;
+}
+function setIconText(el, name, text) { el.innerHTML = OK.icon(name); el.appendChild(document.createTextNode(text)); }
+/** A HUD pill: a kit icon (or the picture) and a number; it pops when the number goes up. */
+function pillSet(el, icon, text, up) {
+  if (el.dataset.icon !== icon) { el.dataset.icon = icon; el.textContent = ''; const i = document.createElement('span'); i.setAttribute('aria-hidden', 'true'); setIcon(i, icon); i.style.display = 'contents'; const b = document.createElement('b'); el.append(i, b); }
+  el.lastChild.textContent = text;
+  if (up) juicePop(el);
+}
+function juicePop(el) { if (el && !calm()) try { OK.juice.pop(el); } catch (e) { /* ignore */ } }
+/** data-icon="name" in the markup: the kit's icon goes first in that element. */
+function kitIcons(root) {
+  for (const el of root.querySelectorAll('[data-icon]')) {
+    if (el.classList.contains('pill')) continue;
+    const old = el.querySelector(':scope > svg'); if (old) old.remove();
+    el.insertAdjacentHTML('afterbegin', OK.icon(el.dataset.icon));
+  }
+}
+/** The kit title follows the screen stack: it shows while the title is the top screen (and while the kingdom loads). */
+function titleSync() {
+  if (!HOS_TITLE) return;
+  const want = UI.top() === 'titleScreen' || (!S.ready && !UI.stack.length && S.screen !== 'play');
+  if (want) HOS_TITLE.show(); else HOS_TITLE.hide();
+}
+/** The hero maker's "My Oomba character" chip (signed-in players who designed one on their Me page). */
+function meChip() {
+  const b = $('meBtn'); b.hidden = !MY_LOOK; if (!MY_LOOK) return;
+  const pic = $('meBtnPic'); if (!pic.firstChild) { const c = portraitOf(ME, 40); if (c) pic.appendChild(c); }
+  b.setAttribute('aria-pressed', String(Object.keys(MY_LOOK).every(k => MAKER.look[k] === MY_LOOK[k])));
+}
+/** The End: the hero and Princess Marigold as kit characters, cheering. */
+function endPics() {
+  const el = $('endPics'), a = portraitOf(heroSpec(G.look), 128, 'happy'), b = portraitOf(npcSpec('marigold'), 128, 'happy');
+  if (!a || !b) return;
+  el.textContent = ''; el.append(a, b);
+}
 const CANVAS_TEXTURES = [];   // re-uploaded after a lost 3D picture comes back
 function canvasTexture(c, repeat) {
   const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
@@ -5915,6 +6249,7 @@ function setQuality(i, pin) {
   sun.castShadow = L.shadows;
   camera.far = L.far; camera.updateProjectionMatrix();
   scene.fog.near = L.fogNear; scene.fog.far = L.fogFar;
+  inkQuality(i);
   if (S.ready) SCATTER.refresh(true);
   if (changed) GAME.emit('quality', i);
 }
@@ -7074,6 +7409,17 @@ function buildFortress() {
 }
 
 /* ---- Waystones: a glowing pad + standing stone, a floating sun rune (instanced) ---- */
+const RUNE_FADE = [];
+/** 1 = show a waystone rune at p; 0 = it is too near the camera or sits on the line from the camera to the hero. */
+function runeClear(p) {
+  const ax = camera.position.x, ay = camera.position.y, az = camera.position.z, dc = Math.hypot(p.x - ax, p.y - ay, p.z - az);
+  if (dc > 16) return 1;
+  let k = Math.min(1, Math.max(0, (dc - 3.5) / 3.5));
+  const sx = hero.pos.x - ax, sy = hero.pos.y + 1 - ay, sz = hero.pos.z - az, L2 = sx * sx + sy * sy + sz * sz || 1;
+  const t = ((p.x - ax) * sx + (p.y - ay) * sy + (p.z - az) * sz) / L2;
+  if (t > 0 && t < 1) { const qx = ax + sx * t - p.x, qy = ay + sy * t - p.y, qz = az + sz * t - p.z; if (qx * qx + qy * qy + qz * qz < 1.6 * 1.6) k = 0; }
+  return k;
+}
 const WAYSTONES = [
   { id: 'w1', x: 0, z: 315, zone: 'meadowbrook', ox: 3.2, oz: 0 }, { id: 'w2', x: 120, z: 235, zone: 'farm', ox: 0, oz: -3.6 }, { id: 'w3', x: -120, z: 130, zone: 'forest', ox: 0, oz: -4.5 },
   { id: 'w4', x: -200, z: 75, zone: 'camp', ox: 2.8, oz: 1.8, when: () => G.won.indexOf('e3') >= 0 }, { id: 'w5', x: 0, z: -31, zone: 'bridge', ox: 4.5, oz: 0 },
@@ -7445,6 +7791,7 @@ function setGear(gear) {
   r.legLM.geometry = r.legRM.geometry = r.lookGeo['leg_' + ft] || r.lookGeo.leg_base;
   r.sword.geometry = HEROGEO.sword[wt] || HEROGEO.sword.wood;
   r.swordGlow.visible = wt === 'sun'; if (wt === 'sun') r.swordGlow.geometry = HEROGEO.sword.sunGlow;
+  heroInk();
 }
 hero.setGear = setGear; hero.applyLook = applyLook;
 
@@ -7828,6 +8175,7 @@ const UI = {
     if (this.isOpen(id)) return; clearInputs();
     this.stack.push(id); const el = $(id); el.hidden = false;
     const f = el.querySelector('button:not([hidden]):not([disabled])'); if (f) try { f.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+    titleSync();
     GAME.emit('screen', id);
   },
   close(id) {
@@ -7836,6 +8184,7 @@ const UI = {
     if (id === 'heroScreen') camera.clearViewOffset();
     const t = this.top(); if (t) { const f = $(t).querySelector('button:not([hidden]):not([disabled])'); if (f) try { f.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
     else try { canvas.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+    titleSync();
     GAME.emit('screen', this.top() || S.screen);
   },
   escape() {
@@ -7860,6 +8209,8 @@ const UI = {
   },
   banner(text, kind) {
     const b = $('banner'); b.textContent = text; b.className = 'banner' + (kind ? ' ' + kind : ''); void b.offsetWidth; b.classList.add('show');
+    // name tags step aside while the big banner is up, so the two never sit on top of each other
+    document.body.classList.add('bannered'); clearTimeout(this.bannerT); this.bannerT = setTimeout(() => document.body.classList.remove('bannered'), 2300);
   },
   badge(text) {
     const box = $('badges'); const d = document.createElement('div'); d.className = 'badge'; d.textContent = text; box.appendChild(d); setTimeout(() => d.remove(), 4100);
@@ -7867,7 +8218,7 @@ const UI = {
   /** A conversation card: { portrait: '👵', name: 'Granny Fern', lines: ['...', '...'], npc, keys }. Gameplay waits. */
   say(o, done) {
     const D = this.dialog; Object.assign(D, { open: true, lines: o.lines || [], i: 0, shown: 0, done: done || null, npc: o.npc || null, keys: o.keys || null });
-    clearInputs(); $('dlgPortrait').textContent = o.portrait || '🙂'; $('dlgName').textContent = o.name || '';
+    clearInputs(); setPortrait($('dlgPortrait'), o.npc, o.portrait || '🙂'); $('dlgName').textContent = o.name || '';
     $('dialog').setAttribute('aria-label', t('a.dialog', { name: o.name || '' })); $('dialog').hidden = false; $('dlgText').textContent = '';
     if (calm()) D.shown = 1e9; this.setPrompt(null); try { $('dlgNext').focus({ preventScroll: true }); } catch (e) { /* ignore */ }
   },
@@ -7887,7 +8238,7 @@ const UI = {
   setPrompt(it) {
     const show = !!it && !this.dialog.open;
     $('ctxBtn').hidden = !show; $('keyHint').hidden = !show;
-    if (show) { const label = t(it.label || 'btn.use'); $('ctxText').textContent = label; $('ctxIcon').textContent = it.icon || '✋'; $('keyHintText').textContent = label; $('ctxBtn').setAttribute('aria-label', label); }
+    if (show) { const label = t(it.label || 'btn.use'); $('ctxText').textContent = label; setIcon($('ctxIcon'), it.icon || '✋'); $('keyHintText').textContent = label; $('ctxBtn').setAttribute('aria-label', label); }
   },
   /** The quest tracker: { title, objective, progress: { done, total } | null, target: { x, z } | null } (already-translated text). */
   tracker: {
@@ -7923,11 +8274,11 @@ function updateHud(dt) {
   const L = UI.last, hp = G.hp, mh = G.maxHearts, potions = G.potions.heart + G.potions.big + G.potions.shield + G.potions.zoom + G.potions.power, def = heroDefense();
   const cssW = $('hearts').clientWidth;
   if (UI.hudDirty || L.hp !== hp || L.mh !== mh || L.heartsW !== cssW) { L.hp = hp; L.mh = mh; L.heartsW = cssW; drawHearts(hp, mh); $('hearts').setAttribute('aria-label', t('a.hearts', { n: Math.ceil(hp / 4), max: mh })); }
-  if (UI.hudDirty || L.def !== def) { L.def = def; $('defPill').textContent = '🛡️ ' + NUMF.format(def); $('defPill').setAttribute('aria-label', t('hud.def', { n: def })); }
-  if (UI.hudDirty || L.coins !== G.coins) { L.coins = G.coins; $('coinPill').textContent = '🪙 ' + NUMF.format(G.coins); $('coinPill').setAttribute('aria-label', t('a.coins', { n: G.coins })); }
-  if (UI.hudDirty || L.gems !== G.gems.length) { L.gems = G.gems.length; $('gemPill').textContent = '💎 ' + NUMF.format(G.gems.length); $('gemPill').setAttribute('aria-label', t('a.gems', { n: G.gems.length })); }
-  if (UI.hudDirty || L.potions !== potions) { L.potions = potions; $('potionN').textContent = NUMF.format(potions); $('potionBtn').classList.toggle('none', !potions); $('potionBtn').setAttribute('aria-label', t('a.potion', { n: potions })); }
-  if (UI.hudDirty || L.muted !== BRB.sfx.muted) { L.muted = BRB.sfx.muted; $('soundIcon').textContent = BRB.sfx.muted ? '🔇' : '🔊'; }
+  if (UI.hudDirty || L.def !== def) { const up = L.def !== undefined && def > L.def; L.def = def; pillSet($('defPill'), '🛡️', NUMF.format(def), up); $('defPill').setAttribute('aria-label', t('hud.def', { n: def })); }
+  if (UI.hudDirty || L.coins !== G.coins) { const up = L.coins !== undefined && G.coins > L.coins; L.coins = G.coins; pillSet($('coinPill'), 'coin', NUMF.format(G.coins), up); $('coinPill').setAttribute('aria-label', t('a.coins', { n: G.coins })); }
+  if (UI.hudDirty || L.gems !== G.gems.length) { const up = L.gems !== undefined && G.gems.length > L.gems; L.gems = G.gems.length; pillSet($('gemPill'), 'gem', NUMF.format(G.gems.length), up); $('gemPill').setAttribute('aria-label', t('a.gems', { n: G.gems.length })); }
+  if (UI.hudDirty || L.potions !== potions) { const up = L.potions !== undefined && potions > L.potions; L.potions = potions; $('potionN').textContent = NUMF.format(potions); $('potionBtn').classList.toggle('none', !potions); $('potionBtn').setAttribute('aria-label', t('a.potion', { n: potions })); if (up) juicePop($('potionBtn')); }
+  if (UI.hudDirty || L.muted !== BRB.sfx.muted) { L.muted = BRB.sfx.muted; setIcon($('soundIcon'), BRB.sfx.muted ? 'mute' : 'sound'); }
   UI.hudDirty = false;
   // tracker distance (4 times a second)
   UI.trackT -= dt;
@@ -7950,9 +8301,9 @@ function drawHearts(hp, mh) {
   const rows = w < 150 ? 2 : 1, perRow = Math.ceil(mh / rows), s = Math.min(w / perRow - 2, h / rows - 3);
   for (let i = 0; i < mh; i++) {
     const row = Math.floor(i / perRow), col2 = i % perRow, cx = col2 * (s + 2) + s / 2 + 1, cy = row * (s + 3) + 1.5, q = clamp(hp - i * 4, 0, 4);
-    heartPath(g, cx, cy, s); g.fillStyle = 'rgba(40,30,60,.35)'; g.fill();
-    if (q > 0) { g.save(); heartPath(g, cx, cy, s); g.clip(); g.fillStyle = '#ff4d6d'; g.fillRect(cx - s / 2, cy, s * q / 4, s); g.fillStyle = 'rgba(255,255,255,.45)'; g.fillRect(cx - s * 0.32, cy + s * 0.12, s * 0.16, s * 0.16); g.restore(); }
-    heartPath(g, cx, cy, s); g.lineWidth = 2; g.strokeStyle = '#fff'; g.stroke();
+    heartPath(g, cx, cy, s); g.fillStyle = KCOL.heartOff; g.fill();
+    if (q > 0) { g.save(); heartPath(g, cx, cy, s); g.clip(); g.fillStyle = KCOL.heart; g.fillRect(cx - s / 2, cy, s * q / 4, s); g.fillStyle = KCOL.shine; g.fillRect(cx - s * 0.3, cy + s * 0.14, s * 0.14, s * 0.14); g.restore(); }
+    heartPath(g, cx, cy, s); g.lineJoin = 'round'; g.lineWidth = 2.4; g.strokeStyle = KCOL.ink; g.stroke();
   }
 }
 /** A 512 x 512 picture of the whole kingdom (terrain colours, hill shading, water, buildings), made once at load. */
@@ -8039,11 +8390,12 @@ function showTitle() {
   placeHero(0, 330, Math.PI); if (SCATTER.ready) SCATTER.refresh(true, 0, 318);
   UI.open('titleScreen'); GAME.emit('screen', 'title');
 }
-function swatchRow(id, list, key, isColor) {
+function swatchRow(id, list, key, isColor, order) {
   const row = $(id); row.textContent = '';
-  list.forEach((v, i) => {
+  (order || list.map((v, i) => i)).forEach((i, pos) => {
+    const v = list[i];
     const b = document.createElement('button'); b.type = 'button';
-    if (isColor) { b.className = 'sw'; b.style.background = v; b.setAttribute('aria-label', t('look.pick', { what: t(key === 'skin' ? 'look.skin' : key === 'hairColor' ? 'look.hairColor' : 'look.outfit'), n: i + 1 })); }
+    if (isColor) { b.className = 'sw'; b.style.background = v; b.setAttribute('aria-label', t('look.pick', { what: t(key === 'skin' ? 'look.skin' : key === 'hairColor' ? 'look.hairColor' : 'look.outfit'), n: pos + 1 })); }
     else { b.className = 'chip'; b.textContent = t('hair.' + v); }
     b.setAttribute('aria-pressed', String(MAKER.look[key] === i));
     b.addEventListener('click', () => { MAKER.look[key] = i; sfx('click'); makerRefresh(); });
@@ -8051,7 +8403,8 @@ function swatchRow(id, list, key, isColor) {
   });
 }
 function makerRefresh() {
-  swatchRow('skinRow', LOOKS.skin, 'skin', true); swatchRow('hairRow', LOOKS.hair, 'hair', false); swatchRow('hairColorRow', LOOKS.hairColor, 'hairColor', true); swatchRow('outfitRow', LOOKS.outfit, 'outfit', true);
+  swatchRow('skinRow', LOOKS.skin, 'skin', true, LOOKS.skinOrder); swatchRow('hairRow', LOOKS.hair, 'hair', false);
+  meChip(); swatchRow('hairColorRow', LOOKS.hairColor, 'hairColor', true); swatchRow('outfitRow', LOOKS.outfit, 'outfit', true);
   const dr = $('diffRow'); dr.textContent = '';
   for (const d of ['easy', 'normal', 'brave']) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'diff'; b.setAttribute('aria-pressed', String(MAKER.difficulty === d));
@@ -8068,17 +8421,20 @@ function makerFrame() {   // keep the hero in the part of the screen the panel d
 function openHeroMaker() {
   MAKER.look = defaultLook(); MAKER.difficulty = 'normal';
   UI.close('titleScreen'); placeHero(0, 333, 0); makerRefresh(); UI.open('heroScreen'); makerFrame();
+  // start on the chosen skin, so the keyboard ring and the "chosen" tick mark the same swatch
+  { const s = $('skinRow').querySelector('[aria-pressed="true"]'); if (s) try { s.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
 }
 $('randomBtn').addEventListener('click', () => {
-  MAKER.look.skin = (Math.random() * 6) | 0; MAKER.look.hair = (Math.random() * 4) | 0; MAKER.look.hairColor = (Math.random() * 6) | 0; MAKER.look.outfit = (Math.random() * 6) | 0;
+  MAKER.look.skin = (Math.random() * LOOKS.skin.length) | 0; MAKER.look.hair = (Math.random() * LOOKS.hair.length) | 0; MAKER.look.hairColor = (Math.random() * LOOKS.hairColor.length) | 0; MAKER.look.outfit = (Math.random() * LOOKS.outfit.length) | 0;
   sfx('powerup'); makerRefresh();
 });
+$('meBtn').addEventListener('click', () => { if (!MY_LOOK) return; Object.assign(MAKER.look, MY_LOOK); sfx('powerup'); makerRefresh(); });
 $('makerGo').addEventListener('click', () => { sfx('click'); UI.close('heroScreen'); introStart(); });
 $('makerBack').addEventListener('click', () => { sfx('click'); UI.close('heroScreen'); showTitle(); });
 const INTRO_EMO = ['🌻', '😠', '🐉', '🗡️'];
 let introI = 0;
 function introStart() { introI = 0; introShow(); UI.open('introScreen'); try { $('introNext').focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
-function introShow() { $('introEmo').textContent = INTRO_EMO[introI]; $('introText').textContent = t('intro.' + (introI + 1)); $('introNext').textContent = introI === 3 ? t('start') : t('next'); }
+function introShow() { setPortrait($('introEmo'), ['', 'snarlwick', '', 'hero'][introI], INTRO_EMO[introI], 128); $('introText').textContent = t('intro.' + (introI + 1)); $('introNext').textContent = introI === 3 ? t('start') : t('next'); }
 function introFinish() { UI.close('introScreen'); startPlay('new', { look: MAKER.look, difficulty: MAKER.difficulty }); }
 $('introNext').addEventListener('click', () => { sfx('click'); if (introI < 3) { introI++; introShow(); try { $('introNext').focus({ preventScroll: true }); } catch (e) { /* ignore */ } } else introFinish(); });
 $('introSkip').addEventListener('click', () => { sfx('click'); introFinish(); });
@@ -8145,6 +8501,7 @@ function openControls() {
 }
 /** Words written in the page itself (data-i18n = text, data-i18n-aria = aria-label), direction for text containers. */
 function applyStaticText() {
+  kitIcons(document);
   try { document.documentElement.lang = LANG; } catch (e) { /* ignore */ }
   document.title = t('title');
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
@@ -9151,7 +9508,7 @@ function knockOut(enc) {
 function koStep(dt) {
   KO.t += dt;
   if (KO.t < 1.4 && (KO.t * 10 | 0) % 5 === 0 && ((KO.t - dt) * 10 | 0) % 5 !== 0) FX.stars(hero.pos.x, hero.pos.y + 0.9, hero.pos.z, 2);
-  if (KO.t >= 0.8 && !KO.card) { KO.card = true; $('koTitle').textContent = t('ko.h'); $('koText').textContent = t('ko.back'); $('koCard').hidden = false; $('fade').classList.add('on'); }
+  if (KO.t >= 0.8 && !KO.card) { KO.card = true; setPortrait($('koPic'), 'hero', '💫', 112, 'sleepy'); $('koTitle').textContent = t('ko.h'); $('koText').textContent = t('ko.back'); $('koCard').hidden = false; $('fade').classList.add('on'); }
   if (KO.t >= 1.5 && !KO.moved) {
     KO.moved = true;
     for (const e of ENC) if (e.state === 'active' || e.state === 'paused') resetEnc(e, true);
@@ -9644,7 +10001,7 @@ function showLoot(got) {
     const s = document.createElement('span'); s.className = 'lc'; const i = document.createElement('i'); i.textContent = g.icon; i.style.background = g.color; i.setAttribute('aria-hidden', 'true');
     const b = document.createElement('b'); b.textContent = g.id === 'coins' ? t('got.coins', { n: g.n }) : g.n > 1 ? g.name + ' ×' + NUMF.format(g.n) : g.name; s.append(i, b); box.appendChild(s);
   }
-  $('lootTitle').textContent = t('loot.h'); const c = $('lootCard'); c.hidden = false; c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
+  setIconText($('lootTitle'), 'spark', t('loot.h')); const c = $('lootCard'); c.hidden = false; c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
   clearTimeout(showLoot.timer); showLoot.timer = setTimeout(() => { c.hidden = true; c.classList.remove('show'); }, 4800);
 }
 /** A one-time tip (remembered in the save). */
@@ -10557,7 +10914,7 @@ function completeMission(m) {
   G.mission = next || 'done'; G.step = 0;
   if (m.id !== 'm11') {
     UI.banner(t('m.done')); sfx('win'); hero.play('victory', 1.0);
-    if (got.length) { showLoot(got); $('lootTitle').textContent = t('m.rewards'); }
+    if (got.length) { showLoot(got); setIconText($('lootTitle'), 'trophy', t('m.rewards')); }
     QUEST.announce = 3.0; UI.tracker.set(null);
   }
   QUEST.dirty = true; saveGame('mission'); scoreSubmit();
@@ -11028,7 +11385,7 @@ const CUT = {
       this.li = li; const L = this.lines[li];
       if (L) {
         const who = L.who, n = NPCS[who], d = n ? n.d : NPC_EXTRA[who];
-        $('cutPortrait').textContent = who === 'hero' ? '🗡️' : who === 'snarlwick' ? '😈' : who === 'cinder' ? '🐉' : who === 'story' ? '📖' : d ? d.portrait : '🙂';
+        setPortrait($('cutPortrait'), who, who === 'hero' ? '🗡️' : who === 'snarlwick' ? '😈' : who === 'cinder' ? '🐉' : who === 'story' ? '📖' : d ? d.portrait : '🙂');
         $('cutName').textContent = who === 'hero' || who === 'story' ? '' : t('npc.' + who); $('cutText').textContent = t(L.key, L.vars);
         $('cutCap').hidden = false; if (who !== 'story' && who !== 'hero') SND3.voice(d ? d.pitch : who === 'snarlwick' ? 0.55 : 0.8);
       } else $('cutCap').hidden = true;
@@ -11869,12 +12226,13 @@ function showEnd() {
   G.flags.ended = true; G.flags.princessFree = true; hero.anim.name = null;
   $('endStory').textContent = t('end.3');
   const ul = $('endStats'); ul.textContent = '';
-  for (const [emo, key, vars] of [['⏱️', 'end.time', { time: fmtTime(G.stats.playSec) }], ['💎', 'end.gems', { n: G.gems.length, total: GEMS.length }], ['🎁', 'end.chests', { n: G.stats.chests }], ['💪', 'end.ups', { n: G.stats.knockouts }], ['⭐', 'end.points', { n: G.points }]]) {
-    const li = document.createElement('li'); const i = document.createElement('span'); i.textContent = emo; i.setAttribute('aria-hidden', 'true'); const b = document.createElement('b'); b.textContent = t(key, vars); li.append(i, b); ul.appendChild(li);
+  endPics();
+  for (const [emo, key, vars] of [['timer', 'end.time', { time: fmtTime(G.stats.playSec) }], ['gem', 'end.gems', { n: G.gems.length, total: GEMS.length }], ['trophy', 'end.chests', { n: G.stats.chests }], ['heart', 'end.ups', { n: G.stats.knockouts }], ['star', 'end.points', { n: G.points }]]) {
+    const li = document.createElement('li'); const i = document.createElement('span'); setIcon(i, emo); i.setAttribute('aria-hidden', 'true'); const b = document.createElement('b'); b.textContent = t(key, vars); li.append(i, b); ul.appendChild(li);
   }
   const cr = $('endCredits'); cr.textContent = '';
   for (const key of ['credits.1', 'credits.2', 'credits.3']) { const p = document.createElement('p'); p.textContent = t(key); cr.appendChild(p); }
-  UI.open('endScreen'); MUSIC.force = 'festival';
+  UI.open('endScreen'); MUSIC.force = 'festival'; juicePop($('endScreen').querySelector('.card'));
   saveGame('end'); scoreSubmit();
   try { BRB.gameOver({ won: true, score: G.points }); } catch (e) { /* ignore */ }
   GAME.emit('ending');
@@ -12309,6 +12667,7 @@ function renderFrame(dt, now) {
   BLOBS.end();
   if (S.screen === 'play') updateHud(dt);
   UI.dialogFrame(dt); worldUiFrame(dt);
+  B.update(dt);   // the kit bridge: Ink line width for this screen size, outline distances
   renderer.render(scene, camera);
 }
 const WHITE = new THREE.Color(1, 1, 1), DOME_GLOOM = new THREE.Color('#8f6cb8');
@@ -12336,7 +12695,11 @@ function worldFrame(dt, now) {
   if (WORLD.dyn.flame && !cm) { const f = WORLD.dyn.flame; f.scale.set(1 + Math.sin(now * 0.0047) * 0.06, 1 + Math.sin(now * 0.0061) * 0.1, 1 + Math.cos(now * 0.0053) * 0.06); }
   const runes = WORLD.runes, ts = now / 1000;
   for (let i = 0; i < WAYSTONES.length; i++) {
-    const wy = WAYSTONES[i], on = G.waystones.indexOf(wy.id) >= 0, sc = on ? 1 : 0.55; V1.set(wy.x, wy.y + (on ? 2.5 : 2.0) + (cm ? 0 : Math.sin(ts * 1.4 + i) * 0.15), wy.z); Q1.setFromAxisAngle(UP, cm ? 0 : ts * (on ? 0.8 : 0.3) + i); V2.set(sc, sc, sc); Q2.setFromAxisAngle(XAX, Math.PI / 2); Q1.multiply(Q2);
+    const wy = WAYSTONES[i], on = G.waystones.indexOf(wy.id) >= 0; V1.set(wy.x, wy.y + (on ? 2.5 : 2.0) + (cm ? 0 : Math.sin(ts * 1.4 + i) * 0.15), wy.z);
+    // a rune right in front of the camera, or between the camera and the hero, shrinks away (like the trees) so it never hides the hero
+    const want = runeClear(V1), rf = RUNE_FADE[i] === undefined ? want : RUNE_FADE[i] + (want - RUNE_FADE[i]) * damp(dt, cm ? 30 : 8);
+    RUNE_FADE[i] = Math.abs(rf - want) < 0.01 ? want : rf;
+    const sc = (on ? 1 : 0.55) * RUNE_FADE[i]; Q1.setFromAxisAngle(UP, cm ? 0 : ts * (on ? 0.8 : 0.3) + i); V2.set(sc, sc, sc); Q2.setFromAxisAngle(XAX, Math.PI / 2); Q1.multiply(Q2);
     runes.setMatrixAt(i, M4.compose(V1, Q1, V2));
     if (UI.runesDirty) runes.setColorAt(i, C1.set(on ? '#ffd23f' : '#c3d0e2'));
   }
@@ -12416,6 +12779,7 @@ function onBuilt() {
   setQuality(SET.quality !== 'auto' && SET.quality !== undefined ? +SET.quality : autoStart, SET.quality !== 'auto' ? true : null);
   S.ready = true; window.__hosReady = true;
   for (const s of GAME.systems) if (s.init) { try { s.init(); } catch (e) { console.error(e); } }
+  inkWorld();
   installTestHooks();
   GAME.emit('ready');
   showTitle();
@@ -12480,7 +12844,7 @@ const TEST = {
     if (o.mission && typeof TEST.setMission === 'function') TEST.setMission(o.mission, o.step || 0);
     if (o.cover) {
       S.coverMode = true; const c = POINTS.cover; placeHero(c[0], c[1], c[2]); CAM.pitch = -9 * DEG; CAM.yaw = c[2] + Math.PI;
-      UI.tracker.set(null); $('toasts').textContent = ''; $('banner').className = 'banner'; G.zonesSeen.push('meadowbrook'); S.zone = 'meadowbrook';
+      UI.tracker.set(null); $('toasts').textContent = ''; $('banner').className = 'banner'; document.body.classList.remove('bannered'); G.zonesSeen.push('meadowbrook'); S.zone = 'meadowbrook';
     }
     return testState();
   },

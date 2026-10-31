@@ -31,7 +31,7 @@ import { makeGame, GAME_PARTS, groundFollow, CONTROLS, KIND_NAMES } from './game
 import { grid, generate, LEGEND } from './level.js';
 import { installPacks, PACK_NAMES } from './packs.js';
 
-export const VERSION = '1.0.0', API = 1;
+export const VERSION = '1.1.0', API = 1;
 
 function parseQuery(win) {
   const out = {};
@@ -169,7 +169,7 @@ function publicApi(kit) {
     version: VERSION, api: API,
     get tier() { return kit.tier; }, get backend() { return kit.backend; },
     color, tokens: { radius, space, outline, motion, z, palette: PALETTE, roles: ROLES, skin: SKIN, hair: HAIR },
-    theme: { get mode() { return theme.mode; }, get biome() { return theme.biome; }, on: (ev, fn) => theme.on(ev, fn), set: m => theme.set(m) },
+    theme: { get mode() { return theme.mode; }, get biome() { return theme.biome; }, get look() { return theme.look || null; }, get names() { return theme.names || []; }, on: (ev, fn) => theme.on(ev, fn), set: m => theme.set(m) },
     rand, seedOf, tween, ease, easings: EASE_NAMES,
     spring: (target, prop, o) => loop.tw.spring(target, prop, o),
     // Which clock: Oomba.wait/after/every and Oomba.time.wait/after/every run on the GAME clock (they stop while the
@@ -215,8 +215,13 @@ function publicApi(kit) {
     save: { define: o => kit.save.define(o), get: () => kit.save.get(), set: p => kit.save.set(p) },
     settings: new Proxy({}, { get: (t, k) => (k === 'on' ? (ev, fn) => settings.on(ev, fn) : k === 'set' ? p => settings.patch(p) : k === 'reduced' ? settings.reduced : settings.get(k)), set: (t, k, v) => { settings.patch({ [k]: v }); return true; } }),
     validate,
+    /** avatar() -> the character the player designed on their Me page (BRB.user.character: a parts spec, never a
+     *  picture; its bold.wear and bold.mood apply in the Bold style), else a look from their account; a guest gets the
+     *  mascot. me() is the same. */
+    avatar: () => O.me(),
     me: () => {
-      const u = kit.brb && kit.brb.user;
+      const u = kit.brb && kit.brb.user, c = u && !u.isGuest && u.character;
+      if (c && typeof c === 'object') { const bo = STYLE.name === 'bold', b = bo && c.bold || {}; return charSpec(Object.assign({}, c, { wear: [].concat(c.wear || [], b.wear || []), mood: bo ? b.mood : c.mood, bold: 0, seed: 7 })); }
       if (!u || u.isGuest) return charSpec({ species: 'oomba', seed: 1 });
       const r = rand(String(u.avatar || '') + '|' + String(u.displayName || ''));
       return charSpec({ species: 'kid', skin: r.int(0, 7), hair: { style: r.pick(['puffs', 'bob', 'curls', 'spiky', 'braids', 'buzz', 'long', 'cap']), color: r.pick(['cocoa', 'black', 'blonde', 'copper']) }, outfit: { top: r.pick(['tee', 'hoodie', 'dress', 'overalls']), color: r.pick(['sky', 'grape', 'coral', 'mint']) }, seed: r.int(1, 1e6) });
@@ -257,7 +262,7 @@ function publicApi(kit) {
     char: spec => charSpec(spec),
     icon: (name, o) => icon(name, o), icons: ICON_NAMES,
     art: {
-      define: (name, def) => { kit.artPacks.push(a => a.define(name, def)); if (kit.stage) kit.stage.atlas.define(name, def); },
+      define: (name, def) => { kit.artPacks.push(a => a.define(name, def)); if (kit.stage) kit.stage.atlas.define(name, def); if (kit.helper && (!kit.stage || kit.helper !== kit.stage.atlas)) kit.helper.define(name, def); },
       pack: fn => { kit.artPacks.push(fn); if (kit.stage) fn(kit.stage.atlas); },
       rig: (name, fn) => { kit.rigs[name] = fn; },
       part: (name, fn) => { kit.parts[name] = fn; },

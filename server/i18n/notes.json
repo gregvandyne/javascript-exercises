@@ -848,5 +848,8 @@
   "js.studio.mic.recording": "Status line under the chat box while the microphone records. {time} is how long so far and {max} the longest a recording can be, both like 0:12 and 1:00.",
   "studio.mic.tooLong": "{max} is the longest recording allowed, as minutes:seconds (e.g. 1:00). Keep it as it is.",
   "studio.mic.start": "Screen-reader label and tooltip of the 🎤 button next to the Builder chat box: speak a message instead of typing it.",
-  "js.studio.steps.search.now": "A build step row: the AI is looking up a real-world fact on the web. Never mention links or websites. Short, max ~30 chars."
+  "js.studio.steps.search.now": "A build step row: the AI is looking up a real-world fact on the web. Never mention links or websites. Short, max ~30 chars.",
+  "js.studio.themeUse": "Put into the kid's message to the Builder when they tap a theme chip in the Studio. {name} is the theme's name (studio.themes.names.*). Short, like the kid would say it.",
+  "me.character.bold": "The name of the kit's look for 12-14 year olds: keep \"Bold\" unless your language needs another word.",
+  "me.character.names.color.mint": "Colour names of the kit palette (spark yellow is not offered). Shown as screen-reader labels and tooltips of colour dots. The others (coral, sky, grape...) are the same kind of name."
 }

@@ -149,8 +149,13 @@ async function followUp(ctx, m, cur) {
   let theme = detectTheme(text);
   // In a 3D game "stars" are the things to collect, not a new hero (unless they say so).
   if (theme && theme.key === 'star' && isThreeGame(cur.html) && !/\b(hero|player|character)\b/.test(t)) theme = null;
+  // "play as me" in Star Island: the hero becomes the character the player designed on their Me page.
+  const asMe = /\b(play as (me|myself)|my (own )?(character|avatar|oomba)|me as the hero|the hero (be|is) me|make (the hero|it) me)\b/.test(t);
   if (kit) Object.assign(changes, kitChanges(t, cur.html, tune, theme, said));
-  else if (theme && (/\b(hero|player|character|guy|main)\b|\bchange\b|\bturn\b|\bmake (it|him|her|them)\b|\binstead\b|\binto\b|\babout\b/.test(t))) {
+  else if (asMe && isThreeGame(cur.html)) {
+    const from = (tune.hero && tune.hero[0]) || guessHero(cur.html, g.icon);
+    if (from) { changes.hero = [from, 'me']; said.push('made the hero you: the character from your Me page 🎨'); }
+  } else if (theme && (/\b(hero|player|character|guy|main)\b|\bchange\b|\bturn\b|\bmake (it|him|her|them)\b|\binstead\b|\binto\b|\babout\b/.test(t))) {
     const from = (tune.hero && tune.hero[0]) || guessHero(cur.html, g.icon);
     if (from) { changes.hero = [from, theme.emoji]; said.push(`swapped in a ${theme.name.toLowerCase()} ${theme.emoji}`); }
   }

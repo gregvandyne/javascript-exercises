@@ -28,8 +28,9 @@ const { ICONS, ICON_NAMES, icon } = await import('../../kit/src/icons.js');
 const { SPECIES, HAIR_STYLES, TOPS, WEAR } = await import('../../kit/src/validate.js');
 // The art packs (kit/packs/) join the library first, so every check below covers their species, props and biomes too.
 const { installPacks } = await import('../../kit/src/packs.js');
-const packKit = { artPacks: [], stages: [], version: '1.0.0', warn: m => { throw new Error(m); }, doc: { createElement: () => ({}), head: { appendChild() {} } }, attachStage() {} }; installPacks(packKit);
-for (const name of ['art-animals', 'art-school', 'art-biomes', 'dress', 'style-bold']) { const m = await import(`../../kit/packs/${name}.js`); packKit.definePack({ name: m.PACK.name, version: '1.0.0' }, m.define); }
+const { VERSION } = await import('../../kit/src/index.js');
+const packKit = { artPacks: [], stages: [], version: VERSION, theme: {}, warn: m => { throw new Error(m); }, doc: { createElement: () => ({}), head: { appendChild() {} } }, attachStage() {} }; installPacks(packKit);
+for (const name of ['art-animals', 'art-school', 'art-biomes', 'art-biomes-2', 'art-props', 'dress', 'style-bold']) { const m = await import(`../../kit/packs/${name}.js`); packKit.definePack({ name: m.PACK.name, version: VERSION }, m.define); }
 const ALL_PROPS = [].concat(...Object.values(PROP_GROUPS));
 const withPacks = A => { defineProps(A); for (const fn of packKit.artPacks) fn(A); };
 

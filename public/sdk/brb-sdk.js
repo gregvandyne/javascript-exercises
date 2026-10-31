@@ -600,10 +600,13 @@
     window.addEventListener('pagehide', stopSpeaking);   // never keep talking after the game is closed
   }
 
+  function deepFreeze(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreeze(o[k]); }); Object.freeze(o); } return o; }
   var BRB = {
     version: 1,
     // lang: the player's site language ("en", "fr", "ar"...); dir: "rtl" for right-to-left languages (he, ar), else "ltr".
+    // character: the Oomba character the player designed on their Me page (a small parts spec, never a picture), or null.
     user: Object.freeze({ displayName: (INIT.user && INIT.user.displayName) || 'Player', avatar: (INIT.user && INIT.user.avatar) || '🙂', isGuest: !!(INIT.user && INIT.user.isGuest),
+      character: deepFreeze(INIT.user && INIT.user.character && typeof INIT.user.character === 'object' ? JSON.parse(JSON.stringify(INIT.user.character)) : null),
       lang: (INIT.user && typeof INIT.user.lang === 'string' && INIT.user.lang) || 'en', dir: INIT.user && INIT.user.dir === 'rtl' ? 'rtl' : 'ltr' }),
     game: Object.freeze({ id: (INIT.game && INIT.game.id) || '', title: (INIT.game && INIT.game.title) || '' }),
     // The site's theme ('light' / 'dark'; '' = follow the device) and motion preference ('reduce' / 'full'; '' = the

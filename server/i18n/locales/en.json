@@ -326,6 +326,118 @@
         "newPw": "New password",
         "newPwConfirm": "New password again"
       }
+    },
+    "character": {
+      "heading": "My Oomba character",
+      "text": "Design your own character once. Games that let you play as yourself make it the hero. It is a drawing you make, never a photo.",
+      "guestText": "Guests play as Oomba. Make an account to design your own character.",
+      "signup": "Make an account",
+      "previewLabel": "Your character",
+      "styleGroup": "Show the look for",
+      "playful": "Playful",
+      "bold": "Bold",
+      "boldNote": "Bold is the look in games for older players. Pick what you wear there.",
+      "kind": "Kind",
+      "body": "Body shape",
+      "skin": "Skin tone",
+      "skinLabel": "Skin tone {n}",
+      "hair": "Hair",
+      "hairColor": "Hair color",
+      "eyes": "Eyes",
+      "top": "Top",
+      "topColor": "Top color",
+      "color": "Color",
+      "accent": "Extra color",
+      "accessory": "Extra",
+      "boldHat": "On your head",
+      "boldTop": "Jacket",
+      "boldEyes": "Eyes in Bold",
+      "none": "None",
+      "save": "Save my character",
+      "reset": "Start again",
+      "notSaved": "Not saved yet",
+      "saved": "Your character is saved! Games can use it now.",
+      "invalid": "That character could not be saved. Please try again.",
+      "guestOnly": "Make an account to save your own character.",
+      "names": {
+        "species": {
+          "kid": "Kid",
+          "oomba": "Oomba",
+          "fox": "Fox",
+          "bunny": "Bunny",
+          "frog": "Frog",
+          "bee": "Bee"
+        },
+        "body": {
+          "bean": "Bean",
+          "ball": "Round",
+          "pear": "Pear"
+        },
+        "hair": {
+          "puffs": "Puffs",
+          "bob": "Bob",
+          "curls": "Curls",
+          "spiky": "Spiky",
+          "braids": "Braids",
+          "buzz": "Short",
+          "long": "Long",
+          "cap": "Cap"
+        },
+        "hairColor": {
+          "cocoa": "Brown",
+          "black": "Black",
+          "blonde": "Blond",
+          "copper": "Red",
+          "stone": "Gray",
+          "grape": "Purple",
+          "sky": "Blue",
+          "mint": "Green"
+        },
+        "eyes": {
+          "happy": "Happy",
+          "surprised": "Surprised",
+          "determined": "Determined",
+          "thinking": "Thinking",
+          "sleepy": "Sleepy",
+          "wink": "Wink"
+        },
+        "top": {
+          "tee": "T-shirt",
+          "hoodie": "Hoodie",
+          "dress": "Dress",
+          "overalls": "Overalls"
+        },
+        "color": {
+          "mint": "Mint",
+          "coral": "Coral",
+          "sky": "Sky blue",
+          "grape": "Grape",
+          "peach": "Peach",
+          "cocoa": "Cocoa",
+          "stone": "Stone",
+          "snow": "Snow"
+        },
+        "wear": {
+          "scarf": "Scarf",
+          "glasses": "Glasses",
+          "crown": "Crown",
+          "wizard-hat": "Wizard hat",
+          "backpack": "Backpack",
+          "headphones": "Headphones"
+        },
+        "boldHat": {
+          "hood": "Hood",
+          "visor": "Visor",
+          "headset": "Headset",
+          "helmet": "Helmet",
+          "cap-back": "Cap"
+        },
+        "boldTop": {
+          "jersey": "Jersey",
+          "bomber": "Bomber jacket",
+          "techvest": "Tech vest"
+        }
+      }
     }
   },
   "cards": {
@@ -484,7 +596,8 @@
         "h": "What we keep",
         "p1": "Own accounts keep a made-up name, a password (stored scrambled) and what your child does here: the games they make, their chats with the Builder and any pictures or files they add, saves, scores, ratings, favorites, friends, chat messages, a profile photo if they upload one, and settings such as language and theme. Guest play keeps a made-up name, saves, scores, ratings and favorites.",
         "p2": "A school account is one your child signs in to with a login card from school. It is made and owned by the school, and keeps the same things plus the student's real name as the school typed it for the class list (only the school's staff and our team see it), their classes, lesson progress, written answers and their teacher's feedback. If your child joins a class with their own account and a class code, the school keeps the same things for that class, including their real name if the teacher types one.",
-        "paid3": "Family plans never see class activity: a grown-up linked to a student sees only that student's family extra messages."
+        "paid3": "Family plans never see class activity: a grown-up linked to a student sees only that student's family extra messages.",
+        "p4": "<b>Their Oomba character:</b> own accounts can design a drawn character that games use as the hero (a body shape, skin tone, hair, eyes, clothes and colours chosen from our lists). It is kept with their account as those choices only, never a photo or a picture of them, and it is deleted with the account."
       },
       "never": {
         "h": "What we never collect",
@@ -1339,6 +1452,27 @@
       "daily": "That's all the recordings for today. You can still type your message.",
       "failed": "Sorry, I couldn't turn that into words. Try again, or type your message.",
       "busy": "The speech helper is busy right now. Try again in a moment."
+    },
+    "themes": {
+      "heading": "Pick a world",
+      "current": "now",
+      "names": {
+        "meadow": "Meadow",
+        "beach": "Beach",
+        "jungle": "Jungle",
+        "snow": "Snow",
+        "desert": "Desert",
+        "reef": "Reef",
+        "space": "Space",
+        "candy": "Candy",
+        "haunted": "Haunted",
+        "castle": "Castle",
+        "cyber": "Cyber",
+        "stadium": "Stadium",
+        "forest": "Forest",
+        "autumn": "Autumn",
+        "city": "City"
+      }
     }
   },
   "publish": {
@@ -2023,7 +2157,12 @@
         "noMic": "No microphone was found on this device.",
         "cancelled": "Recording stopped. Nothing was sent or kept.",
         "failed": "Sorry, I couldn't turn that into words. Try again, or type your message."
-      }
+      },
+      "themeUse": "Use the {name} theme."
+    },
+    "character": {
+      "unsaved": "Not saved yet",
+      "saved": "Your character is saved!"
     }
   },
   "favorites": {

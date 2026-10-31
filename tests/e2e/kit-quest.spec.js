@@ -36,9 +36,10 @@ test('Oomba Quest: one Oomba.game call with three packs plays through talk, spri
   const k = await openQuest(browser), f = k.f;
   // the packs come from their own pinned tags (SRI + crossorigin), after the kit's
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(t => t[0])).toEqual(['/vendor/oomba-kit/1.0.0/oomba-kit.js', '/vendor/oomba-kit/1.0.0/packs/art-animals.js', '/vendor/oomba-kit/1.0.0/packs/art-biomes.js', '/vendor/oomba-kit/1.0.0/packs/art-school.js', '/vendor/oomba-kit/1.0.0/packs/dress.js', '/vendor/oomba-kit/1.0.0/packs/style-bold.js']);
+  const PACKS = ['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'art-school', 'dress', 'style-bold'];
+  expect(tags.map(t => t[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', ...PACKS.map(n => `/vendor/oomba-kit/1.1.0/packs/${n}.js`)]);
   for (const t of tags) expect([t[1], t[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => window.Oomba.packs.sort())).toEqual(['art-animals', 'art-biomes', 'art-school', 'dress', 'style-bold']);
+  expect(await f.evaluate(() => window.Oomba.packs.sort())).toEqual(PACKS);
   await expect(f.locator('.ok-title-screen .ok-h1')).toHaveText('Oomba Quest');
   // Play -> how-to -> countdown -> play (the kit's own scenes)
   await f.locator('.ok-title-screen .ok-hot').click();
