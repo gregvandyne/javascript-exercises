@@ -7,6 +7,9 @@
 // Part 3: the run's teams (preset numbers and scores, never names) and settings; a class student's team, bonus points
 // (outside the gradebook score) and per-question marks; the questions as asked (host-written text, choices, the
 // answer and the counts) for the question review and "play the missed questions again"; CSV for every run.
+// Part 4: the run belongs to its owner (s.owner, the creator), whoever was host at the end; runs that had a co-host keep
+// who ran them (live_run_log: adults' joins, leaves, removals, handoffs and key actions; a class student only in class
+// runs), shown to the run's viewers in "Who ran this game".
 import { q, tx, uid } from '../db.js';
 import * as T from './classlive-teams.js';
 import { needsHelp } from './classlive-dash.js';
@@ -80,12 +83,13 @@ const itemRow = it => ({ ...(it.q ? { q: it.q } : { i: it.i }), right: it.right,
 /** Save an ended session (one transaction). Class runs: scores for the class's active students. */
 export function save(s, sum = summary(s)) {
   const id = s.id;
-  const host = getUser(s.host.userId);
+  const ownerId = s.owner || s.host.userId;
+  const host = getUser(ownerId);
   const classRun = s.audience === 'class' && s.classId && host && S.teaches(host, s.classId);
   tx(() => {
     q.run(`INSERT OR REPLACE INTO live_runs(id, host_id, class_id, class_lesson_id, step_id, audience, mode, game_id, version_id, set_id, title,
       started_at, ended_at, players, guests, items, scored_by, teams, settings) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-    id, s.host.userId, classRun ? s.classId : null, classRun ? s.clId : null, classRun ? s.stepId : null, s.audience, s.mode,
+    id, ownerId, classRun ? s.classId : null, classRun ? s.clId : null, classRun ? s.stepId : null, s.audience, s.mode,
     s.gameId, s.versionId, s.setId, s.title, s.startedAt || s.createdAt, s.endedAt || Date.now(), sum.players.length, sum.guests,
     // The question texts the host wrote (or a starter set's): never anything a player sent.
     JSON.stringify(sum.items.map(itemRow)),
@@ -93,6 +97,7 @@ export function save(s, sum = summary(s)) {
     // n and presets: the whole setup (a team nobody played on is not in list), so "Play again with these teams" rebuilds it
     sum.teams.length ? JSON.stringify({ scoring: sum.scoring, ...(T.setupOf(s) ? { n: T.setupOf(s).n, presets: T.setupOf(s).presets } : {}), list: sum.teams.map(t => ({ k: t.k, p: t.p, sum: t.sum, avg: t.avg, bonus: t.bonus, rank: t.rank, size: t.size })) }) : '',
     JSON.stringify(sum.settings));
+    if (s.cohostEver && Array.isArray(s.log)) saveLog(s, id, classRun);
     if (!classRun) return;
     // Rank order: a student who somehow held two seats (rows are best first) keeps the better one.
     const done = new Set();
@@ -106,6 +111,38 @@ export function save(s, sum = summary(s)) {
       if (s.clId && s.stepId) { const u = getUser(userId); if (u) progress.gameScore(u, s.clId, s.stepId, p.score, 'live'); }
     }
   });
+}
+
+/** An account that still exists (account deletion leaves a tombstone row named deleted_<id>). */
+const isLive = uid => { const u = getUser(uid); return !!u && u.username !== `deleted_${uid}`; };
+/** The run's log (part 4), inside save()'s transaction: target_user only for a class student of a class run. */
+function saveLog(s, id, classRun) {
+  q.run('DELETE FROM live_run_log WHERE run_id=?', id);
+  // An account deleted while the game was open (forgetUser already ran) never comes back into the log: its id is
+  // written as NULL, as forgetUser leaves the rows it found ("a former co-host", an unnamed student).
+  const known = new Map();
+  const keep = uid => { if (!uid) return null; if (!known.has(uid)) known.set(uid, isLive(uid)); return known.get(uid) ? uid : null; };
+  s.log.forEach((e, i) => {
+    const target = classRun && keep(e.tu) && S.classMember(s.classId, e.tu)?.role === 'student' ? e.tu : null;
+    const detail = e.v !== undefined ? String(e.v) : e.k !== undefined ? `k${e.k}` : '';
+    q.run('INSERT INTO live_run_log(run_id, i, at, actor_id, action, target_user, other_id, detail) VALUES (?,?,?,?,?,?,?,?)', id, i, e.at, keep(e.by), e.a, target, keep(e.other), detail);
+  });
+}
+/** A saved run's log with names: [{ at, action, actor (name or ''), target (a student's name or ''), other, detail }].
+ *  Deleted accounts come back as '' (the page says "A former co-host"). Adults' names: the school roster name in class
+ *  runs, else the display name. */
+export function runLog(run) {
+  if (!run) return [];
+  const c = run.class_id && S.getClass(run.class_id);
+  const nameOf = id => {
+    if (!id) return '';
+    const m = c && q.get("SELECT roster_name FROM school_members WHERE school_id=? AND user_id=?", c.school_id, id);
+    if (m && m.roster_name) return m.roster_name;
+    const u = getUser(id);
+    return u ? u.display_name || u.username : '';
+  };
+  return q.all('SELECT at, actor_id, action, target_user, other_id, detail FROM live_run_log WHERE run_id=? ORDER BY i', run.id)
+    .map(r => ({ at: r.at, action: r.action, actor: nameOf(r.actor_id), target: r.target_user ? nameOf(r.target_user) : '', other: nameOf(r.other_id), detail: r.detail }));
 }
 
 /** A persisted run, for its host or a teacher of its class. -> { run, items, scores } | null */
@@ -168,7 +205,7 @@ export function report(s, reason) {
   const id = uid(12);
   const items = s.items ? JSON.stringify(s.items.map(it => it.q)).slice(0, 20000) : '';
   q.run('INSERT INTO live_reports(id, host_id, game_id, version_id, set_id, reason, items, created_at) VALUES (?,?,?,?,?,?,?,?)',
-    id, s.host.userId, s.gameId, s.versionId, s.setId, REPORT_REASONS.includes(reason) ? reason : 'other', items, Date.now());
+    id, s.owner || s.host.userId, s.gameId, s.versionId, s.setId, REPORT_REASONS.includes(reason) ? reason : 'other', items, Date.now());
   return id;
 }
 export const openReports = (limit = 100) => q.all(`SELECT r.*, g.title game_title, g.slug game_slug, h.username host_name FROM live_reports r LEFT JOIN games g ON g.id=r.game_id
@@ -180,7 +217,7 @@ export const resolveReport = (by, id) => q.run('UPDATE live_reports SET resolved
 export function retention(t = Date.now()) {
   const old = q.all('SELECT id FROM live_runs WHERE class_id IS NULL AND ended_at<?', t - KEEP.classless).map(r => r.id);
   tx(() => {
-    for (const id of old) { q.run('DELETE FROM live_run_scores WHERE run_id=?', id); q.run('DELETE FROM live_runs WHERE id=?', id); }
+    for (const id of old) { q.run('DELETE FROM live_run_scores WHERE run_id=?', id); q.run('DELETE FROM live_run_log WHERE run_id=?', id); q.run('DELETE FROM live_runs WHERE id=?', id); }
     q.run('DELETE FROM live_reports WHERE resolved_at IS NOT NULL AND resolved_at<?', t - KEEP.reports);
   });
   return old.length;
@@ -197,7 +234,11 @@ export function forgetUser(userId) {
   q.run('DELETE FROM live_prefs WHERE user_id=?', userId);
   q.run('UPDATE live_class_team_cfg SET saved_by=NULL WHERE saved_by=?', userId);
   q.run('UPDATE live_support SET set_by=NULL WHERE set_by=?', userId);
-  for (const r of q.all('SELECT id FROM live_runs WHERE host_id=?', userId)) q.run('DELETE FROM live_run_scores WHERE run_id=?', r.id);
+  // Part 4: in other people's run logs they become "a former co-host" (or an unnamed student).
+  q.run('UPDATE live_run_log SET actor_id=NULL WHERE actor_id=?', userId);
+  q.run('UPDATE live_run_log SET other_id=NULL WHERE other_id=?', userId);
+  q.run('UPDATE live_run_log SET target_user=NULL WHERE target_user=?', userId);
+  for (const r of q.all('SELECT id FROM live_runs WHERE host_id=?', userId)) { q.run('DELETE FROM live_run_scores WHERE run_id=?', r.id); q.run('DELETE FROM live_run_log WHERE run_id=?', r.id); }
   q.run('DELETE FROM live_runs WHERE host_id=?', userId);
   q.run('DELETE FROM live_sets WHERE owner_id=?', userId);
   q.run("UPDATE live_reports SET host_id='deleted' WHERE host_id=?", userId);
@@ -207,7 +248,11 @@ export function forgetUser(userId) {
  *  teams and support (registered with schools.js, so it needs no import of this module). */
 export function forgetClassData({ classId, userId = null }) {
   if (!classId) return;
-  if (userId) { q.run('DELETE FROM live_class_teams WHERE class_id=? AND user_id=?', classId, userId); q.run('DELETE FROM live_support WHERE class_id=? AND user_id=?', classId, userId); return; }
+  if (userId) {
+    q.run('DELETE FROM live_class_teams WHERE class_id=? AND user_id=?', classId, userId); q.run('DELETE FROM live_support WHERE class_id=? AND user_id=?', classId, userId);
+    q.run('UPDATE live_run_log SET target_user=NULL WHERE target_user=? AND run_id IN (SELECT id FROM live_runs WHERE class_id=?)', userId, classId);
+    return;
+  }
   q.run('DELETE FROM live_class_teams WHERE class_id=?', classId); q.run('DELETE FROM live_class_team_cfg WHERE class_id=?', classId);
   q.run('DELETE FROM live_support WHERE class_id=?', classId);
 }
@@ -224,6 +269,7 @@ export function mergeLiveData({ from, into }) {
     q.run(`UPDATE ${t} SET user_id=? WHERE user_id=?`, into, from);
   }
   q.run('UPDATE OR IGNORE live_run_scores SET user_id=? WHERE user_id=?', into, from);
+  q.run('UPDATE live_run_log SET target_user=? WHERE target_user=?', into, from);
   q.run('DELETE FROM live_run_scores WHERE user_id=?', from);
 }
 S.onAccountMerge(mergeLiveData);

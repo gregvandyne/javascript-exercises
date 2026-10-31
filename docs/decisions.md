@@ -1709,8 +1709,7 @@ reviewer) is `.claude/work/teams-out/design-final.md`; what shipped and why:
 - **Homework from a set** is a new lesson step kind `quiz` (the existing `question` kind is free text): a snapshot of
   the set's items, answers checked by the server once each, marks kept, score = % right in the gradebook. Behind
   `LIVE_HOMEWORK` (off); the rest ships without it.
-- **Cut or deferred:** co-host (a new token role, access matrix and another adult seeing support data: designed, not
-  built), typed team names, team talk, reduced answer choices, machine translation, power-ups, random student picker,
+- **Cut or deferred:** co-host (built in part 4, below), typed team names, team talk, reduced answer choices, machine translation, power-ups, random student picker,
   auto-advance, Sheets export, showing free-text responses, support in frames.
 
 ### Part 3, the pages and games (client)
@@ -1730,6 +1729,83 @@ reviewer) is `.claude/work/teams-out/design-final.md`; what shipped and why:
   "Your team finished a mission!"), and the platform lobby (a team banner row). Every team cue has a shape and a name.
 - **Homework (flag off):** "Assign as homework" is a small form on the results page (class, optional due date); the
   student's quiz step is a platform page (one question at a time, Read aloud, no timer).
+
+## Oomba Live, part 4: co-hosts
+
+Owner request: "Provide co-host capabilities." Design: `.claude/work/cohost-out/design.md` (not shipped). Server:
+`classlive-access.js` (who may co-host), `classlive-sessions.js` (the model, actors, conflicts, the handoff),
+`classlive-cohost.js` (invites, answers, removal, Make host), `routes/live.js`, `views/live.js`; client
+`live-cohost.js`, `live-dash.js`, `live-host.js`. Protocol: docs/live-protocol.md "Part 4". Legal: item 43.
+
+- **D1 Rooms.** Class and family rooms only. Open rooms have no co-hosts (no button; the API answers 400
+  `cohostRoom`): their other adults would be unknown, self-declared accounts.
+- **D2 Who, in a class room.** Active staff (`school_members.role` teacher or admin) of the class's school; never a
+  student of the class, a guest, a banned account, or a platform admin who isn't a member of the school; never someone
+  from another school. Decided by school membership, not `account_type`. The host picks from the school's staff list a
+  class teacher already sees under "Add a teacher": no search, no free text, no new names.
+- **D3 Who, in a family room.** Another grown-up of the owner's family. Today a family has exactly one grown-up
+  (`families.owner_id` is unique), so the list is empty and the panel says so. One seam (`A.hooks.familyGrownups`)
+  lets a future "second grown-up in a family" feature turn it on. Grown-up connections (friend codes) are not family
+  ("nothing about anyone's children").
+- **D4 Tiers.** `full` (teaches the class: the same rule that gives the host account names, saved runs and support) or
+  `limited` (everyone else: same-school staff not on the class, admins who don't teach it, family co-hosts). The tier
+  belongs to the person: a limited co-host who becomes host stays limited. It is the person's access now, never frozen
+  at accept: `retier` recomputes it in the 30-second sweep, on every controller hello, before a support change, at a
+  handoff or "Make host", and for the results page at the end (and again when it is viewed); a changed tier gets a
+  fresh `wel`. Support changes (`act a: 'acc'`) reach full-tier dashboards only, never the projector page's `wel`.
+- **D5 What limited misses.** `dp` (progress, needs help), `sup` and support changes (`h acc` → `nak notAllowed`, even
+  for a limited host), `dq.answered` and `dq.extra` (who answered; the extra-time count reveals support), the account
+  names of the dashboard (they get the players' view), the `names: 'names'` setting, Student details and the CSV on
+  the results page, and saved runs (which stay with the class's teachers).
+- **D6 Adult names stay with adults.** `ch` (who runs the game) and `act` (the activity line) go to controller
+  connections only, are PRIVATE in `live-common.js` (never into a frame), and never to players. The projector page
+  shows no activity line; its Co-hosts dialog opens behind a gate ("Grown-ups' names show here. Check the class can't
+  see your screen.") and hides the names again when closed. A co-host's End confirm on the projector names nobody.
+- **D7 One projector slot.** Two host frames would fight over `st`/`ev`. The host always takes the projector (the old
+  holder gets `bye replaced`); a co-host takes it only when it is empty (else `bye projectorBusy`). Frame tokens carry
+  the holder (`r: 'h'|'c'`).
+- **D8 Remembered settings.** Only the host's own Start saves `live_prefs`, to their own profile. A co-host's Start and
+  any `cf` save nothing.
+- **D9 End.** A co-host may end the game after a confirm; the message must carry `sure: 1` (the server ignores a
+  co-host `end` without it).
+- **D10 Handoff.** When the host has no connection (no dashboard, not holding the projector) for `LIVE_HANDOFF_SECS`
+  (default 120 s), the longest-standing co-host who is connected, still eligible and not the host of another open game
+  becomes host. Co-hosts keep every game control meanwhile. With no co-hosts nothing changes: the session ends 10 minutes
+  after the last controller leaves (with no co-hosts, the host: the rule before part 4).
+- **D11 The former host comes back** as a co-host (their old token still works: their entry keeps the old nonce). The
+  host's "Make host" hands it back (confirm).
+- **D12 Rematch / play again** carries no co-hosts: every grant is fresh and visible.
+- **D13 Flag.** `LIVE_COHOST` (on by default, like `LIVE_TEAMS`). `0` hides every button, the APIs and the invite
+  page answer 404, a co-host token is refused; deleting logged data works whatever the flag.
+- **D14 Invites.** Pending invites count towards the cap of 3, expire after 15 minutes or with the session, and reach the
+  invitee only inside Oomba: the `/live` page, `GET /api/live/mine`, the `/live/cohost/:sid` link (a QR in the host's
+  panel; the page is the same 404 as an unknown session for anyone not invited). No email, no push, nothing typed.
+- **D15 Kit.** No change: co-host is platform-side. Frames see a co-host's projector as `role: 'host'` as today; no pin
+  re-stamp.
+- **Owner vs host.** `s.owner` (the creator) never changes: `live_runs.host_id`, the class-run check in `R.save` (a
+  class run is saved with scores if the owner teaches the class), the family check on joins, saved teams' `saved_by`,
+  reports. `s.host` is the current host; `hostOpen` follows it.
+- **Authority per message.** Each controller socket carries only its user id; `actorOf` looks up role and tier per
+  message, so a removal stops a message already in flight and a promotion needs no reconnect. Rate buckets are per
+  connection. Every controller message and co-host HTTP call runs to the end with no `await`: the order applied is the
+  order of `act.i`.
+- **Conflicts.** A toggle already in that state is refused with `nak already` (who did it, only when their change is
+  what the state is now: an automatic lock or an eyes-up pause names nobody stale). Another controller's change to a
+  family this action would touch (pause/resume, lock/unlock, eyes) within `conflictMs` (1 s) is refused with `nak
+  conflict`, so two adults can't make it flap; anyone may undo their own at once. Eyes up and resume move each other
+  (eyes up pauses, resume lowers eyes), so each records and checks both families. A second adult's +time on the same
+  question within 1 s is refused (`nak already`): two presses don't add twice. Messages (3 s) and bonus points (1 s)
+  keep one gap for the whole session (the class hears one at a time); the refused adult is told (`nak tooSoon` with
+  who, or `wait` for their own repeat), never silently dropped. `next`/`skip` keep the `seq` guard. `lock`/`unlock`
+  became idempotent (no `lk` when nothing changed).
+- **Audit.** Joins, leaves, removals, handoffs and key actions (not `next` or `say`) are kept with the run in
+  `live_run_log` (migration `0041_live_cohost`), only for runs that had a co-host; students are named only in class
+  runs. Lifecycle events also go to `audit_log` at once, so a game that never started is on record. "Who ran this
+  game" on the saved results page (closed). Retention follows `live_runs`; a deleted account shows as "A former
+  co-host".
+- **Owner questions (defaults apply):** Q1 family co-hosting needs a "second grown-up in a family" feature (own change,
+  own legal review); Q2 school admins who don't teach the class get controls only; Q3 open rooms get no co-hosts; Q4
+  the 2-minute grace.
 
 ## Game data packs (/vendor/data/)
 

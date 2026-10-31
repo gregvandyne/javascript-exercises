@@ -4,6 +4,9 @@
 // message must be hello with a seat or host token within 5 seconds. Then every message goes through
 // classlive-protocol.parse (types, ranges, sizes, the shape of game event data) and a token bucket per type; anything
 // else is dropped. Log lines carry the session id, seat numbers and a reason only: never names, codes or addresses.
+// Part 4: a controller is the host or a co-host (a token with r 'h' or 'c', and that account's sign-in). Its authority
+// is looked up per message (LS.actorOf): a removed co-host's next message closes the socket (bye cohostOff, 4403), a
+// promoted one is the host at once. Rate buckets are per connection, so two adults don't share one budget.
 import { WebSocketServer } from 'ws';
 import { config } from '../config.js';
 import { userFromRequest, readToken } from '../auth.js';
@@ -45,7 +48,7 @@ export const route = {
 
 function connection(ws, req) {
   live.add(ws);
-  let s = null, seat = null, role = null, view = null, alive = true, pingAt = 0;
+  let s = null, seat = null, role = null, view = null, alive = true, pingAt = 0, ctlUser = null, ctlBuckets = null;
   const close = (code, why) => { if (why) hooks.log('info', 'live socket closed', { sid: s ? s.id : null, seat: seat ? seat.no : null, why }); try { ws.close(code); } catch { /* gone */ } };
   const helloTimer = setTimeout(() => { if (!s) close(4401, 'no hello'); }, hooks.helloMs);
   helloTimer.unref?.();
@@ -73,7 +76,7 @@ function connection(ws, req) {
     if (!s) return hello(raw);
     const m = P.parse(raw, role);
     if (!m) return;
-    const b = role === 'host' ? (view === 'dash' ? s.dashBuckets : s.host.buckets) : seat.buckets;
+    const b = role === 'host' ? ctlBuckets : seat.buckets;
     if (b && !b.take(m.t)) { if (b.dropped(m.t)) close(4429, 'flood'); return; }
     if (s.phase === 'ended') return;
     try { (role === 'host' ? fromHost : fromPlayer)(m); } catch (e) { hooks.log('error', 'live message failed', { sid: s.id, error: e.message }); }
@@ -95,12 +98,16 @@ function connection(ws, req) {
     const sess = tok && LS.get(tok.s);
     if (!sess || sess.phase === 'ended') { LS.sendTo(ws, { t: 'bye', why: 'ended' }); return close(4404, 'no session'); }
     const { u } = userFromRequest(req);
-    if (tok.r === 'h') {
-      if (!u || u.id !== sess.host.userId || tok.u !== u.id || tok.k !== sess.host.nonce) return close(4401, 'not host');
+    if (tok.r === 'h' || tok.r === 'c') {
+      const ok = LS.controllerFor(sess, tok, u);
+      if (!ok.ok) {
+        if (ok.why === 'cohostOff') { LS.sendTo(ws, { t: 'bye', why: 'cohostOff' }); return close(4403, 'cohost off'); }
+        return close(4401, 'not host');
+      }
       clearTimeout(helloTimer);
-      // The projector (default) or the teacher's dashboard (hello view: 'dash'): the same host token and sign-in.
-      s = sess; role = 'host'; view = m.view === 'dash' ? 'dash' : 'projector';
-      LS.attachHost(s, ws, view);
+      // The projector (default) or a dashboard (hello view: 'dash'): the controller's own token and sign-in.
+      s = sess; role = 'host'; view = m.view === 'dash' ? 'dash' : 'projector'; ctlUser = u.id; ctlBuckets = P.buckets(LS.hooks.now);
+      LS.attachHost(s, ws, view, u.id);
       return;
     }
     if (sess.banned.has(tok.k) || (tok.u && sess.banned.has(tok.u))) { LS.sendTo(ws, { t: 'bye', why: 'removed' }); return close(4403, 'removed'); }
@@ -136,16 +143,20 @@ function connection(ws, req) {
   }
   function fromHost(m) {
     if (m.t === 'pi') return common(m);
-    // The dashboard has no game frame: it controls the session (h, tm, cf) and nothing a frame would send.
+    const who = LS.actorOf(s, ctlUser, ws);
+    if (!who) { LS.sendTo(ws, { t: 'bye', why: 'cohostOff' }); return close(4403, 'not a controller'); }
+    // The dashboard has no game frame: it controls the session (h, tm, cf) and nothing a frame would send. A projector
+    // page that lost the slot sends nothing more.
     if (view === 'dash' && !['h', 'tm', 'cf'].includes(m.t)) return undefined;
+    if (view === 'projector' && s.host.conn !== ws) return undefined;
     if (common(m)) return;
     switch (m.t) {
       case 'rdy': return LS.hostReady(s, m.cfg);
-      case 'h': { const { t, a, ...rest } = m; return LS.hostAction(s, a, rest); }
+      case 'h': { const { t, a, ...rest } = m; return LS.hostAction(s, a, rest, who); }
       case 'st': return LS.setState(s, m.d);
       case 'ev': return LS.event(s, null, m);
-      case 'tm': return LS.teamAction(s, m);
-      case 'cf': return LS.setSettings(s, m.d);
+      case 'tm': return LS.teamAction(s, m, who);
+      case 'cf': return LS.setSettings(s, m.d, who);
       default: return undefined;
     }
   }

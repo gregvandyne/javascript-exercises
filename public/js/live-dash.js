@@ -5,8 +5,12 @@
 // answer and "needs help" stay hidden until the teacher taps (remembered), and the first visit says to use a screen the
 // class can't see. Tabs: players (status, needs help, support badges, a menu per player: bonus, move, new nickname,
 // support, remove), question (live answer bars), teams (board, team bonus, select-then-move), messages, settings.
+// Part 4: co-hosts use this page too, with their own token. The Host / Co-host chip, the activity line (act, nak: "Ms. X
+// paused the game"), and the Co-hosts tab. A limited co-host (not a teacher of the class) has no needs help, support or
+// who answered: the server never sends them, and the page has no place for them.
 import { connect, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, teamChip, teamsOf, scoresOf, flash, paintTeam } from '/js/live-common.js';
 import { board as teamBoard, teamBars } from '/js/live-teams-ui.js';
+import { cohostPanel, actText, nakText, namesOf } from '/js/live-cohost.js';
 
 const D = readJson('lv-dash-data');
 const $ = id => document.getElementById(id);
@@ -18,12 +22,19 @@ const pics = portraits(D.kit);
 const nm = n => nameOf(D.nicks || [], n);
 const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch { /* private mode */ } return null; };
 let showHelp = store('lv:dash:help') === '1', showAnswer = store('lv:dash:answer') === '1';
+const CTL = D.ctl || { role: 'host', tier: 'full' }, TC = D.cohost || null, FULL = CTL.tier === 'full';
+let adults = new Map(), acts = [], leaving = false, ch = null;
+const shownNames = new Map();   // seat -> the name this page last showed (an act about a removed player still names them)
 
 const sock = connect({ tok: D.tok, view: 'dash', onMessage, onState(st) { document.body.classList.toggle('lv-offline', st === 'retry'); } });
 
 function onMessage(m) {
   switch (m.t) {
-    case 'wel': welcome(m); break;
+    case 'wel': if (m.ctl && (m.ctl.role !== CTL.role || m.ctl.tier !== CTL.tier)) { location.reload(); return; } welcome(m); break;
+    case 'ch': onCh(m); break;
+    case 'act': onAct(m); break;
+    case 'nak': if (TC) line(nakText(m, { names: adults, TX: TC })); break;
+    case 'bye': if (m.why === 'cohostOff') cohostOff(); break;
     case 'pj': case 'pu': { const p = playerOf(m.p); players.set(p.seat, p); drawPlayers(); drawTeams(); break; }
     case 'pl': players.delete(m.n); progress.delete(m.n); support.delete(m.n); drawPlayers(); drawTeams(); break;
     case 'ros': players.clear(); for (const P of m.players || []) { const p = playerOf(P); players.set(p.seat, p); } drawPlayers(); drawTeams(); break;
@@ -59,7 +70,37 @@ function welcome(m) {
   if (m.settings) { settings = { ...settings, ...m.settings }; fillSettings(); }
   if (m.quiz && m.quiz.q) { q = m.quiz.q; }
   if (m.dq) { dq = m.dq; answered = new Set(m.dq.answered || []); }
+  if (m.ch) onCh(m.ch);
+  if (m.acts) { acts = []; for (const a of m.acts) onAct(a, true); if (acts.length && TC) line(actLine(acts[acts.length - 1])); }
   onPhase(m);
+}
+
+// ---- part 4: the chip, the activity line, the Co-hosts tab ----
+const panelRoot = document.querySelector('#lv-tab-cohosts [data-lv-cohost-panel]');
+const panel = panelRoot && TC ? cohostPanel(panelRoot, { sid: D.sid, TX: TC, onLeft: () => { leaving = true; } }) : null;
+if (panel && CTL.role === 'host') panel.refresh();
+function onCh(m) {
+  ch = m; namesOf(m, adults);
+  const chip = $('lv-dash-role');
+  if (chip && TC) chip.textContent = CTL.role === 'host' ? TC.roleHost : fill(TC.youCohost, { host: adults.get(m.host) || '' });
+  if (panel) panel.setCh(m);
+  drawRecent();
+}
+const presetName = k => (presetOf(k) || {}).name || '';
+const actLine = m => actText(m, { names: adults, player: n => shownNames.get(n) || '', team: presetName, TX: TC });
+function onAct(m, quiet = false) {
+  if (!TC) return;
+  acts.push(m); if (acts.length > 10) acts.shift();
+  if (!quiet) line(actLine(m));
+  drawRecent();
+}
+function drawRecent() { if (panel) panel.setRecent(acts.slice().reverse().map(actLine).filter(Boolean)); }
+function line(text) { const el = $('lv-dash-activity'); if (el && text) el.textContent = text; }
+function cohostOff() {
+  const box = $('lv-cohost-off'); if (!box || !TC) return;
+  $('lv-cohost-off-text').textContent = leaving ? TC.left : TC.removed;
+  box.hidden = false;
+  document.body.classList.add('lv-cohost-gone');
 }
 
 // ---- the top bar: the controls shown by phase ----
@@ -90,7 +131,8 @@ document.querySelector('.lv-dash-acts').addEventListener('click', e => {
   const a = b.dataset.lvAct;
   if (a === 'end' && !confirm(b.dataset.confirm)) return;
   if (a === 'eyes') { sock.send('h', { a: 'eyes', on: !eyesOn }); return; }
-  sock.send('h', { a, ...(a === 'next' || a === 'skip' ? { at: seq } : {}) });
+  // a co-host's end says it is sure (the server ignores it otherwise)
+  sock.send('h', { a, ...(a === 'next' || a === 'skip' ? { at: seq } : {}), ...(a === 'end' && CTL.role !== 'host' ? { sure: 1 } : {}) });
 });
 
 // ---- the one-time notice ----
@@ -115,19 +157,29 @@ document.querySelector('.lv-tabs').addEventListener('keydown', e => {
   pickTab(vis[j].dataset.lvTab, true);
 });
 pickTab('players');
+// The chip ("Host" / "Co-host · ...") opens the Co-hosts tab: on a phone that tab sits past the edge of the row.
+const roleChip = $('lv-dash-role');
+if (roleChip && $('lv-tab-cohosts')) roleChip.addEventListener('click', () => { pickTab('cohosts', true); $('lv-tab-cohosts').scrollIntoView({ block: 'nearest' }); });
+// More tabs past the edge: the row fades at that end (lv-tabs-more), until it is scrolled to the end.
+const tabRow = document.querySelector('.lv-tabs');
+function tabFade() {
+  const max = tabRow.scrollWidth - tabRow.clientWidth;
+  tabRow.classList.toggle('lv-tabs-more', max > 2 && Math.abs(tabRow.scrollLeft) < max - 2);
+}
+tabRow.addEventListener('scroll', tabFade, { passive: true }); addEventListener('resize', tabFade); tabFade();
 
 // ---- players ----
 const list = $('lv-dash-players'), cardTpl = $('lv-dash-card-tpl');
 const presetOf = k => { const t = teams.list.find(x => x.k === k); return t ? presets[t.p] : null; };
 function statusOf(p) {
   if (!p.connected) return ['offline', TX.offline];
-  if (D.quiz && (phase === 'playing' || phase === 'paused') && q) return answered.has(p.seat) ? ['answered', `✓ ${TX.answered}`] : ['thinking', `… ${TX.thinking}`];
+  if (FULL && D.quiz && (phase === 'playing' || phase === 'paused') && q) return answered.has(p.seat) ? ['answered', `✓ ${TX.answered}`] : ['thinking', `… ${TX.thinking}`];
   if (p.late) return ['late', TX.late];
   return ['', ''];
 }
 function drawPlayers() {
   const helpBtn = $('lv-dash-help-toggle');
-  helpBtn.setAttribute('aria-pressed', String(showHelp)); helpBtn.textContent = showHelp ? TX.hideHelp : TX.showHelp;
+  if (helpBtn) { helpBtn.setAttribute('aria-pressed', String(showHelp)); helpBtn.textContent = showHelp ? TX.hideHelp : TX.showHelp; }
   $('lv-dash-empty').hidden = players.size > 0;
   const seen = new Set();
   for (const p of [...players.values()].sort((a, b) => a.seat - b.seat)) {
@@ -140,6 +192,7 @@ function drawPlayers() {
       list.append(li);
     }
     const name = nm(p.name) || `#${p.seat}`;
+    shownNames.set(p.seat, name);
     li.querySelector('.lv-p-name').textContent = name;
     li.querySelector('.lv-dash-menu').setAttribute('aria-label', `${name}: ⋯`);
     const tm = li.querySelector('.lv-dash-team'); tm.textContent = ''; const pr = teams.on && p.team ? presetOf(p.team) : null;
@@ -154,7 +207,7 @@ function drawPlayers() {
   }
   for (const li of [...list.children]) if (!seen.has(li.dataset.seat)) li.remove();
 }
-$('lv-dash-help-toggle').addEventListener('click', () => { showHelp = !showHelp; store('lv:dash:help', showHelp ? '1' : '0'); drawPlayers(); });
+$('lv-dash-help-toggle') && $('lv-dash-help-toggle').addEventListener('click', () => { showHelp = !showHelp; store('lv:dash:help', showHelp ? '1' : '0'); drawPlayers(); });
 
 // the player menu (a dialog): bonus, move, new nickname, support, remove
 const dlg = $('lv-dash-player');
@@ -173,7 +226,7 @@ function openPlayer(seat) {
   $('lv-dash-rename').hidden = typeof p.name !== 'number';
   const sp = support.get(seat) || [seat, 100, 0, 0, 0];
   for (const r of dlg.querySelectorAll('input[name="lv-acc-time"]')) r.checked = +r.value === sp[1];
-  $('lv-acc-read').checked = !!sp[2]; $('lv-acc-simple').checked = !!sp[3];
+  if ($('lv-acc-read')) { $('lv-acc-read').checked = !!sp[2]; $('lv-acc-simple').checked = !!sp[3]; }
   const sv = $('lv-acc-save'); if (sv) sv.checked = !!sp[4];
   if (dlg.showModal) dlg.showModal();
 }
@@ -210,7 +263,9 @@ function drawQuestion() {
     li.append(lab, n, f); bars.append(li);
   });
   const connected = [...players.values()].filter(p => p.connected).length;
-  $('lv-dash-answered').textContent = `${fill(TX.answers, { count: answered.size })} · ${answered.size}/${connected}`;
+  // a limited co-host has the counts, not who answered
+  const done = FULL ? answered.size : dq && dq.i === q.i ? dq.counts.reduce((x, y) => x + y, 0) : 0;
+  $('lv-dash-answered').textContent = `${fill(TX.answers, { count: done })} · ${done}/${connected}`;
   const ex = $('lv-dash-extra'); ex.hidden = !(dq && dq.extra && phase === 'playing'); if (!ex.hidden) ex.textContent = fill(TX.extraWaiting, { count: dq.extra });
 }
 $('lv-dash-answer-toggle').addEventListener('click', () => { showAnswer = !showAnswer; store('lv:dash:answer', showAnswer ? '1' : '0'); drawQuestion(); });

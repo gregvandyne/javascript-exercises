@@ -112,6 +112,7 @@ const liveClassroom = parseFlag(process.env.LIVE_CLASSROOM, 'LIVE_CLASSROOM', tr
 const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
 const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
+const liveCohost = parseFlag(process.env.LIVE_COHOST, 'LIVE_COHOST', true);
 /** Speech to text providers (server/services/stt.js). 'mock' answers fixed words, for tests only. */
 export const STT_PROVIDERS = ['openai', 'elevenlabs', 'mock'];
 const sttProvider = String(process.env.STT_PROVIDER || 'openai').trim().toLowerCase();
@@ -151,7 +152,7 @@ export const config = {
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
-    liveTeams.error, liveSaveSupport.error, liveHomework.error,
+    liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error,
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
@@ -203,6 +204,11 @@ export const config = {
   liveTeams: liveTeams.on,
   liveSaveSupport: liveSaveSupport.on,
   liveHomework: liveHomework.on,
+  // Oomba Live part 4 (docs/decisions.md "Oomba Live, part 4"): co-hosts. LIVE_COHOST=0 hides every co-host button and
+  // the co-host APIs answer 404 (deleting logged data still works). LIVE_HANDOFF_SECS (3-600, default 120): how long the
+  // host may be gone before the longest-standing co-host takes over.
+  liveCohost: liveCohost.on,
+  liveHandoffSecs: Math.min(600, Math.max(3, Math.floor(num(process.env.LIVE_HANDOFF_SECS, 120)))),
   sttMaxSeconds: Math.min(120, Math.max(5, num(process.env.STT_MAX_SECONDS, 60))),
   sttMaxBytes: Math.min(10_000_000, Math.max(100_000, num(process.env.STT_MAX_BYTES, 1_500_000))),
   sttPerMinute: Math.max(1, num(process.env.STT_PER_MINUTE, 8)),

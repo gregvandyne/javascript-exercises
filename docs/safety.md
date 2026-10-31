@@ -488,6 +488,13 @@ counted. Player pages use the bare layout: no menus, no prices, plans or sign-up
 - *Stored:* a class's saved teams, saved support (flag), marks and bonus in class runs, the host's remembered settings:
   all inside the school (or the host's own account) and deleted with the class membership, the class or the account.
   Family and open rooms save nothing new.
+- *Co-hosts (part 4, `LIVE_COHOST`).* Only adults run a game: in a class room, staff of the class's school (never a
+  student, a guest or someone from another school); in a family room, another grown-up of that family (nobody yet);
+  open rooms have none. Kids never co-host. A co-host who doesn't teach the class gets the controls only: no needs
+  help, support, who answered, account names beyond what the room shows, Student details or CSV. Adults' names go only
+  to the adults' own pages, never to a student, a game frame or the projector screen (its Co-hosts list is behind a
+  "check the class can't see your screen" step). There is no message path between a co-host and a student: the same
+  fixed messages, bonus reasons and Eyes up as the host. Who did what is kept with the run (legal-review item 43).
 
 **Honest limits.** Grown-up accounts are self-declared, so "a host account" does not prove an adult; the limits above
 (open rooms: nicknames only, reviewed games only, 30 players, Report) are the protection. A determined game author

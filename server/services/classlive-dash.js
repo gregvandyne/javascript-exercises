@@ -1,5 +1,6 @@
 // Oomba Live teacher dashboard data (docs/decisions.md "Oomba Live, part 3"; protocol `dq`, `dp`, `sup`). Pure. These
-// messages go to the host's dashboard connection only (s.dash): never to a player, the projector or a game frame.
+// messages go to full-tier dashboards only (the host's, and co-hosts who teach the class): never to a player, the
+// projector or a game frame. A limited co-host's dashboard gets limitedDq.
 
 /** Why a seat may need help: '' (no), 'lowScore', 'wrongRun', 'missRun'.
  *  Quiz: at least 3 answered and under half right; 2 wrong in a row; 2 missed in a row while connected.
@@ -28,3 +29,8 @@ export function dqMsg(s) {
 
 /** sup: support per seat [[seat, time (100|150|200), read 0/1, simple 0/1, saved 0/1]] (seats with any support). */
 export const supMsg = s => ({ t: 'sup', p: [...s.seats.values()].filter(x => x.acc).map(x => [x.no, x.acc.time, x.acc.read ? 1 : 0, x.acc.simple ? 1 : 0, x.acc.saved ? 1 : 0]) });
+
+/** dq for a limited controller (part 4: a co-host who doesn't teach the class): the counts and the right answer only.
+ *  Who has answered, and how many are still answering with extra time (that reveals who has support), are student
+ *  detail. */
+export const limitedDq = m => (m ? { t: 'dq', i: m.i, answer: m.answer, counts: m.counts } : null);

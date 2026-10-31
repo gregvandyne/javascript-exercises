@@ -96,7 +96,7 @@ Everything else (unknown types, extra fields, out of range, host types from a pl
 | `lk` | `locked` | Host only: lock changed. |
 | `rp` | `n` | Host only: reports so far in this session. |
 | `res` | `id` | Host only: the session ended; results at `/live/results/<id>`. |
-| `bye` | `why` | `removed ended full locked replaced expired restart flood takenDown`; the socket closes. After a normal end the players' `bye ended` comes when the linger ends (up to 2 minutes; the end screen shows at `ph ended` as before). |
+| `bye` | `why` | `removed ended full locked replaced expired restart flood takenDown` (part 4: `cohostOff projectorBusy`); the socket closes. After a normal end the players' `bye ended` comes when the linger ends (up to 2 minutes; the end screen shows at `ph ended` as before). |
 | `wel` (more) | `teams` (the `tms` fields), `ts?` (rows), `settings` (players: `{ board, emotes, names }`; hosts: all, with `late`, `maxPlayers`, `locked`), `eyes`, `lang` (the set's language, for read aloud), `me.acc: { time, read, simple }` (player; PRIVATE) · host: `view`; the dashboard also `dp`, `sup`, `dq?` and no `frame` | `players` and `nameMode` are per view. |
 | `tms` | `on, n, teams: [[k, p, size]], m: [[seat, k]], scoring, choose, locked` | Every team setup or membership change (one message, never a `pu` per seat). |
 | `tml` | `ok, uneven?: [sizes] | null` | Hosts: the answer to `tm last` (`ok: false` = no saved teams). |
@@ -230,6 +230,64 @@ board. `/js/live-dash.js` (the dashboard), `/js/live-class-teams.js` (the class 
 Templates in the pages' JSON `text` are the messages as written (ICU plurals included): `live-common.js` `fill()` formats
 them in the page's language. On the projector a player's `bn` (bonus) is never shown and never passed to the frame; a
 team's is. The projector holds its frame on the game's end for `podiumHoldMs`, then opens the results.
+
+## Part 4: co-hosts (still v1; additive)
+
+Design: docs/decisions.md "Oomba Live, part 4". `LIVE_COHOST=0`: none of this (the APIs 404, no `ch`/`act`, a co-host
+token gets 4401).
+
+**HTTP**
+
+| Route | Who | Body | Answer |
+|---|---|---|---|
+| `GET /api/live/cohost/:sid` | the current host (404 otherwise) | | `{ list: [{ ref, id, name, tier, state: 'on'|'away'|'invited', since }], candidates: [{ id, name, tier }], max: 3, link: '/live/cohost/<sid>', room }` (`no-store`) · 400 `cohostRoom` (open rooms). |
+| `POST /api/live/cohost/:sid` | the current host, 60/hour | `{ a: 'invite'|'cancel'|'remove'|'host', userId }` | `{ ok, list, candidates, … , toast? }` (`host`: `{ ok, redirect }`) · 400 `{ code }`: `cohostRoom notEligible full already self notCohost hasOpen` · 404. |
+| `POST /api/live/cohost/:sid/answer` | the invitee, 30/hour | `{ yes }` (`true`/`'1'` accepts) | `{ ok, redirect: '/live/host/<sid>/dash' | '/live' }` · 410 `gone` (expired, ended, full, no longer eligible, not invited). |
+| `POST /api/live/cohost/:sid/leave` | a co-host | | `{ ok, redirect: '/live', toast }` · 404. |
+| `GET /live/cohost/:sid` | signed in | | The invite page for the invited account (`#lv-cohost-accept`, `#lv-cohost-decline`: data-api forms); a controller → 302 to their Teacher view; anyone else the same 404 as an unknown session. |
+| `GET /live/host/:sid`, `GET /live/host/:sid/dash` (more) | the host or a co-host (their own token in the page); a pending invitee at `/dash` → 302 `/live/cohost/:sid` | | Per role and tier. |
+| `GET /api/live/mine` (more) | hosts | | adds `cohosting: [{ sid, title, dash }]` and `invites: [{ sid, title, from, page }]` when there are any. |
+| `GET /live/results/:id` (`.csv`) (more) | in memory: the owner and every controller at the end | | A limited controller gets the class-safe part only (`#lv-limited-note`, no `#lv-details`; the CSV 404). Saved runs that had a co-host add `<details id="lv-run-log">` "Who ran this game". |
+
+Co-host token: `signToken({ s, n: 0, k: <their nonce>, r: 'c', u }, 4 h)` (a new nonce on every accept). The host
+frame's token carries the projector slot's holder (`r: 'h'|'c'`, `k`, `u`).
+
+**Socket.** `hello` with an `r: 'h'` or `r: 'c'` token: the signed-in account must be `tok.u`, and `tok.k` the host's
+nonce or that account's co-host nonce (else 4401; a removed or no longer eligible co-host gets `bye cohostOff` and
+4403). Views: `dash` (one per controller; a newer one of the same person replaces it, 4409) and `projector` (one slot:
+the host always takes it, the old holder gets `bye replaced`; a co-host only when it is empty, else `bye
+projectorBusy`, 4409). Authority is looked up per message: a removed co-host's next message gets `bye cohostOff`.
+
+| `t` | Fields | Notes |
+|---|---|---|
+| `h` (more, client → server) | `end` may carry `sure: 1` | Required from a co-host; other values are dropped. `acc` from a limited controller → `nak notAllowed`. |
+| `wel` (more) | controllers: `ctl: { me, host, role: 'host'|'cohost', tier: 'full'|'limited' }`, `ch` (as below, without `t`), `acts: [act…]` (last 10; `acc` ones only for a full-tier dashboard, never the projector page) | A limited dashboard: no `dp`/`sup`, `dq` without `answered`/`extra`, players and `nameMode` per the players' view. |
+| `ch` | `host: ref, list: [[ref, name, 'on'|'away'|'invited', tier]], max: 3, past?: [[ref, name]]` | Every controller connection, on any co-host, invite, presence or host change. `list[0]` is the host. `past`: adults no longer listed (removed, left, an invite cancelled or declined), so the activity line keeps naming them, also after a reload; pages merge names and never drop one. Adults' display (school roster) names, to adults only. |
+| `act` | `i, by: ref, a, n?: seat, k?: team, v?, o?: ref` | Every controller connection (`a: 'acc'` only to full tier), only once the session has had a co-host. `a`: `start pause resume next skip lock unlock kick end eyes (v 1/0) say time (v secs) bonus rename acc teams settings joined left removed invited declined cancelled host away back`. `i` rises: the order the server applied. |
+| `nak` | `a, why: 'already'|'conflict'|'tooSoon'|'wait'|'notAllowed', by?: ref` | To the refused connection only. `already`: the toggle is already in that state (`by` only when that adult's change is what the state is now, never a stale one), or another adult already added time to this question within 1 s. `conflict`: another controller changed a toggle family this action would change (pause/resume, lock/unlock, eyes; resume also checks eyes, and eyes up/down also checks pause, since each moves the other) within 1 s. `tooSoon`: another adult sent a message (3 s) or a bonus (1 s) just now (the session's gap: the class hears one at a time), `by` names them; `wait`: the same adult, too soon. |
+| `bye` (more) | `why: 'cohostOff'|'projectorBusy'` | `cohostOff`: removed, left, or no longer eligible (4403). |
+| `dq` (limited) | `i, answer, counts` | |
+
+`ch`, `act` and `nak` are PRIVATE in `live-common.js` (never relayed into a frame); `wel.ctl`, `wel.ch` and `wel.acts`
+are stripped before the projector page relays its `wel`. Players never receive them.
+
+**Part 4 hooks.**
+- `/live/host/:sid`: `[data-lv-act="cohosts"]` (class and family rooms, the host) → `<dialog id="lv-cohosts">`:
+  `#lv-cohosts-gate` (notice, `#lv-cohosts-show`, `#lv-cohosts-phone`) and `#lv-cohosts-body` (hidden until Show;
+  hidden again on close) with the panel below (prefix `lv-cohosts`). A co-host on this page: `#lv-cohost-me`, End
+  with the co-host confirm; `#lv-proj-busy` (`#lv-proj-busy-text`, Teacher view link) on `projectorBusy`/`replaced`;
+  `#lv-cohost-off` (`#lv-cohost-off-text`) on `cohostOff`. No activity line. JSON adds `ctl: { role, tier, cohosts }`
+  and `cohost` (texts: `act.*`, `state.*`, …).
+- `/live/host/:sid/dash`: `#lv-dash-role` (chip: "Host" / "Co-host · {host} is the host"), `#lv-dash-activity`
+  (`role=status`, polite: the newest `act`/`nak`), tab `[data-lv-tab="cohosts"]` → `#lv-tab-cohosts` (the panel, prefix
+  `lv-dch`), `#lv-dash-limited` (limited only), `#lv-cohost-off`. Limited: no `#lv-dash-help-toggle`, no
+  `#lv-dash-support`, no `names` option. A `wel` whose `ctl.role` or `ctl.tier` differs from the page's reloads it.
+- The panel (`[data-lv-cohost-panel][data-prefix][data-role]`, `/js/live-cohost.js`): `#<p>-list`
+  (`li.lv-cohost-row[data-state]` with `[data-cohost-act="cancel|remove|host"][data-user-id]`, each with
+  `data-confirm` where it asks), host only `#<p>-pick` (`#<p>-who` select of candidates, submit), `#<p>-none`,
+  `#<p>-err`, `#<p>-link` (QR and link); `#<p>-recent`; a co-host's `#lv-cohost-leave`.
+- `/live`: `[data-lv-cohost-invite="<sid>"]` (a link to the invite) and `[data-lv-cohost-on="<sid>"]` (Teacher view).
+- `/live/cohost/:sid`: `.lv-cohost-invite-text`, `#lv-cohost-accept`, `#lv-cohost-decline`.
 
 ## 4. The frame
 

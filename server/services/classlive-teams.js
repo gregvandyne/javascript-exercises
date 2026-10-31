@@ -351,7 +351,7 @@ export function saveClassTeams(s) {
   if (!plan.size) return false;
   const cfg = setupOf(s), had = loadClassTeams(s.classId);
   if (had && had.cfg.n !== cfg.n && had.plan.size > plan.size) return false;
-  return saveClassPlan(s.classId, cfg, plan, s.host.userId, { merge: !!had && had.cfg.n === cfg.n });
+  return saveClassPlan(s.classId, cfg, plan, s.owner || s.host.userId, { merge: !!had && had.cfg.n === cfg.n });
 }
 export function forgetClassTeams(classId) {
   tx(() => { q.run('DELETE FROM live_class_teams WHERE class_id=?', classId); q.run('DELETE FROM live_class_team_cfg WHERE class_id=?', classId); });

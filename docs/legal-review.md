@@ -355,4 +355,36 @@ Owner decisions for parent-made accounts (no lawyer needed):
     - **(d) The host's own remembered game settings** (`live_prefs`), deleted with the account.
     - **Play again** keeps, for at most 2 minutes after a game ends, which seat had which account, nickname, avatar and
       team, and the session's removals, so the same players can be moved into a new game; then it is wiped.
+
+43. **Oomba Live co-hosts: who else may run a live game, and what they see (part 4).** New, behind `LIVE_COHOST` (on by
+    default; `0` turns it off). docs/decisions.md "Oomba Live, part 4", docs/safety.md §12. No new collection from
+    students or guests; no new channel between an adult and a child.
+    - **Who.** Class rooms: active staff (teachers, school admins) of the class's school, picked from the staff list a
+      class teacher already sees (no search). Never a student, a guest, a banned account, staff of another school or a
+      platform admin outside the school. Family rooms: another grown-up of the same family; **today nobody** (a family
+      has one grown-up). Open rooms: nobody. At most 3, invites included; invites expire after 15 minutes.
+    - **Two tiers.** A co-host who teaches the class sees what the host sees (account names on the Teacher view, needs
+      help, support and support changes, who answered, Student details, the CSV, saved runs). Anyone else gets the game
+      controls only: players' names as the players see them (account names only when the host shows them to the whole
+      room), answer counts, no needs help, no support, no Student details, no CSV, no saved runs.
+    - **The tier follows access now, not as it was at accept.** A teacher taken off the class mid-game (still staff of
+      the school) drops to controls only at the next check (every 30 s, on reconnect, on a support change, at a handoff
+      and at the end): their Teacher view is redrawn without needs help, support and who answered, and the results page
+      shows them no Student details or CSV. Leaving the school stops co-hosting altogether. Support changes are never on
+      the projector page, not even in its gated Co-hosts dialog.
+    - **Adult names** (display or school roster names) go only to the adults running the game: never to a student's
+      device, never into game code, never on the projector screen (the projector's Co-hosts list is behind a "check the
+      class can't see your screen" step). Adults' account ids never go over the wire (small per-session numbers do).
+    - **Stored:** `live_run_log` (who did what in a run that had a co-host: adults' ids, action, time, and in class runs
+      the class student an action was about, e.g. removed or support changed) and `audit_log` rows for invites,
+      answers, removals, leaving and handoffs (user ids and the session id only). Seen by the run's viewers (the owner,
+      the class's teachers, platform admins). Retention follows `live_runs` (classless runs: 90 days); a deleted account
+      becomes "A former co-host" (also when it is deleted while the game is still open: its id is never written into
+      the log afterwards); a student who leaves the class is taken off the log; a school account merge moves it.
+    - **Questions for counsel:** (1) Limited same-school staff see students' account names when the room already shows
+      them to everyone: is that within "school officials with a legitimate educational interest" (FERPA), or should
+      limited co-hosts always get nicknames? (2) Should a school admin who doesn't teach the class get the full tier (we
+      chose controls only)? (3) Does the action log about students (removed, support changed) need a sentence in the
+      school-facing privacy text? (4) A "second grown-up in a family" feature (needed before family co-hosting does
+      anything) needs its own review.
     - **Question:** do the school terms already cover teachers' saved groups ((a)), or do they need a sentence?

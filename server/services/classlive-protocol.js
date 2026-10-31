@@ -24,7 +24,9 @@ export const ADD_SECS = [10, 20, 30];
 /** Host connections: the projector (the room's screen) and the teacher's dashboard (a phone or laptop). */
 export const HOST_VIEWS = ['projector', 'dash'];
 export const VIEWS = ['3d', '2d', 'watch'];
-export const BYE = ['removed', 'ended', 'full', 'locked', 'replaced', 'expired', 'restart', 'flood', 'takenDown'];
+export const BYE = ['removed', 'ended', 'full', 'locked', 'replaced', 'expired', 'restart', 'flood', 'takenDown', 'cohostOff', 'projectorBusy'];
+/** Part 4: why a controller's action was refused (nak). */
+export const NAK = ['already', 'conflict', 'tooSoon', 'wait', 'notAllowed'];
 /** Largest message (bytes of JSON) a player may send; the host's page and frame may send more (shared state). */
 export const MAX = { player: 2 * 1024, host: 16 * 1024, ev: 512, state: 8 * 1024 };
 /** Messages per second per type (token buckets: this rate, a burst of twice it). Over: dropped silently. */
@@ -143,6 +145,8 @@ export function parse(raw, role = 'player') {
       if (m.a === 'kick' || m.a === 'rename') { if (!int(m.n, 1, 1000)) return null; out.n = m.n; }
       if (m.a === 'next' || m.a === 'skip') { if (!int(m.at, 0, 1e9)) return null; out.at = m.at; }
       if (m.a === 'eyes') { if (typeof m.on !== 'boolean') return null; out.on = m.on; }
+      // part 4: a co-host's end must say it is sure (the page asks first); any other value is dropped
+      if (m.a === 'end' && m.sure === 1) out.sure = 1;
       if (m.a === 'say') { if (!int(m.m, 0, SAY.length - 1)) return null; out.m = m.m; }
       if (m.a === 'time') { if (!ADD_SECS.includes(m.s)) return null; out.s = m.s; }
       if (m.a === 'bonus') {
