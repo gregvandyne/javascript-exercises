@@ -129,11 +129,19 @@ h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
 .logo{font:800 clamp(34px,9vw,54px)/1 var(--font);color:var(--spark);-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink);margin:4px 0 6px}
 /* Hero maker */
 #heroScreen{justify-content:flex-end;align-items:stretch;background:none;padding:0}
-.maker{width:min(440px,52vw);height:100%;overflow:auto;background:var(--card);color:var(--text);border-inline-start:var(--bw) solid var(--edge);padding:max(16px,env(safe-area-inset-top)) 18px max(16px,env(safe-area-inset-bottom));text-align:start}
-@media (max-aspect-ratio:4/5){#heroScreen{align-items:flex-end}.maker{width:100%;height:58%;border-radius:26px 26px 0 0;border:var(--bw) solid var(--edge);border-bottom:0;padding-inline:14px}}
-.maker h2{font-size:24px;margin:0 0 4px}
-.maker h2.mkh2{margin:14px 0 6px}
-.mrow{margin:9px 0 5px;font:800 16px/1.2 var(--font)}
+.maker{display:flex;flex-direction:column;width:min(440px,52vw);height:100%;overflow:hidden;background:var(--card);color:var(--text);border-inline-start:1px solid var(--hair-line);box-shadow:0 0 32px var(--sheet-sh);padding:0;text-align:start}
+/* the sheet: a scrolling body (fades out at the bottom edge) over a footer that always shows Back and Let's go */
+.mkbody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:max(18px,env(safe-area-inset-top)) 18px 18px}
+@media (max-aspect-ratio:4/5){#heroScreen{align-items:flex-end}
+  .maker{width:100%;height:58%;height:min(60dvh,560px);border-radius:28px 28px 0 0;border:0;border-top:1px solid var(--hair-line);box-shadow:0 -10px 34px var(--sheet-sh)}
+  .mkbody{padding:16px 16px 16px}}
+/* title row: the heading and the dice ("Surprise me") side by side, so the dice is always in view */
+.mkhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.mkhead h2{flex:1 1 auto;min-width:0}
+.maker .chip.mkdice{min-height:40px;padding:0 13px;font-size:15px}
+.maker h2{font-size:24px;margin:0}
+.maker h2.mkh2{margin:16px 0 8px}
+.mrow{margin:10px 0 4px;font:800 15px/1.2 var(--font)}
 .swatches{display:flex;flex-wrap:wrap;gap:8px}
 /* every colour group is one row: the swatches share the width (up to 46px each) instead of wrapping */
 #skinRow,#hairColorRow,#outfitRow{flex-wrap:nowrap;gap:6px;padding:4px 3px}
@@ -146,8 +154,20 @@ h2{margin:4px 0 12px;font:800 26px/1.15 var(--font)}
 #hairRow{flex-wrap:nowrap;gap:6px}
 #hairRow .chip{flex:1 1 auto;min-width:0;justify-content:center;padding:0 8px;text-align:center}
 .mkextra{margin-top:12px}
-.mkbtns{display:flex;flex-direction:row-reverse;gap:10px;margin-top:14px}
-.mkbtns .big{margin:0;min-height:56px}
+.mkextra:has(#meBtn[hidden]){display:none}
+/* the footer casts a soft shadow up over the scrolling sheet: a clear edge, so a cut-off row reads as "scroll for more" */
+.mkbtns{position:relative;flex:none;display:flex;flex-direction:row-reverse;gap:10px;margin:0;padding:10px 18px max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--hair-line);background:var(--card);box-shadow:0 -8px 16px -8px var(--sheet-sh)}
+/* the maker's controls: a light edge instead of the heavy Ink outline and drop, the same in light and dark */
+.maker .chip,.maker .diff{border:1.5px solid var(--chip-edge);box-shadow:0 1px 2px var(--sheet-sh)}
+.maker .chip[aria-pressed="true"]{background:var(--mint);border-color:var(--mint-d);box-shadow:none}
+.maker .diff[aria-pressed="true"]{background:var(--mint-t);border:2px solid var(--mint-d);box-shadow:none}
+.maker .sw{border:3px solid var(--card);box-shadow:0 0 0 1.5px var(--chip-edge)}
+/* chosen: a Spark rim, an Ink ring that fits inside the row's gap (no growing into the next swatch) and a tick */
+.maker .sw[aria-pressed="true"]{border-color:var(--spark);box-shadow:0 0 0 2.5px var(--ink);transform:none}
+@media (max-aspect-ratio:4/5){.mkbtns{padding-inline:16px}}
+.mkbtns .big{margin:0;min-height:54px}
+/* short phones: tighter rows so more of the sheet shows at once */
+@media (max-height:760px){.maker h2{font-size:22px}.maker h2.mkh2{margin:12px 0 6px}.mrow{margin:8px 0 3px}#skinRow,#hairColorRow,#outfitRow{padding-block:3px}.mkbtns .big,.mkbtns #makerBack{min-height:50px}.maker .chip{min-height:44px}.maker .diff{min-height:48px;padding-block:5px}}
 .mkbtns #makerGo{flex:2 1 0;min-width:0}
 .mkbtns #makerBack{flex:1 1 0;min-width:0;min-height:56px}
 .chip{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 15px;border-radius:999px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);font:700 16px/1.1 var(--font);box-shadow:0 3px 0 var(--ink)}
@@ -275,6 +295,8 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
     set('ink', c('ink')); set('cream', c('cream', 'tint')); set('paper', c('cream', 'shade'));
     set('card', kv('card')); set('text', kv('text')); set('edge', kv('edge')); set('bg2', kv('bg2')); set('focus', kv('focus'));
     set('scrim', kv('scrim')); set('scrim-e', night ? 'rgba(10,12,12,.2)' : 'rgba(20,20,20,.08)');
+    set('hair-line', night ? 'rgba(255,255,255,.12)' : 'rgba(20,20,20,.1)'); set('sheet-sh', night ? 'rgba(0,0,0,.45)' : 'rgba(30,40,60,.16)');
+    set('chip-edge', night ? 'rgba(255,255,255,.22)' : 'rgba(20,20,20,.2)');
     for (const h of ['spark', 'mint', 'coral', 'sky', 'grape', 'peach', 'stone', 'cocoa']) {
       set(h, c(h, 'base')); set(h + '-t', c(h, 'tint')); set(h + '-l', c(h, 'light')); set(h + '-d', c(h, 'shade'));
     }
@@ -348,14 +370,16 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 
 <section class="screen" id="heroScreen" role="dialog" aria-labelledby="makerTitle" hidden>
   <div class="maker">
-    <h2 id="makerTitle" data-i18n="look.h"></h2>
+    <div class="mkbody">
+    <div class="mkhead"><h2 id="makerTitle" data-i18n="look.h"></h2><button class="chip mkdice" id="randomBtn" type="button"><span aria-hidden="true">🎲 </span><span data-i18n="look.random"></span></button></div>
     <div class="mrow" data-i18n="look.skin"></div><div class="swatches" id="skinRow"></div>
     <div class="mrow" data-i18n="look.hair"></div><div class="swatches" id="hairRow"></div>
     <div class="mrow" data-i18n="look.hairColor"></div><div class="swatches" id="hairColorRow"></div>
     <div class="mrow" data-i18n="look.outfit"></div><div class="swatches" id="outfitRow"></div>
-    <div class="swatches mkextra"><button class="chip" id="meBtn" type="button" hidden><span aria-hidden="true" id="meBtnPic"></span><span data-i18n="look.me"></span></button><button class="chip" id="randomBtn" type="button"><span aria-hidden="true">🎲 </span><span data-i18n="look.random"></span></button></div>
+    <div class="swatches mkextra"><button class="chip" id="meBtn" type="button" hidden><span aria-hidden="true" id="meBtnPic"></span><span data-i18n="look.me"></span></button></div>
     <h2 class="mkh2" data-i18n="diff.h"></h2>
     <div class="diffs" id="diffRow"></div>
+    </div>
     <div class="mkbtns"><button class="big" id="makerGo" type="button" data-i18n="start"></button><button class="big soft" id="makerBack" type="button" data-i18n="back"></button></div>
   </div>
 </section>
@@ -6052,9 +6076,12 @@ function readSave() { const s = store.get(CONFIG.saveKey); return s && typeof s 
 const S = { screen: 'loading', ready: false, paused: false, manual: false, simTime: 0, frames: 0, fps: 0, quality: COARSE ? 1 : 0, qualityPinned: null,
   lost: false, zone: null, zoneT: 0, prompt: null, popping: 0, popTo: null, building: 0, playSec: 0, autosave: 0, gloom: 0, coverMode: false };
 const canvas = $('view');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: (devicePixelRatio || 1) < 1.5 && (navigator.hardwareConcurrency || 4) > 4, powerPreference: 'high-performance' });
-/** Drawing with the processor instead of a graphics chip (no GPU, or it is blocked): start at the lightest level. */
-const SOFTWARE_GL = (() => { try { const gl = renderer.getContext(), ext = gl.getExtension('WEBGL_debug_renderer_info'); return /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : '')); } catch (e) { return false; } })();
+/** Drawing with the processor instead of a graphics chip (no GPU, or it is blocked): start at the lightest level and
+ *  skip multisampling. Checked on a throwaway context first, so the real one can ask for smooth edges everywhere else. */
+const SOFTWARE_GL = (() => { try { const gl = document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl'); if (!gl) return false; const ext = gl.getExtension('WEBGL_debug_renderer_info'), soft = /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : '')); const lose = gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext(); return soft; } catch (e) { return false; } })();
+// Smooth (multisampled) edges on every real graphics chip: phones' tile GPUs do it almost free, and the hero maker's
+// close-up needs it most (on a 3x phone the old rule turned it off).
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !SOFTWARE_GL, powerPreference: 'high-performance' });
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 const scene = new THREE.Scene();
@@ -6097,11 +6124,14 @@ const MAT = {
   glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
   char: inkMat(1.25, false),
   blob: new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
+  // the hero's eyes, nose, cheeks and smile: flat colour, no light, so they stay crisp (lit, the whites went mint at the rim)
+  face: new THREE.MeshBasicMaterial({ vertexColors: true }),
 };
 /* Ink outlines: characters always keep theirs; buildings, rocks and trees ("detail" Ink, camera layer 1) drop it at
    the lowest picture quality. Grass, flowers, reeds and mushrooms never get any (too small to read). */
 const INK_DETAIL = 1;
 camera.layers.enable(INK_DETAIL);
+const STAGE = 5;   // the hero maker's own set (see makerStage): the camera sees only this layer while the maker is open
 function inkLayer(root, layer) { root.traverse(o => { if (o.userData.okInk) o.layers.set(layer); }); }
 /** Outline everything the world build made: the people, foes, crowds, sheep, chests and pickups (always), the
  *  landmarks and the scattered trees, bushes and rocks (detail). */
@@ -6128,11 +6158,31 @@ function heroInk() {
   const r = hero.rig; if (!r) return;
   const old = []; r.root.traverse(o => { if (o.userData.okInk) old.push(o); });
   for (const o of old) o.parent.remove(o);
-  B.outline(r.root, { important: true, width: 1 });
+  // the hero maker's close-up gets a finer line (the kit's line is sized for a character a few metres away)
+  B.outline(r.root, { important: true, width: hero.onStage ? 0.7 : 1 });
+  r.root.traverse(o => { if (o.userData.okInk) { o.material = inkPushed(o.material); if (hero.onStage) o.layers.enable(STAGE); } });
+}
+/** The kit's Ink hull, drawn a few centimetres further back. The hero is many parts that touch (sleeve and cuff, ears
+ *  and head, belt and shirt); right at those seams the hull and the next part's skin had the same depth and fought,
+ *  which drew dashed and stippled lines all over the body. Pushed back (10 cm), a seam's hull hides behind the part in front,
+ *  while the outline round the hero (the sky or ground is far behind it) is untouched. */
+const INK_PUSH = { value: 0.1 }, INK_PUSHED = new Map();
+function inkPushed(base) {
+  if (!base || base.userData.okPushed) return base;
+  let m = INK_PUSHED.get(base); if (m) return m;
+  m = base.clone(); m.userData.okPushed = true;
+  m.onBeforeCompile = (sh, r) => {
+    if (base.onBeforeCompile) base.onBeforeCompile(sh, r);
+    sh.uniforms.okPush = INK_PUSH;
+    sh.vertexShader = 'uniform float okPush;\n' + sh.vertexShader.replace(/\}\s*$/, '\tgl_Position.z -= projectionMatrix[3][2] * okPush / gl_Position.w;\n}\n');
+  };
+  m.customProgramCacheKey = () => 'okInkPush';
+  INK_PUSHED.set(base, m); return m;
 }
 /** The game's quality ladder drives the bridge too: 0-1 full Ink, 2 no tree Ink far away, 3 characters only. */
 function inkQuality(i) {
   B.quality = i <= 1 ? 2 : i === 2 ? 1 : 0;
+  if (hero.onStage) return;   // the hero maker's camera sees its own set only (makerStage restores the layers)
   if (i >= 3) camera.layers.disable(INK_DETAIL); else camera.layers.enable(INK_DETAIL);
 }
 
@@ -7749,27 +7799,37 @@ function buildGearGeometries() {
 }
 /** Look-dependent geometry: head (skin, face, hair), torso (outfit), arms (sleeves + hands), legs (per boots tier). */
 function buildLookGeometries(look) {
-  const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cone = prim('cone:6');
+  const box = prim('box'), cone = prim('cone:6');
   const skin = LOOKS.skin[look.skin] || LOOKS.skin[1], hairC = LOOKS.hairColor[look.hairColor] || LOOKS.hairColor[1], fit = LOOKS.outfit[look.outfit] || LOOKS.outfit[1];
   const dark = '#' + col(fit).multiplyScalar(0.62).getHexString(), skinD = '#' + col(skin).multiplyScalar(0.85).getHexString();
   const out = {};
-  const head = geoFrom([[s2, 0, 0.34, 0, 0.36, 0.35, 0.35, 0, 0, 0, skin], [s1, 0, 0.3, 0.335, 0.05, 0.04, 0.04, 0, 0, 0, skinD],
-    [s1, 0.19, 0.24, 0.28, 0.06, 0.035, 0.02, 0, 0, 0, '#ff9eb5'], [s1, -0.19, 0.24, 0.28, 0.06, 0.035, 0.02, 0, 0, 0, '#ff9eb5'], [s1, 0.345, 0.32, 0, 0.06, 0.08, 0.05, 0, 0, 0, skin], [s1, -0.345, 0.32, 0, 0.06, 0.08, 0.05, 0, 0, 0, skin]]);
-  head.add(SMILE, 0, 0.2, 0.33, 1, 1, 1, 0, 0, Math.PI, '#5a2a1a');
-  out.head = head.geometry('lit');
+  // smooth (not faceted) spheres for the head, ears and hands: the toon shading then falls in clean bands
+  out.head = geoFrom([[SSPH, 0, 0.34, 0, 0.36, 0.35, 0.35, 0, 0, 0, skin], [SSPH, 0.35, 0.32, -0.01, 0.055, 0.075, 0.045, 0, 0, 0, skin], [SSPH, -0.35, 0.32, -0.01, 0.055, 0.075, 0.045, 0, 0, 0, skin]]).geometry('lit');
+  // The face (nose, cheeks, smile) is its own mesh with no Ink: an outline round such small parts merged them into a dark
+  // "moustache" on the maker's close-up. The smile is a wider, rounder arc that reads at any size.
+  // Drawn unlit (flat colour, like a sticker) and lifted just off the skin, so the features stay crisp at any size.
+  out.face = geoFrom([[SSPH, 0, 0.285, 0.343, 0.035, 0.026, 0.02, 0, 0, 0, skinD],
+    [SSPH, 0.2, 0.25, 0.283, 0.052, 0.03, 0.012, 0, 0.6, 0, '#ff9eb5'], [SSPH, -0.2, 0.25, 0.283, 0.052, 0.03, 0.012, 0, -0.6, 0, '#ff9eb5'],
+    [HERO_SMILE, 0, 0.215, 0.33, 1, 1, 1, -0.3, 0, Math.PI, '#5a2a1a']]).geometry('lit');
   const hair = geoFrom([]), style = LOOKS.hair[look.hair] || 'short';
-  if (style === 'short' || style === 'ponytail') { hair.add(s2, 0, 0.42, -0.03, 0.38, 0.3, 0.39, 0, 0, 0, hairC); hair.add(box, 0, 0.52, 0.22, 0.6, 0.1, 0.18, -0.35, 0, 0, hairC); }
-  if (style === 'ponytail') { hair.add(s1, 0, 0.38, -0.4, 0.13, 0.13, 0.13, 0, 0, 0, '#ff5c9e'); hair.add(cone, 0, 0.36, -0.42, 0.13, 0.42, 0.13, Math.PI * 0.85, 0, 0, hairC); }
-  if (style === 'spiky') { hair.add(s2, 0, 0.42, -0.03, 0.37, 0.27, 0.38, 0, 0, 0, hairC); for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, r = i % 2 ? 0.2 : 0.12; hair.add(cone, Math.cos(a) * r, 0.62, Math.sin(a) * r - 0.04, 0.1, 0.24, 0.1, Math.sin(a) * 0.6, 0, -Math.cos(a) * 0.6, hairC); } }
-  if (style === 'curly') { for (let i = 0; i < 13; i++) { const a = i / 13 * Math.PI * 2, r = i % 2 ? 0.27 : 0.2, y = 0.55 + (i % 3) * 0.06; hair.add(s1, Math.cos(a) * r, y, Math.sin(a) * r - 0.06, 0.13, 0.12, 0.13, 0, 0, 0, hairC); } hair.add(s1, 0, 0.66, -0.04, 0.2, 0.14, 0.2, 0, 0, 0, hairC); for (const s of [-1, 1]) hair.add(s1, s * 0.33, 0.36, -0.12, 0.1, 0.18, 0.12, 0, 0, 0, hairC); }
+  // Every style starts from a smooth cap that hugs the skull (tilted back: the hairline sits above the eyes, the back
+  // covers the nape), then adds a fringe of soft locks, so it reads as hair rather than a box on a dome.
+  const capOn = () => hair.add(HAIR_CAP, 0, 0.34, -0.005, 0.378, 0.372, 0.382, -0.3, 0, 0, hairC);
+  const fringe = n => { for (let i = 0; i < n; i++) { const u = n > 1 ? i / (n - 1) - 0.5 : 0; hair.add(SSPH, u * 0.42, 0.51 - Math.abs(u) * 0.09, 0.29 - Math.abs(u) * 0.09, 0.115, 0.07, 0.07, -0.35, u * 1.1, -u * 0.5, hairC); } };
+  if (style === 'short' || style === 'ponytail') { capOn(); fringe(4); for (const s of [-1, 1]) hair.add(SSPH, s * 0.345, 0.39, 0.02, 0.05, 0.1, 0.07, 0, 0, s * 0.15, hairC); }
+  if (style === 'ponytail') { hair.add(SSPH, 0, 0.4, -0.37, 0.07, 0.07, 0.07, 0, 0, 0, '#ff5c9e'); hair.add(SSPH, 0, 0.24, -0.43, 0.1, 0.2, 0.1, 0.35, 0, 0, hairC); }
+  if (style === 'spiky') { capOn(); fringe(3); for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, r = i % 2 ? 0.2 : 0.12; hair.add(cone, Math.cos(a) * r, 0.6, Math.sin(a) * r - 0.06, 0.1, 0.24, 0.1, Math.sin(a) * 0.6, 0, -Math.cos(a) * 0.6, hairC); } }
+  if (style === 'curly') { capOn(); fringe(4); for (let i = 0; i < 13; i++) { const a = i / 13 * Math.PI * 2, r = i % 2 ? 0.27 : 0.2, y = 0.57 + (i % 3) * 0.05; hair.add(SSPH, Math.cos(a) * r, y, Math.sin(a) * r - 0.06, 0.13, 0.12, 0.13, 0, 0, 0, hairC); } hair.add(SSPH, 0, 0.68, -0.04, 0.2, 0.13, 0.2, 0, 0, 0, hairC); for (const s of [-1, 1]) hair.add(SSPH, s * 0.33, 0.36, -0.12, 0.1, 0.18, 0.12, 0, 0, 0, hairC); }
   out.hair = hair.geometry('lit');
   out.torso = geoFrom([[box, 0, -0.35, 0, 0.6, 0.65, 0.36, 0, 0, 0, fit], [box, 0, -0.33, 0, 0.62, 0.1, 0.38, 0, 0, 0, '#5b3a1e'], [box, 0, -0.32, 0.19, 0.12, 0.08, 0.02, 0, 0, 0, '#ffc83d'],
-    [box, 0, 0.2, 0, 0.3, 0.12, 0.3, 0, 0, 0, skin], [box, 0, 0.02, 0.185, 0.36, 0.2, 0.02, 0, 0, 0, '#ffffff']]).geometry('lit');
-  out.arm = geoFrom([[box, 0, -0.32, 0, 0.18, 0.36, 0.19, 0, 0, 0, fit], [box, 0, -0.44, 0, 0.17, 0.14, 0.18, 0, 0, 0, skin], [s1, 0, -0.5, 0, 0.11, 0.11, 0.11, 0, 0, 0, skin]]).geometry('lit');
+    [box, 0, 0.2, 0, 0.3, 0.12, 0.3, 0, 0, 0, skin]]).geometry('lit');
+  // a small Sunvale sun on the chest (it was a blank white patch); its own mesh, so no Ink ring round it
+  out.badge = geoFrom([[prim('cyl:12:1.000'), 0, 0.1, 0.17, 0.075, 0.025, 0.075, Math.PI / 2, 0, 0, '#ffc83d'], [prim('cyl:12:1.000'), 0, 0.1, 0.185, 0.04, 0.012, 0.04, Math.PI / 2, 0, 0, '#ff9f1c']]).geometry('lit');
+  out.arm = geoFrom([[box, 0, -0.32, 0, 0.18, 0.36, 0.19, 0, 0, 0, fit], [box, 0, -0.44, 0, 0.17, 0.14, 0.18, 0, 0, 0, skin], [SSPH, 0, -0.5, 0, 0.11, 0.11, 0.11, 0, 0, 0, skin]]).geometry('lit');
   out.cape = geoFrom([[box, 0, -0.62, 0, 0.56, 0.64, 0.04, 0, 0, 0, dark]]).geometry('lit');
   const bootC = { base: '#3b2a1e', leather: '#8b5a2b', iron: '#c9d1dc', sun: '#ffc83d' };
   for (const tier of ['base', 'leather', 'iron', 'sun']) {
-    const parts = [[box, 0, -0.45, 0, 0.22, 0.47, 0.24, 0, 0, 0, dark], [box, 0, -0.55, 0.04, 0.25, 0.16, 0.32, 0, 0, 0, bootC[tier]]];
+    const parts = [[box, 0, -0.45, 0, 0.22, 0.47, 0.24, 0, 0, 0, dark], [box, 0, -0.55, 0.04, 0.228, 0.16, 0.32, 0, 0, 0, bootC[tier]]];
     if (tier !== 'base') parts.push([box, 0, -0.5, 0.01, 0.26, tier === 'leather' ? 0.28 : 0.34, 0.27, 0, 0, 0, bootC[tier]]);
     if (tier === 'iron') parts.push([box, 0, -0.33, 0.12, 0.16, 0.1, 0.06, 0, 0, 0, '#9aa4b2']);
     if (tier === 'sun') parts.push([prim('cone:4'), 0, -0.36, 0.12, 0.06, 0.14, 0.03, 0, 0, 0, '#ff9f1c']);
@@ -7778,13 +7838,18 @@ function buildLookGeometries(look) {
   return out;
 }
 const SMILE = (() => { const g = new THREE.TorusGeometry(0.075, 0.018, 4, 10, Math.PI).toNonIndexed(); g.computeVertexNormals(); return g; })();
+const HERO_SMILE = (() => { const g = new THREE.TorusGeometry(0.085, 0.022, 8, 24, Math.PI).toNonIndexed(); g.computeVertexNormals(); return g; })();
+/** A smooth sphere (its normals point straight out, unlike the faceted 'sph' prims) and the hair cap: the top of one,
+ *  down to just past the equator, so it hugs the head. */
+const SSPH = new THREE.SphereGeometry(1, 32, 20).toNonIndexed();
+const HAIR_CAP = new THREE.SphereGeometry(1, 32, 16, 0, Math.PI * 2, 0, 1.5).toNonIndexed();
 function buildHeroModel() {
   const mk = (geo, mat) => { const m = new THREE.Mesh(geo || EMPTY_GEO, mat || MAT.char); m.castShadow = true; return m; };
   const root = new THREE.Group(), body = new THREE.Group(); root.add(body); body.position.y = 0.9;
   const legL = new THREE.Group(), legR = new THREE.Group(); legL.position.set(-0.15, -0.35, 0); legR.position.set(0.15, -0.35, 0); body.add(legL, legR);
   const legLM = mk(), legRM = mk(); legL.add(legLM); legR.add(legRM);
   const torso = new THREE.Group(); body.add(torso);
-  const torsoM = mk(), chest = mk(); torso.add(torsoM, chest);
+  const torsoM = mk(), chest = mk(), badgeM = mk(); badgeM.castShadow = false; badgeM.userData.noInk = true; torso.add(torsoM, badgeM, chest);
   const cape = new THREE.Group(); cape.position.set(0, 0.26, -0.2); torso.add(cape); const capeM = mk(); cape.add(capeM);
   const armL = new THREE.Group(), armR = new THREE.Group(); armL.position.set(-0.39, 0.22, 0); armR.position.set(0.39, 0.22, 0); torso.add(armL, armR);
   const armLM = mk(), armRM = mk(); armL.add(armLM); armR.add(armRM);
@@ -7792,20 +7857,20 @@ function buildHeroModel() {
   const sword = mk(); const swordGlow = mk(null, MAT.glow); swordGlow.castShadow = false; hand.add(sword, swordGlow); hand.rotation.x = Math.PI / 2;
   const shield = mk(), shieldGlow = mk(null, MAT.glow); shieldGlow.castShadow = false; armL.add(shield, shieldGlow);
   const head = new THREE.Group(); head.position.set(0, 0.3, 0); torso.add(head);
-  const headM = mk(), hair = mk(), helmet = mk(), hat = mk(); head.add(headM, hair, helmet, hat);
-  const eyes = new THREE.Group(); eyes.position.set(0, 0.36, 0.3); head.add(eyes);
+  const headM = mk(), hair = mk(), helmet = mk(), hat = mk(), faceM = mk(null, MAT.face); faceM.castShadow = false; faceM.userData.noInk = true; head.add(headM, faceM, hair, helmet, hat);
+  const eyes = new THREE.Group(); eyes.position.set(0, 0.36, 0.316); head.add(eyes);
   const ek = new Kit(), s1 = prim('sph:1');
   for (const s of [-1, 1]) { ek.add(s1, s * 0.12, 0, 0, 0.075, 0.095, 0.04, 0, 0, 0, '#ffffff'); ek.add(s1, s * 0.12, -0.01, 0.03, 0.05, 0.065, 0.025, 0, 0, 0, '#2b1b0e'); ek.add(s1, s * 0.12 + 0.02, 0.02, 0.05, 0.018, 0.018, 0.01, 0, 0, 0, '#ffffff'); }
-  const eyeM = mk(ek.geometry('lit')); eyeM.castShadow = false; eyes.add(eyeM);
+  const eyeM = mk(ek.geometry('lit'), MAT.face); eyeM.castShadow = false; eyeM.userData.noInk = true; eyes.add(eyeM);
   scene.add(root);
-  hero.rig = { root, body, legL, legR, legLM, legRM, torso, torsoM, chest, cape, capeM, armL, armR, armLM, armRM, hand, sword, swordGlow, shield, shieldGlow, head, headM, hair, helmet, hat, eyes };
+  hero.rig = { root, body, legL, legR, legLM, legRM, torso, torsoM, badgeM, chest, cape, capeM, armL, armR, armLM, armRM, hand, sword, swordGlow, shield, shieldGlow, head, headM, faceM, hair, helmet, hat, eyes };
 }
 const EMPTY_GEO = new THREE.BufferGeometry();
 /** Rebuild the look-dependent parts (New game / Continue / hero maker). */
 function applyLook(look) {
   const r = hero.rig; if (!r) return;
   const old = r.lookGeo; const g = buildLookGeometries(look); r.lookGeo = g;
-  r.headM.geometry = g.head; r.hair.geometry = g.hair; r.torsoM.geometry = g.torso; r.armLM.geometry = g.arm; r.armRM.geometry = g.arm; r.capeM.geometry = g.cape;
+  r.headM.geometry = g.head; r.faceM.geometry = g.face; r.hair.geometry = g.hair; r.torsoM.geometry = g.torso; r.badgeM.geometry = g.badge; r.armLM.geometry = g.arm; r.armRM.geometry = g.arm; r.capeM.geometry = g.cape;
   if (old) for (const k of Object.keys(old)) old[k].dispose();
   hero.hat = look.hat || null; hero.showHat = !!look.showHat;
   setGear(hero.gear);
@@ -8165,8 +8230,10 @@ function updateCamera(dt, now) {
     camera.position.set(-30, 21, 354); camera.lookAt(-30 + 36 * ca - 52 * sa, 9, 354 - 36 * sa - 52 * ca); CAM.cutNext = true; return;
   }
   if (UI.isOpen('heroScreen')) {    // the hero maker: a close look at the hero, framed beside the panel
-    V1.set(hero.pos.x + Math.sin(hero.yaw) * 4.4, hero.pos.y + 1.55, hero.pos.z + Math.cos(hero.yaw) * 4.4);
-    camera.position.copy(V1); camera.lookAt(hero.pos.x, hero.pos.y + 1.05, hero.pos.z); CAM.cutNext = true; return;
+    // closer on wide screens (the narrower fov there left the hero small in a big empty field)
+    const d = viewW / viewH > 0.8 ? 2.7 : 4.4, h = viewW / viewH > 0.8 ? 1.25 : 1.55;
+    V1.set(hero.pos.x + Math.sin(hero.yaw) * d, hero.pos.y + h, hero.pos.z + Math.cos(hero.yaw) * d);
+    camera.position.copy(V1); camera.lookAt(hero.pos.x, hero.pos.y + 0.95, hero.pos.z); CAM.cutNext = true; return;
   }
   if (S.screen === 'play' && !UI.blocking()) {
     if (inp.held.camL) { CAM.yaw += C.keyTurn * (0.4 + (SET.camSpeed - 1) / 9 * 1.6) * dt; CAM.lastInput = now; }
@@ -8215,7 +8282,7 @@ const UI = {
   close(id) {
     id = id || this.top(); const i = this.stack.indexOf(id); if (i < 0) return;
     this.stack.splice(i, 1); $(id).hidden = true;
-    if (id === 'heroScreen') camera.clearViewOffset();
+    if (id === 'heroScreen') { camera.clearViewOffset(); makerStage(false); }
     const t = this.top(); if (t) { const f = $(t).querySelector('button:not([hidden]):not([disabled])'); if (f) try { f.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
     else try { canvas.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
     titleSync();
@@ -8452,9 +8519,56 @@ function makerFrame() {   // keep the hero in the part of the screen the panel d
   if (wide) { const panel = Math.min(440, viewW * 0.52); camera.setViewOffset(viewW, viewH, panel / 2, 0, viewW, viewH); }
   else camera.setViewOffset(viewW, viewH, 0, viewH * 0.26, viewW, viewH);
 }
+/** The hero maker's stage: the device's full sharpness (the play-time quality level can be as low as 0.75x), a finer
+ *  Ink line, and a clean set of its own (a sky dome, a soft meadow and a round blob shadow, on camera layer STAGE) so
+ *  nothing of the village or its clouds competes with the hero; the sword is put away. */
+const STAGE_KEEP = { mask: 1, fogColor: 0 };
+let stageSet = null;
+function buildStage() {
+  const g = new THREE.Group(), c = new THREE.Color();
+  const sky = new THREE.SphereGeometry(60, 32, 16), sp = sky.attributes.position, sc = new Float32Array(sp.count * 3);
+  for (let i = 0; i < sp.count; i++) {
+    const e = sp.getY(i) / 60;   // elevation, -1..1
+    if (e < 0.04) c.copy(SKY_COLORS.horizon); else if (e < 0.35) c.copy(SKY_COLORS.horizon).lerp(SKY_COLORS.mid, (e - 0.04) / 0.31); else c.copy(SKY_COLORS.mid).lerp(SKY_COLORS.top, Math.min(1, (e - 0.35) / 0.5));
+    sc.set([c.r, c.g, c.b], i * 3);
+  }
+  sky.setAttribute('color', new THREE.BufferAttribute(sc, 3));
+  const dome = new THREE.Mesh(sky, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false }));
+  dome.renderOrder = -1; g.add(dome);
+  const ground = new THREE.CircleGeometry(55, 64).rotateX(-Math.PI / 2), gp = ground.attributes.position, gc = new Float32Array(gp.count * 3);
+  const near = col('#9bdc6e'), far = col('#7cc657');
+  for (let i = 0; i < gp.count; i++) { c.copy(near).lerp(far, Math.min(1, hyp(gp.getX(i), gp.getZ(i)) / 9)); gc.set([c.r, c.g, c.b], i * 3); }
+  ground.setAttribute('color', new THREE.BufferAttribute(gc, 3));
+  g.add(new THREE.Mesh(ground, new THREE.MeshBasicMaterial({ vertexColors: true })));
+  // a soft round shadow (a radial fade), not a hard-edged polygon
+  const cv = document.createElement('canvas'); cv.width = cv.height = 128; const x = cv.getContext('2d');
+  if (x && x.createRadialGradient) { const rg = x.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, 'rgba(30,60,30,.42)'); rg.addColorStop(0.55, 'rgba(30,60,30,.22)'); rg.addColorStop(1, 'rgba(30,60,30,0)'); x.fillStyle = rg; x.fillRect(0, 0, 128, 128); }
+  const blob = new THREE.Mesh(new THREE.CircleGeometry(0.75, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: canvasTexture(cv), transparent: true, depthWrite: false }));
+  blob.position.y = 0.012; blob.renderOrder = 1; g.add(blob);
+  g.traverse(o => o.layers.set(STAGE)); g.visible = false; scene.add(g);
+  return g;
+}
+function makerStage(on) {
+  if (!!hero.onStage === on) return; hero.onStage = on;
+  if (on) {
+    if (!stageSet) stageSet = buildStage();
+    stageSet.position.copy(hero.pos); stageSet.visible = true;
+    STAGE_KEEP.mask = camera.layers.mask; STAGE_KEEP.fogColor = scene.fog.color.getHex();
+    camera.layers.set(STAGE); hemi.layers.enable(STAGE); sun.layers.enable(STAGE); sun.castShadow = false;
+    scene.fog.color.copy(SKY_COLORS.horizon); scene.fog.near = 14; scene.fog.far = 48;
+    fitter.maxDpr(Math.min(devicePixelRatio || 1, SOFTWARE_GL ? 2 : 3));
+  } else {
+    if (stageSet) stageSet.visible = false;
+    camera.layers.mask = STAGE_KEEP.mask; scene.fog.color.setHex(STAGE_KEEP.fogColor);
+    setQuality(S.quality);
+  }
+  if (hero.rig) { hero.rig.hand.visible = !on; hero.rig.root.traverse(o => { if (on) o.layers.enable(STAGE); else o.layers.disable(STAGE); }); }
+  heroInk();
+}
 function openHeroMaker() {
   MAKER.look = defaultLook(); MAKER.difficulty = 'normal';
-  UI.close('titleScreen'); placeHero(0, 333, 0); makerRefresh(); UI.open('heroScreen'); makerFrame();
+  UI.close('titleScreen'); placeHero(0, 336, -Math.PI / 2); makerStage(true); makerRefresh(); UI.open('heroScreen'); makerFrame();
+  { const b = document.querySelector('#heroScreen .mkbody'); if (b) b.scrollTop = 0; }
   // start on the chosen skin, so the keyboard ring and the "chosen" tick mark the same swatch
   { const s = $('skinRow').querySelector('[aria-pressed="true"]'); if (s) try { s.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
 }
@@ -12749,6 +12863,12 @@ function worldFrame(dt, now) {
   // the sun (and its shadow box) follows the hero, snapped to shadow-map texels so shadows do not shimmer
   const fx = play ? hero.pos.x : 0, fz = play ? hero.pos.z : 318, fy = play ? hero.pos.y : 8, snap = 44 / 1024;
   sun.target.position.set(Math.round(fx / snap) * snap, fy, Math.round(fz / snap) * snap); sun.position.copy(sun.target.position).add(SUN_OFFSET);
+  // the hero maker: a key light from just above and beside the camera, so the face is evenly lit (the play-time sun
+  // from the side drew a hard toon shadow band across it)
+  if (hero.onStage) {
+    V1.subVectors(camera.position, hero.pos).setY(0).normalize();
+    sun.target.position.copy(hero.pos); sun.position.set(hero.pos.x + V1.x * 14 - V1.z * 5, hero.pos.y + 14, hero.pos.z + V1.z * 14 + V1.x * 5);
+  }
 }
 const Q2 = new THREE.Quaternion(), XAX = new THREE.Vector3(1, 0, 0);
 
