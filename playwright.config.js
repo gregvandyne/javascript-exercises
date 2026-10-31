@@ -48,6 +48,8 @@ export default defineConfig({
       // Speaking instead of typing with the test-only provider (fixed words, no network), so the Studio has its mic;
       // a real STT_API_KEY and web search never reach a test server.
       STT_PROVIDER: 'mock', STT_API_KEY: '', STT_MODEL: '', BUILDER_WEB_SEARCH: '', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
+      // Co-host handoff after 3 s instead of 2 minutes, so live-cohost.spec.js can watch it happen.
+      LIVE_HANDOFF_SECS: process.env.LIVE_HANDOFF_SECS || '3',
       GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'fake-test-secret', GOOGLE_OIDC_BASE: `http://127.0.0.1:${PORT + 1}` },
   }],
 });

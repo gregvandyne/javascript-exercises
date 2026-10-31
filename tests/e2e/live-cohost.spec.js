@@ -4,7 +4,7 @@
 // Co-hosts dialog, sees the invite on /live, accepts on his phone, and gets the controls without student details; he
 // pauses, the student's phone pauses, Tia's Teacher view says who did it; adult names never show on the student's
 // phone or the projector; Tia removes him. Then the handoff: Tia leaves, Tom becomes host and ends the game.
-// Run with LIVE_HANDOFF_SECS=3. COHOST_SHOTS=<dir> (or LIVE_SHOTS) saves the screenshots.
+// The test server runs with LIVE_HANDOFF_SECS=3 (playwright.config.js). COHOST_SHOTS=<dir> (or LIVE_SHOTS) saves the screenshots.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
 import { login, signup, uniq, ADMIN } from './helpers.js';
