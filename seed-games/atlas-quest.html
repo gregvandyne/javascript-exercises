@@ -303,18 +303,32 @@ const dirWord = deg => DIRS[Math.round(deg / 45) % 8];
 const SHAPES = {};
 for (const [k, rings] of Object.entries(D.MAP)) {
   const rs = rings.map(a => { const f = new Float32Array(a.length); let x = 0, y = 0; for (let i = 0; i < a.length; i += 2) { x += a[i]; y += a[i + 1]; f[i] = x / 10; f[i + 1] = y / 10; } return f; });
+  // Rings that cross the date line (Russia's far east, Fiji) are made continuous, so they run past 180 instead of
+  // jumping across the whole flat map; one that goes all the way round a pole (Antarctica) is closed through the pole.
+  for (let n = 0; n < rs.length; n++) {
+    const f = rs[n]; let off = 0;
+    for (let i = 2; i < f.length; i += 2) { const raw = f[i] + off, d = raw - f[i - 2]; if (d > 180) off -= 360; else if (d < -180) off += 360; f[i] += off; }
+    const last = f.length - 2;
+    if (Math.abs(f[last] - f[0]) > 180) {
+      let my = 0; for (let i = 1; i < f.length; i += 2) my += f[i];
+      const pole = my < 0 ? -90 : 90, g2 = new Float32Array(f.length + 4); g2.set(f);
+      g2.set([f[last], pole, f[0], pole], f.length); rs[n] = g2;
+    }
+  }
   let x0 = 999, x1 = -999, y0 = 999, y1 = -999;
   for (const r of rs) for (let i = 0; i < r.length; i += 2) { x0 = Math.min(x0, r[i]); x1 = Math.max(x1, r[i]); y0 = Math.min(y0, r[i + 1]); y1 = Math.max(y1, r[i + 1]); }
   const boxOf = r => { let a = 999, b = 999, c2 = -999, d = -999; for (let i = 0; i < r.length; i += 2) { a = Math.min(a, r[i]); c2 = Math.max(c2, r[i]); b = Math.min(b, r[i + 1]); d = Math.max(d, r[i + 1]); } return [a, b, c2, d]; };
   const boxes = rs.map(boxOf).sort((p, q) => (q[2] - q[0]) * (q[3] - q[1]) - (p[2] - p[0]) * (p[3] - p[1]));
   const parts = [boxes[0]]; for (const b of boxes.slice(1)) if (!parts.some(p => b[0] >= p[0] - 0.5 && b[2] <= p[2] + 0.5 && b[1] >= p[1] - 0.5 && b[3] <= p[3] + 0.5)) parts.push(b);
-  SHAPES[k] = { rings: rs, box: [x0, y0, x1, y1], parts: parts.slice(0, 12) };
+  SHAPES[k] = { rings: rs, box: [x0, y0, x1, y1], parts: parts.slice(0, 12), shifts: [0, ...(x1 > 180 ? [-360] : []), ...(x0 < -180 ? [360] : [])] };
 }
 function countryAt(lat, lng) {
   for (const [k, s] of Object.entries(SHAPES)) {
-    const [x0, y0, x1, y1] = s.box; if (lng < x0 || lng > x1 || lat < y0 || lat > y1) continue;
     let c = false;
-    for (const r of s.rings) for (let i = 0, j = r.length - 2; i < r.length; j = i, i += 2) { const xi = r[i], yi = r[i + 1], xj = r[j], yj = r[j + 1]; if ((yi > lat) !== (yj > lat) && lng < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c; }
+    for (const sh of s.shifts) {
+    const L = lng - sh, [x0, y0, x1, y1] = s.box; if (L < x0 || L > x1 || lat < y0 || lat > y1) continue;
+    for (const r of s.rings) for (let i = 0, j = r.length - 2; i < r.length; j = i, i += 2) { const xi = r[i], yi = r[i + 1], xj = r[j], yj = r[j + 1]; if ((yi > lat) !== (yj > lat) && L < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c; }
+    }
     if (c) return k;
   }
   return null;
@@ -343,7 +357,7 @@ function drawMap() {
   for (let lng = -150; lng <= 180; lng += 30) { const x = (lng + 180) / 360 * W; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
   g.globalAlpha = 1;
   const sx = W / 360, sy = H / 180;
-  const path = s => { g.beginPath(); for (const r of s.rings) { for (let i = 0; i < r.length; i += 2) { const x = (r[i] + 180) * sx, y = (90 - r[i + 1]) * sy; if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.closePath(); } };
+  const path = s => { g.beginPath(); for (const sh of s.shifts) for (const r of s.rings) { for (let i = 0; i < r.length; i += 2) { const x = (r[i] + sh + 180) * sx, y = (90 - r[i + 1]) * sy; if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.closePath(); } };
   for (const [k, s] of Object.entries(SHAPES)) {
     const c = BY[k], mk = MARK[k];
     g.fillStyle = mk === 'hot' ? PAL.hot : mk === 'wrong' ? PAL.wrong : mk === 'pick' ? PAL.pick : mk === 'near' ? PAL.near : mk === 'reg' ? C(REG[c.reg].hue, PAL.night ? 'shade' : 'light') : !c ? PAL.other : isLit(k) ? C(REG[c.reg].hue, PAL.night ? 'base' : 'light') : SAVE.m[k] ? C(REG[c.reg].hue, PAL.night ? 'shade' : 'tint') : PAL.land;
@@ -359,7 +373,8 @@ function drawMap() {
 /** Lay a flag over a country: over its biggest piece, and again over any far-off islands, stretched at most 2:1. */
 function paintFlag(g, k, s, sx, sy) {
   const im = FLAGS[k].im, A = 4 / 3;
-  for (const [x0, y0, x1, y1] of s.parts) {
+  for (const sh of s.shifts) for (let [x0, y0, x1, y1] of s.parts) {
+    x0 += sh; x1 += sh;
     const cosL = Math.max(0.25, Math.cos((y0 + y1) / 2 * DEG));      // on the globe, high latitudes shrink sideways
     const w = (x1 - x0) * sx * cosL, h = (y1 - y0) * sy;
     let fw = w, fh = h;                                              // cover the box, stretching the flag no more than 2:1
@@ -1148,6 +1163,7 @@ Object.assign(window.__brbTest, {
   closeModal: () => { closeKitScreens(); closeCard(); },
   closeDialog: () => closeKitScreens(),
   pickAt: (x, y) => pickAt(x, y),
+  countryAt: (lat, lng) => countryAt(lat, lng),
   screenOf: cc => { const c = BY[cc], at = TINY.has(cc) ? c.cap : c.lab; return project(ll2v(at[0], at[1], 1)); },
   countries: () => COUNTRIES.length,
   cover: () => {   // the store picture: a half-lit world with pins, a trail and the plane in flight, no sheet
