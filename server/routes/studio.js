@@ -440,7 +440,7 @@ router.post('/api/studio/:id/transcribe', requireBuilder, (req, res, next) => {
   try {
     const r = await transcribe({ bytes, locale: req.locale || 'en' });
     bytes = null;
-    log('info', 'speech to text', { bytes: size, seconds: Math.round(seconds), ms: r.ms, provider: r.provider, ...(req.sttFromLive ? { mode: 'fallback' } : {}) });
+    log('info', 'speech to text', { bytes: size, seconds: Math.round(seconds), ms: r.ms, provider: r.provider, ...(req.sttFromLive ? { mode: 'fallback' } : {}), ...(req.get('x-live-why') ? { liveWhy: String(req.get('x-live-why')).replace(/[^a-z0-9-]/gi, '').slice(0, 32) } : {}) });
     if (!r.text) return res.json({ text: '', reason: 'nothing' });
     res.json({ text: r.text });
   } catch (e) {

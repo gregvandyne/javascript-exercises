@@ -1412,12 +1412,12 @@ const mic = (() => {
     const rate = +S.mic.rate || 16000;
     const l = L = { ctx, ws: null, node: null, src: null, rate, queue: [], queued: 0, frames: 0, ready: false, failed: false, done: false, refused: false, liveId: '', base: interimOn(input.value.replace(/\s+$/, '')) };
     let ws;
-    try { ws = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/studio/${ID}/listen`); } catch { liveFailed(l); return; }
+    try { ws = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/studio/${ID}/listen`); } catch { liveFailed(l, 'socket'); return; }
     ws.binaryType = 'arraybuffer'; l.ws = ws;
-    l.openTimer = setTimeout(() => { if (!l.ready) liveFailed(l); }, 5000);
+    l.openTimer = setTimeout(() => { if (!l.ready) liveFailed(l, l.ws && l.ws.readyState === 1 ? 'not-ready' : 'no-connect'); }, 5000);
     ws.onopen = () => flushFrames(l);
     ws.onmessage = e => { if (typeof e.data === 'string') { let m = null; try { m = JSON.parse(e.data); } catch { /* not ours */ } if (m) onLive(l, m); } };
-    ws.onclose = () => { if (L === l && !l.done && !l.refused) liveFailed(l); };
+    ws.onclose = e => { if (L === l && !l.done && !l.refused) liveFailed(l, 'closed-' + ((e && e.code) || 0)); };
     ws.onerror = () => {};
     startAudio(l);
   }
@@ -1442,16 +1442,16 @@ const mic = (() => {
       l.frameTimer = setTimeout(() => {
         if (L !== l || l.frames) return;
         if (l.ctx) l.ctx.resume().catch(() => {});
-        l.frameTimer = setTimeout(() => { if (L === l && !l.frames && state === 'recording') liveFailed(l); }, 1500);
+        l.frameTimer = setTimeout(() => { if (L === l && !l.frames && state === 'recording') liveFailed(l, 'no-audio'); }, 1500);
       }, 1000);
-    } catch { liveFailed(l); }
+    } catch { liveFailed(l, 'worklet'); }
   }
   function sendFrame(l, buf) {
     if (l.failed || l.done || l.refused) return;
     const ws = l.ws;
     if (ws && ws.readyState === 1) {
       // A link too slow for live: the clip is uploaded instead (dropping frames would lose words).
-      if (ws.bufferedAmount > 512 * 1024) { liveFailed(l); return; }
+      if (ws.bufferedAmount > 512 * 1024) { liveFailed(l, 'slow'); return; }
       flushFrames(l); ws.send(buf);
     } else if (l.queued < (S.mic.maxMs / 1000) * l.rate * 2) { l.queue.push(buf); l.queued += buf.byteLength; }
   }
@@ -1466,7 +1466,7 @@ const mic = (() => {
     if (m.type === 'ready') {
       clearTimeout(l.openTimer);
       if (state !== 'recording' || !stream) return;   // stopped (or cancelled) while it opened: the stop below decides
-      if (+m.rate && +m.rate !== l.rate) { liveFailed(l); return; }   // the page was made for another service
+      if (+m.rate && +m.rate !== l.rate) { liveFailed(l, 'rate'); return; }   // the page was made for another service
       l.ready = true; tick();
     } else if (m.type === 'text') {
       if (!l.failed) showInterim(l, String(m.text || ''));
@@ -1475,13 +1475,13 @@ const mic = (() => {
     } else if (m.type === 'final') {
       l.done = true; liveFinal(l, String(m.text || ''));
     } else if (m.type === 'error') {
-      if (m.fallback) liveFailed(l); else liveRefused(l, m.error);
+      if (m.fallback) liveFailed(l, 'server-' + (m.code || '')); else liveRefused(l, m.error);
     }
   }
   /** The live link failed: keep recording (the clip is uploaded at the end); the words so far stay, not final. */
-  function liveFailed(l) {
+  function liveFailed(l, why) {
     if (l.failed || l.done || l.refused) return;
-    l.failed = true; closeSocket(l); stopAudio(l);
+    l.failed = true; l.why = why || 'other'; closeSocket(l); stopAudio(l);
     if (state === 'recording') tick();
     settle();
   }
@@ -1541,7 +1541,7 @@ const mic = (() => {
       l.onFlushed = sendStop;
       if (l.node) { try { l.node.port.postMessage('flush'); } catch { /* gone */ } setTimeout(sendStop, 300); } else sendStop();
       // The words should come within a few seconds; if not, the clip is uploaded instead.
-      l.waitTimer = setTimeout(() => liveFailed(l), 8000);
+      l.waitTimer = setTimeout(() => liveFailed(l, 'final-timeout'), 8000);
       release(true); rec.stop();
     } else {
       // Live never got going: closing the socket (not "cancel") lets the server count this clip's upload as its fallback.
@@ -1587,7 +1587,7 @@ const mic = (() => {
     setState('working'); say(t('js.studio.mic.transcribing'));
     let data = null, res = null;
     try {
-      res = await fetch(`/api/studio/${ID}/transcribe`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type.split(';')[0] || 'audio/webm', 'X-Clip-Ms': String(Math.round(ms)), ...(l && l.liveId ? { 'X-Live-Id': l.liveId } : {}) }, body: blob });
+      res = await fetch(`/api/studio/${ID}/transcribe`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type.split(';')[0] || 'audio/webm', 'X-Clip-Ms': String(Math.round(ms)), ...(l && l.liveId ? { 'X-Live-Id': l.liveId } : {}), ...(S.mic && S.mic.live ? { 'X-Live-Why': (l && l.why) || (canLive() ? 'not-started' : 'unsupported') } : {}) }, body: blob });
       data = await res.json().catch(() => ({}));
     } catch { /* offline */ }
     blob = null;
