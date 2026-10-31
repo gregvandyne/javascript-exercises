@@ -6,6 +6,11 @@
 export const THREE_VERSION = '0.185.1';
 export const VENDOR_PATH = '/vendor/three/';                  // every vendored version; the frame CSP allows this path
 export const THREE_DIR = `${VENDOR_PATH}${THREE_VERSION}/`;
+// Reviewed data packs for one game (e.g. its words in one language), under public/vendor/data/<game>/<version>/.
+// A game loads only the pack it needs at run time (a script tag with integrity), so a big game can keep a
+// per-language pack out of its own file and every player downloads only their language. Like every /vendor folder,
+// a version folder never changes once published (served immutable): new content goes in a new version folder.
+export const DATA_PATH = '/vendor/data/';
 export const THREE_MODULE = `${THREE_DIR}three.module.min.js`;
 export const THREE_CORE = `${THREE_DIR}three.core.min.js`;    // three.module.min.js imports it as ./three.core.min.js
 // sha384 of the two files (tests/unit/vendor.test.js checks these against public/vendor).

@@ -178,6 +178,15 @@ test('the screenshot worker serves kit files from disk (and nothing outside the 
   assert.ok(vendorFile(`${H}${V.THREE_MODULE}`), 'three still routes');
 });
 
+test('reviewed game data packs (/vendor/data/<game>/<version>/) are allowed by the frame CSP and served from disk', () => {
+  const H = 'http://game.invalid';
+  assert.match(frameCsp('https://oomba.example').match(/script-src[^;]*/)[0], /https:\/\/oomba\.example\/vendor\/data\//);
+  const root = path.join(path.dirname(KIT_DIR), 'data');
+  const game = fs.readdirSync(root)[0], ver = fs.readdirSync(path.join(root, game))[0], file = fs.readdirSync(path.join(root, game, ver))[0];
+  assert.equal(vendorFile(`${H}/vendor/data/${game}/${ver}/${file}`), path.join(root, game, ver, file));
+  for (const bad of [`/vendor/data/${game}/${ver}/../../x.js`, `/vendor/data/${game}/${ver}/nope.js`, '/vendor/data/x.js', `/vendor/data/${game}/${ver}/sub/${file}`]) assert.equal(vendorFile(H + bad), null, bad);
+});
+
 test('the SDK passes the site theme (plumbing only); frames without one leave it to the device', () => {
   const doc = frameDocument(GAME(K.kitTag()), { user: { lang: 'en' }, game: { id: 'g', title: 'G' }, theme: 'dark' });
   assert.match(doc, /"theme":"dark"/);
