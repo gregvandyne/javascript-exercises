@@ -6,50 +6,129 @@
 <meta name="oomba-live" content="2d">
 <title>Quest Race</title>
 <style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe8ff; font-family: var(--ok-font, system-ui, sans-serif); color: #1d2340; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe8ff; font-family: var(--ok-font, system-ui, sans-serif); color: #1d2340; -webkit-tap-highlight-color: transparent; }
   #view, #flat { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   #flat[hidden], #view[hidden], .qr-hide { display: none !important; }
-  .qr-ui { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-start; padding: max(8px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); gap: 8px; }
-  .qr-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+  .qr-ui { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-start; padding: max(8px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); gap: 6px; }
+  /* the mini track: every runner on the five zones, the leader's crown, me ringed */
+  .qr-strip { pointer-events: none; height: 40px; border-radius: 14px; background: rgba(255,255,255,.88); box-shadow: 0 3px 0 rgba(29,35,64,.18); overflow: hidden; flex: none; }
+  .qr-strip canvas { width: 100%; height: 100%; display: block; }
+  .qr-host .qr-strip { height: 52px; }
+  .qr-top { display: flex; justify-content: space-between; gap: 6px; align-items: flex-start; flex-wrap: wrap; }
+  .qr-pills { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .qr-pill:empty { display: none; }
-  .qr-pill { pointer-events: none; background: rgba(255,255,255,.92); border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 16px; box-shadow: 0 3px 0 rgba(29,35,64,.18); display: inline-flex; gap: 6px; align-items: center; }
+  .qr-pill { pointer-events: none; background: rgba(255,255,255,.94); border-radius: 999px; padding: 5px 12px; font-weight: 800; font-size: 15px; box-shadow: 0 3px 0 rgba(29,35,64,.18); display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
+  .qr-pill.place { background: #1d2340; color: #fff; }
+  .qr-combo { pointer-events: none; display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.94); border-radius: 999px; padding: 4px 12px 4px 8px; font-weight: 800; font-size: 14px; box-shadow: 0 3px 0 rgba(29,35,64,.18); }
+  .qr-combo .pips { display: inline-flex; gap: 3px; }
+  .qr-combo .pips i { width: 12px; height: 12px; border-radius: 50%; background: #e3e8f4; border: 2px solid #1d2340; box-sizing: border-box; }
+  .qr-combo .pips i.on { background: #ff8a2a; border-color: #b4470a; }
+  .qr-combo.hot { background: linear-gradient(90deg, #ffcf3d, #ff7a2a); color: #3a1500; animation: qr-glow 1s ease-in-out infinite alternate; }
+  @keyframes qr-glow { from { box-shadow: 0 0 0 0 rgba(255,138,42,.7), 0 3px 0 rgba(29,35,64,.18); } to { box-shadow: 0 0 18px 4px rgba(255,138,42,.7), 0 3px 0 rgba(29,35,64,.18); } }
+  /* broadcast banner: a lower-third that slides in */
+  .qr-ticker { pointer-events: none; align-self: center; display: flex; align-items: stretch; max-width: min(94vw, 760px); border-radius: 16px; overflow: hidden; box-shadow: 0 6px 0 rgba(0,0,0,.25); opacity: 0; transform: translateY(-14px) scale(.96); transition: opacity .25s, transform .3s cubic-bezier(.2,1.6,.4,1); }
+  .qr-ticker.in { opacity: 1; transform: none; }
+  .qr-ticker .ic { background: #ffc83d; color: #1d2340; font-size: clamp(20px, 4.5vw, 34px); padding: 6px 12px; display: flex; align-items: center; }
+  .qr-ticker .tx { background: #1d2340; color: #fff; font-weight: 900; font-size: clamp(16px, 3.8vw, 28px); padding: 8px 16px; display: flex; align-items: center; overflow-wrap: anywhere; }
+  .qr-ticker.gold .ic { background: #ff7a2a; color: #fff; } .qr-ticker.gold .tx { background: linear-gradient(90deg, #3b1d6e, #1d2340); }
+  .qr-ticker.zone .ic { background: #37c47a; }
+  .qr-host .qr-ticker .tx { font-size: clamp(20px, 2.6vw, 40px); padding: 10px 22px; }
+  .qr-host .qr-ticker .ic { font-size: clamp(24px, 3vw, 46px); }
   .qr-banner { align-self: center; background: #1d2340; color: #fff; border-radius: 18px; padding: 10px 20px; font-weight: 800; font-size: clamp(18px, 4.5vw, 30px); text-align: center; max-width: 92vw; }
   .qr-banner:empty { display: none; }
-  .qr-card { pointer-events: auto; background: rgba(255,255,255,.96); border-radius: 22px; padding: 12px; box-shadow: 0 6px 0 rgba(29,35,64,.2); max-width: 760px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+  /* countdown: big numbers that pop */
+  .qr-count { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 5; }
+  .qr-count span { font-weight: 900; font-size: min(42vw, 42vh); line-height: 1; color: #fff; -webkit-text-stroke: max(4px, .9vw) #1d2340; paint-order: stroke fill; text-shadow: 0 1.4vw 0 rgba(29,35,64,.35); }
+  .qr-count span.go { color: #ffc83d; font-size: min(26vw, 30vh); }
+  .qr-count span.pop { animation: qr-pop .8s cubic-bezier(.2,1.5,.4,1) both; }
+  @keyframes qr-pop { 0% { transform: scale(2.2); opacity: 0; } 20% { opacity: 1; } 45% { transform: scale(1); } 100% { transform: scale(.92); opacity: 1; } }
+  .qr-boost { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 6; }
+  .qr-boost span { font-weight: 900; font-size: min(18vw, 120px); background: linear-gradient(180deg, #fff27a, #ff8a2a 60%, #e9465c); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 3px #3a1500; filter: drop-shadow(0 6px 0 rgba(0,0,0,.25)); animation: qr-boostin 1.3s cubic-bezier(.2,1.4,.4,1) both; }
+  @keyframes qr-boostin { 0% { transform: scale(.3) rotate(-8deg); opacity: 0; } 30% { transform: scale(1.15) rotate(3deg); opacity: 1; } 55% { transform: scale(1) rotate(0); } 85% { opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+  /* the question card */
+  .qr-card { pointer-events: auto; background: rgba(255,255,255,.97); border-radius: 22px; padding: 12px; box-shadow: 0 6px 0 rgba(29,35,64,.2); max-width: 760px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box; animation: qr-up .35s cubic-bezier(.2,1.3,.4,1) both; }
+  @keyframes qr-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
   .qr-q { margin: 0; font-weight: 800; font-size: clamp(18px, 4.6vw, 28px); text-align: center; overflow-wrap: anywhere; }
-  .qr-timer { height: 8px; border-radius: 99px; background: #e3e8f4; overflow: hidden; }
-  .qr-timer i { display: block; height: 100%; width: 100%; background: #2f6bff; transform-origin: left center; }
+  .qr-timer { height: 10px; border-radius: 99px; background: #e3e8f4; overflow: hidden; }
+  .qr-timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #37c47a, #2f6bff); transform-origin: left center; }
+  .qr-timer.low i { background: linear-gradient(90deg, #ff7a2a, #e9465c); }
   [dir="rtl"] .qr-timer i { transform-origin: right center; }
   .qr-pad { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .qr-a { min-height: 52px; border: 0; border-radius: 16px; color: #fff; font: 800 clamp(16px, 4.2vw, 24px)/1.15 inherit; font-family: inherit; padding: 8px 10px; display: flex; align-items: center; gap: 10px; text-align: start; cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,.25); }
+  .qr-a { position: relative; min-height: 58px; border: 0; border-radius: 16px; color: #fff; font: 800 clamp(16px, 4.2vw, 24px)/1.15 inherit; font-family: inherit; padding: 8px 10px; display: flex; align-items: center; gap: 10px; text-align: start; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,.28); transition: transform .08s, box-shadow .08s, opacity .2s; }
+  .qr-a:active:not([disabled]) { transform: translateY(5px) scale(.98); box-shadow: 0 1px 0 rgba(0,0,0,.28); }
   .qr-a .sh { font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
   .qr-a .tx { flex: 1; overflow-wrap: anywhere; }
+  .qr-a .ct { flex: none; font-size: .85em; background: rgba(0,0,0,.25); border-radius: 999px; padding: 2px 10px; }
   .qr-a:focus-visible { outline: 4px solid #ffc83d; outline-offset: 2px; }
-  .qr-a[disabled] { cursor: default; opacity: .55; }
-  .qr-a.pick { opacity: 1; outline: 4px solid #1d2340; outline-offset: 2px; }
-  .qr-a.right { opacity: 1; box-shadow: 0 0 0 5px #37c47a, 0 5px 0 rgba(0,0,0,.25); }
+  .qr-a[disabled] { cursor: default; opacity: .5; }
+  .qr-a.pick { opacity: 1; outline: 4px solid #1d2340; outline-offset: 2px; animation: qr-press .3s ease-out; }
+  @keyframes qr-press { 50% { transform: scale(1.05); } }
+  .qr-a.right { opacity: 1; box-shadow: 0 0 0 5px #37c47a, 0 0 22px 6px rgba(55,196,122,.7), 0 6px 0 rgba(0,0,0,.25); animation: qr-press .5s ease-out; }
   .qr-a.right .sh::after { content: ' ✓'; }
-  .c0 { background: #e9465c; } .c1 { background: #2f6bff; } .c2 { background: #d79a00; } .c3 { background: #27996a; }
+  .qr-a.miss { animation: qr-shake .45s ease-in-out; }
+  @keyframes qr-shake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+  .c0 { background: #e9465c; } .c1 { background: #2f6bff; } .c2 { background: #c98a00; } .c3 { background: #27996a; }
   .qr-note { margin: 0; text-align: center; font-weight: 800; font-size: 18px; min-height: 1.2em; }
-  .qr-bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: end; height: 90px; }
-  .qr-bar { border-radius: 10px 10px 4px 4px; min-height: 6px; color: #fff; font-weight: 800; text-align: center; padding-top: 2px; }
-  .qr-host .qr-board { max-width: 560px; }
-  .qr-board { pointer-events: none; background: rgba(255,255,255,.94); border-radius: 18px; padding: 10px 14px; margin: 0 auto; max-width: 420px; width: 100%; }
-  .qr-board h2 { margin: 0 0 6px; font-size: 20px; text-align: center; }
-  .qr-board ol { margin: 0; padding-inline-start: 24px; font-weight: 700; font-size: 17px; }
-  .qr-host .qr-q { font-size: clamp(24px, 4vw, 48px); }
-  .qr-host .qr-card { max-width: 1100px; }
-  .qr-host .qr-a { min-height: 64px; font-size: clamp(18px, 2.4vw, 30px); }
-  .qr-stick { position: fixed; inset-block-end: 18px; inset-inline-start: 18px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.35); border: 3px solid rgba(29,35,64,.25); pointer-events: auto; touch-action: none; }
-  .qr-stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(29,35,64,.55); }
+  .qr-note.good { color: #157a46; } .qr-note.bad { color: #b0263a; }
+  .qr-sub { margin: -4px 0 0; text-align: center; font-weight: 700; font-size: 15px; color: #4b5375; min-height: 0; }
+  .qr-sub:empty { display: none; }
+  .qr-card.compact .qr-pad { grid-template-columns: 1fr; }
+  .qr-card.compact .qr-a:not(.pick):not(.right) { display: none; }
+  .qr-card.compact .qr-q { font-size: clamp(15px, 3.8vw, 20px); }
+  .qr-card.compact .qr-a { min-height: 44px; }
+  /* the projector: answered meter, answer bars */
+  .qr-meter { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: clamp(16px, 1.8vw, 24px); }
+  .qr-meter b { flex: 1; height: 14px; border-radius: 99px; background: #e3e8f4; overflow: hidden; }
+  .qr-meter b i { display: block; height: 100%; width: 0; background: #ffc83d; transition: width .4s; }
+  .qr-bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: end; height: 110px; }
+  .qr-bar { position: relative; border-radius: 10px 10px 4px 4px; height: 6px; color: #fff; font-weight: 900; font-size: 20px; text-align: center; padding-top: 4px; transition: height .9s cubic-bezier(.2,1.2,.4,1); box-sizing: border-box; overflow: hidden; }
+  .qr-bar.win { box-shadow: 0 0 0 4px #37c47a, 0 0 18px 4px rgba(55,196,122,.6); }
+  .qr-host .qr-q { font-size: clamp(26px, 4.2vw, 58px); }
+  .qr-host .qr-card { max-width: 1200px; padding: 16px 20px; }
+  .qr-host .qr-a { min-height: 66px; font-size: clamp(18px, 2.5vw, 34px); }
+  .qr-host .qr-a[disabled] { opacity: 1; }
+  .qr-host .qr-pad.revealed .qr-a:not(.right) { opacity: .45; }
+  @property --f { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+  .qr-pad.revealed .qr-a { background-image: linear-gradient(90deg, rgba(255,255,255,.38) var(--f, 0%), transparent var(--f, 0%)); transition: --f 1s cubic-bezier(.2,1,.4,1), opacity .2s; }
+  [dir="rtl"] .qr-pad.revealed .qr-a { background-image: linear-gradient(270deg, rgba(255,255,255,.38) var(--f, 0%), transparent var(--f, 0%)); }
+  /* standings beside the race (projector), and the final board */
+  .qr-stand { pointer-events: none; position: fixed; inset-block-start: 74px; inset-inline-end: 12px; width: min(330px, 38vw); background: rgba(29,35,64,.9); color: #fff; border-radius: 18px; padding: 10px 12px; box-shadow: 0 6px 0 rgba(0,0,0,.25); animation: qr-side .4s cubic-bezier(.2,1.3,.4,1) both; }
+  @keyframes qr-side { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  [dir="rtl"] .qr-stand { animation-name: qr-side-r; }
+  @keyframes qr-side-r { from { transform: translateX(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .qr-stand h2 { margin: 0 0 6px; font-size: clamp(16px, 1.6vw, 22px); text-align: center; color: #ffc83d; }
+  .qr-stand ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .qr-stand li { display: grid; grid-template-columns: 2em 1fr auto; gap: 8px; align-items: center; font-weight: 800; font-size: clamp(14px, 1.5vw, 21px); background: rgba(255,255,255,.08); border-radius: 10px; padding: 4px 8px; }
+  .qr-stand li .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qr-stand li .md { text-align: center; }
+  .qr-stand li.tm { border: 2px solid var(--team); }
+  .qr-stand li canvas { width: 18px; height: 18px; vertical-align: -3px; margin-inline-end: 4px; }
+  .qr-stand.final { inset-block-start: auto; inset-block-end: 12px; }
+  @media (max-width: 699px) { .qr-stand.final.solo { display: none; } }
+  /* phones: the end card */
+  .qr-end { pointer-events: auto; margin: 0 auto; background: rgba(255,255,255,.97); border-radius: 22px; padding: 14px 16px; box-shadow: 0 6px 0 rgba(29,35,64,.2); text-align: center; max-width: 420px; width: 100%; box-sizing: border-box; animation: qr-up .5s cubic-bezier(.2,1.3,.4,1) both; }
+  .qr-end .md { font-size: 54px; line-height: 1; }
+  .qr-end p { margin: 6px 0; font-weight: 900; font-size: clamp(20px, 5vw, 28px); }
+  .qr-end small { display: block; font-weight: 700; font-size: 16px; color: #4b5375; }
+  .qr-btn { pointer-events: auto; margin-top: 10px; border: 0; border-radius: 16px; background: #ffc83d; color: #1d2340; font: 900 20px/1 inherit; font-family: inherit; padding: 14px 22px; box-shadow: 0 6px 0 #b98a00; cursor: pointer; }
+  .qr-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #b98a00; }
+  .qr-btn:focus-visible { outline: 4px solid #1d2340; outline-offset: 2px; }
+  /* podium labels over the 3D (or 2D) podium */
+  .qr-medal { position: fixed; left: 0; top: 0; pointer-events: none; transform: translate(-50%, -100%); background: #fff; border-radius: 14px; padding: 4px 12px; font-weight: 900; font-size: clamp(14px, 2vw, 26px); box-shadow: 0 4px 0 rgba(29,35,64,.25); white-space: nowrap; display: flex; gap: 6px; align-items: center; }
+  .qr-medal[hidden] { display: none; }
+  .qr-medal.m0 { background: #ffd84a; } .qr-medal.m1 { background: #e6ecf5; } .qr-medal.m2 { background: #f2b98a; }
+  .qr-fx { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 7; }
+  .qr-fx i { position: absolute; width: 10px; height: 10px; border-radius: 3px; }
   .qr-tbars { pointer-events: none; display: flex; flex-direction: column; gap: 4px; max-width: 520px; width: 100%; margin: 0 auto; }
   .qr-tbar { position: relative; display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 12px; background: rgba(255,255,255,.92); font-weight: 800; font-size: 15px; overflow: hidden; border: 2px solid #1d2340; isolation: isolate; }
-  .qr-tbar i { position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--team); opacity: .45; z-index: -1; }
+  .qr-tbar i { position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--team); opacity: .45; z-index: -1; transition: width .6s; }
   [dir="rtl"] .qr-tbar i { inset: 0 0 0 auto; }
   .qr-tbar canvas { width: 20px; height: 20px; flex: none; }
   .qr-tbar .nm { flex: 1; overflow-wrap: anywhere; }
-  .qr-board li canvas { width: 18px; height: 18px; vertical-align: -3px; margin-inline-end: 4px; }
+  .qr-stick { position: fixed; inset-block-end: 18px; inset-inline-start: 18px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.35); border: 3px solid rgba(29,35,64,.25); pointer-events: auto; touch-action: none; }
+  .qr-stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(29,35,64,.55); }
   .qr-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-height: 520px) { .qr-strip { height: 30px; } .qr-a { min-height: 44px; } .qr-card { gap: 6px; padding: 8px; } }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
@@ -57,20 +136,29 @@
 <canvas id="view" aria-hidden="true" hidden></canvas>
 <canvas id="flat" aria-hidden="true" hidden></canvas>
 <div class="qr-ui" id="ui">
-  <div class="qr-top"><span class="qr-pill" id="qnum"></span><span class="qr-pill" id="team"></span><span class="qr-pill" id="gems" aria-live="polite"></span></div>
+  <div class="qr-strip" id="stripbox" aria-hidden="true"><canvas id="strip"></canvas></div>
+  <div class="qr-top"><span class="qr-pills"><span class="qr-pill" id="qnum"></span><span class="qr-pill place" id="place"></span><span class="qr-pill" id="team"></span></span><span class="qr-pills"><span class="qr-combo qr-hide" id="combo" aria-hidden="true"><span class="pips"><i></i><i></i><i></i></span><span id="combo-t"></span></span><span class="qr-pill" id="gems" aria-live="polite"></span></span></div>
   <div class="qr-tbars qr-hide" id="tbars" aria-hidden="true"></div>
+  <div class="qr-ticker" id="ticker" aria-hidden="true"><span class="ic" id="ticker-i"></span><span class="tx" id="ticker-t" dir="auto"></span></div>
   <p class="qr-banner" id="banner" role="status" aria-live="polite"></p>
   <div id="bottom" style="margin-top:auto">
-    <div class="qr-board qr-hide" id="board"><h2 id="board-h"></h2><ol id="board-list"></ol></div>
+    <div class="qr-end qr-hide" id="endcard" role="status"><div class="md" id="end-md" aria-hidden="true"></div><p id="end-t"></p><small id="end-s"></small><button class="qr-btn qr-hide" type="button" id="again"></button></div>
     <section class="qr-card qr-hide" id="card" aria-labelledby="qtext">
       <p class="qr-q" id="qtext" dir="auto"></p>
-      <div class="qr-timer" aria-hidden="true"><i id="timer"></i></div>
+      <div class="qr-timer" id="timerbox" aria-hidden="true"><i id="timer"></i></div>
+      <div class="qr-meter qr-hide" id="meter" aria-hidden="true"><span id="meter-t"></span><b><i id="meter-i"></i></b></div>
       <div class="qr-pad" id="pad" role="group" aria-labelledby="qtext"></div>
       <div class="qr-bars qr-hide" id="bars" aria-hidden="true"></div>
       <p class="qr-note" id="note" aria-live="polite"></p>
+      <p class="qr-sub" id="sub"></p>
     </section>
   </div>
 </div>
+<div class="qr-stand qr-hide" id="stand" aria-hidden="true"><h2 id="stand-h"></h2><ol id="stand-list"></ol></div>
+<div class="qr-medal m0" id="medal0" hidden></div><div class="qr-medal m1" id="medal1" hidden></div><div class="qr-medal m2" id="medal2" hidden></div>
+<div class="qr-count" id="count" aria-hidden="true"></div>
+<div class="qr-boost" id="boostfx" aria-hidden="true"></div>
+<div class="qr-fx" id="fx" aria-hidden="true"></div>
 <div class="qr-stick qr-hide" id="stick" aria-hidden="true"><i></i></div>
 <p class="qr-sr" id="sr" aria-live="assertive"></p>
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
@@ -79,14 +167,19 @@
 <script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
 /* QUEST RACE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Questions on every device; a right
-   answer is a gem and a dash along the race path across a 3D island to the finish flag; podium and confetti at the end.
+   answer is a gem and a dash along a race path across a 3D island: Sunny Beach, the Jungle, the Volcano Pass, the Sky
+   Bridge and the Castle finish. The projector is a sports broadcast: a director camera, banners ("takes the lead!",
+   "3 in a row!", "Photo finish!"), a mini track with every runner, standings and a podium with fireworks. Phones get a
+   juicy answer pad, a streak meter (3 right in a row is a BOOST), overtakes and their place.
    This classic script holds the whole game (rules, the answer pad, the race model, the 2D view): devices that can't
    draw 3D (no WebGL 2 or import maps) and Simple view play it top-down. The module script further down only adds the
-   3D view. Played alone (not in a live session) it is a practice race against three ghost runners. */
+   3D view. Played alone (not in a live session) it is a practice race against three island racers.
+   The server owns scoring and race progress (race: [[seat, prog 0..1000, gems]] after each question); the game only
+   shows it. Streaks, overtakes and banners are worked out here from those updates. */
 (function () {
   'use strict';
   var O = window.Oomba, L = O.live;
-  O.strings({
+  var STR = {
     en: { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
     'en-GB': { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
     es: { title: 'Carrera de misiones', qnum: 'Pregunta {n} de {total}', gems: 'Gemas: {n}', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Casi!', timeUp: '¡Se acabó el tiempo!', wait: '¡Corre por ahí mientras llegan todos!', ready: '¡Prepárate!', go: '¡Ya!', finish: '¡Meta!', podium: 'Ganadores', place: '¡Quedaste en el puesto {rank} de {count}!', answers: '{n} respondieron', practice: 'Carrera de práctica: ¡gana a los fantasmas!', ghost: 'Fantasma {n}', top: 'Mejores corredores', paused: 'En pausa', skipped: 'Saltada', move: 'Muévete con las flechas o el mando', teams: 'Equipos', teamRank: '{team}: puesto {rank}', teamPodium: 'Equipos ganadores', perPlayer: 'por jugador', yourTeam: 'Tu equipo: {team}' },
@@ -100,14 +193,34 @@
     'zh-Hant': { title: '任務競賽', qnum: '第 {n} 題，共 {total} 題', gems: '寶石：{n}', locked: '答案已送出！', right: '答對了！+{points}', wrong: '差一點！', timeUp: '時間到！', wait: '等大家加入時到處跑跑吧！', ready: '準備！', go: '出發！', finish: '終點！', podium: '優勝者', place: '你是第 {rank} 名，共 {count} 人！', answers: '{n} 人已作答', practice: '練習賽：打敗幽靈！', ghost: '幽靈 {n}', top: '領先選手', paused: '暫停', skipped: '已跳過', move: '用方向鍵或搖桿移動', teams: '隊伍', teamRank: '{team}：第 {rank} 名', teamPodium: '獲勝隊伍', perPlayer: '每人平均', yourTeam: '你的隊伍：{team}' },
     he: { title: 'מרוץ המשימות', qnum: 'שאלה {n} מתוך {total}', gems: 'אבני חן: {n}', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'כמעט!', timeUp: 'נגמר הזמן!', wait: 'רוצו מסביב בזמן שכולם מצטרפים!', ready: 'היכון!', go: 'צאו!', finish: 'סיום!', podium: 'המנצחים', place: 'הגעת למקום {rank} מתוך {count}!', answers: '{n} ענו', practice: 'מרוץ אימון: נצחו את הרוחות!', ghost: 'רוח {n}', top: 'הרצים המובילים', paused: 'מושהה', skipped: 'דולגה', move: 'זוזו עם החיצים או הג׳ויסטיק', teams: 'קבוצות', teamRank: '{team}: מקום {rank}', teamPodium: 'הקבוצות המנצחות', perPlayer: 'לשחקן', yourTeam: 'הקבוצה שלך: {team}' },
     ar: { title: 'سباق المهمات', qnum: 'السؤال {n} من {total}', gems: 'الجواهر: {n}', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'اقتربت!', timeUp: 'انتهى الوقت!', wait: 'تجوّل حتى ينضم الجميع!', ready: 'استعد!', go: 'انطلق!', finish: 'خط النهاية!', podium: 'الفائزون', place: 'جئت في المركز {rank} من {count}!', answers: 'أجاب {n}', practice: 'سباق تدريبي: تغلّب على الأشباح!', ghost: 'شبح {n}', top: 'أفضل المتسابقين', paused: 'متوقف مؤقتاً', skipped: 'تم تخطيه', move: 'تحرّك بالأسهم أو بعصا التحكم', teams: 'الفرق', teamRank: '{team}: المركز {rank}', teamPodium: 'الفرق الفائزة', perPlayer: 'لكل لاعب', yourTeam: 'فريقك: {team}' },
-  });
+  };
+  // new in the showpiece version: broadcast banners, zones, the streak meter, overtakes, practice racers
+  var MORE = {
+    en: { lead: '{name} takes the lead!', leadAnon: 'New leader!', streak: '{name}: {n} in a row!', streakAnon: '{n} in a row!', crosses: '{name} crosses the finish line!', wins: '{name} wins the race!', winsAnon: 'We have a winner!', photo: 'Photo finish!', z0: 'Sunny Beach', z1: 'Jungle Run', z2: 'Volcano Pass', z3: 'Sky Bridge', z4: 'Castle Finish', place2: 'Place {rank} of {count}', boost: 'BOOST!', combo: '{n} in a row', comboHint: '3 right in a row = boost!', overtake: 'Overtake!', enc1: 'Next one is yours!', enc2: 'Shake it off and keep running!', enc3: 'Good try! Eyes on the next one!', rightWas: 'Answer: {answer}', watch: 'Locked in! Watch the race', nextSoon: 'Next question coming up…', answeredOf: '{n} of {total} answered', youFinished: 'You crossed the finish line!', again: 'Race again', practice2: 'Practice race against the island racers!', standings: 'Race standings', final: 'Final standings' },
+    es: { lead: '¡{name} toma la delantera!', leadAnon: '¡Nuevo líder!', streak: '¡{name}: {n} seguidas!', streakAnon: '¡{n} seguidas!', crosses: '¡{name} cruza la meta!', wins: '¡{name} gana la carrera!', winsAnon: '¡Ya tenemos ganador!', photo: '¡Final de foto!', z0: 'Playa Soleada', z1: 'Carrera en la Selva', z2: 'Paso del Volcán', z3: 'Puente del Cielo', z4: 'Meta del Castillo', place2: 'Puesto {rank} de {count}', boost: '¡TURBO!', combo: '{n} seguidas', comboHint: '¡3 aciertos seguidos = turbo!', overtake: '¡Adelantamiento!', enc1: '¡La próxima es tuya!', enc2: '¡Sacúdete y sigue corriendo!', enc3: '¡Buen intento! ¡Atento a la próxima!', rightWas: 'Respuesta: {answer}', watch: '¡Respuesta enviada! Mira la carrera', nextSoon: 'Ya viene la siguiente pregunta…', answeredOf: '{n} de {total} respondieron', youFinished: '¡Cruzaste la meta!', again: 'Correr otra vez', practice2: '¡Carrera de práctica contra los corredores de la isla!', standings: 'Clasificación', final: 'Clasificación final' },
+    fr: { lead: '{name} prend la tête !', leadAnon: 'Nouveau leader !', streak: '{name} : {n} de suite !', streakAnon: '{n} de suite !', crosses: '{name} franchit la ligne d’arrivée !', wins: '{name} gagne la course !', winsAnon: 'Nous avons un gagnant !', photo: 'Photo-finish !', z0: 'Plage ensoleillée', z1: 'Course dans la jungle', z2: 'Col du volcan', z3: 'Pont du ciel', z4: 'Arrivée au château', place2: 'Place {rank} sur {count}', boost: 'TURBO !', combo: '{n} de suite', comboHint: '3 bonnes réponses de suite = turbo !', overtake: 'Dépassement !', enc1: 'La prochaine est pour toi !', enc2: 'Secoue-toi et continue de courir !', enc3: 'Bien essayé ! Concentre-toi sur la suivante !', rightWas: 'Réponse : {answer}', watch: 'Réponse envoyée ! Regarde la course', nextSoon: 'La prochaine question arrive…', answeredOf: '{n} sur {total} ont répondu', youFinished: 'Tu as franchi la ligne d’arrivée !', again: 'Recourir', practice2: 'Course d’entraînement contre les coureurs de l’île !', standings: 'Classement', final: 'Classement final' },
+    de: { lead: '{name} geht in Führung!', leadAnon: 'Neue Führung!', streak: '{name}: {n} in Folge!', streakAnon: '{n} in Folge!', crosses: '{name} läuft durchs Ziel!', wins: '{name} gewinnt das Rennen!', winsAnon: 'Wir haben einen Sieger!', photo: 'Fotofinish!', z0: 'Sonnenstrand', z1: 'Dschungellauf', z2: 'Vulkanpass', z3: 'Himmelsbrücke', z4: 'Burgziel', place2: 'Platz {rank} von {count}', boost: 'TURBO!', combo: '{n} in Folge', comboHint: '3 richtig in Folge = Turbo!', overtake: 'Überholt!', enc1: 'Die nächste schaffst du!', enc2: 'Abschütteln und weiterlaufen!', enc3: 'Guter Versuch! Auf zur nächsten!', rightWas: 'Antwort: {answer}', watch: 'Antwort abgegeben! Schau dir das Rennen an', nextSoon: 'Die nächste Frage kommt gleich…', answeredOf: '{n} von {total} haben geantwortet', youFinished: 'Du bist im Ziel!', again: 'Nochmal rennen', practice2: 'Übungsrennen gegen die Inselläufer!', standings: 'Rennstand', final: 'Endstand' },
+    it: { lead: '{name} passa in testa!', leadAnon: 'Nuovo leader!', streak: '{name}: {n} di fila!', streakAnon: '{n} di fila!', crosses: '{name} taglia il traguardo!', wins: '{name} vince la corsa!', winsAnon: 'Abbiamo un vincitore!', photo: 'Fotofinish!', z0: 'Spiaggia del Sole', z1: 'Corsa nella Giungla', z2: 'Passo del Vulcano', z3: 'Ponte del Cielo', z4: 'Traguardo del Castello', place2: 'Posto {rank} su {count}', boost: 'TURBO!', combo: '{n} di fila', comboHint: '3 giuste di fila = turbo!', overtake: 'Sorpasso!', enc1: 'La prossima è tua!', enc2: 'Scrollatela di dosso e continua a correre!', enc3: 'Bel tentativo! Occhi sulla prossima!', rightWas: 'Risposta: {answer}', watch: 'Risposta inviata! Guarda la corsa', nextSoon: 'Sta arrivando la prossima domanda…', answeredOf: '{n} su {total} hanno risposto', youFinished: 'Hai tagliato il traguardo!', again: 'Corri ancora', practice2: 'Corsa di prova contro i corridori dell’isola!', standings: 'Classifica', final: 'Classifica finale' },
+    pt: { lead: '{name} assume a liderança!', leadAnon: 'Novo líder!', streak: '{name}: {n} seguidas!', streakAnon: '{n} seguidas!', crosses: '{name} cruza a linha de chegada!', wins: '{name} vence a corrida!', winsAnon: 'Temos um vencedor!', photo: 'Chegada na foto!', z0: 'Praia do Sol', z1: 'Corrida na Selva', z2: 'Passagem do Vulcão', z3: 'Ponte do Céu', z4: 'Chegada no Castelo', place2: '{rank}º lugar de {count}', boost: 'TURBO!', combo: '{n} seguidas', comboHint: '3 certas seguidas = turbo!', overtake: 'Ultrapassagem!', enc1: 'A próxima é sua!', enc2: 'Deixa pra lá e continue correndo!', enc3: 'Boa tentativa! Atenção na próxima!', rightWas: 'Resposta: {answer}', watch: 'Resposta enviada! Assista à corrida', nextSoon: 'A próxima pergunta já vem…', answeredOf: '{n} de {total} responderam', youFinished: 'Você cruzou a linha de chegada!', again: 'Correr de novo', practice2: 'Corrida de treino contra os corredores da ilha!', standings: 'Classificação', final: 'Classificação final' },
+    nl: { lead: '{name} neemt de leiding!', leadAnon: 'Nieuwe leider!', streak: '{name}: {n} op rij!', streakAnon: '{n} op rij!', crosses: '{name} komt over de finish!', wins: '{name} wint de race!', winsAnon: 'We hebben een winnaar!', photo: 'Fotofinish!', z0: 'Zonnestrand', z1: 'Junglerace', z2: 'Vulkaanpas', z3: 'Hemelbrug', z4: 'Kasteelfinish', place2: 'Plek {rank} van {count}', boost: 'TURBO!', combo: '{n} op rij', comboHint: '3 goed op rij = turbo!', overtake: 'Ingehaald!', enc1: 'De volgende is voor jou!', enc2: 'Schud het van je af en ren door!', enc3: 'Goed geprobeerd! Let op de volgende!', rightWas: 'Antwoord: {answer}', watch: 'Antwoord verstuurd! Kijk naar de race', nextSoon: 'De volgende vraag komt eraan…', answeredOf: '{n} van {total} hebben geantwoord', youFinished: 'Je bent over de finish!', again: 'Nog een keer racen', practice2: 'Oefenrace tegen de eilandrenners!', standings: 'Tussenstand', final: 'Eindstand' },
+    ru: { lead: '{name} выходит вперёд!', leadAnon: 'Новый лидер!', streak: '{name}: {n} подряд!', streakAnon: '{n} подряд!', crosses: '{name} пересекает финиш!', wins: '{name} выигрывает гонку!', winsAnon: 'У нас есть победитель!', photo: 'Фотофиниш!', z0: 'Солнечный пляж', z1: 'Тропа в джунглях', z2: 'Перевал вулкана', z3: 'Небесный мост', z4: 'Финиш у замка', place2: 'Место {rank} из {count}', boost: 'УСКОРЕНИЕ!', combo: '{n} подряд', comboHint: '3 верных подряд = ускорение!', overtake: 'Обгон!', enc1: 'Следующий — твой!', enc2: 'Не грусти, беги дальше!', enc3: 'Хорошая попытка! Следующий вопрос твой!', rightWas: 'Ответ: {answer}', watch: 'Ответ принят! Смотри гонку', nextSoon: 'Скоро следующий вопрос…', answeredOf: 'Ответили: {n} из {total}', youFinished: 'Ты на финише!', again: 'Ещё забег', practice2: 'Тренировочный забег с бегунами острова!', standings: 'Положение в гонке', final: 'Итоги гонки' },
+    ja: { lead: '{name}がトップにたった！', leadAnon: 'あたらしいトップ！', streak: '{name}：{n}れんぞく！', streakAnon: '{n}れんぞく！', crosses: '{name}がゴール！', wins: '{name}のゆうしょう！', winsAnon: 'ゆうしょうがきまった！', photo: 'しゃしんはんてい！', z0: 'おひさまビーチ', z1: 'ジャングルラン', z2: 'かざんのみち', z3: 'そらのはし', z4: 'おしろのゴール', place2: '{count}人中 {rank}位', boost: 'ブースト！', combo: '{n}れんぞく', comboHint: '3もんれんぞくせいかいでブースト！', overtake: 'ぬいた！', enc1: 'つぎはきっとできるよ！', enc2: 'きにしないで はしりつづけよう！', enc3: 'おしかった！つぎのもんだいにしゅうちゅう！', rightWas: 'こたえ：{answer}', watch: 'こたえをおくったよ！レースをみよう', nextSoon: 'つぎのもんだいがくるよ…', answeredOf: '{total}人中 {n}人がこたえた', youFinished: 'ゴールしたよ！', again: 'もういちどはしる', practice2: 'しまのランナーとれんしゅうレース！', standings: 'レースのじゅんい', final: 'さいしゅうじゅんい' },
+    'zh-Hant': { lead: '{name} 取得領先！', leadAnon: '新的領先者！', streak: '{name}：連對 {n} 題！', streakAnon: '連對 {n} 題！', crosses: '{name} 衝過終點線！', wins: '{name} 贏得比賽！', winsAnon: '冠軍出爐了！', photo: '終點拍照定勝負！', z0: '陽光海灘', z1: '叢林奔跑', z2: '火山小徑', z3: '天空之橋', z4: '城堡終點', place2: '第 {rank} 名，共 {count} 人', boost: '加速！', combo: '連對 {n} 題', comboHint: '連對 3 題就能加速！', overtake: '超車！', enc1: '下一題一定可以！', enc2: '別在意，繼續跑！', enc3: '好可惜！專心下一題！', rightWas: '答案：{answer}', watch: '答案已送出！來看比賽吧', nextSoon: '下一題馬上來…', answeredOf: '{total} 人中有 {n} 人作答', youFinished: '你衝過終點線了！', again: '再跑一次', practice2: '和島上的選手來一場練習賽！', standings: '比賽排名', final: '最終排名' },
+    he: { lead: '{name} עולה להובלה!', leadAnon: 'מוביל חדש!', streak: '{name}: {n} ברצף!', streakAnon: '{n} ברצף!', crosses: '{name} חוצה את קו הסיום!', wins: '{name} מנצח במרוץ!', winsAnon: 'יש לנו מנצח!', photo: 'סיום צמוד!', z0: 'החוף השמשי', z1: 'ריצה בג׳ונגל', z2: 'מעבר הר הגעש', z3: 'גשר השמיים', z4: 'סיום בטירה', place2: 'מקום {rank} מתוך {count}', boost: 'טורבו!', combo: '{n} ברצף', comboHint: '3 נכונות ברצף = טורבו!', overtake: 'עקיפה!', enc1: 'הבאה שלכם!', enc2: 'לא נורא, ממשיכים לרוץ!', enc3: 'ניסיון יפה! מתרכזים בבאה!', rightWas: 'התשובה: {answer}', watch: 'התשובה נשלחה! צפו במרוץ', nextSoon: 'השאלה הבאה כבר מגיעה…', answeredOf: '{n} מתוך {total} ענו', youFinished: 'חציתם את קו הסיום!', again: 'לרוץ שוב', practice2: 'מרוץ אימון נגד הרצים של האי!', standings: 'מצב המרוץ', final: 'התוצאות הסופיות' },
+    ar: { lead: '{name} يتصدّر السباق!', leadAnon: 'متصدّر جديد!', streak: '{name}: {n} على التوالي!', streakAnon: '{n} على التوالي!', crosses: '{name} يعبر خط النهاية!', wins: '{name} يفوز بالسباق!', winsAnon: 'لدينا فائز!', photo: 'نهاية متقاربة جداً!', z0: 'الشاطئ المشمس', z1: 'جري في الغابة', z2: 'ممر البركان', z3: 'جسر السماء', z4: 'نهاية القلعة', place2: 'المركز {rank} من {count}', boost: 'تسريع!', combo: '{n} على التوالي', comboHint: '3 إجابات صحيحة متتالية = تسريع!', overtake: 'تجاوز!', enc1: 'السؤال القادم لك!', enc2: 'لا بأس، واصل الجري!', enc3: 'محاولة جيدة! ركّز في السؤال القادم!', rightWas: 'الإجابة: {answer}', watch: 'تم إرسال إجابتك! شاهد السباق', nextSoon: 'السؤال التالي قادم…', answeredOf: 'أجاب {n} من {total}', youFinished: 'عبرت خط النهاية!', again: 'سباق جديد', practice2: 'سباق تدريبي ضد متسابقي الجزيرة!', standings: 'ترتيب السباق', final: 'الترتيب النهائي' },
+  };
+  MORE['en-GB'] = MORE.en;
+  Object.keys(STR).forEach(function (k) { var m = MORE[k] || MORE.en; Object.keys(m).forEach(function (x) { STR[k][x] = m[x]; }); });
+  O.strings(STR);
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };
   document.documentElement.dir = O.dir || 'ltr'; document.documentElement.lang = O.lang || 'en';
   document.title = t('title');
   var reduced = !!(O.settings && O.settings.reduced);
   var host = L.role === 'host';
+  var solo = !L.active;
   if (host) document.body.classList.add('qr-host');
+  var rtl = (O.dir || 'ltr') === 'rtl';
 
   // ---- the race path: a Catmull-Rom curve through 12 points, measured so progress 0..1000 is even along it ----
   var CTRL = [[-22, 20], [-10, 24], [3, 21], [13, 14], [18, 3], [13, -7], [2, -10], [-8, -5], [-17, -6], [-21, -15], [-11, -23], [4, -24]];
@@ -123,11 +236,22 @@
     }
     var e = CTRL[CTRL.length - 1]; total += Math.hypot(e[0] - last[0], e[1] - last[1]); TRACK.push({ x: e[0], z: e[1], s: total });
   })();
+  // five zones along the path, and the Sky Bridge's arch (the only part off the ground)
+  var ZONES = [
+    { a: 0, b: 0.2, icon: '🏖️', col: '#f3cf7d', dark: '#c99a3c' },
+    { a: 0.2, b: 0.44, icon: '🌴', col: '#79c25a', dark: '#3f8a35' },
+    { a: 0.44, b: 0.68, icon: '🌋', col: '#e9774c', dark: '#a8452a' },
+    { a: 0.68, b: 0.84, icon: '🌉', col: '#7cc7f5', dark: '#3a86c0' },
+    { a: 0.84, b: 1.0001, icon: '🏰', col: '#b7a2f5', dark: '#6f55c9' },
+  ];
+  function zoneOf(u) { for (var i = 0; i < ZONES.length; i++) if (u < ZONES[i].b) return i; return ZONES.length - 1; }
+  var BR = [0.705, 0.825];
+  function heightAt(u) { if (u <= BR[0] || u >= BR[1]) return 0; var s = (u - BR[0]) / (BR[1] - BR[0]); return Math.sin(s * Math.PI) * 2.4; }
   function at(u) {
     u = Math.max(0, Math.min(1, u)); var d = u * total, lo = 0, hi = TRACK.length - 1;
     while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (TRACK[mid].s < d) lo = mid; else hi = mid; }
     var a = TRACK[lo], b = TRACK[hi], k = (d - a.s) / Math.max(1e-6, b.s - a.s), dx = b.x - a.x, dz = b.z - a.z, n = Math.hypot(dx, dz) || 1;
-    return { x: a.x + dx * k, z: a.z + dz * k, dx: dx / n, dz: dz / n };
+    return { x: a.x + dx * k, z: a.z + dz * k, y: heightAt(u), dx: dx / n, dz: dz / n };
   }
   var GATES = []; for (var g = 1; g <= 10; g++) GATES.push(g / 11);
   var START = at(0), FINISH = at(1);
@@ -136,30 +260,94 @@
   var R = new Map();
   function runner(seat) {
     var r = R.get(seat);
-    if (!r) { r = { seat: seat, shown: 0, target: 0, gems: 0, lane: R.size, x: START.x, z: START.z, h: 0, sp: 0 }; R.set(seat, r); place(r); }
+    if (!r) { r = { seat: seat, shown: 0, target: 0, gems: 0, lane: R.size, x: START.x, y: 0, z: START.z, h: 0, sp: 0, streak: 0, boost: 0, burst: 0, stumble: 0, done: 0 }; R.set(seat, r); place(r); }
     return r;
   }
   function place(r) {
     var p = at(r.shown / 1000), lane = ((r.lane % 8) - 3.5) * 0.55;
-    r.x = p.x - p.dz * lane; r.z = p.z + p.dx * lane; r.h = Math.atan2(p.dx, p.dz);
+    r.x = p.x - p.dz * lane; r.z = p.z + p.dx * lane; r.y = p.y; r.h = Math.atan2(p.dx, p.dz);
   }
   var phase = L.phase, me = L.me, mySeat = me ? me.seat : -1;
   var roam = { x: START.x + 3, z: START.z - 3, h: Math.PI, sp: 0 };   // my own avatar in the lobby
   var keys = {}, stick = { x: 0, y: 0 };
-  var Q = null, myPick = -1, reveal = null, finished = false, podium = [], boardTop = [], podiumTeams = [];
+  var Q = null, myPick = -1, reveal = null, finished = false, podium = [], podiumTeams = [];
+  var myStreak = 0, lastTop = [], leader = null, finishCount = 0, photoUntil = 0, ended = false, tickerLog = [];
   function inRace() { return phase !== 'lobby'; }
+  // the projector may hide names (the teacher's choice): then the banners say it without a name
+  function nameOf(seat) {
+    if (seat < 0) { var b = BOTS[-seat - 1]; return b ? b.name : ''; }
+    if (host && L.names === 'hidden') return '';
+    if (solo && seat === 0) return (window.BRB && BRB.user && BRB.user.displayName) || '';
+    return L.nameOf(seat) || '';
+  }
+  // a colour per runner for the mini track: the team's, else the avatar's own colour, else one from the seat
+  var DOTS = ['#e9465c', '#2f6bff', '#c98a00', '#27996a', '#9b59e8', '#ff7a2a', '#1aa9c4', '#d6409f'];
+  function dotColor(seat) {
+    if (L.teamsOn) { var k = L.teamOf(seat); if (k) { var st = L.teamStyle(k); if (st) return st.color; } }
+    if (seat < 0) { var b = BOTS[-seat - 1]; return b ? b.dot : '#888'; }
+    return DOTS[((seat % DOTS.length) + DOTS.length) % DOTS.length];
+  }
+  function ranking() {
+    return Array.from(R.values()).sort(function (a, b) { return (b.target - a.target) || ((a.done || 1e9) - (b.done || 1e9)) || (b.gems - a.gems) || (a.seat - b.seat); });
+  }
+  function rankOf(seat) { var list = ranking(); for (var i = 0; i < list.length; i++) if (list[i].seat === seat) return i + 1; return 0; }
 
-  // ---- the answer pad and the host's card ----
+  // ---- sound, haptics and little DOM bursts ----
+  function sfx(name, o) { try { O.sfx(name, o); } catch (e) { /* none */ } }
+  function buzz(p) { if (reduced || host) return; try { var ua = navigator.userActivation; if (navigator.vibrate && (!ua || ua.hasBeenActive)) navigator.vibrate(p); } catch (e) { /* not allowed here */ } }
+  function burstAt(el, colors, n) {
+    if (reduced || !el || !el.getBoundingClientRect) return;
+    var r = el.getBoundingClientRect(), box = $('fx'), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    for (var i = 0; i < (n || 18); i++) {
+      var p = document.createElement('i'); p.style.left = cx + 'px'; p.style.top = cy + 'px'; p.style.background = colors[i % colors.length];
+      var a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 110;
+      box.appendChild(p);
+      try {
+        var an = p.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: 'translate(' + (Math.cos(a) * d - 5) + 'px,' + (Math.sin(a) * d - 5 + 30) + 'px) rotate(' + (Math.random() * 540) + 'deg) scale(.4)', opacity: 0 }], { duration: 700 + Math.random() * 400, easing: 'cubic-bezier(.2,.8,.4,1)' });
+        an.onfinish = function (q) { return function () { q.remove(); }; }(p);
+      } catch (er) { p.remove(); }
+    }
+  }
+  function boostFx() {
+    var b = $('boostfx'); b.textContent = '';
+    var s = document.createElement('span'); s.textContent = t('boost'); b.appendChild(s);
+    setTimeout(function () { if (s.parentNode) s.remove(); }, 1400);
+  }
+
+  // ---- the broadcast banner (a queue: each one a moment on screen) ----
+  var tq = [], tBusy = false;
+  function ticker(icon, text, cls) {
+    if (!text) return;
+    tickerLog.push(text); if (tickerLog.length > 20) tickerLog.shift();
+    if (tq.length >= 4) tq.shift();
+    tq.push({ icon: icon, text: text, cls: cls || '' });
+    if (!tBusy) nextTicker();
+  }
+  function nextTicker() {
+    var it = tq.shift(), el = $('ticker');
+    if (!it) { tBusy = false; return; }
+    tBusy = true;
+    $('ticker-i').textContent = it.icon; $('ticker-t').textContent = it.text;
+    el.className = 'qr-ticker ' + it.cls;
+    void el.offsetWidth; el.classList.add('in');
+    if (host) sfx('pop', { volume: 0.5, caption: false });
+    say(it.text);
+    setTimeout(function () { el.classList.remove('in'); setTimeout(nextTicker, 280); }, it.cls.indexOf('long') >= 0 ? 3400 : 2400);
+  }
+
+  // ---- the answer pad and the projector's card ----
   var SHAPES = ['▲', '◆', '●', '■'];
+  function hideCard() { $('card').classList.add('qr-hide'); }
   function showCard(q) {
     Q = q; myPick = -1; reveal = null;
-    $('board').classList.add('qr-hide');
-    $('card').classList.remove('qr-hide');
+    $('stand').classList.add('qr-hide'); $('endcard').classList.add('qr-hide');
+    var card = $('card'); card.classList.remove('qr-hide', 'compact'); card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
     $('qtext').textContent = q.q;
     $('qnum').textContent = t('qnum', { n: q.i + 1, total: q.n });
-    $('note').textContent = host ? t('answers', { n: 0 }) : '';
+    $('note').textContent = ''; $('note').className = 'qr-note'; $('sub').textContent = '';
+    $('meter').classList.toggle('qr-hide', !host); if (host) setMeter(0);
     $('bars').classList.add('qr-hide');
-    var pad = $('pad'); pad.textContent = '';
+    var pad = $('pad'); pad.textContent = ''; pad.classList.remove('revealed');
     q.choices.forEach(function (c, i) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'qr-a c' + i; b.dataset.choice = i;
       var sh = document.createElement('span'); sh.className = 'sh'; sh.setAttribute('aria-hidden', 'true'); sh.textContent = SHAPES[i];
@@ -170,54 +358,107 @@
       b.addEventListener('click', function () { choose(i); });
       pad.appendChild(b);
     });
-    if (q.answered) { $('note').textContent = t('locked'); }
+    if (q.answered) { $('note').textContent = t('locked'); card.classList.add('compact'); }
+    else if (!host && q.i === 0 && myStreak === 0) $('sub').textContent = t('comboHint');
     banner('');
     say(q.q);
     if (!host && !q.answered) { var first = pad.querySelector('button'); if (first) first.focus({ preventScroll: true }); }
   }
+  function setMeter(n) {
+    var tot = Math.max(1, L.players().filter(function (p) { return p.connected !== false; }).length);
+    $('meter-t').textContent = t('answeredOf', { n: n, total: tot });
+    $('meter-i').style.width = Math.min(100, Math.round(n / tot * 100)) + '%';
+  }
   function choose(i) {
-    if (host || !Q || myPick >= 0 || L.quiz.answered) return;
-    if (L.active) { if (!L.quiz.answer(i)) return; } else practiceAnswer(i);
+    if (host || !Q || myPick >= 0 || (L.active && L.quiz.answered) || phase !== 'playing') return;
+    if (L.active) { if (!L.quiz.answer(i)) return; }
     myPick = i;
+    var btn = $('pad').children[i];
     [].forEach.call($('pad').children, function (b, k) { b.disabled = true; b.classList.toggle('pick', k === i); });
-    $('note').textContent = t('locked');
-    O.sfx('select');
+    $('note').textContent = t('watch'); $('sub').textContent = '';
+    sfx('select'); buzz(12);
+    burstAt(btn, ['#ffffff', '#ffc83d'], 10);
+    setTimeout(function () { if (myPick === i && !reveal) $('card').classList.add('compact'); }, 450);
+    if (!L.active) practiceAnswered(i);
   }
   function showReveal(rv) {
     reveal = rv;
+    var card = $('card'); card.classList.remove('compact');
     if (rv.skipped) { $('note').textContent = t('skipped'); return; }
-    [].forEach.call($('pad').children, function (b, k) { b.disabled = true; b.classList.toggle('right', k === rv.answer); });
+    var pad = $('pad'); pad.classList.add('revealed');
+    [].forEach.call(pad.children, function (b, k) { b.disabled = true; b.classList.toggle('right', k === rv.answer); if (k === myPick && k !== rv.answer) b.classList.add('miss'); });
     if (host) {
-      var bars = $('bars'); bars.textContent = ''; bars.classList.remove('qr-hide');
-      var most = Math.max.apply(null, [1].concat(rv.counts));
-      rv.counts.forEach(function (n, k) { var d = document.createElement('div'); d.className = 'qr-bar c' + k; d.style.height = Math.max(8, 84 * n / most) + 'px'; d.textContent = n; bars.appendChild(d); });
+      $('meter').classList.add('qr-hide');
+      var counts = rv.counts || [], sum = counts.reduce(function (a, b) { return a + b; }, 0) || 1;
+      [].forEach.call(pad.children, function (b, k) {
+        var n = counts[k] || 0, ct = document.createElement('span'); ct.className = 'ct'; ct.textContent = n; b.appendChild(ct);
+        b.style.setProperty('--f', '0%');
+        requestAnimationFrame(function () { requestAnimationFrame(function () { b.style.setProperty('--f', Math.round(n / sum * 100) + '%'); }); });
+      });
       $('note').textContent = '';
+      sfx('gate', { volume: 0.6, caption: false });
+      // after a moment the card makes way for the race and the standings
+      setTimeout(function () { if (reveal === rv && phase === 'between') { hideCard(); showStand(false); } }, 3400);
+    } else {
+      setTimeout(function () { if (reveal === rv && phase === 'between') { hideCard(); banner(finished ? t('youFinished') : t('nextSoon')); } }, 3200);
     }
-    if (rv.top && rv.top.length) { boardTop = rv.top; }
-    // the projector: after a moment the card makes way for the race (the camera follows the leaders), with the top five
-    if (host) setTimeout(function () { if (reveal === rv && phase === 'between') showBoard(boardTop, t('top')); }, 3000);
   }
   function showResult(r) {
-    if (host || r.none) { if (!host && r.none) { $('note').textContent = t('timeUp'); } return; }
-    $('note').textContent = r.ok ? t('right', { points: r.points }) : t('wrong');
-    say($('note').textContent);
-    O.sfx(r.ok ? 'correct' : 'wrong');
-    var mine = R.get(mySeat); if (mine && !r.ok) mine.stumble = 0.6;
+    if (host) return;
+    if (r.none) { $('note').textContent = t('timeUp'); $('note').className = 'qr-note bad'; myStreak = 0; setCombo(); return; }
+    var note = $('note');
+    if (r.ok) {
+      myStreak++;
+      note.textContent = t('right', { points: r.points }); note.className = 'qr-note good';
+      $('sub').textContent = '';
+      sfx('correct'); buzz([20, 40, 30]);
+      var right = $('pad').children[reveal ? reveal.answer : myPick]; burstAt(right, ['#ffc83d', '#37c47a', '#ffffff', '#2f6bff'], 26);
+      if (myStreak === 3 || (myStreak > 3 && myStreak % 2 === 1)) { boostFx(); sfx('levelup'); buzz([30, 30, 30, 30, 60]); }
+    } else {
+      myStreak = 0;
+      note.textContent = t('wrong'); note.className = 'qr-note bad';
+      var ans = Q && reveal && Q.choices[reveal.answer] != null ? Q.choices[reveal.answer] : '';
+      $('sub').textContent = t('enc' + (1 + Math.floor(Math.random() * 3))) + (ans ? ' · ' + t('rightWas', { answer: ans }) : '');
+      sfx('wrong'); buzz(90);
+      var mine = R.get(mySeat); if (mine) mine.stumble = 0.8;
+    }
+    say(note.textContent);
+    setCombo();
+  }
+  function setCombo() {
+    var c = $('combo'); if (host) { c.classList.add('qr-hide'); return; }
+    c.classList.toggle('qr-hide', !inRace() || phase === 'ended');
+    [].forEach.call(c.querySelectorAll('.pips i'), function (p, k) { p.classList.toggle('on', myStreak > k); });
+    c.classList.toggle('hot', myStreak >= 3);
+    $('combo-t').textContent = myStreak >= 3 ? '🔥 ' + t('boost') : myStreak >= 2 ? t('combo', { n: myStreak }) : '🔥';
   }
   // a team's shape; onTeam: drawn on the team's own colour, so it takes the team's ink (text colour) instead
   function shapeCanvas(tm, px, onTeam) {
     var c = document.createElement('canvas'), k = Math.min(2, devicePixelRatio || 1); c.width = c.height = Math.round(px * k); c.setAttribute('aria-hidden', 'true');
     var x = c.getContext('2d'); x.scale(k, k); L.drawShape(x, tm.shape, px / 2, px / 2, px * 0.42, onTeam ? tm.ink : tm.color, onTeam ? null : '#1d2340'); return c;
   }
-  // teams first (team mode: shape, icon, name, score), then the racers
-  function showBoard(list, title, tms) {
-    $('card').classList.add('qr-hide');
-    var b = $('board'); b.classList.remove('qr-hide'); $('board-h').textContent = title;
-    var ol = $('board-list'); ol.textContent = '';
-    (tms || []).filter(function (x) { return x.size > 0; }).sort(function (a, c) { return (a.rank || 99) - (c.rank || 99) || a.team - c.team; }).forEach(function (tm) {
-      var li = document.createElement('li'); li.className = 'qr-tli'; li.append(shapeCanvas(tm, 18), tm.icon + ' ' + tm.name + (tm.rank ? ' · ' + tm.score + (L.teamScoring === 'avg' ? ' ' + t('perPlayer') : '') : '')); ol.appendChild(li);
+  // the projector's standings: teams first (team mode), then the top racers with their gems
+  var MEDALS = ['🥇', '🥈', '🥉'];
+  function showStand(final, tms) {
+    var box = $('stand'); if (!host && !solo) { box.classList.add('qr-hide'); return; }
+    if (solo && !final) { box.classList.add('qr-hide'); return; }
+    box.classList.remove('qr-hide'); box.classList.toggle('final', !!final); box.classList.toggle('solo', solo);
+    $('stand-h').textContent = final ? t('final') : t('standings');
+    var ol = $('stand-list'); ol.textContent = '';
+    (tms || (L.teamsOn ? L.teams() : [])).filter(function (x) { return x.size > 0; }).sort(function (a, c) { return (a.rank || 99) - (c.rank || 99) || a.team - c.team; }).forEach(function (tm) {
+      var li = document.createElement('li'); li.className = 'tm'; li.style.setProperty('--team', tm.color);
+      var md = document.createElement('span'); md.className = 'md'; md.textContent = tm.rank && tm.rank <= 3 ? MEDALS[tm.rank - 1] : (tm.rank || '');
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.append(shapeCanvas(tm, 18), tm.icon + ' ' + tm.name);
+      var sc = document.createElement('span'); sc.textContent = tm.rank ? tm.score + (L.teamScoring === 'avg' ? ' ' + t('perPlayer') : '') : '';
+      li.append(md, nm, sc); ol.appendChild(li);
     });
-    list.slice(0, 5).forEach(function (p) { var li = document.createElement('li'); li.textContent = p.name + (p.score != null ? ' · ' + p.score : ''); ol.appendChild(li); });
+    ranking().slice(0, 5).forEach(function (r, i) {
+      var li = document.createElement('li');
+      var md = document.createElement('span'); md.className = 'md'; md.textContent = i < 3 ? MEDALS[i] : String(i + 1);
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = nameOf(r.seat) || '●'; nm.style.color = nameOf(r.seat) ? '' : dotColor(r.seat);
+      var gm = document.createElement('span'); gm.textContent = '💎 ' + r.gems;
+      li.append(md, nm, gm); ol.appendChild(li);
+    });
   }
   // the projector: one bar per team under the top (average progress of its runners); a player: my team on a pill
   function teamBars() {
@@ -236,59 +477,119 @@
     var mt = L.myTeam, pill = $('team'); pill.textContent = '';
     if (mt && !host) { pill.style.background = mt.color; pill.style.color = mt.ink; pill.append(shapeCanvas(mt, 18, true), t('yourTeam', { team: mt.name })); }
   }
-  var tbTimer = setInterval(function () { if (L.teamsOn) teamBars(); }, 500);
+  setInterval(function () { if (L.teamsOn) teamBars(); }, 500);
   L.on('teams', teamBars);
   function banner(text) { $('banner').textContent = text || ''; }
   function say(text) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = text; }, 30); }
-  function setGems() { var r = R.get(mySeat); $('gems').textContent = host ? '' : t('gems', { n: r ? r.gems : 0 }); $('gems').classList.toggle('qr-hide', host || !inRace()); }
+  function setGems() {
+    var r = R.get(mySeat);
+    $('gems').textContent = host ? '' : '💎 ' + (r ? r.gems : 0);
+    $('gems').setAttribute('aria-label', t('gems', { n: r ? r.gems : 0 }));
+    $('gems').classList.toggle('qr-hide', host || !inRace());
+    var pl = $('place'), n = R.size;
+    var moved = false; R.forEach(function (x) { if (x.target > 0) moved = true; });
+    pl.textContent = !host && inRace() && r && n > 1 && moved ? t('place2', { rank: rankOf(mySeat), count: n }) : '';
+  }
 
-  // ---- the session ----
-  function syncRace(list) {
-    list.forEach(function (p) { var r = runner(p.seat); r.target = Math.max(r.target, p.prog); if (p.gems > r.gems) { r.gems = p.gems; r.burst = 1; } });
+  // ---- the race updates: progress, streaks, overtakes, the lead, the finish ----
+  function syncRace(list, round) {
+    var before = mySeat >= 0 && R.get(mySeat) ? rankOf(mySeat) : 0, wasLeader = leader;
+    var news = [], fresh = [];
+    list.forEach(function (p) {
+      var r = runner(p.seat), up = p.prog > r.target;
+      if (round) { r.streak = up ? r.streak + 1 : 0; r.boost = r.streak >= 3 ? 1 : 0; if (up && r.streak >= 3 && (r.streak === 3 || r.streak % 2 === 1)) news.push(r); }
+      r.target = Math.max(r.target, p.prog);
+      if (p.gems > r.gems) { r.gems = p.gems; r.burst = 1; }
+      if (r.target >= 1000 && !r.done) { r.done = ++finishCount; fresh.push(r); }
+    });
     setGems();
-    var mine = R.get(mySeat); if (mine && mine.target >= 1000 && !finished) { finished = true; banner(t('finish')); }
+    var mine = R.get(mySeat);
+    if (mine && mine.target >= 1000 && !finished) { finished = true; if (!host) { ticker('🏁', t('youFinished'), 'gold'); sfx('levelup'); buzz([40, 40, 80]); } }
+    if (!round) { var top0 = ranking()[0]; leader = top0 && top0.target > 0 ? top0.seat : null; return; }
+    // overtakes (phones): my place went up
+    var after = mine ? rankOf(mySeat) : 0;
+    if (!host && mine && before && after && after < before && !finished) { ticker('⬆️', t('overtake') + ' +' + (before - after), ''); buzz([15, 30, 15]); }
+    // the projector (and practice): the lead, streaks, the finish, a photo finish
+    var top = ranking()[0];
+    leader = top && top.target > 0 ? top.seat : null;
+    if (host || solo) {
+      if (leader != null && leader !== wasLeader && !fresh.length) { var nm = nameOf(leader); ticker('👑', nm ? t('lead', { name: nm }) : t('leadAnon'), 'gold'); }
+      news.slice(0, 2).forEach(function (r) { var nm2 = nameOf(r.seat); ticker('🔥', nm2 ? t('streak', { name: nm2, n: r.streak }) : t('streakAnon', { n: r.streak }), ''); });
+      fresh.sort(function (a, b) { return a.done - b.done; }).forEach(function (r) {
+        var nm3 = nameOf(r.seat);
+        if (r.done === 1) ticker('🏆', nm3 ? t('wins', { name: nm3 }) : t('winsAnon'), 'gold long');
+        else if (r.done <= 3) ticker('🏁', nm3 ? t('crosses', { name: nm3 }) : t('finish'), '');
+      });
+      var second = ranking()[1];
+      if (fresh.length && second && (fresh.length > 1 || (top.target - second.target) < 60)) { photoUntil = performance.now() + 4000; ticker('📸', t('photo'), 'gold'); }
+    }
   }
   function resetToStart() { L.players().forEach(function (p) { runner(p.seat); }); setGems(); }
-  L.on('welcome', function () { me = L.me; mySeat = me ? me.seat : -1; L.players().forEach(function (p) { runner(p.seat); }); syncRace(L.race()); });
+  L.on('welcome', function () { me = L.me; mySeat = me ? me.seat : -1; L.players().forEach(function (p) { runner(p.seat); }); syncRace(L.race(), false); setCombo(); });
   L.on('join', function (p) { runner(p.seat); });
   L.on('leave', function (p) { R.delete(p.seat); });
   L.on('phase', function (e) {
     phase = e.phase;
     $('stick').classList.toggle('qr-hide', host || phase !== 'lobby' || !L.active);
     if (phase === 'lobby') banner(host ? '' : t('wait'));
-    else if (phase === 'loading' || phase === 'countdown') { resetToStart(); banner(t('ready')); }
+    else if (phase === 'loading' || phase === 'countdown') { resetToStart(); banner(''); }
     else if (phase === 'paused') banner(t('paused'));
-    else if (phase === 'playing' || phase === 'between') banner(finished ? t('finish') : '');
-    setGems();
+    else if (phase === 'playing') banner('');
+    setGems(); setCombo();
   });
-  L.on('countdown', function (e) { countdownTo(e.at); });
+  L.on('countdown', function (e) { countdownTo(function () { return e.at - L.now(); }); });
   L.on('question', function (q) { showCard(q); });
-  L.on('answers', function (a) { if (host) $('note').textContent = t('answers', { n: a.n }); });
+  L.on('answers', function (a) { if (host) setMeter(a.n); });
   L.on('reveal', showReveal);
   L.on('result', showResult);
-  L.on('race', syncRace);
+  L.on('race', function (list) { syncRace(list, true); });
   L.on('end', function (e) {
-    var order = L.race().sort(function (a, b) { return b.prog - a.prog; });
-    podium = (order.length ? order : e.top).slice(0, 3).map(function (p) { return p.seat; });
-    // team mode: the podium steps carry the top three teams (their colour and shape), each with its best runner on it
+    var order = ranking().map(function (r) { return { seat: r.seat, prog: r.target }; });
     var tms = (e.teams || []).filter(function (x) { return x.size > 0 && x.rank > 0; }).sort(function (a, b) { return a.rank - b.rank || a.team - b.team; });
+    endRace(order.length ? order : e.top, tms, e.teams);
+  });
+  // the end: the podium (the top three runners, or in team mode the top three teams with their best runner on it)
+  function endRace(order, tms, allTeams) {
+    ended = true; phase = 'ended';
+    podium = order.slice(0, 3).map(function (p) { return p.seat; });
     podiumTeams = [];
-    if (tms.length) {
+    if (tms && tms.length) {
       podium = []; tms.slice(0, 3).forEach(function (tm) {
         var best = order.filter(function (p) { return L.teamOf(p.seat) === tm.team; })[0];
         podium.push(best ? best.seat : -99); podiumTeams.push({ team: tm.team, color: tm.color, ink: tm.ink, shape: tm.shape });
       });
     }
-    showBoard(e.top.length ? e.top : order.map(function (p) { return { name: p.name, score: null }; }), tms.length ? t('teamPodium') : t('podium'), e.teams);
-    banner(t('finish'));
+    hideCard(); banner(''); setCombo(); setGems();
+    showStand(true, allTeams);
+    podium.forEach(function (seat, k) { var m = $('medal' + k); m.textContent = MEDALS[k] + ' ' + (podiumTeams[k] ? '' : (nameOf(seat) || '')); m.hidden = true; });
+    if (!host) {
+      var rk = rankOf(mySeat), card = $('endcard'); card.classList.remove('qr-hide');
+      $('end-md').textContent = rk && rk <= 3 ? MEDALS[rk - 1] : '🏁';
+      $('end-t').textContent = rk ? t('place', { rank: rk, count: R.size }) : t('finish');
+      var mine = R.get(mySeat); $('end-s').textContent = mine ? '💎 ' + mine.gems : '';
+      $('again').classList.toggle('qr-hide', !solo);
+      if (solo) setTimeout(function () { $('again').focus({ preventScroll: true }); }, 100);
+    }
+    ticker('🏆', t('podium'), 'gold');
     if (!reduced) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
-    O.sfx('win');
-  });
-  var cdTimer = 0;
-  function countdownTo(atMs) {
-    clearInterval(cdTimer);
-    var tick = function () { var left = Math.ceil((atMs - L.now()) / 1000); banner(left > 0 ? String(left) : t('go')); if (left <= 0) { clearInterval(cdTimer); setTimeout(function () { if (phase === 'playing') banner(''); }, 700); } };
-    tick(); cdTimer = setInterval(tick, 200);
+    sfx('win'); buzz([60, 40, 60, 40, 120]);
+  }
+  // the countdown: 3, 2, 1, GO with big numbers
+  var cdTimer = 0, cdLast = null, cdLog = [];
+  function countdownTo(leftMs) {
+    clearInterval(cdTimer); cdLast = null;
+    var el = $('count');
+    var tick = function () {
+      var left = Math.ceil(leftMs() / 1000), label = left > 0 ? String(left) : t('go');
+      if (label !== cdLast && left > -1) {
+        cdLast = label; el.textContent = ''; cdLog.push(label);
+        var s = document.createElement('span'); s.textContent = label; s.className = 'pop' + (left > 0 ? '' : ' go'); el.appendChild(s);
+        if (left > 0) { sfx('count'); buzz(20); } else { sfx('whoosh'); buzz(60); }
+        say(label);
+      }
+      if (left <= 0) { clearInterval(cdTimer); setTimeout(function () { el.textContent = ''; }, 800); }
+    };
+    tick(); cdTimer = setInterval(tick, 100);
   }
 
   // ---- the timer bar ----
@@ -297,11 +598,48 @@
       var left = L.active ? L.quiz.left() : Math.max(0, practice.deadline - performance.now());
       var f = Math.max(0, Math.min(1, left / (Q.secs * 1000)));
       $('timer').style.transform = 'scaleX(' + f + ')';
+      $('timerbox').classList.toggle('low', f < 0.25);
     }
   }
 
+  // ---- the mini track: five zones, every runner as a dot, the leader's crown, me ringed ----
+  var stripLast = 0;
+  function drawStrip(now) {
+    if (now - stripLast < 66) return; stripLast = now;
+    var cv = $('strip'), box = $('stripbox');
+    var show = inRace() || (solo && practice.on);
+    box.classList.toggle('qr-hide', !show); if (!show) return;
+    var W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+    if (!W || !H) return;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    var x = cv.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+    var pad = 22, len = W - pad * 2, y = H * 0.62, X = function (u) { return rtl ? pad + len * (1 - u) : pad + len * u; };
+    ZONES.forEach(function (z) {
+      x.fillStyle = z.col; var a = X(z.a), b = X(Math.min(1, z.b)); x.fillRect(Math.min(a, b), y - 5, Math.abs(b - a), 10);
+      x.font = Math.round(H * 0.34) + 'px system-ui'; x.textAlign = 'center'; x.globalAlpha = 0.55; x.fillText(z.icon, (a + b) / 2, H * 0.36); x.globalAlpha = 1;
+    });
+    x.font = Math.round(H * 0.42) + 'px system-ui'; x.fillText('🏁', X(1) + (rtl ? -10 : 10), y + 6);
+    var list = ranking(), lead = list[0], rad = Math.max(4, Math.min(8, H * 0.16)), meR = null;
+    for (var i = list.length - 1; i >= 0; i--) {
+      var r = list[i], px = X(r.shown / 1000);
+      if (r.seat === mySeat && !host) { meR = r; continue; }
+      x.beginPath(); x.arc(px, y, rad, 0, Math.PI * 2); x.fillStyle = dotColor(r.seat); x.fill(); x.lineWidth = 2; x.strokeStyle = '#1d2340'; x.stroke();
+      if (r.boost && !reduced) { x.beginPath(); x.arc(px, y, rad + 3 + Math.sin(now / 90) * 1.5, 0, Math.PI * 2); x.strokeStyle = '#ff8a2a'; x.lineWidth = 2; x.stroke(); }
+    }
+    if (meR) {
+      var mx = X(meR.shown / 1000);
+      x.beginPath(); x.arc(mx, y, rad + 3, 0, Math.PI * 2); x.fillStyle = '#ffffff'; x.fill(); x.lineWidth = 3; x.strokeStyle = '#1d2340'; x.stroke();
+      x.beginPath(); x.arc(mx, y, rad - 0.5, 0, Math.PI * 2); x.fillStyle = dotColor(meR.seat); x.fill();
+      x.fillStyle = '#1d2340'; x.beginPath(); x.moveTo(mx - 5, y - rad - 9); x.lineTo(mx + 5, y - rad - 9); x.lineTo(mx, y - rad - 3); x.fill();
+    }
+    if (lead && lead.target > 0) { x.font = Math.round(H * 0.36) + 'px system-ui'; x.fillText('👑', X(lead.shown / 1000), y - rad - 2); }
+  }
+
   // ---- moving in the lobby: arrows / WASD, or the on-screen stick ----
-  addEventListener('keydown', function (e) { keys[e.key] = true; });
+  addEventListener('keydown', function (e) {
+    keys[e.key] = true;
+    if (!host && Q && phase === 'playing' && myPick < 0 && /^[1-4]$/.test(e.key)) choose(+e.key - 1);
+  });
   addEventListener('keyup', function (e) { keys[e.key] = false; });
   (function () {
     var el = $('stick'), knob = el.firstElementChild, id = null;
@@ -331,57 +669,117 @@
   }
 
   // ---- one simulation step (the 3D module or the 2D loop calls it) ----
+  var zoneSeen = 0;
   function step(dt) {
     dt = Math.min(0.1, Math.max(0, dt));
+    var slow = performance.now() < photoUntil && !reduced ? 0.4 : 1;
     R.forEach(function (r) {
-      if (r.shown < r.target) { r.shown = Math.min(r.target, r.shown + (reduced ? 400 : 160) * dt); r.sp = 1; } else r.sp = 0;
+      if (r.shown < r.target) {
+        var gap = r.target - r.shown, sp = (reduced ? 400 : 110 + Math.min(220, gap * 0.9)) * (r.boost ? 1.35 : 1) * slow;
+        r.shown = Math.min(r.target, r.shown + sp * dt); r.sp = 1;
+      } else r.sp = 0;
       if (r.stumble) r.stumble = Math.max(0, r.stumble - dt);
       if (r.burst) r.burst = Math.max(0, r.burst - dt);
       place(r);
     });
+    // the leader enters a new zone: a banner on the projector (and in practice)
+    if ((host || solo) && inRace() && !ended) {
+      var top = null; R.forEach(function (r) { if (!top || r.shown > top.shown) top = r; });
+      var z = top ? zoneOf(top.shown / 1000) : 0;
+      if (z > zoneSeen) { zoneSeen = z; ticker(ZONES[z].icon, t('z' + z), 'zone'); }
+    }
     if (!L.active) practiceStep(dt);
     timerTick();
+    drawStrip(performance.now());
   }
 
-  // ---- practice (solo): five questions, three ghost runners ----
-  var practice = { on: false, i: -1, deadline: 0, items: [], ghosts: [] , rnd: O.rand(7) };
+  // ---- practice (solo): eight questions against three island racers, with the same banners and streaks ----
+  var BOTS = [
+    { name: 'Bolt', skill: 0.82, quick: 0.55, dot: '#ff7a2a', spec: { species: 'fox', colors: { base: 'coral', accent: 'spark' } } },
+    { name: 'Sunny', skill: 0.7, quick: 0.4, dot: '#c98a00', spec: { species: 'bee', colors: { base: 'spark', accent: 'stone' } } },
+    { name: 'Mango', skill: 0.6, quick: 0.3, dot: '#27996a', spec: { species: 'frog', colors: { base: 'mint', accent: 'peach' } } },
+  ];
+  var practice = { on: false, i: -1, deadline: 0, items: [], picks: [], timer: 0, rnd: O.rand(Date.now() % 100000) };
+  function makeItems(rnd) {
+    var out = [], kinds = ['add', 'sub', 'mul', 'miss', 'add', 'div', 'mul', 'sub'];
+    kinds.forEach(function (k) {
+      var a, b, ans, q;
+      if (k === 'add') { a = rnd.int(12, 59); b = rnd.int(5, 39); ans = a + b; q = a + ' + ' + b + ' = ?'; }
+      else if (k === 'sub') { a = rnd.int(30, 99); b = rnd.int(6, 29); ans = a - b; q = a + ' − ' + b + ' = ?'; }
+      else if (k === 'mul') { a = rnd.int(3, 12); b = rnd.int(3, 12); ans = a * b; q = a + ' × ' + b + ' = ?'; }
+      else if (k === 'div') { b = rnd.int(2, 9); ans = rnd.int(3, 12); a = ans * b; q = a + ' ÷ ' + b + ' = ?'; }
+      else { a = rnd.int(4, 30); ans = rnd.int(3, 25); b = a + ans; q = a + ' + ? = ' + b; }
+      var ch = [ans], d = [1, -1, 2, 10, -10, 3]; rnd.shuffle(d);
+      for (var i = 0; ch.length < 4 && i < d.length; i++) if (ans + d[i] >= 0 && ch.indexOf(ans + d[i]) < 0) ch.push(ans + d[i]);
+      var sh = rnd.shuffle(ch.slice());
+      out.push({ q: q, choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 });
+    });
+    return out;
+  }
   function practiceStart() {
-    practice.on = true; mySeat = 0;
-    var rnd = practice.rnd;
-    for (var i = 0; i < 5; i++) { var a = rnd.int(2, 12), b = rnd.int(2, 12), ans = a + b, ch = [ans, ans + 1, ans - 1, ans + 2], sh = rnd.shuffle(ch.slice()); practice.items.push({ q: a + ' + ' + b + ' = ?', choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 }); }
-    runner(0);
-    for (var g = 1; g <= 3; g++) { var r = runner(-g); r.ghost = true; practice.ghosts.push(-g); }
-    banner(t('practice'));
-    setTimeout(practiceNext, 1500);
+    practice.on = true; mySeat = 0; ended = false; finished = false; finishCount = 0; leader = null; zoneSeen = 0; myStreak = 0; podium = [];
+    R.clear(); practice.i = -1; practice.items = makeItems(practice.rnd);
+    runner(0); BOTS.forEach(function (b, k) { var r = runner(-(k + 1)); r.bot = b; });
+    $('endcard').classList.add('qr-hide'); $('stand').classList.add('qr-hide');
+    for (var k = 0; k < 3; k++) $('medal' + k).hidden = true;
+    ticker('🏝️', t('practice2'), 'zone long');
+    phase = 'countdown'; setGems(); setCombo();
+    var go = performance.now() + 4200;
+    setTimeout(function () { countdownTo(function () { return go - performance.now(); }); }, 900);
+    clearTimeout(practice.timer); practice.timer = setTimeout(practiceNext, 4400);
   }
   function practiceNext() {
     practice.i++;
     if (practice.i >= practice.items.length) {
-      var order = Array.from(R.values()).sort(function (a, b) { return b.target - a.target; });
-      podium = order.slice(0, 3).map(function (r) { return r.seat; });
-      showBoard(order.map(function (r) { return { name: r.seat < 0 ? t('ghost', { n: -r.seat }) : (BRB.user.displayName || ''), score: null }; }), t('podium'));
-      phase = 'ended'; banner(t('finish')); if (!reduced) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
+      endRace(ranking().map(function (r) { return { seat: r.seat, prog: r.target }; }), [], []);
       return;
     }
     var it = practice.items[practice.i];
-    practice.deadline = performance.now() + it.secs * 1000; phase = 'playing';
+    practice.deadline = performance.now() + it.secs * 1000; phase = 'playing'; practice.picks = [];
+    practice.shownAt = performance.now();
     showCard({ i: practice.i, n: practice.items.length, q: it.q, choices: it.choices, secs: it.secs, at: 0 });
+    setGems(); setCombo();
+    // the racers answer, each in its own time
+    BOTS.forEach(function (b, k) {
+      var when = (b.quick + practice.rnd.float() * 0.5) * it.secs * 1000 * 0.6;
+      var ok = practice.rnd.chance(b.skill), pick = ok ? it.answer : (it.answer + 1 + practice.rnd.int(0, it.choices.length - 2)) % it.choices.length;
+      practice.picks.push({ seat: -(k + 1), pick: pick, ms: when });
+    });
   }
-  function practiceAnswer(i) {
-    var it = practice.items[practice.i], ok = i === it.answer, n = practice.items.length;
-    showReveal({ answer: it.answer, counts: [] });
-    showResult({ ok: ok, points: ok ? 750 : 0 });
-    var me0 = runner(0); if (ok) { me0.target = Math.min(1000, me0.target + 1000 / n); me0.gems++; me0.burst = 1; }
-    practice.ghosts.forEach(function (s) { var r = runner(s); if (practice.rnd.chance(0.6)) r.target = Math.min(1000, r.target + 1000 / n * 0.9); });
-    setGems(); phase = 'between';
-    setTimeout(practiceNext, 1800);
+  function practiceAnswered(i) {
+    practice.mine = { pick: i, ms: performance.now() - practice.shownAt };
+    clearTimeout(practice.timer); practice.timer = setTimeout(practiceReveal, 900);
+  }
+  function practiceReveal() {
+    if (phase !== 'playing') return;
+    var it = practice.items[practice.i], n = practice.items.length, secs = it.secs * 1000;
+    var all = practice.picks.concat(practice.mine && practice.mine.pick >= 0 ? [{ seat: 0, pick: practice.mine.pick, ms: practice.mine.ms }] : []);
+    var counts = it.choices.map(function () { return 0; }); all.forEach(function (a) { counts[a.pick]++; });
+    phase = 'between';
+    showReveal({ answer: it.answer, counts: counts });
+    var mineOk = practice.mine && practice.mine.pick === it.answer;
+    if (!practice.mine || practice.mine.pick < 0) showResult({ none: true });
+    else showResult({ ok: mineOk, points: mineOk ? Math.round(500 + 500 * (1 - Math.min(1, practice.mine.ms / secs))) : 0 });
+    // the same race steps as the server: 80% of a step for a right answer, up to 20% more for a quick one
+    var list = [];
+    R.forEach(function (r) {
+      var a = null; all.forEach(function (x) { if (x.seat === r.seat) a = x; });
+      var ok = a && a.pick === it.answer, prog = r.target, gems = r.gems;
+      if (ok) { prog = Math.min(1000, prog + 800 / n + (200 / n) * (1 - Math.max(0, a.ms - secs / 3) / (secs * 2 / 3))); gems += a.ms < secs / 3 ? 2 : 1; }
+      list.push({ seat: r.seat, prog: Math.round(prog), gems: gems });
+    });
+    syncRace(list, true);
+    practice.mine = null;
+    clearTimeout(practice.timer); practice.timer = setTimeout(practiceNext, 5200);
   }
   function practiceStep() {
-    if (practice.on && phase === 'playing' && performance.now() > practice.deadline && myPick < 0) { myPick = 9; practiceAnswer(-1); }
+    if (practice.on && phase === 'playing' && performance.now() > practice.deadline) { if (myPick < 0) { myPick = 9; practice.mine = { pick: -1, ms: 0 }; } practiceReveal(); }
   }
+  $('again').textContent = t('again');
+  $('again').addEventListener('click', function () { sfx('select'); practiceStart(); });
 
-  // ---- the 2D view (Simple view, or a device without 3D): top-down island and race ----
-  var flat2 = null, flatRaf = 0;
+  // ---- the 2D view (Simple view, or a device without 3D): the island from above, zones, runners, sparkles ----
+  var flat2 = null, sparks2 = [];
   function start2d() {
     var cv = $('flat'); cv.hidden = false; $('view').hidden = true;
     flat2 = L.flat({ me: true, px: 64 });
@@ -392,30 +790,57 @@
       var W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
       if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var sc = Math.min(W, H) / 62, ox = W / 2, oy = H / 2;
+      var sc = Math.min(W, H) / 62, ox = W / 2, oy = H / 2 + (Q && phase === 'playing' ? -H * 0.12 : 0);
       ctx.fillStyle = '#7fd0f0'; ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = '#f4dca0'; ctx.beginPath(); ctx.ellipse(ox, oy, 30 * sc, 30 * sc, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#9ad46c'; ctx.beginPath(); ctx.ellipse(ox, oy, 26 * sc, 26 * sc, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#e8c27a'; ctx.lineWidth = 2.2 * sc; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath();
-      TRACK.forEach(function (p, i) { if (i) ctx.lineTo(ox + p.x * sc, oy + p.z * sc); else ctx.moveTo(ox + p.x * sc, oy + p.z * sc); }); ctx.stroke();
-      ctx.font = '700 ' + Math.round(sc * 1.6) + 'px system-ui'; ctx.textAlign = 'center';
-      GATES.forEach(function (u) { var p = at(u); ctx.fillStyle = '#ffc83d'; ctx.beginPath(); ctx.arc(ox + p.x * sc, oy + p.z * sc, sc * 0.7, 0, Math.PI * 2); ctx.fill(); });
-      ctx.fillStyle = '#1d2340'; ctx.fillText('🏁', ox + FINISH.x * sc, oy + FINISH.z * sc);
+      // the volcano and the castle
+      var V = at(0.56), C = FINISH;
+      ctx.fillStyle = '#a8452a'; ctx.beginPath(); ctx.arc(ox + (V.x + V.dz * 7) * sc, oy + (V.z - V.dx * 7) * sc, 4.2 * sc, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ff9a3a'; ctx.beginPath(); ctx.arc(ox + (V.x + V.dz * 7) * sc, oy + (V.z - V.dx * 7) * sc, 1.6 * sc, 0, Math.PI * 2); ctx.fill();
+      // the path, zone by zone
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ZONES.forEach(function (z) {
+        ctx.strokeStyle = z.dark; ctx.lineWidth = 3 * sc; ctx.beginPath();
+        for (var u = z.a; u <= Math.min(1, z.b) + 1e-6; u += 0.01) { var p = at(u); if (u === z.a) ctx.moveTo(ox + p.x * sc, oy + p.z * sc); else ctx.lineTo(ox + p.x * sc, oy + p.z * sc); }
+        ctx.stroke(); ctx.strokeStyle = z.col; ctx.lineWidth = 2.2 * sc; ctx.stroke();
+        var m = at((z.a + Math.min(1, z.b)) / 2); ctx.font = Math.round(sc * 2.6) + 'px system-ui'; ctx.textAlign = 'center'; ctx.fillText(z.icon, ox + (m.x + m.dz * 4.5) * sc, oy + (m.z - m.dx * 4.5) * sc);
+      });
+      GATES.forEach(function (u) { var p = at(u); ctx.fillStyle = '#ffc83d'; ctx.beginPath(); ctx.arc(ox + p.x * sc, oy + p.z * sc, sc * 0.6, 0, Math.PI * 2); ctx.fill(); });
+      ctx.font = Math.round(sc * 3.4) + 'px system-ui'; ctx.fillText('🏰', ox + (C.x + C.dz * 4) * sc, oy + (C.z - C.dx * 4) * sc);
+      ctx.fillStyle = '#1d2340'; ctx.font = Math.round(sc * 2.4) + 'px system-ui'; ctx.fillText('🏁', ox + FINISH.x * sc, oy + FINISH.z * sc);
+      // boosted runners glow; gems sparkle
+      R.forEach(function (r) {
+        var px = ox + r.x * sc, py = oy + r.z * sc;
+        if (r.boost && !reduced) { ctx.fillStyle = 'rgba(255,138,42,' + (0.35 + 0.15 * Math.sin(ts / 80)) + ')'; ctx.beginPath(); ctx.arc(px, py, sc * 2.2, 0, Math.PI * 2); ctx.fill(); }
+        if (r.burst > 0.95 && !reduced) for (var k = 0; k < 10; k++) sparks2.push({ x: r.x, z: r.z, vx: (Math.random() - 0.5) * 8, vz: (Math.random() - 0.5) * 8, life: 0.8 });
+      });
+      sparks2 = sparks2.filter(function (s) { s.life -= dt; s.x += s.vx * dt; s.z += s.vz * dt; if (s.life > 0) { ctx.fillStyle = 'rgba(255,215,60,' + s.life + ')'; ctx.beginPath(); ctx.arc(ox + s.x * sc, oy + s.z * sc, sc * 0.45, 0, Math.PI * 2); ctx.fill(); } return s.life > 0; });
       // everyone: in the lobby where they roam (the platform's positions); in the race on the path
       if (phase === 'lobby' && L.active) { if (!host) flat2.place(mySeat, roam.x, roam.z, roam.h); R.forEach(function (r) { if (r.seat !== mySeat) flat2.free(r.seat); }); }
-      else R.forEach(function (r) { if (r.seat >= 0 || !L.active) flat2.place(r.seat, r.x, r.z, r.h); });
+      else R.forEach(function (r) { if (r.seat >= 0) flat2.place(r.seat, r.x, r.z, r.h); });
       flat2.draw(ctx, { scale: sc, ox: ox, oy: oy, r: Math.max(12, sc * 1.1) });
-      if (!L.active) R.forEach(function (r) { if (r.seat < 0) { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.arc(ox + r.x * sc, oy + r.z * sc - sc, sc, 0, Math.PI * 2); ctx.fill(); } });
-      flatRaf = requestAnimationFrame(loop);
+      // practice racers: a coloured badge with their initial
+      R.forEach(function (r) {
+        if (r.seat >= 0) return;
+        var px = ox + r.x * sc, py = oy + r.z * sc - sc;
+        ctx.fillStyle = dotColor(r.seat); ctx.beginPath(); ctx.arc(px, py, Math.max(10, sc * 1.1), 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1d2340'; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = '800 ' + Math.max(11, Math.round(sc * 1.2)) + 'px system-ui'; ctx.fillText(nameOf(r.seat).charAt(0), px, py + sc * 0.4);
+      });
+      // the podium labels at the castle
+      if (ended) podium.forEach(function (seat, k) { var r = R.get(seat); if (r) QR.medalAt(k, ox + r.x * sc + (k - 1) * 70, oy + r.z * sc - sc * 2.6 - k * 4); });
+      requestAnimationFrame(loop);
     };
-    flatRaf = requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
   }
 
   // ---- start: the 3D module takes over when it can; otherwise (or after 8 s) the 2D view ----
   var QR = window.QR = {
-    view: L.view, at: at, TRACK: TRACK, GATES: GATES, START: START, FINISH: FINISH, R: R, roam: roam, step: step, stepRoam: stepRoam,
-    get phase() { return phase; }, get mySeat() { return mySeat; }, get host() { return host; }, get podium() { return podium; }, get podiumTeams() { return podiumTeams; }, get finished() { return finished; },
+    view: L.view, at: at, heightAt: heightAt, ZONES: ZONES, BRIDGE: BR, zoneOf: zoneOf, TRACK: TRACK, GATES: GATES, START: START, FINISH: FINISH, R: R, BOTS: BOTS, roam: roam, step: step, stepRoam: stepRoam, ranking: ranking,
+    get phase() { return phase; }, get mySeat() { return mySeat; }, get host() { return host; }, get solo() { return solo; }, get podium() { return podium; }, get podiumTeams() { return podiumTeams; }, get finished() { return finished; },
+    get leader() { return leader; }, get photo() { return performance.now() < photoUntil; }, get question() { return !!(Q && phase === 'playing'); }, get cardUp() { return !$('card').classList.contains('qr-hide'); },
     started3d: false, drawCalls: 0,
+    medalAt: function (k, x, y) { var m = $('medal' + k); if (!m || !ended || podium[k] == null) return; m.hidden = false; m.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px) translate(-50%,-100%)'; },
     fallback: function () { if (QR.started3d || flat2) return; QR.view = '2d'; begin(); },
   };
   var begun = false;
@@ -427,17 +852,18 @@
     if (!L.active && !practice.on) practiceStart();
     $('stick').classList.toggle('qr-hide', host || phase !== 'lobby' || !L.active);
     if (phase === 'lobby' && L.active && !host) banner(t('wait'));
-    setGems();
+    setGems(); setCombo();
   }
   QR.begin = begin;
   if (QR.view === '2d') begin(); else setTimeout(function () { if (!QR.started3d) QR.fallback(); }, 8000);
   O.test({
     state: function () {
       var mine = R.get(mySeat);
-      return { view: QR.view, phase: phase, role: L.role, me: { seat: mySeat, progress: mine ? Math.round(mine.shown) : 0, target: mine ? mine.target : 0, gems: mine ? mine.gems : 0, x: roam.x, z: roam.z },
+      return { view: QR.view, phase: phase, role: L.role, me: { seat: mySeat, progress: mine ? Math.round(mine.shown) : 0, target: mine ? mine.target : 0, gems: mine ? mine.gems : 0, x: roam.x, z: roam.z, streak: myStreak, rank: mine ? rankOf(mySeat) : 0 },
         others: L.players().filter(function (p) { return p.seat !== mySeat; }).map(function (p) { var pos = L.position(p.seat); var r = R.get(p.seat); return { seat: p.seat, x: pos ? pos.x : null, z: pos ? pos.z : null, progress: r ? Math.round(r.shown) : 0 }; }),
         question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 || L.quiz.answered } : null, podium: podium.slice(), drawCalls: QR.drawCalls, started3d: QR.started3d,
-        teams: L.teams().map(function (x) { return { team: x.team, name: x.name, rank: x.rank, size: x.size }; }), myTeam: L.myTeam ? L.myTeam.team : 0, teamBars: !$('tbars').classList.contains('qr-hide'), podiumTeams: podiumTeams.map(function (x) { return x.team; }) };
+        teams: L.teams().map(function (x) { return { team: x.team, name: x.name, rank: x.rank, size: x.size }; }), myTeam: L.myTeam ? L.myTeam.team : 0, teamBars: !$('tbars').classList.contains('qr-hide'), podiumTeams: podiumTeams.map(function (x) { return x.team; }),
+        leader: leader, banners: tickerLog.slice(), countdown: cdLog.slice(), runners: ranking().map(function (r) { return { seat: r.seat, target: r.target, gems: r.gems, streak: r.streak, done: r.done }; }), practice: practice.on };
     },
     start: function () { return true; },
   });
@@ -453,9 +879,13 @@
     "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48" } }
 </script>
 <script type="module">
-// The 3D view of Quest Race: the island (the kit's beach theme), the race path as one flat ribbon, gem gates, the start
-// arch, the finish flag and podium, my runner as my own character, everyone else through Oomba.live.crowd (rigs near,
-// billboards further, one instanced shape far away, nameplates for the nearest eight).
+// The 3D view of Quest Race: the island in five zones (palms on Sunny Beach, the Jungle, a smoking volcano, the Sky
+// Bridge arching over a lagoon, a castle at the finish), the race path as a ribbon in each zone's colour, gem gates, a
+// start arch and the podium. Runners are the players' own characters (Oomba.live.crowd: rigs near, billboards further,
+// one instanced shape far away). One particle system does the dust, the boost flames, the gem bursts and the
+// fireworks. The projector gets a director camera: an orbit in the lobby, a crane down to the start line, a wide shot
+// over the island while the question is up, a chase cam on the leader while the runners run, slow motion for a photo
+// finish, and a turn around the podium at the end. Detail follows the device (B.tier); reduced motion keeps it still.
 import * as THREE from 'three';
 const QR = window.QR, O = window.Oomba, L = O.live;
 if (QR && QR.view === '3d') {
@@ -463,100 +893,263 @@ if (QR && QR.view === '3d') {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: devicePixelRatio < 1.5 });
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 16 / 9, 0.1, 400);
   const B = O.three(THREE, { renderer, scene, camera, theme: 'beach' });
-  const W = B.world({ size: 40, flat: true, clear: 32, propCount: { low: 6, mid: 9, high: 12 }[B.tier] });
-  // the island: a grassy top on the beach (one mesh), the race path a sandy ribbon across it
-  const isle = new THREE.Mesh(new THREE.CircleGeometry(31, 48), B.toon('#8FCB6A', { rim: 0 })); isle.rotation.x = -Math.PI / 2; isle.position.y = 0.015; isle.userData.noInk = true; isle.receiveShadow = true; scene.add(isle);
-  // the path: one ribbon mesh
-  const pts = QR.TRACK, pos = [], idx = [];
-  pts.forEach((p, i) => {
-    const n = pts[Math.min(pts.length - 1, i + 1)], q = pts[Math.max(0, i - 1)], dx = n.x - q.x, dz = n.z - q.z, l = Math.hypot(dx, dz) || 1, w = 2.6;
-    pos.push(p.x - dz / l * w, 0.03, p.z + dx / l * w, p.x + dz / l * w, 0.03, p.z - dx / l * w);
-    if (i) { const a = i * 2; idx.push(a - 2, a - 1, a, a - 1, a + 1, a); }
-  });
-  const rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); rg.setIndex(idx); rg.computeVertexNormals();
-  const ribbon = new THREE.Mesh(rg, B.toon('#F4DCA0', { rim: 0 })); ribbon.userData.noInk = true; ribbon.receiveShadow = true; scene.add(ribbon);
+  const tier = B.tier, low = tier === 'low', high = tier === 'high', motion = B.reduced ? 0 : 1;
+  B.world({ size: 40, flat: true, clear: 32, propCount: { low: 4, mid: 7, high: 10 }[tier] });
+  // the island: a grassy top on the beach (one mesh)
+  const isle = new THREE.Mesh(new THREE.CircleGeometry(31, 56), B.toon('#8FCB6A', { rim: 0 })); isle.rotation.x = -Math.PI / 2; isle.position.y = 0.015; isle.userData.noInk = true; isle.receiveShadow = true; scene.add(isle);
+  // ---- the path: one ribbon per zone, in the zone's colour, rising over the Sky Bridge ----
+  const ribbon = (a, b, color, w, y0) => {
+    const pos = [], idx = [], n = Math.max(2, Math.ceil((b - a) * 260));
+    for (let i = 0; i <= n; i++) {
+      const u = a + (b - a) * i / n, p = QR.at(u), y = p.y + y0;
+      pos.push(p.x - p.dz * w, y, p.z + p.dx * w, p.x + p.dz * w, y, p.z - p.dx * w);
+      if (i) { const k = i * 2; idx.push(k - 2, k - 1, k, k - 1, k + 1, k); }
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    const m = new THREE.Mesh(g, B.toon(color, { rim: 0, side: THREE.DoubleSide })); m.userData.noInk = true; m.receiveShadow = true; scene.add(m); return m;
+  };
+  QR.ZONES.forEach(z => { ribbon(z.a, Math.min(1, z.b), z.dark, 2.85, 0.025); ribbon(z.a, Math.min(1, z.b), z.col, 2.45, 0.04); });
+  // ---- instanced scenery helpers (one draw call per shape) ----
+  const inst = (geo, mat, list, setup) => {
+    if (!list.length) return null;
+    const m = new THREE.InstancedMesh(geo, mat, list.length), o = new THREE.Object3D();
+    list.forEach((it, i) => { o.position.set(it.x, it.y || 0, it.z); o.rotation.set(it.rx || 0, it.ry || 0, it.rz || 0); o.scale.setScalar(it.s || 1); if (setup) setup(o, it); o.updateMatrix(); m.setMatrixAt(i, o.matrix); });
+    m.castShadow = !low; scene.add(m); return m;
+  };
+  const rnd = O.rand(11);
+  const side = (u, off) => { const p = QR.at(u); return { x: p.x + p.dz * off, z: p.z - p.dx * off, p }; };
+  const nearTrack = (x, z, d) => { for (let u = 0; u <= 1; u += 0.01) { const p = QR.at(u); if (Math.hypot(p.x - x, p.z - z) < d) return true; } return false; };
+  const lobbyC = { x: QR.START.x + 3, z: QR.START.z - 3 };
+  const scatter = (a, b, n, offMin, offMax) => { const out = []; for (let i = 0; i < n * 4 && out.length < n; i++) { const u = a + rnd.float() * (b - a), off = (rnd.chance(0.5) ? 1 : -1) * (offMin + rnd.float() * (offMax - offMin)), s = side(u, off); if (Math.hypot(s.x, s.z) < 28 && !nearTrack(s.x, s.z, 3.9) && Math.hypot(s.x - lobbyC.x, s.z - lobbyC.z) > 11) out.push({ x: s.x, z: s.z, u }); } return out; };
+  const many = { low: 0.5, mid: 0.8, high: 1 }[tier];
+  // Sunny Beach: palms (a leaning trunk and a crown of leaves) and striped umbrellas
+  const palms = scatter(0, 0.2, Math.round(9 * many), 3.4, 8);
+  inst(new THREE.CylinderGeometry(0.16, 0.26, 4, 6), B.toon('#9b6b3d', { flat: true }), palms.map(p => ({ ...p, y: 2, rz: (rnd.float() - 0.5) * 0.35, rx: (rnd.float() - 0.5) * 0.35, s: 0.9 + rnd.float() * 0.3 })));
+  inst(new THREE.ConeGeometry(1.7, 1.2, 7), B.toon('#3fa34d', { flat: true }), palms.map(p => ({ ...p, y: 4.1, ry: rnd.float() * 6, s: 0.9 + rnd.float() * 0.3 })));
+  const umbr = scatter(0.02, 0.18, Math.round(4 * many), 3.6, 6);
+  inst(new THREE.ConeGeometry(1.3, 0.6, 8), B.toon('coral', { flat: true }), umbr.map(p => ({ ...p, y: 2.1 })));
+  inst(new THREE.CylinderGeometry(0.06, 0.06, 2, 5), B.toon('stone'), umbr.map(p => ({ ...p, y: 1 })));
+  // the Jungle: tall layered trees and big round bushes
+  const jt = scatter(0.2, 0.44, Math.round(16 * many), 3.2, 9);
+  inst(new THREE.CylinderGeometry(0.22, 0.32, 3, 6), B.toon('#7a5130', { flat: true }), jt.map(p => ({ ...p, y: 1.5 })));
+  inst(new THREE.ConeGeometry(1.9, 2.6, 7), B.toon('#2f8f3e', { flat: true }), jt.map(p => ({ ...p, y: 3.5, ry: rnd.float() * 6 })));
+  inst(new THREE.ConeGeometry(1.4, 2.0, 7), B.toon('#45b052', { flat: true }), jt.map(p => ({ ...p, y: 4.9, ry: rnd.float() * 6 })));
+  const bushes = scatter(0.18, 0.5, Math.round(14 * many), 2.9, 7);
+  inst(new THREE.IcosahedronGeometry(1, 0), B.toon('#3c9a47', { flat: true }), bushes.map(p => ({ ...p, y: 0.5, s: 0.7 + rnd.float() * 0.7 })));
+  // the Volcano: a big cone beside the pass, a glowing crater, lava streams and rocks; smoke puffs rise from it
+  const VP = side(0.56, 8.5);
+  const volcano = new THREE.Mesh(new THREE.ConeGeometry(6.2, 7.5, 12, 1, true), B.toon('#8a4a32', { flat: true })); volcano.position.set(VP.x, 3.75, VP.z); scene.add(volcano); B.outline(volcano, { important: true });
+  const crater = new THREE.Mesh(new THREE.CircleGeometry(1.25, 16), new THREE.MeshBasicMaterial({ color: '#ff7a1a' })); crater.rotation.x = -Math.PI / 2; crater.position.set(VP.x, 7.3, VP.z); crater.userData.noInk = true; scene.add(crater);
+  const capTop = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.6, 0.5, 12, 1, true), B.toon('#5b2c1c', { flat: true })); capTop.position.set(VP.x, 7.15, VP.z); scene.add(capTop);
+  const lava = new THREE.MeshBasicMaterial({ color: '#ff8a2a' });
+  for (let k = 0; k < 3; k++) { const a = k * 2.1 + 0.4, st = new THREE.Mesh(new THREE.BoxGeometry(0.35, 6.4, 0.08), lava); st.position.set(VP.x + Math.sin(a) * 3.1, 3.6, VP.z + Math.cos(a) * 3.1); st.lookAt(VP.x, 3.6, VP.z); st.rotateX(-0.69); st.userData.noInk = true; scene.add(st); }
+  const rocks = scatter(0.44, 0.68, Math.round(12 * many), 2.9, 7);
+  inst(new THREE.DodecahedronGeometry(0.7, 0), B.toon('#5d5a66', { flat: true }), rocks.map(p => ({ ...p, y: 0.35, s: 0.5 + rnd.float() * 0.9, ry: rnd.float() * 6 })));
+  const puffs = []; const puffM = B.toon('#d9d4cf', { flat: true });
+  for (let k = 0; k < (low ? 4 : 8); k++) { const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.9, 0), puffM.clone()); m.material.transparent = true; m.userData.noInk = true; m.userData.t = k / (low ? 4 : 8); scene.add(m); puffs.push(m); }
+  // the Sky Bridge: planks over a lagoon, posts and ropes
+  const lag = side((QR.BRIDGE[0] + QR.BRIDGE[1]) / 2, 0);
+  const lagoon = new THREE.Mesh(new THREE.CircleGeometry(5.6, 28), new THREE.MeshBasicMaterial({ color: '#3fb7e8' })); lagoon.rotation.x = -Math.PI / 2; lagoon.position.set(lag.x, 0.05, lag.z); lagoon.scale.set(1, 1.6, 1); lagoon.rotation.z = Math.atan2(lag.p.dx, lag.p.dz); lagoon.userData.noInk = true; scene.add(lagoon);
+  const posts = []; for (let u = QR.BRIDGE[0]; u <= QR.BRIDGE[1] + 1e-6; u += (QR.BRIDGE[1] - QR.BRIDGE[0]) / 10) for (const s of [-2.75, 2.75]) { const q = side(u, s); posts.push({ x: q.x, z: q.z, y: q.p.y + 0.6 }); }
+  inst(new THREE.CylinderGeometry(0.09, 0.11, 1.2, 5), B.toon('#7a5130'), posts);
+  for (const s of [-2.75, 2.75]) { const pts = []; for (let u = QR.BRIDGE[0]; u <= QR.BRIDGE[1] + 1e-6; u += 0.004) { const q = side(u, s); pts.push(new THREE.Vector3(q.x, q.p.y + 1.15, q.z)); } const rope = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.05, 4), B.toon('#e8c27a')); rope.userData.noInk = true; scene.add(rope); }
+  // the Castle: two towers with cone roofs and flags, a wall behind the finish, a checkered finish arch
+  const F = QR.at(1), cast = new THREE.Group();
+  const stoneM = B.toon('#d8d0e6', { flat: true }), roofM = B.toon('grape', { flat: true });
+  for (const s of [-4.6, 4.6]) {
+    const tw = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.35, 6, 10), stoneM); tw.position.set(s, 3, 0); cast.add(tw);
+    const rf = new THREE.Mesh(new THREE.ConeGeometry(1.6, 2.4, 10), roofM); rf.position.set(s, 7.2, 0); cast.add(rf);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.7), B.toon('coral', { side: THREE.DoubleSide })); fl.position.set(s + 0.55, 8.9, 0); fl.userData.wave = true; cast.add(fl);
+    const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.6, 4), B.toon('stone')); pl.position.set(s, 8.6, 0); cast.add(pl);
+  }
+  const wall = new THREE.Mesh(new THREE.BoxGeometry(10, 3.4, 0.9), stoneM); wall.position.set(0, 1.7, 15); cast.add(wall);
+  for (let k = -4.5; k <= 4.5; k += 1.5) { const mer = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.9), stoneM); mer.position.set(k, 3.75, 15); cast.add(mer); }
+  for (const s of [-5.6, 5.6]) { const tw = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.45, 7, 10), stoneM); tw.position.set(s, 3.5, 15); cast.add(tw); const rf = new THREE.Mesh(new THREE.ConeGeometry(1.75, 2.6, 10), roofM); rf.position.set(s, 8.3, 15); cast.add(rf); }
+  const checker = document.createElement('canvas'); checker.width = 128; checker.height = 32; { const x = checker.getContext('2d'); for (let i = 0; i < 16; i++) for (let j = 0; j < 4; j++) { x.fillStyle = (i + j) % 2 ? '#1d2340' : '#ffffff'; x.fillRect(i * 8, j * 8, 8, 8); } }
+  const banner = new THREE.Mesh(new THREE.PlaneGeometry(7.4, 1.1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(checker), side: THREE.DoubleSide })); banner.position.set(0, 5.2, 0); banner.userData.noInk = true; cast.add(banner);
+  for (const s of [-3.7, 3.7]) { const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 5.8, 6), B.toon('stone')); pole.position.set(s, 2.9, 0); cast.add(pole); }
+  cast.position.set(F.x, 0, F.z); cast.rotation.y = Math.atan2(F.dx, F.dz); scene.add(cast); B.outline(cast, { important: true });
+  // the start arch
+  const S0 = QR.at(0), arch = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.28, 6, 18, Math.PI), B.toon('coral'));
+  arch.position.set(S0.x, 0, S0.z); arch.rotation.y = Math.atan2(S0.dx, S0.dz) + Math.PI / 2; scene.add(arch); B.outline(arch, { important: true });
+  // zone signposts: an emoji on a board at each zone's door
+  const signTex = icon => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.fillStyle = '#fff8e6'; x.beginPath(); x.arc(64, 64, 60, 0, Math.PI * 2); x.fill(); x.lineWidth = 8; x.strokeStyle = '#1d2340'; x.stroke(); x.font = '72px system-ui, "Apple Color Emoji", "Noto Color Emoji", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(icon, 64, 70); return new THREE.CanvasTexture(c); };
+  const signs = QR.ZONES.slice(1).map(z => { const q = side(z.a, 3.6), g = new THREE.Group(); const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 2.6, 5), B.toon('#7a5130')); post.position.y = 1.3; g.add(post); const board = new THREE.Sprite(new THREE.SpriteMaterial({ map: signTex(z.icon) })); board.scale.set(1.5, 1.5, 1); board.position.y = 3; board.userData.noInk = true; g.add(board); g.position.set(q.x, 0, q.z); scene.add(g); return g; });
   // gem gates: a glowing ring on the path and a spark (the gem) floating over it
   const ringG = new THREE.RingGeometry(1.6, 2.1, 24), ringM = B.toon('spark', { step: 'light', glow: true, rim: 0 });
   const gates = QR.GATES.map(u => {
     const p = QR.at(u), g = new THREE.Group();
-    const ring = new THREE.Mesh(ringG, ringM); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05; ring.userData.noInk = true; g.add(ring);
-    const sp = B.spark({ size: 0.8 }); sp.position.y = 1.9; g.add(sp);
-    g.position.set(p.x, 0, p.z); scene.add(g); return g;
+    const ring = new THREE.Mesh(ringG, ringM); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.07; ring.userData.noInk = true; g.add(ring);
+    const sp = B.spark({ size: 0.8 }); sp.position.y = 1.9; g.add(sp); g.userData.sp = sp;
+    g.position.set(p.x, p.y, p.z); scene.add(g); return g;
   });
-  // the start arch and the finish flag with its podium
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.25, 6, 18, Math.PI), B.toon('coral')); const S0 = QR.at(0);
-  arch.position.set(S0.x, 0, S0.z); arch.rotation.y = Math.atan2(S0.dx, S0.dz) + Math.PI / 2; scene.add(arch); B.outline(arch, { important: true });
-  const F = QR.at(1), flag = new THREE.Group();
-  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 4.5, 6), B.toon('stone')); pole.position.y = 2.25; flag.add(pole);
-  const cloth = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.1), B.toon('coral', { side: THREE.DoubleSide })); cloth.position.set(0.9, 3.8, 0); flag.add(cloth);
-  flag.position.set(F.x + F.dz * 3.4, 0, F.z - F.dx * 3.4); scene.add(flag); B.outline(flag, { important: true });
-  const PODIUM = [[0, 1.4], [-1.7, 1.0], [1.7, 0.7]].map(([off, h], k) => {
-    const m = new THREE.Mesh(new THREE.BoxGeometry(1.5, h, 1.5), B.toon(['spark', 'stone', 'peach'][k])); const px = F.x + F.dx * 4 - F.dz * off, pz = F.z + F.dz * 4 + F.dx * off;
+  // the podium beyond the finish
+  const PODIUM = [[0, 1.4], [-1.8, 1.0], [1.8, 0.7]].map(([off, h], k) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(1.6, h, 1.6), B.toon(['spark', 'stone', 'peach'][k])); const px = F.x + F.dx * 5.5 - F.dz * off, pz = F.z + F.dz * 5.5 + F.dx * off;
     m.position.set(px, h / 2, pz); scene.add(m); B.outline(m); return { x: px, z: pz, h, mesh: m };
   });
-  // me
+
+  // ---- particles: one Points cloud (additive glow) for dust, flames, gem bursts and fireworks ----
+  const NP = { low: 500, mid: 1100, high: 1800 }[tier];
+  const pPos = new Float32Array(NP * 3), pCol = new Float32Array(NP * 3), pVel = new Float32Array(NP * 3), pLife = new Float32Array(NP), pMax = new Float32Array(NP), pBase = new Float32Array(NP * 3), pGrav = new Float32Array(NP);
+  const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3)); pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+  const dotTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.4, 'rgba(255,255,255,.8)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+  const pts = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.55, map: dotTex, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true }));
+  pts.frustumCulled = false; pts.userData.noInk = true; scene.add(pts);
+  for (let i = 0; i < NP; i++) pPos[i * 3 + 1] = -99;
+  let pHead = 0;
+  const col = new THREE.Color();
+  function emit(x, y, z, vx, vy, vz, hex, life, grav) {
+    if (!motion) return;
+    const i = pHead; pHead = (pHead + 1) % NP;
+    pPos[i * 3] = x; pPos[i * 3 + 1] = y; pPos[i * 3 + 2] = z; pVel[i * 3] = vx; pVel[i * 3 + 1] = vy; pVel[i * 3 + 2] = vz;
+    col.set(hex); pBase[i * 3] = col.r; pBase[i * 3 + 1] = col.g; pBase[i * 3 + 2] = col.b; pLife[i] = pMax[i] = life; pGrav[i] = grav == null ? 6 : grav;
+  }
+  function stepParticles(dt) {
+    for (let i = 0; i < NP; i++) {
+      if (pLife[i] <= 0) continue;
+      pLife[i] -= dt; const f = Math.max(0, pLife[i] / pMax[i]);
+      pVel[i * 3 + 1] -= pGrav[i] * dt;
+      pPos[i * 3] += pVel[i * 3] * dt; pPos[i * 3 + 1] += pVel[i * 3 + 1] * dt; pPos[i * 3 + 2] += pVel[i * 3 + 2] * dt;
+      pCol[i * 3] = pBase[i * 3] * f; pCol[i * 3 + 1] = pBase[i * 3 + 1] * f; pCol[i * 3 + 2] = pBase[i * 3 + 2] * f;
+      if (pLife[i] <= 0) pPos[i * 3 + 1] = -99;
+    }
+    pGeo.attributes.position.needsUpdate = true; pGeo.attributes.color.needsUpdate = true;
+  }
+  const FLAME = ['#ffe36a', '#ff9a2a', '#ff5a2a'], GEMC = ['#ffe36a', '#7ff0ff', '#ffffff', '#ff9ad5'], FW = ['#ff4d6d', '#ffd23f', '#3bceac', '#4d96ff', '#c77dff', '#ffffff'];
+  function gemBurst(x, y, z) { for (let k = 0; k < (low ? 14 : 26); k++) { const a = Math.random() * Math.PI * 2, s = 2 + Math.random() * 4; emit(x, y + 1.4, z, Math.cos(a) * s, 3 + Math.random() * 5, Math.sin(a) * s, GEMC[k % GEMC.length], 0.9 + Math.random() * 0.5, 9); } }
+  function firework(x, y, z) { const c = FW[Math.floor(Math.random() * FW.length)], c2 = FW[Math.floor(Math.random() * FW.length)]; for (let k = 0; k < (low ? 40 : 90); k++) { const a = Math.random() * Math.PI * 2, b = Math.acos(2 * Math.random() - 1), s = 6 + Math.random() * 3; emit(x, y, z, Math.sin(b) * Math.cos(a) * s, Math.cos(b) * s, Math.sin(b) * Math.sin(a) * s, k % 3 ? c : c2, 1.3 + Math.random() * 0.6, 3); } }
+
+  // ---- me (a player), practice racers, and everyone else through the crowd ----
   const me = L.role === 'host' ? null : B.rig(L.me && L.me.avatar ? L.me.avatar : O.avatar(), { size: 1.6 });
   if (me) scene.add(me);
-  const ghosts = new Map();
+  const bots = new Map();
   const crowd = L.crowd(B, { auto: false, size: 1.6, self: () => me });   // self: my own emotes play on my runner
-  // team mode: a ring under my own runner; at the end the podium steps take the top teams' colours and shapes
   const myRing = () => { if (me) crowd.teamRing(me, L.myTeam ? L.myTeam.team : 0); };
   L.on('teams', myRing); myRing();
-  let banners = null;
+  let flags = null;
   const teamPodium = () => {
-    if (banners || !QR.podiumTeams.length) return;
-    banners = QR.podiumTeams.map((tm, k) => {
+    if (flags || !QR.podiumTeams.length) return;
+    flags = QR.podiumTeams.map((tm, k) => {
       const P = PODIUM[k]; if (!P) return null;
       P.mesh.material = B.toon(tm.color);
       const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
       x.fillStyle = tm.color; x.fillRect(0, 0, 128, 128); x.lineWidth = 6; x.strokeStyle = '#ffffff'; x.strokeRect(3, 3, 122, 122); L.drawShape(x, tm.shape, 64, 64, 44, tm.ink, null);
-      const flagM = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), side: THREE.DoubleSide }));
-      flagM.position.set(P.x, P.h + 2.6, P.z); flagM.userData.noInk = true; scene.add(flagM); return flagM;
+      const flagM = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), side: THREE.DoubleSide }));
+      flagM.position.set(P.x + F.dx * 0.95, P.h + 1.15, P.z + F.dz * 0.95); flagM.userData.noInk = true; scene.add(flagM); return flagM;
     });
   };
-  BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap, onResize(w, h) { camera.fov = w / h < 0.8 ? 72 : 58; } });
-  let yaw = 0, look = new THREE.Vector3(QR.START.x, 1, QR.START.z), t0 = 0;
-  B.run(dt => {
-    QR.step(dt); t0 += dt;
+  BRB.fx.fit3d(renderer, camera, { maxDpr: Math.min(B.dprCap, low ? 1 : 1.5), onResize(w, h) { camera.fov = w / h < 0.8 ? 72 : 56; } });
+
+  // ---- the director (the projector) and the chase camera (a player) ----
+  const camPos = new THREE.Vector3(QR.START.x + 14, 9, QR.START.z + 10), camLook = new THREE.Vector3(QR.START.x, 1, QR.START.z);
+  const wantPos = new THREE.Vector3(), wantLook = new THREE.Vector3(), tmp = new THREE.Vector3();
+  let yaw = 0, t0 = 0, lastPhase = '', phaseT = 0, shotT = 0, shot = 0, fwT = 0, fov = 56, kick = 0;
+  const pack = () => { let sx = 0, sz = 0, n = 0, lead = null; QR.R.forEach(r => { sx += r.x; sz += r.z; n++; if (!lead || r.shown > lead.shown) lead = r; }); return { x: n ? sx / n : QR.START.x, z: n ? sz / n : QR.START.z, lead }; };
+  const SOLID = [{ x: VP.x, z: VP.z, r: 7.6, h: 9 }];
+  { const cs = Math.cos(cast.rotation.y), sn = Math.sin(cast.rotation.y); for (const [lx, lz, r, h] of [[-4.6, 0, 2, 9.5], [4.6, 0, 2, 9.5], [-5.6, 15, 2.2, 9.5], [5.6, 15, 2.2, 9.5], [-2.5, 15, 1.6, 4.3], [0, 15, 1.6, 4.3], [2.5, 15, 1.6, 4.3]]) SOLID.push({ x: F.x + lx * cs + lz * sn, z: F.z - lx * sn + lz * cs, r, h }); }
+  function clearCam(v) {
+    for (const o of SOLID) { if (v.y > o.h) continue; const dx = v.x - o.x, dz = v.z - o.z, d = Math.hypot(dx, dz); if (d < o.r) { const k = (o.r + 0.4) / Math.max(0.01, d); v.x = o.x + dx * k; v.z = o.z + dz * k; } }
+    if (v.y < 1.2) v.y = 1.2;
+  }
+  function director(dt, ph) {
+    const P = pack(), lead = P.lead, a = t0 * 0.07 * motion;
+    if (ph === 'lobby') { wantLook.set(QR.START.x + 3, 0.8, QR.START.z - 3); wantPos.set(wantLook.x + Math.sin(a + 2.2) * 15, 9, wantLook.z + Math.cos(a + 2.2) * 15); return 2; }
+    if (ph === 'loading' || ph === 'countdown') {
+      // the crane: from high over the island down to the start line
+      const k = Math.min(1, phaseT / 3.2), e = 1 - Math.pow(1 - k, 3), S = QR.START;
+      wantLook.set(S.x + S.dx * 3, 1, S.z + S.dz * 3);
+      wantPos.set(S.x - S.dx * (9 + 30 * (1 - e)) + S.dz * 4, 3.2 + 32 * (1 - e), S.z - S.dz * (9 + 30 * (1 - e)) - S.dx * 4);
+      return 3.5;
+    }
+    if (ph === 'ended') { const Pd = PODIUM[0], b = Math.sin(t0 * 0.15) * 0.35 * motion, fwd = Math.atan2(F.dx, F.dz); wantLook.set(Pd.x, 2.2, Pd.z); wantPos.set(Pd.x + Math.sin(fwd + b) * 8.2, 4.6, Pd.z + Math.cos(fwd + b) * 8.2); return 1.6; }
+    if (QR.photo && lead) {
+      // photo finish: low and close at the line, from the side
+      wantLook.set(F.x, 1.1, F.z); wantPos.set(F.x + F.dz * 6.5 - F.dx * 1.5, 1.8, F.z - F.dx * 6.5 - F.dz * 1.5); return 4;
+    }
+    if (QR.cardUp) {
+      // the question is up (the card covers the lower half): a wide, slow pass over the island, the pack high in frame
+      const c = Math.sin(a * 0.6) * 0.5; wantLook.set(P.x * 0.6, 0, P.z * 0.6 + 6);
+      wantPos.set(P.x * 0.6 + Math.sin(c + 0.4) * 30, 30, P.z * 0.6 + Math.cos(c + 0.4) * 30 + 6); return 1.2;
+    }
+    // the runners run: a chase cam behind the leader, then a side shot of the pack, turn about
+    shotT += dt; if (shotT > 5.5) { shotT = 0; shot = (shot + 1) % 2; }
+    if (!lead) { wantLook.set(P.x, 1, P.z); wantPos.set(P.x + 14, 12, P.z + 14); return 2; }
+    const p = QR.at(lead.shown / 1000);
+    if (shot === 0) { wantLook.set(lead.x + p.dx * 3, lead.y + 1.2, lead.z + p.dz * 3); wantPos.set(lead.x - p.dx * 7.5 + p.dz * 1.5, lead.y + 3.6, lead.z - p.dz * 7.5 - p.dx * 1.5); }
+    else { wantLook.set((lead.x + P.x) / 2, 1, (lead.z + P.z) / 2); wantPos.set(wantLook.x + p.dz * 13, 7.5, wantLook.z - p.dx * 13); }
+    return 2.4;
+  }
+  B.run(dt0 => {
+    const slow = QR.photo && motion ? 0.4 : 1, dt = dt0 * slow;
+    QR.step(dt0); t0 += dt;
     const ph = QR.phase, ended = ph === 'ended';
+    if (ph !== lastPhase) { lastPhase = ph; phaseT = 0; } else phaseT += dt0;
     // my avatar: roaming in the lobby, on the path in the race, on the podium at the end
     if (me) {
       if (ph === 'lobby' && L.active) { QR.stepRoam(dt, yaw); me.position.set(QR.roam.x, 0, QR.roam.z); me.heading = QR.roam.h; me.speed = QR.roam.sp; }
-      else { const r = QR.R.get(QR.mySeat); if (r) { me.position.set(r.x, 0, r.z); me.heading = r.h; me.speed = r.sp; if (r.stumble) me.play('hurt', 500); if (r.burst > 0.95) me.play('cheer', 800); } }
+      else { const r = QR.R.get(QR.mySeat); if (r) { me.position.set(r.x, r.y, r.z); me.heading = r.h; me.speed = r.sp; if (r.stumble > 0.75) me.play('hurt', 500); if (r.burst > 0.95) me.play('cheer', 800); } }
     }
-    // everyone else: their roaming positions in the lobby (the platform sends them); their runner in the race
+    // everyone else (and the practice racers)
     QR.R.forEach(r => {
       if (r.seat === QR.mySeat && L.role !== 'host') return;
-      if (r.seat < 0) {   // practice ghosts
-        let g = ghosts.get(r.seat); if (!g) { g = B.sprite({ species: 'oomba', colors: { base: 'snow' } }, { size: 1.4 }); g.traverse(o => { if (o.material) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.55; } }); scene.add(g); ghosts.set(r.seat, g); }
-        g.position.set(r.x, 0, r.z); g.heading = r.h; g.speed = r.sp; return;
+      if (r.seat < 0) {
+        let g = bots.get(r.seat); if (!g) { g = B.rig(r.bot ? r.bot.spec : { species: 'oomba' }, { size: 1.5 }); scene.add(g); bots.set(r.seat, g); }
+        g.position.set(r.x, r.y, r.z); g.heading = r.h; g.speed = r.sp; if (r.burst > 0.95) g.play('cheer', 800); return;
       }
-      if (ph === 'lobby') crowd.free(r.seat); else crowd.place(r.seat, r.x, 0, r.z, r.h, r.sp);
+      if (ph === 'lobby') crowd.free(r.seat); else crowd.place(r.seat, r.x, r.y, r.z, r.h, r.sp);
     });
-    if (ended) teamPodium();
-    if (banners) for (const b of banners) if (b) b.lookAt(camera.position);
-    if (ended) QR.podium.forEach((seat, k) => { const P = PODIUM[k]; if (!P) return; if (seat === QR.mySeat && me) { me.position.set(P.x, P.h, P.z); me.heading = 0; me.speed = 0; if (Math.floor(t0 * 2) % 3 === 0) me.play('cheer', 600); } else crowd.place(seat, P.x, P.h, P.z, 0, 0); });
+    // effects: dust behind runners, flames behind boosted ones, a burst of gems
+    if (motion && !ended) QR.R.forEach(r => {
+      const p = QR.at(r.shown / 1000);
+      if (r.sp && Math.random() < (low ? 0.25 : 0.6)) emit(r.x - p.dx * 0.5, r.y + 0.15, r.z - p.dz * 0.5, (Math.random() - 0.5) * 1.2, 0.8 + Math.random(), (Math.random() - 0.5) * 1.2, '#e8d2a0', 0.5, 2);
+      if (r.boost && Math.random() < (low ? 0.4 : 0.9)) emit(r.x - p.dx * 0.6 + (Math.random() - 0.5) * 0.4, r.y + 0.5 + Math.random() * 0.6, r.z - p.dz * 0.6 + (Math.random() - 0.5) * 0.4, -p.dx * 2, 1.5 + Math.random() * 2, -p.dz * 2, FLAME[Math.floor(Math.random() * 3)], 0.45, -2);
+      if (r.burst > 0.95 && !r.fxBurst) { r.fxBurst = true; gemBurst(r.x, r.y, r.z); }
+      if (r.burst < 0.5) r.fxBurst = false;
+    });
+    // the volcano smokes and glows; flags wave; gems spin
+    puffs.forEach((m, k) => { const tt = (m.userData.t + t0 * 0.12 * (motion || 0.2)) % 1; m.position.set(VP.x + Math.sin(k * 2.3) * tt * 1.5, 7.6 + tt * 6, VP.z + Math.cos(k * 1.7) * tt * 1.5); m.scale.setScalar(0.5 + tt * 1.8); m.material.opacity = 0.75 * (1 - tt); });
+    crater.material.color.setHSL(0.06 + 0.02 * Math.sin(t0 * 3), 1, 0.55 + 0.08 * Math.sin(t0 * 5) * motion);
+    if (motion) { gates.forEach((g, k) => { g.userData.sp.rotation.y = t0 * 2 + k; g.userData.sp.position.y = 1.9 + Math.sin(t0 * 2.5 + k) * 0.18; }); cast.traverse(o => { if (o.userData.wave) o.rotation.y = Math.sin(t0 * 4 + o.position.x) * 0.35; }); }
+    // the end: runners on the podium, fireworks over the castle
+    if (ended) {
+      teamPodium();
+      QR.podium.forEach((seat, k) => {
+        const P = PODIUM[k]; if (!P) return;
+        if (seat === QR.mySeat && me) { me.position.set(P.x, P.h, P.z); me.heading = Math.atan2(camera.position.x - P.x, camera.position.z - P.z); me.speed = 0; if (Math.floor(t0 * 2) % 3 === 0) me.play('cheer', 600); }
+        else if (seat < 0) { const g = bots.get(seat); if (g) { g.position.set(P.x, P.h, P.z); g.speed = 0; } }
+        else crowd.place(seat, P.x, P.h, P.z, 0, 0);
+        tmp.set(P.x, P.h + 2.25, P.z).project(camera);
+        if (tmp.z < 1) QR.medalAt(k, (tmp.x + 1) / 2 * canvas.clientWidth, (1 - tmp.y) / 2 * canvas.clientHeight);
+      });
+      fwT -= dt0; if (fwT <= 0 && motion) { fwT = 0.55 + Math.random() * 0.6; firework(F.x + (Math.random() - 0.5) * 14, 9 + Math.random() * 5, F.z + (Math.random() - 0.5) * 14); }
+    }
+    if (flags) for (const f of flags) if (f) f.lookAt(camera.position);
+    stepParticles(dt0);
     crowd.update(dt);
-    // the camera: behind me (a player), a slow cinematic over the race (the host's projector)
-    if (L.role === 'host' || !me) {
-      if (ph === 'lobby') { const a = (B.reduced ? 0 : t0 * 0.06) + 2.2; camera.position.set(QR.START.x + 3 + Math.sin(a) * 11, 6.5, QR.START.z - 3 + Math.cos(a) * 11); camera.lookAt(QR.START.x + 3, 0.8, QR.START.z - 3); }
-      else if (ended) { const P = PODIUM[0]; camera.position.set(P.x + 7, 5, P.z + 7); camera.lookAt(P.x, 1.5, P.z); }
-      else {
-        let lead = null; QR.R.forEach(r => { if (!lead || r.shown > lead.shown) lead = r; });
-        const tx = lead ? lead.x : QR.START.x, tz = lead ? lead.z : QR.START.z;
-        look.lerp(new THREE.Vector3(tx, 1, tz), Math.min(1, dt * 2));
-        const a = (B.reduced ? 0 : t0 * 0.08) + 0.8;
-        camera.position.set(look.x + Math.sin(a) * 18, 14, look.z + Math.cos(a) * 18); camera.lookAt(look);
-      }
+    // the camera
+    let follow = 3;
+    if (L.role === 'host' || !me || ended) {
+      follow = director(dt0, ph);
+      if (ended && L.role !== 'host' && canvas.clientWidth < canvas.clientHeight) { wantLook.y -= 2.2; wantPos.y += 2.5; }
+      if (B.reduced) { camPos.copy(wantPos); camLook.copy(wantLook); }
     } else {
       const tgt = me.position, hd = ph === 'lobby' ? yaw : me.heading;
       if (ph !== 'lobby') yaw += ((hd - yaw + Math.PI * 3) % (Math.PI * 2) - Math.PI) * Math.min(1, dt * 2);
-      look.lerp(new THREE.Vector3(tgt.x, tgt.y + 1, tgt.z), Math.min(1, dt * 5));
+      const r = QR.R.get(QR.mySeat), boosting = r && r.boost && r.sp;
       // during a question the card covers the lower half: look further down so I stay in the top half
-      const low = ph === 'playing' || ph === 'between' ? 2.6 : 0.4;
-      camera.position.set(look.x - Math.sin(yaw) * 7, look.y + 4.2 + low * 0.6, look.z - Math.cos(yaw) * 7);
-      camera.lookAt(look.x + Math.sin(yaw) * low, look.y + 0.4 - low * 0.9, look.z + Math.cos(yaw) * low);
+      const lowv = QR.cardUp ? 2.6 : 0.4, dist = ended ? 9 : 7;
+      wantLook.set(tgt.x + Math.sin(yaw) * lowv, tgt.y + 1.4 - lowv * 0.9, tgt.z + Math.cos(yaw) * lowv);
+      wantPos.set(tgt.x - Math.sin(yaw) * dist, tgt.y + 5.4 + lowv * 0.6, tgt.z - Math.cos(yaw) * dist);
+      kick += ((boosting ? 1 : 0) - kick) * Math.min(1, dt0 * 3);
+      follow = 5;
     }
+    clearCam(wantPos);
+    camPos.lerp(wantPos, Math.min(1, dt0 * follow)); camLook.lerp(wantLook, Math.min(1, dt0 * follow * 1.4)); clearCam(camPos);
+    camera.position.copy(camPos); camera.lookAt(camLook);
+    const baseFov = canvas.clientWidth / Math.max(1, canvas.clientHeight) < 0.8 ? 72 : 56;
+    fov += ((baseFov + kick * 10 * motion) - fov) * Math.min(1, dt0 * 4);
+    if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = fov; camera.updateProjectionMatrix(); }
     QR.drawCalls = renderer.info.render.calls;
     QR.crowdCalls = crowd.drawCalls;
   });
