@@ -209,6 +209,7 @@ router.get('/play/:slug', (req, res) => {
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
     <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>`}
+    ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo" aria-hidden="true">🔊</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </div>
   <div class="stage" id="stage" dir="ltr">

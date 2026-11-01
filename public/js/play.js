@@ -2,6 +2,7 @@
 // and turns allowed ones into server calls. Docs: docs/sdk.md
 import { api, toast, sheet, pageData, refreshLive, tappedJustNow, $, t, esc } from '/js/app.js';
 import { openLobby, startRelay } from '/js/match.js';
+import { ttsBlob, voiceMode, setVoiceMode, saveData } from '/js/tts.js';
 const d = pageData();
 // The game frame waits in a <template> until its 'load' listener is on (below), so its first load is never missed.
 const frame = document.importNode($('#gameframe-tpl').content.firstElementChild, true), stage = $('#stage');
@@ -69,7 +70,11 @@ const TYPES = {
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
   'brb:retry': m => true,
   'brb:online': m => true,
+  // AI voices (official games only; public/js/tts.js): one line of the game's own words to read aloud.
+  'brb:tts': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.text === 'string' && m.text.length > 0 && m.text.length <= 600 && typeof m.lang === 'string' && m.lang.length <= 16
+    && TTS_ROLES.includes(m.role) && Number.isFinite(m.rate) && m.rate >= 0.5 && m.rate <= 2 && (m.pre === undefined || m.pre === true),
 };
+const TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
 export function validMessage(e, frameWin) {
   if (e.source !== frameWin) return null;            // only our game frame
   if (e.origin !== 'null') return null;              // sandboxed frames have an opaque origin
@@ -87,7 +92,8 @@ const relay = d.match ? startRelay(d, stage) : null;
 addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
   switch (m.type) {
-    case 'brb:ready': if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); break;
+    case 'brb:ready': if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); tellMode(); break;
+    case 'brb:tts': gameLine(m); break;
     // "Play online" in a game that can be played online: the site's own sheet (friends, family, codes).
     case 'brb:online': if (d.online && !d.match && tappedJustNow()) openLobby(d); break;
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
@@ -124,5 +130,34 @@ $('#p-rate') && $('#p-rate').addEventListener('click', () => {
   s.el.addEventListener('click', async e => {
     const b = e.target.closest('[data-stars]'); if (!b) return;
     try { await api(`/api/games/${d.gameId}/rate`, { method: 'POST', body: { stars: +b.dataset.stars } }); d.myStars = +b.dataset.stars; toast(t('js.play.thanksRating')); s.close(); } catch (err) { toast(err.message, { bad: true }); }
+  });
+});
+
+// ---- AI voices (docs/tts-design.md): the game frame can't fetch, so its lines come through here ----
+// Only official games get d.tts (a token bound to this player and game); the server checks the game, the language and
+// the words again. Any refusal, a timeout or the device choice: the frame is told no, and it uses the device's voice.
+const toFrame = (msg, transfer) => { try { frame.contentWindow.postMessage({ brb: 1, ...msg }, '*', transfer || []); } catch { /* frame gone */ } };
+function tellMode() { if (d.tts) toFrame({ type: 'brb:tts-mode', mode: voiceMode() }); }
+async function gameLine(m) {
+  const no = why => { if (!m.pre) toFrame({ type: 'brb:tts', id: m.id, ok: false, why }); };
+  if (!d.tts || !d.tts.tok) return no('off');
+  if (voiceMode() !== 'ai') return no('off');
+  try {
+    const blob = await ttsBlob({ ctx: 'game', tok: d.tts.tok, text: m.text, lang: m.lang, role: m.role, rate: m.rate });
+    if (m.pre) return;
+    const buf = await blob.arrayBuffer();   // a fresh copy each time: the transfer hands it to the frame
+    toFrame({ type: 'brb:tts', id: m.id, ok: true, buf }, [buf]);
+  } catch (err) { no(err && err.code ? err.code : 'error'); }
+}
+// The 🔊 Voices button (only when this game has AI voices): AI voices or this device's own voice, and what AI voices are.
+$('#p-voices') && $('#p-voices').addEventListener('click', () => {
+  const cur = voiceMode();
+  const opt = (v, label) => `<label class="radio-row"><input type="radio" name="voices" value="${v}"${cur === v ? ' checked' : ''}> ${esc(label)}</label>`;
+  const s = sheet({ title: t('js.play.voicesTitle'), content: `<div class="stack" role="radiogroup" aria-label="${esc(t('js.play.voicesTitle'))}">${opt('ai', t('js.play.voicesAi'))}${opt('device', t('js.play.voicesDevice'))}</div>
+    <p class="small muted" id="p-voices-note">${esc(t('js.play.voicesNote', { provider: d.tts.provider || 'OpenAI' }))}</p>${saveData() ? `<p class="small muted">${esc(t('js.play.voicesSaveData'))}</p>` : ''}` });
+  s.el.addEventListener('change', e => {
+    const r = e.target.closest('input[name="voices"]'); if (!r) return;
+    setVoiceMode(r.value); tellMode();
+    $('#p-voices').setAttribute('aria-pressed', String(r.value === 'ai'));
   });
 });

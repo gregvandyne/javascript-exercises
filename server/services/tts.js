@@ -92,14 +92,20 @@ function hasName(text, name) {
   if (latin(n)) return new RegExp(`(^|\\s)${escRe(n)}(\\s|$)`).test(t);
   return t.replace(/\s/g, '').includes(n.replace(/\s/g, ''));
 }
+/** Contexts whose text is a teacher's question set, looked up on the server by number (routes/tts.js). */
+const BY_NUMBER = new Set(['live', 'lesson']);
 /**
  * The backstop checks (the main guard is which text a route accepts). -> null (ok) | 'long' (empty or over
  * TTS_MAX_CHARS) | 'filtered' (rude words, personal info, something like a link code, the user's own name or username).
+ * ctx 'live' / 'lesson': a teacher's quiz question, already on everyone's screen. Its numbers and answer letters are not
+ * taken for a phone number or a family link code (a maths question with its four answers reads as "2 + 3? A: 5. B: 4. C:
+ * 6. D: 7.": one long run of digits, and letter-digit pairs like a link code). Rude words, emails and links still count.
  */
-export function speakable(text, { user = null } = {}) {
+export function speakable(text, { user = null, ctx = null } = {}) {
   const s = tidy(text);
   if (!s || s.length > config.ttsMaxChars) return 'long';
-  if (hasProfanity(s) || personalInfo(s) || looksLikeLinkCode(s)) return 'filtered';
+  const quiz = BY_NUMBER.has(ctx), pi = personalInfo(s);
+  if (hasProfanity(s) || (pi && !(pi === 'phone' && quiz)) || (!quiz && looksLikeLinkCode(s))) return 'filtered';
   if (user && (hasName(s, user.display_name) || hasName(s, user.username))) return 'filtered';
   return null;
 }

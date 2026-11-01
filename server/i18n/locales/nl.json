@@ -610,7 +610,8 @@
         "h": "Wat de AI ziet",
         "p1": "Om een game te maken, worden de berichten, afbeeldingen en bestanden die je kind aan de Bouwer geeft naar Claude gestuurd, een AI van het bedrijf Anthropic, die de game schrijft. De naam en gebruikersnaam van je kind worden daar niet bij meegestuurd. Ook profielfoto's worden naar Claude gestuurd, zodat ze gecontroleerd worden voordat iemand ze ziet. Claude beoordeelt games voordat ze met iedereen kunnen worden gedeeld, en ons team bekijkt de games waarover Claude twijfelt. Chats tussen vrienden en antwoorden in lessen worden niet naar de AI gestuurd.",
         "p2": "Praten in plaats van typen: als je kind in de chat van de Bouwer op de microfoon tikt, gaat de opname naar de spraak-naar-tekstdienst {provider}, die er woorden van maakt. Je kind ziet de woorden en kan ze aanpassen voordat het verstuurt. De opname wordt alleen hiervoor gebruikt en meteen verwijderd: wij bewaren hem nooit, en {provider} mag hem niet bewaren of gebruiken om zijn systemen te trainen. De woorden gaan door dezelfde veiligheidscontroles als een getypt bericht.",
-        "p3": "Feiten opzoeken: om een spel goed te maken kan de Bouwer een feit op internet opzoeken (bijvoorbeeld hoe snel een jachtluipaard rent). Je kind ziet nooit de webpagina's of links. De Bouwer heeft de opdracht nooit iets persoonlijks op te zoeken; lijkt een zoekopdracht toch persoonlijk, dan worden de resultaten niet gebruikt en de woorden niet bewaard. Sites voor volwassenen, gokken, sociale media en video's zijn geblokkeerd. We bewaren een lijst van de zoekopdrachten, zonder de naam of gebruikersnaam van je kind, samen met het spel waarvoor ze waren, 90 dagen, zodat ons team ze kan controleren."
+        "p3": "Feiten opzoeken: om een spel goed te maken kan de Bouwer een feit op internet opzoeken (bijvoorbeeld hoe snel een jachtluipaard rent). Je kind ziet nooit de webpagina's of links. De Bouwer heeft de opdracht nooit iets persoonlijks op te zoeken; lijkt een zoekopdracht toch persoonlijk, dan worden de resultaten niet gebruikt en de woorden niet bewaard. Sites voor volwassenen, gokken, sociale media en video's zijn geblokkeerd. We bewaren een lijst van de zoekopdrachten, zonder de naam of gebruikersnaam van je kind, samen met het spel waarvoor ze waren, 90 dagen, zodat ons team ze kan controleren.",
+        "p4": "AI-stemmen: sommige van onze eigen spellen, lesquizzen en Oomba Live-quizzen kunnen hun tekst voorlezen met een computerstem van {ttsProvider}. Alleen tekst die wij, de makers van een spel of de leraar van uw kind hebben geschreven wordt verstuurd, nooit wat uw kind typt of zegt, en nooit zijn of haar naam. Uw kind krijgt te horen dat de stemmen door AI zijn gemaakt en kan met de knop 🔊 Stemmen overstappen op de stem van het apparaat."
       },
       "keep": {
         "h": "Hoe lang we het bewaren",
@@ -978,7 +979,8 @@
         "p2": "<b>Betalen is niet de manier waarop we een ouder om toestemming vragen.</b> Een abonnement kopen verandert niets aan wat we over een kind verzamelen, waarvoor we dat gebruiken of waarmee een ouder akkoord is gegaan.",
         "p3": "<b>Je rechten als ouder (eigen accounts):</b> je kunt ons vragen om je te laten zien wat we over je kind bewaren, om het te verwijderen, of om te stoppen met meer verzamelen. Mail naar <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Er is nog geen knop om te verwijderen of te downloaden, dus we handelen deze verzoeken met de hand af, en we moeten controleren dat jij de ouder bent voordat we iets doen. Ontkoppelen of een abonnement opzeggen verwijdert het account van je kind niet.",
         "p4": "<b>Schoolaccounts:</b> een schoolaccount wordt gemaakt door de school en is van de school. Voor die accounts handelen we namens de school en volgens haar instructies: we gebruiken gegevens van leerlingen alleen om Oomba Academy aan de school te leveren, nooit voor reclame, en we verkopen ze niet. Ouders van leerlingen met een schoolaccount kunnen de school vragen om gegevens in te zien of te verwijderen; de school kan het aan ons vragen. Een gegevensovereenkomst die de school met ons heeft ondertekend, gaat voor.",
-        "p5": "<b>Geen verkoop, geen reclame:</b> we verkopen niemands persoonsgegevens, tonen geen reclame en gebruiken geen advertentie- of trackingcookies."
+        "p5": "<b>Geen verkoop, geen reclame:</b> we verkopen niemands persoonsgegevens, tonen geen reclame en gebruiken geen advertentie- of trackingcookies.",
+        "p6": "<b>AI-stemmen:</b> als een spel, les of Oomba Live tekst voorleest met een AI-stem, wordt alleen die tekst vanaf onze server naar {ttsProvider} gestuurd om het geluid te maken, nooit iets over uw kind. {ttsProvider} mag de tekst een beperkte tijd bewaren om misbruik te controleren. Spelers krijgen te horen dat deze stemmen door een computer zijn gemaakt."
       },
       "billingKeep": {
         "h": "Hoe lang we betaalgegevens bewaren",
@@ -1108,7 +1110,8 @@
       "lostTitle": "Oeps, het 3D-beeld stopte",
       "lostText": "Dat gebeurt soms. Tik op Opnieuw om het spel opnieuw te starten.",
       "retry": "Opnieuw proberen"
-    }
+    },
+    "voices": "Stemmen"
   },
   "friends": {
     "title": "Vrienden",
@@ -1677,7 +1680,12 @@
       "starsLabel": "{count, plural, one {# ster} other {# sterren}}",
       "thanksRating": "Bedankt voor je beoordeling!",
       "stopped": "Dit spel werkt niet meer.",
-      "restart": "Opnieuw beginnen"
+      "restart": "Opnieuw beginnen",
+      "voicesTitle": "Stemmen",
+      "voicesAi": "AI-stemmen",
+      "voicesDevice": "De stem van dit apparaat",
+      "voicesNote": "De personages in dit spel praten met stemmen van een computer (AI-stemmen van {provider}). Ze lezen alleen de woorden van het spel voor, nooit iets wat jij typt en nooit je naam.",
+      "voicesSaveData": "Databesparing staat aan, dus de stem van dit apparaat wordt gebruikt tot je AI-stemmen kiest."
     },
     "friends": {
       "codeCopied": "Code gekopieerd! Geef hem aan een vriend die je kent.",
@@ -4453,7 +4461,8 @@
       "pickTeam": "Kies je team",
       "eyes": "Kijk naar je leraar",
       "moved": "Je zit nu bij {team}",
-      "again": "Misschien start je leraar nog een spel. Blijf op deze pagina!"
+      "again": "Misschien start je leraar nog een spel. Blijf op deze pagina!",
+      "aiVoice": "Voorlezen gebruikt een AI-stem van de computer ({provider})."
     },
     "emote": {
       "wave": "Zwaaien",
@@ -4498,7 +4507,8 @@
       "teacherView": "Leraarweergave",
       "soundOn": "Geluid aan",
       "soundOff": "Geluid uit",
-      "seeResultsNow": "Nu de uitslag bekijken"
+      "seeResultsNow": "Nu de uitslag bekijken",
+      "read": "Vraag voorlezen"
     },
     "landing": {
       "title": "Een livespel leiden",
@@ -5053,7 +5063,11 @@
       "emotes": "Emotes",
       "remembered": "Je keuzes worden onthouden voor je volgende live spel.",
       "reset": "Terug naar de standaardinstellingen",
-      "save": "Opslaan"
+      "save": "Opslaan",
+      "voices": "Stemmen voor voorlezen",
+      "voicesAi": "AI-stemmen",
+      "voicesDevice": "De eigen stem van elk apparaat",
+      "voicesHint": "AI-stemmen worden gemaakt door een computer ({provider}). Alleen je vragen en antwoordkeuzes worden verstuurd, nooit namen of wat leerlingen typen."
     },
     "say": {
       "menu": "Bericht",

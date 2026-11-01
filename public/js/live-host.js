@@ -9,7 +9,7 @@
 // Part 4: co-hosts. The host's "Co-hosts" dialog shows adults' names only behind a gate ("check the class can't see your
 // screen"), and closing it hides them again; no activity line ever shows here. A co-host may use this page when the
 // projector slot is free (else it says so and points to the Teacher view); the host's own projector takes it back.
-import { connect, gameFrame, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, teamChip, teamsOf, scoresOf, flash, paintTeam } from '/js/live-common.js';
+import { connect, gameFrame, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, teamChip, teamsOf, scoresOf, flash, paintTeam, readAloud, stopReading, voiceFor, aiOn } from '/js/live-common.js';
 import { board as teamBoard, teamBars } from '/js/live-teams-ui.js';
 import { cohostPanel, actText, namesOf } from '/js/live-cohost.js';
 
@@ -67,8 +67,10 @@ function onMessage(m) {
     case 'bn': if (m.k) flash($('lv-bonus-toast'), fill(D.text.toastTeam, { team: (presetOf(m.k) || {}).name || '', points: m.p, reason: (D.bonus || [])[m.r] || '' }), 5000); if (!m.k) return; break;   // a player's bonus is private: not on the class's screen
     case 'eyes': setEyes(m.on); return;
     case 'say': flash($('lv-say-banner'), (D.say || [])[m.m] || '', 6000); return;
-    case 'cf': settings = { ...settings, ...m.d }; fillSettings(); setSound(); return;
+    case 'cf': settings = { ...settings, ...m.d }; fillSettings(); setSound(); showRead(); return;
     case 'dq': case 'dp': case 'sup': case 'me': case 'again': return;   // never for the projector (and never sent here)
+    case 'q': question = { i: m.i, q: m.q, choices: m.choices || [] }; showRead(); break;
+    case 'rv': question = null; stopReading(); showRead(); break;
     default: break;
   }
   if (frame) frame.send(m);
@@ -85,6 +87,8 @@ function welcome(m) {
   if (m.teams) teams = teamsOf(m.teams);
   if (m.ts) scoresOf(m.ts, scores);
   if (m.settings) { settings = { ...settings, ...m.settings }; fillSettings(); setSound(); }
+  readLang = m.lang || readLang;
+  question = m.quiz && m.quiz.q ? { i: m.quiz.q.i, q: m.quiz.q.q, choices: m.quiz.q.choices || [] } : null;
   for (const p of players.values()) drawPlayer(p);
   count(); setLocked(m.locked); setEyes(!!m.eyes);
   if (!frame || !frame.el) {
@@ -120,6 +124,8 @@ async function onPhase(m, first = false) {
   const time = $('lv-time'); if (time) time.hidden = !(D.quiz && phase === 'playing');
   const al = $('lv-autolock'); if (al) al.hidden = phase !== 'lobby' || locked || settings.late !== false;
   document.body.dataset.phase = phase;
+  if (phase !== 'playing') { question = phase === 'paused' ? question : null; stopReading(); }
+  showRead();
   if (phase === 'loading' && frame && frame.kind === 'lobby' && !first) { const tok = await frameToken('game'); if (tok) loadFrame('game', tok); }
   // In a game, the code box gets out of the way once play starts (Show code brings it back).
   $('lv-joinbox').classList.toggle('is-small', !['lobby'].includes(phase));
@@ -213,6 +219,22 @@ function setSound() {
   b.setAttribute('aria-pressed', String(on)); b.textContent = `${on ? '🔊' : '🔇'} ${on ? D.text.soundOn : D.text.soundOff}`;
 }
 setSound();
+
+// ---- read the question aloud on the big screen (quiz modes, with the projector's Sound on) ----
+// AI voices (D.tts, unless the teacher set Voices to each device's own voice): the server reads the open question by
+// its number with this page's host token; otherwise, or if that fails, this computer's own voice reads it.
+let question = null, readLang = '';
+const lng = () => readLang || document.documentElement.lang;
+const aiHere = () => !!(D.tts && settings.voices !== 'device' && aiOn(D.tts.langs, lng()));
+function showRead() {
+  const b = $('lv-host-read'); if (!b) return;
+  b.hidden = !(question && phase === 'playing' && settings.sound !== false && (aiHere() || voiceFor(lng())));
+}
+$('lv-host-read') && $('lv-host-read').addEventListener('click', () => {
+  if (!question) return;
+  const text = `${question.q}. ${question.choices.map((c, i) => `${String.fromCharCode(65 + i)}: ${c}`).join('. ')}`;
+  readAloud({ text, lang: lng(), ai: aiHere() ? { langs: D.tts.langs, body: { ctx: 'live', sid: D.sid, tok: D.tok, i: question.i, lang: lng() } } : null });
+});
 
 // ---- the settings dialog: fields named by setting; Save sends what changed (cf) ----
 const sform = $('lv-settings-form');

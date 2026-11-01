@@ -938,3 +938,4 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-modes>.panel{margin:0}
 .lp-mode h3{margin:0 0 var(--s2);font-size:1.15rem}
 .lp-mode p{margin:0}
+.radio-row{display:flex;gap:8px;align-items:center;min-block-size:44px}

@@ -610,7 +610,8 @@
         "h": "What the AI sees",
         "p1": "To make a game, the messages, pictures and files your child gives the Builder are sent to Claude, an AI made by the company Anthropic, which writes the game. Your child's name and username are not sent with them. Profile photos are also sent to Claude to be checked before anyone sees them. Claude reviews games before they can be shared with everyone, and our team checks any it is unsure about. Chats between friends and lesson answers are not sent to the AI.",
         "p2": "Speaking instead of typing: when your child taps the microphone in the Builder chat, the recording is sent to {provider}, a speech-to-text service, which turns it into words. Your child sees the words and can change them before sending. The recording is used only for this and deleted straight away: we never store it, and {provider} is not allowed to keep it or use it to train its systems. The words go through the same safety checks as a typed message.",
-        "p3": "Looking up facts: to get a game right, the Builder can look up a fact on the web (for example how fast a cheetah runs). Your child never sees the web pages or links. The Builder is told never to search for anything personal; if a search still looks personal, its results are not used and its words are not kept. Adult, gambling, social media and video sites are blocked. We keep a list of the searches, without your child's name or username, together with the game they were for, for 90 days so our team can check them."
+        "p3": "Looking up facts: to get a game right, the Builder can look up a fact on the web (for example how fast a cheetah runs). Your child never sees the web pages or links. The Builder is told never to search for anything personal; if a search still looks personal, its results are not used and its words are not kept. Adult, gambling, social media and video sites are blocked. We keep a list of the searches, without your child's name or username, together with the game they were for, for 90 days so our team can check them.",
+        "p4": "AI voices: some of our own games, lesson quizzes and Oomba Live quizzes can read their words aloud with a computer-made voice from {ttsProvider}. Only text written by us, a game's makers or your child's teacher is sent, never what your child types or says, and never their name. Your child is told the voices are made by AI, and can switch to the device's own voice with the 🔊 Voices button."
       },
       "keep": {
         "h": "How long we keep it",
@@ -978,7 +979,8 @@
         "p2": "<b>Paying is not how we ask a parent for permission.</b> Buying a plan doesn't change what we collect about a child, what we use it for, or what a parent has agreed to.",
         "p3": "<b>Your rights as a parent (own accounts):</b> you can ask us to show you what we keep about your child, to delete it, or to stop collecting more. Email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. There is no delete or download button yet, so we handle these requests by hand, and we will need to check that you are the parent before we act. Unlinking or cancelling a plan does not delete your child's account.",
         "p4": "<b>School accounts:</b> a school account is made and owned by the school. For those accounts we act on the school's behalf and under its direction: we use student information only to provide Oomba Academy to the school, never for advertising, and we don't sell it. Parents of school accounts should ask the school to see or delete records; the school can ask us. A data agreement the school has signed with us comes first.",
-        "p5": "<b>No selling, no ads:</b> we don't sell anyone's personal information, show ads, or use advertising or tracking cookies."
+        "p5": "<b>No selling, no ads:</b> we don't sell anyone's personal information, show ads, or use advertising or tracking cookies.",
+        "p6": "<b>AI voices:</b> when a game, lesson or Oomba Live reads text aloud with an AI voice, only that text is sent from our server to {ttsProvider} to make the sound, never anything about your child. {ttsProvider} may keep it for a limited time to check for misuse. Players are told these voices are made by a computer."
       },
       "billingKeep": {
         "h": "How long we keep billing information",
@@ -1108,7 +1110,8 @@
       "lostTitle": "Oops, the 3D picture stopped",
       "lostText": "That can happen sometimes. Tap Try again to start the game over.",
       "retry": "Try again"
-    }
+    },
+    "voices": "Voices"
   },
   "friends": {
     "title": "Friends",
@@ -1677,7 +1680,12 @@
       "starsLabel": "{count, plural, one {# star} other {# stars}}",
       "thanksRating": "Thanks for rating!",
       "stopped": "This game stopped working.",
-      "restart": "Start again"
+      "restart": "Start again",
+      "voicesTitle": "Voices",
+      "voicesAi": "AI voices",
+      "voicesDevice": "This device's voice",
+      "voicesNote": "Characters in this game are voiced by a computer (AI voices from {provider}). They read only the game's own words, never anything you type and never your name.",
+      "voicesSaveData": "Data Saver is on, so this device's voice is used until you pick AI voices."
     },
     "friends": {
       "codeCopied": "Code copied! Give it to a friend you know.",
@@ -4454,7 +4462,8 @@
       "pickTeam": "Pick your team",
       "eyes": "Eyes on your teacher",
       "moved": "You moved to {team}",
-      "again": "Your teacher may start another game. Stay on this page!"
+      "again": "Your teacher may start another game. Stay on this page!",
+      "aiVoice": "Read uses a computer-made AI voice ({provider})."
     },
     "emote": {
       "wave": "Wave",
@@ -4499,7 +4508,8 @@
       "teacherView": "Teacher view",
       "soundOn": "Sound on",
       "soundOff": "Sound off",
-      "seeResultsNow": "See results now"
+      "seeResultsNow": "See results now",
+      "read": "Read question"
     },
     "landing": {
       "title": "Host a live game",
@@ -5054,7 +5064,11 @@
       "emotes": "Emotes",
       "remembered": "Your choices are remembered for your next live game.",
       "reset": "Back to standard settings",
-      "save": "Save"
+      "save": "Save",
+      "voices": "Voices for reading aloud",
+      "voicesAi": "AI voices",
+      "voicesDevice": "Each device's own voice",
+      "voicesHint": "AI voices are made by a computer ({provider}). Only your questions and answer choices are sent, never names or anything students type."
     },
     "say": {
       "menu": "Message",

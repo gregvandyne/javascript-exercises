@@ -3,7 +3,7 @@
 // The server checks each answer once and never sends the answers before; when the last one is in the step is done and
 // the page reloads to show the score.
 import { api, toast } from '/js/app.js';
-import { fill, speak, voiceFor } from '/js/live-common.js';
+import { fill, readAloud, voiceFor, aiOn } from '/js/live-common.js';
 
 const SHAPES = ['▲', '◆', '●', '■'];
 if (document.querySelector('.lv-qstep') && !document.querySelector('link[href^="/css/live.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/css/live.css'; document.head.append(l); }
@@ -11,6 +11,10 @@ for (const box of document.querySelectorAll('.lv-qstep')) {
   const go = box.querySelector('.lv-qstep-go'); if (!go) continue;
   let T = {}; try { T = JSON.parse(box.querySelector('script[type="application/json"]').textContent); } catch { /* none */ }
   const lang = box.dataset.lang || document.documentElement.lang;
+  // AI voices (data-tts: the locales on now): the server reads question i of this step by its number (the per-device
+  // choice in /js/tts.js applies); otherwise this device's own voice.
+  const ttsLangs = (box.dataset.tts || '').split(',').filter(Boolean);
+  const ai = () => ttsLangs.length && aiOn(ttsLangs, lang);
   let items = [], marks = '', i = -1;
   go.addEventListener('click', async () => {
     go.disabled = true;
@@ -25,10 +29,13 @@ for (const box of document.querySelectorAll('.lv-qstep')) {
     const head = document.createElement('p'); head.className = 'small muted'; head.textContent = fill(T.of, { n: i + 1, total: items.length });
     const q = document.createElement('p'); q.className = 'lv-qstep-q'; q.textContent = it.q; q.dir = 'auto';
     box.append(head, q);
-    if (window.speechSynthesis && voiceFor(lang)) {
+    if (ai() || (window.speechSynthesis && voiceFor(lang))) {
       const rd = document.createElement('button'); rd.type = 'button'; rd.className = 'btn btn-sm'; rd.textContent = `🔊 ${T.read}`;
-      rd.addEventListener('click', () => speak(`${it.q}. ${it.choices.map((c, k) => `${String.fromCharCode(65 + k)}: ${c}`).join('. ')}`, lang));
+      const n = i;
+      rd.addEventListener('click', () => readAloud({ text: `${it.q}. ${it.choices.map((c, k) => `${String.fromCharCode(65 + k)}: ${c}`).join('. ')}`, lang,
+        ai: ai() ? { langs: ttsLangs, body: { ctx: 'lesson', clId: box.dataset.cl, stepId: box.dataset.step, i: n, lang } } : null }));
       box.append(rd);
+      if (ai() && T.aiVoice) { const note = document.createElement('p'); note.className = 'small muted'; note.textContent = T.aiVoice; box.append(note); }
     }
     const pad = document.createElement('div'); pad.className = 'lv-qstep-pad'; pad.setAttribute('role', 'group'); pad.setAttribute('aria-label', it.q);
     it.choices.forEach((c, k) => {

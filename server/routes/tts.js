@@ -103,7 +103,7 @@ router.post('/api/tts', async (req, res) => {
   const r = resolve(req, b);
   if (r.error) return fail(res, r.error[0], r.error[1]);
   if (!tts.localeOn(r.locale)) return fail(res, 404, 'off');
-  const why = tts.speakable(r.text, { user: req.user });
+  const why = tts.speakable(r.text, { user: req.user, ctx: b.ctx });
   if (why) return fail(res, 422, why);
   // New audio only: per person and per address (a whole school behind one address still fits).
   const gate = () => (!allow(`tts-gen:${who(req)}`, config.ttsPerMinute, 60e3) || !allow(`tts-gen-ip:${ipOf(req)}`, LIMITS.ipGenPer10Min, 600e3) ? 'fast' : null);

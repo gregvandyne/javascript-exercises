@@ -1,8 +1,12 @@
 # AI voices (text to speech): design
 
-Status: the server part is built (config, `services/tts*.js`, `routes/tts.js`, migration `0042_tts`, `/admin/voices`,
-warm-up, unit tests); the client part (SDK, play page, live pages, Hero, disclosures) is next. Branch `tts-voices` (worktree `.claude/work/wt-tts`, from `origin/main` 9c2121a; the
-latest migration there is `0041_live_cohost`, so this work adds `0042_tts`).
+Status: built. Server part (config, `services/tts*.js`, `routes/tts.js`, migration `0042_tts`, `/admin/voices`,
+warm-up) and client part (SDK `tts-client` block, `public/js/tts.js`, play page Voices sheet, Oomba Live player and
+projector Read, lesson quiz Read, Hero of Sunvale voices, disclosures in 13 languages, `tests/e2e/tts.spec.js`). Tested
+with the mock provider only: the real OpenAI call has never run here. Branch `tts-voices` (worktree `.claude/work/wt-tts`,
+from `origin/main` 9c2121a). Differences from the plan below: the `speechSynthesis.speak` wrapper **is** routed to AI
+voices for official games (the task asked for it; start/end events are fired on the utterance); the projector reads only
+when the teacher taps **Read question** (no automatic reading); quiz text skips the phone and link-code backstops.
 
 Goal: official games, lessons and Oomba Live can read **site-, game- and teacher-written text** aloud with a hosted
 voice (OpenAI's speech API) instead of the device's own voice. It is off by default. When it is off, or anything goes

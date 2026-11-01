@@ -434,3 +434,141 @@ test('BRB.speak utterances pass through the wrapper untouched; the wrapper is in
   const k = fakeSpeech({ voices: LISTS.macSafari }); const odd = { text: 'x', pitch: 1.1 };
   k.win.speechSynthesis.speak(odd); assert.equal(odd.pitch, 1.1); assert.equal('voice' in odd, false);
 });
+
+// ---- AI voices: the SDK's tts-client block (docs/tts-design.md), with a fake parent page and a fake Audio ---------------
+// Only official games get INIT.tts; then BRB.speak asks the play page (brb:tts) and plays the bytes it gets back, and falls
+// back to the device's voice on a refusal, a missing answer (4 s) or audio that won't play. onend comes exactly once.
+function fakeTts({ voices = LISTS.chromeOS, synth = true, langs = ['en', 'fr', 'zh-Hant'], user = { lang: 'en' }, playFails = false } = {}) {
+  const log = [], sent = [], listeners = {}, winListeners = {}, timers = [], audios = [];
+  const ss = { paused: false, list: voices, getVoices() { return this.list; }, speak(u) { log.push(['speak', u]); }, cancel() { log.push(['cancel']); }, resume() {},
+    addEventListener(n, f) { (listeners[n] = listeners[n] || []).push(f); } };
+  class Utter { constructor(text) { this.text = text; this.lang = ''; this.voice = null; this.pitch = 1; this.rate = 1; this.volume = 1; } }
+  const parent = { name: 'parent' };
+  const win = { addEventListener(n, f) { (winListeners[n] = winListeners[n] || []).push(f); }, removeEventListener() {} };
+  if (synth) { win.speechSynthesis = ss; win.SpeechSynthesisUtterance = Utter; }
+  class FakeAudio {
+    constructor() { this.plays = []; this.paused = true; this.volume = 1; audios.push(this); }
+    play() { this.plays.push(this.src); this.paused = false; return playFails ? Promise.reject(new Error('NotAllowedError')) : Promise.resolve(); }
+    pause() { this.paused = true; } removeAttribute(k) { if (k === 'src') this.src = ''; }
+    end() { this.onended && this.onended(); }
+  }
+  const urls = []; const FakeURL = { createObjectURL: b => { urls.push(b); return `blob:fake/${urls.length}`; }, revokeObjectURL() {} };
+  let tid = 0;
+  const st = (f, ms) => { timers.push({ f, ms, id: ++tid, done: false }); return tid; };
+  const ct = id => { const t = timers.find(x => x.id === id); if (t) t.done = true; };
+  const api = new Function('window', 'INIT', 'setTimeout', 'clearTimeout', 'send', 'parentWin', 'Audio', 'URL',
+    SPEECH + '\nreturn { speak: speak, stopSpeaking: stopSpeaking, prefetchSpeech: prefetchSpeech, aiVoice: aiVoice, ttsLocale: ttsLocale };')(
+    win, { user, tts: langs ? { langs } : undefined }, st, ct, (type, m) => sent.push({ type, ...m }), parent, FakeAudio, FakeURL);
+  const run = ms => timers.filter(t => !t.done && (ms === undefined || t.ms === ms)).forEach(t => { t.done = true; t.f(); });
+  const reply = (m, source = parent) => (winListeners.message || []).forEach(f => f({ source, data: { brb: 1, type: 'brb:tts', ...m } }));
+  const mode = m => (winListeners.message || []).forEach(f => f({ source: parent, data: { brb: 1, type: 'brb:tts-mode', mode: m } }));
+  const spoken = () => log.filter(l => l[0] === 'speak').map(l => l[1]).filter(u => u.text.trim());
+  return { api, sent, log, spoken, audios, run, reply, mode, win, flush: () => new Promise(r => setImmediate(r)) };
+}
+const buf = () => new Uint8Array([0xff, 0xfb, 0x90, 0x00]).buffer;
+
+test('AI voices: speak asks the play page, plays the bytes it gets back, onend once; the next queued line follows', async () => {
+  const f = fakeTts();
+  let ends = 0, ends2 = 0;
+  assert.equal(f.api.speak('  Hello   there! ', { voice: 'wise', rate: 0.8, onend: () => ends++ }), true);
+  assert.deepEqual(f.sent, [{ type: 'brb:tts', id: 1, text: 'Hello there!', lang: 'en', role: 'wise', rate: 0.8, pre: undefined }]);
+  assert.equal(f.spoken().length, 0, 'not the device voice');
+  assert.equal(f.api.speak('Second.', { queue: true, voice: 'nobody', onend: () => ends2++ }), true);
+  assert.equal(f.sent[1].role, 'narrator', 'unknown roles are the narrator');
+  f.reply({ id: 2, ok: true, buf: buf() });                         // the second line is ready first: it waits its turn
+  f.reply({ id: 1, ok: true, buf: buf() });
+  await f.flush();
+  const a = f.audios[0];
+  assert.deepEqual(a.plays, ['blob:fake/1']);
+  a.end(); assert.equal(ends, 1);
+  assert.deepEqual(a.plays, ['blob:fake/1', 'blob:fake/2']);
+  a.end(); a.end(); assert.equal(ends2, 1, 'onend once'); assert.equal(ends, 1);
+  f.reply({ id: 1, ok: true, buf: buf() }); assert.equal(a.plays.length, 2, 'a repeated reply is ignored');
+});
+
+test('AI voices: no answer in 4 s, a refusal or audio that will not play -> the device voice, onend once; late replies dropped', async () => {
+  const f = fakeTts();
+  let ends = 0;
+  f.api.speak('Slow line.', { onend: () => ends++ });
+  f.run(4000);                                                       // nothing came back
+  const [u] = f.spoken(); assert.equal(u.text, 'Slow line.'); assert.equal(u.voice.lang, 'en-US');
+  f.reply({ id: 1, ok: true, buf: buf() }); await f.flush();
+  assert.equal(f.audios.length ? f.audios[0].plays.length : 0, 0, 'the late reply is dropped');
+  u.onend(); assert.equal(ends, 1);
+  // a refusal: at once
+  let e2 = 0; f.api.speak('Refused line.', { onend: () => e2++ });
+  f.reply({ id: 2, ok: false, why: 'filtered' });
+  assert.equal(f.spoken().at(-1).text, 'Refused line.'); f.spoken().at(-1).onend(); assert.equal(e2, 1);
+  // play() rejected
+  const g = fakeTts({ playFails: true }); let e3 = 0;
+  g.api.speak('Blocked audio.', { onend: () => e3++ }); g.reply({ id: 1, ok: true, buf: buf() }); await g.flush(); await g.flush();
+  assert.equal(g.spoken().at(-1).text, 'Blocked audio.'); g.spoken().at(-1).onend(); assert.equal(e3, 1);
+  // no device voice either (no speechSynthesis): onend still comes, once, a moment later
+  const h = fakeTts({ synth: false }); let e4 = 0;
+  assert.equal(h.api.speak('Nobody to say it.', { onend: () => e4++ }), true);
+  h.reply({ id: 1, ok: false, why: 'off' }); h.run(0); h.run(0);
+  assert.equal(e4, 1);
+  // no voice for the language on the device: the same
+  const k = fakeTts({ voices: LISTS.windowsNaturalLocal }); let e5 = 0;
+  k.api.speak('Bonjour', { lang: 'fr', onend: () => e5++ }); k.reply({ id: 1, ok: false }); k.run(0);
+  assert.equal(e5, 1);
+});
+
+test('AI voices: a new line stops the one playing (no onend for it); stopSpeaking stops all; replies from elsewhere are ignored', async () => {
+  const f = fakeTts();
+  let a1 = 0, a2 = 0;
+  f.api.speak('First.', { onend: () => a1++ }); f.reply({ id: 1, ok: true, buf: buf() }); await f.flush();
+  f.api.speak('Second.', { onend: () => a2++ });                     // queue false: First stops
+  assert.equal(f.audios[0].paused, true);
+  assert.ok(f.log.some(l => l[0] === 'cancel'));
+  f.reply({ id: 2, ok: true, buf: buf() }, { name: 'someone else' }); await f.flush();
+  assert.equal(f.audios[0].plays.length, 1, 'only the parent page may answer');
+  f.reply({ id: 2, ok: true, buf: buf() }); await f.flush();
+  f.audios[0].end(); assert.deepEqual([a1, a2], [0, 1]);
+  f.api.speak('Third.', { onend: () => a1++ }); f.api.stopSpeaking();
+  f.reply({ id: 3, ok: true, buf: buf() }); f.run(4000); await f.flush();
+  assert.equal(a1, 0); assert.equal(f.spoken().length, 0);
+});
+
+test('AI voices: only for the languages on, never with opts.device, the device choice or over 600 characters; prefetch; tag mapping', () => {
+  const f = fakeTts();
+  assert.deepEqual(['en', 'en-US', 'en-GB', 'fr-CA', 'zh-TW', 'zh-Hant', 'zh-HK', 'zh-CN', 'zh', 'pt-PT', 'pt-BR', 'iw', 'xx', ''].map(f.api.ttsLocale),
+    ['en', 'en', 'en-GB', 'fr', 'zh-Hant', 'zh-Hant', 'zh-Hant', null, null, null, 'pt', null, null, null]);
+  assert.deepEqual([f.api.aiVoice('en-US'), f.api.aiVoice('fr'), f.api.aiVoice('de'), f.api.aiVoice('zh-CN'), f.api.aiVoice()], [true, true, false, false, true]);
+  f.api.speak('Hallo', { lang: 'de' }); f.api.speak('Hi', { device: true }); f.api.speak('x'.repeat(601));
+  assert.equal(f.sent.length, 0); assert.deepEqual(f.spoken().slice(0, 2).map(u => u.text), ['Hallo', 'Hi'], 'the device voice, as before'); assert.equal(f.spoken().slice(2).map(u => u.text).join(''), 'x'.repeat(601));
+  assert.equal(f.api.prefetchSpeech(['Line one.', '', 'Line two.'], { voice: 'grumpy' }), true);
+  assert.deepEqual(f.sent.map(m => [m.text, m.role, m.pre]), [['Line one.', 'grumpy', true], ['Line two.', 'grumpy', true]]);
+  // the player chose "This device's voice" on the play page
+  f.mode('device');
+  assert.equal(f.api.aiVoice('en'), false);
+  f.api.speak('Device now.'); assert.equal(f.sent.length, 2); assert.equal(f.spoken().at(-1).text, 'Device now.');
+  f.mode('ai'); assert.equal(f.api.aiVoice('en'), true);
+  // without INIT.tts (every Builder game, every frame but an official game's): nothing changes
+  const g = fakeTts({ langs: null });
+  assert.equal(g.api.aiVoice('en'), false); assert.equal(g.api.prefetchSpeech(['x']), false);
+  g.api.speak('Hello'); assert.equal(g.sent.length, 0); assert.equal(g.spoken().length, 1);
+});
+
+test('AI voices: an official game\'s own speechSynthesis.speak is read by the AI voice too, with its start and end events', async () => {
+  const f = fakeTts();
+  const u = new f.win.SpeechSynthesisUtterance('Raw line.'); u.lang = 'en-US';
+  const ev = []; u.onstart = () => ev.push('start'); u.onend = () => ev.push('end');
+  f.win.speechSynthesis.speak(u);
+  assert.equal(f.sent.at(-1).text, 'Raw line.'); assert.equal(f.spoken().length, 0);
+  f.reply({ id: 1, ok: true, buf: buf() }); await f.flush();
+  f.audios[0].end();
+  assert.deepEqual(ev, ['start', 'end']);
+  // refused: the game's own utterance goes to the device as it was
+  const w = new f.win.SpeechSynthesisUtterance('Raw two.'); w.lang = 'en-US';
+  f.win.speechSynthesis.speak(w); f.reply({ id: 2, ok: false });
+  assert.equal(f.spoken().at(-1), w);
+  // the game's speechSynthesis.cancel() stops the AI voice too
+  f.win.speechSynthesis.speak(new f.win.SpeechSynthesisUtterance('Raw three.'));
+  f.win.speechSynthesis.cancel();
+  f.reply({ id: 3, ok: true, buf: buf() }); await f.flush();
+  assert.equal(f.audios[0].plays.length, 1);
+  // a language that is off: straight to the device
+  const x = new f.win.SpeechSynthesisUtterance('Hallo'); x.lang = 'de-DE'; const n = f.sent.length;
+  f.win.speechSynthesis.speak(x); assert.equal(f.sent.length, n); assert.equal(f.spoken().at(-1), x);
+});

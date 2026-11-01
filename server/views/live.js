@@ -10,6 +10,7 @@ import { EMOTES, HOST_ACTIONS, SAY, BONUS_REASONS, ADD_SECS, EXTRA_TIME } from '
 import { PRESETS, presetsFor } from '../services/classlive-teams.js';
 import { KEYS as SETTING_KEYS, QUIZ_ONLY, view as settingsView } from '../services/classlive-settings.js';
 import { config } from '../config.js';
+import { onLocales as ttsOnLocales, ttsEnabled } from '../services/tts.js';
 import { lookup } from '../i18n/index.js';
 /** A message as written (not formatted), for page scripts that fill it in with their own values (plurals included):
  *  live-common.js fill(). */
@@ -42,6 +43,9 @@ const SHAPE_PATHS = {
 export const shapesSprite = () => raw(`<svg id="lv-shapes" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">${PRESETS.map(p => `<symbol id="lv-shape-${p.shape}" viewBox="0 0 24 24">${SHAPE_PATHS[p.shape]}</symbol>`).join('')}</svg>`);
 /** Fixed lists, translated, for the page scripts (sent as indexes on the wire; never free text). */
 const sayList = t => SAY.map(id => t(`live.say.${id}`));
+/** AI voices (server/routes/tts.js): the locales on now, for the pages that read questions aloud; {} when off. */
+const ttsPart = () => { const langs = ttsOnLocales(); return langs.length ? { tts: { langs } } : {}; };
+const TTS_COMPANY = 'OpenAI';   // a company name, never translated
 const bonusList = t => BONUS_REASONS.map(id => t(`live.bonus.reason.${id}`));
 /** Labels for every game setting and its values (the settings dialog and the landing). */
 export function settingsText(t) {
@@ -78,6 +82,7 @@ export function settingsFields(t, { values, quiz = true, accounts = false, idp =
     ${box('shuffleQ')}${box('shuffleA')}${box('late')}
     ${sel('names', names)}<p class="small muted">${t('live.settings.namesHint')}</p>
     ${box('sound')}${box('emotes')}
+    ${ttsEnabled() ? html`${sel('voices', [['ai', t('live.settings.voicesAi')], ['device', t('live.settings.voicesDevice')]])}<p class="small muted">${t('live.settings.voicesHint', { provider: TTS_COMPANY })}</p>` : ''}
   </details>`;
 }
 /** The teams row: Off · 2 · 3 · 4 · 5 · 6 (a radio group), and how teams score. */
@@ -187,6 +192,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
     <div class="lv-team-pick-list" id="lv-team-pick-list" role="group" aria-labelledby="lv-team-pick-h"></div>
   </section>
   <button class="btn lv-read" type="button" id="lv-read" hidden>🔊 ${t('live.play.read')}</button>
+  <p class="small muted lv-read-ai" id="lv-read-ai" hidden>${t('live.play.aiVoice', { provider: TTS_COMPANY })}</p>
   <div class="lv-stage" id="lv-stage" dir="ltr"></div>
   <div class="lv-eyes" id="lv-eyes" hidden><p class="lv-eyes-icon" aria-hidden="true">👀</p><p class="lv-eyes-text" role="alert">${t('live.eyes.cover')}</p><p class="small">${t('live.eyes.coverHint')}</p></div>
   <canvas class="lv-watch" id="lv-watch" hidden aria-label="${t('live.play.watchHint')}"></canvas>
@@ -208,7 +214,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
     </form>
   </dialog>
   ${shapesSprite()}
-  ${jsonData('lv-play-data', { sid, title, open, nicks, msgs: msgs(t, 'live.play', PLAY_CODES), phases: phaseText(t), emotes: EMOTES, thanks: rawT(t)('live.play.reportThanks'), place: rawT(t)('live.play.place'), late: rawT(t)('live.play.late'), watchHint: rawT(t)('live.play.watchHint'), kit: KIT(),
+  ${jsonData('lv-play-data', { ...ttsPart(), sid, title, open, nicks, msgs: msgs(t, 'live.play', PLAY_CODES), phases: phaseText(t), emotes: EMOTES, thanks: rawT(t)('live.play.reportThanks'), place: rawT(t)('live.play.place'), late: rawT(t)('live.play.late'), watchHint: rawT(t)('live.play.watchHint'), kit: KIT(),
     presets: presetsFor(t), say: sayList(t), bonus: bonusList(t),
     text: { team: rawT(t)('live.play.team'), you: rawT(t)('live.team.you'), moved: rawT(t)('live.play.moved'), rank: rawT(t)('live.team.rank'), full: rawT(t)('live.team.full'), locked: rawT(t)('live.team.locked'), size: rawT(t)('live.team.size'), toastSeat: rawT(t)('live.bonus.toastSeat'), toastTeam: rawT(t)('live.bonus.toastTeam'), read: rawT(t)('live.play.read'), readAgain: rawT(t)('live.play.readAgain'), eyes: rawT(t)('live.play.eyes'), again: rawT(t)('live.play.again'), perPlayer: rawT(t)('live.team.perPlayer') } })}
 </div>`;
@@ -248,6 +254,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     <details class="lv-say" id="lv-say"><summary class="btn">💬 ${t('live.say.menu')}</summary><div class="lv-say-list" role="group" aria-label="${t('live.say.menu')}">${sayList(t).map((x, i) => html`<button class="btn btn-sm" type="button" data-lv-say="${i}">${x}</button>`)}</div></details>
     <button class="btn lv-act" type="button" data-lv-act="settings" aria-haspopup="dialog">⚙️ ${t('live.settings.open')}</button>
     <button class="btn lv-act" type="button" data-lv-act="sound" aria-pressed="${st.sound ? 'true' : 'false'}">${t(st.sound ? 'live.host.soundOn' : 'live.host.soundOff')}</button>
+    ${s.quiz ? html`<button class="btn lv-act" type="button" id="lv-host-read" hidden>🔊 ${t('live.host.read')}</button>` : ''}
     <button class="btn lv-act" type="button" data-lv-act="dash" aria-haspopup="dialog">📱 ${t('live.host.teacherView')}</button>
     ${me.cohosts ? html`<button class="btn lv-act" type="button" data-lv-act="cohosts" aria-haspopup="dialog">👥 ${t('live.cohost.open')}</button>` : ''}
     ${me.role === 'cohost' ? html`<p class="small lv-cohost-me" id="lv-cohost-me">${t('live.cohost.youCohostShort')}</p>` : ''}
@@ -327,7 +334,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   <p class="notice warn" id="lv-reports" hidden role="status">${t('live.host.reports')}</p>
   ${shapesSprite()}
   ${jsonData('lv-host-data', {
-    sid: s.id, tok: token, code: s.code, joinUrl, audience: s.audience, nameMode: s.nameMode, mode: s.mode, title: s.title, max: s.settings.maxPlayers, nicks,
+    ...ttsPart(), sid: s.id, tok: token, code: s.code, joinUrl, audience: s.audience, nameMode: s.nameMode, mode: s.mode, title: s.title, max: s.settings.maxPlayers, nicks,
     actions: HOST_ACTIONS, results: `/live/results/${s.id}`, kit: KIT(),
     quiz: !!s.quiz, teamsOn, hasLast, presets, say: sayList(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY, dashUrl, podiumHoldMs: 6000,
     ctl: { role: me.role, tier: me.tier, cohosts: !!me.cohosts }, ...(me.cohosts || me.role === 'cohost' ? { cohost: cohostText(t) } : {}),

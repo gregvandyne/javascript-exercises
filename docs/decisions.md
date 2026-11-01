@@ -1874,3 +1874,29 @@ docs/legal-review.md item 44.
 - **Privacy:** no text, user id or address is stored or logged (a short hash, sizes, timings). Requests to OpenAI come
   from our server. The provider facts (URL, fields, models, voices, price) are from memory and were not checked in the
   sandbox: check them before turning it on.
+
+## AI voices, client part (November 2026)
+
+The pages and games now use the server voices (docs/tts-design.md, docs/sdk.md "AI voices"). Still off until the owner
+switches it on, then per language at `/admin/voices`.
+- **Games:** behind `BRB.speak` in the SDK (not the frozen kit: its `say()` calls `BRB.speak`, so kit games such as
+  Atlas Quest get it unchanged). The play page fetches for the frame; 4 s without audio, a refusal or audio that won't
+  play means the device's voice for that line. `onend` now always comes once after `speak()` returned `true`.
+  An official game's own `speechSynthesis.speak` is routed the same way (none of today's seed games does that on the
+  site; Builder games never get AI voices, so a kid's own words are never sent).
+- **Hero of Sunvale** reads its conversation cards and cut-scene captions with a voice role per speaker (its
+  `VOICES` block: Granny and the Queen wise, Bo and the Chief deep, Snarlwick grumpy…), prefetches each card, stops the
+  voice when the card moves on, and keeps its beeps when AI voices are off. Its Sound button silences the voices too.
+- **Oomba Live:** the player's Read button and a new **Read question** button on the projector (shown while a question
+  is open and the projector's Sound is on) ask for the open question by number. The teacher's new live setting
+  **Voices for reading aloud** (AI voices / each device's own voice) applies to both. Lesson quiz steps do the same with
+  the device choice.
+- **Kids choose:** a 🔊 Voices button on the play page (only when the game has AI voices): AI voices or this device's
+  voice, kept on the device; Data Saver means the device's voice until the kid picks AI voices.
+- **Disclosure** (OpenAI's usage policy: say the voice is AI-made): the Voices sheet, the live setting's hint, a note
+  under Read on the player's page and in lesson quizzes, the parents page (`info.parents.ai.p4`) and the privacy page
+  (`info.privacy.children.p6`), in all 13 languages (en-GB uses the English). `LEGAL_UPDATED` is 2026-11-01.
+- **Quiz text backstop:** a teacher's maths question read with its answer letters ("2 + 3? A: 5. B: 4…") looked like a
+  phone number and a family link code, so for `live`/`lesson` (text looked up by number) those two checks are skipped;
+  rude words, emails and links still refuse it.
+

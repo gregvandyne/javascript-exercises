@@ -5875,6 +5875,16 @@ const I18N = {
   },
 };
 // ==== I18N END ====
+// ==== VOICES START ====
+// AI voices (only when Oomba Academy has them on for this game and language; BRB.aiVoice): the character voice each
+// speaker's lines are read with. server/services/tts-lines.js also reads this block to make the lines ahead of time
+// (d.<speaker>.* keys use the speaker's role, the others 'story'; VOICE_KEY_ROLES: lines a character says under another
+// key). Roles: narrator, friendly, bright, deep, wise, grumpy. Only the game's own words are ever read, never a name.
+const VOICE_ROLES = { story: 'narrator', granny: 'wise', queen: 'wise', bo: 'deep', oakley: 'deep', finn: 'deep', plum: 'deep', chief: 'deep',
+  tilly: 'friendly', ivy: 'friendly', hazel: 'friendly', maple: 'friendly', marigold: 'bright', hero: 'bright', snarlwick: 'grumpy', snarl: 'grumpy',
+  cinder: 'deep', vil: 'friendly', guard: 'deep' };
+const VOICE_KEY_ROLES = { 'd.shop.': 'wise' };
+// ==== VOICES END ====
 const LANG = (function () {
   let l = 'en'; try { l = String((window.BRB && BRB.user && BRB.user.lang) || 'en'); } catch (e) { /* older SDK */ }
   const own = k => Object.prototype.hasOwnProperty.call(I18N, k);
@@ -5890,6 +5900,21 @@ const NUM_LOCALE = LANG.split('-')[0] === 'ar' ? 'ar-u-nu-latn' : LANG;
 const PLURAL = (function () { try { return new Intl.PluralRules(NUM_LOCALE); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
 const NUMF = (function () { try { return new Intl.NumberFormat(NUM_LOCALE); } catch (e) { return { format: n => String(n) }; } })();
 function tRaw(key) { for (const c of I18N_CHAIN) { const v = I18N[c][key]; if (v !== undefined) return v; } return undefined; }
+/* Spoken lines (AI voices): a card's lines are read one by one in the speaker's voice, fetched ahead when the card
+   opens, and stopped when the card moves on or closes. With AI voices off, sound off (the Sound button) or another
+   language, nothing is read and the little "voice" beeps play as before. */
+const VOICE = {
+  spoke: false,
+  on() { try { return !BRB.sfx.muted && typeof BRB.aiVoice === 'function' && BRB.aiVoice(LANG); } catch (e) { return false; } },
+  role(who) { const w = String(who || 'story'); return VOICE_ROLES[w] || VOICE_ROLES.story || 'narrator'; },
+  say(text, who) {
+    if (!text || !this.on()) { this.stop(); return false; }
+    let ok = false; try { ok = BRB.speak(text, { lang: LANG, voice: this.role(who) }); } catch (e) { ok = false; }
+    this.spoke = !!ok; return this.spoke;
+  },
+  ahead(lines, who) { if (!this.on()) return; try { BRB.prefetchSpeech(lines, { lang: LANG, voice: this.role(who) }); } catch (e) { /* older SDK */ } },
+  stop() { if (!this.spoke) return; this.spoke = false; try { BRB.stopSpeaking(); } catch (e) { /* ignore */ } },
+};
 /** t('key', { n: 3 }): this language's words with {name} filled in. Looked up on screen changes, never per frame. */
 function t(key, vars) {
   let v = tRaw(key);
@@ -8718,17 +8743,19 @@ const UI = {
   },
   /** A conversation card: { portrait: '👵', name: 'Granny Fern', lines: ['...', '...'], npc, keys }. Gameplay waits. */
   say(o, done) {
-    const D = this.dialog; Object.assign(D, { open: true, lines: o.lines || [], i: 0, shown: 0, done: done || null, npc: o.npc || null, keys: o.keys || null });
+    const D = this.dialog; Object.assign(D, { open: true, lines: o.lines || [], i: 0, shown: 0, done: done || null, npc: o.npc || null, keys: o.keys || null, voice: o.voice || o.npc || null });
     clearInputs(); setPortrait($('dlgPortrait'), o.npc, o.portrait || '🙂'); $('dlgName').textContent = o.name || '';
     $('dialog').setAttribute('aria-label', t('a.dialog', { name: o.name || '' })); $('dialog').hidden = false; $('dlgText').textContent = '';
     if (calm()) D.shown = 1e9; this.setPrompt(null); try { $('dlgNext').focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+    VOICE.ahead(D.lines.slice(1), D.voice); VOICE.say(D.lines[0], D.voice);
   },
   dialogNext() {
     const D = this.dialog; if (!D.open) return;
     const line = D.lines[D.i] || '';
     if (D.shown < line.length) { D.shown = line.length; $('dlgText').textContent = line; return; }
     sfx('click'); D.i++; D.shown = calm() ? 1e9 : 0;
-    if (D.i >= D.lines.length) { D.open = false; $('dialog').hidden = true; clearInputs(); const f = D.done; D.done = null; if (f) f(); }
+    if (D.i >= D.lines.length) { VOICE.stop(); D.open = false; $('dialog').hidden = true; clearInputs(); const f = D.done; D.done = null; if (f) f(); }
+    else VOICE.say(D.lines[D.i], D.voice);
   },
   dialogFrame(dt) {
     const D = this.dialog; if (!D.open) return;
@@ -9040,7 +9067,7 @@ $('bagBtn').addEventListener('click', () => { sfx('click'); UI.openBag(); });
 $('mapBtn').addEventListener('click', () => UI.openMap());
 $('minimap').addEventListener('click', () => UI.openMap());
 $('tracker').addEventListener('click', () => UI.openMap());
-$('soundBtn').addEventListener('click', () => { BRB.sfx.mute(); SET.sound = !BRB.sfx.muted; saveSettings(); UI.hudDirty = true; sfx('click'); });
+$('soundBtn').addEventListener('click', () => { BRB.sfx.mute(); SET.sound = !BRB.sfx.muted; if (BRB.sfx.muted) VOICE.stop(); saveSettings(); UI.hudDirty = true; sfx('click'); });
 $('mapClose').addEventListener('click', () => { sfx('click'); UI.close('mapScreen'); });
 $('setClose').addEventListener('click', () => { sfx('click'); UI.close('settingsScreen'); });
 $('ctlClose').addEventListener('click', () => { sfx('click'); UI.close('controlsScreen'); });
@@ -11392,7 +11419,7 @@ function sheepFrame(now) {
 function npcSay(id, keys, done, vars) {
   const n = NPCS[id], d = n ? n.d : NPC_EXTRA[id] || null;
   if (n) { n.yaw = faceTo(n.x, n.z, hero.pos.x, hero.pos.z); hero.yaw = faceTo(hero.pos.x, hero.pos.z, n.x, n.z); hero.vel.set(0, 0, 0); }
-  SND3.voice(d ? d.pitch : 1);
+  if (!VOICE.on()) SND3.voice(d ? d.pitch : 1);
   UI.say({ portrait: d ? d.portrait : '🙂', name: t('npc.' + id), lines: keys.map(k => t(k, vars)), npc: id, keys: keys.slice() }, done);
 }
 function talkTo(id) {
@@ -11425,8 +11452,8 @@ function talkVillager(v) {
   if (UI.dialog.open || CUT.on) return;
   v.yaw = faceTo(v.x, v.z, hero.pos.x, hero.pos.z); hero.yaw = faceTo(hero.pos.x, hero.pos.z, v.x, v.z); hero.vel.set(0, 0, 0);
   const key = v.guard ? (G.won.indexOf('e7') >= 0 ? 'say.guard2' : 'say.guard1') : v.set === 'river' && v.freedLine ? 'say.freed' + v.freedLine : 'say.tip' + v.tip;
-  SND3.voice(1 + (v.i % 5) * 0.08);
-  UI.say({ portrait: v.guard ? '💂' : '🙂', name: t(v.guard ? 'npc.guard' : 'npc.villager'), lines: [t(key), t(hintKey())], npc: 'vil' + v.i, keys: [key, hintKey()] });
+  if (!VOICE.on()) SND3.voice(1 + (v.i % 5) * 0.08);
+  UI.say({ portrait: v.guard ? '💂' : '🙂', name: t(v.guard ? 'npc.guard' : 'npc.villager'), lines: [t(key), t(hintKey())], npc: 'vil' + v.i, keys: [key, hintKey()], voice: v.guard ? 'guard' : 'vil' });
 }
 /** Smith Bo's side goal: 12 Sun Gems -> Sunblade, 24 -> Sunsteel Crown-Helm (gems are a collection, never spent). */
 function boTalk() {
@@ -12000,7 +12027,7 @@ const CUT = {
   play(o) {
     if (this.on) this.end(true);
     Object.assign(this, { on: true, id: o.id || 'cut', t: 0, dur: o.dur || 4, shots: o.shots || [], lines: o.lines || [], li: -1, update: o.update || null, onEnd: o.onEnd || null, mem: 0, shotI: -1, fadeT: 0 });
-    if (UI.dialog.open) { UI.dialog.open = false; $('dialog').hidden = true; UI.dialog.done = null; }
+    if (UI.dialog.open) { UI.dialog.open = false; $('dialog').hidden = true; UI.dialog.done = null; VOICE.stop(); }
     $('cutCap').hidden = true; document.body.classList.add('cut'); UI.setPrompt(null);
     UI.open('cutScreen'); CAM.shot = { pos: this.pos, look: this.look };
     this.apply(0);
@@ -12035,8 +12062,9 @@ const CUT = {
         const who = L.who, n = NPCS[who], d = n ? n.d : NPC_EXTRA[who];
         setPortrait($('cutPortrait'), who, who === 'hero' ? '🗡️' : who === 'snarlwick' ? '😈' : who === 'cinder' ? '🐉' : who === 'story' ? '📖' : d ? d.portrait : '🙂');
         $('cutName').textContent = who === 'hero' || who === 'story' ? '' : t('npc.' + who); $('cutText').textContent = t(L.key, L.vars);
-        $('cutCap').hidden = false; if (who !== 'story' && who !== 'hero') SND3.voice(d ? d.pitch : who === 'snarlwick' ? 0.55 : 0.8);
-      } else $('cutCap').hidden = true;
+        $('cutCap').hidden = false;
+        if (!VOICE.say(t(L.key, L.vars), who) && who !== 'story' && who !== 'hero') SND3.voice(d ? d.pitch : who === 'snarlwick' ? 0.55 : 0.8);
+      } else { $('cutCap').hidden = true; VOICE.stop(); }
     }
     if (this.update) this.update(this.dur ? tm / this.dur : 1, tm, dt);
   },
@@ -12050,7 +12078,7 @@ const CUT = {
   skip() { if (!this.on) return; this.t = this.dur; this.apply(0); this.end(false); },
   end(quiet) {
     if (!this.on) return;
-    this.on = false; $('cutCap').hidden = true; document.body.classList.remove('cut'); $('fade').classList.remove('on');
+    this.on = false; $('cutCap').hidden = true; document.body.classList.remove('cut'); $('fade').classList.remove('on'); VOICE.stop();
     if (UI.isOpen('cutScreen')) UI.close('cutScreen');
     CAM.shot = null; CAM.cut();
     const f = this.onEnd, id = this.id; this.onEnd = null; this.update = null;
@@ -13163,7 +13191,7 @@ function makeSaveAt(id, step, o) {
 }
 function forceStep() {
   const st = questStep(); if (!st) return false;
-  if (UI.dialog.open) { UI.dialog.open = false; $('dialog').hidden = true; UI.dialog.done = null; }
+  if (UI.dialog.open) { UI.dialog.open = false; $('dialog').hidden = true; UI.dialog.done = null; VOICE.stop(); }
   switch (st.kind) {
     case 'talk': if (st.after) st.after(); completeStep(); break;
     case 'reach': placeHero(st.x, st.z); completeStep(); break;

@@ -123,6 +123,12 @@ test('speakable: empty, too long, rude words, personal info, link codes, the pla
   assert.equal(tts.speakable('what the fuck'), 'filtered');
   assert.equal(tts.speakable('mail me at kid@example.com'), 'filtered');
   assert.equal(tts.speakable('call 555 123 4567'), 'filtered');
+  // A teacher's maths question read by number (live, lesson): its digits are not a phone number; emails still are.
+  const maths = 'What is 2 + 3? A: 5. B: 4. C: 6. D: 7.';
+  assert.equal(tts.speakable(maths, { ctx: 'game' }), 'filtered');
+  assert.equal(tts.speakable(maths, { ctx: 'live' }), null);
+  assert.equal(tts.speakable(maths, { ctx: 'lesson' }), null);
+  assert.equal(tts.speakable('Write to kid@example.com', { ctx: 'live' }), 'filtered');
   const user = { display_name: 'Zara Moon', username: 'StarFox77' };
   assert.equal(tts.speakable('Well done, Zara Moon!', { user }), 'filtered');
   assert.equal(tts.speakable('Go starfox77, go!', { user }), 'filtered');

@@ -610,7 +610,8 @@
         "h": "Was die KI sieht",
         "p1": "Damit ein Spiel entsteht, werden die Nachrichten, Bilder und Dateien, die Ihr Kind dem Baumeister gibt, an Claude geschickt, eine vom Unternehmen Anthropic entwickelte KI, die das Spiel schreibt. Name und Benutzername Ihres Kindes werden dabei nicht mitgeschickt. Auch Profilfotos werden an Claude geschickt und geprüft, bevor jemand sie sieht. Claude überprüft Spiele, bevor sie mit allen geteilt werden können, und unser Team sieht sich jedes an, bei dem Claude unsicher ist. Chats zwischen Freunden und Antworten in Lektionen werden nicht an die KI geschickt.",
         "p2": "Sprechen statt tippen: Wenn Ihr Kind im Chat des Baumeisters auf das Mikrofon tippt, wird die Aufnahme an den Spracherkennungsdienst {provider} geschickt, der sie in Wörter umwandelt. Ihr Kind sieht die Wörter und kann sie vor dem Senden ändern. Die Aufnahme wird nur dafür verwendet und sofort gelöscht: Wir speichern sie nie, und {provider} darf sie weder aufbewahren noch zum Trainieren seiner Systeme verwenden. Die Wörter durchlaufen dieselben Sicherheitsprüfungen wie eine getippte Nachricht.",
-        "p3": "Fakten nachschlagen: Damit ein Spiel stimmt, kann der Baumeister einen Fakt im Internet nachschlagen (zum Beispiel, wie schnell ein Gepard läuft). Ihr Kind sieht nie die Webseiten oder Links. Der Baumeister ist angewiesen, nie nach etwas Persönlichem zu suchen; wirkt eine Suche trotzdem persönlich, werden ihre Ergebnisse nicht verwendet und ihre Wörter nicht gespeichert. Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Videos sind gesperrt. Wir behalten eine Liste der Suchen, ohne den Namen oder Benutzernamen Ihres Kindes, zusammen mit dem Spiel, für das sie gemacht wurden, 90 Tage lang, damit unser Team sie prüfen kann."
+        "p3": "Fakten nachschlagen: Damit ein Spiel stimmt, kann der Baumeister einen Fakt im Internet nachschlagen (zum Beispiel, wie schnell ein Gepard läuft). Ihr Kind sieht nie die Webseiten oder Links. Der Baumeister ist angewiesen, nie nach etwas Persönlichem zu suchen; wirkt eine Suche trotzdem persönlich, werden ihre Ergebnisse nicht verwendet und ihre Wörter nicht gespeichert. Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Videos sind gesperrt. Wir behalten eine Liste der Suchen, ohne den Namen oder Benutzernamen Ihres Kindes, zusammen mit dem Spiel, für das sie gemacht wurden, 90 Tage lang, damit unser Team sie prüfen kann.",
+        "p4": "KI-Stimmen: Einige unserer eigenen Spiele, Lektions-Quizze und Oomba-Live-Quizze können ihre Texte mit einer Computerstimme von {ttsProvider} vorlesen. Gesendet wird nur Text, den wir, die Macher eines Spiels oder die Lehrkraft Ihres Kindes geschrieben haben, nie etwas, das Ihr Kind tippt oder sagt, und nie sein Name. Ihr Kind erfährt, dass die Stimmen von einer KI stammen, und kann mit dem Knopf 🔊 Stimmen zur Stimme des Geräts wechseln."
       },
       "keep": {
         "h": "Wie lange wir Daten speichern",
@@ -978,7 +979,8 @@
         "p2": "<b>Bezahlen ist nicht der Weg, auf dem wir Eltern um Erlaubnis bitten.</b> Der Kauf eines Abos ändert nichts daran, was wir über ein Kind erfassen, wofür wir es verwenden oder wozu ein Elternteil eingewilligt hat.",
         "p3": "<b>Ihre Rechte als Elternteil (eigene Konten):</b> Sie können verlangen, dass wir Ihnen zeigen, was wir über Ihr Kind speichern, dass wir es löschen oder dass wir nichts weiter erfassen. Schreiben Sie an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Es gibt noch keinen Knopf zum Löschen oder Herunterladen, daher bearbeiten wir diese Anfragen von Hand, und wir müssen prüfen, dass Sie der Elternteil sind, bevor wir handeln. Das Trennen einer Verbindung oder das Kündigen eines Abos löscht das Konto Ihres Kindes nicht.",
         "p4": "<b>Schulkonten:</b> Ein Schulkonto wird von der Schule angelegt und gehört ihr. Für diese Konten handeln wir im Auftrag und nach Weisung der Schule: Wir verwenden Schülerdaten nur, um der Schule Oomba Academy bereitzustellen, nie für Werbung, und wir verkaufen sie nicht. Eltern von Schulkonten sollten die Schule bitten, Daten einzusehen oder zu löschen; die Schule kann sich an uns wenden. Eine Datenvereinbarung, die die Schule mit uns unterzeichnet hat, hat Vorrang.",
-        "p5": "<b>Kein Verkauf, keine Werbung:</b> Wir verkaufen keine personenbezogenen Daten, zeigen keine Werbung und verwenden keine Werbe- oder Tracking-Cookies."
+        "p5": "<b>Kein Verkauf, keine Werbung:</b> Wir verkaufen keine personenbezogenen Daten, zeigen keine Werbung und verwenden keine Werbe- oder Tracking-Cookies.",
+        "p6": "<b>KI-Stimmen:</b> Wenn ein Spiel, eine Lektion oder Oomba Live Text mit einer KI-Stimme vorliest, wird nur dieser Text von unserem Server an {ttsProvider} geschickt, um den Ton zu erzeugen, nie etwas über Ihr Kind. {ttsProvider} darf ihn eine begrenzte Zeit aufbewahren, um Missbrauch zu prüfen. Spieler erfahren, dass diese Stimmen von einem Computer stammen."
       },
       "billingKeep": {
         "h": "Wie lange wir Abrechnungsdaten speichern",
@@ -1108,7 +1110,8 @@
       "lostTitle": "Hoppla, das 3D-Bild ist stehengeblieben",
       "lostText": "Das passiert manchmal. Tippe auf Nochmal versuchen, um das Spiel neu zu starten.",
       "retry": "Nochmal versuchen"
-    }
+    },
+    "voices": "Stimmen"
   },
   "friends": {
     "title": "Freunde",
@@ -1677,7 +1680,12 @@
       "starsLabel": "{count, plural, one {# Stern} other {# Sterne}}",
       "thanksRating": "Danke fürs Bewerten!",
       "stopped": "Dieses Spiel funktioniert gerade nicht mehr.",
-      "restart": "Neu starten"
+      "restart": "Neu starten",
+      "voicesTitle": "Stimmen",
+      "voicesAi": "KI-Stimmen",
+      "voicesDevice": "Stimme dieses Geräts",
+      "voicesNote": "Die Figuren in diesem Spiel sprechen mit Computerstimmen (KI-Stimmen von {provider}). Sie lesen nur die Wörter des Spiels vor, nie etwas, das du tippst, und nie deinen Namen.",
+      "voicesSaveData": "Der Datensparmodus ist an, darum wird die Stimme dieses Geräts benutzt, bis du KI-Stimmen wählst."
     },
     "friends": {
       "codeCopied": "Code kopiert! Gib ihn einem Freund, den du kennst.",
@@ -4453,7 +4461,8 @@
       "pickTeam": "Wähle dein Team",
       "eyes": "Schau zu deiner Lehrkraft",
       "moved": "Du bist jetzt bei {team}",
-      "again": "Vielleicht startet deine Lehrkraft gleich noch ein Spiel. Bleib auf dieser Seite!"
+      "again": "Vielleicht startet deine Lehrkraft gleich noch ein Spiel. Bleib auf dieser Seite!",
+      "aiVoice": "Vorlesen nutzt eine KI-Stimme vom Computer ({provider})."
     },
     "emote": {
       "wave": "Winken",
@@ -4498,7 +4507,8 @@
       "teacherView": "Lehreransicht",
       "soundOn": "Ton an",
       "soundOff": "Ton aus",
-      "seeResultsNow": "Ergebnisse jetzt ansehen"
+      "seeResultsNow": "Ergebnisse jetzt ansehen",
+      "read": "Frage vorlesen"
     },
     "landing": {
       "title": "Live-Spiel leiten",
@@ -5053,7 +5063,11 @@
       "emotes": "Emotes",
       "remembered": "Ihre Auswahl wird für Ihr nächstes Live-Spiel gemerkt.",
       "reset": "Zurück zu den Standardeinstellungen",
-      "save": "Speichern"
+      "save": "Speichern",
+      "voices": "Stimmen zum Vorlesen",
+      "voicesAi": "KI-Stimmen",
+      "voicesDevice": "Die Stimme jedes Geräts",
+      "voicesHint": "KI-Stimmen macht ein Computer ({provider}). Gesendet werden nur deine Fragen und Antworten, nie Namen oder etwas, das Schüler tippen."
     },
     "say": {
       "menu": "Nachricht",

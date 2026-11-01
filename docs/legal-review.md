@@ -3,7 +3,7 @@
 /terms, /refunds and /privacy (server/routes/info.js, text in `info.terms.*`, `info.refunds.*`, `info.privacy.*` and the
 reused `info.parents.*` sections) are on the site for everyone, also before `BILLING_PUBLIC`. They were made from the
 drafts terms.md, refunds.md and privacy-payments.md. The public text has no drafting markers; every marker from the
-drafts is listed here with what the page says today. **Last updated: 2026-10-30** (`LEGAL_UPDATED` in
+drafts is listed here with what the page says today. **Last updated: 2026-11-01** (`LEGAL_UPDATED` in
 server/routes/info.js; change it with every change to the text).
 
 ## Turning on TERMS_PUBLISHED
@@ -408,8 +408,9 @@ Owner decisions for parent-made accounts (no lawyer needed):
       may be reused), or is default retention of site-written text acceptable?
     - **OpenAI usage policy: AI voices must be disclosed.** OpenAI requires telling listeners the voice is AI-generated
       and not a human. The disclosure goes on /parents (`info.parents.ai.p4`), /privacy (`info.privacy.children.p6`), the
-      play page's 🔊 Voices sheet and the live settings (all 13 locales; the client part adds them and moves
-      `LEGAL_UPDATED`). Draft: "Characters in this game are voiced by a computer (AI voices from OpenAI). They read only
+      play page's 🔊 Voices sheet, the live settings, and a note under Read in Oomba Live and lesson quizzes (all 13
+      locales; `LEGAL_UPDATED` moved to 2026-11-01). The direct notice to parents (`family.made.notice.*`) is not
+      changed, because no information about the child goes to OpenAI: please confirm it needs no AI-voice line. Draft: "Characters in this game are voiced by a computer (AI voices from OpenAI). They read only
       the game's own words, never anything you type or your name." Is that wording enough for kids 8-14 and their
       parents?
     - **A choice, not consent.** Kids can switch to "This device's voice" (kept on the device), teachers choose AI or

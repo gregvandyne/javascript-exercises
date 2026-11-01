@@ -23,6 +23,7 @@ import { shapesSprite, teamText } from '../views/live.js';
 import { jsonData } from '../views/html.js';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { onLocales as ttsOnLocales } from '../services/tts.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -264,9 +265,9 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     }
     // A quiz step (homework from a live question set): one question at a time, big buttons with shapes, Read aloud,
     // no timer; the server checks each answer once (public/js/live-quiz-step.js).
-    if (s.kind === 'quiz') return html`<section class="lv-qstep" data-api="/api/lessons/${cl.id}/steps/${s.id}/quiz" data-lang="${req.locale}" aria-live="polite">
+    if (s.kind === 'quiz') return html`<section class="lv-qstep" data-api="/api/lessons/${cl.id}/steps/${s.id}/quiz" data-cl="${cl.id}" data-step="${s.id}" data-lang="${req.locale}" data-tts="${ttsOnLocales().join(',')}" aria-live="polite">
       ${isDone ? html`<p class="sc-score">🏆 ${t('lessons.quiz.done', { score: x.score ?? 0 })}</p>` : html`<button class="btn btn-primary btn-big lv-qstep-go" type="button">▶ ${t('lessons.quiz.start')}</button>`}
-      ${jsonData(`lv-qstep-${s.id}`, { right: t('lessons.quiz.right'), wrong: t('lessons.quiz.wrong'), next: t('lessons.quiz.next'), of: t('lessons.quiz.of'), done: t('lessons.quiz.done'), read: t('live.play.read') })}
+      ${jsonData(`lv-qstep-${s.id}`, { right: t('lessons.quiz.right'), wrong: t('lessons.quiz.wrong'), next: t('lessons.quiz.next'), of: t('lessons.quiz.of'), done: t('lessons.quiz.done'), read: t('live.play.read'), aiVoice: t('live.play.aiVoice', { provider: 'OpenAI' }) })}
     </section>`;
     if (s.kind === 'question') return html`
       <form class="answerform" data-api="${api(s)}/answer" data-reload novalidate>

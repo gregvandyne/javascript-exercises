@@ -47,7 +47,10 @@ export default defineConfig({
     env: { ...NO_STRIPE_ENV, PORT: String(PORT), BRB_DATA_DIR: DATA, BRB_LOCALES_DIR: LOCALES, BRB_ALL_LOCALES: '1', ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', DEMO_TEACHER_PASSWORD: 'demo-pass-123', ANTHROPIC_API_KEY: '', BRB_SILENT: '1',
       // Speaking instead of typing with the test-only provider (fixed words, no network), so the Studio has its mic;
       // a real STT_API_KEY and web search never reach a test server.
-      STT_PROVIDER: 'mock', STT_API_KEY: '', STT_MODEL: '', BUILDER_WEB_SEARCH: '', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
+      STT_PROVIDER: 'mock', STT_API_KEY: '', STT_MODEL: '', BUILDER_WEB_SEARCH: '',
+      // AI voices with the test-only provider (a silent MP3, no network). Every language stays off until a test switches it
+      // on at /admin/voices (tests/e2e/tts.spec.js switches them off again), so other specs keep the device's voice.
+      TTS_ENABLED: '1', TTS_PROVIDER: 'mock', TTS_API_KEY: '', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
       // Co-host handoff after 3 s instead of 2 minutes, so live-cohost.spec.js can watch it happen.
       LIVE_HANDOFF_SECS: process.env.LIVE_HANDOFF_SECS || '3',
       GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'fake-test-secret', GOOGLE_OIDC_BASE: `http://127.0.0.1:${PORT + 1}` },
