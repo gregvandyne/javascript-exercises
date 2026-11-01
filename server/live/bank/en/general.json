@@ -67,7 +67,7 @@
 ["How many degrees are in a right angle?", "90", "45", "180", "360"],
 ["Which instrument does a drummer NOT play?", "The violin", "The snare drum", "The cymbal", "The bass drum"],
 ["Which bird is a symbol of peace?", "The dove", "The crow", "The eagle", "The owl"],
-["How many continents start with the letter A?", "5", "3", "4", "2"],
+["How many corners does a cube have?", "8", "6", "12", "4"],
 ["What do bees live in?", "A hive", "A den", "A burrow", "A nest of sticks"],
 ["Which shape has all points the same distance from the center?", "A circle", "A square", "A triangle", "An oval"],
 ["Which is the longest bone in the human body?", "The femur (thigh bone)", "The spine", "The skull", "The rib"],
@@ -103,7 +103,7 @@
 ["What is the smallest prime number?", "2", "1", "3", "0"],
 ["What is a haiku?", "A short Japanese poem of three lines", "A Japanese sword", "A kind of tea", "A martial art"],
 ["What is the hardest natural substance in the human body?", "Tooth enamel", "Bone", "Nail", "Cartilage"],
-["Which painter is famous for cutting off part of his own ear?", "Vincent van Gogh", "Pablo Picasso", "Salvador Dalí", "Claude Monet"],
+["Which painter made \"The Starry Night\"?", "Vincent van Gogh", "Pablo Picasso", "Salvador Dalí", "Claude Monet"],
 ["How many players are on a cricket team on the field?", "11", "9", "10", "15"],
 ["Which planet spins on its side, almost lying down?", "Uranus", "Saturn", "Mars", "Mercury"]
 ]
