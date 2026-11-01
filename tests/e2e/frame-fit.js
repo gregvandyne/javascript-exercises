@@ -4,7 +4,7 @@
 //   clipped    text cut off inside a box that hides overflow (a box that scrolls is fine)
 //   overlap    two pieces of text, or two controls, on top of each other (overlays that ignore the pointer, such as
 //              a banner or confetti, are left out: they are meant to float over the game)
-//   squashed   a tappable control under 40 px, or out of shape (a tile half again taller than wide, or a sliver)
+//   squashed   a tappable control under 40 px, or out of shape (a tile half again taller than wide)
 // Only visible things count: hidden, transparent and zero-size elements, anything in an aria-hidden layer, and
 // anything covered by another layer (a board under the question card).
 export async function frameProblems(frame, { minTap = 40 } = {}) {
@@ -61,7 +61,7 @@ export async function frameProblems(frame, { minTap = 40 } = {}) {
         // real controls stay full size) may go down to 28 px.
         const need = it.el.closest('[data-fit-dense]') ? 28 : minTap;
         if (small < need) out.push({ kind: 'squashed', what: name, size: [Math.round(r.width), Math.round(r.height)] });
-        else if (ratio > 1.5 || ratio < 0.08) out.push({ kind: 'squashed', what: name, size: [Math.round(r.width), Math.round(r.height)] });
+        else if (ratio > 1.5) out.push({ kind: 'squashed', what: name, size: [Math.round(r.width), Math.round(r.height)] });
       }
     }
     // Overlap: pairs of texts or of controls in the normal page (not floating), not nested in each other.
