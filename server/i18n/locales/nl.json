@@ -5268,6 +5268,48 @@
         "wait": "Wacht even en probeer het dan nog eens.",
         "notAllowed": "Alleen de leerkrachten van de klas kunnen dat."
       }
+    },
+    "bank": {
+      "subject": {
+        "math": "Rekenen",
+        "science": "Natuur en techniek",
+        "geography": "Aardrijkskunde",
+        "words": "Lezen en woorden",
+        "history": "Geschiedenis",
+        "general": "Algemene kennis",
+        "mixed": "Van alles wat"
+      },
+      "level": {
+        "a6": "6–7 jaar",
+        "a8": "8–9 jaar",
+        "a10": "10–11 jaar",
+        "a12": "12–14 jaar"
+      },
+      "math": {
+        "missing": "{a} + ? = {c}. Welk getal ontbreekt?",
+        "div": "Hoeveel is {a} ÷ {b}?",
+        "frac": "Hoeveel is {n}/{d} van {x}?",
+        "pct": "Hoeveel is {p}% van {x}?",
+        "alg": "Als {a}x + {b} = {c}, wat is x?",
+        "sq": "Hoeveel is {a} in het kwadraat?"
+      },
+      "solo": {
+        "title": "Kies je vragen",
+        "subject": "Vak",
+        "level": "Niveau",
+        "count": "Hoeveel vragen?",
+        "start": "Start!",
+        "boardSubjects": "Vakken op het bord (kies 2 tot 6)"
+      }
+    },
+    "bankUi": {
+      "bank": "Vragenbank: kies een vak en niveau",
+      "bankGroup": "Vragenbank",
+      "subject": "Vak",
+      "level": "Niveau",
+      "count": "Aantal vragen",
+      "boardSubjects": "Vakken op het bord (kies 2 tot 6)",
+      "bankHint": "Elk spel nieuwe vragen, geschreven voor elke leeftijd."
     }
   },
   "match": {
@@ -5307,7 +5349,7 @@
       "lead": "Echte schermen van een livespel op een demoschool met verzonnen namen.",
       "s1": {
         "h": "Kies een spel en je vragen",
-        "p": "Kies Questrace, Vragenduel of Breinbord en daarna je eigen vragenset, een set die een collega heeft gedeeld, een kant-en-klare startset of de vragen uit een van je lessen.",
+        "p": "Kies Questrace, Vragenduel of Breinbord en daarna de vragen: de vragenbank per vak en leeftijd (6 tot 14 jaar), je eigen vragenset, een set die een collega heeft gedeeld of de vragen uit een van je lessen.",
         "alt": "De pagina “Een livespel leiden”: spelmodi om uit te kiezen, een vragenset en wie mee mag doen."
       },
       "s2": {

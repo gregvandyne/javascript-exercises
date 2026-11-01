@@ -439,7 +439,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
 
 /** /live: pick a game or mode, a question set, who can join, then open the room (a data-api form: works without the
  *  page script). */
-export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null }) {
+export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null }) {
   const t = req.t;
   // part 4: invites to co-host and games this account co-hosts (only inside Oomba: no email, no push)
   const ch = cohost || { invites: [], on: [] };
@@ -449,6 +449,17 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   const radio = (name, value, checked) => raw(`<input type="radio" name="${name}" value="${value}"${checked ? ' checked' : ''}>`);
   const card = (value, icon, title, text, checked, quiz = false, teams = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
   const anyPicked = !!pre.pick;
+  // Questions: what the host chose last time (prefs.bank), else the question bank.
+  const lastBank = (prefs && prefs.bank) || {};
+  const okSet = v => typeof v === 'string' && (v === 'bank' || [...sets.mine, ...sets.school].some(x => x.ready && `set:${x.id}` === v));
+  const chosen = pre.set && (pre.set === 'bank' || pre.set.startsWith('set:') || pre.set.startsWith('starter:')) ? pre.set : okSet(lastBank.set) ? lastBank.set : bank ? 'bank' : '';
+  const ids = bank ? bank.subjects.map(x => x.id) : [];
+  const bk = {
+    subject: lastBank.subject === 'mixed' || ids.includes(lastBank.subject) ? lastBank.subject : 'mixed',
+    level: ['a6', 'a8', 'a10', 'a12'].includes(lastBank.level) ? lastBank.level : 'a8',
+    count: bank && bank.counts.includes(lastBank.count) ? lastBank.count : 10,
+    board: Array.isArray(lastBank.board) && lastBank.board.filter(x => ids.includes(x)).length >= 2 ? lastBank.board.filter(x => ids.includes(x)) : ids.slice(0, 5),
+  };
   const audiences = [classes.length ? 'class' : null, family ? 'family' : null, 'open'].filter(Boolean);
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
   return html`<div class="lv lv-landing" data-lv-page="landing">
@@ -464,10 +475,22 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
     <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>
       <div class="field"><label for="lv-set">${t('live.landing.questionsLabel')}</label>
         <select id="lv-set" name="set">
-          ${sets.mine.length ? html`<optgroup label="${t('live.landing.mySets')}">${sets.mine.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${pre.set === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
-          ${sets.school.length ? html`<optgroup label="${t('live.landing.schoolSets')}">${sets.school.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}>${s.title}</option>`)}</optgroup>` : ''}
-          <optgroup label="${t('live.landing.starters')}">${starters.map(s => html`<option value="starter:${s.id}"${pre.set === `starter:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>
+          ${bank ? html`<optgroup label="${t('live.bankUi.bankGroup')}"><option value="bank"${chosen === 'bank' ? raw(' selected') : ''}>${t('live.bankUi.bank')}</option></optgroup>` : ''}
+          ${sets.mine.length ? html`<optgroup label="${t('live.landing.mySets')}">${sets.mine.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
+          ${sets.school.length ? html`<optgroup label="${t('live.landing.schoolSets')}">${sets.school.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>` : ''}
+          ${pre.set && pre.set.startsWith('starter:') ? html`<optgroup label="${t('live.landing.starters')}">${starters.map(s => html`<option value="starter:${s.id}"${pre.set === `starter:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>` : ''}
         </select></div>
+      ${bank ? html`<div class="lv-bank" id="lv-bank">
+        <div class="field lv-bank-one"><label for="lv-bank-subject">${t('live.bankUi.subject')}</label>
+          <select id="lv-bank-subject" name="bankSubject"><option value="mixed"${bk.subject === 'mixed' ? raw(' selected') : ''}>${bank.mixed}</option>${bank.subjects.map(x => html`<option value="${x.id}"${bk.subject === x.id ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+        <fieldset class="lv-bank-board" hidden><legend>${t('live.bankUi.boardSubjects')}</legend><div class="lv-bank-subs">
+          ${bank.subjects.map(x => html`<label class="lv-check"><input type="checkbox" name="bankBoard" value="${x.id}"${bk.board.includes(x.id) ? raw(' checked') : ''}> ${x.name}</label>`)}</div></fieldset>
+        <div class="field"><label for="lv-bank-level">${t('live.bankUi.level')}</label>
+          <select id="lv-bank-level" name="bankLevel">${bank.levels.map(x => html`<option value="${x.id}"${bk.level === x.id ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+        <div class="field lv-bank-one"><label for="lv-bank-count">${t('live.bankUi.count')}</label>
+          <select id="lv-bank-count" name="bankCount">${bank.counts.map(n => html`<option value="${n}"${bk.count === n ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+        <p class="small muted lv-bank-hint">${t('live.bankUi.bankHint')}</p>
+      </div>` : ''}
       <a class="small" href="/live/sets">${t('live.landing.newSet')}</a>
     </fieldset>
     <fieldset class="lv-group"><legend>${t('live.landing.who')}</legend>

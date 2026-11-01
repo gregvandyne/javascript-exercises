@@ -5269,6 +5269,48 @@
         "wait": "Wait a moment, then try again.",
         "notAllowed": "Only the class's teachers can do that."
       }
+    },
+    "bank": {
+      "subject": {
+        "math": "Math",
+        "science": "Science",
+        "geography": "Geography",
+        "words": "Reading & words",
+        "history": "History",
+        "general": "General knowledge",
+        "mixed": "A bit of everything"
+      },
+      "level": {
+        "a6": "Ages 6–7",
+        "a8": "Ages 8–9",
+        "a10": "Ages 10–11",
+        "a12": "Ages 12–14"
+      },
+      "math": {
+        "missing": "{a} + ? = {c}. What is the missing number?",
+        "div": "What is {a} ÷ {b}?",
+        "frac": "What is {n}/{d} of {x}?",
+        "pct": "What is {p}% of {x}?",
+        "alg": "If {a}x + {b} = {c}, what is x?",
+        "sq": "What is {a} squared?"
+      },
+      "solo": {
+        "title": "Choose your questions",
+        "subject": "Subject",
+        "level": "Level",
+        "count": "How many questions?",
+        "start": "Start!",
+        "boardSubjects": "Board subjects (pick 2 to 6)"
+      }
+    },
+    "bankUi": {
+      "bank": "Question bank: choose a subject and level",
+      "bankGroup": "Question bank",
+      "subject": "Subject",
+      "level": "Level",
+      "count": "Number of questions",
+      "boardSubjects": "Board subjects (pick 2 to 6)",
+      "bankHint": "Fresh questions every game, written for each age group."
     }
   },
   "match": {
@@ -5308,7 +5350,7 @@
       "lead": "Real screens from a live game in a demo school with made-up names.",
       "s1": {
         "h": "Pick a game and your questions",
-        "p": "Choose Quest Race, Question Battle or Brain Board, then your own question set, one a colleague shared, a ready-made starter, or the questions from one of your lessons.",
+        "p": "Choose Quest Race, Question Battle or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lessons.",
         "alt": "The Host a live game page: game modes to pick from, a question set and who can join."
       },
       "s2": {

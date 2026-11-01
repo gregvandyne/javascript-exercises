@@ -5267,6 +5267,48 @@
         "wait": "Espera un momento y vuelve a intentarlo.",
         "notAllowed": "Solo los docentes de la clase pueden hacer eso."
       }
+    },
+    "bank": {
+      "subject": {
+        "math": "Matemáticas",
+        "science": "Ciencias",
+        "geography": "Geografía",
+        "words": "Lectura y palabras",
+        "history": "Historia",
+        "general": "Cultura general",
+        "mixed": "Un poco de todo"
+      },
+      "level": {
+        "a6": "6–7 años",
+        "a8": "8–9 años",
+        "a10": "10–11 años",
+        "a12": "12–14 años"
+      },
+      "math": {
+        "missing": "{a} + ? = {c}. ¿Qué número falta?",
+        "div": "¿Cuánto es {a} ÷ {b}?",
+        "frac": "¿Cuánto es {n}/{d} de {x}?",
+        "pct": "¿Cuánto es el {p} % de {x}?",
+        "alg": "Si {a}x + {b} = {c}, ¿cuánto vale x?",
+        "sq": "¿Cuánto es {a} al cuadrado?"
+      },
+      "solo": {
+        "title": "Elige tus preguntas",
+        "subject": "Materia",
+        "level": "Nivel",
+        "count": "¿Cuántas preguntas?",
+        "start": "¡Empezar!",
+        "boardSubjects": "Materias del tablero (elige de 2 a 6)"
+      }
+    },
+    "bankUi": {
+      "bank": "Banco de preguntas: elige materia y nivel",
+      "bankGroup": "Banco de preguntas",
+      "subject": "Materia",
+      "level": "Nivel",
+      "count": "Número de preguntas",
+      "boardSubjects": "Materias del tablero (elige de 2 a 6)",
+      "bankHint": "Preguntas nuevas en cada partida, escritas para cada edad."
     }
   },
   "match": {
@@ -5306,7 +5348,7 @@
       "lead": "Pantallas reales de un juego en vivo en una escuela de demostración con nombres inventados.",
       "s1": {
         "h": "Elija un juego y sus preguntas",
-        "p": "Elija Carrera de misiones, Batalla de preguntas o Tablero Cerebro y, después, su propio conjunto de preguntas, uno que haya compartido un colega, un conjunto inicial ya preparado o las preguntas de una de sus lecciones.",
+        "p": "Elija Carrera de misiones, Batalla de preguntas o Tablero Cerebro y, después, las preguntas: el banco de preguntas por materia y edad (de 6 a 14 años), su propio conjunto, uno que haya compartido un colega o las preguntas de una de sus lecciones.",
         "alt": "La página “Dirigir un juego en vivo”: los modos de juego para elegir, un conjunto de preguntas y quién puede unirse."
       },
       "s2": {
