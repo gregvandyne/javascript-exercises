@@ -214,6 +214,9 @@ test('the stored transcript never contains game source; the model gets it as a s
 test('system prompt and tools are fixed and cover the kid rules and the contract', () => {
   for (const s of ['No chat or messaging between players', 'personal details', 'No links', 'real brands', 'jump-scares', 'gambling', 'Cartoon slapstick', 'Educational', 'window.BRB', '<title>', 'BRB.sfx', 'three short questions', 'never put the uploaded photo', 'playtest_game', '__brbTest', 'Art direction', 'start()']) assert.ok(SYSTEM_PROMPT.toLowerCase().includes(s.toLowerCase()), s);
   assert.deepEqual(TOOLS.map(t => t.name), ['ask_user', 'write_game', 'edit_game', 'set_game', 'playtest_game', 'start_from_template', 'test_notes']);
+  // Every device, tablets first: the rule, and the playtest that shows them all.
+  for (const s of ['EVERY DEVICE, TABLET FIRST', 'tablet in portrait and landscape', 'phone in portrait and landscape', 'desktop', 'at least 44px', 'nothing that only works', 'never finish while any view looks wrong', 'check the tablet views as carefully as the phone']) assert.ok(SYSTEM_PROMPT.includes(s), s);
+  assert.match(TOOLS.find(t => t.name === 'playtest_game').description, /every device \(phone and tablet, each in portrait and landscape, and desktop\)/);
   assert.doesNotMatch(SYSTEM_PROMPT, /\$\{/);
 });
 

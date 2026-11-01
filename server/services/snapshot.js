@@ -47,11 +47,20 @@ const VENDOR_TYPES = { js: 'text/javascript; charset=utf-8', woff2: 'font/woff2'
 export const threeReady = () => [THREE_MODULE, THREE_CORE].every(p => !!vendorFile(`${HOST}${p}`));
 const ALLOWED = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com)\//;
 const IDLE_MS = 45_000;
-const JOB_MS = 40_000;
+export const JOB_MS = 55_000;   // a playtest with every device size takes about 15 s more than a cover
 export const SIZES = {
   cover: { portrait: { width: 360, height: 480 }, landscape: { width: 640, height: 480 } },
   phone: { portrait: { width: 390, height: 700 }, landscape: { width: 844, height: 390 } },
 };
+/** The devices a Builder playtest checks (docs/sdk.md "How the Builder edits games"): the game is shown at each size by
+ *  resizing the window, as turning a tablet does, so a game has to lay itself out again on a resize. */
+export const VIEWS = [
+  { key: 'phone-portrait', label: 'Phone portrait', width: 390, height: 844 },
+  { key: 'tablet-portrait', label: 'Tablet portrait', width: 820, height: 1180 },
+  { key: 'phone-landscape', label: 'Phone landscape', width: 844, height: 390 },
+  { key: 'tablet-landscape', label: 'Tablet landscape', width: 1180, height: 820 },
+  { key: 'desktop', label: 'Desktop', width: 1280, height: 800 },
+];
 // Words on a start button, in the site's languages (lower case).
 const PLAY_WORDS = /\b(play|start|go|begin|let'?s go|tap to (play|start))\b|jouer|commencer|jugar|empezar|comenzar|spielen|starten|los geht|jogar|começar|iniciar|gioca|inizia|spelen|begin|играть|начать|старт|スタート|あそぶ|はじめる|開始|遊戲|שחק|התחל|العب|ابدأ|▶|►/i;
 
@@ -128,6 +137,59 @@ function inspect(W) {
   };
 }
 
+/** Layout problems at the current window size, in the game frame (short sentences for the model, at most 6): sideways
+ *  scrolling, text or buttons cut off at an edge, text cut off inside its box, things on top of each other, buttons too
+ *  small to tap or squashed thin. Only visible things on top count (not a board under a question card, not floating
+ *  layers that ignore the pointer, such as banners and confetti). */
+function layoutProblems() {
+  const W = innerWidth, H = innerHeight, out = [];
+  const say = s => { if (out.length < 6 && !out.includes(s)) out.push(s); };
+  const de = document.documentElement;
+  if (de.scrollWidth > W + 2 || (document.body && document.body.scrollWidth > W + 2)) say('the page is wider than the screen and scrolls sideways');
+  const shown = el => {
+    if (el.closest('[aria-hidden="true"],[hidden]')) return false;
+    for (let e = el; e; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.2) return false; }
+    const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2;
+  };
+  const floating = el => { for (let e = el; e; e = e.parentElement) if (getComputedStyle(e).pointerEvents === 'none') return true; return false; };
+  const txt = el => `"${(el.innerText || el.value || el.getAttribute('aria-label') || el.tagName.toLowerCase()).trim().replace(/\s+/g, ' ').slice(0, 28)}"`;
+  const ownText = el => [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+  const scrollerOf = el => { for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) { const o = getComputedStyle(e).overflowY; if (o === 'auto' || o === 'scroll') return e; } return null; };
+  const items = [];
+  for (const el of document.body ? document.body.querySelectorAll('*') : []) {
+    if (/^(SCRIPT|STYLE|CANVAS|TEMPLATE|NOSCRIPT|svg|path|g)$/i.test(el.tagName)) continue;
+    const control = el.matches('button,[role="button"],a[href],input,select,textarea');
+    if (!control && !ownText(el)) continue;
+    if (!shown(el)) continue;
+    const r = el.getBoundingClientRect();
+    const cx = Math.min(W - 1, Math.max(0, r.left + r.width / 2)), cy = Math.min(H - 1, Math.max(0, r.top + r.height / 2));
+    const hit = document.elementFromPoint(cx, cy);
+    if (hit && !el.contains(hit) && !hit.contains(el) && !floating(hit) && cy === r.top + r.height / 2) continue;   // covered by another layer
+    items.push({ el, control, r, float: floating(el), scroller: scrollerOf(el) });
+    if (items.length > 400) break;
+  }
+  for (const it of items) {
+    const r = it.r;
+    if (!it.float && !it.scroller && (r.left < -2 || r.top < -2 || r.right > W + 2 || r.bottom > H + 2)) say(`cut off at the screen edge: ${txt(it.el)}`);
+    const cs = getComputedStyle(it.el);
+    if (!it.control && /hidden|clip/.test(cs.overflowX + cs.overflowY) && cs.textOverflow !== 'ellipsis' && (it.el.scrollWidth > it.el.clientWidth + 2 || it.el.scrollHeight > it.el.clientHeight + 3)) say(`text cut off inside its box: ${txt(it.el)}`);
+    if (it.control && !it.float) {
+      const w = Math.round(r.width), h = Math.round(r.height);
+      if (Math.min(w, h) < 44) say(`too small to tap (${w}x${h}px, needs 44): ${txt(it.el)}`);
+      else if (h / w > 1.5) say(`squashed tall and thin (${w}x${h}px): ${txt(it.el)}`);
+    }
+  }
+  const flat = items.filter(it => !it.float);
+  for (let i = 0; i < flat.length && out.length < 6; i++) for (let j = i + 1; j < flat.length; j++) {
+    const a = flat[i], b = flat[j];
+    if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
+    if (a.control !== b.control && (a.el.closest('button,[role="button"]') || b.el.closest('button,[role="button"]'))) continue;
+    const x = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left), y = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
+    if (x > 4 && y > 4 && x * y > Math.min(a.r.width * a.r.height, b.r.width * b.r.height) * 0.2) { say(`on top of each other: ${txt(a.el)} and ${txt(b.el)}`); break; }
+  }
+  return out;
+}
+
 /** Find what to tap to start: the test hook's start(), a Play-ish button, the biggest button, or the middle of the screen. */
 function startTarget(words) {
   const re = new RegExp(words, 'i');
@@ -143,8 +205,11 @@ function startTarget(words) {
 
 /**
  * Run a game and photograph it (remote worker when SNAPSHOT_URL is set, else local Chromium).
- * opts: { size: 'cover'|'phone', orientation: 'portrait'|'landscape'|'any', lang, dir, title, titleMs, playMs, scale, quality }
- * Returns { title: Buffer, play: Buffer|null, started, errors: [], before: inspect(), after: inspect() }.
+ * opts: { size: 'cover'|'phone', orientation: 'portrait'|'landscape'|'any', lang, dir, title, titleMs, playMs, scale, quality,
+ *   probe, views }. views: true also shows the game at every VIEWS size (the Builder's playtest): one contact sheet of the
+ *   title screen and one after starting, with the layout problems found at each size.
+ * Returns { title: Buffer, play: Buffer|null, started, errors: [], before: inspect(), after: inspect(), probe,
+ *   views: [{ key, label, width, height, title: [problems], play: [problems] }] | null, sheetTitle, sheetPlay }.
  */
 export function runGame(gameHtml, opts = {}) {
   if (!enabled()) return Promise.reject(new Error('Screenshots are off on this server'));
@@ -159,11 +224,12 @@ export function runLocal(gameHtml, opts = {}) {
 
 // ---- Remote worker client / wire format ---------------------------------------------
 // The result travels as JSON, so the JPEG buffers go as base64.
+const PICS = ['title', 'play', 'sheetTitle', 'sheetPlay'];
 export function resultToJson(r) {
-  return { ...r, title: r.title ? r.title.toString('base64') : null, play: r.play ? r.play.toString('base64') : null };
+  const o = { ...r }; for (const k of PICS) o[k] = r[k] ? r[k].toString('base64') : null; return o;
 }
 function jsonToResult(j) {
-  return { ...j, title: j.title ? Buffer.from(j.title, 'base64') : null, play: j.play ? Buffer.from(j.play, 'base64') : null };
+  const o = { ...j }; for (const k of PICS) o[k] = j[k] ? Buffer.from(j[k], 'base64') : null; return o;
 }
 // The worker is down, busy (or too slow to answer) or refuses our token: not the game's fault, so callers retry later
 // (err.workerDown).
@@ -242,6 +308,19 @@ async function capture(gameHtml, opts) {
     await wait(o.titleMs);
     const before = await frame.evaluate(inspect, shape.width).catch(e => ({ error: e.message }));
     const title = await page.screenshot({ type: 'jpeg', quality: o.quality });
+    // Every device size in turn (the window is resized, as turning a tablet does), then back to the phone.
+    const views = o.views ? VIEWS.map(v => ({ ...v, title: [], play: [] })) : null;
+    const shotsOf = { title: [], play: [] };
+    const sweep = async stage => {
+      for (const v of views) {
+        await page.setViewportSize({ width: v.width, height: v.height });
+        await wait(450);
+        v[stage] = await frame.evaluate(layoutProblems).catch(e => [`the layout check failed (${String(e.message || e).split('\n')[0].slice(0, 80)})`]);
+        shotsOf[stage].push(await page.screenshot({ type: 'jpeg', quality: 50 }));
+      }
+      await page.setViewportSize(shape); await wait(350);
+    };
+    if (views) await sweep('title');
     let play = null, started = null;
     if (o.playMs > 0) {
       const target = await frame.evaluate(startTarget, PLAY_WORDS.source).catch(() => null);
@@ -251,13 +330,43 @@ async function capture(gameHtml, opts) {
       play = await page.screenshot({ type: 'jpeg', quality: o.quality });
     }
     const after = await frame.evaluate(inspect, shape.width).catch(e => ({ error: e.message }));
+    if (views && o.playMs > 0) await sweep('play');
+    // One picture per stage with every size side by side, labelled, so the model sees them all at once.
+    let sheetTitle = null, sheetPlay = null;
+    if (views) {
+      sheetTitle = await contactSheet(ctx, views, shotsOf.title, 'title', 'Title screen');
+      if (shotsOf.play.length) sheetPlay = await contactSheet(ctx, views, shotsOf.play, 'play', 'After starting');
+    }
     // the playtest's probe: about 25 s of game time stepped deterministically, holding right, jumping and answering
     let probe = null;
     if (o.probe) probe = await frame.evaluate(probeGame, { secs: o.probeSecs || 25 }).catch(e => ({ error: String(e.message || e).split('\n')[0].slice(0, 160) }));
-    return { title, play, started, errors: [...new Set(errors)].slice(0, 8), kitWarnings: [...new Set(kitWarnings)].slice(0, 10), before, after, probe, launches };
+    return { title, play, started, errors: [...new Set(errors)].slice(0, 8), kitWarnings: [...new Set(kitWarnings)].slice(0, 10), before, after, probe, launches,
+      views: views ? views.map(({ key, label, width, height, title: t, play: p }) => ({ key, label, width, height, title: t, play: p })) : null, sheetTitle, sheetPlay };
   } finally {
     await ctx.close().catch(() => {});
   }
+}
+
+/** The device pictures of one stage in one JPEG: two rows (phone portrait, tablet portrait, phone landscape; tablet
+ *  landscape, desktop), each picture scaled to the row's height and labelled with its size and how many problems it has. */
+async function contactSheet(ctx, views, pics, stage, heading) {
+  const H = 420, GAP = 14, rows = [views.slice(0, 3).map((v, i) => [v, pics[i]]), views.slice(3).map((v, i) => [v, pics[i + 3]])];
+  const tile = ([v, pic]) => {
+    const w = Math.round(v.width * H / v.height), n = v[stage].length;
+    return `<figure style="margin:0;width:${w}px"><figcaption style="font:700 15px/1.25 system-ui,sans-serif;color:#fff;padding:4px 0;white-space:nowrap">${v.label}<br>`
+      + `<span style="font-weight:600;color:#ccc">${v.width}×${v.height}</span> · <span style="color:${n ? '#ff8a80' : '#9be89b'}">${n ? `${n} problem${n > 1 ? 's' : ''}` : 'OK'}</span></figcaption>`
+      + `<img src="data:image/jpeg;base64,${pic.toString('base64')}" style="display:block;width:${w}px;height:${H}px;border:2px solid #fff;border-radius:6px"></figure>`;
+  };
+  const html = `<!doctype html><meta charset="utf-8"><body style="margin:0;background:#222;padding:10px"><div style="font:800 17px system-ui,sans-serif;color:#ffd24a;margin-bottom:6px">${heading} on every device</div>`
+    + rows.map(r => `<div style="display:flex;gap:${GAP}px;margin-bottom:${GAP}px;align-items:flex-end">${r.map(tile).join('')}</div>`).join('') + '</body>';
+  const page = await ctx.newPage();
+  try {
+    await page.setViewportSize({ width: 1300, height: 900 });
+    await page.setContent(html, { waitUntil: 'load', timeout: 8000 });
+    const box = await page.evaluate(() => ({ w: Math.ceil(document.body.scrollWidth), h: Math.ceil(document.body.scrollHeight) }));
+    await page.setViewportSize({ width: Math.min(1568, box.w), height: Math.min(1200, box.h) });   // the model's largest size
+    return await page.screenshot({ type: 'jpeg', quality: 60, fullPage: true });
+  } finally { await page.close().catch(() => {}); }
 }
 
 /** In the game frame: drive a kit game (Oomba.game: __brbTest.step) for `secs` of game time: hold right, jump now and

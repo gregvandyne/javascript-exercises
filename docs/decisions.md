@@ -1895,3 +1895,13 @@ level (adding to 10 at 6–7; percentages, negatives, squares and simple algebra
 - **Other languages** have every interface word and the generated maths, and the 20 translated science and geography
   starter questions until their own `server/live/bank/<lang>/` files are written: the pickers offer only the subjects
   a language has. Translating the English bank is a mechanical follow-up (same files, same shape).
+## The Builder checks every device, tablets first (November 2026)
+
+Kids play on tablets (iPads, Chromebooks) more than on anything else, and games that looked fine in the Builder's phone
+playtest were hard to play on a tablet. So the playtest now also shows the model the title screen and the game after
+starting at five sizes (phone and tablet, each in portrait and landscape, and desktop), as two labelled contact sheets
+with the layout problems found at each size, and the system prompt has a firm "EVERY DEVICE, TABLET FIRST" rule. The
+sizes are reached by resizing the window, so a game must lay itself out again on a resize, as it must when a tablet
+turns. Cost: two more pictures per playtest (about 1,500 x 1,000 pixels each) and about 8 seconds more per playtest; a
+screenshot job's limit went from 40 to 55 seconds.
+

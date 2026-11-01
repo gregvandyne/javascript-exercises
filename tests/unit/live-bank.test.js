@@ -60,12 +60,12 @@ test('no repeats until the pool is used up', () => {
   assert.equal(b.filter(x => seen.has(x.id)).length, 0);
 });
 
-test('a board: the chosen subjects as columns of 5, easy to hard; other languages offer what they have', () => {
+test('a board: the chosen subjects as columns of 5, easy to hard; every language offers every subject', () => {
   const items = BANK.bankItems('bank:board:a10:science+history+geography', 'en');
   assert.equal(items.length, 15);
   assert.deepEqual([...new Set(items.map(x => x.cat))], ['Science', 'History', 'Geography']);
-  const fr = BANK.pickerFor('fr').subjects.map(x => x.id);
-  assert.deepEqual(fr, ['math', 'science', 'geography']);
+  const all = BANK.pickerFor('en').subjects.map(x => x.id);
+  for (const lang of ['fr', 'de', 'es', 'pt', 'it', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he']) assert.deepEqual(BANK.pickerFor(lang).subjects.map(x => x.id), all, lang);
   assert.equal(BANK.parseBankId('bank:nope:a8:10'), null);
   assert.equal(BANK.parseBankId('bank:science:a9:10'), null);
 });
@@ -117,3 +117,24 @@ test('makeBank works with any random source (same seed, same questions)', () => 
   const data = BANK.dataFor('en'), strings = BANK.stringsFor('en');
   assert.deepEqual(makeBank(data, strings, seq()).pick({ subject: 'science', level: 'a8', count: 5 }).map(x => x.q), makeBank(data, strings, seq()).pick({ subject: 'science', level: 'a8', count: 5 }).map(x => x.q));
 });
+
+test('every language has the whole bank: same levels and counts as English, one right answer first, no repeated answers, clean words', async () => {
+  const fs = await import('node:fs');
+  const { profanityMatch } = await import('../../server/services/textfilter.js');
+  const en = Object.fromEntries(fs.readdirSync('server/live/bank/en').map(f => [f, JSON.parse(fs.readFileSync(`server/live/bank/en/${f}`, 'utf8'))]));
+  for (const lang of fs.readdirSync('server/live/bank').filter(d => !/\.js$/.test(d) && d !== 'en')) {
+    for (const [f, src] of Object.entries(en)) {
+      const d = JSON.parse(fs.readFileSync(`server/live/bank/${lang}/${f}`, 'utf8'));
+      assert.deepEqual(Object.keys(d), Object.keys(src), `${lang}/${f} levels`);
+      for (const [lv, items] of Object.entries(src)) {
+        assert.equal(d[lv].length, items.length, `${lang}/${f} ${lv} count`);
+        d[lv].forEach((it, i) => {
+          assert.ok(it.length >= 3 && it.every(x => typeof x === 'string' && x.trim()), `${lang}/${f} ${lv} #${i}`);
+          assert.equal(new Set(it.slice(1).map(x => x.toLowerCase())).size, it.length - 1, `${lang}/${f} ${lv} #${i}: answers differ`);
+          for (const x of it) assert.ok(!profanityMatch(x), `${lang}/${f} ${lv} #${i}: ${x}`);
+        });
+      }
+    }
+  }
+});
+
