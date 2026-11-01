@@ -278,3 +278,28 @@ on(document, 'click', e => {
   const a = e.target instanceof Element && e.target.closest('a[data-count]');
   if (a && navigator.sendBeacon) try { navigator.sendBeacon(a.dataset.count); } catch { /* counting must never stop a link */ }
 });
+
+// ---- Online match invites: a friend or family member asks to play a game together (server/routes/match.js) ----
+// Signed-in accounts check every 25 s while the page is visible; each invite is shown once per tab.
+if (FIRST && document.body.dataset.user && !document.body.dataset.guest && !pageData().match) {
+  const shown = new Set(); try { for (const id of JSON.parse(sessionStorage.getItem('brb-invites') || '[]')) shown.add(id); } catch { /* storage off */ }
+  let open = false;
+  const check = async () => {
+    if (document.hidden || open) return;
+    let invites = []; try { invites = (await api('/api/match/inbox', { background: true })).invites; } catch { return; }
+    const i = invites.find(x => !shown.has(x.id)); if (!i) return;
+    shown.add(i.id); try { sessionStorage.setItem('brb-invites', JSON.stringify([...shown].slice(-50))); } catch { /* storage off */ }
+    open = true;
+    const s = sheet({ title: t('js.app.inviteTitle', { game: i.game.title }), onClose: () => { open = false; },
+      content: `<p class="mt-invite-line"><span class="mt-av" aria-hidden="true">${esc(i.from.avatar)}</span> ${esc(t('js.app.inviteText', { name: i.from.name, game: `${i.game.icon} ${i.game.title}` }))}</p>
+        <div class="row"><button class="btn btn-primary" type="button" data-yes>${esc(t('js.app.invitePlay'))}</button><button class="btn" type="button" data-no>${esc(t('js.app.inviteNo'))}</button></div><p class="err" role="alert"></p>` });
+    s.el.addEventListener('click', async e => {
+      const yes = e.target.closest('[data-yes]'), no = e.target.closest('[data-no]'); if (!yes && !no) return;
+      try {
+        const r = await api(`/api/match/${encodeURIComponent(i.id)}/${yes ? 'accept' : 'decline'}`, { method: 'POST', body: {} });
+        if (yes && r.redirect) location.href = r.redirect; else s.close();
+      } catch (err) { $('.err', s.el).textContent = err.message; }
+    });
+  };
+  setTimeout(check, 1500); setInterval(check, 25000);
+}

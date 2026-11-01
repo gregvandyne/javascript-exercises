@@ -1642,7 +1642,11 @@
       "close": "Cerrar",
       "playing": "{n} jugando",
       "justNow": "justo ahora",
-      "copied": "¡Copiado!"
+      "copied": "¡Copiado!",
+      "inviteTitle": "¿Jugar a {game}?",
+      "inviteText": "¡{name} quiere jugar a {game} contigo!",
+      "invitePlay": "¡A jugar!",
+      "inviteNo": "Ahora no"
     },
     "game": {
       "needSignIn": "Primero toca “Jugar como invitado” o entra a tu cuenta.",
@@ -2221,6 +2225,31 @@
       "right": "La respuesta correcta",
       "answer": "Respuesta {n}",
       "saved": "¡Guardado!"
+    },
+    "match": {
+      "title": "Jugar a {title} online",
+      "playingNow": "Jugando ahora",
+      "family": "Familia",
+      "invite": "Invitar",
+      "wantsToPlay": "¡{name} quiere jugar!",
+      "play": "Jugar",
+      "invitesForYou": "Invitaciones para ti",
+      "friendsHeading": "Amigos y familia",
+      "noFriends": "Todavía no tienes amigos para invitar. Primero agrega a un amigo con su código de amigo.",
+      "friendsPage": "Ir a Amigos",
+      "guestNoFriends": "Crea una cuenta para invitar a amigos. Igual puedes jugar con un código.",
+      "codeHeading": "Jugar con un código",
+      "codeHint": "Crea un código y díselo al otro jugador, o escribe el código que creó.",
+      "makeCode": "Crear un código",
+      "enterCode": "Código de partida",
+      "codePlaceholder": "ABC-DEF",
+      "join": "Unirme",
+      "typeCode": "Primero escribe el código de partida.",
+      "shareCode": "Tu código de partida",
+      "shareHint": "Díselo al otro jugador. Tiene que tocar Jugar online en {title} y escribirlo.",
+      "waitingFor": "Esperando a que {name} diga que sí…",
+      "cancel": "Cancelar",
+      "ended": "Esta partida online terminó."
     }
   },
   "favorites": {
@@ -5172,6 +5201,20 @@
         "wait": "Espera un momento y vuelve a intentarlo.",
         "notAllowed": "Solo los docentes de la clase pueden hacer eso."
       }
+    }
+  },
+  "match": {
+    "err": {
+      "signIn": "Inicia sesión para jugar online.",
+      "notOnline": "Este juego no se puede jugar online.",
+      "notFound": "Ese código no funciona. Revísalo e inténtalo de nuevo.",
+      "gone": "Esa invitación terminó.",
+      "tooMany": "Tienes demasiadas partidas online. Primero termina una.",
+      "codeLength": "Los códigos de partida tienen 6 letras y números.",
+      "ownCode": "¡Ese es tu propio código! Díselo al otro jugador.",
+      "notPlaying": "Esta partida no está en marcha ahora.",
+      "bad": "No se pudo enviar esa jugada.",
+      "full": "Esta partida es demasiado larga para seguir."
     }
   }
 }

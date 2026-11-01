@@ -1642,7 +1642,11 @@
       "close": "Fermer",
       "playing": "{n} en jeu",
       "justNow": "à l’instant",
-      "copied": "Copié !"
+      "copied": "Copié !",
+      "inviteTitle": "Jouer à {game} ?",
+      "inviteText": "{name} veut jouer à {game} avec toi !",
+      "invitePlay": "On joue !",
+      "inviteNo": "Pas maintenant"
     },
     "game": {
       "needSignIn": "Touche « Jouer en invité » ou connecte-toi d’abord.",
@@ -2221,6 +2225,31 @@
       "right": "La bonne réponse",
       "answer": "Réponse {n}",
       "saved": "Enregistré !"
+    },
+    "match": {
+      "title": "Jouer à {title} en ligne",
+      "playingNow": "En train de jouer",
+      "family": "Famille",
+      "invite": "Inviter",
+      "wantsToPlay": "{name} veut jouer !",
+      "play": "Jouer",
+      "invitesForYou": "Invitations pour toi",
+      "friendsHeading": "Amis et famille",
+      "noFriends": "Tu n’as pas encore d’amis à inviter. Ajoute d’abord un ami avec son code ami.",
+      "friendsPage": "Aller aux Amis",
+      "guestNoFriends": "Crée un compte pour inviter des amis. Tu peux quand même jouer avec un code.",
+      "codeHeading": "Jouer avec un code",
+      "codeHint": "Crée un code et donne-le à l’autre joueur, ou tape le code qu’il a créé.",
+      "makeCode": "Créer un code",
+      "enterCode": "Code de partie",
+      "codePlaceholder": "ABC-DEF",
+      "join": "Rejoindre",
+      "typeCode": "Tape d’abord le code de partie.",
+      "shareCode": "Ton code de partie",
+      "shareHint": "Donne-le à l’autre joueur. Il touche Jouer en ligne dans {title} et le tape.",
+      "waitingFor": "On attend que {name} dise oui…",
+      "cancel": "Annuler",
+      "ended": "Cette partie en ligne est terminée."
     }
   },
   "favorites": {
@@ -5172,6 +5201,20 @@
         "wait": "Attends un instant, puis réessaie.",
         "notAllowed": "Seuls les enseignants de la classe peuvent faire ça."
       }
+    }
+  },
+  "match": {
+    "err": {
+      "signIn": "Connecte-toi pour jouer en ligne.",
+      "notOnline": "Ce jeu ne se joue pas en ligne.",
+      "notFound": "Ce code ne marche pas. Vérifie-le et réessaie.",
+      "gone": "Cette invitation est terminée.",
+      "tooMany": "Tu as trop de parties en ligne en cours. Termines-en une d’abord.",
+      "codeLength": "Les codes de partie ont 6 lettres et chiffres.",
+      "ownCode": "C’est ton propre code ! Donne-le à l’autre joueur.",
+      "notPlaying": "Cette partie n’est pas en cours en ce moment.",
+      "bad": "Ce coup n’a pas pu être envoyé.",
+      "full": "Cette partie est trop longue pour continuer."
     }
   }
 }

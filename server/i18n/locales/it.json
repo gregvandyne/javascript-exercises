@@ -1643,7 +1643,11 @@
       "close": "Chiudi",
       "playing": "{n} in gioco",
       "justNow": "proprio ora",
-      "copied": "Copiato!"
+      "copied": "Copiato!",
+      "inviteTitle": "Giocare a {game}?",
+      "inviteText": "{name} vuole giocare a {game} con te!",
+      "invitePlay": "Giochiamo!",
+      "inviteNo": "Non ora"
     },
     "game": {
       "needSignIn": "Tocca «Gioca come ospite» oppure accedi prima.",
@@ -2222,6 +2226,31 @@
       "right": "La risposta giusta",
       "answer": "Risposta {n}",
       "saved": "Salvato!"
+    },
+    "match": {
+      "title": "Gioca a {title} online",
+      "playingNow": "Adesso in gioco",
+      "family": "Famiglia",
+      "invite": "Invita",
+      "wantsToPlay": "{name} vuole giocare!",
+      "play": "Gioca",
+      "invitesForYou": "Inviti per te",
+      "friendsHeading": "Amici e famiglia",
+      "noFriends": "Non hai ancora amici da invitare. Prima aggiungi un amico con il suo codice amico.",
+      "friendsPage": "Vai agli Amici",
+      "guestNoFriends": "Crea un account per invitare gli amici. Puoi comunque giocare con un codice.",
+      "codeHeading": "Gioca con un codice",
+      "codeHint": "Crea un codice e dillo all'altro giocatore, oppure scrivi il codice che ha creato.",
+      "makeCode": "Crea un codice",
+      "enterCode": "Codice partita",
+      "codePlaceholder": "ABC-DEF",
+      "join": "Entra",
+      "typeCode": "Prima scrivi il codice partita.",
+      "shareCode": "Il tuo codice partita",
+      "shareHint": "Dillo all'altro giocatore: deve toccare Gioca online in {title} e scriverlo.",
+      "waitingFor": "Aspettiamo che {name} dica di sì…",
+      "cancel": "Annulla",
+      "ended": "Questa partita online è finita."
     }
   },
   "favorites": {
@@ -5173,6 +5202,20 @@
         "wait": "Aspetta un momento, poi riprova.",
         "notAllowed": "Solo gli insegnanti della classe possono farlo."
       }
+    }
+  },
+  "match": {
+    "err": {
+      "signIn": "Accedi per giocare online.",
+      "notOnline": "Questo gioco non si può giocare online.",
+      "notFound": "Questo codice non funziona. Controllalo e riprova.",
+      "gone": "Questo invito non c'è più.",
+      "tooMany": "Hai troppe partite online in corso. Prima finiscine una.",
+      "codeLength": "I codici partita hanno 6 lettere e numeri.",
+      "ownCode": "Questo è il tuo codice! Dillo all'altro giocatore.",
+      "notPlaying": "Questa partita non è in corso adesso.",
+      "bad": "Non è stato possibile inviare questa mossa.",
+      "full": "Questa partita è troppo lunga per continuare."
     }
   }
 }

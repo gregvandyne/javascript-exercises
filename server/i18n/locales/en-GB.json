@@ -125,6 +125,37 @@
       "save": {
         "placeholder": "My favourite so far"
       }
+    },
+    "app": {
+      "inviteTitle": "Play {game}?",
+      "inviteText": "{name} wants to play {game} with you!",
+      "invitePlay": "Let's play!",
+      "inviteNo": "Not now"
+    },
+    "match": {
+      "title": "Play {title} online",
+      "playingNow": "Playing now",
+      "family": "Family",
+      "invite": "Invite",
+      "wantsToPlay": "{name} wants to play!",
+      "play": "Play",
+      "invitesForYou": "Invites for you",
+      "friendsHeading": "Friends and family",
+      "noFriends": "No friends to invite yet. Add a friend with their friend code first.",
+      "friendsPage": "Go to Friends",
+      "guestNoFriends": "Make an account to invite friends. You can still play with a code.",
+      "codeHeading": "Play with a code",
+      "codeHint": "Make a code and tell it to the other player, or type the code they made.",
+      "makeCode": "Make a code",
+      "enterCode": "Match code",
+      "codePlaceholder": "ABC-DEF",
+      "join": "Join",
+      "typeCode": "Type the match code first.",
+      "shareCode": "Your match code",
+      "shareHint": "Tell it to the other player. They tap Play online in {title} and type it in.",
+      "waitingFor": "Waiting for {name} to say yes…",
+      "cancel": "Cancel",
+      "ended": "This online game has ended."
     }
   },
   "favorites": {
@@ -322,6 +353,20 @@
           "q": "What is the centre of an atom called?"
         }
       }
+    }
+  },
+  "match": {
+    "err": {
+      "signIn": "Sign in to play online.",
+      "notOnline": "This game can't be played online.",
+      "notFound": "That code doesn't work. Check it and try again.",
+      "gone": "That invite has ended.",
+      "tooMany": "You have too many online games going. Finish one first.",
+      "codeLength": "Match codes have 6 letters and numbers.",
+      "ownCode": "That's your own code! Tell it to the other player.",
+      "notPlaying": "This game isn't going right now.",
+      "bad": "That move couldn't be sent.",
+      "full": "This game is too long to go on."
     }
   }
 }

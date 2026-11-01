@@ -499,3 +499,24 @@ counted. Player pages use the bare layout: no menus, no prices, plans or sign-up
 **Honest limits.** Grown-up accounts are self-declared, so "a host account" does not prove an adult; the limits above
 (open rooms: nicknames only, reviewed games only, 30 players, Report) are the protection. A determined game author
 could still draw shapes that spell words; open rooms therefore run reviewed games only.
+
+## 13. Online matches (two players, two devices)
+
+`server/services/match.js`, `server/routes/match.js`, `public/js/match.js`; decisions: docs/decisions.md "Online matches".
+A player opens "Play online" in a game made for it (an allowlist of official games: `match.GAMES`, today Castle Clash).
+
+**Who can play whom.** The same rule as friends: two kids or two grown-ups, never one of each, except inside a family
+(a grown-up and their linked children, and brothers and sisters). Never when either has blocked the other. Invites go
+only to accepted friends (connections for grown-ups) and family; there is no search. A code (6 letters and digits,
+one use, 15 minutes) works for anyone allowed by that rule; for anyone else it says "not found", word for word like a
+wrong code. Wrong codes are limited per address (40 per 10 minutes), plus the usual per-account limits.
+
+**No text, ever.** The relay carries only kind `mv` or `act` with an object of up to 8 one- or two-letter keys holding
+integers 0-9999 or booleans, checked by the SDK, the page and the server. A match cannot carry a word. Players who
+are not friends or family see each other only as one of the 144 fixed kind nicknames with a made-up character, never
+an account name or avatar. Leaving is one button and ends the match for both.
+
+**The frame.** A match frame is the same sandboxed frame (no network); its SDK hands the page a private
+`MessagePort` with the first `brb:ready`, as live frames do. Only the match's two players get a match frame; anyone
+else opening the address gets the plain game. Matches live in memory: a restart ends them.
+

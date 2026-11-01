@@ -238,6 +238,49 @@
     };
     if (document.documentElement) watchText(); else document.addEventListener('DOMContentLoaded', watchText);
   }
+  // ---- Online matches: two players on their own devices (docs/sdk.md "Online matches") -------------
+  // Like Oomba Live, a match frame (INIT.match) gets a private MessagePort, handed to the page with the first brb:ready;
+  // the page relays to the server. What a game sends is checked here (and again by the page and the server): kind 'mv'
+  // or 'act', and an object of up to 8 one- or two-letter keys holding integers 0-9999 or booleans. Never a string, so a
+  // match can never carry text. Any game may call BRB.match.menu() (the site's "Play online" sheet, for online games).
+  var MATCH = INIT.match && typeof INIT.match === 'object' ? INIT.match : null, matchChan = null, matchPort = null;
+  var matchSubs = [], matchQueue = [];
+  function matchData(d) {
+    if (!d || typeof d !== 'object' || Array.isArray(d)) return null;
+    var keys = Object.keys(d), out = {}; if (keys.length > 8) return null;
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i], v = d[k];
+      if (!/^[a-z]{1,2}$/.test(k)) return null;
+      if (typeof v === 'boolean' || isInt(v, 0, 9999)) out[k] = v; else return null;
+    }
+    return out;
+  }
+  var matchApi = {
+    v: 1, active: false, init: null,
+    menu: function () { send('brb:online', {}); },
+    send: function () { return false; }, on: function () {}, leave: function () {}
+  };
+  if (MATCH && typeof MessageChannel === 'function') {
+    matchChan = new MessageChannel(); matchPort = matchChan.port1;
+    matchPort.onmessage = function (e) {
+      var m = e.data; if (!m || typeof m !== 'object' || typeof m.t !== 'string') return;
+      if (!matchSubs.length) { if (matchQueue.length < 500) matchQueue.push(m); return; }
+      for (var i = 0; i < matchSubs.length; i++) { try { matchSubs[i](m); } catch (err) { if (window.console) console.error(err); } }
+    };
+    matchApi.active = true;
+    matchApi.init = deepFreezeEarly({ v: 1, seat: MATCH.seat === 1 ? 1 : 0 });
+    matchApi.send = function (k, d) {
+      var data = matchData(d);
+      if ((k !== 'mv' && k !== 'act') || !data) { if (window.console) console.warn('[oomba match] not sent: ' + k + ' (numbers and booleans only, see docs/sdk.md)'); return false; }
+      try { matchPort.postMessage({ t: 'ev', k: k, d: data }); return true; } catch (e) { return false; }
+    };
+    matchApi.on = function (fn) {
+      if (typeof fn !== 'function') return;
+      matchSubs.push(fn);
+      if (matchQueue.length) { var q = matchQueue; matchQueue = []; q.forEach(function (m) { try { fn(m); } catch (err) { /* game's own */ } }); }
+    };
+    matchApi.leave = function () { try { matchPort.postMessage({ t: 'leave' }); } catch (e) { /* ignore */ } };
+  }
   function deepFreezeEarly(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreezeEarly(o[k]); }); Object.freeze(o); } return o; }
 
   // ---- Canvas contexts: remember which kind each canvas got -----------------------------
@@ -708,6 +751,8 @@
     device: DEV ? Object.freeze({ webgl2: devMissing.indexOf('webgl2') < 0, importmap: devMissing.indexOf('importmap') < 0 }) : null,
     // Oomba Live (live frames only): the transport the kit's live pack uses. Games use Oomba.live, never this.
     live: liveApi ? Object.freeze(liveApi) : Object.freeze({ v: 1, active: false }),
+    // Online matches (BRB.match): menu() opens the site's "Play online" sheet; in a match frame, send/on/leave.
+    match: Object.freeze(matchApi),
     storage: {
       get: function (k) { var v = local.getItem(k); if (v === null) return null; try { return JSON.parse(v); } catch (e) { return v; } },
       set: function (k, v) { local.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); },
@@ -730,6 +775,7 @@
   function ready() {
     // A live frame hands its port to the page with the first brb:ready (and only then).
     if (liveChan && !readySent) { readySent = true; send('brb:ready', { title: document.title || '', live: 1 }, [liveChan.port2]); return; }
+    if (matchChan && !readySent) { readySent = true; send('brb:ready', { title: document.title || '', match: 1 }, [matchChan.port2]); return; }
     readySent = true; send('brb:ready', { title: document.title || '' });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else setTimeout(ready, 0);

@@ -18,6 +18,8 @@ import { tEn, tFor, normalizeCode, localeInfo } from '../i18n/index.js';
 import { fileFor } from '../services/shots.js';
 import * as progress from '../services/progress.js';
 import { characterOf } from '../services/character.js';
+import * as match from '../services/match.js';
+import { onlineGame } from './match.js';
 import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
@@ -184,7 +186,14 @@ router.get('/play/:slug', (req, res) => {
   const isOwner = u && (u.id === g.owner_id || u.role === 'admin');
   const versionId = g.published_version_id || (isOwner ? g.current_version_id : null);
   if (!versionId) return notFound(req, res, t('game.notReadyYet'));
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale }, 15 * 60);
+  // An online match (?match=<id>, routes/match.js): only its two players, while it lasts; anyone else gets the game.
+  let inMatch = null;
+  if (req.query.match) {
+    const m = match.get(req.query.match), seat = m ? match.seatOf(m, u) : -1;
+    if (seat < 0 || m.state === 'ended' || m.gameId !== g.id) return res.redirect(`/play/${g.slug}`);
+    inMatch = { id: m.id, seat };
+  }
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}) }, 15 * 60);
   const liked = games.userLiked(g.id, u && u.id);
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
   // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step.
@@ -203,8 +212,8 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson })}`;
-  page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'] });
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, online: !!(u && onlineGame(u, g.id)) })}`;
+  page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: ['js.match'] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.
@@ -248,6 +257,8 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
+    // An online match frame (BRB.match): the seat only; names and moves come from the page over a private port.
+    ...(tok.m && u && match.get(tok.m) && match.seatOf(match.get(tok.m), u) >= 0 ? { match: { v: 1, seat: match.seatOf(match.get(tok.m), u) } } : {}),
     // Shown by the SDK, in the game's language: the "newer device" card (can't run 3D) and the "3D picture
     // stopped" card (a lost WebGL context on any device) with its Try again button.
     deviceText: {
