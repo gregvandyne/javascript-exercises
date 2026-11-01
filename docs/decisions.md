@@ -1999,3 +1999,13 @@ sizes are reached by resizing the window, so a game must lay itself out again on
 turns. Cost: two more pictures per playtest (about 1,500 x 1,000 pixels each) and about 8 seconds more per playtest; a
 screenshot job's limit went from 40 to 55 seconds.
 
+## Tablets are a required check for every game (November 2026)
+
+Many children play on a classroom or family tablet, held upright or on its side, so a game is not done until it plays
+well on a tablet in both orientations, as well as on a phone (both ways) and a desktop. `npm run layout:games`
+(scripts/games-fit-audit.js; tests/e2e/games-fit.spec.js runs it) opens every launch game at 390×844, 844×390,
+820×1180, 1180×820 and 1280×800, with touch on phones and tablets, on the title screen and after pressing Play, and
+fails on anything off screen, cut off, on top of something else or squashed, on a button that needs scrolling to reach,
+or on sideways scrolling (tests/e2e/frame-fit.js), keeping a screenshot of every check to look at by eye. The live quiz
+modes are checked in a real session by `npm run layout:live`. Passing the check is the minimum: also play the game with
+touch on a tablet both ways (for a 3D game, check the camera frames the scene on a tall screen too).

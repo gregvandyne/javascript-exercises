@@ -24,6 +24,8 @@
   .bb-main { flex: 1; min-height: 0; display: flex; gap: 12px; }
   .bb-grid { flex: 1; min-height: 0; display: grid; gap: clamp(4px, 1vw, 10px); grid-template-rows: auto repeat(5, 1fr); align-content: center; }
   .bb-cat.sym { font-size: clamp(22px, 4vw, 40px); padding: 2px 4px; }
+  .bb-grid.short .bb-cat { min-height: 0; padding: 2px 4px; box-shadow: 0 2px 0 #0b0e26; }
+  .bb-grid.short .bb-cat.sym { font-size: 20px; }
   .bb-cat { display: grid; place-items: center; text-align: center; padding: 6px 4px; border-radius: 14px; border: 3px solid #0b0e26; box-shadow: 0 4px 0 #0b0e26; font-weight: 800; font-size: clamp(11px, 1.9vw, 22px); line-height: 1.1; color: #1d2340; overflow-wrap: anywhere; min-height: 2.6em; }
   .k0 { background: #ff8fa3; } .k1 { background: #8fd3ff; } .k2 { background: #b6f08a; } .k3 { background: #ffcf6e; } .k4 { background: #c9a8ff; } .k5 { background: #7ff0d6; }
   .bb-tile { position: relative; perspective: 900px; border: 0; padding: 0; background: none; min-height: 0; cursor: default; font: inherit; }
@@ -257,8 +259,14 @@ window.SoloBank = (function () {
     var grid = $('grid'); if (!grid) return;
     var cols = +grid.dataset.cols || 5, gap = parseFloat(getComputedStyle(grid).columnGap) || 6;
     var colW = (grid.clientWidth - gap * (cols - 1)) / cols;
-    var rowH = Math.max(44, Math.round(colW * 0.66));
-    grid.style.gridTemplateRows = 'auto repeat(5, minmax(44px, ' + rowH + 'px))';
+    // Short screens (a phone on its side): rows also fit the height there is, never under 40 px (a finger), and the
+    // category headers get slimmer.
+    var short = grid.clientHeight > 0 && grid.clientHeight < 340;
+    grid.classList.toggle('short', short);
+    var head = grid.querySelector('.bb-cat'), headH = head ? head.offsetHeight : 40;
+    var byHeight = grid.clientHeight > 0 ? Math.floor((grid.clientHeight - headH - gap * 5) / 5) : 999;
+    var rowH = Math.max(40, Math.min(Math.round(colW * 0.66), byHeight));
+    grid.style.gridTemplateRows = 'auto repeat(5, minmax(40px, ' + rowH + 'px))';
   }
   if (window.ResizeObserver) new ResizeObserver(fitBoard).observe(document.documentElement); else addEventListener('resize', fitBoard);
   function renderBoard() {

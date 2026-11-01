@@ -83,7 +83,23 @@ body{margin:0;touch-action:none}
 .aq-paint svg{width:14px;height:14px}
 .aq-hint{font-size:14px;opacity:.85;margin:6px 0 0}
 .aq-num{direction:ltr;unicode-bidi:isolate}
-@media (max-height:560px) and (orientation:landscape){.aq-sheet.ok-card{left:auto;right:10px;width:min(420px,48vw);max-height:calc(100vh - 80px);bottom:10px}}
+/* Wider than tall (phones and tablets on their side, desktops): the sheets stand at the right, the globe has the left
+   (the camera moves the globe into the free space: placeCam). Upright, they sit at the bottom. */
+body.side .aq-sheet.ok-card{left:auto;right:10px;top:64px;bottom:auto;margin:0;width:min(460px,42vw);max-height:calc(100% - 74px)}
+@media (max-height:560px){body.side .aq-sheet.ok-card{top:58px;width:min(400px,48vw)}}
+/* Tablets and big screens: everything a size up, so it reads and taps easily at arm's length */
+@media (min-width:700px) and (min-height:700px){
+  .aq-sheet.ok-card{max-width:680px;padding:18px 18px 16px}
+  body.side .aq-sheet.ok-card{width:min(480px,40vw)}
+  .aq-sheet h2{font-size:26px}.aq-sub{font-size:17px}
+  .aq-q .txt{font-size:23px}.aq-q .txt small{font-size:16px}
+  .aq-q .aq-flag{width:120px}.aq-q .aq-flag.big{width:180px}
+  .aq-opt{min-height:64px;font-size:19px}
+  .aq-mode{min-height:100px;font-size:17px}.aq-mode small{font-size:13px}.aq-mode svg{width:32px;height:32px}
+  .aq-chips{flex-wrap:wrap;overflow:visible}
+  .aq-feed{font-size:17px}.aq-why{font-size:17px}.aq-hint{font-size:16px}
+  .aq-tag{font-size:16px}
+}
 /* tinted pieces keep dark text in both themes */
 .aq-mode,.aq-opt.good,.aq-opt.bad,.aq-fact,.aq-tag.good,.aq-tag.bad,.aq-tag.hot,.aq-paint.on{color:var(--aq-ink)}
 /* culture: the "why" after an answer, and the finds in a country file */
@@ -108,6 +124,15 @@ body{margin:0;touch-action:none}
 .ok-ui .ok-switch{-webkit-appearance:none;appearance:none;overflow:hidden;-webkit-tap-highlight-color:transparent}
 .ok-ui .ok-modal .ok-srow{flex-wrap:wrap}
 .ok-ui .ok-modal .ok-seg{max-width:100%;flex-wrap:wrap}
+/* Captain Skye's dialogs on short screens (a phone on its side): picture on the left, words and the button on the
+   right, so the button is always in view without scrolling */
+@media (max-height:500px) and (orientation:landscape){
+  .ok-ui .ok-dialog .ok-card{display:grid;grid-template-columns:auto 1fr;column-gap:18px;row-gap:6px;align-items:center;width:min(640px,92vw);max-width:none;padding:14px 18px;text-align:start}
+  .ok-ui .ok-dialog .ok-portrait{grid-row:1/span 3;width:72px!important;height:90px!important}
+  .ok-ui .ok-dialog .ok-h2,.ok-ui .ok-dialog .ok-p,.ok-ui .ok-dialog .ok-row{grid-column:2;text-align:start;margin:0}
+  .ok-ui .ok-dialog .ok-h2{font-size:22px}
+  .ok-ui .ok-dialog .ok-row{justify-content:flex-start}
+}
 </style>
 <canvas id="view" tabindex="-1" aria-label="The globe"></canvas>
 <div class="aq-labels" id="labels"></div>
@@ -265,7 +290,9 @@ const SKY = new THREE.Color(C('sky', 'tint'));
 scene.background = SKY;
 const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.01, 100);
 let viewW = innerWidth, viewH = innerHeight;
-function resize() { viewW = innerWidth; viewH = innerHeight; document.body.classList.toggle('landscape', viewW > viewH); }
+// 'landscape': wider than tall. 'side': the sheets stand at the right-hand side (landscape phones and tablets, desktops),
+// leaving the globe the whole left; held upright they sit at the bottom.
+function resize() { viewW = innerWidth; viewH = innerHeight; document.body.classList.toggle('landscape', viewW > viewH); document.body.classList.toggle('side', viewW > viewH * 1.15 && (viewH <= 560 || viewW >= 900)); }
 if (HAS_BRB && BRB.fx && BRB.fx.fit3d) BRB.fx.fit3d(renderer, camera, { maxDpr: 1.75, onResize() { resize(); } });
 else { const fit = () => { renderer.setPixelRatio(Math.min(1.75, devicePixelRatio || 1)); renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); resize(); }; addEventListener('resize', fit); fit(); }
 canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); });
@@ -584,9 +611,17 @@ function placeCam() {
   // the sheet covers the bottom of the screen: nudge the globe up so the part in view is centred in the free space
   // A taller virtual view with the bottom window shown: the globe's centre moves up by half the sheet's height,
   // into the middle of the free space (the window always stays inside the virtual view).
-  const sheet = openSheet(); let d = 0;
-  if (sheet && !document.body.classList.contains('landscape')) d = Math.min(viewH * 0.42, sheet.getBoundingClientRect().height / 2);
-  camera.setViewOffset(viewW, viewH + 2 * d, 0, 2 * d, viewW, viewH);
+  // A sheet at the side (landscape) moves the globe sideways into the free space instead.
+  // The shift must not zoom in: the field of view grows with the virtual view, so the window keeps the same view of
+  // the world. And a tall screen (a phone or tablet held upright) sees a little more, so the globe isn't cut at the sides.
+  const sheet = openSheet(); let d = 0, dx = 0;
+  const side = document.body.classList.contains('side');
+  if (sheet && !side) d = Math.min(viewH * 0.42, sheet.getBoundingClientRect().height / 2);
+  if (sheet && side) { const r = sheet.getBoundingClientRect(); dx = Math.min(viewW * 0.3, (viewW - r.left) / 2); }
+  const aspect = viewW / viewH, base = Math.tan(21 * Math.PI / 180) / Math.pow(Math.min(1, Math.max(0.45, aspect)), 0.55);
+  const fov = 2 * Math.atan(base * (viewH + 2 * d) / viewH) * 180 / Math.PI;
+  if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
+  camera.setViewOffset(viewW + 2 * dx, viewH + 2 * d, 2 * dx, 2 * d, viewW, viewH);
   head.position.copy(p).add(new THREE.Vector3(0.6, 1.2, 0.4)); head.target.position.set(0, 0, 0);
 }
 const openSheet = () => (!$('#quizSheet').hidden ? $('#quizSheet') : !$('#homeSheet').hidden ? $('#homeSheet') : null);
@@ -1244,6 +1279,7 @@ Object.assign(window.__brbTest, {
   countryAt: (lat, lng) => countryAt(lat, lng),
   screenOf: cc => { const c = BY[cc], at = TINY.has(cc) ? c.cap : c.lab; return project(ll2v(at[0], at[1], 1)); },
   countries: () => COUNTRIES.length,
+  current: () => { const q = game && game.qs[game.i]; return q && q.c ? q.c.cc : null; },
   cover: () => {   // the store picture: a half-lit world with pins, a trail and the plane in flight, no sheet
     closeKitScreens(); closeCard(); game = null; mode = 'home';
     for (const c of COUNTRIES) if (['eu', 'af'].includes(c.reg) || EASY.has(c.cc)) SAVE.m[c.cc] = 3;

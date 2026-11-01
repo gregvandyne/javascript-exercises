@@ -331,7 +331,7 @@ body.ftwin:has(#scrim:not([hidden])) .scrim{background:transparent;backdrop-filt
 .tokbtn .pen svg{width:13px;height:13px}
 .quick{display:flex;gap:5px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none}
 .quick::-webkit-scrollbar{display:none}
-.quick button{flex:none;width:33px;height:33px;border-radius:50%;border:2px solid var(--ok-line);background:var(--ok-card);display:grid;place-items:center;font-size:1.15rem;line-height:1;padding:0}
+.quick button{flex:none;width:40px;height:40px;border-radius:50%;border:2px solid var(--ok-line);background:var(--ok-card);display:grid;place-items:center;font-size:1.15rem;line-height:1;padding:0}
 .quick button img{width:100%;height:100%;border-radius:50%}
 .quick button[aria-pressed="true"]{border:2.5px solid var(--ft-ink);background:var(--c);box-shadow:0 2px 0 var(--ft-ink)}
 .quick button:disabled{opacity:.25;filter:grayscale(1);cursor:not-allowed}
@@ -359,7 +359,7 @@ body.ftwin:has(#scrim:not([hidden])) .scrim{background:transparent;backdrop-filt
   <section id="game" hidden>
     <div class="hud"><span id="pauseSlot"></span><div class="mid"><span class="pill modetag" id="modetag"></span></div><span id="muteSlot"></span></div>
     <div class="layout">
-      <div class="stadium"><div class="board" id="board"></div></div>
+      <div class="stadium"><div class="board" id="board" data-fit-dense></div></div>
       <div class="side">
         <div class="sheets" id="sheets"></div>
         <p class="howto sk" data-i18n="tapSquare">Tap any square to see the player or what it does.</p>

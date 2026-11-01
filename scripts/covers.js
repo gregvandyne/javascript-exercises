@@ -145,7 +145,32 @@ const RECIPES = {
     await f.evaluate(() => window.__brbTest.cover());
     await wait(2500);
   } },
+  // The live quiz games, in their solo practice (the same screens a class sees on the board).
+  'quest-race': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f); await play(f);
+    // A few questions in, so the runners are spread along the island track.
+    for (let i = 0; i < 4; i++) { await until(f, s => s.question && !s.answered); await f.evaluate(i => window.__brbTest.answer(i % 3 ? 0 : 1), i); await wait(i < 3 ? 3800 : 1800); }
+  } },
+  'question-battle': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f); await play(f);
+    // The boss already wobbling from a hit, and the next question up with its four answer tiles.
+    await until(f, s => s.question); await f.evaluate(() => window.__brbTest.answer(0)); await wait(4500);
+    await until(f, s => s.question); await wait(1400);
+  } },
+  'brain-board': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f); await play(f);
+    // The board of categories with a few tiles already won.
+    for (const [c, r] of [[0, 0], [2, 1], [1, 0]]) {
+      await until(f, s => s.phase === 'between' || s.board || true); await f.evaluate(([c, r]) => window.__brbTest.pick(c, r), [c, r]); await wait(1800);
+      await f.evaluate(() => window.__brbTest.answer(0)); await wait(3800);
+    }
+    await wait(1200);
+  } },
 };
+/** The kit's title screen: press Play. */
+async function play(f) { await wait(900); const go = await f.$('.ok-title-screen .ok-hot'); if (go) { await go.click(); await wait(1500); } }
+/** Wait for the game's own state to match (its test hook), or go on after a few seconds. */
+async function until(f, ok, ms = 8000) { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (ok(await f.evaluate(() => window.__brbTest.state()) || {})) return; } catch { /* reloading */ } await wait(200); } }
 
 async function capture(browser, slug) {
   const htmlPath = path.join(ROOT, 'seed-games', `${slug}.html`);
