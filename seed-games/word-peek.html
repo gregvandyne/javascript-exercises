@@ -173,6 +173,8 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .help h2{text-align:center}
 .help ul{margin:6px 0;padding-inline-start:20px;padding-inline-end:0;line-height:1.4;font-weight:600}
 .help .btns{justify-content:center}
+/* the how-to card scrolls on a short screen (a phone on its side): its button stays in view at the bottom */
+.help .btns{position:sticky;bottom:-2px;z-index:1;background:var(--ok-card);padding:8px 0 4px;margin-bottom:-4px}
 @media (max-height:740px){
   .help{padding:16px 14px 14px!important;gap:6px!important}.help p{font-size:.95rem!important}
   .ex{margin:4px 0 0}.ex .tile{--tile:36px}.exNote{font-size:.88rem!important}
