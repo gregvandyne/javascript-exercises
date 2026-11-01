@@ -60,6 +60,10 @@ body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
   .lv-host > .lv-hoststage { min-block-size: max(56vh, 460px); }
   .lv-roster { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); max-block-size: none; }
 }
+/* a phone hosting: the game gets the whole screen height below the code card (scroll down to it) */
+@media (max-width: 600px) {
+  .lv-host > .lv-hoststage { min-block-size: max(460px, calc(100dvh - 16px)); }
+}
 
 /* the player's page: the game as big as the phone allows */
 .lv-play { gap: 10px; padding-block: 10px; min-block-size: 100dvh; }

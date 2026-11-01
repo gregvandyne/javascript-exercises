@@ -83,9 +83,9 @@
   .qr-bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: end; height: 110px; }
   .qr-bar { position: relative; border-radius: 10px 10px 4px 4px; height: 6px; color: #fff; font-weight: 900; font-size: 20px; text-align: center; padding-top: 4px; transition: height .9s cubic-bezier(.2,1.2,.4,1); box-sizing: border-box; overflow: hidden; }
   .qr-bar.win { box-shadow: 0 0 0 4px #37c47a, 0 0 18px 4px rgba(55,196,122,.6); }
-  .qr-host .qr-q { font-size: clamp(26px, 4.2vw, 58px); }
+  .qr-host .qr-q { font-size: clamp(18px, min(4.2vw, 4.6vh), 58px); }
   .qr-host .qr-card { max-width: 1200px; padding: 16px 20px; }
-  .qr-host .qr-a { min-height: 66px; font-size: clamp(18px, 2.5vw, 34px); }
+  .qr-host .qr-a { min-height: clamp(48px, 8vh, 66px); font-size: clamp(15px, min(2.5vw, 3vh), 34px); }
   .qr-host .qr-a[disabled] { opacity: 1; }
   .qr-host .qr-pad.revealed .qr-a:not(.right) { opacity: .45; }
   @property --f { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
