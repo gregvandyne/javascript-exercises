@@ -5254,6 +5254,48 @@
         "wait": "Warte kurz und versuch es dann noch einmal.",
         "notAllowed": "Das können nur die Lehrkräfte der Klasse."
       }
+    },
+    "bank": {
+      "subject": {
+        "math": "Mathe",
+        "science": "Naturwissenschaften",
+        "geography": "Erdkunde",
+        "words": "Lesen und Wörter",
+        "history": "Geschichte",
+        "general": "Allgemeinwissen",
+        "mixed": "Von allem etwas"
+      },
+      "level": {
+        "a6": "6–7 Jahre",
+        "a8": "8–9 Jahre",
+        "a10": "10–11 Jahre",
+        "a12": "12–14 Jahre"
+      },
+      "math": {
+        "missing": "{a} + ? = {c}. Welche Zahl fehlt?",
+        "div": "Was ist {a} ÷ {b}?",
+        "frac": "Was ist {n}/{d} von {x}?",
+        "pct": "Was sind {p} % von {x}?",
+        "alg": "Wenn {a}x + {b} = {c}, was ist x?",
+        "sq": "Was ist {a} zum Quadrat?"
+      },
+      "solo": {
+        "title": "Wähle deine Fragen",
+        "subject": "Fach",
+        "level": "Stufe",
+        "count": "Wie viele Fragen?",
+        "start": "Los geht’s!",
+        "boardSubjects": "Fächer auf dem Brett (2 bis 6)"
+      }
+    },
+    "bankUi": {
+      "bank": "Fragenbank: Fach und Stufe wählen",
+      "bankGroup": "Fragenbank",
+      "subject": "Fach",
+      "level": "Stufe",
+      "count": "Anzahl der Fragen",
+      "boardSubjects": "Fächer auf dem Brett (2 bis 6)",
+      "bankHint": "Jedes Spiel neue Fragen, passend für jedes Alter geschrieben."
     }
   },
   "match": {
@@ -5293,7 +5335,7 @@
       "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
       "s1": {
         "h": "Spiel und Fragen auswählen",
-        "p": "Wählen Sie Quest-Rennen, Fragen-Duell oder Denkbrett und dann Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, ein fertiges Starterset oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
+        "p": "Wählen Sie Quest-Rennen, Fragen-Duell oder Denkbrett und dann die Fragen: die Fragenbank nach Fach und Alter (6 bis 14), Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
         "alt": "Die Seite „Live-Spiel leiten“: Spielmodi zur Auswahl, ein Fragenset und wer beitreten kann."
       },
       "s2": {

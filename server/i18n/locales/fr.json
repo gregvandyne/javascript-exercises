@@ -5253,6 +5253,48 @@
         "wait": "Attends un instant, puis réessaie.",
         "notAllowed": "Seuls les enseignants de la classe peuvent faire ça."
       }
+    },
+    "bank": {
+      "subject": {
+        "math": "Maths",
+        "science": "Sciences",
+        "geography": "Géographie",
+        "words": "Lecture et mots",
+        "history": "Histoire",
+        "general": "Culture générale",
+        "mixed": "Un peu de tout"
+      },
+      "level": {
+        "a6": "6–7 ans",
+        "a8": "8–9 ans",
+        "a10": "10–11 ans",
+        "a12": "12–14 ans"
+      },
+      "math": {
+        "missing": "{a} + ? = {c}. Quel est le nombre manquant ?",
+        "div": "Combien font {a} ÷ {b} ?",
+        "frac": "Combien font {n}/{d} de {x} ?",
+        "pct": "Combien font {p} % de {x} ?",
+        "alg": "Si {a}x + {b} = {c}, combien vaut x ?",
+        "sq": "Combien fait {a} au carré ?"
+      },
+      "solo": {
+        "title": "Choisis tes questions",
+        "subject": "Matière",
+        "level": "Niveau",
+        "count": "Combien de questions ?",
+        "start": "C’est parti !",
+        "boardSubjects": "Matières du plateau (de 2 à 6)"
+      }
+    },
+    "bankUi": {
+      "bank": "Banque de questions : choisissez une matière et un niveau",
+      "bankGroup": "Banque de questions",
+      "subject": "Matière",
+      "level": "Niveau",
+      "count": "Nombre de questions",
+      "boardSubjects": "Matières du plateau (de 2 à 6)",
+      "bankHint": "De nouvelles questions à chaque partie, écrites pour chaque âge."
     }
   },
   "match": {
@@ -5292,7 +5334,7 @@
       "lead": "De vrais écrans d’une partie en direct dans une école de démonstration aux noms inventés.",
       "s1": {
         "h": "Choisissez un jeu et vos questions",
-        "p": "Choisissez Course aux quêtes, Bataille de questions ou Plateau Cerveau, puis votre propre série de questions, une série partagée par un collègue, une série de départ toute prête ou les questions de l’une de vos leçons.",
+        "p": "Choisissez Course aux quêtes, Bataille de questions ou Plateau Cerveau, puis les questions : la banque de questions par matière et par âge (de 6 à 14 ans), votre propre série, une série partagée par un collègue ou les questions de l’une de vos leçons.",
         "alt": "La page « Animer une partie en direct » : les modes de jeu au choix, une série de questions et qui peut rejoindre."
       },
       "s2": {

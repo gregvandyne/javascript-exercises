@@ -376,3 +376,12 @@ button.lv-dash-role:focus-visible { outline: 3px solid var(--focus); outline-off
 .lv-secs { max-width: 140px; }
 .lv-paste-example { white-space: pre-wrap; font-size: .85rem; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0; }
 .lv-cat .input { max-width: 320px; }
+/* The question bank on the landing: subject, level and count side by side when there is room; board subjects in a grid */
+.lv-bank { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: end; margin-block: 10px; }
+.lv-bank[hidden], .lv-bank [hidden] { display: none; }
+.lv-bank .field { margin: 0; }
+.lv-bank select { inline-size: 100%; min-block-size: 44px; }
+.lv-bank-board { grid-column: 1 / -1; border: 0; padding: 0; margin: 0; }
+.lv-bank-board legend { font-weight: 700; margin-block-end: 6px; }
+.lv-bank-subs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 4px 12px; }
+.lv-bank-hint { grid-column: 1 / -1; margin: 0; }

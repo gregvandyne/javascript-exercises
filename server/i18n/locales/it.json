@@ -5254,6 +5254,48 @@
         "wait": "Aspetta un momento, poi riprova.",
         "notAllowed": "Solo gli insegnanti della classe possono farlo."
       }
+    },
+    "bank": {
+      "subject": {
+        "math": "Matematica",
+        "science": "Scienze",
+        "geography": "Geografia",
+        "words": "Lettura e parole",
+        "history": "Storia",
+        "general": "Cultura generale",
+        "mixed": "Un po’ di tutto"
+      },
+      "level": {
+        "a6": "6–7 anni",
+        "a8": "8–9 anni",
+        "a10": "10–11 anni",
+        "a12": "12–14 anni"
+      },
+      "math": {
+        "missing": "{a} + ? = {c}. Qual è il numero mancante?",
+        "div": "Quanto fa {a} ÷ {b}?",
+        "frac": "Quanto fa {n}/{d} di {x}?",
+        "pct": "Quanto fa il {p}% di {x}?",
+        "alg": "Se {a}x + {b} = {c}, quanto vale x?",
+        "sq": "Quanto fa {a} al quadrato?"
+      },
+      "solo": {
+        "title": "Scegli le tue domande",
+        "subject": "Materia",
+        "level": "Livello",
+        "count": "Quante domande?",
+        "start": "Via!",
+        "boardSubjects": "Materie del tabellone (da 2 a 6)"
+      }
+    },
+    "bankUi": {
+      "bank": "Banca di domande: scegli materia e livello",
+      "bankGroup": "Banca di domande",
+      "subject": "Materia",
+      "level": "Livello",
+      "count": "Numero di domande",
+      "boardSubjects": "Materie del tabellone (da 2 a 6)",
+      "bankHint": "Domande nuove a ogni partita, scritte per ogni età."
     }
   },
   "match": {
@@ -5293,7 +5335,7 @@
       "lead": "Schermate reali di una partita dal vivo in una scuola dimostrativa con nomi inventati.",
       "s1": {
         "h": "Scelga un gioco e le domande",
-        "p": "Scelga Corsa delle missioni, Sfida a domande o Tabellone Cervello, poi una sua serie di domande, una condivisa da un collega, una serie di partenza già pronta o le domande di una delle sue lezioni.",
+        "p": "Scelga Corsa delle missioni, Sfida a domande o Tabellone Cervello, poi le domande: la banca di domande per materia ed età (dai 6 ai 14 anni), una sua serie, una condivisa da un collega o le domande di una delle sue lezioni.",
         "alt": "La pagina «Guida una partita dal vivo»: le modalità di gioco tra cui scegliere, una serie di domande e chi può entrare."
       },
       "s2": {

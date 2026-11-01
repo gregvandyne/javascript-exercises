@@ -127,6 +127,56 @@
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
+/* Solo practice questions from the Oomba Live question bank (the same code in Quest Race, Question Battle and Brain
+   Board). The bank for the player's language is a reviewed file in /vendor/data/live-bank/, built by
+   scripts/live-bank.js, which also writes the version and checksums below. SoloBank.choose({ board }, done) shows the
+   pack's setup card (subject, level, how many questions; a board's subjects) and calls done(items, choice), or
+   done(null) when the pack can't load (the game then plays its own built-in questions). The choice is remembered,
+   and questions already played come last until every one has been seen. */
+/* live-bank:begin */var BANK_VER = 'v1-einjpmbk', BANK_SRI = {"en":"sha384-eVxky+VsC5PkgS1Fu3IgAO3SOnvDRyN7r6ZP5wgA/c3gPiyMAPnpKn+MaVyOleEF","en-GB":"sha384-bZMKeXw3MdYAvE4VtGgixo32DYU6hogGwM/BiwlB9cgkiwFN7Ypn277Qsjz8C06T","pt":"sha384-nRMlqE0Nu4qdPQTGoOW2ncyVRZqoxJJY2aMoROYOkeTFMG9ISdYbYZU8kx7S5Rko","fr":"sha384-cgPuYZZo9zyoJZQin8J2Ye3tdJjyZNqHFdq/kVQa8x50prQFBIpqGcSPirJzv6KG","es":"sha384-vzIjItUqEdV0k4/ccSUfhMJkKe5FTFlCof8OMqAiaCKNOEGfKWg1YMkLh0Un5OWx","de":"sha384-WQdMFZFTxZXTlWjAwmvgqeq1OdHg07SVjO74MGOJJCoUuudodFMOawaIE+369HNU","he":"sha384-0hho6lzQs8tgNpNQEAi2RpemGbxTzMT2FUDX17R2nTzBFltl9sHDI/LCauvHjLcQ","ja":"sha384-NXzlyGuflq+T82JvMa2Kz/rwjRiGtTAV264m7PEvHmvv3J9yHF/DU/XtWAv7xWkk","ar":"sha384-+1aG9tTrQVRUSjnDP/E5nKiHY/dJH1QBrqn4dKANwRNKcN/gPXKD06P4pg3vuvSv","ru":"sha384-/mR7nAb4UTvZELISpwlqLAWd+1WEXoJrm5abcGN/Ab5KneVl3mDPEA8hA6YFaxeR","it":"sha384-IpFTZhK4KYs1B9q89VJxxZhbKE4QwT61qu23EitHk60XV6T23oo0vk9vdd25/ldv","zh-Hant":"sha384-HvOxxeo8SvEoJgzdu9WCsRdRGCuReL6F1WfZuov0j7PkUeqPE+SL1Tf6CHELq0tU","nl":"sha384-wb8AlzC7mgV716IvTA3K7KOukSMdETIhpv9o+ORYmmJ5ulkG5XrcCKQXw0hgCFuP"};/* live-bank:end */
+window.SoloBank = (function () {
+  var pack = null, tried = false, waiting = [];
+  var store = {
+    get: function (k) { try { return window.BRB && BRB.storage ? BRB.storage.get(k) : null; } catch (e) { return null; } },
+    set: function (k, v) { try { if (window.BRB && BRB.storage) BRB.storage.set(k, v); } catch (e) { /* ignore */ } }
+  };
+  function lang() {
+    var l = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+    return BANK_SRI[l] ? l : BANK_SRI[l.split('-')[0]] ? l.split('-')[0] : 'en';
+  }
+  function load(cb) {
+    if (pack || tried) return cb(pack);
+    waiting.push(cb); if (waiting.length > 1) return;
+    var code = lang(), done = function (p) { tried = true; pack = p; var w = waiting; waiting = []; w.forEach(function (f) { f(p); }); };
+    if (!BANK_VER || !BANK_SRI[code]) return done(null);
+    var s = document.createElement('script');
+    s.src = '/vendor/data/live-bank/' + BANK_VER + '/' + code + '.js'; s.integrity = BANK_SRI[code]; s.crossOrigin = 'anonymous';
+    var timer = setTimeout(function () { if (!tried) done(null); }, 9000);
+    s.onload = function () { clearTimeout(timer); if (!tried) done((window.OombaBank || {})[code] || null); };
+    s.onerror = function () { clearTimeout(timer); if (!tried) done(null); };
+    document.head.appendChild(s);
+  }
+  function choose(opts, cb) {
+    opts = opts || {};
+    load(function (p) {
+      if (!p) return cb(null, null);
+      var bank = p.makeBank(p.data, p.strings, Math.random), code = lang(), seenKey = 'oomba-bank-seen-' + code;
+      var saved = store.get('oomba-bank-choice') || {};
+      p.setupCard(document, document.body, { bank: bank, strings: p.strings.solo, board: !!opts.board, saved: saved }, function (c) {
+        store.set('oomba-bank-choice', c);
+        var list = store.get(seenKey); list = Array.isArray(list) ? list : [];
+        var seen = new Set(list);
+        var items = opts.board ? bank.board({ subjects: c.subjects, level: c.level, seen: seen }) : bank.pick({ subject: c.subject, level: c.level, count: c.count, seen: seen });
+        items.forEach(function (it) { if (it.id && it.id.indexOf('math:') !== 0) list.push(it.id); });
+        store.set(seenKey, list.slice(-1500));
+        cb(items, c);
+      });
+    });
+  }
+  return { choose: choose, load: load };
+})();
+</script>
+<script>
 /* QUESTION BATTLE: an Oomba Live reference game (docs/kit-api.md "Live class games"), played as a co-op BOSS BATTLE.
    The whole class are heroes facing one big, silly boss (a grumpy storm cloud, a cheeky robot or a sleepy dragon; the
    host picks one at random and shares it with setState). Every right answer fires a star from the right answer's tile
@@ -786,7 +836,13 @@
   if (!L.active) {
     for (var k = 0; k < 5; k++) { var a = practice.rnd.int(2, 9), b = practice.rnd.int(2, 9), ans = a * b, sh = practice.rnd.shuffle([ans, ans + a, ans - b, ans + 1]); practice.items.push({ q: a + ' × ' + b + ' = ?', choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 }); }
     total = practice.items.length;
-    L.on('start', function () { banner(t('arrives', { boss: t('boss' + boss.kind) })); setTimeout(function () { banner(t('practice')); }, 1800); setTimeout(practiceNext, 3000); });
+    // Playing alone: choose the questions first (subject, level, how many), then the boss arrives.
+    L.on('start', function () {
+      window.SoloBank.choose({}, function (items) {
+        if (items && items.length) { practice.items = items; total = items.length; }
+        banner(t('arrives', { boss: t('boss' + boss.kind) })); setTimeout(function () { banner(t('practice')); }, 1800); setTimeout(practiceNext, 3000);
+      });
+    });
   } else if (phase === 'lobby') banner(host ? t('arrives', { boss: t('boss' + boss.kind) }) : t('wait'));
   O.test({
     state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 } : null, score: myScore, streak: myStreak, boss: { kind: boss.kind, hp: Math.round(boss.hpTo), mood: boss.mood }, board: !$('board').hidden, teamBoard: !$('tboard').hidden, teams: L.teams().map(function (x) { return { team: x.team, name: x.name, rank: x.rank, score: x.score, size: x.size, mine: x.mine }; }), myTeam: L.myTeam ? L.myTeam.team : 0, note: $('note').textContent, players: L.players().length }; },
