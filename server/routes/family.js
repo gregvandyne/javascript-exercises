@@ -55,12 +55,14 @@ const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join
 const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
   /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
   // Oomba Live: grown-ups host (and join) live games (routes/live.js).
-  /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/];
+  /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/,
+  // Online matches: grown-ups play their own children (and other grown-ups) (routes/match.js).
+  /^\/api\/match\/(people|inbox|[^/]+\/wait)$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/,
-  /^\/api\/live(\/[^/]+)+$/];
+  /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections
 // (the friend-code APIs; services/friends.js keeps adults and kids apart). Chat, /friends and /u/ stay closed.
 const GROWNUP_BUILDER_GET = [/^\/build$/, /^\/studio\/[^/]+$/, /^\/api\/studio\/[^/]+(\/(live|uploads\/[^/]+))?$/, /^\/family\/connections$/, /^\/api\/friends$/];

@@ -182,6 +182,7 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 | `brb:fullscreen` | `{ on }` | toggles full screen on the game area |
 | `brb:orientation` | `{ value }` | orientation hint |
 | `brb:retry` | – | the 3D card's "Try again": the page reloads the game, only right after a tap (a reload started inside the frame has no sign-in cookie, so the server refuses it) |
+| `brb:online` | – | `BRB.match.menu()`: opens the "Play online" sheet, for online games only, right after a tap |
 
 The parent checks that each message comes from its own game frame (`event.source`), has the expected shape,
 and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`, `public/js/admin.js`).
@@ -204,6 +205,24 @@ down on its second load (`public/js/live-common.js`). Games never use the port: 
   contenteditable is switched off, also for elements the game adds later (buttons, sliders and checkboxes still work).
 - `BRB.device` (3D games): `{webgl2, importmap}`. A game with `<meta name="oomba-live" content="2d">` gets no "newer
   device" card when they are missing: it draws its own 2D view.
+
+## Online matches (`BRB.match`)
+
+For official two-player games on the allowlist (`server/services/match.js` `GAMES`). `BRB.match.menu()` asks the page
+to open the site's "Play online" sheet (friends, family, match codes); the page ignores it for other games. On
+`/play/<slug>?match=<id>` the frame gets `INIT.match = { v: 1, seat }`, and then:
+
+- `BRB.match.active` (true), `BRB.match.init` (`{ v: 1, seat: 0|1 }`; seat 0 made the match).
+- `BRB.match.on(fn)`: `{ t: 'wait' }` (the other player hasn't joined; the page shows the code or "waiting for…"),
+  `{ t: 'go', seat, me: { name }, opp: { name, character }, hist: [[seat, k, d], …] }` (both in; the whole history,
+  sent again after the frame reloads), `{ t: 'ev', f, k, d }` (the other player's event; your own are not echoed),
+  `{ t: 'opp', on }` (their connection), `{ t: 'left' }` (they left for good).
+- `BRB.match.send(k, d)`: `k` is `'mv'` or `'act'`; `d` is an object of at most 8 keys `/^[a-z]{1,2}$/`, each an
+  integer 0-9999 or a boolean. Anything else is dropped with a console warning (and refused by the page and server).
+- `BRB.match.leave()`: leaves the match; the page goes back to the plain game.
+
+Like live frames, the transport is a private `MessagePort` handed to the page with the first `brb:ready`
+(`{ match: 1 }` plus the port); `public/js/match.js` relays it to `/api/match/:id/wait` and `/send`.
 
 ## How the Builder edits games
 

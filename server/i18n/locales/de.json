@@ -1643,7 +1643,11 @@
       "close": "Schließen",
       "playing": "{n} spielen",
       "justNow": "gerade eben",
-      "copied": "Kopiert!"
+      "copied": "Kopiert!",
+      "inviteTitle": "{game} spielen?",
+      "inviteText": "{name} will mit dir {game} spielen!",
+      "invitePlay": "Los geht's!",
+      "inviteNo": "Jetzt nicht"
     },
     "game": {
       "needSignIn": "Tipp auf „Als Gast spielen“ oder melde dich zuerst an.",
@@ -2222,6 +2226,31 @@
       "right": "Die richtige Antwort",
       "answer": "Antwort {n}",
       "saved": "Gespeichert!"
+    },
+    "match": {
+      "title": "{title} online spielen",
+      "playingNow": "Gerade im Spiel",
+      "family": "Familie",
+      "invite": "Einladen",
+      "wantsToPlay": "{name} will spielen!",
+      "play": "Spielen",
+      "invitesForYou": "Einladungen für dich",
+      "friendsHeading": "Freunde und Familie",
+      "noFriends": "Du hast noch keine Freunde zum Einladen. Füge zuerst einen Freund mit seinem Freundescode hinzu.",
+      "friendsPage": "Zu den Freunden",
+      "guestNoFriends": "Erstelle ein Konto, um Freunde einzuladen. Mit einem Code kannst du trotzdem spielen.",
+      "codeHeading": "Mit einem Code spielen",
+      "codeHint": "Mach einen Code und sag ihn dem anderen Spieler. Oder tipp den Code ein, den er gemacht hat.",
+      "makeCode": "Code machen",
+      "enterCode": "Spielcode",
+      "codePlaceholder": "ABC-DEF",
+      "join": "Beitreten",
+      "typeCode": "Tipp zuerst den Spielcode ein.",
+      "shareCode": "Dein Spielcode",
+      "shareHint": "Sag ihn dem anderen Spieler. Er tippt in {title} auf „Online spielen“ und gibt ihn ein.",
+      "waitingFor": "Warten, bis {name} Ja sagt…",
+      "cancel": "Abbrechen",
+      "ended": "Dieses Online-Spiel ist vorbei."
     }
   },
   "favorites": {
@@ -5173,6 +5202,20 @@
         "wait": "Warte kurz und versuch es dann noch einmal.",
         "notAllowed": "Das können nur die Lehrkräfte der Klasse."
       }
+    }
+  },
+  "match": {
+    "err": {
+      "signIn": "Melde dich an, um online zu spielen.",
+      "notOnline": "Dieses Spiel kann man nicht online spielen.",
+      "notFound": "Dieser Code klappt nicht. Prüf ihn und versuch es noch mal.",
+      "gone": "Diese Einladung ist vorbei.",
+      "tooMany": "Du hast zu viele Online-Spiele gleichzeitig. Spiel zuerst eins zu Ende.",
+      "codeLength": "Spielcodes haben 6 Buchstaben und Zahlen.",
+      "ownCode": "Das ist dein eigener Code! Sag ihn dem anderen Spieler.",
+      "notPlaying": "Dieses Spiel läuft gerade nicht.",
+      "bad": "Dieser Zug konnte nicht gesendet werden.",
+      "full": "Dieses Spiel ist zu lang geworden und kann nicht weitergehen."
     }
   }
 }

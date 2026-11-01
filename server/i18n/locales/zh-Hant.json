@@ -1642,7 +1642,11 @@
       "close": "關閉",
       "playing": "{n} 人在玩",
       "justNow": "剛剛",
-      "copied": "已複製！"
+      "copied": "已複製！",
+      "inviteTitle": "要玩 {game} 嗎？",
+      "inviteText": "{name} 想跟你一起玩 {game}！",
+      "invitePlay": "來玩吧！",
+      "inviteNo": "現在不要"
     },
     "game": {
       "needSignIn": "請點「用訪客身分玩」或先登入。",
@@ -2221,6 +2225,31 @@
       "right": "正確答案",
       "answer": "答案 {n}",
       "saved": "已儲存！"
+    },
+    "match": {
+      "title": "線上玩 {title}",
+      "playingNow": "正在玩",
+      "family": "家人",
+      "invite": "邀請",
+      "wantsToPlay": "{name} 想玩！",
+      "play": "開始玩",
+      "invitesForYou": "給你的邀請",
+      "friendsHeading": "好友和家人",
+      "noFriends": "還沒有可以邀請的好友。先用好友代碼加一位好友吧。",
+      "friendsPage": "前往好友",
+      "guestNoFriends": "建立帳號就能邀請好友。你還是可以用代碼來玩。",
+      "codeHeading": "用代碼來玩",
+      "codeHint": "建立一組代碼告訴對方，或輸入對方建立的代碼。",
+      "makeCode": "建立代碼",
+      "enterCode": "對戰代碼",
+      "codePlaceholder": "ABC-DEF",
+      "join": "加入",
+      "typeCode": "請先輸入對戰代碼。",
+      "shareCode": "你的對戰代碼",
+      "shareHint": "把它告訴對方。對方在 {title} 點「線上玩」，再輸入代碼。",
+      "waitingFor": "等待 {name} 答應…",
+      "cancel": "取消",
+      "ended": "這場線上對戰已經結束了。"
     }
   },
   "favorites": {
@@ -5172,6 +5201,20 @@
         "wait": "請稍等一下再試。",
         "notAllowed": "只有班級的老師可以這樣做。"
       }
+    }
+  },
+  "match": {
+    "err": {
+      "signIn": "登入後就能線上玩。",
+      "notOnline": "這個遊戲不能線上玩。",
+      "notFound": "這組代碼不能用。請檢查後再試一次。",
+      "gone": "這個邀請已經結束了。",
+      "tooMany": "你同時進行的線上對戰太多了。先完成一場吧。",
+      "codeLength": "對戰代碼有 6 個英文字母和數字。",
+      "ownCode": "這是你自己的代碼！把它告訴對方。",
+      "notPlaying": "這場對戰現在沒有在進行。",
+      "bad": "這一步沒辦法送出。",
+      "full": "這場對戰太長了，沒辦法繼續。"
     }
   }
 }

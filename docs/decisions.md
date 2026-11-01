@@ -1815,3 +1815,18 @@ A game file stays under 2 MB, but some official games carry a lot of words in ma
 - **Version folders never change** once published, because `/vendor` is served immutable with a one-year cache. New content goes in a new version folder. The game names its version and holds the `sha384` of each file.
 - **The game still works without a pack**, e.g. in English, if the file can't load.
 - The screenshot worker and `scripts/covers.js` serve these files from disk, like the other `/vendor` folders.
+
+## Online matches (play a friend on another device)
+
+Castle Clash's "Play online": invite a friend or family member, or share a match code. Built as its own small
+feature rather than on Oomba Live, because Live rooms are hosted by grown-ups only (teachers, parents) and are
+built for classes; a match is two equal players, either of whom may be a kid.
+- Transport: HTTP long-poll (`GET /api/match/:id/wait?after=&k=`, 20 s) and `POST /api/match/:id/send`. Turn-based
+  games need nothing faster, it works behind every proxy, and needs no second socket protocol. The page relays; the
+  frame has no network (docs/sdk.md "Online matches").
+- The server does not know chess: it relays numbered events, and each side's game checks moves with its own rules.
+  A reloaded page gets the whole history and the game replays it.
+- In memory only (like live sessions): matches are short; a deploy ends the ones in progress and the page says so.
+- Allowlisted official games only (`match.GAMES`), so a game made in the Builder can never turn the relay into
+  a message channel, even though the data is numbers only. Safety rules: docs/safety.md §13.
+

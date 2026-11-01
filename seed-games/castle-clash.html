@@ -177,6 +177,10 @@ canvas#board.kbd:focus{box-shadow:0 0 0 3px var(--ok-focus)} /* ring only after 
 .mode .emo svg{width:46px;height:46px}
 .mode b{font-size:1.1rem;font-weight:800}
 .mode span{font-size:.82rem;color:var(--muted);line-height:1.2}
+.mode.wide{grid-column:1/-1;flex-direction:row;min-height:76px;gap:12px}
+.mode.wide .emo{width:48px;height:48px}
+.mode .mtxt{display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:2px}
+.cbtn.off{opacity:.55}
 
 .levels{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .level{border:2.5px solid var(--line);border-radius:18px;background:var(--soft);padding:8px 6px;min-height:88px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink)}
@@ -389,6 +393,7 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
       <button class="mode" id="modeTwo"><canvas id="modeKings" width="112" height="112"></canvas><b data-i18n="mode.two">Two Players</b><span data-i18n="mode.twoSub">Share one screen</span></button>
       <button class="mode" id="modeLearn"><canvas id="modePawn" width="112" height="112"></canvas><b data-i18n="mode.learn">Learn Chess</b><span id="learnStat"></span></button>
       <button class="mode" id="modePuzzle"><div class="emo" data-icon="puzzle" aria-hidden="true"></div><b data-i18n="mode.puzzle">Puzzles</b><span id="puzStat"></span></button>
+      <button class="mode wide" id="modeOnline" hidden><div class="emo" data-icon="globe" aria-hidden="true"></div><div class="mtxt"><b data-i18n="mode.online">Play Online</b><span data-i18n="mode.onlineSub">Invite a friend or use a code</span></div></button>
     </div>
   </div>
 </section>
@@ -552,6 +557,22 @@ const CONFIG = {
 // ==== I18N START ====
 const I18N = {
   "en": {
+    "mode.online": "Play Online",
+    "mode.onlineSub": "Invite a friend or use a code",
+    "on.waiting": "Waiting for the other player…",
+    "on.theirTurn": "{nick} is thinking…",
+    "on.lost": "{nick} lost connection. Waiting…",
+    "on.left": "{nick} left the game.",
+    "on.offered": "You offered a tie. Waiting for {nick}…",
+    "on.tieAsk": "{nick} offers a tie",
+    "on.tieAskText": "Do you want to end this game as a tie?",
+    "on.tieNo": "{nick} wants to keep playing.",
+    "on.againWait": "Waiting for {nick}…",
+    "on.wantsAgain": "{nick} wants to play again!",
+    "on.leave": "Leave",
+    "on.leaveAsk": "Leave this game?",
+    "on.willWin": "{nick} will win this game.",
+    "on.pause": "The game keeps going while this menu is open.",
     "a.pause": "Pause",
     "welcome": "Welcome!",
     "a.soundOff": "Turn sound off",
@@ -838,6 +859,9 @@ const I18N = {
     "cur.empty": "empty",
   },
   "en-GB": {
+    "on.offered": "You offered a draw. Waiting for {nick}…",
+    "on.tieAsk": "{nick} offers a draw",
+    "on.tieAskText": "Do you want to end this game as a draw?",
     "les.bishop.text": "The bishop slides on the diagonals, so it always stays on squares of one colour.",
     "L.draw": ["A draw! We are both champions.","Nobody wins — what a battle!"],
     "r.stalemate": "Stalemate! The king can't move but isn't in check — it's a draw.",
@@ -854,6 +878,22 @@ const I18N = {
     "ask.tieYes": "Yes, draw",
   },
   "pt": {
+    "mode.online": "Jogar online",
+    "mode.onlineSub": "Convide um amigo ou use um código",
+    "on.waiting": "Esperando o outro jogador…",
+    "on.theirTurn": "{nick} está pensando…",
+    "on.lost": "{nick} perdeu a conexão. Esperando…",
+    "on.left": "{nick} saiu do jogo.",
+    "on.offered": "Você ofereceu empate. Esperando {nick}…",
+    "on.tieAsk": "{nick} oferece empate",
+    "on.tieAskText": "Quer terminar este jogo empatado?",
+    "on.tieNo": "{nick} quer continuar jogando.",
+    "on.againWait": "Esperando {nick}…",
+    "on.wantsAgain": "{nick} quer jogar de novo!",
+    "on.leave": "Sair",
+    "on.leaveAsk": "Sair deste jogo?",
+    "on.willWin": "{nick} vai ganhar este jogo.",
+    "on.pause": "O jogo continua enquanto este menu está aberto.",
     "a.pause": "Pausar",
     "welcome": "Boas-vindas!",
     "a.soundOff": "Desligar o som",
@@ -1152,6 +1192,22 @@ const I18N = {
     "cur.empty": "vazia",
   },
   "fr": {
+    "mode.online": "Jouer en ligne",
+    "mode.onlineSub": "Invite un ami ou utilise un code",
+    "on.waiting": "On attend l'autre joueur…",
+    "on.theirTurn": "{nick} réfléchit…",
+    "on.lost": "{nick} a perdu la connexion. On attend…",
+    "on.left": "{nick} a quitté la partie.",
+    "on.offered": "Tu as proposé match nul. On attend {nick}…",
+    "on.tieAsk": "{nick} propose match nul",
+    "on.tieAskText": "Veux-tu finir cette partie sur un match nul ?",
+    "on.tieNo": "{nick} veut continuer à jouer.",
+    "on.againWait": "On attend {nick}…",
+    "on.wantsAgain": "{nick} veut rejouer !",
+    "on.leave": "Quitter",
+    "on.leaveAsk": "Quitter cette partie ?",
+    "on.willWin": "{nick} gagnera cette partie.",
+    "on.pause": "La partie continue pendant que ce menu est ouvert.",
     "a.pause": "Pause",
     "welcome": "Bienvenue !",
     "a.soundOff": "Couper le son",
@@ -1450,6 +1506,22 @@ const I18N = {
     "cur.empty": "case vide",
   },
   "es": {
+    "mode.online": "Jugar en línea",
+    "mode.onlineSub": "Invita a un amigo o usa un código",
+    "on.waiting": "Esperando al otro jugador…",
+    "on.theirTurn": "{nick} está pensando…",
+    "on.lost": "{nick} perdió la conexión. Esperando…",
+    "on.left": "{nick} dejó la partida.",
+    "on.offered": "Ofreciste empate. Esperando a {nick}…",
+    "on.tieAsk": "{nick} ofrece empate",
+    "on.tieAskText": "¿Quieres terminar esta partida en empate?",
+    "on.tieNo": "{nick} quiere seguir jugando.",
+    "on.againWait": "Esperando a {nick}…",
+    "on.wantsAgain": "¡{nick} quiere jugar otra vez!",
+    "on.leave": "Salir",
+    "on.leaveAsk": "¿Salir de esta partida?",
+    "on.willWin": "{nick} ganará esta partida.",
+    "on.pause": "La partida sigue mientras este menú está abierto.",
     "a.pause": "Pausa",
     "welcome": "¡Bienvenido!",
     "a.soundOff": "Quitar el sonido",
@@ -1736,6 +1808,22 @@ const I18N = {
     "cur.empty": "vacía",
   },
   "de": {
+    "mode.online": "Online spielen",
+    "mode.onlineSub": "Lade einen Freund ein oder nutze einen Code",
+    "on.waiting": "Warte auf den anderen Spieler…",
+    "on.theirTurn": "{nick} denkt nach…",
+    "on.lost": "{nick} hat keine Verbindung. Warte…",
+    "on.left": "{nick} hat das Spiel verlassen.",
+    "on.offered": "Du hast ein Unentschieden angeboten. Warte auf {nick}…",
+    "on.tieAsk": "{nick} bietet ein Unentschieden an",
+    "on.tieAskText": "Willst du dieses Spiel unentschieden beenden?",
+    "on.tieNo": "{nick} will weiterspielen.",
+    "on.againWait": "Warte auf {nick}…",
+    "on.wantsAgain": "{nick} will noch mal spielen!",
+    "on.leave": "Verlassen",
+    "on.leaveAsk": "Dieses Spiel verlassen?",
+    "on.willWin": "{nick} gewinnt dann dieses Spiel.",
+    "on.pause": "Das Spiel läuft weiter, solange dieses Menü offen ist.",
     "a.pause": "Pause",
     "welcome": "Willkommen!",
     "a.soundOff": "Ton aus",
@@ -2040,6 +2128,22 @@ const I18N = {
     "cur.empty": "leer",
   },
   "he": {
+    "mode.online": "משחק ברשת",
+    "mode.onlineSub": "הזמינו חבר או השתמשו בקוד",
+    "on.waiting": "מחכים לשחקן השני…",
+    "on.theirTurn": "{nick} חושב…",
+    "on.lost": "החיבור של {nick} נותק. מחכים…",
+    "on.left": "{nick} יצא מהמשחק.",
+    "on.offered": "הצעתם תיקו. מחכים ל{nick}…",
+    "on.tieAsk": "{nick} מציע תיקו",
+    "on.tieAskText": "לסיים את המשחק בתיקו?",
+    "on.tieNo": "{nick} רוצה להמשיך לשחק.",
+    "on.againWait": "מחכים ל{nick}…",
+    "on.wantsAgain": "{nick} רוצה לשחק שוב!",
+    "on.leave": "לצאת",
+    "on.leaveAsk": "לצאת מהמשחק?",
+    "on.willWin": "{nick} ינצח במשחק הזה.",
+    "on.pause": "המשחק ממשיך כשהתפריט הזה פתוח.",
     "a.pause": "השהיה",
     "welcome": "ברוכים הבאים!",
     "a.soundOff": "לכבות את הצליל",
@@ -2326,6 +2430,22 @@ const I18N = {
     "cur.empty": "ריק",
   },
   "ja": {
+    "mode.online": "オンラインで​あそぶ",
+    "mode.onlineSub": "ともだちを​さそうか、コードで",
+    "on.waiting": "あいてを​まっています…",
+    "on.theirTurn": "{nick}が​かんがえ中…",
+    "on.lost": "{nick}の​つうしんが​きれました。まっています…",
+    "on.left": "{nick}が​ゲームを​ぬけました。",
+    "on.offered": "ひきわけを​ていあんしたよ。{nick}を​まっています…",
+    "on.tieAsk": "{nick}が​ひきわけを​ていあん",
+    "on.tieAskText": "この​ゲームを​ひきわけに​する？",
+    "on.tieNo": "{nick}は​まだ​つづけたいって。",
+    "on.againWait": "{nick}を​まっています…",
+    "on.wantsAgain": "{nick}が​もう一回​あそびたいって！",
+    "on.leave": "ぬける",
+    "on.leaveAsk": "この​ゲームを​ぬける？",
+    "on.willWin": "{nick}の​かちに​なります。",
+    "on.pause": "この​メニューを​ひらいていても​ゲームは​つづきます。",
     "a.pause": "ポーズ",
     "welcome": "ようこそ！",
     "a.soundOff": "音をけす",
@@ -2612,6 +2732,22 @@ const I18N = {
     "cur.empty": "からっぽ",
   },
   "ar": {
+    "mode.online": "العب عبر الإنترنت",
+    "mode.onlineSub": "ادعُ صديقًا أو استخدم رمزًا",
+    "on.waiting": "بانتظار اللاعب الآخر…",
+    "on.theirTurn": "{nick} يفكّر…",
+    "on.lost": "انقطع اتصال {nick}. بانتظاره…",
+    "on.left": "غادر {nick} اللعبة.",
+    "on.offered": "عرضت التعادل. بانتظار {nick}…",
+    "on.tieAsk": "{nick} يعرض التعادل",
+    "on.tieAskText": "هل تريد إنهاء هذه اللعبة بالتعادل؟",
+    "on.tieNo": "{nick} يريد مواصلة اللعب.",
+    "on.againWait": "بانتظار {nick}…",
+    "on.wantsAgain": "{nick} يريد اللعب مرة أخرى!",
+    "on.leave": "مغادرة",
+    "on.leaveAsk": "هل تغادر هذه اللعبة؟",
+    "on.willWin": "سيفوز {nick} بهذه اللعبة.",
+    "on.pause": "تستمر اللعبة بينما هذه القائمة مفتوحة.",
     "a.pause": "إيقاف مؤقت",
     "welcome": "أهلًا بك!",
     "a.soundOff": "أطفئ الصوت",
@@ -2910,6 +3046,22 @@ const I18N = {
     "cur.empty": "فارغ",
   },
   "ru": {
+    "mode.online": "Играть онлайн",
+    "mode.onlineSub": "Позови друга или введи код",
+    "on.waiting": "Ждём другого игрока…",
+    "on.theirTurn": "{nick} думает…",
+    "on.lost": "У {nick} пропала связь. Ждём…",
+    "on.left": "{nick} больше не в игре.",
+    "on.offered": "Ничья предложена. Ждём {nick}…",
+    "on.tieAsk": "{nick} предлагает ничью",
+    "on.tieAskText": "Закончить эту партию вничью?",
+    "on.tieNo": "{nick} хочет играть дальше.",
+    "on.againWait": "Ждём {nick}…",
+    "on.wantsAgain": "{nick} хочет сыграть ещё раз!",
+    "on.leave": "Выйти",
+    "on.leaveAsk": "Выйти из этой партии?",
+    "on.willWin": "{nick} выиграет эту партию.",
+    "on.pause": "Пока это меню открыто, игра продолжается.",
     "a.pause": "Пауза",
     "welcome": "Привет!",
     "a.soundOff": "Выключить звук",
@@ -3220,6 +3372,22 @@ const I18N = {
     "cur.empty": "пусто",
   },
   "it": {
+    "mode.online": "Gioca online",
+    "mode.onlineSub": "Invita un amico o usa un codice",
+    "on.waiting": "Aspettiamo l'altro giocatore…",
+    "on.theirTurn": "{nick} sta pensando…",
+    "on.lost": "{nick} ha perso la connessione. Aspettiamo…",
+    "on.left": "{nick} ha lasciato la partita.",
+    "on.offered": "Hai proposto la patta. Aspettiamo {nick}…",
+    "on.tieAsk": "{nick} propone la patta",
+    "on.tieAskText": "Vuoi finire questa partita in parità?",
+    "on.tieNo": "{nick} vuole continuare a giocare.",
+    "on.againWait": "Aspettiamo {nick}…",
+    "on.wantsAgain": "{nick} vuole giocare ancora!",
+    "on.leave": "Esci",
+    "on.leaveAsk": "Uscire da questa partita?",
+    "on.willWin": "{nick} vincerà questa partita.",
+    "on.pause": "La partita continua mentre questo menu è aperto.",
     "a.pause": "Pausa",
     "welcome": "Benvenuto!",
     "a.soundOff": "Spegni il suono",
@@ -3518,6 +3686,22 @@ const I18N = {
     "cur.empty": "vuota",
   },
   "zh-Hant": {
+    "mode.online": "線上對戰",
+    "mode.onlineSub": "邀請朋友或使用代碼",
+    "on.waiting": "正在等另一位玩家…",
+    "on.theirTurn": "{nick}正在思考…",
+    "on.lost": "{nick}的連線中斷了，等一下…",
+    "on.left": "{nick}離開了遊戲。",
+    "on.offered": "你提出和局，正在等{nick}…",
+    "on.tieAsk": "{nick}提出和局",
+    "on.tieAskText": "要用和局結束這盤棋嗎？",
+    "on.tieNo": "{nick}想繼續下。",
+    "on.againWait": "正在等{nick}…",
+    "on.wantsAgain": "{nick}想再玩一次！",
+    "on.leave": "離開",
+    "on.leaveAsk": "要離開這盤棋嗎？",
+    "on.willWin": "這盤棋會由{nick}獲勝。",
+    "on.pause": "這個選單開著時，遊戲還會繼續。",
     "a.pause": "暫停",
     "welcome": "歡迎！",
     "a.soundOff": "關閉聲音",
@@ -3804,6 +3988,22 @@ const I18N = {
     "cur.empty": "空格",
   },
   "nl": {
+    "mode.online": "Online spelen",
+    "mode.onlineSub": "Nodig een vriend uit of gebruik een code",
+    "on.waiting": "Wachten op de andere speler…",
+    "on.theirTurn": "{nick} denkt na…",
+    "on.lost": "{nick} heeft geen verbinding. Even wachten…",
+    "on.left": "{nick} heeft het spel verlaten.",
+    "on.offered": "Je bood gelijkspel aan. Wachten op {nick}…",
+    "on.tieAsk": "{nick} biedt gelijkspel aan",
+    "on.tieAskText": "Wil je dit spel als gelijkspel beëindigen?",
+    "on.tieNo": "{nick} wil verder spelen.",
+    "on.againWait": "Wachten op {nick}…",
+    "on.wantsAgain": "{nick} wil nog een keer spelen!",
+    "on.leave": "Verlaten",
+    "on.leaveAsk": "Dit spel verlaten?",
+    "on.willWin": "{nick} wint dan dit spel.",
+    "on.pause": "Het spel gaat door terwijl dit menu open is.",
     "a.pause": "Pauze",
     "welcome": "Welkom!",
     "a.soundOff": "Geluid uit",
@@ -5100,12 +5300,13 @@ function kitIcons(root) {
   }
   for (const el of (root || document).querySelectorAll('i.kd[data-mark]')) el.innerHTML = iconHTML(el.dataset.mark === 'w' ? 'sun' : 'moon');
 }
-/** The game's own three symbols, drawn in the kit's sticker style (Ink lines, a hue fill): the Sun Kingdom's sun, the
- *  Moon Kingdom's moon and a jigsaw piece for the puzzles. Every other name is a kit icon. */
+/** The game's own four symbols, drawn in the kit's sticker style (Ink lines, a hue fill): the Sun Kingdom's sun, the
+ *  Moon Kingdom's moon, a jigsaw piece for the puzzles and a globe for playing online. Every other name is a kit icon. */
 const OWN_ICONS = {
   sun: '<circle cx="12" cy="12" r="5" style="fill:var(--cc-spark,#FFD23F)"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" fill="none"/>',
   moon: '<path d="M14.6 3.2a8.6 8.6 0 1 0 6.2 13.4 7 7 0 0 1-6.2-13.4z" style="fill:var(--cc-sky,#5AA9F0)"/><circle cx="18.6" cy="5.4" r=".9" style="fill:currentColor"/>',
   puzzle: '<path d="M4 8.5h4.4a2.6 2.6 0 1 1 5.2 0H18v4.4a2.6 2.6 0 1 1 0 5.2V21H4z" style="fill:var(--cc-mint,#3DBE7C)"/>',
+  globe: '<circle cx="12" cy="12" r="9" style="fill:var(--cc-sky,#5AA9F0)"/><path d="M3 12h18M12 3c-3 3.2-3 14.8 0 18M12 3c3 3.2 3 14.8 0 18M5 7.5h14M5 16.5h14" fill="none"/>',
 };
 const iconHTML = name => OWN_ICONS[name] ? `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${OWN_ICONS[name]}</svg>` : Oomba.icon(name);
 /** A kingdom mark (the sun or the moon) as an inline icon, for text rows. */
@@ -5656,6 +5857,7 @@ function playMove(m, opts) {
   let capt = 0, captSq = -1;
   if (fl & E.F_EP) { captSq = to + (side === WHITE ? -16 : 16); capt = pos.board[captSq]; } else if (pos.board[to]) { capt = pos.board[to]; captSq = to; }
   if (G.clock.on && G.mode === 'two' && !G.result) tickClock(nowMs()); // charge the mover for the time used
+  if (G.mode === 'online') onlineMoved(m, side, opts.by === 'user');
   pos.make(m);
   const entry = { m, san, side, piece, capt, captSq, from, to, fl };
   G.hist.push(entry);
@@ -5859,13 +6061,21 @@ function endGame(result, reason) {
     try { BRB.score.submit(pts, 'robot wins'); BRB.gameOver({ won, score: pts }); } catch (e) { /* ignore */ }
     sfx(won ? 'win' : winner >= 0 ? 'lose' : 'coin');
     if (won) try { BRB.fx.confetti(); } catch (e) { /* ignore */ }
+  } else if (G.mode === 'online') {
+    const won = winner === G.playerSide;
+    head = won ? t('end.youWin') : winner >= 0 ? t('end.nickWins', { nick: ON.opp }) : t('end.tie');
+    if (!ON.replay) {
+      sfx(won ? 'win' : winner >= 0 ? 'lose' : 'coin');
+      if (won) try { BRB.fx.confetti(); } catch (e) { /* ignore */ }
+      try { BRB.gameOver({ won }); } catch (e) { /* ignore */ }
+    }
   } else {
     if (winner >= 0) { head = t('end.nickWins', { nick: nickOf(winner)[1] }); sfx('win'); try { BRB.fx.confetti(); } catch (e) { /* ignore */ } }
     else { head = t('end.tie'); sfx('coin'); }
     try { BRB.gameOver({ won: winner >= 0 }); } catch (e) { /* ignore */ }
   }
-  store.remove(CONFIG.gameKey);
-  const text = REASON_TEXT[reason] ? REASON_TEXT[reason](winner) : '';
+  if (G.mode !== 'online') store.remove(CONFIG.gameKey);   // an online game never touches the saved robot or two-player game
+  const text = reason === 'left' ? t('on.left', { nick: ON.opp }) : REASON_TEXT[reason] ? REASON_TEXT[reason](winner) : '';
   // Hoot's reaction stays in his bar (and on the results card) until the next game
   if (G.mode === 'robot' && G.speech) clearTimeout(G.speechTimer);
   G.endInfo = { head, text, chips, say: G.mode === 'robot' ? G.speech : '' };
@@ -5873,7 +6083,7 @@ function endGame(result, reason) {
   if (winner >= 0 && reason === 'checkmate') { const ks = G.pos.kings[(winner ^ 8) >> 3]; G.faces[ks] = { face: 2, until: Infinity }; }
   // a robot win sends a new robot-points total, and the site then shows "New best" at the bottom of the screen for a few
   // seconds: the card waits for it (the bar shows Hoot's reaction meanwhile), so the toast never covers its buttons
-  later(showEnd, G.instant ? 0 : G.mode === 'robot' && winner === G.playerSide ? CONFIG.endWaitWin : 1000);
+  later(showEnd, G.instant || ON.replay ? 0 : G.mode === 'robot' && winner === G.playerSide ? CONFIG.endWaitWin : 1000);
 }
 function showEnd() {
   if (!G.result || G.screen !== 'play') return;
@@ -5892,6 +6102,7 @@ function showEnd() {
   let atTop = false;
   if (!sideLayout && G.reason === 'checkmate') { const [, ky] = boardToScreen(G.pos.kings[G.pos.side >> 3]); atTop = ky > window.innerHeight * 0.45; }
   $('#endScreen').classList.toggle('top', atTop);
+  endButtons();
   $('#endScreen').hidden = false; $('#unpeekBtn').hidden = true; G.endShown = true;
   setTimeout(() => $('#againBtn').focus(), 50);
 }
@@ -5904,6 +6115,9 @@ function endPicture() {
     if (w === G.playerSide) add(ME, 'cheer');
     else if (w >= 0) add(HOOT(G.level), 'happy');
     else { add(ME, 'happy', Math.round(px * 0.8)); add(HOOT(G.level), 'happy', Math.round(px * 0.8)); }
+  } else if (G.mode === 'online') {
+    if (w >= 0) add(w === G.playerSide ? ME : ON.oppSpec, 'cheer');
+    else { add(ME, 'happy', Math.round(px * 0.8)); add(ON.oppSpec, 'happy', Math.round(px * 0.8)); }
   } else if (w >= 0) add(NICK_SPECS[nickIndex(w)], 'cheer');
   else { add(NICK_SPECS[nickIndex(WHITE)], 'happy', Math.round(px * 0.8)); add(NICK_SPECS[nickIndex(BLACK)], 'happy', Math.round(px * 0.8)); }
   if (!REDUCED && !G.instant) { try { Oomba.juice.pop(box); } catch (e) { /* ignore */ } }
@@ -6250,6 +6464,9 @@ function renderBars(force) {
     if (G.mode === 'robot') {
       if (isRobot) { name = t('hoot'); sub = `${KINGDOM(side)} · ${t('bar.level', { lvl: levelName(G.level) })}`; }
       else { name = BRB.user && !BRB.user.isGuest && BRB.user.displayName ? BRB.user.displayName : t('you'); sub = KINGDOM(side); setPic(emo, ME, AV_PX, G.result && G.result !== '1/2-1/2' ? (resultWinner() === side ? 'happy' : 'sad') : undefined, true); }
+    } else if (G.mode === 'online') {
+      const mine = side === G.playerSide; name = mine ? ON.me : ON.ready ? ON.opp : '…'; sub = KINGDOM(side);
+      setPic(emo, mine ? ME : ON.oppSpec, AV_PX, G.result && G.result !== '1/2-1/2' ? (resultWinner() === side ? 'happy' : 'sad') : undefined, true);
     } else if (G.mode === 'two') { const n = nickOf(side); name = n[1]; sub = KINGDOM(side); setPic(emo, NICK_SPECS[nickIndex(side)], AV_PX, G.result && G.result !== '1/2-1/2' ? (resultWinner() === side ? 'happy' : 'sad') : undefined, true); }
     else { name = KINGDOM(side); sub = side === G.pos.side ? t('bar.yourMove') : ''; kingPic(emo, side); }
     $('#' + bar + 'Name').textContent = name;
@@ -6257,7 +6474,7 @@ function renderBars(force) {
     const mark = $('#' + bar + 'Mark'), mk = side === WHITE ? 'w' : 'b'; if (mark.dataset.mark !== mk) { mark.dataset.mark = mk; mark.innerHTML = iconHTML(mk === 'w' ? 'sun' : 'moon'); }
     const subEl = $('#' + bar + 'Sub'), speak = isRobot && G.speech;
     if (speak) subEl.textContent = G.speech;
-    else { subEl.textContent = sub; if (G.mode === 'robot' || G.mode === 'two') subEl.insertAdjacentHTML('afterbegin', markHTML(side)); }
+    else { subEl.textContent = sub; if (G.mode === 'robot' || G.mode === 'two' || G.mode === 'online') subEl.insertAdjacentHTML('afterbegin', markHTML(side)); }
     subEl.classList.toggle('say', !!speak); subEl.parentNode.classList.toggle('speaking', !!speak);
   }
   // captured trays (pieces each side has taken) + material lead
@@ -6298,6 +6515,7 @@ function updateStatus() {
     if (G.puz.solved || G.puz.busy) return;
     setStatus(check ? t('st.checkKeep') : t('st.puzzle', { n: G.puz.i + 1, total: PUZZLES.length }), check ? 'good' : ''); return;
   }
+  if (G.mode === 'online' && !G.result) { onlineStatus(); return; }
   if (G.result) { setStatus(G.endInfo ? G.endInfo.head : t('st.over'), G.result === '1/2-1/2' ? '' : 'good'); return; }
   if (G.mode === 'robot') {
     const last = G.hist.length ? G.hist[G.hist.length - 1] : null, robotJustMoved = last && last.side !== G.playerSide;
@@ -6352,6 +6570,11 @@ function renderControls() {
       ask(t('ask.nickGiveUp', { nick: n[1] }), t('ask.willWin.' + SW(s ^ 8)), t('ask.giveUpYes'), () => endGame(s === WHITE ? '0-1' : '1-0', 'resign'));
     }, { disabled: !!G.result || !G.hist.length }));
     box.appendChild(ctlButton('plus', t('c.new'), () => G.result ? restartTwo() : ask(t('ask.new'), t('ask.newText'), t('ask.newYes'), restartTwo), { aria: t('c.newA') }));
+  } else if (G.mode === 'online') {
+    box.appendChild(ctlButton('swap', t('c.flip'), flipBoard, { aria: t('c.flipA') }));
+    box.appendChild(ctlButton('heart', t('c.offer'), offerDrawOnline, { disabled: !ON.ready || !!G.result || G.hist.length < 2 || ON.draw >= 0 || ON.left }));
+    box.appendChild(ctlButton('flag', t('c.giveUp'), giveUpOnline, { disabled: !ON.ready || !!G.result || ON.left }));
+    box.appendChild(ctlButton('quit', t('on.leave'), leaveOnline));
   } else if (G.mode === 'learn') {
     box.appendChild(ctlButton('book', t('c.lessons'), () => showScreen('learn')));
     box.appendChild(ctlButton('restart', t('c.retry'), () => startLesson(G.lessonIdx)));
@@ -6377,10 +6600,162 @@ function offerDraw() {
   const s = G.pos.side, n = nickOf(s), o = nickOf(s ^ 8);
   ask(t('ask.tie', { nick: o[1] }), t('ask.tieText', { nick: n[1] }), t('ask.tieYes'), () => endGame('1/2-1/2', 'agree'), t('ask.tieNo'));
 }
-let askYes = null;
-function ask(title, text, yes, onYes, no) {
+let askYes = null, askNo = null;
+function ask(title, text, yes, onYes, no, onNo) {
   $('#askTitle').textContent = title; $('#askText').textContent = text; $('#askYes').textContent = yes || t('yes'); $('#askNo').textContent = no || t('no');
-  askYes = onYes; $('#askScreen').hidden = false; setTimeout(() => $('#askNo').focus(), 30);
+  askYes = onYes; askNo = onNo || null; $('#askScreen').hidden = false; setTimeout(() => $('#askNo').focus(), 30);
+}
+/** Closes the ask card as No (its No action runs too). */
+function askSaysNo() { const f = askNo; askYes = null; askNo = null; $('#askScreen').hidden = true; if (f) f(); }
+
+/* =====================================================================================
+   ONLINE: one match between two players on two devices (BRB.match, from the site's page)
+   The page relays events between the two frames: { k: 'mv', d: { g, n, f, t, p } } (game g, ply n, from/to squares in
+   the engine's 0x88 numbers, promotion 0 none / 1 knight / 2 bishop / 3 rook / 4 queen) and { k: 'act', d: { g, a } }
+   (1 give up, 2 offer a tie, 3 yes to the tie, 4 no, 5 play again). Numbers only, never words: the channel can't carry
+   a chat. Both frames run the same rules, so they always agree; seat 0 (who made the match) plays the Sun Kingdom in
+   even games and the Moon Kingdom in odd ones. Nothing is saved here: the page keeps every event and replays them.
+   ===================================================================================== */
+const ON = { seat: 0, g: 0, ready: false, me: '', opp: '', oppSpec: NICK_SPECS[2], oppOn: true, left: false, again: [false, false], draw: -1, replay: false, note: '', asking: false, out: [] };
+function MATCH() { try { return window.BRB && BRB.match ? BRB.match : null; } catch (e) { return null; } }
+const seatSide = (seat, g) => ((g % 2 === 0) === (seat === 0) ? WHITE : BLACK);
+const nameText = s => (typeof s === 'string' ? s.replace(/\s+/g, ' ').trim().slice(0, 40) : '');
+function matchSend(k, d) {
+  ON.out.push([k, Object.assign({}, d)]); if (ON.out.length > 400) ON.out.shift();
+  const m = MATCH(); try { return !!(m && m.active && m.send(k, d)); } catch (e) { return false; }
+}
+function leaveMatch() { const m = MATCH(); try { if (m && typeof m.leave === 'function') m.leave(); } catch (e) { /* ignore */ } }
+/** A match frame: straight to the board, waiting for the page to say both players are in. */
+function startMatchFrame() {
+  const m = MATCH(); ON.seat = m.init && m.init.seat === 1 ? 1 : 0;
+  ON.me = (BRB.user && !BRB.user.isGuest && nameText(BRB.user.displayName)) || t('you');
+  startOnline(0);
+  try { m.on(onMatchMessage); } catch (e) { /* ignore */ }
+}
+function startOnline(g) {
+  resetBoardState();
+  G.mode = 'online'; ON.g = g; ON.again = [false, false]; ON.draw = -1; ON.note = ''; ON.asking = false;
+  G.playerSide = seatSide(ON.seat, g); G.flipped = G.playerSide === BLACK; G.rotate = false; R.bg = null;
+  G.clock = { on: false, min: 0, ms: [0, 0], last: 0 }; G.hintsLeft = 0;
+  G.pos.setFen(E.START_FEN); G.startFen = G.pos.fen();
+  refreshCheck(); showPlay(); G.cursor = G.flipped ? 116 : 4;
+}
+/** Messages from the page: wait, go (with every event so far), ev (the other player's), opp (connection), left. */
+function onMatchMessage(m) {
+  if (!m || typeof m !== 'object') return;
+  if (m.t === 'wait') { ON.ready = false; if (G.mode !== 'online') startOnline(0); updateStatus(); renderControls(); return; }
+  if (m.t === 'go') {
+    if (m.seat === 0 || m.seat === 1) ON.seat = m.seat;
+    if (m.me && nameText(m.me.name)) ON.me = nameText(m.me.name);
+    ON.opp = (m.opp && nameText(m.opp.name)) || '?';
+    ON.oppSpec = m.opp && m.opp.character && typeof m.opp.character === 'object' ? m.opp.character : NICK_SPECS[ON.seat ? 0 : 7];
+    ON.ready = true; ON.oppOn = true; ON.left = false;
+    // rebuild from the whole history, without animation or sounds (the same result every time it arrives)
+    const hist = Array.isArray(m.hist) ? m.hist : [];
+    ON.replay = true;
+    try {
+      startOnline(0);
+      for (const e of hist) if (Array.isArray(e) && e.length === 3) onMatchEvent(e[0], e[1], e[2], false);
+    } finally { ON.replay = false; }
+    refreshCheck(); renderMoves(); renderBars(true); updateStatus(); renderControls(); G.dirty = true;
+    if (!G.result && ON.draw === (ON.seat ^ 1)) askDraw();
+    if (!hist.length) sfx('powerup');
+    return;
+  }
+  if (m.t === 'ev') { if (ON.ready && (m.f === 0 || m.f === 1) && m.f !== ON.seat) onMatchEvent(m.f, m.k, m.d, true); return; }
+  if (m.t === 'opp') { ON.oppOn = !!m.on; updateStatus(); return; }
+  if (m.t === 'left') {
+    ON.left = true; closeDrawAsk();
+    if (ON.ready && !G.result) endGame(G.playerSide === WHITE ? '1-0' : '0-1', 'left');
+    else { endButtons(); updateStatus(); }
+    renderControls();
+  }
+}
+/** One event, from either seat (live: as it happens; else replayed from the history). */
+function onMatchEvent(f, k, d, live) {
+  if ((f !== 0 && f !== 1) || !d || typeof d !== 'object') return;
+  if (k === 'act' && d.a === 5) {
+    if (d.g !== ON.g || ON.again[f]) return;
+    ON.again[f] = true;
+    if (ON.again[0] && ON.again[1]) { startOnline(ON.g + 1); if (live) sfx('powerup'); }
+    else { if (live) sfx('coin'); endButtons(); }
+    return;
+  }
+  if (d.g !== ON.g || G.result) return;
+  const side = seatSide(f, ON.g);
+  if (k === 'mv') {
+    if (d.n !== G.hist.length || G.pos.side !== side) return;   // already played (or not this one's turn)
+    const promo = d.p >= 1 && d.p <= 4 ? d.p + 1 : 0;
+    const m = G.pos.legalMoves().find(x => E.mFrom(x) === d.f && E.mTo(x) === d.t && E.mPromo(x) === promo);
+    if (!m) { if (window.console) console.warn('[castle clash] an online move that is not legal here', d); return; }
+    if (live) { if (G.anim) finishAnim(); clearSelection(); promoPending = null; $('#promoScreen').hidden = true; playMove(m, { by: 'opp' }); }
+    else replayMove(m);
+    return;
+  }
+  if (k !== 'act') return;
+  if (d.a === 1) endGame(side === WHITE ? '0-1' : '1-0', 'resign');
+  else if (d.a === 2) { if (ON.draw < 0) { ON.draw = f; if (live && f !== ON.seat) askDraw(); } }
+  else if (d.a === 3) { if (ON.draw === (f ^ 1)) { ON.draw = -1; endGame('1/2-1/2', 'agree'); } }
+  else if (d.a === 4) { if (ON.draw === (f ^ 1)) { ON.draw = -1; if (f !== ON.seat) ON.note = t('on.tieNo', { nick: ON.opp }); } }
+  if (!G.result) { updateStatus(); renderControls(); }
+}
+/** Called by playMove just before an online move is made: send my own, and a move answers a waiting tie offer. */
+function onlineMoved(m, side, mine) {
+  ON.note = '';
+  if (mine) { const pr = E.mPromo(m); matchSend('mv', { g: ON.g, n: G.hist.length, f: E.mFrom(m), t: E.mTo(m), p: pr ? pr - 1 : 0 }); }
+  const mover = side === G.playerSide ? ON.seat : ON.seat ^ 1;
+  if (ON.draw >= 0 && ON.draw !== mover) { ON.draw = -1; closeDrawAsk(); }
+}
+/** A move from the history: made at once (no slide, no sound), like resuming a saved game. */
+function replayMove(m) {
+  const pos = G.pos, legal = pos.legalMoves(), san = E.san(pos, m, legal), from = E.mFrom(m), to = E.mTo(m), fl = E.mFlags(m), side = pos.side, piece = pos.board[from];
+  let capt = 0, captSq = -1; if (fl & E.F_EP) { captSq = to + (side === WHITE ? -16 : 16); capt = pos.board[captSq]; } else if (pos.board[to]) { capt = pos.board[to]; captSq = to; }
+  onlineMoved(m, side, false);
+  pos.make(m); G.hist.push({ m, san, side, piece, capt, captSq, from, to, fl });
+  refreshCheck();
+  const st = E.status(pos); if (st.over) endGame(st.result, st.reason);
+}
+/** My own act: sent, then applied here the same way the other frame applies it. */
+function onlineAct(a) {
+  if (!ON.ready) return;
+  if (a === 5 ? !G.result || ON.left : G.result) return;
+  matchSend('act', { g: ON.g, a });
+  onMatchEvent(ON.seat, 'act', { g: ON.g, a }, true);
+}
+function offerDrawOnline() { if (ON.draw < 0 && G.hist.length >= 2) onlineAct(2); }
+function giveUpOnline() { ask(t('ask.giveUp'), t('on.willWin', { nick: ON.opp }), t('ask.giveUpYes'), () => onlineAct(1)); }
+function leaveOnline() { if (G.result || !ON.ready || ON.left) { leaveMatch(); return; } ask(t('on.leaveAsk'), t('on.willWin', { nick: ON.opp }), t('on.leave'), leaveMatch); }
+function againOnline() { if (!ON.again[ON.seat]) onlineAct(5); }
+function askDraw() {
+  ON.asking = true;
+  ask(t('on.tieAsk', { nick: ON.opp }), t('on.tieAskText'), t('ask.tieYes'), () => { ON.asking = false; onlineAct(3); }, t('ask.tieNo'), () => { ON.asking = false; onlineAct(4); });
+}
+function closeDrawAsk() { if (!ON.asking) return; ON.asking = false; askYes = null; askNo = null; $('#askScreen').hidden = true; }
+function onlineStatus() {
+  const check = G.pos.inCheckCache, mine = G.pos.side === G.playerSide;
+  if (!ON.ready) setStatus(t('on.waiting'), '');
+  else if (ON.left) setStatus(t('on.left', { nick: ON.opp }), 'warn');
+  else if (!ON.oppOn) setStatus(t('on.lost', { nick: ON.opp }), 'warn');
+  else if (ON.draw === ON.seat) setStatus(t('on.offered', { nick: ON.opp }), '');
+  else if (ON.note) setStatus(ON.note, '');
+  else if (mine) setStatus(t(check ? 'st.check' : 'st.yourTurn'), check ? 'warn' : '');
+  else setStatus(t('on.theirTurn', { nick: ON.opp }), '');
+}
+/** The results card's buttons in a match: Play again (then "Waiting for …" until the other player says yes too), Leave. */
+function endButtons() {
+  const again = $('#againBtn'), menu = $('#endMenu');
+  const online = G.mode === 'online';
+  again.querySelector('[data-i18n]').textContent = online && ON.again[ON.seat] ? t('on.againWait', { nick: ON.opp }) : t('again');
+  again.disabled = online && (ON.again[ON.seat] || ON.left);
+  menu.querySelector('[data-i18n]').textContent = online ? t('on.leave') : t('changeMode');
+  if (!online) return;
+  const chips = $('#endChips'); chips.innerHTML = '';
+  if (ON.left && G.reason !== 'left') chips.appendChild(chip(t('on.left', { nick: ON.opp }), 'quit'));
+  else if (ON.again[ON.seat ^ 1]) chips.appendChild(chip(t('on.wantsAgain', { nick: ON.opp }), 'restart'));
+}
+function onlineState() {
+  return { seat: ON.seat, game: ON.g, side: G.playerSide === WHITE ? 'w' : 'b', ready: ON.ready, me: ON.me, opp: ON.opp, oppOnline: ON.oppOn, left: ON.left,
+    again: ON.again.slice(), drawBy: ON.draw, asking: ON.asking, myTurn: G.mode === 'online' && G.pos.side === G.playerSide && !G.result, canMove: G.mode === 'online' && canAct() };
 }
 
 /* ---------- menus ---------- */
@@ -6479,6 +6854,7 @@ function renderMenu() {
   paintIcon($('#modePawn'), PAWN, 3);
   $('#learnStat').textContent = t('menu.les', { n: LESSONS.filter(l => DATA.stars[l.id]).length, total: LESSONS.length });
   $('#puzStat').textContent = t('menu.puz', { n: PUZZLES.filter((p, i) => DATA.puzzles[i]).length, total: PUZZLES.length });
+  const m = MATCH(); $('#modeOnline').hidden = !(m && typeof m.menu === 'function');
 }
 function renderRobotSetup() {
   const box = $('#levels'); box.innerHTML = '';
@@ -6591,6 +6967,15 @@ function openKitPause() {
   const board = Oomba.ui.button(t('set.board'), { kind: 'quiet', icon: 'eye', onPress: () => { G.pauseBack = true; closeKitPause(); openSettings(); } });
   board.id = 'pauseSettings';
   if (resume && resume.nextSibling) resume.nextSibling.after(board); else if (col) col.append(board);
+  if (G.mode === 'online') {   // a match: no restart or mode menu, but a tie offer, giving up and leaving
+    note.textContent = t('on.pause');
+    if (resume && resume.nextSibling && resume.nextSibling !== board) resume.nextSibling.hidden = true;
+    if (quit) quit.hidden = true;
+    const add = (label, icon, fn, off) => { const b = Oomba.ui.button(label, { kind: 'quiet', icon, onPress: () => { closeKitPause(); setPaused(false); fn(); } }); if (off) b.disabled = true; if (col) col.append(b); return b; };
+    add(t('c.offer'), 'heart', offerDrawOnline, !ON.ready || !!G.result || G.hist.length < 2 || ON.draw >= 0 || ON.left).id = 'pauseTie';
+    add(t('c.giveUp'), 'flag', giveUpOnline, !ON.ready || !!G.result || ON.left).id = 'pauseGiveUp';
+    add(t('on.leave'), 'quit', leaveOnline).id = 'pauseLeave';
+  }
 }
 /** Closes the kit's pause screen from code (P again, a test, settings, a new screen) without acting on its result. */
 function closeKitPause() {
@@ -6600,6 +6985,7 @@ function closeKitPause() {
 }
 /** The kit pause's Restart: the same kind of game again (asks first when the game has moves to lose). */
 function restartSame() {
+  if (G.mode === 'online') return;
   const go = () => {
     if (G.mode === 'robot') startGame({ mode: 'robot', level: G.level, side: DATA.side });
     else if (G.mode === 'two') restartTwo();
@@ -6639,6 +7025,7 @@ function canAct() {
   if (G.result) return false;
   if (G.mode === 'robot') return !G.thinking && G.pos.side === G.playerSide;
   if (G.mode === 'puzzle') return !G.puz.solved && !G.puz.busy && G.pos.side === G.puz.side;
+  if (G.mode === 'online') return ON.ready && !ON.left && G.pos.side === G.playerSide;
   return true;
 }
 function ownPiece(s) {
@@ -6771,7 +7158,7 @@ function onGlobalKey(e) {
   if (k === 'Escape') {
     if (!$('#setScreen').hidden) { closeSettings(); return; }
     if (!$('#promoScreen').hidden) { promoPending = null; $('#promoScreen').hidden = true; focusBoard(); return; }
-    if (!$('#askScreen').hidden) { askYes = null; $('#askScreen').hidden = true; focusBoard(); return; }
+    if (!$('#askScreen').hidden) { askSaysNo(); focusBoard(); return; }
     if (G.screen === 'play') { if (G.sel >= 0) { clearSelection(); return; } setPaused(true); return; }
     const back = document.querySelector('.screen:not([hidden]) .back[data-go]'); if (back) back.click();
     return;
@@ -6831,7 +7218,7 @@ function wire() {
   document.addEventListener('pointerdown', () => R.canvas.classList.remove('kbd'), true);
   $('#sanBox').addEventListener('keydown', onSanEnter);
   window.addEventListener('resize', () => layout());
-  document.addEventListener('visibilitychange', () => { if (document.hidden && G.screen === 'play' && !G.result && G.mode !== 'learn') setPaused(true); if (document.hidden && G.screen === 'play') saveGame(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && G.screen === 'play' && !G.result && G.mode !== 'learn' && G.mode !== 'online') setPaused(true); if (document.hidden && G.screen === 'play') saveGame(); });
   window.addEventListener('pagehide', () => { if (G.screen === 'play') saveGame(); });
   for (const b of document.querySelectorAll('[data-go]')) b.addEventListener('click', () => { sfx('click'); showScreen(b.dataset.go); });
   $('#resumeBtn').addEventListener('click', () => { const s = savedGame(); sfx('click'); if (s) startGame(Object.assign({}, s, { side: s.playerSide, fen: s.startFen })); });
@@ -6863,13 +7250,15 @@ function wire() {
   toggle('#tFaces', () => { DATA.settings.faces = !DATA.settings.faces; });
   $('#fenBox').addEventListener('focus', e => e.target.select());
   $('#promoCancel').addEventListener('click', () => { promoPending = null; $('#promoScreen').hidden = true; focusBoard(); });
-  $('#askYes').addEventListener('click', () => { const f = askYes; askYes = null; $('#askScreen').hidden = true; sfx('click'); if (f) f(); focusBoard(); });
-  $('#askNo').addEventListener('click', () => { askYes = null; $('#askScreen').hidden = true; sfx('click'); focusBoard(); });
+  $('#askYes').addEventListener('click', () => { const f = askYes; askYes = null; askNo = null; $('#askScreen').hidden = true; sfx('click'); if (f) f(); focusBoard(); });
+  $('#askNo').addEventListener('click', () => { sfx('click'); askSaysNo(); focusBoard(); });
   $('#againBtn').addEventListener('click', () => {
     sfx('click');
-    if (G.mode === 'robot') startGame({ mode: 'robot', level: G.level, side: DATA.side }); else restartTwo();
+    if (G.mode === 'online') againOnline();
+    else if (G.mode === 'robot') startGame({ mode: 'robot', level: G.level, side: DATA.side }); else restartTwo();
   });
-  $('#endMenu').addEventListener('click', () => { sfx('click'); showScreen('menu'); });
+  $('#endMenu').addEventListener('click', () => { sfx('click'); if (G.mode === 'online') leaveMatch(); else showScreen('menu'); });
+  $('#modeOnline').addEventListener('click', () => { sfx('click'); const m = MATCH(); if (m && typeof m.menu === 'function') try { m.menu(); } catch (e) { /* ignore */ } });
   $('#endDetails').addEventListener('toggle', () => { $('#endMoves').hidden = !$('#endDetails').open; });
   $('#peekBtn').addEventListener('click', () => { $('#endScreen').hidden = true; $('#unpeekBtn').hidden = false; placePeek(); $('#unpeekBtn').focus(); });
   $('#unpeekBtn').addEventListener('click', () => { $('#unpeekBtn').hidden = true; $('#endScreen').hidden = false; });
@@ -6911,6 +7300,7 @@ function testState() {
     puzzle: G.puz ? { index: G.puz.i, solved: G.puz.solved, left: G.puz.left } : null,
     lesson: G.mode === 'learn' ? { index: G.lessonIdx, done: G.lessonDone, apples: G.walk ? G.walk.apples.size : null, piece: G.walk ? E.sqName(walkPiece()) : null } : null,
     endShown: !$('#endScreen').hidden, points: robotPoints(), wins: Object.assign({}, DATA.wins), squarePx: R.sq,
+    online: G.mode === 'online' ? onlineState() : null,
   };
 }
 window.__brbTest = {
@@ -6933,6 +7323,7 @@ window.__brbTest = {
     if (!m) return Promise.resolve({ ok: false, error: 'illegal' });
     if (G.result) return Promise.resolve({ ok: false, error: 'game over' });
     if (G.mode === 'robot' && G.pos.side !== G.playerSide) return Promise.resolve({ ok: false, error: 'not your turn' });
+    if (G.mode === 'online' && !canAct()) return Promise.resolve({ ok: false, error: 'not your turn' });
     playMove(m, { by: 'user' });
     return waitIdle(!!opts.waitRobot).then(() => waitIdle(!!opts.waitRobot)).then(() => Object.assign({ ok: true }, testState()));
   },
@@ -6957,6 +7348,10 @@ window.__brbTest = {
   lessons: () => LESSONS.map(l => ({ id: l.id, title: l.title })),
   seed(n) { E.setSeed(n); return true; },
   idle: () => waitIdle(true),
+  /** Online matches: state() (seat, game index, my side, names, offers...), inject(pageMessage) as if the page sent it,
+   *  sent() -> every [k, d] this frame sent (oldest first), and act(a) for the online buttons (1 give up, 2 offer a tie,
+   *  3 yes to a tie, 4 no, 5 play again). */
+  online: { state: () => onlineState(), inject(m) { onMatchMessage(m); return onlineState(); }, sent: () => ON.out.map(x => JSON.parse(JSON.stringify(x))), act(a) { onlineAct(a); return onlineState(); } },
   /** Screen position (CSS px inside the game frame) of a square's centre, e.g. 'e2', for real taps and drags. */
   squareCenter(name) {
     const s = E.sqParse(name); if (s < 0) return null;
@@ -6974,6 +7369,6 @@ $('#sideArt').appendChild(kingdomArt(false));
 wire();
 updateMute();
 layout();
-showScreen('title');
+if (MATCH() && MATCH().active) startMatchFrame(); else showScreen('title');
 requestAnimationFrame(frame);
 </script>

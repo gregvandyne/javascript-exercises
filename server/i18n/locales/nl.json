@@ -1643,7 +1643,11 @@
       "close": "Sluiten",
       "playing": "{n} spelen",
       "justNow": "zojuist",
-      "copied": "Gekopieerd!"
+      "copied": "Gekopieerd!",
+      "inviteTitle": "{game} spelen?",
+      "inviteText": "{name} wil {game} met je spelen!",
+      "invitePlay": "We gaan spelen!",
+      "inviteNo": "Nu niet"
     },
     "game": {
       "needSignIn": "Tik eerst op “Speel als gast” of log in.",
@@ -2222,6 +2226,31 @@
       "right": "Het goede antwoord",
       "answer": "Antwoord {n}",
       "saved": "Opgeslagen!"
+    },
+    "match": {
+      "title": "{title} online spelen",
+      "playingNow": "Nu aan het spelen",
+      "family": "Gezin",
+      "invite": "Uitnodigen",
+      "wantsToPlay": "{name} wil spelen!",
+      "play": "Spelen",
+      "invitesForYou": "Uitnodigingen voor jou",
+      "friendsHeading": "Vrienden en gezin",
+      "noFriends": "Je hebt nog geen vrienden om uit te nodigen. Voeg eerst een vriend toe met zijn vriendcode.",
+      "friendsPage": "Naar Vrienden",
+      "guestNoFriends": "Maak een account om vrienden uit te nodigen. Met een code kun je wel spelen.",
+      "codeHeading": "Spelen met een code",
+      "codeHint": "Maak een code en vertel hem aan de andere speler, of typ de code die de ander heeft gemaakt.",
+      "makeCode": "Code maken",
+      "enterCode": "Spelcode",
+      "codePlaceholder": "ABC-DEF",
+      "join": "Meedoen",
+      "typeCode": "Typ eerst de spelcode.",
+      "shareCode": "Jouw spelcode",
+      "shareHint": "Vertel hem aan de andere speler. Die tikt in {title} op Online spelen en typt hem in.",
+      "waitingFor": "Wachten tot {name} ja zegt…",
+      "cancel": "Annuleren",
+      "ended": "Dit online spel is afgelopen."
     }
   },
   "favorites": {
@@ -5173,6 +5202,20 @@
         "wait": "Wacht even en probeer het dan nog eens.",
         "notAllowed": "Alleen de leerkrachten van de klas kunnen dat."
       }
+    }
+  },
+  "match": {
+    "err": {
+      "signIn": "Log in om online te spelen.",
+      "notOnline": "Dit spel kun je niet online spelen.",
+      "notFound": "Die code werkt niet. Check hem en probeer het opnieuw.",
+      "gone": "Die uitnodiging is afgelopen.",
+      "tooMany": "Je hebt te veel online spellen tegelijk. Maak er eerst eentje af.",
+      "codeLength": "Spelcodes hebben 6 letters en cijfers.",
+      "ownCode": "Dat is je eigen code! Vertel hem aan de andere speler.",
+      "notPlaying": "Dit spel is nu niet bezig.",
+      "bad": "Die zet kon niet worden verstuurd.",
+      "full": "Dit spel is te lang om door te gaan."
     }
   }
 }

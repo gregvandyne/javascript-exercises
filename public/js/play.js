@@ -1,6 +1,7 @@
 // Parent side of the game sandbox. Validates every message from the frame (source, origin, shape)
 // and turns allowed ones into server calls. Docs: docs/sdk.md
 import { api, toast, sheet, pageData, refreshLive, tappedJustNow, $, t, esc } from '/js/app.js';
+import { openLobby, startRelay } from '/js/match.js';
 const d = pageData();
 // The game frame waits in a <template> until its 'load' listener is on (below), so its first load is never missed.
 const frame = document.importNode($('#gameframe-tpl').content.firstElementChild, true), stage = $('#stage');
@@ -67,6 +68,7 @@ const TYPES = {
   'brb:fullscreen': m => typeof m.on === 'boolean',
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
   'brb:retry': m => true,
+  'brb:online': m => true,
 };
 export function validMessage(e, frameWin) {
   if (e.source !== frameWin) return null;            // only our game frame
@@ -80,9 +82,14 @@ async function flushSave() {
   saveTimer = null; const data = pendingSave; pendingSave = null; if (!data) return;
   try { await api(`/api/games/${d.gameId}/save`, { method: 'POST', body: { data }, active: playing() }); } catch (err) { if (err.status !== 401) toast(t('js.play.saveFailed'), { bad: true }); }
 }
+// An online match (?match=<id>): the frame hands its private port over with brb:ready; public/js/match.js relays.
+const relay = d.match ? startRelay(d, stage) : null;
 addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
   switch (m.type) {
+    case 'brb:ready': if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); break;
+    // "Play online" in a game that can be played online: the site's own sheet (friends, family, codes).
+    case 'brb:online': if (d.online && !d.match && tappedJustNow()) openLobby(d); break;
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
     case 'brb:score': {
       if (!d.canSave || Date.now() - lastScoreAt < 2000) return; lastScoreAt = Date.now();
