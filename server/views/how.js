@@ -37,9 +37,17 @@ export const STEPS = {
     { n: 's4', slug: 'teachers-student' },
     { n: 's5', slug: 'teachers-gradebook' },
   ],
+  // /teachers/live: a live game from the host's pick to the leaderboard (scripts/how-shots.js --only live).
+  teachersLive: [
+    { n: 's1', slug: 'live-pick' },
+    { n: 's2', slug: 'live-lobby' },
+    { n: 's3', slug: 'live-join' },
+    { n: 's4', slug: 'live-play' },
+    { n: 's5', slug: 'live-results' },
+  ],
 };
 /** The hero picture: a wide screen (desktop capture) and a phone (phone capture), reusing the steps' files. */
-const ART = { parents: { laptop: 'parents-build', phone: 'parents-play' }, teachers: { laptop: 'teachers-gradebook', phone: 'teachers-student' } };
+const ART = { parents: { laptop: 'parents-build', phone: 'parents-play' }, teachers: { laptop: 'teachers-gradebook', phone: 'teachers-student' }, teachersLive: { laptop: 'live-lobby', phone: 'live-play' } };
 
 /** The steps shown on this page for this request. */
 export const howStepList = (req, page) => STEPS[page].filter(s => (!s.when || s.when(req)) && have(s.slug));

@@ -5,6 +5,8 @@
 // that are live and public (visibleWhere(null), source='seed', owned by the official account), /safety, /parents and
 // its guides, the legal pages, /sdk/ and, once paid plans are public, /plans. Never a profile, a class, or a game a child made.
 import { Router } from 'express';
+import fs from 'node:fs';
+import { liveOn } from '../services/classlive-sessions.js';
 import { config } from '../config.js';
 import { q } from '../db.js';
 import { visibleWhere } from '../services/games.js';
@@ -45,6 +47,7 @@ export function sitemapEntries() {
   const out = [
     { path: '/', langs: langsWithKey('home.intro.heading'), lastmod: newest ? day(newest) : null, images: ['/og/site.jpg'] },
     { path: '/teachers', langs: langsWithKey('teachers.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] },
+    ...(liveOn() ? [{ path: '/teachers/live', langs: langsWithKey('teachersLive.h1'), lastmod: CONTENT_UPDATED, images: [fs.existsSync(new URL('../../public/og/teachers-live.jpg', import.meta.url)) ? '/og/teachers-live.jpg' : '/og/teachers.jpg'] }] : []),
     { path: '/learn', langs: langsWithKey('learn.index.h1'), lastmod: CONTENT_UPDATED },
     ...HUBS.map(h => ({ path: `/learn/${h.slug}`, langs: langsWithKey(`learn.hubs.${h.key}.h1`), lastmod: CONTENT_UPDATED })),
     ...list.map(g => {
