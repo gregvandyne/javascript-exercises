@@ -1,0 +1,7456 @@
+{
+ "about": "Would You Rather dilemmas (English source). Each item: id (never reuse or renumber: saved progress uses it), cat, a/b {text, tags}. Tags drive the personality card and are never translated. Translators: copy this file to <lang>.json and translate only the text fields, then run node scripts/wyr-bank.js.",
+ "items": [
+  {
+   "id": "animals-1",
+   "cat": "animals",
+   "a": {
+    "text": "mit Tieren sprechen können",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "jede Sprache der Welt sprechen",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "animals-2",
+   "cat": "animals",
+   "a": {
+    "text": "einen Drachen so klein wie eine Katze haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine Katze so groß wie ein Pferd haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-3",
+   "cat": "animals",
+   "a": {
+    "text": "auf einem Delfin zur Schule reiten",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "auf einer Giraffe zur Schule reiten",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-4",
+   "cat": "animals",
+   "a": {
+    "text": "einen Schwanz wie ein Affe haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Ohren wie ein Hase haben",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-5",
+   "cat": "animals",
+   "a": {
+    "text": "einen Tag lang ein Gepard sein",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen Tag lang eine Eule sein",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-6",
+   "cat": "animals",
+   "a": {
+    "text": "mit Walen schwimmen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "mit Adlern fliegen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-7",
+   "cat": "animals",
+   "a": {
+    "text": "einen sprechenden Papagei haben",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen tanzenden Hund haben",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-8",
+   "cat": "animals",
+   "a": {
+    "text": "mit Eichhörnchen im Baumhaus wohnen",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "mit Robben auf einem Boot wohnen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-9",
+   "cat": "animals",
+   "a": {
+    "text": "so stark wie eine Ameise sein",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "so schlau wie ein Krake sein",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-10",
+   "cat": "animals",
+   "a": {
+    "text": "einen Pinguin als Haustier haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen Panda als Haustier haben",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-11",
+   "cat": "animals",
+   "a": {
+    "text": "ein Einhorn haben",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen Phönix haben",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-12",
+   "cat": "animals",
+   "a": {
+    "text": "unter Wasser atmen wie ein Fisch",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "durch die Luft gleiten wie ein Flughörnchen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-13",
+   "cat": "animals",
+   "a": {
+    "text": "am Strand auf Schildkrötenbabys aufpassen",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "im Wald auf Eulenbabys aufpassen",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-14",
+   "cat": "animals",
+   "a": {
+    "text": "ein Pferd haben, das fliegen kann",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen Hund haben, der sprechen kann",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-15",
+   "cat": "animals",
+   "a": {
+    "text": "eine fleißige Biene sein",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "ein verschlafenes Faultier sein",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-16",
+   "cat": "animals",
+   "a": {
+    "text": "einen Panzer wie eine Schildkröte haben",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Stacheln wie ein Igel haben",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-17",
+   "cat": "animals",
+   "a": {
+    "text": "hören wie eine Fledermaus",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "sehen wie ein Falke",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-18",
+   "cat": "animals",
+   "a": {
+    "text": "ein Haustier haben, das nie groß wird",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ein Haustier haben, das so groß wie ein Bus wird",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-19",
+   "cat": "animals",
+   "a": {
+    "text": "mit einem Bären befreundet sein",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "mit einem Fuchs befreundet sein",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-20",
+   "cat": "animals",
+   "a": {
+    "text": "in einem Nest schlafen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "in einem Erdbau schlafen",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-21",
+   "cat": "animals",
+   "a": {
+    "text": "eine Katze haben, die zaubern kann",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen Hamster haben, der singen kann",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-22",
+   "cat": "animals",
+   "a": {
+    "text": "ein Zuhause für verlorene Welpen leiten",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ein Zuhause für verlorene Kätzchen leiten",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-23",
+   "cat": "animals",
+   "a": {
+    "text": "ein Pinguin im Schnee sein",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "ein Flamingo in der Sonne sein",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-24",
+   "cat": "animals",
+   "a": {
+    "text": "Streifen wie ein Zebra haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Flecken wie ein Leopard haben",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "animals-25",
+   "cat": "animals",
+   "a": {
+    "text": "einen Zoo besuchen, wo die Tiere dich angucken",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einen Hof besuchen, wo die Tiere zurückreden",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-26",
+   "cat": "animals",
+   "a": {
+    "text": "mit einer Eule die Sterne zählen",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "mit einem Maulwurf den ganzen Tag Tunnel graben",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-27",
+   "cat": "animals",
+   "a": {
+    "text": "einen langen Hals wie eine Giraffe haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen Rüssel wie ein Elefant haben",
+    "tags": [
+     "animal",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-28",
+   "cat": "animals",
+   "a": {
+    "text": "die Farbe wechseln wie ein Chamäleon",
+    "tags": [
+     "make",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "leuchten wie ein Glühwürmchen",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-29",
+   "cat": "animals",
+   "a": {
+    "text": "einen Goldfisch haben, der pfeifen kann",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "eine Schnecke haben, die Rennen gewinnt",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-30",
+   "cat": "animals",
+   "a": {
+    "text": "ein Elefantenbaby versorgen",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ein Kängurubaby versorgen",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-31",
+   "cat": "animals",
+   "a": {
+    "text": "ein Löwe mit lautem Gebrüll sein",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "eine Katze mit leisem Schnurren sein",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-32",
+   "cat": "animals",
+   "a": {
+    "text": "mit Meeresschildkröten im Meer schwimmen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mit Eisbärbabys im Schnee spielen",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-33",
+   "cat": "animals",
+   "a": {
+    "text": "einen Kraken haben, der im Haushalt hilft",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen Affen haben, der Witze erzählt",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-34",
+   "cat": "animals",
+   "a": {
+    "text": "von Vogelgesang am Fenster aufwachen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "von einem Welpen wachgeschleckt werden",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-35",
+   "cat": "animals",
+   "a": {
+    "text": "ein berühmter Tierarzt sein",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ein berühmter Tierforscher sein",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-36",
+   "cat": "animals",
+   "a": {
+    "text": "ein Haustier haben, das im Dunkeln leuchtet",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ein Haustier haben, das unsichtbar werden kann",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-37",
+   "cat": "animals",
+   "a": {
+    "text": "einen Tag als Ameise im Ameisenhaufen leben",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen Tag als Biene im Bienenstock leben",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-38",
+   "cat": "animals",
+   "a": {
+    "text": "so flink wie ein Kolibri sein",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "so lange leben wie eine Schildkröte",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "food-1",
+   "cat": "food",
+   "a": {
+    "text": "für immer nur Süßes essen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "für immer nur Salziges essen",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-2",
+   "cat": "food",
+   "a": {
+    "text": "einen Fluss aus Schokolade haben",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen Wasserfall aus Limonade haben",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-3",
+   "cat": "food",
+   "a": {
+    "text": "Pizza zum Frühstück essen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Pfannkuchen zum Abendessen essen",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-4",
+   "cat": "food",
+   "a": {
+    "text": "nie wieder Eis essen",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "nie wieder Pizza essen",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-5",
+   "cat": "food",
+   "a": {
+    "text": "einen Kühlschrank haben, der alles zaubert",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "einen Garten haben, in dem jedes Obst wächst",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "food-6",
+   "cat": "food",
+   "a": {
+    "text": "ein berühmter Koch sein",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ein berühmter Essenstester sein",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-7",
+   "cat": "food",
+   "a": {
+    "text": "einen Keks so groß wie ein Fahrrad essen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "hundert winzige Kekse essen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-8",
+   "cat": "food",
+   "a": {
+    "text": "in einer Burg frühstücken",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "auf einem Berggipfel frühstücken",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-9",
+   "cat": "food",
+   "a": {
+    "text": "das größte Sandwich der Welt machen",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "die höchste Torte der Welt backen",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-10",
+   "cat": "food",
+   "a": {
+    "text": "nur noch Milch trinken",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "nur noch Orangensaft trinken",
+    "tags": [
+     "food",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "food-11",
+   "cat": "food",
+   "a": {
+    "text": "Spaghetti mit den Händen essen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Suppe mit der Gabel essen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-12",
+   "cat": "food",
+   "a": {
+    "text": "einen Süßigkeitenladen haben",
+    "tags": [
+     "food",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "eine Bäckerei haben",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-13",
+   "cat": "food",
+   "a": {
+    "text": "jeden Tag etwas Neues probieren",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag dein Lieblingsessen essen",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-14",
+   "cat": "food",
+   "a": {
+    "text": "eine Popcornmaschine im Zimmer haben",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine Smoothie-Maschine im Zimmer haben",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-15",
+   "cat": "food",
+   "a": {
+    "text": "eine Woche lang nur Grünes essen",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "eine Woche lang nur Oranges essen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-16",
+   "cat": "food",
+   "a": {
+    "text": "für die ganze Familie kochen",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "für deinen besten Freund einen Kuchen backen",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-17",
+   "cat": "food",
+   "a": {
+    "text": "eine Obstschale haben, die nie leer wird",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "eine Tüte Chips haben, die nie leer wird",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-18",
+   "cat": "food",
+   "a": {
+    "text": "am Strand picknicken",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "im verschneiten Wald picknicken",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-19",
+   "cat": "food",
+   "a": {
+    "text": "Eis essen, das nie schmilzt",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Pizza essen, die nie kalt wird",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-20",
+   "cat": "food",
+   "a": {
+    "text": "Farben schmecken können",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Musik riechen können",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-21",
+   "cat": "food",
+   "a": {
+    "text": "mit deinen Kuscheltieren Teeparty feiern",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mit deinen Freunden grillen",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-22",
+   "cat": "food",
+   "a": {
+    "text": "ein Essen von einem Roboter gekocht bekommen",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ein Essen von einem König gekocht bekommen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-23",
+   "cat": "food",
+   "a": {
+    "text": "Riesen-Erdbeeren züchten",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Riesen-Kürbisse züchten",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-24",
+   "cat": "food",
+   "a": {
+    "text": "nur mit Stäbchen essen",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "nur mit einem Löffel essen",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-25",
+   "cat": "food",
+   "a": {
+    "text": "auf allem Streusel haben",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "auf allem Käse haben",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-26",
+   "cat": "food",
+   "a": {
+    "text": "jede Woche Essen aus einem neuen Land probieren",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ein Gericht perfekt kochen lernen",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-27",
+   "cat": "food",
+   "a": {
+    "text": "für immer gratis Pfannkuchen bekommen",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "für immer gratis Tacos bekommen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-28",
+   "cat": "food",
+   "a": {
+    "text": "eine Küche in deinem Baumhaus haben",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "eine Küche auf einem Boot haben",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-29",
+   "cat": "food",
+   "a": {
+    "text": "jeden Tag im Bett frühstücken",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "jeden Abend unter den Sternen essen",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-30",
+   "cat": "food",
+   "a": {
+    "text": "einen Lolli haben, der den Geschmack wechselt",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Kaugummi haben, der nie seinen Geschmack verliert",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-31",
+   "cat": "food",
+   "a": {
+    "text": "Jury bei einem Kuchenwettbewerb sein",
+    "tags": [
+     "food",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einen Kuchenwettbewerb gewinnen",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-32",
+   "cat": "food",
+   "a": {
+    "text": "deine eigene Eissorte erfinden",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "deinen eigenen Pizzabelag erfinden",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-33",
+   "cat": "food",
+   "a": {
+    "text": "ein ganzes Essen nur aus Suppe essen",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ein ganzes Essen nur aus Sandwiches essen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-34",
+   "cat": "food",
+   "a": {
+    "text": "einen Kakaobrunnen haben",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Fruchtpunsch-Brunnen haben",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-35",
+   "cat": "food",
+   "a": {
+    "text": "nur runde Sachen essen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "nur eckige Sachen essen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-36",
+   "cat": "food",
+   "a": {
+    "text": "einen Freund haben, der für dich backt",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "einen Freund haben, der für dich kocht",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-37",
+   "cat": "food",
+   "a": {
+    "text": "neben einer Bäckerei wohnen",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "neben einer Eisdiele wohnen",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-38",
+   "cat": "food",
+   "a": {
+    "text": "ein geheimes Rezept in einem alten Buch finden",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "einen ganz neuen Snack erfinden",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "powers-1",
+   "cat": "powers",
+   "a": {
+    "text": "fliegen können",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "unsichtbar sein",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-2",
+   "cat": "powers",
+   "a": {
+    "text": "Gedanken lesen",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Dinge mit Gedanken bewegen",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-3",
+   "cat": "powers",
+   "a": {
+    "text": "superschnell sein",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "superstark sein",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-4",
+   "cat": "powers",
+   "a": {
+    "text": "dich überallhin beamen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "die Zeit anhalten",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-5",
+   "cat": "powers",
+   "a": {
+    "text": "unter Wasser atmen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "durch Wände gehen",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-6",
+   "cat": "powers",
+   "a": {
+    "text": "das Wetter steuern",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Pflanzen mit einem Winken wachsen lassen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-7",
+   "cat": "powers",
+   "a": {
+    "text": "so klein wie eine Ameise werden",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "so groß wie ein Hochhaus werden",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-8",
+   "cat": "powers",
+   "a": {
+    "text": "mit Pflanzen sprechen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mit Maschinen sprechen",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-9",
+   "cat": "powers",
+   "a": {
+    "text": "ein Supergehör haben",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Superaugen haben",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-10",
+   "cat": "powers",
+   "a": {
+    "text": "jeden Kratzer und blauen Fleck heilen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "jeden zum Lächeln bringen",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-11",
+   "cat": "powers",
+   "a": {
+    "text": "so hoch wie ein Haus springen",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "so schnell wie ein Auto rennen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-12",
+   "cat": "powers",
+   "a": {
+    "text": "dich in jedes Tier verwandeln",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "dich in jeden Gegenstand verwandeln",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-13",
+   "cat": "powers",
+   "a": {
+    "text": "es schneien lassen, wann du willst",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "die Sonne scheinen lassen, wann du willst",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-14",
+   "cat": "powers",
+   "a": {
+    "text": "einen Rucksack haben, in den alles passt",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Schuhe haben, die dich überallhin tragen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-15",
+   "cat": "powers",
+   "a": {
+    "text": "nie schlafen müssen",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "nie essen müssen",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-16",
+   "cat": "powers",
+   "a": {
+    "text": "im Dunkeln leuchten",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "die Haarfarbe mit Gedanken ändern",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-17",
+   "cat": "powers",
+   "a": {
+    "text": "jedes Können durch Zuschauen lernen",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "jede Sprache in einer Minute lernen",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "powers-18",
+   "cat": "powers",
+   "a": {
+    "text": "Dinge mit einer Berührung einfrieren",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Dinge mit einer Berührung aufwärmen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-19",
+   "cat": "powers",
+   "a": {
+    "text": "dein Zimmer mit einem Fingerschnipp aufräumen",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "deine Hausaufgaben mit einem Fingerschnipp erledigen",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-20",
+   "cat": "powers",
+   "a": {
+    "text": "eine Kraft haben, die anderen hilft",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "eine Kraft haben, mit der du die Welt erkundest",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-21",
+   "cat": "powers",
+   "a": {
+    "text": "überall, wo du gehst, Blumen wachsen lassen",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "überall, wo du gehst, Musik spielen lassen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-22",
+   "cat": "powers",
+   "a": {
+    "text": "dich dehnen wie Gummi",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "hüpfen wie ein Ball",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-23",
+   "cat": "powers",
+   "a": {
+    "text": "im Dunkeln sehen",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "durch Wände sehen",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-24",
+   "cat": "powers",
+   "a": {
+    "text": "mit deinem zukünftigen Ich sprechen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mit deinem jüngeren Ich sprechen",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-25",
+   "cat": "powers",
+   "a": {
+    "text": "einen Stift haben, der echte Dinge malt",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einen Pinsel haben, der echte Orte malt",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-26",
+   "cat": "powers",
+   "a": {
+    "text": "winzig werden, wenn du schüchtern bist",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "riesig werden, wenn du mutig bist",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-27",
+   "cat": "powers",
+   "a": {
+    "text": "nie frieren",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "nie müde sein",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-28",
+   "cat": "powers",
+   "a": {
+    "text": "einen Regenbogen herbeirufen, wann du willst",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "eine sanfte Brise herbeirufen, wann du willst",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-29",
+   "cat": "powers",
+   "a": {
+    "text": "wissen, was dein Haustier denkt",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "wissen, was deine Lehrkraft denkt",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-30",
+   "cat": "powers",
+   "a": {
+    "text": "am schnellsten auf der Welt schwimmen",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "am schnellsten auf der Welt klettern",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-31",
+   "cat": "powers",
+   "a": {
+    "text": "alles reparieren, was kaputtgeht",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "alles bauen, was du dir vorstellst",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "powers-32",
+   "cat": "powers",
+   "a": {
+    "text": "eine Wolke haben, auf der du reiten kannst",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen fliegenden Teppich haben",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-33",
+   "cat": "powers",
+   "a": {
+    "text": "die Schwerkraft steuern",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "das Licht steuern",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-34",
+   "cat": "powers",
+   "a": {
+    "text": "einen Superheldenumhang haben",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine Superheldenmaske haben",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-35",
+   "cat": "powers",
+   "a": {
+    "text": "einen Sidekick haben",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "selbst der Sidekick sein",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-36",
+   "cat": "powers",
+   "a": {
+    "text": "jeden zum Lachen bringen",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "jeden ruhig machen",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-37",
+   "cat": "powers",
+   "a": {
+    "text": "jeden Tag einen kleinen Fehler rückgängig machen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag eine Stunde extra bekommen",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-38",
+   "cat": "powers",
+   "a": {
+    "text": "eine Kraft haben, die nur montags wirkt",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "eine Kraft haben, die nur bei Regen wirkt",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-1",
+   "cat": "school",
+   "a": {
+    "text": "in einer Burg zur Schule gehen",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "in einem Raumschiff zur Schule gehen",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-2",
+   "cat": "school",
+   "a": {
+    "text": "einen Roboter als Lehrer haben",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einen Zauberer als Lehrer haben",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-3",
+   "cat": "school",
+   "a": {
+    "text": "nur durch Spiele lernen",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "nur durch Lieder lernen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-4",
+   "cat": "school",
+   "a": {
+    "text": "längere Sommerferien haben",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "längere Winterferien haben",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-5",
+   "cat": "school",
+   "a": {
+    "text": "mit einem Zaubertaschenrechner rechnen",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "mit einem Zauberstift Diktate schreiben",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-6",
+   "cat": "school",
+   "a": {
+    "text": "jeden Tag auf dem Schulhof Mittag essen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag in einem Garten Mittag essen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-7",
+   "cat": "school",
+   "a": {
+    "text": "der beste Freund des Klassentiers sein",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "die Klassenbücherei leiten",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-8",
+   "cat": "school",
+   "a": {
+    "text": "einen Schulausflug zum Mond machen",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "einen Schulausflug unters Meer machen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-9",
+   "cat": "school",
+   "a": {
+    "text": "eine Rutsche statt einer Treppe haben",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "in jedem Klassenzimmer ein Trampolin haben",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-10",
+   "cat": "school",
+   "a": {
+    "text": "ein Buch schreiben",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ein riesiges Wandbild malen",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-11",
+   "cat": "school",
+   "a": {
+    "text": "beim Schultheater mitspielen",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "im Schulchor singen",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-12",
+   "cat": "school",
+   "a": {
+    "text": "ein Spiel programmieren lernen",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "einen Roboter bauen lernen",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-13",
+   "cat": "school",
+   "a": {
+    "text": "doppelt so lange Pause haben",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "doppelt so lange Mittagspause haben",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-14",
+   "cat": "school",
+   "a": {
+    "text": "neben deinem besten Freund sitzen",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "am Fenster sitzen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-15",
+   "cat": "school",
+   "a": {
+    "text": "jede Stunde draußen haben",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "jede Stunde in einer gemütlichen Bücherei haben",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-16",
+   "cat": "school",
+   "a": {
+    "text": "jeden Tag ein Buch lesen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag ein Bild malen",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-17",
+   "cat": "school",
+   "a": {
+    "text": "die Forschermesse der Schule leiten",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "die Kunstausstellung der Schule leiten",
+    "tags": [
+     "make",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-18",
+   "cat": "school",
+   "a": {
+    "text": "einen sprechenden Rucksack haben",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ein Federmäppchen haben, das sich selbst aufräumt",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-19",
+   "cat": "school",
+   "a": {
+    "text": "ein ganzes Jahr über Dinosaurier lernen",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "ein ganzes Jahr über das Weltall lernen",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-20",
+   "cat": "school",
+   "a": {
+    "text": "Hausaufgaben als Schatzsuche bekommen",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Hausaufgaben als Rätsel bekommen",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-21",
+   "cat": "school",
+   "a": {
+    "text": "der Klassenhelfer sein",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "der Klassenerfinder sein",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-22",
+   "cat": "school",
+   "a": {
+    "text": "später mit der Schule anfangen",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "früher mit der Schule aufhören",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-23",
+   "cat": "school",
+   "a": {
+    "text": "ein Lama als Klassentier haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen Papagei als Klassentier haben",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-24",
+   "cat": "school",
+   "a": {
+    "text": "jede Stunde mit einem Spiel beginnen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "jede Stunde mit einer Geschichte beginnen",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-25",
+   "cat": "school",
+   "a": {
+    "text": "ein Klassenzimmer im Baumhaus haben",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ein Klassenzimmer im U-Boot haben",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-26",
+   "cat": "school",
+   "a": {
+    "text": "einen Tag lang deine Klasse unterrichten",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einen Tag lang die ganze Schule leiten",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-27",
+   "cat": "school",
+   "a": {
+    "text": "einen Roboter haben, der deine Tasche trägt",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Hund haben, der dich zur Schule bringt",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-28",
+   "cat": "school",
+   "a": {
+    "text": "eine neue Sprache lernen",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ein neues Instrument lernen",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-29",
+   "cat": "school",
+   "a": {
+    "text": "jede Woche ein Sportfest haben",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "jede Woche einen Kunsttag haben",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-30",
+   "cat": "school",
+   "a": {
+    "text": "am besten in Rechtschreibung sein",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "am besten in Mathe sein",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-31",
+   "cat": "school",
+   "a": {
+    "text": "eine Rede vor der ganzen Schule halten",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ein Video für die ganze Schule drehen",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-32",
+   "cat": "school",
+   "a": {
+    "text": "eine riesige Tafel zum Malen haben",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine riesige Puzzlewand haben",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-33",
+   "cat": "school",
+   "a": {
+    "text": "nach dem Mittagessen ein Nickerchen machen",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "nach dem Mittagessen eine Tanzparty feiern",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-34",
+   "cat": "school",
+   "a": {
+    "text": "Tische haben, die schweben",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Stühle haben, die sich drehen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-35",
+   "cat": "school",
+   "a": {
+    "text": "von einem berühmten Forscher lernen",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "von einem berühmten Künstler lernen",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-36",
+   "cat": "school",
+   "a": {
+    "text": "im Schulgarten Gemüse anbauen",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "das Aquarium der Schule pflegen",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "school-37",
+   "cat": "school",
+   "a": {
+    "text": "eine ruhige Leseecke haben",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "eine laute Bauecke haben",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-1",
+   "cat": "travel",
+   "a": {
+    "text": "einen Dschungel erkunden",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "eine Wüste erkunden",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-2",
+   "cat": "travel",
+   "a": {
+    "text": "den Nordpol besuchen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "eine tropische Insel besuchen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-3",
+   "cat": "travel",
+   "a": {
+    "text": "mit dem Heißluftballon reisen",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "mit dem U-Boot reisen",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-4",
+   "cat": "travel",
+   "a": {
+    "text": "einen Berg besteigen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "zu einem Korallenriff tauchen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-5",
+   "cat": "travel",
+   "a": {
+    "text": "auf Safari gehen",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "eine Kreuzfahrt machen",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-6",
+   "cat": "travel",
+   "a": {
+    "text": "im Zelt unter den Sternen schlafen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "in einer Burg schlafen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-7",
+   "cat": "travel",
+   "a": {
+    "text": "einen versteckten Schatz finden",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "eine verlorene Stadt finden",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-8",
+   "cat": "travel",
+   "a": {
+    "text": "auf einem Kamel reiten",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "auf einem Elefanten reiten",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-9",
+   "cat": "travel",
+   "a": {
+    "text": "in die Vergangenheit reisen",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "in die Zukunft reisen",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-10",
+   "cat": "travel",
+   "a": {
+    "text": "jedes Land der Welt besuchen",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "jeden Planeten im Sonnensystem besuchen",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-11",
+   "cat": "travel",
+   "a": {
+    "text": "mit deiner Familie einen Roadtrip machen",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "mit deinen Freunden Zug fahren",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-12",
+   "cat": "travel",
+   "a": {
+    "text": "eine Höhle voller Kristalle erkunden",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ein altes Piratenschiff erkunden",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-13",
+   "cat": "travel",
+   "a": {
+    "text": "eine Woche in einem Iglu wohnen",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "eine Woche in einem Wüstenzelt wohnen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-14",
+   "cat": "travel",
+   "a": {
+    "text": "in den Bergen Schlitten fahren",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "am Strand surfen",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-15",
+   "cat": "travel",
+   "a": {
+    "text": "eine Karte haben, die überallhin führt",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "einen Schlüssel haben, der jede Tür öffnet",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-16",
+   "cat": "travel",
+   "a": {
+    "text": "über eine wackelige Hängebrücke gehen",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "hoch oben über einen Glasboden laufen",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-17",
+   "cat": "travel",
+   "a": {
+    "text": "Polarlichter sehen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Vulkan aus der Ferne sehen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-18",
+   "cat": "travel",
+   "a": {
+    "text": "nachts ein Museum besuchen",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "nachts einen Freizeitpark besuchen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "travel-19",
+   "cat": "travel",
+   "a": {
+    "text": "mit dem Kanu einen Fluss hinunterpaddeln",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mit der Seilrutsche durch die Bäume sausen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-20",
+   "cat": "travel",
+   "a": {
+    "text": "ein berühmter Entdecker sein",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ein berühmter Kartenzeichner sein",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-21",
+   "cat": "travel",
+   "a": {
+    "text": "in einem Hubschrauber fliegen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "auf einem Piratenschiff segeln",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-22",
+   "cat": "travel",
+   "a": {
+    "text": "im Wald zelten",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "am Strand zelten",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-23",
+   "cat": "travel",
+   "a": {
+    "text": "„Hallo“ in fünfzig Sprachen lernen",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "fünfzig verschiedene Tänze lernen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-24",
+   "cat": "travel",
+   "a": {
+    "text": "eine Tür zu einem geheimen Garten finden",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "eine Tür zu einer geheimen Bibliothek finden",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-25",
+   "cat": "travel",
+   "a": {
+    "text": "eine Stadt voller Wolkenkratzer besuchen",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ein Dorf aus winzigen Häusern besuchen",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-26",
+   "cat": "travel",
+   "a": {
+    "text": "einen Tag auf einem Bauernhof verbringen",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "einen Tag in einem Leuchtturm verbringen",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-27",
+   "cat": "travel",
+   "a": {
+    "text": "mit einer Karte auf Abenteuer gehen",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ohne Karte auf Abenteuer gehen",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-28",
+   "cat": "travel",
+   "a": {
+    "text": "in einem Riesenballon um die Welt reisen",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "mit einem Superschnellzug um die Welt reisen",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-29",
+   "cat": "travel",
+   "a": {
+    "text": "eine neue Insel entdecken",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "eine neue Tierart entdecken",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-30",
+   "cat": "travel",
+   "a": {
+    "text": "auf ein Musikfestival gehen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "auf ein Laternenfest gehen",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-31",
+   "cat": "travel",
+   "a": {
+    "text": "den größten Wasserfall besuchen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "den höchsten Baum besuchen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-32",
+   "cat": "travel",
+   "a": {
+    "text": "auf einem Hausboot wohnen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "in einer Berghütte wohnen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-33",
+   "cat": "travel",
+   "a": {
+    "text": "mit einer Rakete verreisen",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "auf einer Riesenschildkröte verreisen",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-34",
+   "cat": "travel",
+   "a": {
+    "text": "mit bunten Fischen schnorcheln",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "mit Bergziegen wandern",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-35",
+   "cat": "travel",
+   "a": {
+    "text": "mit einer kleinen Tasche ein Jahr lang reisen",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "auf jede Reise dein ganzes Zimmer mitnehmen",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-36",
+   "cat": "travel",
+   "a": {
+    "text": "auf einer langen Reise eine Wüste durchqueren",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "auf einer langen Reise das Eis durchqueren",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-37",
+   "cat": "travel",
+   "a": {
+    "text": "einmal um eine ganze Insel radeln",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "einmal ganz um einen See wandern",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-38",
+   "cat": "travel",
+   "a": {
+    "text": "Reiseführer für andere sein",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "mit einem Reiseführer unterwegs sein",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-1",
+   "cat": "silly",
+   "a": {
+    "text": "Spaghetti als Haare haben",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Marshmallows als Zehen haben",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-2",
+   "cat": "silly",
+   "a": {
+    "text": "Glitzer niesen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Seifenblasen hicksen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-3",
+   "cat": "silly",
+   "a": {
+    "text": "einen Tag lang wie ein Krebs laufen",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen Tag lang wie ein Frosch hüpfen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-4",
+   "cat": "silly",
+   "a": {
+    "text": "nur noch in Reimen sprechen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "nur noch singend sprechen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-5",
+   "cat": "silly",
+   "a": {
+    "text": "eine Nase haben, die hupt",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Ohren haben, die pfeifen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-6",
+   "cat": "silly",
+   "a": {
+    "text": "Socken an den Händen tragen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Fäustlinge an den Füßen tragen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-7",
+   "cat": "silly",
+   "a": {
+    "text": "eine Stimme wie eine Ente haben",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ein Lachen wie ein Esel haben",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-8",
+   "cat": "silly",
+   "a": {
+    "text": "in einem Haus aus Wackelpudding wohnen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "in einem Haus aus Kissen wohnen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-9",
+   "cat": "silly",
+   "a": {
+    "text": "einen Haustier-Stein haben, der Witze erzählt",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ein Haustier-Kissen haben, das dich umarmt",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "silly-10",
+   "cat": "silly",
+   "a": {
+    "text": "einen Regenbogen rülpsen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Konfetti niesen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-11",
+   "cat": "silly",
+   "a": {
+    "text": "Augenbrauen haben, die tanzen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Haare haben, die mit deiner Laune die Farbe wechseln",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-12",
+   "cat": "silly",
+   "a": {
+    "text": "auf einer Riesenbanane reiten",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "auf einer riesigen Quietscheente reiten",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-13",
+   "cat": "silly",
+   "a": {
+    "text": "einen Hut tragen, der immer eine Torte ist",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Schuhe tragen, die ein Lied quietschen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-14",
+   "cat": "silly",
+   "a": {
+    "text": "eine Giraffe als Sofa haben",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "einen Wal als Badewanne haben",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-15",
+   "cat": "silly",
+   "a": {
+    "text": "nur noch rückwärts laufen",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "nur noch auf Zehenspitzen laufen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-16",
+   "cat": "silly",
+   "a": {
+    "text": "einen Mini-Drachen in der Hosentasche haben",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "einen Mini-Elefanten auf der Schulter haben",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-17",
+   "cat": "silly",
+   "a": {
+    "text": "mit Roboterstimme sprechen",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "mit piepsiger Mäusestimme sprechen",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-18",
+   "cat": "silly",
+   "a": {
+    "text": "alles, was du anfasst, in Wackelpudding verwandeln",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "alles, was du anfasst, in Federn verwandeln",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-19",
+   "cat": "silly",
+   "a": {
+    "text": "ein Trampolin als Bett haben",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "ein Bällebad als Badewanne haben",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-20",
+   "cat": "silly",
+   "a": {
+    "text": "jeden Tag einen Schlafanzug tragen",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag ein Superheldenkostüm tragen",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-21",
+   "cat": "silly",
+   "a": {
+    "text": "einen Schnurrbart aus Zuckerwatte haben",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "einen Bart aus Seifenblasen haben",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-22",
+   "cat": "silly",
+   "a": {
+    "text": "jedes Mal tanzen, wenn eine Glocke klingelt",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "jedes Mal singen, wenn du eine Katze siehst",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-23",
+   "cat": "silly",
+   "a": {
+    "text": "von einer Blaskapelle verfolgt werden",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "von einer Entenschar verfolgt werden",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-24",
+   "cat": "silly",
+   "a": {
+    "text": "Toast haben, der beim Toasten singt",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "einen Kühlschrank haben, der Witze erzählt",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "silly-25",
+   "cat": "silly",
+   "a": {
+    "text": "Füße mit einem Känguru tauschen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Ohren mit einem Elefanten tauschen",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-26",
+   "cat": "silly",
+   "a": {
+    "text": "in einem riesigen Schuh wohnen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "in einer riesigen Teekanne wohnen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-27",
+   "cat": "silly",
+   "a": {
+    "text": "in Vanillepudding baden",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "in Schaum baden, der höher ist als du",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-28",
+   "cat": "silly",
+   "a": {
+    "text": "überallhin hüpfen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "überallhin rollen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-29",
+   "cat": "silly",
+   "a": {
+    "text": "ein Lachen haben, das Blumen blühen lässt",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "ein Gähnen haben, das es schneien lässt",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-30",
+   "cat": "silly",
+   "a": {
+    "text": "einen Mantel aus Blättern tragen",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen Mantel aus Federn tragen",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-31",
+   "cat": "silly",
+   "a": {
+    "text": "einen Hund haben, der miaut",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "eine Katze haben, die bellt",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-32",
+   "cat": "silly",
+   "a": {
+    "text": "mit den Füßen klatschen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "mit den Ohren winken",
+    "tags": [
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-33",
+   "cat": "silly",
+   "a": {
+    "text": "Blumen in deinen Haaren wachsen lassen",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Weintrauben an deinen Ellbogen wachsen lassen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-34",
+   "cat": "silly",
+   "a": {
+    "text": "eine sprechende Zahnbürste haben",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "eine singende Haarbürste haben",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-35",
+   "cat": "silly",
+   "a": {
+    "text": "eine Kissenburg so groß wie ein Haus bauen",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine Sandburg so groß wie ein Haus bauen",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "silly-36",
+   "cat": "silly",
+   "a": {
+    "text": "nur mit einem Riesenlöffel essen",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "nur mit einem Ringelstrohhalm trinken",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-37",
+   "cat": "silly",
+   "a": {
+    "text": "eine Minute lang ein wackeliger Pudding sein",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "eine Minute lang ein Flummi sein",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-38",
+   "cat": "silly",
+   "a": {
+    "text": "einen Schluckauf haben, der wie eine Trompete klingt",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ein Niesen haben, das wie eine Trommel klingt",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-1",
+   "cat": "sports",
+   "a": {
+    "text": "das Siegtor schießen",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "den entscheidenden Ball halten",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "sports-2",
+   "cat": "sports",
+   "a": {
+    "text": "ein berühmter Fußballstar sein",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ein berühmter Turner sein",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-3",
+   "cat": "sports",
+   "a": {
+    "text": "ein Wettrennen gewinnen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ein Wettschwimmen gewinnen",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-4",
+   "cat": "sports",
+   "a": {
+    "text": "auf dem Mond Basketball spielen",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "unter Wasser Tennis spielen",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-5",
+   "cat": "sports",
+   "a": {
+    "text": "Skateboardfahren lernen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Rollschuhfahren lernen",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-6",
+   "cat": "sports",
+   "a": {
+    "text": "bei einem Pferderennen reiten",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "bei einem Radrennen fahren",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-7",
+   "cat": "sports",
+   "a": {
+    "text": "mit deinen Freunden in einem Team sein",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ein Team kleiner Kinder trainieren",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-8",
+   "cat": "sports",
+   "a": {
+    "text": "eine Kletterwand hochklettern",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "quer durch einen See schwimmen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-9",
+   "cat": "sports",
+   "a": {
+    "text": "den ganzen Tag ein Brettspiel spielen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "den ganzen Tag ein Ballspiel spielen",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-10",
+   "cat": "sports",
+   "a": {
+    "text": "Schachmeister sein",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Tischtennismeister sein",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-11",
+   "cat": "sports",
+   "a": {
+    "text": "Schlittschuh laufen",
+    "tags": [
+     "fast",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Ski fahren",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-12",
+   "cat": "sports",
+   "a": {
+    "text": "ein perfektes Rad schlagen",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine ganze Minute Handstand machen",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-13",
+   "cat": "sports",
+   "a": {
+    "text": "eine Medaille gewinnen",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "einen Pokal gewinnen",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-14",
+   "cat": "sports",
+   "a": {
+    "text": "in einer Burg Verstecken spielen",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "in einem Riesenlabyrinth Fangen spielen",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-15",
+   "cat": "sports",
+   "a": {
+    "text": "super tanzen können",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "super Kampfsport können",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-16",
+   "cat": "sports",
+   "a": {
+    "text": "in einem Stadion voller Fans spielen",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "mit Freunden in einem ruhigen Park spielen",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-17",
+   "cat": "sports",
+   "a": {
+    "text": "einen Ball so weit wie ein Fußballfeld schießen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "einen Ball so hoch wie einen Turm werfen",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-18",
+   "cat": "sports",
+   "a": {
+    "text": "Surfen lernen",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Segeln lernen",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-19",
+   "cat": "sports",
+   "a": {
+    "text": "einen Pool im Garten haben",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "einen Fußballplatz im Garten haben",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-20",
+   "cat": "sports",
+   "a": {
+    "text": "Kartrennen fahren",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Segelregatten fahren",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-21",
+   "cat": "sports",
+   "a": {
+    "text": "der Schiedsrichter sein",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "der Mannschaftskapitän sein",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-22",
+   "cat": "sports",
+   "a": {
+    "text": "mit einer Ziege Yoga machen",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "mit einem Hund joggen gehen",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "sports-23",
+   "cat": "sports",
+   "a": {
+    "text": "einen Sport spielen, den es noch nicht gibt",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "der Beste in einer uralten Sportart sein",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-24",
+   "cat": "sports",
+   "a": {
+    "text": "haushoch gewinnen",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "mit nur einem Punkt Vorsprung gewinnen",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-25",
+   "cat": "sports",
+   "a": {
+    "text": "in einem Team aus Robotern spielen",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "in einem Team aus Tieren spielen",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-26",
+   "cat": "sports",
+   "a": {
+    "text": "ein Skateboard haben, das fliegt",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "ein Fahrrad haben, das auf Wasser fährt",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-27",
+   "cat": "sports",
+   "a": {
+    "text": "auf einem Riesentrampolin springen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "eine Riesenwasserrutsche runterrutschen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-28",
+   "cat": "sports",
+   "a": {
+    "text": "Sport im Schnee machen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Sport am Strand machen",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-29",
+   "cat": "sports",
+   "a": {
+    "text": "Jonglieren lernen",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Jo-Jo-Tricks lernen",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-30",
+   "cat": "sports",
+   "a": {
+    "text": "im Finale den Elfmeter schießen",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "im Finale im Tor stehen",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-31",
+   "cat": "sports",
+   "a": {
+    "text": "im Regen Sport machen",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "im Sonnenschein Sport machen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-32",
+   "cat": "sports",
+   "a": {
+    "text": "einen Marathon laufen",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "anderthalb Kilometer schwimmen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-33",
+   "cat": "sports",
+   "a": {
+    "text": "beim Ballwerfen gewinnen",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "beim Tauziehen gewinnen",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-34",
+   "cat": "sports",
+   "a": {
+    "text": "auf den höchsten Baum im Park klettern",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "das beste Versteck im Park finden",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-35",
+   "cat": "sports",
+   "a": {
+    "text": "einen Sport machen, bei dem alle gewinnen",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "einen Sport machen, bei dem du dich selbst übertriffst",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-36",
+   "cat": "sports",
+   "a": {
+    "text": "deinem Team zujubeln",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "von deinem Team angefeuert werden",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-1",
+   "cat": "space",
+   "a": {
+    "text": "auf dem Mond spazieren gehen",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "im tiefsten Ozean schwimmen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-2",
+   "cat": "space",
+   "a": {
+    "text": "eine Sternschnuppe sehen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "einen Wal aus dem Meer springen sehen",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-3",
+   "cat": "space",
+   "a": {
+    "text": "auf dem Mars leben",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "unter dem Meer leben",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-4",
+   "cat": "space",
+   "a": {
+    "text": "die Ringe des Saturn besuchen",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "den großen roten Sturm auf Jupiter besuchen",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-5",
+   "cat": "space",
+   "a": {
+    "text": "einen Wald pflanzen",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "einen Strand aufräumen",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "space-6",
+   "cat": "space",
+   "a": {
+    "text": "Astronaut sein",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Meeresbiologe sein",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-7",
+   "cat": "space",
+   "a": {
+    "text": "auf einem Berg den Sonnenaufgang sehen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "am Strand den Sonnenuntergang sehen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-8",
+   "cat": "space",
+   "a": {
+    "text": "jeden Tag einen Regenbogen sehen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag Schnee sehen",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-9",
+   "cat": "space",
+   "a": {
+    "text": "einen neuen Planeten entdecken",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "einen neuen Stern entdecken",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-10",
+   "cat": "space",
+   "a": {
+    "text": "im Weltall schweben",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "in einem warmen Meer treiben",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-11",
+   "cat": "space",
+   "a": {
+    "text": "eine Nacht im Regenwald verbringen",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "eine Nacht in der Wüste verbringen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-12",
+   "cat": "space",
+   "a": {
+    "text": "einem Stern einen Namen geben",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einer neuen Blume einen Namen geben",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-13",
+   "cat": "space",
+   "a": {
+    "text": "dort leben, wo immer Sommer ist",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "dort leben, wo immer Winter ist",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-14",
+   "cat": "space",
+   "a": {
+    "text": "einen freundlichen Außerirdischen treffen",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "das Fossil eines neuen Dinosauriers finden",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-15",
+   "cat": "space",
+   "a": {
+    "text": "ein Teleskop haben, das alles sieht",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ein U-Boot haben, das überallhin taucht",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-16",
+   "cat": "space",
+   "a": {
+    "text": "ein Gewitter vom gemütlichen Fenster aus sehen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "aus einer warmen Hütte den Schnee fallen sehen",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-17",
+   "cat": "space",
+   "a": {
+    "text": "auf einem Kometen reiten",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "auf dem Mond herumhüpfen",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-18",
+   "cat": "space",
+   "a": {
+    "text": "mit einem Roboter einen Vulkan erkunden",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "mit einem Schlittenhund einen Gletscher erkunden",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-19",
+   "cat": "space",
+   "a": {
+    "text": "einen Garten auf einem Raumschiff pflegen",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "einen Bauernhof unter dem Meer pflegen",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-20",
+   "cat": "space",
+   "a": {
+    "text": "für immer das Meeresrauschen hören",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "für immer Vogelgezwitscher hören",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-21",
+   "cat": "space",
+   "a": {
+    "text": "alle Bäume in einem Wald zählen",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "alle Wellen an einem Strand zählen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-22",
+   "cat": "space",
+   "a": {
+    "text": "einen Tag lang eine Wolke sein",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "einen Tag lang ein Regentropfen sein",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-23",
+   "cat": "space",
+   "a": {
+    "text": "die höchste Sonnenblume züchten",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "die größte Wassermelone züchten",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "space-24",
+   "cat": "space",
+   "a": {
+    "text": "ein Fenster haben, das das Weltall zeigt",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ein Fenster haben, das das Meer zeigt",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-25",
+   "cat": "space",
+   "a": {
+    "text": "eine Höhle mit leuchtenden Würmchen finden",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "einen Strand mit leuchtenden Wellen finden",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-26",
+   "cat": "space",
+   "a": {
+    "text": "ein Korallenriff retten",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "einen Regenwald retten",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-27",
+   "cat": "space",
+   "a": {
+    "text": "als Erster einen neuen Planeten betreten",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "als Erster ein neues Tier treffen",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-28",
+   "cat": "space",
+   "a": {
+    "text": "ein Jahr auf einer Raumstation verbringen",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ein Jahr auf einem Forschungsschiff verbringen",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-29",
+   "cat": "space",
+   "a": {
+    "text": "jede Nacht Sterne gucken",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag am Meer in Felstümpeln stöbern",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-30",
+   "cat": "space",
+   "a": {
+    "text": "einen Babystern in den Händen halten",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "einen Regenbogen in den Händen halten",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-31",
+   "cat": "space",
+   "a": {
+    "text": "den heißesten Ort der Erde besuchen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "den kältesten Ort der Erde besuchen",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-32",
+   "cat": "space",
+   "a": {
+    "text": "eine totale Sonnenfinsternis sehen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Sternschnuppenregen sehen",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-33",
+   "cat": "space",
+   "a": {
+    "text": "einen Garten voller Schmetterlinge haben",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Garten voller Vögel haben",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-34",
+   "cat": "space",
+   "a": {
+    "text": "auf einer schwebenden Insel leben",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "auf einem Berg über den Wolken leben",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-35",
+   "cat": "space",
+   "a": {
+    "text": "die Namen aller Sterne lernen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "die Namen aller Vögel lernen",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-36",
+   "cat": "space",
+   "a": {
+    "text": "für jeden Freund einen Baum pflanzen",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "für jeden Vogel, den du siehst, ein Vogelhaus bauen",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "space-37",
+   "cat": "space",
+   "a": {
+    "text": "herausfinden, was in einem Schwarzen Loch ist",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "herausfinden, was am Meeresgrund lebt",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-1",
+   "cat": "future",
+   "a": {
+    "text": "einen Roboter als besten Freund haben",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "einen Dino als besten Freund haben",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-2",
+   "cat": "future",
+   "a": {
+    "text": "in einem fliegenden Auto fahren",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "in einem selbstfahrenden Auto fahren",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-3",
+   "cat": "future",
+   "a": {
+    "text": "in einem Haus wohnen, das sich selbst putzt",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "in einem Haus wohnen, das überallhin wandert",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-4",
+   "cat": "future",
+   "a": {
+    "text": "eine neue Art Spielzeug erfinden",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "eine neue Art Essen erfinden",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "future-5",
+   "cat": "future",
+   "a": {
+    "text": "ein Handy haben, das dich teleportiert",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "eine Brille haben, die jede Sprache übersetzt",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "future-6",
+   "cat": "future",
+   "a": {
+    "text": "Erfinder sein",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Wissenschaftler sein",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-7",
+   "cat": "future",
+   "a": {
+    "text": "in einer Stadt unter dem Meer leben",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "in einer Stadt in den Wolken leben",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-8",
+   "cat": "future",
+   "a": {
+    "text": "einen Roboter haben, der deine Aufgaben erledigt",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Roboter haben, der mit dir spielt",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-9",
+   "cat": "future",
+   "a": {
+    "text": "hundert Jahre in die Zukunft sehen",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "hundert Jahre in die Vergangenheit sehen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-10",
+   "cat": "future",
+   "a": {
+    "text": "eine Zeitmaschine bauen",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "eine Rakete bauen",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-11",
+   "cat": "future",
+   "a": {
+    "text": "einen neuen Freizeitpark entwerfen",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine neue Stadt entwerfen",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-12",
+   "cat": "future",
+   "a": {
+    "text": "Schuhe haben, mit denen du fliegst",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "eine Jacke haben, die dich unsichtbar macht",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-13",
+   "cat": "future",
+   "a": {
+    "text": "eine Maschine erfinden, die alle freundlich macht",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "eine Maschine erfinden, die alle zum Lachen bringt",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-14",
+   "cat": "future",
+   "a": {
+    "text": "mit einem Computer reden, der alles weiß",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "mit einem Tier reden, das alles weiß",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-15",
+   "cat": "future",
+   "a": {
+    "text": "auf einer Raumstation leben",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "in einem schlauen Baumhaus leben",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-16",
+   "cat": "future",
+   "a": {
+    "text": "einen 3D-Drucker für Spielzeug haben",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "einen 3D-Drucker für Essen haben",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-17",
+   "cat": "future",
+   "a": {
+    "text": "ein Videospiel erfinden",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ein Brettspiel erfinden",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-18",
+   "cat": "future",
+   "a": {
+    "text": "ein Hologramm-Haustier haben",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ein Roboter-Haustier haben",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-19",
+   "cat": "future",
+   "a": {
+    "text": "mit einer Erfindung die Meere säubern",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "mit einer Erfindung Wälder pflanzen",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-20",
+   "cat": "future",
+   "a": {
+    "text": "ein Auto in Form eines Schuhs haben",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "einen Bus in Form eines Wals haben",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-21",
+   "cat": "future",
+   "a": {
+    "text": "erleben, wie Menschen auf dem Mars landen",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Städte ganz ohne Müll erleben",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-22",
+   "cat": "future",
+   "a": {
+    "text": "ein Bett haben, das Träume wahr werden lässt",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "einen Spiegel haben, der die Zukunft zeigt",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-23",
+   "cat": "future",
+   "a": {
+    "text": "einen Roboter bauen, der malen kann",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "einen Roboter bauen, der tanzen kann",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-24",
+   "cat": "future",
+   "a": {
+    "text": "Energie aus Lachen machen",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Energie aus Musik machen",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-25",
+   "cat": "future",
+   "a": {
+    "text": "ein berühmter Designer sein",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ein berühmter Ingenieur sein",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-26",
+   "cat": "future",
+   "a": {
+    "text": "einen Raketenrucksack haben",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ein schwebendes Hoverboard haben",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-27",
+   "cat": "future",
+   "a": {
+    "text": "eine Bücherei haben, deren Bücher sich vorlesen",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "eine Bücherei haben, in der du in Geschichten steigst",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-28",
+   "cat": "future",
+   "a": {
+    "text": "eine neue Farbe erfinden",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ein neues Musikinstrument erfinden",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-29",
+   "cat": "future",
+   "a": {
+    "text": "einen Roboterkoch haben",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "einen Robotergärtner haben",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-30",
+   "cat": "future",
+   "a": {
+    "text": "Kleidung entwerfen, die die Farbe wechselt",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Kleidung entwerfen, die dich überall warm hält",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-31",
+   "cat": "future",
+   "a": {
+    "text": "in einem Haus mit Rutsche in die Küche wohnen",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "in einem Haus mit Seilrutsche in den Garten wohnen",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "future-32",
+   "cat": "future",
+   "a": {
+    "text": "Menschen in tausend Jahren eine Nachricht senden",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "eine Nachricht von vor tausend Jahren bekommen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-33",
+   "cat": "future",
+   "a": {
+    "text": "ein Auto haben, das mit Limo fährt",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ein Auto haben, das mit Sonnenschein fährt",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-34",
+   "cat": "future",
+   "a": {
+    "text": "einen Schirm haben, der allen Regen stoppt",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Stiefel haben, an denen kein Matsch klebt",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-35",
+   "cat": "future",
+   "a": {
+    "text": "ein Zuhause für Tiere bauen",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ein Zuhause für Roboter bauen",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-36",
+   "cat": "future",
+   "a": {
+    "text": "etwas erfinden, das alle benutzen",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "etwas erfinden, das nur du benutzt",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-37",
+   "cat": "future",
+   "a": {
+    "text": "lernen, indem du Wissen ins Gehirn lädst",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "lernen, indem du Dinge selbst ausprobierst",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-38",
+   "cat": "future",
+   "a": {
+    "text": "eine Drohne haben, die Snacks liefert",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "eine Drohne haben, die mit deinem Hund Gassi geht",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-1",
+   "cat": "family",
+   "a": {
+    "text": "bei deinem besten Freund übernachten",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "bei deinen Cousins übernachten",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-2",
+   "cat": "family",
+   "a": {
+    "text": "eine Überraschungsparty planen",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "eine Überraschungsparty bekommen",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-3",
+   "cat": "family",
+   "a": {
+    "text": "zehn Geschwister haben",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ein Einzelkind sein",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-4",
+   "cat": "family",
+   "a": {
+    "text": "mit deinen Großeltern verreisen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mit deinen Freunden verreisen",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-5",
+   "cat": "family",
+   "a": {
+    "text": "jeden Tag einen neuen Freund finden",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "für immer einen besten Freund behalten",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-6",
+   "cat": "family",
+   "a": {
+    "text": "einen Familien-Filmabend machen",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "einen Familien-Spieleabend machen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-7",
+   "cat": "family",
+   "a": {
+    "text": "einem Freund einen Brief schreiben",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "für einen Freund ein Geschenk basteln",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-8",
+   "cat": "family",
+   "a": {
+    "text": "einen Freund haben, der super zuhört",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Freund haben, der richtig lustig ist",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-9",
+   "cat": "family",
+   "a": {
+    "text": "einem Freund bei den Hausaufgaben helfen",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einem Freund beim Burgbauen helfen",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-10",
+   "cat": "family",
+   "a": {
+    "text": "mit deiner Familie Plätzchen backen",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "mit deiner Familie ein Puzzle legen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-11",
+   "cat": "family",
+   "a": {
+    "text": "einen geheimen Handschlag haben",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "eine geheime Codesprache haben",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-12",
+   "cat": "family",
+   "a": {
+    "text": "mit deiner Familie auf ein Konzert gehen",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "mit deiner Familie ins Museum gehen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-13",
+   "cat": "family",
+   "a": {
+    "text": "neben deinem besten Freund wohnen",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "neben deinen Großeltern wohnen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-14",
+   "cat": "family",
+   "a": {
+    "text": "eine Party für dein Haustier feiern",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "eine Party für deine Lehrkraft feiern",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-15",
+   "cat": "family",
+   "a": {
+    "text": "deinen Nachtisch teilen",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "dein Spielzeug teilen",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-16",
+   "cat": "family",
+   "a": {
+    "text": "der Lustigste in deiner Familie sein",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "der Netteste in deiner Familie sein",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-17",
+   "cat": "family",
+   "a": {
+    "text": "mit all deinen Freunden picknicken",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "einen ruhigen Tag mit einem Freund verbringen",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-18",
+   "cat": "family",
+   "a": {
+    "text": "ein Familienvideo drehen",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ein Familienkochbuch machen",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-19",
+   "cat": "family",
+   "a": {
+    "text": "mit deinen Großeltern Brettspiele spielen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mit deinen Cousins Fußball spielen",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-20",
+   "cat": "family",
+   "a": {
+    "text": "einen Freund aus einem anderen Land haben",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einen Freund von einem anderen Planeten haben",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-21",
+   "cat": "family",
+   "a": {
+    "text": "den nächsten Familienausflug planen",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "das nächste Familienessen planen",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-22",
+   "cat": "family",
+   "a": {
+    "text": "ein riesiges Familienfoto an der Wand haben",
+    "tags": [
+     "social",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Stammbaum an deine Wand gemalt haben",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-23",
+   "cat": "family",
+   "a": {
+    "text": "die besten Umarmungen geben",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "die besten High Fives geben",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-24",
+   "cat": "family",
+   "a": {
+    "text": "gut darin sein, andere aufzumuntern",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "gut darin sein, Probleme zu lösen",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-25",
+   "cat": "family",
+   "a": {
+    "text": "einen Tag mit deinem Lieblingsverwandten verbringen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Tag mit deiner Lieblingslehrkraft verbringen",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-26",
+   "cat": "family",
+   "a": {
+    "text": "jeden Abend ein großes Familienessen haben",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "einmal pro Woche im Bett frühstücken",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "family-27",
+   "cat": "family",
+   "a": {
+    "text": "dir mit deiner Familie einen Tanz ausdenken",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "dir mit deiner Familie ein Lied ausdenken",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-28",
+   "cat": "family",
+   "a": {
+    "text": "mit deinen Freunden einen Club haben",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "mit deinen Freunden eine Band haben",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-29",
+   "cat": "family",
+   "a": {
+    "text": "einem neuen Kind helfen, sich wohlzufühlen",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "einem verirrten Haustier helfen, heimzufinden",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-30",
+   "cat": "family",
+   "a": {
+    "text": "einen Tag lang mit einem Freund das Haus tauschen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "einen Tag lang mit einem Freund die Familie tauschen",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-31",
+   "cat": "family",
+   "a": {
+    "text": "einen Freund haben, der dieselben Spiele mag",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen Freund haben, der dir neue Spiele zeigt",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-32",
+   "cat": "family",
+   "a": {
+    "text": "deinen Geburtstag am Strand feiern",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "deinen Geburtstag im Schnee feiern",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-33",
+   "cat": "family",
+   "a": {
+    "text": "einen Brief von einem Freund bekommen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "überraschend Besuch von einem Freund bekommen",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-34",
+   "cat": "family",
+   "a": {
+    "text": "ein Familienhaustier haben",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "einen Familiengarten haben",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-35",
+   "cat": "family",
+   "a": {
+    "text": "mit deinen Geschwistern eine Höhle bauen",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "mit deinen Eltern einen Schneemann bauen",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-36",
+   "cat": "family",
+   "a": {
+    "text": "mit Freunden eine Zeitkapsel machen",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "mit Freunden ein Erinnerungsalbum basteln",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-37",
+   "cat": "family",
+   "a": {
+    "text": "jeden Tag jemandem Danke sagen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "jeden Tag jemanden zum Lachen bringen",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-38",
+   "cat": "family",
+   "a": {
+    "text": "derjenige sein, der lustige Sachen plant",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "derjenige sein, der überall mitmacht",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-1",
+   "cat": "deep",
+   "a": {
+    "text": "alles über die Vergangenheit wissen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "ein bisschen über die Zukunft wissen",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-2",
+   "cat": "deep",
+   "a": {
+    "text": "richtig mutig sein",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "richtig lieb sein",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-3",
+   "cat": "deep",
+   "a": {
+    "text": "sehr schlau sein",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "sehr kreativ sein",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-4",
+   "cat": "deep",
+   "a": {
+    "text": "immer die Wahrheit sagen",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "immer das Richtige zu sagen wissen",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-5",
+   "cat": "deep",
+   "a": {
+    "text": "viele Freunde haben",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen ganz engen Freund haben",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-6",
+   "cat": "deep",
+   "a": {
+    "text": "berühmt sein",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "glücklich und unbekannt sein",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-7",
+   "cat": "deep",
+   "a": {
+    "text": "jetzt einen Wunsch frei haben",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "drei Wünsche haben, wenn du älter bist",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-8",
+   "cat": "deep",
+   "a": {
+    "text": "nie gelangweilt sein",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "nie traurig sein",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-9",
+   "cat": "deep",
+   "a": {
+    "text": "dich an jeden Traum erinnern",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "aussuchen, was du träumst",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-10",
+   "cat": "deep",
+   "a": {
+    "text": "der Beste in einer Sache sein",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "in vielen Sachen gut sein",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "deep-11",
+   "cat": "deep",
+   "a": {
+    "text": "jeden Streit schlichten können",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "jeden aufmuntern können",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-12",
+   "cat": "deep",
+   "a": {
+    "text": "mehr Zeit zum Spielen haben",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "mehr Zeit zum Lernen haben",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-13",
+   "cat": "deep",
+   "a": {
+    "text": "in einer großen Stadt wohnen",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "auf dem Land wohnen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-14",
+   "cat": "deep",
+   "a": {
+    "text": "einen Tag lang die Gedanken von jemandem lesen",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "einen Tag lang deine Gedanken lesen lassen",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-15",
+   "cat": "deep",
+   "a": {
+    "text": "ein toller Anführer sein",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ein toller Helfer sein",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-16",
+   "cat": "deep",
+   "a": {
+    "text": "eine große Sache verändern",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "viele kleine Sachen verändern",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-17",
+   "cat": "deep",
+   "a": {
+    "text": "einen verlorenen Schatz finden",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einen verlorenen Freund wiederfinden",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-18",
+   "cat": "deep",
+   "a": {
+    "text": "ein Geschenk machen",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ein Geschenk bekommen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-19",
+   "cat": "deep",
+   "a": {
+    "text": "einen Preis gewinnen",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "einem Freund helfen, einen Preis zu gewinnen",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-20",
+   "cat": "deep",
+   "a": {
+    "text": "aus Fehlern lernen",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "nie Fehler machen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-21",
+   "cat": "deep",
+   "a": {
+    "text": "gut zuhören können",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "gut erklären können",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-22",
+   "cat": "deep",
+   "a": {
+    "text": "immer pünktlich sein",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "immer ganz entspannt mit der Zeit sein",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-23",
+   "cat": "deep",
+   "a": {
+    "text": "jede Sprache können",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "jedes Instrument spielen",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-24",
+   "cat": "deep",
+   "a": {
+    "text": "einen ruhigen Morgen haben",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "einen trubeligen Morgen haben",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-25",
+   "cat": "deep",
+   "a": {
+    "text": "alles planen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "alles spontan machen",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-26",
+   "cat": "deep",
+   "a": {
+    "text": "einmal ein großes Abenteuer erleben",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "jede Woche kleine Abenteuer erleben",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "deep-27",
+   "cat": "deep",
+   "a": {
+    "text": "dein Zimmer ordentlich halten",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "dein Zimmer gemütlich und chaotisch lassen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-28",
+   "cat": "deep",
+   "a": {
+    "text": "dem Planeten helfen",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "den Menschen in deiner Stadt helfen",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-29",
+   "cat": "deep",
+   "a": {
+    "text": "super Geschichten erzählen können",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "super Probleme lösen können",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "deep-30",
+   "cat": "deep",
+   "a": {
+    "text": "einen Tag ohne Bildschirme verbringen",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "einen Tag ohne Süßigkeiten verbringen",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "deep-31",
+   "cat": "deep",
+   "a": {
+    "text": "jemand sein, der Neues ausprobiert",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "jemand sein, der Angefangenes beendet",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-32",
+   "cat": "deep",
+   "a": {
+    "text": "zuerst Entschuldigung sagen",
+    "tags": [
+     "kind",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "zuerst Danke sagen",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-33",
+   "cat": "deep",
+   "a": {
+    "text": "ein tolles Gedächtnis haben",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "eine tolle Fantasie haben",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-34",
+   "cat": "deep",
+   "a": {
+    "text": "die Welt ein bisschen bunter machen",
+    "tags": [
+     "make",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "die Welt ein bisschen leiser machen",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-35",
+   "cat": "deep",
+   "a": {
+    "text": "einen schönen Moment anhalten können",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "einen schönen Moment nochmal erleben können",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-36",
+   "cat": "deep",
+   "a": {
+    "text": "ein geheimes Talent allen zeigen",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ein geheimes Talent für dich behalten",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-37",
+   "cat": "deep",
+   "a": {
+    "text": "viele Fragen stellen",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "viele Antworten finden",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-38",
+   "cat": "deep",
+   "a": {
+    "text": "länger Kind bleiben",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "ein bisschen schneller erwachsen werden",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  }
+ ]
+}

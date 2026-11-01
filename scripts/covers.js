@@ -145,6 +145,14 @@ const RECIPES = {
     await f.evaluate(() => window.__brbTest.cover());
     await wait(2500);
   } },
+  'would-you-rather': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f);
+    // Two cards with the first one just picked (the glow and the tick), before the next question comes.
+    await f.evaluate(() => window.__brbTest.start('alone', { count: 10, topics: ['powers'] }));
+    await wait(700);
+    await f.evaluate(() => window.__brbTest.pick('a'));
+    await wait(600);
+  } },
   // The live quiz games, in their solo practice (the same screens a class sees on the board).
   'quest-race': { viewport: PORTRAIT, touch: true, async prep(f) {
     await hook(f); await play(f);

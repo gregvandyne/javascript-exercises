@@ -1,0 +1,7456 @@
+{
+ "about": "Would You Rather dilemmas (English source). Each item: id (never reuse or renumber: saved progress uses it), cat, a/b {text, tags}. Tags drive the personality card and are never translated. Translators: copy this file to <lang>.json and translate only the text fields, then run node scripts/wyr-bank.js.",
+ "items": [
+  {
+   "id": "animals-1",
+   "cat": "animals",
+   "a": {
+    "text": "どうぶつとお話しする",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "世界中のことばを話す",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "animals-2",
+   "cat": "animals",
+   "a": {
+    "text": "ねこくらいの大きさのドラゴンをかう",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "うまくらいの大きさのねこをかう",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-3",
+   "cat": "animals",
+   "a": {
+    "text": "イルカにのって学校へ行く",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "キリンにのって学校へ行く",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-4",
+   "cat": "animals",
+   "a": {
+    "text": "サルみたいなしっぽがある",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ウサギみたいな耳がある",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-5",
+   "cat": "animals",
+   "a": {
+    "text": "1日だけチーターになる",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "1日だけフクロウになる",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-6",
+   "cat": "animals",
+   "a": {
+    "text": "クジラといっしょにおよぐ",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ワシといっしょに空をとぶ",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-7",
+   "cat": "animals",
+   "a": {
+    "text": "おしゃべりするオウムをかう",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ダンスする犬をかう",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-8",
+   "cat": "animals",
+   "a": {
+    "text": "リスといっしょに木の上の家でくらす",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "アザラシといっしょに船でくらす",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-9",
+   "cat": "animals",
+   "a": {
+    "text": "アリみたいに力もちになる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "タコみたいにかしこくなる",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-10",
+   "cat": "animals",
+   "a": {
+    "text": "ペンギンをペットにする",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "パンダをペットにする",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-11",
+   "cat": "animals",
+   "a": {
+    "text": "ユニコーンをかう",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ふしちょうをかう",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-12",
+   "cat": "animals",
+   "a": {
+    "text": "魚みたいに水の中で息をする",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "モモンガみたいに空をすべる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-13",
+   "cat": "animals",
+   "a": {
+    "text": "はまべでウミガメの赤ちゃんのおせわをする",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "森でフクロウのひなのおせわをする",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-14",
+   "cat": "animals",
+   "a": {
+    "text": "空をとべるうまをかう",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "お話しできる犬をかう",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-15",
+   "cat": "animals",
+   "a": {
+    "text": "はたらきもののミツバチになる",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "のんびりやのナマケモノになる",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-16",
+   "cat": "animals",
+   "a": {
+    "text": "カメみたいなこうらがある",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ハリネズミみたいなトゲトゲがある",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-17",
+   "cat": "animals",
+   "a": {
+    "text": "コウモリみたいに耳がいい",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "タカみたいに目がいい",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-18",
+   "cat": "animals",
+   "a": {
+    "text": "ずっと大きくならないペットをかう",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "バスくらい大きくなるペットをかう",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-19",
+   "cat": "animals",
+   "a": {
+    "text": "クマとなかよしになる",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "キツネとなかよしになる",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-20",
+   "cat": "animals",
+   "a": {
+    "text": "鳥の巣でねる",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "土の中のあなでねる",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-21",
+   "cat": "animals",
+   "a": {
+    "text": "手品ができるねこをかう",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "歌えるハムスターをかう",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-22",
+   "cat": "animals",
+   "a": {
+    "text": "まいごの子犬のおうちをつくる",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "まいごの子ねこのおうちをつくる",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-23",
+   "cat": "animals",
+   "a": {
+    "text": "雪の中のペンギンになる",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "おひさまの下のフラミンゴになる",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-24",
+   "cat": "animals",
+   "a": {
+    "text": "シマウマみたいなしまもようがある",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ヒョウみたいな水玉もようがある",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "animals-25",
+   "cat": "animals",
+   "a": {
+    "text": "どうぶつが人を見ている動物園に行く",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "どうぶつがへんじをする牧場に行く",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-26",
+   "cat": "animals",
+   "a": {
+    "text": "フクロウといっしょに星をかぞえる",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "モグラといっしょに1日中トンネルをほる",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-27",
+   "cat": "animals",
+   "a": {
+    "text": "キリンみたいに長い首がある",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ゾウみたいに長い鼻がある",
+    "tags": [
+     "animal",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-28",
+   "cat": "animals",
+   "a": {
+    "text": "カメレオンみたいに色がかわる",
+    "tags": [
+     "make",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ホタルみたいにピカッと光る",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-29",
+   "cat": "animals",
+   "a": {
+    "text": "口ぶえがふける金魚をかう",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "かけっこで勝てるカタツムリをかう",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-30",
+   "cat": "animals",
+   "a": {
+    "text": "ゾウの赤ちゃんのおせわをする",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "カンガルーの赤ちゃんのおせわをする",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-31",
+   "cat": "animals",
+   "a": {
+    "text": "大きな声でほえるライオンになる",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "やさしくゴロゴロいうねこになる",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-32",
+   "cat": "animals",
+   "a": {
+    "text": "ウミガメと海でおよぐ",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "シロクマの子どもと雪であそぶ",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-33",
+   "cat": "animals",
+   "a": {
+    "text": "お手つだいしてくれるタコをかう",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ギャグを言うサルをかう",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-34",
+   "cat": "animals",
+   "a": {
+    "text": "まどべの小鳥の歌で目をさます",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "子犬に顔をなめられて目をさます",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-35",
+   "cat": "animals",
+   "a": {
+    "text": "有名などうぶつのお医者さんになる",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "有名などうぶつたんけん家になる",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-36",
+   "cat": "animals",
+   "a": {
+    "text": "くらやみで光るペットをかう",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "すがたを消せるペットをかう",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-37",
+   "cat": "animals",
+   "a": {
+    "text": "1日だけアリになってアリの巣ですごす",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "1日だけミツバチになって巣ですごす",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-38",
+   "cat": "animals",
+   "a": {
+    "text": "ハチドリみたいにすばやくなる",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "リクガメみたいに長生きする",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "food-1",
+   "cat": "food",
+   "a": {
+    "text": "ずっとあまいものだけ食べる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ずっとしょっぱいものだけ食べる",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-2",
+   "cat": "food",
+   "a": {
+    "text": "チョコレートの川がある",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "レモネードのたきがある",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-3",
+   "cat": "food",
+   "a": {
+    "text": "朝ごはんにピザを食べる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "夜ごはんにパンケーキを食べる",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-4",
+   "cat": "food",
+   "a": {
+    "text": "もう二度とアイスを食べない",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "もう二度とピザを食べない",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-5",
+   "cat": "food",
+   "a": {
+    "text": "ほしい食べものが出てくるれいぞうこ",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ほしいくだものがなる畑",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "food-6",
+   "cat": "food",
+   "a": {
+    "text": "有名なシェフになる",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "有名な味見のプロになる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-7",
+   "cat": "food",
+   "a": {
+    "text": "自転車くらい大きいクッキーを1まい食べる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ちっちゃいクッキーを100まい食べる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-8",
+   "cat": "food",
+   "a": {
+    "text": "お城で朝ごはんを食べる",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "山のてっぺんで朝ごはんを食べる",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-9",
+   "cat": "food",
+   "a": {
+    "text": "世界一大きいサンドイッチをつくる",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "世界一高いケーキをつくる",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-10",
+   "cat": "food",
+   "a": {
+    "text": "ぎゅうにゅうだけ飲む",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "オレンジジュースだけ飲む",
+    "tags": [
+     "food",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "food-11",
+   "cat": "food",
+   "a": {
+    "text": "スパゲッティを手で食べる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "スープをフォークで食べる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-12",
+   "cat": "food",
+   "a": {
+    "text": "おかしやさんをひらく",
+    "tags": [
+     "food",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "パンやさんをひらく",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-13",
+   "cat": "food",
+   "a": {
+    "text": "毎日あたらしい食べものをためす",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "毎日大好きな食べものを食べる",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-14",
+   "cat": "food",
+   "a": {
+    "text": "へやにポップコーンマシンがある",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "へやにスムージーマシンがある",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-15",
+   "cat": "food",
+   "a": {
+    "text": "1週間みどりの食べものだけ食べる",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "1週間オレンジ色の食べものだけ食べる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-16",
+   "cat": "food",
+   "a": {
+    "text": "家族みんなに夜ごはんをつくる",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "親友にケーキをやく",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-17",
+   "cat": "food",
+   "a": {
+    "text": "なくならないくだもののおさら",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "なくならないポテトチップスのふくろ",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-18",
+   "cat": "food",
+   "a": {
+    "text": "はまべでピクニックする",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "雪の森でピクニックする",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-19",
+   "cat": "food",
+   "a": {
+    "text": "とけないアイスを食べる",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "さめないピザを食べる",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-20",
+   "cat": "food",
+   "a": {
+    "text": "色の味がわかる",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "音楽のにおいがわかる",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-21",
+   "cat": "food",
+   "a": {
+    "text": "おもちゃたちとお茶会をする",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "友だちとバーベキューをする",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-22",
+   "cat": "food",
+   "a": {
+    "text": "ロボットがつくったごはんを食べる",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "王さまがつくったごはんを食べる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-23",
+   "cat": "food",
+   "a": {
+    "text": "でっかいイチゴをそだてる",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "でっかいカボチャをそだてる",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-24",
+   "cat": "food",
+   "a": {
+    "text": "おはしだけで食べる",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "スプーンだけで食べる",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-25",
+   "cat": "food",
+   "a": {
+    "text": "なんにでもカラースプレーをかける",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "なんにでもチーズをのせる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-26",
+   "cat": "food",
+   "a": {
+    "text": "毎週ちがう国の料理をためす",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ひとつの料理をかんぺきにつくれるようになる",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-27",
+   "cat": "food",
+   "a": {
+    "text": "パンケーキが一生ただになる",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "タコスが一生ただになる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-28",
+   "cat": "food",
+   "a": {
+    "text": "木の上の家にキッチンがある",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "船の上にキッチンがある",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-29",
+   "cat": "food",
+   "a": {
+    "text": "毎日ベッドで朝ごはんを食べる",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "毎ばん星空の下で夜ごはんを食べる",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-30",
+   "cat": "food",
+   "a": {
+    "text": "味がかわるペロペロキャンディ",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ずっと味がなくならないガム",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-31",
+   "cat": "food",
+   "a": {
+    "text": "ケーキコンテストのしんさいんになる",
+    "tags": [
+     "food",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ケーキコンテストでゆうしょうする",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-32",
+   "cat": "food",
+   "a": {
+    "text": "オリジナルのアイスの味を考える",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "オリジナルのピザのトッピングを考える",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-33",
+   "cat": "food",
+   "a": {
+    "text": "ごはんがぜんぶスープになる",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ごはんがぜんぶサンドイッチになる",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-34",
+   "cat": "food",
+   "a": {
+    "text": "ホットココアのふん水がある",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "フルーツポンチのふん水がある",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-35",
+   "cat": "food",
+   "a": {
+    "text": "まるい食べものだけ食べる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "しかくい食べものだけ食べる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-36",
+   "cat": "food",
+   "a": {
+    "text": "おかしをやいてくれる友だちがいる",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ごはんをつくってくれる友だちがいる",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-37",
+   "cat": "food",
+   "a": {
+    "text": "パンやさんのとなりにすむ",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "アイスやさんのとなりにすむ",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-38",
+   "cat": "food",
+   "a": {
+    "text": "古い本でひみつのレシピを見つける",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "まったくあたらしいおやつを発明する",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "powers-1",
+   "cat": "powers",
+   "a": {
+    "text": "空をとぶ",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "とうめい人間になる",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-2",
+   "cat": "powers",
+   "a": {
+    "text": "人の心が読める",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "心の力でものを動かす",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-3",
+   "cat": "powers",
+   "a": {
+    "text": "ものすごく足が速くなる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ものすごく力もちになる",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-4",
+   "cat": "powers",
+   "a": {
+    "text": "どこへでもワープする",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "時間を止める",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-5",
+   "cat": "powers",
+   "a": {
+    "text": "水の中で息ができる",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "かべをすりぬける",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-6",
+   "cat": "powers",
+   "a": {
+    "text": "天気をあやつる",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "手をふると草花がそだつ",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-7",
+   "cat": "powers",
+   "a": {
+    "text": "アリくらい小さくなる",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ビルくらい大きくなる",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-8",
+   "cat": "powers",
+   "a": {
+    "text": "植物とお話しする",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "きかいとお話しする",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-9",
+   "cat": "powers",
+   "a": {
+    "text": "ものすごく耳がよくなる",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "ものすごく目がよくなる",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-10",
+   "cat": "powers",
+   "a": {
+    "text": "どんなすりきずもなおせる",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "だれでもえがおにできる",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-11",
+   "cat": "powers",
+   "a": {
+    "text": "家くらい高くジャンプする",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "車くらい速く走る",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-12",
+   "cat": "powers",
+   "a": {
+    "text": "どんなどうぶつにもへんしんする",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "どんなものにもへんしんする",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-13",
+   "cat": "powers",
+   "a": {
+    "text": "すきなときに雪をふらせる",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "すきなときに晴れにする",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-14",
+   "cat": "powers",
+   "a": {
+    "text": "なんでも入るリュックをもつ",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "どこへでもつれていってくれるくつをもつ",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-15",
+   "cat": "powers",
+   "a": {
+    "text": "ずっとねむらなくていい",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ずっと食べなくていい",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-16",
+   "cat": "powers",
+   "a": {
+    "text": "くらやみで光る",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "考えるだけでかみの色をかえる",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-17",
+   "cat": "powers",
+   "a": {
+    "text": "見るだけでどんなわざもまねできる",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "1分でどんなことばもおぼえる",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "powers-18",
+   "cat": "powers",
+   "a": {
+    "text": "さわるとものがこおる",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "さわるとものがあたたまる",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-19",
+   "cat": "powers",
+   "a": {
+    "text": "指をならすとへやがかたづく",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "指をならすとしゅくだいがおわる",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-20",
+   "cat": "powers",
+   "a": {
+    "text": "人をたすけるちょうのうりょく",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "たんけんができるちょうのうりょく",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-21",
+   "cat": "powers",
+   "a": {
+    "text": "歩いたところに花がさく",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "歩いたところで音楽がなる",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-22",
+   "cat": "powers",
+   "a": {
+    "text": "ゴムみたいにのびる",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "ボールみたいにはずむ",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-23",
+   "cat": "powers",
+   "a": {
+    "text": "くらやみでも見える",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "かべのむこうが見える",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-24",
+   "cat": "powers",
+   "a": {
+    "text": "しょうらいの自分とお話しする",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "小さいころの自分とお話しする",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-25",
+   "cat": "powers",
+   "a": {
+    "text": "かいたものが本物になるえんぴつ",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "かいた場所が本物になる絵ふで",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-26",
+   "cat": "powers",
+   "a": {
+    "text": "はずかしいとき小さくなる",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "勇気が出たとき大きくなる",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-27",
+   "cat": "powers",
+   "a": {
+    "text": "ずっとさむくならない",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ずっとつかれない",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-28",
+   "cat": "powers",
+   "a": {
+    "text": "すきなときににじを出す",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "すきなときにそよ風をよぶ",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-29",
+   "cat": "powers",
+   "a": {
+    "text": "ペットの考えていることがわかる",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "先生の考えていることがわかる",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-30",
+   "cat": "powers",
+   "a": {
+    "text": "世界一およぐのが速くなる",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "世界一のぼるのが速くなる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-31",
+   "cat": "powers",
+   "a": {
+    "text": "こわれたものをなんでもなおす",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "考えたものをなんでもつくる",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "powers-32",
+   "cat": "powers",
+   "a": {
+    "text": "のれる雲をもつ",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "空とぶじゅうたんをもつ",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-33",
+   "cat": "powers",
+   "a": {
+    "text": "じゅうりょくをあやつる",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "光をあやつる",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-34",
+   "cat": "powers",
+   "a": {
+    "text": "ヒーローのマントをもつ",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ヒーローのマスクをもつ",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-35",
+   "cat": "powers",
+   "a": {
+    "text": "あいぼうがいる",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "だれかのあいぼうになる",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-36",
+   "cat": "powers",
+   "a": {
+    "text": "だれでもわらわせる",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "だれでもおちつかせる",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-37",
+   "cat": "powers",
+   "a": {
+    "text": "毎日小さなしっぱいを1つとりけす",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "毎日1時間ふえる",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-38",
+   "cat": "powers",
+   "a": {
+    "text": "月曜日だけ使えるちょうのうりょく",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "雨の日だけ使えるちょうのうりょく",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-1",
+   "cat": "school",
+   "a": {
+    "text": "お城の学校にかよう",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "うちゅう船の学校にかよう",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-2",
+   "cat": "school",
+   "a": {
+    "text": "ロボットの先生がいい",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "まほう使いの先生がいい",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-3",
+   "cat": "school",
+   "a": {
+    "text": "ゲームだけでべんきょうする",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "歌だけでべんきょうする",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-4",
+   "cat": "school",
+   "a": {
+    "text": "夏休みが長くなる",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "冬休みが長くなる",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-5",
+   "cat": "school",
+   "a": {
+    "text": "まほうの電たくでさんすうをする",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "まほうのペンでかん字をかく",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-6",
+   "cat": "school",
+   "a": {
+    "text": "毎日校庭でおべんとうを食べる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "毎日お花ばたけでおべんとうを食べる",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-7",
+   "cat": "school",
+   "a": {
+    "text": "クラスのペットのなかよしになる",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "クラスの本だながかりになる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-8",
+   "cat": "school",
+   "a": {
+    "text": "遠足で月に行く",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "遠足で海の中に行く",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-9",
+   "cat": "school",
+   "a": {
+    "text": "かいだんのかわりにすべり台がある",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "どの教室にもトランポリンがある",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-10",
+   "cat": "school",
+   "a": {
+    "text": "本を書く",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "大きなかべ画をかく",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-11",
+   "cat": "school",
+   "a": {
+    "text": "学校のげきに出る",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "学校の合唱団に入る",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-12",
+   "cat": "school",
+   "a": {
+    "text": "ゲームのプログラミングをならう",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ロボットのつくりかたをならう",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-13",
+   "cat": "school",
+   "a": {
+    "text": "休み時間が2ばいになる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "給食の時間が2ばいになる",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-14",
+   "cat": "school",
+   "a": {
+    "text": "親友のとなりの席になる",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "まどのとなりの席になる",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-15",
+   "cat": "school",
+   "a": {
+    "text": "じゅぎょうをぜんぶ外でする",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "じゅぎょうをぜんぶ図書館でする",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-16",
+   "cat": "school",
+   "a": {
+    "text": "1日1さつ本を読む",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "1日1まい絵をかく",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-17",
+   "cat": "school",
+   "a": {
+    "text": "学校の科学まつりのリーダーになる",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "学校の作品てんのリーダーになる",
+    "tags": [
+     "make",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-18",
+   "cat": "school",
+   "a": {
+    "text": "おしゃべりするランドセル",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "自分でかたづくふでばこ",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-19",
+   "cat": "school",
+   "a": {
+    "text": "1年じゅうきょうりゅうについて学ぶ",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "1年じゅううちゅうについて学ぶ",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-20",
+   "cat": "school",
+   "a": {
+    "text": "しゅくだいが宝さがしになる",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "しゅくだいがパズルになる",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-21",
+   "cat": "school",
+   "a": {
+    "text": "クラスのお手つだいがかりになる",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "クラスの発明がかりになる",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-22",
+   "cat": "school",
+   "a": {
+    "text": "学校がおそくはじまる",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "学校がはやくおわる",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-23",
+   "cat": "school",
+   "a": {
+    "text": "クラスでアルパカをかう",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "クラスでオウムをかう",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-24",
+   "cat": "school",
+   "a": {
+    "text": "じゅぎょうのはじめに毎回ゲームをする",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "じゅぎょうのはじめに毎回お話を聞く",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-25",
+   "cat": "school",
+   "a": {
+    "text": "木の上の教室でべんきょうする",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "せんすいかんの教室でべんきょうする",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-26",
+   "cat": "school",
+   "a": {
+    "text": "1日だけクラスの先生になる",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "1日だけ校長先生になる",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-27",
+   "cat": "school",
+   "a": {
+    "text": "ランドセルをはこぶロボットがいる",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "学校までいっしょに歩く犬がいる",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-28",
+   "cat": "school",
+   "a": {
+    "text": "あたらしいことばをならう",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "あたらしいがっきをならう",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-29",
+   "cat": "school",
+   "a": {
+    "text": "毎週うんどう会がある",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "毎週お絵かきの日がある",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-30",
+   "cat": "school",
+   "a": {
+    "text": "学校でいちばん字が上手になる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "学校でいちばんさんすうが上手になる",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-31",
+   "cat": "school",
+   "a": {
+    "text": "全校のまえでスピーチする",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "全校むけのビデオをつくる",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-32",
+   "cat": "school",
+   "a": {
+    "text": "絵がかける大きな黒板がある",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "大きなパズルのかべがある",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-33",
+   "cat": "school",
+   "a": {
+    "text": "給食のあとにおひるねする",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "給食のあとにダンスパーティーする",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-34",
+   "cat": "school",
+   "a": {
+    "text": "ういているつくえがある",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "くるくる回るいすがある",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-35",
+   "cat": "school",
+   "a": {
+    "text": "有名な科学者から学ぶ",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有名な芸術家から学ぶ",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-36",
+   "cat": "school",
+   "a": {
+    "text": "学校の畑で野さいをそだてる",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "学校の水そうのおせわをする",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "school-37",
+   "cat": "school",
+   "a": {
+    "text": "しずかな読書コーナーがある",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "にぎやかな工作コーナーがある",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-1",
+   "cat": "travel",
+   "a": {
+    "text": "ジャングルをたんけんする",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "さばくをたんけんする",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-2",
+   "cat": "travel",
+   "a": {
+    "text": "北極に行く",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "南の島に行く",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-3",
+   "cat": "travel",
+   "a": {
+    "text": "ねつききゅうで旅をする",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "せんすいかんで旅をする",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-4",
+   "cat": "travel",
+   "a": {
+    "text": "山にのぼる",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "サンゴしょうまでもぐる",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-5",
+   "cat": "travel",
+   "a": {
+    "text": "サファリに行く",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "大きな客船で旅をする",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-6",
+   "cat": "travel",
+   "a": {
+    "text": "星空の下でテントにねる",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "お城でねる",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-7",
+   "cat": "travel",
+   "a": {
+    "text": "かくされた宝ものを見つける",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "まぼろしの町を見つける",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-8",
+   "cat": "travel",
+   "a": {
+    "text": "ラクダにのる",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ゾウにのる",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-9",
+   "cat": "travel",
+   "a": {
+    "text": "むかしにタイムトラベルする",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "みらいにタイムトラベルする",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-10",
+   "cat": "travel",
+   "a": {
+    "text": "世界中の国に行く",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "太陽けいのわく星ぜんぶに行く",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-11",
+   "cat": "travel",
+   "a": {
+    "text": "家族とドライブ旅行に行く",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "友だちと電車の旅に行く",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-12",
+   "cat": "travel",
+   "a": {
+    "text": "水しょうだらけのどうくつをたんけんする",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "古いかいぞく船をたんけんする",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-13",
+   "cat": "travel",
+   "a": {
+    "text": "1週間かまくらでくらす",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "1週間さばくのテントでくらす",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-14",
+   "cat": "travel",
+   "a": {
+    "text": "山でそりあそびをする",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "海でサーフィンをする",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-15",
+   "cat": "travel",
+   "a": {
+    "text": "どこへでも行ける地図をもつ",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "どんなドアもあくかぎをもつ",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-16",
+   "cat": "travel",
+   "a": {
+    "text": "ゆらゆらのつりばしをわたる",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "高いところのガラスのゆかを歩く",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-17",
+   "cat": "travel",
+   "a": {
+    "text": "オーロラを見る",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "遠くから火山を見る",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-18",
+   "cat": "travel",
+   "a": {
+    "text": "夜のはくぶつかんに行く",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "夜のゆうえんちに行く",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "travel-19",
+   "cat": "travel",
+   "a": {
+    "text": "カヌーで川をくだる",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "ジップラインで木の間をすべる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-20",
+   "cat": "travel",
+   "a": {
+    "text": "有名なたんけん家になる",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "有名な地図をつくる人になる",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-21",
+   "cat": "travel",
+   "a": {
+    "text": "ヘリコプターにのる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "かいぞく船で海に出る",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-22",
+   "cat": "travel",
+   "a": {
+    "text": "森でキャンプする",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "はまべでキャンプする",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-23",
+   "cat": "travel",
+   "a": {
+    "text": "50のことばで「こんにちは」を言える",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "50しゅるいのダンスをおどれる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-24",
+   "cat": "travel",
+   "a": {
+    "text": "ひみつの庭へのドアを見つける",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ひみつの図書館へのドアを見つける",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-25",
+   "cat": "travel",
+   "a": {
+    "text": "高いビルがならぶ町に行く",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "小さな家がならぶ村に行く",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-26",
+   "cat": "travel",
+   "a": {
+    "text": "1日牧場ですごす",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "1日とうだいですごす",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-27",
+   "cat": "travel",
+   "a": {
+    "text": "地図をもってぼうけんに出る",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "地図なしでぼうけんに出る",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-28",
+   "cat": "travel",
+   "a": {
+    "text": "大きなききゅうで世界一周する",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ちょう速の電車で世界一周する",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-29",
+   "cat": "travel",
+   "a": {
+    "text": "あたらしい島を見つける",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "あたらしいどうぶつを見つける",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-30",
+   "cat": "travel",
+   "a": {
+    "text": "音楽フェスに行く",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ランタンまつりに行く",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-31",
+   "cat": "travel",
+   "a": {
+    "text": "いちばん大きなたきに行く",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "いちばん高い木を見に行く",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-32",
+   "cat": "travel",
+   "a": {
+    "text": "船の家でくらす",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "山の小屋でくらす",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-33",
+   "cat": "travel",
+   "a": {
+    "text": "ロケットで旅をする",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "大きなカメにのって旅をする",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-34",
+   "cat": "travel",
+   "a": {
+    "text": "カラフルな魚とシュノーケリングする",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "山のヤギとハイキングする",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-35",
+   "cat": "travel",
+   "a": {
+    "text": "小さなカバン1つで1年旅をする",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "どの旅にもへやのものをぜんぶもっていく",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-36",
+   "cat": "travel",
+   "a": {
+    "text": "長い旅でさばくをわたる",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "長い旅で氷の上をわたる",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-37",
+   "cat": "travel",
+   "a": {
+    "text": "自転車で島を1しゅうする",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "歩いてみずうみを1しゅうする",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-38",
+   "cat": "travel",
+   "a": {
+    "text": "旅行者のガイドになる",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "ガイドつきで旅をする",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-1",
+   "cat": "silly",
+   "a": {
+    "text": "かみの毛がスパゲッティになる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "足の指がマシュマロになる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-2",
+   "cat": "silly",
+   "a": {
+    "text": "くしゃみでキラキラが出る",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "しゃっくりでシャボン玉が出る",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-3",
+   "cat": "silly",
+   "a": {
+    "text": "1日カニ歩きでくらす",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "1日カエルとびでくらす",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-4",
+   "cat": "silly",
+   "a": {
+    "text": "ぜんぶダジャレで話す",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ぜんぶ歌で話す",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-5",
+   "cat": "silly",
+   "a": {
+    "text": "鼻がプップーとなる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "耳がピーッとなる",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-6",
+   "cat": "silly",
+   "a": {
+    "text": "手にくつしたをはく",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "足に手ぶくろをはく",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-7",
+   "cat": "silly",
+   "a": {
+    "text": "アヒルみたいな声になる",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ロバみたいなわらい声になる",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-8",
+   "cat": "silly",
+   "a": {
+    "text": "ゼリーでできた家にすむ",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "まくらでできた家にすむ",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-9",
+   "cat": "silly",
+   "a": {
+    "text": "ギャグを言う石をペットにする",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ぎゅっとしてくれるまくらをペットにする",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "silly-10",
+   "cat": "silly",
+   "a": {
+    "text": "げっぷでにじが出る",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "くしゃみで紙ふぶきが出る",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-11",
+   "cat": "silly",
+   "a": {
+    "text": "まゆ毛がおどりだす",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "気分でかみの色がかわる",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-12",
+   "cat": "silly",
+   "a": {
+    "text": "大きなバナナにのる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "大きなアヒルのおもちゃにのる",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-13",
+   "cat": "silly",
+   "a": {
+    "text": "ぼうしがいつもケーキ",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "くつが歩くとメロディーをかなでる",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-14",
+   "cat": "silly",
+   "a": {
+    "text": "キリンがソファになる",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "クジラがおふろになる",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-15",
+   "cat": "silly",
+   "a": {
+    "text": "うしろ向きにしか歩けない",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "つま先立ちでしか歩けない",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-16",
+   "cat": "silly",
+   "a": {
+    "text": "ポケットに小さなドラゴンがいる",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "かたに小さなゾウがいる",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-17",
+   "cat": "silly",
+   "a": {
+    "text": "ロボットの声で話す",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ネズミみたいなキーキー声で話す",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-18",
+   "cat": "silly",
+   "a": {
+    "text": "さわったものがぜんぶゼリーになる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "さわったものがぜんぶ羽になる",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-19",
+   "cat": "silly",
+   "a": {
+    "text": "ベッドがトランポリンになる",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "おふろがボールプールになる",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-20",
+   "cat": "silly",
+   "a": {
+    "text": "毎日パジャマで出かける",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "毎日ヒーローのいしょうで出かける",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-21",
+   "cat": "silly",
+   "a": {
+    "text": "わたあめのおひげがはえる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "あわあわのあごひげがはえる",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-22",
+   "cat": "silly",
+   "a": {
+    "text": "ベルを聞くたびにおどる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ねこを見るたびに歌う",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-23",
+   "cat": "silly",
+   "a": {
+    "text": "マーチングバンドについてこられる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "アヒルのむれについてこられる",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-24",
+   "cat": "silly",
+   "a": {
+    "text": "やくと歌いだすパン",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ギャグを言うれいぞうこ",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "silly-25",
+   "cat": "silly",
+   "a": {
+    "text": "カンガルーと足をこうかんする",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "ゾウと耳をこうかんする",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-26",
+   "cat": "silly",
+   "a": {
+    "text": "大きなくつの中にすむ",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "大きなティーポットの中にすむ",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-27",
+   "cat": "silly",
+   "a": {
+    "text": "カスタードのおふろに入る",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "自分より高いあわのおふろに入る",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-28",
+   "cat": "silly",
+   "a": {
+    "text": "どこへ行くにもはねていく",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "どこへ行くにもころがっていく",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-29",
+   "cat": "silly",
+   "a": {
+    "text": "わらうと花がさく",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "あくびすると雪がふる",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-30",
+   "cat": "silly",
+   "a": {
+    "text": "はっぱのコートを着る",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "羽のコートを着る",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-31",
+   "cat": "silly",
+   "a": {
+    "text": "ニャーとなく犬をかう",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ワンとほえるねこをかう",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-32",
+   "cat": "silly",
+   "a": {
+    "text": "足ではくしゅする",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "耳でバイバイする",
+    "tags": [
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-33",
+   "cat": "silly",
+   "a": {
+    "text": "かみの毛に花をさかせる",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ひじにぶどうをならせる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-34",
+   "cat": "silly",
+   "a": {
+    "text": "おしゃべりする歯ブラシ",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "歌うヘアブラシ",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-35",
+   "cat": "silly",
+   "a": {
+    "text": "家くらい大きなまくらのひみつきち",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "家くらい大きなすなのお城",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "silly-36",
+   "cat": "silly",
+   "a": {
+    "text": "大きなスプーンだけで食べる",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "くるくるストローだけで飲む",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-37",
+   "cat": "silly",
+   "a": {
+    "text": "1分だけぷるぷるゼリーになる",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "1分だけはずむボールになる",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-38",
+   "cat": "silly",
+   "a": {
+    "text": "しゃっくりがラッパの音になる",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "くしゃみがたいこの音になる",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-1",
+   "cat": "sports",
+   "a": {
+    "text": "決勝ゴールをきめる",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "決勝のシュートを止める",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "sports-2",
+   "cat": "sports",
+   "a": {
+    "text": "有名なサッカー選手になる",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "有名な体そう選手になる",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-3",
+   "cat": "sports",
+   "a": {
+    "text": "かけっこで1番になる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "水えいで1番になる",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-4",
+   "cat": "sports",
+   "a": {
+    "text": "月でバスケをする",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "水の中でテニスをする",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-5",
+   "cat": "sports",
+   "a": {
+    "text": "スケボーをならう",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ローラースケートをならう",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-6",
+   "cat": "sports",
+   "a": {
+    "text": "うまにのってレースに出る",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "自転車でレースに出る",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-7",
+   "cat": "sports",
+   "a": {
+    "text": "友だちと同じチームに入る",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "小さい子のチームのコーチになる",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-8",
+   "cat": "sports",
+   "a": {
+    "text": "ボルダリングのかべをのぼる",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "みずうみをおよいでわたる",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-9",
+   "cat": "sports",
+   "a": {
+    "text": "1日中ボードゲームをする",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "1日中ボールあそびをする",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-10",
+   "cat": "sports",
+   "a": {
+    "text": "チェスのチャンピオンになる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "たっきゅうのチャンピオンになる",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-11",
+   "cat": "sports",
+   "a": {
+    "text": "アイススケートに行く",
+    "tags": [
+     "fast",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "スキーに行く",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-12",
+   "cat": "sports",
+   "a": {
+    "text": "かんぺきな側転をきめる",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "1分間さか立ちをする",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-13",
+   "cat": "sports",
+   "a": {
+    "text": "メダルをもらう",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "トロフィーをもらう",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-14",
+   "cat": "sports",
+   "a": {
+    "text": "お城でかくれんぼする",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "大きなめいろでおにごっこする",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-15",
+   "cat": "sports",
+   "a": {
+    "text": "ダンスがとくいになる",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "武道がとくいになる",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-16",
+   "cat": "sports",
+   "a": {
+    "text": "ファンでいっぱいのスタジアムでプレーする",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "しずかな公園で友だちとあそぶ",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-17",
+   "cat": "sports",
+   "a": {
+    "text": "サッカー場の長さくらいボールをける",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "タワーくらい高くボールをなげる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-18",
+   "cat": "sports",
+   "a": {
+    "text": "サーフィンをならう",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "ヨットをならう",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-19",
+   "cat": "sports",
+   "a": {
+    "text": "庭にプールがある",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "庭にサッカー場がある",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-20",
+   "cat": "sports",
+   "a": {
+    "text": "ゴーカートでレースする",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ヨットでレースする",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-21",
+   "cat": "sports",
+   "a": {
+    "text": "しんぱんになる",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "チームのキャプテンになる",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-22",
+   "cat": "sports",
+   "a": {
+    "text": "ヤギといっしょにヨガをする",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "犬といっしょにジョギングする",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "sports-23",
+   "cat": "sports",
+   "a": {
+    "text": "まだだれも知らないスポーツをする",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "とても古いスポーツで一番になる",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-24",
+   "cat": "sports",
+   "a": {
+    "text": "大きな点差で勝つ",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "1点差で勝つ",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-25",
+   "cat": "sports",
+   "a": {
+    "text": "ロボットのチームでプレーする",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "どうぶつのチームでプレーする",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-26",
+   "cat": "sports",
+   "a": {
+    "text": "空をとぶスケボーをもつ",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "水の上を走る自転車をもつ",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-27",
+   "cat": "sports",
+   "a": {
+    "text": "大きなトランポリンでとびはねる",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "大きなウォータースライダーをすべる",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-28",
+   "cat": "sports",
+   "a": {
+    "text": "雪の中でスポーツをする",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "はまべでスポーツをする",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-29",
+   "cat": "sports",
+   "a": {
+    "text": "ジャグリングをならう",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "けん玉をならう",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-30",
+   "cat": "sports",
+   "a": {
+    "text": "決勝でPKをける",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "決勝でゴールキーパーをする",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-31",
+   "cat": "sports",
+   "a": {
+    "text": "雨の中でスポーツをする",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "晴れた日にスポーツをする",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-32",
+   "cat": "sports",
+   "a": {
+    "text": "マラソンを走る",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "1.5キロおよぐ",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-33",
+   "cat": "sports",
+   "a": {
+    "text": "キャッチボールで勝つ",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "つなひきで勝つ",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-34",
+   "cat": "sports",
+   "a": {
+    "text": "公園でいちばん高い木にのぼる",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "公園でいちばんのかくれ場所を見つける",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-35",
+   "cat": "sports",
+   "a": {
+    "text": "みんなが勝つスポーツをする",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "自分の記録をこえるスポーツをする",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-36",
+   "cat": "sports",
+   "a": {
+    "text": "チームをおうえんする",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "チームにおうえんされる",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-1",
+   "cat": "space",
+   "a": {
+    "text": "月の上を歩く",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "いちばんふかい海でおよぐ",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-2",
+   "cat": "space",
+   "a": {
+    "text": "ながれ星を見る",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "クジラが海からジャンプするのを見る",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-3",
+   "cat": "space",
+   "a": {
+    "text": "火星にすむ",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "海の中にすむ",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-4",
+   "cat": "space",
+   "a": {
+    "text": "土星のわを見に行く",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "木星の大きな赤いあらしを見に行く",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-5",
+   "cat": "space",
+   "a": {
+    "text": "森をつくるために木をうえる",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "はまべのゴミをひろう",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "space-6",
+   "cat": "space",
+   "a": {
+    "text": "うちゅうひこうしになる",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "海のいきものの学者になる",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-7",
+   "cat": "space",
+   "a": {
+    "text": "山の上で朝日を見る",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "はまべで夕日を見る",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-8",
+   "cat": "space",
+   "a": {
+    "text": "毎日にじを見る",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "毎日雪を見る",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-9",
+   "cat": "space",
+   "a": {
+    "text": "あたらしいわく星を見つける",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "あたらしい星を見つける",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-10",
+   "cat": "space",
+   "a": {
+    "text": "うちゅうでぷかぷかうかぶ",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "あたたかい海でぷかぷかうかぶ",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-11",
+   "cat": "space",
+   "a": {
+    "text": "ねったいうりんで1ばんすごす",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "さばくで1ばんすごす",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-12",
+   "cat": "space",
+   "a": {
+    "text": "星に名前をつける",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "あたらしい花に名前をつける",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-13",
+   "cat": "space",
+   "a": {
+    "text": "ずっと夏のところにすむ",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ずっと冬のところにすむ",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-14",
+   "cat": "space",
+   "a": {
+    "text": "やさしいうちゅう人に会う",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "あたらしいきょうりゅうの化石を見つける",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-15",
+   "cat": "space",
+   "a": {
+    "text": "なんでも見えるぼうえんきょう",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "どこへでも行けるせんすいかん",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-16",
+   "cat": "space",
+   "a": {
+    "text": "あったかいへやのまどからかみなりを見る",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "あたたかい小屋から雪がふるのを見る",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-17",
+   "cat": "space",
+   "a": {
+    "text": "すい星にのる",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "月の上でぴょんぴょんはねる",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-18",
+   "cat": "space",
+   "a": {
+    "text": "ロボットと火山をたんけんする",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "そり犬と氷河をたんけんする",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-19",
+   "cat": "space",
+   "a": {
+    "text": "うちゅう船で畑のおせわをする",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "海の中の牧場のおせわをする",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-20",
+   "cat": "space",
+   "a": {
+    "text": "ずっと波の音が聞こえる",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "ずっと鳥の声が聞こえる",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-21",
+   "cat": "space",
+   "a": {
+    "text": "森の木をぜんぶかぞえる",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "はまべの波をぜんぶかぞえる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-22",
+   "cat": "space",
+   "a": {
+    "text": "1日だけ雲になる",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "1日だけ雨つぶになる",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-23",
+   "cat": "space",
+   "a": {
+    "text": "いちばん高いひまわりをそだてる",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "いちばん大きいスイカをそだてる",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "space-24",
+   "cat": "space",
+   "a": {
+    "text": "うちゅうが見えるまどがある",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "海が見えるまどがある",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-25",
+   "cat": "space",
+   "a": {
+    "text": "光る虫がいるどうくつを見つける",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "光る波がよせるはまべを見つける",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-26",
+   "cat": "space",
+   "a": {
+    "text": "サンゴしょうをまもる",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "ねったいうりんをまもる",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-27",
+   "cat": "space",
+   "a": {
+    "text": "あたらしいわく星にはじめて立つ",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "あたらしいどうぶつにはじめて会う",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-28",
+   "cat": "space",
+   "a": {
+    "text": "1年うちゅうステーションですごす",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "1年けんきゅう船ですごす",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-29",
+   "cat": "space",
+   "a": {
+    "text": "毎ばん星をながめる",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "毎日いそあそびをする",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-30",
+   "cat": "space",
+   "a": {
+    "text": "赤ちゃんの星を手にのせる",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "にじを手につかむ",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-31",
+   "cat": "space",
+   "a": {
+    "text": "地球でいちばんあつい場所に行く",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "地球でいちばんさむい場所に行く",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-32",
+   "cat": "space",
+   "a": {
+    "text": "かいき日食を見る",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "りゅうせい群を見る",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-33",
+   "cat": "space",
+   "a": {
+    "text": "チョウでいっぱいの庭がある",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "小鳥でいっぱいの庭がある",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-34",
+   "cat": "space",
+   "a": {
+    "text": "空にうかぶ島にすむ",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "雲より高い山の上にすむ",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-35",
+   "cat": "space",
+   "a": {
+    "text": "星の名前をぜんぶおぼえる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "鳥の名前をぜんぶおぼえる",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-36",
+   "cat": "space",
+   "a": {
+    "text": "友だち1人ごとに木を1本うえる",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "見かけた鳥ごとに巣箱をつくる",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "space-37",
+   "cat": "space",
+   "a": {
+    "text": "ブラックホールの中をしらべる",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "海のそこにすむいきものをしらべる",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-1",
+   "cat": "future",
+   "a": {
+    "text": "ロボットが親友になる",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "きょうりゅうが親友になる",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-2",
+   "cat": "future",
+   "a": {
+    "text": "空とぶ車にのる",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "自動で走る車にのる",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-3",
+   "cat": "future",
+   "a": {
+    "text": "自分でそうじする家にすむ",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "どこへでも動ける家にすむ",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-4",
+   "cat": "future",
+   "a": {
+    "text": "あたらしいおもちゃを発明する",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "あたらしい食べものを発明する",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "future-5",
+   "cat": "future",
+   "a": {
+    "text": "ワープできるスマホをもつ",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "どんなことばもやくせるメガネをもつ",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "future-6",
+   "cat": "future",
+   "a": {
+    "text": "発明家になる",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "科学者になる",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-7",
+   "cat": "future",
+   "a": {
+    "text": "海の中の町にすむ",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "雲の上の町にすむ",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-8",
+   "cat": "future",
+   "a": {
+    "text": "お手つだいをしてくれるロボット",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "いっしょにあそんでくれるロボット",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-9",
+   "cat": "future",
+   "a": {
+    "text": "100年先のみらいを見る",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "100年前のむかしを見る",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-10",
+   "cat": "future",
+   "a": {
+    "text": "タイムマシンをつくる",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ロケットをつくる",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-11",
+   "cat": "future",
+   "a": {
+    "text": "あたらしいゆうえんちをデザインする",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "あたらしい町をデザインする",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-12",
+   "cat": "future",
+   "a": {
+    "text": "空をとべるくつをもつ",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "すがたが消えるジャケットをもつ",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-13",
+   "cat": "future",
+   "a": {
+    "text": "みんながやさしくなるきかいを発明する",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "みんながわらうきかいを発明する",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-14",
+   "cat": "future",
+   "a": {
+    "text": "なんでも知っているコンピューターと話す",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "なんでも知っているどうぶつと話す",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-15",
+   "cat": "future",
+   "a": {
+    "text": "うちゅうステーションでくらす",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ハイテクな木の上の家でくらす",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-16",
+   "cat": "future",
+   "a": {
+    "text": "おもちゃの3Dプリンターをもつ",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "食べものの3Dプリンターをもつ",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-17",
+   "cat": "future",
+   "a": {
+    "text": "テレビゲームをつくる",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "ボードゲームをつくる",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-18",
+   "cat": "future",
+   "a": {
+    "text": "ホログラムのペットをかう",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ロボットのペットをかう",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-19",
+   "cat": "future",
+   "a": {
+    "text": "あたらしい発明で海をきれいにする",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "あたらしい発明で森をふやす",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-20",
+   "cat": "future",
+   "a": {
+    "text": "くつの形の車をもつ",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "クジラの形のバスをもつ",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-21",
+   "cat": "future",
+   "a": {
+    "text": "火星にすむ人たちを見られる",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ゴミのない町を見られる",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-22",
+   "cat": "future",
+   "a": {
+    "text": "ゆめをかなえるベッド",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "みらいがうつる鏡",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-23",
+   "cat": "future",
+   "a": {
+    "text": "絵がかけるロボットをつくる",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "ダンスできるロボットをつくる",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-24",
+   "cat": "future",
+   "a": {
+    "text": "わらい声からエネルギーをつくる",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "音楽からエネルギーをつくる",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-25",
+   "cat": "future",
+   "a": {
+    "text": "有名なデザイナーになる",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "有名なエンジニアになる",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-26",
+   "cat": "future",
+   "a": {
+    "text": "ジェットパックをもつ",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "うくスケボーをもつ",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-27",
+   "cat": "future",
+   "a": {
+    "text": "本が読み聞かせしてくれる図書館",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "お話の中に入れる図書館",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-28",
+   "cat": "future",
+   "a": {
+    "text": "あたらしい色を発明する",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "あたらしいがっきを発明する",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-29",
+   "cat": "future",
+   "a": {
+    "text": "ロボットのコックさんがいる",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "ロボットの庭師さんがいる",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-30",
+   "cat": "future",
+   "a": {
+    "text": "色がかわる服をデザインする",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "どこでもあったかい服をデザインする",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-31",
+   "cat": "future",
+   "a": {
+    "text": "キッチンまですべり台がある家にすむ",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "庭までジップラインがある家にすむ",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "future-32",
+   "cat": "future",
+   "a": {
+    "text": "1000年後の人にメッセージをおくる",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "1000年前の人からメッセージをもらう",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-33",
+   "cat": "future",
+   "a": {
+    "text": "レモネードで走る車をもつ",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "おひさまの光で走る車をもつ",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-34",
+   "cat": "future",
+   "a": {
+    "text": "雨をぜんぶふせぐかさ",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "どろよごれをぜんぶふせぐ長ぐつ",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-35",
+   "cat": "future",
+   "a": {
+    "text": "どうぶつのおうちをつくる",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "ロボットのおうちをつくる",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-36",
+   "cat": "future",
+   "a": {
+    "text": "みんなが使うものを発明する",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "自分だけが使うものを発明する",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-37",
+   "cat": "future",
+   "a": {
+    "text": "頭にダウンロードしておぼえる",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "自分でためしておぼえる",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-38",
+   "cat": "future",
+   "a": {
+    "text": "おやつをとどけてくれるドローン",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "犬のさんぽをしてくれるドローン",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-1",
+   "cat": "family",
+   "a": {
+    "text": "親友とおとまり会をする",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "いとことおとまり会をする",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-2",
+   "cat": "family",
+   "a": {
+    "text": "サプライズパーティーをけいかくする",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "サプライズパーティーをしてもらう",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-3",
+   "cat": "family",
+   "a": {
+    "text": "きょうだいが10人いる",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "ひとりっ子になる",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-4",
+   "cat": "family",
+   "a": {
+    "text": "おじいちゃんおばあちゃんと旅行する",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "友だちと旅行する",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-5",
+   "cat": "family",
+   "a": {
+    "text": "毎日あたらしい友だちをつくる",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ずっと1人の親友となかよし",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-6",
+   "cat": "family",
+   "a": {
+    "text": "家族で映画の夜をする",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "家族でゲームの夜をする",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-7",
+   "cat": "family",
+   "a": {
+    "text": "友だちに手紙を書く",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "友だちにプレゼントをつくる",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-8",
+   "cat": "family",
+   "a": {
+    "text": "話をよく聞いてくれる友だち",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "すごくおもしろい友だち",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-9",
+   "cat": "family",
+   "a": {
+    "text": "友だちのしゅくだいを手つだう",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "友だちのひみつきちづくりを手つだう",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-10",
+   "cat": "family",
+   "a": {
+    "text": "家族でクッキーをやく",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "家族でパズルをする",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-11",
+   "cat": "family",
+   "a": {
+    "text": "ひみつのあくしゅをきめる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ひみつのあんごうをきめる",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-12",
+   "cat": "family",
+   "a": {
+    "text": "家族でコンサートに行く",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "家族ではくぶつかんに行く",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-13",
+   "cat": "family",
+   "a": {
+    "text": "親友のとなりにすむ",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "おじいちゃんおばあちゃんのとなりにすむ",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-14",
+   "cat": "family",
+   "a": {
+    "text": "ペットのためにパーティーをひらく",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "先生のためにパーティーをひらく",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-15",
+   "cat": "family",
+   "a": {
+    "text": "デザートをわけてあげる",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "おもちゃをかしてあげる",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-16",
+   "cat": "family",
+   "a": {
+    "text": "家族でいちばんおもしろい人になる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "家族でいちばんやさしい人になる",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-17",
+   "cat": "family",
+   "a": {
+    "text": "友だちみんなとピクニックする",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "1人の友だちとのんびりすごす",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-18",
+   "cat": "family",
+   "a": {
+    "text": "家族のビデオをつくる",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "家族のレシピ本をつくる",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-19",
+   "cat": "family",
+   "a": {
+    "text": "おじいちゃんおばあちゃんとボードゲーム",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "いとことサッカーをする",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-20",
+   "cat": "family",
+   "a": {
+    "text": "ほかの国の友だちがいる",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "ほかの星の友だちがいる",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-21",
+   "cat": "family",
+   "a": {
+    "text": "つぎの家族旅行をけいかくする",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "つぎの家族のごはん会をけいかくする",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-22",
+   "cat": "family",
+   "a": {
+    "text": "かべに大きな家族の写真をかざる",
+    "tags": [
+     "social",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "かべに家族の木の絵をかく",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-23",
+   "cat": "family",
+   "a": {
+    "text": "せかい一のハグができる",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "せかい一のハイタッチができる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-24",
+   "cat": "family",
+   "a": {
+    "text": "人を元気づけるのがとくい",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "もんだいをかいけつするのがとくい",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-25",
+   "cat": "family",
+   "a": {
+    "text": "大好きなしんせきと1日すごす",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "大好きな先生と1日すごす",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-26",
+   "cat": "family",
+   "a": {
+    "text": "毎ばん家族みんなでごはんを食べる",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "週に1回ベッドで朝ごはんを食べる",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "family-27",
+   "cat": "family",
+   "a": {
+    "text": "家族でダンスを考える",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "家族で歌をつくる",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-28",
+   "cat": "family",
+   "a": {
+    "text": "友だちとクラブをつくる",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "友だちとバンドをくむ",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-29",
+   "cat": "family",
+   "a": {
+    "text": "転校生がなじめるように手つだう",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "まいごのペットを家にかえす",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-30",
+   "cat": "family",
+   "a": {
+    "text": "1日だけ友だちと家をこうかんする",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "1日だけ友だちと家族をこうかんする",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-31",
+   "cat": "family",
+   "a": {
+    "text": "同じゲームが好きな友だち",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "あたらしいゲームを教えてくれる友だち",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-32",
+   "cat": "family",
+   "a": {
+    "text": "はまべでたんじょう日をおいわいする",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "雪の中でたんじょう日をおいわいする",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-33",
+   "cat": "family",
+   "a": {
+    "text": "友だちから手紙がとどく",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "友だちがとつぜんあそびにくる",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-34",
+   "cat": "family",
+   "a": {
+    "text": "家族でペットをかう",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "家族で畑をつくる",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-35",
+   "cat": "family",
+   "a": {
+    "text": "きょうだいとひみつきちをつくる",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "おうちの人と雪だるまをつくる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-36",
+   "cat": "family",
+   "a": {
+    "text": "友だちとタイムカプセルをうめる",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "友だちと思い出アルバムをつくる",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-37",
+   "cat": "family",
+   "a": {
+    "text": "毎日だれかに「ありがとう」を言う",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "毎日だれかをわらわせる",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-38",
+   "cat": "family",
+   "a": {
+    "text": "楽しいことをけいかくする人になる",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "なんでもいっしょに楽しむ人になる",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-1",
+   "cat": "deep",
+   "a": {
+    "text": "むかしのことをぜんぶ知る",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "みらいのことを少しだけ知る",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-2",
+   "cat": "deep",
+   "a": {
+    "text": "とても勇気がある",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "とてもやさしい",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-3",
+   "cat": "deep",
+   "a": {
+    "text": "とてもかしこい",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "とてもアイデアがゆたか",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-4",
+   "cat": "deep",
+   "a": {
+    "text": "いつも本当のことを言う",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "いつもぴったりのことばが言える",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-5",
+   "cat": "deep",
+   "a": {
+    "text": "友だちがたくさんいる",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "すごくなかよしの友だちが1人いる",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-6",
+   "cat": "deep",
+   "a": {
+    "text": "有名になる",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "知られなくてもしあわせにくらす",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-7",
+   "cat": "deep",
+   "a": {
+    "text": "今ねがいを1つかなえる",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "大人になってからねがいを3つかなえる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-8",
+   "cat": "deep",
+   "a": {
+    "text": "ずっとたいくつしない",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ずっと悲しくならない",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-9",
+   "cat": "deep",
+   "a": {
+    "text": "見たゆめをぜんぶおぼえている",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "見るゆめを自分でえらべる",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-10",
+   "cat": "deep",
+   "a": {
+    "text": "1つのことで一番になる",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "いろいろなことが上手になる",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "deep-11",
+   "cat": "deep",
+   "a": {
+    "text": "どんなけんかもなかなおりさせる",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "だれでも元気にできる",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-12",
+   "cat": "deep",
+   "a": {
+    "text": "あそぶ時間がふえる",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "学ぶ時間がふえる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-13",
+   "cat": "deep",
+   "a": {
+    "text": "大きな町にすむ",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "いなかにすむ",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-14",
+   "cat": "deep",
+   "a": {
+    "text": "1日だけ人の心が読める",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "1日だけ自分の心を読まれる",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-15",
+   "cat": "deep",
+   "a": {
+    "text": "すごいリーダーになる",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "すごいお手つだいさんになる",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-16",
+   "cat": "deep",
+   "a": {
+    "text": "1つの大きなことをかえる",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "小さなことをたくさんかえる",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-17",
+   "cat": "deep",
+   "a": {
+    "text": "なくした宝ものを見つける",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "はなればなれの友だちを見つける",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-18",
+   "cat": "deep",
+   "a": {
+    "text": "プレゼントをあげる",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "プレゼントをもらう",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-19",
+   "cat": "deep",
+   "a": {
+    "text": "自分がしょうをもらう",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "友だちがしょうをもらうのを手つだう",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-20",
+   "cat": "deep",
+   "a": {
+    "text": "しっぱいから学ぶ",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "ぜったいにしっぱいしない",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-21",
+   "cat": "deep",
+   "a": {
+    "text": "話を聞くのがとくい",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "せつめいするのがとくい",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-22",
+   "cat": "deep",
+   "a": {
+    "text": "いつも早めにつく",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "時間を気にせずのんびりする",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-23",
+   "cat": "deep",
+   "a": {
+    "text": "すべてのことばが話せる",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "すべてのがっきがひける",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-24",
+   "cat": "deep",
+   "a": {
+    "text": "しずかな朝をすごす",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "いそがしい朝をすごす",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-25",
+   "cat": "deep",
+   "a": {
+    "text": "なんでもけいかくを立てる",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "そのときの思いつきで動く",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-26",
+   "cat": "deep",
+   "a": {
+    "text": "大ぼうけんを1回する",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "小さなぼうけんを毎週する",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "deep-27",
+   "cat": "deep",
+   "a": {
+    "text": "へやをいつもきれいにする",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "へやをちらかっててもいごこちよくする",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-28",
+   "cat": "deep",
+   "a": {
+    "text": "地球をたすける",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "町の人たちをたすける",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-29",
+   "cat": "deep",
+   "a": {
+    "text": "お話をするのが上手になる",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "もんだいをとくのが上手になる",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "deep-30",
+   "cat": "deep",
+   "a": {
+    "text": "1日画面を見ないですごす",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "1日おかしを食べないですごす",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "deep-31",
+   "cat": "deep",
+   "a": {
+    "text": "あたらしいことにチャレンジする人",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "はじめたことをさいごまでやる人",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-32",
+   "cat": "deep",
+   "a": {
+    "text": "先に「ごめんね」を言う",
+    "tags": [
+     "kind",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "先に「ありがとう」を言う",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-33",
+   "cat": "deep",
+   "a": {
+    "text": "すごいきおく力がある",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "すごいそうぞう力がある",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-34",
+   "cat": "deep",
+   "a": {
+    "text": "世界をもう少しカラフルにする",
+    "tags": [
+     "make",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "世界をもう少ししずかにする",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-35",
+   "cat": "deep",
+   "a": {
+    "text": "楽しいしゅんかんを止められる",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "楽しいしゅんかんをくりかえせる",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-36",
+   "cat": "deep",
+   "a": {
+    "text": "ひみつのとくぎをみんなに見せる",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "ひみつのとくぎを自分だけのものにする",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-37",
+   "cat": "deep",
+   "a": {
+    "text": "たくさんしつもんする",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "たくさん答えを見つける",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-38",
+   "cat": "deep",
+   "a": {
+    "text": "もっと長く子どものままでいる",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "ちょっと早く大人になる",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  }
+ ]
+}

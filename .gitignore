@@ -1,6 +1,7 @@
 node_modules
 data/
 !public/vendor/data/
+!scripts/data/
 test-results/
 playwright-report/
 screenshots/
