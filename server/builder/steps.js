@@ -46,7 +46,7 @@ const FACTS = {
   v: int(1, 999999),                                     // check, playtest, resume: version number
   title: x => (typeof x === 'string' ? cut(x, 60) || undefined : undefined),        // name
   icon: x => (typeof x === 'string' ? cut(x, 8) || undefined : undefined),          // name
-  pics: int(0, 2),                                       // playtest: pictures taken
+  pics: int(0, 4),                                       // playtest: pictures taken (phone title and play, two device sheets)
   probs: int(0, 999),                                    // playtest: problems the automatic checks found
 };
 export function keep(facts) {

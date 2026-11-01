@@ -1875,3 +1875,13 @@ narrow column on tablets.
 (used to fix a member's published game for them). Off unless `ADMIN_API_TOKEN` (32+ characters) is set; bearer token,
 rate-limited, audited as the admin account; new versions pass the usual safety scan, and a version waiting for review
 is approved as the admin. Remove the token when the fix is done.
+## The Builder checks every device, tablets first (November 2026)
+
+Kids play on tablets (iPads, Chromebooks) more than on anything else, and games that looked fine in the Builder's phone
+playtest were hard to play on a tablet. So the playtest now also shows the model the title screen and the game after
+starting at five sizes (phone and tablet, each in portrait and landscape, and desktop), as two labelled contact sheets
+with the layout problems found at each size, and the system prompt has a firm "EVERY DEVICE, TABLET FIRST" rule. The
+sizes are reached by resizing the window, so a game must lay itself out again on a resize, as it must when a tablet
+turns. Cost: two more pictures per playtest (about 1,500 x 1,000 pixels each) and about 8 seconds more per playtest; a
+screenshot job's limit went from 40 to 55 seconds.
+

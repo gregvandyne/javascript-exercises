@@ -486,7 +486,7 @@ Oomba.game({ api: 1, title: CONFIG.title, subtitle: 'sub', strings: WORDS, /* ..
   never in the middle where the title, Play and the choices go. Keep the band
   behind the title and Play free of ledges (start them below it or past the first screen). Speech bubbles place themselves clear of pickups and faces; your own DOM that must stay visible gets
   `data-ok-keep`. Choices fly above the skyline's signs, not across them.
-- Phones first: the kit's camera frames platformers; for `camera: 'fixed'` games set the zoom in `update` so the scene
+- Phones first, tablets too (portrait and landscape): the kit's camera frames platformers; for `camera: 'fixed'` games set the zoom in `update` so the scene
   fits `w.stage.view` (see the third example). Your DOM pieces sit below `top: var(--ok-safe-top)` (the HUD and the
   kit's right/wrong banner are above it) or in a card at the bottom, and keep 48px buttons. Put something to see near
   the start: the play picture becomes the game's cover.
