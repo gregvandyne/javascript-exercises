@@ -156,6 +156,13 @@
       "waitingFor": "Waiting for {name} to say yes…",
       "cancel": "Cancel",
       "ended": "This online game has ended."
+    },
+    "live-sets": {
+      "grade": "Year or level (optional)",
+      "gradeHint": "e.g. Year 7, GCSE, beginners",
+      "aiTopicHint": "e.g. Causes of the First World War, the water cycle, Spanish food words, solving linear equations",
+      "aiLevel": "Year or level",
+      "aiLevelHint": "e.g. Year 4, Year 9, GCSE chemistry"
     }
   },
   "favorites": {
@@ -372,6 +379,10 @@
   "teachersLive": {
     "tools": {
       "li1": "Teams of 2 to 6, balanced for you, with team colours and scores."
+    },
+    "own": {
+      "p": "Write quizzes for any subject and any age, from early reading to secondary-school chemistry.",
+      "li3": "Describe a topic and a year group, and AI drafts the questions for you to check and edit."
     }
   }
 }

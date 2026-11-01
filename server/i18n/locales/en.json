@@ -2225,7 +2225,40 @@
       "removeQuestion": "Remove this question",
       "right": "The right answer",
       "answer": "Answer {n}",
-      "saved": "Saved!"
+      "saved": "Saved!",
+      "grade": "Grade or level (optional)",
+      "gradeHint": "e.g. Grade 7, Year 10, beginners",
+      "aiButton": "Draft questions with AI",
+      "pasteButton": "Paste questions",
+      "count": "{n} of {max} questions",
+      "true": "True",
+      "false": "False",
+      "makeTf": "Make it true or false",
+      "removeAnswer": "Remove this answer",
+      "moveUp": "Move this question up",
+      "moveDown": "Move this question down",
+      "duplicate": "Duplicate",
+      "aiTitle": "Draft questions with AI",
+      "aiIntro": "Describe what you're teaching and who it's for. The questions appear below for you to check and edit before you save. Always check the answers.",
+      "aiTopic": "Topic",
+      "aiTopicHint": "e.g. Causes of World War I, the water cycle, Spanish food words, solving linear equations",
+      "aiLevel": "Grade or level",
+      "aiLevelHint": "e.g. Grade 4, Year 9, high school chemistry",
+      "aiCount": "How many questions",
+      "aiKind": "Kind of questions",
+      "aiMixed": "A mix",
+      "aiChoice4": "Four answers each",
+      "aiTf": "True or false",
+      "aiGo": "Draft questions",
+      "aiWorking": "Writing questions…",
+      "aiNeedTopic": "Type a topic first.",
+      "added": "{n, plural, one {Added # question.} other {Added # questions.}} Check them, then save.",
+      "pasteTitle": "Paste questions",
+      "pasteSheet": "From a spreadsheet: copy the rows and paste them here. One row per question: the question, the right answer, then 1 to 3 wrong answers, and the seconds to answer (optional).",
+      "pasteText": "Or type them: the question on one line, then its answers on the lines below, with * before the right one. Leave an empty line between questions.",
+      "pasteExample": "What is the largest planet?\n* Jupiter\nSaturn\nEarth\n\nWater boils at 100 °C at sea level.\n* True\nFalse",
+      "pasteFound": "{n, plural, =0 {No questions found yet.} one {# question found.} other {# questions found.}}",
+      "pasteGo": "Add these questions"
     },
     "match": {
       "title": "Play {title} online",
@@ -4708,7 +4741,10 @@
       "new": "New question set",
       "empty": "No question sets yet.",
       "items": "{count, plural, one {# question} other {# questions}}",
-      "draft": "needs answers"
+      "draft": "needs answers",
+      "school": "Shared at my school",
+      "schoolHint": "Sets other teachers at your school shared. Make a copy to change one.",
+      "copy": "Make a copy"
     },
     "api": {
       "off": "Live games are switched off right now.",
@@ -4728,14 +4764,17 @@
       "audience": "Pick who can join.",
       "set": {
         "title": "Give the set a title.",
-        "items": "Add 1 to 50 questions.",
+        "items": "Add 1 to 100 questions.",
         "question": "Question {n} needs words (and nothing personal or rude).",
         "choice": "An answer in question {n} is not allowed.",
         "choices": "Question {n} needs 2 to 4 answers, with the right one chosen.",
         "sameChoice": "Question {n} has two answers that are the same.",
         "tooBig": "This set is too big.",
         "noQuestions": "This lesson has no question steps.",
-        "notFound": "We can't find that set."
+        "notFound": "We can't find that set.",
+        "topic": "Type a topic first.",
+        "aiOff": "Drafting with AI isn't available right now. You can still type or paste your questions.",
+        "aiFailed": "The AI couldn't write questions this time. Try again, or change the topic a little."
       },
       "noMissed": "Everyone got every question right, so there is nothing to play again.",
       "teamsOff": "This game had no teams.",
@@ -5225,7 +5264,7 @@
     "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads. Free for teachers.",
     "kicker": "Oomba Live for teachers",
     "h1": "Live quiz games your whole class plays together",
-    "lead": "Put the game on the board. Students join on their own devices with a 7-digit code and race through your questions. Free, with no ads, and nothing for students to type but the code.",
+    "lead": "Put the game on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
     "badges": {
       "free": "Free for teachers",
       "ads": "No ads",
@@ -5243,7 +5282,7 @@
       "lead": "Real screens from a live game in a demo school with made-up names.",
       "s1": {
         "h": "Pick a game and your questions",
-        "p": "Choose Quest Race or Question Battle, then a ready-made starter set, a set you write, or the questions from one of your lessons.",
+        "p": "Choose Quest Race or Question Battle, then your own question set, one a colleague shared, a ready-made starter, or the questions from one of your lessons.",
         "alt": "The Host a live game page: game modes to pick from, a question set and who can join."
       },
       "s2": {
@@ -5321,9 +5360,18 @@
       "q3": "How many students can play?",
       "a3": "Up to {max} in a class room. A room open to anyone with the code takes up to {open} players when a parent or other grown-up hosts it, and up to {max} when a teacher does.",
       "q4": "Can I use my own questions?",
-      "a4": "Yes. Write a set of up to {items} questions with 2 to 4 answers each, use a starter set, or turn the questions from one of your lessons into a live quiz.",
+      "a4": "Yes, on any subject and at any level. Write a set of up to {items} questions with 2 to 4 answers each, paste one from a spreadsheet, let AI draft one for you to edit, or turn the questions from one of your lessons into a live quiz.",
       "q5": "What do students need?",
       "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the game on the board from your own computer."
+    },
+    "own": {
+      "h": "Your questions, your way",
+      "p": "Write quizzes for any subject and any age, from early reading to high-school chemistry.",
+      "li1": "Type questions with 2 to 4 answers, or true or false, and a time from 5 seconds to 2 minutes each.",
+      "li2": "Paste a whole quiz from a spreadsheet or a document in one go.",
+      "li3": "Describe a topic and a grade, and AI drafts the questions for you to check and edit.",
+      "li4": "Up to 100 questions in a set. Share sets with teachers at your school, or copy theirs and make them your own.",
+      "li5": "Want a different kind of game? Build your own quiz game with the AI Builder, and it plays live with any of your question sets."
     }
   }
 }

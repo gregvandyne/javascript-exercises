@@ -368,3 +368,10 @@ button.lv-dash-role:focus-visible { outline: 3px solid var(--focus); outline-off
 .lv-cohost-link > summary::-webkit-details-marker { display: none; }
 /* the picked person's access level, under the picker (a long name never hides it) */
 .lv-cohost-pick-tier { margin: 4px 0 0; overflow-wrap: anywhere; }
+/* The question-set editor's extras: subject and level side by side, the AI and paste buttons, question tools */
+.lv-set-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.lv-set-tools, .lv-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.lv-q-tools { justify-content: flex-end; }
+.lv-choice .lv-x { flex: none; min-width: 36px; padding: 0 8px; }
+.lv-secs { max-width: 140px; }
+.lv-paste-example { white-space: pre-wrap; font-size: .85rem; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0; }

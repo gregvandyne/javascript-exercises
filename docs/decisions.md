@@ -1830,3 +1830,13 @@ built for classes; a match is two equal players, either of whom may be a kid.
 - Allowlisted official games only (`match.GAMES`), so a game made in the Builder can never turn the relay into
   a message channel, even though the data is numbers only. Safety rules: docs/safety.md §13.
 
+
+## Live quizzes back, and question sets teachers fully control (November 2026)
+
+Quest Race and Question Battle are offered again on /live (the owner's call; #107 had hidden them). The seed clears
+the `retired` flag it had set. Question sets are the teacher's own content: any subject, any level, up to 100
+questions, 2-4 answers or true/false, 5 seconds to 2 minutes a question, pasted from a spreadsheet or a document,
+drafted by AI from a topic and a grade (services/set-ai.js; questions go into the editor and are only saved, through the
+usual text checks, when the teacher saves), and copied from a colleague's shared set. A teacher's own sets come first in
+the live picker; the starters come last. Teachers can also build their own quiz games with the Builder (`quiz: true`),
+which play live with any of their sets. Landing page: /teachers/live.

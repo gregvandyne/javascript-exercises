@@ -13,7 +13,7 @@ import { starterItems, STARTERS } from '../live/starters.js';
 
 /** Extra time after the deadline for answers already on their way. */
 export const GRACE_MS = 600;
-export const SECS = [10, 20, 30, 60];
+export { SECS } from './classlive-sets.js';
 export const STREAK = { step: 50, max: 200 };
 
 /**

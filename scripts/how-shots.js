@@ -411,10 +411,26 @@ async function liveShots({ person, shot }, ids) {
   // 1. The landing: pick a game, the questions, who can join (her class).
   for (const kind of ['phone', 'desk']) {
     const p = await person(kind, 'MsRivera');
+    // Her own question set (a teacher's sets come first in the picker, before the starters).
     await p.goto('/live');
+    if (kind === 'phone') {
+      const made = await p.request.post('/api/live/sets', { data: { title: 'Year 6 Science: Forces', subject: 'Science', grade: 'Year 6', items: [
+        { q: 'Which force pulls objects towards the Earth?', choices: ['Gravity', 'Friction', 'Magnetism', 'Air resistance'], answer: 0, secs: 20 },
+        { q: 'Friction always slows a moving object down.', choices: ['True', 'False'], answer: 0, secs: 15 },
+        { q: 'Which unit do we measure force in?', choices: ['Newtons', 'Kilograms', 'Metres', 'Seconds'], answer: 0, secs: 20 },
+      ] }, headers: { Origin: new URL(p.url()).origin } });
+      if (!made.ok()) throw new Error(`live: question set ${made.status()}`);
+    }
+    await p.goto('/live');
+    // Question Battle, so the question-set picker shows too.
+    await p.locator('input[name="pick"][value="mode:battle"]').check({ force: true }).catch(() => {});
+    await p.locator('#lv-new').dispatchEvent('change');
     const cls = p.locator('input[name="audience"][value="class"]');
     if (await cls.count()) await cls.check().catch(() => {});
-    made.push({ slug: 'live-pick', kind, png: await shot(p, `live-pick-${kind}`, { names: true }) });
+    await p.locator('#lv-class').selectOption({ label: "Ms. Rivera's Class" }).catch(() => {});
+    // A new teacher's empty "My games" and "Shared with my classes" groups are left out: the games, then who can join.
+    await p.evaluate(() => { for (const f of document.querySelectorAll('#lv-new fieldset.lv-group')) if (!f.querySelector('.lv-pick') && !f.querySelector('input,select')) f.style.display = 'none'; });
+    made.push({ slug: 'live-pick', kind, png: await shot(p, `live-pick-${kind}`, { names: true, focus: '#lv-new', offset: 12 }) });
     await p.context().close();
   }
 
@@ -467,9 +483,9 @@ async function liveShots({ person, shot }, ids) {
   for (let i = 0; i < LIVE_ITEMS.length; i++) {
     for (const s of frames) await until(async () => { const st = await state(s.f); return st.phase === 'playing' && st.question && st.question.i === i; }, `question ${i}`);
     if (i === 0) {
-      for (const [name, kind] of [['Pixel Panda', 'phone'], ['Nova Newt', 'desk']]) {
+      for (const [name, kind] of [['Nova Newt', 'desk'], ['Pixel Panda', 'phone']]) {
         const s = frames.find(x => x.rosterName === name);
-        await s.p.waitForTimeout(1200);
+        await s.p.waitForTimeout(900);
         made.push({ slug: 'live-play', kind, png: await shot(s.p, `live-play-${kind}`, { names: true }) });
       }
     }
@@ -488,11 +504,14 @@ async function liveShots({ person, shot }, ids) {
   const results = host.url();
 
   // 5. The results page, on the laptop and on a phone.
-  made.push({ slug: 'live-results', kind: 'desk', png: await shot(host, 'live-results-desk', { names: true }) });
+  // The student table (in "Details", closed by default so it isn't shown on the projector by accident).
+  const details = async p => { await p.locator('#lv-details summary').click(); await p.locator('#lv-student-table').waitFor(); };
+  await details(host);
+  made.push({ slug: 'live-results', kind: 'desk', png: await shot(host, 'live-results-desk', { names: true, focus: '#lv-details', offset: 12 }) });
   {
     const p = await person('phone', 'MsRivera');
-    await p.goto(results);
-    made.push({ slug: 'live-results', kind: 'phone', png: await shot(p, 'live-results-phone', { names: true }) });
+    await p.goto(results); await details(p);
+    made.push({ slug: 'live-results', kind: 'phone', png: await shot(p, 'live-results-phone', { names: true, focus: '#lv-details', offset: 12 }) });
     await p.context().close();
   }
   for (const s of students) await s.p.context().close();

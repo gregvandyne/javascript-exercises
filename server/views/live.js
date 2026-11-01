@@ -442,7 +442,6 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   const radio = (name, value, checked) => raw(`<input type="radio" name="${name}" value="${value}"${checked ? ' checked' : ''}>`);
   const card = (value, icon, title, text, checked, quiz = false, teams = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
   const anyPicked = !!pre.pick;
-  const firstGame = (groups.find(g => g.games.length) || { games: [{}] }).games[0].id;
   const audiences = [classes.length ? 'class' : null, family ? 'family' : null, 'open'].filter(Boolean);
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
   return html`<div class="lv lv-landing" data-lv-page="landing">
@@ -451,16 +450,16 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   ${ch.on.map(x => html`<p class="notice lv-cohost-on" data-lv-cohost-on="${x.sid}">${t('live.cohost.landingOn', { title: x.title })} <a class="btn btn-sm" href="/live/host/${x.sid}/dash">${t('live.cohost.openDash')}</a></p>`)}
   <p class="muted">${t('live.landing.intro', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>
   <form class="stack" id="lv-new" data-api="/api/live/sessions" novalidate>
-    ${modes.length ? html`<fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
+    <fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
       ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true))}
-    </div></fieldset>` : ''}
-    ${groups.map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', anyPicked ? pre.pick === `game:${x.id}` : !modes.length && x.id === firstGame, x.quiz, x.teams))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
+    </div></fieldset>
+    ${groups.map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
     <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>
       <div class="field"><label for="lv-set">${t('live.landing.questionsLabel')}</label>
         <select id="lv-set" name="set">
-          <optgroup label="${t('live.landing.starters')}">${starters.map(s => html`<option value="starter:${s.id}"${pre.set === `starter:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>
           ${sets.mine.length ? html`<optgroup label="${t('live.landing.mySets')}">${sets.mine.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${pre.set === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
           ${sets.school.length ? html`<optgroup label="${t('live.landing.schoolSets')}">${sets.school.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}>${s.title}</option>`)}</optgroup>` : ''}
+          <optgroup label="${t('live.landing.starters')}">${starters.map(s => html`<option value="starter:${s.id}"${pre.set === `starter:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>
         </select></div>
       <a class="small" href="/live/sets">${t('live.landing.newSet')}</a>
     </fieldset>
@@ -566,6 +565,8 @@ export function setsBody(req, { sets }) {
   <h1>${t('live.sets.heading')}</h1>
   <p><button class="btn btn-primary" type="button" id="lv-set-new">${t('live.sets.new')}</button></p>
   ${sets.mine.length ? html`<ul class="lv-setlist" id="lv-setlist">${sets.mine.map(s => html`<li data-set="${s.id}"><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}${s.ready ? '' : ` · ${t('live.sets.draft')}`}</span></li>`)}</ul>` : html`<p class="muted" id="lv-setlist-empty">${t('live.sets.empty')}</p>`}
+  ${sets.school.length ? html`<h2 class="lv-h2">${t('live.sets.school')}</h2><p class="small muted">${t('live.sets.schoolHint')}</p>
+  <ul class="lv-setlist">${sets.school.map(s => html`<li><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}</span> <button class="btn btn-sm" type="button" data-copy-set="${s.id}">${t('live.sets.copy')}</button></li>`)}</ul>` : ''}
   <section class="lv-panel" id="lv-set-editor" hidden></section>
 </div>`;
 }

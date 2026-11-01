@@ -2224,7 +2224,40 @@
       "removeQuestion": "Quitar esta pregunta",
       "right": "La respuesta correcta",
       "answer": "Respuesta {n}",
-      "saved": "¡Guardado!"
+      "saved": "¡Guardado!",
+      "grade": "Curso o nivel (opcional)",
+      "gradeHint": "p. ej., 7.º grado, 2.º de secundaria, principiantes",
+      "aiButton": "Redactar preguntas con IA",
+      "pasteButton": "Pegar preguntas",
+      "count": "{n} de {max} preguntas",
+      "true": "Verdadero",
+      "false": "Falso",
+      "makeTf": "Convertir en verdadero o falso",
+      "removeAnswer": "Quitar esta respuesta",
+      "moveUp": "Subir esta pregunta",
+      "moveDown": "Bajar esta pregunta",
+      "duplicate": "Duplicar",
+      "aiTitle": "Redactar preguntas con IA",
+      "aiIntro": "Describe qué enseñas y para quién es. Las preguntas aparecen abajo para que las revises y edites antes de guardar. Revisa siempre las respuestas.",
+      "aiTopic": "Tema",
+      "aiTopicHint": "p. ej., causas de la Primera Guerra Mundial, el ciclo del agua, palabras de comida en inglés, resolver ecuaciones lineales",
+      "aiLevel": "Curso o nivel",
+      "aiLevelHint": "p. ej., 4.º grado, 3.º de secundaria, química de bachillerato",
+      "aiCount": "Cuántas preguntas",
+      "aiKind": "Tipo de preguntas",
+      "aiMixed": "Una mezcla",
+      "aiChoice4": "Cuatro respuestas cada una",
+      "aiTf": "Verdadero o falso",
+      "aiGo": "Redactar preguntas",
+      "aiWorking": "Escribiendo preguntas…",
+      "aiNeedTopic": "Primero escribe un tema.",
+      "added": "{n, plural, one {Se añadió # pregunta.} other {Se añadieron # preguntas.}} Revísalas y luego guarda.",
+      "pasteTitle": "Pegar preguntas",
+      "pasteSheet": "Desde una hoja de cálculo: copia las filas y pégalas aquí. Una fila por pregunta: la pregunta, la respuesta correcta, luego de 1 a 3 respuestas incorrectas y los segundos para responder (opcional).",
+      "pasteText": "O escríbelas: la pregunta en una línea y sus respuestas en las líneas de abajo, con * delante de la correcta. Deja una línea vacía entre preguntas.",
+      "pasteExample": "¿Cuál es el planeta más grande?\n* Júpiter\nSaturno\nTierra\n\nEl agua hierve a 100 °C al nivel del mar.\n* Verdadero\nFalso",
+      "pasteFound": "{n, plural, =0 {Todavía no se encontraron preguntas.} one {Se encontró # pregunta.} other {Se encontraron # preguntas.}}",
+      "pasteGo": "Añadir estas preguntas"
     },
     "match": {
       "title": "Jugar a {title} online",
@@ -4706,7 +4739,10 @@
       "new": "Nuevo conjunto de preguntas",
       "empty": "Todavía no hay conjuntos de preguntas.",
       "items": "{count, plural, one {# pregunta} other {# preguntas}}",
-      "draft": "faltan respuestas"
+      "draft": "faltan respuestas",
+      "school": "Compartidos en mi escuela",
+      "schoolHint": "Conjuntos que compartieron otros docentes de tu escuela. Haz una copia para cambiar uno.",
+      "copy": "Hacer una copia"
     },
     "api": {
       "off": "Los juegos en vivo están desactivados ahora.",
@@ -4726,14 +4762,17 @@
       "audience": "Elige quién puede unirse.",
       "set": {
         "title": "Ponle un título al conjunto.",
-        "items": "Añade de 1 a 50 preguntas.",
+        "items": "Añade de 1 a 100 preguntas.",
         "question": "La pregunta {n} necesita texto (nada personal ni grosero).",
         "choice": "Una respuesta de la pregunta {n} no está permitida.",
         "choices": "La pregunta {n} necesita de 2 a 4 respuestas, con la correcta elegida.",
         "sameChoice": "La pregunta {n} tiene dos respuestas iguales.",
         "tooBig": "Este conjunto es demasiado grande.",
         "noQuestions": "Esta lección no tiene pasos de pregunta.",
-        "notFound": "No encontramos ese conjunto."
+        "notFound": "No encontramos ese conjunto.",
+        "topic": "Primero escribe un tema.",
+        "aiOff": "Redactar con IA no está disponible ahora. Aún puedes escribir o pegar tus preguntas.",
+        "aiFailed": "La IA no pudo escribir preguntas esta vez. Inténtalo de nuevo o cambia un poco el tema."
       },
       "noMissed": "Todos acertaron todas las preguntas, así que no hay nada que repetir.",
       "teamsOff": "Este juego no tenía equipos.",
@@ -5223,7 +5262,7 @@
     "description": "Proyecte una carrera de preguntas en vivo. Sus estudiantes se unen desde cualquier dispositivo con un código de 7 cifras, sin cuentas, sin escribir y sin anuncios. Gratis para docentes.",
     "kicker": "Oomba Live para docentes",
     "h1": "Juegos de preguntas en vivo que toda su clase juega a la vez",
-    "lead": "Muestre el juego en la pizarra. Sus estudiantes se unen desde sus propios dispositivos con un código de 7 cifras y compiten respondiendo a sus preguntas. Gratis, sin anuncios y sin que tengan que escribir nada más que el código.",
+    "lead": "Muestre el juego en la pizarra. Sus estudiantes se unen desde sus propios dispositivos con un código de 7 cifras y compiten respondiendo a sus preguntas, de cualquier materia y de cualquier nivel. Gratis, sin anuncios y sin que tengan que escribir nada más que el código.",
     "badges": {
       "free": "Gratis para docentes",
       "ads": "Sin anuncios",
@@ -5241,7 +5280,7 @@
       "lead": "Pantallas reales de un juego en vivo en una escuela de demostración con nombres inventados.",
       "s1": {
         "h": "Elija un juego y sus preguntas",
-        "p": "Elija Carrera de misiones o Batalla de preguntas y, después, un conjunto inicial ya preparado, un conjunto escrito por usted o las preguntas de una de sus lecciones.",
+        "p": "Elija Carrera de misiones o Batalla de preguntas y, después, su propio conjunto de preguntas, uno que haya compartido un colega, un conjunto inicial ya preparado o las preguntas de una de sus lecciones.",
         "alt": "La página “Dirigir un juego en vivo”: los modos de juego para elegir, un conjunto de preguntas y quién puede unirse."
       },
       "s2": {
@@ -5319,9 +5358,18 @@
       "q3": "¿Cuántos estudiantes pueden jugar?",
       "a3": "Hasta {max} en una sala de clase. Una sala abierta a cualquiera con el código admite hasta {open} jugadores si la dirige un padre, una madre u otra persona adulta, y hasta {max} si la dirige un docente.",
       "q4": "¿Puedo usar mis propias preguntas?",
-      "a4": "Sí. Escriba un conjunto de hasta {items} preguntas con 2 a 4 respuestas cada una, use un conjunto inicial o convierta las preguntas de una de sus lecciones en un juego de preguntas en vivo.",
+      "a4": "Sí, de cualquier materia y de cualquier nivel. Escriba un conjunto de hasta {items} preguntas con 2 a 4 respuestas cada una, pegue uno desde una hoja de cálculo, deje que la IA redacte uno para que usted lo edite o convierta las preguntas de una de sus lecciones en un juego de preguntas en vivo.",
       "q5": "¿Qué necesitan los estudiantes?",
       "a5": "Cualquier dispositivo con un navegador actualizado: Chromebooks, tabletas, computadoras portátiles o teléfonos. No hay que instalar nada. Usted muestra el juego en la pizarra desde su propia computadora."
+    },
+    "own": {
+      "h": "Sus preguntas, a su manera",
+      "p": "Escriba cuestionarios para cualquier materia y cualquier edad, desde los primeros pasos en la lectura hasta la química de bachillerato.",
+      "li1": "Escriba preguntas con 2 a 4 respuestas, o de verdadero o falso, con un tiempo de 5 segundos a 2 minutos cada una.",
+      "li2": "Pegue un cuestionario completo desde una hoja de cálculo o un documento de una sola vez.",
+      "li3": "Describa un tema y un curso, y la IA redacta las preguntas para que usted las revise y edite.",
+      "li4": "Hasta 100 preguntas por conjunto. Comparta conjuntos con los docentes de su escuela, o copie los de ellos y adáptelos a su gusto.",
+      "li5": "¿Quiere otro tipo de juego? Cree su propio juego de preguntas con el Constructor con IA, y podrá jugarlo en vivo con cualquiera de sus conjuntos de preguntas."
     }
   }
 }

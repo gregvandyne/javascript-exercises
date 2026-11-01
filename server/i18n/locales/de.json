@@ -2225,7 +2225,40 @@
       "removeQuestion": "Diese Frage entfernen",
       "right": "Die richtige Antwort",
       "answer": "Antwort {n}",
-      "saved": "Gespeichert!"
+      "saved": "Gespeichert!",
+      "grade": "Klassenstufe oder Niveau (optional)",
+      "gradeHint": "z. B. Klasse 7, Jahrgang 10, Anfänger",
+      "aiButton": "Fragen mit KI entwerfen",
+      "pasteButton": "Fragen einfügen",
+      "count": "{n} von {max} Fragen",
+      "true": "Wahr",
+      "false": "Falsch",
+      "makeTf": "In Wahr oder falsch umwandeln",
+      "removeAnswer": "Diese Antwort entfernen",
+      "moveUp": "Diese Frage nach oben schieben",
+      "moveDown": "Diese Frage nach unten schieben",
+      "duplicate": "Duplizieren",
+      "aiTitle": "Fragen mit KI entwerfen",
+      "aiIntro": "Beschreib, was du unterrichtest und für wen. Die Fragen erscheinen unten, damit du sie vor dem Speichern prüfen und bearbeiten kannst. Prüf immer die Antworten.",
+      "aiTopic": "Thema",
+      "aiTopicHint": "z. B. Ursachen des Ersten Weltkriegs, der Wasserkreislauf, spanische Wörter rund ums Essen, lineare Gleichungen lösen",
+      "aiLevel": "Klassenstufe oder Niveau",
+      "aiLevelHint": "z. B. Klasse 4, Jahrgang 9, Chemie in der Oberstufe",
+      "aiCount": "Wie viele Fragen",
+      "aiKind": "Art der Fragen",
+      "aiMixed": "Gemischt",
+      "aiChoice4": "Je vier Antworten",
+      "aiTf": "Wahr oder falsch",
+      "aiGo": "Fragen entwerfen",
+      "aiWorking": "Fragen werden geschrieben …",
+      "aiNeedTopic": "Gib zuerst ein Thema ein.",
+      "added": "{n, plural, one {# Frage hinzugefügt.} other {# Fragen hinzugefügt.}} Prüf sie und speichere dann.",
+      "pasteTitle": "Fragen einfügen",
+      "pasteSheet": "Aus einer Tabelle: Kopiere die Zeilen und füge sie hier ein. Eine Zeile pro Frage: die Frage, die richtige Antwort, dann 1 bis 3 falsche Antworten und die Sekunden zum Antworten (optional).",
+      "pasteText": "Oder tipp sie ein: die Frage in eine Zeile, darunter ihre Antworten, mit * vor der richtigen. Lass zwischen den Fragen eine Zeile frei.",
+      "pasteExample": "Was ist der größte Planet?\n* Jupiter\nSaturn\nErde\n\nWasser kocht auf Meereshöhe bei 100 °C.\n* Wahr\nFalsch",
+      "pasteFound": "{n, plural, =0 {Noch keine Fragen gefunden.} one {# Frage gefunden.} other {# Fragen gefunden.}}",
+      "pasteGo": "Diese Fragen hinzufügen"
     },
     "match": {
       "title": "{title} online spielen",
@@ -4707,7 +4740,10 @@
       "new": "Neues Fragenset",
       "empty": "Noch keine Fragensets.",
       "items": "{count, plural, one {# Frage} other {# Fragen}}",
-      "draft": "Antworten fehlen"
+      "draft": "Antworten fehlen",
+      "school": "An meiner Schule geteilt",
+      "schoolHint": "Sets, die andere Lehrkräfte an deiner Schule geteilt haben. Mach eine Kopie, um eines zu ändern.",
+      "copy": "Kopie erstellen"
     },
     "api": {
       "off": "Live-Spiele sind gerade ausgeschaltet.",
@@ -4727,14 +4763,17 @@
       "audience": "Wähle, wer mitspielen darf.",
       "set": {
         "title": "Gib dem Set einen Titel.",
-        "items": "Füge 1 bis 50 Fragen hinzu.",
+        "items": "Füge 1 bis 100 Fragen hinzu.",
         "question": "Frage {n} braucht Text (nichts Persönliches und nichts Unhöfliches).",
         "choice": "Eine Antwort in Frage {n} ist nicht erlaubt.",
         "choices": "Frage {n} braucht 2 bis 4 Antworten, und die richtige muss ausgewählt sein.",
         "sameChoice": "Frage {n} hat zwei gleiche Antworten.",
         "tooBig": "Dieses Set ist zu groß.",
         "noQuestions": "Diese Unterrichtseinheit hat keine Frageschritte.",
-        "notFound": "Wir finden dieses Set nicht."
+        "notFound": "Wir finden dieses Set nicht.",
+        "topic": "Gib zuerst ein Thema ein.",
+        "aiOff": "Das Entwerfen mit KI ist gerade nicht verfügbar. Du kannst deine Fragen trotzdem eintippen oder einfügen.",
+        "aiFailed": "Die KI konnte diesmal keine Fragen schreiben. Versuch es noch einmal oder ändere das Thema ein wenig."
       },
       "noMissed": "Alle haben alles richtig, es gibt nichts zu wiederholen.",
       "teamsOff": "Dieses Spiel hatte keine Teams.",
@@ -5224,7 +5263,7 @@
     "description": "Bringen Sie ein Live-Quizrennen auf den Beamer. Die Kinder treten auf jedem Gerät mit einem 7-stelligen Code bei, ohne Konten, ohne Tippen und ohne Werbung. Kostenlos für Lehrkräfte.",
     "kicker": "Oomba Live für Lehrkräfte",
     "h1": "Live-Quizspiele, die Ihre ganze Klasse gemeinsam spielt",
-    "lead": "Zeigen Sie das Spiel an der Tafel. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei und beantworten Ihre Fragen um die Wette. Kostenlos, ohne Werbung, und außer dem Code müssen sie nichts eintippen.",
+    "lead": "Zeigen Sie das Spiel an der Tafel. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei und beantworten Ihre Fragen um die Wette, in jedem Fach und auf jedem Niveau. Kostenlos, ohne Werbung, und außer dem Code müssen sie nichts eintippen.",
     "badges": {
       "free": "Kostenlos für Lehrkräfte",
       "ads": "Keine Werbung",
@@ -5242,7 +5281,7 @@
       "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
       "s1": {
         "h": "Spiel und Fragen auswählen",
-        "p": "Wählen Sie Quest-Rennen oder Fragen-Duell und dann ein fertiges Starterset, ein selbst geschriebenes Set oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
+        "p": "Wählen Sie Quest-Rennen oder Fragen-Duell und dann Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, ein fertiges Starterset oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
         "alt": "Die Seite „Live-Spiel leiten“: Spielmodi zur Auswahl, ein Fragenset und wer beitreten kann."
       },
       "s2": {
@@ -5320,9 +5359,18 @@
       "q3": "Wie viele Kinder können mitspielen?",
       "a3": "Bis zu {max} in einem Klassenraum. Ein Raum für alle mit dem Code fasst bis zu {open} Spieler, wenn ein Elternteil oder ein anderer Erwachsener ihn leitet, und bis zu {max}, wenn eine Lehrkraft ihn leitet.",
       "q4": "Kann ich eigene Fragen verwenden?",
-      "a4": "Ja. Schreiben Sie ein Set mit bis zu {items} Fragen mit je 2 bis 4 Antworten, nutzen Sie ein Starterset oder machen Sie aus den Fragen einer Ihrer Unterrichtseinheiten ein Live-Quiz.",
+      "a4": "Ja, in jedem Fach und auf jedem Niveau. Schreiben Sie ein Set mit bis zu {items} Fragen mit je 2 bis 4 Antworten, fügen Sie eines aus einer Tabelle ein, lassen Sie die KI eines entwerfen, das Sie dann bearbeiten, oder machen Sie aus den Fragen einer Ihrer Unterrichtseinheiten ein Live-Quiz.",
       "q5": "Was brauchen die Schülerinnen und Schüler?",
       "a5": "Ein beliebiges Gerät mit aktuellem Browser: Chromebooks, Tablets, Laptops oder Handys. Nichts zu installieren. Sie zeigen das Spiel von Ihrem eigenen Computer aus an der Tafel."
+    },
+    "own": {
+      "h": "Ihre Fragen, ganz nach Ihren Wünschen",
+      "p": "Schreiben Sie Quizze für jedes Fach und jedes Alter, vom ersten Lesen bis zur Chemie in der Oberstufe.",
+      "li1": "Tippen Sie Fragen mit 2 bis 4 Antworten oder Wahr-oder-falsch-Fragen ein, jeweils mit einer Zeit von 5 Sekunden bis 2 Minuten.",
+      "li2": "Fügen Sie ein ganzes Quiz aus einer Tabelle oder einem Dokument auf einmal ein.",
+      "li3": "Beschreiben Sie ein Thema und eine Klassenstufe, und die KI entwirft die Fragen, die Sie dann prüfen und bearbeiten.",
+      "li4": "Bis zu 100 Fragen pro Set. Teilen Sie Sets mit Lehrkräften Ihrer Schule, oder kopieren Sie deren Sets und passen Sie sie für sich an.",
+      "li5": "Lust auf eine andere Art von Spiel? Bauen Sie mit dem KI-Baumeister Ihr eigenes Quizspiel, und es lässt sich mit jedem Ihrer Fragensets live spielen."
     }
   }
 }

@@ -263,6 +263,11 @@ router.get('/teachers/live', (req, res, next) => {
     <div class="lp-modes">${mode('🏝️', 'race')}${mode('⚡', 'battle')}${mode('🎮', 'games')}</div>
   </section>
 
+  <section class="panel" id="own" aria-labelledby="own-h">
+    ${el(t, 'h2', 'teachersLive.own.h', {}, ' id="own-h"')}${el(t, 'p', 'teachersLive.own.p')}
+    <ul class="lp-list">${[1, 2, 3, 4, 5].map(n => el(t, 'li', `teachersLive.own.li${n}`))}</ul>
+  </section>
+
   <div class="lp-cols">
     <section class="panel" id="tools" aria-labelledby="tools-h">
       ${el(t, 'h2', 'teachersLive.tools.h', {}, ' id="tools-h"')}

@@ -2225,7 +2225,40 @@
       "removeQuestion": "Deze vraag verwijderen",
       "right": "Het goede antwoord",
       "answer": "Antwoord {n}",
-      "saved": "Opgeslagen!"
+      "saved": "Opgeslagen!",
+      "grade": "Leerjaar of niveau (optioneel)",
+      "gradeHint": "bijv. groep 7, havo 4, beginners",
+      "aiButton": "Vragen opstellen met AI",
+      "pasteButton": "Vragen plakken",
+      "count": "{n} van {max} vragen",
+      "true": "Waar",
+      "false": "Niet waar",
+      "makeTf": "Maak er waar of niet waar van",
+      "removeAnswer": "Dit antwoord verwijderen",
+      "moveUp": "Deze vraag omhoog verplaatsen",
+      "moveDown": "Deze vraag omlaag verplaatsen",
+      "duplicate": "Dupliceren",
+      "aiTitle": "Vragen opstellen met AI",
+      "aiIntro": "Beschrijf wat je lesgeeft en voor wie. De vragen verschijnen hieronder, zodat je ze kunt controleren en bewerken voordat je opslaat. Controleer altijd de antwoorden.",
+      "aiTopic": "Onderwerp",
+      "aiTopicHint": "bijv. oorzaken van de Eerste Wereldoorlog, de waterkringloop, Spaanse woorden over eten, lineaire vergelijkingen oplossen",
+      "aiLevel": "Leerjaar of niveau",
+      "aiLevelHint": "bijv. groep 6, vwo 3, scheikunde op de middelbare school",
+      "aiCount": "Hoeveel vragen",
+      "aiKind": "Soort vragen",
+      "aiMixed": "Een mix",
+      "aiChoice4": "Elk vier antwoorden",
+      "aiTf": "Waar of niet waar",
+      "aiGo": "Vragen opstellen",
+      "aiWorking": "Vragen schrijven…",
+      "aiNeedTopic": "Typ eerst een onderwerp.",
+      "added": "{n, plural, one {# vraag toegevoegd.} other {# vragen toegevoegd.}} Controleer ze en sla dan op.",
+      "pasteTitle": "Vragen plakken",
+      "pasteSheet": "Uit een spreadsheet: kopieer de rijen en plak ze hier. Eén rij per vraag: de vraag, het goede antwoord, dan 1 tot 3 foute antwoorden en de seconden om te antwoorden (optioneel).",
+      "pasteText": "Of typ ze: de vraag op één regel, daaronder de antwoorden, met * voor het goede antwoord. Laat een lege regel tussen de vragen.",
+      "pasteExample": "Wat is de grootste planeet?\n* Jupiter\nSaturnus\nAarde\n\nWater kookt op zeeniveau bij 100 °C.\n* Waar\nNiet waar",
+      "pasteFound": "{n, plural, =0 {Nog geen vragen gevonden.} one {# vraag gevonden.} other {# vragen gevonden.}}",
+      "pasteGo": "Deze vragen toevoegen"
     },
     "match": {
       "title": "{title} online spelen",
@@ -4707,7 +4740,10 @@
       "new": "Nieuwe vragenset",
       "empty": "Nog geen vragensets.",
       "items": "{count, plural, one {# vraag} other {# vragen}}",
-      "draft": "antwoorden ontbreken"
+      "draft": "antwoorden ontbreken",
+      "school": "Gedeeld op mijn school",
+      "schoolHint": "Sets die andere leraren op je school hebben gedeeld. Maak een kopie om er een te wijzigen.",
+      "copy": "Kopie maken"
     },
     "api": {
       "off": "Livespellen staan nu uit.",
@@ -4727,14 +4763,17 @@
       "audience": "Kies wie mag meedoen.",
       "set": {
         "title": "Geef de set een titel.",
-        "items": "Voeg 1 tot 50 vragen toe.",
+        "items": "Voeg 1 tot 100 vragen toe.",
         "question": "Vraag {n} heeft tekst nodig (niets persoonlijks of grofs).",
         "choice": "Een antwoord bij vraag {n} is niet toegestaan.",
         "choices": "Vraag {n} heeft 2 tot 4 antwoorden nodig, met het goede antwoord gekozen.",
         "sameChoice": "Vraag {n} heeft twee dezelfde antwoorden.",
         "tooBig": "Deze set is te groot.",
         "noQuestions": "Deze les heeft geen vraagstappen.",
-        "notFound": "We vinden die set niet."
+        "notFound": "We vinden die set niet.",
+        "topic": "Typ eerst een onderwerp.",
+        "aiOff": "Vragen opstellen met AI is nu niet beschikbaar. Je kunt je vragen nog steeds typen of plakken.",
+        "aiFailed": "De AI kon deze keer geen vragen schrijven. Probeer het opnieuw of pas het onderwerp een beetje aan."
       },
       "noMissed": "Iedereen had alles goed, dus er is niets om nog eens te spelen.",
       "teamsOff": "Dit spel had geen teams.",
@@ -5224,7 +5263,7 @@
     "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame. Gratis voor leerkrachten.",
     "kicker": "Oomba Live voor leerkrachten",
     "h1": "Live quizspellen die je hele klas samen speelt",
-    "lead": "Zet het spel op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door jouw vragen. Gratis, zonder reclame, en leerlingen hoeven niets te typen behalve de code.",
+    "lead": "Zet het spel op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door jouw vragen, over elk vak en op elk niveau. Gratis, zonder reclame, en leerlingen hoeven niets te typen behalve de code.",
     "badges": {
       "free": "Gratis voor leerkrachten",
       "ads": "Geen reclame",
@@ -5242,7 +5281,7 @@
       "lead": "Echte schermen van een livespel op een demoschool met verzonnen namen.",
       "s1": {
         "h": "Kies een spel en je vragen",
-        "p": "Kies Questrace of Vragenduel en daarna een kant-en-klare startset, een set die je zelf schrijft of de vragen uit een van je lessen.",
+        "p": "Kies Questrace of Vragenduel en daarna je eigen vragenset, een set die een collega heeft gedeeld, een kant-en-klare startset of de vragen uit een van je lessen.",
         "alt": "De pagina “Een livespel leiden”: spelmodi om uit te kiezen, een vragenset en wie mee mag doen."
       },
       "s2": {
@@ -5320,9 +5359,18 @@
       "q3": "Hoeveel leerlingen kunnen meedoen?",
       "a3": "Tot {max} in een klasruimte. Een ruimte die open is voor iedereen met de code heeft plek voor maximaal {open} spelers als een ouder of andere volwassene het spel leidt, en maximaal {max} als een leerkracht dat doet.",
       "q4": "Kan ik mijn eigen vragen gebruiken?",
-      "a4": "Ja. Schrijf een set van maximaal {items} vragen met elk 2 tot 4 antwoorden, gebruik een startset of maak van de vragen uit een van je lessen een livequiz.",
+      "a4": "Ja, over elk vak en op elk niveau. Schrijf een set van maximaal {items} vragen met elk 2 tot 4 antwoorden, plak er een uit een spreadsheet, laat AI er een opstellen die je daarna bewerkt, of maak van de vragen uit een van je lessen een livequiz.",
       "q5": "Wat hebben leerlingen nodig?",
       "a5": "Elk apparaat met een actuele browser: Chromebooks, tablets, laptops of telefoons. Niets te installeren. Je laat het spel vanaf je eigen computer op het bord zien."
+    },
+    "own": {
+      "h": "Jouw vragen, op jouw manier",
+      "p": "Maak quizzen voor elk vak en elke leeftijd, van aanvankelijk lezen tot scheikunde op de middelbare school.",
+      "li1": "Typ vragen met 2 tot 4 antwoorden, of waar of niet waar, met per vraag een tijd van 5 seconden tot 2 minuten.",
+      "li2": "Plak in één keer een hele quiz uit een spreadsheet of een document.",
+      "li3": "Beschrijf een onderwerp en een leerjaar, en AI stelt de vragen op, zodat jij ze kunt controleren en bewerken.",
+      "li4": "Tot 100 vragen in een set. Deel sets met leraren op je school, of kopieer die van hen en maak ze helemaal van jou.",
+      "li5": "Zin in een ander soort spel? Bouw je eigen quizspel met de AI-Bouwer, en je speelt het live met al je vragensets."
     }
   }
 }

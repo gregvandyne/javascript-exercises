@@ -2225,7 +2225,40 @@
       "removeQuestion": "Togli questa domanda",
       "right": "La risposta giusta",
       "answer": "Risposta {n}",
-      "saved": "Salvato!"
+      "saved": "Salvato!",
+      "grade": "Classe o livello (facoltativo)",
+      "gradeHint": "es. 2ª media, 1ª superiore, principianti",
+      "aiButton": "Prepara domande con l’IA",
+      "pasteButton": "Incolla domande",
+      "count": "{n} domande su {max}",
+      "true": "Vero",
+      "false": "Falso",
+      "makeTf": "Trasforma in vero o falso",
+      "removeAnswer": "Togli questa risposta",
+      "moveUp": "Sposta su questa domanda",
+      "moveDown": "Sposta giù questa domanda",
+      "duplicate": "Duplica",
+      "aiTitle": "Prepara domande con l’IA",
+      "aiIntro": "Descrivi cosa insegni e a chi. Le domande compaiono qui sotto, così puoi controllarle e modificarle prima di salvare. Controlla sempre le risposte.",
+      "aiTopic": "Argomento",
+      "aiTopicHint": "es. le cause della Prima guerra mondiale, il ciclo dell’acqua, parole spagnole sul cibo, risolvere equazioni di primo grado",
+      "aiLevel": "Classe o livello",
+      "aiLevelHint": "es. 4ª elementare, 3ª media, chimica alle superiori",
+      "aiCount": "Quante domande",
+      "aiKind": "Tipo di domande",
+      "aiMixed": "Un misto",
+      "aiChoice4": "Quattro risposte ciascuna",
+      "aiTf": "Vero o falso",
+      "aiGo": "Prepara le domande",
+      "aiWorking": "Sto scrivendo le domande…",
+      "aiNeedTopic": "Scrivi prima un argomento.",
+      "added": "{n, plural, one {# domanda aggiunta.} other {# domande aggiunte.}} Controllale, poi salva.",
+      "pasteTitle": "Incolla domande",
+      "pasteSheet": "Da un foglio di calcolo: copia le righe e incollale qui. Una riga per domanda: la domanda, la risposta giusta, poi da 1 a 3 risposte sbagliate e i secondi per rispondere (facoltativo).",
+      "pasteText": "Oppure scrivile: la domanda su una riga, poi le sue risposte nelle righe sotto, con * davanti a quella giusta. Lascia una riga vuota tra una domanda e l’altra.",
+      "pasteExample": "Qual è il pianeta più grande?\n* Giove\nSaturno\nTerra\n\nAl livello del mare l’acqua bolle a 100 °C.\n* Vero\nFalso",
+      "pasteFound": "{n, plural, =0 {Ancora nessuna domanda trovata.} one {# domanda trovata.} other {# domande trovate.}}",
+      "pasteGo": "Aggiungi queste domande"
     },
     "match": {
       "title": "Gioca a {title} online",
@@ -4707,7 +4740,10 @@
       "new": "Nuova serie di domande",
       "empty": "Ancora nessuna serie di domande.",
       "items": "{count, plural, one {# domanda} other {# domande}}",
-      "draft": "mancano le risposte"
+      "draft": "mancano le risposte",
+      "school": "Condivise nella mia scuola",
+      "schoolHint": "Serie condivise da altri insegnanti della tua scuola. Fanne una copia per modificarla.",
+      "copy": "Fai una copia"
     },
     "api": {
       "off": "Le partite dal vivo sono spente in questo momento.",
@@ -4727,14 +4763,17 @@
       "audience": "Scegli chi può entrare.",
       "set": {
         "title": "Dai un titolo alla serie.",
-        "items": "Aggiungi da 1 a 50 domande.",
+        "items": "Aggiungi da 1 a 100 domande.",
         "question": "La domanda {n} ha bisogno di un testo (niente di personale o di volgare).",
         "choice": "Una risposta della domanda {n} non è permessa.",
         "choices": "La domanda {n} ha bisogno di 2-4 risposte, con quella giusta scelta.",
         "sameChoice": "La domanda {n} ha due risposte uguali.",
         "tooBig": "Questa serie è troppo grande.",
         "noQuestions": "Questa lezione non ha passaggi con domande.",
-        "notFound": "Non troviamo quella serie."
+        "notFound": "Non troviamo quella serie.",
+        "topic": "Scrivi prima un argomento.",
+        "aiOff": "La preparazione con l’IA non è disponibile in questo momento. Puoi comunque scrivere o incollare le tue domande.",
+        "aiFailed": "Questa volta l’IA non è riuscita a scrivere le domande. Riprova, o cambia un po’ l’argomento."
       },
       "noMissed": "Tutti hanno risposto bene a tutto: non c'è niente da rigiocare.",
       "teamsOff": "Questo gioco non aveva squadre.",
@@ -5224,7 +5263,7 @@
     "description": "Proietti una corsa a quiz dal vivo. Gli studenti entrano da qualsiasi dispositivo con un codice di 7 cifre, senza account, senza scrivere e senza pubblicità. Gratis per gli insegnanti.",
     "kicker": "Oomba Live per gli insegnanti",
     "h1": "Quiz dal vivo a cui tutta la classe gioca insieme",
-    "lead": "Mostri il gioco alla lavagna. Gli studenti entrano dai propri dispositivi con un codice di 7 cifre e fanno a gara sulle sue domande. Gratis, senza pubblicità, e gli studenti non devono scrivere nulla tranne il codice.",
+    "lead": "Mostri il gioco alla lavagna. Gli studenti entrano dai propri dispositivi con un codice di 7 cifre e fanno a gara sulle sue domande, di qualsiasi materia e a qualsiasi livello. Gratis, senza pubblicità, e gli studenti non devono scrivere nulla tranne il codice.",
     "badges": {
       "free": "Gratis per gli insegnanti",
       "ads": "Senza pubblicità",
@@ -5242,7 +5281,7 @@
       "lead": "Schermate reali di una partita dal vivo in una scuola dimostrativa con nomi inventati.",
       "s1": {
         "h": "Scelga un gioco e le domande",
-        "p": "Scelga Corsa delle missioni o Sfida a domande, poi una serie di partenza già pronta, una serie scritta da lei o le domande di una delle sue lezioni.",
+        "p": "Scelga Corsa delle missioni o Sfida a domande, poi una sua serie di domande, una condivisa da un collega, una serie di partenza già pronta o le domande di una delle sue lezioni.",
         "alt": "La pagina «Guida una partita dal vivo»: le modalità di gioco tra cui scegliere, una serie di domande e chi può entrare."
       },
       "s2": {
@@ -5320,9 +5359,18 @@
       "q3": "Quanti studenti possono giocare?",
       "a3": "Fino a {max} in una stanza di classe. Una stanza aperta a chiunque abbia il codice accoglie fino a {open} giocatori se la guida un genitore o un altro adulto, e fino a {max} se la guida un insegnante.",
       "q4": "Posso usare le mie domande?",
-      "a4": "Sì. Scriva una serie di massimo {items} domande con 2-4 risposte ciascuna, usi una serie di partenza o trasformi le domande di una delle sue lezioni in un quiz dal vivo.",
+      "a4": "Sì, su qualsiasi materia e a qualsiasi livello. Scriva una serie di massimo {items} domande con 2-4 risposte ciascuna, ne incolli una da un foglio di calcolo, lasci che l’IA ne prepari una da modificare, o trasformi le domande di una delle sue lezioni in un quiz dal vivo.",
       "q5": "Di cosa hanno bisogno gli studenti?",
       "a5": "Qualsiasi dispositivo con un browser aggiornato: Chromebook, tablet, portatili o telefoni. Niente da installare. Lei mostra il gioco alla lavagna dal suo computer."
+    },
+    "own": {
+      "h": "Le sue domande, a modo suo",
+      "p": "Scriva quiz per qualsiasi materia e qualsiasi età, dalle prime letture alla chimica delle superiori.",
+      "li1": "Scriva domande con 2-4 risposte, o vero o falso, con un tempo da 5 secondi a 2 minuti ciascuna.",
+      "li2": "Incolli un intero quiz da un foglio di calcolo o da un documento in un colpo solo.",
+      "li3": "Descriva un argomento e una classe, e l’IA prepara le domande che lei poi controlla e modifica.",
+      "li4": "Fino a 100 domande per serie. Condivida le serie con gli insegnanti della sua scuola, oppure copi le loro e le adatti a modo suo.",
+      "li5": "Vuole un tipo di gioco diverso? Crei il suo gioco a quiz con il Costruttore IA: si gioca dal vivo con qualsiasi sua serie di domande."
     }
   }
 }
