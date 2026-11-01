@@ -522,12 +522,12 @@ function finish() {
     add('p', 'trait-desc', t('d.' + top));
     if (S.picks.length) {
       add('p', 'lbl', t('yourMix'));
-      const bars = add('div', 'mixbars'), max = Math.max(1, tr[0][1]);
+      const bars = add('div', 'mixbars'), max = Math.max(1, tr.reduce((n, x) => n + x[1], 0));   // each trait's share of all the tags picked
       for (const [k, v] of tr.slice(0, 3)) {
         if (!v) continue;
         const row = document.createElement('div'); row.className = 'mixbar';
         const name = document.createElement('span'); name.textContent = CONFIG.traitIcon[k] + ' ' + t('t.' + k);
-        const track = document.createElement('span'); track.className = 'track'; const bar = document.createElement('i'); bar.style.width = Math.round(100 * v / max) + '%'; track.appendChild(bar);
+        const track = document.createElement('span'); track.className = 'track'; const bar = document.createElement('i'); bar.style.width = Math.max(8, Math.round(100 * v / max)) + '%'; track.appendChild(bar);
         row.append(name, track, document.createElement('span')); bars.appendChild(row);
       }
       add('p', 'trait-desc', t('choices', { n: S.picks.length }));
