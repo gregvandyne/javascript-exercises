@@ -233,6 +233,15 @@ changes and the Builder is told why), `set_game(title, icon, description, catego
 and `test_notes(checklist)`. Every `write_game` / `edit_game` / `start_from_template` makes a new, safety-scanned version.
 The 3D rules are a separate fixed system block, sent only when the builder asks for 3D or the game is already 3D.
 
+`playtest_game()` plays the game on a phone (a picture of the title screen and one after pressing Play, errors, the kit's
+warnings and a short scripted round), then shows the same two moments on every device: phone portrait 390x844, tablet
+portrait 820x1180, phone landscape 844x390, tablet landscape 1180x820 and desktop 1280x800 (`VIEWS` in
+server/services/snapshot.js), made by resizing the window as a tablet turning does. The model gets them as two labelled
+contact sheets, and the layout problems found at each size (sideways scrolling, text or buttons cut off, text cut off
+in its box, things on top of each other, tap targets under 44px, buttons squashed tall and thin) as problems named by
+device. The system prompt's "EVERY DEVICE, TABLET FIRST" rule says the game must look right on all five, tablets above
+all, and that the Builder never finishes while any view looks wrong.
+
 Without an API key a deterministic mock Builder is used. It adapts the "Start from" templates and makes changes like
 "make it harder", "change the colour", "change the hero to a dragon" or "add a second level" through a small
 "tune-up" script (`server/builder/layer.js`) whose settings are single lines such as `BRB_TUNE.speed = 1.25;`,

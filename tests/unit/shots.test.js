@@ -74,7 +74,7 @@ test('the sweeper finds live versions without a picture; seed and failed version
   assert.ok(shots.sweep(50) >= 1);
 });
 
-test('playtest_game shows the model two pictures, the errors and the layout problems', { skip, timeout: 90_000 }, async () => {
+test('playtest_game shows the model the phone pictures, every device side by side, the errors and the layout problems', { skip, timeout: 120_000 }, async () => {
   const g = games.createGame(owner.id, { title: 'Broken' });
   games.addVersion(g.id, `<title>Broken</title><style>.wide{width:900px;background:#f60;height:40px}</style>
     <div class="wide">This line is far too wide for a phone screen and runs off the side</div>
@@ -85,14 +85,28 @@ test('playtest_game shows the model two pictures, the errors and the layout prob
   const tb = toolbox({ user: owner, gameId: g.id, emit, state: {}, locale: 'en', steps: stepRecorder(emit) });
   const r = await tb.exec('playtest_game', {});
   assert.equal(r.ok, true);
-  assert.ok(Array.isArray(r.forModel)); assert.equal(r.forModel.filter(b => b.type === 'image').length, 2);
+  assert.ok(Array.isArray(r.forModel));
+  const pics = r.forModel.filter(b => b.type === 'image');
+  assert.equal(pics.length, 4, 'phone title, phone after Play, then a sheet of every device for each');
   const text = r.forModel[0].text;
   assert.match(text, /undefinedThing/); assert.match(text, /boom/);
   assert.match(text, /wider than the phone/); assert.match(text, /div\.wide> from x=0 to x=900/); assert.match(text, /smaller than 40px/); assert.match(text, /__brbTest is missing/);
   assert.match(text, /tapped "Play"/);
+  // Every device, by name and size, with what is wrong there: the 900px bar scrolls sideways on a tablet in portrait
+  // (820px) but not on a desktop; the 20px button is too small everywhere.
+  for (const v of ['phone portrait 390x844', 'tablet portrait 820x1180', 'phone landscape 844x390', 'tablet landscape 1180x820', 'desktop 1280x800']) assert.ok(text.includes(v), v);
+  assert.match(text, /On tablet portrait \(820x1180\): [^\n]*scrolls sideways/);
+  assert.doesNotMatch(text, /On desktop \(1280x800\): [^\n]*scrolls sideways/);
+  assert.match(text, /On tablet landscape \(1180x820\): [^\n]*too small to tap \(20x20px/);
+  assert.match(text, /Tablets \(portrait and landscape\) are what most kids play on/);
+  if (process.env.BUILDER_SHOTS) {   // a copy of what the model sees, for a look by eye
+    fs.mkdirSync(process.env.BUILDER_SHOTS, { recursive: true });
+    pics.forEach((p, i) => fs.writeFileSync(`${process.env.BUILDER_SHOTS}/playtest-${i + 1}.jpg`, Buffer.from(p.source.data, 'base64')));
+    fs.writeFileSync(`${process.env.BUILDER_SHOTS}/playtest.txt`, text);
+  }
   // The live build step: started only once playtesting really runs, then the pictures and problem count.
   assert.deepEqual(events.map(e => e[0]), ['step', 'stepinfo', 'playtest']);
-  assert.equal(events[0][1].key, 'playtest'); assert.equal(events[1][1].pics, 2); assert.ok(events[1][1].probs >= 4);
+  assert.equal(events[0][1].key, 'playtest'); assert.equal(events[1][1].pics, 4); assert.ok(events[1][1].probs >= 6);
   assert.equal(events[1][1].probs, events[2][1].problems);
 });
 
@@ -135,7 +149,7 @@ test('a job that runs past the time limit waited in the worker\'s queue: busy, s
     config.snapshotUrl = `http://127.0.0.1:${fake.address().port}`; config.shotsToken = 'tok';
     const p = snapshot.runGame('<p>x</p>');
     await new Promise(r => setImmediate(r)); await new Promise(r => setImmediate(r));
-    mock.timers.tick(56_000);
+    mock.timers.tick(snapshot.JOB_MS + 16_000);   // the job's own limit, plus the client's 15 s of grace
     await assert.rejects(p, e => e.workerDown === true && /timed out \(busy\)/.test(e.message));
   } finally { mock.timers.reset(); config.snapshotUrl = saved.url; config.shotsToken = saved.token; fake.closeAllConnections(); fake.close(); }
 });

@@ -1856,3 +1856,13 @@ Hero of Sunvale is a fun adventure, not a class activity (the owner's call): `NO
 keeps it out of a teacher's /live picker and refuses it for a class room (`notForClass`); a parent may still host it
 for their family or an open room. Empty game groups on /live are hidden.
 
+## The Builder checks every device, tablets first (November 2026)
+
+Kids play on tablets (iPads, Chromebooks) more than on anything else, and games that looked fine in the Builder's phone
+playtest were hard to play on a tablet. So the playtest now also shows the model the title screen and the game after
+starting at five sizes (phone and tablet, each in portrait and landscape, and desktop), as two labelled contact sheets
+with the layout problems found at each size, and the system prompt has a firm "EVERY DEVICE, TABLET FIRST" rule. The
+sizes are reached by resizing the window, so a game must lay itself out again on a resize, as it must when a tablet
+turns. Cost: two more pictures per playtest (about 1,500 x 1,000 pixels each) and about 8 seconds more per playtest; a
+screenshot job's limit went from 40 to 55 seconds.
+
