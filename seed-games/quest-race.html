@@ -538,7 +538,7 @@
     setGems(); setCombo();
   });
   L.on('countdown', function (e) { countdownTo(function () { return e.at - L.now(); }); });
-  L.on('question', function (q) { showCard(q); });
+  L.on('question', function (q) { if (cdLast && cdLast !== t('go')) countdownTo(function () { return 0; }); showCard(q); });
   L.on('answers', function (a) { if (host) setMeter(a.n); });
   L.on('reveal', showReveal);
   L.on('result', showResult);
@@ -561,7 +561,7 @@
     }
     hideCard(); banner(''); setCombo(); setGems();
     showStand(true, allTeams);
-    podium.forEach(function (seat, k) { var m = $('medal' + k); m.textContent = MEDALS[k] + ' ' + (podiumTeams[k] ? '' : (nameOf(seat) || '')); m.hidden = true; });
+    podium.forEach(function (seat, k) { var m = $('medal' + k); m.textContent = MEDALS[k] + (podiumTeams[k] || !(seat < 0 || (seat === mySeat && !host && QR.view !== '2d')) ? '' : ' ' + (nameOf(seat) || '')); m.hidden = true; });
     if (!host) {
       var rk = rankOf(mySeat), card = $('endcard'); card.classList.remove('qr-hide');
       $('end-md').textContent = rk && rk <= 3 ? MEDALS[rk - 1] : '🏁';
@@ -920,17 +920,17 @@ if (QR && QR.view === '3d') {
   const side = (u, off) => { const p = QR.at(u); return { x: p.x + p.dz * off, z: p.z - p.dx * off, p }; };
   const nearTrack = (x, z, d) => { for (let u = 0; u <= 1; u += 0.01) { const p = QR.at(u); if (Math.hypot(p.x - x, p.z - z) < d) return true; } return false; };
   const lobbyC = { x: QR.START.x + 3, z: QR.START.z - 3 };
-  const scatter = (a, b, n, offMin, offMax) => { const out = []; for (let i = 0; i < n * 4 && out.length < n; i++) { const u = a + rnd.float() * (b - a), off = (rnd.chance(0.5) ? 1 : -1) * (offMin + rnd.float() * (offMax - offMin)), s = side(u, off); if (Math.hypot(s.x, s.z) < 28 && !nearTrack(s.x, s.z, 3.9) && Math.hypot(s.x - lobbyC.x, s.z - lobbyC.z) > 11) out.push({ x: s.x, z: s.z, u }); } return out; };
+  const scatter = (a, b, n, offMin, offMax, clear = 3.9) => { const out = []; for (let i = 0; i < n * 4 && out.length < n; i++) { const u = a + rnd.float() * (b - a), off = (rnd.chance(0.5) ? 1 : -1) * (offMin + rnd.float() * (offMax - offMin)), s = side(u, off); if (Math.hypot(s.x, s.z) < 28 && !nearTrack(s.x, s.z, clear) && Math.hypot(s.x - lobbyC.x, s.z - lobbyC.z) > 11) out.push({ x: s.x, z: s.z, u }); } return out; };
   const many = { low: 0.5, mid: 0.8, high: 1 }[tier];
   // Sunny Beach: palms (a leaning trunk and a crown of leaves) and striped umbrellas
-  const palms = scatter(0, 0.2, Math.round(9 * many), 3.4, 8);
+  const palms = scatter(0, 0.2, Math.round(9 * many), 5.6, 10, 5.4);
   inst(new THREE.CylinderGeometry(0.16, 0.26, 4, 6), B.toon('#9b6b3d', { flat: true }), palms.map(p => ({ ...p, y: 2, rz: (rnd.float() - 0.5) * 0.35, rx: (rnd.float() - 0.5) * 0.35, s: 0.9 + rnd.float() * 0.3 })));
   inst(new THREE.ConeGeometry(1.7, 1.2, 7), B.toon('#3fa34d', { flat: true }), palms.map(p => ({ ...p, y: 4.1, ry: rnd.float() * 6, s: 0.9 + rnd.float() * 0.3 })));
   const umbr = scatter(0.02, 0.18, Math.round(4 * many), 3.6, 6);
   inst(new THREE.ConeGeometry(1.3, 0.6, 8), B.toon('coral', { flat: true }), umbr.map(p => ({ ...p, y: 2.1 })));
   inst(new THREE.CylinderGeometry(0.06, 0.06, 2, 5), B.toon('stone'), umbr.map(p => ({ ...p, y: 1 })));
   // the Jungle: tall layered trees and big round bushes
-  const jt = scatter(0.2, 0.44, Math.round(16 * many), 3.2, 9);
+  const jt = scatter(0.2, 0.44, Math.round(16 * many), 5.8, 11, 5.6);
   inst(new THREE.CylinderGeometry(0.22, 0.32, 3, 6), B.toon('#7a5130', { flat: true }), jt.map(p => ({ ...p, y: 1.5 })));
   inst(new THREE.ConeGeometry(1.9, 2.6, 7), B.toon('#2f8f3e', { flat: true }), jt.map(p => ({ ...p, y: 3.5, ry: rnd.float() * 6 })));
   inst(new THREE.ConeGeometry(1.4, 2.0, 7), B.toon('#45b052', { flat: true }), jt.map(p => ({ ...p, y: 4.9, ry: rnd.float() * 6 })));
@@ -1044,13 +1044,22 @@ if (QR && QR.view === '3d') {
   // ---- the director (the projector) and the chase camera (a player) ----
   const camPos = new THREE.Vector3(QR.START.x + 14, 9, QR.START.z + 10), camLook = new THREE.Vector3(QR.START.x, 1, QR.START.z);
   const wantPos = new THREE.Vector3(), wantLook = new THREE.Vector3(), tmp = new THREE.Vector3();
-  let yaw = 0, t0 = 0, lastPhase = '', phaseT = 0, shotT = 0, shot = 0, fwT = 0, fov = 56, kick = 0;
+  let yaw = 0, t0 = 0, lastPhase = '', phaseT = 0, shotT = 0, shot = 0, fwT = 0, fov = 56, kick = 0, cut = false, wasPhoto = false;
   const pack = () => { let sx = 0, sz = 0, n = 0, lead = null; QR.R.forEach(r => { sx += r.x; sz += r.z; n++; if (!lead || r.shown > lead.shown) lead = r; }); return { x: n ? sx / n : QR.START.x, z: n ? sz / n : QR.START.z, lead }; };
   const SOLID = [{ x: VP.x, z: VP.z, r: 7.6, h: 9 }];
   { const cs = Math.cos(cast.rotation.y), sn = Math.sin(cast.rotation.y); for (const [lx, lz, r, h] of [[-4.6, 0, 2, 9.5], [4.6, 0, 2, 9.5], [-5.6, 15, 2.2, 9.5], [5.6, 15, 2.2, 9.5], [-2.5, 15, 1.6, 4.3], [0, 15, 1.6, 4.3], [2.5, 15, 1.6, 4.3]]) SOLID.push({ x: F.x + lx * cs + lz * sn, z: F.z - lx * sn + lz * cs, r, h }); }
   function clearCam(v) {
     for (const o of SOLID) { if (v.y > o.h) continue; const dx = v.x - o.x, dz = v.z - o.z, d = Math.hypot(dx, dz); if (d < o.r) { const k = (o.r + 0.4) / Math.max(0.01, d); v.x = o.x + dx * k; v.z = o.z + dz * k; } }
     if (v.y < 1.2) v.y = 1.2;
+  }
+  // does the line from the camera to its target pass through the volcano or a tower?
+  function blocked(a, b) {
+    for (const o of SOLID) {
+      if (Math.min(a.y, b.y) > o.h) continue;
+      const dx = b.x - a.x, dz = b.z - a.z, l2 = dx * dx + dz * dz || 1, k = Math.max(0, Math.min(1, ((o.x - a.x) * dx + (o.z - a.z) * dz) / l2));
+      if (Math.hypot(a.x + dx * k - o.x, a.z + dz * k - o.z) < o.r * 0.95) return true;
+    }
+    return false;
   }
   function director(dt, ph) {
     const P = pack(), lead = P.lead, a = t0 * 0.07 * motion;
@@ -1064,8 +1073,8 @@ if (QR && QR.view === '3d') {
     }
     if (ph === 'ended') { const Pd = PODIUM[0], b = Math.sin(t0 * 0.15) * 0.35 * motion, fwd = Math.atan2(F.dx, F.dz); wantLook.set(Pd.x, 2.2, Pd.z); wantPos.set(Pd.x + Math.sin(fwd + b) * 8.2, 4.6, Pd.z + Math.cos(fwd + b) * 8.2); return 1.6; }
     if (QR.photo && lead) {
-      // photo finish: low and close at the line, from the side
-      wantLook.set(F.x, 1.1, F.z); wantPos.set(F.x + F.dz * 6.5 - F.dx * 1.5, 1.8, F.z - F.dx * 6.5 - F.dz * 1.5); return 4;
+      // photo finish: low, just past the line, looking back at the runners coming through the castle gate
+      wantLook.set(F.x - F.dx * 4, 1.2, F.z - F.dz * 4); wantPos.set(F.x + F.dx * 3.6 + F.dz * 0.8, 1.7, F.z + F.dz * 3.6 - F.dx * 0.8); return 4;
     }
     if (QR.cardUp) {
       // the question is up (the card covers the lower half): a wide, slow pass over the island, the pack high in frame
@@ -1077,14 +1086,24 @@ if (QR && QR.view === '3d') {
     if (!lead) { wantLook.set(P.x, 1, P.z); wantPos.set(P.x + 14, 12, P.z + 14); return 2; }
     const p = QR.at(lead.shown / 1000);
     if (shot === 0) { wantLook.set(lead.x + p.dx * 3, lead.y + 1.2, lead.z + p.dz * 3); wantPos.set(lead.x - p.dx * 7.5 + p.dz * 1.5, lead.y + 3.6, lead.z - p.dz * 7.5 - p.dx * 1.5); }
-    else { wantLook.set((lead.x + P.x) / 2, 1, (lead.z + P.z) / 2); wantPos.set(wantLook.x + p.dz * 13, 7.5, wantLook.z - p.dx * 13); }
+    else if (lead.shown > 880) {
+      // near the finish: through the castle gate, looking back at the runners coming in
+      wantLook.set(lead.x, lead.y + 1, lead.z); wantPos.set(F.x + F.dx * 7 + F.dz * 1.2, 3.4, F.z + F.dz * 7 - F.dx * 1.2);
+    } else {
+      // the side shot: the side of the path with a clear view
+      wantLook.set((lead.x + P.x) / 2, 1, (lead.z + P.z) / 2);
+      wantPos.set(wantLook.x + p.dz * 13, 7.5, wantLook.z - p.dx * 13);
+      if (blocked(wantPos, wantLook)) wantPos.set(wantLook.x - p.dz * 13, 7.5, wantLook.z + p.dx * 13);
+    }
+    if (blocked(wantPos, wantLook)) wantPos.y = Math.max(wantPos.y, 13);   // still in the way: rise above it
     return 2.4;
   }
   B.run(dt0 => {
     const slow = QR.photo && motion ? 0.4 : 1, dt = dt0 * slow;
     QR.step(dt0); t0 += dt;
     const ph = QR.phase, ended = ph === 'ended';
-    if (ph !== lastPhase) { lastPhase = ph; phaseT = 0; } else phaseT += dt0;
+    if (ph !== lastPhase) { if (ph === 'ended' || ph === 'countdown') cut = true; lastPhase = ph; phaseT = 0; } else phaseT += dt0;
+    if (QR.photo && !wasPhoto) cut = true; wasPhoto = QR.photo;
     // my avatar: roaming in the lobby, on the path in the race, on the podium at the end
     if (me) {
       if (ph === 'lobby' && L.active) { QR.stepRoam(dt, yaw); me.position.set(QR.roam.x, 0, QR.roam.z); me.heading = QR.roam.h; me.speed = QR.roam.sp; }
@@ -1141,10 +1160,12 @@ if (QR && QR.view === '3d') {
       const lowv = QR.cardUp ? 2.6 : 0.4, dist = ended ? 9 : 7;
       wantLook.set(tgt.x + Math.sin(yaw) * lowv, tgt.y + 1.4 - lowv * 0.9, tgt.z + Math.cos(yaw) * lowv);
       wantPos.set(tgt.x - Math.sin(yaw) * dist, tgt.y + 5.4 + lowv * 0.6, tgt.z - Math.cos(yaw) * dist);
+      if (blocked(wantPos, wantLook)) wantPos.y += 5;
       kick += ((boosting ? 1 : 0) - kick) * Math.min(1, dt0 * 3);
       follow = 5;
     }
     clearCam(wantPos);
+    if (cut && (L.role === 'host' || !me || ended)) { camPos.copy(wantPos); camLook.copy(wantLook); } cut = false;
     camPos.lerp(wantPos, Math.min(1, dt0 * follow)); camLook.lerp(wantLook, Math.min(1, dt0 * follow * 1.4)); clearCam(camPos);
     camera.position.copy(camPos); camera.lookAt(camLook);
     const baseFov = canvas.clientWidth / Math.max(1, canvas.clientHeight) < 0.8 ? 72 : 56;
