@@ -6,7 +6,7 @@
 // Real captures of the running app, from made-up demo people in a throwaway database (never a real DB or a real child):
 // Pixel Panda, Rocket Otter, Ms. Rivera's Class at Sunny Hill Demo School... Light theme only (the page frames them).
 //
-// Usage: npm run how-shots [-- --only parents|teachers] [-- --keep]     (--keep leaves the temp data and PNGs)
+// Usage: npm run how-shots [-- --only parents|teachers|live] [-- --keep]     (--keep leaves the temp data and PNGs)
 //        HOW_PORT=5990 (the server; the fake Stripe for the family step uses HOW_PORT + 1)
 //        HOW_REAL_BUILDER=1 with ANTHROPIC_API_KEY set: the Builder step from Claude (not deterministic: check it by eye).
 // Needs ImageMagick `convert` with WebP (else Chromium encodes) and the Playwright Chromium (BRB_CHROMIUM or /opt/pw-browsers).
@@ -61,7 +61,8 @@ async function seedMode() {
     must(schools.addToClass(teacher, cls.id, r.user.id), 'add to class');
     kids[rosterName] = r.user.id;
   }
-  setPassword(kids['Pixel Panda'], PASS);
+  // Every school account can sign in (the live group joins a class room as each of them).
+  for (const id of Object.values(kids)) setPassword(id, PASS);
   // A second, smaller class, so My classes looks like a real week.
   const club = must(schools.createClass(teacher, school.id, { name: 'Coding Club', grade: '5' }), 'class 2').class;
   for (const n of ['Comet Fox', 'Maple Koala', 'Nova Newt']) must(schools.addToClass(teacher, club.id, kids[n]), 'add to club');
@@ -128,6 +129,7 @@ async function main() {
     const made = [];
     if (!only || only === 'parents') made.push(...await parentShots(shooter, ids));
     if (!only || only === 'teachers') made.push(...await teacherShots(shooter, ids));
+    if (!only || only === 'live') made.push(...await liveShots(shooter, ids));
     if (!only || only === 'parents') {
       // The same database, now with paid-plan pages on, for the family step.
       await stop(app);
@@ -382,6 +384,141 @@ async function teacherShots({ person, shot }, ids) {
   return made;
 }
 
+// ---------------------------------------------------------------- Oomba Live (/teachers/live)
+// Ms. Rivera hosts a Question Battle for her class; the five demo students join with their own school accounts (a class
+// room shows account names). live-pick: her /live landing; live-lobby: the projector page with the code, QR and the
+// class joined; live-join: a student's /join with the code typed; live-play: a student's question card; live-results:
+// the results page after the last question.
+const LIVE_ITEMS = [
+  { q: 'Which planet is closest to the Sun?', choices: ['Mercury', 'Venus', 'Earth', 'Mars'], answer: 0, secs: 30 },
+  { q: 'What do plants need to make food?', choices: ['Sunlight', 'Sand', 'Salt', 'Snow'], answer: 0, secs: 30 },
+  { q: 'How many legs does a spider have?', choices: ['8', '6', '10', '4'], answer: 0, secs: 30 },
+];
+async function liveShots({ person, shot }, ids) {
+  const made = [];
+  const liveFrame = async (page, ready) => {
+    for (let i = 0; i < 300; i++) {
+      const f = page.frames().find(x => /\/live\/frame\//.test(x.url()));
+      if (f) { try { const st = await f.evaluate(() => window.__brbTest && window.__brbTest.state && window.__brbTest.state()); if (st && (!ready || ready(st))) return f; } catch { /* loading */ } }
+      await page.waitForTimeout(150);
+    }
+    throw new Error('live: no game frame');
+  };
+  const state = f => f.evaluate(() => window.__brbTest.state());
+  const until = async (fn, what, ms = 30_000) => { const t0 = Date.now(); for (;;) { if (await fn()) return; if (Date.now() - t0 > ms) throw new Error(`live: ${what}`); await new Promise(r => setTimeout(r, 200)); } };
+  const act = (host, a) => host.locator(`[data-lv-act="${a}"]:not([hidden])`).click();
+
+  // 1. The landing: pick a game, the questions, who can join (her class).
+  for (const kind of ['phone', 'desk']) {
+    const p = await person(kind, 'MsRivera');
+    // Her own question set (a teacher's sets come first in the picker, before the starters).
+    await p.goto('/live');
+    if (kind === 'phone') {
+      const made = await p.request.post('/api/live/sets', { data: { title: 'Year 6 Science: Forces', subject: 'Science', grade: 'Year 6', items: [
+        { q: 'Which force pulls objects towards the Earth?', choices: ['Gravity', 'Friction', 'Magnetism', 'Air resistance'], answer: 0, secs: 20 },
+        { q: 'Friction always slows a moving object down.', choices: ['True', 'False'], answer: 0, secs: 15 },
+        { q: 'Which unit do we measure force in?', choices: ['Newtons', 'Kilograms', 'Metres', 'Seconds'], answer: 0, secs: 20 },
+      ] }, headers: { Origin: new URL(p.url()).origin } });
+      if (!made.ok()) throw new Error(`live: question set ${made.status()}`);
+    }
+    await p.goto('/live');
+    // Question Battle, so the question-set picker shows too.
+    await p.locator('input[name="pick"][value="mode:battle"]').check({ force: true }).catch(() => {});
+    await p.locator('#lv-new').dispatchEvent('change');
+    const cls = p.locator('input[name="audience"][value="class"]');
+    if (await cls.count()) await cls.check().catch(() => {});
+    await p.locator('#lv-class').selectOption({ label: "Ms. Rivera's Class" }).catch(() => {});
+    // A new teacher's empty "My games" and "Shared with my classes" groups are left out: the games, then who can join.
+    await p.evaluate(() => { for (const f of document.querySelectorAll('#lv-new fieldset.lv-group')) if (!f.querySelector('.lv-pick') && !f.querySelector('input,select')) f.style.display = 'none'; });
+    made.push({ slug: 'live-pick', kind, png: await shot(p, `live-pick-${kind}`, { names: true, focus: '#lv-new', offset: 12 }) });
+    await p.context().close();
+  }
+
+  // 2. The room, opened as the landing form does, for her class.
+  const host = await person('desk', 'MsRivera');
+  host.on('dialog', d => d.accept());
+  const origin = new URL(host.url()).origin;
+  const r = await host.request.post('/api/live/sessions', { data: { pick: 'mode:battle', items: LIVE_ITEMS, audience: 'class', classId: ids.classId, replace: true }, headers: { Origin: origin } });
+  if (r.status() !== 200) throw new Error(`live: session ${r.status()} ${await r.text()}`);
+  const hostUrl = (await r.json()).redirect;
+  await host.goto(hostUrl);
+  const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
+
+  // 3. The join page with the code typed (before joining), on a phone and a wide screen.
+  for (const kind of ['phone', 'desk']) {
+    const p = await person(kind, 'BrightFox57');
+    await p.goto('/join');
+    await p.fill('#jc', code);
+    made.push({ slug: 'live-join', kind, png: await shot(p, `live-join-${kind}`, { names: true }) });
+    await p.context().close();
+  }
+
+  // The class joins: four on phones, Nova Newt on a laptop (so the question card has a wide-screen picture too).
+  const students = [];
+  for (const [rosterName, username] of STUDENTS) {
+    const p = await person(rosterName === 'Nova Newt' ? 'desk' : 'phone', username);
+    await p.goto(`/join#${code}`);
+    await p.click('#lv-join button[type=submit]');
+    await p.locator('#lv-as-me').click();
+    await p.waitForURL(/\/live\/play\//);
+    students.push({ rosterName, p });
+  }
+  await until(async () => (await host.locator('#lv-roster li').count()) >= STUDENTS.length, 'everyone in the roster');
+  await liveFrame(host);
+  await host.waitForTimeout(1200);
+  made.push({ slug: 'live-lobby', kind: 'desk', png: await shot(host, 'live-lobby-desk', { names: true }) });
+  {
+    // The same projector page on a phone (it takes over the host's line; the laptop page reloads after).
+    const p = await person('phone', 'MsRivera');
+    await p.goto(hostUrl); await liveFrame(p); await p.waitForTimeout(1200);
+    made.push({ slug: 'live-lobby', kind: 'phone', png: await shot(p, 'live-lobby-phone', { names: true }) });
+    await p.context().close();
+    await host.goto(hostUrl); await liveFrame(host); await host.waitForTimeout(800);
+  }
+
+  // 4. The first question on Pixel Panda's phone and Nova Newt's laptop, before answering.
+  const frames = [];
+  for (const s of students) frames.push({ ...s, f: await liveFrame(s.p) });
+  await act(host, 'start');
+  for (let i = 0; i < LIVE_ITEMS.length; i++) {
+    for (const s of frames) await until(async () => { const st = await state(s.f); return st.phase === 'playing' && st.question && st.question.i === i; }, `question ${i}`);
+    if (i === 0) {
+      for (const [name, kind] of [['Nova Newt', 'desk'], ['Pixel Panda', 'phone']]) {
+        const s = frames.find(x => x.rosterName === name);
+        await s.p.waitForTimeout(900);
+        made.push({ slug: 'live-play', kind, png: await shot(s.p, `live-play-${kind}`, { names: true }) });
+      }
+    }
+    // Most are right; a couple miss one, so the leaderboard has an order.
+    for (const [k, s] of frames.entries()) {
+      const q = (await state(s.f)).question, right = q.choices.indexOf(LIVE_ITEMS[i].choices[0]);
+      const pick = (k + i) % 4 === 3 ? (right + 1) % q.choices.length : right;
+      await s.f.locator('.qb-a').nth(pick).click();
+      await s.p.waitForTimeout(150 + k * 120);
+    }
+    for (const s of frames) await until(async () => (await state(s.f)).phase !== 'playing', `reveal ${i}`);
+    await host.waitForTimeout(600);
+    await act(host, 'next');
+  }
+  await host.waitForURL(/\/live\/results\//, { timeout: 30_000 });
+  const results = host.url();
+
+  // 5. The results page, on the laptop and on a phone.
+  // The student table (in "Details", closed by default so it isn't shown on the projector by accident).
+  const details = async p => { await p.locator('#lv-details summary').click(); await p.locator('#lv-student-table').waitFor(); };
+  await details(host);
+  made.push({ slug: 'live-results', kind: 'desk', png: await shot(host, 'live-results-desk', { names: true, focus: '#lv-details', offset: 12 }) });
+  {
+    const p = await person('phone', 'MsRivera');
+    await p.goto(results); await details(p);
+    made.push({ slug: 'live-results', kind: 'phone', png: await shot(p, 'live-results-phone', { names: true, focus: '#lv-details', offset: 12 }) });
+    await p.context().close();
+  }
+  for (const s of students) await s.p.context().close();
+  await host.context().close();
+  return made;
+}
+
 // ---------------------------------------------------------------- encode
 const SIZES = { phone: [['p', 390], ['p', 780]], desk: [['d', 1024], ['d', 2048]] };
 function hasMagick() { try { return /WEBP/i.test(execFileSync('convert', ['-list', 'format'], { encoding: 'utf8' })) ? 'convert' : null; } catch { return null; } }
@@ -413,7 +550,7 @@ function report(files) {
   const kb = n => `${(n / 1024).toFixed(0)} KB`;
   for (const f of files) console.log(`${path.relative(ROOT, f.file).padEnd(48)} ${kb(f.bytes).padStart(7)}`);
   let over = false;
-  for (const pg of ['parents', 'teachers']) {
+  for (const pg of ['parents', 'teachers', 'live']) {
     const mine = files.filter(f => f.slug.startsWith(pg + '-'));
     if (!mine.length) continue;
     const phone = mine.filter(f => f.tag === 'p' && f.w === 780).reduce((a, f) => a + f.bytes, 0);

@@ -2224,7 +2224,40 @@
       "removeQuestion": "Retirer cette question",
       "right": "La bonne réponse",
       "answer": "Réponse {n}",
-      "saved": "Enregistré !"
+      "saved": "Enregistré !",
+      "grade": "Niveau ou classe (facultatif)",
+      "gradeHint": "ex. : 5e, seconde, débutants",
+      "aiButton": "Rédiger des questions avec l’IA",
+      "pasteButton": "Coller des questions",
+      "count": "{n} questions sur {max}",
+      "true": "Vrai",
+      "false": "Faux",
+      "makeTf": "Transformer en vrai ou faux",
+      "removeAnswer": "Retirer cette réponse",
+      "moveUp": "Monter cette question",
+      "moveDown": "Descendre cette question",
+      "duplicate": "Dupliquer",
+      "aiTitle": "Rédiger des questions avec l’IA",
+      "aiIntro": "Décris ce que tu enseignes et à qui. Les questions apparaissent en dessous pour que tu les vérifies et les modifies avant d’enregistrer. Vérifie toujours les réponses.",
+      "aiTopic": "Sujet",
+      "aiTopicHint": "ex. : les causes de la Première Guerre mondiale, le cycle de l’eau, le vocabulaire espagnol de la nourriture, résoudre des équations du premier degré",
+      "aiLevel": "Niveau ou classe",
+      "aiLevelHint": "ex. : CM1, 3e, chimie au lycée",
+      "aiCount": "Nombre de questions",
+      "aiKind": "Type de questions",
+      "aiMixed": "Un mélange",
+      "aiChoice4": "Quatre réponses chacune",
+      "aiTf": "Vrai ou faux",
+      "aiGo": "Rédiger les questions",
+      "aiWorking": "Rédaction des questions…",
+      "aiNeedTopic": "Tape d’abord un sujet.",
+      "added": "{n, plural, one {# question ajoutée.} other {# questions ajoutées.}} Vérifie-les, puis enregistre.",
+      "pasteTitle": "Coller des questions",
+      "pasteSheet": "Depuis un tableur : copie les lignes et colle-les ici. Une ligne par question : la question, la bonne réponse, puis 1 à 3 mauvaises réponses, et les secondes pour répondre (facultatif).",
+      "pasteText": "Ou tape-les : la question sur une ligne, puis ses réponses sur les lignes du dessous, avec * devant la bonne. Laisse une ligne vide entre les questions.",
+      "pasteExample": "Quelle est la plus grande planète ?\n* Jupiter\nSaturne\nTerre\n\nAu niveau de la mer, l’eau bout à 100 °C.\n* Vrai\nFaux",
+      "pasteFound": "{n, plural, =0 {Aucune question trouvée pour l’instant.} one {# question trouvée.} other {# questions trouvées.}}",
+      "pasteGo": "Ajouter ces questions"
     },
     "match": {
       "title": "Jouer à {title} en ligne",
@@ -3738,7 +3771,8 @@
       "p1": "Lancez une course-quiz en direct ou tout jeu prêt pour le direct au vidéoprojecteur. Les élèves rejoignent sur leurs propres appareils avec un code à 7 chiffres.",
       "li1": "Modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions) et Bataille de questions.",
       "li2": "Utilisez une série de départ, tapez une série rapide ou transformez les questions d’une leçon en quiz en direct.",
-      "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement."
+      "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement.",
+      "more": "Voir comment fonctionne Oomba Live"
     }
   },
   "learn": {
@@ -4705,7 +4739,10 @@
       "new": "Nouvelle série de questions",
       "empty": "Pas encore de série de questions.",
       "items": "{count, plural, one {# question} other {# questions}}",
-      "draft": "réponses à ajouter"
+      "draft": "réponses à ajouter",
+      "school": "Partagées dans mon école",
+      "schoolHint": "Séries partagées par d’autres enseignants de votre école. Faites-en une copie pour la modifier.",
+      "copy": "Faire une copie"
     },
     "api": {
       "off": "Les parties en direct sont désactivées pour le moment.",
@@ -4725,14 +4762,17 @@
       "audience": "Choisissez qui peut participer.",
       "set": {
         "title": "Donnez un titre à la série.",
-        "items": "Ajoutez de 1 à 50 questions.",
+        "items": "Ajoutez de 1 à 100 questions.",
         "question": "La question {n} a besoin d’un texte (rien de personnel ni de grossier).",
         "choice": "Une réponse de la question {n} n’est pas autorisée.",
         "choices": "La question {n} a besoin de 2 à 4 réponses, avec la bonne choisie.",
         "sameChoice": "La question {n} a deux réponses identiques.",
         "tooBig": "Cette série est trop grande.",
         "noQuestions": "Cette leçon n’a pas d’étape de question.",
-        "notFound": "Cette série est introuvable."
+        "notFound": "Cette série est introuvable.",
+        "topic": "Tapez d’abord un sujet.",
+        "aiOff": "La rédaction avec l’IA n’est pas disponible pour le moment. Vous pouvez toujours taper ou coller vos questions.",
+        "aiFailed": "L’IA n’a pas réussi à écrire des questions cette fois. Réessayez, ou modifiez un peu le sujet."
       },
       "noMissed": "Tout le monde a tout juste : il n'y a rien à rejouer.",
       "teamsOff": "Ce jeu n'avait pas d'équipes.",
@@ -5215,6 +5255,121 @@
       "notPlaying": "Cette partie n’est pas en cours en ce moment.",
       "bad": "Ce coup n’a pas pu être envoyé.",
       "full": "Cette partie est trop longue pour continuer."
+    }
+  },
+  "teachersLive": {
+    "title": "Oomba Live : des quiz en direct gratuits pour votre classe",
+    "description": "Lancez une course-quiz en direct au vidéoprojecteur. Les élèves rejoignent la partie sur n’importe quel appareil avec un code à 7 chiffres, sans compte, sans saisie et sans publicité. Gratuit pour les enseignants.",
+    "kicker": "Oomba Live pour les enseignants",
+    "h1": "Des quiz en direct auxquels toute votre classe joue ensemble",
+    "lead": "Affichez le jeu au tableau. Les élèves rejoignent la partie sur leurs propres appareils avec un code à 7 chiffres et répondent à vos questions dans une vraie course, dans toutes les matières et à tous les niveaux. Gratuit, sans publicité, et les élèves n’ont rien à taper à part le code.",
+    "badges": {
+      "free": "Gratuit pour les enseignants",
+      "ads": "Sans publicité",
+      "noAccounts": "Aucun compte élève nécessaire",
+      "browser": "Tout navigateur, même sur Chromebook",
+      "languages": "{count} langues"
+    },
+    "cta": {
+      "host": "Animer une partie en direct gratuite",
+      "how": "Voir comment ça marche",
+      "join": "Rejoindre une partie ? Tapez le code ici"
+    },
+    "how": {
+      "h": "Des questions au podium en quelques minutes",
+      "lead": "De vrais écrans d’une partie en direct dans une école de démonstration aux noms inventés.",
+      "s1": {
+        "h": "Choisissez un jeu et vos questions",
+        "p": "Choisissez Course aux quêtes ou Bataille de questions, puis votre propre série de questions, une série partagée par un collègue, une série de départ toute prête ou les questions de l’une de vos leçons.",
+        "alt": "La page « Animer une partie en direct » : les modes de jeu au choix, une série de questions et qui peut rejoindre."
+      },
+      "s2": {
+        "h": "Affichez le code au tableau",
+        "p": "Les élèves ouvrent la page pour rejoindre sur leur appareil et tapent le code à 7 chiffres, ou scannent le QR code. Leurs noms apparaissent à mesure qu’ils arrivent.",
+        "alt": "L’écran du vidéoprojecteur avant le début de la partie : un grand code à 7 chiffres, un QR code et les élèves déjà arrivés."
+      },
+      "s3": {
+        "h": "Les élèves rejoignent en quelques secondes",
+        "p": "Ni application ni inscription pour une salle ouverte. Dans une salle de classe, vos élèves connectés rejoignent avec leur propre compte.",
+        "alt": "Le téléphone d’un élève sur la page pour rejoindre, avec le code à 7 chiffres saisi."
+      },
+      "s4": {
+        "h": "Tout le monde répond en même temps",
+        "p": "La question est au tableau et les boutons de réponse sont sur chaque appareil. Plus une bonne réponse arrive vite, plus elle rapporte de points.",
+        "alt": "Le téléphone d’un élève pendant une question, avec quatre boutons de réponse."
+      },
+      "s5": {
+        "h": "Voyez qui sait quoi",
+        "p": "Un classement après chaque question et, à la fin, une page de résultats par question et par élève.",
+        "alt": "L’écran du vidéoprojecteur avec le classement et les scores des élèves."
+      }
+    },
+    "modes": {
+      "h": "Deux façons de jouer, plus des jeux en direct",
+      "race": {
+        "h": "Course aux quêtes",
+        "p": "Une course sur une île en 3D. Chaque bonne réponse rapporte des gemmes et un coup d’accélérateur, et toute la classe suit les coureurs au tableau."
+      },
+      "battle": {
+        "h": "Bataille de questions",
+        "p": "Le classique : la question sur le grand écran, les réponses sur chaque appareil et un classement après chaque question."
+      },
+      "games": {
+        "h": "Jeux prêts pour le direct",
+        "p": "Certains jeux de la bibliothèque se jouent aussi en direct, avec tous les élèves dans le même monde."
+      }
+    },
+    "tools": {
+      "h": "Les outils demandés par les enseignants",
+      "li1": "Des équipes de 2 à 6, équilibrées pour vous, avec couleurs et scores d’équipe.",
+      "li2": "« Regardez-moi » met chaque écran en pause, et des messages rapides comme « Plus qu’une minute ».",
+      "li3": "Un minuteur de 10, 20 ou 30 secondes par question, et vous pouvez passer ou mettre en pause à tout moment.",
+      "li4": "Des points bonus pour le travail d’équipe, la gentillesse et les efforts.",
+      "li5": "Du temps en plus pour les élèves qui en ont besoin.",
+      "li6": "Un co-animateur peut mener la partie avec vous.",
+      "li7": "Des résultats par question et par élève. Les parties de classe sont enregistrées et se téléchargent sous forme de tableur."
+    },
+    "safe": {
+      "h": "Pensé pour les enfants dès le départ",
+      "li1": "Les élèves ne peuvent rien taper d’autre que le code : pas de discussion, pas de noms libres, pas de commentaires.",
+      "li2": "Dans une salle ouverte, chacun reçoit un gentil surnom inventé, comme Loutre Courageuse, jamais un vrai nom.",
+      "li3": "Une salle de classe est réservée à vos propres élèves connectés, et leurs scores vont dans votre carnet de notes.",
+      "li4": "Les codes expirent à la fin de la partie, et les élèves peuvent vous signaler n’importe quel problème d’une seule touche.",
+      "link": "En savoir plus sur notre <a href=\"{safety}\">page sécurité</a>."
+    },
+    "more": {
+      "h": "Plus qu’un quiz",
+      "p": "Oomba Live fait partie d’Oomba Academy, où les élèves jouent aussi à des jeux éducatifs et créent leurs propres jeux avec un assistant IA sûr. Un seul compte gratuit pour toute votre classe.",
+      "link": "Oomba Academy pour les enseignants"
+    },
+    "start": {
+      "h": "Envie de lancer votre première partie en direct ?",
+      "p": "Créez un compte adulte gratuit ou connectez-vous avec votre compte école. Choisissez une série de départ et vous pourrez jouer en deux minutes.",
+      "signedIn": "Vous êtes connecté. Choisissez un jeu et ouvrez votre salle.",
+      "kid": "Les parties en direct sont animées par des enseignants et d’autres adultes. Demande le code à ton enseignant, puis rejoins la partie ici :",
+      "pSchool": "Connectez-vous avec votre compte école ou obtenez un compte école gratuit pour votre classe. Choisissez une série de départ et vous pourrez jouer en deux minutes."
+    },
+    "faq": {
+      "h": "Les questions des enseignants sur Oomba Live",
+      "q1": "Oomba Live est-il gratuit ?",
+      "a1": "Oui. Animer des parties en direct, les séries de questions de départ, vos propres séries et les résultats : tout est gratuit, sans publicité.",
+      "q2": "Mes élèves ont-ils besoin d’un compte ?",
+      "a2": "Pas pour une salle ouverte : les élèves tapent le code et reçoivent un surnom inventé. Dans une salle de classe, ils utilisent les comptes école que vous avez créés pour eux, et leurs scores vont dans votre carnet de notes.",
+      "q3": "Combien d’élèves peuvent jouer ?",
+      "a3": "Jusqu’à {max} dans une salle de classe. Une salle ouverte à toute personne qui a le code accueille jusqu’à {open} joueurs quand un parent ou un autre adulte l’anime, et jusqu’à {max} quand c’est un enseignant.",
+      "q4": "Puis-je utiliser mes propres questions ?",
+      "a4": "Oui, dans toutes les matières et à tous les niveaux. Écrivez une série de {items} questions maximum avec 2 à 4 réponses chacune, collez-en une depuis un tableur, laissez l’IA en rédiger une que vous modifierez, ou transformez les questions de l’une de vos leçons en quiz en direct.",
+      "q5": "De quoi les élèves ont-ils besoin ?",
+      "a5": "N’importe quel appareil avec un navigateur à jour : Chromebook, tablette, ordinateur portable ou téléphone. Rien à installer. Vous affichez le jeu au tableau depuis votre propre ordinateur."
+    },
+    "own": {
+      "h": "Vos questions, à votre façon",
+      "p": "Écrivez des quiz pour toutes les matières et tous les âges, des premières lectures à la chimie au lycée.",
+      "li1": "Tapez des questions avec 2 à 4 réponses, ou en vrai ou faux, avec un temps de 5 secondes à 2 minutes pour chacune.",
+      "li2": "Collez un quiz entier depuis un tableur ou un document, en une seule fois.",
+      "li3": "Décrivez un sujet et un niveau, et l’IA rédige les questions pour que vous les vérifiiez et les modifiiez.",
+      "li4": "Jusqu’à 100 questions par série. Partagez vos séries avec les enseignants de votre école, ou copiez les leurs et adaptez-les à votre façon.",
+      "li5": "Envie d’un autre type de jeu ? Créez votre propre jeu de quiz avec le Constructeur IA : il se joue en direct avec n’importe laquelle de vos séries de questions."
     }
   }
 }

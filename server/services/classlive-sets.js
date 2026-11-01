@@ -1,5 +1,5 @@
 // Oomba Live question sets (docs/decisions.md "Oomba Live"): written by teachers and grown-ups, never by players. Each
-// item is a question, 2-4 choices, the right one, and a time (10, 20, 30 or 60 seconds). Text is checked like any text
+// item is a question, 2-4 choices, the right one, and a time (SECS: 5 seconds to 2 minutes). Text is checked like any text
 // adults publish to children: no rude words, no personal information (emails, phone numbers, addresses, links).
 // Ownership follows the lesson library: the owner edits; staff of the same school may use a set the owner shared.
 import { q, uid, now, tx } from '../db.js';
@@ -7,8 +7,8 @@ import { cleanText } from './textfilter.js';
 import * as S from './schools.js';
 import * as L from './lessons.js';
 
-export const LIMITS = { items: 50, q: 200, choice: 80, title: 80, bytes: 40 * 1024 };
-export const SECS = [10, 20, 30, 60];
+export const LIMITS = { items: 100, q: 300, choice: 120, title: 80, bytes: 120 * 1024 };
+export const SECS = [5, 10, 15, 20, 30, 45, 60, 90, 120];
 
 const fail = code => ({ ok: false, code });
 export const getSet = id => (id ? q.get('SELECT * FROM live_sets WHERE id=?', String(id)) : null) || null;
@@ -76,6 +76,14 @@ export function updateSet(u, id, { title, subject, grade, items, shared } = {}) 
     subject !== undefined ? String(subject).slice(0, 40) : set.subject, grade !== undefined ? String(grade).slice(0, 20) : set.grade,
     JSON.stringify(list), shared !== undefined ? (shared && set.school_id ? 1 : 0) : set.shared, now(), set.id);
   return { ok: true, set: getSet(set.id) };
+}
+/** A copy of a set this person may use (their own, or one a colleague shared), owned by them and not shared. */
+export function copySet(u, id) {
+  const set = getSet(id); if (!canUse(u, set)) return fail('notFound');
+  const school = staffSchool(u), t = now(), nid = uid(12);
+  q.run('INSERT INTO live_sets(id, owner_id, school_id, title, subject, grade, lang, items, lesson_id, shared, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,0,?,?)',
+    nid, u.id, school ? school.school_id : null, String(set.title).slice(0, LIMITS.title), set.subject || '', set.grade || '', set.lang || 'en', set.items, null, t, t);
+  return { ok: true, set: getSet(nid) };
 }
 export function archiveSet(u, id) {
   const set = getSet(id); if (!canEdit(u, set)) return fail('notFound');

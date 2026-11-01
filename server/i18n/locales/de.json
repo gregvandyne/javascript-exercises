@@ -2225,7 +2225,40 @@
       "removeQuestion": "Diese Frage entfernen",
       "right": "Die richtige Antwort",
       "answer": "Antwort {n}",
-      "saved": "Gespeichert!"
+      "saved": "Gespeichert!",
+      "grade": "Klassenstufe oder Niveau (optional)",
+      "gradeHint": "z. B. Klasse 7, Jahrgang 10, Anfänger",
+      "aiButton": "Fragen mit KI entwerfen",
+      "pasteButton": "Fragen einfügen",
+      "count": "{n} von {max} Fragen",
+      "true": "Wahr",
+      "false": "Falsch",
+      "makeTf": "In Wahr oder falsch umwandeln",
+      "removeAnswer": "Diese Antwort entfernen",
+      "moveUp": "Diese Frage nach oben schieben",
+      "moveDown": "Diese Frage nach unten schieben",
+      "duplicate": "Duplizieren",
+      "aiTitle": "Fragen mit KI entwerfen",
+      "aiIntro": "Beschreib, was du unterrichtest und für wen. Die Fragen erscheinen unten, damit du sie vor dem Speichern prüfen und bearbeiten kannst. Prüf immer die Antworten.",
+      "aiTopic": "Thema",
+      "aiTopicHint": "z. B. Ursachen des Ersten Weltkriegs, der Wasserkreislauf, spanische Wörter rund ums Essen, lineare Gleichungen lösen",
+      "aiLevel": "Klassenstufe oder Niveau",
+      "aiLevelHint": "z. B. Klasse 4, Jahrgang 9, Chemie in der Oberstufe",
+      "aiCount": "Wie viele Fragen",
+      "aiKind": "Art der Fragen",
+      "aiMixed": "Gemischt",
+      "aiChoice4": "Je vier Antworten",
+      "aiTf": "Wahr oder falsch",
+      "aiGo": "Fragen entwerfen",
+      "aiWorking": "Fragen werden geschrieben …",
+      "aiNeedTopic": "Gib zuerst ein Thema ein.",
+      "added": "{n, plural, one {# Frage hinzugefügt.} other {# Fragen hinzugefügt.}} Prüf sie und speichere dann.",
+      "pasteTitle": "Fragen einfügen",
+      "pasteSheet": "Aus einer Tabelle: Kopiere die Zeilen und füge sie hier ein. Eine Zeile pro Frage: die Frage, die richtige Antwort, dann 1 bis 3 falsche Antworten und die Sekunden zum Antworten (optional).",
+      "pasteText": "Oder tipp sie ein: die Frage in eine Zeile, darunter ihre Antworten, mit * vor der richtigen. Lass zwischen den Fragen eine Zeile frei.",
+      "pasteExample": "Was ist der größte Planet?\n* Jupiter\nSaturn\nErde\n\nWasser kocht auf Meereshöhe bei 100 °C.\n* Wahr\nFalsch",
+      "pasteFound": "{n, plural, =0 {Noch keine Fragen gefunden.} one {# Frage gefunden.} other {# Fragen gefunden.}}",
+      "pasteGo": "Diese Fragen hinzufügen"
     },
     "match": {
       "title": "{title} online spielen",
@@ -3739,7 +3772,8 @@
       "p1": "Starten Sie ein Live-Quizrennen oder ein anderes Live-Spiel am Beamer. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei.",
       "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen) und Fragen-Duell.",
       "li2": "Nutzen Sie ein Starterset, tippen Sie schnell eigene Fragen oder machen Sie aus den Fragen einer Unterrichtseinheit ein Live-Quiz.",
-      "li3": "Klassenräume sind nur für Ihre angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch. Kein Chat, kein Tippen, keine frei eingegebenen Namen."
+      "li3": "Klassenräume sind nur für Ihre angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch. Kein Chat, kein Tippen, keine frei eingegebenen Namen.",
+      "more": "So funktioniert Oomba Live"
     }
   },
   "learn": {
@@ -4706,7 +4740,10 @@
       "new": "Neues Fragenset",
       "empty": "Noch keine Fragensets.",
       "items": "{count, plural, one {# Frage} other {# Fragen}}",
-      "draft": "Antworten fehlen"
+      "draft": "Antworten fehlen",
+      "school": "An meiner Schule geteilt",
+      "schoolHint": "Sets, die andere Lehrkräfte an deiner Schule geteilt haben. Mach eine Kopie, um eines zu ändern.",
+      "copy": "Kopie erstellen"
     },
     "api": {
       "off": "Live-Spiele sind gerade ausgeschaltet.",
@@ -4726,14 +4763,17 @@
       "audience": "Wähle, wer mitspielen darf.",
       "set": {
         "title": "Gib dem Set einen Titel.",
-        "items": "Füge 1 bis 50 Fragen hinzu.",
+        "items": "Füge 1 bis 100 Fragen hinzu.",
         "question": "Frage {n} braucht Text (nichts Persönliches und nichts Unhöfliches).",
         "choice": "Eine Antwort in Frage {n} ist nicht erlaubt.",
         "choices": "Frage {n} braucht 2 bis 4 Antworten, und die richtige muss ausgewählt sein.",
         "sameChoice": "Frage {n} hat zwei gleiche Antworten.",
         "tooBig": "Dieses Set ist zu groß.",
         "noQuestions": "Diese Unterrichtseinheit hat keine Frageschritte.",
-        "notFound": "Wir finden dieses Set nicht."
+        "notFound": "Wir finden dieses Set nicht.",
+        "topic": "Gib zuerst ein Thema ein.",
+        "aiOff": "Das Entwerfen mit KI ist gerade nicht verfügbar. Du kannst deine Fragen trotzdem eintippen oder einfügen.",
+        "aiFailed": "Die KI konnte diesmal keine Fragen schreiben. Versuch es noch einmal oder ändere das Thema ein wenig."
       },
       "noMissed": "Alle haben alles richtig, es gibt nichts zu wiederholen.",
       "teamsOff": "Dieses Spiel hatte keine Teams.",
@@ -5216,6 +5256,121 @@
       "notPlaying": "Dieses Spiel läuft gerade nicht.",
       "bad": "Dieser Zug konnte nicht gesendet werden.",
       "full": "Dieses Spiel ist zu lang geworden und kann nicht weitergehen."
+    }
+  },
+  "teachersLive": {
+    "title": "Oomba Live: kostenlose Live-Quizspiele für Ihre Klasse",
+    "description": "Bringen Sie ein Live-Quizrennen auf den Beamer. Die Kinder treten auf jedem Gerät mit einem 7-stelligen Code bei, ohne Konten, ohne Tippen und ohne Werbung. Kostenlos für Lehrkräfte.",
+    "kicker": "Oomba Live für Lehrkräfte",
+    "h1": "Live-Quizspiele, die Ihre ganze Klasse gemeinsam spielt",
+    "lead": "Zeigen Sie das Spiel an der Tafel. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei und beantworten Ihre Fragen um die Wette, in jedem Fach und auf jedem Niveau. Kostenlos, ohne Werbung, und außer dem Code müssen sie nichts eintippen.",
+    "badges": {
+      "free": "Kostenlos für Lehrkräfte",
+      "ads": "Keine Werbung",
+      "noAccounts": "Keine Schülerkonten nötig",
+      "browser": "Jeder Browser, auch auf Chromebooks",
+      "languages": "{count} Sprachen"
+    },
+    "cta": {
+      "host": "Kostenloses Live-Spiel leiten",
+      "how": "So funktioniert es",
+      "join": "Einem Spiel beitreten? Code hier eingeben"
+    },
+    "how": {
+      "h": "Von den Fragen aufs Siegerpodest in wenigen Minuten",
+      "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
+      "s1": {
+        "h": "Spiel und Fragen auswählen",
+        "p": "Wählen Sie Quest-Rennen oder Fragen-Duell und dann Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, ein fertiges Starterset oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
+        "alt": "Die Seite „Live-Spiel leiten“: Spielmodi zur Auswahl, ein Fragenset und wer beitreten kann."
+      },
+      "s2": {
+        "h": "Den Code an der Tafel zeigen",
+        "p": "Die Schülerinnen und Schüler öffnen auf ihrem Gerät die Beitrittsseite und geben den 7-stelligen Code ein oder scannen den QR-Code. Ihre Namen erscheinen, sobald sie beitreten.",
+        "alt": "Der Beamer-Bildschirm vor Spielbeginn: ein großer 7-stelliger Code, ein QR-Code und die Schülerinnen und Schüler, die schon beigetreten sind."
+      },
+      "s3": {
+        "h": "In Sekunden dabei",
+        "p": "Für einen offenen Raum braucht es keine App und keine Registrierung. In einem Klassenraum treten Ihre angemeldeten Schülerinnen und Schüler mit ihren eigenen Konten bei.",
+        "alt": "Das Handy eines Kindes auf der Beitrittsseite, mit eingegebenem 7-stelligem Code."
+      },
+      "s4": {
+        "h": "Alle antworten gleichzeitig",
+        "p": "Die Frage steht an der Tafel, die Antwortknöpfe sind auf jedem Gerät. Richtige Antworten bringen umso mehr Punkte, je schneller sie kommen.",
+        "alt": "Das Handy eines Kindes während einer Frage, mit vier Antwortknöpfen."
+      },
+      "s5": {
+        "h": "Sehen, wer was weiß",
+        "p": "Nach jeder Frage eine Bestenliste und am Ende eine Ergebnisseite nach Fragen und nach Schülerinnen und Schülern.",
+        "alt": "Der Beamer-Bildschirm mit der Bestenliste und den Punkten der Schülerinnen und Schüler."
+      }
+    },
+    "modes": {
+      "h": "Zwei Spielarten, dazu Live-Spiele",
+      "race": {
+        "h": "Quest-Rennen",
+        "p": "Ein Inselrennen in 3D. Jede richtige Antwort bringt Edelsteine und einen Schub, und die ganze Klasse verfolgt die Läufer an der Tafel."
+      },
+      "battle": {
+        "h": "Fragen-Duell",
+        "p": "Der Klassiker: die Frage auf der großen Leinwand, die Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste."
+      },
+      "games": {
+        "h": "Live-fähige Spiele",
+        "p": "Einige Spiele aus der Bibliothek lassen sich auch gemeinsam live spielen, mit allen Schülerinnen und Schülern in derselben Welt."
+      }
+    },
+    "tools": {
+      "h": "Werkzeuge, die sich Lehrkräfte gewünscht haben",
+      "li1": "Teams mit 2 bis 6 Kindern, automatisch ausgeglichen, mit Teamfarben und Teampunkten.",
+      "li2": "„Alle mal herschauen“ pausiert jeden Bildschirm, dazu kurze Nachrichten wie „Noch eine Minute“.",
+      "li3": "Ein Timer von 10, 20 oder 30 Sekunden pro Frage, und Sie können jederzeit überspringen oder pausieren.",
+      "li4": "Bonuspunkte für Teamarbeit, Freundlichkeit und Einsatz.",
+      "li5": "Mehr Zeit für Schülerinnen und Schüler, die sie brauchen.",
+      "li6": "Ein Co-Host kann das Spiel gemeinsam mit Ihnen leiten.",
+      "li7": "Ergebnisse nach Fragen und nach Schülerinnen und Schülern. Klassenspiele werden gespeichert und lassen sich als Tabelle herunterladen."
+    },
+    "safe": {
+      "h": "Von Anfang an für Kinder gemacht",
+      "li1": "Die Kinder können nur den Code eintippen: kein Chat, keine frei eingegebenen Namen, keine Kommentare.",
+      "li2": "In einem offenen Raum bekommen alle einen freundlichen ausgedachten Spitznamen wie „Mutiger Otter“, nie einen echten Namen.",
+      "li3": "Ein Klassenraum ist nur für Ihre eigenen angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch.",
+      "li4": "Codes verfallen, wenn das Spiel endet, und die Kinder können Ihnen alles mit einem Tippen melden.",
+      "link": "Mehr dazu auf unserer <a href=\"{safety}\">Sicherheitsseite</a>."
+    },
+    "more": {
+      "h": "Mehr als ein Quiz",
+      "p": "Oomba Live gehört zu Oomba Academy, wo die Kinder auch Lernspiele spielen und mit einem sicheren KI-Helfer eigene Spiele bauen. Ein kostenloses Konto für Ihre ganze Klasse.",
+      "link": "Oomba Academy für Lehrkräfte"
+    },
+    "start": {
+      "h": "Bereit für Ihr erstes Live-Spiel?",
+      "p": "Erstellen Sie ein kostenloses Erwachsenenkonto oder melden Sie sich mit Ihrem Schulkonto an. Wählen Sie ein Starterset, und in zwei Minuten kann es losgehen.",
+      "signedIn": "Sie sind angemeldet. Wählen Sie ein Spiel und öffnen Sie Ihren Raum.",
+      "kid": "Live-Spiele werden von Lehrkräften und anderen Erwachsenen geleitet. Frag deine Lehrkraft nach dem Code und tritt dann hier bei:",
+      "pSchool": "Melden Sie sich mit Ihrem Schulkonto an oder holen Sie sich ein kostenloses Schulkonto für Ihre Klasse. Wählen Sie ein Starterset, und in zwei Minuten kann es losgehen."
+    },
+    "faq": {
+      "h": "Häufige Fragen von Lehrkräften zu Oomba Live",
+      "q1": "Ist Oomba Live kostenlos?",
+      "a1": "Ja. Live-Spiele leiten, die Starter-Fragensets, Ihre eigenen Sets und die Ergebnisse sind alle kostenlos und ohne Werbung.",
+      "q2": "Brauchen meine Schülerinnen und Schüler Konten?",
+      "a2": "Nicht für einen offenen Raum: Die Kinder geben den Code ein und bekommen einen ausgedachten Spitznamen. In einem Klassenraum nutzen sie die Schulkonten, die Sie für sie angelegt haben, und ihre Punkte kommen in Ihr Notenbuch.",
+      "q3": "Wie viele Kinder können mitspielen?",
+      "a3": "Bis zu {max} in einem Klassenraum. Ein Raum für alle mit dem Code fasst bis zu {open} Spieler, wenn ein Elternteil oder ein anderer Erwachsener ihn leitet, und bis zu {max}, wenn eine Lehrkraft ihn leitet.",
+      "q4": "Kann ich eigene Fragen verwenden?",
+      "a4": "Ja, in jedem Fach und auf jedem Niveau. Schreiben Sie ein Set mit bis zu {items} Fragen mit je 2 bis 4 Antworten, fügen Sie eines aus einer Tabelle ein, lassen Sie die KI eines entwerfen, das Sie dann bearbeiten, oder machen Sie aus den Fragen einer Ihrer Unterrichtseinheiten ein Live-Quiz.",
+      "q5": "Was brauchen die Schülerinnen und Schüler?",
+      "a5": "Ein beliebiges Gerät mit aktuellem Browser: Chromebooks, Tablets, Laptops oder Handys. Nichts zu installieren. Sie zeigen das Spiel von Ihrem eigenen Computer aus an der Tafel."
+    },
+    "own": {
+      "h": "Ihre Fragen, ganz nach Ihren Wünschen",
+      "p": "Schreiben Sie Quizze für jedes Fach und jedes Alter, vom ersten Lesen bis zur Chemie in der Oberstufe.",
+      "li1": "Tippen Sie Fragen mit 2 bis 4 Antworten oder Wahr-oder-falsch-Fragen ein, jeweils mit einer Zeit von 5 Sekunden bis 2 Minuten.",
+      "li2": "Fügen Sie ein ganzes Quiz aus einer Tabelle oder einem Dokument auf einmal ein.",
+      "li3": "Beschreiben Sie ein Thema und eine Klassenstufe, und die KI entwirft die Fragen, die Sie dann prüfen und bearbeiten.",
+      "li4": "Bis zu 100 Fragen pro Set. Teilen Sie Sets mit Lehrkräften Ihrer Schule, oder kopieren Sie deren Sets und passen Sie sie für sich an.",
+      "li5": "Lust auf eine andere Art von Spiel? Bauen Sie mit dem KI-Baumeister Ihr eigenes Quizspiel, und es lässt sich mit jedem Ihrer Fragensets live spielen."
     }
   }
 }

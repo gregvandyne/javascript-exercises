@@ -2225,7 +2225,40 @@
       "removeQuestion": "Deze vraag verwijderen",
       "right": "Het goede antwoord",
       "answer": "Antwoord {n}",
-      "saved": "Opgeslagen!"
+      "saved": "Opgeslagen!",
+      "grade": "Leerjaar of niveau (optioneel)",
+      "gradeHint": "bijv. groep 7, havo 4, beginners",
+      "aiButton": "Vragen opstellen met AI",
+      "pasteButton": "Vragen plakken",
+      "count": "{n} van {max} vragen",
+      "true": "Waar",
+      "false": "Niet waar",
+      "makeTf": "Maak er waar of niet waar van",
+      "removeAnswer": "Dit antwoord verwijderen",
+      "moveUp": "Deze vraag omhoog verplaatsen",
+      "moveDown": "Deze vraag omlaag verplaatsen",
+      "duplicate": "Dupliceren",
+      "aiTitle": "Vragen opstellen met AI",
+      "aiIntro": "Beschrijf wat je lesgeeft en voor wie. De vragen verschijnen hieronder, zodat je ze kunt controleren en bewerken voordat je opslaat. Controleer altijd de antwoorden.",
+      "aiTopic": "Onderwerp",
+      "aiTopicHint": "bijv. oorzaken van de Eerste Wereldoorlog, de waterkringloop, Spaanse woorden over eten, lineaire vergelijkingen oplossen",
+      "aiLevel": "Leerjaar of niveau",
+      "aiLevelHint": "bijv. groep 6, vwo 3, scheikunde op de middelbare school",
+      "aiCount": "Hoeveel vragen",
+      "aiKind": "Soort vragen",
+      "aiMixed": "Een mix",
+      "aiChoice4": "Elk vier antwoorden",
+      "aiTf": "Waar of niet waar",
+      "aiGo": "Vragen opstellen",
+      "aiWorking": "Vragen schrijven…",
+      "aiNeedTopic": "Typ eerst een onderwerp.",
+      "added": "{n, plural, one {# vraag toegevoegd.} other {# vragen toegevoegd.}} Controleer ze en sla dan op.",
+      "pasteTitle": "Vragen plakken",
+      "pasteSheet": "Uit een spreadsheet: kopieer de rijen en plak ze hier. Eén rij per vraag: de vraag, het goede antwoord, dan 1 tot 3 foute antwoorden en de seconden om te antwoorden (optioneel).",
+      "pasteText": "Of typ ze: de vraag op één regel, daaronder de antwoorden, met * voor het goede antwoord. Laat een lege regel tussen de vragen.",
+      "pasteExample": "Wat is de grootste planeet?\n* Jupiter\nSaturnus\nAarde\n\nWater kookt op zeeniveau bij 100 °C.\n* Waar\nNiet waar",
+      "pasteFound": "{n, plural, =0 {Nog geen vragen gevonden.} one {# vraag gevonden.} other {# vragen gevonden.}}",
+      "pasteGo": "Deze vragen toevoegen"
     },
     "match": {
       "title": "{title} online spelen",
@@ -3739,7 +3772,8 @@
       "p1": "Speel een live quizrace of een ander spel dat klaar is voor live op het digibord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
       "li1": "Kant-en-klare modi: Questrace (een race over een 3D-eiland, aangedreven door jouw vragen) en Vragenduel.",
       "li2": "Gebruik een startset, typ snel een eigen set of maak van de vragen in een les een livequiz.",
-      "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen."
+      "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen.",
+      "more": "Bekijk hoe Oomba Live werkt"
     }
   },
   "learn": {
@@ -4706,7 +4740,10 @@
       "new": "Nieuwe vragenset",
       "empty": "Nog geen vragensets.",
       "items": "{count, plural, one {# vraag} other {# vragen}}",
-      "draft": "antwoorden ontbreken"
+      "draft": "antwoorden ontbreken",
+      "school": "Gedeeld op mijn school",
+      "schoolHint": "Sets die andere leraren op je school hebben gedeeld. Maak een kopie om er een te wijzigen.",
+      "copy": "Kopie maken"
     },
     "api": {
       "off": "Livespellen staan nu uit.",
@@ -4726,14 +4763,17 @@
       "audience": "Kies wie mag meedoen.",
       "set": {
         "title": "Geef de set een titel.",
-        "items": "Voeg 1 tot 50 vragen toe.",
+        "items": "Voeg 1 tot 100 vragen toe.",
         "question": "Vraag {n} heeft tekst nodig (niets persoonlijks of grofs).",
         "choice": "Een antwoord bij vraag {n} is niet toegestaan.",
         "choices": "Vraag {n} heeft 2 tot 4 antwoorden nodig, met het goede antwoord gekozen.",
         "sameChoice": "Vraag {n} heeft twee dezelfde antwoorden.",
         "tooBig": "Deze set is te groot.",
         "noQuestions": "Deze les heeft geen vraagstappen.",
-        "notFound": "We vinden die set niet."
+        "notFound": "We vinden die set niet.",
+        "topic": "Typ eerst een onderwerp.",
+        "aiOff": "Vragen opstellen met AI is nu niet beschikbaar. Je kunt je vragen nog steeds typen of plakken.",
+        "aiFailed": "De AI kon deze keer geen vragen schrijven. Probeer het opnieuw of pas het onderwerp een beetje aan."
       },
       "noMissed": "Iedereen had alles goed, dus er is niets om nog eens te spelen.",
       "teamsOff": "Dit spel had geen teams.",
@@ -5216,6 +5256,121 @@
       "notPlaying": "Dit spel is nu niet bezig.",
       "bad": "Die zet kon niet worden verstuurd.",
       "full": "Dit spel is te lang om door te gaan."
+    }
+  },
+  "teachersLive": {
+    "title": "Oomba Live: gratis live quizspellen voor je klas",
+    "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame. Gratis voor leerkrachten.",
+    "kicker": "Oomba Live voor leerkrachten",
+    "h1": "Live quizspellen die je hele klas samen speelt",
+    "lead": "Zet het spel op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door jouw vragen, over elk vak en op elk niveau. Gratis, zonder reclame, en leerlingen hoeven niets te typen behalve de code.",
+    "badges": {
+      "free": "Gratis voor leerkrachten",
+      "ads": "Geen reclame",
+      "noAccounts": "Geen leerlingaccounts nodig",
+      "browser": "Elke browser, ook op Chromebooks",
+      "languages": "{count} talen"
+    },
+    "cta": {
+      "host": "Leid een gratis livespel",
+      "how": "Bekijk hoe het werkt",
+      "join": "Doe je mee aan een spel? Typ hier de code"
+    },
+    "how": {
+      "h": "Van vragen naar het podium in een paar minuten",
+      "lead": "Echte schermen van een livespel op een demoschool met verzonnen namen.",
+      "s1": {
+        "h": "Kies een spel en je vragen",
+        "p": "Kies Questrace of Vragenduel en daarna je eigen vragenset, een set die een collega heeft gedeeld, een kant-en-klare startset of de vragen uit een van je lessen.",
+        "alt": "De pagina “Een livespel leiden”: spelmodi om uit te kiezen, een vragenset en wie mee mag doen."
+      },
+      "s2": {
+        "h": "Laat de code op het bord zien",
+        "p": "Leerlingen gaan op hun apparaat naar de meedoenpagina en typen de code van 7 cijfers, of scannen de QR-code. Hun namen verschijnen zodra ze meedoen.",
+        "alt": "Het scherm op het digibord voordat het spel begint: een grote code van 7 cijfers, een QR-code en de leerlingen die al meedoen."
+      },
+      "s3": {
+        "h": "Leerlingen doen binnen seconden mee",
+        "p": "Geen app en geen account nodig voor een open ruimte. In een klasruimte doen je ingelogde leerlingen mee met hun eigen account.",
+        "alt": "De telefoon van een leerling op de meedoenpagina, met de code van 7 cijfers ingetypt."
+      },
+      "s4": {
+        "h": "Iedereen antwoordt tegelijk",
+        "p": "De vraag staat op het bord en de antwoordknoppen staan op elk apparaat. Hoe sneller een goed antwoord, hoe meer punten.",
+        "alt": "De telefoon van een leerling tijdens een vraag, met vier antwoordknoppen."
+      },
+      "s5": {
+        "h": "Zie wie wat weet",
+        "p": "Na elke vraag een ranglijst, en aan het eind een resultatenpagina per vraag en per leerling.",
+        "alt": "Het scherm op het digibord met de ranglijst en de scores van de leerlingen."
+      }
+    },
+    "modes": {
+      "h": "Twee manieren om te spelen, plus livespellen",
+      "race": {
+        "h": "Questrace",
+        "p": "Een race over een 3D-eiland. Elk goed antwoord levert edelstenen en een boost op, en de hele klas volgt de lopers op het bord."
+      },
+      "battle": {
+        "h": "Vragenduel",
+        "p": "De klassieker: de vraag op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst."
+      },
+      "games": {
+        "h": "Spellen die klaar zijn voor live",
+        "p": "Sommige spellen uit de bibliotheek kun je ook live samen spelen, met alle leerlingen in dezelfde wereld."
+      }
+    },
+    "tools": {
+      "h": "Hulpmiddelen waar leerkrachten om vroegen",
+      "li1": "Teams van 2 tot 6, eerlijk voor je verdeeld, met teamkleuren en scores.",
+      "li2": "“Allemaal even kijken” zet elk scherm op pauze, en er zijn snelle berichten zoals “Nog één minuut”.",
+      "li3": "Een timer van 10, 20 of 30 seconden per vraag, en je kunt altijd overslaan of pauzeren.",
+      "li4": "Bonuspunten voor samenwerken, vriendelijkheid en inzet.",
+      "li5": "Extra tijd voor leerlingen die dat nodig hebben.",
+      "li6": "Een co-host kan het spel samen met je leiden.",
+      "li7": "Resultaten per vraag en per leerling. Klassenspellen worden bewaard en zijn te downloaden als spreadsheet."
+    },
+    "safe": {
+      "h": "Vanaf het begin voor kinderen gemaakt",
+      "li1": "Leerlingen kunnen alleen de code typen: geen chat, geen zelfgekozen namen, geen reacties.",
+      "li2": "In een open ruimte krijgt iedereen een vriendelijke verzonnen bijnaam, zoals Dappere Otter, nooit een echte naam.",
+      "li3": "Een klasruimte is alleen voor je eigen ingelogde leerlingen, en hun scores gaan naar je cijferboek.",
+      "li4": "Codes vervallen als het spel afloopt, en leerlingen kunnen je met één tik alles melden.",
+      "link": "Lees meer op onze <a href=\"{safety}\">veiligheidspagina</a>."
+    },
+    "more": {
+      "h": "Meer dan een quiz",
+      "p": "Oomba Live hoort bij Oomba Academy, waar leerlingen ook leerspellen spelen en hun eigen spellen bouwen met een veilige AI-helper. Eén gratis account voor je hele klas.",
+      "link": "Oomba Academy voor leerkrachten"
+    },
+    "start": {
+      "h": "Klaar voor je eerste livespel?",
+      "p": "Maak een gratis ouderaccount of log in met je schoolaccount. Kies een startset en je kunt binnen twee minuten spelen.",
+      "signedIn": "Je bent ingelogd. Kies een spel en open je ruimte.",
+      "kid": "Livespellen worden geleid door leerkrachten en andere volwassenen. Vraag je leerkracht om de code en doe dan hier mee:",
+      "pSchool": "Log in met je schoolaccount, of vraag een gratis schoolaccount aan voor je klas. Kies een startset en je kunt binnen twee minuten spelen."
+    },
+    "faq": {
+      "h": "Vragen van leerkrachten over Oomba Live",
+      "q1": "Is Oomba Live gratis?",
+      "a1": "Ja. Livespellen leiden, de startsets met vragen, je eigen sets en de resultaten zijn allemaal gratis, zonder reclame.",
+      "q2": "Hebben mijn leerlingen een account nodig?",
+      "a2": "Niet voor een open ruimte: leerlingen typen de code en krijgen een verzonnen bijnaam. In een klasruimte gebruiken ze de schoolaccounts die je voor ze hebt gemaakt, en hun scores gaan naar je cijferboek.",
+      "q3": "Hoeveel leerlingen kunnen meedoen?",
+      "a3": "Tot {max} in een klasruimte. Een ruimte die open is voor iedereen met de code heeft plek voor maximaal {open} spelers als een ouder of andere volwassene het spel leidt, en maximaal {max} als een leerkracht dat doet.",
+      "q4": "Kan ik mijn eigen vragen gebruiken?",
+      "a4": "Ja, over elk vak en op elk niveau. Schrijf een set van maximaal {items} vragen met elk 2 tot 4 antwoorden, plak er een uit een spreadsheet, laat AI er een opstellen die je daarna bewerkt, of maak van de vragen uit een van je lessen een livequiz.",
+      "q5": "Wat hebben leerlingen nodig?",
+      "a5": "Elk apparaat met een actuele browser: Chromebooks, tablets, laptops of telefoons. Niets te installeren. Je laat het spel vanaf je eigen computer op het bord zien."
+    },
+    "own": {
+      "h": "Jouw vragen, op jouw manier",
+      "p": "Maak quizzen voor elk vak en elke leeftijd, van aanvankelijk lezen tot scheikunde op de middelbare school.",
+      "li1": "Typ vragen met 2 tot 4 antwoorden, of waar of niet waar, met per vraag een tijd van 5 seconden tot 2 minuten.",
+      "li2": "Plak in één keer een hele quiz uit een spreadsheet of een document.",
+      "li3": "Beschrijf een onderwerp en een leerjaar, en AI stelt de vragen op, zodat jij ze kunt controleren en bewerken.",
+      "li4": "Tot 100 vragen in een set. Deel sets met leraren op je school, of kopieer die van hen en maak ze helemaal van jou.",
+      "li5": "Zin in een ander soort spel? Bouw je eigen quizspel met de AI-Bouwer, en je speelt het live met al je vragensets."
     }
   }
 }

@@ -932,3 +932,9 @@ ol.steps li{margin-bottom:var(--s2)}
 .mt-dots i:nth-child(2){animation-delay:.15s}.mt-dots i:nth-child(3){animation-delay:.3s}
 @keyframes mt-bob{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-6px);opacity:1}}
 @media (prefers-reduced-motion:reduce){.mt-dots i{animation:none}}
+/* /teachers/live: the three ways to play */
+.lp-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4)}
+@media (max-width:820px){.lp-modes{grid-template-columns:minmax(0,1fr)}}
+.lp-modes>.panel{margin:0}
+.lp-mode h3{margin:0 0 var(--s2);font-size:1.15rem}
+.lp-mode p{margin:0}

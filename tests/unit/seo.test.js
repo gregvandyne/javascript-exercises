@@ -46,7 +46,7 @@ const ld = html => [...html.matchAll(/<script type="application\/ld\+json">([\s\
 const nodes = html => ld(html).flatMap(d => d['@graph'] || [d]);
 const ofType = (html, type) => nodes(html).filter(n => [].concat(n['@type']).includes(type));
 
-const PUBLIC = ['/', '/teachers', ...HUBS.map(h => `/learn/${h.slug}`), '/g/sum-racer', '/g/castle-clash', '/safety', '/parents', '/privacy', '/terms', '/refunds', '/sdk/'];
+const PUBLIC = ['/', '/teachers', '/teachers/live', ...HUBS.map(h => `/learn/${h.slug}`), '/g/sum-racer', '/g/castle-clash', '/safety', '/parents', '/privacy', '/terms', '/refunds', '/sdk/'];
 
 test('robots.txt: private app paths disallowed, the rest allowed, the sitemap named', async () => {
   const r = await get('/robots.txt');
@@ -356,3 +356,21 @@ test('/teachers: honest privacy wording with Sign in with Google, and a call to 
     assert.doesNotMatch(g, /We never ask students for an email address/);
   } finally { [config.googleClientId, config.googleClientSecret] = saved; }
 });
+
+test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, in the sitemap; the way in fits who is reading', async () => {
+  const page = await get('/teachers/live');
+  assert.equal(page.status, 200);
+  assert.equal((page.text.match(/<h1/g) || []).length, 1);
+  assert.match(page.text, /Live quiz games your whole class plays together/);
+  assert.match(page.text, /href="\/login\?next=%2Flive"/, 'signed out: sign in, then straight to hosting');
+  assert.match(page.text, /href="\/join"/);
+  assert.match(page.text, /Up to 60 in a class room/);
+  assert.match((await get('/teachers')).text, /href="\/teachers\/live"/);
+  assert.match((await get('/sitemap.xml')).text, /\/teachers\/live<\/loc>/);
+  assert.equal((await get('/es/teachers/live')).status, 200);
+  // A child's account can't host: it is shown the join page instead of a sign-up.
+  const k = (await get('/teachers/live', { cookie: cookieOf(kid) })).text;
+  assert.doesNotMatch(k, /next=%2Flive/);
+  assert.match(k, /Ask your teacher for the code/);
+});
+

@@ -43,6 +43,8 @@ import * as V from '../views/live.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { audit } from '../db.js';
+import { draftQuestions, KINDS as SET_AI_KINDS } from '../services/set-ai.js';
 
 export const router = Router();
 const LOBBY_FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../live/lobby.html');
@@ -144,9 +146,10 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   const shared = [];
   for (const c of teaching) for (const g of games.classGames(c.id, { limit: 100 })) if (!sharedSeen.has(g.id)) { sharedSeen.add(g.id); shared.push(g); }
   const groups = [{ key: 'official', games: ready(officialReady()) }, { key: 'mine', games: ready(mine) }, ...(teaching.length ? [{ key: 'shared', games: ready(shared) }] : [])];
-  // Quest Race and Question Battle are not offered for now (scripts/seed.js RETIRED_GAMES); the modes stay in the
-  // server so they can come back by listing them here again.
-  const modes = [];
+  const modes = [
+    { id: 'quest-race', icon: '🏝️', title: t('live.mode.questRace'), text: t('live.mode.questRaceText') },
+    { id: 'battle', icon: '⚡', title: t('live.mode.battle'), text: t('live.mode.battleText') },
+  ];
   const starters = STARTERS.map(id => ({ id, title: t(`live.starter.title.${id.replace('-', '')}`) }));
   const q = req.query;
   const pre = {
@@ -559,6 +562,22 @@ router.post('/api/live/sets', on, requireAnyAccount, hostOnly, rateLimit('lv-set
   const r = SETS.createSet(req.user, { title: b.title, subject: b.subject, grade: b.grade, items: b.items, shared: !!b.shared, lang: req.locale });
   if (!r.ok) return setErr(req, res, r);
   res.json({ id: r.set.id });
+});
+// "✨ Draft with AI": questions for the editor only (nothing is saved until the teacher saves the set).
+router.post('/api/live/sets/draft', on, requireAnyAccount, hostOnly, rateLimit('lv-set-ai', 30, 3600e3), async (req, res) => {
+  const b = req.body || {};
+  if (!String(b.topic || '').trim()) return res.status(400).json({ error: req.t('live.api.set.topic'), code: 'topic' });
+  let r;
+  try { r = await draftQuestions({ topic: b.topic, level: b.level, count: b.count, kind: SET_AI_KINDS.includes(b.kind) ? b.kind : 'mixed', locale: req.locale, t: req.t }); }
+  catch { r = { ok: false, code: 'aiFailed' }; }
+  if (!r.ok) return res.status(503).json({ error: req.t(`live.api.set.${r.code}`), code: r.code });
+  audit(req.user.id, 'live.set.draft', '', { count: r.items.length });
+  res.json({ title: r.title, items: r.items });
+});
+router.post('/api/live/sets/:id/copy', on, requireAnyAccount, hostOnly, rateLimit('lv-set', 120, 3600e3), (req, res) => {
+  const r = SETS.copySet(req.user, req.params.id);
+  if (!r.ok) return setErr(req, res, r);
+  res.json({ id: r.set.id, redirect: `/live/sets#${r.set.id}` });
 });
 router.post('/api/live/sets/from-lesson/:lessonId', on, requireAnyAccount, hostOnly, rateLimit('lv-set', 120, 3600e3), (req, res) => {
   const r = SETS.fromLesson(req.user, req.params.lessonId);

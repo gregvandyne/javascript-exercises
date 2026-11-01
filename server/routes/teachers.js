@@ -6,6 +6,8 @@
 // never a game a child made. The text is under teachers.* and learn.* in the locale files. Until a language has it, a
 // paragraph shows the English, marked lang="en" dir="ltr", and search engines are told the page is English only.
 import { liveOn } from '../services/classlive-sessions.js';
+import { canHost, GROWNUP_OPEN_MAX } from '../services/classlive-access.js';
+import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
@@ -186,6 +188,7 @@ router.get('/teachers', (req, res) => {
     ${liveOn() ? html`<section class="panel" id="live" aria-labelledby="live-h">
       ${el(t, 'h2', 'teachers.live.h', {}, ' id="live-h"')}${el(t, 'p', 'teachers.live.p1')}
       <ul class="lp-list">${['li1', 'li2', 'li3'].map(k => el(t, 'li', `teachers.live.${k}`))}</ul>
+      <p><a class="btn" href="${lp(req, '/teachers/live')}">${t('teachers.live.more')}</a></p>
     </section>` : ''}
     <section class="panel" id="uses" aria-labelledby="uses-h">
       ${el(t, 'h2', 'teachers.uses.h', {}, ' id="uses-h"')}${el(t, 'p', 'teachers.uses.p')}
@@ -217,6 +220,86 @@ router.get('/teachers', (req, res) => {
       jsonld: [seo.graph([
         { '@type': 'WebPage', '@id': seo.abs(req, '/teachers'), url: seo.abs(req, '/teachers'), name: t('teachers.title'), description: t('teachers.description'), isPartOf: { '@id': seo.abs(req, '/#website') }, publisher: { '@id': seo.orgId(req) }, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' } },
         { '@type': 'ItemList', name: t('teachers.play.h'), itemListElement: items },
+        faq.ld, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req), seo.websiteLd(req, req.locale),
+      ])],
+    },
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------- /teachers/live
+// Oomba Live for teachers: what a live class game is, real screens of one, the tools and the safety rules, and a way in
+// (hosting needs a teacher or grown-up account: canHost). 404 while live games are off.
+router.get('/teachers/live', (req, res, next) => {
+  if (!liveOn()) return next();
+  const t = req.t, u = req.user;
+  const langCount = availableLocales().length;
+  const host = canHost(u), kid = !!u && !u.is_guest && !host;
+  // The way in: hosts go straight to /live; signed-out teachers sign in (or sign up as a grown-up while those pages are on,
+  // else set up their school on /teachers); a child's account is told to ask for the code.
+  const hostHref = host ? '/live' : familiesOn(req) ? '/grown-ups/signup?next=%2Flive' : '/login?next=%2Flive';
+  const badges = [['✅', 'free'], ['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
+  const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
+  const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
+  const mode = (emoji, k) => html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}</section>`;
+  const startBtns = kid ? html`<a class="btn btn-primary btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
+    : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>${!host && !familiesOn(req) ? html`<a class="btn btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a>` : ''}`;
+  const body = html`<div class="lp">
+  <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
+    ${el(t, 'p', 'teachersLive.kicker', {}, ' class="lp-kicker"')}
+    ${el(t, 'h1', 'teachersLive.h1', {}, ' id="lp-h1"')}
+    ${el(t, 'p', 'teachersLive.lead', {}, ' class="lead"')}
+    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', `teachersLive.badges.${k}`, { count: langCount })}</li>`)}</ul>
+    <div class="row lp-cta">
+      ${kid ? '' : html`<a class="btn btn-primary btn-big" href="${hostHref}">▶ ${t('teachersLive.cta.host')}</a>`}
+      <a class="btn btn-big" href="#how-it-works">${t('teachersLive.cta.how')}</a>
+    </div>
+    <p class="small"><a href="/join">${t('teachersLive.cta.join')}</a></p>
+    ${howArt(req, 'teachersLive')}
+  </section>
+  ${howSteps(req, 'teachersLive')}
+
+  <section class="lp-sec" id="modes" aria-labelledby="modes-h">
+    ${el(t, 'h2', 'teachersLive.modes.h', {}, ' id="modes-h"')}
+    <div class="lp-modes">${mode('🏝️', 'race')}${mode('⚡', 'battle')}${mode('🎮', 'games')}</div>
+  </section>
+
+  <section class="panel" id="own" aria-labelledby="own-h">
+    ${el(t, 'h2', 'teachersLive.own.h', {}, ' id="own-h"')}${el(t, 'p', 'teachersLive.own.p')}
+    <ul class="lp-list">${[1, 2, 3, 4, 5].map(n => el(t, 'li', `teachersLive.own.li${n}`))}</ul>
+  </section>
+
+  <div class="lp-cols">
+    <section class="panel" id="tools" aria-labelledby="tools-h">
+      ${el(t, 'h2', 'teachersLive.tools.h', {}, ' id="tools-h"')}
+      <ul class="lp-list">${[1, 2, 3, 4, 5, 6, 7].map(n => el(t, 'li', `teachersLive.tools.li${n}`))}</ul>
+    </section>
+    <section class="panel" id="safe" aria-labelledby="safe-h">
+      ${el(t, 'h2', 'teachersLive.safe.h', {}, ' id="safe-h"')}
+      <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `teachersLive.safe.li${n}`))}</ul>
+      ${el(t, 'p', 'teachersLive.safe.link', { safety: lp(req, '/safety') })}
+    </section>
+  </div>
+
+  <section class="panel" id="more" aria-labelledby="more-h">
+    ${el(t, 'h2', 'teachersLive.more.h', {}, ' id="more-h"')}${el(t, 'p', 'teachersLive.more.p')}
+    <p><a href="${lp(req, '/teachers')}">${t('teachersLive.more.link')}</a></p>
+  </section>
+
+  <section class="panel lp-start" id="start" aria-labelledby="start-h">
+    ${el(t, 'h2', 'teachersLive.start.h', {}, ' id="start-h"')}
+    ${el(t, 'p', kid ? 'teachersLive.start.kid' : host ? 'teachersLive.start.signedIn' : familiesOn(req) ? 'teachersLive.start.p' : 'teachersLive.start.pSchool')}
+    <div class="row">${startBtns}</div>
+  </section>
+  ${faq.markup}
+  </div>`;
+  const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t('teachersLive.kicker'), '/teachers/live']];
+  page(req, res, {
+    title: t('teachersLive.title'), description: t('teachersLive.description'), body, bodyClass: 'lp-page',
+    head: howHead(), scripts: [HOW_SCRIPT],
+    seo: {
+      index: true, path: '/teachers/live', langs: seo.langsWithKey('teachersLive.h1'), image: fsOg('teachers-live') ? '/og/teachers-live.jpg' : '/og/teachers.jpg', imageAlt: t('teachersLive.title'),
+      jsonld: [seo.graph([
+        { '@type': 'WebPage', '@id': seo.abs(req, '/teachers/live'), url: seo.abs(req, '/teachers/live'), name: t('teachersLive.title'), description: t('teachersLive.description'), isPartOf: { '@id': seo.abs(req, '/#website') }, publisher: { '@id': seo.orgId(req) }, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' } },
         faq.ld, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req), seo.websiteLd(req, req.locale),
       ])],
     },

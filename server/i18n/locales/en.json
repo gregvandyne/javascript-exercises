@@ -2225,7 +2225,40 @@
       "removeQuestion": "Remove this question",
       "right": "The right answer",
       "answer": "Answer {n}",
-      "saved": "Saved!"
+      "saved": "Saved!",
+      "grade": "Grade or level (optional)",
+      "gradeHint": "e.g. Grade 7, Year 10, beginners",
+      "aiButton": "Draft questions with AI",
+      "pasteButton": "Paste questions",
+      "count": "{n} of {max} questions",
+      "true": "True",
+      "false": "False",
+      "makeTf": "Make it true or false",
+      "removeAnswer": "Remove this answer",
+      "moveUp": "Move this question up",
+      "moveDown": "Move this question down",
+      "duplicate": "Duplicate",
+      "aiTitle": "Draft questions with AI",
+      "aiIntro": "Describe what you're teaching and who it's for. The questions appear below for you to check and edit before you save. Always check the answers.",
+      "aiTopic": "Topic",
+      "aiTopicHint": "e.g. Causes of World War I, the water cycle, Spanish food words, solving linear equations",
+      "aiLevel": "Grade or level",
+      "aiLevelHint": "e.g. Grade 4, Year 9, high school chemistry",
+      "aiCount": "How many questions",
+      "aiKind": "Kind of questions",
+      "aiMixed": "A mix",
+      "aiChoice4": "Four answers each",
+      "aiTf": "True or false",
+      "aiGo": "Draft questions",
+      "aiWorking": "Writing questions…",
+      "aiNeedTopic": "Type a topic first.",
+      "added": "{n, plural, one {Added # question.} other {Added # questions.}} Check them, then save.",
+      "pasteTitle": "Paste questions",
+      "pasteSheet": "From a spreadsheet: copy the rows and paste them here. One row per question: the question, the right answer, then 1 to 3 wrong answers, and the seconds to answer (optional).",
+      "pasteText": "Or type them: the question on one line, then its answers on the lines below, with * before the right one. Leave an empty line between questions.",
+      "pasteExample": "What is the largest planet?\n* Jupiter\nSaturn\nEarth\n\nWater boils at 100 °C at sea level.\n* True\nFalse",
+      "pasteFound": "{n, plural, =0 {No questions found yet.} one {# question found.} other {# questions found.}}",
+      "pasteGo": "Add these questions"
     },
     "match": {
       "title": "Play {title} online",
@@ -3740,7 +3773,8 @@
       "p1": "Run a live quiz race or any live-ready game on the projector. Students join on their own devices with a 7-digit code.",
       "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions) and Question Battle.",
       "li2": "Use a starter question set, type a quick set, or turn a lesson's questions into a live quiz.",
-      "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names."
+      "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
+      "more": "See how Oomba Live works"
     }
   },
   "learn": {
@@ -4707,7 +4741,10 @@
       "new": "New question set",
       "empty": "No question sets yet.",
       "items": "{count, plural, one {# question} other {# questions}}",
-      "draft": "needs answers"
+      "draft": "needs answers",
+      "school": "Shared at my school",
+      "schoolHint": "Sets other teachers at your school shared. Make a copy to change one.",
+      "copy": "Make a copy"
     },
     "api": {
       "off": "Live games are switched off right now.",
@@ -4727,14 +4764,17 @@
       "audience": "Pick who can join.",
       "set": {
         "title": "Give the set a title.",
-        "items": "Add 1 to 50 questions.",
+        "items": "Add 1 to 100 questions.",
         "question": "Question {n} needs words (and nothing personal or rude).",
         "choice": "An answer in question {n} is not allowed.",
         "choices": "Question {n} needs 2 to 4 answers, with the right one chosen.",
         "sameChoice": "Question {n} has two answers that are the same.",
         "tooBig": "This set is too big.",
         "noQuestions": "This lesson has no question steps.",
-        "notFound": "We can't find that set."
+        "notFound": "We can't find that set.",
+        "topic": "Type a topic first.",
+        "aiOff": "Drafting with AI isn't available right now. You can still type or paste your questions.",
+        "aiFailed": "The AI couldn't write questions this time. Try again, or change the topic a little."
       },
       "noMissed": "Everyone got every question right, so there is nothing to play again.",
       "teamsOff": "This game had no teams.",
@@ -5217,6 +5257,121 @@
       "notPlaying": "This game isn't going right now.",
       "bad": "That move couldn't be sent.",
       "full": "This game is too long to go on."
+    }
+  },
+  "teachersLive": {
+    "title": "Oomba Live: free live quiz games for your class",
+    "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads. Free for teachers.",
+    "kicker": "Oomba Live for teachers",
+    "h1": "Live quiz games your whole class plays together",
+    "lead": "Put the game on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
+    "badges": {
+      "free": "Free for teachers",
+      "ads": "No ads",
+      "noAccounts": "No student accounts needed",
+      "browser": "Any browser, Chromebooks too",
+      "languages": "{count} languages"
+    },
+    "cta": {
+      "host": "Host a free live game",
+      "how": "See how it works",
+      "join": "Joining a game? Type the code here"
+    },
+    "how": {
+      "h": "From questions to a podium in a few minutes",
+      "lead": "Real screens from a live game in a demo school with made-up names.",
+      "s1": {
+        "h": "Pick a game and your questions",
+        "p": "Choose Quest Race or Question Battle, then your own question set, one a colleague shared, a ready-made starter, or the questions from one of your lessons.",
+        "alt": "The Host a live game page: game modes to pick from, a question set and who can join."
+      },
+      "s2": {
+        "h": "Show the code on the board",
+        "p": "Students go to the join page on their device and type the 7-digit code, or scan the QR code. Their names appear as they join.",
+        "alt": "The projector screen before the game starts: a big 7-digit code, a QR code and the students who have joined."
+      },
+      "s3": {
+        "h": "Students join in seconds",
+        "p": "No app and no sign-up for an open room. In a class room, your signed-in students join with their own accounts.",
+        "alt": "A student's phone on the join page, with the 7-digit code typed in."
+      },
+      "s4": {
+        "h": "Everyone answers at once",
+        "p": "The question is on the board and the answer buttons are on every device. Right answers score more the faster they come.",
+        "alt": "A student's phone during a question, with four answer buttons."
+      },
+      "s5": {
+        "h": "See who knows what",
+        "p": "A leaderboard after each question, and at the end a results page by question and by student.",
+        "alt": "The projector screen showing the leaderboard with the students' scores."
+      }
+    },
+    "modes": {
+      "h": "Two ways to play, plus live games",
+      "race": {
+        "h": "Quest Race",
+        "p": "A 3D island race. Every right answer gives gems and a boost, and the whole class watches the runners on the board."
+      },
+      "battle": {
+        "h": "Question Battle",
+        "p": "The classic: the question on the big screen, answers on every device, and a leaderboard after each one."
+      },
+      "games": {
+        "h": "Live-ready games",
+        "p": "Some games in the library can be played live together too, with every student in the same world."
+      }
+    },
+    "tools": {
+      "h": "Tools teachers asked for",
+      "li1": "Teams of 2 to 6, balanced for you, with team colors and scores.",
+      "li2": "\"Eyes on me\" pauses every screen, and quick messages like \"One minute left\".",
+      "li3": "A timer of 10, 20 or 30 seconds a question, and skip or pause any time.",
+      "li4": "Bonus points for teamwork, kindness and effort.",
+      "li5": "Extra time for students who need it.",
+      "li6": "A co-host can run the game with you.",
+      "li7": "Results by question and by student. Class games are saved and download as a spreadsheet."
+    },
+    "safe": {
+      "h": "Built for kids from the start",
+      "li1": "Students can't type anything but the code: no chat, no free-text names, no comments.",
+      "li2": "In an open room everyone gets a kind made-up nickname, like Brave Otter, never a real name.",
+      "li3": "A class room is for your own signed-in students only, and their scores go into your gradebook.",
+      "li4": "Codes end when the game ends, and students can report anything to you with one tap.",
+      "link": "Read more on our <a href=\"{safety}\">safety page</a>."
+    },
+    "more": {
+      "h": "More than a quiz",
+      "p": "Oomba Live is part of Oomba Academy, where students also play learning games and build their own games with a safe AI helper. One free account for your whole class.",
+      "link": "Oomba Academy for teachers"
+    },
+    "start": {
+      "h": "Ready for your first live game?",
+      "p": "Make a free grown-up account, or sign in with your school account. Pick a starter set and you can be playing in two minutes.",
+      "signedIn": "You're signed in. Pick a game and open your room.",
+      "kid": "Live games are hosted by teachers and other grown-ups. Ask your teacher for the code, then join here:",
+      "pSchool": "Sign in with your school account, or get a free school account for your class. Pick a starter set and you can be playing in two minutes."
+    },
+    "faq": {
+      "h": "Questions teachers ask about Oomba Live",
+      "q1": "Is Oomba Live free?",
+      "a1": "Yes. Hosting live games, the starter question sets, your own sets and the results are all free, with no ads.",
+      "q2": "Do my students need accounts?",
+      "a2": "Not for an open room: students type the code and get a made-up nickname. In a class room, they use the school accounts you made for them, and their scores go into your gradebook.",
+      "q3": "How many students can play?",
+      "a3": "Up to {max} in a class room. A room open to anyone with the code takes up to {open} players when a parent or other grown-up hosts it, and up to {max} when a teacher does.",
+      "q4": "Can I use my own questions?",
+      "a4": "Yes, on any subject and at any level. Write a set of up to {items} questions with 2 to 4 answers each, paste one from a spreadsheet, let AI draft one for you to edit, or turn the questions from one of your lessons into a live quiz.",
+      "q5": "What do students need?",
+      "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the game on the board from your own computer."
+    },
+    "own": {
+      "h": "Your questions, your way",
+      "p": "Write quizzes for any subject and any age, from early reading to high-school chemistry.",
+      "li1": "Type questions with 2 to 4 answers, or true or false, and a time from 5 seconds to 2 minutes each.",
+      "li2": "Paste a whole quiz from a spreadsheet or a document in one go.",
+      "li3": "Describe a topic and a grade, and AI drafts the questions for you to check and edit.",
+      "li4": "Up to 100 questions in a set. Share sets with teachers at your school, or copy theirs and make them your own.",
+      "li5": "Want a different kind of game? Build your own quiz game with the AI Builder, and it plays live with any of your question sets."
     }
   }
 }

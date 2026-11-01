@@ -2225,7 +2225,40 @@
       "removeQuestion": "Remover esta pergunta",
       "right": "A resposta certa",
       "answer": "Resposta {n}",
-      "saved": "Salvo!"
+      "saved": "Salvo!",
+      "grade": "Ano ou nível (opcional)",
+      "gradeHint": "ex.: 7º ano, 1º ano do ensino médio, iniciantes",
+      "aiButton": "Criar perguntas com IA",
+      "pasteButton": "Colar perguntas",
+      "count": "{n} de {max} perguntas",
+      "true": "Verdadeiro",
+      "false": "Falso",
+      "makeTf": "Transformar em verdadeiro ou falso",
+      "removeAnswer": "Remover esta resposta",
+      "moveUp": "Mover esta pergunta para cima",
+      "moveDown": "Mover esta pergunta para baixo",
+      "duplicate": "Duplicar",
+      "aiTitle": "Criar perguntas com IA",
+      "aiIntro": "Descreva o que você ensina e para quem. As perguntas aparecem abaixo para você conferir e editar antes de salvar. Sempre confira as respostas.",
+      "aiTopic": "Tema",
+      "aiTopicHint": "ex.: causas da Primeira Guerra Mundial, o ciclo da água, palavras de comida em espanhol, resolver equações do 1º grau",
+      "aiLevel": "Ano ou nível",
+      "aiLevelHint": "ex.: 4º ano, 9º ano, química do ensino médio",
+      "aiCount": "Quantas perguntas",
+      "aiKind": "Tipo de perguntas",
+      "aiMixed": "Uma mistura",
+      "aiChoice4": "Quatro respostas cada",
+      "aiTf": "Verdadeiro ou falso",
+      "aiGo": "Criar perguntas",
+      "aiWorking": "Escrevendo perguntas…",
+      "aiNeedTopic": "Digite um tema primeiro.",
+      "added": "{n, plural, one {# pergunta adicionada.} other {# perguntas adicionadas.}} Confira e depois salve.",
+      "pasteTitle": "Colar perguntas",
+      "pasteSheet": "De uma planilha: copie as linhas e cole aqui. Uma linha por pergunta: a pergunta, a resposta certa, depois de 1 a 3 respostas erradas e os segundos para responder (opcional).",
+      "pasteText": "Ou digite: a pergunta em uma linha e as respostas nas linhas de baixo, com * antes da certa. Deixe uma linha vazia entre as perguntas.",
+      "pasteExample": "Qual é o maior planeta?\n* Júpiter\nSaturno\nTerra\n\nA água ferve a 100 °C ao nível do mar.\n* Verdadeiro\nFalso",
+      "pasteFound": "{n, plural, =0 {Nenhuma pergunta encontrada ainda.} one {# pergunta encontrada.} other {# perguntas encontradas.}}",
+      "pasteGo": "Adicionar estas perguntas"
     },
     "match": {
       "title": "Jogar {title} online",
@@ -3740,7 +3773,8 @@
       "p1": "Conduza uma corrida de perguntas ao vivo ou qualquer jogo pronto para o modo ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
       "li1": "Modos prontos: Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas) e Batalha de Perguntas.",
       "li2": "Use um conjunto pronto, digite um conjunto rápido ou transforme as perguntas de uma aula em um quiz ao vivo.",
-      "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente."
+      "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente.",
+      "more": "Veja como o Oomba Live funciona"
     }
   },
   "learn": {
@@ -4707,7 +4741,10 @@
       "new": "Novo conjunto de perguntas",
       "empty": "Ainda não há conjuntos de perguntas.",
       "items": "{count, plural, one {# pergunta} other {# perguntas}}",
-      "draft": "faltam respostas"
+      "draft": "faltam respostas",
+      "school": "Compartilhados na minha escola",
+      "schoolHint": "Conjuntos que outros professores da sua escola compartilharam. Faça uma cópia para alterar um deles.",
+      "copy": "Fazer uma cópia"
     },
     "api": {
       "off": "Os jogos ao vivo estão desligados agora.",
@@ -4727,14 +4764,17 @@
       "audience": "Escolha quem pode entrar.",
       "set": {
         "title": "Dê um título ao conjunto.",
-        "items": "Adicione de 1 a 50 perguntas.",
+        "items": "Adicione de 1 a 100 perguntas.",
         "question": "A pergunta {n} precisa de texto (nada pessoal nem grosseiro).",
         "choice": "Uma resposta da pergunta {n} não é permitida.",
         "choices": "A pergunta {n} precisa de 2 a 4 respostas, com a certa escolhida.",
         "sameChoice": "A pergunta {n} tem duas respostas iguais.",
         "tooBig": "Este conjunto é grande demais.",
         "noQuestions": "Esta aula não tem etapas de pergunta.",
-        "notFound": "Não encontramos esse conjunto."
+        "notFound": "Não encontramos esse conjunto.",
+        "topic": "Digite um tema primeiro.",
+        "aiOff": "Criar com IA não está disponível agora. Você ainda pode digitar ou colar suas perguntas.",
+        "aiFailed": "A IA não conseguiu escrever perguntas desta vez. Tente de novo ou mude um pouco o tema."
       },
       "noMissed": "Todo mundo acertou todas, então não há nada para jogar de novo.",
       "teamsOff": "Este jogo não tinha times.",
@@ -5217,6 +5257,121 @@
       "notPlaying": "Esta partida não está acontecendo agora.",
       "bad": "Não deu para enviar essa jogada.",
       "full": "Esta partida ficou longa demais para continuar."
+    }
+  },
+  "teachersLive": {
+    "title": "Oomba Live: jogos de quiz ao vivo grátis para a sua turma",
+    "description": "Coloque uma corrida de perguntas ao vivo no projetor. Os alunos entram em qualquer aparelho com um código de 7 dígitos, sem conta, sem digitar e sem anúncios. Grátis para professores.",
+    "kicker": "Oomba Live para professores",
+    "h1": "Jogos de quiz ao vivo que a turma toda joga junta",
+    "lead": "Mostre o jogo na lousa. Os alunos entram nos próprios aparelhos com um código de 7 dígitos e apostam corrida respondendo às suas perguntas, de qualquer matéria e em qualquer nível. Grátis, sem anúncios, e os alunos só precisam digitar o código.",
+    "badges": {
+      "free": "Grátis para professores",
+      "ads": "Sem anúncios",
+      "noAccounts": "Os alunos não precisam de conta",
+      "browser": "Qualquer navegador, até no Chromebook",
+      "languages": "{count} idiomas"
+    },
+    "cta": {
+      "host": "Conduza um jogo ao vivo grátis",
+      "how": "Veja como funciona",
+      "join": "Vai entrar em um jogo? Digite o código aqui"
+    },
+    "how": {
+      "h": "Das perguntas ao pódio em poucos minutos",
+      "lead": "Telas reais de um jogo ao vivo em uma escola de demonstração com nomes inventados.",
+      "s1": {
+        "h": "Escolha um jogo e as suas perguntas",
+        "p": "Escolha Corrida de Missões ou Batalha de Perguntas e depois o seu próprio conjunto de perguntas, um que um colega compartilhou, um conjunto pronto ou as perguntas de uma das suas aulas.",
+        "alt": "A página “Conduzir um jogo ao vivo”: os modos de jogo para escolher, um conjunto de perguntas e quem pode entrar."
+      },
+      "s2": {
+        "h": "Mostre o código na lousa",
+        "p": "Os alunos abrem a página de entrada no aparelho e digitam o código de 7 dígitos, ou leem o QR code. Os nomes aparecem conforme eles entram.",
+        "alt": "A tela do projetor antes de o jogo começar: um código grande de 7 dígitos, um QR code e os alunos que já entraram."
+      },
+      "s3": {
+        "h": "Os alunos entram em segundos",
+        "p": "Sem app e sem cadastro em uma sala aberta. Em uma sala de turma, seus alunos com conta conectada entram com a própria conta.",
+        "alt": "O celular de um aluno na página de entrada, com o código de 7 dígitos digitado."
+      },
+      "s4": {
+        "h": "Todos respondem ao mesmo tempo",
+        "p": "A pergunta fica na lousa e os botões de resposta, em cada aparelho. Quanto mais rápida a resposta certa, mais pontos ela vale.",
+        "alt": "O celular de um aluno durante uma pergunta, com quatro botões de resposta."
+      },
+      "s5": {
+        "h": "Veja quem sabe o quê",
+        "p": "Um ranking depois de cada pergunta e, no final, uma página de resultados por pergunta e por aluno.",
+        "alt": "A tela do projetor mostrando o ranking com a pontuação dos alunos."
+      }
+    },
+    "modes": {
+      "h": "Dois jeitos de jogar, e ainda jogos ao vivo",
+      "race": {
+        "h": "Corrida de Missões",
+        "p": "Uma corrida por uma ilha em 3D. Cada resposta certa dá gemas e um impulso, e a turma toda acompanha os corredores na lousa."
+      },
+      "battle": {
+        "h": "Batalha de Perguntas",
+        "p": "O clássico: a pergunta na tela grande, as respostas em cada aparelho e um ranking depois de cada uma."
+      },
+      "games": {
+        "h": "Jogos prontos para o modo ao vivo",
+        "p": "Alguns jogos da biblioteca também podem ser jogados ao vivo, com todos os alunos no mesmo mundo."
+      }
+    },
+    "tools": {
+      "h": "Ferramentas que os professores pediram",
+      "li1": "Equipes de 2 a 6, equilibradas para você, com cores e pontuação por equipe.",
+      "li2": "“Olhos em mim” pausa todas as telas, e há mensagens rápidas como “Falta um minuto”.",
+      "li3": "Um cronômetro de 10, 20 ou 30 segundos por pergunta, e você pode pular ou pausar a qualquer momento.",
+      "li4": "Pontos extras por trabalho em equipe, gentileza e esforço.",
+      "li5": "Tempo extra para os alunos que precisam.",
+      "li6": "Um coanfitrião pode conduzir o jogo com você.",
+      "li7": "Resultados por pergunta e por aluno. Os jogos da turma ficam salvos e podem ser baixados como planilha."
+    },
+    "safe": {
+      "h": "Feito para crianças desde o início",
+      "li1": "Os alunos só podem digitar o código: sem chat, sem nomes livres, sem comentários.",
+      "li2": "Em uma sala aberta, cada um recebe um apelido inventado e simpático, como Lontra Corajosa, nunca um nome real.",
+      "li3": "Uma sala de turma é só para os seus próprios alunos com conta conectada, e a pontuação deles vai para o seu diário de notas.",
+      "li4": "Os códigos expiram quando o jogo termina, e os alunos podem avisar você sobre qualquer coisa com um toque.",
+      "link": "Saiba mais na nossa <a href=\"{safety}\">página de segurança</a>."
+    },
+    "more": {
+      "h": "Mais do que um quiz",
+      "p": "O Oomba Live faz parte da Oomba Academy, onde os alunos também jogam jogos educativos e criam os próprios jogos com um assistente de IA seguro. Uma conta grátis para a turma toda.",
+      "link": "Oomba Academy para professores"
+    },
+    "start": {
+      "h": "Tudo pronto para o seu primeiro jogo ao vivo?",
+      "p": "Crie uma conta de adulto grátis ou entre com a sua conta da escola. Escolha um conjunto pronto e em dois minutos você já pode estar jogando.",
+      "signedIn": "Sua conta está conectada. Escolha um jogo e abra a sua sala.",
+      "kid": "Os jogos ao vivo são conduzidos por professores e outros adultos. Peça o código ao seu professor e entre aqui:",
+      "pSchool": "Entre com a sua conta da escola ou peça uma conta grátis da escola para a sua turma. Escolha um conjunto pronto e em dois minutos você já pode estar jogando."
+    },
+    "faq": {
+      "h": "Perguntas dos professores sobre o Oomba Live",
+      "q1": "O Oomba Live é grátis?",
+      "a1": "Sim. Conduzir jogos ao vivo, os conjuntos de perguntas prontos, os seus próprios conjuntos e os resultados são todos grátis, sem anúncios.",
+      "q2": "Meus alunos precisam de conta?",
+      "a2": "Não em uma sala aberta: os alunos digitam o código e recebem um apelido inventado. Em uma sala de turma, eles usam as contas da escola que você criou para eles, e a pontuação deles vai para o seu diário de notas.",
+      "q3": "Quantos alunos podem jogar?",
+      "a3": "Até {max} em uma sala de turma. Uma sala aberta a qualquer pessoa com o código recebe até {open} jogadores quando é conduzida por um responsável ou outro adulto, e até {max} quando é conduzida por um professor.",
+      "q4": "Posso usar as minhas próprias perguntas?",
+      "a4": "Sim, de qualquer matéria e em qualquer nível. Escreva um conjunto de até {items} perguntas com 2 a 4 respostas cada, cole um de uma planilha, deixe a IA criar um rascunho para você editar ou transforme as perguntas de uma das suas aulas em um quiz ao vivo.",
+      "q5": "Do que os alunos precisam?",
+      "a5": "Qualquer aparelho com um navegador atualizado: Chromebooks, tablets, notebooks ou celulares. Nada para instalar. Você mostra o jogo na lousa pelo seu próprio computador."
+    },
+    "own": {
+      "h": "Suas perguntas, do seu jeito",
+      "p": "Crie quizzes para qualquer matéria e qualquer idade, da alfabetização à química do ensino médio.",
+      "li1": "Digite perguntas com 2 a 4 respostas, ou de verdadeiro ou falso, com um tempo de 5 segundos a 2 minutos para cada uma.",
+      "li2": "Cole um quiz inteiro de uma planilha ou de um documento de uma vez só.",
+      "li3": "Descreva um tema e um ano escolar, e a IA cria um rascunho das perguntas para você conferir e editar.",
+      "li4": "Até 100 perguntas por conjunto. Compartilhe conjuntos com os professores da sua escola, ou copie os deles e adapte do seu jeito.",
+      "li5": "Quer outro tipo de jogo? Crie o seu próprio jogo de quiz com o Construtor com IA, e ele pode ser jogado ao vivo com qualquer um dos seus conjuntos de perguntas."
     }
   }
 }
