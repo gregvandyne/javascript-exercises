@@ -368,5 +368,10 @@
       "bad": "That move couldn't be sent.",
       "full": "This game is too long to go on."
     }
+  },
+  "teachersLive": {
+    "tools": {
+      "li1": "Teams of 2 to 6, balanced for you, with team colours and scores."
+    }
   }
 }

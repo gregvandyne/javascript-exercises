@@ -3739,7 +3739,8 @@
       "p1": "Avviate al proiettore una corsa a quiz dal vivo o qualsiasi gioco pronto per il dal vivo. Gli studenti entrano dai propri dispositivi con un codice di 7 cifre.",
       "li1": "Modalità incluse: Corsa delle missioni (una corsa su un’isola in 3D guidata dalle vostre domande) e Sfida a domande.",
       "li2": "Usate una serie di partenza, scrivete una serie veloce o trasformate le domande di una lezione in un quiz dal vivo.",
-      "li3": "Le stanze di classe sono solo per i vostri studenti con accesso effettuato, e i loro punti vanno nel vostro registro. Niente chat, niente scrittura, niente nomi scritti liberamente."
+      "li3": "Le stanze di classe sono solo per i vostri studenti con accesso effettuato, e i loro punti vanno nel vostro registro. Niente chat, niente scrittura, niente nomi scritti liberamente.",
+      "more": "Veda come funziona Oomba Live"
     }
   },
   "learn": {
@@ -5216,6 +5217,112 @@
       "notPlaying": "Questa partita non è in corso adesso.",
       "bad": "Non è stato possibile inviare questa mossa.",
       "full": "Questa partita è troppo lunga per continuare."
+    }
+  },
+  "teachersLive": {
+    "title": "Oomba Live: quiz dal vivo gratuiti per la sua classe",
+    "description": "Proietti una corsa a quiz dal vivo. Gli studenti entrano da qualsiasi dispositivo con un codice di 7 cifre, senza account, senza scrivere e senza pubblicità. Gratis per gli insegnanti.",
+    "kicker": "Oomba Live per gli insegnanti",
+    "h1": "Quiz dal vivo a cui tutta la classe gioca insieme",
+    "lead": "Mostri il gioco alla lavagna. Gli studenti entrano dai propri dispositivi con un codice di 7 cifre e fanno a gara sulle sue domande. Gratis, senza pubblicità, e gli studenti non devono scrivere nulla tranne il codice.",
+    "badges": {
+      "free": "Gratis per gli insegnanti",
+      "ads": "Senza pubblicità",
+      "noAccounts": "Nessun account per gli studenti",
+      "browser": "Qualsiasi browser, anche su Chromebook",
+      "languages": "{count} lingue"
+    },
+    "cta": {
+      "host": "Avvii una partita dal vivo gratis",
+      "how": "Veda come funziona",
+      "join": "Devi entrare in una partita? Scrivi qui il codice"
+    },
+    "how": {
+      "h": "Dalle domande al podio in pochi minuti",
+      "lead": "Schermate reali di una partita dal vivo in una scuola dimostrativa con nomi inventati.",
+      "s1": {
+        "h": "Scelga un gioco e le domande",
+        "p": "Scelga Corsa delle missioni o Sfida a domande, poi una serie di partenza già pronta, una serie scritta da lei o le domande di una delle sue lezioni.",
+        "alt": "La pagina «Guida una partita dal vivo»: le modalità di gioco tra cui scegliere, una serie di domande e chi può entrare."
+      },
+      "s2": {
+        "h": "Mostri il codice alla lavagna",
+        "p": "Gli studenti aprono la pagina per entrare sul proprio dispositivo e scrivono il codice di 7 cifre, oppure inquadrano il codice QR. I loro nomi compaiono man mano che entrano.",
+        "alt": "Lo schermo del proiettore prima dell’inizio della partita: un grande codice di 7 cifre, un codice QR e gli studenti già entrati."
+      },
+      "s3": {
+        "h": "Gli studenti entrano in pochi secondi",
+        "p": "Nessuna app e nessuna registrazione per una stanza aperta. In una stanza di classe, i suoi studenti entrano con il proprio account.",
+        "alt": "Il telefono di uno studente sulla pagina per entrare, con il codice di 7 cifre inserito."
+      },
+      "s4": {
+        "h": "Tutti rispondono insieme",
+        "p": "La domanda è alla lavagna e i pulsanti di risposta sono su ogni dispositivo. Più una risposta giusta arriva in fretta, più punti vale.",
+        "alt": "Il telefono di uno studente durante una domanda, con quattro pulsanti di risposta."
+      },
+      "s5": {
+        "h": "Veda chi sa cosa",
+        "p": "Una classifica dopo ogni domanda e, alla fine, una pagina dei risultati per domanda e per studente.",
+        "alt": "Lo schermo del proiettore con la classifica e i punteggi degli studenti."
+      }
+    },
+    "modes": {
+      "h": "Due modi di giocare, più i giochi dal vivo",
+      "race": {
+        "h": "Corsa delle missioni",
+        "p": "Una corsa su un’isola in 3D. Ogni risposta giusta dà gemme e una spinta, e tutta la classe segue i corridori alla lavagna."
+      },
+      "battle": {
+        "h": "Sfida a domande",
+        "p": "Il classico: la domanda sul grande schermo, le risposte su ogni dispositivo e una classifica dopo ciascuna."
+      },
+      "games": {
+        "h": "Giochi pronti per il dal vivo",
+        "p": "Alcuni giochi della raccolta si possono giocare anche dal vivo insieme, con tutti gli studenti nello stesso mondo."
+      }
+    },
+    "tools": {
+      "h": "Gli strumenti chiesti dagli insegnanti",
+      "li1": "Squadre da 2 a 6, bilanciate automaticamente, con colori e punteggi di squadra.",
+      "li2": "«Occhi su di me» mette in pausa ogni schermo, e ci sono messaggi veloci come «Manca un minuto».",
+      "li3": "Un timer di 10, 20 o 30 secondi per domanda, e può saltare o mettere in pausa in qualsiasi momento.",
+      "li4": "Punti bonus per lavoro di squadra, gentilezza e impegno.",
+      "li5": "Tempo extra per gli studenti che ne hanno bisogno.",
+      "li6": "Un co-conduttore può guidare la partita insieme a lei.",
+      "li7": "Risultati per domanda e per studente. Le partite di classe vengono salvate e si scaricano come foglio di calcolo."
+    },
+    "safe": {
+      "h": "Pensato per i bambini fin dall’inizio",
+      "li1": "Gli studenti non possono scrivere nulla tranne il codice: niente chat, niente nomi liberi, niente commenti.",
+      "li2": "In una stanza aperta ognuno riceve un soprannome inventato e gentile, come Lontra Coraggiosa, mai un nome vero.",
+      "li3": "Una stanza di classe è solo per i suoi studenti che hanno effettuato l’accesso, e i loro punteggi vanno nel suo registro.",
+      "li4": "I codici scadono quando finisce la partita, e gli studenti possono segnalarle qualsiasi cosa con un tocco.",
+      "link": "Scopra di più nella nostra <a href=\"{safety}\">pagina sulla sicurezza</a>."
+    },
+    "more": {
+      "h": "Più di un quiz",
+      "p": "Oomba Live fa parte di Oomba Academy, dove gli studenti giocano anche a giochi educativi e creano i propri giochi con un assistente IA sicuro. Un solo account gratuito per tutta la classe.",
+      "link": "Oomba Academy per gli insegnanti"
+    },
+    "start": {
+      "h": "Tutto pronto per la sua prima partita dal vivo?",
+      "p": "Crei un account genitore gratuito o acceda con il suo account scolastico. Scelga una serie di partenza e potrà giocare in due minuti.",
+      "signedIn": "Ha effettuato l’accesso. Scelga un gioco e apra la sua stanza.",
+      "kid": "Le partite dal vivo sono guidate da insegnanti e altri adulti. Chiedi il codice al tuo insegnante, poi entra qui:",
+      "pSchool": "Acceda con il suo account scolastico o attivi un account scolastico gratuito per la sua classe. Scelga una serie di partenza e potrà giocare in due minuti."
+    },
+    "faq": {
+      "h": "Domande degli insegnanti su Oomba Live",
+      "q1": "Oomba Live è gratis?",
+      "a1": "Sì. Guidare partite dal vivo, le serie di domande di partenza, le sue serie e i risultati sono tutti gratuiti, senza pubblicità.",
+      "q2": "I miei studenti hanno bisogno di un account?",
+      "a2": "Non per una stanza aperta: gli studenti scrivono il codice e ricevono un soprannome inventato. In una stanza di classe usano gli account scolastici che lei ha creato per loro, e i loro punteggi vanno nel suo registro.",
+      "q3": "Quanti studenti possono giocare?",
+      "a3": "Fino a {max} in una stanza di classe. Una stanza aperta a chiunque abbia il codice accoglie fino a {open} giocatori se la guida un genitore o un altro adulto, e fino a {max} se la guida un insegnante.",
+      "q4": "Posso usare le mie domande?",
+      "a4": "Sì. Scriva una serie di massimo {items} domande con 2-4 risposte ciascuna, usi una serie di partenza o trasformi le domande di una delle sue lezioni in un quiz dal vivo.",
+      "q5": "Di cosa hanno bisogno gli studenti?",
+      "a5": "Qualsiasi dispositivo con un browser aggiornato: Chromebook, tablet, portatili o telefoni. Niente da installare. Lei mostra il gioco alla lavagna dal suo computer."
     }
   }
 }
