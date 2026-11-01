@@ -445,6 +445,15 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS live_run_log_actor ON live_run_log(actor_id);
     CREATE INDEX IF NOT EXISTS live_run_log_target ON live_run_log(target_user);
     CREATE INDEX IF NOT EXISTS live_run_log_other ON live_run_log(other_id);`],
+  // AI voices (docs/decisions.md "AI voices"; server/services/tts.js): the audio cache on disk (<dataDir>/tts) and its
+  // index, and the site's daily use. Never the text, a user id or an address: a row has the audio's hash, sizes and
+  // which voice made it. The admin's choices live in settings ('tts.voices').
+  ['0042_tts', `CREATE TABLE IF NOT EXISTS tts_cache (hash TEXT PRIMARY KEY, bytes INTEGER NOT NULL, chars INTEGER NOT NULL,
+      provider TEXT NOT NULL, model TEXT NOT NULL, voice TEXT NOT NULL, locale TEXT NOT NULL, role TEXT NOT NULL,
+      pinned INTEGER NOT NULL DEFAULT 0, hits INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, last_used INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS tts_cache_lru ON tts_cache(pinned, last_used);
+    CREATE TABLE IF NOT EXISTS tts_usage (day TEXT PRIMARY KEY, calls INTEGER NOT NULL DEFAULT 0, chars INTEGER NOT NULL DEFAULT 0,
+      hits INTEGER NOT NULL DEFAULT 0, fails INTEGER NOT NULL DEFAULT 0);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

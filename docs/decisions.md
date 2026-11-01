@@ -1841,6 +1841,100 @@ usual text checks, when the teacher saves), and copied from a colleague's shared
 the live picker; the starters come last. Teachers can also build their own quiz games with the Builder (`quiz: true`),
 which play live with any of their sets. Landing page: /teachers/live.
 
+## AI voices (text to speech), server part (November 2026)
+
+Official games, lesson quiz steps and Oomba Live can read **site-, game- and teacher-written text** aloud with a hosted
+voice (OpenAI's speech API) instead of the device's voice. Design and the client part: docs/tts-design.md. Legal:
+docs/legal-review.md item 44.
+- **Off by default, two switches.** `TTS_ENABLED=1` and a key (`TTS_API_KEY`; `STT_API_KEY` only when both providers
+  are openai) turn it on for the site; then each locale stays off until the admin switches it on at `/admin/voices`
+  (setting `tts.voices`, audited), so the owner listens first and the existing e2e tests are unaffected. `TTS_LOCALES`
+  is the ceiling. Off, or any refusal, means the device voice is used as before; pages never show an error.
+- **Shaped like speech to text** (`services/stt.js`): `services/tts.js` has provider adapters (`openai`, and `mock`
+  that answers a real silent MP3 so headless Chromium can play it; refused in production), config in `TTS_*`, cost in
+  the AI budget (`tts:<provider>`), usage in its own table.
+- **What may be spoken is chosen by the server, not the page.** `POST /api/tts` takes a context: `game` (a 2-hour token
+  the play page mints only for official seed games, bound to the player; Builder games always use the device voice),
+  `live` (the question open now, by number; never one still to come; seat or host token), `lesson` (a quiz step's
+  question by number, behind the quiz API's access check). Backstops: rude words, personal info, link codes, the
+  player's own name or username, more than `TTS_MAX_CHARS` (600).
+- **One line, made once.** Audio is cached on disk under the data folder, keyed by sha256 of provider, model, voice,
+  instructions/speed, locale, rate bucket and text; requests in flight share one provider call (a class of 30 on one
+  question makes one). Least recently used lines go when the cache passes `TTS_CACHE_MB`; warm-up and admin samples are
+  pinned. `GET /tts/<hash>.mp3` is same-origin only and immutable.
+- **Limits:** 120 requests a minute per person; new audio `TTS_PER_MINUTE` (20) a minute per person and 200 per address
+  in 10 minutes; `TTS_DAILY_CHARS` (300,000) a day site-wide; the AI budget.
+- **Voices:** six roles a game asks for (narrator, friendly, bright, deep, wise, grumpy), never a provider voice; the
+  narrator is chosen per locale, the others shared. gpt-4o-mini-tts gets kid-friendly reading instructions with an
+  accent hint per locale; zh-Hant is read as Taiwanese Mandarin, never Cantonese (like the SDK's device-voice choice).
+  tts-1 / tts-1-hd get a speed instead.
+- **Warm-up** (`services/tts-lines.js`): Hero of Sunvale's spoken lines are read from the repository file's I18N block
+  (node:vm, empty context, 2 s limit; never the database copy), generated two at a time in the background, with a cost
+  estimate first; it stops at the daily characters or the AI budget.
+- **Privacy:** no text, user id or address is stored or logged (a short hash, sizes, timings). Requests to OpenAI come
+  from our server. The provider facts (URL, fields, models, voices, price) are from memory and were not checked in the
+  sandbox: check them before turning it on.
+
+## AI voices, client part (November 2026)
+
+The pages and games now use the server voices (docs/tts-design.md, docs/sdk.md "AI voices"). Still off until the owner
+switches it on, then per language at `/admin/voices`.
+- **Games:** behind `BRB.speak` in the SDK (not the frozen kit: its `say()` calls `BRB.speak`, so kit games such as
+  Atlas Quest get it unchanged). The play page fetches for the frame; 4 s without audio, a refusal or audio that won't
+  play means the device's voice for that line. `onend` now always comes once after `speak()` returned `true`.
+  An official game's own `speechSynthesis.speak` is routed the same way (none of today's seed games does that on the
+  site; Builder games never get AI voices, so a kid's own words are never sent).
+- **Hero of Sunvale** reads its conversation cards and cut-scene captions with a voice role per speaker (its
+  `VOICES` block: Granny and the Queen wise, Bo and the Chief deep, Snarlwick grumpy…), prefetches each card, stops the
+  voice when the card moves on, and keeps its beeps when AI voices are off. Its Sound button silences the voices too.
+- **Oomba Live:** the player's Read button and a new **Read question** button on the projector (shown while a question
+  is open and the projector's Sound is on) ask for the open question by number. The teacher's new live setting
+  **Voices for reading aloud** (AI voices / each device's own voice) applies to both. Lesson quiz steps do the same with
+  the device choice.
+- **Kids choose:** a 🔊 Voices button on the play page (only when the game has AI voices): AI voices or this device's
+  voice, kept on the device; Data Saver means the device's voice until the kid picks AI voices.
+- **Disclosure** (OpenAI's usage policy: say the voice is AI-made): the Voices sheet, the live setting's hint, a note
+  under Read on the player's page and in lesson quizzes, the parents page (`info.parents.ai.p4`) and the privacy page
+  (`info.privacy.children.p6`), in all 13 languages (en-GB uses the English). `LEGAL_UPDATED` is 2026-11-01.
+- **Quiz text backstop:** a teacher's maths question read with its answer letters ("2 + 3? A: 5. B: 4…") looked like a
+  phone number and a family link code, so for `live`/`lesson` (text looked up by number) those two checks are skipped;
+  rude words, emails and links still refuse it.
+
+### AI voices: review fixes (November 2026)
+- **Only a game's own words, checked on the server.** `ctx:'game'` text must be one of the game's spoken lines in that
+  language (`tts-lines.allowedLine`: Hero's I18N block read from the repository file, memoised per file time; a line
+  with `{placeholders}` matches only with numbers in their place). Anything else is `422 filtered` and the device's
+  voice reads it. The role comes from the line, not the page, and the game picks it by the same rule
+  (`voiceRole(key)` in Hero's `VOICES` block = `roleOf`): mg.* and d.gate.open bright, say.guard* deep, say.* friendly,
+  sw.* grumpy, cinder.* deep, hint.* the narrator. So warm-up audio is the audio played, and `/tts/<hash>.mp3` can
+  only ever hold our own lines.
+- **Only games written for it.** AI voices are for official games listed in `tts-lines.GAMES` (Hero of Sunvale today).
+  shark-plank (a kid types the secret word in two-player mode), word-hunt and word-peek keep the device's voice and get
+  no Voices button. A game added later must list its spoken keys, and speak anything a kid typed with `device:true`.
+- **TTS's own share of the AI budget.** Unset `TTS_DAILY_CHARS` now means about 20% of `AI_DAILY_BUDGET_USD` at
+  `TTS_USD_PER_1K_CHARS` (66,666 characters at $5 and $0.015), and new audio stops once the free pool has spent 80% of
+  its daily or monthly budget, so voices never rest the Builder, picture checks or reviews. Per person (an account, or
+  a seat in Oomba Live) `TTS_USER_DAILY_CHARS` (5,000) and per address `TTS_IP_DAILY_CHARS` (30,000) new characters a
+  day, counted in memory under a salted hash (never stored). Live and lesson questions are read in the session's /
+  page's language only (the posted `lang` is ignored), and live requests are limited per seat, not per school address.
+- **iPhone / iPad:** `readAloud` plays a silent clip (and a silent device utterance) inside the tap before fetching,
+  and `public/js/tts.js` does the same once on the page's first tap, so the automatic read of each new question can
+  play. The SDK's unlock keeps listening until a play() in a gesture actually worked, and plays a refused AI line on
+  the next tap. The device fallback has a watchdog (4 s + 120 ms a character) so a device that never says "ended"
+  can't stall the queue.
+- **The line on screen first:** Hero speaks a card's line before prefetching the rest; the page fetcher runs lines to
+  speak now before prefetches (one prefetch at a time), and prefetches pause for a minute after a `fast` answer.
+- **Disclosure everywhere a voice is heard:** the play bar button now says **AI voices**; the first AI line on a
+  device shows a toast (`js.play.voicesNote`, once, `localStorage['oomba:voices-told']`); Hero's settings screen says
+  the voices are AI-made when they are on (`set.aiVoices`, 12 game languages + en-GB fallback); the projector shows the
+  AI note under **Read question**.
+- **With TTS off nothing changes:** the projector's Read question button shows only when AI voices are on for the
+  site (`D.tts`); the SDK's queued lines with no voice fire `onend` only for its own AI fallback items. Sound off or
+  Voices → device on the projector (and Voices → device for players) stops a question being read. The teacher's
+  Voices field shows only for quiz sessions. zh-Hant device voices prefer zh-TW, then zh-CN, never Cantonese first.
+- **Admin page on phones:** small ▶ buttons, the sample sentence readable (not a header style), the language column
+  sticky, the narrator's ▶ marked, and under 600 px one ▶ per row that plays the narrator chosen there.
+
 ## Brain Board, and fun games kept out of class rooms (November 2026)
 
 A third built-in live quiz mode, in the category-board genre, with its own name and look (a night-sky board, Lucky

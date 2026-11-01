@@ -16,18 +16,19 @@ export const KEYS = {
   names: { values: ['names', 'nicknames', 'hidden'] },
   sound: { bool: true },
   emotes: { bool: true },
+  voices: { values: ['ai', 'device'] },                      // AI voices (routes/tts.js) or each device's own voice
 };
 /** Settings that only quiz runs use (hidden for game-mode sessions). */
-export const QUIZ_ONLY = ['secs', 'count', 'shuffleQ', 'shuffleA', 'points'];
+export const QUIZ_ONLY = ['secs', 'count', 'shuffleQ', 'shuffleA', 'points', 'voices'];   // voices: only quizzes read aloud
 /** What players' pages are told (opt): nothing else about the room's settings reaches a player. */
-export const PUBLIC = ['board', 'emotes', 'names'];
+export const PUBLIC = ['board', 'emotes', 'names', 'voices'];
 
 /** The defaults for a room. nameMode: 'accounts' (a teacher's own class) or 'nicknames'. */
 export function DEFAULTS(audience = 'open', nameMode = 'nicknames') {
   return {
     secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed',
     board: audience === 'open' ? 'top5' : 'all', late: audience !== 'open',
-    names: nameMode === 'accounts' ? 'names' : 'nicknames', sound: true, emotes: true,
+    names: nameMode === 'accounts' ? 'names' : 'nicknames', sound: true, emotes: true, voices: 'ai',
   };
 }
 
@@ -59,9 +60,9 @@ export function clean(d, { lobby = true, nameMode = 'nicknames' } = {}) {
 }
 
 /** The settings as the host sees them (s.settings with late). */
-export const view = st => ({ secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes, maxPlayers: st.maxPlayers, locked: st.locked });
+export const view = st => ({ secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes, voices: st.voices || 'ai', maxPlayers: st.maxPlayers, locked: st.locked });
 /** What players get (opt). */
-export const publicPart = st => ({ board: st.board, emotes: st.emotes, names: st.names });
+export const publicPart = st => ({ board: st.board, emotes: st.emotes, names: st.names, voices: st.voices || 'ai' });
 
 /**
  * Apply a clean patch to s.settings. late maps to autoLock: before start it only says whether start locks the room;

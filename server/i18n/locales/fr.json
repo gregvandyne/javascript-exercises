@@ -609,7 +609,8 @@
         "h": "Ce que voit l’IA",
         "p1": "Pour créer un jeu, les messages, images et fichiers que votre enfant donne au Constructeur sont envoyés à Claude, une IA créée par l’entreprise Anthropic, qui écrit le jeu. Le nom et le nom d’utilisateur de votre enfant ne sont pas envoyés avec ces contenus. Les photos de profil sont aussi envoyées à Claude pour être vérifiées avant que quiconque les voie. Claude examine les jeux avant qu’ils puissent être partagés avec tout le monde, et notre équipe vérifie ceux pour lesquels il a un doute. Les discussions entre amis et les réponses aux leçons ne sont pas envoyées à l’IA.",
         "p2": "Parler au lieu d’écrire : quand votre enfant touche le micro dans le chat du Constructeur, l’enregistrement est envoyé au service de transcription de la parole {provider}, qui le transforme en mots. Votre enfant voit les mots et peut les modifier avant d’envoyer. L’enregistrement sert uniquement à cela et est supprimé aussitôt : nous ne le conservons jamais, et {provider} n’a pas le droit de le conserver ni de l’utiliser pour entraîner ses systèmes. Les mots passent par les mêmes contrôles de sécurité qu’un message écrit.",
-        "p3": "Recherche de faits : pour qu’un jeu soit juste, le Constructeur peut chercher un fait sur le web (par exemple la vitesse d’un guépard). Votre enfant ne voit jamais les pages web ni les liens. Le Constructeur a pour consigne de ne jamais rien chercher de personnel ; si une recherche semble quand même personnelle, ses résultats ne sont pas utilisés et ses mots ne sont pas conservés. Les sites pour adultes, de jeux d’argent, de réseaux sociaux et de vidéos sont bloqués. Nous gardons une liste des recherches, sans le nom ni le nom d’utilisateur de votre enfant, avec le jeu pour lequel elles ont été faites, pendant 90 jours pour que notre équipe puisse les vérifier."
+        "p3": "Recherche de faits : pour qu’un jeu soit juste, le Constructeur peut chercher un fait sur le web (par exemple la vitesse d’un guépard). Votre enfant ne voit jamais les pages web ni les liens. Le Constructeur a pour consigne de ne jamais rien chercher de personnel ; si une recherche semble quand même personnelle, ses résultats ne sont pas utilisés et ses mots ne sont pas conservés. Les sites pour adultes, de jeux d’argent, de réseaux sociaux et de vidéos sont bloqués. Nous gardons une liste des recherches, sans le nom ni le nom d’utilisateur de votre enfant, avec le jeu pour lequel elles ont été faites, pendant 90 jours pour que notre équipe puisse les vérifier.",
+        "p4": "Voix IA : certains de nos jeux, quiz de leçons et quiz Oomba Live peuvent lire leur texte à voix haute avec une voix faite par ordinateur de {ttsProvider}. Seul le texte écrit par nous, par les créateurs d'un jeu ou par l'enseignant de votre enfant est envoyé, jamais ce que votre enfant écrit ou dit, ni son nom. Votre enfant est informé que les voix sont faites par une IA et peut passer à la voix de l'appareil avec le bouton 🔊 Voix IA."
       },
       "keep": {
         "h": "Combien de temps nous conservons les données",
@@ -977,7 +978,8 @@
         "p2": "<b>Payer n’est pas la façon dont nous demandons l’autorisation d’un parent.</b> Acheter un abonnement ne change pas ce que nous collectons sur un enfant, l’usage que nous en faisons, ni ce qu’un parent a accepté.",
         "p3": "<b>Vos droits en tant que parent (comptes personnels) :</b> vous pouvez nous demander de vous montrer ce que nous conservons sur votre enfant, de le supprimer, ou d’arrêter d’en collecter davantage. Écrivez à <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Il n’y a pas encore de bouton de suppression ou de téléchargement : nous traitons donc ces demandes manuellement, et nous devrons vérifier que vous êtes bien le parent avant d’agir. Retirer le lien ou résilier un abonnement ne supprime pas le compte de votre enfant.",
         "p4": "<b>Comptes école :</b> un compte école est créé par l’école, à qui il appartient. Pour ces comptes, nous agissons pour le compte de l’école et selon ses instructions : nous utilisons les informations des élèves uniquement pour fournir Oomba Academy à l’école, jamais à des fins publicitaires, et nous ne les vendons pas. Les parents d’élèves ayant un compte école doivent s’adresser à l’école pour consulter ou supprimer des données ; l’école peut nous le demander. Un accord sur les données signé entre l’école et nous prévaut.",
-        "p5": "<b>Pas de vente, pas de publicité :</b> nous ne vendons les informations personnelles de personne, n’affichons pas de publicité et n’utilisons pas de cookies publicitaires ou de suivi."
+        "p5": "<b>Pas de vente, pas de publicité :</b> nous ne vendons les informations personnelles de personne, n’affichons pas de publicité et n’utilisons pas de cookies publicitaires ou de suivi.",
+        "p6": "<b>Voix IA :</b> quand un jeu, une leçon ou Oomba Live lit un texte avec une voix IA, seul ce texte est envoyé de notre serveur à {ttsProvider} pour créer le son, jamais rien sur votre enfant. {ttsProvider} peut le garder pendant une durée limitée pour vérifier qu'il n'y a pas d'abus. Les joueurs sont informés que ces voix sont faites par un ordinateur."
       },
       "billingKeep": {
         "h": "Combien de temps nous conservons les informations de facturation",
@@ -1107,7 +1109,8 @@
       "lostTitle": "Oups, l'image 3D s'est arrêtée",
       "lostText": "Ça arrive parfois. Touche Réessayer pour recommencer le jeu.",
       "retry": "Réessayer"
-    }
+    },
+    "voices": "Voix IA"
   },
   "friends": {
     "title": "Amis",
@@ -1676,7 +1679,12 @@
       "starsLabel": "{count, plural, one {# étoile} other {# étoiles}}",
       "thanksRating": "Merci pour ta note !",
       "stopped": "Ce jeu s’est arrêté.",
-      "restart": "Recommencer"
+      "restart": "Recommencer",
+      "voicesTitle": "Voix",
+      "voicesAi": "Voix IA",
+      "voicesDevice": "La voix de cet appareil",
+      "voicesNote": "Les personnages de ce jeu ont des voix faites par un ordinateur (voix IA de {provider}). Elles lisent seulement les mots du jeu, jamais ce que tu écris ni ton nom.",
+      "voicesSaveData": "L'économiseur de données est activé : la voix de cet appareil est utilisée tant que tu ne choisis pas les voix IA."
     },
     "friends": {
       "codeCopied": "Code copié ! Donne-le à un ami que tu connais.",
@@ -4457,7 +4465,8 @@
       "pickTeam": "Choisis ton équipe",
       "eyes": "Regarde ton enseignant",
       "moved": "Tu es maintenant dans l'équipe {team}",
-      "again": "Ton enseignant va peut-être lancer un autre jeu. Reste sur cette page !"
+      "again": "Ton enseignant va peut-être lancer un autre jeu. Reste sur cette page !",
+      "aiVoice": "La lecture utilise une voix IA faite par ordinateur ({provider})."
     },
     "emote": {
       "wave": "Saluer",
@@ -4502,7 +4511,8 @@
       "teacherView": "Vue enseignant",
       "soundOn": "Son activé",
       "soundOff": "Son coupé",
-      "seeResultsNow": "Voir les résultats"
+      "seeResultsNow": "Voir les résultats",
+      "read": "Lire la question"
     },
     "landing": {
       "title": "Animer une partie en direct",
@@ -5064,7 +5074,11 @@
       "emotes": "Émoticônes",
       "remembered": "Vos choix sont gardés pour votre prochain jeu en direct.",
       "reset": "Revenir aux réglages standard",
-      "save": "Enregistrer"
+      "save": "Enregistrer",
+      "voices": "Voix pour la lecture à voix haute",
+      "voicesAi": "Voix IA",
+      "voicesDevice": "La voix de chaque appareil",
+      "voicesHint": "Les voix IA sont faites par un ordinateur ({provider}). Seules vos questions et les choix de réponse sont envoyés, jamais de noms ni ce que les élèves écrivent."
     },
     "say": {
       "menu": "Message",
@@ -5425,5 +5439,8 @@
       "li4": "Jusqu’à 100 questions par série. Partagez vos séries avec les enseignants de votre école, ou copiez les leurs et adaptez-les à votre façon.",
       "li5": "Envie d’un autre type de jeu ? Créez votre propre jeu de quiz avec le Constructeur IA : il se joue en direct avec n’importe laquelle de vos séries de questions."
     }
+  },
+  "tts": {
+    "sample": "Salut ! Je suis ton guide à l’Oomba Academy. Allons explorer, résoudre des énigmes et nous amuser ensemble !"
   }
 }

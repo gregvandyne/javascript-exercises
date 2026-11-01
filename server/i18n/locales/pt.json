@@ -610,7 +610,8 @@
         "h": "O que a IA vê",
         "p1": "Para criar um jogo, as mensagens, imagens e arquivos que a criança dá ao Construtor são enviados ao Claude, uma IA feita pela empresa Anthropic, que escreve o jogo. O nome e o nome de usuário da criança não são enviados junto. As fotos de perfil também são enviadas ao Claude para serem verificadas antes que alguém as veja. O Claude revisa os jogos antes que possam ser compartilhados com todos, e a nossa equipe confere os jogos sobre os quais ele tem dúvida. Os chats entre amigos e as respostas das aulas não são enviados à IA.",
         "p2": "Falar em vez de digitar: quando a criança toca no microfone no chat do Construtor, a gravação é enviada ao serviço de conversão de fala em texto {provider}, que a transforma em palavras. A criança vê as palavras e pode mudá-las antes de enviar. A gravação é usada só para isso e apagada na hora: nós nunca a guardamos, e {provider} não pode guardá-la nem usá-la para treinar seus sistemas. As palavras passam pelas mesmas verificações de segurança que uma mensagem digitada.",
-        "p3": "Pesquisa de fatos: para acertar um jogo, o Construtor pode pesquisar um fato na internet (por exemplo, a velocidade de um guepardo). A criança nunca vê as páginas nem os links. O Construtor tem a instrução de nunca pesquisar nada pessoal; se ainda assim uma pesquisa parecer pessoal, os resultados não são usados e as palavras não são guardadas. Sites adultos, de apostas, de redes sociais e de vídeos são bloqueados. Guardamos uma lista das pesquisas, sem o nome nem o nome de usuário da criança, junto com o jogo para o qual foram feitas, por 90 dias para que nossa equipe possa conferi-las."
+        "p3": "Pesquisa de fatos: para acertar um jogo, o Construtor pode pesquisar um fato na internet (por exemplo, a velocidade de um guepardo). A criança nunca vê as páginas nem os links. O Construtor tem a instrução de nunca pesquisar nada pessoal; se ainda assim uma pesquisa parecer pessoal, os resultados não são usados e as palavras não são guardadas. Sites adultos, de apostas, de redes sociais e de vídeos são bloqueados. Guardamos uma lista das pesquisas, sem o nome nem o nome de usuário da criança, junto com o jogo para o qual foram feitas, por 90 dias para que nossa equipe possa conferi-las.",
+        "p4": "Vozes de IA: alguns dos nossos jogos, quizzes de aulas e quizzes do Oomba Live podem ler o texto em voz alta com uma voz feita por computador da {ttsProvider}. Só é enviado texto escrito por nós, pelos criadores de um jogo ou pelo professor do seu filho, nunca o que seu filho digita ou fala, e nunca o nome dele. Seu filho fica sabendo que as vozes são feitas por IA e pode trocar para a voz do próprio aparelho com o botão 🔊 Vozes de IA."
       },
       "keep": {
         "h": "Por quanto tempo guardamos",
@@ -978,7 +979,8 @@
         "p2": "<b>Pagar não é a forma como pedimos permissão aos pais.</b> Comprar um plano não muda o que coletamos sobre uma criança, para que usamos esses dados nem o que um pai, mãe ou responsável aceitou.",
         "p3": "<b>Seus direitos como pai, mãe ou responsável (contas próprias):</b> você pode nos pedir para mostrar o que guardamos sobre a criança, para apagar esses dados ou para parar de coletar mais. Escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Ainda não há um botão para apagar ou baixar os dados, então atendemos esses pedidos manualmente e vamos precisar confirmar que você é o pai, a mãe ou o responsável antes de agir. Desvincular ou cancelar um plano não exclui a conta da criança.",
         "p4": "<b>Contas da escola:</b> uma conta da escola é criada pela escola e pertence a ela. Para essas contas, agimos em nome da escola e sob a orientação dela: usamos as informações dos alunos apenas para oferecer a Oomba Academy à escola, nunca para publicidade, e não as vendemos. Os pais e responsáveis de contas da escola devem pedir à escola para ver ou apagar registros; a escola pode pedir para a gente. Um acordo de dados que a escola tenha assinado com a gente tem prioridade.",
-        "p5": "<b>Nada de venda, nada de anúncios:</b> não vendemos informações pessoais de ninguém, não mostramos anúncios e não usamos cookies de publicidade ou de rastreamento."
+        "p5": "<b>Nada de venda, nada de anúncios:</b> não vendemos informações pessoais de ninguém, não mostramos anúncios e não usamos cookies de publicidade ou de rastreamento.",
+        "p6": "<b>Vozes de IA:</b> quando um jogo, uma aula ou o Oomba Live lê um texto com uma voz de IA, só esse texto é enviado do nosso servidor para a {ttsProvider} para criar o som, nunca nada sobre seu filho. A {ttsProvider} pode guardá-lo por um tempo limitado para verificar abusos. Os jogadores ficam sabendo que essas vozes são feitas por um computador."
       },
       "billingKeep": {
         "h": "Por quanto tempo guardamos as informações de cobrança",
@@ -1108,7 +1110,8 @@
       "lostTitle": "Ops, a imagem 3D parou",
       "lostText": "Isso às vezes acontece. Toque em Tentar de novo para recomeçar o jogo.",
       "retry": "Tentar de novo"
-    }
+    },
+    "voices": "Vozes de IA"
   },
   "friends": {
     "title": "Amigos",
@@ -1677,7 +1680,12 @@
       "starsLabel": "{count, plural, one {# estrela} other {# estrelas}}",
       "thanksRating": "Obrigado por avaliar!",
       "stopped": "Este jogo parou de funcionar.",
-      "restart": "Começar de novo"
+      "restart": "Começar de novo",
+      "voicesTitle": "Vozes",
+      "voicesAi": "Vozes de IA",
+      "voicesDevice": "A voz deste aparelho",
+      "voicesNote": "Os personagens deste jogo têm vozes feitas por um computador (vozes de IA da {provider}). Elas leem só as palavras do próprio jogo, nunca o que você digita e nunca o seu nome.",
+      "voicesSaveData": "A economia de dados está ligada, então a voz deste aparelho é usada até você escolher vozes de IA."
     },
     "friends": {
       "codeCopied": "Código copiado! Dê para um amigo que você conhece.",
@@ -4459,7 +4467,8 @@
       "pickTeam": "Escolha seu time",
       "eyes": "Olhe para o professor",
       "moved": "Você foi para {team}",
-      "again": "Seu professor pode começar outro jogo. Fique nesta página!"
+      "again": "Seu professor pode começar outro jogo. Fique nesta página!",
+      "aiVoice": "Ler usa uma voz de IA feita por computador ({provider})."
     },
     "emote": {
       "wave": "Acenar",
@@ -4504,7 +4513,8 @@
       "teacherView": "Visão do professor",
       "soundOn": "Som ligado",
       "soundOff": "Som desligado",
-      "seeResultsNow": "Ver resultados agora"
+      "seeResultsNow": "Ver resultados agora",
+      "read": "Ler pergunta"
     },
     "landing": {
       "title": "Conduzir um jogo ao vivo",
@@ -5066,7 +5076,11 @@
       "emotes": "Emotes",
       "remembered": "Suas escolhas ficam salvas para o próximo jogo ao vivo.",
       "reset": "Voltar às configurações padrão",
-      "save": "Salvar"
+      "save": "Salvar",
+      "voices": "Vozes para ler em voz alta",
+      "voicesAi": "Vozes de IA",
+      "voicesDevice": "A voz de cada aparelho",
+      "voicesHint": "As vozes de IA são feitas por um computador ({provider}). Só suas perguntas e opções de resposta são enviadas, nunca nomes ou o que os alunos digitam."
     },
     "say": {
       "menu": "Mensagem",
@@ -5427,5 +5441,8 @@
       "li4": "Até 100 perguntas por conjunto. Compartilhe conjuntos com os professores da sua escola, ou copie os deles e adapte do seu jeito.",
       "li5": "Quer outro tipo de jogo? Crie o seu próprio jogo de quiz com o Construtor com IA, e ele pode ser jogado ao vivo com qualquer um dos seus conjuntos de perguntas."
     }
+  },
+  "tts": {
+    "sample": "Oi! Eu sou seu guia na Oomba Academy. Vamos explorar, resolver enigmas e nos divertir juntos!"
   }
 }

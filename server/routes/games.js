@@ -24,6 +24,7 @@ import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady } from '../services/classlive-check.js';
+import { playData as ttsPlayData, frameData as ttsFrameData } from './tts.js';
 
 export const router = Router();
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
@@ -196,6 +197,8 @@ router.get('/play/:slug', (req, res) => {
   const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}) }, 15 * 60);
   const liked = games.userLiked(g.id, u && u.id);
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
+  // AI voices (routes/tts.js): official games only, when TTS is on and a language is switched on; absent otherwise.
+  const ttsData = ttsPlayData(u, g);
   // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step.
   const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
   const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
@@ -206,13 +209,14 @@ router.get('/play/:slug', (req, res) => {
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
     <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>`}
+    ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo" aria-hidden="true">🔊</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </div>
   <div class="stage" id="stage" dir="ltr">
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, online: !!(u && onlineGame(u, g.id)) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, online: !!(u && onlineGame(u, g.id)), ...(ttsData ? { tts: ttsData } : {}) })}`;
   page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: ['js.match'] });
 });
 
@@ -257,6 +261,9 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
+    // AI voices (routes/tts.js): the TTS locales on now, only for official games with TTS on; absent otherwise (the SDK
+    // then speaks with the device's voice exactly as before).
+    ...(!preview && ttsFrameData(u, g) ? { tts: ttsFrameData(u, g) } : {}),
     // An online match frame (BRB.match): the seat only; names and moves come from the page over a private port.
     ...(tok.m && u && match.get(tok.m) && match.seatOf(match.get(tok.m), u) >= 0 ? { match: { v: 1, seat: match.seatOf(match.get(tok.m), u) } } : {}),
     // Shown by the SDK, in the game's language: the "newer device" card (can't run 3D) and the "3D picture

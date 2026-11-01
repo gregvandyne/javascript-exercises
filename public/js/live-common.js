@@ -245,22 +245,9 @@ export function teamsOf(m) {
 /** Team scores from ts: Map(k -> {score, rank, sum, avg}). */
 export function scoresOf(rows, into = new Map()) { for (const r of rows || []) into.set(r[0], { score: r[1], rank: r[2], sum: r[3], avg: r[4] }); return into; }
 /** Ordinal-free rank text: "{rank} of {count}" templates come from the server. */
-/** Read text aloud in a language (speechSynthesis), if the browser has a voice for it. -> true when it spoke. */
-export function speak(text, lang) {
-  try {
-    const ss = window.speechSynthesis; if (!ss || !text) return false;
-    const u = new SpeechSynthesisUtterance(String(text)); if (lang) u.lang = lang;
-    const v = voiceFor(lang); if (v) u.voice = v;
-    ss.cancel(); ss.speak(u); return true;
-  } catch { return false; }
-}
-export function voiceFor(lang) {
-  try {
-    const vs = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
-    const base = String(lang || '').toLowerCase().split('-')[0];
-    return vs.find(v => v.lang && v.lang.toLowerCase() === String(lang || '').toLowerCase()) || vs.find(v => v.lang && v.lang.toLowerCase().split(/[-_]/)[0] === base) || null;
-  } catch { return null; }
-}
+/** Read text aloud in a language with the device's own voice, if it has one. -> true when it spoke. AI voices (a question
+ *  by its number): readAloud in /js/tts.js. */
+export { deviceSpeak as speak, deviceVoice as voiceFor, readAloud, stopReading, aiOn } from '/js/tts.js';
 /** A toast in a fixed element for ms (role=status is on the element). */
 export function flash(el, text, ms = 4000) {
   if (!el) return; el.textContent = text; el.hidden = false;
