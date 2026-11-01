@@ -18,7 +18,9 @@ export async function frameProblems(frame, { minTap = 40 } = {}) {
       }
       const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2;
     };
-    const floating = el => { for (let e = el; e; e = e.parentElement) if (getComputedStyle(e).pointerEvents === 'none') return true; return false; };
+    // pointer-events is inherited, so an element's own computed value tells whether it ignores the pointer (a layer can
+    // switch it off and its buttons back on: the kit's UI root does).
+    const floating = el => getComputedStyle(el).pointerEvents === 'none';
     const label = el => {
       const one = e => e.tagName.toLowerCase() + (e.id ? `#${e.id}` : '') + [...e.classList].slice(0, 2).map(c => `.${c}`).join('');
       return `${one(el.parentElement || el)} > ${one(el)} "${(el.innerText || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 40)}"`;
@@ -46,12 +48,13 @@ export async function frameProblems(frame, { minTap = 40 } = {}) {
       for (let e = it.el.parentElement; e && e !== document.body; e = e.parentElement) { const o = getComputedStyle(e).overflowY; if (o === 'auto' || o === 'scroll') { scroller = e; break; } }
       if (!scroller && !it.float && (r.left < -2 || r.top < -2 || r.right > W + 2 || r.bottom > H + 2)) out.push({ kind: 'offscreen', what: name, rect: [r.left, r.top, r.width, r.height].map(Math.round) });
       // A control (an answer button) has to be in view without scrolling, even inside a box that scrolls.
-      if (scroller && it.control && !it.float) {
+      // (A long list made to be scrolled, like a song picker or a board of many tiles, is fine.)
+      if (scroller && it.control && !it.float && scroller.querySelectorAll('button,[role="button"],a[href]').length <= 8) {
         const b = scroller.getBoundingClientRect();
         if (r.top < b.top - 2 || r.bottom > Math.min(b.bottom, H) + 2) out.push({ kind: 'offscreen', what: `${name} (needs scrolling)`, rect: [r.left, r.top, r.width, r.height].map(Math.round) });
       }
       const cs = getComputedStyle(it.el);
-      if (!it.control && /hidden|clip/.test(cs.overflowX + cs.overflowY) && cs.textOverflow !== 'ellipsis' && (it.el.scrollWidth > it.el.clientWidth + 2 || it.el.scrollHeight > it.el.clientHeight + 3)) out.push({ kind: 'clipped', what: name });
+      if (!it.control && /hidden|clip/.test(cs.overflowX + cs.overflowY) && cs.textOverflow !== 'ellipsis' && !(cs.webkitLineClamp && cs.webkitLineClamp !== 'none') && (it.el.scrollWidth > it.el.clientWidth + 2 || it.el.scrollHeight > it.el.clientHeight + 3)) out.push({ kind: 'clipped', what: name });
       if (it.control && !it.float) {
         const small = Math.min(r.width, r.height), ratio = r.height / r.width;
         if (small < minTap) out.push({ kind: 'squashed', what: name, size: [Math.round(r.width), Math.round(r.height)] });
@@ -63,6 +66,9 @@ export async function frameProblems(frame, { minTap = 40 } = {}) {
     for (let i = 0; i < flat.length; i++) for (let j = i + 1; j < flat.length; j++) {
       const a = flat[i], b = flat[j];
       if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
+      // Letters of one title may touch on purpose (the kit's sticker-style title words overlap a little).
+      const ha = a.el.closest('h1,h2,h3,[role="heading"],.ok-title-block'), hb = b.el.closest('h1,h2,h3,[role="heading"],.ok-title-block');
+      if (ha && ha === hb) continue;
       if (a.control !== b.control && (a.el.closest('button,[role="button"]') || b.el.closest('button,[role="button"]'))) continue;
       const x = Math.min(a.rect.right, b.rect.right) - Math.max(a.rect.left, b.rect.left);
       const y = Math.min(a.rect.bottom, b.rect.bottom) - Math.max(a.rect.top, b.rect.top);

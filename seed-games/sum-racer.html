@@ -249,6 +249,15 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   .sr-tcard .ok-p{font-size:1rem!important;line-height:1.3}
   .ok-title-screen .sr-tcard .ok-big{min-height:66px;font-size:1.65rem;margin-top:2px}
 }
+/* a phone on its side: a compact lockup, so the whole card (Play included) fits above the road */
+@media (orientation:landscape) and (max-height:440px){
+  .ok-title-screen .ok-h1{font-size:clamp(2rem,11vh,2.9rem)}
+  .signs{display:none}
+  .sr-tcard{gap:6px;padding:10px 14px 12px}
+  .sr-tcard .ok-p{font-size:.95rem!important;line-height:1.25}
+  .ok-title-screen .sr-tcard .ok-big{min-height:54px;min-width:200px;font-size:1.45rem;margin-top:0}
+  .sr-tcard .chip{font-size:.85rem;padding:2px 9px 2px 5px}
+}
 /* the race: a bigger key hint on wide screens */
 .kbhint{font-size:1.05rem}
 /* results: a chequered finish banner over the podium, the card off the screen edge, bolder buttons and stats */
