@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { q, audit, setting } from '../server/db.js';
+import { log } from '../server/services/log.js';
 import { config } from '../server/config.js';
 import { createUser, getUserByName, setPassword, verifyPassword, OFFICIAL, OFFICIAL_OLD_NAMES } from '../server/auth.js';
 import { BRAND } from '../server/views/brand.js';
@@ -20,6 +21,24 @@ const DEMO_SLUG = 'magic-cups-demo-school';
 // The launch games, imported in this order. The home-page hero is the featured game marked "hero": true in its JSON
 // (featured=2), else the most played featured game.
 export const SEED_GAMES = ['hero-of-sunvale', 'shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek', 'swish-flick', 'loop-lab', 'beat-lanes', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest'];
+// Member games the owner asked to take down because an official game replaces them (once each, by key; the game is
+// hidden, never deleted, so it can be brought back by clearing hidden_reason): Dinosaur's "Would You Rather" (Nov 2026,
+// replaced by the official Would You Rather).
+export const REPLACED = [{ key: 'replaced:dinosaur-wyr', owner: 'dinosaur', title: 'would you rather' }];
+export function replaceMemberGames(officialId, say = () => {}) {
+  for (const r of REPLACED) {
+    if (setting(r.key)) continue;
+    const rows = q.all(`SELECT g.id, g.title, u.username FROM games g JOIN users u ON u.id=g.owner_id
+      WHERE g.owner_id<>? AND lower(g.title) LIKE ? AND (lower(u.username) LIKE ? OR lower(u.display_name) LIKE ?)`, officialId, `%${r.title}%`, `%${r.owner}%`, `%${r.owner}%`);
+    for (const g of rows) {
+      q.run("UPDATE games SET visibility='private', featured=0, hidden_reason='replaced', updated_at=? WHERE id=?", Date.now(), g.id);
+      audit(null, 'game.replaced', g.id, { title: g.title, owner: g.username, by: r.key });
+      say(`  ✗ hidden (replaced by an official game): ${g.title} by ${g.username}`);
+    }
+    log(rows.length ? 'info' : 'warn', 'member games replaced', { key: r.key, games: rows.map(g => `${g.id} ${g.title} by ${g.username}`) });
+    setting(r.key, JSON.stringify({ at: Date.now(), games: rows.map(g => g.id) }));
+  }
+}
 export function seed({ quiet = false } = {}) {
   const say = (...a) => { if (!quiet) console.log(...a); };
   let admin = getUserByName(config.adminUsername);
@@ -41,6 +60,7 @@ export function seed({ quiet = false } = {}) {
   // Quest Race and Question Battle were hidden for a while (hidden_reason 'retired'); the import republishes them but
   // keeps that flag, so clear it for the official launch games.
   q.run("UPDATE games SET hidden_reason='' WHERE hidden_reason='retired' AND owner_id=?", official.id);
+  replaceMemberGames(official.id, say);
   const demo = seedDemoTeacher(admin, say);
   const bootstrapped = seedSchools(admin, config.bootstrapSchools, say);
   return { admin, official, demo, bootstrapped };
