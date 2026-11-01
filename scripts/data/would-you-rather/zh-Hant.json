@@ -1,0 +1,7456 @@
+{
+ "about": "Would You Rather dilemmas (English source). Each item: id (never reuse or renumber: saved progress uses it), cat, a/b {text, tags}. Tags drive the personality card and are never translated. Translators: copy this file to <lang>.json and translate only the text fields, then run node scripts/wyr-bank.js.",
+ "items": [
+  {
+   "id": "animals-1",
+   "cat": "animals",
+   "a": {
+    "text": "和動物說話",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "會說世界上所有的語言",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "animals-2",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻像貓一樣大的寵物龍",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "養一隻像馬一樣大的寵物貓",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-3",
+   "cat": "animals",
+   "a": {
+    "text": "騎海豚去上學",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "騎長頸鹿去上學",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-4",
+   "cat": "animals",
+   "a": {
+    "text": "有像猴子一樣的尾巴",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有像兔子一樣的耳朵",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-5",
+   "cat": "animals",
+   "a": {
+    "text": "當一天獵豹",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "當一天貓頭鷹",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-6",
+   "cat": "animals",
+   "a": {
+    "text": "和鯨魚一起游泳",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "和老鷹一起飛翔",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-7",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻會說話的鸚鵡",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻會跳舞的狗",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-8",
+   "cat": "animals",
+   "a": {
+    "text": "和松鼠住在樹屋裡",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "和海豹住在船上",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-9",
+   "cat": "animals",
+   "a": {
+    "text": "像螞蟻一樣力氣大",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "像章魚一樣聰明",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-10",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻企鵝當寵物",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "養一隻熊貓當寵物",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-11",
+   "cat": "animals",
+   "a": {
+    "text": "擁有一隻獨角獸",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "擁有一隻火鳳凰",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-12",
+   "cat": "animals",
+   "a": {
+    "text": "像魚一樣在水裡呼吸",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "像飛鼠一樣在空中滑翔",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-13",
+   "cat": "animals",
+   "a": {
+    "text": "在海灘照顧小海龜",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "在森林照顧小貓頭鷹",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-14",
+   "cat": "animals",
+   "a": {
+    "text": "養一匹會飛的馬",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻會說話的狗",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-15",
+   "cat": "animals",
+   "a": {
+    "text": "當一隻忙碌的蜜蜂",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "當一隻愛睡的樹懶",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-16",
+   "cat": "animals",
+   "a": {
+    "text": "有像烏龜一樣的殼",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "有像刺蝟一樣的刺",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-17",
+   "cat": "animals",
+   "a": {
+    "text": "像蝙蝠一樣耳朵靈",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "像老鷹一樣眼睛尖",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-18",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻永遠長不大的寵物",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻會長得像公車一樣大的寵物",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-19",
+   "cat": "animals",
+   "a": {
+    "text": "和熊當好朋友",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "和狐狸當好朋友",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-20",
+   "cat": "animals",
+   "a": {
+    "text": "睡在鳥巢裡",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "睡在地洞裡",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-21",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻會變魔術的貓",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻會唱歌的倉鼠",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-22",
+   "cat": "animals",
+   "a": {
+    "text": "開一間走失小狗的家",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "開一間走失小貓的家",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-23",
+   "cat": "animals",
+   "a": {
+    "text": "當雪地裡的企鵝",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "當陽光下的紅鶴",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-24",
+   "cat": "animals",
+   "a": {
+    "text": "有斑馬一樣的條紋",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有花豹一樣的斑點",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "animals-25",
+   "cat": "animals",
+   "a": {
+    "text": "去動物會看你的動物園",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "去動物會回話的農場",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-26",
+   "cat": "animals",
+   "a": {
+    "text": "和貓頭鷹一起數星星",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "和鼴鼠一起挖一整天地道",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-27",
+   "cat": "animals",
+   "a": {
+    "text": "有長頸鹿一樣的長脖子",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有大象一樣的長鼻子",
+    "tags": [
+     "animal",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-28",
+   "cat": "animals",
+   "a": {
+    "text": "像變色龍一樣會變色",
+    "tags": [
+     "make",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "像螢火蟲一樣會發光",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-29",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻會吹口哨的金魚",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻會贏賽跑的蝸牛",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-30",
+   "cat": "animals",
+   "a": {
+    "text": "照顧一隻小象",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "照顧一隻小袋鼠",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-31",
+   "cat": "animals",
+   "a": {
+    "text": "當一隻大聲吼叫的獅子",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "當一隻輕輕呼嚕的貓",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-32",
+   "cat": "animals",
+   "a": {
+    "text": "和海龜在海裡游泳",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "和小北極熊在雪地玩",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-33",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻會幫忙做家事的章魚",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻會講笑話的猴子",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-34",
+   "cat": "animals",
+   "a": {
+    "text": "被窗邊的鳥叫聲叫醒",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "被小狗舔臉叫醒",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-35",
+   "cat": "animals",
+   "a": {
+    "text": "當有名的動物醫生",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "當有名的動物探險家",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-36",
+   "cat": "animals",
+   "a": {
+    "text": "養一隻會在黑暗中發光的寵物",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "養一隻會隱形的寵物",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-37",
+   "cat": "animals",
+   "a": {
+    "text": "當一天住在蟻窩裡的螞蟻",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "當一天住在蜂巢裡的蜜蜂",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-38",
+   "cat": "animals",
+   "a": {
+    "text": "像蜂鳥一樣敏捷",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "像陸龜一樣長壽",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "food-1",
+   "cat": "food",
+   "a": {
+    "text": "一輩子只吃甜的東西",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "一輩子只吃鹹的東西",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-2",
+   "cat": "food",
+   "a": {
+    "text": "有一條巧克力河",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有一座檸檬汁瀑布",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-3",
+   "cat": "food",
+   "a": {
+    "text": "早餐吃披薩",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "晚餐吃鬆餅",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-4",
+   "cat": "food",
+   "a": {
+    "text": "再也不能吃冰淇淋",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "再也不能吃披薩",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-5",
+   "cat": "food",
+   "a": {
+    "text": "有一台想吃什麼就變出什麼的冰箱",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一座想吃什麼水果就長什麼的菜園",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "food-6",
+   "cat": "food",
+   "a": {
+    "text": "當有名的大廚",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "當有名的美食評審",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-7",
+   "cat": "food",
+   "a": {
+    "text": "吃一片像腳踏車一樣大的餅乾",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "吃一百片迷你小餅乾",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-8",
+   "cat": "food",
+   "a": {
+    "text": "在城堡裡吃早餐",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "在山頂上吃早餐",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-9",
+   "cat": "food",
+   "a": {
+    "text": "做出全世界最大的三明治",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "做出全世界最高的蛋糕",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-10",
+   "cat": "food",
+   "a": {
+    "text": "只能喝牛奶",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "只能喝柳橙汁",
+    "tags": [
+     "food",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "food-11",
+   "cat": "food",
+   "a": {
+    "text": "用手吃義大利麵",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "用叉子喝湯",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-12",
+   "cat": "food",
+   "a": {
+    "text": "開一間糖果店",
+    "tags": [
+     "food",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "開一間麵包店",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-13",
+   "cat": "food",
+   "a": {
+    "text": "每天嚐一種新食物",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "每天吃最愛的食物",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-14",
+   "cat": "food",
+   "a": {
+    "text": "房間裡有爆米花機",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "房間裡有果昔機",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-15",
+   "cat": "food",
+   "a": {
+    "text": "一個星期只吃綠色的食物",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "一個星期只吃橘色的食物",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-16",
+   "cat": "food",
+   "a": {
+    "text": "幫全家人煮晚餐",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "幫好朋友烤蛋糕",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-17",
+   "cat": "food",
+   "a": {
+    "text": "有一盤吃不完的水果",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "有一包吃不完的洋芋片",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-18",
+   "cat": "food",
+   "a": {
+    "text": "在海灘野餐",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "在下雪的森林野餐",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-19",
+   "cat": "food",
+   "a": {
+    "text": "吃永遠不會融化的冰淇淋",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "吃永遠不會變冷的披薩",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-20",
+   "cat": "food",
+   "a": {
+    "text": "能嚐到顏色的味道",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "能聞到音樂的味道",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-21",
+   "cat": "food",
+   "a": {
+    "text": "和玩具們開茶會",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "和朋友們烤肉",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-22",
+   "cat": "food",
+   "a": {
+    "text": "吃機器人煮的飯",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "吃國王煮的飯",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-23",
+   "cat": "food",
+   "a": {
+    "text": "種出超大的草莓",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "種出超大的南瓜",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-24",
+   "cat": "food",
+   "a": {
+    "text": "只能用筷子吃飯",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "只能用湯匙吃飯",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-25",
+   "cat": "food",
+   "a": {
+    "text": "每樣東西都撒上彩色糖粒",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "每樣東西都加上起司",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-26",
+   "cat": "food",
+   "a": {
+    "text": "每週嚐一個新國家的料理",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "學會把一道菜做到完美",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-27",
+   "cat": "food",
+   "a": {
+    "text": "贏得一輩子免費的鬆餅",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "贏得一輩子免費的珍珠奶茶",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-28",
+   "cat": "food",
+   "a": {
+    "text": "在樹屋裡有廚房",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "在船上有廚房",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-29",
+   "cat": "food",
+   "a": {
+    "text": "每天在床上吃早餐",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "每晚在星空下吃晚餐",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-30",
+   "cat": "food",
+   "a": {
+    "text": "有一支會換口味的棒棒糖",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "有一片永遠不會沒味道的口香糖",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-31",
+   "cat": "food",
+   "a": {
+    "text": "當蛋糕比賽的評審",
+    "tags": [
+     "food",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "贏得蛋糕比賽冠軍",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-32",
+   "cat": "food",
+   "a": {
+    "text": "發明自己的冰淇淋口味",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "發明自己的披薩配料",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-33",
+   "cat": "food",
+   "a": {
+    "text": "一整餐只吃湯",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "一整餐只吃三明治",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-34",
+   "cat": "food",
+   "a": {
+    "text": "有一座熱可可噴泉",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有一座水果潘趣噴泉",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-35",
+   "cat": "food",
+   "a": {
+    "text": "只吃圓形的食物",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "只吃方形的食物",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-36",
+   "cat": "food",
+   "a": {
+    "text": "有一個會幫你烤點心的朋友",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "有一個會幫你煮飯的朋友",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-37",
+   "cat": "food",
+   "a": {
+    "text": "住在麵包店隔壁",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "住在冰淇淋店隔壁",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-38",
+   "cat": "food",
+   "a": {
+    "text": "在舊書裡找到祕密食譜",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "發明一種全新的點心",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "powers-1",
+   "cat": "powers",
+   "a": {
+    "text": "會飛",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "會隱形",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-2",
+   "cat": "powers",
+   "a": {
+    "text": "能看穿別人的心思",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "能用念力移動東西",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-3",
+   "cat": "powers",
+   "a": {
+    "text": "跑得超級快",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "力氣超級大",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-4",
+   "cat": "powers",
+   "a": {
+    "text": "瞬間移動到任何地方",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "讓時間停止",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-5",
+   "cat": "powers",
+   "a": {
+    "text": "能在水裡呼吸",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "能穿牆",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-6",
+   "cat": "powers",
+   "a": {
+    "text": "控制天氣",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "揮揮手就讓植物長大",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-7",
+   "cat": "powers",
+   "a": {
+    "text": "縮小到像螞蟻一樣",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "長高到像大樓一樣",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-8",
+   "cat": "powers",
+   "a": {
+    "text": "和植物說話",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "和機器說話",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-9",
+   "cat": "powers",
+   "a": {
+    "text": "有超級聽力",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "有超級視力",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-10",
+   "cat": "powers",
+   "a": {
+    "text": "治好任何擦傷和瘀青",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "讓任何人露出笑容",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-11",
+   "cat": "powers",
+   "a": {
+    "text": "跳得像房子一樣高",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "跑得像汽車一樣快",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-12",
+   "cat": "powers",
+   "a": {
+    "text": "變成任何動物",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "變成任何東西",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-13",
+   "cat": "powers",
+   "a": {
+    "text": "想下雪就下雪",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "想出太陽就出太陽",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-14",
+   "cat": "powers",
+   "a": {
+    "text": "有一個什麼都裝得下的背包",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "有一雙能帶你去任何地方的鞋子",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-15",
+   "cat": "powers",
+   "a": {
+    "text": "永遠不用睡覺",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "永遠不用吃飯",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-16",
+   "cat": "powers",
+   "a": {
+    "text": "在黑暗中發光",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "想一想就能改變髮色",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-17",
+   "cat": "powers",
+   "a": {
+    "text": "看一眼就學會任何本領",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "一分鐘學會任何語言",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "powers-18",
+   "cat": "powers",
+   "a": {
+    "text": "摸一下就讓東西結冰",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "摸一下就讓東西變暖",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-19",
+   "cat": "powers",
+   "a": {
+    "text": "一彈手指就整理好房間",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "一彈手指就寫完功課",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-20",
+   "cat": "powers",
+   "a": {
+    "text": "擁有幫助別人的超能力",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "擁有探險用的超能力",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-21",
+   "cat": "powers",
+   "a": {
+    "text": "走到哪裡花就開到哪裡",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "走到哪裡音樂就響到哪裡",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-22",
+   "cat": "powers",
+   "a": {
+    "text": "像橡皮一樣伸長",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "像皮球一樣彈跳",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-23",
+   "cat": "powers",
+   "a": {
+    "text": "在黑暗中看得見",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "能看穿牆壁",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-24",
+   "cat": "powers",
+   "a": {
+    "text": "和未來的自己說話",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "和小時候的自己說話",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-25",
+   "cat": "powers",
+   "a": {
+    "text": "有一支畫什麼就變真的的鉛筆",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "有一支畫哪裡就變真的的畫筆",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-26",
+   "cat": "powers",
+   "a": {
+    "text": "害羞時變得很小",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "勇敢時變得很大",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-27",
+   "cat": "powers",
+   "a": {
+    "text": "永遠不會覺得冷",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "永遠不會覺得累",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-28",
+   "cat": "powers",
+   "a": {
+    "text": "想要彩虹就叫出彩虹",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "想要微風就叫來微風",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-29",
+   "cat": "powers",
+   "a": {
+    "text": "知道寵物在想什麼",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "知道老師在想什麼",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-30",
+   "cat": "powers",
+   "a": {
+    "text": "成為世界上游泳最快的人",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "成為世界上攀爬最快的人",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-31",
+   "cat": "powers",
+   "a": {
+    "text": "修好任何壞掉的東西",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "做出任何想像得到的東西",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "powers-32",
+   "cat": "powers",
+   "a": {
+    "text": "有一朵能騎的雲",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有一張飛天魔毯",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-33",
+   "cat": "powers",
+   "a": {
+    "text": "控制重力",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "控制光",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-34",
+   "cat": "powers",
+   "a": {
+    "text": "有一件超級英雄披風",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有一個超級英雄面罩",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-35",
+   "cat": "powers",
+   "a": {
+    "text": "有一個小幫手",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "當別人的小幫手",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-36",
+   "cat": "powers",
+   "a": {
+    "text": "讓任何人哈哈大笑",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "讓任何人平靜下來",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-37",
+   "cat": "powers",
+   "a": {
+    "text": "每天收回一個小錯誤",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "每天多一個小時",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-38",
+   "cat": "powers",
+   "a": {
+    "text": "擁有只在星期一有用的超能力",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "擁有只在下雨天有用的超能力",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-1",
+   "cat": "school",
+   "a": {
+    "text": "在城堡裡上學",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "在太空船上上學",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-2",
+   "cat": "school",
+   "a": {
+    "text": "有一位機器人老師",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "有一位巫師老師",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-3",
+   "cat": "school",
+   "a": {
+    "text": "只用遊戲學習",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "只用歌曲學習",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-4",
+   "cat": "school",
+   "a": {
+    "text": "暑假變長",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "寒假變長",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-5",
+   "cat": "school",
+   "a": {
+    "text": "用魔法計算機算數學",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "用魔法筆寫國字",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-6",
+   "cat": "school",
+   "a": {
+    "text": "每天在操場吃午餐",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "每天在花園吃午餐",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-7",
+   "cat": "school",
+   "a": {
+    "text": "當班級寵物的好朋友",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "負責管理班級圖書角",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-8",
+   "cat": "school",
+   "a": {
+    "text": "校外教學去月球",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "校外教學去海底",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-9",
+   "cat": "school",
+   "a": {
+    "text": "用溜滑梯代替樓梯",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "每間教室都有彈跳床",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-10",
+   "cat": "school",
+   "a": {
+    "text": "寫一本書",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "畫一幅超大的壁畫",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-11",
+   "cat": "school",
+   "a": {
+    "text": "參加學校的話劇演出",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "參加學校的合唱團",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-12",
+   "cat": "school",
+   "a": {
+    "text": "學寫程式做遊戲",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "學做機器人",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-13",
+   "cat": "school",
+   "a": {
+    "text": "下課時間變兩倍",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "午餐時間變兩倍",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-14",
+   "cat": "school",
+   "a": {
+    "text": "坐在好朋友旁邊",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "坐在窗戶旁邊",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-15",
+   "cat": "school",
+   "a": {
+    "text": "每堂課都在戶外上",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "每堂課都在溫馨的圖書館上",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-16",
+   "cat": "school",
+   "a": {
+    "text": "每天讀一本書",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "每天畫一張畫",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-17",
+   "cat": "school",
+   "a": {
+    "text": "主辦學校的科展",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "主辦學校的美術展",
+    "tags": [
+     "make",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-18",
+   "cat": "school",
+   "a": {
+    "text": "有一個會說話的書包",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一個會自己整理的鉛筆盒",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-19",
+   "cat": "school",
+   "a": {
+    "text": "一整年都學恐龍",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "一整年都學太空",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-20",
+   "cat": "school",
+   "a": {
+    "text": "功課是一場尋寶遊戲",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "功課是一道謎題",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-21",
+   "cat": "school",
+   "a": {
+    "text": "當班上的小幫手",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "當班上的小發明家",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-22",
+   "cat": "school",
+   "a": {
+    "text": "晚一點開始上課",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "早一點放學",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-23",
+   "cat": "school",
+   "a": {
+    "text": "班上養一隻羊駝",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "班上養一隻鸚鵡",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-24",
+   "cat": "school",
+   "a": {
+    "text": "每堂課開始先玩遊戲",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "每堂課開始先聽故事",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-25",
+   "cat": "school",
+   "a": {
+    "text": "在樹屋裡上課",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "在潛水艇裡上課",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-26",
+   "cat": "school",
+   "a": {
+    "text": "當一天班上的老師",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "當一天全校的校長",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-27",
+   "cat": "school",
+   "a": {
+    "text": "有一個幫你背書包的機器人",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有一隻陪你走路上學的狗",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-28",
+   "cat": "school",
+   "a": {
+    "text": "學一種新語言",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "學一種新樂器",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-29",
+   "cat": "school",
+   "a": {
+    "text": "每週都有運動會",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "每週都有美術日",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-30",
+   "cat": "school",
+   "a": {
+    "text": "成為全校國字最厲害的人",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "成為全校數學最厲害的人",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-31",
+   "cat": "school",
+   "a": {
+    "text": "對全校演講",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "為全校拍一支影片",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-32",
+   "cat": "school",
+   "a": {
+    "text": "有一面能畫畫的超大黑板",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有一面超大的拼圖牆",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-33",
+   "cat": "school",
+   "a": {
+    "text": "午餐後睡午覺",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "午餐後開舞會",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-34",
+   "cat": "school",
+   "a": {
+    "text": "有會飄浮的書桌",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有會旋轉的椅子",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-35",
+   "cat": "school",
+   "a": {
+    "text": "跟有名的科學家學習",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "跟有名的藝術家學習",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-36",
+   "cat": "school",
+   "a": {
+    "text": "在學校菜園種菜",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "照顧學校的魚缸",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "school-37",
+   "cat": "school",
+   "a": {
+    "text": "有一個安靜的閱讀角",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "有一個熱鬧的積木角",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-1",
+   "cat": "travel",
+   "a": {
+    "text": "探險叢林",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "探險沙漠",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-2",
+   "cat": "travel",
+   "a": {
+    "text": "去北極",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "去熱帶小島",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-3",
+   "cat": "travel",
+   "a": {
+    "text": "搭熱氣球旅行",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "搭潛水艇旅行",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-4",
+   "cat": "travel",
+   "a": {
+    "text": "爬一座高山",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "潛到珊瑚礁",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-5",
+   "cat": "travel",
+   "a": {
+    "text": "去非洲看野生動物",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "搭郵輪旅行",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-6",
+   "cat": "travel",
+   "a": {
+    "text": "在星空下睡帳篷",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "睡在城堡裡",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-7",
+   "cat": "travel",
+   "a": {
+    "text": "找到藏起來的寶藏",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "找到失落的城市",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-8",
+   "cat": "travel",
+   "a": {
+    "text": "騎駱駝",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "騎大象",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-9",
+   "cat": "travel",
+   "a": {
+    "text": "回到過去",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "前往未來",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-10",
+   "cat": "travel",
+   "a": {
+    "text": "去世界上每一個國家",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "去太陽系每一顆行星",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-11",
+   "cat": "travel",
+   "a": {
+    "text": "和家人開車去旅行",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "和朋友搭火車去旅行",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-12",
+   "cat": "travel",
+   "a": {
+    "text": "探險滿是水晶的山洞",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "探險一艘舊海盜船",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-13",
+   "cat": "travel",
+   "a": {
+    "text": "在冰屋住一個星期",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "在沙漠帳篷住一個星期",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-14",
+   "cat": "travel",
+   "a": {
+    "text": "去山上滑雪橇",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "去海邊衝浪",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-15",
+   "cat": "travel",
+   "a": {
+    "text": "有一張能去任何地方的地圖",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "有一把能打開任何門的鑰匙",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-16",
+   "cat": "travel",
+   "a": {
+    "text": "走過搖搖晃晃的吊橋",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "走過高高的玻璃地板",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-17",
+   "cat": "travel",
+   "a": {
+    "text": "看極光",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "從遠處看火山",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-18",
+   "cat": "travel",
+   "a": {
+    "text": "晚上去博物館",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "晚上去遊樂園",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "travel-19",
+   "cat": "travel",
+   "a": {
+    "text": "划獨木舟順著河流而下",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "搭滑索穿過樹林",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-20",
+   "cat": "travel",
+   "a": {
+    "text": "當有名的探險家",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "當有名的地圖繪製師",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-21",
+   "cat": "travel",
+   "a": {
+    "text": "搭直升機",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "搭海盜船航海",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-22",
+   "cat": "travel",
+   "a": {
+    "text": "在森林露營",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "在海邊露營",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-23",
+   "cat": "travel",
+   "a": {
+    "text": "學會用五十種語言說你好",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "學會五十種不同的舞",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-24",
+   "cat": "travel",
+   "a": {
+    "text": "找到一扇通往祕密花園的門",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "找到一扇通往祕密圖書館的門",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-25",
+   "cat": "travel",
+   "a": {
+    "text": "去高樓林立的城市",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "去滿是小房子的村莊",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-26",
+   "cat": "travel",
+   "a": {
+    "text": "在農場過一天",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "在燈塔過一天",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-27",
+   "cat": "travel",
+   "a": {
+    "text": "帶著地圖去冒險",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "不帶地圖去冒險",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-28",
+   "cat": "travel",
+   "a": {
+    "text": "搭超大氣球環遊世界",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "搭超快的火車環遊世界",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-29",
+   "cat": "travel",
+   "a": {
+    "text": "發現一座新島嶼",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "發現一種新動物",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-30",
+   "cat": "travel",
+   "a": {
+    "text": "去音樂節",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "去燈會",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-31",
+   "cat": "travel",
+   "a": {
+    "text": "去看最大的瀑布",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "去看最高的樹",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-32",
+   "cat": "travel",
+   "a": {
+    "text": "住在船屋裡",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "住在山中小木屋",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-33",
+   "cat": "travel",
+   "a": {
+    "text": "搭火箭去旅行",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "騎大海龜去旅行",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-34",
+   "cat": "travel",
+   "a": {
+    "text": "和彩色的魚一起浮潛",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "和山羊一起爬山",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-35",
+   "cat": "travel",
+   "a": {
+    "text": "只帶一個小包包旅行一年",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "每次旅行都帶著整個房間",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-36",
+   "cat": "travel",
+   "a": {
+    "text": "長途跋涉穿越沙漠",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "長途跋涉穿越冰原",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-37",
+   "cat": "travel",
+   "a": {
+    "text": "騎腳踏車環島一圈",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "走路繞湖一整圈",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-38",
+   "cat": "travel",
+   "a": {
+    "text": "當旅客的導遊",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "當有導遊帶的旅客",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-1",
+   "cat": "silly",
+   "a": {
+    "text": "頭髮變成義大利麵",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "腳趾變成棉花糖",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-2",
+   "cat": "silly",
+   "a": {
+    "text": "打噴嚏噴出亮粉",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "打嗝冒出泡泡",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-3",
+   "cat": "silly",
+   "a": {
+    "text": "像螃蟹一樣橫著走一天",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "像青蛙一樣跳一天",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-4",
+   "cat": "silly",
+   "a": {
+    "text": "只能用押韻的話說話",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "只能用唱的說話",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-5",
+   "cat": "silly",
+   "a": {
+    "text": "鼻子會發出喇叭聲",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "耳朵會吹口哨",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-6",
+   "cat": "silly",
+   "a": {
+    "text": "把襪子穿在手上",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "把手套戴在腳上",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-7",
+   "cat": "silly",
+   "a": {
+    "text": "聲音像鴨子",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "笑聲像驢子",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-8",
+   "cat": "silly",
+   "a": {
+    "text": "住在果凍做的房子",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "住在枕頭做的房子",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-9",
+   "cat": "silly",
+   "a": {
+    "text": "養一顆會講笑話的寵物石頭",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "養一個會抱抱的寵物枕頭",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "silly-10",
+   "cat": "silly",
+   "a": {
+    "text": "打嗝打出彩虹",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "打噴嚏噴出彩色紙花",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-11",
+   "cat": "silly",
+   "a": {
+    "text": "有會跳舞的眉毛",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "頭髮會隨心情變色",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-12",
+   "cat": "silly",
+   "a": {
+    "text": "騎一根超大香蕉",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "騎一隻超大黃色小鴨",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-13",
+   "cat": "silly",
+   "a": {
+    "text": "帽子永遠是一個蛋糕",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "鞋子走路會唱出一首歌",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-14",
+   "cat": "silly",
+   "a": {
+    "text": "拿長頸鹿當沙發",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "拿鯨魚當浴缸",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-15",
+   "cat": "silly",
+   "a": {
+    "text": "只能倒著走",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "只能踮著腳尖走",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-16",
+   "cat": "silly",
+   "a": {
+    "text": "口袋裡有一隻小小龍",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "肩膀上有一隻小小象",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-17",
+   "cat": "silly",
+   "a": {
+    "text": "用機器人的聲音說話",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "用吱吱叫的老鼠聲說話",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-18",
+   "cat": "silly",
+   "a": {
+    "text": "摸到的東西都變成果凍",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "摸到的東西都變成羽毛",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-19",
+   "cat": "silly",
+   "a": {
+    "text": "床是一張彈跳床",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "浴缸是一座球池",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-20",
+   "cat": "silly",
+   "a": {
+    "text": "每天都穿睡衣",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "每天都穿超級英雄裝",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-21",
+   "cat": "silly",
+   "a": {
+    "text": "長出棉花糖做的小鬍子",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "長出泡泡做的大鬍子",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-22",
+   "cat": "silly",
+   "a": {
+    "text": "每次聽到鈴聲就跳舞",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "每次看到貓就唱歌",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-23",
+   "cat": "silly",
+   "a": {
+    "text": "後面跟著一支樂隊",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "後面跟著一群鴨子",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-24",
+   "cat": "silly",
+   "a": {
+    "text": "有一片烤了會唱歌的吐司",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "有一台會講笑話的冰箱",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "silly-25",
+   "cat": "silly",
+   "a": {
+    "text": "和袋鼠交換腳",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "和大象交換耳朵",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-26",
+   "cat": "silly",
+   "a": {
+    "text": "住在一隻巨大的鞋子裡",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "住在一個巨大的茶壺裡",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-27",
+   "cat": "silly",
+   "a": {
+    "text": "在卡士達醬裡泡澡",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "在比你還高的泡泡裡泡澡",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-28",
+   "cat": "silly",
+   "a": {
+    "text": "走到哪裡都用彈的",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "走到哪裡都用滾的",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-29",
+   "cat": "silly",
+   "a": {
+    "text": "笑一下就讓花開",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "打個哈欠就讓天下雪",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-30",
+   "cat": "silly",
+   "a": {
+    "text": "穿樹葉做的外套",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "穿羽毛做的外套",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-31",
+   "cat": "silly",
+   "a": {
+    "text": "養一隻會喵喵叫的狗",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻會汪汪叫的貓",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-32",
+   "cat": "silly",
+   "a": {
+    "text": "用腳拍手",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "用耳朵揮手",
+    "tags": [
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-33",
+   "cat": "silly",
+   "a": {
+    "text": "頭髮上開出花朵",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "手肘上長出葡萄",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-34",
+   "cat": "silly",
+   "a": {
+    "text": "有一支會說話的牙刷",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一把會唱歌的梳子",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-35",
+   "cat": "silly",
+   "a": {
+    "text": "蓋一座像房子一樣大的枕頭城堡",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "堆一座像房子一樣大的沙堡",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "silly-36",
+   "cat": "silly",
+   "a": {
+    "text": "只能用超大湯匙吃東西",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "只能用彎彎的吸管喝東西",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-37",
+   "cat": "silly",
+   "a": {
+    "text": "當一分鐘搖晃晃的果凍",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "當一分鐘彈跳的皮球",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-38",
+   "cat": "silly",
+   "a": {
+    "text": "打嗝聲像喇叭",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "打噴嚏聲像打鼓",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-1",
+   "cat": "sports",
+   "a": {
+    "text": "踢進致勝的一球",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "擋下致勝的一球",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "sports-2",
+   "cat": "sports",
+   "a": {
+    "text": "當有名的足球員",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "當有名的體操選手",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-3",
+   "cat": "sports",
+   "a": {
+    "text": "贏得賽跑冠軍",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "贏得游泳冠軍",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-4",
+   "cat": "sports",
+   "a": {
+    "text": "在月球上打籃球",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "在水裡打網球",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-5",
+   "cat": "sports",
+   "a": {
+    "text": "學溜滑板",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "學溜直排輪",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-6",
+   "cat": "sports",
+   "a": {
+    "text": "騎馬比賽",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "騎腳踏車比賽",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-7",
+   "cat": "sports",
+   "a": {
+    "text": "和朋友同一隊",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "當小小孩球隊的教練",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-8",
+   "cat": "sports",
+   "a": {
+    "text": "爬攀岩牆",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "游泳橫渡湖泊",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-9",
+   "cat": "sports",
+   "a": {
+    "text": "玩一整天桌遊",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "玩一整天球",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-10",
+   "cat": "sports",
+   "a": {
+    "text": "當西洋棋冠軍",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "當桌球冠軍",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-11",
+   "cat": "sports",
+   "a": {
+    "text": "去溜冰",
+    "tags": [
+     "fast",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "去滑雪",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-12",
+   "cat": "sports",
+   "a": {
+    "text": "完美地側翻",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "倒立整整一分鐘",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-13",
+   "cat": "sports",
+   "a": {
+    "text": "贏得一面獎牌",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "贏得一座獎盃",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-14",
+   "cat": "sports",
+   "a": {
+    "text": "在城堡裡玩捉迷藏",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "在巨大迷宮裡玩鬼抓人",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-15",
+   "cat": "sports",
+   "a": {
+    "text": "很會跳舞",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "很會武術",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-16",
+   "cat": "sports",
+   "a": {
+    "text": "在滿場球迷的體育館比賽",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "和朋友在安靜的公園玩",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-17",
+   "cat": "sports",
+   "a": {
+    "text": "把球踢得像足球場一樣遠",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "把球丟得像高塔一樣高",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-18",
+   "cat": "sports",
+   "a": {
+    "text": "學衝浪",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "學駕帆船",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-19",
+   "cat": "sports",
+   "a": {
+    "text": "家裡院子有游泳池",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "家裡院子有足球場",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-20",
+   "cat": "sports",
+   "a": {
+    "text": "開卡丁車比賽",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "駕帆船比賽",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-21",
+   "cat": "sports",
+   "a": {
+    "text": "當裁判",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "當隊長",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-22",
+   "cat": "sports",
+   "a": {
+    "text": "和山羊一起做瑜伽",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "和狗一起慢跑",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "sports-23",
+   "cat": "sports",
+   "a": {
+    "text": "玩一種還沒人發明的運動",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "成為一種古老運動的高手",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-24",
+   "cat": "sports",
+   "a": {
+    "text": "大比分贏球",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "只贏一分",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-25",
+   "cat": "sports",
+   "a": {
+    "text": "和機器人同一隊",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "和動物同一隊",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-26",
+   "cat": "sports",
+   "a": {
+    "text": "有一塊會飛的滑板",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "有一台能在水上騎的腳踏車",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-27",
+   "cat": "sports",
+   "a": {
+    "text": "在超大彈跳床上跳",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "從超大滑水道滑下來",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-28",
+   "cat": "sports",
+   "a": {
+    "text": "在雪地做運動",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "在海灘做運動",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-29",
+   "cat": "sports",
+   "a": {
+    "text": "學拋接雜耍",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "學溜溜球",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-30",
+   "cat": "sports",
+   "a": {
+    "text": "在決賽踢罰球",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "在決賽當守門員",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-31",
+   "cat": "sports",
+   "a": {
+    "text": "在雨中運動",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "在陽光下運動",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-32",
+   "cat": "sports",
+   "a": {
+    "text": "跑一場馬拉松",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "游一點五公里",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-33",
+   "cat": "sports",
+   "a": {
+    "text": "贏得接球遊戲",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "贏得拔河比賽",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-34",
+   "cat": "sports",
+   "a": {
+    "text": "爬上公園裡最高的樹",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "找到公園裡最好的藏身處",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-35",
+   "cat": "sports",
+   "a": {
+    "text": "玩每個人都會贏的運動",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "玩努力超越自己紀錄的運動",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-36",
+   "cat": "sports",
+   "a": {
+    "text": "幫你的隊伍加油",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "被你的隊伍加油",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-1",
+   "cat": "space",
+   "a": {
+    "text": "在月球上散步",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "在最深的海裡游泳",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-2",
+   "cat": "space",
+   "a": {
+    "text": "看到流星",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "看到鯨魚跳出海面",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-3",
+   "cat": "space",
+   "a": {
+    "text": "住在火星上",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "住在海底",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-4",
+   "cat": "space",
+   "a": {
+    "text": "去看土星環",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "去看木星的大紅斑",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-5",
+   "cat": "space",
+   "a": {
+    "text": "種一片森林",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "淨灘",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "space-6",
+   "cat": "space",
+   "a": {
+    "text": "當太空人",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "當海洋生物學家",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-7",
+   "cat": "space",
+   "a": {
+    "text": "在山上看日出",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "在海邊看日落",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-8",
+   "cat": "space",
+   "a": {
+    "text": "每天都看到彩虹",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "每天都看到雪",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-9",
+   "cat": "space",
+   "a": {
+    "text": "發現一顆新行星",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "發現一顆新恆星",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-10",
+   "cat": "space",
+   "a": {
+    "text": "在太空中飄浮",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "在溫暖的海裡漂浮",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-11",
+   "cat": "space",
+   "a": {
+    "text": "在雨林裡過一夜",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "在沙漠裡過一夜",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-12",
+   "cat": "space",
+   "a": {
+    "text": "幫一顆星星取名字",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "幫一種新的花取名字",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-13",
+   "cat": "space",
+   "a": {
+    "text": "住在永遠是夏天的地方",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "住在永遠是冬天的地方",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-14",
+   "cat": "space",
+   "a": {
+    "text": "遇見友善的外星人",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "找到新恐龍的化石",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-15",
+   "cat": "space",
+   "a": {
+    "text": "有一支什麼都看得到的望遠鏡",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一艘哪裡都去得了的潛水艇",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-16",
+   "cat": "space",
+   "a": {
+    "text": "從溫暖的窗邊看雷雨",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "從溫暖的小屋看下雪",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-17",
+   "cat": "space",
+   "a": {
+    "text": "騎在彗星上",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "在月球上蹦蹦跳",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-18",
+   "cat": "space",
+   "a": {
+    "text": "和機器人一起探險火山",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "和雪橇犬一起探險冰河",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-19",
+   "cat": "space",
+   "a": {
+    "text": "照顧太空船上的花園",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "照顧海底的農場",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-20",
+   "cat": "space",
+   "a": {
+    "text": "永遠聽得到海浪聲",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "永遠聽得到鳥叫聲",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-21",
+   "cat": "space",
+   "a": {
+    "text": "數完森林裡所有的樹",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "數完海灘上所有的浪",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-22",
+   "cat": "space",
+   "a": {
+    "text": "當一天雲朵",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "當一天雨滴",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-23",
+   "cat": "space",
+   "a": {
+    "text": "種出最高的向日葵",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "種出最大的西瓜",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "space-24",
+   "cat": "space",
+   "a": {
+    "text": "有一扇看得到太空的窗",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一扇看得到大海的窗",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-25",
+   "cat": "space",
+   "a": {
+    "text": "找到有發光蟲的山洞",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "找到有發光海浪的海灘",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-26",
+   "cat": "space",
+   "a": {
+    "text": "拯救一片珊瑚礁",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "拯救一片雨林",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-27",
+   "cat": "space",
+   "a": {
+    "text": "第一個踏上新星球",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "第一個遇見新動物",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-28",
+   "cat": "space",
+   "a": {
+    "text": "在太空站住一年",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "在研究船上住一年",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-29",
+   "cat": "space",
+   "a": {
+    "text": "每晚都去看星星",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "每天都去潮間帶探險",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-30",
+   "cat": "space",
+   "a": {
+    "text": "把一顆小星星捧在手心",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "把一道彩虹握在手裡",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-31",
+   "cat": "space",
+   "a": {
+    "text": "去地球上最熱的地方",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "去地球上最冷的地方",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-32",
+   "cat": "space",
+   "a": {
+    "text": "看到日全食",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "看到流星雨",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-33",
+   "cat": "space",
+   "a": {
+    "text": "有一座滿是蝴蝶的花園",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有一座滿是小鳥的花園",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-34",
+   "cat": "space",
+   "a": {
+    "text": "住在飄浮的島上",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "住在雲上面的高山",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-35",
+   "cat": "space",
+   "a": {
+    "text": "記住每顆星星的名字",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "記住每種鳥的名字",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-36",
+   "cat": "space",
+   "a": {
+    "text": "每有一個朋友就種一棵樹",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "每看到一隻鳥就做一個鳥屋",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "space-37",
+   "cat": "space",
+   "a": {
+    "text": "弄清楚黑洞裡面有什麼",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "弄清楚海底住著什麼",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-1",
+   "cat": "future",
+   "a": {
+    "text": "有一個機器人好朋友",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "有一個恐龍好朋友",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-2",
+   "cat": "future",
+   "a": {
+    "text": "搭會飛的車",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "搭會自己開的車",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-3",
+   "cat": "future",
+   "a": {
+    "text": "住在會自己打掃的房子",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "住在能搬到任何地方的房子",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-4",
+   "cat": "future",
+   "a": {
+    "text": "發明一種新玩具",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "發明一種新食物",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "future-5",
+   "cat": "future",
+   "a": {
+    "text": "有一支能瞬間移動的手機",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "有一副能翻譯任何語言的眼鏡",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "future-6",
+   "cat": "future",
+   "a": {
+    "text": "當發明家",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "當科學家",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-7",
+   "cat": "future",
+   "a": {
+    "text": "住在海底城市",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "住在雲端城市",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-8",
+   "cat": "future",
+   "a": {
+    "text": "有一個幫你做家事的機器人",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有一個陪你玩遊戲的機器人",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-9",
+   "cat": "future",
+   "a": {
+    "text": "看見一百年後的未來",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "看見一百年前的過去",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-10",
+   "cat": "future",
+   "a": {
+    "text": "造一台時光機",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "造一艘火箭",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-11",
+   "cat": "future",
+   "a": {
+    "text": "設計一座新的遊樂園",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "設計一座新的城市",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-12",
+   "cat": "future",
+   "a": {
+    "text": "有一雙能讓你飛的鞋子",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "有一件能讓你隱形的外套",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-13",
+   "cat": "future",
+   "a": {
+    "text": "發明讓大家變善良的機器",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "發明讓大家哈哈笑的機器",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-14",
+   "cat": "future",
+   "a": {
+    "text": "和無所不知的電腦聊天",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "和無所不知的動物聊天",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-15",
+   "cat": "future",
+   "a": {
+    "text": "住在太空站",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "住在智慧樹屋",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-16",
+   "cat": "future",
+   "a": {
+    "text": "有一台做玩具的3D列印機",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一台做食物的3D列印機",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-17",
+   "cat": "future",
+   "a": {
+    "text": "設計一款電玩遊戲",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "設計一款桌遊",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-18",
+   "cat": "future",
+   "a": {
+    "text": "養一隻全像投影寵物",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "養一隻機器人寵物",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-19",
+   "cat": "future",
+   "a": {
+    "text": "用新發明清理海洋",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "用新發明種出森林",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-20",
+   "cat": "future",
+   "a": {
+    "text": "有一台鞋子造型的車",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "有一台鯨魚造型的公車",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-21",
+   "cat": "future",
+   "a": {
+    "text": "親眼看到人類住在火星",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "親眼看到沒有垃圾的城市",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-22",
+   "cat": "future",
+   "a": {
+    "text": "有一張讓夢想成真的床",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "有一面照出未來的鏡子",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-23",
+   "cat": "future",
+   "a": {
+    "text": "做一個會畫畫的機器人",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "做一個會跳舞的機器人",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-24",
+   "cat": "future",
+   "a": {
+    "text": "用笑聲產生能源",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "用音樂產生能源",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-25",
+   "cat": "future",
+   "a": {
+    "text": "當有名的設計師",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "當有名的工程師",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-26",
+   "cat": "future",
+   "a": {
+    "text": "有一個噴射背包",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一塊懸浮滑板",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-27",
+   "cat": "future",
+   "a": {
+    "text": "有一間書會念給你聽的圖書館",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一間能走進故事裡的圖書館",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-28",
+   "cat": "future",
+   "a": {
+    "text": "發明一種新顏色",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "發明一種新樂器",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-29",
+   "cat": "future",
+   "a": {
+    "text": "有一個機器人廚師",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "有一個機器人園丁",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-30",
+   "cat": "future",
+   "a": {
+    "text": "設計會變色的衣服",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "設計在哪裡都很保暖的衣服",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-31",
+   "cat": "future",
+   "a": {
+    "text": "住在有溜滑梯通到廚房的房子",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "住在有滑索通到院子的房子",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "future-32",
+   "cat": "future",
+   "a": {
+    "text": "寄一封信給一千年後的人",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "收到一千年前的人寄來的信",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-33",
+   "cat": "future",
+   "a": {
+    "text": "有一台靠檸檬汁跑的車",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "有一台靠陽光跑的車",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-34",
+   "cat": "future",
+   "a": {
+    "text": "有一把能擋住所有雨的傘",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有一雙不會沾到泥巴的靴子",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-35",
+   "cat": "future",
+   "a": {
+    "text": "為動物蓋一個家",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "為機器人蓋一個家",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-36",
+   "cat": "future",
+   "a": {
+    "text": "發明一樣大家都會用的東西",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "發明一樣只有你會用的東西",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-37",
+   "cat": "future",
+   "a": {
+    "text": "把知識直接下載到腦袋裡",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "靠自己動手試試看來學習",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-38",
+   "cat": "future",
+   "a": {
+    "text": "有一台會送點心的無人機",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "有一台會幫你遛狗的無人機",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-1",
+   "cat": "family",
+   "a": {
+    "text": "和好朋友一起過夜",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "和表兄弟姊妹一起過夜",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-2",
+   "cat": "family",
+   "a": {
+    "text": "策劃一場驚喜派對",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "收到一場驚喜派對",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-3",
+   "cat": "family",
+   "a": {
+    "text": "有十個兄弟姊妹",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "當獨生子女",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-4",
+   "cat": "family",
+   "a": {
+    "text": "和爺爺奶奶去度假",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "和朋友去度假",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-5",
+   "cat": "family",
+   "a": {
+    "text": "每天交一個新朋友",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "永遠只有一個最好的朋友",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-6",
+   "cat": "family",
+   "a": {
+    "text": "全家一起看電影之夜",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "全家一起玩遊戲之夜",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-7",
+   "cat": "family",
+   "a": {
+    "text": "寫一封信給朋友",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "做一份禮物給朋友",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-8",
+   "cat": "family",
+   "a": {
+    "text": "有一個很會傾聽的朋友",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有一個超級好笑的朋友",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-9",
+   "cat": "family",
+   "a": {
+    "text": "幫朋友寫功課",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "幫朋友蓋祕密基地",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-10",
+   "cat": "family",
+   "a": {
+    "text": "和家人一起烤餅乾",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "和家人一起拼拼圖",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-11",
+   "cat": "family",
+   "a": {
+    "text": "有一個祕密握手暗號",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "有一套祕密暗語",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-12",
+   "cat": "family",
+   "a": {
+    "text": "和家人去聽音樂會",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "和家人去博物館",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-13",
+   "cat": "family",
+   "a": {
+    "text": "住在好朋友隔壁",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "住在爺爺奶奶隔壁",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-14",
+   "cat": "family",
+   "a": {
+    "text": "幫寵物辦一場派對",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "幫老師辦一場派對",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-15",
+   "cat": "family",
+   "a": {
+    "text": "和別人分享甜點",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "和別人分享玩具",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-16",
+   "cat": "family",
+   "a": {
+    "text": "當家裡最好笑的人",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "當家裡最善良的人",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-17",
+   "cat": "family",
+   "a": {
+    "text": "和所有朋友一起野餐",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "和一個朋友安靜地過一天",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-18",
+   "cat": "family",
+   "a": {
+    "text": "拍一支家庭影片",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "做一本家庭食譜",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-19",
+   "cat": "family",
+   "a": {
+    "text": "和爺爺奶奶玩桌遊",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "和表兄弟姊妹踢足球",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-20",
+   "cat": "family",
+   "a": {
+    "text": "有一個外國朋友",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "有一個外星朋友",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-21",
+   "cat": "family",
+   "a": {
+    "text": "規劃下一次家庭旅行",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "規劃下一次家庭聚餐",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-22",
+   "cat": "family",
+   "a": {
+    "text": "牆上掛一張超大全家福",
+    "tags": [
+     "social",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "牆上畫一棵家族樹",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-23",
+   "cat": "family",
+   "a": {
+    "text": "給出最棒的擁抱",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "給出最棒的擊掌",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-24",
+   "cat": "family",
+   "a": {
+    "text": "很會讓人開心起來",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "很會解決問題",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-25",
+   "cat": "family",
+   "a": {
+    "text": "和最喜歡的親戚過一天",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "和最喜歡的老師過一天",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-26",
+   "cat": "family",
+   "a": {
+    "text": "每晚都有豐盛的家庭晚餐",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "每週一次在床上吃早餐",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "family-27",
+   "cat": "family",
+   "a": {
+    "text": "和家人一起編一支舞",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "和家人一起寫一首歌",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-28",
+   "cat": "family",
+   "a": {
+    "text": "和朋友成立一個社團",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "和朋友組一個樂團",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-29",
+   "cat": "family",
+   "a": {
+    "text": "幫新同學融入大家",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "幫走失的寵物找到家",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-30",
+   "cat": "family",
+   "a": {
+    "text": "和朋友交換房子一天",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "和朋友交換家人一天",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-31",
+   "cat": "family",
+   "a": {
+    "text": "有一個喜歡同樣遊戲的朋友",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有一個會教你新遊戲的朋友",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-32",
+   "cat": "family",
+   "a": {
+    "text": "在海邊過生日",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "在雪地裡過生日",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-33",
+   "cat": "family",
+   "a": {
+    "text": "收到朋友寄來的信",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "朋友突然來找你玩",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-34",
+   "cat": "family",
+   "a": {
+    "text": "家裡養一隻寵物",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "家裡有一座小菜園",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-35",
+   "cat": "family",
+   "a": {
+    "text": "和兄弟姊妹蓋祕密基地",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "和爸爸媽媽堆雪人",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-36",
+   "cat": "family",
+   "a": {
+    "text": "和朋友一起做時空膠囊",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "和朋友一起做剪貼簿",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-37",
+   "cat": "family",
+   "a": {
+    "text": "每天對一個人說謝謝",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "每天讓一個人笑出來",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-38",
+   "cat": "family",
+   "a": {
+    "text": "當負責計畫好玩活動的人",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "當什麼活動都一起參加的人",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-1",
+   "cat": "deep",
+   "a": {
+    "text": "知道過去所有的事",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "知道一點點未來的事",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-2",
+   "cat": "deep",
+   "a": {
+    "text": "非常勇敢",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "非常善良",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-3",
+   "cat": "deep",
+   "a": {
+    "text": "非常聰明",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "非常有創意",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-4",
+   "cat": "deep",
+   "a": {
+    "text": "永遠說實話",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "永遠知道該說什麼才對",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-5",
+   "cat": "deep",
+   "a": {
+    "text": "有很多朋友",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "有一個非常要好的朋友",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-6",
+   "cat": "deep",
+   "a": {
+    "text": "變得很有名",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "默默無名但很快樂",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-7",
+   "cat": "deep",
+   "a": {
+    "text": "現在就實現一個願望",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "長大後實現三個願望",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-8",
+   "cat": "deep",
+   "a": {
+    "text": "永遠不會無聊",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "永遠不會難過",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-9",
+   "cat": "deep",
+   "a": {
+    "text": "記得每一個夢",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "自己選擇要做什麼夢",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-10",
+   "cat": "deep",
+   "a": {
+    "text": "在一件事上當第一名",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "很多事都做得不錯",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "deep-11",
+   "cat": "deep",
+   "a": {
+    "text": "知道怎麼化解任何爭吵",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "知道怎麼讓任何人開心",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-12",
+   "cat": "deep",
+   "a": {
+    "text": "有更多時間玩",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有更多時間學習",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-13",
+   "cat": "deep",
+   "a": {
+    "text": "住在大城市",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "住在鄉下",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-14",
+   "cat": "deep",
+   "a": {
+    "text": "讀別人的心一天",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "讓別人讀你的心一天",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-15",
+   "cat": "deep",
+   "a": {
+    "text": "當一個很棒的領袖",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "當一個很棒的幫手",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-16",
+   "cat": "deep",
+   "a": {
+    "text": "做出一個大大的改變",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "做出很多小小的改變",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-17",
+   "cat": "deep",
+   "a": {
+    "text": "找到失落的寶藏",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "找到失聯的朋友",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-18",
+   "cat": "deep",
+   "a": {
+    "text": "送禮物",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "收禮物",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-19",
+   "cat": "deep",
+   "a": {
+    "text": "自己得獎",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "幫朋友得獎",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-20",
+   "cat": "deep",
+   "a": {
+    "text": "從錯誤中學習",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "永遠不犯錯",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-21",
+   "cat": "deep",
+   "a": {
+    "text": "很會傾聽",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "很會解釋",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-22",
+   "cat": "deep",
+   "a": {
+    "text": "永遠提早到",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "對時間總是很放鬆",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-23",
+   "cat": "deep",
+   "a": {
+    "text": "會說每一種語言",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "會彈每一種樂器",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-24",
+   "cat": "deep",
+   "a": {
+    "text": "度過安靜的早晨",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "度過忙碌的早晨",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-25",
+   "cat": "deep",
+   "a": {
+    "text": "每件事都先計畫好",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "走一步算一步",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-26",
+   "cat": "deep",
+   "a": {
+    "text": "來一次大冒險",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "每週來一些小冒險",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "deep-27",
+   "cat": "deep",
+   "a": {
+    "text": "把房間保持整齊",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "讓房間舒服但有點亂",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-28",
+   "cat": "deep",
+   "a": {
+    "text": "幫助地球",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "幫助住在附近的人",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-29",
+   "cat": "deep",
+   "a": {
+    "text": "當一個很會說故事的人",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "當一個很會解決問題的人",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "deep-30",
+   "cat": "deep",
+   "a": {
+    "text": "一整天不看螢幕",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "一整天不吃糖果",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "deep-31",
+   "cat": "deep",
+   "a": {
+    "text": "當勇於嘗試新事物的人",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "當做事有始有終的人",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-32",
+   "cat": "deep",
+   "a": {
+    "text": "先說對不起",
+    "tags": [
+     "kind",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "先說謝謝",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-33",
+   "cat": "deep",
+   "a": {
+    "text": "有超強的記憶力",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "有超強的想像力",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-34",
+   "cat": "deep",
+   "a": {
+    "text": "讓世界多一點色彩",
+    "tags": [
+     "make",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "讓世界安靜一點",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-35",
+   "cat": "deep",
+   "a": {
+    "text": "能暫停快樂的時刻",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "能重播快樂的時刻",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-36",
+   "cat": "deep",
+   "a": {
+    "text": "把祕密才藝分享給大家",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "把祕密才藝留給自己",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-37",
+   "cat": "deep",
+   "a": {
+    "text": "問很多問題",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "找到很多答案",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-38",
+   "cat": "deep",
+   "a": {
+    "text": "當小孩久一點",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "長大快一點",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  }
+ ]
+}
