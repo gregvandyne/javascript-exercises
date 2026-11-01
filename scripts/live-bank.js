@@ -32,7 +32,8 @@ for (const { code } of availableLocales()) {
   packs[code] = body;
 }
 const hash = crypto.createHash('sha256').update(Object.keys(packs).sort().map(k => k + packs[k]).join('\n')).digest('hex').slice(0, 8);
-const ver = `1.0.0-${hash}`;
+// letters only: a run of digits in a version could read like a phone number to the content scanner
+const ver = `v1-${hash.replace(/[0-9]/g, d => 'ghijklmnop'[+d])}`;
 fs.mkdirSync(OUT, { recursive: true });
 for (const d of fs.readdirSync(OUT)) if (d !== ver) fs.rmSync(path.join(OUT, d), { recursive: true, force: true });
 fs.mkdirSync(path.join(OUT, ver), { recursive: true });

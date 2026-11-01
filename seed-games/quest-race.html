@@ -172,7 +172,7 @@
    pack's setup card (subject, level, how many questions; a board's subjects) and calls done(items, choice), or
    done(null) when the pack can't load (the game then plays its own built-in questions). The choice is remembered,
    and questions already played come last until every one has been seen. */
-/* live-bank:begin */var BANK_VER = '1.0.0-f0488793', BANK_SRI = {"en":"sha384-jnde/y/3isSFp3ZBEz1jI4lUCqibFk8Hynkttmy348dzAmYYI0vZzJG0xC72fzeO","en-GB":"sha384-T6t3+Bk0LLjVb4ugg5ILi46AW1ZXHKZtEHz6BqvcgBxZwvsg7u1PoqEOIbw2+tvT","pt":"sha384-ODz/eBNh+GZoWAUKWdv/T99iPpSk/zut6vBA72Q/URbqI9+uVQVGhVwRDHTYCEh7","fr":"sha384-kKSyw1Okqe4zWsudl0jdF/G4jlhWITM4uSDY5jeM4VeOl+bHkPqz8ELt+imGovzP","es":"sha384-Z8bEzHdpK6fmFVqpbN+4DCFyego5zv6HhPl1K6Py/e618N/bGwY1X26tarjs0nmT","de":"sha384-+NPTAVbY14TQyAjqY5kJe6hDjYSWi1TCebvO0wgAjHdxRFI+kQTNAO7sC51HD18x","he":"sha384-DnFbG8QJQ3EVEJmRO5omuHg0vVlT5g8J9s90mEHKkjzcmbnhW2r/jHfTbHh/sIgT","ja":"sha384-329VW9plMwnOe/61O2aRIbao5c41UFRv27X+YFs5kDbwT7O9Fidg7oZr7JArscjL","ar":"sha384-zjXC3BZz0CzT4EeZRszuxktAoL1BKgYCzfML7rhveyJT/IZXpY3kPZyJExu0lsc0","ru":"sha384-K8atbd6t97NogWC1OQ83EMu0GYMLcR+xtb4+TsTYYYvrISQREfWSZgW1hzkUjXu8","it":"sha384-YXC+fBEoKtxZIwA0veUlcntZxzdRZJk/HKyaqNt/Oy+dzlquFc6RR5JWqsBllApo","zh-Hant":"sha384-7925SSoWNsFKgFiVuWjl/sbUVldRXmXyG8tDF2/BnkTSbdQRKuVVIvWzQGY1mNri","nl":"sha384-vbjVuhrH6mNeZafVg+bWqHhI4m51zC3+LBOAWvUcU4bhaMKDnUcw7pqkDzGhvNv+"};/* live-bank:end */
+/* live-bank:begin */var BANK_VER = 'v1-fgkoonpj', BANK_SRI = {"en":"sha384-jnde/y/3isSFp3ZBEz1jI4lUCqibFk8Hynkttmy348dzAmYYI0vZzJG0xC72fzeO","en-GB":"sha384-T6t3+Bk0LLjVb4ugg5ILi46AW1ZXHKZtEHz6BqvcgBxZwvsg7u1PoqEOIbw2+tvT","pt":"sha384-ODz/eBNh+GZoWAUKWdv/T99iPpSk/zut6vBA72Q/URbqI9+uVQVGhVwRDHTYCEh7","fr":"sha384-kKSyw1Okqe4zWsudl0jdF/G4jlhWITM4uSDY5jeM4VeOl+bHkPqz8ELt+imGovzP","es":"sha384-Z8bEzHdpK6fmFVqpbN+4DCFyego5zv6HhPl1K6Py/e618N/bGwY1X26tarjs0nmT","de":"sha384-+NPTAVbY14TQyAjqY5kJe6hDjYSWi1TCebvO0wgAjHdxRFI+kQTNAO7sC51HD18x","he":"sha384-DnFbG8QJQ3EVEJmRO5omuHg0vVlT5g8J9s90mEHKkjzcmbnhW2r/jHfTbHh/sIgT","ja":"sha384-329VW9plMwnOe/61O2aRIbao5c41UFRv27X+YFs5kDbwT7O9Fidg7oZr7JArscjL","ar":"sha384-zjXC3BZz0CzT4EeZRszuxktAoL1BKgYCzfML7rhveyJT/IZXpY3kPZyJExu0lsc0","ru":"sha384-K8atbd6t97NogWC1OQ83EMu0GYMLcR+xtb4+TsTYYYvrISQREfWSZgW1hzkUjXu8","it":"sha384-YXC+fBEoKtxZIwA0veUlcntZxzdRZJk/HKyaqNt/Oy+dzlquFc6RR5JWqsBllApo","zh-Hant":"sha384-7925SSoWNsFKgFiVuWjl/sbUVldRXmXyG8tDF2/BnkTSbdQRKuVVIvWzQGY1mNri","nl":"sha384-vbjVuhrH6mNeZafVg+bWqHhI4m51zC3+LBOAWvUcU4bhaMKDnUcw7pqkDzGhvNv+"};/* live-bank:end */
 window.SoloBank = (function () {
   var pack = null, tried = false, waiting = [];
   var store = {
@@ -316,7 +316,7 @@ window.SoloBank = (function () {
   // Runners never stand on each other: runners close together on the path (a pack) spread across its width, at most
   // FORM.cols side by side, and a bigger pack runs in rows one behind the other. Slots go by seat, so nobody swaps
   // places in a pack; each runner eases into its slot (r.lat across, r.back behind its real spot).
-  var FORM = { cols: 4, gap: 1.3, row: 1.7, near: 1.8 };
+  var FORM = { cols: 3, gap: 1.75, row: 2.1, near: 2.2 };
   function formation(dt) {
     var list = Array.from(R.values()).sort(function (a, b) { return a.shown - b.shown; }), packs = [], cur = [];
     list.forEach(function (r) {

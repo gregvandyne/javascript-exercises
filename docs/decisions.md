@@ -1875,3 +1875,23 @@ narrow column on tablets.
 (used to fix a member's published game for them). Off unless `ADMIN_API_TOKEN` (32+ characters) is set; bearer token,
 rate-limited, audited as the admin account; new versions pass the usual safety scan, and a version waiting for review
 is approved as the admin. Remove the token when the fix is done.
+
+## The live question bank (November 2026)
+
+Quest Race, Question Battle and Brain Board no longer lean on one static list. `server/live/bank/` holds a bank by
+subject (Math, Science, Geography, Reading & words, History, General knowledge) and level (ages 6–7, 8–9, 10–11, 12–14):
+25 hand-written questions per subject and level in English (`server/live/bank/en/<subject>.json`, rows of
+question, right answer, 1-3 wrong answers; en-GB gets British spellings at load), and maths generated fresh at every
+level (adding to 10 at 6–7; percentages, negatives, squares and simple algebra at 12–14). One engine
+(`server/live/bank/engine.js`) serves both sides:
+- **Teachers** pick "Question bank" on /live, then a subject (or "A bit of everything"), a level and how many; Brain
+  Board takes 2–6 ticked subjects and builds columns easy to hard (the row below the level first, the level above
+  last). The choice is remembered with the host's live preferences. Own sets, school sets and lessons stay as before.
+- **Players alone** (solo practice in each game) get a setup card from the same engine: subject, level, how many (a
+  board's subjects for Brain Board), remembered with BRB.storage; questions already played come last until the pool is
+  used up. The frame has no network, so the bank travels as reviewed language packs,
+  `public/vendor/data/live-bank/<version>/<lang>.js` (the "Game data packs" pattern), built by `scripts/live-bank.js`,
+  which also writes each pack's sha384 into the three games. Run it after any bank or engine change, then seed.
+- **Other languages** have every interface word and the generated maths, and the 20 translated science and geography
+  starter questions until their own `server/live/bank/<lang>/` files are written: the pickers offer only the subjects
+  a language has. Translating the English bank is a mechanical follow-up (same files, same shape).

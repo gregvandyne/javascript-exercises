@@ -1,6 +1,6 @@
 // Oomba Live pages (routes/live.js, views/live.js): one /join for live codes and class codes, nothing sold on player
 // pages, no profile links in the host's roster, the landing for hosts only, traffic never counted, the flag.
-import { reset, call, open, config, teacher, mum, kid, mia, LS } from './_live.js';
+import { reset, call, open, config, teacher, mum, kid, mia, LS, publish, liveHtml, official } from './_live.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const traffic = await import('../../server/services/traffic.js');
@@ -46,7 +46,8 @@ test('/live: hosts only (others go to /join); the landing posts to /api/live/ses
   assert.equal((await call('/live', { user: mia })).headers.get('location'), '/join');
   const page = await call('/live', { user: teacher });
   assert.equal(page.status, 200); assert.match(page.text, /data-api="\/api\/live\/sessions"/); assert.match(page.text, /value="mode:quest-race"/);
-  assert.match(page.text, /value="starter:math-8"/);
+  assert.match(page.text, /<option value="bank" selected>/, "the question bank is the default");
+  assert.match(page.text, /name="bankSubject"/); assert.match(page.text, /name="bankLevel"/);
   const r = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:quest-race', set: 'starter:science', audience: 'open', maxPlayers: '20' } });
   assert.equal(r.status, 200, r.text); assert.match(r.json.redirect, /^\/live\/host\//);
   const again = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:battle', set: 'starter:geo', audience: 'open' } });
@@ -112,4 +113,21 @@ test('question sets: hosts make, list and archive them; rude or personal text is
   const s = LS.createSession(teacher, { mode: 'battle', setId: ok.json.id, audience: 'open' });
   assert.ok(s.ok); assert.equal(s.session.items[0].q, 'Half of 8?');
   assert.equal((await call(`/api/live/sets/${ok.json.id}/archive`, { method: 'POST', user: teacher })).status, 200);
+});
+
+test('/live: the question bank by subject and level; the choice is remembered for next time', async () => {
+  publish(official, liveHtml("live.on('question', () => {});", { quiz: true }), { source: 'seed', slug: 'brain-board', title: 'Brain Board' });
+  const r = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:battle', set: 'bank', bankSubject: 'history', bankLevel: 'a12', bankCount: '15', audience: 'open', replace: true } });
+  assert.equal(r.status, 200, r.text);
+  const s = LS.get(r.json.sid);
+  assert.equal(s.items.length, 15);
+  assert.ok(s.items.every(it => it.cat === 'History'));
+  const page = (await call('/live', { user: teacher })).text;
+  assert.match(page, /<option value="history" selected>/);
+  assert.match(page, /<option value="a12" selected>/);
+  assert.match(page, /<option value="15" selected>/);
+  // a board takes the ticked subjects
+  const b = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:board', set: 'bank', bankBoard: ['math', 'words', 'general'], bankLevel: 'a6', audience: 'open', replace: true } });
+  assert.equal(b.status, 200, b.text);
+  assert.deepEqual([...new Set(LS.get(b.json.sid).items.map(it => it.cat))], ['Math', 'Reading & words', 'General knowledge']);
 });
