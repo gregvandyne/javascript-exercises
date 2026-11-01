@@ -8,7 +8,7 @@
 // automatic for a seat whose support says so), and Play again (a private token moves this page to the new game).
 // The seat's own support (me / wel.me.acc) stays on this page: it is never passed into the game frame.
 import { api, toast, t } from '/js/app.js';
-import { connect, gameFrame, can3d, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, paintTeam, teamsOf, scoresOf, speak, voiceFor, flash } from '/js/live-common.js';
+import { connect, gameFrame, can3d, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, paintTeam, teamsOf, scoresOf, readAloud, stopReading, voiceFor, aiOn, flash } from '/js/live-common.js';
 
 const D = readJson('lv-play-data');
 const $ = id => document.getElementById(id);
@@ -73,7 +73,7 @@ function onMessage(m) {
     case 'bn': bonusToast(m); if (m.n && m.n !== mySeat) return; break;
     case 'eyes': setEyes(m.on); return;
     case 'say': flash($('lv-say-banner'), (D.say || [])[m.m] || '', 6000); return;
-    case 'opt': opt = { ...opt, ...m }; applyOpt(); break;
+    case 'opt': opt = { ...opt, ...m }; applyOpt(); if (m.voices === 'device') stopReading(); showRead(); break;
     case 'me': if (m.acc) setAcc(m.acc); return;
     case 'again': return again(m);
     case 'ros': players.clear(); for (const P of m.players || []) players.set(P[0], playerOf(P)); { const mine = players.get(mySeat); if (mine) $('lv-me-name').textContent = nm(mine.name); } break;
@@ -343,16 +343,22 @@ async function setAcc(a, first = false) {
 }
 // ---- read aloud: a button for every player in quiz modes (when this browser has a voice for the set's language) ----
 const readBtn = $('lv-read');
+// AI voices (D.tts.langs, when on and the teacher left Voices on AI): the server reads the open question by its number,
+// with this page's seat token; anything else (off, refused, slow) is read by this device's own voice.
+const readLang = () => lang || document.documentElement.lang;
+const aiHere = () => !!(D.tts && opt.voices !== 'device' && aiOn(D.tts.langs, readLang()));
 function showRead() {
   if (!readBtn) return;
   const quiz = wel && wel.mode && wel.mode !== 'game';
-  const can = !!(window.speechSynthesis && voiceFor(lang || document.documentElement.lang));
+  const can = aiHere() || !!(window.speechSynthesis && voiceFor(readLang()));
   readBtn.hidden = !(quiz && can && question && phase === 'playing');
+  const note = $('lv-read-ai'); if (note) note.hidden = readBtn.hidden || !aiHere();
 }
 function readQuestion() {
   if (!question) return;
   const L2 = i => String.fromCharCode(65 + i);
-  speak(`${question.q}. ${question.choices.map((c, i) => `${L2(i)}: ${c}`).join('. ')}`, lang || document.documentElement.lang);
+  const text = `${question.q}. ${question.choices.map((c, i) => `${L2(i)}: ${c}`).join('. ')}`;
+  readAloud({ text, lang: readLang(), ai: aiHere() ? { langs: D.tts.langs, body: { ctx: 'live', sid, tok, i: question.i } } : null });
 }
 readBtn && readBtn.addEventListener('click', () => { tapped = true; readQuestion(); readBtn.textContent = `🔊 ${TX.readAgain}`; });
 // browsers speak only after a gesture: the first tap anywhere unlocks the automatic reading

@@ -25,7 +25,7 @@ scripts (`public/js/live-*.js`), the SDK transport (`public/sdk/brb-sdk.js`) and
 
 | Route | Who | Body / query | Answer |
 |---|---|---|---|
-| `POST /api/live/sessions` (more) | hosts | as above, plus `settings: { secs, count, shuffleQ, shuffleA, points, board, late, names, sound, emotes }` (or those as flat form fields; checkboxes post a hidden `0` first), `teams: { n: 2..6, scoring: 'avg'|'sum', presets? }` (or form `teams` = `0`/`2`..`6` and `scoring`) · or `{ again: <ended sid>, shuffle? }` (play again with the lingering players) · or `{ fromRun: <run id>, only: 'missed' }` · or `{ againRun: <run id> }` (a saved class run's teams as the plan) | `{ sid, redirect, moved? }` · 410 `againGone` · 400 `noMissed`/`teamsOff`/`noClass` · 404 `notFound`. |
+| `POST /api/live/sessions` (more) | hosts | as above, plus `settings: { secs, count, shuffleQ, shuffleA, points, board, late, names, sound, emotes, voices }` (or those as flat form fields; checkboxes post a hidden `0` first), `teams: { n: 2..6, scoring: 'avg'|'sum', presets? }` (or form `teams` = `0`/`2`..`6` and `scoring`) · or `{ again: <ended sid>, shuffle? }` (play again with the lingering players) · or `{ fromRun: <run id>, only: 'missed' }` · or `{ againRun: <run id> }` (a saved class run's teams as the plan) | `{ sid, redirect, moved? }` · 410 `againGone` · 400 `noMissed`/`teamsOff`/`noClass` · 404 `notFound`. |
 | `GET /live/host/:sid/dash` | that host (signed in; others 404, signed out → sign-in) | | The teacher's dashboard (bare, `no-store`). The address holds no token. |
 | `GET/POST/DELETE /api/live/prefs` | hosts | POST `{ settings, teams: { on, n, scoring } }` | `{ settings, teams }` or `{}` (remembered defaults; also saved at every start). |
 | `GET/PUT/DELETE /api/live/classes/:classId/teams` | the class's teachers (404 otherwise, or `LIVE_TEAMS=0`) | PUT `{ n: 2..6, presets: [p], scoring, plan: [[userId, k]] }` | GET `{ classId, students: [{ id, name }], saved: { n, presets, scoring, plan, savedAt } | null }`; PUT `{ ok, toast }`. |
@@ -67,7 +67,7 @@ removed, `4404` no session/seat, `4409` replaced by another device, `4413` messa
 | `h` (more) | `eyes {on}`, `say {m: 0..9}`, `time {s: 10|20|30}`, `bonus {n: seat | k: 1..6, r: 0..4}`, `rename {n}`, `acc {n, x: 100|150|200, ra: 0|1, sv: 0|1, save?: 1}` | host | 5 (say 1 per 3 s, bonus 1/s, eyes 1/s) | `SAY = twoMinutes oneMinute lastQuestion lastRound eyesOnMe greatTeamwork greatEffort beKind getReady almostDone` (`live.say.*`). `BONUS_REASONS = teamwork kindness effort helping listening` (+100). `time`: quiz modes, while playing. `rename`: a seat shown by nickname. `acc`: support (`save` only in class rooms with `LIVE_SAVE_SUPPORT`). |
 | `tm` | `a: on {n?} off count {n} preset {k, p: 0..7} scoring {v: 'avg'|'sum'} choose {v: bool} lock unlock balance shuffle move {s: seat, k: 0..6} last` | host | 10 | Lobby only: on, off, count, preset, scoring, choose, shuffle, last (class rooms). Balance: lobby or `between`. Move: any time (`k: 0` lobby only). Lock: any time. Ignored with `LIVE_TEAMS=0`. Answer: `tms` to everyone (and `tml` to the hosts for `last`). |
 | `pt` | `k: 1..6` | player | 1 | Pick a team: lobby only, the host allows it, not locked, the team under ceil(players / n) + 1. |
-| `cf` | `d: { secs, count, shuffleQ, shuffleA, points, board, late, names, sound, emotes }` (a subset) | host | 5 | Unknown keys and values dropped; `secs count shuffleQ shuffleA points` only in the lobby; `names: 'names'` only in a teacher's own class room. `late` is the room's `autoLock` (after start: off locks now, on unlocks). |
+| `cf` | `d: { secs, count, shuffleQ, shuffleA, points, board, late, names, sound, emotes, voices }` (a subset) | host | 5 | Unknown keys and values dropped; `secs count shuffleQ shuffleA points` only in the lobby; `names: 'names'` only in a teacher's own class room. `late` is the room's `autoLock` (after start: off locks now, on unlocks). |
 | `ev` (more) | player `to: 'team'`; host `tm: 1..6` | all | 10 | To the sender's own team (and the hosts) / to one team. Relayed with `tm`. The same vocabulary rules. |
 
 Everything else (unknown types, extra fields, out of range, host types from a player) is dropped silently.
@@ -97,14 +97,14 @@ Everything else (unknown types, extra fields, out of range, host types from a pl
 | `rp` | `n` | Host only: reports so far in this session. |
 | `res` | `id` | Host only: the session ended; results at `/live/results/<id>`. |
 | `bye` | `why` | `removed ended full locked replaced expired restart flood takenDown` (part 4: `cohostOff projectorBusy`); the socket closes. After a normal end the players' `bye ended` comes when the linger ends (up to 2 minutes; the end screen shows at `ph ended` as before). |
-| `wel` (more) | `teams` (the `tms` fields), `ts?` (rows), `settings` (players: `{ board, emotes, names }`; hosts: all, with `late`, `maxPlayers`, `locked`), `eyes`, `lang` (the set's language, for read aloud), `me.acc: { time, read, simple }` (player; PRIVATE) · host: `view`; the dashboard also `dp`, `sup`, `dq?` and no `frame` | `players` and `nameMode` are per view. |
+| `wel` (more) | `teams` (the `tms` fields), `ts?` (rows), `settings` (players: `{ board, emotes, names, voices }`; hosts: all, with `late`, `maxPlayers`, `locked`), `eyes`, `lang` (the set's language, for read aloud), `me.acc: { time, read, simple }` (player; PRIVATE) · host: `view`; the dashboard also `dp`, `sup`, `dq?` and no `frame` | `players` and `nameMode` are per view. |
 | `tms` | `on, n, teams: [[k, p, size]], m: [[seat, k]], scoring, choose, locked` | Every team setup or membership change (one message, never a `pu` per seat). |
 | `tml` | `ok, uneven?: [sizes] | null` | Hosts: the answer to `tm last` (`ok: false` = no saved teams). |
 | `ts` | `s: [[k, score, rank, sum, avg]], fin?: 1` | Team scores (score = the ranking kind; rank 0 = no members, or the leaderboard is off for players). Before `rv`, with every `lb`, after a bonus, and before `ph ended` (`fin`). |
 | `bn` | `n?` or `k?`, `r: 0..4`, `p: 100` | Bonus: a seat's goes to that seat and the hosts only; a team's to everyone. |
 | `eyes` | `on` | Everyone. Players cover the screen; frames see `ph paused` when it paused play. |
 | `say` | `m: 0..9` | Everyone: a fixed message, shown in each device's language. |
-| `opt` | `board, emotes, names` | Players: the public settings changed. |
+| `opt` | `board, emotes, names, voices` | Players: the public settings changed. `voices`: `'ai'` (default) or `'device'`, the teacher's choice for reading questions aloud (AI voices, docs/tts-design.md). |
 | `ros` | `players: [P], nameMode` | Everyone, per view: the names setting changed (replace the roster). |
 | `cf` | `d` (all settings) | Hosts: the settings changed. |
 | `lk` (more) | `locked` | Also when late join is switched after start. |
@@ -319,3 +319,14 @@ nameMode, mode, nicks[144 in the frame's language], view: '3d'|'2d', me, teamPre
 (`fallback: '2d'` when the game has `<meta name="oomba-live" content="2d">`). The frame never opens a socket: the
 page relays messages over a `MessagePort` (docs/sdk.md "Live messages"; `public/js/live-common.js`). The live-ready check (`classlive-check.js`): the pinned `live`
 pack (kit ≥ 1.1.0), `live.ready(`, a start/end handler or `live.phase`, a result report, no raw transport.
+
+## AI voices (read aloud)
+
+With AI voices on (docs/tts-design.md) and the teacher's `voices` setting `'ai'`, the player's **Read** (`#lv-read`,
+note `#lv-read-ai`) and the projector's **Read question** (`#lv-host-read`, while a question is open and the projector's
+Sound is on) call `POST /api/tts { ctx: 'live', sid, tok, i, lang }`: the seat token or the host/co-host token, and the
+number of the question open now (`q.i`). The server builds the text from the teacher's question and choices; any other
+`i` is refused (`404 notNow`), so a coming question can't be heard early. Any refusal means the device's own voice reads
+the text the page already shows. `#lv-play-data` and `#lv-host-data` carry `tts: { langs }` when AI voices are on.
+Lesson quiz steps use `{ ctx: 'lesson', clId, stepId, i }` (`.lv-qstep[data-tts]`).
+

@@ -11,7 +11,7 @@ const D = await import('../../server/services/classlive-dash.js');
 test.beforeEach(() => reset());
 
 test('defaults per room', () => {
-  assert.deepEqual(ST.DEFAULTS('class', 'accounts'), { secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed', board: 'all', late: true, names: 'names', sound: true, emotes: true });
+  assert.deepEqual(ST.DEFAULTS('class', 'accounts'), { secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed', board: 'all', late: true, names: 'names', sound: true, emotes: true, voices: 'ai' });
   const open = ST.DEFAULTS('open');
   assert.equal(open.board, 'top5'); assert.equal(open.late, false); assert.equal(open.names, 'nicknames');
   assert.equal(ST.DEFAULTS('family').late, true);
@@ -36,7 +36,7 @@ test('late join is the existing autoLock: before start it decides the lock at st
   assert.equal(s.settings.locked, true);
   assert.deepEqual(ST.apply(s, { late: false }), { changed: [], lock: null }, 'no change, nothing sent');
   assert.equal(ST.view(s.settings).late, false);
-  assert.deepEqual(ST.publicPart(s.settings), { board: 'top5', emotes: true, names: 'nicknames' });
+  assert.deepEqual(ST.publicPart(s.settings), { board: 'top5', emotes: true, names: 'nicknames', voices: 'ai' });
   const chosen = ST.initial({ maxPlayers: 30, locked: false, autoLock: false }, 'class', 'accounts', { late: false, board: 'off', bogus: 1 });
   assert.equal(chosen.autoLock, true); assert.equal(chosen.board, 'off'); assert.equal(chosen.bogus, undefined);
 });

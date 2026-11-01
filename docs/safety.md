@@ -404,6 +404,20 @@ docs/legal-review.md). Billing data and its timers are on `/privacy`.
     the child is in a class (school records are the school's). Only made accounts get these tools; a code-linked
     child's grown-up still only sees the extra-message counts and can unlink.
 
+### AI voices: what may be read aloud
+
+When AI voices are on (docs/tts-design.md; off by default), only text written by us, an official game's makers or a
+teacher is ever sent to the voice service (OpenAI), from our server:
+- **Games:** only official seed games get the play page's token (signed, 2 hours, bound to the player and game);
+  Builder games, kid-made or teacher-made, always use the device's voice, so a kid's own words are never sent.
+- **Oomba Live and lesson quizzes:** the page sends a question's **number**, never text; the server reads the teacher's
+  question and choices, and only for the question open now.
+- **Never:** chat, typed answers, names, or a child's voice. Backstops refuse rude words, emails, phone numbers, links,
+  link codes and the player's own name or username (quiz questions skip the phone and link-code checks, see
+  docs/decisions.md).
+- Kids are told the voices are made by AI (the 🔊 Voices sheet, the note under Read) and can choose the device's voice;
+  teachers choose per live game; parents read it on /parents and /privacy. Nothing is stored about who listened.
+
 ## 12. Live classroom (Oomba Live)
 
 Live class games (`server/services/classlive-*.js`, `server/routes/live.js`; protocol: docs/live-protocol.md;

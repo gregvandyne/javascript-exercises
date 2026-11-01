@@ -625,7 +625,8 @@
       // Chrome can garbage-collect a playing utterance and never fire onend: hold on to it until it is done.
       var done = function () { var k = liveUtterances.indexOf(u); if (k >= 0) liveUtterances.splice(k, 1); };
       liveUtterances.push(u);
-      u.onerror = done;
+      // A line that fails (not one stopped by a new line) still ends for the AI-voice fallback (opts.onfail, internal).
+      u.onerror = function (ev) { done(); if (i === parts.length - 1 && typeof opts.onfail === 'function' && !(ev && /cancel|interrupt/.test(String(ev.error || '')))) opts.onfail(); };
       u.onend = function () { done(); if (i === parts.length - 1 && typeof opts.onend === 'function') { try { opts.onend(); } catch (e) { /* game's own error */ } } };
       synth.speak(u);
     });
@@ -634,24 +635,182 @@
   function flushPending() {
     if (!voiceList.length && !voicesSettled) return;
     var list = pendingSpeech; pendingSpeech = [];
-    list.forEach(function (a) { try { startSpeech(a[0], a[1], a[2]); } catch (e) { /* ignore */ } });
+    // An AI-voice fallback line (opts.onfail, internal) that finds no voice after all still ends, so the queue moves on.
+    // A game's own queued lines behave as before (no onend when there is no voice).
+    list.forEach(function (a) { var ok = false; try { ok = startSpeech(a[0], a[1], a[2]); } catch (e) { /* ignore */ } if (!ok && a[1] && typeof a[1].onfail === 'function') endLater(a[1]); });
   }
   // speak(text, { lang, rate, pitch, volume, queue, onend }): true if it started (or is waiting for the
   // device's voice list, which some browsers fill a moment after the page loads); false when there is
   // no speech here or no voice for the language. A new line stops the one playing unless queue is true.
+  // With AI voices on for this game and language (INIT.tts, see "AI voices" below), the line is read by the server's
+  // voice instead, and falls back to the device's voice if that does not come. opts.voice: a character role for AI
+  // voices ('narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'); opts.device: true = always the device's voice.
+  // Once speak() has returned true, onend comes exactly once (unless the line is stopped by a new one or stopSpeaking).
   function speak(text, opts) {
     opts = opts || {};
-    if (!synth || !Utter) return false;
     var s = String(text == null ? '' : text).replace(/\s+/g, ' ').trim(); if (!s) return false;
     var lang = typeof opts.lang === 'string' && opts.lang ? opts.lang : USER_LANG;
+    if (ttsWanted(s, lang, opts)) { try { return ttsSpeak(s, opts, lang, null); } catch (e) { /* fall through to the device */ } }
+    if (!synth || !Utter) return false;
     try {
-      if (!opts.queue) { pendingSpeech = []; synth.cancel(); }
+      if (!opts.queue) { pendingSpeech = []; ttsStop(); synth.cancel(); }
       if (!voiceList.length) loadVoices();
       if (!voiceList.length) { if (voicesSettled) return false; pendingSpeech.push([s, opts, lang]); return true; }
       return startSpeech(s, opts, lang);
     } catch (e) { return false; }
   }
-  function stopSpeaking() { pendingSpeech = []; try { if (synth) synth.cancel(); } catch (e) { /* ignore */ } }
+  function stopSpeaking() { pendingSpeech = []; ttsStop(); try { if (synth) synth.cancel(); } catch (e) { /* ignore */ } }
+  function endLater(opts) { if (opts && typeof opts.onend === 'function') setTimeout(function () { try { opts.onend(); } catch (e) { /* game's own error */ } }, 0); }
+
+  // tts-client:start
+  // ---- AI voices (docs/sdk.md "AI voices"; server/routes/tts.js) --------------------------------------
+  // Only official games get INIT.tts ({ langs: the site locales switched on }); every other frame never has it, and then
+  // nothing below runs. The frame can't fetch (connect-src 'none'), so it asks the play page (brb:tts {id, text, lang,
+  // role, rate}); the page asks our server and hands back the MP3's bytes, which play here as a blob: URL on one shared
+  // Audio element. Queueing, stopping, volume and onend stay here, as with the device's voice. No answer in 4 s, a
+  // refusal, or audio that won't play: that line is spoken with the device's voice instead. The play page can also say
+  // the player chose the device's voice (brb:tts-mode). Only the game's own words are sent; the server checks again.
+  var TTS = INIT.tts && typeof INIT.tts === 'object' && Array.isArray(INIT.tts.langs) && INIT.tts.langs.length ? INIT.tts : null;
+  var TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
+  var TTS_SITE = ['en', 'ar', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru'];
+  var TTS_WAIT_MS = 4000, TTS_MAX = 600;
+  var TTS_SILENT = 'data:audio/wav;base64,UklGRjQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YRAAAACAgICAgICAgICAgICAgICA';
+  var ttsMode = 'ai', ttsQueue = [], ttsCur = null, ttsSeq = 0, ttsById = {}, ttsAudio = null;
+  // A language tag -> the site locale its AI voice speaks, or null (zh-CN and pt-PT: the site's zh is Traditional and
+  // its pt Brazilian, so those keep the device's voice).
+  function ttsLocale(tag) {
+    var t = String(tag || '').trim().replace(/_/g, '-').toLowerCase();
+    if (!t || t.length > 20) return null;
+    if (t === 'en-gb' || t === 'en-uk') return 'en-GB';
+    if (/^zh-(hant|tw|hk|mo)\b/.test(t)) return 'zh-Hant';
+    if (t === 'zh' || t.indexOf('zh-') === 0 || t === 'pt-pt') return null;
+    var base = t.split('-')[0];
+    return TTS_SITE.indexOf(base) >= 0 ? base : null;
+  }
+  function ttsWanted(s, lang, opts) {
+    if (!TTS || ttsMode !== 'ai' || (opts && opts.device === true) || s.length > TTS_MAX) return false;
+    var l = ttsLocale(lang);
+    return !!l && TTS.langs.indexOf(l) >= 0;
+  }
+  function ttsRole(r) { return TTS_ROLES.indexOf(r) >= 0 ? r : 'narrator'; }
+  function ttsAsk(item, pre) {
+    send('brb:tts', { id: item.id, text: item.s, lang: ttsLocale(item.lang), role: ttsRole(item.opts.voice), rate: num(item.opts.rate, 0.5, 2, 1), pre: pre ? true : undefined });
+  }
+  // dev: how to say this line with the device's voice instead (a game's own utterance keeps its own; see the wrapper).
+  function ttsSpeak(s, opts, lang, dev) {
+    if (!opts.queue) { ttsStop(); pendingSpeech = []; try { if (synth) synthCancel.call(synth); } catch (e) { /* ignore */ } }
+    var item = { id: ++ttsSeq, s: s, opts: opts, lang: lang, dev: dev, buf: null, state: 'asked', timer: null, url: null };
+    ttsById[item.id] = item; ttsQueue.push(item); ttsAsk(item, false);
+    if (!ttsCur) ttsNext();
+    return true;
+  }
+  function ttsNext() {
+    ttsCur = ttsQueue.shift() || null; if (!ttsCur) return;
+    var it = ttsCur;
+    if (it.state === 'ready') ttsPlay(it); else if (it.state === 'failed') ttsFallback(it);
+    else it.timer = setTimeout(function () { if (ttsCur === it && it.state === 'asked') { it.state = 'failed'; ttsFallback(it); } }, TTS_WAIT_MS);
+  }
+  function ttsForget(it) { delete ttsById[it.id]; if (it.timer) clearTimeout(it.timer); it.timer = null; if (it.url) { try { URL.revokeObjectURL(it.url); } catch (e) { /* ignore */ } it.url = null; } }
+  // The line is over (played or spoken): its onend, once, then the next line.
+  function ttsDone(it) {
+    if (it.state === 'done' || it.state === 'stopped') return;
+    it.state = 'done'; ttsForget(it);
+    if (ttsCur === it) ttsCur = null;
+    if (typeof it.opts.onend === 'function') { try { it.opts.onend(); } catch (e) { /* game's own error */ } }
+    if (!ttsCur) ttsNext();
+  }
+  function ttsFallback(it) {
+    if (it.state === 'done' || it.state === 'stopped' || it.fell) return;
+    it.fell = true; ttsForget(it);
+    // A watchdog: some devices never say the device's speech ended (iOS drops speech outside a tap without an event,
+    // Chrome sometimes never fires onend). Without it, every later queued line would wait forever.
+    var dog = setTimeout(function () { ttsDone(it); }, 4000 + it.s.length * 120);
+    var fin = function () { clearTimeout(dog); ttsDone(it); };
+    if (it.dev) { try { it.dev(fin); return; } catch (e) { fin(); return; } }
+    if (!synth || !Utter) { setTimeout(fin, 0); return; }
+    var o = {}; for (var k in it.opts) if (Object.prototype.hasOwnProperty.call(it.opts, k)) o[k] = it.opts[k];
+    o.onend = fin; o.onfail = fin; o.queue = true;
+    try {
+      if (!voiceList.length) loadVoices();
+      if (!voiceList.length && !voicesSettled) { pendingSpeech.push([it.s, o, it.lang]); return; }
+      if (!startSpeech(it.s, o, it.lang)) setTimeout(fin, 0);
+    } catch (e) { setTimeout(fin, 0); }
+  }
+  function ttsEl() {
+    if (!ttsAudio) { try { ttsAudio = new Audio(); ttsAudio.preload = 'auto'; } catch (e) { ttsAudio = null; } }
+    return ttsAudio;
+  }
+  function ttsPlay(it) {
+    var a = ttsEl(); if (!a) { ttsFallback(it); return; }
+    it.state = 'playing';
+    try { it.url = URL.createObjectURL(new Blob([it.buf], { type: 'audio/mpeg' })); } catch (e) { ttsFallback(it); return; }
+    it.buf = null;
+    a.onended = function () { if (ttsCur === it) ttsDone(it); };
+    a.onerror = function () { if (ttsCur === it && it.state === 'playing') ttsFallback(it); };
+    a.volume = num(it.opts.volume, 0, 1, 1);
+    a.src = it.url;
+    if (typeof it.onstart === 'function') { try { it.onstart(); } catch (e) { /* ignore */ } }
+    try { var p = a.play(); if (p && typeof p.catch === 'function') p.catch(function () { if (ttsCur === it && it.state === 'playing') ttsFallback(it); }); }
+    catch (e) { ttsFallback(it); }
+  }
+  // Stop every AI line (a new line without queue, stopSpeaking, the page closing). No onend for stopped lines.
+  function ttsStop() {
+    if (!TTS) return;
+    var all = ttsQueue.slice(); if (ttsCur) all.unshift(ttsCur);
+    ttsQueue = []; ttsCur = null;
+    all.forEach(function (it) { it.state = 'stopped'; ttsForget(it); });
+    if (ttsAudio) { try { ttsAudio.onended = ttsAudio.onerror = null; ttsAudio.pause(); ttsAudio.removeAttribute('src'); } catch (e) { /* ignore */ } }
+  }
+  // Lines a game will say soon (a whole conversation card): the play page fetches them now, so they start at once.
+  function prefetchSpeech(lines, opts) {
+    opts = opts || {};
+    if (!TTS || !lines || typeof lines.length !== 'number') return false;
+    var lang = typeof opts.lang === 'string' && opts.lang ? opts.lang : USER_LANG, n = 0;
+    for (var i = 0; i < lines.length && n < 20; i++) {
+      var s = String(lines[i] == null ? '' : lines[i]).replace(/\s+/g, ' ').trim();
+      if (!s || !ttsWanted(s, lang, opts)) continue;
+      ttsAsk({ id: ++ttsSeq, s: s, opts: opts, lang: lang }, true); n++;
+    }
+    return n > 0;
+  }
+  // Is this line going to be read by an AI voice? (lang: as for speak). Games use it to leave out their own "voice" beeps.
+  function aiVoice(lang) { return !!TTS && ttsMode === 'ai' && ttsWanted('x', typeof lang === 'string' && lang ? lang : USER_LANG, {}); }
+  var synthCancel = synth ? synth.cancel : null;
+  if (TTS) {
+    window.addEventListener('message', function (e) {
+      if (e.source !== parentWin) return;
+      var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1) return;
+      if (m.type === 'brb:tts-mode') { if (m.mode === 'ai' || m.mode === 'device') { ttsMode = m.mode; if (ttsMode === 'device' && (ttsCur || ttsQueue.length)) { var w = ttsQueue.slice(); if (ttsCur && ttsCur.state === 'asked') w.unshift(ttsCur); w.forEach(function (it) { if (it.state === 'asked') it.state = 'failed'; }); if (ttsCur && ttsCur.state === 'failed') ttsFallback(ttsCur); } } return; }
+      if (m.type !== 'brb:tts' || typeof m.id !== 'number') return;
+      var it = ttsById[m.id]; if (!it || it.state !== 'asked') return;   // stopped, timed out or a prefetch: dropped
+      if (m.ok === true && m.buf instanceof ArrayBuffer && m.buf.byteLength > 0) { it.buf = m.buf; it.state = 'ready'; if (ttsCur === it) { if (it.timer) clearTimeout(it.timer); it.timer = null; ttsPlay(it); } }
+      else { it.state = 'failed'; if (ttsCur === it) ttsFallback(it); }
+    });
+    // Unlock the shared Audio element on a tap or key (iPhone, iPad), with a silent sound. The listeners go only once a
+    // play() inside a gesture worked (a touchend after a scroll is not a gesture: the next tap tries again). If an AI line
+    // is waiting to play (its play() was refused outside a tap), this tap plays it instead.
+    var ttsUnlocked = false;
+    var ttsUnlockDone = function () {
+      if (ttsUnlocked) return; ttsUnlocked = true;
+      ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.removeEventListener(n, ttsUnlock, true); });
+    };
+    var ttsUnlock = function () {
+      if (ttsUnlocked) return;
+      var a = ttsEl(); if (!a) return;
+      var cur = ttsCur;
+      try {
+        var p;
+        if (cur && cur.state === 'playing' && cur.url && !cur.fell) { if (!a.paused) { ttsUnlockDone(); return; } p = a.play(); }
+        else { a.src = TTS_SILENT; p = a.play(); }   // nothing on the element now (a line being fetched sets its own src)
+        if (p && typeof p.then === 'function') {
+          p.then(function () { ttsUnlockDone(); if (!ttsCur || ttsCur.state !== 'playing') { try { if (a.src === TTS_SILENT) a.pause(); } catch (e) { /* ignore */ } } }, function () { /* not a gesture: next time */ });
+        } else ttsUnlockDone();
+      } catch (e) { /* ignore */ }
+    };
+    ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.addEventListener(n, ttsUnlock, true); });
+    window.addEventListener('pagehide', function () { ttsStop(); });
+  }
+  // tts-client:end
 
   // ---- Better voices for games that call speechSynthesis.speak directly ------------------------------
   // Older games (Builder games saved before BRB.speak existed, and some seed games) build their own
@@ -705,15 +864,42 @@
     var best = voiceFor(cur.lang);
     if (best && best !== cur && best.name !== cur.name && voiceQuality(best) - q >= VOICE_UPGRADE_MARGIN) u.voice = best;
   }
+  // With AI voices on (INIT.tts: official games only), a game's own utterance is read by the AI voice too: start and
+  // end events are fired on the utterance, and the game's speechSynthesis.cancel() stops it. If the AI voice does not
+  // come, the utterance goes to the device as before (upgraded as above), so its own events fire as usual.
+  function utterEvent(u, type) {
+    var ev = null;
+    try { ev = new window.SpeechSynthesisEvent(type, { utterance: u }); } catch (e) { try { ev = new Event(type); } catch (e2) { ev = null; } }
+    try { if (ev && typeof u.dispatchEvent === 'function') u.dispatchEvent(ev); else if (typeof u['on' + type] === 'function') u['on' + type]({ type: type, utterance: u }); } catch (e) { /* game's own error */ }
+  }
+  function routeUtterance(u, orig, self) {
+    var s = String(u.text == null ? '' : u.text).replace(/\s+/g, ' ').trim(), lang = u.lang || gameLang();
+    if (!s || !ttsWanted(s, lang, {})) return false;
+    var opts = { lang: lang, rate: u.rate, volume: u.volume, queue: true, onend: function () { utterEvent(u, 'end'); } };
+    ttsSpeak(s, opts, lang, function (fin) {
+      try { upgradeUtterance(u); } catch (e) { /* ignore */ }
+      var gone = function () { u.removeEventListener('end', gone); u.removeEventListener('error', gone); opts.onend = null; fin(); };
+      try { u.addEventListener('end', gone); u.addEventListener('error', gone); } catch (e) { /* ignore */ }
+      opts.onend = null;   // the device fires the game's own end event
+      orig.call(self, u);
+    });
+    var it = ttsById[ttsSeq]; if (it) it.onstart = function () { utterEvent(u, 'start'); };
+    return true;
+  }
   function installSpeakUpgrade() {
     var orig = synth.speak;
     if (typeof orig !== 'function' || orig.__brbUpgrade) return;   // once, even if the SDK runs twice
     var wrapped = function (u) {
+      try { if (TTS && u && typeof u === 'object' && !isOwn(u) && (!Utter || u instanceof Utter) && routeUtterance(u, orig, this)) return undefined; } catch (e) { /* the device's voice, below */ }
       try { upgradeUtterance(u); } catch (e) { /* never stop the game's speech */ }
       return orig.apply(this, arguments);
     };
     wrapped.__brbUpgrade = true;
     try { synth.speak = wrapped; } catch (e) { /* read-only: leave it */ }
+    if (TTS && typeof synthCancel === 'function') {
+      var cancel = function () { ttsStop(); return synthCancel.apply(this, arguments); };
+      try { synth.cancel = cancel; } catch (e) { /* read-only: leave it */ }
+    }
   }
   if (synth) {
     installSpeakUpgrade();
@@ -767,7 +953,10 @@
     // Speech with the most natural voice available (see "Speech" above and docs/sdk.md).
     voice: function (lang) { try { return voiceFor(lang); } catch (e) { return null; } },
     speak: speak,
-    stopSpeaking: stopSpeaking
+    stopSpeaking: stopSpeaking,
+    // AI voices (official games, when on): fetch lines ahead, and whether a language is read by an AI voice now.
+    prefetchSpeech: prefetchSpeech,
+    aiVoice: aiVoice
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }

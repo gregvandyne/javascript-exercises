@@ -65,8 +65,10 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.fx.fit3d(renderer, camera, opts?)` | Fits a 3D renderer (e.g. a Three.js `WebGLRenderer`) to the screen: pixel ratio first (capped, `opts.maxDpr`, default 1.5), then the size, then `camera.aspect`, again on every resize and rotate. `opts.element` fits an element instead of the window; `opts.onResize(w, h, dpr)` runs after each fit. Returns `{ resize(), maxDpr(n), stop() }` (`maxDpr(n)` is for quality ladders). |
 | `BRB.sfx.play(name)` | `'jump' \| 'hit' \| 'coin' \| 'win' \| 'lose' \| 'click' \| 'powerup'`, synthesised with WebAudio. |
 | `BRB.sfx.mute(on?)` | Toggle or set mute; returns the new state. `BRB.sfx.muted` reads it. The choice is saved. |
-| `BRB.speak(text, opts?)` | Reads `text` aloud with the most natural voice already on the device (see [Speech](#speech)). `opts`: `{ lang, rate, pitch, volume, queue, onend }`; `lang` is the language the text is written in (default `BRB.user.lang`). Returns `true` if it started, `false` if it cannot (no speech, or no voice for the language). |
+| `BRB.speak(text, opts?)` | Reads `text` aloud with the most natural voice already on the device (see [Speech](#speech)). `opts`: `{ lang, rate, pitch, volume, queue, onend, voice, device }`; `lang` is the language the text is written in (default `BRB.user.lang`); `voice` a character role for AI voices; `device: true` always the device's voice. Returns `true` if it started, `false` if it cannot (no speech, or no voice for the language). After `true`, `onend` comes exactly once unless the line is stopped. |
 | `BRB.voice(lang?)` | The `SpeechSynthesisVoice` `BRB.speak` would use for a language tag (default `BRB.user.lang`), or `null`. |
+| `BRB.prefetchSpeech(lines, opts?)` | AI voices only (see [AI voices](#ai-voices)): asks for lines the game will say soon (a whole conversation card), so they start at once. `opts`: `{ lang, voice, rate }`. `false` (and nothing happens) without AI voices. |
+| `BRB.aiVoice(lang?)` | `true` when lines in this language are read by an AI voice now (an official game, the language switched on, the player has not chosen the device's voice). A game can leave out its own "voice" beeps then. |
 | `BRB.stopSpeaking()` | Stops the speech that is playing or waiting. |
 
 There is no network and no way to reach the page around the game.
@@ -134,6 +136,36 @@ BRB.speak(T[BRB.user.lang].win);                      // text from the game's ow
   - `BRB.speak`'s own utterances pass straight through. Nothing is delayed or split: an utterance spoken before the
     voice list has loaded goes out exactly as the game made it.
 
+### AI voices
+
+Official games (our seed games, never Builder games) can be read by a hosted AI voice (OpenAI's speech API) when the
+owner turns it on (`TTS_ENABLED`, a key, and each language switched on at `/admin/voices`; docs/tts-design.md). The frame
+then gets `INIT.tts = { langs }`, and the SDK's `tts-client` block (`// tts-client:start … end`) puts it behind the same
+`BRB.speak`:
+- The frame can't fetch, so it asks the play page with `brb:tts { id, text, lang, role, rate, pre? }`; the page asks
+  `POST /api/tts` (with its game token) and answers `{ brb:1, type:'brb:tts', id, ok:true, buf }` (the MP3's bytes,
+  transferred) or `{ ok:false, why }`. The SDK plays the bytes as a `blob:` URL on one shared `Audio` element (unlocked
+  on the first tap with a silent sound), with the line's `volume`; queueing, `queue: false`, `stopSpeaking()` and
+  closing the page work as with the device's voice. Replies are accepted only from `window.parent` and for a line that
+  is still waiting.
+- **Fallback:** no answer within 4 s, a refusal, or audio that won't play: that line is spoken by the device's voice
+  (`startSpeech`), and `onend` still comes once. A reply after the fallback is dropped.
+- **The `onend` promise:** once `speak()` returned `true`, `onend` comes exactly once, even when no voice could say the
+  line after all (the device path too: a line waiting for the voice list that never finds a voice). A line stopped by a
+  new line or `stopSpeaking()` gets no `onend` (as before).
+- `opts.voice`: `'narrator'` (default), `'friendly'`, `'bright'`, `'deep'`, `'wise'` or `'grumpy'`; the admin maps
+  roles to OpenAI voices. `pitch` is ignored by AI voices; `rate` picks slow (< 0.9), normal or fast (> 1.1).
+- The language: `en-GB` stays British, `zh-TW`/`zh-HK`/`zh-Hant` are read as Taiwanese Mandarin, `zh-CN` and `pt-PT`
+  keep the device's voice (the site's Chinese is Traditional and its Portuguese Brazilian), any other tag uses its base
+  language when the site has it.
+- The play page's 🔊 Voices sheet lets the player choose "This device's voice" (`localStorage['oomba:voices']`; Data
+  Saver picks it by default); the page tells the frame with `brb:tts-mode { mode }` and answers every `brb:tts` with
+  `ok:false`.
+- An official game's own `speechSynthesis.speak(u)` is read by the AI voice too (start and end events are fired on `u`,
+  and `speechSynthesis.cancel()` stops it); on any failure `u` goes to the device as before.
+- Hero of Sunvale speaks its conversation cards and cut-scene captions this way, each speaker with the role in its
+  `// ==== VOICES START/END ====` block, prefetches the whole card, and keeps its "voice" beeps when AI voices are off.
+
 ## 3D games
 
 A game is a 3D game when it uses an import map or imports `three` (`server/services/vendor.js`, `isThreeGame`). Three.js
@@ -183,6 +215,7 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 | `brb:orientation` | `{ value }` | orientation hint |
 | `brb:retry` | – | the 3D card's "Try again": the page reloads the game, only right after a tap (a reload started inside the frame has no sign-in cookie, so the server refuses it) |
 | `brb:online` | – | `BRB.match.menu()`: opens the "Play online" sheet, for online games only, right after a tap |
+| `brb:tts` | `{ id, text, lang, role, rate, pre? }` | AI voices (official games, when on): fetches the line from `/api/tts` and posts the MP3's bytes back (`{ id, ok, buf }`), or `{ id, ok:false, why }`; `pre`: fetch only, no answer |
 
 The parent checks that each message comes from its own game frame (`event.source`), has the expected shape,
 and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`, `public/js/admin.js`).

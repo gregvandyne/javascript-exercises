@@ -389,5 +389,8 @@
       "p": "Write quizzes for any subject and any age, from early reading to secondary-school chemistry.",
       "li3": "Describe a topic and a year group, and AI drafts the questions for you to check and edit."
     }
+  },
+  "tts": {
+    "sample": "Hello! I'm your guide at Oomba Academy. Let's explore, solve puzzles and have loads of fun together!"
   }
 }

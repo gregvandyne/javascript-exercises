@@ -938,3 +938,9 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-modes>.panel{margin:0}
 .lp-mode h3{margin:0 0 var(--s2);font-size:1.15rem}
 .lp-mode p{margin:0}
+.radio-row{display:flex;gap:8px;align-items:center;min-block-size:44px}
+.tv-grid .tv-sample{text-transform:none;letter-spacing:normal;color:var(--text);font-size:.9rem;margin-top:4px;min-inline-size:12rem}
+.tv-grid th[scope=row]{position:sticky;inset-inline-start:0;background:var(--card);z-index:1}
+.tv-grid [data-play][aria-current="true"]{outline:3px solid var(--text);outline-offset:1px}
+.tv-grid .tv-one{display:none}
+@media (max-width:600px){.tv-grid .tv-v{display:none}.tv-grid .tv-one{display:table-cell}}
