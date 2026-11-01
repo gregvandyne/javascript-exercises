@@ -1,0 +1,7456 @@
+{
+ "about": "Would You Rather dilemmas (English source). Each item: id (never reuse or renumber: saved progress uses it), cat, a/b {text, tags}. Tags drive the personality card and are never translated. Translators: copy this file to <lang>.json and translate only the text fields, then run node scripts/wyr-bank.js.",
+ "items": [
+  {
+   "id": "animals-1",
+   "cat": "animals",
+   "a": {
+    "text": "Parlare con gli animali",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Parlare tutte le lingue umane",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "animals-2",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un drago grande come un gatto",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un gatto grande come un cavallo",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-3",
+   "cat": "animals",
+   "a": {
+    "text": "Andare a scuola in groppa a un delfino",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Andare a scuola in groppa a una giraffa",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-4",
+   "cat": "animals",
+   "a": {
+    "text": "Avere la coda come una scimmia",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere le orecchie come un coniglio",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-5",
+   "cat": "animals",
+   "a": {
+    "text": "Essere un ghepardo per un giorno",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Essere un gufo per un giorno",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-6",
+   "cat": "animals",
+   "a": {
+    "text": "Nuotare con le balene",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Volare con le aquile",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-7",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un pappagallo parlante",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere un cane ballerino",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-8",
+   "cat": "animals",
+   "a": {
+    "text": "Vivere in una casa sull’albero con gli scoiattoli",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Vivere su una barca con le foche",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-9",
+   "cat": "animals",
+   "a": {
+    "text": "Essere forte come una formica",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Essere furbo come un polpo",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-10",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un pinguino come animale",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un panda come animale",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "animals-11",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un unicorno",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere una fenice",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-12",
+   "cat": "animals",
+   "a": {
+    "text": "Respirare sott’acqua come un pesce",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Planare in aria come uno scoiattolo volante",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-13",
+   "cat": "animals",
+   "a": {
+    "text": "Curare tartarughine su una spiaggia",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Curare gufetti in un bosco",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-14",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un cavallo che vola",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere un cane che parla",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-15",
+   "cat": "animals",
+   "a": {
+    "text": "Essere un’ape indaffarata",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Essere un bradipo dormiglione",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-16",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un guscio come una tartaruga",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere gli aculei come un riccio",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-17",
+   "cat": "animals",
+   "a": {
+    "text": "Sentire come un pipistrello",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Vedere come un falco",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-18",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un animale che resta sempre cucciolo",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere un animale grande come un autobus",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "animals-19",
+   "cat": "animals",
+   "a": {
+    "text": "Essere amico di un orso",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Essere amico di una volpe",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-20",
+   "cat": "animals",
+   "a": {
+    "text": "Dormire in un nido",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Dormire in una tana",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-21",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un gatto che fa giochi di magia",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere un criceto che canta",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-22",
+   "cat": "animals",
+   "a": {
+    "text": "Gestire un rifugio per cagnolini smarriti",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Gestire un rifugio per gattini smarriti",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-23",
+   "cat": "animals",
+   "a": {
+    "text": "Essere un pinguino nella neve",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Essere un fenicottero al sole",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-24",
+   "cat": "animals",
+   "a": {
+    "text": "Avere le strisce come una zebra",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere le macchie come un leopardo",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "animals-25",
+   "cat": "animals",
+   "a": {
+    "text": "Visitare uno zoo dove gli animali guardano te",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Visitare una fattoria dove gli animali rispondono",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-26",
+   "cat": "animals",
+   "a": {
+    "text": "Contare le stelle con un gufo",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Scavare gallerie con una talpa",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-27",
+   "cat": "animals",
+   "a": {
+    "text": "Avere il collo lungo come una giraffa",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere la proboscide come un elefante",
+    "tags": [
+     "animal",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "animals-28",
+   "cat": "animals",
+   "a": {
+    "text": "Cambiare colore come un camaleonte",
+    "tags": [
+     "make",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Illuminarti come una lucciola",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "animals-29",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un pesce rosso che fischia",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere una lumaca che vince le gare",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-30",
+   "cat": "animals",
+   "a": {
+    "text": "Prenderti cura di un elefantino",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Prenderti cura di un cucciolo di canguro",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-31",
+   "cat": "animals",
+   "a": {
+    "text": "Essere un leone dal ruggito potente",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Essere un gatto dalle fusa dolci",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-32",
+   "cat": "animals",
+   "a": {
+    "text": "Nuotare nel mare con le tartarughe",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Giocare nella neve con gli orsetti polari",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-33",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un polpo che aiuta nelle faccende",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere una scimmia che racconta barzellette",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-34",
+   "cat": "animals",
+   "a": {
+    "text": "Svegliarti col canto di un uccellino",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Svegliarti con un cucciolo che ti lecca",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-35",
+   "cat": "animals",
+   "a": {
+    "text": "Essere un veterinario famoso",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Essere un famoso esploratore di animali",
+    "tags": [
+     "brave",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-36",
+   "cat": "animals",
+   "a": {
+    "text": "Avere un animale che brilla al buio",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un animale che diventa invisibile",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "animals-37",
+   "cat": "animals",
+   "a": {
+    "text": "Passare un giorno da formica nel formicaio",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Passare un giorno da ape nell’alveare",
+    "tags": [
+     "social",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "animals-38",
+   "cat": "animals",
+   "a": {
+    "text": "Essere veloce come un colibrì",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Vivere a lungo come una tartaruga",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "food-1",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare solo cose dolci per sempre",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Mangiare solo cose salate per sempre",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-2",
+   "cat": "food",
+   "a": {
+    "text": "Avere un fiume di cioccolato",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere una cascata di limonata",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-3",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare la pizza a colazione",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Mangiare i pancake a cena",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-4",
+   "cat": "food",
+   "a": {
+    "text": "Non mangiare mai più il gelato",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Non mangiare mai più la pizza",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-5",
+   "cat": "food",
+   "a": {
+    "text": "Avere un frigo che crea qualsiasi cibo",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere un orto che fa crescere ogni frutto",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "food-6",
+   "cat": "food",
+   "a": {
+    "text": "Essere un cuoco famoso",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Essere un assaggiatore famoso",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-7",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare un biscotto grande come una bici",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Mangiare cento biscottini minuscoli",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-8",
+   "cat": "food",
+   "a": {
+    "text": "Fare colazione in un castello",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Fare colazione in cima a una montagna",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-9",
+   "cat": "food",
+   "a": {
+    "text": "Preparare il panino più grande del mondo",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Preparare la torta più alta del mondo",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-10",
+   "cat": "food",
+   "a": {
+    "text": "Bere solo latte",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Bere solo succo d’arancia",
+    "tags": [
+     "food",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "food-11",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare gli spaghetti con le mani",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Mangiare la minestra con la forchetta",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-12",
+   "cat": "food",
+   "a": {
+    "text": "Gestire un negozio di caramelle",
+    "tags": [
+     "food",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Gestire una panetteria",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-13",
+   "cat": "food",
+   "a": {
+    "text": "Assaggiare un cibo nuovo ogni giorno",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Mangiare il tuo piatto preferito ogni giorno",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "food-14",
+   "cat": "food",
+   "a": {
+    "text": "Avere una macchina dei popcorn in camera",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere una macchina dei frullati in camera",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-15",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare solo cibi verdi per una settimana",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Mangiare solo cibi arancioni per una settimana",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-16",
+   "cat": "food",
+   "a": {
+    "text": "Cucinare la cena per tutta la famiglia",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Fare una torta per il tuo migliore amico",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-17",
+   "cat": "food",
+   "a": {
+    "text": "Avere un cesto di frutta che non finisce mai",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Avere un sacchetto di patatine che non finisce mai",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-18",
+   "cat": "food",
+   "a": {
+    "text": "Fare un picnic in spiaggia",
+    "tags": [
+     "food",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Fare un picnic in un bosco innevato",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "food-19",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare un gelato che non si scioglie mai",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Mangiare una pizza che non si fredda mai",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "food-20",
+   "cat": "food",
+   "a": {
+    "text": "Sentire il sapore dei colori",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Sentire il profumo della musica",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-21",
+   "cat": "food",
+   "a": {
+    "text": "Fare un tè con i tuoi giocattoli",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Fare una grigliata con i tuoi amici",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-22",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare un pranzo cucinato da un robot",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Mangiare un pranzo cucinato da un re",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-23",
+   "cat": "food",
+   "a": {
+    "text": "Coltivare fragole giganti",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Coltivare zucche giganti",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-24",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare solo con le bacchette",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Mangiare solo con il cucchiaio",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-25",
+   "cat": "food",
+   "a": {
+    "text": "Mettere le codette su tutto",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Mettere il formaggio su tutto",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-26",
+   "cat": "food",
+   "a": {
+    "text": "Provare il cibo di un nuovo Paese ogni settimana",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Imparare a cucinare un piatto alla perfezione",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-27",
+   "cat": "food",
+   "a": {
+    "text": "Vincere pancake gratis per sempre",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Vincere tacos gratis per sempre",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-28",
+   "cat": "food",
+   "a": {
+    "text": "Avere una cucina nella casa sull’albero",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Avere una cucina su una barca",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-29",
+   "cat": "food",
+   "a": {
+    "text": "Fare colazione a letto ogni giorno",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Cenare sotto le stelle ogni sera",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-30",
+   "cat": "food",
+   "a": {
+    "text": "Avere un lecca-lecca che cambia gusto",
+    "tags": [
+     "food",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere una gomma che non perde mai il gusto",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-31",
+   "cat": "food",
+   "a": {
+    "text": "Fare il giudice in una gara di torte",
+    "tags": [
+     "food",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Vincere una gara di torte",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "food-32",
+   "cat": "food",
+   "a": {
+    "text": "Inventare un nuovo gusto di gelato",
+    "tags": [
+     "make",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Inventare un nuovo condimento per la pizza",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-33",
+   "cat": "food",
+   "a": {
+    "text": "Fare un pasto intero di sole zuppe",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Fare un pasto intero di soli panini",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-34",
+   "cat": "food",
+   "a": {
+    "text": "Avere una fontana di cioccolata calda",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere una fontana di succo di frutta",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-35",
+   "cat": "food",
+   "a": {
+    "text": "Mangiare solo cibi rotondi",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Mangiare solo cibi quadrati",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-36",
+   "cat": "food",
+   "a": {
+    "text": "Avere un amico che ti prepara i dolci",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Avere un amico che ti cucina i pasti",
+    "tags": [
+     "social",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "food-37",
+   "cat": "food",
+   "a": {
+    "text": "Abitare accanto a un forno",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Abitare accanto a una gelateria",
+    "tags": [
+     "food",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "food-38",
+   "cat": "food",
+   "a": {
+    "text": "Trovare una ricetta segreta in un vecchio libro",
+    "tags": [
+     "think",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Inventare una merenda tutta nuova",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "powers-1",
+   "cat": "powers",
+   "a": {
+    "text": "Volare",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Essere invisibile",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-2",
+   "cat": "powers",
+   "a": {
+    "text": "Leggere nel pensiero",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Muovere le cose col pensiero",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-3",
+   "cat": "powers",
+   "a": {
+    "text": "Essere velocissimo",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Essere fortissimo",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-4",
+   "cat": "powers",
+   "a": {
+    "text": "Teletrasportarti ovunque",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Fermare il tempo",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-5",
+   "cat": "powers",
+   "a": {
+    "text": "Respirare sott’acqua",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Attraversare i muri",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-6",
+   "cat": "powers",
+   "a": {
+    "text": "Controllare il meteo",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Far crescere le piante con un gesto",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-7",
+   "cat": "powers",
+   "a": {
+    "text": "Rimpicciolire come una formica",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Diventare alto come un palazzo",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-8",
+   "cat": "powers",
+   "a": {
+    "text": "Parlare con le piante",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Parlare con le macchine",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-9",
+   "cat": "powers",
+   "a": {
+    "text": "Avere un super udito",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Avere una super vista",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-10",
+   "cat": "powers",
+   "a": {
+    "text": "Guarire ogni graffio o livido",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Far sorridere chiunque",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-11",
+   "cat": "powers",
+   "a": {
+    "text": "Saltare alto come una casa",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Correre veloce come un’auto",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-12",
+   "cat": "powers",
+   "a": {
+    "text": "Trasformarti in qualsiasi animale",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Trasformarti in qualsiasi oggetto",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-13",
+   "cat": "powers",
+   "a": {
+    "text": "Far nevicare quando vuoi",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Far uscire il sole quando vuoi",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-14",
+   "cat": "powers",
+   "a": {
+    "text": "Avere uno zaino che contiene tutto",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere scarpe che ti portano ovunque",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-15",
+   "cat": "powers",
+   "a": {
+    "text": "Non avere mai bisogno di dormire",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Non avere mai bisogno di mangiare",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "powers-16",
+   "cat": "powers",
+   "a": {
+    "text": "Brillare al buio",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Cambiare colore ai capelli col pensiero",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-17",
+   "cat": "powers",
+   "a": {
+    "text": "Copiare un’abilità solo guardandola",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Imparare una lingua in un minuto",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "powers-18",
+   "cat": "powers",
+   "a": {
+    "text": "Congelare le cose toccandole",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Scaldare le cose toccandole",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "powers-19",
+   "cat": "powers",
+   "a": {
+    "text": "Riordinare la camera con uno schiocco di dita",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Finire i compiti con uno schiocco di dita",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-20",
+   "cat": "powers",
+   "a": {
+    "text": "Avere un potere che aiuta gli altri",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Avere un potere per esplorare",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-21",
+   "cat": "powers",
+   "a": {
+    "text": "Far nascere fiori dove cammini",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Far suonare musica dove cammini",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-22",
+   "cat": "powers",
+   "a": {
+    "text": "Allungarti come la gomma",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Rimbalzare come una palla",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "powers-23",
+   "cat": "powers",
+   "a": {
+    "text": "Vedere al buio",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Vedere attraverso i muri",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-24",
+   "cat": "powers",
+   "a": {
+    "text": "Parlare con te da grande",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Parlare con te da piccolo",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-25",
+   "cat": "powers",
+   "a": {
+    "text": "Avere una matita che disegna cose vere",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere un pennello che dipinge posti veri",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-26",
+   "cat": "powers",
+   "a": {
+    "text": "Diventare minuscolo quando sei timido",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Diventare gigante quando sei coraggioso",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-27",
+   "cat": "powers",
+   "a": {
+    "text": "Non sentire mai freddo",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Non sentirti mai stanco",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-28",
+   "cat": "powers",
+   "a": {
+    "text": "Far apparire un arcobaleno quando vuoi",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Far soffiare una brezza quando vuoi",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "powers-29",
+   "cat": "powers",
+   "a": {
+    "text": "Sapere cosa pensa il tuo animale",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Sapere cosa pensa il tuo insegnante",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-30",
+   "cat": "powers",
+   "a": {
+    "text": "Essere il nuotatore più veloce del mondo",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Essere lo scalatore più veloce del mondo",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "powers-31",
+   "cat": "powers",
+   "a": {
+    "text": "Aggiustare tutto ciò che si rompe",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Costruire tutto ciò che immagini",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "powers-32",
+   "cat": "powers",
+   "a": {
+    "text": "Avere una nuvola da cavalcare",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un tappeto volante",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-33",
+   "cat": "powers",
+   "a": {
+    "text": "Controllare la gravità",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Controllare la luce",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-34",
+   "cat": "powers",
+   "a": {
+    "text": "Avere un mantello da supereroe",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere una maschera da supereroe",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "powers-35",
+   "cat": "powers",
+   "a": {
+    "text": "Avere un aiutante",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Essere l’aiutante",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-36",
+   "cat": "powers",
+   "a": {
+    "text": "Far ridere chiunque",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Far calmare chiunque",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "powers-37",
+   "cat": "powers",
+   "a": {
+    "text": "Cancellare un piccolo errore al giorno",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere un’ora in più ogni giorno",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "powers-38",
+   "cat": "powers",
+   "a": {
+    "text": "Avere un potere che funziona solo il lunedì",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere un potere che funziona solo con la pioggia",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-1",
+   "cat": "school",
+   "a": {
+    "text": "Andare a scuola in un castello",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Andare a scuola su un’astronave",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-2",
+   "cat": "school",
+   "a": {
+    "text": "Avere un robot come maestro",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere un mago come maestro",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-3",
+   "cat": "school",
+   "a": {
+    "text": "Imparare solo giocando",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Imparare solo cantando",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-4",
+   "cat": "school",
+   "a": {
+    "text": "Avere vacanze estive più lunghe",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere vacanze invernali più lunghe",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-5",
+   "cat": "school",
+   "a": {
+    "text": "Fare matematica con una calcolatrice magica",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Fare il dettato con una penna magica",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-6",
+   "cat": "school",
+   "a": {
+    "text": "Pranzare in cortile ogni giorno",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Pranzare in un giardino ogni giorno",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-7",
+   "cat": "school",
+   "a": {
+    "text": "Essere il migliore amico dell’animale di classe",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Occuparti della biblioteca di classe",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-8",
+   "cat": "school",
+   "a": {
+    "text": "Fare una gita scolastica sulla Luna",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Fare una gita scolastica sotto il mare",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "school-9",
+   "cat": "school",
+   "a": {
+    "text": "Avere uno scivolo al posto delle scale",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Avere un trampolino in ogni aula",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-10",
+   "cat": "school",
+   "a": {
+    "text": "Scrivere un libro",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Dipingere un murale enorme",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-11",
+   "cat": "school",
+   "a": {
+    "text": "Recitare nello spettacolo della scuola",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Cantare nel coro della scuola",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-12",
+   "cat": "school",
+   "a": {
+    "text": "Imparare a programmare un gioco",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Imparare a costruire un robot",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-13",
+   "cat": "school",
+   "a": {
+    "text": "Avere la ricreazione lunga il doppio",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Avere la pausa pranzo lunga il doppio",
+    "tags": [
+     "food",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-14",
+   "cat": "school",
+   "a": {
+    "text": "Sederti vicino al tuo migliore amico",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Sederti vicino alla finestra",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "school-15",
+   "cat": "school",
+   "a": {
+    "text": "Fare tutte le lezioni all’aperto",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Fare tutte le lezioni in una biblioteca accogliente",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-16",
+   "cat": "school",
+   "a": {
+    "text": "Leggere un libro al giorno",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Fare un disegno al giorno",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-17",
+   "cat": "school",
+   "a": {
+    "text": "Organizzare la fiera della scienza",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Organizzare la mostra d’arte della scuola",
+    "tags": [
+     "make",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-18",
+   "cat": "school",
+   "a": {
+    "text": "Avere uno zaino che parla",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere un astuccio che si riordina da solo",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-19",
+   "cat": "school",
+   "a": {
+    "text": "Studiare i dinosauri tutto l’anno",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Studiare lo spazio tutto l’anno",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-20",
+   "cat": "school",
+   "a": {
+    "text": "Avere compiti a caccia al tesoro",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere compiti a forma di rompicapo",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-21",
+   "cat": "school",
+   "a": {
+    "text": "Essere l’aiutante della classe",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere l’inventore della classe",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "school-22",
+   "cat": "school",
+   "a": {
+    "text": "Iniziare la scuola più tardi",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Finire la scuola prima",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-23",
+   "cat": "school",
+   "a": {
+    "text": "Avere un lama come animale di classe",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un pappagallo come animale di classe",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-24",
+   "cat": "school",
+   "a": {
+    "text": "Fare un gioco all’inizio di ogni lezione",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Ascoltare una storia all’inizio di ogni lezione",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-25",
+   "cat": "school",
+   "a": {
+    "text": "Avere un’aula in una casa sull’albero",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un’aula in un sottomarino",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-26",
+   "cat": "school",
+   "a": {
+    "text": "Fare lezione alla classe per un giorno",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Dirigere tutta la scuola per un giorno",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-27",
+   "cat": "school",
+   "a": {
+    "text": "Avere un robot che porta lo zaino",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere un cane che ti accompagna a scuola",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-28",
+   "cat": "school",
+   "a": {
+    "text": "Imparare una nuova lingua",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Imparare un nuovo strumento",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-29",
+   "cat": "school",
+   "a": {
+    "text": "Avere una giornata di sport ogni settimana",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Avere una giornata d’arte ogni settimana",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "school-30",
+   "cat": "school",
+   "a": {
+    "text": "Essere il migliore in ortografia",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Essere il migliore in matematica",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-31",
+   "cat": "school",
+   "a": {
+    "text": "Fare un discorso a tutta la scuola",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Fare un video per tutta la scuola",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "school-32",
+   "cat": "school",
+   "a": {
+    "text": "Avere una lavagna gigante per disegnare",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un muro-puzzle gigante",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "school-33",
+   "cat": "school",
+   "a": {
+    "text": "Fare un pisolino dopo pranzo",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare una festa da ballo dopo pranzo",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "school-34",
+   "cat": "school",
+   "a": {
+    "text": "Avere banchi che galleggiano",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere sedie che girano",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "school-35",
+   "cat": "school",
+   "a": {
+    "text": "Imparare da uno scienziato famoso",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Imparare da un artista famoso",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "school-36",
+   "cat": "school",
+   "a": {
+    "text": "Coltivare verdure nell’orto della scuola",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Curare l’acquario della scuola",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "school-37",
+   "cat": "school",
+   "a": {
+    "text": "Avere un angolo lettura tranquillo",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere un angolo costruzioni rumoroso",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-1",
+   "cat": "travel",
+   "a": {
+    "text": "Esplorare una giungla",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Esplorare un deserto",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-2",
+   "cat": "travel",
+   "a": {
+    "text": "Visitare il Polo Nord",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Visitare un’isola tropicale",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-3",
+   "cat": "travel",
+   "a": {
+    "text": "Viaggiare in mongolfiera",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Viaggiare in sottomarino",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-4",
+   "cat": "travel",
+   "a": {
+    "text": "Scalare una montagna",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Tuffarti in una barriera corallina",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-5",
+   "cat": "travel",
+   "a": {
+    "text": "Fare un safari",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Fare una crociera",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-6",
+   "cat": "travel",
+   "a": {
+    "text": "Dormire in tenda sotto le stelle",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Dormire in un castello",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-7",
+   "cat": "travel",
+   "a": {
+    "text": "Trovare un tesoro nascosto",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Trovare una città perduta",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-8",
+   "cat": "travel",
+   "a": {
+    "text": "Cavalcare un cammello",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Cavalcare un elefante",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-9",
+   "cat": "travel",
+   "a": {
+    "text": "Viaggiare nel passato",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Viaggiare nel futuro",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-10",
+   "cat": "travel",
+   "a": {
+    "text": "Visitare tutti i Paesi del mondo",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Visitare tutti i pianeti del sistema solare",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-11",
+   "cat": "travel",
+   "a": {
+    "text": "Fare un viaggio in auto con la famiglia",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare un viaggio in treno con gli amici",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-12",
+   "cat": "travel",
+   "a": {
+    "text": "Esplorare una grotta piena di cristalli",
+    "tags": [
+     "brave",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Esplorare una vecchia nave pirata",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-13",
+   "cat": "travel",
+   "a": {
+    "text": "Vivere in un igloo per una settimana",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Vivere in una tenda nel deserto per una settimana",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-14",
+   "cat": "travel",
+   "a": {
+    "text": "Andare in slittino in montagna",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare surf al mare",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-15",
+   "cat": "travel",
+   "a": {
+    "text": "Avere una mappa per andare ovunque",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Avere una chiave che apre ogni porta",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-16",
+   "cat": "travel",
+   "a": {
+    "text": "Attraversare un ponte di corda traballante",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Camminare su un pavimento di vetro in alto",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-17",
+   "cat": "travel",
+   "a": {
+    "text": "Vedere l’aurora boreale",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Vedere un vulcano da lontano",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-18",
+   "cat": "travel",
+   "a": {
+    "text": "Visitare un museo di notte",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Visitare un parco divertimenti di notte",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "travel-19",
+   "cat": "travel",
+   "a": {
+    "text": "Scendere un fiume in canoa",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Volare sulla zipline tra gli alberi",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-20",
+   "cat": "travel",
+   "a": {
+    "text": "Essere un esploratore famoso",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Essere un cartografo famoso",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-21",
+   "cat": "travel",
+   "a": {
+    "text": "Volare in elicottero",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Navigare su una nave pirata",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-22",
+   "cat": "travel",
+   "a": {
+    "text": "Campeggiare nel bosco",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Campeggiare in spiaggia",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-23",
+   "cat": "travel",
+   "a": {
+    "text": "Imparare a dire ciao in cinquanta lingue",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Imparare cinquanta balli diversi",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "travel-24",
+   "cat": "travel",
+   "a": {
+    "text": "Trovare la porta di un giardino segreto",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Trovare la porta di una biblioteca segreta",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-25",
+   "cat": "travel",
+   "a": {
+    "text": "Visitare una città di grattacieli",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Visitare un villaggio di casette minuscole",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-26",
+   "cat": "travel",
+   "a": {
+    "text": "Passare un giorno in una fattoria",
+    "tags": [
+     "animal",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Passare un giorno in un faro",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-27",
+   "cat": "travel",
+   "a": {
+    "text": "Partire all’avventura con una mappa",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Partire all’avventura senza mappa",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-28",
+   "cat": "travel",
+   "a": {
+    "text": "Girare il mondo in un pallone gigante",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Girare il mondo su un treno superveloce",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "travel-29",
+   "cat": "travel",
+   "a": {
+    "text": "Scoprire una nuova isola",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Scoprire un nuovo tipo di animale",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "travel-30",
+   "cat": "travel",
+   "a": {
+    "text": "Andare a un festival musicale",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Andare a una festa delle lanterne",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "travel-31",
+   "cat": "travel",
+   "a": {
+    "text": "Visitare la cascata più grande",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Visitare l’albero più alto",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-32",
+   "cat": "travel",
+   "a": {
+    "text": "Vivere su una casa galleggiante",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Vivere in una baita in montagna",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-33",
+   "cat": "travel",
+   "a": {
+    "text": "Viaggiare su un razzo",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Viaggiare su una tartaruga gigante",
+    "tags": [
+     "animal",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "travel-34",
+   "cat": "travel",
+   "a": {
+    "text": "Fare snorkeling tra pesci colorati",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare escursioni con le capre di montagna",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "travel-35",
+   "cat": "travel",
+   "a": {
+    "text": "Viaggiare un anno con una borsa piccola",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Portarti tutta la camera in ogni viaggio",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "travel-36",
+   "cat": "travel",
+   "a": {
+    "text": "Attraversare un deserto in un lungo viaggio",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Attraversare i ghiacci in un lungo viaggio",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-37",
+   "cat": "travel",
+   "a": {
+    "text": "Fare il giro di un’isola in bici",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Fare il giro di un lago a piedi",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "travel-38",
+   "cat": "travel",
+   "a": {
+    "text": "Fare la guida per i viaggiatori",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Viaggiare con una guida",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-1",
+   "cat": "silly",
+   "a": {
+    "text": "Avere spaghetti al posto dei capelli",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Avere marshmallow al posto delle dita dei piedi",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-2",
+   "cat": "silly",
+   "a": {
+    "text": "Starnutire brillantini",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere il singhiozzo a bolle",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-3",
+   "cat": "silly",
+   "a": {
+    "text": "Camminare come un granchio per un giorno",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Saltare come una rana per un giorno",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-4",
+   "cat": "silly",
+   "a": {
+    "text": "Parlare solo in rima",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Parlare solo cantando",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-5",
+   "cat": "silly",
+   "a": {
+    "text": "Avere un naso che suona come un clacson",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Avere orecchie che fischiano",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-6",
+   "cat": "silly",
+   "a": {
+    "text": "Mettere i calzini sulle mani",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Mettere le muffole sui piedi",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-7",
+   "cat": "silly",
+   "a": {
+    "text": "Avere la voce da papera",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere la risata da asino",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-8",
+   "cat": "silly",
+   "a": {
+    "text": "Vivere in una casa di gelatina",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Vivere in una casa di cuscini",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-9",
+   "cat": "silly",
+   "a": {
+    "text": "Avere un sasso che racconta barzellette",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere un cuscino che dà abbracci",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "silly-10",
+   "cat": "silly",
+   "a": {
+    "text": "Ruttare un arcobaleno",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Starnutire coriandoli",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "silly-11",
+   "cat": "silly",
+   "a": {
+    "text": "Avere sopracciglia che ballano",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere capelli che cambiano colore con l’umore",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-12",
+   "cat": "silly",
+   "a": {
+    "text": "Cavalcare una banana gigante",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Cavalcare una paperella di gomma gigante",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-13",
+   "cat": "silly",
+   "a": {
+    "text": "Portare un cappello che è sempre una torta",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Portare scarpe che squittiscono una canzone",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-14",
+   "cat": "silly",
+   "a": {
+    "text": "Avere una giraffa come divano",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere una balena come vasca da bagno",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-15",
+   "cat": "silly",
+   "a": {
+    "text": "Camminare solo all’indietro",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Camminare solo in punta di piedi",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-16",
+   "cat": "silly",
+   "a": {
+    "text": "Avere un draghetto in tasca",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Avere un elefantino sulla spalla",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-17",
+   "cat": "silly",
+   "a": {
+    "text": "Parlare con una voce da robot",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Parlare con una vocina da topolino",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-18",
+   "cat": "silly",
+   "a": {
+    "text": "Trasformare in gelatina tutto ciò che tocchi",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Trasformare in piume tutto ciò che tocchi",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-19",
+   "cat": "silly",
+   "a": {
+    "text": "Avere un trampolino come letto",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Avere una piscina di palline come vasca",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-20",
+   "cat": "silly",
+   "a": {
+    "text": "Indossare il pigiama ogni giorno",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Indossare un costume da supereroe ogni giorno",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-21",
+   "cat": "silly",
+   "a": {
+    "text": "Avere i baffi di zucchero filato",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Avere la barba di bolle di sapone",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-22",
+   "cat": "silly",
+   "a": {
+    "text": "Ballare ogni volta che senti una campanella",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Cantare ogni volta che vedi un gatto",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-23",
+   "cat": "silly",
+   "a": {
+    "text": "Essere seguito da una banda musicale",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere seguito da una fila di anatre",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-24",
+   "cat": "silly",
+   "a": {
+    "text": "Avere un pane che canta nel tostapane",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Avere un frigo che racconta barzellette",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "silly-25",
+   "cat": "silly",
+   "a": {
+    "text": "Scambiare i piedi con un canguro",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Scambiare le orecchie con un elefante",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-26",
+   "cat": "silly",
+   "a": {
+    "text": "Vivere in una scarpa gigante",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Vivere in una teiera gigante",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-27",
+   "cat": "silly",
+   "a": {
+    "text": "Fare il bagno nella crema pasticcera",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Fare il bagno in una schiuma più alta di te",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "silly-28",
+   "cat": "silly",
+   "a": {
+    "text": "Rimbalzare ovunque tu vada",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Rotolare ovunque tu vada",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-29",
+   "cat": "silly",
+   "a": {
+    "text": "Avere una risata che fa sbocciare i fiori",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Avere uno sbadiglio che fa nevicare",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-30",
+   "cat": "silly",
+   "a": {
+    "text": "Indossare un cappotto di foglie",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Indossare un cappotto di piume",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-31",
+   "cat": "silly",
+   "a": {
+    "text": "Avere un cane che miagola",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere un gatto che abbaia",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "silly-32",
+   "cat": "silly",
+   "a": {
+    "text": "Applaudire con i piedi",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Salutare con le orecchie",
+    "tags": [
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "silly-33",
+   "cat": "silly",
+   "a": {
+    "text": "Far crescere fiori tra i capelli",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Far crescere uva sui gomiti",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-34",
+   "cat": "silly",
+   "a": {
+    "text": "Avere uno spazzolino che parla",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere una spazzola che canta",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "silly-35",
+   "cat": "silly",
+   "a": {
+    "text": "Fare un fortino di cuscini grande come una casa",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare un castello di sabbia grande come una casa",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "silly-36",
+   "cat": "silly",
+   "a": {
+    "text": "Mangiare solo con un cucchiaio gigante",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Bere solo con una cannuccia a spirale",
+    "tags": [
+     "fun",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "silly-37",
+   "cat": "silly",
+   "a": {
+    "text": "Essere una gelatina tremolante per un minuto",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Essere una palla rimbalzina per un minuto",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "silly-38",
+   "cat": "silly",
+   "a": {
+    "text": "Avere un singhiozzo che suona come una tromba",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere uno starnuto che suona come un tamburo",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-1",
+   "cat": "sports",
+   "a": {
+    "text": "Segnare il gol della vittoria",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Fare la parata della vittoria",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "sports-2",
+   "cat": "sports",
+   "a": {
+    "text": "Essere un calciatore famoso",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere un ginnasta famoso",
+    "tags": [
+     "fast",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "sports-3",
+   "cat": "sports",
+   "a": {
+    "text": "Vincere una gara di corsa",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Vincere una gara di nuoto",
+    "tags": [
+     "fast",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-4",
+   "cat": "sports",
+   "a": {
+    "text": "Giocare a basket sulla Luna",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Giocare a tennis sott’acqua",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-5",
+   "cat": "sports",
+   "a": {
+    "text": "Imparare ad andare sullo skateboard",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Imparare ad andare sui pattini a rotelle",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-6",
+   "cat": "sports",
+   "a": {
+    "text": "Fare una gara a cavallo",
+    "tags": [
+     "animal",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Fare una gara in bici",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-7",
+   "cat": "sports",
+   "a": {
+    "text": "Giocare in squadra con i tuoi amici",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Allenare una squadra di bambini piccoli",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-8",
+   "cat": "sports",
+   "a": {
+    "text": "Scalare una parete d’arrampicata",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Attraversare un lago a nuoto",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-9",
+   "cat": "sports",
+   "a": {
+    "text": "Fare un gioco da tavolo tutto il giorno",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Giocare a palla tutto il giorno",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-10",
+   "cat": "sports",
+   "a": {
+    "text": "Essere campione di scacchi",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Essere campione di ping-pong",
+    "tags": [
+     "fast",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-11",
+   "cat": "sports",
+   "a": {
+    "text": "Pattinare sul ghiaccio",
+    "tags": [
+     "fast",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Sciare",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-12",
+   "cat": "sports",
+   "a": {
+    "text": "Fare la ruota alla perfezione",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Stare in verticale per un minuto intero",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-13",
+   "cat": "sports",
+   "a": {
+    "text": "Vincere una medaglia",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Vincere una coppa",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-14",
+   "cat": "sports",
+   "a": {
+    "text": "Giocare a nascondino in un castello",
+    "tags": [
+     "fun",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Giocare ad acchiapparello in un labirinto",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-15",
+   "cat": "sports",
+   "a": {
+    "text": "Essere bravo a ballare",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Essere bravo nelle arti marziali",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-16",
+   "cat": "sports",
+   "a": {
+    "text": "Giocare in uno stadio pieno di tifosi",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Giocare in un parco tranquillo con gli amici",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-17",
+   "cat": "sports",
+   "a": {
+    "text": "Calciare un pallone lontano come un campo",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Lanciare una palla alta come una torre",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-18",
+   "cat": "sports",
+   "a": {
+    "text": "Imparare a fare surf",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Imparare ad andare in barca a vela",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-19",
+   "cat": "sports",
+   "a": {
+    "text": "Avere una piscina in giardino",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Avere un campo da calcio in giardino",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-20",
+   "cat": "sports",
+   "a": {
+    "text": "Fare gare di go-kart",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare gare di barche a vela",
+    "tags": [
+     "nature",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-21",
+   "cat": "sports",
+   "a": {
+    "text": "Essere l’arbitro",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Essere il capitano della squadra",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-22",
+   "cat": "sports",
+   "a": {
+    "text": "Fare yoga con una capra",
+    "tags": [
+     "calm",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Fare jogging con un cane",
+    "tags": [
+     "fast",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "sports-23",
+   "cat": "sports",
+   "a": {
+    "text": "Fare uno sport non ancora inventato",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Essere il migliore in uno sport antichissimo",
+    "tags": [
+     "think",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-24",
+   "cat": "sports",
+   "a": {
+    "text": "Vincere con tanti punti di vantaggio",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Vincere per un solo punto",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-25",
+   "cat": "sports",
+   "a": {
+    "text": "Giocare in una squadra di robot",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Giocare in una squadra di animali",
+    "tags": [
+     "animal",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "sports-26",
+   "cat": "sports",
+   "a": {
+    "text": "Avere uno skateboard che vola",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Avere una bici che va sull’acqua",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-27",
+   "cat": "sports",
+   "a": {
+    "text": "Saltare su un trampolino gigante",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Scendere da uno scivolo d’acqua gigante",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "sports-28",
+   "cat": "sports",
+   "a": {
+    "text": "Fare sport sulla neve",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Fare sport in spiaggia",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-29",
+   "cat": "sports",
+   "a": {
+    "text": "Imparare a fare il giocoliere",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Imparare a usare lo yo-yo",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-30",
+   "cat": "sports",
+   "a": {
+    "text": "Tirare un rigore in finale",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Essere il portiere in finale",
+    "tags": [
+     "brave",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-31",
+   "cat": "sports",
+   "a": {
+    "text": "Fare sport sotto la pioggia",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare sport sotto il sole",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "sports-32",
+   "cat": "sports",
+   "a": {
+    "text": "Correre una maratona",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Nuotare per un chilometro",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "sports-33",
+   "cat": "sports",
+   "a": {
+    "text": "Vincere una partita di palla prigioniera",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Vincere una partita di tiro alla fune",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "sports-34",
+   "cat": "sports",
+   "a": {
+    "text": "Arrampicarti sull’albero più alto del parco",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Trovare il nascondiglio migliore del parco",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "sports-35",
+   "cat": "sports",
+   "a": {
+    "text": "Fare uno sport dove vincono tutti",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Fare uno sport dove batti il tuo record",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "sports-36",
+   "cat": "sports",
+   "a": {
+    "text": "Fare il tifo per la tua squadra",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Ricevere il tifo della tua squadra",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-1",
+   "cat": "space",
+   "a": {
+    "text": "Camminare sulla Luna",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Nuotare nell’oceano più profondo",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-2",
+   "cat": "space",
+   "a": {
+    "text": "Vedere una stella cadente",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Vedere una balena saltare fuori dal mare",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-3",
+   "cat": "space",
+   "a": {
+    "text": "Vivere su Marte",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Vivere sotto il mare",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-4",
+   "cat": "space",
+   "a": {
+    "text": "Visitare gli anelli di Saturno",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Visitare la grande macchia rossa di Giove",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-5",
+   "cat": "space",
+   "a": {
+    "text": "Piantare una foresta",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Pulire una spiaggia",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "space-6",
+   "cat": "space",
+   "a": {
+    "text": "Essere un astronauta",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Essere un biologo marino",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-7",
+   "cat": "space",
+   "a": {
+    "text": "Guardare l’alba da una montagna",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Guardare il tramonto da una spiaggia",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-8",
+   "cat": "space",
+   "a": {
+    "text": "Vedere un arcobaleno ogni giorno",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Vedere la neve ogni giorno",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-9",
+   "cat": "space",
+   "a": {
+    "text": "Scoprire un nuovo pianeta",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Scoprire una nuova stella",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-10",
+   "cat": "space",
+   "a": {
+    "text": "Fluttuare nello spazio",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Galleggiare in un mare caldo",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-11",
+   "cat": "space",
+   "a": {
+    "text": "Passare una notte nella foresta pluviale",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Passare una notte nel deserto",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-12",
+   "cat": "space",
+   "a": {
+    "text": "Dare un nome a una stella",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Dare un nome a un nuovo fiore",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-13",
+   "cat": "space",
+   "a": {
+    "text": "Vivere dove è sempre estate",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Vivere dove è sempre inverno",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-14",
+   "cat": "space",
+   "a": {
+    "text": "Incontrare un alieno simpatico",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Trovare il fossile di un nuovo dinosauro",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-15",
+   "cat": "space",
+   "a": {
+    "text": "Avere un telescopio che vede tutto",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere un sottomarino che va ovunque",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-16",
+   "cat": "space",
+   "a": {
+    "text": "Guardare un temporale da una finestra calda",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Guardare la neve cadere da una baita",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-17",
+   "cat": "space",
+   "a": {
+    "text": "Cavalcare una cometa",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Rimbalzare sulla Luna",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-18",
+   "cat": "space",
+   "a": {
+    "text": "Esplorare un vulcano con un robot",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Esplorare un ghiacciaio con un cane da slitta",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-19",
+   "cat": "space",
+   "a": {
+    "text": "Curare un orto su un’astronave",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Curare una fattoria sotto il mare",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "space-20",
+   "cat": "space",
+   "a": {
+    "text": "Sentire il rumore del mare per sempre",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Sentire il canto degli uccelli per sempre",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-21",
+   "cat": "space",
+   "a": {
+    "text": "Contare tutti gli alberi di una foresta",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Contare tutte le onde di una spiaggia",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-22",
+   "cat": "space",
+   "a": {
+    "text": "Essere una nuvola per un giorno",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Essere una goccia di pioggia per un giorno",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-23",
+   "cat": "space",
+   "a": {
+    "text": "Coltivare il girasole più alto",
+    "tags": [
+     "nature",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Coltivare l’anguria più grande",
+    "tags": [
+     "nature",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "space-24",
+   "cat": "space",
+   "a": {
+    "text": "Avere una finestra che dà sullo spazio",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere una finestra che dà sul mare",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-25",
+   "cat": "space",
+   "a": {
+    "text": "Trovare una grotta con vermi luminosi",
+    "tags": [
+     "nature",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Trovare una spiaggia con onde luminose",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "space-26",
+   "cat": "space",
+   "a": {
+    "text": "Salvare una barriera corallina",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Salvare una foresta pluviale",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-27",
+   "cat": "space",
+   "a": {
+    "text": "Essere il primo su un nuovo pianeta",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Essere il primo a incontrare un nuovo animale",
+    "tags": [
+     "animal",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-28",
+   "cat": "space",
+   "a": {
+    "text": "Passare un anno su una stazione spaziale",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Passare un anno su una nave di ricerca",
+    "tags": [
+     "nature",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "space-29",
+   "cat": "space",
+   "a": {
+    "text": "Guardare le stelle ogni notte",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Esplorare le pozze tra gli scogli ogni giorno",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-30",
+   "cat": "space",
+   "a": {
+    "text": "Tenere una stellina appena nata in mano",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Tenere un arcobaleno in mano",
+    "tags": [
+     "make",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-31",
+   "cat": "space",
+   "a": {
+    "text": "Visitare il posto più caldo della Terra",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Visitare il posto più freddo della Terra",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "space-32",
+   "cat": "space",
+   "a": {
+    "text": "Vedere un’eclissi totale",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Vedere una pioggia di stelle cadenti",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "space-33",
+   "cat": "space",
+   "a": {
+    "text": "Avere un giardino pieno di farfalle",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere un giardino pieno di uccellini",
+    "tags": [
+     "nature",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-34",
+   "cat": "space",
+   "a": {
+    "text": "Vivere su un’isola che galleggia",
+    "tags": [
+     "calm",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Vivere su una montagna sopra le nuvole",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "space-35",
+   "cat": "space",
+   "a": {
+    "text": "Imparare il nome di ogni stella",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Imparare il nome di ogni uccello",
+    "tags": [
+     "think",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "space-36",
+   "cat": "space",
+   "a": {
+    "text": "Piantare un albero per ogni amico che hai",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Fare una casetta per ogni uccello che vedi",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "space-37",
+   "cat": "space",
+   "a": {
+    "text": "Scoprire cosa c’è dentro un buco nero",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Scoprire cosa vive in fondo al mare",
+    "tags": [
+     "think",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-1",
+   "cat": "future",
+   "a": {
+    "text": "Avere un robot come migliore amico",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Avere un dinosauro come migliore amico",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-2",
+   "cat": "future",
+   "a": {
+    "text": "Viaggiare su un’auto volante",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Viaggiare su un’auto che si guida da sola",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-3",
+   "cat": "future",
+   "a": {
+    "text": "Vivere in una casa che si pulisce da sola",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Vivere in una casa che si sposta ovunque",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-4",
+   "cat": "future",
+   "a": {
+    "text": "Inventare un nuovo tipo di giocattolo",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Inventare un nuovo tipo di cibo",
+    "tags": [
+     "make",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "future-5",
+   "cat": "future",
+   "a": {
+    "text": "Avere un telefono che ti teletrasporta",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Avere occhiali che traducono ogni lingua",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "future-6",
+   "cat": "future",
+   "a": {
+    "text": "Essere un inventore",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Essere uno scienziato",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-7",
+   "cat": "future",
+   "a": {
+    "text": "Vivere in una città sotto il mare",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Vivere in una città tra le nuvole",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-8",
+   "cat": "future",
+   "a": {
+    "text": "Avere un robot che fa le faccende",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere un robot che gioca con te",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-9",
+   "cat": "future",
+   "a": {
+    "text": "Vedere cento anni nel futuro",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Vedere cento anni nel passato",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-10",
+   "cat": "future",
+   "a": {
+    "text": "Costruire una macchina del tempo",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Costruire un razzo",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "future-11",
+   "cat": "future",
+   "a": {
+    "text": "Progettare un nuovo parco divertimenti",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Progettare una nuova città",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-12",
+   "cat": "future",
+   "a": {
+    "text": "Avere scarpe che ti fanno volare",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Avere una giacca che ti rende invisibile",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-13",
+   "cat": "future",
+   "a": {
+    "text": "Inventare una macchina che rende tutti gentili",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Inventare una macchina che fa ridere tutti",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-14",
+   "cat": "future",
+   "a": {
+    "text": "Parlare con un computer che sa tutto",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Parlare con un animale che sa tutto",
+    "tags": [
+     "animal",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-15",
+   "cat": "future",
+   "a": {
+    "text": "Vivere su una stazione spaziale",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Vivere in una casa sull’albero intelligente",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-16",
+   "cat": "future",
+   "a": {
+    "text": "Avere una stampante 3D per giocattoli",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere una stampante 3D per il cibo",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-17",
+   "cat": "future",
+   "a": {
+    "text": "Creare un videogioco",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Creare un gioco da tavolo",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-18",
+   "cat": "future",
+   "a": {
+    "text": "Avere un animale ologramma",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Avere un animale robot",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-19",
+   "cat": "future",
+   "a": {
+    "text": "Pulire gli oceani con una nuova invenzione",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Piantare foreste con una nuova invenzione",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-20",
+   "cat": "future",
+   "a": {
+    "text": "Avere un’auto a forma di scarpa",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere un autobus a forma di balena",
+    "tags": [
+     "fun",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "future-21",
+   "cat": "future",
+   "a": {
+    "text": "Vedere persone vivere su Marte",
+    "tags": [
+     "tech",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Vedere città senza spazzatura",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-22",
+   "cat": "future",
+   "a": {
+    "text": "Avere un letto che avvera i tuoi sogni",
+    "tags": [
+     "calm",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere uno specchio che mostra il futuro",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-23",
+   "cat": "future",
+   "a": {
+    "text": "Costruire un robot che disegna",
+    "tags": [
+     "tech",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Costruire un robot che balla",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-24",
+   "cat": "future",
+   "a": {
+    "text": "Produrre energia con le risate",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Produrre energia con la musica",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-25",
+   "cat": "future",
+   "a": {
+    "text": "Essere un designer famoso",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere un ingegnere famoso",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-26",
+   "cat": "future",
+   "a": {
+    "text": "Avere uno zaino a reazione",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere un hoverboard",
+    "tags": [
+     "fast",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-27",
+   "cat": "future",
+   "a": {
+    "text": "Avere una biblioteca dove i libri ti leggono",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere una biblioteca dove entri nelle storie",
+    "tags": [
+     "make",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-28",
+   "cat": "future",
+   "a": {
+    "text": "Inventare un nuovo colore",
+    "tags": [
+     "make",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Inventare un nuovo strumento musicale",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-29",
+   "cat": "future",
+   "a": {
+    "text": "Avere un robot cuoco",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Avere un robot giardiniere",
+    "tags": [
+     "tech",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "future-30",
+   "cat": "future",
+   "a": {
+    "text": "Creare vestiti che cambiano colore",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Creare vestiti che tengono sempre caldo",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-31",
+   "cat": "future",
+   "a": {
+    "text": "Avere in casa uno scivolo fino in cucina",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere in casa una zipline fino al giardino",
+    "tags": [
+     "fun",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "future-32",
+   "cat": "future",
+   "a": {
+    "text": "Mandare un messaggio a chi vivrà tra mille anni",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Ricevere un messaggio di mille anni fa",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "future-33",
+   "cat": "future",
+   "a": {
+    "text": "Avere un’auto che va a limonata",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Avere un’auto che va a energia solare",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "future-34",
+   "cat": "future",
+   "a": {
+    "text": "Avere un ombrello che ferma tutta la pioggia",
+    "tags": [
+     "tech",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere stivali che tengono lontano il fango",
+    "tags": [
+     "tech",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-35",
+   "cat": "future",
+   "a": {
+    "text": "Costruire una casa per gli animali",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   },
+   "b": {
+    "text": "Costruire una casa per i robot",
+    "tags": [
+     "tech",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "future-36",
+   "cat": "future",
+   "a": {
+    "text": "Inventare qualcosa che usano tutti",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Inventare qualcosa che usi solo tu",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "future-37",
+   "cat": "future",
+   "a": {
+    "text": "Imparare scaricando le cose nel cervello",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Imparare provando da solo",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "future-38",
+   "cat": "future",
+   "a": {
+    "text": "Avere un drone che consegna merende",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Avere un drone che porta a spasso il cane",
+    "tags": [
+     "tech",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-1",
+   "cat": "family",
+   "a": {
+    "text": "Fare un pigiama party col tuo migliore amico",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare un pigiama party con i tuoi cugini",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-2",
+   "cat": "family",
+   "a": {
+    "text": "Organizzare una festa a sorpresa",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Ricevere una festa a sorpresa",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-3",
+   "cat": "family",
+   "a": {
+    "text": "Avere dieci fratelli e sorelle",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Essere figlio unico",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-4",
+   "cat": "family",
+   "a": {
+    "text": "Andare in vacanza con i nonni",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Andare in vacanza con gli amici",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-5",
+   "cat": "family",
+   "a": {
+    "text": "Farti un nuovo amico ogni giorno",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Tenere un migliore amico per sempre",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-6",
+   "cat": "family",
+   "a": {
+    "text": "Fare una serata film in famiglia",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Fare una serata giochi in famiglia",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-7",
+   "cat": "family",
+   "a": {
+    "text": "Scrivere una lettera a un amico",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Fare un regalo per un amico",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-8",
+   "cat": "family",
+   "a": {
+    "text": "Avere un amico che sa ascoltare",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere un amico davvero divertente",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-9",
+   "cat": "family",
+   "a": {
+    "text": "Aiutare un amico con i compiti",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Aiutare un amico a costruire un fortino",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-10",
+   "cat": "family",
+   "a": {
+    "text": "Fare i biscotti con la famiglia",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Fare un puzzle con la famiglia",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-11",
+   "cat": "family",
+   "a": {
+    "text": "Avere una stretta di mano segreta",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Avere un linguaggio in codice segreto",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-12",
+   "cat": "family",
+   "a": {
+    "text": "Andare a un concerto con la famiglia",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Andare al museo con la famiglia",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-13",
+   "cat": "family",
+   "a": {
+    "text": "Abitare accanto al tuo migliore amico",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Abitare accanto ai nonni",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-14",
+   "cat": "family",
+   "a": {
+    "text": "Fare una festa per il tuo animale",
+    "tags": [
+     "animal",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Fare una festa per il tuo insegnante",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-15",
+   "cat": "family",
+   "a": {
+    "text": "Condividere il tuo dolce",
+    "tags": [
+     "kind",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Condividere i tuoi giochi",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-16",
+   "cat": "family",
+   "a": {
+    "text": "Essere il più simpatico della famiglia",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere il più gentile della famiglia",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-17",
+   "cat": "family",
+   "a": {
+    "text": "Fare un picnic con tutti i tuoi amici",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Passare una giornata tranquilla con un amico",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-18",
+   "cat": "family",
+   "a": {
+    "text": "Fare un video di famiglia",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Fare un ricettario di famiglia",
+    "tags": [
+     "food",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-19",
+   "cat": "family",
+   "a": {
+    "text": "Fare giochi da tavolo con i nonni",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Giocare a calcio con i cugini",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-20",
+   "cat": "family",
+   "a": {
+    "text": "Avere un amico di un altro Paese",
+    "tags": [
+     "social",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere un amico di un altro pianeta",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-21",
+   "cat": "family",
+   "a": {
+    "text": "Organizzare la prossima gita in famiglia",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Organizzare la prossima cena in famiglia",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-22",
+   "cat": "family",
+   "a": {
+    "text": "Avere una foto di famiglia gigante sul muro",
+    "tags": [
+     "social",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere un albero genealogico dipinto sul muro",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-23",
+   "cat": "family",
+   "a": {
+    "text": "Dare gli abbracci migliori",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Dare i migliori batti cinque",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-24",
+   "cat": "family",
+   "a": {
+    "text": "Saper tirare su il morale",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Saper risolvere i problemi",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-25",
+   "cat": "family",
+   "a": {
+    "text": "Passare un giorno col tuo parente preferito",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Passare un giorno col tuo insegnante preferito",
+    "tags": [
+     "think",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-26",
+   "cat": "family",
+   "a": {
+    "text": "Fare una grande cena in famiglia ogni sera",
+    "tags": [
+     "social",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Fare colazione a letto una volta a settimana",
+    "tags": [
+     "calm",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "family-27",
+   "cat": "family",
+   "a": {
+    "text": "Inventare un balletto con la famiglia",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Inventare una canzone con la famiglia",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-28",
+   "cat": "family",
+   "a": {
+    "text": "Avere un club con i tuoi amici",
+    "tags": [
+     "social",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Avere una band con i tuoi amici",
+    "tags": [
+     "social",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "family-29",
+   "cat": "family",
+   "a": {
+    "text": "Far sentire benvenuto un nuovo compagno",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Aiutare un animale smarrito a tornare a casa",
+    "tags": [
+     "kind",
+     "animal"
+    ]
+   }
+  },
+  {
+   "id": "family-30",
+   "cat": "family",
+   "a": {
+    "text": "Scambiare casa con un amico per un giorno",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Scambiare famiglia con un amico per un giorno",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-31",
+   "cat": "family",
+   "a": {
+    "text": "Avere un amico che ama i tuoi stessi giochi",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un amico che ti insegna giochi nuovi",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "family-32",
+   "cat": "family",
+   "a": {
+    "text": "Festeggiare il compleanno al mare",
+    "tags": [
+     "nature",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Festeggiare il compleanno sulla neve",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "family-33",
+   "cat": "family",
+   "a": {
+    "text": "Ricevere una lettera da un amico",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Ricevere una visita a sorpresa da un amico",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "family-34",
+   "cat": "family",
+   "a": {
+    "text": "Avere un animale di famiglia",
+    "tags": [
+     "animal",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Avere un orto di famiglia",
+    "tags": [
+     "nature",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-35",
+   "cat": "family",
+   "a": {
+    "text": "Costruire una tana con i tuoi fratelli",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Fare un pupazzo di neve con i tuoi genitori",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "family-36",
+   "cat": "family",
+   "a": {
+    "text": "Creare una capsula del tempo con gli amici",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Creare un album dei ricordi con gli amici",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "family-37",
+   "cat": "family",
+   "a": {
+    "text": "Dire grazie a qualcuno ogni giorno",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Far ridere qualcuno ogni giorno",
+    "tags": [
+     "fun",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "family-38",
+   "cat": "family",
+   "a": {
+    "text": "Essere chi organizza le cose divertenti",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere chi partecipa a tutto",
+    "tags": [
+     "fun",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-1",
+   "cat": "deep",
+   "a": {
+    "text": "Sapere tutto sul passato",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Sapere un pochino del futuro",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-2",
+   "cat": "deep",
+   "a": {
+    "text": "Essere molto coraggioso",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Essere molto gentile",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-3",
+   "cat": "deep",
+   "a": {
+    "text": "Essere molto intelligente",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Essere molto creativo",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-4",
+   "cat": "deep",
+   "a": {
+    "text": "Dire sempre la verità",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Sapere sempre la cosa giusta da dire",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-5",
+   "cat": "deep",
+   "a": {
+    "text": "Avere tantissimi amici",
+    "tags": [
+     "social",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere un amico molto stretto",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-6",
+   "cat": "deep",
+   "a": {
+    "text": "Essere famoso",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Essere felice e sconosciuto",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-7",
+   "cat": "deep",
+   "a": {
+    "text": "Avere un desiderio adesso",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Avere tre desideri da grande",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-8",
+   "cat": "deep",
+   "a": {
+    "text": "Non annoiarti mai",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Non essere mai triste",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-9",
+   "cat": "deep",
+   "a": {
+    "text": "Ricordare ogni sogno",
+    "tags": [
+     "think",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Scegliere cosa sognare",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-10",
+   "cat": "deep",
+   "a": {
+    "text": "Essere il migliore in una cosa",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Essere bravo in tante cose",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "deep-11",
+   "cat": "deep",
+   "a": {
+    "text": "Saper risolvere ogni litigio",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Saper tirare su di morale chiunque",
+    "tags": [
+     "kind",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-12",
+   "cat": "deep",
+   "a": {
+    "text": "Avere più tempo per giocare",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere più tempo per imparare",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-13",
+   "cat": "deep",
+   "a": {
+    "text": "Vivere in una grande città",
+    "tags": [
+     "social",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Vivere in campagna",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-14",
+   "cat": "deep",
+   "a": {
+    "text": "Leggere i pensieri di qualcuno per un giorno",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Far leggere i tuoi a qualcuno per un giorno",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-15",
+   "cat": "deep",
+   "a": {
+    "text": "Essere un grande capo",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere un grande aiutante",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-16",
+   "cat": "deep",
+   "a": {
+    "text": "Fare una grande differenza",
+    "tags": [
+     "brave",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Fare tante piccole differenze",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-17",
+   "cat": "deep",
+   "a": {
+    "text": "Ritrovare un tesoro perduto",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Ritrovare un amico perso di vista",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-18",
+   "cat": "deep",
+   "a": {
+    "text": "Fare un regalo",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Ricevere un regalo",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-19",
+   "cat": "deep",
+   "a": {
+    "text": "Vincere un premio",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Aiutare un amico a vincere un premio",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-20",
+   "cat": "deep",
+   "a": {
+    "text": "Imparare dagli errori",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Non sbagliare mai",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-21",
+   "cat": "deep",
+   "a": {
+    "text": "Essere bravo ad ascoltare",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Essere bravo a spiegare",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-22",
+   "cat": "deep",
+   "a": {
+    "text": "Essere sempre in anticipo",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Essere sempre rilassato con l’orario",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-23",
+   "cat": "deep",
+   "a": {
+    "text": "Parlare tutte le lingue",
+    "tags": [
+     "think",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Suonare tutti gli strumenti",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-24",
+   "cat": "deep",
+   "a": {
+    "text": "Avere una mattina tranquilla",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Avere una mattina piena di cose",
+    "tags": [
+     "fast",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-25",
+   "cat": "deep",
+   "a": {
+    "text": "Pianificare tutto",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Improvvisare strada facendo",
+    "tags": [
+     "fun",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "deep-26",
+   "cat": "deep",
+   "a": {
+    "text": "Vivere una grande avventura una volta",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Vivere piccole avventure ogni settimana",
+    "tags": [
+     "fun",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "deep-27",
+   "cat": "deep",
+   "a": {
+    "text": "Tenere la camera in ordine",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Tenere la camera accogliente e disordinata",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-28",
+   "cat": "deep",
+   "a": {
+    "text": "Aiutare il pianeta",
+    "tags": [
+     "kind",
+     "nature"
+    ]
+   },
+   "b": {
+    "text": "Aiutare le persone della tua città",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "deep-29",
+   "cat": "deep",
+   "a": {
+    "text": "Essere un grande narratore",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Essere bravissimo a risolvere problemi",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "deep-30",
+   "cat": "deep",
+   "a": {
+    "text": "Passare un giorno senza schermi",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Passare un giorno senza dolci",
+    "tags": [
+     "brave",
+     "food"
+    ]
+   }
+  },
+  {
+   "id": "deep-31",
+   "cat": "deep",
+   "a": {
+    "text": "Essere uno che prova cose nuove",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Essere uno che finisce ciò che inizia",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-32",
+   "cat": "deep",
+   "a": {
+    "text": "Chiedere scusa per primo",
+    "tags": [
+     "kind",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Dire grazie per primo",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-33",
+   "cat": "deep",
+   "a": {
+    "text": "Avere una memoria straordinaria",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Avere una fantasia straordinaria",
+    "tags": [
+     "make",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "deep-34",
+   "cat": "deep",
+   "a": {
+    "text": "Rendere il mondo un po’ più colorato",
+    "tags": [
+     "make",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Rendere il mondo un po’ più silenzioso",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "deep-35",
+   "cat": "deep",
+   "a": {
+    "text": "Poter mettere in pausa un momento felice",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Poter rivivere un momento felice",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-36",
+   "cat": "deep",
+   "a": {
+    "text": "Mostrare a tutti un tuo talento segreto",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Tenere un talento segreto solo per te",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "deep-37",
+   "cat": "deep",
+   "a": {
+    "text": "Fare tante domande",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Trovare tante risposte",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "deep-38",
+   "cat": "deep",
+   "a": {
+    "text": "Restare bambino più a lungo",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Crescere un po’ più in fretta",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  }
+ ]
+}
