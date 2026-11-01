@@ -1868,3 +1868,10 @@ or squashed (tap targets 40 px or more, never half again taller than wide), answ
 scrolling, and the page never scrolls sideways. A screenshot of every check is kept for a look by eye. Found with it:
 the player page's `<body>` had the class `lv-player` (the roster row's flex style), which squeezed every live game into a
 narrow column on tablets.
+
+## Admin game tool (November 2026)
+
+`server/routes/admin-tool.js`: find a game, read its live code and put a fixed version live from outside a browser
+(used to fix a member's published game for them). Off unless `ADMIN_API_TOKEN` (32+ characters) is set; bearer token,
+rate-limited, audited as the admin account; new versions pass the usual safety scan, and a version waiting for review
+is approved as the admin. Remove the token when the fix is done.
