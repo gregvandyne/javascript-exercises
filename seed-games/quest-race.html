@@ -166,6 +166,56 @@
 <script src="/vendor/oomba-kit/1.1.0/packs/bridge-3d.js" integrity="sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
+/* Solo practice questions from the Oomba Live question bank (the same code in Quest Race, Question Battle and Brain
+   Board). The bank for the player's language is a reviewed file in /vendor/data/live-bank/, built by
+   scripts/live-bank.js, which also writes the version and checksums below. SoloBank.choose({ board }, done) shows the
+   pack's setup card (subject, level, how many questions; a board's subjects) and calls done(items, choice), or
+   done(null) when the pack can't load (the game then plays its own built-in questions). The choice is remembered,
+   and questions already played come last until every one has been seen. */
+/* live-bank:begin */var BANK_VER = '1.0.0-f0488793', BANK_SRI = {"en":"sha384-jnde/y/3isSFp3ZBEz1jI4lUCqibFk8Hynkttmy348dzAmYYI0vZzJG0xC72fzeO","en-GB":"sha384-T6t3+Bk0LLjVb4ugg5ILi46AW1ZXHKZtEHz6BqvcgBxZwvsg7u1PoqEOIbw2+tvT","pt":"sha384-ODz/eBNh+GZoWAUKWdv/T99iPpSk/zut6vBA72Q/URbqI9+uVQVGhVwRDHTYCEh7","fr":"sha384-kKSyw1Okqe4zWsudl0jdF/G4jlhWITM4uSDY5jeM4VeOl+bHkPqz8ELt+imGovzP","es":"sha384-Z8bEzHdpK6fmFVqpbN+4DCFyego5zv6HhPl1K6Py/e618N/bGwY1X26tarjs0nmT","de":"sha384-+NPTAVbY14TQyAjqY5kJe6hDjYSWi1TCebvO0wgAjHdxRFI+kQTNAO7sC51HD18x","he":"sha384-DnFbG8QJQ3EVEJmRO5omuHg0vVlT5g8J9s90mEHKkjzcmbnhW2r/jHfTbHh/sIgT","ja":"sha384-329VW9plMwnOe/61O2aRIbao5c41UFRv27X+YFs5kDbwT7O9Fidg7oZr7JArscjL","ar":"sha384-zjXC3BZz0CzT4EeZRszuxktAoL1BKgYCzfML7rhveyJT/IZXpY3kPZyJExu0lsc0","ru":"sha384-K8atbd6t97NogWC1OQ83EMu0GYMLcR+xtb4+TsTYYYvrISQREfWSZgW1hzkUjXu8","it":"sha384-YXC+fBEoKtxZIwA0veUlcntZxzdRZJk/HKyaqNt/Oy+dzlquFc6RR5JWqsBllApo","zh-Hant":"sha384-7925SSoWNsFKgFiVuWjl/sbUVldRXmXyG8tDF2/BnkTSbdQRKuVVIvWzQGY1mNri","nl":"sha384-vbjVuhrH6mNeZafVg+bWqHhI4m51zC3+LBOAWvUcU4bhaMKDnUcw7pqkDzGhvNv+"};/* live-bank:end */
+window.SoloBank = (function () {
+  var pack = null, tried = false, waiting = [];
+  var store = {
+    get: function (k) { try { return window.BRB && BRB.storage ? BRB.storage.get(k) : null; } catch (e) { return null; } },
+    set: function (k, v) { try { if (window.BRB && BRB.storage) BRB.storage.set(k, v); } catch (e) { /* ignore */ } }
+  };
+  function lang() {
+    var l = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+    return BANK_SRI[l] ? l : BANK_SRI[l.split('-')[0]] ? l.split('-')[0] : 'en';
+  }
+  function load(cb) {
+    if (pack || tried) return cb(pack);
+    waiting.push(cb); if (waiting.length > 1) return;
+    var code = lang(), done = function (p) { tried = true; pack = p; var w = waiting; waiting = []; w.forEach(function (f) { f(p); }); };
+    if (!BANK_VER || !BANK_SRI[code]) return done(null);
+    var s = document.createElement('script');
+    s.src = '/vendor/data/live-bank/' + BANK_VER + '/' + code + '.js'; s.integrity = BANK_SRI[code]; s.crossOrigin = 'anonymous';
+    var timer = setTimeout(function () { if (!tried) done(null); }, 9000);
+    s.onload = function () { clearTimeout(timer); if (!tried) done((window.OombaBank || {})[code] || null); };
+    s.onerror = function () { clearTimeout(timer); if (!tried) done(null); };
+    document.head.appendChild(s);
+  }
+  function choose(opts, cb) {
+    opts = opts || {};
+    load(function (p) {
+      if (!p) return cb(null, null);
+      var bank = p.makeBank(p.data, p.strings, Math.random), code = lang(), seenKey = 'oomba-bank-seen-' + code;
+      var saved = store.get('oomba-bank-choice') || {};
+      p.setupCard(document, document.body, { bank: bank, strings: p.strings.solo, board: !!opts.board, saved: saved }, function (c) {
+        store.set('oomba-bank-choice', c);
+        var list = store.get(seenKey); list = Array.isArray(list) ? list : [];
+        var seen = new Set(list);
+        var items = opts.board ? bank.board({ subjects: c.subjects, level: c.level, seen: seen }) : bank.pick({ subject: c.subject, level: c.level, count: c.count, seen: seen });
+        items.forEach(function (it) { if (it.id && it.id.indexOf('math:') !== 0) list.push(it.id); });
+        store.set(seenKey, list.slice(-1500));
+        cb(items, c);
+      });
+    });
+  }
+  return { choose: choose, load: load };
+})();
+</script>
+<script>
 /* QUEST RACE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Questions on every device; a right
    answer is a gem and a dash along a race path across a 3D island: Sunny Beach, the Jungle, the Volcano Pass, the Sky
    Bridge and the Castle finish. The projector is a sports broadcast: a director camera, banners ("takes the lead!",
@@ -263,8 +313,32 @@
     if (!r) { r = { seat: seat, shown: 0, target: 0, gems: 0, lane: R.size, x: START.x, y: 0, z: START.z, h: 0, sp: 0, streak: 0, boost: 0, burst: 0, stumble: 0, done: 0 }; R.set(seat, r); place(r); }
     return r;
   }
+  // Runners never stand on each other: runners close together on the path (a pack) spread across its width, at most
+  // FORM.cols side by side, and a bigger pack runs in rows one behind the other. Slots go by seat, so nobody swaps
+  // places in a pack; each runner eases into its slot (r.lat across, r.back behind its real spot).
+  var FORM = { cols: 4, gap: 1.3, row: 1.7, near: 1.8 };
+  function formation(dt) {
+    var list = Array.from(R.values()).sort(function (a, b) { return a.shown - b.shown; }), packs = [], cur = [];
+    list.forEach(function (r) {
+      if (cur.length && (r.shown - cur[cur.length - 1].shown) / 1000 * total > FORM.near) { packs.push(cur); cur = []; }
+      cur.push(r);
+    });
+    if (cur.length) packs.push(cur);
+    var k = Math.min(1, dt * 3.5);
+    packs.forEach(function (pack) {
+      pack.sort(function (a, b) { return a.seat - b.seat; });
+      var rows = Math.ceil(pack.length / FORM.cols);
+      pack.forEach(function (r, j) {
+        var row = Math.floor(j / FORM.cols), inRow = row < rows - 1 ? FORM.cols : pack.length - row * FORM.cols, col = j % FORM.cols;
+        // rows alternate their offset by half a gap, so the names of one row sit between those of the next
+        var lat = (col - (inRow - 1) / 2) * FORM.gap + (row % 2 ? FORM.gap / 4 : 0), back = row * FORM.row;
+        if (r.lat === undefined) { r.lat = lat; r.back = back; }
+        r.lat += (lat - r.lat) * k; r.back += (back - r.back) * k;
+      });
+    });
+  }
   function place(r) {
-    var p = at(r.shown / 1000), lane = ((r.lane % 8) - 3.5) * 0.55;
+    var back = (r.back || 0) / Math.max(1, total) * 1000, p = at(Math.max(0, r.shown - back) / 1000), lane = r.lat || 0;
     r.x = p.x - p.dz * lane; r.z = p.z + p.dx * lane; r.y = p.y; r.h = Math.atan2(p.dx, p.dz);
   }
   var phase = L.phase, me = L.me, mySeat = me ? me.seat : -1;
@@ -680,8 +754,9 @@
       } else r.sp = 0;
       if (r.stumble) r.stumble = Math.max(0, r.stumble - dt);
       if (r.burst) r.burst = Math.max(0, r.burst - dt);
-      place(r);
     });
+    formation(dt);
+    R.forEach(place);
     // the leader enters a new zone: a banner on the projector (and in practice)
     if ((host || solo) && inRace() && !ended) {
       var top = null; R.forEach(function (r) { if (!top || r.shown > top.shown) top = r; });
@@ -716,9 +791,14 @@
     });
     return out;
   }
+  // Playing alone: choose the questions first (subject, level, how many), then race.
   function practiceStart() {
+    practice.on = true; phase = 'lobby';
+    window.SoloBank.choose({}, function (items) { practiceGo(items && items.length ? items : null); });
+  }
+  function practiceGo(items) {
     practice.on = true; mySeat = 0; ended = false; finished = false; finishCount = 0; leader = null; zoneSeen = 0; myStreak = 0; podium = [];
-    R.clear(); practice.i = -1; practice.items = makeItems(practice.rnd);
+    R.clear(); practice.i = -1; practice.items = items || makeItems(practice.rnd);
     runner(0); BOTS.forEach(function (b, k) { var r = runner(-(k + 1)); r.bot = b; });
     $('endcard').classList.add('qr-hide'); $('stand').classList.add('qr-hide');
     for (var k = 0; k < 3; k++) $('medal' + k).hidden = true;

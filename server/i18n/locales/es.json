@@ -5253,6 +5253,48 @@
         "wait": "Espera un momento y vuelve a intentarlo.",
         "notAllowed": "Solo los docentes de la clase pueden hacer eso."
       }
+    },
+    "bank": {
+      "subject": {
+        "math": "Matemáticas",
+        "science": "Ciencias",
+        "geography": "Geografía",
+        "words": "Lectura y palabras",
+        "history": "Historia",
+        "general": "Cultura general",
+        "mixed": "Un poco de todo"
+      },
+      "level": {
+        "a6": "6–7 años",
+        "a8": "8–9 años",
+        "a10": "10–11 años",
+        "a12": "12–14 años"
+      },
+      "math": {
+        "missing": "{a} + ? = {c}. ¿Qué número falta?",
+        "div": "¿Cuánto es {a} ÷ {b}?",
+        "frac": "¿Cuánto es {n}/{d} de {x}?",
+        "pct": "¿Cuánto es el {p} % de {x}?",
+        "alg": "Si {a}x + {b} = {c}, ¿cuánto vale x?",
+        "sq": "¿Cuánto es {a} al cuadrado?"
+      },
+      "solo": {
+        "title": "Elige tus preguntas",
+        "subject": "Materia",
+        "level": "Nivel",
+        "count": "¿Cuántas preguntas?",
+        "start": "¡Empezar!",
+        "boardSubjects": "Materias del tablero (elige de 2 a 6)"
+      }
+    },
+    "bankUi": {
+      "bank": "Banco de preguntas: elige materia y nivel",
+      "bankGroup": "Banco de preguntas",
+      "subject": "Materia",
+      "level": "Nivel",
+      "count": "Número de preguntas",
+      "boardSubjects": "Materias del tablero (elige de 2 a 6)",
+      "bankHint": "Preguntas nuevas en cada partida, escritas para cada edad."
     }
   },
   "match": {

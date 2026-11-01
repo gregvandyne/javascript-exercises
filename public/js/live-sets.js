@@ -18,6 +18,17 @@ if (form) {
     const card = pick && form.querySelector(`input[name="pick"][value="${CSS.escape(pick)}"]`);
     const quiz = pick.startsWith('mode:') || (card && card.closest('.lv-pick') && card.closest('.lv-pick').dataset.quiz === '1');
     if (sets) sets.hidden = !quiz;
+    // The question bank: subject, level and how many; a board (Brain Board) ticks its subjects instead.
+    const bank = $('lv-bank'), setSel = $('lv-set');
+    if (bank && setSel) {
+      bank.hidden = !quiz || setSel.value !== 'bank';
+      const board = pick === 'mode:board';
+      for (const el of bank.querySelectorAll('.lv-bank-one')) el.hidden = board;
+      const bf = bank.querySelector('.lv-bank-board'); if (bf) bf.hidden = !board;
+      // a board needs 2 to 6 subjects: stop at 6, never untick the second-last
+      const boxes = [...bank.querySelectorAll('input[name="bankBoard"]')], on = boxes.filter(x => x.checked).length;
+      for (const x of boxes) x.disabled = (!x.checked && on >= 6) || (x.checked && on <= 2);
+    }
     const aud = (form.querySelector('input[name="audience"]:checked') || {}).value;
     if (cls) cls.closest('.field').hidden = aud !== 'class';
     // part 3: quiz-only settings only for picks that use questions; how teams score only when teams are on;

@@ -11,6 +11,7 @@ import * as T from './classlive-teams.js';
 import * as D from './classlive-dash.js';
 import * as B from './classlive-board.js';
 import { starterItems, STARTERS } from '../live/starters.js';
+import { bankItems } from '../live/bank/index.js';
 
 /** Extra time after the deadline for answers already on their way. */
 export const GRACE_MS = 600;
@@ -28,6 +29,10 @@ export function loadItems(host, { setId = null, starter = null, items = null, la
     const list = sets.itemsOf(set);
     if (!list.length || list.some(it => !sets.complete(it))) return { ok: false, code: 'setIncomplete' };
     return { ok: true, items: list, setId: set.id };
+  }
+  if (starter && String(starter).startsWith('bank:')) {
+    const list = bankItems(starter, lang);
+    return list && list.length ? { ok: true, items: list } : { ok: false, code: 'noSet' };
   }
   if (starter) {
     if (!STARTERS.includes(starter)) return { ok: false, code: 'noSet' };

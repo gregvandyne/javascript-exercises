@@ -1,0 +1,119 @@
+// The Oomba Live question bank (server/live/bank, docs/decisions.md "The live question bank"): subjects x levels for
+// teachers (/live) and solo practice (the games' language packs from scripts/live-bank.js).
+import './_setup.js';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import vm from 'node:vm';
+
+const BANK = await import('../../server/live/bank/index.js');
+const { makeBank, SUBJECTS, LEVELS } = await import('../../server/live/bank/engine.js');
+const { profanityMatch } = await import('../../server/services/textfilter.js');
+const { cleanItems } = await import('../../server/services/classlive-sets.js');
+const { availableLocales, tFor } = await import('../../server/i18n/index.js');
+const { loadItems } = await import('../../server/services/classlive-quiz.js');
+const { bankChoice } = await import('../../server/routes/live.js');
+
+test('English: every hand-written subject has at least 25 questions at every level, each fair and clean', () => {
+  const data = BANK.dataFor('en');
+  for (const s of SUBJECTS.filter(x => x !== 'math')) for (const l of LEVELS) {
+    const rows = data[s][l];
+    assert.ok(rows && rows.length >= 25, `${s} ${l}: ${rows && rows.length}`);
+    for (const r of rows) {
+      assert.ok(r.length >= 3 && r.length <= 5, `${s} ${l}: ${r[0]}`);
+      assert.equal(new Set(r.slice(1).map(x => x.toLowerCase())).size, r.length - 1, `different answers: ${r[0]}`);
+      for (const x of r) assert.equal(profanityMatch(x), null, `filter: ${x}`);
+      assert.ok(!r.some(x => /\d{7,}/.test(x)), `no phone-like numbers: ${r[0]}`);
+    }
+  }
+});
+
+test('items come out ready to play: the answer among the choices, and they pass the question-set checks', () => {
+  for (const lang of ['en', 'en-GB', 'fr', 'ja', 'ar']) {
+    const bank = BANK.bankFor(lang);
+    for (const subject of ['mixed', ...bank.subjects()]) for (const level of LEVELS) {
+      const items = bank.pick({ subject, level, count: 10 });
+      assert.equal(items.length, 10, `${lang} ${subject} ${level}`);
+      for (const it of items) {
+        assert.ok(it.answer >= 0 && it.answer < it.choices.length, it.q);
+        assert.ok(it.cat && it.q && !/\{\w+\}/.test(it.q), `${lang}: ${it.q}`);
+      }
+      assert.equal(cleanItems(items.map(({ q, choices, answer, secs, cat }) => ({ q, choices, answer, secs, cat }))).ok, true, `${lang} ${subject} ${level}`);
+    }
+  }
+});
+
+test('maths gets harder by level (fractions, percentages, negatives and algebra at 12-14)', () => {
+  const bank = BANK.bankFor('en');
+  const qs = l => Array.from({ length: 200 }, () => bank.mathItem(l).q).join('\n');
+  assert.doesNotMatch(qs('a6'), /×|÷|%/);
+  assert.match(qs('a10'), /÷/);
+  const big = qs('a12'); assert.match(big, /%/); assert.match(big, /x \+/); assert.match(big, /squared/);
+});
+
+test('no repeats until the pool is used up', () => {
+  const bank = BANK.bankFor('en'), seen = new Set();
+  const a = bank.pick({ subject: 'history', level: 'a10', count: 20, seen }); a.forEach(x => seen.add(x.id));
+  const b = bank.pick({ subject: 'history', level: 'a10', count: 5, seen });
+  assert.equal(b.filter(x => seen.has(x.id)).length, 0);
+});
+
+test('a board: the chosen subjects as columns of 5, easy to hard; other languages offer what they have', () => {
+  const items = BANK.bankItems('bank:board:a10:science+history+geography', 'en');
+  assert.equal(items.length, 15);
+  assert.deepEqual([...new Set(items.map(x => x.cat))], ['Science', 'History', 'Geography']);
+  const fr = BANK.pickerFor('fr').subjects.map(x => x.id);
+  assert.deepEqual(fr, ['math', 'science', 'geography']);
+  assert.equal(BANK.parseBankId('bank:nope:a8:10'), null);
+  assert.equal(BANK.parseBankId('bank:science:a9:10'), null);
+});
+
+test('British English spellings in en-GB', () => {
+  const all = JSON.stringify(BANK.dataFor('en-GB'));
+  assert.match(all, /colours/); assert.doesNotMatch(all, /\bcolors\b/);
+  assert.match(all, /The fall of the Berlin Wall/, 'only the season becomes autumn');
+});
+
+test('live sessions take bank questions; the /live form turns into a bank id', () => {
+  const r = loadItems(null, { starter: 'bank:geography:a12:15', lang: 'en' });
+  assert.equal(r.ok, true); assert.equal(r.items.length, 15);
+  assert.equal(loadItems(null, { starter: 'bank:geography:zz:15' }).ok, false);
+  assert.deepEqual(bankChoice({ bankLevel: 'a6', bankSubject: 'science', bankCount: '5' }, 'mode:battle'), { board: false, level: 'a6', subject: 'science', count: 5, subs: [] });
+  assert.equal(bankChoice({ bankLevel: 'x', bankSubject: 'evil', bankCount: '999', bankBoard: ['math', 'science', 'hack'] }, 'mode:board').subs.join(), 'math,science');
+});
+
+test('every site language has its words for the bank, with the same {slots} as English', () => {
+  for (const { code } of availableLocales()) {
+    const s = BANK.stringsFor(code), en = BANK.stringsFor('en');
+    for (const k of Object.keys(en.math)) assert.deepEqual((s.math[k].match(/\{\w+\}/g) || []).sort(), (en.math[k].match(/\{\w+\}/g) || []).sort(), `${code} math.${k}`);
+    for (const v of [...Object.values(s.subject), ...Object.values(s.level), ...Object.values(s.math)]) assert.equal(profanityMatch(v), null, `${code}: ${v}`);
+    for (const k of ['title', 'subject', 'level', 'count', 'start', 'boardSubjects']) assert.ok(tFor(code)(`live.bank.solo.${k}`), `${code} solo.${k}`);
+  }
+});
+
+test('the games load their packs: right version, checksums match, the pack runs and makes questions', () => {
+  const pv = fs.readdirSync('public/vendor/data/live-bank');
+  assert.equal(pv.length, 1, 'one pack version');
+  for (const g of ['quest-race', 'question-battle', 'brain-board']) {
+    const html = fs.readFileSync(`seed-games/${g}.html`, 'utf8');
+    const m = /var BANK_VER = '([^']+)', BANK_SRI = (\{[^;]*\});/.exec(html);
+    assert.ok(m, g); assert.equal(m[1], pv[0], `${g}: built with scripts/live-bank.js`);
+    const sri = JSON.parse(m[2]);
+    for (const { code } of availableLocales()) {
+      const body = fs.readFileSync(path.join('public/vendor/data/live-bank', pv[0], `${code}.js`));
+      assert.equal('sha384-' + crypto.createHash('sha384').update(body).digest('base64'), sri[code], `${g} ${code}`);
+    }
+  }
+  const w = { window: {} }; vm.runInNewContext(fs.readFileSync(path.join('public/vendor/data/live-bank', pv[0], 'de.js'), 'utf8'), w);
+  const p = w.window.OombaBank.de, bank = p.makeBank(p.data, p.strings, Math.random);
+  assert.ok(bank.pick({ subject: 'math', level: 'a8', count: 3 }).every(x => /\?/.test(x.q)));
+  assert.equal(p.strings.solo.start, tFor('de')('live.bank.solo.start'));
+});
+
+test('makeBank works with any random source (same seed, same questions)', () => {
+  const seq = () => { let a = 7; return () => { a = (a * 16807) % 2147483647; return a / 2147483647; }; };
+  const data = BANK.dataFor('en'), strings = BANK.stringsFor('en');
+  assert.deepEqual(makeBank(data, strings, seq()).pick({ subject: 'science', level: 'a8', count: 5 }).map(x => x.q), makeBank(data, strings, seq()).pick({ subject: 'science', level: 'a8', count: 5 }).map(x => x.q));
+});

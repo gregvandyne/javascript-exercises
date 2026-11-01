@@ -127,6 +127,56 @@
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
+/* Solo practice questions from the Oomba Live question bank (the same code in Quest Race, Question Battle and Brain
+   Board). The bank for the player's language is a reviewed file in /vendor/data/live-bank/, built by
+   scripts/live-bank.js, which also writes the version and checksums below. SoloBank.choose({ board }, done) shows the
+   pack's setup card (subject, level, how many questions; a board's subjects) and calls done(items, choice), or
+   done(null) when the pack can't load (the game then plays its own built-in questions). The choice is remembered,
+   and questions already played come last until every one has been seen. */
+/* live-bank:begin */var BANK_VER = '1.0.0-f0488793', BANK_SRI = {"en":"sha384-jnde/y/3isSFp3ZBEz1jI4lUCqibFk8Hynkttmy348dzAmYYI0vZzJG0xC72fzeO","en-GB":"sha384-T6t3+Bk0LLjVb4ugg5ILi46AW1ZXHKZtEHz6BqvcgBxZwvsg7u1PoqEOIbw2+tvT","pt":"sha384-ODz/eBNh+GZoWAUKWdv/T99iPpSk/zut6vBA72Q/URbqI9+uVQVGhVwRDHTYCEh7","fr":"sha384-kKSyw1Okqe4zWsudl0jdF/G4jlhWITM4uSDY5jeM4VeOl+bHkPqz8ELt+imGovzP","es":"sha384-Z8bEzHdpK6fmFVqpbN+4DCFyego5zv6HhPl1K6Py/e618N/bGwY1X26tarjs0nmT","de":"sha384-+NPTAVbY14TQyAjqY5kJe6hDjYSWi1TCebvO0wgAjHdxRFI+kQTNAO7sC51HD18x","he":"sha384-DnFbG8QJQ3EVEJmRO5omuHg0vVlT5g8J9s90mEHKkjzcmbnhW2r/jHfTbHh/sIgT","ja":"sha384-329VW9plMwnOe/61O2aRIbao5c41UFRv27X+YFs5kDbwT7O9Fidg7oZr7JArscjL","ar":"sha384-zjXC3BZz0CzT4EeZRszuxktAoL1BKgYCzfML7rhveyJT/IZXpY3kPZyJExu0lsc0","ru":"sha384-K8atbd6t97NogWC1OQ83EMu0GYMLcR+xtb4+TsTYYYvrISQREfWSZgW1hzkUjXu8","it":"sha384-YXC+fBEoKtxZIwA0veUlcntZxzdRZJk/HKyaqNt/Oy+dzlquFc6RR5JWqsBllApo","zh-Hant":"sha384-7925SSoWNsFKgFiVuWjl/sbUVldRXmXyG8tDF2/BnkTSbdQRKuVVIvWzQGY1mNri","nl":"sha384-vbjVuhrH6mNeZafVg+bWqHhI4m51zC3+LBOAWvUcU4bhaMKDnUcw7pqkDzGhvNv+"};/* live-bank:end */
+window.SoloBank = (function () {
+  var pack = null, tried = false, waiting = [];
+  var store = {
+    get: function (k) { try { return window.BRB && BRB.storage ? BRB.storage.get(k) : null; } catch (e) { return null; } },
+    set: function (k, v) { try { if (window.BRB && BRB.storage) BRB.storage.set(k, v); } catch (e) { /* ignore */ } }
+  };
+  function lang() {
+    var l = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+    return BANK_SRI[l] ? l : BANK_SRI[l.split('-')[0]] ? l.split('-')[0] : 'en';
+  }
+  function load(cb) {
+    if (pack || tried) return cb(pack);
+    waiting.push(cb); if (waiting.length > 1) return;
+    var code = lang(), done = function (p) { tried = true; pack = p; var w = waiting; waiting = []; w.forEach(function (f) { f(p); }); };
+    if (!BANK_VER || !BANK_SRI[code]) return done(null);
+    var s = document.createElement('script');
+    s.src = '/vendor/data/live-bank/' + BANK_VER + '/' + code + '.js'; s.integrity = BANK_SRI[code]; s.crossOrigin = 'anonymous';
+    var timer = setTimeout(function () { if (!tried) done(null); }, 9000);
+    s.onload = function () { clearTimeout(timer); if (!tried) done((window.OombaBank || {})[code] || null); };
+    s.onerror = function () { clearTimeout(timer); if (!tried) done(null); };
+    document.head.appendChild(s);
+  }
+  function choose(opts, cb) {
+    opts = opts || {};
+    load(function (p) {
+      if (!p) return cb(null, null);
+      var bank = p.makeBank(p.data, p.strings, Math.random), code = lang(), seenKey = 'oomba-bank-seen-' + code;
+      var saved = store.get('oomba-bank-choice') || {};
+      p.setupCard(document, document.body, { bank: bank, strings: p.strings.solo, board: !!opts.board, saved: saved }, function (c) {
+        store.set('oomba-bank-choice', c);
+        var list = store.get(seenKey); list = Array.isArray(list) ? list : [];
+        var seen = new Set(list);
+        var items = opts.board ? bank.board({ subjects: c.subjects, level: c.level, seen: seen }) : bank.pick({ subject: c.subject, level: c.level, count: c.count, seen: seen });
+        items.forEach(function (it) { if (it.id && it.id.indexOf('math:') !== 0) list.push(it.id); });
+        store.set(seenKey, list.slice(-1500));
+        cb(items, c);
+      });
+    });
+  }
+  return { choose: choose, load: load };
+})();
+</script>
+<script>
 /* BRAIN BOARD: an Oomba Live built-in mode (docs/live-protocol.md "Brain Board"). A board of category columns with
    tiles worth 100 to 500 on the projector. The host (or the player whose turn it is) picks a tile; it flips, and its
    question opens on every device at once. Right answers score the tile's value (plus a little for speed); one or two
@@ -437,13 +487,28 @@
     var starAt = [R.int(0, 4), R.int(1, 4)];
     return { items: items, star: starAt, bb: { cats: cats, t: t5, cur: null, turn: 0, turns: 0, left: 25 }, score: 0, deadline: 0, to: 0 };
   }
+  /** A practice board from bank items (grouped by subject, easy to hard): up to 6 columns of 5, values 100-500. */
+  function boardFrom(items) {
+    var R = O.rand(Date.now() % 100000), cats = [], cols = [];
+    items.forEach(function (it) { var k = cats.indexOf(it.cat); if (k < 0) { if (cats.length >= 6) return; cats.push(it.cat); cols.push([]); k = cats.length - 1; } if (cols[k].length < 5) cols[k].push(it); });
+    var keep = []; cols.forEach(function (c, k) { if (c.length === 5) keep.push(k); });
+    if (keep.length < 2) return null;
+    var outItems = [], t5 = [], names = [];
+    keep.forEach(function (k) {
+      names.push(cats[k]);
+      var col = cols[k].map(function (it, r) { return { q: it.q, choices: it.choices.slice(), answer: it.answer, secs: Math.max(15, it.secs || 20), v: (r + 1) * 100 }; });
+      outItems.push(col); t5.push(col.map(function (it) { return [it.v, 0]; }));
+    });
+    var starAt = [R.int(0, keep.length - 1), R.int(1, 4)];
+    return { items: outItems, star: starAt, bb: { cats: names, t: t5, cur: null, turn: 0, turns: 0, left: keep.length * 5 }, score: 0, deadline: 0, to: 0 };
+  }
   function practicePick(ci, r) {
     var p = practice, b = p.bb;
     b.cur = [ci, r, p.star[0] === ci && p.star[1] === r ? 1 : 0]; b.t[ci][r][1] = 1;
     phase = 'countdown'; onBoard();
     setTimeout(function () {
       var it = p.items[ci][r]; phase = 'playing'; p.deadline = performance.now() + it.secs * 1000;
-      showCard({ i: ci * 5 + r, n: 25, q: it.q, choices: it.choices, secs: it.secs, at: 0 });
+      showCard({ i: ci * 5 + r, n: p.items.length * 5, q: it.q, choices: it.choices, secs: it.secs, at: 0 });
       clearTimeout(p.to); p.to = setTimeout(function () { if (myPick < 0) { myPick = 9; practiceAnswer(-1); } }, it.secs * 1000);
     }, REDUCED ? 300 : 1100);
   }
@@ -462,7 +527,12 @@
 
   L.ready({ lobby: true, quiz: true, hostView: true, teams: true, words: ['pick'] });
   if (!L.active) {
-    L.on('start', function () { practice = practiceBoard(); phase = 'between'; $('status').textContent = t('practice'); view(); });
+    // Playing alone: choose the board's subjects and level first.
+    L.on('start', function () {
+      window.SoloBank.choose({ board: true }, function (items) {
+        practice = (items && boardFrom(items)) || practiceBoard(); phase = 'between'; $('status').textContent = t('practice'); view();
+      });
+    });
   } else if (phase === 'lobby' && !host) $('status').textContent = t('wait');
   O.test({
     state: function () {

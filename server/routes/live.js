@@ -37,6 +37,7 @@ import * as CH from '../services/classlive-cohost.js';
 import { SAY, BONUS_REASONS } from '../services/classlive-protocol.js';
 import { nicksFor } from '../services/classlive-names.js';
 import { STARTERS } from '../live/starters.js';
+import { pickerFor, SUBJECTS as BANK_SUBJECTS, LEVELS as BANK_LEVELS, COUNTS as BANK_COUNTS } from '../live/bank/index.js';
 import { familyOfOwner, familiesOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
 import * as V from '../views/live.js';
@@ -166,9 +167,21 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   noStore(res);
   page(req, res, { title: t('live.landing.title'), active: 'classes', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
     body: V.landingBody(req, { modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
-      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(),
+      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale),
       cohost: { invites: CH.invitesFor(u).map(x => ({ sid: x.s.id, title: x.s.title, from: x.from })), on: CH.cohostingFor(u).map(x => ({ sid: x.id, title: x.title })) } }) });
 });
+
+/** The question bank part of the landing form -> a bank starter id (server/live/bank/index.js parseBankId). A board
+ *  (Brain Board) takes the ticked subjects, anything else one subject (or mixed) and a number of questions. */
+export function bankChoice(b, pick) {
+  const level = BANK_LEVELS.includes(String(b.bankLevel)) ? String(b.bankLevel) : 'a8';
+  const board = String(pick || '') === 'mode:board';
+  const subs = [].concat(b.bankBoard ?? []).map(String).filter(x => BANK_SUBJECTS.includes(x));
+  const subject = b.bankSubject === 'mixed' || BANK_SUBJECTS.includes(String(b.bankSubject)) ? String(b.bankSubject) : 'mixed';
+  const count = BANK_COUNTS.includes(+b.bankCount) ? +b.bankCount : 10;
+  return { board, level, subject, count, subs: [...new Set(subs)].slice(0, 6) };
+}
+const bankStarter = (b, pick) => { const c = bankChoice(b, pick); return c.board ? `bank:board:${c.level}:${(c.subs.length >= 2 ? c.subs : BANK_SUBJECTS.slice(0, 5)).join('+')}` : `bank:${c.subject}:${c.level}:${c.count}`; };
 
 /** The landing's form ({ pick: 'mode:<id>'|'game:<id>', set: 'starter:<id>'|'set:<id>', audience, classId, ... }) or
  *  the same as JSON fields ({ mode, gameId, setId, starter, items, ... }). */
@@ -180,7 +193,8 @@ function sessionOpts(b, req) {
   else if (pick.startsWith('game:')) { o.mode = 'game'; o.gameId = pick.slice(5); }
   else { o.mode = b.mode ? String(b.mode) : null; o.gameId = b.gameId ? String(b.gameId) : null; }
   const set = String(b.set || '');
-  if (set.startsWith('starter:')) o.starter = set.slice(8);
+  if (set === 'bank') o.starter = bankStarter(b, pick);
+  else if (set.startsWith('starter:')) o.starter = set.slice(8);
   else if (set.startsWith('set:')) o.setId = set.slice(4);
   if (b.setId) o.setId = String(b.setId);
   if (b.starter) o.starter = String(b.starter);
@@ -259,6 +273,11 @@ router.post('/api/live/sessions', on, requireAnyAccount, hostOnly, rateLimit('lv
     if (r.code === 'hasOpen') return apiErr(req, res, 409, 'hasOpen', { sid: r.sid, host: `/live/host/${r.sid}` });
     const status = { off: 404, notHost: 404, notFound: 404, busy: 503 }[r.code] || 400;
     return apiErr(req, res, status, r.code, r.issue ? { issue: r.issue.code } : {});
+  }
+  // Remember where the questions came from, for next time (the landing preselects it).
+  if (!b.again && !b.fromRun && !b.againRun && b.set) {
+    const c = bankChoice(b, b.pick), set = String(b.set);
+    try { ST.saveBankPref(req.user.id, { set: set === 'bank' || set.startsWith('set:') ? set : 'bank', subject: c.subject, level: c.level, count: c.count, ...(c.subs.length >= 2 ? { board: c.subs } : {}) }); } catch { /* not important */ }
   }
   res.json({ sid: r.session.id, redirect: `/live/host/${r.session.id}` });
 });

@@ -105,12 +105,29 @@ export function loadPrefs(userId) {
     const settings = clean(p.settings || {}, { lobby: true, nameMode: 'accounts' });
     const t = p.teams || {};
     const teams = { on: !!t.on, n: Number.isInteger(t.n) && t.n >= 2 && t.n <= 6 ? t.n : 2, scoring: t.scoring === 'sum' ? 'sum' : 'avg' };
-    return { settings, teams };
+    const bk = p.bank && typeof p.bank === 'object' ? p.bank : null;
+    return { settings, teams, ...(bk ? { bank: cleanBank(bk) } : {}) };
   } catch { return null; }
+}
+/** Where a host's questions came from last time: the bank (subject, level, count, board subjects) or one of their sets. */
+const cleanBank = b => ({
+  set: typeof b.set === 'string' && /^(bank|set:[A-Za-z0-9_-]{1,40})$/.test(b.set) ? b.set : 'bank',
+  subject: /^[a-z]{1,20}$/.test(String(b.subject)) ? String(b.subject) : 'mixed',
+  level: ['a6', 'a8', 'a10', 'a12'].includes(b.level) ? b.level : 'a8',
+  count: [5, 10, 15, 20].includes(+b.count) ? +b.count : 10,
+  ...(Array.isArray(b.board) ? { board: b.board.filter(x => /^[a-z]{1,20}$/.test(String(x))).slice(0, 6) } : {}),
+});
+export function saveBankPref(userId, bank) {
+  const r = q.get('SELECT prefs FROM live_prefs WHERE user_id=?', String(userId || ''));
+  let p = {}; try { p = r ? JSON.parse(r.prefs) : {}; } catch { p = {}; }
+  p.bank = cleanBank(bank || {});
+  q.run('INSERT INTO live_prefs(user_id, prefs, updated_at) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET prefs=excluded.prefs, updated_at=excluded.updated_at', userId, JSON.stringify(p), Date.now());
+  return p.bank;
 }
 /** Save what the host started with (at start). */
 export function savePrefs(userId, { settings, teams }) {
-  const p = { settings: clean(settings || {}, { lobby: true, nameMode: 'accounts' }), teams: teams ? { on: !!teams.on, n: teams.n, scoring: teams.scoring } : { on: false } };
+  const old = loadPrefs(userId);
+  const p = { settings: clean(settings || {}, { lobby: true, nameMode: 'accounts' }), teams: teams ? { on: !!teams.on, n: teams.n, scoring: teams.scoring } : { on: false }, ...(old && old.bank ? { bank: old.bank } : {}) };
   q.run('INSERT INTO live_prefs(user_id, prefs, updated_at) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET prefs=excluded.prefs, updated_at=excluded.updated_at', userId, JSON.stringify(p), Date.now());
   return p;
 }
