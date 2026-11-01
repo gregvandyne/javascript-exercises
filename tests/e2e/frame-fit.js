@@ -57,7 +57,10 @@ export async function frameProblems(frame, { minTap = 40 } = {}) {
       if (!it.control && /hidden|clip/.test(cs.overflowX + cs.overflowY) && cs.textOverflow !== 'ellipsis' && !(cs.webkitLineClamp && cs.webkitLineClamp !== 'none') && (it.el.scrollWidth > it.el.clientWidth + 2 || it.el.scrollHeight > it.el.clientHeight + 3)) out.push({ kind: 'clipped', what: name });
       if (it.control && !it.float) {
         const small = Math.min(r.width, r.height), ratio = r.height / r.width;
-        if (small < minTap) out.push({ kind: 'squashed', what: name, size: [Math.round(r.width), Math.round(r.height)] });
+        // A dense game board (data-fit-dense: e.g. a 44-square board where a square only shows its card, while the
+        // real controls stay full size) may go down to 28 px.
+        const need = it.el.closest('[data-fit-dense]') ? 28 : minTap;
+        if (small < need) out.push({ kind: 'squashed', what: name, size: [Math.round(r.width), Math.round(r.height)] });
         else if (ratio > 1.5 || ratio < 0.08) out.push({ kind: 'squashed', what: name, size: [Math.round(r.width), Math.round(r.height)] });
       }
     }
