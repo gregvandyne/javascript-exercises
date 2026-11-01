@@ -2265,7 +2265,12 @@
       "pasteText": "Ou tape-les : la question sur une ligne, puis ses réponses sur les lignes du dessous, avec * devant la bonne. Laisse une ligne vide entre les questions.",
       "pasteExample": "Quelle est la plus grande planète ?\n* Jupiter\nSaturne\nTerre\n\nAu niveau de la mer, l’eau bout à 100 °C.\n* Vrai\nFaux",
       "pasteFound": "{n, plural, =0 {Aucune question trouvée pour l’instant.} one {# question trouvée.} other {# questions trouvées.}}",
-      "pasteGo": "Ajouter ces questions"
+      "pasteGo": "Ajouter ces questions",
+      "category": "Catégorie (facultatif)",
+      "categoryHint": "Pour Plateau Cerveau, ex. Planètes",
+      "categoryColumn": "Catégorie",
+      "pasteCats": "Pour Plateau Cerveau, ajoutez des catégories : une première colonne avec l’en-tête « Catégorie » dans le tableur, ou une ligne comme « # Planètes » avant ses questions.",
+      "aiBoard": "Un Plateau Cerveau (5 catégories × 5)"
     },
     "match": {
       "title": "Jouer à {title} en ligne",
@@ -3777,7 +3782,7 @@
     "live": {
       "h": "Jeux en direct en classe",
       "p1": "Lancez une course-quiz en direct ou tout jeu prêt pour le direct au vidéoprojecteur. Les élèves rejoignent sur leurs propres appareils avec un code à 7 chiffres.",
-      "li1": "Modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions) et Bataille de questions.",
+      "li1": "Modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions), Bataille de questions et Plateau Cerveau (un plateau de catégories, du plus facile au plus difficile).",
       "li2": "Utilisez une série de départ, tapez une série rapide ou transformez les questions d’une leçon en quiz en direct.",
       "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement.",
       "more": "Voir comment fonctionne Oomba Live"
@@ -4541,7 +4546,9 @@
       "questRace": "Course aux quêtes",
       "questRaceText": "Réponds aux questions pour traverser une île en 3D. Les bonnes réponses donnent des gemmes et un coup de boost !",
       "battle": "Bataille de questions",
-      "battleText": "Les questions sur le grand écran, les réponses sur chaque appareil, et un classement après chaque question."
+      "battleText": "Les questions sur le grand écran, les réponses sur chaque appareil, et un classement après chaque question.",
+      "board": "Plateau Cerveau",
+      "boardText": "Un plateau de catégories : choisis une case, tout le monde répond. Les grosses cases sont plus difficiles et rapportent plus, et une Étoile chance cachée double les points."
     },
     "starter": {
       "title": {
@@ -4549,7 +4556,8 @@
         "math10": "Maths, 10-11 ans",
         "math12": "Maths, 12-14 ans",
         "science": "Sciences",
-        "geo": "Géographie"
+        "geo": "Géographie",
+        "board": "Plateau Cerveau varié, 8 à 14 ans"
       },
       "math": {
         "add": "Combien font {a} + {b} ?",
@@ -4699,7 +4707,9 @@
           "c2": "Les États-Unis",
           "c3": "L’Indonésie"
         }
-      }
+      },
+      "boardMath": "Maths",
+      "boardMix": "Mélange"
     },
     "results": {
       "title": "Résultats de la partie en direct",
@@ -4782,7 +4792,8 @@
         "notFound": "Cette série est introuvable.",
         "topic": "Tapez d’abord un sujet.",
         "aiOff": "La rédaction avec l’IA n’est pas disponible pour le moment. Vous pouvez toujours taper ou coller vos questions.",
-        "aiFailed": "L’IA n’a pas réussi à écrire des questions cette fois. Réessayez, ou modifiez un peu le sujet."
+        "aiFailed": "L’IA n’a pas réussi à écrire des questions cette fois. Réessayez, ou modifiez un peu le sujet.",
+        "cat": "La catégorie de la question {n} n’est pas autorisée."
       },
       "noMissed": "Tout le monde a tout juste : il n'y a rien à rejouer.",
       "teamsOff": "Ce jeu n'avait pas d'équipes.",
@@ -4798,7 +4809,8 @@
         "hasOpen": "Cette personne anime un autre jeu en direct en ce moment.",
         "gone": "Cette invitation est terminée.",
         "self": "Tu es déjà l’animateur."
-      }
+      },
+      "notForClass": "Ce jeu est fait pour s’amuser, pas pour la classe. Choisissez un mode quiz ou l’un de vos jeux."
     },
     "nick": {
       "0": "Loutre Courageuse",
@@ -5294,7 +5306,7 @@
       "lead": "De vrais écrans d’une partie en direct dans une école de démonstration aux noms inventés.",
       "s1": {
         "h": "Choisissez un jeu et vos questions",
-        "p": "Choisissez Course aux quêtes ou Bataille de questions, puis votre propre série de questions, une série partagée par un collègue, une série de départ toute prête ou les questions de l’une de vos leçons.",
+        "p": "Choisissez Course aux quêtes, Bataille de questions ou Plateau Cerveau, puis votre propre série de questions, une série partagée par un collègue, une série de départ toute prête ou les questions de l’une de vos leçons.",
         "alt": "La page « Animer une partie en direct » : les modes de jeu au choix, une série de questions et qui peut rejoindre."
       },
       "s2": {
@@ -5319,7 +5331,7 @@
       }
     },
     "modes": {
-      "h": "Deux façons de jouer, plus des jeux en direct",
+      "h": "Trois façons de jouer",
       "race": {
         "h": "Course aux quêtes",
         "p": "Une course sur une île en 3D. Chaque bonne réponse rapporte des gemmes et un coup d’accélérateur, et toute la classe suit les coureurs au tableau."
@@ -5328,9 +5340,9 @@
         "h": "Bataille de questions",
         "p": "Le classique : la question sur le grand écran, les réponses sur chaque appareil et un classement après chaque question."
       },
-      "games": {
-        "h": "Jeux prêts pour le direct",
-        "p": "Certains jeux de la bibliothèque se jouent aussi en direct, avec tous les élèves dans le même monde."
+      "board": {
+        "h": "Plateau Cerveau",
+        "p": "Un plateau de catégories à l’écran. Choisissez une case (ou laissez la réponse juste la plus rapide choisir) : sa question s’ouvre sur tous les appareils. Les cases difficiles rapportent plus, et une Étoile chance cachée double les points."
       }
     },
     "tools": {

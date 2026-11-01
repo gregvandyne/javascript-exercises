@@ -57,7 +57,7 @@
 body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 @media (max-width: 900px) {
   .lv-host { grid-template-columns: 1fr; grid-template-areas: 'bar' 'join' 'stage' 'controls' 'teams' 'roster' 'reports'; }
-  .lv-host > .lv-hoststage { min-block-size: 56vh; }
+  .lv-host > .lv-hoststage { min-block-size: max(56vh, 460px); }
   .lv-roster { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); max-block-size: none; }
 }
 
@@ -375,3 +375,4 @@ button.lv-dash-role:focus-visible { outline: 3px solid var(--focus); outline-off
 .lv-choice .lv-x { flex: none; min-width: 36px; padding: 0 8px; }
 .lv-secs { max-width: 140px; }
 .lv-paste-example { white-space: pre-wrap; font-size: .85rem; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0; }
+.lv-cat .input { max-width: 320px; }

@@ -41,6 +41,7 @@ import * as C from './classlive-check.js';
 import * as T from './classlive-teams.js';
 import * as ST from './classlive-settings.js';
 import * as D from './classlive-dash.js';
+import * as B from './classlive-board.js';
 import { getUser } from '../auth.js';
 import { audit } from '../db.js';
 import * as L from './lessons.js';
@@ -241,7 +242,7 @@ export function createSession(host, opts = {}) {
     settings: null,
     phase: 'lobby', round: 0, at: t, pausedAt: 0, seq: 1, seatSeq: 0, lastActive: t,
     seats: new Map(), byUser: new Map(), nicksUsed: new Set(), banned: new Set(),
-    state: {}, stateBytes: 2, items, qz: null, race: mode === 'quest-race' ? new Map() : null,
+    state: {}, stateBytes: 2, items, qz: null, race: mode === 'quest-race' ? new Map() : null, board: null,
     itemStats: new Map(), dirty: new Set(), scoresDirty: false, timers: {}, reports: 0, summary: null,
     allItems: items, lang: opts.lang || 'en', teams: T.initial(), dash: null, eyes: false, eyesPaused: false, actAt: {}, again: null,
   };
@@ -799,7 +800,30 @@ export function controllerFor(s, tok, u) {
 }
 
 // The way the quiz module talks to devices (no import cycle).
-const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s) };
+const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s) };
+
+// ---------------------------------------------------------------- Brain Board (classlive-board.js)
+/** The board everyone sees (s.state.bb), sent with the usual shared-state message to every device and the projector. */
+function publishBoard(s) {
+  if (!s.board) return;
+  const bb = B.publicState(s);
+  s.state = { ...s.state, bb }; s.stateBytes = JSON.stringify(s.state).length;
+  broadcast(s, { t: 'st', d: { bb } });
+}
+/** After a reveal or a skip: show the board again; a cleared board ends by itself after a moment for the podium. */
+function boardChanged(s) {
+  publishBoard(s);
+  if (s.board && !B.remaining(s)) setTimer(s, 'boardEnd', B.END_MS, () => { if (open(s) && s.phase === 'between') endSession(s.id, 'ended'); });
+}
+/** A tile picked (from the projector's game, or by the player whose turn it is): flip it, count down, ask. */
+export function boardPick(s, ci, r, seatNo = 0) {
+  if (!B.pick(s, ci, r, seatNo)) return false;
+  s.lastActive = now();
+  publishBoard(s);
+  countdown(s);
+  return true;
+}
+export function boardTurns(s, on) { if (!B.setTurns(s, on)) return false; publishBoard(s); return true; }
 
 // ---------------------------------------------------------------- phases
 function clearTimer(s, k) { if (s.timers[k]) { clearTimeout(s.timers[k]); s.timers[k] = null; } }
@@ -832,7 +856,9 @@ function countdown(s) {
 function play(s) {
   if (s.phase !== 'countdown') return;
   s.round++;
-  if (s.quiz) Q.ask(s, io, s.qz ? s.qz.i + 1 : 0);
+  // Brain Board: the picked tile's question; with nothing picked (the first countdown), the board.
+  if (s.board) { const i = B.opening(s); if (i >= 0) Q.ask(s, io, i); else { setPhase(s, 'between'); publishBoard(s); } }
+  else if (s.quiz) Q.ask(s, io, s.qz ? s.qz.i + 1 : 0);
   else setPhase(s, 'playing', { at: now() });
   // Eyes up while the game moved into play (raised in the lobby, loading, the countdown or between questions): the
   // round opens paused, so no clock runs behind the cover; lowering eyes (or Resume) starts it.
@@ -960,6 +986,7 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       // The settings shape the questions now; every seat still without a team gets one; what the host started with
       // becomes their remembered defaults (the next /live landing is filled in with it).
       if (s.quiz) Q.applySettings(s);
+      if (s.mode === 'board') { const turns = !!(s.settings && s.settings.turns); B.build(s); B.setTurns(s, turns); s.state = { ...s.state, bb: B.publicState(s) }; }
       if (T.isOn(s)) { for (const seat of s.seats.values()) if (!seat.team) T.place(s, seat); broadcast(s, T.tmsMsg(s)); }
       // Only the host's own start saves remembered defaults, to their own profile (a co-host's start saves nothing).
       if (!who || who.role === 'host') try { ST.savePrefs(s.host.userId, { settings: ST.view(s.settings), teams: T.isOn(s) ? { on: true, ...T.setupOf(s) } : { on: false } }); } catch (e) { hooks.log('warn', 'live prefs not saved', { sid: s.id, error: e.message }); }
@@ -991,6 +1018,8 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       if (at !== s.seq) return false;
       if (s.quiz) {
         if (s.phase === 'playing') return a === 'skip' ? Q.skip(s, io) : Q.reveal(s, io), true;
+        // Brain Board: between questions the board waits for a pick; Next only ends a cleared board.
+        if (s.phase === 'between' && s.board) { if (!B.remaining(s)) { endSession(s.id, 'ended'); return true; } return false; }
         if (s.phase === 'between') { if (!Q.hasNext(s)) { endSession(s.id, 'ended'); return true; } countdown(s); return true; }
         return false;
       }
@@ -1166,6 +1195,9 @@ export function emote(s, seat, e) {
  *  host: to every player, one seat, or one team. */
 export function event(s, from, m) {
   if (!['lobby', 'loading', 'countdown', 'playing', 'between'].includes(s.phase)) return;
+  // Brain Board: a tile pick (the projector's game, or the player whose turn it is), and the host's "players pick" switch.
+  if (s.board && m.k === 'pick' && m.d && typeof m.d === 'object') { boardPick(s, m.d.c, m.d.r, from ? from.no : 0); return; }
+  if (s.board && m.k === 'turns' && !from && m.d && typeof m.d === 'object') { boardTurns(s, !!m.d.on); return; }
   if (!from) {
     if (!strings(m.d, [m.k]).every(shownOk)) return;
     const msg = { t: 'ev', f: 0, k: m.k, d: m.d };

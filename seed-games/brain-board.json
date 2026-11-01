@@ -1,0 +1,15 @@
+{
+  "slug": "brain-board",
+  "title": "Brain Board",
+  "icon": "🌟",
+  "cover": "space",
+  "category": "learning",
+  "tags": "live,quiz,class,board,categories,questions,teams",
+  "description": "A live class quiz board: pick a tile from a category, and its question opens on every device at once. Bigger tiles are harder and worth more, and a hidden Lucky Star doubles the points. Played alone, it is a practice board of sums.",
+  "orientation": "any",
+  "players_max": 60,
+  "age_rating": "everyone",
+  "featured": false,
+  "notes": "Oomba Live built-in mode 'board', 2D on the Oomba Kit 1.1.0 with the live pack. The server owns the board (shared state bb: categories, tile values and states, the open tile, whose pick it is; server/services/classlive-board.js) and the scoring (tile value plus up to 20% for speed, doubled on a Lucky Star, never minus points). The game draws it: the projector picks tiles (L.send('pick', {c, r})) and toggles players picking (L.send('turns', {on})); with turns on, the fastest right answer picks next from their phone (L.send('pick', ..., {toHost: true}); word 'pick'). Uses Oomba.live ready({lobby, quiz, hostView, teams, words}), the state / question / answers / reveal / result / leaderboard / end events, quiz.answer and flat() (lobby, scores, podium). Played alone: a 5x5 practice board of sums. Test hooks: window.__brbTest.state(), pick(c, r), answer(i), turns().",
+  "l10n": {}
+}

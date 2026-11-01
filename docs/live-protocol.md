@@ -132,6 +132,28 @@ or `between`) opens straight into `paused` (`q` is sent, no deadline runs), and 
 are up also sends `eyes {on: false}`: no clock ever runs behind the cover. After `ph ended` connected players linger up to 2 minutes (their messages are dropped) for
 "Play again"; then `bye ended`.
 
+### Brain Board (built-in mode `board`)
+
+A quiz mode on the usual question machinery (`q`, `an`, `ack`, `rv`, `you`), with a board the server owns
+(`server/services/classlive-board.js`). At `start` the set is laid out: questions with a category (`cat`, optional,
+≤ 40 characters, checked when the set is saved) become columns in the order they first appear, up to 5 a column in the
+set's order (100-500); questions without one fill numbered columns row by row (later = worth more). At most 6 columns
+and 30 tiles; 1 hidden Lucky Star (2 on boards over 15 tiles), never in the top row. The set is never shuffled.
+
+- The board is shared state `bb`, sent with `st` to every device **and the projector** (`d: { bb }`), and in `wel.state`:
+  `{ cats: [name], t: [[[value, st]]] (per column, per tile; st 0 waiting, 1 open now, 2 done, 3 done and was a Lucky Star),
+  cur: [col, row, star 0|1] | null, turn: seat | 0, turns: 0|1, left, last }`. A star shows only when its tile opens.
+- After the first countdown the phase is `between` with the board up (no question). A pick is a game event:
+  `ev { k: 'pick', d: { c, r } }` from the host's frame, or from the player whose turn it is (`to: 'host'`; `pick` is in
+  the game's words). Refused unless the phase is `between`, no tile is open, the tile exists and is not done, and (for a
+  player) turns are on and it is their turn. A pick publishes `bb` with `cur` set (the tile flips), counts down, then asks
+  that tile's question. `ev { k: 'turns', d: { on: 0|1 } }` from the host turns "players pick" on or off; with it on, the
+  fastest connected right answer picks next (else the host). Neither event is relayed.
+- Points for a right answer: the tile's value plus up to 20% of it for speed (none with accuracy-only points), doubled on
+  a Lucky Star; a wrong answer or none is 0 (never minus). Teams bank as usual.
+- After the reveal the tile is done and `bb` is published again. Host `next` between tiles does nothing; on a cleared
+  board it ends the game, which also ends by itself 9 seconds after the last reveal. `skip` closes the tile with no points.
+
 ## 3. Page hooks (server-rendered; the scripts show and fill them)
 
 All pages: `<div class="lv lv-<page>" data-lv-page="<page>">`, stylesheet `/css/live.css` (prefix `.lv-`).

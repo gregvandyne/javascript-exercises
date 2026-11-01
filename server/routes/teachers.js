@@ -260,7 +260,7 @@ router.get('/teachers/live', (req, res, next) => {
 
   <section class="lp-sec" id="modes" aria-labelledby="modes-h">
     ${el(t, 'h2', 'teachersLive.modes.h', {}, ' id="modes-h"')}
-    <div class="lp-modes">${mode('🏝️', 'race')}${mode('⚡', 'battle')}${mode('🎮', 'games')}</div>
+    <div class="lp-modes">${mode('🏝️', 'race')}${mode('⚡', 'battle')}${mode('🌟', 'board')}</div>
   </section>
 
   <section class="panel" id="own" aria-labelledby="own-h">

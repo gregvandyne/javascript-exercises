@@ -15,7 +15,12 @@ import { config } from '../config.js';
 
 export const AUDIENCES = ['open', 'class', 'family'];
 /** Built-in modes, and the official game each one runs as (seed-games/<slug>.html). */
-export const MODES = { 'quest-race': 'quest-race', battle: 'question-battle' };
+export const MODES = { 'quest-race': 'quest-race', battle: 'question-battle', board: 'brain-board' };
+/** Official games made for fun, not for class: never hosted for a class room, and left out of a teacher's live picker
+ *  (a parent may still host them for their family or an open room). */
+export const NOT_FOR_CLASS = new Set(['hero-of-sunvale']);
+/** Does this host get the class picker (teaches a class, or is school staff or the platform admin)? */
+export const teacherHost = u => !!u && (S.isStaff(u) || S.isPlatformAdmin(u) || S.classesOf(u.id, 'teacher').length > 0);
 /** The most players a grown-up's open room may have, whatever LIVE_MAX_PLAYERS says (self-declared adults). */
 export const GROWNUP_OPEN_MAX = 30;
 
@@ -54,6 +59,7 @@ export function audienceRefusal(host, audience, { classId = null } = {}) {
  */
 export function hostable(host, game, audience, { classId = null } = {}) {
   if (!game || game.status === 'deleted') return { ok: false, code: 'notFound' };
+  if (audience === 'class' && NOT_FOR_CLASS.has(game.slug)) return { ok: false, code: 'notForClass' };
   if (isOfficial(game)) return game.published_version_id ? { ok: true, versionId: game.published_version_id, official: true } : { ok: false, code: 'notFound' };
   if (!game.published_version_id || game.status !== 'published' || game.hidden_reason) return { ok: false, code: 'notPublished' };
   if (!games.canView(host, game)) return { ok: false, code: 'notFound' };

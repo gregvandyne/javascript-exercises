@@ -4,12 +4,12 @@
   "icon": "⚡",
   "cover": "space",
   "category": "learning",
-  "tags": "live,quiz,class,questions,leaderboard",
-  "description": "A live class quiz: the questions on the big screen, the answers on every device, and a leaderboard after each one. Fast right answers score the most. Played alone, it is a quick practice round.",
+  "tags": "live,quiz,class,questions,leaderboard,boss battle,teamwork",
+  "description": "A live class quiz played as a co-op boss battle: the whole class answers together to beat a silly boss (a grumpy storm cloud, a cheeky robot or a sleepy dragon). Every right answer fires a star, faster answers and streaks hit harder, and a top five with overtakes after each question. Played alone, it is a quick practice round against the boss.",
   "orientation": "any",
   "players_max": 60,
   "age_rating": "everyone",
   "featured": false,
-  "notes": "Oomba Live reference game (built-in mode 'battle'), 2D on the Oomba Kit 1.1.0 with the live pack. Uses Oomba.live: ready({lobby, quiz, hostView}), the question / answers / reveal / result / end / emote events, quiz.answer and flat() (the lobby and the podium portraits). Test hooks: window.__brbTest.state(), answer(i).",
+  "notes": "Oomba Live reference game (built-in mode 'battle'), 2D on the Oomba Kit 1.1.0 with the live pack. A co-op boss battle: the host picks one of three bosses at random and shares it with setState({boss}); every screen computes the boss's energy only from the reveals' answer counts (each question an equal share, 45-100% of it landing by the share of right answers; the last question always finishes the boss, so the class always wins). The server keeps all points; streak power-ups (fire stars, lightning, rainbow) are pictures only. Projector: the boss big, the question, animated answer bars, stars flying from the right tile, the top five with overtakes sliding and a star line, the defeat cutscene and podium. Phones: the boss small, chunky answer buttons, your own attack, a streak pill, vibration where allowed. Uses Oomba.live: ready({lobby, quiz, hostView, teams}), the question / answers / reveal / result / end / emote / state events, quiz.answer, setState and flat(). Test hooks: window.__brbTest.state() (with boss {kind, hp, mood} and streak), answer(i).",
   "l10n": {}
 }

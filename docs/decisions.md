@@ -1935,3 +1935,47 @@ switches it on, then per language at `/admin/voices`.
 - **Admin page on phones:** small ▶ buttons, the sample sentence readable (not a header style), the language column
   sticky, the narrator's ▶ marked, and under 600 px one ▶ per row that plays the narrator chosen there.
 
+## Brain Board, and fun games kept out of class rooms (November 2026)
+
+A third built-in live quiz mode, in the category-board genre, with its own name and look (a night-sky board, Lucky
+Stars): the projector shows categories × 5 tiles worth 100-500; the host (or the fastest right answer, when "players
+pick" is on) picks a tile and everyone answers it on their device. No wagers and nothing typed: a Lucky Star simply
+doubles the points, and wrong answers never cost points (kids). The server owns the board as shared state, so a
+reconnecting phone or projector always sees the same board (docs/live-protocol.md "Brain Board"). Question sets gained
+an optional category per question (editor field, a "Category" spreadsheet column or "# Category" lines when pasting, and
+an AI "Brain Board" draft of 5 categories × 5 rising in difficulty); sets without categories still make a board. The
+starters gained a mixed board (Science, Geography, Math, Mix) for ages 8-14, now listed first.
+
+Hero of Sunvale is a fun adventure, not a class activity (the owner's call): `NOT_FOR_CLASS` in classlive-access.js
+keeps it out of a teacher's /live picker and refuses it for a class room (`notForClass`); a parent may still host it
+for their family or an open room. Empty game groups on /live are hidden.
+
+
+## Live games are checked on phones, tablets and desktops (November 2026)
+
+Every change to an Oomba Live game or the live pages must keep `tests/e2e/live-layout.spec.js` green. It runs
+`scripts/live-layout-audit.js` (`npm run layout:live` against any running server): each quiz mode is hosted with three
+players, and the projector page and a player's page are checked at 390×844, 360×640, 820×1180, 1180×820, 1280×800 and
+1920×1080, in the lobby, during a long question (2 minutes, so every size sees it open), at the reveal, on the board and
+at the end. Inside the game frame (tests/e2e/frame-fit.js) nothing may be off screen, cut off, on top of something else
+or squashed (tap targets 40 px or more, never half again taller than wide), answer buttons must be in view without
+scrolling, and the page never scrolls sideways. A screenshot of every check is kept for a look by eye. Found with it:
+the player page's `<body>` had the class `lv-player` (the roster row's flex style), which squeezed every live game into a
+narrow column on tablets.
+
+## Admin game tool (November 2026)
+
+`server/routes/admin-tool.js`: find a game, read its live code and put a fixed version live from outside a browser
+(used to fix a member's published game for them). Off unless `ADMIN_API_TOKEN` (32+ characters) is set; bearer token,
+rate-limited, audited as the admin account; new versions pass the usual safety scan, and a version waiting for review
+is approved as the admin. Remove the token when the fix is done.
+## The Builder checks every device, tablets first (November 2026)
+
+Kids play on tablets (iPads, Chromebooks) more than on anything else, and games that looked fine in the Builder's phone
+playtest were hard to play on a tablet. So the playtest now also shows the model the title screen and the game after
+starting at five sizes (phone and tablet, each in portrait and landscape, and desktop), as two labelled contact sheets
+with the layout problems found at each size, and the system prompt has a firm "EVERY DEVICE, TABLET FIRST" rule. The
+sizes are reached by resizing the window, so a game must lay itself out again on a resize, as it must when a tablet
+turns. Cost: two more pictures per playtest (about 1,500 x 1,000 pixels each) and about 8 seconds more per playtest; a
+screenshot job's limit went from 40 to 55 seconds.
+

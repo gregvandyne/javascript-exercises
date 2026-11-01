@@ -1,7 +1,7 @@
 // /live (landingBody) and /live/sets (setsBody): the host's landing form and the question-set editor
 // (docs/live-protocol.md). The landing form works without this script (app.js posts data-api forms); here it shows the
 // question sets only for picks that use questions, the class picker only for class rooms, and asks before replacing an
-// open live game (409 hasOpen). The editor builds sets of 1-100 questions with 2-4 answers each (typed, pasted from a spreadsheet or drafted by the
+// open live game (409 hasOpen). Each question may have a category (Brain Board's column). The editor builds sets of 1-100 questions with 2-4 answers each (typed, pasted from a spreadsheet or drafted by the
 // AI, then edited); questions are written by
 // grown-ups and checked on the server (profanity and personal information are refused).
 import { api, toast, sheet, t, esc } from '/js/app.js';
@@ -107,7 +107,8 @@ if (editor) {
   function question(it) {
     const li = document.createElement('li'); li.className = 'lv-q';
     const n = Math.random().toString(36).slice(2, 8);
-    li.innerHTML = `<div class="field"><label for="q-${n}">${esc(t('js.live-sets.question'))}</label><textarea id="q-${n}" class="input" rows="2" maxlength="${MAX.q}">${esc(it.q)}</textarea></div>
+    li.innerHTML = `<div class="field lv-cat"><label for="c-${n}">${esc(t('js.live-sets.category'))}</label><input id="c-${n}" class="input" maxlength="${MAX.cat}" placeholder="${esc(t('js.live-sets.categoryHint'))}" value="${esc(it.cat || '')}" data-cat></div>
+      <div class="field"><label for="q-${n}">${esc(t('js.live-sets.question'))}</label><textarea id="q-${n}" class="input" rows="2" maxlength="${MAX.q}">${esc(it.q)}</textarea></div>
       <fieldset class="lv-group"><legend>${esc(t('js.live-sets.answers'))}</legend><div class="lv-choices"></div>
       <div class="lv-row"><button class="btn btn-sm" type="button" data-add-choice>＋ ${esc(t('js.live-sets.addAnswer'))}</button>
       <button class="btn btn-sm" type="button" data-tf>${esc(t('js.live-sets.makeTf'))}</button></div></fieldset>
@@ -140,7 +141,8 @@ if (editor) {
   }
   const read = li => {
     const rows = [...li.querySelectorAll('.lv-choice')];
-    return { q: li.querySelector('textarea').value.trim(), choices: rows.map(r => r.querySelector('input.input').value.trim()), answer: Math.max(0, rows.findIndex(r => r.querySelector('input[type=radio]').checked)), secs: +li.querySelector('select').value };
+    const cat = li.querySelector('[data-cat]').value.trim();
+    return { ...(cat ? { cat } : {}), q: li.querySelector('textarea').value.trim(), choices: rows.map(r => r.querySelector('input.input').value.trim()), answer: Math.max(0, rows.findIndex(r => r.querySelector('input[type=radio]').checked)), secs: +li.querySelector('select').value };
   };
   const collect = () => [...document.querySelectorAll('#lv-qlist > li')].map(read);
 
@@ -153,7 +155,7 @@ if (editor) {
       <div class="lv-set-meta">
         <div class="field"><label for="lv-ai-count">${esc(t('js.live-sets.aiCount'))}</label><select id="lv-ai-count" class="input">${[5, 10, 15, 20, 30].map(x => `<option${x === 10 ? ' selected' : ''}>${x}</option>`).join('')}</select></div>
         <div class="field"><label for="lv-ai-kind">${esc(t('js.live-sets.aiKind'))}</label><select id="lv-ai-kind" class="input">
-          <option value="mixed">${esc(t('js.live-sets.aiMixed'))}</option><option value="choice4">${esc(t('js.live-sets.aiChoice4'))}</option><option value="truefalse">${esc(t('js.live-sets.aiTf'))}</option></select></div>
+          <option value="mixed">${esc(t('js.live-sets.aiMixed'))}</option><option value="choice4">${esc(t('js.live-sets.aiChoice4'))}</option><option value="truefalse">${esc(t('js.live-sets.aiTf'))}</option><option value="board">${esc(t('js.live-sets.aiBoard'))}</option></select></div>
       </div>
       <p class="err" role="alert"></p>
       <button class="btn btn-primary" type="submit">✨ ${esc(t('js.live-sets.aiGo'))}</button></form>` });
@@ -174,6 +176,7 @@ if (editor) {
     const s = sheet({ title: t('js.live-sets.pasteTitle'), content: `<div class="stack">
       <p class="small">${esc(t('js.live-sets.pasteSheet'))}</p>
       <p class="small">${esc(t('js.live-sets.pasteText'))}</p>
+      <p class="small muted">${esc(t('js.live-sets.pasteCats'))}</p>
       <pre class="lv-paste-example" dir="auto">${esc(t('js.live-sets.pasteExample'))}</pre>
       <label class="sr-only" for="lv-paste">${esc(t('js.live-sets.pasteButton'))}</label>
       <textarea id="lv-paste" class="input" rows="8"></textarea>
@@ -181,7 +184,7 @@ if (editor) {
       <button class="btn btn-primary" type="button" id="lv-paste-go" disabled>${esc(t('js.live-sets.pasteGo'))}</button></div>` });
     const ta = s.el.querySelector('#lv-paste'), go = s.el.querySelector('#lv-paste-go'), info = s.el.querySelector('#lv-paste-n');
     let found = [];
-    ta.addEventListener('input', () => { found = parsePasted(ta.value, { header: t('js.live-sets.question') }); info.textContent = t('js.live-sets.pasteFound', { n: found.length }); go.disabled = !found.length; });
+    ta.addEventListener('input', () => { found = parsePasted(ta.value, { header: t('js.live-sets.question'), catHeader: t('js.live-sets.categoryColumn') }); info.textContent = t('js.live-sets.pasteFound', { n: found.length }); go.disabled = !found.length; });
     go.addEventListener('click', () => { const n = addItems(found); s.close(); toast(t('js.live-sets.added', { n })); });
   }
   async function save(e) {

@@ -2266,7 +2266,12 @@
       "pasteText": "Oppure scrivile: la domanda su una riga, poi le sue risposte nelle righe sotto, con * davanti a quella giusta. Lascia una riga vuota tra una domanda e l’altra.",
       "pasteExample": "Qual è il pianeta più grande?\n* Giove\nSaturno\nTerra\n\nAl livello del mare l’acqua bolle a 100 °C.\n* Vero\nFalso",
       "pasteFound": "{n, plural, =0 {Ancora nessuna domanda trovata.} one {# domanda trovata.} other {# domande trovate.}}",
-      "pasteGo": "Aggiungi queste domande"
+      "pasteGo": "Aggiungi queste domande",
+      "category": "Categoria (facoltativa)",
+      "categoryHint": "Per Tabellone Cervello, es. Pianeti",
+      "categoryColumn": "Categoria",
+      "pasteCats": "Per Tabellone Cervello, aggiungi le categorie: una prima colonna con l’intestazione «Categoria» nel foglio di calcolo, o una riga come «# Pianeti» prima delle sue domande.",
+      "aiBoard": "Un Tabellone Cervello (5 categorie × 5)"
     },
     "match": {
       "title": "Gioca a {title} online",
@@ -3778,7 +3783,7 @@
     "live": {
       "h": "Giochi dal vivo in classe",
       "p1": "Avviate al proiettore una corsa a quiz dal vivo o qualsiasi gioco pronto per il dal vivo. Gli studenti entrano dai propri dispositivi con un codice di 7 cifre.",
-      "li1": "Modalità incluse: Corsa delle missioni (una corsa su un’isola in 3D guidata dalle vostre domande) e Sfida a domande.",
+      "li1": "Modalità incluse: Corsa delle missioni (una corsa su un’isola in 3D guidata dalle vostre domande), Sfida a domande e Tabellone Cervello (un tabellone di categorie, dal facile al difficile).",
       "li2": "Usate una serie di partenza, scrivete una serie veloce o trasformate le domande di una lezione in un quiz dal vivo.",
       "li3": "Le stanze di classe sono solo per i vostri studenti con accesso effettuato, e i loro punti vanno nel vostro registro. Niente chat, niente scrittura, niente nomi scritti liberamente.",
       "more": "Veda come funziona Oomba Live"
@@ -4542,7 +4547,9 @@
       "questRace": "Corsa delle missioni",
       "questRaceText": "Rispondi alle domande per correre su un’isola in 3D. Le risposte giuste danno gemme e una spinta!",
       "battle": "Sfida a domande",
-      "battleText": "Domande sul grande schermo, risposte su ogni dispositivo e una classifica dopo ognuna."
+      "battleText": "Domande sul grande schermo, risposte su ogni dispositivo e una classifica dopo ognuna.",
+      "board": "Tabellone Cervello",
+      "boardText": "Un tabellone di categorie: scegli una casella e rispondono tutti. Le caselle più alte sono più difficili e valgono di più, e una Stella fortunata nascosta raddoppia i punti."
     },
     "starter": {
       "title": {
@@ -4550,7 +4557,8 @@
         "math10": "Matematica, 10-11 anni",
         "math12": "Matematica, 12-14 anni",
         "science": "Scienze",
-        "geo": "Geografia"
+        "geo": "Geografia",
+        "board": "Tabellone Cervello misto, 8-14 anni"
       },
       "math": {
         "add": "Quanto fa {a} + {b}?",
@@ -4700,7 +4708,9 @@
           "c2": "Stati Uniti",
           "c3": "Indonesia"
         }
-      }
+      },
+      "boardMath": "Matematica",
+      "boardMix": "Misto"
     },
     "results": {
       "title": "Risultati della partita dal vivo",
@@ -4783,7 +4793,8 @@
         "notFound": "Non troviamo quella serie.",
         "topic": "Scrivi prima un argomento.",
         "aiOff": "La preparazione con l’IA non è disponibile in questo momento. Puoi comunque scrivere o incollare le tue domande.",
-        "aiFailed": "Questa volta l’IA non è riuscita a scrivere le domande. Riprova, o cambia un po’ l’argomento."
+        "aiFailed": "Questa volta l’IA non è riuscita a scrivere le domande. Riprova, o cambia un po’ l’argomento.",
+        "cat": "La categoria della domanda {n} non è permessa."
       },
       "noMissed": "Tutti hanno risposto bene a tutto: non c'è niente da rigiocare.",
       "teamsOff": "Questo gioco non aveva squadre.",
@@ -4799,7 +4810,8 @@
         "hasOpen": "Questa persona sta conducendo un altro gioco dal vivo.",
         "gone": "Questo invito è scaduto.",
         "self": "Sei già il conduttore."
-      }
+      },
+      "notForClass": "Questo gioco è per divertirsi, non per la classe. Scegli una modalità quiz o uno dei tuoi giochi."
     },
     "nick": {
       "0": "Lontra Coraggiosa",
@@ -5295,7 +5307,7 @@
       "lead": "Schermate reali di una partita dal vivo in una scuola dimostrativa con nomi inventati.",
       "s1": {
         "h": "Scelga un gioco e le domande",
-        "p": "Scelga Corsa delle missioni o Sfida a domande, poi una sua serie di domande, una condivisa da un collega, una serie di partenza già pronta o le domande di una delle sue lezioni.",
+        "p": "Scelga Corsa delle missioni, Sfida a domande o Tabellone Cervello, poi una sua serie di domande, una condivisa da un collega, una serie di partenza già pronta o le domande di una delle sue lezioni.",
         "alt": "La pagina «Guida una partita dal vivo»: le modalità di gioco tra cui scegliere, una serie di domande e chi può entrare."
       },
       "s2": {
@@ -5320,7 +5332,7 @@
       }
     },
     "modes": {
-      "h": "Due modi di giocare, più i giochi dal vivo",
+      "h": "Tre modi di giocare",
       "race": {
         "h": "Corsa delle missioni",
         "p": "Una corsa su un’isola in 3D. Ogni risposta giusta dà gemme e una spinta, e tutta la classe segue i corridori alla lavagna."
@@ -5329,9 +5341,9 @@
         "h": "Sfida a domande",
         "p": "Il classico: la domanda sul grande schermo, le risposte su ogni dispositivo e una classifica dopo ciascuna."
       },
-      "games": {
-        "h": "Giochi pronti per il dal vivo",
-        "p": "Alcuni giochi della raccolta si possono giocare anche dal vivo insieme, con tutti gli studenti nello stesso mondo."
+      "board": {
+        "h": "Tabellone Cervello",
+        "p": "Un tabellone di categorie sullo schermo. Scelga una casella (o lasci scegliere a chi risponde giusto più in fretta) e la sua domanda si apre su tutti i dispositivi. Le caselle difficili valgono di più, e una Stella fortunata nascosta raddoppia i punti."
       }
     },
     "tools": {
