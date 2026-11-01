@@ -130,8 +130,8 @@ export const hooks = { familyGrownups: fam => (fam ? [fam.owner_id] : []) };
 /**
  * The tier a person would have as a controller of this session: 'full' (sees student details: the same rule that gives
  * the host account names, saved runs and support), 'limited' (controls only), or null (may not control it).
- *   class:  active staff (teacher or admin) of the class's school, never a student of the class; 'full' only when they
- *           teach the class. A platform admin's all-access does not count: school membership only.
+ *   class:  active staff (teacher or admin) of the class's school, never a student of the class; 'full' when they
+ *           teach the class or are an admin of its school (the owner's call, docs/decisions.md). A platform admin's all-access does not count: school membership only.
  *   family: the owner ('full'), or another grown-up of the owner's family ('limited'; nobody today, see hooks).
  *   open:   the owner only. Guests, banned accounts and kids never control a session.
  */
@@ -145,7 +145,7 @@ export function controlTier(s, u) {
     if (cm && cm.role === 'student') return null;
     const m = S.membership(c.school_id, u.id);
     if (!m || (m.role !== 'teacher' && m.role !== 'admin')) return null;
-    return S.teaches(u, c.id) ? 'full' : 'limited';
+    return S.teaches(u, c.id) || m.role === 'admin' ? 'full' : 'limited';
   }
   if (s.audience === 'family') {
     if (u.id === owner) return 'full';
