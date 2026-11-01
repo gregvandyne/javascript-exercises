@@ -6,15 +6,25 @@ const data = JSON.parse(document.getElementById('page-data').textContent);
 let audio = null;
 
 document.addEventListener('click', async e => {
-  const b = e.target.closest('[data-play]'); if (!b) return;
+  const b = e.target.closest('[data-play],[data-play-narrator]'); if (!b) return;
+  // The phone layout's single ▶ plays the narrator chosen in that row's select.
+  const voice = b.hasAttribute('data-play-narrator') ? (document.querySelector(`select[data-narrator="${b.dataset.locale}"]`) || {}).value : b.dataset.voice;
   b.disabled = true;
   try {
-    const r = await api('/api/admin/tts/sample', { method: 'POST', body: { locale: b.dataset.locale, voice: b.dataset.voice } });
+    const r = await api('/api/admin/tts/sample', { method: 'POST', body: { locale: b.dataset.locale, voice } });
     if (audio) audio.pause();
     audio = new Audio(r.u);
     await audio.play();
   } catch (ex) { toast(ex.message, { bad: true }); }
   finally { b.disabled = false; }
+});
+
+// The ▶ of the narrator chosen in each row is marked (aria-current), and follows the select.
+document.addEventListener('change', e => {
+  const sel = e.target.closest('select[data-narrator]'); if (!sel) return;
+  for (const b of document.querySelectorAll(`[data-play][data-locale="${sel.dataset.narrator}"]`)) {
+    if (b.dataset.voice === sel.value) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+  }
 });
 
 const form = $('#tv-form');

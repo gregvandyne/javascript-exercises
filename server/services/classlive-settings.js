@@ -19,7 +19,7 @@ export const KEYS = {
   voices: { values: ['ai', 'device'] },                      // AI voices (routes/tts.js) or each device's own voice
 };
 /** Settings that only quiz runs use (hidden for game-mode sessions). */
-export const QUIZ_ONLY = ['secs', 'count', 'shuffleQ', 'shuffleA', 'points'];
+export const QUIZ_ONLY = ['secs', 'count', 'shuffleQ', 'shuffleA', 'points', 'voices'];   // voices: only quizzes read aloud
 /** What players' pages are told (opt): nothing else about the room's settings reaches a player. */
 export const PUBLIC = ['board', 'emotes', 'names', 'voices'];
 

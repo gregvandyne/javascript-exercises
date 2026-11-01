@@ -1,11 +1,15 @@
 // AI voices (docs/decisions.md "AI voices"; server/services/tts.js). The page asks for a line, gets back the URL of a
 // cached MP3 and plays it (a game frame gets the bytes from its play page, because frames can't fetch).
 //   POST /api/tts   { ctx, … }  -> 200 { u: '/tts/<sha256>.mp3' } | 404 off | 422 filtered/long | 429 fast/site | 503 busy
-//     ctx 'game'   { tok, text, lang, role, rate }  tok: from the play page's page-data (official games only, bound to the
-//                  signed-in player, 2 hours). The text is the game's own words.
-//     ctx 'live'   { sid, tok, i, lang? }  the live question i (only the one open now), by number: the server reads the
-//                  teacher's question and its answer choices. tok: the player's seat token or the host/co-host token.
-//     ctx 'lesson' { clId, stepId, i, lang? }  a lesson quiz step's question i, behind the same access as its quiz API.
+//     ctx 'game'   { tok, text, lang, role, rate }  tok: from the play page's page-data (official games listed in
+//                  tts-lines GAMES only, bound to the signed-in player, 2 hours). The text must be one of that game's own
+//                  spoken lines in that language (tts-lines allowedLine; numbers only in a line's {placeholders}): anything
+//                  else is 422 filtered. The role comes from the line, never from the page.
+//     ctx 'live'   { sid, tok, i }  the live question i (only the one open now), by number: the server reads the
+//                  teacher's question and its answer choices, in the session's language. tok: the player's seat token or
+//                  the host/co-host token.
+//     ctx 'lesson' { clId, stepId, i }  a lesson quiz step's question i, behind the same access as its quiz API, in the
+//                  page's language.
 //   GET /tts/<sha256>.mp3   the cached audio (same-origin only; immutable).
 //   Admin (role admin): GET /admin/voices, POST /api/admin/tts/sample, POST /api/admin/tts/settings,
 //   GET|POST /api/admin/tts/warm, POST /api/admin/tts/warm/stop.
@@ -30,13 +34,15 @@ import { COMMUNITY_CSS } from './social.js';
 
 export const router = Router();
 
-/** Requests a minute per person (cache hits are cheap), new audio a minute per person, new audio per address in 10 min. */
+/** Requests a minute per person (cache hits are cheap), new audio per address in 10 min. New audio a minute per person:
+ *  TTS_PER_MINUTE; new characters a day per person and per address: TTS_USER_DAILY_CHARS, TTS_IP_DAILY_CHARS. */
 export const LIMITS = { perMinute: 120, ipGenPer10Min: 200 };
 export const GAME_TOKEN_SEC = 2 * 3600;
 
 // ---------------------------------------------------------------- game tokens (minted by the play page)
-/** May this game use AI voices: an official seed game, published and not hidden? */
-export const gameAllowed = g => !!g && isOfficial(g) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason;
+/** May this game use AI voices: an official seed game listed in tts-lines GAMES (its spoken lines are known), published
+ *  and not hidden? Other official games (word games where a kid types a word, among them) keep the device's voice. */
+export const gameAllowed = g => !!g && lines.TTS_GAMES.has(g.slug) && isOfficial(g) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason;
 /**
  * The play page's tts data for a game, or null (TTS off, no locale on, not an official game, nobody signed in, a guest
  * included). -> { tok, langs } where tok is bound to the user and the game for 2 hours.
@@ -52,6 +58,11 @@ export const frameData = (user, game) => { const d = playData(user, game); retur
 
 // ---------------------------------------------------------------- POST /api/tts
 const who = req => (req.user ? `u:${req.user.id}` : `ip:${ipOf(req)}`);
+/** Whose request this is, for the request limit: a live seat counts as its own person (a school behind one address). */
+const whoFor = (req, b) => {
+  if (b.ctx === 'live' && typeof b.tok === 'string') { const tok = readToken(b.tok); if (tok && tok.r === 'p' && tok.s && tok.n != null) return `seat:${tok.s}:${tok.n}`; }
+  return who(req);
+};
 const fail = (res, status, code) => res.status(status).json({ code });
 const LETTERS = ['A', 'B', 'C', 'D'];
 /** A quiz question read aloud: the question, then each choice with its letter. */
@@ -59,7 +70,6 @@ export const questionText = (qq, choices = []) => [String(qq || ''), ...choices.
 
 /** -> { text, locale, role, rate } or { error: [status, code] }. */
 function resolve(req, b) {
-  const lang = l => V.ttsLocale(l) || V.ttsLocale(req.locale) || 'en';
   if (b.ctx === 'game') {
     const tok = readToken(typeof b.tok === 'string' ? b.tok : '');
     if (!tok || tok.k !== 'tts' || !tok.u || !req.user || req.user.id !== tok.u) return { error: [403, 'token'] };
@@ -67,8 +77,11 @@ function resolve(req, b) {
     if (!gameAllowed(g) || !games.canView(req.user, g)) return { error: [404, 'off'] };
     if (typeof b.text !== 'string') return { error: [422, 'long'] };
     const locale = V.ttsLocale(b.lang);
-    if (!locale) return { error: [404, 'off'] };
-    return { text: b.text, locale, role: V.ROLES.includes(b.role) ? b.role : 'narrator', rate: V.rateBucket(b.rate) };
+    if (!locale || !tts.localeOn(locale)) return { error: [404, 'off'] };
+    // Only the game's own words (never what a player typed), with the line's own role.
+    const line = lines.allowedLine(g.slug, locale, b.text, b.role);
+    if (!line) return { error: [422, 'filtered'] };
+    return { text: line.text, locale, role: line.role, rate: V.rateBucket(b.rate) };
   }
   if (b.ctx === 'live') {
     const s = LS.get(b.sid);
@@ -81,7 +94,8 @@ function resolve(req, b) {
     const cur = s.qz && s.qz.cur;
     // Only the question open now: never one that is still to come.
     if (!cur || !Number.isInteger(b.i) || b.i !== cur.i) return { error: [404, 'notNow'] };
-    return { text: questionText(cur.q, cur.choices), locale: lang(b.lang || s.lang), role: 'narrator', rate: 'normal' };
+    // The session's language only (the text is never translated: another language would only be a wrong accent).
+    return { text: questionText(cur.q, cur.choices), locale: V.ttsLocale(s.lang) || 'en', role: 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'lesson') {
     if (!req.user || !config.liveHomework) return { error: [404, 'off'] };
@@ -89,7 +103,7 @@ function resolve(req, b) {
     if (!r.ok) return { error: [404, 'off'] };
     const it = Number.isInteger(b.i) ? r.items[b.i] : null;
     if (!it) return { error: [404, 'off'] };
-    return { text: questionText(it.q, it.choices), locale: lang(b.lang), role: 'narrator', rate: 'normal' };
+    return { text: questionText(it.q, it.choices), locale: V.ttsLocale(req.locale) || 'en', role: 'narrator', rate: 'normal' };
   }
   return { error: [400, 'ctx'] };
 }
@@ -98,15 +112,19 @@ const STATUS = { off: 404, long: 422, filtered: 422, fast: 429, site: 429, busy:
 router.post('/api/tts', async (req, res) => {
   res.set('Cache-Control', 'no-store');
   if (!tts.ttsEnabled()) return fail(res, 404, 'off');
-  if (!allow(`tts:${who(req)}`, LIMITS.perMinute, 60e3)) return fail(res, 429, 'fast');
   const b = req.body && typeof req.body === 'object' ? req.body : {};
+  if (!allow(`tts:${whoFor(req, b)}`, LIMITS.perMinute, 60e3)) return fail(res, 429, 'fast');
   const r = resolve(req, b);
   if (r.error) return fail(res, r.error[0], r.error[1]);
   if (!tts.localeOn(r.locale)) return fail(res, 404, 'off');
   const why = tts.speakable(r.text, { user: req.user, ctx: b.ctx });
   if (why) return fail(res, 422, why);
-  // New audio only: per person and per address (a whole school behind one address still fits).
-  const gate = () => (!allow(`tts-gen:${who(req)}`, config.ttsPerMinute, 60e3) || !allow(`tts-gen-ip:${ipOf(req)}`, LIMITS.ipGenPer10Min, 600e3) ? 'fast' : null);
+  // New audio only: per person and per address, a minute and a day (a whole school behind one address still fits:
+  // a class shares one question's audio). The day's characters are counted in memory under a salted hash.
+  const gate = p => {
+    if (!allow(`tts-gen:${whoFor(req, b)}`, config.ttsPerMinute, 60e3) || !allow(`tts-gen-ip:${ipOf(req)}`, LIMITS.ipGenPer10Min, 600e3)) return 'fast';
+    return usage.takeQuota([whoFor(req, b), `ip:${ipOf(req)}`], [config.ttsUserDailyChars, config.ttsIpDailyChars], p.text.length) ? null : 'fast';
+  };
   try {
     const out = await tts.synthesize({ ...r, ctx: b.ctx, gate });
     res.json({ u: out.url });
@@ -145,20 +163,22 @@ router.get('/admin/voices', (req, res) => {
   ${on ? '' : html`<section class="panel" role="status"><b>AI voices are off.</b> They need TTS_ENABLED=1 and a key (TTS_API_KEY, or STT_API_KEY when both providers are openai). Until then nothing here can play, and every page uses the device's own voice.</section>`}
   <section class="panel small">
     <p><b>Provider</b> ${config.ttsProvider || '–'} · <b>model</b> ${config.ttsProvider === 'mock' ? 'mock (silent audio)' : config.ttsModel} · <b>TTS_LOCALES</b> ${config.ttsLocales.join(', ')}</p>
-    <p><b>Today</b> ${use.chars.toLocaleString('en-US')} of ${config.ttsDailyChars.toLocaleString('en-US')} characters (${use.calls} new, ${use.hits} from the cache, ${use.fails} failed) · about ${usd(usage.usdFor(use.chars))} · AI budget today ${usd(b.today)} of ${usd(b.daily)}${b.ok ? '' : html` <b>(cap reached: no new audio)</b>`}</p>
+    <p><b>Today</b> ${use.chars.toLocaleString('en-US')} of ${usage.dailyCap().toLocaleString('en-US')} characters (${use.calls} new, ${use.hits} from the cache, ${use.fails} failed) · about ${usd(usage.usdFor(use.chars))} · AI budget today ${usd(b.today)} of ${usd(b.daily)}${b.ok ? '' : html` <b>(cap reached: no new audio)</b>`}</p>
     <p><b>Cache</b> ${st.n} lines, ${mb(st.bytes)} of ${config.ttsCacheMb} MB (${st.pinned} kept by warm-up and samples)</p>
     <p class="muted">Only text written by us, a game's makers or a teacher is ever spoken, never what a kid types and never a name. Players are told the voices are AI voices from OpenAI. Each language stays silent until you switch it on here; listen to it first.</p>
   </section>
   <h2 class="stats-h">Languages and narrator voices</h2>
-  <p class="muted small">▶ plays the sample sentence in that language with that voice (made once, then kept). Narrator: the voice that reads stories, lessons and quiz questions in that language.</p>
+  <p class="muted small">▶ plays the sample sentence in that language with that voice (made once, then kept; the narrator's ▶ is marked). Narrator: the voice that reads stories, lessons and quiz questions in that language. On a phone, ▶ plays the narrator chosen in that row.</p>
   <form id="tv-form">
   <div class="panel tblwrap"><table class="tbl tv-grid">
-    <thead><tr><th>Language</th><th>On</th><th>Narrator</th>${V.VOICES.map(v => html`<th>${v}</th>`)}</tr></thead>
+    <thead><tr><th>Language</th><th>On</th><th>Narrator</th><th class="tv-one">Play</th>${V.VOICES.map(v => html`<th class="tv-v">${v}</th>`)}</tr></thead>
     <tbody>${locales.map(l => html`<tr data-locale="${l.code}">
-      <th scope="row">${l.name} <span class="muted small">${l.code}</span><div class="small tv-sample" lang="${l.code}" dir="${l.dir}">${V.sampleFor(l.code)}</div></th>
-      <td><input type="checkbox" name="on-${l.code}" aria-label="${l.name} on" ${s.locales[l.code].on ? raw('checked') : ''} ${allowed.has(l.code) ? '' : raw('disabled title="Not in TTS_LOCALES"')}></td>
-      <td><select name="narrator-${l.code}" aria-label="${l.name} narrator">${V.VOICES.map(v => html`<option ${v === s.locales[l.code].narrator ? raw('selected') : ''}>${v}</option>`)}</select></td>
-      ${V.VOICES.map(v => html`<td><button class="btn btn-s" type="button" data-play data-locale="${l.code}" data-voice="${v}" aria-label="Play ${l.name} with ${v}" ${on ? '' : raw('disabled')}>▶</button></td>`)}
+      <th scope="row">${l.name} <span class="muted small">${l.code}</span></th>
+      <td><input type="checkbox" name="on-${l.code}" aria-label="${l.name} on" ${s.locales[l.code].on ? raw('checked') : ''} ${allowed.has(l.code) ? '' : raw('disabled title="Not in TTS_LOCALES"')}>
+        <div class="small tv-sample" lang="${l.code}" dir="${l.dir}">${V.sampleFor(l.code)}</div></td>
+      <td><select name="narrator-${l.code}" aria-label="${l.name} narrator" data-narrator="${l.code}">${V.VOICES.map(v => html`<option ${v === s.locales[l.code].narrator ? raw('selected') : ''}>${v}</option>`)}</select></td>
+      <td class="tv-one"><button class="btn btn-sm" type="button" data-play-narrator data-locale="${l.code}" aria-label="Play ${l.name} with the narrator chosen" ${on ? '' : raw('disabled')}>▶</button></td>
+      ${V.VOICES.map(v => html`<td class="tv-v"><button class="btn btn-sm" type="button" data-play data-locale="${l.code}" data-voice="${v}" aria-label="Play ${l.name} with ${v}" ${v === s.locales[l.code].narrator ? raw('aria-current="true"') : ''} ${on ? '' : raw('disabled')}>▶</button></td>`)}
     </tr>`)}</tbody>
   </table></div>
   <h2 class="stats-h">Character voices (every language)</h2>

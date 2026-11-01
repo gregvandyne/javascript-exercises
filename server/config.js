@@ -242,7 +242,12 @@ export const config = {
   ttsLocales: ttsLocales.list,
   ttsMaxChars: Math.min(4000, Math.max(50, Math.floor(num(process.env.TTS_MAX_CHARS, 600)))),
   ttsCacheMb: Math.max(16, num(process.env.TTS_CACHE_MB, 512)),
-  ttsDailyChars: Math.max(1000, Math.floor(num(process.env.TTS_DAILY_CHARS, 300000))),
+  // TTS_DAILY_CHARS: new characters a day, site-wide. Unset: derived from the AI budget (server/services/tts-usage.js
+  // dailyCap: about 20% of AI_DAILY_BUDGET_USD at TTS_USD_PER_1K_CHARS), so voices can never eat the whole free pool.
+  ttsDailyChars: process.env.TTS_DAILY_CHARS ? Math.max(1000, Math.floor(num(process.env.TTS_DAILY_CHARS, 1000))) : null,
+  // New characters a day for one person (a signed-in account, or a seat in Oomba Live) and for one network address.
+  ttsUserDailyChars: Math.max(200, Math.floor(num(process.env.TTS_USER_DAILY_CHARS, 5000))),
+  ttsIpDailyChars: Math.max(1000, Math.floor(num(process.env.TTS_IP_DAILY_CHARS, 30000))),
   ttsPerMinute: Math.max(1, Math.floor(num(process.env.TTS_PER_MINUTE, 20))),
   ttsUsdPer1kChars: Math.max(0, num(process.env.TTS_USD_PER_1K_CHARS, 0.015)),
   ttsTimeoutMs: Math.min(60000, Math.max(2000, num(process.env.TTS_TIMEOUT_MS, 15000))),

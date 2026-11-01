@@ -611,7 +611,7 @@
         "p1": "Per creare un gioco, i messaggi, le immagini e i file che vostro figlio o figlia dà al Costruttore vengono inviati a Claude, un'IA creata dall'azienda Anthropic, che scrive il gioco. Il nome e il nome utente di vostro figlio o figlia non vengono inviati insieme a questi contenuti. Anche le foto del profilo vengono inviate a Claude per essere controllate prima che qualcuno le veda. Claude verifica i giochi prima che possano essere condivisi con tutti, e il nostro team controlla quelli su cui ha dei dubbi. Le chat tra amici e le risposte alle lezioni non vengono inviate all'IA.",
         "p2": "Parlare invece di scrivere: quando vostro figlio o figlia tocca il microfono nella chat del Costruttore, la registrazione viene inviata al servizio di trascrizione vocale {provider}, che la trasforma in parole. Vostro figlio o figlia vede le parole e può cambiarle prima di inviarle. La registrazione serve solo a questo e viene cancellata subito: non la conserviamo mai, e {provider} non può conservarla né usarla per addestrare i suoi sistemi. Le parole passano per gli stessi controlli di sicurezza di un messaggio scritto.",
         "p3": "Ricerca di fatti: per fare un gioco giusto, il Costruttore può cercare un fatto sul web (per esempio quanto corre veloce un ghepardo). Vostro figlio o figlia non vede mai le pagine web né i link. Il Costruttore ha l'istruzione di non cercare mai niente di personale; se una ricerca sembra comunque personale, i suoi risultati non vengono usati e le sue parole non vengono conservate. I siti per adulti, di scommesse, di social network e di video sono bloccati. Conserviamo un elenco delle ricerche, senza il nome o il nome utente di vostro figlio o figlia, insieme al gioco per cui sono state fatte, per 90 giorni, così il nostro team può controllarle.",
-        "p4": "Voci IA: alcuni dei nostri giochi, i quiz delle lezioni e i quiz di Oomba Live possono leggere ad alta voce i loro testi con una voce fatta da un computer di {ttsProvider}. Viene inviato solo testo scritto da noi, dai creatori di un gioco o dall'insegnante di tuo figlio, mai quello che tuo figlio scrive o dice e mai il suo nome. A tuo figlio viene detto che le voci sono fatte dall'IA, e può passare alla voce del dispositivo con il pulsante 🔊 Voci."
+        "p4": "Voci IA: alcuni dei nostri giochi, i quiz delle lezioni e i quiz di Oomba Live possono leggere ad alta voce i loro testi con una voce fatta da un computer di {ttsProvider}. Viene inviato solo testo scritto da noi, dai creatori di un gioco o dall'insegnante di tuo figlio, mai quello che tuo figlio scrive o dice e mai il suo nome. A tuo figlio viene detto che le voci sono fatte dall'IA, e può passare alla voce del dispositivo con il pulsante 🔊 Voci IA."
       },
       "keep": {
         "h": "Per quanto tempo li conserviamo",
@@ -1111,7 +1111,7 @@
       "lostText": "A volte succede. Tocca Riprova per ricominciare il gioco.",
       "retry": "Riprova"
     },
-    "voices": "Voci"
+    "voices": "Voci IA"
   },
   "friends": {
     "title": "Amici",

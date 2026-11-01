@@ -611,7 +611,7 @@
         "p1": "To make a game, the messages, pictures and files your child gives the Builder are sent to Claude, an AI made by the company Anthropic, which writes the game. Your child's name and username are not sent with them. Profile photos are also sent to Claude to be checked before anyone sees them. Claude reviews games before they can be shared with everyone, and our team checks any it is unsure about. Chats between friends and lesson answers are not sent to the AI.",
         "p2": "Speaking instead of typing: when your child taps the microphone in the Builder chat, the recording is sent to {provider}, a speech-to-text service, which turns it into words. Your child sees the words and can change them before sending. The recording is used only for this and deleted straight away: we never store it, and {provider} is not allowed to keep it or use it to train its systems. The words go through the same safety checks as a typed message.",
         "p3": "Looking up facts: to get a game right, the Builder can look up a fact on the web (for example how fast a cheetah runs). Your child never sees the web pages or links. The Builder is told never to search for anything personal; if a search still looks personal, its results are not used and its words are not kept. Adult, gambling, social media and video sites are blocked. We keep a list of the searches, without your child's name or username, together with the game they were for, for 90 days so our team can check them.",
-        "p4": "AI voices: some of our own games, lesson quizzes and Oomba Live quizzes can read their words aloud with a computer-made voice from {ttsProvider}. Only text written by us, a game's makers or your child's teacher is sent, never what your child types or says, and never their name. Your child is told the voices are made by AI, and can switch to the device's own voice with the 🔊 Voices button."
+        "p4": "AI voices: some of our own games, lesson quizzes and Oomba Live quizzes can read their words aloud with a computer-made voice from {ttsProvider}. Only text written by us, a game's makers or your child's teacher is sent, never what your child types or says, and never their name. Your child is told the voices are made by AI, and can switch to the device's own voice with the 🔊 AI voices button."
       },
       "keep": {
         "h": "How long we keep it",
@@ -1111,7 +1111,7 @@
       "lostText": "That can happen sometimes. Tap Try again to start the game over.",
       "retry": "Try again"
     },
-    "voices": "Voices"
+    "voices": "AI voices"
   },
   "friends": {
     "title": "Friends",

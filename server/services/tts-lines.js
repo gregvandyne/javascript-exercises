@@ -6,8 +6,10 @@
 //   `const VOICE_ROLES = { <npc id>: '<role>', story: 'narrator', … }` and may define
 //   `const VOICE_KEY_ROLES = { '<key prefix>': '<role>' }` for lines one character says under another's key (Granny's
 //   shop line is d.shop.1). A line's role: the longest VOICE_KEY_ROLES prefix, else VOICE_ROLES[npc] for `d.<npc>.*`,
-//   else VOICE_ROLES.story (else 'narrator'). Games must speak a line with the same role for the warm cache to hit (a
-//   line spoken with another role is simply made on first use).
+//   else VOICE_ROLES.story (else 'narrator'). The game picks a line's role with the same rule (Hero's voiceRole), and
+//   the server takes the role from here, never from the page, so the warm cache always hits.
+// - The same lines are the allowlist for POST /api/tts ctx 'game' (allowedLine): a game listed in GAMES may only have its
+//   own words read, lines with {placeholders} only with numbers in their place.
 // - One run at a time, two lines at a time; it stops when the daily characters or the AI budget run out, and pins
 //   its lines so cache clean-ups keep them.
 import fs from 'node:fs';
@@ -25,10 +27,14 @@ export const SEED_DIR = path.join(ROOT, 'seed-games');
 
 /** Games that can be warmed and which of their keys are spoken. */
 export const GAMES = {
-  'hero-of-sunvale': { title: 'Hero of Sunvale', spoken: /^(intro\.\d+|end\.(\d+|free)|d\.[a-z]+\.[a-z0-9]+|hint\.[a-z0-9]+|say\.[a-zA-Z0-9]+|mg\.[a-z]+)$/ },
+  'hero-of-sunvale': { title: 'Hero of Sunvale', spoken: /^(intro\.\d+|end\.(\d+|free)|d\.[a-z]+\.[a-z0-9]+|hint\.[a-z0-9]+|say\.[a-zA-Z0-9]+|mg\.[a-z]+|sw\.[a-z0-9]+|cinder\.[a-z]+)$/ },
 };
-/** Lines said under another character's key (used until the game has its own VOICE_KEY_ROLES). */
-export const DEFAULT_KEY_ROLES = { 'd.shop.': 'wise' };
+/** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose
+ *  spoken lines the server knows. Every other game keeps the device's voice. */
+export const TTS_GAMES = new Set(Object.keys(GAMES));
+/** Lines said under another character's key (used until the game has its own VOICE_KEY_ROLES). hint.* lines are read
+ *  by the narrator in every character's card. */
+export const DEFAULT_KEY_ROLES = { 'd.shop.': 'wise', 'd.gate.open': 'bright', 'mg.': 'bright', 'say.guard': 'deep', 'say.': 'friendly', 'sw.': 'grumpy', 'cinder.': 'deep', 'hint.': 'narrator' };
 /** Used until the game has its own VOICES block (the same mapping as docs/tts-design.md §4). */
 export const DEFAULT_VOICE_ROLES = {
   story: 'narrator', granny: 'wise', queen: 'wise', bo: 'deep', oakley: 'deep', finn: 'deep', plum: 'deep', chief: 'deep',
@@ -43,7 +49,9 @@ const run = (code, name) => vm.runInNewContext(`${code}\n;${name}`, Object.creat
 /** A game's I18N object and voice roles, from its file in seed-games/. */
 export function readGame(slug, dir = SEED_DIR) {
   if (!GAMES[slug]) return null;
-  const src = fs.readFileSync(path.join(dir, `${slug}.html`), 'utf8');
+  return parseGame(fs.readFileSync(path.join(dir, `${slug}.html`), 'utf8'));
+}
+function parseGame(src) {
   const i18n = block(src, '// ==== I18N START ====', '// ==== I18N END ====');
   if (!i18n) return null;
   const strings = run(i18n, 'I18N');
@@ -62,8 +70,9 @@ export function roleOf(key, roles, keyRoles = {}) {
   const r = pre ? keyRoles[pre] : m && roles[m[1]] ? roles[m[1]] : roles.story;
   return V.ROLES.includes(r) ? r : 'narrator';
 }
-/** A game's spoken lines in one locale: [{ key, locale, role, text }] (falls back like the game's t(): locale, base, en). */
-export function gameLines(slug, locale, game = readGame(slug)) {
+/** A game's spoken lines in one locale: [{ key, locale, role, text }] (falls back like the game's t(): locale, base, en).
+ *  templates: true also lists lines with {placeholders} (for the allowlist; the warm-up skips them). */
+export function gameLines(slug, locale, game = readGame(slug), { templates = false } = {}) {
   if (!game) return [];
   const { strings, roles, keyRoles } = game;
   const chain = [...new Set([locale, locale.split('-')[0], 'en'])].filter(c => Object.prototype.hasOwnProperty.call(strings, c));
@@ -71,10 +80,51 @@ export function gameLines(slug, locale, game = readGame(slug)) {
   const out = [];
   for (const key of keys) {
     let text; for (const c of chain) { if (strings[c][key] !== undefined) { text = strings[c][key]; break; } }
-    if (typeof text !== 'string' || /\{\w+\}/.test(text) || !text.trim()) continue;
+    if (typeof text !== 'string' || !text.trim() || (!templates && /\{\w+\}/.test(text))) continue;
     out.push({ key, locale, role: roleOf(key, roles, keyRoles), text });
   }
   return out;
+}
+
+// ---------------------------------------------------------------- the allowlist (routes/tts.js, ctx 'game')
+// A game may only have its own spoken lines read: the server never sends text a player could have typed. A line with
+// {placeholders} matches only with numbers in their place (a count like "Crystal smashed! 3/5"), never letters.
+const NUM = "[0-9][0-9.,'’ ]{0,15}";
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const memo = new Map();   // `${slug}|${locale}` -> { mtime, exact: Map(text -> roles[]), tpl: [{ re, roles }] }
+/** The allowlist of one game and locale (memoised per file modification time). */
+export function allowlist(slug, locale, dir = SEED_DIR) {
+  if (!GAMES[slug]) return null;
+  const file = path.join(dir, `${slug}.html`);
+  let mtime; try { mtime = fs.statSync(file).mtimeMs; } catch { return null; }
+  const k = `${slug}|${locale}|${dir}`, hit = memo.get(k);
+  if (hit && hit.mtime === mtime) return hit;
+  const exact = new Map(), tpl = [];
+  for (const x of gameLines(slug, locale, readGame(slug, dir), { templates: true })) {
+    const text = tts.tidy(x.text);
+    if (/\{\w+\}/.test(text)) {
+      const re = new RegExp(`^${text.split(/\{\w+\}/).map(escRe).join(NUM)}$`, 'u');
+      const t = tpl.find(y => y.re.source === re.source);
+      if (t) { if (!t.roles.includes(x.role)) t.roles.push(x.role); } else tpl.push({ re, roles: [x.role] });
+    } else {
+      const r = exact.get(text) || []; if (!r.includes(x.role)) r.push(x.role); exact.set(text, r);
+    }
+  }
+  const out = { mtime, exact, tpl };
+  memo.set(k, out);
+  return out;
+}
+/**
+ * Is this one of the game's own spoken lines in this locale? -> { text, role } (role: the line's own role; the asked
+ * role only when the same words are also another character's line) or null.
+ */
+export function allowedLine(slug, locale, text, askedRole = null) {
+  const a = allowlist(slug, locale); if (!a) return null;
+  const s = tts.tidy(text);
+  const pick = roles => ({ text: s, role: roles.includes(askedRole) ? askedRole : roles[0] });
+  const ex = a.exact.get(s); if (ex) return pick(ex);
+  const t = a.tpl.find(y => y.re.test(s));
+  return t ? pick(t.roles) : null;
 }
 
 // ---------------------------------------------------------------- the warm-up run

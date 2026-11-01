@@ -33,7 +33,7 @@ for (const box of document.querySelectorAll('.lv-qstep')) {
       const rd = document.createElement('button'); rd.type = 'button'; rd.className = 'btn btn-sm'; rd.textContent = `🔊 ${T.read}`;
       const n = i;
       rd.addEventListener('click', () => readAloud({ text: `${it.q}. ${it.choices.map((c, k) => `${String.fromCharCode(65 + k)}: ${c}`).join('. ')}`, lang,
-        ai: ai() ? { langs: ttsLangs, body: { ctx: 'lesson', clId: box.dataset.cl, stepId: box.dataset.step, i: n, lang } } : null }));
+        ai: ai() ? { langs: ttsLangs, body: { ctx: 'lesson', clId: box.dataset.cl, stepId: box.dataset.step, i: n } } : null }));
       box.append(rd);
       if (ai() && T.aiVoice) { const note = document.createElement('p'); note.className = 'small muted'; note.textContent = T.aiVoice; box.append(note); }
     }

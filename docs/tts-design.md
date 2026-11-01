@@ -6,7 +6,12 @@ projector Read, lesson quiz Read, Hero of Sunvale voices, disclosures in 13 lang
 with the mock provider only: the real OpenAI call has never run here. Branch `tts-voices` (worktree `.claude/work/wt-tts`,
 from `origin/main` 9c2121a). Differences from the plan below: the `speechSynthesis.speak` wrapper **is** routed to AI
 voices for official games (the task asked for it; start/end events are fired on the utterance); the projector reads only
-when the teacher taps **Read question** (no automatic reading); quiz text skips the phone and link-code backstops.
+when the teacher taps **Read question** (no automatic reading; the button shows only when AI voices are on for the site
+and the projector's Sound is on, not "Read questions aloud", which is each player's own reading support); quiz text
+skips the phone and link-code backstops. After review (docs/decisions.md "AI voices: review fixes"): `ctx:'game'` takes
+only the game's own spoken lines (a server allowlist) with the line's own role, only for games listed in
+`tts-lines.GAMES`; TTS has its own budget share and per-person daily quotas; live/lesson use the session's/page's
+language only.
 
 Goal: official games, lessons and Oomba Live can read **site-, game- and teacher-written text** aloud with a hosted
 voice (OpenAI's speech API) instead of the device's own voice. It is off by default. When it is off, or anything goes
@@ -129,7 +134,8 @@ use the device voice. Live game frames could be added later with the same handle
   1. If the cache has it: update `last_used` (at most once an hour per hash), count a hit, return it.
   2. **Single flight**: `inflight: Map(hash → Promise)`, so 30 phones asking for the same live question make one
      provider call.
-  3. Caps: `ttsUsage.blocked()` (daily characters `TTS_DAILY_CHARS`, then `aiBudget.ok('free')`) → `TtsError('site')`.
+  3. Caps: `ttsUsage.blocked()` (daily characters `dailyCap()`, then the free AI pool below 80% of its budgets) →
+     `TtsError('site')`.
   4. Call the provider. Write `<dataDir>/tts/<hash[0..1]>/<hash>.mp3` (write to a temporary file, then rename). Add a
      `tts_cache` row. `ttsUsage.record(chars)` → `aiBudget.recordSpend('tts:<provider>', chars/1000 *
      TTS_USD_PER_1K_CHARS)`.
@@ -170,10 +176,13 @@ use the device voice. Live game frames could be added later with the same handle
 - `ctx:'game'` (`tok, text, lang, role, rate`): `tok` = `signToken({k:'tts', g, v, u, l}, 2h)` minted by the play page
   route (`routes/games.js`, in `page-data` as `tts:{tok}`) **only for official games** (`g.source==='seed' && owner
   === OFFICIAL`, published) and only when `ttsEnabled()`. The server checks: the token is valid; `tok.u` equals
-  `req.user?.id` (the same binding as `/frame/:token`); the game is still official and viewable; the locale is on; the
-  text passes `speakable`. **Kid- or teacher-made Builder games never get a token**, so they keep the device voice.
+  `req.user?.id` (the same binding as `/frame/:token`); the game is still official, **listed in `tts-lines.GAMES`**
+  and viewable; the locale is on; **the text is one of the game's own spoken lines in that locale**
+  (`allowedLine`; `{placeholders}` match numbers only), else `422 filtered`; the role is the line's own; the text
+  passes `speakable`. **Kid- or teacher-made Builder games, and official games not listed, never get a token**, so
+  they keep the device voice.
 - `ctx:'live'` (`sid, i, tok` = the player's seat token or the host/co-host token): **text by reference**. The server
-  builds `q + ". A: c1. B: c2 …"` from the run's question `i` in the set's language. It refuses `i` beyond the
+  builds `q + ". A: c1. B: c2 …"` from the run's question `i` in the session's language (a posted `lang` is ignored). It refuses `i` beyond the
   question being shown now, so upcoming questions never leak. The text is the teacher's (or an AI-drafted set the
   teacher approved).
 - `ctx:'lesson'` (`clId, stepId, i`): text by reference from the quiz step's set, behind the same access check as
@@ -194,11 +203,14 @@ token (live) or the session plus access (lesson) is the "must come from a game p
 referrer-based check (we send `Referrer-Policy: same-origin`, but referrers can be stripped).
 
 Rate limits (`ratelimit.js allow`):
-- `tts:<user|ip>` 120 requests a minute (hits are cheap).
+- `tts:<user|seat|ip>` 120 requests a minute (hits are cheap; a live seat counts as its own person).
 - **Misses**: `tts-gen:<user|ip>` `TTS_PER_MINUTE` (20) a minute, and `tts-gen-ip:<ip>` 200 every 10 minutes (a
   school behind one address).
-- Site-wide: `TTS_DAILY_CHARS` (300,000) plus the AI budget. A 429 means the device voice is used, never an error
-  toast.
+- **Per day**: `TTS_USER_DAILY_CHARS` (5,000) new characters per person or seat and `TTS_IP_DAILY_CHARS` (30,000) per
+  address, in memory under a salted hash.
+- Site-wide: `TTS_DAILY_CHARS` (unset: about 20% of `AI_DAILY_BUDGET_USD`, 66,666 at the defaults), and no new audio
+  once the free AI pool is past 80% of its daily or monthly budget. A 429 means the device voice is used, never an
+  error toast.
 
 ### Data (migration `0042_tts`)
 ```sql
@@ -223,7 +235,9 @@ written with `audit()`. `tts_usage` rows older than 90 days are deleted (the `st
 | `TTS_LOCALES` | all 13 | the ceiling; `/admin/voices` switches locales inside it |
 | `TTS_MAX_CHARS` | 600 | per request (OpenAI's limit is 4096) |
 | `TTS_CACHE_MB` | 512 | the disk cap for `<dataDir>/tts` |
-| `TTS_DAILY_CHARS` | 300000 | generated characters a day, site-wide |
+| `TTS_DAILY_CHARS` | ~20% of the AI budget | generated characters a day, site-wide (unset: derived from `AI_DAILY_BUDGET_USD`) |
+| `TTS_USER_DAILY_CHARS` | 5000 | new characters a day per person (account or live seat) |
+| `TTS_IP_DAILY_CHARS` | 30000 | new characters a day per network address |
 | `TTS_PER_MINUTE` | 20 | generations a minute per user (or IP) |
 | `TTS_USD_PER_1K_CHARS` | 0.015 | cost estimate for `ai-budget` |
 | `TTS_TIMEOUT_MS` | 15000 | provider timeout |
@@ -272,15 +286,16 @@ written with `audit()`. `tts_usage` rows older than 90 days are deleted (the `st
   or about $1.40 at the default price.
 
 ## 7. Settings, consent, disclosure
-- **Kids (per device)**: on the play page bar, a **🔊 Voices** button, shown only when `pageData.tts` is set, opens a
+- **Kids (per device)**: on the play page bar, a **🔊 AI voices** button, shown only when `pageData.tts` is set, opens a
   sheet with "AI voices" / "This device's voice" (stored in `localStorage['oomba:voices']`, default AI) and the
   disclosure: *"Characters in this game are voiced by a computer (AI voices from OpenAI). They read only the game's
   own words, never anything you type or your name."* With "device", play.js answers `brb:tts` with `ok:false,
   why:'off'` at once. The game's own mute still silences everything.
 - **Teachers**: Live settings (`classlive-settings.js`) get `voices:'ai'|'device'` (default `ai`, kept in
-  `live_prefs`) next to the existing "Read questions aloud". It applies to the players' Read button and to the
-  **projector**, which can now read the question aloud when the host's Sound is on and "Read questions aloud" is on
-  (`live-host.js`, `ctx:'live'` with the host token). A disclosure line goes under the setting. The lesson quiz step uses
+  `live_prefs`; shown for quiz sessions only). It applies to the players' Read button and to the **projector**, whose
+  **Read question** button shows when AI voices are on for the site and the host's Sound is on (`live-host.js`,
+  `ctx:'live'` with the host token), with the AI note under it. A disclosure line goes under the setting. The first AI
+  line in a game shows a one-time toast saying the voices are AI-made, and Hero's settings screen says so too. The lesson quiz step uses
   the per-device choice (`localStorage['oomba:voices']`).
 - **Disclosure in every one of the 13 locales** (`npm run i18n:check`): the parents page `info.parents.ai.p4` (*"AI
   voices: some official games, lessons and Oomba Live can read their own words aloud with a computer-made voice from

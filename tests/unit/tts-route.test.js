@@ -2,7 +2,8 @@
 // site- or teacher-written text (an official game's signed token bound to the player; the live question open now, by
 // number; a lesson quiz question the student may see), locales off until the admin switches them on, the backstop
 // filters, generation limits; GET /tts/<hash>.mp3 headers and refusals; the admin voice page and its APIs; the play
-// page's token and the frame's INIT.tts only for official games.
+// page's token and the frame's INIT.tts only for official games listed in tts-lines GAMES (Hero of Sunvale), and for
+// them only the game's own spoken lines (an allowlist from the repository file), with the line's own role.
 import { reset, call, config, q, auth, LS, games, publish, official, teacher, cls, mia, leo, kid, boss, open } from './_live.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -15,7 +16,9 @@ const SETS = await import('../../server/services/classlive-sets.js');
 const R = await import('../../server/routes/tts.js');
 
 const GAME_HTML = '<!doctype html><title>t</title><p>hi</p><script>BRB.speak("Hello there!")</script>';
-const seedGame = publish(official, GAME_HTML, { source: 'seed', slug: 'tts-seed-game', title: 'Seed' });
+const seedGame = publish(official, GAME_HTML, { source: 'seed', slug: 'hero-of-sunvale', title: 'Hero of Sunvale' });
+// An official game not written for AI voices (a kid types the secret word in its two-player mode): device voice only.
+const sharkGame = publish(official, GAME_HTML, { source: 'seed', slug: 'shark-plank', title: 'Shark Plank' });
 const kidGame = publish(kid, GAME_HTML, { source: 'studio', slug: 'tts-kid-game', title: 'Mine' });
 tts.hooks.log = () => {};
 
@@ -25,17 +28,22 @@ function on(locales = ['en']) {
   V.save(null, { locales: Object.fromEntries(TTS_ALL_LOCALES.map(l => [l, { on: locales.includes(l) }])) });
 }
 function off() { config.ttsEnabled = false; config.ttsProvider = 'openai'; }
-test.beforeEach(() => { reset(); q.run('DELETE FROM tts_cache'); q.run('DELETE FROM tts_usage'); });
+const usage = await import('../../server/services/tts-usage.js');
+test.beforeEach(() => { reset(); usage._resetQuota(); q.run('DELETE FROM tts_cache'); q.run('DELETE FROM tts_usage'); q.run('DELETE FROM ai_spend'); q.run('DELETE FROM ai_spend_pool'); });
 test.afterEach(() => off());
 
 const gameTok = (user, g = seedGame) => R.playData(user, g)?.tok;
 const say = (user, body) => call('/api/tts', { method: 'POST', body, user });
+// Hero of Sunvale's own spoken lines (en), from the repository file.
+const HERO = lines.gameLines('hero-of-sunvale', 'en');
+const heroLine = key => HERO.find(x => x.key === key).text;
+const CHEER = heroLine('mg.cheer'), GRANNY = heroLine('d.granny.1'), INTRO = heroLine('intro.1');
 
 test('off by default: POST answers 404 off, no token on the play page, no INIT.tts in the frame', async () => {
   off();
   assert.deepEqual((await say(mia, { ctx: 'game', tok: 'x', text: 'Hi', lang: 'en' })).json, { code: 'off' });
   assert.equal(R.playData(mia, seedGame), null);
-  const page = await call('/play/tts-seed-game', { user: mia });
+  const page = await call('/play/hero-of-sunvale', { user: mia });
   assert.equal(page.status, 200);
   assert.ok(!page.text.includes('"tts"'), 'no tts in page-data');
 });
@@ -46,33 +54,51 @@ test('game: an official game\'s token works for its own player only; Builder gam
   assert.deepEqual(d.langs, ['en']); assert.ok(d.tok);
   assert.equal(R.playData(mia, kidGame), null, 'a kid-made game: device voice only');
   assert.equal(R.playData(null, seedGame), null, 'nobody signed in');
-  const r = await say(mia, { ctx: 'game', tok: d.tok, text: 'Find the hidden word!', lang: 'en-US', role: 'friendly', rate: 1 });
+  const r = await say(mia, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en-US', role: 'friendly', rate: 1 });
   assert.equal(r.status, 200, r.text); assert.match(r.json.u, /^\/tts\/[0-9a-f]{64}\.mp3$/);
   assert.equal(r.headers.get('cache-control'), 'no-store');
+  // The role is the line's own (Marigold's cheer: bright), whatever the page asked for.
+  assert.equal(r.json.u, tts.urlOf(tts.plan({ text: CHEER, locale: 'en', role: 'bright' }).hash));
+  // Only the game's own words: free text with a valid token is refused (a kid with devtools can't have anything read).
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'Find the hidden word!', lang: 'en' })).json, { code: 'filtered' });
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: `${CHEER} Mia`, lang: 'en' })).json, { code: 'filtered' });
+  // A line with a {placeholder}: numbers only in its place, never letters.
+  assert.equal((await say(mia, { ctx: 'game', tok: d.tok, text: 'Crystal smashed! 2/5', lang: 'en' })).status, 200);
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'Crystal smashed! Mia/5', lang: 'en' })).json, { code: 'filtered' });
+  // Another language's own words, in that language only.
+  const deCheer = lines.gameLines('hero-of-sunvale', 'de').find(x => x.key === 'mg.cheer').text;
+  on(['en', 'de']);
+  assert.equal((await say(mia, { ctx: 'game', tok: d.tok, text: deCheer, lang: 'de' })).status, 200);
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: deCheer, lang: 'en' })).json, { code: 'filtered' });
+  on(['en']);
   // Another account can't use mia's token; a forged token is refused.
-  assert.equal((await say(leo, { ctx: 'game', tok: d.tok, text: 'Find the hidden word!', lang: 'en' })).status, 403);
-  assert.equal((await say(null, { ctx: 'game', tok: d.tok, text: 'Find the hidden word!', lang: 'en' })).status, 403);
+  assert.equal((await say(leo, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en' })).status, 403);
+  assert.equal((await say(null, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en' })).status, 403);
   const forged = auth.signToken({ k: 'tts', g: kidGame.id, u: mia.id }, 60);
-  assert.equal((await say(mia, { ctx: 'game', tok: forged, text: 'Hi friend', lang: 'en' })).json.code, 'off', 'a token for a Builder game is refused');
+  assert.equal((await say(mia, { ctx: 'game', tok: forged, text: CHEER, lang: 'en' })).json.code, 'off', 'a token for a Builder game is refused');
+  // An official game that isn't listed for AI voices (shark-plank speaks a word a kid types): no data, and a token
+  // minted for it anyway is refused.
+  assert.equal(R.playData(mia, sharkGame), null); assert.equal(R.frameData(mia, sharkGame), null);
+  assert.equal((await say(mia, { ctx: 'game', tok: auth.signToken({ k: 'tts', g: sharkGame.id, u: mia.id }, 60), text: CHEER, lang: 'en' })).status, 404);
   assert.equal((await say(mia, { ctx: 'game', tok: auth.signToken({ g: seedGame.id, u: mia.id }, 60), text: 'Hi', lang: 'en' })).status, 403, 'not a tts token');
   // A locale that is off (fr), or one TTS can't speak (zh-CN): 404 off.
   assert.equal((await say(mia, { ctx: 'game', tok: d.tok, text: 'Bonjour !', lang: 'fr' })).json.code, 'off');
   assert.equal((await say(mia, { ctx: 'game', tok: d.tok, text: '你好', lang: 'zh-CN' })).json.code, 'off');
   // The backstops.
-  assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'x'.repeat(601), lang: 'en' })).json, { code: 'long' });
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'x'.repeat(601), lang: 'en' })).json, { code: 'filtered' });
   assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'you shit', lang: 'en' })).json, { code: 'filtered' });
   assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'email me: a@b.com', lang: 'en' })).json, { code: 'filtered' });
   assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: `Great job, ${mia.display_name}!`, lang: 'en' })).json, { code: 'filtered' }, 'never the player\'s name');
   assert.equal((await say(mia, { ctx: 'nope' })).status, 400);
   // The game hidden since: refused.
   q.run("UPDATE games SET hidden_reason='test' WHERE id=?", seedGame.id);
-  assert.equal((await say(mia, { ctx: 'game', tok: d.tok, text: 'Find the hidden word!', lang: 'en' })).json.code, 'off');
+  assert.equal((await say(mia, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en' })).json.code, 'off');
   q.run("UPDATE games SET hidden_reason='' WHERE id=?", seedGame.id);
 });
 
 test('play page and frame: the token and INIT.tts only for an official game with a locale on', async () => {
   on(['en', 'fr']);
-  const page = await call('/play/tts-seed-game', { user: mia });
+  const page = await call('/play/hero-of-sunvale', { user: mia });
   const pd = JSON.parse(/<script type="application\/json" id="page-data">(.*?)<\/script>/s.exec(page.text)[1]);
   assert.deepEqual(pd.tts.langs, ['en', 'fr']); assert.ok(pd.tts.tok);
   const frameUrl = /data-src="(\/frame\/[^"]+)"/.exec(page.text)[1];
@@ -83,11 +109,13 @@ test('play page and frame: the token and INIT.tts only for an official game with
   assert.ok(!kidPage.text.includes('"tts"'));
   const kidFrame = await call(/data-src="(\/frame\/[^"]+)"/.exec(kidPage.text)[1], { user: mia });
   assert.ok(!kidFrame.text.includes('"tts":{'), 'no INIT.tts for a Builder game');
+  const sharkPage = await call('/play/shark-plank', { user: mia });
+  assert.ok(!sharkPage.text.includes('"tts"') && !sharkPage.text.includes('id="p-voices"'), 'no tts and no Voices button for an official game not listed');
 });
 
 test('GET /tts/<hash>.mp3: audio/mpeg, immutable, same-origin only; unknown hashes 404', async () => {
   on(['en']);
-  const r = await say(mia, { ctx: 'game', tok: gameTok(mia), text: 'Ready, set, go!', lang: 'en' });
+  const r = await say(mia, { ctx: 'game', tok: gameTok(mia), text: INTRO, lang: 'en' });
   const a = await fetch(`${(await import('./_live.js')).ctx.base}${r.json.u}`);
   assert.equal(a.status, 200);
   assert.equal(a.headers.get('content-type'), 'audio/mpeg');
@@ -102,27 +130,49 @@ test('GET /tts/<hash>.mp3: audio/mpeg, immutable, same-origin only; unknown hash
   assert.equal((await call('/tts/../../etc/passwd')).status, 404);
   assert.equal((await call('/tts/abc.mp3')).status, 404);
   // Same line again: from the cache, the same URL.
-  const again = await say(mia, { ctx: 'game', tok: gameTok(mia), text: 'Ready, set, go!', lang: 'en' });
+  const again = await say(mia, { ctx: 'game', tok: gameTok(mia), text: INTRO, lang: 'en' });
   assert.equal(again.json.u, r.json.u);
   assert.equal(q.get('SELECT COUNT(*) n FROM tts_cache').n, 1);
   // Nothing in the cache row or the usage table identifies who asked or what was said.
   const row = q.get('SELECT * FROM tts_cache');
-  assert.ok(!JSON.stringify(row).includes('Ready') && !JSON.stringify(row).includes(mia.id));
+  assert.ok(!JSON.stringify(row).includes(INTRO.slice(0, 12)) && !JSON.stringify(row).includes(mia.id));
 });
 
 test('limits: the 21st new line in a minute is refused (cached lines still come); requests a minute', async () => {
   on(['en']);
   const tok = gameTok(mia);
-  for (let i = 0; i < 20; i++) assert.equal((await say(mia, { ctx: 'game', tok, text: `Line ${'abcdefghijklmnopqrstuvwxyz'[i]} is here`, lang: 'en' })).status, 200);
-  const r = await say(mia, { ctx: 'game', tok, text: 'One line too many', lang: 'en' });
+  const short = HERO.filter(x => x.text.length < 60);
+  for (let i = 0; i < 20; i++) assert.equal((await say(mia, { ctx: 'game', tok, text: short[i].text, lang: 'en' })).status, 200);
+  const r = await say(mia, { ctx: 'game', tok, text: short[20].text, lang: 'en' });
   assert.equal(r.status, 429); assert.equal(r.json.code, 'fast');
-  assert.equal((await say(mia, { ctx: 'game', tok, text: 'Line a is here', lang: 'en' })).status, 200, 'cached still plays');
-  for (let i = 0; i < 100; i++) await say(mia, { ctx: 'game', tok, text: 'Line a is here', lang: 'en' });
-  assert.equal((await say(mia, { ctx: 'game', tok, text: 'Line a is here', lang: 'en' })).json.code, 'fast', '120 requests a minute');
+  assert.equal((await say(mia, { ctx: 'game', tok, text: short[0].text, lang: 'en' })).status, 200, 'cached still plays');
+  for (let i = 0; i < 100; i++) await say(mia, { ctx: 'game', tok, text: short[0].text, lang: 'en' });
+  assert.equal((await say(mia, { ctx: 'game', tok, text: short[0].text, lang: 'en' })).json.code, 'fast', '120 requests a minute');
   // The site's daily characters.
   reset(); config.ttsDailyChars = 1000;
   q.run("INSERT INTO tts_usage(day, chars) VALUES (date('now'), 1000) ON CONFLICT(day) DO UPDATE SET chars=1000");
-  assert.deepEqual((await say(leo, { ctx: 'game', tok: gameTok(leo), text: 'A brand new line', lang: 'en' })).json, { code: 'site' });
+  assert.deepEqual((await say(leo, { ctx: 'game', tok: gameTok(leo), text: short[25].text, lang: 'en' })).json, { code: 'site' });
+});
+
+test('budget: TTS keeps to its own share (a daily cap from the AI budget, the free pool past 80%), and a daily quota per person and address', async () => {
+  on(['en']);
+  // The default cap: about 20% of the daily AI budget at the price per 1k characters ($5 x 20% / $0.015 per 1k).
+  assert.equal(usage.dailyCap({ ttsDailyChars: null, aiDailyBudgetUsd: 5, ttsUsdPer1kChars: 0.015 }), 66666);
+  assert.equal(usage.dailyCap({ ttsDailyChars: 12345, aiDailyBudgetUsd: 5, ttsUsdPer1kChars: 0.015 }), 12345);
+  // One account: new characters a day (cache hits are free).
+  const keep = config.ttsUserDailyChars; config.ttsUserDailyChars = 200;
+  try {
+    const tok = gameTok(mia);
+    const longish = HERO.filter(x => x.text.length >= 60 && x.text.length < 100);
+    let sent = 0, i = 0, last;
+    while (sent + longish[i].text.length <= 200) { last = await say(mia, { ctx: 'game', tok, text: longish[i].text, lang: 'en' }); assert.equal(last.status, 200, last.text); sent += longish[i].text.length; i++; }
+    assert.deepEqual((await say(mia, { ctx: 'game', tok, text: longish[i].text, lang: 'en' })).json, { code: 'fast' }, 'over the day\'s characters');
+    assert.equal((await say(mia, { ctx: 'game', tok, text: longish[0].text, lang: 'en' })).status, 200, 'cached still plays');
+    assert.equal((await say(leo, { ctx: 'game', tok: gameTok(leo), text: longish[i].text, lang: 'en' })).status, 200, 'another account has its own');
+  } finally { config.ttsUserDailyChars = keep; }
+  // The free AI pool at 80% of its daily budget: no new audio (the Builder and picture checks keep the rest).
+  q.run("INSERT INTO ai_spend(day, usd, calls) VALUES (date('now'), ?, 1) ON CONFLICT(day) DO UPDATE SET usd=excluded.usd", config.aiDailyBudgetUsd * 0.81);
+  assert.deepEqual((await say(kid, { ctx: 'game', tok: gameTok(kid), text: INTRO, lang: 'en' })).json, { code: 'site' });
 });
 
 test('live: only the question open now, by number, for a seat or the host; the teacher\'s "device voices" setting turns it off', async () => {
@@ -146,6 +196,10 @@ test('live: only the question open now, by number, for a seat or the host; the t
   assert.equal((await ask(mia, seatTok, 1)).json.code, 'notNow', 'never a question still to come');
   assert.equal((await ask(leo, seatTok, 0)).status, 403, 'another account with mia\'s seat token');
   assert.equal((await ask(mia, 'garbage', 0)).status, 404);
+  // The session's language only: a seat asking for another language gets the same audio (no extra generations).
+  on(['en', 'fr']);
+  const fr = await say(mia, { ctx: 'live', sid: s.id, tok: seatTok, i: 0, lang: 'fr' });
+  assert.equal(fr.json.u, r.json.u);
   s.settings.voices = 'device';
   assert.equal((await ask(mia, seatTok, 0)).json.code, 'off');
 });

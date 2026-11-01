@@ -1900,3 +1900,38 @@ switches it on, then per language at `/admin/voices`.
   phone number and a family link code, so for `live`/`lesson` (text looked up by number) those two checks are skipped;
   rude words, emails and links still refuse it.
 
+### AI voices: review fixes (November 2026)
+- **Only a game's own words, checked on the server.** `ctx:'game'` text must be one of the game's spoken lines in that
+  language (`tts-lines.allowedLine`: Hero's I18N block read from the repository file, memoised per file time; a line
+  with `{placeholders}` matches only with numbers in their place). Anything else is `422 filtered` and the device's
+  voice reads it. The role comes from the line, not the page, and the game picks it by the same rule
+  (`voiceRole(key)` in Hero's `VOICES` block = `roleOf`): mg.* and d.gate.open bright, say.guard* deep, say.* friendly,
+  sw.* grumpy, cinder.* deep, hint.* the narrator. So warm-up audio is the audio played, and `/tts/<hash>.mp3` can
+  only ever hold our own lines.
+- **Only games written for it.** AI voices are for official games listed in `tts-lines.GAMES` (Hero of Sunvale today).
+  shark-plank (a kid types the secret word in two-player mode), word-hunt and word-peek keep the device's voice and get
+  no Voices button. A game added later must list its spoken keys, and speak anything a kid typed with `device:true`.
+- **TTS's own share of the AI budget.** Unset `TTS_DAILY_CHARS` now means about 20% of `AI_DAILY_BUDGET_USD` at
+  `TTS_USD_PER_1K_CHARS` (66,666 characters at $5 and $0.015), and new audio stops once the free pool has spent 80% of
+  its daily or monthly budget, so voices never rest the Builder, picture checks or reviews. Per person (an account, or
+  a seat in Oomba Live) `TTS_USER_DAILY_CHARS` (5,000) and per address `TTS_IP_DAILY_CHARS` (30,000) new characters a
+  day, counted in memory under a salted hash (never stored). Live and lesson questions are read in the session's /
+  page's language only (the posted `lang` is ignored), and live requests are limited per seat, not per school address.
+- **iPhone / iPad:** `readAloud` plays a silent clip (and a silent device utterance) inside the tap before fetching,
+  and `public/js/tts.js` does the same once on the page's first tap, so the automatic read of each new question can
+  play. The SDK's unlock keeps listening until a play() in a gesture actually worked, and plays a refused AI line on
+  the next tap. The device fallback has a watchdog (4 s + 120 ms a character) so a device that never says "ended"
+  can't stall the queue.
+- **The line on screen first:** Hero speaks a card's line before prefetching the rest; the page fetcher runs lines to
+  speak now before prefetches (one prefetch at a time), and prefetches pause for a minute after a `fast` answer.
+- **Disclosure everywhere a voice is heard:** the play bar button now says **AI voices**; the first AI line on a
+  device shows a toast (`js.play.voicesNote`, once, `localStorage['oomba:voices-told']`); Hero's settings screen says
+  the voices are AI-made when they are on (`set.aiVoices`, 12 game languages + en-GB fallback); the projector shows the
+  AI note under **Read question**.
+- **With TTS off nothing changes:** the projector's Read question button shows only when AI voices are on for the
+  site (`D.tts`); the SDK's queued lines with no voice fire `onend` only for its own AI fallback items. Sound off or
+  Voices → device on the projector (and Voices → device for players) stops a question being read. The teacher's
+  Voices field shows only for quiz sessions. zh-Hant device voices prefer zh-TW, then zh-CN, never Cantonese first.
+- **Admin page on phones:** small ▶ buttons, the sample sentence readable (not a header style), the language column
+  sticky, the narrator's ▶ marked, and under 600 px one ▶ per row that plays the narrator chosen there.
+

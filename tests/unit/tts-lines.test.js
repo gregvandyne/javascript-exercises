@@ -57,3 +57,36 @@ ${voices}
     assert.throws(() => lines.readGame('hero-of-sunvale', dir), /timed out/);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('Hero of Sunvale speaks every line with the role the warm-up and the server use; every line it speaks is allowed', async () => {
+  const vm = await import('node:vm');
+  const src = fs.readFileSync(path.join(lines.SEED_DIR, 'hero-of-sunvale.html'), 'utf8');
+  const block = src.slice(src.indexOf('// ==== VOICES START ===='), src.indexOf('// ==== VOICES END ===='));
+  const voiceRole = vm.runInNewContext(`${block}\n;voiceRole`, Object.create(null));
+  const game = lines.readGame('hero-of-sunvale');
+  // The same rule on both sides, for every spoken key (templates too).
+  for (const x of lines.gameLines('hero-of-sunvale', 'en', game, { templates: true })) assert.equal(voiceRole(x.key), x.role, x.key);
+  const role = k => lines.roleOf(k, game.roles, game.keyRoles);
+  assert.equal(role('mg.cheer'), 'bright'); assert.equal(role('d.gate.open'), 'bright'); assert.equal(role('d.gate.locked'), 'narrator');
+  assert.equal(role('say.guard1'), 'deep'); assert.equal(role('say.tip1'), 'friendly'); assert.equal(role('hint.m1'), 'narrator');
+  assert.equal(role('sw.intro'), 'grumpy'); assert.equal(role('cinder.purr'), 'deep'); assert.equal(role('d.shop.1'), 'wise');
+  // Every key the game speaks (cutscene lines, conversation cards) is one of its spoken lines.
+  const spoken = new Set(lines.gameLines('hero-of-sunvale', 'en', game, { templates: true }).map(x => x.key));
+  const used = new Set([...src.matchAll(/who: '[a-z]+', key: '([a-zA-Z0-9.]+)'/g)].map(m => m[1]));
+  for (const m of src.matchAll(/npcSay\('[a-z]+', \[([^\]]*)\]/g)) for (const k of m[1].matchAll(/'([a-z]+\.[a-zA-Z0-9.]+)'/g)) used.add(k[1]);
+  assert.ok(used.size > 20, `keys found: ${used.size}`);
+  for (const k of used) assert.ok(spoken.has(k), `${k} is spoken but not allowed`);
+  // The allowlist: exact lines and numbers-only templates, per locale.
+  for (const l of TTS_ALL_LOCALES) {
+    const a = lines.allowlist('hero-of-sunvale', l);
+    assert.ok(a.exact.size > 80, l);
+    const cheer = lines.gameLines('hero-of-sunvale', l, game).find(x => x.key === 'mg.cheer');
+    assert.deepEqual(lines.allowedLine('hero-of-sunvale', l, `  ${cheer.text} `), { text: cheer.text, role: 'bright' });
+  }
+  assert.equal(lines.allowedLine('hero-of-sunvale', 'en', 'Find {n} more Sun Gems and I can make it!'), null, 'never the raw template');
+  assert.deepEqual(lines.allowedLine('hero-of-sunvale', 'en', 'Find 12 more Sun Gems and I can make it!'), { text: 'Find 12 more Sun Gems and I can make it!', role: 'deep' });
+  assert.equal(lines.allowedLine('hero-of-sunvale', 'en', 'Find Mia more Sun Gems and I can make it!'), null);
+  assert.equal(lines.allowedLine('hero-of-sunvale', 'en', 'Hello, I am a kid typing'), null);
+  assert.equal(lines.allowedLine('word-hunt', 'en', 'Find the word!'), null, 'only listed games');
+  assert.deepEqual([...lines.TTS_GAMES], ['hero-of-sunvale']);
+});

@@ -67,7 +67,10 @@ function onMessage(m) {
     case 'bn': if (m.k) flash($('lv-bonus-toast'), fill(D.text.toastTeam, { team: (presetOf(m.k) || {}).name || '', points: m.p, reason: (D.bonus || [])[m.r] || '' }), 5000); if (!m.k) return; break;   // a player's bonus is private: not on the class's screen
     case 'eyes': setEyes(m.on); return;
     case 'say': flash($('lv-say-banner'), (D.say || [])[m.m] || '', 6000); return;
-    case 'cf': settings = { ...settings, ...m.d }; fillSettings(); setSound(); showRead(); return;
+    case 'cf': { const was = settings; settings = { ...settings, ...m.d }; fillSettings(); setSound();
+      // Sound switched off, or Voices switched to each device's own: stop a question being read now.
+      if ((settings.sound === false && was.sound !== false) || (settings.voices === 'device' && was.voices !== 'device')) stopReading();
+      showRead(); return; }
     case 'dq': case 'dp': case 'sup': case 'me': case 'again': return;   // never for the projector (and never sent here)
     case 'q': question = { i: m.i, q: m.q, choices: m.choices || [] }; showRead(); break;
     case 'rv': question = null; stopReading(); showRead(); break;
@@ -221,19 +224,22 @@ function setSound() {
 setSound();
 
 // ---- read the question aloud on the big screen (quiz modes, with the projector's Sound on) ----
-// AI voices (D.tts, unless the teacher set Voices to each device's own voice): the server reads the open question by
-// its number with this page's host token; otherwise, or if that fails, this computer's own voice reads it.
+// Only when AI voices are on for the site (D.tts; with them off the projector stays as it was). AI voices (unless the
+// teacher set Voices to each device's own voice): the server reads the open question by its number with this page's
+// host token; otherwise, or if that fails, this computer's own voice reads it. A note under the button says the voice
+// is made by AI, for a class that only sees the big screen.
 let question = null, readLang = '';
 const lng = () => readLang || document.documentElement.lang;
 const aiHere = () => !!(D.tts && settings.voices !== 'device' && aiOn(D.tts.langs, lng()));
 function showRead() {
   const b = $('lv-host-read'); if (!b) return;
-  b.hidden = !(question && phase === 'playing' && settings.sound !== false && (aiHere() || voiceFor(lng())));
+  b.hidden = !(D.tts && question && phase === 'playing' && settings.sound !== false && (aiHere() || voiceFor(lng())));
+  const note = $('lv-host-read-ai'); if (note) note.hidden = b.hidden || !aiHere();
 }
 $('lv-host-read') && $('lv-host-read').addEventListener('click', () => {
   if (!question) return;
   const text = `${question.q}. ${question.choices.map((c, i) => `${String.fromCharCode(65 + i)}: ${c}`).join('. ')}`;
-  readAloud({ text, lang: lng(), ai: aiHere() ? { langs: D.tts.langs, body: { ctx: 'live', sid: D.sid, tok: D.tok, i: question.i, lang: lng() } } : null });
+  readAloud({ text, lang: lng(), ai: aiHere() ? { langs: D.tts.langs, body: { ctx: 'live', sid: D.sid, tok: D.tok, i: question.i } } : null });
 });
 
 // ---- the settings dialog: fields named by setting; Save sends what changed (cf) ----

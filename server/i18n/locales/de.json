@@ -611,7 +611,7 @@
         "p1": "Damit ein Spiel entsteht, werden die Nachrichten, Bilder und Dateien, die Ihr Kind dem Baumeister gibt, an Claude geschickt, eine vom Unternehmen Anthropic entwickelte KI, die das Spiel schreibt. Name und Benutzername Ihres Kindes werden dabei nicht mitgeschickt. Auch Profilfotos werden an Claude geschickt und geprüft, bevor jemand sie sieht. Claude überprüft Spiele, bevor sie mit allen geteilt werden können, und unser Team sieht sich jedes an, bei dem Claude unsicher ist. Chats zwischen Freunden und Antworten in Lektionen werden nicht an die KI geschickt.",
         "p2": "Sprechen statt tippen: Wenn Ihr Kind im Chat des Baumeisters auf das Mikrofon tippt, wird die Aufnahme an den Spracherkennungsdienst {provider} geschickt, der sie in Wörter umwandelt. Ihr Kind sieht die Wörter und kann sie vor dem Senden ändern. Die Aufnahme wird nur dafür verwendet und sofort gelöscht: Wir speichern sie nie, und {provider} darf sie weder aufbewahren noch zum Trainieren seiner Systeme verwenden. Die Wörter durchlaufen dieselben Sicherheitsprüfungen wie eine getippte Nachricht.",
         "p3": "Fakten nachschlagen: Damit ein Spiel stimmt, kann der Baumeister einen Fakt im Internet nachschlagen (zum Beispiel, wie schnell ein Gepard läuft). Ihr Kind sieht nie die Webseiten oder Links. Der Baumeister ist angewiesen, nie nach etwas Persönlichem zu suchen; wirkt eine Suche trotzdem persönlich, werden ihre Ergebnisse nicht verwendet und ihre Wörter nicht gespeichert. Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Videos sind gesperrt. Wir behalten eine Liste der Suchen, ohne den Namen oder Benutzernamen Ihres Kindes, zusammen mit dem Spiel, für das sie gemacht wurden, 90 Tage lang, damit unser Team sie prüfen kann.",
-        "p4": "KI-Stimmen: Einige unserer eigenen Spiele, Lektions-Quizze und Oomba-Live-Quizze können ihre Texte mit einer Computerstimme von {ttsProvider} vorlesen. Gesendet wird nur Text, den wir, die Macher eines Spiels oder die Lehrkraft Ihres Kindes geschrieben haben, nie etwas, das Ihr Kind tippt oder sagt, und nie sein Name. Ihr Kind erfährt, dass die Stimmen von einer KI stammen, und kann mit dem Knopf 🔊 Stimmen zur Stimme des Geräts wechseln."
+        "p4": "KI-Stimmen: Einige unserer eigenen Spiele, Lektions-Quizze und Oomba-Live-Quizze können ihre Texte mit einer Computerstimme von {ttsProvider} vorlesen. Gesendet wird nur Text, den wir, die Macher eines Spiels oder die Lehrkraft Ihres Kindes geschrieben haben, nie etwas, das Ihr Kind tippt oder sagt, und nie sein Name. Ihr Kind erfährt, dass die Stimmen von einer KI stammen, und kann mit dem Knopf 🔊 KI-Stimmen zur Stimme des Geräts wechseln."
       },
       "keep": {
         "h": "Wie lange wir Daten speichern",
@@ -1111,7 +1111,7 @@
       "lostText": "Das passiert manchmal. Tippe auf Nochmal versuchen, um das Spiel neu zu starten.",
       "retry": "Nochmal versuchen"
     },
-    "voices": "Stimmen"
+    "voices": "KI-Stimmen"
   },
   "friends": {
     "title": "Freunde",

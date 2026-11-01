@@ -611,7 +611,7 @@
         "p1": "Para criar um jogo, as mensagens, imagens e arquivos que a criança dá ao Construtor são enviados ao Claude, uma IA feita pela empresa Anthropic, que escreve o jogo. O nome e o nome de usuário da criança não são enviados junto. As fotos de perfil também são enviadas ao Claude para serem verificadas antes que alguém as veja. O Claude revisa os jogos antes que possam ser compartilhados com todos, e a nossa equipe confere os jogos sobre os quais ele tem dúvida. Os chats entre amigos e as respostas das aulas não são enviados à IA.",
         "p2": "Falar em vez de digitar: quando a criança toca no microfone no chat do Construtor, a gravação é enviada ao serviço de conversão de fala em texto {provider}, que a transforma em palavras. A criança vê as palavras e pode mudá-las antes de enviar. A gravação é usada só para isso e apagada na hora: nós nunca a guardamos, e {provider} não pode guardá-la nem usá-la para treinar seus sistemas. As palavras passam pelas mesmas verificações de segurança que uma mensagem digitada.",
         "p3": "Pesquisa de fatos: para acertar um jogo, o Construtor pode pesquisar um fato na internet (por exemplo, a velocidade de um guepardo). A criança nunca vê as páginas nem os links. O Construtor tem a instrução de nunca pesquisar nada pessoal; se ainda assim uma pesquisa parecer pessoal, os resultados não são usados e as palavras não são guardadas. Sites adultos, de apostas, de redes sociais e de vídeos são bloqueados. Guardamos uma lista das pesquisas, sem o nome nem o nome de usuário da criança, junto com o jogo para o qual foram feitas, por 90 dias para que nossa equipe possa conferi-las.",
-        "p4": "Vozes de IA: alguns dos nossos jogos, quizzes de aulas e quizzes do Oomba Live podem ler o texto em voz alta com uma voz feita por computador da {ttsProvider}. Só é enviado texto escrito por nós, pelos criadores de um jogo ou pelo professor do seu filho, nunca o que seu filho digita ou fala, e nunca o nome dele. Seu filho fica sabendo que as vozes são feitas por IA e pode trocar para a voz do próprio aparelho com o botão 🔊 Vozes."
+        "p4": "Vozes de IA: alguns dos nossos jogos, quizzes de aulas e quizzes do Oomba Live podem ler o texto em voz alta com uma voz feita por computador da {ttsProvider}. Só é enviado texto escrito por nós, pelos criadores de um jogo ou pelo professor do seu filho, nunca o que seu filho digita ou fala, e nunca o nome dele. Seu filho fica sabendo que as vozes são feitas por IA e pode trocar para a voz do próprio aparelho com o botão 🔊 Vozes de IA."
       },
       "keep": {
         "h": "Por quanto tempo guardamos",
@@ -1111,7 +1111,7 @@
       "lostText": "Isso às vezes acontece. Toque em Tentar de novo para recomeçar o jogo.",
       "retry": "Tentar de novo"
     },
-    "voices": "Vozes"
+    "voices": "Vozes de IA"
   },
   "friends": {
     "title": "Amigos",

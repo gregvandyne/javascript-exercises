@@ -635,8 +635,9 @@
   function flushPending() {
     if (!voiceList.length && !voicesSettled) return;
     var list = pendingSpeech; pendingSpeech = [];
-    // speak() said true for these: with no voice for the language after all, onend still comes (once).
-    list.forEach(function (a) { var ok = false; try { ok = startSpeech(a[0], a[1], a[2]); } catch (e) { /* ignore */ } if (!ok) endLater(a[1]); });
+    // An AI-voice fallback line (opts.onfail, internal) that finds no voice after all still ends, so the queue moves on.
+    // A game's own queued lines behave as before (no onend when there is no voice).
+    list.forEach(function (a) { var ok = false; try { ok = startSpeech(a[0], a[1], a[2]); } catch (e) { /* ignore */ } if (!ok && a[1] && typeof a[1].onfail === 'function') endLater(a[1]); });
   }
   // speak(text, { lang, rate, pitch, volume, queue, onend }): true if it started (or is waiting for the
   // device's voice list, which some browsers fill a moment after the page loads); false when there is
@@ -721,7 +722,10 @@
   function ttsFallback(it) {
     if (it.state === 'done' || it.state === 'stopped' || it.fell) return;
     it.fell = true; ttsForget(it);
-    var fin = function () { ttsDone(it); };
+    // A watchdog: some devices never say the device's speech ended (iOS drops speech outside a tap without an event,
+    // Chrome sometimes never fires onend). Without it, every later queued line would wait forever.
+    var dog = setTimeout(function () { ttsDone(it); }, 4000 + it.s.length * 120);
+    var fin = function () { clearTimeout(dog); ttsDone(it); };
     if (it.dev) { try { it.dev(fin); return; } catch (e) { fin(); return; } }
     if (!synth || !Utter) { setTimeout(fin, 0); return; }
     var o = {}; for (var k in it.opts) if (Object.prototype.hasOwnProperty.call(it.opts, k)) o[k] = it.opts[k];
@@ -782,11 +786,26 @@
       if (m.ok === true && m.buf instanceof ArrayBuffer && m.buf.byteLength > 0) { it.buf = m.buf; it.state = 'ready'; if (ttsCur === it) { if (it.timer) clearTimeout(it.timer); it.timer = null; ttsPlay(it); } }
       else { it.state = 'failed'; if (ttsCur === it) ttsFallback(it); }
     });
-    // Unlock the shared Audio element on the first tap or key (iPhone, iPad), with a silent sound.
-    var ttsUnlock = function () {
+    // Unlock the shared Audio element on a tap or key (iPhone, iPad), with a silent sound. The listeners go only once a
+    // play() inside a gesture worked (a touchend after a scroll is not a gesture: the next tap tries again). If an AI line
+    // is waiting to play (its play() was refused outside a tap), this tap plays it instead.
+    var ttsUnlocked = false;
+    var ttsUnlockDone = function () {
+      if (ttsUnlocked) return; ttsUnlocked = true;
       ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.removeEventListener(n, ttsUnlock, true); });
-      var a = ttsEl(); if (!a || ttsCur) return;
-      try { a.src = TTS_SILENT; var p = a.play(); if (p && typeof p.catch === 'function') p.catch(function () { /* ignore */ }); } catch (e) { /* ignore */ }
+    };
+    var ttsUnlock = function () {
+      if (ttsUnlocked) return;
+      var a = ttsEl(); if (!a) return;
+      var cur = ttsCur;
+      try {
+        var p;
+        if (cur && cur.state === 'playing' && cur.url && !cur.fell) { if (!a.paused) { ttsUnlockDone(); return; } p = a.play(); }
+        else { a.src = TTS_SILENT; p = a.play(); }   // nothing on the element now (a line being fetched sets its own src)
+        if (p && typeof p.then === 'function') {
+          p.then(function () { ttsUnlockDone(); if (!ttsCur || ttsCur.state !== 'playing') { try { if (a.src === TTS_SILENT) a.pause(); } catch (e) { /* ignore */ } } }, function () { /* not a gesture: next time */ });
+        } else ttsUnlockDone();
+      } catch (e) { /* ignore */ }
     };
     ['touchend', 'pointerup', 'click', 'keydown'].forEach(function (n) { window.addEventListener(n, ttsUnlock, true); });
     window.addEventListener('pagehide', function () { ttsStop(); });

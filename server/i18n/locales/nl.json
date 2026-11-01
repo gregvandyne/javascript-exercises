@@ -611,7 +611,7 @@
         "p1": "Om een game te maken, worden de berichten, afbeeldingen en bestanden die je kind aan de Bouwer geeft naar Claude gestuurd, een AI van het bedrijf Anthropic, die de game schrijft. De naam en gebruikersnaam van je kind worden daar niet bij meegestuurd. Ook profielfoto's worden naar Claude gestuurd, zodat ze gecontroleerd worden voordat iemand ze ziet. Claude beoordeelt games voordat ze met iedereen kunnen worden gedeeld, en ons team bekijkt de games waarover Claude twijfelt. Chats tussen vrienden en antwoorden in lessen worden niet naar de AI gestuurd.",
         "p2": "Praten in plaats van typen: als je kind in de chat van de Bouwer op de microfoon tikt, gaat de opname naar de spraak-naar-tekstdienst {provider}, die er woorden van maakt. Je kind ziet de woorden en kan ze aanpassen voordat het verstuurt. De opname wordt alleen hiervoor gebruikt en meteen verwijderd: wij bewaren hem nooit, en {provider} mag hem niet bewaren of gebruiken om zijn systemen te trainen. De woorden gaan door dezelfde veiligheidscontroles als een getypt bericht.",
         "p3": "Feiten opzoeken: om een spel goed te maken kan de Bouwer een feit op internet opzoeken (bijvoorbeeld hoe snel een jachtluipaard rent). Je kind ziet nooit de webpagina's of links. De Bouwer heeft de opdracht nooit iets persoonlijks op te zoeken; lijkt een zoekopdracht toch persoonlijk, dan worden de resultaten niet gebruikt en de woorden niet bewaard. Sites voor volwassenen, gokken, sociale media en video's zijn geblokkeerd. We bewaren een lijst van de zoekopdrachten, zonder de naam of gebruikersnaam van je kind, samen met het spel waarvoor ze waren, 90 dagen, zodat ons team ze kan controleren.",
-        "p4": "AI-stemmen: sommige van onze eigen spellen, lesquizzen en Oomba Live-quizzen kunnen hun tekst voorlezen met een computerstem van {ttsProvider}. Alleen tekst die wij, de makers van een spel of de leraar van uw kind hebben geschreven wordt verstuurd, nooit wat uw kind typt of zegt, en nooit zijn of haar naam. Uw kind krijgt te horen dat de stemmen door AI zijn gemaakt en kan met de knop 🔊 Stemmen overstappen op de stem van het apparaat."
+        "p4": "AI-stemmen: sommige van onze eigen spellen, lesquizzen en Oomba Live-quizzen kunnen hun tekst voorlezen met een computerstem van {ttsProvider}. Alleen tekst die wij, de makers van een spel of de leraar van uw kind hebben geschreven wordt verstuurd, nooit wat uw kind typt of zegt, en nooit zijn of haar naam. Uw kind krijgt te horen dat de stemmen door AI zijn gemaakt en kan met de knop 🔊 AI-stemmen overstappen op de stem van het apparaat."
       },
       "keep": {
         "h": "Hoe lang we het bewaren",
@@ -1111,7 +1111,7 @@
       "lostText": "Dat gebeurt soms. Tik op Opnieuw om het spel opnieuw te starten.",
       "retry": "Opnieuw proberen"
     },
-    "voices": "Stemmen"
+    "voices": "AI-stemmen"
   },
   "friends": {
     "title": "Vrienden",

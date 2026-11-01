@@ -138,16 +138,30 @@ $('#p-rate') && $('#p-rate').addEventListener('click', () => {
 // the words again. Any refusal, a timeout or the device choice: the frame is told no, and it uses the device's voice.
 const toFrame = (msg, transfer) => { try { frame.contentWindow.postMessage({ brb: 1, ...msg }, '*', transfer || []); } catch { /* frame gone */ } };
 function tellMode() { if (d.tts) toFrame({ type: 'brb:tts-mode', mode: voiceMode() }); }
+// After the server says "slow down" ('fast'), prefetches pause for a minute so the lines actually spoken keep their
+// voice. The first time an AI voice plays on this device, a toast says the voices are AI-made (the 🔊 Voices sheet
+// says more).
+const TOLD_KEY = 'oomba:voices-told';
+let fastUntil = 0;
+function tellAiOnce() {
+  try { if (localStorage.getItem(TOLD_KEY)) return; localStorage.setItem(TOLD_KEY, '1'); } catch { /* storage off: tell every time */ }
+  toast(t('js.play.voicesNote', { provider: d.tts.provider || 'OpenAI' }), { ms: 9000 });
+}
 async function gameLine(m) {
   const no = why => { if (!m.pre) toFrame({ type: 'brb:tts', id: m.id, ok: false, why }); };
   if (!d.tts || !d.tts.tok) return no('off');
   if (voiceMode() !== 'ai') return no('off');
+  if (m.pre && Date.now() < fastUntil) return;
   try {
-    const blob = await ttsBlob({ ctx: 'game', tok: d.tts.tok, text: m.text, lang: m.lang, role: m.role, rate: m.rate });
+    const blob = await ttsBlob({ ctx: 'game', tok: d.tts.tok, text: m.text, lang: m.lang, role: m.role, rate: m.rate }, { pre: !!m.pre });
     if (m.pre) return;
     const buf = await blob.arrayBuffer();   // a fresh copy each time: the transfer hands it to the frame
     toFrame({ type: 'brb:tts', id: m.id, ok: true, buf }, [buf]);
-  } catch (err) { no(err && err.code ? err.code : 'error'); }
+    tellAiOnce();
+  } catch (err) {
+    if (err && err.code === 'fast') fastUntil = Date.now() + 60e3;
+    no(err && err.code ? err.code : 'error');
+  }
 }
 // The 🔊 Voices button (only when this game has AI voices): AI voices or this device's own voice, and what AI voices are.
 $('#p-voices') && $('#p-voices').addEventListener('click', () => {

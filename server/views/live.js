@@ -82,7 +82,7 @@ export function settingsFields(t, { values, quiz = true, accounts = false, idp =
     ${box('shuffleQ')}${box('shuffleA')}${box('late')}
     ${sel('names', names)}<p class="small muted">${t('live.settings.namesHint')}</p>
     ${box('sound')}${box('emotes')}
-    ${ttsEnabled() ? html`${sel('voices', [['ai', t('live.settings.voicesAi')], ['device', t('live.settings.voicesDevice')]])}<p class="small muted">${t('live.settings.voicesHint', { provider: TTS_COMPANY })}</p>` : ''}
+    ${ttsEnabled() ? html`${sel('voices', [['ai', t('live.settings.voicesAi')], ['device', t('live.settings.voicesDevice')]])}<p class="small muted lv-quiz-only"${quiz ? '' : raw(' hidden')}>${t('live.settings.voicesHint', { provider: TTS_COMPANY })}</p>` : ''}
   </details>`;
 }
 /** The teams row: Off · 2 · 3 · 4 · 5 · 6 (a radio group), and how teams score. */
@@ -254,7 +254,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     <details class="lv-say" id="lv-say"><summary class="btn">💬 ${t('live.say.menu')}</summary><div class="lv-say-list" role="group" aria-label="${t('live.say.menu')}">${sayList(t).map((x, i) => html`<button class="btn btn-sm" type="button" data-lv-say="${i}">${x}</button>`)}</div></details>
     <button class="btn lv-act" type="button" data-lv-act="settings" aria-haspopup="dialog">⚙️ ${t('live.settings.open')}</button>
     <button class="btn lv-act" type="button" data-lv-act="sound" aria-pressed="${st.sound ? 'true' : 'false'}">${t(st.sound ? 'live.host.soundOn' : 'live.host.soundOff')}</button>
-    ${s.quiz ? html`<button class="btn lv-act" type="button" id="lv-host-read" hidden>🔊 ${t('live.host.read')}</button>` : ''}
+    ${s.quiz ? html`<button class="btn lv-act" type="button" id="lv-host-read" hidden>🔊 ${t('live.host.read')}</button><p class="small muted lv-host-read-ai" id="lv-host-read-ai" hidden>${t('live.play.aiVoice', { provider: TTS_COMPANY })}</p>` : ''}
     <button class="btn lv-act" type="button" data-lv-act="dash" aria-haspopup="dialog">📱 ${t('live.host.teacherView')}</button>
     ${me.cohosts ? html`<button class="btn lv-act" type="button" data-lv-act="cohosts" aria-haspopup="dialog">👥 ${t('live.cohost.open')}</button>` : ''}
     ${me.role === 'cohost' ? html`<p class="small lv-cohost-me" id="lv-cohost-me">${t('live.cohost.youCohostShort')}</p>` : ''}
