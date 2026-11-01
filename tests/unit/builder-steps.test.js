@@ -114,7 +114,7 @@ test('stepRecorder: numbers rows, patches the right row, keeps only allowed fact
     ['stepinfo', { i: 3, ok: false, why: 'cut' }],
     ['stepinfo', { i: 2, th: 1 }],
   ]);
-  assert.deepEqual(keep({ st: 'pass', v: 3, pics: 7, probs: -2, e: 4, via: 'edit', c: 'look' }), { st: 'pass', v: 3, pics: 2, probs: 0, e: 4, via: 'edit', c: 'look' });
+  assert.deepEqual(keep({ st: 'pass', v: 3, pics: 7, probs: -2, e: 4, via: 'edit', c: 'look' }), { st: 'pass', v: 3, pics: 4, probs: 0, e: 4, via: 'edit', c: 'look' });
   assert.deepEqual(keep({ st: 'bad', via: 'paint', title: '  ', icon: '', plan: '' }), {});
   assert.equal(keep({ title: 'T'.repeat(80) }).title.length, 60);
   assert.equal(keep({ icon: '🐉🐉🐉🐉🐉🐉🐉🐉🐉🐉' }).icon, '🐉'.repeat(8), 'icon capped at 8 characters (code points)');

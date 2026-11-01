@@ -405,7 +405,7 @@ test('build steps: a real playtest with problems gives "looking at the pictures"
     ]);
     assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'write', 'check', 'think', 'playtest', 'think', 'fix', 'check', 'think']);
     const pt = rows[5];
-    assert.equal(pt.v, 1); assert.ok(pt.pics >= 1 && pt.pics <= 2, `pictures: ${pt.pics}`); assert.ok(pt.probs >= 1, 'the missing __brbTest hook is a problem');
+    assert.equal(pt.v, 1); assert.ok(pt.pics >= 1 && pt.pics <= 4, `pictures: ${pt.pics}`);   // the phone's two, then a sheet of every device for each assert.ok(pt.probs >= 1, 'the missing __brbTest hook is a problem');
     assert.equal(pt.probs, events.find(e => e[0] === 'playtest')[1].problems, 'the same count as the playtest card');
     assert.ok(idx(events, 'step', s => s.key === 'playtest') < idx(events, 'playtest'));
     assert.deepEqual(rows[6], { key: 'think', n: 3, c: 'look', a: 1 });

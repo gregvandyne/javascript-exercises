@@ -137,7 +137,9 @@ export function toolbox(ctx) {
       return { ok: true, forModel: `Game details saved.${problems.length ? ' Skipped: ' + problems.join('; ') + '.' : ''}`, event: ['meta', out] };
     },
     // Play the current version at phone size like a real player would, and show the model what happened:
-    // a picture of the title screen, a picture two seconds after tapping Play, errors, and layout problems.
+    // a picture of the title screen, a picture two seconds after tapping Play, errors, and layout problems; then the
+    // same two moments on every device (phone and tablet, portrait and landscape, desktop) as two contact sheets, with
+    // the layout problems found at each size (snapshot.js VIEWS).
     async playtest_game() {
       const cur = current(); const g = game();
       if (!cur) return { ok: false, forModel: 'There is no game yet. Build it with write_game first.' };
@@ -148,7 +150,7 @@ export function toolbox(ctx) {
       const orientation = g.orientation === 'landscape' ? 'landscape' : 'portrait';
       let r;
       try {
-        r = await snapshot.runGame(cur.html, { size: 'phone', orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title, scale: 1, quality: 62, titleMs: 1500, playMs: 2500, probe: true });
+        r = await snapshot.runGame(cur.html, { size: 'phone', orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title, scale: 1, quality: 62, titleMs: 1500, playMs: 2500, probe: true, views: true });
       } catch (e) {
         steps.info({ ok: false }, row);
         // The screenshot worker is down or busy: say so, rather than blame the game.
@@ -169,23 +171,32 @@ export function toolbox(ctx) {
       if (!a.testHook) problems.push('window.__brbTest is missing (add state() and start(), see the Game Contract).');
       else if (a.state && /"game":false/.test(a.state)) problems.push('This Oomba Kit game never registered its test hooks: call Oomba.test({ state: () => ({...}), start: () => ... }) so the playtest can start a round and read the game state.');
       problems.push(...probeProblems(r, a));
+      // Every device: the same problems at each size become problems to fix, named by the device.
+      const views = Array.isArray(r.views) ? r.views : [];
+      for (const v of views) {
+        const found = [...new Set([...(v.title || []).map(x => `title screen: ${x}`), ...(v.play || []).map(x => `playing: ${x}`)])];
+        if (found.length) problems.push(`On ${v.label.toLowerCase()} (${v.width}x${v.height}): ${found.slice(0, 5).join('; ')}.`);
+      }
       const tips = styleTips(scanVersion(cur.html), ctx.requests);
-      steps.info({ pics: (r.title ? 1 : 0) + (r.play ? 1 : 0), probs: problems.length }, row);
+      const sheets = [r.sheetTitle, r.sheetPlay].filter(Boolean);
+      steps.info({ pics: (r.title ? 1 : 0) + (r.play ? 1 : 0) + sheets.length, probs: problems.length }, row);
       const size = orientation === 'landscape' ? '844x390 landscape' : '390x700 portrait';
       const text = [
         `Playtest of version ${cur.number} on a phone (${size}), in the builder's language.`,
         `Picture 1: the title screen after 1.5 seconds. Then I ${r.started || 'could not find anything to tap'}. Picture 2: 2.5 seconds later.`,
+        sheets.length ? `Pictures 3${sheets.length > 1 ? ' and 4' : ''}: the title screen${sheets.length > 1 ? ' and the game after starting' : ''} on every device, side by side: ${views.map(v => `${v.label.toLowerCase()} ${v.width}x${v.height}`).join(', ')}. Each was made by resizing the window, as turning a tablet does, so the game must lay itself out again on a resize. Tablets (portrait and landscape) are what most kids play on: check them as carefully as the phone.` : '',
         a.state ? `__brbTest.state() after starting: ${a.state}` : '',
         problems.length ? `Problems found:\n- ${problems.join('\n- ')}` : 'No errors or layout problems were detected.',
         r.probe && !r.probe.error && r.probe.s1 ? `Then I played on for about 25 s of game time (holding right, jumping, answering each question with the first answer left, pressing the game's own buttons and 1-4 in turn): scenes ${r.probe.scenes.join(' → ')}; score ${r.probe.s0.score} → ${r.probe.s1.score}; picked up ${r.probe.s1.got} of ${r.probe.s1.total}.` : '',
         r.kitWarnings && r.kitWarnings.length ? `Oomba Kit warnings (the game runs, but each is a mistake to fix):\n- ${r.kitWarnings.join('\n- ')}` : '',
         tips.length ? `Style check:\n- ${tips.join('\n- ')}` : '',
-        'Now look at both pictures like a picky player and art director: Is it clear what to do? Does it look polished and fun, with a real',
-        'background, characters with personality and a tidy HUD? Is anything blank, overlapping, cut off, too small, misaligned or ugly?',
-        'Did the game actually start? Fix every real problem with edit_game (then playtest again), or say it looks good and carry on.',
+        `Now look at ${sheets.length ? 'every picture, every device' : 'both pictures'} like a picky player and art director: Is it clear what to do? Does it look polished and fun, with a real`,
+        'background, characters with personality and a tidy HUD? Is anything blank, overlapping, cut off, too small, misaligned, stretched or ugly',
+        'on any device (a tablet in portrait or landscape too, not just the phone)? Did the game actually start? Fix every real problem with',
+        'edit_game (then playtest again), or say it looks good and carry on.',
       ].filter(Boolean).join('\n');
       const img = buf => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: buf.toString('base64') } });
-      const content = [{ type: 'text', text }, img(r.title), ...(r.play ? [img(r.play)] : [])];
+      const content = [{ type: 'text', text }, img(r.title), ...(r.play ? [img(r.play)] : []), ...sheets.map(img)];
       return { ok: true, forModel: content, event: ['playtest', { version: cur.number, problems: problems.length }] };
     },
     // A ready-made game saved as a new version on the server, so the model does not have to write it out.
