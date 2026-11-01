@@ -4877,6 +4877,7 @@
       "familyText": "Start een spel op een groot scherm. Iedereen doet mee op een eigen apparaat met een code. Niemand kan chatten of typen.",
       "join": "Meedoen met een spel",
       "joinText": "Heb je een spelcode van je juf of meester? Typ hem hier.",
+      "joinShort": "Een spelcode? Typ hem hier.",
       "studioAskText": "Maak hier een live klassenspel van met Oomba Live: de hele klas speelt samen en ziet elkaar, en de leraar ziet de scores."
     },
     "check": {

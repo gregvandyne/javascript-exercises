@@ -4876,6 +4876,7 @@
       "familyText": "Empieza un juego en una pantalla grande. Cada uno se une desde su dispositivo con un código. Nadie puede chatear ni escribir.",
       "join": "Unirse a un juego",
       "joinText": "¿Tienes un código de juego de tu profe? Escríbelo aquí.",
+      "joinShort": "¿Tienes un código? Escríbelo aquí.",
       "studioAskText": "Convierte esto en un juego de clase en vivo con Oomba Live: toda la clase juega a la vez y se ve, y el profe ve los puntos."
     },
     "check": {

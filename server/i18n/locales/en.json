@@ -4878,6 +4878,7 @@
       "familyText": "Start a game on a big screen. Everyone joins on their own device with a code. Nobody can chat or type.",
       "join": "Join a game",
       "joinText": "Got a game code from your teacher? Type it here.",
+      "joinShort": "Have a game code? Type it here.",
       "studioAskText": "Make this a live class game with Oomba Live: everyone in the class plays together and sees each other, and the teacher sees the scores."
     },
     "check": {

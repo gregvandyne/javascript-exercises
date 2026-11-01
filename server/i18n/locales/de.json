@@ -4877,6 +4877,7 @@
       "familyText": "Starte ein Spiel auf einem großen Bildschirm. Alle machen mit einem Code auf ihrem eigenen Gerät mit. Niemand kann chatten oder tippen.",
       "join": "Spiel beitreten",
       "joinText": "Hast du einen Spielcode von deiner Lehrkraft? Gib ihn hier ein.",
+      "joinShort": "Spielcode? Hier eingeben.",
       "studioAskText": "Mach daraus ein Live-Klassenspiel mit Oomba Live: Die ganze Klasse spielt zusammen und sieht sich, und die Lehrkraft sieht die Punkte."
     },
     "check": {
