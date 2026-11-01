@@ -2258,7 +2258,12 @@
       "pasteText": "Ou digite: a pergunta em uma linha e as respostas nas linhas de baixo, com * antes da certa. Deixe uma linha vazia entre as perguntas.",
       "pasteExample": "Qual é o maior planeta?\n* Júpiter\nSaturno\nTerra\n\nA água ferve a 100 °C ao nível do mar.\n* Verdadeiro\nFalso",
       "pasteFound": "{n, plural, =0 {Nenhuma pergunta encontrada ainda.} one {# pergunta encontrada.} other {# perguntas encontradas.}}",
-      "pasteGo": "Adicionar estas perguntas"
+      "pasteGo": "Adicionar estas perguntas",
+      "category": "Categoria (opcional)",
+      "categoryHint": "Para o Tabuleiro Cérebro, ex.: Planetas",
+      "categoryColumn": "Categoria",
+      "pasteCats": "Para o Tabuleiro Cérebro, adicione categorias: uma primeira coluna com o título “Categoria” na planilha, ou uma linha como “# Planetas” antes das perguntas dela.",
+      "aiBoard": "Um Tabuleiro Cérebro (5 categorias × 5)"
     },
     "match": {
       "title": "Jogar {title} online",
@@ -3771,7 +3776,7 @@
     "live": {
       "h": "Jogos ao vivo em sala de aula",
       "p1": "Conduza uma corrida de perguntas ao vivo ou qualquer jogo pronto para o modo ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
-      "li1": "Modos prontos: Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas) e Batalha de Perguntas.",
+      "li1": "Modos prontos: Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas), Batalha de Perguntas e Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil).",
       "li2": "Use um conjunto pronto, digite um conjunto rápido ou transforme as perguntas de uma aula em um quiz ao vivo.",
       "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente.",
       "more": "Veja como o Oomba Live funciona"
@@ -4533,7 +4538,9 @@
       "questRace": "Corrida de Missões",
       "questRaceText": "Responda perguntas para correr por uma ilha em 3D. Respostas certas dão joias e um impulso!",
       "battle": "Batalha de Perguntas",
-      "battleText": "Perguntas na tela grande, respostas em cada aparelho e um placar depois de cada uma."
+      "battleText": "Perguntas na tela grande, respostas em cada aparelho e um placar depois de cada uma.",
+      "board": "Tabuleiro Cérebro",
+      "boardText": "Um tabuleiro de categorias: escolha uma casa e todos respondem. As casas maiores são mais difíceis e valem mais, e uma Estrela da sorte escondida dobra os pontos."
     },
     "starter": {
       "title": {
@@ -4541,7 +4548,8 @@
         "math10": "Matemática, 10-11 anos",
         "math12": "Matemática, 12-14 anos",
         "science": "Ciências",
-        "geo": "Geografia"
+        "geo": "Geografia",
+        "board": "Tabuleiro Cérebro variado, 8 a 14 anos"
       },
       "math": {
         "add": "Quanto é {a} + {b}?",
@@ -4691,7 +4699,9 @@
           "c2": "Estados Unidos",
           "c3": "Indonésia"
         }
-      }
+      },
+      "boardMath": "Matemática",
+      "boardMix": "Variado"
     },
     "results": {
       "title": "Resultados do jogo ao vivo",
@@ -4774,7 +4784,8 @@
         "notFound": "Não encontramos esse conjunto.",
         "topic": "Digite um tema primeiro.",
         "aiOff": "Criar com IA não está disponível agora. Você ainda pode digitar ou colar suas perguntas.",
-        "aiFailed": "A IA não conseguiu escrever perguntas desta vez. Tente de novo ou mude um pouco o tema."
+        "aiFailed": "A IA não conseguiu escrever perguntas desta vez. Tente de novo ou mude um pouco o tema.",
+        "cat": "A categoria da pergunta {n} não é permitida."
       },
       "noMissed": "Todo mundo acertou todas, então não há nada para jogar de novo.",
       "teamsOff": "Este jogo não tinha times.",
@@ -4790,7 +4801,8 @@
         "hasOpen": "Essa pessoa está conduzindo outro jogo ao vivo agora.",
         "gone": "Este convite terminou.",
         "self": "Você já é o anfitrião."
-      }
+      },
+      "notForClass": "Este jogo é para diversão, não para a aula. Escolha um modo de perguntas ou um dos seus jogos."
     },
     "nick": {
       "0": "Lontra Corajosa",
@@ -5282,7 +5294,7 @@
       "lead": "Telas reais de um jogo ao vivo em uma escola de demonstração com nomes inventados.",
       "s1": {
         "h": "Escolha um jogo e as suas perguntas",
-        "p": "Escolha Corrida de Missões ou Batalha de Perguntas e depois o seu próprio conjunto de perguntas, um que um colega compartilhou, um conjunto pronto ou as perguntas de uma das suas aulas.",
+        "p": "Escolha Corrida de Missões, Batalha de Perguntas ou Tabuleiro Cérebro e depois o seu próprio conjunto de perguntas, um que um colega compartilhou, um conjunto pronto ou as perguntas de uma das suas aulas.",
         "alt": "A página “Conduzir um jogo ao vivo”: os modos de jogo para escolher, um conjunto de perguntas e quem pode entrar."
       },
       "s2": {
@@ -5307,7 +5319,7 @@
       }
     },
     "modes": {
-      "h": "Dois jeitos de jogar, e ainda jogos ao vivo",
+      "h": "Três jeitos de jogar",
       "race": {
         "h": "Corrida de Missões",
         "p": "Uma corrida por uma ilha em 3D. Cada resposta certa dá gemas e um impulso, e a turma toda acompanha os corredores na lousa."
@@ -5316,9 +5328,9 @@
         "h": "Batalha de Perguntas",
         "p": "O clássico: a pergunta na tela grande, as respostas em cada aparelho e um ranking depois de cada uma."
       },
-      "games": {
-        "h": "Jogos prontos para o modo ao vivo",
-        "p": "Alguns jogos da biblioteca também podem ser jogados ao vivo, com todos os alunos no mesmo mundo."
+      "board": {
+        "h": "Tabuleiro Cérebro",
+        "p": "Um tabuleiro de categorias na tela. Escolha uma casa (ou deixe quem acertar mais rápido escolher) e a pergunta abre em todos os aparelhos. As casas mais difíceis valem mais, e uma Estrela da sorte escondida dobra os pontos."
       }
     },
     "tools": {

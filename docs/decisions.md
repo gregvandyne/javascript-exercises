@@ -1840,3 +1840,19 @@ drafted by AI from a topic and a grade (services/set-ai.js; questions go into th
 usual text checks, when the teacher saves), and copied from a colleague's shared set. A teacher's own sets come first in
 the live picker; the starters come last. Teachers can also build their own quiz games with the Builder (`quiz: true`),
 which play live with any of their sets. Landing page: /teachers/live.
+
+## Brain Board, and fun games kept out of class rooms (November 2026)
+
+A third built-in live quiz mode, in the category-board genre, with its own name and look (a night-sky board, Lucky
+Stars): the projector shows categories × 5 tiles worth 100-500; the host (or the fastest right answer, when "players
+pick" is on) picks a tile and everyone answers it on their device. No wagers and nothing typed: a Lucky Star simply
+doubles the points, and wrong answers never cost points (kids). The server owns the board as shared state, so a
+reconnecting phone or projector always sees the same board (docs/live-protocol.md "Brain Board"). Question sets gained
+an optional category per question (editor field, a "Category" spreadsheet column or "# Category" lines when pasting, and
+an AI "Brain Board" draft of 5 categories × 5 rising in difficulty); sets without categories still make a board. The
+starters gained a mixed board (Science, Geography, Math, Mix) for ages 8-14, now listed first.
+
+Hero of Sunvale is a fun adventure, not a class activity (the owner's call): `NOT_FOR_CLASS` in classlive-access.js
+keeps it out of a teacher's /live picker and refuses it for a class room (`notForClass`); a parent may still host it
+for their family or an open room. Empty game groups on /live are hidden.
+

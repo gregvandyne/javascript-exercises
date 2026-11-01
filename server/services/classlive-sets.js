@@ -7,7 +7,7 @@ import { cleanText } from './textfilter.js';
 import * as S from './schools.js';
 import * as L from './lessons.js';
 
-export const LIMITS = { items: 100, q: 300, choice: 120, title: 80, bytes: 120 * 1024 };
+export const LIMITS = { items: 100, q: 300, choice: 120, title: 80, cat: 40, bytes: 120 * 1024 };
 export const SECS = [5, 10, 15, 20, 30, 45, 60, 90, 120];
 
 const fail = code => ({ ok: false, code });
@@ -39,7 +39,10 @@ export function cleanItems(items, { drafts = false } = {}) {
     for (const c of raw.slice(0, 4)) { const v = text(c, LIMITS.choice); if (!v.ok) return { ...fail('choice'), at: i }; choices.push(v.value); }
     const secs = SECS.includes(+it.secs) ? +it.secs : 20;
     const answer = Number.isInteger(+it.answer) ? +it.answer : 0;
-    const item = { q: qq.value, choices, answer, secs };
+    // An optional category (Brain Board's column heading), checked like the question.
+    const cc = it.cat ? text(it.cat, LIMITS.cat) : { ok: true, value: '' };
+    if (!cc.ok) return { ...fail('cat'), at: i };
+    const item = { q: qq.value, choices, answer, secs, ...(cc.value ? { cat: cc.value } : {}) };
     if (!complete(item) && !(drafts && choices.every(Boolean))) return { ...fail('choices'), at: i };
     if (new Set(choices.map(c => c.toLowerCase())).size !== choices.length) return { ...fail('sameChoice'), at: i };
     out.push(item);

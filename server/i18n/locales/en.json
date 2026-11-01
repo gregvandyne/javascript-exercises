@@ -2258,7 +2258,12 @@
       "pasteText": "Or type them: the question on one line, then its answers on the lines below, with * before the right one. Leave an empty line between questions.",
       "pasteExample": "What is the largest planet?\n* Jupiter\nSaturn\nEarth\n\nWater boils at 100 °C at sea level.\n* True\nFalse",
       "pasteFound": "{n, plural, =0 {No questions found yet.} one {# question found.} other {# questions found.}}",
-      "pasteGo": "Add these questions"
+      "pasteGo": "Add these questions",
+      "category": "Category (optional)",
+      "categoryHint": "For Brain Board, e.g. Planets",
+      "categoryColumn": "Category",
+      "pasteCats": "For Brain Board, add categories: a first spreadsheet column with the header \"Category\", or a line like \"# Planets\" before its questions.",
+      "aiBoard": "A Brain Board (5 categories × 5)"
     },
     "match": {
       "title": "Play {title} online",
@@ -3771,7 +3776,7 @@
     "live": {
       "h": "Live class games",
       "p1": "Run a live quiz race or any live-ready game on the projector. Students join on their own devices with a 7-digit code.",
-      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions) and Question Battle.",
+      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions), Question Battle and Brain Board (a board of categories, easy to hard).",
       "li2": "Use a starter question set, type a quick set, or turn a lesson's questions into a live quiz.",
       "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
       "more": "See how Oomba Live works"
@@ -4533,7 +4538,9 @@
       "questRace": "Quest Race",
       "questRaceText": "Answer questions to race across a 3D island. Right answers give gems and a boost!",
       "battle": "Question Battle",
-      "battleText": "Questions on the big screen, answers on every device, and a leaderboard after each one."
+      "battleText": "Questions on the big screen, answers on every device, and a leaderboard after each one.",
+      "board": "Brain Board",
+      "boardText": "A board of categories: pick a tile, everyone answers. Bigger tiles are harder and worth more, and a hidden Lucky Star doubles the points."
     },
     "starter": {
       "title": {
@@ -4541,7 +4548,8 @@
         "math10": "Math, ages 10-11",
         "math12": "Math, ages 12-14",
         "science": "Science",
-        "geo": "Geography"
+        "geo": "Geography",
+        "board": "Brain Board mix, ages 8-14"
       },
       "math": {
         "add": "What is {a} + {b}?",
@@ -4691,7 +4699,9 @@
           "c2": "United States",
           "c3": "Indonesia"
         }
-      }
+      },
+      "boardMath": "Math",
+      "boardMix": "Mix"
     },
     "results": {
       "title": "Live game results",
@@ -4774,7 +4784,8 @@
         "notFound": "We can't find that set.",
         "topic": "Type a topic first.",
         "aiOff": "Drafting with AI isn't available right now. You can still type or paste your questions.",
-        "aiFailed": "The AI couldn't write questions this time. Try again, or change the topic a little."
+        "aiFailed": "The AI couldn't write questions this time. Try again, or change the topic a little.",
+        "cat": "The category in question {n} is not allowed."
       },
       "noMissed": "Everyone got every question right, so there is nothing to play again.",
       "teamsOff": "This game had no teams.",
@@ -4790,7 +4801,8 @@
         "hasOpen": "That person is hosting another live game right now.",
         "gone": "This invite has ended.",
         "self": "You're already the host."
-      }
+      },
+      "notForClass": "This game is for fun, not for class. Pick a quiz mode or one of your own games."
     },
     "nick": {
       "0": "Brave Otter",
@@ -5282,7 +5294,7 @@
       "lead": "Real screens from a live game in a demo school with made-up names.",
       "s1": {
         "h": "Pick a game and your questions",
-        "p": "Choose Quest Race or Question Battle, then your own question set, one a colleague shared, a ready-made starter, or the questions from one of your lessons.",
+        "p": "Choose Quest Race, Question Battle or Brain Board, then your own question set, one a colleague shared, a ready-made starter, or the questions from one of your lessons.",
         "alt": "The Host a live game page: game modes to pick from, a question set and who can join."
       },
       "s2": {
@@ -5307,7 +5319,7 @@
       }
     },
     "modes": {
-      "h": "Two ways to play, plus live games",
+      "h": "Three ways to play",
       "race": {
         "h": "Quest Race",
         "p": "A 3D island race. Every right answer gives gems and a boost, and the whole class watches the runners on the board."
@@ -5316,9 +5328,9 @@
         "h": "Question Battle",
         "p": "The classic: the question on the big screen, answers on every device, and a leaderboard after each one."
       },
-      "games": {
-        "h": "Live-ready games",
-        "p": "Some games in the library can be played live together too, with every student in the same world."
+      "board": {
+        "h": "Brain Board",
+        "p": "A board of categories on the screen. Pick a tile (or let the fastest right answer pick), and its question opens on every device. Harder tiles are worth more, and a hidden Lucky Star doubles the points."
       }
     },
     "tools": {

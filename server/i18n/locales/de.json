@@ -2258,7 +2258,12 @@
       "pasteText": "Oder tipp sie ein: die Frage in eine Zeile, darunter ihre Antworten, mit * vor der richtigen. Lass zwischen den Fragen eine Zeile frei.",
       "pasteExample": "Was ist der größte Planet?\n* Jupiter\nSaturn\nErde\n\nWasser kocht auf Meereshöhe bei 100 °C.\n* Wahr\nFalsch",
       "pasteFound": "{n, plural, =0 {Noch keine Fragen gefunden.} one {# Frage gefunden.} other {# Fragen gefunden.}}",
-      "pasteGo": "Diese Fragen hinzufügen"
+      "pasteGo": "Diese Fragen hinzufügen",
+      "category": "Kategorie (optional)",
+      "categoryHint": "Für das Denkbrett, z. B. Planeten",
+      "categoryColumn": "Kategorie",
+      "pasteCats": "Für das Denkbrett Kategorien hinzufügen: eine erste Spalte mit der Überschrift „Kategorie“ in der Tabelle, oder eine Zeile wie „# Planeten“ vor ihren Fragen.",
+      "aiBoard": "Ein Denkbrett (5 Kategorien × 5)"
     },
     "match": {
       "title": "{title} online spielen",
@@ -3770,7 +3775,7 @@
     "live": {
       "h": "Live-Spiele in der Klasse",
       "p1": "Starten Sie ein Live-Quizrennen oder ein anderes Live-Spiel am Beamer. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei.",
-      "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen) und Fragen-Duell.",
+      "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen), Fragen-Duell und Denkbrett (ein Brett mit Kategorien, von leicht bis schwer).",
       "li2": "Nutzen Sie ein Starterset, tippen Sie schnell eigene Fragen oder machen Sie aus den Fragen einer Unterrichtseinheit ein Live-Quiz.",
       "li3": "Klassenräume sind nur für Ihre angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch. Kein Chat, kein Tippen, keine frei eingegebenen Namen.",
       "more": "So funktioniert Oomba Live"
@@ -4532,7 +4537,9 @@
       "questRace": "Quest-Rennen",
       "questRaceText": "Beantworte Fragen und renne über eine 3D-Insel. Richtige Antworten bringen Edelsteine und einen Schub!",
       "battle": "Fragen-Duell",
-      "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste."
+      "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste.",
+      "board": "Denkbrett",
+      "boardText": "Ein Brett mit Kategorien: Feld wählen, alle antworten. Größere Felder sind schwerer und bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte."
     },
     "starter": {
       "title": {
@@ -4540,7 +4547,8 @@
         "math10": "Mathe, 10-11 Jahre",
         "math12": "Mathe, 12-14 Jahre",
         "science": "Naturwissenschaften",
-        "geo": "Erdkunde"
+        "geo": "Erdkunde",
+        "board": "Denkbrett gemischt, 8 bis 14 Jahre"
       },
       "math": {
         "add": "Was ist {a} + {b}?",
@@ -4690,7 +4698,9 @@
           "c2": "Vereinigte Staaten",
           "c3": "Indonesien"
         }
-      }
+      },
+      "boardMath": "Mathe",
+      "boardMix": "Gemischt"
     },
     "results": {
       "title": "Ergebnisse des Live-Spiels",
@@ -4773,7 +4783,8 @@
         "notFound": "Wir finden dieses Set nicht.",
         "topic": "Gib zuerst ein Thema ein.",
         "aiOff": "Das Entwerfen mit KI ist gerade nicht verfügbar. Du kannst deine Fragen trotzdem eintippen oder einfügen.",
-        "aiFailed": "Die KI konnte diesmal keine Fragen schreiben. Versuch es noch einmal oder ändere das Thema ein wenig."
+        "aiFailed": "Die KI konnte diesmal keine Fragen schreiben. Versuch es noch einmal oder ändere das Thema ein wenig.",
+        "cat": "Die Kategorie in Frage {n} ist nicht erlaubt."
       },
       "noMissed": "Alle haben alles richtig, es gibt nichts zu wiederholen.",
       "teamsOff": "Dieses Spiel hatte keine Teams.",
@@ -4789,7 +4800,8 @@
         "hasOpen": "Diese Person leitet gerade ein anderes Live-Spiel.",
         "gone": "Diese Einladung ist abgelaufen.",
         "self": "Du bist schon der Host."
-      }
+      },
+      "notForClass": "Dieses Spiel ist zum Spaß, nicht für den Unterricht. Wähle einen Quizmodus oder eins deiner Spiele."
     },
     "nick": {
       "0": "Mutiger Otter",
@@ -5281,7 +5293,7 @@
       "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
       "s1": {
         "h": "Spiel und Fragen auswählen",
-        "p": "Wählen Sie Quest-Rennen oder Fragen-Duell und dann Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, ein fertiges Starterset oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
+        "p": "Wählen Sie Quest-Rennen, Fragen-Duell oder Denkbrett und dann Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, ein fertiges Starterset oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
         "alt": "Die Seite „Live-Spiel leiten“: Spielmodi zur Auswahl, ein Fragenset und wer beitreten kann."
       },
       "s2": {
@@ -5306,7 +5318,7 @@
       }
     },
     "modes": {
-      "h": "Zwei Spielarten, dazu Live-Spiele",
+      "h": "Drei Spielarten",
       "race": {
         "h": "Quest-Rennen",
         "p": "Ein Inselrennen in 3D. Jede richtige Antwort bringt Edelsteine und einen Schub, und die ganze Klasse verfolgt die Läufer an der Tafel."
@@ -5315,9 +5327,9 @@
         "h": "Fragen-Duell",
         "p": "Der Klassiker: die Frage auf der großen Leinwand, die Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste."
       },
-      "games": {
-        "h": "Live-fähige Spiele",
-        "p": "Einige Spiele aus der Bibliothek lassen sich auch gemeinsam live spielen, mit allen Schülerinnen und Schülern in derselben Welt."
+      "board": {
+        "h": "Denkbrett",
+        "p": "Ein Brett mit Kategorien auf dem Bildschirm. Wählen Sie ein Feld (oder lassen Sie die schnellste richtige Antwort wählen), und seine Frage öffnet sich auf allen Geräten. Schwerere Felder bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte."
       }
     },
     "tools": {

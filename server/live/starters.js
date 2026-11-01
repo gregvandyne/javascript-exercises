@@ -5,7 +5,7 @@
 import crypto from 'node:crypto';
 import { tFor } from '../i18n/index.js';
 
-export const STARTERS = ['math-8', 'math-10', 'math-12', 'science', 'geo'];
+export const STARTERS = ['board', 'math-8', 'math-10', 'math-12', 'science', 'geo'];
 export const FIXED = { science: 10, geo: 10 };
 const rnd = (lo, hi) => lo + crypto.randomInt(hi - lo + 1);
 
@@ -39,6 +39,18 @@ function mathItem(t, band) {
 /** The items of a starter set, in this language. Maths: 10 fresh questions; Science, Geography: the fixed ten. */
 export function starterItems(id, lang = 'en') {
   const t = tFor(lang);
+  // A ready board for Brain Board (any quiz mode can use it): Science, Geography, Math (easy to hard) and a Mix column.
+  if (id === 'board') {
+    const fixed = (set, i, cat) => ({ ...starterItems(set, lang)[i], cat });
+    const sci = t('live.starter.title.science'), geo = t('live.starter.title.geo'), math = t('live.starter.boardMath'), mix = t('live.starter.boardMix');
+    const sums = [8, 8, 10, 10, 12].map(b => ({ ...mathItem(t, b), cat: math }));
+    return [
+      ...[0, 1, 2, 3, 4].map(i => fixed('science', i, sci)),
+      ...[0, 1, 2, 3, 4].map(i => fixed('geo', i, geo)),
+      ...sums,
+      fixed('science', 5, mix), fixed('geo', 5, mix), fixed('science', 6, mix), fixed('geo', 6, mix), fixed('science', 7, mix),
+    ];
+  }
   const m = /^math-(8|10|12)$/.exec(id);
   if (m) return Array.from({ length: 10 }, () => mathItem(t, +m[1]));
   const n = FIXED[id] || 0;

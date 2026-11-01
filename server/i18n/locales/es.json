@@ -2257,7 +2257,12 @@
       "pasteText": "O escríbelas: la pregunta en una línea y sus respuestas en las líneas de abajo, con * delante de la correcta. Deja una línea vacía entre preguntas.",
       "pasteExample": "¿Cuál es el planeta más grande?\n* Júpiter\nSaturno\nTierra\n\nEl agua hierve a 100 °C al nivel del mar.\n* Verdadero\nFalso",
       "pasteFound": "{n, plural, =0 {Todavía no se encontraron preguntas.} one {Se encontró # pregunta.} other {Se encontraron # preguntas.}}",
-      "pasteGo": "Añadir estas preguntas"
+      "pasteGo": "Añadir estas preguntas",
+      "category": "Categoría (opcional)",
+      "categoryHint": "Para Tablero Cerebro, p. ej. Planetas",
+      "categoryColumn": "Categoría",
+      "pasteCats": "Para Tablero Cerebro, añade categorías: una primera columna con el título «Categoría» en la hoja de cálculo, o una línea como «# Planetas» antes de sus preguntas.",
+      "aiBoard": "Un Tablero Cerebro (5 categorías × 5)"
     },
     "match": {
       "title": "Jugar a {title} online",
@@ -3769,7 +3774,7 @@
     "live": {
       "h": "Juegos en vivo en clase",
       "p1": "Lanza una carrera de preguntas en vivo o cualquier juego listo para jugar en vivo en el proyector. El alumnado se une desde sus propios dispositivos con un código de 7 cifras.",
-      "li1": "Modos incluidos: Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas) y Batalla de preguntas.",
+      "li1": "Modos incluidos: Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas), Batalla de preguntas y Tablero Cerebro (un tablero de categorías, de fácil a difícil).",
       "li2": "Usa un conjunto inicial, escribe un conjunto rápido o convierte las preguntas de una lección en un juego en vivo.",
       "li3": "Las salas de clase son solo para tu alumnado con sesión iniciada, y sus puntos van a tu cuaderno de notas. Sin chat, sin escribir y sin nombres escritos a mano.",
       "more": "Vea cómo funciona Oomba Live"
@@ -4531,7 +4536,9 @@
       "questRace": "Carrera de misiones",
       "questRaceText": "Responde preguntas para recorrer una isla en 3D. ¡Las respuestas correctas dan gemas y un impulso!",
       "battle": "Batalla de preguntas",
-      "battleText": "Preguntas en la pantalla grande, respuestas en cada dispositivo y una clasificación después de cada una."
+      "battleText": "Preguntas en la pantalla grande, respuestas en cada dispositivo y una clasificación después de cada una.",
+      "board": "Tablero Cerebro",
+      "boardText": "Un tablero de categorías: elige una casilla y todos responden. Las casillas más altas son más difíciles y valen más, y una Estrella de la suerte escondida duplica los puntos."
     },
     "starter": {
       "title": {
@@ -4539,7 +4546,8 @@
         "math10": "Matemáticas, 10-11 años",
         "math12": "Matemáticas, 12-14 años",
         "science": "Ciencias",
-        "geo": "Geografía"
+        "geo": "Geografía",
+        "board": "Tablero Cerebro variado, 8 a 14 años"
       },
       "math": {
         "add": "¿Cuánto es {a} + {b}?",
@@ -4689,7 +4697,9 @@
           "c2": "Estados Unidos",
           "c3": "Indonesia"
         }
-      }
+      },
+      "boardMath": "Matemáticas",
+      "boardMix": "Variado"
     },
     "results": {
       "title": "Resultados del juego en vivo",
@@ -4772,7 +4782,8 @@
         "notFound": "No encontramos ese conjunto.",
         "topic": "Primero escribe un tema.",
         "aiOff": "Redactar con IA no está disponible ahora. Aún puedes escribir o pegar tus preguntas.",
-        "aiFailed": "La IA no pudo escribir preguntas esta vez. Inténtalo de nuevo o cambia un poco el tema."
+        "aiFailed": "La IA no pudo escribir preguntas esta vez. Inténtalo de nuevo o cambia un poco el tema.",
+        "cat": "La categoría de la pregunta {n} no está permitida."
       },
       "noMissed": "Todos acertaron todas las preguntas, así que no hay nada que repetir.",
       "teamsOff": "Este juego no tenía equipos.",
@@ -4788,7 +4799,8 @@
         "hasOpen": "Esa persona está dirigiendo otro juego en vivo ahora mismo.",
         "gone": "Esta invitación ya terminó.",
         "self": "Ya eres el anfitrión."
-      }
+      },
+      "notForClass": "Este juego es para divertirse, no para clase. Elige un modo de preguntas o uno de tus juegos."
     },
     "nick": {
       "0": "Nutria Valiente",
@@ -5280,7 +5292,7 @@
       "lead": "Pantallas reales de un juego en vivo en una escuela de demostración con nombres inventados.",
       "s1": {
         "h": "Elija un juego y sus preguntas",
-        "p": "Elija Carrera de misiones o Batalla de preguntas y, después, su propio conjunto de preguntas, uno que haya compartido un colega, un conjunto inicial ya preparado o las preguntas de una de sus lecciones.",
+        "p": "Elija Carrera de misiones, Batalla de preguntas o Tablero Cerebro y, después, su propio conjunto de preguntas, uno que haya compartido un colega, un conjunto inicial ya preparado o las preguntas de una de sus lecciones.",
         "alt": "La página “Dirigir un juego en vivo”: los modos de juego para elegir, un conjunto de preguntas y quién puede unirse."
       },
       "s2": {
@@ -5305,7 +5317,7 @@
       }
     },
     "modes": {
-      "h": "Dos formas de jugar, y además juegos en vivo",
+      "h": "Tres formas de jugar",
       "race": {
         "h": "Carrera de misiones",
         "p": "Una carrera por una isla en 3D. Cada respuesta correcta da gemas y un impulso, y toda la clase sigue a los corredores en la pizarra."
@@ -5314,9 +5326,9 @@
         "h": "Batalla de preguntas",
         "p": "El clásico: la pregunta en la pantalla grande, las respuestas en cada dispositivo y una clasificación tras cada una."
       },
-      "games": {
-        "h": "Juegos listos para jugar en vivo",
-        "p": "Algunos juegos de la biblioteca también se pueden jugar en vivo, con todos los estudiantes en el mismo mundo."
+      "board": {
+        "h": "Tablero Cerebro",
+        "p": "Un tablero de categorías en la pantalla. Elija una casilla (o deje que elija quien acierte más rápido) y su pregunta se abre en todos los dispositivos. Las casillas más difíciles valen más, y una Estrella de la suerte escondida duplica los puntos."
       }
     },
     "tools": {
