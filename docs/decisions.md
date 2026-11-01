@@ -1856,3 +1856,15 @@ Hero of Sunvale is a fun adventure, not a class activity (the owner's call): `NO
 keeps it out of a teacher's /live picker and refuses it for a class room (`notForClass`); a parent may still host it
 for their family or an open room. Empty game groups on /live are hidden.
 
+
+## Live games are checked on phones, tablets and desktops (November 2026)
+
+Every change to an Oomba Live game or the live pages must keep `tests/e2e/live-layout.spec.js` green. It runs
+`scripts/live-layout-audit.js` (`npm run layout:live` against any running server): each quiz mode is hosted with three
+players, and the projector page and a player's page are checked at 390×844, 360×640, 820×1180, 1180×820, 1280×800 and
+1920×1080, in the lobby, during a long question (2 minutes, so every size sees it open), at the reveal, on the board and
+at the end. Inside the game frame (tests/e2e/frame-fit.js) nothing may be off screen, cut off, on top of something else
+or squashed (tap targets 40 px or more, never half again taller than wide), answer buttons must be in view without
+scrolling, and the page never scrolls sideways. A screenshot of every check is kept for a look by eye. Found with it:
+the player page's `<body>` had the class `lv-player` (the roster row's flex style), which squeezed every live game into a
+narrow column on tablets.

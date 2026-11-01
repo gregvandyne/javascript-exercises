@@ -24,7 +24,8 @@
     "i18n:check": "node scripts/i18n-check.js",
     "hooks": "git config core.hooksPath scripts/hooks",
     "check-keys": "node scripts/check-keys.js",
-    "kit-rules": "node scripts/build-kit-rules.js"
+    "kit-rules": "node scripts/build-kit-rules.js",
+    "layout:live": "node scripts/live-layout-audit.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",
