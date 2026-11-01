@@ -1840,3 +1840,37 @@ drafted by AI from a topic and a grade (services/set-ai.js; questions go into th
 usual text checks, when the teacher saves), and copied from a colleague's shared set. A teacher's own sets come first in
 the live picker; the starters come last. Teachers can also build their own quiz games with the Builder (`quiz: true`),
 which play live with any of their sets. Landing page: /teachers/live.
+
+## AI voices (text to speech), server part (November 2026)
+
+Official games, lesson quiz steps and Oomba Live can read **site-, game- and teacher-written text** aloud with a hosted
+voice (OpenAI's speech API) instead of the device's voice. Design and the client part: docs/tts-design.md. Legal:
+docs/legal-review.md item 44.
+- **Off by default, two switches.** `TTS_ENABLED=1` and a key (`TTS_API_KEY`; `STT_API_KEY` only when both providers
+  are openai) turn it on for the site; then each locale stays off until the admin switches it on at `/admin/voices`
+  (setting `tts.voices`, audited), so the owner listens first and the existing e2e tests are unaffected. `TTS_LOCALES`
+  is the ceiling. Off, or any refusal, means the device voice is used as before; pages never show an error.
+- **Shaped like speech to text** (`services/stt.js`): `services/tts.js` has provider adapters (`openai`, and `mock`
+  that answers a real silent MP3 so headless Chromium can play it; refused in production), config in `TTS_*`, cost in
+  the AI budget (`tts:<provider>`), usage in its own table.
+- **What may be spoken is chosen by the server, not the page.** `POST /api/tts` takes a context: `game` (a 2-hour token
+  the play page mints only for official seed games, bound to the player; Builder games always use the device voice),
+  `live` (the question open now, by number; never one still to come; seat or host token), `lesson` (a quiz step's
+  question by number, behind the quiz API's access check). Backstops: rude words, personal info, link codes, the
+  player's own name or username, more than `TTS_MAX_CHARS` (600).
+- **One line, made once.** Audio is cached on disk under the data folder, keyed by sha256 of provider, model, voice,
+  instructions/speed, locale, rate bucket and text; requests in flight share one provider call (a class of 30 on one
+  question makes one). Least recently used lines go when the cache passes `TTS_CACHE_MB`; warm-up and admin samples are
+  pinned. `GET /tts/<hash>.mp3` is same-origin only and immutable.
+- **Limits:** 120 requests a minute per person; new audio `TTS_PER_MINUTE` (20) a minute per person and 200 per address
+  in 10 minutes; `TTS_DAILY_CHARS` (300,000) a day site-wide; the AI budget.
+- **Voices:** six roles a game asks for (narrator, friendly, bright, deep, wise, grumpy), never a provider voice; the
+  narrator is chosen per locale, the others shared. gpt-4o-mini-tts gets kid-friendly reading instructions with an
+  accent hint per locale; zh-Hant is read as Taiwanese Mandarin, never Cantonese (like the SDK's device-voice choice).
+  tts-1 / tts-1-hd get a speed instead.
+- **Warm-up** (`services/tts-lines.js`): Hero of Sunvale's spoken lines are read from the repository file's I18N block
+  (node:vm, empty context, 2 s limit; never the database copy), generated two at a time in the background, with a cost
+  estimate first; it stops at the daily characters or the AI budget.
+- **Privacy:** no text, user id or address is stored or logged (a short hash, sizes, timings). Requests to OpenAI come
+  from our server. The provider facts (URL, fields, models, voices, price) are from memory and were not checked in the
+  sandbox: check them before turning it on.

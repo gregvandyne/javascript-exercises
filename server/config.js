@@ -116,6 +116,24 @@ const liveCohost = parseFlag(process.env.LIVE_COHOST, 'LIVE_COHOST', true);
 /** Speech to text providers (server/services/stt.js). 'mock' answers fixed words, for tests only. */
 export const STT_PROVIDERS = ['openai', 'elevenlabs', 'mock'];
 const sttProvider = String(process.env.STT_PROVIDER || 'openai').trim().toLowerCase();
+/** Text to speech providers (server/services/tts.js). 'mock' answers a silent MP3, for tests only. */
+export const TTS_PROVIDERS = ['openai', 'mock'];
+/** Every site locale TTS may speak (TTS_LOCALES narrows it; /admin/voices switches each one on inside that). */
+export const TTS_ALL_LOCALES = ['en', 'en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl'];
+const ttsEnabled = parseFlag(process.env.TTS_ENABLED, 'TTS_ENABLED');
+const ttsProvider = String(process.env.TTS_PROVIDER || 'openai').trim().toLowerCase();
+const ttsModel = String(process.env.TTS_MODEL || 'gpt-4o-mini-tts').trim();
+/** TTS_LOCALES: a comma list of site locales (any case), default all of them. -> { list, error } */
+export function parseTtsLocales(v) {
+  if (v == null || !String(v).trim()) return { list: [...TTS_ALL_LOCALES], error: null };
+  const out = [], bad = [];
+  for (const raw of String(v).split(',').map(x => x.trim()).filter(Boolean)) {
+    const code = TTS_ALL_LOCALES.find(c => c.toLowerCase() === raw.toLowerCase());
+    if (code) { if (!out.includes(code)) out.push(code); } else bad.push(raw);
+  }
+  return { list: out, error: bad.length ? `TTS_LOCALES has unknown locales: ${bad.join(', ')} (use ${TTS_ALL_LOCALES.join(', ')})` : null };
+}
+const ttsLocales = parseTtsLocales(process.env.TTS_LOCALES);
 const sessionSecret = process.env.SESSION_SECRET || '';
 /** SQLite journal modes that keep data safe after a crash (MEMORY and OFF don't). */
 export const JOURNAL_MODES = ['WAL', 'DELETE', 'TRUNCATE', 'PERSIST'];
@@ -156,6 +174,10 @@ export const config = {
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
+    ttsEnabled.error, ttsLocales.error,
+    !TTS_PROVIDERS.includes(ttsProvider) && `TTS_PROVIDER must be one of ${TTS_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
+    ttsProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "TTS_PROVIDER=mock is for tests and can't be used in production",
+    !/^[A-Za-z0-9._-]{1,60}$/.test(ttsModel) && 'TTS_MODEL must be a model name like gpt-4o-mini-tts, tts-1 or tts-1-hd',
     !JOURNAL_MODES.includes(journalMode) && `BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`,
     requireSecret.on && sessionSecret && sessionSecret.length < MIN_SECRET_LENGTH
       && `SESSION_SECRET is shorter than ${MIN_SECRET_LENGTH} characters, which REQUIRE_SESSION_SECRET=1 refuses (make one with: openssl rand -hex 32)`,
@@ -209,6 +231,21 @@ export const config = {
   // host may be gone before the longest-standing co-host takes over.
   liveCohost: liveCohost.on,
   liveHandoffSecs: Math.min(600, Math.max(3, Math.floor(num(process.env.LIVE_HANDOFF_SECS, 120)))),
+  // AI voices (text to speech; server/services/tts.js, docs/decisions.md "AI voices"): official games, lessons and Oomba
+  // Live read site-, game- and teacher-written text aloud with a hosted voice. OFF unless TTS_ENABLED=1 AND a key is set:
+  // TTS_API_KEY, or STT_API_KEY when both TTS_PROVIDER and STT_PROVIDER are openai (the owner sets keys in the host's
+  // dashboard, never in a file). Even then each language stays off until the admin switches it on at /admin/voices.
+  ttsEnabled: ttsEnabled.on,
+  ttsProvider: TTS_PROVIDERS.includes(ttsProvider) ? ttsProvider : '',
+  ttsApiKey: process.env.TTS_API_KEY || '',
+  ttsModel,
+  ttsLocales: ttsLocales.list,
+  ttsMaxChars: Math.min(4000, Math.max(50, Math.floor(num(process.env.TTS_MAX_CHARS, 600)))),
+  ttsCacheMb: Math.max(16, num(process.env.TTS_CACHE_MB, 512)),
+  ttsDailyChars: Math.max(1000, Math.floor(num(process.env.TTS_DAILY_CHARS, 300000))),
+  ttsPerMinute: Math.max(1, Math.floor(num(process.env.TTS_PER_MINUTE, 20))),
+  ttsUsdPer1kChars: Math.max(0, num(process.env.TTS_USD_PER_1K_CHARS, 0.015)),
+  ttsTimeoutMs: Math.min(60000, Math.max(2000, num(process.env.TTS_TIMEOUT_MS, 15000))),
   sttMaxSeconds: Math.min(120, Math.max(5, num(process.env.STT_MAX_SECONDS, 60))),
   sttMaxBytes: Math.min(10_000_000, Math.max(100_000, num(process.env.STT_MAX_BYTES, 1_500_000))),
   sttPerMinute: Math.max(1, num(process.env.STT_PER_MINUTE, 8)),

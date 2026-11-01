@@ -5371,5 +5371,8 @@
       "li4": "Jusqu’à 100 questions par série. Partagez vos séries avec les enseignants de votre école, ou copiez les leurs et adaptez-les à votre façon.",
       "li5": "Envie d’un autre type de jeu ? Créez votre propre jeu de quiz avec le Constructeur IA : il se joue en direct avec n’importe laquelle de vos séries de questions."
     }
+  },
+  "tts": {
+    "sample": "Salut ! Je suis ton guide à l’Oomba Academy. Allons explorer, résoudre des énigmes et nous amuser ensemble !"
   }
 }

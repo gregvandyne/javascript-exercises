@@ -5373,5 +5373,8 @@
       "li4": "Up to 100 questions in a set. Share sets with teachers at your school, or copy theirs and make them your own.",
       "li5": "Want a different kind of game? Build your own quiz game with the AI Builder, and it plays live with any of your question sets."
     }
+  },
+  "tts": {
+    "sample": "Hi! I'm your guide at Oomba Academy. Let's explore, solve puzzles and have fun together!"
   }
 }

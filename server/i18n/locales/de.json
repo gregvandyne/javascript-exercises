@@ -5372,5 +5372,8 @@
       "li4": "Bis zu 100 Fragen pro Set. Teilen Sie Sets mit Lehrkräften Ihrer Schule, oder kopieren Sie deren Sets und passen Sie sie für sich an.",
       "li5": "Lust auf eine andere Art von Spiel? Bauen Sie mit dem KI-Baumeister Ihr eigenes Quizspiel, und es lässt sich mit jedem Ihrer Fragensets live spielen."
     }
+  },
+  "tts": {
+    "sample": "Hallo! Ich bin dein Begleiter in der Oomba Academy. Komm, wir gehen auf Entdeckungsreise, lösen Rätsel und haben zusammen viel Spaß!"
   }
 }

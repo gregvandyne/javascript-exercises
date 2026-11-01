@@ -1380,5 +1380,6 @@
   "lessons.quiz.of": "{n} and {total} are numbers.",
   "live.homework.hint": "On the live results page, when a teacher assigns the question set as homework (a quiz step in a class lesson).",
   "lessons.kinds.quiz": "A lesson step kind: multiple-choice questions from a live question set, checked automatically.",
-  "live.results.rankedBy": "Caption above the team results table, for the teacher: which number decides the team places. {how} is the team-score setting's own label (live.team.scoringAvg or live.team.scoringSum), inserted as is."
+  "live.results.rankedBy": "Caption above the team results table, for the teacher: which number decides the team places. {how} is the team-score setting's own label (live.team.scoringAvg or live.team.scoringSum), inserted as is.",
+  "tts.sample": "The sample sentence the admin plays on /admin/voices to judge each AI voice in this language (the text is read aloud by a computer voice). Natural, warm and simple for kids aged 8 to 14, in this language only; keep \"Oomba Academy\" as is. One or two short sentences, max ~140 chars."
 }

@@ -5373,5 +5373,8 @@
       "li4": "Até 100 perguntas por conjunto. Compartilhe conjuntos com os professores da sua escola, ou copie os deles e adapte do seu jeito.",
       "li5": "Quer outro tipo de jogo? Crie o seu próprio jogo de quiz com o Construtor com IA, e ele pode ser jogado ao vivo com qualquer um dos seus conjuntos de perguntas."
     }
+  },
+  "tts": {
+    "sample": "Oi! Eu sou seu guia na Oomba Academy. Vamos explorar, resolver enigmas e nos divertir juntos!"
   }
 }

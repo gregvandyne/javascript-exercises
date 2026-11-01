@@ -5371,5 +5371,8 @@
       "li4": "Hasta 100 preguntas por conjunto. Comparta conjuntos con los docentes de su escuela, o copie los de ellos y adáptelos a su gusto.",
       "li5": "¿Quiere otro tipo de juego? Cree su propio juego de preguntas con el Constructor con IA, y podrá jugarlo en vivo con cualquiera de sus conjuntos de preguntas."
     }
+  },
+  "tts": {
+    "sample": "¡Hola! Soy tu guía en Oomba Academy. ¡Vamos a explorar, resolver acertijos y divertirnos juntos!"
   }
 }

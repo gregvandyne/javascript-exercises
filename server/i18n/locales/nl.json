@@ -5372,5 +5372,8 @@
       "li4": "Tot 100 vragen in een set. Deel sets met leraren op je school, of kopieer die van hen en maak ze helemaal van jou.",
       "li5": "Zin in een ander soort spel? Bouw je eigen quizspel met de AI-Bouwer, en je speelt het live met al je vragensets."
     }
+  },
+  "tts": {
+    "sample": "Hoi! Ik ben je gids bij Oomba Academy. Kom, we gaan samen op ontdekkingsreis, puzzels oplossen en plezier maken!"
   }
 }

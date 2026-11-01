@@ -388,3 +388,34 @@ Owner decisions for parent-made accounts (no lawyer needed):
       school-facing privacy text? (4) A "second grown-up in a family" feature (needed before family co-hosting does
       anything) needs its own review.
     - **Question:** do the school terms already cover teachers' saved groups ((a)), or do they need a sentence?
+### AI voices: games, lessons and Oomba Live reading their own words aloud (2026-11, server part; not yet reviewed)
+
+44. **AI voices (text to speech with OpenAI).** docs/decisions.md "AI voices", docs/tts-design.md. **Off** until the
+    owner sets `TTS_ENABLED=1` and a key (`TTS_API_KEY`, or `STT_API_KEY` when both providers are OpenAI); even then
+    each language stays silent until the admin switches it on at `/admin/voices` after listening to it. What ships:
+    official games (never Builder games), lesson quiz steps and Oomba Live questions can be read aloud with a voice
+    made by OpenAI's speech API instead of the device's own voice. Please confirm:
+    - **No child's personal information goes to OpenAI.** Only text written by us, an official game's makers or the
+      child's teacher is sent (live and lesson questions are looked up on the server by number; the child's page can't
+      send its own text there; game text needs a signed token for an official game, bound to the player). Checks refuse
+      rude words, emails, phone numbers, addresses, links and the player's own name or username. Never chat, typed
+      answers, names or a child's voice. Requests go from our server, so OpenAI sees our server's address, not the
+      child's. Is OpenAI then outside COPPA's "disclosure" (no personal information), and does it still need listing as
+      a sub-processor for schools?
+    - **OpenAI's data retention for this text.** Speech API inputs are site text only, but they may be kept by OpenAI
+      for abuse monitoring (30 days by default, from memory: please check OpenAI's current API data-usage terms) unless
+      the project has zero data retention. Is ZDR needed here (it is required for the STT key, item 38, and the same key
+      may be reused), or is default retention of site-written text acceptable?
+    - **OpenAI usage policy: AI voices must be disclosed.** OpenAI requires telling listeners the voice is AI-generated
+      and not a human. The disclosure goes on /parents (`info.parents.ai.p4`), /privacy (`info.privacy.children.p6`), the
+      play page's 🔊 Voices sheet and the live settings (all 13 locales; the client part adds them and moves
+      `LEGAL_UPDATED`). Draft: "Characters in this game are voiced by a computer (AI voices from OpenAI). They read only
+      the game's own words, never anything you type or your name." Is that wording enough for kids 8-14 and their
+      parents?
+    - **A choice, not consent.** Kids can switch to "This device's voice" (kept on the device), teachers choose AI or
+      device voices for a live game (`voices` setting, default AI). No consent screen, because no personal information
+      is involved: please confirm.
+    - **Stored:** audio files on our disk (`<data>/tts`, keyed by a hash of the text and voice; capped at
+      `TTS_CACHE_MB`), a `tts_cache` row per line (hash, sizes, voice, locale, role; no text, no user) and `tts_usage`
+      per day (counts and characters only; 90 days). Logs carry a short hash, sizes and timings, never the text or who
+      asked. The cost goes into the AI spending caps. Nothing is sold; there are no ads.
