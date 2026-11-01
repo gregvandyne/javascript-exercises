@@ -57,7 +57,7 @@
 body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 @media (max-width: 900px) {
   .lv-host { grid-template-columns: 1fr; grid-template-areas: 'bar' 'join' 'stage' 'controls' 'teams' 'roster' 'reports'; }
-  .lv-host > .lv-hoststage { min-block-size: 56vh; }
+  .lv-host > .lv-hoststage { min-block-size: max(56vh, 460px); }
   .lv-roster { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); max-block-size: none; }
 }
 
