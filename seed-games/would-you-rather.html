@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Would You Rather?</title>
+<!-- Would You Rather (official, Oomba Kit 1.1.0): pick one of two, with no right or wrong answers, so nothing is scored.
+     Alone it ends with a "You're a…" card made from the kinds of things you picked (tags on every option); with friends
+     everyone picks in secret on one device, then the picks are revealed; in "Guess my pick" one picks and the rest guess.
+     The questions (414 in English) and the game's words in every site language come from scripts/data/would-you-rather
+     (scripts/wyr-bank.js writes them between the wyr-data markers below; translated questions load as packs). -->
+<style>
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+  body { background: #bfe6ff; }
+  #game { position: fixed; inset: 0; display: flex; flex-direction: column; font-family: var(--ok-font, system-ui, sans-serif); color: var(--ok-text, #1d2340);
+    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); box-sizing: border-box; gap: 8px; pointer-events: auto; }
+  .bar { display: flex; align-items: center; gap: 8px; min-height: 48px; flex: none; }
+  .bar .sp { flex: 1; min-width: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card, #fffaf0); border: 3px solid var(--ok-edge, #1d2340); font-weight: 800; font-size: 16px; white-space: nowrap; }
+  .ibtn { width: 48px; height: 48px; flex: none; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 3px solid var(--ok-edge, #1d2340); background: var(--ok-card, #fffaf0); color: var(--ok-text, #1d2340); box-shadow: 0 3px 0 var(--ok-edge, #1d2340); cursor: pointer; font: inherit; }
+  .ibtn svg { width: 24px; height: 24px; }
+  .screen { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  .card { background: var(--ok-card, #fffaf0); border: 4px solid var(--ok-edge, #1d2340); border-radius: 28px; box-shadow: 0 6px 0 var(--ok-edge, #1d2340); box-sizing: border-box; }
+  .btn { font: inherit; font-weight: 800; font-size: clamp(17px, min(2.6vw, 3.4vh), 24px); min-height: 52px; padding: 8px 22px; border-radius: 999px; border: 3px solid var(--ok-edge, #1d2340);
+    box-shadow: 0 4px 0 var(--ok-edge, #1d2340); background: var(--ok-card, #fffaf0); color: var(--ok-text, #1d2340); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn.hot { background: var(--wyr-hot); color: var(--wyr-ink); }
+  .btn.go { background: var(--wyr-go); color: var(--wyr-ink); }
+  .btn:active, .ibtn:active, .chip:active, .mode:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ok-edge, #1d2340); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  :focus-visible { outline: 4px solid var(--wyr-focus); outline-offset: 3px; }
+
+  /* home */
+  #home .card { width: min(640px, 100%); max-height: 100%; overflow: auto; padding: clamp(14px, 3vh, 28px) clamp(14px, 3vw, 28px); display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 14px); text-align: center; }
+  .logo { margin: 0; font-size: clamp(30px, min(7vw, 7vh), 60px); line-height: 1.05; font-weight: 900; letter-spacing: .01em; }
+  .logo .a { color: var(--wyr-a-ink); } .logo .b { color: var(--wyr-b-ink); }
+  .tagline { margin: 0; font-size: clamp(15px, min(2.6vw, 3vh), 20px); font-weight: 700; opacity: .85; }
+  .duo { display: flex; gap: 10px; justify-content: center; font-size: clamp(34px, min(8vw, 8vh), 64px); line-height: 1; }
+  .duo span { display: inline-block; animation: wyr-bob 2.4s ease-in-out infinite; }
+  .duo span:nth-child(2) { animation-delay: .4s; } .duo span:nth-child(3) { animation-delay: .8s; }
+  @keyframes wyr-bob { 50% { transform: translateY(-6px) rotate(-4deg); } }
+  .modes { width: 100%; display: grid; gap: 10px; }
+  .mode { display: flex; align-items: center; gap: 14px; text-align: start; width: 100%; min-height: 64px; padding: 10px 16px; border-radius: 22px; border: 3px solid var(--ok-edge, #1d2340);
+    box-shadow: 0 4px 0 var(--ok-edge, #1d2340); background: var(--ok-card, #fffaf0); color: var(--wyr-ink); font: inherit; cursor: pointer; }
+  .mode .em { font-size: 34px; flex: none; }
+  .mode b { display: block; font-size: clamp(18px, min(2.8vw, 3.4vh), 24px); }
+  .mode small { display: block; font-size: clamp(13px, min(2vw, 2.6vh), 16px); font-weight: 600; opacity: .85; }
+  .mode.m-alone { background: var(--wyr-a); } .mode.m-friends { background: var(--wyr-b); } .mode.m-guess { background: var(--wyr-c); }
+  @media (orientation: landscape) and (min-width: 700px) { .modes { grid-template-columns: repeat(3, 1fr); } .mode { flex-direction: column; text-align: center; gap: 4px; padding: 14px 10px; } }
+  @media (orientation: landscape) and (max-height: 430px) { .duo { display: none; } .mode { min-height: 56px; padding: 8px 10px; } .mode .em { font-size: 26px; } }
+
+  /* setup */
+  #setup .card { width: min(820px, 100%); max-height: 100%; display: flex; flex-direction: column; padding: clamp(12px, 2.4vh, 24px) clamp(12px, 2.4vw, 24px); gap: 10px; }
+  .setup-scroll { overflow: auto; min-height: 0; flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 4px; }
+  .lbl { margin: 0; font-weight: 800; font-size: clamp(16px, min(2.4vw, 3vh), 20px); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font: inherit; font-weight: 700; font-size: clamp(15px, min(2.2vw, 2.8vh), 18px); min-height: 46px; padding: 6px 14px; border-radius: 999px; border: 3px solid var(--ok-edge, #1d2340);
+    background: var(--ok-card, #fffaf0); color: var(--ok-text, #1d2340); box-shadow: 0 3px 0 var(--ok-edge, #1d2340); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .chip[aria-pressed="true"] { background: var(--wyr-spark); color: var(--wyr-ink); }
+  .people { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .face { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 28px; border: 3px solid var(--ok-edge, #1d2340); flex: none; color: var(--wyr-ink); }
+  .start-row { display: flex; justify-content: flex-end; gap: 10px; flex: none; }
+  .start-row .btn { min-width: 160px; }
+
+  /* play */
+  #play { justify-content: flex-start; }
+  .ask { margin: 0; text-align: center; font-weight: 900; font-size: clamp(22px, min(4.4vw, 4.6vh), 40px); flex: none; background: var(--ok-card, #fffaf0); border: 3px solid var(--ok-edge, #1d2340); border-radius: 999px; padding: 0 22px; }
+  .who-line { margin: 0; background: var(--ok-card, #fffaf0); border-radius: 999px; padding: 2px 14px; text-align: center; font-weight: 800; font-size: clamp(16px, min(2.6vw, 3vh), 22px); flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .who-line .face { width: 40px; height: 40px; font-size: 22px; }
+  .pair { flex: 1; min-height: 0; width: min(1100px, 100%); display: grid; grid-template-rows: 1fr auto 1fr; gap: 6px; align-items: stretch; }
+  @media (orientation: landscape) { .pair { grid-template-rows: none; grid-template-columns: 1fr auto 1fr; } }
+  .opt { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 0; padding: clamp(10px, 2vh, 24px) clamp(12px, 2vw, 24px);
+    border-radius: 30px; border: 4px solid var(--ok-edge, #1d2340); box-shadow: 0 6px 0 var(--ok-edge, #1d2340); color: var(--wyr-ink); font: inherit; cursor: pointer; text-align: center; overflow: hidden;
+    transition: transform .18s ease, opacity .25s ease, box-shadow .18s ease; }
+  .opt.a { background: var(--wyr-a); } .opt.b { background: var(--wyr-b); }
+  .opt .tx { font-weight: 900; font-size: clamp(20px, min(3.6vw, 4.2vh), 40px); line-height: 1.2; overflow-wrap: anywhere; }
+  .opt .tag { font-size: clamp(26px, min(5vw, 5.5vh), 52px); line-height: 1; }
+  .opt .count { font-weight: 800; font-size: clamp(14px, min(2.2vw, 2.6vh), 18px); background: rgba(255,255,255,.75); border-radius: 999px; padding: 2px 12px; }
+  .opt .faces { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; min-height: 0; }
+  .opt .faces .face { width: 44px; height: 44px; font-size: 24px; }
+  .opt .check { position: absolute; inset-block-start: 10px; inset-inline-end: 12px; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 26px;
+    background: var(--ok-card, #fffaf0); border: 3px solid var(--ok-edge, #1d2340); transform: scale(0); transition: transform .2s cubic-bezier(.3, 1.6, .5, 1); }
+  .opt.chosen { transform: scale(1.03); box-shadow: 0 0 0 6px var(--wyr-spark), 0 6px 0 var(--ok-edge, #1d2340); }
+  .opt.chosen .check { transform: scale(1); }
+  .opt.chosen .tx { padding-inline: 44px; }
+  .opt.faded { filter: saturate(.25) brightness(.92); transform: scale(.96); box-shadow: 0 3px 0 var(--ok-edge, #1d2340); }
+  .opt.faded .tx { opacity: .7; }
+  .opt:disabled { cursor: default; }
+  .opt.guess { cursor: default; justify-content: space-between; }
+  .opt.guess .gtap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .gface { width: 52px; height: 52px; border-radius: 50%; border: 3px dashed var(--ok-edge, #1d2340); display: grid; place-items: center; font-size: 26px; background: rgba(255,255,255,.55); cursor: pointer; padding: 0; font-family: inherit; }
+  .gface[aria-pressed="true"] { border-style: solid; background: var(--ok-card, #fffaf0); box-shadow: 0 0 0 4px var(--wyr-spark); }
+  .gface.right { box-shadow: 0 0 0 5px var(--wyr-go-solid); }
+  .or { align-self: center; justify-self: center; display: grid; place-items: center; min-width: 58px; height: 58px; padding: 0 10px; border-radius: 999px; font-weight: 900; font-size: 20px;
+    background: var(--ok-edge, #1d2340); color: var(--ok-card, #fffaf0); z-index: 1; margin: -14px 0; }
+  @media (orientation: landscape) { .or { margin: 0 -14px; } }
+  .react { margin: 0; text-align: center; font-weight: 900; font-size: clamp(18px, min(3vw, 3.6vh), 28px); min-height: 1.3em; flex: none; color: var(--wyr-ink); }
+  .react span { display: inline-block; background: var(--ok-card, #fffaf0); border: 3px solid var(--ok-edge, #1d2340); border-radius: 999px; padding: 2px 16px; animation: wyr-pop .35s cubic-bezier(.3, 1.6, .5, 1); }
+  @keyframes wyr-pop { from { transform: scale(.4); opacity: 0; } }
+  .foot { display: flex; align-items: center; justify-content: center; gap: 10px; flex: none; width: min(1100px, 100%); flex-wrap: wrap; }
+  .foot .sp { flex: 1; }
+
+  /* pass the device */
+  #pass .card, #summary .card { width: min(620px, 100%); max-height: 100%; overflow: auto; padding: clamp(14px, 3vh, 30px); display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 14px); text-align: center; }
+  #pass .big { width: clamp(84px, min(16vw, 16vh), 130px); height: clamp(84px, min(16vw, 16vh), 130px); font-size: clamp(46px, min(9vw, 9vh), 72px); }
+  #pass h2, #summary h2 { margin: 0; font-size: clamp(24px, min(4.6vw, 5vh), 38px); }
+  #pass p { margin: 0; font-weight: 700; font-size: clamp(16px, min(2.6vw, 3vh), 20px); }
+
+  /* summary */
+  .trait-big { font-size: clamp(56px, min(12vw, 12vh), 96px); line-height: 1; }
+  .trait-name { margin: 0; font-size: clamp(26px, min(5vw, 5.4vh), 44px); font-weight: 900; color: var(--wyr-a-ink); }
+  .trait-desc { margin: 0; font-weight: 700; font-size: clamp(16px, min(2.6vw, 3vh), 20px); }
+  .mixbars { width: 100%; display: grid; gap: 8px; text-align: start; }
+  .mixbar { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-weight: 800; }
+  .mixbar i { display: block; height: 14px; border-radius: 99px; background: var(--wyr-spark); border: 2px solid var(--ok-edge, #1d2340); }
+  .mixbar .track { background: rgba(0,0,0,.08); border-radius: 99px; }
+  .ppl { width: 100%; display: grid; gap: 8px; }
+  .prow { display: flex; align-items: center; gap: 10px; text-align: start; padding: 6px 10px; border-radius: 18px; background: rgba(0,0,0,.05); font-weight: 800; }
+  .prow small { display: block; font-weight: 700; opacity: .85; }
+  .alike { padding: 10px 14px; border-radius: 20px; background: var(--wyr-c); color: var(--wyr-ink); font-weight: 800; width: 100%; box-sizing: border-box; }
+  .alike .faces { display: flex; justify-content: center; gap: 8px; margin-bottom: 4px; }
+  .acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  .toast { position: fixed; inset-inline: 0; inset-block-end: 18px; margin: 0 auto; width: max-content; max-width: calc(100% - 32px); background: var(--ok-edge, #1d2340); color: var(--ok-card, #fffaf0);
+    padding: 10px 18px; border-radius: 16px; font-weight: 800; z-index: 20; pointer-events: none; }
+  /* short screens (a phone on its side): tighter */
+  @media (max-height: 430px) {
+    #game { gap: 4px; padding-top: 6px; padding-bottom: 6px; }
+    .bar { min-height: 44px; } .ibtn { width: 44px; height: 44px; }
+    .ask { font-size: 20px; } .react { font-size: 17px; }
+    .opt { border-radius: 22px; gap: 4px; } .opt .tag { font-size: 26px; }
+    .or { min-width: 46px; height: 46px; font-size: 16px; }
+    .btn { min-height: 46px; padding: 4px 18px; }
+    #pass .card, #summary .card { gap: 6px; }
+    .opt .tag { display: none; }
+    #playScreen.with-who .ask { display: none; }
+    .gface, .opt .faces .face { width: 42px; height: 42px; font-size: 22px; }
+  }
+  @media (max-height: 560px) { .opt .tag { display: none; } }
+  /* reduced motion: no bobbing, popping or sliding */
+  .ok-rm .duo span, .ok-rm .react span { animation: none; }
+  .ok-rm .opt, .ok-rm .opt .check { transition: none; }
+</style>
+</head>
+<body>
+<div id="game" dir="auto">
+  <div class="bar">
+    <button class="ibtn" type="button" id="homeBtn" hidden></button>
+    <span class="pill" id="progress" hidden></span>
+    <span class="sp"></span>
+    <button class="ibtn" type="button" id="setBtn"></button>
+  </div>
+
+  <section class="screen" id="home">
+    <div class="card">
+      <div class="duo" aria-hidden="true"><span>🤔</span><span>⚖️</span><span>🤩</span></div>
+      <h1 class="logo" id="logo"></h1>
+      <p class="tagline" data-t="tagline"></p>
+      <div class="modes">
+        <button class="mode m-alone" type="button" id="play" data-mode="alone"><span class="em" aria-hidden="true">🙋</span><span><b data-t="alone"></b><small data-t="aloneSub"></small></span></button>
+        <button class="mode m-friends" type="button" data-mode="friends"><span class="em" aria-hidden="true">👫</span><span><b data-t="friends"></b><small data-t="friendsSub"></small></span></button>
+        <button class="mode m-guess" type="button" data-mode="guess"><span class="em" aria-hidden="true">🔮</span><span><b data-t="guess"></b><small data-t="guessSub"></small></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="setup" hidden>
+    <div class="card">
+      <div class="setup-scroll">
+        <p class="lbl" data-t="topics"></p>
+        <div class="chips" id="topics"></div>
+        <div id="countBox"><p class="lbl" data-t="howMany"></p><div class="chips" id="counts"></div></div>
+        <div id="peopleBox"><p class="lbl" data-t="players"></p><div class="people" id="people"></div></div>
+      </div>
+      <div class="start-row"><button class="btn hot" type="button" id="startBtn" data-start data-t="play"></button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="pass" hidden>
+    <div class="card">
+      <div class="face big" id="passFace"></div>
+      <h2 id="passTitle"></h2>
+      <p id="passText"></p>
+      <button class="btn hot" type="button" id="readyBtn" data-t="ready"></button>
+    </div>
+  </section>
+
+  <section class="screen" id="playScreen" hidden>
+    <p class="who-line" id="whoLine" hidden></p>
+    <p class="ask" id="ask" data-t="wyr"></p>
+    <div class="pair" id="pair">
+      <button class="opt a" type="button" id="optA"><span class="check" aria-hidden="true">✔</span><span class="tag" aria-hidden="true"></span><span class="tx" dir="auto"></span><span class="faces"></span><span class="gtap"></span></button>
+      <span class="or" data-t="or"></span>
+      <button class="opt b" type="button" id="optB"><span class="check" aria-hidden="true">✔</span><span class="tag" aria-hidden="true"></span><span class="tx" dir="auto"></span><span class="faces"></span><span class="gtap"></span></button>
+    </div>
+    <p class="react" id="react" aria-live="polite"></p>
+    <div class="foot">
+      <button class="btn" type="button" id="skipBtn" data-t="skip"></button>
+      <button class="btn" type="button" id="finishBtn" data-t="finish" hidden></button>
+      <button class="btn hot" type="button" id="revealBtn" data-t="reveal" hidden></button>
+      <button class="btn go" type="button" id="nextBtn" data-t="next" hidden></button>
+    </div>
+  </section>
+
+  <section class="screen" id="summary" hidden>
+    <div class="card" id="sumCard"></div>
+  </section>
+  <p class="toast" id="toast" hidden></p>
+</div>
+
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/dress.js" integrity="sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH" crossorigin="anonymous"></script>
+<script>
+/* wyr-data:begin */
+var WYR_PACK_VER = "", WYR_PACK_SRI = {};
+var WYR_UI = {"en":{"title":"Would You Rather?","tagline":"Pick one! There are no wrong answers.","alone":"Play alone","aloneSub":"Find out what kind of chooser you are","friends":"With friends","friendsSub":"Pass the device and see who thinks alike","guess":"Guess my pick","guessSub":"One picks, everyone else guesses","topics":"Topics","mix":"Mix of everything","cat.animals":"Animals","cat.food":"Food","cat.powers":"Superpowers","cat.school":"School","cat.travel":"Adventure & travel","cat.silly":"Silly","cat.sports":"Sports & games","cat.space":"Nature & space","cat.future":"Future & inventions","cat.family":"Friends & family","cat.deep":"Big thinkers","howMany":"How many?","endless":"Endless","players":"Players","player":"Player {n}","addPlayer":"Add a player","removePlayer":"Remove a player","play":"Play!","wyr":"Would you rather…","or":"OR","skip":"Skip","next":"Next","finish":"Finish","qOf":"{n} of {total}","picked":"{n} picked","passTo":"Pass to {name}","secret":"Pick secretly, then pass it on.","ready":"I'm ready!","reveal":"Reveal!","allMatch":"Everyone picked the same!","split":"A split decision!","matched":"{a} and {b} matched!","guessWho":"{name}, pick secretly!","guessNow":"Everyone else: what did {name} pick?","tapYou":"Tap your face on the card you guess.","guessedRight":"{n} guessed right!","nobodyGuessed":"Nobody guessed it. What a surprise!","allGuessed":"Everyone guessed it!","youAre":"You're a…","yourMix":"Your mix","choices":"{n} choices","mostAlike":"Most alike","alikeLine":"{a} and {b} picked the same {n} times","again":"Play again","home":"Home","back":"Back","settings":"Settings","allSeen":"You've seen every question in these topics. Shuffling them again!","react.0":"Great pick!","react.1":"Ooh, interesting!","react.2":"Good one!","react.3":"Love it!","react.4":"Bold choice!","react.5":"Nice!","t.brave":"Adventurer","t.think":"Thinker","t.make":"Creator","t.animal":"Animal friend","t.food":"Foodie","t.fast":"Speedster","t.kind":"Kind heart","t.calm":"Cozy dreamer","t.fun":"Giggle champ","t.nature":"Nature lover","t.tech":"Inventor","t.social":"Team player","d.brave":"You love a challenge and a big adventure.","d.think":"You like to figure things out and learn.","d.make":"You love to imagine and make new things.","d.animal":"Animals have a special place in your heart.","d.food":"You know life is better with good food.","d.fast":"You like things fast, fun and full of action.","d.kind":"You look out for others and spread kindness.","d.calm":"You enjoy calm, cozy and peaceful times.","d.fun":"You find the fun and silly side of everything.","d.nature":"You feel happiest in the great outdoors.","d.tech":"Gadgets, robots and big ideas excite you.","d.social":"You love being with friends and family."},"en-GB":{"t.calm":"Cosy dreamer","d.calm":"You enjoy calm, cosy and peaceful times."},"de":{"title":"Was wäre dir lieber?","tagline":"Wähl eins! Es gibt keine falschen Antworten.","alone":"Allein spielen","aloneSub":"Finde heraus, was für ein Typ du bist","friends":"Mit Freunden","friendsSub":"Gebt das Gerät weiter und seht, wer gleich denkt","guess":"Rate meine Wahl","guessSub":"Einer wählt, alle anderen raten","topics":"Themen","mix":"Von allem etwas","cat.animals":"Tiere","cat.food":"Essen","cat.powers":"Superkräfte","cat.school":"Schule","cat.travel":"Abenteuer & Reisen","cat.silly":"Quatsch","cat.sports":"Sport & Spiele","cat.space":"Natur & Weltall","cat.future":"Zukunft & Erfindungen","cat.family":"Freunde & Familie","cat.deep":"Große Fragen","howMany":"Wie viele?","endless":"Endlos","players":"Spieler","player":"Spieler {n}","addPlayer":"Spieler hinzufügen","removePlayer":"Spieler entfernen","play":"Los geht's!","wyr":"Was wäre dir lieber…","or":"ODER","skip":"Überspringen","next":"Weiter","finish":"Fertig","qOf":"{n} von {total}","picked":"{n} gewählt","passTo":"Gib weiter an {name}","secret":"Wähl heimlich und gib dann weiter.","ready":"Ich bin bereit!","reveal":"Aufdecken!","allMatch":"Alle haben dasselbe gewählt!","split":"Geteilte Meinung!","matched":"{a} und {b} sind sich einig!","guessWho":"{name}, wähl heimlich!","guessNow":"Alle anderen: Was hat {name} gewählt?","tapYou":"Tippe dein Gesicht auf der Karte an, die du rätst.","guessedRight":"{n} haben richtig geraten!","nobodyGuessed":"Keiner hat es erraten. Was für eine Überraschung!","allGuessed":"Alle haben es erraten!","youAre":"Du bist…","yourMix":"Deine Mischung","choices":"{n} Entscheidungen","mostAlike":"Am ähnlichsten","alikeLine":"{a} und {b} haben {n}-mal dasselbe gewählt","again":"Nochmal spielen","home":"Start","back":"Zurück","settings":"Einstellungen","allSeen":"Du hast alle Fragen zu diesen Themen gesehen. Wir mischen sie neu!","react.0":"Tolle Wahl!","react.1":"Oh, spannend!","react.2":"Gute Entscheidung!","react.3":"Super!","react.4":"Mutig!","react.5":"Klasse!","t.brave":"Abenteurer","t.think":"Denker","t.make":"Erfinder-Künstler","t.animal":"Tierfreund","t.food":"Feinschmecker","t.fast":"Flitzer","t.kind":"Gutes Herz","t.calm":"Gemütlicher Träumer","t.fun":"Lachprofi","t.nature":"Naturfreund","t.tech":"Tüftler","t.social":"Teamplayer","d.brave":"Du liebst Herausforderungen und große Abenteuer.","d.think":"Du knobelst gern und lernst gern dazu.","d.make":"Du stellst dir gern Neues vor und baust es.","d.animal":"Tiere haben einen besonderen Platz in deinem Herzen.","d.food":"Du weißt: Mit gutem Essen ist alles schöner.","d.fast":"Du magst es schnell, lustig und voller Action.","d.kind":"Du achtest auf andere und verbreitest Freundlichkeit.","d.calm":"Du genießt ruhige, gemütliche Momente.","d.fun":"Du findest an allem die lustige Seite.","d.nature":"Draußen in der Natur bist du am glücklichsten.","d.tech":"Geräte, Roboter und große Ideen begeistern dich.","d.social":"Du bist am liebsten mit Freunden und Familie zusammen."},"fr":{"title":"Tu préfères ?","tagline":"Choisis ! Il n’y a pas de mauvaise réponse.","alone":"Jouer seul","aloneSub":"Découvre quel genre de personne tu es","friends":"Entre amis","friendsSub":"Passez-vous l’appareil et voyez qui pense pareil","guess":"Devine mon choix","guessSub":"Un joueur choisit, les autres devinent","topics":"Thèmes","mix":"Un peu de tout","cat.animals":"Animaux","cat.food":"Nourriture","cat.powers":"Superpouvoirs","cat.school":"École","cat.travel":"Aventure et voyages","cat.silly":"Rigolo","cat.sports":"Sports et jeux","cat.space":"Nature et espace","cat.future":"Futur et inventions","cat.family":"Amis et famille","cat.deep":"Grandes questions","howMany":"Combien ?","endless":"Sans fin","players":"Joueurs","player":"Joueur {n}","addPlayer":"Ajouter un joueur","removePlayer":"Retirer un joueur","play":"C’est parti !","wyr":"Tu préfères…","or":"OU","skip":"Passer","next":"Suivant","finish":"Terminer","qOf":"{n} sur {total}","picked":"{n} ont choisi","passTo":"Passe à {name}","secret":"Choisis en secret, puis passe l’appareil.","ready":"Je suis prêt !","reveal":"Révéler !","allMatch":"Tout le monde a choisi pareil !","split":"Les avis sont partagés !","matched":"{a} et {b} ont choisi pareil !","guessWho":"{name}, choisis en secret !","guessNow":"Les autres : qu’a choisi {name} ?","tapYou":"Touche ton visage sur la carte que tu devines.","guessedRight":"{n} ont deviné juste !","nobodyGuessed":"Personne n’a deviné. Quelle surprise !","allGuessed":"Tout le monde a deviné !","youAre":"Tu es…","yourMix":"Ton mélange","choices":"{n} choix","mostAlike":"Les plus semblables","alikeLine":"{a} et {b} ont choisi pareil {n} fois","again":"Rejouer","home":"Accueil","back":"Retour","settings":"Réglages","allSeen":"Tu as vu toutes les questions de ces thèmes. On les remélange !","react.0":"Super choix !","react.1":"Oh, intéressant !","react.2":"Bien vu !","react.3":"J’adore !","react.4":"Quel courage !","react.5":"Génial !","t.brave":"Aventurier","t.think":"Penseur","t.make":"Créateur","t.animal":"Ami des animaux","t.food":"Gourmand","t.fast":"Fusée","t.kind":"Cœur tendre","t.calm":"Rêveur douillet","t.fun":"Champion du rire","t.nature":"Amoureux de la nature","t.tech":"Inventeur","t.social":"Esprit d’équipe","d.brave":"Tu aimes les défis et les grandes aventures.","d.think":"Tu aimes comprendre et apprendre.","d.make":"Tu adores imaginer et créer.","d.animal":"Les animaux ont une place spéciale dans ton cœur.","d.food":"Tu sais que la vie est meilleure avec de bons plats.","d.fast":"Tu aimes ce qui est rapide, drôle et plein d’action.","d.kind":"Tu prends soin des autres et répands la gentillesse.","d.calm":"Tu aimes les moments calmes et douillets.","d.fun":"Tu trouves le côté drôle de tout.","d.nature":"Tu es plus heureux en pleine nature.","d.tech":"Les gadgets, les robots et les grandes idées te passionnent.","d.social":"Tu adores être avec tes amis et ta famille."},"es":{"title":"¿Qué prefieres?","tagline":"¡Elige uno! No hay respuestas incorrectas.","alone":"Jugar solo","aloneSub":"Descubre qué tipo de persona eres","friends":"Con amigos","friendsSub":"Pásense el dispositivo y vean quién piensa igual","guess":"Adivina mi elección","guessSub":"Uno elige, los demás adivinan","topics":"Temas","mix":"Un poco de todo","cat.animals":"Animales","cat.food":"Comida","cat.powers":"Superpoderes","cat.school":"Escuela","cat.travel":"Aventura y viajes","cat.silly":"Locuras","cat.sports":"Deportes y juegos","cat.space":"Naturaleza y espacio","cat.future":"Futuro e inventos","cat.family":"Amigos y familia","cat.deep":"Grandes preguntas","howMany":"¿Cuántas?","endless":"Sin fin","players":"Jugadores","player":"Jugador {n}","addPlayer":"Añadir jugador","removePlayer":"Quitar jugador","play":"¡A jugar!","wyr":"¿Qué prefieres…","or":"O","skip":"Saltar","next":"Siguiente","finish":"Terminar","qOf":"{n} de {total}","picked":"{n} eligieron","passTo":"Pásalo a {name}","secret":"Elige en secreto y pásalo.","ready":"¡Estoy listo!","reveal":"¡Mostrar!","allMatch":"¡Todos eligieron lo mismo!","split":"¡Opiniones divididas!","matched":"¡{a} y {b} coincidieron!","guessWho":"{name}, ¡elige en secreto!","guessNow":"Los demás: ¿qué eligió {name}?","tapYou":"Toca tu cara en la tarjeta que adivinas.","guessedRight":"¡{n} acertaron!","nobodyGuessed":"Nadie lo adivinó. ¡Qué sorpresa!","allGuessed":"¡Todos lo adivinaron!","youAre":"Eres…","yourMix":"Tu mezcla","choices":"{n} elecciones","mostAlike":"Los más parecidos","alikeLine":"{a} y {b} eligieron lo mismo {n} veces","again":"Jugar otra vez","home":"Inicio","back":"Atrás","settings":"Ajustes","allSeen":"Ya viste todas las preguntas de estos temas. ¡Las volvemos a mezclar!","react.0":"¡Gran elección!","react.1":"¡Qué interesante!","react.2":"¡Buena!","react.3":"¡Me encanta!","react.4":"¡Qué valiente!","react.5":"¡Genial!","t.brave":"Aventurero","t.think":"Pensador","t.make":"Creador","t.animal":"Amigo de los animales","t.food":"Sibarita","t.fast":"Bólido","t.kind":"Gran corazón","t.calm":"Soñador tranquilo","t.fun":"Campeón de la risa","t.nature":"Amante de la naturaleza","t.tech":"Inventor","t.social":"Compañero de equipo","d.brave":"Te encantan los retos y las grandes aventuras.","d.think":"Te gusta resolver cosas y aprender.","d.make":"Te encanta imaginar y crear cosas nuevas.","d.animal":"Los animales tienen un lugar especial en tu corazón.","d.food":"Sabes que la vida es mejor con buena comida.","d.fast":"Te gusta lo rápido, lo divertido y la acción.","d.kind":"Cuidas de los demás y repartes amabilidad.","d.calm":"Disfrutas los momentos tranquilos y acogedores.","d.fun":"Le encuentras el lado divertido a todo.","d.nature":"Eres más feliz al aire libre.","d.tech":"Los aparatos, los robots y las grandes ideas te emocionan.","d.social":"Te encanta estar con tus amigos y tu familia."},"pt":{"title":"O que você prefere?","tagline":"Escolha um! Não existe resposta errada.","alone":"Jogar sozinho","aloneSub":"Descubra que tipo de pessoa você é","friends":"Com amigos","friendsSub":"Passem o aparelho e vejam quem pensa igual","guess":"Adivinhe minha escolha","guessSub":"Um escolhe, os outros adivinham","topics":"Temas","mix":"Um pouco de tudo","cat.animals":"Animais","cat.food":"Comida","cat.powers":"Superpoderes","cat.school":"Escola","cat.travel":"Aventura e viagens","cat.silly":"Maluquices","cat.sports":"Esportes e jogos","cat.space":"Natureza e espaço","cat.future":"Futuro e invenções","cat.family":"Amigos e família","cat.deep":"Grandes perguntas","howMany":"Quantas?","endless":"Sem fim","players":"Jogadores","player":"Jogador {n}","addPlayer":"Adicionar jogador","removePlayer":"Tirar jogador","play":"Vamos jogar!","wyr":"O que você prefere…","or":"OU","skip":"Pular","next":"Próxima","finish":"Terminar","qOf":"{n} de {total}","picked":"{n} escolheram","passTo":"Passe para {name}","secret":"Escolha em segredo e passe adiante.","ready":"Estou pronto!","reveal":"Revelar!","allMatch":"Todo mundo escolheu igual!","split":"Opiniões divididas!","matched":"{a} e {b} escolheram igual!","guessWho":"{name}, escolha em segredo!","guessNow":"Os outros: o que {name} escolheu?","tapYou":"Toque no seu rosto na carta que você acha.","guessedRight":"{n} acertaram!","nobodyGuessed":"Ninguém acertou. Que surpresa!","allGuessed":"Todo mundo acertou!","youAre":"Você é…","yourMix":"Sua mistura","choices":"{n} escolhas","mostAlike":"Os mais parecidos","alikeLine":"{a} e {b} escolheram igual {n} vezes","again":"Jogar de novo","home":"Início","back":"Voltar","settings":"Configurações","allSeen":"Você já viu todas as perguntas desses temas. Vamos embaralhar de novo!","react.0":"Ótima escolha!","react.1":"Hum, interessante!","react.2":"Boa!","react.3":"Adorei!","react.4":"Que coragem!","react.5":"Legal!","t.brave":"Aventureiro","t.think":"Pensador","t.make":"Criador","t.animal":"Amigo dos animais","t.food":"Comilão","t.fast":"Foguete","t.kind":"Coração bom","t.calm":"Sonhador tranquilo","t.fun":"Campeão da risada","t.nature":"Amante da natureza","t.tech":"Inventor","t.social":"Parceiro de equipe","d.brave":"Você adora desafios e grandes aventuras.","d.think":"Você gosta de descobrir as coisas e aprender.","d.make":"Você adora imaginar e criar coisas novas.","d.animal":"Os animais têm um lugar especial no seu coração.","d.food":"Você sabe que a vida é melhor com comida boa.","d.fast":"Você gosta de coisas rápidas, divertidas e cheias de ação.","d.kind":"Você cuida dos outros e espalha gentileza.","d.calm":"Você curte momentos calmos e aconchegantes.","d.fun":"Você encontra o lado divertido de tudo.","d.nature":"Você é mais feliz ao ar livre.","d.tech":"Aparelhos, robôs e grandes ideias empolgam você.","d.social":"Você adora estar com amigos e família."},"it":{"title":"Preferiresti?","tagline":"Scegline una! Non ci sono risposte sbagliate.","alone":"Gioca da solo","aloneSub":"Scopri che tipo di persona sei","friends":"Con gli amici","friendsSub":"Passatevi il dispositivo e scoprite chi la pensa uguale","guess":"Indovina la mia scelta","guessSub":"Uno sceglie, gli altri indovinano","topics":"Argomenti","mix":"Un po’ di tutto","cat.animals":"Animali","cat.food":"Cibo","cat.powers":"Superpoteri","cat.school":"Scuola","cat.travel":"Avventure e viaggi","cat.silly":"Pazzerie","cat.sports":"Sport e giochi","cat.space":"Natura e spazio","cat.future":"Futuro e invenzioni","cat.family":"Amici e famiglia","cat.deep":"Grandi domande","howMany":"Quante?","endless":"Senza fine","players":"Giocatori","player":"Giocatore {n}","addPlayer":"Aggiungi un giocatore","removePlayer":"Togli un giocatore","play":"Si gioca!","wyr":"Preferiresti…","or":"O","skip":"Salta","next":"Avanti","finish":"Fine","qOf":"{n} di {total}","picked":"{n} hanno scelto","passTo":"Passa a {name}","secret":"Scegli in segreto, poi passa.","ready":"Sono pronto!","reveal":"Scopri!","allMatch":"Tutti hanno scelto lo stesso!","split":"Opinioni divise!","matched":"{a} e {b} hanno scelto lo stesso!","guessWho":"{name}, scegli in segreto!","guessNow":"Tutti gli altri: cosa ha scelto {name}?","tapYou":"Tocca la tua faccia sulla carta che indovini.","guessedRight":"{n} hanno indovinato!","nobodyGuessed":"Nessuno ha indovinato. Che sorpresa!","allGuessed":"Tutti hanno indovinato!","youAre":"Sei…","yourMix":"Il tuo mix","choices":"{n} scelte","mostAlike":"I più simili","alikeLine":"{a} e {b} hanno scelto lo stesso {n} volte","again":"Gioca ancora","home":"Inizio","back":"Indietro","settings":"Impostazioni","allSeen":"Hai visto tutte le domande di questi argomenti. Le rimescoliamo!","react.0":"Ottima scelta!","react.1":"Oh, interessante!","react.2":"Bella!","react.3":"Fantastico!","react.4":"Che coraggio!","react.5":"Grande!","t.brave":"Avventuriero","t.think":"Pensatore","t.make":"Creativo","t.animal":"Amico degli animali","t.food":"Buongustaio","t.fast":"Razzo","t.kind":"Cuore d’oro","t.calm":"Sognatore tranquillo","t.fun":"Campione di risate","t.nature":"Amante della natura","t.tech":"Inventore","t.social":"Gioco di squadra","d.brave":"Ami le sfide e le grandi avventure.","d.think":"Ti piace capire le cose e imparare.","d.make":"Adori immaginare e creare cose nuove.","d.animal":"Gli animali hanno un posto speciale nel tuo cuore.","d.food":"Sai che la vita è più bella con il buon cibo.","d.fast":"Ti piacciono le cose veloci, divertenti e piene di azione.","d.kind":"Pensi agli altri e diffondi gentilezza.","d.calm":"Ti piacciono i momenti calmi e accoglienti.","d.fun":"Trovi il lato divertente di tutto.","d.nature":"Sei più felice all’aria aperta.","d.tech":"Gadget, robot e grandi idee ti entusiasmano.","d.social":"Ami stare con gli amici e la famiglia."},"nl":{"title":"Wat heb je liever?","tagline":"Kies er één! Er zijn geen foute antwoorden.","alone":"Alleen spelen","aloneSub":"Ontdek wat voor kiezer jij bent","friends":"Met vrienden","friendsSub":"Geef het apparaat door en zie wie hetzelfde denkt","guess":"Raad mijn keuze","guessSub":"Eén kiest, de rest raadt","topics":"Onderwerpen","mix":"Van alles wat","cat.animals":"Dieren","cat.food":"Eten","cat.powers":"Superkrachten","cat.school":"School","cat.travel":"Avontuur en reizen","cat.silly":"Gek","cat.sports":"Sport en spel","cat.space":"Natuur en ruimte","cat.future":"Toekomst en uitvindingen","cat.family":"Vrienden en familie","cat.deep":"Grote vragen","howMany":"Hoeveel?","endless":"Eindeloos","players":"Spelers","player":"Speler {n}","addPlayer":"Speler toevoegen","removePlayer":"Speler weghalen","play":"Spelen!","wyr":"Wat heb je liever…","or":"OF","skip":"Overslaan","next":"Volgende","finish":"Klaar","qOf":"{n} van {total}","picked":"{n} gekozen","passTo":"Geef door aan {name}","secret":"Kies stiekem en geef het dan door.","ready":"Ik ben er klaar voor!","reveal":"Laat zien!","allMatch":"Iedereen koos hetzelfde!","split":"De meningen zijn verdeeld!","matched":"{a} en {b} kozen hetzelfde!","guessWho":"{name}, kies stiekem!","guessNow":"De rest: wat koos {name}?","tapYou":"Tik op je gezicht bij de kaart die jij raadt.","guessedRight":"{n} raadden het goed!","nobodyGuessed":"Niemand raadde het. Wat een verrassing!","allGuessed":"Iedereen raadde het!","youAre":"Jij bent…","yourMix":"Jouw mix","choices":"{n} keuzes","mostAlike":"Meest hetzelfde","alikeLine":"{a} en {b} kozen {n} keer hetzelfde","again":"Nog een keer","home":"Start","back":"Terug","settings":"Instellingen","allSeen":"Je hebt alle vragen van deze onderwerpen gezien. We schudden ze opnieuw!","react.0":"Goede keuze!","react.1":"Oh, interessant!","react.2":"Mooie!","react.3":"Leuk!","react.4":"Wat dapper!","react.5":"Top!","t.brave":"Avonturier","t.think":"Denker","t.make":"Maker","t.animal":"Dierenvriend","t.food":"Lekkerbek","t.fast":"Snelheidsduivel","t.kind":"Goed hart","t.calm":"Knusse dromer","t.fun":"Lachkampioen","t.nature":"Natuurliefhebber","t.tech":"Uitvinder","t.social":"Teamspeler","d.brave":"Je houdt van uitdagingen en grote avonturen.","d.think":"Je zoekt graag dingen uit en leert graag.","d.make":"Je bedenkt en maakt graag nieuwe dingen.","d.animal":"Dieren hebben een speciaal plekje in je hart.","d.food":"Je weet dat het leven beter is met lekker eten.","d.fast":"Je houdt van snel, leuk en vol actie.","d.kind":"Je zorgt voor anderen en deelt vriendelijkheid uit.","d.calm":"Je geniet van rustige, knusse momenten.","d.fun":"Je ziet overal de grappige kant van.","d.nature":"Je bent het gelukkigst buiten in de natuur.","d.tech":"Gadgets, robots en grote ideeën maken je blij.","d.social":"Je bent graag samen met vrienden en familie."},"ru":{"title":"Что бы ты выбрал?","tagline":"Выбирай! Неправильных ответов нет.","alone":"Играть одному","aloneSub":"Узнай, какой ты по характеру","friends":"С друзьями","friendsSub":"Передавайте устройство и узнайте, кто думает похоже","guess":"Угадай мой выбор","guessSub":"Один выбирает, остальные угадывают","topics":"Темы","mix":"Всё вперемешку","cat.animals":"Животные","cat.food":"Еда","cat.powers":"Суперсилы","cat.school":"Школа","cat.travel":"Приключения и путешествия","cat.silly":"Смешное","cat.sports":"Спорт и игры","cat.space":"Природа и космос","cat.future":"Будущее и изобретения","cat.family":"Друзья и семья","cat.deep":"Большие вопросы","howMany":"Сколько?","endless":"Без конца","players":"Игроки","player":"Игрок {n}","addPlayer":"Добавить игрока","removePlayer":"Убрать игрока","play":"Играть!","wyr":"Что бы ты выбрал…","or":"ИЛИ","skip":"Пропустить","next":"Дальше","finish":"Готово","qOf":"{n} из {total}","picked":"Выбрали: {n}","passTo":"Передай: {name}","secret":"Выбери тайно и передай дальше.","ready":"Я готов!","reveal":"Показать!","allMatch":"Все выбрали одно и то же!","split":"Мнения разделились!","matched":"{a} и {b} выбрали одинаково!","guessWho":"{name}, выбирай тайно!","guessNow":"Остальные: что выбрал игрок {name}?","tapYou":"Нажми на своё лицо на карточке, которую угадываешь.","guessedRight":"Угадали: {n}!","nobodyGuessed":"Никто не угадал. Вот сюрприз!","allGuessed":"Все угадали!","youAre":"Ты —","yourMix":"Твоя смесь","choices":"Выборов: {n}","mostAlike":"Самые похожие","alikeLine":"{a} и {b} выбрали одинаково {n} раз(а)","again":"Ещё раз","home":"В начало","back":"Назад","settings":"Настройки","allSeen":"Ты видел все вопросы этих тем. Перемешиваем заново!","react.0":"Отличный выбор!","react.1":"О, интересно!","react.2":"Хороший!","react.3":"Здорово!","react.4":"Смело!","react.5":"Класс!","t.brave":"Искатель приключений","t.think":"Мыслитель","t.make":"Творец","t.animal":"Друг животных","t.food":"Гурман","t.fast":"Скоростной","t.kind":"Доброе сердце","t.calm":"Уютный мечтатель","t.fun":"Чемпион смеха","t.nature":"Любитель природы","t.tech":"Изобретатель","t.social":"Командный игрок","d.brave":"Ты любишь испытания и большие приключения.","d.think":"Тебе нравится разбираться и узнавать новое.","d.make":"Ты любишь придумывать и создавать новое.","d.animal":"Животные занимают особое место в твоём сердце.","d.food":"Ты знаешь: с вкусной едой жизнь лучше.","d.fast":"Ты любишь быстрое, весёлое и полное действия.","d.kind":"Ты заботишься о других и даришь доброту.","d.calm":"Ты любишь спокойные, уютные моменты.","d.fun":"Ты во всём находишь смешную сторону.","d.nature":"Счастливее всего ты на природе.","d.tech":"Гаджеты, роботы и большие идеи тебя восхищают.","d.social":"Ты обожаешь быть с друзьями и семьёй."},"ja":{"title":"どっちがいい？","tagline":"ひとつえらんでね！まちがいはないよ。","alone":"ひとりであそぶ","aloneSub":"きみがどんなタイプかわかるよ","friends":"ともだちと","friendsSub":"じゅんばんにわたして、にている人を見つけよう","guess":"わたしのえらんだのはどっち？","guessSub":"ひとりがえらんで、みんなであてる","topics":"テーマ","mix":"ぜんぶまぜる","cat.animals":"どうぶつ","cat.food":"たべもの","cat.powers":"ちょうのうりょく","cat.school":"がっこう","cat.travel":"ぼうけんとりょこう","cat.silly":"おもしろ","cat.sports":"スポーツとあそび","cat.space":"しぜんとうちゅう","cat.future":"みらいとはつめい","cat.family":"ともだちとかぞく","cat.deep":"じっくりかんがえる","howMany":"いくつ？","endless":"おわりなし","players":"プレイヤー","player":"プレイヤー{n}","addPlayer":"プレイヤーをふやす","removePlayer":"プレイヤーをへらす","play":"あそぶ！","wyr":"どっちがいい？","or":"それとも","skip":"とばす","next":"つぎへ","finish":"おわる","qOf":"{n}／{total}","picked":"{n}人がえらんだ","passTo":"{name}にわたしてね","secret":"こっそりえらんで、つぎの人にわたそう。","ready":"じゅんびOK！","reveal":"はっぴょう！","allMatch":"みんな同じ！","split":"わかれたね！","matched":"{a}と{b}がおなじ！","guessWho":"{name}、こっそりえらんでね！","guessNow":"ほかのみんな：{name}はどっちをえらんだ？","tapYou":"あてるカードの上で、じぶんの顔をタップしてね。","guessedRight":"{n}人があたり！","nobodyGuessed":"だれもあてられなかった。びっくり！","allGuessed":"みんなあたり！","youAre":"きみは…","yourMix":"きみのタイプ","choices":"{n}回えらんだ","mostAlike":"いちばんにている二人","alikeLine":"{a}と{b}は{n}回おなじだった","again":"もういちど","home":"はじめ","back":"もどる","settings":"せってい","allSeen":"このテーマのしつもんをぜんぶ見たよ。またまぜるね！","react.0":"いいね！","react.1":"おもしろい！","react.2":"ナイス！","react.3":"すてき！","react.4":"ゆうきがある！","react.5":"やったね！","t.brave":"ぼうけんか","t.think":"かんがえる人","t.make":"つくる人","t.animal":"どうぶつのともだち","t.food":"くいしんぼう","t.fast":"スピードスター","t.kind":"やさしいこころ","t.calm":"のんびりゆめみる人","t.fun":"わらいのチャンピオン","t.nature":"しぜんだいすき","t.tech":"はつめいか","t.social":"チームプレイヤー","d.brave":"チャレンジと大ぼうけんが大すき。","d.think":"なぞをといたり、まなんだりするのがすき。","d.make":"そうぞうして、あたらしいものをつくるのが大すき。","d.animal":"どうぶつがこころのとくべつなばしょにいるよ。","d.food":"おいしいものがあると、まいにちがたのしいね。","d.fast":"はやくて、たのしくて、アクションいっぱいがすき。","d.kind":"まわりの人をたいせつにして、やさしさをひろげるよ。","d.calm":"しずかで、ほっとするじかんがすき。","d.fun":"なんでもおもしろいところを見つけるよ。","d.nature":"そとのしぜんの中がいちばんしあわせ。","d.tech":"きかいやロボットや大きなアイデアにわくわく。","d.social":"ともだちやかぞくといっしょにいるのが大すき。"},"zh-Hant":{"title":"你比較想要哪個？","tagline":"選一個吧！沒有錯的答案。","alone":"一個人玩","aloneSub":"看看你是哪一種人","friends":"和朋友一起","friendsSub":"輪流傳裝置，看誰的想法最像","guess":"猜猜我選哪個","guessSub":"一個人選，其他人猜","topics":"主題","mix":"全部混在一起","cat.animals":"動物","cat.food":"食物","cat.powers":"超能力","cat.school":"學校","cat.travel":"冒險和旅行","cat.silly":"搞笑","cat.sports":"運動和遊戲","cat.space":"自然和太空","cat.future":"未來和發明","cat.family":"朋友和家人","cat.deep":"想一想","howMany":"幾題？","endless":"無限","players":"玩家","player":"玩家{n}","addPlayer":"增加玩家","removePlayer":"減少玩家","play":"開始玩！","wyr":"你比較想要…","or":"還是","skip":"跳過","next":"下一題","finish":"結束","qOf":"第{n}題／共{total}題","picked":"{n}人選這個","passTo":"交給{name}","secret":"偷偷選好，再傳給下一位。","ready":"我準備好了！","reveal":"揭曉！","allMatch":"大家都選一樣的！","split":"意見分成兩邊！","matched":"{a}和{b}選得一樣！","guessWho":"{name}，偷偷選吧！","guessNow":"其他人：{name}選了哪個？","tapYou":"在你猜的卡片上點自己的頭像。","guessedRight":"{n}人猜對了！","nobodyGuessed":"沒有人猜到，真是驚喜！","allGuessed":"大家都猜對了！","youAre":"你是…","yourMix":"你的組合","choices":"選了{n}次","mostAlike":"最像的兩個人","alikeLine":"{a}和{b}有{n}次選得一樣","again":"再玩一次","home":"首頁","back":"返回","settings":"設定","allSeen":"這些主題的問題你都看過了，重新洗牌囉！","react.0":"選得好！","react.1":"喔，好有趣！","react.2":"不錯喔！","react.3":"好喜歡！","react.4":"好勇敢！","react.5":"讚！","t.brave":"冒險家","t.think":"思考家","t.make":"創作家","t.animal":"動物好朋友","t.food":"美食家","t.fast":"速度之星","t.kind":"溫暖的心","t.calm":"悠閒夢想家","t.fun":"歡笑冠軍","t.nature":"大自然愛好者","t.tech":"發明家","t.social":"團隊好夥伴","d.brave":"你喜歡挑戰和大冒險。","d.think":"你喜歡想清楚事情，也喜歡學習。","d.make":"你很愛想像，也愛做出新東西。","d.animal":"動物在你心裡有特別的位置。","d.food":"你知道有好吃的東西，生活更美好。","d.fast":"你喜歡快速、好玩又刺激的事。","d.kind":"你會照顧別人，把溫暖分享出去。","d.calm":"你喜歡安靜又舒服的時光。","d.fun":"你總能找到每件事好笑的一面。","d.nature":"在大自然裡你最開心。","d.tech":"機器、機器人和大點子讓你好興奮。","d.social":"你最喜歡和朋友、家人在一起。"},"ar":{"title":"ماذا تفضّل؟","tagline":"اختر واحدًا! لا توجد إجابات خاطئة.","alone":"العب وحدك","aloneSub":"اكتشف ما نوع شخصيتك","friends":"مع الأصدقاء","friendsSub":"مرّروا الجهاز واكتشفوا من يفكّر مثل من","guess":"خمّن اختياري","guessSub":"واحد يختار والباقون يخمّنون","topics":"المواضيع","mix":"قليل من كل شيء","cat.animals":"الحيوانات","cat.food":"الطعام","cat.powers":"قوى خارقة","cat.school":"المدرسة","cat.travel":"مغامرات وسفر","cat.silly":"مضحك","cat.sports":"رياضة وألعاب","cat.space":"الطبيعة والفضاء","cat.future":"المستقبل والاختراعات","cat.family":"الأصدقاء والعائلة","cat.deep":"أسئلة كبيرة","howMany":"كم سؤالًا؟","endless":"بلا نهاية","players":"اللاعبون","player":"اللاعب {n}","addPlayer":"أضف لاعبًا","removePlayer":"احذف لاعبًا","play":"هيا نلعب!","wyr":"هل تفضّل…","or":"أم","skip":"تخطَّ","next":"التالي","finish":"إنهاء","qOf":"{n} من {total}","picked":"اختاره {n}","passTo":"مرّر الجهاز إلى {name}","secret":"اختر سرًّا ثم مرّر الجهاز.","ready":"أنا جاهز!","reveal":"اكشف!","allMatch":"الجميع اختار الشيء نفسه!","split":"الآراء منقسمة!","matched":"{a} و{b} اختارا الشيء نفسه!","guessWho":"{name}، اختر سرًّا!","guessNow":"الباقون: ماذا اختار {name}؟","tapYou":"المس وجهك على البطاقة التي تخمّنها.","guessedRight":"خمّن {n} بشكل صحيح!","nobodyGuessed":"لم يخمّن أحد. يا لها من مفاجأة!","allGuessed":"الجميع خمّن بشكل صحيح!","youAre":"أنت…","yourMix":"مزيجك","choices":"{n} اختيارات","mostAlike":"الأكثر تشابهًا","alikeLine":"{a} و{b} اختارا الشيء نفسه {n} مرات","again":"العب مرة أخرى","home":"البداية","back":"رجوع","settings":"الإعدادات","allSeen":"رأيت كل أسئلة هذه المواضيع. سنخلطها من جديد!","react.0":"اختيار رائع!","react.1":"أوه، مثير!","react.2":"جيد!","react.3":"أحببته!","react.4":"اختيار شجاع!","react.5":"جميل!","t.brave":"مغامر","t.think":"مفكّر","t.make":"مبدع","t.animal":"صديق الحيوانات","t.food":"محبّ الطعام","t.fast":"سريع كالبرق","t.kind":"قلب طيّب","t.calm":"حالم هادئ","t.fun":"بطل الضحك","t.nature":"محبّ الطبيعة","t.tech":"مخترع","t.social":"لاعب فريق","d.brave":"تحب التحديات والمغامرات الكبيرة.","d.think":"تحب أن تفهم الأشياء وتتعلّم.","d.make":"تحب أن تتخيّل وتصنع أشياء جديدة.","d.animal":"للحيوانات مكان خاص في قلبك.","d.food":"تعرف أن الحياة أجمل مع الطعام اللذيذ.","d.fast":"تحب الأشياء السريعة والممتعة والمليئة بالحركة.","d.kind":"تهتم بالآخرين وتنشر اللطف.","d.calm":"تستمتع بالأوقات الهادئة والمريحة.","d.fun":"تجد الجانب المضحك في كل شيء.","d.nature":"أنت أسعد ما تكون في الطبيعة.","d.tech":"الأجهزة والروبوتات والأفكار الكبيرة تحمّسك.","d.social":"تحب أن تكون مع أصدقائك وعائلتك."},"he":{"title":"מה הייתם מעדיפים?","tagline":"בחרו אחד! אין תשובות לא נכונות.","alone":"משחק לבד","aloneSub":"גלו איזה סוג של בוחרים אתם","friends":"עם חברים","friendsSub":"העבירו את המכשיר וגלו מי חושב דומה","guess":"נחשו מה בחרתי","guessSub":"אחד בוחר, כל השאר מנחשים","topics":"נושאים","mix":"קצת מהכול","cat.animals":"בעלי חיים","cat.food":"אוכל","cat.powers":"כוחות על","cat.school":"בית ספר","cat.travel":"הרפתקאות וטיולים","cat.silly":"מצחיק","cat.sports":"ספורט ומשחקים","cat.space":"טבע וחלל","cat.future":"עתיד והמצאות","cat.family":"חברים ומשפחה","cat.deep":"שאלות גדולות","howMany":"כמה?","endless":"בלי סוף","players":"שחקנים","player":"שחקן {n}","addPlayer":"הוספת שחקן","removePlayer":"הסרת שחקן","play":"משחקים!","wyr":"מה הייתם מעדיפים…","or":"או","skip":"דילוג","next":"הבא","finish":"סיום","qOf":"{n} מתוך {total}","picked":"{n} בחרו","passTo":"העבירו ל{name}","secret":"בחרו בסוד, ואז העבירו הלאה.","ready":"אני מוכן!","reveal":"גילוי!","allMatch":"כולם בחרו אותו דבר!","split":"הדעות חלוקות!","matched":"{a} ו{b} בחרו אותו דבר!","guessWho":"{name}, בחרו בסוד!","guessNow":"כל השאר: מה בחר {name}?","tapYou":"הקישו על הפרצוף שלכם בכרטיס שאתם מנחשים.","guessedRight":"{n} ניחשו נכון!","nobodyGuessed":"אף אחד לא ניחש. איזו הפתעה!","allGuessed":"כולם ניחשו!","youAre":"אתם…","yourMix":"השילוב שלכם","choices":"{n} בחירות","mostAlike":"הכי דומים","alikeLine":"{a} ו{b} בחרו אותו דבר {n} פעמים","again":"עוד פעם","home":"התחלה","back":"חזרה","settings":"הגדרות","allSeen":"ראיתם את כל השאלות בנושאים האלה. מערבבים מחדש!","react.0":"בחירה מעולה!","react.1":"וואו, מעניין!","react.2":"יפה!","react.3":"אהבתי!","react.4":"בחירה אמיצה!","react.5":"כל הכבוד!","t.brave":"הרפתקנים","t.think":"חושבים","t.make":"יוצרים","t.animal":"חברים של בעלי חיים","t.food":"אוהבי אוכל","t.fast":"מהירים כברק","t.kind":"לב טוב","t.calm":"חולמים רגועים","t.fun":"אלופי הצחוק","t.nature":"אוהבי טבע","t.tech":"ממציאים","t.social":"שחקני צוות","d.brave":"אתם אוהבים אתגרים והרפתקאות גדולות.","d.think":"אתם אוהבים להבין דברים וללמוד.","d.make":"אתם אוהבים לדמיין וליצור דברים חדשים.","d.animal":"לבעלי חיים יש מקום מיוחד בלב שלכם.","d.food":"אתם יודעים שהחיים טובים יותר עם אוכל טעים.","d.fast":"אתם אוהבים דברים מהירים, כיפיים ומלאי אקשן.","d.kind":"אתם דואגים לאחרים ומפיצים טוב לב.","d.calm":"אתם נהנים מרגעים שקטים ונעימים.","d.fun":"אתם מוצאים את הצד המצחיק בכל דבר.","d.nature":"אתם הכי שמחים בטבע.","d.tech":"גאדג'טים, רובוטים ורעיונות גדולים מלהיבים אתכם.","d.social":"אתם אוהבים להיות עם חברים ומשפחה."}};
+var WYR_EN = [["animals-1","animals","Talk to animals","animal kind","Speak every human language","think social"],["animals-2","animals","Have a pet dragon the size of a cat","animal fun","Have a pet cat the size of a horse","animal fun"],["animals-3","animals","Ride a dolphin to school","animal nature","Ride a giraffe to school","animal fun"],["animals-4","animals","Have a tail like a monkey","animal fun","Have ears like a rabbit","animal calm"],["animals-5","animals","Be a cheetah for a day","fast animal","Be an owl for a day","think animal"],["animals-6","animals","Swim with whales","nature brave","Fly with eagles","brave nature"],["animals-7","animals","Have a talking parrot","social animal","Have a dancing dog","fun animal"],["animals-8","animals","Live in a treehouse with squirrels","nature animal","Live on a boat with seals","nature brave"],["animals-9","animals","Be as strong as an ant","fast brave","Be as clever as an octopus","think animal"],["animals-10","animals","Have a pet penguin","animal fun","Have a pet panda","animal calm"],["animals-11","animals","Have a unicorn","make fun","Have a phoenix","brave make"],["animals-12","animals","Breathe underwater like a fish","nature brave","Glide through the air like a flying squirrel","fast brave"],["animals-13","animals","Look after baby turtles on a beach","kind nature","Look after baby owls in a forest","kind nature"],["animals-14","animals","Have a horse that can fly","brave animal","Have a dog that can talk","social animal"],["animals-15","animals","Be a busy bee","social fast","Be a sleepy sloth","calm fun"],["animals-16","animals","Have a shell like a turtle","calm animal","Have a spiky coat like a hedgehog","animal brave"],["animals-17","animals","Hear like a bat","think animal","See like a hawk","fast animal"],["animals-18","animals","Have a pet that never grows up","kind animal","Have a pet that grows as big as a bus","fun brave"],["animals-19","animals","Be friends with a bear","brave animal","Be friends with a fox","think animal"],["animals-20","animals","Sleep in a nest","nature calm","Sleep in a burrow","calm animal"],["animals-21","animals","Have a cat that can do magic tricks","fun animal","Have a hamster that can sing","fun animal"],["animals-22","animals","Run a home for lost puppies","kind animal","Run a home for lost kittens","kind animal"],["animals-23","animals","Be a penguin in the snow","animal calm","Be a flamingo in the sun","animal fun"],["animals-24","animals","Have stripes like a zebra","animal fun","Have spots like a leopard","animal fast"],["animals-25","animals","Visit a zoo where the animals watch you","fun think","Visit a farm where the animals talk back","fun animal"],["animals-26","animals","Count the stars with an owl","think nature","Dig tunnels all day with a mole","nature make"],["animals-27","animals","Have a long neck like a giraffe","animal fun","Have a long trunk like an elephant","animal make"],["animals-28","animals","Change colour like a chameleon","make animal","Light up like a firefly","make nature"],["animals-29","animals","Have a goldfish that can whistle","fun animal","Have a snail that can win races","fast fun"],["animals-30","animals","Take care of a baby elephant","kind animal","Take care of a baby kangaroo","kind animal"],["animals-31","animals","Be a lion with a loud roar","brave animal","Be a cat with a soft purr","calm animal"],["animals-32","animals","Swim in the sea with sea turtles","nature calm","Play in the snow with polar bear cubs","fun animal"],["animals-33","animals","Have an octopus that helps with chores","tech animal","Have a monkey that tells jokes","fun animal"],["animals-34","animals","Wake up to a bird singing at your window","calm nature","Wake up to a puppy licking your face","animal fun"],["animals-35","animals","Be a famous animal doctor","kind animal","Be a famous animal explorer","brave animal"],["animals-36","animals","Have a pet that glows in the dark","make fun","Have a pet that can turn invisible","think fun"],["animals-37","animals","Spend a day as an ant in an ant hill","social animal","Spend a day as a bee in a hive","social animal"],["animals-38","animals","Be as quick as a hummingbird","fast animal","Live as long as a tortoise","calm think"],["food-1","food","Eat only sweet food forever","food fun","Eat only salty food forever","food brave"],["food-2","food","Have a chocolate river","food fun","Have a lemonade waterfall","food fun"],["food-3","food","Eat pizza for breakfast","food fun","Eat pancakes for dinner","food calm"],["food-4","food","Never eat ice cream again","food brave","Never eat pizza again","food brave"],["food-5","food","Have a fridge that makes any food you want","food tech","Have a garden that grows any fruit you want","food nature"],["food-6","food","Be a famous chef","food make","Be a famous food taster","food fun"],["food-7","food","Eat one cookie as big as a bike","food fun","Eat a hundred tiny cookies","food fun"],["food-8","food","Have breakfast in a castle","food make","Have breakfast on a mountain top","food brave"],["food-9","food","Make the world's biggest sandwich","food make","Make the world's tallest cake","food make"],["food-10","food","Only drink milk","food calm","Only drink orange juice","food fast"],["food-11","food","Eat spaghetti with your hands","fun food","Eat soup with a fork","fun food"],["food-12","food","Run a sweet shop","food social","Run a bakery","food make"],["food-13","food","Taste a new food every day","food brave","Eat your favourite food every day","food calm"],["food-14","food","Have a popcorn machine in your room","food fun","Have a smoothie machine in your room","food tech"],["food-15","food","Eat only green food for a week","food nature","Eat only orange food for a week","food fun"],["food-16","food","Cook dinner for your whole family","kind food","Bake a cake for your best friend","kind food"],["food-17","food","Have a bowl of fruit that never runs out","food nature","Have a bag of crisps that never runs out","food fun"],["food-18","food","Have a picnic on the beach","food nature","Have a picnic in a snowy forest","food brave"],["food-19","food","Eat ice cream that never melts","food tech","Eat pizza that never gets cold","food tech"],["food-20","food","Taste colours","make food","Smell music","make fun"],["food-21","food","Have a tea party with your toys","fun calm","Have a barbecue with your friends","social food"],["food-22","food","Eat a meal cooked by a robot","tech food","Eat a meal cooked by a king","fun food"],["food-23","food","Grow giant strawberries","nature food","Grow giant pumpkins","nature food"],["food-24","food","Only eat with chopsticks","think food","Only eat with a spoon","calm food"],["food-25","food","Have sprinkles on everything","fun food","Have cheese on everything","food fun"],["food-26","food","Try food from a new country every week","brave food","Learn to cook one dish perfectly","make food"],["food-27","food","Win free pancakes for life","food calm","Win free tacos for life","food fun"],["food-28","food","Have a kitchen in your treehouse","make food","Have a kitchen on a boat","brave food"],["food-29","food","Eat breakfast in bed every day","calm food","Eat dinner under the stars every night","nature food"],["food-30","food","Have a lollipop that changes flavour","food make","Have gum that never loses its flavour","food fun"],["food-31","food","Judge a cake contest","food think","Win a cake contest","food make"],["food-32","food","Invent your own ice cream flavour","make food","Invent your own pizza topping","make food"],["food-33","food","Eat a whole meal of only soup","calm food","Eat a whole meal of only sandwiches","food fun"],["food-34","food","Have a hot chocolate fountain","food calm","Have a fruit punch fountain","food fun"],["food-35","food","Only eat food that is round","fun food","Only eat food that is square","fun food"],["food-36","food","Have a friend who bakes for you","social food","Have a friend who cooks for you","social food"],["food-37","food","Live next door to a bakery","food calm","Live next door to an ice cream shop","food fun"],["food-38","food","Find a secret recipe in an old book","think food","Invent a brand new snack","make food"],["powers-1","powers","Fly","brave fast","Be invisible","think fun"],["powers-2","powers","Read minds","think social","Move things with your mind","think make"],["powers-3","powers","Be super fast","fast brave","Be super strong","brave kind"],["powers-4","powers","Teleport anywhere","fast brave","Stop time","think calm"],["powers-5","powers","Breathe underwater","nature brave","Walk through walls","fun brave"],["powers-6","powers","Control the weather","nature make","Make plants grow with a wave","nature calm"],["powers-7","powers","Shrink to the size of an ant","fun think","Grow as tall as a building","fun brave"],["powers-8","powers","Talk to plants","nature calm","Talk to machines","tech think"],["powers-9","powers","Have super hearing","think fast","Have super sight","think fast"],["powers-10","powers","Heal any scratch or bruise","kind calm","Make anyone smile","kind fun"],["powers-11","powers","Jump as high as a house","fast fun","Run as fast as a car","fast brave"],["powers-12","powers","Turn into any animal","animal fun","Turn into any object","fun think"],["powers-13","powers","Make it snow whenever you want","fun nature","Make it sunny whenever you want","calm nature"],["powers-14","powers","Have a backpack that holds anything","make think","Have shoes that walk you anywhere","fast brave"],["powers-15","powers","Never need to sleep","fast think","Never need to eat","calm think"],["powers-16","powers","Glow in the dark","fun make","Change your hair colour by thinking","make fun"],["powers-17","powers","Copy any skill by watching it","think make","Learn any language in a minute","think social"],["powers-18","powers","Freeze things with a touch","brave fun","Warm things up with a touch","kind calm"],["powers-19","powers","Tidy your room with a snap","calm fun","Finish your homework with a snap","think fun"],["powers-20","powers","Have a power that helps others","kind social","Have a power that lets you explore","brave nature"],["powers-21","powers","Make flowers grow wherever you walk","nature kind","Make music play wherever you walk","fun make"],["powers-22","powers","Stretch like rubber","fun fast","Bounce like a ball","fun fast"],["powers-23","powers","See in the dark","think nature","See through walls","think fun"],["powers-24","powers","Talk to your future self","think calm","Talk to your younger self","think kind"],["powers-25","powers","Have a pencil that draws real things","make think","Have a paintbrush that paints real places","make nature"],["powers-26","powers","Become tiny when you feel shy","calm fun","Become giant when you feel brave","brave fun"],["powers-27","powers","Never feel cold","calm brave","Never feel tired","fast brave"],["powers-28","powers","Call a rainbow whenever you want","make nature","Call a gentle breeze whenever you want","calm nature"],["powers-29","powers","Know what your pet is thinking","animal think","Know what your teacher is thinking","think fun"],["powers-30","powers","Be the fastest swimmer in the world","fast nature","Be the fastest climber in the world","fast brave"],["powers-31","powers","Fix anything that breaks","tech kind","Build anything you can imagine","make tech"],["powers-32","powers","Have a cloud you can ride","calm fun","Have a flying carpet","brave fun"],["powers-33","powers","Control gravity","think brave","Control light","think make"],["powers-34","powers","Have a superhero cape","brave fun","Have a superhero mask","think fun"],["powers-35","powers","Have a sidekick","social brave","Be the sidekick","social kind"],["powers-36","powers","Make anyone laugh","fun kind","Make anyone feel calm","calm kind"],["powers-37","powers","Undo one small mistake each day","think calm","Get one extra hour each day","fast make"],["powers-38","powers","Have a power that works only on Mondays","fun think","Have a power that works only in the rain","fun nature"],["school-1","school","Go to school in a castle","make fun","Go to school on a spaceship","tech brave"],["school-2","school","Have a robot teacher","tech think","Have a teacher who is a wizard","make fun"],["school-3","school","Learn only through games","fun think","Learn only through songs","fun make"],["school-4","school","Have a longer summer holiday","calm fun","Have a longer winter holiday","calm fun"],["school-5","school","Do maths with a magic calculator","tech think","Do spelling with a magic pen","think make"],["school-6","school","Eat lunch in the playground every day","fun social","Eat lunch in a garden every day","nature calm"],["school-7","school","Be the class pet's best friend","animal kind","Be in charge of the class library","think calm"],["school-8","school","Go on a school trip to the Moon","brave tech","Go on a school trip under the sea","nature brave"],["school-9","school","Have a slide instead of stairs","fun fast","Have a trampoline in every classroom","fun fast"],["school-10","school","Write a book","make think","Paint a huge mural","make fun"],["school-11","school","Be in the school play","social make","Be in the school choir","social make"],["school-12","school","Learn to code a game","tech make","Learn to build a robot","tech make"],["school-13","school","Have twice as much break time","fun social","Have twice as long for lunch","food calm"],["school-14","school","Sit next to your best friend","social fun","Sit next to a window","calm nature"],["school-15","school","Have every lesson outdoors","nature calm","Have every lesson in a cosy library","calm think"],["school-16","school","Read a book a day","think calm","Draw a picture a day","make calm"],["school-17","school","Run the school science fair","think tech","Run the school art show","make social"],["school-18","school","Have a talking backpack","fun tech","Have a pencil case that tidies itself","tech calm"],["school-19","school","Learn about dinosaurs all year","think nature","Learn about space all year","think tech"],["school-20","school","Have homework that is a treasure hunt","brave fun","Have homework that is a puzzle","think fun"],["school-21","school","Be the class helper","kind social","Be the class inventor","tech make"],["school-22","school","Start school later","calm fun","Finish school earlier","fun fast"],["school-23","school","Have a llama as a class pet","animal fun","Have a parrot as a class pet","animal social"],["school-24","school","Play a game at the start of every lesson","fun social","Hear a story at the start of every lesson","calm think"],["school-25","school","Have a classroom in a treehouse","nature fun","Have a classroom in a submarine","brave tech"],["school-26","school","Teach your class for one day","kind think","Run the whole school for one day","brave social"],["school-27","school","Have a robot that carries your bag","tech calm","Have a dog that walks you to school","animal fun"],["school-28","school","Learn a new language","think social","Learn a new instrument","make fun"],["school-29","school","Have sports day every week","fast social","Have art day every week","make calm"],["school-30","school","Be the best speller in school","think calm","Be the best at maths in school","think fast"],["school-31","school","Give a speech to the whole school","brave social","Make a video for the whole school","make tech"],["school-32","school","Have a giant chalkboard to draw on","make fun","Have a giant puzzle wall","think fun"],["school-33","school","Have a nap after lunch","calm fun","Have a dance party after lunch","fun social"],["school-34","school","Have desks that float","tech fun","Have chairs that spin","fun fast"],["school-35","school","Learn from a famous scientist","think tech","Learn from a famous artist","make think"],["school-36","school","Grow vegetables in the school garden","nature kind","Look after the school's fish tank","animal kind"],["school-37","school","Have a quiet reading corner","calm think","Have a noisy building corner","make fun"],["travel-1","travel","Explore a jungle","brave nature","Explore a desert","brave think"],["travel-2","travel","Visit the North Pole","brave nature","Visit a tropical island","calm nature"],["travel-3","travel","Travel by hot air balloon","calm brave","Travel by submarine","brave tech"],["travel-4","travel","Climb a mountain","brave nature","Dive to a coral reef","nature brave"],["travel-5","travel","Go on a safari","animal brave","Go on a cruise","calm social"],["travel-6","travel","Sleep in a tent under the stars","nature calm","Sleep in a castle","fun make"],["travel-7","travel","Find a hidden treasure","brave think","Find a lost city","brave think"],["travel-8","travel","Ride a camel","animal brave","Ride an elephant","animal brave"],["travel-9","travel","Travel back in time","think brave","Travel to the future","tech brave"],["travel-10","travel","Visit every country in the world","brave social","Visit every planet in the solar system","brave tech"],["travel-11","travel","Go on a road trip with your family","social fun","Go on a train trip with your friends","social fun"],["travel-12","travel","Explore a cave full of crystals","brave make","Explore an old pirate ship","brave fun"],["travel-13","travel","Live in an igloo for a week","brave calm","Live in a desert tent for a week","brave nature"],["travel-14","travel","Go sledging in the mountains","fast fun","Go surfing at the beach","fast nature"],["travel-15","travel","Have a map to anywhere","think brave","Have a key that opens any door","fun brave"],["travel-16","travel","Cross a wobbly rope bridge","brave fast","Walk across a glass floor up high","brave think"],["travel-17","travel","See the northern lights","nature calm","See a volcano from far away","nature brave"],["travel-18","travel","Visit a museum at night","think fun","Visit a theme park at night","fun fast"],["travel-19","travel","Paddle a canoe down a river","nature calm","Ride a zip line through the trees","fast brave"],["travel-20","travel","Be a famous explorer","brave think","Be a famous mapmaker","think make"],["travel-21","travel","Fly in a helicopter","fast brave","Sail on a pirate ship","brave fun"],["travel-22","travel","Go camping in the woods","nature calm","Go camping on the beach","nature fun"],["travel-23","travel","Learn hello in fifty languages","social think","Learn fifty different dances","fun social"],["travel-24","travel","Find a door to a secret garden","nature think","Find a door to a secret library","think calm"],["travel-25","travel","Visit a city of skyscrapers","tech fun","Visit a village of tiny houses","calm make"],["travel-26","travel","Spend a day on a farm","animal nature","Spend a day in a lighthouse","calm brave"],["travel-27","travel","Go on an adventure with a map","brave think","Go on an adventure with no map","brave fun"],["travel-28","travel","Travel the world in a giant balloon","calm brave","Travel the world on a super-fast train","fast tech"],["travel-29","travel","Discover a new island","brave nature","Discover a new kind of animal","animal think"],["travel-30","travel","Go to a music festival","fun social","Go to a lantern festival","calm make"],["travel-31","travel","Visit the biggest waterfall","nature brave","Visit the tallest tree","nature calm"],["travel-32","travel","Live on a houseboat","calm nature","Live in a mountain cabin","calm nature"],["travel-33","travel","Take a trip on a rocket","brave tech","Take a trip on a giant turtle","animal calm"],["travel-34","travel","Snorkel with colourful fish","nature fun","Hike with mountain goats","animal brave"],["travel-35","travel","Pack one small bag for a year of travel","think brave","Bring your whole room on every trip","calm fun"],["travel-36","travel","Cross a desert on a long journey","brave nature","Cross the ice on a long journey","brave nature"],["travel-37","travel","Cycle around a whole island","fast nature","Walk all the way around a lake","calm nature"],["travel-38","travel","Be a guide for travellers","social kind","Be a traveller with a guide","calm social"],["silly-1","silly","Have spaghetti for hair","fun food","Have marshmallows for toes","fun food"],["silly-2","silly","Sneeze glitter","fun make","Hiccup bubbles","fun calm"],["silly-3","silly","Walk like a crab for a day","fun animal","Hop like a frog for a day","fun fast"],["silly-4","silly","Talk only in rhymes","fun make","Talk only in song","fun make"],["silly-5","silly","Have a nose that honks","fun social","Have ears that whistle","fun make"],["silly-6","silly","Wear socks on your hands","fun calm","Wear mittens on your feet","fun calm"],["silly-7","silly","Have a voice like a duck","fun animal","Have a laugh like a donkey","fun animal"],["silly-8","silly","Live in a house made of jelly","fun food","Live in a house made of pillows","fun calm"],["silly-9","silly","Have a pet rock that tells jokes","fun think","Have a pet pillow that gives hugs","calm kind"],["silly-10","silly","Burp a rainbow","fun make","Sneeze confetti","fun social"],["silly-11","silly","Have eyebrows that dance","fun make","Have hair that changes colour with your mood","make fun"],["silly-12","silly","Ride a giant banana","fun food","Ride a giant rubber duck","fun calm"],["silly-13","silly","Wear a hat that is always a cake","fun food","Wear shoes that squeak a tune","fun make"],["silly-14","silly","Have a giraffe as a sofa","fun animal","Have a whale as a bathtub","fun animal"],["silly-15","silly","Only walk backwards","fun think","Only walk on tiptoe","fun calm"],["silly-16","silly","Have a tiny dragon in your pocket","fun brave","Have a tiny elephant on your shoulder","fun animal"],["silly-17","silly","Speak in a robot voice","tech fun","Speak in a squeaky mouse voice","fun animal"],["silly-18","silly","Turn everything you touch into jelly","fun food","Turn everything you touch into feathers","fun calm"],["silly-19","silly","Have a trampoline for a bed","fun fast","Have a ball pit for a bathtub","fun calm"],["silly-20","silly","Wear pyjamas every day","calm fun","Wear a superhero costume every day","brave fun"],["silly-21","silly","Have a moustache made of candyfloss","fun food","Have a beard made of bubbles","fun calm"],["silly-22","silly","Dance every time you hear a bell","fun social","Sing every time you see a cat","fun animal"],["silly-23","silly","Be followed by a marching band","fun social","Be followed by a flock of ducks","fun animal"],["silly-24","silly","Have bread that sings when toasted","fun food","Have a fridge that tells jokes","fun tech"],["silly-25","silly","Swap feet with a kangaroo","fun fast","Swap ears with an elephant","fun animal"],["silly-26","silly","Live in a giant shoe","fun calm","Live in a giant teapot","fun calm"],["silly-27","silly","Have a bath in custard","fun food","Have a bath in bubbles taller than you","fun calm"],["silly-28","silly","Bounce everywhere you go","fun fast","Roll everywhere you go","fun fast"],["silly-29","silly","Have a laugh that makes flowers bloom","fun nature","Have a yawn that makes it snow","calm fun"],["silly-30","silly","Wear a coat made of leaves","nature fun","Wear a coat made of feathers","animal fun"],["silly-31","silly","Have a dog that meows","fun animal","Have a cat that barks","fun animal"],["silly-32","silly","Clap with your feet","fun fast","Wave with your ears","fun"],["silly-33","silly","Grow flowers in your hair","nature fun","Grow grapes on your elbows","fun food"],["silly-34","silly","Have a talking toothbrush","fun tech","Have a singing hairbrush","fun make"],["silly-35","silly","Make a pillow fort as big as a house","make fun","Make a sandcastle as big as a house","make nature"],["silly-36","silly","Only eat with a giant spoon","fun food","Only drink with a curly straw","fun food"],["silly-37","silly","Be a wobbly jelly for a minute","fun calm","Be a bouncy ball for a minute","fun fast"],["silly-38","silly","Have a hiccup that sounds like a trumpet","fun make","Have a sneeze that sounds like a drum","fun make"],["sports-1","sports","Score the winning goal","brave fast","Make the winning save","brave kind"],["sports-2","sports","Be a famous footballer","fast social","Be a famous gymnast","fast make"],["sports-3","sports","Win a running race","fast brave","Win a swimming race","fast nature"],["sports-4","sports","Play basketball on the Moon","fun tech","Play tennis underwater","fun nature"],["sports-5","sports","Learn to skateboard","fast brave","Learn to rollerskate","fast fun"],["sports-6","sports","Ride a horse in a race","animal fast","Ride a bike in a race","fast brave"],["sports-7","sports","Be on a team with your friends","social fun","Coach a team of little kids","kind social"],["sports-8","sports","Climb a rock wall","brave fast","Swim across a lake","brave nature"],["sports-9","sports","Play a board game all day","think calm","Play a ball game all day","fast social"],["sports-10","sports","Be a chess champion","think calm","Be a table tennis champion","fast think"],["sports-11","sports","Go ice skating","fast calm","Go skiing","fast brave"],["sports-12","sports","Do a cartwheel perfectly","fast fun","Do a handstand for a whole minute","brave fast"],["sports-13","sports","Win a medal","brave fast","Win a trophy","social brave"],["sports-14","sports","Play hide and seek in a castle","fun think","Play tag in a giant maze","fast fun"],["sports-15","sports","Be great at dancing","make fun","Be great at martial arts","brave calm"],["sports-16","sports","Play in a stadium full of fans","social brave","Play in a quiet park with friends","calm social"],["sports-17","sports","Kick a ball as far as a football pitch","fast brave","Throw a ball as high as a tower","fast brave"],["sports-18","sports","Learn to surf","nature fast","Learn to sail","nature think"],["sports-19","sports","Have a pool in your garden","fun nature","Have a football pitch in your garden","fast social"],["sports-20","sports","Race go-karts","fast fun","Race sailing boats","nature fast"],["sports-21","sports","Be the referee","think kind","Be the team captain","brave social"],["sports-22","sports","Do yoga with a goat","calm animal","Go jogging with a dog","fast animal"],["sports-23","sports","Play a sport no one has invented yet","make fun","Be the best at a very old sport","think fast"],["sports-24","sports","Win by a lot","brave fast","Win by just one point","fun brave"],["sports-25","sports","Play on a team of robots","tech social","Play on a team of animals","animal social"],["sports-26","sports","Have a skateboard that flies","tech fast","Have a bike that can ride on water","tech nature"],["sports-27","sports","Jump on a giant trampoline","fun fast","Slide down a giant waterslide","fun fast"],["sports-28","sports","Do a sport in the snow","brave nature","Do a sport on the beach","fun nature"],["sports-29","sports","Learn juggling","make fun","Learn the yo-yo","make calm"],["sports-30","sports","Take a penalty in a final","brave fast","Be the goalkeeper in a final","brave calm"],["sports-31","sports","Play sports in the rain","brave fun","Play sports in the sunshine","fun calm"],["sports-32","sports","Run a marathon","brave fast","Swim a mile","brave nature"],["sports-33","sports","Win a game of catch","fast fun","Win a game of tug of war","social brave"],["sports-34","sports","Climb the tallest tree in the park","brave nature","Find the best hiding spot in the park","think fun"],["sports-35","sports","Play a sport where everyone wins","kind social","Play a sport where you try to beat your best","brave think"],["sports-36","sports","Cheer for your team","social kind","Be cheered on by your team","social brave"],["space-1","space","Walk on the Moon","brave tech","Swim in the deepest ocean","brave nature"],["space-2","space","See a shooting star","calm nature","See a whale jump out of the sea","nature animal"],["space-3","space","Live on Mars","brave tech","Live under the sea","nature brave"],["space-4","space","Visit Saturn's rings","brave tech","Visit Jupiter's big red storm","brave think"],["space-5","space","Plant a forest","nature kind","Clean up a beach","nature kind"],["space-6","space","Be an astronaut","brave tech","Be a marine biologist","nature think"],["space-7","space","Watch a sunrise on a mountain","calm nature","Watch a sunset on a beach","calm nature"],["space-8","space","See a rainbow every day","nature calm","See snow every day","nature fun"],["space-9","space","Discover a new planet","think brave","Discover a new star","think calm"],["space-10","space","Float in space","calm brave","Float in a warm sea","calm nature"],["space-11","space","Spend a night in the rainforest","nature brave","Spend a night in the desert","nature calm"],["space-12","space","Name a star","make calm","Name a new flower","make nature"],["space-13","space","Live where it is always summer","calm fun","Live where it is always winter","brave fun"],["space-14","space","Meet a friendly alien","social brave","Find a fossil of a new dinosaur","think nature"],["space-15","space","Have a telescope that sees anything","think tech","Have a submarine that goes anywhere","brave tech"],["space-16","space","Watch a thunderstorm from a cosy window","calm nature","Watch the snow fall from a warm cabin","calm nature"],["space-17","space","Ride a comet","fast brave","Bounce on the Moon","fun brave"],["space-18","space","Explore a volcano with a robot","tech brave","Explore a glacier with a sled dog","animal brave"],["space-19","space","Look after a garden on a spaceship","nature tech","Look after a farm under the sea","nature tech"],["space-20","space","Hear the sound of the ocean forever","calm nature","Hear the sound of birds forever","calm nature"],["space-21","space","Count all the trees in a forest","think nature","Count all the waves on a beach","think calm"],["space-22","space","Be a cloud for a day","calm nature","Be a raindrop for a day","nature fun"],["space-23","space","Grow the tallest sunflower","nature make","Grow the biggest watermelon","nature food"],["space-24","space","Have a window that shows space","calm tech","Have a window that shows the sea","calm nature"],["space-25","space","Find a cave with glowing worms","nature brave","Find a beach with glowing waves","nature calm"],["space-26","space","Save a coral reef","kind nature","Save a rainforest","kind nature"],["space-27","space","Be the first person on a new planet","brave tech","Be the first person to meet a new animal","animal brave"],["space-28","space","Spend a year on a space station","brave tech","Spend a year on a research ship","nature think"],["space-29","space","Go stargazing every night","calm think","Go rock pooling every day","nature fun"],["space-30","space","Hold a baby star in your hands","calm make","Hold a rainbow in your hands","make nature"],["space-31","space","Visit the hottest place on Earth","brave nature","Visit the coldest place on Earth","brave nature"],["space-32","space","See a total eclipse","think calm","See a meteor shower","nature fun"],["space-33","space","Have a garden full of butterflies","nature calm","Have a garden full of birds","nature animal"],["space-34","space","Live on a floating island","calm nature","Live on a mountain above the clouds","calm brave"],["space-35","space","Learn the names of every star","think calm","Learn the names of every bird","think animal"],["space-36","space","Plant a tree for every friend you have","kind nature","Build a bird house for every bird you see","kind make"],["space-37","space","Find out what is inside a black hole","think brave","Find out what lives at the bottom of the sea","think nature"],["future-1","future","Have a robot best friend","tech social","Have a dinosaur best friend","animal fun"],["future-2","future","Ride in a flying car","tech fast","Ride in a car that drives itself","tech calm"],["future-3","future","Live in a house that cleans itself","tech calm","Live in a house that moves anywhere","tech brave"],["future-4","future","Invent a new kind of toy","make tech","Invent a new kind of food","make food"],["future-5","future","Have a phone that can teleport you","tech fast","Have glasses that translate any language","tech social"],["future-6","future","Be an inventor","make tech","Be a scientist","think tech"],["future-7","future","Live in a city under the sea","tech nature","Live in a city in the clouds","tech calm"],["future-8","future","Have a robot that does your chores","tech calm","Have a robot that plays games with you","tech fun"],["future-9","future","See a hundred years into the future","think tech","See a hundred years into the past","think calm"],["future-10","future","Build a time machine","tech think","Build a rocket","tech brave"],["future-11","future","Design a new theme park","make fun","Design a new city","make think"],["future-12","future","Have shoes that help you fly","tech fast","Have a jacket that makes you invisible","tech think"],["future-13","future","Invent a machine that makes everyone kind","kind tech","Invent a machine that makes everyone laugh","fun tech"],["future-14","future","Talk to a computer that knows everything","think tech","Talk to an animal that knows everything","animal think"],["future-15","future","Live on a space station","tech brave","Live in a smart treehouse","tech nature"],["future-16","future","Have a 3D printer for toys","make tech","Have a 3D printer for food","food tech"],["future-17","future","Create a video game","make tech","Create a board game","make think"],["future-18","future","Have a hologram pet","tech animal","Have a robot pet","tech animal"],["future-19","future","Clean the oceans with a new invention","kind tech","Plant forests with a new invention","kind nature"],["future-20","future","Have a car shaped like a shoe","fun make","Have a bus shaped like a whale","fun animal"],["future-21","future","Live to see people on Mars","tech brave","Live to see cities with no rubbish","kind tech"],["future-22","future","Have a bed that makes your dreams come true","calm make","Have a mirror that shows the future","think fun"],["future-23","future","Build a robot that can draw","tech make","Build a robot that can dance","tech fun"],["future-24","future","Make energy from laughter","fun tech","Make energy from music","make tech"],["future-25","future","Be a famous designer","make social","Be a famous engineer","tech think"],["future-26","future","Have a jetpack","fast tech","Have a hoverboard","fast fun"],["future-27","future","Have a library where books read themselves to you","calm tech","Have a library where you can step inside stories","make think"],["future-28","future","Invent a new colour","make think","Invent a new musical instrument","make fun"],["future-29","future","Have a robot chef","tech food","Have a robot gardener","tech nature"],["future-30","future","Design clothes that change colour","make tech","Design clothes that keep you warm anywhere","tech kind"],["future-31","future","Live in a house with a slide to the kitchen","fun make","Live in a house with a zip line to the garden","fun fast"],["future-32","future","Send a message to people in a thousand years","think kind","Receive a message from people a thousand years ago","think calm"],["future-33","future","Have a car that runs on lemonade","fun tech","Have a car that runs on sunshine","nature tech"],["future-34","future","Have an umbrella that stops all rain","tech calm","Have boots that stop all mud","tech fun"],["future-35","future","Build a home for animals","kind animal","Build a home for robots","tech kind"],["future-36","future","Invent something everyone uses","make tech","Invent something only you use","make fun"],["future-37","future","Learn by downloading things into your brain","tech think","Learn by trying things yourself","brave think"],["future-38","future","Have a drone that delivers snacks","tech food","Have a drone that walks your dog","tech animal"],["family-1","family","Have a sleepover with your best friend","social fun","Have a sleepover with your cousins","social fun"],["family-2","family","Plan a surprise party","kind make","Get a surprise party","social fun"],["family-3","family","Have ten brothers and sisters","social fun","Be an only child","calm think"],["family-4","family","Go on holiday with your grandparents","kind calm","Go on holiday with your friends","social fun"],["family-5","family","Make a new friend every day","social brave","Keep one best friend forever","kind calm"],["family-6","family","Have a family movie night","calm social","Have a family game night","fun social"],["family-7","family","Write a letter to a friend","kind make","Make a gift for a friend","kind make"],["family-8","family","Have a friend who is a great listener","kind calm","Have a friend who is really funny","fun social"],["family-9","family","Help a friend with homework","kind think","Help a friend build a fort","kind make"],["family-10","family","Bake cookies with your family","food kind","Build a puzzle with your family","think calm"],["family-11","family","Have a secret handshake","fun social","Have a secret code language","think social"],["family-12","family","Go to a concert with your family","social fun","Go to a museum with your family","think calm"],["family-13","family","Live next door to your best friend","social fun","Live next door to your grandparents","kind calm"],["family-14","family","Throw a party for your pet","animal fun","Throw a party for your teacher","kind social"],["family-15","family","Share your dessert","kind food","Share your toys","kind social"],["family-16","family","Be the funniest person in your family","fun social","Be the kindest person in your family","kind calm"],["family-17","family","Have a picnic with all your friends","social food","Have a quiet day with one friend","calm kind"],["family-18","family","Make a family video","make social","Make a family cookbook","food make"],["family-19","family","Play board games with your grandparents","think calm","Play football with your cousins","fast social"],["family-20","family","Have a friend from another country","social think","Have a friend from another planet","fun brave"],["family-21","family","Plan the next family trip","think brave","Plan the next family dinner","food kind"],["family-22","family","Have a giant family photo on your wall","social calm","Have a family tree painted on your wall","make calm"],["family-23","family","Give the best hugs","kind calm","Give the best high fives","fun social"],["family-24","family","Be good at cheering people up","kind fun","Be good at solving problems","think kind"],["family-25","family","Spend a day with your favourite relative","kind calm","Spend a day with your favourite teacher","think kind"],["family-26","family","Have a big family dinner every night","social food","Have breakfast in bed once a week","calm food"],["family-27","family","Make up a dance with your family","fun make","Make up a song with your family","make fun"],["family-28","family","Have a club with your friends","social make","Have a band with your friends","social make"],["family-29","family","Help a new kid feel welcome","kind social","Help a lost pet find its home","kind animal"],["family-30","family","Swap houses with a friend for a day","fun social","Swap families with a friend for a day","fun brave"],["family-31","family","Have a friend who loves the same games","social fun","Have a friend who teaches you new games","social think"],["family-32","family","Celebrate your birthday at the beach","nature fun","Celebrate your birthday in the snow","fun brave"],["family-33","family","Get a letter from a friend","kind calm","Get a surprise visit from a friend","social fun"],["family-34","family","Have a family pet","animal kind","Have a family garden","nature kind"],["family-35","family","Build a den with your siblings","make social","Build a snowman with your parents","fun social"],["family-36","family","Make a time capsule with friends","think make","Make a scrapbook with friends","make calm"],["family-37","family","Say thank you to someone every day","kind calm","Make someone laugh every day","fun kind"],["family-38","family","Be the one who plans fun things","make social","Be the one who joins in with everything","fun social"],["deep-1","deep","Know everything about the past","think calm","Know a little about the future","think brave"],["deep-2","deep","Be really brave","brave kind","Be really kind","kind calm"],["deep-3","deep","Be very clever","think calm","Be very creative","make fun"],["deep-4","deep","Always tell the truth","kind think","Always know the right thing to say","social think"],["deep-5","deep","Have lots of friends","social fun","Have one very close friend","kind calm"],["deep-6","deep","Be famous","social brave","Be happy and unknown","calm kind"],["deep-7","deep","Get one wish now","brave fun","Get three wishes when you are older","think calm"],["deep-8","deep","Never be bored","fun brave","Never be sad","calm kind"],["deep-9","deep","Remember every dream","think make","Choose what you dream","make calm"],["deep-10","deep","Be the best at one thing","think brave","Be good at many things","think make"],["deep-11","deep","Know how to fix any argument","kind think","Know how to cheer anyone up","kind fun"],["deep-12","deep","Have more time to play","fun calm","Have more time to learn","think calm"],["deep-13","deep","Live in a big city","social fast","Live in the countryside","nature calm"],["deep-14","deep","Read a person's thoughts for a day","think social","Let someone read yours for a day","brave kind"],["deep-15","deep","Be a great leader","brave social","Be a great helper","kind social"],["deep-16","deep","Make one big difference","brave kind","Make lots of small differences","kind calm"],["deep-17","deep","Find a lost treasure","brave fun","Find a lost friend","kind social"],["deep-18","deep","Give a gift","kind make","Get a gift","fun calm"],["deep-19","deep","Win a prize","brave fun","Help a friend win a prize","kind social"],["deep-20","deep","Learn from mistakes","think brave","Never make mistakes","think calm"],["deep-21","deep","Be good at listening","kind calm","Be good at explaining","think social"],["deep-22","deep","Always be early","think calm","Always be relaxed about time","calm fun"],["deep-23","deep","Know every language","think social","Play every instrument","make fun"],["deep-24","deep","Have a quiet morning","calm think","Have a busy morning","fast social"],["deep-25","deep","Plan everything","think calm","Make it up as you go","fun brave"],["deep-26","deep","Have a big adventure once","brave fun","Have small adventures every week","fun nature"],["deep-27","deep","Keep your room tidy","calm think","Keep your room cosy and messy","fun calm"],["deep-28","deep","Help the planet","kind nature","Help people in your town","kind social"],["deep-29","deep","Be a great storyteller","make social","Be a great problem solver","think tech"],["deep-30","deep","Spend a day without screens","nature calm","Spend a day without sweets","brave food"],["deep-31","deep","Be someone who tries new things","brave fun","Be someone who finishes what they start","think calm"],["deep-32","deep","Say sorry first","kind brave","Say thank you first","kind calm"],["deep-33","deep","Have an amazing memory","think calm","Have an amazing imagination","make fun"],["deep-34","deep","Make the world a little more colourful","make kind","Make the world a little quieter","calm kind"],["deep-35","deep","Be able to pause a happy moment","calm kind","Be able to replay a happy moment","calm think"],["deep-36","deep","Share a secret talent with everyone","brave social","Keep a secret talent just for you","calm think"],["deep-37","deep","Ask lots of questions","think brave","Find lots of answers","think calm"],["deep-38","deep","Stay a kid for longer","fun calm","Grow up a little faster","brave think"]];
+/* wyr-data:end */
+</script>
+<script>
+(function () {
+'use strict';
+const $ = id => document.getElementById(id);
+const CONFIG = {
+  storeKey: 'would-you-rather-v1',
+  counts: [10, 20, 0],          // 0 = endless
+  autoNextMs: 1500,             // alone: the next question comes by itself after a pick
+  maxPlayers: 6,
+  faces: ['🦊', '🐼', '🐯', '🐙', '🦄', '🐨'],
+  hues: ['coral', 'sky', 'mint', 'grape', 'spark', 'peach'],
+  traitOrder: ['brave', 'think', 'make', 'animal', 'food', 'fast', 'kind', 'calm', 'fun', 'nature', 'tech', 'social'],
+  traitIcon: { brave: '🧭', think: '💡', make: '🎨', animal: '🐾', food: '🍕', fast: '⚡', kind: '💛', calm: '☁️', fun: '😄', nature: '🌿', tech: '🤖', social: '🤝' },
+  catIcon: { mix: '🎲', animals: '🐾', food: '🍕', powers: '🦸', school: '📚', travel: '🧭', silly: '🤪', sports: '⚽', space: '🪐', future: '🚀', family: '💛', deep: '💭' },
+  cats: ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep'],
+};
+
+/* ---------------- words: the game's table under 'wyr.' keys, English as the fallback ---------------- */
+const STR = {};
+for (const l in WYR_UI) { STR[l] = {}; for (const k in WYR_UI[l]) STR[l]['wyr.' + k] = WYR_UI[l][k]; }
+try { Oomba.strings(STR); } catch (e) { /* ignore */ }
+const LANG = (typeof Oomba !== 'undefined' && Oomba.lang) || 'en';
+function t(k, vars) {
+  let s = null;
+  try { const v = Oomba.t('wyr.' + k, vars); if (v && v !== 'wyr.' + k) s = v; } catch (e) { /* ignore */ }
+  if (s == null) { s = (WYR_UI[LANG] && WYR_UI[LANG][k]) || (WYR_UI.en && WYR_UI.en[k]) || k; for (const n in vars || {}) s = s.split('{' + n + '}').join(vars[n]); }
+  return s;
+}
+function paint(root) { for (const el of (root || document).querySelectorAll('[data-t]')) el.textContent = t(el.dataset.t); }
+
+/* ---------------- the questions: English built in; a translated pack replaces the texts by id ---------------- */
+const ITEMS = WYR_EN.map(r => ({ id: r[0], cat: r[1], a: { text: r[2], tags: r[3].split(' ') }, b: { text: r[4], tags: r[5].split(' ') } }));
+const BY_ID = new Map(ITEMS.map(it => [it.id, it]));
+function loadPack() {
+  return new Promise(res => {
+    if (!WYR_PACK_VER || !WYR_PACK_SRI[LANG]) return res(false);
+    const s = document.createElement('script');
+    s.src = '/vendor/data/would-you-rather/' + WYR_PACK_VER + '/' + LANG + '.js'; s.integrity = WYR_PACK_SRI[LANG]; s.crossOrigin = 'anonymous';
+    s.onload = () => { const rows = (window.WyrPacks || {})[LANG] || []; for (const r of rows) { const it = BY_ID.get(r[0]); if (it) { it.a.text = r[1]; it.b.text = r[2]; } } res(true); };
+    s.onerror = () => res(false);
+    document.head.appendChild(s);
+  });
+}
+
+/* ---------------- saved choices (settings and the questions seen, never anything scored) ---------------- */
+const store = { get() { try { return (window.BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } },
+  set(v) { try { if (window.BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* ignore */ } } };
+const SAVE = Object.assign({ seen: [], topics: ['mix'], count: 10, players: 3 }, store.get());
+if (!Array.isArray(SAVE.seen)) SAVE.seen = [];
+const save = () => store.set({ seen: SAVE.seen.slice(-ITEMS.length), topics: SAVE.topics, count: SAVE.count, players: SAVE.players });
+
+/* ---------------- kit: the world behind, colours, sound ---------------- */
+let STAGE = null;
+try {
+  STAGE = Oomba.stage({ api: 1, biome: 'meadow', size: [960, 540] });
+  STAGE.camera.y = -120;
+  for (const [x, s] of [[-420, 150], [400, 170], [-260, 110], [250, 120]]) STAGE.add('tree', { x, y: 30, size: s, layer: 'near' });
+} catch (e) { /* the page still works without the world */ }
+const C = (r, s) => { try { return Oomba.color(r, s); } catch (e) { return null; } };
+const VARS = { a: C('coral', 'light') || '#ffb3a7', b: C('sky', 'light') || '#a8d8ff', c: C('grape', 'light') || '#d7c4ff', hot: C('hot') || '#ffd24a', go: C('mint', 'light') || '#b9f0c8',
+  'go-solid': C('mint') || '#3fc380', spark: C('spark') || '#ffd24a', ink: C('ink') || '#1d2340', 'a-ink': C('coral', 'shade') || '#b8402d', 'b-ink': C('sky', 'shade') || '#1f6fae', focus: C('grape') || '#7b5cff' };
+for (const k in VARS) document.documentElement.style.setProperty('--wyr-' + k, VARS[k]);
+const hue = i => C(CONFIG.hues[i % CONFIG.hues.length], 'light') || '#eee';
+try { Oomba.ui.root().appendChild($('game')); } catch (e) { /* ignore */ }
+const reduced = () => { try { return !!Oomba.settings.reduced; } catch (e) { return false; } };
+const syncMotion = () => $('game').classList.toggle('ok-rm', reduced());
+function sfx(name) { try { Oomba.sfx(name, { caption: false }); } catch (e) { /* ignore */ } }
+function icon(name) { try { return Oomba.icon(name, { size: 24 }); } catch (e) { return ''; } }
+$('setBtn').innerHTML = icon('settings'); $('setBtn').setAttribute('aria-label', t('settings'));
+$('homeBtn').innerHTML = icon('home'); $('homeBtn').setAttribute('aria-label', t('home'));
+$('game').dir = (typeof Oomba !== 'undefined' && Oomba.dir) || 'ltr';
+document.documentElement.lang = LANG;
+$('logo').innerHTML = '';
+{ const words = t('title'); $('logo').textContent = words; }
+paint();
+
+/* ---------------- state ---------------- */
+const S = { screen: 'home', mode: 'alone', topics: SAVE.topics.slice(), count: SAVE.count, players: SAVE.players,
+  queue: [], cur: null, n: 0, picks: [], people: [], turn: 0, round: [], picker: 0, guesses: {}, busy: false, timer: 0 };
+function toast(text) { const el = $('toast'); el.textContent = text; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 2600); }
+function show(id) {
+  for (const s of ['home', 'setup', 'pass', 'playScreen', 'summary']) $(s).hidden = s !== id;
+  S.screen = id; $('homeBtn').hidden = id === 'home';
+  try { Oomba.scene = id === 'home' ? 'home' : 'play'; } catch (e) { /* ignore */ }
+  syncMotion();
+}
+const person = i => ({ face: CONFIG.faces[i], name: t('player', { n: i + 1 }), color: hue(i) });
+function faceEl(i, cls) { const p = person(i), el = document.createElement('span'); el.className = 'face' + (cls ? ' ' + cls : ''); el.style.background = p.color; el.textContent = p.face; el.setAttribute('aria-label', p.name); el.title = p.name; return el; }
+
+/* ---------------- home and setup ---------------- */
+for (const b of document.querySelectorAll('.mode')) b.addEventListener('click', () => { sfx('select'); openSetup(b.dataset.mode); });
+function openSetup(mode) {
+  S.mode = mode;
+  const topics = $('topics'); topics.textContent = '';
+  for (const c of ['mix', ...CONFIG.cats]) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.dataset.cat = c;
+    b.innerHTML = '<span aria-hidden="true">' + CONFIG.catIcon[c] + '</span>'; b.appendChild(document.createTextNode(t(c === 'mix' ? 'mix' : 'cat.' + c)));
+    b.addEventListener('click', () => { sfx('pop'); toggleTopic(c); });
+    topics.appendChild(b);
+  }
+  const counts = $('counts'); counts.textContent = '';
+  for (const n of CONFIG.counts) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = n ? String(n) : t('endless'); b.dataset.n = n;
+    b.addEventListener('click', () => { sfx('pop'); S.count = n; syncSetup(); });
+    counts.appendChild(b);
+  }
+  $('peopleBox').hidden = mode === 'alone';
+  syncSetup(); show('setup');
+}
+function toggleTopic(c) {
+  if (c === 'mix') S.topics = ['mix'];
+  else {
+    let list = S.topics.filter(x => x !== 'mix');
+    list = list.includes(c) ? list.filter(x => x !== c) : [...list, c];
+    S.topics = list.length ? list : ['mix'];
+  }
+  syncSetup();
+}
+function syncSetup() {
+  for (const b of $('topics').children) b.setAttribute('aria-pressed', String(S.topics.includes(b.dataset.cat)));
+  for (const b of $('counts').children) b.setAttribute('aria-pressed', String(+b.dataset.n === S.count));
+  const box = $('people'); box.textContent = '';
+  for (let i = 0; i < S.players; i++) box.appendChild(faceEl(i));
+  const minus = document.createElement('button'); minus.type = 'button'; minus.className = 'ibtn'; minus.textContent = '−'; minus.setAttribute('aria-label', t('removePlayer')); minus.disabled = S.players <= 2;
+  minus.addEventListener('click', () => { S.players = Math.max(2, S.players - 1); sfx('pop'); syncSetup(); });
+  const plus = document.createElement('button'); plus.type = 'button'; plus.className = 'ibtn'; plus.textContent = '+'; plus.setAttribute('aria-label', t('addPlayer')); plus.disabled = S.players >= CONFIG.maxPlayers;
+  plus.addEventListener('click', () => { S.players = Math.min(CONFIG.maxPlayers, S.players + 1); sfx('pop'); syncSetup(); });
+  box.append(minus, plus);
+}
+$('startBtn').addEventListener('click', () => { sfx('spark'); begin(); });
+
+/* ---------------- the questions in play: chosen topics, nothing repeated until the pool is used up ---------------- */
+function pool() { return ITEMS.filter(it => S.topics.includes('mix') || S.topics.includes(it.cat)); }
+function fillQueue() {
+  const all = pool(), seen = new Set(SAVE.seen);
+  let fresh = all.filter(it => !seen.has(it.id));
+  if (!fresh.length) { const ids = new Set(all.map(it => it.id)); SAVE.seen = SAVE.seen.filter(id => !ids.has(id)); fresh = all.slice(); toast(t('allSeen')); }
+  for (let i = fresh.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [fresh[i], fresh[j]] = [fresh[j], fresh[i]]; }
+  S.queue = fresh;
+}
+function nextItem() { if (!S.queue.length) fillQueue(); return S.queue.shift(); }
+function begin() {
+  SAVE.topics = S.topics.slice(); SAVE.count = S.count; SAVE.players = S.players; save();
+  S.n = 0; S.picks = []; S.queue = []; S.round = [];
+  S.people = S.mode === 'alone' ? [0] : Array.from({ length: S.players }, (_, i) => i);
+  S.picker = 0;
+  ask();
+}
+const total = () => S.count;
+function progress() {
+  const el = $('progress'); el.hidden = false;
+  el.textContent = total() ? t('qOf', { n: S.n, total: total() }) : t('choices', { n: S.n });
+}
+
+/* One question: alone you pick; with friends everyone picks in secret in turn; in guess mode one picks, the rest guess. */
+function ask() {
+  if (total() && S.n >= total()) return finish();
+  S.cur = nextItem(); S.n += 1; S.round = []; S.turn = 0; S.guesses = {};
+  progress();
+  if (S.mode === 'alone') return showQuestion({});
+  if (S.mode === 'friends') return passTo(S.people[0]);
+  S.picker = (S.n - 1) % S.people.length;
+  return passTo(S.picker, true);
+}
+function passTo(i, picker) {
+  const p = person(i);
+  const f = $('passFace'); f.textContent = p.face; f.style.background = p.color;
+  $('passTitle').textContent = picker ? t('guessWho', { name: p.name }) : t('passTo', { name: p.name });
+  $('passText').textContent = t('secret');
+  S.passing = i; show('pass'); setTimeout(() => $('readyBtn').focus(), 60);
+}
+$('readyBtn').addEventListener('click', () => { sfx('select'); showQuestion({ who: S.passing }); });
+
+function setCard(el, opt, side) {
+  el.querySelector('.tx').textContent = opt.text;
+  el.querySelector('.tag').textContent = CONFIG.traitIcon[opt.tags[0]] || '';
+  el.querySelector('.faces').textContent = ''; el.querySelector('.gtap').textContent = '';
+  el.classList.remove('chosen', 'faded', 'guess'); el.disabled = false; el.dataset.side = side;
+  el.setAttribute('aria-label', opt.text);
+}
+function showQuestion({ who, guessing }) {
+  const it = S.cur;
+  setCard($('optA'), it.a, 'a'); setCard($('optB'), it.b, 'b');
+  // a picture per card, never the same one on both (it would say the two are alike)
+  const ia = CONFIG.traitIcon[it.a.tags[0]], ib = (it.b.tags.map(x => CONFIG.traitIcon[x]).find(x => x !== ia)) || '';
+  $('optA').querySelector('.tag').textContent = ib ? ia : (it.a.tags.map(x => CONFIG.traitIcon[x]).find(x => x !== CONFIG.traitIcon[it.b.tags[0]]) || '');
+  $('optB').querySelector('.tag').textContent = ib || ($('optA').querySelector('.tag').textContent ? CONFIG.traitIcon[it.b.tags[0]] : '');
+  const line = $('whoLine'); line.textContent = ''; line.hidden = who == null && !guessing;
+  $('playScreen').classList.toggle('with-who', !line.hidden);
+  if (who != null) { line.appendChild(faceEl(who)); line.appendChild(document.createTextNode(person(who).name)); }
+  if (guessing) line.appendChild(document.createTextNode(t('guessNow', { name: person(S.picker).name })));
+  $('react').textContent = '';
+  $('skipBtn').hidden = !(S.mode === 'alone' || (S.mode !== 'alone' && S.turn === 0 && !guessing));
+  $('finishBtn').hidden = !(S.mode === 'alone' && !total() && S.picks.length > 0);
+  $('revealBtn').hidden = !guessing; $('nextBtn').hidden = true;
+  S.busy = false; S.who = who; S.guessing = !!guessing;
+  show('playScreen');
+  if (guessing) setupGuess();
+}
+
+function choose(side) {
+  if (S.busy || S.screen !== 'playScreen' || S.guessing) return;
+  S.busy = true;
+  const it = S.cur, opt = it[side];
+  const chosen = side === 'a' ? $('optA') : $('optB'), other = side === 'a' ? $('optB') : $('optA');
+  chosen.classList.add('chosen'); other.classList.add('faded'); $('optA').disabled = $('optB').disabled = true;
+  sfx('pop');
+  if (!reduced()) { try { Oomba.juice.pop(chosen); } catch (e) { /* ignore */ } }
+  const by = S.who != null ? S.who : 0;
+  S.picks.push({ id: it.id, side, tags: opt.tags, by });
+  if (S.mode === 'alone') {
+    SAVE.seen.push(it.id); save();
+    const r = $('react'); r.textContent = ''; const s = document.createElement('span'); s.textContent = t('react.' + Math.floor(Math.random() * 6)); r.appendChild(s);
+    $('skipBtn').hidden = true; $('nextBtn').hidden = false; $('finishBtn').hidden = !!total();
+    clearTimeout(S.timer); S.timer = setTimeout(() => { if (S.screen === 'playScreen' && S.busy) goNext(); }, reduced() ? CONFIG.autoNextMs + 800 : CONFIG.autoNextMs);
+    return;
+  }
+  S.round.push({ by, side });
+  if (S.mode === 'guess') { // the picker has chosen: everyone else guesses
+    SAVE.seen.push(it.id); save();
+    setTimeout(() => showQuestion({ guessing: true }), reduced() ? 150 : 650);
+    return;
+  }
+  S.turn += 1;
+  setTimeout(() => { if (S.turn < S.people.length) passTo(S.people[S.turn]); else { SAVE.seen.push(it.id); save(); revealFriends(); } }, reduced() ? 150 : 650);
+}
+$('optA').addEventListener('click', () => choose('a'));
+$('optB').addEventListener('click', () => choose('b'));
+function goNext() { clearTimeout(S.timer); sfx('select'); ask(); }
+$('nextBtn').addEventListener('click', goNext);
+$('skipBtn').addEventListener('click', () => { if (S.busy) return; sfx('whoosh'); S.n -= 1; S.round = []; ask(); });
+$('finishBtn').addEventListener('click', () => { clearTimeout(S.timer); finish(); });
+
+/* With friends: everyone's picks, side by side. */
+function revealFriends() {
+  showQuestion({});
+  $('skipBtn').hidden = true;
+  const byA = S.round.filter(r => r.side === 'a').map(r => r.by), byB = S.round.filter(r => r.side === 'b').map(r => r.by);
+  for (const [el, list] of [[$('optA'), byA], [$('optB'), byB]]) {
+    el.disabled = true;
+    const faces = el.querySelector('.faces'); for (const i of list) faces.appendChild(faceEl(i));
+    const c = document.createElement('span'); c.className = 'count'; c.textContent = t('picked', { n: list.length }); faces.appendChild(c);
+    if (!list.length) el.classList.add('faded');
+  }
+  let line = byA.length === 0 || byB.length === 0 ? t('allMatch') : t('split');
+  if (byA.length && byB.length) { const pair = byA.length >= 2 ? byA : byB.length >= 2 ? byB : null; if (pair) line = t('matched', { a: person(pair[0]).name, b: person(pair[1]).name }); }
+  const r = $('react'); r.textContent = ''; const s = document.createElement('span'); s.textContent = line; r.appendChild(s);
+  sfx('spark');
+  $('nextBtn').hidden = false; S.busy = true; setTimeout(() => $('nextBtn').focus(), 60);
+}
+
+/* Guess my pick: each other player puts their face on the card they think was picked. */
+function setupGuess() {
+  const guessers = S.people.filter(i => i !== S.picker);
+  for (const el of [$('optA'), $('optB')]) {
+    el.classList.add('guess'); el.disabled = false;
+    const box = el.querySelector('.gtap');
+    for (const i of guessers) {
+      const p = person(i), b = document.createElement('button'); b.type = 'button'; b.className = 'gface'; b.textContent = p.face; b.style.borderColor = 'var(--ok-edge, #1d2340)';
+      b.setAttribute('aria-label', p.name + ': ' + el.querySelector('.tx').textContent); b.dataset.p = i; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', ev => { ev.stopPropagation(); S.guesses[i] = el.dataset.side; sfx('pop'); syncGuess(); });
+      box.appendChild(b);
+    }
+  }
+  const r = $('react'); r.textContent = ''; const s = document.createElement('span'); s.textContent = t('tapYou'); r.appendChild(s);
+  syncGuess();
+}
+function syncGuess() {
+  for (const b of document.querySelectorAll('.gface')) {
+    const side = b.closest('.opt').dataset.side, on = S.guesses[b.dataset.p] === side;
+    b.setAttribute('aria-pressed', String(on)); b.style.background = on ? person(+b.dataset.p).color : '';
+  }
+}
+$('revealBtn').addEventListener('click', () => {
+  const pick = S.round[0].side, el = pick === 'a' ? $('optA') : $('optB'), other = pick === 'a' ? $('optB') : $('optA');
+  el.classList.add('chosen'); other.classList.add('faded');
+  const guessers = S.people.filter(i => i !== S.picker), right = guessers.filter(i => S.guesses[i] === pick);
+  for (const b of document.querySelectorAll('.gface')) { b.disabled = true; if (S.guesses[b.dataset.p] === pick && b.closest('.opt') === el) b.classList.add('right'); }
+  const line = right.length === guessers.length ? t('allGuessed') : right.length ? t('guessedRight', { n: right.length }) : t('nobodyGuessed');
+  const r = $('react'); r.textContent = ''; const s = document.createElement('span'); s.textContent = line; r.appendChild(s);
+  sfx(right.length ? 'spark' : 'whoosh');
+  if (right.length && !reduced()) { try { Oomba.juice.pop(el); } catch (e) { /* ignore */ } }
+  $('revealBtn').hidden = true; $('nextBtn').hidden = false; S.guessing = false; S.busy = true;
+  setTimeout(() => $('nextBtn').focus(), 60);
+});
+
+/* ---------------- the end: what kind of chooser you are (always kind, never a score) ---------------- */
+function traits(picks) {
+  const n = {}; for (const k of CONFIG.traitOrder) n[k] = 0;
+  for (const p of picks) for (const tg of p.tags) if (tg in n) n[tg] += 1;
+  return CONFIG.traitOrder.map(k => [k, n[k]]).sort((a, b) => b[1] - a[1] || CONFIG.traitOrder.indexOf(a[0]) - CONFIG.traitOrder.indexOf(b[0]));
+}
+function finish() {
+  clearTimeout(S.timer);
+  const card = $('sumCard'); card.textContent = '';
+  const add = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; card.appendChild(el); return el; };
+  $('progress').hidden = true;
+  if (S.mode === 'alone') {
+    const tr = traits(S.picks), top = tr[0][1] ? tr[0][0] : 'fun';
+    add('p', 'lbl', t('youAre'));
+    add('div', 'trait-big', CONFIG.traitIcon[top]).setAttribute('aria-hidden', 'true');
+    add('h2', 'trait-name', t('t.' + top));
+    add('p', 'trait-desc', t('d.' + top));
+    if (S.picks.length) {
+      add('p', 'lbl', t('yourMix'));
+      const bars = add('div', 'mixbars'), max = Math.max(1, tr[0][1]);
+      for (const [k, v] of tr.slice(0, 3)) {
+        if (!v) continue;
+        const row = document.createElement('div'); row.className = 'mixbar';
+        const name = document.createElement('span'); name.textContent = CONFIG.traitIcon[k] + ' ' + t('t.' + k);
+        const track = document.createElement('span'); track.className = 'track'; const bar = document.createElement('i'); bar.style.width = Math.round(100 * v / max) + '%'; track.appendChild(bar);
+        row.append(name, track, document.createElement('span')); bars.appendChild(row);
+      }
+      add('p', 'trait-desc', t('choices', { n: S.picks.length }));
+    }
+  } else {
+    // most alike: the pair who picked the same side most often (friends mode), and everyone's own type
+    const by = i => S.picks.filter(p => p.by === i);
+    if (S.mode === 'friends' && S.people.length >= 2) {
+      let best = null;
+      for (let i = 0; i < S.people.length; i++) for (let j = i + 1; j < S.people.length; j++) {
+        const a = new Map(by(i).map(p => [p.id, p.side])); let same = 0;
+        for (const p of by(j)) if (a.get(p.id) === p.side) same++;
+        if (!best || same > best[2]) best = [i, j, same];
+      }
+      if (best && best[2] > 0) {
+        const box = add('div', 'alike'); const faces = document.createElement('div'); faces.className = 'faces'; faces.append(faceEl(best[0]), faceEl(best[1]));
+        const h = document.createElement('div'); h.textContent = t('mostAlike'); h.style.fontSize = '20px';
+        const l = document.createElement('div'); l.textContent = t('alikeLine', { a: person(best[0]).name, b: person(best[1]).name, n: best[2] });
+        box.append(faces, h, l);
+      }
+    }
+    const ppl = add('div', 'ppl');
+    for (const i of S.people) {
+      const mine = by(i); if (!mine.length) continue;
+      const top = traits(mine)[0][0], row = document.createElement('div'); row.className = 'prow';
+      const txt = document.createElement('span'); const b = document.createElement('b'); b.textContent = person(i).name; const s = document.createElement('small'); s.textContent = CONFIG.traitIcon[top] + ' ' + t('t.' + top);
+      txt.append(b, s); row.append(faceEl(i), txt); ppl.appendChild(row);
+    }
+  }
+  const acts = add('div', 'acts');
+  const again = document.createElement('button'); again.type = 'button'; again.className = 'btn hot'; again.textContent = t('again'); again.addEventListener('click', () => { sfx('spark'); begin(); });
+  const home = document.createElement('button'); home.type = 'button'; home.className = 'btn'; home.textContent = t('home'); home.addEventListener('click', goHome);
+  acts.append(again, home);
+  show('summary'); sfx('win');
+  if (!reduced()) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } }
+  setTimeout(() => again.focus(), 60);
+}
+
+function goHome() { clearTimeout(S.timer); sfx('select'); $('progress').hidden = true; show('home'); }
+$('homeBtn').addEventListener('click', goHome);
+$('setBtn').addEventListener('click', async () => { sfx('select'); try { await Oomba.ui.settings(); } catch (e) { /* ignore */ } syncMotion(); });
+document.addEventListener('keydown', e => {
+  if (S.screen !== 'playScreen' || e.repeat) return;
+  if ((e.key === 'ArrowLeft' || e.key === '1') && !S.busy) choose('a');
+  if ((e.key === 'ArrowRight' || e.key === '2') && !S.busy) choose('b');
+});
+
+/* ---------------- test hooks ---------------- */
+window.__brbTest = {
+  state: () => ({ screen: S.screen, mode: S.mode, n: S.n, total: total(), cur: S.cur && S.cur.id, picks: S.picks.length, players: S.people.length, topics: S.topics.slice(), bank: ITEMS.length, seen: SAVE.seen.length }),
+  start: (mode, opts) => { openSetup(mode || 'alone'); if (opts) { if (opts.count != null) S.count = opts.count; if (opts.players) S.players = opts.players; if (opts.topics) S.topics = opts.topics; } begin(); },
+  pick: side => choose(side === 1 || side === 'b' ? 'b' : 'a'),
+  ready: () => $('readyBtn').click(),
+  next: () => $('nextBtn').click(),
+  guess: (player, side) => { S.guesses[player] = side; syncGuess(); },
+  reveal: () => $('revealBtn').click(),
+  finish: () => finish(),
+  home: () => goHome(),
+};
+
+show('home');
+loadPack().then(() => { paint(); });
+try { if (window.BRB && BRB.ready) BRB.ready(); } catch (e) { /* ignore */ }
+})();
+</script>
+</body>
+</html>
