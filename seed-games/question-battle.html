@@ -5,78 +5,142 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Question Battle</title>
 <style>
-  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); background: #f4f1e6; color: #1d2340; }
-  @media (prefers-color-scheme: dark) { html.auto, html.auto body { background: #171b2e; color: #f4f1e6; } }
-  html.dark, html.dark body { background: #171b2e; color: #f4f1e6; }
-  #lobby { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-  .qb { position: fixed; inset: 0; display: flex; flex-direction: column; gap: 12px; padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); pointer-events: none; }
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); background: #9fd8ff; color: #1d2340; }
+  canvas.full { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  #fx { pointer-events: none; z-index: 5; }
+  .qb { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: clamp(4px, 1.1vh, 8px); padding: max(8px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); pointer-events: none; }
   .qb > * { pointer-events: auto; }
-  .qb-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 800; }
-  .qb-pill { background: rgba(255,255,255,.9); color: #1d2340; border-radius: 999px; padding: 6px 14px; box-shadow: 0 3px 0 rgba(29,35,64,.15); }
-  .qb-banner { margin: 0 auto; background: #1d2340; color: #fff; border-radius: 18px; padding: 10px 22px; font-weight: 800; font-size: clamp(20px, 5vw, 34px); text-align: center; max-width: 92vw; }
+  .qb [hidden], .qb-card[hidden] { display: none !important; }
+  .qb-top, .qb-boss, .qb-banner { flex-shrink: 0; }
+  .qb-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 800; min-height: 32px; }
+  .qb-top .sp { flex: 1; }
+  .qb-pill { background: rgba(255,255,255,.94); color: #1d2340; border: 3px solid #1d2340; border-radius: 999px; padding: 3px 12px; box-shadow: 0 3px 0 #1d2340; font-size: clamp(13px, 2.4vw, 18px); white-space: nowrap; }
+  .qb-pill.fire { background: linear-gradient(90deg, #ffd23d, #ff7a3d); }
+  .qb-pill.fire.big { animation: qb-pulse .6s ease-in-out infinite alternate; }
+  @keyframes qb-pulse { to { transform: scale(1.08); } }
+  .qb-boss { width: min(560px, 92%); margin: 0 auto; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1d2340; }
+  .qb-boss .nm { background: #fff; border: 3px solid #1d2340; border-radius: 12px; padding: 2px 10px; font-size: clamp(12px, 2.2vw, 17px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; box-shadow: 0 3px 0 #1d2340; }
+  .qb-hp { flex: 1; height: clamp(16px, 2.6vh, 24px); background: #fff; border: 3px solid #1d2340; border-radius: 999px; overflow: hidden; box-shadow: 0 3px 0 #1d2340; position: relative; }
+  .qb-hp i { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(180deg, #7ee08a, #2fb35a); border-radius: 999px; }
+  [dir="rtl"] .qb-hp i { transform-origin: 100% 50%; }
+  .qb-hp i.mid { background: linear-gradient(180deg, #ffe066, #f2a91a); }
+  .qb-hp i.low { background: linear-gradient(180deg, #ff9a8a, #e9465c); }
+  .qb-hp b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; color: #1d2340; }
+  .qb-stage { flex: 1 1000 var(--stage, 24vh); min-height: 0; pointer-events: none !important; }
+  .qb-banner { margin: 0 auto; background: #1d2340; color: #fff; border-radius: 18px; padding: 8px 20px; font-weight: 800; font-size: clamp(15px, min(4.4vw, 4.6vh), 32px); text-align: center; max-width: 92vw; box-shadow: 0 4px 0 rgba(0,0,0,.25); }
+  .qb-banner.big { font-size: clamp(24px, 6vw, 54px); background: linear-gradient(90deg, #ff6aa8, #ffb03b, #ffe066, #6ee07a, #4fb4ff, #9d7bff); color: #1d2340; border: 4px solid #1d2340; animation: qb-pop .5s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes qb-pop { from { transform: scale(.4); opacity: 0; } }
   .qb-banner:empty { display: none; }
-  .qb-card { flex: 1; display: flex; flex-direction: column; gap: 12px; justify-content: center; max-width: 1100px; width: 100%; margin: 0 auto; min-height: 0; }
-  .qb-card[hidden], .qb [hidden] { display: none !important; }
-  .qb-q { margin: 0; text-align: center; font-weight: 800; font-size: clamp(20px, 5.2vw, 44px); overflow-wrap: anywhere; }
-  .qb-ring { width: 64px; height: 64px; margin: 0 auto; position: relative; }
+  .qb-card { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 10px; justify-content: flex-start; max-width: 1100px; width: 100%; margin: 0 auto; min-height: 0; box-sizing: border-box;
+    background: rgba(255,255,255,.93); border: 4px solid #1d2340; border-radius: 26px; padding: 12px; box-shadow: 0 6px 0 #1d2340; }
+  .qb-qrow { display: flex; align-items: center; gap: 12px; }
+  .qb-q { margin: 0; flex: 1; text-align: center; font-weight: 800; font-size: clamp(16px, min(4.6vw, 4.4vh), 42px); overflow-wrap: break-word; line-height: 1.15; }
+  .qb-ring { width: 58px; height: 58px; flex: none; position: relative; }
   .qb-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .qb-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; }
+  .qb-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 21px; }
   .qb-pad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .qb-a { min-height: 64px; border: 0; border-radius: 18px; color: #fff; font: 800 clamp(17px, 4.4vw, 30px)/1.15 inherit; font-family: inherit; padding: 10px 12px; display: flex; align-items: center; gap: 12px; text-align: start; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
-  .qb-a .sh { font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
-  .qb-a .tx { flex: 1; overflow-wrap: anywhere; }
-  .qb-a:focus-visible { outline: 4px solid #ffc83d; outline-offset: 2px; }
-  .qb-a[disabled] { cursor: default; opacity: .5; }
-  .qb-a.pick { opacity: 1; outline: 4px solid #1d2340; outline-offset: 2px; }
-  .qb-a.right { opacity: 1; box-shadow: 0 0 0 6px #37c47a, 0 6px 0 rgba(0,0,0,.25); }
-  .qb-a .n { font-size: .9em; background: rgba(0,0,0,.2); border-radius: 99px; padding: 2px 10px; }
+  .qb-a { position: relative; overflow: hidden; min-height: clamp(46px, 9vh, 72px); border: 4px solid #1d2340; border-radius: 20px; color: #fff; font-family: inherit; font-weight: 800; font-size: clamp(15px, min(4.2vw, 3.6vh), 30px); line-height: 1.15; padding: 10px 12px; display: flex; align-items: center; gap: 12px; text-align: start; cursor: pointer; box-shadow: 0 7px 0 #1d2340; transition: transform .08s, box-shadow .08s, opacity .2s; text-shadow: 0 2px 0 rgba(0,0,0,.25); touch-action: manipulation; }
+  .qb-a:active:not([disabled]) { transform: translateY(5px); box-shadow: 0 2px 0 #1d2340; }
+  .qb-a .sh { position: relative; z-index: 1; font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
+  .qb-a .tx { position: relative; z-index: 1; flex: 1; min-width: 0; overflow-wrap: break-word; hyphens: auto; }
+  .qb-a .fill { position: absolute; inset: 0; background: rgba(255,255,255,.28); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.9,.3,1); }
+  [dir="rtl"] .qb-a .fill { transform-origin: 100% 50%; }
+  .qb-a:focus-visible { outline: 5px solid #ffc83d; outline-offset: 3px; }
+  .qb-a[disabled] { cursor: default; opacity: .45; }
+  body.host .qb-a[disabled] { opacity: 1; }
+  body.host .qb-a.dim { opacity: .55; }
+  .qb-a.pick { opacity: 1; transform: translateY(3px) scale(.98); box-shadow: 0 3px 0 #1d2340, 0 0 0 5px #ffc83d; }
+  .qb-a.right { opacity: 1; box-shadow: 0 0 0 7px #37c47a, 0 7px 0 #1d2340; animation: qb-glow 1s ease-in-out 2; }
+  .qb-a.nope { animation: qb-shake .4s; }
+  @keyframes qb-glow { 50% { box-shadow: 0 0 0 12px #8ff0b4, 0 7px 0 #1d2340; } }
+  @keyframes qb-shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .qb-a .n { position: relative; z-index: 1; font-size: .9em; background: #1d2340; border-radius: 99px; padding: 2px 12px; }
   .c0 { background: #e9465c; } .c1 { background: #2f6bff; } .c2 { background: #b98400; } .c3 { background: #27996a; }
-  .qb-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(18px, 4.5vw, 30px); min-height: 1.2em; }
-  .qb-board { background: rgba(255,255,255,.95); color: #1d2340; border-radius: 20px; padding: 12px 16px; max-width: 520px; width: 100%; margin: 0 auto; }
-  .qb-board h2 { margin: 0 0 8px; text-align: center; }
-  .qb-board ol { margin: 0; padding-inline-start: 26px; font-weight: 800; font-size: clamp(16px, 3vw, 24px); }
-  .qb-podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; }
-  .qb-step { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 800; text-align: center; width: 30%; max-width: 160px; overflow-wrap: anywhere; }
-  .qb-step canvas { width: 72px; height: 72px; }
-  .qb-step i { display: block; width: 100%; border-radius: 12px 12px 0 0; background: #ffc83d; }
+  .qb-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(17px, 4.2vw, 28px); min-height: 1.2em; }
+  .qb-note.ok { color: #1a8a4a; } .qb-note.bad { color: #b4233a; }
+  .qb-board { flex: 0 1 auto; min-height: 0; overflow-y: auto; background: rgba(255,255,255,.96); color: #1d2340; border: 4px solid #1d2340; border-radius: 24px; padding: 12px 16px; max-width: 620px; width: 100%; margin: 0 auto; box-sizing: border-box; box-shadow: 0 6px 0 #1d2340; overflow-x: hidden; }
+  .qb-board h2 { margin: 0 0 4px; text-align: center; font-size: clamp(18px, min(3.4vw, 4.6vh), 36px); }
+  .qb-mvp { text-align: center; font-weight: 800; margin: 0 0 8px; color: #b46a00; font-size: clamp(15px, 2.6vw, 22px); }
+  .qb-mvp:empty { display: none; }
+  .qb-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .qb-rows li { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 16px; font-weight: 800; font-size: clamp(15px, min(2.8vw, 3.6vh), 30px); background: #f4f1e6; border: 3px solid #1d2340; }
+  .qb-rows li:first-child { background: #ffe58a; }
+  .qb-rows li .r { min-width: 1.3em; text-align: center; }
+  .qb-rows li .nm { flex: 1; overflow-wrap: anywhere; }
+  .qb-rows li canvas { width: clamp(26px, 5.4vh, 48px); height: clamp(26px, 5.4vh, 48px); flex: none; }
+  .qb-rows li .up { font-size: .7em; color: #fff; background: #27996a; border-radius: 99px; padding: 1px 8px; }
+  .qb-podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 8px; }
+  .qb-step { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 800; text-align: center; width: 30%; max-width: 170px; overflow-wrap: anywhere; }
+  .qb-step canvas { width: clamp(44px, 11vh, 96px); height: clamp(44px, 11vh, 96px); }
+  .qb-step i { display: grid; place-items: center; width: 100%; border-radius: 14px 14px 0 0; background: #ffc83d; border: 3px solid #1d2340; border-bottom: 0; font-style: normal; font-size: 28px; transform-origin: 50% 100%; animation: qb-rise .8s cubic-bezier(.2,1.4,.4,1) both; }
+  .qb-step:nth-child(1) i { animation-delay: .3s; } .qb-step:nth-child(2) i { animation-delay: .7s; background: #ffe066; } .qb-step:nth-child(3) i { animation-delay: 0s; }
+  @keyframes qb-rise { from { transform: scaleY(0); } }
   .qb-tlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-  .qb-tlist li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: clamp(16px, 3vw, 26px); border: 2px solid #1d2340; }
+  .qb-tlist li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: clamp(16px, 3vw, 26px); border: 3px solid #1d2340; }
   .qb-tlist li .r { min-width: 1.4em; text-align: center; }
   .qb-tlist li .nm { flex: 1; overflow-wrap: anywhere; }
   .qb-tlist li canvas { width: 30px; height: 30px; flex: none; }
   .qb-tpod { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 10px; }
-  .qb-tpod .qb-step i { border: 2px solid #1d2340; border-bottom: 0; display: grid; place-items: center; }
   .qb-tpod canvas { width: 40px; height: 40px; }
   .qb-team { display: inline-flex; align-items: center; gap: 6px; }
   .qb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* the host's projector: a big boss up top, the question card under it */
+  body.host .qb-a { min-height: clamp(48px, 11vh, 96px); font-size: clamp(16px, min(3vw, 4.6vh), 40px); }
+  body.host .qb-q { font-size: clamp(18px, min(3.4vw, 5.4vh), 52px); }
+  body.host.between .qb-a { min-height: clamp(44px, 8.5vh, 80px); }
+  body.host .qb-card { padding: clamp(8px, 1.6vh, 16px); gap: clamp(6px, 1.4vh, 12px); }
+  body.ended .qb-card { display: none !important; }
+  @media (max-width: 440px) { .qb-a { padding: 8px 8px; gap: 6px; } .qb-a .sh { width: 1.05em; font-size: 1.1em; } .qb-pad { gap: 8px; } .qb-a .tx { hyphens: manual; } }
+  @media (max-height: 600px) { body:not(.host) #score { display: none; } .qb-boss .nm { font-size: 12px; } }
+  @media (max-height: 700px) { .qb-ring { width: 46px; height: 46px; } .qb-ring b { font-size: 17px; } .qb-card { padding: 8px; gap: 6px; border-radius: 20px; } .qb-a { border-radius: 16px; box-shadow: 0 5px 0 #1d2340; } .qb-note { font-size: clamp(15px, 3.4vh, 24px); } }
+  html.dark .qb-card, html.dark .qb-board, html.dark .qb-pill, html.dark .qb-boss .nm { background: rgba(29,35,64,.94); color: #f4f1e6; border-color: #0b0e1c; }
+  html.dark .qb-rows li { background: #2a3050; } html.dark .qb-rows li:first-child { background: #6b5410; }
+  html.dark .qb-note.ok { color: #7ee08a; } html.dark .qb-note.bad { color: #ff9a8a; }
+  @media (prefers-color-scheme: dark) {
+    html.auto .qb-card, html.auto .qb-board, html.auto .qb-pill, html.auto .qb-boss .nm { background: rgba(29,35,64,.94); color: #f4f1e6; border-color: #0b0e1c; }
+    html.auto .qb-rows li { background: #2a3050; } html.auto .qb-rows li:first-child { background: #6b5410; }
+    html.auto .qb-note.ok { color: #7ee08a; } html.auto .qb-note.bad { color: #ff9a8a; }
+  }
+  @media (prefers-reduced-motion: reduce) { .qb-banner.big, .qb-step i, .qb-a.right, .qb-a.nope, .qb-pill.fire.big { animation: none; } }
 </style>
 </head>
 <body>
-<canvas id="lobby" aria-hidden="true"></canvas>
+<canvas class="full" id="lobby" aria-hidden="true"></canvas>
 <div class="qb" id="ui">
-  <div class="qb-top"><span class="qb-pill" id="qnum" hidden></span><span class="qb-pill qb-team" id="team" hidden></span><span class="qb-pill" id="score" hidden></span></div>
+  <div class="qb-top"><span class="qb-pill" id="qnum" hidden></span><span class="qb-pill qb-team" id="team" hidden></span><span class="sp"></span><span class="qb-pill fire" id="streak" hidden></span><span class="qb-pill" id="score" hidden></span></div>
+  <div class="qb-boss" id="bossbar"><span class="nm" id="bossname"></span><div class="qb-hp" role="meter" id="hpbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="hpfill"></i></div></div>
+  <div class="qb-stage" id="stage" aria-hidden="true"></div>
   <p class="qb-banner" id="banner" role="status" aria-live="polite"></p>
   <section class="qb-card" id="card" hidden aria-labelledby="qtext">
-    <div class="qb-ring" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="#2f6bff" stroke-width="4" stroke-dasharray="94.25" stroke-dashoffset="0" stroke-linecap="round"/></svg><b id="secs"></b></div>
-    <p class="qb-q" id="qtext" dir="auto"></p>
+    <div class="qb-qrow">
+      <div class="qb-ring" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="#2f6bff" stroke-width="4" stroke-dasharray="94.25" stroke-dashoffset="0" stroke-linecap="round"/></svg><b id="secs"></b></div>
+      <p class="qb-q" id="qtext" dir="auto"></p>
+    </div>
     <div class="qb-pad" id="pad" role="group" aria-labelledby="qtext"></div>
     <p class="qb-note" id="note" aria-live="polite"></p>
   </section>
   <section class="qb-board" id="tboard" hidden><h2 id="tboard-h"></h2><div class="qb-tpod" id="tpodium"></div><ol class="qb-tlist" id="tboard-list"></ol></section>
-  <section class="qb-board" id="board" hidden><h2 id="board-h"></h2><div class="qb-podium" id="podium"></div><ol id="board-list"></ol></section>
+  <section class="qb-board" id="board" hidden><h2 id="board-h"></h2><p class="qb-mvp" id="mvp"></p><div class="qb-podium" id="podium"></div><ol class="qb-rows" id="board-list"></ol></section>
 </div>
+<canvas class="full" id="fx" aria-hidden="true"></canvas>
 <p class="qb-sr" id="sr" aria-live="assertive"></p>
 <script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
 <script>
-/* QUESTION BATTLE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Classic quiz: the question and
-   its answers on the projector (the host's view), answer buttons on every device, the answer counts and the top five
-   after each question, and a podium at the end. 2D only, so it runs on any device. The lobby: everyone's character
-   bouncing on a meadow, with the emotes players send. Played alone, it is a five-question practice round. */
+/* QUESTION BATTLE: an Oomba Live reference game (docs/kit-api.md "Live class games"), played as a co-op BOSS BATTLE.
+   The whole class are heroes facing one big, silly boss (a grumpy storm cloud, a cheeky robot or a sleepy dragon; the
+   host picks one at random and shares it with setState). Every right answer fires a star from the right answer's tile
+   (faster answers and streaks make bigger, fancier ones), the boss wobbles and its energy bar drops; at two thirds and
+   one third it changes its look, and the last question always lands the finishing blow, so the class always wins.
+   The boss's energy comes only from the reveals' answer counts (the same numbers on every screen); the server keeps all
+   the points (500-1000 by speed, plus a streak bonus) and power-ups are only pictures. The projector (host view) shows
+   the boss big, the question, the answer bars and an animated top five (overtakes slide, a star for the biggest jump);
+   phones show the boss small, chunky answer buttons, your streak and your own attack. 2D only, so it runs anywhere.
+   Played alone, it is a five-question practice round against the boss. */
 (function () {
   'use strict';
   var O = window.Oomba, L = O.live;
-  O.strings({
+  var STR = {
     en: { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
     'en-GB': { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
     es: { title: 'Batalla de preguntas', qnum: 'Pregunta {n} de {total}', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Esta vez no!', timeUp: '¡Se acabó el tiempo!', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', top: 'Los cinco mejores', podium: 'Ganadores', rank: 'Vas en el puesto {rank}', score: '{n} puntos', practice: 'Ronda de práctica', paused: 'En pausa', skipped: 'Saltada', answers: '{n} respondieron', done: '¡Bien jugado!', teams: 'Equipos', teamRank: '{team}: puesto {rank}', teamPodium: 'Equipos ganadores', perPlayer: 'por jugador', yourTeam: 'Tu equipo: {team}' },
@@ -90,105 +154,453 @@
     'zh-Hant': { title: '問答大戰', qnum: '第 {n} 題，共 {total} 題', locked: '答案已送出！', right: '答對了！+{points}', wrong: '這次沒答對！', timeUp: '時間到！', wait: '等主持人開始…', ready: '準備！', go: '開始！', top: '前五名', podium: '優勝者', rank: '你是第 {rank} 名', score: '{n} 分', practice: '練習回合', paused: '暫停', skipped: '已跳過', answers: '{n} 人已作答', done: '玩得好！', teams: '隊伍', teamRank: '{team}：第 {rank} 名', teamPodium: '獲勝隊伍', perPlayer: '每人平均', yourTeam: '你的隊伍：{team}' },
     he: { title: 'קרב שאלות', qnum: 'שאלה {n} מתוך {total}', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'לא הפעם!', timeUp: 'נגמר הזמן!', wait: 'מחכים שהמארח יתחיל…', ready: 'היכון!', go: 'יוצאים!', top: 'החמישייה הראשונה', podium: 'המנצחים', rank: 'את/ה במקום {rank}', score: '{n} נקודות', practice: 'סבב אימון', paused: 'מושהה', skipped: 'דולגה', answers: '{n} ענו', done: 'כל הכבוד!', teams: 'קבוצות', teamRank: '{team}: מקום {rank}', teamPodium: 'הקבוצות המנצחות', perPlayer: 'לשחקן', yourTeam: 'הקבוצה שלך: {team}' },
     ar: { title: 'معركة الأسئلة', qnum: 'السؤال {n} من {total}', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'ليس هذه المرة!', timeUp: 'انتهى الوقت!', wait: 'بانتظار أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', top: 'أفضل خمسة', podium: 'الفائزون', rank: 'أنت في المركز {rank}', score: '{n} نقطة', practice: 'جولة تدريبية', paused: 'متوقف مؤقتاً', skipped: 'تم تخطيه', answers: 'أجاب {n}', done: 'أحسنت اللعب!', teams: 'الفرق', teamRank: '{team}: المركز {rank}', teamPodium: 'الفرق الفائزة', perPlayer: 'لكل لاعب', yourTeam: 'فريقك: {team}' },
-  });
+  };
+  var NEW = {
+    en: { boss0: 'Grumbles the Storm Cloud', boss1: 'Bleep the Cheeky Robot', boss2: 'Snooze the Sleepy Dragon', arrives: '{boss} wants to stop the class! Answer together to win.', energy: 'Boss energy', hits: 'Class hits: {n}', phase2: 'The boss is wobbling! Keep going!', phase3: 'Almost there! One big push!', finale: 'Last question: the finishing blow!', defeated: 'Boss defeated! You did it together!', streak: 'Streak ×{n}', power1: 'Fire stars!', power2: 'Lightning strike!', power3: 'Rainbow blast!', cheer1: 'Shake it off, hero!', cheer2: 'The next one is yours!', cheer3: 'Heroes never give up!', watch: 'Watch the big screen!', mvp: '{name} leads the attack!', up: '{name} moves up!', hit: 'Your attack hit!' },
+    es: { boss0: 'Gruñón, la Nube Tormentosa', boss1: 'Bip, el Robot Travieso', boss2: 'Siestas, el Dragón Dormilón', arrives: '¡{boss} quiere detener a la clase! Respondan juntos para ganar.', energy: 'Energía del jefe', hits: 'Golpes de la clase: {n}', phase2: '¡El jefe se tambalea! ¡Sigan así!', phase3: '¡Casi lo logran! ¡Un último empujón!', finale: 'Última pregunta: ¡el golpe final!', defeated: '¡Jefe vencido! ¡Lo lograron juntos!', streak: 'Racha ×{n}', power1: '¡Estrellas de fuego!', power2: '¡Golpe de rayo!', power3: '¡Explosión arcoíris!', cheer1: '¡Ánimo, héroe!', cheer2: '¡La próxima es tuya!', cheer3: '¡Los héroes nunca se rinden!', watch: '¡Mira la pantalla grande!', mvp: '¡{name} lidera el ataque!', up: '¡{name} sube puestos!', hit: '¡Tu ataque acertó!' },
+    fr: { boss0: 'Grognon, le Nuage d’orage', boss1: 'Bip, le Robot farceur', boss2: 'Roupillon, le Dragon endormi', arrives: '{boss} veut arrêter la classe ! Répondez ensemble pour gagner.', energy: 'Énergie du boss', hits: 'Coups de la classe : {n}', phase2: 'Le boss vacille ! Continuez !', phase3: 'Presque ! Un dernier effort !', finale: 'Dernière question : le coup final !', defeated: 'Boss vaincu ! Vous avez réussi ensemble !', streak: 'Série ×{n}', power1: 'Étoiles de feu !', power2: 'Coup d’éclair !', power3: 'Rayon arc-en-ciel !', cheer1: 'Courage, héros !', cheer2: 'La prochaine est pour toi !', cheer3: 'Les héros n’abandonnent jamais !', watch: 'Regarde le grand écran !', mvp: '{name} mène l’attaque !', up: '{name} remonte !', hit: 'Ton attaque a touché !' },
+    de: { boss0: 'Grummel, die Gewitterwolke', boss1: 'Piep, der freche Roboter', boss2: 'Schnarch, der schläfrige Drache', arrives: '{boss} will die Klasse aufhalten! Antwortet gemeinsam, um zu gewinnen.', energy: 'Energie des Endgegners', hits: 'Treffer der Klasse: {n}', phase2: 'Der Endgegner wackelt! Weiter so!', phase3: 'Fast geschafft! Noch ein großer Schub!', finale: 'Letzte Frage: der finale Treffer!', defeated: 'Endgegner besiegt! Ihr habt es gemeinsam geschafft!', streak: 'Serie ×{n}', power1: 'Feuersterne!', power2: 'Blitzschlag!', power3: 'Regenbogenstrahl!', cheer1: 'Kopf hoch, Held!', cheer2: 'Die nächste schaffst du!', cheer3: 'Helden geben nie auf!', watch: 'Schau auf den großen Bildschirm!', mvp: '{name} führt den Angriff an!', up: '{name} steigt auf!', hit: 'Dein Angriff hat getroffen!' },
+    it: { boss0: 'Brontolo, la Nuvola Temporalesca', boss1: 'Bip, il Robot Birbante', boss2: 'Pisolo, il Drago Dormiglione', arrives: '{boss} vuole fermare la classe! Rispondete insieme per vincere.', energy: 'Energia del boss', hits: 'Colpi della classe: {n}', phase2: 'Il boss traballa! Continuate così!', phase3: 'Ci siamo quasi! Un’ultima spinta!', finale: 'Ultima domanda: il colpo finale!', defeated: 'Boss sconfitto! Ce l’avete fatta insieme!', streak: 'Serie ×{n}', power1: 'Stelle di fuoco!', power2: 'Colpo di fulmine!', power3: 'Raggio arcobaleno!', cheer1: 'Su con la vita, eroe!', cheer2: 'La prossima è tua!', cheer3: 'Gli eroi non si arrendono mai!', watch: 'Guarda il grande schermo!', mvp: '{name} guida l’attacco!', up: '{name} sale in classifica!', hit: 'Il tuo attacco è andato a segno!' },
+    pt: { boss0: 'Ranzinza, a Nuvem de Tempestade', boss1: 'Bip, o Robô Levado', boss2: 'Soneca, o Dragão Dorminhoco', arrives: '{boss} quer parar a turma! Respondam juntos para vencer.', energy: 'Energia do chefão', hits: 'Golpes da turma: {n}', phase2: 'O chefão está balançando! Continuem!', phase3: 'Quase lá! Mais um empurrão!', finale: 'Última pergunta: o golpe final!', defeated: 'Chefão derrotado! Vocês conseguiram juntos!', streak: 'Sequência ×{n}', power1: 'Estrelas de fogo!', power2: 'Golpe de raio!', power3: 'Explosão de arco-íris!', cheer1: 'Força, herói!', cheer2: 'A próxima é sua!', cheer3: 'Heróis nunca desistem!', watch: 'Olhe para a tela grande!', mvp: '{name} lidera o ataque!', up: '{name} subiu!', hit: 'Seu ataque acertou!' },
+    nl: { boss0: 'Mopper de Onweerswolk', boss1: 'Piep de Brutale Robot', boss2: 'Snurk de Slaperige Draak', arrives: '{boss} wil de klas tegenhouden! Antwoord samen om te winnen.', energy: 'Energie van de eindbaas', hits: 'Treffers van de klas: {n}', phase2: 'De eindbaas wiebelt! Ga zo door!', phase3: 'Bijna! Nog één flinke duw!', finale: 'Laatste vraag: de genadeklap!', defeated: 'Eindbaas verslagen! Jullie deden het samen!', streak: 'Reeks ×{n}', power1: 'Vuursterren!', power2: 'Bliksemslag!', power3: 'Regenboogstraal!', cheer1: 'Kop op, held!', cheer2: 'De volgende is voor jou!', cheer3: 'Helden geven nooit op!', watch: 'Kijk naar het grote scherm!', mvp: '{name} leidt de aanval!', up: '{name} klimt omhoog!', hit: 'Je aanval was raak!' },
+    ru: { boss0: 'Ворчун — Грозовая Туча', boss1: 'Бип — Озорной Робот', boss2: 'Соня — Сонный Дракон', arrives: '{boss} хочет остановить класс! Отвечайте вместе, чтобы победить.', energy: 'Энергия босса', hits: 'Удары класса: {n}', phase2: 'Босс шатается! Так держать!', phase3: 'Почти получилось! Ещё один рывок!', finale: 'Последний вопрос: решающий удар!', defeated: 'Босс побеждён! Вы сделали это вместе!', streak: 'Серия ×{n}', power1: 'Огненные звёзды!', power2: 'Удар молнии!', power3: 'Радужный луч!', cheer1: 'Не сдавайся, герой!', cheer2: 'Следующий вопрос твой!', cheer3: 'Герои никогда не сдаются!', watch: 'Смотри на большой экран!', mvp: '{name} ведёт атаку!', up: '{name} поднимается выше!', hit: 'Твоя атака попала!' },
+    ja: { boss0: 'ぶつぶつ雲のゴロゴロン', boss1: 'いたずらロボのピコ', boss2: 'ねぼすけドラゴンのスヤリン', arrives: '{boss}がクラスをじゃましにきた！みんなでこたえてやっつけよう。', energy: 'ボスのげんき', hits: 'クラスのこうげき：{n}', phase2: 'ボスがふらふらしてる！そのちょうし！', phase3: 'あとすこし！みんなでもうひとふんばり！', finale: 'さいごのもんだい：とどめのいちげき！', defeated: 'ボスをやっつけた！みんなのちからだ！', streak: 'れんぞく ×{n}', power1: 'ほのおのスター！', power2: 'いなずまアタック！', power3: 'にじいろビーム！', cheer1: 'ドンマイ、ヒーロー！', cheer2: 'つぎはきっとできるよ！', cheer3: 'ヒーローはあきらめない！', watch: '大きな画面を見てね！', mvp: '{name}がこうげきをリード！', up: '{name}がじゅんいアップ！', hit: 'きみのこうげきがあたった！' },
+    'zh-Hant': { boss0: '愛抱怨的暴風雲', boss1: '調皮機器人嗶嗶', boss2: '愛睡覺的瞌睡龍', arrives: '{boss}想阻止全班！大家一起答題來打敗它。', energy: '頭目能量', hits: '全班命中：{n}', phase2: '頭目搖搖晃晃了！繼續加油！', phase3: '快成功了！再用力一次！', finale: '最後一題：致勝一擊！', defeated: '打敗頭目了！大家一起做到了！', streak: '連續 ×{n}', power1: '火焰星星！', power2: '閃電一擊！', power3: '彩虹光束！', cheer1: '別在意，英雄！', cheer2: '下一題一定行！', cheer3: '英雄永不放棄！', watch: '看大螢幕！', mvp: '{name}帶頭進攻！', up: '{name}名次上升！', hit: '你的攻擊命中了！' },
+    he: { boss0: 'רטנון ענן הסערה', boss1: 'ביפ הרובוט השובב', boss2: 'נמנמון הדרקון הישנוני', arrives: '{boss} רוצה לעצור את הכיתה! ענו יחד כדי לנצח.', energy: 'האנרגיה של הבוס', hits: 'פגיעות של הכיתה: {n}', phase2: 'הבוס מתנדנד! המשיכו כך!', phase3: 'כמעט! עוד דחיפה אחת גדולה!', finale: 'שאלה אחרונה: המכה המכריעה!', defeated: 'הבוס הובס! עשיתם את זה יחד!', streak: 'רצף ×{n}', power1: 'כוכבי אש!', power2: 'מכת ברק!', power3: 'קרן קשת בענן!', cheer1: 'לא נורא, גיבורים!', cheer2: 'השאלה הבאה שלכם!', cheer3: 'גיבורים אף פעם לא מוותרים!', watch: 'הסתכלו על המסך הגדול!', mvp: '{name} מוביל/ה את המתקפה!', up: '{name} עולה בדירוג!', hit: 'המתקפה שלך פגעה!' },
+    ar: { boss0: 'الغيمة العاصفة المتذمّرة', boss1: 'بيب الروبوت المشاكس', boss2: 'التنين النعسان', arrives: '{boss} يريد إيقاف الصف! أجيبوا معًا لتفوزوا.', energy: 'طاقة الزعيم', hits: 'ضربات الصف: {n}', phase2: 'الزعيم يترنّح! استمرّوا!', phase3: 'اقتربتم! دفعة كبيرة أخيرة!', finale: 'السؤال الأخير: الضربة الحاسمة!', defeated: 'هُزم الزعيم! نجحتم معًا!', streak: 'سلسلة ×{n}', power1: 'نجوم نارية!', power2: 'ضربة برق!', power3: 'شعاع قوس قزح!', cheer1: 'لا بأس يا بطل!', cheer2: 'السؤال القادم لك!', cheer3: 'الأبطال لا يستسلمون أبدًا!', watch: 'انظر إلى الشاشة الكبيرة!', mvp: '{name} يقود الهجوم!', up: '{name} يتقدّم!', hit: 'هجومك أصاب!' },
+  };
+  NEW['en-GB'] = NEW.en;
+  Object.keys(NEW).forEach(function (k) { if (STR[k]) Object.assign(STR[k], NEW[k]); });
+  O.strings(STR);
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };
   document.documentElement.dir = O.dir || 'ltr'; document.documentElement.lang = O.lang || 'en';
   document.documentElement.className = BRB.theme || 'auto';
   document.title = t('title');
-  var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, ringTimer = 0, myScore = 0;
-  var SHAPES = ['▲', '◆', '●', '■'];
-  function banner(s) { $('banner').textContent = s || ''; }
+  var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, ringTimer = 0, myScore = 0, myStreak = 0, total = 0;
+  var REDUCED = !!(O.settings && O.settings.reduced) || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var RTL = (O.dir || 'ltr') === 'rtl';
+  var SHAPES = ['▲', '◆', '●', '■'], TILE = ['#e9465c', '#2f6bff', '#b98400', '#27996a'];
+  var FONT = getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+  document.body.classList.toggle('host', host);
+  function banner(s, big) { var b = $('banner'); b.textContent = s || ''; b.classList.toggle('big', !!big && !!s); }
+  var bannerTo = 0;
+  function flash(s, ms, big) { banner(s, big); clearTimeout(bannerTo); bannerTo = setTimeout(function () { if ($('banner').textContent === s) banner(''); }, ms || 2000); }
   function say(s) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = s; }, 30); }
+  function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not allowed here */ } }
+  var now = function () { return performance.now(); };
 
-  // ---- the lobby: everyone bouncing on a meadow, emotes over their heads ----
-  var flat = L.flat({ me: true, px: 72 }), cv = $('lobby'), ctx = cv.getContext('2d'), emotes = new Map(), last = performance.now();
-  var EMO = { wave: '👋', cheer: '🎉', jump: '⬆️', dance: '💃', clap: '👏', heart: '❤️' };
-  L.on('emote', function (e) { emotes.set(e.from, { name: e.name, until: performance.now() + 2000 }); });
-  function drawLobby(ts) {
-    var dt = (ts - last) / 1000; last = ts;
-    var W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
-    if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    var showLobby = phase === 'lobby' || phase === 'loading' || phase === 'countdown';
-    cv.style.visibility = showLobby || phase === 'ended' ? 'visible' : 'hidden';
-    if (showLobby) {
-      var grd = ctx.createLinearGradient(0, 0, 0, H); grd.addColorStop(0, '#bfe8ff'); grd.addColorStop(0.55, '#d8f3c4'); grd.addColorStop(1, '#9ad46c');
-      ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
-      var all = L.players(), sc = 1, tms = L.teamsOn ? L.teams() : [];
-      // Team mode: one band per team (a header with the team's shape, icon, name and size), its players inside.
-      var groups = tms.length ? tms.map(function (tm) { return { tm: tm, list: all.filter(function (p) { return p.team === tm.team; }) }; }) : [{ tm: null, list: all }];
-      var loose = tms.length ? all.filter(function (p) { return !p.team; }) : [];
-      if (loose.length) groups[groups.length - 1].list = groups[groups.length - 1].list.concat(loose);
-      var bc = groups.length === 1 ? 1 : W > 700 ? groups.length : Math.min(2, groups.length), br = Math.ceil(groups.length / bc);
-      var top0 = H * (tms.length ? 0.2 : 0.3), bw = W / bc, bh = (H - top0) / br, rtl = (O.dir || 'ltr') === 'rtl', rr = 44;
-      groups.forEach(function (g, gi) {
-        var col = gi % bc, row = Math.floor(gi / bc), x0 = (rtl ? bc - 1 - col : col) * bw, y0 = top0 + row * bh, head = g.tm ? 40 : 0;
-        if (g.tm) {
-          ctx.globalAlpha = 0.16; ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, bh - 6); ctx.globalAlpha = 1;
-          ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, head); ctx.strokeStyle = '#1d2340'; ctx.lineWidth = 2; ctx.strokeRect(x0 + 4, y0, bw - 8, bh - 6);
-          L.drawShape(ctx, g.tm.shape, rtl ? x0 + bw - 26 : x0 + 26, y0 + head / 2, 12, g.tm.ink, null);
-          ctx.fillStyle = g.tm.ink; ctx.font = '800 17px system-ui, sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = rtl ? 'right' : 'left'; try { ctx.direction = rtl ? 'rtl' : 'ltr'; } catch (er) { /* old canvas */ }
-          ctx.fillText(g.tm.icon + ' ' + g.tm.name + ' · ' + g.list.length, rtl ? x0 + bw - 46 : x0 + 46, y0 + head / 2, bw - 60); ctx.textBaseline = 'alphabetic';
-        }
-        var n = g.list.length, cols = Math.max(1, Math.min(8, Math.ceil(Math.sqrt(Math.max(1, n) * bw / Math.max(1, bh - head))))), rows = Math.max(1, Math.ceil(n / cols));
-        var cw = bw / cols, ch = (bh - head) / rows, r = Math.max(12, Math.min(44, Math.min(cw, ch) * 0.3)); rr = Math.min(rr, r);
-        g.list.forEach(function (p, i) {
-          var cx = x0 + (i % cols + 0.5) * cw, cy = y0 + head + (Math.floor(i / cols) + 0.7) * ch;
-          var hop = O.settings && O.settings.reduced ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
-          flat.place(p.seat, cx / sc, (cy - hop) / sc, 0);
-          var e = emotes.get(p.seat); if (e && e.until > performance.now()) { ctx.font = Math.round(r) + 'px system-ui'; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
-        });
-      });
-      flat.draw(ctx, { scale: sc, r: rr });
-    }
-    requestAnimationFrame(drawLobby);
+  // ---- the boss ----------------------------------------------------------------------------------------------------
+  // hp: what the bar shows (eases to hpTo). dealt[i]: the share of energy question i took (from its reveal's counts).
+  var boss = { kind: 0, hp: 100, hpTo: 100, hitT: -1e9, hitPow: 0, mood: 'calm', beatT: 0, dealt: {}, said: {} };
+  function setKind(k) { k = ((k | 0) % 3 + 3) % 3; boss.kind = k; $('bossname').textContent = t('boss' + k); $('hpbar').setAttribute('aria-label', t('energy') + ': ' + t('boss' + k)); }
+  function moodOf(hp) { return hp <= 0 ? 'beaten' : hp <= 33 ? 'dizzy' : hp <= 66 ? 'angry' : 'calm'; }
+  /** The energy a reveal takes: every question has an equal share; how much of it lands depends on how many answered
+   *  right (never nothing: a brave try still chips at the boss). The last question takes whatever is left. */
+  function applyReveal(rv) {
+    if (rv.i == null || boss.dealt[rv.i] != null || !total) return 0;
+    var share = 100 / total, counts = rv.counts || [], answered = counts.reduce(function (a, b) { return a + (b || 0); }, 0);
+    var right = rv.skipped ? 0 : counts[rv.answer] || 0, frac = answered ? right / answered : 0;
+    var dmg = rv.skipped ? 0 : share * (0.45 + 0.55 * frac);
+    boss.dealt[rv.i] = dmg;
+    var left = 100; Object.keys(boss.dealt).forEach(function (k) { left -= boss.dealt[k]; });
+    var last = rv.i >= total - 1;
+    var was = boss.hpTo; boss.hpTo = last ? 0 : Math.max(6, left);
+    return was - boss.hpTo;
   }
-  requestAnimationFrame(drawLobby);
+  /** Joining (or reloading) in the middle: no reveals seen yet, so start from a fair guess for this question. */
+  function catchUp(i) { if (!Object.keys(boss.dealt).length && i > 0 && total) { boss.hpTo = boss.hp = Math.max(8, 100 - (100 / total) * i * 0.75); } }
+  function hpBar() {
+    var f = Math.max(0, Math.min(100, boss.hp)), el = $('hpfill');
+    el.style.transform = 'scaleX(' + (f / 100).toFixed(3) + ')';
+    el.className = f <= 33 ? 'low' : f <= 66 ? 'mid' : '';
+    $('hpbar').setAttribute('aria-valuenow', String(Math.round(f)));
+  }
+  function moodCheck() {
+    var m = moodOf(boss.hpTo);
+    if (m === boss.mood) return;
+    boss.mood = m;
+    if (m === 'angry' && !boss.said.a) { boss.said.a = 1; later(function () { flash(t('phase2'), 2000); say(t('phase2')); }, 900); }
+    if (m === 'dizzy' && !boss.said.d) { boss.said.d = 1; later(function () { flash(t('phase3'), 2000); say(t('phase3')); }, 900); }
+    if (m === 'beaten') { boss.beatT = now() + 700; }
+  }
+  var timers = [];
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
 
-  // ---- questions ----
+  // ---- drawing: the arena (sky, the boss, the lobby crowd) and the effects layer -----------------------------------
+  var cv = $('lobby'), ctx = cv.getContext('2d'), fx = $('fx'), fctx = fx.getContext('2d');
+  var flat = L.flat({ me: true, px: 72 }), emotes = new Map(), last = now();
+  var EMO = { wave: '👋', cheer: '🎉', jump: '⬆️', dance: '💃', clap: '👏', heart: '❤️' };
+  L.on('emote', function (e) { emotes.set(e.from, { name: e.name, until: now() + 2000 }); });
+  var INK = '#1d2340';
+  function fit(c, x) {
+    var W = c.clientWidth, H = c.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+    if (c.width !== Math.round(W * dpr) || c.height !== Math.round(H * dpr)) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); return { W: W, H: H };
+  }
+  var SKY = [['#8fd3ff', '#dff4ff', '#a6e07c', '#7cc85a'], ['#3d3a8c', '#9c8cf0', '#5b5bb5', '#45449a'], ['#ffb37a', '#ffe0b8', '#e8a46a', '#c98250']];
+  function drawSky(W, H, ts) {
+    var s = SKY[boss.kind], g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, s[0]); g.addColorStop(0.62, s[1]); g.addColorStop(1, s[1]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // far hills / city / mountains, then a near ground
+    ctx.fillStyle = s[2];
+    ctx.beginPath(); ctx.moveTo(0, H);
+    for (var x = 0; x <= W + 40; x += 40) {
+      var y = boss.kind === 1 ? H * 0.72 - ((x / 40) % 3 === 0 ? 70 : (x / 40) % 2 ? 40 : 20) : boss.kind === 2 ? H * 0.7 - Math.abs(Math.sin(x / 140)) * H * 0.16 : H * 0.74 - Math.sin(x / 170) * H * 0.05;
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = s[3]; ctx.beginPath(); ctx.moveTo(0, H);
+    for (x = 0; x <= W + 30; x += 30) ctx.lineTo(x, H * 0.84 + Math.sin(x / 90 + 1) * 10);
+    ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+    // a few twinkles or drifting puffs
+    for (var i = 0; i < 14; i++) {
+      var px = ((i * 977) % 1000) / 1000 * W, py = ((i * 613) % 1000) / 1000 * H * 0.6, ph = REDUCED ? 0 : ts / 900 + i;
+      ctx.globalAlpha = boss.kind === 1 ? 0.5 + 0.5 * Math.sin(ph) : 0.35;
+      ctx.fillStyle = '#fff';
+      if (boss.kind === 1) { star(ctx, px, py, 2.5 + (i % 3), '#fff', null); }
+      else { ctx.beginPath(); ctx.arc((px + (REDUCED ? 0 : ts * 0.01 * (1 + i % 3))) % (W + 60) - 30, py, 10 + (i % 4) * 5, 0, 6.3); ctx.fill(); }
+    }
+    ctx.globalAlpha = 1;
+  }
+  function star(c, x, y, r, fill, stroke, rot) {
+    c.beginPath();
+    for (var i = 0; i < 10; i++) { var a = (rot || 0) - Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.48 : r; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+    c.closePath(); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.strokeStyle = stroke; c.lineWidth = Math.max(1.5, r * 0.18); c.stroke(); }
+  }
+  function blob(c, circles, fill, lw) {
+    c.lineWidth = lw * 2; c.strokeStyle = INK; c.fillStyle = INK;
+    circles.forEach(function (k) { c.beginPath(); c.arc(k[0], k[1], k[2], 0, 6.3); c.stroke(); });
+    c.fillStyle = fill; circles.forEach(function (k) { c.beginPath(); c.arc(k[0], k[1], k[2], 0, 6.3); c.fill(); });
+  }
+  function rrect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function eyes(c, R, lx, rx, y, mood, ts, opts) {
+    opts = opts || {};
+    [lx, rx].forEach(function (ex, k) {
+      if (mood === 'dizzy') { // swirls
+        c.strokeStyle = INK; c.lineWidth = R * 0.035; c.beginPath();
+        for (var a = 0; a < 12; a += 0.4) c.lineTo(ex + Math.cos(a + (REDUCED ? 0 : ts / 200) * (k ? 1 : -1)) * a * R * 0.012, y + Math.sin(a + (REDUCED ? 0 : ts / 200) * (k ? 1 : -1)) * a * R * 0.012);
+        c.stroke(); return;
+      }
+      if (mood === 'beaten') { c.strokeStyle = INK; c.lineWidth = R * 0.045; c.beginPath(); c.arc(ex, y + R * 0.03, R * 0.1, Math.PI * 1.1, Math.PI * 1.9); c.stroke(); return; }
+      if (opts.sleepy && mood === 'calm') { c.strokeStyle = INK; c.lineWidth = R * 0.045; c.beginPath(); c.arc(ex, y - R * 0.02, R * 0.1, Math.PI * 0.15, Math.PI * 0.85); c.stroke(); return; }
+      c.fillStyle = '#fff'; c.strokeStyle = INK; c.lineWidth = R * 0.03;
+      c.beginPath(); c.ellipse(ex, y, R * 0.13, R * 0.16, 0, 0, 6.3); c.fill(); c.stroke();
+      c.fillStyle = INK; c.beginPath(); c.arc(ex + (k ? -1 : 1) * R * 0.02, y + R * 0.03, R * 0.07, 0, 6.3); c.fill();
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(ex + (k ? -1 : 1) * R * 0.02 + R * 0.025, y, R * 0.022, 0, 6.3); c.fill();
+      if (mood === 'angry' || opts.brows) { // brows
+        c.strokeStyle = INK; c.lineWidth = R * 0.05; c.lineCap = 'round'; c.beginPath();
+        var tilt = mood === 'angry' ? 0.09 : 0.03;
+        c.moveTo(ex - R * 0.14, y - R * (k ? 0.17 + tilt : 0.17 + tilt * -0.3) - R * 0.04); c.lineTo(ex + R * 0.14, y - R * (k ? 0.17 - tilt * 0.3 : 0.17 + tilt) - R * 0.04);
+        c.stroke();
+      }
+    });
+  }
+  function sweat(c, R, x, y, ts) { c.fillStyle = '#7fd0ff'; c.strokeStyle = INK; c.lineWidth = R * 0.02; var dy = REDUCED ? 0 : (ts / 8) % (R * 0.25); c.beginPath(); c.moveTo(x, y + dy - R * 0.06); c.quadraticCurveTo(x + R * 0.06, y + dy + R * 0.04, x, y + dy + R * 0.06); c.quadraticCurveTo(x - R * 0.06, y + dy + R * 0.04, x, y + dy - R * 0.06); c.fill(); c.stroke(); }
+  function hearts(c, R, ts) {
+    for (var i = 0; i < 5; i++) {
+      var a = (REDUCED ? 0 : ts / 700) + i * 1.25, x = Math.cos(a) * R * 1.05, y = -R * 0.2 + Math.sin(a) * R * 0.45;
+      c.font = Math.round(R * 0.22) + 'px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(i % 2 ? '💖' : '✨', x, y);
+    }
+  }
+  function orbitStars(c, R, ts) { for (var i = 0; i < 3; i++) { var a = (REDUCED ? 0 : ts / 380) + i * 2.1; star(c, Math.cos(a) * R * 0.6, -R * 0.78 + Math.sin(a) * R * 0.14, R * 0.08, '#ffe066', INK); } }
+
+  function drawCloud(c, R, mood, ts) {
+    var body = mood === 'beaten' ? '#ffffff' : mood === 'dizzy' ? '#8f9cb6' : mood === 'angry' ? '#a9b6cc' : '#d3dceb';
+    if (mood === 'beaten') { // a rainbow behind a happy cloud
+      ['#ff6a6a', '#ffb03b', '#ffe066', '#6ee07a', '#4fb4ff', '#9d7bff'].forEach(function (col, i) { c.strokeStyle = col; c.lineWidth = R * 0.09; c.beginPath(); c.arc(0, R * 0.55, R * (1.45 - i * 0.09), Math.PI, 0); c.stroke(); });
+    } else if (mood !== 'calm') { // little lightning bolts underneath
+      for (var i = -1; i <= 1; i++) {
+        if (!REDUCED && Math.sin(ts / 90 + i * 2) < 0.2) continue;
+        c.fillStyle = '#ffe066'; c.strokeStyle = INK; c.lineWidth = R * 0.025; var bx = i * R * 0.45, by = R * 0.48;
+        c.beginPath(); c.moveTo(bx, by); c.lineTo(bx - R * 0.1, by + R * 0.25); c.lineTo(bx, by + R * 0.22); c.lineTo(bx - R * 0.05, by + R * 0.45); c.lineTo(bx + R * 0.12, by + R * 0.15); c.lineTo(bx + R * 0.02, by + R * 0.18); c.closePath(); c.fill(); c.stroke();
+      }
+    } else { // gentle grumpy drizzle
+      c.strokeStyle = '#6ab6ff'; c.lineWidth = R * 0.03; c.lineCap = 'round';
+      for (i = 0; i < 6; i++) { var rx = (i - 2.5) * R * 0.22, ry = R * 0.55 + (REDUCED ? 0 : (ts / 4 + i * 40) % (R * 0.4)); c.beginPath(); c.moveTo(rx, ry); c.lineTo(rx - R * 0.03, ry + R * 0.08); c.stroke(); }
+    }
+    blob(c, [[0, 0, R * 0.62], [-R * 0.58, R * 0.12, R * 0.44], [R * 0.58, R * 0.12, R * 0.44], [-R * 0.28, -R * 0.36, R * 0.46], [R * 0.3, -R * 0.4, R * 0.42], [0, R * 0.26, R * 0.5]], body, R * 0.035);
+    c.globalAlpha = 0.5; c.fillStyle = '#fff'; c.beginPath(); c.ellipse(-R * 0.35, -R * 0.5, R * 0.18, R * 0.08, -0.5, 0, 6.3); c.fill(); c.globalAlpha = 1;
+    eyes(c, R, -R * 0.22, R * 0.22, -R * 0.05, mood, ts, { brows: true });
+    c.fillStyle = 'rgba(255,120,150,.45)'; c.beginPath(); c.arc(-R * 0.4, R * 0.12, R * 0.08, 0, 6.3); c.arc(R * 0.4, R * 0.12, R * 0.08, 0, 6.3); c.fill();
+    mouth(c, R, 0, R * 0.2, mood, ts);
+    if (mood === 'angry' || mood === 'dizzy') sweat(c, R, R * 0.5, -R * 0.3, ts);
+    if (mood === 'dizzy') orbitStars(c, R, ts);
+    if (mood === 'beaten') hearts(c, R, ts);
+  }
+  function mouth(c, R, x, y, mood, ts) {
+    c.strokeStyle = INK; c.lineWidth = R * 0.045; c.lineCap = 'round'; c.beginPath();
+    if (mood === 'beaten') { c.fillStyle = '#ff7d9a'; c.arc(x, y - R * 0.02, R * 0.13, 0.1, Math.PI - 0.1); c.closePath(); c.fill(); c.stroke(); return; }
+    if (mood === 'calm') { c.arc(x, y + R * 0.1, R * 0.12, Math.PI * 1.2, Math.PI * 1.8); c.stroke(); return; }
+    if (mood === 'angry') { c.fillStyle = '#fff'; rrect(c, x - R * 0.15, y - R * 0.04, R * 0.3, R * 0.1, R * 0.03); c.fill(); c.stroke(); c.beginPath(); for (var i = 1; i < 4; i++) { c.moveTo(x - R * 0.15 + i * R * 0.075, y - R * 0.04); c.lineTo(x - R * 0.15 + i * R * 0.075, y + R * 0.06); } c.lineWidth = R * 0.02; c.stroke(); return; }
+    for (var k = 0; k <= 8; k++) c.lineTo(x - R * 0.16 + k * R * 0.04, y + Math.sin(k * 1.6 + (REDUCED ? 0 : ts / 120)) * R * 0.03); c.stroke();
+  }
+  function drawRobot(c, R, mood, ts) {
+    var metal = mood === 'beaten' ? '#c6f0ff' : mood === 'dizzy' ? '#8e9cb0' : '#b8c7d9', blink = REDUCED ? 1 : Math.sin(ts / 300) > 0 ? 1 : 0.4;
+    // arms
+    c.lineWidth = R * 0.1; c.strokeStyle = INK; c.lineCap = 'round';
+    var wave = REDUCED ? 0 : Math.sin(ts / (mood === 'beaten' ? 160 : 400)) * (mood === 'beaten' ? 0.6 : 0.25);
+    [[-1, wave], [1, -wave]].forEach(function (s) { c.save(); c.translate(s[0] * R * 0.62, R * 0.45); c.rotate(s[0] * (0.6 + s[1])); c.beginPath(); c.moveTo(0, 0); c.lineTo(s[0] * R * 0.35, -R * 0.1); c.stroke(); c.strokeStyle = metal; c.lineWidth = R * 0.06; c.stroke(); c.fillStyle = '#ffb03b'; c.strokeStyle = INK; c.lineWidth = R * 0.03; c.beginPath(); c.arc(s[0] * R * 0.38, -R * 0.11, R * 0.09, 0, 6.3); c.fill(); c.stroke(); c.restore(); c.lineWidth = R * 0.1; c.strokeStyle = INK; });
+    // body
+    c.fillStyle = metal; c.strokeStyle = INK; c.lineWidth = R * 0.05; rrect(c, -R * 0.5, R * 0.25, R, R * 0.6, R * 0.14); c.fill(); c.stroke();
+    c.fillStyle = mood === 'angry' ? '#ff5c5c' : mood === 'beaten' ? '#ff7db3' : '#55e0a0'; c.globalAlpha = blink; c.beginPath(); c.arc(0, R * 0.55, R * 0.1, 0, 6.3); c.fill(); c.globalAlpha = 1; c.lineWidth = R * 0.03; c.stroke();
+    // antenna
+    var bend = mood === 'dizzy' ? 0.5 : 0;
+    c.lineWidth = R * 0.045; c.beginPath(); c.moveTo(0, -R * 0.55); c.quadraticCurveTo(R * 0.05 + bend * R * 0.2, -R * 0.75, bend * R * 0.3, -R * 0.88); c.stroke();
+    c.fillStyle = mood === 'angry' ? '#ff5c5c' : '#ffe066'; c.globalAlpha = blink; c.beginPath(); c.arc(bend * R * 0.3, -R * 0.9, R * 0.08, 0, 6.3); c.fill(); c.globalAlpha = 1; c.lineWidth = R * 0.03; c.stroke();
+    // head + face screen
+    c.fillStyle = metal; c.lineWidth = R * 0.05; rrect(c, -R * 0.66, -R * 0.58, R * 1.32, R * 0.86, R * 0.2); c.fill(); c.stroke();
+    c.fillStyle = '#ffb03b'; [-1, 1].forEach(function (s) { c.beginPath(); c.arc(s * R * 0.7, -R * 0.15, R * 0.09, 0, 6.3); c.fill(); c.stroke(); });
+    c.fillStyle = '#1d2340'; rrect(c, -R * 0.5, -R * 0.45, R, R * 0.6, R * 0.12); c.fill();
+    var led = mood === 'angry' ? '#ff5c5c' : mood === 'beaten' ? '#ff7db3' : '#5cf2ff';
+    c.fillStyle = led; c.strokeStyle = led;
+    if (mood === 'beaten') { c.font = Math.round(R * 0.26) + 'px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('♥', -R * 0.2, -R * 0.2); c.fillText('♥', R * 0.2, -R * 0.2); }
+    else if (mood === 'dizzy') { c.lineWidth = R * 0.03; [-1, 1].forEach(function (s) { c.beginPath(); c.moveTo(s * R * 0.2 - R * 0.07, -R * 0.27); c.lineTo(s * R * 0.2 + R * 0.07, -R * 0.13); c.moveTo(s * R * 0.2 + R * 0.07, -R * 0.27); c.lineTo(s * R * 0.2 - R * 0.07, -R * 0.13); c.stroke(); }); }
+    else { [-1, 1].forEach(function (s) { rrect(c, s * R * 0.2 - R * 0.07, -R * 0.3 + (mood === 'angry' ? (s > 0 ? R * 0.03 : 0) : 0), R * 0.14, mood === 'angry' ? R * 0.1 : R * 0.16, R * 0.03); c.fill(); }); }
+    c.lineWidth = R * 0.035; c.beginPath();
+    if (mood === 'beaten' || mood === 'calm') { c.arc(0, -R * 0.08, R * 0.12, 0.2, Math.PI - 0.2); } else if (mood === 'angry') { c.moveTo(-R * 0.14, -R * 0.0); c.lineTo(R * 0.14, -R * 0.0); } else { for (var k = 0; k <= 6; k++) c.lineTo(-R * 0.15 + k * R * 0.05, -R * 0.02 + (k % 2 ? R * 0.03 : -R * 0.03)); }
+    c.stroke();
+    if (mood === 'angry' || mood === 'dizzy') { // steam puffs from the ears
+      c.fillStyle = 'rgba(255,255,255,.8)'; for (var p = 0; p < 3; p++) { var f = REDUCED ? 0.5 : ((ts / 900) + p / 3) % 1; [-1, 1].forEach(function (s) { c.beginPath(); c.arc(s * (R * 0.8 + f * R * 0.3), -R * 0.25 - f * R * 0.35, R * (0.05 + f * 0.08), 0, 6.3); c.fill(); }); }
+    }
+    if (mood === 'dizzy') orbitStars(c, R, ts);
+    if (mood === 'beaten') hearts(c, R, ts);
+  }
+  function drawDragon(c, R, mood, ts) {
+    var green = mood === 'beaten' ? '#9be8a2' : mood === 'dizzy' ? '#6fb87a' : '#7fd28a';
+    // wings
+    c.fillStyle = '#b48cff'; c.strokeStyle = INK; c.lineWidth = R * 0.04;
+    var flap = REDUCED ? 0 : Math.sin(ts / (mood === 'calm' ? 700 : 220)) * 0.18;
+    [-1, 1].forEach(function (s) { c.save(); c.translate(s * R * 0.45, -R * 0.15); c.rotate(s * (0.3 + flap)); c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(s * R * 0.55, -R * 0.65, s * R * 0.75, -R * 0.2); c.quadraticCurveTo(s * R * 0.5, -R * 0.2, s * R * 0.55, R * 0.05); c.quadraticCurveTo(s * R * 0.3, -R * 0.05, 0, R * 0.15); c.closePath(); c.fill(); c.stroke(); c.restore(); });
+    // tail
+    c.lineWidth = R * 0.16; c.strokeStyle = INK; c.lineCap = 'round'; c.beginPath(); c.moveTo(R * 0.4, R * 0.55); c.quadraticCurveTo(R * 0.95, R * 0.7, R * 0.9, R * 0.3); c.stroke(); c.lineWidth = R * 0.09; c.strokeStyle = green; c.stroke();
+    c.fillStyle = '#ffb03b'; c.strokeStyle = INK; c.lineWidth = R * 0.03; c.beginPath(); c.moveTo(R * 0.9, R * 0.18); c.lineTo(R * 1.02, R * 0.32); c.lineTo(R * 0.82, R * 0.34); c.closePath(); c.fill(); c.stroke();
+    // body and belly
+    blob(c, [[0, R * 0.32, R * 0.55], [0, -R * 0.22, R * 0.5]], green, R * 0.035);
+    c.fillStyle = '#fff1b8'; c.beginPath(); c.ellipse(0, R * 0.42, R * 0.32, R * 0.36, 0, 0, 6.3); c.fill();
+    // horns and spikes
+    c.fillStyle = '#ffe066'; c.strokeStyle = INK; c.lineWidth = R * 0.03;
+    [-1, 1].forEach(function (s) { c.beginPath(); c.moveTo(s * R * 0.22, -R * 0.62); c.lineTo(s * R * 0.32, -R * 0.88); c.lineTo(s * R * 0.38, -R * 0.58); c.closePath(); c.fill(); c.stroke(); });
+    eyes(c, R, -R * 0.2, R * 0.2, -R * 0.26, mood, ts, { sleepy: true });
+    // nostrils, mouth
+    c.fillStyle = INK; c.beginPath(); c.arc(-R * 0.07, -R * 0.06, R * 0.025, 0, 6.3); c.arc(R * 0.07, -R * 0.06, R * 0.025, 0, 6.3); c.fill();
+    if (mood === 'calm') { // a big yawn now and then, and Zzz
+      var yawn = REDUCED ? 0 : Math.max(0, Math.sin(ts / 1400)); c.fillStyle = '#c0425a'; c.strokeStyle = INK; c.lineWidth = R * 0.03; c.beginPath(); c.ellipse(0, R * 0.06, R * 0.08, R * (0.02 + yawn * 0.07), 0, 0, 6.3); c.fill(); c.stroke();
+      c.fillStyle = '#fff'; c.font = '800 ' + Math.round(R * 0.2) + 'px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle';
+      for (var z = 0; z < 3; z++) { var f = REDUCED ? z / 3 : ((ts / 1600) + z / 3) % 1; c.globalAlpha = 1 - f; c.fillText('z', R * (0.45 + f * 0.35), -R * (0.5 + f * 0.5)); } c.globalAlpha = 1;
+    } else mouth(c, R, 0, R * 0.06, mood, ts);
+    c.fillStyle = 'rgba(255,120,150,.45)'; c.beginPath(); c.arc(-R * 0.36, -R * 0.08, R * 0.07, 0, 6.3); c.arc(R * 0.36, -R * 0.08, R * 0.07, 0, 6.3); c.fill();
+    if (mood === 'angry' || mood === 'dizzy') { // smoke puffs from the nose
+      c.fillStyle = 'rgba(120,120,120,.55)'; for (var p = 0; p < 3; p++) { var g = REDUCED ? 0.5 : ((ts / 700) + p / 3) % 1; [-1, 1].forEach(function (s) { c.beginPath(); c.arc(s * (R * 0.1 + g * R * 0.15), -R * 0.1 - g * R * 0.3, R * (0.03 + g * 0.06), 0, 6.3); c.fill(); }); }
+      sweat(c, R, -R * 0.45, -R * 0.45, ts);
+    }
+    if (mood === 'dizzy') orbitStars(c, R, ts);
+    if (mood === 'beaten') hearts(c, R, ts);
+  }
+  function bossBox() {
+    var r = $('stage').getBoundingClientRect(), show = r.height > 20;
+    var R = Math.min(r.height * 0.46, r.width * 0.22, innerHeight * 0.2);
+    return { x: r.left + r.width / 2, y: r.top + r.height * 0.52, R: R, show: show };
+  }
+  function drawBoss(ts) {
+    var b = bossBox(); if (!b.show) return;
+    var since = ts - boss.hitT, mood = boss.mood === 'beaten' && ts < boss.beatT ? 'dizzy' : boss.mood;
+    var bob = REDUCED ? 0 : Math.sin(ts / 600) * b.R * 0.04, wob = 0, sq = 1;
+    if (!REDUCED && since < 600) { var d = 1 - since / 600; wob = Math.sin(since / 30) * 0.18 * d * (0.6 + boss.hitPow); sq = 1 - 0.12 * d * Math.abs(Math.cos(since / 40)); }
+    if (mood === 'beaten' && !REDUCED) { bob = Math.sin(ts / 220) * b.R * 0.08; wob = Math.sin(ts / 300) * 0.08; }
+    // shadow on the ground
+    ctx.fillStyle = 'rgba(0,0,0,.14)'; ctx.beginPath(); ctx.ellipse(b.x, b.y + b.R * 1.02, b.R * 0.7, b.R * 0.1, 0, 0, 6.3); ctx.fill();
+    // the boss is drawn on its own small canvas, so a hit can flash just the boss white
+    var size = Math.ceil(b.R * 4.4), dpr = Math.min(2, devicePixelRatio || 1);
+    if (bossCv.width !== Math.round(size * dpr)) { bossCv.width = bossCv.height = Math.round(size * dpr); }
+    bossCtx.setTransform(dpr, 0, 0, dpr, 0, 0); bossCtx.clearRect(0, 0, size, size);
+    bossCtx.save(); bossCtx.translate(size / 2, size / 2 + bob); bossCtx.rotate(wob); bossCtx.scale(2 - sq, sq);
+    [drawCloud, drawRobot, drawDragon][boss.kind](bossCtx, b.R, mood, ts);
+    bossCtx.restore();
+    if (since < 170) { bossCtx.globalCompositeOperation = 'source-atop'; bossCtx.fillStyle = 'rgba(255,255,255,' + (0.7 * (1 - since / 170)).toFixed(2) + ')'; bossCtx.fillRect(0, 0, size, size); bossCtx.globalCompositeOperation = 'source-over'; }
+    ctx.drawImage(bossCv, b.x - size / 2, b.y - size / 2, size, size);
+  }
+  var bossCv = document.createElement('canvas'), bossCtx = bossCv.getContext('2d');
+  function drawLobbyCrowd(W, H, ts) {
+    var all = L.players(), tms = L.teamsOn ? L.teams() : [];
+    var groups = tms.length ? tms.map(function (tm) { return { tm: tm, list: all.filter(function (p) { return p.team === tm.team; }) }; }) : [{ tm: null, list: all }];
+    var loose = tms.length ? all.filter(function (p) { return !p.team; }) : [];
+    if (loose.length) groups[groups.length - 1].list = groups[groups.length - 1].list.concat(loose);
+    var st = $('stage').getBoundingClientRect(), top0 = Math.max(st.bottom + 50, H * 0.42);
+    var bc = groups.length === 1 ? 1 : W > 700 ? groups.length : Math.min(2, groups.length), br = Math.ceil(groups.length / bc);
+    var bw = W / bc, bh = (H - top0) / br, rr = 44;
+    groups.forEach(function (g, gi) {
+      var col = gi % bc, row = Math.floor(gi / bc), x0 = (RTL ? bc - 1 - col : col) * bw, y0 = top0 + row * bh, head = g.tm ? 40 : 0;
+      if (g.tm) {
+        ctx.globalAlpha = 0.18; ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, bh - 6); ctx.globalAlpha = 1;
+        ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, head); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x0 + 4, y0, bw - 8, bh - 6);
+        L.drawShape(ctx, g.tm.shape, RTL ? x0 + bw - 26 : x0 + 26, y0 + head / 2, 12, g.tm.ink, null);
+        ctx.fillStyle = g.tm.ink; ctx.font = '800 17px ' + FONT; ctx.textBaseline = 'middle'; ctx.textAlign = RTL ? 'right' : 'left'; try { ctx.direction = RTL ? 'rtl' : 'ltr'; } catch (er) { /* old canvas */ }
+        ctx.fillText(g.tm.icon + ' ' + g.tm.name + ' · ' + g.list.length, RTL ? x0 + bw - 46 : x0 + 46, y0 + head / 2, bw - 60); ctx.textBaseline = 'alphabetic';
+      }
+      var n = g.list.length, cols = Math.max(1, Math.min(8, Math.ceil(Math.sqrt(Math.max(1, n) * bw / Math.max(1, bh - head))))), rows = Math.max(1, Math.ceil(n / cols));
+      var cw = bw / cols, ch = (bh - head) / rows, r = Math.max(12, Math.min(40, Math.min(cw, ch) * 0.3)); rr = Math.min(rr, r);
+      g.list.forEach(function (p, i) {
+        var cx = x0 + (i % cols + 0.5) * cw, cy = y0 + head + (Math.floor(i / cols) + 0.7) * ch;
+        var hop = REDUCED ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
+        flat.place(p.seat, cx, cy - hop, 0);
+        var e = emotes.get(p.seat); if (e && e.until > now()) { ctx.font = Math.round(r) + 'px ' + FONT; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
+      });
+    });
+    flat.draw(ctx, { scale: 1, r: rr });
+  }
+
+  // ---- effects: attack stars, sparks, floating numbers ------------------------------------------------------------
+  var shots = [], sparks = [], floats = [];
+  var POWER = [null, { col: '#ffe066' }, { col: '#ffe066' }, { col: '#ff8a3d', key: 'power1' }, { col: '#ff8a3d', key: 'power1' }, { col: '#7fdcff', bolt: true, key: 'power2' }, { col: '#7fdcff', bolt: true, key: 'power2' }, { rainbow: true, key: 'power3' }];
+  function powerOf(streak) { return POWER[Math.max(1, Math.min(7, streak))]; }
+  /** A star from (x, y) to the boss. size 0.5-2; delay ms; pw: a power look. */
+  function launch(x, y, size, delay, pw, mine) {
+    if (REDUCED) { later(function () { hit(size, mine); }, delay || 0); return; }
+    shots.push({ x0: x, y0: y, t0: now() + (delay || 0), dur: 650 + Math.random() * 250, size: size, pw: pw || POWER[1], spin: Math.random() * 6, bend: (Math.random() - 0.5) * 220, mine: !!mine, trail: [] });
+  }
+  var lastHitSfx = 0;
+  function hit(size, mine, x, y) {
+    boss.hitT = now(); boss.hitPow = Math.min(1, size / 2);
+    var b = bossBox();
+    if (!REDUCED && b.show) {
+      var hx = x != null ? x : b.x, hy = y != null ? y : b.y;
+      for (var i = 0; i < 8 + size * 6; i++) { var a = Math.random() * 6.3, v = 120 + Math.random() * 260 * size; sparks.push({ x: hx, y: hy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 80, life: 0.6 + Math.random() * 0.4, age: 0, col: ['#ffe066', '#ffffff', '#ff8fb8', '#7fdcff'][i % 4], r: 2 + Math.random() * 3 * size }); }
+    }
+    if (now() - lastHitSfx > 90) { lastHitSfx = now(); try { O.sfx(mine ? 'powerup' : 'hit'); } catch (e) { /* no sound */ } }
+  }
+  function floatText(text, x, y, col, size) { if (REDUCED) return; floats.push({ text: text, x: x, y: y, t0: now(), col: col || '#fff', size: size || 34 }); }
+  function drawFx(ts) {
+    var d = fit(fx, fctx); fctx.clearRect(0, 0, d.W, d.H);
+    var b = bossBox();
+    for (var i = shots.length - 1; i >= 0; i--) {
+      var s = shots[i], f = (ts - s.t0) / s.dur; if (f < 0) continue;
+      if (f >= 1) { shots.splice(i, 1); hit(s.size, s.mine, b.x + (Math.random() - 0.5) * b.R * 0.6, b.y + (Math.random() - 0.5) * b.R * 0.6); continue; }
+      var e = f * f * (3 - 2 * f), mx = (s.x0 + b.x) / 2 + s.bend, my = Math.min(s.y0, b.y) - 80;
+      var x = (1 - e) * (1 - e) * s.x0 + 2 * (1 - e) * e * mx + e * e * b.x, y = (1 - e) * (1 - e) * s.y0 + 2 * (1 - e) * e * my + e * e * b.y;
+      s.trail.push([x, y]); if (s.trail.length > 10) s.trail.shift();
+      var r = (10 + 10 * s.size) * (s.mine ? 1.3 : 1);
+      s.trail.forEach(function (p, k) {
+        fctx.globalAlpha = (k / s.trail.length) * 0.5;
+        fctx.fillStyle = s.pw.rainbow ? 'hsl(' + ((ts / 3 + k * 30) % 360) + ',95%,62%)' : s.pw.col;
+        fctx.beginPath(); fctx.arc(p[0], p[1], r * (0.3 + 0.5 * k / s.trail.length), 0, 6.3); fctx.fill();
+      });
+      fctx.globalAlpha = 1;
+      if (s.pw.bolt) { fctx.strokeStyle = '#fff'; fctx.lineWidth = 3; fctx.beginPath(); fctx.moveTo(x - r, y - r); fctx.lineTo(x, y); fctx.lineTo(x - r * 0.4, y + r * 0.2); fctx.lineTo(x + r, y + r); fctx.stroke(); }
+      star(fctx, x, y, r, s.pw.rainbow ? 'hsl(' + ((ts / 2) % 360) + ',95%,62%)' : s.pw.col, INK, s.spin + ts / 120);
+    }
+    var dt = Math.min(0.05, (ts - (drawFx.last || ts)) / 1000); drawFx.last = ts;
+    for (i = sparks.length - 1; i >= 0; i--) {
+      var p = sparks[i]; p.age += dt; if (p.age > p.life) { sparks.splice(i, 1); continue; }
+      p.vy += 500 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+      fctx.globalAlpha = 1 - p.age / p.life; star(fctx, p.x, p.y, p.r, p.col, null, p.age * 8);
+    }
+    fctx.globalAlpha = 1;
+    fctx.textAlign = 'center'; fctx.textBaseline = 'middle';
+    for (i = floats.length - 1; i >= 0; i--) {
+      var fl = floats[i], a = (ts - fl.t0) / 1400; if (a > 1) { floats.splice(i, 1); continue; }
+      fctx.globalAlpha = 1 - Math.max(0, a - 0.6) / 0.4; fctx.font = '900 ' + Math.round(fl.size * (1 + Math.min(0.3, a))) + 'px ' + FONT;
+      fctx.lineWidth = 6; fctx.strokeStyle = INK; fctx.strokeText(fl.text, fl.x, fl.y - a * 70); fctx.fillStyle = fl.col; fctx.fillText(fl.text, fl.x, fl.y - a * 70);
+    }
+    fctx.globalAlpha = 1;
+    if (sparks.length > 400) sparks.splice(0, sparks.length - 400);
+  }
+  function frame(ts) {
+    var d = fit(cv, ctx); ctx.clearRect(0, 0, d.W, d.H);
+    // the energy bar eases down (a little faster when far off)
+    if (boss.hp !== boss.hpTo) { var step = Math.max(0.15, Math.abs(boss.hp - boss.hpTo) * 0.06); boss.hp = boss.hp > boss.hpTo ? Math.max(boss.hpTo, boss.hp - step) : Math.min(boss.hpTo, boss.hp + step); if (REDUCED) boss.hp = boss.hpTo; hpBar(); }
+    drawSky(d.W, d.H, ts);
+    var lobbyish = phase === 'lobby' || phase === 'loading' || phase === 'countdown';
+    if (lobbyish && L.active) drawLobbyCrowd(d.W, d.H, ts);
+    drawBoss(ts);
+    drawFx(ts);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // ---- layout: how much room the boss gets ------------------------------------------------------------------------
+  function layout() {
+    var H = innerHeight, short = H < 560, size;
+    if (!$('board').hidden || !$('tboard').hidden) size = phase === 'ended' ? 0.13 : host ? 0.2 : 0.16;
+    else if (phase === 'ended') size = host ? 0.4 : 0.34;
+    else if (phase === 'lobby' || phase === 'loading' || phase === 'countdown') size = host ? 0.3 : 0.24;
+    else if (phase === 'between') size = host ? 0.2 : 0.17;
+    else size = host ? 0.27 : 0.17;
+    if (short) size *= 0.7;
+    document.body.style.setProperty('--stage', Math.round(H * size) + 'px');
+    document.body.classList.toggle('ended', phase === 'ended');
+    document.body.classList.toggle('between', phase === 'between');
+  }
+  addEventListener('resize', layout);
+
+  // ---- questions ----------------------------------------------------------------------------------------------------
   function showCard(q) {
-    Q = q; myPick = -1; lastResult = null;
-    $('board').hidden = true; $('card').hidden = false; $('qnum').hidden = false;
+    Q = q; myPick = -1; lastResult = null; total = q.n || total; catchUp(q.i);
+    $('board').hidden = true; $('tboard').hidden = true; $('card').hidden = false; $('qnum').hidden = false;
     $('qtext').textContent = q.q; $('qnum').textContent = t('qnum', { n: q.i + 1, total: q.n });
-    $('note').textContent = host ? t('answers', { n: 0 }) : q.answered ? t('locked') : '';
+    $('note').textContent = host ? t('answers', { n: 0 }) : q.answered ? t('locked') : ''; $('note').className = 'qb-note';
     var pad = $('pad'); pad.textContent = '';
     q.choices.forEach(function (c, i) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'qb-a c' + i;
+      var fill = document.createElement('span'); fill.className = 'fill'; fill.setAttribute('aria-hidden', 'true');
       var sh = document.createElement('span'); sh.className = 'sh'; sh.setAttribute('aria-hidden', 'true'); sh.textContent = SHAPES[i];
       var tx = document.createElement('span'); tx.className = 'tx'; tx.textContent = c;
-      b.append(sh, tx); b.setAttribute('aria-label', String.fromCharCode(65 + i) + ': ' + c);
+      b.append(fill, sh, tx); b.setAttribute('aria-label', String.fromCharCode(65 + i) + ': ' + c);
       b.disabled = host || !!q.answered;
       b.addEventListener('click', function () { choose(i); });
       pad.appendChild(b);
     });
-    banner(''); say(q.q);
+    var lastQ = q.i === q.n - 1;
+    if (lastQ) { flash('⚡ ' + t('finale'), 2200, true); say(t('finale')); } else banner('');
+    say(q.q);
     clearInterval(ringTimer); ringTimer = setInterval(ring, 100); ring();
+    layout();
     if (!host && !q.answered && pad.firstChild) pad.firstChild.focus({ preventScroll: true });
   }
   function ring() {
     if (!Q || phase !== 'playing') return;
-    var left = L.active ? L.quiz.left() : Math.max(0, practice.deadline - performance.now()), f = Math.max(0, Math.min(1, left / (Q.secs * 1000)));
+    var left = L.active ? L.quiz.left() : Math.max(0, practice.deadline - now()), f = Math.max(0, Math.min(1, left / (Q.secs * 1000)));
     $('ring').setAttribute('stroke-dashoffset', String(94.25 * (1 - f))); $('secs').textContent = Math.ceil(left / 1000);
+    $('ring').setAttribute('stroke', f < 0.25 ? '#e9465c' : '#2f6bff');
   }
   function choose(i) {
     if (host || !Q || myPick >= 0) return;
     if (L.active) { if (!L.quiz.answer(i)) return; } else practiceAnswer(i);
     myPick = i;
     [].forEach.call($('pad').children, function (b, k) { b.disabled = true; b.classList.toggle('pick', k === i); });
-    $('note').textContent = t('locked'); O.sfx('select');
+    if (L.active) { $('note').textContent = t('locked'); $('note').className = 'qb-note'; }
+    try { O.sfx('select'); } catch (e) { /* none */ } buzz(15);
   }
+  function tileRect(k) { var b = $('pad').children[k]; return b ? b.getBoundingClientRect() : null; }
   function showReveal(rv) {
     clearInterval(ringTimer);
     if (rv.skipped) { $('note').textContent = t('skipped'); return; }
+    var counts = rv.counts || [], max = Math.max(1, Math.max.apply(null, counts.concat([0])));
     [].forEach.call($('pad').children, function (b, k) {
-      b.disabled = true; b.classList.toggle('right', k === rv.answer);
-      if (host && rv.counts) { var n = document.createElement('span'); n.className = 'n'; n.textContent = rv.counts[k] || 0; b.appendChild(n); }
+      b.disabled = true; b.classList.toggle('right', k === rv.answer); b.classList.toggle('dim', k !== rv.answer);
+      if (k !== rv.answer && k === myPick) b.classList.add('nope');
+      if (host && counts.length) {
+        var n = document.createElement('span'); n.className = 'n'; n.textContent = counts[k] || 0; b.appendChild(n);
+        var fill = b.querySelector('.fill'); if (fill) requestAnimationFrame(function () { fill.style.transform = 'scaleX(' + ((counts[k] || 0) / max).toFixed(3) + ')'; });
+      }
     });
-    // the host's view: the answer bars, then the team board (team mode), then the top five (none when the leaderboard is off)
-    var tms = rv.teams || [], at = 2500;
-    if (host && tms.length) { setTimeout(function () { if (phase === 'between') teamBoard(tms, t('teams'), false); }, at); at += 2500; }
-    if (host && rv.top && rv.top.length) setTimeout(function () { if (phase === 'between') board(rv.top, t('top'), false); }, at);
+    // the class's attack: one star per right answer (at most 24 on screen) from the right answer's tile
+    var dmg = applyReveal(rv), right = counts[rv.answer] || 0, rc = tileRect(rv.answer);
+    var lastQ = rv.i >= total - 1;
+    if (rc) {
+      var n = host ? Math.min(24, Math.max(1, right)) : Math.min(6, right);
+      for (var s = 0; s < n; s++) launch(rc.left + rc.width * (0.15 + Math.random() * 0.7), rc.top + rc.height * (0.2 + Math.random() * 0.6), host ? 0.8 + Math.random() * 0.5 : 0.6, 150 + s * (host ? 60 : 90), POWER[1]);
+      if (lastQ) for (var m = 0; m < 10; m++) launch(rc.left + rc.width / 2, rc.top, 1.8, 900 + m * 60, POWER[7]);
+    }
+    if (host) {
+      later(function () { var b = bossBox(); floatText('-' + Math.max(1, Math.round(dmg)), b.x + b.R * 1.15 + 30, b.y, '#ffe066', Math.max(26, Math.min(48, b.R * 0.45))); flash(t('hits', { n: right }), 1800); say(t('hits', { n: right })); }, 900);
+    }
+    later(moodCheck, 1000);
+    // the host's view: the answer bars and the attack, then the team board (team mode), then the top five
+    var tms = rv.teams || [], at = 3000;
+    if (host && tms.length) { later(function () { if (phase === 'between') teamBoard(tms, t('teams'), false); }, at); at += 2600; }
+    if (host && rv.top && rv.top.length) later(function () { if (phase === 'between') board(rv.top, t('top'), false); }, at);
   }
   var lastResult = null;
   // team scores can land just after my result: the note follows them while the question is revealed
@@ -196,17 +608,39 @@
   function showResult(r, again) {
     if (host) return;
     lastResult = r;
-    if (r.none) { $('note').textContent = t('timeUp'); return; }
+    if (r.i == null && r.of) { // the end: your final place
+      $('note').textContent = r.rank ? t('rank', { rank: r.rank }) : ''; return;
+    }
+    if (r.none) { if (!again) myStreak = 0; streakPill(); $('note').textContent = t('timeUp'); $('note').className = 'qb-note bad'; return; }
+    if (!again) myStreak = r.ok ? myStreak + 1 : 0;
     myScore = r.score || myScore + (r.points || 0);
-    var mt = L.myTeam;
-    $('note').textContent = (r.ok ? t('right', { points: r.points }) : t('wrong')) + (r.rank ? ' · ' + t('rank', { rank: r.rank }) : '') + (mt && mt.rank ? ' · ' + t('teamRank', { team: mt.name, rank: mt.rank }) : '');
+    var mt = L.myTeam, cheer = t('cheer' + (1 + ((Q ? Q.i : 0) % 3)));
+    $('note').textContent = (r.ok ? t('right', { points: r.points }) : t('wrong') + ' ' + cheer) + (r.rank ? ' · ' + t('rank', { rank: r.rank }) : '') + (mt && mt.rank ? ' · ' + t('teamRank', { team: mt.name, rank: mt.rank }) : '');
+    $('note').className = 'qb-note ' + (r.ok ? 'ok' : 'bad');
     $('score').hidden = false; $('score').textContent = t('score', { n: myScore });
-    if (!again) { say($('note').textContent); O.sfx(r.ok ? 'correct' : 'wrong'); }
+    streakPill();
+    if (again) return;
+    say($('note').textContent);
+    try { O.sfx(r.ok ? 'correct' : 'wrong'); } catch (e) { /* none */ }
+    if (r.ok) {
+      buzz([25, 40, 70]);
+      // my own attack: bigger when fast, more and fancier stars with a streak
+      var pw = powerOf(myStreak), rc = tileRect(myPick >= 0 ? myPick : 0), size = 0.9 + Math.min(1, ((r.points || 500) - 500) / 500), k = 1 + Math.min(4, myStreak - 1);
+      if (rc) for (var i = 0; i < k; i++) launch(rc.left + rc.width / 2, rc.top + rc.height / 2, size, i * 110, pw, true);
+      var cr = $('card').getBoundingClientRect(); if (rc) floatText('+' + r.points, rc.left + rc.width / 2, cr.top - 24, '#ffe066', 36);
+      if (pw.key) later(function () { flash('🔥 ' + t(pw.key), 1500); }, 300); else later(function () { flash(t('hit'), 1300); }, 600);
+    } else {
+      buzz(80);
+    }
+  }
+  function streakPill() {
+    var el = $('streak'); el.hidden = myStreak < 2 || host;
+    if (!el.hidden) { el.textContent = '🔥 ' + t('streak', { n: myStreak }); el.classList.toggle('big', myStreak >= 5); }
   }
   // a team's shape; onTeam: drawn on the team's own colour, so it takes the team's ink (text colour) instead
   function shapeCanvas(tm, px, onTeam) {
     var c = document.createElement('canvas'), k = Math.min(2, devicePixelRatio || 1); c.width = c.height = Math.round(px * k); c.setAttribute('aria-hidden', 'true');
-    var x = c.getContext('2d'); x.scale(k, k); L.drawShape(x, tm.shape, px / 2, px / 2, px * 0.42, onTeam ? tm.ink : tm.color, onTeam ? null : '#1d2340'); return c;
+    var x = c.getContext('2d'); x.scale(k, k); L.drawShape(x, tm.shape, px / 2, px / 2, px * 0.42, onTeam ? tm.ink : tm.color, onTeam ? null : INK); return c;
   }
   /** The team board (host, between questions) or the team podium (the end): shape, icon, name, score; ranks only when
    *  the leaderboard allows them (rank 0 = hidden or no players). */
@@ -221,7 +655,7 @@
       var st = document.createElement('div'); st.className = 'qb-step';
       st.appendChild(shapeCanvas(tm, 40));
       var nm = document.createElement('span'); nm.textContent = tm.icon + ' ' + tm.name; st.appendChild(nm);
-      var bar = document.createElement('i'); bar.style.height = [90, 64, 44][k] + 'px'; bar.style.background = tm.color; bar.style.color = tm.ink; bar.textContent = tm.rank; st.appendChild(bar);
+      var bar = document.createElement('i'); bar.style.height = Math.round([96, 68, 46][k] * Math.min(1.4, innerHeight / 720)) + 'px'; bar.style.background = tm.color; bar.style.color = tm.ink; bar.textContent = tm.rank; st.appendChild(bar);
       pd.appendChild(st);
     });
     ranked.forEach(function (tm) {
@@ -231,74 +665,131 @@
       var sc = document.createElement('span'); sc.textContent = ranks ? tm.score + (L.teamScoring === 'avg' ? ' ' + t('perPlayer') : '') : '';
       li.append(r, shapeCanvas(tm, 30, true), nm, sc); ol.appendChild(li);
     });
+    layout();
+  }
+  // The top five, animated: rows slide from where they were (an overtake slides up), a ▲ for places gained, 🔥 for a
+  // streak bonus (a question worth more than 1000), and a star line for the biggest jump this question.
+  var prevRank = new Map(), prevScore = new Map();
+  function portraitOf(seat, px) {
+    var c = flat.portrait(seat); if (!c) return null;
+    var img = document.createElement('canvas'); img.width = c.width; img.height = c.height; img.getContext('2d').drawImage(c, 0, 0); img.setAttribute('aria-hidden', 'true'); return img;
   }
   function board(top, title, podium) {
     $('card').hidden = true; var b = $('board'); b.hidden = false; $('board-h').textContent = title;
     if (!podium) $('tboard').hidden = true;
-    var ol = $('board-list'), pd = $('podium'); ol.textContent = ''; pd.textContent = '';
+    var ol = $('board-list'), pd = $('podium'); pd.textContent = '';
+    var before = new Map(); [].forEach.call(ol.children, function (li) { before.set(li.dataset.seat, li.getBoundingClientRect().top); });
+    ol.textContent = ''; $('mvp').textContent = '';
     if (podium) [1, 0, 2].forEach(function (k) {
       var p = top[k]; if (!p) return;
       var st = document.createElement('div'); st.className = 'qb-step';
-      var c = flat.portrait(p.seat); if (c) { var img = document.createElement('canvas'); img.width = c.width; img.height = c.height; img.getContext('2d').drawImage(c, 0, 0); img.setAttribute('aria-hidden', 'true'); st.appendChild(img); }
+      var img = portraitOf(p.seat, 84); if (img) st.appendChild(img);
       var nm = document.createElement('span'); nm.textContent = p.name; st.appendChild(nm);
-      var bar = document.createElement('i'); bar.style.height = [90, 64, 44][k] + 'px'; st.appendChild(bar);
+      var bar = document.createElement('i'); bar.style.height = Math.round([96, 68, 46][k] * Math.min(1.4, innerHeight / 720)) + 'px'; bar.textContent = k + 1; st.appendChild(bar);
       pd.appendChild(st);
     });
-    top.slice(podium ? 3 : 0, 5).forEach(function (p) { var li = document.createElement('li'); li.textContent = p.name + ' · ' + p.score; ol.appendChild(li); });
-    if (podium) ol.start = 4; else ol.removeAttribute('start');
+    var best = null;
+    top.slice(podium ? 3 : 0, podium && !host ? 3 : 5).forEach(function (p, i) {
+      var rank = (podium ? 3 : 0) + i + 1, li = document.createElement('li'); li.dataset.seat = String(p.seat);
+      var r = document.createElement('span'); r.className = 'r'; r.textContent = rank;
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = p.name;
+      var gain = prevScore.has(p.seat) ? p.score - prevScore.get(p.seat) : 0;
+      if (gain > 1000) nm.textContent += ' 🔥';
+      li.append(r);
+      var img = portraitOf(p.seat, 40); if (img) li.append(img);
+      li.append(nm);
+      var was = prevRank.get(p.seat);
+      if (!podium && was && was > rank) { var up = document.createElement('span'); up.className = 'up'; up.textContent = '▲' + (was - rank); li.append(up); if (!best || was - rank > best.d) best = { d: was - rank, p: p }; }
+      var sc = document.createElement('span'); sc.textContent = p.score; li.append(sc);
+      ol.appendChild(li);
+    });
+    ol.start = podium ? 4 : 1;
+    if (!podium) {
+      var lead = top[0];
+      $('mvp').textContent = best ? '⭐ ' + t('up', { name: best.p.name }) : lead ? '⭐ ' + t('mvp', { name: lead.name }) : '';
+      top.forEach(function (p, i) { prevRank.set(p.seat, i + 1); prevScore.set(p.seat, p.score); });
+    }
+    layout();
+    if (!REDUCED) [].forEach.call(ol.children, function (li) {
+      var y0 = before.get(li.dataset.seat), y1 = li.getBoundingClientRect().top;
+      var from = y0 != null ? 'translateY(' + (y0 - y1) + 'px)' : 'translateX(' + (RTL ? '-' : '') + '60px)';
+      try { li.animate([{ transform: from, opacity: y0 != null ? 1 : 0 }, { transform: 'none', opacity: 1 }], { duration: 700, easing: 'cubic-bezier(.2,.9,.3,1.2)' }); } catch (e) { /* old browser */ }
+    });
   }
 
   L.on('phase', function (e) {
     phase = e.phase;
-    if (phase === 'lobby') { banner(host ? '' : t('wait')); $('card').hidden = true; }
+    if (phase === 'lobby') { banner(host ? t('arrives', { boss: t('boss' + boss.kind) }) : t('wait')); $('card').hidden = true; }
     if (phase === 'playing' || phase === 'lobby') $('tboard').hidden = true;
     if (phase === 'loading') banner(t('ready'));
     if (phase === 'paused') banner(t('paused'));
     if (phase === 'playing') banner('');
+    layout();
   });
   var cd = 0;
-  L.on('countdown', function (e) { clearInterval(cd); var tick = function () { var left = Math.ceil((e.at - L.now()) / 1000); banner(left > 0 ? String(left) : t('go')); if (left <= 0) { clearInterval(cd); setTimeout(function () { if (phase === 'playing') banner(''); }, 700); } }; tick(); cd = setInterval(tick, 200); });
+  L.on('countdown', function (e) { clearInterval(cd); var tick = function () { var left = Math.ceil((e.at - L.now()) / 1000); banner(left > 0 ? String(left) : t('go'), left <= 0); if (left <= 0) { clearInterval(cd); setTimeout(function () { if (phase === 'playing') banner(''); }, 700); } }; tick(); cd = setInterval(tick, 200); });
   L.on('question', showCard);
   L.on('answers', function (a) { if (host) $('note').textContent = t('answers', { n: a.n }); });
   L.on('reveal', showReveal);
   L.on('result', showResult);
-  L.on('end', function (e) {
-    clearInterval(ringTimer);
-    // team mode: the team podium first, then the players' podium under it (none when the leaderboard is off)
-    if (e.teams && e.teams.length) teamBoard(e.teams, t('teamPodium'), true); else $('tboard').hidden = true;
-    if (e.top && e.top.length) board(e.top, t('podium'), true); else $('board').hidden = true;
-    banner(t('done'));
-    if (!(O.settings && O.settings.reduced)) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
-    O.sfx('win');
-  });
+  L.on('end', function (e) { theEnd(e.top || [], e.teams || []); });
+  /** The end: the finishing blow (if the last reveal didn't land it), the boss turns happy, then the podiums. */
+  function theEnd(top, teams) {
+    clearInterval(ringTimer); phase = 'ended';
+    var wasUp = boss.hpTo > 0;
+    boss.hpTo = 0; boss.mood = 'beaten'; boss.beatT = now() + (wasUp ? 900 : 300);
+    if (wasUp && !REDUCED) { var b = bossBox(); for (var m = 0; m < 10; m++) launch(innerWidth / 2 + (m - 5) * 30, innerHeight - 40, 1.6, m * 70, POWER[7]); }
+    $('card').hidden = true; $('board').hidden = true; $('tboard').hidden = true; layout();
+    later(function () {
+      banner('🏆 ' + t('defeated'), true); say(t('defeated'));
+      if (!REDUCED) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
+      try { O.sfx('win'); } catch (er) { /* none */ }
+    }, wasUp ? 700 : 300);
+    later(function () {
+      // team mode: the team podium first, then the players' podium under it (none when the leaderboard is off)
+      banner(''); if (!host) banner(t('defeated'));
+      if (teams.length) teamBoard(teams, t('teamPodium'), true);
+      if (top.length) board(top, L.active ? t('podium') : t('done'), L.active);
+      layout();
+    }, wasUp ? 2200 : 1500);
+  }
 
-  // ---- practice (played alone) ----
+  // ---- practice (played alone): five questions against the boss ---------------------------------------------------
   var practice = { i: -1, items: [], deadline: 0, score: 0, rnd: O.rand(11) };
   function practiceNext() {
     practice.i++;
-    if (practice.i >= practice.items.length) { phase = 'ended'; board([{ seat: 0, name: BRB.user.displayName || '', score: practice.score }], t('done'), false); return; }
-    var it = practice.items[practice.i]; phase = 'playing'; practice.deadline = performance.now() + it.secs * 1000;
+    if (practice.i >= practice.items.length) { theEnd([{ seat: 0, name: BRB.user.displayName || '', score: practice.score }], []); return; }
+    var it = practice.items[practice.i]; phase = 'playing'; practice.deadline = now() + it.secs * 1000;
     showCard({ i: practice.i, n: practice.items.length, q: it.q, choices: it.choices, secs: it.secs, at: 0 });
     clearTimeout(practice.to); practice.to = setTimeout(function () { if (myPick < 0) { myPick = 9; practiceAnswer(-1); } }, it.secs * 1000);
   }
   function practiceAnswer(i) {
     clearTimeout(practice.to);
-    var it = practice.items[practice.i], ok = i === it.answer, pts = ok ? 500 + Math.round(500 * Math.max(0, practice.deadline - performance.now()) / (it.secs * 1000)) : 0;
-    practice.score += pts; phase = 'between';
-    showReveal({ answer: it.answer }); showResult({ ok: ok, points: pts, score: practice.score, none: i < 0 });
-    setTimeout(practiceNext, 1800);
+    var it = practice.items[practice.i], ok = i === it.answer, pts = ok ? 500 + Math.round(500 * Math.max(0, practice.deadline - now()) / (it.secs * 1000)) + Math.min(200, 50 * myStreak) : 0;
+    practice.score += pts; phase = 'between'; layout();
+    var counts = it.choices.map(function (c, k) { return k === i ? 1 : 0; });
+    myPick = i;
+    showReveal({ i: practice.i, answer: it.answer, counts: counts }); showResult({ i: practice.i, ok: ok, points: pts, score: practice.score, none: i < 0 });
+    setTimeout(practiceNext, 2400);
   }
 
   // players see their team on the question card's top bar
   function myTeamPill() { var mt = L.myTeam, el = $('team'); if (!el) return; el.hidden = !mt; if (mt) { el.textContent = ''; el.style.background = mt.color; el.style.color = mt.ink; el.append(shapeCanvas(mt, 20, true), ' ' + t('yourTeam', { team: mt.name })); } }
   L.on('teams', myTeamPill); L.on('welcome', myTeamPill);
+  // the boss: the host picks one and shares it; everyone else follows the shared state
+  L.on('state', function (s) { if (s && typeof s.boss === 'number') { setKind(s.boss); if (phase === 'lobby' && host) banner(t('arrives', { boss: t('boss' + boss.kind) })); } });
+  L.on('welcome', function () { if (L.state && typeof L.state.boss === 'number') setKind(L.state.boss); });
+  setKind(L.state && typeof L.state.boss === 'number' ? L.state.boss : host || !L.active ? Math.floor(Math.random() * 3) : 0);
+  hpBar(); layout();
   L.ready({ lobby: true, quiz: true, hostView: true, teams: true });
+  if (host && !(L.state && typeof L.state.boss === 'number')) L.setState({ boss: boss.kind });
   if (!L.active) {
     for (var k = 0; k < 5; k++) { var a = practice.rnd.int(2, 9), b = practice.rnd.int(2, 9), ans = a * b, sh = practice.rnd.shuffle([ans, ans + a, ans - b, ans + 1]); practice.items.push({ q: a + ' × ' + b + ' = ?', choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 }); }
-    L.on('start', function () { banner(t('practice')); setTimeout(practiceNext, 1200); });
-  } else if (phase === 'lobby' && !host) banner(t('wait'));
+    total = practice.items.length;
+    L.on('start', function () { banner(t('arrives', { boss: t('boss' + boss.kind) })); setTimeout(function () { banner(t('practice')); }, 1800); setTimeout(practiceNext, 3000); });
+  } else if (phase === 'lobby') banner(host ? t('arrives', { boss: t('boss' + boss.kind) }) : t('wait'));
   O.test({
-    state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 } : null, score: myScore, board: !$('board').hidden, teamBoard: !$('tboard').hidden, teams: L.teams().map(function (x) { return { team: x.team, name: x.name, rank: x.rank, score: x.score, size: x.size, mine: x.mine }; }), myTeam: L.myTeam ? L.myTeam.team : 0, note: $('note').textContent, players: L.players().length }; },
+    state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 } : null, score: myScore, streak: myStreak, boss: { kind: boss.kind, hp: Math.round(boss.hpTo), mood: boss.mood }, board: !$('board').hidden, teamBoard: !$('tboard').hidden, teams: L.teams().map(function (x) { return { team: x.team, name: x.name, rank: x.rank, score: x.score, size: x.size, mine: x.mine }; }), myTeam: L.myTeam ? L.myTeam.team : 0, note: $('note').textContent, players: L.players().length }; },
     start: function () { return true; },
   });
   window.__brbTest.answer = function (i) { choose(i); };
