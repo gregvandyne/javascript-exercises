@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import * as sets from './classlive-sets.js';
 import * as T from './classlive-teams.js';
 import * as D from './classlive-dash.js';
+import * as B from './classlive-board.js';
 import { starterItems, STARTERS } from '../live/starters.js';
 
 /** Extra time after the deadline for answers already on their way. */
@@ -41,7 +42,7 @@ export function loadItems(host, { setId = null, starter = null, items = null, la
 }
 
 const shuffle = n => { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = crypto.randomInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-export const hasNext = s => !!s.items && (s.qz ? s.qz.i + 1 : 0) < s.items.length;
+export const hasNext = s => (s.board ? B.remaining(s) > 0 : !!s.items && (s.qz ? s.qz.i + 1 : 0) < s.items.length);
 
 /** At start: the host's settings shape the run's questions (shuffled order, the first N, one time for all). The loaded
  *  set stays in s.allItems (play again, play missed). */
@@ -49,7 +50,8 @@ export function applySettings(s) {
   if (!s.items) return;
   const st = s.settings || {};
   let list = (s.allItems || s.items).map(it => ({ ...it }));
-  if (st.shuffleQ) list = shuffle(list.length).map(k => list[k]);
+  // Brain Board keeps the set's order: the board is laid out from it (easy to hard).
+  if (st.shuffleQ && s.mode !== 'board') list = shuffle(list.length).map(k => list[k]);
   if (st.count) list = list.slice(0, st.count);
   for (const it of list) { it.own = it.own || it.secs; if (st.secs) it.secs = st.secs; }
   s.items = list;
@@ -172,7 +174,7 @@ export function reveal(s, io) {
     if (a.ok) {
       seat.streak++; seat.correct++; seat.wrongRun = 0;
       // Speed points against the question's own time (and the seat's extra time), never the added time.
-      p = points(a.elapsed, (c.base * pct(seat)) / 100, seat.streak, { accuracy });
+      p = s.board ? B.points(s, a.elapsed, (c.base * pct(seat)) / 100, { accuracy }) : points(a.elapsed, (c.base * pct(seat)) / 100, seat.streak, { accuracy });
       seat.score += p;
       if (s.race) { const r = s.race.get(seat.no) || { prog: 0, gems: 0 }; r.prog = Math.min(1000, r.prog + (0.8 * 1000) / n + ((0.2 * 1000) / n) * (1 - Math.max(0, a.elapsed - limit / 3) / (limit * 2 / 3))); r.gems += a.elapsed < limit / 3 ? 2 : 1; s.race.set(seat.no, r); }
     } else { seat.streak = 0; seat.wrongRun = (seat.wrongRun || 0) + 1; }
@@ -187,6 +189,7 @@ export function reveal(s, io) {
   counts.forEach((k, i) => { if (i !== c.answer && k > 0 && (topWrong === null || k > counts[topWrong])) topWrong = i; });
   // The question as the class saw it (host-written text only), for the question review and "play the missed ones".
   s.itemStats.set(c.i, { q: c.q, choices: c.choices, answer: c.answer, secs: c.own, counts, right, answered, topWrong: topWrong === null ? null : c.choices[topWrong] });
+  if (s.board) B.closeTile(s, s.qz.answers);
   s.qz.cur = null;
   s.scoresDirty = false;
   const ranked = rankSeats(s);
@@ -202,6 +205,7 @@ export function reveal(s, io) {
     io.toSeat(s, r.seat, { t: 'you', i: c.i, ok: m.ok, points: m.points, rank: rows ? r.rank : 0, score: r.score, ...(m.none ? { none: true } : {}) });
   }
   io.toDash(s, D.dpMsg(s));
+  if (s.board && io.boardChanged) io.boardChanged(s);
 }
 
 /** Skip the current question: nobody scores, it doesn't count for accuracy. */
@@ -210,8 +214,10 @@ export function skip(s, io) {
   if (!c) return;
   clearTimeout(s.timers.deadline); s.timers.deadline = null;
   s.qz.cur = null;
+  if (s.board) B.skipTile(s);
   io.setPhase(s, 'between');
   io.broadcast(s, { t: 'rv', i: c.i, skipped: true });
+  if (s.board && io.boardChanged) io.boardChanged(s);
 }
 
 export function pause(s) { clearTimeout(s.timers.deadline); s.timers.deadline = null; }

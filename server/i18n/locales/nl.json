@@ -2258,7 +2258,12 @@
       "pasteText": "Of typ ze: de vraag op één regel, daaronder de antwoorden, met * voor het goede antwoord. Laat een lege regel tussen de vragen.",
       "pasteExample": "Wat is de grootste planeet?\n* Jupiter\nSaturnus\nAarde\n\nWater kookt op zeeniveau bij 100 °C.\n* Waar\nNiet waar",
       "pasteFound": "{n, plural, =0 {Nog geen vragen gevonden.} one {# vraag gevonden.} other {# vragen gevonden.}}",
-      "pasteGo": "Deze vragen toevoegen"
+      "pasteGo": "Deze vragen toevoegen",
+      "category": "Categorie (optioneel)",
+      "categoryHint": "Voor Breinbord, bijv. Planeten",
+      "categoryColumn": "Categorie",
+      "pasteCats": "Voor Breinbord kun je categorieën toevoegen: een eerste kolom met de kop „Categorie” in het spreadsheet, of een regel zoals „# Planeten” vóór de vragen.",
+      "aiBoard": "Een Breinbord (5 categorieën × 5)"
     },
     "match": {
       "title": "{title} online spelen",
@@ -3770,7 +3775,7 @@
     "live": {
       "h": "Livespellen in de klas",
       "p1": "Speel een live quizrace of een ander spel dat klaar is voor live op het digibord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
-      "li1": "Kant-en-klare modi: Questrace (een race over een 3D-eiland, aangedreven door jouw vragen) en Vragenduel.",
+      "li1": "Kant-en-klare modi: Questrace (een race over een 3D-eiland, aangedreven door jouw vragen), Vragenduel en Breinbord (een bord vol categorieën, van makkelijk naar moeilijk).",
       "li2": "Gebruik een startset, typ snel een eigen set of maak van de vragen in een les een livequiz.",
       "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen.",
       "more": "Bekijk hoe Oomba Live werkt"
@@ -4532,7 +4537,9 @@
       "questRace": "Questrace",
       "questRaceText": "Beantwoord vragen en race over een 3D-eiland. Goede antwoorden geven edelstenen en een duwtje vooruit!",
       "battle": "Vragenduel",
-      "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst."
+      "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst.",
+      "board": "Breinbord",
+      "boardText": "Een bord vol categorieën: kies een vakje en iedereen antwoordt. Grotere vakjes zijn moeilijker en leveren meer op, en een verstopte Geluksster verdubbelt de punten."
     },
     "starter": {
       "title": {
@@ -4540,7 +4547,8 @@
         "math10": "Rekenen, 10-11 jaar",
         "math12": "Wiskunde, 12-14 jaar",
         "science": "Natuurwetenschappen",
-        "geo": "Aardrijkskunde"
+        "geo": "Aardrijkskunde",
+        "board": "Breinbord gemengd, 8 tot 14 jaar"
       },
       "math": {
         "add": "Hoeveel is {a} + {b}?",
@@ -4690,7 +4698,9 @@
           "c2": "Verenigde Staten",
           "c3": "Indonesië"
         }
-      }
+      },
+      "boardMath": "Rekenen",
+      "boardMix": "Gemengd"
     },
     "results": {
       "title": "Uitslag van het livespel",
@@ -4773,7 +4783,8 @@
         "notFound": "We vinden die set niet.",
         "topic": "Typ eerst een onderwerp.",
         "aiOff": "Vragen opstellen met AI is nu niet beschikbaar. Je kunt je vragen nog steeds typen of plakken.",
-        "aiFailed": "De AI kon deze keer geen vragen schrijven. Probeer het opnieuw of pas het onderwerp een beetje aan."
+        "aiFailed": "De AI kon deze keer geen vragen schrijven. Probeer het opnieuw of pas het onderwerp een beetje aan.",
+        "cat": "De categorie bij vraag {n} is niet toegestaan."
       },
       "noMissed": "Iedereen had alles goed, dus er is niets om nog eens te spelen.",
       "teamsOff": "Dit spel had geen teams.",
@@ -4789,7 +4800,8 @@
         "hasOpen": "Die persoon leidt nu een ander livespel.",
         "gone": "Deze uitnodiging is voorbij.",
         "self": "Jij bent al de host."
-      }
+      },
+      "notForClass": "Dit spel is voor de lol, niet voor de klas. Kies een quizmodus of een van je eigen spellen."
     },
     "nick": {
       "0": "Dappere Otter",
@@ -5281,7 +5293,7 @@
       "lead": "Echte schermen van een livespel op een demoschool met verzonnen namen.",
       "s1": {
         "h": "Kies een spel en je vragen",
-        "p": "Kies Questrace of Vragenduel en daarna je eigen vragenset, een set die een collega heeft gedeeld, een kant-en-klare startset of de vragen uit een van je lessen.",
+        "p": "Kies Questrace, Vragenduel of Breinbord en daarna je eigen vragenset, een set die een collega heeft gedeeld, een kant-en-klare startset of de vragen uit een van je lessen.",
         "alt": "De pagina “Een livespel leiden”: spelmodi om uit te kiezen, een vragenset en wie mee mag doen."
       },
       "s2": {
@@ -5306,7 +5318,7 @@
       }
     },
     "modes": {
-      "h": "Twee manieren om te spelen, plus livespellen",
+      "h": "Drie manieren om te spelen",
       "race": {
         "h": "Questrace",
         "p": "Een race over een 3D-eiland. Elk goed antwoord levert edelstenen en een boost op, en de hele klas volgt de lopers op het bord."
@@ -5315,9 +5327,9 @@
         "h": "Vragenduel",
         "p": "De klassieker: de vraag op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst."
       },
-      "games": {
-        "h": "Spellen die klaar zijn voor live",
-        "p": "Sommige spellen uit de bibliotheek kun je ook live samen spelen, met alle leerlingen in dezelfde wereld."
+      "board": {
+        "h": "Breinbord",
+        "p": "Een bord vol categorieën op het scherm. Kies een vakje (of laat het snelste goede antwoord kiezen) en de vraag gaat open op elk apparaat. Moeilijkere vakjes leveren meer op, en een verstopte Geluksster verdubbelt de punten."
       }
     },
     "tools": {

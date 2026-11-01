@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brain Board</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); background: #14183a; color: #fff8e6; }
+  html.light, html.light body { background: #1b2150; }
+  #sky { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  [hidden] { display: none !important; }
+  .bb { position: fixed; inset: 0; display: flex; flex-direction: column; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+  .bb-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 800; }
+  .bb-top .sp { flex: 1; }
+  .bb-logo { display: inline-flex; align-items: center; gap: 8px; font-size: clamp(18px, 3vw, 28px); letter-spacing: .02em; color: #ffd24a; text-shadow: 0 3px 0 #0b0e26; }
+  .bb-logo i { font-style: normal; display: inline-block; animation: bb-tw 2.4s ease-in-out infinite; }
+  .bb-pill { background: #fff8e6; color: #1d2340; border-radius: 999px; padding: 6px 14px; border: 3px solid #0b0e26; box-shadow: 0 3px 0 #0b0e26; font-size: clamp(14px, 2vw, 18px); white-space: nowrap; }
+  .bb-pill.gold { background: #ffd24a; }
+  .bb-btn { font: inherit; font-weight: 800; cursor: pointer; }
+  .bb-status { margin: 0 auto; text-align: center; font-weight: 800; font-size: clamp(18px, 3.6vw, 32px); color: #fff8e6; text-shadow: 0 3px 0 #0b0e26; min-height: 1.2em; }
+  .bb-status.mine { color: #ffd24a; animation: bb-pulse 1.1s ease-in-out infinite; }
+  /* the board */
+  .bb-main { flex: 1; min-height: 0; display: flex; gap: 12px; }
+  .bb-grid { flex: 1; min-height: 0; display: grid; gap: clamp(4px, 1vw, 10px); grid-template-rows: auto repeat(5, 1fr); }
+  .bb-cat.sym { font-size: clamp(22px, 4vw, 40px); padding: 2px 4px; }
+  .bb-cat { display: grid; place-items: center; text-align: center; padding: 6px 4px; border-radius: 14px; border: 3px solid #0b0e26; box-shadow: 0 4px 0 #0b0e26; font-weight: 800; font-size: clamp(11px, 1.9vw, 22px); line-height: 1.1; color: #1d2340; overflow-wrap: anywhere; min-height: 2.6em; }
+  .k0 { background: #ff8fa3; } .k1 { background: #8fd3ff; } .k2 { background: #b6f08a; } .k3 { background: #ffcf6e; } .k4 { background: #c9a8ff; } .k5 { background: #7ff0d6; }
+  .bb-tile { position: relative; perspective: 900px; border: 0; padding: 0; background: none; min-height: 0; cursor: default; font: inherit; }
+  .bb-tile .in { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,1.4,.5,1); }
+  .bb-tile .f, .bb-tile .b { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 14px; border: 3px solid #0b0e26; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .bb-tile .f { background: linear-gradient(160deg, #3d4bb8, #262f86); box-shadow: inset 0 -6px 0 rgba(0,0,0,.25), 0 4px 0 #0b0e26; color: #ffd24a; font-weight: 900; font-size: clamp(16px, 3.6vw, 44px); text-shadow: 0 3px 0 #0b0e26; }
+  .bb-tile .b { transform: rotateY(180deg); background: #fff8e6; color: #1d2340; font-weight: 900; font-size: clamp(14px, 2.6vw, 30px); }
+  .bb-tile.star .b { background: radial-gradient(circle, #fff4b0, #ffd24a 60%, #ff9f1a); }
+  .bb-tile.open .in { transform: rotateY(180deg) scale(1.06); }
+  .bb-tile.done .f { background: #1c2152; color: rgba(255,248,230,.28); text-shadow: none; box-shadow: none; font-size: clamp(14px, 2.6vw, 30px); }
+  .bb-tile.can { cursor: pointer; }
+  .bb-tile.can:hover .f, .bb-tile.can:focus-visible .f { background: linear-gradient(160deg, #5664d8, #333ea6); transform: translateY(-2px); }
+  .bb-tile:focus-visible { outline: 4px solid #ffd24a; outline-offset: 2px; border-radius: 14px; }
+  .bb-tile.can .f { animation: bb-glow 2s ease-in-out infinite; }
+  /* scores (projector) */
+  .bb-side { width: clamp(150px, 20vw, 260px); display: flex; flex-direction: column; gap: 8px; }
+  .bb-side h2 { margin: 0; font-size: clamp(14px, 1.8vw, 20px); color: #ffd24a; text-shadow: 0 2px 0 #0b0e26; }
+  .bb-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .bb-rows li { display: flex; align-items: center; gap: 8px; background: #fff8e6; color: #1d2340; border: 3px solid #0b0e26; border-radius: 12px; padding: 4px 8px; font-weight: 800; font-size: clamp(12px, 1.6vw, 18px); }
+  .bb-rows li .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bb-rows li canvas { width: 26px; height: 26px; flex: none; }
+  /* the question card */
+  .bb-card { position: fixed; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; padding: 12px; background: rgba(11,14,38,.72); }
+  .bb-cardin { width: min(1100px, 100%); max-height: 100%; overflow: auto; background: #fff8e6; color: #1d2340; border: 4px solid #0b0e26; border-radius: 26px; box-shadow: 0 8px 0 #0b0e26; padding: clamp(12px, 2.4vw, 28px); display: flex; flex-direction: column; gap: clamp(8px, 1.6vw, 16px); animation: bb-in .45s cubic-bezier(.3,1.5,.5,1); }
+  .bb-chead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .bb-chead .cat { padding: 4px 12px; border-radius: 999px; border: 3px solid #0b0e26; font-weight: 800; }
+  .bb-chead .val { padding: 4px 12px; border-radius: 999px; background: #262f86; color: #ffd24a; font-weight: 900; border: 3px solid #0b0e26; }
+  .bb-chead .lucky { padding: 4px 12px; border-radius: 999px; background: #ffd24a; font-weight: 900; border: 3px solid #0b0e26; animation: bb-pulse 1s ease-in-out infinite; }
+  .bb-chead .sp { flex: 1; }
+  .bb-ring { width: 58px; height: 58px; position: relative; flex: none; }
+  .bb-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .bb-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; }
+  .bb-q { margin: 0; text-align: center; font-weight: 800; font-size: clamp(20px, 4.4vw, 46px); line-height: 1.2; overflow-wrap: anywhere; }
+  .bb-pad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bb-a { min-height: 60px; border: 3px solid #0b0e26; border-radius: 18px; color: #fff; font-family: inherit; font-weight: 800; font-size: clamp(17px, 3.2vw, 32px); line-height: 1.15; padding: 10px 12px; display: flex; align-items: center; gap: 12px; text-align: start; cursor: pointer; box-shadow: 0 6px 0 #0b0e26; }
+  .bb-a .sh { font-size: 1.2em; width: 1.3em; text-align: center; flex: none; }
+  .bb-a .tx { flex: 1; overflow-wrap: anywhere; }
+  .bb-a .n { font-size: .85em; background: rgba(0,0,0,.25); border-radius: 99px; padding: 2px 10px; }
+  .bb-a[disabled] { cursor: default; opacity: .5; }
+  .bb-a.pick { opacity: 1; transform: translateY(3px); box-shadow: 0 3px 0 #0b0e26, 0 0 0 5px #ffd24a; }
+  .bb-a.right { opacity: 1; box-shadow: 0 0 0 7px #37c47a, 0 6px 0 #0b0e26; }
+  .bb-a:focus-visible { outline: 4px solid #ffd24a; outline-offset: 3px; }
+  .c0 { background: #e9465c; } .c1 { background: #2f6bff; } .c2 { background: #b98400; } .c3 { background: #27996a; }
+  .bb-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(18px, 3.4vw, 30px); min-height: 1.2em; }
+  .bb-note.good { color: #1f8a52; } .bb-note.bad { color: #b3263e; }
+  /* the Lucky Star burst */
+  .bb-burst { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; pointer-events: none; }
+  .bb-burst div { text-align: center; font-weight: 900; color: #ffd24a; text-shadow: 0 4px 0 #0b0e26; animation: bb-star 1.8s ease-out forwards; }
+  .bb-burst big { display: block; font-size: clamp(90px, 22vw, 220px); line-height: 1; }
+  .bb-burst span { font-size: clamp(26px, 6vw, 64px); }
+  .bb-banner { position: fixed; left: 50%; top: 44%; transform: translate(-50%, -50%); z-index: 7; background: #ffd24a; color: #1d2340; border: 4px solid #0b0e26; box-shadow: 0 6px 0 #0b0e26; border-radius: 22px; padding: 10px 28px; font-weight: 900; font-size: clamp(28px, 8vw, 80px); pointer-events: none; }
+  .bb-banner:empty { display: none; }
+  /* the end */
+  .bb-end { position: fixed; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 16px; }
+  .bb-end h2 { margin: 0; font-size: clamp(28px, 6vw, 64px); color: #ffd24a; text-shadow: 0 4px 0 #0b0e26; text-align: center; }
+  .bb-podium { display: flex; justify-content: center; align-items: flex-end; gap: 12px; }
+  .bb-step { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 800; text-align: center; width: 30vw; max-width: 180px; overflow-wrap: anywhere; }
+  .bb-step canvas { width: 76px; height: 76px; }
+  .bb-step i { display: grid; place-items: center; width: 100%; border-radius: 14px 14px 0 0; background: #ffd24a; color: #1d2340; border: 3px solid #0b0e26; border-bottom: 0; font-style: normal; font-size: 28px; }
+  .bb-end ol { margin: 0; padding: 0 0 0 1.6em; font-weight: 800; font-size: clamp(16px, 2.4vw, 24px); }
+  .bb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @keyframes bb-in { from { transform: scale(.6) rotate(-3deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes bb-pulse { 50% { transform: scale(1.06); } }
+  @keyframes bb-glow { 50% { box-shadow: inset 0 -6px 0 rgba(0,0,0,.25), 0 4px 0 #0b0e26, 0 0 18px #ffd24a; } }
+  @keyframes bb-tw { 50% { transform: rotate(18deg) scale(1.2); } }
+  @keyframes bb-star { 0% { transform: scale(.2) rotate(-40deg); opacity: 0; } 25% { transform: scale(1.15) rotate(8deg); opacity: 1; } 70% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+  @media (max-width: 700px) { .bb-side { display: none; } .bb-pad { grid-template-columns: 1fr; } .bb-a { min-height: 54px; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  html.reduced *, html.reduced *::before, html.reduced *::after { animation: none !important; transition: none !important; }
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="bb" id="ui">
+  <div class="bb-top">
+    <span class="bb-logo"><i aria-hidden="true">🌟</i><span id="logo"></span></span>
+    <span class="sp"></span>
+    <span class="bb-pill" id="team" hidden></span>
+    <span class="bb-pill" id="left" hidden></span>
+    <button class="bb-pill bb-btn" type="button" id="turns" hidden aria-pressed="false"></button>
+    <span class="bb-pill gold" id="score" hidden></span>
+  </div>
+  <p class="bb-status" id="status" role="status" aria-live="polite"></p>
+  <div class="bb-main" id="main" hidden>
+    <div class="bb-grid" id="grid" role="grid"></div>
+    <aside class="bb-side" id="side" hidden><h2 id="side-h"></h2><ol class="bb-rows" id="rows"></ol></aside>
+  </div>
+</div>
+<section class="bb-card" id="card" hidden aria-labelledby="qtext">
+  <div class="bb-cardin">
+    <div class="bb-chead"><span class="cat" id="ccat"></span><span class="val" id="cval"></span><span class="lucky" id="clucky" hidden></span><span class="sp"></span>
+      <div class="bb-ring" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="#262f86" stroke-width="4" stroke-dasharray="94.25" stroke-dashoffset="0" stroke-linecap="round"/></svg><b id="secs"></b></div></div>
+    <p class="bb-q" id="qtext" dir="auto"></p>
+    <div class="bb-pad" id="pad" role="group" aria-labelledby="qtext"></div>
+    <p class="bb-note" id="note" aria-live="polite"></p>
+  </div>
+</section>
+<div class="bb-burst" id="burst" hidden aria-hidden="true"><div><big>★</big><span id="burst-t"></span></div></div>
+<p class="bb-banner" id="banner" aria-hidden="true"></p>
+<section class="bb-end" id="end" hidden><h2 id="end-h"></h2><div class="bb-podium" id="podium"></div><ol id="end-list"></ol></section>
+<p class="bb-sr" id="sr" aria-live="assertive"></p>
+<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.0/packs/live.js" integrity="sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m" crossorigin="anonymous"></script>
+<script>
+/* BRAIN BOARD: an Oomba Live built-in mode (docs/live-protocol.md "Brain Board"). A board of category columns with
+   tiles worth 100 to 500 on the projector. The host (or the player whose turn it is) picks a tile; it flips, and its
+   question opens on every device at once. Right answers score the tile's value (plus a little for speed); one or two
+   hidden Lucky Stars score double. No wagers, no typing, never minus points. The server owns the board (shared state
+   bb) and the scoring; this file draws it. Played alone: a practice board of sums. 2D only, so it runs everywhere. */
+(function () {
+  'use strict';
+  var O = window.Oomba, L = O.live;
+  O.strings({
+    en: { title: 'Brain Board', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', paused: 'Paused', practice: 'Practice board', left: '{n} tiles left', hostPick: 'Pick a tile!', youPick: 'Your pick! Tap a tile.', theyPick: '{name} picks the next tile', hostPicks: 'The host picks the next tile', watch: 'Watch the board!', col: 'Set {n}', pts: '{n}', lucky: 'Lucky Star!', luckyText: 'Double points!', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", answers: '{n} answered', skipped: 'Skipped', top: 'Scores', podium: 'Winners', done: 'Board cleared!', score: '{n} points', rank: 'You are number {rank}', turnsOn: 'Players pick: on', turnsOff: 'Players pick: off', teamPodium: 'Winning teams', yourTeam: 'Your team: {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, done' },
+    'en-GB': { title: 'Brain Board', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', paused: 'Paused', practice: 'Practice board', left: '{n} tiles left', hostPick: 'Pick a tile!', youPick: 'Your pick! Tap a tile.', theyPick: '{name} picks the next tile', hostPicks: 'The host picks the next tile', watch: 'Watch the board!', col: 'Set {n}', pts: '{n}', lucky: 'Lucky Star!', luckyText: 'Double points!', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", answers: '{n} answered', skipped: 'Skipped', top: 'Scores', podium: 'Winners', done: 'Board cleared!', score: '{n} points', rank: 'You are number {rank}', turnsOn: 'Players pick: on', turnsOff: 'Players pick: off', teamPodium: 'Winning teams', yourTeam: 'Your team: {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, done' },
+    es: { title: 'Tablero Cerebro', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', paused: 'En pausa', practice: 'Tablero de práctica', left: 'Quedan {n} casillas', hostPick: '¡Elige una casilla!', youPick: '¡Te toca elegir! Toca una casilla.', theyPick: '{name} elige la próxima casilla', hostPicks: 'El anfitrión elige la próxima casilla', watch: '¡Mira el tablero!', col: 'Grupo {n}', pts: '{n}', lucky: '¡Estrella de la suerte!', luckyText: '¡Puntos dobles!', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Esta vez no!', timeUp: '¡Se acabó el tiempo!', answers: '{n} respondieron', skipped: 'Saltada', top: 'Puntos', podium: 'Ganadores', done: '¡Tablero completado!', score: '{n} puntos', rank: 'Vas en el puesto {rank}', turnsOn: 'Eligen los jugadores: sí', turnsOff: 'Eligen los jugadores: no', teamPodium: 'Equipos ganadores', yourTeam: 'Tu equipo: {team}', tile: '{cat}, {n} puntos', tileDone: '{cat}, {n} puntos, hecha' },
+    fr: { title: 'Plateau Cerveau', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', paused: 'En pause', practice: 'Plateau d’entraînement', left: 'Encore {n} cases', hostPick: 'Choisis une case !', youPick: 'À toi de choisir ! Touche une case.', theyPick: '{name} choisit la prochaine case', hostPicks: 'L’hôte choisit la prochaine case', watch: 'Regarde le plateau !', col: 'Série {n}', pts: '{n}', lucky: 'Étoile chance !', luckyText: 'Points doublés !', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Pas cette fois !', timeUp: 'Temps écoulé !', answers: '{n} ont répondu', skipped: 'Passée', top: 'Points', podium: 'Gagnants', done: 'Plateau terminé !', score: '{n} points', rank: 'Tu es numéro {rank}', turnsOn: 'Les joueurs choisissent : oui', turnsOff: 'Les joueurs choisissent : non', teamPodium: 'Équipes gagnantes', yourTeam: 'Ton équipe : {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, faite' },
+    de: { title: 'Denkbrett', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', paused: 'Pause', practice: 'Übungsbrett', left: 'Noch {n} Felder', hostPick: 'Wähle ein Feld!', youPick: 'Du wählst! Tippe auf ein Feld.', theyPick: '{name} wählt das nächste Feld', hostPicks: 'Die Spielleitung wählt das nächste Feld', watch: 'Schau aufs Brett!', col: 'Reihe {n}', pts: '{n}', lucky: 'Glücksstern!', luckyText: 'Doppelte Punkte!', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Diesmal nicht!', timeUp: 'Zeit ist um!', answers: '{n} haben geantwortet', skipped: 'Übersprungen', top: 'Punkte', podium: 'Gewinner', done: 'Brett geschafft!', score: '{n} Punkte', rank: 'Du bist auf Platz {rank}', turnsOn: 'Spieler wählen: an', turnsOff: 'Spieler wählen: aus', teamPodium: 'Siegerteams', yourTeam: 'Dein Team: {team}', tile: '{cat}, {n} Punkte', tileDone: '{cat}, {n} Punkte, erledigt' },
+    it: { title: 'Tabellone Cervello', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', paused: 'In pausa', practice: 'Tabellone di prova', left: 'Ancora {n} caselle', hostPick: 'Scegli una casella!', youPick: 'Tocca a te! Tocca una casella.', theyPick: '{name} sceglie la prossima casella', hostPicks: 'Chi conduce sceglie la prossima casella', watch: 'Guarda il tabellone!', col: 'Gruppo {n}', pts: '{n}', lucky: 'Stella fortunata!', luckyText: 'Punti doppi!', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Non stavolta!', timeUp: 'Tempo scaduto!', answers: '{n} hanno risposto', skipped: 'Saltata', top: 'Punti', podium: 'Vincitori', done: 'Tabellone completato!', score: '{n} punti', rank: 'Sei al posto numero {rank}', turnsOn: 'Scelgono i giocatori: sì', turnsOff: 'Scelgono i giocatori: no', teamPodium: 'Squadre vincitrici', yourTeam: 'La tua squadra: {team}', tile: '{cat}, {n} punti', tileDone: '{cat}, {n} punti, fatta' },
+    pt: { title: 'Tabuleiro Cérebro', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', paused: 'Pausado', practice: 'Tabuleiro de treino', left: 'Faltam {n} casas', hostPick: 'Escolha uma casa!', youPick: 'Sua vez de escolher! Toque numa casa.', theyPick: '{name} escolhe a próxima casa', hostPicks: 'O anfitrião escolhe a próxima casa', watch: 'Olhe o tabuleiro!', col: 'Grupo {n}', pts: '{n}', lucky: 'Estrela da sorte!', luckyText: 'Pontos em dobro!', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Não foi dessa vez!', timeUp: 'Acabou o tempo!', answers: '{n} responderam', skipped: 'Pulada', top: 'Pontos', podium: 'Vencedores', done: 'Tabuleiro completo!', score: '{n} pontos', rank: 'Você está em {rank}º lugar', turnsOn: 'Jogadores escolhem: sim', turnsOff: 'Jogadores escolhem: não', teamPodium: 'Equipes vencedoras', yourTeam: 'Sua equipe: {team}', tile: '{cat}, {n} pontos', tileDone: '{cat}, {n} pontos, feita' },
+    nl: { title: 'Breinbord', wait: 'Wachten tot de host begint…', ready: 'Maak je klaar!', go: 'Start!', paused: 'Gepauzeerd', practice: 'Oefenbord', left: 'Nog {n} vakjes', hostPick: 'Kies een vakje!', youPick: 'Jij kiest! Tik op een vakje.', theyPick: '{name} kiest het volgende vakje', hostPicks: 'De host kiest het volgende vakje', watch: 'Kijk naar het bord!', col: 'Reeks {n}', pts: '{n}', lucky: 'Geluksster!', luckyText: 'Dubbele punten!', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Deze keer niet!', timeUp: 'De tijd is om!', answers: '{n} hebben geantwoord', skipped: 'Overgeslagen', top: 'Punten', podium: 'Winnaars', done: 'Bord helemaal klaar!', score: '{n} punten', rank: 'Je staat op plek {rank}', turnsOn: 'Spelers kiezen: aan', turnsOff: 'Spelers kiezen: uit', teamPodium: 'Winnende teams', yourTeam: 'Jouw team: {team}', tile: '{cat}, {n} punten', tileDone: '{cat}, {n} punten, klaar' },
+    ru: { title: 'Мозговое табло', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', paused: 'Пауза', practice: 'Тренировочное табло', left: 'Клеток осталось: {n}', hostPick: 'Выберите клетку!', youPick: 'Твой выбор! Нажми на клетку.', theyPick: '{name} выбирает следующую клетку', hostPicks: 'Следующую клетку выбирает ведущий', watch: 'Смотри на табло!', col: 'Набор {n}', pts: '{n}', lucky: 'Счастливая звезда!', luckyText: 'Двойные очки!', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'В этот раз нет!', timeUp: 'Время вышло!', answers: 'Ответили: {n}', skipped: 'Пропущен', top: 'Очки', podium: 'Победители', done: 'Табло пройдено!', score: 'Очки: {n}', rank: 'Ты на {rank}-м месте', turnsOn: 'Выбирают игроки: да', turnsOff: 'Выбирают игроки: нет', teamPodium: 'Команды-победители', yourTeam: 'Твоя команда: {team}', tile: '{cat}, очков: {n}', tileDone: '{cat}, очков: {n}, сыграно' },
+    ja: { title: 'ブレインボード', wait: 'ホストがはじめるのをまってね…', ready: 'よーい！', go: 'スタート！', paused: 'ポーズ', practice: 'れんしゅうボード', left: 'のこり {n}マス', hostPick: 'マスをえらんでね！', youPick: 'きみのばん！マスをタップしてね。', theyPick: '{name}さんがつぎのマスをえらぶよ', hostPicks: 'ホストがつぎのマスをえらぶよ', watch: 'ボードをみてね！', col: 'セット{n}', pts: '{n}', lucky: 'ラッキースター！', luckyText: 'ポイント2ばい！', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'ざんねん！', timeUp: 'じかんぎれ！', answers: '{n}人がこたえた', skipped: 'スキップ', top: 'ポイント', podium: 'ゆうしょう', done: 'ボードクリア！', score: '{n}ポイント', rank: 'いま {rank}位', turnsOn: 'プレイヤーがえらぶ：オン', turnsOff: 'プレイヤーがえらぶ：オフ', teamPodium: 'ゆうしょうチーム', yourTeam: 'きみのチーム：{team}', tile: '{cat}、{n}ポイント', tileDone: '{cat}、{n}ポイント、おわり' },
+    'zh-Hant': { title: '腦力大板', wait: '等主持人開始…', ready: '準備！', go: '開始！', paused: '暫停', practice: '練習板', left: '還有 {n} 格', hostPick: '選一格吧！', youPick: '輪到你選！點一格。', theyPick: '{name} 選下一格', hostPicks: '主持人選下一格', watch: '看大板！', col: '第 {n} 組', pts: '{n}', lucky: '幸運星！', luckyText: '分數加倍！', locked: '答案已送出！', right: '答對了！+{points}', wrong: '這次沒答對！', timeUp: '時間到！', answers: '{n} 人已作答', skipped: '已跳過', top: '分數', podium: '優勝者', done: '全部完成！', score: '{n} 分', rank: '你是第 {rank} 名', turnsOn: '玩家選格：開', turnsOff: '玩家選格：關', teamPodium: '獲勝隊伍', yourTeam: '你的隊伍：{team}', tile: '{cat}，{n} 分', tileDone: '{cat}，{n} 分，已完成' },
+    he: { title: 'לוח המוח', wait: 'מחכים שהמארח יתחיל…', ready: 'היכון!', go: 'יוצאים!', paused: 'מושהה', practice: 'לוח אימון', left: 'נשארו {n} משבצות', hostPick: 'בחרו משבצת!', youPick: 'תורך לבחור! הקישו על משבצת.', theyPick: '{name} בוחר/ת את המשבצת הבאה', hostPicks: 'המארח בוחר את המשבצת הבאה', watch: 'הסתכלו על הלוח!', col: 'סדרה {n}', pts: '{n}', lucky: 'כוכב מזל!', luckyText: 'נקודות כפולות!', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'לא הפעם!', timeUp: 'נגמר הזמן!', answers: '{n} ענו', skipped: 'דולגה', top: 'נקודות', podium: 'המנצחים', done: 'הלוח הושלם!', score: '{n} נקודות', rank: 'את/ה במקום {rank}', turnsOn: 'השחקנים בוחרים: כן', turnsOff: 'השחקנים בוחרים: לא', teamPodium: 'הקבוצות המנצחות', yourTeam: 'הקבוצה שלך: {team}', tile: '{cat}, {n} נקודות', tileDone: '{cat}, {n} נקודות, הושלמה' },
+    ar: { title: 'لوحة الأذكياء', wait: 'بانتظار أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', paused: 'متوقف مؤقتاً', practice: 'لوحة تدريب', left: 'المربعات الباقية: {n}', hostPick: 'اختر مربعاً!', youPick: 'دورك! اضغط على مربع.', theyPick: '{name} يختار المربع التالي', hostPicks: 'المضيف يختار المربع التالي', watch: 'انظر إلى اللوحة!', col: 'المجموعة {n}', pts: '{n}', lucky: 'نجمة الحظ!', luckyText: 'نقاط مضاعفة!', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'ليس هذه المرة!', timeUp: 'انتهى الوقت!', answers: 'أجاب {n}', skipped: 'تم تخطيه', top: 'النقاط', podium: 'الفائزون', done: 'اكتملت اللوحة!', score: '{n} نقطة', rank: 'أنت في المركز {rank}', turnsOn: 'اللاعبون يختارون: نعم', turnsOff: 'اللاعبون يختارون: لا', teamPodium: 'الفرق الفائزة', yourTeam: 'فريقك: {team}', tile: '{cat}، {n} نقطة', tileDone: '{cat}، {n} نقطة، انتهى' },
+  });
+  var t = function (k, v) { return O.t(k, v); };
+  var $ = function (id) { return document.getElementById(id); };
+  var REDUCED = !!(O.settings && O.settings.reduced) || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  document.documentElement.dir = O.dir || 'ltr'; document.documentElement.lang = O.lang || 'en';
+  document.documentElement.className = (BRB.theme || 'auto') + (REDUCED ? ' reduced' : '');
+  document.title = t('title'); $('logo').textContent = t('title');
+  var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, ringTimer = 0, myScore = 0, revealUntil = 0, lastCur = null, viewTimer = 0;
+  var SHAPES = ['▲', '◆', '●', '■'];
+  function say(s) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = s; }, 30); }
+  function sfx(n) { try { O.sfx(n); } catch (e) { /* no sound */ } }
+
+  // ---- the night sky: twinkling stars, and in the lobby everyone's character on a little hill ----
+  var flat = L.flat({ me: true, px: 72 }), cv = $('sky'), ctx = cv.getContext('2d'), stars = [], emotes = new Map();
+  var EMO = { wave: '👋', cheer: '🎉', jump: '⬆️', dance: '💃', clap: '👏', heart: '❤️' };
+  var rnd = O.rand(7);
+  for (var s0 = 0; s0 < 90; s0++) stars.push({ x: rnd.float(0, 1), y: rnd.float(0, 1), r: rnd.float(0.6, 2.2), p: rnd.float(0, 6.3) });
+  L.on('emote', function (e) { emotes.set(e.from, { name: e.name, until: performance.now() + 2000 }); });
+  function drawSky(ts) {
+    var W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+    if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b0e26'); g.addColorStop(1, '#262f86');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    stars.forEach(function (s) { ctx.globalAlpha = REDUCED ? 0.7 : 0.45 + 0.45 * Math.sin(ts / 700 + s.p); ctx.fillStyle = '#fff8e6'; ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.r, 0, 6.3); ctx.fill(); });
+    ctx.globalAlpha = 1;
+    var lobby = phase === 'lobby' || phase === 'loading' || (phase === 'countdown' && !(bb() && bb().t));
+    if (lobby && L.active) {
+      ctx.fillStyle = '#3a8f5c'; ctx.beginPath(); ctx.ellipse(W / 2, H * 1.15, W * 0.8, H * 0.5, 0, 0, 6.3); ctx.fill();
+      var all = L.players(), n = all.length, cols = Math.max(1, Math.min(8, Math.ceil(Math.sqrt(Math.max(1, n) * W / (H * 0.6))))), rows = Math.max(1, Math.ceil(n / cols));
+      var cw = W / cols, ch = H * 0.6 / rows, r = Math.max(14, Math.min(46, Math.min(cw, ch) * 0.3));
+      all.forEach(function (p, i) {
+        var cx = (i % cols + 0.5) * cw, cy = H * 0.32 + (Math.floor(i / cols) + 0.7) * ch;
+        var hop = REDUCED ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
+        flat.place(p.seat, cx, cy - hop, 0);
+        var e = emotes.get(p.seat); if (e && e.until > performance.now()) { ctx.font = Math.round(r) + 'px system-ui'; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
+      });
+      flat.draw(ctx, { scale: 1, r: r });
+    }
+    requestAnimationFrame(drawSky);
+  }
+  requestAnimationFrame(drawSky);
+
+  // ---- the board (the server's shared state bb; the practice board when played alone) ----
+  var practice = null;
+  function bb() { return practice ? practice.bb : (L.state && L.state.bb) || null; }
+  function catName(b, ci) { return (b.cats[ci] || '').trim() || t('col', { n: ci + 1 }); }
+  function myTurn(b) { return !host && !practice && L.active && b && b.turns && L.me && b.turn === L.me.seat; }
+  function canPick(b) { if (!b || b.cur || phase !== 'between') return false; return practice ? true : host || myTurn(b); }
+  function renderBoard() {
+    var b = bb(), grid = $('grid');
+    if (!b || !b.t) return;
+    var pickable = canPick(b);
+    grid.style.gridTemplateColumns = 'repeat(' + b.t.length + ', minmax(0, 1fr))';
+    grid.textContent = '';
+    b.t.forEach(function (col, ci) { var h = document.createElement('div'); h.className = 'bb-cat k' + (ci % 6); h.setAttribute('role', 'columnheader'); h.dir = 'auto'; h.textContent = catName(b, ci); if (h.textContent.length <= 2) h.classList.add('sym'); h.style.gridColumn = String(ci + 1); h.style.gridRow = '1'; grid.appendChild(h); });
+    b.t.forEach(function (col, ci) {
+      col.forEach(function (tile, r) {
+        var v = tile[0], st = tile[1];
+        var el = document.createElement('button'); el.type = 'button'; el.className = 'bb-tile';
+        el.style.gridColumn = String(ci + 1); el.style.gridRow = String(r + 2);
+        var isCur = b.cur && b.cur[0] === ci && b.cur[1] === r;
+        if (st >= 2) el.classList.add('done');
+        if (isCur) { el.classList.add('open'); if (b.cur[2]) el.classList.add('star'); }
+        if (st === 3) el.classList.add('star');
+        var can = pickable && st === 0;
+        if (can) el.classList.add('can');
+        el.disabled = !can;
+        el.setAttribute('aria-label', t(st >= 2 ? 'tileDone' : 'tile', { cat: catName(b, ci), n: v }));
+        var inner = document.createElement('span'); inner.className = 'in';
+        var f = document.createElement('span'); f.className = 'f'; f.textContent = st === 3 ? '★' : st === 2 ? '✓' : String(v);
+        var bk = document.createElement('span'); bk.className = 'b'; bk.textContent = isCur && b.cur[2] ? '★' : String(v);
+        inner.append(f, bk); el.appendChild(inner);
+        if (can) el.addEventListener('click', function () { pickTile(ci, r); });
+        grid.appendChild(el);
+      });
+    });
+    $('left').hidden = false; $('left').textContent = t('left', { n: b.left });
+    if (host && L.active) { var tb = $('turns'); tb.hidden = false; tb.textContent = t(b.turns ? 'turnsOn' : 'turnsOff'); tb.setAttribute('aria-pressed', String(!!b.turns)); }
+    status();
+  }
+  function status() {
+    var b = bb(), el = $('status'); el.classList.remove('mine');
+    if (!b || phase === 'ended') { return; }
+    if (phase === 'paused') { el.textContent = t('paused'); return; }
+    if (b.cur || phase === 'countdown' || phase === 'playing') { el.textContent = t('watch'); return; }
+    if (practice || host) { el.textContent = host && b.turns && b.turn ? t('theyPick', { name: L.nameOf(b.turn) }) : t('hostPick'); return; }
+    if (myTurn(b)) { el.textContent = t('youPick'); el.classList.add('mine'); return; }
+    el.textContent = b.turns && b.turn ? t('theyPick', { name: L.nameOf(b.turn) }) : t('hostPicks');
+  }
+  function pickTile(ci, r) {
+    var b = bb(); if (!canPick(b)) return;
+    sfx('select');
+    if (practice) return practicePick(ci, r);
+    if (host) L.send('pick', { c: ci, r: r }); else L.send('pick', { c: ci, r: r }, { toHost: true });
+  }
+  $('turns').addEventListener('click', function () { var b = bb(); if (!host || !b) return; sfx('click'); L.send('turns', { on: b.turns ? 0 : 1 }); });
+
+  // A tile just opened: the flip (and a Lucky Star burst) on every screen.
+  function onBoard() {
+    var b = bb(); if (!b) return;
+    var cur = b.cur ? b.cur.join(':') : null;
+    if (cur && cur !== lastCur) { sfx(b.cur[2] ? 'levelup' : 'whoosh'); if (b.cur[2]) starBurst(); }
+    lastCur = cur;
+    view();
+  }
+  function starBurst() {
+    $('burst-t').textContent = t('lucky') + ' ' + t('luckyText'); $('burst').hidden = false; say(t('lucky') + ' ' + t('luckyText'));
+    setTimeout(function () { $('burst').hidden = true; }, REDUCED ? 1400 : 1800);
+  }
+  L.on('state', onBoard);
+
+  // ---- what is on screen: the board, the question card, or the end ----
+  function view() {
+    clearTimeout(viewTimer);
+    var b = bb(), now = performance.now();
+    var showCard = !!Q && (phase === 'playing' || phase === 'paused' || now < revealUntil);
+    $('card').hidden = !showCard;
+    $('main').hidden = !(b && b.t) || phase === 'ended' || phase === 'lobby' || phase === 'loading';
+    $('end').hidden = phase !== 'ended';
+    var over = phase === 'ended';
+    if (over) { $('status').textContent = ''; $('left').hidden = true; $('turns').hidden = true; }
+    if (!$('main').hidden) renderBoard();
+    if (now < revealUntil) viewTimer = setTimeout(view, revealUntil - now + 20);
+  }
+
+  // ---- the question card ----
+  function tileOf(i) {
+    var b = bb(); if (!b || !b.cur) return null;
+    return { cat: catName(b, b.cur[0]), v: b.t[b.cur[0]][b.cur[1]][0], star: !!b.cur[2], k: b.cur[0] };
+  }
+  function showCard(q) {
+    Q = q; myPick = -1; revealUntil = 0;
+    var tl = tileOf(q.i) || { cat: '', v: 0, star: false, k: 0 };
+    $('ccat').textContent = tl.cat; $('ccat').className = 'cat k' + (tl.k % 6); $('ccat').hidden = !tl.cat;
+    $('cval').textContent = t('score', { n: tl.v }); $('cval').hidden = !tl.v;
+    $('clucky').hidden = !tl.star; $('clucky').textContent = '★ ' + t('luckyText');
+    $('qtext').textContent = q.q;
+    var note = $('note'); note.className = 'bb-note'; note.textContent = host ? t('answers', { n: 0 }) : q.answered ? t('locked') : '';
+    var pad = $('pad'); pad.textContent = '';
+    q.choices.forEach(function (c, i) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'bb-a c' + i;
+      var sh = document.createElement('span'); sh.className = 'sh'; sh.setAttribute('aria-hidden', 'true'); sh.textContent = SHAPES[i];
+      var tx = document.createElement('span'); tx.className = 'tx'; tx.dir = 'auto'; tx.textContent = c;
+      b.append(sh, tx); b.setAttribute('aria-label', String.fromCharCode(65 + i) + ': ' + c);
+      b.disabled = host || !!q.answered;
+      b.addEventListener('click', function () { choose(i); });
+      pad.appendChild(b);
+    });
+    view(); say(q.q);
+    clearInterval(ringTimer); ringTimer = setInterval(ring, 100); ring();
+    if (!host && !q.answered && pad.firstChild) pad.firstChild.focus({ preventScroll: true });
+  }
+  function ring() {
+    if (!Q || phase !== 'playing') return;
+    var left = practice ? Math.max(0, practice.deadline - performance.now()) : L.quiz.left(), f = Math.max(0, Math.min(1, left / (Q.secs * 1000)));
+    $('ring').setAttribute('stroke-dashoffset', String(94.25 * (1 - f))); $('secs').textContent = Math.ceil(left / 1000);
+    if (left > 0 && left < 3200 && Math.ceil(left / 1000) !== ring.last) { ring.last = Math.ceil(left / 1000); sfx('count'); }
+  }
+  function choose(i) {
+    if (host || !Q || myPick >= 0 || phase !== 'playing') return;
+    if (practice) practiceAnswer(i); else if (!L.quiz.answer(i)) return;
+    myPick = i;
+    [].forEach.call($('pad').children, function (b, k) { b.disabled = true; b.classList.toggle('pick', k === i); });
+    if (!practice) $('note').textContent = t('locked');
+    sfx('select');
+  }
+  function showReveal(rv) {
+    clearInterval(ringTimer); $('secs').textContent = '';
+    revealUntil = performance.now() + (practice ? 1900 : 4200);
+    if (rv.skipped) { $('note').textContent = t('skipped'); view(); return; }
+    [].forEach.call($('pad').children, function (b, k) {
+      b.disabled = true; b.classList.toggle('right', k === rv.answer);
+      if (host && rv.counts) { var n = document.createElement('span'); n.className = 'n'; n.textContent = rv.counts[k] || 0; b.appendChild(n); }
+    });
+    if (host) { $('note').textContent = ''; sfx('spark'); }
+    if (host && rv.top) scores(rv.top);
+    view();
+  }
+  function showResult(r) {
+    if (host) return;
+    var note = $('note');
+    if (r.none) { note.textContent = t('timeUp'); note.className = 'bb-note bad'; return; }
+    myScore = typeof r.score === 'number' ? r.score : myScore + (r.points || 0);
+    note.textContent = (r.ok ? t('right', { points: r.points }) : t('wrong')) + (r.rank ? ' · ' + t('rank', { rank: r.rank }) : '');
+    note.className = 'bb-note ' + (r.ok ? 'good' : 'bad');
+    $('score').hidden = false; $('score').textContent = t('score', { n: myScore });
+    say(note.textContent); sfx(r.ok ? 'correct' : 'wrong');
+    if (r.ok && !REDUCED && r.points >= 600) { try { BRB.fx.confetti(); } catch (e) { /* none */ } }
+  }
+
+  // ---- the projector's score column: teams when on, else the top players ----
+  function scores(top) {
+    if (!host) return;
+    var rows = $('rows'); rows.textContent = '';
+    var tms = L.teamsOn ? L.teams().filter(function (x) { return x.size > 0; }) : [];
+    if (tms.length) {
+      $('side-h').textContent = t('top');
+      tms.sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); }).forEach(function (tm) {
+        var li = document.createElement('li'); li.style.background = tm.color; li.style.color = tm.ink;
+        var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = tm.icon + ' ' + tm.name;
+        var sc = document.createElement('b'); sc.textContent = tm.score; li.append(nm, sc); rows.appendChild(li);
+      });
+    } else {
+      $('side-h').textContent = t('top');
+      (top || []).slice(0, 8).forEach(function (p) {
+        var li = document.createElement('li');
+        var c = flat.portrait(p.seat); if (c) { var img = document.createElement('canvas'); img.width = c.width; img.height = c.height; img.getContext('2d').drawImage(c, 0, 0); img.setAttribute('aria-hidden', 'true'); li.appendChild(img); }
+        var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = p.name;
+        var sc = document.createElement('b'); sc.textContent = p.score; li.append(nm, sc); rows.appendChild(li);
+      });
+    }
+    $('side').hidden = !rows.children.length;
+  }
+  L.on('leaderboard', function (e) { if (host) scores(e.top); });
+  L.on('teams', function () { if (host && L.teamsOn) scores([]); myTeamPill(); });
+
+  // ---- the end: a podium ----
+  function podium(top, title) {
+    $('end-h').textContent = title;
+    var pd = $('podium'), ol = $('end-list'); pd.textContent = ''; ol.textContent = '';
+    [1, 0, 2].forEach(function (k) {
+      var p = top[k]; if (!p) return;
+      var st = document.createElement('div'); st.className = 'bb-step';
+      if (p.seat) { var c = flat.portrait(p.seat); if (c) { var img = document.createElement('canvas'); img.width = c.width; img.height = c.height; img.getContext('2d').drawImage(c, 0, 0); img.setAttribute('aria-hidden', 'true'); st.appendChild(img); } }
+      var nm = document.createElement('span'); nm.textContent = p.name + ' · ' + p.score; st.appendChild(nm);
+      var bar = document.createElement('i'); bar.style.height = [110, 80, 56][k] + 'px'; bar.textContent = k + 1; st.appendChild(bar);
+      pd.appendChild(st);
+    });
+    top.slice(3, 8).forEach(function (p) { var li = document.createElement('li'); li.textContent = p.name + ' · ' + p.score; ol.appendChild(li); });
+    ol.start = 4;
+  }
+
+  // ---- the session ----
+  L.on('phase', function (e) {
+    var was = phase;
+    phase = e.phase;
+    // the question just closed: keep its card up while the answer is revealed (the reveal follows this message)
+    if (phase === 'between' && was === 'playing' && Q) revealUntil = performance.now() + 4200;
+    if (phase === 'lobby') { $('status').textContent = host ? '' : t('wait'); }
+    if (phase === 'loading') $('status').textContent = t('ready');
+    view();
+  });
+  var cd = 0;
+  L.on('countdown', function (e) {
+    clearInterval(cd);
+    // the first countdown (before the board) says 3-2-1; later ones are the tile flipping: a quick 2-1 over the board
+    var tick = function () { var left = Math.ceil((e.at - L.now()) / 1000); $('banner').textContent = left > 0 && $('burst').hidden ? String(left) : ''; if (left <= 0) clearInterval(cd); };
+    tick(); cd = setInterval(tick, 200);
+  });
+  L.on('question', function (q) { clearInterval(cd); $('banner').textContent = ''; showCard(q); });
+  L.on('answers', function (a) { if (host) $('note').textContent = t('answers', { n: a.n }); });
+  L.on('reveal', showReveal);
+  L.on('result', showResult);
+  L.on('end', function (e) {
+    clearInterval(ringTimer); phase = 'ended'; Q = null;
+    if (e.teams && e.teams.length && !(e.top && e.top.length)) podium(e.teams.filter(function (x) { return x.rank; }).sort(function (a, b) { return a.rank - b.rank; }).map(function (x) { return { seat: 0, name: x.icon + ' ' + x.name, score: x.score }; }), t('teamPodium'));
+    else podium(e.top || [], t('done'));
+    view();
+    if (!REDUCED) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
+    sfx('win');
+  });
+  function myTeamPill() { var mt = L.myTeam, el = $('team'); el.hidden = !mt || host; if (mt && !host) { el.textContent = t('yourTeam', { team: mt.icon + ' ' + mt.name }); el.style.background = mt.color; el.style.color = mt.ink; } }
+  L.on('welcome', function () { phase = L.phase; myTeamPill(); onBoard(); });
+
+  // ---- practice (played alone): a board of sums, + − × ÷ and a mix, easy at the top ----
+  function practiceBoard() {
+    var R = O.rand(Date.now() % 100000), items = [], cats = ['+', '−', '×', '÷', '?'];
+    function four(ans, spread) { var set = [ans]; while (set.length < 4) { var w = ans + R.int(-spread, spread); if (w !== ans && w >= 0 && set.indexOf(w) < 0) set.push(w); } return R.shuffle(set); }
+    var t5 = [];
+    cats.forEach(function (c, ci) {
+      var col = [];
+      for (var r = 0; r < 5; r++) {
+        var hi = [9, 20, 50, 100, 500][r], a, b, ans, q;
+        if (ci === 0) { a = R.int(1, hi); b = R.int(1, hi); ans = a + b; q = a + ' + ' + b; }
+        else if (ci === 1) { a = R.int(2, hi * 2); b = R.int(1, a); ans = a - b; q = a + ' − ' + b; }
+        else if (ci === 2) { a = R.int(2, [5, 9, 12, 15, 25][r]); b = R.int(2, [5, 9, 12, 15, 25][r]); ans = a * b; q = a + ' × ' + b; }
+        else if (ci === 3) { b = R.int(2, [5, 9, 12, 12, 20][r]); ans = R.int(2, [5, 9, 12, 20, 25][r]); a = b * ans; q = a + ' ÷ ' + b; }
+        else { a = R.int(1, hi); ans = R.int(1, hi); b = a + ans; q = a + ' + ? = ' + b; }
+        var ch = four(ans, Math.max(3, Math.round(ans / 6)));
+        col.push({ q: q.indexOf('?') >= 0 ? q : q + ' = ?', choices: ch.map(String), answer: ch.indexOf(ans), secs: 15 + r * 5, v: (r + 1) * 100 });
+      }
+      items.push(col);
+      t5.push(col.map(function (it) { return [it.v, 0]; }));
+    });
+    var starAt = [R.int(0, 4), R.int(1, 4)];
+    return { items: items, star: starAt, bb: { cats: cats, t: t5, cur: null, turn: 0, turns: 0, left: 25 }, score: 0, deadline: 0, to: 0 };
+  }
+  function practicePick(ci, r) {
+    var p = practice, b = p.bb;
+    b.cur = [ci, r, p.star[0] === ci && p.star[1] === r ? 1 : 0]; b.t[ci][r][1] = 1;
+    phase = 'countdown'; onBoard();
+    setTimeout(function () {
+      var it = p.items[ci][r]; phase = 'playing'; p.deadline = performance.now() + it.secs * 1000;
+      showCard({ i: ci * 5 + r, n: 25, q: it.q, choices: it.choices, secs: it.secs, at: 0 });
+      clearTimeout(p.to); p.to = setTimeout(function () { if (myPick < 0) { myPick = 9; practiceAnswer(-1); } }, it.secs * 1000);
+    }, REDUCED ? 300 : 1100);
+  }
+  function practiceAnswer(i) {
+    var p = practice, b = p.bb; clearTimeout(p.to);
+    var ci = b.cur[0], r = b.cur[1], it = p.items[ci][r], ok = i === it.answer, star = !!b.cur[2];
+    var pts = ok ? (it.v + Math.round(it.v * 0.2 * Math.max(0, p.deadline - performance.now()) / (it.secs * 1000))) * (star ? 2 : 1) : 0;
+    p.score += pts; phase = 'between';
+    showReveal({ answer: it.answer }); showResult({ ok: ok, points: pts, score: p.score, none: i < 0 });
+    b.t[ci][r][1] = star ? 3 : 2; b.cur = null; b.left--;
+    setTimeout(function () {
+      if (!b.left) { phase = 'ended'; Q = null; podium([{ seat: 0, name: BRB.user.displayName || t('title'), score: p.score }], t('done')); view(); sfx('win'); if (!REDUCED) { try { BRB.fx.confetti(); } catch (e) { /* none */ } } }
+      else view();
+    }, 1950);
+  }
+
+  L.ready({ lobby: true, quiz: true, hostView: true, teams: true, words: ['pick'] });
+  if (!L.active) {
+    L.on('start', function () { practice = practiceBoard(); phase = 'between'; $('status').textContent = t('practice'); view(); });
+  } else if (phase === 'lobby' && !host) $('status').textContent = t('wait');
+  O.test({
+    state: function () {
+      var b = bb();
+      return { role: L.role, phase: phase, practice: !!practice, board: b ? { cats: b.cats.slice(), left: b.left, cur: b.cur, turns: b.turns, turn: b.turn, done: b.t.map(function (c) { return c.map(function (x) { return x[1]; }); }) } : null,
+        question: Q ? { i: Q.i, q: Q.q, choices: Q.choices.slice(), answered: myPick >= 0 } : null, card: !$('card').hidden, score: myScore, note: $('note').textContent, status: $('status').textContent, canPick: canPick(b), ended: !$('end').hidden };
+    },
+    start: function () { return true; },
+  });
+  window.__brbTest.pick = function (c, r) { pickTile(c, r); };
+  window.__brbTest.answer = function (i) { choose(i); };
+  window.__brbTest.turns = function () { $('turns').click(); };
+})();
+</script>
+</body>
+</html>
