@@ -417,7 +417,7 @@ router.get('/live/play/:sid', on, (req, res) => {
   const s = LS.get(req.params.sid);
   const open = !!s && s.phase !== 'ended';
   noStore(res);
-  page(req, res, { title: s ? s.title : req.t('live.play.title'), bare: true, bodyClass: 'lv-body lv-player', head: '<link rel="stylesheet" href="/css/live.css">',
+  page(req, res, { title: s ? s.title : req.t('live.play.title'), bare: true, bodyClass: 'lv-body lv-player-page', head: '<link rel="stylesheet" href="/css/live.css">',
     body: V.playBody(req, { sid: s ? s.id : String(req.params.sid).slice(0, 40), title: s ? s.title : req.t('live.play.title'), nicks: nicksFor(req.locale), open }), scripts: ['/js/live-play.js'] }, open ? 200 : 404);
 });
 
