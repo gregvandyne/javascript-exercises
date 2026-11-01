@@ -904,4 +904,8 @@ ol.steps li{margin-bottom:var(--s2)}
 /* Oomba Live: "Join a game" in the signed-out top bar (wide screens; phones have it on the home page) */
 .joinnow{display:none;flex:none;white-space:nowrap}
 @media (min-width:1500px){.joinnow{display:inline-flex}}
-.home-join{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;margin:12px 0 0}
+.home-join{flex:1 1 100%;min-width:0;display:grid;margin:var(--s3) 0 0}
+/* "Join a game": same card shape as the doors above, in the green button colour. */
+.door-join{background:var(--accent);color:var(--on-accent);border-color:var(--accent-press);box-shadow:0 4px 0 var(--accent-press)}
+.door-join:hover{background:var(--accent-hover)}
+.door-join .door-s{color:var(--on-accent)}

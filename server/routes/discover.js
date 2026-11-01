@@ -66,7 +66,7 @@ router.get('/', (req, res) => {
   const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       ${homeDoors(req)}
-      ${liveOn() ? html`<p class="home-join"><a class="btn btn-primary btn-big" href="/join" id="home-join"><span aria-hidden="true">🎟️</span> ${t('live.entry.join')}</a> <span class="muted">${t('live.entry.joinText')}</span></p>` : ''}
+      ${liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinText')}>${t('live.entry.joinText')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : ''}
       <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
   const body = html`${intro}
   <div id="play" class="home-play">
