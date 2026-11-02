@@ -61,3 +61,21 @@ go && go.addEventListener('click', async () => {
 stop && stop.addEventListener('click', async () => { try { show(await api('/api/admin/tts/warm/stop', { method: 'POST', body: {} })); } catch (ex) { toast(ex.message, { bad: true }); } });
 show(data.warm);
 if (data.warm.running) poll();
+
+// Games with AI voices: switch one on from its link or name, or off from the list (routes/tts.js /api/admin/tts/games).
+const addForm = $('#tv-game-add'), gStatus = $('#tv-games-status');
+addForm && addForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const game = addForm.elements.game.value.trim(); if (!game) return;
+  try {
+    const r = await api('/api/admin/tts/games', { method: 'POST', body: { game, on: true } });
+    if (gStatus) gStatus.textContent = `AI voices are on for ${r.game.title}.`;
+    toast('Switched on.'); setTimeout(() => location.reload(), 600);
+  } catch (ex) { if (gStatus) gStatus.textContent = ex.message; toast(ex.message, { bad: true }); }
+});
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-tg-off]'); if (!b) return;
+  b.disabled = true;
+  try { await api('/api/admin/tts/games', { method: 'POST', body: { game: b.dataset.tgOff, on: false } }); toast('Switched off.'); setTimeout(() => location.reload(), 600); }
+  catch (ex) { toast(ex.message, { bad: true }); b.disabled = false; }
+});

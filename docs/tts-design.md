@@ -180,7 +180,7 @@ use the device voice. Live game frames could be added later with the same handle
   and viewable; the locale is on; **the text is one of the game's own spoken lines in that locale**
   (`allowedLine`; `{placeholders}` match numbers only), else `422 filtered`; the role is the line's own; the text
   passes `speakable`. **Kid- or teacher-made Builder games, and official games not listed, never get a token**, so
-  they keep the device voice.
+  they keep the device voice, **unless the admin switched that one game on** (see "A game the admin switched on").
 - `ctx:'live'` (`sid, i, tok` = the player's seat token or the host/co-host token): **text by reference**. The server
   builds `q + ". A: c1. B: c2 …"` from the run's question `i` in the session's language (a posted `lang` is ignored). It refuses `i` beyond the
   question being shown now, so upcoming questions never leak. The text is the teacher's (or an AI-drafted set the
@@ -267,6 +267,36 @@ written with `audit()`. `tts_usage` rows older than 90 days are deleted (the `st
   to `setting('tts.voices')`, written with `audit()`. It takes effect without a redeploy (each request reads it; an
   in-memory copy is refreshed when it is saved).
 - It works with `TTS_PROVIDER=mock` (silent mp3), so the e2e test can drive it.
+
+### A game the admin switched on (`services/tts-games.js`)
+The site owner can give AI voices to one more game at a time, such as a teacher's own Builder game:
+- **Switch:** `setting('tts.games')` = `{ <game id>: { by, at } }`, changed only by a platform admin
+  (`POST /api/admin/tts/games {game, on}`, behind `requireAdmin`: 404 for anyone else) and audited
+  (`admin.tts.game.on|off`). `game` may be a slug, an id or a pasted link (`/g/<slug>`, `/play/<slug>`, any language
+  prefix). UI: the admin-only **AI voices for this game** box on the game's page `/g/<slug>`, and **Games with AI
+  voices** on `/admin/voices` (a list with **Switch off**, and an **Add a game** field for a link or name). English
+  only, like the rest of the admin panel; nothing a kid sees changed.
+- **Who:** only a game made by a teacher, school staff or the platform admin. A student's or any other account's game
+  is refused with a message naming why, and is re-checked on every request (the maker's role now, not at publish
+  time). Official games are refused too: listed ones have their known lines, the rest (word games) keep the device
+  voice by design. Both admin pages say "Nothing plays yet" when AI voices are off for the site or no language is on.
+- **When:** published, not hidden, not suspended (`routes/tts.js gameAllowed`). Drafts and Studio previews never.
+- **What:** `allowedText`: the request must be the game's own words from its **published version's HTML**: string
+  literals in its scripts (template `${…}` and `{name}` count as placeholders), markup text and text attributes
+  (`title`, `alt`, `aria-label`, `placeholder`, `value`…), each also split into lines and sentences; a chain
+  `'You have ' + n + ' points!'` is also kept whole as one pattern. Compared in lower case with whitespace collapsed
+  (not removed) and plain punctuation trimmed at the ends; a number of up to 7 digits (`1,234`, `1 234`) is one token.
+  - A request matches one string whole. Its placeholders take a number, or one of the game's own short names (letters
+    only, 3+ letters, up to 3 words, not an array item; at most one a line): `'{name} wins!'` / `'¡Gana {name}!'`
+    with `CONFIG.p1.name = 'Fox'`. A number elsewhere only where the game's text has a number.
+  - Or at most `MAX_JOIN` (3) of its phrases or sentences joined (the kit reads a "how to play" as one): each piece
+    has a space or ends a sentence, has 3+ letters, isn't an array item (word lists, answer letters, alphabets) or a
+    code string; only spaces and plain punctuation (at most 4) between pieces, never glued inside a word. Emoji and
+    symbols are never free: they must be in the matched text.
+  - The text sent to the voice is the request's (spacing or case changes make a new clip; the rate limits and daily
+    budget cap the cost). The allowlist is cached per `published_version_id`, so a new published version is used at once. Anything else:
+  `422 filtered` (the device's voice). The role is the one asked for if it is a known role, else narrator. The
+  `speakable` backstops still run.
 
 ## 6. Warm-up
 - `server/services/tts-lines.js`: `gameLines(slug)` → `[{locale, role, text}]`.
