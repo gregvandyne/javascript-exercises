@@ -69,6 +69,7 @@ const TYPES = {
   'brb:fullscreen': m => typeof m.on === 'boolean',
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
   'brb:retry': m => true,
+  'brb:poll': m => typeof m.item === 'string' && /^[a-z0-9][a-z0-9-]{0,39}$/.test(m.item) && (m.choice === 0 || m.choice === 1) && Number.isInteger(m.seat) && m.seat >= 0 && m.seat <= 5 && Number.isInteger(m.n) && m.n >= 0 && m.n < 1e9,
   'brb:online': m => true,
   // AI voices (official games only; public/js/tts.js): one line of the game's own words to read aloud.
   'brb:tts': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.text === 'string' && m.text.length > 0 && m.text.length <= 600 && typeof m.lang === 'string' && m.lang.length <= 16
@@ -93,6 +94,13 @@ addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
   switch (m.type) {
     case 'brb:ready': if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); tellMode(); break;
+    // A poll (BRB.poll, official games on the list): count the choice, hand the totals back to the frame.
+    case 'brb:poll': {
+      const answer = r => { try { frame.contentWindow.postMessage({ brb: 1, type: 'brb:pollResult', n: m.n, ...(r ? { a: r.a, b: r.b, total: r.total, min: r.min } : { off: true }) }, '*'); } catch { /* frame gone */ } };
+      if (!d.polls) { answer(null); break; }
+      api(`/api/games/${d.gameId}/poll`, { method: 'POST', body: { item: m.item, choice: m.choice, seat: m.seat }, active: playing() }).then(answer, () => answer(null));
+      break;
+    }
     case 'brb:tts': gameLine(m); break;
     // "Play online" in a game that can be played online: the site's own sheet (friends, family, codes).
     case 'brb:online': if (d.online && !d.match && tappedJustNow()) openLobby(d); break;

@@ -2009,3 +2009,11 @@ fails on anything off screen, cut off, on top of something else or squashed, on 
 or on sideways scrolling (tests/e2e/frame-fit.js), keeping a screenshot of every check to look at by eye. The live quiz
 modes are checked in a real session by `npm run layout:live`. Passing the check is the minimum: also play the game with
 touch on a tablet both ways (for a 3D game, check the camera frames the scene on a tall screen too).
+
+## Game polls (November 2026)
+
+Would You Rather shows "62% chose this" after a pick and at the reveals. The game calls `BRB.poll(item, choice, seat)`;
+the play page posts it to `POST /api/games/:id/poll` (official games on `services/polls.js` POLL_GAMES only) and hands
+the totals back. Only counts are kept (`game_polls`), plus who already voted (`game_poll_votes`, one vote per player,
+item and pass-and-play seat 0-5) so a player can't tip the numbers; nobody is ever shown who chose what, and nothing
+typed is stored. Under 5 votes the game says "You're one of the first to answer" instead of a percentage.

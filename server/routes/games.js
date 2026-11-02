@@ -19,6 +19,7 @@ import { fileFor } from '../services/shots.js';
 import * as progress from '../services/progress.js';
 import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
+import * as polls from '../services/polls.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
@@ -216,7 +217,7 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, online: !!(u && onlineGame(u, g.id)), ...(ttsData ? { tts: ttsData } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(ttsData ? { tts: ttsData } : {}) })}`;
   page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: ['js.match'] });
 });
 
@@ -282,6 +283,16 @@ function apiGame(req, res) {
   if (!g || !games.canView(req.user, g)) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
   return g;
 }
+// Game polls (services/polls.js): an official game on the list counts a choice and gets the totals back.
+// Body { item, choice: 0|1, seat?: 0-5 }. -> { a, b, total, min }
+const pollGame = g => polls.POLL_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
+router.post('/api/games/:id/poll', requireUser, rateLimit('poll', 240, 60e3), (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!pollGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const b = req.body || {}, item = String(b.item || ''), choice = +b.choice, seat = b.seat === undefined ? 0 : +b.seat;
+  if (!polls.ITEM.test(item) || !(choice === 0 || choice === 1) || !(Number.isInteger(seat) && seat >= 0 && seat <= 5)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  res.json({ ...polls.vote(g.id, req.user.id, item, choice, seat), min: polls.MIN_SHOWN });
+});
 router.post('/api/games/:id/rate', requireUser, rateLimit('rate', 30, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const s = Math.round(+(req.body || {}).stars);

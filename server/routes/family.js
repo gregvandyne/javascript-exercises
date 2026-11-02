@@ -61,7 +61,7 @@ const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/sta
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
-  /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report)$/,
+  /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report|poll)$/,
   /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections
 // (the friend-code APIs; services/friends.js keeps adults and kids apart). Chat, /friends and /u/ stay closed.
