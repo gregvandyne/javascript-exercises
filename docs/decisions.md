@@ -2025,13 +2025,19 @@ in `tts-lines.GAMES`. Design: docs/tts-design.md "A game the admin switched on".
 - **A per-game switch, admin only.** Stored in `settings` (`tts.games`, no migration), audited, toggled on the game's
   page (admin-only box "AI voices for this game") or at `/admin/voices` ("Games with AI voices": list, Switch off, Add
   a game by link or name). Non-admins get 404 from the API.
-- **Only grown-up staff's games.** The maker must be a teacher, school staff or the admin (or the game official). A
-  student's game is refused with a clear message: its words are a kid's, and the child-safety rule is that only site,
-  game or teacher text is spoken.
+- **Only grown-up staff's games.** The maker must be a teacher, school staff or the admin. A student's game is refused
+  with a clear message: its words are a kid's, and the child-safety rule is that only site, game or teacher text is
+  spoken. Official games can't be switched on here either: listed ones already read their known lines, and the others
+  (word games where a kid types the word) keep the device's voice by design. The maker's role is checked as it is now,
+  on every request, not as it was when each version was published (see docs/safety.md).
 - **Only the game's own words.** There is no list of spoken keys for such a game, so the allowlist is every string in
   its published version's source (script literals, markup text, text attributes), cached per published version;
-  numbers may differ and up to 4 strings may be joined (templates like `'Score: ' + n`). Joining is capped and each
-  piece is a whole string of the game's, so single-letter strings can't spell new words. Drafts and previews never
+  a line must match one of its strings whole. Placeholders (`${…}`, `{name}`, `'a' + x + 'b'` chains) take a number or
+  one of the game's own short names (`'{name} wins!'` with `'Fox'`), at most one name a line; a number elsewhere only
+  where the game's text has one. Joining is limited to 3 of the game's phrases or sentences (a kit "how to play" read
+  as one) with only spaces and plain punctuation between, never inside a word. A safety review showed that freer
+  joining let a kid build sentences ("come to my house", another kid's name) from word lists and letter arrays, so
+  list items, short words and code strings are never join pieces or names, and emoji or symbols never get added. Drafts and previews never
   speak. The existing backstops (rude words, personal info, the player's name, length) still apply. Role: the one the
   game asks for if known, else narrator.
 - Kid-facing text did not change (the Voices button and sheet are the same), so no new translations.

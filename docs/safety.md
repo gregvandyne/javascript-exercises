@@ -411,8 +411,14 @@ teacher is ever sent to the voice service (OpenAI), from our server:
 - **Games:** only official seed games get the play page's token (signed, 2 hours, bound to the player and game);
   Builder games use the device's voice, so a kid's own words are never sent. The one exception: the site owner may
   switch AI voices on for a game made by a **teacher, school staff or the admin** (never a student's game; audited).
-  Even then only that game's own words from its published version are read (numbers may change; a few of its strings
-  joined), checked on the server; anything else, such as what a player typed, gets the device's voice.
+  Even then only that game's own words from its published version are read, checked on the server: a whole line of
+  the game's with its numbers (or one of its own names, like 'Fox') in its placeholders, or up to 3 of its phrases or
+  sentences joined. Word lists, letter lists and single words are never building blocks, no emoji or extra numbers can
+  be added, so a kid can't make it say new sentences or a name; anything else gets the device's voice. Official games
+  can't be switched on this way. Known limit: "made by a teacher" means the maker's role now (checked on every
+  request), not when the game was made, so if a school promotes a student to teacher their earlier games could be
+  switched on; demoting a teacher turns voices off at once. The admin should check the game's history before
+  switching on a game by someone recently promoted.
 - **Oomba Live and lesson quizzes:** the page sends a question's **number**, never text; the server reads the teacher's
   question and choices, and only for the question open now.
 - **Never:** chat, typed answers, names, or a child's voice. Backstops refuse rude words, emails, phone numbers, links,

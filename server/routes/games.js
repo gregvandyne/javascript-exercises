@@ -138,11 +138,12 @@ router.get('/g/:slug', (req, res) => {
  *  admin panel, and only ever shown to the admin). */
 function adminVoices(u, g) {
   if (!u || u.role !== 'admin') return '';
-  if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>🔊 AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p></section>`;
+  if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>🔊 AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p>${ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}</section>`;
   const x = ttsGames.info(g);
   return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>🔊 AI voices for this game</h2>
     <p class="muted">Admin only. Reads this game's own words (from its published version) with AI voices in the languages switched on at <a href="/admin/voices">AI voices</a>; never what a player types. ${x.on && !x.live ? 'It starts once the game is published and not hidden.' : ''}</p>
-    ${x.ok || x.on ? html`<label class="row" style="gap:8px"><input type="checkbox" id="admin-voices-on" ${x.on ? raw('checked') : ''} ${x.ok || x.on ? '' : raw('disabled')}> AI voices for this game</label>` : ''}
+    ${x.ok || x.on ? html`<label class="row" style="gap:8px"><input type="checkbox" id="admin-voices-on" ${x.on ? raw('checked') : ''}> AI voices for this game</label>` : ''}
+    ${x.on && x.ok && ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}
     ${x.ok ? '' : html`<p id="admin-voices-why"><b>Can't be switched on.</b> ${x.why}</p>`}
     <p id="admin-voices-status" role="status"></p></section>`;
 }

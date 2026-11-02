@@ -276,15 +276,25 @@ The site owner can give AI voices to one more game at a time, such as a teacher'
   prefix). UI: the admin-only **AI voices for this game** box on the game's page `/g/<slug>`, and **Games with AI
   voices** on `/admin/voices` (a list with **Switch off**, and an **Add a game** field for a link or name). English
   only, like the rest of the admin panel; nothing a kid sees changed.
-- **Who:** only a game made by a teacher, school staff or the platform admin (or an official game). A student's or
-  any other account's game is refused with a message naming why, and is re-checked on every request.
+- **Who:** only a game made by a teacher, school staff or the platform admin. A student's or any other account's game
+  is refused with a message naming why, and is re-checked on every request (the maker's role now, not at publish
+  time). Official games are refused too: listed ones have their known lines, the rest (word games) keep the device
+  voice by design. Both admin pages say "Nothing plays yet" when AI voices are off for the site or no language is on.
 - **When:** published, not hidden, not suspended (`routes/tts.js gameAllowed`). Drafts and Studio previews never.
 - **What:** `allowedText`: the request must be the game's own words from its **published version's HTML**: string
   literals in its scripts (template `${…}` and `{name}` count as placeholders), markup text and text attributes
-  (`title`, `alt`, `aria-label`, `placeholder`, `value`…), each also split into lines and sentences. Compared without
-  spaces and case, with digit runs as one placeholder (numbers may differ, never letters). A line may also be joined
-  from at most `MAX_JOIN` (4) of those strings plus numbers and punctuation (`'You have ' + n + ' points!'`). The
-  allowlist is cached per `published_version_id`, so a new published version is used at once. Anything else:
+  (`title`, `alt`, `aria-label`, `placeholder`, `value`…), each also split into lines and sentences; a chain
+  `'You have ' + n + ' points!'` is also kept whole as one pattern. Compared in lower case with whitespace collapsed
+  (not removed) and plain punctuation trimmed at the ends; a number of up to 7 digits (`1,234`, `1 234`) is one token.
+  - A request matches one string whole. Its placeholders take a number, or one of the game's own short names (letters
+    only, 3+ letters, up to 3 words, not an array item; at most one a line): `'{name} wins!'` / `'¡Gana {name}!'`
+    with `CONFIG.p1.name = 'Fox'`. A number elsewhere only where the game's text has a number.
+  - Or at most `MAX_JOIN` (3) of its phrases or sentences joined (the kit reads a "how to play" as one): each piece
+    has a space or ends a sentence, has 3+ letters, isn't an array item (word lists, answer letters, alphabets) or a
+    code string; only spaces and plain punctuation (at most 4) between pieces, never glued inside a word. Emoji and
+    symbols are never free: they must be in the matched text.
+  - The text sent to the voice is the request's (spacing or case changes make a new clip; the rate limits and daily
+    budget cap the cost). The allowlist is cached per `published_version_id`, so a new published version is used at once. Anything else:
   `422 filtered` (the device's voice). The role is the one asked for if it is a known role, else narrator. The
   `speakable` backstops still run.
 

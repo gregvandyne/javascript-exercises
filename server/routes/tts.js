@@ -170,7 +170,7 @@ router.get('/admin/voices', (req, res) => {
   const onNow = config.ttsLocales.filter(l => s.locales[l].on);
   let est = null; try { est = lines.estimate(['hero-of-sunvale'], onNow.length ? onNow : config.ttsLocales); delete est.list; } catch { est = null; }
   const locales = LOCALES.filter(l => ttsLocaleList().includes(l.code));
-  const games_ = TG.list();
+  const games_ = TG.list(), silent = TG.silentWhy();
   const body = html`
   <div class="pagehead"><h1>🔊 AI voices</h1></div>
   ${on ? '' : html`<section class="panel" role="status"><b>AI voices are off.</b> They need TTS_ENABLED=1 and a key (TTS_API_KEY, or STT_API_KEY when both providers are openai). Until then nothing here can play, and every page uses the device's own voice.</section>`}
@@ -200,10 +200,10 @@ router.get('/admin/voices', (req, res) => {
   </form>
   <h2 class="stats-h" id="tv-games-h">Games with AI voices</h2>
   <section class="panel" id="tv-games" aria-labelledby="tv-games-h">
-    <p class="small">Official games listed for voices (${[...lines.TTS_GAMES].join(', ')}) always have them. Here you can switch them on for one more game made by a teacher, school staff or you: it reads only that game's own words from its published version (numbers may change), never what a player types or a name. A student's game can't be switched on. You can also switch a game on or off on its own page.</p>
+    <p class="small">Official games listed for voices (${[...lines.TTS_GAMES].join(', ')}) always have them. Here you can switch them on for one more game made by a teacher, school staff or you: it reads only that game's own words from its published version (numbers may change, and a placeholder may take one of the game's own names), never what a player types or a player's name. A student's game can't be switched on, and nor can other official games (word games keep the device's voice). You can also switch a game on or off on its own page.</p>
     ${games_.length ? html`<div class="tblwrap"><table class="tbl" id="tv-games-list"><thead><tr><th>Game</th><th>Made by</th><th>State</th><th></th></tr></thead><tbody>${games_.map(x => html`<tr data-game="${x.id}">
       <th scope="row"><a href="/g/${x.slug}">${x.title}</a> <span class="muted small">${x.slug}</span></th><td>@${x.owner}</td>
-      <td class="small">${!x.ok ? html`<b>Not allowed:</b> ${x.why}` : x.live ? 'On' : 'On once published (not published, or hidden now)'}</td>
+      <td class="small">${!x.ok ? html`<b>Not allowed:</b> ${x.why}` : !x.live ? 'On once published (not published, or hidden now)' : silent ? html`On, but nothing plays yet: ${silent}` : 'On'}</td>
       <td><button class="btn btn-sm" type="button" data-tg-off="${x.id}">Switch off</button></td></tr>`)}</tbody></table></div>` : html`<p class="small muted" id="tv-games-none">No other game has AI voices.</p>`}
     <form class="row" id="tv-game-add" novalidate>
       <label class="field" style="flex:1;min-width:220px"><span>Add a game: paste its link or name (slug)</span><input class="input" name="game" id="tv-game-input" autocomplete="off" placeholder="https://oomba.ai/g/my-game" maxlength="500"></label>

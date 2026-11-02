@@ -8,7 +8,8 @@
 //      when the server fails the device's voice takes over (onend still once); "This device's voice" in the Voices sheet
 //      stops the requests. Official games not written for AI voices (word-peek) never get them.
 //   3b. a teacher's Builder game the admin switched on (its page's "AI voices for this game", then /admin/voices "Add a
-//      game" by link): a line from its own source plays, a made-up line falls back to the device; switched off again
+//      game" by link): the game itself speaks a line from its own source (the quiz host's hello) and it plays, a
+//      made-up line falls back to the device; switched off again
 //   4. Hero of Sunvale: Granny Fern's line is asked for in her own voice role, and the talk still moves on when blocked
 //   5. Oomba Live: the player's Read and the projector's Read question ask for the open question by number (the audio
 //      element is unlocked inside the tap, for iPhone); the next question is refused; the projector says the voice is AI
@@ -193,7 +194,7 @@ test('a teacher\'s Builder game switched on by the admin: its own words play, a 
   try {
     await ownIp(tp);
     await login(tp, TEACHER.username, TEACHER.password);
-    const g = await templateGame(tp, { title: uniq('Voice Catch '), template: 'catch' });
+    const g = await templateGame(tp, { title: uniq('Voice Quiz '), template: 'quiz' });
     await publishFromStudio(tp, 'school');
     await expect.poll(async () => (await (await tp.request.get(`/api/studio/${g.id}`)).json()).game.status).toBe('published');
     // Off until the admin switches it on: no Voices button.
@@ -219,24 +220,27 @@ test('a teacher\'s Builder game switched on by the admin: its own words play, a 
     await expect(a.locator(`#tv-games-list tr[data-game="${g.id}"]`)).toHaveCount(1);
 
     // Playing it: a line from the game's own source is read by the server voice; a made-up line is refused.
-    const asked = []; tp.on('request', r => { if (r.url().endsWith('/api/tts')) asked.push(r.postDataJSON()); });
     await tp.goto(`/play/${g.slug}`);
     const f = await gameFrame(tp);
     expect(JSON.parse(await tp.locator('#page-data').textContent()).tts.langs).toEqual(['en']);
     await expect(tp.locator('#p-voices')).toHaveCount(1);
     await f.locator('body').click({ position: { x: 5, y: 5 } });
     await watchAudio(f);
-    await f.evaluate(() => { try { BRB.stopSpeaking(); } catch { /* none */ } window.__onend = 0; window.__plays = []; });
-    const [ok] = await Promise.all([tp.waitForResponse(r => r.url().endsWith('/api/tts')), speak(f, 'Dodge the rocks!')]);
+    // The game speaks by itself (the quiz template's host: w.say(host, 'hello') through the kit's i18n and BRB.speak).
+    const hello = tp.waitForResponse(r => r.url().endsWith('/api/tts') && /Welcome to the quiz show/.test(r.request().postData() || ''), { timeout: 60000 });
+    for (const sel of ['.ok-title-screen .ok-hot', '.ok-howto .ok-hot']) {
+      const b = f.locator(sel);
+      if (await b.isVisible({ timeout: 8000 }).catch(() => false)) await b.click();
+    }
+    const ok = await hello;
     expect(ok.status(), await ok.text()).toBe(200);
+    expect(ok.request().postDataJSON()).toMatchObject({ ctx: 'game', text: 'Hoot! Welcome to the quiz show!', lang: 'en' });
     await expect.poll(() => f.evaluate(() => window.__plays.length), { timeout: 15000 }).toBeGreaterThan(0);
-    await expect.poll(() => f.evaluate(() => window.__onend), { timeout: 15000 }).toBe(1);
-    expect(asked.at(-1)).toMatchObject({ ctx: 'game', text: 'Dodge the rocks!', lang: 'en' });
-    const plays = await f.evaluate(() => window.__plays.length);
-    const [ref] = await Promise.all([tp.waitForResponse(r => r.url().endsWith('/api/tts')), speak(f, 'A line this game never had')]);
+    // A made-up line (as a game could send it): refused, and the device's voice reads it.
+    await f.evaluate(() => { try { BRB.stopSpeaking(); } catch { /* none */ } window.__onend = 0; });
+    const [ref] = await Promise.all([tp.waitForResponse(r => r.url().endsWith('/api/tts') && /never had/.test(r.request().postData() || '')), speak(f, 'A line this game never had')]);
     expect([ref.status(), (await ref.json()).code]).toEqual([422, 'filtered']);
-    await expect.poll(() => f.evaluate(() => window.__onend), { timeout: 15000 }).toBe(2);   // the device's voice (onend once)
-    expect(await f.evaluate(() => window.__plays.length)).toBe(plays);
+    await expect.poll(() => f.evaluate(() => window.__onend), { timeout: 15000 }).toBe(1);   // the device's voice (onend once)
 
     // Off again (the specs after this one see no switched-on game).
     const off = await a.request.post('/api/admin/tts/games', { data: { game: g.id, on: false }, headers: { Origin: new URL(a.url()).origin } });

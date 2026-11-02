@@ -40,10 +40,13 @@ const say = (user, body) => call('/api/tts', { method: 'POST', body, user });
 test('the switch: admin only (404 for anyone else), audited, by slug, id or link; a student\'s game is refused', async () => {
   for (const u of [teacher, mia, kid, null]) {
     const r = await sw(u, 'haberle-quiz', true);
-    assert.equal(r.status, u ? 404 : 404, `not for ${u ? u.username : 'guests'}`);
+    assert.equal(r.status, 404, `not for ${u ? u.username : 'guests'}`);
   }
   assert.equal((await call('/admin/voices', { user: teacher })).status, 404);
   assert.equal(TG.isOn(teacherGame.id), false);
+  // Official games: never through this switch (their known lines, or the device's voice by design for word games).
+  const off1 = await sw(boss, 'quest-race', true);
+  assert.equal(off1.status, 400); assert.match(off1.json.error, /Official games not on the AI voices list/);
   const r = await sw(boss, 'https://oomba.ai/es/g/haberle-quiz?x=1', true);
   assert.equal(r.status, 200, r.text); assert.equal(r.json.game.id, teacherGame.id); assert.equal(r.json.game.on, true);
   assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='admin.tts.game.on' AND target=? AND actor_id=?", teacherGame.id, boss.id));
@@ -72,6 +75,14 @@ test('the game page: the switch shows for the admin only, with the reason for a 
   assert.match(a.text, /id="admin-voices"/); assert.match(a.text, /id="admin-voices-on"/); assert.match(a.text, /admin-game-voices\.js/);
   const t = await call('/g/haberle-quiz', { user: teacher });
   assert.ok(!t.text.includes('admin-voices'), 'never for the maker or anyone else');
+  // Switched on while AI voices are off for the site, or no language is on: the admin is told nothing plays yet.
+  TG.set(boss, teacherGame, true);
+  assert.match((await call('/g/haberle-quiz', { user: boss })).text, /id="admin-voices-note"[^]*off for the whole site/);
+  on([]);
+  assert.match((await call('/g/haberle-quiz', { user: boss })).text, /No language is switched on/);
+  assert.match((await call('/admin/voices', { user: boss })).text, /On, but nothing plays yet: No language is switched on/);
+  on(['en']);
+  assert.ok(!(await call('/g/haberle-quiz', { user: boss })).text.includes('admin-voices-note'));
   const k = await call('/g/kid-quiz', { user: boss });
   assert.match(k.text, /id="admin-voices-why"/); assert.ok(!k.text.includes('id="admin-voices-on"'));
 });
@@ -148,4 +159,33 @@ test('source parsing: strings, templates, markup and attributes; comments and re
   const letters = TG.buildAllowlist(`<script>const ABC = ${JSON.stringify('abcdefghijklmnopqrstuvwxyz'.split(''))};</script>`);
   assert.ok(TG.matches(letters, TG.canon('a')));
   assert.ok(!TG.matches(letters, TG.canon('hello')));
+});
+
+test('safety: no sentences built from word lists, letters, emoji or free numbers; names only in a placeholder', () => {
+  const a = TG.buildAllowlist(`<script>
+    const WORDS = ['come', 'to', 'my', 'house', 'meet', 'me', 'after', 'school', 'dont', 'tell', 'mom', 'sam', 'dad'];
+    const CHOICES = ['A', 'B', 'C', 'D']; const AZ = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    const CONFIG = { p1: { name: 'Fox' }, css: 'fade-in', w: '12px' };
+    const I18N = { en: { wins: '{name} wins!', lose: 'Stars found: {got}/{total}. Can you find them all next time?', score: 'Score: {score} · Best: {best}', how1: 'Wait for GO', how2: 'Tap your side first (or press A / L)' },
+      fr: { wins: '{name} gagne !', lose: 'Étoiles trouvées : {got}/{total}. Tu les trouveras toutes la prochaine fois ?', score: 'Score : {score} · Record : {best}' },
+      es: { wins: '¡Gana {name}!' } };
+    function cheer(n) { say('Great job, ' + n + '!'); say('cat'); say('dog'); say('Find the word!'); }
+  </script>`);
+  const yes = s => assert.ok(TG.matches(a, TG.canon(s)), `should play: ${s}`);
+  const no = s => assert.ok(!TG.matches(a, TG.canon(s)), `should be refused: ${s}`);
+  // The game's i18n lines with their placeholders filled: numbers, French spacing, and the game's own names.
+  yes('Stars found: 3/10. Can you find them all next time?');
+  yes('Étoiles trouvées : 3/10. Tu les trouveras toutes la prochaine fois ?');
+  yes('Score: 1,234 · Best: 2,000');
+  yes('Score\u202f: 1\u202f234 · Record\u202f: 2\u202f000');
+  yes('Fox wins!'); yes('¡Gana Fox!'); yes('Fox gagne !');
+  yes('Great job, 5!');
+  yes('Wait for GO Tap your side first (or press A / L)');            // a kit "how to play" read as one
+  yes('Find the word! Great job, 3!');
+  // A word list, answer letters or an alphabet are never building blocks, and never fill a name.
+  for (const s of ['come to my house', 'meet me after school', 'dont tell mom', 'Great job, Dad!', 'Great job, Sam!', 'Great job, Mia!', 'Mia wins!', 'sam wins!'])
+    no(s);
+  // Emoji or symbols added, numbers where the game has none, a long number in a number's place, glued words.
+  for (const s of ['Great job, 🖕🖕🖕 !', 'Great job, ☠☠☠☠ !', 'Fox wins! 💩', 'cat 5551234 dog', 'Find the word! 555', 'Great job, 5551234567!', 'Fox fade-in', 'catdog', 'cat dog'])
+    no(s);
 });
