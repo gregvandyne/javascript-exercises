@@ -8,14 +8,13 @@
 // (fixRounds: 1 for everyone, 3 for trusted makers). The report is data for the AI: what the game itself printed is
 // quoted, cleaned and cut short, never instructions.
 import { cleanNote } from './steps.js';
-import { isStaff } from '../services/schools.js';
+import { trustedMaker } from './usage.js';
 
 /** Tests: raw(html, version) replaces the browser run (it returns what snapshot.autoplayGame would). */
 export const hooks = { raw: null };
 
-/** Teachers, school staff and the site's admin: their builds get more fix rounds. */
-export const trustedMaker = u => !!u && (u.role === 'admin' || isStaff(u));
-/** How many times one build may go back to fix what the automatic playtest found. */
+export { trustedMaker };
+/** How many times one build may go back (trusted makers: the admin, school staff and class teachers, usage.js) to fix what the automatic playtest found. */
 export const fixRounds = u => (trustedMaker(u) ? 3 : 1);
 /** The AI needs at least this much of the build's time left to start a fix round (a fix is one or two model calls). */
 export const FIX_NEEDS_MS = 4 * 60_000;

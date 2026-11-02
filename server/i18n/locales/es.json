@@ -1374,6 +1374,7 @@
       "builder": "Constructor",
       "pro": "Calidad pro",
       "proTitle": "La calidad pro tarda más, pero crea juegos más elaborados",
+      "proIncluded": "Incluido para docentes: cada mensaje usa calidad pro",
       "attach": "Agregar una imagen o un archivo",
       "inputLabel": "Mensaje para el Constructor",
       "placeholder": "Cuéntale tu idea al Constructor…",

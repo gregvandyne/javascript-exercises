@@ -1375,6 +1375,7 @@
       "builder": "Builder",
       "pro": "Pro quality",
       "proTitle": "Pro quality takes longer but builds fancier games",
+      "proIncluded": "Included for teachers: every message uses Pro quality",
       "attach": "Add a picture or file",
       "inputLabel": "Message to the Builder",
       "placeholder": "Tell the Builder your idea…",

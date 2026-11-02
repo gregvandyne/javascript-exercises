@@ -37,6 +37,9 @@ import { cleanText } from '../services/textfilter.js';
 import * as autotest from './autotest.js';
 
 export const MAX_STEPS = 14;  // model calls per build (build, details, playtest, fixes, retest, notes, question)
+export const MAX_STEPS_TRUSTED = 20;   // a trusted maker's build (usage.js trustedMaker): more rounds to playtest and fix
+/** Model calls one build may make. trusted: the builder is a trusted maker. */
+export const maxStepsFor = trusted => (trusted ? MAX_STEPS_TRUSTED : MAX_STEPS);
 const MAX_SCAN_FIXES = 2;     // extra rounds allowed to fix a failed safety scan
 const HISTORY_MESSAGES = 40;  // earlier transcript entries sent to the model
 const FALLBACKS = process.env.BUILDER_FALLBACKS !== '0';
@@ -124,7 +127,7 @@ export async function run(ctx) {
   const messages = mergeRoles([...historyToMessages(ctx.history || []), { role: 'user', content: userContent }]);
   let tokensIn = 0, tokensOut = 0, fixes = 0;
   const steps = ctx.steps || NO_STEPS;
-  let max = ctx.maxRounds || MAX_STEPS;
+  let max = ctx.maxRounds || maxStepsFor(!!ctx.trusted);
   // The automatic playtest (autotest.js): once the AI finishes a build that saved a version, the platform plays it, and
   // problems it finds go back to the AI for a fix round (ctx.autoFixes of them: 1, or 3 for trusted makers), then the
   // fixed version is played again. Skipped (the report kept) when the AI budget is resting or the build's time is
