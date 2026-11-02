@@ -2017,3 +2017,21 @@ the play page posts it to `POST /api/games/:id/poll` (official games on `service
 the totals back. Only counts are kept (`game_polls`), plus who already voted (`game_poll_votes`, one vote per player,
 item and pass-and-play seat 0-5) so a player can't tip the numbers; nobody is ever shown who chose what, and nothing
 typed is stored. Under 5 votes the game says "You're one of the first to answer" instead of a percentage.
+
+## AI voices for a chosen game (November 2026)
+
+The owner wanted AI voices for one teacher's new game (and any later game they pick), not only official games listed
+in `tts-lines.GAMES`. Design: docs/tts-design.md "A game the admin switched on".
+- **A per-game switch, admin only.** Stored in `settings` (`tts.games`, no migration), audited, toggled on the game's
+  page (admin-only box "AI voices for this game") or at `/admin/voices` ("Games with AI voices": list, Switch off, Add
+  a game by link or name). Non-admins get 404 from the API.
+- **Only grown-up staff's games.** The maker must be a teacher, school staff or the admin (or the game official). A
+  student's game is refused with a clear message: its words are a kid's, and the child-safety rule is that only site,
+  game or teacher text is spoken.
+- **Only the game's own words.** There is no list of spoken keys for such a game, so the allowlist is every string in
+  its published version's source (script literals, markup text, text attributes), cached per published version;
+  numbers may differ and up to 4 strings may be joined (templates like `'Score: ' + n`). Joining is capped and each
+  piece is a whole string of the game's, so single-letter strings can't spell new words. Drafts and previews never
+  speak. The existing backstops (rude words, personal info, the player's name, length) still apply. Role: the one the
+  game asks for if known, else narrator.
+- Kid-facing text did not change (the Voices button and sheet are the same), so no new translations.

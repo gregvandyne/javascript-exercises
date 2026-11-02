@@ -409,7 +409,10 @@ docs/legal-review.md). Billing data and its timers are on `/privacy`.
 When AI voices are on (docs/tts-design.md; off by default), only text written by us, an official game's makers or a
 teacher is ever sent to the voice service (OpenAI), from our server:
 - **Games:** only official seed games get the play page's token (signed, 2 hours, bound to the player and game);
-  Builder games, kid-made or teacher-made, always use the device's voice, so a kid's own words are never sent.
+  Builder games use the device's voice, so a kid's own words are never sent. The one exception: the site owner may
+  switch AI voices on for a game made by a **teacher, school staff or the admin** (never a student's game; audited).
+  Even then only that game's own words from its published version are read (numbers may change; a few of its strings
+  joined), checked on the server; anything else, such as what a player typed, gets the device's voice.
 - **Oomba Live and lesson quizzes:** the page sends a question's **number**, never text; the server reads the teacher's
   question and choices, and only for the question open now.
 - **Never:** chat, typed answers, names, or a child's voice. Backstops refuse rude words, emails, phone numbers, links,

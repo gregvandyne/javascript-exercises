@@ -2,9 +2,11 @@
 // cached MP3 and plays it (a game frame gets the bytes from its play page, because frames can't fetch).
 //   POST /api/tts   { ctx, … }  -> 200 { u: '/tts/<sha256>.mp3' } | 404 off | 422 filtered/long | 429 fast/site | 503 busy
 //     ctx 'game'   { tok, text, lang, role, rate }  tok: from the play page's page-data (official games listed in
-//                  tts-lines GAMES only, bound to the signed-in player, 2 hours). The text must be one of that game's own
-//                  spoken lines in that language (tts-lines allowedLine; numbers only in a line's {placeholders}): anything
-//                  else is 422 filtered. The role comes from the line, never from the page.
+//                  tts-lines GAMES, and games the admin switched on (services/tts-games.js); bound to the signed-in
+//                  player, 2 hours). The text must be one of that game's own spoken lines in that language (tts-lines
+//                  allowedLine; numbers only in a line's {placeholders}), or for a switched-on game its own words from
+//                  its published version (tts-games allowedText): anything else is 422 filtered. The role comes from the
+//                  line for a listed game; a switched-on game gets the role asked for if it is a known one, else narrator.
 //     ctx 'live'   { sid, tok, i }  the live question i (only the one open now), by number: the server reads the
 //                  teacher's question and its answer choices, in the session's language. tok: the player's seat token or
 //                  the host/co-host token.
@@ -12,7 +14,7 @@
 //                  page's language.
 //   GET /tts/<sha256>.mp3   the cached audio (same-origin only; immutable).
 //   Admin (role admin): GET /admin/voices, POST /api/admin/tts/sample, POST /api/admin/tts/settings,
-//   GET|POST /api/admin/tts/warm, POST /api/admin/tts/warm/stop.
+//   GET|POST /api/admin/tts/warm, POST /api/admin/tts/warm/stop, GET|POST /api/admin/tts/games (a game's switch).
 // Every refusal means "use the device's own voice": pages never show an error for it.
 import { Router } from 'express';
 import { requireAdmin, signToken, readToken } from '../auth.js';
@@ -24,6 +26,7 @@ import * as tts from '../services/tts.js';
 import * as V from '../services/tts-voices.js';
 import * as usage from '../services/tts-usage.js';
 import * as lines from '../services/tts-lines.js';
+import * as TG from '../services/tts-games.js';
 import * as games from '../services/games.js';
 import { isOfficial } from '../services/classlive-access.js';
 import * as LS from '../services/classlive-sessions.js';
@@ -41,8 +44,11 @@ export const GAME_TOKEN_SEC = 2 * 3600;
 
 // ---------------------------------------------------------------- game tokens (minted by the play page)
 /** May this game use AI voices: an official seed game listed in tts-lines GAMES (its spoken lines are known), published
- *  and not hidden? Other official games (word games where a kid types a word, among them) keep the device's voice. */
-export const gameAllowed = g => !!g && lines.TTS_GAMES.has(g.slug) && isOfficial(g) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason;
+ *  and not hidden? Other official games (word games where a kid types a word, among them) keep the device's voice.
+ *  Also a game the admin switched on (services/tts-games.js: made by a teacher, staff or the admin, published, not
+ *  hidden; never a draft or a preview). */
+export const listedGame = g => !!g && lines.TTS_GAMES.has(g.slug) && isOfficial(g) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason;
+export const gameAllowed = g => listedGame(g) || TG.allowed(g);
 /**
  * The play page's tts data for a game, or null (TTS off, no locale on, not an official game, nobody signed in, a guest
  * included). -> { tok, langs } where tok is bound to the user and the game for 2 hours.
@@ -79,9 +85,15 @@ function resolve(req, b) {
     const locale = V.ttsLocale(b.lang);
     if (!locale || !tts.localeOn(locale)) return { error: [404, 'off'] };
     // Only the game's own words (never what a player typed), with the line's own role.
-    const line = lines.allowedLine(g.slug, locale, b.text, b.role);
-    if (!line) return { error: [422, 'filtered'] };
-    return { text: line.text, locale, role: line.role, rate: V.rateBucket(b.rate) };
+    if (listedGame(g)) {
+      const line = lines.allowedLine(g.slug, locale, b.text, b.role);
+      if (!line) return { error: [422, 'filtered'] };
+      return { text: line.text, locale, role: line.role, rate: V.rateBucket(b.rate) };
+    }
+    // A game the admin switched on: words from its published version's own source only.
+    const text = TG.allowedText(g, b.text);
+    if (!text) return { error: [422, 'filtered'] };
+    return { text, locale, role: V.ROLES.includes(b.role) ? b.role : 'narrator', rate: V.rateBucket(b.rate) };
   }
   if (b.ctx === 'live') {
     const s = LS.get(b.sid);
@@ -158,6 +170,7 @@ router.get('/admin/voices', (req, res) => {
   const onNow = config.ttsLocales.filter(l => s.locales[l].on);
   let est = null; try { est = lines.estimate(['hero-of-sunvale'], onNow.length ? onNow : config.ttsLocales); delete est.list; } catch { est = null; }
   const locales = LOCALES.filter(l => ttsLocaleList().includes(l.code));
+  const games_ = TG.list();
   const body = html`
   <div class="pagehead"><h1>🔊 AI voices</h1></div>
   ${on ? '' : html`<section class="panel" role="status"><b>AI voices are off.</b> They need TTS_ENABLED=1 and a key (TTS_API_KEY, or STT_API_KEY when both providers are openai). Until then nothing here can play, and every page uses the device's own voice.</section>`}
@@ -185,6 +198,19 @@ router.get('/admin/voices', (req, res) => {
   <div class="panel row">${Object.keys(V.DEFAULT_ROLES).map(r => html`<label>${r} <select name="role-${r}">${V.VOICES.map(v => html`<option ${v === s.roles[r] ? raw('selected') : ''}>${v}</option>`)}</select></label>`)}</div>
   <div class="row"><button class="btn btn-primary" type="submit">Save</button></div>
   </form>
+  <h2 class="stats-h" id="tv-games-h">Games with AI voices</h2>
+  <section class="panel" id="tv-games" aria-labelledby="tv-games-h">
+    <p class="small">Official games listed for voices (${[...lines.TTS_GAMES].join(', ')}) always have them. Here you can switch them on for one more game made by a teacher, school staff or you: it reads only that game's own words from its published version (numbers may change), never what a player types or a name. A student's game can't be switched on. You can also switch a game on or off on its own page.</p>
+    ${games_.length ? html`<div class="tblwrap"><table class="tbl" id="tv-games-list"><thead><tr><th>Game</th><th>Made by</th><th>State</th><th></th></tr></thead><tbody>${games_.map(x => html`<tr data-game="${x.id}">
+      <th scope="row"><a href="/g/${x.slug}">${x.title}</a> <span class="muted small">${x.slug}</span></th><td>@${x.owner}</td>
+      <td class="small">${!x.ok ? html`<b>Not allowed:</b> ${x.why}` : x.live ? 'On' : 'On once published (not published, or hidden now)'}</td>
+      <td><button class="btn btn-sm" type="button" data-tg-off="${x.id}">Switch off</button></td></tr>`)}</tbody></table></div>` : html`<p class="small muted" id="tv-games-none">No other game has AI voices.</p>`}
+    <form class="row" id="tv-game-add" novalidate>
+      <label class="field" style="flex:1;min-width:220px"><span>Add a game: paste its link or name (slug)</span><input class="input" name="game" id="tv-game-input" autocomplete="off" placeholder="https://oomba.ai/g/my-game" maxlength="500"></label>
+      <button class="btn btn-primary" type="submit">Switch on AI voices</button>
+    </form>
+    <p class="small" id="tv-games-status" role="status"></p>
+  </section>
   <h2 class="stats-h">Warm-up</h2>
   <section class="panel" id="tv-warm">
     <p class="small">Makes every spoken line of Hero of Sunvale ahead of time for the languages switched on, so kids never wait. Lines already made are skipped. It stops by itself at the daily character cap or the AI budget.</p>
@@ -225,3 +251,16 @@ router.post('/api/admin/tts/warm', (req, res) => {
   res.json(r.status);
 });
 router.post('/api/admin/tts/warm/stop', (req, res) => res.json(lines.stop()));
+// A game's own switch (services/tts-games.js). GET ?game=<slug, id or link> -> { game }; POST { game, on } -> { ok, game }.
+router.get('/api/admin/tts/games', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  if (req.query.game == null) return res.json({ games: TG.list() });
+  const g = TG.findGame(req.query.game);
+  return g ? res.json({ game: TG.info(g) }) : res.status(404).json({ error: 'No game with that name or link.' });
+});
+router.post('/api/admin/tts/games', (req, res) => {
+  const b = req.body || {};
+  if (typeof b.on !== 'boolean') return res.status(400).json({ error: 'Say on or off.' });
+  const r = TG.set(req.user, TG.findGame(b.game), b.on);
+  return r.ok ? res.json(r) : res.status(r.status).json({ error: r.error });
+});

@@ -7,13 +7,15 @@
 //      says once that the voices are AI-made; text that isn't the game's own is refused and the device's voice reads it;
 //      when the server fails the device's voice takes over (onend still once); "This device's voice" in the Voices sheet
 //      stops the requests. Official games not written for AI voices (word-peek) never get them.
+//   3b. a teacher's Builder game the admin switched on (its page's "AI voices for this game", then /admin/voices "Add a
+//      game" by link): a line from its own source plays, a made-up line falls back to the device; switched off again
 //   4. Hero of Sunvale: Granny Fern's line is asked for in her own voice role, and the talk still moves on when blocked
 //   5. Oomba Live: the player's Read and the projector's Read question ask for the open question by number (the audio
 //      element is unlocked inside the tap, for iPhone); the next question is refused; the projector says the voice is AI
 //   6. /parents and /privacy say the voices are made by AI (English and Hebrew)
 // Every language is switched off again at the end, so the specs after this one keep the device's voice.
 import { test, expect } from '@playwright/test';
-import { login, signup, gameFrame, ownIp, ADMIN } from './helpers.js';
+import { login, signup, gameFrame, ownIp, ADMIN, templateGame, publishFromStudio, uniq } from './helpers.js';
 
 test.describe.configure({ mode: 'serial' });
 const LOCALES = ['en', 'en-GB', 'ar', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant'];
@@ -181,6 +183,65 @@ test('on: a game line is read by the server voice in the frame; a failing server
   await page.waitForTimeout(500);
   expect(asked.length).toBe(n);
   await page.evaluate(() => localStorage.setItem('oomba:voices', 'ai'));
+});
+
+test('a teacher\'s Builder game switched on by the admin: its own words play, a made-up line falls back; then off', async ({ browser }) => {
+  test.setTimeout(150_000);
+  await setLocales(browser, ['en']);
+  const a = await adminCtx(browser);
+  const tctx = await browser.newContext(); const tp = await tctx.newPage();
+  try {
+    await ownIp(tp);
+    await login(tp, TEACHER.username, TEACHER.password);
+    const g = await templateGame(tp, { title: uniq('Voice Catch '), template: 'catch' });
+    await publishFromStudio(tp, 'school');
+    await expect.poll(async () => (await (await tp.request.get(`/api/studio/${g.id}`)).json()).game.status).toBe('published');
+    // Off until the admin switches it on: no Voices button.
+    await tp.goto(`/play/${g.slug}`);
+    expect(JSON.parse(await tp.locator('#page-data').textContent()).tts).toBeUndefined();
+    // The admin, on the game's own page: the switch.
+    await a.goto(`/g/${g.slug}`);
+    await expect(a.locator('#admin-voices')).toContainText('AI voices for this game');
+    await Promise.all([a.waitForResponse(r => r.url().endsWith('/api/admin/tts/games') && r.ok()), a.locator('#admin-voices-on').check()]);
+    await expect(a.locator('#admin-voices-status')).toContainText('on for this game');
+    // The maker sees no switch.
+    await tp.goto(`/g/${g.slug}`);
+    await expect(tp.locator('#admin-voices')).toHaveCount(0);
+    // Off from /admin/voices, then on again with "Add a game" and the game's link.
+    await a.goto('/admin/voices');
+    const row = a.locator(`#tv-games-list tr[data-game="${g.id}"]`);
+    await expect(row).toContainText(g.title);
+    await Promise.all([a.waitForResponse(r => r.url().endsWith('/api/admin/tts/games') && r.ok()), row.locator('[data-tg-off]').click()]);
+    await a.waitForLoadState('load');
+    await expect(a.locator(`#tv-games-list tr[data-game="${g.id}"]`)).toHaveCount(0);
+    await a.fill('#tv-game-input', new URL(`/g/${g.slug}`, a.url()).href);
+    await Promise.all([a.waitForResponse(r => r.url().endsWith('/api/admin/tts/games') && r.ok()), a.locator('#tv-game-add button[type="submit"]').click()]);
+    await expect(a.locator(`#tv-games-list tr[data-game="${g.id}"]`)).toHaveCount(1);
+
+    // Playing it: a line from the game's own source is read by the server voice; a made-up line is refused.
+    const asked = []; tp.on('request', r => { if (r.url().endsWith('/api/tts')) asked.push(r.postDataJSON()); });
+    await tp.goto(`/play/${g.slug}`);
+    const f = await gameFrame(tp);
+    expect(JSON.parse(await tp.locator('#page-data').textContent()).tts.langs).toEqual(['en']);
+    await expect(tp.locator('#p-voices')).toHaveCount(1);
+    await f.locator('body').click({ position: { x: 5, y: 5 } });
+    await watchAudio(f);
+    await f.evaluate(() => { try { BRB.stopSpeaking(); } catch { /* none */ } window.__onend = 0; window.__plays = []; });
+    const [ok] = await Promise.all([tp.waitForResponse(r => r.url().endsWith('/api/tts')), speak(f, 'Dodge the rocks!')]);
+    expect(ok.status(), await ok.text()).toBe(200);
+    await expect.poll(() => f.evaluate(() => window.__plays.length), { timeout: 15000 }).toBeGreaterThan(0);
+    await expect.poll(() => f.evaluate(() => window.__onend), { timeout: 15000 }).toBe(1);
+    expect(asked.at(-1)).toMatchObject({ ctx: 'game', text: 'Dodge the rocks!', lang: 'en' });
+    const plays = await f.evaluate(() => window.__plays.length);
+    const [ref] = await Promise.all([tp.waitForResponse(r => r.url().endsWith('/api/tts')), speak(f, 'A line this game never had')]);
+    expect([ref.status(), (await ref.json()).code]).toEqual([422, 'filtered']);
+    await expect.poll(() => f.evaluate(() => window.__onend), { timeout: 15000 }).toBe(2);   // the device's voice (onend once)
+    expect(await f.evaluate(() => window.__plays.length)).toBe(plays);
+
+    // Off again (the specs after this one see no switched-on game).
+    const off = await a.request.post('/api/admin/tts/games', { data: { game: g.id, on: false }, headers: { Origin: new URL(a.url()).origin } });
+    expect(off.status()).toBe(200);
+  } finally { await tctx.close(); }
 });
 
 test('Hero of Sunvale: Granny Fern is read in her own voice role; the talk moves on when the voice is blocked', async ({ browser, page }) => {

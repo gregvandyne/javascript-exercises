@@ -681,7 +681,8 @@
 
   // tts-client:start
   // ---- AI voices (docs/sdk.md "AI voices"; server/routes/tts.js) --------------------------------------
-  // Only official games get INIT.tts ({ langs: the site locales switched on }); every other frame never has it, and then
+  // Only official games listed for voices, and a game the admin switched on, get INIT.tts ({ langs: locales on }); others
+  // never have it, and then
   // nothing below runs. The frame can't fetch (connect-src 'none'), so it asks the play page (brb:tts {id, text, lang,
   // role, rate}); the page asks our server and hands back the MP3's bytes, which play here as a blob: URL on one shared
   // Audio element. Queueing, stopping, volume and onend stay here, as with the device's voice. No answer in 4 s, a
@@ -881,7 +882,7 @@
     var best = voiceFor(cur.lang);
     if (best && best !== cur && best.name !== cur.name && voiceQuality(best) - q >= VOICE_UPGRADE_MARGIN) u.voice = best;
   }
-  // With AI voices on (INIT.tts: official games only), a game's own utterance is read by the AI voice too: start and
+  // With AI voices on (INIT.tts: official or admin-chosen games), a game's own utterance is read by the AI voice too: start and
   // end events are fired on the utterance, and the game's speechSynthesis.cancel() stops it. If the AI voice does not
   // come, the utterance goes to the device as before (upgraded as above), so its own events fire as usual.
   function utterEvent(u, type) {
