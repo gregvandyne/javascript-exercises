@@ -92,12 +92,12 @@ function build(w) {
   for (let n = 1; n <= CONFIG.squares; n++) {
     const s = SPECIALS[n], p = spot(w, n), hue = s ? { boost: 'mint', slide: 'coral', again: 'grape' }[s.kind] : n === CONFIG.squares ? 'peach' : 'sky';
     w.spawn('tile', { x: p.x, y: p.y, size: 1.25, variant: O.num(n) + ':' + hue, z: 1 });
-    if (s) w.spawn(s.art, { x: p.x + w.cell * 0.5, y: p.y - w.cell * 0.5, size: 0.85, z: 2 });
+    if (s) w.spawn(s.art, { x: p.x + w.cell * 0.4, y: p.y - w.cell * 0.4, size: 0.7, z: 2 });
   }
   const end = spot(w, CONFIG.squares);
   w.spawn('trophy', { x: end.x, y: end.y - w.cell * 1.2, size: 1.1, z: 2, parts: [{ bob: { amp: 5 } }, { glow: { amount: 0.5 } }] });
   const p2 = w.spawn(Object.assign({}, who(1)), { x: 0, y: 0, tag: 'p2', size: 1, z: 4 });
-  w.hero.size = w.cell;
+  w.hero.size = w.cell * 0.62; p2.size = w.cell * 0.62;
   place(w, 0, 1); place(w, 1, 1); p2.look(w.hero);
   die = w.spawn('dice', { x: w.level.w / 2, y: spot(w, CONFIG.squares).y - w.cell * 2.7, size: 1.3, variant: '6', z: 5 });
   ui = { roll: O.ui.button(O.t('roll'), { kind: 'hot', big: true, icon: O.icon('play'), onPress: () => roll(w) }), turn: document.createElement('div') };
@@ -105,7 +105,9 @@ function build(w) {
   O.ui.root().append(ui.roll, ui.turn);
   showTurn(w);
 }
-function place(w, i, n) { const p = spot(w, n), t = token(w, i); t.x = p.x + (i ? 0.32 : -0.32) * w.cell; t.y = p.y - w.cell * 0.45; }
+/** Player i's spot on square n: feet on the tile's bottom corner, plainly ON it. */
+function seat(w, i, n) { const p = spot(w, n); return { x: p.x + (i ? 0.3 : -0.3) * w.cell, y: p.y + w.cell * 0.64 }; }
+function place(w, i, n) { const s = seat(w, i, n), t = token(w, i); t.x = s.x; t.y = s.y; }
 function showTurn(w) {
   if (!ui) return;
   ui.turn.innerHTML = ''; ui.turn.append(O.ui.portrait(token(w, turn).spec, { size: 40 }), O.t('turn', { name: who(turn).name }));
@@ -114,11 +116,13 @@ function showTurn(w) {
   if (bot) w.after(CONFIG.botDelay * 1000, () => roll(w));
 }
 async function hop(w, i, to) {
-  const t = token(w, i), dir = to > pos[i] ? 1 : -1;
+  const t = token(w, i), dir = to > pos[i] ? 1 : -1; let k = 0;
   while (pos[i] !== to && !w.ended) {
-    pos[i] += dir; const p = spot(w, pos[i]);
-    t.flip = p.x + (i ? 0.32 : -0.32) * w.cell < t.x; t.state('jump');
-    await O.tween(t, { x: p.x + (i ? 0.32 : -0.32) * w.cell, y: p.y - w.cell * 0.45 }, { ms: CONFIG.stepMs, ease: 'quadOut' });
+    pos[i] += dir; const s = seat(w, i, pos[i]);
+    t.flip = s.x < t.x; t.state('jump');
+    await O.tween(t, { x: s.x, y: s.y }, { ms: CONFIG.stepMs, ease: 'quadOut' });
+    // count the hops (1, 2, 3...)
+    O.juice.float(O.num(++k), s.x, s.y - w.cell * 1.1, 'player');
     t.squash(0.85, 120); O.sfx('step', { pitch: 1 + pos[i] * 0.01 });
   }
   t.state('idle');
@@ -138,9 +142,9 @@ async function roll(w) {
     O.ui.toast(O.t(s.kind));
     if (s.kind === 'again') { again = true; O.sfx('spark'); token(w, i).state('cheer'); }
     else {
-      O.sfx(s.kind === 'boost' ? 'levelup' : 'whoosh'); const p = spot(w, s.to); pos[i] = s.to;
+      O.sfx(s.kind === 'boost' ? 'levelup' : 'whoosh'); const p = seat(w, i, s.to); pos[i] = s.to;
       w.stage.burst(s.kind === 'boost' ? 'sparkle' : 'dust', token(w, i).x, token(w, i).y, { n: 14 });
-      await O.tween(token(w, i), { x: p.x + (i ? 0.32 : -0.32) * w.cell, y: p.y - w.cell * 0.45 }, { ms: 520, ease: 'cubicInOut' });
+      await O.tween(token(w, i), { x: p.x, y: p.y }, { ms: 520, ease: 'cubicInOut' });
     }
   }
   if (w.ended) return;
