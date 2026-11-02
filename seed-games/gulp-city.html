@@ -1,0 +1,1309 @@
+<title>Gulp City</title>
+<style>
+/* Gulp City: a tiny black hole that swallows a whole city. Its own Three.js world (no Oomba Kit): one full-screen canvas,
+   its own screens (title, how to play, settings, pause, swallowed, results) and HUD. Colours are the tokens below. */
+:root{--g-card:#fffdf7;--g-text:#1c1a33;--g-edge:#1c1a33;--g-go:#7c5cff;--g-go-text:#ffffff;--g-hot:#ff7a59;--g-soft:#efeaff;--g-dim:rgba(28,26,51,.42);--g-good:#2fbf71;--g-bar:#e3dcff;--ts:1}
+:root.dark{--g-card:#221f3d;--g-text:#fff8ee;--g-edge:#07061a;--g-soft:#2f2a55;--g-dim:rgba(5,4,18,.55);--g-bar:#3b3566}
+:root.hc{--g-edge:#000;--g-dim:rgba(0,0,0,.7)}
+:root.hc.dark{--g-card:#000;--g-text:#fff;--g-edge:#fff}
+:root.hc:not(.dark){--g-card:#fff;--g-text:#000}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;background:#a8dcff;touch-action:none;user-select:none;-webkit-user-select:none}
+body{font:700 calc(16px * var(--ts))/1.3 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;color:var(--g-text)}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+button{font:inherit;font-weight:800;cursor:pointer;color:var(--g-text)}
+.btn{min-height:48px;min-width:48px;padding:8px 20px;border-radius:999px;border:3px solid var(--g-edge);background:var(--g-go);color:var(--g-go-text);box-shadow:0 4px 0 var(--g-edge);font-size:calc(19px * var(--ts));line-height:1.1}
+.btn small{display:block;font-size:.62em;font-weight:700;opacity:.9}
+.btn.ghost{background:var(--g-card);color:var(--g-text)}
+.btn.hot{background:var(--g-hot);color:#1c1a33}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--g-edge)}
+.btn:focus-visible,.icon:focus-visible,.seg button:focus-visible{outline:3px solid var(--g-hot);outline-offset:2px}
+.icon{width:48px;height:48px;padding:0;border-radius:50%;border:3px solid var(--g-edge);background:var(--g-card);box-shadow:0 3px 0 var(--g-edge);font-size:20px;line-height:1;flex:none}
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:var(--g-dim);padding:12px;box-sizing:border-box}
+#titleScreen{background:linear-gradient(180deg,rgba(28,26,51,.05),rgba(28,26,51,.45))}
+.card{background:var(--g-card);border:3px solid var(--g-edge);border-radius:24px;box-shadow:0 7px 0 var(--g-edge);padding:18px 20px 20px;max-width:min(460px,100%);max-height:100%;overflow:auto;box-sizing:border-box;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.card h1{margin:0;font-size:calc(clamp(26px,6vw,40px) * var(--ts));line-height:1.05;letter-spacing:-.5px}
+.card h2{margin:0;font-size:calc(26px * var(--ts));line-height:1.1}
+.card p{margin:0}
+.logo{display:flex;align-items:center;gap:10px;justify-content:center}
+.swirl{width:46px;height:46px;border-radius:50%;flex:none;background:radial-gradient(circle at 50% 50%,#000 0 34%,#3a1f7a 46%,#7c5cff 60%,#5cf2ff 72%,transparent 74%);box-shadow:0 0 0 3px var(--g-edge)}
+.tag{opacity:.85;font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.seg{display:flex;border:3px solid var(--g-edge);border-radius:999px;overflow:hidden;background:var(--g-card)}
+.seg button{min-height:42px;min-width:64px;padding:4px 12px;border:0;background:transparent;font-size:calc(16px * var(--ts))}
+.seg button+button{border-inline-start:3px solid var(--g-edge)}
+.seg button[aria-pressed=true]{background:var(--g-go);color:var(--g-go-text)}
+.seglabel{font-size:calc(14px * var(--ts));opacity:.8}
+.how{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;text-align:start}
+.how li{display:flex;gap:10px;align-items:center}
+.how li span:first-child{font-size:26px;flex:none;width:34px;text-align:center}
+.set{display:grid;grid-template-columns:1fr auto;gap:8px 14px;align-items:center;width:100%;text-align:start}
+.toggle{min-height:44px;min-width:76px;border-radius:999px;border:3px solid var(--g-edge);background:var(--g-soft);padding:4px 12px;font-size:calc(16px * var(--ts))}
+.toggle[aria-pressed=true]{background:var(--g-good);color:#08210f}
+.stars{font-size:34px;letter-spacing:4px;line-height:1}
+.big{font-size:calc(20px * var(--ts))}
+#hud{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;align-items:flex-start;gap:8px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left));pointer-events:none}
+#hud .gap{flex:1}
+#hud button{pointer-events:auto}
+.pill{background:var(--g-card);border:3px solid var(--g-edge);border-radius:16px;padding:4px 12px;box-shadow:0 3px 0 var(--g-edge);white-space:nowrap}
+#sizeBox{display:flex;flex-direction:column;gap:3px;min-width:118px;padding-inline:13px 15px;flex:none}
+#sizeTop{display:flex;justify-content:space-between;gap:8px;font-size:calc(17px * var(--ts))}
+#barRow{display:flex;align-items:center;gap:6px;font-size:14px}
+#bar{flex:1;height:9px;border-radius:9px;background:var(--g-bar);overflow:hidden;min-width:60px}
+#barFill{height:100%;width:0;background:linear-gradient(90deg,#7c5cff,#5cf2ff);border-radius:9px}
+#clock{font-size:calc(19px * var(--ts));align-self:flex-start}
+#clock.low{background:var(--g-hot);color:#1c1a33}
+#side{position:fixed;z-index:9;top:calc(max(8px,env(safe-area-inset-top)) + 58px);inset-inline-end:max(10px,env(safe-area-inset-right));display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
+#board{background:var(--g-card);border:3px solid var(--g-edge);border-radius:14px;box-shadow:0 3px 0 var(--g-edge);padding:5px 9px;min-width:132px;font-size:calc(13px * var(--ts))}
+#board h3{margin:0 0 2px;font-size:calc(12px * var(--ts));opacity:.75;text-transform:uppercase;letter-spacing:.4px}
+#board ol{list-style:none;margin:0;padding:0}
+#board li{display:flex;gap:6px;align-items:center;line-height:1.35}
+#board li .dot{width:10px;height:10px;border-radius:50%;flex:none;border:2px solid var(--g-edge)}
+#board li .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:84px}
+#board li.me{color:var(--g-go);font-weight:900}
+:root.dark #board li.me{color:#b9a8ff}
+#mapBox{position:fixed;z-index:9;bottom:max(10px,env(safe-area-inset-bottom));inset-inline-end:max(10px,env(safe-area-inset-right));width:104px;height:104px;border-radius:16px;border:3px solid var(--g-edge);box-shadow:0 3px 0 var(--g-edge);overflow:hidden;background:#4fb6e8;pointer-events:none}
+#map{width:100%;height:100%;display:block}
+#banner{position:fixed;z-index:12;left:50%;top:22%;transform:translate(-50%,-50%);pointer-events:none;background:var(--g-card);border:3px solid var(--g-edge);border-radius:20px;box-shadow:0 5px 0 var(--g-edge);padding:10px 18px;font-size:calc(21px * var(--ts));text-align:center;max-width:min(86vw,520px);opacity:0;transition:opacity .25s,transform .25s}
+#banner.on{opacity:1;transform:translate(-50%,-50%) scale(1.04)}
+#tip{position:fixed;z-index:11;left:50%;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 4px);transform:translateX(-50%);pointer-events:none;color:#fffdf7;font-size:calc(17px * var(--ts));text-shadow:0 2px 4px rgba(0,0,0,.6),0 0 2px #000;white-space:nowrap;opacity:0;transition:opacity .3s}
+#tip.on{opacity:1}
+#stickBase{position:fixed;width:120px;height:120px;border-radius:50%;background:rgba(255,253,247,.25);border:3px solid rgba(28,26,51,.8);display:none;z-index:8;pointer-events:none;transform:translate(-50%,-50%)}
+#stickKnob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:#7c5cff;border:3px solid #1c1a33}
+@media (max-height:460px){.card{gap:7px;padding:12px 16px 14px}.card h1{font-size:calc(28px * var(--ts))}.swirl{width:34px;height:34px}.btn{min-height:44px;padding:6px 16px;font-size:calc(17px * var(--ts))}#side{top:calc(max(8px,env(safe-area-inset-top)) + 54px)}#mapBox{width:84px;height:84px}}
+@media (max-width:420px){#sizeBox{min-width:0;padding-inline:9px 11px}#sizeTop{font-size:calc(15px * var(--ts))}#clock{font-size:calc(16px * var(--ts));padding:4px 8px}#hud .icon{width:44px;height:44px}#hud{gap:6px}#board{min-width:112px}#board li .nm{max-width:64px}}
+@media (max-width:380px){#sizeLabel{display:none}}
+@media (max-width:560px){#tip{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 124px)}}
+@media (min-width:768px) and (min-height:700px){#board{font-size:calc(15px * var(--ts));min-width:160px}#mapBox{width:136px;height:136px}}
+@media (prefers-reduced-motion:reduce){.btn:active{transform:none}#banner,#banner.on{transition:none;transform:translate(-50%,-50%)}}
+</style>
+
+<canvas id="view" tabindex="0"></canvas>
+<div id="hud" hidden>
+  <div class="pill" id="sizeBox"><div id="sizeTop"><span id="sizeLabel"></span><span id="sizeVal"></span></div><div id="barRow"><div id="bar"><div id="barFill"></div></div><span id="nextIcon"></span></div></div>
+  <span class="gap"></span><span class="pill" id="clock" hidden></span><span class="gap"></span>
+  <button class="icon" id="soundBtn" type="button"></button><button class="icon" id="pauseBtn" type="button">⏸</button>
+</div>
+<div id="side" hidden><div id="board"><h3 id="boardTitle"></h3><ol id="boardList"></ol></div></div>
+<div id="mapBox" hidden><canvas id="map" width="160" height="160"></canvas></div>
+<div id="banner" role="status" aria-live="polite"></div>
+<div id="tip" aria-hidden="true"></div>
+<div id="stickBase"><div id="stickKnob"></div></div>
+
+<div class="screen" id="titleScreen"><div class="card">
+  <div class="logo"><span class="swirl" aria-hidden="true"></span><h1 id="titleText"></h1></div>
+  <p class="tag" id="tagText"></p>
+  <div class="row"><button class="btn" id="playBtn" type="button"></button><button class="btn hot" id="freeBtn" type="button"></button></div>
+  <div class="row" style="align-items:center"><span class="seglabel" id="rivalsLabel"></span><div class="seg" id="diffSeg" role="group"><button type="button" data-d="easy"></button><button type="button" data-d="normal"></button><button type="button" data-d="hard"></button></div></div>
+  <div class="row"><button class="btn ghost" id="howBtn" type="button"></button><button class="btn ghost" id="setBtn" type="button"></button></div>
+  <p id="bestText"></p>
+</div></div>
+<div class="screen" id="howScreen" hidden><div class="card"><h2 id="howTitle"></h2><ul class="how" id="howList"></ul><button class="btn" id="howDone" type="button"></button></div></div>
+<div class="screen" id="setScreen" hidden><div class="card"><h2 id="setTitle"></h2><div class="set" id="setGrid"></div><button class="btn" id="setDone" type="button"></button></div></div>
+<div class="screen" id="pauseScreen" hidden><div class="card"><h2 id="pausedText"></h2><div class="row"><button class="btn" id="resumeBtn" type="button"></button></div><div class="row"><button class="btn ghost" id="pSetBtn" type="button"></button><button class="btn ghost" id="finishBtn" type="button"></button><button class="btn ghost" id="menuBtn" type="button"></button></div></div></div>
+<div class="screen" id="gulpScreen" hidden><div class="card"><h2 id="gulpTitle"></h2><p class="big" id="gulpText"></p><p id="gulpKeep"></p><button class="btn" id="keepBtn" type="button"></button></div></div>
+<div class="screen" id="endScreen" hidden><div class="card"><h2 id="endTitle"></h2><div class="stars" id="endStars"></div><p class="big" id="endRank"></p><p id="endSize"></p><p id="endCity"></p><p id="endPoints"></p><div class="row"><button class="btn" id="againBtn" type="button"></button><button class="btn ghost" id="endMenuBtn" type="button"></button></div></div></div>
+
+<script>
+/* =====================================================================================
+   WORDS: every word the player sees, in the 13 site languages (BRB.user.lang picks one; missing keys fall back to the
+   base language, then English). Rival names stay the same in every language.
+   ===================================================================================== */
+const I18N = {
+  en: { title: 'Gulp City', tagline: 'You are a tiny black hole. Swallow the city and grow!', play: 'Play', playSub: '2½ minutes', free: 'Free roam', freeSub: 'No clock', rivals: 'Rivals', easy: 'Easy', normal: 'Normal', hard: 'Hard', how: 'How to play', settings: 'Settings', best: 'Best: {n} points', bestSize: 'Biggest hole: {n} m',
+    howTitle: 'How to play', how1Touch: 'Drag anywhere to move your hole.', how1Keys: 'Move with the arrow keys, WASD, or drag.', how2: 'Swallow things smaller than you to grow.', how3: 'Bigger holes can swallow smaller ones. Stay away from them!', how4: 'Be the biggest hole when the time runs out!', gotIt: 'Got it!',
+    sizeLabel: 'Size', meters: '{n} m', next: 'Next', max: 'Biggest!', leader: 'Biggest holes', you: 'You', paused: 'Paused', resume: 'Keep playing', menu: 'Menu', finish: 'See results', pause: 'Pause', sound: 'Sound on or off',
+    unlock: 'Now you can swallow {what}!', g0: 'fire hydrants, cones and lamp posts', g1: 'benches, bikes and trees', g2: 'cars and fountains', g3: 'vans and fire trucks', g4: 'buses and houses', g5: 'buildings', g6: 'skyscrapers', g7: 'landmarks and the stadium',
+    tooBig: 'Too big! Grow first.', gulpTitle: 'Gulp!', gulpText: '{name} swallowed you!', gulpKeep: 'You start again, a little smaller.', keepGoing: 'Keep going', ateRival: 'You swallowed {name}!',
+    timeUp: "Time's up!", freeDone: 'Free roam', rank: 'You are #{rank} of {total}!', winner: 'You are the biggest hole!', endSize: 'Biggest size: {n} m', endCity: 'City swallowed: {n}%', endPoints: 'Points: {score} · Best: {best}', again: 'Play again', stars: '{n} of 3 stars',
+    setTitle: 'Settings', soundSet: 'Sound', music: 'Music', readAloud: 'Read aloud', motion: 'Motion', motionAuto: 'Auto', motionLess: 'Less', contrast: 'High contrast', textSize: 'Text size', on: 'On', off: 'Off', done: 'Done',
+    hintTouch: 'Drag anywhere to move', hintKeys: 'Move: arrow keys, WASD or drag', world: 'A city seen from above, with your black hole' },
+  'en-GB': {},
+  pt: { title: 'Gulp City', tagline: 'Você é um buraco negro pequenininho. Engula a cidade e cresça!', play: 'Jogar', playSub: '2½ minutos', free: 'Passeio livre', freeSub: 'Sem relógio', rivals: 'Rivais', easy: 'Fácil', normal: 'Normal', hard: 'Difícil', how: 'Como jogar', settings: 'Ajustes', best: 'Recorde: {n} pontos', bestSize: 'Maior buraco: {n} m',
+    howTitle: 'Como jogar', how1Touch: 'Arraste em qualquer lugar para mover o seu buraco.', how1Keys: 'Mova com as setas, WASD ou arrastando.', how2: 'Engula coisas menores que você para crescer.', how3: 'Buracos maiores podem engolir os menores. Fique longe deles!', how4: 'Seja o maior buraco quando o tempo acabar!', gotIt: 'Entendi!',
+    sizeLabel: 'Tamanho', meters: '{n} m', next: 'Próximo', max: 'O maior!', leader: 'Maiores buracos', you: 'Você', paused: 'Pausado', resume: 'Continuar', menu: 'Menu', finish: 'Ver resultado', pause: 'Pausar', sound: 'Som ligado ou desligado',
+    unlock: 'Agora você pode engolir {what}!', g0: 'hidrantes, cones e postes', g1: 'bancos, bicicletas e árvores', g2: 'carros e fontes', g3: 'vans e caminhões de bombeiro', g4: 'ônibus e casas', g5: 'prédios', g6: 'arranha-céus', g7: 'monumentos e o estádio',
+    tooBig: 'Grande demais! Cresça primeiro.', gulpTitle: 'Glup!', gulpText: '{name} engoliu você!', gulpKeep: 'Você recomeça um pouco menor.', keepGoing: 'Continuar', ateRival: 'Você engoliu {name}!',
+    timeUp: 'Acabou o tempo!', freeDone: 'Passeio livre', rank: 'Você ficou em #{rank} de {total}!', winner: 'Você é o maior buraco!', endSize: 'Maior tamanho: {n} m', endCity: 'Cidade engolida: {n}%', endPoints: 'Pontos: {score} · Recorde: {best}', again: 'Jogar de novo', stars: '{n} de 3 estrelas',
+    setTitle: 'Ajustes', soundSet: 'Som', music: 'Música', readAloud: 'Ler em voz alta', motion: 'Movimento', motionAuto: 'Automático', motionLess: 'Menos', contrast: 'Alto contraste', textSize: 'Tamanho do texto', on: 'Ligado', off: 'Desligado', done: 'Pronto',
+    hintTouch: 'Arraste para se mover', hintKeys: 'Mover: setas, WASD ou arrastar', world: 'Uma cidade vista de cima, com o seu buraco negro' },
+  fr: { title: 'Gulp City', tagline: 'Tu es un tout petit trou noir. Avale la ville et grandis !', play: 'Jouer', playSub: '2 min 30', free: 'Balade libre', freeSub: 'Sans chrono', rivals: 'Rivaux', easy: 'Facile', normal: 'Normal', hard: 'Difficile', how: 'Comment jouer', settings: 'Réglages', best: 'Record : {n} points', bestSize: 'Plus grand trou : {n} m',
+    howTitle: 'Comment jouer', how1Touch: 'Glisse ton doigt n’importe où pour déplacer ton trou.', how1Keys: 'Déplace-toi avec les flèches, ZQSD/WASD ou en glissant.', how2: 'Avale ce qui est plus petit que toi pour grandir.', how3: 'Les trous plus grands peuvent avaler les plus petits. Éloigne-toi d’eux !', how4: 'Sois le plus grand trou quand le temps est fini !', gotIt: 'Compris !',
+    sizeLabel: 'Taille', meters: '{n} m', next: 'Ensuite', max: 'Le plus grand !', leader: 'Plus grands trous', you: 'Toi', paused: 'Pause', resume: 'Continuer', menu: 'Menu', finish: 'Voir le résultat', pause: 'Pause', sound: 'Son activé ou coupé',
+    unlock: 'Tu peux maintenant avaler {what} !', g0: 'les bouches d’incendie, les cônes et les lampadaires', g1: 'les bancs, les vélos et les arbres', g2: 'les voitures et les fontaines', g3: 'les camionnettes et les camions de pompiers', g4: 'les bus et les maisons', g5: 'les immeubles', g6: 'les gratte-ciel', g7: 'les monuments et le stade',
+    tooBig: 'Trop grand ! Grandis d’abord.', gulpTitle: 'Glouf !', gulpText: '{name} t’a avalé !', gulpKeep: 'Tu recommences, un peu plus petit.', keepGoing: 'Continuer', ateRival: 'Tu as avalé {name} !',
+    timeUp: 'Temps écoulé !', freeDone: 'Balade libre', rank: 'Tu es n° {rank} sur {total} !', winner: 'Tu es le plus grand trou !', endSize: 'Plus grande taille : {n} m', endCity: 'Ville avalée : {n} %', endPoints: 'Points : {score} · Record : {best}', again: 'Rejouer', stars: '{n} étoile(s) sur 3',
+    setTitle: 'Réglages', soundSet: 'Son', music: 'Musique', readAloud: 'Lecture à voix haute', motion: 'Mouvement', motionAuto: 'Auto', motionLess: 'Moins', contrast: 'Contraste élevé', textSize: 'Taille du texte', on: 'Oui', off: 'Non', done: 'OK',
+    hintTouch: 'Glisse pour te déplacer', hintKeys: 'Bouger : flèches, ZQSD/WASD ou glisser', world: 'Une ville vue du ciel, avec ton trou noir' },
+  es: { title: 'Gulp City', tagline: 'Eres un agujero negro diminuto. ¡Trágate la ciudad y crece!', play: 'Jugar', playSub: '2½ minutos', free: 'Paseo libre', freeSub: 'Sin reloj', rivals: 'Rivales', easy: 'Fácil', normal: 'Normal', hard: 'Difícil', how: 'Cómo jugar', settings: 'Ajustes', best: 'Récord: {n} puntos', bestSize: 'Agujero más grande: {n} m',
+    howTitle: 'Cómo jugar', how1Touch: 'Arrastra en cualquier parte para mover tu agujero.', how1Keys: 'Muévete con las flechas, WASD o arrastrando.', how2: 'Trágate cosas más pequeñas que tú para crecer.', how3: 'Los agujeros más grandes pueden tragarse a los pequeños. ¡Aléjate de ellos!', how4: '¡Sé el agujero más grande cuando se acabe el tiempo!', gotIt: '¡Entendido!',
+    sizeLabel: 'Tamaño', meters: '{n} m', next: 'Siguiente', max: '¡El más grande!', leader: 'Agujeros más grandes', you: 'Tú', paused: 'En pausa', resume: 'Seguir jugando', menu: 'Menú', finish: 'Ver resultado', pause: 'Pausa', sound: 'Sonido sí o no',
+    unlock: '¡Ahora puedes tragarte {what}!', g0: 'bocas de incendio, conos y farolas', g1: 'bancos, bicis y árboles', g2: 'coches y fuentes', g3: 'furgonetas y camiones de bomberos', g4: 'autobuses y casas', g5: 'edificios', g6: 'rascacielos', g7: 'monumentos y el estadio',
+    tooBig: '¡Demasiado grande! Crece primero.', gulpTitle: '¡Glup!', gulpText: '¡{name} te tragó!', gulpKeep: 'Empiezas otra vez, un poco más pequeño.', keepGoing: 'Seguir', ateRival: '¡Te tragaste a {name}!',
+    timeUp: '¡Se acabó el tiempo!', freeDone: 'Paseo libre', rank: '¡Quedaste #{rank} de {total}!', winner: '¡Eres el agujero más grande!', endSize: 'Tamaño máximo: {n} m', endCity: 'Ciudad tragada: {n} %', endPoints: 'Puntos: {score} · Récord: {best}', again: 'Jugar otra vez', stars: '{n} de 3 estrellas',
+    setTitle: 'Ajustes', soundSet: 'Sonido', music: 'Música', readAloud: 'Leer en voz alta', motion: 'Movimiento', motionAuto: 'Auto', motionLess: 'Menos', contrast: 'Alto contraste', textSize: 'Tamaño del texto', on: 'Sí', off: 'No', done: 'Listo',
+    hintTouch: 'Arrastra para moverte', hintKeys: 'Moverse: flechas, WASD o arrastrar', world: 'Una ciudad vista desde arriba, con tu agujero negro' },
+  de: { title: 'Gulp City', tagline: 'Du bist ein winziges Schwarzes Loch. Verschling die Stadt und wachse!', play: 'Spielen', playSub: '2½ Minuten', free: 'Freies Spiel', freeSub: 'Ohne Uhr', rivals: 'Gegner', easy: 'Leicht', normal: 'Normal', hard: 'Schwer', how: 'So geht’s', settings: 'Einstellungen', best: 'Rekord: {n} Punkte', bestSize: 'Größtes Loch: {n} m',
+    howTitle: 'So geht’s', how1Touch: 'Zieh irgendwo, um dein Loch zu bewegen.', how1Keys: 'Bewegen mit Pfeiltasten, WASD oder Ziehen.', how2: 'Verschling Dinge, die kleiner sind als du, und wachse.', how3: 'Größere Löcher können kleinere verschlingen. Halte Abstand!', how4: 'Sei das größte Loch, wenn die Zeit um ist!', gotIt: 'Alles klar!',
+    sizeLabel: 'Größe', meters: '{n} m', next: 'Als Nächstes', max: 'Am größten!', leader: 'Größte Löcher', you: 'Du', paused: 'Pause', resume: 'Weiterspielen', menu: 'Menü', finish: 'Ergebnis ansehen', pause: 'Pause', sound: 'Ton an oder aus',
+    unlock: 'Jetzt kannst du {what} verschlingen!', g0: 'Hydranten, Hütchen und Laternen', g1: 'Bänke, Fahrräder und Bäume', g2: 'Autos und Brunnen', g3: 'Lieferwagen und Feuerwehrautos', g4: 'Busse und Häuser', g5: 'Gebäude', g6: 'Wolkenkratzer', g7: 'Wahrzeichen und das Stadion',
+    tooBig: 'Zu groß! Erst wachsen.', gulpTitle: 'Schluck!', gulpText: '{name} hat dich verschlungen!', gulpKeep: 'Du fängst wieder an, etwas kleiner.', keepGoing: 'Weiter', ateRival: 'Du hast {name} verschlungen!',
+    timeUp: 'Die Zeit ist um!', freeDone: 'Freies Spiel', rank: 'Du bist Platz {rank} von {total}!', winner: 'Du bist das größte Loch!', endSize: 'Größte Größe: {n} m', endCity: 'Verschlungene Stadt: {n} %', endPoints: 'Punkte: {score} · Rekord: {best}', again: 'Nochmal spielen', stars: '{n} von 3 Sternen',
+    setTitle: 'Einstellungen', soundSet: 'Ton', music: 'Musik', readAloud: 'Vorlesen', motion: 'Bewegung', motionAuto: 'Auto', motionLess: 'Weniger', contrast: 'Hoher Kontrast', textSize: 'Textgröße', on: 'An', off: 'Aus', done: 'Fertig',
+    hintTouch: 'Zum Bewegen ziehen', hintKeys: 'Bewegen: Pfeiltasten, WASD oder Ziehen', world: 'Eine Stadt von oben, mit deinem Schwarzen Loch' },
+  he: { title: 'Gulp City', tagline: 'אתם חור שחור קטנטן. בלעו את העיר וגדלו!', play: 'שחקו', playSub: '2.5 דקות', free: 'שיטוט חופשי', freeSub: 'בלי שעון', rivals: 'יריבים', easy: 'קל', normal: 'רגיל', hard: 'קשה', how: 'איך משחקים', settings: 'הגדרות', best: 'שיא: {n} נקודות', bestSize: 'החור הכי גדול: {n} מ׳',
+    howTitle: 'איך משחקים', how1Touch: 'גררו בכל מקום כדי להזיז את החור.', how1Keys: 'זזים עם החיצים, WASD או בגרירה.', how2: 'בלעו דברים קטנים מכם כדי לגדול.', how3: 'חורים גדולים יכולים לבלוע קטנים יותר. התרחקו מהם!', how4: 'היו החור הכי גדול כשהזמן נגמר!', gotIt: 'הבנתי!',
+    sizeLabel: 'גודל', meters: '{n} מ׳', next: 'הבא', max: 'הכי גדול!', leader: 'החורים הכי גדולים', you: 'אתם', paused: 'מושהה', resume: 'המשיכו לשחק', menu: 'תפריט', finish: 'לתוצאות', pause: 'השהיה', sound: 'צליל פועל או כבוי',
+    unlock: 'עכשיו אפשר לבלוע {what}!', g0: 'ברזי כיבוי, קונוסים ועמודי תאורה', g1: 'ספסלים, אופניים ועצים', g2: 'מכוניות ומזרקות', g3: 'טנדרים וכבאיות', g4: 'אוטובוסים ובתים', g5: 'בניינים', g6: 'גורדי שחקים', g7: 'אתרים מפורסמים ואת האצטדיון',
+    tooBig: 'גדול מדי! קודם צריך לגדול.', gulpTitle: 'גלופ!', gulpText: '{name} בלע אתכם!', gulpKeep: 'מתחילים שוב, קצת יותר קטנים.', keepGoing: 'ממשיכים', ateRival: 'בלעתם את {name}!',
+    timeUp: 'נגמר הזמן!', freeDone: 'שיטוט חופשי', rank: 'אתם במקום {rank} מתוך {total}!', winner: 'אתם החור הכי גדול!', endSize: 'הגודל הכי גדול: {n} מ׳', endCity: 'העיר שנבלעה: {n}%', endPoints: 'נקודות: {score} · שיא: {best}', again: 'שחקו שוב', stars: '{n} מתוך 3 כוכבים',
+    setTitle: 'הגדרות', soundSet: 'צליל', music: 'מוזיקה', readAloud: 'הקראה', motion: 'תנועה', motionAuto: 'אוטומטי', motionLess: 'פחות', contrast: 'ניגודיות גבוהה', textSize: 'גודל טקסט', on: 'פועל', off: 'כבוי', done: 'סיום',
+    hintTouch: 'גררו כדי לזוז', hintKeys: 'תזוזה: חיצים, WASD או גרירה', world: 'עיר במבט מלמעלה, עם החור השחור שלכם' },
+  ja: { title: 'Gulp City', tagline: 'きみは ちいさな ブラックホール。まちを のみこんで おおきく なろう！', play: 'あそぶ', playSub: '2ふん30びょう', free: 'じゆうに あそぶ', freeSub: 'じかん せいげん なし', rivals: 'ライバル', easy: 'かんたん', normal: 'ふつう', hard: 'むずかしい', how: 'あそびかた', settings: 'せってい', best: 'ベスト：{n}てん', bestSize: 'いちばん おおきい あな：{n} m',
+    howTitle: 'あそびかた', how1Touch: 'どこでも ドラッグして あなを うごかそう。', how1Keys: 'やじるしキー、WASD、または ドラッグで うごくよ。', how2: 'じぶんより ちいさい ものを のみこむと おおきく なるよ。', how3: 'おおきい あなは ちいさい あなを のみこめる。ちかづかないでね！', how4: 'じかん ぎれの とき、いちばん おおきい あなに なろう！', gotIt: 'わかった！',
+    sizeLabel: 'おおきさ', meters: '{n} m', next: 'つぎ', max: 'いちばん！', leader: 'おおきい あな ランキング', you: 'きみ', paused: 'ちょっと やすみ', resume: 'つづける', menu: 'メニュー', finish: 'けっかを みる', pause: 'とめる', sound: 'おとの オン・オフ',
+    unlock: '{what}を のみこめるように なったよ！', g0: 'しょうかせん、コーン、がいとう', g1: 'ベンチ、じてんしゃ、き', g2: 'くるまと ふんすい', g3: 'バンと しょうぼうしゃ', g4: 'バスと いえ', g5: 'ビル', g6: 'こうそうビル', g7: 'めいしょと スタジアム',
+    tooBig: 'おおきすぎる！まず おおきく なろう。', gulpTitle: 'ゴクン！', gulpText: '{name}に のみこまれた！', gulpKeep: 'すこし ちいさく なって また スタート。', keepGoing: 'つづける', ateRival: '{name}を のみこんだ！',
+    timeUp: 'じかん ぎれ！', freeDone: 'じゆうに あそぶ', rank: '{total}つ ちゅう {rank}い！', winner: 'きみが いちばん おおきい あな！', endSize: 'いちばん おおきい サイズ：{n} m', endCity: 'のみこんだ まち：{n}%', endPoints: 'てんすう：{score} ・ ベスト：{best}', again: 'もういちど', stars: 'ほし 3つ ちゅう {n}つ',
+    setTitle: 'せってい', soundSet: 'おと', music: 'おんがく', readAloud: 'よみあげ', motion: 'うごき', motionAuto: 'じどう', motionLess: 'すくなめ', contrast: 'くっきり ひょうじ', textSize: 'もじの おおきさ', on: 'オン', off: 'オフ', done: 'OK',
+    hintTouch: 'ドラッグで うごく', hintKeys: 'うごく：やじるし、WASD、ドラッグ', world: 'うえから みた まちと きみの ブラックホール' },
+  ar: { title: 'Gulp City', tagline: 'أنت ثقب أسود صغير جدًا. ابتلع المدينة وكبُر!', play: 'العب', playSub: 'دقيقتان ونصف', free: 'تجوّل حر', freeSub: 'بلا وقت', rivals: 'المنافسون', easy: 'سهل', normal: 'عادي', hard: 'صعب', how: 'طريقة اللعب', settings: 'الإعدادات', best: 'الأفضل: {n} نقطة', bestSize: 'أكبر ثقب: {n} م',
+    howTitle: 'طريقة اللعب', how1Touch: 'اسحب في أي مكان لتحريك ثقبك.', how1Keys: 'تحرّك بالأسهم أو WASD أو بالسحب.', how2: 'ابتلع الأشياء الأصغر منك لتكبر.', how3: 'الثقوب الأكبر تستطيع ابتلاع الأصغر. ابتعد عنها!', how4: 'كن أكبر ثقب عندما ينتهي الوقت!', gotIt: 'فهمت!',
+    sizeLabel: 'الحجم', meters: '{n} م', next: 'التالي', max: 'الأكبر!', leader: 'أكبر الثقوب', you: 'أنت', paused: 'متوقف مؤقتًا', resume: 'تابع اللعب', menu: 'القائمة', finish: 'شاهد النتيجة', pause: 'إيقاف مؤقت', sound: 'تشغيل الصوت أو إيقافه',
+    unlock: 'الآن يمكنك ابتلاع {what}!', g0: 'صنابير الإطفاء والأقماع وأعمدة الإنارة', g1: 'المقاعد والدراجات والأشجار', g2: 'السيارات والنوافير', g3: 'الشاحنات الصغيرة وسيارات الإطفاء', g4: 'الحافلات والبيوت', g5: 'المباني', g6: 'ناطحات السحاب', g7: 'المعالم والملعب',
+    tooBig: 'كبير جدًا! اكبر أولًا.', gulpTitle: 'غلب!', gulpText: 'ابتلعك {name}!', gulpKeep: 'تبدأ من جديد وأنت أصغر قليلًا.', keepGoing: 'تابع', ateRival: 'ابتلعت {name}!',
+    timeUp: 'انتهى الوقت!', freeDone: 'تجوّل حر', rank: 'أنت رقم {rank} من {total}!', winner: 'أنت أكبر ثقب!', endSize: 'أكبر حجم: {n} م', endCity: 'المدينة المبتلعة: {n}%', endPoints: 'النقاط: {score} · الأفضل: {best}', again: 'العب مرة أخرى', stars: '{n} من 3 نجوم',
+    setTitle: 'الإعدادات', soundSet: 'الصوت', music: 'الموسيقى', readAloud: 'القراءة بصوت عالٍ', motion: 'الحركة', motionAuto: 'تلقائي', motionLess: 'أقل', contrast: 'تباين عالٍ', textSize: 'حجم النص', on: 'تشغيل', off: 'إيقاف', done: 'تم',
+    hintTouch: 'اسحب لتتحرك', hintKeys: 'الحركة: الأسهم أو WASD أو السحب', world: 'مدينة من الأعلى مع ثقبك الأسود' },
+  ru: { title: 'Gulp City', tagline: 'Ты крошечная чёрная дыра. Проглоти город и вырасти!', play: 'Играть', playSub: '2,5 минуты', free: 'Свободная игра', freeSub: 'Без часов', rivals: 'Соперники', easy: 'Легко', normal: 'Обычно', hard: 'Сложно', how: 'Как играть', settings: 'Настройки', best: 'Рекорд: {n} очков', bestSize: 'Самая большая дыра: {n} м',
+    howTitle: 'Как играть', how1Touch: 'Тяни где угодно, чтобы двигать дыру.', how1Keys: 'Двигайся стрелками, WASD или тяни.', how2: 'Глотай то, что меньше тебя, и расти.', how3: 'Большие дыры могут проглотить маленькие. Держись от них подальше!', how4: 'Будь самой большой дырой, когда время закончится!', gotIt: 'Понятно!',
+    sizeLabel: 'Размер', meters: '{n} м', next: 'Дальше', max: 'Самая большая!', leader: 'Самые большие дыры', you: 'Ты', paused: 'Пауза', resume: 'Играть дальше', menu: 'Меню', finish: 'Итоги', pause: 'Пауза', sound: 'Звук вкл. или выкл.',
+    unlock: 'Теперь можно глотать {what}!', g0: 'гидранты, конусы и фонари', g1: 'скамейки, велосипеды и деревья', g2: 'машины и фонтаны', g3: 'фургоны и пожарные машины', g4: 'автобусы и дома', g5: 'здания', g6: 'небоскрёбы', g7: 'достопримечательности и стадион',
+    tooBig: 'Слишком большое! Сначала подрасти.', gulpTitle: 'Глоть!', gulpText: '{name} проглотил тебя!', gulpKeep: 'Ты начинаешь снова, чуть меньше.', keepGoing: 'Дальше', ateRival: 'Ты проглотил {name}!',
+    timeUp: 'Время вышло!', freeDone: 'Свободная игра', rank: 'Ты на {rank} месте из {total}!', winner: 'Ты самая большая дыра!', endSize: 'Самый большой размер: {n} м', endCity: 'Проглочено города: {n} %', endPoints: 'Очки: {score} · Рекорд: {best}', again: 'Ещё раз', stars: '{n} из 3 звёзд',
+    setTitle: 'Настройки', soundSet: 'Звук', music: 'Музыка', readAloud: 'Читать вслух', motion: 'Движение', motionAuto: 'Авто', motionLess: 'Меньше', contrast: 'Высокий контраст', textSize: 'Размер текста', on: 'Вкл.', off: 'Выкл.', done: 'Готово',
+    hintTouch: 'Тяни, чтобы двигаться', hintKeys: 'Движение: стрелки, WASD или тяни', world: 'Город сверху и твоя чёрная дыра' },
+  it: { title: 'Gulp City', tagline: 'Sei un minuscolo buco nero. Inghiotti la città e diventa enorme!', play: 'Gioca', playSub: '2 minuti e ½', free: 'Giro libero', freeSub: 'Senza orologio', rivals: 'Rivali', easy: 'Facile', normal: 'Normale', hard: 'Difficile', how: 'Come si gioca', settings: 'Impostazioni', best: 'Record: {n} punti', bestSize: 'Buco più grande: {n} m',
+    howTitle: 'Come si gioca', how1Touch: 'Trascina dove vuoi per muovere il tuo buco.', how1Keys: 'Muoviti con le frecce, WASD o trascinando.', how2: 'Inghiotti le cose più piccole di te per crescere.', how3: 'I buchi più grandi possono inghiottire quelli piccoli. Stagli lontano!', how4: 'Sii il buco più grande quando finisce il tempo!', gotIt: 'Capito!',
+    sizeLabel: 'Grandezza', meters: '{n} m', next: 'Prossimo', max: 'Il più grande!', leader: 'Buchi più grandi', you: 'Tu', paused: 'In pausa', resume: 'Continua a giocare', menu: 'Menu', finish: 'Vedi il risultato', pause: 'Pausa', sound: 'Suono sì o no',
+    unlock: 'Ora puoi inghiottire {what}!', g0: 'idranti, coni e lampioni', g1: 'panchine, biciclette e alberi', g2: 'auto e fontane', g3: 'furgoni e camion dei pompieri', g4: 'autobus e case', g5: 'palazzi', g6: 'grattacieli', g7: 'monumenti e lo stadio',
+    tooBig: 'Troppo grande! Prima cresci.', gulpTitle: 'Gulp!', gulpText: '{name} ti ha inghiottito!', gulpKeep: 'Ricominci un po’ più piccolo.', keepGoing: 'Continua', ateRival: 'Hai inghiottito {name}!',
+    timeUp: 'Tempo scaduto!', freeDone: 'Giro libero', rank: 'Sei n. {rank} su {total}!', winner: 'Sei il buco più grande!', endSize: 'Grandezza massima: {n} m', endCity: 'Città inghiottita: {n}%', endPoints: 'Punti: {score} · Record: {best}', again: 'Gioca ancora', stars: '{n} stelle su 3',
+    setTitle: 'Impostazioni', soundSet: 'Suono', music: 'Musica', readAloud: 'Leggi ad alta voce', motion: 'Movimento', motionAuto: 'Auto', motionLess: 'Meno', contrast: 'Contrasto alto', textSize: 'Grandezza del testo', on: 'Sì', off: 'No', done: 'Fatto',
+    hintTouch: 'Trascina per muoverti', hintKeys: 'Muoviti: frecce, WASD o trascina', world: 'Una città vista dall’alto, con il tuo buco nero' },
+  'zh-Hant': { title: 'Gulp City', tagline: '你是一個小小的黑洞。把城市吞下去，越長越大！', play: '開始', playSub: '2分30秒', free: '自由探索', freeSub: '沒有時間限制', rivals: '對手', easy: '簡單', normal: '普通', hard: '困難', how: '玩法', settings: '設定', best: '最高分：{n} 分', bestSize: '最大的洞：{n} 公尺',
+    howTitle: '玩法', how1Touch: '在任何地方拖曳來移動你的黑洞。', how1Keys: '用方向鍵、WASD 或拖曳來移動。', how2: '吞下比你小的東西就會變大。', how3: '比較大的洞可以吞掉比較小的洞。離它們遠一點！', how4: '時間到的時候，當最大的黑洞！', gotIt: '知道了！',
+    sizeLabel: '大小', meters: '{n} 公尺', next: '下一個', max: '最大了！', leader: '最大的黑洞', you: '你', paused: '暫停中', resume: '繼續玩', menu: '選單', finish: '看結果', pause: '暫停', sound: '聲音開關',
+    unlock: '現在可以吞下{what}了！', g0: '消防栓、三角錐和路燈', g1: '長椅、腳踏車和樹', g2: '汽車和噴水池', g3: '廂型車和消防車', g4: '公車和房子', g5: '大樓', g6: '摩天大樓', g7: '地標和體育場',
+    tooBig: '太大了！先長大吧。', gulpTitle: '咕嚕！', gulpText: '{name}把你吞下去了！', gulpKeep: '你重新開始，變小了一點。', keepGoing: '繼續', ateRival: '你吞下了{name}！',
+    timeUp: '時間到！', freeDone: '自由探索', rank: '你是 {total} 個中的第 {rank} 名！', winner: '你是最大的黑洞！', endSize: '最大尺寸：{n} 公尺', endCity: '吞下的城市：{n}%', endPoints: '分數：{score} · 最高分：{best}', again: '再玩一次', stars: '3 顆星中的 {n} 顆',
+    setTitle: '設定', soundSet: '聲音', music: '音樂', readAloud: '朗讀', motion: '動態', motionAuto: '自動', motionLess: '較少', contrast: '高對比', textSize: '文字大小', on: '開', off: '關', done: '完成',
+    hintTouch: '拖曳來移動', hintKeys: '移動：方向鍵、WASD 或拖曳', world: '從上面看的城市和你的黑洞' },
+  nl: { title: 'Gulp City', tagline: 'Jij bent een piepklein zwart gat. Slok de stad op en groei!', play: 'Spelen', playSub: '2½ minuut', free: 'Vrij spelen', freeSub: 'Zonder klok', rivals: 'Tegenstanders', easy: 'Makkelijk', normal: 'Normaal', hard: 'Moeilijk', how: 'Hoe speel je?', settings: 'Instellingen', best: 'Record: {n} punten', bestSize: 'Grootste gat: {n} m',
+    howTitle: 'Hoe speel je?', how1Touch: 'Sleep waar je wilt om je gat te bewegen.', how1Keys: 'Bewegen met de pijltjes, WASD of slepen.', how2: 'Slok dingen op die kleiner zijn dan jij en groei.', how3: 'Grotere gaten kunnen kleinere opslokken. Blijf bij ze uit de buurt!', how4: 'Wees het grootste gat als de tijd om is!', gotIt: 'Begrepen!',
+    sizeLabel: 'Grootte', meters: '{n} m', next: 'Hierna', max: 'Het grootst!', leader: 'Grootste gaten', you: 'Jij', paused: 'Pauze', resume: 'Verder spelen', menu: 'Menu', finish: 'Uitslag bekijken', pause: 'Pauze', sound: 'Geluid aan of uit',
+    unlock: 'Nu kun je {what} opslokken!', g0: 'brandkranen, pionnen en lantaarnpalen', g1: 'bankjes, fietsen en bomen', g2: 'auto’s en fonteinen', g3: 'busjes en brandweerauto’s', g4: 'bussen en huizen', g5: 'gebouwen', g6: 'wolkenkrabbers', g7: 'bezienswaardigheden en het stadion',
+    tooBig: 'Te groot! Eerst groeien.', gulpTitle: 'Slok!', gulpText: '{name} heeft je opgeslokt!', gulpKeep: 'Je begint opnieuw, een beetje kleiner.', keepGoing: 'Verder', ateRival: 'Je hebt {name} opgeslokt!',
+    timeUp: 'De tijd is om!', freeDone: 'Vrij spelen', rank: 'Je bent nummer {rank} van {total}!', winner: 'Jij bent het grootste gat!', endSize: 'Grootste grootte: {n} m', endCity: 'Stad opgeslokt: {n}%', endPoints: 'Punten: {score} · Record: {best}', again: 'Nog een keer', stars: '{n} van 3 sterren',
+    setTitle: 'Instellingen', soundSet: 'Geluid', music: 'Muziek', readAloud: 'Voorlezen', motion: 'Beweging', motionAuto: 'Auto', motionLess: 'Minder', contrast: 'Hoog contrast', textSize: 'Tekstgrootte', on: 'Aan', off: 'Uit', done: 'Klaar',
+    hintTouch: 'Sleep om te bewegen', hintKeys: 'Bewegen: pijltjes, WASD of slepen', world: 'Een stad van bovenaf, met jouw zwarte gat' },
+};
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const I18N_CHAIN = [I18N[LANG], I18N[LANG.split('-')[0]], I18N.en].filter(Boolean);
+let NUMF = null, NUMF1 = null;
+try { NUMF = new Intl.NumberFormat(LANG); NUMF1 = new Intl.NumberFormat(LANG, { minimumFractionDigits: 1, maximumFractionDigits: 1 }); } catch { NUMF = NUMF1 = null; }
+const fmt = n => (NUMF ? NUMF.format(n) : String(n));
+const fmt1 = n => (NUMF1 ? NUMF1.format(n) : n.toFixed(1));
+function t(key, vars) {
+  let s; for (const c of I18N_CHAIN) { if (c[key] !== undefined) { s = c[key]; break; } }
+  if (s === undefined) return key;
+  return vars ? s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] === undefined ? m : typeof vars[k] === 'number' ? fmt(vars[k]) : String(vars[k]))) : s;
+}
+document.documentElement.lang = LANG;
+document.documentElement.dir = (window.BRB && BRB.user && BRB.user.dir) || 'ltr';
+// Light or dark, like the site (BRB.theme; '' follows the device).
+(function () { const th = (window.BRB && BRB.theme) || ''; const dark = th ? th === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.classList.toggle('dark', dark); })();
+// Until the 3D city is ready, a start() from the platform is remembered and done as soon as it is.
+window.__brbTest = { state: () => ({ screen: 'loading', ready: false }), start(o) { window.__gulpStartWanted = o || {}; } };
+</script>
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
+  "integrity": {
+    "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+    "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* =====================================================================
+   CONFIG: the numbers of the game.
+   ===================================================================== */
+const CONFIG = {
+  roundSeconds: 150,     // a round (Play): two and a half minutes
+  startSize: 0.8,        // the hole's radius at the start (metres)
+  growth: 0.45,          // how much a swallowed thing grows the hole (its footprint, squared)
+  fit: 0.92,             // a thing fits when its footprint radius is under this share of the hole's radius
+  eatRatio: 1.15,        // a hole swallows another hole this many times smaller
+  maxSize: 95,           // the biggest a hole can get (radius)
+  speed: 4.5,            // moving speed: this ...
+  speedPerMetre: 3.4,    // ... plus this times the square root of the radius (metres a second)
+  slowAt: 6,             // growing slows down as the hole gets bigger than this (radius) ...
+  slowPow: 1.3,          // ... this steeply
+  blocks: 24,            // the city is blocks x blocks
+  block: 60,             // a block with its half of the roads round it (metres)
+  safeSeconds: 3,        // after a start or a respawn no hole can swallow the player for this long
+  graceSeconds: 22,      // at the start of a round the rivals leave the player alone for this long
+  rivals: { easy: 6, normal: 8, hard: 10 },
+  rivalSpeed: { easy: 0.72, normal: 0.84, hard: 0.95 },
+  rivalGrowth: { easy: 0.7, normal: 0.85, hard: 1.0 },
+  rivalChase: { easy: 0.35, normal: 0.7, hard: 1.0 },
+  chaseSeconds: { easy: 2.5, normal: 4, hard: 6 },   // a rival gives up a chase after this long ...
+  chaseRest: 7,          // ... and leaves that hole alone for this long
+  chaseSpeed: 0.9,       // a chasing rival moves this much slower than usual (so a quick player can get away)
+};
+const RIVAL_NAMES = ['Zorp', 'Bloop', 'Nomi', 'Gobbo', 'Swirla', 'Mochi', 'Pip', 'Vortz', 'Dot', 'Munchy'];
+const RIVAL_COLORS = ['#ff5c8a', '#ffb020', '#3ddc97', '#4cc9ff', '#c38bff', '#ff7a45', '#9be15d', '#f15bb5', '#00d1c1', '#ffd166'];
+const PLAYER_COLOR = '#5cf2ff';
+const HALF = CONFIG.blocks * CONFIG.block / 2;   // 720: the island's half width (inside the ring road)
+
+const $ = id => document.getElementById(id);
+const DEVICE_REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TOUCH = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const hexV = h => { const n = parseInt(h.slice(1), 16); return new THREE.Vector3((n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255); };
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------- settings (saved for signed-in players) ---------- */
+const SET = Object.assign({ music: true, read: false, motion: 'auto', contrast: false, text: 1, diff: 'normal' }, (() => { try { return BRB.storage.get('gulp-city-settings') || {}; } catch { return {}; } })());
+const saveSet = () => { try { BRB.storage.set('gulp-city-settings', SET); } catch { /* preview */ } };
+const reduced = () => DEVICE_REDUCED || SET.motion === 'less';
+function applySet() {
+  document.documentElement.classList.toggle('hc', !!SET.contrast);
+  document.documentElement.style.setProperty('--ts', String(SET.text || 1));
+}
+applySet();
+
+/* ---------- renderer, scene, camera ---------- */
+const canvas = $('view');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: devicePixelRatio < 1.5, powerPreference: 'high-performance', stencil: true });
+const scene = new THREE.Scene();
+const SKY = '#a8dcff';
+scene.background = new THREE.Color(SKY);
+scene.fog = new THREE.Fog(SKY, 60, 200);
+const camera = new THREE.PerspectiveCamera(50, 16 / 9, 0.5, 4000);
+let portrait = false;
+const fit = BRB.fx.fit3d(renderer, camera, { maxDpr: 1.5, onResize(w, h) { portrait = w / h < 0.85; camera.fov = portrait ? 62 : 50; camera.updateProjectionMatrix(); } });
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); S.lost = true; pause(); });
+canvas.addEventListener('webglcontextrestored', () => { S.lost = false; });
+scene.add(new THREE.HemisphereLight('#ffffff', '#b7a98d', 1.55));
+const sun = new THREE.DirectionalLight('#fff3dc', 1.9); sun.position.set(0.45, 1, 0.3); scene.add(sun);
+
+/* ---------- see-through: buildings between the camera and the player turn to a light lattice ---------- */
+const SEE = { uCam: { value: new THREE.Vector3() }, uTgt: { value: new THREE.Vector3() }, uRad: { value: 6 } };
+function seeThrough(mat) {
+  mat.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, SEE);
+    sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', `#include <project_vertex>
+      vec4 wpS = vec4(transformed, 1.0);
+      #ifdef USE_INSTANCING
+        wpS = instanceMatrix * wpS;
+      #endif
+      vWP = (modelMatrix * wpS).xyz;`);
+    sh.fragmentShader = 'varying vec3 vWP;\nuniform vec3 uCam;\nuniform vec3 uTgt;\nuniform float uRad;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+      { vec3 sg = uTgt - uCam; float L = length(sg); vec3 dr = sg / L; float tt = dot(vWP - uCam, dr);
+        if (tt > 0.0 && tt < L - uRad * 0.5 && vWP.y > 1.2) { float dd = length(vWP - (uCam + dr * tt));
+          if (dd < uRad) { float k = mod(floor(gl_FragCoord.x) + floor(gl_FragCoord.y), 2.0); if (k < 0.5 || dd < uRad * 0.55) discard; } } }`);
+  };
+  return mat;
+}
+
+/* ---------- materials: one plain, one with windows (a repeating window tile) ---------- */
+const winTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 64, 64);
+  g.fillStyle = '#7fa6cf'; g.fillRect(12, 14, 40, 36);
+  g.fillStyle = '#b9d6f2'; g.fillRect(12, 14, 40, 12);
+  g.fillStyle = '#e9e9e9'; g.fillRect(30, 14, 4, 36);
+  const tx = new THREE.CanvasTexture(c); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4; return tx;
+})();
+const matPlain = seeThrough(new THREE.MeshLambertMaterial({ vertexColors: true }));
+const matWin = seeThrough(new THREE.MeshLambertMaterial({ vertexColors: true, map: winTex }));
+
+/* ---------- building blocks for the models (merged into one geometry per kind of thing) ---------- */
+const G = { box: new THREE.BoxGeometry(1, 1, 1), cyl: new THREE.CylinderGeometry(1, 1, 1, 7), cyl6: new THREE.CylinderGeometry(1, 1, 1, 6), oct: new THREE.CylinderGeometry(1, 1, 1, 8),
+  cone: new THREE.ConeGeometry(1, 1, 7), pyr: new THREE.ConeGeometry(1, 1, 4), sph: new THREE.IcosahedronGeometry(1, 0), wheel: new THREE.TorusGeometry(1, 0.14, 4, 9), ring: new THREE.TorusGeometry(1, 0.035, 4, 32) };
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(), _ax = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
+let PARTS = null;
+const part = (geo, color, x, y, z, sx, sy, sz, o = {}) => PARTS.push(Object.assign({ geo, color, x, y, z, sx, sy, sz }, o));
+const box = (w, h, d, c, x = 0, y0 = 0, z = 0, o) => part(G.box, c, x, y0 + h / 2, z, w, h, d, o);
+const cyl = (r, h, c, x = 0, y0 = 0, z = 0, o) => part((o && o.geo) || G.cyl, c, x, y0 + h / 2, z, r, h, r, o);
+const sph = (r, c, x = 0, y = 0, z = 0, o) => part(G.sph, c, x, y, z, r, r * ((o && o.flat) || 1), r, o);
+const cone = (r, h, c, x = 0, y0 = 0, z = 0, o) => part((o && o.geo) || G.cone, c, x, y0 + h / 2, z, r, h, r, o);
+function mergeParts(list) {
+  if (!list.length) return null;
+  let n = 0; const gs = [];
+  for (const p of list) {
+    const g = p.geo.index ? p.geo.toNonIndexed() : p.geo.clone();
+    _e.set(p.rx || 0, p.ry || 0, p.rz || 0); _q.setFromEuler(_e);
+    _m4.compose(_v.set(p.x, p.y, p.z), _q, _s.set(p.sx, p.sy, p.sz)); g.applyMatrix4(_m4);
+    n += g.attributes.position.count; gs.push([g, p]);
+  }
+  const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), col = new Float32Array(n * 3), uv = new Float32Array(n * 2); const c = new THREE.Color(); let o = 0;
+  for (const [g, p] of gs) {
+    const cnt = g.attributes.position.count, P = g.attributes.position.array, N = g.attributes.normal.array;
+    pos.set(P, o * 3); nor.set(N, o * 3); c.set(p.color);
+    for (let i = 0; i < cnt; i++) {
+      col[(o + i) * 3] = c.r; col[(o + i) * 3 + 1] = c.g; col[(o + i) * 3 + 2] = c.b;
+      let u = 0.03, v = 0.03;
+      if (p.win && Math.abs(N[i * 3 + 1]) < 0.5) { u = (Math.abs(N[i * 3]) > 0.5 ? P[i * 3 + 2] : P[i * 3]) / 4.2; v = P[i * 3 + 1] / 3.6; }
+      uv[(o + i) * 2] = u; uv[(o + i) * 2 + 1] = v;
+    }
+    o += cnt; g.dispose();
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  geo.computeBoundingSphere(); return geo;
+}
+
+/* =====================================================================
+   THE THINGS OF THE CITY. s: footprint radius (what must fit in the hole), h: height, g: the size group (unlocks).
+   Each model is drawn with +x as its front. tint: colours one of each kind is painted.
+   ===================================================================== */
+const C = { red: '#e8403a', dark: '#3a3d4a', grey: '#9aa0ad', steel: '#c9ced8', white: '#f7f7f2', black: '#24242c', glass: '#9cc8f0', trunk: '#8a5a3b', leaf: '#4fae55', leaf2: '#7fcb5c', wood: '#b9824f', yellow: '#ffd23f', orange: '#ff8a3d', blue: '#3f7fe0', green: '#2f9e5c', roof: '#c4553f', stone: '#cfc8b8', water: '#7fd3f7', tan: '#e2c9a0' };
+const BRIGHT = ['#ff6b6b', '#4dabf7', '#ffd43b', '#69db7c', '#ffffff', '#b197fc', '#ff922b', '#63e6be', '#f783ac', '#5c7cfa'];
+const PASTEL = ['#ffe3c4', '#d7f0ff', '#e6ffd9', '#fff3b0', '#ffd6e7', '#e5dbff', '#ffffff', '#d3f9d8'];
+const TOWER = ['#e8f3ff', '#d6e4f5', '#f1ece2', '#e3f6f0', '#f6e7f2', '#e1e6ff'];
+function wheels(len, wid, r, y = r) { for (const sx of [-1, 1]) for (const sz of [-1, 1]) part(G.cyl, C.black, sx * len * 0.33, y, sz * wid / 2, r, 0.28, r, { rx: Math.PI / 2 }); }
+const TYPES = [
+  // --- group 0: the small things a tiny hole starts with ---
+  { id: 'hydrant', g: 0, s: 0.3, h: 0.8, build() { cyl(0.17, 0.55, C.red); cyl(0.21, 0.08, C.red, 0, 0.55); sph(0.15, C.red, 0, 0.66); cyl(0.07, 0.42, C.red, 0, 0.18, 0, { rz: Math.PI / 2 }); } },
+  { id: 'cone', g: 0, s: 0.3, h: 0.75, build() { box(0.55, 0.06, 0.55, C.orange); cone(0.24, 0.68, C.orange, 0, 0.06); cyl(0.15, 0.1, C.white, 0, 0.36); } },
+  { id: 'trash', g: 0, s: 0.35, h: 1, build() { cyl(0.3, 0.85, C.green); cyl(0.34, 0.1, '#1f6e40', 0, 0.85); } },
+  { id: 'mailbox', g: 0, s: 0.4, h: 1.5, build() { box(0.12, 0.4, 0.12, C.dark); box(0.5, 0.75, 0.45, C.blue, 0, 0.4); cyl(0.25, 0.45, C.blue, 0, 0.92, 0, { rx: Math.PI / 2 }); } },
+  { id: 'lamp', g: 0, s: 0.3, h: 5.2, build() { cyl(0.2, 0.3, C.dark); cyl(0.08, 4.9, C.grey, 0, 0.3); box(0.95, 0.09, 0.12, C.grey, 0.45, 5.1); box(0.42, 0.14, 0.28, '#fff2a8', 0.86, 4.98); } },
+  { id: 'sign', g: 0, s: 0.3, h: 2.6, build() { cyl(0.045, 2.2, C.grey); cyl(0.34, 0.05, C.red, 0, 2.18, 0, { geo: G.oct, rz: Math.PI / 2 }); } },
+  { id: 'meter', g: 0, s: 0.22, h: 1.3, build() { cyl(0.045, 1, C.grey); box(0.2, 0.3, 0.16, '#5a6b8a', 0, 1); } },
+  { id: 'newsbox', g: 0, s: 0.38, h: 1, build() { box(0.5, 0.9, 0.45, C.yellow); box(0.44, 0.08, 0.4, '#d9a400', 0, 0.9); box(0.05, 0.3, 0.3, C.glass, 0.25, 0.45); } },
+  { id: 'pot', g: 0, s: 0.45, h: 1.1, build() { cyl(0.42, 0.5, '#d9733f'); sph(0.42, C.leaf2, 0, 0.78); sph(0.12, '#ff6fa8', 0.2, 1.05, 0.1); } },
+  { id: 'booth', g: 0, s: 0.62, h: 2.4, build() { box(0.9, 2.3, 0.9, C.red); box(0.94, 1.3, 0.7, C.glass, 0, 0.7); box(0.95, 0.12, 0.95, '#b02a25', 0, 2.3); } },
+  // --- group 1: benches, bikes and trees ---
+  { id: 'bench', g: 1, s: 1.0, h: 1, build() { box(0.08, 0.45, 0.44, C.dark, -0.75); box(0.08, 0.45, 0.44, C.dark, 0.75); box(1.8, 0.08, 0.5, C.wood, 0, 0.45); box(1.8, 0.42, 0.08, C.wood, 0, 0.55, -0.24); } },
+  { id: 'bike', g: 1, s: 0.95, h: 1.1, tint: BRIGHT, build() { for (const x of [-0.55, 0.55]) part(G.wheel, C.black, x, 0.36, 0, 0.33, 0.33, 0.33); box(1.0, 0.07, 0.07, C.white, 0, 0.62); box(0.07, 0.4, 0.07, C.white, -0.15, 0.4, 0, { rz: 0.3 }); box(0.28, 0.07, 0.14, C.dark, -0.3, 0.86); box(0.07, 0.07, 0.5, C.dark, 0.5, 0.95); } },
+  { id: 'tree', g: 1, s: 1.15, h: 4.4, tint: ['#ffffff', '#e8ffd9', '#fff5cc', '#dff3ff'], build() { cyl(0.16, 1.9, C.trunk); sph(1.05, C.leaf, 0, 2.6); sph(0.72, C.leaf2, 0.2, 3.45, -0.1); } },
+  { id: 'bush', g: 1, s: 0.95, h: 1.3, build() { sph(0.72, C.leaf, 0, 0.55); sph(0.5, C.leaf2, 0.45, 0.45, 0.2); sph(0.45, C.leaf, -0.45, 0.4, -0.15); } },
+  { id: 'picnic', g: 1, s: 1.25, h: 0.9, build() { box(1.8, 0.08, 0.85, C.wood, 0, 0.72); for (const z of [-0.65, 0.65]) box(1.8, 0.06, 0.3, C.wood, 0, 0.42, z); for (const x of [-0.7, 0.7]) box(0.08, 0.72, 1.5, C.trunk, x, 0); } },
+  { id: 'cart', g: 1, s: 1.2, h: 2.4, build() { box(1.4, 0.8, 0.8, C.white, 0, 0.35); box(1.42, 0.2, 0.82, C.red, 0, 0.75); cyl(0.04, 1.2, C.grey, 0, 1.15); cone(0.95, 0.45, C.yellow, 0, 1.95); for (const x of [-0.5, 0.5]) part(G.cyl, C.black, x, 0.2, 0.42, 0.2, 0.1, 0.2, { rx: Math.PI / 2 }); } },
+  // --- group 2: cars and fountains ---
+  { id: 'car', g: 2, s: 2.1, h: 1.6, tint: BRIGHT, build() { box(4, 0.75, 1.8, C.white, 0, 0.3); box(2.1, 0.62, 1.62, C.glass, -0.2, 1.05); box(2.0, 0.09, 1.66, C.white, -0.2, 1.62); wheels(4, 1.62, 0.36); box(0.06, 0.2, 1.4, '#fff7c2', 2.0, 0.65); } },
+  { id: 'taxi', g: 2, s: 2.1, h: 1.9, build() { box(4, 0.75, 1.8, C.yellow, 0, 0.3); box(2.1, 0.62, 1.62, C.glass, -0.2, 1.05); box(2.0, 0.09, 1.66, C.yellow, -0.2, 1.62); box(0.5, 0.22, 0.25, C.white, -0.2, 1.71); box(4.02, 0.12, 1.82, C.black, 0, 0.62); wheels(4, 1.62, 0.36); } },
+  { id: 'bigtree', g: 2, s: 2.2, h: 7.6, tint: ['#ffffff', '#e8ffd9', '#fff1c7'], build() { cyl(0.3, 3.6, C.trunk); sph(2.0, C.leaf, 0, 5.0); sph(1.45, C.leaf2, 1.1, 4.3, 0.3); sph(1.4, C.leaf, -1.0, 4.4, -0.5); sph(1.2, C.leaf2, 0.1, 6.4, 0); } },
+  { id: 'kiosk', g: 2, s: 1.9, h: 3.2, tint: PASTEL, build() { box(2.6, 2.4, 2.2, C.white); box(2.62, 0.9, 1.0, C.glass, 0, 1.2, 0.65); box(3.1, 0.25, 2.7, C.red, 0, 2.4); box(3.1, 0.5, 0.1, C.white, 0, 2.65, 1.3); } },
+  { id: 'fountain', g: 2, s: 2.4, h: 2.4, build() { cyl(2.3, 0.6, C.stone); cyl(2.0, 0.12, C.water, 0, 0.5); cyl(0.32, 1.5, C.stone, 0, 0.5); cyl(0.8, 0.2, C.stone, 0, 1.6); sph(0.5, C.water, 0, 2.0, 0, { flat: 1.3 }); } },
+  { id: 'slide', g: 2, s: 2.0, h: 2.6, build() { box(0.9, 2.2, 0.9, C.blue, -1.2, 0); box(1.0, 0.12, 1.0, C.red, -1.2, 2.2); box(3.0, 0.12, 0.8, C.yellow, 0.35, 1.05, 0, { rz: -0.62 }); box(0.12, 2.4, 0.12, C.white, -1.65, 0, 0.42); box(0.12, 2.4, 0.12, C.white, -1.65, 0, -0.42); } },
+  // --- group 3: vans, food trucks, fire trucks and boats ---
+  { id: 'van', g: 3, s: 2.65, h: 2.6, tint: ['#ffffff', '#dfe8ff', '#fff1d1', '#d9f7e8'], build() { box(5, 1.95, 2, C.white, 0, 0.35); box(0.06, 0.8, 1.7, C.glass, 2.5, 1.2); box(1.2, 0.8, 2.02, C.glass, 1.6, 1.25); box(3.2, 0.5, 2.02, C.blue, -0.8, 1.1); wheels(5, 1.8, 0.4); } },
+  { id: 'foodtruck', g: 3, s: 3.2, h: 3.2, tint: ['#ffffff', '#ffe6f0', '#e6f7ff', '#fff6cc'], build() { box(6, 2.4, 2.3, C.white, 0, 0.4); box(1.5, 1.5, 2.32, C.glass, 2.2, 1.2); box(2.8, 1.0, 0.06, '#3a3d4a', -0.8, 1.4, 1.16); box(3.2, 0.12, 1.0, C.orange, -0.8, 2.45, 1.6, { rx: 0.35 }); cone(0.55, 0.9, '#f5c26b', -0.8, 2.8, 0); wheels(6, 2.1, 0.42); } },
+  { id: 'firetruck', g: 3, s: 4.7, h: 3.4, build() { box(9, 2.0, 2.4, C.red, 0, 0.5); box(2.2, 1.3, 2.42, C.red, 3.4, 2.5); box(1.0, 0.8, 2.44, C.glass, 4.0, 2.6); box(6.0, 0.2, 0.9, C.steel, -1.2, 2.8); box(6.0, 0.08, 0.08, C.steel, -1.2, 3.0, 0.4); box(6.0, 0.08, 0.08, C.steel, -1.2, 3.0, -0.4); box(0.5, 0.25, 1.4, '#4dabf7', 3.4, 3.8); box(9.02, 0.18, 2.42, C.white, 0, 1.4); for (const x of [-3.0, -1.0, 3.2]) for (const z of [-1.1, 1.1]) part(G.cyl, C.black, x, 0.5, z, 0.5, 0.3, 0.5, { rx: Math.PI / 2 }); } },
+  { id: 'boat', g: 3, s: 4.6, h: 4, build() { box(9, 1.6, 3.2, C.white, 0, -0.4); box(1.8, 1.6, 2.4, C.white, 4.2, -0.4, 0, { ry: Math.PI / 4, sx: 2.2 }); box(9.02, 0.3, 3.22, C.blue, 0, 0.5); box(3.2, 1.6, 2.4, C.white, -1.2, 1.2); box(3.22, 0.5, 2.42, C.glass, -1.2, 1.9); cyl(0.08, 2.2, C.grey, 0.8, 1.2); } },
+  // --- group 4: buses, houses, shops and containers ---
+  { id: 'bus', g: 4, s: 6.0, h: 3.5, tint: ['#ffd23f', '#5fb4ff', '#ff8a5c', '#66c792', '#ffffff'], build() { box(12, 2.6, 2.6, C.white, 0, 0.45); box(11.2, 0.95, 2.64, '#2c3e5c', -0.2, 1.6); box(0.06, 1.3, 2.2, C.glass, 6.0, 1.4); box(11.8, 0.2, 2.5, C.steel, 0, 3.05); for (const x of [-3.8, 3.8]) for (const z of [-1.2, 1.2]) part(G.cyl, C.black, x, 0.5, z, 0.5, 0.32, 0.5, { rx: Math.PI / 2 }); } },
+  { id: 'house', g: 4, s: 6.1, h: 8.8, tint: PASTEL, build() { box(8, 5.5, 8, C.white, 0, 0, 0, { win: true }); cone(6.1, 3.3, C.roof, 0, 5.5, 0, { geo: G.pyr, ry: Math.PI / 4 }); box(1.4, 2.4, 0.1, '#8a5a3b', 0, 0, 4.02); box(0.9, 1.6, 0.9, '#a8a3a0', 2.2, 7.0, -1.5); } },
+  { id: 'shop', g: 4, s: 6.5, h: 7, tint: PASTEL, build() { box(12, 6, 10, C.white, 0, 0, 0, { win: true }); box(12.4, 0.5, 10.4, C.grey, 0, 6); box(12.2, 0.22, 1.7, '#ff7a6b', 0, 3.3, 5.8, { rx: 0.35 }); box(12.2, 0.24, 0.5, C.white, 0, 3.05, 6.55); box(6, 1.2, 0.3, C.white, 0, 4.6, 5.1); box(10, 2.4, 0.08, C.glass, 0, 0.3, 5.03); } },
+  { id: 'containers', g: 4, s: 6.3, h: 5.4, build() { const cs = ['#e8403a', '#3f7fe0', '#2f9e5c', '#ff8a3d', '#ffd23f', '#9b59b6']; let k = 0; for (const z of [-1.3, 1.3]) for (const y of [0, 2.6]) box(11.6, 2.5, 2.45, cs[(k++ * 3 + 1) % cs.length], 0, y, z); } },
+  // --- group 5: buildings ---
+  { id: 'apartment', g: 5, s: 11.4, h: 27, tint: TOWER.concat(PASTEL.slice(0, 3)), build() { box(18, 24, 15, C.white, 0, 0, 0, { win: true }); box(18.4, 0.6, 15.4, C.grey, 0, 24); box(4, 2.2, 4, C.steel, -4, 24.6, 2); cyl(1.4, 2.6, C.wood, 5, 24.6, -3); } },
+  { id: 'warehouse', g: 5, s: 12.4, h: 11, tint: ['#e0e6ee', '#f2e2cf', '#d9ecf2'], build() { box(24, 8.5, 18, C.white); part(G.cyl6, C.grey, 0, 8.5, 0, 9.4, 24.2, 3.0, { rz: Math.PI / 2 }); box(6, 5, 0.1, '#7d8697', -4, 0, 9.02); box(6, 5, 0.1, '#7d8697', 5, 0, 9.02); } },
+  { id: 'office', g: 5, s: 12.0, h: 44, tint: TOWER, build() { box(17, 40, 17, C.white, 0, 0, 0, { win: true }); box(17.4, 1, 17.4, C.grey, 0, 40); box(8, 3, 8, C.steel, 0, 41); } },
+  // --- group 6: skyscrapers and cranes ---
+  { id: 'crane', g: 6, s: 14, h: 46, build() { box(6, 1, 6, C.dark); box(1.6, 38, 1.6, C.yellow, 0, 1); box(30, 1.4, 1.4, C.yellow, 6, 39); box(3, 2.4, 3, C.yellow, 0, 37.5); box(4, 3, 3, C.grey, -8, 40.4); box(0.12, 22, 0.12, C.dark, 18, 18); box(2.4, 1.2, 2.4, '#ff8a3d', 18, 16.8); } },
+  { id: 'sky1', g: 6, s: 14.5, h: 92, tint: TOWER, build() { box(20, 66, 20, C.white, 0, 0, 0, { win: true }); box(15, 18, 15, C.white, 0, 66, 0, { win: true }); box(15.6, 0.8, 15.6, C.grey, 0, 84); cyl(0.5, 14, C.steel, 0, 84.8); sph(0.8, '#ff6b6b', 0, 99); } },
+  { id: 'sky2', g: 6, s: 15.6, h: 112, tint: TOWER, build() { box(22, 40, 22, C.white, 0, 0, 0, { win: true }); box(18, 34, 18, C.white, 0, 40, 0, { win: true }); box(13, 26, 13, C.white, 0, 74, 0, { win: true }); cone(9.5, 12, C.steel, 0, 100, 0, { geo: G.pyr, ry: Math.PI / 4 }); } },
+  // --- group 7: landmarks and the stadium ---
+  { id: 'tower', g: 7, s: 18.4, h: 175, build() { box(26, 8, 26, C.stone); box(16, 60, 16, '#f0eadf', 0, 8, 0, { win: true }); box(12, 50, 12, '#f0eadf', 0, 68, 0, { win: true }); cyl(9, 6, '#7c5cff', 0, 118); cyl(7, 2, C.white, 0, 124); cyl(1.2, 40, C.steel, 0, 126); sph(2.2, '#5cf2ff', 0, 167); } },
+  { id: 'ferris', g: 7, s: 21, h: 46, build() { box(14, 2, 10, C.stone); for (const z of [-3, 3]) { box(1.2, 24, 1.2, C.white, -6, 2, z, { rz: -0.25 }); box(1.2, 24, 1.2, C.white, 6, 2, z, { rz: 0.25 }); } for (const z of [-2.6, 2.6]) part(G.ring, '#ff6fa8', 0, 25, z, 19, 19, 19); for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; box(0.5, 19, 0.5, C.white, Math.cos(a) * 9.5, 25 - 9.5 + Math.sin(a) * 9.5 - 0.0, 0, { rz: a + Math.PI / 2, sz: 1 }); box(3, 2.6, 3.4, BRIGHT[i % BRIGHT.length], Math.cos(a) * 19, 23 + Math.sin(a) * 19, 0); } cyl(1.6, 6, C.grey, 0, 22, 0, { rx: Math.PI / 2 }); } },
+  { id: 'stadium', g: 7, s: 54, h: 30, build() {
+    for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2, x = Math.cos(a) * 46, z = Math.sin(a) * 38; box(12, 22, 7, i % 2 ? '#e9e4ff' : '#ffffff', x, 0, z, { ry: -(a + Math.PI / 2) }); box(12.4, 3, 7.4, '#7c5cff', x, 22, z, { ry: -(a + Math.PI / 2) }); }
+    box(70, 0.3, 50, '#3fae4f', 0, 0.05); box(56, 0.32, 0.5, C.white, 0, 0.06); cyl(6, 0.33, '#3fae4f', 0, 0.06); for (const [x, z] of [[-40, -34], [40, -34], [-40, 34], [40, 34]]) { box(1.2, 32, 1.2, C.grey, x, 0, z); box(5, 2.5, 1, '#fff7c2', x, 31, z); } } },
+];
+const TI = Object.fromEntries(TYPES.map((t, i) => [t.id, i]));
+for (const T of TYPES) {
+  PARTS = []; T.build();
+  T.geoPlain = mergeParts(PARTS.filter(p => !p.win)); T.geoWin = mergeParts(PARTS.filter(p => p.win));
+  T.pts = Math.round(5 + T.s * T.s * 8);
+  T.vis = (T.h + T.s * 2.5) * 40 + 30;   // hidden when the camera is farther than this (too small to see)
+}
+// The size groups: the hole can swallow a group once it fits the group's smallest thing.
+const GROUPS = [0, 1, 2, 3, 4, 5, 6, 7].map(g => ({ g, min: Math.min(...TYPES.filter(t => t.g === g).map(t => t.s)), icon: ['🚧', '🌳', '🚗', '🚒', '🚌', '🏢', '🏙️', '🏟️'][g] }));
+
+/* =====================================================================
+   THE CITY: 24 x 24 blocks on an island, in districts (downtown, midtown, suburbs, parks, the harbour), with a
+   tower plaza in the middle, a big park with a ferris wheel and a stadium. Always the same city (a fixed seed).
+   ===================================================================== */
+const DIST = { water: 0, downtown: 1, midtown: 2, suburb: 3, park: 4, harbor: 5, stadium: 6, plaza: 7 };
+const N = CONFIG.blocks, B = CONFIG.block;
+const district = new Uint8Array(N * N), mgroup = new Uint8Array(N * N);
+const rnd = mulberry32(20261102);
+const R = (a, b) => a + rnd() * (b - a);
+for (let bz = 0; bz < N; bz++) for (let bx = 0; bx < N; bx++) {
+  const d = Math.max(Math.abs(bx - 11.5), Math.abs(bz - 11.5));
+  let k = bz === 0 ? DIST.harbor : d < 3 ? DIST.downtown : d < 6.5 ? DIST.midtown : DIST.suburb;
+  if (k !== DIST.harbor && d > 1 && rnd() < (k === DIST.downtown ? 0.06 : 0.12)) k = DIST.park;
+  district[bz * N + bx] = k;
+}
+const merge = (cells, k, g) => { for (const [x, z] of cells) { district[z * N + x] = k; mgroup[z * N + x] = g; } };
+merge([[11, 11], [12, 11], [11, 12], [12, 12]], DIST.plaza, 1);
+merge([[17, 6], [18, 6], [17, 7], [18, 7]], DIST.stadium, 2);
+merge([[5, 16], [6, 16], [5, 17], [6, 17]], DIST.park, 3);
+const distTex = (() => { const d = new Uint8Array(N * N * 4); for (let i = 0; i < N * N; i++) { d[i * 4] = district[i]; d[i * 4 + 1] = mgroup[i]; d[i * 4 + 3] = 255; } const t = new THREE.DataTexture(d, N, N, THREE.RGBAFormat); t.needsUpdate = true; return t; })();
+const blockAt = (bx, bz) => (bx < 0 || bz < 0 || bx >= N || bz >= N ? -1 : bz * N + bx);
+
+// ---- placing things (positions are kept in plain arrays, then packed) ----
+const PX = [], PZ = [], PR = [], PS = [], PT = [], PC = [];
+function place(type, x, z, rot = 0, sc = 1) {
+  const T = TYPES[TI[type]];
+  PX.push(x); PZ.push(z); PR.push(rot); PS.push(sc); PT.push(TI[type]);
+  PC.push(T.tint ? T.tint[Math.floor(rnd() * T.tint.length)] : null);
+}
+const pick = arr => arr[Math.floor(rnd() * arr.length)];
+function weighted(list) { let sum = 0; for (const [, w] of list) sum += w; let r = rnd() * sum; for (const [k, w] of list) { r -= w; if (r <= 0) return k; } return list[0][0]; }
+const SIDE_ITEMS = {
+  [DIST.downtown]: [['trash', 3], ['newsbox', 2], ['meter', 3], ['pot', 3], ['booth', 1], ['bench', 2], ['tree', 2], ['cone', 1], ['sign', 1], ['bike', 2], ['mailbox', 2]],
+  [DIST.midtown]: [['trash', 3], ['meter', 2], ['pot', 2], ['bench', 2], ['tree', 3], ['bike', 2], ['mailbox', 2], ['cone', 2], ['newsbox', 1], ['sign', 1]],
+  [DIST.suburb]: [['tree', 5], ['bush', 4], ['mailbox', 3], ['trash', 2], ['bike', 1], ['cone', 1], ['pot', 1]],
+  [DIST.park]: [['tree', 5], ['bench', 4], ['bush', 3], ['trash', 2], ['pot', 2], ['bike', 1]],
+  [DIST.harbor]: [['cone', 4], ['trash', 2], ['sign', 2], ['bike', 1], ['bench', 1]],
+  [DIST.stadium]: [['tree', 3], ['bench', 3], ['cart', 2], ['trash', 2], ['pot', 2], ['cone', 2]],
+  [DIST.plaza]: [['bench', 3], ['pot', 3], ['tree', 3], ['trash', 2], ['cart', 1]],
+};
+const PARK_CHANCE = { [DIST.downtown]: 0.55, [DIST.midtown]: 0.55, [DIST.suburb]: 0.35, [DIST.park]: 0.3, [DIST.harbor]: 0.25, [DIST.stadium]: 0.5, [DIST.plaza]: 0.3 };
+for (let bz = 0; bz < N; bz++) for (let bx = 0; bx < N; bx++) {
+  const k = district[bz * N + bx], g = mgroup[bz * N + bx], X0 = -HALF + bx * B, Z0 = -HALF + bz * B;
+  // the four sidewalks: lamps, a hydrant at a corner, then small things; parked cars in the curb lane
+  const sides = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+  for (const [sx, sz] of sides) {
+    const nb = blockAt(bx + sx, bz + sz); if (g && nb >= 0 && mgroup[nb] === g) continue;   // inside a merged block
+    const along = sx === 0, off = (sx || sz) < 0 ? 7.5 : 52.5, curb = (sx || sz) < 0 ? 3.6 : 56.4;
+    const P = (u, o) => (along ? [X0 + u, Z0 + o] : [X0 + o, Z0 + u]);
+    const rotSide = along ? (sz < 0 ? Math.PI / 2 : -Math.PI / 2) : (sx < 0 ? 0 : Math.PI);
+    for (const u of [16, 31, 46]) { const [x, z] = P(u + R(-1, 1), off + (sx || sz) * -0.8); place('lamp', x, z, rotSide); }
+    if (rnd() < 0.7) { const [x, z] = P(rnd() < 0.5 ? 11 : 49, off); place('hydrant', x, z); }
+    for (let u = 12; u < 50; u += R(2.4, 4.6)) {
+      if (Math.abs(u - 16) < 1.6 || Math.abs(u - 31) < 1.6 || Math.abs(u - 46) < 1.6 || rnd() < 0.35) continue;
+      const it = weighted(SIDE_ITEMS[k]); const [x, z] = P(u, off + (sx || sz) * (it === 'tree' || it === 'bush' ? 0.5 : -0.5));
+      place(it, x, z, rotSide + (it === 'bench' || it === 'bike' ? 0 : R(-0.4, 0.4)));
+      if (it === 'tree' || it === 'bench') u += 1.5;
+    }
+    // parked along the curb, front along the road
+    const rotCar = along ? 0 : Math.PI / 2;
+    for (let u = 12; u < 48;) {
+      let ty = 'car', len = 6.5;
+      const r = rnd();
+      if (k === DIST.downtown && r < 0.3) ty = 'taxi';
+      else if ((k === DIST.downtown || k === DIST.midtown) && r >= 0.3 && r < 0.37) { ty = 'bus'; len = 14; }
+      else if (k === DIST.park && r < 0.5) { ty = 'foodtruck'; len = 8; }
+      else if (r < 0.45) { ty = 'van'; len = 7; }
+      else if (r < 0.47) { ty = 'firetruck'; len = 11; }
+      if (u + len > 50) break;
+      if (rnd() < PARK_CHANCE[k]) { const [x, z] = P(u + len / 2, curb); place(ty, x, z, rotCar + (rnd() < 0.5 ? 0 : Math.PI)); }
+      u += len + R(0.5, 4);
+    }
+  }
+  // the inside of the block
+  const IX = X0 + 9, IZ = Z0 + 9, IW = 42;
+  const spots = [];   // [x, z, radius] already used inside this block
+  const free = (x, z, r) => spots.every(([a, b, c]) => Math.hypot(a - x, b - z) > r + c - 0.2);
+  const put = (type, x, z, rot = R(0, Math.PI * 2), sc = 1) => { const T = TYPES[TI[type]]; if (!free(x, z, T.s * sc)) return false; spots.push([x, z, T.s * sc]); place(type, x, z, rot, sc); return true; };
+  const scatter = (type, n, tries = 6) => { for (let i = 0; i < n; i++) for (let k2 = 0; k2 < tries; k2++) if (put(type, IX + R(1.5, IW - 1.5), IZ + R(1.5, IW - 1.5))) break; };
+  const quarter = [[IX + 10.5, IZ + 10.5], [IX + 31.5, IZ + 10.5], [IX + 10.5, IZ + 31.5], [IX + 31.5, IZ + 31.5]];
+  const rot4 = () => Math.floor(rnd() * 4) * Math.PI / 2;
+  if (k === DIST.downtown) {
+    for (const [x, z] of quarter) {
+      const r = rnd();
+      if (r < 0.32) put(rnd() < 0.5 ? 'sky1' : 'sky2', x, z, rot4());
+      else if (r < 0.72) put('office', x, z, rot4());
+      else { put(rnd() < 0.6 ? 'fountain' : 'kiosk', x, z); for (let i = 0; i < 6; i++) put(pick(['bench', 'pot', 'tree', 'cart', 'trash']), x + R(-8, 8), z + R(-8, 8)); }
+    }
+  } else if (k === DIST.midtown) {
+    for (const [x, z] of quarter) {
+      const r = rnd();
+      if (r < 0.45) put('apartment', x, z, rot4());
+      else if (r < 0.75) { put('shop', x, z, rot4()); for (let i = 0; i < 3; i++) put(pick(['pot', 'bike', 'bench', 'trash']), x + R(-9, 9), z + R(-9, 9)); }
+      else { put(rnd() < 0.5 ? 'bigtree' : 'kiosk', x, z); for (let i = 0; i < 6; i++) put(pick(['bench', 'tree', 'bush', 'cart', 'pot', 'picnic']), x + R(-9, 9), z + R(-9, 9)); }
+    }
+  } else if (k === DIST.suburb) {
+    for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) {
+      const x = IX + 7 + a * 14, z = IZ + 7 + b * 14;
+      if (rnd() < 0.75) { put('house', x, z, rot4()); if (rnd() < 0.5) put(pick(['tree', 'bush']), x + R(-6, 6), z + R(-6, 6)); }
+      else { put(rnd() < 0.5 ? 'bigtree' : 'slide', x, z); put(pick(['bush', 'tree', 'picnic']), x + R(-5, 5), z + R(-5, 5)); }
+    }
+  } else if (k === DIST.park) {
+    if (g === 3) {   // the big park: a ferris wheel in the middle of four blocks
+      if (bx === 5 && bz === 16) { const cx = -HALF + 6 * B, cz = -HALF + 17 * B; place('ferris', cx, cz, 0); }
+      const cx = -HALF + 6 * B, cz = -HALF + 17 * B; spots.push([cx - X0 + X0, cz, 24]);
+    }
+    if (rnd() < 0.5 && !g) put('fountain', IX + 21, IZ + 21);
+    scatter('bigtree', 4); scatter('tree', 8); scatter('bush', 6); scatter('bench', 4); scatter('picnic', 2); scatter('pot', 2);
+    if (rnd() < 0.6) scatter('slide', 1); if (rnd() < 0.5) scatter('cart', 1);
+  } else if (k === DIST.harbor) {
+    const r = rnd();
+    if (r < 0.4) put('crane', IX + 21, IZ + 21, rot4()); else if (r < 0.75) put('warehouse', IX + 21, IZ + 21, rot4());
+    scatter('containers', 2 + Math.floor(rnd() * 2), 10); scatter('cone', 3);
+    for (let i = 0; i < 2; i++) place('boat', X0 + R(10, 50), -HALF - R(22, 44), rnd() < 0.5 ? 0 : Math.PI);
+  } else if (k === DIST.stadium) {
+    if (bx === 17 && bz === 6) place('stadium', -HALF + 18 * B, -HALF + 7 * B, 0);
+    const cx = -HALF + 18 * B, cz = -HALF + 7 * B;
+    for (let i = 0; i < 10; i++) { const a = rnd() * Math.PI * 2, rr = R(57, 64), x = cx + Math.cos(a) * rr, z = cz + Math.sin(a) * rr * 0.92; if (x > X0 + 8 && x < X0 + 52 && z > Z0 + 8 && z < Z0 + 52) place(pick(['tree', 'bench', 'cart', 'pot']), x, z, a); }
+  } else if (k === DIST.plaza) {
+    if (bx === 11 && bz === 11) place('tower', 0, 0, 0);
+    const cx = 0, cz = 0;
+    for (const [fx, fz] of [[-34, -34], [34, -34], [-34, 34], [34, 34]]) if (fx > X0 - cx && fx < X0 + 60 && fz > Z0 && fz < Z0 + 60) { place('fountain', fx, fz, 0); }
+    for (let i = 0; i < 14; i++) { const x = X0 + R(9, 51), z = Z0 + R(9, 51); if (Math.hypot(x - cx, z - cz) > 24 && Math.hypot(Math.abs(x) - 34, Math.abs(z) - 34) > 4) place(pick(['bench', 'pot', 'tree', 'kiosk', 'cart', 'trash']), x, z, R(0, 6.28)); }
+  }
+}
+// ---- pack into typed arrays ----
+const NOBJ = PX.length;
+const OX = Float32Array.from(PX), OZ = Float32Array.from(PZ), ORT = Float32Array.from(PR), OSC = Float32Array.from(PS), OT = Uint8Array.from(PT);
+const OST = new Uint8Array(NOBJ);   // 0 standing, 1 falling, 2 swallowed
+const OSET = new Int32Array(NOBJ), OIDX = new Int32Array(NOBJ), OWOB = new Float32Array(NOBJ);
+let TOTAL_PTS = 0; for (let i = 0; i < NOBJ; i++) TOTAL_PTS += TYPES[OT[i]].pts;
+
+/* ---------- instanced meshes: one per kind of thing per region of the map (so far-away regions are culled) ---------- */
+const REG = 16, REG0 = -800, REGS = 1600 / REG;
+const SETS = [];      // { type, plain, win, dirty }
+const TYPE_SETS = TYPES.map(() => []);
+const _col = new THREE.Color();
+function composeAt(i, x, y, z, yaw, tiltAxisX, tiltAxisZ, tilt, sc) {
+  _q.setFromAxisAngle(_up, yaw);
+  if (tilt) { _ax.set(tiltAxisX, 0, tiltAxisZ); if (_ax.lengthSq() < 1e-9) _ax.set(1, 0, 0); _ax.normalize(); _q2.setFromAxisAngle(_ax, tilt); _q.premultiply(_q2); }
+  _m4.compose(_v.set(x, y, z), _q, _s.set(sc, sc, sc)); return _m4;
+}
+const ZERO = new THREE.Matrix4().makeScale(0, 0, 0);
+function setMatrix(i, m) { const st = SETS[OSET[i]]; if (st.plain) st.plain.setMatrixAt(OIDX[i], m); if (st.win) st.win.setMatrixAt(OIDX[i], m); st.dirty = true; }
+{
+  const lists = new Map();
+  for (let i = 0; i < NOBJ; i++) {
+    const rx = clamp(Math.floor((OX[i] - REG0) / REGS), 0, REG - 1), rz = clamp(Math.floor((OZ[i] - REG0) / REGS), 0, REG - 1), key = OT[i] * 1000 + rz * REG + rx;
+    if (!lists.has(key)) lists.set(key, []); lists.get(key).push(i);
+  }
+  for (const [key, ids] of lists) {
+    const T = TYPES[Math.floor(key / 1000)], rr = key % 1000, st = { type: Math.floor(key / 1000), plain: null, win: null, dirty: false, cx: REG0 + (rr % REG + 0.5) * REGS, cz: REG0 + (Math.floor(rr / REG) + 0.5) * REGS, vis: true }, si = SETS.length; SETS.push(st); TYPE_SETS[st.type].push(st);
+    for (const [geo, mat, k] of [[T.geoPlain, matPlain, 'plain'], [T.geoWin, matWin, 'win']]) {
+      if (!geo) continue;
+      const im = new THREE.InstancedMesh(geo, mat, ids.length); im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); st[k] = im; scene.add(im);
+    }
+    ids.forEach((i, n) => { OSET[i] = si; OIDX[i] = n; });
+    ids.forEach(i => { const c = PC[i]; if (c) { _col.set(c); if (st.plain) st.plain.setColorAt(OIDX[i], _col); if (st.win) st.win.setColorAt(OIDX[i], _col); } });
+  }
+}
+function standAll() {
+  for (let i = 0; i < NOBJ; i++) { OST[i] = 0; OWOB[i] = 0; setMatrix(i, composeAt(i, OX[i], 0, OZ[i], ORT[i], 0, 0, 0, OSC[i])); }
+  for (const st of SETS) for (const im of [st.plain, st.win]) if (im) { im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); }
+}
+standAll();
+
+// ---- a grid of the standing things, for quick "what is near this hole" questions ----
+const CELL = 24, GOFF = -800, GN = Math.ceil(1600 / CELL);
+const cellOf = v => clamp(Math.floor((v - GOFF) / CELL), 0, GN - 1);
+const cellStart = new Int32Array(GN * GN + 1), cellItems = new Int32Array(NOBJ);
+{ const cnt = new Int32Array(GN * GN); const cid = new Int32Array(NOBJ);
+  for (let i = 0; i < NOBJ; i++) { cid[i] = cellOf(OZ[i]) * GN + cellOf(OX[i]); cnt[cid[i]]++; }
+  for (let c = 0; c < GN * GN; c++) cellStart[c + 1] = cellStart[c] + cnt[c];
+  const fill = cellStart.slice(0, GN * GN); for (let i = 0; i < NOBJ; i++) cellItems[fill[cid[i]]++] = i; }
+
+/* ---------- traffic: cars, taxis, buses and trucks driving round the city (their own meshes, never culled) ---------- */
+const MOVER_KINDS = [['car', 150], ['taxi', 45], ['bus', 24], ['van', 26], ['foodtruck', 10], ['firetruck', 8]];
+const MV = [];   // { t, im, idx, axis, line, dir, pos, speed, st, color }
+const MOVER_SETS = [];
+for (const [id, n] of MOVER_KINDS) {
+  const T = TYPES[TI[id]], st = { type: TI[id], plain: null, win: null, dirty: true };
+  if (T.geoPlain) { st.plain = new THREE.InstancedMesh(T.geoPlain, matPlain, n); st.plain.frustumCulled = false; st.plain.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(st.plain); }
+  MOVER_SETS.push(st);
+  for (let i = 0; i < n; i++) {
+    const m = { t: TI[id], st, idx: i, axis: rnd() < 0.5 ? 0 : 1, line: -HALF + Math.floor(rnd() * (N + 1)) * B, dir: rnd() < 0.5 ? -1 : 1, pos: R(-HALF, HALF), speed: id === 'bus' || id === 'firetruck' ? R(7, 9) : R(8, 13), state: 0, x: 0, z: 0 };
+    if (T.tint) { _col.set(pick(T.tint)); st.plain.setColorAt(i, _col); }
+    MV.push(m);
+  }
+}
+const MV_START = MV.map(m => ({ pos: m.pos, dir: m.dir }));
+function moverXZ(m) { const lane = m.dir * 1.8; if (m.axis === 0) { m.x = m.pos; m.z = m.line + lane; } else { m.x = m.line - lane; m.z = m.pos; } }
+function moverMatrix(m, y = 0, sc = 1, tiltX = 0, tiltZ = 0, tilt = 0) { const yaw = m.axis === 0 ? (m.dir > 0 ? 0 : Math.PI) : (m.dir > 0 ? -Math.PI / 2 : Math.PI / 2); return composeAt(0, m.x, y, m.z, yaw, tiltX, tiltZ, tilt, sc); }
+function updateTraffic(dt) {
+  for (const m of MV) {
+    if (m.state !== 0) continue;
+    m.pos += m.dir * m.speed * dt;
+    if (m.pos > HALF + 2 || m.pos < -HALF - 2) { m.dir = -m.dir; m.pos = clamp(m.pos, -HALF - 2, HALF + 2); }
+    moverXZ(m); m.st.plain.setMatrixAt(m.idx, moverMatrix(m)); m.st.dirty = true;
+  }
+}
+function resetTraffic() { MV.forEach((m, i) => { m.pos = MV_START[i].pos; m.dir = MV_START[i].dir; m.state = 0; moverXZ(m); m.st.plain.setMatrixAt(m.idx, moverMatrix(m)); m.st.dirty = true; }); }
+
+/* ---------- the ground: roads, sidewalks, parks, docks and the sea, drawn by a shader (sharp at every zoom) ---------- */
+const groundMat = new THREE.ShaderMaterial({
+  uniforms: { uDist: { value: distTex }, uTime: { value: 0 }, uFog: { value: hexV(SKY) }, uFogNear: { value: 60 }, uFogFar: { value: 200 } },
+  vertexShader: `varying vec3 vW; varying float vDepth;
+    void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vec4 mv = viewMatrix * w; vDepth = -mv.z; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `precision highp float; uniform sampler2D uDist; uniform float uTime; uniform vec3 uFog; uniform float uFogNear; uniform float uFogFar;
+    varying vec3 vW; varying float vDepth;
+    float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f); return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y); }
+    ivec4 info(ivec2 b){ if (b.x < 0 || b.y < 0 || b.x > 23 || b.y > 23) return ivec4(-1, 0, 0, 0); vec4 t = texelFetch(uDist, b, 0); return ivec4(int(t.r*255.0+0.5), int(t.g*255.0+0.5), 0, 0); }
+    void main(){
+      vec2 p = vW.xz; const float H = 720.0;
+      vec3 col;
+      float m = max(abs(p.x), abs(p.y));
+      if (m > H + 6.0) {
+        float w = noise(p * 0.06 + vec2(uTime * 0.15, uTime * 0.1)) * 0.5 + noise(p * 0.21 - uTime * 0.2) * 0.25;
+        col = mix(vec3(0.27, 0.66, 0.88), vec3(0.42, 0.78, 0.95), w);
+        float shore = m - (H + 6.0);
+        if (p.y > -H - 6.0 && shore < 9.0) col = mix(vec3(0.95, 0.86, 0.62), col, smoothstep(6.0, 9.0, shore));
+        if (p.y < -H - 6.0 && abs(p.x) < H + 6.0 && p.y > -H - 9.0) col = vec3(0.55, 0.42, 0.3);
+      } else {
+        vec2 c = (p + H) / 60.0; ivec2 b = ivec2(floor(c)); vec2 f = (c - floor(c)) * 60.0;
+        bool rx = f.x < 6.0 || f.x > 54.0, rz = f.y < 6.0 || f.y > 54.0;
+        ivec4 me = info(b);
+        ivec2 bx2 = ivec2(f.x < 30.0 ? b.x - 1 : b.x + 1, b.y), bz2 = ivec2(b.x, f.y < 30.0 ? b.y - 1 : b.y + 1), bd = ivec2(bx2.x, bz2.y);
+        bool mx = me.y > 0 && info(bx2).y == me.y, mz = me.y > 0 && info(bz2).y == me.y, md = mx && mz && info(bd).y == me.y;
+        bool road = (rx && rz) ? !md : (rx ? !mx : (rz ? !mz : false));
+        if (me.x < 0) road = true;
+        if (road) {
+          col = vec3(0.35, 0.37, 0.43) + (noise(p * 1.7) - 0.5) * 0.03;
+          float dcx = min(f.x, 60.0 - f.x), dcz = min(f.y, 60.0 - f.y);
+          if (rx && !rz && dcx < 0.16 && fract(p.y / 8.0) < 0.5) col = vec3(0.98, 0.9, 0.55);
+          if (rz && !rx && dcz < 0.16 && fract(p.x / 8.0) < 0.5) col = vec3(0.98, 0.9, 0.55);
+          if (rx && !rz && ((f.y > 6.3 && f.y < 9.5) || (f.y > 50.5 && f.y < 53.7)) && fract(p.x / 1.3) < 0.5) col = vec3(0.92);
+          if (rz && !rx && ((f.x > 6.3 && f.x < 9.5) || (f.x > 50.5 && f.x < 53.7)) && fract(p.y / 1.3) < 0.5) col = vec3(0.92);
+          if (rx && rz && !md) col *= 0.97;
+        } else {
+          bool sideX = (f.x < 9.0 && !mx) || (f.x > 51.0 && !mx), sideZ = (f.y < 9.0 && !mz) || (f.y > 51.0 && !mz);
+          bool merged = me.y > 0 && (rx || rz);
+          int k = me.x;
+          if ((sideX || sideZ) && !merged) {
+            col = vec3(0.84, 0.82, 0.77);
+            if (fract(p.x / 1.5) < 0.05 || fract(p.y / 1.5) < 0.05) col *= 0.93;
+            float edge = min(min(abs(f.x - 6.0), abs(f.x - 54.0)), min(abs(f.y - 6.0), abs(f.y - 54.0)));
+            if (edge < 0.25) col = vec3(0.7, 0.69, 0.66);
+          } else if (k == 3 || k == 4) {
+            float n = noise(p * 0.35) * 0.6 + noise(p * 2.1) * 0.4;
+            col = k == 4 ? mix(vec3(0.38, 0.73, 0.38), vec3(0.47, 0.8, 0.42), n) : mix(vec3(0.52, 0.8, 0.45), vec3(0.6, 0.85, 0.5), n);
+            vec2 q = me.y == 3 ? abs(p - vec2(-360.0, 300.0)) : abs(f - 30.0);
+            if (k == 4 && (min(q.x, q.y) < 1.6 || abs(length(me.y == 3 ? p - vec2(-360.0, 300.0) : f - 30.0) - (me.y == 3 ? 34.0 : 8.0)) < 1.5)) col = vec3(0.89, 0.83, 0.68);
+          } else if (k == 5) {
+            col = vec3(0.71, 0.53, 0.35) * (fract(p.y / 1.2) < 0.08 ? 0.82 : 1.0) * (0.95 + noise(p * vec2(0.1, 2.0)) * 0.1);
+          } else if (k == 6) {
+            col = vec3(0.86, 0.84, 0.78); if (fract(p.x / 4.0) < 0.04 || fract(p.y / 4.0) < 0.04) col *= 0.94;
+          } else if (k == 7) {
+            float r = length(p); col = vec3(0.92, 0.87, 0.78); if (fract(r / 6.0) < 0.06) col = vec3(0.82, 0.73, 0.88); if (fract(p.x / 3.0) < 0.03 || fract(p.y / 3.0) < 0.03) col *= 0.96;
+          } else if (k == 1) {
+            col = vec3(0.79, 0.77, 0.74); if (fract(p.x / 3.0) < 0.04 || fract(p.y / 3.0) < 0.04) col *= 0.93;
+          } else {
+            col = vec3(0.83, 0.79, 0.71); if (fract(p.x / 2.5) < 0.04 || fract(p.y / 2.5) < 0.04) col *= 0.94;
+          }
+        }
+      }
+      col = mix(col, uFog, smoothstep(uFogNear, uFogFar, vDepth));
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+});
+groundMat.stencilWrite = true; groundMat.stencilRef = 1; groundMat.stencilFunc = THREE.NotEqualStencilFunc;
+groundMat.stencilFail = groundMat.stencilZFail = groundMat.stencilZPass = THREE.KeepStencilOp;
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000).rotateX(-Math.PI / 2), groundMat);
+ground.renderOrder = -8; ground.frustumCulled = false; scene.add(ground);
+
+/* =====================================================================
+   THE HOLES: a disc that cuts the ground away (stencil), a pit with a swirl at the bottom, and a glowing rim.
+   ===================================================================== */
+const holeDisc = new THREE.CircleGeometry(1, 56).rotateX(-Math.PI / 2);
+const pitGeo = new THREE.CylinderGeometry(1, 1, 1, 56, 1, true).translate(0, -0.5, 0);
+const ringGeo = new THREE.RingGeometry(0.97, 1.16, 64, 1).rotateX(-Math.PI / 2);
+const VERT_UV = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
+const stencilEq = m => { m.stencilWrite = true; m.stencilRef = 1; m.stencilFunc = THREE.EqualStencilFunc; m.stencilFail = m.stencilZFail = m.stencilZPass = THREE.KeepStencilOp; return m; };
+const writerMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+Object.assign(writerMat, { stencilWrite: true, stencilRef: 1, stencilFunc: THREE.AlwaysStencilFunc, stencilZPass: THREE.ReplaceStencilOp, stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp });
+const clock = { t: 0 };
+function makeHole(name, color, isPlayer) {
+  const col = hexV(color), group = new THREE.Group();
+  const disc = new THREE.Mesh(holeDisc, writerMat); disc.position.y = 0.02; disc.renderOrder = -10;
+  const pit = new THREE.Mesh(pitGeo, stencilEq(new THREE.ShaderMaterial({ side: THREE.BackSide, uniforms: { uColor: { value: col }, uTime: { value: 0 } }, vertexShader: VERT_UV,
+    fragmentShader: `uniform vec3 uColor; uniform float uTime; varying vec2 vUv;
+      void main(){ float y = vUv.y; float b = 0.5 + 0.5 * sin(vUv.x * 6.2832 * 7.0 + y * 16.0 - uTime * 3.0);
+        vec3 c = mix(vec3(0.0), uColor * 0.5, pow(y, 2.2)) + uColor * 0.22 * b * pow(y, 5.0); gl_FragColor = vec4(c, 1.0); }` })));
+  pit.scale.y = 2.6; pit.renderOrder = -9;
+  const bottom = new THREE.Mesh(holeDisc, stencilEq(new THREE.ShaderMaterial({ uniforms: { uColor: { value: col }, uTime: { value: 0 } }, vertexShader: VERT_UV,
+    fragmentShader: `uniform vec3 uColor; uniform float uTime; varying vec2 vUv;
+      void main(){ vec2 p = vUv * 2.0 - 1.0; float d = length(p); float a = atan(p.y, p.x);
+        float s = sin(a * 3.0 + d * 11.0 - uTime * 2.6); float arm = smoothstep(0.15, 1.0, s) * (1.0 - d);
+        vec3 c = vec3(0.02, 0.0, 0.05) + uColor * arm * 0.55 + vec3(1.0) * pow(max(0.0, 1.0 - d * 3.2), 3.0) * 0.3; gl_FragColor = vec4(c, 1.0); }` })));
+  bottom.position.y = -2.6; bottom.renderOrder = -9;
+  const ringMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uColor: { value: col }, uTime: { value: 0 }, uBlink: { value: 1 } }, vertexShader: VERT_UV,
+    fragmentShader: `uniform vec3 uColor; uniform float uTime; uniform float uBlink; varying vec2 vUv;
+      void main(){ vec2 p = vUv * 2.0 - 1.0; float d = length(p); float a = atan(p.y, p.x); float t = clamp((d - 0.836) / 0.164, 0.0, 1.0);
+        float dash = 0.5 + 0.5 * sin(a * 12.0 - uTime * 4.0); vec3 c = mix(uColor, vec3(1.0), 0.45 * dash * (1.0 - t));
+        float al = (1.0 - t * t) * 0.95 * uBlink; if (t < 0.12) { c = mix(vec3(0.05,0.02,0.1), c, t / 0.12); }
+        gl_FragColor = vec4(c, al); }` });
+  const ring = new THREE.Mesh(ringGeo, ringMat); ring.position.y = 0.06; ring.renderOrder = 2;
+  group.add(disc, pit, bottom, ring); scene.add(group);
+  // the name above the hole
+  const lc = document.createElement('canvas'); lc.width = 256; lc.height = 72; const g = lc.getContext('2d');
+  g.font = '900 40px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.lineWidth = 10; g.strokeStyle = '#1c1a33'; g.strokeText(name, 128, 38); g.fillStyle = isPlayer ? '#ffffff' : color; g.fillText(name, 128, 38);
+  const lt = new THREE.CanvasTexture(lc); lt.colorSpace = THREE.SRGBColorSpace;
+  const label = new THREE.Sprite(new THREE.SpriteMaterial({ map: lt, depthTest: false, transparent: true })); label.renderOrder = 10; scene.add(label);
+  return { name, color, isPlayer, group, mats: [pit.material, bottom.material, ringMat], ringMat, label, x: 0, z: 0, r: 1, rT: 1, vx: 0, vz: 0, alive: true, dying: null, safe: 0, respawn: 0, gmul: 1, smul: 1, ai: { tx: 0, tz: 0, next: 0, mode: 'food', prey: null, item: -1, chaseT: 0, rest: 0, restFrom: null }, best: 1, points: 0 };
+}
+const holes = [];
+const player = makeHole(t('you'), PLAYER_COLOR, true);
+holes.push(player);
+for (let i = 0; i < 10; i++) holes.push(makeHole(RIVAL_NAMES[i], RIVAL_COLORS[i], false));
+
+/* ---------- particles: a puff of sparkles when something is swallowed ---------- */
+const PN = 160, pPos = new Float32Array(PN * 3), pVel = new Float32Array(PN * 3), pLife = new Float32Array(PN);
+const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3)); pPos.fill(-999);
+const dotTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d'); const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.45, 'rgba(255,240,200,0.9)'); gr.addColorStop(1, 'rgba(255,240,200,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 32); const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return tx; })();
+const pMat = new THREE.PointsMaterial({ color: '#ffffff', map: dotTex, size: 0.5, transparent: true, opacity: 0.95, depthWrite: false });
+const points = new THREE.Points(pGeo, pMat); points.frustumCulled = false; points.renderOrder = 3; scene.add(points);
+let pNext = 0;
+function puff(x, z, r, n) {
+  if (reduced()) n = Math.min(n, 3);
+  for (let k = 0; k < n; k++) { const i = pNext++ % PN, a = Math.random() * 6.283; pPos[i * 3] = x + Math.cos(a) * r * 0.8; pPos[i * 3 + 1] = 0.3; pPos[i * 3 + 2] = z + Math.sin(a) * r * 0.8; pVel[i * 3] = -Math.cos(a) * r * 0.6; pVel[i * 3 + 1] = 2 + Math.random() * 3 + r * 0.3; pVel[i * 3 + 2] = -Math.sin(a) * r * 0.6; pLife[i] = 0.6 + Math.random() * 0.3; }
+}
+function updateParticles(dt) {
+  let any = false;
+  for (let i = 0; i < PN; i++) { if (pLife[i] <= 0) continue; any = true; pLife[i] -= dt; if (pLife[i] <= 0) { pPos[i * 3 + 1] = -999; continue; } pVel[i * 3 + 1] -= 9 * dt; pPos[i * 3] += pVel[i * 3] * dt; pPos[i * 3 + 1] += pVel[i * 3 + 1] * dt; pPos[i * 3 + 2] += pVel[i * 3 + 2] * dt; }
+  if (any) pGeo.attributes.position.needsUpdate = true;
+  pMat.size = Math.max(0.3, cam.dist * 0.012);
+}
+
+/* ---------- sound: synthesised gulps and a little tune (off when the sound is off) ---------- */
+const AU = { ctx: null, master: null, last: 0, beat: 0, step: 0, timer: null };
+function audioOn() {
+  if (AU.ctx) { if (AU.ctx.state === 'suspended') AU.ctx.resume(); return; }
+  try { const AC = window.AudioContext || window.webkitAudioContext; AU.ctx = new AC(); AU.master = AU.ctx.createGain(); AU.master.gain.value = 0.55; AU.master.connect(AU.ctx.destination); } catch { AU.ctx = null; }
+  if (AU.ctx && !AU.timer) AU.timer = setInterval(musicTick, 120);
+}
+const quiet = () => !AU.ctx || BRB.sfx.muted;
+function tone(f0, f1, dur, vol, type = 'sine', when = 0) {
+  const c = AU.ctx, now = c.currentTime + when, o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(f0, now); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), now + dur);
+  g.gain.setValueAtTime(0.0001, now); g.gain.exponentialRampToValueAtTime(vol, now + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  o.connect(g); g.connect(AU.master); o.start(now); o.stop(now + dur + 0.02);
+}
+function gulpSound(s) { if (quiet()) return; const now = AU.ctx.currentTime; if (now - AU.last < 0.05) return; AU.last = now; const f = 820 / (1 + s * 0.55) + 70; tone(f, f * 0.32, 0.16 + Math.min(0.5, s * 0.02), 0.2); if (s > 4) tone(f * 0.5, f * 0.2, 0.4, 0.14, 'triangle'); }
+function chime() { if (quiet()) return; [523, 659, 784, 1046].forEach((f, i) => tone(f, f, 0.22, 0.12, 'triangle', i * 0.09)); }
+function sadSound() { if (quiet()) return; [392, 330, 262].forEach((f, i) => tone(f, f * 0.9, 0.3, 0.12, 'triangle', i * 0.16)); }
+function bigGulp() { if (quiet()) return; tone(300, 60, 0.6, 0.25); tone(600, 120, 0.5, 0.12, 'triangle'); }
+const MELODY = [0, 4, 7, 9, 7, 4, 2, 4, 0, 4, 7, 12, 9, 7, 4, 2], BASS = [0, 0, 5, 5, 7, 7, 5, 5];
+function musicTick() {
+  if (!AU.ctx || BRB.sfx.muted || !SET.music || S.screen !== 'play') return;
+  const c = AU.ctx; if (AU.beat < c.currentTime) AU.beat = c.currentTime + 0.05;
+  while (AU.beat < c.currentTime + 0.3) {
+    const k = AU.step % 16, w = AU.beat - c.currentTime;
+    if (k % 2 === 0) tone(196 * Math.pow(2, MELODY[k] / 12), 196 * Math.pow(2, MELODY[k] / 12), 0.2, 0.035, 'triangle', w);
+    if (k % 4 === 0) { const b = 98 * Math.pow(2, BASS[(AU.step >> 2) % 8] / 12); tone(b, b, 0.35, 0.05, 'sine', w); }
+    AU.beat += 0.15; AU.step++;
+  }
+}
+const say = text => { if (SET.read && !BRB.sfx.muted && BRB.speak) BRB.speak(text); };
+
+/* =====================================================================
+   THE GAME
+   ===================================================================== */
+const S = { screen: 'title', ready: false, lost: false, mode: 'round', left: 0, time: 0, points: 0, eaten: 0, best: 0, bestSize: 0, unlocked: 0, grace: 0, frames: 0, slow: 0, quality: 2, lod: 1,
+  tipT: 0, tipCool: 0, bannerT: 0, uiT: 0, mapT: 0, eatenBy: '', paused: false, fps: 60 };
+try { const sv = BRB.storage.get('gulp-city-v1') || {}; S.best = +sv.best || 0; S.bestSize = +sv.bestSize || 0; } catch { /* no save */ }
+const saveBest = () => { try { BRB.storage.set('gulp-city-v1', { best: S.best, bestSize: S.bestSize }); } catch { /* preview */ } };
+const cap = h => h.r * CONFIG.fit;
+const speedOf = h => CONFIG.speed + Math.sqrt(h.r) * CONFIG.speedPerMetre;
+const sizeText = h => t('meters', { n: fmt1(h.rT * 2) });
+
+// ---- falling things ----
+const FALL = [];   // { kind: 0 thing | 1 car, i | m, h, t, dur, ox, oz, yaw, sc, s, hgt }
+function startFall(kind, ref, h) {
+  const T = TYPES[kind === 0 ? OT[ref] : ref.t];
+  const x = kind === 0 ? OX[ref] : ref.x, z = kind === 0 ? OZ[ref] : ref.z;
+  const yaw = kind === 0 ? ORT[ref] : (ref.axis === 0 ? (ref.dir > 0 ? 0 : Math.PI) : (ref.dir > 0 ? -Math.PI / 2 : Math.PI / 2));
+  FALL.push({ kind, ref, h, t: 0, dur: 0.45 + 0.22 * Math.sqrt(T.s), ox: x - h.x, oz: z - h.z, yaw, sc: kind === 0 ? OSC[ref] : 1, s: T.s, hgt: T.h, pts: T.pts });
+  if (kind === 0) OST[ref] = 1; else ref.state = 1;
+}
+function updateFalls(dt) {
+  for (let k = FALL.length - 1; k >= 0; k--) {
+    const f = FALL[k]; f.t += dt; const u = Math.min(1, f.t / f.dur), e = u * u;
+    const pull = 1 - Math.min(1, u * 1.15) * 0.8;
+    const x = f.h.x + f.ox * pull, z = f.h.z + f.oz * pull, y = -(f.hgt * 1.25 + f.h.r * 1.5) * e;
+    const tilt = reduced() ? 0 : Math.min(1.25, u * 2.4), sc = f.sc * (1 - 0.85 * e);
+    const m = composeAt(0, x, y, z, f.yaw, f.oz, -f.ox, -tilt, sc);
+    if (f.kind === 0) setMatrix(f.ref, m); else { f.ref.st.plain.setMatrixAt(f.ref.idx, m); f.ref.st.dirty = true; }
+    if (u >= 1) {
+      if (f.kind === 0) { OST[f.ref] = 2; setMatrix(f.ref, ZERO); } else { f.ref.state = 2; f.ref.st.plain.setMatrixAt(f.ref.idx, ZERO); f.ref.st.dirty = true; }
+      FALL[k] = FALL[FALL.length - 1]; FALL.pop();
+      swallowed(f.h, f.s, f.pts);
+    }
+  }
+}
+function grow(h, s, mul = 1) { const slow = 1 / (1 + Math.pow(h.rT / CONFIG.slowAt, CONFIG.slowPow)); h.rT = Math.min(CONFIG.maxSize, Math.sqrt(h.rT * h.rT + CONFIG.growth * s * s * h.gmul * mul * slow)); }
+function swallowed(h, s, pts) {
+  if (!h.alive) return;
+  grow(h, s); h.points += pts;
+  if (h.isPlayer && S.screen === 'play') {
+    S.points += pts; S.eaten++; gulpSound(s); if (s > h.r * 0.12) puff(h.x, h.z, h.r, s > 3 ? 8 : 4);
+    if (s > 8 && !reduced()) cam.kick = Math.min(1, cam.kick + s * 0.02);
+  }
+}
+// ---- one hole eats what fits under it ----
+function eatScan(h) {
+  const r = h.r, c = cap(h), x0 = cellOf(h.x - r), x1 = cellOf(h.x + r), z0 = cellOf(h.z - r), z1 = cellOf(h.z + r);
+  let tooBig = false;
+  for (let cz = z0; cz <= z1; cz++) for (let cx = x0; cx <= x1; cx++) {
+    const cell = cz * GN + cx;
+    for (let k = cellStart[cell], e = cellStart[cell + 1]; k < e; k++) {
+      const i = cellItems[k]; if (OST[i] !== 0) continue;
+      const s = TYPES[OT[i]].s * OSC[i], dx = OX[i] - h.x, dz = OZ[i] - h.z, d2 = dx * dx + dz * dz;
+      if (s <= c) { const lim = r - s * 0.5; if (d2 < lim * lim) startFall(0, i, h); }
+      else if (h.isPlayer && d2 < (r + s * 0.6) * (r + s * 0.6)) { tooBig = true; if (!reduced() && OWOB[i] <= 0) OWOB[i] = 0.5; }
+    }
+  }
+  for (const m of MV) {
+    if (m.state !== 0) continue; const s = TYPES[m.t].s, dx = m.x - h.x, dz = m.z - h.z, d2 = dx * dx + dz * dz;
+    if (s <= c) { const lim = r - s * 0.5; if (d2 < lim * lim) startFall(1, m, h); } else if (h.isPlayer && d2 < r * r) tooBig = true;
+  }
+  return tooBig;
+}
+// ---- the wobble of things too big to fall in ----
+const WOB = [];
+function updateWobble(dt) {
+  if (reduced()) return;
+  const h = player, r = h.r + 30, x0 = cellOf(h.x - r), x1 = cellOf(h.x + r), z0 = cellOf(h.z - r), z1 = cellOf(h.z + r);
+  for (let cz = z0; cz <= z1; cz++) for (let cx = x0; cx <= x1; cx++) {
+    const cell = cz * GN + cx;
+    for (let k = cellStart[cell], e = cellStart[cell + 1]; k < e; k++) {
+      const i = cellItems[k]; if (OST[i] !== 0 || OWOB[i] <= 0) continue;
+      OWOB[i] -= dt; const dx = OX[i] - h.x, dz = OZ[i] - h.z, w = OWOB[i] > 0 ? Math.sin(S.time * 22 + i) * 0.035 * Math.min(1, OWOB[i] * 3) : 0;
+      setMatrix(i, composeAt(i, OX[i], 0, OZ[i], ORT[i], dz || 1, -dx, w, OSC[i]));
+    }
+  }
+}
+
+// ---- moving the holes ----
+const input = { x: 0, z: 0 };
+const keys = new Set();
+const stick = { id: null, x0: 0, y0: 0, x: 0, y: 0 };
+let drive = null;
+function readInput() {
+  if (drive) { input.x = drive.x || 0; input.z = drive.z || 0; return; }
+  let x = 0, z = 0;
+  if (keys.has('arrowleft') || keys.has('a') || keys.has('q')) x -= 1;
+  if (keys.has('arrowright') || keys.has('d')) x += 1;
+  if (keys.has('arrowup') || keys.has('w') || keys.has('z')) z -= 1;
+  if (keys.has('arrowdown') || keys.has('s')) z += 1;
+  if (stick.id !== null) { x = stick.x; z = stick.y; }
+  const l = Math.hypot(x, z); if (l > 1) { x /= l; z /= l; }
+  input.x = x; input.z = z;
+}
+const LIM = HALF + 2;
+function moveHole(h, ix, iz, dt, mul = 1) {
+  const sp = speedOf(h) * mul, k = 1 - Math.exp(-dt * 7);
+  h.vx += (ix * sp - h.vx) * k; h.vz += (iz * sp - h.vz) * k;
+  h.x = clamp(h.x + h.vx * dt, -LIM, LIM); h.z = clamp(h.z + h.vz * dt, -LIM, LIM);
+}
+// ---- the rivals: look for food, chase smaller holes, run from bigger ones ----
+function rivalThink(h) {
+  const ai = h.ai; ai.next = S.time + 0.45 + Math.random() * 0.4;
+  let threat = null, td = 1e9, prey = null, pd = 1e9;
+  for (const o of holes) {
+    if (o === h || !o.alive || o.dying || (o.isPlayer && S.screen !== 'play')) continue;
+    const d = Math.hypot(o.x - h.x, o.z - h.z);
+    if (o.r > h.r * CONFIG.eatRatio && d < o.r * 2.5 + 30 && d < td) { threat = o; td = d; }
+    const chase = CONFIG.rivalChase[S.diff] * (o.isPlayer ? 1 : 0.8);
+    if (h.r > o.r * (CONFIG.eatRatio + 0.05) && d < 30 + h.r * 4 && d < pd && !(o.isPlayer && (S.grace > 0 || o.safe > 0)) && !(ai.rest > S.time && ai.restFrom === o) && Math.random() < chase) { prey = o; pd = d; }
+  }
+  if (threat) { ai.mode = 'flee'; const dx = h.x - threat.x, dz = h.z - threat.z, l = Math.hypot(dx, dz) || 1; ai.tx = h.x + dx / l * 120; ai.tz = h.z + dz / l * 120; return; }
+  if (prey) { if (ai.mode !== 'chase' || ai.prey !== prey) ai.chaseT = 0; ai.mode = 'chase'; ai.prey = prey; ai.tx = prey.x + prey.vx * 0.6; ai.tz = prey.z + prey.vz * 0.6; return; }
+  // food: the best thing that fits nearby (bigger and closer is better)
+  ai.mode = 'food';
+  const c = cap(h), rad = 26 + h.r * 3.2, x0 = cellOf(h.x - rad), x1 = cellOf(h.x + rad), z0 = cellOf(h.z - rad), z1 = cellOf(h.z + rad);
+  let best = 0, bi = -1;
+  for (let cz = z0; cz <= z1; cz++) for (let cx = x0; cx <= x1; cx++) {
+    const cell = cz * GN + cx;
+    for (let q = cellStart[cell], e = cellStart[cell + 1]; q < e; q++) {
+      const i = cellItems[q]; if (OST[i] !== 0) continue; const s = TYPES[OT[i]].s; if (s > c) continue;
+      const d = Math.hypot(OX[i] - h.x, OZ[i] - h.z), score = (s * s + 0.25) / (d + 3 + h.r) * (0.8 + Math.random() * 0.4);
+      if (score > best) { best = score; bi = i; }
+    }
+  }
+  if (bi >= 0) { ai.tx = OX[bi]; ai.tz = OZ[bi]; ai.item = bi; return; }
+  const a = Math.random() * 6.283; ai.tx = clamp(h.x + Math.cos(a) * 150, -HALF, HALF); ai.tz = clamp(h.z + Math.sin(a) * 150, -HALF, HALF); ai.item = -1;
+}
+function updateRival(h, dt) {
+  if (S.time >= h.ai.next || (h.ai.mode === 'chase' && (!h.ai.prey || !h.ai.prey.alive)) || (h.ai.mode === 'food' && h.ai.item >= 0 && OST[h.ai.item] !== 0)) rivalThink(h);
+  if (h.ai.mode === 'chase' && h.ai.prey && h.ai.prey.alive) {
+    h.ai.tx = h.ai.prey.x; h.ai.tz = h.ai.prey.z; h.ai.chaseT += dt;
+    if (h.ai.chaseT > CONFIG.chaseSeconds[S.diff]) { h.ai.rest = S.time + CONFIG.chaseRest; h.ai.restFrom = h.ai.prey; h.ai.mode = 'food'; h.ai.prey = null; h.ai.next = 0; }
+  }
+  let dx = h.ai.tx - h.x, dz = h.ai.tz - h.z; const l = Math.hypot(dx, dz);
+  if (l < 0.4) { dx = dz = 0; h.ai.next = 0; } else { const k2 = Math.min(1, l / (1.5 + h.r * 0.5)); dx = dx / l * k2; dz = dz / l * k2; }
+  const wob = h.ai.mode === 'food' || reduced() ? 0 : 0.18; dx += Math.sin(S.time * 1.3 + h.r) * wob; dz += Math.cos(S.time * 1.1 + h.x * 0.01) * wob;
+  moveHole(h, dx, dz, dt, h.smul * (h.ai.mode === 'chase' ? CONFIG.chaseSpeed : 1));
+}
+// ---- holes swallow holes ----
+function holeFights() {
+  for (const a of holes) {
+    if (!a.alive || a.dying) continue;
+    for (const b of holes) {
+      if (a === b || !b.alive || b.dying || b.safe > 0 || a.r < b.r * CONFIG.eatRatio) continue;
+      if (b.isPlayer && S.screen !== 'play') continue;
+      const d = Math.hypot(a.x - b.x, a.z - b.z);
+      if (d < a.r - b.r * 0.35) { b.dying = { by: a, t: 0 }; }
+    }
+  }
+}
+function updateDying(h, dt) {
+  const d = h.dying; d.t += dt; const u = Math.min(1, d.t / 0.55);
+  h.x += (d.by.x - h.x) * Math.min(1, dt * 8); h.z += (d.by.z - h.z) * Math.min(1, dt * 8);
+  h.r = Math.max(0.05, h.rT * (1 - u));
+  if (u >= 1) {
+    h.alive = false; h.dying = null; h.group.visible = false; h.label.visible = false;
+    if (d.by.alive) { grow(d.by, h.rT, 1.4 / CONFIG.growth * 0.5); d.by.points += Math.round(50 + h.rT * h.rT * 6); }
+    if (d.by.isPlayer && S.screen === 'play') { S.points += Math.round(50 + h.rT * h.rT * 6); bigGulp(); banner('🌀 ' + t('ateRival', { name: h.name }), 2.2); puff(d.by.x, d.by.z, d.by.r, 14); }
+    if (h.isPlayer) playerSwallowed(d.by);
+    else h.respawn = 3.5 + Math.random() * 2;
+  }
+}
+function spawnSpot(minDist, r) {
+  for (let k = 0; k < 40; k++) {
+    const x = R2(-HALF + 30, HALF - 30), z = R2(-HALF + 60, HALF - 30);
+    if (S.screen === 'play' && Math.hypot(x - player.x, z - player.z) < minDist) continue;
+    if (holes.some(o => o.alive && o.r > r * 1.1 && Math.hypot(o.x - x, o.z - z) < o.r * 3 + 60)) continue;
+    return [x, z];
+  }
+  return [R2(-HALF + 30, HALF - 30), R2(-HALF + 60, HALF - 30)];
+}
+function R2(a, b) { return a + Math.random() * (b - a); }
+function placeHole(h, x, z, r) { h.x = x; h.z = z; h.r = h.rT = r; h.vx = h.vz = 0; h.alive = true; h.dying = null; h.group.visible = true; h.label.visible = true; h.ai.next = 0; h.best = Math.max(h.best, r); }
+function reviveRival(h) {
+  const r = clamp(CONFIG.startSize + Math.random() * Math.min(5, player.r * 0.45), CONFIG.startSize, 6);
+  const [x, z] = spawnSpot(160, r); placeHole(h, x, z, r); h.safe = 2;
+}
+
+// ---- unlocks: "Now you can swallow buses!" ----
+function checkUnlocks() {
+  const c = cap(player);
+  while (S.unlocked + 1 < GROUPS.length && c >= GROUPS[S.unlocked + 1].min) {
+    S.unlocked++; const G2 = GROUPS[S.unlocked], text = t('unlock', { what: t('g' + G2.g) });
+    banner(G2.icon + ' ' + text, 2.8); chime(); say(text);
+  }
+}
+function banner(text, secs) { const b = $('banner'); b.textContent = text; b.classList.add('on'); S.bannerT = secs; }
+function tip(text) { const e = $('tip'); e.textContent = text; e.classList.add('on'); S.tipT = 2.2; }
+
+/* ---------- the camera: above and a little behind the player, farther out as it grows ---------- */
+const cam = { x: 0, z: 0, dist: 30, kick: 0, orbit: 0 };
+function updateCamera(dt) {
+  if (S.screen === 'title' || S.screen === 'how' || S.screen === 'settings' && S.from === 'title') {
+    cam.orbit += dt * (reduced() ? 0.01 : 0.04);
+    const a = cam.orbit, rr = 330;
+    camera.position.set(Math.sin(a) * rr, 250, Math.cos(a) * rr); camera.lookAt(0, portrait ? -90 : 10, 0);
+    cam.dist = 420; fogFor(420); return;
+  }
+  const want = (19 + player.r * 8.6) * (portrait ? 1.3 : 1);
+  cam.dist += (want - cam.dist) * Math.min(1, dt * 2.5);
+  const k = Math.min(1, dt * 9); cam.x += (player.x - cam.x) * k; cam.z += (player.z - cam.z) * k;
+  cam.kick = Math.max(0, cam.kick - dt * 2.5);
+  const pitch = 1.02, D = cam.dist * (1 + cam.kick * 0.05);
+  camera.position.set(cam.x, Math.sin(pitch) * D, cam.z + Math.cos(pitch) * D);
+  camera.lookAt(cam.x, 0, cam.z - D * 0.04);
+  fogFor(D);
+}
+function fogFor(D) {
+  const near = D * 1.3 * S.lod + 25, far = D * 3 * S.lod + 70;
+  scene.fog.near = near; scene.fog.far = far; groundMat.uniforms.uFogNear.value = near; groundMat.uniforms.uFogFar.value = far;
+  camera.far = far + 200; camera.updateProjectionMatrix();
+  // a kind of thing shows in a region only when the region is close enough for it to be seen
+  const fx = S.screen === 'title' || S.screen === 'how' || S.screen === 'settings' && S.from === 'title' ? 0 : cam.x, fz = S.screen === 'title' || S.screen === 'how' || S.screen === 'settings' && S.from === 'title' ? 0 : cam.z, half = REGS / 2;
+  for (const st of SETS) {
+    const dx = Math.max(0, Math.abs(st.cx - fx) - half), dz = Math.max(0, Math.abs(st.cz - fz) - half), d = Math.hypot(dx, dz) + D * 0.6;
+    const vis = d < TYPES[st.type].vis * S.lod && Math.hypot(dx, dz) < far;
+    if (vis !== st.vis) { st.vis = vis; if (st.plain) st.plain.visible = vis; if (st.win) st.win.visible = vis; }
+  }
+  for (const st of MOVER_SETS) if (st.plain) st.plain.visible = TYPES[st.type].vis * S.lod > D;
+}
+
+/* ---------- input ---------- */
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase(); keys.add(k);
+  if ((k === 'p' || k === 'escape') && (S.screen === 'play' || S.screen === 'pause')) { S.screen === 'play' ? pause() : resume(); e.preventDefault(); }
+  if (k.startsWith('arrow') || k === ' ') e.preventDefault();
+});
+addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
+addEventListener('blur', () => keys.clear());
+canvas.addEventListener('pointerdown', e => {
+  if (S.screen !== 'play' || stick.id !== null) return;
+  Object.assign(stick, { id: e.pointerId, x0: e.clientX, y0: e.clientY, x: 0, y: 0 });
+  const b = $('stickBase'); b.style.display = 'block'; b.style.left = e.clientX + 'px'; b.style.top = e.clientY + 'px';
+  canvas.setPointerCapture(e.pointerId); audioOn();
+});
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerId !== stick.id) return;
+  let dx = e.clientX - stick.x0, dy = e.clientY - stick.y0; const m = Math.hypot(dx, dy), RR = 50; if (m > RR) { dx *= RR / m; dy *= RR / m; }
+  stick.x = dx / RR; stick.y = dy / RR; $('stickKnob').style.transform = `translate(${dx}px,${dy}px)`;
+});
+const endPointer = e => { if (e.pointerId === stick.id) { stick.id = null; stick.x = stick.y = 0; $('stickBase').style.display = 'none'; $('stickKnob').style.transform = ''; } };
+canvas.addEventListener('pointerup', endPointer); canvas.addEventListener('pointercancel', endPointer);
+
+/* ---------- screens ---------- */
+const SCREENS = ['titleScreen', 'howScreen', 'setScreen', 'pauseScreen', 'gulpScreen', 'endScreen'];
+const show = id => { for (const s of SCREENS) $(s).hidden = s !== id; };
+function setPlayingUI(on) { $('hud').hidden = !on; $('side').hidden = !on; $('mapBox').hidden = !on; document.body.classList.toggle('playing', on); if (!on) { $('stickBase').style.display = 'none'; stick.id = null; } }
+function resetWorld() {
+  standAll(); resetTraffic(); FALL.length = 0;
+  for (let i = 0; i < PN; i++) { pLife[i] = 0; pPos[i * 3 + 1] = -999; }
+}
+function setupRivals(count, keepPlayer) {
+  holes.forEach((h, i) => {
+    if (h.isPlayer) return;
+    h.gmul = CONFIG.rivalGrowth[S.diff]; h.smul = CONFIG.rivalSpeed[S.diff]; h.points = 0;
+    if (i > count) { h.alive = false; h.group.visible = false; h.label.visible = false; h.respawn = 1e9; return; }
+    const r = CONFIG.startSize + Math.random() * 0.6, [x, z] = spawnSpot(keepPlayer ? 170 : 0, r); placeHole(h, x, z, r); h.safe = 0; h.respawn = 0;
+  });
+}
+function startGame(o = {}) {
+  audioOn();
+  S.mode = o.mode || 'round'; S.diff = o.difficulty || SET.diff || 'normal';
+  if (o.seed !== undefined) Math.random = mulberry32(o.seed);
+  resetWorld();
+  S.points = 0; S.eaten = 0; S.unlocked = 0; S.tips = 0; S.left = CONFIG.roundSeconds; S.grace = o.noGrace ? 0 : CONFIG.graceSeconds; S.time = S.time || 0;
+  // the player starts on a quiet street corner in midtown, full of small things
+  placeHole(player, -HALF + 8 * B + 30, -HALF + 14 * B, CONFIG.startSize); player.best = CONFIG.startSize; player.safe = CONFIG.safeSeconds; player.points = 0;
+  cam.x = player.x; cam.z = player.z; cam.dist = 19 + player.r * 8.6;
+  S.screen = 'play'; setupRivals(o.rivals !== undefined ? o.rivals : CONFIG.rivals[S.diff], true);
+  show(null); setPlayingUI(true); $('clock').hidden = S.mode !== 'round';
+  tip(t(TOUCH ? 'hintTouch' : 'hintKeys')); S.tipT = 4; canvas.focus(); hud(true);
+}
+function pause() { if (S.screen !== 'play') return; S.screen = 'pause'; show('pauseScreen'); $('finishBtn').hidden = S.mode !== 'free'; keys.clear(); endPointer({ pointerId: stick.id }); }
+function resume() { if (S.screen !== 'pause') return; S.screen = 'play'; show(null); }
+function playerSwallowed(by) {
+  sadSound(); S.screen = 'gulp'; S.eatenBy = by.name;
+  $('gulpText').textContent = t('gulpText', { name: by.name }); show('gulpScreen'); say(t('gulpText', { name: by.name }));
+  endPointer({ pointerId: stick.id });
+}
+function keepGoing() {
+  const r = Math.max(CONFIG.startSize, player.rT * 0.55);
+  const [x, z] = spawnSpot(0, r); placeHole(player, x, z, r); player.safe = CONFIG.safeSeconds;
+  cam.x = x; cam.z = z; S.screen = 'play'; show(null);
+}
+function rankOf() { const alive = holes.filter(h => h.alive || h.isPlayer); const list = alive.slice().sort((a, b) => b.r - a.r); return { rank: list.indexOf(player) + 1, total: list.length }; }
+function endGame() {
+  if (S.screen !== 'play' && S.screen !== 'pause') return;
+  const { rank, total } = rankOf(), stars = rank === 1 ? 3 : rank <= 3 ? 2 : 1;
+  S.screen = 'end'; setPlayingUI(false);
+  const size = player.best * 2, pct = Math.min(100, S.points / TOTAL_PTS * 100);
+  if (S.points > S.best) S.best = S.points; if (size > S.bestSize) S.bestSize = size; saveBest();
+  if (S.mode === 'round') BRB.gameOver({ won: rank === 1, score: S.points }); else BRB.score.submit(S.points, 'points');
+  $('endTitle').textContent = S.mode === 'round' ? t('timeUp') : t('freeDone');
+  $('endStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars); $('endStars').setAttribute('aria-label', t('stars', { n: stars })); $('endStars').hidden = S.mode !== 'round';
+  $('endRank').textContent = rank === 1 ? t('winner') : t('rank', { rank, total });
+  $('endSize').textContent = t('endSize', { n: fmt1(size) }); $('endCity').textContent = t('endCity', { n: pct < 1 ? fmt1(pct) : Math.round(pct) });
+  $('endPoints').textContent = t('endPoints', { score: S.points, best: S.best });
+  show('endScreen'); BRB.sfx.play(rank === 1 ? 'win' : 'lose'); if (rank === 1 && S.mode === 'round') BRB.fx.confetti();
+  say($('endTitle').textContent + ' ' + $('endRank').textContent);
+}
+function toTitle() {
+  S.screen = 'title'; setPlayingUI(false); resetWorld();
+  S.diff = SET.diff || 'normal'; setupRivals(8, false); player.alive = false; player.group.visible = false; player.label.visible = false;
+  titleTexts(); show('titleScreen');
+}
+
+/* ---------- HUD, leaderboard, minimap ---------- */
+const mapBase = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 160; const g = c.getContext('2d');
+  g.fillStyle = '#4fb6e8'; g.fillRect(0, 0, 160, 160);
+  const sc = 160 / 1600, o = 800;
+  g.fillStyle = '#9aa0ad'; g.fillRect((o - HALF - 6) * sc, (o - HALF - 6) * sc, (HALF * 2 + 12) * sc, (HALF * 2 + 12) * sc);
+  const COLS = ['#4fb6e8', '#c7c2b8', '#d8cbb3', '#8fd07a', '#5cbf5c', '#b88a5a', '#e9e4ff', '#efe3cf'];
+  for (let bz = 0; bz < N; bz++) for (let bx = 0; bx < N; bx++) { g.fillStyle = COLS[district[bz * N + bx]]; const X0 = -HALF + bx * B + 6, Z0 = -HALF + bz * B + 6; g.fillRect((X0 + o) * sc, (Z0 + o) * sc, 48 * sc + 0.5, 48 * sc + 0.5); }
+  return c;
+})();
+function drawMap() {
+  const c = $('map'), g = c.getContext('2d'), sc = 160 / 1600, o = 800;
+  g.drawImage(mapBase, 0, 0);
+  for (const h of holes) {
+    if (!h.alive) continue;
+    const x = (h.x + o) * sc, y = (h.z + o) * sc, r = Math.max(h.isPlayer ? 4 : 3, h.r * sc * 1.4);
+    g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fillStyle = '#120a24'; g.fill(); g.lineWidth = h.isPlayer ? 3 : 2; g.strokeStyle = h.isPlayer ? '#ffffff' : h.color; g.stroke();
+  }
+}
+const segVals = () => { for (const b of document.querySelectorAll('#diffSeg button')) b.setAttribute('aria-pressed', String(b.dataset.d === (SET.diff || 'normal'))); };
+function hud(force) {
+  const nextG = GROUPS[S.unlocked + 1];
+  $('sizeVal').textContent = sizeText(player);
+  if (nextG) {
+    const prevMin = S.unlocked > 0 ? GROUPS[S.unlocked].min : CONFIG.startSize * CONFIG.fit;
+    const pct = clamp((cap(player) - prevMin) / (nextG.min - prevMin), 0, 1);
+    $('barFill').style.width = (pct * 100).toFixed(1) + '%'; $('nextIcon').textContent = nextG.icon; $('nextIcon').title = t('next');
+  } else { $('barFill').style.width = '100%'; $('nextIcon').textContent = '👑'; }
+  if (S.mode === 'round') { const s = Math.ceil(S.left), txt = '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); if ($('clock').textContent !== txt) $('clock').textContent = txt; $('clock').classList.toggle('low', s <= 15); }
+  const list = holes.filter(h => h.alive || h.isPlayer).sort((a, b) => b.rT - a.rT), short = innerHeight < 470 ? 3 : 5;
+  const rows = list.slice(0, short); if (!rows.includes(player)) { rows.pop(); rows.push(player); }
+  const ol = $('boardList'); let html = '';
+  for (const h of rows) html += `<li class="${h.isPlayer ? 'me' : ''}"><span>${list.indexOf(h) + 1}</span><span class="dot" style="background:${h.isPlayer ? PLAYER_COLOR : h.color}"></span><span class="nm">${h.isPlayer ? t('you') : h.name}</span><span>${fmt1(h.rT * 2)}</span></li>`;
+  if (ol.innerHTML !== html) ol.innerHTML = html;
+}
+
+/* ---------- the loop ---------- */
+let lastT = performance.now(), fpsAcc = 0, fpsN = 0;
+function frame(now) {
+  const rawDt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
+  const dt = Math.min(0.05, rawDt);
+  fpsAcc += rawDt; fpsN++; if (fpsAcc > 1) { S.fps = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
+  if (!S.lost) step(dt);
+  render(rawDt);
+}
+function step(dt) {
+  const playing = S.screen === 'play', live = playing || S.screen === 'title' || S.screen === 'how' || (S.screen === 'settings' && S.from === 'title');
+  S.time += dt; S.frames++;
+  const tt = S.time;
+  for (const h of holes) for (const m of h.mats) m.uniforms.uTime.value = reduced() ? tt * 0.25 : tt;
+  groundMat.uniforms.uTime.value = tt;
+  if (live) {
+    if (playing) {
+      if (S.auto) updateRival(player, dt); else { readInput(); moveHole(player, input.x, input.z, dt); }
+      if (Math.abs(input.x) + Math.abs(input.z) > 0.1 && S.tipT > 2) S.tipT = Math.min(S.tipT, 0.6);
+      if (S.mode === 'round') { S.left -= dt; if (S.left <= 0) { S.left = 0; hud(true); endGame(); return; } }
+      S.grace = Math.max(0, S.grace - dt);
+    }
+    updateTraffic(dt);
+    for (const h of holes) {
+      h.safe = Math.max(0, h.safe - dt);
+      if (!h.alive) { if (!h.isPlayer && h.respawn < 1e8) { h.respawn -= dt; if (h.respawn <= 0) reviveRival(h); } continue; }
+      if (h.dying) { updateDying(h, dt); continue; }
+      if (!h.isPlayer) updateRival(h, dt);
+      const tooBig = eatScan(h);
+      if (h.isPlayer && tooBig && S.tipCool <= 0 && playing && S.tips < 3) { tip(t('tooBig')); S.tipCool = 9; S.tips++; }
+      h.r += (h.rT - h.r) * Math.min(1, dt * 5); h.best = Math.max(h.best, h.rT);
+    }
+    holeFights();
+    updateFalls(dt); updateWobble(dt); updateParticles(dt);
+    if (playing) { checkUnlocks(); S.uiT -= dt; if (S.uiT <= 0) { S.uiT = 0.2; hud(); } S.mapT -= dt; if (S.mapT <= 0) { S.mapT = 0.25; drawMap(); } }
+  }
+  S.tipCool -= dt;
+  if (S.tipT > 0) { S.tipT -= dt; if (S.tipT <= 0) $('tip').classList.remove('on'); }
+  if (S.bannerT > 0) { S.bannerT -= dt; if (S.bannerT <= 0) $('banner').classList.remove('on'); }
+}
+function render(dt) {
+  updateCamera(dt);
+  for (const h of holes) {
+    if (!h.alive && !h.dying) continue;
+    const r = Math.max(0.05, h.r); h.group.position.set(h.x, 0, h.z); h.group.scale.set(r, r, r);
+    h.ringMat.uniforms.uBlink.value = h.safe > 0 && !reduced() ? 0.55 + 0.45 * Math.abs(Math.sin(S.time * 8)) : 1;
+    const ls = Math.max(3, cam.dist * 0.085);
+    h.label.position.set(h.x, r * 0.4 + ls * 0.35 + 1.2, h.z - r * 0.9); h.label.scale.set(ls * 2.6, ls * 0.73, 1);
+    h.label.visible = h.alive && (S.screen === 'play' || S.screen === 'pause' || S.screen === 'gulp');
+  }
+  for (const st of SETS) if (st.dirty) { if (st.plain) st.plain.instanceMatrix.needsUpdate = true; if (st.win) st.win.instanceMatrix.needsUpdate = true; st.dirty = false; }
+  for (const st of MOVER_SETS) if (st.dirty) { st.plain.instanceMatrix.needsUpdate = true; st.dirty = false; }
+  // see-through: the line from the camera to the player
+  SEE.uCam.value.copy(camera.position); SEE.uTgt.value.set(cam.x, 0.5, cam.z); SEE.uRad.value = S.screen === 'play' || S.screen === 'pause' || S.screen === 'gulp' ? player.r * 1.7 + 5 : 0;
+  renderer.render(scene, camera);
+  // quality ladder: slow frames lower the pixel ratio, then show less far away
+  S.slow = S.slow * 0.97 + (dt > 1 / 32 ? 0.03 : 0);
+  if (S.slow > 0.55 && S.frames > 150) { S.slow = 0; if (S.quality === 2) fit.maxDpr(1); else if (S.quality === 1) { fit.maxDpr(0.8); S.lod = 0.8; } else if (S.quality === 0) S.lod = 0.62; S.quality = Math.max(-1, S.quality - 1); }
+}
+
+/* ---------- words on the screens, buttons ---------- */
+function titleTexts() {
+  $('titleText').textContent = t('title'); $('tagText').textContent = t('tagline');
+  $('playBtn').innerHTML = ''; $('playBtn').append(t('play')); const ps = document.createElement('small'); ps.textContent = t('playSub'); $('playBtn').append(ps);
+  $('freeBtn').innerHTML = ''; $('freeBtn').append(t('free')); const fs = document.createElement('small'); fs.textContent = t('freeSub'); $('freeBtn').append(fs);
+  $('rivalsLabel').textContent = t('rivals');
+  for (const b of document.querySelectorAll('#diffSeg button')) b.textContent = t(b.dataset.d);
+  $('diffSeg').setAttribute('aria-label', t('rivals')); segVals();
+  $('howBtn').textContent = t('how'); $('setBtn').textContent = t('settings');
+  $('bestText').textContent = S.best ? t('best', { n: S.best }) + (S.bestSize ? ' · ' + t('bestSize', { n: fmt1(S.bestSize) }) : '') : '';
+}
+function staticTexts() {
+  canvas.setAttribute('aria-label', t('world'));
+  $('howTitle').textContent = t('howTitle'); $('howDone').textContent = t('gotIt');
+  const how = [['🕹️', t(TOUCH ? 'how1Touch' : 'how1Keys')], ['🌀', t('how2')], ['⚠️', t('how3')], ['🏆', t('how4')]];
+  $('howList').innerHTML = ''; for (const [i, s] of how) { const li = document.createElement('li'); const a = document.createElement('span'); a.textContent = i; const b2 = document.createElement('span'); b2.textContent = s; li.append(a, b2); $('howList').append(li); }
+  $('setTitle').textContent = t('setTitle'); $('setDone').textContent = t('done');
+  $('pausedText').textContent = t('paused'); $('resumeBtn').textContent = t('resume'); $('pSetBtn').textContent = t('settings'); $('finishBtn').textContent = t('finish'); $('menuBtn').textContent = t('menu');
+  $('gulpTitle').textContent = t('gulpTitle'); $('gulpKeep').textContent = t('gulpKeep'); $('keepBtn').textContent = t('keepGoing');
+  $('againBtn').textContent = t('again'); $('endMenuBtn').textContent = t('menu');
+  $('sizeLabel').textContent = t('sizeLabel'); $('boardTitle').textContent = t('leader');
+  $('pauseBtn').setAttribute('aria-label', t('pause')); $('soundBtn').setAttribute('aria-label', t('sound'));
+}
+const soundIcon = () => { $('soundBtn').textContent = BRB.sfx.muted ? '🔇' : '🔊'; };
+function buildSettings() {
+  const grid = $('setGrid'); grid.innerHTML = '';
+  const row = (label, makeCtl) => { const l = document.createElement('span'); l.textContent = label; grid.append(l, makeCtl()); };
+  const toggle = (get, set) => () => { const b = document.createElement('button'); b.type = 'button'; b.className = 'toggle'; const paint = () => { const on = get(); b.textContent = t(on ? 'on' : 'off'); b.setAttribute('aria-pressed', String(on)); }; paint(); b.onclick = () => { set(!get()); paint(); saveSet(); applySet(); BRB.sfx.play('click'); }; return b; };
+  const seg = (opts, get, set) => () => { const d = document.createElement('div'); d.className = 'seg'; for (const [v, label] of opts) { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.setAttribute('aria-pressed', String(get() === v)); b.onclick = () => { set(v); for (const x of d.children) x.setAttribute('aria-pressed', String(x === b)); saveSet(); applySet(); BRB.sfx.play('click'); }; d.append(b); } return d; };
+  row(t('soundSet'), toggle(() => !BRB.sfx.muted, v => { BRB.sfx.mute(!v); soundIcon(); }));
+  row(t('music'), toggle(() => !!SET.music, v => { SET.music = v; }));
+  row(t('readAloud'), toggle(() => !!SET.read, v => { SET.read = v; }));
+  row(t('motion'), seg([['auto', t('motionAuto')], ['less', t('motionLess')]], () => SET.motion, v => { SET.motion = v; }));
+  row(t('contrast'), toggle(() => !!SET.contrast, v => { SET.contrast = v; }));
+  row(t('textSize'), seg([[1, '100%'], [1.25, '125%'], [1.5, '150%']], () => SET.text || 1, v => { SET.text = v; }));
+}
+function openSettings(from) { S.from = from; S.screen = 'settings'; buildSettings(); show('setScreen'); }
+function closeSettings() { if (S.from === 'pause') { S.screen = 'pause'; show('pauseScreen'); } else { S.screen = 'title'; titleTexts(); show('titleScreen'); } }
+const click = fn => () => { BRB.sfx.play('click'); audioOn(); fn(); };
+$('playBtn').onclick = click(() => startGame({ mode: 'round' }));
+$('freeBtn').onclick = click(() => startGame({ mode: 'free' }));
+for (const b of document.querySelectorAll('#diffSeg button')) b.onclick = click(() => { SET.diff = b.dataset.d; saveSet(); segVals(); });
+$('howBtn').onclick = click(() => { S.screen = 'how'; show('howScreen'); });
+$('howDone').onclick = click(() => { S.screen = 'title'; show('titleScreen'); });
+$('setBtn').onclick = click(() => openSettings('title'));
+$('pSetBtn').onclick = click(() => openSettings('pause'));
+$('setDone').onclick = click(closeSettings);
+$('resumeBtn').onclick = click(resume);
+$('finishBtn').onclick = click(endGame);
+$('menuBtn').onclick = click(toTitle);
+$('keepBtn').onclick = click(keepGoing);
+$('againBtn').onclick = click(() => startGame({ mode: S.mode }));
+$('endMenuBtn').onclick = click(toTitle);
+$('pauseBtn').onclick = click(pause);
+$('soundBtn').onclick = () => { BRB.sfx.mute(); soundIcon(); audioOn(); };
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+
+/* ---------- go ---------- */
+staticTexts(); soundIcon(); toTitle();
+renderer.setAnimationLoop(frame);
+S.ready = true;
+
+/* ---------- test hook (the platform's playtests, the layout checks and the cover picture) ---------- */
+function nearest(test) {
+  let best = null, bd = 1e18;
+  for (let i = 0; i < NOBJ; i++) { if (OST[i] !== 0 || !test(TYPES[OT[i]])) continue; const d = (OX[i] - player.x) ** 2 + (OZ[i] - player.z) ** 2; if (d < bd) { bd = d; best = i; } }
+  return best === null ? null : { i: best, type: TYPES[OT[best]].id, x: OX[best], z: OZ[best], s: TYPES[OT[best]].s, st: OST[best] };
+}
+window.__brbTest = {
+  state: () => ({ screen: S.screen, ready: S.ready, mode: S.mode, difficulty: S.diff, r: +player.r.toFixed(3), rT: +player.rT.toFixed(3), cap: +cap(player).toFixed(3), x: +player.x.toFixed(2), z: +player.z.toFixed(2),
+    alive: player.alive, points: S.points, eaten: S.eaten, left: +S.left.toFixed(1), unlocked: S.unlocked, rank: rankOf().rank, objects: NOBJ, movers: MV.length, falling: FALL.length,
+    holes: holes.map(h => ({ name: h.name, r: +h.rT.toFixed(2), x: +h.x.toFixed(1), z: +h.z.toFixed(1), alive: h.alive, player: h.isPlayer })),
+    fps: S.fps, quality: S.quality, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles }),
+  start(o) { startGame(Object.assign({ mode: 'round' }, o || {})); S.tipT = 0.01; },
+  drive(o) { drive = o ? Object.assign({}, o) : null; },
+  teleport(x, z) { player.x = x; player.z = z; player.vx = player.vz = 0; cam.x = x; cam.z = z; },
+  setSize(r) { player.r = player.rT = r; checkUnlocks(); },
+  nearest(o) { o = o || {}; return nearest(T => (o.type ? T.id === o.type : true) && (o.minS === undefined || T.s >= o.minS) && (o.maxS === undefined || T.s <= o.maxS)); },
+  objectState(i) { return { st: OST[i], type: TYPES[OT[i]].id, x: OX[i], z: OZ[i] }; },
+  types: () => TYPES.map(T => ({ id: T.id, s: T.s, g: T.g, pts: T.pts })),
+  rival(i, o) { const h = holes[i]; if (!h || h.isPlayer) return null; placeHole(h, o.x, o.z, o.r); h.safe = 0; if (o.freeze) { h.smul = 0; h.ai.next = 1e9; h.ai.tx = o.x; h.ai.tz = o.z; } return { name: h.name }; },
+  /** Run the game for a while without drawing (fast): -> state. */
+  sim(seconds, stepDt = 1 / 30) { for (let k = 0, n = Math.round(seconds / stepDt); k < n && S.screen === 'play'; k++) step(stepDt); for (const st of SETS) st.dirty = true; return this.state(); },
+  autopilot(on) { S.auto = !!on; player.ai.next = 0; player.smul = 1; },
+  freezeRivals(on) { for (const h of holes) if (!h.isPlayer) { h.smul = on ? 0 : CONFIG.rivalSpeed[S.diff]; if (on) { h.ai.next = 1e9; h.ai.tx = h.x; h.ai.tz = h.z; } else h.ai.next = 0; } },
+  setGrace(s) { S.grace = s; player.safe = Math.min(player.safe, s); },
+  setTimeLeft(s) { S.left = s; },
+  keepGoing() { if (S.screen === 'gulp') keepGoing(); },
+  pause() { pause(); }, resume() { resume(); }, finish() { endGame(); }, menu() { toTitle(); },
+  /** A good-looking moment for the cover picture: a medium hole swallowing cars among buildings, rivals nearby. */
+  cover() {
+    startGame({ mode: 'round', seed: 5 }); S.tipT = 0.01; S.grace = 999;
+    const x = -HALF + 9 * B, z = -HALF + 13 * B + 2;
+    placeHole(player, x, z, 6.4); player.safe = 0; cam.x = x; cam.z = z; cam.dist = 15 + 6.4 * 8.6 * (portrait ? 1.3 : 1); checkUnlocks(); S.bannerT = 0.01;
+    this.rival(1, { x: x + 1.5, z: z + 40, r: 3.2, freeze: true }); this.rival(2, { x: x - 33, z: z - 2, r: 8.5, freeze: true });
+  },
+};
+if (window.__gulpStartWanted) window.__brbTest.start(window.__gulpStartWanted);
+</script>

@@ -153,6 +153,12 @@ const RECIPES = {
     await f.evaluate(() => window.__brbTest.pick('a'));
     await wait(600);
   } },
+  'gulp-city': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await f.waitForFunction(() => window.__brbTest && window.__brbTest.state().ready, null, { timeout: 60000 });
+    // A middle-sized hole at a downtown crossing, swallowing traffic, a bigger rival and a smaller one close by.
+    await f.evaluate(() => window.__brbTest.cover());
+    await wait(4000);
+  } },
   // The live quiz games, in their solo practice (the same screens a class sees on the board).
   'quest-race': { viewport: PORTRAIT, touch: true, async prep(f) {
     await hook(f); await play(f);
