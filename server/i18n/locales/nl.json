@@ -5344,6 +5344,10 @@
     "kicker": "Oomba Live voor leerkrachten",
     "h1": "Live quizspellen die je hele klas samen speelt",
     "lead": "Zet het spel op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door jouw vragen, over elk vak en op elk niveau. Gratis, zonder reclame, en leerlingen hoeven niets te typen behalve de code.",
+    "demo": {
+      "h": "Bekijk het in één minuut",
+      "note": "Een video van één minuut zonder geluid, met ondertitels in beeld: een leraar start een Quest Race over natuurkunde, leerlingen doen mee op hun telefoon met een code en racen door de vragen. Daarna beschrijft een kind een spel aan de Builder, die het maakt en speelt om te controleren of het werkt, en het kind speelt het. Tot slot een paar van de leerspellen."
+    },
     "badges": {
       "free": "Gratis voor leerkrachten",
       "ads": "Geen reclame",

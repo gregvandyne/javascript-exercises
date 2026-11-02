@@ -803,6 +803,8 @@ ol.steps li{margin-bottom:var(--s2)}
   .lp .btn{white-space:normal;text-align:center;max-width:100%;padding-block:8px}}
 .lp-sec>h2{margin-bottom:var(--s2)}
 .lp-sec>p{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
+.lp-video{display:block;width:100%;max-width:960px;height:auto;aspect-ratio:16/9;margin:0 0 var(--s3);border-radius:var(--r);border:3px solid var(--text);background:var(--card);box-shadow:var(--shadow)}
+.lp-demo>p.small{color:var(--muted);margin-top:0}
 .lp-games{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--s4)}
 .lp-game{display:grid;grid-template-columns:84px minmax(0,1fr);gap:var(--s3);align-items:start;height:100%;padding:var(--s3);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);color:var(--text)}
 .lp-game:hover{text-decoration:none;box-shadow:var(--shadow-lg)}

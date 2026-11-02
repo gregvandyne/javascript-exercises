@@ -5345,6 +5345,10 @@
     "kicker": "Oomba Live for teachers",
     "h1": "Live quiz games your whole class plays together",
     "lead": "Put the game on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
+    "demo": {
+      "h": "See it in one minute",
+      "note": "A one-minute video with no sound and captions on screen: a teacher starts a Quest Race in Science, students join on their phones with a code and race through the questions, then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, a few of the learning games."
+    },
     "badges": {
       "free": "Free for teachers",
       "ads": "No ads",

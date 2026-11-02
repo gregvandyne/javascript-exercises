@@ -5343,6 +5343,10 @@
     "kicker": "Oomba Live para docentes",
     "h1": "Juegos de preguntas en vivo que toda su clase juega a la vez",
     "lead": "Muestre el juego en la pizarra. Sus estudiantes se unen desde sus propios dispositivos con un código de 7 cifras y compiten respondiendo a sus preguntas, de cualquier materia y de cualquier nivel. Gratis, sin anuncios y sin que tengan que escribir nada más que el código.",
+    "demo": {
+      "h": "Míralo en un minuto",
+      "note": "Un vídeo de un minuto sin sonido y con subtítulos en pantalla: un docente inicia una Quest Race de Ciencias, los alumnos se unen desde el móvil con un código y responden las preguntas. Después, un niño le describe un juego al Builder, que lo crea y lo juega para comprobar que funciona, y el niño lo juega. Al final, algunos de los juegos educativos."
+    },
     "badges": {
       "free": "Gratis para docentes",
       "ads": "Sin anuncios",
