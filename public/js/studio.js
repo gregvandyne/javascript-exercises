@@ -1305,9 +1305,9 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'fu-retry') { const b = a.closest('.msg.fu'); if (b) sendFollowUp(b.dataset.text || '', { cid: b.dataset.cid, el: b }); }
 });
 const proBtn = $('#st-pro');
-const setPro = v => { pro = v; proBtn.setAttribute('aria-pressed', String(pro)); try { localStorage.setItem('brb-pro', pro ? '1' : '0'); } catch { /* ignore */ } };
-proBtn.addEventListener('click', () => { setPro(!pro); toast(pro ? `✨ ${t('js.studio.proOn')}` : t('js.studio.proOff')); });
-setPro(pro);
+// Teachers and the admin have no switch: every message they send uses Pro quality (the server decides).
+const setPro = v => { pro = v; if (proBtn) proBtn.setAttribute('aria-pressed', String(pro)); try { localStorage.setItem('brb-pro', pro ? '1' : '0'); } catch { /* ignore */ } };
+if (proBtn) { proBtn.addEventListener('click', () => { setPro(!pro); toast(pro ? `✨ ${t('js.studio.proOn')}` : t('js.studio.proOff')); }); setPro(pro); }
 
 // ---------------------------------------------------------------- uploads (inspiration pictures and files)
 const OK_TYPES = /^(image\/(png|jpeg|webp|gif)|application\/pdf|text\/(plain|markdown|csv)|application\/json)$/;

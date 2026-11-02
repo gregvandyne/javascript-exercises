@@ -154,6 +154,7 @@
   "studio.top.publish": "Main button: share the game so others can play it. Max ~12 chars. Shown after 🚀.",
   "studio.chat.builder": "The name of the AI helper that builds games. Use one consistent word everywhere (here, in chat, in the Builder's own replies).",
   "studio.chat.pro": "Toggle for a slower, better AI model. Max ~14 chars.",
+  "studio.chat.proIncluded": "Tooltip on the Pro quality badge that teachers and the site admin see instead of the toggle: their messages always use the better AI model.",
   "studio.chat.placeholder": "Hint in the message box to the AI Builder.",
   "studio.preview.phone": "Preview size button, max ~8 chars.",
   "studio.preview.tablet": "Preview size button, max ~8 chars.",

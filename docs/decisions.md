@@ -2096,3 +2096,21 @@ expansive map) and asked for it rebuilt as an official game. `seed-games/gulp-ci
 - **Tests:** `tests/unit/gulp-city.test.js` (scan, words in every language, swallowing, big things waiting, rivals,
   the clock, free roam, draw budget, Arabic); `scripts/games-fit-audit.js` covers it at the 5 sizes; a screenshot cover
   (`scripts/covers.js`).
+
+## Trusted makers build with the Pro model (2 Nov 2026)
+
+- **Who:** `trustedMaker(user)` in `server/builder/usage.js`: the platform admin, school staff (admins and teachers of
+  a school) and anyone who teaches a class. Never students, other kids' or family accounts, guests or banned accounts.
+- **Pro by default:** every Builder message a trusted maker sends uses the Pro model (`runner.submit` sets it), whatever
+  the Studio switch says. The Studio shows a "Pro quality ✓" badge instead of the switch, with "Included for teachers"
+  as its tooltip (`studio.chat.proIncluded`, 13 languages).
+- **One message each:** a trusted maker's Pro message counts as one message (`allowanceFor().proWeight` is 1 for them),
+  never `PRO_TURN_WEIGHT`.
+- **Longer builds:** the time cap is `BUILDER_STAFF_TURN_MAX_SECONDS` (default 2400 = 40 minutes, against 20 for
+  everyone else), and a build may make `MAX_STEPS_TRUSTED` = 20 model calls (14 for everyone else), so there is room
+  to playtest and fix more. The time estimate and a resumed build use the same numbers. Output tokens per call
+  (`BUILDER_MAX_TOKENS`) and the effort level (already "high" for Pro) are unchanged.
+- **Cost:** these builds still count against the AI spending cap (`AI_DAILY_BUDGET_USD`, default $5 a day). A Pro build
+  with more calls costs several times a normal one, so a few teacher builds can reach the daily cap sooner; the cap
+  itself is unchanged. Raise it, or watch `/admin/stats`, if teachers build a lot.
+- **Tests:** `tests/unit/builder-trusted.test.js`.

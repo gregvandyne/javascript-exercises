@@ -27,7 +27,7 @@ import { restingUntil } from '../builder/anthropic.js';
 import { isBusy, cancel as cancelBuild, life as builderLife, submit, publicTurn, lastTurn } from '../builder/runner.js';
 import * as live from '../builder/live.js';
 import * as turns from '../builder/turns.js';
-import { allowanceFor, counter, familyOf } from '../builder/usage.js';
+import { allowanceFor, counter, familyOf, trustedMaker } from '../builder/usage.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
@@ -219,7 +219,9 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
         <div class="st-chat-head">
           <span class="st-bot" aria-hidden="true">🤖</span><b>${t('studio.chat.builder')}</b>
           <span class="st-turns" id="st-turns"${t.own('js.studio.turnsLeftToday') ? '' : html` data-class-en`}></span>
-          <button class="st-pro" type="button" id="st-pro" aria-pressed="false" title="${t('studio.chat.proTitle')}">✨ ${t('studio.chat.pro')}</button>
+          ${trustedMaker(req.user)
+            ? html`<span class="st-pro st-pro-incl" id="st-pro-incl" title="${t('studio.chat.proIncluded')}"><span aria-hidden="true">✨</span> ${t('studio.chat.pro')} <span aria-hidden="true">✓</span><span class="sr-only">: ${t('studio.chat.proIncluded')}</span></span>`
+            : html`<button class="st-pro" type="button" id="st-pro" aria-pressed="false" title="${t('studio.chat.proTitle')}">✨ ${t('studio.chat.pro')}</button>`}
         </div>
         <div class="st-log" id="st-log" role="log" aria-live="polite"></div>
         <form class="st-compose" id="st-compose" autocomplete="off">

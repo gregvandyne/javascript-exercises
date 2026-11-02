@@ -26,6 +26,20 @@ import * as aiBudget from '../services/ai-budget.js';
 import { ownerPlan, planLimits } from '../services/billing.js';
 import { schoolSide } from '../services/school-billing.js';
 import { resting } from './anthropic.js';
+import { isStaff, classesOf } from '../services/schools.js';
+import { getUser } from '../auth.js';
+
+/** Trusted makers: the platform admin, school staff (admins and teachers of a school) and teachers of a class. Their
+ *  Builder messages always use the Pro model (the strongest), count as one message (never the Pro weight), and get a
+ *  longer time cap and more model calls (docs/decisions.md "Trusted makers build with the Pro model"). Students, family
+ *  accounts and guests are unchanged. user: a user row or a user id. */
+export function trustedMaker(user) {
+  const u = user && typeof user === 'object' ? user : (user ? getUser(user) : null);
+  if (!u || u.is_guest || u.banned) return false;
+  return isStaff(u) || classesOf(u.id, 'teacher').length > 0;
+}
+/** How long one build attempt may run for this builder (runner.js cap, the time estimate). */
+export const turnCapMs = user => (trustedMaker(user) ? config.builderStaffTurnMaxMs : config.builderTurnMaxMs);
 
 export const dailyTurns = () => Math.max(0, config.builderDailyTurns | 0);
 /** Turns one message uses: PRO_TURN_WEIGHT for "Pro quality", else 1. */
@@ -84,7 +98,7 @@ const childExtrasOn = (userId, familyId, day) => q.get('SELECT COALESCE(SUM(weig
  *    schoolId: the school whose pool pays (null when none). classContext: show "{left} left today" only (no totals).
  */
 export function allowanceFor(user, day = today()) {
-  const id = idOf(user), daily = dailyTurns(), proWeight = weightOf(true);
+  const id = idOf(user), daily = dailyTurns(), proWeight = trustedMaker(user) ? 1 : weightOf(true);
   const used = id ? turnsUsed(id, day) : 0;
   const side = schoolSide(id);
   const classContext = side.student || !!side.school;
@@ -141,7 +155,7 @@ export const turnsLeft = (user, day = today()) => allowanceFor(user, day).left;
 export function takeTurn(user, day = today(), { pro = false } = {}) {
   const a = allowanceFor(user, day);
   if (a.left <= 0) return false;
-  const weight = weightOf(pro);
+  const weight = pro ? a.proWeight : 1;   // a trusted maker's Pro message is one message
   q.run('INSERT INTO builder_usage(user_id, day, turns) VALUES (?,?,?) ON CONFLICT(user_id, day) DO UPDATE SET turns=turns+excluded.turns', idOf(user), day, weight);
   return { source: a.source, pool: a.pool, weight };
 }
