@@ -64,7 +64,7 @@ test('saving: accounts save it (and can clear it), guests cannot, bad specs are 
   // the Me page has the editor (real radio buttons) for accounts, and a sign-up link for guests
   const me = await (await fetch(base + '/me', { headers: { cookie: cookieFor(kid.id) } })).text();
   assert.match(me, /id="charform"/); assert.match(me, /type="radio" name="skin"/); assert.match(me, /<legend>/); assert.match(me, /\/js\/character\.js/);
-  assert.match(me, /oomba-kit\/1\.1\.0\/oomba-kit\.js/, 'the preview draws with kit 1.1.0');
+  assert.match(me, /oomba-kit\/1\.1\.\d+\/oomba-kit\.js/, 'the preview draws with kit 1.1 (the latest patch)');
   const gme = await (await fetch(base + '/me', { headers: { cookie: cookieFor(guest.id) } })).text();
   assert.match(gme, /id="charform"/); assert.doesNotMatch(gme, /name="skin"/); assert.match(gme, /signup\?next=/);
 });

@@ -7,6 +7,7 @@
 // tool and saveVersion() writes nothing, so no version can land after a build ended or was handed off.
 import * as games from '../services/games.js';
 import { sanitizeGameHtml, MAX_GAME_BYTES } from '../services/sanitize.js';
+import { upgradeKitPins } from '../services/kit.js';
 import { scanVersion } from '../services/scanner.js';
 import { respectChoices } from '../services/stylelint.js';
 import { cleanText } from '../services/textfilter.js';
@@ -75,7 +76,8 @@ export function toolbox(ctx) {
     const g0 = game(); if (!g0 || g0.status === 'deleted') return { ok: false, forModel: 'The game was deleted.', stop: true };
     if (typeof rawHtml !== 'string' || rawHtml.trim().length < 20) return { ok: false, forModel: 'The game was empty. Send the complete game document.' };
     if (Buffer.byteLength(rawHtml) > MAX_GAME_BYTES) return { ok: false, forModel: 'The game is bigger than 2 MB. Make it smaller.' };
-    const { html, removed } = sanitizeGameHtml(rawHtml.replace(/^\s*<!doctype[^>]*>/i, ''));
+    // a game on a patched kit version (kit.js KIT_PATCHES) moves to the patch release whenever the Builder saves it
+    const { html, removed } = sanitizeGameHtml(upgradeKitPins(rawHtml.replace(/^\s*<!doctype[^>]*>/i, '')));
     const report = scanVersion(html);
     // Shown on the version card: no links or site names (the model may have read web pages), nothing the filter refuses.
     const n0 = cleanNote(stripLinks(notes), 200);

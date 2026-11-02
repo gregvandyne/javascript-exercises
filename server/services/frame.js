@@ -7,7 +7,7 @@ import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { sanitizeGameHtml } from './sanitize.js';
 import { deviceNeeds, VENDOR_PATH, DATA_PATH } from './vendor.js';
-import { KIT_PATH, upgradePackPins } from './kit.js';
+import { KIT_PATH, upgradeKitPins } from './kit.js';
 import { config } from '../config.js';
 
 const SDK_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/sdk/brb-sdk.js');
@@ -61,8 +61,8 @@ const cleanCache = new Map();
  *  game to 30-40 devices at once). */
 export function cleanGameHtml(gameHtml, cacheKey = null) {
   if (cacheKey && cleanCache.has(cacheKey)) return cleanCache.get(cacheKey);
-  // a saved game that pins a pack's older hash (kit.js KIT_PACKS_RETIRED) loads the pack's current file
-  const { html } = sanitizeGameHtml(upgradePackPins(gameHtml));
+  // a saved game on a patched kit version (kit.js KIT_PATCHES) or with a pack's older hash loads the current files
+  const { html } = sanitizeGameHtml(upgradeKitPins(gameHtml));
   if (cacheKey) { if (cleanCache.size >= 32) cleanCache.delete(cleanCache.keys().next().value); cleanCache.set(cacheKey, html); }
   return html;
 }

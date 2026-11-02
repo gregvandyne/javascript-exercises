@@ -8,7 +8,7 @@ test('swish-flick: kit title, arcade to the result card, story win, pause, no er
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('/play/swish-flick');
   const f = await gameFrame(page);
-  await f.waitForFunction(() => window.__brbTest && window.Oomba && Oomba.version === '1.1.0');
+  await f.waitForFunction(() => window.__brbTest && window.Oomba && Oomba.version === '1.1.1');
   await expect(f.locator('.ok-title-screen #goArcade')).toBeVisible();
   expect(await f.evaluate(() => __brbTest.state().screen)).toBe('title');
   // arcade from the title's own button: a few solved shots, then the clock runs out -> the kit's card with the stats

@@ -174,7 +174,7 @@ test('lint and scanner: live notes for a game that loads the live pack; the mock
   assert.equal(scanVersion(live).status, 'pass'); assert.equal(scanVersion(live).live, true);
   assert.equal(withLive(live), live, 'once');
   // half-way: the pack but no ready() / start / report -> lint notes the Builder can act on
-  const half = html.replace(/(<script src="\/vendor\/oomba-kit\/1\.1\.0\/oomba-kit\.js"[^>]*><\/script>)/, `$1\n${kitPackTag('live')}`);
+  const half = html.replace(/(<script src="\/vendor\/oomba-kit\/\d+\.\d+\.\d+\/oomba-kit\.js"[^>]*><\/script>)/, `$1\n${kitPackTag('live')}`);
   const codes = lintGame(half).map(l => l.code);
   for (const c of ['live_ready_call', 'live_no_start', 'live_no_report']) assert.ok(codes.includes(c), c);
   // aliases count: const L = Oomba.live; L.ready(...)
@@ -245,11 +245,11 @@ test('teams: off and safe solo; tms/ts/bn become the team API and events; team s
 });
 
 test('every pin of the live pack equals the manifest (kit.js, the three seed games, the platform lobby)', async () => {
-  const man = JSON.parse(fs.readFileSync('public/vendor/oomba-kit/1.1.0/manifest.json', 'utf8'));
+  const { KIT_PACKS, KIT_LATEST } = await import('../../server/services/kit.js');
+  const man = JSON.parse(fs.readFileSync(`public/vendor/oomba-kit/${KIT_LATEST}/manifest.json`, 'utf8'));
   const want = man.files ? man.files['packs/live.js'] : man['packs/live.js'];
   const sri = want || JSON.stringify(man).match(/"packs\/live\.js":\s*"([^"]+)"/)[1];
-  const { KIT_PACKS } = await import('../../server/services/kit.js');
-  assert.equal(KIT_PACKS['1.1.0'].live, sri);
+  assert.equal(KIT_PACKS[KIT_LATEST].live, sri);
   for (const f of ['seed-games/quest-race.html', 'seed-games/question-battle.html', 'seed-games/hero-of-sunvale.html', 'server/live/lobby.html']) {
     const m = fs.readFileSync(f, 'utf8').match(/packs\/live\.js" integrity="([^"]+)"/);
     assert.ok(m, f); assert.equal(m[1], sri, f);
