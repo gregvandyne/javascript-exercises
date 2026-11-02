@@ -141,6 +141,11 @@ toon (cel) shading with a soft rim light and Ink outlines, the kit's colours, a 
 low-poly rigs or as billboards of their 2D art, and the kit's screens over the canvas. `THREE` is passed in, never
 imported by the kit. 2D games never load this pack.
 
+**For existing games only.** Since November 2026 the AI Builder does not use the bridge (or any of the kit) for new 3D
+games: it builds each 3D world itself from the builder's idea, starting from its own kit-free starter
+(`server/builder/templates/world3d.html`, see docs/decisions.md "3D worlds are the Builder's own"). The bridge stays for
+games already built on it (Star Island and older Builder games); the Builder gets this reference only when it edits one.
+
 <!-- builder:3d -->
 **3D games on the kit.** Load the kit tag, then `{{PACK_TAG:dress}}` (themes) and `{{PACK_TAG:bridge-3d}}` (plus the
 packs a theme needs, and `{{PACK_TAG:style-bold}}` for `style: 'bold'`), then three.js with its import map. One call

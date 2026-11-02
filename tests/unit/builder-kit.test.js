@@ -65,9 +65,9 @@ test('KIT_RULES ends the cached system prompt, with the pinned kit and pack tags
   for (const n of new Set(names)) assert.ok(KIT_RULES.includes(n), `KIT_RULES names ${n}`);
   for (const s of ['Oomba.game', 'Oomba.level.grid', 'w.spawn', 'w.ask', 'collectible', 'quizGate', 'one key per line', 'WORDS', 'game clock', 'upgrade', 'var(--ok-card)', 'motion', 'Art direction'])
     assert.ok(SYSTEM_PROMPT.includes(s), s);
-  // The tool may start from any template now (they are small kit games).
+  // The tool may start from the 2D kit templates, and from world3d (its own 3D starter, no kit) for every 3D game; never Star Island.
   const start = TOOLS.find(t => t.name === 'start_from_template');
-  assert.deepEqual(start.input_schema.properties.template.enum, ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'island']);
+  assert.deepEqual(start.input_schema.properties.template.enum, ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d']);
 });
 
 test('the three example games in the rules run in the kit with only the packs they load: straight into play, no warnings', async () => {

@@ -14,12 +14,12 @@ import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
 import { localeInfo } from '../i18n/index.js';
-import { templateHtml, templateInfo, TEMPLATE_KEYS } from './catalog.js';
+import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS } from './catalog.js';
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 
-// Templates the Builder may start from with start_from_template: every template (all on the Oomba Kit; island is 3D).
-const STARTERS = TEMPLATE_KEYS;
+// Templates the Builder may start from with start_from_template: the 2D kit templates, and world3d (its own 3D starter).
+const STARTERS = BUILDER_TEMPLATE_KEYS;
 
 const CATS = games.CATEGORY_KEYS;
 /** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
@@ -210,8 +210,8 @@ export function toolbox(ctx) {
       if (stopped()) return { ok: false, forModel: 'Stopped.', stop: true };   // stopped while the files were read
       steps.start('template');
       const r = saveVersion(html, (input && input.notes) || `Started from ${info ? info.title : key}`);
-      if (r.ok) r.forModel += key === 'island'
-        ? ` It is ${info ? info.title : key}. Now make it theirs with edit_game: change the CONFIG block near the top of the module script (and the I18N table for words), following the 3D RULES.`
+      if (r.ok) r.forModel += key === 'world3d'
+        ? ' It is the 3D starter (no Oomba Kit). Now, in this same turn, replace its EXAMPLE world with the world the builder asked for (buildWorld, makeHero, SPAWN, onPickup, CONFIG and the I18N words in every language), following the 3D RULES, then playtest.'
         : ` It is ${info ? info.title : key}, an Oomba Kit game. Now make it theirs with edit_game: change lines of its CONFIG block (one key per line: title, the hero and cast as character specs, the biome, numbers, item lists), its content lists, and the WORDS table (every language you change), following the KIT RULES.`;
       return r;
     },

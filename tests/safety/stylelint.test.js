@@ -70,13 +70,15 @@ test('the notes never change the safety status, and the Builder layer is not the
   assert.deepEqual(lintGame(withLayer(GOOD, { speed: 1.25, look: { fox: { colors: { base: 'sky' } } } })), []);
 });
 
-test('3D kit games: materials need colour codes in code, so only their CSS counts', () => {
+test('3D games: a world of its own gets no kit look notes; a bridge game\'s CSS still counts', () => {
   const three = `<title>T</title><canvas id="view"></canvas>\n${kitTag()}\n${threeImportMap()}\n<script type="module">\nimport * as THREE from 'three';\nconst m = new THREE.MeshLambertMaterial({ color: '#56bb48' });\n</script>`;
-  assert.deepEqual(codes(three), ['three_bridge'], 'a 3D kit game is pointed at the 3D bridge');
-  assert.deepEqual(codes(three.replace('<canvas', '<style>.tip{background:#fff}</style><canvas')), ['raw_hex', 'three_bridge']);
+  // a 3D world of its own (the Builder's world3d) loads the kit only for Oomba Live: never pointed at the kit's look
+  assert.deepEqual(codes(three), [], 'a 3D world of its own is not pointed at the 3D bridge');
+  assert.deepEqual(codes(three.replace('<canvas', '<style>.tip{background:#fff;font-family:system-ui}</style><canvas')), []);
   const bridged = three.replace(kitTag(), kitTag() + kitPackTag('bridge-3d')).replace("const m =", "const B = Oomba.three(THREE, { scene });\nconst m =");
   assert.deepEqual(lintGame(bridged), []);
   assert.deepEqual(codes(bridged.replace(kitPackTag('bridge-3d'), '')), ['pack_missing']);
+  assert.deepEqual(codes(bridged.replace('<canvas', '<style>.tip{background:#fff}</style><canvas')), ['raw_hex'], 'a bridge game\'s CSS colours count');
 });
 
 test('false positives from the review stay quiet: words in the game\'s text, "result-row", "Room #101", id selectors after a pseudo-class', () => {

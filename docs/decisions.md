@@ -2041,3 +2041,36 @@ in `tts-lines.GAMES`. Design: docs/tts-design.md "A game the admin switched on".
   speak. The existing backstops (rude words, personal info, the player's name, length) still apply. Role: the one the
   game asks for if known, else narrator.
 - Kid-facing text did not change (the Voices button and sheet are the same), so no new translations.
+
+## 3D worlds are the Builder's own; the Oomba Kit is for 2D (November 2026)
+
+The owner found kit-made 3D worlds generic: every 3D game came out as Star Island or a `B.world` meadow, whatever the kid
+asked for. Now:
+- **2D games:** unchanged, on the Oomba Kit.
+- **3D games:** never on the kit (no kit tag, no `Oomba.three`, no kit screens). The Builder calls
+  `start_from_template('world3d')`, a kit-free starter (`server/builder/templates/world3d.html`), and in the same turn
+  replaces its EXAMPLE world (`buildWorld`, `makeHero`, `SPAWN`, `onPickup`, CONFIG, the I18N words) with the world the
+  builder described: land shape, buildings, landmarks, colours, sky and goal.
+- **What the starter keeps, so every world plays right:**
+  - A player controller: gravity; ground from the land's `height(x, z)` and solids' tops; walks up slopes up to
+    `CONFIG.slope` and ledges up to `CONFIG.step`; walls stop it and it slides along them, never lifted; jumps (Space, Z,
+    the button; never up or W) that land; bounds and a respawn after a fall.
+  - A follow camera pulled in so it is never under the land or inside a solid.
+  - Touch joystick, jump button and keyboard.
+  - Its own title, HUD, pause and results screens in the 13 languages, light and dark.
+  - The pixel-ratio cap and a quality ladder, context-loss handlers, and `__brbTest` (state, start, drive, teleport, look).
+- **Routing:**
+  - The 3D RULES are sent when a message asks for 3D (`asksFor3d`, 13 languages) or the game is 3D (`isThreeGame`).
+  - The tool's template list is `BUILDER_TEMPLATE_KEYS`: the seven 2D templates plus `world3d`, never `island`.
+  - The bridge's API reference (`KIT_3D_BRIDGE_RULES`) goes only with a game that already calls `Oomba.three`. Small
+    fixes may stay on the bridge; a changed world is rebuilt from `world3d`.
+- **Live 3D worlds** load the kit tag and the live pack only for the Oomba Live connection. They draw other players
+  themselves from `Oomba.live.flat().positions()`.
+  - The style lint gives no kit look notes to a 3D game that does not call `Oomba.three`, and the `three_bridge` note
+    is gone.
+- **Star Island** stays a "Start from" card a kid can pick, and the no-AI mock Builder still uses it for 3D: it cannot
+  design a world.
+- **Tests:**
+  - `tests/unit/world3d-frame.test.js` walks the starter's player in Chromium: flat ground, a wall and sliding along it,
+    a roof too high to jump onto, steps, a hill, a jump, the edge.
+  - Also `templates.test.js`, `builder-claude.test.js` and `builder-kit.test.js`.

@@ -8,7 +8,7 @@ import { fakeWin } from '../support/kit-fake.js';
 import { createKit } from '../../kit/src/index.js';
 import { loadTemplate } from '../../server/builder/templates/index.js';
 import { lintGame } from '../../server/services/stylelint.js';
-import { THREE_D_RULES, KIT_RULES } from '../../server/builder/prompt.js';
+import { THREE_D_RULES, KIT_RULES, KIT_3D_BRIDGE_RULES, usesKit3d } from '../../server/builder/prompt.js';
 import { kitPackTag } from '../../server/services/kit.js';
 
 const THREE = await import('../../public/vendor/three/0.185.1/three.module.min.js');
@@ -164,7 +164,7 @@ test('performance: tier caps, the governor steps quality down on slow frames and
   assert.ok(low.frames <= 3, `30 fps on a low tier (${low.frames} renders in 4 frames)`);
 });
 
-test('Builder: Star Island is on the bridge; the 3D rules teach it; the lint asks for the pack', () => {
+test('Star Island is on the bridge; the bridge reference goes only with older bridge games; the lint asks for the pack', () => {
   const html = loadTemplate('island');
   assert.ok(html.includes(kitPackTag('bridge-3d')) && html.includes(kitPackTag('dress')));
   assert.match(html, /Oomba\.three\(THREE, \{ renderer, scene, camera, theme: CONFIG\.theme/);
@@ -173,8 +173,10 @@ test('Builder: Star Island is on the bridge; the 3D rules teach it; the lint ask
   const noPack = html.replace(kitPackTag('bridge-3d'), '');
   assert.ok(lintGame(noPack).some(x => x.code === 'pack_missing'));
   const plain = html.replace(/Oomba\.three\(/g, 'makeWorld(');
-  assert.ok(lintGame(plain).some(x => x.code === 'three_bridge'), 'a 3D kit game without the bridge is told about it');
-  for (const s of ['Oomba.three(THREE', 'B.rig(', 'B.sprite(', 'B.inkify(', 'B.bake(', 'B.motion', kitPackTag('bridge-3d')]) assert.ok(THREE_D_RULES.includes(s), s);
+  assert.ok(!lintGame(plain).some(x => x.code === 'three_bridge'), 'a 3D world of its own is never pointed at the bridge');
+  for (const s of ['Oomba.three(THREE', 'B.rig(', 'B.sprite(', 'B.inkify(', 'B.bake(', 'B.motion', kitPackTag('bridge-3d')]) assert.ok(KIT_3D_BRIDGE_RULES.includes(s), s);
+  assert.ok(!THREE_D_RULES.includes('Oomba.three(THREE') && !THREE_D_RULES.includes(kitPackTag('bridge-3d')), 'new 3D games are not taught the bridge');
+  assert.ok(usesKit3d(html) && !usesKit3d(loadTemplate('world3d')));
   assert.ok(!KIT_RULES.includes('B.rig('), '2D builds do not carry the 3D bridge\'s rules');
 });
 

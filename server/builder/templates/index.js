@@ -30,6 +30,10 @@ export const TEMPLATES = [
   // 3D: uses the self-hosted Three.js (see server/services/vendor.js); the platform checks the device can run it.
   { key: 'island', title: 'Star Island', icon: '🏝️', cover: 'ocean', category: 'adventure', players: 1, threeD: true,
     description: 'A 3D island to explore: run, jump up floating rocks and find every shiny star before time runs out.' },
+  // The Builder's own 3D starter (no Oomba Kit): a renderer, a walking player, a follow camera, controls and screens, with
+  // an EXAMPLE world the Builder replaces with the world the builder asked for. Not a "Start from" card (builderOnly).
+  { key: 'world3d', title: 'My 3D World', icon: '🌍', cover: 'ocean', category: 'adventure', players: 1, threeD: true, builderOnly: true,
+    description: 'A 3D world of your own to explore.' },
 ];
 
 const cache = new Map();

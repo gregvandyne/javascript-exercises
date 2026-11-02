@@ -574,6 +574,10 @@ packs and props, the style lint checks names and packs).
 
 ### 6.6 The 3D bridge (kit 1.1.0, pack `bridge-3d`)
 
+> Since November 2026 the AI Builder no longer builds new 3D games on the kit: the Oomba Kit is for 2D games, and a 3D
+> world is the Builder's own Three.js world, designed from the builder's words (docs/decisions.md "3D worlds are the
+> Builder's own"). The bridge stays, unchanged and versioned, for the games already on it (Star Island, older games).
+
 three.js games get the Oomba Ink look from one pack (`kit/packs/bridge-3d.js`, 10.4 KB br, cap 14 KB), so 2D games
 pay nothing. `Oomba.three(THREE, { renderer, scene, camera, theme })` → a bridge `B` (the API is in
 [kit-api.md](kit-api.md#the-3d-bridge-kit-110-pack-bridge-3d)). `THREE` is passed in; the pack never imports it.
@@ -1127,13 +1131,13 @@ Everything is also reachable by keyboard, touch and gamepad. In `ar` the HUD, me
 The kit is the default look, never a rule over a kid's own idea. The style lint (`server/services/stylelint.js`) and the
 Builder respect a builder's explicit creative choices: their colours, their characters and made-up creatures, odd or
 mixed themes, a plain or minimal look, emoji or a font they asked for.
-- **Look notes are suggestions.** `raw_hex emoji_text emoji_dom font theme_name dress_missing three_bridge` are level
+- **Look notes are suggestions.** `raw_hex emoji_text emoji_dom font theme_name dress_missing` are level
   `info` with `look: true` (they never were blocking); the model reads them as "Look suggestion, skip it if the builder
   asked for this look".
 - **Asked-for looks are dropped.** `lintGame(html, {request})` / `respectChoices(lint, requests)` take the builder's
   own messages for the game (`agent.js` passes every message so far to the toolbox): colour words or codes drop
   `raw_hex`, emoji drop the emoji notes, font words drop `font`, plain / simple / minimal / "my own style" drop
-  `dress_missing` and `three_bridge`, and a made-up theme name the builder used themselves drops `theme_name` (words in
+  `dress_missing`, and a made-up theme name the builder used themselves drops `theme_name` (words in
   the site's languages, not only English). Made-up creatures are never flagged (an unknown species is not a pack name).
 - **The rule is in KIT_RULES** (docs/kit-api.md, "The builder's own choices always win") and in the style-check
   sentence after each version. Tests: `tests/safety/stylelint.test.js` (the lint) and

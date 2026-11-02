@@ -8,7 +8,11 @@ import { fileURLToPath } from 'node:url';
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const FALLBACK_HTML = fs.readFileSync(path.join(DIR, 'fallback-game.html'), 'utf8');
 
+// The Studio's "Start from" cards (a kid may pick Star Island, a finished 3D game on the kit's 3D bridge).
 export const TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'island'];
+// What the AI Builder may start from: the 2D kit templates, and for every 3D game its own starter (world3d, no Oomba
+// Kit), whose example world it replaces with the world the builder asked for. The Builder never starts from Star Island.
+export const BUILDER_TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d'];
 const DEFAULTS = {
   quiz: { title: 'Quiz Show', icon: '❓', cover: 'sunset', category: 'learning', players: 1, description: 'Quick questions with a timer and a cheering crowd.' },
   runner: { title: 'Runner', icon: '🏃', cover: 'forest', category: 'arcade', players: 1, description: 'Jump over bumps and grab coins as the speed ramps up.' },
@@ -18,6 +22,7 @@ const DEFAULTS = {
   duel: { title: 'Two-Player Duel', icon: '⚔️', cover: 'lava', category: 'silly', players: 2, description: 'Two players, one screen. Who is fastest?' },
   board: { title: 'Board Game', icon: '🎲', cover: 'gold', category: 'board', players: 2, description: 'Roll the dice and race to the end.' },
   island: { title: 'Star Island', icon: '🏝️', cover: 'ocean', category: 'adventure', players: 1, description: 'A 3D island to explore and find the stars.' },
+  world3d: { title: 'My 3D World', icon: '🌍', cover: 'ocean', category: 'adventure', players: 1, description: 'A 3D world of your own to explore.' },
 };
 
 let modPromise = null;
@@ -32,7 +37,10 @@ export async function listTemplates() {
   const fromMod = m && Array.isArray(m.TEMPLATES) ? m.TEMPLATES : [];
   return TEMPLATE_KEYS.map(key => ({ key, ...DEFAULTS[key], ...(fromMod.find(t => t && t.key === key) || {}) }));
 }
-export async function templateInfo(key) { return (await listTemplates()).find(t => t.key === key) || null; }
+export async function templateInfo(key) {
+  const m = await mod(), fromMod = m && Array.isArray(m.TEMPLATES) ? m.TEMPLATES : [];
+  return DEFAULTS[key] ? { key, ...DEFAULTS[key], ...(fromMod.find(t => t && t.key === key) || {}) } : null;
+}
 
 /** The template's game HTML, or the built-in fallback game if the template is missing or broken. */
 export async function templateHtml(key) {
