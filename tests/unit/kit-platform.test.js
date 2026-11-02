@@ -141,8 +141,11 @@ test('a saved game on a patched kit version is served on its patch release (core
   }
   const latest = GAME(K.kitTag());
   assert.equal(K.upgradeKitPins(latest), latest);
-  const old = GAME(K.kitTag('1.0.0'));
-  assert.equal(K.upgradeKitPins(old), old, '1.0.0 has no patch release');
+  // the first kit gets the same fixes: 1.0.0 games are served on 1.0.1 (and 1.0.1 itself stays as it is)
+  assert.equal(K.KIT_PATCHES['1.0.0'], '1.0.1');
+  assert.equal(K.kitVersion(K.upgradeKitPins(GAME(K.kitTag('1.0.0')))), '1.0.1');
+  const v101 = GAME(K.kitTag('1.0.1'));
+  assert.equal(K.upgradeKitPins(v101), v101);
 });
 
 test('a saved game that pins an unlocked pack\'s older hash (the live pack before teams) passes the scanner, counts as live-ready and is served with the current hash', async () => {
