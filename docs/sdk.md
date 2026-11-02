@@ -287,6 +287,13 @@ in its box, things on top of each other, tap targets under 44px, buttons squashe
 device. The system prompt's "EVERY DEVICE, TABLET FIRST" rule says the game must look right on all five, tablets above
 all, and that the Builder never finishes while any view looks wrong.
 
+After the AI finishes a build that saved a version, the platform also plays it by itself (the automatic playtest,
+`server/builder/autotest.js`): about 18 s of keys, taps, swipes and the game's own buttons, watching the screen, the
+score (`__brbTest.state()`, numbers on screen, `BRB.score` / `BRB.gameOver`) and errors, then the layout on phone
+landscape, tablet portrait and desktop. Real problems go back to the AI for a fix round (1 a build, 3 for teachers,
+school staff and the admin) and the fixed version is played again (docs/decisions.md "The Builder playtests every
+build by itself").
+
 Without an API key a deterministic mock Builder is used. It adapts the "Start from" templates and makes changes like
 "make it harder", "change the colour", "change the hero to a dragon" or "add a second level" through a small
 "tune-up" script (`server/builder/layer.js`) whose settings are single lines such as `BRB_TUNE.speed = 1.25;`,

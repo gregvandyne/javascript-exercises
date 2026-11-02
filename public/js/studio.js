@@ -338,15 +338,15 @@ function renderLog() {
 // The top of the live card ("eta" below): how long builds like this usually take, from the server's numbers (eta.js),
 // and that the builder can close the page or sign out. Both appear at the first real authoring step or once the build
 // has lasted the estimate's showAt (LEAVE_AT without one), so a quick question reply never flashes them.
-const STEP_ICON = { search: '🔎', screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', ask: '💬', resume: '🔄', read: '📬', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
-const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read', 'search']);
+const STEP_ICON = { search: '🔎', screen: '🛡️', blocks: '🧱', think: '🧠', write: '✍️', edit: '✏️', fix: '🛠️', template: '🏝️', check: '🔒', name: '🏷️', playtest: '📱', notes: '🧪', autotest: '🎮', ask: '💬', resume: '🔄', read: '📬', sending: '📨', offline: '📶', waiting: '⏳', restart: '🔄' };
+const SERVER_STEPS = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read', 'search', 'autotest']);
 // Timed rows run until the next row starts (spinner, seconds); the others take milliseconds and arrive done.
-const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'search', 'sending', 'offline', 'waiting', 'restart']);
+const TIMED = new Set(['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'playtest', 'autotest', 'search', 'sending', 'offline', 'waiting', 'restart']);
 const AUTHOR = new Set(['write', 'edit', 'fix']);
 // An instant row's learning line is shown under the next timed row ("Just now: …"): one per row, most useful first,
 // each at most once a turn.
 const JUST_NOW = ['check', 'read', 'template', 'notes', 'name', 'ask'];
-const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next', 'msg']);
+const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next', 'msg', 'auto']);
 const FACTS = [...'abcdefghijk'];
 const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;
 const LONG_AT = 45000, TIP_LONG = 15000;   // a round still planning after 45 s says that big ideas take a while   // how long each 💡 line stays
@@ -399,9 +399,11 @@ function stepLabel(k, f, done) {
     const why = THINK_WHY.has(f.c) ? f.c : 'next';
     // Round 1 says "reading" only until the AI starts answering; after that it is planning (it may think for a while).
     const plan = why === 'start' && (f.a || f.th);
-    return ST(`think.${done ? 'done' : 'now'}.${plan ? (f.g ? 'planGame' : 'plan') : why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1, m: f.m || 1 });
+    return ST(`think.${done ? 'done' : 'now'}.${plan ? (f.g ? 'planGame' : 'plan') : why === 'start' && f.g ? 'startGame' : why}`, { n: f.n || 1, m: f.m || 1, p: f.p || 1 });
   }
   if (k === 'check') return ST(`check.${['pass', 'flag', 'fail'].includes(f.st) ? f.st : 'flag'}`, { v: f.v || 1, k: f.k || 1 });
+  // The platform's own playtest: how many problems it found once it is done (none: it passed).
+  if (k === 'autotest') return f.ok === false ? ST('autotest.failed') : !done || typeof f.probs !== 'number' ? ST('autotest.now') : f.probs ? ST('autotest.done', { count: f.probs }) : ST('autotest.clean');
   if (k === 'name') {
     const title = f.title ? isolate(f.title) : '', icon = f.icon || '';
     return title && icon ? ST('name.titleIcon', { title, icon }) : title ? ST('name.title', { title }) : icon ? ST('name.icon', { icon }) : ST('name.details');

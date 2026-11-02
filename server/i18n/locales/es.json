@@ -1621,7 +1621,8 @@
       "notYours": "Otra persona empezó esta construcción. Espera a que termine."
     },
     "budgetStop": "El Constructor de IA tiene que descansar ahora, así que paré aquí. Todo lo que hice hasta ahora está guardado.",
-    "searchStopped": "No pude buscar eso, así que paré aquí. ¡Prueba a pedirlo de otra forma!"
+    "searchStopped": "No pude buscar eso, así que paré aquí. ¡Prueba a pedirlo de otra forma!",
+    "autotestLeft": "Atención: mi prueba automática todavía encontró {count, plural, one {# problema} other {# problemas}} que no pude arreglar esta vez. Pídeme “arregla los problemas de la prueba” y sigo."
   },
   "uploads": {
     "tooFast": "¡Son muchos archivos! Espera un minuto y vuelve a intentarlo.",
@@ -1990,7 +1991,8 @@
             "next": "Ronda {n}: decidiendo qué hacer ahora",
             "plan": "Ronda {n}: planeando cómo construirlo",
             "planGame": "Ronda {n}: planeando los cambios",
-            "msg": "Ronda {n}: {m, plural, one {leyendo tu mensaje nuevo} other {leyendo tus # mensajes nuevos}}"
+            "msg": "Ronda {n}: {m, plural, one {leyendo tu mensaje nuevo} other {leyendo tus # mensajes nuevos}}",
+            "auto": "Ronda {n}: arreglando {p, plural, one {el problema} other {los # problemas}} que encontró la prueba"
           },
           "done": {
             "start": "Ronda {n}: leyó tu mensaje",
@@ -2001,7 +2003,8 @@
             "next": "Ronda {n}: decidió qué hacer ahora",
             "plan": "Ronda {n}: planeó cómo construirlo",
             "planGame": "Ronda {n}: planeó los cambios",
-            "msg": "Ronda {n}: {m, plural, one {leyó tu mensaje nuevo} other {leyó tus # mensajes nuevos}}"
+            "msg": "Ronda {n}: {m, plural, one {leyó tu mensaje nuevo} other {leyó tus # mensajes nuevos}}",
+            "auto": "Ronda {n}: arreglé lo que encontró la prueba"
           },
           "learn": {
             "start": "Una ronda es cada vez que la app le pregunta a la IA. No recuerda nada, así que la app le vuelve a enviar el chat.",
@@ -2011,7 +2014,8 @@
             "next": "Después de cada herramienta, la IA lee el resultado y elige el siguiente paso. Ese ciclo la convierte en un agente.",
             "thinking": "Antes de responder, esta IA piensa en silencio, un poco como cuando resuelves algo en tu cabeza.",
             "long": "Con las ideas grandes, la IA puede tardar un minuto o dos en planear antes de escribir código. Sigue trabajando aunque salgas de esta página.",
-            "msg": "Esta IA lee los mensajes nuevos entre un paso y otro, no en medio de uno. Así puede cambiar su plan."
+            "msg": "Esta IA lee los mensajes nuevos entre un paso y otro, no en medio de uno. Así puede cambiar su plan.",
+            "auto": "Cuando la prueba encuentra un problema, la IA lee el informe y arregla solo esa parte. Luego la app vuelve a jugar."
           }
         },
         "write": {
@@ -2105,6 +2109,13 @@
           "now": "Buscando un dato",
           "done": "Buscó un dato",
           "learn": "La IA puede buscar un dato real, como lo rápido que corre un guepardo, para que tu juego sea correcto. Nunca te muestra páginas web, y un control de seguridad lee lo que encontró."
+        },
+        "autotest": {
+          "now": "Jugando a tu juego como un jugador",
+          "done": "Lo jugué como un jugador: {count, plural, one {encontré # problema} other {encontré # problemas}}",
+          "clean": "Lo jugué como un jugador: todo funciona ✓",
+          "failed": "Esta vez no pude jugarlo solo",
+          "learn": "Después de cada construcción, la app juega sola unos 20 segundos: pulsa teclas, toca, desliza y comprueba que la puntuación cambia y que nada se rompe."
         }
       },
       "resumed": "🔄 El servidor se reinició, así que el Constructor siguió desde donde estaba.",

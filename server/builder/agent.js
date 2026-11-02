@@ -21,6 +21,7 @@ import { tEn } from '../i18n/index.js';
 import * as turns from './turns.js';
 import * as eta from './eta.js';
 import * as runner from './runner.js';
+import * as autotest from './autotest.js';
 export { isBusy, busyCount } from './runner.js';
 
 export const MAX_INPUT = 2000;
@@ -127,6 +128,8 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
       between: (round, o) => runner.between(job, round, o), settle: () => runner.settle(job), pending: () => job.waiting.length,
       pool: job.pool, cost: usd => { try { turns.addCost(job.id, usd); } catch { /* the database is closing */ } },
       resume: carry, maxRounds, trusted: trustedMaker(user),
+      // the automatic playtest's fix rounds (autotest.js), and when the build's time cap ends it
+      autoFixes: autotest.fixRounds(user), deadline: job.t0 + turnCapMs(user),
     })) };
   } catch (e) {
     // An abort (time cap, delete, ban, hand-off) is not the Builder getting muddled.

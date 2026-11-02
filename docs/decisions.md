@@ -2097,6 +2097,42 @@ expansive map) and asked for it rebuilt as an official game. `seed-games/gulp-ci
   the clock, free roam, draw budget, Arabic); `scripts/games-fit-audit.js` covers it at the 5 sizes; a screenshot cover
   (`scripts/covers.js`).
 
+## The Builder playtests every build by itself (November 2026)
+
+The Builder's own `playtest_game` is something the AI may or may not call, and it is a look (pictures and layout), not
+a play. Now the platform plays every build itself before the build ends (`server/builder/autotest.js`,
+`snapshot.js` `autoplay()`), and sends what it found back to the AI to fix:
+- **When:** the AI ends its turn (a reply, or a question with `ask_user`) after saving a new version in this build.
+  A chat-only answer is never played. A build that ends some other way (out of rounds, the AI budget, a failed scan)
+  with an unplayed version is played once, report only.
+- **What it does:** in the same sandboxed frame and CSP as players get (no network), it starts the game (the test
+  hook's `start()`, a Play-ish button in any of the 13 languages, the biggest button, the middle), then about 18 s of
+  input: arrow keys, WASD, space, Enter, 1, taps across the screen, swipes and drags (a touch joystick), the game's own
+  buttons (never pause, settings, sound, menu or leave) and mouse movement. It samples the screen (how much changes
+  with and without input, how much is one colour), reads `__brbTest.state()` (score, scene/screen, hero/pos), the
+  numbers on screen and what the SDK posts (`brb:score`, `brb:gameover`, `brb:save`), counts frames, and checks the
+  layout at phone landscape, tablet portrait and desktop (the same check as `playtest_game`). About 25 s a run, inside
+  the usual one-at-a-time screenshot queue (55 s cap; a run that times out is reported as a game that may freeze).
+- **The report:** started? input made a difference (yes / no / unclear)? score changed? game over reached (and how
+  soon)? Problems the AI must look at: errors (deduplicated, top 5, quoted), start does nothing, a blank screen, a
+  frozen screen, controls that do nothing (when the game reports a hero), a game over within 3 s, very slow (under 8
+  frames a second), layout problems per device, kit warnings. "The score never changed in a game that has a score" is
+  a soft finding (a calm game, a quiz waiting for an answer or a story may be fine): the AI gets it once per build and
+  judges it. What the game printed is data, cleaned and cut short; the report is at most 3,800 characters.
+- **The fix loop:** the report goes to the AI as a platform note in the next user turn (after any tool results); it
+  fixes with `edit_game`, and the platform plays the fixed version again. Fix rounds per build: 1, or 3 for trusted
+  makers (the site admin, teachers and school staff: `trustedMaker`). It stops as soon as a run is clean, when the AI
+  saved nothing new (it judged the findings false alarms), when the AI budget is resting, or when under 4 minutes of
+  the build's time cap are left (under 75 s: no run at all). Problems still there when the rounds are used up are said
+  honestly at the end of the reply, in the builder's language ("my automatic playtest still found N problems...").
+- **The Studio** shows each run as a step ("Playing your game like a player would" → "found N problems" /
+  "everything worked ✓") and the fix round as "Round N: fixing the problems the playtest found", in all 13 languages.
+- **Cost:** the run itself costs no AI. A fix round is one or two model calls (most builds that pass cost nothing
+  extra). Wait time: about 25 s per run.
+- Tests: `tests/unit/builder-autotest.test.js` (the report on canned facts, the loop against a fake Messages API:
+  rounds per role, early stop, soft findings, budget and time skips, the `ask_user` ending; and the real browser run on
+  a game that crashes on start, one whose score never changes and the Catch template).
+
 ## Trusted makers build with the Pro model (2 Nov 2026)
 
 - **Who:** `trustedMaker(user)` in `server/builder/usage.js`: the platform admin, school staff (admins and teachers of

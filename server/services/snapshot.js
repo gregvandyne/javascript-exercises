@@ -217,6 +217,11 @@ export function runGame(gameHtml, opts = {}) {
   return runLocal(gameHtml, opts);
 }
 
+/** The automatic playtest of a game (see autoplay()): opts { orientation, lang, dir, title, autoplayMs?, budgetMs? }. */
+export function autoplayGame(gameHtml, opts = {}) {
+  return runGame(gameHtml, { scale: 1, ...opts, mode: 'autoplay', size: 'phone' });
+}
+
 /** Always run locally in this process (one game at a time, time-limited). The worker calls this. */
 export function runLocal(gameHtml, opts = {}) {
   return serial(() => capture(gameHtml, opts));
@@ -264,7 +269,10 @@ async function capture(gameHtml, opts) {
   const o = { size: 'cover', orientation: 'portrait', lang: 'en', dir: 'ltr', title: 'Game', titleMs: 1400, playMs: 2200, scale: 1.5, quality: 72, ...opts };
   const shape = SIZES[o.size][o.orientation === 'landscape' ? 'landscape' : 'portrait'];
   const doc = frameDocument(gameHtml, { user: { displayName: 'Player', avatar: '🦊', isGuest: false, lang: o.lang, dir: o.dir }, game: { id: 'preview', title: o.title }, save: {}, canSave: false, preview: true });
-  const host = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#000;overflow:hidden}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
+  // The automatic playtest also logs what the game tells the platform through the SDK (score, game over, saves): the
+  // SDK posts those to the page around the frame, which is this host page here.
+  const listen = o.mode === 'autoplay' ? `<script>${HOST_LOG}</script>` : '';
+  const host = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#000;overflow:hidden}iframe{width:100%;height:100%;border:0;display:block}</style>${listen}<iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
   const b = await browser();
   const ctx = await b.newContext({ viewport: shape, deviceScaleFactor: o.scale, hasTouch: true, isMobile: false, reducedMotion: 'no-preference', serviceWorkers: 'block', locale: o.lang });
   const errors = [], kitWarnings = [];
@@ -305,6 +313,7 @@ async function capture(gameHtml, opts) {
     page.on('dialog', d => d.dismiss().catch(() => {}));
     await page.goto(`${HOST}/`, { waitUntil: 'domcontentloaded', timeout: 15000 });
     const frame = await waitFrame(page);
+    if (o.mode === 'autoplay') return await autoplay({ ctx, page, frame, errors, kitWarnings, o, shape });
     await wait(o.titleMs);
     const before = await frame.evaluate(inspect, shape.width).catch(e => ({ error: e.message }));
     const title = await page.screenshot({ type: 'jpeg', quality: o.quality });
@@ -345,6 +354,137 @@ async function capture(gameHtml, opts) {
   } finally {
     await ctx.close().catch(() => {});
   }
+}
+
+// ---- The automatic playtest (the Builder runs it after every build: builder/autotest.js) -------------------------------
+// About 18 s of real play with simulated input (keys, taps, swipes, the game's own buttons, mouse movement), sampling the
+// screen to tell a moving game from a frozen or blank one, reading what the game reports (the SDK's score / game over /
+// saves, the kit's or game's __brbTest.state(), numbers shown on screen), then the layout at phone landscape and tablet
+// portrait (and desktop when there is time). Raw facts only: builder/autotest.js turns them into a report.
+export const AUTOPLAY_MS = 18_000;
+/** In the host page (the frame's parent): keep what the SDK posts (brb:score, brb:gameover, brb:save, brb:ready). */
+const HOST_LOG = "window.__ap=[];window.__ap0=Date.now();addEventListener('message',function(e){var d=e.data;if(!d||d.brb!==1||typeof d.type!=='string'||window.__ap.length>200)return;window.__ap.push({type:d.type.slice(0,20),score:typeof d.score==='number'?d.score:null,won:!!d.won,t:Date.now()-window.__ap0});});";
+// Buttons the playtest never presses while playing: they pause, open settings or leave (in the site's languages).
+const AVOID_WORDS = /pause|setting|menu|quit|exit|home|sound|mute|music|full ?screen|help|how to|close|back|share|language|leave|pausa|paus|réglage|ajust|einstell|impost|instell|настрой|пауза|выйти|設定|ポーズ|設定|暫停|הגדרות|השהה|إعداد|إيقاف|⚙|⏸|✕|×|🔊|🔇|❚❚|☰|^ii$/i;
+
+/** In the game frame: what is on screen and what the game says about itself. */
+function apRead() {
+  let state = null, hook = false;
+  try { hook = !!(window.__brbTest && typeof window.__brbTest.state === 'function'); if (hook) { const s = window.__brbTest.state(); state = s && typeof s === 'object' ? JSON.parse(JSON.stringify(s, (k, v) => (typeof v === 'string' ? v.slice(0, 40) : v))) : null; } } catch (e) { state = { error: String(e && e.message || e).slice(0, 80) }; }
+  const vis = el => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 2 && r.height > 2 && cs.visibility !== 'hidden' && cs.display !== 'none' && +cs.opacity > 0.1 && r.bottom > 0 && r.top < innerHeight; };
+  // Numbers on screen (a score, a timer, a counter) in reading order: a change means the game is counting something.
+  const nums = [];
+  const walk = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_TEXT);
+  for (let n = walk.nextNode(); n && nums.length < 30; n = walk.nextNode()) {
+    const m = (n.textContent || '').match(/\d+/g); if (!m || !n.parentElement || !vis(n.parentElement)) continue;
+    nums.push(...m.slice(0, 3));
+  }
+  const text = ((document.body && document.body.innerText) || '').replace(/\s+/g, ' ').trim();
+  return { hook, state, nums: nums.join(','), scoreWord: /score|points|punkte|points|puntos|pontos|punti|punten|очки|счёт|スコア|得分|分數|ניקוד|نقاط/i.test(text), textLen: text.length,
+    canvases: [...document.querySelectorAll('canvas')].filter(vis).length, raf: window.__apRaf || 0 };
+}
+/** In the game frame: count animation frames from now (the fps estimate). */
+function apRaf() { if (window.__apRafOn) return; window.__apRafOn = 1; window.__apRaf = 0; const f = () => { window.__apRaf++; requestAnimationFrame(f); }; requestAnimationFrame(f); }
+/** In the game frame: the visible buttons the playtest may press while playing (answers, moves, not pause/settings). */
+function apButtons(avoid) {
+  const re = new RegExp(avoid, 'i');
+  const vis = el => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 8 && r.height > 8 && cs.visibility !== 'hidden' && cs.display !== 'none' && +cs.opacity > 0.2 && r.top >= 0 && r.left >= 0 && r.bottom <= innerHeight && r.right <= innerWidth && !el.disabled; };
+  return [...document.querySelectorAll('button,[role=button],.btn,[onclick]')].filter(vis)
+    .filter(el => !el.closest('.ok-corner, .ok-hud, .ok-modal .ok-close, [data-ap-skip]'))
+    .filter(el => !re.test(((el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '') + ' ' + (el.textContent || '')).trim()))
+    .slice(0, 12).map(el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+}
+
+/** The automatic playtest, in an open game (capture() with mode 'autoplay'). Returns raw facts (no pictures but one). */
+async function autoplay({ page, frame, errors, kitWarnings, o, shape }) {
+  const t0 = Date.now(), budget = o.budgetMs || 40_000, left = () => budget - (Date.now() - t0);
+  const W = shape.width, H = shape.height;
+  const shots = [];   // { t, at: 'title'|'start'|'idle'|'play', buf }
+  const shot = async at => { try { shots.push({ at, t: Date.now() - t0, buf: await page.screenshot({ type: 'jpeg', quality: 45 }) }); } catch { /* the page is gone */ } };
+  const read = () => frame.evaluate(apRead).catch(e => ({ error: String(e.message || e).split('\n')[0].slice(0, 120) }));
+  const hostLog = () => page.evaluate(() => (window.__ap || []).slice(0, 200)).catch(() => []);
+  await wait(o.titleMs || 1500);
+  const s0 = await read(); await shot('title');
+  // Start the game: the test hook, a Play-ish button, the biggest button, or the middle of the screen; then Enter.
+  const target = await frame.evaluate(startTarget, PLAY_WORDS.source).catch(() => null);
+  const started = target ? (target.hook ? 'hook' : target.label ? `tap:${target.label}` : 'tap') : 'none';
+  if (target && !target.hook) await page.touchscreen.tap(target.x, target.y).catch(() => page.mouse.click(target.x, target.y).catch(() => {}));
+  const startedAt = Date.now() - t0;
+  // Keys go to the focused frame: after a hook start (no tap) the focus is still on the page around the game.
+  await page.focus('iframe').catch(() => {});
+  await wait(1200);
+  await frame.evaluate(apRaf).catch(() => {});
+  const s1 = await read(); await shot('start');
+  // A moment with no input: how much the screen moves on its own (an animated title or game).
+  await wait(700); await shot('idle');
+  // Play: a cycle of inputs, each a few hundred ms, with a picture and a reading every other step.
+  const keyHold = async (k, ms) => { await page.keyboard.down(k).catch(() => {}); await wait(ms); await page.keyboard.up(k).catch(() => {}); };
+  const keyTap = async k => { await page.keyboard.press(k).catch(() => {}); await wait(120); };
+  const tap = async (x, y) => { await page.touchscreen.tap(x, y).catch(() => page.mouse.click(x, y).catch(() => {})); await wait(150); };
+  const drag = async (x1, y1, x2, y2) => { await page.mouse.move(x1, y1).catch(() => {}); await page.mouse.down().catch(() => {}); for (let i = 1; i <= 6; i++) { await page.mouse.move(x1 + (x2 - x1) * i / 6, y1 + (y2 - y1) * i / 6).catch(() => {}); await wait(60); } await wait(150); await page.mouse.up().catch(() => {}); };
+  const pressButton = async i => { const list = await frame.evaluate(apButtons, AVOID_WORDS.source).catch(() => []); if (list.length) { const b = list[i % list.length]; await tap(b.x, b.y); return 1; } return 0; };
+  const actions = [
+    () => keyHold('ArrowRight', 700), () => keyTap('Space'), () => keyHold('ArrowUp', 450), () => tap(W * 0.5, H * 0.55),
+    () => pressButton(0), () => keyHold('ArrowLeft', 550), () => drag(W * 0.18, H * 0.78, W * 0.32, H * 0.6),
+    () => keyHold('KeyD', 500), () => keyTap('Enter'), () => tap(W * 0.25, H * 0.4), () => pressButton(1), () => keyHold('KeyW', 400),
+    () => keyHold('ArrowDown', 400), () => tap(W * 0.75, H * 0.65), () => drag(W * 0.7, H * 0.5, W * 0.3, H * 0.5), () => keyTap('Digit1'),
+    () => keyHold('KeyA', 450), () => pressButton(2), () => page.mouse.move(W * 0.8, H * 0.3, { steps: 6 }).catch(() => {}), () => keyTap('Space'),
+  ];
+  const readings = [];
+  const playMs = Math.min(o.autoplayMs || AUTOPLAY_MS, Math.max(4000, left() - 14_000));
+  const playFrom = Date.now(); let pressed = 0, i = 0;
+  while (Date.now() - playFrom < playMs) {
+    pressed += (await actions[i % actions.length]()) || 0;
+    if (i % 2 === 1) { await shot('play'); readings.push({ t: Date.now() - t0, ...(await read()) }); }
+    i++;
+  }
+  const rafSecs = (Date.now() - playFrom) / 1000 + 0.7 + 1.2;   // counting began right after the start tap
+  const s2 = await read(); await shot('play');
+  const events = await hostLog();
+  // Layout at the sizes most kids play on (resized, as turning a tablet does); desktop too when there is time.
+  const layout = [];
+  for (const v of VIEWS.filter(x => x.key === 'phone-landscape' || x.key === 'tablet-portrait' || (x.key === 'desktop'))) {
+    if (v.key === 'desktop' && left() < 6000) break;
+    if (left() < 2500) break;
+    await page.setViewportSize({ width: v.width, height: v.height }).catch(() => {});
+    await wait(450);
+    layout.push({ key: v.key, label: v.label, width: v.width, height: v.height, problems: await frame.evaluate(layoutProblems).catch(e => [`the layout check failed (${String(e.message || e).split('\n')[0].slice(0, 80)})`]) });
+  }
+  await page.setViewportSize(shape).catch(() => {});
+  const diffs = await picDiffs(page.context(), shots.map(s => s.buf)).catch(() => null);
+  const title = shots.length ? shots[shots.length - 1].buf : await page.screenshot({ type: 'jpeg', quality: 45 });
+  return {
+    mode: 'autoplay', title, launches, started, startedAt, inputs: i, pressed, playMs: Date.now() - playFrom, ms: Date.now() - t0,
+    errors: [...new Set(errors)].slice(0, 12), kitWarnings: [...new Set(kitWarnings)].slice(0, 6),
+    s0, s1, s2, readings, events, layout, fps: s2 && s2.raf ? Math.round(s2.raf / rafSecs) : null,
+    shots: shots.map((s, k) => ({ at: s.at, t: s.t, ...(diffs ? diffs[k] : {}) })),
+  };
+}
+
+/** For each picture: how much of it is one colour (blank) and how much changed since the picture before (0..1). Drawn in a
+ *  blank page of the same context (data: pictures, so the canvas can be read). */
+async function picDiffs(ctx, bufs) {
+  if (!bufs.length) return [];
+  const page = await ctx.newPage();
+  try {
+    await page.setContent('<!doctype html><body></body>', { timeout: 5000 });
+    return await page.evaluate(async srcs => {
+      const load = src => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+      const w = 96, h = 64, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true });
+      let prev = null; const out = [];
+      for (const src of srcs) {
+        const im = await load(src); g.drawImage(im, 0, 0, w, h); const d = g.getImageData(0, 0, w, h).data;
+        const counts = new Map(); let changed = 0;
+        for (let p = 0; p < d.length; p += 4) {
+          const key = (d[p] >> 4) << 8 | (d[p + 1] >> 4) << 4 | (d[p + 2] >> 4); counts.set(key, (counts.get(key) || 0) + 1);
+          if (prev && Math.abs(d[p] - prev[p]) + Math.abs(d[p + 1] - prev[p + 1]) + Math.abs(d[p + 2] - prev[p + 2]) > 48) changed++;
+        }
+        out.push({ same: Math.round(Math.max(...counts.values()) / (w * h) * 1000) / 1000, moved: prev ? Math.round(changed / (w * h) * 1000) / 1000 : null });
+        prev = d;
+      }
+      return out;
+    }, bufs.map(b => 'data:image/jpeg;base64,' + b.toString('base64')));
+  } finally { await page.close().catch(() => {}); }
 }
 
 /** The device pictures of one stage in one JPEG: two rows (phone portrait, tablet portrait, phone landscape; tablet

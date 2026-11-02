@@ -1622,7 +1622,8 @@
       "notYours": "Iemand anders heeft de Bouwer hier aan het werk gezet. Wacht tot hij klaar is."
     },
     "budgetStop": "De AI-Bouwer moet nu even rusten, dus ik ben hier gestopt. Alles wat ik tot nu toe heb gemaakt is bewaard.",
-    "searchStopped": "Ik kon dat niet opzoeken, dus ben ik hier gestopt. Probeer het eens op een andere manier te vragen!"
+    "searchStopped": "Ik kon dat niet opzoeken, dus ben ik hier gestopt. Probeer het eens op een andere manier te vragen!",
+    "autotestLeft": "Let op: mijn automatische speltest vond nog {count, plural, one {# probleem} other {# problemen}} die ik deze keer niet kon oplossen. Vraag me “los de testproblemen op” en ik ga verder."
   },
   "uploads": {
     "tooFast": "Dat zijn veel bestanden! Wacht een minuutje en probeer het opnieuw.",
@@ -1991,7 +1992,8 @@
             "next": "Ronde {n}: beslist wat er nu moet gebeuren",
             "plan": "Ronde {n}: maakt een plan om het te bouwen",
             "planGame": "Ronde {n}: maakt een plan voor de veranderingen",
-            "msg": "Ronde {n}: {m, plural, one {leest je nieuwe bericht} other {leest je # nieuwe berichten}}"
+            "msg": "Ronde {n}: {m, plural, one {leest je nieuwe bericht} other {leest je # nieuwe berichten}}",
+            "auto": "Ronde {n}: {p, plural, one {het probleem} other {de # problemen}} uit de speltest oplossen"
           },
           "done": {
             "start": "Ronde {n}: las je bericht",
@@ -2002,7 +2004,8 @@
             "next": "Ronde {n}: besliste wat er nu moest gebeuren",
             "plan": "Ronde {n}: maakte een plan om het te bouwen",
             "planGame": "Ronde {n}: maakte een plan voor de veranderingen",
-            "msg": "Ronde {n}: {m, plural, one {las je nieuwe bericht} other {las je # nieuwe berichten}}"
+            "msg": "Ronde {n}: {m, plural, one {las je nieuwe bericht} other {las je # nieuwe berichten}}",
+            "auto": "Ronde {n}: opgelost wat de speltest vond"
           },
           "learn": {
             "start": "Een ronde is elke keer dat de app de AI iets vraagt. De AI onthoudt niets, dus de app stuurt de chat steeds opnieuw.",
@@ -2012,7 +2015,8 @@
             "next": "Na elk hulpmiddel leest de AI het resultaat en kiest de volgende stap. Door die lus is het een agent.",
             "thinking": "Voordat hij antwoordt, denkt deze AI eerst stil na, een beetje zoals jij iets in je hoofd uitrekent.",
             "long": "Bij grote ideeën kan de AI een minuut of twee bezig zijn met plannen voordat hij code schrijft. Hij gaat door, ook als je deze pagina verlaat.",
-            "msg": "Deze AI leest nieuwe berichten tussen de stappen door, niet midden in een stap. Daarna kan hij zijn plan aanpassen."
+            "msg": "Deze AI leest nieuwe berichten tussen de stappen door, niet midden in een stap. Daarna kan hij zijn plan aanpassen.",
+            "auto": "Als de speltest een probleem vindt, leest de AI het verslag en repareert alleen dat stuk. Daarna speelt de app het spel opnieuw."
           }
         },
         "write": {
@@ -2106,6 +2110,13 @@
           "now": "Iets aan het opzoeken",
           "done": "Iets opgezocht",
           "learn": "De AI kan een echt feit opzoeken, zoals hoe snel een jachtluipaard rent, zodat je spel klopt. Hij laat je nooit webpagina's zien, en een veiligheidscontrole leest wat hij vond."
+        },
+        "autotest": {
+          "now": "Je spel spelen zoals een speler",
+          "done": "Gespeeld als een speler: {count, plural, one {# probleem gevonden} other {# problemen gevonden}}",
+          "clean": "Gespeeld als een speler: alles werkt ✓",
+          "failed": "Kon het deze keer niet zelf spelen",
+          "learn": "Na elke bouwbeurt speelt de app het spel zo’n 20 seconden zelf: toetsen, tikken, vegen, en kijkt of de score verandert en niets kapotgaat."
         }
       },
       "resumed": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",

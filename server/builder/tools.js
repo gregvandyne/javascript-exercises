@@ -17,6 +17,7 @@ import { localeInfo } from '../i18n/index.js';
 import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS } from './catalog.js';
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
+import * as autotest from './autotest.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, and world3d (its own 3D starter).
 const STARTERS = BUILDER_TEMPLATE_KEYS;
@@ -223,9 +224,34 @@ export function toolbox(ctx) {
     },
   };
 
+  /** The automatic playtest of the current version (autotest.js), run by the platform, never by the model: a row of its
+   *  own ('autotest', with the problems it found), and the report. -> { ran: false } when it can't run here (screenshots
+   *  off, the worker down, the build stopped), else { ran: true, version, ...buildReport() }. */
+  async function autoPlaytest() {
+    const cur = current(), g = game();
+    if (!cur || !g || stopped()) return { ran: false };
+    if (!autotest.hooks.raw && !snapshot.enabled()) return { ran: false };
+    const row = steps.start('autotest', { v: cur.number });
+    let raw;
+    try {
+      raw = autotest.hooks.raw ? await autotest.hooks.raw(cur.html, cur)
+        : await snapshot.autoplayGame(cur.html, { orientation: g.orientation === 'portrait' ? 'portrait' : 'landscape', lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title });
+    } catch (e) {
+      // The screenshot worker is down or busy: not the game's fault, so no report at all.
+      if (e && e.workerDown) { steps.info({ ok: false }, row); return { ran: false }; }
+      raw = { failed: String((e && e.message) || e).split('\n')[0] };
+    }
+    if (stopped()) return { ran: false };
+    const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number });
+    steps.info({ probs: rep.problems.length }, row);
+    ctx.emit('playtest', { version: cur.number, problems: rep.problems.length, auto: true });
+    return { ran: true, version: cur.number, ...rep };
+  }
+
   return {
     current,
     game,
+    autoPlaytest,
     /** Run a tool by name; streams its event; returns the tool result (a promise for playtest_game). */
     exec(name, input) {
       if (stopped()) return { ok: false, forModel: 'Stopped.' };

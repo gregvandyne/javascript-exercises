@@ -34,6 +34,7 @@ import { NO_STEPS, inputScanner, cleanNote } from './steps.js';
 import * as search from './search.js';
 import { getUser } from '../auth.js';
 import { cleanText } from '../services/textfilter.js';
+import * as autotest from './autotest.js';
 
 export const MAX_STEPS = 14;  // model calls per build (build, details, playtest, fixes, retest, notes, question)
 export const MAX_STEPS_TRUSTED = 20;   // a trusted maker's build (usage.js trustedMaker): more rounds to playtest and fix
@@ -126,7 +127,31 @@ export async function run(ctx) {
   const messages = mergeRoles([...historyToMessages(ctx.history || []), { role: 'user', content: userContent }]);
   let tokensIn = 0, tokensOut = 0, fixes = 0;
   const steps = ctx.steps || NO_STEPS;
-  const max = ctx.maxRounds || maxStepsFor(!!ctx.trusted);
+  let max = ctx.maxRounds || maxStepsFor(!!ctx.trusted);
+  // The automatic playtest (autotest.js): once the AI finishes a build that saved a version, the platform plays it, and
+  // problems it finds go back to the AI for a fix round (ctx.autoFixes of them: 1, or 3 for trusted makers), then the
+  // fixed version is played again. Skipped (the report kept) when the AI budget is resting or the build's time is
+  // nearly up. A soft finding (the score check, possibly a false alarm) starts a round only the first time it is seen.
+  const auto = { left: Number.isInteger(ctx.autoFixes) ? ctx.autoFixes : 1, dirty: false, seen: new Set(), left2fix: null };
+  const timeLeft = () => (ctx.deadline ? ctx.deadline - Date.now() : Infinity);
+  const aborted = () => !!(ctx.signal && ctx.signal.aborted);
+  /** Play the newest version if the AI saved one since the last check. -> the report to fix now, or null (none, clean,
+   *  nothing new, or no fix round possible: then left2fix holds the real problems still there). */
+  async function autoCheck() {
+    if (!auto.dirty || !ctx.tools.autoPlaytest || aborted() || timeLeft() < autotest.TEST_NEEDS_MS) return null;
+    auto.dirty = false;
+    const a = await ctx.tools.autoPlaytest();
+    if (!a || !a.ran || aborted()) return null;
+    auto.left2fix = a.issues.filter(i => !i.soft);
+    const fresh = a.issues.filter(i => !i.soft || !auto.seen.has(i.key));
+    for (const i of a.issues) auto.seen.add(i.key);
+    if (!fresh.length) return null;
+    if (auto.left < 1 || !aiBudget.ok(ctx.pool || 'free') || timeLeft() < autotest.FIX_NEEDS_MS) return null;
+    auto.left--; auto.left2fix = null;
+    max = Math.max(max, step0() + 4);   // room for the fix round and one retry
+    return a;
+  }
+  let stepNow = 0; const step0 = () => stepNow;
   // Why the next round starts (its step label) and whether its write/edit is a fix of real problems.
   let prev = { c: 'start', fixing: false };
   let cutOff = false;   // a round already ran out of room before using a tool
@@ -145,6 +170,7 @@ export async function run(ctx) {
   let pauses = 0, retried = false;
 
   for (let step = 0; step < max; step++) {
+    stepNow = step;
     if (ctx.signal && ctx.signal.aborted) break;
     // The AI budget can run out in the middle of a turn: finish what we have instead of starting another call.
     if (step && !aiBudget.ok(ctx.pool || 'free')) { ctx.emit('text', { text: '\n\n' + t('builder.budgetStop') }); break; }
@@ -165,7 +191,7 @@ export async function run(ctx) {
     const c = !step ? (fresh.length && !ctx.text ? 'msg' : 'start') : fresh.length ? 'msg' : prev.c;
     const cur = ctx.tools.current();
     // Every round re-sends the system prompt, the current game and the chat so far: the model keeps no memory.
-    steps.start('think', { n: step + 1, c, ...(c === 'msg' ? { m: fresh.length } : {}), ...(!step && cur ? { g: 1 } : {}) });
+    steps.start('think', { n: step + 1, c, ...(c === 'msg' ? { m: fresh.length } : {}), ...(c === 'auto' && prev.p ? { p: prev.p } : {}), ...(!step && cur ? { g: 1 } : {}) });
     // The short language block goes last, after the cache points, so the cached prefix is the same for every language.
     // The fixed 3D rules sit between the system prompt and the game, only for 3D requests and 3D games.
     const system = [
@@ -347,6 +373,9 @@ export async function run(ctx) {
         return { model, tokensIn, tokensOut, error: 'cut_off' };
       }
       if (more()) { messages.push({ role: 'user', content: [] }); prev = { c: 'msg', fixing: false }; continue; }
+      // The AI is done: the platform plays what it made, and sends back what it found (once per fix round).
+      const a = await autoCheck();
+      if (a) { messages.push({ role: 'user', content: [{ type: 'text', text: a.forModel }] }); prev = { c: 'auto', fixing: true, p: a.problems.length }; continue; }
       break;
     }
     const results = []; let stop = false; let failedScan = false;
@@ -359,6 +388,7 @@ export async function run(ctx) {
         : truncated ? { ok: false, forModel: 'Your last tool call was cut off because it was too long. Make it shorter (use edit_game for small changes).' } : await ctx.tools.exec(tu.name, input);
       if (r.stop) stop = true;
       if (r.report && r.report.status === 'fail') failedScan = true;
+      if (r.version) auto.dirty = true;
       if (r.event && r.event[0] === 'playtest') { playtested = true; probs += +r.event[1].problems || 0; }
       // Mark the row this tool call started (a set_game row may have started in between).
       const row = authorRow.get(tu.id);
@@ -374,13 +404,25 @@ export async function run(ctx) {
     }
     prev = { c: playtested ? 'look' : failedScan ? 'scan' : shownErr ? 'retry' : 'next', fixing: failedScan || probs > 0 };
     if (pastCap) { if (!results.some(x => !x.is_error)) endKindly(); break; }
-    if (stop && !more()) break;   // ask_user waits for the answer, unless it may be here already
+    if (stop && !more()) {   // ask_user waits for the answer, unless it may be here already
+      // ...but first the platform plays what the AI made: real problems get a fix round (the question stays on screen).
+      const a = failedScan ? null : await autoCheck();
+      if (!a) break;
+      messages.push({ role: 'user', content: [...results, { type: 'text', text: a.forModel }] });
+      prev = { c: 'auto', fixing: true, p: a.problems.length }; onlyResults = openServerTool(content);
+      continue;
+    }
     if (failedScan && ++fixes > MAX_SCAN_FIXES) { ctx.emit('text', { text: '\n\n' + t('builder.scanStillFailing') }); break; }
     messages.push({ role: 'user', content: results });
     // A search still running beside our tools: the next user turn may hold only the tool results.
     onlyResults = openServerTool(content);
   }
-  return { model, tokensIn, tokensOut, ...(found.count ? { searches: found.count } : {}) };
+  // The build ended some other way (out of rounds, the budget, a failed scan) with a version nobody played yet: play it
+  // so the builder hears about real problems. Then say honestly what is still wrong (the builder's own language).
+  if (auto.dirty && !aborted()) { auto.left = 0; await autoCheck(); }
+  const still = !aborted() && auto.left2fix ? auto.left2fix.length : 0;
+  if (still) ctx.emit('text', { text: '\n\n' + t('builder.autotestLeft', { count: still }) });
+  return { model, tokensIn, tokensOut, ...(found.count ? { searches: found.count } : {}), ...(auto.seen.size || auto.left2fix ? { autotest: { left: still } } : {}) };
 }
 
 /**
