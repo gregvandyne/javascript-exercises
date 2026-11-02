@@ -32,6 +32,22 @@ export const contactEmail = () => config.contactEmail || 'greg@oomba.ai';
 const OG_DIR = new URL('../../public/og/', import.meta.url);
 /** Is there a share picture for this launch game (scripts/og-images.js)? */
 export const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
+// The one-minute demo video on /teachers/live (public/video, made by recording the real app: docs/decisions.md).
+const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
+const hasDemo = fs.existsSync(new URL('oomba-demo.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-demo-poster.jpg', VIDEO_DIR));
+/** The demo video: no sound, its captions burned in and also as a track, with a written description of what it shows. */
+function demoVideo(req) {
+  if (!hasDemo) return '';
+  const t = req.t;
+  return html`<section class="lp-sec lp-demo" id="demo" aria-labelledby="demo-h">
+    ${el(t, 'h2', 'teachersLive.demo.h', {}, ' id="demo-h"')}
+    <video class="lp-video" controls muted playsinline preload="none" width="1280" height="720" poster="/video/oomba-demo-poster.jpg" aria-describedby="demo-note">
+      <source src="/video/oomba-demo.mp4" type="video/mp4">
+      <track kind="captions" src="/video/oomba-demo.en.vtt" srclang="en" label="English">
+    </video>
+    ${el(t, 'p', 'teachersLive.demo.note', {}, ' class="small" id="demo-note"')}
+  </section>`;
+}
 
 /** lang/dir for an element whose text is still the English (see routes/info.js). */
 export const fb = (t, key) => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
@@ -256,6 +272,7 @@ router.get('/teachers/live', (req, res, next) => {
     <p class="small"><a href="/join">${t('teachersLive.cta.join')}</a></p>
     ${howArt(req, 'teachersLive')}
   </section>
+  ${demoVideo(req)}
   ${howSteps(req, 'teachersLive')}
 
   <section class="lp-sec" id="modes" aria-labelledby="modes-h">
