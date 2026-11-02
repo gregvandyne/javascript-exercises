@@ -1,4 +1,4 @@
-# Oomba Kit API reference (what exists: kit 1.1.0)
+# Oomba Kit API reference (what exists: kit 1.1.1)
 
 This page lists only what the kit does today, with exact signatures. It is the page a model reads before writing a kit
 game. Start with **the game layer** (`Oomba.game`): a whole game is a spec, a one-character level and a few handlers.
@@ -6,11 +6,11 @@ The design and the plans are in [kit.md](kit.md). `tests/unit/kit-api.test.js` c
 public name is on this page.
 
 Load the kit with exactly the tag `kitTag()` makes (pinned version, `integrity`, `crossorigin="anonymous"`). It creates
-`window.Oomba` (alias `window.OK`) once. New games load the latest kit (1.1.0, with themes); games saved on 1.0.0 keep
-their own pinned tag and work as before (the server serves both; a version's files never change).
+`window.Oomba` (alias `window.OK`) once. New games load the latest kit (1.1.1: 1.1.0 with themes, plus settings fixes); games saved on 1.0.0 keep
+their own pinned tag and work as before (the server serves both; a version's files never change; games saved on 1.1.0 are served on 1.1.1).
 
 ```html
-<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.1/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <script>
   const S = Oomba.stage({ api: 1, biome: 'meadow' });
   const hero = S.add('kid', { x: 0, y: 0, size: 120, hair: { style: 'curls', color: 'black' } });
@@ -23,7 +23,7 @@ their own pinned tag and work as before (the server serves both; a version's fil
 ## The game layer (start here)
 
 ```html
-<script src="/vendor/oomba-kit/1.1.0/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.1/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <script>
   Oomba.game({
     api: 1, title: 'Spark Hop', theme: 'meadow', controls: 'platformer:kid-easy', hud: ['score', 'lives:3', 'timer:90'],
@@ -109,7 +109,7 @@ Extra art comes in separate pinned files, loaded only by the games that use them
 kit's tag** (`kitPackTag(name)` on the server; any other form fails the scanner):
 
 ```html
-<script src="/vendor/oomba-kit/1.1.0/packs/art-animals.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.1/packs/art-animals.js" integrity="sha384-…" crossorigin="anonymous"></script>
 ```
 
 - `art-animals`: species `cat dog bear mouse owl penguin duck` (13 with the core six).

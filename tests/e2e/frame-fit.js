@@ -5,10 +5,11 @@
 //   overlap    two pieces of text, or two controls, on top of each other (overlays that ignore the pointer, such as
 //              a banner or confetti, are left out: they are meant to float over the game)
 //   squashed   a tappable control under 40 px, or out of shape (a tile half again taller than wide)
+//   knob       an on/off switch whose knob pokes out of its track (switchProblems below)
 // Only visible things count: hidden, transparent and zero-size elements, anything in an aria-hidden layer, and
 // anything covered by another layer (a board under the question card).
 export async function frameProblems(frame, { minTap = 40 } = {}) {
-  return frame.evaluate(({ minTap }) => {
+  const out = await frame.evaluate(({ minTap }) => {
     const W = innerWidth, H = innerHeight, out = [];
     const visible = el => {
       if (el.closest('[aria-hidden="true"],[hidden]')) return false;
@@ -82,6 +83,37 @@ export async function frameProblems(frame, { minTap = 40 } = {}) {
     }
     return out;
   }, { minTap });
+  return out.concat(await switchProblems(frame));
+}
+
+/** On/off switches (role="switch", the kit's .ok-switch) whose knob is not wholly inside the track, in either state.
+ *  The knob is the switch's ::after or ::before (measured from its used position, size, borders and transform) or, for
+ *  a switch built from elements, its first child. */
+export async function switchProblems(frame) {
+  return frame.evaluate(() => {
+    const out = [], px = v => parseFloat(v) || 0;
+    for (const sw of document.querySelectorAll('[role="switch"],.ok-switch')) {
+      const t = sw.getBoundingClientRect();
+      if (t.width < 3 || t.height < 3 || sw.closest('[aria-hidden="true"],[hidden]')) continue;
+      let k = null;
+      for (const pseudo of ['::after', '::before']) {
+        const c = getComputedStyle(sw, pseudo);
+        if (c.content === 'none' || c.content === 'normal' || c.display === 'none' || c.position !== 'absolute') continue;
+        let w = px(c.width), h = px(c.height);
+        if (c.boxSizing !== 'border-box') { w += px(c.borderLeftWidth) + px(c.borderRightWidth) + px(c.paddingLeft) + px(c.paddingRight); h += px(c.borderTopWidth) + px(c.borderBottomWidth) + px(c.paddingTop) + px(c.paddingBottom); }
+        const m = c.transform && c.transform !== 'none' ? new DOMMatrixReadOnly(c.transform) : null;
+        const x = t.left + sw.clientLeft + px(c.left) + (m ? m.e : 0), y = t.top + sw.clientTop + px(c.top) + (m ? m.f : 0);
+        k = { left: x, top: y, right: x + w, bottom: y + h }; break;
+      }
+      if (!k && sw.firstElementChild) k = sw.firstElementChild.getBoundingClientRect();
+      if (!k) continue;
+      const slack = 0.5;
+      if (k.left < t.left - slack || k.top < t.top - slack || k.right > t.right + slack || k.bottom > t.bottom + slack) {
+        out.push({ kind: 'knob', what: `${sw.className || sw.tagName.toLowerCase()} "${sw.getAttribute('aria-label') || ''}" ${sw.getAttribute('aria-checked')}`, track: [t.left, t.top, t.right, t.bottom].map(Math.round), knob: [k.left, k.top, k.right, k.bottom].map(v => Math.round(v * 10) / 10) });
+      }
+    }
+    return out;
+  });
 }
 
 /** The page around the frame: no sideways scrolling at this width. */

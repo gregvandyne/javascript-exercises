@@ -22,9 +22,9 @@ async function open(page) {
 test('Loop Lab runs on the kit: title menu, tapping squares, play, a challenge, a save and the concert', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', ...['art-animals', 'art-biomes-2', 'art-props', 'art-school', 'dress'].map(n => `/vendor/oomba-kit/1.1.0/packs/${n}.js`)]);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.1/oomba-kit.js', ...['art-animals', 'art-biomes-2', 'art-props', 'art-school', 'dress'].map(n => `/vendor/oomba-kit/1.1.1/packs/${n}.js`)]);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), __brbTest.state().screen])).toEqual(['1.1.0', true, 'title']);
+  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), __brbTest.state().screen])).toEqual(['1.1.1', true, 'title']);
   // the kit's title: "Make music" is its Play button, the other ways in sit on the card
   await expect(f.locator('.ok-title-screen #goStudio')).toBeVisible();
   for (const id of ['goTemplates', 'goChallenges', 'goSaves', 'goStickers']) await expect(f.locator(`.ok-title-screen #${id}`)).toBeVisible();

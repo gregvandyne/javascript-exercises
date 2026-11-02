@@ -1,4 +1,4 @@
-// Hero of Sunvale on the Oomba Kit (1.1.0), played in the real sandboxed frame and its CSP: the pinned kit tags, the
+// Hero of Sunvale on the Oomba Kit (1.1.1), played in the real sandboxed frame and its CSP: the pinned kit tags, the
 // kit's title with the game's card, the 3D bridge (toon materials and Ink outlines), the hero maker, a talk with a kit
 // portrait, the pause screen, The End with the hero and Marigold, and no console errors.
 import { test, expect } from '@playwright/test';
@@ -18,7 +18,7 @@ test('Hero of Sunvale runs on the kit: title, bridge, maker, a talk, pause and T
   const f = await gameFrame(page);
   // the kit and its packs, pinned, before three.js
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.0/oomba-kit.js', '/vendor/oomba-kit/1.1.0/packs/dress.js', '/vendor/oomba-kit/1.1.0/packs/art-biomes-2.js', '/vendor/oomba-kit/1.1.0/packs/bridge-3d.js', '/vendor/oomba-kit/1.1.0/packs/live.js']);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.1/oomba-kit.js', '/vendor/oomba-kit/1.1.1/packs/dress.js', '/vendor/oomba-kit/1.1.1/packs/art-biomes-2.js', '/vendor/oomba-kit/1.1.1/packs/bridge-3d.js', '/vendor/oomba-kit/1.1.1/packs/live.js']);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
   // the kit's title opens while the kingdom builds (the game's card with the loading bar under the lockup)
   await expect(f.locator('.ok-title-screen.hos-title #loadBox')).toBeVisible();
@@ -27,7 +27,7 @@ test('Hero of Sunvale runs on the kit: title, bridge, maker, a talk, pause and T
   await expect(f.locator('.ok-title-screen .ok-title-hero canvas')).toHaveCount(1);
   expect(await f.evaluate(() => window.__brbTest.state().screen)).toBe('title');
   const look = await f.evaluate(() => window.__brbTest.kitLook());
-  expect(look.version).toBe('1.1.0');
+  expect(look.version).toBe('1.1.1');
   expect(look.toon).toEqual(['MeshToonMaterial', 'MeshToonMaterial', 'MeshToonMaterial']);
   expect(look.inks).toBeGreaterThan(50); expect(look.heroInks).toBeGreaterThan(5); expect(look.title).toBe(true); expect(look.theme).toBe('castle');
   // New game -> the hero maker (the kit title closes), the intro, then play

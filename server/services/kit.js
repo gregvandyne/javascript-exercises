@@ -7,12 +7,14 @@
 export const KIT_PATH = '/vendor/oomba-kit/';
 // version -> sha384 of oomba-kit.js (tests/unit/kit-platform.test.js checks these against the files on disk).
 export const KIT_VERSIONS = Object.freeze({
+  '1.1.1': 'sha384-Wgqj2PSlFwytZeZGp8pP88yYh+9gBwHsxfR8iCSwFGanfxtFvm0nCajioExdU9cR',
   '1.1.0': 'sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX',
   '1.0.0': 'sha384-z+NesXSa8n9F3R0/dcZ7o60eHwzQbYE94cEyPfLu6WlUZ2zOaEO2OAS6WsmM7oUU',
 });
 // version -> {pack name -> sha384 of packs/<name>.js}: the optional art packs (extra species, props, biomes). A game
 // loads a pack with exactly kitPackTag(name), after the kit's own tag; only games that use a pack download it.
 export const KIT_PACKS = Object.freeze({
+  '1.1.1': Object.freeze({ 'art-animals': 'sha384-1+gICzmVtut34LdNT/D7rRd+sZTT64OOrsRaDAb7t1teIYgUt4C+v8gPyYEkuffy', 'art-biomes': 'sha384-4cHhNf1PrNwk+hg/FOgSv6DmKZEj8xjg+QHv4d4uvaxGECpSrr4ufAi8GRvgypFq', 'art-biomes-2': 'sha384-u9YkoqK1K+ldCH7jwk+Zejoni3Vqx8D7H3LKXnSwus4KTCcu0zlOtvYBJqQA6Vrq', 'art-props': 'sha384-g3+Dl+tJaadQRMXioJmD2uWS1tG/w6VsLwkbYCk7R0msHjhFzoRyBLUneN8UbKh/', 'art-school': 'sha384-8/rWOf8YLZdCX9UybhjqQslrbsd3e8QMlwqMezsL6IwAbcCNr/oa9Dk/KTX+4j+k', 'bridge-3d': 'sha384-R/CTtC6xebHbpJ8ThLH63lWo3cK99guBfvkXhkRfRHq/ExI5IMfyrwfaS4ebuC/m', 'dress': 'sha384-vTqWJ0kg/5vWPNHKvjUbbIfH1xIJ6SlshBrz3XF7a+0PM5ksjktWUX+51fISbvgA', 'live': 'sha384-YeX04fBWdCGAP/BiIkFowgE77W/gKEQa+9aaBeHB1WWxiJiUggyVCj8MSq166q8V', 'style-bold': 'sha384-B2WLn83DNOUWH/voSVa2u4JRHQ8sxLaW2/p6FY0MXvzXCJOufUio+Wj9GB9QvEEg' }),
   '1.1.0': Object.freeze({ 'art-animals': 'sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE', 'art-biomes': 'sha384-UVVUeKEbyMD1WPlwhrdiH/sB6bVZpbw7GKz2KoN4VJg/JMMI+hUkvx2Ts03akI3t', 'art-biomes-2': 'sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs', 'art-props': 'sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle', 'art-school': 'sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P', 'bridge-3d': 'sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli', 'dress': 'sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH', 'live': 'sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m', 'style-bold': 'sha384-k+n1lKA8kY7eQBU96sQUOp6Hb9i7/wDs/mQ3rkJFKRpyeIpcGqF0XDCcCm28Mjp0' }),
   '1.0.0': Object.freeze({ 'art-animals': 'sha384-fIOJsCe/mBmelLUnXEhcOGl0x7/dQvXe5xKjHrOD4KegZbvOrJ9DzTizBzU9RzOD', 'art-biomes': 'sha384-0X8OvdyaknEYsK5nXvhDnMNWl1lS8XuHH/SKuJrOF7CjDIwxYbp3yQeChbVl2zhH', 'art-school': 'sha384-yCC/QOZAd0OcPMGet+ySH+2pkji2SRciYBilMG/braih3toohKVqxJGR4YoQJrqM', 'dress': 'sha384-cLr8VKytVQYDunYCBWc3ZZuc3v1GsLxrYMkqdof5zRFlOs4VKIp5cxtTLrMpBDLe', 'style-bold': 'sha384-smhSYk+V6EuNb/TjWseiOlH187FTJModZe951GNvlqgfYC5e1txwq8ST3ql1sch+' }),
 });
@@ -26,7 +28,7 @@ export const KIT_PACKS_RETIRED = Object.freeze({
 const retired = (v, name, h) => !!(KIT_PACKS_RETIRED[v] && KIT_PACKS_RETIRED[v][name] && KIT_PACKS_RETIRED[v][name].includes(h));
 // The version new games get (kitTag() and kitPackTag() default to it: templates, the Builder's rules, the /kit preview).
 // Older versions stay servable for the saved games that pin them; their files never change (kit/SHIPPED.json).
-export const KIT_LATEST = '1.1.0';
+export const KIT_LATEST = '1.1.1';
 export const kitSrc = (v = KIT_LATEST) => `${KIT_PATH}${v}/oomba-kit.js`;
 export const kitPackSrc = (name, v = KIT_LATEST) => `${KIT_PATH}${v}/packs/${name}.js`;
 
@@ -65,6 +67,29 @@ export function upgradePackPins(html) {
     if (!k || !retired(k[1], k[2], a.integrity)) return block;
     return block.split(a.integrity).join(KIT_PACKS[k[1]][k[2]]);
   });
+}
+
+// version -> the patch release served in its place: the same API with fixes only (1.1.1: the settings switch's knob
+// stays inside its track on every engine and theme, the settings button is a cog, setting rows wrap on narrow phones).
+// Saved games keep their stored tags; upgradeKitPins() swaps them whenever a game is served. Only grows.
+export const KIT_PATCHES = Object.freeze({ '1.1.0': '1.1.1' });
+
+/** A saved game served on the kit's patch release (KIT_PATCHES): its core tag and every pack tag move to the patch
+ *  version with their hashes. Only when every kit tag is a valid pin of the same patched version (otherwise the game
+ *  is left exactly as it is, and the scanner's rules apply). Retired pack hashes are upgraded first. */
+export function upgradeKitPins(html) {
+  html = upgradePackPins(html);
+  const from = kitVersion(html), to = from && KIT_PATCHES[from];
+  if (!to) return html;
+  let ok = true;
+  const out = html.replace(SCRIPT_RE, (block, attrText) => {
+    const a = attrs(attrText), src = a.src || '', p = PIN_RE.exec(src), k = PACK_RE.exec(src);
+    if (!p && !k) return block;
+    const want = p ? KIT_VERSIONS[from] : KIT_PACKS[from][k[2]], next = p ? KIT_VERSIONS[to] : KIT_PACKS[to][k && k[2]];
+    if ((p || k)[1] !== from || a.integrity !== want || !next) { ok = false; return block; }
+    return block.split(src).join(p ? kitSrc(to) : kitPackSrc(k[2], to)).split(a.integrity).join(next);
+  });
+  return ok ? out : html;
 }
 
 /** The pinned kit version a game loads, or null. */

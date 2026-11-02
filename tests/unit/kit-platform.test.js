@@ -62,8 +62,9 @@ test('the built file is up to date with kit/src', async () => {
 });
 
 const brot = buf => zlib.brotliCompressSync(buf, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 } }).length;
-test('size gate: oomba-kit.js is at most 95 KB brotli, and each art pack is under its own cap', () => {
-  assert.equal(SIZE_CAPS.core, 95 * 1024);
+test('size gate: oomba-kit.js is at most 96 KB brotli, and each art pack is under its own cap', () => {
+  // 95 KB until 1.1.0 (94.9); 1.1.1 needed 0.2 KB more for the settings fixes (a switch whose knob stays in its track, a cog icon).
+  assert.equal(SIZE_CAPS.core, 96 * 1024);
   const br = brot(dist(VERSION));
   assert.ok(br <= SIZE_CAPS.core, `core: ${br} bytes brotli`);
   for (const name of packNames()) {
@@ -119,6 +120,31 @@ test('scanner: a pack passes only as its exact pinned tag, after the kit tag of 
   assert.ok(codes(GAME(core, `const u = '/vendor/oomba-kit/${VERSION}/packs/art-animals.js';`)).includes('kit_tag'));
 });
 
+test('a saved game on a patched kit version is served on its patch release (core and packs), anything else as it is', () => {
+  const init = { user: {}, game: { id: 'g', title: 'g' }, save: {}, canSave: false };
+  assert.ok(Object.keys(K.KIT_PATCHES).length);
+  for (const [from, to] of Object.entries(K.KIT_PATCHES)) {
+    assert.ok(K.KIT_VERSIONS[from] && K.KIT_VERSIONS[to], `${from} -> ${to}: both built`);
+    assert.equal(from.split('.').slice(0, 2).join('.'), to.split('.').slice(0, 2).join('.'), 'a patch release only (same major and minor)');
+    for (const n of K.kitPacks(from)) assert.ok(K.KIT_PACKS[to][n], `${to} has every pack ${from} has (${n})`);
+    const packs = K.kitPacks(from).slice(0, 3);
+    const html = GAME(K.kitTag(from) + packs.map(n => K.kitPackTag(n, from)).join(''));
+    const up = K.upgradeKitPins(html);
+    assert.equal(K.kitVersion(up), to);
+    assert.ok(up.includes(K.kitTag(to)) && packs.every(n => up.includes(K.kitPackTag(n, to))) && !up.includes(`/${from}/`));
+    assert.deepEqual(codes(up).filter(c => c.startsWith('kit')), [], 'the upgraded game passes the scanner');
+    const doc = frameDocument(html, init);
+    assert.ok(doc.includes(K.KIT_VERSIONS[to]) && !doc.includes(K.KIT_VERSIONS[from]), 'the frame serves the patch release');
+    // a broken pin (a pack from another version, a wrong hash) is left exactly as it is
+    const odd = GAME(K.kitTag(from) + K.kitPackTag(packs[0], from).replace(/integrity="[^"]+"/, 'integrity="sha384-AAAA"'));
+    assert.equal(K.upgradeKitPins(odd), odd);
+  }
+  const latest = GAME(K.kitTag());
+  assert.equal(K.upgradeKitPins(latest), latest);
+  const old = GAME(K.kitTag('1.0.0'));
+  assert.equal(K.upgradeKitPins(old), old, '1.0.0 has no patch release');
+});
+
 test('a saved game that pins an unlocked pack\'s older hash (the live pack before teams) passes the scanner, counts as live-ready and is served with the current hash', async () => {
   const { hasLivePack } = await import('../../server/services/classlive-lint.js');
   for (const [v, packs] of Object.entries(K.KIT_PACKS_RETIRED)) {
@@ -133,7 +159,8 @@ test('a saved game that pins an unlocked pack\'s older hash (the live pack befor
         const up = K.upgradePackPins(html);
         assert.ok(up.includes(K.kitPackTag(name, v)) && !up.includes(h), 'rewritten to the current tag');
         const doc = frameDocument(html, { user: {}, game: { id: 'g', title: 'g' }, save: {}, canSave: false });
-        assert.ok(doc.includes(K.KIT_PACKS[v][name]) && !doc.includes(h), 'the frame serves the current hash');
+        const served = K.KIT_PATCHES[v] || v;   // on the patch release, when the version has one
+        assert.ok(doc.includes(K.KIT_PACKS[served][name]) && !doc.includes(h), 'the frame serves the current hash');
         if (name === 'live') assert.equal(hasLivePack(html), true);
       }
     }
