@@ -12,7 +12,8 @@
 // resume: instant, fact v (the newest saved version): the build carried on after a server restart (runner.js).
 // read: instant, fact m: the building blocks read m new messages the builder sent while they worked (mock.js).
 // search: the AI is looking a fact up on the web (search.js); never its query or the sites.
-export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read', 'search'];
+// autotest: the platform's own automatic playtest after a build (autotest.js), facts v and probs (0 = passed).
+export const STEP_KEYS = ['screen', 'blocks', 'think', 'write', 'edit', 'fix', 'template', 'check', 'name', 'playtest', 'notes', 'ask', 'resume', 'read', 'search', 'autotest'];
 const MAX_ROWS = 80;
 
 /** One line of model or player text, safe to show: control and bidi-override characters become spaces, whitespace
@@ -30,7 +31,8 @@ const flag = x => (x === 1 || x === true ? 1 : undefined);
 /** The only facts a row may carry (SSE and storage alike). Anything else is dropped. */
 const FACTS = {
   n: int(1, 99),                                         // think: round number (one model call)
-  c: oneOf(['start', 'look', 'scan', 'retry', 'next', 'msg']),   // think: why the round started (msg: new messages)
+  c: oneOf(['start', 'look', 'scan', 'retry', 'next', 'msg', 'auto']),   // think: why the round started (msg: new messages, auto: fixing what the automatic playtest found)
+  p: int(1, 99),                                         // think (auto): how many problems the automatic playtest found
   m: x => (Number.isInteger(x) && x >= 1 && x <= 9 ? x : undefined),   // think (msg), read: how many new messages (1-9)
   g: flag,                                               // think (start): a game already exists, so the round reads it too
   th: flag,                                              // think: a thinking block really streamed in this round
@@ -47,7 +49,7 @@ const FACTS = {
   title: x => (typeof x === 'string' ? cut(x, 60) || undefined : undefined),        // name
   icon: x => (typeof x === 'string' ? cut(x, 8) || undefined : undefined),          // name
   pics: int(0, 4),                                       // playtest: pictures taken (phone title and play, two device sheets)
-  probs: int(0, 999),                                    // playtest: problems the automatic checks found
+  probs: int(0, 999),                                    // playtest, autotest: problems the automatic checks found
 };
 export function keep(facts) {
   const out = {};

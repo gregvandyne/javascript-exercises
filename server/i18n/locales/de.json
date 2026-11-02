@@ -1621,7 +1621,8 @@
       "notYours": "Jemand anderes hat diesen Bau gestartet. Warte, bis er fertig ist."
     },
     "budgetStop": "Der KI-Baumeister muss sich jetzt ausruhen, deshalb habe ich hier aufgehört. Alles, was ich bisher gemacht habe, ist gespeichert.",
-    "searchStopped": "Das konnte ich nicht nachschlagen, deshalb habe ich hier aufgehört. Frag doch mal anders!"
+    "searchStopped": "Das konnte ich nicht nachschlagen, deshalb habe ich hier aufgehört. Frag doch mal anders!",
+    "autotestLeft": "Achtung: Mein automatischer Spieltest hat noch {count, plural, one {# Problem} other {# Probleme}} gefunden, die ich diesmal nicht lösen konnte. Bitte mich „Behebe die Testprobleme“ und ich mache weiter."
   },
   "uploads": {
     "tooFast": "Das sind ganz schön viele Dateien! Warte eine Minute und versuch es noch mal.",
@@ -1990,7 +1991,8 @@
             "next": "Runde {n}: entscheidet, was als Nächstes kommt",
             "plan": "Runde {n}: plant, wie es gebaut wird",
             "planGame": "Runde {n}: plant die Änderungen",
-            "msg": "Runde {n}: {m, plural, one {liest deine neue Nachricht} other {liest deine # neuen Nachrichten}}"
+            "msg": "Runde {n}: {m, plural, one {liest deine neue Nachricht} other {liest deine # neuen Nachrichten}}",
+            "auto": "Runde {n}: behebe {p, plural, one {das Problem} other {die # Probleme}} aus dem Spieltest"
           },
           "done": {
             "start": "Runde {n}: hat deine Nachricht gelesen",
@@ -2001,7 +2003,8 @@
             "next": "Runde {n}: hat entschieden, was als Nächstes kommt",
             "plan": "Runde {n}: hat geplant, wie es gebaut wird",
             "planGame": "Runde {n}: hat die Änderungen geplant",
-            "msg": "Runde {n}: {m, plural, one {hat deine neue Nachricht gelesen} other {hat deine # neuen Nachrichten gelesen}}"
+            "msg": "Runde {n}: {m, plural, one {hat deine neue Nachricht gelesen} other {hat deine # neuen Nachrichten gelesen}}",
+            "auto": "Runde {n}: Probleme aus dem Spieltest behoben"
           },
           "learn": {
             "start": "Eine Runde ist jedes Mal, wenn die App die KI fragt. Die KI merkt sich nichts, also schickt die App ihr den Chat noch einmal.",
@@ -2011,7 +2014,8 @@
             "next": "Nach jedem Werkzeug liest die KI das Ergebnis und wählt den nächsten Schritt. Diese Schleife macht sie zu einem Agenten.",
             "thinking": "Bevor sie antwortet, denkt diese KI erst still nach, ein bisschen so, wie du etwas im Kopf ausrechnest.",
             "long": "Bei großen Ideen plant die KI manchmal ein oder zwei Minuten, bevor sie Code schreibt. Sie macht weiter, auch wenn du diese Seite verlässt.",
-            "msg": "Diese KI liest neue Nachrichten zwischen den Schritten, nicht mitten in einem. Dann kann sie ihren Plan ändern."
+            "msg": "Diese KI liest neue Nachrichten zwischen den Schritten, nicht mitten in einem. Dann kann sie ihren Plan ändern.",
+            "auto": "Findet der Spieltest ein Problem, liest die KI den Bericht und repariert genau diesen Teil. Dann spielt die App das Spiel noch einmal."
           }
         },
         "write": {
@@ -2105,6 +2109,13 @@
           "now": "Schlage etwas nach",
           "done": "Etwas nachgeschlagen",
           "learn": "Die KI kann einen echten Fakt nachschlagen, zum Beispiel wie schnell ein Gepard läuft, damit dein Spiel stimmt. Sie zeigt dir nie Webseiten, und eine Sicherheitsprüfung liest, was sie gefunden hat."
+        },
+        "autotest": {
+          "now": "Spiele dein Spiel wie ein Spieler",
+          "done": "Wie ein Spieler gespielt: {count, plural, one {# Problem gefunden} other {# Probleme gefunden}}",
+          "clean": "Wie ein Spieler gespielt: alles klappt ✓",
+          "failed": "Konnte es diesmal nicht selbst spielen",
+          "learn": "Nach jedem Bauen spielt die App das Spiel etwa 20 Sekunden selbst: Tasten, Tippen, Wischen, und sie prüft, ob sich die Punkte ändern und nichts kaputtgeht."
         }
       },
       "resumed": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",

@@ -1621,7 +1621,8 @@
       "notYours": "Questa costruzione l’ha iniziata qualcun altro. Aspetta che sia finita."
     },
     "budgetStop": "Il Costruttore IA deve riposarsi adesso, quindi mi sono fermato qui. Tutto quello che ho fatto finora è salvato.",
-    "searchStopped": "Non sono riuscito a cercarlo, quindi mi sono fermato qui. Prova a chiederlo in un altro modo!"
+    "searchStopped": "Non sono riuscito a cercarlo, quindi mi sono fermato qui. Prova a chiederlo in un altro modo!",
+    "autotestLeft": "Attenzione: il mio test automatico ha ancora trovato {count, plural, one {# problema} other {# problemi}} che stavolta non sono riuscito a sistemare. Chiedimi “sistema i problemi del test” e continuo."
   },
   "uploads": {
     "tooFast": "Quanti file! Aspetta un minuto e riprova.",
@@ -1990,7 +1991,8 @@
             "next": "Giro {n}: decide cosa fare dopo",
             "plan": "Giro {n}: fa un piano per costruirlo",
             "planGame": "Giro {n}: fa un piano delle modifiche",
-            "msg": "Giro {n}: {m, plural, one {legge il tuo nuovo messaggio} other {legge i tuoi # nuovi messaggi}}"
+            "msg": "Giro {n}: {m, plural, one {legge il tuo nuovo messaggio} other {legge i tuoi # nuovi messaggi}}",
+            "auto": "Turno {n}: sistemo {p, plural, one {il problema} other {i # problemi}} trovati dal test"
           },
           "done": {
             "start": "Giro {n}: ha letto il tuo messaggio",
@@ -2001,7 +2003,8 @@
             "next": "Giro {n}: ha deciso cosa fare dopo",
             "plan": "Giro {n}: ha fatto un piano per costruirlo",
             "planGame": "Giro {n}: ha fatto un piano delle modifiche",
-            "msg": "Giro {n}: {m, plural, one {ha letto il tuo nuovo messaggio} other {ha letto i tuoi # nuovi messaggi}}"
+            "msg": "Giro {n}: {m, plural, one {ha letto il tuo nuovo messaggio} other {ha letto i tuoi # nuovi messaggi}}",
+            "auto": "Turno {n}: sistemato quello che ha trovato il test"
           },
           "learn": {
             "start": "Un giro è ogni volta che l’app chiede qualcosa all’IA. L’IA non ricorda nulla, quindi l’app le rimanda la chat.",
@@ -2011,7 +2014,8 @@
             "next": "Dopo ogni strumento, l’IA legge il risultato e sceglie il passo successivo. Questo ciclo la rende un agente.",
             "thinking": "Prima di rispondere, questa IA pensa in silenzio, un po’ come quando risolvi qualcosa a mente.",
             "long": "Con le idee grandi, l’IA può metterci un minuto o due a fare un piano prima di scrivere il codice. Continua anche se lasci questa pagina.",
-            "msg": "Questa IA legge i nuovi messaggi tra un passaggio e l’altro, non nel mezzo di uno. Così può cambiare il suo piano."
+            "msg": "Questa IA legge i nuovi messaggi tra un passaggio e l’altro, non nel mezzo di uno. Così può cambiare il suo piano.",
+            "auto": "Quando il test trova un problema, l’IA legge il rapporto e sistema solo quella parte. Poi l’app gioca di nuovo."
           }
         },
         "write": {
@@ -2105,6 +2109,13 @@
           "now": "Sto cercando un’informazione",
           "done": "Ha cercato un’informazione",
           "learn": "L’IA può cercare un fatto vero, come quanto corre veloce un ghepardo, così il tuo gioco è giusto. Non ti mostra mai pagine web, e un controllo di sicurezza legge quello che ha trovato."
+        },
+        "autotest": {
+          "now": "Gioco al tuo gioco come un giocatore",
+          "done": "Giocato come un giocatore: {count, plural, one {trovato # problema} other {trovati # problemi}}",
+          "clean": "Giocato come un giocatore: funziona tutto ✓",
+          "failed": "Stavolta non sono riuscito a giocarci da solo",
+          "learn": "Dopo ogni costruzione, l’app gioca da sola per circa 20 secondi: tasti, tocchi, trascinamenti, e controlla che il punteggio cambi e che niente si rompa."
         }
       },
       "resumed": "🔄 Il server si è riavviato, quindi il Costruttore ha continuato da dove era rimasto.",
