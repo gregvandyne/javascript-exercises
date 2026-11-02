@@ -1,7 +1,7 @@
 # Oomba Kit (developer docs)
 
-> **Status: phase 1 (engine, art library, UI kit, demo) and phase 2's game layer and art packs are built; kit 1.1.0
-> (the current version, with themes: §6.5) is built next to the locked 1.0.0. This file is
+> **Status: phase 1 (engine, art library, UI kit, demo) and phase 2's game layer and art packs are built; kit 1.1.1
+> (the current version: 1.1.0 with themes, §6.5, plus the settings fixes below) is built next to the locked 1.0.0 and 1.1.0. This file is
 > the design; for what exists, with exact signatures, read [kit-api.md](kit-api.md)** (that page is what a model reads;
 > a unit test keeps it equal to the code). Sections marked **(not built)** describe plans.
 >
@@ -13,13 +13,23 @@
 > - **Build and versions:** `node scripts/build-kit.js` (esbuild 0.28.2, a pinned build-only devDependency; without it a
 >   built-in stripper) writes `public/vendor/oomba-kit/<version>/` (the core `oomba-kit.js`, `packs/<name>.js`, fonts,
 >   `manifest.json`) and the SRIs into `server/services/kit.js` (`KIT_VERSIONS`, `KIT_PACKS`), and prints every file's
->   brotli size against its cap (`SIZE_CAPS`: core 95 KB; art-animals 12, art-school 12, art-biomes 8). A version folder is immutable: the build refuses to overwrite it,
+>   brotli size against its cap (`SIZE_CAPS`: core 96 KB, 95 until 1.1.0; art-animals 12, art-school 12, art-biomes 8). A version folder is immutable: the build refuses to overwrite it,
 >   `--replace` works only while the version is unshipped, and once a version is listed in `kit/SHIPPED.json`
 >   (version → sha384, plus its packs' hashes, added in the change that ships it; **1.0.0 is locked**, with its three packs, in the change that ships the first games on it) `--replace` is refused and a test fails if its hash or file
 >   ever changes (saved games pin that hash). Sizes in 1.1.0 (brotli): core 94.9 KB (cap 95), art-animals 1.9, art-biomes 1.9, art-biomes-2 3.3, art-props 3.1,
 >   art-school 4.0, dress 8.1, style-bold 3.0 (packs cap 10-12 KB). Sizes in 1.0.0: core about 91 KB (cap 95 KB, with the game layer;
 >   the learning and food props moved to `art-school`), art-animals 1.8 KB, art-school 4.1 KB, art-biomes 1.5 KB.
 >   `tests/unit/kit-platform.test.js` enforces the caps.
+> - **Patch releases (1.1.1):** 1.1.0 with fixes only, same API and packs. The settings switch is a fixed border-box
+>   track (64×40, `appearance: none`, `overflow: hidden`) with its knob in a 4 px gutter, so it never pokes out on any
+>   engine, theme, text size or direction; at night switches and segmented controls get a Cream edge (an Ink edge
+>   vanished on the dark card); setting rows wrap on narrow phones instead of pushing a segmented control off the
+>   card; the `settings` icon is a cog (the old ringed dot with rays read as the light/dark sun). Core 95.1 KB brotli,
+>   so the core cap went from 95 to 96 KB. `KIT_PATCHES` (kit.js) maps 1.1.0 → 1.1.1: `upgradeKitPins()` serves every
+>   saved 1.1.0 game on 1.1.1 (the frame), the Builder saves edits on it, and `scripts/kit-upgrade-seeds.js` moved the
+>   official games (Atlas Quest and Code Isle moved from 1.0.0 by hand: no API they use changed). 1.0.0 has no patch
+>   release, so member games still on 1.0.0 keep the old switch and icon. `tests/e2e/frame-fit.js` has a `knob` rule
+>   (a switch whose knob leaves its track), so the layout audits catch it.
 > - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
 >   `/vendor/three/`); the scanner accepts exactly `kitTag()` and, after it, exactly `kitPackTag(name)` for each pack (same
 >   version), fails anything else naming the kit (`kit_pin`, `kit_tag`) and flags games that name `Oomba.debug` or the

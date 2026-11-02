@@ -13,7 +13,9 @@ const SPARK = 'M12 2.5Q13.4 10.6 21.5 12Q13.4 13.4 12 21.5Q10.6 13.4 2.5 12Q10.6
 const HEART = 'M12 20.6C5.2 16.8 3 12.6 3.6 9.2C4.2 5.6 8.6 4.4 12 8.2C15.4 4.4 19.8 5.6 20.4 9.2C21 12.6 18.8 16.8 12 20.6z';
 const STAR = 'M12 3l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.4 6.7 19.3l1.1-5.9-4.4-4.1 6-.8z';
 const FLAG = 'M6.5 4.5h11l-2.6 4 2.6 4h-11z';
-const SPEAKER = '*M3.5 9.5h3.6L12 5.2v13.6l-4.9-4.3H3.5z';
+// a cog with 8 square teeth (never rays: a ringed dot reads as a sun, the light/dark switch)
+const GEAR = 'M' + [...Array(32)].map((_, i) => { const k = i & 3, a = (i >> 2) * Math.PI / 4 + [-.36, -.2, .2, .36][k], r = k % 3 ? 9.8 : 7.4; return +(12 + r * Math.sin(a)).toFixed(1) + ' ' + +(12 - r * Math.cos(a)).toFixed(1); }).join('L') + 'z';
+const SPEAKER ='*M3.5 9.5h3.6L12 5.2v13.6l-4.9-4.3H3.5z';
 /** Role fills (overridable per use with the CSS variable --ok-fill, e.g. a greyed results slot). */
 export const ICON_ROLES = { reward: PALETTE.spark[2], danger: PALETTE.coral[2], success: PALETTE.mint[2], card: PALETTE.cream[0] };
 export const ICONS = {
@@ -22,7 +24,7 @@ export const ICONS = {
   sound: [SPEAKER, 'M15.5 9.2a4 4 0 0 1 0 5.6', 'M18.2 6.6a7.6 7.6 0 0 1 0 10.8'],
   mute: [SPEAKER, 'M15.8 9.5l5 5', 'M20.8 9.5l-5 5'],
   music: ['M9 17.5V6l10-2v11.5', '*' + C(6.5, 17.5, 2.6), '*' + C(16.5, 15.5, 2.6)],
-  settings: [C(12, 12, 3.4), 'M12 2.8v2.8M12 18.4v2.8M2.8 12h2.8M18.4 12h2.8M5.5 5.5l2 2M16.5 16.5l2 2M5.5 18.5l2-2M16.5 7.5l2-2'],
+  settings: ['card:' + GEAR, C(12, 12, 3)],
   restart: ['M4.5 12a7.5 7.5 0 1 0 2.4-5.5', 'M4.5 3.5v4.5H9'],
   home: ['card:M3.5 11.5L12 4.5l8.5 7v8.5h-17z', 'M10 20v-5h4v5'],
   check: ['M5 12.5l4.5 4.5L19 7.5'],

@@ -5,14 +5,14 @@ import { gameFrame } from './helpers.js';
 
 const rows = list => list.map(r => [...r].map(Number));
 
-test('Drop Four runs on kit 1.1.0: title, a robot game, pause, results and a two-player series', async ({ page }) => {
+test('Drop Four runs on kit 1.1.1: title, a robot game, pause, results and a two-player series', async ({ page }) => {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto('/play/connect-four');
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.__brbTest && window.__brbTest.setBoard);
-  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.includes('dress'), Oomba.packs.includes('art-animals')])).toEqual(['1.1.0', true, true]);
+  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.includes('dress'), Oomba.packs.includes('art-animals')])).toEqual(['1.1.1', true, true]);
   // the kit's title with the game's card: who plays, the seats and the kit's Play button
   await expect(f.locator('.ok-title-screen .c4-tcard')).toBeVisible();
   await expect(f.locator('.c4-tcard [data-mode="robot"]')).toHaveAttribute('aria-pressed', 'true');

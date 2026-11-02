@@ -79,15 +79,16 @@ export const SCREEN_CSS = `
 .ok-count b{font-weight:800;font-size:clamp(5rem,30vmin,14rem);color:${CREAM};-webkit-text-stroke:max(3px,1.4vmin) ${INK};paint-order:stroke fill;font-variant-numeric:tabular-nums;animation:ok-countpop 700ms cubic-bezier(.34,1.56,.64,1) both}
 .ok-count b.ok-go{color:${P.mint[2]}}
 .ok-set{width:min(520px,100%)}
-.ok-set .ok-srow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:8px 0;border-bottom:2px dashed var(--ok-line);text-align:start;font-weight:700}
-.ok-seg{display:inline-flex;border:2px solid ${INK};border-radius:999px;overflow:hidden;flex-shrink:0}
-.ok-seg button{font:inherit;font-weight:700;min-height:44px;min-width:44px;padding:0 12px;border:0;background:${CREAM};color:${INK};cursor:pointer}
+.ok-set .ok-srow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;width:100%;padding:8px 0;border-bottom:2px dashed var(--ok-line);text-align:start;font-weight:700}
+.ok-seg{display:inline-flex;max-width:100%;margin-inline-start:auto;border:2px solid ${INK};border-radius:999px;overflow:hidden;flex-shrink:0}
+.ok-seg button{flex:1 1 auto;font:inherit;font-weight:700;min-height:44px;min-width:44px;padding:0 12px;border:0;background:${CREAM};color:${INK};cursor:pointer}
 .ok-seg button+button{border-inline-start:2px solid ${INK}}
 .ok-seg button[aria-pressed=true]{background:${P.mint[2]}}
-.ok-switch{position:relative;width:64px;height:40px;border-radius:999px;border:2px solid ${INK};background:${P.stone[0]};cursor:pointer;flex-shrink:0;padding:0}
-.ok-switch::after{content:"";position:absolute;top:4px;inset-inline-start:4px;width:28px;height:28px;border-radius:50%;background:${CREAM};border:2px solid ${INK};transition:inset-inline-start 160ms ease-out}
+.ok-switch{-webkit-appearance:none;appearance:none;box-sizing:border-box;position:relative;width:64px;height:40px;margin:0;padding:0;border-radius:999px;border:2px solid ${INK};background:${P.stone[0]};overflow:hidden;cursor:pointer;flex:0 0 auto}
+.ok-switch::after{content:"";box-sizing:border-box;position:absolute;top:4px;inset-inline-start:4px;width:28px;height:28px;border-radius:50%;background:${CREAM};border:2px solid ${INK};transition:inset-inline-start 160ms ease-out}
 .ok-switch[aria-checked=true]{background:${P.mint[2]}}
-.ok-switch[aria-checked=true]::after{inset-inline-start:24px}
+.ok-switch[aria-checked=true]::after{inset-inline-start:28px}
+.ok-night .ok-switch,.ok-night .ok-seg{border-color:${CREAM}99}
 .ok-ask .ok-card{width:min(560px,100%)}
 .ok-q{font-weight:800;margin:0;font-size:clamp(1.6rem,6vmin,2.6rem);line-height:1.15;font-variant-numeric:tabular-nums;text-wrap:balance}
 .ok-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;background:#2B1F5C;padding:14px;border-radius:26px;border:3px solid ${INK}}
