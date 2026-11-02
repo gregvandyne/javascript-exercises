@@ -2074,3 +2074,25 @@ asked for. Now:
   - `tests/unit/world3d-frame.test.js` walks the starter's player in Chromium: flat ground, a wall and sliding along it,
     a roof too high to jump onto, steps, a hill, a jump, the edge.
   - Also `templates.test.js`, `builder-claude.test.js` and `builder-kit.test.js`.
+
+## Gulp City: an official black-hole city game (2 Nov 2026)
+
+The admin lost a Builder project (a black hole that swallows a city, other black holes that can swallow you, a super
+expansive map) and asked for it rebuilt as an official game. `seed-games/gulp-city.html` (slug `gulp-city`):
+- **3D of its own**, like every new 3D world ("3D worlds are the Builder's own"): the pinned Three.js import map, no
+  Oomba Kit, its own screens (title, how to play, settings, pause, "Gulp!", results) in the 13 languages, light and dark,
+  RTL for Arabic and Hebrew. Settings: sound, music, read aloud (`BRB.speak`), motion (auto / less), high contrast,
+  text size 100/125/150 %.
+- **The city** comes from a fixed seed: an island of 24 x 24 blocks (1.4 km) with districts (downtown, midtown,
+  suburbs, parks, harbour), the Gulp Tower plaza, a big park with a ferris wheel and a stadium; about 31,000 things of
+  39 kinds plus about 260 vehicles driving the streets. No people are ever swallowed.
+- **Performance:** things are instanced per kind per 100 m region and hidden when too small to see at the camera's
+  distance, low-poly shapes, one shader for the whole ground, a pixel-ratio cap and a quality ladder. Under 600k
+  triangles and 400 draw calls at the start of a round (tested).
+- **Rules:** a thing fits when its footprint is under 92 % of the hole's radius; swallowing adds area, slowing as the
+  hole grows, so a good round ends around 40-50 m across with the landmarks unlocked; the stadium is a free-roam goal.
+  Rivals (6/8/10) seek food, chase smaller holes for a few seconds (then rest), flee bigger ones; a hole 15 % bigger
+  swallows a smaller one. The player is safe for the first 22 s and 3 s after each "Gulp!", and starts again smaller.
+- **Tests:** `tests/unit/gulp-city.test.js` (scan, words in every language, swallowing, big things waiting, rivals,
+  the clock, free roam, draw budget, Arabic); `scripts/games-fit-audit.js` covers it at the 5 sizes; a screenshot cover
+  (`scripts/covers.js`).
