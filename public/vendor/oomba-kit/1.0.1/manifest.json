@@ -1,0 +1,23 @@
+{
+  "version": "1.0.1",
+  "api": 1,
+  "files": {
+    "oomba-kit.js": "sha384-tDcRpCvfTdRzJKs8zs3Al8GnILyvX7BJr3K5+qPukmr6z0kgKJVOSl1UJMSCDs46",
+    "packs/art-animals.js": "sha384-wU/R/Sio0vUM5Mw4P+17xtobKFhB1PaOi4YGriGuERJUzBDj2tshWsDP2wbA0ReT",
+    "packs/art-biomes.js": "sha384-byqpnRLN3nAKB5nun+h+ZGUfHq1zKwFKr52Ohk5CbJJihjjzU3OJDufWmaRR7AD7",
+    "packs/art-school.js": "sha384-+RmA1hDUtGZ6RB0heExwfC91Luvng8DjQVsg8eZ71ymwMKQ5Lnjd2bqkN56Yg1fD",
+    "packs/dress.js": "sha384-FlNKnsCDAfpUo8lyJWlmK86r/UHiBWdr4Gxb05qBtUlK84V6/VOru7Q9ynbl9ODe",
+    "packs/style-bold.js": "sha384-94atha+FTu9W5Nuo+cIGWTk/EG7WlKbIRzQ7gkOgU9NobZjgayVaS3cbQul8+hIK",
+    "fonts/bricolage-latin.woff2": "sha384-X/jaeJ4W5GX6njFPEfUBZdJHzn5fubPkE+9LDSLSmoJRUtrBMlRU1+5BAHszUiNB",
+    "fonts/bricolage-latin-ext.woff2": "sha384-Ot7IlVGIs2pRGgA5YgE5tJccM1wkGm5cs2e1qkPHXBwCUMF/C0NVXdFYEsrbfv9x",
+    "fonts/OFL.txt": "sha384-JA+iC+Ed3rNRZpoSVhqXkEYWz/2PvbVwINTmNcnUvukL6sqylA/l3Z7FoBpydUJd",
+    "LICENSE": "sha384-Dz2HA6El77VGt0XRsy/cvvCOC+IZMEXvQTdjhGzrCGtkC579G1doZbZhP27XwgrE"
+  },
+  "packs": [
+    "art-animals",
+    "art-biomes",
+    "art-school",
+    "dress",
+    "style-bold"
+  ]
+}

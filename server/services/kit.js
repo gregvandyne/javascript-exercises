@@ -9,6 +9,7 @@ export const KIT_PATH = '/vendor/oomba-kit/';
 export const KIT_VERSIONS = Object.freeze({
   '1.1.1': 'sha384-Wgqj2PSlFwytZeZGp8pP88yYh+9gBwHsxfR8iCSwFGanfxtFvm0nCajioExdU9cR',
   '1.1.0': 'sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX',
+  '1.0.1': 'sha384-tDcRpCvfTdRzJKs8zs3Al8GnILyvX7BJr3K5+qPukmr6z0kgKJVOSl1UJMSCDs46',
   '1.0.0': 'sha384-z+NesXSa8n9F3R0/dcZ7o60eHwzQbYE94cEyPfLu6WlUZ2zOaEO2OAS6WsmM7oUU',
 });
 // version -> {pack name -> sha384 of packs/<name>.js}: the optional art packs (extra species, props, biomes). A game
@@ -16,6 +17,7 @@ export const KIT_VERSIONS = Object.freeze({
 export const KIT_PACKS = Object.freeze({
   '1.1.1': Object.freeze({ 'art-animals': 'sha384-1+gICzmVtut34LdNT/D7rRd+sZTT64OOrsRaDAb7t1teIYgUt4C+v8gPyYEkuffy', 'art-biomes': 'sha384-4cHhNf1PrNwk+hg/FOgSv6DmKZEj8xjg+QHv4d4uvaxGECpSrr4ufAi8GRvgypFq', 'art-biomes-2': 'sha384-u9YkoqK1K+ldCH7jwk+Zejoni3Vqx8D7H3LKXnSwus4KTCcu0zlOtvYBJqQA6Vrq', 'art-props': 'sha384-g3+Dl+tJaadQRMXioJmD2uWS1tG/w6VsLwkbYCk7R0msHjhFzoRyBLUneN8UbKh/', 'art-school': 'sha384-8/rWOf8YLZdCX9UybhjqQslrbsd3e8QMlwqMezsL6IwAbcCNr/oa9Dk/KTX+4j+k', 'bridge-3d': 'sha384-R/CTtC6xebHbpJ8ThLH63lWo3cK99guBfvkXhkRfRHq/ExI5IMfyrwfaS4ebuC/m', 'dress': 'sha384-vTqWJ0kg/5vWPNHKvjUbbIfH1xIJ6SlshBrz3XF7a+0PM5ksjktWUX+51fISbvgA', 'live': 'sha384-YeX04fBWdCGAP/BiIkFowgE77W/gKEQa+9aaBeHB1WWxiJiUggyVCj8MSq166q8V', 'style-bold': 'sha384-B2WLn83DNOUWH/voSVa2u4JRHQ8sxLaW2/p6FY0MXvzXCJOufUio+Wj9GB9QvEEg' }),
   '1.1.0': Object.freeze({ 'art-animals': 'sha384-0kgnnCmovTaNwWnsPFryp1c8kgX7ji/jku0tdAsfRwfiaWP9usy3eBLuIdBsh8jE', 'art-biomes': 'sha384-UVVUeKEbyMD1WPlwhrdiH/sB6bVZpbw7GKz2KoN4VJg/JMMI+hUkvx2Ts03akI3t', 'art-biomes-2': 'sha384-0ad0awdyk2fC5pFpqYc/7EABVSKTEe1ZKo2YB6cvjKZDIDA2mI1+YRUEQhOgXrHs', 'art-props': 'sha384-/RtKQ/ov2WG1EoCt4pJ98rHY07jOZjZ+lia901K+1BfS49MydEROuw7UaInBPHle', 'art-school': 'sha384-tjWzckG1fXZNGAIROedz8rciqX12aec8Bw77p9Pn81hGGnR/2i9HS7cM6023xw0P', 'bridge-3d': 'sha384-XrVZh1TfGin1ajGCc72TzhAxeqUJQM3JI3kI1weHoMgUIV4urBdPtJbZxO7wPOli', 'dress': 'sha384-ZCFgY98YAWY7Tcy+GfJLalmnJukKdzbVpg6j4ZljXuJSYgYzkWSWMPihVW/u8CqH', 'live': 'sha384-coSMEAXKgHblAGttFS4mvWXqRq7LEVGZP+rPPYCxp8BnVqWKHWjnu+kWuuB1vd2m', 'style-bold': 'sha384-k+n1lKA8kY7eQBU96sQUOp6Hb9i7/wDs/mQ3rkJFKRpyeIpcGqF0XDCcCm28Mjp0' }),
+  '1.0.1': Object.freeze({ 'art-animals': 'sha384-wU/R/Sio0vUM5Mw4P+17xtobKFhB1PaOi4YGriGuERJUzBDj2tshWsDP2wbA0ReT', 'art-biomes': 'sha384-byqpnRLN3nAKB5nun+h+ZGUfHq1zKwFKr52Ohk5CbJJihjjzU3OJDufWmaRR7AD7', 'art-school': 'sha384-+RmA1hDUtGZ6RB0heExwfC91Luvng8DjQVsg8eZ71ymwMKQ5Lnjd2bqkN56Yg1fD', 'dress': 'sha384-FlNKnsCDAfpUo8lyJWlmK86r/UHiBWdr4Gxb05qBtUlK84V6/VOru7Q9ynbl9ODe', 'style-bold': 'sha384-94atha+FTu9W5Nuo+cIGWTk/EG7WlKbIRzQ7gkOgU9NobZjgayVaS3cbQul8+hIK' }),
   '1.0.0': Object.freeze({ 'art-animals': 'sha384-fIOJsCe/mBmelLUnXEhcOGl0x7/dQvXe5xKjHrOD4KegZbvOrJ9DzTizBzU9RzOD', 'art-biomes': 'sha384-0X8OvdyaknEYsK5nXvhDnMNWl1lS8XuHH/SKuJrOF7CjDIwxYbp3yQeChbVl2zhH', 'art-school': 'sha384-yCC/QOZAd0OcPMGet+ySH+2pkji2SRciYBilMG/braih3toohKVqxJGR4YoQJrqM', 'dress': 'sha384-cLr8VKytVQYDunYCBWc3ZZuc3v1GsLxrYMkqdof5zRFlOs4VKIp5cxtTLrMpBDLe', 'style-bold': 'sha384-smhSYk+V6EuNb/TjWseiOlH187FTJModZe951GNvlqgfYC5e1txwq8ST3ql1sch+' }),
 });
 // version -> {pack name -> [older sha384s]}: hashes an unlocked pack (not in kit/SHIPPED.json) had before it was
@@ -69,10 +71,10 @@ export function upgradePackPins(html) {
   });
 }
 
-// version -> the patch release served in its place: the same API with fixes only (1.1.1: the settings switch's knob
+// version -> the patch release served in its place: the same API with fixes only (1.0.1 and 1.1.1: the settings switch's knob
 // stays inside its track on every engine and theme, the settings button is a cog, setting rows wrap on narrow phones).
 // Saved games keep their stored tags; upgradeKitPins() swaps them whenever a game is served. Only grows.
-export const KIT_PATCHES = Object.freeze({ '1.1.0': '1.1.1' });
+export const KIT_PATCHES = Object.freeze({ '1.0.0': '1.0.1', '1.1.0': '1.1.1' });
 
 /** A saved game served on the kit's patch release (KIT_PATCHES): its core tag and every pack tag move to the patch
  *  version with their hashes. Only when every kit tag is a valid pin of the same patched version (otherwise the game
