@@ -7,7 +7,7 @@ public name is on this page.
 
 Load the kit with exactly the tag `kitTag()` makes (pinned version, `integrity`, `crossorigin="anonymous"`). It creates
 `window.Oomba` (alias `window.OK`) once. New games load the latest kit (1.1.1: 1.1.0 with themes, plus settings fixes); games saved on 1.0.0 keep
-their own pinned tag and work as before (the server serves both; a version's files never change; games saved on 1.1.0 are served on 1.1.1).
+their own pinned tag and work as before (the server serves both; a version's files never change; games saved on 1.0.0 and 1.1.0 are served on their patch releases 1.0.1 and 1.1.1).
 
 ```html
 <script src="/vendor/oomba-kit/1.1.1/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
