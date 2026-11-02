@@ -304,6 +304,11 @@ export const THREE_D_RULES = `3D RULES (the builder asked for a 3D game, or this
 - Write a whole new 3D game only when the idea really does not fit the island, and then keep the template's structure: the
   import map, the kit tag, its packs and its screens, the renderer and fit3d set-up, the 3D bridge (below), the quality
   ladder, the context-loss handlers, the controls and __brbTest.
+- A 3D map to walk around (a town, a maze, a castle, an obstacle course, rooms, a city): build it on the 3D bridge with
+  B.world (its height(x, z) for hills and valleys), make every building, wall, crate, platform and rock a B.solid,
+  move the player with B.walker and the camera with B.follow (below). Never move the player by hand: the player has to
+  stay on the ground, walk up slopes and steps, stop at walls and cliffs, jump only with the jump key or button, land
+  again, and never leave the map. Test it in the playtest: walk into a wall, up a slope and off a ledge, then jump.
 
 # The 3D library
 - Three.js ${THREE_VERSION}, served by Oomba Academy itself. Load it with exactly this import map (copy it exactly, integrity

@@ -79,3 +79,57 @@ test('3D bridge: reduced motion is honoured, and the title screen sits over the 
   expect(errors).toEqual([]);
   await ctx.close();
 });
+
+// Kit 1.1.2: walking a 3D map. Holding forward (W) into a wall and a crate never lifts the hero off the ground (W walks,
+// it never jumps), Space jumps onto the crate and lands, the steps are walked up, the map's edge holds, on a desktop
+// and on a phone (the touch stick walks, the jump button jumps).
+test('3D bridge: the walker keeps the hero on the ground (walls, a crate, steps, the edge), jumps land, keys and touch', async ({ browser }) => {
+  test.setTimeout(120_000);
+  for (const [vp, touch] of [[[1280, 800], false], [[844, 390], true]]) {
+    const ctx = await browser.newContext({ viewport: { width: vp[0], height: vp[1] }, hasTouch: touch, isMobile: touch }); const page = await ctx.newPage();
+    await login(page, ADMIN.username, ADMIN.password);
+    // the phone opens the scene's frame on its own, so the touch controls sit inside the phone's screen
+    let f = page, errors = [];
+    if (touch) { page.on('pageerror', e => errors.push(String(e.message || e))); await page.goto('/kit/frame/three?th=meadow&shot=play'); await page.waitForFunction(() => window.__brbTest && window.__brbTest.state().ready, null, { timeout: 30000 }); }
+    else ({ f, errors } = await scene(page, 'th=meadow&shot=play'));
+    await f.waitForFunction(() => window.__brbTest.state().scene === 'play');
+    await f.evaluate(() => window.__brbTest.drive());
+    const st = () => f.evaluate(() => window.__walker.state());
+    const tp = async (x, z) => { await f.evaluate(([x, z]) => { window.__walker.teleport(x, z); }, [x, z]); await page.waitForTimeout(300); };
+    const onGround = s => s.grounded && Math.abs(s.y - s.ground) < 0.03;
+    const watch = async ms => { const out = []; for (let t = 0; t < ms; t += 100) { await page.waitForTimeout(100); out.push(await st()); } return out; };
+    if (!touch) {
+      await page.locator('#kitframe').click({ position: { x: 20, y: vp[1] / 2 } });
+      await tp(-1, -6);
+      await page.keyboard.down('KeyW'); let tr = await watch(2500); await page.keyboard.up('KeyW');
+      expect(tr.every(onGround), 'holding W: on the ground the whole time, never a jump').toBe(true);
+      expect((await st()).z).toBeGreaterThan(-10.5);   // stopped at the wall
+      await tp(-3, 6.5); await page.keyboard.down('KeyW'); tr = await watch(1200);
+      expect(tr.every(onGround) && (await st()).z > 4.2, 'the crate is a wall when walking').toBe(true);
+      await page.keyboard.press('Space'); await page.waitForTimeout(380); await page.keyboard.up('KeyW'); await page.waitForTimeout(900);
+      let s = await st(); expect(onGround(s) && s.y > s.terrain + 0.9, `jumped onto the crate (${JSON.stringify(s)})`).toBe(true);
+      await tp(4, 3.6); await page.keyboard.down('KeyS'); tr = await watch(1400); await page.keyboard.up('KeyS');
+      expect(tr.some(x => x.grounded && x.y > x.terrain + 0.7), 'walked up the steps').toBe(true);
+      await tp(0, 0); await page.keyboard.down('KeyD'); tr = await watch(5000); await page.keyboard.up('KeyD');
+      s = await st(); expect(Math.hypot(s.x, s.z)).toBeLessThanOrEqual(26 * 0.9 + 0.05);
+      expect(tr.every(x => !x.grounded || Math.abs(x.y - x.ground) < 0.03), 'never floats on the slopes').toBe(true);
+    } else {
+      await page.touchscreen.tap(vp[0] / 2, vp[1] / 3); await page.waitForTimeout(300);
+      await tp(-1, -6);
+      const box = await f.locator('.ok-stick').boundingBox();
+      const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+      const cdp = await ctx.newCDPSession(page);
+      const touchAt = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 1 }] });
+      await touchAt('touchStart', cx, cy); await touchAt('touchMove', cx, cy - 40);
+      const tr = await watch(2000); await touchAt('touchEnd');
+      expect(tr.every(onGround) && (await st()).z < -8, 'the stick walks forward on the ground to the wall').toBe(true);
+      await tp(6, -3); const y0 = (await st()).y;
+      const jb = await f.locator('.ok-jump').boundingBox(); await page.touchscreen.tap(jb.x + jb.width / 2, jb.y + jb.height / 2);
+      let hi = y0; for (let i = 0; i < 12; i++) { await page.waitForTimeout(80); hi = Math.max(hi, (await st()).y); }
+      expect(hi - y0, 'the jump button jumps').toBeGreaterThan(0.8); expect(onGround(await st()), 'and lands').toBe(true);
+    }
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `walk-${touch ? 'phone' : 'desktop'}.png`) });
+    expect(errors).toEqual([]);
+    await ctx.close();
+  }
+});

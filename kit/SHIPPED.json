@@ -4,7 +4,8 @@
     "1.0.1": "sha384-tDcRpCvfTdRzJKs8zs3Al8GnILyvX7BJr3K5+qPukmr6z0kgKJVOSl1UJMSCDs46",
     "1.0.0": "sha384-z+NesXSa8n9F3R0/dcZ7o60eHwzQbYE94cEyPfLu6WlUZ2zOaEO2OAS6WsmM7oUU",
     "1.1.0": "sha384-GCejMN1YYamlsZNEJw6SRznGmZC2i6tppYwkLt8cv2gI3YTTsZq6l8eyUQuAM8qX",
-    "1.1.1": "sha384-Wgqj2PSlFwytZeZGp8pP88yYh+9gBwHsxfR8iCSwFGanfxtFvm0nCajioExdU9cR"
+    "1.1.1": "sha384-Wgqj2PSlFwytZeZGp8pP88yYh+9gBwHsxfR8iCSwFGanfxtFvm0nCajioExdU9cR",
+    "1.1.2": "sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1"
   },
   "packs": {
     "1.0.1": {
@@ -40,6 +41,16 @@
       "bridge-3d": "sha384-R/CTtC6xebHbpJ8ThLH63lWo3cK99guBfvkXhkRfRHq/ExI5IMfyrwfaS4ebuC/m",
       "dress": "sha384-vTqWJ0kg/5vWPNHKvjUbbIfH1xIJ6SlshBrz3XF7a+0PM5ksjktWUX+51fISbvgA",
       "style-bold": "sha384-B2WLn83DNOUWH/voSVa2u4JRHQ8sxLaW2/p6FY0MXvzXCJOufUio+Wj9GB9QvEEg"
+    },
+    "1.1.2": {
+      "art-animals": "sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION",
+      "art-biomes": "sha384-ncXx4zVCTio0bUVqrvpQ0uAKmvm/JcWprinhR0X/rlmHV/9UfwEw3wirHq+Hhsc+",
+      "art-biomes-2": "sha384-HLqoCO2/jj82nsj7mFOu0oYfcC9/3M5xWooNfKXjsX8roLgcEPErFyk1DoLhDHES",
+      "art-props": "sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA",
+      "art-school": "sha384-xbmoMTLjBXfyHbxMV8HIl3jSzcl3bxEMMdgGu+KgGuyZY+WNXrh9ogBhRTpyMWO8",
+      "bridge-3d": "sha384-AFvPKYnmW3Fs6eWrWCt5/XJ5bLQQ5HUXBruQp+RWtcR/T3bGMwngfsdU2Sk+ODz8",
+      "dress": "sha384-JZ2+9mOMVNO4iOIJ8Geoa/9ryqx6ygcPzCxDnZ1XmwOKuMJSCM3llSYH2L4SUAYV",
+      "style-bold": "sha384-pFXgoNOZ/kWWctAb2ucgoE+wLssJGKLBbeZJppwZQlTGTPqBEFYA0dOtLTst2DiH"
     }
   }
 }

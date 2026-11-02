@@ -177,3 +177,55 @@ test('Builder: Star Island is on the bridge; the 3D rules teach it; the lint ask
   for (const s of ['Oomba.three(THREE', 'B.rig(', 'B.sprite(', 'B.inkify(', 'B.bake(', 'B.motion', kitPackTag('bridge-3d')]) assert.ok(THREE_D_RULES.includes(s), s);
   assert.ok(!KIT_RULES.includes('B.rig('), '2D builds do not carry the 3D bridge\'s rules');
 });
+
+test('walking a 3D map (kit 1.1.2): on the ground, up gentle slopes and steps, never up cliffs or walls, jumps land, bounds hold', () => {
+  const { O } = kit({ search: '?okDebug=1' }), scene = new THREE.Scene(), cam = camera();
+  const B = O.three(THREE, { renderer: renderer(), scene, camera: cam, theme: 'meadow' });
+  // a ramp east (rise 0.5 per metre), a 3 m cliff north, flat elsewhere
+  const W = B.world({ size: 30, props: [], height: (x, z) => (z < -10 ? 3 : 0) + (x > 5 ? (x - 5) * 0.5 : 0) });
+  const hero = B.rig({ species: 'fox' }); scene.add(hero); hero.position.set(0, 4, 0);
+  const P = B.walker(hero, { input: false });
+  const walk = (x, z, s) => { P.move = { x, z }; for (let i = 0; i < s * 60; i++) B.update(1 / 60); P.move = null; for (let i = 0; i < 30; i++) B.update(1 / 60); };
+  const onGround = () => Math.abs(hero.position.y - W.groundAt(hero.position.x, hero.position.z, hero.position.y + 0.5)) < 0.03;
+  for (let i = 0; i < 60; i++) B.update(1 / 60); assert.ok(P.grounded && hero.position.y === 0, `dropped onto the ground (${hero.position.y})`);
+  // forward into the cliff: stops at its foot, stays on the ground
+  walk(0, -1, 4);
+  assert.ok(hero.position.z > -10.1 && hero.position.z < -9, `stopped at the cliff (${hero.position.z.toFixed(2)})`);
+  assert.equal(+hero.position.y.toFixed(2), 0, 'never climbs the cliff'); assert.ok(P.grounded && onGround());
+  // up the gentle ramp: follows the slope exactly
+  P.teleport(0, 0); walk(1, 0, 2);
+  assert.ok(hero.position.x > 8 && onGround(), `walked up the ramp on the ground (${hero.position.x.toFixed(2)}, ${hero.position.y.toFixed(2)})`);
+  // a crate 1 m high: a wall (slides along it), jumping lands on it; a 0.4 m step is walked up
+  const crate = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 2)); crate.position.set(0, 0.5, 4); scene.add(crate); B.solid(crate);
+  const step = new THREE.Mesh(new THREE.BoxGeometry(2, 0.4, 2)); step.position.set(-4, 0.2, 4); scene.add(step); B.solid(step);
+  P.teleport(0, 0); walk(0, 1, 2);
+  assert.ok(hero.position.z < 2.7 && hero.position.y === 0, `the crate is a wall (${hero.position.z.toFixed(2)}, ${hero.position.y})`);
+  walk(1, 1, 0.6); assert.ok(hero.position.x > 1 && hero.position.y === 0, 'slides along it, still on the ground');
+  P.teleport(0, 2.2); P.move = { x: 0, z: 1 }; P.jump(); for (let i = 0; i < 30; i++) B.update(1 / 60); P.move = null; for (let i = 0; i < 60; i++) B.update(1 / 60);
+  assert.ok(P.grounded && Math.abs(hero.position.y - 1) < 0.01, `jumped onto the crate (${hero.position.y.toFixed(2)})`);
+  P.teleport(-4, 1); walk(0, 1, 0.8); assert.ok(Math.abs(hero.position.y - 0.4) < 0.01, `walked up the step (${hero.position.y.toFixed(2)})`);
+  walk(0, 1, 1.5); assert.equal(+hero.position.y.toFixed(2), 0, 'and down off it');
+  // a jump on flat ground comes back to the ground
+  P.teleport(-6, -4); P.jump(); let top = 0; for (let i = 0; i < 90; i++) { B.update(1 / 60); top = Math.max(top, hero.position.y); }
+  assert.ok(top > 1 && P.grounded && hero.position.y === 0, `up ${top.toFixed(2)} m and down again`);
+  // the edge of the map holds; falling out of the world brings it back to the start
+  walk(-1, 0, 8); assert.ok(Math.hypot(hero.position.x, hero.position.z) <= 30 * 0.9 + 0.01, 'inside the bounds');
+  P.teleport(0, 0, -40); B.update(1 / 60); assert.ok(hero.position.y >= 0 && P.grounded, 'back on the map after a fall');
+  // moving with the camera's view: forward is where it looks on the ground, its pitch never lifts the walker
+  cam.position.set(-3, 20, -1.99); cam.lookAt(-3, 0, -2); cam.updateMatrixWorld();
+  P.teleport(-3, -2); const a = hero.position.clone(); P.opt.input = true;
+  const I = O.debug.kit.input; I.srcDown('KeyW'); for (let i = 0; i < 30; i++) { I.update(); B.update(1 / 60); } I.srcUp('KeyW'); I.update();
+  assert.ok(hero.position.z < a.z - 0.5 && Math.abs(hero.position.x - a.x) < 0.05 && hero.position.y === 0, `up walks where the camera looks, on the ground (${hero.position.x.toFixed(2)}, ${hero.position.y}, ${hero.position.z.toFixed(2)})`);
+  P.opt.input = false;
+  // the follow camera stays above the ground and out of the crate
+  const F = B.follow(P); F.yaw = Math.PI; for (let i = 0; i < 60; i++) B.update(1 / 60);
+  assert.ok(cam.position.y > W.heightAt(cam.position.x, cam.position.z) + 0.4, 'the camera is never under the ground');
+});
+
+test('in a 3D world up and W walk forward and never jump (jump: Space, Z, the pad\'s A, the button)', () => {
+  const { O } = kit({ search: '?okDebug=1' });
+  O.three(THREE, { scene: new THREE.Scene(), camera: camera() });
+  const I = O.debug.kit.input;
+  const on = src => { I.srcDown(src); I.update(); const p = I.pressed('jump'); I.srcUp(src); I.update(); return p; };
+  assert.equal(on('KeyW'), false, 'W walks'); assert.equal(on('ArrowUp'), false, 'up walks'); assert.equal(on('Space'), true, 'Space jumps');
+});
