@@ -281,6 +281,23 @@
     };
     matchApi.leave = function () { try { matchPort.postMessage({ t: 'leave' }); } catch (e) { /* ignore */ } };
   }
+  // ---- Polls (BRB.poll): asked of the page with postMessage, answered by the page (public/js/play.js) ----------------
+  var pollWait = {}, pollN = 0;
+  window.addEventListener('message', function (e) {
+    var m = e.data;
+    if (e.source !== parentWin || !m || m.brb !== 1 || m.type !== 'brb:pollResult' || typeof m.n !== 'number' || !pollWait[m.n]) return;
+    var done = pollWait[m.n]; delete pollWait[m.n];
+    done(m.off ? null : { a: m.a | 0, b: m.b | 0, total: m.total | 0, min: m.min | 0 });
+  });
+  function pollAsk(item, choice, seat) {
+    return new Promise(function (resolve) {
+      item = String(item || ''); choice = choice === 1 ? 1 : choice === 0 ? 0 : -1; seat = seat | 0;
+      if (!/^[a-z0-9][a-z0-9-]{0,39}$/.test(item) || choice < 0 || seat < 0 || seat > 5) { resolve(null); return; }
+      var n = ++pollN; pollWait[n] = resolve;
+      setTimeout(function () { if (pollWait[n]) { delete pollWait[n]; resolve(null); } }, 5000);
+      send('brb:poll', { item: item, choice: choice, seat: seat, n: n });
+    });
+  }
   function deepFreezeEarly(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreezeEarly(o[k]); }); Object.freeze(o); } return o; }
 
   // ---- Canvas contexts: remember which kind each canvas got -----------------------------
@@ -939,6 +956,9 @@
     live: liveApi ? Object.freeze(liveApi) : Object.freeze({ v: 1, active: false }),
     // Online matches (BRB.match): menu() opens the site's "Play online" sheet; in a match frame, send/on/leave.
     match: Object.freeze(matchApi),
+    // Polls (official games on the list, e.g. Would You Rather): count a choice, get everyone's totals back.
+    // BRB.poll(item, choice 0|1, seat 0-5) -> Promise<{ a, b, total, min } | null>; null when off, offline or slow (5 s).
+    poll: function (item, choice, seat) { return pollAsk(item, choice, seat); },
     storage: {
       get: function (k) { var v = local.getItem(k); if (v === null) return null; try { return JSON.parse(v); } catch (e) { return v; } },
       set: function (k, v) { local.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); },

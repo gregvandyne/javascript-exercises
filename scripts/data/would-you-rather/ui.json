@@ -87,11 +87,15 @@
   "d.fun": "You find the fun and silly side of everything.",
   "d.nature": "You feel happiest in the great outdoors.",
   "d.tech": "Gadgets, robots and big ideas excite you.",
-  "d.social": "You love being with friends and family."
+  "d.social": "You love being with friends and family.",
+  "pct": "{n}% chose this",
+  "pctFirst": "You're one of the first to answer this one!"
  },
  "en-GB": {
   "t.calm": "Cosy dreamer",
-  "d.calm": "You enjoy calm, cosy and peaceful times."
+  "d.calm": "You enjoy calm, cosy and peaceful times.",
+  "pct": "{n}% chose this",
+  "pctFirst": "You're one of the first to answer this one!"
  },
  "de": {
   "title": "Was wäre dir lieber?",
@@ -181,7 +185,9 @@
   "d.fun": "Du findest an allem die lustige Seite.",
   "d.nature": "Draußen in der Natur bist du am glücklichsten.",
   "d.tech": "Geräte, Roboter und große Ideen begeistern dich.",
-  "d.social": "Du bist am liebsten mit Freunden und Familie zusammen."
+  "d.social": "Du bist am liebsten mit Freunden und Familie zusammen.",
+  "pct": "{n} % haben das gewählt",
+  "pctFirst": "Du gehörst zu den Ersten, die das beantworten!"
  },
  "fr": {
   "title": "Tu préfères ?",
@@ -271,7 +277,9 @@
   "d.fun": "Tu trouves le côté drôle de tout.",
   "d.nature": "Tu es plus heureux en pleine nature.",
   "d.tech": "Les gadgets, les robots et les grandes idées te passionnent.",
-  "d.social": "Tu adores être avec tes amis et ta famille."
+  "d.social": "Tu adores être avec tes amis et ta famille.",
+  "pct": "{n} % ont choisi ça",
+  "pctFirst": "Tu es parmi les premiers à répondre à celle-ci !"
  },
  "es": {
   "title": "¿Qué prefieres?",
@@ -361,7 +369,9 @@
   "d.fun": "Le encuentras el lado divertido a todo.",
   "d.nature": "Eres más feliz al aire libre.",
   "d.tech": "Los aparatos, los robots y las grandes ideas te emocionan.",
-  "d.social": "Te encanta estar con tus amigos y tu familia."
+  "d.social": "Te encanta estar con tus amigos y tu familia.",
+  "pct": "{n} % eligió esto",
+  "pctFirst": "¡Eres de los primeros en responder esta!"
  },
  "pt": {
   "title": "O que você prefere?",
@@ -451,7 +461,9 @@
   "d.fun": "Você encontra o lado divertido de tudo.",
   "d.nature": "Você é mais feliz ao ar livre.",
   "d.tech": "Aparelhos, robôs e grandes ideias empolgam você.",
-  "d.social": "Você adora estar com amigos e família."
+  "d.social": "Você adora estar com amigos e família.",
+  "pct": "{n}% escolheram isso",
+  "pctFirst": "Você é um dos primeiros a responder esta!"
  },
  "it": {
   "title": "Preferiresti?",
@@ -541,7 +553,9 @@
   "d.fun": "Trovi il lato divertente di tutto.",
   "d.nature": "Sei più felice all’aria aperta.",
   "d.tech": "Gadget, robot e grandi idee ti entusiasmano.",
-  "d.social": "Ami stare con gli amici e la famiglia."
+  "d.social": "Ami stare con gli amici e la famiglia.",
+  "pct": "{n}% ha scelto questo",
+  "pctFirst": "Sei tra i primi a rispondere a questa!"
  },
  "nl": {
   "title": "Wat heb je liever?",
@@ -631,7 +645,9 @@
   "d.fun": "Je ziet overal de grappige kant van.",
   "d.nature": "Je bent het gelukkigst buiten in de natuur.",
   "d.tech": "Gadgets, robots en grote ideeën maken je blij.",
-  "d.social": "Je bent graag samen met vrienden en familie."
+  "d.social": "Je bent graag samen met vrienden en familie.",
+  "pct": "{n}% koos dit",
+  "pctFirst": "Je bent een van de eersten die dit beantwoordt!"
  },
  "ru": {
   "title": "Что бы ты выбрал?",
@@ -721,7 +737,9 @@
   "d.fun": "Ты во всём находишь смешную сторону.",
   "d.nature": "Счастливее всего ты на природе.",
   "d.tech": "Гаджеты, роботы и большие идеи тебя восхищают.",
-  "d.social": "Ты обожаешь быть с друзьями и семьёй."
+  "d.social": "Ты обожаешь быть с друзьями и семьёй.",
+  "pct": "{n}% выбрали это",
+  "pctFirst": "Ты один из первых, кто ответил на этот вопрос!"
  },
  "ja": {
   "title": "どっちがいい？",
@@ -811,7 +829,9 @@
   "d.fun": "なんでもおもしろいところを見つけるよ。",
   "d.nature": "そとのしぜんの中がいちばんしあわせ。",
   "d.tech": "きかいやロボットや大きなアイデアにわくわく。",
-  "d.social": "ともだちやかぞくといっしょにいるのが大すき。"
+  "d.social": "ともだちやかぞくといっしょにいるのが大すき。",
+  "pct": "{n}%の人がこれをえらんだよ",
+  "pctFirst": "このしつもんにこたえた、さいしょのひとりだよ！"
  },
  "zh-Hant": {
   "title": "你比較想要哪個？",
@@ -901,7 +921,9 @@
   "d.fun": "你總能找到每件事好笑的一面。",
   "d.nature": "在大自然裡你最開心。",
   "d.tech": "機器、機器人和大點子讓你好興奮。",
-  "d.social": "你最喜歡和朋友、家人在一起。"
+  "d.social": "你最喜歡和朋友、家人在一起。",
+  "pct": "{n}% 的人選了這個",
+  "pctFirst": "你是最早回答這一題的人之一！"
  },
  "ar": {
   "title": "ماذا تفضّل؟",
@@ -991,7 +1013,9 @@
   "d.fun": "تجد الجانب المضحك في كل شيء.",
   "d.nature": "أنت أسعد ما تكون في الطبيعة.",
   "d.tech": "الأجهزة والروبوتات والأفكار الكبيرة تحمّسك.",
-  "d.social": "تحب أن تكون مع أصدقائك وعائلتك."
+  "d.social": "تحب أن تكون مع أصدقائك وعائلتك.",
+  "pct": "{n}% اختاروا هذا",
+  "pctFirst": "أنت من أوائل من أجابوا عن هذا السؤال!"
  },
  "he": {
   "title": "מה הייתם מעדיפים?",
@@ -1081,6 +1105,8 @@
   "d.fun": "אתם מוצאים את הצד המצחיק בכל דבר.",
   "d.nature": "אתם הכי שמחים בטבע.",
   "d.tech": "גאדג'טים, רובוטים ורעיונות גדולים מלהיבים אתכם.",
-  "d.social": "אתם אוהבים להיות עם חברים ומשפחה."
+  "d.social": "אתם אוהבים להיות עם חברים ומשפחה.",
+  "pct": "{n}% בחרו בזה",
+  "pctFirst": "אתם בין הראשונים שעונים על השאלה הזאת!"
  }
 }

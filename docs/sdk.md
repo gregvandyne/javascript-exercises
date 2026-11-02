@@ -257,6 +257,14 @@ to open the site's "Play online" sheet (friends, family, match codes); the page 
 Like live frames, the transport is a private `MessagePort` handed to the page with the first `brb:ready`
 (`{ match: 1 }` plus the port); `public/js/match.js` relays it to `/api/match/:id/wait` and `/send`.
 
+## Polls (`BRB.poll`)
+
+For official games on the list (`server/services/polls.js` POLL_GAMES). `BRB.poll(item, choice, seat)` counts a choice
+(`item`: `/^[a-z0-9][a-z0-9-]{0,39}$/`, `choice` 0 or 1, `seat` 0-5 for pass-and-play players) once per player and seat,
+and resolves to `{ a, b, total, min }` (show a percentage only when `total >= min`), or `null` when polls are off, the
+player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, seat, n}` to the page and
+`brb:pollResult {n, a, b, total, min}` (or `{n, off: true}`) back.
+
 ## How the Builder edits games
 
 The AI Builder works with these tools: `ask_user(question, options)`, `write_game(html, notes)` (a whole new version),

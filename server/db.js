@@ -454,6 +454,12 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS tts_cache_lru ON tts_cache(pinned, last_used);
     CREATE TABLE IF NOT EXISTS tts_usage (day TEXT PRIMARY KEY, calls INTEGER NOT NULL DEFAULT 0, chars INTEGER NOT NULL DEFAULT 0,
       hits INTEGER NOT NULL DEFAULT 0, fails INTEGER NOT NULL DEFAULT 0);`],
+  // Game polls (services/polls.js): how many players chose each side of an item, and who already chose (one vote per
+  // player and seat per item; a seat is a pass-and-play player on one device).
+  ['0043_game_polls', `CREATE TABLE IF NOT EXISTS game_polls (game_id TEXT NOT NULL, item TEXT NOT NULL, a INTEGER NOT NULL DEFAULT 0,
+      b INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (game_id, item));
+    CREATE TABLE IF NOT EXISTS game_poll_votes (game_id TEXT NOT NULL, item TEXT NOT NULL, user_id TEXT NOT NULL, seat INTEGER NOT NULL,
+      choice INTEGER NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (game_id, item, user_id, seat));`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
