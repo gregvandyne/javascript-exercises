@@ -30,10 +30,10 @@ import * as eta from './eta.js';
 import { stepRecorder } from './steps.js';
 import { previewUrl } from './tools.js';
 import { restingUntil } from './anthropic.js';
-import { turnsLeft, takeTurn, allowanceFor, limitMessage, limitKey, counter } from './usage.js';
+import { turnsLeft, takeTurn, allowanceFor, limitMessage, limitKey, counter, trustedMaker, turnCapMs } from './usage.js';
 import { loadChat, appendChat, updateChat } from './chat.js';
 import { getUpload, LIMITS as UPLOADS } from './uploads.js';
-import { MAX_STEPS } from './claude.js';
+import { maxStepsFor } from './claude.js';
 import { executeTurn, endBuild, refundable, providerName, providerKind, hooks, MAX_INPUT } from './agent.js';
 export { registerProvider } from './agent.js';
 
@@ -90,7 +90,7 @@ function newJob(row, { attempt = row.attempt } = {}) {
   };
   job.steps = stepRecorder((n, d) => job.emit(n, d), t0);
   // Not unref'd: every way a build ends clears its timers, and a build must not be dropped because nothing else runs.
-  job.timers.cap = setTimeout(() => cancel(job, 'timeout'), Math.max(1, config.builderTurnMaxMs));
+  job.timers.cap = setTimeout(() => cancel(job, 'timeout'), Math.max(1, turnCapMs(row.user_id)));
   return job;
 }
 function start(job, opts) {
@@ -120,6 +120,8 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   const err = (status, key, code, vars) => fail(t, status, key, code, vars);
   // 1. Checks, in the order the Builder always had.
   if (!user.builder_enabled) return err(403, 'builder.errors.disabled', 'disabled');
+  // Trusted makers (the admin, school staff, class teachers) always build with the Pro model (usage.js trustedMaker).
+  if (trustedMaker(user)) pro = true;
   text = String(text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT);
   const wanted = (Array.isArray(uploadIds) ? uploadIds : []).slice(0, UPLOADS.perMessage).map(getUpload).filter(u => u && u.game_id === game.id && !u.used_at);
   if (!text && !wanted.length) return err(400, 'builder.errors.empty', 'empty');
@@ -700,7 +702,7 @@ function resume(row, g, u) {
     user: u, game: g, text: row.request.text || '', pro: !!row.pro, t: tFor(row.locale),
     uploads: (row.request.uploadIds || []).map(getUpload).filter(x => x && x.game_id === row.game_id),
     resume: { versions: turns.versionsSince(row.game_id, row.base_version), ...(orig && orig.request.text ? { original: orig.request.text, cont: true } : {}) },
-    maxRounds: Math.max(LIMITS.maxRoundsOnResume, MAX_STEPS - (row.model_calls || 0)),
+    maxRounds: Math.max(LIMITS.maxRoundsOnResume, maxStepsFor(trustedMaker(u)) - (row.model_calls || 0)),
   });
 }
 

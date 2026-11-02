@@ -264,6 +264,9 @@ export const config = {
   builderMaxTokens: num(process.env.BUILDER_MAX_TOKENS, 64000),   // the models think first: room for thinking plus a whole game
   // Hard cap on one Builder build attempt (server/builder/runner.js): it is stopped after this long, whoever watches.
   builderTurnMaxMs: Math.max(1, num(process.env.BUILDER_TURN_MAX_SECONDS, 1200)) * 1000,
+  // The same cap for trusted makers (the platform admin, school staff and class teachers, builder/usage.js
+  // trustedMaker): their builds always use the Pro model and get more model calls, so they get longer.
+  builderStaffTurnMaxMs: Math.max(1, num(process.env.BUILDER_STAFF_TURN_MAX_SECONDS, 2400)) * 1000,
   // AI spending cap in US dollars (see server/services/ai-budget.js). Calls stop once either is reached.
   aiDailyBudgetUsd: posNum(process.env.AI_DAILY_BUDGET_USD, 5),
   aiMonthlyBudgetUsd: posNum(process.env.AI_MONTHLY_BUDGET_USD, 150),

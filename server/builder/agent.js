@@ -10,7 +10,7 @@ import * as games from '../services/games.js';
 import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
 import { screenInput } from './screen.js';
-import { takeTurn, turnsLeft, allowanceFor, limitMessage } from './usage.js';
+import { takeTurn, turnsLeft, allowanceFor, limitMessage, trustedMaker, turnCapMs } from './usage.js';
 import { loadChat, appendChat } from './chat.js';
 import { toolbox } from './tools.js';
 import { takeForTurn } from './uploads.js';
@@ -111,7 +111,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
   // The time estimate, once the build is charged and before the provider starts (a follow-on build's words are its
   // carried messages). Resumed attempts get a fresh one from now.
   const words = text || job.waiting.map(e => e.text).join('\n');
-  job.est = eta.estimate(eta.predict({ provider: name, pro, cur: tb.current(), state, text: words }), { capMs: config.builderTurnMaxMs });
+  job.est = eta.estimate(eta.predict({ provider: name, pro, cur: tb.current(), state, text: words }), { capMs: turnCapMs(user) });
   if (job.est) emit('eta', { ...job.est.start, el: Date.now() - job.t0 });
   // A Continue carries on an earlier build that stopped: the provider gets what it saved and its message.
   const carry = resume || (continueOf ? { versions: turns.versionsSince(game.id, continueOf.base_version), original: continueOf.request.text, cont: true } : null);
@@ -126,7 +126,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
       user, game, text, pro: !!pro, history, uploads, state, tools: tb, emit, steps, signal: job.ac.signal, locale, t, turn: job.id,
       between: (round, o) => runner.between(job, round, o), settle: () => runner.settle(job), pending: () => job.waiting.length,
       pool: job.pool, cost: usd => { try { turns.addCost(job.id, usd); } catch { /* the database is closing */ } },
-      resume: carry, maxRounds,
+      resume: carry, maxRounds, trusted: trustedMaker(user),
     })) };
   } catch (e) {
     // An abort (time cap, delete, ban, hand-off) is not the Builder getting muddled.
@@ -171,7 +171,7 @@ export function endBuild(job, { usage = job.usage || {} } = {}) {
   job.seg = { text: '', events: [] }; job.lead = []; job.hold = null;   // written: nothing of it may be written again
   const status = statusOf(end); job.end = end; const durationMs = Date.now() - job.t0;
   turns.finish(job.id, { status, end, versions, modelCalls: rec ? rec.r : 0, tokensIn: usage.tokensIn || 0, tokensOut: usage.tokensOut || 0, durationMs, canContinue: end === 'timeout' && !!job.request.text });
-  eta.finish({ id: job.id, est: job.est, versions, base: job.base, firstVersionMs: job.firstV, followups: job.read, end, attempt: job.attempt, chain: job.chain, durationMs, capMs: config.builderTurnMaxMs });
+  eta.finish({ id: job.id, est: job.est, versions, base: job.base, firstVersionMs: job.firstV, followups: job.read, end, attempt: job.attempt, chain: job.chain, durationMs, capMs: turnCapMs(job.userId) });
   const refunded = refundable(status, end, versions) && turns.refund(job.id);
   const left = turnsLeft(job.userId);
   job.emit('done', { turnsLeft: left, ...(rec ? { steps: rec } : {}), ...(refunded ? { refunded: true } : {}), end });

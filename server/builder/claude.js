@@ -36,6 +36,9 @@ import { getUser } from '../auth.js';
 import { cleanText } from '../services/textfilter.js';
 
 export const MAX_STEPS = 14;  // model calls per build (build, details, playtest, fixes, retest, notes, question)
+export const MAX_STEPS_TRUSTED = 20;   // a trusted maker's build (usage.js trustedMaker): more rounds to playtest and fix
+/** Model calls one build may make. trusted: the builder is a trusted maker. */
+export const maxStepsFor = trusted => (trusted ? MAX_STEPS_TRUSTED : MAX_STEPS);
 const MAX_SCAN_FIXES = 2;     // extra rounds allowed to fix a failed safety scan
 const HISTORY_MESSAGES = 40;  // earlier transcript entries sent to the model
 const FALLBACKS = process.env.BUILDER_FALLBACKS !== '0';
@@ -123,7 +126,7 @@ export async function run(ctx) {
   const messages = mergeRoles([...historyToMessages(ctx.history || []), { role: 'user', content: userContent }]);
   let tokensIn = 0, tokensOut = 0, fixes = 0;
   const steps = ctx.steps || NO_STEPS;
-  const max = ctx.maxRounds || MAX_STEPS;
+  const max = ctx.maxRounds || maxStepsFor(!!ctx.trusted);
   // Why the next round starts (its step label) and whether its write/edit is a fix of real problems.
   let prev = { c: 'start', fixing: false };
   let cutOff = false;   // a round already ran out of room before using a tool
