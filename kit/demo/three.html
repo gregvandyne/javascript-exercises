@@ -52,24 +52,25 @@ if (view === 'cast') {
   // the play scene: the hero walks (arrows / WASD / the stick) and collects sparks; the friend asks a question
   const hero = B.rig(HERO, { size: 1.6 }); scene.add(hero);
   const friend = B.sprite(FRIEND, { size: 1.6 }); friend.position.set(3.2, W.heightAt(3.2, -3.5), -3.5); friend.heading = Math.PI; scene.add(friend);
-  const sparks = [], spots = [[-4, -2], [-6, 3], [0, 5], [5, 3], [7, -2], [-2, -7], [3, -8], [-7, -6]];
-  for (const [x, z] of spots) { const s = B.spark({ size: 0.9 }); s.position.set(x, W.heightAt(x, z) + 1, z); scene.add(s); sparks.push(s); }
+  // solids: a crate to jump onto, two steps to walk up, a wall to walk along (the walker stands on or stops at them)
+  const box = (w, h, d, x, z, hue) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), B.toon(hue, { flat: true })); m.position.set(x, W.heightAt(x, z) + h / 2, z); scene.add(m); B.outline(m); B.solid(m); return m; };
+  box(2, 1, 2, -3, 3, 'peach'); box(1.6, 0.4, 1.6, 4, 6, 'sky'); box(1.6, 0.8, 1.6, 4, 7.6, 'sky'); box(6, 2.2, 0.8, -1, -10.5, 'stone');
+  const sparks = [], spots = [[-4, -2], [-6, 3], [0, 5], [5, 3], [7, -2], [-2, -7], [3, -8], [-7, -6], [-3, 3], [4, 7.6]];
+  for (const [x, z] of spots) { const s = B.spark({ size: 0.9 }); s.position.set(x, B.groundAt(x, z) + 1, z); scene.add(s); sparks.push(s); }
   state.total = sparks.length;
-  const pos = new THREE.Vector3(0, W.heightAt(0, 2), 2), camAt = new THREE.Vector3(), look = new THREE.Vector3();
-  hero.position.copy(pos);
-  let demo = shot === 'play' || shot === 'ask', target = 0, vy = 0;
+  // the walker keeps the hero on the ground (keys, stick, jump button); the camera trails it
+  hero.position.set(0, W.heightAt(0, 2), 2);
+  const P = B.walker(hero, { speed: 5.2 }), cam = B.follow(P);
+  window.__walker = P;
+  const pos = hero.position;
+  let demo = shot === 'play' || shot === 'ask', target = 0;
   const step = dt => {
-    if (state.screen !== 'play' || Oomba.ui.open || Oomba.time.paused) { hero.speed = 0; return; }
-    const ax = Oomba.input.axis(); let mx = ax.x, mz = ax.y;
-    if (demo && !mx && !mz) { const t = sparks[target % sparks.length]; if (t) { mx = t.position.x - pos.x; mz = t.position.z - pos.z; const l = Math.hypot(mx, mz) || 1; mx /= l; mz /= l; } }
-    else if (mx || mz) demo = false;
-    const sp = Math.min(1, Math.hypot(mx, mz)), speed = 5.2;
-    if (sp > 0.05) { pos.x += mx * speed * dt; pos.z += mz * speed * dt; hero.heading = Math.atan2(mx, mz); }
-    if (Oomba.input.pressed('jump') && !hero.air) { vy = 7; hero.air = true; }
-    const g = W.heightAt(pos.x, pos.z); vy -= 20 * dt; pos.y += vy * dt;
-    if (pos.y <= g) { if (hero.air) hero.play('land'); pos.y = g; vy = 0; hero.air = false; }
-    const r = Math.hypot(pos.x, pos.z); if (r > 20) { pos.x *= 20 / r; pos.z *= 20 / r; }
-    hero.speed = sp; hero.position.copy(pos);
+    P.enabled = state.screen === 'play';
+    if (!P.enabled || Oomba.ui.open || Oomba.time.paused) return;
+    const ax = Oomba.input.axis();
+    if (ax.x || ax.y) demo = false;
+    P.move = null;
+    if (demo) { const t = sparks[target % sparks.length]; if (t) { const mx = t.position.x - pos.x, mz = t.position.z - pos.z, l = Math.hypot(mx, mz) || 1; P.move = { x: mx / l, z: mz / l }; } if (P.grounded && Math.hypot(P.vx, P.vz) < 1.2) P.jump(); }   // stuck at a crate: hop up
     for (const s of sparks) if (s.visible && s.position.distanceTo(pos.clone().setY(pos.y + 1)) < 1.3) {
       s.visible = false; state.got++; hud.score.add(10); hud.count.add(1); Oomba.sfx('spark'); hero.play('cheer'); target++;
       if (state.got === state.total) finish();
@@ -93,23 +94,15 @@ if (view === 'cast') {
     hud = Oomba.ui.hud(['score', 'count:spark', 'timer:90'], { total: state.total, onPause: r => { if (r === 'restart' || r === 'quit') location.reload(); } });
     hud.timer.start(90, () => { state.screen = 'lose'; Oomba.ui.tryAgain({ score: hud.score.value, title: 'Time’s up!' }).then(() => location.reload()); });
   }
-  window.__brbTest = Object.assign(window.__brbTest, { start: () => { if (state.screen === 'title') { document.querySelectorAll('.ok-title-screen .ok-big, .ok-big').forEach(b => b.click()); } } });
-  // the camera follows from behind and above, smoothly (no shake, no roll; reduced motion snaps a little faster)
-  const follow = dt => {
-    const back = tall ? 8 : 7.5, up = tall ? 3.8 : 3.4;
-    camAt.set(pos.x, pos.y + up, pos.z + back);
-    camera.position.lerp(camAt, state.screen === 'title' ? 1 : 1 - Math.exp(-dt * 4));
-    look.set(pos.x, pos.y + (tall ? 1.8 : 1.4), pos.z - (tall ? 4 : 3)); camera.lookAt(look);
-  };
-  camera.position.set(pos.x, pos.y + 3.4, pos.z + 7.5); follow(1);
-  B.run(dt => { step(dt); follow(dt); state.fps = state.fps ? state.fps * 0.95 + (1 / Math.max(dt, 1e-3)) * 0.05 : 1 / Math.max(dt, 1e-3); });
+  window.__brbTest = Object.assign(window.__brbTest, { drive: () => { demo = false; }, start: () => { if (state.screen === 'title') { document.querySelectorAll('.ok-title-screen .ok-big, .ok-big').forEach(b => b.click()); } } });
+  B.run(dt => { step(dt); state.fps = state.fps ? state.fps * 0.95 + (1 / Math.max(dt, 1e-3)) * 0.05 : 1 / Math.max(dt, 1e-3); });
   state.ready = true;
-  if (shot === 'play' || shot === 'ask') { Oomba.fonts.ready.then(start); if (shot === 'ask') { pos.set(1.6, W.heightAt(1.6, -2), -2); hero.position.copy(pos); hero.heading = Math.PI * 0.6; follow(1); Oomba.fonts.ready.then(() => Oomba.time.real.after(300, quiz)); } }
+  if (shot === 'play' || shot === 'ask') { Oomba.fonts.ready.then(start); if (shot === 'ask') { P.teleport(1.6, -2); hero.heading = Math.PI * 0.6; cam.snap(); Oomba.fonts.ready.then(() => Oomba.time.real.after(300, quiz)); } }
   else Oomba.fonts.ready.then(() => Oomba.ui.title({ title: 'Oomba 3D', subtitle: Oomba.t('sub'), hero: Oomba.char(HERO) })).then(start);
 }
 if (view === 'cast') B.run();
 window.__brbTest.state = () => ({ ready: state.ready, game: true, scene: state.screen, view, theme: B.look.name, biome: B.look.biome, style: B.style, tier: B.tier, quality: B.quality, tod: B.tod,
-  calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio: renderer.getPixelRatio(), got: state.got, total: state.total, fps: Math.round(state.fps), props: W.props.length, reduced: B.reduced });
+  calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio: renderer.getPixelRatio(), hero: window.__walker ? window.__walker.state() : null, got: state.got, total: state.total, fps: Math.round(state.fps), props: W.props.length, reduced: B.reduced });
 renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); Oomba.time.pause('gl'); });
 renderer.domElement.addEventListener('webglcontextrestored', () => Oomba.time.resume('gl'));
 </script>

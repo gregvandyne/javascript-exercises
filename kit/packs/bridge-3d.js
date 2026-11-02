@@ -79,6 +79,8 @@ export function define(K) {
         land: { grass: deepen(BI.bands[3][0]), grassDark: deepen(m(BI.bands[3][0], BI.bands[3][1], 0.7)), rock: deepen(m(P.stone[1], BI.bands[2][1], 0.25)), sand: /beach|desert|reef/.test(biome) ? BI.ground[0] : '#F4DCA0' } },
       color, neon, ink: Col(bold ? BOLD_INK : INK), accent: bold ? neon(accent) : color(accent),
     };
+    // in a 3D world up / W walk forward, so they never also jump (the 2D default): jump is Space, Z, the pad's A, the button
+    if (kit.input && kit.input.bindings && o.upJumps !== true) kit.input.map({ jump: (kit.input.bindings.jump || []).filter(b => b !== 'KeyW' && b !== 'ArrowUp') });
     { const A2 = kit.helperAtlas(); B.look.props = (look ? (kit.theme.names && kit.useTheme ? look.props : []) : []).filter(n => A2.defs.get(n)); }
     // ---- toon materials with a rim ----
     const U = { rim: { value: Col(bold ? NEON.cyan : CREAM) }, rimK: { value: bold ? 0.5 : 0.22 }, px: { value: new T.Vector2(0.002, 0.003) }, ink: { value: 2.5 }, near: { value: 12 } };
@@ -381,7 +383,8 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
       const SIZE = { tower: 5.5, goalpost: 3.6, pyramid: 5, igloo: 3.2, sandcastle: 2.8, totem: 3.6, banner: 3.6, torch: 2.4, cauldron: 2, satellite: 2.6, ufo: 2.6, rocket: 3.8, planet: 3, bus: 3.2, car: 2.6, tree: 4.2, boat: 3, cactus: 3, snowman: 2.8, pine: 4.4, sign: 2.6, drone: 2, lantern: 2.4, ghost: 2.2, pumpkin: 1.8, goal: 3 };
       for (let j = 0; names.length && j < want; j++) {
         const nm = names[j % names.length], a = (j + rnd() * 0.7) / want * TAU, d = clear + rnd() * (size - clear), x = Math.cos(a) * d, z = Math.sin(a) * d;
-        const p = prop(nm, { size: (SIZE[nm] || 2) * (opt.propScale || 1) }); p.position.set(x, heightAt(x, z), z); grp.add(p); props.push(p);
+        const s = (SIZE[nm] || 2) * (opt.propScale || 1), p = prop(nm, { size: s }), y = heightAt(x, z); p.position.set(x, y, z); grp.add(p); props.push(p);
+        if (opt.solidProps !== false) p.userData.okSolid = solid({ x, z, r: clamp(s * 0.12, 0.25, 0.7), bottom: y - 1, top: y + s }, { walkable: false, of: p });
       }
       // clouds by day (one instanced mesh), stars at night or in space
       let clouds = null, stars = null;
@@ -399,7 +402,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
         stars = new T.Points(sg, new T.PointsMaterial({ color: Col(bold ? NEON.cyan : '#FFF3C4'), size: 2.2, sizeAttenuation: false, fog: false })); grp.add(stars); own.push(sg, stars.material);
       }
       scene.add(grp);
-      const W = { group: grp, heightAt, props, clouds, stars, size, sun, hemi };
+      const W = { group: grp, heightAt, props, clouds, stars, size, sun, hemi, solid, groundAt: (x, z, y) => groundAt(x, z, y) };
       B.worldInfo = W; return W;
     }
     const im3 = (im, j, M) => im.setMatrixAt(j, M);
@@ -408,6 +411,9 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
     let clock = 0, slow = 0, fast = 0, prLast = 0, pruned = 0;
     function update(dt = 1 / 60) {
       dt = Math.min(0.1, Math.max(0, dt)); clock += dt;
+      for (const c of solids) if (c.moving) c.fit();
+      for (const w of walkers) if (!w.opt.manual) w.update(dt);
+      for (const f of follows) f.update(dt);
       const mo = motion();
       if (renderer) { renderer.getSize(sz); if (sz.x && sz.y) { U.px.value.set(2 / sz.x, 2 / sz.y); U.ink.value = clamp(sz.y * 0.0055, 2.2, 5) * (bold ? 0.82 : 1); } }   // the kit's 2D line: about 5% of a character's height on screen
       if (camera) { camera.getWorldPosition(camPos); right.setFromMatrixColumn(camera.matrixWorld, 0); }
@@ -474,6 +480,166 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
     }
     const hv = new T.Vector3();
     function dirFlip(a) { hv.set(Math.sin(a.heading), 0, Math.cos(a.heading)); return camera ? hv.dot(right) < -0.05 : false; }
+    // ---- walking around a 3D map: solids, the ground under a point, a character controller and a follow camera ----
+    // Solids are boxes or round posts in plan (x, z) with a bottom and a top: a wall stops the walker (it slides along),
+    // a top within a step is ground (crates, stairs, platforms, roofs it can jump onto). The terrain is heightAt.
+    const solids = [], walkers = [], follows = [], bx = new T.Box3();
+    function solid(t, opt = {}) {
+      const c = { obj: t && t.isObject3D ? t : null, of: opt.of || (t && t.isObject3D ? t : null), round: opt.shape === 'round', walk: opt.walkable !== false, moving: !!opt.moving, pad: opt.pad || 0, dx: 0, dz: 0, dy: 0 };
+      c.fit = () => {
+        const ox = c.x0, oz = c.z0, oy = c.top;
+        if (c.obj) { c.obj.updateWorldMatrix(true, true); bx.setFromObject(c.obj); if (bx.isEmpty()) return c; Object.assign(c, { x0: bx.min.x - c.pad, x1: bx.max.x + c.pad, z0: bx.min.z - c.pad, z1: bx.max.z + c.pad, bottom: bx.min.y, top: bx.max.y }); }
+        else if (t.r != null) Object.assign(c, { round: true, x0: t.x - t.r, x1: t.x + t.r, z0: t.z - t.r, z1: t.z + t.r, bottom: t.bottom != null ? t.bottom : -1e9, top: t.top });
+        else Object.assign(c, { x0: t.x0, x1: t.x1, z0: t.z0, z1: t.z1, bottom: t.bottom != null ? t.bottom : -1e9, top: t.top });
+        c.cx = (c.x0 + c.x1) / 2; c.cz = (c.z0 + c.z1) / 2; c.r = Math.max(c.x1 - c.x0, c.z1 - c.z0) / 2;
+        if (ox != null) { c.dx = c.x0 - ox; c.dz = c.z0 - oz; c.dy = c.top - oy; }
+        return c;
+      };
+      c.fit(); c.remove = () => { const j = solids.indexOf(c); if (j >= 0) solids.splice(j, 1); };
+      solids.push(c); return c;
+    }
+    // how far (x, z) lies inside a solid's plan, grown by r: [depth, push x, push z] (depth <= 0: outside)
+    function inside(c, x, z, r) {
+      if (c.round) { const dx = x - c.cx, dz = z - c.cz, d = Math.hypot(dx, dz) || 1e-6; return [c.r + r - d, dx / d, dz / d]; }
+      const qx = clamp(x, c.x0, c.x1), qz = clamp(z, c.z0, c.z1), dx = x - qx, dz = z - qz, d = Math.hypot(dx, dz);
+      if (d > 1e-6) return [r - d, dx / d, dz / d];
+      const e = [[x - c.x0, -1, 0], [c.x1 - x, 1, 0], [z - c.z0, 0, -1], [c.z1 - z, 0, 1]].sort((a, b) => a[0] - b[0])[0];
+      return [e[0] + r, e[1], e[2]];
+    }
+    const terrain = (x, z) => (B.worldInfo ? B.worldInfo.heightAt(x, z) : 0);
+    /** The ground under (x, z) for feet coming from height y: the terrain, or the highest solid top within a step of y. */
+    function groundAt(x, z, y = 1e9, step = 0.5, r = 0) {
+      let g = terrain(x, z), on = null;
+      for (const c of solids) if (c.walk && (!c.of || c.of.visible) && c.top > g && c.top <= y + step && inside(c, x, z, r * 0.5)[0] > 0) { g = c.top; on = c; }
+      groundAt.on = on; return g;
+    }
+    const keepSigned = a => Math.atan2(Math.sin(a), Math.cos(a));
+    // jump presses are edges of the kit's fixed steps; a render frame can span several, so count them as they happen
+    const IN = kit.input;
+    if (IN && IN.update && !IN.okJumps) { const up = IN.update.bind(IN); IN.okJumps = 1; IN.update = pads => { up(pads); if (IN.pressed('jump')) IN.okJumps++; }; }
+    const fwd = new T.Vector3();
+    /** walker(actor, opts): moves a rig or sprite (or any Object3D) around the map with the arrows / WASD, the touch stick
+     *  and the jump button, relative to where the camera looks, on the ground. */
+    function walker(a, opt = {}) {
+      const S = Object.assign({ speed: 5, accel: 12, jump: 8, gravity: 24, radius: 0.4, height: 1.6, step: 0.5, slope: 0.9, turn: 12, fall: 25, input: true, touch: true, sound: true }, opt);
+      const p = a.position, P = { actor: a, opt: S, vx: 0, vz: 0, vy: 0, grounded: true, enabled: true, on: null, spawn: p.clone(), coyote: 0, buffer: 0, move: null, jumps: IN ? IN.okJumps : 0 };
+      if (S.input && S.touch) { const O = api(); if (O && O.input && O.input.touch) O.input.touch('stick+jump'); }
+      const bounds = () => {
+        const b = S.bounds;
+        if (b === false) return null;
+        if (b && typeof b === 'object') return b;
+        return { r: typeof b === 'number' ? b : (B.worldInfo ? B.worldInfo.size * 0.9 : 1e9) };
+      };
+      const walls = (x, z, y) => {   // push (x, z) out of every solid it is in that is a wall at this height
+        for (let k = 0; k < 2; k++) for (const c of solids) {
+          if (c.top <= y + S.step || c.bottom >= y + S.height || (c.of && !c.of.visible)) continue;
+          const [d, nx, nz] = inside(c, x, z, S.radius); if (d > 0) { x += nx * d; z += nz * d; }
+        }
+        const bd = bounds();
+        if (bd && bd.r != null) { const d = Math.hypot(x, z); if (d > bd.r) { x *= bd.r / d; z *= bd.r / d; } }
+        else if (bd) { x = clamp(x, bd.x0, bd.x1); z = clamp(z, bd.z0, bd.z1); }
+        return [x, z];
+      };
+      // a step on the terrain: never up a slope steeper than S.slope (rise per metre) or a ledge higher than a step
+      const climbable = (x, z, nx, nz, y) => {
+        const len = Math.hypot(nx - x, nz - z); if (len < 1e-6) return true;
+        const rise = groundAt(nx, nz, y, S.step, S.radius) - y;
+        return rise <= 0.02 || (rise <= S.step && (!!groundAt.on || rise / len <= S.slope));
+      };
+      P.teleport = (x, z, y) => { p.set(x, y != null ? y : groundAt(x, z), z); P.vx = P.vz = P.vy = 0; P.grounded = true; for (const f of follows) if (f.obj === a) f.snap(); return P; };   // a cut: the camera cuts too
+      P.jump = (v = S.jump) => { P.vy = v; P.grounded = false; P.coyote = 0; a.air = true; return P; };
+      P.state = () => ({ x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), ground: +groundAt(p.x, p.z, p.y, S.step, S.radius).toFixed(2), terrain: +terrain(p.x, p.z).toFixed(2), grounded: P.grounded });
+      P.remove = () => { const j = walkers.indexOf(P); if (j >= 0) walkers.splice(j, 1); };
+      P.update = dt => {
+        const O = api();
+        if (!P.enabled || (O && ((O.time && O.time.paused) || (O.ui && O.ui.open)))) { a.speed = 0; return; }
+        if (dt > 0.034) { const n = Math.ceil(dt / 0.034); for (let j = 0; j < n; j++) P.update(dt / n); return; }   // slow frames: same speed, small steps
+        // input: the stick / keys, turned to the camera's view on the ground plane (its pitch never lifts the walker)
+        let ix = 0, iz = 0;
+        if (P.move) { ix = P.move.x || 0; iz = P.move.z || 0; }
+        else if (S.input && O && O.input) {
+          const ax = O.input.axis(); let fx = 0, fz = -1;
+          if (camera) { camera.getWorldDirection(fwd); fwd.y = 0; if (fwd.lengthSq() > 1e-6) { fwd.normalize(); fx = fwd.x; fz = fwd.z; } }
+          ix = -fz * ax.x - fx * ax.y; iz = fx * ax.x - fz * ax.y;
+          if (IN && IN.okJumps !== P.jumps) { P.jumps = IN.okJumps; P.buffer = 0.15; }
+        }
+        const il = Math.hypot(ix, iz); if (il > 1) { ix /= il; iz /= il; }
+        const k = 1 - Math.exp(-dt * S.accel * (P.grounded ? 1 : 0.5));
+        P.vx += (ix * S.speed - P.vx) * k; P.vz += (iz * S.speed - P.vz) * k;
+        // ride a moving platform
+        if (P.grounded && P.on && P.on.moving) { p.x += P.on.dx; p.z += P.on.dz; p.y += Math.max(0, P.on.dy); }
+        // move in small steps: walls slide, steep slopes and high ledges stop, low ones are stepped up
+        const dist = Math.hypot(P.vx, P.vz) * dt, n = Math.max(1, Math.ceil(dist / (S.radius * 0.5)));
+        for (let j = 0; j < n; j++) {
+          const sx = P.vx * dt / n, sz = P.vz * dt / n;
+          let [nx, nz] = walls(p.x + sx, p.z + sz, p.y);
+          if (!climbable(p.x, p.z, nx, nz, p.y)) {
+            const tx = walls(p.x + sx, p.z, p.y), tz = walls(p.x, p.z + sz, p.y);
+            if (Math.abs(sx) > 1e-5 && climbable(p.x, p.z, tx[0], tx[1], p.y)) [nx, nz] = tx;
+            else if (Math.abs(sz) > 1e-5 && climbable(p.x, p.z, tz[0], tz[1], p.y)) [nx, nz] = tz;
+            else { nx = p.x; nz = p.z; }
+          }
+          p.x = nx; p.z = nz;
+        }
+        // jump (a little late off a ledge, or pressed a little early, still counts)
+        P.coyote = P.grounded ? 0.1 : Math.max(0, P.coyote - dt); P.buffer = Math.max(0, P.buffer - dt);
+        if (P.buffer > 0 && P.coyote > 0) { P.buffer = 0; P.jump(); if (S.sound && O && O.sfx) O.sfx('jump'); }
+        // gravity, landing, and the ground under the feet (snapped down slopes and steps, so it never floats)
+        if (P.grounded) {
+          const g = groundAt(p.x, p.z, p.y, S.step, S.radius), on = groundAt.on;
+          if (g < p.y - Math.max(S.step, Math.hypot(P.vx, P.vz) * dt * S.slope * 2 + 0.05)) { P.grounded = false; P.vy = 0; }
+          else { p.y = g; P.on = on; }
+        }
+        if (!P.grounded) {
+          const y0 = p.y; P.vy -= S.gravity * dt; p.y += P.vy * dt;
+          if (P.vy > 0) for (const c of solids) if ((!c.of || c.of.visible) && c.bottom > y0 + S.height - 0.05 && p.y + S.height > c.bottom && inside(c, p.x, p.z, S.radius * 0.5)[0] > 0) { p.y = c.bottom - S.height; P.vy = 0; }   // a ceiling bumps the head
+          const g = groundAt(p.x, p.z, Math.max(y0, p.y), 0.05, S.radius);
+          if (p.y <= g) { p.y = g; P.on = groundAt.on; P.grounded = true; P.vy = 0; if (a.play) a.play('land'); }
+        }
+        // fell out of the world (a hole, off the edge): back to the start
+        if (p.y < P.spawn.y - S.fall) { P.teleport(P.spawn.x, P.spawn.z, P.spawn.y); if (S.onFall) S.onFall(P); }
+        const hs = Math.hypot(P.vx, P.vz);
+        if (hs > 0.3) { const want = Math.atan2(P.vx, P.vz), h = a.heading || 0; a.heading = h + keepSigned(want - h) * (1 - Math.exp(-dt * S.turn)); }
+        a.speed = clamp(hs / S.speed, 0, 1); a.air = !P.grounded;
+      };
+      { const g = groundAt(p.x, p.z, p.y + S.step, S.step, S.radius); if (p.y < g) p.y = g; P.spawn.copy(p); }
+      walkers.push(P); return P;
+    }
+    /** follow(target, opts): a third-person camera that trails the target, never goes under the ground or into a solid;
+     *  drag on the 3D view (not on the stick) to look around. */
+    function follow(target, opt = {}) {
+      const S = Object.assign({ distance: 7.5, height: 3.2, look: 1.4, yaw: 0, smooth: 5, orbit: true, tall: 1.25 }, opt);
+      const obj = target && target.actor ? target.actor : target, F = { yaw: S.yaw, pitch: 0, opt: S, obj }, at = new T.Vector3(), want = new T.Vector3(), lk = new T.Vector3();
+      let drag = null, first = true;
+      const el = renderer && renderer.domElement;
+      if (el && el.addEventListener && S.orbit) {
+        if (el.style) el.style.touchAction = 'none';
+        el.addEventListener('pointerdown', e => { drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; });
+        el.addEventListener('pointermove', e => { if (!drag || drag.id !== e.pointerId) return; F.yaw -= (e.clientX - drag.x) * 0.008; F.pitch = clamp(F.pitch + (e.clientY - drag.y) * 0.004, -0.35, 0.5); drag.x = e.clientX; drag.y = e.clientY; });
+        const end = e => { if (drag && drag.id === e.pointerId) drag = null; };
+        el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+      }
+      F.update = dt => {
+        if (!camera || !obj) return;
+        const tall = (camera.aspect || 1.6) < 0.8 ? S.tall : 1, d = S.distance * tall, h = S.height * tall + F.pitch * d;
+        at.set(obj.position.x, obj.position.y + S.look, obj.position.z);
+        want.set(at.x + Math.sin(F.yaw) * d, obj.position.y + h, at.z + Math.cos(F.yaw) * d);
+        // walk the arm out from the target: stop before the ground or a solid gets between
+        let best = 1;
+        for (let j = 1; j <= 8; j++) {
+          const f = j / 8, x = at.x + (want.x - at.x) * f, y = at.y + (want.y - at.y) * f, z = at.z + (want.z - at.z) * f;
+          let hit = y < terrain(x, z) + 0.5;
+          if (!hit) for (const c of solids) if (c !== (target && target.on) && (!c.of || c.of.visible) && y > c.bottom && y < c.top + 0.3 && inside(c, x, z, 0.3)[0] > 0) { hit = true; break; }
+          if (hit) { best = (j - 1) / 8; break; }
+        }
+        want.lerp(at, 1 - Math.max(0.15, best));
+        want.y = Math.max(want.y, terrain(want.x, want.z) + 0.5);
+        if (first) { camera.position.copy(want); first = false; } else camera.position.lerp(want, 1 - Math.exp(-dt * (B.reduced ? S.smooth * 1.5 : S.smooth)));
+        lk.set(at.x, at.y, at.z); camera.lookAt(lk);
+      };
+      F.snap = () => { first = true; F.update(0); return F; };
+      follows.push(F); F.snap(); return F;
+    }
     // ---- running it ----
     function run(fn) {
       if (!renderer) { kit.warn('Oomba.three: run() needs the renderer'); return B; }
@@ -497,7 +663,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
     }
     const toScreen = v => { const p = (v.isVector3 ? v.clone() : v.getWorldPosition(new T.Vector3())).project(camera), c = renderer.domElement; return { x: (p.x + 1) / 2 * c.clientWidth, y: (1 - p.y) / 2 * c.clientHeight, behind: p.z > 1 }; };
     function dispose() { for (const x of own) if (x && x.dispose) x.dispose(); if (renderer) renderer.setAnimationLoop(null); }
-    Object.assign(B, { toon, inkify, outline, bake, sky, world, prop, sprite, rig, spark, character: (spec, opt = {}) => (opt.as === 'sprite' ? sprite(spec, opt) : rig(spec, opt)), update, run, fit, setQuality, toScreen, dispose });
+    Object.assign(B, { toon, inkify, outline, bake, sky, world, prop, sprite, rig, spark, character: (spec, opt = {}) => (opt.as === 'sprite' ? sprite(spec, opt) : rig(spec, opt)), solid, groundAt: (x, z, y) => groundAt(x, z, y), walker, follow, update, run, fit, setQuality, toScreen, dispose });
     kit.three3d = B;
     return B;
   }

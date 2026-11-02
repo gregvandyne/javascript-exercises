@@ -1,4 +1,4 @@
-# Oomba Kit API reference (what exists: kit 1.1.1)
+# Oomba Kit API reference (what exists: kit 1.1.2)
 
 This page lists only what the kit does today, with exact signatures. It is the page a model reads before writing a kit
 game. Start with **the game layer** (`Oomba.game`): a whole game is a spec, a one-character level and a few handlers.
@@ -6,11 +6,11 @@ The design and the plans are in [kit.md](kit.md). `tests/unit/kit-api.test.js` c
 public name is on this page.
 
 Load the kit with exactly the tag `kitTag()` makes (pinned version, `integrity`, `crossorigin="anonymous"`). It creates
-`window.Oomba` (alias `window.OK`) once. New games load the latest kit (1.1.1: 1.1.0 with themes, plus settings fixes); games saved on 1.0.0 keep
-their own pinned tag and work as before (the server serves both; a version's files never change; games saved on 1.1.0 are served on 1.1.1).
+`window.Oomba` (alias `window.OK`) once. New games load the latest kit (1.1.2: 1.1.0 with themes, plus settings fixes and walking in 3D); games saved on 1.0.0 keep
+their own pinned tag and work as before (the server serves both; a version's files never change; games saved on 1.1.0 or 1.1.1 are served on 1.1.2).
 
 ```html
-<script src="/vendor/oomba-kit/1.1.1/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <script>
   const S = Oomba.stage({ api: 1, biome: 'meadow' });
   const hero = S.add('kid', { x: 0, y: 0, size: 120, hair: { style: 'curls', color: 'black' } });
@@ -23,7 +23,7 @@ their own pinned tag and work as before (the server serves both; a version's fil
 ## The game layer (start here)
 
 ```html
-<script src="/vendor/oomba-kit/1.1.1/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <script>
   Oomba.game({
     api: 1, title: 'Spark Hop', theme: 'meadow', controls: 'platformer:kid-easy', hud: ['score', 'lives:3', 'timer:90'],
@@ -109,7 +109,7 @@ Extra art comes in separate pinned files, loaded only by the games that use them
 kit's tag** (`kitPackTag(name)` on the server; any other form fails the scanner):
 
 ```html
-<script src="/vendor/oomba-kit/1.1.1/packs/art-animals.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-…" crossorigin="anonymous"></script>
 ```
 
 - `art-animals`: species `cat dog bear mouse owl penguin duck` (13 with the core six).
@@ -156,9 +156,20 @@ const W = B.world({ size: 30 });                         // sky, fog, light, lan
 const hero = B.rig(CONFIG.hero, { size: 1.6 }); scene.add(hero);   // a kit character spec as a toon rig with Ink
 const friend = B.sprite({ species: 'bunny' }); friend.position.set(3, W.heightAt(3, -3), -3); scene.add(friend);
 const coin = B.spark(); coin.position.set(0, W.heightAt(0, -6) + 1, -6); scene.add(coin);
+const house = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 4), B.toon('coral')); house.position.set(-6, W.heightAt(-6, 0) + 1.5, 0); scene.add(house);
+B.solid(house);                                          // walls stop the hero; it can jump onto the roof
+const player = B.walker(hero);                           // walks on the ground: keys, stick, jump button, gravity, slopes
+B.follow(player);                                        // the camera trails it, never under the ground or in a wall
 BRB.fx.fit3d(renderer, camera, { maxDpr: B.dprCap, onResize(w, h) { camera.fov = w / h < 0.8 ? 70 : 60; } });
-B.run(dt => { /* move the hero: hero.position, hero.heading (radians), hero.speed 0..1, hero.air; then the camera */ });
+B.run(dt => { /* the game's rules: pickups (coin.position.distanceTo(hero.position) < 1.2), talk, the goal */ });
 ```
+
+**Walking around a 3D map (kit 1.1.2).** Never move the player by hand (`hero.position.y += …`, moving along the
+camera's direction, a jump with no landing): it ends up walking into the air or through walls. `B.walker(actor)` does
+it: forward is where the camera looks on the ground, gravity always pulls down, it stands on the land and on every
+solid's top, walks up gentle slopes and steps, slides along walls, can't climb cliffs, jumps (Space, Z, the touch
+button; never up or W, which walk) and lands, stays inside the map and comes back to the start after a fall. Make every
+building, wall, crate, platform, tree trunk and rock a solid with `B.solid(mesh)`; the world's own props already are.
 
 - `Oomba.three(THREE, {renderer, scene, camera, theme, style, tod, size, governor})` → `B`. `theme` is a theme name or
   recolour (Themes, above); `style: 'bold'` (12-14) or the theme's; `tod` 0 (noon) … 1 (night): the theme's by default,
@@ -178,6 +189,22 @@ B.run(dt => { /* move the hero: hero.position, hero.heading (radians), hero.spee
   devices at 30 fps). `B.fit({onResize})` sizes the renderer where there is no `BRB.fx.fit3d`. `B.tier` (`'low' | 'mid' | 'high'`), `B.quality` (0-2, the governor lowers it: pixel ratio, shadows,
   outline distance, props), `B.dprCap`, `B.reduced`, `B.motion` (multiply your own decorative motion by it: 0 with
   reduced motion, 0.75 in Bold), `B.color(hue, step)`, `B.neon(name)`, `B.toScreen(obj)` → `{x, y}` CSS px for DOM.
+- Moving (kit 1.1.2): `B.walker(actor, {speed: 5, jump: 8, gravity: 24, step: 0.5, slope: 0.9, radius: 0.4, height:
+  1.6, bounds, input, touch, onFall})` → `P`: `bounds` a radius, `{x0, x1, z0, z1}` or `false` (default: the world's
+  edge); `step` the highest ledge it walks up; `slope` the steepest rise per metre it walks up; `input: false` for a
+  walker the game moves itself with `P.move = {x, z}` (-1..1, an NPC, a cutscene) or `null`; the touch stick and jump
+  button show on touch screens. `P.grounded`, `P.vy`, `P.jump(v)`, `P.teleport(x, z)`, `P.spawn` (where a fall
+  returns it; set it at a checkpoint), `P.enabled = false` (frozen), `P.state()` → `{x, y, z, ground, grounded}`.
+  It stops while the game is paused or a kit dialog is open, and sets the actor's `heading`, `speed` and `air`.
+- `B.solid(mesh | {x, z, r, top, bottom} | {x0, x1, z0, z1, top, bottom}, {shape: 'round', walkable, moving})` → a
+  solid (its box in the world, from the mesh's bounds; `shape: 'round'` for posts, trunks and towers); `walkable:
+  false` when its top is not ground; `moving: true` for a lift or moving platform (it carries the walker); hidden
+  meshes stop counting; `solid.remove()`. `B.groundAt(x, z)` (also `W.groundAt`) → the height to stand at there.
+  For a game's own land, pass its height to `B.world({height(x, z)})` (or `{ground: false, height}`) so the walker
+  and the camera know it.
+- `B.follow(target, {distance: 7.5, height: 3.2, look: 1.4, yaw, orbit: true})` → a third-person camera behind and
+  above a walker or actor: smooth, never under the ground or behind a solid, farther back in portrait; drag on the
+  view (not the stick) to look around (`orbit: false` to keep it fixed). `F.yaw` (radians), `F.snap()`.
 - Screens: the kit's own over the canvas: `Oomba.ui.title`, `Oomba.ui.howTo`, `Oomba.ui.hud`, `Oomba.ui.ask`,
   `Oomba.ui.win`, `Oomba.ui.tryAgain`, `Oomba.ui.pause`.
 <!-- /builder -->

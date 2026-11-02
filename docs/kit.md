@@ -1,6 +1,6 @@
 # Oomba Kit (developer docs)
 
-> **Status: phase 1 (engine, art library, UI kit, demo) and phase 2's game layer and art packs are built; kit 1.1.1
+> **Status: phase 1 (engine, art library, UI kit, demo) and phase 2's game layer and art packs are built; kit 1.1.2
 > (the current version: 1.1.0 with themes, §6.5, plus the settings fixes below) is built next to the locked 1.0.0 and 1.1.0. This file is
 > the design; for what exists, with exact signatures, read [kit-api.md](kit-api.md)** (that page is what a model reads;
 > a unit test keeps it equal to the code). Sections marked **(not built)** describe plans.
@@ -30,6 +30,17 @@
 >   official games (Atlas Quest and Code Isle moved from 1.0.0 by hand: no API they use changed). 1.0.0 has no patch
 >   release, so member games still on 1.0.0 keep the old switch and icon. `tests/e2e/frame-fit.js` has a `knob` rule
 >   (a switch whose knob leaves its track), so the layout audits catch it.
+> - **1.1.2 (3D maps you can walk around):** in a 3D world up and W walk forward and never also jump (the 2D default
+>   binds them to jump, so holding forward kept lifting a 3D player into the air): `Oomba.three()` maps jump to Space,
+>   Z, the pad's A and the touch button (`upJumps: true` keeps the old keys). The `bridge-3d` pack gains `B.walker`
+>   (a character controller: camera-relative input on the ground plane, gravity, ground snapping to the land and to
+>   solid tops, gentle slopes and low steps walked up, cliffs and walls stop it and it slides along them, jumps with
+>   coyote time that land, map bounds, back to the start after a fall, moving platforms carry it), `B.solid` (box or
+>   round solids from a mesh or numbers; the world's props are solid), `B.groundAt` and `B.follow` (a third-person
+>   camera that never goes under the land or behind a solid, drag to look around). bridge-3d is 13.0 KB brotli (cap
+>   14). Same API plus additions, so `KIT_PATCHES` maps 1.1.0 and 1.1.1 → 1.1.2 (every saved game gets the key fix);
+>   the official games and the live lobby moved with `scripts/kit-upgrade-seeds.js`. The Builder's 3D rules send maps
+>   to the walker (docs/kit-api.md, "Walking around a 3D map").
 > - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
 >   `/vendor/three/`); the scanner accepts exactly `kitTag()` and, after it, exactly `kitPackTag(name)` for each pack (same
 >   version), fails anything else naming the kit (`kit_pin`, `kit_tag`) and flags games that name `Oomba.debug` or the
