@@ -27,8 +27,10 @@
 >   card; the `settings` icon is a cog (the old ringed dot with rays read as the light/dark sun). Core 95.1 KB brotli,
 >   so the core cap went from 95 to 96 KB. `KIT_PATCHES` (kit.js) maps 1.1.0 → 1.1.1: `upgradeKitPins()` serves every
 >   saved 1.1.0 game on 1.1.1 (the frame), the Builder saves edits on it, and `scripts/kit-upgrade-seeds.js` moved the
->   official games (Atlas Quest and Code Isle moved from 1.0.0 by hand: no API they use changed). 1.0.0 has no patch
->   release, so member games still on 1.0.0 keep the old switch and icon. `tests/e2e/frame-fit.js` has a `knob` rule
+>   official games (Atlas Quest and Code Isle moved from 1.0.0 by hand: no API they use changed). **1.0.1** is the same
+>   fixes on 1.0.0 (built from the 1.0.0 sources at c97abfa, which rebuild 1.0.0 byte for byte, with only the switch,
+>   setting-row and cog changes applied; its five packs are 1.0.0's with the new version stamp), locked too, and
+>   `KIT_PATCHES` maps 1.0.0 → 1.0.1, so member games still on 1.0.0 get the fixes when served. `tests/e2e/frame-fit.js` has a `knob` rule
 >   (a switch whose knob leaves its track), so the layout audits catch it.
 > - **1.1.2 (3D maps you can walk around):** in a 3D world up and W walk forward and never also jump (the 2D default
 >   binds them to jump, so holding forward kept lifting a 3D player into the air): `Oomba.three()` maps jump to Space,

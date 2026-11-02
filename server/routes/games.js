@@ -25,7 +25,8 @@ import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady } from '../services/classlive-check.js';
-import { playData as ttsPlayData, frameData as ttsFrameData } from './tts.js';
+import { playData as ttsPlayData, frameData as ttsFrameData, listedGame as ttsListed } from './tts.js';
+import * as ttsGames from '../services/tts-games.js';
 
 export const router = Router();
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
@@ -101,6 +102,7 @@ router.get('/g/:slug', (req, res) => {
     </div>
     <div class="grid2">
       <div class="stack">
+        ${adminVoices(u, g)}
         <section class="panel"><h2>${t('game.about.heading')}</h2>
           <p class="ugc" style="white-space:pre-line">${g.description || t('game.about.noDescription')}</p>
           ${learn ? html`<p class="lp-practise"${fbl(`learn.games.${learn.key}`)}><b>${t('learn.practise')}</b> ${t(`learn.games.${learn.key}`)}${band ? ` · ${t('learn.grades', band)}` : ''}${ages ? ` · ${t('learn.ages.line', ages)}` : ''}${hub ? html` · <a href="${lp(req, `/learn/${hub.slug}`)}">${t('learn.seeAll', { name: t(`learn.hubs.${hub.key}.name`) })}</a>` : ''}</p>` : ''}
@@ -128,9 +130,23 @@ router.get('/g/:slug', (req, res) => {
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);
   const title = official && written(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && written(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
-  page(req, res, { title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js'],
+  page(req, res, { title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
     seo: official ? gameSeo(req, g, d, owner) : null });
 });
+
+/** The platform admin's "AI voices for this game" switch on a game's page (services/tts-games.js; English like the
+ *  admin panel, and only ever shown to the admin). */
+function adminVoices(u, g) {
+  if (!u || u.role !== 'admin') return '';
+  if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>🔊 AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p>${ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}</section>`;
+  const x = ttsGames.info(g);
+  return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>🔊 AI voices for this game</h2>
+    <p class="muted">Admin only. Reads this game's own words (from its published version) with AI voices in the languages switched on at <a href="/admin/voices">AI voices</a>; never what a player types. ${x.on && !x.live ? 'It starts once the game is published and not hidden.' : ''}</p>
+    ${x.ok || x.on ? html`<label class="row" style="gap:8px"><input type="checkbox" id="admin-voices-on" ${x.on ? raw('checked') : ''}> AI voices for this game</label>` : ''}
+    ${x.on && x.ok && ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}
+    ${x.ok ? '' : html`<p id="admin-voices-why"><b>Can't be switched on.</b> ${x.why}</p>`}
+    <p id="admin-voices-status" role="status"></p></section>`;
+}
 
 /** A link that stays in the language address the page was opened at (/es/g/… -> /es/learn/…). */
 const lp = (req, p) => (req.pathLocale && seo.localizable(p) ? seo.localeUrl(p, req.pathLocale) : p);

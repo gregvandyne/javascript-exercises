@@ -1,7 +1,7 @@
 // AI voices on our own pages (docs/tts-design.md; server/routes/tts.js). Fetches a line's audio from our server and plays
 // it, or hands its bytes to a game frame (public/js/play.js), with the device's own voice as the fallback for anything
 // that goes wrong. Only text written by us, a game's makers or a teacher is ever sent: callers pass the game's own words
-// (play.js, official games only) or a live / lesson question by its number (the server reads the teacher's text).
+// (play.js: official games, or one the admin switched on; the server checks they are its own) or a live / lesson question by its number (the server reads the teacher's text).
 //   voiceMode() / setVoiceMode('ai' | 'device')  this device's choice (localStorage 'oomba:voices'; data saver: device)
 //   ttsLocale(tag)                               a language tag -> the site locale an AI voice speaks, or null
 //   ttsBlob(body, { pre })                       POST /api/tts, then the MP3 -> a Blob (throws on any refusal); pre:
