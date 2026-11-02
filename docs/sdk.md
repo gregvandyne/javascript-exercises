@@ -197,7 +197,11 @@ relative URLs resolve against the frame's own address; the integrity lines pin b
   browser") instead of a blank screen. It does the same when the 3D picture is lost (`webglcontextlost`) and is not
   restored within 4 seconds, or the game did not ask for it back (`preventDefault()`); the message goes away if it comes back.
   Games should not show their own.
-- The **Star Island** template (`server/builder/templates/island.html`) is the reference: comfort (field of view 60-75,
+- The AI Builder starts every new 3D game from its own starter, `server/builder/templates/world3d.html` (no Oomba Kit):
+  a walking player (gravity, ground, slopes, steps, walls it slides along, jumps that land, bounds and respawn), a follow
+  camera that never goes under the land or into a wall, keyboard and touch controls, its own screens in the 13 languages,
+  and an example world the Builder replaces with the world the builder asked for.
+- The **Star Island** template (`server/builder/templates/island.html`, on the kit's 3D bridge) is a finished 3D game: comfort (field of view 60-75,
   a smooth follow camera, no shake), a pixel-ratio cap of 1.5 and an automatic quality ladder, context-loss handling,
   reduced motion, keyboard + touch joystick, and every word in the 13 languages.
 

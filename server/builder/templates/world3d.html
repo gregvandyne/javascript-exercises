@@ -1,0 +1,389 @@
+<title>My 3D World</title>
+<style>
+/* A 3D world of the Builder's own (no Oomba Kit): one full-screen Three.js canvas, its own screens (title, HUD, pause,
+   results), a touch joystick and jump button. Colours are the CSS tokens below, light and dark. */
+:root{--w-sky:#bfe6ff;--w-card:#fffdf2;--w-text:#1f1d2b;--w-edge:#1f1d2b;--w-go:#5fd39a;--w-go-shade:#2f9e6c;--w-hot:#ff8a5c;--w-reward:#ffd23f;--w-dim:rgba(31,29,43,.55)}
+:root.dark{--w-sky:#1b2140;--w-card:#262a45;--w-text:#fffdf2;--w-edge:#0d0f1f;--w-dim:rgba(5,6,15,.6)}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--w-sky);touch-action:none;user-select:none;-webkit-user-select:none}
+body{font:600 16px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;color:var(--w-text)}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+button{font:inherit;font-weight:800;cursor:pointer;color:var(--w-text)}
+.btn{min-height:48px;min-width:48px;padding:10px 22px;border-radius:999px;border:3px solid var(--w-edge);background:var(--w-go);box-shadow:0 5px 0 var(--w-edge);font-size:19px}
+.btn.ghost{background:var(--w-card)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--w-edge)}
+.icon{width:48px;height:48px;padding:0;border-radius:50%;border:3px solid var(--w-edge);background:var(--w-card);box-shadow:0 3px 0 var(--w-edge);font-size:20px;line-height:1}
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:var(--w-dim);padding:16px;box-sizing:border-box}
+.card{background:var(--w-card);border:3px solid var(--w-edge);border-radius:24px;box-shadow:0 8px 0 var(--w-edge);padding:22px 22px 26px;max-width:min(440px,100%);max-height:100%;overflow:auto;box-sizing:border-box;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.card h1{margin:0;font-size:clamp(24px,6vw,36px);line-height:1.1}
+.card p{margin:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#hud{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;align-items:center;gap:8px;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));pointer-events:none}
+#hud .pill{pointer-events:none;background:var(--w-card);border:3px solid var(--w-edge);border-radius:999px;padding:6px 14px;font-weight:900;box-shadow:0 3px 0 var(--w-edge);white-space:nowrap}
+#hud .gap{flex:1}
+#hud button{pointer-events:auto}
+#stickBase{position:fixed;width:128px;height:128px;border-radius:50%;background:rgba(255,253,242,.28);border:3px solid var(--w-edge);display:none;z-index:9;pointer-events:none;transform:translate(-50%,-50%)}
+#stickKnob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:var(--w-go);border:3px solid var(--w-edge)}
+#jumpBtn{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));width:88px;height:88px;border-radius:50%;border:3px solid var(--w-edge);background:var(--w-hot);box-shadow:0 6px 0 var(--w-edge);z-index:9;display:none;touch-action:none;font-size:15px;padding:0 6px;overflow:hidden}
+#jumpBtn.down{transform:translateY(4px);box-shadow:0 2px 0 var(--w-edge)}
+#hint{position:fixed;left:16px;right:120px;bottom:max(24px,env(safe-area-inset-bottom));z-index:9;pointer-events:none;color:#fffdf2;font-weight:800;text-shadow:0 2px 4px rgba(0,0,0,.5)}
+body.touch.playing #jumpBtn{display:block}
+@media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
+</style>
+
+<canvas id="view" aria-label=""></canvas>
+<div id="hud" hidden>
+  <span class="pill" id="goal"></span><span class="pill" id="clock" hidden></span><span class="gap"></span>
+  <button class="icon" id="soundBtn" type="button">🔊</button><button class="icon" id="pauseBtn" type="button">⏸</button>
+</div>
+<div id="stickBase"><div id="stickKnob"></div></div>
+<div id="hint" hidden></div>
+<button id="jumpBtn" type="button"></button>
+<div class="screen" id="titleScreen"><div class="card"><h1 id="titleText"></h1><p id="subText"></p><p id="bestText"></p><div class="row"><button class="btn" id="playBtn" type="button"></button></div><p id="howText"></p></div></div>
+<div class="screen" id="pauseScreen" hidden><div class="card"><h1 id="pausedText"></h1><div class="row"><button class="btn" id="resumeBtn" type="button"></button><button class="btn ghost" id="restartBtn" type="button"></button></div></div></div>
+<div class="screen" id="endScreen" hidden><div class="card"><h1 id="endTitle"></h1><p id="endText"></p><p id="endScore"></p><div class="row"><button class="btn" id="againBtn" type="button"></button></div></div></div>
+
+<script>
+/* =====================================================================================
+   WORDS: every word the player sees, in the 13 site languages (BRB.user.lang picks one;
+   missing keys fall back to the base language, then English). Change or add words in EVERY language.
+   ===================================================================================== */
+const I18N = {
+  en: { title: 'My 3D World', sub: 'Explore the world and find every star!', play: 'Play', again: 'Play again', resume: 'Keep going', restart: 'Start over', paused: 'Paused', pause: 'Pause', sound: 'Sound on or off', jump: 'JUMP', hintKeys: 'Walk: arrows or WASD · Jump: Space · Drag to look around', hintTouch: 'Drag on the left to walk · Tap JUMP · Drag on the right to look', goal: '⭐ {got}/{total}', win: 'You did it!', lose: "Time's up!", winText: 'You found every star!', loseText: 'Stars found: {got} of {total}', score: 'Score: {score} · Best: {best}', best: 'Best score: {n}', world: 'A 3D world to explore' },
+  'en-GB': {},
+  pt: { title: 'Meu Mundo 3D', sub: 'Explore o mundo e encontre todas as estrelas!', play: 'Jogar', again: 'Jogar de novo', resume: 'Continuar', restart: 'Recomeçar', paused: 'Pausado', pause: 'Pausar', sound: 'Som ligado ou desligado', jump: 'PULAR', hintKeys: 'Andar: setas ou WASD · Pular: Espaço · Arraste para olhar em volta', hintTouch: 'Arraste à esquerda para andar · Toque em PULAR · Arraste à direita para olhar', goal: '⭐ {got}/{total}', win: 'Você conseguiu!', lose: 'Acabou o tempo!', winText: 'Você encontrou todas as estrelas!', loseText: 'Estrelas encontradas: {got} de {total}', score: 'Pontos: {score} · Recorde: {best}', best: 'Melhor pontuação: {n}', world: 'Um mundo 3D para explorar' },
+  fr: { title: 'Mon monde 3D', sub: 'Explore le monde et trouve toutes les étoiles !', play: 'Jouer', again: 'Rejouer', resume: 'Continuer', restart: 'Recommencer', paused: 'Pause', pause: 'Pause', sound: 'Son activé ou coupé', jump: 'SAUT', hintKeys: 'Marcher : flèches ou ZQSD/WASD · Sauter : Espace · Glisse pour regarder autour', hintTouch: 'Glisse à gauche pour marcher · Touche SAUT · Glisse à droite pour regarder', goal: '⭐ {got}/{total}', win: 'Bravo !', lose: 'Temps écoulé !', winText: 'Tu as trouvé toutes les étoiles !', loseText: 'Étoiles trouvées : {got} sur {total}', score: 'Score : {score} · Record : {best}', best: 'Meilleur score : {n}', world: 'Un monde 3D à explorer' },
+  es: { title: 'Mi mundo 3D', sub: '¡Explora el mundo y encuentra todas las estrellas!', play: 'Jugar', again: 'Jugar otra vez', resume: 'Seguir', restart: 'Empezar de nuevo', paused: 'En pausa', pause: 'Pausa', sound: 'Sonido sí o no', jump: 'SALTAR', hintKeys: 'Caminar: flechas o WASD · Saltar: Espacio · Arrastra para mirar alrededor', hintTouch: 'Arrastra a la izquierda para caminar · Toca SALTAR · Arrastra a la derecha para mirar', goal: '⭐ {got}/{total}', win: '¡Lo lograste!', lose: '¡Se acabó el tiempo!', winText: '¡Encontraste todas las estrellas!', loseText: 'Estrellas encontradas: {got} de {total}', score: 'Puntos: {score} · Récord: {best}', best: 'Mejor puntuación: {n}', world: 'Un mundo 3D para explorar' },
+  de: { title: 'Meine 3D-Welt', sub: 'Erkunde die Welt und finde alle Sterne!', play: 'Spielen', again: 'Nochmal spielen', resume: 'Weiter', restart: 'Neu starten', paused: 'Pause', pause: 'Pause', sound: 'Ton an oder aus', jump: 'SPRUNG', hintKeys: 'Laufen: Pfeiltasten oder WASD · Springen: Leertaste · Ziehen zum Umschauen', hintTouch: 'Links ziehen zum Laufen · SPRUNG tippen · Rechts ziehen zum Umschauen', goal: '⭐ {got}/{total}', win: 'Geschafft!', lose: 'Die Zeit ist um!', winText: 'Du hast alle Sterne gefunden!', loseText: 'Gefundene Sterne: {got} von {total}', score: 'Punkte: {score} · Rekord: {best}', best: 'Bester Punktestand: {n}', world: 'Eine 3D-Welt zum Erkunden' },
+  he: { title: 'העולם התלת־ממדי שלי', sub: 'חקרו את העולם ומצאו את כל הכוכבים!', play: 'שחקו', again: 'שחקו שוב', resume: 'המשיכו', restart: 'התחילו מחדש', paused: 'מושהה', pause: 'השהיה', sound: 'צליל פועל או כבוי', jump: 'קפיצה', hintKeys: 'הליכה: חיצים או WASD · קפיצה: רווח · גררו כדי להסתכל מסביב', hintTouch: 'גררו משמאל כדי ללכת · הקישו על קפיצה · גררו מימין כדי להסתכל', goal: '⭐ {got}/{total}', win: 'הצלחתם!', lose: 'נגמר הזמן!', winText: 'מצאתם את כל הכוכבים!', loseText: 'כוכבים שנמצאו: {got} מתוך {total}', score: 'ניקוד: {score} · שיא: {best}', best: 'הניקוד הטוב ביותר: {n}', world: 'עולם תלת־ממדי לחקור' },
+  ja: { title: 'わたしの 3D ワールド', sub: 'せかいを たんけんして ほしを ぜんぶ みつけよう！', play: 'あそぶ', again: 'もういちど', resume: 'つづける', restart: 'さいしょから', paused: 'ちょっと やすみ', pause: 'とめる', sound: 'おとの オン・オフ', jump: 'ジャンプ', hintKeys: 'あるく：やじるし か WASD ・ ジャンプ：スペース ・ ドラッグで まわりを みる', hintTouch: 'ひだりを ドラッグで あるく ・ ジャンプを タップ ・ みぎを ドラッグで みる', goal: '⭐ {got}/{total}', win: 'やったね！', lose: 'じかん ぎれ！', winText: 'ほしを ぜんぶ みつけたよ！', loseText: 'みつけた ほし：{total}こ ちゅう {got}こ', score: 'スコア：{score} ・ ベスト：{best}', best: 'ベストスコア：{n}', world: 'たんけんできる 3D の せかい' },
+  ar: { title: 'عالمي الثلاثي الأبعاد', sub: 'استكشف العالم واعثر على كل النجوم!', play: 'العب', again: 'العب مرة أخرى', resume: 'تابع', restart: 'ابدأ من جديد', paused: 'متوقف مؤقتًا', pause: 'إيقاف مؤقت', sound: 'تشغيل الصوت أو إيقافه', jump: 'اقفز', hintKeys: 'المشي: الأسهم أو WASD · القفز: المسافة · اسحب لتنظر حولك', hintTouch: 'اسحب يسارًا للمشي · انقر اقفز · اسحب يمينًا للنظر', goal: '⭐ {got}/{total}', win: 'لقد نجحت!', lose: 'انتهى الوقت!', winText: 'وجدت كل النجوم!', loseText: 'النجوم التي وجدتها: {got} من {total}', score: 'النقاط: {score} · الأفضل: {best}', best: 'أفضل نتيجة: {n}', world: 'عالم ثلاثي الأبعاد للاستكشاف' },
+  ru: { title: 'Мой 3D-мир', sub: 'Исследуй мир и найди все звёзды!', play: 'Играть', again: 'Ещё раз', resume: 'Продолжить', restart: 'Начать заново', paused: 'Пауза', pause: 'Пауза', sound: 'Звук вкл. или выкл.', jump: 'ПРЫЖОК', hintKeys: 'Ходить: стрелки или WASD · Прыжок: пробел · Тяни, чтобы осмотреться', hintTouch: 'Тяни слева, чтобы идти · Нажми ПРЫЖОК · Тяни справа, чтобы осмотреться', goal: '⭐ {got}/{total}', win: 'Получилось!', lose: 'Время вышло!', winText: 'Ты нашёл все звёзды!', loseText: 'Найдено звёзд: {got} из {total}', score: 'Очки: {score} · Рекорд: {best}', best: 'Лучший результат: {n}', world: '3D-мир, который можно исследовать' },
+  it: { title: 'Il mio mondo 3D', sub: 'Esplora il mondo e trova tutte le stelle!', play: 'Gioca', again: 'Gioca ancora', resume: 'Continua', restart: 'Ricomincia', paused: 'In pausa', pause: 'Pausa', sound: 'Suono sì o no', jump: 'SALTA', hintKeys: 'Cammina: frecce o WASD · Salta: Spazio · Trascina per guardarti intorno', hintTouch: 'Trascina a sinistra per camminare · Tocca SALTA · Trascina a destra per guardare', goal: '⭐ {got}/{total}', win: 'Ce l’hai fatta!', lose: 'Tempo scaduto!', winText: 'Hai trovato tutte le stelle!', loseText: 'Stelle trovate: {got} su {total}', score: 'Punti: {score} · Record: {best}', best: 'Miglior punteggio: {n}', world: 'Un mondo 3D da esplorare' },
+  'zh-Hant': { title: '我的 3D 世界', sub: '探索世界，找到所有星星！', play: '開始', again: '再玩一次', resume: '繼續', restart: '重新開始', paused: '暫停中', pause: '暫停', sound: '聲音開關', jump: '跳', hintKeys: '走路：方向鍵或 WASD · 跳：空白鍵 · 拖曳可環顧四周', hintTouch: '在左邊拖曳走路 · 點「跳」 · 在右邊拖曳環顧', goal: '⭐ {got}/{total}', win: '你成功了！', lose: '時間到！', winText: '你找到了所有星星！', loseText: '找到的星星：{got} / {total}', score: '分數：{score} · 最佳：{best}', best: '最高分：{n}', world: '可以探索的 3D 世界' },
+  nl: { title: 'Mijn 3D-wereld', sub: 'Ontdek de wereld en vind alle sterren!', play: 'Spelen', again: 'Nog een keer', resume: 'Verder', restart: 'Opnieuw', paused: 'Pauze', pause: 'Pauze', sound: 'Geluid aan of uit', jump: 'SPRING', hintKeys: 'Lopen: pijltjes of WASD · Springen: spatie · Sleep om rond te kijken', hintTouch: 'Sleep links om te lopen · Tik op SPRING · Sleep rechts om te kijken', goal: '⭐ {got}/{total}', win: 'Gelukt!', lose: 'De tijd is om!', winText: 'Je hebt alle sterren gevonden!', loseText: 'Sterren gevonden: {got} van {total}', score: 'Score: {score} · Record: {best}', best: 'Beste score: {n}', world: 'Een 3D-wereld om te ontdekken' },
+};
+const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
+const I18N_CHAIN = [I18N[LANG], I18N[LANG.split('-')[0]], I18N.en].filter(Boolean);
+let NUMF = null; try { NUMF = new Intl.NumberFormat(LANG); } catch { NUMF = null; }
+function t(key, vars) {
+  let s; for (const c of I18N_CHAIN) { if (c[key] !== undefined) { s = c[key]; break; } }
+  if (s === undefined) return key;
+  return vars ? s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] === undefined ? m : typeof vars[k] === 'number' && NUMF ? NUMF.format(vars[k]) : String(vars[k]))) : s;
+}
+document.documentElement.lang = LANG;
+for (const id of ['titleScreen', 'pauseScreen', 'endScreen', 'hud']) document.getElementById(id).dir = (window.BRB && BRB.user && BRB.user.dir) || 'ltr';
+// Light or dark, like the site (BRB.theme; '' follows the device).
+(function () { const th = (window.BRB && BRB.theme) || ''; const dark = th ? th === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.classList.toggle('dark', dark); })();
+// Until the 3D world is ready, a start() from the platform is remembered and done as soon as it is.
+window.__brbTest = { state: () => ({ screen: 'loading', ready: false }), start() { window.__worldStartWanted = true; } };
+</script>
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
+  "integrity": {
+    "/vendor/three/0.185.1/three.module.min.js": "sha384-QHQk1LzjJlJYNdthXjKCmffpDRZL3EqJ7LfqBzyKyvGgjAYM2ZVuYtFGg42NcAJ/",
+    "/vendor/three/0.185.1/three.core.min.js": "sha384-rx+KIp/9ptjArhnFAcpVoOc/ynktDsRtRJKIbC7YVKylEvFu8sgmzk9RmQ+CIV48" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* =====================================================================
+   CONFIG: the numbers of the game.
+   ===================================================================== */
+const CONFIG = {
+  roundSeconds: 0,      // a time limit for the round in seconds (0 = no clock)
+  speed: 5.5,           // walking speed (metres a second)
+  jump: 8.5,            // jump strength
+  gravity: 24,          // how fast you fall back down
+  step: 0.5,            // the highest ledge you walk up without jumping (metres)
+  slope: 1.0,           // the steepest slope you can walk up (rise per metre; 1 = 45 degrees)
+  radius: 0.4,          // how wide the player is
+  height: 1.6,          // how tall the player is
+  bounds: 38,           // how far from the middle you can go (metres; the world's edge)
+};
+
+const $ = id => document.getElementById(id);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TOUCH = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
+document.body.classList.toggle('touch', TOUCH);
+
+/* ---------- renderer, scene, camera ---------- */
+const canvas = $('view');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: devicePixelRatio < 1.5, powerPreference: 'high-performance' });
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(65, 16 / 9, 0.1, 400);
+const fit = BRB.fx.fit3d(renderer, camera, { maxDpr: 1.5, onResize(w, h) { camera.fov = w / h < 0.8 ? 72 : 62; camera.updateProjectionMatrix(); } });
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); S.lost = true; pause(); });
+canvas.addEventListener('webglcontextrestored', () => { S.lost = false; });
+
+/* ---------- the world's helpers (keep these; the world below uses them) ----------
+   height(x, z): the land's height. solid(mesh | box, opts): something the player cannot walk through and can stand on.
+   pickup(mesh, x, y, z): something to collect. decor: a group of decoration the quality ladder may hide on slow devices. */
+const solids = [], pickups = [], movers = [];
+let landHeight = () => 0;
+const decor = new THREE.Group(); scene.add(decor);
+const _box = new THREE.Box3();
+/** A solid from a mesh (its axis-aligned box in the world) or a box {x0, x1, z0, z1, bottom, top}; opts.round: a post or
+ *  trunk (a circle round its middle); opts.walkable: false when its top is not ground. Returns the solid. */
+function solid(m, opts = {}) {
+  let b;
+  if (m && m.isObject3D) { m.updateWorldMatrix(true, true); _box.setFromObject(m); b = { x0: _box.min.x, x1: _box.max.x, z0: _box.min.z, z1: _box.max.z, bottom: _box.min.y, top: _box.max.y }; }
+  else b = Object.assign({ bottom: -100 }, m);
+  const s = Object.assign(b, { round: !!opts.round, walkable: opts.walkable !== false, mesh: m && m.isObject3D ? m : null });
+  if (s.round) { s.cx = (s.x0 + s.x1) / 2; s.cz = (s.z0 + s.z1) / 2; s.r = Math.max(s.x1 - s.x0, s.z1 - s.z0) / 2; }
+  solids.push(s); return s;
+}
+/** Make the land: a grid shaped by height(x, z) and coloured by color(x, z, y) (a THREE.Color). */
+function land({ size = 90, segments = 90, height = () => 0, color = () => new THREE.Color('#7ccf6a') } = {}) {
+  landHeight = height;
+  const g = new THREE.PlaneGeometry(size, size, segments, segments); g.rotateX(-Math.PI / 2);
+  const p = g.attributes.position, cols = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), y = height(x, z); p.setY(i, y); const c = color(x, z, y); cols.set([c.r, c.g, c.b], i * 3); }
+  g.setAttribute('color', new THREE.BufferAttribute(cols, 3)); g.computeVertexNormals();
+  const mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true })); mesh.receiveShadow = true; scene.add(mesh); return mesh;
+}
+/** A thing to collect at (x, y, z). */
+function pickup(mesh, x, y, z) { mesh.position.set(x, y, z); scene.add(mesh); const p = { mesh, x, y, z, got: false, base: y }; pickups.push(p); return p; }
+const lambert = color => new THREE.MeshLambertMaterial({ color });
+/** The height the player stands at here: the land, or the top of a solid under them (no higher than feet + step). */
+function groundAt(x, z, feet = Infinity, r = 0) {
+  let g = landHeight(x, z);
+  for (const s of solids) {
+    if (!s.walkable || (s.mesh && !s.mesh.visible) || s.top > feet + CONFIG.step + 0.001) continue;
+    if (inside(s, x, z, r * 0.6) && s.top > g) g = s.top;
+  }
+  return g;
+}
+function inside(s, x, z, r) {
+  if (s.round) return Math.hypot(x - s.cx, z - s.cz) < s.r + r;
+  return x > s.x0 - r && x < s.x1 + r && z > s.z0 - r && z < s.z1 + r;
+}
+
+/* =====================================================================
+   THE WORLD: build it from the builder's idea. EXAMPLE ONLY: replace all of it.
+   Sky colour, fog, lights, land (hills, water, paths), buildings, props, landmarks and the things to find all come from
+   what the builder asked for. Every wall, building, crate, platform, trunk and rock is a solid().
+   ===================================================================== */
+const SPAWN = { x: 0, z: 8 };
+const WORLD = { sky: '#bfe6ff', fog: [30, 110] };
+function buildWorld() {
+  scene.background = new THREE.Color(WORLD.sky); scene.fog = new THREE.Fog(WORLD.sky, WORLD.fog[0], WORLD.fog[1]);
+  scene.add(new THREE.HemisphereLight('#ffffff', '#6a8f5a', 1.1));
+  const sun = new THREE.DirectionalLight('#fff3d6', 1.6); sun.position.set(20, 40, 15); sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40, far: 120 });
+  scene.add(sun);
+  // land: a meadow with one round hill
+  land({ height: (x, z) => 3.2 * Math.exp(-((x + 14) ** 2 + (z + 10) ** 2) / 80), color: (x, z, y) => new THREE.Color().setHSL(0.28, 0.45, 0.42 + y * 0.03) });
+  // a little house (a solid you can jump onto)
+  const house = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 5), lambert('#ff8a5c')); house.position.set(8, 1.5, -6); house.castShadow = true; scene.add(house); solid(house);
+  // steps up to a ledge
+  for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.BoxGeometry(3, 0.45 * (i + 1), 1.2), lambert('#c9b79c')); st.position.set(-6, 0.225 * (i + 1), -2 - i * 1.2); st.castShadow = st.receiveShadow = true; scene.add(st); solid(st); }
+  // a wall
+  const wall = new THREE.Mesh(new THREE.BoxGeometry(12, 2.4, 0.8), lambert('#9aa0b5')); wall.position.set(0, 1.2, -16); wall.castShadow = true; scene.add(wall); solid(wall);
+  // trees (decoration, with solid trunks)
+  for (const [x, z] of [[14, 6], [-16, 8], [18, -14], [-4, 14]]) {
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 2), lambert('#8a5a3b')); trunk.position.set(x, landHeight(x, z) + 1, z);
+    const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(1.6, 0), lambert('#3fa45b')); crown.position.set(x, landHeight(x, z) + 3, z);
+    trunk.castShadow = crown.castShadow = true; decor.add(trunk, crown); solid(trunk, { round: true, walkable: false });
+  }
+  // stars to find
+  const starGeo = new THREE.OctahedronGeometry(0.5, 0), starMat = new THREE.MeshLambertMaterial({ color: '#ffd23f', emissive: '#a07000' });
+  for (const [x, y, z] of [[8, 3.9, -6], [-6, 2.6, -6.2], [-14, landHeight(-14, -10) + 1, -10], [3, 1, 2], [12, 1, 10]]) pickup(new THREE.Mesh(starGeo, starMat), x, y, z);
+}
+/** The player: build it from shapes, in the builder's idea (a fox, a robot, themselves...). Feet at y = 0. */
+function makeHero() {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.7, 4, 10), lambert('#5fb4ff')); body.position.y = 0.75;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 14, 10), lambert('#ffd9b0')); head.position.y = 1.42;
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 6), lambert('#1f1d2b')); nose.position.set(0, 1.42, -0.33);
+  for (const m of [body, head]) m.castShadow = true;
+  g.add(body, head, nose); return g;
+}
+/** What happens when a pickup is collected, and how the round is won. */
+function onPickup(p) { S.score += 10; BRB.sfx.play('coin'); if (S.got === pickups.length) endRound(true); }
+
+/* ---------- the player: gravity, ground, slopes, steps, walls, jumps, bounds ---------- */
+const hero = { group: makeHero(), x: SPAWN.x, y: 0, z: SPAWN.z, vy: 0, heading: Math.PI, grounded: true, coyote: 0, buffer: 0 };
+scene.add(hero.group);
+function respawn() { hero.x = SPAWN.x; hero.z = SPAWN.z; hero.y = groundAt(hero.x, hero.z) ; hero.vy = 0; hero.grounded = true; }
+/** Can the player stand at (x, z) with feet at y? -> the new feet height, or null when a wall, a cliff or a steep slope is in the way. */
+function canStand(x, z, y, dist) {
+  const R = CONFIG.radius;
+  for (const s of solids) {
+    if (s.mesh && !s.mesh.visible) continue;
+    if (!inside(s, x, z, R)) continue;
+    if (s.bottom >= y + CONFIG.height - 0.05) continue;                  // above the head
+    if (s.walkable && s.top <= y + CONFIG.step + 0.001) continue;       // low enough to step onto
+    return null;                                                         // a wall
+  }
+  const h = landHeight(x, z);
+  if (h > y + 0.02 && (h - y > CONFIG.step || (hero.grounded && (h - y) / Math.max(dist, 1e-4) > CONFIG.slope))) return null;   // a cliff or too steep
+  return y;
+}
+function inBounds(x, z) { return Math.hypot(x, z) <= CONFIG.bounds; }
+function moveHero(dt, ix, iz, jumpPressed) {
+  // input is relative to where the camera looks, on the ground only (never its tilt)
+  const fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw), rx = -fz, rz = fx;
+  let mx = rx * ix + fx * iz, mz = rz * ix + fz * iz; const len = Math.hypot(mx, mz); if (len > 1) { mx /= len; mz /= len; }
+  if (len > 0.05) hero.heading = Math.atan2(mx, mz);
+  if (jumpPressed) hero.buffer = 0.14;
+  const steps = Math.max(1, Math.ceil(dt / (1 / 120))), h = dt / steps;
+  for (let i = 0; i < steps; i++) {
+    hero.coyote = hero.grounded ? 0.12 : Math.max(0, hero.coyote - h); hero.buffer = Math.max(0, hero.buffer - h);
+    if (hero.buffer > 0 && hero.coyote > 0) { hero.vy = CONFIG.jump; hero.grounded = false; hero.coyote = 0; hero.buffer = 0; BRB.sfx.play('jump'); }
+    // sideways: x then z, so a wall stops one direction and the player slides along it
+    const dx = mx * CONFIG.speed * h, dz = mz * CONFIG.speed * h;
+    if (dx && inBounds(hero.x + dx, hero.z) && canStand(hero.x + dx, hero.z, hero.y, Math.abs(dx)) !== null) hero.x += dx;
+    if (dz && inBounds(hero.x, hero.z + dz) && canStand(hero.x, hero.z + dz, hero.y, Math.abs(dz)) !== null) hero.z += dz;
+    // up and down: gravity always pulls; land on the ground or a solid's top; walk down slopes without bouncing
+    hero.vy -= CONFIG.gravity * h; let ny = hero.y + hero.vy * h;
+    for (const s of solids) {   // bump the head on a solid's underside
+      if (hero.vy > 0 && !(s.mesh && !s.mesh.visible) && inside(s, hero.x, hero.z, CONFIG.radius * 0.6) && hero.y + CONFIG.height <= s.bottom + 0.01 && ny + CONFIG.height > s.bottom) { ny = s.bottom - CONFIG.height; hero.vy = 0; }
+    }
+    const g = groundAt(hero.x, hero.z, hero.y, CONFIG.radius);
+    if (ny <= g) { ny = g; hero.vy = 0; hero.grounded = true; }
+    else if (hero.grounded && hero.vy <= 0 && hero.y - g <= CONFIG.step) { ny = g; hero.vy = 0; }   // stay on the ground going downhill
+    else hero.grounded = false;
+    hero.y = ny;
+  }
+  if (hero.y < -20 || !inBounds(hero.x, hero.z)) respawn();
+  hero.group.position.set(hero.x, hero.y, hero.z);
+  hero.group.rotation.y = hero.heading;
+  if (!REDUCED) { const run = hero.grounded && len > 0.05; hero.group.children[0].scale.y = run ? 1 + Math.sin(S.time * 18) * 0.04 : 1; }
+}
+
+/* ---------- the camera: behind and above, never under the land or inside a solid ---------- */
+const cam = { yaw: 0, pitch: 0.38, dist: 7.5, cur: new THREE.Vector3(), look: new THREE.Vector3(), ready: false };
+function blocked(x, y, z) {
+  if (y < landHeight(x, z) + 0.4) return true;
+  for (const s of solids) if (!(s.mesh && !s.mesh.visible) && inside(s, x, z, 0.2) && y < s.top + 0.3 && y > s.bottom - 0.3) return true;
+  return false;
+}
+function updateCamera(dt) {
+  const portrait = innerWidth / innerHeight < 0.8, D = cam.dist * (portrait ? 1.25 : 1);
+  const tx = hero.x, ty = hero.y + 1.4, tz = hero.z;
+  let d = D;
+  for (let k = 1; k <= 10; k++) {   // pull in until nothing is between the player and the camera
+    const f = k / 10 * D, x = tx + Math.sin(cam.yaw) * Math.cos(cam.pitch) * f, y = ty + Math.sin(cam.pitch) * f, z = tz + Math.cos(cam.yaw) * Math.cos(cam.pitch) * f;
+    if (blocked(x, y, z)) { d = Math.max(1.2, (k - 1) / 10 * D); break; }
+  }
+  const want = new THREE.Vector3(tx + Math.sin(cam.yaw) * Math.cos(cam.pitch) * d, ty + Math.sin(cam.pitch) * d, tz + Math.cos(cam.yaw) * Math.cos(cam.pitch) * d);
+  const k = cam.ready ? 1 - Math.exp(-dt * 8) : 1; cam.cur.lerp(want, k); cam.look.lerp(new THREE.Vector3(tx, ty, tz), k); cam.ready = true;
+  cam.cur.y = Math.max(cam.cur.y, landHeight(cam.cur.x, cam.cur.z) + 0.4);
+  camera.position.copy(cam.cur); camera.lookAt(cam.look);
+}
+
+/* ---------- input: keyboard, touch joystick + jump button, drag to look around ---------- */
+const keys = new Set(); let jumpQueued = false;
+const stick = { id: null, x0: 0, y0: 0, x: 0, y: 0 }, look = { id: null, x: 0 };
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase(); keys.add(k);
+  if ((k === ' ' || k === 'z') && S.screen === 'play') { jumpQueued = true; e.preventDefault(); }
+  if ((k === 'p' || k === 'escape') && (S.screen === 'play' || S.screen === 'pause')) S.screen === 'play' ? pause() : resume();
+  if (k.startsWith('arrow')) e.preventDefault();
+});
+addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
+addEventListener('blur', () => keys.clear());
+canvas.addEventListener('pointerdown', e => {
+  if (S.screen !== 'play') return;
+  if (e.pointerType !== 'mouse' && e.clientX < innerWidth * 0.55 && stick.id === null) {
+    Object.assign(stick, { id: e.pointerId, x0: e.clientX, y0: e.clientY, x: 0, y: 0 });
+    const b = $('stickBase'); b.style.display = 'block'; b.style.left = e.clientX + 'px'; b.style.top = e.clientY + 'px'; $('hint').hidden = true;
+  } else if (look.id === null) Object.assign(look, { id: e.pointerId, x: e.clientX });
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerId === stick.id) {
+    let dx = e.clientX - stick.x0, dy = e.clientY - stick.y0; const m = Math.hypot(dx, dy), R = 52; if (m > R) { dx *= R / m; dy *= R / m; }
+    stick.x = dx / R; stick.y = dy / R; $('stickKnob').style.transform = `translate(${dx}px,${dy}px)`;
+  } else if (e.pointerId === look.id) { cam.yaw -= (e.clientX - look.x) * 0.006; look.x = e.clientX; }
+});
+const endPointer = e => {
+  if (e.pointerId === stick.id) { stick.id = null; stick.x = stick.y = 0; $('stickBase').style.display = 'none'; $('stickKnob').style.transform = ''; }
+  if (e.pointerId === look.id) look.id = null;
+};
+canvas.addEventListener('pointerup', endPointer); canvas.addEventListener('pointercancel', endPointer);
+const jb = $('jumpBtn');
+jb.addEventListener('pointerdown', e => { e.preventDefault(); jumpQueued = true; jb.classList.add('down'); });
+for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) jb.addEventListener(ev, () => jb.classList.remove('down'));
+let drive = null;   // test input (window.__brbTest.drive)
+function readInput() {
+  if (drive) return { x: drive.x || 0, z: drive.z || 0 };
+  let x = 0, z = 0;
+  if (keys.has('arrowleft') || keys.has('a') || keys.has('q')) x -= 1;
+  if (keys.has('arrowright') || keys.has('d')) x += 1;
+  if (keys.has('arrowup') || keys.has('w')) z += 1;
+  if (keys.has('arrowdown') || keys.has('s')) z -= 1;
+  if (stick.id !== null) { x = stick.x; z = -stick.y; }
+  return { x, z };
+}
+
+/* ---------- screens, HUD, rounds ---------- */
+const S = { screen: 'title', ready: false, lost: false, time: 0, left: 0, got: 0, score: 0, best: +(BRB.storage.get('best') || 0), frames: 0, slow: 0, quality: 2 };
+const show = id => { for (const s of ['titleScreen', 'pauseScreen', 'endScreen']) $(s).hidden = s !== id; };
+function hud() { $('goal').textContent = t('goal', { got: S.got, total: pickups.length }); const c = $('clock'); c.hidden = !CONFIG.roundSeconds; if (CONFIG.roundSeconds) c.textContent = '⏱ ' + Math.ceil(S.left); }
+function startRound() {
+  S.got = 0; S.score = 0; S.left = CONFIG.roundSeconds; for (const p of pickups) { p.got = false; p.mesh.visible = true; }
+  respawn(); cam.yaw = 0; cam.ready = false; show(null); $('hud').hidden = false; S.screen = 'play'; document.body.classList.add('playing');
+  $('hint').textContent = t(TOUCH ? 'hintTouch' : 'hintKeys'); $('hint').hidden = false; hud(); canvas.focus();
+}
+function pause() { if (S.screen !== 'play') return; S.screen = 'pause'; show('pauseScreen'); keys.clear(); }
+function resume() { if (S.screen !== 'pause') return; S.screen = 'play'; show(null); }
+function endRound(won) {
+  S.screen = 'end'; document.body.classList.remove('playing'); $('hud').hidden = true;
+  if (won) S.score += Math.ceil(S.left) * 5;
+  const best = Math.max(S.best, S.score); if (best !== S.best) { S.best = best; BRB.storage.set('best', best); }
+  BRB.gameOver({ won, score: S.score }); BRB.sfx.play(won ? 'win' : 'lose'); if (won) BRB.fx.confetti();
+  $('endTitle').textContent = t(won ? 'win' : 'lose'); $('endText').textContent = won ? t('winText') : t('loseText', { got: S.got, total: pickups.length });
+  $('endScore').textContent = t('score', { score: S.score, best: S.best }); show('endScreen');
+}
+function toTitle() {
+  S.screen = 'title'; $('titleText').textContent = t('title'); $('subText').textContent = t('sub');
+  $('bestText').textContent = S.best ? t('best', { n: S.best }) : ''; $('howText').textContent = t(TOUCH ? 'hintTouch' : 'hintKeys'); show('titleScreen');
+}
+$('playBtn').textContent = t('play'); $('againBtn').textContent = t('again'); $('resumeBtn').textContent = t('resume'); $('restartBtn').textContent = t('restart');
+$('pausedText').textContent = t('paused'); jb.textContent = t('jump'); canvas.setAttribute('aria-label', t('world'));
+$('pauseBtn').setAttribute('aria-label', t('pause')); $('soundBtn').setAttribute('aria-label', t('sound'));
+const soundIcon = () => { $('soundBtn').textContent = BRB.sfx.muted ? '🔇' : '🔊'; }; soundIcon();
+$('playBtn').onclick = () => { BRB.sfx.play('click'); startRound(); };
+$('againBtn').onclick = () => { BRB.sfx.play('click'); startRound(); };
+$('resumeBtn').onclick = resume; $('restartBtn').onclick = startRound;
+$('pauseBtn').onclick = pause; $('soundBtn').onclick = () => { BRB.sfx.mute(); soundIcon(); };
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+
+/* ---------- the loop, with a quality ladder for slow devices ---------- */
+buildWorld(); respawn();
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(0.1, clock.getDelta()); S.time += dt; S.frames++;
+  if (S.screen === 'play' && !S.lost) {
+    const i = readInput(); moveHero(dt, i.x, i.z, jumpQueued || !!(drive && drive.jump)); jumpQueued = false; if (drive) drive.jump = false;
+    for (const p of pickups) {
+      if (p.got) continue;
+      p.mesh.rotation.y += dt * 2; if (!REDUCED) p.mesh.position.y = p.base + Math.sin(S.time * 2 + p.x) * 0.15;
+      if (Math.hypot(p.x - hero.x, p.z - hero.z) < 1.1 && Math.abs(p.y - (hero.y + 0.8)) < 1.4) { p.got = true; p.mesh.visible = false; S.got++; onPickup(p); }
+    }
+    if (CONFIG.roundSeconds && S.screen === 'play') { S.left -= dt; if (S.left <= 0) { S.left = 0; endRound(false); } }
+    hud();
+  } else if (S.screen !== 'play') { if (!REDUCED) cam.yaw += dt * 0.08; }
+  updateCamera(dt);
+  renderer.render(scene, camera);
+  // quality ladder: slow frames lower the pixel ratio, then turn off shadows, then hide decoration
+  S.slow = S.slow * 0.97 + (dt > 1 / 40 ? 0.03 : 0);
+  if (S.slow > 0.5 && S.frames > 120) { S.slow = 0; if (S.quality === 2) fit.maxDpr(1); else if (S.quality === 1) { renderer.shadowMap.enabled = false; scene.traverse(o => { if (o.material) o.material.needsUpdate = true; }); } else decor.visible = false; S.quality = Math.max(-1, S.quality - 1); }
+});
+S.ready = true;
+
+/* ---------- test hook (the platform's playtests and cover pictures) ---------- */
+window.__brbTest = {
+  state: () => ({ screen: S.screen, ready: S.ready, got: S.got, total: pickups.length, score: S.score, pos: { x: +hero.x.toFixed(2), y: +hero.y.toFixed(2), z: +hero.z.toFixed(2) },
+    ground: +landHeight(hero.x, hero.z).toFixed(2), grounded: hero.grounded, quality: S.quality, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles }),
+  start() { startRound(); $('hint').hidden = true; },
+  drive(o) { drive = o ? Object.assign({}, o) : null; },   // { x: -1..1, z: -1..1 (forward), jump: true } or null
+  teleport(x, z) { hero.x = x; hero.z = z; hero.y = groundAt(x, z); hero.vy = 0; },
+  look(yaw) { cam.yaw = yaw; },
+};
+toTitle();
+if (window.__worldStartWanted) window.__brbTest.start();
+</script>

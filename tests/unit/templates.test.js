@@ -15,11 +15,13 @@ import * as biomes from '../../kit/packs/art-biomes.js';
 import * as dress from '../../kit/packs/dress.js';
 
 const KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'island'];
+const ALL = [...KEYS, 'world3d'];   // world3d: the Builder's own 3D starter (no kit), not a "Start from" card
 const COVERS = ['sunset', 'ocean', 'forest', 'candy', 'night', 'lava', 'mint', 'gold'];
 const CATEGORIES = ['arcade', 'sports', 'puzzle', 'words', 'board', 'adventure', 'learning', 'music', 'silly'];
 
 test('TEMPLATES lists every template with valid metadata', () => {
-  assert.deepEqual(TEMPLATES.map(t => t.key), KEYS);
+  assert.deepEqual(TEMPLATES.map(t => t.key), ALL);
+  assert.deepEqual(TEMPLATES.filter(t => t.builderOnly).map(t => t.key), ['world3d']);
   for (const t of TEMPLATES) {
     assert.ok(t.title && t.icon && t.description, `${t.key} has title/icon/description`);
     assert.ok(COVERS.includes(t.cover), `${t.key} cover`);
@@ -145,4 +147,21 @@ test('template play, headless: the catcher drops things that the kit catches; th
   const r = runTemplate('runner'); r.T.start();
   const x0 = r.T.state().hero.x; r.T.step(60); await new Promise(res => setImmediate(res)); r.T.step(30);
   assert.ok(r.T.state().hero.x > x0 + 48, `the hero runs right on its own (${x0} -> ${r.T.state().hero.x})`);
+});
+
+test('world3d: the Builder\'s own 3D starter is not on the Oomba Kit and has everything a 3D world needs', () => {
+  const html = loadTemplate('world3d');
+  assert.equal(scanVersion(html).status, 'pass');
+  assert.ok(isThreeGame(html) && html.includes(threeImportMap()), 'exactly the pinned import map');
+  assert.doesNotMatch(html, /oomba-kit|Oomba\./, 'no Oomba Kit at all');
+  assert.ok(TEMPLATES.find(t => t.key === 'world3d').builderOnly, 'not a "Start from" card');
+  for (const re of [/BRB\.fx\.fit3d\(renderer, camera, \{ maxDpr: 1\.5/, /webglcontextlost[\s\S]*preventDefault/, /webglcontextrestored/, /prefers-reduced-motion: reduce/,
+    /function buildWorld\(\)/, /function makeHero\(\)/, /function solid\(/, /function land\(/, /function moveHero\(/, /CONFIG\.gravity/, /CONFIG\.step/, /CONFIG\.slope/,
+    /respawn\(\)/, /id="stickBase"/, /id="jumpBtn"/, /addEventListener\('keydown'/, /BRB\.gameOver\(/, /BRB\.storage\.set\('best'/, /fit\.maxDpr\(1\)/, /window\.__brbTest = \{/])
+    assert.match(html, re);
+  assert.doesNotMatch(html, /BRB\.fx\.fit\(/, 'never the 2D fit on the 3D canvas');
+  // up / W walk; only Space, Z and the button jump
+  assert.match(html, /if \(\(k === ' ' \|\| k === 'z'\) && S\.screen === 'play'\) \{ jumpQueued = true/);
+  const tables = {}; for (const m of html.matchAll(/^ {2}(?:'([\w-]+)'|(\w+)): \{/gm)) tables[m[1] || m[2]] = true;
+  for (const c of CODES) assert.ok(tables[c], `I18N has ${c}`);
 });

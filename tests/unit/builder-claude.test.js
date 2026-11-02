@@ -118,19 +118,27 @@ test('Claude provider: streams text, runs tools, makes versions, caches the syst
   assert.doesNotMatch(JSON.stringify(last.messages), /<canvas/);
 });
 
-test('3D: the fixed 3D rules block is sent only for 3D, and start_from_template copies Star Island in', async () => {
+test('3D: the fixed 3D rules block is sent only for 3D; the Builder starts from its own 3D starter (no kit) and builds the world', async () => {
   const u = auth.createUser({ username: 'ClaudeThreeD', password: 'secret1' }); const g = games.createGame(u.id, {});
   script.push(
     [{ type: 'tool_use', name: 'start_from_template', input: { template: 'island', notes: 'Started a 3D island' } }],
-    [{ type: 'tool_use', name: 'edit_game', input: { edits: [{ find: "  sky: 'day',", replace: "  sky: 'night'," }, { find: "  hero: '🐣',", replace: "  hero: '🦊'," }], notes: 'A fox at night' } }],
-    [{ type: 'text', text: 'Your 3D island is ready!' }],
+    [{ type: 'tool_use', name: 'start_from_template', input: { template: 'world3d', notes: 'Started a 3D world' } }],
+    [{ type: 'tool_use', name: 'edit_game', input: { edits: [{ find: "const WORLD = { sky: '#bfe6ff', fog: [30, 110] };", replace: "const WORLD = { sky: '#1b2140', fog: [20, 90] };" }, { find: "lambert('#5fb4ff')", replace: "lambert('#ff8a3d')" }], notes: 'A fox at night' } }],
+    [{ type: 'text', text: 'Your 3D world is ready!' }],
   );
   const before = requests.length; const events = [];
   const r = await runTurn({ user: u, gameId: g.id, text: 'make a 3D game with a fox', emit: (n, d) => events.push([n, d]) });
   assert.equal(r.ok, true, JSON.stringify(events.filter(e => e[0] === 'error')));
   const calls = requests.slice(before).filter(x => x.body.stream);
-  assert.equal(calls.length, 3);
+  assert.equal(calls.length, 4);
   const sys = calls[0].body.system;
+  // Star Island (a kit game) is not offered to the Builder: it is told to use world3d
+  const startTool = calls[0].body.tools.find(t => t.name === 'start_from_template');
+  assert.ok(startTool.input_schema.properties.template.enum.includes('world3d') && !startTool.input_schema.properties.template.enum.includes('island'));
+  const refusal = calls[1].body.messages.at(-1).content.find(c => c.type === 'tool_result');
+  assert.match(JSON.stringify(refusal.content), /Unknown template[\s\S]*world3d/);
+  assert.ok(!THREE_D_RULES.includes('Oomba.three(') && /NOT built on the Oomba Kit/.test(THREE_D_RULES), 'new 3D games are never on the kit');
+  for (const s of ['buildWorld()', 'makeHero()', 'solid(mesh)', 'CONFIG.step', 'never up or W', 'Never ship the example']) assert.ok(THREE_D_RULES.includes(s), s);
   assert.equal(sys[0].text, SYSTEM_PROMPT, 'the main prompt is unchanged (cache-friendly)');
   assert.equal(sys[1].text, THREE_D_RULES); assert.deepEqual(sys[1].cache_control, { type: 'ephemeral' });
   assert.match(sys[2].text, /CURRENT GAME: none yet/); assert.match(sys[3].text, /^LANGUAGE:/);
@@ -141,10 +149,11 @@ test('3D: the fixed 3D rules block is sent only for 3D, and start_from_template 
   assert.match(THREE_D_RULES, /Live or closed world[\s\S]*ask_user[\s\S]*"Oomba Live"[\s\S]*closed world/);
   assert.ok(asksForLive('🌍 Live: others join with Oomba Live'), 'the live chip turns on the live rules');
   assert.ok(!asksForLive('🏝️ Closed: just my world'));
-  assert.match(calls[1].body.system[2].text, /<current_game>[\s\S]*type="importmap"/, 'the template is the current game for the next step');
+  assert.match(calls[2].body.system[2].text, /<current_game>[\s\S]*type="importmap"/, 'the starter is the current game for the next step');
   const v = games.getVersion(games.getGame(g.id).current_version_id);
   assert.equal(v.number, 2); assert.equal(v.safety_status, 'pass', v.safety_report);
-  assert.match(v.html, /sky: 'night'/); assert.match(v.html, /hero: '🦊'/); assert.ok(v.html.includes(threeImportMap()));
+  assert.match(v.html, /sky: '#1b2140'/); assert.match(v.html, /#ff8a3d/); assert.ok(v.html.includes(threeImportMap()));
+  assert.ok(!/oomba-kit/.test(v.html), 'no Oomba Kit in a 3D world');
   // Later turns on a 3D game keep the block; a 2D game never gets it.
   script.push([{ type: 'text', text: 'Sure!' }]);
   await runTurn({ user: u, gameId: g.id, text: 'thanks', emit: () => {} });
@@ -417,8 +426,8 @@ test('build steps: a real playtest with problems gives "looking at the pictures"
 test('build steps: starting from the ready-made 3D world gives a template row, then the safety check', async () => {
   const u = auth.createUser({ username: 'StepsKid6', password: 'secret1' }); const g = games.createGame(u.id, {});
   const { events, rows } = await stepTurn(u, g, 'make a 3D game with a fox', [
-    [{ type: 'tool_use', name: 'start_from_template', input: { template: 'island', notes: 'Started a 3D island' } }],
-    [{ type: 'text', text: 'Your 3D island is ready!' }],
+    [{ type: 'tool_use', name: 'start_from_template', input: { template: 'world3d', notes: 'Started a 3D world' } }],
+    [{ type: 'text', text: 'Your 3D world is ready!' }],
   ]);
   assert.deepEqual(rows, [{ key: 'screen' }, { key: 'think', n: 1, c: 'start', a: 1 }, { key: 'template' }, { key: 'check', st: 'pass', v: 1 }, { key: 'think', n: 2, c: 'next', a: 1 }]);
   assert.ok(idx(events, 'step', s => s.key === 'check') < idx(events, 'version'));

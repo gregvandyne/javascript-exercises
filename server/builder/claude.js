@@ -26,7 +26,7 @@
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
-import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive } from './prompt.js';
+import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive } from './prompt.js';
 import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
@@ -170,6 +170,8 @@ export async function run(ctx) {
       // Fixed, and only while web search is on: it is cached with the block after it.
       ...(searchOn ? [{ type: 'text', text: search.SEARCH_RULES }] : []),
       ...(wants3d(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: THREE_D_RULES, cache_control: { type: 'ephemeral' } }] : []),
+      // An older 3D game on the kit's 3D bridge: its reference too (no cache point of its own; the game's block caches it).
+      ...(cur && usesKit3d(cur.html) ? [{ type: 'text', text: KIT_3D_BRIDGE_RULES }] : []),
       ...(wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
       { type: 'text', text: languageBlock(ctx.locale || 'en') },

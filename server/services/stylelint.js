@@ -100,7 +100,7 @@ const SCREEN_NAMES = new Set(['pause', 'paused', 'pause-screen', 'pausescreen', 
 // The lint never flags or "corrects" a builder's explicit creative choices. Notes about the LOOK are suggestions only
 // (level 'info', look: true): a default for when the builder said nothing, never a rule over what they asked for. When
 // the builder's own words (this message and their earlier ones for the game) asked for that look, the note is dropped.
-export const LOOK_CODES = ['raw_hex', 'emoji_text', 'emoji_dom', 'font', 'theme_name', 'dress_missing', 'three_bridge'];
+export const LOOK_CODES = ['raw_hex', 'emoji_text', 'emoji_dom', 'font', 'theme_name', 'dress_missing'];
 const COLOUR_WORDS = /#[0-9a-f]{3,8}\b|\b(?:colou?rs?|colou?red|red|pink|purple|violet|green|blue|yellow|orange|black|white|gr[ae]y|brown|gold(?:en)?|silver|rainbow|neon|teal|turquoise|magenta|cyan|lime|navy|maroon|beige|pastel|dark|bright|rojo|rosa|morado|verde|azul|amarillo|negro|blanco|naranja|colou?r|couleurs?|rouge|rose|vert|bleu|jaune|noir|blanc|farben?|rot|lila|gr(?:ü|ue)n|blau|gelb|schwarz|wei(?:ß|ss)|kleur(?:en)?|rood|roze|paars|groen|blauw|geel|zwart|wit|cor(?:es)?|vermelho|roxo|amarelo|preto|branco|colori?|colore|rosso|viola|blu|giallo|nero|bianco)\b|красн|розов|зел[её]н|син|ж[её]лт|ч[её]рн|бел|цвет|أحمر|أزرق|أخضر|أسود|أبيض|لون|אדום|כחול|ירוק|שחור|לבן|צבע|赤|青|緑|黒|白|ピンク|色|紅|藍|綠|顏色/i;
 const EMOJI_WORDS = /\p{Extended_Pictographic}|\bemoj?is?\b|絵文字|表情符號|эмодзи|אימוג|إيموجي/iu;
 const FONT_WORDS = /\b(?:fonts?|typefaces?|comic sans|handwriting|pixel letters|letter style|police|fuentes?|tipograf\w*|schrift(?:art)?|lettertype|carattere|fonte)\b|шрифт|フォント|字型|גופן|خط/i;
@@ -114,7 +114,7 @@ export function kidChoices(texts) {
   if (COLOUR_WORDS.test(s)) out.add('raw_hex');
   if (EMOJI_WORDS.test(s)) { out.add('emoji_text'); out.add('emoji_dom'); }
   if (FONT_WORDS.test(s)) out.add('font');
-  if (PLAIN_WORDS.test(s)) { out.add('dress_missing'); out.add('three_bridge'); }
+  if (PLAIN_WORDS.test(s)) { out.add('dress_missing'); }
   return out;
 }
 /** Lint notes with the creative-freedom rule applied: look notes the builder's words asked for are dropped; a made-up
@@ -136,6 +136,8 @@ export function lintGame(html, o = {}) {
   const { js, css, inline, markup } = parts(src);
   const code = withoutConfig(js), threeD = THREE.test(src) && /\/vendor\/three\//.test(src);
   const usesGame = /\b(?:Oomba|OK|O)\s*\.\s*game\s*\(/.test(js);
+  // A 3D world of its own (not on the kit's 3D bridge) loads the kit only for Oomba Live: the kit's look notes are not for it.
+  if (threeD && !/\b(?:Oomba|OK)\s*\.\s*three\s*\(/.test(code)) return [];
   const decls = declarations(css, inline);
 
   // 1. Colour codes outside CONFIG: CSS property values (never selectors) and colour-like spots in code (3D games
@@ -194,7 +196,6 @@ export function lintGame(html, o = {}) {
   if (threeD && versionPacks['bridge-3d']) {
     const bridge = /\b(?:Oomba|OK)\s*\.\s*three\s*\(/.test(code);
     if (bridge && !src.includes('/packs/bridge-3d.js')) add('warn', 'pack_missing', "Uses Oomba.three without the bridge-3d pack. Add the pack's pinned tag right after the kit tag (and the dress pack's, for themes), or the 3D world has no kit look.");
-    else if (!bridge) add('info', 'three_bridge', "A 3D game without the kit's 3D bridge: its world will not look like the other Oomba games. Load the bridge-3d pack and use Oomba.three(THREE, { renderer, scene, camera, theme }) for the sky, toon materials, Ink outlines and kit characters (the 3D rules show how).");
   } else if (threeD && /\b(?:Oomba|OK)\s*\.\s*three\s*\(/.test(code)) add('warn', 'theme_kit', `Uses Oomba.three, but kit ${version} has no 3D bridge: it came with kit 1.1.0. Load the kit and its packs with exactly the tags the rules give.`);
   // 9. Icons by a name the kit does not have (howTo cards, ui.button).
   const icons = [...code.matchAll(/\bicon\s*:\s*(['"])([a-z][a-z0-9-]{0,24})\1/g)].map(m => m[2]).filter(n => !ICON_NAMES.includes(n));
