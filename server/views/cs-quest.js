@@ -215,7 +215,7 @@ export function planBody(req, d) {
     return html`<dl class="csq-script">${rows}</dl>`;
   };
   const ex = tpl.explore || {};
-  const stepsList = html`<ol class="csq-steps csq-plain">${tpl.steps.map(s => html`<li><span class="sc-kind" aria-hidden="true">${{ game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩' }[s.kind]}</span><span><b lang="en" dir="ltr">${s.title}</b> <span class="small muted">${t(`lessons.kinds.${s.kind}`)}${s.gameSlug ? html` · <span lang="en" dir="ltr">${cat.games[s.gameSlug]?.title || s.gameSlug}</span>` : ''}${Array.isArray(s.standards) ? html` · ${idChips(s.standards)}` : ''}</span></span><span class="csq-min">${t('lessons.minutesN', { count: s.minutes })}</span></li>`)}</ol>`;
+  const stepsList = html`<ol class="csq-steps csq-plain">${tpl.steps.map(s => html`<li><span class="csq-kind" aria-hidden="true">${{ game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩' }[s.kind]}</span><span><b lang="en" dir="ltr">${s.title}</b> <span class="small muted">${t(`lessons.kinds.${s.kind}`)}${s.gameSlug ? html` · <span lang="en" dir="ltr">${cat.games[s.gameSlug]?.title || s.gameSlug}</span>` : ''}${Array.isArray(s.standards) ? html` · ${idChips(s.standards)}` : ''}</span></span><span class="csq-min">${t('lessons.minutesN', { count: s.minutes })}</span></li>`)}</ol>`;
   return html`
   <div class="pagehead csq-plan-head"><div><span class="small muted">${t('cs.unit.n', { n: tpl.unit })} · ${en('span', tpl.unitTitle)} · ${t(BAND_KEY[tpl.band])}</span>
     <h1 lang="en" dir="ltr">${tpl.title}</h1>

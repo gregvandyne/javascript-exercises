@@ -306,7 +306,7 @@ router.get('/teachers/cs-quest', (req, res) => {
   const bandIds = band => cat.units.flatMap(un => un.lessons.flatMap(l => l.primary[band] || []));
   const ids = CSTA.all().filter(s => bandIds(s.level).includes(s.id));
   const unitItem = un => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: un.n })} · ${un.title}</b>${un.needsSchoolPlan ? html` <span class="chip-s warn">${el(t, 'span', `${k}.units.needsPlan`)}</span>` : ''}
-    <ol class="csq-lessons" lang="en" dir="ltr">${un.lessons.map(l => html`<li>${l.n} ${l.title} <span class="csq-ids">(${[...l.primary['1B'], ...l.primary['2']].join(', ')})</span></li>`)}</ol></li>`;
+    <ol class="csq-lessons" lang="en" dir="ltr">${un.lessons.map(l => html`<li>${l.n} ${l.title} <span class="small muted">(${[...l.primary['1B'], ...l.primary['2']].join(', ')})</span></li>`)}</ol></li>`;
   const pathItem = p => html`<article class="panel"><h3 lang="en" dir="ltr">${p.title}${p.default ? html` <span class="csq-badge">${el(t, 'span', `${k}.paths.recommended`)}</span>` : ''}</h3>
     <p class="small"><span lang="en" dir="ltr">${p.lessons.join(', ')}</span></p>${p.note ? V.en('p', p.note, ' class="small muted"') : ''}</article>`;
   const faqPairs = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => [`${k}.faq.q${n}`, `${k}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));

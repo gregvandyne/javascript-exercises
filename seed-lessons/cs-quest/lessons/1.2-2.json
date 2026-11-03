@@ -8,7 +8,7 @@
  "band": "2",
  "bandCode": "2",
  "grade": "Grades 6-8",
- "title": "CS Quest 1.2 · Again and again (Loops)",
+ "title": "1.2 · Again and again (Loops)",
  "name": "Again and again (Loops)",
  "short": "Loops",
  "summary": "Students replace repeated steps with a repeat block in Robo Route, then put a loop inside a loop: the inner loop makes one stair, the outer loop makes the staircase. They predict how many steps a nested loop really runs by multiplying, and check it in step mode. One device per student.",

@@ -39,7 +39,7 @@
 .csq-seg{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center}
 .csq-steps li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--s3);align-items:baseline;padding:var(--s2) 0;border-bottom:1px solid var(--line)}
 .csq-steps li:last-child{border-bottom:0}
-.csq-steps .sc-kind{font-size:1.2rem}
+.csq-steps .csq-kind{font-size:1.2rem}
 .csq-steps .csq-min{white-space:nowrap;color:var(--muted);font-size:.9rem}
 
 /* ---------- Program page ---------- */
@@ -87,6 +87,8 @@ details.csq-menu{position:relative}
 details.csq-menu>summary{list-style:none}
 details.csq-menu>summary::-webkit-details-marker{display:none}
 details.csq-menu .menu{position:absolute;inset-inline-start:0;top:calc(100% + 6px);z-index:20;display:grid;gap:var(--s2);width:min(86vw,320px);padding:var(--s3);border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow-lg)}
+details.csq-menu:not([open]) .menu{display:none}
+@media (max-width:600px){details.csq-menu[open]{flex-basis:100%}details.csq-menu .menu{position:static;width:auto;margin-top:6px}}
 details.csq-menu .menu a{display:block;padding:8px 10px;border-radius:var(--r-sm);min-height:44px;display:flex;align-items:center}
 details.csq-menu .menu a:hover{background:var(--hover);text-decoration:none}
 .csq-assign .formgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr))}
@@ -211,3 +213,5 @@ section.panel>.csq-code{margin-top:var(--s3)}
   .csq-card-grid{gap:8px}
   .csq-proj-nav,.csq-proj-top{display:none!important}
 }
+/* English-first copy on a right-to-left page: keep the list marker inside the box (it would hang off the left edge) */
+[dir="rtl"] .lp-list>li[dir="ltr"]{list-style-position:inside}

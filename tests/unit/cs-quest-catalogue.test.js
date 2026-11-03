@@ -141,7 +141,7 @@ for (const l of lessons) {
     assert.equal(l.unit, e.unit); assert.equal(l.order, e.order); assert.equal(l.n, e.n); assert.equal(l.band, e.band); assert.equal(l.bandCode, e.bandCode);
     assert.equal(l.grade, e.band === '1B' ? 'Grades 3-5' : 'Grades 6-8');
     assert.equal(l.name, e.name); assert.equal(l.short, e.short);
-    assert.equal(l.title, `CS Quest ${l.n} · ${l.name}`); assert.ok(l.title.length <= 100, 'title <= 100 (lessons.title)');
+    assert.equal(l.title, `${l.n} · ${l.name}`); assert.ok(l.title.length <= 100, 'title <= 100 (lessons.title)');
     assert.ok(typeof l.summary === 'string' && l.summary.length >= 40 && l.summary.length <= 600, 'summary 40..600 (lessons.summary)');
     assert.equal(l.duration, 45);
     assert.deepEqual(l.csta.primary, e.primary, 'primary ids as units.json lists them');

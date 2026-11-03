@@ -107,7 +107,7 @@ codes and step standards against), owner B's `sets/u<n>-<1b|2>.json` (the 14 uni
 turns a lesson file into an ordinary lesson in a teacher's library:
 
 - `materialise(u, schoolId, key, { folderId, again })`: the folder **CS Quest** with a sub-folder per unit and band
-  (`Unit 1 · Think Like a Robot (Grades 3-5)`), the lesson (title `CS Quest 1.2 · …`, subject `Computer science`, grade,
+  (`Unit 1 · Think Like a Robot (Grades 3-5)`), the lesson (title `1.2 · …` (no program name: students see it), subject `Computer science`, grade,
   summary, the I-can lines as objectives, `template_key` = the catalogue key, `template_version`), the derived live sets in
   the teacher's My sets with subject `cs-quest` (`CSQ 1.2 warm-up · Loops (3-5)`: the five warm-up items at 15 s;
   `CSQ 1.2 exit ticket (3-5)`: the three exit items with `cat`; once per unit and band `CSQ Unit 1 review (3-5)`: the whole

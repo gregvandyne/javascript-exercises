@@ -91,7 +91,7 @@ test('materialise: a lesson lands in CS Quest / Unit folders with its fields, te
   const r = T.materialise(ana, oak.id, 'csq-1b-1.2');
   assert.ok(r.ok, JSON.stringify(r)); assert.equal(r.created, true);
   const l = r.lesson;
-  assert.equal(l.title, 'CS Quest 1.2 · Again and again (Loops)'); assert.equal(l.subject, 'Computer science'); assert.equal(l.grade, 'Grades 3-5');
+  assert.equal(l.title, '1.2 · Again and again (Loops)'); assert.equal(l.subject, 'Computer science'); assert.equal(l.grade, 'Grades 3-5');
   assert.equal(l.template_key, 'csq-1b-1.2'); assert.equal(l.template_version, 1); assert.equal(l.owner_id, ana.id); assert.equal(l.school_id, oak.id);
   assert.match(l.objectives, /^Spot steps that repeat/m, 'I-can lines as objectives, capitalised, one per line');
   const tree = L.folderTree(ana.id, oak.id);

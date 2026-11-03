@@ -8,7 +8,7 @@
  "band": "1B",
  "bandCode": "1b",
  "grade": "Grades 3-5",
- "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+ "title": "2.1 · Bug hunt (Test and debug)",
  "name": "Bug hunt (Test and debug)",
  "short": "Debugging",
  "summary": "Students fix programs that are already written and already broken. In the Debug Lab every level starts with a broken program: a wrong turn, a loop count one too many, a missing block, a wrong condition, a block out of order, an extra block inside a loop, and two bugs at once on the last level. Pairs step through it one block at a time, say what they expected and what Bolt did, change only that block, and test again. Fewest edits earn the most stars.",

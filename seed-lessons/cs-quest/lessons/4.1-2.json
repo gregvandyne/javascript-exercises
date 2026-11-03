@@ -8,7 +8,7 @@
  "band": "2",
  "bandCode": "2",
  "grade": "Grades 6-8",
- "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+ "title": "4.1 · How a message travels (Packets, routes, protocols)",
  "name": "How a message travels (Packets, routes, protocols)",
  "short": "Packets",
  "summary": "Students run the Envelope Relay with a lost packet the receiver must ask for again, then learn what protocols are for in Packet Post's Rules of the Road: numbering, acknowledging, resending only the missing packet, catching damaged packets with a checksum and choosing a faster path past a busy router. One device per student.",

@@ -8,7 +8,7 @@
  "band": "2",
  "bandCode": "2",
  "grade": "Grades 6-8",
- "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+ "title": "2.1 · Bug hunt (Test and debug)",
  "name": "Bug hunt (Test and debug)",
  "short": "Debugging",
  "summary": "Students test one program against three test boards and fix it without breaking the others. In the Debug Lab every level starts with a broken program and three tabs that show a check mark or an X per test after each run; level 6 is an edge case, an odd board that breaks a hidden assumption about the gems, and level 7 adds the rule never bump. Fewest edits earn the most stars. One device per student.",

@@ -8,7 +8,7 @@
  "band": "2",
  "bandCode": "2",
  "grade": "Grades 6-8",
- "title": "CS Quest 5.3 · Bits and pixels (How computers store things)",
+ "title": "5.3 · Bits and pixels (How computers store things)",
  "name": "Bits and pixels (How computers store things)",
  "short": "Bits and pixels",
  "summary": "Students represent the same data several ways: binary and decimal, 0/1 pictures, gray levels from 0 to 255, RGB sliders to match a color swatch, and one color as a name, three numbers and a code. They work out how many colors a number of bits can show. Played in Inside the Machine's Bits & Pixels. One device per student.",

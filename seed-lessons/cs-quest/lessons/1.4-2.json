@@ -8,7 +8,7 @@
  "band": "2",
  "bandCode": "2",
  "grade": "Grades 6-8",
- "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+ "title": "1.4 · Counting and remembering (Variables)",
  "name": "Counting and remembering (Variables)",
  "short": "Variables",
  "summary": "Students create variables with names a partner can read, in three types: a number like count, an on/off flag like hasKey, and a word from a list like color. In Robo Route the shelf offers good and bad names and the level refuses x or thing and says why; the last level is a working program that nobody can read until it is renamed. One device per student.",

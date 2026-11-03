@@ -8,7 +8,7 @@
  "band": "2",
  "bandCode": "2",
  "grade": "Grades 6-8",
- "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+ "title": "1.3 · If this, then that (Conditionals and events)",
  "name": "If this, then that (Conditionals and events)",
  "short": "Conditionals",
  "summary": "Students make Bolt decide for itself, then join conditions with AND, OR and NOT. In Robo Route the fog hides the path ahead, every gem sits on a corner, and from level 3 the layouts change on every run, so only a rule that checks at every step works. An if inside a loop solves any maze. One device per student.",

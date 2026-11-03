@@ -8,7 +8,7 @@
  "band": "1B",
  "bandCode": "1b",
  "grade": "Grades 3-5",
- "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+ "title": "4.1 · How a message travels (Packets, routes, protocols)",
  "name": "How a message travels (Packets, routes, protocols)",
  "short": "Packets",
  "summary": "Students act out how a message travels: a picture cut into numbered pieces is passed desk to desk by student routers and put back together by number. Then in Packet Post they help Pim break messages into packets in Break It Up and, when a road closes mid-send, reroute them in the first levels of Many Roads. Pairs share one device.",

@@ -8,7 +8,7 @@
  "band": "1B",
  "bandCode": "1b",
  "grade": "Grades 3-5",
- "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+ "title": "1.4 · Counting and remembering (Variables)",
  "name": "Counting and remembering (Variables)",
  "short": "Variables",
  "summary": "Students use a variable, a labeled box the program can look in and change, to count gems so a door opens. In Robo Route the watch pill shows what is in the box as the program runs; set puts a number in, change by adds to it, and a countdown level runs the box down to zero. Pairs share one device.",

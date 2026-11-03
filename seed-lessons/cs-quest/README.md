@@ -25,7 +25,7 @@ additions; coverage clauses run once all 46 lesson files exist, and bank clauses
   `version` as `template_version`.
 - `band` is the CSTA level (`1B` | `2`); `bandCode` is the in-game / params form (`1b` | `2`). In-game the bands are called
   Explorer and Pro; teacher chrome says "Grades 3-5" / "Grades 6-8".
-- `title` is the library title `CS Quest <u.n> · <name>` (<= 100 chars, sorts and searches in a crowded library); `name`
+- `title` is the library title `<u.n> · <name>` (<= 100 chars; no program name: students see it, and the "CS Quest" folder already groups the lessons); `name`
   is the plain lesson name; `short` is the lesson's one-or-two-word topic (the bank's `topic`, the Brain Board column, the
   derived warm-up set's name).
 - Kids never see a standard code, and never see the program name inside a game. Step titles and bodies (what students
@@ -43,7 +43,7 @@ paragraphs and `- ` for a short list (the platform renders `<p>` per blank line,
 | `version` | int >= 1 | bump when the lesson changes in a way a teacher should re-add ("Update available") |
 | `unit`, `order`, `n` | int 1-7, int 1-23, `"u.n"` | as in `units.json` |
 | `band`, `bandCode`, `grade` | `1B`\|`2`, `1b`\|`2`, `Grades 3-5`\|`Grades 6-8` | consistent with each other |
-| `title`, `name`, `short` | string | `title` = `CS Quest <n> · <name>` <= 100; `short` <= 40 and equal to the bank topic |
+| `title`, `name`, `short` | string | `title` = `<n> · <name>` <= 100 (never "CS Quest": students see it); `short` <= 40 and equal to the bank topic |
 | `summary` | string <= 600 | the library summary (`lessons.summary`) |
 | `duration` | 45 | always; the 40-minute cut is `shortPeriod40` |
 | `csta` | `{ primary[], also[], buildsToward[] }` | `primary` non-empty: taught, exit items tagged, rubric line; `also`: practiced again; `buildsToward`: never counted as evidence |

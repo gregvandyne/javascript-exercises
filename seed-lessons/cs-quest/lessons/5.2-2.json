@@ -8,7 +8,7 @@
  "band": "2",
  "bandCode": "2",
  "grade": "Grades 6-8",
- "title": "CS Quest 5.2 · It's not working! (Troubleshooting)",
+ "title": "5.2 · It's not working! (Troubleshooting)",
  "name": "It's not working! (Troubleshooting)",
  "short": "Troubleshooting",
  "summary": "Students troubleshoot systematically: build a flowchart from yes/no checks first, then run it, change one thing at a time and use a swap test to isolate the fault, including faults in a connected device such as a printer or a router. At Inside the Machine's Fix-It Desk one ticket is a trick: the fault is the user's own cable. One device per student.",
