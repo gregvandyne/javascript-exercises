@@ -1,0 +1,297 @@
+{
+ "id": "csq-1b-5.3",
+ "key": "csq-1b-5.3",
+ "version": 1,
+ "unit": 5,
+ "order": 16,
+ "n": "5.3",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "CS Quest 5.3 · Bits and pixels (How computers store things)",
+ "name": "Bits and pixels (How computers store things)",
+ "short": "Bits and pixels",
+ "summary": "Students learn that a computer keeps everything, numbers, letters and pictures, as on/off switches called bits in storage, and that a photo is still in storage when the tablet is off. In Inside the Machine's Bits & Pixels they turn binary cards into numbers, make a picture from 0s and 1s and send a letter with five switches. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "1B-CS-02"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "explain that a computer keeps everything in storage as on/off switches, 0 and 1",
+  "make a picture from 0s and 1s"
+ ],
+ "questCode": "4 1 0 0",
+ "params": "chapter=bits&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "binary cards (16 8 4 2 1), one set for the board and one per pair",
+  "8 by 8 pixel grids (for the twin or the block day)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Send the word HI across the room with only a flashlight that turns on and off. How?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: binary cards, then where the photo lives"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Bits & Pixels"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u5-1b",
+  "items": [
+   "1b-5.2-e1",
+   "1b-5.2-e2",
+   "1b-5.3-r1",
+   "1b-5.3-e1",
+   "1b-5.2-r1"
+  ],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 5.2, one vocabulary item, one preview of today, one more from 5.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "bits",
+   "level": 1
+  },
+  "do": [
+   "Give five students the binary cards 16 8 4 2 1. Face up is on (1), face down is off (0). Make the class's grade number together, then the number of students in the room.",
+   "Open Inside the Machine at Bits & Pixels on the projector (Open game at this chapter). Play level 1 with the class."
+  ],
+  "say": [
+   "Everything in a computer is numbers, and every number is on/off switches called bits.",
+   "The bits are kept in storage, so your photo is still there when the tablet is off."
+  ],
+  "ask": [
+   "Where is the photo when the tablet is switched off?"
+  ],
+  "afterAsk": "Take answers until someone says storage. Draw the path on the board: touch sensor, processor, storage, screen. The photo lives in storage the whole time; the screen only shows it.",
+  "bigIdea": "Computers keep everything as on/off bits in storage, even when they are switched off.",
+  "vocab": [
+   "bit",
+   "binary",
+   "pixel",
+   "storage"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "inside-the-machine",
+  "chapter": "bits",
+  "chapterTitle": "Bits & Pixels",
+  "levels": 5,
+  "goal": "3 levels",
+  "stretch": "the chapter, then 3 stars",
+  "pairs": "driver and navigator on one device; swap at the chime every 2 levels; the navigator holds the binary cards and checks the answer before the driver taps",
+  "lookFors": [
+   "thinking the photo lives in the screen",
+   "adding the cards that are face down",
+   "reading the cards from the wrong end"
+  ],
+  "misconception": "The picture is not kept in the screen: the screen only shows it, and the bits that make it are kept in storage.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "How many numbers can 5 cards make?",
+  "When the tablet is off, where is your photo, and how is it kept?"
+ ],
+ "showMe": "Five students hold the binary cards at the front; the class calls out a number and they flip to show it.",
+ "exit": {
+  "setId": "csq-u5-1b",
+  "items": [
+   "1b-5.3-e1",
+   "1b-5.3-e2",
+   "1b-5.3-e3"
+  ],
+  "sentencePrompt": "When the tablet is off, where is your photo, and what is it made of?",
+  "frame": "When the tablet is off my photo is ___.",
+  "rubric": [
+   {
+    "line": "Storage: how a computer keeps a photo",
+    "ids": [
+     "1B-CS-02"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says the photo is kept somewhere in the tablet",
+     "Says the photo is kept in storage",
+     "Also says it is kept as bits (on/off), or how it gets to the screen"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "dot-picture cards: each card shows its number as dots",
+   "the binary cards on the desk during Play",
+   "hint 1 flips one card at a time"
+  ],
+  "stretch": [
+   "8-bit letters: send your initials with eight switches",
+   "3 stars on every level"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Binary Cards and Pixel Grids",
+  "minutes": 15,
+  "materials": [
+   "binary cards (16 8 4 2 1) per pair",
+   "8 by 8 pixel grids",
+   "a pencil"
+  ],
+  "steps": [
+   "Pairs make five numbers with the binary cards and write each as 0s and 1s.",
+   "They get a row of 0s and 1s for each line of a pixel grid and color the 1s.",
+   "The finished grid shows a picture; pairs say what it is.",
+   "Each pair writes a small picture of their own as 0s and 1s and trades with a neighbor to color.",
+   "Share: where would this picture be kept in a tablet?"
+  ],
+  "printables": [
+   "binary-cards",
+   "pixel-grid"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: how could you send the word HI across the room with only a flashlight that turns on and off?",
+  "Play Inside the Machine, chapter Bits & Pixels, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 4 1 0 0. Goal: 3 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Bits & Pixels"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "1b-5.2-e1",
+   "1b-5.3-r1"
+  ],
+  "discuss": "How many numbers can 5 cards make?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Binary Cards and Pixel Grids twin (15 minutes) before Play",
+   "the 8-bit letters stretch after Play",
+   "10 minutes of the Unit 5 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "The exit evidence for this band is storage and the system, not binary; binary is enrichment.",
+  "Digits in game text are spaced, like 255 0 128.",
+  "Most pairs reach level 4 of 5 in 18 minutes: that is success.",
+  "Shared devices: this is an odd lesson in the unit, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Send the word HI across the room with only a flashlight that turns on and off. How?\n\nBig idea: Computers keep everything as on/off bits in storage, even when they are switched off.\n\nWe will talk about:\n- How many numbers can 5 cards make?\n- When the tablet is off, where is your photo, and how is it kept?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Bits & Pixels",
+   "minutes": 18,
+   "gameSlug": "inside-the-machine",
+   "options": "chapter=bits&band=1b&lock=1",
+   "questCode": "4 1 0 0",
+   "standards": [
+    "1B-CS-02"
+   ],
+   "body": "Goal: 3 levels. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 4 1 0 0.\nPairs: driver and navigator. Swap when you hear the chime. The navigator checks with the paper cards."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about bits, pixels and storage."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "1B-CS-02"
+   ],
+   "rubric": "exit",
+   "body": "When the tablet is off, where is your photo, and what is it made of?\nFrame: When the tablet is off my photo is ___."
+  }
+ ]
+}

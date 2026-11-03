@@ -1,0 +1,306 @@
+{
+ "id": "csq-2-4.3",
+ "key": "csq-2-4.3",
+ "version": 1,
+ "unit": 4,
+ "order": 13,
+ "n": "4.3",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 4.3 · Secret messages (Spotting tricks, ciphers)",
+ "name": "Secret messages (Spotting tricks, ciphers)",
+ "short": "Secret messages",
+ "summary": "Students encode and decode messages with a shift, a keyed substitution and pixels that hide a message in a picture, crack a shift by counting the most common letter, and compare how hard each method is to crack. Then, in Spot the Trick cards 7-10, they catch spoofed senders and ask what a trick message already knew about them. Played in Packet Post. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-NI-06"
+  ],
+  "also": [
+   "2-NI-05",
+   "2-IC-23"
+  ],
+  "buildsToward": []
+ },
+ "iCan": [
+  "encode and decode a message with two or more methods",
+  "say which method is harder to crack and why",
+  "spot a spoofed sender and say what a trick message already knew about me"
+ ],
+ "questCode": "6 2 0 0",
+ "params": "chapter=ciphers&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Cipher Wheels printable (one per student, with a paper fastener)",
+  "Trick or Treat cards (for the twin or the block day)",
+  "login cards"
+ ],
+ "doNow": "A message says: You won a free tablet! Reply with your mailbox key to claim it. What do you do? Name two clues that it is a trick.",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: a shift on the wheel, then crack one without the key"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Secret Messages"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u4-2",
+  "items": [
+   "2-4.2-e1",
+   "2-4.2-e2",
+   "2-4.3-r1",
+   "2-4.3-e1",
+   "2-4.2-r1"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 4.2, one vocabulary item, one preview of today, one more from 4.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "ciphers",
+   "level": 1
+  },
+  "do": [
+   "Open Packet Post at Secret Messages on the projector (Open game at this chapter). Level 1 is a shift: turn the wheel 3 and decode the message with the class.",
+   "Write KHOOR on the board. Ask the class to crack it without the key by trying shifts one at a time."
+  ],
+  "say": [
+   "Encryption scrambles a message so only someone with the key can read it.",
+   "Some scrambles are much harder to crack. A shift has only 25 keys to try; a keyed substitution has so many keys that trying them all would take far too long."
+  ],
+  "ask": [
+   "How many keys would you have to try to crack a shift? How many would a computer have to try for a keyed substitution?"
+  ],
+  "afterAsk": "Take answers. A computer tries all 25 shifts at once. Trying every key is called brute force, and more possible keys is what makes a method strong.",
+  "bigIdea": "Encryption scrambles a message so only the key opens it, and more possible keys make it harder to crack.",
+  "vocab": [
+   "encryption",
+   "decrypt",
+   "cipher",
+   "key",
+   "brute force"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "packet-post",
+  "chapter": "ciphers",
+  "chapterTitle": "Secret Messages",
+  "then": {
+   "chapter": "tricks",
+   "levels": "7-10"
+  },
+  "levels": 7,
+  "goal": "4 levels",
+  "stretch": "the chapter, then Spot the Trick cards 7-10",
+  "solo": "one device per student; a neighbor may read the message out loud, never touch your screen",
+  "lookFors": [
+   "cracking a shift by guessing words instead of counting the most common letter",
+   "calling hidden pixels encryption: they hide the message, they do not scramble it",
+   "thinking a keyed substitution is just a shift with a bigger number"
+  ],
+  "misconception": "Hiding a message is not the same as scrambling it: steganography hides it in a picture, encryption makes it unreadable without the key.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Why is a keyed substitution harder than a shift? How many keys would a computer try?",
+  "On the trick cards, what did the sender already know about you, and where could they have found it?"
+ ],
+ "showMe": "One student cracks a shift on the projector by counting the most common letter; the class predicts the key before the student turns the wheel.",
+ "exit": {
+  "setId": "csq-u4-2",
+  "items": [
+   "2-4.3-e1",
+   "2-4.3-e2",
+   "2-4.3-e3"
+  ],
+  "sentencePrompt": "Compare two methods from today. Which is harder to crack, and why?",
+  "frame": "___ is harder to crack than ___ because ___.",
+  "rubric": [
+   {
+    "line": "Encryption: comparing methods and how hard they are to crack",
+    "ids": [
+     "2-NI-06"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a method of hiding or scrambling a message",
+     "Compares two methods and says which is harder to crack",
+     "Explains why: the number of possible keys, or hiding versus scrambling"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the cipher wheel on the desk during Play",
+   "a letter-count strip for cracking a shift",
+   "hint 1 shows the most common letter"
+  ],
+  "stretch": [
+   "write a message that uses two methods, a shift inside hidden pixels, for a neighbor to decode",
+   "Spot the Trick cards 7-10"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Cipher Wheels and Trick or Treat",
+  "minutes": 15,
+  "materials": [
+   "Cipher Wheels printable and a paper fastener",
+   "a keyed substitution table",
+   "Trick or Treat cards 7-10"
+  ],
+  "steps": [
+   "Students build the wheel and encode a short sentence with a shift; a partner cracks it without the key by counting the most common letter.",
+   "They encode the same sentence with the keyed substitution table; the partner tries to crack it and gives up after two minutes.",
+   "Compare: how many keys does each method have? Which would a computer crack faster?",
+   "Trick cards: for each card, find what the sender already knew about you and where it was public.",
+   "Share: what would you keep off a public profile after today?"
+  ],
+  "printables": [
+   "cipher-wheel",
+   "substitution-table",
+   "trick-or-treat-cards"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: a message says you won a free tablet and asks you to reply with your mailbox key. What do you do? Name two clues.",
+  "Play Packet Post, chapter Secret Messages, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 6 2 0 0. Goal: 4 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Secret Messages"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-4.2-e1",
+   "2-4.3-r1"
+  ],
+  "discuss": "Why is a keyed substitution harder than a shift? How many keys would a computer try?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Cipher Wheels twin (15 minutes) before Play",
+   "the two-method message after Play",
+   "10 minutes of the Unit 4 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "The cipher word list is screened at build time; senders on the trick cards are roles, never real names.",
+  "Vocabulary beyond the five on the learn card: steganography, shift, substitution, spoofing.",
+  "Cards 7-10 of Spot the Trick carry the also ids for privacy and public information; they are the stretch.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: A message says: You won a free tablet! Reply with your mailbox key to claim it. What do you do? Name two clues that it is a trick.\n\nBig idea: Encryption scrambles a message so only the key opens it, and more possible keys make it harder to crack.\n\nWe will talk about:\n- Why is a keyed substitution harder than a shift? How many keys would a computer try?\n- On the trick cards, what did the sender already know about you, and where could they have found it?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Secret Messages",
+   "minutes": 18,
+   "gameSlug": "packet-post",
+   "options": "chapter=ciphers&band=2&lock=1",
+   "questCode": "6 2 0 0",
+   "standards": [
+    "2-NI-06"
+   ],
+   "body": "Goal: 4 levels. Stretch: finish the chapter. Then the game takes you to four more trick cards.\nIf the game asks for a quest code, it is 6 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about secret messages."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-NI-06"
+   ],
+   "rubric": "exit",
+   "body": "Compare two methods from today. Which is harder to crack, and why?\nFrame: ___ is harder to crack than ___ because ___."
+  }
+ ]
+}

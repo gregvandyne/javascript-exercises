@@ -1,0 +1,318 @@
+{
+ "id": "csq-2-3.3",
+ "key": "csq-2-3.3",
+ "version": 1,
+ "unit": 3,
+ "order": 10,
+ "n": "3.3",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 3.3 · Our class survey (Collect, chart, claim)",
+ "name": "Our class survey (Collect, chart, claim)",
+ "short": "Surveys",
+ "summary": "Students design a three-question survey with one deliberately leading question to fix, collect answers from the class, clean and chart them in Data Detective's My Data, and compare with another class by percent. Every pair's chart is pooled on the projector so the class sees what a bigger sample says. One device per student, surveys run in pairs.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-DA-08",
+   "2-IC-22"
+  ],
+  "also": [
+   "2-DA-09"
+  ],
+  "buildsToward": []
+ },
+ "iCan": [
+  "design a short survey and fix a leading question",
+  "collect, clean and chart answers from many people",
+  "report a finding and compare groups of different sizes by percent"
+ ],
+ "questCode": "7 2 2 0",
+ "params": "chapter=my-data&band=2&mode=tally&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "blank survey slips (one per student per question)",
+  "tally sheets (one per pair)",
+  "login cards"
+ ],
+ "doNow": "Vote on the board with one tally mark: dog, cat, other or none. Then write one survey question that pushes people toward an answer.",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: My Data with the Do Now tallies, then the other class by percent"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: My Data"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u3-2",
+  "items": [
+   "2-3.2-e1",
+   "2-3.2-e2",
+   "2-3.3-r1",
+   "2-3.3-e1",
+   "2-3.2-r1"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 3.2, one vocabulary item, one preview of today, one more from 3.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "my-data",
+   "level": 1
+  },
+  "do": [
+   "Open Data Detective at My Data on the projector (Open game at this chapter). Count the Do Now tallies with the class, enter them with the steppers and choose a chart.",
+   "Load the provided set from another class and compare the two charts by percent. Read two Do Now questions out loud and ask the class which one is leading."
+  ],
+  "say": [
+   "Real data comes from real people. Collecting it well is half the job.",
+   "A question that pushes people toward one answer is a leading question. It builds bias into the data before anyone counts."
+  ],
+  "ask": [
+   "Our class and the other class are different sizes. Can we compare the dog counts directly? What should we compare instead?"
+  ],
+  "afterAsk": "Take answers until someone says percent. Work one out on the board: count divided by the number of respondents, times 100.",
+  "bigIdea": "A fair finding needs fair questions, clean data and a big enough sample.",
+  "vocab": [
+   "survey",
+   "sample",
+   "bias",
+   "respondent",
+   "percent"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "data-detective",
+  "chapter": "my-data",
+  "chapterTitle": "My Data",
+  "mode": "tally",
+  "levels": 3,
+  "goal": "one survey question charted, cleaned and compared by percent",
+  "stretch": "the chapter: all three questions, then a finding that uses two charts",
+  "solo": "pairs write three questions, fix the leading one and run the survey together on slips (or as one live round); each partner enters the tallies on their own device so both charts can be pooled",
+  "lookFors": [
+   "a leading question kept because it gives the answer the pair wanted",
+   "missing or doubled slips not cleaned before charting",
+   "comparing counts with the other class instead of percents"
+  ],
+  "misconception": "More answers do not fix a biased question: a leading question makes the data unfair before anyone counts, so fix the question first.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Which question was leading, and how did you fix it?",
+  "We pooled every pair's chart. Did the pooled chart say the same thing as yours? Why is a bigger sample fairer?"
+ ],
+ "showMe": "Every pair's chart for the shared question goes up on the projector, one after another, then the class adds them into one pooled chart.",
+ "exit": {
+  "setId": "csq-u3-2",
+  "items": [
+   "2-3.3-e1",
+   "2-3.3-e2",
+   "2-3.3-e3"
+  ],
+  "sentencePrompt": "What did your survey find, and what makes the finding fair or not fair?",
+  "frame": "Our survey found ___; it is fair because ___.",
+  "rubric": [
+   {
+    "line": "Survey data: collecting, cleaning and comparing",
+    "ids": [
+     "2-DA-08"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Reports a finding from the survey",
+     "Reports a finding and names a cleaning step or a percent comparison",
+     "Also says how a missing or bad answer could change the result"
+    ]
+   },
+   {
+    "line": "Many contributors: fair questions and a pooled sample",
+    "ids": [
+     "2-IC-22"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names the leading question or the pooled chart",
+     "Says how the pair fixed the leading question or why pooling helps",
+     "Explains both: a fair question and a bigger sample make the finding fairer"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "two provided questions and one leading question to fix",
+   "a printed percent strip: count, total, percent",
+   "a tally sheet with the categories filled in"
+  ],
+  "stretch": [
+   "a finding that uses two charts",
+   "run one question as a live round and compare it with the paper answers"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Tally and Grid",
+  "minutes": 20,
+  "materials": [
+   "survey slips",
+   "tally sheets",
+   "grid paper",
+   "calculators for percent"
+  ],
+  "steps": [
+   "Pairs write three questions; the teacher checks that one leading question was spotted and fixed.",
+   "They survey the class on slips and tally the answers.",
+   "They clean the slips: blanks, doubles and impossible answers.",
+   "They chart one question on grid paper and work out each percent.",
+   "Share: tape every chart for the shared question on the board and add them into one pooled chart."
+  ],
+  "printables": [
+   "survey-slips",
+   "tally-sheet",
+   "grid-paper"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: vote with one tally mark for a favorite pet, then write one survey question that pushes people toward an answer",
+  "Play Data Detective, chapter My Data, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 7 2 2 0. Goal: one survey question charted, cleaned and compared by percent. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: My Data"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-3.2-e1",
+   "2-3.3-r1"
+  ],
+  "discuss": "Which question was leading, and how did you fix it?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "one question as a live round before Play",
+   "the two-chart finding after Play",
+   "10 minutes of the Unit 3 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "A no-right-answer poll does not exist in the live sets yet; a live round from the Would You Rather topics can stand in for one question.",
+  "No names on the slips: the survey counts answers, not people.",
+  "Vocabulary beyond the five on the learn card: tally, category, crowdsourcing, leading question.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Vote on the board with one tally mark: dog, cat, other or none. Then write one survey question that pushes people toward an answer.\n\nBig idea: A fair finding needs fair questions, clean data and a big enough sample.\n\nWe will talk about:\n- Which question was leading, and how did you fix it?\n- We pooled every pair's chart. Did the pooled chart say the same thing as yours? Why is a bigger sample fairer?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: My Data",
+   "minutes": 18,
+   "gameSlug": "data-detective",
+   "options": "chapter=my-data&band=2&mode=tally&lock=1",
+   "questCode": "7 2 2 0",
+   "standards": [
+    "2-DA-08",
+    "2-IC-22"
+   ],
+   "body": "Goal: one survey question charted, cleaned and compared by percent. Stretch: chart all three questions, then write a finding that uses two charts.\nIf the game asks for a quest code, it is 7 2 2 0.\nPairs write the survey and collect the answers together. Fix the leading question before you hand it out. Each of you enters the numbers on your own device."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about surveys, bias and pooling."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-DA-08",
+    "2-IC-22"
+   ],
+   "rubric": "exit",
+   "body": "What did your survey find, and what makes the finding fair or not fair?\nFrame: Our survey found ___; it is fair because ___."
+  }
+ ]
+}
