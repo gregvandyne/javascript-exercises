@@ -30,20 +30,22 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-board{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px;min-height:0}
 .im-panel{display:flex;flex-direction:column;gap:8px;padding:12px;overflow:auto;min-height:0;scrollbar-width:thin}
 @media (orientation:landscape) and (min-width:640px){.im-body{grid-template-rows:none;grid-template-columns:minmax(0,9fr) minmax(0,11fr)}#im.im-lefty .im-body{grid-template-columns:minmax(0,11fr) minmax(0,9fr)}#im.im-lefty .im-panel{order:-1}}
-@media (max-height:480px){.im-panel{padding:8px 10px;gap:6px}.im-tray{gap:6px}.im-tile{min-height:48px;padding:5px 10px 5px 12px;font-size:.95em}.im-ticket{padding:8px 12px}.im-ticket p{font-size:.85em}.im-board{padding:6px}
-  .im-play.im-screen{top:calc(62px + env(safe-area-inset-top))}.im-play .im-top{position:fixed;top:calc(8px + env(safe-area-inset-top));inset-inline-start:calc(318px + env(safe-area-inset-left));inset-inline-end:calc(134px + env(safe-area-inset-right));justify-content:center;flex-wrap:nowrap;z-index:13;min-height:0;overflow:hidden}.im-play .im-top .im-pill{flex:0 1 auto}.im-top .ok-btn{flex:0 0 auto}
-  .im-part{min-height:60px;font-size:.76em;padding:4px 6px}.im-part svg{width:28px;height:28px}.im-device{gap:8px 12px}}
+@media (orientation:landscape) and (min-width:640px) and (max-height:480px){.im-body{grid-template-columns:minmax(0,8fr) minmax(0,12fr)}#im.im-lefty .im-body{grid-template-columns:minmax(0,12fr) minmax(0,8fr)}}
+@media (max-height:480px){.im-screen{padding-bottom:calc(6px + env(safe-area-inset-bottom))}.im-panel{padding:6px 10px;gap:5px}.im-tray{gap:6px}.im-note{font-size:.85em}.im-tile{min-height:48px;padding:4px 8px 4px 10px;font-size:.95em;line-height:1.15}.im-tile .im-cost{font-size:.78em;padding:1px 6px}.im-ticket{padding:8px 12px}.im-ticket p{font-size:.85em}.im-board{padding:6px}
+  .im-play.im-screen{top:calc(58px + env(safe-area-inset-top))}.im-play .im-top{position:fixed;top:calc(8px + env(safe-area-inset-top));inset-inline-start:calc(318px + env(safe-area-inset-left));inset-inline-end:calc(134px + env(safe-area-inset-right));justify-content:center;flex-wrap:nowrap;z-index:13;min-height:0;overflow:hidden}.im-play .im-top .im-pill{flex:0 1 auto}.im-top .ok-btn{flex:0 0 auto}
+  .im-part{min-height:60px;font-size:.76em;padding:4px 6px}.im-part svg{width:28px;height:28px}.im-device{gap:8px 10px}}
 .im-prompt{font-weight:800;font-size:clamp(1.05em,2.6vmin,1.35em);line-height:1.25;margin:0;text-wrap:balance}
 .im-prompt:empty,.im-note:empty{display:none}
 .im-note{font-weight:600;opacity:.85;margin:0;font-size:.95em}
-/* the action row stays in view at the foot of the work panel while a long tray scrolls under it */
-.im-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-top:auto;position:sticky;bottom:0;z-index:2;background:var(--ok-card);padding-top:6px;box-shadow:12px 0 0 var(--ok-card),-12px 0 0 var(--ok-card),0 12px 0 var(--ok-card)}
+#im .im-note svg{display:inline-block;vertical-align:-5px}
+.im-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-top:auto;flex:0 0 auto}
 .im-actions:empty{display:none}
 .im-actions .ok-btn{min-height:48px}
-/* tiles: a tray of taps (cards, checks, chain pieces) */
+/* tiles: a tray of taps (cards, checks, chain pieces); the whole work panel scrolls when a tray is taller than its room */
 .im-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:8px}
 .im-tray.im-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))}
 .im-tray.im-two{grid-template-columns:1fr 1fr}
+@media (max-width:480px){.im-tray.im-list.im-checks{grid-template-columns:1fr 1fr}}
 .im-tile{position:relative;min-height:52px;padding:8px 12px 8px 14px;border-radius:16px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:700;line-height:1.2;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;text-align:start;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
 .im-tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--im-edge)}
 .im-tile.on{background:var(--im-sky-t);border-color:var(--im-sky)}
@@ -52,7 +54,9 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-tile.dim{opacity:.55}
 .im-tile .im-k{position:absolute;top:1px;inset-inline-start:7px;font-size:.68em;font-weight:700;opacity:.5}
 .im-tile .im-num{position:absolute;top:-9px;inset-inline-end:-6px;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--im-sky);border:2px solid var(--im-edge);display:grid;place-items:center;font-size:.8em;font-weight:800;box-sizing:border-box}
-.im-tile>span:not([class]){flex:1 1 auto;min-width:0}
+/* the label's wrap size is its longest word: the row wraps the badge under the label only when that word and the badge
+   cannot share the width; a word wider than the tile itself may break */
+.im-tile>span:not([class]){flex:1 1 min-content;overflow-wrap:break-word}
 .im-tile .im-cost{margin-inline-start:auto;flex:none;font-size:.85em;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--im-peach-t);border:2px solid var(--im-edge);white-space:nowrap}
 .im-tile canvas,.im-tile>svg{width:34px;height:34px;flex:none}
 .im-tile .im-mark{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--im-edge);display:grid;place-items:center;background:var(--ok-card)}
@@ -72,7 +76,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-tile[aria-pressed=true]:not(:has(.im-num))::after,.im-part[aria-pressed=true]::after{content:'';position:absolute;top:-6px;inset-inline-end:2px;width:6px;height:11px;border:solid var(--ok-text);border-width:0 3px 3px 0;transform:rotate(45deg);z-index:1}
 .im-part[aria-pressed=true]::before{top:auto;bottom:-9px}.im-part[aria-pressed=true]::after{top:auto;bottom:0}
 /* large text on a narrow screen: one tile per row, so the tray is short tiles, not tall ones */
-@media (max-width:600px){#im.im-big .im-tray,#im.im-big .im-tray.im-two,#im.im-big .im-tray.im-list,#im.im-big .im-bins{grid-template-columns:1fr}}
+@media (max-width:600px),(max-height:480px){#im.im-big .im-tray,#im.im-big .im-tray.im-two,#im.im-big .im-tray.im-list,#im.im-big .im-tray.im-list.im-checks,#im.im-big .im-bins{grid-template-columns:1fr}}
 /* left-handed: the work panel and the action row sit on the start side */
 #im.im-lefty .im-actions{justify-content:flex-start}
 /* right-to-left: the flow arrows and the delete key point the other way (the kit does not mirror icons) */
@@ -158,7 +162,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-modal{position:fixed;inset:0;z-index:21;display:flex;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));background:var(--ok-scrim);box-sizing:border-box}
 .im-modal .im-card{position:relative;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--im-edge);border-radius:28px;box-shadow:0 8px 0 var(--im-edge);padding:20px 18px 18px;width:min(520px,100%);max-height:100%;overflow:auto;scrollbar-width:thin;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;box-sizing:border-box;animation:im-pop 260ms cubic-bezier(.34,1.56,.64,1)}
 .ok-rm .im-modal .im-card{animation:none}
-.im-card>.ok-btn[data-focus]{position:sticky;bottom:0;z-index:1;box-shadow:0 0 0 8px var(--ok-card)}
+.im-card:not(:has(.im-pad))>.ok-btn[data-focus]{position:sticky;bottom:0;z-index:1;box-shadow:0 0 0 8px var(--ok-card)}
 .im-card h2{margin:0;font-size:1.5em;font-weight:800;line-height:1.1;text-wrap:balance}
 .im-card p{margin:0;font-weight:600;line-height:1.4;max-width:36ch;text-wrap:pretty}
 .im-card .im-pic{height:84px;display:flex;align-items:center;gap:12px}
@@ -1020,10 +1024,10 @@ function openCard(build, { onEscape = null, cls = '' } = {}) {
     e.stopPropagation();
   };
   document.addEventListener('keydown', keys, true);
-  const close = v => { if (!m.isConnected) return; m.remove(); document.removeEventListener('keydown', keys, true); if (S.modal === api) S.modal = null; try { if (prev && prev.focus) prev.focus({ preventScroll: true }); } catch (e) { /* gone */ } resolve(v); };
+  const close = v => { if (!m.isConnected) return; m.remove(); document.removeEventListener('keydown', keys, true); if (S.modal === api) S.modal = null; for (const k in SCREENS) SCREENS[k].inert = false; try { if (prev && prev.focus) prev.focus({ preventScroll: true }); } catch (e) { /* gone */ } resolve(v); };
   const api = { root: m, card, close, done };
   build(card, close);
-  ROOT.appendChild(m); S.modal = api;
+  ROOT.appendChild(m); S.modal = api; for (const k in SCREENS) SCREENS[k].inert = true;
   const f = card.querySelector('[data-focus]') || card.querySelector('button'); if (f) Oomba.time.real.after(0, () => f.focus({ preventScroll: true }));
   return api;
 }
@@ -1338,7 +1342,7 @@ const KINDS = {
     stack.append(tk, react, clock); board.appendChild(stack);
     const showClock = () => { clock.innerHTML = pic('clock'); clock.appendChild(document.createTextNode(tr('Time used: {n} min', { n: cost }) + ' · ' + tr('Star at {n} min or less', { n: l.par }))); };
     const reaction = (text, ok) => { react.innerHTML = icon(ok ? 'check' : 'info', { size: 24 }); react.appendChild(document.createTextNode(text)); react.classList.remove('im-pop'); void react.offsetWidth; react.classList.add('im-pop'); announce(text); if (ok) say(text); };
-    const order = maybeShuffle(l, l.checks.filter(c => !c.help)), helper = l.checks.find(c => c.help); ui.tray.classList.add('im-list');
+    const order = maybeShuffle(l, l.checks.filter(c => !c.help)), helper = l.checks.find(c => c.help); ui.tray.classList.add('im-list', 'im-checks');
     order.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); b.addEventListener('click', () => tap(c.id)); btns[c.id] = b; ui.tray.appendChild(b); });
     if (helper) { const b = btn(tr(helper.label) + ' · ' + tr('{n} min', { n: helper.cost }), { kind: 'quiet', icon: 'user', onPress: () => tap(helper.id) }); b.dataset.id = helper.id; btns[helper.id] = b; ui.primary = b; ui.refresh(); }
     const tap = id => {
@@ -1360,7 +1364,7 @@ const KINDS = {
     const ui = shell(panel, ''), A = { flow: [], swaps: [] }, byId = {}; l.checks.forEach(c => { byId[c.id] = c; }); (l.swaps || []).forEach(s => { byId[s.id] = s; });
     let phase = 'build', cost = 0, left = new Set(l.faults), tried = new Set(), ran = [];
     const stack = el('div', 'im-stack'), tk = el('div', 'im-ticket', pic(l.device)); const tb = el('div'); tb.appendChild(el('h3', '', esc(tr(l.ticket.title)))); tb.appendChild(el('p', '', esc(tr(l.ticket.text)))); tk.appendChild(tb);
-    const chain = el('div', 'im-flowprev'), react = el('div', 'im-react'), clock = el('div', 'im-clock'); ui.tray.classList.add('im-list');
+    const chain = el('div', 'im-flowprev'), react = el('div', 'im-react'), clock = el('div', 'im-clock'); ui.tray.classList.add('im-list', 'im-checks');
     stack.append(tk, react, chain, clock); board.appendChild(stack);
     const showClock = () => { clock.innerHTML = pic('clock'); clock.appendChild(document.createTextNode(tr('Time used: {n} min', { n: cost }) + ' · ' + tr('Star at {n} min or less', { n: l.par }))); };
     const reaction = (text, ok) => { react.innerHTML = icon(ok ? 'check' : 'info', { size: 24 }); react.appendChild(document.createTextNode(text)); announce(text); if (ok) say(text); };
@@ -1797,7 +1801,8 @@ document.addEventListener('keydown', e => {
     const bs = [...grp.querySelectorAll('button')].filter(b => !b.disabled && b.offsetParent !== null), i = bs.indexOf(a); if (i < 0 || bs.length < 2) return;
     const rtl = ROOT.dir === 'rtl', side = e.key === 'ArrowRight' ? (rtl ? -1 : 1) : e.key === 'ArrowLeft' ? (rtl ? 1 : -1) : 0;
     const top0 = bs[0].getBoundingClientRect().top, cols = Math.max(1, bs.filter(b => Math.abs(b.getBoundingClientRect().top - top0) < 4).length);
-    const j = side ? i + side : i + (e.key === 'ArrowDown' ? cols : -cols);
+    let j = side ? i + side : i + (e.key === 'ArrowDown' ? cols : -cols);
+    if (!side && !bs[j] && e.key === 'ArrowDown' && Math.floor(i / cols) < Math.floor((bs.length - 1) / cols)) j = bs.length - 1;   // a short last row: its last tile
     if (bs[j]) { e.preventDefault(); bs[j].focus({ preventScroll: false }); }
   }
 });

@@ -263,6 +263,22 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       await T(frame, 'answer', solOf('fixit-2-3'));
       s = await T(frame, 'state'); assert.equal(s.done, true);
       const v2 = await T(frame, 'verdict'); assert.ok(v2.ok && v2.good && v2.path.some(p => p.kind === 'swap' && p.hit), JSON.stringify(v2));
+      // keyboard: the arrows walk a tray (mirrored in Arabic) and Enter picks; a chosen tile carries a check badge as
+      // well as its color; the left-handed setting moves the action row to the start side
+      for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
+      s = await T(frame, 'start', { chapter: 'hw-sw', band: '1b', level: 2, seed: 4 }); assert.equal(s.kind, 'order');
+      const focused = () => frame.evaluate(() => [...document.querySelectorAll('.im-tray button')].indexOf(document.activeElement));
+      await frame.focus('.im-tray button'); assert.equal(await focused(), 0);
+      await frame.press('.im-tray button', lang === 'ar' ? 'ArrowLeft' : 'ArrowRight'); assert.equal(await focused(), 1, 'the forward arrow moves to the next tile');
+      await frame.press('.im-tray button:nth-child(2)', 'ArrowDown'); assert.ok(await focused() > 1, 'down moves a row');
+      await frame.press('.im-tray button:focus', 'Enter');
+      assert.deepEqual(await frame.evaluate(() => { const b = document.querySelector('.im-tray button[aria-pressed="true"]'); return [!!b, b && b.querySelector('.im-num') !== null, b && getComputedStyle(b, '::before').content]; }), [true, true, 'none'], 'Enter picks the step; a chosen step shows its number badge (and no second badge)');
+      s = await T(frame, 'start', { chapter: 'gadget', band: '2', level: 1, seed: 4 }); await T(frame, 'tap', solOf('gadget-1').picked[0]);
+      assert.equal(await frame.evaluate(() => { const b = document.querySelector('.im-tray button[aria-pressed="true"]'); return b && getComputedStyle(b, '::before').content; }), '""', 'a chosen part shows a check badge, not only a color');
+      await frame.evaluate(() => { Oomba.settings.leftHanded = true; });
+      assert.equal(await frame.evaluate(() => document.getElementById('im').classList.contains('im-lefty') && getComputedStyle(document.querySelector('.im-actions')).justifyContent), 'flex-start', 'left-handed: the action row sits at the start side');
+      await fit('the parts bin, left-handed'); await shot('lefty');
+      await frame.evaluate(() => { Oomba.settings.leftHanded = false; });
       // one level of every other kind: the switch board, the pixel grid, the RGB panel, the parts bin, the Design Lab
       const played = size.width > 1000 ? [['bits', '1b', 1, 'bits-1b-1'], ['bits', '1b', 2, 'bits-1b-2'], ['bits', '1b', 3, 'bits-1b-3'], ['bits', '1b', 5, 'bits-1b-5'], ['bits', '2', 2, 'bits-2-2'], ['bits', '2', 4, 'bits-2-4'], ['bits', '2', 6, 'bits-2-6'], ['gadget', '2', 1, 'gadget-1'], ['gadget', '2', 4, 'gadget-4'], ['design-lab', '1b', 1, 'design-1'], ['design-lab', '2', 4, 'design-2-4']]
         : [['bits', '1b', 4, 'bits-1b-4'], ['bits', '2', 3, 'bits-2-3'], ['bits', '2', 5, 'bits-2-5'], ['bits', '2', 7, 'bits-2-7'], ['gadget', '2', 2, 'gadget-2'], ['design-lab', '1b', 3, 'design-1b-3'], ['design-lab', '2', 5, 'design-2-5']];
