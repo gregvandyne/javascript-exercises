@@ -81,9 +81,34 @@ export function hostable(host, game, audience, { classId = null } = {}) {
 /** 'accounts' only in a class room hosted by a teacher of that class; everywhere else 'nicknames' (everyone). */
 export const nameMode = (host, audience, classId) => (audience === 'class' && classId && S.teaches(host, classId) ? 'accounts' : 'nicknames');
 
-/** The most players this room may have. */
-export function maxPlayersFor(host, audience, asked) {
-  let max = Math.min(config.liveMaxPlayers, Number.isInteger(asked) && asked >= 2 ? asked : config.liveMaxPlayers);
+/**
+ * How many players each live game is made for (docs/live-capacity.md, measured with scripts/live-load.js at 10, 20
+ * and 30 players). max: the most a room of this game may have (LIVE_MAX_PLAYERS still caps it); best: the range it
+ * plays best at, shown on the game's card; teamsAbove: above this many, the room suggests teams. Keyed by built-in
+ * mode or by official game slug. Any other live game (a Builder game): BUILDER_DEFAULT_MAX, or what it declares with
+ * Oomba.live.ready({ maxPlayers: n }).
+ */
+export const CAPACITY = {
+  'quest-race': { max: 40, best: [2, 40] },
+  battle: { max: 60, best: [2, 60] },
+  board: { max: 40, best: [2, 40], teamsAbove: 16 },
+  'hero-of-sunvale': { max: 30, best: [2, 30] },
+};
+export const BUILDER_DEFAULT_MAX = 30;
+/** The capacity of a game: by mode (built-in), by slug (official), else declared by the game (2-60), else 30. */
+export function capacityFor({ mode = null, slug = null, declared = null } = {}) {
+  const c = (mode && CAPACITY[mode]) || (slug && CAPACITY[slug]);
+  const top = Math.min(config.liveMaxPlayers, 60);
+  if (c) return { ...c, max: Math.min(c.max, config.liveMaxPlayers), best: [c.best[0], Math.min(c.best[1], config.liveMaxPlayers)] };
+  const d = Number.isInteger(declared) && declared >= 2 ? Math.min(declared, top) : Math.min(BUILDER_DEFAULT_MAX, top);
+  return { max: d, best: [2, d], declared: Number.isInteger(declared) && declared >= 2 };
+}
+
+/** The most players this room may have: what the host asked (if any), never above the game's capacity, the site's
+ *  LIVE_MAX_PLAYERS, or (a grown-up's open room) GROWNUP_OPEN_MAX. cap: capacityFor(...) of the game. */
+export function maxPlayersFor(host, audience, asked, cap = null) {
+  const ceiling = Math.min(config.liveMaxPlayers, cap && cap.max ? cap.max : config.liveMaxPlayers);
+  let max = Math.min(ceiling, Number.isInteger(asked) && asked >= 2 ? asked : ceiling);
   if (audience === 'open' && isGrownup(host) && !S.isStaff(host)) max = Math.min(max, GROWNUP_OPEN_MAX);
   return max;
 }

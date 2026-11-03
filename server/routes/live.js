@@ -107,6 +107,8 @@ router.post('/api/live/join', on, async (req, res) => {
   const r = LS.join(s, req.user, { asGuest: !!(req.body && req.body.asGuest), useMine: !!(req.body && req.body.useMine), lang: req.locale });
   if (!r.ok) {
     const status = { signIn: 401, notMember: 403, removed: 403, takenDown: 404, locked: 409, full: 409, ended: 410 }[r.code] || 400;
+    // A full room says how many it holds ("This game is full (30 players).").
+    if (r.code === 'full') return reply(409, { error: req.t('live.join.full', { max: s.settings.maxPlayers }), code: 'full', max: s.settings.maxPlayers });
     return err(status, r.code, r.code === 'signIn' ? { login: '/login?next=%2Fjoin' } : {});
   }
   return reply(200, { sid: s.id, tok: r.token, ...seatInfo(s, r.seat), audience: s.audience, nameMode: s.nameMode, title: s.title, again: r.again, canReroll: !r.seat.everConnected && s.nameMode !== 'accounts' && !r.seat.ownAvatar, play: `/live/play/${s.id}` });
@@ -140,7 +142,7 @@ router.post('/api/live/report', on, (req, res) => {
 const officialReady = () => games.listVisible(null, { official: true, limit: 100 }).filter(g => !Object.values(A.MODES).includes(g.slug));
 router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   const t = req.t, u = req.user;
-  const ready = list => list.filter(g => g.published_version_id && C.gameReady(g)).map(g => { const c = C.liveCheck(g.published_version_id); return { id: g.id, icon: g.icon, title: g.title, quiz: c.quiz, teams: !!c.teams }; });
+  const ready = list => list.filter(g => g.published_version_id && C.gameReady(g)).map(g => { const c = C.liveCheck(g.published_version_id); return { id: g.id, icon: g.icon, title: g.title, quiz: c.quiz, teams: !!c.teams, cap: A.capacityFor({ slug: g.slug, declared: c.maxPlayers }) }; });
   const mine = games.myGames(u.id, 200).filter(g => g.status === 'published' && !g.hidden_reason);
   const teaching = S.classesOf(u.id, 'teacher');
   const sharedSeen = new Set(mine.map(g => g.id));
@@ -153,7 +155,7 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
     { id: 'quest-race', icon: '🏝️', title: t('live.mode.questRace'), text: t('live.mode.questRaceText') },
     { id: 'battle', icon: '⚡', title: t('live.mode.battle'), text: t('live.mode.battleText') },
     { id: 'board', icon: '🌟', title: t('live.mode.board'), text: t('live.mode.boardText') },
-  ];
+  ].map(m => ({ ...m, cap: A.capacityFor({ mode: m.id }) }));
   const starters = STARTERS.map(id => ({ id, title: t(`live.starter.title.${id.replace('-', '')}`) }));
   const q = req.query;
   const pre = {

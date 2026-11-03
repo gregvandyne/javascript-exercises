@@ -230,12 +230,15 @@ reports results (`score(n)`, `item(i, ok)` or `quiz.answer(choice)`); and never 
 `postMessage`. Everything must also work alone (`Oomba.live.active` is false, the role is `'solo'`, `start` fires after
 `ready()`).
 
-- `Oomba.live.ready({presence, lobby, quiz, hostView, maxScorePerSec, view, words})`: once, when the game can play.
+- `Oomba.live.ready({presence, lobby, quiz, hostView, maxScorePerSec, view, words, maxPlayers})`: once, when the game can play.
   `presence: {bounds (metres from the centre), maxSpeed (m/s)}` for games where players walk around a shared world;
   `lobby: true` when the game draws its own waiting room (otherwise the platform's lobby shows first); `quiz: true` when
   the host's question set drives the game; `hostView: true` when the game draws a view for the projector;
   `words: ['kind', 'word', ...]` (up to 64, written out in the code) lists every event kind and word the game's `send()`
-  uses: a player's events carry only these.
+  uses: a player's events carry only these. `maxPlayers: n` (a number written in the code, 2-60) says how many players
+  the game is made for; a room of it never seats more (without it: 30). Design for that many: a whole class is 20-30, so
+  the host's screen must stay readable with everyone in it (top-N leaderboards, only the nearest name tags, players
+  spread out, never stacked), and set a lower number only when the game truly can't hold more (a small arena, turns).
 - `Oomba.live.active`, `.role` (`'player' | 'host' | 'solo'`), `.phase` (`lobby loading countdown playing paused between
   ended`), `.round`, `.view` (`'3d' | '2d'`: draw 2D when it says so), `.me` (`{seat, name, avatar, team, score}`),
   `.players()` (each `{seat, name, avatar, team, score, connected, ready, late, me}`; names are already in the player's

@@ -38,6 +38,16 @@ if (form) {
     const sc = form.querySelector('.lv-team-scoring'); if (sc) sc.hidden = !teams;
     const names = form.querySelector('select[name="names"]');
     if (names) { const o = names.querySelector('option[value="names"]'); if (o) { o.hidden = o.disabled = aud !== 'class'; if (aud !== 'class' && names.value === 'names') names.value = 'nicknames'; } }
+    // "Most players": never more than the picked game is made for (its card's data-max); the server clamps it too.
+    const mx = $('lv-max'), hint = $('lv-max-hint');
+    if (mx) {
+      const lab = card && card.closest('.lv-pick'), ceiling = +mx.dataset.ceiling || 60;
+      const top = Math.min(ceiling, lab && +lab.dataset.max ? +lab.dataset.max : ceiling);
+      const was = +mx.max;
+      mx.max = String(top);
+      if (!+mx.value || +mx.value > top || +mx.value === was) mx.value = String(top);
+      if (hint && hint.dataset.tpl) hint.textContent = hint.dataset.tpl.replace('{max}', String(top));
+    }
   };
   const reset = $('lv-prefs-reset');
   if (reset) reset.addEventListener('click', async () => {

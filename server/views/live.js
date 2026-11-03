@@ -447,7 +447,10 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   // room's rules again when it opens).
   const values = { secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed', board: 'all', late: true, names: classes.length ? 'names' : 'nicknames', sound: true, emotes: true, ...((prefs && prefs.settings) || {}) };
   const radio = (name, value, checked) => raw(`<input type="radio" name="${name}" value="${value}"${checked ? ' checked' : ''}>`);
-  const card = (value, icon, title, text, checked, quiz = false, teams = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
+  // Each game card says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md); data-max
+  // lets the page clamp "Most players" to the picked game.
+  const players = cap => (cap ? html`<span class="small lv-pick-players">👥 ${t('live.landing.best', { min: cap.best[0], max: cap.best[1] })}${cap.teamsAbove && teamsOn ? html` · ${t('live.landing.teamsAbove', { n: cap.teamsAbove })}` : ''}</span>` : '');
+  const card = (value, icon, title, text, checked, quiz = false, teams = false, cap = null) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}${cap ? raw(` data-max="${cap.max}"`) : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${players(cap)}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
   const anyPicked = !!pre.pick;
   // Questions: what the host chose last time (prefs.bank), else the question bank.
   const lastBank = (prefs && prefs.bank) || {};
@@ -469,9 +472,9 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   <p class="muted">${t('live.landing.intro', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>
   <form class="stack" id="lv-new" data-api="/api/live/sessions" novalidate>
     <fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
-      ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true))}
+      ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true, m.cap))}
     </div></fieldset>
-    ${groups.filter(g => g.games.length || !modes.length).map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
+    ${groups.filter(g => g.games.length || !modes.length).map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams, x.cap))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
     <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>
       <div class="field"><label for="lv-set">${t('live.landing.questionsLabel')}</label>
         <select id="lv-set" name="set">
@@ -496,7 +499,7 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
     <fieldset class="lv-group"><legend>${t('live.landing.who')}</legend>
       ${audiences.map(a => html`<label class="lv-radio">${radio('audience', a, a === audDefault)} ${t(`live.landing.audience.${a}`)}</label>`)}
       ${classes.length ? html`<div class="field"><label for="lv-class">${t('live.landing.classPick')}</label><select id="lv-class" name="classId">${classes.map(c => html`<option value="${c.id}"${pre.classId === c.id ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>` : ''}
-      <div class="field"><label for="lv-max">${t('live.landing.maxPlayers')}</label><input id="lv-max" name="maxPlayers" type="number" inputmode="numeric" min="2" max="${maxPlayers}" value="${maxPlayers}"></div>
+      <div class="field"><label for="lv-max">${t('live.landing.maxPlayers')}</label><input id="lv-max" name="maxPlayers" type="number" inputmode="numeric" min="2" max="${maxPlayers}" value="${maxPlayers}" data-ceiling="${maxPlayers}" aria-describedby="lv-max-hint"><p class="small muted" id="lv-max-hint" data-tpl="${t('live.landing.maxHint', { max: '{max}' })}"></p></div>
       <p class="small muted">${t('live.landing.openHint')}</p>
     </fieldset>
     ${teamsOn ? html`<div class="lv-group">${teamsRow(t, { n: prefs && prefs.teams && prefs.teams.on ? prefs.teams.n : 0, scoring: prefs && prefs.teams ? prefs.teams.scoring : 'avg' })}</div>` : ''}
