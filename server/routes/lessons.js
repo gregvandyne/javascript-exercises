@@ -322,8 +322,11 @@ router.post('/api/lessons/:id', requireUser, (req, res) => {
   if (title !== undefined && !String(title).trim()) return err(req, res, 'lessonTitle', 400, 'title');
   send(req, res, L.updateLesson(req.user, req.params.id, { title, summary, subject, grade, objectives, shared: shared !== undefined ? bool(shared) : undefined }));
 });
-const stepInput = x => ({ kind: x.kind, title: x.title, body: x.body, minutes: x.minutes, gameId: x.gameId });
-const stepErr = (req, res, r) => (r.code === 'buildPrompt' || r.code === 'stepText' || r.code === 'questionText' ? err(req, res, r.code, 400, 'body') : r.code === 'pickGame' ? err(req, res, r.code, 400, 'gameId') : send(req, res, r));
+// options / standards / template / rubric: CS Quest fields (docs/cs-quest.md), set by the catalogue materialiser and APIs, not the editor form.
+const stepInput = x => ({ kind: x.kind, title: x.title, body: x.body, minutes: x.minutes, gameId: x.gameId, options: x.options, standards: x.standards, template: x.template, rubric: x.rubric });
+const CS_CODES = ['stepOptions', 'stepStandards', 'stepTemplate', 'stepRubric'];
+const stepErr = (req, res, r) => (r.code === 'buildPrompt' || r.code === 'stepText' || r.code === 'questionText' ? err(req, res, r.code, 400, 'body') : r.code === 'pickGame' ? err(req, res, r.code, 400, 'gameId')
+  : CS_CODES.includes(r.code) ? res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code }) : send(req, res, r));
 router.post('/api/lessons/:id/steps', requireUser, (req, res) => { const r = L.addStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r); });
 router.post('/api/lesson-steps/:id', requireUser, (req, res) => { const r = L.updateStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r); });
 router.post('/api/lesson-steps/:id/up', requireUser, (req, res) => send(req, res, L.reorderStep(req.user, req.params.id, -1)));

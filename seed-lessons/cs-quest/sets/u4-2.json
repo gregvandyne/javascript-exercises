@@ -1,0 +1,242 @@
+{
+ "id": "csq-u4-2",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 4,
+ "band": "2",
+ "title": "CSQ Unit 4 · Packet Post (6-8)",
+ "modes": [
+  "battle",
+  "quest-race",
+  "board"
+ ],
+ "cstaTags": [
+  "2-NI-04",
+  "2-NI-05",
+  "2-IC-23",
+  "2-NI-06"
+ ],
+ "items": [
+  {
+   "id": "2-u4-o1",
+   "lesson": "4.1",
+   "use": "opener",
+   "cat": "2-NI-04",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Rules that computers agree on for sending data are a…",
+   "choices": [
+    "protocol",
+    "password",
+    "packet",
+    "processor"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-4.1-r1",
+   "lesson": "4.1",
+   "use": "review",
+   "cat": "2-NI-04",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A number on each packet that says where it belongs is a…",
+   "choices": [
+    "a sequence number",
+    "a checksum",
+    "a passphrase",
+    "a router name"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-4.1-e1",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "2-NI-04",
+   "topic": "Packets",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Packet 3 never arrives. What does the protocol do?",
+   "choices": [
+    "gives up on the message",
+    "guesses what it said",
+    "sends the whole message to everyone",
+    "the receiver asks for packet 3 again"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-4.1-e2",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "2-NI-04",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A checksum helps to…",
+   "choices": [
+    "detect a damaged packet",
+    "encrypt the message",
+    "find the fastest road",
+    "name the router"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-4.1-e3",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "2-NI-04",
+   "topic": "Packets",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why do all post offices (routers) need the same rules?",
+   "choices": [
+    "so they all look the same inside",
+    "so packets from anywhere can be passed on and rebuilt",
+    "so packets travel more slowly and safely",
+    "so only one road is ever used"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-4.2-r1",
+   "lesson": "4.2",
+   "use": "review",
+   "cat": "2-NI-05",
+   "topic": "Passphrases",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A lock on the server room door is an example of…",
+   "choices": [
+    "digital security",
+    "encryption",
+    "a protocol",
+    "physical security"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-4.2-e1",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "2-NI-05",
+   "topic": "Passphrases",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which is a physical security measure?",
+   "choices": [
+    "a firewall",
+    "locking the room with the backup drive",
+    "HTTPS",
+    "a strong network passphrase"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-4.2-e2",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "2-NI-05",
+   "topic": "Passphrases",
+   "kind": "apply",
+   "secs": 20,
+   "q": "The padlock (HTTPS) on a shop page means…",
+   "choices": [
+    "your details travel in a sealed envelope",
+    "the shop sells things cheaply",
+    "the page loads faster than usual",
+    "the shop is closed right now"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-4.2-e3",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "2-IC-23",
+   "topic": "Passphrases",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Posting your weekly schedule publicly: friends can find you, but the risk is…",
+   "choices": [
+    "the internet gets slower",
+    "it costs money",
+    "nobody sees it",
+    "strangers know where you will be"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-4.3-r1",
+   "lesson": "4.3",
+   "use": "review",
+   "cat": "2-NI-06",
+   "topic": "Secret messages",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Scrambling a message so only someone with the key can read it is…",
+   "choices": [
+    "compression",
+    "routing",
+    "sorting",
+    "encryption"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-4.3-e1",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "2-NI-06",
+   "topic": "Secret messages",
+   "kind": "apply",
+   "secs": 20,
+   "q": "A shift of 3 turns A into D. What does HELLO become?",
+   "choices": [
+    "KHOOR",
+    "EBIIL",
+    "HELLO",
+    "OLLEH"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-4.3-e2",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "2-NI-06",
+   "topic": "Secret messages",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which method hides a message instead of scrambling it?",
+   "choices": [
+    "a Caesar shift of the letters",
+    "steganography (in a picture's pixels)",
+    "a keyed substitution cipher",
+    "a checksum on each packet"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-4.3-e3",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "2-NI-06",
+   "topic": "Secret messages",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why is a keyed substitution harder to crack than a shift?",
+   "choices": [
+    "the letters are bigger on the page",
+    "it uses numbers instead of letters",
+    "there are far more possible keys to try",
+    "it makes the message much shorter"
+   ],
+   "answer": 2
+  }
+ ]
+}

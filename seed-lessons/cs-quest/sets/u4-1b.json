@@ -1,0 +1,240 @@
+{
+ "id": "csq-u4-1b",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 4,
+ "band": "1B",
+ "title": "CSQ Unit 4 · Packet Post (3-5)",
+ "modes": [
+  "quest-race",
+  "battle",
+  "board"
+ ],
+ "cstaTags": [
+  "1B-NI-04",
+  "1B-NI-05"
+ ],
+ "items": [
+  {
+   "id": "1b-u4-o1",
+   "lesson": "4.1",
+   "use": "opener",
+   "cat": "1B-NI-04",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A small piece of a message sent over a network is a…",
+   "choices": [
+    "pixel",
+    "password",
+    "program",
+    "packet"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-4.1-r1",
+   "lesson": "4.1",
+   "use": "review",
+   "cat": "1B-NI-04",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A machine that passes packets along the way is a…",
+   "choices": [
+    "router",
+    "printer",
+    "speaker",
+    "battery"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-4.1-e1",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "1B-NI-04",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A photo is sent over the internet. Which is true?",
+   "choices": [
+    "it travels in one big piece from start to end",
+    "it goes through one single wire all the way",
+    "it is drawn again by hand at the other end",
+    "it is cut into packets that may take different roads"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-4.1-e2",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "1B-NI-04",
+   "topic": "Packets",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Packets arrive in the order 3, 1, 2. What does the receiving device do?",
+   "choices": [
+    "throws all three packets away",
+    "sends them straight back",
+    "uses the numbers to put them back in order",
+    "prints them in the order they came"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-4.1-e3",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "1B-NI-04",
+   "topic": "Packets",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "A road in the network closes while a message is being sent. What happens?",
+   "choices": [
+    "the message is lost for ever",
+    "the packets take another road",
+    "the internet stops",
+    "the picture changes color"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-4.2-r1",
+   "lesson": "4.2",
+   "use": "review",
+   "cat": "1B-NI-05",
+   "topic": "Passphrases",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Information that only you and your family should know is…",
+   "choices": [
+    "public",
+    "a packet",
+    "a router",
+    "private"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-4.2-e1",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "1B-NI-05",
+   "topic": "Passphrases",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which passphrase is the strongest?",
+   "choices": [
+    "password1",
+    "your pet's name",
+    "your name and your birthday",
+    "purple-river-bicycle-moon"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-4.2-e2",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "1B-NI-05",
+   "topic": "Passphrases",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Who may you tell your passphrase?",
+   "choices": [
+    "a parent or another trusted adult only",
+    "your best friend, if they promise",
+    "anyone who asks nicely enough",
+    "a prize team that messages you online"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-4.2-e3",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "1B-NI-05",
+   "topic": "Passphrases",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why keep a backup copy of your photos somewhere safe?",
+   "choices": [
+    "so they load faster on the tablet",
+    "if the tablet breaks you still have them",
+    "because the law says you must",
+    "so your friends can see them all"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-4.3-r1",
+   "lesson": "4.3",
+   "use": "review",
+   "cat": "1B-NI-05",
+   "topic": "Secret messages",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A message that tries to trick you into giving away private information is…",
+   "choices": [
+    "a backup copy of a message",
+    "a packet on its way to you",
+    "a trick message (phishing)",
+    "a loop in a program"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-4.3-e1",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "1B-NI-05",
+   "topic": "Secret messages",
+   "kind": "apply",
+   "secs": 20,
+   "q": "\"You won a tablet! Reply with your password to claim it.\" What do you do?",
+   "choices": [
+    "do not reply, and tell a trusted adult",
+    "reply with the password quickly",
+    "send it to a friend",
+    "reply with your address"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-4.3-e2",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "1B-NI-05",
+   "topic": "Secret messages",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Which is a sign of a trick message?",
+   "choices": [
+    "it comes from your class page",
+    "it has no pictures",
+    "it says hurry and asks for your password",
+    "it is short"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-4.3-e3",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "1B-NI-05",
+   "topic": "Secret messages",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why does a cipher wheel keep a message private?",
+   "choices": [
+    "it makes the message shorter",
+    "only someone with the key can read it",
+    "it deletes the message",
+    "it sends the message faster"
+   ],
+   "answer": 1
+  }
+ ]
+}

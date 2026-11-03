@@ -938,6 +938,23 @@
   }
 
   function deepFreeze(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreeze(o[k]); }); Object.freeze(o); } return o; }
+  // Lesson parameters (docs/sdk.md "Lesson parameters"): a lesson step may open the game at a chapter, for a band, in a
+  // mode, at a level, locked or not. Only those five keys, values [a-z0-9-]{1,16}; band '1b' or '2'; level 1-30 and
+  // lock 0 or 1 as numbers. Anything else is dropped, so a game reads (window.BRB && BRB.params) || {} and nothing more.
+  function cleanParams(p) {
+    var out = {};
+    if (!p || typeof p !== 'object') return out;
+    var str = function (v) { if (typeof v === 'number' && isFinite(v)) v = String(v); return typeof v === 'string' && /^[a-z0-9-]{1,16}$/.test(v) ? v : null; };
+    // Own properties only: nothing arrives through a prototype (the server sends a plain object; this is belt and braces).
+    var own = function (k) { return Object.prototype.hasOwnProperty.call(p, k) ? p[k] : undefined; };
+    var chapter = str(own('chapter')), band = str(own('band')), mode = str(own('mode')), level = str(own('level')), lock = str(own('lock'));
+    if (chapter) out.chapter = chapter;
+    if (band === '1b' || band === '2') out.band = band;
+    if (mode) out.mode = mode;
+    if (level && /^[0-9]{1,2}$/.test(level) && +level >= 1 && +level <= 30) out.level = +level;
+    if (lock === '0' || lock === '1') out.lock = +lock;
+    return out;
+  } /* end cleanParams */
   var BRB = {
     version: 1,
     // lang: the player's site language ("en", "fr", "ar"...); dir: "rtl" for right-to-left languages (he, ar), else "ltr".
@@ -951,6 +968,8 @@
     theme: INIT.theme === 'light' || INIT.theme === 'dark' ? INIT.theme : '',
     motion: INIT.motion === 'reduce' || INIT.motion === 'full' ? INIT.motion : '',
     preview: !!INIT.preview,
+    // Lesson parameters ({ chapter, band, mode, level, lock }, see cleanParams above): frozen, {} when there are none.
+    params: Object.freeze(cleanParams(INIT.params)),
     // 3D games: what this browser can do ({webgl2, importmap}); null for 2D games. Live class games read it to pick their
     // 2D path (docs/kit-api.md "Live class games").
     device: DEV ? Object.freeze({ webgl2: devMissing.indexOf('webgl2') < 0, importmap: devMissing.indexOf('importmap') < 0 }) : null,

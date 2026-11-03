@@ -113,6 +113,8 @@ const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
 const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
 const liveCohost = parseFlag(process.env.LIVE_COHOST, 'LIVE_COHOST', true);
+// CS Quest (docs/cs-quest.md): QUIZ_STEPS=0 hides quiz steps (exit tickets) on the student lesson page and their APIs.
+const quizSteps = parseFlag(process.env.QUIZ_STEPS, 'QUIZ_STEPS', true);
 /** Speech to text providers (server/services/stt.js). 'mock' answers fixed words, for tests only. */
 export const STT_PROVIDERS = ['openai', 'elevenlabs', 'mock'];
 const sttProvider = String(process.env.STT_PROVIDER || 'openai').trim().toLowerCase();
@@ -170,7 +172,7 @@ export const config = {
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
-    liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error,
+    liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error,
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
@@ -226,6 +228,13 @@ export const config = {
   liveTeams: liveTeams.on,
   liveSaveSupport: liveSaveSupport.on,
   liveHomework: liveHomework.on,
+  // CS Quest (docs/cs-quest.md). QUIZ_STEPS (default on) gates quiz steps on the student lesson page and the student quiz
+  // APIs under /api/progress/:cl/:step/quiz; LIVE_HOMEWORK only gates "Set as homework" from a live results page (and,
+  // until they move to QUIZ_STEPS, the older /api/lessons/:cl/steps/:step/quiz routes in routes/live.js).
+  // CS_QUEST_BUILD_TEAMS_PER_PERIOD (1-60, default 8): how many capstone teams the plan page says can build this period
+  // (services/builder-status.js builderStatus()).
+  quizSteps: quizSteps.on,
+  csQuestBuildTeamsPerPeriod: Math.min(60, Math.max(1, Math.floor(num(process.env.CS_QUEST_BUILD_TEAMS_PER_PERIOD, 8)) || 8)),
   // Oomba Live part 4 (docs/decisions.md "Oomba Live, part 4"): co-hosts. LIVE_COHOST=0 hides every co-host button and
   // the co-host APIs answer 404 (deleting logged data still works). LIVE_HANDOFF_SECS (3-600, default 120): how long the
   // host may be gone before the longest-standing co-host takes over.

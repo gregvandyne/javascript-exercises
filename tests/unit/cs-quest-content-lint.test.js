@@ -14,8 +14,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { SLUGS, PACK_LANGS, loadEnglish, checkAll, dataDir } = await import('../../scripts/cs-quest-i18n.mjs');
 
-const UK = /\b(colou?rs?|colou?red|colou?ring|favourites?|grey|labelled|licence|organis(e|ed|ing)|practis(ed|ing)|neighbours?|recognis(e|ed|ing)|maths|centre|metres?|behaviours?|honour|catalogue|analys(e|ed|ing)|defence|travelled|modelling|cancelled|jewellery|tyres?|whilst|learnt|spelt|programme)\b/i;
-const US_OK = /\bcolor|gray\b/i; // the American forms are fine; the regex above only matches the British ones (colour, grey)
+const UK = /\b(colours?|coloured|colouring|favourites?|grey|labelled|licence|organis(e|ed|ing)|practis(ed|ing)|neighbours?|recognis(e|ed|ing)|maths|centre|metres?|behaviours?|honour|catalogue|analys(e|ed|ing)|defence|travelled|modelling|cancelled|jewellery|tyres?|whilst|learnt|spelt|programme)\b/i;
 const BAD = [[/\d{7,}/, 'a 7+ digit run (reads as a phone number)'], [/@/, 'an @ (reads as an email or handle)'], [/\/\/\w[\w.-]*\.\w{2,}/, 'a //host.tld link'], [/https?:/i, 'a URL scheme']];
 const literalsOf = html => { const out = []; const re = /(['"`])((?:\\.|(?!\1)[^\\\n]){2,400})\1/g; let m; while ((m = re.exec(html))) out.push(m[2]); return out; };
 const sentence = s => /\s/.test(s) && s.length >= 12;
@@ -32,7 +31,7 @@ for (const slug of SLUGS) {
     assert.ok(Buffer.byteLength(html) <= 2 * 1024 * 1024, 'under the 2 MB game cap');
     for (const lit of literalsOf(html)) {
       for (const [re, why] of BAD) assert.ok(!re.test(lit), `string literal has ${why}: ${lit.slice(0, 80)}`);
-      if (sentence(lit)) assert.ok(!UK.test(lit) || US_OK.test(lit) && !/colour|grey/i.test(lit), `US spelling please: ${lit.slice(0, 80)}`);
+      if (sentence(lit)) assert.ok(!UK.test(lit), `US spelling please: ${lit.slice(0, 80)}`);
     }
   });
 
