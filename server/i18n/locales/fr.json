@@ -4377,6 +4377,10 @@
         "q4": "Créer des jeux vaut-il mieux que d’y jouer ?",
         "a4": "Les deux ont leur place. Créer un jeu demande aux enfants de planifier, d’expliquer clairement, de tester et de corriger : c’est un temps d’écran actif."
       }
+    },
+    "demo": {
+      "h": "Tout voir en moins d’une minute",
+      "note": "Une courte vidéo avec musique et sous-titres à l’écran : des enfants jouent à des jeux éducatifs (un globe terrestre, Tu préfères, les échecs et Gulp City), puis un enfant décrit un jeu au Builder, qui le crée et y joue pour vérifier qu’il fonctionne, et l’enfant y joue. Enfin, comment tout reste sûr : un nom inventé sans e-mail, des amis ajoutés uniquement avec un code, et des jeux qui restent privés jusqu’à ce que l’enfant choisisse de les partager."
     }
   },
   "connections": {

@@ -1,0 +1,8 @@
+# media made by these scripts never goes in the repo
+*.mp4
+*.wav
+*.mp3
+*.png
+*.jpg
+lines/
+vo-lines/

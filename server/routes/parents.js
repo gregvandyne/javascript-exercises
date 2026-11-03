@@ -14,6 +14,7 @@
 // are on /plans only. Games are official launch games anyone may open (launchGame), never a game a child made, and never
 // Ring Rumble, Happy Putt or Footy Tycoon. The text is under parents.* and learn.ages.* in the locale files; English
 // fallbacks are marked lang="en", and search engines are told a page is English only until its heading is translated.
+import fs from 'node:fs';
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound, parentsLabel } from '../views/layout.js';
@@ -107,6 +108,23 @@ function familiesSection(req) {
   </section>`;
 }
 
+// The parents' demo video (public/video, recorded from the real app with made-up names: scripts/demo-video).
+const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
+const hasVideo = fs.existsSync(new URL('oomba-parents.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-parents-poster.jpg', VIDEO_DIR));
+/** The video: muted until the viewer turns the sound on, captions burned in and also as a track, a written description. */
+function parentsVideo(req) {
+  if (!hasVideo) return '';
+  const t = req.t;
+  return html`<section class="lp-sec lp-demo" id="video" aria-labelledby="video-h">
+    ${el(t, 'h2', 'parents.demo.h', {}, ' id="video-h"')}
+    <video class="lp-video" controls muted playsinline preload="none" width="1280" height="720" poster="/video/oomba-parents-poster.jpg" aria-describedby="video-note">
+      <source src="/video/oomba-parents.mp4" type="video/mp4">
+      <track kind="captions" src="/video/oomba-parents.en.vtt" srclang="en" label="English">
+    </video>
+    ${el(t, 'p', 'parents.demo.note', {}, ' class="small" id="video-note"')}
+  </section>`;
+}
+
 router.get('/parents', async (req, res) => {
   const t = req.t;
   const paid = familiesOn(req);
@@ -129,6 +147,7 @@ router.get('/parents', async (req, res) => {
     <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
     ${howArt(req, 'parents')}
   </section>
+  ${parentsVideo(req)}
 
   <section class="panel" id="safe" aria-labelledby="safe-h">
     ${el(t, 'h2', 'parents.safe.h', {}, ' id="safe-h"')}
