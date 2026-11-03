@@ -172,7 +172,7 @@ const card = frame => frame.evaluate(() => {
   const $ = id => document.getElementById(id);
   return { title: $('titleText').textContent, tag: $('tagText').textContent, play: $('playBtn').textContent, playOff: $('playBtn').disabled, freeOff: $('freeBtn').disabled,
     diff: [...document.querySelectorAll('#diffSeg button')].map(b => b.textContent), how: $('howBtn').textContent, load: !$('loadRow').hidden,
-    fail: !$('failScreen').hidden, title2: !$('titleScreen').hidden, failTitle: $('failTitle').textContent, retry: $('failBtn').textContent };
+    fail: !$('failScreen').hidden, title2: !$('titleScreen').hidden, loading: !$('loadScreen').hidden, ready: !!(window.__brbTest && window.__brbTest.state().ready), loadTitle: $('loadTitle').textContent, failTitle: $('failTitle').textContent, retry: $('failBtn').textContent };
 });
 
 test('gulp-city: the title card has its words before the 3D part runs, Play waits for the city, and a failed start says so', { skip, timeout: 120_000 }, async () => {
@@ -183,16 +183,20 @@ test('gulp-city: the title card has its words before the 3D part runs, Play wait
     assert.equal(first.title, 'Gulp City'); assert.match(first.tag, /black hole/); assert.match(first.play, /Play/);
     assert.deepEqual(first.diff, ['Easy', 'Normal', 'Hard']); assert.equal(first.how, 'How to play');
     assert.equal(first.playOff, true, 'Play waits for the city'); assert.equal(first.freeOff, true);
+    // While the city builds, only the loading view shows (swirl, name, bar); the title card waits for the city.
+    assert.equal(first.title2, false); assert.equal(first.loading, !first.fail, 'the loading view, until the failure card replaces it'); assert.equal(first.loadTitle, 'Gulp City');
     await a.frame.waitForFunction(() => window.__brbTest.state().failed, null, { timeout: 30_000 });
     const c = await card(a.frame);
-    assert.equal(c.fail, true); assert.equal(c.title2, false);
+    assert.equal(c.fail, true); assert.equal(c.title2, false); assert.equal(c.loading, false);
     assert.match(c.failTitle, /couldn.t start/); assert.equal(c.retry, 'Try again');
   } finally { await a.ctx.close(); }
   // The city gets built: the progress row goes, the buttons work.
-  const b = await open({ size: { width: 390, height: 844 } });
+  let firstB = null;
+  const b = await open({ size: { width: 390, height: 844 }, early: async f => { await f.waitForFunction(() => document.getElementById('loadTitle').textContent); firstB = await card(f); } });
   try {
     const c = await card(b.frame);
-    assert.equal(c.load, false); assert.equal(c.playOff, false); assert.equal(c.freeOff, false); assert.equal(c.fail, false);
+    if (!firstB.ready) { assert.equal(firstB.loading, true); assert.equal(firstB.title2, false); }
+    assert.equal(c.load, false); assert.equal(c.loading, false); assert.equal(c.title2, true); assert.equal(c.playOff, false); assert.equal(c.freeOff, false); assert.equal(c.fail, false);
     assert.deepEqual(b.errors, []);
   } finally { await b.ctx.close(); }
 });
