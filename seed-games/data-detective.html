@@ -1011,7 +1011,7 @@ const DOT = { name: 'Dot', spec: null };
 const PAL = { name: 'Crew mate', spec: null };   // pair mode: the second player's face when they have no avatar of their own
 function dotSpec(crowned) { try { return Oomba.char({ species: 'fox', colors: { base: 'peach', belly: 'cream', accent: 'spark' }, wear: crowned ? ['glasses', 'crown'] : ['glasses'], mood: 'thinking' }); } catch (e) { return { species: 'fox' }; } }
 DOT.spec = dotSpec(false);
-try { PAL.spec = Oomba.char({ species: 'cat', colors: { base: 'sky', belly: 'cream', accent: 'spark' }, wear: ['scarf'], mood: 'happy' }); } catch (e) { PAL.spec = { species: 'cat' }; }
+try { PAL.spec = Oomba.char({ species: 'bunny', colors: { base: 'sky', belly: 'cream', accent: 'spark' }, wear: ['scarf'], mood: 'happy' }); } catch (e) { PAL.spec = { species: 'bunny' }; }
 try {
   STAGE = Oomba.stage({ api: 1, biome: 'forest', size: [960, 540] });
   STAGE.camera.y = -110;
