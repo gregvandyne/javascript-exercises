@@ -1,0 +1,379 @@
+{
+ "id": "csq-u1-2",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 1,
+ "band": "2",
+ "title": "CSQ Unit 1 · Think Like a Robot (6-8)",
+ "modes": [
+  "battle",
+  "quest-race",
+  "board"
+ ],
+ "cstaTags": [
+  "2-AP-10",
+  "2-AP-13",
+  "2-AP-12",
+  "2-AP-11",
+  "2-AP-14"
+ ],
+ "items": [
+  {
+   "id": "2-u1-o1",
+   "lesson": "1.1",
+   "use": "opener",
+   "cat": "2-AP-10",
+   "topic": "Sequences",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A plan for a program written in plain words, step by step, is…",
+   "choices": [
+    "pseudocode",
+    "a packet",
+    "a protocol",
+    "a password"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-1.1-r1",
+   "lesson": "1.1",
+   "use": "review",
+   "cat": "2-AP-10",
+   "topic": "Sequences",
+   "kind": "recall",
+   "secs": 15,
+   "q": "In a flowchart, a diamond shape means…",
+   "choices": [
+    "a loop",
+    "the end",
+    "a variable",
+    "a decision"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-1.1-e1",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "2-AP-10",
+   "topic": "Sequences",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which is pseudocode?",
+   "choices": [
+    "a drawing of Bolt",
+    "a photo of the grid",
+    "a list of names",
+    "IF on a gem THEN pick up"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-1.1-e2",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "2-AP-10",
+   "topic": "Sequences",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why write a plan (pseudocode or flowchart) before programming?",
+   "choices": [
+    "because the game refuses to run",
+    "to make the program longer",
+    "to think the steps through before building",
+    "to avoid testing it"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-1.1-e3",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "2-AP-13",
+   "topic": "Sequences",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Splitting a long route into \"reach the key\", \"open the door\", \"reach the goal\" is…",
+   "choices": [
+    "debugging the program",
+    "decomposing the problem",
+    "encrypting the route",
+    "looping the route"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-1.2-r1",
+   "lesson": "1.2",
+   "use": "review",
+   "cat": "2-AP-12",
+   "topic": "Loops",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A loop inside another loop is a…",
+   "choices": [
+    "compound loop",
+    "variable loop",
+    "nested loop",
+    "event loop"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-1.2-e1",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "2-AP-12",
+   "topic": "Loops",
+   "kind": "apply",
+   "secs": 20,
+   "q": "How many squares does repeat 3 { repeat 2 { move } } take Bolt?",
+   "choices": [
+    "5",
+    "3",
+    "6",
+    "9"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-1.2-e2",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "2-AP-12",
+   "topic": "Loops",
+   "kind": "apply",
+   "secs": 20,
+   "q": "repeat 4 { move, repeat 2 { pick up } }: how many pick-ups?",
+   "choices": [
+    "6",
+    "4",
+    "2",
+    "8"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-1.2-e3",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "2-AP-12",
+   "topic": "Loops",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Bolt must cross 3 rooms, each 4 squares long, turning right at each door. Which program does it with the fewest blocks?",
+   "choices": [
+    "repeat 3 { repeat 4 { move }, turn right }",
+    "twelve move blocks and three turns",
+    "repeat 12 { move }",
+    "repeat 4 { move }, turn right"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-1.3-r1",
+   "lesson": "1.3",
+   "use": "review",
+   "cat": "2-AP-12",
+   "topic": "Conditionals",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A condition joined with AND, OR or NOT is a…",
+   "choices": [
+    "a compound condition",
+    "a nested loop",
+    "a repeat-until loop",
+    "a named procedure"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-1.3-e1",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "2-AP-12",
+   "topic": "Conditionals",
+   "kind": "apply",
+   "secs": 20,
+   "q": "The door opens if Bolt has the key AND is touching the door. Bolt has the key, two squares away. Opens?",
+   "choices": [
+    "yes, one part is enough",
+    "sometimes",
+    "only with a loop",
+    "no, both parts must be true"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-1.3-e2",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "2-AP-12",
+   "topic": "Conditionals",
+   "kind": "apply",
+   "secs": 20,
+   "q": "\"if NOT wall ahead: move\". When does Bolt move?",
+   "choices": [
+    "when there is a wall ahead",
+    "never",
+    "when there is no wall ahead",
+    "only on paint"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-1.3-e3",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "2-AP-12",
+   "topic": "Conditionals",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Which program can reach the goal in a maze you have not seen before, without bumping a wall?",
+   "choices": [
+    "move, move, turn left, move, move, turn right",
+    "repeat until goal { if path ahead: move, else: turn left }",
+    "repeat until goal { move }",
+    "if path ahead: move, else: turn left"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-1.4-r1",
+   "lesson": "1.4",
+   "use": "review",
+   "cat": "2-AP-11",
+   "topic": "Variables",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A variable that holds only true or false is a…",
+   "choices": [
+    "a number box",
+    "a flag (boolean)",
+    "a word box",
+    "a list of words"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-1.4-e1",
+   "lesson": "1.4",
+   "use": "exit",
+   "cat": "2-AP-11",
+   "topic": "Variables",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which is the clearest name for the number of gems left?",
+   "choices": [
+    "g",
+    "thing",
+    "number1",
+    "gemsLeft"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-1.4-e2",
+   "lesson": "1.4",
+   "use": "exit",
+   "cat": "2-AP-11",
+   "topic": "Variables",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which type fits \"is the door locked?\"",
+   "choices": [
+    "a true/false flag",
+    "a number",
+    "a word",
+    "a color list"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-1.4-e3",
+   "lesson": "1.4",
+   "use": "exit",
+   "cat": "2-AP-11",
+   "topic": "Variables",
+   "kind": "apply",
+   "secs": 20,
+   "q": "energy is 10. \"change energy by -2\" runs three times. What is energy?",
+   "choices": [
+    "8",
+    "4",
+    "6",
+    "16"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-1.5-r1",
+   "lesson": "1.5",
+   "use": "review",
+   "cat": "2-AP-14",
+   "topic": "Functions",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A named group of steps you can call many times is a…",
+   "choices": [
+    "parameter",
+    "loop",
+    "procedure",
+    "event"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-1.5-e1",
+   "lesson": "1.5",
+   "use": "exit",
+   "cat": "2-AP-14",
+   "topic": "Functions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Room(steps) is called with 3 and then 5. What is \"steps\"?",
+   "choices": [
+    "a loop",
+    "an event",
+    "a parameter",
+    "a bug"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-1.5-e2",
+   "lesson": "1.5",
+   "use": "exit",
+   "cat": "2-AP-14",
+   "topic": "Functions",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why give a procedure a parameter?",
+   "choices": [
+    "to make the procedure run faster",
+    "so it never needs a loop inside",
+    "so one procedure can do different amounts",
+    "so it can only be called once"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-1.5-e3",
+   "lesson": "1.5",
+   "use": "exit",
+   "cat": "2-AP-13",
+   "topic": "Functions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You decompose a level into three subgoals. What should your program have?",
+   "choices": [
+    "one giant block",
+    "three separate procedures, one per subgoal",
+    "no procedures",
+    "three copies of the same steps"
+   ],
+   "answer": 1
+  }
+ ]
+}

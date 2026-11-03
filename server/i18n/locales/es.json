@@ -5386,6 +5386,10 @@
         "flag": "Encuentra el país de esta bandera",
         "famous": "Encuentra el país famoso por {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Preparado desde el plan de la lección. Puedes cambiar lo que quieras."
     }
   },
   "match": {
@@ -5531,5 +5535,18 @@
   },
   "tts": {
     "sample": "¡Hola! Soy tu guía en Oomba Academy. ¡Vamos a explorar, resolver acertijos y divertirnos juntos!"
+  },
+  "cs": {
+    "step": {
+      "hostedLive": "Tu profe dirige esto en vivo"
+    },
+    "review": {
+      "rubric": "Notas de la rúbrica",
+      "notMarked": "Sin nota",
+      "marksTitle": "Notas de la rúbrica: {marks}",
+      "alsoMark": "Poner la misma nota a estos compañeros de equipo",
+      "alsoMarkHint": "Reciben las mismas notas de rúbrica en este paso. Tu comentario escrito se queda solo con este alumno.",
+      "noHandIns": "Todavía nadie ha entregado nada."
+    }
   }
 }

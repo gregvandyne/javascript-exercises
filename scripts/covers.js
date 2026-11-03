@@ -194,6 +194,12 @@ const RECIPES = {
     await wait(1200);
   } },
 };
+
+// Game owners keep their cover recipe next to the game: scripts/covers/<slug>.recipe.js exports { '<slug>': recipe }.
+for (const f of fs.existsSync(path.join(ROOT, 'scripts/covers')) ? fs.readdirSync(path.join(ROOT, 'scripts/covers')).filter(n => n.endsWith('.recipe.js')).sort() : []) {
+  Object.assign(RECIPES, (await import(path.join(ROOT, 'scripts/covers', f))).default);
+}
+
 /** The kit's title screen: press Play. */
 async function play(f) { await wait(900); const go = await f.$('.ok-title-screen .ok-hot'); if (go) { await go.click(); await wait(1500); } }
 /** Wait for the game's own state to match (its test hook), or go on after a few seconds. */

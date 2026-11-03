@@ -37,7 +37,7 @@ import * as CH from '../services/classlive-cohost.js';
 import { SAY, BONUS_REASONS } from '../services/classlive-protocol.js';
 import { nicksFor } from '../services/classlive-names.js';
 import { STARTERS } from '../live/starters.js';
-import { pickerFor, SUBJECTS as BANK_SUBJECTS, LEVELS as BANK_LEVELS, COUNTS as BANK_COUNTS } from '../live/bank/index.js';
+import { pickerFor, parseBankId, SUBJECTS as BANK_SUBJECTS, LEVELS as BANK_LEVELS, COUNTS as BANK_COUNTS } from '../live/bank/index.js';
 import * as WYR from '../live/wyr.js';
 import * as ATL from '../live/atlas.js';
 import { familyOfOwner, familiesOn } from '../services/family.js';
@@ -163,10 +163,13 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   ].map(m => ({ ...m, cap: A.capacityFor({ mode: m.id }) }));
   const starters = STARTERS.map(id => ({ id, title: t(`live.starter.title.${id.replace('-', '')}`) }));
   const q = req.query;
+  // P6 (CS Quest): ?starter= fills the form with a platform starter a lesson plan names (unknown ones are ignored).
+  const starter = starterPre(q.starter);
   const pre = {
-    pick: q.game ? `game:${String(q.game)}` : q.mode ? `mode:${String(q.mode)}` : '',
-    classId: q.class ? String(q.class) : '', audience: q.class || q.cl ? 'class' : '', set: q.set ? `set:${String(q.set)}` : '',
-    clId: q.cl ? String(q.cl) : '', stepId: q.step ? String(q.step) : '',
+    pick: q.game ? `game:${String(q.game)}` : q.mode ? `mode:${String(q.mode)}` : starter && starter.mode ? `mode:${starter.mode}` : '',
+    classId: q.class ? String(q.class) : '', audience: q.class || q.cl ? 'class' : '',
+    set: q.set ? `set:${String(q.set)}` : starter && starter.kind === 'bank' ? 'bank' : starter && starter.kind === 'fixed' ? `starter:${starter.id}` : '',
+    clId: q.cl ? String(q.cl) : '', stepId: q.step ? String(q.step) : '', starter,
   };
   // From a lesson's "Host live": the class comes from the class lesson.
   if (pre.clId && !pre.classId) { const cl = L.getClassLesson(pre.clId); if (cl) pre.classId = cl.class_id; }
@@ -177,6 +180,23 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
       prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req),
       cohost: { invites: CH.invitesFor(u).map(x => ({ sid: x.s.id, title: x.s.title, from: x.from })), on: CH.cohostingFor(u).map(x => ({ sid: x.id, title: x.title })) } }) });
 });
+
+/**
+ * P6: a /live?starter=<id> preselect. The id is one the session API already understands (classlive-quiz.loadItems):
+ * 'wyr:<topics|mix>:<count>:<secs>' (Would You Rather Live), 'atlas:<region>:<level>:<kinds>:<count>:<secs>',
+ * 'bank:<subject|mixed>:<level>:<count>' or 'bank:board:<level>:<subject>+<subject>' (the question bank), or a fixed
+ * starter ('science', 'geo', 'board', 'math-8'…). Anything else -> null, and the landing shows its defaults.
+ * -> { id, kind: 'wyr'|'atlas'|'bank'|'fixed', mode: the mode it implies or null, wyr?, atlas?, bank? }
+ */
+export function starterPre(id) {
+  // a '+' between topics or subjects arrives as a space when the link did not encode it: no id ever has a space
+  const s = typeof id === 'string' ? id.replace(/ /g, '+') : '';
+  if (!s || s.length > 80) return null;
+  if (s.startsWith('wyr:')) { const p = WYR.parseId(s); return p ? { id: s, kind: 'wyr', mode: 'wyr', wyr: p } : null; }
+  if (s.startsWith('atlas:')) { const p = ATL.parseId(s); return p ? { id: s, kind: 'atlas', mode: 'atlas', atlas: p } : null; }
+  if (s.startsWith('bank:')) { const p = parseBankId(s); return p ? { id: s, kind: 'bank', mode: p.board ? 'board' : null, bank: p } : null; }
+  return STARTERS.includes(s) ? { id: s, kind: 'fixed', mode: s === 'board' ? 'board' : null } : null;
+}
 
 /** The question bank part of the landing form -> a bank starter id (server/live/bank/index.js parseBankId). A board
  *  (Brain Board) takes the ticked subjects, anything else one subject (or mixed) and a number of questions. */

@@ -11,8 +11,20 @@
 import { q, uid, now, tx, audit } from '../db.js';
 import * as S from './schools.js';
 import * as games from './games.js';
+import * as CSTA from '../standards/csta.js';
+import { cleanOptions } from './play-params.js';
+import { TEMPLATE_KEYS } from '../builder/catalog.js';
 
 export const STEP_KINDS = ['game', 'build', 'text', 'question'];
+/** Step kinds that may carry CSTA standards (lesson_steps.standards): a game step evidences them when played, a question
+ *  step when answered, a build step when handed in (docs/cs-quest.md). */
+export const STANDARDS_KINDS = ['game', 'question', 'build'];
+/** Step kinds a teacher marks against a rubric (lesson_steps.rubric; progress.review marks). */
+export const RUBRIC_KINDS = ['question', 'build'];
+/** A rubric: at most this many lines, each with a short name, the CSTA ids it evidences and up to four level descriptors. */
+export const RUBRIC_LIMITS = Object.freeze({ lines: 8, line: 80, levels: 4, level: 200, ids: 8 });
+/** A catalogue lesson key (lessons.template_key): "csq-1b-1.2" and the like. */
+const TEMPLATE_KEY = /^[a-z0-9][a-z0-9._-]{0,59}$/;
 /** A question set as homework (LIVE_HOMEWORK; classlive-sets.homework): made only from a set, with a snapshot of its
  *  items (lesson_steps.items), so later set edits never change work in progress. Its title, text and minutes can be
  *  edited like any step; its questions can't. Answers are checked by the server (progress.quizAnswer). */
@@ -115,29 +127,42 @@ export const removedFrom = classId => q.all(`SELECT DISTINCT l.id, l.title FROM 
 /** Lessons colleagues shared with the school (not the viewer's own). */
 export const sharedLessons = (u, schoolId) => q.all(`SELECT ${LESSON_COLS}, COALESCE(NULLIF(m.roster_name,''), u.display_name) owner_name FROM lessons l JOIN users u ON u.id=l.owner_id
   LEFT JOIN school_members m ON m.school_id=l.school_id AND m.user_id=l.owner_id WHERE l.school_id=? AND l.shared=1 AND l.archived_at IS NULL AND l.owner_id!=? ORDER BY l.updated_at DESC LIMIT 200`, schoolId, u.id);
-export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '' }) {
+/** A lesson's own fields, cleaned: the given ones over the old row's (a new lesson has no old row). templateKey /
+ *  templateVersion say which catalogue lesson (CS Quest) and version a library copy was made from ('' / 0 = none).
+ *  -> { ok, v: { title, summary, subject, grade, objectives, shared, template_key, template_version } } | { ok: false, code } */
+export function cleanLesson(fields = {}, old = {}) {
+  const v = {
+    title: fields.title !== undefined ? clip(fields.title, 100) : old.title || '',
+    summary: fields.summary !== undefined ? clipText(fields.summary, 600) : old.summary || '',
+    subject: fields.subject !== undefined ? clip(fields.subject, 40) : old.subject || '',
+    grade: fields.grade !== undefined ? clip(fields.grade, 12) : old.grade || '',
+    objectives: fields.objectives !== undefined ? clipText(fields.objectives, 1000) : old.objectives || '',
+    shared: fields.shared !== undefined ? (fields.shared ? 1 : 0) : old.shared || 0,
+    template_key: fields.templateKey !== undefined ? clip(fields.templateKey, 60).toLowerCase() : old.template_key || '',
+    template_version: fields.templateVersion !== undefined ? Math.max(0, Math.floor(+fields.templateVersion || 0)) : old.template_version || 0,
+  };
+  if (!v.title) return fail('lessonTitle');
+  if (v.template_key && !TEMPLATE_KEY.test(v.template_key)) return fail('templateKey');
+  if (!v.template_key) v.template_version = 0;
+  return ok({ v });
+}
+export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0 }) {
   if (!isStaffOf(u, schoolId)) return fail('notFound');
-  const ttl = clip(title, 100); if (!ttl) return fail('lessonTitle');
+  const c = cleanLesson({ title, summary, subject, grade, objectives, templateKey, templateVersion }); if (!c.ok) return c;
   if (folderId) { const f = getFolder(folderId); if (!ownsFolder(u, f) || f.school_id !== schoolId) return fail('notFound'); }
-  const id = uid(10), t = now();
-  q.run(`INSERT INTO lessons(id, school_id, owner_id, folder_id, title, summary, subject, grade, objectives, position, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-    id, schoolId, u.id, folderId || null, ttl, clipText(summary, 600), clip(subject, 40), clip(grade, 12), clipText(objectives, 1000),
-    nextPos('lessons', 'owner_id=? AND school_id=? AND folder_id IS ?', u.id, schoolId, folderId || null), t, t);
-  audit(u.id, 'lesson.create', id, { school: schoolId });
+  const id = uid(10), t = now(), v = c.v;
+  q.run(`INSERT INTO lessons(id, school_id, owner_id, folder_id, title, summary, subject, grade, objectives, position, created_at, updated_at, template_key, template_version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    id, schoolId, u.id, folderId || null, v.title, v.summary, v.subject, v.grade, v.objectives,
+    nextPos('lessons', 'owner_id=? AND school_id=? AND folder_id IS ?', u.id, schoolId, folderId || null), t, t, v.template_key, v.template_version);
+  audit(u.id, 'lesson.create', id, { school: schoolId, ...(v.template_key ? { template: v.template_key, version: v.template_version } : {}) });
   return ok({ lesson: getLesson(id) });
 }
 export function updateLesson(u, lessonId, fields = {}) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
-  const v = {
-    title: fields.title !== undefined ? clip(fields.title, 100) : l.title,
-    summary: fields.summary !== undefined ? clipText(fields.summary, 600) : l.summary,
-    subject: fields.subject !== undefined ? clip(fields.subject, 40) : l.subject,
-    grade: fields.grade !== undefined ? clip(fields.grade, 12) : l.grade,
-    objectives: fields.objectives !== undefined ? clipText(fields.objectives, 1000) : l.objectives,
-    shared: fields.shared !== undefined ? (fields.shared ? 1 : 0) : l.shared,
-  };
-  if (!v.title) return fail('lessonTitle');
-  q.run('UPDATE lessons SET title=?, summary=?, subject=?, grade=?, objectives=?, shared=?, updated_at=? WHERE id=?', v.title, v.summary, v.subject, v.grade, v.objectives, v.shared, now(), l.id);
+  const c = cleanLesson(fields, l); if (!c.ok) return c;
+  const v = c.v;
+  q.run('UPDATE lessons SET title=?, summary=?, subject=?, grade=?, objectives=?, shared=?, template_key=?, template_version=?, updated_at=? WHERE id=?',
+    v.title, v.summary, v.subject, v.grade, v.objectives, v.shared, v.template_key, v.template_version, now(), l.id);
   return ok({ lesson: getLesson(l.id) });
 }
 const touch = lessonId => q.run('UPDATE lessons SET updated_at=? WHERE id=?', now(), lessonId);
@@ -176,23 +201,81 @@ export function reorderFolder(u, folderId, dir) {
   shift('lesson_folders', f.id, dir, 'owner_id=? AND school_id=? AND parent_id IS ?', [f.owner_id, f.school_id, f.parent_id || null]);
   return ok();
 }
-/** Copy a lesson (own, or shared by a colleague) into the user's library. */
+/** A quiz step's snapshot of a set's items: text, choices and the answer, plus the CSTA id (cat) and the seconds each
+ *  item carries, so an exit ticket keeps its standard tag (P4). Anything else on an item is left behind. */
+export function quizSnapshot(items) {
+  return JSON.stringify((Array.isArray(items) ? items : []).map(it => ({
+    q: it.q, choices: it.choices, answer: it.answer,
+    ...(typeof it.cat === 'string' && it.cat.trim() ? { cat: it.cat.trim().slice(0, 40) } : {}),
+    ...(Number.isFinite(+it.secs) && +it.secs > 0 ? { secs: Math.round(+it.secs) } : {}),
+  })));
+}
+/** A quiz step's items regenerated from the question set it came from (set_id), when that set still exists and is still
+ *  complete; else the step's own snapshot (a copy never loses its questions). */
+function quizItemsFor(step) {
+  if (step.set_id) {
+    const set = q.get('SELECT items FROM live_sets WHERE id=? AND archived_at IS NULL', step.set_id);
+    let items = null; try { items = set ? JSON.parse(set.items) : null; } catch { items = null; }
+    const complete = it => it && typeof it.q === 'string' && it.q.trim() && Array.isArray(it.choices) && it.choices.length >= 2 && Number.isInteger(it.answer) && it.answer >= 0 && it.answer < it.choices.length;
+    if (Array.isArray(items) && items.length && items.every(complete)) return quizSnapshot(items);
+  }
+  return step.items || '';
+}
+/** Copy a lesson (own, or shared by a colleague) into the user's library: every step with its lesson parameters,
+ *  standards, Studio template and rubric; quiz steps keep their set and get fresh items from it (P8). The copy remembers
+ *  the catalogue lesson the original came from (template_key / template_version). */
 export function copyLesson(u, lessonId, { folderId } = {}) {
   const l = getLesson(lessonId);
   if (!l || !(canEditLesson(u, l) || canSeeShared(u, l))) return fail('notFound');
   // A copy of your own lesson lands next to it (same folder); a colleague's lesson goes to the top of your library.
   if (folderId === undefined) folderId = l.owner_id === u.id ? l.folder_id || null : null;
-  const r = createLesson(u, l.school_id, { title: l.owner_id === u.id ? `${l.title} (2)` : l.title, folderId, summary: l.summary, subject: l.subject, grade: l.grade, objectives: l.objectives });
+  const r = createLesson(u, l.school_id, { title: l.owner_id === u.id ? `${l.title} (2)` : l.title, folderId, summary: l.summary, subject: l.subject, grade: l.grade, objectives: l.objectives,
+    templateKey: l.template_key || '', templateVersion: l.template_version || 0 });
   if (!r.ok) return r;
   tx(() => {
     q.run('UPDATE lessons SET copied_from=? WHERE id=?', l.id, r.lesson.id);
-    for (const s of steps(l.id)) q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at) VALUES (?,?,?,?,?,?,?,?,?)', uid(10), r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now());
+    for (const s of steps(l.id)) {
+      q.run(`INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, options, standards, template, rubric) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        uid(10), r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
+        s.kind === QUIZ_KIND ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : '', s.options || '', s.standards || '', s.template || '', s.rubric || '');
+    }
   });
   audit(u.id, 'lesson.copy', r.lesson.id, { from: l.id });
   return ok({ lesson: getLesson(r.lesson.id) });
 }
 
 // ---------------------------------------------------------------- steps
+/** A step's CSTA standards: a comma list or an array of ids -> the canonical comma list; null when an id is unknown. */
+export function cleanStandards(input) {
+  const text = Array.isArray(input) ? input.join(',') : input;
+  const { ids, bad } = CSTA.parseList(text);
+  if (bad.length || ids.length > 40) return null;
+  return ids.join(',');
+}
+/** A step's rubric (JSON text or an array of lines) -> canonical JSON text ('' when empty); null when it is not a rubric.
+ *  A line: { line: 'Plan' (1-80 chars), ids: ['1B-AP-13', ...] (CSTA ids, optional), levels: ['...', x4] (optional). } */
+export function cleanRubric(input) {
+  let lines = input;
+  if (typeof input === 'string') { if (!input.trim()) return ''; try { lines = JSON.parse(input); } catch { return null; } }
+  if (lines == null) return '';
+  if (!Array.isArray(lines) || lines.length > RUBRIC_LIMITS.lines) return null;
+  const out = [];
+  for (const x of lines) {
+    if (!x || typeof x !== 'object') return null;
+    const line = clip(x.line, RUBRIC_LIMITS.line); if (!line) return null;
+    const ids = cleanStandards(x.ids === undefined ? '' : x.ids); if (ids === null) return null;
+    const idList = ids ? ids.split(',') : [];
+    if (idList.length > RUBRIC_LIMITS.ids) return null;
+    const levels = x.levels === undefined || x.levels === null ? [] : x.levels;
+    if (!Array.isArray(levels) || levels.length > RUBRIC_LIMITS.levels || levels.some(s => typeof s !== 'string')) return null;
+    out.push({ line, ids: idList, levels: levels.map(s => clip(s, RUBRIC_LIMITS.level)) });
+  }
+  return out.length ? JSON.stringify(out) : '';
+}
+/** A step's rubric lines as data ([] when it has none or the text is unreadable). */
+export const rubricOf = step => { try { const x = JSON.parse((step && step.rubric) || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
+/** The step's quiz items ([{ q, choices, answer, cat?, secs? }]; [] when none). */
+export const quizItemsOf = step => { try { const x = JSON.parse((step && step.items) || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
 function cleanStep(u, input, old = {}) {
   const kind = input.kind !== undefined ? input.kind : old.kind;
   if (!STEP_KINDS.includes(kind) && !(kind === QUIZ_KIND && old.kind === QUIZ_KIND)) return fail('stepKind');
@@ -202,8 +285,22 @@ function cleanStep(u, input, old = {}) {
     body: input.body !== undefined ? clipText(input.body, 4000) : old.body || '',
     minutes: input.minutes !== undefined ? Math.max(0, Math.min(240, Math.round(+input.minutes || 0))) : old.minutes || 0,
     game_id: input.gameId !== undefined ? (input.gameId || null) : old.game_id || null,
+    // CS Quest (docs/cs-quest.md): lesson parameters for the game, CSTA ids, the Studio template a build starts from, a rubric.
+    options: input.options !== undefined ? cleanOptions(input.options) : old.options || '',
+    standards: input.standards !== undefined ? cleanStandards(input.standards) : old.standards || '',
+    template: input.template !== undefined ? clip(input.template, 20).toLowerCase() : old.template || '',
+    rubric: input.rubric !== undefined ? cleanRubric(input.rubric) : old.rubric || '',
   };
-  if (kind !== 'game') v.game_id = null;
+  // A field that does not belong to this kind is dropped before it is checked (a text step sent a template is not refused);
+  // on the kinds that keep it, a bad value refuses the step so a catalogue mistake shows up.
+  if (kind !== 'game') { v.game_id = null; v.options = ''; }
+  if (kind !== 'build') v.template = '';
+  if (!STANDARDS_KINDS.includes(kind)) v.standards = '';
+  if (!RUBRIC_KINDS.includes(kind)) v.rubric = '';
+  if (v.options === null) return fail('stepOptions');
+  if (v.standards === null) return fail('stepStandards');
+  if (v.rubric === null) return fail('stepRubric');
+  if (v.template && !TEMPLATE_KEYS.includes(v.template)) return fail('stepTemplate');
   if (kind === 'game') {
     if (!v.game_id) return fail('pickGame');
     const g = games.getGame(v.game_id);
@@ -219,26 +316,27 @@ export function addStep(u, lessonId, input) {
   if (q.get('SELECT COUNT(*) n FROM lesson_steps WHERE lesson_id=?', l.id).n >= 40) return fail('tooManySteps');
   const c = cleanStep(u, input || {}); if (!c.ok) return c;
   const id = uid(10);
-  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at) VALUES (?,?,?,?,?,?,?,?,?)',
-    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, now());
+  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, options, standards, template, rubric) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, now(), c.v.options, c.v.standards, c.v.template, c.v.rubric);
   touch(l.id);
   return ok({ step: getStep(id) });
 }
-/** A quiz step from a question set (the set's items as they are now). -> { ok, step } */
-export function addQuizStep(u, lessonId, { title = '', setId, items }) {
+/** A quiz step from a question set (the set's items as they are now, with each item's cat and secs). -> { ok, step } */
+export function addQuizStep(u, lessonId, { title = '', setId, items, minutes = 0, body = '' }) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
   if (!Array.isArray(items) || !items.length) return fail('stepKind');
   const id = uid(10);
   q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), QUIZ_KIND, clip(title, 100), '', null, 0, now(), setId || null,
-    JSON.stringify(items.map(it => ({ q: it.q, choices: it.choices, answer: it.answer }))));
+    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), QUIZ_KIND, clip(title, 100), clipText(body, 4000), null, Math.max(0, Math.min(240, Math.round(+minutes || 0))), now(), setId || null,
+    quizSnapshot(items));
   touch(l.id);
   return ok({ step: getStep(id) });
 }
 export function updateStep(u, stepId, input) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
   const c = cleanStep(u, input || {}, s); if (!c.ok) return c;
-  q.run('UPDATE lesson_steps SET kind=?, title=?, body=?, game_id=?, minutes=? WHERE id=?', c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, s.id);
+  q.run('UPDATE lesson_steps SET kind=?, title=?, body=?, game_id=?, minutes=?, options=?, standards=?, template=?, rubric=? WHERE id=?',
+    c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, c.v.options, c.v.standards, c.v.template, c.v.rubric, s.id);
   touch(l.id);
   return ok();
 }
@@ -394,6 +492,62 @@ export function assign(u, classId, lessonId, { unitId = null, opensAt = null, du
   // restored: the row came back; workBack: and students had work in it.
   const workBack = !!old && !!q.get('SELECT 1 FROM step_progress WHERE class_lesson_id=? LIMIT 1', id);
   return ok({ classLesson: getClassLesson(id), restored: !!old, workBack });
+}
+/** How a unit's lessons are spaced (assignUnitWithCadence). */
+export const CADENCES = ['daily', 'weekdays', 'weekly', 'twice-weekly'];
+const isoDay = t => new Date(t).toISOString().slice(0, 10);
+/**
+ * The calendar days n lessons open on from start ('YYYY-MM-DD' or a stored day; today when empty), spaced by cadence:
+ * daily (every day), weekdays (Monday to Friday, weekends skipped), weekly (every 7 days), twice-weekly (3 then 4 days
+ * apart, so the same two weekdays each week). -> [day at 00:00 UTC, ...]; null when start is unreadable or the cadence unknown.
+ */
+export function cadenceDates(start, n, cadence = 'weekdays') {
+  if (!CADENCES.includes(cadence)) return null;
+  const first = start === undefined || start === null || start === '' ? Math.floor(now() / DAY) * DAY : typeof start === 'number' ? Math.floor(start / DAY) * DAY : dateOrNull(start);
+  if (first === undefined || first === null) return null;
+  const out = []; let d = first, i = 0;
+  const weekday = t => { const w = new Date(t).getUTCDay(); return w !== 0 && w !== 6; };
+  if (cadence === 'weekdays') while (!weekday(d)) d += DAY;
+  for (let k = 0; k < Math.max(0, Math.floor(n)); k++) {
+    out.push(d);
+    if (cadence === 'daily') d += DAY;
+    else if (cadence === 'weekly') d += 7 * DAY;
+    else if (cadence === 'twice-weekly') { d += (i % 2 === 0 ? 3 : 4) * DAY; i++; }
+    else { d += DAY; while (!weekday(d)) d += DAY; }
+  }
+  return out;
+}
+/**
+ * Assign a unit's lessons to a class in one go (CS Quest P17): lesson k opens on the k-th cadence day from start and is
+ * due dueDays after it opens, or, without dueDays, the day before the next lesson opens (the last one a week after it
+ * opens). Lessons go through assign() one by one (same permissions; a removed one comes back with its work); a lesson
+ * already in the class or refused is reported in skipped, the rest are assigned. unitId: an existing unit of the class.
+ * -> { ok: true, assigned: [{ lessonId, classLesson, opensAt, dueAt }], skipped: [{ lessonId, code }] } | { ok: false, code }
+ */
+export function assignUnitWithCadence(u, classId, lessonIds, { unitId = null, start = null, cadence = 'weekdays', dueDays = null } = {}) {
+  const c = managed(u, classId); if (!c) return fail('notFound');
+  const all = Array.isArray(lessonIds) ? [...new Set(lessonIds.map(String).filter(Boolean))] : [];
+  if (!all.length || all.length > 60) return fail('badRequest');
+  if (unitId) { const un = getUnit(unitId); if (!un || un.class_id !== c.id) return fail('notFound'); }
+  // Only a lesson assign() will take gets a day (the same rule: this school's, and editable by the teacher or coming back
+  // after a removal); the rest are reported as not found and the following lessons keep their dates. A lesson already in
+  // the class keeps its day (it is there on that day anyway).
+  const takes = id => { const l = getLesson(id); return !!l && l.school_id === c.school_id && !!(canEditLesson(u, l) || q.get('SELECT 1 FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NOT NULL', c.id, l.id)); };
+  const ids = all.filter(takes);
+  const skipped = all.filter(id => !ids.includes(id)).map(lessonId => ({ lessonId, code: 'notFound' }));
+  const days = cadenceDates(start, ids.length, cadence);
+  if (!days) return fail(CADENCES.includes(cadence) ? 'badDate' : 'badCadence');
+  const dd = dueDays === null || dueDays === undefined || dueDays === '' ? null : Math.floor(+dueDays);
+  if (dd !== null && !(Number.isInteger(dd) && dd >= 0 && dd <= 365)) return fail('badDate');
+  const assigned = [];
+  ids.forEach((lessonId, k) => {
+    const opens = days[k];
+    const due = dd !== null ? opens + dd * DAY : k + 1 < days.length ? Math.max(opens, days[k + 1] - DAY) : opens + 7 * DAY;
+    const r = assign(u, c.id, lessonId, { unitId, opensAt: isoDay(opens), dueAt: isoDay(due) });
+    if (r.ok) assigned.push({ lessonId, classLesson: r.classLesson, opensAt: opens, dueAt: due, restored: r.restored });
+    else skipped.push({ lessonId, code: r.code });
+  });
+  return ok({ assigned, skipped });
 }
 export function updateAssignment(u, clId, { unitId, opensAt, dueAt } = {}) {
   const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');

@@ -460,6 +460,24 @@ export const MIGRATIONS = [
       b INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (game_id, item));
     CREATE TABLE IF NOT EXISTS game_poll_votes (game_id TEXT NOT NULL, item TEXT NOT NULL, user_id TEXT NOT NULL, seat INTEGER NOT NULL,
       choice INTEGER NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (game_id, item, user_id, seat));`],
+  // CS Quest platform slice (docs/cs-quest.md; the curriculum materialiser fills these; empty = today's behaviour):
+  // - lesson_steps.options: the game step's lesson parameters as a query string (chapter=&band=&mode=&level=&lock=,
+  //   services/play-params.js), appended to the Play link and signed into the frame token as BRB.params;
+  // - lesson_steps.standards: a comma list of CSTA ids (server/standards/csta.js) on game, question and build steps;
+  // - lesson_steps.template: the Studio template a build step starts from (builder/catalog.js TEMPLATE_KEYS);
+  // - lesson_steps.rubric: JSON [{ line, ids, levels }] on question and build steps; the teacher's 0-3 mark per line
+  //   goes in step_progress.marks (one character per line: 0-3, '-' not marked; quiz steps keep their 1/0/- there);
+  // - lessons.template_key / template_version: which catalogue lesson (and version) a library copy was made from.
+  // Each column is added only when missing, so a database that already has one is left alone.
+  ['0044_cs_quest_steps', '', conn => {
+    const add = (table, col, type) => { if (!conn.prepare(`PRAGMA table_info(${table})`).all().some(c => c.name === col)) conn.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${type};`); };
+    add('lesson_steps', 'options', "TEXT NOT NULL DEFAULT ''");
+    add('lesson_steps', 'standards', "TEXT NOT NULL DEFAULT ''");
+    add('lesson_steps', 'template', "TEXT NOT NULL DEFAULT ''");
+    add('lesson_steps', 'rubric', "TEXT NOT NULL DEFAULT ''");
+    add('lessons', 'template_key', "TEXT NOT NULL DEFAULT ''");
+    add('lessons', 'template_version', 'INTEGER NOT NULL DEFAULT 0');
+  }],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

@@ -1,0 +1,260 @@
+{
+ "id": "csq-u6-2",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 6,
+ "band": "2",
+ "title": "CSQ Unit 6 · Tech Choices (6-8)",
+ "modes": [
+  "battle",
+  "quest-race",
+  "board"
+ ],
+ "cstaTags": [
+  "2-IC-20",
+  "2-IC-21",
+  "2-CS-01",
+  "2-IC-23",
+  "2-AP-16"
+ ],
+ "items": [
+  {
+   "id": "2-u6-o1",
+   "lesson": "6.1",
+   "use": "opener",
+   "cat": "2-IC-20",
+   "topic": "Tech changes",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A benefit that comes with a cost is a…",
+   "choices": [
+    "protocol",
+    "tradeoff",
+    "pixel",
+    "parameter"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-6.1-r1",
+   "lesson": "6.1",
+   "use": "review",
+   "cat": "2-IC-20",
+   "topic": "Tech changes",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Doing a task by machine instead of by hand is…",
+   "choices": [
+    "encryption",
+    "decomposition",
+    "automation",
+    "crowdsourcing"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-6.1-e1",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "2-IC-20",
+   "topic": "Tech changes",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Driverless cars might…",
+   "choices": [
+    "have no downsides at all for anyone",
+    "have no upsides at all for anyone",
+    "reduce some accidents but change drivers' jobs",
+    "need no software to drive"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-6.1-e2",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "2-IC-20",
+   "topic": "Tech changes",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Self-checkout: faster lines for shoppers; the career tradeoff is…",
+   "choices": [
+    "fewer cashier jobs, new technician jobs",
+    "more cashier jobs, fewer shoppers",
+    "no change to any job at all",
+    "cheaper food and the same jobs"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-6.1-e3",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "2-IC-20",
+   "topic": "Tech changes",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "A map app that picks your route saves time. A cost is…",
+   "choices": [
+    "it never works outside town",
+    "you may stop learning your way around",
+    "it is always wrong about the time",
+    "it needs no battery at all"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-6.2-r1",
+   "lesson": "6.2",
+   "use": "review",
+   "cat": "2-IC-21",
+   "topic": "For everyone",
+   "kind": "recall",
+   "secs": 15,
+   "q": "When a technology works worse for some groups because of how it was built or tested, that is…",
+   "choices": [
+    "accessibility",
+    "bias",
+    "a protocol",
+    "a loop"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-6.2-e1",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "2-IC-21",
+   "topic": "For everyone",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Face unlock works badly for some skin tones. Most likely cause?",
+   "choices": [
+    "phones are too small to see a face",
+    "nobody uses face unlock any more",
+    "it is a cipher nobody can crack",
+    "it was tested with a group that all looked alike"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-6.2-e2",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "2-IC-21",
+   "topic": "For everyone",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "A \"best lunch\" survey skipped every vegetarian. The result is…",
+   "choices": [
+    "fair, because most students eat meat",
+    "accurate, because the sample was large",
+    "biased, because a group is missing",
+    "fine, vegetarians can vote next time"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-6.2-e3",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "2-CS-01",
+   "topic": "For everyone",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Users struggle to read the screen in bright sun. Which recommendation helps them and others?",
+   "choices": [
+    "smaller text so more fits",
+    "a high-brightness, high-contrast mode",
+    "more icons and fewer words",
+    "a longer charging cable"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-6.3-r1",
+   "lesson": "6.3",
+   "use": "review",
+   "cat": "2-IC-23",
+   "topic": "Share or keep",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Tricking a person into giving away information, like a message pretending to be from the school office, is…",
+   "choices": [
+    "a checksum error",
+    "social engineering",
+    "a network protocol",
+    "an automated task"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-6.3-r2",
+   "lesson": "6.3",
+   "use": "review",
+   "cat": "2-AP-16",
+   "topic": "Share or keep",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You add a free sound effect from a sound library to your game. Besides giving credit, what should you check first?",
+   "choices": [
+    "its license: what it lets you do",
+    "that it is the loudest one",
+    "that nobody else has used it",
+    "that it is the newest file"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-6.3-e1",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "2-IC-23",
+   "topic": "Share or keep",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Posting your full name, school and daily route online is risky because…",
+   "choices": [
+    "it uses too much data each month",
+    "strangers can use it to trick or find you",
+    "it is boring for other people",
+    "it is illegal in every country"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-6.3-e2",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "2-IC-23",
+   "topic": "Share or keep",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Making your high scores public: a benefit is competition; a risk is…",
+   "choices": [
+    "the game gets slower",
+    "the art gets worse",
+    "it shows who played and when",
+    "nothing at all"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-6.3-e3",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "2-AP-16",
+   "topic": "Share or keep",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You use a library's code in your game. The license asks for…",
+   "choices": [
+    "nothing at all from you",
+    "deleting it later on",
+    "a passphrase to unlock it",
+    "attribution (credit as it asks)"
+   ],
+   "answer": 3
+  }
+ ]
+}
