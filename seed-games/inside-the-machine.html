@@ -29,20 +29,22 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-body{flex:1 1 0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) fit-content(66%);gap:8px}
 .im-board{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px;min-height:0}
 .im-panel{display:flex;flex-direction:column;gap:8px;padding:12px;overflow:auto;min-height:0;scrollbar-width:thin}
-@media (orientation:landscape) and (min-width:640px){.im-body{grid-template-rows:none;grid-template-columns:minmax(0,9fr) minmax(0,11fr)}}
+@media (orientation:landscape) and (min-width:640px){.im-body{grid-template-rows:none;grid-template-columns:minmax(0,9fr) minmax(0,11fr)}#im.im-lefty .im-body{grid-template-columns:minmax(0,11fr) minmax(0,9fr)}#im.im-lefty .im-panel{order:-1}}
 @media (max-height:480px){.im-panel{padding:8px 10px;gap:6px}.im-tray{gap:6px}.im-tile{min-height:48px;padding:5px 10px 5px 12px;font-size:.95em}.im-ticket{padding:8px 12px}.im-ticket p{font-size:.85em}.im-board{padding:6px}
   .im-play.im-screen{top:calc(62px + env(safe-area-inset-top))}.im-play .im-top{position:fixed;top:calc(8px + env(safe-area-inset-top));inset-inline-start:calc(318px + env(safe-area-inset-left));inset-inline-end:calc(134px + env(safe-area-inset-right));justify-content:center;flex-wrap:nowrap;z-index:13;min-height:0;overflow:hidden}.im-play .im-top .im-pill{flex:0 1 auto}.im-top .ok-btn{flex:0 0 auto}
   .im-part{min-height:60px;font-size:.76em;padding:4px 6px}.im-part svg{width:28px;height:28px}.im-device{gap:8px 12px}}
 .im-prompt{font-weight:800;font-size:clamp(1.05em,2.6vmin,1.35em);line-height:1.25;margin:0;text-wrap:balance}
 .im-prompt:empty,.im-note:empty{display:none}
 .im-note{font-weight:600;opacity:.85;margin:0;font-size:.95em}
-.im-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-top:auto}
+/* the action row stays in view at the foot of the work panel while a long tray scrolls under it */
+.im-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-top:auto;position:sticky;bottom:0;z-index:2;background:var(--ok-card);padding-top:6px;box-shadow:12px 0 0 var(--ok-card),-12px 0 0 var(--ok-card),0 12px 0 var(--ok-card)}
+.im-actions:empty{display:none}
 .im-actions .ok-btn{min-height:48px}
 /* tiles: a tray of taps (cards, checks, chain pieces) */
 .im-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:8px}
 .im-tray.im-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))}
 .im-tray.im-two{grid-template-columns:1fr 1fr}
-.im-tile{position:relative;min-height:52px;padding:8px 12px 8px 14px;border-radius:16px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:700;line-height:1.2;display:flex;align-items:center;gap:8px;text-align:start;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
+.im-tile{position:relative;min-height:52px;padding:8px 12px 8px 14px;border-radius:16px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:700;line-height:1.2;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;text-align:start;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
 .im-tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--im-edge)}
 .im-tile.on{background:var(--im-sky-t);border-color:var(--im-sky)}
 .im-tile.good{background:var(--im-mint-t)}
@@ -50,6 +52,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-tile.dim{opacity:.55}
 .im-tile .im-k{position:absolute;top:1px;inset-inline-start:7px;font-size:.68em;font-weight:700;opacity:.5}
 .im-tile .im-num{position:absolute;top:-9px;inset-inline-end:-6px;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--im-sky);border:2px solid var(--im-edge);display:grid;place-items:center;font-size:.8em;font-weight:800;box-sizing:border-box}
+.im-tile>span:not([class]){flex:1 1 auto;min-width:0}
 .im-tile .im-cost{margin-inline-start:auto;flex:none;font-size:.85em;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--im-peach-t);border:2px solid var(--im-edge);white-space:nowrap}
 .im-tile canvas,.im-tile>svg{width:34px;height:34px;flex:none}
 .im-tile .im-mark{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--im-edge);display:grid;place-items:center;background:var(--ok-card)}
@@ -63,6 +66,17 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-pop{animation:im-pop 260ms cubic-bezier(.34,1.56,.64,1)}
 .im-shake{animation:im-shake 240ms linear}
 .ok-rm .im-pop,.ok-rm .im-shake{animation:none}
+.ok-rm .im-tile,.ok-rm .im-key,.ok-rm .im-part,.ok-rm .im-bin{transition:none}
+/* a chosen tile or part shows a check badge as well as its color (color cues setting, and plain sense) */
+.im-tile[aria-pressed=true]:not(:has(.im-num))::before,.im-part[aria-pressed=true]::before{content:'';position:absolute;top:-9px;inset-inline-end:-6px;width:24px;height:24px;border-radius:50%;background:var(--ok-card);border:2px solid var(--im-edge);box-sizing:border-box;z-index:1}
+.im-tile[aria-pressed=true]:not(:has(.im-num))::after,.im-part[aria-pressed=true]::after{content:'';position:absolute;top:-6px;inset-inline-end:2px;width:6px;height:11px;border:solid var(--ok-text);border-width:0 3px 3px 0;transform:rotate(45deg);z-index:1}
+.im-part[aria-pressed=true]::before{top:auto;bottom:-9px}.im-part[aria-pressed=true]::after{top:auto;bottom:0}
+/* large text on a narrow screen: one tile per row, so the tray is short tiles, not tall ones */
+@media (max-width:600px){#im.im-big .im-tray,#im.im-big .im-tray.im-two,#im.im-big .im-tray.im-list,#im.im-big .im-bins{grid-template-columns:1fr}}
+/* left-handed: the work panel and the action row sit on the start side */
+#im.im-lefty .im-actions{justify-content:flex-start}
+/* right-to-left: the flow arrows and the delete key point the other way (the kit does not mirror icons) */
+#im[dir=rtl] .im-arrow svg,#im[dir=rtl] .im-mirror svg{transform:scaleX(-1)}
 /* the device board: parts as big taps, wires drawn over them */
 .im-device{display:grid;grid-auto-flow:row dense;gap:10px 14px;justify-content:center;align-content:center;position:relative;max-width:100%}
 .im-part{position:relative;min-height:66px;min-width:76px;padding:6px 8px;border-radius:18px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:inherit;font-weight:800;font-size:.82em;line-height:1.1;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;z-index:1;text-align:center}
@@ -144,6 +158,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-modal{position:fixed;inset:0;z-index:21;display:flex;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));background:var(--ok-scrim);box-sizing:border-box}
 .im-modal .im-card{position:relative;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--im-edge);border-radius:28px;box-shadow:0 8px 0 var(--im-edge);padding:20px 18px 18px;width:min(520px,100%);max-height:100%;overflow:auto;scrollbar-width:thin;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;box-sizing:border-box;animation:im-pop 260ms cubic-bezier(.34,1.56,.64,1)}
 .ok-rm .im-modal .im-card{animation:none}
+.im-card>.ok-btn[data-focus]{position:sticky;bottom:0;z-index:1;box-shadow:0 0 0 8px var(--ok-card)}
 .im-card h2{margin:0;font-size:1.5em;font-weight:800;line-height:1.1;text-wrap:balance}
 .im-card p{margin:0;font-weight:600;line-height:1.4;max-width:36ch;text-wrap:pretty}
 .im-card .im-pic{height:84px;display:flex;align-items:center;gap:12px}
@@ -928,7 +943,9 @@ for (const k in VARS) document.documentElement.style.setProperty('--im-' + k, VA
 try { Oomba.ui.root().appendChild($('game')); } catch (e) { /* ignore */ }
 ROOT.dir = Oomba.dir || 'ltr';
 ROOT.lang = Oomba.lang || 'en';
-const syncMotion = () => ROOT.classList.toggle('ok-rm', reduced());
+const lefty = () => { try { return !!Oomba.settings.leftHanded; } catch (e) { return false; } };
+const bigText = () => { try { return +Oomba.settings.textSize >= 1.5; } catch (e) { return false; } };
+const syncMotion = () => { ROOT.classList.toggle('ok-rm', reduced()); ROOT.classList.toggle('im-lefty', lefty()); ROOT.classList.toggle('im-big', bigText()); };
 try { Oomba.settings.on('change', syncMotion); } catch (e) { /* ignore */ }
 syncMotion();
 Oomba.scene = 'title';
@@ -994,7 +1011,9 @@ function openCard(build, { onEscape = null, cls = '' } = {}) {
     if (!m.isConnected) return;
     const bs = [...card.querySelectorAll('button:not([disabled])')].filter(b => b.offsetParent !== null);
     const i = bs.indexOf(document.activeElement);
+    const rtl = ROOT.dir === 'rtl', fwd = e.key === 'ArrowDown' || (e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')), back = e.key === 'ArrowUp' || (e.key === (rtl ? 'ArrowRight' : 'ArrowLeft'));
     if (e.key === 'Tab' && bs.length) { e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); }
+    else if ((fwd || back) && bs.length) { e.preventDefault(); bs[(Math.max(i, 0) + (fwd ? 1 : -1) + bs.length) % bs.length].focus(); }
     else if (e.key === 'Escape') { if (onEscape) { e.preventDefault(); onEscape(); } }
     else if (/^[1-9]$/.test(e.key)) { const t = card.querySelectorAll('.im-check-tiles button, .im-key')[+e.key - 1]; if (t && card.querySelector('.im-check-tiles')) t.click(); else return; }
     else return;
@@ -1724,7 +1743,7 @@ function openQuestCard() {
       const pad = el('div', 'im-pad');
       const key = (label, fn, cls) => { const k = el('button', 'im-key' + (cls ? ' ' + cls : '')); k.type = 'button'; k.innerHTML = label; k.disabled = HAS_PARAMS; k.addEventListener('click', fn); pad.appendChild(k); return k; };
       for (let d = 1; d <= 9; d++) key(String(d), () => { if (code.length < 4) { code += String(d); sfx('select'); show(); } });
-      const back = key(icon('back', { size: 26 }), () => { code = code.slice(0, -1); sfx('pop'); show(); }); back.setAttribute('aria-label', tr('Delete'));
+      const back = key(icon('back', { size: 26 }), () => { code = code.slice(0, -1); sfx('pop'); show(); }, 'im-mirror'); back.setAttribute('aria-label', tr('Delete'));
       key('0', () => { if (code.length < 4) { code += '0'; sfx('select'); show(); } });
       const go = key(icon('check', { size: 26 }), () => { if (code.length === 4) { close(code); } else toast(tr('A quest code has four digits.')); }, 'go'); go.setAttribute('aria-label', tr('Go'));
       card.appendChild(pad);
@@ -1772,6 +1791,15 @@ document.addEventListener('keydown', e => {
     const live = [...SCREENS.play.querySelectorAll('.im-tray button, .im-bins button, .im-device button')].filter(b => !b.disabled && b.offsetParent !== null);
     const b = live[+e.key - 1]; if (b) { e.preventDefault(); b.click(); }
   } else if (e.key === 'Enter' && S.ui.primary && !S.ui.primary.disabled && document.activeElement && document.activeElement.tagName !== 'BUTTON') { e.preventDefault(); S.ui.primary.click(); }
+  else if (/^Arrow(Left|Right|Up|Down)$/.test(e.key)) {
+    // arrows walk the group the focused button sits in: Left/Right (mirrored in RTL) one step, Up/Down one row
+    const a = document.activeElement, grp = a && a.tagName === 'BUTTON' ? a.closest('.im-tray, .im-bins, .im-device, .im-switches, .im-grid, .im-actions, .im-top, .im-stepper') : null; if (!grp) return;
+    const bs = [...grp.querySelectorAll('button')].filter(b => !b.disabled && b.offsetParent !== null), i = bs.indexOf(a); if (i < 0 || bs.length < 2) return;
+    const rtl = ROOT.dir === 'rtl', side = e.key === 'ArrowRight' ? (rtl ? -1 : 1) : e.key === 'ArrowLeft' ? (rtl ? 1 : -1) : 0;
+    const top0 = bs[0].getBoundingClientRect().top, cols = Math.max(1, bs.filter(b => Math.abs(b.getBoundingClientRect().top - top0) < 4).length);
+    const j = side ? i + side : i + (e.key === 'ArrowDown' ? cols : -cols);
+    if (bs[j]) { e.preventDefault(); bs[j].focus({ preventScroll: false }); }
+  }
 });
 
 /* ---------- test hooks (the cover, the playtest, the unit test): deterministic from a seed ---------- */

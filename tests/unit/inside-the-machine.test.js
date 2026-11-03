@@ -20,6 +20,7 @@ const LABEL = /^\d{1,2}\/\d{1,2} (levels|cases|tickets|cards), \d{1,3} stars(, \
 const { frameDocument, frameCsp, SANDBOX } = await import('../../server/services/frame.js');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { kitTag, kitPackTag } = await import('../../server/services/kit.js');
+const { frameProblems } = await import('../e2e/frame-fit.js');
 
 const ctx = vm.createContext({ window: {} });
 for (const m of HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], ctx);
@@ -181,7 +182,7 @@ async function open({ size = { width: 390, height: 844 }, lang = 'en', params = 
   const shim = params ? `<script>if (window.BRB && !('params' in BRB)) Object.defineProperty(BRB, 'params', { value: Object.freeze(${JSON.stringify(params)}) });</script>` : '';
   const doc = frameDocument(shim + HTML, init);
   const host = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
-  const errors = [], messages = [];
+  const errors = [], messages = [], consoleErrors = [];
   await ctx.route('**/*', route => {
     const u = route.request().url();
     if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
@@ -192,21 +193,25 @@ async function open({ size = { width: 390, height: 844 }, lang = 'en', params = 
   });
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push(String(e.message)));
-  page.on('console', msg => { if (msg.type() === 'error' || msg.type() === 'warning') messages.push(msg.text()); });
+  page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); else if (msg.type() === 'warning') messages.push(msg.text()); });
   await page.goto(HOST + '/', { waitUntil: 'load' });
   let frame = null;
   for (let i = 0; i < 200 && !frame; i++) { frame = page.frames().find(f => f.url() === HOST + '/frame'); if (!frame) await page.waitForTimeout(25); }
   frame.on('pageerror', e => errors.push(String(e.message)));
   await frame.waitForFunction(() => window.__brbTest && typeof window.__brbTest.start === 'function' && window.__brbTest.state().ready, null, { timeout: 60_000 });
   const shot = async name => { if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.waitForTimeout(150); await page.screenshot({ path: path.join(SHOTS, `${name}-${size.width}x${size.height}-${lang}.png`) }); } };
-  return { ctx, page, frame, errors, messages, shot };
+  return { ctx, page, frame, errors, messages, consoleErrors, shot };
 }
 const T = (frame, fn, ...a) => frame.evaluate(([f, a]) => window.__brbTest[f](...a), [fn, a]);
 const solOf = id => L.level(id).sol;
 
-test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It desk, reports progress in the label grammar, renders on a phone and a desktop, in English and Arabic', { skip, timeout: 240_000 }, async () => {
-  for (const [size, lang] of [[{ width: 390, height: 844 }, 'en'], [{ width: 1280, height: 800 }, 'ar']]) {
-    const { ctx, frame, errors, messages, shot } = await open({ size, lang });
+test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It desk, reports progress in the label grammar, renders on a phone and a desktop, in English and Arabic', { skip, timeout: 300_000 }, async () => {
+  const PHONE = { width: 390, height: 844 }, DESK = { width: 1280, height: 800 };
+  for (const [size, lang, full] of [[PHONE, 'en', true], [DESK, 'ar', true], [PHONE, 'ar', false], [DESK, 'en', false]]) {
+    const { ctx, frame, errors, messages, consoleErrors, shot } = await open({ size, lang });
+    // nothing clipped, overlapping, squashed or outside the frame; on a phone at 150% text a tray of six long tiles is
+    // a list that scrolls under the pinned action row, which the audit's small-scroller rule would otherwise flag
+    const fit = async (what, { scrolls = false } = {}) => { const p = (await frameProblems(frame)).filter(x => !(scrolls && /needs scrolling/.test(x.what))); assert.deepEqual(p, [], `${what} fits at ${size.width}x${size.height} ${lang}`); };
     try {
       let s = await T(frame, 'state');
       assert.equal(s.screen, 'title'); assert.equal(s.ready, true);
@@ -248,6 +253,9 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       await T(frame, 'check', 1);
       await frame.waitForFunction(() => window.__brbTest.state().modal === false);
       s = await T(frame, 'state'); assert.match(s.label, /^1\/7 tickets, 3 stars, \d\/1 checks$/, s.label);
+      await fit('the results card');
+      if (lang === 'ar') assert.equal(await frame.evaluate(() => document.getElementById('im').dir), 'rtl');
+      if (!full) { assert.deepEqual(errors, [], 'no page errors'); assert.deepEqual(consoleErrors, [], 'no console errors'); continue; }
       // Pro Fix-It: the flowchart first, then the swap test (the user's cable)
       await T(frame, 'closeDialog');
       s = await T(frame, 'start', { chapter: 'fixit', band: '2', level: 3, seed: 2 });
@@ -277,6 +285,14 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
         if (id === 'gadget-4' || id === 'design-2-4') { assert.ok(s.modal, `${id}: the verdict card`); assert.equal((await frame.$$('.im-modal .im-fv')).length, 2, `${id}: both choices explained`); await shot(id + '-verdict'); }
       }
       await T(frame, 'closeDialog');
+      // text at 150%: the densest screens still fit (the audit rules of tests/e2e/frame-fit.js)
+      for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
+      await frame.evaluate(() => { Oomba.settings.textSize = 1.5; });
+      s = await T(frame, 'start', { chapter: 'fixit', band: '1b', level: 3, seed: 4 }); await T(frame, 'hint'); await T(frame, 'hint'); await frame.waitForTimeout(80); await fit('the Fix-It tray with two hints at 150%', { scrolls: size.width < 600 }); await shot('ticket-150');
+      s = await T(frame, 'start', { chapter: 'gadget', band: '2', level: 2, seed: 4 }); for (const pid of solOf('gadget-2').picked) await T(frame, 'tap', pid); await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); }); await frame.waitForFunction(() => window.__brbTest.state().viewPhase === 'quotes'); await frame.waitForTimeout(80); await fit('the gadget quotes at 150%', { scrolls: size.width < 600 });
+      s = await T(frame, 'start', { chapter: 'design-lab', band: '2', level: 5, seed: 4 }); await T(frame, 'tap', L.level('design-2-5').struggle); await frame.waitForTimeout(600); await fit('the Design Lab changes at 150%', { scrolls: size.width < 600 }); await shot('persona-150');
+      s = await T(frame, 'start', { chapter: 'parts', band: '1b', level: 1, seed: 4 }); await T(frame, 'questCard'); await frame.waitForTimeout(80); await fit('the Quest Card at 150%'); await T(frame, 'closeDialog');
+      await frame.evaluate(() => { Oomba.settings.textSize = 1; });
       // the Daily Crew Challenge: the same level all day, its own card, no lesson progress
       for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
       const pick = await T(frame, 'dailyPick', '2'); assert.ok(L.level(pick.id) && L.level(pick.id).bands.includes('2'), JSON.stringify(pick));
@@ -307,8 +323,8 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       s = await T(frame, 'state'); assert.equal(s.chapter, 'parts'); assert.equal(s.band, '1b'); assert.equal(s.lesson, true); assert.equal(s.lock, false);
       assert.equal(await T(frame, 'code', '7777'), false, 'no seventh chapter');
       if (lang === 'ar') { assert.equal(await frame.evaluate(() => document.getElementById('im').dir), 'rtl'); assert.equal(await frame.evaluate(() => document.querySelector('.im-slots') === null), true); }
-      const errs = errors.concat(messages.filter(m => /Uncaught|TypeError|ReferenceError/.test(m)));
-      assert.deepEqual(errs, [], 'no page errors');
+      assert.deepEqual(errors, [], 'no page errors'); assert.deepEqual(consoleErrors, [], 'no console errors');
+      assert.deepEqual(messages.filter(m => /Uncaught|TypeError|ReferenceError/.test(m)), [], 'no warnings that are really errors');
     } finally { await ctx.close(); }
   }
 });
