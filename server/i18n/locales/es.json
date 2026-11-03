@@ -4377,6 +4377,10 @@
         "q4": "¿Es mejor crear juegos que jugarlos?",
         "a4": "Las dos cosas tienen su lugar. Crear un juego pide a los niños planear, explicar con claridad, probar y corregir, así que es un tipo de tiempo de pantalla activo."
       }
+    },
+    "demo": {
+      "h": "Míralo en menos de un minuto",
+      "note": "Un video corto con música y subtítulos en pantalla: niños juegan a juegos educativos (un globo terráqueo, ¿Qué prefieres?, ajedrez y Gulp City), luego un niño le describe un juego al Builder, que lo crea y lo juega para comprobar que funciona, y el niño lo juega. Al final, cómo se mantiene seguro: un nombre inventado sin correo electrónico, amigos que se agregan solo con un código y juegos que siguen siendo privados hasta que el niño decide compartirlos."
     }
   },
   "connections": {

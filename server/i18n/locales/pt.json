@@ -4379,6 +4379,10 @@
         "q4": "Criar jogos é melhor do que jogar?",
         "a4": "Os dois têm seu lugar. Criar um jogo pede que a criança planeje, explique com clareza, teste e corrija, então é um tipo ativo de tempo de tela."
       }
+    },
+    "demo": {
+      "h": "Veja em menos de um minuto",
+      "note": "Um vídeo curto com música e legendas na tela: crianças jogam jogos educativos (um globo terrestre, Você prefere, xadrez e Gulp City), depois uma criança descreve um jogo para o Builder, que o cria e joga para verificar se funciona, e a criança joga. Por fim, como tudo continua seguro: um nome inventado sem e-mail, amigos adicionados só com um código e jogos que ficam privados até a criança decidir compartilhar."
     }
   },
   "connections": {

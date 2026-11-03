@@ -357,6 +357,17 @@ test('/teachers: honest privacy wording with Sign in with Google, and a call to 
   } finally { [config.googleClientId, config.googleClientSecret] = saved; }
 });
 
+test('/parents: the short video (muted, poster, captions track, written description) and its files are served', async () => {
+  const page = await get('/parents');
+  assert.equal(page.status, 200);
+  assert.match(page.text, /<video class="lp-video" controls muted playsinline preload="none"[^>]*poster="\/video\/oomba-parents-poster\.jpg"[^>]*aria-describedby="video-note"/);
+  assert.match(page.text, /<source src="\/video\/oomba-parents\.mp4" type="video\/mp4">/);
+  assert.match(page.text, /<track kind="captions" src="\/video\/oomba-parents\.en\.vtt" srclang="en"/);
+  assert.match(page.text, /id="video-note"[^>]*>A short video with music and captions on screen/);
+  for (const f of ['/video/oomba-parents.mp4', '/video/oomba-parents-poster.jpg', '/video/oomba-parents.en.vtt']) assert.equal((await get(f)).status, 200, f);
+  assert.match((await get('/es/parents')).text, /Míralo en menos de un minuto/);
+});
+
 test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, in the sitemap; the way in fits who is reading', async () => {
   const page = await get('/teachers/live');
   assert.equal(page.status, 200);

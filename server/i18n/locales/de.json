@@ -4378,6 +4378,10 @@
         "q4": "Ist Spiele bauen besser als Spiele spielen?",
         "a4": "Beides hat seinen Platz. Wer ein Spiel baut, muss planen, klar erklären, testen und verbessern, deshalb ist es eine aktive Art von Bildschirmzeit."
       }
+    },
+    "demo": {
+      "h": "In weniger als einer Minute erklärt",
+      "note": "Ein kurzes Video mit Musik und Untertiteln im Bild: Kinder spielen Lernspiele (einen Globus, Würdest du eher, Schach und Gulp City), dann beschreibt ein Kind dem Builder ein Spiel, der es baut und es probespielt, um zu prüfen, ob es funktioniert, und das Kind spielt es. Zum Schluss, wie es sicher bleibt: ein ausgedachter Name ohne E-Mail, Freunde nur mit einem Code und Spiele, die privat bleiben, bis das Kind sie teilen möchte."
     }
   },
   "connections": {
