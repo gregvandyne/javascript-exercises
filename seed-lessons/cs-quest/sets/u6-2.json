@@ -62,10 +62,10 @@
    "secs": 20,
    "q": "Driverless cars might…",
    "choices": [
-    "have no downsides at all",
-    "have no upsides at all",
+    "have no downsides at all for anyone",
+    "have no upsides at all for anyone",
     "reduce some accidents but change drivers' jobs",
-    "need no software"
+    "need no software to drive"
    ],
    "answer": 2
   },
@@ -80,9 +80,9 @@
    "q": "Self-checkout: faster lines for shoppers; the career tradeoff is…",
    "choices": [
     "fewer cashier jobs, new technician jobs",
-    "more cashier jobs",
-    "no change to jobs",
-    "cheaper food only"
+    "more cashier jobs, fewer shoppers",
+    "no change to any job at all",
+    "cheaper food and the same jobs"
    ],
    "answer": 0
   },
@@ -96,10 +96,10 @@
    "secs": 20,
    "q": "A map app that picks your route saves time. A cost is…",
    "choices": [
-    "it never works",
+    "it never works outside town",
     "you may stop learning your way around",
-    "it is always wrong",
-    "it needs no battery"
+    "it is always wrong about the time",
+    "it needs no battery at all"
    ],
    "answer": 1
   },
@@ -130,9 +130,9 @@
    "secs": 20,
    "q": "Face unlock works badly for some skin tones. Most likely cause?",
    "choices": [
-    "phones are too small",
-    "nobody uses it",
-    "it is a cipher",
+    "phones are too small to see a face",
+    "nobody uses face unlock any more",
+    "it is a cipher nobody can crack",
     "it was tested with a group that all looked alike"
    ],
    "answer": 3
@@ -147,10 +147,10 @@
    "secs": 20,
    "q": "A \"best lunch\" survey skipped every vegetarian. The result is…",
    "choices": [
-    "perfect",
-    "random",
+    "fair, because most students eat meat",
+    "accurate, because the sample was large",
     "biased, because a group is missing",
-    "encrypted"
+    "fine, vegetarians can vote next time"
    ],
    "answer": 2
   },
@@ -164,10 +164,10 @@
    "secs": 20,
    "q": "Users struggle to read the screen in bright sun. Which recommendation helps them and others?",
    "choices": [
-    "smaller text",
+    "smaller text so more fits",
     "a high-brightness, high-contrast mode",
-    "more icons",
-    "a longer cable"
+    "more icons and fewer words",
+    "a longer charging cable"
    ],
    "answer": 1
   },
@@ -179,12 +179,12 @@
    "topic": "Share or keep",
    "kind": "recall",
    "secs": 15,
-   "q": "Tricking a person into giving away information, like a fake \"office\" message, is…",
+   "q": "Tricking a person into giving away information, like a message pretending to be from the school office, is…",
    "choices": [
-    "a checksum",
+    "a checksum error",
     "social engineering",
-    "a protocol",
-    "automation"
+    "a network protocol",
+    "an automated task"
    ],
    "answer": 1
   },
@@ -215,10 +215,10 @@
    "secs": 20,
    "q": "Posting your full name, school and daily route online is risky because…",
    "choices": [
-    "it uses too much data",
+    "it uses too much data each month",
     "strangers can use it to trick or find you",
-    "it is boring",
-    "it is illegal everywhere"
+    "it is boring for other people",
+    "it is illegal in every country"
    ],
    "answer": 1
   },
@@ -249,9 +249,9 @@
    "secs": 20,
    "q": "You use a library's code in your game. The license asks for…",
    "choices": [
-    "nothing at all",
-    "deleting it later",
-    "a password",
+    "nothing at all from you",
+    "deleting it later on",
+    "a passphrase to unlock it",
     "attribution (credit as it asks)"
    ],
    "answer": 3

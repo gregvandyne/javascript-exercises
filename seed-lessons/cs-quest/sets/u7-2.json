@@ -66,7 +66,7 @@
    "secs": 20,
    "q": "Your team has 3 sessions and 4 features. You should…",
    "choices": [
-    "build everything at once",
+    "build everything at the same time",
     "skip planning",
     "set milestones and split the features",
     "let one person do it all"
@@ -83,10 +83,10 @@
    "secs": 20,
    "q": "Which plan is best decomposed?",
    "choices": [
-    "\"the whole game\"",
+    "\"the whole game, built all at once\"",
     "start screen · play loop · scoring · end screen",
-    "\"make it fun\"",
-    "\"add levels\""
+    "\"make it fun, make it cool, make it big\"",
+    "\"add levels, then add more levels\""
    ],
    "answer": 1
   },
@@ -101,9 +101,9 @@
    "q": "A 6-box flowchart of your game's main rule helps because…",
    "choices": [
     "it shows the decisions before you build",
-    "the Builder requires it",
-    "it is prettier",
-    "it replaces testing"
+    "the Builder requires it first",
+    "it is prettier than a list",
+    "it replaces testing later"
    ],
    "answer": 0
   },
@@ -134,10 +134,10 @@
    "secs": 20,
    "q": "Why write test cases before you test?",
    "choices": [
-    "because testing is optional",
+    "because testing is optional anyway",
     "so you check what matters, not just what you notice",
-    "to use more messages",
-    "so the Builder rests"
+    "to use up more of the messages",
+    "so the Builder gets a rest between them"
    ],
    "answer": 1
   },
@@ -185,9 +185,9 @@
    "secs": 15,
    "q": "Changing your game because of what players said is…",
    "choices": [
-    "automation",
-    "encryption",
-    "decomposition",
+    "automating the game",
+    "encrypting the feedback",
+    "decomposing the game",
     "incorporating feedback"
    ],
    "answer": 3
@@ -202,9 +202,9 @@
    "secs": 20,
    "q": "Feedback from many testers helps because…",
    "choices": [
-    "one tester is always enough",
-    "it is faster",
-    "testers are smarter",
+    "one tester's opinion is always enough",
+    "it is faster than testing it yourself",
+    "testers are smarter than makers",
     "different players find different problems"
    ],
    "answer": 3
@@ -219,10 +219,10 @@
    "secs": 20,
    "q": "7 of 9 testers rated level 2 \"too hard\". Which change does the data support?",
    "choices": [
-    "make level 1 harder",
-    "add a level 3",
+    "make level 1 harder to match",
+    "add a level 3 after it",
     "make level 2 easier, then test again",
-    "change the title"
+    "change the title of the game"
    ],
    "answer": 2
   },
@@ -270,10 +270,10 @@
    "secs": 15,
    "q": "Documentation makes a program easier to…",
    "choices": [
-    "sell",
+    "sell for more money",
     "follow, test and debug",
-    "encrypt",
-    "shorten"
+    "encrypt and hide",
+    "run much faster"
    ],
    "answer": 1
   },
@@ -304,7 +304,7 @@
    "secs": 15,
    "q": "Credits in your game should name…",
    "choices": [
-    "where your family lives",
+    "your birthday and your age",
     "your password",
     "nothing",
     "the template, art and ideas you reused"

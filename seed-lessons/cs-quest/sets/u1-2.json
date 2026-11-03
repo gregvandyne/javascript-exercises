@@ -65,7 +65,7 @@
     "a drawing of Bolt",
     "a photo of the grid",
     "a list of names",
-    "IF gem ahead THEN pick up"
+    "IF on a gem THEN pick up"
    ],
    "answer": 3
   },
@@ -128,7 +128,7 @@
    "topic": "Loops",
    "kind": "apply",
    "secs": 20,
-   "q": "How many squares does repeat 3 { repeat 2 { forward } } move Bolt?",
+   "q": "How many squares does repeat 3 { repeat 2 { move } } take Bolt?",
    "choices": [
     "5",
     "3",
@@ -145,7 +145,7 @@
    "topic": "Loops",
    "kind": "apply",
    "secs": 20,
-   "q": "repeat 4 { forward, repeat 2 { pick up } }: how many pick-ups?",
+   "q": "repeat 4 { move, repeat 2 { pick up } }: how many pick-ups?",
    "choices": [
     "6",
     "4",
@@ -162,12 +162,12 @@
    "topic": "Loops",
    "kind": "apply",
    "secs": 20,
-   "q": "Which program moves Bolt 8 squares with the fewest blocks?",
+   "q": "Bolt must cross 3 rooms, each 4 squares long, turning right at each door. Which program does it with the fewest blocks?",
    "choices": [
-    "repeat 8 { forward }",
-    "eight forward blocks",
-    "repeat 4 { forward }",
-    "forward, repeat 7"
+    "repeat 3 { repeat 4 { move }, turn right }",
+    "twelve move blocks and three turns",
+    "repeat 12 { move }",
+    "repeat 4 { move }, turn right"
    ],
    "answer": 0
   },
@@ -181,10 +181,10 @@
    "secs": 15,
    "q": "A condition joined with AND, OR or NOT is a…",
    "choices": [
-    "compound condition",
-    "nested loop",
-    "parameter",
-    "procedure"
+    "a compound condition",
+    "a nested loop",
+    "a repeat-until loop",
+    "a named procedure"
    ],
    "answer": 0
   },
@@ -213,7 +213,7 @@
    "topic": "Conditionals",
    "kind": "apply",
    "secs": 20,
-   "q": "\"if NOT wall ahead: forward\". When does Bolt move?",
+   "q": "\"if NOT wall ahead: move\". When does Bolt move?",
    "choices": [
     "when there is a wall ahead",
     "never",
@@ -230,12 +230,12 @@
    "topic": "Conditionals",
    "kind": "analyze",
    "secs": 20,
-   "q": "Which program solves any maze?",
+   "q": "Which program can reach the goal in a maze you have not seen before, without bumping a wall?",
    "choices": [
-    "forward, forward, turn left, forward",
-    "repeat until goal { if path ahead: forward, else: turn right }",
-    "repeat 10 { forward }",
-    "if path ahead: forward"
+    "move, move, turn left, move, move, turn right",
+    "repeat until goal { if path ahead: move, else: turn left }",
+    "repeat until goal { move }",
+    "if path ahead: move, else: turn left"
    ],
    "answer": 1
   },
@@ -249,10 +249,10 @@
    "secs": 15,
    "q": "A variable that holds only true or false is a…",
    "choices": [
-    "number",
-    "boolean (flag)",
-    "word",
-    "list"
+    "a number box",
+    "a flag (boolean)",
+    "a word box",
+    "a list of words"
    ],
    "answer": 1
   },
@@ -283,10 +283,10 @@
    "secs": 20,
    "q": "Which type fits \"is the door locked?\"",
    "choices": [
-    "true/false (flag)",
-    "number",
-    "word",
-    "color list"
+    "a true/false flag",
+    "a number",
+    "a word",
+    "a color list"
    ],
    "answer": 0
   },
@@ -298,7 +298,7 @@
    "topic": "Variables",
    "kind": "apply",
    "secs": 20,
-   "q": "energy is 10. *change energy by -2* runs three times. What is energy?",
+   "q": "energy is 10. \"change energy by -2\" runs three times. What is energy?",
    "choices": [
     "8",
     "4",
@@ -318,9 +318,9 @@
    "q": "A named group of steps you can call many times is a…",
    "choices": [
     "parameter",
-    "packet",
+    "loop",
     "procedure",
-    "pixel"
+    "event"
    ],
    "answer": 2
   },
@@ -351,10 +351,10 @@
    "secs": 20,
    "q": "Why give a procedure a parameter?",
    "choices": [
-    "to make it run faster",
-    "to avoid loops",
+    "to make the procedure run faster",
+    "so it never needs a loop inside",
     "so one procedure can do different amounts",
-    "so it cannot be called"
+    "so it can only be called once"
    ],
    "answer": 2
   },

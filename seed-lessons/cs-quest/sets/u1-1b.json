@@ -43,12 +43,12 @@
    "topic": "Sequences",
    "kind": "recall",
    "secs": 15,
-   "q": "Which block makes Bolt move one square?",
+   "q": "Which block takes Bolt one square ahead?",
    "choices": [
     "turn left",
     "repeat",
     "if",
-    "forward"
+    "move"
    ],
    "answer": 3
   },
@@ -77,12 +77,12 @@
    "topic": "Sequences",
    "kind": "apply",
    "secs": 20,
-   "q": "Bolt must pick up every gem on the way to the flag. When you compare two routes, what matters most?",
+   "q": "The level asks for every gem. Route A and Route B both reach the flag. Route A misses one gem. Route B gets every gem but uses 3 more blocks. Which route is right?",
    "choices": [
-    "that the route has the most turns",
-    "that the route collects all the gems before the flag",
-    "that the route is the longest one",
-    "that the route uses the most blocks"
+    "Route A, fewer blocks always wins",
+    "Route B, it does everything the level asks",
+    "Either, they both reach the flag",
+    "Neither, the gems do not matter"
    ],
    "answer": 1
   },
@@ -96,10 +96,10 @@
    "secs": 20,
    "q": "Bolt faces a wall. The gem is two squares to the right. Which program reaches it?",
    "choices": [
-    "forward, forward, turn right",
-    "turn right, forward, forward",
-    "turn left, forward, forward",
-    "forward, turn right, turn right"
+    "move, move, turn right",
+    "turn right, move, move",
+    "turn left, move, move",
+    "move, turn right, turn right"
    ],
    "answer": 1
   },
@@ -111,7 +111,7 @@
    "topic": "Sequences",
    "kind": "recall",
    "secs": 15,
-   "q": "What does the block *turn left* do to Bolt?",
+   "q": "What does the block \"turn left\" do to Bolt?",
    "choices": [
     "moves Bolt one square left",
     "moves Bolt back one square",
@@ -164,10 +164,10 @@
    "secs": 20,
    "q": "Which program moves Bolt 8 squares with the fewest blocks?",
    "choices": [
-    "eight forward blocks",
-    "repeat 4 { forward }",
-    "repeat 8 { forward }",
-    "forward, repeat 7"
+    "eight move blocks",
+    "repeat 4 { move }",
+    "repeat 8 { move }",
+    "repeat 7 { move }, move"
    ],
    "answer": 2
   },
@@ -179,7 +179,7 @@
    "topic": "Loops",
    "kind": "apply",
    "secs": 20,
-   "q": "How many squares does repeat 3 { forward, forward } move Bolt?",
+   "q": "How many squares does repeat 3 { move, move } take Bolt?",
    "choices": [
     "3",
     "6",
@@ -196,11 +196,11 @@
    "topic": "Loops",
    "kind": "analyze",
    "secs": 20,
-   "q": "The repeat is around the wrong blocks, so Bolt turns 4 times. What is the bug?",
+   "q": "Bolt should move 4 squares, but it spins in place 4 times and stays put. What is the bug?",
    "choices": [
-    "the loop wraps the turn, not the forward",
+    "the repeat is around the turn, not the move",
     "the loop count is too small",
-    "Bolt needs more gems",
+    "Bolt needs more gems first",
     "the goal is in the wrong place"
    ],
    "answer": 0
@@ -216,7 +216,7 @@
    "q": "A block that lets Bolt choose what to do is…",
    "choices": [
     "a repeat block",
-    "a forward block",
+    "a move block",
     "an if block",
     "a stop block"
    ],
@@ -230,12 +230,12 @@
    "topic": "Conditionals",
    "kind": "apply",
    "secs": 20,
-   "q": "Bolt cannot see ahead. Which program never bumps a wall?",
+   "q": "You do not know where the walls are. Which program never bumps a wall?",
    "choices": [
-    "forward, forward, forward",
-    "if path ahead: forward, else: turn",
-    "repeat 4 { forward }",
-    "turn left, forward"
+    "move, move, move, move",
+    "if path ahead: move, else: turn left",
+    "repeat 4 { move, move }",
+    "turn left, move, move, move"
    ],
    "answer": 1
   },
@@ -247,11 +247,11 @@
    "topic": "Conditionals",
    "kind": "analyze",
    "secs": 20,
-   "q": "What is the difference between *when* and *if*?",
+   "q": "What is the difference between \"when\" and \"if\"?",
    "choices": [
-    "when repeats; if moves",
-    "they are the same block",
-    "if is only for turning",
+    "when runs once at the start; if runs at the end",
+    "they are the same block with two names",
+    "when is for gems; if is for walls",
     "when waits for something to happen; if checks now"
    ],
    "answer": 3
@@ -264,12 +264,12 @@
    "topic": "Conditionals",
    "kind": "apply",
    "secs": 20,
-   "q": "\"when gem collected: open door\". When does the door open?",
+   "q": "\"when a gem is picked up: open door\". When does the door open?",
    "choices": [
     "the moment Bolt picks up a gem",
     "at the start of the program",
-    "after every forward",
-    "never"
+    "after every move",
+    "never, the door stays shut"
    ],
    "answer": 0
   },
@@ -286,7 +286,7 @@
     "loop",
     "event",
     "variable",
-    "packet"
+    "block"
    ],
    "answer": 2
   },
@@ -298,7 +298,7 @@
    "topic": "Variables",
    "kind": "recall",
    "secs": 15,
-   "q": "What does *change score by 1* do?",
+   "q": "What does \"change score by 1\" do?",
    "choices": [
     "sets the score to 1",
     "adds one to the score",
@@ -315,7 +315,7 @@
    "topic": "Variables",
    "kind": "apply",
    "secs": 20,
-   "q": "gems is 0. Bolt picks up 3 gems; each time *change gems by 1* runs. What is gems now?",
+   "q": "gems is 0. Bolt picks up 3 gems; each time \"change gems by 1\" runs. What is gems now?",
    "choices": [
     "3",
     "0",
@@ -332,7 +332,7 @@
    "topic": "Variables",
    "kind": "apply",
    "secs": 20,
-   "q": "What does *set lives to 3* do?",
+   "q": "What does \"set lives to 3\" do?",
    "choices": [
     "adds 3 to the lives box",
     "takes 3 away from lives",
@@ -369,9 +369,9 @@
    "q": "Changing part of a program someone else made so it does something new is called…",
    "choices": [
     "debugging",
-    "sorting",
+    "looping",
     "remixing",
-    "encrypting"
+    "decomposing"
    ],
    "answer": 2
   },
@@ -387,7 +387,7 @@
    "choices": [
     "writing every step yourself on a blank grid",
     "deleting a block you do not like",
-    "taking the Cross Room block and adding a gem pick-up to it",
+    "changing a classmate's My Block so it also opens the door",
     "running the same program twice"
    ],
    "answer": 2
@@ -402,9 +402,9 @@
    "secs": 20,
    "q": "Bolt must cross four identical rooms. What is the smart move?",
    "choices": [
-    "write every step four times",
+    "write out every step four times in a row",
     "make one My Block: Room and call it 4 times",
-    "use one very long forward",
+    "use one very long move block",
     "skip the rooms"
    ],
    "answer": 1
@@ -419,10 +419,10 @@
    "secs": 20,
    "q": "Which group of steps most deserves its own named block?",
    "choices": [
-    "the very first step",
-    "a single turn",
+    "the very first step of the program",
+    "a single turn in the middle",
     "steps that repeat in several places",
-    "the last step only"
+    "only the very last step"
    ],
    "answer": 2
   },
@@ -434,14 +434,14 @@
    "topic": "Functions",
    "kind": "apply",
    "secs": 20,
-   "q": "You changed one step of a shelf block and used it. What should stay on it?",
+   "q": "You take a My Block the game gives you that crosses one room, and add a gem pick-up to it. What have you made?",
    "choices": [
-    "nothing, it is yours now",
-    "a new name only",
-    "the old bug",
-    "the \"based on\" line that credits the original"
+    "a copy with nothing new in it",
+    "a remix: the old block plus something new",
+    "a bug in the old block",
+    "a block built from nothing"
    ],
-   "answer": 3
+   "answer": 1
   }
  ]
 }

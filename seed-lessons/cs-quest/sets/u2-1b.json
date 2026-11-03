@@ -62,9 +62,9 @@
    "q": "\"Expected vs actual\" means…",
    "choices": [
     "what should happen vs what did happen",
-    "fast vs slow programs",
-    "long vs short programs",
-    "easy vs hard levels"
+    "fast programs vs slow programs",
+    "long programs vs short programs",
+    "easy levels vs hard levels"
    ],
    "answer": 0
   },
@@ -80,7 +80,7 @@
    "choices": [
     "step through and watch where it goes wrong",
     "delete everything and start again",
-    "add more forward blocks",
+    "add more move blocks",
     "ask for the answer"
    ],
    "answer": 0
@@ -112,10 +112,10 @@
    "secs": 20,
    "q": "When is a program really fixed?",
    "choices": [
-    "when it looks right",
+    "when it looks right on the screen",
     "when you test it and it does what you expected",
-    "when it has fewer blocks",
-    "when a friend says so"
+    "when it has fewer blocks than before",
+    "when a friend says it is fine"
    ],
    "answer": 1
   },
@@ -129,9 +129,9 @@
    "secs": 15,
    "q": "Who is the navigator in pair programming?",
    "choices": [
-    "the one who taps the blocks",
-    "the teacher",
-    "the fastest kid",
+    "the one who taps the blocks on the tablet",
+    "the teacher walking around the room",
+    "the kid who finishes the level fastest",
     "the one who reads the plan and watches for mistakes"
    ],
    "answer": 3

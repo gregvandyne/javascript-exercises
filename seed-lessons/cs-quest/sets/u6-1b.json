@@ -43,10 +43,10 @@
    "topic": "Tech changes",
    "kind": "recall",
    "secs": 15,
-   "q": "Which invention first let people talk to someone far away?",
+   "q": "Which invention first let people send a written message across the world in seconds?",
    "choices": [
     "the printing press",
-    "the telephone",
+    "email",
     "the bicycle",
     "the oven"
    ],
@@ -79,10 +79,10 @@
    "secs": 20,
    "q": "People change technology too. Which is an example?",
    "choices": [
-    "the sun rises every day",
-    "rain falls on roofs",
+    "a phone gets slower as it gets older",
+    "a game needs a charger to work",
     "captions were added because viewers asked",
-    "birds build nests"
+    "a new tablet costs more than an old one"
    ],
    "answer": 2
   },
@@ -130,10 +130,10 @@
    "secs": 20,
    "q": "Captions in a game help…",
    "choices": [
-    "only the game designer",
-    "nobody at all",
+    "only the person who designed the game",
+    "nobody, they just get in the way",
     "people who cannot hear and people in a noisy room",
-    "only people who can hear"
+    "only people who can already hear well"
    ],
    "answer": 2
   },
@@ -147,9 +147,9 @@
    "secs": 20,
    "q": "A player cannot hold the tablet with two hands. Which change helps most?",
    "choices": [
-    "brighter colors",
-    "more levels",
-    "louder music",
+    "brighter colors on the screen",
+    "more levels to play",
+    "louder music and sounds",
     "a one-hand button layout"
    ],
    "answer": 3
@@ -165,9 +165,9 @@
    "q": "Asking another pair what they think of your audit ideas is…",
    "choices": [
     "seeking other perspectives",
-    "cheating",
-    "debugging",
-    "encrypting"
+    "cheating on the audit",
+    "debugging the audit",
+    "encrypting your ideas"
    ],
    "answer": 0
   },
@@ -216,9 +216,9 @@
    "q": "You find a picture online for your game. What first?",
    "choices": [
     "check you are allowed to use it, then give credit",
-    "use it, it is online",
-    "change one pixel",
-    "print it out"
+    "use it, anything online is free to take",
+    "change one pixel so it counts as yours",
+    "print it out and glue it in"
    ],
    "answer": 0
   },
@@ -232,9 +232,9 @@
    "secs": 15,
    "q": "A picture marked \"public domain\" may be…",
    "choices": [
-    "never used",
-    "used only on Fridays",
-    "sold as your own only",
+    "never used by anyone",
+    "used only with the maker's permission",
+    "used only if you pay",
     "used freely"
    ],
    "answer": 3
@@ -249,10 +249,10 @@
    "secs": 20,
    "q": "You remix a friend's level. What should you do?",
    "choices": [
-    "hide where it came from",
-    "delete their level",
+    "hide where the level came from",
+    "delete their level afterwards",
     "credit the friend whose level it was",
-    "say you made it alone"
+    "say you made it all alone"
    ],
    "answer": 2
   }

@@ -94,10 +94,10 @@
    "secs": 20,
    "q": "Taking a photo needs the camera (hardware) and…",
    "choices": [
-    "a second camera",
-    "a printer",
+    "a second camera at the back",
+    "a printer plugged in",
     "the camera app (software)",
-    "a passphrase"
+    "a passphrase for the photo"
    ],
    "answer": 2
   },
@@ -131,7 +131,7 @@
     "buy a new tablet",
     "delete the app",
     "volume up and headphones unplugged?",
-    "reset the Wi-Fi password"
+    "reset the network passphrase"
    ],
    "answer": 2
   },
@@ -196,8 +196,8 @@
    "secs": 15,
    "q": "Where is a photo kept when the tablet is switched off?",
    "choices": [
-    "on the screen",
-    "in the speaker",
+    "on the screen, where you saw it",
+    "inside the speaker",
     "in storage, as on/off switches",
     "nowhere, it is gone"
    ],

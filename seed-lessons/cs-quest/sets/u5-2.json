@@ -61,9 +61,9 @@
    "secs": 20,
    "q": "Users keep pressing the wrong button on a gadget because two buttons look the same. Best recommendation?",
    "choices": [
-    "add a third button that looks the same",
-    "make the gadget heavier",
-    "remove the screen",
+    "print smaller labels on both buttons",
+    "move both buttons to the back",
+    "ask users to be more careful",
     "give the two buttons different shapes"
    ],
    "answer": 3
@@ -93,12 +93,12 @@
    "topic": "Parts",
    "kind": "analyze",
    "secs": 20,
-   "q": "Bluetooth sensor vs a cable: the tradeoff is…",
+   "q": "A wireless sensor vs a cable: the tradeoff is…",
    "choices": [
-    "color vs size",
+    "the color vs the size",
     "mobility vs extra battery use",
-    "sound vs picture",
-    "price only"
+    "the sound vs the picture",
+    "the price, nothing else"
    ],
    "answer": 1
   },
@@ -113,9 +113,9 @@
    "q": "Users say the gadget's text is too small outdoors. Best improvement?",
    "choices": [
     "a bigger, brighter text option",
-    "more buttons",
-    "a longer cable",
-    "a cheaper case"
+    "more buttons on the front",
+    "a longer charging cable",
+    "a cheaper plastic case"
    ],
    "answer": 0
   },
@@ -144,12 +144,12 @@
    "topic": "Troubleshooting",
    "kind": "analyze",
    "secs": 20,
-   "q": "The printer prints from one laptop but not another. Where is the fault most likely?",
+   "q": "The printer prints from one laptop but not from the other. Where is the fault most likely?",
    "choices": [
-    "the printer",
-    "the paper",
-    "the building's power",
-    "the first laptop or its connection"
+    "the printer, since it is the shared part",
+    "the paper tray, since both laptops use it",
+    "the building's power, since both plug into it",
+    "the laptop that cannot print, or its connection"
    ],
    "answer": 3
   },

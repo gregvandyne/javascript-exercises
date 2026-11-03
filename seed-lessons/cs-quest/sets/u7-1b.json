@@ -47,9 +47,9 @@
    "secs": 15,
    "q": "The first step of making a game for someone is…",
    "choices": [
-    "add music",
-    "build it fast",
-    "pick a color",
+    "add music first",
+    "build it as fast as you can",
+    "pick a color for the title",
     "decide who it is for and plan"
    ],
    "answer": 3
@@ -81,9 +81,9 @@
    "secs": 20,
    "q": "In your pair, the tester/note-taker should…",
    "choices": [
-    "type every message",
-    "decide everything alone",
-    "do nothing",
+    "type every message to the Builder",
+    "decide everything without asking",
+    "do nothing until it is done",
     "play the game and write what happened"
    ],
    "answer": 3
@@ -150,9 +150,9 @@
    "q": "Why send one change per message?",
    "choices": [
     "so you can test each change and see what fixed what",
-    "because messages are short",
-    "to use more messages",
-    "so the Builder rests"
+    "because messages have to be short",
+    "to use up more of the messages",
+    "so the Builder gets a rest between them"
    ],
    "answer": 0
   },
@@ -184,9 +184,9 @@
    "q": "Feedback from a tester is…",
    "choices": [
     "what they noticed while playing your game",
-    "a bug in the Builder",
-    "the game's score",
-    "a kind of loop"
+    "a bug the Builder put in the game",
+    "the score at the end of the game",
+    "a kind of loop in the game"
    ],
    "answer": 0
   },
@@ -200,10 +200,10 @@
    "secs": 20,
    "q": "Why get feedback from different people?",
    "choices": [
-    "one person is always enough",
+    "one person's opinion is always enough",
     "different players notice different things",
-    "it is faster",
-    "so nobody plays it"
+    "it is faster than testing yourself",
+    "so nobody has to play it twice"
    ],
    "answer": 1
   },
@@ -234,9 +234,9 @@
    "secs": 20,
    "q": "While a tester plays, the maker should…",
    "choices": [
-    "tell them every move",
-    "play instead of them",
-    "leave the room",
+    "tell them every move to make",
+    "play the game instead of them",
+    "leave the room until they finish",
     "watch where they get stuck, without helping"
    ],
    "answer": 3
@@ -251,10 +251,10 @@
    "secs": 15,
    "q": "Explaining why you chose a timer in your game is…",
    "choices": [
-    "debugging",
-    "encrypting",
+    "debugging the timer",
+    "encrypting the timer",
     "describing a design choice",
-    "sorting"
+    "sorting the game's parts"
    ],
    "answer": 2
   },
@@ -269,9 +269,9 @@
    "q": "A good 60-second demo tells the audience…",
    "choices": [
     "who it is for and one choice you made and why",
-    "your password",
-    "every bug ever",
-    "nothing, just play"
+    "your passphrase and your login",
+    "every bug the game ever had",
+    "nothing, you just play in silence"
    ],
    "answer": 0
   },
@@ -285,9 +285,9 @@
    "secs": 20,
    "q": "\"How to play\" instructions should…",
    "choices": [
-    "list every line of code",
-    "be kept secret",
-    "be longer than the game",
+    "list every line of code in the game",
+    "be kept secret from the players",
+    "be longer than the game itself",
     "tell a new player what to do in a few lines"
    ],
    "answer": 3
@@ -302,10 +302,10 @@
    "secs": 15,
    "q": "Credits should list…",
    "choices": [
-    "where your family lives",
-    "your password",
+    "your birthday and your age",
+    "your passphrase, in case it is needed",
     "people, art and ideas you used",
-    "nothing at all"
+    "nothing at all, it is your game"
    ],
    "answer": 2
   }

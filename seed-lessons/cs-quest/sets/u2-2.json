@@ -61,9 +61,9 @@
    "secs": 15,
    "q": "\"Expected vs actual\" means…",
    "choices": [
-    "fast vs slow programs",
-    "long vs short programs",
-    "easy vs hard levels",
+    "fast programs vs slow programs",
+    "long programs vs short programs",
+    "easy levels vs hard levels",
     "what should happen vs what did happen"
    ],
    "answer": 3
@@ -95,9 +95,9 @@
    "secs": 20,
    "q": "Which test would catch a loop count that is one too many?",
    "choices": [
-    "a grid with no walls at all",
-    "a grid with only one square",
-    "no test can catch it",
+    "a wide open grid with no walls at all",
+    "a grid with extra gems to pick up",
+    "no test can catch a count bug",
     "a grid where the goal is right before a wall"
    ],
    "answer": 3
@@ -113,9 +113,9 @@
    "q": "You fixed grid C but now grid A fails. What does systematic testing say?",
    "choices": [
     "run all the test grids again after every fix",
-    "grid A does not matter now",
-    "delete grid A",
-    "only test the newest grid"
+    "grid A does not matter once C passes",
+    "delete grid A from the tests",
+    "only test the newest grid, C"
    ],
    "answer": 0
   },
@@ -163,10 +163,10 @@
    "secs": 20,
    "q": "Your tester found level 2 confusing. Incorporating their feedback means…",
    "choices": [
-    "ignoring it",
+    "ignoring it and moving on",
     "changing the level and testing again",
-    "blaming the tester",
-    "deleting level 2"
+    "blaming the tester for playing badly",
+    "deleting level 2 from the game"
    ],
    "answer": 1
   },
@@ -181,9 +181,9 @@
    "q": "Your pair has 18 minutes: build, test, fix. What helps most?",
    "choices": [
     "set a time for each part and who does it",
-    "build until time runs out",
-    "skip testing",
-    "both do the same thing"
+    "build until the time runs out",
+    "skip testing to save time",
+    "both do the same thing together"
    ],
    "answer": 0
   },

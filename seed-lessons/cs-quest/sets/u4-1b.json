@@ -59,9 +59,9 @@
    "secs": 15,
    "q": "A photo is sent over the internet. Which is true?",
    "choices": [
-    "it travels in one big piece",
-    "it goes through one single wire",
-    "it is drawn again by hand",
+    "it travels in one big piece from start to end",
+    "it goes through one single wire all the way",
+    "it is drawn again by hand at the other end",
     "it is cut into packets that may take different roads"
    ],
    "answer": 3
@@ -76,10 +76,10 @@
    "secs": 20,
    "q": "Packets arrive in the order 3, 1, 2. What does the receiving device do?",
    "choices": [
-    "throws them away",
-    "sends them back",
+    "throws all three packets away",
+    "sends them straight back",
     "uses the numbers to put them back in order",
-    "prints them as they came"
+    "prints them in the order they came"
    ],
    "answer": 2
   },
@@ -128,8 +128,8 @@
    "q": "Which passphrase is the strongest?",
    "choices": [
     "password1",
-    "abc123",
     "your pet's name",
+    "your name and your birthday",
     "purple-river-bicycle-moon"
    ],
    "answer": 3
@@ -144,10 +144,10 @@
    "secs": 20,
    "q": "Who may you tell your passphrase?",
    "choices": [
-    "a parent or guardian only",
-    "your best friend",
-    "anyone who asks nicely",
-    "a prize team online"
+    "a parent or another trusted adult only",
+    "your best friend, if they promise",
+    "anyone who asks nicely enough",
+    "a prize team that messages you online"
    ],
    "answer": 0
   },
@@ -161,10 +161,10 @@
    "secs": 20,
    "q": "Why keep a backup copy of your photos somewhere safe?",
    "choices": [
-    "so they load faster",
+    "so they load faster on the tablet",
     "if the tablet breaks you still have them",
-    "because it is the law",
-    "so friends can see them"
+    "because the law says you must",
+    "so your friends can see them all"
    ],
    "answer": 1
   },
@@ -178,10 +178,10 @@
    "secs": 15,
    "q": "A message that tries to trick you into giving away private information is…",
    "choices": [
-    "a backup",
-    "a packet",
+    "a backup copy of a message",
+    "a packet on its way to you",
     "a trick message (phishing)",
-    "a loop"
+    "a loop in a program"
    ],
    "answer": 2
   },
@@ -195,7 +195,7 @@
    "secs": 20,
    "q": "\"You won a tablet! Reply with your password to claim it.\" What do you do?",
    "choices": [
-    "do not reply, and tell a grown-up",
+    "do not reply, and tell a trusted adult",
     "reply with the password quickly",
     "send it to a friend",
     "reply with your address"

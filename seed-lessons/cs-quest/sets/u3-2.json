@@ -60,10 +60,10 @@
    "secs": 20,
    "q": "A survey row says a student has \"twelvety\" pets. What should you do?",
    "choices": [
-    "keep it, data is data",
-    "change every row",
+    "keep it, every row is data",
+    "change every row to match it",
     "fix or remove the row before charting",
-    "make it the title"
+    "make it the chart's title"
    ],
    "answer": 2
   },
@@ -126,7 +126,7 @@
    "topic": "Predictions",
    "kind": "apply",
    "secs": 20,
-   "q": "Your ramp rule predicted 40 cm; five trials averaged 52 cm. What next?",
+   "q": "Your paper ramp rule predicted 40 cm; five trials averaged 52 cm. What next?",
    "choices": [
     "keep the rule as it is",
     "stop measuring",
@@ -146,9 +146,9 @@
    "q": "After a change, the model's error went from 12 to 3. What does that show?",
    "choices": [
     "the refined model fits the data better",
-    "the data is wrong",
-    "the model is now perfect",
-    "the trials were too short"
+    "the data from the trials is wrong",
+    "the model now predicts perfectly",
+    "the trials were too short to count"
    ],
    "answer": 0
   },
@@ -160,12 +160,12 @@
    "topic": "Predictions",
    "kind": "apply",
    "secs": 20,
-   "q": "In Game Balance, only 4 of 20 test runs finished; the target is about 16. You should…",
+   "q": "Your runner's jump rule: only 4 of 20 test runs finished; the target is about 16. You should…",
    "choices": [
-    "ship it, it is hard",
+    "ship it, a hard game is a good game",
     "change the jump rule and run the 20 tests again",
-    "run 2 tests only",
-    "remove the jump"
+    "run 2 more tests and call it done",
+    "remove the jump from the game"
    ],
    "answer": 1
   },

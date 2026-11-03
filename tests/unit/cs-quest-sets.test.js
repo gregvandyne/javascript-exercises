@@ -94,6 +94,15 @@ const primaries = (band, lesson) => (LESSONS.find(l => l.band === band && l.less
 const KINDS = ['recall', 'apply', 'analyze'];
 const USES = { o: 'opener', e: 'exit', r: 'review' };
 const BAND_PREFIX = { '1B': '1b', '2': '2' };
+// The five "which note / message is best" items: there the fuller answer is the point, so the length rule skips them.
+const FULL_ANSWER_OK = ['1b-2.2-e3', '2-2.2-e3', '1b-7.2-e1', '2-7.2-e2', '2-7.4-e2'];
+// Trademarks a kid-safe bank never names (plan §6.1 "no brands"; "wireless", "network passphrase", "a map app" instead)
+const BRAND = /\b(Bluetooth|Wi-?Fi|iPad|iPhone|Android|Chromebook|Windows|Google|YouTube|TikTok|Minecraft|Roblox|Fortnite|Lego|Nintendo|Xbox|PlayStation|Alexa|Siri)\b/i;
+// Robo Route's block names as its shelf shows them (scripts/data/cs-quest/robo-route/en.json, owner C). Unit-1 items name
+// these blocks; the plan said "forward" for the movement block, the game says "move". The string list lives on the
+// game's branch until integration, so the cross-check runs once both are on main and is skipped before that.
+const ROBO_EN = path.join(ROOT, 'scripts/data/cs-quest/robo-route/en.json');
+const ROBO_BLOCKS = ['move', 'turn left', 'turn right', 'pick up', 'repeat', 'repeat until goal', 'if', 'else', 'when', 'path ahead', 'on a gem', 'a gem is picked up', 'set', 'change', 'My Block'];
 // British forms only (the content-lint test's regex also matches "color" and whitelists it; this one never matches US forms)
 const UK = /\b(colours?|coloured|colouring|favourites?|grey|labelled|licence|organis(e|ed|ing)|practis(e|ed|ing)|neighbours?|recognis(e|ed|ing)|maths|centre|metres?|behaviours?|honour|catalogue|analys(e|ed|ing)|defence|travelled|modelling|cancelled|jewellery|tyres?|whilst|learnt|spelt|programme)\b/i;
 const BAD = [[/\d{7,}/, 'a 7+ digit run'], [/@/, 'an @'], [/\/\/\w[\w.-]*\.\w{2,}/, 'a //host.tld link'], [/https?:/i, 'a URL scheme'], [/\bwww\./i, 'a www. link']];
@@ -144,7 +153,17 @@ test('every item matches the itemSchema: id grammar, lesson, use, kind, secs, le
       assert.ok(Number.isInteger(it.answer) && it.answer >= 0 && it.answer < 4, `${where}: answer index`);
       assert.ok(typeof it.topic === 'string' && it.topic.length >= 3 && it.topic.length <= LIMITS.cat, `${where}: topic (Brain Board column) 3..${LIMITS.cat} chars`);
       assert.ok(it.cat.length <= LIMITS.cat);
-      for (const s of stringsOf(it)) assert.equal(s, s.trim(), `${where}: no stray spaces: ${JSON.stringify(s)}`);
+      for (const s of stringsOf(it)) {
+        assert.equal(s, s.trim(), `${where}: no stray spaces: ${JSON.stringify(s)}`);
+        // Quest Race, Question Battle and Brain Board render the stem as plain text and read it aloud: no markdown
+        assert.ok(!/[*_`]/.test(s), `${where}: no asterisks, underscores or backticks (quote a block name instead): ${s}`);
+      }
+      // the longest-answer tell (plan §6.1 "three wrong answers of similar length to the right one"): the right answer
+      // is never far longer than every distractor, except where the fuller answer is the point (FULL_ANSWER_OK)
+      if (!FULL_ANSWER_OK.includes(it.id)) {
+        const right = it.choices[it.answer].length, longestWrong = Math.max(...it.choices.filter((_, i) => i !== it.answer).map(c => c.length));
+        assert.ok(right <= Math.max(1.6 * longestWrong, longestWrong + 8), `${where}: the right answer (${right} chars) is far longer than every distractor (longest ${longestWrong} chars), a length cue`);
+      }
     }
     // the same lesson always shows the same column name on the board
     const topics = new Map();
@@ -226,6 +245,9 @@ test('kid-safe text: no digit runs, handles or links; US spelling; the real scan
         for (const [re, why] of BAD) assert.ok(!re.test(s), `${b.id} ${it.id} has ${why}: ${s}`);
         assert.ok(!UK.test(s), `${b.id} ${it.id}: US spelling please: ${s}`);
         assert.ok(!/\btype your password\b/i.test(s), `${b.id} ${it.id}: never "type your password"`);
+        assert.ok(!BRAND.test(s), `${b.id} ${it.id}: no brand names: ${s}`);
+        // lesson content says "trusted adult" (CA-8; the games keep "grown-up")
+        assert.ok(!/\bgrown-?ups?\b/i.test(s), `${b.id} ${it.id}: say "trusted adult", not "grown-up": ${s}`);
       }
     }
     all.push(b.title);
@@ -243,6 +265,16 @@ test('kid-safe text: no digit runs, handles or links; US spelling; the real scan
   assert.equal(r.status, 'pass', JSON.stringify(r.issues || r, null, 1));
 });
 
+test('unit-1 items name the blocks as Robo Route shows them: "move", never the plan\'s "forward"; the names exist in the game', { skip: fs.existsSync(ROBO_EN) ? false : 'robo-route strings are not on this branch yet (checked once both are on main)' }, () => {
+  const strings = JSON.parse(fs.readFileSync(ROBO_EN, 'utf8')).strings;
+  const named = name => strings.some(s => new RegExp(`(^|[^A-Za-z])${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^A-Za-z]|$)`, 'i').test(s));
+  for (const name of ROBO_BLOCKS) assert.ok(named(name), `Robo Route's English strings name the block "${name}"`);
+});
+
+test('the movement block is "move" in every unit-1 item (Robo Route\'s shelf label), not the plan\'s "forward"', () => {
+  for (const it of allItems.filter(it => it.lesson.startsWith('1.'))) for (const s of stringsOf(it)) assert.ok(!/\bforward\b/i.test(s), `${it.id}: say "move", not "forward": ${s}`);
+});
+
 // ---------------------------------------------------------------- Would You Rather (plan §7): seed-lessons/cs-quest/wyr-tech.json
 // The dilemmas live in the official game's bank (scripts/data/would-you-rather, topics tech and online, checked in
 // tests/unit/live-wyr-atlas.test.js); this file adds the teacher's prompt after each reveal and the CSTA ids.
@@ -253,6 +285,7 @@ test('wyr-tech.json: the two CS Quest sets name every dilemma of their topic, wi
   const doc = JSON.parse(fs.readFileSync(WYR_FILE, 'utf8'));
   assert.equal(doc.program, 'cs-quest'); assert.equal(doc.kind, 'wyr');
   const bank = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/would-you-rather/en.json'), 'utf8')).items;
+  const bankById = new Map(bank.map(it => [it.id, it]));
   const expect = [['wyr-tech', 'tech', '6.1', 'wyr:tech:8:20', 20], ['wyr-online', 'online', '6.3', 'wyr:online:8:20', 10]];
   assert.deepEqual(doc.sets.map(s => [s.id, s.topic, s.lesson, s.starter, s.items.length]), expect);
   for (const s of doc.sets) {
@@ -265,6 +298,10 @@ test('wyr-tech.json: the two CS Quest sets name every dilemma of their topic, wi
     assert.deepEqual(s.items.map(it => it.id), bank.filter(it => it.cat === s.topic).map(it => it.id), `${s.id}: ids match the bank`);
     const used = new Set();
     for (const it of s.items) {
+      // the printed prompt sheet shows the dilemma's A/B text beside the prompt (screens never show an id): the bank's words
+      assert.deepEqual(Object.keys(it), ['id', 'a', 'b', 'prompt', 'csta'], `${it.id}: id, a, b, prompt, csta`);
+      assert.equal(it.a, bankById.get(it.id).a.text, `${it.id}: a is the bank's English text`);
+      assert.equal(it.b, bankById.get(it.id).b.text, `${it.id}: b is the bank's English text`);
       assert.ok(typeof it.prompt === 'string' && it.prompt.length >= 8 && it.prompt.length <= 300 && /\?$/.test(it.prompt), `${it.id}: a prompt that asks something`);
       for (const [re, why] of BAD) assert.ok(!re.test(it.prompt), `${it.id} has ${why}`);
       assert.ok(!UK.test(it.prompt), `${it.id}: US spelling please: ${it.prompt}`);

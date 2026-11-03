@@ -44,10 +44,10 @@
    "secs": 15,
    "q": "A number on each packet that says where it belongs is a…",
    "choices": [
-    "sequence number",
-    "checksum",
-    "password",
-    "pixel"
+    "a sequence number",
+    "a checksum",
+    "a passphrase",
+    "a router name"
    ],
    "answer": 0
   },
@@ -95,10 +95,10 @@
    "secs": 20,
    "q": "Why do all post offices (routers) need the same rules?",
    "choices": [
-    "so they look the same",
+    "so they all look the same inside",
     "so packets from anywhere can be passed on and rebuilt",
-    "so packets travel slower",
-    "so only one road is used"
+    "so packets travel more slowly and safely",
+    "so only one road is ever used"
    ],
    "answer": 1
   },
@@ -132,7 +132,7 @@
     "a firewall",
     "locking the room with the backup drive",
     "HTTPS",
-    "a strong Wi-Fi password"
+    "a strong network passphrase"
    ],
    "answer": 1
   },
@@ -147,9 +147,9 @@
    "q": "The padlock (HTTPS) on a shop page means…",
    "choices": [
     "your details travel in a sealed envelope",
-    "the shop is cheap",
-    "the page loads faster",
-    "the shop is closed"
+    "the shop sells things cheaply",
+    "the page loads faster than usual",
+    "the shop is closed right now"
    ],
    "answer": 0
   },
@@ -214,10 +214,10 @@
    "secs": 15,
    "q": "Which method hides a message instead of scrambling it?",
    "choices": [
-    "a Caesar shift",
+    "a Caesar shift of the letters",
     "steganography (in a picture's pixels)",
-    "a keyed substitution",
-    "a checksum"
+    "a keyed substitution cipher",
+    "a checksum on each packet"
    ],
    "answer": 1
   },
@@ -231,10 +231,10 @@
    "secs": 20,
    "q": "Why is a keyed substitution harder to crack than a shift?",
    "choices": [
-    "the letters are bigger",
-    "it uses numbers",
+    "the letters are bigger on the page",
+    "it uses numbers instead of letters",
     "there are far more possible keys to try",
-    "it is shorter"
+    "it makes the message much shorter"
    ],
    "answer": 2
   }
