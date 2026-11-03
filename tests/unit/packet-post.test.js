@@ -9,20 +9,25 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
+const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const { loadData, collect, EN } = await import('../../scripts/packet-post-strings.mjs');
+const { loadData, collect, screenWords, EN } = await import('../../scripts/packet-post-strings.mjs');
 const { kitTag, kitPackTag } = await import('../../server/services/kit.js');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const HTML = fs.readFileSync(path.join(ROOT, 'seed-games/packet-post.html'), 'utf8');
 const { E, D } = loadData(HTML);
-const { LEVELS, CHAPTERS, THEN } = D;
+const { LEVELS, CHAPTERS, THEN, WORDS } = D;
 const CSTA = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'server/standards/csta-2017.json'), 'utf8')).standards.map(s => s.id));
 const SEEDS = [1, 2, 3, 4, 5, 6];
 const J = v => JSON.parse(JSON.stringify(v));   // values from the vm realm: compare by structure, not prototype
 const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
 // the contract: levels per chapter and band
-const CONTRACT = { packets: { '1b': 5, '2': 5 }, routes: { '1b': 4, '2': 6 }, protocols: { '1b': 2, '2': 6 } };
+const CONTRACT = { packets: { '1b': 5, '2': 5 }, routes: { '1b': 4, '2': 6 }, protocols: { '1b': 2, '2': 6 }, locks: { '1b': 6, '2': 7 }, tricks: { '1b': 6, '2': 10 }, ciphers: { '1b': 3, '2': 7 } };
+// the standards each chapter claims per band (the contract); a level's csta (Explorer) / csta2 (Pro) stay inside them
+const CHAPTER_CSTA = { packets: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, routes: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, protocols: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, locks: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] }, tricks: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] }, ciphers: { '1b': [], '2': ['2-NI-06'] } };
+const cstaFor = (l, band) => (band === '2' ? (l.csta2 || l.csta) : l.csta) || [];
 
 test('packet-post: the exact kit 1.1.2 tag and its four packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Packet Post</title>'));
@@ -35,8 +40,7 @@ test('packet-post: the exact kit 1.1.2 tag and its four packs, the metadata, and
   assert.equal(meta.slug, 'packet-post'); assert.equal(meta.title, 'Packet Post'); assert.equal(meta.cover, 'gold'); assert.equal(meta.category, 'learning');
   assert.equal(meta.featured, true); assert.equal(meta.orientation, 'any'); assert.equal(meta.players_max, 1); assert.equal(meta.age_rating, 'everyone');
   assert.ok(meta.description.length <= 600 && meta.description.length > 100);
-  assert.equal(typeof meta.l10n, 'object');
-  for (const [l, v] of Object.entries(meta.l10n)) assert.ok(v && v.description, `l10n ${l}`);
+  for (const l of ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) { const v = meta.l10n[l]; assert.ok(v && v.description && v.description.length > 60 && v.description.length <= 600, `l10n ${l} description`); assert.ok(v.tags && v.tags.length <= 200, `l10n ${l} tags`); assert.doesNotMatch(v.description + v.tags, /\d{7,}|@|https?:/, `l10n ${l} clean`); }
   assert.doesNotMatch(HTML, /\bsetTimeout\s*\(|\bsetInterval\s*\(|\bDate\.now\b|\brequestAnimationFrame\s*\(/, 'the game clock only');
   assert.doesNotMatch(HTML, /<input|<textarea|contenteditable/i, 'tap-only: no text inputs');
 });
@@ -51,7 +55,8 @@ test('packet-post: chapters and levels match the contract, every CSTA id exists,
     assert.ok(CHAPTERS.some(c => c.id === l.ch), `${l.id}: chapter`);
     assert.ok(l.bands.length && l.bands.every(b => b === '1b' || b === '2'), `${l.id}: bands`);
     for (const id of [].concat(l.csta || [], l.csta2 || [])) assert.ok(CSTA.has(id), `${l.id}: CSTA ${id}`);
-    assert.ok(l.csta && l.csta.length, `${l.id}: csta`);
+    assert.ok(Array.isArray(l.csta), `${l.id}: csta`);
+    for (const band of l.bands) { const ids = cstaFor(l, band), allowed = CHAPTER_CSTA[l.ch][band]; if (allowed.length) assert.ok(ids.length, `${l.id} ${band}: claims a standard`); for (const id of ids) assert.ok(allowed.includes(id), `${l.id} ${band}: ${id} is one of the chapter's standards`); }
     if (l.bands.includes('1b') && l.bands.includes('2')) assert.ok(l.csta2 && l.csta2.length, `${l.id}: a shared level names its level 2 standard too`);
     assert.ok(Array.isArray(l.hints) && l.hints.length === 3 && l.hints.every(h => typeof h === 'string' && h.length > 10), `${l.id}: 3 hint tiers`);
     assert.ok(l.check && l.check.q && l.check.tiles.length === 3 && l.check.answer >= 0 && l.check.answer < 3, `${l.id}: Case-closed check`);
@@ -60,8 +65,20 @@ test('packet-post: chapters and levels match the contract, every CSTA id exists,
   }
   // level 1 of every chapter (per band) opens a learn card
   for (const c of CHAPTERS) for (const band of ['1b', '2']) { const ls = levelsFor(c.id, band); if (ls.length) assert.ok(ls[0].learn && ls[0].learn.title && ls[0].learn.text, `${c.id} ${band}: learn card on level 1`); }
-  // chains: every then names a chapter that exists for the band; a chapter's standards cover the lesson's
-  for (const [band, map] of Object.entries(THEN)) for (const [from, t] of Object.entries(map)) { assert.ok(CHAPTERS.some(c => c.id === from) && CHAPTERS.some(c => c.id === t.ch), `${band} ${from} -> ${t.ch}`); }
+  // every chapter's standards are claimed by at least one of its levels in the band
+  for (const [ch, bands] of Object.entries(CHAPTER_CSTA)) for (const [band, ids] of Object.entries(bands)) for (const id of ids) assert.ok(levelsFor(ch, band).some(l => cstaFor(l, band).includes(id)), `${ch} ${band}: a level claims ${id}`);
+  // chains: every then names a chapter that exists for the band, its levels exist, and (CI clause f') the lessons' standards sit inside the chapter and its chain
+  assert.deepEqual(J(THEN), { '1b': { packets: { ch: 'routes' }, tricks: { ch: 'ciphers', levels: [1, 3] } }, '2': { protocols: { ch: 'routes', levels: [5, 6] }, ciphers: { ch: 'tricks', levels: [7, 10] } } });
+  for (const [band, map] of Object.entries(THEN)) for (const [from, t] of Object.entries(map)) { assert.ok(CHAPTERS.some(c => c.id === from) && CHAPTERS.some(c => c.id === t.ch), `${band} ${from} -> ${t.ch}`); if (t.levels) assert.ok(levelsFor(t.ch, band).length >= t.levels[1], `${band} ${from} -> ${t.ch} ${t.levels}`); }
+  for (const [band, ch, standards] of [['1b', 'packets', ['1B-NI-04']], ['2', 'protocols', ['2-NI-04']], ['1b', 'locks', ['1B-NI-05']], ['2', 'locks', ['2-NI-05', '2-IC-23']], ['1b', 'tricks', ['1B-NI-05']], ['2', 'ciphers', ['2-NI-06']]]) { const union = new Set(CHAPTER_CSTA[ch][band].concat(THEN[band][ch] ? CHAPTER_CSTA[THEN[band][ch].ch][band] : [])); for (const id of standards) assert.ok(union.has(id), `lesson ${band} ${ch}: ${id}`); }
+  // the tricks chapter counts cards; the Explorer cipher levels are enrichment (no 1B id claimed)
+  assert.equal(CHAPTERS.find(c => c.id === 'tricks').noun, 'cards'); assert.deepEqual(J(CHAPTERS.find(c => c.id === 'ciphers').enrichment), ['1b']);
+  for (const l of levelsFor('ciphers', '1b')) assert.deepEqual(J(l.csta), []);
+  // the special levels the plan names: Share or Shield (six facts with a good side, a risk and a reason), the twelve measures, the sealed street, the two-key lockbox
+  const sos = LEVELS.find(l => l.id === 'lk-11'); assert.equal(sos.items.length, 6); for (const t of sos.items) assert.ok(t.benefit && t.risk && t.reasons.length === 3 && ['public', 'private'].includes(t.bin), t.id);
+  assert.equal(LEVELS.find(l => l.id === 'lk-7').items.length, 12); assert.ok(LEVELS.find(l => l.id === 'lk-8').secret); assert.ok(LEVELS.find(l => l.id === 'ci-7').items.some(t => /lockbox/.test(t.text)));
+  for (const l of LEVELS.filter(l => l.type === 'inbox')) { assert.ok(l.cues.length >= 3 && l.cues.length <= 4 && ['safe', 'trick'].includes(l.verdict), l.id); if (l.verdict === 'trick') assert.ok(l.cues.filter(c => c.trick).length >= 2 && l.cues.some(c => !c.trick), `${l.id}: trick cues and one honest one`); else assert.ok(l.cues.every(c => !c.trick), `${l.id}: a friendly letter has no trick cue`); }
+  assert.ok(levelsFor('tricks', '1b').some(l => l.verdict === 'safe'), 'a friendly-but-odd letter guards against false positives');
 });
 
 test('packet-post: every level is solved by its sol for several seeds, well made and within par; the empty run never passes', () => {
@@ -74,7 +91,9 @@ test('packet-post: every level is solved by its sol for several seeds, well made
     assert.ok(E.Run.cost(run) <= l.par, `${l.id} seed ${seed}: par ${l.par} >= cost ${E.Run.cost(run)}`);
     const empty = E.play(l, [], seed); assert.ok(!empty.done, `${l.id}: nothing done is not a solution`);
     assert.equal(empty.stars(), 0);
+    const st = E.starter(l); if (st) { const run2 = E.play(l, st, seed); assert.ok(!run2.done, `${l.id} seed ${seed}: the starter does not solve it`); }
   }
+  assert.ok(LEVELS.filter(l => l.starter != null).length >= 12, 'starters where the plan has a tempting wrong first try');
 });
 
 test('packet-post: a wasted hop, a wrong placement or an extra rule costs the second star; a budget or a snoop fails the run', () => {
@@ -126,6 +145,11 @@ test('packet-post: the progress label grammar, the class quest number and the pa
   assert.deepEqual(J(E.questCode('0230', CHAPTERS)), { chapter: null, band: '2', mode: 'projector', level: 0 });
   assert.deepEqual(J(E.questCode('6225', CHAPTERS)), { chapter: 'ciphers', band: '2', mode: 'wheel', level: 5 });
   for (const bad of ['7100', '1300', '110', '11000', 'abcd', '']) assert.equal(E.questCode(bad, CHAPTERS), null, bad);
+  // the quest number round-trips through its digits (chapter, band, mode, level), and the lessons' numbers point where the contract says
+  for (const q of [{ chapter: 'packets', band: '1b', mode: 'play', level: 0 }, { chapter: 'protocols', band: '2', mode: 'play', level: 0 }, { chapter: 'locks', band: '1b', mode: 'play', level: 0 }, { chapter: 'locks', band: '2', mode: 'play', level: 0 }, { chapter: 'tricks', band: '1b', mode: 'play', level: 0 }, { chapter: 'ciphers', band: '2', mode: 'play', level: 0 }, { chapter: null, band: '2', mode: 'projector', level: 0 }, { chapter: 'ciphers', band: '2', mode: 'wheel', level: 5 }]) { const d = E.questDigits(q, CHAPTERS); assert.match(d, /^\d{4}$/); assert.deepEqual(J(E.questCode(d, CHAPTERS)), q); }
+  assert.deepEqual([['packets', '1b'], ['protocols', '2'], ['locks', '1b'], ['locks', '2'], ['tricks', '1b'], ['ciphers', '2']].map(([c, b]) => E.questDigits({ chapter: c, band: b }, CHAPTERS)), ['1100', '3200', '4100', '4200', '5100', '6200']);
+  // the Daily Crew Challenge: the same level and seed for everyone on one day, a different one on most other days, always a random level of the band
+  for (const band of ['1b', '2']) { const a = E.daily(LEVELS, band, 20760), b = E.daily(LEVELS, band, 20760); assert.equal(a.level.id, b.level.id); assert.equal(a.seed, b.seed); assert.ok(a.level.random && a.level.bands.includes(band)); const ids = new Set([20760, 20761, 20762, 20763, 20764, 20765, 20766].map(d => E.daily(LEVELS, band, d).level.id)); assert.ok(ids.size >= 3, `${band}: the daily moves around (${[...ids]})`); }
   assert.deepEqual(J(E.cleanParams({ chapter: 'packets', band: '1b', lock: 1 }, CHAPTERS)), { chapter: 'packets', band: '1b', lock: 1, present: true });
   assert.deepEqual(J(E.cleanParams({ chapter: 'protocols', band: '2', level: 3, lock: '0', mode: 'projector' }, CHAPTERS)), { chapter: 'protocols', band: '2', level: 3, mode: 'projector', lock: 0, present: true });
   assert.deepEqual(J(E.cleanParams({ chapter: 'nope', band: '9', level: 99, mode: 'fly' }, CHAPTERS)), { lock: 0, present: true });
@@ -141,6 +165,18 @@ test('packet-post: the ciphers round-trip and the shift can be cracked by counti
   assert.equal(E.guessShift(E.caesar('THE EAGLE SEES THE SEA EVERY EVENING', 7)), 7);
   assert.deepEqual(E.readBits(E.hideBits([200, 201, 202, 203, 10], [1, 0, 1, 1]), 4), [1, 0, 1, 1]);
   assert.deepEqual(E.hideBits([200, 201, 202, 203, 10], [1, 0, 1, 1]).slice(4), [10]);
+  // every cipher level round-trips: its cipher text decodes back to its plain text with its own shift or key, for every seed
+  for (const l of LEVELS.filter(l => l.type === 'cipher')) for (const seed of SEEDS) { const I = E.instance(l, seed); assert.equal(I.kind === 'keyed' ? E.substitute(I.cipher, I.key, true) : E.caesar(I.cipher, -I.shift), I.plain, `${l.id} seed ${seed}`); assert.ok(I.plain.length >= 4 && /^[A-Z ]+$/.test(I.plain), `${l.id}: a plain word from the list`); if (I.mode === 'crack') assert.equal(E.guessShift(I.cipher), I.shift, `${l.id} seed ${seed}: E is the most common letter`); if (I.choices) { assert.equal(new Set(I.choices).size, 3); assert.equal(I.choices[I.answer], I.mode === 'encode' ? I.cipher : I.plain); } if (I.mode !== 'encode' && !I.choices) assert.notEqual(I.startShift, I.shift, `${l.id} seed ${seed}: the wheel does not start on the answer`); }
+  for (const l of LEVELS.filter(l => l.type === 'pixel')) for (const seed of SEEDS) { const I = E.instance(l, seed); assert.equal(I.target.length, I.w * I.h); assert.deepEqual(E.readBits(E.hideBits(I.values, I.target), I.target.length), I.target, `${l.id}: the picture hides in the last bits`); }
+});
+
+test('packet-post: the cipher word list is screened by all 25 shifts against the profanity lists of every language', () => {
+  assert.ok(WORDS.length >= 10 && WORDS.every(w => /^[A-Z ]+$/.test(w)), 'capital letters and spaces only');
+  const bad = screenWords(HTML);
+  assert.deepEqual(bad, [], 'no shift of any cipher word hits a blocklist');
+  // the screening itself works: a word whose shift is a blocked word is caught (shift 1 of ONQM)
+  const { profanityMatch } = require('../../server/services/textfilter.js');
+  assert.ok(profanityMatch(E.caesar('ONQM', 1)), 'the screening catches a shifted bad word');
 });
 
 test('packet-post: every English string is listed in en.json, inside the budget', () => {
@@ -152,7 +188,8 @@ test('packet-post: every English string is listed in en.json, inside the budget'
   for (const s of all) assert.ok(have.has(s), `en.json lists: ${s}`);
   assert.equal(en.length, new Set(en).size, 'no duplicates');
   assert.deepEqual(en, all, 'en.json is current (node scripts/packet-post-strings.mjs)');
-  for (const s of all) { assert.doesNotMatch(s, /\d{7,}|@|https?:|\/\/\w+\./, s); assert.doesNotMatch(s, /\bcodes?\b/i, `never the word code: ${s}`); }
+  for (const s of all) { assert.doesNotMatch(s, /\d{7,}|@|https?:|\/\/\w+\./, s); assert.doesNotMatch(s, /\bcodes?\b|password/i, `never the word code or password: ${s}`); assert.doesNotMatch(s, /(enter|type|what's|tell us) (your|ur) (real name|full name|address|phone|email|school|age|birthday|password)/i, `no personal prompt: ${s}`); }
+  assert.ok(c.prose.length <= 1000, `level text ${c.prose.length} <= 1000`);
   // every key with {slots} is used with those slots in the game
   for (const s of c.chrome) for (const slot of s.match(/\{\w+\}/g) || []) assert.ok(/^\{[a-z]+\}$/.test(slot), `${s}: simple slots`);
 });
