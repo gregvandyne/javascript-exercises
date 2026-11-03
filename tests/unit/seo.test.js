@@ -371,7 +371,7 @@ test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, i
   // The one-minute demo: a silent video with a poster, a captions track and a written description; its files are served.
   assert.match(page.text, /<video class="lp-video" controls muted playsinline preload="none"[^>]*poster="\/video\/oomba-demo-poster\.jpg"[^>]*aria-describedby="demo-note"/);
   assert.match(page.text, /<track kind="captions" src="\/video\/oomba-demo\.en\.vtt" srclang="en"/);
-  assert.match(page.text, /id="demo-note"[^>]*>A one-minute video with no sound/);
+  assert.match(page.text, /id="demo-note"[^>]*>A one-minute video with music and captions on screen/);
   for (const f of ['/video/oomba-demo.mp4', '/video/oomba-demo-poster.jpg', '/video/oomba-demo.en.vtt']) assert.equal((await get(f)).status, 200, f);
   assert.match((await get('/es/teachers/live')).text, /Míralo en un minuto/);
   // A child's account can't host: it is shown the join page instead of a sign-up.
