@@ -281,3 +281,20 @@ test('robo-route: in Chromium a desktop in Arabic mirrors the chrome, keeps the 
     assert.deepEqual(errors, []); assert.deepEqual(consoleErrors, []);
   } finally { await ctx.close(); }
 });
+
+test('robo-route: in Chromium the densest level (Pro conditionals, an 8 by 8 board and a six-block shelf) fits tablets both ways and a phone on its side, at 150% text too', { skip, timeout: 180_000 }, async () => {
+  for (const [size, lang, big] of [[{ width: 820, height: 1180 }, 'en', false], [{ width: 1180, height: 820 }, 'he', false], [{ width: 844, height: 390 }, 'en', false], [{ width: 820, height: 1180 }, 'en', true]]) {
+    const { ctx, page, frame, errors } = await open({ size, lang });
+    try {
+      await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(400);
+      if (big) await frame.evaluate(() => { Oomba.settings.set({ textSize: 1.5 }); });
+      await T(frame, 'start', { chapter: 'conditionals', band: '2', level: 5, seed: 1 }); await T(frame, 'closeModal'); await page.waitForTimeout(400);
+      const s = await T(frame, 'state'); assert.equal(s.levelId, 'cond-5p');
+      await T(frame, 'program', 'repeat until goal { move; if not path or paint { right } }'); await page.waitForTimeout(200);
+      // the program's first block selected: the tray shows below it
+      await frame.evaluate(() => document.querySelector('.rr-blk[data-id]').click()); await page.waitForTimeout(200);
+      assert.deepEqual(await fit(frame), [], `${size.width}x${size.height} ${lang}${big ? ' 150%' : ''} fits`);
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
+});

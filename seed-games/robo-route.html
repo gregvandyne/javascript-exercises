@@ -86,7 +86,7 @@ body{margin:0;touch-action:manipulation}
 .rr-blk.sel{outline:3px solid var(--ok-focus);outline-offset:2px;background:var(--rr-sel)}
 .rr-blk.running{background:var(--rr-go)}
 .rr-blk.hl,.rr-shelf .hl{animation:rr-pulse 1s ease-in-out infinite;box-shadow:0 0 0 4px var(--rr-hot)}
-.rr-slot{min-height:44px;min-width:48px;border-radius:8px;border:2px dashed var(--ok-line);background:transparent;color:var(--ok-text);opacity:.7;font-weight:700;font-size:.85em;padding:0 8px;cursor:pointer}
+.rr-slot{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:48px;border-radius:8px;border:2px dashed var(--ok-line);background:transparent;color:var(--ok-text);opacity:.7;font-weight:700;font-size:.85em;padding:0 8px;cursor:pointer}
 .rr-slot.cur{border-color:var(--ok-focus);opacity:1;border-style:solid}
 .rr-empty{font-weight:600;opacity:.7;font-size:.92em;padding:6px 4px}
 .rr-tray{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -123,6 +123,9 @@ body{margin:0;touch-action:manipulation}
 @keyframes rr-pulse{50%{transform:scale(1.04)}}
 @keyframes rr-shake{25%,75%{translate:-6px}50%{translate:6px}}
 .ok-rm .rr-titlebolt svg,.ok-rm .rr-bolt.bump svg,.ok-rm .rr-blk.hl,.ok-rm .rr-shelf .hl,.ok-rm .rr-shake{animation:none}
+/* a phone on its side: the panel starts right under the HUD, the program flows as wrapped chips, the tray takes the run bar's row */
+.rr-play.short .rr-prog .rr-list{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px}
+.rr-play.short .rr-list.inner{width:auto;align-self:auto;margin-inline-start:2px;padding-inline-start:6px;border-inline-start-width:4px}
 @media (max-height:460px){.rr-play{gap:6px}.rr-panel{padding:6px;gap:4px}.rr-shelf .ok-btn{min-height:48px;padding:0 10px;font-size:.92em}.rr-top .rr-pill{min-height:30px;font-size:.85em}}
 </style>
 <div id="game">
@@ -1070,8 +1073,9 @@ function startChapter(id, o = {}) {
   const ch = CHAPTERS.find(c => c.id === id && !c.soon) || CHAPTERS[0];
   S.chapter = ch; S.levels = levelsFor(ch.id, S.band);
   if (!S.levels.length) return goMap();
-  let i = o.level ? Math.min(S.levels.length, o.level) - 1 : nextOpen();
-  if (!levelOpen(i)) i = nextOpen();
+  // a level asked for by name (a teacher's level param, a quest code's last digit, a test) opens even when the ones
+  // before it are not done; otherwise the chapter's first unfinished level
+  const i = o.level ? Math.min(S.levels.length, o.level) - 1 : nextOpen();
   if (!S.hud) { S.hud = Oomba.ui.hud(['progress', 'count:star'], { onPause: v => { if (v === 'restart') startLevel(S.li); if (v === 'quit') { S.quest = null; goTitle(); } } }); }
   startLevel(i);
 }
@@ -1085,7 +1089,13 @@ function startLevel(i) {
   announce(tr('{chapter} · Level {n}', { chapter: chapterTitle(S.chapter), n: i + 1 }));
   if (S.level.learn && !SAVE.learned[S.level.id + ':' + S.band]) openLearn(); else if (S.level.plan) openPlan();
 }
-function layoutClass() { const p = $('#rr'); const land = innerWidth > innerHeight * 1.15; p.classList.toggle('landscape', land); p.classList.toggle('portrait', !land); fitGrid(); }
+function layoutClass() {
+  const p = $('#rr'); const land = innerWidth > innerHeight * 1.15, short = innerHeight < 500;
+  p.classList.toggle('landscape', land); p.classList.toggle('portrait', !land); p.classList.toggle('short', short);
+  // on a phone held sideways the kit's safe band would leave no room: the panel starts right under the HUD instead
+  if (short) { const parts = [...document.querySelectorAll('.ok-ui .ok-hud .ok-pill, .ok-ui .ok-hud .ok-btn')]; const b = Math.max(50, ...parts.map(e => e.getBoundingClientRect().bottom)); p.style.top = Math.min(140, Math.round(b + 6)) + 'px'; } else p.style.top = '';
+  fitGrid();
+}
 /** The board is a square as big as its box allows (a percentage aspect ratio does not survive a flex parent's height clamp). */
 function fitGrid() { const wrap = document.querySelector('.rr-gridwrap'), box = document.querySelector('.rr-gridbox'); if (!wrap || !box) return; const s = Math.max(60, Math.floor(Math.min(wrap.clientWidth, wrap.clientHeight))); box.style.width = box.style.height = s + 'px'; }
 addEventListener('resize', () => { if (S.screen === 'play') { layoutClass(); placeBolt(); } });
@@ -1222,9 +1232,11 @@ function renderProgram() {
   syncShelf();
 }
 function slot(list, i, label) {
-  const s = el('button', 'rr-slot', esc(label || '+')); s.type = 'button'; s.setAttribute('aria-label', tr('Put the next block here'));
+  // an insertion point (not a button: the real controls are the blocks and the tray; Enter or Space works on it too)
+  const s = el('span', 'rr-slot', esc(label || '+')); s.tabIndex = 0; s.setAttribute('aria-label', tr('Put the next block here'));
   if (S.cur && S.cur.list === list && S.cur.i === i) s.classList.add('cur');
-  s.addEventListener('click', () => { S.cur = { list, i }; S.sel = null; renderProgram(); renderTray(); });
+  const pick = () => { S.cur = { list, i }; S.sel = null; renderProgram(); renderTray(); };
+  s.addEventListener('click', pick); s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
   return s;
 }
 function renderList(list, top) {
@@ -1246,7 +1258,7 @@ function renderList(list, top) {
 function renderTray() {
   const t = $('#tray'); t.innerHTML = ''; $('#edit').hidden = true;
   const f = S.sel != null ? find(S.sel) : null;
-  t.hidden = !f; if (!f) return;
+  t.hidden = !f; $('#runbar').hidden = !!f && $('#rr').classList.contains('short'); if (!f) return;
   const b = f.b;
   const add = (label, icon, fn, kind = 'icon') => { const x = btn(label, { kind, icon, onPress: () => { if (S.playing) return; fn(); renderProgram(); renderTray(); } }); t.appendChild(x); return x; };
   add(tr('Move up'), 'up', () => { if (f.i > 0) { f.list.splice(f.i, 1); f.list.splice(f.i - 1, 0, b); } });
