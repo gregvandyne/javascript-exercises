@@ -224,7 +224,7 @@ section.panel>.csq-code{margin-top:var(--s3)}
 .csq-std th,.csq-std td{text-align:start;vertical-align:top;padding:var(--s2) var(--s3);font-size:.9rem}
 .csq-std thead th{font-size:.8rem;color:var(--text-2);text-transform:none;letter-spacing:0;white-space:nowrap}
 .csq-std-concept th{background:var(--bg-2,var(--card));font-weight:800;font-size:.85rem;text-transform:none;letter-spacing:0}
-.csq-std-id{min-width:180px;max-width:320px;text-transform:none;letter-spacing:0;font-weight:400}
+.csq-std-id,.tbl th.csq-std-id{min-width:180px;max-width:320px;text-transform:none;letter-spacing:0;font-weight:400}
 .csq-std-id b{display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
 .csq-std-id .small{display:block;line-height:1.3;margin-top:2px}
 .csq-std-lessons{min-width:140px;max-width:260px}

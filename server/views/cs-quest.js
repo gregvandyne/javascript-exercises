@@ -42,6 +42,8 @@ export const idChips = ids => html`<span class="csq-idrow">${(ids || []).map(idC
 export const programBadge = cat => raw(`<span class="csq-badge" lang="en" dir="ltr">${esc(cat.program.teacherBadge)}</span>`);
 /** The quest code, big, left to right. */
 export const questCode = code => (code ? raw(`<span class="csq-code" dir="ltr" lang="en">${esc(code)}</span>`) : '');
+/** The printables a lesson offers (the plan page's menu; ?sheet= answers 404 for any other). Unit 7 adds the Builder sheets. */
+export const printablesOf = tpl => ['exit-half', 'sub-plan', 'unplugged', 'rubric', ...(tpl.unit === 7 ? ['planning-sheet', 'etiquette-card'] : []), ...(tpl.unpluggedTwin?.printables || [])].filter((x, i, a) => a.indexOf(x) === i);
 /** A period table ([clock, minutes, label]) that scrolls by itself on a phone. */
 export function periodTable(t, rows, cls = '') {
   return html`<div class="csq-tbl"><table class="tbl csq-period ${cls}"><thead><tr><th>${t('cs.plan.clock')}</th><th>${t('cs.plan.min')}</th><th>${t('cs.plan.segment')}</th></tr></thead>
@@ -55,7 +57,7 @@ export function itemView(it, { showAnswer = true, n = null } = {}) {
 /** The Builder status line (P18): on / resting, and about how many teams can build this period. No prices. */
 export function builderLine(t, b) {
   if (!b) return '';
-  return html`<p class="csq-builder ${b.on ? 'is-on' : 'is-resting'}"><span>${b.on ? '🟢' : '🟡'} ${t(b.on ? 'cs.builder.on' : 'cs.builder.resting')}</span><span>· ${t('cs.builder.teams', { count: b.teamsPerPeriod })}</span>${!b.on && b.why === 'noKey' ? html`<span class="small muted">· ${t('cs.builder.noKey')}</span>` : ''}</p>`;
+  return html`<p class="csq-builder ${b.on ? 'is-on' : 'is-resting'}"><span>${b.on ? '🟢' : '🟡'} ${t(b.on ? 'cs.builder.on' : 'cs.builder.resting')}</span>${b.on ? html`<span>· ${t('cs.builder.teams', { count: b.teamsPerPeriod })}</span>` : ''}${!b.on && b.why === 'noKey' ? html`<span class="small muted">· ${t('cs.builder.noKey')}</span>` : ''}</p>`;
 }
 const lessonUrl = (key, extra = '') => `/teach/cs-quest/${key}${extra}`;
 const stateChip = (t, st) => (!st || !st.inLibrary ? html`<span class="chip-s">${t('cs.state.notAdded')}</span>`
@@ -135,6 +137,7 @@ export function programBody(req, d) {
     <div class="csq-paths">${cat.paths.map(pathCard)}</div></section>
   <h2 class="sec-h">📚 ${t('cs.units.h')}</h2>
   ${cat.units.map(unitCard)}
+  <p class="small muted">${t('teachers.cs.cstaNote')}</p>
   <p class="small muted">${t('cs.program.footer')} <a href="/teachers/cs-quest">${t('cs.program.public')}</a> · <a href="/teach/cs-quest/coverage">${t('cs.program.coverage')}</a> · <span lang="en" dir="ltr">${b.grade}: ${b.inGame}</span></p>`;
 }
 
@@ -156,9 +159,10 @@ export function planBody(req, d) {
   // The two equal warm-up buttons (D2): live, or the projector; 6.1 and 6.3 start Would You Rather instead.
   const warmupLive = !d.flags.live ? html`<p class="notice csq-notice-line">ℹ️ ${t('cs.plan.liveOff')}</p>`
     : tpl.warmup ? liveForm('warmup', t('cs.buttons.warmup'), '📡', true) : wyr ? liveForm('wyr', t('cs.buttons.wyr'), '📡', true) : '';
+  const liveNote = d.flags.live && (tpl.warmup || wyr) && d.classes.length && !(d.assigned || []).length ? html`<p class="small muted">ℹ️ ${t('cs.plan.liveNotAssigned')}</p>` : '';
   const projector = tpl.warmup ? html`<a class="btn btn-primary" href="${lessonUrl(key, '?projector=warmup')}" target="_blank" rel="noopener">🖥️ ${t('cs.buttons.projector')}</a>` : '';
   const steps = (d.copy || []).filter(Boolean);
-  const printables = ['exit-half', 'sub-plan', 'unplugged', 'rubric', 'planning-sheet', 'etiquette-card', ...(tpl.unpluggedTwin?.printables || [])].filter((x, i, a) => a.indexOf(x) === i);
+  const printables = printablesOf(tpl);
   const sheetName = s => (t.has(`cs.sheets.${s}`) ? t(`cs.sheets.${s}`) : s.replace(/-/g, ' '));
   const printMenu = html`<details class="csq-menu"><summary class="btn">🖨️ ${t('cs.buttons.printables')}</summary><div class="menu">
     ${printables.map(s => html`<a href="${lessonUrl(key, `?sheet=${s}`)}" target="_blank" rel="noopener">${sheetName(s)}</a>`)}</div></details>`;
@@ -181,24 +185,25 @@ export function planBody(req, d) {
   const state = html`<div class="csq-state">
     ${stateChip(t, st)}
     ${current ? html`<a class="btn btn-sm" href="/teach/lessons/${current.id}">✏️ ${t('cs.state.open')}</a>` : html`<form data-api="/api/lessons/from-template/${key}" data-reload data-toast="${t('cs.toast.one')}"><input type="hidden" name="schoolId" value="${d.school.id}"><button class="btn btn-sm btn-primary" type="submit">➕ ${t('cs.add')}</button></form>`}
+    ${current && st.gamesReady ? html`<form data-api="/api/lessons/${current.id}/switch-on-games" data-reload><button class="btn btn-sm btn-primary" type="submit">▶ ${t('cs.state.switchOn')}</button></form>` : ''}
     ${current ? html`<form data-api="/api/lessons/${current.id}/reset-template" data-reload data-toast="${t('cs.state.resetDone')}" data-confirm="${t('cs.state.resetConfirm')}"><button class="btn btn-sm" type="submit">♻️ ${t('cs.state.reset')}</button></form>` : ''}
     ${d.assigned.map(a => html`<a class="chip-s" href="/class/${a.class_id}/progress/${a.id}">📌 ${a.name}</a>`)}
     ${d.other ? html`<a class="btn btn-sm" href="${lessonUrl(d.other.key)}">🔁 ${t('cs.plan.switchBand', { band: t(BAND_KEY[d.other.band]) })}</a>` : ''}
   </div>`;
-  const notes = html`${!d.bank ? html`<p class="notice warn">⚠️ ${t('cs.plan.bankMissing')}</p>` : ''}${game && !pub ? html`<p class="notice warn">⚠️ ${t('cs.plan.gameNotYet', { game: cat.games[game]?.title || game })}</p>` : ''}`;
+  const notes = html`${!d.bank ? html`<p class="notice warn">⚠️ ${t('cs.plan.bankMissing')}</p>` : ''}${game && !pub ? html`<p class="notice warn">⚠️ ${t('cs.plan.gameNotYet', { game: cat.games[game]?.title || game })} ${t('cs.plan.gameLater')}</p>` : ''}${current && st.gamesReady ? html`<p class="notice warn">⬆️ ${t('cs.plan.gamesReady', { count: st.gamesReady })}</p>` : ''}`;
   const buttons = html`<section class="panel" aria-labelledby="go-h"><h2 id="go-h" class="sr-only">${t('cs.plan.actions')}</h2>
-    <div class="csq-two">${warmupLive}${projector}</div>
+    <div class="csq-two">${warmupLive}${projector}</div>${liveNote}
     <div class="acts csq-acts">
-      ${game && pub && tpl.params ? html`<a class="btn" href="/play/${game}?${tpl.params}&mode=projector" target="_blank" rel="noopener">▶ ${t('cs.buttons.game')}</a>` : ''}
+      ${game && pub && tpl.params ? html`<a class="btn" href="/play/${game}?${tpl.params}&mode=projector" target="_blank" rel="noopener">▶ ${t('cs.buttons.game')}</a>` : game && !pub ? html`<button class="btn" type="button" disabled title="${t('cs.plan.gameNotYet', { game: cat.games[game]?.title || game })}">▶ ${t('cs.buttons.gameNotYet')}</button>` : ''}
       ${d.flags.live && d.bank ? liveForm('exit', t('cs.buttons.exitLive'), '📡') : ''}
       ${d.flags.live && d.bank ? liveForm('review', t('cs.buttons.review'), '🌟') : ''}
       <a class="btn" href="${lessonUrl(key, '?projector=exit')}" target="_blank" rel="noopener">🖥️ ${t('cs.buttons.exitProjector')}</a>
       <a class="btn" href="${lessonUrl(key, '?print=1')}" target="_blank" rel="noopener">🖨️ ${t('cs.buttons.print')}</a>
       ${printMenu}
-      ${d.classes.length ? html`<a class="btn" href="#assign">📌 ${t('cs.buttons.assign')}</a><a class="btn" href="#assign-unit">📅 ${t('cs.buttons.assignUnit')}</a>` : ''}
+      ${d.classes.length ? html`<a class="btn" href="#assign" data-open-details>📌 ${t('cs.buttons.assign')}</a><a class="btn" href="#assign-unit" data-open-details>📅 ${t('cs.buttons.assignUnit')}</a>` : ''}
     </div>
     ${d.classes.length > 1 ? html`<p class="small muted csq-classpick"><label for="live-class">${t('cs.plan.liveClass')}</label> <select class="input input-sm" id="live-class" data-class-pick>${classOptions(d.preselect)}</select></p>` : ''}
-    ${questCode(tpl.questCode)}</section>`;
+    ${tpl.questCode ? html`<p class="csq-codeline"><b>${t('cs.plan.questCode')}</b> ${questCode(tpl.questCode)} <span class="small muted">${t('cs.plan.questCodeHint')}</span></p>` : ''}</section>`;
   const exitRubric = (tpl.exit.rubric || []).length ? html`<div class="csq-tbl"><table class="tbl csq-rubric-tbl" lang="en" dir="ltr"><thead><tr><th>${t('cs.plan.rubricLine')}</th><th>0</th><th>1</th><th>2</th><th>3</th></tr></thead>
     <tbody>${tpl.exit.rubric.map(r => html`<tr><td><b>${r.line}</b><br>${idChips(r.ids)}</td>${(r.levels || []).map(l => html`<td>${l}</td>`)}</tr>`)}</tbody></table></div>` : '';
   const playBlock = () => {
@@ -207,10 +212,10 @@ export function planBody(req, d) {
     if (game) { rows.push(html`<dt>${t('cs.plan.game')}</dt><dd lang="en" dir="ltr">${GAME_EMOJI[game] || '🎮'} ${cat.games[game]?.title || game} · ${play.chapterTitle || play.chapter}${play.levels ? ` · ${t('cs.plan.levelsN', { count: play.levels })}` : ''}${play.then ? ` → ${play.then.chapter} ${play.then.levels || ''}` : ''}${play.second ? ` · ${cat.games[play.second.game]?.title || play.second.game} · ${play.second.chapterTitle}` : ''}</dd>`); }
     if (wyr) row('cs.plan.starter', play.starter);
     row('cs.plan.goal', play.goal); row('cs.plan.stretch', play.stretch); row('cs.plan.pairs', play.pairs || play.solo || play.teams);
-    for (const k of ['protocol', 'artifact', 'shape', 'message', 'partnerNote', 'handIn', 'roles', 'rules', 'defend', 'room', 'builderStatus', 'prefill', 'paperPath']) if (typeof play[k] === 'string') rows.push(html`<dt lang="en" dir="ltr">${k.replace(/([A-Z])/g, ' $1').toLowerCase()}</dt><dd>${en('span', play[k])}</dd>`);
-    for (const k of ['rotations', 'etiquette', 'sheet', 'creditsTemplate', 'demoCircles']) if (Array.isArray(play[k])) rows.push(html`<dt lang="en" dir="ltr">${k.replace(/([A-Z])/g, ' $1').toLowerCase()}</dt><dd>${enList(play[k])}</dd>`);
-    if (play.audit) rows.push(html`<dt lang="en" dir="ltr">audit (${play.audit.minutes} min)</dt><dd>${enList(play.audit.steps)}</dd>`);
-    if (play.timelineWalk) rows.push(html`<dt lang="en" dir="ltr">timeline walk (${play.timelineWalk.minutes} min)</dt><dd>${enList(play.timelineWalk.steps)}</dd>`);
+    for (const k of ['protocol', 'artifact', 'shape', 'message', 'partnerNote', 'handIn', 'roles', 'rules', 'defend', 'room', 'builderStatus', 'prefill', 'paperPath']) if (typeof play[k] === 'string') rows.push(html`<dt>${t(`cs.plan.playKeys.${k}`)}</dt><dd>${en('span', play[k])}</dd>`);
+    for (const k of ['rotations', 'etiquette', 'sheet', 'creditsTemplate', 'demoCircles']) if (Array.isArray(play[k])) rows.push(html`<dt>${t(`cs.plan.playKeys.${k}`)}</dt><dd>${enList(play[k])}</dd>`);
+    if (play.audit) rows.push(html`<dt>${t('cs.plan.playKeys.audit')} · ${t('lessons.minutesN', { count: play.audit.minutes })}</dt><dd>${enList(play.audit.steps)}</dd>`);
+    if (play.timelineWalk) rows.push(html`<dt>${t('cs.plan.playKeys.timelineWalk')} · ${t('lessons.minutesN', { count: play.timelineWalk.minutes })}</dt><dd>${enList(play.timelineWalk.steps)}</dd>`);
     row('cs.plan.lookFors', play.lookFors); row('cs.plan.misconception', play.misconception); row('cs.plan.early', play.earlyFinishers);
     return html`<dl class="csq-script">${rows}</dl>`;
   };
@@ -296,6 +301,7 @@ export function coverageBody(req, d) {
   <section class="panel"><h2>${t('cs.coverage.legendH')}</h2>
     <ul class="csq-legend"><li><b>${t('cs.coverage.practiced')}</b> ${t('cs.coverage.practicedText')}</li><li><b>${t('cs.coverage.checked')}</b> ${t('cs.coverage.checkedText')}</li><li><b>${t('cs.coverage.applied')}</b> ${t('cs.coverage.appliedText')}</li></ul>
     <p class="small muted">${t('cs.coverage.bold')} · ${t('cs.coverage.itemsNote')}</p>
+    <p class="small muted">${t('teachers.cs.cstaNote')}</p>
     ${map.missing.length ? html`<p class="notice warn">${t('cs.coverage.missing', { count: map.missing.length })} <span lang="en" dir="ltr">${map.missing.join(', ')}</span></p>` : html`<p class="notice good">${t('cs.coverage.complete')}</p>`}
     ${noPrimary.length ? html`<p class="notice warn">${t('cs.coverage.noPrimary')} ${idChips(noPrimary)}</p>` : ''}</section>
   ${levels.map(table)}
@@ -306,8 +312,9 @@ export function coverageBody(req, d) {
 /** "From CS Quest 1.2 (v1) · Open the plan page" with Reset (P21) when a newer catalogue version exists. */
 export function editorBanner(req, l, tpl, { edit = false } = {}) {
   const t = req.t;
-  const newer = tpl.version > (l.template_version || 0);
-  return html`<div class="notice csq-notice-line ${newer ? 'warn' : ''}"><span>💻 ${t('cs.editor.from', { n: tpl.n, version: l.template_version || tpl.version })}${newer ? ` · ${t('cs.editor.newer', { version: tpl.version })}` : ''}</span>
+  const newer = tpl.version > (l.template_version || 0), ready = T.pendingGames(l, tpl).length;
+  return html`<div class="notice csq-notice-line ${newer || ready ? 'warn' : ''}"><span>💻 ${t('cs.editor.from', { n: tpl.n, version: l.template_version || tpl.version })}${newer ? ` · ${t('cs.editor.newer', { version: tpl.version })}` : ''}${ready ? ` · ${t('cs.plan.gamesReady', { count: ready })}` : ''}</span>
     <a class="btn btn-sm" href="${lessonUrl(tpl.key)}">📋 ${t('cs.editor.plan')}</a>
+    ${edit && ready ? html`<form data-api="/api/lessons/${l.id}/switch-on-games" data-reload><button class="btn btn-sm btn-primary" type="submit">▶ ${t('cs.state.switchOn')}</button></form>` : ''}
     ${edit && newer ? html`<form data-api="/api/lessons/${l.id}/reset-template" data-reload data-toast="${t('cs.state.resetDone')}" data-confirm="${t('cs.state.resetConfirm')}"><button class="btn btn-sm" type="submit">♻️ ${t('cs.state.reset')}</button></form>` : ''}</div>`;
 }

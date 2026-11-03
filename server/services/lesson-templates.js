@@ -145,7 +145,8 @@ const statusOf = (tpl, copies) => {
  *  -> { key, version, inLibrary, current (newest copy | null), copies, updateAvailable } | null (unknown key) */
 export function status(u, schoolId, key) {
   const tpl = getTemplate(key); if (!tpl) return null;
-  return statusOf(tpl, copiesOf(u, schoolId, key));
+  const st = statusOf(tpl, copiesOf(u, schoolId, key));
+  return { ...st, gamesReady: st.current ? pendingGames(st.current, tpl).length : 0 };
 }
 /** The same for every catalogue lesson at once: Map key -> status (one query). */
 export function libraryStatus(u, schoolId) {
@@ -210,7 +211,8 @@ const addOrThrow = (r, s) => { if (!r.ok) throw Object.assign(new Error(`step ${
 function makeSteps(u, lesson, tpl, sets, notes) {
   const made = [];
   for (const s of tpl.steps) {
-    const base = { title: s.title, body: s.body || '', minutes: s.minutes };
+    const nb = tpl.questCode ? String(tpl.questCode).replace(/ /g, '\u00a0') : null;
+    const base = { title: s.title, body: nb ? String(s.body || '').split(tpl.questCode).join(nb) : s.body || '', minutes: s.minutes };
     if (s.kind === 'text') made.push(addOrThrow(L.addStep(u, lesson.id, { kind: 'text', ...base }), s));
     else if (s.kind === 'game') {
       const g = publishedGame(s.gameSlug);
@@ -250,7 +252,7 @@ export function materialise(u, schoolId, key, { folderId = null, again = false }
   try {
     return tx(() => {
       const folder = folderId || ensureFolders(u, schoolId, tpl);
-      const r = L.createLesson(u, schoolId, { title: tpl.title, folderId: folder, summary: tpl.summary, subject: SUBJECT, grade: tpl.grade,
+      const r = L.createLesson(u, schoolId, { title: tpl.title, folderId: folder, summary: tpl.kidSummary || '', subject: SUBJECT, grade: tpl.grade,
         objectives: (tpl.iCan || []).map(cap).join('\n'), templateKey: tpl.key, templateVersion: tpl.version });
       if (!r.ok) throw Object.assign(new Error('lesson'), { code: r.code });
       const sets = derivedSets(u, tpl, r.lesson.id, notes);
@@ -262,6 +264,32 @@ export function materialise(u, schoolId, key, { folderId = null, again = false }
     if (e && e.code) return { ok: false, code: e.code, ...(e.step ? { step: e.step } : {}), ...(e.set ? { set: e.set } : {}), ...(e.why ? { why: e.why } : {}) };
     throw e;
   }
+}
+/**
+ * Text steps of a copy that stand in for a game which was not published when the copy was made, and whose game is
+ * published now (the catalogue step with the same title is a game step). -> [{ stepId, slug, game, tplStep }]
+ */
+export function pendingGames(lesson, tpl = lesson && getTemplate(lesson.template_key)) {
+  if (!lesson || !tpl) return [];
+  const want = new Map(tpl.steps.filter(s => s.kind === 'game').map(s => [s.title, s]));
+  const out = [];
+  for (const st of L.steps(lesson.id)) {
+    const s = st.kind === 'text' && want.get(st.title); if (!s) continue;
+    const g = publishedGame(s.gameSlug); if (g) out.push({ stepId: st.id, slug: s.gameSlug, game: g, tplStep: s });
+  }
+  return out;
+}
+/** "Switch on the game": those text steps become the catalogue's game steps in place (students' work on the lesson stays).
+ *  -> { ok, switched: n } | { ok: false, code } */
+export function switchOnGames(u, lessonId) {
+  const l = L.getLesson(lessonId);
+  if (!l || !L.canEditLesson(u, l) || !getTemplate(l.template_key)) return fail('notFound');
+  const tpl = getTemplate(l.template_key), p = pendingGames(l, tpl);
+  try {
+    tx(() => { for (const x of p) addOrThrow(L.updateStep(u, x.stepId, { kind: 'game', gameId: x.game.id, body: x.tplStep.body || '', options: x.tplStep.options || '', standards: x.tplStep.standards || '' }), x.tplStep); });
+  } catch (e) { if (e && e.code) return fail(e.code); throw e; }
+  if (p.length) audit(u.id, 'lesson.switchOnGames', l.id, { key: l.template_key, steps: p.length });
+  return ok({ switched: p.length });
 }
 /** The teacher's derived sets for a lesson file, by title: { warmup, exit, review } (null where there is none yet). */
 export function derivedSetsOf(u, tpl) { const t = setTitles(tpl); return { warmup: tpl.warmup ? findSet(u, t.warmup) : null, exit: findSet(u, t.exit), review: findSet(u, t.review) }; }
@@ -298,12 +326,12 @@ export function resetLesson(u, lessonId) {
   const r = materialise(u, old.school_id, old.template_key, { folderId: old.owner_id === u.id ? old.folder_id || null : null, again: true });
   if (!r.ok) return r;
   const moved = [], kept = [];
-  for (const cl of q.all('SELECT * FROM class_lessons WHERE lesson_id=? AND removed_at IS NULL ORDER BY position, assigned_at', old.id)) {
+  tx(() => { for (const cl of q.all('SELECT * FROM class_lessons WHERE lesson_id=? AND removed_at IS NULL ORDER BY position, assigned_at', old.id)) {
     const a = L.assign(u, cl.class_id, r.lesson.id, { unitId: cl.unit_id, opensAt: cl.opens_at ? isoDay(cl.opens_at) : null, dueAt: cl.due_at ? isoDay(cl.due_at) : null });
     if (!a.ok) { kept.push(cl.class_id); continue; }
     L.unassign(u, cl.id);
     moved.push({ classId: cl.class_id, classLesson: a.classLesson });
-  }
+  } });
   audit(u.id, 'lesson.reset', r.lesson.id, { from: old.id, key: old.template_key, moved: moved.length, kept: kept.length });
   return ok({ lesson: r.lesson, old, moved, kept, notes: r.notes });
 }

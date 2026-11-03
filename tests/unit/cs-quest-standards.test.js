@@ -176,8 +176,9 @@ test('the page, the student drill-down, the CSV and the school report; who may s
   assert.match((await as(ana)(`/class/${cls.id}/standards.csv`)).text, /"'=HYPERLINK\(""x""\)/);
   q.run('UPDATE lessons SET title=? WHERE id=?', mat.lesson.title, lesson.id);
 
-  const rep = await as(ben)(`/class/${cls.id}/standards?report=1`);
-  assert.equal(rep.status, 200, 'any staff of the school');
+  assert.equal((await as(ben)(`/class/${cls.id}/standards?report=1`)).status, 404, 'the report is for school admins');
+  const rep = await as(boss)(`/class/${cls.id}/standards?report=1`);
+  assert.equal(rep.status, 200, 'school admins');
   assert.match(rep.text, /Coverage report/); assert.match(rep.text, /Ana 4B/); assert.match(rep.text, /1B-AP-10/);
   assert.doesNotMatch(rep.text, /Mia Pupil|Leo Pupil|Nora Pupil|Zed Pupil/, 'aggregate only');
   const agg = STD.schoolReport(oak.id).rows.find(r => r.id === '1B-AP-10');

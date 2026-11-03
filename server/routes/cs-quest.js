@@ -122,6 +122,10 @@ router.post('/api/lessons/from-template', requireUser, staffOnly, LIMIT, (req, r
 router.post('/api/lessons/:id/reset-template', requireUser, staffOnly, LIMIT, (req, res) => send(req, res, T.resetLesson(req.user, req.params.id), r => ({
   ok: true, lesson: lessonJson(r.lesson), old: lessonJson(r.old), moved: r.moved.map(m => ({ classId: m.classId, classLessonId: m.classLesson.id })), kept: r.kept, notes: r.notes,
 })));
+/** Switch on the game: text steps that stood in for a game that is published now become game steps in place. */
+router.post('/api/lessons/:id/switch-on-games', requireUser, staffOnly, LIMIT, (req, res) => send(req, res, T.switchOnGames(req.user, req.params.id), r => ({
+  ok: true, switched: r.switched, toast: req.t('cs.state.gamesOn', { count: r.switched }),
+})));
 
 // ---------------------------------------------------------------- the plan page's buttons: live, assign
 /** The copy of a lesson file in the teacher's library for the school, made when missing. -> { lesson, sets, steps } | null */
@@ -152,12 +156,13 @@ router.post('/api/cs-quest/lessons/:key/live', requireUser, staffOnly, LIMIT, (r
   else if (what === 'review' && copy.sets.review) { q.set('mode', 'board'); q.set('set', copy.sets.review.id); }
   else if (what === 'wyr' && tpl.play && tpl.play.type === 'live') { q.set('mode', 'wyr'); if (tpl.play.starter) q.set('starter', tpl.play.starter); step = stepFor(T.WYR_SLUG); }
   else return bad(req, res, what === 'warmup' || what === 'exit' || what === 'review' ? 'bankMissing' : 'badRequest');
+  let note = null;
   if (c) {
     q.set('class', c.id);
     const cl = step && L.assignedClasses(copy.lesson.id).find(a => a.class_id === c.id && !a.archived_at);
-    if (cl) { q.set('cl', cl.id); q.set('step', step.id); }
+    if (cl) { q.set('cl', cl.id); q.set('step', step.id); } else if (step) note = req.t('cs.plan.liveNotAssigned');
   }
-  res.json({ ok: true, redirect: `/live?${q}` });
+  res.json({ ok: true, redirect: `/live?${q}`, ...(note ? { note, toast: note } : {}) });
 });
 /** Assign to class: { classId, opensAt?, dueAt?, unitId?, schoolId? }: the lesson is materialised first, then assigned. */
 router.post('/api/cs-quest/lessons/:key/assign', requireUser, staffOnly, LIMIT, (req, res) => {
@@ -186,6 +191,12 @@ function assignUnit(req, res, classId) {
   const body = { ...b(req) };
   if (typeof body.what === 'string') { const m = /^(unit|path):(.+)$/.exec(body.what); if (m) body[m[1]] = m[2]; }
   const band = bandOf(body.band);
+  // Everything that can refuse the request is checked before anything is materialised (no side effects on a 400 / 404).
+  const cadence = body.cadence || 'weekdays';
+  if (!L.CADENCES.includes(cadence)) return bad(req, res, 'badCadence');
+  if (body.start && !/^\d{4}-\d{2}-\d{2}$/.test(String(body.start))) return bad(req, res, 'badDate');
+  if (body.dueDays !== undefined && body.dueDays !== '' && body.dueDays !== null && !(Number.isInteger(+body.dueDays) && +body.dueDays >= 0 && +body.dueDays <= 365)) return bad(req, res, 'badDate');
+  if (body.unitId) { const un = L.getUnit(String(body.unitId)); if (!un || un.class_id !== c.id) return bad(req, res, 'notFound', 404); }
   let lessonIds = [], keyOf = new Map(), materialised = [], missing = [], unitName = typeof body.unitName === 'string' ? body.unitName.trim() : '';
   if (Array.isArray(body.lessonIds) && body.lessonIds.length) lessonIds = body.lessonIds.map(String);
   else {
@@ -195,7 +206,7 @@ function assignUnit(req, res, classId) {
       if (!band) return bad(req, res, 'band');
       const k = T.unitKeys(body.unit, band); if (!k) return bad(req, res, 'notFound', 404);
       keys = k.keys; missing = k.missing;
-      if (!unitName) { const un = T.unitOf(body.unit); unitName = `Unit ${un.n} · ${un.title}`; }
+      if (!unitName) { const un = T.unitOf(body.unit); unitName = `${req.t('cs.unit.n', { n: un.n })} · ${un.title}`; }
     } else if (body.path) {
       if (!band) return bad(req, res, 'band');
       const k = T.pathKeys(body.path, band); if (!k) return bad(req, res, 'notFound', 404);
@@ -215,13 +226,13 @@ function assignUnit(req, res, classId) {
     if (!unit) { const r = L.createUnit(u, c.id, unitName); if (!r.ok) return bad(req, res, r.code); unit = r.unit; }
   }
   const dueDays = body.dueDays === undefined || body.dueDays === '' || body.dueDays === null ? null : body.dueDays;
-  const r = L.assignUnitWithCadence(u, c.id, lessonIds, { unitId: unit ? unit.id : null, start: body.start || null, cadence: body.cadence || 'weekdays', dueDays });
+  const r = L.assignUnitWithCadence(u, c.id, lessonIds, { unitId: unit ? unit.id : null, start: body.start || null, cadence, dueDays });
   if (!r.ok) return bad(req, res, r.code, r.code === 'notFound' ? 404 : 400);
   res.json({
     ok: true, unit: unit ? { id: unit.id, name: unit.name } : null,
     assigned: r.assigned.map(a => ({ lessonId: a.lessonId, key: keyOf.get(a.lessonId) || null, classLessonId: a.classLesson.id, opensAt: isoDay(a.opensAt), dueAt: isoDay(a.dueAt), restored: !!a.restored })),
     skipped: r.skipped.map(s => ({ ...s, key: keyOf.get(s.lessonId) || null })), materialised, missing,
-    toast: req.t('cs.unitForm.done', { count: r.assigned.length, class: c.name }),
+    toast: req.t('cs.unitForm.done', { count: r.assigned.length, class: c.name }) + (r.skipped.length ? ` ${req.t('cs.unitForm.skipped', { count: r.skipped.length, list: r.skipped.map(x => { const k = keyOf.get(x.lessonId); const m = k && /\d\.\d$/.exec(k); return m ? m[0] : ''; }).filter(Boolean).join(', ') })}` : ''),
   });
 }
 router.post('/api/classes/:id/assign-unit', requireUser, staffOnly, LIMIT, (req, res) => assignUnit(req, res, req.params.id));
@@ -274,6 +285,7 @@ router.get('/teach/cs-quest/:key', requireUser, staffPage, (req, res) => {
   const bare = { head: V.CSS, bare: true, bodyClass: 'printpage' };
   if (req.query.print === '1') return page(req, res, { title: tpl.title, body: printBody(req, { cat, tpl, warmupItems, exitItems, back }), ...bare, scripts: ['/js/print.js'] });
   if (req.query.sheet) {
+    if (!V.printablesOf(tpl).includes(String(req.query.sheet))) return notFound(req, res);
     const body = sheetBody(req, { cat, tpl, sheet: String(req.query.sheet), exitItems, back });
     if (!body) return notFound(req, res);
     return page(req, res, { title: tpl.title, body, ...bare, scripts: ['/js/print.js'] });
@@ -343,7 +355,7 @@ router.get('/teachers/cs-quest', (req, res) => {
       ${el(t, 'p', `${k}.claim.note`, {}, ' class="small muted"')}</section>
     <section class="panel" id="standards" aria-labelledby="standards-h">${el(t, 'h2', `${k}.standards.h`, {}, ' id="standards-h"')}
       <div class="csq-stats"><div class="csq-stat"><b dir="ltr">${CSTA.ids('1B').length}</b>${el(t, 'span', `${k}.standards.b1`)}</div><div class="csq-stat"><b dir="ltr">${CSTA.ids('2').length}</b>${el(t, 'span', `${k}.standards.b2`)}</div><div class="csq-stat"><b dir="ltr">46</b>${el(t, 'span', `${k}.standards.files`)}</div></div>
-      ${el(t, 'p', `${k}.standards.p`)}
+      ${el(t, 'p', `${k}.standards.p`)}${el(t, 'p', `${k}.cstaNote`, {}, ' class="small muted"')}
       ${staff ? html`<p><a href="/teach/cs-quest/coverage">🗺️ ${t('cs.program.coverage')}</a></p>` : ''}</section>
     <section class="panel" id="materials" aria-labelledby="materials-h">${el(t, 'h2', `${k}.materials.h`, {}, ' id="materials-h"')}
       ${V.enList(cat.materials, 'lp-list')}${el(t, 'p', `${k}.materials.p`, {}, ' class="small muted"')}</section>
@@ -371,10 +383,10 @@ router.get('/teachers/cs-quest', (req, res) => {
 });
 
 // ---------------------------------------------------------------- the class Standards tab (plan 9.4, P12)
-/** The class's teachers and school admins (S.canManageClass); the principal's report: any signed-in staff of the school. */
+/** The class's teachers and school admins (S.canManageClass); the principal's report: the school's admins (S.canManageSchool). */
 const stdClass = (req, res, { report = false } = {}) => {
   const c = S.getClass(String(req.params.id || ''));
-  const okay = c && (report ? ['admin', 'teacher'].includes(S.roleIn(req.user, c.school_id)) : S.canManageClass(req.user, c));
+  const okay = c && (report ? S.canManageSchool(req.user, c.school_id) : S.canManageClass(req.user, c));
   if (!okay) { notFound(req, res); return null; }
   return c;
 };

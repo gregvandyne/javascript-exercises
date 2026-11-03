@@ -3806,6 +3806,9 @@
       "li2": "Gebruik een startset, typ snel een eigen set of maak van de vragen in een les een livequiz.",
       "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen.",
       "more": "Bekijk hoe Oomba Live werkt"
+    },
+    "cs": {
+      "cstaNote": "Standaarden: CSTA K-12 Computer Science Standards (2017), niveaus 1B en 2. Dit programma is niet gemaakt, beoordeeld of goedgekeurd door de CSTA."
     }
   },
   "learn": {
@@ -5586,7 +5589,7 @@
       "on": "Builder: aan",
       "resting": "Builder: rust",
       "teams": "ongeveer {count} teams kunnen dit lesuur bouwen",
-      "noKey": "de Builder is op deze site niet ingesteld"
+      "noKey": "Unit 7 heeft de Builder nodig; die is op deze site nog niet ingesteld."
     },
     "buttons": {
       "warmup": "Opwarmer starten (live)",
@@ -5599,7 +5602,8 @@
       "print": "Afdrukken",
       "printables": "Om te printen",
       "assign": "Aan klas toewijzen",
-      "assignUnit": "Unit toewijzen..."
+      "assignUnit": "Unit toewijzen...",
+      "gameNotYet": "Spel openen (nog niet uit)"
     },
     "coverage": {
       "title": "Dekkingskaart",
@@ -5706,7 +5710,33 @@
       "bankMissing": "De vragenbank van deze les is nog niet geladen.",
       "gameNotYet": "{game} is nog niet gepubliceerd; leerlingen zien tot dan een melding.",
       "notWritten": "Deze les is nog niet geschreven.",
-      "switchBand": "Naar {band}"
+      "switchBand": "Naar {band}",
+      "gamesReady": "Het spel is er nu: tekststappen in je kopie die een spelstap kunnen worden: {count}. Leerlingen houden hun werk.",
+      "gameLater": "Zodra het gepubliceerd is, druk je hier of in de lessenbewerker op ‘Spel aanzetten’.",
+      "liveNotAssigned": "Wijs de les eerst toe aan de klas, zodat de opwarmer meetelt in Voortgang.",
+      "questCodeHint": "Leerlingen typen dit als het spel erom vraagt.",
+      "playKeys": {
+        "protocol": "Werkwijze",
+        "artifact": "Wat ze maken",
+        "shape": "Vorm",
+        "message": "Boodschap",
+        "partnerNote": "Notitie voor partner",
+        "handIn": "Inleveren",
+        "roles": "Rollen",
+        "rules": "Regels",
+        "defend": "Verdedigen",
+        "room": "Ruimte",
+        "builderStatus": "Builder-status",
+        "prefill": "Vooraf ingevuld",
+        "paperPath": "Papieren route",
+        "rotations": "Rondes",
+        "etiquette": "Omgangsregels",
+        "sheet": "Blad",
+        "creditsTemplate": "Bronvermelding-sjabloon",
+        "demoCircles": "Demokringen",
+        "audit": "Controle",
+        "timelineWalk": "Tijdlijnwandeling"
+      }
     },
     "print": {
       "back": "Terug",
@@ -5761,8 +5791,10 @@
       "soon": "Binnenkort",
       "gameNotYet": "{game} nog niet gepubliceerd",
       "reset": "Terugzetten naar de CS Quest-versie",
-      "resetConfirm": "Een nieuwe kopie uit CS Quest maken? Je klassen en datums gaan mee; de oude kopie houdt het werk van de leerlingen.",
-      "resetDone": "Teruggezet naar de CS Quest-versie."
+      "resetConfirm": "Een nieuwe kopie maken vanuit CS Quest? Je klassen en datums gaan mee. Leerlingen beginnen de nieuwe kopie vanaf het begin; hun werk aan de oude kopie blijft bewaard en komt terug als je de oude kopie opnieuw toewijst.",
+      "resetDone": "Teruggezet naar de CS Quest-versie.",
+      "switchOn": "Spel aanzetten",
+      "gamesOn": "Spelstappen aangezet: {count}."
     },
     "toast": {
       "one": "Toegevoegd aan je bibliotheek.",
@@ -5790,7 +5822,8 @@
         "daily": "elke dag",
         "twiceweekly": "twee keer per week",
         "weekly": "elke week"
-      }
+      },
+      "skipped": "Al toegewezen: {count} ({list})."
     },
     "units": {
       "h": "Units"

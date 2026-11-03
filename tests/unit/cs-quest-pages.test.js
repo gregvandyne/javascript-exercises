@@ -55,7 +55,8 @@ const noNav = text => !/<nav[^>]+class="[^"]*\b(topnav|sitenav|navbar)\b/.test(t
 test('/teach/cs-quest: band toggle, units with lesson rows, Add to my library / Add unit / the four paths, Before you start, Builder status line', async () => {
   const p = await as(ana)('/teach/cs-quest?band=1B');
   assert.equal(p.status, 200);
-  for (const s of ['Before you start', 'Add to my library', 'Add unit', 'Core 10 (no Builder)', 'Full', 'CS Ed Week', 'Device-first', 'Coverage map', 'Builder: resting', 'teams can build this period', 'Unit 7', 'Grades 3-5', 'CS Quest · CSTA 1B/2', 'Headphones']) assert.ok(p.text.includes(s), `program page has "${s}"`);
+  for (const s of ['Before you start', 'Add to my library', 'Add unit', 'Core 10 (no Builder)', 'Full', 'CS Ed Week', 'Device-first', 'Coverage map', 'Builder: resting', 'Unit 7', 'Grades 3-5', 'CS Quest · CSTA 1B/2', 'Headphones']) assert.ok(p.text.includes(s), `program page has "${s}"`);
+  if (!/Builder: on/.test(p.text)) assert.doesNotMatch(p.text, /teams can build this period/, 'no capacity promised while the Builder rests');
   assert.ok(p.text.indexOf('Core 10 (no Builder)') < p.text.indexOf('CS Ed Week'), 'Core 10 first');
   for (const id of ['core10-no-builder', 'full', 'cs-ed-week', 'device-first']) assert.ok(p.text.includes(`/api/lessons/from-template/path/${id}`));
   assert.ok(!/\$\s?\d|per month|per seat/.test(p.text), 'no prices');
@@ -88,7 +89,10 @@ test('/teach/cs-quest/:key: the plan page with the buttons (Start warm-up (live)
   assert.equal(p.status, 200);
   for (const s of ['I can', 'CS Quest · CSTA 1B/2', 'Do Now', 'Show questions on the projector', 'Assign to class', 'Assign unit...', 'Print', 'Printables', 'Short period (40 min)', 'Block (80-90 min)', 'Explore (projector script)', 'Say this', 'Sub plan', 'Unplugged twin', 'Exit ticket', 'Switch to Grades 6-8', 'every school day', 'twice a week']) assert.ok(p.text.includes(s), `plan page has "${s}"`);
   assert.ok(p.text.includes('lang="en"'), 'lesson text is marked English');
-  for (const sheet of ['planning-sheet', 'etiquette-card', 'exit-half', 'unplugged', 'sub-plan']) assert.ok(p.text.includes(`?sheet=${sheet}`), sheet);
+  for (const sheet of ['exit-half', 'unplugged', 'sub-plan']) assert.ok(p.text.includes(`?sheet=${sheet}`), sheet);
+  for (const sheet of ['planning-sheet', 'etiquette-card']) assert.ok(!p.text.includes(`?sheet=${sheet}`), `${sheet} is a unit 7 sheet`);
+  assert.match(p.text, /data-open-details/, 'the Assign buttons open their form');
+  assert.match(p.text, /Students type this if the game asks for it/, 'the quest code is labeled');
   // add, then the Reset button appears and the editor shows the banner
   const add = await as(ana)(`/api/lessons/from-template/${KEY}`, { method: 'POST', body: { schoolId: oak.id } });
   assert.equal(add.status, 200);
@@ -110,10 +114,12 @@ test('/teach/cs-quest/:key?print=1: the printed plan (two pages, quest code larg
 
 test('/teach/cs-quest/:key?sheet=<name>: printables named by the lesson (grid-mat, loop-cards, planning-sheet, rubric, ...)', async () => {
   const tpl = T.getTemplate(KEY);
-  for (const s of ['exit-half', 'sub-plan', 'unplugged', 'rubric', 'planning-sheet', 'etiquette-card', ...tpl.unpluggedTwin.printables]) {
+  for (const s of ['exit-half', 'sub-plan', 'unplugged', 'rubric', ...tpl.unpluggedTwin.printables]) {
     const p = await as(ana)(`/teach/cs-quest/${KEY}?sheet=${s}`);
     assert.equal(p.status, 200, s); assert.ok(p.text.includes('printdoc'), s); assert.ok(noNav(p.text), s);
   }
+  assert.equal((await as(ana)(`/teach/cs-quest/${KEY}?sheet=planning-sheet`)).status, 404, 'a sheet the lesson does not list');
+  for (const s of ['planning-sheet', 'etiquette-card']) assert.equal((await as(ana)(`/teach/cs-quest/csq-1b-7.2?sheet=${s}`)).status, 200, `unit 7 ${s}`);
   assert.equal((await as(ana)(`/teach/cs-quest/${KEY}?sheet=..%2Fx`)).status, 404);
 });
 

@@ -104,7 +104,7 @@ test('materialise: a lesson lands in CS Quest / Unit folders with its fields, te
   const [today, warm, play, exit, words] = steps;
   assert.match(today.body, /^Do Now: /); assert.doesNotMatch(today.body, /CS Quest|1B-AP/);
   assert.equal(warm.game_id, GAME['quest-race'].id); assert.ok(P.hostedLive(warm), 'the warm-up is hosted live (Play hidden)'); assert.equal(warm.options, ''); assert.equal(warm.standards, '');
-  assert.equal(play.game_id, GAME['robo-route'].id); assert.equal(play.options, 'chapter=loops&band=1b&lock=1'); assert.equal(play.standards, '1B-AP-10'); assert.match(play.body, /quest code, it is 2 1 0 0/);
+  assert.equal(play.game_id, GAME['robo-route'].id); assert.equal(play.options, 'chapter=loops&band=1b&lock=1'); assert.equal(play.standards, '1B-AP-10'); assert.match(play.body, /quest code, it is 2\u00a01\u00a00\u00a00/);
   assert.equal(words.kind, 'question'); assert.equal(words.standards, '1B-AP-10'); assert.match(words.body, /A loop ___, and programmers like it because ___\./);
   assert.deepEqual(L.rubricOf(words), tpl.exit.rubric, 'rubric: "exit" resolves to exit.rubric in the platform shape');
   if (haveBanks) {
@@ -157,7 +157,7 @@ test('every lesson file present materialises: kinds, 45 minutes, canonical optio
       if (c.kind === 'game') {
         assert.equal(s.game_slug, c.gameSlug, at);
         if (c.live) { assert.ok(P.hostedLive(s), `${at}: hosted live`); assert.equal(s.options, '', at); if (c.live === 'warmup') assert.equal(s.game_slug, T.WARMUP_GAME[tpl.band], at); }
-        else { assert.equal(s.options, c.options, at); assert.equal(PP.cleanOptions(s.options), s.options, `${at}: canonical options`); assert.equal(PP.parseParams(s.options).lock, 1, at); assert.ok(s.body.includes(c.questCode), `${at}: the quest code is in the body`); assert.equal(s.standards, c.standards.join(','), at); }
+        else { assert.equal(s.options, c.options, at); assert.equal(PP.cleanOptions(s.options), s.options, `${at}: canonical options`); assert.equal(PP.parseParams(s.options).lock, 1, at); assert.ok(s.body.includes(c.questCode.replace(/ /g, '\u00a0')), `${at}: the quest code is in the body (no-break spaces)`); assert.equal(s.standards, c.standards.join(','), at); }
       }
       if (c.kind === 'question' || c.kind === 'build') {
         assert.equal(s.standards, (c.standards || []).join(','), at);
@@ -239,6 +239,25 @@ test('a game that is not published becomes a text step "game not available yet" 
     assert.deepEqual(r.notes.map(n => [n.code, n.step, n.slug]), [['gameNotPublished', 'Warm-up (live)', 'quest-race'], ['gameNotPublished', 'Play: Sort & Group', 'data-detective']]);
     assert.equal(minutes(steps), 45);
   } finally { q.run("UPDATE games SET status='published' WHERE slug IN ('data-detective', 'quest-race')"); }
+});
+
+test('a copy made while its game was unpublished: once the game is out, Switch on the game turns those text steps into game steps in place', () => {
+  q.run("UPDATE games SET status='draft' WHERE slug IN ('packet-post', 'quest-race')");
+  let lesson;
+  try {
+    lesson = T.materialise(ana, oak.id, 'csq-1b-4.1').lesson;
+    assert.equal(T.pendingGames(lesson).length, 0, 'nothing to switch on while the games are unpublished');
+  } finally { q.run("UPDATE games SET status='published' WHERE slug IN ('packet-post', 'quest-race')"); }
+  assert.equal(T.status(ana, oak.id, 'csq-1b-4.1').gamesReady, 2, 'the plan page sees both steps');
+  const before = L.steps(lesson.id).map(s => s.id);
+  const r = T.switchOnGames(ana, lesson.id);
+  assert.ok(r.ok); assert.equal(r.switched, 2);
+  const after = L.steps(lesson.id);
+  assert.deepEqual(after.map(s => s.id), before, 'same step ids: students keep their work');
+  assert.deepEqual(after.filter(s => s.kind === 'game').map(s => s.title), ['Warm-up (live)', T.getTemplate('csq-1b-4.1').steps[2].title]);
+  assert.ok(after.every(s => !/not available yet/.test(s.body)));
+  assert.equal(T.pendingGames(lesson).length, 0);
+  assert.equal(T.switchOnGames(ben, lesson.id).code, 'notFound', 'only who can edit the lesson');
 });
 
 test('reset to the CS Quest version (P21): a fresh copy takes the old copy\'s classes, unit and dates; the old copy is unassigned and keeps its work', () => {
@@ -353,6 +372,10 @@ test('routes: assign-unit with a cadence (P17): keys are materialised first, a c
   // refusals
   r = await api(`/api/classes/${c2.id}/assign-unit`, { method: 'POST', body: { unit: 1, band: '2', start: 'not a day' } }); assert.equal(r.status, 400); assert.equal(r.json.code, 'badDate');
   r = await api(`/api/classes/${c2.id}/assign-unit`, { method: 'POST', body: { unit: 1, band: '2', cadence: 'monthly' } }); assert.equal(r.status, 400); assert.equal(r.json.code, 'badCadence');
+  { const n = () => q.get("SELECT COUNT(*) n FROM lessons WHERE owner_id=? AND template_key LIKE 'csq-2-3.%'", ana.id).n, n0 = n();
+    r = await api(`/api/classes/${c2.id}/assign-unit`, { method: 'POST', body: { unit: 3, band: '2', cadence: 'nope' } }); assert.equal(r.json.code, 'badCadence');
+    r = await api(`/api/classes/${c2.id}/assign-unit`, { method: 'POST', body: { unit: 3, band: '2', dueDays: -1 } }); assert.equal(r.json.code, 'badDate');
+    assert.equal(n(), n0, 'a refused request materialises nothing'); }
   r = await api(`/api/classes/${c2.id}/assign-unit`, { method: 'POST', body: { unit: 1 } }); assert.equal(r.status, 400); assert.equal(r.json.code, 'band');
   r = await api(`/api/classes/${c2.id}/assign-unit`, { method: 'POST', body: { unit: 9, band: '2' } }); assert.equal(r.status, 404);
   r = await api(`/api/classes/${c2.id}/assign-unit`, { method: 'POST', body: {} }); assert.equal(r.status, 400); assert.equal(r.json.code, 'badRequest');

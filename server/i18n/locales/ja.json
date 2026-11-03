@@ -3805,6 +3805,9 @@
       "li2": "スターターセットをつかったり、すぐに問題を入力したり、レッスンの問題をライブクイズにしたりできます。",
       "li3": "クラスの部屋はログインした自分の生徒だけが参加でき、スコアは成績表に入ります。チャットなし、文字入力なし、自由な名前なし。",
       "more": "Oomba Liveのしくみを見る"
+    },
+    "cs": {
+      "cstaNote": "基準: CSTA K-12 Computer Science Standards（2017）、レベル1Bと2。このプログラムは CSTA が作成・審査・推奨したものではありません。"
     }
   },
   "learn": {
@@ -5585,7 +5588,7 @@
       "on": "Builder: 稼働中",
       "resting": "Builder: 休止中",
       "teams": "この時間に作れるチームはおよそ{count}",
-      "noKey": "このサイトではBuilderが設定されていません"
+      "noKey": "ユニット7には Builder が必要ですが、このサイトではまだ設定されていません。"
     },
     "buttons": {
       "warmup": "ウォームアップを開始(ライブ)",
@@ -5598,7 +5601,8 @@
       "print": "印刷",
       "printables": "印刷教材",
       "assign": "クラスに割り当て",
-      "assignUnit": "ユニットを割り当て..."
+      "assignUnit": "ユニットを割り当て...",
+      "gameNotYet": "ゲームを開く（まだ公開前）"
     },
     "coverage": {
       "title": "カバレッジマップ",
@@ -5705,7 +5709,33 @@
       "bankMissing": "このレッスンの問題バンクはまだ読み込まれていません。",
       "gameNotYet": "{game}はまだ公開されていません。公開まで生徒には注意が表示されます。",
       "notWritten": "このレッスンはまだ書かれていません。",
-      "switchBand": "{band}に切り替え"
+      "switchBand": "{band}に切り替え",
+      "gamesReady": "ゲームが公開されました。ゲームのステップにできるテキストのステップ: {count}。児童生徒の学習はそのまま残ります。",
+      "gameLater": "公開されたら、このページかレッスン編集画面で「ゲームをオンにする」を押してください。",
+      "liveNotAssigned": "ウォームアップを進捗に記録するには、先にレッスンをクラスに割り当ててください。",
+      "questCodeHint": "ゲームで聞かれたら児童生徒が入力します。",
+      "playKeys": {
+        "protocol": "進め方",
+        "artifact": "作るもの",
+        "shape": "形",
+        "message": "メッセージ",
+        "partnerNote": "ペアへのメモ",
+        "handIn": "提出",
+        "roles": "役割",
+        "rules": "ルール",
+        "defend": "理由を説明",
+        "room": "ルーム",
+        "builderStatus": "Builder の状態",
+        "prefill": "入力済み",
+        "paperPath": "紙のルート",
+        "rotations": "ローテーション",
+        "etiquette": "マナー",
+        "sheet": "シート",
+        "creditsTemplate": "クレジットのひな形",
+        "demoCircles": "デモの輪",
+        "audit": "チェック",
+        "timelineWalk": "年表ウォーク"
+      }
     },
     "print": {
       "back": "戻る",
@@ -5760,8 +5790,10 @@
       "soon": "近日公開",
       "gameNotYet": "{game}は未公開",
       "reset": "CS Questの版に戻す",
-      "resetConfirm": "CS Questから新しいコピーを作りますか?クラスと日付は新しいコピーに移り、古いコピーには生徒の作品が残ります。",
-      "resetDone": "CS Questの版に戻しました。"
+      "resetConfirm": "CS Quest から新しいコピーを作りますか？ クラスと日付は新しいコピーに移ります。児童生徒は新しいコピーを最初から始めます。古いコピーでの学習は保存され、古いコピーをもう一度割り当てると戻ります。",
+      "resetDone": "CS Questの版に戻しました。",
+      "switchOn": "ゲームをオンにする",
+      "gamesOn": "オンにしたゲームのステップ: {count}"
     },
     "toast": {
       "one": "ライブラリに追加しました。",
@@ -5789,7 +5821,8 @@
         "daily": "毎日",
         "twiceweekly": "週2回",
         "weekly": "毎週"
-      }
+      },
+      "skipped": "割り当て済み: {count}（{list}）"
     },
     "units": {
       "h": "ユニット"

@@ -3905,7 +3905,8 @@
         "h": "Get started",
         "p": "Set up your school for free, or sign in, then open CS Quest from Teach.",
         "staff": "Open CS Quest and add the Core 10 path to your library."
-      }
+      },
+      "cstaNote": "Standards: CSTA K-12 Computer Science Standards (2017), levels 1B and 2. This program is not made, reviewed or endorsed by CSTA."
     }
   },
   "learn": {
@@ -5705,7 +5706,7 @@
       "on": "Builder: on",
       "resting": "Builder: resting",
       "teams": "{count, plural, one {about # team can build this period} other {about # teams can build this period}}",
-      "noKey": "the Builder is not set up on this site"
+      "noKey": "Unit 7 needs the Builder; it is not set up on this site yet."
     },
     "buttons": {
       "warmup": "Start warm-up (live)",
@@ -5718,7 +5719,8 @@
       "print": "Print",
       "printables": "Printables",
       "assign": "Assign to class",
-      "assignUnit": "Assign unit..."
+      "assignUnit": "Assign unit...",
+      "gameNotYet": "Open game (not out yet)"
     },
     "coverage": {
       "title": "Coverage map",
@@ -5825,7 +5827,33 @@
       "bankMissing": "The question bank for this lesson is not loaded yet.",
       "gameNotYet": "{game} is not published yet; students see a note until it is.",
       "notWritten": "This lesson is not written yet.",
-      "switchBand": "Switch to {band}"
+      "switchBand": "Switch to {band}",
+      "gamesReady": "The game is out now: {count, plural, one {# text step} other {# text steps}} in your copy can become a game step. Students keep their work.",
+      "gameLater": "When it is published, press Switch on the game here or in the lesson editor.",
+      "liveNotAssigned": "Assign the lesson to the class first so the warm-up counts in Progress.",
+      "questCodeHint": "Students type this if the game asks for it.",
+      "playKeys": {
+        "protocol": "Protocol",
+        "artifact": "What they make",
+        "shape": "Shape",
+        "message": "Message",
+        "partnerNote": "Partner note",
+        "handIn": "Hand in",
+        "roles": "Roles",
+        "rules": "Rules",
+        "defend": "Defend",
+        "room": "Room",
+        "builderStatus": "Builder status",
+        "prefill": "Prefilled",
+        "paperPath": "Paper path",
+        "rotations": "Rotations",
+        "etiquette": "Etiquette",
+        "sheet": "Sheet",
+        "creditsTemplate": "Credits template",
+        "demoCircles": "Demo circles",
+        "audit": "Audit",
+        "timelineWalk": "Timeline walk"
+      }
     },
     "print": {
       "back": "Back",
@@ -5880,8 +5908,10 @@
       "soon": "Coming soon",
       "gameNotYet": "{game} not published yet",
       "reset": "Reset to the CS Quest version",
-      "resetConfirm": "Make a fresh copy from CS Quest? Your classes and dates move to it; the old copy keeps the students' work.",
-      "resetDone": "Reset to the CS Quest version."
+      "resetConfirm": "Make a fresh copy from CS Quest? Your classes and dates move to it. Students start the fresh copy from the beginning; their work on the old copy is saved and comes back if you assign the old copy again.",
+      "resetDone": "Reset to the CS Quest version.",
+      "switchOn": "Switch on the game",
+      "gamesOn": "{count, plural, one {# game step switched on.} other {# game steps switched on.}}"
     },
     "toast": {
       "one": "Added to your library.",
@@ -5909,7 +5939,8 @@
         "daily": "every day",
         "twiceweekly": "twice a week",
         "weekly": "every week"
-      }
+      },
+      "skipped": "{count, plural, one {# already assigned ({list}).} other {# already assigned ({list}).}}"
     },
     "units": {
       "h": "Units"

@@ -58,3 +58,15 @@ if (proj) {
   });
   show(i);
 }
+
+// ---- the plan page's Assign buttons open their form (a <details> at the foot of the page) and focus its first field
+const openDetails = id => {
+  const d = id && document.getElementById(id);
+  if (!d || d.tagName !== 'DETAILS') return;
+  d.open = true;
+  const f = d.querySelector('select, input:not([type="hidden"])');
+  if (f) setTimeout(() => f.focus({ preventScroll: true }), 0);
+};
+for (const a of document.querySelectorAll('a[data-open-details]')) a.addEventListener('click', () => openDetails(a.getAttribute('href').slice(1)));
+addEventListener('hashchange', () => openDetails(location.hash.slice(1)));
+if (location.hash) openDetails(location.hash.slice(1));

@@ -3805,6 +3805,9 @@
       "li2": "使用入門題組、快速輸入一組題目，或把課程中的問題變成即時問答。",
       "li3": "班級房間只開放給你已登入的學生，他們的分數會進入你的成績冊。沒有聊天、沒有打字、沒有自由輸入的名字。",
       "more": "看看 Oomba Live 怎麼運作"
+    },
+    "cs": {
+      "cstaNote": "標準：CSTA K-12 Computer Science Standards（2017），1B 與 2 級。本課程並非由 CSTA 製作、審查或認可。"
     }
   },
   "learn": {
@@ -5585,7 +5588,7 @@
       "on": "Builder:運作中",
       "resting": "Builder:休息中",
       "teams": "這節課約有 {count} 隊可以製作",
-      "noKey": "本站尚未設定 Builder"
+      "noKey": "第 7 單元需要 Builder；本網站尚未設定。"
     },
     "buttons": {
       "warmup": "開始暖身(直播)",
@@ -5598,7 +5601,8 @@
       "print": "列印",
       "printables": "列印教材",
       "assign": "指派給班級",
-      "assignUnit": "指派單元..."
+      "assignUnit": "指派單元...",
+      "gameNotYet": "開啟遊戲（尚未推出）"
     },
     "coverage": {
       "title": "涵蓋地圖",
@@ -5705,7 +5709,33 @@
       "bankMissing": "這堂課的題庫尚未載入。",
       "gameNotYet": "{game} 尚未發布;在那之前學生會看到提示。",
       "notWritten": "這堂課尚未撰寫。",
-      "switchBand": "切換到 {band}"
+      "switchBand": "切換到 {band}",
+      "gamesReady": "遊戲已推出：你的副本中可改成遊戲步驟的文字步驟：{count}。學生的作業會保留。",
+      "gameLater": "推出後，請在這裡或課程編輯器按「開啟遊戲」。",
+      "liveNotAssigned": "請先把課程指派給班級，暖身才會計入進度。",
+      "questCodeHint": "遊戲要求時，學生輸入這個代碼。",
+      "playKeys": {
+        "protocol": "流程",
+        "artifact": "要做的作品",
+        "shape": "形式",
+        "message": "訊息",
+        "partnerNote": "給夥伴的提醒",
+        "handIn": "繳交",
+        "roles": "角色",
+        "rules": "規則",
+        "defend": "說明理由",
+        "room": "房間",
+        "builderStatus": "Builder 狀態",
+        "prefill": "預先填好",
+        "paperPath": "紙本路線",
+        "rotations": "輪替",
+        "etiquette": "禮儀",
+        "sheet": "學習單",
+        "creditsTemplate": "致謝範本",
+        "demoCircles": "示範圈",
+        "audit": "檢查",
+        "timelineWalk": "時間軸走讀"
+      }
     },
     "print": {
       "back": "返回",
@@ -5760,8 +5790,10 @@
       "soon": "即將推出",
       "gameNotYet": "{game} 尚未發布",
       "reset": "重設為 CS Quest 版本",
-      "resetConfirm": "要從 CS Quest 建立新的副本嗎?你的班級和日期會移到新副本;舊副本保留學生的作業。",
-      "resetDone": "已重設為 CS Quest 版本。"
+      "resetConfirm": "要從 CS Quest 建立新副本嗎？你的班級和日期會移到新副本。學生會從頭開始新副本；他們在舊副本的作業會保留，若再次指派舊副本就會回來。",
+      "resetDone": "已重設為 CS Quest 版本。",
+      "switchOn": "開啟遊戲",
+      "gamesOn": "已開啟的遊戲步驟：{count}"
     },
     "toast": {
       "one": "已加入你的資料庫。",
@@ -5789,7 +5821,8 @@
         "daily": "每天",
         "twiceweekly": "每週兩次",
         "weekly": "每週"
-      }
+      },
+      "skipped": "已指派：{count}（{list}）"
     },
     "units": {
       "h": "單元"

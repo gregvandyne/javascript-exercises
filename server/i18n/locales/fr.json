@@ -3805,6 +3805,9 @@
       "li2": "Utilisez une série de départ, tapez une série rapide ou transformez les questions d’une leçon en quiz en direct.",
       "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement.",
       "more": "Voir comment fonctionne Oomba Live"
+    },
+    "cs": {
+      "cstaNote": "Normes : CSTA K-12 Computer Science Standards (2017), niveaux 1B et 2. Ce programme n’est ni créé, ni relu, ni approuvé par la CSTA."
     }
   },
   "learn": {
@@ -5585,7 +5588,7 @@
       "on": "Builder : actif",
       "resting": "Builder : au repos",
       "teams": "environ {count} équipes peuvent créer pendant ce cours",
-      "noKey": "le Builder n’est pas configuré sur ce site"
+      "noKey": "L’unité 7 a besoin du Builder ; il n’est pas encore configuré sur ce site."
     },
     "buttons": {
       "warmup": "Lancer l’échauffement (direct)",
@@ -5598,7 +5601,8 @@
       "print": "Imprimer",
       "printables": "À imprimer",
       "assign": "Assigner à la classe",
-      "assignUnit": "Assigner l’unité..."
+      "assignUnit": "Assigner l’unité...",
+      "gameNotYet": "Ouvrir le jeu (pas encore sorti)"
     },
     "coverage": {
       "title": "Carte de couverture",
@@ -5705,7 +5709,33 @@
       "bankMissing": "La banque de questions de cette leçon n’est pas encore chargée.",
       "gameNotYet": "{game} n’est pas encore publié ; les élèves voient une note en attendant.",
       "notWritten": "Cette leçon n’est pas encore écrite.",
-      "switchBand": "Passer à {band}"
+      "switchBand": "Passer à {band}",
+      "gamesReady": "Le jeu est sorti : étapes de texte de votre copie qui peuvent devenir des étapes de jeu : {count}. Les élèves gardent leur travail.",
+      "gameLater": "Une fois publié, appuyez sur « Activer le jeu » ici ou dans l’éditeur de leçon.",
+      "liveNotAssigned": "Attribuez d’abord la leçon à la classe pour que l’échauffement compte dans la progression.",
+      "questCodeHint": "Les élèves le saisissent si le jeu le demande.",
+      "playKeys": {
+        "protocol": "Protocole",
+        "artifact": "Ce qu’ils créent",
+        "shape": "Forme",
+        "message": "Message",
+        "partnerNote": "Note pour le binôme",
+        "handIn": "À rendre",
+        "roles": "Rôles",
+        "rules": "Règles",
+        "defend": "Justifier",
+        "room": "Salle",
+        "builderStatus": "État du Builder",
+        "prefill": "Prérempli",
+        "paperPath": "Parcours papier",
+        "rotations": "Rotations",
+        "etiquette": "Savoir-vivre",
+        "sheet": "Fiche",
+        "creditsTemplate": "Modèle de crédits",
+        "demoCircles": "Cercles de démo",
+        "audit": "Vérification",
+        "timelineWalk": "Parcours de la frise"
+      }
     },
     "print": {
       "back": "Retour",
@@ -5760,8 +5790,10 @@
       "soon": "Bientôt",
       "gameNotYet": "{game} pas encore publié",
       "reset": "Revenir à la version CS Quest",
-      "resetConfirm": "Créer une nouvelle copie depuis CS Quest ? Vos classes et dates y passent ; l’ancienne copie garde le travail des élèves.",
-      "resetDone": "Version CS Quest rétablie."
+      "resetConfirm": "Créer une nouvelle copie depuis CS Quest ? Vos classes et vos dates y passent. Les élèves recommencent la nouvelle copie depuis le début ; leur travail sur l’ancienne copie est conservé et revient si vous réattribuez l’ancienne copie.",
+      "resetDone": "Version CS Quest rétablie.",
+      "switchOn": "Activer le jeu",
+      "gamesOn": "Étapes de jeu activées : {count}."
     },
     "toast": {
       "one": "Ajoutée à votre bibliothèque.",
@@ -5789,7 +5821,8 @@
         "daily": "chaque jour",
         "twiceweekly": "deux fois par semaine",
         "weekly": "chaque semaine"
-      }
+      },
+      "skipped": "Déjà attribuées : {count} ({list})."
     },
     "units": {
       "h": "Unités"
