@@ -23,7 +23,7 @@
   @media (orientation: portrait) { .pp-tools { order: 3; width: 100%; } }
   @media (orientation: landscape) { .pp-tools { flex-direction: column; flex-wrap: wrap; height: 100%; width: auto; align-content: flex-start; margin-top: 0; padding-top: 0; } }
   /* a phone on its side: the kit's HUD pills end at about 56px and this game never drops a banner outside a card, so its panels start right under the HUD */
-  @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-panel > .pp-h { display: none; } .pp-board .pp-wheel { width: auto; height: 170px; flex: none; } .pp-fill { gap: 6px; padding: 8px; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
+  @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-panel > .pp-h { display: none; } .pp-board .pp-wheel { width: auto; height: 150px; flex: none; } .pp-cipher { font-size: 1em; letter-spacing: .06em; } .pp-itemcard { padding: 6px 10px; } .pp-shift { font-size: 1.1em; } .pp-fill { gap: 6px; padding: 8px; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
   .pp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
   @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } }
   @media (orientation: landscape) { .pp-board.pp-board-small { width: 38%; } }
@@ -817,7 +817,7 @@ game = O.game({
   api: 1, title: CONFIG.title, subtitle: tr('Deliver every packet. Keep every secret.'), biome: CONFIG.biome,
   controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
   hud: ['progress', 'count:star'],
-  howTo: [{ icon: 'tap', text: tr('Tap a road for each numbered packet') }, { icon: 'move', text: tr('Put the pieces back in number order') }, { icon: 'lock', text: tr('Follow the post office rules and keep secrets sealed') }],
+  howTo: [{ icon: 'tap', text: tr('Tap a road for each packet') }, { icon: 'move', text: tr('Rebuild the picture by number') }, { icon: 'lock', text: tr('Keep secrets sealed') }],
   level: O.level.grid(SET, { N: Object.assign({ kind: 'npc', tag: 'pim', flip: true, size: 2.1 }, CONFIG.pim) }),
   update: frame,
   testState: () => testState(),
@@ -1164,8 +1164,11 @@ function renderCipherPanel() {
   if (!I.choices) { msg.appendChild($('p', 'pp-h', tr('Your reading'))); UI.reading = $('div', 'pp-cipher'); UI.reading.dir = 'ltr'; msg.appendChild(UI.reading); }
   UI.countLine = $('p', 'pp-h'); msg.appendChild(UI.countLine);
   const row = $('div', 'pp-row'); panel.appendChild(row);
-  if (I.kind !== 'keyed') { row.appendChild(btn(tr('Turn back'), { kind: 'quiet', icon: 'minus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift - 1 }) })); row.appendChild(btn(tr('Turn forward'), { kind: 'quiet', icon: 'plus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift + 1 }) })); }
-  if (I.mode === 'crack') row.appendChild(btn(tr('Count the letters'), { kind: 'quiet', icon: 'eye', onPress: () => doAction({ t: 'count' }) }));
+  // a phone on its side: the turn buttons (icons) and the letter count sit under the wheel, so the panel keeps the message and its buttons in view
+  const compact = landscape() && window.innerHeight < 520;
+  const turnHost = compact ? (() => { const r = $('div', 'pp-row pp-center'); fill.appendChild(r); return r; })() : row;
+  if (I.kind !== 'keyed') { turnHost.appendChild(btn(tr('Turn back'), { kind: compact ? 'icon' : 'quiet', icon: 'minus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift - 1 }) })); turnHost.appendChild(btn(tr('Turn forward'), { kind: compact ? 'icon' : 'quiet', icon: 'plus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift + 1 }) })); }
+  if (I.mode === 'crack') turnHost.appendChild(btn(tr('Count the letters'), { kind: 'quiet', icon: 'eye', onPress: () => doAction({ t: 'count' }) }));
   if (I.choices) { const tiles = $('div', 'pp-tiles'); panel.appendChild(tiles); UI.tiles = {}; I.choices.forEach((c, k) => { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dir = 'ltr'; b.dataset.choice = String(k); b.textContent = c; b.addEventListener('click', () => doAction({ t: 'choose', k })); tiles.appendChild(b); UI.tiles[k] = b; }); }
   else row.appendChild(btn(tr("That's it!"), { kind: 'hot', icon: 'check', onPress: () => doAction({ t: 'submit' }) }));
   syncCipher();
