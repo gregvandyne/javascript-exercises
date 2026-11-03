@@ -7546,14 +7546,14 @@
    "id": "tech-6",
    "cat": "tech",
    "a": {
-    "text": "Videollamar a tus abuelos cada día",
+    "text": "Videollamar cada día a un familiar que vive lejos",
     "tags": [
      "social",
      "tech"
     ]
    },
    "b": {
-    "text": "Visitarlos una vez al mes",
+    "text": "Visitarlo una vez al mes",
     "tags": [
      "kind",
      "social"
@@ -7672,14 +7672,14 @@
    "id": "tech-13",
    "cat": "tech",
    "a": {
-    "text": "Una impresora que fabrica juguetes nuevos",
+    "text": "Una impresora 3D que hace juguetes",
     "tags": [
      "fun",
      "make"
     ]
    },
    "b": {
-    "text": "Una impresora que fabrica piezas para arreglar cosas",
+    "text": "Una impresora 3D que hace repuestos para lo roto",
     "tags": [
      "make",
      "kind"
@@ -7906,14 +7906,14 @@
    "id": "online-6",
    "cat": "online",
    "a": {
-    "text": "Decir tu contraseña a un amigo para que te ayude",
+    "text": "Escribir tu contraseña en papel y esconderla en casa",
     "tags": [
      "brave",
      "social"
     ]
    },
    "b": {
-    "text": "Arreglarlo solo y tardar más",
+    "text": "Una que recuerdes, sin escribir nada",
     "tags": [
      "think",
      "calm"
@@ -7924,14 +7924,14 @@
    "id": "online-7",
    "cat": "online",
    "a": {
-    "text": "Guardar tus fotos solo en tu tableta",
+    "text": "Fotos solo en tu tableta, donde nadie más las ve",
     "tags": [
      "calm",
      "tech"
     ]
    },
    "b": {
-    "text": "Guardar también una copia en un lugar seguro",
+    "text": "Una copia también en un servicio de otros",
     "tags": [
      "think",
      "calm"

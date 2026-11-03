@@ -7546,7 +7546,7 @@
    "id": "tech-6",
    "cat": "tech",
    "a": {
-    "text": "每天和爺爺奶奶視訊",
+    "text": "每天和住得很遠的親戚視訊",
     "tags": [
      "social",
      "tech"
@@ -7672,14 +7672,14 @@
    "id": "tech-13",
    "cat": "tech",
    "a": {
-    "text": "會做新玩具的印表機",
+    "text": "會做玩具的3D印表機",
     "tags": [
      "fun",
      "make"
     ]
    },
    "b": {
-    "text": "會做零件修理壞東西的印表機",
+    "text": "會做零件修理壞東西的3D印表機",
     "tags": [
      "make",
      "kind"
@@ -7906,14 +7906,14 @@
    "id": "online-6",
    "cat": "online",
    "a": {
-    "text": "把密碼告訴朋友請他幫忙",
+    "text": "把密碼寫在紙上藏在家裡",
     "tags": [
      "brave",
      "social"
     ]
    },
    "b": {
-    "text": "自己修，花久一點",
+    "text": "想一個記得住的，什麼都不寫",
     "tags": [
      "think",
      "calm"
@@ -7924,14 +7924,14 @@
    "id": "online-7",
    "cat": "online",
    "a": {
-    "text": "照片只存在平板裡",
+    "text": "照片只存在平板裡，別人都看不到",
     "tags": [
      "calm",
      "tech"
     ]
    },
    "b": {
-    "text": "也在安全的地方留一份",
+    "text": "也在別人經營的服務上留一份",
     "tags": [
      "think",
      "calm"

@@ -8,10 +8,12 @@
 // Writes everything between the `/* wyr-data:begin */` and `/* wyr-data:end */` markers in seed-games/would-you-rather.html.
 //
 //   node scripts/wyr-bank.js          (then node scripts/seed.js to load the game)
+// Importing this module does nothing (TAGS and CATS are exported for the tests); the build runs only when the script is
+// the program that was started.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'scripts/data/would-you-rather');
@@ -19,8 +21,12 @@ const OUT = path.join(ROOT, 'public/vendor/data/would-you-rather');
 const GAME = path.join(ROOT, 'seed-games/would-you-rather.html');
 export const TAGS = ['brave', 'think', 'make', 'animal', 'food', 'fast', 'kind', 'calm', 'fun', 'nature', 'tech', 'social'];
 // tech and online: the CS Quest topics (lessons 6.1 and 6.3; prompts and CSTA ids in seed-lessons/cs-quest/wyr-tech.json).
+// The live mode's TOPICS (server/live/wyr.js) is the same list; tests/unit/live-wyr-atlas.test.js checks they agree.
 export const CATS = ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep', 'tech', 'online'];
 
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) build();
+
+export function build() {
 const read = f => JSON.parse(fs.readFileSync(path.join(SRC, f), 'utf8'));
 const en = read('en.json').items, ui = read('ui.json');
 const fail = msg => { console.error(`wyr-bank: ${msg}`); process.exit(1); };
@@ -76,3 +82,4 @@ if (fs.existsSync(LIVE)) {
 }
 const per = {}; for (const it of en) per[it.cat] = (per[it.cat] || 0) + 1;
 console.log(`would-you-rather: ${en.length} dilemmas (${Object.entries(per).map(([k, v]) => `${k} ${v}`).join(', ')}), UI in ${Object.keys(ui).length} languages, ${Object.keys(packs).length} translated packs${ver ? ` (${ver})` : ''}`);
+}

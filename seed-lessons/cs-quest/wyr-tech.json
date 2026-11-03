@@ -1,7 +1,7 @@
 {
  "program": "cs-quest",
  "kind": "wyr",
- "about": "Would You Rather (Live) for CS Quest unit 6 (plan section 7). The dilemmas themselves live in the official game's bank (scripts/data/would-you-rather/en.json, topics tech and online, translated in the 11 other data files); this file adds what the WYR format has no room for: the teacher's prompt after each reveal and the CSTA 2017 ids each dilemma practices. Unscored: the reveal is the class split plus the all-time split. The lesson materialiser links these starters from the Would You Rather (live) step; the prompts print with the lesson.",
+ "about": "Would You Rather (Live) for CS Quest unit 6 (plan section 7). The dilemmas themselves live in the official game's bank (scripts/data/would-you-rather/en.json, topics tech and online, translated in the 11 other data files); this file adds what the WYR format has no room for: the teacher's prompt after each reveal and the CSTA 2017 ids each dilemma practices. Each item repeats the dilemma's English A/B text (checked against the bank) so the printed prompt sheet can show the two choices next to the prompt: the host and projector screens show the text, never the id, and the eight come in random order. Unscored: the reveal is the class split plus the all-time split. The lesson materialiser links these starters from the Would You Rather (live) step; the prompts print with the lesson.",
  "sets": [
   {
    "id": "wyr-tech",
@@ -11,28 +11,28 @@
    "band": "both",
    "starter": "wyr:tech:8:20",
    "blockDayStarter": "wyr:tech:10:20",
-   "cstaTags": ["1B-IC-18", "2-IC-20", "2-IC-23", "1B-IC-19", "2-IC-21", "1B-AP-14", "2-AP-16"],
+   "cstaTags": ["1B-IC-18", "2-IC-20", "2-IC-23", "1B-IC-19", "2-IC-21", "1B-AP-14", "2-AP-16", "1B-NI-05"],
    "items": [
-    { "id": "tech-1", "prompt": "Who is helped? What would the robot need to sense?", "csta": ["1B-IC-18", "2-IC-20"] },
-    { "id": "tech-2", "prompt": "Which one changed how people live more?", "csta": ["1B-IC-18"] },
-    { "id": "tech-3", "prompt": "Who gains, who loses a job, who do you trust?", "csta": ["2-IC-20"] },
-    { "id": "tech-4", "prompt": "How has technology changed learning? What did it not change?", "csta": ["1B-IC-18"] },
-    { "id": "tech-5", "prompt": "What data does each collect? Who should see it?", "csta": ["2-IC-23"] },
-    { "id": "tech-6", "prompt": "What did people do before video calls?", "csta": ["1B-IC-18"] },
-    { "id": "tech-7", "prompt": "What is the tradeoff between handy and private?", "csta": ["2-IC-23"] },
-    { "id": "tech-8", "prompt": "How does the free game make money?", "csta": ["2-IC-20"] },
-    { "id": "tech-9", "prompt": "Which would change your day more? Why?", "csta": ["1B-IC-18"] },
-    { "id": "tech-10", "prompt": "What can a robot not do well here?", "csta": ["2-IC-20"] },
-    { "id": "tech-11", "prompt": "What skill might you lose? What do you gain?", "csta": ["2-IC-20"] },
-    { "id": "tech-12", "prompt": "How might this change jobs for translators?", "csta": ["2-IC-20"] },
-    { "id": "tech-13", "prompt": "Which helps more people?", "csta": ["1B-IC-18"] },
-    { "id": "tech-14", "prompt": "Who needs to hear the street? Who needs quiet?", "csta": ["1B-IC-19"] },
-    { "id": "tech-15", "prompt": "What job changes? What is nicer?", "csta": ["2-IC-20"] },
-    { "id": "tech-16", "prompt": "What does the fridge know about you?", "csta": ["2-IC-23"] },
-    { "id": "tech-17", "prompt": "What is better on each? Who is left out by each?", "csta": ["1B-IC-19", "2-IC-21"] },
-    { "id": "tech-18", "prompt": "Which jobs change? Which get safer?", "csta": ["2-IC-20"] },
-    { "id": "tech-19", "prompt": "Who should get the credit for a computer-made song?", "csta": ["1B-AP-14", "2-AP-16"] },
-    { "id": "tech-20", "prompt": "Which skills from this program does each need?", "csta": ["2-IC-20"] }
+    { "id": "tech-1", "a": "A robot that cleans your room", "b": "A robot that cooks your dinner", "prompt": "Who is helped? What would the robot need to sense?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-2", "a": "A phone that never needs charging", "b": "Internet that never drops", "prompt": "Which one changed how people live more?", "csta": ["1B-IC-18"] },
+    { "id": "tech-3", "a": "A self-driving school bus", "b": "A bus with a driver you know", "prompt": "Who gains, who loses a job, who do you trust?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-4", "a": "Learn from a video you can pause", "b": "Learn from a person you can ask", "prompt": "How has technology changed learning? What did it not change?", "csta": ["1B-IC-18"] },
+    { "id": "tech-5", "a": "A watch that counts your steps", "b": "A watch that reminds you to drink water", "prompt": "What data does each collect? Who should see it?", "csta": ["1B-NI-05", "2-IC-23"] },
+    { "id": "tech-6", "a": "Video-call a relative far away every day", "b": "Visit them once a month", "prompt": "What did people do before video calls?", "csta": ["1B-IC-18"] },
+    { "id": "tech-7", "a": "A voice helper that knows everything", "b": "One that never listens unless you press a button", "prompt": "What is the tradeoff between handy and private?", "csta": ["1B-NI-05", "2-IC-23"] },
+    { "id": "tech-8", "a": "A game that is free but shows ads", "b": "A game you pay for once with no ads", "prompt": "How does the free game make money?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-9", "a": "Live in a town with no internet for a week", "b": "Live in a town with no cars for a week", "prompt": "Which would change your day more? Why?", "csta": ["1B-IC-18"] },
+    { "id": "tech-10", "a": "A robot teacher for a day", "b": "A robot referee for a game", "prompt": "What can a robot not do well here?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-11", "a": "A map app that picks your route", "b": "A paper map and your own choices", "prompt": "What skill might you lose? What do you gain?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-12", "a": "Translate any language with your phone", "b": "Learn one language really well", "prompt": "How might this change jobs for translators?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-13", "a": "A 3D printer that makes toys", "b": "A 3D printer that makes spare parts for broken things", "prompt": "Which helps more people?", "csta": ["1B-IC-18"] },
+    { "id": "tech-14", "a": "Headphones that block all noise", "b": "Headphones that let safe sounds through", "prompt": "Who needs to hear the street? Who needs quiet?", "csta": ["1B-IC-19"] },
+    { "id": "tech-15", "a": "A drone that delivers your lunch", "b": "A friend who brings it on a bike", "prompt": "What job changes? What is nicer?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-16", "a": "A smart fridge that orders food", "b": "A shopping list on paper", "prompt": "What does the fridge know about you?", "csta": ["1B-IC-18", "2-IC-23"] },
+    { "id": "tech-17", "a": "Every lesson on a tablet", "b": "Every lesson on paper", "prompt": "What is better on each? Who is left out by each?", "csta": ["1B-IC-19", "2-IC-21"] },
+    { "id": "tech-18", "a": "A robot arm that helps a doctor", "b": "A robot that helps a farmer", "prompt": "Which jobs change? Which get safer?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-19", "a": "Computers that write songs", "b": "Computers that only play songs people wrote", "prompt": "Who should get the credit for a computer-made song?", "csta": ["1B-AP-14", "2-AP-16"] },
+    { "id": "tech-20", "a": "A job building robots", "b": "A job fixing robots", "prompt": "Which skills from our lessons does each need?", "csta": ["1B-IC-18", "2-IC-20"] }
    ]
   },
   {
@@ -44,16 +44,16 @@
    "starter": "wyr:online:8:20",
    "cstaTags": ["2-IC-23", "1B-IC-21", "1B-NI-05", "2-NI-05", "1B-AP-14"],
    "items": [
-    { "id": "online-1", "prompt": "What could go right? What could go wrong?", "csta": ["2-IC-23", "1B-IC-21"] },
-    { "id": "online-2", "prompt": "Who else might see them later?", "csta": ["2-IC-23"] },
-    { "id": "online-3", "prompt": "What does a stranger learn from a real name?", "csta": ["1B-NI-05", "2-IC-23"] },
-    { "id": "online-4", "prompt": "What are you paying with?", "csta": ["2-IC-23"] },
-    { "id": "online-5", "prompt": "What is the middle path?", "csta": ["1B-NI-05"] },
-    { "id": "online-6", "prompt": "Who may know your passphrase?", "csta": ["1B-NI-05", "2-NI-05"] },
-    { "id": "online-7", "prompt": "What happens when the tablet breaks?", "csta": ["1B-NI-05", "2-NI-05"] },
-    { "id": "online-8", "prompt": "What does credit do for the artist?", "csta": ["1B-IC-21", "1B-AP-14"] },
-    { "id": "online-9", "prompt": "Who might comment? Who moderates?", "csta": ["2-IC-23"] },
-    { "id": "online-10", "prompt": "Is anything online ever really gone?", "csta": ["2-IC-23"] }
+    { "id": "online-1", "a": "Everyone online can see your drawing", "b": "Only your family can see it", "prompt": "What could go right? What could go wrong?", "csta": ["2-IC-23", "1B-IC-21"] },
+    { "id": "online-2", "a": "Share one photo with the whole world", "b": "Share ten photos with ten friends", "prompt": "Who else might see them later?", "csta": ["1B-NI-05", "2-IC-23"] },
+    { "id": "online-3", "a": "A nickname online that nobody knows", "b": "Your real first name online", "prompt": "What does a stranger learn from a real name?", "csta": ["1B-NI-05", "2-IC-23"] },
+    { "id": "online-4", "a": "An app that is free if it sees where you are", "b": "An app that costs a little and never knows", "prompt": "What are you paying with?", "csta": ["1B-NI-05", "2-IC-23"] },
+    { "id": "online-5", "a": "Ask a grown-up before every download", "b": "Never download anything", "prompt": "What is the middle path?", "csta": ["1B-NI-05"] },
+    { "id": "online-6", "a": "Write your passphrase on paper and hide it at home", "b": "Make one you can remember, nothing written down", "prompt": "Who may know your passphrase? Where is a written one safe?", "csta": ["1B-NI-05", "2-NI-05"] },
+    { "id": "online-7", "a": "Photos only on your tablet, where nobody else sees them", "b": "Also keep a copy on a service someone else runs", "prompt": "What happens when the tablet breaks? Who else can see the copy?", "csta": ["1B-NI-05", "2-NI-05"] },
+    { "id": "online-8", "a": "Use a picture someone else made and credit them", "b": "Draw your own, even if it is worse", "prompt": "What does credit do for the artist?", "csta": ["1B-IC-21", "1B-AP-14"] },
+    { "id": "online-9", "a": "A class page where anyone can comment", "b": "One where only your class can", "prompt": "Who might comment? Who moderates?", "csta": ["1B-NI-05", "2-IC-23"] },
+    { "id": "online-10", "a": "Delete an old post you are embarrassed by", "b": "Leave it and laugh", "prompt": "Is anything online ever really gone?", "csta": ["1B-NI-05", "2-IC-23"] }
    ]
   }
  ],
@@ -64,6 +64,6 @@
    "wyr-online": "What is public, what is private, who else could see it?"
   },
   "defend": "Defend on every other reveal: one student for A, one for B, thirty seconds each.",
-  "note": "The tech set keeps 20 dilemmas; the lesson hosts 8 at 20 seconds (CA-9). Teachers may host 10 on a block day."
+  "note": "The tech set keeps 20 dilemmas; the lesson hosts 8 at 20 seconds (CA-9). Teachers may host 10 on a block day. The printable prompt sheet shows each dilemma's A/B text beside its prompt (the a/b fields here), because the eight come up in random order and the screens never show an id."
  }
 }

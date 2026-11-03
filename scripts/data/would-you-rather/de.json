@@ -7546,7 +7546,7 @@
    "id": "tech-6",
    "cat": "tech",
    "a": {
-    "text": "Jeden Tag mit den Großeltern videotelefonieren",
+    "text": "Jeden Tag mit Verwandten weit weg videotelefonieren",
     "tags": [
      "social",
      "tech"
@@ -7672,14 +7672,14 @@
    "id": "tech-13",
    "cat": "tech",
    "a": {
-    "text": "Ein Drucker, der neue Spielsachen macht",
+    "text": "Ein 3D-Drucker, der Spielzeug macht",
     "tags": [
      "fun",
      "make"
     ]
    },
    "b": {
-    "text": "Ein Drucker, der Ersatzteile für Kaputtes macht",
+    "text": "Ein 3D-Drucker, der Ersatzteile für Kaputtes macht",
     "tags": [
      "make",
      "kind"
@@ -7906,14 +7906,14 @@
    "id": "online-6",
    "cat": "online",
    "a": {
-    "text": "Einem Freund dein Passwort sagen, damit er hilft",
+    "text": "Dein Passwort aufschreiben und zu Hause verstecken",
     "tags": [
      "brave",
      "social"
     ]
    },
    "b": {
-    "text": "Es allein lösen und länger brauchen",
+    "text": "Eins, das du dir merkst, nichts aufgeschrieben",
     "tags": [
      "think",
      "calm"
@@ -7924,14 +7924,14 @@
    "id": "online-7",
    "cat": "online",
    "a": {
-    "text": "Deine Fotos nur auf dem Tablet speichern",
+    "text": "Fotos nur auf deinem Tablet, wo sie sonst niemand sieht",
     "tags": [
      "calm",
      "tech"
     ]
    },
    "b": {
-    "text": "Auch eine Kopie an einem sicheren Ort haben",
+    "text": "Auch eine Kopie bei einem fremden Dienst",
     "tags": [
      "think",
      "calm"

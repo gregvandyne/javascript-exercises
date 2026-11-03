@@ -12,8 +12,8 @@ import { reset, open, hostSocket, player, publish, official, liveHtml, teacher, 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const WYR_DIR = path.join(ROOT, 'scripts/data/would-you-rather');
 const LANGS = ['en', 'en-GB', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he'];
-// scripts/wyr-bank.js TAGS (not imported: that script builds the game when loaded)
-const WYR_TAGS = ['brave', 'think', 'make', 'animal', 'food', 'fast', 'kind', 'calm', 'fun', 'nature', 'tech', 'social'];
+// the bank builder's tag and topic lists (importing it builds nothing: the build runs only when it is the started script)
+const { TAGS: WYR_TAGS, CATS: WYR_CATS } = await import('../../scripts/wyr-bank.js');
 const WYR = await import('../../server/live/wyr.js');
 const ATL = await import('../../server/live/atlas.js');
 const POLLS = await import('../../server/services/polls.js');
@@ -51,6 +51,7 @@ test('Would You Rather questions: the official bank, by topic, in every language
 
 test('CS Quest topics: tech (20) and online (10) in the bank, named in every language, hosted by the lesson starters', () => {
   assert.equal(WYR.TOPICS.length, 13); assert.deepEqual(WYR.TOPICS.slice(-2), ['tech', 'online']);
+  assert.deepEqual(WYR.TOPICS, WYR_CATS, 'the live topics are the bank builder\'s categories, in the same order');
   const en = WYR.topicsFor('en');
   assert.equal(en.find(x => x.id === 'tech').n, 20); assert.equal(en.find(x => x.id === 'online').n, 10);
   assert.equal(en.find(x => x.id === 'tech').name, 'Tech choices'); assert.equal(en.find(x => x.id === 'online').name, 'Online: share or keep');

@@ -7546,14 +7546,14 @@
    "id": "tech-6",
    "cat": "tech",
    "a": {
-    "text": "Fazer videochamada com os avós todo dia",
+    "text": "Fazer videochamada todo dia com um parente distante",
     "tags": [
      "social",
      "tech"
     ]
    },
    "b": {
-    "text": "Visitá-los uma vez por mês",
+    "text": "Visitá-lo uma vez por mês",
     "tags": [
      "kind",
      "social"
@@ -7672,14 +7672,14 @@
    "id": "tech-13",
    "cat": "tech",
    "a": {
-    "text": "Uma impressora que faz brinquedos novos",
+    "text": "Uma impressora 3D que faz brinquedos",
     "tags": [
      "fun",
      "make"
     ]
    },
    "b": {
-    "text": "Uma impressora que faz peças para consertar coisas",
+    "text": "Uma impressora 3D que faz peças para consertar coisas",
     "tags": [
      "make",
      "kind"
@@ -7906,14 +7906,14 @@
    "id": "online-6",
    "cat": "online",
    "a": {
-    "text": "Contar sua senha a um amigo para ele ajudar",
+    "text": "Anotar sua senha num papel e esconder em casa",
     "tags": [
      "brave",
      "social"
     ]
    },
    "b": {
-    "text": "Resolver sozinho e demorar mais",
+    "text": "Uma que você decore, sem anotar nada",
     "tags": [
      "think",
      "calm"
@@ -7924,14 +7924,14 @@
    "id": "online-7",
    "cat": "online",
    "a": {
-    "text": "Guardar suas fotos só no tablet",
+    "text": "Fotos só no seu tablet, onde ninguém mais vê",
     "tags": [
      "calm",
      "tech"
     ]
    },
    "b": {
-    "text": "Guardar também uma cópia em lugar seguro",
+    "text": "Uma cópia também num serviço de outra pessoa",
     "tags": [
      "think",
      "calm"

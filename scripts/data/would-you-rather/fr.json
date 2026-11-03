@@ -7546,14 +7546,14 @@
    "id": "tech-6",
    "cat": "tech",
    "a": {
-    "text": "Appeler tes grands-parents en vidéo chaque jour",
+    "text": "Appeler en vidéo chaque jour un proche qui vit loin",
     "tags": [
      "social",
      "tech"
     ]
    },
    "b": {
-    "text": "Leur rendre visite une fois par mois",
+    "text": "Lui rendre visite une fois par mois",
     "tags": [
      "kind",
      "social"
@@ -7672,14 +7672,14 @@
    "id": "tech-13",
    "cat": "tech",
    "a": {
-    "text": "Une imprimante qui fabrique des jouets neufs",
+    "text": "Une imprimante 3D qui fabrique des jouets",
     "tags": [
      "fun",
      "make"
     ]
    },
    "b": {
-    "text": "Une imprimante qui fabrique des pièces de réparation",
+    "text": "Une imprimante 3D qui fabrique des pièces de rechange",
     "tags": [
      "make",
      "kind"
@@ -7906,14 +7906,14 @@
    "id": "online-6",
    "cat": "online",
    "a": {
-    "text": "Donner ton mot de passe à un ami pour qu’il t’aide",
+    "text": "Écrire ton mot de passe sur papier et le cacher chez toi",
     "tags": [
      "brave",
      "social"
     ]
    },
    "b": {
-    "text": "Réparer seul, même si c’est plus long",
+    "text": "En choisir un facile à retenir, sans rien écrire",
     "tags": [
      "think",
      "calm"
@@ -7924,14 +7924,14 @@
    "id": "online-7",
    "cat": "online",
    "a": {
-    "text": "Garder tes photos seulement sur ta tablette",
+    "text": "Tes photos seulement sur ta tablette, vues de personne",
     "tags": [
      "calm",
      "tech"
     ]
    },
    "b": {
-    "text": "Garder aussi une copie en lieu sûr",
+    "text": "Une copie aussi sur un service géré par d’autres",
     "tags": [
      "think",
      "calm"

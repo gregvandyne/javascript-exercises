@@ -7546,7 +7546,7 @@
    "id": "tech-6",
    "cat": "tech",
    "a": {
-    "text": "Elke dag videobellen met opa en oma",
+    "text": "Elke dag videobellen met familie ver weg",
     "tags": [
      "social",
      "tech"
@@ -7672,14 +7672,14 @@
    "id": "tech-13",
    "cat": "tech",
    "a": {
-    "text": "Een printer die nieuw speelgoed maakt",
+    "text": "Een 3D-printer die speelgoed maakt",
     "tags": [
      "fun",
      "make"
     ]
    },
    "b": {
-    "text": "Een printer die onderdelen maakt om dingen te repareren",
+    "text": "Een 3D-printer die onderdelen voor kapotte dingen maakt",
     "tags": [
      "make",
      "kind"
@@ -7906,14 +7906,14 @@
    "id": "online-6",
    "cat": "online",
    "a": {
-    "text": "Een vriend je wachtwoord geven zodat hij helpt",
+    "text": "Je wachtwoord op papier schrijven en thuis verstoppen",
     "tags": [
      "brave",
      "social"
     ]
    },
    "b": {
-    "text": "Het zelf oplossen en er langer over doen",
+    "text": "Een die je onthoudt, niets opgeschreven",
     "tags": [
      "think",
      "calm"
@@ -7924,14 +7924,14 @@
    "id": "online-7",
    "cat": "online",
    "a": {
-    "text": "Je foto’s alleen op je tablet bewaren",
+    "text": "Foto’s alleen op je tablet, waar niemand ze ziet",
     "tags": [
      "calm",
      "tech"
     ]
    },
    "b": {
-    "text": "Ook een kopie op een veilige plek bewaren",
+    "text": "Ook een kopie bij een dienst van iemand anders",
     "tags": [
      "think",
      "calm"
