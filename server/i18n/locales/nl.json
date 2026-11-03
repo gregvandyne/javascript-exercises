@@ -2310,6 +2310,11 @@
       "waitingFor": "Wachten tot {name} ja zegt…",
       "cancel": "Annuleren",
       "ended": "Dit online spel is afgelopen."
+    },
+    "cs": {
+      "of": "{n} van {count}",
+      "reveal": "Antwoord tonen",
+      "hide": "Antwoord verbergen"
     }
   },
   "favorites": {
@@ -3826,7 +3831,11 @@
       "beatLanes": "Tikken op de maat van negen liedjes, van Twinkel, twinkel, kleine ster tot de Cancan.",
       "swishFlick": "Veeg om te scoren: de richting bepaalt waar je mikt en de snelheid hoe ver de bal vliegt.",
       "munchMaze": "Een achtervolging in een doolhof: een route plannen, alle bolletjes opeten en de Gloops ontwijken.",
-      "heroOfSunvale": "Een groot 3D-avontuur: een koninkrijk verkennen, de dorpelingen helpen met missies en vriendelijke gevechten winnen om de prinses te bevrijden."
+      "heroOfSunvale": "Een groot 3D-avontuur: een koninkrijk verkennen, de dorpelingen helpen met missies en vriendelijke gevechten winnen om de prinses te bevrijden.",
+      "roboRoute": "Stuur een robot met blokken: reeksen, lussen, voorwaarden, variabelen en functies, en los de bugs op.",
+      "dataDetective": "Sorteer, teken en schoon data op, en doe alleen beweringen die het bewijs steunt.",
+      "packetPost": "Stuur pakketjes door een netwerk, kies sterke wachtzinnen en herken trucs online.",
+      "insideTheMachine": "Bouw en repareer computers: onderdelen, invoer en uitvoer, bits en pixels, ontwerpen voor iedereen."
     },
     "hubs": {
       "math": {
@@ -3993,6 +4002,13 @@
           "p": "Scratch en Code.org leren kinderen programmeren met blokken. De Bouwer werkt anders: kinderen ontwerpen met woorden, en de Bouwer schrijft de game en laat daarbij zijn stappen zien. Veel kinderen doen allebei, en de Bouwer kan een eerste stap zijn voordat ze zelf gaan coderen."
         },
         "safeLink": "Is de AI-Bouwer veilig? Een gids voor ouders"
+      },
+      "cs": {
+        "name": "Informaticaspellen",
+        "short": "Code, data, netwerken en hoe computers werken",
+        "program": {
+          "link": "CS Quest voor leraren"
+        }
       }
     },
     "grades": "Amerikaanse grade {from}–{to}",
@@ -5544,6 +5560,239 @@
       "alsoMark": "Geef deze teamgenoten dezelfde score",
       "alsoMarkHint": "Zij krijgen dezelfde rubriekscores voor deze stap. Je geschreven feedback blijft bij deze leerling.",
       "noHandIns": "Nog niets ingeleverd."
+    },
+    "add": "Toevoegen aan mijn bibliotheek",
+    "band": {
+      "label": "Leerjaren",
+      "b1": "Groep 5-7 (grades 3-5)",
+      "b2": "Groep 8-klas 2 (grades 6-8)"
+    },
+    "before": {
+      "h": "Voor je begint",
+      "gamesOk": "Alle vier de spellen zijn gepubliceerd. Probeer er een zonder inloggen op een leerlingapparaat: /play/robo-route.",
+      "gamesMissing": "Nog niet gepubliceerd: {games}. Lessen die ze gebruiken tonen tot dan een melding.",
+      "liveOn": "Live staat aan: opwarmers en exit-tickets kunnen als live-ruimte.",
+      "liveOff": "Live staat uit op deze site: gebruik „Vragen op het digibord tonen”.",
+      "quizOn": "Quizstappen staan aan: exit-tickets worden gescoord in het cijferboek.",
+      "quizOff": "Quizstappen staan uit: exit-tickets komen als geschreven vragen.",
+      "classes": "Jouw klassen: {count} (live heeft er een nodig).",
+      "zone": "Tijdzone van de school: {zone}. Datums openen en sluiten in deze zone.",
+      "zoneNone": "De school heeft nog geen tijdzone: datums volgen de servertijd.",
+      "headphones": "Koptelefoons helpen. De lesmodus start zonder muziek en met ondertiteling.",
+      "unit7": "Unit 7 (het eindproject) gebruikt de Builder en heeft een schoolabonnement nodig; alle andere units werken zonder."
+    },
+    "builder": {
+      "on": "Builder: aan",
+      "resting": "Builder: rust",
+      "teams": "ongeveer {count} teams kunnen dit lesuur bouwen",
+      "noKey": "de Builder is op deze site niet ingesteld"
+    },
+    "buttons": {
+      "warmup": "Opwarmer starten (live)",
+      "projector": "Vragen op het digibord tonen",
+      "wyr": "Wat kies jij starten (live)",
+      "game": "Spel openen bij dit hoofdstuk",
+      "exitLive": "Exit-ticket live",
+      "review": "Herhaling live",
+      "exitProjector": "Exit-ticket op het digibord",
+      "print": "Afdrukken",
+      "printables": "Om te printen",
+      "assign": "Aan klas toewijzen",
+      "assignUnit": "Unit toewijzen..."
+    },
+    "coverage": {
+      "title": "Dekkingskaart",
+      "lead": "{ids} standaarden, {lessons} lesbestanden, {banks} vragenbanken.",
+      "level": "CSTA-niveau {level} ({grades})",
+      "both": "Beide niveaus",
+      "legendH": "Zo lees je hem",
+      "practiced": "Geoefend",
+      "practicedText": "een leerling rondde een stap met deze standaard af (in duo’s: om de beurt inloggen). Geen beheersing.",
+      "checked": "Getoetst",
+      "checkedText": "vragen met deze standaard zijn beantwoord; de score staat per klas.",
+      "applied": "Toegepast",
+      "appliedText": "de leraar beoordeelde een rubriekregel van deze standaard met 0-3.",
+      "bold": "Vet: de les onderwijst de standaard; gewoon: raakt hem; vaag: bereidt erop voor.",
+      "itemsNote": "Vragen: exit · herhaling · opwarmer.",
+      "noBanks": "banken niet geladen",
+      "missing": "Ontbrekende lesbestanden ({count}):",
+      "complete": "Alle lesbestanden zijn er.",
+      "noPrimary": "Alleen in unit 7:",
+      "practicesH": "Praktijken per unit",
+      "practice": "Praktijk",
+      "units": "Units",
+      "cols": {
+        "id": "Standaard",
+        "concept": "Concept",
+        "practices": "Praktijken",
+        "lessons": "Lessen",
+        "activity": "Activiteit",
+        "items": "Vragen",
+        "rubric": "Rubriekregels"
+      }
+    },
+    "editor": {
+      "from": "Uit CS Quest {n} (v{version})",
+      "newer": "versie {version} is beschikbaar",
+      "plan": "Lesplan openen"
+    },
+    "lesson": {
+      "openPlan": "Lesplan openen",
+      "preview": "Spel bekijken"
+    },
+    "paths": {
+      "h": "Routes",
+      "lead": "Een route voegt zijn lessen voor {band} in één klik toe aan je bibliotheek.",
+      "recommended": "Begin hier",
+      "periods": "Lesuren: {count}",
+      "misses": "Laat weg:",
+      "coversAll": "Dekt alle standaarden van deze leerjaren."
+    },
+    "plan": {
+      "actions": "Deze les geven",
+      "iCan": "Ik kan",
+      "standards": "Standaarden",
+      "also": "Ook:",
+      "toward": "Bereidt voor op:",
+      "vocab": "Woordenschat:",
+      "materials": "Materialen",
+      "doNow": "Startopdracht",
+      "period": "Het lesuur van 45 minuten",
+      "clock": "Klok",
+      "min": "Min",
+      "segment": "Wat er gebeurt",
+      "short40": "Kort lesuur (40 min)",
+      "block": "Blok (80-90 min)",
+      "discuss": "Bespreken",
+      "warmup": "Opwarmvragen",
+      "warmupHow": "Live als {mode}, {secs} seconden per vraag, of op het digibord.",
+      "explore": "Verkennen (digibordscript)",
+      "demo": "Demo",
+      "do": "Doe dit",
+      "say": "Zeg dit",
+      "ask": "Vraag dit",
+      "afterAsk": "Daarna",
+      "bigIdea": "Kernidee",
+      "play": "Spelen",
+      "game": "Spel",
+      "levelN": "level {n}",
+      "levelsN": "Levels: {count}",
+      "starter": "Start",
+      "goal": "Doel",
+      "stretch": "Extra uitdaging",
+      "pairs": "Groepjes",
+      "lookFors": "Let op",
+      "misconception": "Misvatting van de dag",
+      "early": "Voor snelle werkers",
+      "showMe": "Laat zien:",
+      "exit": "Exit-ticket",
+      "sentence": "Zin:",
+      "frame": "Zinsbegin:",
+      "rubric": "Rubriek",
+      "rubricHow": "Geef elke regel 0-3 bij de stap in het cijferboek.",
+      "rubricLine": "Regel",
+      "diff": "Differentiatie",
+      "support": "Steun",
+      "unplugged": "Variant zonder scherm",
+      "sub": "Plan voor de invaller",
+      "notes": "Notities voor de leraar",
+      "steps": "Wat leerlingen zien",
+      "stepsNote": "De stappen die jouw kopie aan leerlingen geeft. Bewerk ze in je bibliotheek na het toevoegen.",
+      "questCode": "Questcode",
+      "liveClass": "Klas voor live en toewijzen:",
+      "liveOff": "Live staat uit op deze site; toon de vragen op het digibord.",
+      "assignNote": "Voegt de les eerst toe aan je bibliotheek als die er nog niet is.",
+      "bankMissing": "De vragenbank van deze les is nog niet geladen.",
+      "gameNotYet": "{game} is nog niet gepubliceerd; leerlingen zien tot dan een melding.",
+      "notWritten": "Deze les is nog niet geschreven.",
+      "switchBand": "Naar {band}"
+    },
+    "print": {
+      "back": "Terug",
+      "print": "Afdrukken",
+      "page2": "pagina 2",
+      "key": "Antwoorden (alleen leraar)",
+      "loginCards": "Leerlingen loggen in met hun klassen-inlogkaarten."
+    },
+    "program": {
+      "title": "CS Quest",
+      "tagline": "Informatica voor grades 3-8",
+      "counts": "{lessons} lessen in {units} units",
+      "lead": "Elke les is één lesuur van 45 minuten: startopdracht, een demo op het digibord, een spelhoofdstuk in duo’s, een korte bespreking en een exit-ticket.",
+      "inLibrary": "Lessen van deze leerjaren in je bibliotheek: {count}",
+      "coverage": "Dekkingskaart",
+      "footer": "Toegevoegde lessen zijn jouw kopieën: pas ze gerust aan.",
+      "public": "Over CS Quest"
+    },
+    "projector": {
+      "warmup": "Opwarmer",
+      "exit": "Exit-ticket",
+      "of": "{n} van {count}",
+      "reveal": "Antwoord tonen",
+      "prev": "Vorige",
+      "next": "Volgende",
+      "nav": "Vragen",
+      "keys": "Pijltjestoetsen bladeren, spatie toont het antwoord."
+    },
+    "sheets": {
+      "exit-half": "Exit-ticket (halve vellen)",
+      "sub-plan": "Plan voor de invaller",
+      "unplugged": "Variant zonder scherm",
+      "rubric": "Rubriek",
+      "planning-sheet": "Planningsblad",
+      "etiquette-card": "Builder-regelkaart",
+      "exitHalfTitle": "Exit-ticket",
+      "steps": "Stappen",
+      "alsoPrint": "Print ook:",
+      "wyrMissing": "De vragen zijn niet geladen; schrijf ze in de tabel.",
+      "fields": {
+        "name": "Naam",
+        "date": "Datum",
+        "team": "Team"
+      }
+    },
+    "state": {
+      "notAdded": "Niet in je bibliotheek",
+      "inLibrary": "In je bibliotheek",
+      "update": "Update beschikbaar",
+      "added": "Toegevoegd",
+      "open": "Openen",
+      "soon": "Binnenkort",
+      "gameNotYet": "{game} nog niet gepubliceerd",
+      "reset": "Terugzetten naar de CS Quest-versie",
+      "resetConfirm": "Een nieuwe kopie uit CS Quest maken? Je klassen en datums gaan mee; de oude kopie houdt het werk van de leerlingen.",
+      "resetDone": "Teruggezet naar de CS Quest-versie."
+    },
+    "toast": {
+      "one": "Toegevoegd aan je bibliotheek.",
+      "many": "Toegevoegd aan je bibliotheek."
+    },
+    "unit": {
+      "n": "Unit {n}",
+      "add": "Unit toevoegen",
+      "assign": "Unit toewijzen...",
+      "lessonsN": "Lessen: {count}",
+      "optional": "Optioneel",
+      "needsPlan": "Heeft een schoolabonnement nodig"
+    },
+    "unitForm": {
+      "what": "Wat",
+      "start": "Eerste les opent op",
+      "cadence": "Daarna één les",
+      "dueDays": "Inleveren na (dagen)",
+      "dueAuto": "volgende les",
+      "button": "Toewijzen",
+      "note": "Elke les opent op een eigen datum.",
+      "done": "Lessen toegewezen aan {class}: {count}.",
+      "cadences": {
+        "weekdays": "elke schooldag",
+        "daily": "elke dag",
+        "twiceweekly": "twee keer per week",
+        "weekly": "elke week"
+      }
+    },
+    "units": {
+      "h": "Units"
     }
   }
 }

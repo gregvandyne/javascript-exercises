@@ -2309,6 +2309,11 @@
       "waitingFor": "等待 {name} 答應…",
       "cancel": "取消",
       "ended": "這場線上對戰已經結束了。"
+    },
+    "cs": {
+      "of": "{n} / {count}",
+      "reveal": "顯示答案",
+      "hide": "隱藏答案"
     }
   },
   "favorites": {
@@ -3825,7 +3830,11 @@
       "beatLanes": "跟著九首歌的節奏點擊，從小星星到康康舞曲。",
       "swishFlick": "滑動手指投籃：方向決定瞄準，速度決定球飛多遠。",
       "munchMaze": "迷宮追逐：規劃路線，吃光所有豆豆，躲開果凍怪。",
-      "heroOfSunvale": "大型 3D 冒險：探索王國、在任務中幫助村民，贏得友善的戰鬥來救出公主。"
+      "heroOfSunvale": "大型 3D 冒險：探索王國、在任務中幫助村民，贏得友善的戰鬥來救出公主。",
+      "roboRoute": "用積木帶領機器人:循序、迴圈、條件、變數和函式,然後修正錯誤。",
+      "dataDetective": "排序、繪圖並整理資料,只提出證據支持的主張。",
+      "packetPost": "在網路上傳送封包、選擇強的通關片語,並識破網路陷阱。",
+      "insideTheMachine": "組裝和修理電腦:零件、輸入與輸出、位元與像素、為所有人設計。"
     },
     "hubs": {
       "math": {
@@ -3992,6 +4001,13 @@
           "p": "Scratch 和 Code.org 用積木教程式設計。小幫手不一樣：孩子用文字設計，小幫手一邊寫遊戲一邊展示步驟。很多孩子兩種都玩，小幫手可以是學寫程式之前的第一步。"
         },
         "safeLink": "AI 小幫手安全嗎？給家長的說明"
+      },
+      "cs": {
+        "name": "電腦科學遊戲",
+        "short": "程式、資料、網路和電腦如何運作",
+        "program": {
+          "link": "給老師的 CS Quest"
+        }
       }
     },
     "grades": "{from}–{to} 年級",
@@ -5543,6 +5559,239 @@
       "alsoMark": "也為這些隊友打同樣的分數",
       "alsoMarkHint": "他們在這個步驟會得到相同的評量表分數。你寫的回饋只會給這位學生。",
       "noHandIns": "還沒有人繳交。"
+    },
+    "add": "加入我的資料庫",
+    "band": {
+      "label": "年級",
+      "b1": "3-5 年級",
+      "b2": "6-8 年級"
+    },
+    "before": {
+      "h": "開始之前",
+      "gamesOk": "四款遊戲都已發布。請在學生裝置上不登入試玩一款:/play/robo-route。",
+      "gamesMissing": "尚未發布:{games}。使用它們的課程會先顯示提示。",
+      "liveOn": "直播已開啟:暖身與離場券可以在直播房間進行。",
+      "liveOff": "本站已關閉直播:請改用「在投影機上顯示題目」。",
+      "quizOn": "測驗步驟已開啟:離場券會在成績簿中計分。",
+      "quizOff": "測驗步驟已關閉:離場券會以書面題目呈現。",
+      "classes": "你任教的班級:{count}(直播需要一個班級)。",
+      "zone": "學校時區:{zone}。日期依此時區開放與截止。",
+      "zoneNone": "學校尚未設定時區:日期使用伺服器時間。",
+      "headphones": "耳機會有幫助。課堂模式預設關閉音樂、開啟字幕。",
+      "unit7": "第 7 單元(總結專題)使用 Builder,需要學校方案;其他單元都不需要。"
+    },
+    "builder": {
+      "on": "Builder:運作中",
+      "resting": "Builder:休息中",
+      "teams": "這節課約有 {count} 隊可以製作",
+      "noKey": "本站尚未設定 Builder"
+    },
+    "buttons": {
+      "warmup": "開始暖身(直播)",
+      "projector": "在投影機上顯示題目",
+      "wyr": "開始「你寧願」(直播)",
+      "game": "在這一章開啟遊戲",
+      "exitLive": "直播離場券",
+      "review": "直播複習",
+      "exitProjector": "在投影機上顯示離場券",
+      "print": "列印",
+      "printables": "列印教材",
+      "assign": "指派給班級",
+      "assignUnit": "指派單元..."
+    },
+    "coverage": {
+      "title": "涵蓋地圖",
+      "lead": "{ids} 項標準、{lessons} 個課程檔案、{banks} 個題庫。",
+      "level": "CSTA 等級 {level}({grades})",
+      "both": "兩個等級",
+      "legendH": "如何閱讀",
+      "practiced": "已練習",
+      "practicedText": "學生完成了標有此標準的步驟(兩人一組:輪流登入)。不代表精熟。",
+      "checked": "已檢核",
+      "checkedText": "標有此標準的題目已作答;正確率以班級呈現。",
+      "applied": "已應用",
+      "appliedText": "老師以 0-3 評了此標準的一項評分規準。",
+      "bold": "粗體課程教這項標準;一般字體觸及它;淡色則為其鋪路。",
+      "itemsNote": "題目:離場 · 複習 · 暖身。",
+      "noBanks": "題庫未載入",
+      "missing": "缺少的課程檔案({count}):",
+      "complete": "所有課程檔案都在。",
+      "noPrimary": "只在第 7 單元教:",
+      "practicesH": "各單元的實踐",
+      "practice": "實踐",
+      "units": "單元",
+      "cols": {
+        "id": "標準",
+        "concept": "概念",
+        "practices": "實踐",
+        "lessons": "課程",
+        "activity": "活動",
+        "items": "題目",
+        "rubric": "評分規準"
+      }
+    },
+    "editor": {
+      "from": "來自 CS Quest {n}(v{version})",
+      "newer": "已有第 {version} 版",
+      "plan": "開啟教案"
+    },
+    "lesson": {
+      "openPlan": "開啟教案",
+      "preview": "預覽遊戲"
+    },
+    "paths": {
+      "h": "學習路線",
+      "lead": "一條路線一鍵把 {band} 的課程加入你的資料庫。",
+      "recommended": "從這裡開始",
+      "periods": "節數:{count}",
+      "misses": "未涵蓋:",
+      "coversAll": "涵蓋此年級的所有標準。"
+    },
+    "plan": {
+      "actions": "進行這堂課",
+      "iCan": "我能",
+      "standards": "標準",
+      "also": "另有:",
+      "toward": "銜接:",
+      "vocab": "詞彙:",
+      "materials": "教材",
+      "doNow": "課前任務",
+      "period": "45 分鐘的一節課",
+      "clock": "時間",
+      "min": "分",
+      "segment": "內容",
+      "short40": "短課(40 分鐘)",
+      "block": "長課(80-90 分鐘)",
+      "discuss": "討論",
+      "warmup": "暖身題目",
+      "warmupHow": "以 {mode} 直播,每題 {secs} 秒,或用投影機。",
+      "explore": "探索(投影機講稿)",
+      "demo": "示範",
+      "do": "這樣做",
+      "say": "這樣說",
+      "ask": "這樣問",
+      "afterAsk": "接著",
+      "bigIdea": "核心概念",
+      "play": "遊戲",
+      "game": "遊戲",
+      "levelN": "第 {n} 關",
+      "levelsN": "關卡數:{count}",
+      "starter": "開場",
+      "goal": "目標",
+      "stretch": "挑戰",
+      "pairs": "分組",
+      "lookFors": "觀察重點",
+      "misconception": "今日常見迷思",
+      "early": "提早完成的學生",
+      "showMe": "讓我看看:",
+      "exit": "離場券",
+      "sentence": "句子:",
+      "frame": "句型:",
+      "rubric": "評分規準",
+      "rubricHow": "在成績簿的步驟上為每一項評 0-3 分。",
+      "rubricLine": "項目",
+      "diff": "差異化教學",
+      "support": "支援",
+      "unplugged": "不插電版本",
+      "sub": "代課計畫",
+      "notes": "教師備註",
+      "steps": "學生看到的內容",
+      "stepsNote": "你的副本給學生的步驟。加入課程後可在資料庫中編輯。",
+      "questCode": "任務代碼",
+      "liveClass": "直播與指派的班級:",
+      "liveOff": "本站已關閉直播;請在投影機上顯示題目。",
+      "assignNote": "若尚未加入,會先把課程加入你的資料庫。",
+      "bankMissing": "這堂課的題庫尚未載入。",
+      "gameNotYet": "{game} 尚未發布;在那之前學生會看到提示。",
+      "notWritten": "這堂課尚未撰寫。",
+      "switchBand": "切換到 {band}"
+    },
+    "print": {
+      "back": "返回",
+      "print": "列印",
+      "page2": "第 2 頁",
+      "key": "解答(僅限教師)",
+      "loginCards": "學生用班級登入卡登入。"
+    },
+    "program": {
+      "title": "CS Quest",
+      "tagline": "3-8 年級的電腦科學",
+      "counts": "{units} 個單元、{lessons} 堂課",
+      "lead": "每堂課是一節 45 分鐘的課:課前任務、投影機示範、兩人一組玩一章遊戲、簡短討論和離場券。",
+      "inLibrary": "資料庫中此年級的課程:{count}",
+      "coverage": "涵蓋地圖",
+      "footer": "你加入的課程是你的副本:可以自由編輯。",
+      "public": "關於 CS Quest"
+    },
+    "projector": {
+      "warmup": "暖身",
+      "exit": "離場券",
+      "of": "{n} / {count}",
+      "reveal": "顯示答案",
+      "prev": "上一題",
+      "next": "下一題",
+      "nav": "題目",
+      "keys": "方向鍵切換,空白鍵顯示答案。"
+    },
+    "sheets": {
+      "exit-half": "離場券(半頁)",
+      "sub-plan": "代課計畫",
+      "unplugged": "不插電版本",
+      "rubric": "評分規準",
+      "planning-sheet": "規劃單",
+      "etiquette-card": "Builder 禮儀卡",
+      "exitHalfTitle": "離場券",
+      "steps": "步驟",
+      "alsoPrint": "也要列印:",
+      "wyrMissing": "題目尚未載入;請寫在表格中。",
+      "fields": {
+        "name": "姓名",
+        "date": "日期",
+        "team": "隊伍"
+      }
+    },
+    "state": {
+      "notAdded": "不在你的資料庫",
+      "inLibrary": "在你的資料庫",
+      "update": "有更新",
+      "added": "已加入",
+      "open": "開啟",
+      "soon": "即將推出",
+      "gameNotYet": "{game} 尚未發布",
+      "reset": "重設為 CS Quest 版本",
+      "resetConfirm": "要從 CS Quest 建立新的副本嗎?你的班級和日期會移到新副本;舊副本保留學生的作業。",
+      "resetDone": "已重設為 CS Quest 版本。"
+    },
+    "toast": {
+      "one": "已加入你的資料庫。",
+      "many": "已加入你的資料庫。"
+    },
+    "unit": {
+      "n": "第 {n} 單元",
+      "add": "加入單元",
+      "assign": "指派單元...",
+      "lessonsN": "課程數:{count}",
+      "optional": "選修",
+      "needsPlan": "需要學校方案"
+    },
+    "unitForm": {
+      "what": "內容",
+      "start": "第一堂課開放日",
+      "cadence": "之後每次一堂課",
+      "dueDays": "幾天後截止",
+      "dueAuto": "下一堂課",
+      "button": "指派",
+      "note": "每堂課在各自的日期開放。",
+      "done": "已指派給 {class} 的課程:{count}。",
+      "cadences": {
+        "weekdays": "每個上課日",
+        "daily": "每天",
+        "twiceweekly": "每週兩次",
+        "weekly": "每週"
+      }
+    },
+    "units": {
+      "h": "單元"
     }
   }
 }

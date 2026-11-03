@@ -2310,6 +2310,11 @@
       "waitingFor": "Aspettiamo che {name} dica di sì…",
       "cancel": "Annulla",
       "ended": "Questa partita online è finita."
+    },
+    "cs": {
+      "of": "{n} di {count}",
+      "reveal": "Mostra la risposta",
+      "hide": "Nascondi la risposta"
     }
   },
   "favorites": {
@@ -3826,7 +3831,11 @@
       "beatLanes": "Toccare a tempo su nove canzoni, da Brilla brilla la stellina al Can-can.",
       "swishFlick": "Lanciare a canestro con il dito: la direzione decide la mira e la velocità quanto lontano vola la palla.",
       "munchMaze": "Un inseguimento nel labirinto: pianificare un percorso, mangiare tutti i puntini e schivare i Gloops.",
-      "heroOfSunvale": "Una grande avventura in 3D: esplorare un regno, aiutare gli abitanti del villaggio nelle missioni e vincere battaglie amichevoli per liberare la principessa."
+      "heroOfSunvale": "Una grande avventura in 3D: esplorare un regno, aiutare gli abitanti del villaggio nelle missioni e vincere battaglie amichevoli per liberare la principessa.",
+      "roboRoute": "Guida un robot con i blocchi: sequenze, cicli, condizioni, variabili e funzioni, poi correggi i bug.",
+      "dataDetective": "Ordina, rappresenta e pulisci i dati, poi fai affermazioni che i dati sostengono.",
+      "packetPost": "Invia pacchetti in rete, scegli passphrase robuste e riconosci i trucchi online.",
+      "insideTheMachine": "Monta e ripara computer: componenti, input e output, bit e pixel, design per tutti."
     },
     "hubs": {
       "math": {
@@ -3993,6 +4002,13 @@
           "p": "Scratch e Code.org insegnano a programmare con i blocchi. Il Costruttore è diverso: i ragazzi progettano a parole e il Costruttore scrive il gioco mostrando i suoi passaggi. Molti ragazzi fanno entrambe le cose, e il Costruttore può essere un primo passo prima del codice."
         },
         "safeLink": "Il Costruttore IA è sicuro? Una guida per i genitori"
+      },
+      "cs": {
+        "name": "Giochi di informatica",
+        "short": "Codice, dati, reti e come funzionano i computer",
+        "program": {
+          "link": "CS Quest per i docenti"
+        }
       }
     },
     "grades": "Classi {from}–{to} (sistema USA)",
@@ -5544,6 +5560,239 @@
       "alsoMark": "Dai gli stessi voti a questi compagni di squadra",
       "alsoMarkHint": "Ricevono gli stessi voti della griglia per questo passaggio. Il commento scritto resta a questo studente.",
       "noHandIns": "Nessuna consegna per ora."
+    },
+    "add": "Aggiungi alla mia biblioteca",
+    "band": {
+      "label": "Fascia",
+      "b1": "Classi 3-5",
+      "b2": "Classi 6-8"
+    },
+    "before": {
+      "h": "Prima di iniziare",
+      "gamesOk": "Tutti e quattro i giochi sono pubblicati. Provane uno senza accesso su un dispositivo degli studenti: /play/robo-route.",
+      "gamesMissing": "Non ancora pubblicati: {games}. Le lezioni che li usano mostrano un avviso fino ad allora.",
+      "liveOn": "Il live è attivo: riscaldamenti e biglietti d’uscita possono svolgersi in una stanza live.",
+      "liveOff": "Il live è disattivato su questo sito: usa «Mostra le domande al proiettore».",
+      "quizOn": "I passi quiz sono attivi: i biglietti d’uscita sono valutati nel registro.",
+      "quizOff": "I passi quiz sono disattivati: i biglietti d’uscita arrivano come domande scritte.",
+      "classes": "Classi in cui insegni: {count} (il live ne richiede una).",
+      "zone": "Fuso orario della scuola: {zone}. Le date aprono e chiudono in questo fuso.",
+      "zoneNone": "La scuola non ha ancora un fuso orario: le date usano l’ora del server.",
+      "headphones": "Le cuffie aiutano. La modalità lezione parte senza musica e con i sottotitoli.",
+      "unit7": "L’unità 7 (il progetto finale) usa il Builder e richiede un piano scuola; le altre unità funzionano senza."
+    },
+    "builder": {
+      "on": "Builder: attivo",
+      "resting": "Builder: a riposo",
+      "teams": "circa {count} squadre possono creare in questa ora",
+      "noKey": "il Builder non è configurato su questo sito"
+    },
+    "buttons": {
+      "warmup": "Avvia il riscaldamento (live)",
+      "projector": "Mostra le domande al proiettore",
+      "wyr": "Avvia Preferiresti (live)",
+      "game": "Apri il gioco a questo capitolo",
+      "exitLive": "Biglietto d’uscita live",
+      "review": "Ripasso live",
+      "exitProjector": "Biglietto d’uscita al proiettore",
+      "print": "Stampa",
+      "printables": "Materiali da stampare",
+      "assign": "Assegna alla classe",
+      "assignUnit": "Assegna unità..."
+    },
+    "coverage": {
+      "title": "Mappa di copertura",
+      "lead": "{ids} standard, {lessons} file di lezione, {banks} banche di domande.",
+      "level": "Livello CSTA {level} ({grades})",
+      "both": "Entrambi i livelli",
+      "legendH": "Come leggerla",
+      "practiced": "Praticato",
+      "practicedText": "uno studente ha finito un passo con questo standard (in coppia: accedete a turno). Non è padronanza.",
+      "checked": "Verificato",
+      "checkedText": "sono state risposte domande su questo standard; la precisione è mostrata per classe.",
+      "applied": "Applicato",
+      "appliedText": "il docente ha valutato da 0 a 3 una riga di rubrica di questo standard.",
+      "bold": "In grassetto le lezioni che insegnano lo standard; normali quelle che lo toccano; sbiadite quelle che vi preparano.",
+      "itemsNote": "Domande: uscita · ripasso · riscaldamento.",
+      "noBanks": "banche non caricate",
+      "missing": "File di lezione mancanti ({count}):",
+      "complete": "Ci sono tutti i file di lezione.",
+      "noPrimary": "Solo nell’unità 7:",
+      "practicesH": "Pratiche per unità",
+      "practice": "Pratica",
+      "units": "Unità",
+      "cols": {
+        "id": "Standard",
+        "concept": "Concetto",
+        "practices": "Pratiche",
+        "lessons": "Lezioni",
+        "activity": "Attività",
+        "items": "Domande",
+        "rubric": "Righe di rubrica"
+      }
+    },
+    "editor": {
+      "from": "Da CS Quest {n} (v{version})",
+      "newer": "è disponibile la versione {version}",
+      "plan": "Apri il piano"
+    },
+    "lesson": {
+      "openPlan": "Apri piano",
+      "preview": "Prova il gioco"
+    },
+    "paths": {
+      "h": "Percorsi",
+      "lead": "Un percorso aggiunge le sue lezioni per {band} alla tua biblioteca con un clic.",
+      "recommended": "Inizia da qui",
+      "periods": "Ore: {count}",
+      "misses": "Lascia fuori:",
+      "coversAll": "Copre tutti gli standard di questa fascia."
+    },
+    "plan": {
+      "actions": "Svolgi questa lezione",
+      "iCan": "So",
+      "standards": "Standard",
+      "also": "Anche:",
+      "toward": "Prepara a:",
+      "vocab": "Vocabolario:",
+      "materials": "Materiali",
+      "doNow": "Per iniziare",
+      "period": "L’ora di 45 minuti",
+      "clock": "Orario",
+      "min": "Min",
+      "segment": "Cosa succede",
+      "short40": "Ora breve (40 min)",
+      "block": "Blocco (80-90 min)",
+      "discuss": "Discussione",
+      "warmup": "Domande di riscaldamento",
+      "warmupHow": "Live come {mode}, {secs} secondi a domanda, o al proiettore.",
+      "explore": "Esplora (copione per il proiettore)",
+      "demo": "Demo",
+      "do": "Fai questo",
+      "say": "Di’ questo",
+      "ask": "Chiedi questo",
+      "afterAsk": "Poi",
+      "bigIdea": "Grande idea",
+      "play": "Gioca",
+      "game": "Gioco",
+      "levelN": "livello {n}",
+      "levelsN": "Livelli: {count}",
+      "starter": "Avvio",
+      "goal": "Obiettivo",
+      "stretch": "Sfida extra",
+      "pairs": "Gruppi",
+      "lookFors": "Cosa osservare",
+      "misconception": "Misconcezione del giorno",
+      "early": "Per chi finisce prima",
+      "showMe": "Mostrami:",
+      "exit": "Biglietto d’uscita",
+      "sentence": "Frase:",
+      "frame": "Traccia:",
+      "rubric": "Rubrica",
+      "rubricHow": "Valuta ogni riga da 0 a 3 sul passo nel registro.",
+      "rubricLine": "Riga",
+      "diff": "Differenziazione",
+      "support": "Supporto",
+      "unplugged": "Versione senza schermi",
+      "sub": "Piano per il supplente",
+      "notes": "Note per il docente",
+      "steps": "Cosa vedono gli studenti",
+      "stepsNote": "I passi che la tua copia dà agli studenti. Modificali nella biblioteca dopo aver aggiunto la lezione.",
+      "questCode": "Codice missione",
+      "liveClass": "Classe per live e assegnazione:",
+      "liveOff": "Il live è disattivato su questo sito; mostra le domande al proiettore.",
+      "assignNote": "Prima aggiunge la lezione alla tua biblioteca, se non c’è.",
+      "bankMissing": "La banca di domande di questa lezione non è ancora caricata.",
+      "gameNotYet": "{game} non è ancora pubblicato; gli studenti vedono un avviso fino ad allora.",
+      "notWritten": "Questa lezione non è ancora scritta.",
+      "switchBand": "Passa a {band}"
+    },
+    "print": {
+      "back": "Indietro",
+      "print": "Stampa",
+      "page2": "pagina 2",
+      "key": "Soluzioni (solo docente)",
+      "loginCards": "Gli studenti accedono con le tessere di accesso della classe."
+    },
+    "program": {
+      "title": "CS Quest",
+      "tagline": "Informatica per le classi 3-8",
+      "counts": "{lessons} lezioni in {units} unità",
+      "lead": "Ogni lezione è un’ora di 45 minuti: avvio, demo al proiettore, un capitolo del gioco in coppia, una breve discussione e un biglietto d’uscita.",
+      "inLibrary": "Lezioni di questa fascia nella tua biblioteca: {count}",
+      "coverage": "Mappa di copertura",
+      "footer": "Le lezioni aggiunte sono tue copie: modificale liberamente.",
+      "public": "Informazioni su CS Quest"
+    },
+    "projector": {
+      "warmup": "Riscaldamento",
+      "exit": "Biglietto d’uscita",
+      "of": "{n} di {count}",
+      "reveal": "Mostra la risposta",
+      "prev": "Precedente",
+      "next": "Successiva",
+      "nav": "Domande",
+      "keys": "Frecce per scorrere, Spazio mostra la risposta."
+    },
+    "sheets": {
+      "exit-half": "Biglietto d’uscita (mezzi fogli)",
+      "sub-plan": "Piano per il supplente",
+      "unplugged": "Versione senza schermi",
+      "rubric": "Rubrica",
+      "planning-sheet": "Scheda di progettazione",
+      "etiquette-card": "Scheda regole del Builder",
+      "exitHalfTitle": "Biglietto d’uscita",
+      "steps": "Passi",
+      "alsoPrint": "Stampa anche:",
+      "wyrMissing": "Le domande non sono caricate; scrivile nella tabella.",
+      "fields": {
+        "name": "Nome",
+        "date": "Data",
+        "team": "Squadra"
+      }
+    },
+    "state": {
+      "notAdded": "Non è nella tua biblioteca",
+      "inLibrary": "Nella tua biblioteca",
+      "update": "Aggiornamento disponibile",
+      "added": "Aggiunta",
+      "open": "Apri",
+      "soon": "In arrivo",
+      "gameNotYet": "{game} non ancora pubblicato",
+      "reset": "Ripristina la versione CS Quest",
+      "resetConfirm": "Creare una nuova copia da CS Quest? Classi e date passano lì; la vecchia copia conserva il lavoro degli studenti.",
+      "resetDone": "Ripristinata la versione CS Quest."
+    },
+    "toast": {
+      "one": "Aggiunta alla tua biblioteca.",
+      "many": "Aggiunte alla tua biblioteca."
+    },
+    "unit": {
+      "n": "Unità {n}",
+      "add": "Aggiungi unità",
+      "assign": "Assegna unità...",
+      "lessonsN": "Lezioni: {count}",
+      "optional": "Facoltativa",
+      "needsPlan": "Richiede un piano scuola"
+    },
+    "unitForm": {
+      "what": "Cosa",
+      "start": "La prima lezione apre il",
+      "cadence": "Poi una lezione",
+      "dueDays": "Scadenza dopo (giorni)",
+      "dueAuto": "lezione successiva",
+      "button": "Assegna",
+      "note": "Ogni lezione apre nella sua data.",
+      "done": "Lezioni assegnate a {class}: {count}.",
+      "cadences": {
+        "weekdays": "ogni giorno di scuola",
+        "daily": "ogni giorno",
+        "twiceweekly": "due volte a settimana",
+        "weekly": "ogni settimana"
+      }
+    },
+    "units": {
+      "h": "Unità"
     }
   }
 }
