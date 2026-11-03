@@ -64,7 +64,7 @@ test('inside-the-machine: the chapter table matches the contract and every chapt
       if (p[band]) assert.equal(JSON.stringify(ch.csta[band]), JSON.stringify(p.csta[band]), `${p.id} ${band} standards`); else assert.ok(!ch.bands.includes(band), `${p.id} has no ${band} band`);
       assert.equal(L.levelsFor(p.id, band).length, p[band], `${p.id} ${band} level count`);
       // a level's standards sit inside its chapter's standards for one of its bands (CI clause f')
-      for (const l of L.levelsFor(p.id, band)) for (const id of l.csta) assert.ok(Object.values(ch.csta).some(list => list.includes(id)), `${l.id}: ${id} belongs to ${p.id}`);
+      for (const l of L.levelsFor(p.id, band)) { assert.ok(L.cstaOf(l, band).length, `${l.id} has standards for ${band}`); for (const id of L.cstaOf(l, band)) assert.ok(Object.values(ch.csta).some(list => list.includes(id)), `${l.id}: ${id} belongs to ${p.id}`); }
     }
   }
   assert.equal(L.LEVELS.length, 48, 'six chapters, forty-eight level records');
@@ -80,8 +80,11 @@ test('inside-the-machine: every level is solved by its sol with the second star,
   for (const l of L.LEVELS) {
     assert.ok(!ids.has(l.id), `${l.id} unique`); ids.add(l.id);
     assert.ok(L.chapter(l.ch) && l.bands.length && l.bands.every(b => L.chapter(l.ch).bands.includes(b)), `${l.id} chapter/bands`);
-    for (const id of [...(l.csta || []), ...(l.csta2 || [])]) assert.ok(CSTA.has(id), `${l.id}: ${id} is a CSTA 2017 id`);
-    assert.ok(l.csta && l.csta.length, `${l.id} has standards`);
+    // csta is one list, or a list per band when a shared level evidences different standards in each band
+    const allCsta = Array.isArray(l.csta) ? l.csta : Object.values(l.csta || {}).flat();
+    for (const id of [...allCsta, ...(l.csta2 || [])]) assert.ok(CSTA.has(id), `${l.id}: ${id} is a CSTA 2017 id`);
+    assert.ok(allCsta.length, `${l.id} has standards`);
+    if (!Array.isArray(l.csta)) assert.equal(Object.keys(l.csta).sort().join(), l.bands.slice().sort().join(), `${l.id}: standards for exactly its bands`);
     const v = L.judge(l, l.sol);
     assert.ok(v.ok, `${l.id} solved by sol: ${v.fails.join(', ')}`);
     assert.ok(v.good, `${l.id} sol earns the second star`);
@@ -102,7 +105,7 @@ test('inside-the-machine: every level is solved by its sol with the second star,
       const worst = l.improvements.filter(c => !l.best.includes(c.id)).slice(0, 2).map(c => c.id); assert.ok(!L.judge(l, { picked: l.sol.picked, imps: worst }).ok, `${l.id}: two poor improvements fail`);
       const one = [l.best[0], worst[0]]; const v1 = L.judge(l, { picked: l.sol.picked, imps: one }); assert.ok(v1.ok && !v1.good, `${l.id}: one good improvement passes without the star`);
     }
-    if (l.kind === 'persona') { assert.equal(l.changes.length, 9, `${l.id}: nine changes`); assert.ok(l.beats.length === 3 && l.struggle >= 0 && l.struggle < 3, `${l.id}: three beats`); for (const c of l.changes) assert.ok(c.text && c.helps, `${l.id}: change ${c.id} says who else it helps`); assert.ok(!L.judge(l, { beat: (l.struggle + 1) % 3, changes: l.best.slice(0, 2) }).ok, `${l.id}: the wrong moment fails`); assert.ok(!L.judge(l, { beat: l.struggle, changes: l.changes.filter(c => !l.best.includes(c.id)).slice(0, 2).map(c => c.id) }).ok, `${l.id}: two useless changes fail`); }
+    if (l.kind === 'persona') { assert.equal(l.changes.length, 9, `${l.id}: nine changes`); assert.ok((l.beats.length === 3 || l.beats.length === 4) && l.struggle >= 0 && l.struggle < l.beats.length, `${l.id}: three or four beats`); for (const c of l.changes) assert.ok(c.text && c.helps, `${l.id}: change ${c.id} says who else it helps`); assert.ok(!L.judge(l, { beat: (l.struggle + 1) % l.beats.length, changes: l.best.slice(0, 2) }).ok, `${l.id}: the wrong moment fails`); assert.ok(!L.judge(l, { beat: l.struggle, changes: l.changes.filter(c => !l.best.includes(c.id)).slice(0, 2).map(c => c.id) }).ok, `${l.id}: two useless changes fail`); }
     if (l.kind === 'pick') for (const r of l.rounds) { assert.equal(r.tiles.length, 3, `${l.id}: three tiles a round`); if (r.show && r.show.bits) assert.ok(r.show.on >= 0 && r.show.on < (1 << r.show.bits), `${l.id}: the bit picture fits its cards`); if (r.show && r.show.rgb) assert.ok(r.show.rgb.length === 3 && r.show.rgb.every(x => x >= 0 && x <= 255)); }
     if (l.kind === 'switches') for (const r of l.rounds) assert.ok(r.target >= 0 && r.target < (1 << (l.bits || 5)), `${l.id}: ${r.target} fits ${l.bits || 5} bits`);
     if (l.kind === 'rgb') assert.ok(l.sol.rgb.every((v, i) => Math.abs(v - l.target[i]) <= l.tol && (v - l.start[i]) % l.step === 0), `${l.id}: the sol is reachable with the stepper and within tolerance`);
@@ -112,6 +115,11 @@ test('inside-the-machine: every level is solved by its sol with the second star,
       assert.ok(l.checks.length <= 8, `${l.id}: at most 8 checks on the tray`);
       for (const c of l.checks) assert.ok(c.label && c.ok && c.cost > 0, `${l.id}: check ${c.id} text and cost`);
       for (const f of l.faults) assert.ok(l.checks.some(c => c.id === f && c.fix) || (l.swaps || []).some(s => s.id === f && s.fix), `${l.id}: fault ${f} has a fix line`);
+      // honesty: a check or swap that does not clear a fault never says the device works again
+      const clears = c => l.faults.includes(c.id) || (c.fixes && l.faults.includes(c.fixes));
+      for (const c of l.checks) if (!clears(c) && !c.help) assert.doesNotMatch(c.ok, /\b(it works|works again|fixed|prints:|goes online|charges fine|prints fine|turns on)\b/i, `${l.id}: check ${c.id} does not claim success`);
+      for (const c of l.swaps || []) if (!clears(c)) assert.doesNotMatch(c.fix, /\b(it works|works again|fixed|prints:|goes online|charges fine|prints fine|was the problem)\b/i, `${l.id}: swap ${c.id} does not claim success`);
+      if (l.kind === 'flow') { const v0 = L.judge(l, l.sol), vs = L.judge(l, Object.assign({}, l.sol, { spent: 16 })); assert.ok(vs.ok && !vs.good && vs.cost === v0.cost + 16, `${l.id}: earlier runs stay on the clock`); }
       const bad = L.judge(l, l.kind === 'flow' ? { flow: [], swaps: [] } : { checks: [] }); assert.ok(!bad.ok, `${l.id}: doing nothing does not fix it`);
     }
   }
@@ -123,7 +131,18 @@ test('inside-the-machine: a wrong answer is marked wrong and an expensive path l
   const g = L.level('gadget-3');
   assert.ok(!L.judge(g, { picked: ['door', 'buzzer', 'button', 'smallbatt', 'cpu'], imps: g.sol.imps }).ok, 'a buzzer is not loud enough for the door alarm');
   assert.ok(!L.judge(g, { picked: ['door', 'siren', 'button', 'bigbatt', 'cpu'], imps: g.sol.imps }).ok, 'the big battery does not fit a pocket');
-  const d = L.level('design-2-4'); assert.ok(L.judge(d, { beat: 1, changes: ['testgroup', 'camera'], wrong: 0 }).ok && !L.judge(d, { beat: 1, changes: ['testgroup', 'camera'], wrong: 0 }).good, 'one best change passes without the star');
+  const d = L.level('design-2-4'); assert.ok(L.judge(d, { beat: d.struggle, changes: ['testgroup', 'camera'], wrong: 0 }).ok && !L.judge(d, { beat: d.struggle, changes: ['testgroup', 'camera'], wrong: 0 }).good, 'one best change passes without the star');
+  // the key is the moment the user actually fails (what the prompt asks), and it is not the same slot on every level
+  for (const p of L.LEVELS.filter(l => l.kind === 'persona')) assert.match(p.beats[p.struggle], /squints|drops|cries|loses|does not recognize|cannot reach/, `${p.id}: the struggle beat is where the user fails`);
+  assert.ok(new Set(L.LEVELS.filter(l => l.kind === 'persona').map(l => l.struggle)).size >= 2, 'the struggle is not always the same tile');
+  assert.equal(L.judge(L.level('design-2-4'), { beat: 2, changes: ['testgroup', 'passcode'] }).fails.join(), 'moment');
+  // shared Design Lab personas evidence a different standard per band; the Pro desk only builds toward 2-AP-10
+  assert.equal(L.cstaOf(L.level('design-1'), '1b').join(), '1B-IC-19'); assert.equal(L.cstaOf(L.level('design-1'), '2').join(), '2-CS-01,2-IC-21');
+  assert.equal(L.cstaOf(L.level('fixit-2-1'), '2').join(), '2-CS-03'); assert.equal(L.level('fixit-2-1').csta2.join(), '2-AP-10');
+  // the frozen app: a restart is a bigger fix that also works (it costs the star, not the ticket)
+  const fr = L.judge(L.level('fixit-1b-4'), { checks: ['restart'] }); assert.ok(fr.ok && !fr.good && fr.cost === 4 && fr.path[0].hit, JSON.stringify(fr));
+  // the noise meter sends its log to the laptop through the cable port (2-CS-02: collect and exchange)
+  assert.ok(L.level('gadget-4').needs.some(n => n.cat === 'connection') && L.level('gadget-4').sol.picked.includes('port'));
   const px = L.level('bits-2-4'); assert.ok(!L.judge(px, { grid: ['0120', '1331', '1331', '0110'], toggles: 21 }).ok, 'a gray level off by one fails');
   const wire = L.level('parts-3');
   assert.ok(!L.judge(wire, { wires: [['touch', 'processor']], edits: 0 }).ok);
@@ -148,6 +167,7 @@ test('inside-the-machine: quest codes are four digits and round-trip for every c
   }
   assert.equal(JSON.stringify(L.parseCode('0100')), JSON.stringify({ chapter: null, band: '1b', mode: 'play', level: 0 }), '0 = the map');
   assert.equal(L.parseCode('12'), null); assert.equal(L.parseCode('9100').chapter, null);
+  assert.equal(L.parseCode('3110'), null, 'mode 1 (debug) belongs to another game'); assert.equal(L.parseCode('3120'), null, 'mode 2 (maker) too');
   assert.equal(L.codeFor({ chapter: 'fixit', band: '2', mode: 'play', level: 0 }), '3200');
   assert.equal(L.codeFor({ chapter: 'gadget', band: '2', mode: 'play', level: 0 }), '5200');
 });
@@ -156,6 +176,9 @@ test('inside-the-machine: en.json is exactly the English the game shows (level t
   const en = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/cs-quest/inside-the-machine/en.json'), 'utf8')).strings;
   const lits = new Set();
   for (const m of MODULE.matchAll(/\btr\((['"])((?:\\.|(?!\1)[^\\\n])+)\1/g)) lits.add(m[2].replace(/\\'/g, "'").replace(/\\"/g, '"'));
+  // plural(n, 'one form', 'other form') and the RULES table are translated texts too
+  for (const m of MODULE.matchAll(/\bplural\([^,]+,\s*'([^'\n]+)',\s*'([^'\n]+)'\)/g)) { lits.add(m[1]); lits.add(m[2]); }
+  const rules = /const RULES = \{([\s\S]*?)\};/.exec(MODULE); for (const m of rules[1].matchAll(/: '([^'\n]+)'/g)) lits.add(m[1]);
   const want = new Set([...L.strings(), ...lits]);
   const have = new Set(en);
   assert.equal(en.length, have.size, 'no duplicates');
@@ -313,7 +336,8 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
       const pick = await T(frame, 'dailyPick', '2'); assert.ok(L.level(pick.id) && L.level(pick.id).bands.includes('2'), JSON.stringify(pick));
       assert.deepEqual(await T(frame, 'dailyPick', '2'), pick, 'deterministic for the day');
-      const before = (await T(frame, 'scores')).length;
+      const before = (await T(frame, 'scores')).length, starsBefore = JSON.stringify((await T(frame, 'save')).stars);
+      assert.ok(L.levelsFor(L.level(pick.id).ch, '2').indexOf(L.level(pick.id)) === 0 || (await T(frame, 'save')).stars['2:' + L.levelsFor(L.level(pick.id).ch, '2')[0].id] || L.level(pick.id).ch === 'parts', 'the daily comes from a started chapter, or the first chapter');
       s = await T(frame, 'daily'); assert.equal(s.daily, pick.day); assert.equal(s.lesson, false);
       assert.ok(L.level(s.levelId).bands.includes(s.band));
       await T(frame, 'answer', solOf(s.levelId));
@@ -324,6 +348,7 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       await shot('daily');
       assert.equal((await T(frame, 'scores')).length, before, 'a daily level is not lesson progress');
       assert.equal((await T(frame, 'save')).daily.day, pick.day);
+      assert.equal(JSON.stringify((await T(frame, 'save')).stars), starsBefore, 'a daily keeps its stars to itself: no chapter level is filled in');
       await T(frame, 'closeDialog');
       await frame.waitForFunction(() => window.__brbTest.state().screen === 'map');
       assert.ok(await frame.$('.im-daily'), 'the daily tile on the map');
@@ -338,6 +363,41 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       assert.equal(await T(frame, 'code', '1100'), true);
       s = await T(frame, 'state'); assert.equal(s.chapter, 'parts'); assert.equal(s.band, '1b'); assert.equal(s.lesson, true); assert.equal(s.lock, false);
       assert.equal(await T(frame, 'code', '7777'), false, 'no seventh chapter');
+      assert.equal(await T(frame, 'code', '3110'), false, 'a debug-mode code belongs to another game');
+      // an unlocked class quest follows the chapter the kid picks on the map: the pill, the label noun and the gradebook agree
+      await T(frame, 'map'); await frame.waitForFunction(() => window.__brbTest.state().screen === 'map');
+      await frame.evaluate(() => { [...document.querySelectorAll('.im-chap')].find(t => /Fix-It/.test(t.textContent)).click(); });
+      await frame.evaluate(() => { [...document.querySelectorAll('.ok-btn')].find(b => b.textContent.trim() === 'Play').click(); });
+      await frame.waitForFunction(() => window.__brbTest.state().screen === 'play');
+      s = await T(frame, 'state'); assert.equal(s.chapter, 'fixit'); assert.deepEqual(s.quest, { ch: 'fixit', band: '1b' }); assert.equal(s.lesson, true);
+      assert.match(await frame.evaluate(() => document.querySelector('.im-play .im-pill').getAttribute('aria-label')), /^Level \d · Class quest: Fix-It Desk · Explorer$/);
+      if (s.modal) await T(frame, 'closeDialog');
+      await T(frame, 'answer', solOf(s.levelId)); await T(frame, 'closeDialog'); await frame.waitForFunction(() => document.querySelector('.im-modal .im-check-tiles')); await T(frame, 'check', 0);
+      await frame.waitForFunction(() => window.__brbTest.state().modal === false);
+      s = await T(frame, 'state'); assert.match(s.label, /^\d\/7 tickets, \d+ stars, 1\/1 checks$/, 'the label names the chapter being played: ' + s.label);
+      await T(frame, 'closeDialog');
+      // the third hint costs a star, the kid is warned after the second, and the stars card says what was missed
+      for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
+      s = await T(frame, 'start', { chapter: 'parts', band: '1b', level: 3, seed: 4 });
+      assert.equal(await frame.evaluate(() => document.querySelector('.im-rule').textContent), 'Second star: no wire taken out.');
+      await T(frame, 'hint'); await T(frame, 'hint');
+      assert.match(await frame.evaluate(() => document.querySelector('.im-panel [role=status]').textContent), /One more hint will cost a star\.$/);
+      assert.match(await frame.evaluate(() => document.querySelector('.im-hintbtn').textContent), /costs a star/);
+      await T(frame, 'hint');
+      assert.match(await frame.evaluate(() => document.querySelector('.im-panel [role=status]').textContent.trim()), /^One missing wire is drawn for you\./, 'hint 3 says what it did');
+      await T(frame, 'tap', 'processor'); await T(frame, 'tap', 'screen'); await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); });   // the hint drew the first wire; the kid adds the second
+      await frame.waitForFunction(() => document.querySelector('.ok-win .im-why'));
+      assert.equal(await frame.evaluate(() => document.querySelector('.ok-win .im-why').textContent), 'Third star next time: no third hint.');
+      s = await T(frame, 'state'); assert.equal(s.hint, 3);
+      // the Design Lab: the key is the moment Tao is locked out (the fourth beat), and a restart also un-freezes the app
+      await T(frame, 'next'); for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
+      s = await T(frame, 'start', { chapter: 'design-lab', band: '2', level: 4, seed: 4 }); await T(frame, 'tap', 1); s = await T(frame, 'state'); assert.equal(s.fails, 1, 'the design-flaw narration is not the moment');
+      await T(frame, 'tap', 3); await T(frame, 'tap', 'testgroup'); await T(frame, 'tap', 'passcode'); await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); });
+      s = await T(frame, 'state'); assert.equal(s.done, true, 'the locked-out moment plus the two best changes solve it');
+      for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
+      s = await T(frame, 'start', { chapter: 'fixit', band: '1b', level: 4, seed: 4 }); await T(frame, 'tap', 'restart');
+      s = await T(frame, 'state'); const vr = await T(frame, 'verdict'); assert.ok(s.done && vr.ok && !vr.good && vr.cost === 4, 'fixit-1b-4: a restart fixes the frozen app without the star');
+      for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
       if (lang === 'ar') { assert.equal(await frame.evaluate(() => document.getElementById('im').dir), 'rtl'); assert.equal(await frame.evaluate(() => document.querySelector('.im-slots') === null), true); }
       assert.deepEqual(errors, [], 'no page errors'); assert.deepEqual(consoleErrors, [], 'no console errors');
       assert.deepEqual(messages.filter(m => /Uncaught|TypeError|ReferenceError/.test(m)), [], 'no warnings that are really errors');
@@ -364,6 +424,7 @@ test('inside-the-machine: BRB.params lock a lesson (chapter, band, lock) and the
       await T(frame, 'check', 0);
       await frame.waitForFunction(() => document.querySelector('.ok-win'));
       s = await T(frame, 'state'); assert.match(s.label, LABEL, s.label);
+      if (i === 1) { const w = await frame.evaluate(() => { const c = document.querySelector('.ok-win .ok-card'), n = document.querySelector('.ok-win .ok-hot'); return { fits: c.scrollHeight <= c.clientHeight, nextBottom: n.getBoundingClientRect().bottom, portrait: !!c.querySelector('canvas') }; }); assert.ok(w.fits && w.nextBottom <= 390 && !w.portrait, 'landscape phone: the stars card fits with Next on screen ' + JSON.stringify(w)); }
       await T(frame, 'next');
       await frame.waitForFunction(() => !document.querySelector('.ok-win'));
     }
