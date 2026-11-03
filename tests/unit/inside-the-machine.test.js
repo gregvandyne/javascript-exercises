@@ -25,15 +25,16 @@ const ctx = vm.createContext({ window: {} });
 for (const m of HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], ctx);
 const L = ctx.window.InsideTheMachineLevels;
 const MODULE = HTML.slice(HTML.indexOf('<script type="module">'));
-// chapters and level counts per band from the contract (chapters still to come are listed with built: false)
+// chapters and level counts per band from the contract
 const PLAN = [
-  { id: 'parts', '1b': 6, '2': 6, csta: { '1b': ['1B-CS-01'], '2': ['1B-CS-01'] }, built: true },
-  { id: 'hw-sw', '1b': 5, '2': 5, csta: { '1b': ['1B-CS-02'], '2': ['1B-CS-02'] }, built: true },
-  { id: 'fixit', '1b': 7, '2': 7, csta: { '1b': ['1B-CS-03'], '2': ['2-CS-03'] }, built: true },
-  { id: 'bits', '1b': 5, '2': 7, csta: { '1b': ['1B-CS-02'], '2': ['2-DA-07'] }, built: false },
-  { id: 'gadget', '1b': 0, '2': 5, csta: { '2': ['2-CS-02', '2-CS-01'] }, built: false },
-  { id: 'design-lab', '1b': 3, '2': 5, csta: { '1b': ['1B-IC-19'], '2': ['2-CS-01', '2-IC-21'] }, built: false },
+  { id: 'parts', '1b': 6, '2': 6, csta: { '1b': ['1B-CS-01'], '2': ['1B-CS-01'] } },
+  { id: 'hw-sw', '1b': 5, '2': 5, csta: { '1b': ['1B-CS-02'], '2': ['1B-CS-02'] } },
+  { id: 'fixit', '1b': 7, '2': 7, csta: { '1b': ['1B-CS-03'], '2': ['2-CS-03'] } },
+  { id: 'bits', '1b': 5, '2': 7, csta: { '1b': ['1B-CS-02'], '2': ['2-DA-07'] } },
+  { id: 'gadget', '1b': 0, '2': 5, csta: { '2': ['2-CS-02', '2-CS-01'] } },
+  { id: 'design-lab', '1b': 3, '2': 5, csta: { '1b': ['1B-IC-19'], '2': ['2-CS-01', '2-IC-21'] } },
 ];
+const KINDS = ['tap', 'pick', 'wire', 'sort', 'order', 'ticket', 'flow', 'switches', 'pixels', 'rgb', 'bin', 'persona'];
 
 test('inside-the-machine: the file is a kit 1.1.2 game that passes the scanner, with its metadata', () => {
   assert.ok(HTML.startsWith('<title>Inside the Machine</title>'));
@@ -54,15 +55,21 @@ test('inside-the-machine: JSON l10n has every non-English description', { skip: 
   for (const l of ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) assert.ok(META.l10n[l] && META.l10n[l].description, `description in ${l}`);
 });
 
-test('inside-the-machine: the chapter table matches the contract and the built chapters have every level', () => {
+test('inside-the-machine: the chapter table matches the contract and every chapter has every level in both bands', () => {
   for (const p of PLAN) {
     const ch = L.chapter(p.id); assert.ok(ch, p.id);
     assert.equal(ch.index, PLAN.indexOf(p) + 1, `${p.id} index`);
     for (const band of ['1b', '2']) {
       if (p[band]) assert.equal(JSON.stringify(ch.csta[band]), JSON.stringify(p.csta[band]), `${p.id} ${band} standards`); else assert.ok(!ch.bands.includes(band), `${p.id} has no ${band} band`);
-      if (p.built) assert.equal(L.levelsFor(p.id, band).length, p[band], `${p.id} ${band} level count`);
+      assert.equal(L.levelsFor(p.id, band).length, p[band], `${p.id} ${band} level count`);
+      // a level's standards sit inside its chapter's standards for one of its bands (CI clause f')
+      for (const l of L.levelsFor(p.id, band)) for (const id of l.csta) assert.ok(Object.values(ch.csta).some(list => list.includes(id)), `${l.id}: ${id} belongs to ${p.id}`);
     }
   }
+  assert.equal(L.LEVELS.length, 48, 'six chapters, forty-eight level records');
+  for (const k of KINDS) assert.ok(L.LEVELS.some(l => l.kind === k), `a level of kind ${k}`);
+  assert.equal(L.levelsFor('design-lab', '2').map(l => l.id).join(' '), 'design-1 design-2 design-2-3 design-2-4 design-2-5', 'Pro briefs 3-5 follow the two shared personas');
+  assert.ok(L.levelsFor('fixit', '2').every(l => l.kind === 'flow'), 'Pro Fix-It builds the flowchart first');
   assert.equal(JSON.stringify(L.chapter('parts').then['1b']), JSON.stringify({ ch: 'hw-sw', from: 1, to: 3 }), 'Explorer 5.1 continues into Hardware or Software 1-3');
   assert.equal(L.MODES[0], 'play'); assert.equal(L.MODES[3], 'projector');
 });
@@ -80,8 +87,24 @@ test('inside-the-machine: every level is solved by its sol with the second star,
     if (l.starter) assert.ok(!L.judge(l, l.starter).ok, `${l.id}: the starter does not pass`);
     if (l.kind === 'ticket' || l.kind === 'flow') { assert.equal(l.par, L.parCost(l), `${l.id}: par is the cheapest-first cost`); assert.ok(v.cost <= l.par, `${l.id}: sol within par`); }
     else assert.ok(l.par >= L.moves(l, l.sol), `${l.id}: par >= moves(sol)`);
-    if (l.kind === 'pixels') assert.equal(l.par, l.target.join('').replace(/0/g, '').length, `${l.id}: par is the number of lit pixels`);
-    if (l.kind === 'bin') { const cheapest = Math.min(...[l.sol].map(a => L.moves(l, a))); assert.equal(l.par, cheapest, `${l.id}: par is the cost of the sol`); assert.ok(L.judge(l, { picked: [] }).met === 0 && L.judge(l, { picked: l.sol.picked.slice(0, 2) }).met < L.judge(l, l.sol).met, `${l.id}: the score is monotone in the needs met`); }
+    if (l.kind === 'pixels') assert.equal(l.par, l.target.join('').split('').reduce((n, d) => n + +d, 0), `${l.id}: par is the number of taps the picture needs`);
+    if (l.kind === 'bin') {
+      assert.equal(l.par, L.moves(l, l.sol), `${l.id}: par is the cost of the sol`);
+      // no cheaper build meets the brief: every subset of the bin that is cheaper fails a need or the budget
+      const ids = l.parts.map(p => p.id); let cheaper = 0;
+      for (let mask = 1; mask < (1 << ids.length); mask++) { const picked = ids.filter((_, i) => mask & (1 << i)); const v = L.judge(l, { picked, imps: l.sol.imps }); if (v.built && v.totals.cost < l.par) cheaper++; }
+      assert.equal(cheaper, 0, `${l.id}: no build cheaper than par meets the brief`);
+      assert.ok(L.judge(l, { picked: [] }).met === 0 && L.judge(l, { picked: l.sol.picked.slice(0, 2) }).met < L.judge(l, l.sol).met, `${l.id}: the score is monotone in the needs met`);
+      assert.ok(l.sim.length >= 3 && l.quotes.length === 3 && l.improvements.length === 6 && l.best.length >= 2 && l.best.every(id => l.improvements.some(c => c.id === id)), `${l.id}: a sim, three quotes, six improvements, the best among them`);
+      for (const c of l.improvements) assert.ok(c.text && c.why, `${l.id}: improvement ${c.id} has its trade-off line`);
+      const built = L.judge(l, { picked: l.sol.picked, imps: [] }); assert.ok(built.built && !built.ok, `${l.id}: a good build still needs two improvements`);
+      const worst = l.improvements.filter(c => !l.best.includes(c.id)).slice(0, 2).map(c => c.id); assert.ok(!L.judge(l, { picked: l.sol.picked, imps: worst }).ok, `${l.id}: two poor improvements fail`);
+      const one = [l.best[0], worst[0]]; const v1 = L.judge(l, { picked: l.sol.picked, imps: one }); assert.ok(v1.ok && !v1.good, `${l.id}: one good improvement passes without the star`);
+    }
+    if (l.kind === 'persona') { assert.equal(l.changes.length, 9, `${l.id}: nine changes`); assert.ok(l.beats.length === 3 && l.struggle >= 0 && l.struggle < 3, `${l.id}: three beats`); for (const c of l.changes) assert.ok(c.text && c.helps, `${l.id}: change ${c.id} says who else it helps`); assert.ok(!L.judge(l, { beat: (l.struggle + 1) % 3, changes: l.best.slice(0, 2) }).ok, `${l.id}: the wrong moment fails`); assert.ok(!L.judge(l, { beat: l.struggle, changes: l.changes.filter(c => !l.best.includes(c.id)).slice(0, 2).map(c => c.id) }).ok, `${l.id}: two useless changes fail`); }
+    if (l.kind === 'pick') for (const r of l.rounds) { assert.equal(r.tiles.length, 3, `${l.id}: three tiles a round`); if (r.show && r.show.bits) assert.ok(r.show.on >= 0 && r.show.on < (1 << r.show.bits), `${l.id}: the bit picture fits its cards`); if (r.show && r.show.rgb) assert.ok(r.show.rgb.length === 3 && r.show.rgb.every(x => x >= 0 && x <= 255)); }
+    if (l.kind === 'switches') for (const r of l.rounds) assert.ok(r.target >= 0 && r.target < (1 << (l.bits || 5)), `${l.id}: ${r.target} fits ${l.bits || 5} bits`);
+    if (l.kind === 'rgb') assert.ok(l.sol.rgb.every((v, i) => Math.abs(v - l.target[i]) <= l.tol && (v - l.start[i]) % l.step === 0), `${l.id}: the sol is reachable with the stepper and within tolerance`);
     assert.equal(l.hints.length, 3, `${l.id}: three hint tiers`); l.hints.forEach(h => assert.ok(h && typeof h === 'string'));
     assert.ok(l.check && l.check.q && l.check.tiles.length === 3 && l.check.answer >= 0 && l.check.answer < 3, `${l.id}: a 3-tile check`);
     if (l.kind === 'ticket' || l.kind === 'flow') {
@@ -91,10 +114,16 @@ test('inside-the-machine: every level is solved by its sol with the second star,
       const bad = L.judge(l, l.kind === 'flow' ? { flow: [], swaps: [] } : { checks: [] }); assert.ok(!bad.ok, `${l.id}: doing nothing does not fix it`);
     }
   }
-  for (const ch of L.CHAPTERS) for (const band of ch.bands) { const first = L.levelsFor(ch.id, band)[0]; if (first) assert.ok(first.learn && first.learn.title && first.learn.text, `${ch.id} ${band}: level 1 has a learn card`); }
+  for (const ch of L.CHAPTERS) for (const band of ch.bands) { const first = L.levelsFor(ch.id, band)[0]; assert.ok(first && first.learn && first.learn.title && first.learn.text, `${ch.id} ${band}: level 1 has a learn card`); }
+  assert.ok(L.LEVELS.filter(l => l.starter).length >= 7, 'starters exist on the wire, order and gadget levels');
 });
 
 test('inside-the-machine: a wrong answer is marked wrong and an expensive path loses the second star', () => {
+  const g = L.level('gadget-3');
+  assert.ok(!L.judge(g, { picked: ['door', 'buzzer', 'button', 'smallbatt', 'cpu'], imps: g.sol.imps }).ok, 'a buzzer is not loud enough for the door alarm');
+  assert.ok(!L.judge(g, { picked: ['door', 'siren', 'button', 'bigbatt', 'cpu'], imps: g.sol.imps }).ok, 'the big battery does not fit a pocket');
+  const d = L.level('design-2-4'); assert.ok(L.judge(d, { beat: 1, changes: ['testgroup', 'camera'], wrong: 0 }).ok && !L.judge(d, { beat: 1, changes: ['testgroup', 'camera'], wrong: 0 }).good, 'one best change passes without the star');
+  const px = L.level('bits-2-4'); assert.ok(!L.judge(px, { grid: ['0120', '1331', '1331', '0110'], toggles: 21 }).ok, 'a gray level off by one fails');
   const wire = L.level('parts-3');
   assert.ok(!L.judge(wire, { wires: [['touch', 'processor']], edits: 0 }).ok);
   assert.ok(!L.judge(wire, { wires: [['touch', 'processor'], ['processor', 'screen'], ['speaker', 'camera']], edits: 0 }).ok, 'an extra wire fails');
@@ -227,15 +256,51 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       s = await T(frame, 'state'); assert.equal(s.done, true);
       const v2 = await T(frame, 'verdict'); assert.ok(v2.ok && v2.good && v2.path.some(p => p.kind === 'swap' && p.hit), JSON.stringify(v2));
       // one level of every other kind: the switch board, the pixel grid, the RGB panel, the parts bin, the Design Lab
-      for (const [chapter, band, level, id] of [['bits', '1b', 1, 'bits-1b-1'], ['bits', '1b', 2, 'bits-1b-2'], ['bits', '2', 2, 'bits-2-2'], ['gadget', '2', 1, 'gadget-1'], ['design-lab', '1b', 1, 'design-1b-1']]) {
+      const played = size.width > 1000 ? [['bits', '1b', 1, 'bits-1b-1'], ['bits', '1b', 2, 'bits-1b-2'], ['bits', '1b', 3, 'bits-1b-3'], ['bits', '1b', 5, 'bits-1b-5'], ['bits', '2', 2, 'bits-2-2'], ['bits', '2', 4, 'bits-2-4'], ['bits', '2', 6, 'bits-2-6'], ['gadget', '2', 1, 'gadget-1'], ['gadget', '2', 4, 'gadget-4'], ['design-lab', '1b', 1, 'design-1'], ['design-lab', '2', 4, 'design-2-4']]
+        : [['bits', '1b', 4, 'bits-1b-4'], ['bits', '2', 3, 'bits-2-3'], ['bits', '2', 5, 'bits-2-5'], ['bits', '2', 7, 'bits-2-7'], ['gadget', '2', 2, 'gadget-2'], ['design-lab', '1b', 3, 'design-1b-3'], ['design-lab', '2', 5, 'design-2-5']];
+      for (const [chapter, band, level, id] of played) {
         for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
         s = await T(frame, 'start', { chapter, band, level, seed: 4 }); assert.equal(s.levelId, id);
         await shot(id);
-        await T(frame, 'answer', solOf(id));
+        if (id === 'gadget-2') {
+          // the gadget: build, a ten-second test run, three users, two improvements
+          for (const pid of solOf(id).picked) await T(frame, 'tap', pid);
+          await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); });
+          await frame.waitForFunction(() => window.__brbTest.state().viewPhase === 'quotes');
+          assert.equal((await frame.$$('.im-fv')).length, 3, 'three user quotes on the board');
+          await shot('gadget-quotes');
+          for (const iid of solOf(id).imps) await T(frame, 'tap', iid);
+          await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); });
+        } else await T(frame, 'answer', solOf(id));
         s = await T(frame, 'state'); assert.equal(s.done, true, `${id} solved by its sol in the browser`);
         const vk = await T(frame, 'verdict'); assert.ok(vk.ok && vk.good, `${id}: ${JSON.stringify(vk)}`);
+        if (id === 'gadget-4' || id === 'design-2-4') { assert.ok(s.modal, `${id}: the verdict card`); assert.equal((await frame.$$('.im-modal .im-fv')).length, 2, `${id}: both choices explained`); await shot(id + '-verdict'); }
       }
       await T(frame, 'closeDialog');
+      // the Daily Crew Challenge: the same level all day, its own card, no lesson progress
+      for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
+      const pick = await T(frame, 'dailyPick', '2'); assert.ok(L.level(pick.id) && L.level(pick.id).bands.includes('2'), JSON.stringify(pick));
+      assert.deepEqual(await T(frame, 'dailyPick', '2'), pick, 'deterministic for the day');
+      const before = (await T(frame, 'scores')).length;
+      s = await T(frame, 'daily'); assert.equal(s.daily, pick.day); assert.equal(s.lesson, false);
+      assert.ok(L.level(s.levelId).bands.includes(s.band));
+      await T(frame, 'answer', solOf(s.levelId));
+      s = await T(frame, 'state'); assert.equal(s.done, true, 'the daily level solved');
+      if (['ticket', 'flow', 'persona', 'bin'].includes(L.level(s.levelId).kind)) { await T(frame, 'closeDialog'); await frame.waitForTimeout(80); }
+      assert.ok(await frame.$('.im-modal'), 'the daily card');
+      assert.ok((await frame.textContent('.im-modal h2')).length > 0);
+      await shot('daily');
+      assert.equal((await T(frame, 'scores')).length, before, 'a daily level is not lesson progress');
+      assert.equal((await T(frame, 'save')).daily.day, pick.day);
+      await T(frame, 'closeDialog');
+      await frame.waitForFunction(() => window.__brbTest.state().screen === 'map');
+      assert.ok(await frame.$('.im-daily'), 'the daily tile on the map');
+      // a full-star chapter crowns Gizmo
+      s = await T(frame, 'state'); assert.deepEqual(s.wear, ['glasses']);
+      assert.equal(await T(frame, 'grant', L.levelsFor('hw-sw', '1b').map(l => l.id), '1b'), true, 'a new crown changes the look');
+      s = await T(frame, 'state'); assert.equal(s.crowns, 1); assert.deepEqual(s.wear, ['glasses', 'crown']);
+      await T(frame, 'start', { band: '1b' }); assert.ok(await frame.$('.im-chap .im-crown'), 'the crown on the Explorer chapter tile');
+      await shot('crown');
       // the quest keypad: 1 1 0 0 opens Parts & Jobs, Explorer; a map code goes to the map
       await T(frame, 'closeDialog'); await frame.waitForFunction(() => window.__brbTest.state().modal === false);
       assert.equal(await T(frame, 'code', '1100'), true);
