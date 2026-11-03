@@ -13,6 +13,8 @@ import { availableCodes } from '../i18n/index.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
 import { liveOn } from '../services/classlive-sessions.js';
+import { liveGameOf } from '../live/live-games.js';
+import { isStaff } from '../services/schools.js';
 
 export const router = Router();
 
@@ -63,10 +65,13 @@ router.get('/', (req, res) => {
   // as signed out: a parent who tried a game keeps their door.
   // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>`
+  // "Join a game" (Oomba Live): a code on the class's big screen. Signed out it sits under the doors; signed in, players
+  // (not school staff, who host) get it above the featured game.
+  const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
+  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${isStaff(u) ? '' : html`<div class="home-join-in">${joinDoor}</div>`}`
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       ${homeDoors(req)}
-      ${liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : ''}
+      ${joinDoor}
       <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
   const body = html`${intro}
   <div id="play" class="home-play">
@@ -76,7 +81,7 @@ router.get('/', (req, res) => {
       <h2 class="hero-title">${hero.title}</h2>
       <p>${hero.description.split('. ')[0] + '.'}</p>
       <div class="row">
-        <a class="btn btn-big" href="/play/${hero.slug}">▶ ${t('home.hero.play')}</a>
+        <a class="btn btn-big" href="${liveOn() && liveGameOf(hero) ? `/g/${hero.slug}` : `/play/${hero.slug}`}">▶ ${t('home.hero.play')}</a>
         <a class="btn btn-ghost" href="/g/${hero.slug}">${t('home.hero.more')}</a>
       </div>
     </div>

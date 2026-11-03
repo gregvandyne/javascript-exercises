@@ -165,9 +165,11 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
   const playNow = out ? html`<a class="btn btn-hot playnow" href="${(req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play'}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
-  // Oomba Live: "Join a game" for signed-out visitors (a class on the big screen gives them a code); wide screens only,
-  // phones get it on the home page.
-  const joinNow = out && liveOn() ? html`<a class="btn joinnow" href="/join"><span aria-hidden="true">🎟️</span> ${t('live.entry.join')}</a>` : '';
+  // Oomba Live: "Join a game" on every page for anyone who might be given a code (not school staff or the platform admin,
+  // who host). Signed in
+  // it is a round 🎟️ button on narrow bars and grows its words on wide ones; signed out (the bar also has "Play now") it
+  // shows on wide screens only, and phones get the big door on the home page.
+  const joinNow = !staff && shell.role !== 'admin' && liveOn() ? html`<a class="btn joinnow${out ? ' joinnow-out' : ''}" href="/join" aria-label="${t('live.entry.join')}"><span aria-hidden="true">🎟️</span><span class="joinnow-t" aria-hidden="true">${t('live.entry.join')}</span></a>` : '';
   const act = currentTab(shell, active);
   const signIn = t('layout.signIn');
   const cur = k => (k === act || (k === 'grownups' && GROWNUP_PAGES.includes(act)) ? raw('aria-current="page"') : '');

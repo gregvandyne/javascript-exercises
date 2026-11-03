@@ -4993,7 +4993,13 @@
       "join": "Unirse a un juego",
       "joinText": "¿Tienes un código de juego de tu profe? Escríbelo aquí.",
       "joinShort": "¿Tienes un código? Escríbelo aquí.",
-      "studioAskText": "Convierte esto en un juego de clase en vivo con Oomba Live: toda la clase juega a la vez y se ve, y el profe ve los puntos."
+      "studioAskText": "Convierte esto en un juego de clase en vivo con Oomba Live: toda la clase juega a la vez y se ve, y el profe ve los puntos.",
+      "badge": "En vivo",
+      "badgeLong": "Juego en vivo para la clase",
+      "howJoin": "Tu profe muestra un código en la pantalla. Escríbelo aquí para unirte.",
+      "teacherHost": "¿Eres docente? Organízalo en vivo con tu clase",
+      "solo": "Practicar solo",
+      "joinGo": "Unirme"
     },
     "check": {
       "live_pack": "todavía no carga el paquete en vivo",

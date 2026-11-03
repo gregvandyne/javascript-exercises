@@ -4994,7 +4994,13 @@
       "join": "Entra in un gioco",
       "joinText": "Hai un codice di gioco dal tuo insegnante? Scrivilo qui.",
       "joinShort": "Hai un codice? Scrivilo qui.",
-      "studioAskText": "Trasformalo in un gioco di classe dal vivo con Oomba Live: tutta la classe gioca insieme e si vede, e l’insegnante vede i punteggi."
+      "studioAskText": "Trasformalo in un gioco di classe dal vivo con Oomba Live: tutta la classe gioca insieme e si vede, e l’insegnante vede i punteggi.",
+      "badge": "Live",
+      "badgeLong": "Gioco live per la classe",
+      "howJoin": "Il tuo insegnante mostra un codice alla lavagna. Scrivilo qui per entrare.",
+      "teacherHost": "Sei un insegnante? Avvialo live con la tua classe",
+      "solo": "Allenati da solo",
+      "joinGo": "Entra"
     },
     "check": {
       "live_pack": "non carica ancora il pacchetto dal vivo",

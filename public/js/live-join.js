@@ -26,9 +26,15 @@ function say(el, code2, extra) {
   if (extra) el.append(' ', extra);
 }
 
-// The code from a QR (/join#1234567): into the box, then out of the address bar.
-const fromHash = (location.hash || '').replace(/^#/, '').replace(/[\s-]/g, '');
-if (/^\d{7}$/.test(fromHash) && input) { input.value = fromHash; history.replaceState(null, '', location.pathname + location.search); }
+// The code from a QR (/join#1234567): into the box, then out of the address bar. From a game page's own "Join" box
+// (/join#go=1234567) the player already pressed Join, so it goes straight on.
+const rawHash = (location.hash || '').replace(/^#/, '');
+const goNow = rawHash.startsWith('go=');
+const fromHash = rawHash.replace(/^go=/, '').replace(/[\s-]/g, '');
+if (/^\d{7}$/.test(fromHash) && input) {
+  input.value = fromHash; history.replaceState(null, '', location.pathname + location.search);
+  if (goNow && form) queueMicrotask(() => (form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true }))));
+}
 
 form && form.addEventListener('submit', e => {
   const v = String(input.value || '').replace(/[\s-]/g, '');

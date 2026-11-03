@@ -917,9 +917,29 @@ ol.steps li{margin-bottom:var(--s2)}
   .printdoc .panel{border:1px solid #999;box-shadow:none;background:#fff!important;break-inside:avoid}
   .printdoc a{color:#000;text-decoration:underline}
 }
-/* Oomba Live: "Join a game" in the signed-out top bar (wide screens; phones have it on the home page) */
-.joinnow{display:none;flex:none;white-space:nowrap}
-@media (min-width:1500px){.joinnow{display:inline-flex}}
+/* Oomba Live: "Join a game" in the top bar. Signed in: a round 🎟️ button, with its words from 1400px. Signed out (the
+   bar also ends with "Play now"): wide screens only; phones have the big door on the home page. */
+.joinnow{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;white-space:nowrap;width:44px;min-height:44px;padding:0;border-radius:999px;font-size:1.15rem}
+.joinnow-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media (min-width:1400px){.joinnow:not(.joinnow-out){width:auto;padding:0 14px;font-size:1rem}.joinnow:not(.joinnow-out) .joinnow-t{position:static;width:auto;height:auto;overflow:visible;clip:auto}}
+.joinnow-out{display:none}
+/* Phones: with the round 🎟️ in the bar, search is the round 🔎 button too, so the bar never overflows (320-600px). */
+@media (max-width:360px){.topbar:has(.joinnow:not(.joinnow-out)){gap:4px;padding-inline:10px}}
+@media (max-width:600px){.topbar:has(.joinnow:not(.joinnow-out)) .topsearch{display:none}.topbar:has(.joinnow:not(.joinnow-out)) .topsearch-btn{display:flex}}
+@media (min-width:1500px){.joinnow-out{display:inline-flex;width:auto;padding:0 14px;font-size:1rem}.joinnow-out .joinnow-t{position:static;width:auto;height:auto;overflow:visible;clip:auto}}
+.home-join-in{display:grid;margin:0 0 var(--s3)}
+.home-join-in .home-join{margin:0}
+/* An Oomba Live mode's card: a "Live" badge (top end of the cover) */
+.live-badge{position:absolute;z-index:2;inset-inline-end:8px;top:8px;padding:3px 9px;border-radius:999px;background:#d93a4a;color:#fff;font-size:.75rem;font-weight:900;letter-spacing:.02em;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+/* An Oomba Live mode's game page: join with a code, host it, practise alone */
+.livepanel{grid-column:2;margin:-6px 0 6px;padding:var(--s3);border-radius:18px;background:var(--card);border:2px solid var(--accent-line,var(--accent));box-shadow:var(--shadow);display:grid;gap:10px;max-width:520px}
+.livepanel-tag{margin:0;font-weight:900;font-size:1.05rem;color:var(--accent-ink)}
+.livepanel-how{margin:0}
+.livepanel-join{display:flex;gap:8px;flex-wrap:wrap}
+.livepanel-join .lv-code-input{flex:1 1 9ch;min-width:0;font-size:1.6rem;font-weight:800;letter-spacing:.12em;text-align:center;min-height:56px}
+.livepanel-join .btn{flex:0 0 auto}
+.livepanel .actions{margin:0}
+@media (max-width:640px){.gamehero .livepanel{grid-column:1/-1;max-width:none;margin:0}.livepanel-join .btn{flex:1 1 auto}}
 .home-join{flex:1 1 100%;min-width:0;display:grid;margin:var(--s3) 0 0}
 /* "Join a game": same card shape as the doors above, in the green button colour. */
 .door-join{background:var(--accent);color:var(--on-accent);border-color:var(--accent-press);box-shadow:0 4px 0 var(--accent-press)}

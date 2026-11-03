@@ -73,7 +73,8 @@ router.get('/join', (req, res, next) => {
   const q = req.query;
   if (q.code !== undefined || q.gerr || q.jerr || q.bad) {
     // A live code typed without the page script: it goes to the page's #fragment (never kept in an address again).
-    if (CODE_RE.test(digits(q.code))) return res.redirect(302, `/join#${digits(q.code)}`);
+    // go=1: from a game page's "Join" box, where the player already pressed Join (the join page goes straight on).
+    if (CODE_RE.test(digits(q.code))) return res.redirect(302, `/join#${q.go === '1' ? 'go=' : ''}${digits(q.code)}`);
     if (googleEnabled()) return next();   // a class code: the class flow (routes/google.js)
     return joinPage(req, res, { bad: true });
   }
