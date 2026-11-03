@@ -107,6 +107,7 @@
   .num { font-variant-numeric: tabular-nums; }
   .bars { display: flex; align-items: flex-end; gap: 6px; height: clamp(170px, 36vh, 420px); padding: 6px 4px 0; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); box-sizing: border-box; }
   .view.compact .bars { height: clamp(150px, 26vh, 360px); }
+  .bars.many { gap: 3px; } .bars.many .barcol { min-width: 34px; padding: 4px 1px 0; } .bars.many .barbtn .barl { font-size: .8em; }
   .barcol { flex: 1 1 0; min-width: 44px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; padding: 4px 2px 0; border-radius: 10px; cursor: pointer; }
   .barcol .barv { font-weight: 900; font-size: 1em; }
   .barcol .fill { width: 100%; max-width: 64px; min-height: 4px; height: calc(var(--h, 0) * 1%); background: var(--dd-bar); border: 3px solid var(--ok-edge); border-radius: 10px 10px 0 0; box-sizing: border-box; transition: height .3s ease; }
@@ -1375,7 +1376,7 @@ function seriesTable(level, st, g, target) {
 function barsView(level, st, g, view) {
   const data = view === 'group' ? E.groupCounts(level, st, st.groupBy) : (level.cats || level.model || level.tally ? E.series(level, st) : E.groupCounts(level, st, st.groupBy || level.groupBy));
   const max = Math.max(1, ...data.map(d => d[1]), level.build ? Math.max(...level.cats.map(c => c[1])) : 0);
-  const wrap = el('div', 'bars'); wrap.setAttribute('data-fit-dense', ''); wrap.setAttribute('role', 'img');
+  const wrap = el('div', 'bars' + (data.length >= 7 ? ' many' : '')); wrap.setAttribute('data-fit-dense', ''); wrap.setAttribute('role', 'img');
   const label = view === 'picto' ? tr('Pictograph') : view === 'group' ? tr('Counts by {col}', { col: tr((level.cols.find(c => c.id === st.groupBy) || {}).label || '') }) : tr('Bar chart');
   wrap.setAttribute('aria-label', label + ': ' + data.map(([c, v]) => `${trCell(c)} ${num(v)}`).join(', '));
   const scale = level.scale || 1;
