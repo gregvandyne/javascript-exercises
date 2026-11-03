@@ -27,6 +27,7 @@ import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady } from '../services/classlive-check.js';
 import { liveGameOf } from '../live/live-games.js';
 import { playData as ttsPlayData, frameData as ttsFrameData, listedGame as ttsListed } from './tts.js';
+import { parseParams, packParams, unpackParams, hasParams } from '../services/play-params.js';
 import * as ttsGames from '../services/tts-games.js';
 
 export const router = Router();
@@ -238,14 +239,19 @@ router.get('/play/:slug', (req, res) => {
     if (seat < 0 || m.state === 'ended' || m.gameId !== g.id) return res.redirect(`/play/${g.slug}`);
     inMatch = { id: m.id, seat };
   }
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}) }, 15 * 60);
+  // Lesson parameters (?chapter=&band=&mode=&level=&lock=, services/play-params.js): a lesson step's Play link says where
+  // the game opens. Only the five known keys with valid values go into the token (o), nothing else from the URL.
+  const o = packParams(parseParams(req.query));
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}) }, 15 * 60);
   const liked = games.userLiked(g.id, u && u.id);
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
   // AI voices (routes/tts.js): official games only, when TTS is on and a language is switched on; absent otherwise.
   const ttsData = ttsPlayData(u, g);
-  // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step.
+  // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step. Not for a
+  // hosted-live step (Quest Race, Would You Rather Live…): the teacher's live run writes that cell, so a hand-typed URL
+  // plays the game without the lesson context (services/progress.js hostedLive).
   const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
-  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
+  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
   const body = html`
   <div class="playbar">
     <a class="iconbtn" href="${lesson ? lesson.back : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
@@ -305,6 +311,8 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
+    // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
+    ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, only for official games with TTS on; absent otherwise (the SDK
     // then speaks with the device's voice exactly as before).
     ...(!preview && ttsFrameData(u, g) ? { tts: ttsFrameData(u, g) } : {}),

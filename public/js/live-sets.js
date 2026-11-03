@@ -67,7 +67,8 @@ if (form) {
   document.addEventListener('submit', async e => {
     if (e.target !== form) return;
     e.preventDefault(); e.stopImmediatePropagation();
-    const body = {}; for (const [k, v] of new FormData(form).entries()) body[k] = v;
+    // ticked boxes of one name (wyrTopic, bankBoard, atlasKind) go as a list, as app.js posts forms
+    const body = {}; for (const [k, v] of new FormData(form).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
     const btn = form.querySelector('[type=submit]'), err = form.querySelector('.form-err');
     btn.disabled = true; err.textContent = '';
     const go = async replace => {

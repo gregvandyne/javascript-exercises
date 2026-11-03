@@ -1,0 +1,1889 @@
+<title>Packet Post</title>
+<style>
+  /* Packet Post: Netville's post office, on the Oomba Kit. Only the game's own DOM pieces are styled here, with the
+     kit's variables (no color values of our own: the few accents are set from Oomba.color at start). */
+  .pp, .pp * { box-sizing: border-box; }
+  .pp { position: fixed; left: 0; right: 0; top: var(--ok-safe-top); bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 0 10px calc(8px + env(safe-area-inset-bottom)); pointer-events: none; font-size: 1em; line-height: 1.25; }
+  .pp > * { pointer-events: auto; }
+  .pp[hidden] { display: none; }
+  .pp.pp-proj { font-size: 1.3em; }
+  .pp-bar { display: flex; align-items: center; gap: 8px; width: min(100%, 1100px); flex: none; min-height: 40px; }
+  .pp-bar .pp-sp { flex: 1; min-width: 0; }
+  .pp-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge); font-weight: 800; max-width: 100%; min-width: 0; flex: 0 1 auto; }
+  .pp-bar .pp-pill.pp-grow { flex: 1 1 auto; }
+  .pp-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pp-pill svg { width: 22px; height: 22px; flex: none; }
+  .pp-pill.pp-wrap span { white-space: normal; line-height: 1.15; }
+  .ok-toast { top: calc(72px + env(safe-area-inset-top)); max-width: calc(100vw - 32px); }
+  .pp-ic { display: inline-flex; flex: none; }
+  .pp-main { display: flex; flex: 1; min-height: 0; width: min(100%, 1100px); gap: 10px; }
+  .pp-board { position: relative; flex: none; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; overflow: hidden; box-shadow: 0 5px 0 var(--ok-edge); }
+  .pp-panel { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: auto; padding: 2px; }
+  @media (orientation: portrait) { .pp-main { flex-direction: column; } .pp-board { width: 100%; flex: 0 0 min(46%, 420px); } }
+  @media (orientation: landscape) { .pp-board { width: 55%; height: 100%; } }
+  @media (orientation: portrait) { .pp-tools { order: 3; width: 100%; } }
+  @media (orientation: landscape) { .pp-tools { flex-direction: column; flex-wrap: wrap; height: 100%; width: auto; align-content: flex-start; margin-top: 0; padding-top: 0; } }
+  /* a phone on its side: the kit's HUD pills end at about 56px and this game never drops a banner outside a card, so its panels start right under the HUD */
+  @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-panel > .pp-h { display: none; } .pp-cipher { font-size: 1em; letter-spacing: .06em; } .pp-itemcard { padding: 6px 10px; } .pp-shift { font-size: 1.1em; } .pp-fill { gap: 6px; padding: 8px; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
+  .pp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
+  @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } .pp-board.pp-board-mid { flex: 0 0 min(36%, 300px); } }
+  @media (orientation: landscape) { .pp-board.pp-board-small { width: 38%; } }
+  @media (orientation: portrait) and (max-width: 520px) { .pp-board.pp-board-small, .pp-board.pp-board-card { display: none; } .pp-cipher { font-size: 1.05em; letter-spacing: .08em; } .pp-board.pp-board-wheel { flex: 0 0 min(38%, 360px); } .pp-say p { max-height: 6.6em; overflow-y: auto; overscroll-behavior: contain; } .pp-pxrow { display: flex; gap: 10px; align-items: center; flex: none; } .pp-pxrow .pp-h { flex: 1; min-width: 0; } }   /* a phone upright: the rule and order tiles need the room; the letter, phrase and sort cards move into the panel */
+  .pp-fillcard { display: flex; flex-direction: column; gap: 8px; flex: none; }
+  .pp-fillcard.pp-center { align-items: center; }
+  .pp-verdicts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; flex: none; }
+  .pp-verdicts .ok-btn { padding: 0 8px; min-width: 0; text-align: center; }
+  .pp-roads { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .pp-roads line { stroke: var(--pp-road); stroke-width: 12; stroke-linecap: round; }
+  .pp-roads line.pp-sealed { stroke: var(--pp-sealed); }
+  .pp-roads line.pp-closed { stroke-dasharray: 4 14; opacity: .55; }
+  .pp-roads line.pp-lit { stroke: var(--pp-lit); }
+  .pp-node { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 1; }
+  .pp-node .pp-ico { position: absolute; left: -23px; top: -23px; width: 46px; height: 46px; border-radius: 50%; background: var(--ok-card); border: 3px solid var(--ok-edge); display: grid; place-items: center; }
+  .pp-node .pp-ico svg { width: 26px; height: 26px; }
+  .pp-node.pp-house .pp-ico { background: var(--pp-house); }
+  .pp-node.pp-here .pp-ico { outline: 4px solid var(--pp-lit); outline-offset: 2px; }
+  .pp-node .pp-busy { position: absolute; right: -10px; top: -10px; width: 24px; height: 24px; border-radius: 50%; background: var(--pp-num); border: 2px solid var(--ok-edge); display: grid; place-items: center; }
+  .pp-node .pp-busy svg { width: 14px; height: 14px; }
+  .pp-node small { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); font-weight: 800; font-size: .72em; line-height: 1.05; background: var(--ok-card); border-radius: 8px; padding: 1px 6px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pp-node.pp-start small { left: -24px; transform: none; }
+  .pp-node.pp-end small { left: auto; right: -24px; transform: none; }
+  .pp-link { position: absolute; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
+    display: grid; place-items: center; padding: 0; cursor: pointer; font: inherit; font-weight: 800; box-shadow: 0 3px 0 var(--ok-edge); z-index: 2; }
+  .pp-link svg { width: 24px; height: 24px; }
+  .pp-link:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ok-edge); }
+  .pp-link.pp-ok { background: var(--pp-go); animation: pp-pulse 1.1s ease-in-out infinite; }
+  .pp-link.pp-closed { background: var(--pp-bad); }
+  .pp-link.pp-sealedb { background: var(--pp-sealed); }
+  .pp-link.pp-glow, .pp-tile.pp-glow, .pp-slotb.pp-glow { box-shadow: 0 0 0 6px var(--pp-lit), 0 3px 0 var(--ok-edge); }
+  .pp-pk { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 10px; border: 3px solid var(--ok-edge); background: var(--ok-card); display: grid; place-items: center; pointer-events: none; z-index: 3; }
+  .pp-pk canvas, .pp-tile canvas, .pp-slot canvas { width: 30px; height: 30px; object-fit: contain; }
+  .pp-pk b, .pp-tile b.pp-n { position: absolute; right: -8px; top: -10px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px; background: var(--pp-num); color: var(--pp-ink); font-size: .8em; display: grid; place-items: center; border: 2px solid var(--ok-edge); line-height: 1; }
+  .pp-say { display: flex; align-items: center; gap: 8px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 6px 10px; min-height: 52px; flex: none; }
+  .pp-say canvas { width: 40px; height: 40px; flex: none; }
+  .pp-say p { margin: 0; font-weight: 700; font-size: .95em; }
+  .pp-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: none; }
+  .pp-row.pp-center { justify-content: center; }
+  .pp-h { margin: 0; font-weight: 800; font-size: 1.05em; background: var(--ok-card); border-radius: 10px; padding: 2px 10px; width: fit-content; max-width: 100%; box-sizing: border-box; }   /* a label on the scenery reads on its own card */
+  .pp-tile { position: relative; min-width: 48px; min-height: 48px; padding: 6px 10px; border-radius: 14px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
+    font: inherit; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); text-align: start; }
+  .pp-tile:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ok-edge); }
+  .pp-tile[aria-pressed="true"] { background: var(--pp-go); }
+  .pp-tick { position: absolute; left: -8px; top: -8px; width: 22px; height: 22px; border-radius: 50%; background: var(--ok-card); border: 2px solid var(--ok-edge); display: grid; place-items: center; }
+  .pp-tick svg { width: 14px; height: 14px; }
+  .pp-ch.pp-daily { grid-column: 1 / -1; }
+  .pp-tile.pp-wide { width: 100%; justify-content: flex-start; min-height: 52px; }
+  .pp-tile.pp-done { background: var(--pp-go); }
+  .pp-tile.pp-flag { background: var(--pp-bad); }
+  .pp-tile.pp-dim { opacity: .5; }
+  .pp-tile[disabled] { cursor: default; opacity: .55; }
+  .pp-tile svg { width: 22px; height: 22px; flex: none; }
+  .pp-dots { display: inline-flex; gap: 3px; flex-wrap: wrap; max-width: 60px; }
+  .pp-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--ok-text); display: inline-block; }
+  .pp-frame { display: grid; gap: 3px; background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 12px; padding: 4px; width: max-content; max-width: 100%; }
+  .pp-slot { width: 40px; height: 40px; background: var(--ok-card); border-radius: 6px; display: grid; place-items: center; }
+  .pp-slot.pp-empty { opacity: .45; }
+  .pp-slot.pp-glow { box-shadow: 0 0 0 4px var(--pp-lit); }
+  .pp-slots { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pp-slotb { position: relative; width: 56px; height: 56px; border-radius: 12px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); display: grid; place-items: center; font: inherit; font-weight: 800; padding: 0; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); }
+  .pp-slotb.pp-have { background: var(--pp-go); cursor: default; }
+  .pp-slotb .pp-mark { position: absolute; right: -8px; top: -8px; width: 22px; height: 22px; border-radius: 50%; background: var(--ok-card); border: 2px solid var(--ok-edge); display: grid; place-items: center; }
+  .pp-slotb .pp-mark svg { width: 14px; height: 14px; }
+  .pp-seq { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; padding: 6px; border-radius: 12px; border: 3px dashed var(--ok-edge); flex: none; }
+  .pp-seq span { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px; background: var(--pp-go); font-weight: 800; font-size: .9em; }
+  .pp-seq .pp-binlabel { padding: 1px 8px; border-radius: 8px; background: var(--ok-card); border: 2px solid var(--ok-edge); font-size: .9em; }
+  .pp-events { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .pp-events li { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: .95em; }
+  .pp-events li svg { width: 22px; height: 22px; flex: none; }
+  .pp-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; flex: none; padding-top: 4px; }
+  .pp-map { width: min(100%, 900px); display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; min-height: 0; overflow: auto; padding: 2px; }
+  .pp-seg { display: inline-flex; border: 3px solid var(--ok-edge); border-radius: 999px; overflow: hidden; background: var(--ok-card); }
+  .pp-seg button { font: inherit; font-weight: 800; min-height: 48px; min-width: 104px; padding: 0 16px; border: 0; background: transparent; color: var(--ok-text); cursor: pointer; }
+  .pp-seg button[aria-pressed="true"] { background: var(--pp-go); }
+  .pp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+  @media (min-width: 700px) { .pp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .pp-ch { display: flex; align-items: center; gap: 10px; min-height: 72px; padding: 8px 12px; border-radius: 20px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; text-align: start; box-shadow: 0 4px 0 var(--ok-edge); cursor: pointer; min-width: 0; }
+  .pp-ch canvas { width: 44px; height: 44px; flex: none; object-fit: contain; }
+  .pp-ch > span { min-width: 0; }
+  .pp-ch b { display: block; font-size: 1em; line-height: 1.15; overflow-wrap: anywhere; }
+  .pp-ch small { display: block; font-weight: 700; opacity: .85; font-size: .8em; line-height: 1.2; }
+  .pp-ch[disabled] { opacity: .55; cursor: default; }
+  .pp-ch .pp-silver { opacity: .6; }
+  @media (orientation: landscape) and (max-height: 520px) { .pp-ch { min-height: 56px; padding: 4px 10px; } .pp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .pp-map { gap: 6px; } }
+  .pp-strip { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .pp-lv { width: 56px; height: 56px; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; font-weight: 800; font-size: 1.1em; display: grid; place-items: center; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); padding: 0; position: relative; }
+  .pp-lv[disabled] { opacity: .45; cursor: default; }
+  .pp-lv small { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); font-size: .6em; background: var(--pp-num); color: var(--pp-ink); border-radius: 999px; padding: 0 5px; border: 2px solid var(--ok-edge); white-space: nowrap; }
+  .pp-card { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--ok-scrim); z-index: 15; }
+  .pp-card > div { background: var(--ok-card); color: var(--ok-text); border: 3px solid var(--ok-edge); border-radius: 26px; padding: 18px; width: min(560px, 100%); max-height: 100%; overflow: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  .pp-card h2 { margin: 0; font-weight: 800; font-size: 1.5em; line-height: 1.1; }
+  .pp-card p { margin: 0; font-weight: 600; font-size: 1.05em; line-height: 1.4; max-width: 36ch; }
+  .pp-card canvas.pp-pic { width: 96px; height: 96px; object-fit: contain; }
+  @media (max-height: 520px) { .pp-card > div { padding: 12px 14px; gap: 8px; } .pp-card canvas.ok-portrait { display: none; } .pp-card canvas.pp-pic { width: 56px; height: 56px; } .pp-card h2 { font-size: 1.2em; } .pp-card p { font-size: .95em; line-height: 1.3; } }
+  .pp-fill { position: absolute; inset: 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow: auto; align-items: stretch; }
+  .pp-fill.pp-center { align-items: center; justify-content: center; }
+  .pp-itemcard { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 16px; padding: 10px 12px; font-size: 1.05em; }
+  .pp-itemcard b { display: block; font-size: 1.15em; }
+  .pp-itemcard p { margin: 4px 0 0; font-weight: 600; font-size: .9em; }
+  .pp-meter { height: 18px; border: 3px solid var(--ok-edge); border-radius: 999px; background: var(--ok-bg2); overflow: hidden; }
+  .pp-meter i { display: block; height: 100%; width: 0; background: var(--pp-bad); transition: width .3s; }
+  .pp-meter.pp-t2 i { background: var(--pp-num); } .pp-meter.pp-t3 i, .pp-meter.pp-t4 i { background: var(--pp-go); }
+  .ok-rm .pp-meter i { transition: none; }
+  .pp-letter { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .pp-letter .pp-from { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: .9em; flex-wrap: wrap; }
+  .pp-letter .pp-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--ok-card); border: 2px solid var(--ok-edge); border-radius: 999px; padding: 2px 10px; }
+  .pp-letter .pp-badge svg { width: 18px; height: 18px; }
+  .pp-letter b { font-size: 1.05em; }
+  .pp-letter p { margin: 0; font-weight: 600; line-height: 1.35; }
+  .pp-letter .pp-fakebtn { align-self: flex-start; background: transparent; border: 2px dashed var(--ok-edge); border-radius: 8px; padding: 4px 12px; font-weight: 700; opacity: .8; cursor: default; }
+  .pp-cipher { letter-spacing: .12em; font-weight: 800; font-size: 1.2em; overflow-wrap: anywhere; }
+  .pp-key { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 2px; font-size: .75em; font-weight: 800; text-align: center; }
+  .pp-key span { background: var(--ok-bg2); border-radius: 4px; padding: 2px 0; }
+  .pp-key span.pp-k2 { background: var(--pp-go); }
+  .pp-pxgrid { display: grid; gap: 3px; width: max-content; max-width: 100%; margin: auto; }
+  .pp-px { width: 40px; height: 40px; border: 2px solid var(--ok-edge); border-radius: 6px; font: inherit; font-weight: 800; font-size: .72em; padding: 0; cursor: pointer; display: grid; place-items: center; position: relative; }
+  .pp-px[aria-pressed="true"] { outline: 4px solid var(--pp-lit); outline-offset: -4px; }
+  .pp-px i { position: absolute; right: 3px; top: 3px; width: 8px; height: 8px; border-radius: 50%; background: var(--pp-lit); border: 1px solid var(--ok-edge); }
+  .pp-target { display: grid; gap: 2px; width: max-content; }
+  .pp-target span { width: 12px; height: 12px; border-radius: 3px; background: var(--ok-bg2); border: 1px solid var(--ok-edge); }
+  .pp-target span.pp-on { background: var(--ok-text); }
+  .pp-digits { display: flex; gap: 8px; }
+  .pp-digits span { width: 44px; height: 52px; border: 3px solid var(--ok-edge); border-radius: 12px; display: grid; place-items: center; font-size: 1.4em; font-weight: 800; background: var(--ok-bg2); }
+  .pp-pad { display: grid; grid-template-columns: repeat(3, 64px); gap: 8px; }
+  .pp-pad .ok-btn { min-height: 52px; padding: 0; font-size: 1.2em; }
+  .pp-wheel { flex: 1 1 0; min-height: 96px; width: 100%; max-width: 400px; max-height: 400px; height: auto; }
+  .pp-wheel text { font-family: inherit; font-weight: 800; font-size: 13px; text-anchor: middle; fill: var(--ok-text); }
+  .pp-wheel .pp-ring { fill: var(--ok-card); stroke: var(--ok-edge); stroke-width: 3; }
+  .pp-wheel .pp-inner-ring { fill: var(--pp-go); }
+  .pp-wheel .pp-inner { transition: transform .35s ease; transform-origin: 50% 50%; }
+  .pp-shift { font-size: 1.3em; font-weight: 800; min-width: 110px; text-align: center; }
+  .pp-lesson-note { font-weight: 700; font-size: .9em; opacity: .85; margin: 0; text-align: center; }
+  @keyframes pp-pulse { 50% { transform: scale(1.08); } }
+  .ok-rm .pp-link.pp-ok { animation: none; }
+  .ok-rm .pp-wheel .pp-inner { transition: none; }
+  .ok-rm .pp-link:active, .ok-rm .pp-tile:active { transform: none; }
+</style>
+<div id="game"></div>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-props.js" integrity="sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-school.js" integrity="sha384-xbmoMTLjBXfyHbxMV8HIl3jSzcl3bxEMMdgGu+KgGuyZY+WNXrh9ogBhRTpyMWO8" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/style-bold.js" integrity="sha384-pFXgoNOZ/kWWctAb2ucgoE+wLssJGKLBbeZJppwZQlTGTPqBEFYA0dOtLTst2DiH" crossorigin="anonymous"></script>
+<script>
+/* ===== Packet Post engine: Netville's map, the packet runs and their verdicts, the post office rules, the ciphers.
+   Plain data and functions (no DOM, no kit), so the unit test can load this block on its own. ===== */
+(function (root) {
+'use strict';
+const TWO32 = 2 ** 32;
+/** A small seeded random source: the same seed deals the same map, the same lost packets, the same tile order. */
+function rng(seed) {
+  let a = (seed >>> 0) || 1;
+  const f = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / TWO32; };
+  return { float: f, int: (lo, hi) => lo + Math.floor(f() * (hi - lo + 1)), pick: arr => arr[Math.floor(f() * arr.length)], chance: p => f() < p,
+    shuffle(arr) { const x = arr.slice(); for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(f() * (i + 1)); const t = x[i]; x[i] = x[j]; x[j] = t; } return x; } };
+}
+function seedOf(s) { let h = 0x811c9dc5; const str = String(s); for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x1000193); } return h >>> 0; }
+const PICTURES = ['apple', 'cupcake', 'melon', 'cookie', 'grapes', 'banana', 'ufo', 'sandcastle', 'tower', 'globe', 'schoolbag', 'pumpkin'];
+const MODES = { 0: 'play', 2: 'wheel', 3: 'projector' };
+const lid = (a, b) => a + '-' + b;
+const range = (a, b) => { const o = []; for (let k = a; k <= b; k++) o.push(k); return o; };
+
+/** One concrete instance of a level for a seed: node spots (mirrored when the level is random), which road closes
+ *  and when, the busy office, the picture, the arrival script, the damaged packets, the tile order. */
+function instance(level, seed) {
+  const sd = seed == null ? 1 : seed, r = rng(seedOf(level.id + '#' + sd)), rnd = !!level.random;
+  const flipX = rnd && r.chance(0.5), flipY = rnd && r.chance(0.5);
+  const nodes = {}, nodeOrder = [];
+  for (const nd of level.nodes || []) { nodes[nd.id] = { id: nd.id, label: nd.label || '', kind: nd.kind || 'office', x: flipX ? 1 - nd.x : nd.x, y: flipY ? 1 - nd.y : nd.y, busy: !!nd.busy }; nodeOrder.push(nd.id); }
+  const links = {}, linkOrder = [];
+  for (const l of level.links || []) { const o = l[2] || {}; const id = lid(l[0], l[1]); links[id] = { id, a: l[0], b: l[1], sealed: !!o.sealed, cost: o.cost || (o.sealed ? 2 : 1), closedAfter: null }; linkOrder.push(id); }
+  for (const c of level.closes || []) if (links[c.link]) links[c.link].closedAfter = c.after;
+  if (level.closesAny && level.closesAny.length) { const c = rnd ? r.pick(level.closesAny) : level.closesAny[0]; if (links[c.link]) links[c.link].closedAfter = c.after; }
+  if (level.busyAny && level.busyAny.length) { const b = rnd ? r.pick(level.busyAny) : level.busyAny[0]; if (nodes[b]) nodes[b].busy = true; }
+  const I = { type: level.type || 'route', id: level.id, seed: sd, nodes, nodeOrder, links, linkOrder, from: level.from || null, to: level.to || null, n: level.n || 0, budget: level.budget || 0,
+    secret: !!level.secret, picture: level.picture || r.pick(PICTURES), par: level.par };
+  if (I.type === 'ack') {
+    let arrive = level.arrive ? level.arrive.slice() : null;
+    if (!arrive) {
+      const all = range(1, I.n), lost = new Set(r.shuffle(all).slice(0, level.lose || 1));
+      const dups = new Set(r.shuffle(all.filter(k => !lost.has(k))).slice(0, level.dups || 0));
+      arrive = all.filter(k => !lost.has(k));
+      for (const d of dups) { const at = Math.min(arrive.length, arrive.indexOf(d) + 2); arrive.splice(at, 0, d); }
+    }
+    I.arrive = arrive; I.lost = range(1, I.n).filter(k => !arrive.includes(k));
+  } else if (I.type === 'check') {
+    const dmg = level.damaged ? level.damaged.slice() : r.shuffle(range(1, I.n)).slice(0, level.damage || 1).sort((a, b) => a - b);
+    I.damaged = dmg; I.packets = range(1, I.n).map(k => { const dots = r.int(2, 6); let says = dots; if (dmg.includes(k)) says = dots + (dots >= 6 || (dots > 2 && r.chance(0.5)) ? -1 : 1); return { n: k, dots, says }; });
+  } else if (I.type === 'order') {
+    I.tiles = level.tiles.map(t => ({ id: t.id, text: t.text })); I.order = level.order.slice();
+    let shown = r.shuffle(I.order); for (let k = 0; k < 8 && shown.join() === I.order.join(); k++) shown = r.shuffle(I.order); I.shown = shown;
+  } else if (I.type === 'rules') {
+    I.rules = level.rules.map(t => ({ id: t.id, text: t.text })); I.needed = level.needed.slice(); I.budget = level.budget; I.events = level.events.map(e => ({ text: e.text, needs: e.needs.slice() }));
+    I.shown = r.shuffle(I.rules.map(t => t.id));
+  } else if (I.type === 'sort') {
+    // share or keep, physical or digital, public or private: every item has its bin and maybe a reason tile
+    I.bins = level.bins.map(b => ({ id: b.id, label: b.label, icon: b.icon || null }));
+    I.items = level.items.map(t => ({ id: t.id, text: t.text, bin: t.bin, info: t.info || null, benefit: t.benefit || null, risk: t.risk || null, reasons: t.reasons ? t.reasons.slice() : null, answer: t.answer == null ? null : t.answer }));
+    I.shown = rnd ? r.shuffle(I.items.map(t => t.id)) : I.items.map(t => t.id);
+  } else if (I.type === 'pass') {
+    // the passphrase builder: word tiles, some of them weak (things about you, or too common)
+    I.need = level.need || 4; I.words = level.words.map(w => ({ id: w.id, text: w.text, weak: !!w.weak }));
+    I.shown = r.shuffle(I.words.map(w => w.id));
+  } else if (I.type === 'inbox') {
+    // a pretend message: a role as the sender, cue chips under the text, then safe / trick / ask a grown-up
+    I.letter = { from: level.from, subject: level.subject, body: level.body, button: level.button || null, badge: level.badge || null };
+    I.cues = level.cues.map(c => ({ id: c.id, text: c.text, trick: !!c.trick })); I.verdict = level.verdict;
+    I.accept = level.accept ? level.accept.slice() : [level.verdict, 'ask'];
+  } else if (I.type === 'cipher') {
+    I.kind = level.kind || 'caesar'; I.mode = level.mode || 'decode';
+    I.plain = String(level.plain || (level.plains && level.plains.length ? (rnd ? r.pick(level.plains) : level.plains[0]) : '')).toUpperCase();
+    I.shift = level.shift != null ? level.shift : (rnd ? r.int(1, I.mode === 'encode' ? 24 : 25) : 3); I.key = level.key || null;
+    I.cipher = I.kind === 'keyed' ? substitute(I.plain, I.key) : caesar(I.plain, I.shift);
+    if (level.choices) { I.choices = level.choices.slice(); I.answer = level.answer; }
+    else if (I.mode === 'encode' || I.kind === 'keyed') {   // three readings: the right one and two near misses, placed by the seed
+      const right = I.mode === 'encode' ? I.cipher : I.plain;
+      const wrongs = I.mode === 'encode' ? [caesar(I.plain, I.shift + 1), caesar(I.plain, I.shift - 1)] : [caesar(I.plain, 1), caesar(I.plain, 25)];
+      I.answer = r.int(0, 2); I.choices = wrongs.slice(); I.choices.splice(I.answer, 0, right);
+    }
+    I.startShift = I.mode === 'encode' ? I.shift : (I.shift + 7 + r.int(0, 11)) % 26;
+  } else if (I.type === 'pixel') {
+    I.w = level.w || 6; I.h = level.h || 6; I.mode = level.mode || 'hide';
+    const n = I.w * I.h, target = (level.target || []).slice(0, n); while (target.length < n) target.push(0);
+    I.target = target.map(b => (b ? 1 : 0));
+    I.values = []; for (let k = 0; k < n; k++) { const base = 120 + r.int(0, 100); const v = (base & ~1) | (I.mode === 'read' ? I.target[k] : (rnd ? r.int(0, 1) : (k % 3 === 0 ? 1 : 0))); I.values.push(v); }
+  }
+  return I;
+}
+
+/** A run of one level: the state machine the game and the tests both drive, one tap at a time. */
+class Run {
+  constructor(level, seed) {
+    this.level = level; this.inst = instance(level, seed); this.type = this.inst.type; this.actions = []; this._optimal = null;
+    const I = this.inst, s = this.s = { phase: 'play', fails: [], wrong: 0, wasted: 0, bounced: 0, toggles: 0 };
+    if (this.type === 'route') Object.assign(s, { i: 1, at: I.from, hops: 0, hopsThis: 0, path: [I.from], paths: [], arrivals: [], tray: [], placed: [], peeked: [], delivered: 0 });
+    else if (this.type === 'ack') { s.cards = I.arrive.map((n, k) => ({ id: 'c' + (k + 1), n, acked: false, gone: false, resent: false })); s.acked = []; s.resent = []; }
+    else if (this.type === 'check') s.flagged = [];
+    else if (this.type === 'order') s.seq = [];
+    else if (this.type === 'rules') { s.chosen = []; s.caught = null; }
+    else if (this.type === 'sort') { s.assigned = {}; s.why = {}; }
+    else if (this.type === 'pass') { s.chosen = []; s.submits = 0; }
+    else if (this.type === 'inbox') { s.flags = []; s.verdict = null; }
+    else if (this.type === 'cipher') { s.shift = I.startShift || 0; s.counted = false; s.submits = 0; s.turns = 0; }
+    else if (this.type === 'pixel') { s.values = I.values.slice(); s.marked = []; s.submits = 0; }
+  }
+  // ---- sort levels: each item to its bin, then (Share or Shield) the reason
+  item(id) { return this.inst.items.find(t => t.id === id) || null; }
+  resolved(t) { const s = this.s; return s.assigned[t.id] != null && (!t.reasons || s.why[t.id] != null); }
+  bin(id, binId) {
+    const s = this.s; if (s.phase !== 'play' || this.type !== 'sort') return { err: 'phase' }; const t = this.item(id); if (!t || s.assigned[id] != null) return { err: 'noitem' };
+    this.actions.push({ t: 'bin', id, bin: binId });
+    if (binId !== t.bin) { s.wrong++; return { wrong: true, id }; }
+    s.assigned[id] = binId; if (this.inst.items.every(x => this.resolved(x))) s.phase = 'done';
+    return { binned: id, bin: binId, why: !!t.reasons, done: s.phase === 'done' };
+  }
+  why(id, k) {
+    const s = this.s; if (s.phase !== 'play' || this.type !== 'sort') return { err: 'phase' }; const t = this.item(id); if (!t || !t.reasons || s.assigned[id] == null || s.why[id] != null) return { err: 'noitem' };
+    this.actions.push({ t: 'why', id, k });
+    if (k !== t.answer) { s.wrong++; return { wrong: true, id }; }
+    s.why[id] = k; if (this.inst.items.every(x => this.resolved(x))) s.phase = 'done';
+    return { why: id, done: s.phase === 'done' };
+  }
+  // ---- pass levels: pick word tiles, watch the meter, lock it in
+  pick(id) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'pass') return { err: 'phase' }; if (!I.words.some(w => w.id === id)) return { err: 'noword' };
+    const k = s.chosen.indexOf(id);
+    if (k < 0 && s.chosen.length >= I.need) return { full: true };
+    this.actions.push({ t: 'pick', id }); s.toggles++;
+    if (k >= 0) s.chosen.splice(k, 1); else s.chosen.push(id);
+    return { chosen: s.chosen.slice(), strength: this.strength() };
+  }
+  /** How long a guessing computer would need: 0 seconds · 1 minutes · 2 days · 3 years · 4 centuries (a weak word spoils it all). */
+  strength() {
+    const I = this.inst, words = this.s.chosen.map(id => I.words.find(w => w.id === id)).filter(Boolean);
+    const weak = words.some(w => w.weak), letters = words.reduce((t, w) => t + w.text.replace(/[^\p{L}\p{N}]/gu, '').length, 0);
+    const tier = weak ? 0 : letters >= 16 ? 4 : letters >= 12 ? 3 : letters >= 8 ? 2 : letters >= 5 ? 1 : 0;
+    return { tier, letters, weak, count: words.length };
+  }
+  // ---- inbox levels: tap the cues, then say safe, trick or ask a grown-up
+  cue(id) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'inbox') return { err: 'phase' }; if (!I.cues.some(c => c.id === id)) return { err: 'nocue' };
+    this.actions.push({ t: 'cue', id }); s.toggles++;
+    const k = s.flags.indexOf(id); if (k >= 0) s.flags.splice(k, 1); else s.flags.push(id);
+    return { flags: s.flags.slice() };
+  }
+  verdict(v) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'inbox') return { err: 'phase' };
+    this.actions.push({ t: 'verdict', v }); s.verdict = v;
+    if (I.accept.includes(v)) { s.phase = 'done'; return { done: true, verdict: v, missed: I.cues.filter(c => c.trick && !s.flags.includes(c.id)).map(c => c.id) }; }
+    s.phase = 'failed'; s.fails.push('verdict'); return { failed: true, verdict: v, want: I.verdict };
+  }
+  // ---- cipher levels: turn the wheel, count the letters, choose the reading
+  shiftTo(n) { const s = this.s; if (s.phase !== 'play' || this.type !== 'cipher') return { err: 'phase' }; this.actions.push({ t: 'shiftTo', n }); s.turns++; s.shift = ((n % 26) + 26) % 26; return { shift: s.shift, reading: caesar(this.inst.cipher, -s.shift) }; }
+  count() { const s = this.s; if (s.phase !== 'play' || this.type !== 'cipher') return { err: 'phase' }; this.actions.push({ t: 'count' }); s.counted = true; return { counts: letterCounts(this.inst.cipher), guess: guessShift(this.inst.cipher) }; }
+  choose(k) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'cipher' || !I.choices) return { err: 'phase' };
+    this.actions.push({ t: 'choose', k });
+    if (k !== I.answer) { s.wrong++; return { wrong: true, k }; }
+    s.phase = 'done'; return { done: true, k };
+  }
+  // ---- pixel levels: the last bit of every pixel hides the picture
+  px(i) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'pixel') return { err: 'phase' }; if (!(i >= 0 && i < s.values.length)) return { err: 'nopixel' };
+    this.actions.push({ t: 'px', i }); s.toggles++;
+    if (I.mode === 'read') { const k = s.marked.indexOf(i); if (k >= 0) s.marked.splice(k, 1); else s.marked.push(i); return { marked: s.marked.slice() }; }
+    s.values[i] ^= 1; return { value: s.values[i], bit: s.values[i] & 1 };
+  }
+  // ---- the map
+  closed(link) { return link.closedAfter != null && this.s.delivered >= link.closedAfter; }
+  linksAt(node) { return this.inst.linkOrder.map(id => this.inst.links[id]).filter(l => l.a === node || l.b === node); }
+  other(link, node) { return link.a === node ? link.b : link.a; }
+  /** Cheapest open path from a node to the house (sealed roads only on a secret run). */
+  bestPath(from, to) {
+    const I = this.inst, dist = { [from]: 0 }, prev = {}, todo = new Set(I.nodeOrder);
+    while (todo.size) {
+      let u = null; for (const v of todo) if (dist[v] != null && (u == null || dist[v] < dist[u])) u = v;
+      if (u == null) break; todo.delete(u); if (u === to) break;
+      for (const l of this.linksAt(u)) {
+        if (this.closed(l) || (I.secret && !l.sealed)) continue;
+        const v = this.other(l, u), d = dist[u] + l.cost;
+        if (dist[v] == null || d < dist[v]) { dist[v] = d; prev[v] = { node: u, link: l.id }; }
+      }
+    }
+    if (dist[to] == null) return null;
+    const path = [], linksUsed = []; let v = to; while (v !== from) { path.unshift(v); linksUsed.unshift(prev[v].link); v = prev[v].node; } path.unshift(from);
+    return { path, links: linksUsed, cost: dist[to] };
+  }
+  // ---- route levels: a packet rides the tapped road, then the pieces go back in number order
+  hop(linkId) {
+    const I = this.inst, s = this.s; if (s.phase !== 'play' || this.type !== 'route') return { err: 'phase' };
+    const l = I.links[linkId]; if (!l) return { err: 'nolink' };
+    if (l.a !== s.at && l.b !== s.at) return { err: 'far' };
+    this.actions.push({ t: 'hop', id: linkId });
+    if (this.closed(l)) { s.bounced++; return { bounced: true, link: l }; }
+    const to = this.other(l, s.at);
+    if (I.secret && !l.sealed && !s.peeked.includes(s.i)) s.peeked.push(s.i);
+    s.at = to; s.hops += l.cost; s.hopsThis += l.cost; s.path.push(to);
+    const ev = { moved: true, from: this.other(l, to), to, link: l, packet: s.i };
+    if (I.budget && s.hops > I.budget) { s.phase = 'failed'; s.fails.push('hops'); ev.out = true; return ev; }
+    if (to === I.to) {
+      if (I.secret && s.peeked.includes(s.i)) { s.phase = 'failed'; s.fails.push('peeked'); ev.peeked = s.i; return ev; }
+      const delay = s.path.some(nd => I.nodes[nd] && I.nodes[nd].busy) ? 2.5 : 0;
+      s.arrivals.push({ n: s.i, t: s.hopsThis + delay + s.i * 0.01 }); s.paths.push(s.path.slice()); s.delivered++;
+      ev.arrived = s.i;
+      if (s.i >= I.n) { s.phase = 'place'; s.tray = s.arrivals.slice().sort((a, b) => a.t - b.t).map(a => a.n); ev.allArrived = true; }
+      else { s.i++; s.at = I.from; s.hopsThis = 0; s.path = [I.from]; }
+    }
+    return ev;
+  }
+  place(n) {
+    const I = this.inst, s = this.s; if (s.phase !== 'place') return { err: 'phase' };
+    this.actions.push({ t: 'place', n });
+    const need = s.placed.length + 1;
+    if (n !== need || !s.tray.includes(n)) { s.wrong++; return { wrong: true, need }; }
+    s.placed.push(n); s.tray.splice(s.tray.indexOf(n), 1);
+    if (s.placed.length >= I.n) s.phase = 'done';
+    return { placed: n, done: s.phase === 'done' };
+  }
+  // ---- ack levels: say got it, throw away extra copies, ask again for the missing ones
+  card(id) { return this.s.cards.find(c => c.id === id) || null; }
+  ack(id) {
+    const s = this.s; if (s.phase !== 'play' || this.type !== 'ack') return { err: 'phase' }; const c = this.card(id); if (!c || c.gone || c.acked) return { err: 'nocard' };
+    this.actions.push({ t: 'ack', id });
+    if (s.acked.includes(c.n)) { s.wrong++; return { wrong: true, dup: c.n }; }
+    c.acked = true; s.acked.push(c.n); this._ackDone(); return { acked: c.n, done: s.phase === 'done' };
+  }
+  discard(id) {
+    const s = this.s; if (s.phase !== 'play' || this.type !== 'ack') return { err: 'phase' }; const c = this.card(id); if (!c || c.gone || c.acked) return { err: 'nocard' };
+    this.actions.push({ t: 'discard', id });
+    const twin = s.cards.some(o => o !== c && o.n === c.n && !o.gone);   // keeping one copy and binning the other is right in either order
+    if (!s.acked.includes(c.n) && !twin) { s.wrong++; return { wrong: true, needed: c.n }; }
+    c.gone = true; this._ackDone(); return { discarded: c.n, done: s.phase === 'done' };
+  }
+  resend(n) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'ack') return { err: 'phase' }; if (!(n >= 1 && n <= I.n)) return { err: 'noslot' };
+    this.actions.push({ t: 'resend', n });
+    if (s.cards.some(c => c.n === n && !c.gone)) { s.wasted++; return { wasted: true, n }; }
+    const c = { id: 'c' + (s.cards.length + 1), n, acked: false, gone: false, resent: true }; s.cards.push(c); s.resent.push(n);
+    return { resent: n, card: c };
+  }
+  _ackDone() { const s = this.s, I = this.inst; if (range(1, I.n).every(k => s.acked.includes(k)) && !s.cards.some(c => !c.acked && !c.gone)) s.phase = 'done'; }
+  // ---- check levels: count the dots, flag the damaged packets, then check the mail
+  flag(n) {
+    const s = this.s; if (s.phase !== 'play' || this.type !== 'check') return { err: 'phase' };
+    this.actions.push({ t: 'flag', n }); s.toggles++;
+    const k = s.flagged.indexOf(n); if (k >= 0) s.flagged.splice(k, 1); else s.flagged.push(n);
+    return { flagged: s.flagged.slice() };
+  }
+  // ---- order levels: tap the tiles in the right order
+  put(id) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'order') return { err: 'phase' };
+    this.actions.push({ t: 'put', id });
+    const need = I.order[s.seq.length];
+    if (id !== need) { s.wrong++; return { wrong: true, need }; }
+    s.seq.push(id); if (s.seq.length >= I.order.length) s.phase = 'done';
+    return { put: id, done: s.phase === 'done' };
+  }
+  // ---- rules levels: pick the rules the problems need, inside the budget
+  toggle(id) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'rules') return { err: 'phase' }; if (!I.rules.some(r => r.id === id)) return { err: 'norule' };
+    this.actions.push({ t: 'toggle', id }); s.toggles++;
+    const k = s.chosen.indexOf(id); if (k >= 0) s.chosen.splice(k, 1); else s.chosen.push(id);
+    return { chosen: s.chosen.slice() };
+  }
+  submit() {
+    const s = this.s, I = this.inst; if (s.phase !== 'play') return { err: 'phase' };
+    this.actions.push({ t: 'submit' });
+    if (this.type === 'check') {
+      const missed = I.damaged.filter(n => !s.flagged.includes(n)), fine = s.flagged.filter(n => !I.damaged.includes(n));
+      if (!missed.length && !fine.length) { s.phase = 'done'; return { done: true }; }
+      s.phase = 'failed'; s.fails.push('check'); return { failed: true, missed, fine };
+    }
+    if (this.type === 'rules') {
+      const caught = I.events.map(e => ({ text: e.text, ok: e.needs.every(id => s.chosen.includes(id)) }));
+      s.caught = caught; const over = s.chosen.length > I.budget;
+      if (caught.every(c => c.ok) && !over) { s.phase = 'done'; return { done: true, caught }; }
+      s.phase = 'failed'; s.fails.push(over ? 'budget' : 'rules'); return { failed: true, caught, over };
+    }
+    if (this.type === 'pass') {
+      const st = this.strength(); s.submits++;
+      if (st.count === I.need && st.tier >= 3) { s.phase = 'done'; return { done: true, strength: st }; }
+      s.phase = 'failed'; s.fails.push(st.weak ? 'weak' : st.count < I.need ? 'count' : 'short'); return { failed: true, strength: st, why: s.fails[s.fails.length - 1] };
+    }
+    if (this.type === 'cipher') {
+      if (I.choices) return { err: 'type' };   // a reading is chosen, never submitted
+      s.submits++;
+      if (s.shift === I.shift) { s.phase = 'done'; return { done: true, reading: I.plain }; }
+      s.phase = 'failed'; s.fails.push('shift'); return { failed: true, reading: caesar(I.cipher, -s.shift) };
+    }
+    if (this.type === 'pixel') {
+      s.submits++;
+      const ok = I.mode === 'read' ? I.target.every((b, k) => (b === 1) === s.marked.includes(k)) : I.target.every((b, k) => (s.values[k] & 1) === b);
+      if (ok) { s.phase = 'done'; return { done: true }; }
+      s.phase = 'failed'; s.fails.push('pixels'); return { failed: true, off: I.target.map((b, k) => k).filter(k => (I.mode === 'read' ? (I.target[k] === 1) !== s.marked.includes(k) : (s.values[k] & 1) !== I.target[k])).length };
+    }
+    return { err: 'type' };
+  }
+  /** Reset after a failed try (the picks stay, the run goes on) on the levels that check a whole answer at once. */
+  retry() { const s = this.s; if (s.phase !== 'failed') return false; if (['check', 'rules', 'pass', 'cipher', 'pixel', 'inbox'].includes(this.type)) { s.phase = 'play'; return true; } return false; }
+  /** One action object: {t: 'hop', id} | {t: 'place', n} | {t: 'ack', id} | {t: 'discard', id} | {t: 'resend', n} | {t: 'flag', n} | {t: 'put', id} | {t: 'toggle', id} | {t: 'submit'}. */
+  act(a) {
+    switch (a && a.t) {
+      case 'hop': return this.hop(a.id); case 'place': return this.place(a.n); case 'ack': return this.ack(a.id); case 'discard': return this.discard(a.id);
+      case 'resend': return this.resend(a.n); case 'flag': return this.flag(a.n); case 'put': return this.put(a.id); case 'toggle': return this.toggle(a.id); case 'submit': return this.submit();
+      case 'bin': return this.bin(a.id, a.bin); case 'why': return this.why(a.id, a.k); case 'pick': return this.pick(a.id); case 'cue': return this.cue(a.id); case 'verdict': return this.verdict(a.v);
+      case 'shiftTo': return this.shiftTo(a.n); case 'count': return this.count(); case 'choose': return this.choose(a.k); case 'px': return this.px(a.i);
+      default: return { err: 'unknown' };
+    }
+  }
+  /** The next good move (the hint's highlight and the solver's step), or null when the run is over. */
+  advice() {
+    const s = this.s, I = this.inst;
+    if (s.phase === 'done') return null;
+    if (this.type === 'route') {
+      if (s.phase === 'place') return { t: 'place', n: s.placed.length + 1 };
+      if (s.phase !== 'play') return null;
+      const p = this.bestPath(s.at, I.to); return p ? { t: 'hop', id: p.links[0], path: p.path } : null;
+    }
+    if (this.type === 'ack') {
+      const c = s.cards.find(x => !x.acked && !x.gone && !s.acked.includes(x.n)); if (c) return { t: 'ack', id: c.id };
+      const d = s.cards.find(x => !x.acked && !x.gone && s.acked.includes(x.n)); if (d) return { t: 'discard', id: d.id };
+      const m = range(1, I.n).find(n => !s.cards.some(x => x.n === n && !x.gone)); if (m) return { t: 'resend', n: m };
+      return null;
+    }
+    if (this.type === 'check') {
+      if (s.phase === 'failed') return null;
+      const d = I.damaged.find(n => !s.flagged.includes(n)); if (d) return { t: 'flag', n: d };
+      const f = s.flagged.find(n => !I.damaged.includes(n)); if (f != null) return { t: 'flag', n: f };
+      return { t: 'submit' };
+    }
+    if (this.type === 'order') return s.phase === 'play' ? { t: 'put', id: I.order[s.seq.length] } : null;
+    if (this.type === 'rules') {
+      if (s.phase === 'failed') return null;
+      const need = I.needed.find(id => !s.chosen.includes(id)); if (need) return { t: 'toggle', id: need };
+      const extra = s.chosen.find(id => !I.needed.includes(id)); if (extra) return { t: 'toggle', id: extra };
+      return { t: 'submit' };
+    }
+    if (s.phase === 'failed') return null;
+    if (this.type === 'sort') {
+      const id = I.shown.find(x => !this.resolved(this.item(x))); if (!id) return null; const t = this.item(id);
+      return s.assigned[id] == null ? { t: 'bin', id, bin: t.bin } : { t: 'why', id, k: t.answer };
+    }
+    if (this.type === 'pass') {
+      const weak = s.chosen.find(id => I.words.find(w => w.id === id).weak); if (weak) return { t: 'pick', id: weak };
+      if (s.chosen.length < I.need) { const best = I.words.filter(w => !w.weak && !s.chosen.includes(w.id)).sort((p, q) => q.text.length - p.text.length)[0]; return best ? { t: 'pick', id: best.id } : null; }
+      return { t: 'submit' };
+    }
+    if (this.type === 'inbox') {
+      const miss = I.cues.find(c => c.trick && !s.flags.includes(c.id)); if (miss) return { t: 'cue', id: miss.id };
+      const extra = s.flags.find(id => !I.cues.find(c => c.id === id).trick); if (extra) return { t: 'cue', id: extra };
+      return { t: 'verdict', v: I.accept.includes(I.verdict) ? I.verdict : I.accept[0] };
+    }
+    if (this.type === 'cipher') {
+      if (I.choices) return { t: 'choose', k: I.answer };
+      if (I.mode === 'crack' && !s.counted) return { t: 'count' };
+      if (s.shift !== I.shift) return { t: 'shiftTo', n: I.shift };
+      return { t: 'submit' };
+    }
+    if (this.type === 'pixel') {
+      for (let k = 0; k < I.target.length; k++) { const want = I.target[k] === 1, has = I.mode === 'read' ? s.marked.includes(k) : (s.values[k] & 1) === 1; if (want !== has) return { t: 'px', i: k }; }
+      return { t: 'submit' };
+    }
+    return null;
+  }
+  get done() { return this.s.phase === 'done'; }
+  get failed() { return this.s.phase === 'failed'; }
+  /** The cheapest run of this very instance (hops for route levels, taps otherwise): the bar for the second star. */
+  optimal() {
+    if (this._optimal == null) { const twin = new Run(this.level, this.inst.seed); twin._optimal = -1; let guard = 0; while (!twin.done && !twin.failed && guard++ < 400) { const a = twin.advice(); if (!a) break; twin.act(a); } this._optimal = twin.done ? Run.cost(twin) : Infinity; }
+    return this._optimal;
+  }
+  /** Well made: no wasted hop or tap, no lost or peeked packet, nothing placed out of order. */
+  quality() {
+    const s = this.s; if (!this.done) return false;
+    if (s.wrong || s.wasted || s.bounced) return false;
+    if (this.type === 'route') return s.hops <= this.optimal() && !s.peeked.length;
+    if (this.type === 'check' || this.type === 'rules') return s.toggles <= this.optimal() - 1;
+    if (this.type === 'pass') return s.toggles <= this.inst.need && s.submits <= 1;
+    if (this.type === 'inbox') { const I = this.inst; if (s.verdict !== I.verdict && I.verdict !== 'ask' && !(I.verdict === 'trick' && s.verdict === 'ask')) return false; return I.cues.filter(c => c.trick).every(c => s.flags.includes(c.id)) && s.flags.every(id => I.cues.find(c => c.id === id).trick) && s.toggles <= I.cues.filter(c => c.trick).length; }
+    if (this.type === 'cipher') return s.submits <= 1;
+    if (this.type === 'pixel') return s.submits <= 1 && s.toggles <= this.optimal() - 1;
+    return true;
+  }
+  /** Stars without the hint rule: 0 unsolved, 1 solved, 2 well made (the game adds the third for no tier-3 hint). */
+  stars(noThirdTierHint = true) { if (!this.done) return 0; return 1 + (this.quality() ? 1 : 0) + (noThirdTierHint ? 1 : 0); }
+  static cost(run) { if (run.type === 'route') return run.actions.filter(a => a.t === 'hop').reduce((t, a) => t + (run.inst.links[a.id] ? run.inst.links[a.id].cost : 0), 0); return run.actions.length; }
+  snapshot() { const s = this.s; return JSON.parse(JSON.stringify({ type: this.type, phase: s.phase, i: s.i, at: s.at, hops: s.hops, placed: s.placed, tray: s.tray, wrong: s.wrong, wasted: s.wasted, bounced: s.bounced, acked: s.acked, flagged: s.flagged, seq: s.seq, chosen: s.chosen, fails: s.fails, cards: s.cards, assigned: s.assigned, flags: s.flags, verdict: s.verdict, shift: s.shift, marked: s.marked, submits: s.submits })); }
+}
+
+/** The actions that solve a level for a seed: the level's own sol (a list of tile or rule ids) or the solver's moves. */
+function solve(level, seed) {
+  const run = new Run(level, seed), out = [];
+  if (Array.isArray(level.sol)) {
+    if (run.type === 'order') return level.sol.map(id => ({ t: 'put', id }));
+    if (run.type === 'rules') return level.sol.map(id => ({ t: 'toggle', id })).concat([{ t: 'submit' }]);
+    if (run.type === 'check') return level.sol.map(n => ({ t: 'flag', n })).concat([{ t: 'submit' }]);
+  }
+  let guard = 0; while (!run.done && !run.failed && guard++ < 400) { const a = run.advice(); if (!a) break; out.push(a); run.act(a); }
+  return out;
+}
+function play(level, actions, seed) { const run = new Run(level, seed); for (const a of actions || []) run.act(a); return run; }
+/** The level's starter as actions (a wrong order, a bloated rule set, every packet flagged, the wrong verdict, the wrong shift), or null. */
+function starter(level) {
+  const st = level.starter; if (st == null) return null; const type = level.type || 'route';
+  if (type === 'order') return st.map(id => ({ t: 'put', id }));
+  if (type === 'rules') return st.map(id => ({ t: 'toggle', id })).concat([{ t: 'submit' }]);
+  if (type === 'check') return st.map(n => ({ t: 'flag', n })).concat([{ t: 'submit' }]);
+  if (type === 'inbox') return [{ t: 'verdict', v: st }];
+  if (type === 'sort') return st.map(x => ({ t: 'bin', id: x[0], bin: x[1] }));
+  if (type === 'pass') return st.map(id => ({ t: 'pick', id })).concat([{ t: 'submit' }]);
+  if (type === 'cipher') return [{ t: 'shiftTo', n: st }, { t: 'submit' }];
+  return Array.isArray(st) ? st : null;
+}
+/** The Daily Crew Challenge: one of the band's random levels, the same for everyone on one UTC day (the day number is the seed). */
+function daily(levels, band, day) {
+  const pool = levels.filter(l => l.random && l.bands.includes(band)); if (!pool.length) return null;
+  const r = rng(seedOf('daily:' + day)); return { level: pool[Math.floor(r.float() * pool.length)], seed: 100000 + (day % 100000), day };
+}
+
+// ---- progress and params
+function label(done, total, noun, stars, checks) { let s = `${done}/${total} ${noun}, ${stars} stars`; if (checks && checks.n) s += `, ${checks.ok}/${checks.n} checks`; return s; }
+const LABEL_RE = /^\d{1,2}\/\d{1,2} (levels|cases|tickets|cards), \d{1,3} stars(, \d{1,2}\/\d{1,2} checks)?$/;
+/** The class quest number C B M L: chapter index (0 = the map), 1 Explorer | 2 Pro, mode, level (0 = first unfinished). */
+function questCode(digits, chapters) {
+  const s = String(digits == null ? '' : digits).replace(/\D/g, ''); if (s.length !== 4) return null;
+  const c = +s[0], b = +s[1], m = +s[2], l = +s[3];
+  const ch = c ? chapters.find(x => x.index === c) : null; if (c && !ch) return null;
+  if (b !== 1 && b !== 2) return null; if (!(m in MODES)) return null;
+  return { chapter: ch ? ch.id : null, band: b === 1 ? '1b' : '2', mode: MODES[m], level: l };
+}
+/** The four digits for a quest: {chapter, band, mode, level} -> 'CBML' (null when the chapter is unknown). */
+function questDigits(q, chapters) {
+  const ch = q && q.chapter ? chapters.find(x => x.id === q.chapter) : null; if (q && q.chapter && !ch) return null;
+  const m = Object.keys(MODES).find(k => k !== '1' && MODES[k] === ((q && q.mode) || 'play')) || '0';
+  return String(ch ? ch.index : 0) + (q && q.band === '2' ? '2' : '1') + m + String(Math.max(0, Math.min(9, (q && q.level) || 0)));
+}
+const PARAM_RE = /^[a-z0-9-]{1,16}$/;
+function cleanParams(raw, chapters) {
+  const p = raw && typeof raw === 'object' ? raw : {}, out = {};
+  for (const k of ['chapter', 'band', 'mode', 'level', 'lock']) { if (p[k] == null || p[k] === '') continue; const v = String(p[k]).toLowerCase(); if (PARAM_RE.test(v)) out[k] = v; }
+  if (out.chapter && !chapters.some(c => c.id === out.chapter)) delete out.chapter;
+  if (out.band && out.band !== '1b' && out.band !== '2') delete out.band;
+  if (out.mode && !['play', 'wheel', 'projector'].includes(out.mode)) delete out.mode;
+  if (out.level != null) { const n = +out.level; if (n >= 1 && n <= 30 && n === Math.floor(n)) out.level = n; else delete out.level; }
+  out.lock = out.lock === '1' ? 1 : 0;
+  out.present = ['chapter', 'band', 'mode', 'level'].some(k => k in out) || out.lock === 1;
+  return out;
+}
+
+// ---- ciphers (the Secret Messages chapter and the wheel tool)
+const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const mod = (n, m) => ((n % m) + m) % m;
+function caesar(text, shift) { return String(text).toUpperCase().replace(/[A-Z]/g, ch => ABC[mod(ABC.indexOf(ch) + shift, 26)]); }
+function substitute(text, key, back) { const K = String(key).toUpperCase(); return String(text).toUpperCase().replace(/[A-Z]/g, ch => { const i = back ? K.indexOf(ch) : ABC.indexOf(ch); return i < 0 ? ch : (back ? ABC : K)[i]; }); }
+function letterCounts(text) { const c = {}; for (const ch of String(text).toUpperCase()) if (/[A-Z]/.test(ch)) c[ch] = (c[ch] || 0) + 1; return c; }
+function guessShift(text) { const c = letterCounts(text); let best = 'E', n = -1; for (const k in c) if (c[k] > n) { n = c[k]; best = k; } return mod(ABC.indexOf(best) - ABC.indexOf('E'), 26); }
+/** Hide bits in the last bit of pixel values (a steganography model): values 0-255, bits 0/1. */
+function hideBits(values, bits) { return values.map((v, i) => (i < bits.length ? (v & ~1) | (bits[i] & 1) : v)); }
+function readBits(values, count) { return values.slice(0, count).map(v => v & 1); }
+
+root.PacketPost = { rng, seedOf, instance, Run, solve, play, starter, daily, label, LABEL_RE, questCode, questDigits, cleanParams, MODES, PICTURES, ABC, caesar, substitute, letterCounts, guessShift, hideBits, readBits };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ===== Packet Post levels: the chapters, every level with its learn card, hints and Case-closed check, and the
+   chapter chains lesson mode follows. English text is the key; the language packs translate it. ===== */
+(function (root) {
+'use strict';
+const CHAPTERS = [
+  { index: 1, id: 'packets', title: 'Break It Up', noun: 'levels', pic: 'apple', csta: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] } },
+  { index: 2, id: 'routes', title: 'Many Roads', noun: 'levels', pic: 'globe', csta: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] } },
+  { index: 3, id: 'protocols', title: 'Rules of the Road', noun: 'levels', pic: 'book', csta: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] } },
+  { index: 4, id: 'locks', title: 'Lock It', noun: 'levels', pic: 'shield', csta: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] } },
+  { index: 5, id: 'tricks', title: 'Spot the Trick', noun: 'cards', pic: 'magnifier', csta: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] } },
+  { index: 6, id: 'ciphers', title: 'Secret Messages', noun: 'levels', pic: 'letterblock', csta: { '1b': [], '2': ['2-NI-06'] }, enrichment: ['1b'] },
+];
+// Lesson mode chains (lock=1 or a class quest number): at chapter end the band goes on into the next chapter.
+const THEN = {
+  '1b': { packets: { ch: 'routes' }, tricks: { ch: 'ciphers', levels: [1, 3] } },
+  '2': { protocols: { ch: 'routes', levels: [5, 6] }, ciphers: { ch: 'tricks', levels: [7, 10] } },
+};
+const H = (id, x, y, label, kind) => ({ id, x, y, label, kind: kind || 'office' });
+const house = (id, x, y, label) => H(id, x, y, label, 'house');
+// Netville's map shapes (spots are fractions of the board; random levels mirror them).
+const LINE = [house('S', 0.12, 0.55, "Pim's Post"), H('A', 0.5, 0.35, 'Mill Office'), house('D', 0.88, 0.55, "Grandma's House")];
+const FORK = to => [house('S', 0.1, 0.5, "Pim's Post"), H('A', 0.5, 0.2, 'Hill Office'), H('B', 0.5, 0.8, 'River Office'), house('D', 0.9, 0.5, to)];
+const FORK_LINKS = [['S', 'A'], ['A', 'D'], ['S', 'B'], ['B', 'D']];
+const DETOUR = to => [house('S', 0.08, 0.5, "Pim's Post"), H('A', 0.46, 0.2, 'Hill Office'), H('B', 0.34, 0.8, 'River Office'), H('C', 0.66, 0.8, 'Bridge Office'), house('D', 0.92, 0.5, to)];
+const DETOUR_LINKS = [['S', 'A'], ['A', 'D'], ['S', 'B'], ['B', 'C'], ['C', 'D']];
+const DIAMOND = to => [house('S', 0.07, 0.5, "Pim's Post"), H('A', 0.36, 0.2, 'Hill Office'), H('B', 0.36, 0.8, 'River Office'), H('C', 0.64, 0.5, 'Center Office'), house('D', 0.93, 0.5, to)];
+const DIAMOND_LINKS = [['S', 'A'], ['S', 'B'], ['A', 'C'], ['B', 'C'], ['C', 'D']];
+const TOWN = to => [house('S', 0.06, 0.5, "Pim's Post"), H('A', 0.3, 0.18, 'Hill Office'), H('B', 0.3, 0.82, 'River Office'), H('C', 0.62, 0.18, 'Bridge Office'), H('E', 0.62, 0.82, 'Mill Office'), house('D', 0.94, 0.5, to)];
+const TOWN_LINKS = [['S', 'A'], ['S', 'B'], ['A', 'C'], ['B', 'E'], ['C', 'D'], ['E', 'D'], ['A', 'B'], ['C', 'E']];
+const BOTH = ['1b', '2'], NI = ['1B-NI-04'], NI2 = ['2-NI-04'], NI5 = ['1B-NI-05'], NI5B = ['2-NI-05'], IC23 = ['2-IC-23'], NI6 = ['2-NI-06'];
+
+const LEVELS = [
+  // ---- Chapter 1: Break It Up (a picture becomes numbered packets; each packet rides a road; the house rebuilds it)
+  { id: 'pk-1', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 3, par: 6, picture: 'apple', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', sol: 'auto',
+    learn: { title: 'Break it up', text: 'A picture is too big to send in one go. The network cuts it into small numbered packets. Each packet rides its own road, and the numbers put the picture back together at the other end.', pic: 'apple' },
+    intro: 'Grandma wants a picture of an apple. Send each packet down the road, then rebuild the picture by number.',
+    hints: ['Where is the packet right now, and which road leaves from there?', 'The glowing road leads out of the office where the packet is waiting.', 'Tap the glowing road. When all the pieces have arrived, tap them in order: 1, then 2, then 3.'],
+    check: { q: 'What does the network do with a big picture before sending it?', tiles: ['Cuts it into numbered packets', 'Sends it in one giant piece', 'Prints it on paper first'], answer: 0 } },
+  { id: 'pk-2', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 3, par: 6, random: true, nodes: FORK('The School'), links: FORK_LINKS, from: 'S', to: 'D', sol: 'auto',
+    intro: 'Two roads lead to the school. Any open road is fine for a packet.',
+    hints: ['Does every packet have to take the same road?', 'Both glowing roads reach the school in two hops.', 'Tap either glowing road for each packet, then rebuild the picture by number.'],
+    check: { q: 'Can two packets of one picture take different roads?', tiles: ['Yes, any open road works', 'No, they must stay together', 'Only the first packet may'], answer: 0 } },
+  { id: 'pk-3', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 4, par: 8, picture: 'melon', nodes: DETOUR('Birthday House'), links: DETOUR_LINKS, from: 'S', to: 'D', sol: 'auto',
+    intro: 'Four packets for the birthday house. One road is short and one is a long detour.',
+    hints: ['Which way reaches the house in the fewest hops?', 'The road over the hill is only two hops. The river way is three.', 'Tap the hill road, then the road into the house. Do that for every packet.'],
+    check: { q: 'Which road gets a packet there fastest?', tiles: ['The shortest open one', 'The longest one', 'The one with the most offices'], answer: 0 } },
+  { id: 'pk-4', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 5, par: 15, random: true, nodes: DIAMOND('Zoo Gate'), links: DIAMOND_LINKS, from: 'S', to: 'D', sol: 'auto',
+    intro: 'Five packets for the zoo. Every road here meets at the center office.',
+    hints: ['Where do all the roads meet before the zoo?', 'Both first roads lead to the center office, and from there one road goes on.', 'Tap a glowing road, then the road to the center office, then the road to the zoo. Repeat for each packet.'],
+    check: { q: 'How does the house know the order of the pieces?', tiles: ['By the number on each packet', 'By how the road looks', 'By which piece looks nicest'], answer: 0 } },
+  { id: 'pk-5', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 6, par: 18, random: true, nodes: TOWN("Grandma's House"), links: TOWN_LINKS, from: 'S', to: 'D', sol: 'auto',
+    intro: 'Six packets across the whole town. Three hops is the fewest for each one.',
+    hints: ['How many hops does the shortest way take?', 'The glowing roads are on a three hop way. Side roads between offices only add hops.', 'Tap the glowing road three times in a row for each packet, then place the six pieces by number.'],
+    check: { q: 'A picture arrives as six packets. What happens at the house?', tiles: ['The pieces are put back in number order', 'Only the first piece is kept', 'The picture is sent back'], answer: 0 } },
+
+  // ---- Chapter 2: Many Roads (a road closes, a busy office is slow, packets arrive mixed up, hop budgets, sealed roads)
+  { id: 'rt-1', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 4, par: 8, picture: 'cookie', nodes: FORK('The School'), links: FORK_LINKS, closes: [{ link: 'A-D', after: 2 }], from: 'S', to: 'D', sol: 'auto',
+    learn: { title: 'Many roads', text: 'Netville has many roads between its post offices. If one road is closed or busy, a packet simply takes another one. Packets can arrive in any order, so the numbers matter.', pic: 'globe' },
+    intro: 'Cookies for the school! Watch the roads: one of them is about to close.',
+    hints: ['A road has closed. Is there another way to the school?', 'The river road is still open and it is just as short.', 'Tap the road to the river office, then the road into the school.'],
+    check: { q: 'A road closes while you are sending. What do you do?', tiles: ['Send the next packets another way', 'Stop sending forever', 'Throw the packets away'], answer: 0 } },
+  { id: 'rt-2', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 4, par: 8, random: true, nodes: FORK('Birthday House'), links: FORK_LINKS, busyAny: ['A', 'B'], from: 'S', to: 'D', sol: 'auto',
+    intro: 'One office is very busy today. Packets that pass it arrive late, so they may come in a mixed up order.',
+    hints: ['Why did a later packet arrive before an earlier one?', 'The busy office (with the clock) holds packets a while. The numbers still tell you the order.', 'Tap the pieces by number, not by the order they arrived: 1, 2, 3, 4.'],
+    check: { q: 'Packet 3 arrives before packet 2. What now?', tiles: ['Wait, then place them in number order', 'Use packet 3 as number 2', 'Send the whole picture again'], answer: 0 } },
+  { id: 'rt-3', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 5, par: 16, picture: 'tower', nodes: TOWN('Zoo Gate'), links: TOWN_LINKS, closes: [{ link: 'A-C', after: 2 }, { link: 'E-D', after: 4 }], from: 'S', to: 'D', sol: 'auto',
+    intro: 'Roadworks all over town. Two roads will close while you send. Keep finding a way.',
+    hints: ['When a road closes, which other roads still reach the zoo?', 'Follow the glowing roads: they always show an open way, even if it is one hop longer.', 'Tap the glowing road each time. The last packet needs four hops instead of three.'],
+    check: { q: 'Why does Netville have more than one road between offices?', tiles: ['So packets still arrive when a road closes', 'Because roads are cheap', 'To confuse the packets'], answer: 0 } },
+  { id: 'rt-4', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 6, par: 18, random: true, nodes: TOWN('The School'), links: TOWN_LINKS, busyAny: ['C', 'E'], closesAny: [{ link: 'A-C', after: 3 }, { link: 'B-E', after: 3 }], from: 'S', to: 'D', sol: 'auto',
+    intro: 'A busy office and a road that closes. Six packets, three hops each, back in order at the end.',
+    hints: ['Which packets will arrive late, and does that change their numbers?', 'The busy office slows packets down. A closed road means another road. The numbers never change.', 'Take the glowing roads, then place the pieces 1 to 6 by their numbers.'],
+    check: { q: 'What keeps a picture correct when its packets take different roads and arrive mixed up?', tiles: ['The numbers on the packets', 'Luck', 'Sending very slowly'], answer: 0 } },
+  { id: 'rt-5', ch: 'routes', bands: ['2'], csta: NI2, type: 'route', n: 4, par: 12, budget: 13, picture: 'ufo', nodes: TOWN('Birthday House'), links: TOWN_LINKS, closes: [{ link: 'A-C', after: 2 }], from: 'S', to: 'D', sol: 'auto',
+    intro: 'Hop budget! You may use thirteen hops in all. Four packets, three hops each, and a road that closes.',
+    hints: ['How many hops can each packet spend if the budget is thirteen for four packets?', 'Three hops each uses twelve. Only one spare hop. The glowing roads never waste one.', 'After the hill road closes, go by the river office and the mill office: still three hops.'],
+    check: { q: 'Your hop budget is small. Which way do you pick?', tiles: ['The way with the fewest hops', 'The way with the most offices', 'Any way, hops are free'], answer: 0 } },
+  { id: 'rt-6', ch: 'routes', bands: ['2'], csta: NI2, type: 'route', n: 3, par: 12, secret: true, picture: 'schoolbag', nodes: FORK('Birthday House'), links: [['S', 'A', { sealed: true }], ['A', 'D', { sealed: true }], ['S', 'B'], ['B', 'D']], from: 'S', to: 'D', sol: 'auto',
+    intro: 'This picture is a secret birthday plan. Open roads have a snoopy cat who reads every packet. Sealed roads cost two hops but nobody can peek.',
+    hints: ['Who can read a packet on an open road?', 'The roads with the lock are sealed. They cost more hops, but the snoopy cat sees nothing.', 'Tap the sealed road over the hill, then the sealed road into the house, for every packet.'],
+    check: { q: 'Why send a secret on a sealed road even if it costs more?', tiles: ['Nobody on the way can read it', 'It is faster', 'Sealed roads always arrive first'], answer: 0 } },
+
+  // ---- Chapter 3: Rules of the Road (say got it, ask again, throw away copies, count the dots, the handshake, rule sets)
+  { id: 'pr-1', ch: 'protocols', bands: ['1b'], csta: NI, type: 'ack', n: 3, par: 4, picture: 'cupcake', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [1, 3], sol: 'auto',
+    learn: { title: 'Say got it', text: 'Post offices follow shared rules. When a packet arrives, the house says got it. When a packet is missing, the house asks for that number again. That way nothing stays lost.', pic: 'book' },
+    intro: 'Three packets were sent, but the mail van hit a bump. Say got it for each packet that arrived, and ask again for the one that did not.',
+    hints: ['Which packet number is missing from the board?', 'Slot 2 is empty. Packets 1 and 3 are waiting for a got it.', 'Tap packet 1, then Say got it. Tap slot 2, then Send again. Say got it for 2 and 3.'],
+    check: { q: 'Packet 2 never arrives. What does the house send back?', tiles: ['Please send packet 2 again', 'Nothing, it just waits', 'The whole picture'], answer: 0 } },
+  { id: 'pr-2', ch: 'protocols', bands: ['1b'], csta: NI, type: 'ack', n: 4, par: 6, picture: 'melon', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [1, 3, 3, 4], sol: 'auto',
+    intro: 'Four packets this time. One got lost and one arrived twice! Extra copies go in the bin.',
+    hints: ['Can a picture use two copies of the same piece?', 'Packet 3 came twice. Say got it once, then throw the extra copy away. Slot 2 is empty.', 'Say got it for 1, 3 and 4. Throw away the second 3. Send again for 2, then say got it.'],
+    check: { q: 'Packet 3 arrives twice. What do you do with the extra copy?', tiles: ['Throw the copy away', 'Use it as packet 2', 'Keep both in the picture'], answer: 0 } },
+  { id: 'pr-3', ch: 'protocols', bands: ['2'], csta: NI2, type: 'ack', n: 5, par: 7, picture: 'cookie', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [1, 2, 4], sol: 'auto',
+    learn: { title: 'Rules of the road', text: 'A protocol is a set of rules computers agree on before they talk: number every packet, say got it when one arrives, ask again for a missing one, throw away extra copies. Every post office in Netville follows them.', pic: 'book' },
+    intro: 'Five packets, two lost on the way. Acknowledge what arrived and ask again for the rest.',
+    hints: ['Which numbers never reached the house?', 'Slots 3 and 5 are empty. The sender will only resend what you ask for.', 'Say got it for 1, 2 and 4. Tap slot 3 and slot 5 and Send again, then say got it for both.'],
+    check: { q: 'What is a protocol?', tiles: ['Shared rules computers follow to talk', 'A kind of cable', 'A very fast packet'], answer: 0 } },
+  { id: 'pr-4', ch: 'protocols', bands: ['2'], csta: NI2, type: 'ack', n: 5, par: 8, picture: 'grapes', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [2, 1, 3, 3, 5, 1], sol: 'auto',
+    intro: 'A slow got it makes a sender resend too early. Now there are extra copies and one packet is still missing.',
+    hints: ['Why can the same packet arrive twice?', 'Packets 1 and 3 each came twice: one got it each, the copies go in the bin. Slot 4 is empty.', 'Say got it for 2, 1, 3 and 5. Throw away the extra 3 and the extra 1. Send again for 4, then say got it.'],
+    check: { q: 'Why can a packet arrive twice?', tiles: ['The sender sent it again because the got-it note was slow', 'The road copied it', 'Every packet is always sent twice'], answer: 0 } },
+  { id: 'pr-5', ch: 'protocols', bands: ['2'], csta: NI2, type: 'check', n: 5, par: 3, damage: 2, random: true, picture: 'banana', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', sol: 'auto',
+    intro: 'Every packet carries a dot count. Count the dots on each one: if the count does not match, the packet was damaged and must be sent again.',
+    hints: ['Does the number of dots match what the label says on every packet?', 'Two packets have a label that does not match their dots.', 'Tap each packet whose dots do not match its label, then tap Check the mail.'],
+    check: { q: 'What does counting the dots tell the house?', tiles: ['Whether a packet was damaged on the way', 'How old the packet is', 'Which road it took'], answer: 0 } },
+  { id: 'pr-6', ch: 'protocols', bands: ['2'], csta: NI2, type: 'order', par: 3, picture: 'globe', nodes: [LINE[0], LINE[2]], links: [['S', 'D']], from: 'S', to: 'D',
+    tiles: [{ id: 'hello', text: 'Hello, are you there?' }, { id: 'ready', text: 'Yes! I am ready to receive.' }, { id: 'go', text: 'Great, sending now.' }], order: ['hello', 'ready', 'go'], sol: ['hello', 'ready', 'go'],
+    intro: 'Before a big send, two computers shake hands in three steps. Put the steps in order.',
+    hints: ['What would you say first if you wanted to know someone is listening?', 'First ask if anyone is there. Then the answer. Then the sending starts.', 'Tap Hello, then Yes, then Great, sending now.'],
+    check: { q: 'Why do two computers say hello before sending?', tiles: ['To check both are ready', 'To be polite', 'To pick the shortest road'], answer: 0 } },
+  { id: 'pr-7', ch: 'protocols', bands: ['2'], csta: NI2, type: 'rules', par: 5, budget: 4, picture: 'tower', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D',
+    events: [{ text: 'Packet 3 never arrives.', needs: ['number', 'ack', 'resend'] }, { text: 'Packet 2 arrives twice.', needs: ['number', 'discard'] }, { text: 'The packets arrive mixed up.', needs: ['number'] }],
+    rules: [{ id: 'number', text: 'Number every packet' }, { id: 'ack', text: 'Say got it for each packet' }, { id: 'resend', text: 'Ask again for a missing packet' }, { id: 'discard', text: 'Throw away extra copies' }, { id: 'twice', text: 'Send everything twice, just in case' }, { id: 'wait', text: 'Wait quietly and hope' }, { id: 'loud', text: 'Send the packets as loud as possible' }],
+    needed: ['number', 'ack', 'resend', 'discard'], sol: ['number', 'ack', 'resend', 'discard'],
+    intro: 'Design the rule set. Three things go wrong on this road. Pick at most four rules that catch all of them.',
+    hints: ['Which rule tells the house that a packet is missing in the first place?', 'Numbers show the gap, got it tells the sender, ask again fills it, and copies need the bin.', 'Pick Number, Say got it, Ask again and Throw away copies. Then try the rules.'],
+    check: { q: 'A good rule set is…', tiles: ['Just the rules the problems need', 'As many rules as possible', 'No rules at all'], answer: 0 } },
+  { id: 'pr-8', ch: 'protocols', bands: ['2'], csta: NI2, type: 'order', par: 5, picture: 'apple', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D',
+    tiles: [{ id: 'cut', text: 'Cut the picture into numbered packets' }, { id: 'road', text: 'Pick a road for each packet' }, { id: 'send', text: 'Send the packets on their way' }, { id: 'ack', text: 'Say got it, or ask again for a missing one' }, { id: 'rebuild', text: 'Put the packets back in number order' }],
+    order: ['cut', 'road', 'send', 'ack', 'rebuild'], sol: ['cut', 'road', 'send', 'ack', 'rebuild'],
+    intro: 'The whole journey of a picture, in five rule cards. Put them in the order they happen.',
+    hints: ['What has to happen before a packet can pick a road?', 'Cutting comes first and rebuilding comes last. Roads before sending, got it after.', 'Tap Cut, Pick a road, Send, Say got it, Put back in order.'],
+    check: { q: 'What happens last?', tiles: ['The packets go back in number order', 'The picture is cut up', 'A road is picked'], answer: 0 } },
+  // ---- Chapter 4: Lock It (what to share and what to keep, the passphrase builder, the device, the spare copy, physical and digital measures, Share or Shield)
+  { id: 'lk-1', ch: 'locks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'sort', par: 8, random: true, bins: [{ id: 'share', label: 'Share', icon: 'speak' }, { id: 'keep', label: 'Keep', icon: 'lock' }],
+    items: [{ id: 'animal', text: 'Your favorite animal', bin: 'share' }, { id: 'addr', text: 'Your home address', bin: 'keep' }, { id: 'draw', text: 'A drawing of your pet', bin: 'share' }, { id: 'key', text: 'Your mailbox key', bin: 'keep' },
+      { id: 'school', text: 'The name of your school', bin: 'keep' }, { id: 'book', text: 'Your favorite book', bin: 'share' }, { id: 'bday', text: 'Your birthday', bin: 'keep' }, { id: 'joke', text: 'A joke you made up', bin: 'share' }], sol: 'auto',
+    learn: { title: 'Lock it up', text: 'Some things about you are private: where you live, your birthday, your mailbox key. Share the fun things, keep the private things, and protect your stuff online the way you protect it at home: lock it, keep the key, keep a spare copy.', pic: 'shield' },
+    intro: 'Pim is sorting the mail. Which things are fine to share with the whole town, and which stay private?',
+    hints: ['Could a stranger use this to find you or get into your things?', 'Where you live, when you were born and your key all help a stranger. A joke or a favorite animal helps nobody.', 'Tap Keep for the address, the key, the school and the birthday. Everything else is Share.'],
+    check: { q: 'Which of these is private?', tiles: ['Your home address', 'Your favorite animal', 'A joke you made up'], answer: 0 } },
+  { id: 'lk-2', ch: 'locks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'pass', par: 5, need: 4,
+    words: [{ id: 'purple', text: "purple" }, { id: 'volcano', text: "volcano" }, { id: 'teapot', text: "teapot" }, { id: 'giraffe', text: "giraffe" }, { id: 'bicycle', text: "bicycle" }, { id: 'thunder', text: "thunder" }, { id: 'bday', text: 'my birthday', weak: true }, { id: 'pet', text: "my pet's name", weak: true }], sol: 'auto',
+    intro: 'Build a mailbox key for Pim from four word tiles. Watch the meter: it shows how long a guessing computer would need.',
+    hints: ['Which tiles could a stranger guess just by knowing you?', 'A birthday or a pet name is easy to look up. Four random words with many letters push the meter to centuries.', 'Pick purple, volcano, giraffe and bicycle, then tap Lock it in.'],
+    check: { q: 'What makes a passphrase strong and easy to remember?', tiles: ['Several random words with many letters', 'Your birthday written backwards', 'The word key'], answer: 0 } },
+  { id: 'lk-3', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'safe', label: 'Protects it', icon: 'check' }, { id: 'risky', label: 'Risky', icon: 'cross' }],
+    items: [{ id: 'lock', text: 'A screen lock on the tablet', bin: 'safe' }, { id: 'update', text: 'Installing updates when they appear', bin: 'safe' }, { id: 'park', text: 'Leaving it unlocked on a park bench', bin: 'risky' },
+      { id: 'logout', text: 'Signing out on a shared computer', bin: 'safe' }, { id: 'lend', text: 'Lending your mailbox key to a friend', bin: 'risky' }, { id: 'popup', text: 'Tapping every pop-up prize', bin: 'risky' }], sol: 'auto',
+    intro: 'A tablet holds your messages and pictures. Sort the habits: which ones protect it, and which ones put it at risk?',
+    hints: ['If the tablet was left alone for a minute, what would keep a stranger out?', 'A lock, an update and signing out keep others out. Lending the key or leaving it open lets them in.', 'Tap Protects it for the lock, the updates and signing out. The other three are Risky.'],
+    check: { q: 'Which habit protects a tablet?', tiles: ['A screen lock', 'Leaving it unlocked on a bench', 'Tapping every pop-up'], answer: 0 } },
+  { id: 'lk-4', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'ok', label: 'Okay to tell', icon: 'check' }, { id: 'no', label: 'Keep it to yourself', icon: 'lock' }],
+    items: [{ id: 'home', text: 'A grown-up at home who looks after your account', bin: 'ok' }, { id: 'friend', text: 'Your best friend, just this once', bin: 'no' }, { id: 'popup', text: 'A pop-up that promises free coins for it', bin: 'no' },
+      { id: 'chat', text: 'A stranger in game chat who says they are a helper', bin: 'no' }, { id: 'teacher', text: 'A teacher setting up the class tablets with you', bin: 'ok' }, { id: 'knows', text: 'Someone who already knows your birthday', bin: 'no' }], sol: 'auto',
+    intro: 'Who may know your mailbox key? Only the grown-ups who look after your account. Sort who gets to hear it.',
+    hints: ['Who looks after your account, and who just wants to get in?', 'A grown-up at home and a teacher setting things up look after you. Friends, strangers and pop-ups do not need your key.', 'Tap Okay to tell for the grown-up at home and the teacher. Everyone else: Keep it to yourself.'],
+    check: { q: 'A friend asks for your mailbox key, just this once. What do you do?', tiles: ['Keep it to yourself', 'Tell them quietly', 'Write it on the board'], answer: 0 } },
+  { id: 'lk-5', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'good', label: 'A good spare copy', icon: 'check' }, { id: 'bad', label: 'Not a spare copy', icon: 'cross' }],
+    items: [{ id: 'drive', text: 'A second copy on a drive at home', bin: 'good' }, { id: 'only', text: 'The only copy, on one tablet', bin: 'bad' }, { id: 'cloud', text: "A copy in the family's online folder", bin: 'good' },
+      { id: 'print', text: 'A printout of your best photo in a drawer', bin: 'good' }, { id: 'same', text: 'The same file saved twice in the same folder', bin: 'bad' }, { id: 'old', text: 'A copy from last year that was never updated', bin: 'bad' }], sol: 'auto',
+    intro: 'A spare key lives somewhere safe, and so should a spare copy of your work. If the tablet breaks, which copies would save the day?',
+    hints: ['If this tablet fell in the pond, would the copy survive?', 'A spare copy lives somewhere else and stays up to date. Two files in one folder sink together.', 'Tap A good spare copy for the drive, the online folder and the printout. The rest are not spare copies.'],
+    check: { q: 'Where should a spare copy (a backup) live?', tiles: ['Somewhere else, kept up to date', 'In the same folder as the original', 'Nowhere, copies are a waste'], answer: 0 } },
+  { id: 'lk-6', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'safe', label: 'Safe habit', icon: 'check' }, { id: 'risky', label: 'Risky habit', icon: 'cross' }],
+    items: [{ id: 'different', text: 'One key for the mail, a different one for games', bin: 'safe' }, { id: 'same', text: 'The same key everywhere', bin: 'risky' }, { id: 'words', text: 'A key made of four random words', bin: 'safe' },
+      { id: 'pet', text: "Your pet's name as the key", bin: 'risky' }, { id: 'change', text: 'Changing the key when a site leaks it', bin: 'safe' }, { id: 'asks', text: 'Telling the key to whoever asks nicely', bin: 'risky' }], sol: 'auto',
+    intro: 'If one key opens every door, losing it opens them all. Sort the habits: safe or risky?',
+    hints: ['If one game leaked your key, what else would open?', 'Different keys keep a leak small. A pet name or the same key everywhere makes one leak a disaster.', 'Tap Safe habit for different keys, four random words and changing a leaked key. The other three are Risky.'],
+    check: { q: 'Why is one key for everything risky?', tiles: ['One leak opens every account', 'It is hard to remember', 'Keys wear out'], answer: 0 } },
+  { id: 'lk-7', ch: 'locks', bands: ['2'], csta: NI5B, type: 'sort', par: 12, random: true, bins: [{ id: 'physical', label: 'Physical', icon: 'home' }, { id: 'digital', label: 'Digital', icon: 'key' }],
+    items: [{ id: 'door', text: 'A lock on the server room door', bin: 'physical' }, { id: 'badge', text: 'A badge to get into the office', bin: 'physical' }, { id: 'safe', text: 'A safe for the backup drives', bin: 'physical' }, { id: 'camera', text: 'A camera at the entrance', bin: 'physical' },
+      { id: 'cable', text: 'A cable lock on the laptop', bin: 'physical' }, { id: 'screen', text: 'A privacy screen on the monitor', bin: 'physical' }, { id: 'key', text: 'A strong mailbox key', bin: 'digital' }, { id: 'twostep', text: 'Two-step sign-in', bin: 'digital' },
+      { id: 'firewall', text: 'A firewall', bin: 'digital' }, { id: 'updates', text: 'Updates for the apps', bin: 'digital' }, { id: 'sealed', text: 'Sealed envelopes (encryption)', bin: 'digital' }, { id: 'scanner', text: 'A virus scanner', bin: 'digital' }], sol: 'auto',
+    intro: 'Netville Post protects its mail two ways: with physical measures you can touch, and digital measures that live in the computers. Sort all twelve.',
+    hints: ['Could you bump into this measure with your elbow?', 'Doors, badges, safes, cameras, cable locks and privacy screens are things. Mailbox keys, two-step sign-in, firewalls, updates, encryption and virus scanners run on the computer.', 'Tap Physical for the six things you can touch and Digital for the six that run on the computer.'],
+    check: { q: 'Which is a digital security measure?', tiles: ['A firewall', 'A lock on the door', 'A camera at the entrance'], answer: 0 } },
+  { id: 'lk-8', ch: 'locks', bands: ['2'], csta: NI5B, type: 'route', n: 3, par: 18, secret: true, picture: 'schoolbag', nodes: DETOUR('The Shop'), links: [['S', 'A'], ['A', 'D'], ['S', 'B', { sealed: true }], ['B', 'C', { sealed: true }], ['C', 'D', { sealed: true }]], from: 'S', to: 'D', sol: 'auto',
+    intro: 'Your order for the shop has your name and your home address inside. The open street is shorter, but the snoopy cat reads everything on it. The padlock street is sealed.',
+    hints: ['Which street has the padlock, and what does the cat see there?', 'Sealed streets cost more hops but hide every letter. The open street over the hill is where the cat waits.', 'Tap the sealed road by the river, then the sealed road to the bridge, then the sealed road into the shop, for every packet.'],
+    check: { q: 'A shop page shows a padlock. What does that mean?', tiles: ['The envelopes to the shop are sealed, so nobody on the way can read them', 'The shop is closed', 'The page is slow'], answer: 0 } },
+  { id: 'lk-9', ch: 'locks', bands: ['2'], csta: NI5B, type: 'pass', par: 5, need: 4,
+    words: [{ id: 'granite', text: 'granite' }, { id: 'kettle', text: 'kettle' }, { id: 'meadow', text: 'meadow' }, { id: 'walrus', text: 'walrus' }, { id: 'trumpet', text: 'trumpet' }, { id: 'comet', text: 'comet' }, { id: 'sticker', text: 'the word on the router sticker', weak: true }, { id: 'street', text: 'our street name', weak: true }], sol: 'auto',
+    intro: 'The home router still has the key printed on its sticker, and anyone who visits can read it. Build it a new one from four word tiles.',
+    hints: ['Which tiles can a visitor read off the router or the street sign?', 'The sticker word and the street name are known to every visitor. Random words with many letters are not.', 'Pick granite, kettle, meadow and trumpet, then tap Lock it in.'],
+    check: { q: 'Why change the key printed on the router sticker?', tiles: ['Anyone who sees the sticker can get in', 'Stickers fall off', 'Printed keys are too long'], answer: 0 } },
+  { id: 'lk-10', ch: 'locks', bands: ['2'], csta: NI5B, type: 'order', par: 4, picture: 'book', nodes: [LINE[0], LINE[2]], links: [['S', 'D']], from: 'S', to: 'D',
+    tiles: [{ id: 'copy', text: 'Make a second copy' }, { id: 'place', text: 'Keep it in another place' }, { id: 'check', text: 'Check that the copy opens' }, { id: 'update', text: 'Update the copy when the file changes' }], order: ['copy', 'place', 'check', 'update'], sol: ['copy', 'place', 'check', 'update'], starter: ['update', 'copy', 'place', 'check'],
+    intro: 'The backup rule in four steps. A copy that lives next to the original, or that nobody ever checked, is no protection at all. Put the steps in order.',
+    hints: ['What has to exist before you can store it somewhere else?', 'First the copy, then its own place, then a check that it works, then keep it fresh.', 'Tap Make a second copy, Keep it in another place, Check that the copy opens, Update the copy.'],
+    check: { q: 'Why keep the copy in another place?', tiles: ['One flood or one theft cannot take both', 'It looks tidier', 'A copy on the same laptop is just as safe'], answer: 0 } },
+  { id: 'lk-11', ch: 'locks', bands: ['2'], csta: IC23, type: 'sort', par: 12, random: true, bins: [{ id: 'public', label: 'Public', icon: 'speak' }, { id: 'private', label: 'Private', icon: 'lock' }],
+    items: [
+      { id: 'name', text: 'Your first name on a class project', bin: 'public', benefit: 'Classmates know whose work it is', risk: 'Very little: a first name alone is not much', reasons: ['Many people share it, and it is not enough to find you', 'Nobody may ever know your name', 'It opens your mailbox'], answer: 0 },
+      { id: 'addr', text: 'Your home address', bin: 'private', benefit: 'Friends could send you a card', risk: 'A stranger could turn up at your door', reasons: ['It tells a stranger exactly where to find you', 'Addresses are boring', 'It is too long to type'], answer: 0 },
+      { id: 'photo', text: 'A photo of your drawing', bin: 'public', benefit: 'People can enjoy your art', risk: 'Little, if nothing private shows in the picture', reasons: ['It shows your work, not where you live', 'Drawings are secret', 'Photos are always private'], answer: 0 },
+      { id: 'key', text: 'Your mailbox key', bin: 'private', benefit: 'None: nobody else needs it', risk: 'Anyone with it can read and send as you', reasons: ['Whoever holds it is you, as far as the mailbox knows', 'Keys are hard to spell', 'Sharing it makes it stronger'], answer: 0 },
+      { id: 'away', text: 'The dates your family is away', bin: 'private', benefit: 'Friends know when you are back', risk: 'It tells everyone the house is empty', reasons: ['It tells everyone when the house is empty', 'Dates are secret numbers', 'Trips are boring'], answer: 0 },
+      { id: 'game', text: 'Your favorite game', bin: 'public', benefit: 'You find people who like it too', risk: 'Almost none', reasons: ['It says what you like, not who or where you are', 'Games are secret', 'It unlocks your tablet'], answer: 0 }], sol: 'auto',
+    intro: 'Share or Shield. Six facts about you, each with a good side and a risk. Decide public or private, then pick the reason.',
+    hints: ['Weigh the good side against the risk: could a stranger use this fact to find you or get into your things?', 'A name, a drawing and a favorite game say what you like. An address, a key and empty-house dates say where and how to reach you.', 'Public: the first name, the photo, the game. Private: the address, the key, the dates away. Then pick the first reason that explains the risk.'],
+    check: { q: 'What makes a fact private rather than public?', tiles: ['It could help a stranger find you or get into your things', 'It is embarrassing', 'It is a number'], answer: 0 } },
+
+  // ---- Chapter 5: Spot the Trick (an inbox of pretend messages: find the cues, then safe, trick or ask a grown-up)
+  { id: 'tk-1', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Prize Team', badge: 'odd', subject: 'You won a tablet!', body: 'Congratulations! You are our lucky winner. Reply with your mailbox key in the next ten minutes to claim your prize.', button: 'Claim now', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'hurry', text: 'Hurry: only ten minutes', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'prize', text: 'A prize for a contest you never entered', trick: true }, { id: 'congrats', text: 'Says congratulations', trick: false }], sol: 'auto',
+    learn: { title: 'Spot the trick', text: 'Some messages are tricks. They rush you, promise prizes, ask for your mailbox key, or come from a sender you do not know. Tap every cue you can find, then decide: safe, trick, or ask a grown-up.', pic: 'magnifier' },
+    intro: "A message just landed in Pim's inbox. Tap every cue that smells like a trick, then decide what it is.",
+    hints: ['Who sent this, and what do they want from you?', 'Look at the clock, the key and the prize. Real prizes never need your key.', 'Tap Hurry, Asks for the mailbox key and the prize cue, then tap Trick.'],
+    check: { q: 'A message offers a prize if you reply with your mailbox key. What is it?', tiles: ['A trick: nobody real asks for your key', 'A lucky day', 'A normal delivery note'], answer: 0 } },
+  { id: 'tk-2', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Your bank', badge: 'odd', subject: 'Your account is locked', body: 'We noticed a problem. Send us your mailbox key today or your account will be closed.', button: 'Unlock', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'threat', text: 'Threatens to close your account', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'sender', text: 'Unknown sender badge', trick: true }, { id: 'today', text: 'Mentions today', trick: false }], sol: 'auto',
+    intro: 'This one sounds scary. Scary is a trick too: it wants you to act before you think.',
+    hints: ['Would a real bank ever ask for your key in a message?', 'A threat, a key request and an unknown badge: three cues on one card.', 'Tap the threat, the key cue and the badge cue, then tap Trick or Ask a grown-up.'],
+    check: { q: 'A message threatens to close your account unless you send your key. What do you do?', tiles: ['Treat it as a trick and ask a grown-up', 'Send the key quickly', 'Reply to argue'], answer: 0 } },
+  { id: 'tk-3', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 1, from: 'Your teacher', badge: 'known', subject: 'Field trip on Friday', body: 'Bring a packed lunch and a raincoat. The bus leaves at nine. See you there!', verdict: 'safe', starter: 'trick',
+    cues: [{ id: 'lunch', text: 'Mentions lunch', trick: false }, { id: 'known', text: 'Known sender badge', trick: false }, { id: 'bus', text: 'Says what time the bus leaves', trick: false }], sol: 'auto',
+    intro: 'Not every message is a trick. Read this one carefully before you decide.',
+    hints: ['Does it rush you, promise anything, or ask for anything private?', 'A known sender, no hurry, no key, nothing to tap. Those are not trick cues.', 'Leave the cues alone and tap Safe.'],
+    check: { q: 'What tells you a message is probably safe?', tiles: ['A known sender and nothing asked of you', 'A big prize', 'A countdown clock'], answer: 0 } },
+  { id: 'tk-4', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Game Shop', badge: 'odd', subject: 'Free coins today only!', body: 'Tap the button to get a thousand free coins. Hurry, the offer ends in one hour!', button: 'Get coins', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'free', text: 'Free coins for nothing', trick: true }, { id: 'hurry', text: 'Hurry, one hour', trick: true }, { id: 'button', text: 'A button that wants a tap right now', trick: true }, { id: 'coins', text: 'Talks about coins', trick: false }], sol: 'auto',
+    intro: 'Free coins! Before you tap anything, find the cues.',
+    hints: ['Why would a shop give coins away for one tap?', 'Something for nothing, a clock, and a shiny button are the classic three.', 'Tap Free coins, Hurry and the button cue, then tap Trick.'],
+    check: { q: 'A shiny button promises free coins if you tap it right now. Why is that a cue?', tiles: ['Tricks rush you so you do not think', 'Buttons are always safe', 'Coins are free online'], answer: 0 } },
+  { id: 'tk-5', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', accept: ['ask'], par: 4, from: 'A new friend', badge: 'odd', subject: 'Meet me after school', body: 'I saw you in the game. Tell me your street and I will come over with a gift.', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'where', text: 'Asks where you live', trick: true }, { id: 'stranger', text: 'Someone you have never met', trick: true }, { id: 'gift', text: 'Offers a gift', trick: true }, { id: 'game', text: 'Mentions the game', trick: false }], sol: 'auto',
+    intro: 'A stranger from the game wants to visit. This is one to show a grown-up.',
+    hints: ['Have you ever met this person? What do they want to know?', 'A stranger, a question about where you live, and a gift to make it sound nice.', 'Tap the three cues, then tap Ask a grown-up.'],
+    check: { q: 'Someone you met in a game asks for your street. What do you do?', tiles: ['Do not answer and tell a grown-up', 'Give the street but not the number', 'Invite them over'], answer: 0 } },
+  { id: 'tk-6', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 1, from: 'The library', badge: 'known', subject: 'Your book is due', body: 'The dinosaur book is due back on Monday. Bring it to the desk any time this week.', verdict: 'safe', starter: 'trick',
+    cues: [{ id: 'due', text: 'Says a book is due', trick: false }, { id: 'known', text: 'Known sender badge', trick: false }, { id: 'calm', text: 'No rush and nothing to tap', trick: false }], sol: 'auto',
+    intro: 'Last card of the day. Look carefully: is anything here a trick cue?',
+    hints: ['Does it ask for anything, or rush you?', 'Known sender, a normal reminder, no button. Nothing to flag.', 'Tap Safe without flagging any cue.'],
+    check: { q: 'The library reminds you a book is due, with no button and no hurry. What is it?', tiles: ['Safe: a normal reminder', 'A trick', 'A prize'], answer: 0 } },
+  { id: 'tk-7', ch: 'tricks', bands: ['2'], csta: NI5B, type: 'inbox', par: 4, from: 'Your bank', badge: 'odd', subject: 'Confirm your details', body: 'For your safety, confirm your mailbox key and birthday using the button below.', button: 'Confirm', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'spoof', text: 'Says the bank, but the badge says unknown sender', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'safety', text: 'Pretends it is for your safety', trick: true }, { id: 'polite', text: 'Is polite', trick: false }], sol: 'auto',
+    intro: 'A sender can write any name on an envelope. The badge shows whether the post office really knows them.',
+    hints: ['Does the name on the envelope match what the post office knows about the sender?', 'The name says bank, the badge says unknown. That mismatch is called a spoofed sender.', 'Tap the badge cue, the key cue and the safety cue, then tap Trick.'],
+    check: { q: 'A message says it is from your bank, but the sender badge says unknown. What is going on?', tiles: ['The sender name is faked (spoofed)', 'The bank moved', 'Badges are random'], answer: 0 } },
+  { id: 'tk-8', ch: 'tricks', bands: ['2'], csta: NI5B, type: 'inbox', par: 4, from: 'Parcel Service', badge: 'odd', subject: 'Your parcel is waiting', body: 'We could not deliver your parcel. Pay a small fee within two hours to get it back.', button: 'Pay now', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'fee', text: 'Asks for money', trick: true }, { id: 'hurry', text: 'Two hours to act', trick: true }, { id: 'noorder', text: 'A parcel you never ordered', trick: true }, { id: 'parcel', text: 'Mentions a parcel', trick: false }], sol: 'auto',
+    intro: 'Did you order anything? A parcel you never ordered is a favorite trick.',
+    hints: ['Were you expecting a parcel at all?', 'Money, a two hour clock, and a parcel out of nowhere.', 'Tap Asks for money, Two hours and the parcel cue, then tap Trick.'],
+    check: { q: 'A note asks for a small fee within two hours for a parcel you never ordered. What is it?', tiles: ['A trick: money plus hurry plus surprise', 'A normal delivery', 'A gift'], answer: 0 } },
+  { id: 'tk-9', ch: 'tricks', bands: ['2'], csta: IC23, type: 'inbox', par: 4, from: 'Fan Club', badge: 'odd', subject: 'Hello, skateboard star!', body: 'We saw your profile: you love skateboards, your dog is called Biscuit and you turn twelve next week. Reply with your mailbox key to get a birthday prize!', button: 'Get prize', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'profile', text: 'Knows things from your public profile', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'prize', text: 'A prize out of nowhere', trick: true }, { id: 'dog', text: 'Mentions your dog', trick: false }], sol: 'auto',
+    intro: 'They know your dog and your birthday. Where did that come from? Anything on a public profile is a gift to a trickster.',
+    hints: ['What did they already know about you, and where could they have read it?', 'Everything they know sits on a public profile. Knowing it does not make them a friend.', 'Tap the profile cue, the key cue and the prize cue, then tap Trick.'],
+    check: { q: 'A stranger knows your dog and your birthday from your public profile. Does that make them trustworthy?', tiles: ['No: anyone can read a public profile', 'Yes, they must be a friend', 'Only if they are polite'], answer: 0 } },
+  { id: 'tk-10', ch: 'tricks', bands: ['2'], csta: IC23, type: 'inbox', par: 4, from: 'Fun Quiz', badge: 'odd', subject: 'Which dragon are you?', body: 'Answer three quick questions to find out: your first pet, the street you grew up on, and your birthday. Then share your result with everyone!', button: 'Start quiz', verdict: 'trick', starter: 'safe',
+    cues: [{ id: 'secrets', text: 'Asks the very things used to reset a mailbox key', trick: true }, { id: 'share', text: 'Wants you to post it for everyone', trick: true }, { id: 'fun', text: 'Dressed up as a fun quiz', trick: true }, { id: 'dragon', text: 'Mentions dragons', trick: false }], sol: 'auto',
+    intro: 'A quiz that only wants three little facts. Those three facts are the ones that reset a mailbox key.',
+    hints: ['What do a first pet, a street and a birthday have in common?', 'Those are the questions a site asks to reset your key. A quiz that collects them collects keys.', 'Tap the three cues, then tap Trick.'],
+    check: { q: 'Why is a quiz that asks for your first pet and birthday a trick?', tiles: ['Those answers reset mailbox keys', 'Quizzes are boring', 'Those answers are not secrets, so it is fine'], answer: 0 } },
+
+  // ---- Chapter 6: Secret Messages (the key wheel, encoding, an unknown shift, the key card, hidden pixels, cracking by counting E, the two-key lockbox)
+  { id: 'ci-1', ch: 'ciphers', bands: BOTH, csta: [], csta2: NI6, type: 'cipher', par: 2, kind: 'caesar', mode: 'decode', plain: 'APPLE', shift: 3, sol: 'auto', starter: 5,
+    learn: { title: 'Secret messages', text: 'A cipher scrambles a message so only someone with the key can read it. The key wheel shifts every letter along the alphabet. Turn it back by the same amount and the message comes back.', pic: 'letterblock' },
+    intro: 'Grandma sent a secret word with a shift of three. Turn the inner wheel until the reading makes sense, then tap That\'s it!',
+    hints: ['The message was shifted by three. Where should the wheel point?', 'Watch the reading under the message: it changes with every turn.', 'Turn to shift 3. The reading says APPLE.'],
+    check: { q: 'What does the key wheel do to a message?', tiles: ['Shifts every letter by the same amount', 'Deletes the vowels', 'Makes the letters bigger'], answer: 0 } },
+  { id: 'ci-2', ch: 'ciphers', bands: BOTH, csta: [], csta2: NI6, type: 'cipher', par: 1, kind: 'caesar', mode: 'encode', plain: 'OAK TREE', shift: 5, sol: 'auto',
+    intro: 'Now you send one. Shift OAK TREE by five and pick the scrambled message that matches.',
+    hints: ['Where does O land when every letter moves five steps forward?', 'O becomes T, A becomes F. Check the first two letters of each reading.', 'Pick the reading that starts with TF.'],
+    check: { q: 'To send a secret with a shift of five, what do you do to each letter?', tiles: ['Move it five steps forward', 'Double it', 'Swap it with the next word'], answer: 0 } },
+  { id: 'ci-3', ch: 'ciphers', bands: BOTH, csta: [], csta2: NI6, type: 'cipher', par: 2, kind: 'caesar', mode: 'decode', random: true, plains: ['RIVER', 'TOWER', 'GARDEN', 'ROCKET', 'PENGUIN', 'LANTERN', 'BRIDGE', 'PICNIC'], sol: 'auto',
+    intro: 'A secret word with an unknown shift. Turn the wheel one step at a time until a real word appears.',
+    hints: ['Does the reading look like a real word yet?', 'Only one shift turns it into a word. Keep going one step at a time and read every time.', 'Keep turning until the reading is a word from Netville: a river, a tower, a garden, a rocket.'],
+    check: { q: 'You do not know the shift. How can you still read the message?', tiles: ['Try every shift until a real word appears', 'Give up', 'Read it backwards'], answer: 0 } },
+  { id: 'ci-4', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'cipher', par: 1, kind: 'keyed', mode: 'decode', plain: 'TOWER', key: 'QWERTYUIOPASDFGHJKLZXCVBNM', choices: ['RIVER', 'TOWER', 'TIGER'], answer: 1, sol: 'auto',
+    intro: 'A key card swaps every letter for a partner, with no pattern to guess. Use the card to read the message, then pick the word it says.',
+    hints: ['Which plain letter does the card swap for the first letter of the message?', 'Find each secret letter in the green row and read the plain letter above it.', 'The card turns the message into TOWER.'],
+    check: { q: 'Why is a key card harder to crack than a shift?', tiles: ['There are far more key cards than shifts to try', 'It is made of thicker paper', 'It uses more vowels'], answer: 0 } },
+  { id: 'ci-5', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'pixel', par: 40, w: 6, h: 6, mode: 'hide', random: true, target: [0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], sol: 'auto',
+    intro: 'Hide a heart inside an ordinary picture. Every pixel is a number; make its last bit match the heart: odd for a dot, even for blank. The picture will look the same.',
+    hints: ['Which pixels need a dot, and which number is odd?', 'A pixel with a dot is odd. Compare each pixel with the small heart.', 'Tap every pixel whose dot does not match the heart, then tap Check the picture.'],
+    check: { q: 'Changing the last bit of a pixel hides a message because…', tiles: ['The picture looks the same to the eye', 'Pixels disappear', 'The picture gets brighter'], answer: 0 } },
+  { id: 'ci-6', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'cipher', par: 3, kind: 'caesar', mode: 'crack', random: true, plains: ['THE BEES SEE THE TREES NEAR THE LAKE', 'WE MEET AT THREE BY THE GREEN GATE', 'SEVEN GEESE SLEEP BESIDE THE WHEEL'], sol: 'auto',
+    intro: 'No key this time. In English the most common letter is usually E. Count the letters, find the most common one, and turn the wheel so it becomes E.',
+    hints: ['Which letter appears most often in the secret message?', 'Tap Count the letters. The top letter is probably a shifted E.', 'Turn the wheel until the most common letter reads as E, then tap That\'s it!'],
+    check: { q: 'How can you crack a shift without the key?', tiles: ['Count the letters: the most common one is probably E', 'Ask the sender nicely', 'Shake the wheel'], answer: 0 } },
+  { id: 'ci-7', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'sort', par: 8, bins: [{ id: 'easy', label: 'Easy to crack', icon: 'unlock' }, { id: 'hard', label: 'Hard to crack', icon: 'lock' }],
+    items: [
+      { id: 'shift', text: 'A shift of three on the key wheel', bin: 'easy', info: 'Every letter moves three steps along the alphabet.', reasons: ['There are only twenty-five shifts to try', 'Nobody knows about wheels', 'Three is a big number'], answer: 0 },
+      { id: 'card', text: 'A key card with a scrambled alphabet', bin: 'hard', info: 'Each letter swaps for its own partner.', reasons: ['There are more key cards than anyone could ever try', 'Cards are made of paper', 'It uses capital letters'], answer: 0 },
+      { id: 'lockbox', text: 'The two-key lockbox', bin: 'hard', info: 'Anyone can snap it shut, but only the owner holds the key that opens it. The opening key never travels.', reasons: ['The opening key never travels, so nobody can copy it', 'Boxes are heavy', 'Two keys make it twice as fast'], answer: 0 },
+      { id: 'pixels', text: 'A message hidden in picture pixels, once the trick is known', bin: 'easy', info: 'The picture looks normal, but the last bits spell it out.', reasons: ['Hiding is not locking: anyone who knows where to look can read it', 'Pictures are always secret', 'Pixels cannot hold letters'], answer: 0 }], sol: 'auto',
+    intro: 'Four ways to keep a secret. Which are easy to crack and which are hard, and why? The two-key lockbox is how real sealed roads work.',
+    hints: ['How many tries would a computer need for each one?', 'Twenty-five shifts is nothing for a computer. A scrambled card or a key that never travels is another story.', 'Easy: the shift and the hidden pixels. Hard: the key card and the lockbox. Then pick the first reason each time.'],
+    check: { q: 'In the two-key lockbox, who can open the box?', tiles: ['Only the owner, with the key that never travels', 'Anyone who finds the box', 'The post office'], answer: 0 } },
+];
+/** The cipher word list: every plaintext, key and reading a player can see, screened at build time by shifting each one by all 25 keys against the profanity lists of every language. */
+const WORDS = [...new Set(LEVELS.filter(l => l.type === 'cipher').flatMap(l => [l.plain, ...(l.plains || []), l.key, ...(l.choices || [])]).filter(Boolean))];
+root.PacketPostLevels = { CHAPTERS, LEVELS, THEN, WORDS };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ===== Packet Post in the kit's other languages: the packs (public/vendor/data/packet-post) hold the words of each
+   language; English is the key. This table stays empty in the game file so it loads only the player's language. ===== */
+(typeof window !== 'undefined' ? window : globalThis).PacketPostI18n = {};
+</script>
+<script type="module">
+const E = window.PacketPost, D = window.PacketPostLevels, O = window.Oomba;
+const CONFIG = {
+  title: 'Packet Post',
+  pim: { species: 'owl', wear: ['backpack'], colors: { base: 'cocoa', accent: 'spark' } },
+  crownLooks: [{ base: 'cocoa', accent: 'sky' }, { base: 'cocoa', accent: 'grape' }, { base: 'stone', accent: 'mint' }, { base: 'peach', accent: 'sky' }, { base: 'snow', accent: 'coral' }, { base: 'grape', accent: 'spark' }],
+  biome: 'meadow',
+  storeKey: 'packet-post-v1',
+  hopMs: 520,
+  arriveMs: 700,
+  levelsPerPage: 6,
+};
+const CHAPTERS = D.CHAPTERS, LEVELS = D.LEVELS, CH_BY_ID = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
+const BAND_NAME = { '1b': 'Explorer', '2': 'Pro' };
+const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
+
+/* ---------- words: English is the key; a language pack adds the translation (Oomba.strings) ---------- */
+const LANG0 = String(O.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
+const PACK_VER = '1.0.0-8773cf3f', PACK_SRI = {"es":"sha384-sbwqaJRST11xgfjYa79/bmPgqaLj36glCiMapA9jRBq50u+1fQoNQzMkkf2JHhTM","fr":"sha384-GeKo8EhbcZKFbvTpPcv5d3zDlF9+9wbZk3UAnj6hxKugZvy4bqnxjeX4hRk5eSdq","de":"sha384-E0vm4QARMLAHzAW/HWglBdX6fk25AJPTJu1Emw4QzTn6LTzhA14QjuB/lgqfpvGo","it":"sha384-9e5ULNjSi8qNLjtlFQ/CoUVnZKrQlVEy0VN0AOv3bmQCtroYvCGxCR4Iatlr+K0r","pt":"sha384-/FTCvMRzeSmEaDDqJJiZSAVbNEniFV6nTOR8OAfaAxAEsTYN2Ij0WzrFQb7FW3QR","nl":"sha384-ox5QNql9p/26tXXikrBqoV6+IjGLiZrHCfaScPvCUJqtGnMUbD8Gkmm/GW+AK6Tx","ru":"sha384-BahryZRSiE882ujGRUak1vQoH3yYRZjg5iJ9oWlE06BVor7MEG1ZuwHHJnjqvSgT","ja":"sha384-A7gqbWL09kqE+vxV3WsRY4h7FvPpYXugTpw+50WrWoObK7jfKpcYQOYWWCLDRp5f","zh-Hant":"sha384-4bXUVuschxGDCuTd068t4FdH4tG29rIpL7M7g5s/xV7Wt4G4wsQ0aY8Kf1cJthf1","he":"sha384-4mt2X/G5KcmRwygG53HuesR6sI4/B107uK0KgbHcCK0NiZoFVHQ0VRxe5PgclQyT","ar":"sha384-iGrqF0ZEshdAQk2Ky9Ar37qTub0O+lB4dN1ooDZsEFj3CJWbvv9BRbby1XVktCaz"};
+const PACK = await new Promise(res => {
+  if (IS_EN0 || !PACK_VER || !PACK_SRI[LANG0]) return res(null);
+  const s = document.createElement('script');
+  s.src = `/vendor/data/packet-post/${PACK_VER}/${LANG0}.js`; s.integrity = PACK_SRI[LANG0]; s.crossOrigin = 'anonymous';
+  s.onload = () => res(((window.CsqPacks || {})['packet-post'] || {})[LANG0] || null); s.onerror = () => res(null);
+  document.head.appendChild(s); O.time.real.after(9000, () => res(null));
+});
+if (PACK && PACK.strings) O.strings({ [LANG0]: PACK.strings });
+const num = n => O.num(n);
+const fillIn = (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : s);
+function tr(s, v) {
+  if (s == null || s === '') return '';
+  const sv = v && Object.fromEntries(Object.entries(v).map(([k, x]) => [k, typeof x === 'number' ? num(x) : String(x)]));
+  const r = O.t(s, sv);
+  return r === s && sv ? fillIn(s, sv) : r;
+}
+
+/* ---------- saved progress (per player, in the cloud save) ---------- */
+const store = { get() { try { return (window.BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } }, set(v) { try { if (window.BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* no save */ } } };
+const SAVE = Object.assign({ band: '1b', stars: {}, skipped: {}, crowns: {}, daily: null }, store.get());
+if (SAVE.band !== '1b' && SAVE.band !== '2') SAVE.band = '1b';
+const save = () => store.set({ band: SAVE.band, stars: SAVE.stars, skipped: SAVE.skipped, crowns: SAVE.crowns, daily: SAVE.daily });
+
+/* ---------- helpers ---------- */
+const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
+const starsOf = id => (SAVE.stars[id] && SAVE.stars[id].n) || 0;
+const silverOf = id => !!(SAVE.stars[id] && SAVE.stars[id].n && SAVE.stars[id].band === '1b');   // Explorer stars, shown silver to a Pro player
+/** The UTC day number (the Daily Crew Challenge's seed): the real calendar, read once per start, never next to the game loop. */
+const dayNumber = () => { const d = new Date(); return Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) / 864e5); };
+const chapterStars = (ch, band, lo, hi) => levelsFor(ch, band).filter((l, i) => lo == null || (i + 1 >= lo && i + 1 <= hi)).reduce((a, l) => a + starsOf(l.id), 0);
+const firstUnfinished = (ch, band) => { const ls = levelsFor(ch, band); const i = ls.findIndex(l => !starsOf(l.id) && !SAVE.skipped[l.id]); return i < 0 ? 0 : i; };
+const unlocked = (ch, band, ix) => { if (ix <= 0) return true; const p = levelsFor(ch, band)[ix - 1]; return !!p && !!(starsOf(p.id) || SAVE.skipped[p.id]); };
+const cstaOf = (level, band) => (band === '2' ? (level.csta2 || level.csta) : level.csta) || [];
+const reduced = () => !!O.settings.reduced;
+const ms = v => (S.fast || reduced() ? 1 : v);
+const $ = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const icon = (name, o) => O.icon(name, o);
+const iconEl = name => { const e = $('span', 'pp-ic'); e.innerHTML = icon(name); e.setAttribute('aria-hidden', 'true'); return e; };
+const btn = (label, o) => O.ui.button(label, o);
+const announce = t => O.ui.announce(t);
+const toast = t => O.ui.toast(t);
+const sfx = (n, o) => { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* quiet */ } };
+const C = (role, step) => { try { return O.color(role, step); } catch (e) { return null; } };
+
+/* ---------- state ---------- */
+const S = {
+  params: E.cleanParams((window.BRB && BRB.params) || {}, CHAPTERS),
+  lesson: false, lock: false, mode: 'play', band: SAVE.band, projector: false,
+  chapter: null, levelIx: 0, level: null, run: null, range: null, lockedChapter: null, chained: [],
+  seed0: 1, attempt: 0, fails: 0, hint: 0, tier3: false, runs: 0, checks: { ok: 0, n: 0 }, daily: null,
+  w: null, pim: null, fast: false, dom: null, screen: 'none', lastLabel: '', lastScore: 0, pending: null, busy: false, flow: 0,
+};
+S.seed0 = E.seedOf(String(O.time.now) + '|' + (window.BRB && BRB.user ? BRB.user.displayName : ''));
+if (S.params.present) { S.lesson = true; S.lock = !!S.params.lock; if (S.params.band) S.band = S.params.band; S.mode = S.params.mode || 'play'; }
+S.projector = S.mode === 'projector';
+
+/* ---------- the kit game: the world behind, the title, HUD, pause and results ---------- */
+const SET = [
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '  P   N               ',
+  '######################',
+  '######################',
+];
+/** Pim's outfit: the satchel always; every chapter crown (full stars) recolors it and adds the crown. */
+function pimLook() { const n = Object.keys(SAVE.crowns).length; if (!n) return Object.assign({}, CONFIG.pim); const c = CONFIG.crownLooks[Math.min(n, CONFIG.crownLooks.length) - 1]; return { species: CONFIG.pim.species, wear: CONFIG.pim.wear.concat(['crown']), colors: c }; }
+let PIM = O.char(pimLook());
+function refreshPim() {
+  PIM = O.char(pimLook()); const w = S.w; if (!w) return;
+  try { const old = w.find('pim'); const nw = w.spawn(Object.assign({ kind: 'npc', tag: 'pim', flip: true, size: 2.1 }, pimLook()), old ? { x: old.x, y: old.y } : { c: 6, r: 6 }); if (old) old.remove(null); S.pim = nw; } catch (e) { /* the world keeps the old look until the next start */ }
+}
+let game = null;
+game = O.game({
+  api: 1, title: CONFIG.title, subtitle: tr('Deliver every packet. Keep every secret.'), biome: CONFIG.biome,
+  controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
+  hud: ['progress', 'count:star'],
+  howTo: [{ icon: 'tap', text: tr('Tap a road for each packet') }, { icon: 'move', text: tr('Rebuild the picture by number') }, { icon: 'lock', text: tr('Keep secrets sealed') }],
+  level: O.level.grid(SET, { N: Object.assign({ kind: 'npc', tag: 'pim', flip: true, size: 2.1 }, pimLook()) }),
+  update: frame,
+  testState: () => testState(),
+  on: { start: onStart, title: hideAll, results: hideAll, lose: hideAll },
+});
+/** The camera: the cast big at the bottom, sky above (the game's own panels sit over the sky). */
+function frame(w) {
+  const V = w.stage.view, Cm = w.cam, L = w.level, tall = V.vh > V.vw * 1.1, z = tall ? V.vw / (6 * w.cell) : Math.min(V.vw / (12 * w.cell), V.vh / (7 * w.cell));
+  Cm.bounds(null); Cm.zoom = z; Cm.x = L.w / 2; Cm.y = L.h - w.cell * 1.6 - V.vh / z / 2;
+  const pim = w.find('pim'); if (pim && w.hero) { const d = (tall ? 1.1 : 2.4) * w.cell; pim.x = L.w / 2 + d; w.hero.x = L.w / 2 - d; }
+}
+
+/* ---------- the game's own DOM, inside the kit's UI layer ---------- */
+function build() {
+  if (S.dom) return S.dom;
+  const root = O.ui.root();
+  for (const [k, v] of Object.entries({ road: C('stone', 'light'), sealed: C('magic', 'light'), lit: C('hot'), go: C('go', 'light'), bad: C('wrong', 'light'), house: C('reward', 'tint'), num: C('reward'), ink: C('ink') })) if (v) root.style.setProperty('--pp-' + k, v);
+  const pp = $('div', 'pp'); pp.id = 'pp'; pp.hidden = true; pp.dir = O.dir; if (S.projector) pp.classList.add('pp-proj');
+  root.appendChild(pp);
+  S.dom = { pp };
+  return S.dom;
+}
+function hideAll() { if (S.dom) { S.dom.pp.hidden = true; S.dom.pp.innerHTML = ''; } S.screen = 'none'; S.run = null; closeCards(); }
+function screen(name) { const { pp } = build(); pp.innerHTML = ''; pp.hidden = false; S.screen = name; S.flow++; return pp; }
+let cardPause = 0;
+function openCard(name) {
+  const { pp } = build(); const c = $('div', 'pp-card pp-card-' + name); c.setAttribute('role', 'dialog'); c.setAttribute('aria-modal', 'true');
+  const inner = $('div'); c.appendChild(inner); pp.appendChild(c); O.time.pause('pp:card'); cardPause++;
+  const prev = document.activeElement;
+  const keys = e => { const bs = [...c.querySelectorAll('button:not([disabled])')]; if (!bs.length) return; const i = bs.indexOf(document.activeElement); if (e.key === 'Tab') { e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); } else if (e.key === 'Escape' && c.onEscape) { e.preventDefault(); c.onEscape(); } e.stopPropagation(); };
+  document.addEventListener('keydown', keys, true);
+  c.closeCard = () => { if (!c.parentNode) return; c.remove(); document.removeEventListener('keydown', keys, true); cardPause--; O.time.resume('pp:card'); try { prev && prev.focus && prev.focus({ preventScroll: true }); } catch (e) { /* gone */ } };
+  O.time.real.after(0, () => { const f = c.querySelector('[data-pp-focus]') || c.querySelector('button'); if (f) f.focus({ preventScroll: true }); });
+  return { card: c, inner };
+}
+function closeCards() { if (!S.dom) return; for (const c of [...S.dom.pp.querySelectorAll('.pp-card')]) if (c.closeCard) c.closeCard(); }
+const portrait = (size, mood) => O.ui.portrait(PIM, { size, mood: mood || 'happy' });
+/** A pressed tile shows a check mark as well as its color (color cues alone are never enough). */
+function pressed(el, on) { el.setAttribute('aria-pressed', String(!!on)); const t = el.querySelector(':scope > .pp-tick'); if (on && !t) { const k = $('span', 'pp-tick'); k.innerHTML = icon('check'); k.setAttribute('aria-hidden', 'true'); el.appendChild(k); } else if (!on && t) t.remove(); }
+const pic = (name, px) => { try { return O.art.toCanvas(name, px || 96); } catch (e) { return document.createElement('canvas'); } };
+
+/* ---------- the kit's start: the chapter map, or straight into the class quest ---------- */
+function onStart(w) {
+  S.w = w; S.pim = w.find('pim'); hideAll(); S.checks = { ok: 0, n: 0 }; S.chained = [];
+  const pending = S.pending; S.pending = null;
+  if (pending) { applyStart(pending); return; }
+  if (S.mode === 'wheel') return showWheel();
+  if (S.lesson && S.params.chapter) { S.lockedChapter = S.params.chapter; return enterChapter(S.params.chapter, S.params.level ? S.params.level - 1 : null); }
+  showMap();
+}
+function applyStart(o) {
+  if (o.seed != null) { S.seed0 = +o.seed || 1; S.attempt = 0; }
+  if (o.band === '1b' || o.band === '2') S.band = o.band;
+  if (o.mode) S.mode = o.mode; else if (o.chapter || o.daily) S.mode = 'play'; S.projector = S.mode === 'projector'; if (S.dom) S.dom.pp.classList.toggle('pp-proj', S.projector);
+  if (o.lesson != null) S.lesson = !!o.lesson; if (o.lock != null) { S.lock = !!o.lock; if (S.lock) S.lesson = true; }
+  if (S.mode === 'wheel') return showWheel();
+  if (o.daily) return startDaily(o.day);
+  if (o.chapter && CH_BY_ID[o.chapter]) { if (S.lesson) S.lockedChapter = o.chapter; return enterChapter(o.chapter, o.level ? o.level - 1 : null); }
+  showMap();
+}
+/** The HUD: the chapter's levels done and stars in play; on the map, the band's whole game. */
+function hudSync() {
+  const w = S.w; if (!w || !w.hud) return;
+  const ls = S.chapter ? levelsFor(S.chapter, S.band) : LEVELS.filter(l => l.bands.includes(S.band));
+  const done = ls.filter(l => starsOf(l.id) > 0).length, stars = ls.reduce((a, l) => a + starsOf(l.id), 0);
+  if (w.hud.progress) w.hud.progress.set(ls.length ? done / ls.length : 0);
+  if (w.hud.count) w.hud.count.set(stars, ls.length * 3);
+}
+
+/* ---------- the chapter map (free play) ---------- */
+function showMap() {
+  if (S.lock) return enterChapter(S.lockedChapter || S.params.chapter || 'packets', null);
+  S.chapter = null; S.level = null; S.run = null; hudSync();
+  const pp = screen('map'), map = $('div', 'pp-map'); pp.appendChild(map);
+  const bar = $('div', 'pp-bar'); map.appendChild(bar);
+  const seg = $('div', 'pp-seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
+  for (const b of ['1b', '2']) { const x = $('button', '', tr(BAND_NAME[b])); x.type = 'button'; x.setAttribute('aria-pressed', String(S.band === b)); x.addEventListener('click', () => { if (S.band === b) return; S.band = b; SAVE.band = b; save(); sfx('select'); announce(tr('Band: {band}', { band: tr(BAND_NAME[b]) })); showMap(); }); seg.appendChild(x); }
+  bar.appendChild(seg); bar.appendChild($('div', 'pp-sp'));
+  bar.appendChild(btn(tr('Quest Card'), { kind: 'icon', icon: 'settings', onPress: () => questCard() }));
+  const grid = $('div', 'pp-grid'); map.appendChild(grid);
+  for (const ch of CHAPTERS) {
+    const ls = levelsFor(ch.id, S.band), got = chapterStars(ch.id, S.band), max = ls.length * 3;
+    const b = $('button', 'pp-ch'); b.type = 'button'; b.appendChild(pic(ch.pic, 44));
+    const t = $('span'); t.appendChild($('b', '', tr(ch.title)));
+    const silver = S.band === '2' ? ls.filter(l => silverOf(l.id)).length : 0;
+    let sub = ls.length ? (ch.enrichment && ch.enrichment.includes(S.band) ? tr('Just for fun · {got} of {max} stars', { got, max }) : tr('{got} of {max} stars', { got, max })) : tr('Coming soon');
+    if (silver) sub += ' · ' + tr('{n} silver', { n: silver });
+    if (SAVE.crowns[ch.id + ':' + S.band]) sub += ' · ' + tr('Crown');
+    const sm = $('small', silver === ls.length && ls.length ? 'pp-silver' : '', sub); sm.dir = 'auto'; t.appendChild(sm); b.appendChild(t);
+    if (!ls.length) b.disabled = true;
+    b.setAttribute('aria-label', tr(ch.title) + '. ' + sub);
+    b.addEventListener('click', () => { sfx('select'); showChapter(ch.id); });
+    grid.appendChild(b);
+  }
+  // the Daily Crew Challenge: one of the band's random levels, the same for the whole crew today, with its own three stars
+  const d = E.daily(LEVELS, S.band, dayNumber());
+  if (d && !S.lesson) {
+    const b = $('button', 'pp-ch pp-daily'); b.type = 'button'; b.appendChild(pic('clock', 44));
+    const t = $('span'); t.appendChild($('b', '', tr('Daily Crew Challenge')));
+    const got = SAVE.daily && SAVE.daily.day === d.day && SAVE.daily.band === S.band ? SAVE.daily.stars : 0;
+    const sub = tr('Today: {chapter}', { chapter: tr(CH_BY_ID[d.level.ch].title) }) + (got ? ' · ' + tr('{n} stars', { n: got }) : '');
+    const sm = $('small', '', sub); sm.dir = 'auto'; t.appendChild(sm); b.appendChild(t);
+    b.setAttribute('aria-label', tr('Daily Crew Challenge') + '. ' + sub);
+    b.addEventListener('click', () => { sfx('select'); startDaily(); });
+    grid.appendChild(b);
+  }
+  announce(tr('Chapter map. Band: {band}', { band: tr(BAND_NAME[S.band]) }));
+}
+function startDaily(day) {
+  const d = E.daily(LEVELS, S.band, day == null ? dayNumber() : day); if (!d) return showMap();
+  S.lesson = false; S.lock = false; S.lockedChapter = null; S.range = null; S.chained = []; S.daily = d;   // the daily is free play
+  const ix = levelsFor(d.level.ch, S.band).indexOf(d.level);
+  S.chapter = d.level.ch; startLevel(d.level.ch, ix, { seed: d.seed, noLearn: true });
+}
+let stripPage = 0;
+function showChapter(chId, page) {
+  const ch = CH_BY_ID[chId], ls = levelsFor(chId, S.band), pp = screen('chapter'), map = $('div', 'pp-map'); pp.appendChild(map);
+  stripPage = page == null ? Math.floor(firstUnfinished(chId, S.band) / CONFIG.levelsPerPage) : page;
+  const bar = $('div', 'pp-bar'); map.appendChild(bar);
+  bar.appendChild(btn(tr('Back'), { kind: 'quiet', icon: 'back', onPress: () => showMap() }));
+  const pill = $('div', 'pp-pill pp-wrap'); pill.appendChild(pic(ch.pic, 28)); pill.appendChild($('span', '', tr(ch.title) + ' · ' + tr(BAND_NAME[S.band]))); bar.appendChild(pill);
+  const strip = $('div', 'pp-strip'); map.appendChild(strip);
+  const per = CONFIG.levelsPerPage, pages = Math.ceil(ls.length / per);
+  ls.slice(stripPage * per, stripPage * per + per).forEach((l, k) => {
+    const ix = stripPage * per + k, b = $('button', 'pp-lv'); b.type = 'button'; b.dir = 'ltr'; b.textContent = num(ix + 1);
+    const st = starsOf(l.id), open = unlocked(chId, S.band, ix);
+    const silver = S.band === '2' && silverOf(l.id);
+    if (st) { const s = $('small', '', (silver ? '◇' : '★') + num(st)); b.appendChild(s); } else if (SAVE.skipped[l.id]) b.appendChild($('small', '', tr('skipped')));
+    b.disabled = !open; b.setAttribute('aria-label', (open ? tr('Level {n}', { n: ix + 1 }) : tr('Level {n}, locked', { n: ix + 1 })) + (st ? ', ' + (silver ? tr('{n} silver', { n: st }) : tr('{n} stars', { n: st })) : ''));
+    b.addEventListener('click', () => { sfx('select'); S.lockedChapter = null; enterChapter(chId, ix); });
+    strip.appendChild(b);
+  });
+  if (pages > 1) { const row = $('div', 'pp-row pp-center'); map.appendChild(row); row.appendChild(btn(tr('Earlier levels'), { kind: 'quiet', icon: 'left', onPress: () => showChapter(chId, Math.max(0, stripPage - 1)) })); row.appendChild(btn(tr('More levels'), { kind: 'quiet', icon: 'right', onPress: () => showChapter(chId, Math.min(pages - 1, stripPage + 1)) })); }
+  const go = btn(tr('Play'), { kind: 'hot', big: true, icon: 'play', onPress: () => { S.lockedChapter = null; enterChapter(chId, null); } }); map.appendChild(go);
+  announce(tr(ch.title));
+}
+
+/* ---------- the Quest Card: band, read aloud, the class quest number keypad ---------- */
+function questCard() {
+  const { card, inner } = openCard('quest'); card.onEscape = () => card.closeCard();
+  inner.appendChild($('h2', '', tr('Quest Card')));
+  if (!S.lock) {
+    const seg = $('div', 'pp-seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
+    for (const b of ['1b', '2']) { const x = $('button', '', tr(BAND_NAME[b])); x.type = 'button'; x.setAttribute('aria-pressed', String(S.band === b)); x.addEventListener('click', () => { S.band = b; SAVE.band = b; save(); for (const y of seg.children) y.setAttribute('aria-pressed', String(y === x)); sfx('select'); }); seg.appendChild(x); }
+    inner.appendChild(seg);
+  }
+  const row = $('div', 'pp-row pp-center'); inner.appendChild(row);
+  const ra = btn(tr('Read aloud'), { kind: O.settings.readAloud ? 'go' : 'quiet', icon: 'speak', onPress: () => { O.settings.readAloud = !O.settings.readAloud; ra.className = 'ok-btn ' + (O.settings.readAloud ? 'ok-go' : 'ok-quiet'); ra.setAttribute('aria-pressed', String(!!O.settings.readAloud)); } }); ra.setAttribute('aria-pressed', String(!!O.settings.readAloud)); row.appendChild(ra);
+  row.appendChild(btn(tr('Settings'), { kind: 'quiet', icon: 'settings', onPress: () => O.ui.settings() }));
+  if (!LIVE && !S.params.present) {
+    inner.appendChild($('p', '', tr('Have a class quest? Tap the four numbers from the board.')));
+    const digits = []; const boxes = $('div', 'pp-digits'); boxes.dir = 'ltr'; for (let k = 0; k < 4; k++) boxes.appendChild($('span', '', '·')); inner.appendChild(boxes);
+    const show = () => { [...boxes.children].forEach((s, k) => { s.textContent = digits[k] == null ? '·' : num(digits[k]); }); go.disabled = digits.length !== 4; };
+    const pad = $('div', 'pp-pad'); pad.dir = 'ltr'; inner.appendChild(pad);
+    const press = d => { if (digits.length >= 4) return; digits.push(d); sfx('select'); show(); };
+    for (const d of [1, 2, 3, 4, 5, 6, 7, 8, 9]) pad.appendChild(btn(num(d), { kind: 'quiet', onPress: () => press(d) }));
+    pad.appendChild(btn(tr('Delete'), { kind: 'icon', icon: 'back', onPress: () => { digits.pop(); show(); } }));
+    pad.appendChild(btn(num(0), { kind: 'quiet', onPress: () => press(0) }));
+    const go = btn(tr('Go'), { kind: 'hot', icon: 'next', onPress: () => { const q = E.questCode(digits.join(''), CHAPTERS); if (!q) { toast(tr('That is not a quest number. Check the board.')); digits.length = 0; show(); return; } card.closeCard(); applyQuest(q); } });
+    pad.appendChild(go); show();
+    card.addEventListener('keydown', e => { if (/^[0-9]$/.test(e.key)) { e.preventDefault(); press(+e.key); } else if (e.key === 'Backspace') { e.preventDefault(); digits.pop(); show(); } else if (e.key === 'Enter' && digits.length === 4 && e.target === card) { e.preventDefault(); go.click(); } });
+  }
+  const close = btn(tr('Close'), { kind: 'go', onPress: () => { card.closeCard(); if (S.screen === 'map') showMap(); } }); close.setAttribute('data-pp-focus', ''); inner.appendChild(close);
+}
+function applyQuest(q) {
+  S.lesson = true; S.band = q.band; SAVE.band = q.band; save(); S.mode = q.mode; S.projector = S.mode === 'projector'; S.dom.pp.classList.toggle('pp-proj', S.projector);
+  S.checks = { ok: 0, n: 0 }; S.chained = [];
+  if (S.mode === 'wheel') return showWheel();
+  if (!q.chapter) return showMap();
+  S.lockedChapter = q.chapter; enterChapter(q.chapter, q.level ? q.level - 1 : null);
+}
+
+/* ---------- entering a chapter and a level ---------- */
+function enterChapter(chId, ix, range) {
+  const ls = levelsFor(chId, S.band);
+  if (!ls.length) { toast(tr('Coming soon')); return S.lock ? null : showMap(); }
+  S.chapter = chId; S.range = range || null; S.daily = null;
+  let at = ix == null ? firstUnfinished(chId, S.band) : Math.max(0, Math.min(ls.length - 1, ix));
+  if (S.range) { const lo = S.range[0] - 1, hi = Math.min(ls.length, S.range[1]) - 1; at = Math.max(lo, Math.min(hi, ix == null ? lo : at)); for (let k = lo; k <= hi; k++) if (!starsOf(ls[k].id) && !SAVE.skipped[ls[k].id]) { at = k; break; } }
+  startLevel(chId, at, {});   // an explicit level (a teacher's level param, a test) opens even when earlier ones are unfinished
+}
+async function startLevel(chId, ix, o = {}) {
+  const ls = levelsFor(chId, S.band), level = ls[ix]; if (!level) return showMap();
+  S.chapter = chId; S.levelIx = ix; S.level = level; S.busy = false;
+  S.hint = o.keepSeed ? o.hint || 0 : 0; S.tier3 = o.keepSeed ? !!o.tier3 : false;   // the same map keeps the hints it was shown; a fresh map starts clean
+  if (!o.keepRun) { S.attempt++; S.fails = o.fails || 0; S.runs = o.runs || 0; }
+  S.runs++;
+  const seed = o.seed != null ? o.seed : E.seedOf(level.id + ':' + S.seed0 + ':' + (o.keepSeed ? S.lastSeed : S.attempt));
+  S.lastSeed = seed; S.run = new E.Run(level, seed);
+  renderLevel(); renderPanel();
+  const flow = ++S.flow;   // after renderLevel: screen() bumps S.flow, so take the token last
+  hudSync();
+  if (ix === 0 && level.learn && !o.noLearn) { await learnCard(level.learn); if (flow !== S.flow) return; }
+  pimSay(tr(level.intro), { speak: ix === 0 });
+  if (level.type === 'ack' || level.type === 'check') {   // the slots and buttons wait until every packet has ridden in
+    S.busy = true;
+    try { await playArrivals(flow); } finally { if (flow === S.flow) S.busy = false; }
+    if (flow !== S.flow) return; UI.revealed = Infinity; if (level.type === 'ack') syncAck(); else if (syncCheck) syncCheck();
+  }
+  if (level.type === 'route') showPacket();
+}
+
+/* ---------- the level screen: the map board on one side, the work panel on the other ---------- */
+const UI = {};
+function renderLevel() {
+  const pp = screen('level'), I = S.run.inst, ch = CH_BY_ID[S.chapter];
+  const bar = $('div', 'pp-bar pp-lvbar'); pp.appendChild(bar);
+  if (S.daily) { const p = $('div', 'pp-pill pp-grow'); p.appendChild(iconEl('clock')); p.appendChild($('span', '', tr('Daily Crew Challenge'))); bar.appendChild(p); }
+  else if (S.lesson) { const p = $('div', 'pp-pill pp-grow pp-wrap'); p.appendChild(iconEl('flag')); p.appendChild($('span', '', tr('Class quest: {chapter} · {band}', { chapter: tr(ch.title), band: tr(BAND_NAME[S.band]) }))); bar.appendChild(p); }
+  else { const p = $('div', 'pp-pill pp-grow pp-wrap'); p.appendChild(pic(ch.pic, 24)); p.appendChild($('span', '', tr(ch.title))); bar.appendChild(p); }
+  const lvv = { n: S.levelIx + 1, total: levelsFor(S.chapter, S.band).length };
+  const lv = $('div', 'pp-pill'); lv.style.flex = '0 0 auto'; lv.appendChild($('span', '', S.daily ? tr(ch.title) : ch.noun === 'cards' ? tr('Card {n} of {total}', lvv) : tr('Level {n} of {total}', lvv))); bar.appendChild(lv);
+  if (S.projector) { const p = $('div', 'pp-pill'); p.appendChild(iconEl('eye')); p.appendChild($('span', '', tr('Projector'))); bar.appendChild(p); }
+  const main = $('div', 'pp-main'); pp.appendChild(main);
+  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid pp-board-card' : I.type === 'pass' || (I.type === 'cipher' && I.kind === 'keyed') ? ' pp-board-card' : I.type === 'cipher' ? ' pp-board-wheel' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
+  const panel = $('div', 'pp-panel'); main.appendChild(panel);
+  Object.assign(UI, { board, panel, links: {}, nodes: {}, lines: {}, packets: {}, pk: null, say: null, revealed: Infinity });
+  PIECES = I.n && MAP_TYPES.includes(I.type) ? pieces(I) : null;
+  if (MAP_TYPES.includes(I.type)) renderBoard(I);
+}
+const MAP_TYPES = ['route', 'ack', 'check', 'order', 'rules'];
+const pct = v => (v * 100).toFixed(2) + '%';
+function renderBoard(I) {
+  const board = UI.board; board.innerHTML = ''; UI.links = {}; UI.nodes = {}; UI.lines = {};
+  const roads = ['<svg class="pp-roads" aria-hidden="true">'];
+  for (const id of I.linkOrder) { const l = I.links[id], a = I.nodes[l.a], b = I.nodes[l.b]; roads.push(`<line x1="${pct(a.x)}" y1="${pct(a.y)}" x2="${pct(b.x)}" y2="${pct(b.y)}" data-link="${id}"${l.sealed ? ' class="pp-sealed"' : ''}></line>`); }
+  roads.push('</svg>'); board.insertAdjacentHTML('beforeend', roads.join(''));
+  for (const ln of board.querySelectorAll('.pp-roads line')) UI.lines[ln.getAttribute('data-link')] = ln;
+  for (const id of I.nodeOrder) {
+    const nd = I.nodes[id], el = $('div', 'pp-node' + (nd.kind === 'house' ? ' pp-house' : '') + (nd.x < 0.2 ? ' pp-start' : nd.x > 0.8 ? ' pp-end' : '')); el.style.left = pct(nd.x); el.style.top = pct(nd.y);
+    const ic = $('div', 'pp-ico'); ic.innerHTML = nd.kind === 'house' ? icon('home') : OFFICE_SVG; if (nd.busy) { const bz = $('span', 'pp-busy'); bz.innerHTML = icon('clock'); bz.title = tr('Busy office'); ic.appendChild(bz); } el.appendChild(ic);
+    const lab = $('small', '', tr(nd.label) + (nd.busy ? ' · ' + tr('busy') : '')); lab.dir = 'auto'; el.appendChild(lab);
+    board.appendChild(el); UI.nodes[id] = el;
+  }
+  if (I.type === 'route') for (const id of I.linkOrder) {
+    const l = I.links[id], a = I.nodes[l.a], b = I.nodes[l.b];
+    const bt = $('button', 'pp-link'); bt.type = 'button'; bt.style.left = pct((a.x + b.x) / 2); bt.style.top = pct((a.y + b.y) / 2); bt.dataset.link = id;
+    bt.addEventListener('click', () => doAction({ t: 'hop', id }));
+    board.appendChild(bt); UI.links[id] = bt;
+  }
+  syncRoads();
+}
+const OFFICE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6"/><path d="M5 10v10h14V10"/><rect x="8" y="13" width="8" height="5" rx="1"/><path d="M8 13l4 3 4-3"/></svg>';
+function closedNow() { return new Set(S.run.inst.linkOrder.filter(id => UI.lines[id] && UI.lines[id].classList.contains('pp-closed'))); }
+/** Paints the roads; with `frozen` (the ids painted closed before a move) a road that just closed keeps its open look until the packet is home. */
+function syncRoads(frozen) {
+  const run = S.run; if (!run || run.type !== 'route') return; const I = run.inst, s = run.s;
+  for (const id of I.linkOrder) {
+    const l = I.links[id], bt = UI.links[id], ln = UI.lines[id], closed = frozen ? frozen.has(id) : run.closed(l), here = s.phase === 'play' && (l.a === s.at || l.b === s.at) && !closed;
+    ln.classList.toggle('pp-closed', closed); ln.classList.toggle('pp-lit', here);
+    bt.className = 'pp-link' + (closed ? ' pp-closed' : here ? ' pp-ok' : l.sealed ? ' pp-sealedb' : '');
+    bt.innerHTML = closed ? icon('cross') : l.sealed ? icon('lock') : here ? icon('next') : icon('move');
+    const other = I.nodes[l.a === s.at ? l.b : l.a];
+    bt.setAttribute('aria-label', closed ? tr('Road closed') : (l.sealed ? tr('Sealed road to {place}, {n} hops', { place: tr(other.label), n: l.cost }) : tr('Road to {place}', { place: tr(other.label) })));
+    bt.disabled = s.phase !== 'play';
+  }
+  for (const id of I.nodeOrder) UI.nodes[id].classList.toggle('pp-here', s.phase === 'play' && id === s.at);
+}
+
+/* ---------- Pim's line and the work panel ---------- */
+function pimSay(text, o = {}) {
+  if (!UI.say) return; UI.say.p.textContent = text; UI.say.p.dir = 'auto';
+  if (o.speak !== false) O.say(text);
+  if (o.announce !== false) announce(text);
+}
+function renderPanel() {
+  const run = S.run, panel = UI.panel; panel.innerHTML = '';
+  const say = $('div', 'pp-say'); say.appendChild(portrait(40)); const p = $('p'); say.appendChild(p); panel.appendChild(say); UI.say = { el: say, p };
+  if (UI.lastSay) p.textContent = UI.lastSay;
+  p.textContent = tr(S.level.intro);
+  if (run.type === 'route') renderRoutePanel();
+  else if (run.type === 'ack') renderAckPanel();
+  else if (run.type === 'check') renderCheckPanel();
+  else if (run.type === 'order') renderOrderPanel();
+  else if (run.type === 'rules') renderRulesPanel();
+  else if (run.type === 'sort') renderSortPanel();
+  else if (run.type === 'pass') renderPassPanel();
+  else if (run.type === 'inbox') renderInboxPanel();
+  else if (run.type === 'cipher') renderCipherPanel();
+  else if (run.type === 'pixel') renderPixelPanel();
+  // a phone on its side: on the card levels Pim's line sits in the board with the card, so the panel keeps its buttons in view
+  const fill = UI.board.querySelector('.pp-fill'); if (fill && run.type !== 'pixel' && landscape() && window.innerHeight < 520) fill.prepend(say);
+  renderTools();
+}
+
+/* ----- sort levels: share or keep, physical or digital, Share or Shield ----- */
+function renderSortPanel() {
+  const panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = cardHost(false);
+  UI.item = $('div', 'pp-itemcard'); fill.appendChild(UI.item);
+  UI.doneList = $('div', 'pp-seq'); UI.doneList.setAttribute('aria-label', tr('Sorted so far')); fill.appendChild(UI.doneList);
+  const prog = $('div', 'pp-pill'); prog.appendChild(iconEl('check')); prog.appendChild($('span', '', '')); panel.appendChild(prog); UI.prog = prog.lastChild;
+  UI.binRow = $('div', 'pp-row'); panel.appendChild(UI.binRow);
+  UI.whyBox = $('div', 'pp-tiles'); panel.appendChild(UI.whyBox);
+  syncSort();
+}
+function currentItem() { const run = S.run, id = run.inst.shown.find(x => !run.resolved(run.item(x))); return id ? run.item(id) : null; }
+function syncSort() {
+  const run = S.run, I = run.inst, s = run.s, t = currentItem(), done = I.items.filter(x => run.resolved(x)).length;
+  UI.prog.textContent = tr('Sorted {n} of {total}', { n: done, total: I.items.length });
+  UI.item.innerHTML = ''; UI.binRow.innerHTML = ''; UI.whyBox.innerHTML = '';
+  UI.doneList.innerHTML = '';
+  for (const x of I.items) if (run.resolved(x)) { const bin = tr(I.bins.find(b => b.id === s.assigned[x.id]).label), sp = $('span'); sp.appendChild(document.createTextNode(tr(x.text))); sp.appendChild($('b', 'pp-binlabel', bin)); sp.setAttribute('aria-label', tr(x.text) + ', ' + bin); UI.doneList.appendChild(sp); }
+  if (!UI.doneList.children.length) UI.doneList.appendChild($('span', 'pp-lesson-note', tr('Nothing sorted yet')));
+  if (!t) return;
+  UI.item.appendChild($('b', '', tr(t.text)));
+  if (t.info) UI.item.appendChild($('p', '', tr(t.info)));
+  if (t.benefit) UI.item.appendChild($('p', '', tr('Good side: {text}', { text: tr(t.benefit) })));
+  if (t.risk) UI.item.appendChild($('p', '', tr('Risk: {text}', { text: tr(t.risk) })));
+  if (s.assigned[t.id] == null) { I.bins.forEach((bn, k) => { const b = btn(tr(bn.label), { kind: k === 0 ? 'go' : 'quiet', icon: bn.icon || undefined, onPress: () => doAction({ t: 'bin', id: t.id, bin: bn.id }) }); b.dataset.bin = bn.id; UI.binRow.appendChild(b); }); }
+  else {
+    const pill = $('div', 'pp-pill'); pill.appendChild(iconEl('check')); pill.appendChild($('span', '', tr(I.bins.find(x => x.id === s.assigned[t.id]).label))); UI.binRow.appendChild(pill); UI.binRow.appendChild($('p', 'pp-h', tr('Why?')));
+    (t.reasons || []).forEach((r, k) => { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.why = String(k); b.textContent = tr(r); b.addEventListener('click', () => doAction({ t: 'why', id: t.id, k })); UI.whyBox.appendChild(b); });
+  }
+}
+
+/* ----- pass levels: the passphrase builder ----- */
+const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'many years', 'centuries'];
+function renderPassPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = cardHost(true); fill.style.width = '100%';
+  fill.appendChild($('p', 'pp-h', tr('Your passphrase')));
+  UI.phrase = $('div', 'pp-seq'); UI.phrase.style.width = '100%'; UI.phrase.setAttribute('aria-label', tr('Your passphrase')); fill.appendChild(UI.phrase);
+  UI.meter = $('div', 'pp-meter'); UI.meter.style.width = '100%'; UI.meter.setAttribute('role', 'progressbar'); UI.meter.setAttribute('aria-valuemin', '0'); UI.meter.setAttribute('aria-valuemax', '4'); UI.meter.appendChild($('i')); fill.appendChild(UI.meter);
+  UI.meterText = $('p', 'pp-h'); fill.appendChild(UI.meterText);
+  const grid = $('div', 'pp-tiles'); panel.appendChild(grid); UI.tiles = {};
+  for (const id of I.shown) { const w = I.words.find(x => x.id === id), b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.word = id; b.setAttribute('aria-pressed', 'false'); b.textContent = tr(w.text); b.addEventListener('click', () => doAction({ t: 'pick', id })); grid.appendChild(b); UI.tiles[id] = b; }
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  row.appendChild(btn(tr('Lock it in'), { kind: 'hot', icon: 'lock', onPress: () => doAction({ t: 'submit' }) }));
+  syncPass();
+}
+function syncPass() {
+  const run = S.run, I = run.inst, s = run.s, st = run.strength();
+  UI.phrase.innerHTML = ''; for (const id of s.chosen) { const sp = $('span'); sp.textContent = tr(I.words.find(w => w.id === id).text); UI.phrase.appendChild(sp); }
+  if (!s.chosen.length) UI.phrase.appendChild($('span', 'pp-lesson-note', tr('Pick {n} words', { n: I.need })));
+  UI.meter.className = 'pp-meter pp-t' + st.tier; UI.meter.firstChild.style.width = ((st.tier + 1) / 5 * 100) + '%'; UI.meter.setAttribute('aria-valuenow', String(st.tier));
+  UI.meterText.textContent = st.weak ? tr('A word about you makes it easy to guess') : st.count ? tr('A computer would need about {time}', { time: tr(GUESS_TIME[st.tier]) }) : tr('Words nobody could guess about you, the more letters the better');
+  for (const id in UI.tiles) pressed(UI.tiles[id], s.chosen.includes(id));
+}
+
+/* ----- inbox levels: spot the trick ----- */
+function renderInboxPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = cardHost(false);
+  const L = I.letter, card = $('div', 'pp-letter'); fill.appendChild(card);
+  const from = $('div', 'pp-from'); from.appendChild(document.createTextNode(tr('From:'))); const badge = $('span', 'pp-badge'); badge.appendChild(iconEl('user')); badge.appendChild(document.createTextNode(tr(L.from))); from.appendChild(badge);
+  if (L.badge) { const b2 = $('span', 'pp-badge'); b2.appendChild(iconEl(L.badge === 'odd' ? 'question' : 'check')); b2.appendChild(document.createTextNode(L.badge === 'odd' ? tr('unknown sender') : tr('known sender'))); from.appendChild(b2); }
+  card.appendChild(from);
+  if (L.subject) card.appendChild($('b', '', tr(L.subject)));
+  card.appendChild($('p', '', tr(L.body)));
+  if (L.button) card.appendChild($('span', 'pp-fakebtn', tr(L.button)));
+  panel.appendChild($('p', 'pp-h', tr('Tap every cue you can find')));
+  const cues = $('div', 'pp-tiles'); panel.appendChild(cues); UI.tiles = {};
+  for (const c of I.cues) { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.cue = c.id; b.setAttribute('aria-pressed', 'false'); b.textContent = tr(c.text); b.addEventListener('click', () => doAction({ t: 'cue', id: c.id })); cues.appendChild(b); UI.tiles[c.id] = b; }
+  const row = $('div', 'pp-verdicts'); panel.appendChild(row);
+  for (const [v, label, kind, ic] of [['safe', tr('Safe'), 'go', 'check'], ['trick', tr('Trick'), 'quiet', 'cross'], ['ask', tr('Ask a grown-up'), 'quiet', 'question']]) { const b = btn(label, { kind, icon: ic, onPress: () => doAction({ t: 'verdict', v }) }); b.dataset.verdict = v; row.appendChild(b); }
+  syncInbox();
+}
+function syncInbox() { const s = S.run.s; for (const id in UI.tiles) pressed(UI.tiles[id], s.flags.includes(id)); }
+
+/* ----- cipher levels: the key wheel, the key card, the readings ----- */
+function wheelMarkup(cls) {
+  const letters = (r, bold) => E.ABC.split('').map((ch, k) => { const a = (k / 26) * Math.PI * 2 - Math.PI / 2; return `<text x="${(150 + Math.cos(a) * r).toFixed(1)}" y="${(150 + Math.sin(a) * r + 5).toFixed(1)}"${bold ? ' font-size="14"' : ''}>${ch}</text>`; }).join('');
+  return `<svg class="${cls}" viewBox="0 0 300 300" role="img" aria-label="${tr('Key wheel')}"><circle cx="150" cy="150" r="146" class="pp-ring"></circle>${letters(126, true)}<g class="pp-inner"><circle cx="150" cy="150" r="104" class="pp-ring pp-inner-ring"></circle>${letters(86, false)}</g></svg>`;
+}
+function setWheel(svg, shift) { svg.querySelector('.pp-inner').style.transform = `rotate(${-shift * 360 / 26}deg)`; svg.setAttribute('aria-label', tr('Key wheel, shift {n}', { n: shift })); }
+function renderCipherPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = I.kind === 'keyed' ? cardHost(true) : (() => { const f = $('div', 'pp-fill pp-center'); board.appendChild(f); return f; })();
+  if (I.kind === 'keyed') {
+    fill.appendChild($('p', 'pp-h', tr('Key card')));
+    const key = $('div', 'pp-key'); key.dir = 'ltr'; key.setAttribute('aria-label', tr('Key card')); fill.appendChild(key);
+    for (let half = 0; half < 2; half++) { for (let k = 0; k < 13; k++) key.appendChild($('span', '', E.ABC[half * 13 + k])); for (let k = 0; k < 13; k++) key.appendChild($('span', 'pp-k2', I.key[half * 13 + k])); }
+  } else { fill.insertAdjacentHTML('beforeend', wheelMarkup('pp-wheel')); UI.wheel = fill.querySelector('.pp-wheel'); }
+  UI.shiftLabel = $('div', 'pp-shift'); UI.shiftLabel.dir = 'ltr';
+  const msg = $('div', 'pp-itemcard'); panel.appendChild(msg);
+  msg.appendChild($('p', 'pp-h', I.mode === 'encode' ? tr('Message to send') : tr('Secret message')));
+  const ct = $('div', 'pp-cipher'); ct.dir = 'ltr'; ct.textContent = I.mode === 'encode' ? I.plain : I.cipher; msg.appendChild(ct);
+  if (!I.choices) { msg.appendChild($('p', 'pp-h', tr('Your reading'))); UI.reading = $('div', 'pp-cipher'); UI.reading.dir = 'ltr'; msg.appendChild(UI.reading); }
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  // a phone on its side: the turn buttons (icons) and the letter count sit under the wheel, so the panel keeps the message and its buttons in view
+  const compact = window.innerWidth < 520 || (landscape() && window.innerHeight < 520);
+  const turnHost = I.kind === 'keyed' ? row : (() => { const r = $('div', 'pp-row pp-center'); fill.appendChild(r); return r; })();
+  if (I.kind !== 'keyed') { turnHost.appendChild(btn(tr('Turn back'), { kind: 'icon', icon: 'minus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift - 1 }) })); turnHost.appendChild(UI.shiftLabel); const fwd = btn(tr('Turn forward'), { kind: 'icon', icon: 'plus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift + 1 }) }); fwd.dataset.turn = '1'; turnHost.appendChild(fwd); }
+  if (I.mode === 'crack') { const cb = btn(tr('Count the letters'), { kind: compact ? 'icon' : 'quiet', icon: 'eye', onPress: () => doAction({ t: 'count' }) }); cb.dataset.count = '1'; if (compact) cb.title = tr('Count the letters'); turnHost.appendChild(cb); }
+  if (I.choices) { const tiles = $('div', 'pp-tiles'); panel.appendChild(tiles); UI.tiles = {}; I.choices.forEach((c, k) => { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dir = 'ltr'; b.dataset.choice = String(k); b.textContent = c; b.addEventListener('click', () => doAction({ t: 'choose', k })); tiles.appendChild(b); UI.tiles[k] = b; }); }
+  else row.appendChild(btn(tr("That's it!"), { kind: 'hot', icon: 'check', onPress: () => doAction({ t: 'submit' }) }));
+  syncCipher();
+}
+function syncCipher(counts) {
+  const run = S.run, I = run.inst, s = run.s;
+  if (UI.wheel) setWheel(UI.wheel, s.shift);
+  UI.shiftLabel.textContent = tr('Shift {n}', { n: s.shift }); if (!UI.wheel) UI.shiftLabel.hidden = true;
+  if (UI.reading) UI.reading.textContent = E.caesar(I.cipher, -s.shift);
+  if (counts) { const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]; if (top) pimSay(tr('Most common letter here: {letter}. In English it is usually E.', { letter: top[0] })); }   // Pim reads the count out
+}
+
+/* ----- pixel levels: hide it in the picture ----- */
+function renderPixelPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = $('div', 'pp-fill pp-center'); board.appendChild(fill);
+  const grid = $('div', 'pp-pxgrid'); grid.setAttribute('data-fit-dense', ''); grid.dir = 'ltr'; grid.style.gridTemplateColumns = `repeat(${I.w}, 40px)`; grid.setAttribute('aria-label', tr('Pixel grid')); fill.appendChild(grid); UI.px = [];
+  for (let k = 0; k < I.w * I.h; k++) { const b = $('button', 'pp-px'); b.type = 'button'; b.dataset.px = String(k); b.addEventListener('click', () => doAction({ t: 'px', i: k })); grid.appendChild(b); UI.px.push(b); }
+  if (I.mode === 'hide') {
+    const host = narrow() ? $('div', 'pp-pxrow') : panel; if (host !== panel) panel.appendChild(host);
+    const tg = $('div', 'pp-target'); tg.style.gridTemplateColumns = `repeat(${I.w}, 12px)`; tg.setAttribute('role', 'img'); tg.setAttribute('aria-label', tr('The picture to hide')); host.appendChild(tg);
+    host.appendChild($('p', 'pp-h', tr('Make the last bit of each pixel match the picture: odd is a dot, even is blank.')));
+    for (const b of I.target) tg.appendChild($('span', b ? 'pp-on' : ''));
+  } else panel.appendChild($('p', 'pp-h', tr('Tap every pixel with an odd value. The odd ones hide the picture.')));
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  row.appendChild(btn(tr('Check the picture'), { kind: 'hot', icon: 'check', onPress: () => doAction({ t: 'submit' }) }));
+  syncPixel();
+}
+function syncPixel() {
+  const run = S.run, I = run.inst, s = run.s;
+  s.values.forEach((v, k) => { const b = UI.px[k]; b.innerHTML = ''; b.style.background = `rgb(${v}, ${v}, ${v})`; b.style.color = v < 150 ? 'var(--ok-card)' : 'var(--ok-text)'; b.appendChild(document.createTextNode(num(v))); if (I.mode === 'hide' && (v & 1)) b.appendChild($('i')); b.setAttribute('aria-label', tr('Pixel {n}: {v}', { n: k + 1, v })); if (I.mode === 'read') b.setAttribute('aria-pressed', String(s.marked.includes(k))); });
+}
+const landscape = () => window.innerWidth > window.innerHeight;
+const narrow = () => !landscape() && window.innerWidth < 520;   // a phone upright
+/** Where a level's card (the letter, the phrase, the item) goes: the board, or on a phone upright the top of the panel (the board hides). */
+function cardHost(center) {
+  if (narrow()) { const c = $('div', 'pp-fillcard' + (center ? ' pp-center' : '')); UI.panel.appendChild(c); return c; }
+  const f = $('div', 'pp-fill' + (center ? ' pp-center' : '')); UI.board.appendChild(f); return f;
+}
+function renderTools() {
+  const main = UI.board && UI.board.parentNode; if (!main) return; const old = main.querySelector('.pp-tools'); if (old) old.remove();
+  const tools = $('div', 'pp-tools'); tools.setAttribute('role', 'group'); tools.setAttribute('aria-label', tr('Level tools')); main.appendChild(tools);
+  const kind = landscape() || narrow() ? 'icon' : 'quiet';   // on a phone the tools are icon buttons: a column beside the panel on its side, one row under it upright
+  const add = (label, ic, onPress) => { const b = btn(label, { kind, icon: ic, onPress }); if (kind === 'icon') b.title = label; tools.appendChild(b); return b; };
+  const learn = S.level.learn || (levelsFor(S.chapter, S.band).find(l => l.learn) || {}).learn;   // re-openable on every level of the chapter
+  if (learn) add(tr('Learn'), 'book', () => learnCard(learn));
+  UI.hintBtn = add(tr('Hint'), 'hint', () => giveHint()); UI.hintBtn.disabled = S.hint >= 3 || !S.run || S.run.done;
+  add(tr('Start over'), 'restart', () => startOver());
+  if (S.fails >= 2 && !S.projector && !S.daily) add(tr('Skip level'), 'next', () => skipLevel());
+  if (!S.lock) add(tr('Map'), 'home', () => { S.lockedChapter = null; showMap(); });
+  UI.toolsLandscape = landscape(); UI.toolsNarrow = narrow();
+}
+let resizeT = null;
+window.addEventListener('resize', () => { if (resizeT) resizeT(); resizeT = O.time.real.after(80, () => { resizeT = null; if (S.screen === 'level' && S.run && (UI.toolsLandscape !== landscape() || UI.toolsNarrow !== narrow())) renderTools(); }); });
+
+/* ----- route levels ----- */
+let PIECES = null;
+function pieces(I) {
+  const n = I.n, src = pic(I.picture, 168), cols = n <= 3 ? n : n === 4 ? 2 : n === 5 ? 5 : 3, rows = Math.ceil(n / cols);
+  const pw = src.width / cols, ph = src.height / rows, out = [];
+  for (let k = 0; k < n; k++) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(pw)); c.height = Math.max(1, Math.ceil(ph)); try { c.getContext('2d').drawImage(src, (k % cols) * pw, Math.floor(k / cols) * ph, pw, ph, 0, 0, c.width, c.height); } catch (e) { /* empty piece */ } c.className = 'pp-piece'; c.style.width = Math.round(30 * pw / Math.max(pw, ph)) + 'px'; c.style.height = Math.round(30 * ph / Math.max(pw, ph)) + 'px'; out.push(c); }
+  return { cols, rows, out, src };
+}
+function pieceEl(k) { return PIECES.out[k - 1].cloneNode(true); }
+function renderRoutePanel() {
+  const run = S.run, I = run.inst, panel = UI.panel;
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  const cur = $('div', 'pp-pill'); cur.appendChild($('span', '', '')); row.appendChild(cur); UI.cur = cur.firstChild;
+  const hops = $('div', 'pp-pill'); hops.appendChild(iconEl('move')); hops.appendChild($('span', '', '')); row.appendChild(hops); UI.hops = hops.lastChild;
+  const work = $('div', 'pp-row'); panel.appendChild(work);
+  const frame = $('div', 'pp-frame'); frame.style.gridTemplateColumns = `repeat(${PIECES.cols}, 40px)`; frame.setAttribute('role', 'img'); frame.setAttribute('aria-label', tr('The picture at the house')); work.appendChild(frame); UI.frame = frame; UI.slots = [];
+  for (let k = 1; k <= I.n; k++) { const sl = $('div', 'pp-slot pp-empty'); sl.dir = 'ltr'; sl.textContent = num(k); frame.appendChild(sl); UI.slots.push(sl); }
+  const tray = $('div', 'pp-row'); tray.setAttribute('aria-label', tr('Arrived packets')); work.appendChild(tray); UI.tray = tray;
+  syncRouteInfo();
+}
+function syncRouteInfo() {
+  const run = S.run, I = run.inst, s = run.s; if (!UI.cur) return;
+  if (s.phase === 'play') UI.cur.textContent = tr('Packet {n} of {total}', { n: s.i, total: I.n });
+  else if (s.phase === 'place') UI.cur.textContent = tr('Tap the pieces in number order');
+  else UI.cur.textContent = tr('Delivered!');
+  UI.hops.textContent = I.budget ? tr('Hops: {n} of {max}', { n: s.hops, max: I.budget }) : tr('Hops: {n}', { n: s.hops });
+}
+function showPacket() {
+  const run = S.run, I = run.inst, s = run.s; if (run.type !== 'route' || s.phase !== 'play') return;
+  if (UI.pk) UI.pk.remove();
+  const nd = I.nodes[s.at], el = $('div', 'pp-pk'); el.style.left = pct(nd.x); el.style.top = pct(nd.y); el.appendChild(pieceEl(s.i)); const b = $('b', '', num(s.i)); b.dir = 'ltr'; el.appendChild(b);
+  UI.board.appendChild(el); UI.pk = el; syncRouteInfo();
+}
+async function movePacket(from, to) {
+  const el = UI.pk; if (!el) return; const a = S.run.inst.nodes[from], b = S.run.inst.nodes[to], st = { p: 0 };
+  await O.tween(st, { p: 1 }, { ms: ms(CONFIG.hopMs), ease: 'cubicInOut', onUpdate: () => { el.style.left = pct(a.x + (b.x - a.x) * st.p); el.style.top = pct(a.y + (b.y - a.y) * st.p); } });
+}
+function fillTray() {
+  const run = S.run, s = run.s, tray = UI.tray; tray.innerHTML = '';
+  for (const n of s.tray) {
+    const b = $('button', 'pp-tile'); b.type = 'button'; b.appendChild(pieceEl(n)); const nb = $('b', 'pp-n', num(n)); nb.dir = 'ltr'; b.appendChild(nb); b.dataset.packet = String(n);
+    b.setAttribute('aria-label', tr('Packet {n}', { n })); b.addEventListener('click', () => doAction({ t: 'place', n })); tray.appendChild(b);
+  }
+}
+
+/* ----- ack levels: the ACK board ----- */
+function renderAckPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel; UI.revealed = 0;
+  panel.appendChild($('p', 'pp-h', tr('Mail slots')));
+  const slots = $('div', 'pp-slots'); panel.appendChild(slots); UI.slotBtns = {};
+  for (let k = 1; k <= I.n; k++) { const b = $('button', 'pp-slotb'); b.type = 'button'; b.dir = 'ltr'; b.dataset.slot = String(k); b.addEventListener('click', () => selectSlot(k)); slots.appendChild(b); UI.slotBtns[k] = b; }
+  panel.appendChild($('p', 'pp-h', tr('Inbox')));
+  const inbox = $('div', 'pp-row'); panel.appendChild(inbox); UI.inbox = inbox;
+  const acts = $('div', 'pp-row'); panel.appendChild(acts); UI.acts = acts;
+  UI.sel = null; syncAck();
+}
+function syncAck() {
+  const run = S.run, I = run.inst, s = run.s;
+  for (let k = 1; k <= I.n; k++) {
+    const b = UI.slotBtns[k], have = s.acked.includes(k); b.innerHTML = ''; b.className = 'pp-slotb' + (have ? ' pp-have' : '') + (UI.sel && UI.sel.slot === k ? ' pp-glow' : '');
+    if (have) { b.appendChild(pieceEl(k)); const m = $('span', 'pp-mark'); m.innerHTML = icon('check'); b.appendChild(m); b.setAttribute('aria-label', tr('Slot {n}: got it', { n: k })); b.disabled = true; }
+    else { b.textContent = num(k); b.setAttribute('aria-label', tr('Slot {n}: empty', { n: k })); b.disabled = false; }
+  }
+  UI.inbox.innerHTML = '';
+  s.cards.forEach((c, k) => {
+    if (c.gone || c.acked || (!c.resent && k >= UI.revealed)) return;
+    const b = $('button', 'pp-tile'); b.type = 'button'; b.appendChild(pieceEl(c.n)); const nb = $('b', 'pp-n', num(c.n)); nb.dir = 'ltr'; b.appendChild(nb); b.dataset.card = c.id;
+    b.setAttribute('aria-pressed', String(!!(UI.sel && UI.sel.card === c.id))); b.setAttribute('aria-label', tr('Packet {n}', { n: c.n })); b.addEventListener('click', () => selectCard(c.id)); UI.inbox.appendChild(b);
+  });
+  UI.acts.innerHTML = '';
+  if (UI.sel && UI.sel.card) { UI.acts.appendChild(btn(tr('Say got it'), { kind: 'go', icon: 'check', onPress: () => doAction({ t: 'ack', id: UI.sel.card }) })); UI.acts.appendChild(btn(tr('Throw away copy'), { kind: 'quiet', icon: 'cross', onPress: () => doAction({ t: 'discard', id: UI.sel.card }) })); }
+  else if (UI.sel && UI.sel.slot) UI.acts.appendChild(btn(tr('Send again'), { kind: 'hot', icon: 'restart', onPress: () => doAction({ t: 'resend', n: UI.sel.slot }) }));
+  else UI.acts.appendChild($('p', 'pp-lesson-note', tr('Tap a packet or an empty slot')));
+}
+function selectCard(id) { UI.sel = UI.sel && UI.sel.card === id ? null : { card: id }; sfx('select'); syncAck(); }
+function selectSlot(k) { UI.sel = UI.sel && UI.sel.slot === k ? null : { slot: k }; sfx('select'); syncAck(); }
+/** Packets ride in from the sender; lost ones fall off the mail van on the way (ack and check levels). */
+async function playArrivals(flow) {
+  const run = S.run, I = run.inst; if (!I.from || !I.to) return;
+  const path = (run.bestPath(I.from, I.to) || { path: [I.from, I.to] }).path;
+  const sends = [];
+  if (run.type === 'ack') { const seen = new Set(); for (const n of I.arrive) { for (const m of I.lost) if (m < n && !seen.has('L' + m)) { seen.add('L' + m); sends.push({ n: m, lost: true }); } sends.push({ n, dup: seen.has(n) }); seen.add(n); } for (const m of I.lost) if (!seen.has('L' + m)) sends.push({ n: m, lost: true }); }
+  else for (const p of I.packets) sends.push({ n: p.n });
+  for (const sd of sends) {
+    if (flow !== S.flow) return;
+    const el = $('div', 'pp-pk'); el.appendChild(pieceEl(sd.n)); const b = $('b', '', num(sd.n)); b.dir = 'ltr'; el.appendChild(b); const n0 = I.nodes[path[0]]; el.style.left = pct(n0.x); el.style.top = pct(n0.y); UI.board.appendChild(el);
+    const stopAt = sd.lost ? Math.max(1, Math.floor(path.length / 2)) : path.length - 1;
+    for (let k = 0; k < stopAt; k++) { const a = I.nodes[path[k]], c = I.nodes[path[k + 1]], st = { p: 0 }; await O.tween(st, { p: 1 }, { ms: ms(CONFIG.arriveMs) / (sd.lost ? 2 : 1), ease: 'cubicInOut', onUpdate: () => { el.style.left = pct(a.x + (c.x - a.x) * st.p); el.style.top = pct(a.y + (c.y - a.y) * st.p); } }); if (flow !== S.flow) { el.remove(); return; } }
+    if (sd.lost) { el.style.opacity = '0'; sfx('wrong', { volume: 0.4 }); toast(tr('Packet {n} fell off the mail van!', { n: sd.n })); await O.wait(ms(260)); }
+    else { sfx('pop', { pitch: 1 + sd.n * 0.05 }); UI.revealed = (UI.revealed === Infinity ? 0 : UI.revealed) + 1; }
+    el.remove();
+    if (run.type === 'ack') syncAck(); else if (syncCheck) syncCheck();
+    await O.wait(ms(120));
+  }
+}
+
+/* ----- check levels: count the dots ----- */
+let syncCheck = null;
+function renderCheckPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel; UI.revealed = 0;
+  panel.appendChild($('p', 'pp-h', tr('Count the dots on each packet. Tap the damaged ones.')));
+  const list = $('div', 'pp-row'); panel.appendChild(list); UI.cards = {};
+  for (const p of I.packets) {
+    const b = $('button', 'pp-tile'); b.type = 'button'; b.dataset.packet = String(p.n);
+    b.appendChild(pieceEl(p.n)); const nb = $('b', 'pp-n', num(p.n)); nb.dir = 'ltr'; b.appendChild(nb);
+    const dots = $('span', 'pp-dots'); dots.setAttribute('aria-hidden', 'true'); for (let k = 0; k < p.dots; k++) dots.appendChild($('i')); b.appendChild(dots);
+    const lab = $('span', '', tr('says {n}', { n: p.says })); lab.dir = 'auto'; b.appendChild(lab);
+    b.setAttribute('aria-label', tr('Packet {n}: {dots} dots, label says {says}', { n: p.n, dots: p.dots, says: p.says }));
+    b.addEventListener('click', () => doAction({ t: 'flag', n: p.n })); list.appendChild(b); UI.cards[p.n] = b;
+  }
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  row.appendChild(btn(tr('Check the mail'), { kind: 'hot', icon: 'check', onPress: () => doAction({ t: 'submit' }) }));
+  syncCheck = () => { I.packets.forEach((p, k) => { const f = run.s.flagged.includes(p.n); UI.cards[p.n].hidden = k >= UI.revealed; UI.cards[p.n].classList.toggle('pp-flag', f); pressed(UI.cards[p.n], f); }); };
+  syncCheck();
+}
+
+/* ----- order levels: tap the tiles in order ----- */
+function renderOrderPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel;
+  const seq = $('div', 'pp-seq'); seq.setAttribute('aria-label', tr('Your order')); panel.appendChild(seq); UI.seq = seq;
+  const list = $('div', 'pp-tiles'); panel.appendChild(list); UI.tiles = {};
+  for (const id of I.shown) { const t = I.tiles.find(x => x.id === id), b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.tile = id; b.textContent = tr(t.text); b.addEventListener('click', () => doAction({ t: 'put', id })); list.appendChild(b); UI.tiles[id] = b; }
+  syncOrder();
+}
+function syncOrder() {
+  const run = S.run, I = run.inst, s = run.s; UI.seq.innerHTML = '';
+  s.seq.forEach((id, k) => { const t = I.tiles.find(x => x.id === id), sp = $('span'); const n = $('b', '', num(k + 1)); n.dir = 'ltr'; sp.appendChild(n); sp.appendChild(document.createTextNode(' ' + tr(t.text))); UI.seq.appendChild(sp); });
+  if (!s.seq.length) UI.seq.appendChild($('span', 'pp-lesson-note', tr('Tap the first step')));
+  for (const id in UI.tiles) { const done = s.seq.includes(id); UI.tiles[id].classList.toggle('pp-done', done); UI.tiles[id].disabled = done; }
+}
+
+/* ----- rules levels: pick the rules under a budget ----- */
+function renderRulesPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel;
+  panel.appendChild($('p', 'pp-h', tr('What goes wrong on this road')));
+  const ev = $('ul', 'pp-events'); panel.appendChild(ev); UI.events = [];
+  for (const e of I.events) { const li = $('li'); const ic = $('span'); ic.innerHTML = icon('question'); li.appendChild(ic); li.appendChild(document.createTextNode(tr(e.text))); ev.appendChild(li); UI.events.push(li); }
+  const list = $('div', 'pp-tiles'); panel.appendChild(list); UI.tiles = {};
+  for (const id of I.shown) { const t = I.rules.find(x => x.id === id), b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.rule = id; b.setAttribute('aria-pressed', 'false'); b.textContent = tr(t.text); b.addEventListener('click', () => doAction({ t: 'toggle', id })); list.appendChild(b); UI.tiles[id] = b; }
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  const bud = $('div', 'pp-pill'); bud.appendChild(iconEl('book')); bud.appendChild($('span', '', '')); row.appendChild(bud); UI.budget = bud.lastChild;
+  row.appendChild(btn(tr('Try the rules'), { kind: 'hot', icon: 'play', onPress: () => doAction({ t: 'submit' }) }));
+  syncRules();
+}
+function syncRules(caught) {
+  const run = S.run, I = run.inst, s = run.s;
+  UI.budget.textContent = tr('Rules: {n} of {max}', { n: s.chosen.length, max: I.budget });
+  for (const id in UI.tiles) pressed(UI.tiles[id], s.chosen.includes(id));
+  if (caught) caught.forEach((c, k) => { const li = UI.events[k]; if (!li) return; li.firstChild.innerHTML = icon(c.ok ? 'check' : 'cross'); li.setAttribute('aria-label', tr(c.text) + ' ' + (c.ok ? tr('caught') : tr('not caught'))); });
+}
+
+/* ---------- actions: every tap goes through here (and the test hook act()) ---------- */
+async function doAction(a) {
+  const run = S.run; if (!run || !a || S.busy || run.done || run.failed) return null;
+  const before = run.s.phase, r = run.act(a); if (!r || r.err) { if (r && r.err === 'far') toast(tr('Start from where the packet is')); return r; }
+  S.busy = true; const flow = S.flow;
+  try {
+    if (run.type === 'route') {
+      if (r.bounced) { sfx('wrong', { volume: 0.5 }); O.juice.shake(0.3, UI.pk); toast(tr('Road closed! Try another road.')); }
+      else if (r.moved) {
+        const wasClosed = closedNow();
+        syncRoads(wasClosed); await movePacket(r.from, r.to); if (flow !== S.flow) return r;
+        if (r.out) { fail(tr('Out of hops! Pick shorter ways.')); return r; }
+        if (r.peeked) { fail(tr('The snoopy cat read packet {n}! Secrets go on sealed roads.', { n: r.peeked })); return r; }
+        if (r.arrived) { sfx('pop', { pitch: 1.1 }); if (UI.pk) { UI.pk.remove(); UI.pk = null; } if (!r.allArrived) showPacket(); }
+        syncRoads();   // the packet is home: a road that closed on this delivery changes now, with its cue
+        const nowClosed = run.inst.linkOrder.filter(id => run.closed(run.inst.links[id]) && !wasClosed.has(id));
+        if (nowClosed.length && r.arrived && !r.allArrived) { toast(tr('A road just closed!')); sfx('gate', { volume: 0.5 }); announce(tr('A road just closed!')); }
+        if (r.allArrived) { pimSay(tr('All packets are here. Tap the pieces in number order.'), { speak: false }); fillTray(); syncRouteInfo(); }
+      } else if (r.wrong) { sfx('wrong', { volume: 0.5 }); const b = UI.tray.querySelector(`[data-packet="${a.n}"]`); if (b) O.juice.shake(0.3, b); toast(tr('Not yet: packet {n} is next', { n: r.need })); }
+      else if (r.placed) { sfx('correct', { pitch: 1 + r.placed * 0.06, volume: 0.6 }); const sl = UI.slots[r.placed - 1]; sl.textContent = ''; sl.classList.remove('pp-empty'); sl.appendChild(pieceEl(r.placed)); O.juice.pop(sl); fillTray(); }
+    } else if (run.type === 'ack') {
+      if (r.wrong && r.dup) { sfx('wrong', { volume: 0.5 }); toast(tr('You already have packet {n}. That one is an extra copy.', { n: r.dup })); }
+      else if (r.wrong && r.needed) { sfx('wrong', { volume: 0.5 }); toast(tr('Packet {n} is needed! Say got it instead.', { n: r.needed })); }
+      else if (r.wasted) { sfx('wrong', { volume: 0.5 }); toast(tr('Packet {n} is already here.', { n: r.n })); }
+      else if (r.acked) { sfx('correct', { volume: 0.6 }); UI.sel = null; }
+      else if (r.discarded) { sfx('whoosh', { volume: 0.6 }); UI.sel = null; }
+      else if (r.resent) { UI.sel = null; sfx('whoosh'); syncAck(); await rideIn(r.card.n, flow); if (flow !== S.flow) return r; }
+      syncAck();
+    } else if (run.type === 'check') {
+      if (r.flagged) { sfx('select'); syncCheck && syncCheck(); }
+      else if (r.failed) { const parts = []; if (r.missed.length) parts.push(tr('Packet {n} does not match and was not sent again.', { n: r.missed[0] })); if (r.fine.length) parts.push(tr('Packet {n} is fine.', { n: r.fine[0] })); fail(parts.join(' '), true); return r; }
+    } else if (run.type === 'order') {
+      if (r.wrong) { sfx('wrong', { volume: 0.5 }); O.juice.shake(0.3, UI.tiles[a.id]); toast(tr('Not that one yet. What comes before it?')); }
+      else if (r.put) { sfx('correct', { pitch: 1 + run.s.seq.length * 0.05, volume: 0.6 }); syncOrder(); }
+    } else if (run.type === 'rules') {
+      if (r.chosen) { sfx('select'); syncRules(); }
+      else if (r.failed) { syncRules(r.caught); const bad = r.caught.find(c => !c.ok); fail(r.over ? tr('Too many rules! Keep only the ones the problems need.') : tr('{event} Nothing in your rules catches that.', { event: tr(bad.text) }), true); return r; }
+      else if (r.done) syncRules(r.caught);
+    }
+    else if (run.type === 'sort') {
+      if (r.wrong) { sfx('wrong', { volume: 0.5 }); toast(a.t === 'bin' ? tr('Think again: where does that belong?') : tr('Not that reason. Think about what could go wrong.')); const el = a.t === 'bin' ? UI.binRow.querySelector(`[data-bin="${a.bin}"]`) : UI.whyBox.querySelector(`[data-why="${a.k}"]`); if (el) O.juice.shake(0.3, el); }
+      else { sfx('correct', { volume: 0.6 }); syncSort(); }
+    } else if (run.type === 'pass') {
+      if (r.full) toast(tr('{n} words is enough. Tap a word to swap it.', { n: run.inst.need }));
+      else if (r.chosen) { sfx('select'); syncPass(); }
+      else if (r.failed) { fail(r.why === 'weak' ? tr('A word about you is easy to guess. Swap it for a random word.') : r.why === 'count' ? tr('Pick {n} words.', { n: run.inst.need }) : tr('Longer words make a stronger passphrase.'), true); return r; }
+    } else if (run.type === 'inbox') {
+      if (r.flags) { sfx('select'); syncInbox(); }
+      else if (r.failed) { fail(r.verdict === 'trick' && r.want === 'trick' ? tr('It is a trick, and this one needs a grown-up.') : tr('Not quite: look at the cues again.'), true); return r; }
+      else if (r.done && r.verdict === 'ask' && run.inst.verdict === 'safe') toast(tr('Asking is always OK. This one was safe.'));
+      else if (r.done && r.missed && r.missed.length) toast(tr('Right! Next time find every cue first.'));
+    } else if (run.type === 'cipher') {
+      if (r.shift != null) { sfx('select'); syncCipher(); }
+      else if (r.counts) { sfx('spark', { volume: 0.5 }); syncCipher(r.counts); }
+      else if (r.wrong) { sfx('wrong', { volume: 0.5 }); const el = UI.tiles && UI.tiles[a.k]; if (el) { O.juice.shake(0.3, el); el.classList.add('pp-dim'); } toast(tr('Not that reading. Check it letter by letter.')); }
+      else if (r.failed) { fail(tr('Not yet: with that shift it reads {text}', { text: r.reading }), true); return r; }
+    } else if (run.type === 'pixel') {
+      if (r.value != null || r.marked) { sfx('select'); syncPixel(); }
+      else if (r.failed) { fail(tr('{n} pixels are still off. Compare the last bits.', { n: r.off }), true); return r; }
+    }
+    if (run.done && before !== 'done') solved(flow);   // the results flow runs on its own (taps are ignored once the run is done)
+  } finally { if (flow === S.flow) S.busy = false; }
+  return r;
+}
+async function rideIn(n, flow) {
+  const run = S.run, I = run.inst, path = (run.bestPath(I.from, I.to) || { path: [I.from, I.to] }).path;
+  const el = $('div', 'pp-pk'); el.appendChild(pieceEl(n)); const b = $('b', '', num(n)); b.dir = 'ltr'; el.appendChild(b); const n0 = I.nodes[path[0]]; el.style.left = pct(n0.x); el.style.top = pct(n0.y); UI.board.appendChild(el);
+  for (let k = 0; k < path.length - 1; k++) { const a = I.nodes[path[k]], c = I.nodes[path[k + 1]], st = { p: 0 }; await O.tween(st, { p: 1 }, { ms: ms(CONFIG.arriveMs), ease: 'cubicInOut', onUpdate: () => { el.style.left = pct(a.x + (c.x - a.x) * st.p); el.style.top = pct(a.y + (c.y - a.y) * st.p); } }); if (flow !== S.flow) break; }
+  el.remove(); sfx('pop');
+}
+/** A failed run: Pim explains, Try again (same map) and, after two, Skip. */
+async function fail(text, keepPicks) {
+  S.fails++; sfx('wrong');
+  pimSay(text);
+  const v = await O.ui.dialog({ title: tr('Not this time'), text, portrait: PIM, mood: 'sad', buttons: [{ label: tr('Try again'), kind: 'hot', value: 'again', icon: 'restart' }].concat(S.fails >= 2 && !S.projector && !S.daily ? [{ label: tr('Skip level'), kind: 'quiet', value: 'skip', icon: 'next' }] : []) });
+  if (v === 'skip') return skipLevel();
+  if (keepPicks && S.run.retry()) { renderTools(); S.busy = false; return; }
+  return startLevel(S.chapter, S.levelIx, { noLearn: true, keepSeed: true, fails: S.fails, runs: S.runs, hint: S.hint, tier3: S.tier3 });
+}
+function startOver() { if (!S.run || S.run.done) return; startLevel(S.chapter, S.levelIx, { noLearn: true, keepSeed: true, fails: S.fails, runs: S.runs, hint: S.hint, tier3: S.tier3 }); }
+
+/* ---------- hints: a question, then a glow, then one move (the third star goes) ---------- */
+function giveHint() {
+  const run = S.run, level = S.level; if (!run || run.done || S.hint >= 3) return;
+  S.hint++; const tier = S.hint, text = tr(level.hints[tier - 1] || level.hints[level.hints.length - 1], { n: run.s.i || 1 });
+  pimSay(text); sfx('spark', { volume: 0.5 });
+  if (tier >= 2) glowAdvice();
+  if (tier === 3 && !S.tier3) { S.tier3 = true; toast(tr('Hint used: the third star is gone for this level')); }
+  if (UI.hintBtn) UI.hintBtn.disabled = S.hint >= 3;
+}
+function glowAdvice() {
+  const run = S.run, a = run.advice(); if (!a) return;
+  for (const el of UI.board.querySelectorAll('.pp-glow')) el.classList.remove('pp-glow');
+  for (const el of UI.panel.querySelectorAll('.pp-glow')) el.classList.remove('pp-glow');
+  let el = null;
+  if (a.t === 'hop') el = UI.links[a.id]; else if (a.t === 'place') el = UI.tray && UI.tray.querySelector(`[data-packet="${a.n}"]`);
+  else if (a.t === 'ack' || a.t === 'discard') el = UI.inbox && UI.inbox.querySelector(`[data-card="${a.id}"]`); else if (a.t === 'resend') el = UI.slotBtns && UI.slotBtns[a.n];
+  else if (a.t === 'flag') el = UI.cards && UI.cards[a.n]; else if (a.t === 'put' || a.t === 'toggle') el = UI.tiles && UI.tiles[a.id];
+  else if (a.t === 'cue' || a.t === 'pick') el = UI.tiles && UI.tiles[a.id]; else if (a.t === 'choose') el = UI.tiles && UI.tiles[a.k];
+  else if (a.t === 'verdict') el = UI.panel.querySelector(`[data-verdict="${a.v}"]`); else if (a.t === 'bin') el = UI.binRow && UI.binRow.querySelector(`[data-bin="${a.bin}"]`); else if (a.t === 'why') el = UI.whyBox && UI.whyBox.querySelector(`[data-why="${a.k}"]`);
+  else if (a.t === 'px') el = UI.px && UI.px[a.i]; else if (a.t === 'shiftTo' || a.t === 'count') el = S.dom.pp.querySelector(a.t === 'count' ? '[data-count]' : '[data-turn]');
+  else if (a.t === 'submit') el = UI.panel.querySelector('.ok-hot');
+  if (el) { el.classList.add('pp-glow'); O.juice.pop(el); }
+}
+
+/* ---------- the learn card ---------- */
+function learnCard(learn) {
+  return new Promise(res => {
+    const { card, inner } = openCard('learn');
+    inner.appendChild(portrait(96, 'happy'));
+    inner.appendChild($('h2', '', tr(learn.title)));
+    if (learn.pic) { const c = pic(learn.pic, 96); c.className = 'pp-pic'; c.setAttribute('aria-hidden', 'true'); inner.appendChild(c); }
+    inner.appendChild($('p', '', tr(learn.text)));
+    const go = btn(tr("Let's go"), { kind: 'hot', big: true, icon: 'play', onPress: () => { card.closeCard(); res(true); } }); go.setAttribute('data-pp-focus', ''); inner.appendChild(go);
+    card.onEscape = () => { card.closeCard(); res(true); };
+    O.say(tr(learn.title) + '. ' + tr(learn.text)); announce(tr(learn.title) + '. ' + tr(learn.text));
+  });
+}
+
+/* ---------- solved: stars, the Case-closed card in lesson mode, the results card, the next level ---------- */
+async function solved(flow) {
+  const run = S.run, level = S.level, stars = run.stars(!S.tier3);
+  pimSay(tr('Delivered!'), { speak: false }); sfx('win'); O.juice.confetti();
+  for (const b of UI.board.querySelectorAll('button')) b.disabled = true;
+  if (S.daily) {
+    const d = S.daily, best = SAVE.daily && SAVE.daily.day === d.day && SAVE.daily.band === S.band ? SAVE.daily.stars : 0;
+    SAVE.daily = { day: d.day, band: S.band, stars: Math.max(best, stars) }; save();
+    const v = await O.ui.win({ stars, score: stars, best, hero: window.innerHeight < 520 ? false : PIM, title: tr('Daily Crew Challenge'), next: true });
+    if (flow !== S.flow) return;
+    if (v === 'again') return startDaily(d.day);
+    S.daily = null; return showMap();
+  }
+  if (!S.projector) {
+    const old = SAVE.stars[level.id] || { n: 0 }; if (stars > old.n || (stars === old.n && S.band === '2' && old.band !== '2')) SAVE.stars[level.id] = { n: stars, band: S.band }; delete SAVE.skipped[level.id]; save();
+    crownCheck();
+  }
+  hudSync();
+  let check = 0, conf = 0;
+  if (S.lesson && !S.projector && level.check) {
+    await O.wait(ms(600)); if (flow !== S.flow) return;
+    check = (await caseClosed(level.check)) ? 1 : 0; if (flow !== S.flow) return;
+    S.checks.n++; if (check) S.checks.ok++;
+    conf = await confidence(); if (flow !== S.flow) return;
+  }
+  report(level, stars, check, conf, false);
+  const v = await O.ui.win({ stars, score: stars, best: null, hero: window.innerHeight < 520 ? false : PIM, title: tr('Delivered!'), next: true });
+  if (flow !== S.flow) return;
+  if (v === 'again') return startLevel(S.chapter, S.levelIx, { noLearn: true });
+  nextLevel();
+}
+function caseClosed(check) {
+  const tiles = check.tiles.map(t => tr(t));
+  const who = window.innerHeight < 520 ? undefined : (S.pim || undefined);   // on a short screen the card stays centered without the asker
+  const order = E.rng(E.seedOf((S.level ? S.level.id : '') + ':check:' + S.seed0 + ':' + S.attempt)).shuffle(tiles.map((_, k) => k));
+  return O.ui.ask({ q: tr(check.q), choices: order.map(k => tiles[k]), index: order.indexOf(check.answer), tries: 1, who }).catch(() => false);
+}
+function confidence() {
+  return O.ui.dialog({ title: tr('How sure were you?'), portrait: PIM, buttons: [{ label: tr('Not sure'), kind: 'quiet', value: 1 }, { label: tr('Fairly sure'), kind: 'quiet', value: 2 }, { label: tr('Very sure'), kind: 'go', value: 3 }] }).then(v => (v == null ? 2 : v));
+}
+function skipLevel() {
+  const level = S.level; if (!level) return;
+  SAVE.skipped[level.id] = true; save(); sfx('whoosh'); toast(tr('Skipped. You can come back to it later.'));
+  report(level, 0, 0, 0, true); S.busy = false;
+  nextLevel();
+}
+function nextLevel() {
+  const ls = levelsFor(S.chapter, S.band), last = S.range ? Math.min(ls.length, S.range[1]) - 1 : ls.length - 1;
+  if (S.levelIx < last) return startLevel(S.chapter, S.levelIx + 1, {});
+  chapterComplete();
+}
+/** Full stars on every level of the chapter: the chapter crown, which recolors Pim's outfit. */
+function crownCheck() {
+  const key = S.chapter + ':' + S.band, ls = levelsFor(S.chapter, S.band);
+  if (SAVE.crowns[key] || !ls.length || !ls.every(l => starsOf(l.id) === 3)) return false;
+  SAVE.crowns[key] = true; save(); refreshPim(); sfx('levelup'); toast(tr('Chapter crown! Pim has a new outfit.')); return true;
+}
+function chapterComplete() {
+  const w = S.w;
+  if (!S.projector) crownCheck();
+  const next = S.lesson ? (D.THEN[S.band] || {})[S.chapter] : null;
+  if (S.lesson && next && !S.chained.includes(next.ch) && levelsFor(next.ch, S.band).length && (!next.levels || levelsFor(next.ch, S.band).length >= next.levels[0])) {
+    S.chained.push(next.ch);
+    toast(tr('Bonus quest: {chapter}', { chapter: tr(CH_BY_ID[next.ch].title) })); sfx('levelup');
+    return enterChapter(next.ch, next.levels ? next.levels[0] - 1 : null, next.levels || null);
+  }
+  const ls = levelsFor(S.lockedChapter || S.chapter, S.band), score = scoreNow(), max = ls.length * 3 || 1, f = score / max;
+  hideAll();
+  // report() already sent the labelled score; the kit's own report would send it again with no label, so the game ends the round itself
+  if (w && !w.ended && !S.projector) { try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ } }
+  if (w && !w.ended) w.win({ stars: f >= 0.9 ? 3 : f >= 0.55 ? 2 : 1, score: S.projector ? 0 : score, submit: false, title: tr('Chapter complete!'), who: PIM });
+}
+/** The chapter's stars (the locked chapter plus any chained chapter's stars: never goes down). */
+function scoreNow() {
+  const main = S.lockedChapter || S.chapter; let score = chapterStars(main, S.band);
+  for (const ch of S.chained) if (ch !== main) { const t = (D.THEN[S.band] || {})[main] || {}; score += chapterStars(ch, S.band, t.ch === ch && t.levels ? t.levels[0] : null, t.levels ? t.levels[1] : null); }
+  return score;
+}
+function report(level, stars, check, conf, skipped) {
+  if (S.projector || S.mode !== 'play') return;
+  const main = S.lockedChapter || S.chapter, ls = levelsFor(main, S.band), done = ls.filter(l => starsOf(l.id) > 0).length, score = scoreNow();
+  const lab = E.label(done, ls.length, CH_BY_ID[main].noun, score, S.lesson ? S.checks : null);
+  S.lastLabel = lab; S.lastScore = score;
+  try { if (window.BRB && BRB.score && !skipped) BRB.score.submit(score, lab); } catch (e) { /* no page */ }
+  const detail = { game: 'pp', chapter: level.ch, level: S.levelIx + 1, stars, band: S.band === '2' ? 2 : 1, csta: cstaOf(level, S.band), check, confidence: conf, hint: S.hint, runs: S.runs, skipped: !!skipped };
+  S.lastReport = detail;
+  try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress(detail); } catch (e) { /* older SDK */ }
+}
+
+/* ---------- the wheel tool: a free cipher wheel for the unplugged twin ---------- */
+let shift = 3;
+function showWheel() {
+  const pp = screen('wheel'), map = $('div', 'pp-map'); pp.appendChild(map);
+  const bar = $('div', 'pp-bar'); map.appendChild(bar);
+  if (!S.lock) bar.appendChild(btn(tr('Map'), { kind: 'quiet', icon: 'home', onPress: () => { S.mode = 'play'; showMap(); } }));
+  const pill = $('div', 'pp-pill'); pill.appendChild(iconEl('key')); pill.appendChild($('span', '', tr('Key wheel'))); bar.appendChild(pill);
+  map.insertAdjacentHTML('beforeend', wheelMarkup('pp-wheel'));
+  const svg = map.querySelector('.pp-wheel');
+  const row = $('div', 'pp-row pp-center'); map.appendChild(row);
+  const minus = btn(tr('Turn back'), { kind: 'quiet', icon: 'minus', onPress: () => turn(-1) }), label = $('div', 'pp-shift'); label.dir = 'ltr';
+  const plus = btn(tr('Turn forward'), { kind: 'quiet', icon: 'plus', onPress: () => turn(1) });
+  row.append(minus, label, plus);
+  const ex = $('p', 'pp-lesson-note'); map.appendChild(ex);
+  const sync = () => { setWheel(svg, shift); label.textContent = tr('Shift {n}', { n: shift }); ex.textContent = tr('{a} becomes {b}', { a: 'A', b: E.caesar('A', shift) }) + ' · ' + tr('{a} becomes {b}', { a: 'E', b: E.caesar('E', shift) }); };
+  const turn = d => { shift = ((shift + d) % 26 + 26) % 26; sfx('select'); sync(); announce(tr('Shift {n}', { n: shift })); };
+  S.wheelTurn = turn;
+  sync();
+}
+/** Arrow keys turn the wheel: the free wheel tool, and the cipher levels that have a wheel (one listener, registered once). */
+document.addEventListener('keydown', e => {
+  const d = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 0;
+  if (!d || e.defaultPrevented || cardPause || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (S.screen === 'wheel' && S.wheelTurn) { e.preventDefault(); return S.wheelTurn(d); }
+  const run = S.run; if (S.screen !== 'level' || !run || run.type !== 'cipher' || run.inst.kind === 'keyed' || run.inst.choices || run.done || run.failed || S.busy) return;
+  if (document.querySelector('.ok-modal')) return;   // a kit card (dialog, quiz, results, pause) owns the keys
+  e.preventDefault(); doAction({ t: 'shiftTo', n: run.s.shift + d });
+});
+
+/* ---------- test hooks (covers, the playtest, the unit test's Chromium run) ---------- */
+function testState() {
+  const run = S.run;
+  return { pp: true, screen: S.screen, chapter: S.chapter, level: S.chapter ? S.levelIx + 1 : 0, levelId: S.level ? S.level.id : null, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
+    phase: run ? run.s.phase : S.screen, stars: S.chapter ? chapterStars(S.chapter, S.band) : 0, levelStars: S.level ? starsOf(S.level.id) : 0, ppScore: S.lastScore, label: S.lastLabel, hops: run && run.s.hops || 0,
+    placed: run && run.s.placed ? run.s.placed.length : 0, fails: S.fails, hint: S.hint, checks: S.checks, ready: true, busy: S.busy, cards: cardPause, daily: S.daily ? S.daily.day : null, crowns: Object.keys(SAVE.crowns).length, silver: S.level ? silverOf(S.level.id) : false, report: S.lastReport || null };
+}
+Object.assign(window.__brbTest, {
+  start(o = {}) { S.pending = Object.assign({}, o); S.fast = S.fast || !!o.fast; game.start(); return testState(); },
+  skipAnimations() { S.fast = true; return true; },
+  act(a) { return doAction(a); },
+  advice() { return S.run ? S.run.advice() : null; },
+  hint() { giveHint(); return S.hint; },
+  /** play(record, {band, seed}): run one level record that is not in the chapters yet (the engine's other level types). */
+  play(rec, o = {}) {
+    const band = o.band === '2' ? '2' : '1b';
+    const r = Object.assign({ ch: 'locks', bands: ['1b', '2'], csta: ['1B-NI-05'], par: 99, intro: 'Test level', hints: ['One', 'Two', 'Three'], check: { q: 'Which?', tiles: ['This', 'That', 'Other'], answer: 0 } }, rec);
+    if (!LEVELS.includes(r)) LEVELS.push(r);
+    S.fast = true; S.pending = { chapter: r.ch, band, level: levelsFor(r.ch, band).length, seed: o.seed != null ? o.seed : 1, lesson: !!o.lesson };
+    game.start(); return testState();
+  },
+  run() { return S.run ? S.run.snapshot() : null; },
+  async solve() { S.fast = true; let guard = 0; while (S.run && !S.run.done && !S.run.failed && guard++ < 300) { while (S.busy) await O.time.real.wait(16); const a = S.run.advice(); if (!a) break; if (S.run.type === 'ack' && UI.sel == null) { /* the UI needs no selection for act() */ } await doAction(a); } return S.run ? S.run.snapshot() : null; },
+  closeCards() { if (S.dom) for (const c of [...S.dom.pp.querySelectorAll('.pp-card')]) { if (c.onEscape) c.onEscape(); else if (c.closeCard) c.closeCard(); } return true; },   // Escape: a learn card's promise resolves too
+  async cover() {
+    S.fast = true; S.pending = { chapter: 'packets', band: '1b', level: 5, seed: 7, lesson: false }; game.start();
+    await O.time.real.wait(50); closeCards();
+    const run = S.run; if (!run) return false;
+    for (let k = 0; k < 2; k++) { let g = 0; while (run.s.phase === 'play' && run.s.i === k + 1 && g++ < 10) { const a = run.advice(); if (!a) break; await doAction(a); } }
+    const I = run.inst, roads = I.linkOrder.slice(0, 3);
+    for (let k = 0; k < 6; k++) { const l = I.links[roads[k % roads.length]], a = I.nodes[l.a], b = I.nodes[l.b], f = 0.3 + 0.4 * (k % 2); const el = $('div', 'pp-pk'); el.appendChild(pieceEl((k % I.n) + 1)); const nb = $('b', '', num((k % I.n) + 1)); nb.dir = 'ltr'; el.appendChild(nb); el.style.left = pct(a.x + (b.x - a.x) * f); el.style.top = pct(a.y + (b.y - a.y) * f); UI.board.appendChild(el); }
+    for (let k = 1; k <= 2; k++) { const sl = UI.slots[k - 1]; if (sl) { sl.textContent = ''; sl.classList.remove('pp-empty'); sl.appendChild(pieceEl(k)); } }
+    return true;
+  },
+});
+</script>

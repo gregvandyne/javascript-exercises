@@ -5387,6 +5387,10 @@
         "flag": "Finde das Land mit dieser Flagge",
         "famous": "Finde das Land, das berühmt ist für {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Nach dem Stundenplan voreingestellt. Du kannst alles noch ändern."
     }
   },
   "match": {
@@ -5532,5 +5536,18 @@
   },
   "tts": {
     "sample": "Hallo! Ich bin dein Begleiter in der Oomba Academy. Komm, wir gehen auf Entdeckungsreise, lösen Rätsel und haben zusammen viel Spaß!"
+  },
+  "cs": {
+    "step": {
+      "hostedLive": "Deine Lehrkraft spielt das live mit der Klasse"
+    },
+    "review": {
+      "rubric": "Bewertung nach Raster",
+      "notMarked": "Nicht bewertet",
+      "marksTitle": "Raster-Bewertung: {marks}",
+      "alsoMark": "Diese Teammitglieder genauso bewerten",
+      "alsoMarkHint": "Sie bekommen bei diesem Schritt dieselbe Raster-Bewertung. Die schriftliche Rückmeldung bleibt bei diesem Kind.",
+      "noHandIns": "Noch nichts abgegeben."
+    }
   }
 }

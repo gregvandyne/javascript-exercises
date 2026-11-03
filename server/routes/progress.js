@@ -24,6 +24,11 @@ import { jsonData } from '../views/html.js';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { onLocales as ttsOnLocales } from '../services/tts.js';
+import { config } from '../config.js';
+import { liveGameOf } from '../live/live-games.js';
+import { templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
+import { scanVersion } from '../services/scanner.js';
+import { sanitizeGameHtml } from '../services/sanitize.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -33,6 +38,19 @@ const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
 const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩' };
+/** Official games a class plays only when the teacher hosts them live (the Oomba Live built-in modes, Would You Rather
+ *  Live among them): a lesson step on one of them shows "Your teacher hosts this live" instead of Play and "I played it",
+ *  and the server refuses the student's own progress calls on it: the live run writes that cell (CS Quest P5;
+ *  services/progress.js hostedLive, also used by /play in routes/games.js). */
+export const HOSTED_LIVE = P.HOSTED_LIVE;
+const hostedLive = P.hostedLive;
+/** A game step's Play link: the lesson context for the gradebook, then the step's lesson parameters (lesson_steps.options,
+ *  services/play-params.js) so the game opens at the right chapter. */
+const playHref = (s, cl) => `/play/${s.game_slug}${cl ? `?lesson=${cl.id}&step=${s.id}${s.options ? `&${s.options}` : ''}` : s.options ? `?${s.options}` : ''}`;
+/** QUIZ_STEPS (default on): quiz steps (exit tickets) on the student lesson page and their APIs; off answers 404. */
+export const quizStepsOn = (req, res, next) => (config.quizSteps ? next() : res.status(404).json({ error: req.t('progress.errors.notFound'), code: 'quizStepsOff' }));
+/** Rubric marks ('23-1') shown as "2 · 3 · – · 1". */
+const marksText = marks => [...String(marks || '')].map(ch => (ch === '-' ? '–' : ch)).join(' · ');
 const err = (req, res, code, status = 400, field) => res.status(status).json({ error: req.t(`progress.errors.${code}`), ...(field ? { field } : {}) });
 const send = (req, res, r, extra = {}) => (r.ok ? res.json({ ok: true, ...extra }) : err(req, res, r.code, r.code === 'notFound' ? 404 : 400, r.code === 'answerEmpty' ? 'answer' : undefined));
 const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ error: req.t('progress.errors.notFound') }) : notFound(req, res, req.t('progress.errors.notFound')));
@@ -40,10 +58,13 @@ const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ 
 // ================================================================ student actions
 router.post('/api/progress/:clid/:sid/done', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.markDone(req.user, req.params.clid, req.params.sid, b(req).done !== false && b(req).done !== '0')));
 router.post('/api/progress/:clid/:sid/answer', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.answer(req.user, req.params.clid, req.params.sid, b(req).answer)));
-/** From the play page: { event: 'start' | 'time' | 'score' | 'end', seconds, score, label }. */
+/** From the play page: { event: 'start' | 'time' | 'score' | 'end', seconds, score, label }. Never for a hosted-live
+ *  step (Quest Race, Would You Rather Live…): only the teacher's live run writes that cell (services/progress.js). */
 router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
   const { event, seconds, score, label } = b(req);
   const u = req.user, { clid, sid } = req.params;
+  const c = P.context(u, clid, sid);
+  if (!c.ok || hostedLive(c.step)) return no(req, res);
   const r = event === 'start' ? P.gameStarted(u, clid, sid) : event === 'time' ? P.gameTime(u, clid, sid, seconds)
     : event === 'score' ? P.gameScore(u, clid, sid, score, label) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null) : { ok: false, code: 'notFound' };
   send(req, res, r);
@@ -184,30 +205,59 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const doneN = lp.students.filter(p => p.total && p.done >= p.total).length;
   const toRead = lp.students.reduce((n, p) => n + p.toRead, 0);
   const lateFor = L.isOpen(lp.cl) && L.dueState(lp.cl) === 'late' ? p => p.done < p.total : () => false;
+  // Rubric marks (CS Quest P11): question and build steps may carry a rubric (lesson_steps.rubric); the teacher gives 0-3
+  // per line, kept one character per line in step_progress.marks.
+  const rubricOf = s => (L.RUBRIC_KINDS.includes(s.kind) ? L.rubricOf(s) : []);
+  const marksChip = x => html`<span class="chip-s st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">📏 ${marksText(x.marks)}</span>`;
   const icon = (s, x) => {
     if (!x) return html`<span class="st-none" title="${t('progress.status.none')}">–</span><span class="sr-only">${t('progress.status.none')}</span>`;
     const isDone = x.status === 'done';
     const reviewed = x.reviewed_at ? t('progress.lesson.read') : t('progress.lesson.new');
     const extra = s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
-    return html`<span class="${isDone ? 'st-done' : 'st-started'}" title="${isDone ? t('progress.status.done') : t('progress.status.started')}">${isDone ? '✅' : '◐'}</span><span class="sr-only">${isDone ? t('progress.status.done') : t('progress.status.started')}</span>${extra}`;
+    const marks = x.marks && rubricOf(s).length ? html`<span class="st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">${marksText(x.marks)}</span>` : '';
+    return html`<span class="${isDone ? 'st-done' : 'st-started'}" title="${isDone ? t('progress.status.done') : t('progress.status.started')}">${isDone ? '✅' : '◐'}</span><span class="sr-only">${isDone ? t('progress.status.done') : t('progress.status.started')}</span>${extra}${marks}`;
   };
   const games_ = new Map(lp.steps.filter(s => s.kind === 'build').flatMap(s => lp.students.map(p => p.cells[lp.steps.indexOf(s)])).filter(x => x && x.game_id).map(x => [x.game_id, games.getGame(x.game_id)]));
   const questions = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === 'question');
   const fullSteps = L.steps(l.id);
+  const byReview = (a, b) => (!!a.x.reviewed_at - !!b.x.reviewed_at) || (b.x.updated_at - a.x.updated_at);
+  // The rubric's radios (one row per line, '–' = not marked) and "Also mark these teammates" (the other students of the class).
+  const rubricFields = (s, x, p) => {
+    const rub = rubricOf(s); if (!rub.length) return '';
+    const mates = lp.students.filter(o => o.id !== p.id);
+    return html`<div class="rubric" role="group" aria-label="${t('cs.review.rubric')}">
+      ${rub.map((line, i) => { const cur = (x && x.marks && x.marks[i]) || '-'; return html`<fieldset class="rubric-line"><legend><b dir="auto">${line.line}</b>${line.ids && line.ids.length ? html` <span class="small muted" lang="en" dir="ltr">${line.ids.join(', ')}</span>` : ''}</legend>
+        <div class="rubric-opts">${['-', '0', '1', '2', '3'].map(v => html`<label class="${cur === v ? 'on' : ''}" title="${v === '-' ? t('cs.review.notMarked') : (line.levels && line.levels[+v]) || v}"><input type="radio" name="mark-${i}" value="${v}" ${cur === v ? raw('checked') : ''}><span>${v === '-' ? '–' : v}</span></label>`)}</div>
+        ${line.levels && line.levels.length ? html`<p class="small muted rubric-levels" dir="auto">${line.levels.map((d, k) => html`${k ? ' · ' : ''}<b>${k}</b> ${d}`)}</p>` : ''}</fieldset>`; })}
+      ${mates.length ? html`<details class="rubric-also"><summary class="small">👥 ${t('cs.review.alsoMark')}</summary><p class="small muted">${t('cs.review.alsoMarkHint')}</p>
+        <div class="rubric-mates">${mates.map(o => html`<label class="chk"><input type="checkbox" name="alsoMark" value="${o.id}"> ${nameOf(o)}</label>`)}</div></details>` : ''}</div>`;
+  };
+  const reviewForm = (s, x, p) => html`<form class="ac-form" data-api="/api/progress/${lp.cl.id}/${s.id}/${p.id}/review" data-reload novalidate>
+    ${rubricFields(s, x, p)}
+    <label class="sr-only" for="fb-${s.id}-${p.id}">${t('progress.lesson.feedback')}</label>
+    <textarea class="input" id="fb-${s.id}-${p.id}" name="feedback" rows="2" maxlength="2000" placeholder="${t('progress.lesson.feedbackPlaceholder')}">${x.feedback}</textarea>
+    <div class="row"><button class="btn btn-primary btn-sm" type="submit">${x.reviewed_at ? `💬 ${t('progress.lesson.update')}` : `✔️ ${t('progress.lesson.send')}`}</button></div>
+  </form>`;
   const answers = questions.map(({ s, i }) => {
-    const list = lp.students.map(p => ({ p, x: p.cells[i] })).filter(({ x }) => x && x.answer).sort((a, b) => (!!a.x.reviewed_at - !!b.x.reviewed_at) || (b.x.updated_at - a.x.updated_at));
+    const list = lp.students.map(p => ({ p, x: p.cells[i] })).filter(({ x }) => x && x.answer).sort(byReview);
     const q = fullSteps.find(x => x.id === s.id);
     return html`<section class="panel answers" aria-labelledby="q-${s.id}"><h2 id="q-${s.id}">✍️ ${t('progress.lesson.question', { n: i + 1 })}</h2>
       <p class="q-text" dir="auto">${q ? q.body : ''}</p>
       ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
-        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">✔️ ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">✍️ ${t('progress.lesson.new')}</span>`}</div>
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">✔️ ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">✍️ ${t('progress.lesson.new')}</span>`}${x.marks && rubricOf(s).length ? marksChip(x) : ''}</div>
         <p class="ac-answer" dir="auto">${x.answer}</p>
-        <form class="ac-form" data-api="/api/progress/${lp.cl.id}/${s.id}/${p.id}/review" data-reload novalidate>
-          <label class="sr-only" for="fb-${s.id}-${p.id}">${t('progress.lesson.feedback')}</label>
-          <textarea class="input" id="fb-${s.id}-${p.id}" name="feedback" rows="2" maxlength="2000" placeholder="${t('progress.lesson.feedbackPlaceholder')}">${x.feedback}</textarea>
-          <div class="row"><button class="btn btn-primary btn-sm" type="submit">${x.reviewed_at ? `💬 ${t('progress.lesson.update')}` : `✔️ ${t('progress.lesson.send')}`}</button></div>
-        </form></li>`)}</ul>` : html`<p class="muted">${t('progress.lesson.noAnswers')}</p>`}
+        ${reviewForm(s, x, p)}</li>`)}</ul>` : html`<p class="muted">${t('progress.lesson.noAnswers')}</p>`}
+    </section>`;
+  });
+  // Build steps with a rubric (the capstone): every student with a row (started, handed in, or marked as a teammate).
+  const builds = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === 'build' && rubricOf(s).length).map(({ s, i }) => {
+    const list = lp.students.map(p => ({ p, x: p.cells[i] })).filter(({ x }) => x).sort(byReview);
+    return html`<section class="panel answers" aria-labelledby="b-${s.id}"><h2 id="b-${s.id}">🛠️ ${s.title || t('lessons.kinds.build')}</h2>
+      ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => { const g = x.game_id ? games_.get(x.game_id) : null; return html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.status === 'done' ? html`<span class="chip-s">📤 ${t('progress.student.handedInText')}</span>` : ''}${x.marks ? marksChip(x) : ''}</div>
+        ${g && g.status === 'published' && games.canView(req.user, g) ? html`<p><a href="/g/${g.slug}">🎮 ${t('progress.lesson.openGame')}</a></p>` : ''}
+        ${reviewForm(s, x, p)}</li>`; })}</ul>` : html`<p class="muted">${t('cs.review.noHandIns')}</p>`}
     </section>`;
   });
   const lateN = lp.students.filter(lateFor).length;
@@ -224,11 +274,26 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
         ${lp.steps.map((s, i) => { const x = p.cells[i]; const g = s.kind === 'build' && x && x.game_id ? games_.get(x.game_id) : null;
           return html`<td><span class="st">${icon(s, x)}</span>${g && g.status === 'published' && games.canView(req.user, g) ? html`<a class="small" href="/g/${g.slug}">${t('progress.lesson.openGame')}</a>` : ''}${s.kind === 'question' && x && x.answer ? html`<a class="small" href="#a-${s.id}-${p.id}">${t('progress.lesson.readAnswer')}</a>` : ''}</td>`; })}
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div></section>`}
-  ${questions.length ? html`<div id="answers">${answers}</div>` : ''}`;
+  ${questions.length || builds.length ? html`<div id="answers">${answers}${builds}</div>` : ''}`;
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
 });
 
-router.post('/api/progress/:clid/:sid/:uid/review', requireUser, (req, res) => send(req, res, P.review(req.user, req.params.clid, req.params.sid, req.params.uid, b(req).feedback)));
+/** Feedback and, on question / build steps with a rubric, marks: { feedback?, marks?: [2, 3, '-', 1] | '23-1' } or the
+ *  form's mark-<i> fields; alsoMark?: classmates who get the same marks (CS Quest P11). A field left out is left as it
+ *  is: no feedback key keeps the feedback, a line with no mark keeps its mark; '-' un-marks a line, '' clears the feedback
+ *  (the form always sends both, so the page behaves as it always did). See services/progress.js review(). */
+router.post('/api/progress/:clid/:sid/:uid/review', requireUser, (req, res) => {
+  const body = b(req);
+  let marks = body.marks;
+  if (marks === undefined) {
+    const idx = Object.keys(body).map(k => /^mark-(\d{1,2})$/.exec(k)).filter(Boolean).map(m => +m[1]);
+    if (idx.length) { marks = []; for (let i = 0; i <= Math.max(...idx); i++) marks.push(body[`mark-${i}`] === undefined ? undefined : String(body[`mark-${i}`])); }
+  }
+  const alsoMark = body.alsoMark === undefined ? [] : [].concat(body.alsoMark).map(String);
+  const r = P.review(req.user, req.params.clid, req.params.sid, req.params.uid, body.feedback, { marks, alsoMark });
+  if (!r.ok && r.code === 'badMarks') return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  send(req, res, r, r.ok ? { marks: r.marks, alsoMarked: r.alsoMarked } : {});
+});
 
 // ================================================================ the lesson as the class sees it (with each student's progress)
 const paras = text => String(text || '').split(/\n{2,}/).filter(Boolean).map(p => html`<p dir="auto">${p.split('\n').map((line, i) => html`${i ? raw('<br>') : ''}${line}`)}</p>`);
@@ -236,7 +301,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
   const cl = L.getClassLesson(req.params.clid);
   if (!cl || cl.class_id !== req.params.cid || !L.canViewClassLesson(u, cl)) return no(req, res);
-  const c = S.getClass(cl.class_id), l = L.getLesson(cl.lesson_id), st = L.steps(l.id);
+  // QUIZ_STEPS off: quiz steps are left off the page (an emergency switch; the gradebook still counts them).
+  const c = S.getClass(cl.class_id), l = L.getLesson(cl.lesson_id), st = L.steps(l.id).filter(s => config.quizSteps || s.kind !== 'quiz');
   const teacher = S.canManageClass(u, c);
   const student = !teacher && S.classMember(c.id, u.id)?.role === 'student';
   const mine = student ? P.forStudent(cl.id, u.id) : {};
@@ -251,21 +317,26 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
       : html`<form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-primary" type="submit">✅ ${t('progress.student.markDone')}</button></form>`;
     if (s.kind === 'game') {
       if (!L.playableBy(s, c.school_id, c.id)) return html`<p class="notice warn">${t('lessons.view.notReady')}</p>`;
-      return html`<div class="row"><a class="btn btn-primary btn-big" href="/play/${s.game_slug}?lesson=${cl.id}&step=${s.id}">▶ ${t('lessons.view.play', { title: s.game_title })}</a></div>
+      // A live-only game (Quest Race, Would You Rather Live…): the teacher hosts it; the live run writes the score here.
+      if (hostedLive(s)) return html`<p class="notice sc-hosted">📡 ${t('cs.step.hostedLive')}</p>
+        ${x && x.score !== null ? html`<p class="sc-score">🏆 ${t('progress.student.best', { score: f.int(x.score) })}</p>` : ''}`;
+      return html`<div class="row"><a class="btn btn-primary btn-big" href="${playHref(s, cl)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a></div>
         ${x && x.score !== null ? html`<p class="sc-score">🏆 ${t('progress.student.best', { score: f.int(x.score) })}</p>` : ''}
         ${isDone ? '' : html`<p class="small muted">${t('progress.student.gameHint')}</p><form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-sm" type="submit">✅ ${t('progress.student.played')}</button></form>`}`;
     }
     if (s.kind === 'build') {
       const g = x && x.game_id ? games.getGame(x.game_id) : null;
       if (!g || g.status === 'deleted') return html`<form data-api="${api(s)}/build"><button class="btn btn-primary btn-big" type="submit">🛠️ ${t('lessons.view.build')}</button></form>`;
-      if (isDone) return html`<p class="sc-score">📤 ${t('progress.student.handedInText')}</p><div class="row">${g.status === 'published' ? html`<a class="btn" href="/g/${g.slug}">🎮 ${t('progress.student.seeGame')}</a>` : ''}<a class="btn" href="/studio/${g.id}">🛠️ ${t('progress.student.keepBuilding')}</a></div>`;
+      // The teacher's written feedback on the build (the rubric marks themselves stay with the teacher).
+      const fb = x.reviewed_at && x.feedback ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b><p dir="auto">${x.feedback}</p></div>` : '';
+      if (isDone) return html`<p class="sc-score">📤 ${t('progress.student.handedInText')}</p><div class="row">${g.status === 'published' ? html`<a class="btn" href="/g/${g.slug}">🎮 ${t('progress.student.seeGame')}</a>` : ''}<a class="btn" href="/studio/${g.id}">🛠️ ${t('progress.student.keepBuilding')}</a></div>${fb}`;
       return html`<div class="row"><a class="btn btn-primary" href="/studio/${g.id}">🛠️ ${t('progress.student.keepBuilding')}</a>
         <form data-api="${api(s)}/hand-in" data-reload data-confirm="${t('progress.student.handInConfirm')}"><button class="btn" type="submit">📤 ${t('progress.student.handIn')}</button></form></div>
-        <p class="small muted">${t('progress.student.handInHint')}</p>`;
+        <p class="small muted">${t('progress.student.handInHint')}</p>${fb}`;
     }
-    // A quiz step (homework from a live question set): one question at a time, big buttons with shapes, Read aloud,
-    // no timer; the server checks each answer once (public/js/live-quiz-step.js).
-    if (s.kind === 'quiz') return html`<section class="lv-qstep" data-api="/api/lessons/${cl.id}/steps/${s.id}/quiz" data-cl="${cl.id}" data-step="${s.id}" data-lang="${req.locale}" data-tts="${ttsOnLocales().join(',')}" aria-live="polite">
+    // A quiz step (an exit ticket, or homework from a live question set): one question at a time, big buttons with
+    // shapes, Read aloud, no timer; the server checks each answer once (public/js/live-quiz-step.js; QUIZ_STEPS).
+    if (s.kind === 'quiz') return html`<section class="lv-qstep" data-api="/api/progress/${cl.id}/${s.id}/quiz" data-cl="${cl.id}" data-step="${s.id}" data-lang="${req.locale}" data-tts="${ttsOnLocales().join(',')}" aria-live="polite">
       ${isDone ? html`<p class="sc-score">🏆 ${t('lessons.quiz.done', { score: x.score ?? 0 })}</p>` : html`<button class="btn btn-primary btn-big lv-qstep-go" type="button">▶ ${t('lessons.quiz.start')}</button>`}
       ${jsonData(`lv-qstep-${s.id}`, { right: t('lessons.quiz.right'), wrong: t('lessons.quiz.wrong'), next: t('lessons.quiz.next'), of: t('lessons.quiz.of'), done: t('lessons.quiz.done'), read: t('live.play.read'), aiVoice: t('live.play.aiVoice', { provider: 'OpenAI' }) })}
     </section>`;
@@ -275,15 +346,22 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
         <textarea class="input" id="ans-${s.id}" name="answer" rows="4" maxlength="3000" placeholder="${t('progress.student.answerPlaceholder')}" required>${x ? x.answer : ''}</textarea><span class="err" id="ans-${s.id}-err"></span>
         <div class="row"><button class="btn btn-primary" type="submit">${x && x.answer ? `✏️ ${t('progress.student.updateAnswer')}` : `📨 ${t('progress.student.sendAnswer')}`}</button>${x && x.answer ? html`<span class="small muted">${t('progress.student.sentAgo', { when: f.ago(x.updated_at) })}</span>` : ''}</div>
       </form>
-      ${x && x.reviewed_at ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b>${x.feedback ? html`<p dir="auto">${x.feedback}</p>` : html`<p class="muted">${t('progress.student.readNoFeedback')}</p>`}</div>` : ''}`;
+      ${x && x.answer && x.reviewed_at ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b>${x.feedback ? html`<p dir="auto">${x.feedback}</p>` : html`<p class="muted">${t('progress.student.readNoFeedback')}</p>`}</div>` : ''}`;
     return '';
   };
   // Teachers see the lesson as students do, with nothing that saves work; a game step gets a plain Play link (no lesson
   // tracking), so they can try the game.
   // A live-ready game step can also be hosted live for the class (Oomba Live): its scores count for this step.
-  const hostLive = s => (s.game_id && liveHostOk(u) && gameLiveReady(games.getGame(s.game_id)) ? html`<a class="btn" href="/live?cl=${cl.id}&step=${s.id}&game=${s.game_id}">📡 ${t('live.entry.hostLive')}</a>` : '');
+  // A built-in live mode (Quest Race, Would You Rather Live…) has no game card on /live: its link picks the mode instead
+  // (server/live/live-games.js), and the run still binds to this step (classlive-sessions resolves the mode's game).
+  const hostLive = s => {
+    if (!s.game_id || !liveHostOk(u)) return '';
+    const g = games.getGame(s.game_id), lg = liveGameOf(g);
+    if (!lg && !gameLiveReady(g)) return '';
+    return html`<a class="btn" href="/live?cl=${cl.id}&step=${s.id}&${lg ? `mode=${lg.mode}` : `game=${s.game_id}`}">📡 ${t('live.entry.hostLive')}</a>`;
+  };
   const preview = s => (s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
-    : s.game_slug ? html`<div class="row"><a class="btn" href="/play/${s.game_slug}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');
+    : s.game_slug ? html`<div class="row"><a class="btn" href="${playHref(s, null)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');
   const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')
     ? html`<form data-api="/api/live/sets/from-lesson/${l.id}"><button class="btn" type="submit">📡 ${t('live.entry.quizLesson')}</button></form>` : '';
   const late = student && L.isOpen(cl) && L.dueState(cl) === 'late' && doneN < st.length;
@@ -303,8 +381,25 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   </li>`; })}</ol>`;
   page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name, ...(student && st.some(s => s.kind === 'quiz') ? { scripts: ['/js/live-quiz-step.js'] } : {}) });
 });
-/** A build step: the student's own Studio game for it (made the first time, reopened after), with the teacher's idea in the Builder box. */
-router.post('/api/progress/:clid/:sid/build', requireUser, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), (req, res) => {
+/** A quiz step's questions for the student (never the answers) and their marks so far; one answer at a time, checked
+ *  here once (public/js/live-quiz-step.js). QUIZ_STEPS gates both. */
+router.get('/api/progress/:clid/:sid/quiz', requireUser, quizStepsOn, (req, res) => {
+  const r = P.quizFor(req.user, req.params.clid, req.params.sid);
+  if (!r.ok) return no(req, res);
+  res.set('Cache-Control', 'no-store');
+  res.json({ items: r.items, marks: r.marks });
+});
+/** A whole number as the quiz script sends it (a number or a digit string); anything else is NaN, which quizAnswer refuses. */
+const whole = v => (typeof v === 'number' || (typeof v === 'string' && /^\d{1,6}$/.test(v)) ? +v : NaN);
+router.post('/api/progress/:clid/:sid/quiz', requireUser, quizStepsOn, rateLimit('progress', 240, 60e3), (req, res) => {
+  const r = P.quizAnswer(req.user, req.params.clid, req.params.sid, whole(b(req).i), whole(b(req).c));
+  if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  res.json({ ok: r.right, answer: r.answer, next: r.next, score: r.score });
+});
+/** A build step: the student's own Studio game for it (made the first time, reopened after), with the teacher's idea in
+ *  the Builder box. A step with a Studio template (lesson_steps.template, e.g. the capstone's Quiz Show) starts from that
+ *  template's game, exactly as "Start from" in the Studio does (routes/studio.js). */
+router.post('/api/progress/:clid/:sid/build', requireUser, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), async (req, res) => {
   const c = P.context(req.user, req.params.clid, req.params.sid);
   if (!c.ok || c.step.kind !== 'build') return no(req, res);
   if (req.user.is_guest) return no(req, res);
@@ -313,7 +408,15 @@ router.post('/api/progress/:clid/:sid/build', requireUser, rateLimit('studio-new
   if (old && old.owner_id === req.user.id && old.status !== 'deleted') return res.json({ ok: true, redirect: `/studio/${old.id}` });
   if (!req.user.builder_enabled) return res.status(403).json({ error: req.t('studio.api.buildingOff') });
   const l = L.getLesson(c.cl.lesson_id);
-  const g = games.createGame(req.user.id, { title: (c.step.title || l.title).slice(0, 60), icon: '🎓', category: 'learning' });
+  const key = TEMPLATE_KEYS.includes(c.step.template) ? c.step.template : '';
+  const info = key ? await templateInfo(key) : null;
+  const g = games.createGame(req.user.id, { title: (c.step.title || l.title).slice(0, 60), icon: '🎓', category: 'learning', ...(info ? { cover: info.cover, players_max: info.players || 1, tags: key } : {}) });
+  if (key) {
+    const { html: tpl } = await templateHtml(key);
+    const { html: clean } = sanitizeGameHtml(tpl);
+    const report = scanVersion(clean);
+    games.addVersion(g.id, clean, { notes: req.t('studio.startedFrom', { title: info.title }), createdBy: req.user.id, safetyStatus: report.status, safetyReport: report });
+  }
   P.buildGame(req.user, c.cl.id, c.step.id, g.id);
   res.json({ ok: true, redirect: `/studio/${g.id}?ask=${encodeURIComponent(c.step.body.slice(0, 300))}` });
 });
