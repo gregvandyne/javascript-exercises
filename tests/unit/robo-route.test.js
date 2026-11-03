@@ -164,6 +164,25 @@ test('robo-route: the verdict says why (bump, splash, nothing to pick up, gems l
   assert.ok(E.run(planned, parse('move; move; move; move'), { planMatch: true }).verdict.planMatch);
   assert.equal(run({ rows: ['>...G'], needs: ['repeat'] }, 'move; move; move; move').verdict.failReason, 'needs');
   assert.ok(run({ rows: ['>...G'], needs: ['repeat'] }, 'repeat 4 { move }').verdict.ok);
+  // a needed block has to do work: an empty repeat, an empty when, a change by 0 do not count
+  const L = (ch, band, id) => levelsFor(ch, band).find(l => l.id === id);
+  assert.equal(run(L('loops', '1b', 'loop-1'), 'repeat 5 { }; move; move; move; move; move').verdict.failReason, 'needs');
+  assert.equal(run(L('loops', '1b', 'loop-1'), 'repeat 1 { move }; move; move; move; move').verdict.failReason, 'needs', 'repeat once is not a loop');
+  assert.equal(run(L('conditionals', '1b', 'cond-2'), 'when gem { }; repeat 8 { move; if gem { pick; right } }').verdict.failReason, 'needs');
+  assert.equal(run(L('variables', '1b', 'var-3'), 'set steps 0; change steps 0; repeat 4 { move }; move').verdict.failReason, 'needs');
+  assert.equal(run(L('loops', '2', 'loop-5p'), 'repeat 3 { repeat 1 { move; move }; right; move; left }').verdict.failReason, 'needs', 'a nested repeat that goes round once is not nested work');
+  assert.match(E.failText(run(L('loops', '2', 'loop-5p'), 'repeat 3 { move; move; right; move; left }').verdict)[1].block, /repeat inside a repeat/, 'needs is said in shelf words');
+  assert.equal(E.NEED_WORDS.if, 'an if block');
+  // a kept shared block must also be called (fn-7p): redoing the zigzag by hand in a new block is not using it
+  const fn7 = L('functions', '2', 'fn-7p');
+  const byHand = run(fn7, fn7.starter + '; proc Finish chip up { repeat 5 { move; right; move; left }; repeat 2 { move } }; call Finish').verdict;
+  assert.equal(byHand.failReason, 'keepcall'); assert.equal(byHand.name, 'Zigzag'); assert.match(E.failText(byHand)[0], /call it/);
+  // the maker's search: a key listed before a gem does not steal the gem's bit in an all-gems door
+  // par counts Bolt's commands plus the set and change a counting door needs (set count 0; ...; change count 1)
+  assert.equal(E.check({ rows: ['>K*DG'], door: { var: 'count', n: 'all' } }).par, 7);
+  assert.ok(run({ rows: ['>K*DG'], door: { var: 'count', n: 'all' } }, 'set count 0; move; move; pick; change count 1; move; move').verdict.ok, 'the 7-block program passes');
+  assert.equal(E.check({ rows: ['>*K.DG'], door: { var: 'count', n: 'all' } }).par, 8);
+  assert.equal(E.check({ rows: ['>#K*DG', '>....G'] }).solvable, true);
   // events, doors and variables
   assert.ok(run({ rows: ['>..#', '##.#', '##G#'] }, 'when bump { right }; repeat until goal { move }').verdict.ok);
   assert.ok(run({ rows: ['>*K.DG'] }, 'move; pick; move; pick; move; move; move').verdict.ok, 'a key opens the door');
@@ -182,6 +201,11 @@ test('robo-route: programs are data: unknown blocks are refused, runaway loops a
   assert.equal(E.run(lvl, [{ t: 'repeat', until: 'goal', body: [{ t: 'left' }] }]).verdict.failReason, 'limit');
   assert.equal(E.run({ rows: ['>#.G'] }, [{ t: 'repeat', until: 'goal', body: [{ t: 'move' }] }]).verdict.failReason, 'bump', 'a loop that bumps for ever says bump, the useful reason');
   assert.equal(E.run(lvl, [{ t: 'repeat', n: 999, body: [{ t: 'repeat', n: 999, body: [{ t: 'left' }] }] }]).verdict.failReason, 'limit');
+  // loop turns and if tests count as work too: five nested repeat 20 round an if would be 3.2 million tests
+  const nest = n => (n ? [{ t: 'repeat', n: 20, body: nest(n - 1) }] : [{ t: 'if', c: { s: 'path' }, body: [] }]);
+  const t0 = process.hrtime.bigint(); const deep = E.run(lvl, nest(5)); const ms = Number(process.hrtime.bigint() - t0) / 1e6;
+  assert.equal(deep.verdict.failReason, 'limit'); assert.ok(ms < 100, `nested loops stop fast (${ms.toFixed(1)} ms)`); assert.ok(deep.results[0].events.length <= E.LIMITS.events + 1, 'the replay stays bounded');
+  assert.equal(E.run(lvl, [{ t: 'when', ev: 'bump', body: [{ t: 'left' }] }, { t: 'repeat', n: 20, body: [{ t: 'repeat', n: 20, body: [{ t: 'repeat', n: 20, body: [{ t: 'repeat', n: 20, body: [{ t: 'move' }] }] }] }] }]).verdict.failReason, 'limit', 'bumps that fire a handler count as work');
   assert.equal(run(lvl, 'proc A { call A }; call A').verdict.failReason, 'deep');
   assert.equal(run(lvl, 'set count 0; change count 7; change count -3; if count = 4 { move; move; move; move }').verdict.ok, true);
   assert.ok(E.run(lvl, [{ t: 'set', v: 'window', val: 0 }, { t: 'set', v: '__proto__', val: 1 }]).verdict.failReason !== 'bad' || true);
@@ -229,7 +253,7 @@ test('robo-route: en.json lists every English string the game shows (and nothing
   for (const c of CHAPTERS) want.add(c.title);
   for (const b of Object.values(LV.BLOCKS)) want.add(b.label);
   for (const t of Object.values(LV.TILES)) want.add(t.label);
-  for (const s of [...Object.values(LV.SENSOR_LABELS), ...Object.values(LV.EVENT_LABELS), ...Object.values(LV.CHIPS), ...Object.values(LV.CREDITS), ...Object.values(LV.WHY), ...LV.MAKER_HINTS.free, ...LV.MAKER_HINTS.test, ...LV.DAILY_HINTS, ...LV.DAILY.map(d => d.hint), ...E.WORDS, 'on', 'off', 'and', 'or', 'Explorer', 'Pro']) want.add(s);
+  for (const s of [...Object.values(LV.SENSOR_LABELS), ...Object.values(LV.EVENT_LABELS), ...Object.values(LV.CHIPS), ...Object.values(LV.CREDITS), ...Object.values(LV.WHY), ...LV.MAKER_HINTS.free, ...LV.MAKER_HINTS.test, ...LV.DAILY_HINTS, ...LV.DAILY.map(d => d.hint), ...E.WORDS, ...Object.values(E.NEED_WORDS), 'on', 'off', 'and', 'or', 'Explorer', 'Pro']) want.add(s);
   for (const l of LEVELS) for (const v of [l, l.pro || {}]) {
     if (v.learn) { want.add(v.learn.title); want.add(v.learn.text); }
     for (const h of v.hints || []) want.add(h);
@@ -238,13 +262,30 @@ test('robo-route: en.json lists every English string the game shows (and nothing
     if (v.predict) { want.add(v.predict.q); for (const t of v.predict.tiles) want.add(t); }
     if (v.task) want.add(v.task);
   }
-  for (const r of ['bump', 'door', 'splash', 'nothing', 'gems', 'goal', 'limit', 'deep', 'name', 'plan', 'needs', 'procs', 'chips', 'chip0', 'credit', 'remix', 'flow', 'nocall', 'empty', 'bad']) for (const left of [1, 2]) { const t = E.failText({ failReason: r, failStep: 1, gemsLeft: left }); if (t) want.add(t[0]); }
+  for (const r of ['bump', 'door', 'splash', 'nothing', 'gems', 'goal', 'limit', 'deep', 'name', 'plan', 'needs', 'procs', 'chips', 'chip0', 'credit', 'remix', 'flow', 'nocall', 'empty', 'bad', 'keepcall']) for (const left of [1, 2]) { const t = E.failText({ failReason: r, failStep: 1, gemsLeft: left }); if (t) want.add(t[0]); }
   const missing = [...want].filter(s => !have.has(s)), stale = en.filter(s => !want.has(s));
   assert.deepEqual(missing, [], 'strings the game shows but en.json lacks');
   assert.deepEqual(stale, [], 'strings in en.json the game no longer shows');
   assert.ok(en.length <= 1450 && en.length >= 850, `${en.length} strings`);
   const UK = /\b(colou?r|grey|favourite|labelled|licence|organise|practise|neighbour|recognise|maths|centre|programme)\b/i;
   for (const s of en) { assert.ok(!UK.test(s) || /\bcolor\b/.test(s) && !/colour/.test(s), `US spelling: ${s}`); assert.doesNotMatch(s, /\d{7,}|@|https?:|\/\/\w+\./, s); assert.doesNotMatch(s, /\b(grown[\s-]?ups?|parents?|guardians?|family|families|mum|mom|dad)\b/i, `no family words near codes: ${s}`); }
+});
+
+test('robo-route: the third hint shows one move, never the whole answer (every command kind of the answer with every count)', () => {
+  const WORDS = { move: /\bmoves?\b/, left: /\bleft\b/, right: /\bright\b/, pick: /\bpick/ };
+  const kinds = list => { const out = new Set(); (function walk(l) { for (const b of l) { if (WORDS[b.t]) out.add(b.t); if (b.body) walk(b.body); if (b.else) walk(b.else); } })(list); return out; };
+  const counts = list => { const out = new Set(); (function walk(l) { for (const b of l) { if (b.t === 'repeat' && typeof b.n === 'number') out.add(b.n); if (b.body) walk(b.body); if (b.else) walk(b.else); } })(list); return out; };
+  const NUM = { 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight' };
+  let checked = 0;
+  for (const [ch, band, l] of everyLevel()) {
+    if (typeof l.sol !== 'string' || l.maxEdits != null) continue;   // the Debug Lab's fixes are one edit by design
+    const sol = parse(l.sol), k = kinds(sol), c = counts(sol), h = l.hints[2].toLowerCase();
+    if (k.size < 3 && !c.size) continue;
+    const allKinds = [...k].every(t => WORDS[t].test(h)), allCounts = [...c].every(n => new RegExp(`\\b(${n}|${NUM[n] || n})\\b`).test(h));
+    assert.ok(!(allKinds && allCounts && (k.size + c.size) >= 3), `${ch}/${band}/${l.id}: hint 3 spells out the answer: ${l.hints[2]}`);
+    checked++;
+  }
+  assert.ok(checked > 50, `${checked} levels checked`);
 });
 
 test('robo-route: the game file and its metadata match the contract', async () => {
@@ -263,8 +304,14 @@ test('robo-route: the game file and its metadata match the contract', async () =
   assert.ok(META.description.length <= 600 && META.description.length > 100);
 });
 
-test('robo-route: the JSON l10n has all 11 non-English descriptions', { skip: !Object.keys(META.l10n || {}).length && 'l10n lands with the translation stage' }, () => {
-  for (const l of ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) assert.ok(META.l10n[l] && META.l10n[l].description, `description in ${l}`);
+test('robo-route: the JSON l10n has all 11 non-English descriptions and tags, kid-safe and short', () => {
+  for (const l of ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) {
+    assert.ok(META.l10n[l] && META.l10n[l].description, `description in ${l}`);
+    assert.ok(META.l10n[l].description.length <= 600 && META.l10n[l].description.length > 60, `${l}: description length`);
+    assert.ok(META.l10n[l].tags && META.l10n[l].tags.length <= 200, `${l}: tags`);
+    assert.doesNotMatch(META.l10n[l].description + META.l10n[l].tags, /\d{7,}|@|https?:|\/\/\w+\./);
+  }
+  assert.equal(Object.keys(META.l10n).length, 11);
 });
 
 /* ---------- real Chromium, the production frame wrapper, the kit served from disk ---------- */
@@ -274,11 +321,14 @@ const skip = !exe && !process.env.PLAYWRIGHT_BROWSERS_PATH ? 'no Chromium on thi
 const HOST = 'http://game.invalid';
 let browser;
 test.after(async () => { if (browser) await browser.close(); });
-async function open({ size = { width: 390, height: 844 }, lang = 'en', save = {} } = {}) {
+async function open({ size = { width: 390, height: 844 }, lang = 'en', save = {}, params = null } = {}) {
   const { frameDocument, frameCsp, SANDBOX } = await import('../../server/services/frame.js');
   if (!browser) { const { chromium } = await import('playwright-core'); browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] }); }
   const ctx = await browser.newContext({ viewport: size, hasTouch: true });
-  const doc = frameDocument(HTML, { user: { displayName: 'P', avatar: 'x', lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Robo Route' }, save, canSave: false, preview: true, deviceText: { title: 'x', text: 'y' } });
+  // a lesson link's params: the platform slice copies init.params onto BRB.params; until that SDK lands here the test
+  // sets the same frozen object right after the SDK, before the game reads (window.BRB && BRB.params) || {}
+  const src = params ? HTML.replace('<title>Robo Route</title>', `<script>BRB.params = Object.freeze(${JSON.stringify(params)});</script><title>Robo Route</title>`) : HTML;
+  const doc = frameDocument(src, { user: { displayName: 'P', avatar: 'x', lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Robo Route' }, save, canSave: false, preview: true, deviceText: { title: 'x', text: 'y' } });
   const host = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
   const errors = [], consoleErrors = [], csp = [];
   await ctx.route('**/*', route => {
@@ -313,7 +363,8 @@ test('robo-route: in Chromium a phone plays level 1 of two chapters in lesson mo
     await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
     s = await T(frame, 'state'); assert.equal(s.screen, 'map');
     assert.deepEqual(await fit(frame), [], 'the chapter map fits a phone');
-    assert.equal(await frame.evaluate(() => document.querySelectorAll('#tiles .rr-tile').length), 9, 'eight chapters and the daily');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#tiles .rr-tile').length), 10, 'eight chapters, the daily and the quest code');
+    assert.ok(await frame.evaluate(() => !!document.getElementById('questTile')), 'the quest code is a tile on the map, not only behind the gear');
     assert.equal(await frame.evaluate(() => document.querySelectorAll('#tiles .rr-tile[disabled]').length), 0, 'every chapter is open');
     await T(frame, 'start', { chapter: 'sequences', band: '1b', seed: 3, lesson: true });
     s = await T(frame, 'state'); assert.equal(s.phase, 'card', 'the learn card opens on level 1');
@@ -327,30 +378,68 @@ test('robo-route: in Chromium a phone plays level 1 of two chapters in lesson mo
     await T(frame, 'skipAnimations'); await T(frame, 'run'); await page.waitForTimeout(300);
     let v = await T(frame, 'verdict'); assert.equal(v.ok, false); assert.equal(v.failReason, 'goal');
     assert.equal((await T(frame, 'state')).fails, 1);
+    assert.equal(await T(frame, 'verdictText'), 'Bolt stopped, but not on the goal.', 'the verdict sentence stays under the board');
+    assert.match(await T(frame, 'banner'), /Bolt stopped, but not on the goal/, 'the kit banner carries the sentence');
     assert.equal(await T(frame, 'hint'), 1, 'hints open after a failed run at Explorer');
     await T(frame, 'closeModal');
+    // a wrong block pulses on hint 2: the block of the answer the program lacks (move here; never turn right on a straight run)
+    for (let i = 0; i < 3; i++) await T(frame, 'shelf', 0);
+    assert.equal(await T(frame, 'hint'), 2); await T(frame, 'closeModal');
+    assert.equal(await frame.evaluate(() => (document.querySelector('#shelf .hl') || {}).dataset?.shelf || null), 'move');
     await T(frame, 'solve'); await page.waitForTimeout(400);
     v = await T(frame, 'verdict'); assert.equal(v.ok, true);
+    assert.equal(await T(frame, 'verdictText'), 'Bolt made it!');
     s = await T(frame, 'state'); assert.equal(s.phase, 'card', 'the Case-closed card in lesson mode');
+    await T(frame, 'key', 'Escape'); await page.waitForTimeout(100);
+    assert.equal((await T(frame, 'state')).card, 'case', 'Escape does not skip the concept check');
     assert.ok(await T(frame, 'check', 0)); await page.waitForTimeout(150); assert.ok(await T(frame, 'confidence', 3)); await page.waitForTimeout(800);
     s = await T(frame, 'state'); assert.match(s.label, LABEL); assert.equal(s.label, '1/6 levels, 3 stars, 1/1 checks'); assert.ok(s.label.length <= 40);
     assert.ok(await frame.evaluate(() => !!document.querySelector('.ok-ui .ok-modal.ok-win')), 'the kit results card');
     await frame.evaluate(() => document.querySelector('.ok-ui .ok-modal.ok-win .ok-row .ok-hot').click()); await page.waitForTimeout(400);
     s = await T(frame, 'state'); assert.equal(s.levelId, 'seq-2'); assert.equal(s.level, 2);
+    // a program that does not compile (a when inside a repeat) is judged, not crashed; the level keeps working after it
+    await T(frame, 'start', { chapter: 'conditionals', band: '1b', level: 2, seed: 3 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.levelId, 'cond-2');
+    assert.equal((await T(frame, 'state')).blocks, 4, 'Explorer starts cond-2 with the loop built (repeat, move, if, pick)');
+    await T(frame, 'shelf', 3); assert.equal((await T(frame, 'state')).blocks, 5, 'a repeat');
+    await T(frame, 'shelf', 5); await page.waitForTimeout(100);
+    assert.match(await T(frame, 'verdictText'), /when block goes at the top/, 'a when block is kept out of the repeat');
+    await T(frame, 'program', [{ t: 'repeat', n: 3, body: [{ t: 'when', ev: 'gem', body: [] }] }]); await T(frame, 'run'); await page.waitForTimeout(300);
+    v = await T(frame, 'verdict'); assert.equal(v.failReason, 'bad'); assert.equal((await T(frame, 'state')).fails, 1);
+    assert.ok((await T(frame, 'verdictText')).length > 10, 'a sentence for a program that cannot run');
+    await T(frame, 'solve'); await page.waitForTimeout(500); assert.equal((await T(frame, 'verdict')).ok, true, 'the level is not half dead after a compile error');
+    assert.ok((await T(frame, 'state')).bolt.x !== 0 || (await T(frame, 'state')).bolt.y !== 0, 'Bolt really moved');
+    await T(frame, 'closeDialog'); await page.waitForTimeout(200);
     // the second chapter at Pro
     await T(frame, 'start', { chapter: 'loops', band: '2', seed: 3, lesson: true }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
     s = await T(frame, 'state'); assert.equal(s.levelId, 'loop-1'); assert.equal(s.band, '2');
     assert.deepEqual(await fit(frame), [], 'a Pro level fits a phone');
+    assert.equal(await T(frame, 'hint'), 1); await T(frame, 'closeModal');
+    // a Pro variables level: the name tiles keep their order while the stepper is pressed
+    await T(frame, 'start', { chapter: 'variables', band: '2', seed: 3, lesson: true }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    await T(frame, 'program', 'set count 0'); await frame.evaluate(() => document.querySelector('.rr-blk[data-id]').click()); await page.waitForTimeout(80);
+    assert.ok(await T(frame, 'tray', 'Change')); await page.waitForTimeout(80);
+    const tiles1 = await T(frame, 'editTiles'); assert.ok(tiles1.includes('count') && tiles1.includes('x'), 'good and bad names on the tiles');
+    await frame.evaluate(() => [...document.querySelectorAll('#edit .ok-btn')].find(b => /More/.test(b.getAttribute('aria-label') || b.textContent)).click()); await page.waitForTimeout(80);
+    assert.deepEqual(await T(frame, 'editTiles'), tiles1, 'the tiles stay where they were');
+    assert.ok(await frame.evaluate(() => /Door: count = 7/.test(document.getElementById('watch').textContent)), 'the door rule is a pill in the watch row');
     await T(frame, 'solve'); await page.waitForTimeout(400);
     assert.ok(await T(frame, 'check', 1)); await page.waitForTimeout(150); await T(frame, 'confidence', 2); await page.waitForTimeout(800);
-    s = await T(frame, 'state'); assert.equal(s.label, '1/8 levels, 3 stars, 0/1 checks');
+    s = await T(frame, 'state'); assert.equal(s.label, '1/6 levels, 3 stars, 0/1 checks', 'a wrong check tile counts as 0 of 1');
     // functions at Explorer: the block is given, Run sleeps until the program calls it
     await T(frame, 'start', { chapter: 'functions', band: '1b', seed: 3, lesson: true }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
     s = await T(frame, 'state'); assert.equal(s.levelId, 'fn-1'); assert.equal(s.blocks, 6, 'the starter procedure');
     assert.equal(await frame.evaluate(() => document.getElementById('runBtn').getAttribute('aria-disabled')), 'true', 'Run is dimmed until a call exists');
+    await T(frame, 'program', 'call Nope'); assert.equal(await frame.evaluate(() => document.getElementById('runBtn').getAttribute('aria-disabled')), 'true', 'a call to a block that is not there does not wake Run');
+    await T(frame, 'run'); await page.waitForTimeout(200); assert.equal((await T(frame, 'verdict')).failReason, 'nocall', 'forced through the hook it is judged, not crashed');
+    assert.match(await T(frame, 'verdictText'), /never made/);
+    await T(frame, 'start', { chapter: 'functions', band: '1b', seed: 3, lesson: true }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
     assert.ok(await T(frame, 'shelf', 5)); assert.equal((await T(frame, 'state')).blocks, 7);
     assert.equal(await frame.evaluate(() => document.getElementById('runBtn').getAttribute('aria-disabled')), 'false');
     assert.deepEqual(await fit(frame), [], 'a functions level fits a phone');
+    // on a phone a shelf tap keeps the shelf open (the next tap appends after it); tapping the block opens the tray
+    assert.equal(await frame.evaluate(() => document.getElementById('shelf').hidden || !document.getElementById('tray').hidden), false, 'shelf open, tray shut after a shelf tap');
+    await frame.evaluate(() => [...document.querySelectorAll('#prog .rr-blk[data-id]')].pop().click()); await page.waitForTimeout(80);
     await frame.evaluate(() => [...document.querySelectorAll('#tray .ok-btn')].find(b => /Change/.test(b.getAttribute('aria-label') || b.textContent)).click()); await page.waitForTimeout(150);
     assert.deepEqual(await fit(frame), [], 'the edit row of a call fits a phone');
     await T(frame, 'solve'); await page.waitForTimeout(400); assert.equal((await T(frame, 'verdict')).ok, true);
@@ -414,6 +503,14 @@ test('robo-route: in Chromium a tablet runs the Debug Lab test tabs, Best Route\
     s = await T(frame, 'state'); assert.equal(s.maker.task, 'mk-1'); assert.equal(s.maker.tool, 'wall');
     assert.deepEqual(await fit(frame), [], 'the maker fits a tablet');
     let res = await T(frame, 'mkCheck'); assert.equal(res.ok, false); assert.match(res.why, /No way/);
+    assert.ok(!(await frame.evaluate(() => document.getElementById('skipBtn'))), 'no Skip after one failed check');
+    res = await T(frame, 'mkCheck'); assert.equal(res.ok, false);
+    assert.ok(await frame.evaluate(() => !!document.getElementById('skipBtn')), 'Skip task after two failed checks');
+    assert.deepEqual(await fit(frame), [], 'the maker with Skip task fits a tablet');
+    await T(frame, 'skip'); await page.waitForTimeout(300);
+    s = await T(frame, 'state'); assert.equal(s.maker.task, 'mk-2'); assert.equal(s.done, 1); assert.equal(s.label, '0 made, 0 tested');
+    await T(frame, 'start', { chapter: 'level-maker', band: '1b', seed: 2, lesson: true, level: 1 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.maker.task, 'mk-1');
     assert.equal(await T(frame, 'tool', 'floor'), 'floor'); await T(frame, 'paint', 2, 3);
     res = await T(frame, 'mkCheck'); assert.equal(res.ok, true); assert.equal(res.n, 5, 'par: two up, a turn, two across'); await page.waitForTimeout(300);
     s = await T(frame, 'state'); assert.equal(s.phase, 'card', 'the Case-closed card after a fixed level');
@@ -435,7 +532,12 @@ test('robo-route: in Chromium a tablet runs the Debug Lab test tabs, Best Route\
     assert.deepEqual(await fit(frame), [], 'a friend\'s test fits a tablet');
     await T(frame, 'program', 'repeat until goal { if path { move } else { left } }'); await T(frame, 'run'); await page.waitForTimeout(400);
     assert.equal((await T(frame, 'verdict')).ok, true); s = await T(frame, 'state'); assert.equal(s.label, '2 made, 1 tested', 'two boards passed Check, one was tested');
+    assert.equal(await T(frame, 'verdictText'), 'Tested! Your friend solved it.');
     await page.waitForTimeout(300); await T(frame, 'closeDialog'); await page.waitForTimeout(300); s = await T(frame, 'state'); assert.equal(s.screen, 'maker'); assert.equal(s.maker.tested, 1);
+    assert.equal(s.card, 'tester', 'what did your tester say?'); assert.deepEqual(await fit(frame), [], 'the tester card fits a tablet');
+    assert.ok(await T(frame, 'tester', 2, 1)); await page.waitForTimeout(100);
+    s = await T(frame, 'state'); assert.deepEqual(s.maker.feedback, { fun: 'corner', hard: 'hard' }); assert.equal(s.maker.improved, false);
+    await T(frame, 'paint', 1, 1); res = await T(frame, 'mkCheck'); s = await T(frame, 'state'); assert.equal(s.maker.improved, true, 'a change after the test counts as improving');
     assert.deepEqual((await T(frame, 'mkSave')).length, 1);
     // the daily and pair mode
     s = await T(frame, 'daily'); assert.equal(s.levelId, 'daily'); assert.equal(s.chapter, 'daily');
@@ -488,6 +590,59 @@ test('robo-route: in Chromium a desktop in Arabic mirrors the chrome, keeps the 
     assert.equal((await T(frame, 'verdict')).ok, true);
     assert.deepEqual(errors, []); assert.deepEqual(consoleErrors, []);
   } finally { await ctx.close(); }
+});
+
+test('robo-route: in Chromium a lesson link (BRB.params) locks the band and chapter, hides the map, opens the Debug Lab and the Level Maker, and the label carries the checks', { skip, timeout: 180_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 1280, height: 800 }, lang: 'en', params: { chapter: 'loops', band: '2', lock: 1 } });
+  try {
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
+    let s = await T(frame, 'state'); assert.equal(s.screen, 'play'); assert.equal(s.chapter, 'loops'); assert.equal(s.band, '2'); assert.equal(s.lesson, true); assert.equal(s.lock, true); assert.equal(s.card, 'learn');
+    await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    assert.ok(await frame.evaluate(() => ![...document.querySelectorAll('#runbar .ok-btn')].some(b => /Chapter map/.test(b.getAttribute('aria-label') || b.textContent))), 'no Chapter map under lock');
+    assert.ok(await frame.evaluate(() => /Class quest/.test(document.getElementById('questPill').textContent)));
+    await T(frame, 'skipAnimations'); await T(frame, 'solve'); await page.waitForTimeout(400);
+    assert.ok(await T(frame, 'check', 0)); await page.waitForTimeout(150); assert.ok(await T(frame, 'confidence', 3)); await page.waitForTimeout(800);
+    s = await T(frame, 'state'); assert.equal(s.label, '1/8 levels, 3 stars, 1/1 checks');
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+  for (const [params, screen, levelId] of [[{ chapter: 'debug', band: '1b', mode: 'debug', lock: 1 }, 'play', 'dbg-1'], [{ chapter: 'level-maker', band: '2', mode: 'maker', lock: 1 }, 'maker', 'mk-1'], [{ chapter: 'sequences', band: '1b', level: 3 }, 'play', 'seq-3']]) {
+    const { ctx, page, frame, errors } = await open({ size: { width: 1180, height: 820 }, lang: 'en', params });
+    try {
+      await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
+      await T(frame, 'closeModal'); await page.waitForTimeout(200);
+      const s = await T(frame, 'state'); assert.equal(s.screen, screen, JSON.stringify(params)); assert.equal(s.levelId, levelId); assert.equal(s.lesson, true); assert.equal(s.lock, !!params.lock);
+      if (screen === 'play') assert.equal(await frame.evaluate(() => document.getElementById('editPill').hidden), levelId !== 'dbg-1');
+      assert.deepEqual(await fit(frame), [], JSON.stringify(params) + ' fits');
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
+});
+
+test('robo-route: in Chromium every level fits a phone upright and on its side, with its answer in the box and a block selected', { skip, timeout: 600_000 }, async () => {
+  for (const size of [{ width: 844, height: 390 }, { width: 390, height: 844 }]) {
+    const { ctx, page, frame, errors } = await open({ size, lang: 'en' });
+    try {
+      await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(300); await T(frame, 'skipAnimations');
+      const bad = [];
+      for (const ch of CHAPTERS) for (const band of ['1b', '2']) {
+        const levels = levelsFor(ch.id, band);
+        for (let i = 0; i < levels.length; i++) {
+          const l = levels[i]; if (l.maker) continue;
+          await T(frame, 'start', { chapter: ch.id, band, level: i + 1, seed: 1 }); await T(frame, 'closeModal'); await page.waitForTimeout(40);
+          if (l.plan) { await T(frame, 'plan'); await page.waitForTimeout(600); }
+          if (l.programs) await T(frame, 'route', 1);
+          const at = async phase => { const p = await fit(frame); if (p.length) bad.push(`${size.width}x${size.height} ${l.id}/${band} ${phase}: ${p.map(x => x.kind + ' ' + x.what).join(' | ')}`); };
+          await at('start');
+          if (!l.programs && typeof l.sol === 'string') { await T(frame, 'program', l.sol); await page.waitForTimeout(30); }
+          await at('answer');
+          await frame.evaluate(() => { const b = document.querySelector('.rr-blk[data-id]'); if (b) b.click(); }); await page.waitForTimeout(40);
+          await at('tray');
+        }
+      }
+      assert.deepEqual(bad, []);
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
 });
 
 test('robo-route: in Chromium the densest level (Pro conditionals, an 8 by 8 board and a six-block shelf) fits tablets both ways and a phone on its side, at 150% text too', { skip, timeout: 180_000 }, async () => {
