@@ -48,6 +48,16 @@ button{font:inherit;font-weight:800;cursor:pointer;color:var(--g-text)}
 .lbar{flex:1;max-width:200px;height:10px;border-radius:10px;background:var(--g-bar);border:2px solid var(--g-edge);overflow:hidden}
 #loadFill{display:block;height:100%;width:3%;background:linear-gradient(90deg,#7c5cff,#5cf2ff);transition:width .25s}
 #loadPct{min-width:3ch;text-align:end;font-variant-numeric:tabular-nums}
+/* Loading: just the swirl, the name and the bar on the sky; the title card comes when the city is ready. */
+#loadScreen{background:none}
+.loadbox{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(320px,100%);text-align:center;color:#1c1a33}
+.loadbox h1{margin:0;font-size:calc(clamp(28px,7vw,40px) * var(--ts));line-height:1.05;letter-spacing:-.5px}
+.loadbox .swirl{width:84px;height:84px}
+.loadbox .lbar{max-width:none}
+.loadbox .load{flex-wrap:wrap}
+.loadbox #loadText{flex-basis:100%}
+.spin{animation:gpulse 1.4s ease-in-out infinite}
+@keyframes gpulse{50%{transform:scale(.82)}}
 .failicon{font-size:48px;line-height:1}
 #hud{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;align-items:flex-start;gap:8px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left));pointer-events:none}
 #hud .gap{flex:1}
@@ -82,7 +92,7 @@ button{font:inherit;font-weight:800;cursor:pointer;color:var(--g-text)}
 @media (max-width:380px){#sizeLabel{display:none}}
 @media (max-width:560px){#tip{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 124px)}}
 @media (min-width:768px) and (min-height:700px){#board{font-size:calc(15px * var(--ts));min-width:160px}#mapBox{width:136px;height:136px}}
-@media (prefers-reduced-motion:reduce){.btn:active{transform:none}#banner,#banner.on{transition:none;transform:translate(-50%,-50%)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}.btn:active{transform:none}#banner,#banner.on{transition:none;transform:translate(-50%,-50%)}}
 </style>
 
 <canvas id="view" tabindex="0"></canvas>
@@ -97,11 +107,14 @@ button{font:inherit;font-weight:800;cursor:pointer;color:var(--g-text)}
 <div id="tip" aria-hidden="true"></div>
 <div id="stickBase"><div id="stickKnob"></div></div>
 
-<div class="screen" id="titleScreen"><div class="card">
+<div class="screen" id="loadScreen"><div class="loadbox">
+  <span class="swirl spin" aria-hidden="true"></span><h1 id="loadTitle"></h1>
+  <div class="load" id="loadRow" role="status"><span id="loadText"></span><span class="lbar" aria-hidden="true"><span id="loadFill"></span></span><span id="loadPct"></span></div>
+</div></div>
+<div class="screen" id="titleScreen" hidden><div class="card">
   <div class="logo"><span class="swirl" aria-hidden="true"></span><h1 id="titleText"></h1></div>
   <p class="tag" id="tagText"></p>
   <div class="row"><button class="btn" id="playBtn" type="button" disabled></button><button class="btn hot" id="freeBtn" type="button" disabled></button></div>
-  <div class="load" id="loadRow" role="status"><span id="loadText"></span><span class="lbar" aria-hidden="true"><span id="loadFill"></span></span><span id="loadPct"></span></div>
   <div class="row" style="align-items:center"><span class="seglabel" id="rivalsLabel"></span><div class="seg" id="diffSeg" role="group"><button type="button" data-d="easy"></button><button type="button" data-d="normal"></button><button type="button" data-d="hard"></button></div></div>
   <div class="row"><button class="btn ghost" id="howBtn" type="button"></button><button class="btn ghost" id="setBtn" type="button"></button></div>
   <p id="bestText"></p>
@@ -262,7 +275,7 @@ var GULP_LOAD = { p: 0, ready: false, failed: '', at: Date.now() };
     for (const b of document.querySelectorAll('#diffSeg button')) { b.textContent = t(b.dataset.d); b.setAttribute('aria-pressed', String(b.dataset.d === (set.diff || 'normal'))); }
     el('howBtn').textContent = t('how'); el('setBtn').textContent = t('settings');
     if (+best.best) el('bestText').textContent = t('best', { n: +best.best }) + (+best.bestSize ? ' · ' + t('bestSize', { n: fmt1(+best.bestSize) }) : '');
-    el('loadText').textContent = t('loading');
+    el('loadText').textContent = t('loading'); el('loadTitle').textContent = t('title');
     el('failTitle').textContent = t('failTitle'); el('failText').textContent = t('failText'); el('failBtn').textContent = t('retry');
     // the title's own buttons work only once the city is there
     el('howBtn').disabled = el('setBtn').disabled = true;
@@ -275,7 +288,7 @@ var GULP_LOAD = { p: 0, ready: false, failed: '', at: Date.now() };
   };
   window.__gulpReady = function () {
     if (GULP_LOAD.failed) return;
-    GULP_LOAD.ready = true; GULP_LOAD.p = 1; el('loadRow').hidden = true;
+    GULP_LOAD.ready = true; GULP_LOAD.p = 1; el('loadRow').hidden = true; el('loadScreen').hidden = true;
     for (const id of ['playBtn', 'freeBtn', 'howBtn', 'setBtn']) el(id).disabled = false;
   };
   window.__gulpFail = function (why) {
