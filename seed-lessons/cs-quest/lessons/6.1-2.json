@@ -1,0 +1,201 @@
+{
+ "id": "csq-2-6.1",
+ "key": "csq-2-6.1",
+ "version": 1,
+ "unit": 6,
+ "order": 17,
+ "n": "6.1",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 6.1 · Tech that changed the world",
+ "name": "Tech that changed the world",
+ "short": "Tech changes",
+ "summary": "Students vote on eight technology dilemmas in Would You Rather (live) and defend a side with a tradeoff: who is helped, who is hurt, which job changes. The Timeline Walk hangs twelve inventions on a rope, each with a job it created and a job it changed. No game and no live warm-up today.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-IC-20"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "compare the tradeoffs of a technology for everyday life",
+  "say which jobs a technology creates and which jobs it changes"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Invention timeline cards printable (12 cards, one per pair)",
+  "a rope or long string across the room, with clothespins or tape",
+  "paper strips for the plus and minus notes",
+  "the Would You Rather prompt sheet (printed with the plan)"
+ ],
+ "doNow": "Write one thing your grandparents did without a computer that you do with one. Whose job did that change?",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 4, "Explore: the tradeoff T-chart (projector script)"],
+  ["0:09", 10, "Timeline Walk: invention cards on the rope"],
+  ["0:19", 13, "Would You Rather (live): Tech choices, 8 dilemmas"],
+  ["0:32", 8, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": null,
+ "explore": {
+  "minutes": 4,
+  "do": [
+   "Draw a T-chart on the board for the self-checkout: left, everyday life (faster lines, no waiting); right, careers (fewer cashier jobs, new technician jobs). Fill it with the class in one minute.",
+   "Hang the telephone card and the video call card at the two ends of the rope and ask who used each this week."
+  ],
+  "say": [
+   "Advances in technology are neither all good nor all bad. The way people use them has tradeoffs: a benefit over here, a cost over there.",
+   "Automation means a machine does a task people used to do. It changes jobs more than it removes them: the cashier's work shrinks and the technician's work grows."
+  ],
+  "ask": [
+   "Driverless cars could cut some accidents. What is the cost side of that T-chart?"
+  ],
+  "afterAsk": "Collect three answers (drivers' jobs, hacking, who is to blame in a crash). Say that today every vote comes with the same question: who is helped, who is hurt, what job changes.",
+  "bigIdea": "Every technology is a tradeoff: it helps someone's day and changes someone's job.",
+  "vocab": ["technology", "tradeoff", "automation", "privacy", "career"]
+ },
+ "play": {
+  "type": "live",
+  "game": "would-you-rather-live",
+  "starter": "wyr:tech:8:20",
+  "count": 8,
+  "secs": 20,
+  "prompts": "wyr-tech.json",
+  "defend": "every other reveal: one student for A, one for B, thirty seconds each; the scaffold for this band is: who is helped, who is hurt, what job changes",
+  "room": "start the room from the plan page with your class picked so the run lands in class history; an open room is fine when students are not signed in",
+  "timelineWalk": {
+   "minutes": 10,
+   "steps": [
+    "Each pair gets one invention card. Pairs hang it on the rope where they think it belongs in time, oldest on the left.",
+    "Pairs write two strips for their card: a plus strip (a job this invention creates) and a minus strip (a job it changes or shrinks), and hang them under the card.",
+    "Walk the rope together for two minutes: read the strips out loud, and for two cards ask the privacy question too: what does this one know about you?"
+   ]
+  },
+  "lookFors": [
+   "a tradeoff with only one side: ask for the job on the other side of the T-chart",
+   "privacy answers that stop at it is creepy: push for what data is collected and who can see it"
+  ],
+  "misconception": "Students think automation simply deletes jobs; the point of the lesson is that it changes jobs, removing some tasks and creating others, and the tradeoff lands differently on different people.",
+  "earlyFinishers": [
+   "add a third strip to a neighbor's card: who decides whether this technology gets used?",
+   "put an invention nobody brought on the rope with its two job strips"
+  ]
+ },
+ "discuss": [
+  "Which invention on the rope would you un-invent for a week? Who would be better off, and who would be worse off?",
+  "Pick the closest vote. Which job does each side change, and who was not asked?"
+ ],
+ "showMe": "Show the class split for the dilemma with the closest vote on the projector; one student per side gives the benefit and the cost in one sentence each.",
+ "exit": {
+  "setId": "csq-u6-2",
+  "items": ["2-6.1-e1", "2-6.1-e2", "2-6.1-e3"],
+  "sentencePrompt": "Pick one technology from today. Name a benefit for everyday life and a cost for someone's job or privacy.",
+  "frame": "___ changed how people ___. The tradeoff is ___.",
+  "rubric": [
+   {
+    "line": "Tech changes: compares a tradeoff for everyday life and for jobs",
+    "ids": ["2-IC-20"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a technology and one effect",
+     "Names a benefit and a cost of the same technology",
+     "Compares both sides for everyday life and for a career or privacy, and says who is affected"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the T-chart stays on the board with the headings everyday life and careers",
+   "defenders may read the printed prompt first and answer only its question",
+   "the host reads each dilemma out loud before the timer starts"
+  ],
+  "stretch": [
+   "influenced by culture: why do emoji exist, and who decides which ones get made?",
+   "write the third column: who decides whether this technology gets used, and who is not asked"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Corners vote",
+  "minutes": 15,
+  "materials": [
+   "the printed dilemma sheet (the 8 dilemmas of the live run)",
+   "a sign for corner A and a sign for corner B",
+   "the invention timeline cards, the rope and the paper strips"
+  ],
+  "steps": [
+   "Read a dilemma out loud. Students walk to corner A or corner B. Count hands out loud and write the split on the board.",
+   "After every other dilemma, one student from each corner has thirty seconds to defend their side with the scaffold: who is helped, who is hurt, what job changes.",
+   "Finish with the Timeline Walk as in the plan: the rope, the cards, a job created and a job changed for each."
+  ],
+  "printables": ["invention-timeline-cards", "wyr-tech-sheet"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: write one thing your grandparents did without a computer that you do with one, and whose job that changed.",
+  "Run the Corners vote with the printed dilemma sheet (walk to corner A or B, count hands, two defenders every other round), then the Timeline Walk: each pair hangs its invention card on the rope with a strip for a job it created and a strip for a job it changed. No projector and no login needed.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Explore: the T-chart, one row"],
+   ["0:07", 8, "Timeline Walk"],
+   ["0:15", 13, "Would You Rather (live), 8 dilemmas"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": [],
+  "discuss": "Which invention on the rope would you un-invent for a week? Who would be better off, and who would be worse off?",
+  "keep": "the exit ticket is never cut; shorten the walk along the rope, not the strips"
+ },
+ "block": {
+  "add": [
+   "host 10 dilemmas instead of 8 (the plan page's block-day starter) with defenders on every reveal",
+   "the full Timeline Walk with the third column: who decides, who is not asked",
+   "10 minutes of the Unit 6 pre-test: the unit opener and review items on the projector"
+  ]
+ },
+ "notes": [
+  "No live warm-up today on purpose: the vote is the warm-up. The warm-up of 6.2 opens with this unit's opener item.",
+  "Vocabulary beyond the five on the learn card: invention.",
+  "Start the room from the plan page with your class picked so the run lands in class history; an open room is fine when students are not signed in, and the step is then completed by participation.",
+  "Driverless cars, self-checkout and map apps are the exit items: use them in the T-chart and the walk."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 27,
+   "body": "Do Now: Write one thing your grandparents did without a computer that you do with one. Whose job did that change?\n\nBig idea: Every technology is a tradeoff: it helps someone's day and changes someone's job.\n\nTimeline Walk: hang your invention card on the rope where it belongs in time. Under it, hang a plus strip (a job it created) and a minus strip (a job it changed).\n\nWe will talk about:\n- Which invention would you un-invent for a week? Who would be better off, and who would be worse off?\n- Pick the closest vote. Which job does each side change?"
+  },
+  {
+   "kind": "game",
+   "title": "Would You Rather (live)",
+   "minutes": 13,
+   "gameSlug": "would-you-rather-live",
+   "live": "wyr",
+   "playHidden": true,
+   "starter": "wyr:tech:8:20",
+   "body": "Eight dilemmas about technology. Vote, then look at how the class split. When your teacher picks you, defend your side for thirty seconds: who is helped, who is hurt, what job changes."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about technology tradeoffs."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-IC-20"],
+   "rubric": "exit",
+   "body": "Pick one technology from today. Name a benefit for everyday life and a cost for someone's job or privacy.\nFrame: ___ changed how people ___. The tradeoff is ___."
+  }
+ ]
+}

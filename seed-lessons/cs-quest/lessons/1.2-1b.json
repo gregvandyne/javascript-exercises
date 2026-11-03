@@ -36,7 +36,7 @@
  "plan": [
   ["0:00", 5, "Arrive, log in, Do Now"],
   ["0:05", 5, "Warm-up (projector or live)"],
-  ["0:10", 6, "Explore: six forward blocks, then one loop"],
+  ["0:10", 6, "Explore: five forward blocks, then one loop"],
   ["0:16", 18, "Play: Loops"],
   ["0:34", 6, "Discuss"],
   ["0:40", 5, "Exit ticket + pack up"]
@@ -54,17 +54,17 @@
   "minutes": 6,
   "demo": {"chapter": "loops", "level": 1},
   "do": [
-   "Open Robo Route at Loops on the projector (Open game at this chapter). Level 1 is a straight corridor of 6 squares. Ask the class for the program. Add six forward blocks. Run it.",
-   "Delete five of the forward blocks. Tap repeat, tap Wrap around the one forward that is left, set the number to 6, run it."
+   "Open Robo Route at Loops on the projector (Open game at this chapter). Level 1 is a straight corridor of 5 squares. Ask the class for the program. Add five forward blocks. Run it.",
+   "Delete all five forward blocks: tap a block, then tap Delete block. Tap repeat on the shelf: an empty repeat block appears, already set to 5. With the repeat block still selected, tap forward, and it drops inside the repeat. Run it."
   ],
   "say": [
-   "That works. A programmer would be annoyed: we wrote the same thing six times.",
+   "That works. A programmer would be annoyed: we wrote the same thing five times.",
    "A loop repeats steps so we do not have to write them again."
   ],
   "ask": [
-   "What does the number mean? What if I put 7?"
+   "What does the number mean? What if I put 6?"
   ],
-  "afterAsk": "Run it with 7. Bolt bumps the wall and the caption says Bump! One too many. Bolt did exactly what we said.",
+  "afterAsk": "Tap the number, set it to 6 and run it. Bolt bumps the wall and the caption says Bump! A wall after step 6. Bolt did exactly what we said.",
   "bigIdea": "A loop repeats steps so we do not have to write them again.",
   "vocab": ["loop", "repeat", "times", "pattern"]
  },
@@ -114,7 +114,7 @@
  "differentiation": {
   "support": [
    "the repeat count is pre-set on levels 1-2",
-   "hint 1 highlights the blocks that repeat",
+   "hint 1 asks which steps happen again and again",
    "read-aloud on; the navigator reads the Loop Cards"
   ],
   "stretch": [

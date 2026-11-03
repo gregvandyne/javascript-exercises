@@ -1,0 +1,230 @@
+{
+ "id": "csq-1b-6.2",
+ "key": "csq-1b-6.2",
+ "version": 1,
+ "unit": 6,
+ "order": 18,
+ "n": "6.2",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "CS Quest 6.2 · Made for everyone (Accessibility, usability, bias)",
+ "name": "Made for everyone (Accessibility, usability, bias)",
+ "short": "For everyone",
+ "summary": "Pairs audit a game they already beat with four real settings (captions, text size, contrast, left-handed), then play Design Lab in Inside the Machine: three briefs for players who see little, use one hand, or are very young. Pairs swap audit sheets and add one idea from the other pair.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-IC-19", "1B-IC-20"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "find ways a game could work better for people who see, hear, read or move differently",
+  "ask another pair for an idea and add it to my own"
+ ],
+ "questCode": "6 1 0 0",
+ "params": "chapter=design-lab&band=1b&lock=1",
+ "materials": [
+  "Accessibility Audit sheet printable (one per pair, picture icons)",
+  "persona cards and a paper remote (for the twin)",
+  "a chime for the sheet swap",
+  "login cards"
+ ],
+ "doNow": "Close your eyes for ten seconds while your partner plays any game with the sound off. Write what you missed.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: the Settings panel on the projector"],
+  ["0:16", 18, "Play: audit sheet (4 minutes), then Design Lab; sheet swap at the chime"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u6-1b",
+  "items": ["1b-u6-o1", "1b-6.1-e1", "1b-6.2-r1", "1b-6.2-e1", "1b-6.1-r1"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "the unit opener (6.1 had no warm-up), one retrieval item from 6.1, one vocabulary item, one preview of today, one more from 6.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "design-lab", "level": 1},
+  "do": [
+   "Open any game on the projector and open its Settings panel (the gear). Read the switches out loud: motion, captions, read-aloud, text size, speed, assist, contrast, color cues, left-handed, graphics.",
+   "Turn captions on and text size up. Then open Inside the Machine at Design Lab (Open game at this chapter) and read brief 1 with the class."
+  ],
+  "say": [
+   "Every switch here was made for someone. Captions were made for people who cannot hear, and they also help anyone on a noisy bus.",
+   "Designing for people at the edges makes things better for everyone."
+  ],
+  "ask": [
+   "Who is each switch for? Who else does it help?"
+  ],
+  "afterAsk": "Take one answer per switch, fast. Write two columns on the board, made for and also helps, and leave them up during Play.",
+  "bigIdea": "Designing for people at the edges makes things better for everyone.",
+  "vocab": ["accessible", "usable", "caption", "contrast"]
+ },
+ "play": {
+  "type": "game",
+  "game": "inside-the-machine",
+  "chapter": "design-lab",
+  "chapterTitle": "Design Lab",
+  "levels": 3,
+  "goal": "the audit sheet with 4 settings, then briefs 1 and 2",
+  "stretch": "brief 3, then 3 stars, then audit a second game",
+  "audit": {
+   "minutes": 4,
+   "steps": [
+    "Pairs open Robo Route at a level they have already beaten and try 4 settings from the audit sheet one at a time: captions, text size, contrast, left-handed.",
+    "For each setting they circle could I still play (yes, kind of, no) and write who it helps.",
+    "They write two improvements for the game at the bottom of the sheet."
+   ]
+  },
+  "swap": "at minute 14 the chime rings: pairs swap audit sheets with the next pair, read the other pair's improvements, and add one improvement they got from the other pair before handing the sheet in",
+  "pairs": "driver and navigator on one device; the Swap! banner shows every level; the navigator holds the audit sheet and reads the brief out loud",
+  "lookFors": [
+   "a pair rates a setting could still play without turning it on: ask them to show you",
+   "an improvement that is a feature, not access (more levels, better music): ask who it helps that could not play before"
+  ],
+  "misconception": "Accessibility settings are only for people with a disability; in fact captions help anyone in a noisy room and big text helps anyone in bright sun, so a change for one person usually helps many.",
+  "earlyFinishers": [
+   "earn 3 stars on every brief",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Which setting surprised you by helping you?",
+  "Which improvement from the other pair did you add, and why was it one you had not thought of?"
+ ],
+ "showMe": "One pair shows brief 2 on the projector: the two changes they picked and who else the verdict says each change helps.",
+ "exit": {
+  "setId": "csq-u6-1b",
+  "items": ["1b-6.2-e1", "1b-6.2-e2", "1b-6.2-e3"],
+  "sentencePrompt": "Name one change that would make a game work better for someone, who it helps, and who else it helps. Then name the idea you got from the other pair.",
+  "frame": "___ would help ___ and also ___. The other pair gave me the idea to ___.",
+  "rubric": [
+   {
+    "line": "Accessibility: a change, who it helps, who else it helps",
+    "ids": ["1B-IC-19"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a change",
+     "Names a change and who it helps",
+     "Names a change, who it was made for and who else it helps"
+    ]
+   },
+   {
+    "line": "Other perspectives: used an idea from another pair",
+    "ids": ["1B-IC-20"],
+    "levels": [
+     "Nothing yet, or no idea named",
+     "Names the other pair's idea",
+     "Names the other pair's idea and added it to the sheet",
+     "Says why the other pair's idea was one they had not thought of, or how it changed their own"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "picture-icon audit sheet: each setting has an icon and a three-face scale",
+   "read-aloud on; the navigator reads the brief out loud before the driver picks changes",
+   "brief 1 pre-selects one change; the pair picks the second"
+  ],
+  "stretch": [
+   "audit a second game with 4 different settings",
+   "brief 3, then invent a user the game forgot and write their brief on the back of the sheet"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Design for Sam",
+  "minutes": 15,
+  "materials": [
+   "persona cards: a Sam who sees little, a Sam who hears little, a Sam who uses one hand, a Sam who is five",
+   "a paper remote (a drawn controller with six big buttons)",
+   "pencils"
+  ],
+  "steps": [
+   "Each pair gets one persona card and the paper remote. They imagine playing a favorite game and mark every button and screen that would be hard for their Sam.",
+   "They redraw the remote for their Sam: bigger buttons, a shape next to every color, a one-hand layout, a read-aloud button.",
+   "Pairs swap remotes with a pair who had a different Sam and add one change the other pair's Sam needs.",
+   "Share: which change helps more than one Sam?"
+  ],
+  "printables": ["accessibility-audit", "persona-cards", "paper-remote"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: close your eyes for ten seconds while your partner plays any game with the sound off; write what you missed.",
+  "Play Inside the Machine, chapter Design Lab, in pairs for 18 minutes: the first 4 minutes trying the settings on the audit sheet, then the briefs. Classes, then the lesson, then Play. If the game asks, the quest code is 6 1 0 0. Goal: 2 briefs. Playing signed out is fine; at the chime pairs swap audit sheets and add one idea from the other pair.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it with the audit sheets."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore: the Settings panel"],
+   ["0:12", 16, "Play: audit sheet, then Design Lab; sheet swap"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-6.1-e1", "1b-6.2-r1"],
+  "discuss": "Which setting surprised you by helping you?",
+  "keep": "the exit ticket is never cut; shorten the audit to 3 settings, never the sheet swap"
+ },
+ "block": {
+  "add": [
+   "the Design for Sam twin (15 minutes) before Play",
+   "audit a second game and brief 3 after Play",
+   "10 minutes of the Unit 6 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "The settings are real: nothing new to build for the audit; any game's gear opens the same panel.",
+  "The sheet swap is the evidence for seeking other perspectives: collect the audit sheets with the added line, and read the sentence step for it.",
+  "Shared devices: this is an even lesson, so partner B signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Close your eyes for ten seconds while your partner plays any game with the sound off. Write what you missed.\n\nBig idea: Designing for people at the edges makes things better for everyone.\n\nWe will talk about:\n- Which setting surprised you by helping you?\n- Which improvement from the other pair did you add?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Design Lab",
+   "minutes": 18,
+   "gameSlug": "inside-the-machine",
+   "options": "chapter=design-lab&band=1b&lock=1",
+   "questCode": "6 1 0 0",
+   "standards": ["1B-IC-19"],
+   "body": "First 4 minutes: the audit sheet. Open a level you already beat, try 4 settings from the gear, and write who each one helps.\nThen Design Lab. Goal: briefs 1 and 2. Stretch: brief 3, then 3 stars.\nIf the game asks for a quest code, it is 6 1 0 0.\nPairs: driver and navigator. Swap when the Swap! banner shows. When the chime rings, swap audit sheets with the next pair and add one idea from theirs to yours."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about making games work for everyone."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-IC-20"],
+   "rubric": "exit",
+   "body": "Name one change that would make a game work better for someone, who it helps, and who else it helps. Then name the idea you got from the other pair.\nFrame: ___ would help ___ and also ___. The other pair gave me the idea to ___."
+  }
+ ]
+}

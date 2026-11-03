@@ -1,0 +1,212 @@
+{
+ "id": "csq-2-1.3",
+ "key": "csq-2-1.3",
+ "version": 1,
+ "unit": 1,
+ "order": 3,
+ "n": "1.3",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+ "name": "If this, then that (Conditionals and events)",
+ "short": "Conditionals",
+ "summary": "Students make Bolt decide for itself, then join conditions with AND, OR and NOT. In Robo Route the fog hides the path ahead, every gem sits on a corner, and from level 3 the layouts change on every run, so only a rule that checks at every step works. An if inside a loop solves any maze. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-12"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "combine conditions with AND, OR and NOT and say when the rule is true",
+  "nest an if inside a loop so Bolt checks at every step",
+  "tell an if (asks now) from a when (waits for an event)"
+ ],
+ "questCode": "3 2 0 0",
+ "params": "chapter=conditionals&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "If-Hat printable (a paper hat band, if cards, when cards, AND / OR / NOT joiner cards)",
+  "login cards"
+ ],
+ "doNow": "If it rains at recess, then ___. Now write one rule with AND in it and one with OR in it, about today.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: fog on level 1, the event on level 2, AND on the board"],
+  ["0:16", 18, "Play: Conditionals & events"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u1-2",
+  "items": ["2-1.2-e1", "2-1.2-e2", "2-1.3-r1", "2-1.3-e1", "2-1.2-r1"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 1.2, one vocabulary item, one preview of today, one more from 1.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "conditionals", "level": 1},
+  "do": [
+   "Open Robo Route at Conditionals & events on the projector (Open game at this chapter). Level 1 has fog: Bolt cannot see whether the path ahead is open. Run a plain list of forward blocks first; Bolt bumps. Then build repeat 8 with if / else inside: if path ahead, forward; else, turn left. Run it. Open level 2 and add when gem, turn right above the loop.",
+   "On the board write the door rule from the warm-up in English: the door opens if Bolt has the key AND is touching the door. Draw a two-column table, key yes/no against touching yes/no, and fill in which of the four boxes opens the door. Only one does."
+  ],
+  "say": [
+   "A conditional lets the program choose. An if asks a question about the world right now; a when listens for something to happen and runs right then.",
+   "Two questions can be joined. Wall ahead AND on a gem is true only when both are true. Wall OR paint is true when either is. NOT flips an answer."
+  ],
+  "ask": [
+   "Bolt has the key and is two squares from the door. Does the door open? Say the rule with AND and explain."
+  ],
+  "afterAsk": "No: both parts must be true at the same moment. Point at the table: three boxes say no. Then ask what changes if the rule said OR, and fill in that table too.",
+  "bigIdea": "A rule can join questions with AND, OR and NOT, and an if inside a loop asks it again at every step.",
+  "vocab": ["condition", "compound", "AND", "OR", "NOT"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "conditionals",
+  "chapterTitle": "Conditionals & events",
+  "levels": 7,
+  "goal": "4 levels, so everyone builds a rule with AND",
+  "stretch": "the chapter, then 3 stars; level 7 adds a key and a door to the maze walker",
+  "solo": "one device per student; levels 1 and 2 are if, else and when; from level 3 the board changes on every run; levels 4 and 5 join conditions with AND, OR and NOT; levels 6 and 7 are one maze walker that solves three mazes, the last one with a key and a door; a neighbor may say the rule in words, never touch your screen",
+  "lookFors": [
+   "OR where AND was needed on level 4: Bolt turns right at every gem, not only at the corner gems",
+   "the if placed outside the loop, so the question is asked once at the start and never again",
+   "reading NOT path ahead as no path anywhere: say it as the way is blocked"
+  ],
+  "misconception": "AND is not true when one part is true: wall ahead AND on a gem needs both at the same moment, and OR is the joiner that needs only one.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Write the level 4 corner rule in English, then as blocks. Which word joins the two questions, and why not the other one?",
+  "Level 6: one program solved three mazes. What did it check at every step, and why could a counted list of moves never do that?"
+ ],
+ "showMe": "One student runs level 4 on the projector in step mode and reads the compound condition aloud each time it is checked; the class answers true or false.",
+ "exit": {
+  "setId": "csq-u1-2",
+  "items": ["2-1.3-e1", "2-1.3-e2", "2-1.3-e3"],
+  "sentencePrompt": "Write a rule Bolt followed today that uses AND, OR or NOT, and say exactly when it is true.",
+  "frame": "If ___ (AND / OR / NOT) ___ then Bolt ___. It is true when ___.",
+  "rubric": [
+   {
+    "line": "Compound conditionals: the rule and when it is true",
+    "ids": ["2-AP-12"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Writes an if rule with no joiner, or a joiner used the wrong way",
+     "Writes a correct rule with AND, OR or NOT from a level and says when it is true",
+     "Also says why that joiner and not the other, or how the if inside the loop made one program fit every layout"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the condition tiles are pictures and words: path ahead, wall ahead, on a gem, on paint",
+   "hint 1 on level 4 names the two questions to join; read-aloud on",
+   "the AND / OR table from Explore stays on the board"
+  ],
+  "stretch": [
+   "3-star par on every level",
+   "level 7: the key maze, then explain the order of the two ifs inside the loop",
+   "rewrite the level 5 rule (NOT path OR paint) without NOT, test it, and say whether it still works on all three boards"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "If-Hat, compound round",
+  "minutes": 15,
+  "materials": ["one paper hat band per group", "if cards (if I clap, hop; if I say blue, sit)", "when cards (when the chime rings, stand)", "joiner cards: AND, OR, NOT"],
+  "steps": [
+   "The caller wears the hat and holds one if card. The group follows the rule only when its condition is true. Add the else: if I clap, hop; else, clap back.",
+   "Compound round: the caller clips two if cards together with a joiner card. If I clap AND I say blue, sit. If I clap OR I wave, hop. If NOT the light is on, freeze. The group calls true or false before acting.",
+   "Add a when card to the hat. It can fire in the middle of any round. Ask: which rules were asked when it was their turn, and which one was listening all the time?",
+   "Share: which joiner caused the most mistakes, and what was the mistake?"
+  ],
+  "printables": ["if-hat", "if-cards", "when-cards", "joiner-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: finish If it rains at recess, then ___, then write one rule with AND and one with OR about today.",
+  "Play Robo Route, chapter Conditionals & events (Pro), one device each, for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 3 2 0 0. Goal: 4 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Conditionals & events"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-1.2-e1", "2-1.3-r1"],
+  "discuss": "Write the level 4 corner rule in English, then as blocks. Which word joins the two questions, and why not the other one?",
+  "keep": "the exit ticket is never cut; in 5 minutes of Explore skip level 2 and keep the AND table"
+ },
+ "block": {
+  "add": [
+   "the If-Hat, compound round twin (15 minutes) before Play",
+   "the 3-star stretch and level 7 after Play",
+   "10 minutes of the Unit 1 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Events are a condition on the world: the when header sits above the program and can fire at any moment during the run.",
+  "Levels marked random run on three seeded layouts, so a fixed list of moves that works once fails on the next board. That failure is the lesson.",
+  "Vocabulary beyond the five on the learn card: event, sensor, nested if, if / else.",
+  "One device per student at this band; the Standards tab counts each student's own play."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: If it rains at recess, then ___. Now write one rule with AND in it and one with OR in it, about today.\n\nBig idea: A rule can join questions with AND, OR and NOT, and an if inside a loop asks it again at every step.\n\nWe will talk about:\n- The level 4 corner rule in English, then as blocks. Which word joins the two questions?\n- One program solved three mazes. What did it check at every step?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Conditionals & events",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=conditionals&band=2&lock=1",
+   "questCode": "3 2 0 0",
+   "standards": ["2-AP-12"],
+   "body": "Goal: 4 levels, so you build a rule with AND. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 3 2 0 0.\nFrom level 3 the board changes every run. Say the rule in words before you build it: if ___ then Bolt ___. AND needs both parts true. OR needs one. NOT flips the answer."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about AND, OR, NOT and an if inside a loop."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-12"],
+   "rubric": "exit",
+   "body": "Write a rule Bolt followed today that uses AND, OR or NOT, and say exactly when it is true.\nFrame: If ___ (AND / OR / NOT) ___ then Bolt ___. It is true when ___."
+  }
+ ]
+}

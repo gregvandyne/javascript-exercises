@@ -1,0 +1,233 @@
+{
+ "id": "csq-1b-7.4",
+ "key": "csq-1b-7.4",
+ "version": 1,
+ "unit": 7,
+ "order": 23,
+ "n": "7.4",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "CS Quest 7.4 · Show and credit",
+ "name": "Show and credit",
+ "short": "Credits",
+ "summary": "Teams finish the Credits and How-to in the question step (made by, idea from, art and sounds, thanks to our testers, how to play in three lines), then demo circles of six: a sixty-second demo that names one choice and why, then one question. The teacher visits each circle and marks the Explain & credit line on the lesson progress page.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-AP-17", "1B-AP-14"],
+  "also": ["1B-IC-21"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "explain one choice in my game in a sixty-second demo",
+  "write How to play in three lines a new player can follow",
+  "credit ideas, art and the people who helped"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Credits and How-to template printable (one per team)",
+  "demo card printable: who it is for, one choice and why, how to play (one per team)",
+  "the capstone rubric printable (teacher copy)",
+  "the team folders with the captains' login cards"
+ ],
+ "doNow": "Who or what helped make your game? List everyone and everything, first names only.",
+ "plan": [
+  ["0:00", 5, "Arrive, captains log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: a model demo and the credits template"],
+  ["0:16", 18, "Credits and How-to (8), then demo circles of six (10)"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u7-1b",
+  "items": ["1b-7.3-e1", "1b-7.3-e2", "1b-7.4-r1", "1b-7.4-e1", "1b-7.3-r1"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from the playtest, one vocabulary item, one preview of today, one more from the playtest"
+ },
+ "explore": {
+  "minutes": 6,
+  "do": [
+   "Give the model demo yourself with the frog quiz, sixty seconds by the clock: who it is for, one choice (the timer) and why, how to play in three lines. Then take one question from the class.",
+   "Put the credits template on the projector: Made by (first names or avatars) · Idea from · Art and sounds (the built-in art) · Thanks to our testers · How to play in three lines. Fill the first two lines for the frog quiz with the class."
+  ],
+  "say": [
+   "A demo is not a speech about how great the game is. It names one choice and why you made it: we added a timer because our testers said it was too easy.",
+   "Credits are how you say who helped: the template you started from, the art you used, the ideas you borrowed, the testers who told you the truth. First names or avatars only."
+  ],
+  "ask": [
+   "Your How to play is six lines long. Which three do you keep?"
+  ],
+  "afterAsk": "Keep what the player does, how they win and one warning; cut the rest. Write the three lines on the board as the model.",
+  "bigIdea": "Explain one choice and why; credit everyone and everything that helped.",
+  "vocab": ["credit", "demo", "instructions"]
+ },
+ "play": {
+  "type": "discussion",
+  "protocol": "credits in the question step, then demo circles",
+  "creditsTemplate": [
+   "Made by: first names or avatars",
+   "Idea from: a teammate, a classmate, a game you like",
+   "Art and sounds: the built-in art, anything a classmate drew for you",
+   "Thanks to our testers",
+   "How to play, in three lines: what you do, how you win, one warning"
+  ],
+  "demoCircles": [
+   "Circles of six (three teams). Each team: sixty seconds of demo on its own device (who it is for, one choice and why, how to play), then sixty seconds for one question from the circle.",
+   "The listeners hold the demo card with the three things to listen for; the teacher visits each circle for one demo and marks the Explain & credit line on the lesson progress page afterwards."
+  ],
+  "lookFors": [
+   "a demo that plays the game without talking: stop it and ask for the one choice",
+   "credits with a full name or a classmate's last name: first names or avatars only",
+   "a How to play longer than three lines"
+  ],
+  "misconception": "Kids think credits are only for things they copied; credits name everyone and everything that helped: the template, the art, the ideas, the testers, even a partner's note.",
+  "earlyFinishers": [
+   "write What version 2 would have on the back of the demo card",
+   "listen to a second circle and write one question for a team there"
+  ]
+ },
+ "discuss": [
+  "What would version 2 have, and which tester or teammate gave you that idea?",
+  "Which choice in someone else's demo surprised you?"
+ ],
+ "showMe": "One team gives its sixty-second demo to the whole class on the projector; the class names the one choice it heard.",
+ "exit": {
+  "setId": "csq-u7-1b",
+  "items": ["1b-7.4-e1", "1b-7.4-e2", "1b-7.4-e3"],
+  "sentencePrompt": "Name one choice you are proud of and why you made it. Then write the first lines of your credits.",
+  "frame": "One choice I am proud of is ___ because ___. Credits: Art: ___. Idea: ___. Thanks to ___.",
+  "rubric": [
+   {
+    "line": "Describe choices: one choice and the reason for it",
+    "ids": ["1B-AP-17"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a choice",
+     "Names a choice and why they made it",
+     "The reason refers to the player's need or to a tester's words"
+    ]
+   },
+   {
+    "line": "Credit: names the art, the ideas and the people",
+    "ids": ["1B-AP-14"],
+    "levels": [
+     "Nothing yet, or no credit",
+     "Names one source",
+     "Credits the art, the idea and the testers, first names only",
+     "Also names the template and where the credits appear in the game"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the demo card with three boxes to point at: who, one choice, how to play",
+   "the credits template with the lines pre-printed; the team fills the blanks",
+   "a quiet team demos to the teacher alone, then to one other team"
+  ],
+  "stretch": [
+   "add How it works: the main rule and the thing the player can see, in two lines",
+   "give the demo a second time to a different circle without the card"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper credits and demo circles",
+  "minutes": 18,
+  "materials": ["the credits template (one per team)", "the demo card", "each team's paper prototype or game"],
+  "steps": [
+   "Teams fill the credits template on paper: made by, idea from, art and sounds, thanks to our testers, how to play in three lines.",
+   "Circles of six: sixty seconds of demo with the paper prototype or the game, one choice and why, then one question.",
+   "The circle picks the demo that explained its choice best and says why."
+  ],
+  "printables": ["credits-template", "demo-card", "rubric"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: who or what helped make your game; list everyone and everything, first names only.",
+  "Teams fill the paper credits template (made by, idea from, art and sounds, thanks to our testers, how to play in three lines), then demo circles of six: sixty seconds per team with the paper prototype or the game, one choice and why, then one question. No projector and no login needed; collect the templates for the teacher.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore: a model demo"],
+   ["0:12", 16, "Credits and How-to (7), then demo circles (9)"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-7.3-e1", "1b-7.4-r1"],
+  "discuss": "What would version 2 have, and which tester or teammate gave you that idea?",
+  "keep": "the exit ticket is never cut; cut the question after each demo to thirty seconds, never the demo"
+ },
+ "block": {
+  "add": [
+   "every team demos to the whole class on the projector",
+   "How it works in two lines for every team",
+   "the Unit 7 review on Brain Board, then version 2 planned on paper"
+  ]
+ },
+ "notes": [
+  "Mark the Explain & credit line (0 to 3) on the lesson progress page after the circles; Also mark these teammates gives the whole team the marks. The Plan, Roles / timeline, Program and Test with others lines were marked on the earlier lessons of this unit.",
+  "No full names anywhere in the Builder or the game: credits use first names or avatars, and the class Games tab shows the same.",
+  "The credits template follows the credit line from Share or keep: Art: first name. Idea: first name.",
+  "A game whose scan was flagged is demoed from the maker's screen; everything else is visible to the class on the Games tab.",
+  "Captains sign in; the question step is the team's."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Who or what helped make your game? List everyone and everything, first names only.\n\nBig idea: Explain one choice and why; credit everyone and everything that helped.\n\nToday: finish your credits and How to play, then demo circles: sixty seconds, one choice and why, one question.\n\nWe will talk about:\n- What would version 2 have?\n- Which choice in someone else's demo surprised you?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "question",
+   "title": "Credits and How-to",
+   "minutes": 18,
+   "standards": ["1B-AP-17", "1B-AP-14"],
+   "rubric": [
+    {
+     "line": "Explain & credit",
+     "ids": ["1B-AP-17", "1B-AP-14", "1B-IC-21"],
+     "levels": [
+      "Nothing yet: no demo and no credits",
+      "Attempted: a demo or credits, but no choice is explained",
+      "Meets: the sixty-second demo names one choice and why, How to play is three lines, credits list the template, art, ideas and testers",
+      "Exceeds: the reason refers to the player's need, and a classmate could play from the How to play alone"
+     ]
+    }
+   ],
+   "body": "Fill in every line. First names or avatars only, never full names.\n- Made by: ___\n- Idea from: ___ (a teammate, a classmate, a game you like)\n- Art and sounds: ___ (the built-in art, anything a classmate drew for you)\n- Thanks to our testers: ___\n- How to play, in three lines: what you do, how you win, one warning.\n- Our demo: the one choice we will explain, and why we made it."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about demos, instructions and credits."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-AP-17", "1B-AP-14"],
+   "rubric": "exit",
+   "body": "Name one choice you are proud of and why you made it. Then write the first lines of your credits.\nFrame: One choice I am proud of is ___ because ___. Credits: Art: ___. Idea: ___. Thanks to ___."
+  }
+ ]
+}

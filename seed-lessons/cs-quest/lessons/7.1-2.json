@@ -1,0 +1,289 @@
+{
+ "id": "csq-2-7.1",
+ "key": "csq-2-7.1",
+ "version": 1,
+ "unit": 7,
+ "order": 20,
+ "n": "7.1",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 7.1 · Plan your game",
+ "name": "Plan your game",
+ "short": "Plan",
+ "summary": "Teams of three plan before building: a user card, a pitch with a win and lose rule, a feature tree with must and nice, the main rule as six boxes described in words, a variables table, roles on a three-period timeline and a five-row test table. Paper first, then three question steps; teams swap sheets for one have-you-thought-about note. The last box is one short message to the Builder.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-18", "2-AP-13", "2-AP-10"],
+  "also": ["2-AP-15"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "split a game into features and sub-parts and mark each one must or nice",
+  "write the main rule as six boxes and describe it in words",
+  "assign roles and milestones on a three-period timeline"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Planning sheet printable, grades 6-8 version (one per team)",
+  "role cards: designer/typist, tester/note-taker, recorder",
+  "one folder per team for the sheet and the captain's login card",
+  "the Builder open on the projector (Make a game)"
+ ],
+ "doNow": "Your favorite simple game: the goal, what can go wrong, how you win. Then: how many separate parts would someone need to build to make it?",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector): the unit pre-test"],
+  ["0:10", 6, "Explore: one message to the Builder, then its rule in six boxes"],
+  ["0:16", 18, "Plan: the planning sheet on paper, then the three question steps"],
+  ["0:34", 6, "Discuss: three messages read aloud"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u7-2",
+  "items": ["2-u7-o1", "2-7.1-r1", "2-7.1-e1", "2-7.1-e2", "2-7.1-e3"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "the unit pre-test: the opener, the vocabulary item and today's three exit items; build day has no warm-up, so this is the unit's only pre-test"
+ },
+ "explore": {
+  "minutes": 6,
+  "do": [
+   "Open the Builder on the projector (Make a game) and send one message: a quiz with three questions about frogs. Narrate while it builds.",
+   "When the automatic playtest ends, draw the six boxes of the frog quiz's main rule on the board with the class: start, show a question, the player answers, is it right (a diamond), add a point, next question or end."
+  ],
+  "say": [
+   "A good message to the Builder comes from a good plan. The Builder only knows what your message says, and the message only says what the sheet worked out.",
+   "A flowchart is the rule before it is a program: a box for each step, a diamond for each decision. If your team cannot draw the rule in six boxes, the rule is not clear yet."
+  ],
+  "ask": [
+   "Which box did the Builder guess on its own, and which decision would you change?"
+  ],
+  "afterAsk": "Collect answers under three headings on the board: must have, nice to have, decide later. That is the feature tree every team fills in.",
+  "bigIdea": "A good message to the Builder comes from a good plan: parts, one clear rule, and who does what by when.",
+  "vocab": ["decomposition", "feature", "flowchart", "timeline", "role"]
+ },
+ "play": {
+  "type": "unplugged",
+  "artifact": "planning sheet",
+  "teams": "threes, one sheet per team; the captain signs in and types the three question steps while the recorder reads from the sheet",
+  "sheet": [
+   "Working title (no names in it)",
+   "User card: age, device, one need (text size, captions, one hand)",
+   "The pitch: one sentence, the genre, the win rule and the lose rule",
+   "Feature tree: 3 features, 2 sub-parts each; mark each one must or nice",
+   "The main rule as six boxes: steps in boxes, each decision in a diamond, described in words",
+   "Variables table: name, type, starts at, changes when",
+   "What the player sees first: three storyboard panels and the How to play text",
+   "Roles: designer/typist, tester/note-taker, recorder; timeline: period 2 build core, period 3 test and fix, period 4 credits and demo",
+   "Reused and credited: the template, ideas, built-in art, with the exact credit line",
+   "Accessibility check, tick 5: text size, contrast, captions, one hand, no flashing",
+   "The message to the Builder, at most 300 characters",
+   "Test table, 5 rows: input, expected, actual, pass?"
+  ],
+  "message": "at most 300 characters: who plays, what the player does, the win and lose rule, the one must-have feature, and one variable the player can see; the teacher pastes it into build day",
+  "partnerNote": "at minute 14 teams swap sheets with the next team for one have-you-thought-about note; the owners write their answer on their own sheet (the start of incorporating feedback)",
+  "lookFors": [
+   "a feature tree with every nice-to-have marked must: ask what the game is without it",
+   "a rule with no diamond: the main rule needs at least one decision",
+   "a timeline that is a list of features: it is who does which part in which period"
+  ],
+  "misconception": "Students think the timeline is a list of features; it is who does which part in which period, with a milestone the team can tick.",
+  "earlyFinishers": [
+   "fill the variables table for a nice-to-have feature and mark which period it would fit",
+   "read your message to a neighbor team without showing the sheet: can they draw your six boxes from it?"
+  ]
+ },
+ "discuss": [
+  "Three messages read aloud: which one would a robot misunderstand, and which must-have is missing from it?",
+  "Whose six boxes have a decision the message never mentions?"
+ ],
+ "showMe": "Three teams read their Builder message from the third question step on the projector; the class says which must-have or which decision is missing from each.",
+ "exit": {
+  "setId": "csq-u7-2",
+  "items": ["2-7.1-e1", "2-7.1-e2", "2-7.1-e3"],
+  "sentencePrompt": "Name your must-have features and the period each one belongs to, then describe the main rule as the boxes of your flowchart.",
+  "frame": "Must-haves: ___, ___ and ___. Period 2: ___; period 3: ___; period 4: ___. The rule: start, ___, if ___ then ___, else ___.",
+  "rubric": [
+   {
+    "line": "Timeline: tasks assigned to periods and people",
+    "ids": ["2-AP-18"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a task or a period",
+     "Puts a task in each of the three periods",
+     "Puts a task and a person in each period and says what the milestone is"
+    ]
+   },
+   {
+    "line": "Decomposition: features and sub-parts",
+    "ids": ["2-AP-13"],
+    "levels": [
+     "Nothing yet, or one big piece",
+     "Names one or two features",
+     "Names three features and marks which are must-haves",
+     "Names three features with sub-parts, marked must or nice, and says why one is a must"
+    ]
+   },
+   {
+    "line": "Flowchart: the main rule as steps and a decision",
+    "ids": ["2-AP-10"],
+    "levels": [
+     "Nothing yet, or no rule",
+     "Names the rule in one sentence",
+     "Describes the rule as steps with one decision (if, then, else)",
+     "Describes all six boxes in order, with the decision and both of its outcomes"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the six boxes are pre-drawn on the sheet with the first box (start) and the diamond already labeled",
+   "the feature tree has three empty branches and the words must and nice to circle",
+   "the message box has four starter lines: A game for ___. You ___. You win when ___. You lose when ___."
+  ],
+  "stretch": [
+   "a second decision in the flowchart, and the variable it reads",
+   "write the test table's five rows before the message, then check the message covers every row"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper plan and pitch",
+  "minutes": 20,
+  "materials": ["the planning sheet, grades 6-8 version (one per team)", "role cards: designer/typist, tester/note-taker, recorder", "pencils"],
+  "steps": [
+   "Teams fill the planning sheet on paper: user card, pitch, feature tree, the six-box rule, variables table, storyboard, roles and timeline, what is reused, the accessibility check, the message, the test table.",
+   "Teams swap sheets with the next team for one have-you-thought-about note and write the answer on their own sheet.",
+   "Each team reads its message aloud in thirty seconds; the class says which must-have or decision is missing.",
+   "Sheets go in the team folder with the captain's login card, ready for build day."
+  ],
+  "printables": ["planning-sheet-pro", "role-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: your favorite simple game: the goal, what can go wrong, how you win, and how many separate parts it has.",
+  "Teams of three fill the planning sheet on paper for 20 minutes: user card, pitch with a win and lose rule, feature tree with must and nice, the main rule as six boxes in words, variables table, roles and a three-period timeline, a five-row test table, and a message of at most 300 characters. Teams swap sheets for one have-you-thought-about note. No projector, no Builder and no login needed; the sheets stay in the team folders.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore: one message, then its rule in six boxes"],
+   ["0:12", 16, "Plan: the sheet, then the three question steps"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-u7-o1", "2-7.1-r1"],
+  "discuss": "Three messages read aloud: which one would a robot misunderstand, and which must-have is missing from it?",
+  "keep": "the exit ticket is never cut; shorten the partner note swap to one minute, never the test table"
+ },
+ "block": {
+  "add": [
+   "a second message on the projector that fixes one thing the Builder guessed, and the six boxes redrawn",
+   "every team pitches its message to the class in thirty seconds",
+   "the five-row test table filled with expected values for every row before build day"
+  ]
+ },
+ "notes": [
+  "Unit 7 is optional and needs a school plan; the plan page shows Builder: on / resting and about how many teams can build this period.",
+  "The team captain signs in for every period of this unit: the captain types the three question steps today and presses Start building on build day, so the team's work sits in one gradebook row. Use Also mark these teammates on the review form so every member gets the rubric marks.",
+  "The message, not the plan, is what the Builder sees. Before build day, copy each team's message from the third question step into the top of that lesson's Build your game step, or let the captain paste it from the sheet.",
+  "Approve the sheet, not the message alone: a team with no feature tree or no decision in its rule builds on paper first on build day.",
+  "The partner note is the start of incorporating feedback (an also id today, primary in the playtest lesson): the Plan line's 3 is a plan that changed because of it.",
+  "Vocabulary beyond the five on the learn card: milestone, must-have."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Your favorite simple game: the goal, what can go wrong, how you win. Then: how many separate parts would someone need to build to make it?\n\nBig idea: A good message to the Builder comes from a good plan: parts, one clear rule, and who does what by when.\n\nToday your team plans on paper first, then types the plan into the three steps below. Nobody builds today.\n\nWe will talk about:\n- Three messages read aloud: which one would a robot misunderstand, and which must-have is missing?\n- Whose six boxes have a decision the message never mentions?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "question",
+   "title": "Who and what",
+   "minutes": 6,
+   "standards": ["2-AP-13", "2-AP-10", "2-AP-15"],
+   "rubric": [
+    {
+     "line": "Plan",
+     "ids": ["2-AP-13", "2-AP-10", "2-AP-15"],
+     "levels": [
+      "Nothing yet: no sheet, or the boxes are empty",
+      "Attempted: a pitch or a user card, but the feature tree or the six-box rule is missing",
+      "Meets: user card, pitch with a win and lose rule, feature tree with must and nice, the rule as six boxes in words, the partner's note answered",
+      "Exceeds: the plan changed after the partner's note, and the change is visible in the game"
+     ]
+    }
+   ],
+   "body": "Copy from your sheet:\n- Working title (no names in it).\n- User card: age, device, one need (text size, captions, one hand).\n- The pitch: one sentence, the genre, how you win, how you lose.\n- What the player sees first: your three storyboard panels, in words.\n- The other team's have-you-thought-about note, and your answer to it."
+  },
+  {
+   "kind": "question",
+   "title": "Parts and the rule",
+   "minutes": 6,
+   "standards": ["2-AP-13", "2-AP-10", "2-AP-15"],
+   "rubric": [
+    {
+     "line": "Plan",
+     "ids": ["2-AP-13", "2-AP-10", "2-AP-15"],
+     "levels": [
+      "Nothing yet: no sheet, or the boxes are empty",
+      "Attempted: a pitch or a user card, but the feature tree or the six-box rule is missing",
+      "Meets: user card, pitch with a win and lose rule, feature tree with must and nice, the rule as six boxes in words, the partner's note answered",
+      "Exceeds: the plan changed after the partner's note, and the change is visible in the game"
+     ]
+    }
+   ],
+   "body": "Copy from your sheet:\n- Feature tree: 3 features, 2 sub-parts each. Mark each one must or nice.\n- The main rule as six boxes, in words: box 1 start, then each step, a diamond for each decision (if ___ then ___, else ___).\n- Variables table: name, type, starts at, changes when. At least one the player can see.\n- Accessibility check: which of the five you ticked (text size, contrast, captions, one hand, no flashing)."
+  },
+  {
+   "kind": "question",
+   "title": "Roles, timeline and test plan",
+   "minutes": 6,
+   "standards": ["2-AP-18"],
+   "rubric": [
+    {
+     "line": "Roles / timeline",
+     "ids": ["2-AP-18"],
+     "levels": [
+      "Nothing yet: no roles or timeline",
+      "Attempted: roles named; the timeline is missing or is one line",
+      "Meets: three roles and a three-period timeline (build core, test and fix, credits and demo) with a milestone each, ticked as the project goes",
+      "Exceeds: three milestones with dates, kept and adjusted when something slipped"
+     ]
+    }
+   ],
+   "body": "Copy from your sheet:\n- Roles: who is designer/typist, tester/note-taker and recorder today. Roles rotate each period.\n- Timeline: period 2 build core, period 3 test and fix, period 4 credits and demo. Write the milestone and the person for each.\n- Reused and credited: the template, ideas, built-in art, and the exact credit line.\n- Test table, 5 rows: input, expected, actual (blank for now), pass?\n- Your message to the Builder, up to 300 characters: who plays, what the player does, how you win and lose, the one must-have feature, one variable the player can see. Your teacher pastes this message into build day."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about planning a game."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-18", "2-AP-13", "2-AP-10"],
+   "rubric": "exit",
+   "body": "Name your must-have features and the period each one belongs to, then describe the main rule as the boxes of your flowchart.\nFrame: Must-haves: ___, ___ and ___. Period 2: ___; period 3: ___; period 4: ___. The rule: start, ___, if ___ then ___, else ___."
+  }
+ ]
+}

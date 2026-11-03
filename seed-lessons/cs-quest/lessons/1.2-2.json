@@ -1,0 +1,212 @@
+{
+ "id": "csq-2-1.2",
+ "key": "csq-2-1.2",
+ "version": 1,
+ "unit": 1,
+ "order": 2,
+ "n": "1.2",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 1.2 · Again and again (Loops)",
+ "name": "Again and again (Loops)",
+ "short": "Loops",
+ "summary": "Students replace repeated steps with a repeat block in Robo Route, then put a loop inside a loop: the inner loop makes one stair, the outer loop makes the staircase. They predict how many steps a nested loop really runs by multiplying, and check it in step mode. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-12"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "use a loop inside a loop and explain what each loop repeats",
+  "predict how many steps a nested loop makes by multiplying",
+  "replace repeated steps with the fewest blocks"
+ ],
+ "questCode": "2 2 0 0",
+ "params": "chapter=loops&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Loop Cards printable (grid mats, arrow cards, repeat bracket cards with a number dial, a nested staircase card)",
+  "login cards"
+ ],
+ "doNow": "Write something you do again and again at school. How many times a day? How many times a week? Show the multiplication.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (projector or live)"],
+  ["0:10", 6, "Explore: seven forward blocks, one loop, then the staircase"],
+  ["0:16", 18, "Play: Loops"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u1-2",
+  "items": ["2-1.1-e1", "2-1.1-e2", "2-1.2-r1", "2-1.2-e1", "2-1.1-r1"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "projector",
+  "why": "two retrieval items from 1.1, one vocabulary item, one preview of today, one more from 1.1; the first weeks use the projector form (hands up, no join code)"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "loops", "level": 1},
+  "do": [
+   "Open Robo Route at Loops on the projector (Open game at this chapter). Level 1 is a straight corridor of seven squares. Ask for the program and add seven forward blocks. Run it. Then delete them all, tap repeat on the shelf (an empty repeat block, already set to 7) and, with the repeat still selected, tap forward so it drops inside. Run it.",
+   "Open level 5 and read the learn card out loud: the inner loop makes one stair, the outer loop makes the staircase. Build it with the class: repeat 3 around repeat 2 with forward inside, then turn right, forward, turn left. Press Step and count the forward moves together."
+  ],
+  "say": [
+   "That works. A programmer would be annoyed: we wrote the same thing seven times. A loop repeats steps so we do not have to write them again.",
+   "A loop inside a loop is a nested loop. The inner loop runs all the way through every time the outer loop goes round once, so the steps multiply: three stairs of two moves is six moves."
+  ],
+  "ask": [
+   "What does the number on a repeat mean? What if I put 8 on level 1?"
+  ],
+  "afterAsk": "Tap the number on level 1, set it to 8 and run it. Bolt bumps the wall and the caption says Bump! A wall after step 8. Bolt did exactly what we said. Keep that line for Discuss.",
+  "bigIdea": "A loop repeats steps, and a loop inside a loop multiplies them.",
+  "vocab": ["loop", "repeat", "nested", "inner", "outer"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "loops",
+  "chapterTitle": "Loops",
+  "levels": 8,
+  "goal": "5 levels, so everyone builds a nested loop",
+  "stretch": "the chapter, then 3 stars; level 8 is a par challenge: six blocks or fewer",
+  "solo": "one device per student; levels 1-4 are single loops, 5-8 nested; a neighbor may say the loop in words, never touch your screen",
+  "lookFors": [
+   "the repeat placed after the steps instead of around them",
+   "on level 5, the across step put inside the inner loop, so Bolt zigzags instead of climbing: ask what one stair is",
+   "counting a nested loop by adding (3 + 2) instead of multiplying (3 times 2): step mode settles it"
+  ],
+  "misconception": "In a nested loop the inner loop runs completely every time the outer loop runs once, so the moves multiply: three stairs of two moves is six moves, not five.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "In the staircase on level 5, how many forward steps actually ran? Show the multiplication.",
+  "Where else do nested loops happen: the days of a school week, rows of eggs in a carton, verses and chorus of a song?"
+ ],
+ "showMe": "One student runs level 5 on the projector in step mode; the class counts the forward moves out loud and checks the multiplication.",
+ "exit": {
+  "setId": "csq-u1-2",
+  "items": ["2-1.2-e1", "2-1.2-e2", "2-1.2-e3"],
+  "sentencePrompt": "What does a nested loop do, and how do you work out how many steps really ran?",
+  "frame": "A nested loop ___. To count the steps I ___.",
+  "rubric": [
+   {
+    "line": "Nested loops: what each loop repeats and how many steps run",
+    "ids": ["2-AP-12"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says a loop repeats steps, nothing about the loop inside",
+     "Says the inner loop runs completely each time round the outer loop, or multiplies the counts correctly",
+     "Explains both what each loop repeats and the multiplication, with an example from a level"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the repeat count is pre-set on levels 1-2",
+   "hint 1 asks which steps repeat; on level 5 it asks whether a loop can make the up part of one stair",
+   "step mode on every nested level: watch the inner loop finish before the outer loop moves on"
+  ],
+  "stretch": [
+   "3-star par on every level",
+   "level 8 in six blocks or fewer, then write it as a multiplication",
+   "program the walk back down the staircase as one nested loop"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Loop Cards, nested",
+  "minutes": 15,
+  "materials": ["one 8 by 8 paper grid per pair", "arrow cards", "three repeat bracket cards with a number dial", "a nested staircase card (a bracket drawn inside a bracket)"],
+  "steps": [
+   "Round 1: one partner lays out a whole staircase route with arrow cards only; the other counts the cards.",
+   "Round 2, shrink the program: replace every run of the same card with a bracket card and a number; count again.",
+   "Round 3, nest it: put the bracket for one stair inside a bigger bracket for the whole staircase. Before running it, write the multiplication and predict the number of forward moves; then run it with a finger and count.",
+   "Share: whose program shrank the most? Did anyone's prediction miss by one, and where did the extra step hide?"
+  ],
+  "printables": ["grid-mat", "arrow-cards", "loop-cards", "nested-card"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: write something you do again and again at school, how many times a day and a week, with the multiplication.",
+  "Play Robo Route, chapter Loops (Pro), one device each, for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 2 2 0 0. Goal: 5 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Loops"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-1.1-e1", "2-1.2-r1"],
+  "discuss": "In the staircase on level 5, how many forward steps actually ran? Show the multiplication.",
+  "keep": "the exit ticket is never cut; in 5 minutes of Explore skip level 5 and let the learn card teach the nested loop"
+ },
+ "block": {
+  "add": [
+   "the Loop Cards, nested twin (15 minutes) before Play",
+   "the 3-star stretch and level 8 after Play",
+   "10 minutes of the Unit 1 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Off-by-one bumps are the lesson's best moments: Bolt did exactly what you said.",
+  "Most students reach level 6 of 8 in 18 minutes: that is success. The nested loops start at level 5, so the goal is 5, not 4.",
+  "Vocabulary beyond the five on the learn card: times, pattern, par.",
+  "One device per student at this band; the Standards tab counts each student's own play."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Write something you do again and again at school. How many times a day? How many times a week? Show the multiplication.\n\nBig idea: A loop repeats steps, and a loop inside a loop multiplies them.\n\nWe will talk about:\n- In the staircase, how many forward steps actually ran? Show the multiplication.\n- Where else do nested loops happen: a school week, rows of eggs, verses and a chorus?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Loops",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=loops&band=2&lock=1",
+   "questCode": "2 2 0 0",
+   "standards": ["2-AP-12"],
+   "body": "Goal: 5 levels, so you build a loop inside a loop. Stretch: finish the chapter, then 3 stars. Level 8 is a par challenge: six blocks or fewer.\nIf the game asks for a quest code, it is 2 2 0 0.\nBefore you run a nested loop, predict the number of moves: inner count times outer count. Then press Step and check."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about loops and loops inside loops."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-12"],
+   "rubric": "exit",
+   "body": "What does a nested loop do, and how do you work out how many steps really ran?\nFrame: A nested loop ___. To count the steps I ___."
+  }
+ ]
+}

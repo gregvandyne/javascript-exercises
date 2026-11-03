@@ -1,0 +1,213 @@
+{
+ "id": "csq-1b-3.1",
+ "key": "csq-1b-3.1",
+ "version": 1,
+ "unit": 3,
+ "order": 8,
+ "n": "3.1",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "CS Quest 3.1 · Sort it out (Organize data)",
+ "name": "Sort it out (Organize data)",
+ "short": "Sorting data",
+ "summary": "Students meet Dot the detective and learn that a table of facts answers a question only once you sort or group it. In Data Detective they sort, group and pick the view that makes the answer show, then pin a claim the view supports. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-DA-06"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "sort and group data so a pattern shows",
+  "choose the view that answers the question",
+  "say what the data showed and why"
+ ],
+ "questCode": "1 1 0 0",
+ "params": "chapter=sort&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Human Bar Chart cards (one fruit card per student, for the twin or the block day)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Most common shoe color in this room: how could we find out fast? Write your plan in one line.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: The Missing Lunchbox, sort by the right column"],
+  ["0:16", 18, "Play: Sort & Group"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u3-1b",
+  "items": ["1b-u3-o1", "1b-3.1-r1", "1b-3.1-e1", "1b-3.1-e2", "1b-3.1-e3"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so before you start"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "sort", "level": 1},
+  "do": [
+   "Open Data Detective at Sort & Group on the projector (Open game at this chapter). Case 1 is The Missing Lunchbox: a table of 10 rows, who, where and when. Read the question out loud: who was in the lunchroom last?",
+   "Ask the class which column to sort by. Try their first idea, even if it is the name column. Then sort by the time column: the answer is the bottom row. Tap Show me, then pin the claim."
+  ],
+  "say": [
+   "Data is facts in rows. A table full of facts does not answer anything until we sort it or group it.",
+   "Dot has one rule: you cannot pin a claim until the view on the screen shows it. Two clues is a hunch, five is a case."
+  ],
+  "ask": [
+   "Which column should we sort by, and how do you know?"
+  ],
+  "afterAsk": "Take three answers. Sort by the one most hands pick. If the answer does not pop out, say so and try the time column. The point is that the column you choose decides whether the answer shows.",
+  "bigIdea": "Sorting and grouping make the answer in the data visible.",
+  "vocab": ["data", "table", "sort", "group"]
+ },
+ "play": {
+  "type": "game",
+  "game": "data-detective",
+  "chapter": "sort",
+  "chapterTitle": "Sort & Group",
+  "levels": 6,
+  "goal": "4 cases",
+  "stretch": "the chapter, then 3 stars",
+  "pairs": "driver and navigator on one device; the Swap! banner shows every 3 cases; the navigator reads the question out loud and names the column before the driver sorts",
+  "lookFors": [
+   "sorting by the first column out of habit instead of the column the question is about",
+   "pinning a claim before the view shows it (the game refuses; watch for pairs who tap Show me over and over without changing the view)",
+   "grouping when the question asks for the most common, sorting when it asks for the biggest or the first"
+  ],
+  "misconception": "Sorting by any column is not enough: the column you sort or group by has to be the one the question asks about.",
+  "earlyFinishers": [
+   "earn 3 stars on every case",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Which view answered the question fastest: the sorted table, the grouped table or the bars? Show me a case where you changed your mind.",
+  "When would sorting not help at all? What question would need grouping instead?"
+ ],
+ "showMe": "One pair shows case 3 on the projector, first sorted by the wrong column, then by the right one; the class says Show me when the answer appears.",
+ "exit": {
+  "setId": "csq-u3-1b",
+  "items": ["1b-3.1-e1", "1b-3.1-e2", "1b-3.1-e3"],
+  "sentencePrompt": "Pick one case you solved today. What did the data show, and how did sorting or grouping make it show?",
+  "frame": "The data showed ___ because ___.",
+  "rubric": [
+   {
+    "line": "Organizing data: what the data showed and how the view made it show",
+    "ids": ["1B-DA-06"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a finding from the data",
+     "Names a finding and says which sort or group made it show",
+     "Also says why that view fit the question, or names a view that would not have worked"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "cases 1-3 glow the column the question is about",
+   "hint 1 reads the question again and underlines the key word",
+   "the navigator reads the question out loud before every sort; read-aloud on"
+  ],
+  "stretch": [
+   "3 stars on every case: no wrong claim pinned",
+   "cases 5-6 ask two questions that need two different sorts; pairs write both claims on paper first"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Human Bar Chart",
+  "minutes": 15,
+  "materials": ["one fruit card per student (four fruits)", "masking tape or chalk for a baseline", "a question card"],
+  "steps": [
+   "Every student gets a fruit card. Ask: which fruit is the most popular in our class? Nobody may answer yet.",
+   "Round 1, no organizing: students stand anywhere and hold up their cards. Ask again. It is hard to tell.",
+   "Round 2, group: students line up behind the sign for their fruit, one behind the other, on the baseline. Now the class is a bar chart. Ask again; the answer is the longest line.",
+   "Round 3, sort: the lines rearrange themselves tallest-first. Ask a new question: which fruit is the least popular? Which is second?",
+   "Share: what did grouping do that standing anywhere did not? Write the claim on the board with the counts next to it."
+  ],
+  "printables": ["fruit-cards", "question-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: most common shoe color in this room, how could we find out fast? Write a one-line plan.",
+  "Play Data Detective, chapter Sort & Group, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 1 1 0 0. Goal: 4 cases. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Sort & Group"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-u3-o1", "1b-3.1-r1"],
+  "discuss": "Which view answered the question fastest: the sorted table, the grouped table or the bars? Show me a case where you changed your mind.",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Human Bar Chart twin (15 minutes) before Play",
+   "the 3-star stretch and the two-question cases after Play",
+   "10 minutes of chapter Chart It (quest code 2 1 0 0) for pairs who finish Sort & Group"
+  ]
+ },
+ "notes": [
+  "The charts in the game are bars with the numbers printed on them, so they read fine on a washed-out projector and with a screen reader.",
+  "The names in the tables are made up and short; nobody in the class is in the data.",
+  "Most pairs reach case 4 or 5 of 6 in 18 minutes: that is success.",
+  "Shared devices: this is an odd lesson in the unit, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Most common shoe color in this room: how could we find out fast? Write your plan in one line.\n\nBig idea: Sorting and grouping make the answer in the data visible.\n\nWe will talk about:\n- Which view answered the question fastest: the sorted table, the grouped table or the bars?\n- When would sorting not help at all?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. It is fine not to know them yet: we check again at the end."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Sort & Group",
+   "minutes": 18,
+   "gameSlug": "data-detective",
+   "options": "chapter=sort&band=1b&lock=1",
+   "questCode": "1 1 0 0",
+   "standards": ["1B-DA-06"],
+   "body": "Goal: 4 cases. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 1 1 0 0.\nPairs: driver and navigator. Swap when the Swap! banner shows. The navigator reads the question out loud and names the column before the driver sorts."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about sorting and grouping data."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-DA-06"],
+   "rubric": "exit",
+   "body": "Pick one case you solved today. What did the data show, and how did sorting or grouping make it show?\nFrame: The data showed ___ because ___."
+  }
+ ]
+}

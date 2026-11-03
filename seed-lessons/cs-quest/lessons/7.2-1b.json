@@ -1,0 +1,220 @@
+{
+ "id": "csq-1b-7.2",
+ "key": "csq-1b-7.2",
+ "version": 1,
+ "unit": 7,
+ "order": 21,
+ "n": "7.2",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "CS Quest 7.2 · Build day",
+ "name": "Build day",
+ "short": "Build",
+ "summary": "Build day: teams with an approved sheet press Start building, send one good message, play their game, log one bug and send one fix. Teams not yet approved build on paper first (three storyboard panels and a test table) and the halves swap. No warm-up: the build queue needs the minutes. The plan page's Builder status line says the morning of whether the Builder is on or resting.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-AP-15"],
+  "also": [],
+  "buildsToward": ["1B-AP-09", "1B-AP-10"]
+ },
+ "iCan": [
+  "ask the Builder for my game with one clear message",
+  "test my game like a player and write what I expected and what happened",
+  "ask for one fix at a time"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Builder etiquette card printable (one per team, stays on the desk)",
+  "storyboard sheet with three panels and the five-row test table (one per team)",
+  "the team folders with the approved planning sheets and the captains' login cards",
+  "the plan page open on the Builder status line"
+ ],
+ "doNow": "Write two things you will test first in your game, and what should happen for each.",
+ "plan": [
+  ["0:00", 5, "Arrive, captains log in, Do Now"],
+  ["0:05", 4, "Explore: the etiquette card and the Builder status line"],
+  ["0:09", 15, "Rotation 1: approved teams build (one message, play, one fix); the others build on paper"],
+  ["0:24", 15, "Rotation 2: swap"],
+  ["0:39", 1, "Discuss: one question"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": null,
+ "explore": {
+  "minutes": 4,
+  "do": [
+   "Put the etiquette card on the projector and read it line by line; hold up the printed one that stays on every team's desk.",
+   "Show the Builder status line on the plan page: on or resting, and about how many teams can build this period. Name the rotation 1 teams (approved sheets first) and the teams starting on paper."
+  ],
+  "say": [
+   "One change per message. Say what you saw and what you expected, like a bug report from Bug hunt: I expected the rocket to fly up when I tap; it flies down.",
+   "Play your game after every change. The Builder is fast; your eyes are the test."
+  ],
+  "ask": [
+   "Your game shows the score going up when you lose a life. What is the one-sentence message?"
+  ],
+  "afterAsk": "Take one answer and fix it together on the board until it names what happened and what should happen. Leave it up as the model message.",
+  "bigIdea": "One good message, play it, one fix: that is how a game gets built.",
+  "vocab": ["message", "test", "fix", "prototype"]
+ },
+ "play": {
+  "type": "builder",
+  "template": "quiz",
+  "prefill": "the team's Builder message from the planning sheet, pasted first into the build step body (the first 300 characters open the Studio message box)",
+  "paperPath": true,
+  "shape": "one good message, then one fix; paper prototyping first for the teams not yet approved",
+  "rotations": [
+   "Rotation 1 (15 minutes): approved teams press Start building. The captain sends the sheet's message, the team plays the game, logs one bug (expected versus actual) and sends one fix. The other teams build on paper: three storyboard panels and the five-row test table (input, expected, actual, pass?), then play-test a neighbor team's paper prototype.",
+   "Rotation 2 (15 minutes): swap. Paper teams whose sheet is approved press Start building; the teams that built go to paper and test a neighbor team's prototype."
+  ],
+  "etiquette": [
+   "one change per message",
+   "say what you saw and what you expected",
+   "ten messages for the whole project, per team",
+   "play your game after every change",
+   "never put your full name, your school or anyone else's name in a message or in the game",
+   "if the Builder is resting, switch to the paper prototype",
+   "demos show the game, not the chat"
+  ],
+  "builderStatus": "on the plan page the morning of: Builder: on / resting, and about how many teams can build this period; resting means the whole class takes the paper path and build day moves to the next period",
+  "lookFors": [
+   "a message with three changes in it: cut it to one and keep the others for later",
+   "a team that sends the next message without playing: the fix log needs expected versus actual before the next message",
+   "a team putting a name into the message or the game: first names or avatars only, and only in the credits"
+  ],
+  "misconception": "Kids think a longer message gets a better game; one change per message is what lets them see what fixed what.",
+  "earlyFinishers": [
+   "a variable the player can see: ask for a score or a timer, then test it",
+   "test a neighbor team's game and fill one row of their test table"
+  ]
+ },
+ "discuss": [
+  "What did the Builder get wrong first, and what did you say to fix it?"
+ ],
+ "exit": {
+  "setId": "csq-u7-1b",
+  "items": ["1b-7.2-e1", "1b-7.2-e2", "1b-7.2-e3"],
+  "sentencePrompt": "What was your best fix message, and what did it change in the game?",
+  "frame": "My best fix message was ___ and it changed ___.",
+  "rubric": [
+   {
+    "line": "Test and fix: a message that says what happened and what should happen",
+    "ids": ["1B-AP-15"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names something that was wrong",
+     "Quotes a message that says what happened and what was expected, and what it changed",
+     "Also says how they tested that the fix worked, or what they will test next"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "start from the Quiz Show template as it is: a team with a weak plan sends one message that changes only the questions",
+   "the message starter on the card: I expected ___. Instead ___. Please ___.",
+   "paper teams get the storyboard panels pre-drawn with the three screens named"
+  ],
+  "stretch": [
+   "a variable the player can see: score, lives or a timer, and a message that changes only that",
+   "a second fix that comes from a paper tester's row of your test table, not from your own play"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper prototype play-test",
+  "minutes": 20,
+  "materials": ["storyboard sheet: three panels", "the five-row test table", "pencils and the planning sheet"],
+  "steps": [
+   "Teams draw the three screens of their game on the storyboard panels: what the player sees first, playing, winning or losing.",
+   "A neighbor team plays the paper prototype: the maker turns the panels, the tester says what they would tap, the note-taker fills the test table (input, expected, actual, pass?).",
+   "Makers fix one panel because of one row of the table and say what they changed.",
+   "Swap roles and test the other team's prototype."
+  ],
+  "printables": ["storyboard", "test-table", "etiquette-card"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: two things you will test first in your game, and what should happen for each.",
+  "Paper prototype day for everyone: teams draw the three screens of their game on the storyboard sheet, a neighbor team play-tests it with the five-row test table (input, expected, actual, pass?), makers fix one panel, then the teams swap. No Builder today and no login needed.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it with the test tables."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 4, "Explore: the etiquette card"],
+   ["0:08", 13, "Rotation 1: build or paper"],
+   ["0:21", 12, "Rotation 2: swap"],
+   ["0:33", 1, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": [],
+  "discuss": "What did the Builder get wrong first, and what did you say to fix it?",
+  "keep": "the exit ticket is never cut; the five minutes come out of the two build rotations"
+ },
+ "block": {
+  "add": [
+   "a third rotation so every team gets a second fix message",
+   "the full paper prototype play-test for every team before anyone builds",
+   "10 minutes of the Unit 7 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "No warm-up today on purpose: the build queue needs the minutes, and the playtest lesson's warm-up covers today's items.",
+  "Builder status: check the plan page the morning of. Resting means the whole class takes the paper path and build day moves to the next period; the paper lesson still counts.",
+  "Captains only: one game per account per build step, so the captain signs in and presses Start building; the other teammates have no build cell. Mark them with Also mark these teammates when you mark the Program line.",
+  "Before this period, paste each team's message from the third question step of Plan your game into the top of this lesson's Build your game step in your copy, or hand the team its sheet and let the captain paste the message into the Studio box.",
+  "Ten messages for the whole project per team, and one or two build turns per team per period, are realistic: one good message, play, one fix is the whole of today.",
+  "The Program line of the rubric is builds-toward only: mark it, but it counts as evidence for nothing on the Standards tab. Test and debug is the line this lesson evidences, through the sentence step.",
+  "Discuss is one minute by construction; the one prompt is enough."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Write two things you will test first in your game, and what should happen for each.\n\nBig idea: One good message, play it, one fix: that is how a game gets built.\n\nToday half the teams build and half build on paper, then you swap. Your captain signs in.\n\nWe will talk about:\n- What did the Builder get wrong first, and what did you say to fix it?"
+  },
+  {
+   "kind": "text",
+   "title": "Builder etiquette",
+   "minutes": 5,
+   "body": "Keep this card on your desk.\n- One change per message.\n- Say what you saw and what you expected: I expected ___. Instead ___. Please ___.\n- Play your game after every change.\n- Ten messages for the whole project. Make each one count.\n- Never put your full name, your school or anyone else's name in a message or in the game. First names or avatars only, and only in the credits.\n- If the Builder is resting, switch to the paper prototype.\n- Demos show the game, not the chat."
+  },
+  {
+   "kind": "build",
+   "title": "Build your game",
+   "minutes": 18,
+   "template": "quiz",
+   "standards": ["1B-AP-15"],
+   "rubric": [
+    {
+     "line": "Program",
+     "ids": [],
+     "levels": [
+      "Nothing yet: no game runs",
+      "Attempted: the game runs; nothing the player can see changes",
+      "Meets: a visible variable (score, lives or time) and a condition or a loop the player can see",
+      "Exceeds: the team can point to where the variable changes and where the condition or loop runs"
+     ]
+    }
+   ],
+   "body": "Paste your team's Builder message here (up to 300 characters).\n\nThen:\n- Press Start building when your teacher has approved your sheet.\n- Send the message. While it builds, get your test plan ready.\n- Play the game. Write one bug in your fix log: what you expected, what happened.\n- Send one fix message about that bug. Play again.\n- Hand in when your teacher says so.\n\nThe card: one change per message; say what you saw and what you expected; play after every change; no full names anywhere; if the Builder is resting, build on paper; demos show the game, not the chat."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about building, testing and fixing."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-AP-15"],
+   "rubric": "exit",
+   "body": "What was your best fix message, and what did it change in the game?\nFrame: My best fix message was ___ and it changed ___."
+  }
+ ]
+}

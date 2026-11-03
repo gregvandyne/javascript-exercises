@@ -1,0 +1,220 @@
+{
+ "id": "csq-2-7.2",
+ "key": "csq-2-7.2",
+ "version": 1,
+ "unit": 7,
+ "order": 21,
+ "n": "7.2",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 7.2 · Build day",
+ "name": "Build day",
+ "short": "Build",
+ "summary": "Build day for teams of three: approved teams send the sheet's message, run the five-row test table against the game, find the input that breaks it and send one precise fix. The others build on paper first (three storyboard panels and the test table) and the halves swap. No warm-up: the build queue needs the minutes. The plan page's Builder status line says the morning of whether the Builder is on or resting.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-17"],
+  "also": [],
+  "buildsToward": ["2-AP-11", "2-AP-12"]
+ },
+ "iCan": [
+  "write test cases before I test, including an edge case",
+  "find the input that breaks my game and describe it exactly",
+  "ask for one precise fix at a time"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Builder etiquette card printable (one per team, stays on the desk)",
+  "storyboard sheet with three panels and the five-row test table (one per team)",
+  "the team folders with the approved planning sheets and the captains' login cards",
+  "the plan page open on the Builder status line"
+ ],
+ "doNow": "Write two test cases for your game: the input, and what should happen. Make one of them an edge: the last second, zero lives, an empty answer.",
+ "plan": [
+  ["0:00", 5, "Arrive, captains log in, Do Now"],
+  ["0:05", 4, "Explore: the etiquette card, the Builder status line, one row of a test table"],
+  ["0:09", 15, "Rotation 1: approved teams build (message, test table, one fix); the others build on paper"],
+  ["0:24", 15, "Rotation 2: swap"],
+  ["0:39", 1, "Discuss: one question"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": null,
+ "explore": {
+  "minutes": 4,
+  "do": [
+   "Put the etiquette card on the projector and read it; point at the printed one on every desk. Show the Builder status line on the plan page and name the rotation 1 teams.",
+   "With the class, fill one row of a test table for the frog quiz on the board: input, a wrong answer; expected, the score stays the same; actual, blank until tested; pass, blank."
+  ],
+  "say": [
+   "Write the test cases first, then test. If you only test what you happen to notice, you miss the edges: the last second of the timer, zero lives, the tenth question.",
+   "A precise fix names the input, what you expected and what happened: Expected the score to stay the same when a life is lost; it goes up by one. One change per message."
+  ],
+  "ask": [
+   "Which three inputs would you test on a timer, and why those three?"
+  ],
+  "afterAsk": "Start, halfway and the last second: write them on the board as the model range. Every team's table needs one edge row.",
+  "bigIdea": "Test cases first, the breaking input named, one precise fix: that is how a game gets built.",
+  "vocab": ["test case", "expected", "actual", "edge case", "fix"]
+ },
+ "play": {
+  "type": "builder",
+  "template": "quiz",
+  "prefill": "the team's Builder message from the planning sheet, pasted first into the build step body (the first 300 characters open the Studio message box)",
+  "paperPath": true,
+  "shape": "one good message, then one fix; paper prototyping first for the teams not yet approved",
+  "rotations": [
+   "Rotation 1 (15 minutes): approved teams press Start building. The captain sends the sheet's message; the tester runs the five-row test table against the game and fills actual and pass for each row; the team picks the failing row that matters most and sends one precise fix. The other teams build on paper: three storyboard panels and their own test table, then play-test a neighbor team's paper prototype row by row.",
+   "Rotation 2 (15 minutes): swap. Paper teams whose sheet is approved press Start building; the teams that built go to paper and run their table against a neighbor team's prototype."
+  ],
+  "etiquette": [
+   "one change per message",
+   "say what you saw and what you expected",
+   "ten messages for the whole project, per team",
+   "play your game after every change",
+   "never put your full name, your school or anyone else's name in a message or in the game",
+   "if the Builder is resting, switch to the paper prototype",
+   "demos show the game, not the chat"
+  ],
+  "builderStatus": "on the plan page the morning of: Builder: on / resting, and about how many teams can build this period; resting means the whole class takes the paper path and build day moves to the next period",
+  "lookFors": [
+   "a test table with no edge row: ask for the last second, zero lives or an empty answer",
+   "a fix message that says broken or make it harder: send them back to the row: input, expected, actual",
+   "a team that fixes a nice-to-have while a must-have row still fails"
+  ],
+  "misconception": "Students think testing means playing the game until something looks wrong; a test table decides what to check before you play, so the edges get checked too and the fix message can name the input.",
+  "earlyFinishers": [
+   "a variable the player can see: ask for a score or a timer, then add two rows to the table for it and run them",
+   "run your table against a neighbor team's game and hand them the failing row"
+  ]
+ },
+ "discuss": [
+  "Which row of the test table failed first, and what exactly did your fix message say?"
+ ],
+ "exit": {
+  "setId": "csq-u7-2",
+  "items": ["2-7.2-e1", "2-7.2-e2", "2-7.2-e3"],
+  "sentencePrompt": "Which input broke your game, what did you expect and what happened, and what did your fix message change?",
+  "frame": "Input ___ broke it: expected ___, actual ___. My fix message was ___ and it changed ___.",
+  "rubric": [
+   {
+    "line": "Systematic testing: test cases first, the breaking input named, one precise fix",
+    "ids": ["2-AP-17"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names something that was wrong",
+     "Names the input, the expected and actual result, and the fix message that changed it",
+     "Also covers an edge case, or reports a second run of the table after the fix"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "start from the Quiz Show template as it is: a team with a weak plan sends one message that changes only the questions, then tests three rows",
+   "the test table comes with the first two rows filled in (a right answer, a wrong answer); the team adds the edge rows",
+   "the message starter on the card: Input ___. Expected ___. Actual ___. Please ___."
+  ],
+  "stretch": [
+   "a variable the player can see and two table rows that check it, including its edge (zero, the maximum)",
+   "a second fix that comes from a neighbor team's run of your table, not from your own"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper prototype play-test",
+  "minutes": 20,
+  "materials": ["storyboard sheet: three panels", "the five-row test table", "pencils and the planning sheet"],
+  "steps": [
+   "Teams draw the three screens of their game on the storyboard panels: what the player sees first, playing, winning or losing, with the variables shown on each screen.",
+   "A neighbor team runs its own five-row test table against the paper prototype: the maker turns the panels, the tester names the input, the note-taker writes actual and pass for each row.",
+   "Makers fix one panel because of the failing row that matters most and say what they changed.",
+   "Swap roles and test the other team's prototype."
+  ],
+  "printables": ["storyboard", "test-table", "etiquette-card"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: two test cases for your game, the input and what should happen; one of them an edge (the last second, zero lives, an empty answer).",
+  "Paper prototype day for everyone: teams draw the three screens of their game on the storyboard sheet, a neighbor team runs the five-row test table against it (input, expected, actual, pass?), makers fix one panel because of the failing row that matters most, then the teams swap. No Builder today and no login needed.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it with the test tables."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 4, "Explore: the etiquette card and one table row"],
+   ["0:08", 13, "Rotation 1: build or paper"],
+   ["0:21", 12, "Rotation 2: swap"],
+   ["0:33", 1, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": [],
+  "discuss": "Which row of the test table failed first, and what exactly did your fix message say?",
+  "keep": "the exit ticket is never cut; the five minutes come out of the two build rotations"
+ },
+ "block": {
+  "add": [
+   "a third rotation so every team gets a second fix and a second run of the table",
+   "the full paper prototype play-test for every team before anyone builds",
+   "10 minutes of the Unit 7 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "No warm-up today on purpose: the build queue needs the minutes, and the playtest lesson's warm-up covers today's items.",
+  "Builder status: check the plan page the morning of. Resting means the whole class takes the paper path and build day moves to the next period; the paper lesson still counts.",
+  "Captains only: one game per account per build step, so the captain signs in and presses Start building; the other teammates have no build cell. Mark them with Also mark these teammates when you mark the Program line.",
+  "Before this period, paste each team's message from the third question step of Plan your game into the top of this lesson's Build your game step in your copy, or hand the team its sheet and let the captain paste the message into the Studio box.",
+  "Ten messages for the whole project per team, and one or two build turns per team per period, are realistic: one good message, the table, one fix is the whole of today.",
+  "The Program line of the rubric is builds-toward only (named variables, loops and conditions are the Builder's work): mark it, but it counts as evidence for nothing on the Standards tab. Systematic testing is the line this lesson evidences, through the sentence step.",
+  "Discuss is one minute by construction; the one prompt is enough."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Write two test cases for your game: the input, and what should happen. Make one of them an edge: the last second, zero lives, an empty answer.\n\nBig idea: Test cases first, the breaking input named, one precise fix: that is how a game gets built.\n\nToday half the teams build and half build on paper, then you swap. Your captain signs in.\n\nWe will talk about:\n- Which row of the test table failed first, and what exactly did your fix message say?"
+  },
+  {
+   "kind": "text",
+   "title": "Builder etiquette",
+   "minutes": 5,
+   "body": "Keep this card on your desk.\n- One change per message.\n- Say what you saw and what you expected: Input ___. Expected ___. Actual ___. Please ___.\n- Play your game after every change, and run your test table.\n- Ten messages for the whole project. Make each one count.\n- Never put your full name, your school or anyone else's name in a message or in the game. First names or avatars only, and only in the credits.\n- If the Builder is resting, switch to the paper prototype.\n- Demos show the game, not the chat."
+  },
+  {
+   "kind": "build",
+   "title": "Build your game",
+   "minutes": 18,
+   "template": "quiz",
+   "standards": ["2-AP-17"],
+   "rubric": [
+    {
+     "line": "Program",
+     "ids": [],
+     "levels": [
+      "Nothing yet: no game runs",
+      "Attempted: the game runs; nothing the player can see changes",
+      "Meets: a visible variable (score, lives or time) and a condition or a loop the player can see",
+      "Exceeds: the team can point to where the variable changes and where the condition or loop runs"
+     ]
+    }
+   ],
+   "body": "Paste your team's Builder message here (up to 300 characters).\n\nThen:\n- Press Start building when your teacher has approved your sheet.\n- Send the message. While it builds, write expected into every row of your test table.\n- Play the game and run the table: fill actual and pass for each row. Include the edge row.\n- Pick the failing row that matters most. Send one fix message: input, expected, actual. Run the table again.\n- Hand in when your teacher says so.\n\nThe card: one change per message; say what you saw and what you expected; play after every change; no full names anywhere; if the Builder is resting, build on paper; demos show the game, not the chat."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about test cases and precise fixes."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-17"],
+   "rubric": "exit",
+   "body": "Which input broke your game, what did you expect and what happened, and what did your fix message change?\nFrame: Input ___ broke it: expected ___, actual ___. My fix message was ___ and it changed ___."
+  }
+ ]
+}

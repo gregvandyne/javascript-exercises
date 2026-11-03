@@ -1,0 +1,223 @@
+{
+ "id": "csq-2-1.1",
+ "key": "csq-2-1.1",
+ "version": 1,
+ "unit": 1,
+ "order": 1,
+ "n": "1.1",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "CS Quest 1.1 · Step by step (Sequences)",
+ "name": "Step by step (Sequences)",
+ "short": "Sequences",
+ "summary": "Students meet Bolt, a robot that does exactly what the blocks say, in order. In Robo Route they write the plan in plain words (pseudocode) before the block shelf opens, split long routes into legs, and compare two routes by step count. One device per student; this is the first period, so the Do Now runs long and the warm-up is on the projector.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-10", "2-AP-13"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "write a plan in plain words or as a flowchart before I program",
+  "split a route into sub-routes and program one at a time",
+  "compare two routes by step count and pick the better one"
+ ],
+ "questCode": "1 2 0 0",
+ "params": "chapter=sequences&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Paper Robot printable (grid mats, arrow cards, plan-line slips)",
+  "login cards"
+ ],
+ "doNow": "Write the steps to make a sandwich in plain, numbered lines. Swap with a neighbor: could a robot follow your lines exactly as written? Mark the first line that would go wrong.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up on the projector (a pre-test, hands up)"],
+  ["0:10", 6, "Explore: be the robot, level 1, then the plan card on level 3"],
+  ["0:16", 18, "Play: Sequences"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u1-2",
+  "items": ["2-u1-o1", "2-1.1-r1", "2-1.1-e1", "2-1.1-e2", "2-1.1-e3"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "projector",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so; the first period uses the projector form (hands up, no join code)"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "sequences", "level": 1},
+  "do": [
+   "Pick one Do Now sandwich and be the robot for three lines: a volunteer reads, you follow word for word, including the mistakes. Then open Robo Route at Sequences on the projector (Open game at this chapter). Level 1 is a straight corridor of seven squares. Let the class call the blocks, add them, run it.",
+   "Open level 3 and show the plan card: three plan lines, out of order, and a locked shelf. Read the lines out loud, let the class order them, and watch the shelf open. Point out that each line is one run of blocks."
+  ],
+  "say": [
+   "A computer does exactly what the steps say, in order. It does not guess what you meant.",
+   "Pro programmers write the plan in plain words before they touch a block. That plan is called pseudocode; a flowchart is the same plan drawn with boxes and diamonds."
+  ],
+  "ask": [
+   "Does writing the plan first slow you down or speed you up? When would it help most?"
+  ],
+  "afterAsk": "Take two answers for each side. Land on: for four moves it is slower; for a route with three legs and two gems it is how you avoid rebuilding. Levels 5 and 6 will test that claim.",
+  "bigIdea": "Write the plan in plain words first; each plan line becomes one part of the program.",
+  "vocab": ["algorithm", "pseudocode", "flowchart", "sequence", "step"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "sequences",
+  "chapterTitle": "Sequences",
+  "levels": 6,
+  "goal": "4 levels",
+  "stretch": "the chapter, then 3 stars (level 5 has two valid routes; level 6 is three legs with a par)",
+  "solo": "one device per student; students may talk to a neighbor but build their own program; a neighbor may read your plan lines out loud, never touch your screen",
+  "lookFors": [
+   "ordering the plan lines by tapping until the shelf opens instead of reading them: ask them to read line 1 aloud and say which blocks it becomes",
+   "turn-vs-move confusion: a turn block spins Bolt in place and does not move it",
+   "on level 5, taking the first route that works without counting the other one; on level 6, building the whole route in one go instead of leg by leg"
+  ],
+  "misconception": "A plan is not extra work that the program replaces: the plan lines are the program in plain words, and each line becomes one run of blocks you can check on its own.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Did writing the plan first help or slow you down? When would it help most?",
+  "Level 6 had three legs. Which leg went wrong first, and how did the plan help you find it?"
+ ],
+ "showMe": "One student shows level 5 on the projector: both routes run, the class counts the blocks and the turns of each.",
+ "exit": {
+  "setId": "csq-u1-2",
+  "items": ["2-1.1-e1", "2-1.1-e2", "2-1.1-e3"],
+  "sentencePrompt": "What is pseudocode, and why write a plan before you program? How did you split the long route on level 6?",
+  "frame": "Pseudocode is ___. Writing it first helps because ___. I split the route into ___ and ___.",
+  "rubric": [
+   {
+    "line": "Plan first: pseudocode or a flowchart before programming",
+    "ids": ["2-AP-10"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says a plan is written first, with no reason or an unclear one",
+     "Says pseudocode or a flowchart is the plan in plain words or shapes, and gives a reason: to think the steps through, or to check one part at a time",
+     "Also writes a real plan line or names a box or diamond, or says when a plan matters most: long or tricky problems"
+    ]
+   },
+   {
+    "line": "Decomposing: splitting the route into parts",
+    "ids": ["2-AP-13"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one part of the route",
+     "Names the legs or sub-goals the route was split into",
+     "Names the parts and says how the split helped: checking one leg at a time, or finding the wrong leg faster"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "levels 1-2 show a ghost path to trace",
+   "read-aloud reads the plan lines; a neighbor may read them too",
+   "hint 1 on the plan levels asks which plan line comes first"
+  ],
+  "stretch": [
+   "par on levels 5 and 6",
+   "write pseudocode for a neighbor's level 6 route on paper, swap, and build from each other's lines",
+   "draw level 5 as a flowchart: boxes for moves, a diamond for the choice between the two routes"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper Robot, plan first",
+  "minutes": 15,
+  "materials": ["one 8 by 8 paper grid per pair with a start, a goal and two gems", "arrow cards (forward, turn left, turn right, pick up)", "plan-line slips"],
+  "steps": [
+   "Before any card is laid, the programmer writes three or four plan lines on slips: drive to the first gem and pick it up; turn and drive up to the second gem; turn toward the goal and drive there.",
+   "The programmer lays arrow cards for line 1 only. The partner robot follows them with a finger, says Bump! at a wall, and the programmer fixes that line before line 2 starts.",
+   "Two routes race: both partners plan and lay a route to the same goal. Count the cards and the turns. Pick the better route and say why.",
+   "Share: which plan line was hardest to turn into cards? Did anyone find a bug by reading the plan instead of running the cards?"
+  ],
+  "printables": ["grid-mat", "arrow-cards", "plan-lines"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: write the steps to make a sandwich in numbered lines, swap with a neighbor and mark the first line a robot would get wrong.",
+  "Play Robo Route, chapter Sequences (Pro), one device each, for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 1 2 0 0. Goal: 4 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Sequences"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-u1-o1", "2-1.1-r1"],
+  "discuss": "Did writing the plan first help or slow you down? When would it help most?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Paper Robot, plan first twin (15 minutes) before Play",
+   "the 3-star stretch and the flowchart of level 5 after Play",
+   "a second two-routes race on paper with water drawn in"
+  ]
+ },
+ "notes": [
+  "Turning does not move the robot; the game makes a turn visible with a spin and a sound, so let the first turn-vs-move mistake happen on the projector.",
+  "The first period loses 3 to 5 minutes to login: run the Do Now longer and cut Discuss to one prompt, never the exit ticket.",
+  "The warm-up is a pre-test: nobody is expected to know the answers yet. Say so before you start.",
+  "Vocabulary beyond the five on the learn card: leg (one straight part of a route), par (the fewest blocks a level needs).",
+  "One device per student at this band; the Standards tab counts each student's own play."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Write the steps to make a sandwich in plain, numbered lines. Swap with a neighbor: could a robot follow your lines exactly as written? Mark the first line that would go wrong.\n\nBig idea: Write the plan in plain words first; each plan line becomes one part of the program.\n\nWe will talk about:\n- Did writing the plan first help or slow you down? When would it help most?\n- Level 6 had three legs. Which leg went wrong first, and how did the plan help you find it?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. Nobody is expected to know them all yet."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Sequences",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=sequences&band=2&lock=1",
+   "questCode": "1 2 0 0",
+   "standards": ["2-AP-10", "2-AP-13"],
+   "body": "Goal: 4 levels. Stretch: finish the chapter, then 3 stars on levels 5 and 6.\nIf the game asks for a quest code, it is 1 2 0 0.\nFrom level 3 the shelf stays locked until the plan lines are in order. Read each line, then build that line before the next.\nRemember: a turn spins Bolt in place. Only forward moves it."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about planning first and splitting a route into parts."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-10", "2-AP-13"],
+   "rubric": "exit",
+   "body": "What is pseudocode, and why write a plan before you program? How did you split the long route on level 6?\nFrame: Pseudocode is ___. Writing it first helps because ___. I split the route into ___ and ___."
+  }
+ ]
+}

@@ -1,0 +1,222 @@
+{
+ "id": "csq-1b-1.5",
+ "key": "csq-1b-1.5",
+ "version": 1,
+ "unit": 1,
+ "order": 5,
+ "n": "1.5",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "CS Quest 1.5 · Build a block (Functions, decomposition, remix)",
+ "name": "Build a block (Functions, decomposition, remix)",
+ "short": "Functions",
+ "summary": "Students name a group of steps once and use it everywhere: a My Block. In Robo Route they call a ready-made block for every stair, split a route into named legs, and remix blocks from the Starter shelf, changing one step and keeping the line that says where the block came from. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-AP-11", "1B-AP-12"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "break a big route into named parts",
+  "make a My Block once and call it many times",
+  "remix a block someone else made, change it, and keep the credit"
+ ],
+ "questCode": "5 1 0 0",
+ "params": "chapter=functions&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Dance Blocks printable (move cards, a block name card, a based-on tag)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Name three things that getting ready for school is made of. Which one could you give a one-word name?",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: call the Stair block, open it, name it"],
+  ["0:16", 18, "Play: Functions"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u1-1b",
+  "items": ["1b-1.4-e1", "1b-1.4-e2", "1b-1.5-r1", "1b-1.5-e1", "1b-1.4-r1"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 1.4, one vocabulary item, one preview of today, one more from 1.4"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "functions", "level": 1},
+  "do": [
+   "Open Robo Route at Functions on the projector (Open game at this chapter). Level 1 is a staircase of three stairs, and a block named Stair is already made. Read the learn card, then tap call three times and run it. Open the Stair block to show the five steps inside it.",
+   "Open level 4 to show the Starter blocks shelf: blocks other people made, each with a line that says where it came from. Open Zig, add one forward at the start, and point at the credit line that stays on."
+  ],
+  "say": [
+   "Name a group of steps once, use it everywhere. A My Block is a group of steps with a name; a call block runs the whole group wherever you put it.",
+   "You may change a block someone else made: that is a remix. Keep the line that says where it came from, so everyone knows who started it."
+  ],
+  "ask": [
+   "What would you name this block so a friend understands it?"
+  ],
+  "afterAsk": "Collect three names for the Stair block and three for a block that crosses a room. Keep the ones that say what the block does, not who made it or how long it is.",
+  "bigIdea": "Name a group of steps once and use it everywhere; when you change someone else's block, keep the credit.",
+  "vocab": ["function", "My Block", "define", "call", "remix"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "functions",
+  "chapterTitle": "Functions",
+  "levels": 6,
+  "goal": "4 levels, so everyone remixes a starter block",
+  "stretch": "the chapter, then 3 stars; level 6 is three named legs",
+  "pairs": "driver and navigator on one device; the Swap! banner shows every 3 levels; the navigator names the block out loud before the driver makes or calls it",
+  "lookFors": [
+   "defining a block and never calling it: Run stays dimmed until a call exists and the hint says why",
+   "deleting the credit line on a remixed block, or changing nothing and calling it a remix",
+   "on levels 3 and 6, one giant block with every step instead of one block per leg"
+  ],
+  "misconception": "Making a My Block does nothing by itself: the steps only run when a call block is placed, and a remix keeps the line that says where the block came from.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Which part of your program deserved a name? Why that one?",
+  "On level 4 you changed a block someone else made. What did you change, what did you keep, and why does the based on line matter?"
+ ],
+ "showMe": "One pair shows level 6 on the projector: the three legs as three named blocks, then the main program with only three calls.",
+ "exit": {
+  "setId": "csq-u1-1b",
+  "items": ["1b-1.5-e1", "1b-1.5-e2", "1b-1.5-e3"],
+  "sentencePrompt": "How did you split a route into named parts today, and what did you change and keep when you remixed a starter block?",
+  "frame": "I split ___ into ___ and ___. When I remixed ___, I changed ___ and kept ___.",
+  "rubric": [
+   {
+    "line": "Decomposing: splitting a route into named parts",
+    "ids": ["1B-AP-11"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one part or one block",
+     "Names the parts the route was split into and the block made for each",
+     "Also says why those parts: they repeat, or each one is easy to check on its own"
+    ]
+   },
+   {
+    "line": "Remixing: changing a starter block and keeping the credit",
+    "ids": ["1B-AP-12"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says a block was changed, with no detail",
+     "Says which starter block was changed, what changed, and that the based on line stayed",
+     "Also says why the change fit the level, or how the remixed block could be used again somewhere else"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "levels 1 and 2 pre-define the block; the pair only calls it",
+   "hint 1 names the parts of the route; read-aloud on",
+   "the navigator names the block out loud before the driver builds it"
+  ],
+  "stretch": [
+   "3-star par on every level",
+   "level 6 at par, then rename the three legs so a new player understands them",
+   "invent one block that solves two different levels and say what would need to change"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Dance Blocks",
+  "minutes": 15,
+  "materials": ["move cards (step, clap, spin, hop, freeze)", "one block name card per group", "a based-on tag"],
+  "steps": [
+   "Each group invents a four-move dance from the move cards and gives it a one-word name on the name card. Practice it once.",
+   "The class is the program: the caller calls block names (Spin! Wave!) and every group that owns that name does its whole dance. Call the same name twice in a row: one name, many runs.",
+   "Remix round: each group swaps dances with another group, changes exactly one move, and clips the based-on tag to the new name card. Perform both versions.",
+   "Share: which move did you change and why? What does the based-on tag tell the audience?"
+  ],
+  "printables": ["dance-cards", "block-name-card", "based-on-tag"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: name three things that getting ready for school is made of, and circle the one you could give a one-word name.",
+  "Play Robo Route, chapter Functions, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 5 1 0 0. Goal: 4 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Functions"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-1.4-e1", "1b-1.5-r1"],
+  "discuss": "Which part of your program deserved a name? Why that one?",
+  "keep": "the exit ticket is never cut; in 5 minutes of Explore do level 1 only and let level 4's learn card teach the remix"
+ },
+ "block": {
+  "add": [
+   "the Dance Blocks twin (15 minutes) before Play",
+   "the 3-star stretch and level 6 after Play",
+   "10 minutes of the Unit 1 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Run stays dimmed while a block is defined but never called; that is the lesson's most useful nudge, so let pairs find it.",
+  "Levels 4 and 5 use the Starter blocks shelf: the remix must change a real step and the credit line must stay on, or the level says so.",
+  "Shared devices: this is an odd lesson, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Name three things that getting ready for school is made of. Which one could you give a one-word name?\n\nBig idea: Name a group of steps once and use it everywhere; when you change someone else's block, keep the credit.\n\nWe will talk about:\n- Which part of your program deserved a name? Why that one?\n- You changed a block someone else made. What did you change, what did you keep, and why?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Functions",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=functions&band=1b&lock=1",
+   "questCode": "5 1 0 0",
+   "standards": ["1B-AP-11", "1B-AP-12"],
+   "body": "Goal: 4 levels, so you remix a starter block. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 5 1 0 0.\nPairs: driver and navigator. Swap when the Swap! banner shows. The navigator names the block out loud before the driver makes or calls it.\nA My Block only runs when you call it. When you remix a starter block, keep its based on line."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about My Blocks, named parts and remixing."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-AP-11", "1B-AP-12"],
+   "rubric": "exit",
+   "body": "How did you split a route into named parts today, and what did you change and keep when you remixed a starter block?\nFrame: I split ___ into ___ and ___. When I remixed ___, I changed ___ and kept ___."
+  }
+ ]
+}
