@@ -62,7 +62,10 @@
   .view { flex: 0 0 auto; max-height: 55%; min-height: 150px; min-width: 0; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 20px; }
   .view > * { flex: none; }
   .work { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: auto; padding-bottom: 4px; }
-  @media (orientation: landscape) and (min-width: 700px) { .case { flex-direction: row; } .view { flex: 11 1 0; max-height: none; } .work { flex: 9 1 0; min-width: 300px; } }
+  @media (orientation: landscape) and (min-width: 700px) {
+    .case { flex-direction: row; } .view { flex: 11 1 0; max-height: none; } .work { flex: 9 1 0; min-width: 300px; }
+    .view > .barsbox { flex: 1 1 auto; min-height: 0; } .barsbox .bars { height: auto; flex: 1 1 auto; min-height: 150px; }   /* side by side: the chart uses the whole column */
+  }
   .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .chip { font: inherit; font-weight: 800; min-height: 48px; padding: 6px 16px; border-radius: 999px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
     box-shadow: 0 3px 0 var(--ok-edge); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
@@ -75,13 +78,14 @@
   .dotsay { margin: 0; font-weight: 700; font-size: 1em; line-height: 1.3; flex: 1; min-width: 0; align-self: center; }
   .claims { display: flex; flex-direction: column; gap: 8px; }
   .claims .q { margin: 0; font-weight: 900; font-size: 1.1em; }
-  .claims .tiles2 { display: grid; gap: 8px; }
+  .tiles2 { display: grid; gap: 8px; }
   .claimtile { font: inherit; font-weight: 800; min-height: 52px; padding: 8px 14px; text-align: start; border-radius: 16px; border: 3px solid var(--ok-edge); box-shadow: 0 3px 0 var(--ok-edge);
     background: var(--ok-card); color: var(--ok-text); cursor: pointer; display: flex; align-items: center; gap: 10px; }
   .claimtile .key { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--dd-tile); font-size: .9em; }
   .claimtile svg { width: 22px; height: 22px; flex: none; margin-inline-start: auto; }
   .claimtile.bad { opacity: .6; }
   .claimtile.good { background: var(--dd-go); color: var(--dd-ink); }
+  .note { margin: 0; font-weight: 700; font-size: .9em; padding: 4px 12px; border-radius: 12px; background: var(--ok-card); border: 2px solid var(--ok-line); }
   .foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .foot .sp { flex: 1; }
 
@@ -903,7 +907,7 @@ function barsView(level, st, g, view) {
     col.addEventListener('click', () => tapBar(c));
     wrap.appendChild(col);
   }
-  const box = el('div'); box.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+  const box = el('div', 'barsbox'); box.style.cssText = 'display:flex;flex-direction:column;gap:6px';
   if (view === 'picto') { const sc = el('p', 'scale'); sc.innerHTML = `${icon('user', 18)} = ${esc(tr('{n} kids', { n: scale }))}`; box.appendChild(sc); }
   box.appendChild(wrap);
   return box;
@@ -989,7 +993,7 @@ function renderClaims() {
   if (!ok) { b.setAttribute('aria-disabled', 'true'); b.classList.remove('hot'); b.classList.add('wait'); }
   b.addEventListener('click', () => { if (!E.evidence(S.level, S.cs)) { sfx('wrong'); dotSay(tr('Show me first: get the view that answers the question on screen, then pin your claim.')); return; } if (level.predict) doAct(['claim', 0]); else { sfx('select'); claimCard(); } });
   box.appendChild(b);
-  const note = el('p'); note.style.margin = '0'; note.style.fontWeight = '700'; note.style.opacity = '.85'; note.textContent = ok ? tr('The view supports a claim. Pin one!') : tr('Show me: the claim card opens when the view on screen answers the question.'); box.appendChild(note);
+  const note = el('p', 'note'); note.textContent = ok ? tr('The view supports a claim. Pin one!') : tr('Show me: the claim card opens when the view on screen answers the question.'); box.appendChild(note);
 }
 /** The claim card: the question (or the claim to judge) and 2-4 tiles, over the view; keys 1-4 pick a tile. */
 function claimCard() {
