@@ -2217,3 +2217,19 @@ two new built-in modes on the quiz machinery (the platform times, checks, scores
 - Play again keeps the same questions (`trusted` items: the platform's own, carried over unchanged); the page's and
   the dashboard's read-aloud and answer bars treat a question with more than 4 choices as a map (question only; the
   dashboard lists the most tapped countries by name with `Intl.DisplayNames`).
+
+## Live games say how to join (3 Nov 2026)
+
+A live mode opened from the home page went straight into solo play, and a student had no obvious place to type the
+class's code. Now:
+- `server/live/live-games.js` lists the official live modes (slug -> mode for /live, and the game to practise alone).
+  Their cards carry a "📡 Live" badge, and the home hero's Play opens the game page for a live mode.
+- A live mode's game page leads with a "Live class game" panel: "Your teacher shows a code on the board. Type it here
+  to join." with a code box and Join, then "Host a live game" (/live?mode=…, for hosts; signed out: the teachers' page)
+  and "Practice solo" (Would You Rather (Live) -> Would You Rather, Atlas Quest (Live) -> Atlas Quest).
+- The box sends `/join?code=…&go=1`; the join page gets `#go=<code>` and joins at once (a QR's `#<code>` still waits
+  for Next).
+- "Join a game" is in the top bar for every player (not school staff or the platform admin, who host): a round 🎟️
+  button, with words from 1400px; on phones the search field becomes the round 🔎 button beside it. Signed in, the
+  home page also has the big "Join a game" door above the featured game.
+- Tests: tests/unit/live-entry.test.js.

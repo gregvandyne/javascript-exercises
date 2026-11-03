@@ -4993,7 +4993,13 @@
       "join": "加入遊戲",
       "joinText": "老師給了你遊戲代碼嗎？在這裡輸入。",
       "joinShort": "有遊戲代碼嗎？在這裡輸入。",
-      "studioAskText": "用 Oomba Live 把它變成班級直播遊戲：全班一起玩、看得到彼此，老師看得到分數。"
+      "studioAskText": "用 Oomba Live 把它變成班級直播遊戲：全班一起玩、看得到彼此，老師看得到分數。",
+      "badge": "即時",
+      "badgeLong": "全班即時遊戲",
+      "howJoin": "老師會在螢幕上顯示代碼。在這裡輸入就能加入。",
+      "teacherHost": "是老師嗎？為你的班級主持即時遊戲",
+      "solo": "自己練習",
+      "joinGo": "加入"
     },
     "check": {
       "live_pack": "還沒有載入直播套件",

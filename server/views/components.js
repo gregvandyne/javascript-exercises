@@ -7,6 +7,7 @@ import { urlFor } from '../services/shots.js';
 import { photoUrl } from '../services/photos.js';
 import { OFFICIAL, GROWNUP_AVATAR, GROWNUP_COLOR } from '../auth.js';
 import { faceMark } from './brand.js';
+import { liveGameOf } from '../live/live-games.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -82,8 +83,11 @@ export function gameCard(g, { showVis = false, classPill = true, byName = null }
   const by = anon && g.owner_name !== OFFICIAL ? '' : byName || g.owner_display || g.owner_name || '';
   const label = by ? t('cards.gameBy', { title: g.title, name: by }) : g.title;
   const pill = g.visibility === 'class' && classPill && !showVis;
-  return html`<a class="gcard" href="/g/${g.slug}" aria-label="${pill ? `${label} · ${t('cards.classOnly')}` : label}">
-    <div style="position:relative">${coverArt(g)}${livePill(g)}${showVis ? html`<span class="vis-pill">${statusLabel(g)}</span>` : pill ? html`<span class="vis-pill vis-class">🎒 ${t('cards.classOnly')}</span>` : ''}</div>
+  // An Oomba Live mode (Quest Race, Would You Rather (Live)...): a "Live" badge, and its page says how to join.
+  const liveMode = !showVis && liveGameOf(g);
+  const aria = [label, pill ? t('cards.classOnly') : '', liveMode ? t('live.entry.badgeLong') : ''].filter(Boolean).join(' · ');
+  return html`<a class="gcard${liveMode ? ' gcard-live' : ''}" href="/g/${g.slug}" aria-label="${aria}">
+    <div style="position:relative">${coverArt(g)}${livePill(g)}${liveMode ? html`<span class="live-badge" aria-hidden="true">📡 ${t('live.entry.badge')}</span>` : ''}${showVis ? html`<span class="vis-pill">${statusLabel(g)}</span>` : pill ? html`<span class="vis-pill vis-class">🎒 ${t('cards.classOnly')}</span>` : ''}</div>
     <div class="t">${g.title}</div>
     ${by ? html`<div class="by">${t('cards.by', { name: by })}</div>` : ''}
     <div class="meta">${stars(g.rating, g.rating_count)}<span class="muted">· ${t('cards.plays', { count: +g.plays || 0, n: fmt.num(g.plays) })}</span></div>

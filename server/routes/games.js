@@ -25,6 +25,7 @@ import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady } from '../services/classlive-check.js';
+import { liveGameOf } from '../live/live-games.js';
 import { playData as ttsPlayData, frameData as ttsFrameData, listedGame as ttsListed } from './tts.js';
 import * as ttsGames from '../services/tts-games.js';
 
@@ -73,6 +74,8 @@ router.get('/g/:slug', (req, res) => {
   const band = learn && gradeBand([g.slug]);
   // The age line only once this language has it, so a translated sentence never carries an unmarked English phrase.
   const ages = learn && t.own('learn.ages.line') && ageBand(g.slug);
+  // An Oomba Live mode: the page leads with joining (a code from the board) and hosting, solo practice comes second.
+  const liveEntry = liveOn() && official ? liveGameOf(g) : null;
   const body = html`
   <article>
     ${crumbs ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}" style="margin-bottom:var(--s3)"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
@@ -89,12 +92,13 @@ router.get('/g/:slug', (req, res) => {
           <div class="stat"><b>${f.num(g.plays)}</b>${t('game.stats.plays', { count: +g.plays || 0 })}</div>
           <div class="stat"><b id="likecount">${f.num(g.likes)}</b>${t('game.stats.likes', { count: +g.likes || 0 })}</div>
         </div>
-        <div class="row actions">
+        ${liveEntry && playable ? '' : html`<div class="row actions">
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
           ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">📡 ${t('live.entry.hostLive')}</a>` : ''}
-        </div>
+        </div>`}
         ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
+      ${liveEntry && playable ? livePanel(req, g, liveEntry) : ''}
       <div class="quietacts">
           ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="qact" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
@@ -139,6 +143,26 @@ router.get('/g/:slug', (req, res) => {
 
 /** The platform admin's "AI voices for this game" switch on a game's page (services/tts-games.js; English like the
  *  admin panel, and only ever shown to the admin). */
+/** An Oomba Live mode's game page: join with a code (the board shows it), host it (grown-ups and teachers; a signed-out
+ *  visitor gets the teachers' page), then practise alone. The code form works without the page script: /join?code=...
+ *  sends a live code on to the join page (routes/live.js). */
+function livePanel(req, g, entry) {
+  const t = req.t, u = req.user;
+  const out = !u || u.is_guest;
+  const host = !out && liveCanHost(u) ? html`<a class="btn btn-big" href="/live?mode=${entry.mode}" id="hostlive">📡 ${t('live.entry.host')}</a>`
+    : out ? html`<a class="btn" href="${lp(req, '/teachers/live')}" id="hostlive">📡 ${t('live.entry.teacherHost')}</a>` : '';
+  return html`<section class="livepanel" aria-labelledby="livepanel-h">
+    <p class="livepanel-tag" id="livepanel-h"><span aria-hidden="true">📡</span> ${t('live.entry.badgeLong')}</p>
+    <p class="livepanel-how">${t('live.entry.howJoin')}</p>
+    <form class="livepanel-join" method="get" action="/join" novalidate><input type="hidden" name="go" value="1">
+      <label class="sr-only" for="lpjc">${t('live.join.codeLabel')}</label>
+      <input class="input lv-code-input" id="lpjc" name="code" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="9" dir="ltr" placeholder="123 4567" required>
+      <button class="btn btn-primary btn-big" type="submit" id="lpjoin">🎟️ ${t('live.entry.joinGo')}</button>
+    </form>
+    <div class="row actions">${host}<a class="btn" href="/play/${entry.solo}" id="playbtn">▶ ${t('live.entry.solo')}</a></div>
+  </section>`;
+}
+
 function adminVoices(u, g) {
   if (!u || u.role !== 'admin') return '';
   if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>🔊 AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p>${ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}</section>`;

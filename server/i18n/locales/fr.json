@@ -4993,7 +4993,13 @@
       "join": "Rejoindre un jeu",
       "joinText": "Tu as un code de jeu de ton prof ? Tape-le ici.",
       "joinShort": "Un code de jeu ? Tape-le ici.",
-      "studioAskText": "Fais-en un jeu de classe en direct avec Oomba Live : toute la classe joue ensemble et se voit, et le prof voit les scores."
+      "studioAskText": "Fais-en un jeu de classe en direct avec Oomba Live : toute la classe joue ensemble et se voit, et le prof voit les scores.",
+      "badge": "En direct",
+      "badgeLong": "Jeu de classe en direct",
+      "howJoin": "Ton enseignant affiche un code au tableau. Tape-le ici pour rejoindre.",
+      "teacherHost": "Enseignant ? Lancez-le en direct avec votre classe",
+      "solo": "S’entraîner seul",
+      "joinGo": "Rejoindre"
     },
     "check": {
       "live_pack": "il ne charge pas encore le pack direct",

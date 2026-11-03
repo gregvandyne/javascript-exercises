@@ -4994,7 +4994,13 @@
       "join": "Meedoen met een spel",
       "joinText": "Heb je een spelcode van je juf of meester? Typ hem hier.",
       "joinShort": "Een spelcode? Typ hem hier.",
-      "studioAskText": "Maak hier een live klassenspel van met Oomba Live: de hele klas speelt samen en ziet elkaar, en de leraar ziet de scores."
+      "studioAskText": "Maak hier een live klassenspel van met Oomba Live: de hele klas speelt samen en ziet elkaar, en de leraar ziet de scores.",
+      "badge": "Live",
+      "badgeLong": "Live klassenspel",
+      "howJoin": "Je leraar laat een code op het bord zien. Typ hem hier om mee te doen.",
+      "teacherHost": "Leraar? Start het live met je klas",
+      "solo": "Alleen oefenen",
+      "joinGo": "Meedoen"
     },
     "check": {
       "live_pack": "het laadt het live-pakket nog niet",

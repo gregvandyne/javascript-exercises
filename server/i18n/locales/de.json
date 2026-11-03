@@ -4994,7 +4994,13 @@
       "join": "Spiel beitreten",
       "joinText": "Hast du einen Spielcode von deiner Lehrkraft? Gib ihn hier ein.",
       "joinShort": "Spielcode? Hier eingeben.",
-      "studioAskText": "Mach daraus ein Live-Klassenspiel mit Oomba Live: Die ganze Klasse spielt zusammen und sieht sich, und die Lehrkraft sieht die Punkte."
+      "studioAskText": "Mach daraus ein Live-Klassenspiel mit Oomba Live: Die ganze Klasse spielt zusammen und sieht sich, und die Lehrkraft sieht die Punkte.",
+      "badge": "Live",
+      "badgeLong": "Live-Klassenspiel",
+      "howJoin": "Deine Lehrkraft zeigt einen Code an der Tafel. Tippe ihn hier ein, um mitzuspielen.",
+      "teacherHost": "Lehrkraft? Starte es live mit deiner Klasse",
+      "solo": "Allein üben",
+      "joinGo": "Beitreten"
     },
     "check": {
       "live_pack": "es lädt das Live-Paket noch nicht",
