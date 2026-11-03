@@ -90,6 +90,7 @@
   .pp-slotb .pp-mark svg { width: 14px; height: 14px; }
   .pp-seq { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; padding: 6px; border-radius: 12px; border: 3px dashed var(--ok-edge); flex: none; }
   .pp-seq span { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px; background: var(--pp-go); font-weight: 800; font-size: .9em; }
+  .pp-seq .pp-binlabel { padding: 1px 8px; border-radius: 8px; background: var(--ok-card); border: 2px solid var(--ok-edge); font-size: .9em; }
   .pp-events { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
   .pp-events li { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: .95em; }
   .pp-events li svg { width: 22px; height: 22px; flex: none; }
@@ -393,17 +394,18 @@ class Run {
   discard(id) {
     const s = this.s; if (s.phase !== 'play' || this.type !== 'ack') return { err: 'phase' }; const c = this.card(id); if (!c || c.gone || c.acked) return { err: 'nocard' };
     this.actions.push({ t: 'discard', id });
-    if (!s.acked.includes(c.n)) { s.wrong++; return { wrong: true, needed: c.n }; }
+    const twin = s.cards.some(o => o !== c && o.n === c.n && !o.gone);   // keeping one copy and binning the other is right in either order
+    if (!s.acked.includes(c.n) && !twin) { s.wrong++; return { wrong: true, needed: c.n }; }
     c.gone = true; this._ackDone(); return { discarded: c.n, done: s.phase === 'done' };
   }
   resend(n) {
-    const s = this.s; if (s.phase !== 'play' || this.type !== 'ack') return { err: 'phase' };
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'ack') return { err: 'phase' }; if (!(n >= 1 && n <= I.n)) return { err: 'noslot' };
     this.actions.push({ t: 'resend', n });
     if (s.cards.some(c => c.n === n && !c.gone)) { s.wasted++; return { wasted: true, n }; }
     const c = { id: 'c' + (s.cards.length + 1), n, acked: false, gone: false, resent: true }; s.cards.push(c); s.resent.push(n);
     return { resent: n, card: c };
   }
-  _ackDone() { const s = this.s, I = this.inst; if (s.acked.length >= I.n && !s.cards.some(c => !c.acked && !c.gone)) s.phase = 'done'; }
+  _ackDone() { const s = this.s, I = this.inst; if (range(1, I.n).every(k => s.acked.includes(k)) && !s.cards.some(c => !c.acked && !c.gone)) s.phase = 'done'; }
   // ---- check levels: count the dots, flag the damaged packets, then check the mail
   flag(n) {
     const s = this.s; if (s.phase !== 'play' || this.type !== 'check') return { err: 'phase' };
@@ -447,6 +449,7 @@ class Run {
       s.phase = 'failed'; s.fails.push(st.weak ? 'weak' : st.count < I.need ? 'count' : 'short'); return { failed: true, strength: st, why: s.fails[s.fails.length - 1] };
     }
     if (this.type === 'cipher') {
+      if (I.choices) return { err: 'type' };   // a reading is chosen, never submitted
       s.submits++;
       if (s.shift === I.shift) { s.phase = 'done'; return { done: true, reading: I.plain }; }
       s.phase = 'failed'; s.fails.push('shift'); return { failed: true, reading: caesar(I.cipher, -s.shift) };
@@ -1071,7 +1074,7 @@ function onStart(w) {
 function applyStart(o) {
   if (o.seed != null) { S.seed0 = +o.seed || 1; S.attempt = 0; }
   if (o.band === '1b' || o.band === '2') S.band = o.band;
-  if (o.mode) S.mode = o.mode; S.projector = S.mode === 'projector'; if (S.dom) S.dom.pp.classList.toggle('pp-proj', S.projector);
+  if (o.mode) S.mode = o.mode; else if (o.chapter || o.daily) S.mode = 'play'; S.projector = S.mode === 'projector'; if (S.dom) S.dom.pp.classList.toggle('pp-proj', S.projector);
   if (o.lesson != null) S.lesson = !!o.lesson; if (o.lock != null) { S.lock = !!o.lock; if (S.lock) S.lesson = true; }
   if (S.mode === 'wheel') return showWheel();
   if (o.daily) return startDaily(o.day);
@@ -1200,7 +1203,8 @@ function enterChapter(chId, ix, range) {
 }
 async function startLevel(chId, ix, o = {}) {
   const ls = levelsFor(chId, S.band), level = ls[ix]; if (!level) return showMap();
-  S.chapter = chId; S.levelIx = ix; S.level = level; S.hint = 0; S.tier3 = false; S.busy = false;
+  S.chapter = chId; S.levelIx = ix; S.level = level; S.busy = false;
+  S.hint = o.keepSeed ? o.hint || 0 : 0; S.tier3 = o.keepSeed ? !!o.tier3 : false;   // the same map keeps the hints it was shown; a fresh map starts clean
   if (!o.keepRun) { S.attempt++; S.fails = o.fails || 0; S.runs = o.runs || 0; }
   S.runs++;
   const seed = o.seed != null ? o.seed : E.seedOf(level.id + ':' + S.seed0 + ':' + (o.keepSeed ? S.lastSeed : S.attempt));
@@ -1210,7 +1214,11 @@ async function startLevel(chId, ix, o = {}) {
   hudSync();
   if (ix === 0 && level.learn && !o.noLearn) { await learnCard(level.learn); if (flow !== S.flow) return; }
   pimSay(tr(level.intro), { speak: ix === 0 });
-  if (level.type === 'ack' || level.type === 'check') { await playArrivals(flow); if (flow !== S.flow) return; UI.revealed = Infinity; if (level.type === 'ack') syncAck(); else if (syncCheck) syncCheck(); }
+  if (level.type === 'ack' || level.type === 'check') {   // the slots and buttons wait until every packet has ridden in
+    S.busy = true;
+    try { await playArrivals(flow); } finally { if (flow === S.flow) S.busy = false; }
+    if (flow !== S.flow) return; UI.revealed = Infinity; if (level.type === 'ack') syncAck(); else if (syncCheck) syncCheck();
+  }
   if (level.type === 'route') showPacket();
 }
 
@@ -1255,10 +1263,12 @@ function renderBoard(I) {
   syncRoads();
 }
 const OFFICE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6"/><path d="M5 10v10h14V10"/><rect x="8" y="13" width="8" height="5" rx="1"/><path d="M8 13l4 3 4-3"/></svg>';
-function syncRoads() {
+function closedNow() { return new Set(S.run.inst.linkOrder.filter(id => UI.lines[id] && UI.lines[id].classList.contains('pp-closed'))); }
+/** Paints the roads; with `frozen` (the ids painted closed before a move) a road that just closed keeps its open look until the packet is home. */
+function syncRoads(frozen) {
   const run = S.run; if (!run || run.type !== 'route') return; const I = run.inst, s = run.s;
   for (const id of I.linkOrder) {
-    const l = I.links[id], bt = UI.links[id], ln = UI.lines[id], closed = run.closed(l), here = s.phase === 'play' && (l.a === s.at || l.b === s.at) && !closed;
+    const l = I.links[id], bt = UI.links[id], ln = UI.lines[id], closed = frozen ? frozen.has(id) : run.closed(l), here = s.phase === 'play' && (l.a === s.at || l.b === s.at) && !closed;
     ln.classList.toggle('pp-closed', closed); ln.classList.toggle('pp-lit', here);
     bt.className = 'pp-link' + (closed ? ' pp-closed' : here ? ' pp-ok' : l.sealed ? ' pp-sealedb' : '');
     bt.innerHTML = closed ? icon('cross') : l.sealed ? icon('lock') : here ? icon('next') : icon('move');
@@ -1312,7 +1322,7 @@ function syncSort() {
   UI.prog.textContent = tr('Sorted {n} of {total}', { n: done, total: I.items.length });
   UI.item.innerHTML = ''; UI.binRow.innerHTML = ''; UI.whyBox.innerHTML = '';
   UI.doneList.innerHTML = '';
-  for (const x of I.items) if (run.resolved(x)) { const sp = $('span'); sp.textContent = tr(x.text) + ' → ' + tr(I.bins.find(b => b.id === s.assigned[x.id]).label); UI.doneList.appendChild(sp); }
+  for (const x of I.items) if (run.resolved(x)) { const bin = tr(I.bins.find(b => b.id === s.assigned[x.id]).label), sp = $('span'); sp.appendChild(document.createTextNode(tr(x.text))); sp.appendChild($('b', 'pp-binlabel', bin)); sp.setAttribute('aria-label', tr(x.text) + ', ' + bin); UI.doneList.appendChild(sp); }
   if (!UI.doneList.children.length) UI.doneList.appendChild($('span', 'pp-lesson-note', tr('Nothing sorted yet')));
   if (!t) return;
   UI.item.appendChild($('b', '', tr(t.text)));
@@ -1439,7 +1449,8 @@ function renderTools() {
   const tools = $('div', 'pp-tools'); tools.setAttribute('role', 'group'); tools.setAttribute('aria-label', tr('Level tools')); main.appendChild(tools);
   const kind = landscape() || narrow() ? 'icon' : 'quiet';   // on a phone the tools are icon buttons: a column beside the panel on its side, one row under it upright
   const add = (label, ic, onPress) => { const b = btn(label, { kind, icon: ic, onPress }); if (kind === 'icon') b.title = label; tools.appendChild(b); return b; };
-  if (S.level.learn) add(tr('Learn'), 'book', () => learnCard(S.level.learn));
+  const learn = S.level.learn || (levelsFor(S.chapter, S.band).find(l => l.learn) || {}).learn;   // re-openable on every level of the chapter
+  if (learn) add(tr('Learn'), 'book', () => learnCard(learn));
   UI.hintBtn = add(tr('Hint'), 'hint', () => giveHint()); UI.hintBtn.disabled = S.hint >= 3 || !S.run || S.run.done;
   add(tr('Start over'), 'restart', () => startOver());
   if (S.fails >= 2 && !S.projector && !S.daily) add(tr('Skip level'), 'next', () => skipLevel());
@@ -1602,19 +1613,21 @@ function syncRules(caught) {
 
 /* ---------- actions: every tap goes through here (and the test hook act()) ---------- */
 async function doAction(a) {
-  const run = S.run; if (!run || S.busy || run.done || (run.failed && a.t !== 'submit')) return null;
-  if (run.failed) run.retry();
+  const run = S.run; if (!run || !a || S.busy || run.done || run.failed) return null;
   const before = run.s.phase, r = run.act(a); if (!r || r.err) { if (r && r.err === 'far') toast(tr('Start from where the packet is')); return r; }
   S.busy = true; const flow = S.flow;
   try {
     if (run.type === 'route') {
       if (r.bounced) { sfx('wrong', { volume: 0.5 }); O.juice.shake(0.3, UI.pk); toast(tr('Road closed! Try another road.')); }
       else if (r.moved) {
-        syncRoads(); await movePacket(r.from, r.to); if (flow !== S.flow) return r;
+        const wasClosed = closedNow();
+        syncRoads(wasClosed); await movePacket(r.from, r.to); if (flow !== S.flow) return r;
         if (r.out) { fail(tr('Out of hops! Pick shorter ways.')); return r; }
         if (r.peeked) { fail(tr('The snoopy cat read packet {n}! Secrets go on sealed roads.', { n: r.peeked })); return r; }
-        if (r.arrived) { sfx('pop', { pitch: 1.1 }); if (UI.pk) { UI.pk.remove(); UI.pk = null; } if (!r.allArrived) { showPacket(); if (run.closed(run.inst.links[a.id]) === false) { /* nothing */ } const nowClosed = run.inst.linkOrder.filter(id => run.closed(run.inst.links[id]) && !UI.lines[id].classList.contains('pp-closed')); if (nowClosed.length) { toast(tr('A road just closed!')); sfx('gate', { volume: 0.5 }); } } }
-        syncRoads();
+        if (r.arrived) { sfx('pop', { pitch: 1.1 }); if (UI.pk) { UI.pk.remove(); UI.pk = null; } if (!r.allArrived) showPacket(); }
+        syncRoads();   // the packet is home: a road that closed on this delivery changes now, with its cue
+        const nowClosed = run.inst.linkOrder.filter(id => run.closed(run.inst.links[id]) && !wasClosed.has(id));
+        if (nowClosed.length && r.arrived && !r.allArrived) { toast(tr('A road just closed!')); sfx('gate', { volume: 0.5 }); announce(tr('A road just closed!')); }
         if (r.allArrived) { pimSay(tr('All packets are here. Tap the pieces in number order.'), { speak: false }); fillTray(); syncRouteInfo(); }
       } else if (r.wrong) { sfx('wrong', { volume: 0.5 }); const b = UI.tray.querySelector(`[data-packet="${a.n}"]`); if (b) O.juice.shake(0.3, b); toast(tr('Not yet: packet {n} is next', { n: r.need })); }
       else if (r.placed) { sfx('correct', { pitch: 1 + r.placed * 0.06, volume: 0.6 }); const sl = UI.slots[r.placed - 1]; sl.textContent = ''; sl.classList.remove('pp-empty'); sl.appendChild(pieceEl(r.placed)); O.juice.pop(sl); fillTray(); }
@@ -1674,9 +1687,9 @@ async function fail(text, keepPicks) {
   const v = await O.ui.dialog({ title: tr('Not this time'), text, portrait: PIM, mood: 'sad', buttons: [{ label: tr('Try again'), kind: 'hot', value: 'again', icon: 'restart' }].concat(S.fails >= 2 && !S.projector && !S.daily ? [{ label: tr('Skip level'), kind: 'quiet', value: 'skip', icon: 'next' }] : []) });
   if (v === 'skip') return skipLevel();
   if (keepPicks && S.run.retry()) { renderTools(); S.busy = false; return; }
-  return startLevel(S.chapter, S.levelIx, { noLearn: true, keepSeed: true, fails: S.fails, runs: S.runs });
+  return startLevel(S.chapter, S.levelIx, { noLearn: true, keepSeed: true, fails: S.fails, runs: S.runs, hint: S.hint, tier3: S.tier3 });
 }
-function startOver() { if (!S.run || S.run.done) return; S.fails++; startLevel(S.chapter, S.levelIx, { noLearn: true, keepSeed: true, fails: S.fails, runs: S.runs }); }
+function startOver() { if (!S.run || S.run.done) return; S.fails++; startLevel(S.chapter, S.levelIx, { noLearn: true, keepSeed: true, fails: S.fails, runs: S.runs, hint: S.hint, tier3: S.tier3 }); }
 
 /* ---------- hints: a question, then a glow, then one move (the third star goes) ---------- */
 function giveHint() {
@@ -1797,7 +1810,9 @@ function report(level, stars, check, conf, skipped) {
   const lab = E.label(done, ls.length, CH_BY_ID[main].noun, score, S.lesson ? S.checks : null);
   S.lastLabel = lab; S.lastScore = score;
   try { if (window.BRB && BRB.score && !skipped) BRB.score.submit(score, lab); } catch (e) { /* no page */ }
-  try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'pp', chapter: level.ch, level: S.levelIx + 1, stars, band: S.band === '2' ? 2 : 1, csta: cstaOf(level, S.band), check, confidence: conf, hint: S.hint, runs: S.runs, skipped: !!skipped }); } catch (e) { /* older SDK */ }
+  const detail = { game: 'pp', chapter: level.ch, level: S.levelIx + 1, stars, band: S.band === '2' ? 2 : 1, csta: cstaOf(level, S.band), check, confidence: conf, hint: S.hint, runs: S.runs, skipped: !!skipped };
+  S.lastReport = detail;
+  try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress(detail); } catch (e) { /* older SDK */ }
 }
 
 /* ---------- the wheel tool: a free cipher wheel for the unplugged twin ---------- */
@@ -1816,17 +1831,25 @@ function showWheel() {
   const ex = $('p', 'pp-lesson-note'); map.appendChild(ex);
   const sync = () => { setWheel(svg, shift); label.textContent = tr('Shift {n}', { n: shift }); ex.textContent = tr('{a} becomes {b}', { a: 'A', b: E.caesar('A', shift) }) + ' · ' + tr('{a} becomes {b}', { a: 'E', b: E.caesar('E', shift) }); };
   const turn = d => { shift = ((shift + d) % 26 + 26) % 26; sfx('select'); sync(); announce(tr('Shift {n}', { n: shift })); };
-  const keys = e => { if (S.screen !== 'wheel') { document.removeEventListener('keydown', keys); return; } if (e.key === 'ArrowRight' || e.key === 'ArrowUp') turn(1); else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') turn(-1); };
-  document.addEventListener('keydown', keys);
+  S.wheelTurn = turn;
   sync();
 }
+/** Arrow keys turn the wheel: the free wheel tool, and the cipher levels that have a wheel (one listener, registered once). */
+document.addEventListener('keydown', e => {
+  const d = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 0;
+  if (!d || e.defaultPrevented || cardPause || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (S.screen === 'wheel' && S.wheelTurn) { e.preventDefault(); return S.wheelTurn(d); }
+  const run = S.run; if (S.screen !== 'level' || !run || run.type !== 'cipher' || run.inst.kind === 'keyed' || run.inst.choices || run.done || run.failed || S.busy) return;
+  if (document.querySelector('.ok-modal')) return;   // a kit card (dialog, quiz, results, pause) owns the keys
+  e.preventDefault(); doAction({ t: 'shiftTo', n: run.s.shift + d });
+});
 
 /* ---------- test hooks (covers, the playtest, the unit test's Chromium run) ---------- */
 function testState() {
   const run = S.run;
   return { pp: true, screen: S.screen, chapter: S.chapter, level: S.chapter ? S.levelIx + 1 : 0, levelId: S.level ? S.level.id : null, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
     phase: run ? run.s.phase : S.screen, stars: S.chapter ? chapterStars(S.chapter, S.band) : 0, levelStars: S.level ? starsOf(S.level.id) : 0, ppScore: S.lastScore, label: S.lastLabel, hops: run && run.s.hops || 0,
-    placed: run && run.s.placed ? run.s.placed.length : 0, fails: S.fails, hint: S.hint, checks: S.checks, ready: true, busy: S.busy, cards: cardPause, daily: S.daily ? S.daily.day : null, crowns: Object.keys(SAVE.crowns).length, silver: S.level ? silverOf(S.level.id) : false };
+    placed: run && run.s.placed ? run.s.placed.length : 0, fails: S.fails, hint: S.hint, checks: S.checks, ready: true, busy: S.busy, cards: cardPause, daily: S.daily ? S.daily.day : null, crowns: Object.keys(SAVE.crowns).length, silver: S.level ? silverOf(S.level.id) : false, report: S.lastReport || null };
 }
 Object.assign(window.__brbTest, {
   start(o = {}) { S.pending = Object.assign({}, o); S.fast = S.fast || !!o.fast; game.start(); return testState(); },
