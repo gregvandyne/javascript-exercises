@@ -27,6 +27,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-pill>span{overflow:hidden;text-overflow:ellipsis}
 .im-play .im-top .im-pill{flex:1 1 0}
 .im-pill svg{width:22px;height:22px;flex:none}
+@media (max-width:480px){.im-play .im-top .im-pill>span{display:none}}
 .im-grow{flex:1 1 auto}
 .im-body{flex:1 1 0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) fit-content(66%);gap:8px}
 .im-board{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px;min-height:0}
@@ -194,9 +195,9 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-flowview .im-fv.fix{background:var(--im-mint-t)}
 .im-flowview .im-fv svg{width:20px;height:20px;flex:none}
 .im-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.im-switches{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.im-switches{display:grid;grid-template-columns:repeat(var(--im-cols,5),minmax(0,1fr));gap:6px;width:100%;max-width:420px;margin:0 auto;justify-items:center}
 .im-sw{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800}
-.im-sw .ok-switch{width:64px;height:40px}
+.im-sw{padding:2px 0;min-width:0;width:100%}.im-sw .ok-switch{width:100%;max-width:64px;min-width:44px;height:44px}
 .im-sw b{font-size:.9em;opacity:.8}
 .im-grid{display:grid;gap:3px;background:var(--im-edge);padding:3px;border-radius:10px}
 .im-px{width:100%;aspect-ratio:1;background:var(--ok-card);border:0;padding:0;border-radius:3px}
@@ -259,13 +260,13 @@ window.InsideTheMachineLevels = (function () {
   const PARTS = {
     screen: { name: 'Screen', role: 'output' }, camera: { name: 'Camera', role: 'input' }, speaker: { name: 'Speaker', role: 'output' },
     mic: { name: 'Microphone', role: 'input' }, battery: { name: 'Battery', role: 'power' }, touch: { name: 'Touch sensor', role: 'input' },
-    processor: { name: 'Processor', role: 'process' }, memory: { name: 'Memory', role: 'storage' }, storage: { name: 'Storage', role: 'storage' },
+    processor: { name: 'Processor', role: 'process' }, memory: { name: 'Memory', role: 'memory' }, storage: { name: 'Storage', role: 'storage' },
     keyboard: { name: 'Keyboard', role: 'input' }, mouse: { name: 'Mouse', role: 'input' }, printer: { name: 'Printer', role: 'output' },
     cable: { name: 'Cable', role: 'link' }, network: { name: 'Network box', role: 'link' }, light: { name: 'Light sensor', role: 'input' },
     motor: { name: 'Motor', role: 'output' }, tablet: { name: 'Tablet', role: 'process' }, power: { name: 'Power plug', role: 'power' },
     paper: { name: 'Paper tray', role: 'storage' }, charger: { name: 'Charger', role: 'power' }, wheels: { name: 'Wheels', role: 'output' },
   };
-  const ROLE_NAMES = { input: 'Input', process: 'Process', output: 'Output', storage: 'Storage', power: 'Power', link: 'Link' };
+  const ROLE_NAMES = { input: 'Input', process: 'Process', output: 'Output', memory: 'Memory', storage: 'Storage', power: 'Power', link: 'Link' };
   // small builders (the English text IS the translation key, so every word here is a string the packs translate)
   const ck = (q, right, w1, w2) => ({ q, tiles: [right, w1, w2], answer: 0 });
   const rd = (q, right, w1, w2) => ({ q, tiles: [right, w1, w2], answer: 0 });
@@ -284,14 +285,14 @@ window.InsideTheMachineLevels = (function () {
     jobs: [job('Which part shows you the photo?', 'screen'), job('Which part takes the photo?', 'camera'), job('Which part plays the song?', 'speaker'),
       job('Which part hears your voice?', 'mic'), job('Which part keeps the tablet running without a plug?', 'battery'), job('Which part feels your finger?', 'touch')],
     learn: { title: 'Every part has a job', text: 'A tablet is a team of parts. Inputs take things in: the touch sensor, the camera, the microphone. Outputs give things out: the screen, the speaker. The processor thinks, storage remembers, and the battery powers it all.' },
-    hints: ['Does this job take something in, or give something out?', 'The parts that do this kind of job are glowing.', 'The glowing part is the one. Tap it.'],
+    hints: ['Does this job take something in, give something out, or power the tablet?', 'The parts that do this kind of job are glowing.', 'The glowing part is the one. Tap it.'],
     check: ck('Which of these is an input?', 'The camera', 'The screen', 'The speaker'),
     sol: { picks: ['screen', 'camera', 'speaker', 'mic', 'battery', 'touch'], wrong: 0 } });
   add({ id: 'parts-2', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'tap', random: true, par: 4, device: 'inside',
     parts: ['processor', 'memory', 'storage', 'battery', 'speaker', 'screen'],
     jobs: [job('Which part does the thinking?', 'processor'), job('Which part keeps your photos safe when the tablet is off?', 'storage'),
       job('Which part holds what the tablet is working on right now?', 'memory'), job('Which part gives the power?', 'battery')],
-    hints: ['Think: is this job about thinking, remembering or powering?', 'The parts that do this kind of job are glowing.', 'The glowing part is the one. Tap it.'],
+    hints: ['Is this job about thinking, remembering for now, remembering for later, or powering?', 'The parts that do this kind of job are glowing.', 'The glowing part is the one. Tap it.'],
     check: ck('Where do your photos stay when the tablet is off?', 'In storage', 'In memory', 'On the screen'),
     sol: { picks: ['processor', 'storage', 'memory', 'battery'], wrong: 0 } });
   add({ id: 'parts-3', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'wire', par: 2, device: 'pad',
@@ -300,12 +301,12 @@ window.InsideTheMachineLevels = (function () {
     need: [['touch', 'processor'], ['processor', 'screen']],
     hints: ['Where does the finger press go first, and what has to think about it?', 'The two parts that still need a wire are glowing.', 'One missing wire is drawn for you. The touch sensor talks to the processor, and the processor talks to the screen.'],
     check: ck('Which part sits in the middle of every path?', 'The processor', 'The battery', 'The speaker'),
-    starter: { wires: [['touch', 'screen']], edits: 0 }, sol: { wires: [['touch', 'processor'], ['processor', 'screen']], edits: 0 } });
+    wrong: { wires: [['touch', 'screen']], edits: 0 }, sol: { wires: [['touch', 'processor'], ['processor', 'screen']], edits: 0 } });
   add({ id: 'parts-4', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'pick', random: true, par: 4,
     story: 'What if it is missing?',
     rounds: [rd('The speaker is missing. What stops working?', 'Playing a song', 'Taking a photo', 'Drawing a line'),
       rd('The touch sensor is missing. What stops working?', 'Tapping an app', 'Hearing a song', 'Seeing a photo'),
-      rd('The storage is missing. What happens after you turn the tablet off and on?', 'Your photos are gone', 'The screen is bigger', 'It gets louder'),
+      rd('The photos were never saved to storage. What happens after you turn the tablet off and on?', 'Your photos are gone', 'The screen is bigger', 'It gets louder'),
       rd('The processor is missing. What happens?', 'Nothing works at all', 'Only the camera works', 'Only the sound stops')],
     hints: ['Which job did that part do?', 'Think about the job of the missing part, not the others.', 'The answer names the job the missing part used to do.'],
     check: ck('Which part can a tablet NOT work without?', 'The processor', 'The camera', 'The speaker'),
@@ -332,26 +333,28 @@ window.InsideTheMachineLevels = (function () {
     bins: [{ id: HW, name: 'Hardware' }, { id: SW, name: 'Software' }],
     cards: [card('c1', 'Screen', HW, 'screen'), card('c2', 'Keyboard', HW, 'keyboard'), card('c3', 'Battery', HW, 'battery'), card('c4', 'Camera', HW, 'camera'),
       card('c5', 'Speaker', HW, 'speaker'), card('c6', 'Processor chip', HW, 'processor'), card('c7', 'Printer', HW, 'printer'),
-      card('c8', 'A drawing app', SW, 'app'), card('c9', 'The rules of a game', SW, 'app'), card('c10', 'A calculator app', SW, 'app'),
-      card('c11', 'The instructions that make the clock tick', SW, 'app'), card('c12', 'A video call app', SW, 'app')],
+      card('c8', 'A drawing app', SW, 'app'), card('c9', 'The rules inside a video game', SW, 'app'), card('c10', 'A calculator app', SW, 'app'),
+      card('c11', 'The program in a digital clock', SW, 'app'), card('c12', 'A video call app', SW, 'app')],
     learn: { title: 'Hardware and software', text: 'Hardware is what you can touch: the screen, the keyboard, the battery, the chips. Software is the instructions that tell the hardware what to do: apps and programs. Every task needs both.' },
+    binWhy: [{ bin: HW, why: 'You can hold it in your hand, so it is hardware.' }, { bin: SW, why: 'It is a set of instructions, so it is software.' }],
     hints: ['Could you hold this in your hand?', 'Hardware cards show a part. Software cards talk about instructions or an app.', 'If it is an app or a set of instructions, it goes in Software.'],
     check: ck('Which one is software?', 'A drawing app', 'A keyboard', 'A battery'),
     sol: { placed: { c1: HW, c2: HW, c3: HW, c4: HW, c5: HW, c6: HW, c7: HW, c8: SW, c9: SW, c10: SW, c11: SW, c12: SW }, wrong: 0 } });
-  add({ id: 'hwsw-2', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'order', random: true, par: 5,
+  add({ id: 'hwsw-2', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'order', random: true, par: 6,
     story: 'A Tap Travels: you tap to take a photo. Put the steps in order.',
     tiles: [tile('finger', 'Your finger taps', 'tap'), tile('touch', 'The touch sensor feels it', 'touch'), tile('cpu', 'The processor works it out', 'processor'),
-      tile('app', 'The camera app says: take a photo', 'app'), tile('screen', 'The screen shows the photo', 'screen')],
-    hints: ['What happens first: the tap, or the photo on the screen?', 'Hardware feels the tap, then the processor, then the app (software), then the screen.', 'The next step is placed for you. Hardware feels the tap before the software acts, and the screen comes last.'],
+      tile('app', 'The camera app says: take a photo', 'app'), tile('camera', 'The camera takes the picture', 'camera'), tile('screen', 'The screen shows the photo', 'screen')],
+    hints: ['What happens first: the tap, or the photo on the screen?', 'Hardware feels the tap, then the processor, then the app (software), then the camera, then the screen.', 'The next step is placed for you. Hardware feels the tap before the software acts, and the screen comes last.'],
     check: ck('Which step is software?', 'The camera app', 'The touch sensor', 'The screen'),
-    starter: { order: ['finger', 'app', 'touch', 'cpu', 'screen'], moves: 5 }, sol: { order: ['finger', 'touch', 'cpu', 'app', 'screen'], moves: 5 } });
+    wrong: { order: ['finger', 'app', 'touch', 'cpu', 'camera', 'screen'], moves: 6 }, sol: { order: ['finger', 'touch', 'cpu', 'app', 'camera', 'screen'], moves: 6 } });
   add({ id: 'hwsw-3', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'sort', random: true, par: 12,
     story: 'Sort the parts by job: input, process, output or storage.',
     bins: [{ id: 'input', name: 'Input' }, { id: 'process', name: 'Process' }, { id: 'output', name: 'Output' }, { id: 'storage', name: 'Storage' }],
     cards: [card('k1', 'Keyboard', 'input', 'keyboard'), card('k2', 'Mouse', 'input', 'mouse'), card('k3', 'Microphone', 'input', 'mic'), card('k4', 'Camera', 'input', 'camera'),
       card('k5', 'Touch sensor', 'input', 'touch'), card('k6', 'Light sensor', 'input', 'light'), card('k7', 'Processor', 'process', 'processor'),
       card('k8', 'Screen', 'output', 'screen'), card('k9', 'Speaker', 'output', 'speaker'), card('k10', 'Printer', 'output', 'printer'),
-      card('k11', 'Hard drive', 'storage', 'storage'), card('k12', 'Memory card', 'storage', 'memory')],
+      card('k11', 'Hard drive', 'storage', 'storage'), card('k12', 'Storage card', 'storage', 'storage')],
+    binWhy: [{ bin: 'input', why: 'It takes something in, so it is an input.' }, { bin: 'process', why: 'It does the thinking, so it is the process part.' }, { bin: 'output', why: 'It gives something out, so it is an output.' }, { bin: 'storage', why: 'It keeps files when the power is off, so it is storage.' }],
     hints: ['Does it take something in, think, give something out, or keep things?', 'Sensors, keys and cameras take things in. Screens, speakers and printers give things out.', 'Anything that keeps files when the power is off is Storage.'],
     check: ck('Which part is an output?', 'The speaker', 'The microphone', 'The hard drive'),
     sol: { placed: { k1: 'input', k2: 'input', k3: 'input', k4: 'input', k5: 'input', k6: 'input', k7: 'process', k8: 'output', k9: 'output', k10: 'output', k11: 'storage', k12: 'storage' }, wrong: 0 } });
@@ -555,7 +558,7 @@ window.InsideTheMachineLevels = (function () {
     hints: ['Which is the biggest value that fits?', 'The biggest value that still fits is glowing. Switch it on, then do the same with what is left.', 'The biggest value that fits is switched on for you.'],
     check: ck('How many different numbers can 5 bits make?', '32', '5', '10'),
     sol: { values: [21, 8, 19], wrong: 0 } });
-  add({ id: 'bits-2-2', ch: 'bits', bands: ['2'], csta: ['2-DA-07'], kind: 'rgb', par: 7, tol: 24, step: 20, start: [100, 100, 100], target: [220, 90, 40],
+  add({ id: 'bits-2-2', ch: 'bits', bands: ['2'], csta: ['2-DA-07'], kind: 'rgb', par: 9, tol: 24, step: 20, start: [100, 100, 100], target: [220, 90, 40],
     story: 'A screen mixes red, green and blue light. Match the swatch: each color is a number from 0 to 255.',
     hints: ['Which of the three lights is furthest from the target?', 'The light that is furthest off is glowing.', 'That light moves one step the right way for you.'],
     check: ck('Why does a color need three numbers?', 'A pixel mixes red, green and blue light', 'Three is lucky', 'One number is for brightness, two are spare'),
@@ -604,7 +607,7 @@ window.InsideTheMachineLevels = (function () {
     moisture: part('moisture', 'Soil moisture sensor', 'sensor', 2, 1, 1, 'drop'), sound: part('sound', 'Sound sensor', 'sensor', 2, 1, 1, 'mic'), door: part('door', 'Door magnet sensor', 'sensor', 1, 0, 1, 'magnet'),
     button: part('button', 'Push button', 'input', 1, 0, 1, 'button'), screen: part('screen', 'Tiny screen', 'output', 4, 2, 2, 'screen'), buzzer: part('buzzer', 'Buzzer', 'output', 1, 1, 1, 'speaker'),
     led: part('led', 'Little light', 'output', 1, 1, 1, 'light'), siren: part('siren', 'Loud siren', 'output', 3, 2, 2, 'speaker'), pump: part('pump', 'Water pump', 'output', 4, 3, 2, 'motor'),
-    memcard: part('memcard', 'Memory card', 'storage', 2, 0, 1, 'memory'), wireless: part('wireless', 'Wireless chip', 'connection', 5, 3, 1, 'network'), port: part('port', 'Cable port', 'connection', 1, 0, 1, 'cable'),
+    memcard: part('memcard', 'Storage card', 'storage', 2, 0, 1, 'storage'), wireless: part('wireless', 'Wireless chip', 'connection', 5, 3, 1, 'network'), port: part('port', 'Cable port', 'connection', 1, 0, 1, 'cable'),
     smallbatt: part('smallbatt', 'Small battery', 'power', 2, 0, 1, 'battery'), bigbatt: part('bigbatt', 'Big battery', 'power', 4, 0, 3, 'battery'), solar: part('solar', 'Solar panel', 'power', 3, 0, 2, 'solar'),
     wallplug: part('wallplug', 'Wall plug', 'power', 1, 0, 1, 'power'), cpu: part('cpu', 'Processor', 'process', 3, 1, 1, 'processor'),
   };
@@ -612,7 +615,7 @@ window.InsideTheMachineLevels = (function () {
   const CATS = { sensor: 'Sensor', input: 'Input', output: 'Output', storage: 'Storage', connection: 'Connection', power: 'Power', process: 'Process' };
   const imp = (id, text, why) => ({ id, text, why });
   const BH = ['Read the brief again: what must the gadget sense, and how will it tell its user?', 'The cheapest part that fills the first missing need is glowing. After the test, the best improvements glow.', 'That part is added for you. After the test, the best improvements are chosen for you.'];
-  const G = (id, brief, parts, needs, budget, par, sim, quotes, improvements, best, check, extra) => add(Object.assign({ id, ch: 'gadget', bands: ['2'], csta: ['2-CS-02'], csta2: ['2-CS-01'], kind: 'bin', random: true, brief, parts: bin(parts), needs, budget, par, sim, quotes, improvements, best, hints: BH, check }, extra || {}));
+  const G = (id, brief, parts, needs, budget, par, sim, quotes, improvements, best, check, extra) => add(Object.assign({ id, ch: 'gadget', bands: ['2'], csta: ['2-CS-02', '2-CS-01'], kind: 'bin', random: true, brief, parts: bin(parts), needs, budget, par, sim, quotes, improvements, best, hints: BH, check }, extra || {}));
   G('gadget-1', { title: 'Step counter', text: 'A clip for a shoe that counts steps and tells the walker when they reach a thousand. Small, cheap, and it must last all day.' },
     ['motion', 'lightsensor', 'thermo', 'button', 'screen', 'buzzer', 'led', 'memcard', 'wireless', 'port', 'smallbatt', 'bigbatt', 'cpu'],
     [{ cat: 'sensor', any: ['motion'], text: 'Something that feels each step' }, { cat: 'output', text: 'A way to tell the walker' }, { cat: 'power', text: 'Power' }, { id: 'cpu', text: 'A processor to count' }],
@@ -624,7 +627,7 @@ window.InsideTheMachineLevels = (function () {
       imp('bigbatt', 'A big battery', 'A big battery lasts longer but is too heavy and bulky for a shoe clip.'), imp('phone', 'Send every step to a phone', 'A wireless chip drains the battery faster: the opposite of what the third walker needs.')],
     ['tinyscreen', 'clip', 'sleep'], ck('Which sensor can count steps?', 'A motion sensor', 'A light sensor', 'A temperature sensor'),
     { learn: { title: 'Design a gadget', text: 'A gadget is sensors and inputs that collect data, a processor, outputs, maybe storage and a connection that sends the data on, and power. Every part costs money, battery and space: each choice is a trade-off. Designers read the brief, pick the parts that do the job, test it with real users, and give up what the brief does not need.' },
-      starter: { picked: ['motion', 'screen', 'wireless', 'bigbatt', 'cpu'], imps: [] }, sol: { picked: ['motion', 'buzzer', 'smallbatt', 'cpu'], imps: ['tinyscreen', 'sleep'] } });
+      wrong: { picked: ['motion', 'screen', 'wireless', 'bigbatt', 'cpu'], imps: [] }, sol: { picked: ['motion', 'buzzer', 'smallbatt', 'cpu'], imps: ['tinyscreen', 'sleep'] } });
   G('gadget-2', { title: 'Plant waterer', text: 'A pot clip that waters a plant when the soil is dry. It sits on a sunny windowsill for weeks with nobody touching it.' },
     ['moisture', 'lightsensor', 'thermo', 'button', 'pump', 'buzzer', 'led', 'memcard', 'wireless', 'smallbatt', 'bigbatt', 'solar', 'cpu'],
     [{ cat: 'sensor', any: ['moisture'], text: 'Something that feels dry soil' }, { cat: 'output', any: ['pump'], text: 'A way to move water' }, { cat: 'power', any: ['solar', 'bigbatt'], text: 'Power that lasts for weeks' }, { id: 'cpu', text: 'A processor to decide' }],
@@ -635,7 +638,7 @@ window.InsideTheMachineLevels = (function () {
       imp('float', 'A float sensor that warns when the tank is empty', 'One cheap sensor stops the plant drying out when the tank is empty.'), imp('bigpump', 'A bigger pump', 'A bigger pump moves water faster but drains the battery and fixes none of the complaints.'),
       imp('plantmusic', 'Play music to the plant', 'Music uses power and the plant did not ask for it.'), imp('goldcase', 'A gold case', 'A gold case costs a lot and waters nothing.')],
     ['threshold', 'blink', 'float'], ck('Why pick the solar panel for a windowsill gadget?', 'It keeps working for weeks without a charge', 'It is the cheapest part', 'It makes the pump stronger'),
-    { starter: { picked: ['moisture', 'pump', 'smallbatt', 'cpu'], imps: [] }, sol: { picked: ['moisture', 'pump', 'solar', 'cpu'], imps: ['threshold', 'float'] } });
+    { wrong: { picked: ['moisture', 'pump', 'smallbatt', 'cpu'], imps: [] }, sol: { picked: ['moisture', 'pump', 'solar', 'cpu'], imps: ['threshold', 'float'] } });
   G('gadget-3', { title: 'Door alarm', text: 'A box for a bedroom door that sounds when the door opens while the owner is out. It must be loud and fit in a pocket.' },
     ['door', 'motion', 'lightsensor', 'button', 'siren', 'buzzer', 'led', 'screen', 'memcard', 'wireless', 'smallbatt', 'bigbatt', 'cpu'],
     [{ cat: 'sensor', any: ['door'], text: 'Something that feels the door open' }, { cat: 'output', any: ['siren'], text: 'Something loud' }, { id: 'button', text: 'A button to arm it' }, { cat: 'power', text: 'Power' }, { id: 'cpu', text: 'A processor to decide' }],
@@ -646,7 +649,7 @@ window.InsideTheMachineLevels = (function () {
       imp('doze', 'Sleep between door openings to save battery', 'Dozing until the sensor moves makes the battery last for weeks instead of days.'), imp('louder', 'An even louder siren', 'A louder siren drains the battery faster and none of the users asked for it.'),
       imp('bigbox', 'A bigger box with a big battery', 'A bigger box lasts longer but no longer fits in a pocket.'), imp('lights', 'Flashing lights on the door', 'Flashing lights use power and tell the owner nothing new.')],
     ['delay', 'combo', 'doze'], ck('Why does the door alarm need a button?', 'So the owner can arm it before leaving', 'To make it louder', 'To charge the battery'),
-    { starter: { picked: ['door', 'siren', 'button', 'bigbatt', 'cpu'], imps: [] }, sol: { picked: ['door', 'siren', 'button', 'smallbatt', 'cpu'], imps: ['delay', 'doze'] } });
+    { wrong: { picked: ['door', 'siren', 'button', 'bigbatt', 'cpu'], imps: [] }, sol: { picked: ['door', 'siren', 'button', 'smallbatt', 'cpu'], imps: ['delay', 'doze'] } });
   G('gadget-4', { title: 'Noise meter', text: 'A classroom box that shows how loud the room is and turns red when it is too loud. It stays plugged into the wall all day, and the teacher\'s laptop keeps a log of the loud moments.' },
     ['sound', 'motion', 'lightsensor', 'button', 'led', 'screen', 'siren', 'buzzer', 'memcard', 'wireless', 'port', 'wallplug', 'smallbatt', 'cpu'],
     [{ cat: 'sensor', any: ['sound'], text: 'Something that hears the room' }, { cat: 'output', any: ['led', 'screen'], text: 'A way to show the loudness' }, { cat: 'connection', any: ['port'], text: 'A way to send the log to the laptop' }, { cat: 'power', any: ['wallplug'], text: 'Power from the wall' }, { id: 'cpu', text: 'A processor to measure' }],
@@ -657,18 +660,18 @@ window.InsideTheMachineLevels = (function () {
       imp('chime', 'A soft chime instead of a sudden red light', 'A soft chime calms a class instead of starting a new shout.'), imp('nsiren', 'A siren when it is too loud', 'A siren makes the loud room louder.'),
       imp('countkids', 'Count which kids are shouting', 'Listening to who said what is a privacy problem, not a noise meter.'), imp('nbatt', 'A bigger battery', 'The meter is plugged into the wall: a battery changes nothing.')],
     ['ladder', 'hold', 'chime'], ck('The meter collects loudness all day. Which part sends the log to the laptop?', 'The cable port', 'The light', 'The battery'),
-    { starter: { picked: ['sound', 'led', 'smallbatt', 'cpu'], imps: [] }, sol: { picked: ['sound', 'led', 'port', 'wallplug', 'cpu'], imps: ['ladder', 'hold'] } });
+    { wrong: { picked: ['sound', 'led', 'smallbatt', 'cpu'], imps: [] }, sol: { picked: ['sound', 'led', 'port', 'wallplug', 'cpu'], imps: ['ladder', 'hold'] } });
   G('gadget-5', { title: 'Lunchbox thermometer', text: 'A tag inside a lunchbox that records the temperature all morning and warns if the food got too warm. Tiny and cheap.' },
     ['thermo', 'moisture', 'lightsensor', 'button', 'led', 'screen', 'buzzer', 'memcard', 'wireless', 'port', 'smallbatt', 'bigbatt', 'cpu'],
-    [{ cat: 'sensor', any: ['thermo'], text: 'Something that feels the temperature' }, { id: 'memcard', text: 'Memory to record the morning' }, { cat: 'output', any: ['led', 'screen'], text: 'A warning the owner can see' }, { cat: 'power', text: 'Power' }, { id: 'cpu', text: 'A processor to record' }],
+    [{ cat: 'sensor', any: ['thermo'], text: 'Something that feels the temperature' }, { id: 'memcard', text: 'Storage to record the morning' }, { cat: 'output', any: ['led', 'screen'], text: 'A warning the owner can see' }, { cat: 'power', text: 'Power' }, { id: 'cpu', text: 'A processor to record' }],
     { cost: 10, battery: 4, size: 5 }, 10,
-    ['Eight in the morning. The lunchbox goes into a bag. The sensor reads cool.', 'Every ten minutes the processor writes the temperature to the memory card.', 'The bag sits in the sun at break. The reading climbs past the safe line.', 'The warning light comes on, ready for lunchtime.'],
+    ['Eight in the morning. The lunchbox goes into a bag. The sensor reads cool.', 'Every ten minutes the processor writes the temperature to the storage card.', 'The bag sits in the sun at break. The reading climbs past the safe line.', 'The warning light comes on, ready for lunchtime.'],
     ['The light was on, but I do not know when it got warm.', 'I forgot to look at it before I ate.', 'It slid to the bottom of the box and I could not find it.'],
-    [imp('whenscreen', 'A tiny screen that shows when it got too warm', 'A tiny screen costs a bit more but turns the record in memory into an answer.'), imp('openbeep', 'A beep when the lunchbox opens', 'A light sensor and a beep remind the owner at exactly the right moment.'),
-      imp('lidclip', 'A clip that holds it on the lid', 'A clip costs nothing and keeps the tag where the owner looks.'), imp('everysec', 'Record the temperature every second', 'Recording every second fills the memory card before lunch for no gain.'),
+    [imp('whenscreen', 'A tiny screen that shows when it got too warm', 'A tiny screen costs a bit more but turns the record in storage into an answer.'), imp('openbeep', 'A beep when the lunchbox opens', 'A light sensor and a beep remind the owner at exactly the right moment.'),
+      imp('lidclip', 'A clip that holds it on the lid', 'A clip costs nothing and keeps the tag where the owner looks.'), imp('everysec', 'Record the temperature every second', 'Recording every second fills the storage card before lunch for no gain.'),
       imp('post', 'A wireless chip that posts every reading', 'A wireless chip costs the most and empties the battery: too much for a cheap tag.'), imp('tbatt', 'A big battery', 'A big battery would not fit in a tiny tag.')],
-    ['whenscreen', 'openbeep', 'lidclip'], ck('Which part lets the tag remember the whole morning?', 'The memory card', 'The buzzer', 'The light'),
-    { starter: { picked: ['thermo', 'led', 'smallbatt', 'cpu'], imps: [] }, sol: { picked: ['thermo', 'memcard', 'led', 'smallbatt', 'cpu'], imps: ['whenscreen', 'lidclip'] } });
+    ['whenscreen', 'openbeep', 'lidclip'], ck('Which part lets the tag remember the whole morning?', 'The storage card', 'The buzzer', 'The light'),
+    { wrong: { picked: ['thermo', 'led', 'smallbatt', 'cpu'], imps: [] }, sol: { picked: ['thermo', 'memcard', 'led', 'smallbatt', 'cpu'], imps: ['whenscreen', 'lidclip'] } });
 
   /* ---------- Chapter 6: Design Lab (Explorer: 1B-IC-19; Pro: 2-CS-01 and 2-IC-21) ---------- */
   const change = (id, text, helps) => ({ id, text, helps });
@@ -681,7 +684,7 @@ window.InsideTheMachineLevels = (function () {
     change('timer', 'A countdown timer', 'A timer makes things harder for anyone who needs more time.'),
     change('leftright', 'A left-hand or right-hand layout switch', 'A layout switch also helps left-handed players and anyone holding a rail.'), change('hold', 'Hold one button to run instead of tapping two', 'Fewer buttons at once helps anyone playing with one hand or one finger.'),
     change('icons', 'Pictures on the buttons instead of words', 'Picture buttons also help new readers and anyone who reads another language.'), change('nopopup', 'No pop-up questions in the middle of play', 'Fewer surprises help young players and anyone who plays in short bursts.'),
-    change('outlines', 'Thick dark outlines on things to tap', 'Outlines also help on old screens and for anyone with low vision.'), change('shapes', 'Shapes as well as colors for gems and traps', 'Shapes also help the one in twelve players who see colors differently.'),
+    change('outlines', 'Thick dark outlines on things to tap', 'Outlines also help on old screens and for anyone with low vision.'), change('shapes', 'Shapes as well as colors for gems and traps', 'Shapes also help the many players (about one in twelve boys) who see colors differently.'),
     change('sunmode', 'A bright high-sun mode', 'A high-sun mode helps everyone who plays outdoors.'),
     change('testgroup', 'Test it with people of many ages, skin tones and faces', 'A wide testing group finds problems before any user does.'), change('passcode', 'Always offer a passcode as another way in', 'A second way in helps anyone when a sensor fails.'),
     change('camera', 'A better camera', 'A better camera still only knows the kinds of faces it was tested on.'), change('lockout', 'Lock for a whole day after three tries', 'A long lockout punishes the very people the sensor already fails.'),
@@ -699,27 +702,27 @@ window.InsideTheMachineLevels = (function () {
     ['Ana opens the game and the music starts.', 'The menu is tiny gray text on a light background.', 'Ana squints, taps the wrong thing, and puts the tablet down.'], 2,
     ['bigtext', 'contrast', 'readaloud', 'bigbutton', 'captions', 'onehand', 'levels', 'music', 'timer'], ['bigtext', 'contrast'],
     ck('Who else does bigger text help?', 'Anyone on a small screen or in bright sun', 'Only Ana', 'Nobody else'),
-    { learn: { title: 'Made for everyone', text: 'People see, hear, read and move in different ways. Watch where a user struggles, then change the design. A change made for someone at the edge usually helps everyone.' } });
+    { cause: 1, learn: { title: 'Made for everyone', text: 'People see, hear, read and move in different ways. Watch where a user struggles, then change the design. A change made for someone at the edge usually helps everyone.' } });
   D('design-2', BOTH, C1, { name: 'Milo', intro: 'Milo broke his arm. Until the cast comes off he plays with one hand.' },
     ['Milo holds the tablet in his left hand and starts a race.', 'The Jump button is on the left edge and the Boost button is on the far right.', 'Milo stretches his thumb across, drops the tablet, and gives up.', 'His sister picks the tablet up and finishes the race for him.'], 2,
     ['onehand', 'leftright', 'hold', 'bigbutton', 'bigtext', 'captions', 'levels', 'music', 'timer'], ['onehand', 'leftright', 'hold'],
-    ck('Who else do one-side controls help?', 'Anyone holding a rail or a drink', 'Only people with a cast', 'Nobody else'));
+    ck('Who else do one-side controls help?', 'Anyone holding a rail or a drink', 'Only people with a cast', 'Nobody else'), { cause: 1 });
   D('design-1b-3', ['1b'], { csta: ['1B-IC-19'] }, { name: 'Sol', intro: 'Sol is six and cannot read yet, but loves the dragon game.' },
     ['Sol taps the dragon and it roars. Fun!', 'Sol flies the dragon over the castle.', 'A box of words pops up: Save your game? Yes or No.', 'Sol taps anywhere, loses the game, and cries.'], 3,
     ['readaloud', 'icons', 'nopopup', 'bigtext', 'bigbutton', 'captions', 'levels', 'music', 'timer'], ['readaloud', 'icons', 'nopopup'],
-    ck('Who else do picture buttons help?', 'New readers and people who read another language', 'Only six-year-olds', 'Nobody else'));
+    ck('Who else do picture buttons help?', 'New readers and people who read another language', 'Only six-year-olds', 'Nobody else'), { cause: 2 });
   D('design-2-3', ['2'], C2, { name: 'Ren', intro: 'Ren plays on the school bus, and the sun shines straight onto the screen.' },
     ['Ren starts a level in the shade of a tree.', 'The bus turns and sunlight hits the screen: the pale blue gems vanish into the light background.', 'Ren taps a shadow instead of a gem and loses a life.', 'In the next tunnel the gems come back, but the life is gone.'], 2,
     ['contrast', 'outlines', 'sunmode', 'shapes', 'bigtext', 'captions', 'levels', 'music', 'timer'], ['contrast', 'outlines', 'sunmode'],
-    ck('Who else does strong contrast help?', 'Anyone outdoors or on a cheap screen', 'Only Ren', 'Nobody else'));
+    ck('Who else does strong contrast help?', 'Anyone outdoors or on a cheap screen', 'Only Ren', 'Nobody else'), { cause: 1 });
   D('design-2-4', ['2'], C2, { name: 'Tao', intro: 'Tao tries a new school tablet. It unlocks when it recognizes your face.' },
-    ['The teacher shows it off: the tablet sees her face and unlocks at once.', 'She says the makers tested it on themselves, and they all looked alike.', 'Tao holds the tablet up and smiles at the camera.', 'It does not recognize Tao. After three tries it locks for an hour.'], 3,
+    ['The teacher shows it off: the tablet sees her face and unlocks at once.', 'She says the makers only tested it on faces like their own.', 'Tao holds the tablet up and smiles at the camera.', 'It does not recognize Tao. After three tries it locks for an hour.'], 3,
     ['testgroup', 'passcode', 'camera', 'lockout', 'bigtext', 'captions', 'levels', 'music', 'timer'], ['testgroup', 'passcode'],
-    ck('Face unlock failed for Tao. Why?', 'It was tested only on people who looked alike', 'Tao did it wrong', 'The battery was low'));
+    ck('Face unlock failed for Tao. Why?', 'It was tested on too few kinds of faces', 'Tao did it wrong', 'The battery was low'), { cause: 1 });
   D('design-2-5', ['2'], C2, { name: 'Zia', intro: 'Zia has small hands. The new game controller was shaped for one adult hand size.' },
     ['Zia picks up the controller for the new racing game.', 'The grips are wide and the shoulder buttons sit far from her fingers.', 'Her thumb cannot reach the boost button, so she loses every race.'], 2,
     ['sizes', 'remap', 'testhands', 'stretch', 'bigger', 'bigtext', 'captions', 'levels', 'music'], ['sizes', 'remap', 'testhands'],
-    ck('Who else does a remappable controller help?', 'Anyone whose hands differ from the designer\'s', 'Only Zia', 'Nobody else'));
+    ck('Who else does a remappable controller help?', 'Anyone whose hands differ from the designer\'s', 'Only Zia', 'Nobody else'), { cause: 1 });
 
   /* ---------- helpers ---------- */
   const chapter = id => CHAPTERS.find(c => c.id === id) || null;
@@ -747,10 +750,15 @@ window.InsideTheMachineLevels = (function () {
    *  already used by earlier runs and swaps of the same ticket (the Pro desk), so a re-run is never free. */
   function runTicket(l, a) {
     const faults = new Set(l.faults), path = []; let cost = Math.max(0, a.spent | 0), helped = false;
+    // inOrder: every useful check (and every swap) was the cheapest one still unused when it was made, ties allowed; the
+    // second star asks for this as well as the time, so a dear check first never earns it even when the fault sits there
+    let inOrder = true;
     const walk = (ids, list, kind) => {
+      const open = list.filter(x => (kind === 'swap' || x.rel) && !x.help);
       for (const id of ids || []) {
         if (!faults.size) break;
         const c = list.find(x => x.id === id); if (!c) continue;
+        if (open.includes(c)) { if (c.cost > Math.min(...open.map(x => x.cost))) inOrder = false; open.splice(open.indexOf(c), 1); }
         cost += c.cost; const hit = faults.has(id) || (!!c.fixes && faults.has(c.fixes)); if (hit) { faults.delete(id); if (c.fixes) faults.delete(c.fixes); }
         if (c.help) { helped = true; faults.clear(); }
         path.push({ id, kind, hit, help: !!c.help, cost: c.cost });
@@ -759,7 +767,7 @@ window.InsideTheMachineLevels = (function () {
     walk(l.kind === 'flow' ? a.flow : a.checks, l.checks, 'check');
     if (l.kind === 'flow') walk(a.swaps, l.swaps || [], 'swap');
     const ok = !faults.size;
-    return { ok, fails: ok ? [] : ['still broken'], cost, path, helped, left: faults.size, good: ok && !helped && cost <= l.par };
+    return { ok, fails: ok ? [] : ['still broken'], cost, path, helped, left: faults.size, good: ok && !helped && inOrder && cost <= l.par, inOrder };
   }
   /** judge(level, answer) -> { ok, fails[], good (the second star) , ...details }. Pure. */
   function judge(l, a) {
@@ -911,7 +919,7 @@ const S = {
   screen: 'title', band: '1b', chapter: null, levelIdx: 0, level: null, mode: 'play',
   lesson: false, lock: false, quest: null, chain: null, wantLevel: 0,
   phase: 'idle', fails: 0, hint: 0, usedHint3: false, wrong: 0, runs: 0, done: false, daily: null,
-  checks: { n: 0, ok: 0 }, seed: 1, rng: null, fast: false, scores: [], lastLabel: '', lastProgress: null, view: null, hud: null, modal: null, mapChapter: null,
+  checks: { n: 0, ok: 0 }, seed: 1, gen: 0, preDaily: null, rng: null, fast: false, scores: [], lastLabel: '', lastProgress: null, view: null, hud: null, modal: null, mapChapter: null,
 };
 {
   const b = PR.band === '2' ? '2' : PR.band === '1b' ? '1b' : (SAVE.band === '2' ? '2' : '1b');
@@ -972,7 +980,8 @@ try { Oomba.settings.on('change', syncMotion); } catch (e) { /* ignore */ }
 syncMotion();
 Oomba.scene = 'title';
 // play beats run on the game clock (they stop with the pause screen); skipAnimations() makes them immediate
-const later = (ms, fn) => { if (S.fast || reduced() && ms < 400) { fn(); return () => {}; } try { return Oomba.after(ms, fn); } catch (e) { fn(); return () => {}; } };
+// a callback scheduled on one screen is dropped when the kid has moved on (startLevel, showMap and toTitle bump S.gen)
+const later = (ms, fn) => { if (S.fast || reduced() && ms < 400) { fn(); return () => {}; } const g = S.gen; const run = () => { if (S.gen === g) fn(); }; try { return Oomba.after(ms, run); } catch (e) { fn(); return () => {}; } };
 
 /* ---------- pictures: kit props where the kit has them, small inline SVG parts elsewhere (currentColor + kit vars) ---------- */
 const SV = body => `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
@@ -1037,7 +1046,12 @@ function openCard(build, { onEscape = null, cls = '' } = {}) {
     if (e.key === 'Tab' && bs.length) { e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); }
     else if ((fwd || back) && bs.length) { e.preventDefault(); bs[(Math.max(i, 0) + (fwd ? 1 : -1) + bs.length) % bs.length].focus(); }
     else if (e.key === 'Escape') { if (onEscape) { e.preventDefault(); onEscape(); } }
-    else if (/^[1-9]$/.test(e.key)) { const t = card.querySelectorAll('.im-check-tiles button, .im-key')[+e.key - 1]; if (t && card.querySelector('.im-check-tiles')) t.click(); else return; }
+    else if (/^[1-9]$/.test(e.key) && card.querySelector('.im-check-tiles')) { const t = card.querySelectorAll('.im-check-tiles button')[+e.key - 1]; if (t) t.click(); else return; }
+    else if (card.querySelector('.im-pad') && (/^[0-9]$/.test(e.key) || e.key === 'Backspace' || (e.key === 'Enter' && !(document.activeElement && document.activeElement.tagName === 'BUTTON')))) {
+      // the quest-code keypad answers a keyboard too: digits, Backspace deletes, Enter goes
+      const keysEl = [...card.querySelectorAll('.im-pad .im-key')], t = e.key === 'Backspace' ? card.querySelector('.im-pad .im-mirror') : e.key === 'Enter' ? card.querySelector('.im-pad .go') : keysEl.find(k => k.textContent === e.key);
+      e.preventDefault(); if (t && !t.disabled) t.click();
+    }
     else return;
     e.stopPropagation();
   };
@@ -1069,7 +1083,7 @@ const gear = () => btn(tr('Quest Card'), { kind: 'icon', icon: 'settings', onPre
 
 /* the chapter map: big tiles, the band toggle, a level strip under the chosen chapter */
 function showMap(chapterId) {
-  S.chapter = null; S.level = null; S.view = null; S.phase = 'idle'; S.daily = null;
+  S.gen++; endDaily(); S.chapter = null; S.level = null; S.view = null; S.phase = 'idle'; S.daily = null;
   const M = SCREENS.map; M.innerHTML = '';
   const top = el('div', 'im-top');
   const me = el('div', 'im-pill'); me.appendChild(portrait(36, 'happy')); me.appendChild(document.createTextNode(tr('Gizmo')));
@@ -1187,7 +1201,7 @@ const short = () => { try { return matchMedia('(max-height: 480px)').matches; } 
 
 function startLevel(chId, idx, o = {}) {
   const list = levelsFor(chId), l = list[idx]; if (!l) return showMap(chId);
-  closeCard();
+  closeCard(); S.gen++;
   Object.assign(S, { chapter: chId, levelIdx: idx, level: l, phase: 'play', fails: 0, hint: 0, usedHint3: false, wrong: 0, runs: 0, done: false, view: null, lastVerdict: null });
   SAVE.last = chId; save();
   try { S.rng = Oomba.rand(Oomba.seedOf(l.id) + S.seed * 7919); } catch (e) { S.rng = { float: Math.random }; }
@@ -1302,12 +1316,13 @@ const KINDS = {
     const key = e => e.slice().sort().join('>');
     const center = id => { const r = btns[id].getBoundingClientRect(), d = dev.getBoundingClientRect(); return [r.left - d.left + r.width / 2, r.top - d.top + r.height / 2]; };
     const draw = () => {
+      if (!dev.isConnected) return;   // the level is gone: no stale note or announcement
       const d = dev.getBoundingClientRect(); svg.setAttribute('viewBox', `0 0 ${Math.max(1, d.width)} ${Math.max(1, d.height)}`); svg.style.width = d.width + 'px'; svg.style.height = d.height + 'px'; svg.innerHTML = '';
       const extra = new Set((S.lastVerdict && S.lastVerdict.extra) || []);
       for (const w of A.wires) { const [x1, y1] = center(w[0]), [x2, y2] = center(w[1]); svg.insertAdjacentHTML('beforeend', `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"${extra.has(key(w)) ? ' style="stroke:var(--im-coral)"' : ''}/>`); }
       setNote(ui, A.wires.length ? plural(A.wires.length, '{n} wire', '{n} wires') : tr('Tap a part, then tap the part it connects to.'));
     };
-    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => draw()) : null; if (ro) ro.observe(dev);
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { if (dev.isConnected) draw(); else ro.disconnect(); }) : null; if (ro) ro.observe(dev);
     const tap = id => {
       if (S.done || !btns[id]) return;
       if (!sel) { sel = id; btns[id].classList.add('on'); btns[id].setAttribute('aria-pressed', 'true'); sfx('select'); return; }
@@ -1330,7 +1345,7 @@ const KINDS = {
   },
   /* the card sorter: one card at a time, tap its bin; a wrong bin bounces the card back after the check */
   sort(l, board, panel) {
-    const ui = shell(panel, tr(l.story)), A = { placed: {}, wrong: 0 }, bins = {}; let queue = maybeShuffle(l, l.cards);
+    const ui = shell(panel, tr(l.story)), A = { placed: {}, wrong: 0 }, bins = {}, back = new Set(); let queue = maybeShuffle(l, l.cards);
     const deck = el('div', 'im-deck'), face = el('div', 'im-face'), left = el('p', 'im-note'); deck.append(face, left); board.appendChild(deck);
     ui.tray.classList.add('im-bins'); ui.tray.classList.remove('im-tray');
     l.bins.forEach((bn, k) => { const b = el('button', 'im-bin'); b.type = 'button'; b.dataset.id = bn.id; b.appendChild(el('b', '', esc(tr(bn.name)))); const c = el('span', 'im-count'); b.appendChild(c); digitKey(b, k); b.addEventListener('click', () => tapBin(bn.id)); bins[bn.id] = { b, c }; ui.tray.appendChild(b); });
@@ -1338,7 +1353,8 @@ const KINDS = {
     const show = () => {
       face.innerHTML = ''; for (const id in bins) bins[id].b.classList.remove('im-glow', 'dim', 'good', 'bad');
       const cur = queue[0]; if (!cur) return;
-      if (cur.pic) face.insertAdjacentHTML('beforeend', pic(cur.pic)); face.appendChild(el('span', '', esc(tr(cur.text)))); face.classList.remove('im-pop'); void face.offsetWidth; face.classList.add('im-pop');
+      if (cur.pic) face.insertAdjacentHTML('beforeend', pic(cur.pic)); face.appendChild(el('span', '', esc(tr(cur.text))));
+      const why = back.has(cur.id) && (l.binWhy || []).find(w => w.bin === cur.bin); if (why) face.appendChild(el('span', 'im-note', esc(tr(why.why)))); face.classList.remove('im-pop'); void face.offsetWidth; face.classList.add('im-pop');
       left.textContent = plural(queue.length, '{n} card to go', '{n} cards to go'); announce(tr(cur.text)); counts();
     };
     const tapBin = id => {
@@ -1351,7 +1367,7 @@ const KINDS = {
       if (v.ok) { counts(); face.innerHTML = icon('check', { size: 48 }); left.textContent = ''; finish(A); return; }
       A.wrong += v.wrongCards.length; failRun(); sfx('wrong');
       banner('wrong', plural(v.wrongCards.length, 'One card is in the wrong bin. Try it again.', '{n} cards are in the wrong bin. Try them again.'));
-      queue = l.cards.filter(c => v.wrongCards.includes(c.id)); for (const c of queue) delete A.placed[c.id]; show();
+      queue = l.cards.filter(c => v.wrongCards.includes(c.id)); for (const c of queue) { delete A.placed[c.id]; back.add(c.id); } show();
     };
     show();
     return { intro: tr(l.story), tap: tapBin, answer: () => A, solve: sol => { S.fast = true; let guard = 0; while (queue.length && guard++ < 100) tapBin(sol.placed[queue[0].id]); },
@@ -1397,13 +1413,14 @@ const KINDS = {
     const order = maybeShuffle(l, l.checks.filter(c => !c.help)), helper = l.checks.find(c => c.help); ui.tray.classList.add('im-list', 'im-checks');
     order.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); b.addEventListener('click', () => tap(c.id)); btns[c.id] = b; ui.tray.appendChild(b); });
     if (helper) { const b = btn(tr(helper.label) + ' · ' + tr('{n} min', { n: helper.cost }), { kind: 'quiet', icon: 'user', onPress: () => tap(helper.id) }); b.dataset.id = helper.id; btns[helper.id] = b; ui.primary = b; ui.refresh(); }
+    let closed = false;   // the case is solved (or handed to the teacher): taps in the closing moment are not billed
     const tap = id => {
-      const c = l.checks.find(x => x.id === id); if (!c || S.done || used.has(id)) return;
+      const c = l.checks.find(x => x.id === id); if (!c || S.done || closed || used.has(id)) return;
       used.add(id); A.checks.push(id); cost += c.cost; const b = btns[id]; b.disabled = true; b.classList.add('dim'); for (const x in btns) btns[x].classList.remove('im-glow');
       tk.classList.remove('im-shake'); void tk.offsetWidth; tk.classList.add('im-shake'); showClock();
       const hit = left.has(id) || (!!c.fixes && left.has(c.fixes));   // a restart also un-freezes the app: it works, it just costs more
-      if (hit) { left.delete(id); if (c.fixes) left.delete(c.fixes); b.classList.remove('dim'); b.classList.add('good'); mark(b, true); sfx('correct'); reaction(tr(c.fix || c.ok), true); if (!left.size) later(700, () => finish(A)); else banner('correct', tr('One fault fixed. Something is still wrong.')); }
-      else if (c.help) { sfx('select'); reaction(tr(c.ok), false); later(700, () => finish(A)); }
+      if (hit) { left.delete(id); if (c.fixes) left.delete(c.fixes); b.classList.remove('dim'); b.classList.add('good'); mark(b, true); sfx('correct'); reaction(tr(c.fix || c.ok), true); if (!left.size) { closed = true; later(700, () => finish(A)); } else banner('correct', tr('One fault fixed. Something is still wrong.')); }
+      else if (c.help) { closed = true; sfx('select'); reaction(tr(c.ok), false); later(700, () => finish(A)); }
       else if (!c.rel) { b.classList.remove('dim'); b.classList.add('bad'); mark(b, false); sfx('wrong'); reaction(tr(c.ok), false); failRun(); }
       else { sfx('select'); reaction(tr(c.ok), false); }
     };
@@ -1457,22 +1474,22 @@ const KINDS = {
       const steps = A.flow.slice(); let i = 0;
       const stepOn = () => {
         if (S.done) return;
-        if (i >= steps.length) { if (l.swaps && l.swaps.length) { phase = 'swap'; renderChain(); renderTray(); reaction(tr('Every question said fine. Time for a swap test.'), false); } else stuck(); return; }
-        const id = steps[i++], c = byId[id]; cost += c.cost; const hit = left.has(id); if (hit) left.delete(id);
+        if (i >= steps.length) { if (l.swaps && l.swaps.length && l.checks.every(c => !c.rel || c.help || steps.includes(c.id))) { phase = 'swap'; renderChain(); renderTray(); reaction(tr('Every question said fine. Time for a swap test.'), false); } else stuck(); return; }
+        const id = steps[i++], c = byId[id]; cost += c.cost; const hit = left.has(id) || (!!c.fixes && left.has(c.fixes)); if (hit) { left.delete(id); if (c.fixes) left.delete(c.fixes); }
         ran.push({ id, hit }); showClock(); renderChain(); tk.classList.remove('im-shake'); void tk.offsetWidth; tk.classList.add('im-shake');
         reaction(tr(hit ? (c.fix || c.ok) : c.ok), hit); if (hit) sfx('correct'); else sfx('step');
-        if (!left.size) { later(700, () => finish(A)); return; }
+        if (!left.size) { phase = 'done'; later(700, () => finish(A)); return; }
         later(650, stepOn);
       };
       stepOn();
     };
-    const stuck = () => { failRun(); sfx('wrong'); banner('wrong', tr('Still broken. A question is missing from the flowchart.')); phase = 'build'; renderChain(); renderTray(); };
+    const stuck = () => { failRun(); sfx('wrong'); banner('wrong', tr('Every question you asked said fine. A question is missing from the flowchart.')); phase = 'build'; renderChain(); renderTray(); };
     const swap = id => {
       const s = (l.swaps || []).find(x => x.id === id); if (!s || S.done || phase !== 'swap' || tried.has(id)) return;
       tried.add(id); A.swaps.push(id); cost += s.cost; showClock(); S.runs++;
       const hit = left.has(id); if (hit) left.delete(id);
       reaction(tr(s.fix), hit); sfx(hit ? 'correct' : 'step'); renderTray();
-      if (!left.size) { later(700, () => finish(A)); return; }
+      if (!left.size) { phase = 'done'; later(700, () => finish(A)); return; }
       if (hit) banner('correct', tr('One fault fixed. Something is still wrong.'));
       if (tried.size >= (l.swaps || []).length) stuck();
     };
@@ -1490,7 +1507,7 @@ const KINDS = {
     const vals = Array.from({ length: n }, (_, k) => 1 << (n - 1 - k)), value = () => bits.reduce((t, on, k) => t + (on ? vals[k] : 0), 0);
     const stack = el('div', 'im-stack'), story = el('p', 'im-note', esc(tr(l.story))), row = el('div', 'im-switches'), outRow = el('div', 'im-row'), out = el('p', 'im-prompt'); out.dir = 'ltr'; outRow.appendChild(out);
     let gray = null; if (l.gray) { gray = el('div', 'im-swatch'); gray.setAttribute('role', 'img'); outRow.appendChild(gray); }
-    stack.append(story, row, outRow); board.appendChild(stack);
+    row.style.setProperty('--im-cols', String(n <= 5 ? n : 4)); stack.append(story, row, outRow); board.appendChild(stack);
     const letter = v => (v >= 1 && v <= 26 ? String.fromCharCode(64 + v) : '·');
     const show = () => { const v = value(); const r = l.rounds[i]; out.textContent = (r && r.show === 'letter') ? `= ${num(v)} = ${letter(v)}` : `= ${num(v)}`; if (gray) { gray.style.background = `rgb(${v},${v},${v})`; gray.setAttribute('aria-label', tr('Gray {n}', { n: v })); } sw.forEach((b, k) => { b.setAttribute('aria-checked', String(bits[k])); b.parentElement.classList.toggle('on', bits[k]); }); };
     vals.forEach((v, k) => { const w = el('div', 'im-sw'); w.appendChild(el('b', '', num(v))); const b = el('button', 'ok-switch'); b.type = 'button'; b.setAttribute('role', 'switch'); b.setAttribute('aria-label', tr('{n} card', { n: v })); b.addEventListener('click', () => tap(k)); w.appendChild(b); w.appendChild(el('span', 'im-sr', esc(tr('on')))); row.appendChild(w); sw.push(b); });
@@ -1565,14 +1582,14 @@ const KINDS = {
     let phase = 'build'; const ibtns = {}; A.imps = [];
     const log = el('div', 'im-flowview'), quotes = el('div', 'im-flowview');
     const runSim = () => {
-      phase = 'sim'; ui.tray.innerHTML = ''; ui.primary = null; ui.refresh(); ui.prompt.textContent = tr('Built! Watch it run.'); setNote(ui, '');
+      phase = 'sim'; ui.tray.innerHTML = ''; ui.primary = btn(tr('Skip'), { kind: 'quiet', icon: 'next', onPress: () => { if (phase === 'sim') showQuotes(); } }); ui.refresh(); ui.prompt.textContent = tr('Built! Watch it run.'); setNote(ui, '');
       needs.replaceWith(log); meters.hidden = true; log.innerHTML = '';
       const lines = l.sim || []; let k = 0;
       const next = () => {
-        if (S.done) return;
-        if (k >= lines.length) { later(900, showQuotes); return; }
+        if (S.done || phase !== 'sim') return;
+        if (k >= lines.length) { later(700, () => { if (phase === 'sim') showQuotes(); }); return; }
         const row = el('div', 'im-fv'); row.innerHTML = icon('play', { size: 20 }); row.appendChild(el('span', '', esc(tr(lines[k])))); row.classList.add('im-pop'); log.appendChild(row); announce(tr(lines[k])); sfx('step'); k++;
-        later(Math.max(400, Math.floor(10000 / Math.max(1, lines.length))), next);
+        later(Math.max(400, Math.floor(6000 / Math.max(1, lines.length))), next);
       };
       next();
     };
@@ -1598,7 +1615,7 @@ const KINDS = {
     ui.primary = btn(tr('Build it'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh(); paint();
     const cheapestFor = () => { const v = L.judge(l, A); const n = v.unmet[0]; if (!n) return null; return l.parts.filter(p => (n.id ? p.id === n.id : p.cat === n.cat && (!n.any || n.any.includes(p.id)))).sort((a, b) => a.cost - b.cost)[0]; };
     const bestLeft = () => (l.best || []).filter(id => ibtns[id] && !A.imps.includes(id));
-    return { intro: tr(l.brief.title) + '. ' + tr(l.brief.text), tap: id => (phase === 'quotes' ? tapImp(id) : tap(id)), check, answer: () => A, phase: () => phase,
+    return { intro: tr(l.brief.title) + '. ' + tr(l.brief.text), tap: id => (phase === 'quotes' ? tapImp(id) : tap(id)), check, answer: () => A, phase: () => phase, noHint: () => phase === 'sim',
       solve: sol => { S.fast = true; for (const id of sol.picked) if (!A.picked.includes(id)) tap(id); check(); if (phase === 'quotes') { for (const id of sol.imps || []) tapImp(id); check(); } },
       hint2: () => { if (phase === 'quotes') { bestLeft().slice(0, 2 - A.imps.length).forEach(id => ibtns[id].classList.add('im-glow')); return; } const p = cheapestFor(); if (p) btns[p.id].classList.add('im-glow'); },
       hint3: () => { if (phase === 'quotes') { A.imps.length = 0; for (const x in ibtns) { ibtns[x].classList.remove('on'); ibtns[x].setAttribute('aria-pressed', 'false'); } (l.best || []).slice(0, 2).forEach(id => tapImp(id)); return; } const p = cheapestFor(); if (p) tap(p.id); } };
@@ -1606,13 +1623,15 @@ const KINDS = {
   /* the Design Lab: watch a user, tap the moment they struggle, pick two changes */
   persona(l, board, panel) {
     const ui = shell(panel, ''), A = { beat: -1, changes: [], wrong: 0 }, beats = []; let phase = 'watch';
-    const stack = el('div', 'im-stack'), who = el('div', 'im-ticket', portrait(56, 'thinking').outerHTML ? '' : ''); who.innerHTML = ''; who.appendChild(portrait(56, 'thinking')); const wt = el('div'); wt.appendChild(el('h3', '', esc(tr(l.persona.name)))); wt.appendChild(el('p', '', esc(tr(l.persona.intro)))); who.appendChild(wt);
+    const stack = el('div', 'im-stack'), who = el('div', 'im-ticket'); who.appendChild(portrait(56, 'thinking')); const wt = el('div'); wt.appendChild(el('h3', '', esc(tr(l.persona.name)))); wt.appendChild(el('p', '', esc(tr(l.persona.intro)))); who.appendChild(wt);
     const scene = el('div', 'im-flowprev'); stack.append(who, scene); board.appendChild(stack); ui.tray.classList.add('im-list');
     ui.prompt.textContent = tr('Watch {name}. Tap the moment they struggle.', { name: tr(l.persona.name) });
     l.beats.forEach((t, k) => { const b = tileBtn(tr(t), null, k); b.hidden = true; b.addEventListener('click', () => tapBeat(k)); ui.tray.appendChild(b); beats.push(b); });
     const reveal = k => { if (k >= beats.length) return; beats[k].hidden = false; beats[k].classList.add('im-pop'); announce(tr(l.beats[k])); later(650, () => reveal(k + 1)); };
     const tapBeat = k => {
       if (S.done || phase !== 'watch') return;
+      // the beat that causes the trouble is a near miss: no wrong tap, no lost star, just a pointer to the moment itself
+      if (k === l.cause) { beats[k].classList.add('im-pop'); sfx('select'); notice(tr('That is what causes it. Now tap the moment {name} struggles.', { name: tr(l.persona.name) })); return; }
       if (k === l.struggle) { A.beat = k; beats[k].classList.add('good'); mark(beats[k], true); sfx('correct'); phase = 'fix'; later(500, showChanges); }
       else { A.wrong++; beats[k].classList.add('bad', 'im-shake'); sfx('wrong'); failRun(); banner('wrong', tr('Look again: when does it stop being fun?')); later(500, () => beats[k].classList.remove('bad', 'im-shake')); }
     };
@@ -1654,6 +1673,7 @@ const explainStars = after => { const why = S.lastWhy || []; if (!after || !why.
 /* ---------- hints, skipping, finishing ---------- */
 function giveHint() {
   const l = S.level; if (!l || S.done || !S.view) return;
+  if (S.view.noHint && S.view.noHint()) { notice(tr('Watch it run first. The hints come back after.')); return; }
   if (S.hint >= 3) { notice(tr('No more hints for this level.')); return; }
   S.hint++; const t = S.hint; let text = (t === 3 && S.view.hint3Text && S.view.hint3Text()) || tr(l.hints[t - 1]);
   // after the second hint the kid is told the next one costs a star (the line and the button both say so)
@@ -1666,7 +1686,9 @@ function giveHint() {
 }
 function skipLevel() {
   const l = S.level; if (!l || S.done) return;
-  S.done = true; S.phase = 'done'; SAVE.skipped[starKey(l)] = true; save();
+  S.done = true; S.phase = 'done';
+  if (S.daily) { nextLevel(); toast(tr('Skipped. You can come back to it later.')); return; }   // a daily skip never marks a chapter level done
+  SAVE.skipped[starKey(l)] = true; save();
   report(l, 0, null, true);
   nextLevel(); notice(tr('Skipped. You can come back to it later.'));
 }
@@ -1690,7 +1712,7 @@ function finish(answer) {
 function helpsCard(l, a) {
   const gadget = l.kind === 'bin', chosen = gadget ? a.imps || [] : a.changes || [], pool = gadget ? l.improvements : l.changes;
   return openCard((card, close) => {
-    card.appendChild(portrait(80, 'cheer')); card.appendChild(el('h2', '', esc(gadget ? tr('Version two!') : tr('Good changes!'))));
+    card.appendChild(portrait(80, 'cheer')); const nBest = chosen.filter(id => l.best.includes(id)).length; card.appendChild(el('h2', '', esc(gadget ? tr('Version two!') : nBest >= 2 ? tr('Good changes!') : tr('One good change'))));
     if (gadget) card.appendChild(el('p', '', esc(tr('Every change is a trade: what it costs, and who it helps.'))));
     const fv = el('div', 'im-flowview');
     for (const id of chosen) { const c = pool.find(x => x.id === id); if (!c) continue; const best = l.best.includes(id); const row = el('div', 'im-fv' + (best ? ' fix' : '')); row.innerHTML = icon(best ? 'check' : 'info', { size: 20 }); row.appendChild(el('span', '', '<b>' + esc(tr(c.text)) + '</b> · ' + esc(tr(gadget ? c.why : c.helps)))); fv.appendChild(row); }
@@ -1717,6 +1739,7 @@ function caseClosed(l, stars) {
     card.appendChild(el('h2', '', esc(tr('Case closed!'))));
     const q = el('p', 'im-prompt', esc(tr(c.q))); card.appendChild(q);
     const tiles = el('div', 'im-check-tiles'); card.appendChild(tiles);
+    const verdict = el('p', 'im-note'); verdict.hidden = true; card.appendChild(verdict);
     const faces = el('div'); faces.hidden = true; faces.appendChild(el('p', '', esc(tr('How sure were you?'))));
     const fr = el('div', 'im-faces'); faces.appendChild(fr); card.appendChild(faces);
     [['faceLow', tr('Not sure'), 1], ['faceMid', tr('Fairly sure'), 2], ['faceHigh', tr('Very sure'), 3]].forEach(([p, label, n]) => { const b = el('button', 'im-face-btn', pic(p)); b.type = 'button'; b.setAttribute('aria-label', label); b.addEventListener('click', () => { if (conf) return; conf = n; b.classList.add('on'); sfx('select'); later(350, () => close(true)); }); fr.appendChild(b); });
@@ -1726,7 +1749,7 @@ function caseClosed(l, stars) {
         if (right != null) return; right = k === c.answer; S.checks.n++; if (right) S.checks.ok++;
         [...tiles.children].forEach(x => { x.disabled = true; if (+x.dataset.k === c.answer) { x.classList.add('good'); mark(x, true); } });
         if (!right) { b.classList.add('bad'); mark(b, false); sfx('wrong'); } else sfx('correct');
-        q.textContent = right ? tr('Right!') : tr('Not quite. The answer is marked.'); announce(q.textContent);
+        verdict.hidden = false; verdict.textContent = right ? tr('Right!') : tr('Not quite. The answer is marked.'); announce(verdict.textContent);
         faces.hidden = false; const f = fr.querySelector('button'); if (f) f.focus({ preventScroll: true });
       });
       tiles.appendChild(b);
@@ -1738,13 +1761,14 @@ function showWin(stars) {
   const title = S.levelIdx + 1 >= chainEnd() ? tr('Chapter complete!') : tr('Level done!');
   // a short frame (a landscape phone) has no room for the portrait: without it the Next button stays on screen
   let p; try { p = Oomba.ui.win({ stars, score: starsInChapter(), hero: short() ? false : GIZMO_SPEC, title, next: true }); } catch (e) { p = Promise.resolve('next'); }
+  try { const sc = document.querySelector('.ok-win .ok-score'); if (sc) sc.after(el('p', 'im-note', esc(tr('Stars in this chapter so far')))); } catch (e) { /* the number stands alone */ }
   try { explainStars(document.querySelector('.ok-win .ok-sparks')); } catch (e) { /* the card stands without the line */ }
   p.then(r => { if (r === 'again') startLevel(S.chapter, S.levelIdx, { noLearn: true }); else nextLevel(); });
 }
 const chainEnd = () => { const list = levelsFor(S.chapter); return S.chain && S.chain.ch === S.chapter ? Math.min(S.chain.to, list.length) : list.length; };
 function nextLevel() {
   if (!S.chapter) return showMap();
-  if (S.daily) { S.daily = null; return showMap(S.chapter); }
+  if (S.daily) { S.daily = null; endDaily(); return showMap(S.chapter); }
   if (S.levelIdx + 1 < chainEnd()) return startLevel(S.chapter, S.levelIdx + 1);
   chapterEnd();
 }
@@ -1770,28 +1794,31 @@ function questDone() {
     card.appendChild(el('p', '', esc(tr('Great work. Tell your teacher you finished.'))));
     const row = el('div', 'im-row');
     row.appendChild(btn(tr('Play again'), { kind: 'quiet', icon: 'restart', onPress: () => close('again') }));
-    const b = btn(S.lock ? tr('Back to the start') : tr('Chapter map'), { kind: 'hot', big: true, icon: 'home', onPress: () => close('home') }); b.setAttribute('data-focus', ''); row.appendChild(b);
+    const b = btn(S.lock ? tr('Back to class') : tr('Chapter map'), { kind: 'hot', big: true, icon: 'home', onPress: () => close('home') }); b.setAttribute('data-focus', ''); row.appendChild(b);
     card.appendChild(row);
   }).done.then(r => { if (r === 'again') startLevel(q.ch, 0, { noLearn: true }); else if (S.lock) toTitle(); else showMap(q.ch); });
 }
 /* the Daily Crew Challenge: one level a day for the whole crew, picked from the day number; its own three-star card */
-const dayNumber = () => Math.floor(new Date().getTime() / 864e5);
+const dayNumber = () => { const d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 6e4) / 864e5); };   // the local day: it rolls over at the kid's midnight
 function dailyPick(band) {
   // the pool: the chapters the kid has started (level 1 done) in this band, so a daily never lands on content the kid has
   // not met; a brand-new player gets the first chapter (and its learn card opens, see startLevel)
   const b = band || S.band, chs = L.CHAPTERS.filter(c => c.bands.includes(b) && levelsFor(c.id, b).length);
   const started = chs.filter(c => isDone(levelsFor(c.id, b)[0], b));
-  const pool = (started.length ? started : chs.slice(0, 1)).flatMap(c => levelsFor(c.id, b));
+  const pool = (started.length ? started : chs.slice(0, 1)).flatMap(c => levelsFor(c.id, b).filter((l, i, all) => i === 0 || isDone(all[i - 1], b)));   // open levels only
   const day = dayNumber(); let r; try { r = Oomba.rand(day * 31 + 7); } catch (e) { r = { int: (a, b) => a + (day % (b - a + 1)) }; }
   return { day, level: pool[r.int(0, pool.length - 1)] };
 }
 function startDaily() {
   const { day, level } = dailyPick(); if (!level) return;
+  // a class quest pauses for the daily and comes back after it (lesson mode, quest, bonus chain, checks and the seed)
+  if (!S.preDaily) S.preDaily = { lesson: S.lesson, quest: S.quest, chain: S.chain, checks: S.checks, seed: S.seed };
   S.lesson = false; S.quest = null; S.chain = null; S.daily = day; S.seed = day;
   startLevel(level.ch, levelsFor(level.ch).indexOf(level));
 }
+function endDaily() { const p = S.preDaily; if (!p) return; S.preDaily = null; Object.assign(S, { lesson: p.lesson, quest: p.quest, chain: p.chain, checks: p.checks, seed: p.seed }); }
 function dailyCard(stars) {
-  S.daily = null;
+  S.daily = null; endDaily();
   openCard((card, close) => {
     card.appendChild(portrait(84, 'cheer')); card.appendChild(el('h2', '', esc(tr('Daily Crew Challenge'))));
     card.appendChild(starRow(stars)); card.appendChild(el('p', '', esc(stars === 3 ? tr('Three stars! The whole crew is proud of you.') : tr('Done! Come back tomorrow for a new challenge.'))));
@@ -1839,13 +1866,13 @@ function openQuestCard() {
 }
 function applyCode(code) {
   const c = L.parseCode(code);
-  if (!c || (c.chapter === null && +code[0] !== 0) || !c.band) { toast(tr('That is not a quest code.')); return false; }
+  if (!c || (c.chapter === null && +code[0] !== 0) || !c.band || (c.chapter && !L.chapter(c.chapter).bands.includes(c.band))) { toast(tr('That is not a quest code.')); return false; }
   if (HAS_PARAMS) { toast(tr('Your teacher set this quest.')); return false; }
   closeCard();
   if (!S.lock) { S.band = c.band; SAVE.band = c.band; save(); }
   S.mode = c.mode; S.chain = null; S.checks = { n: 0, ok: 0 }; S.daily = null;
   if (!c.chapter) { S.lesson = false; S.quest = null; route(); return true; }
-  const ch = L.chapter(c.chapter); if (!ch.bands.includes(S.band)) S.band = ch.bands[0];
+  const ch = L.chapter(c.chapter); if (!ch.bands.includes(S.band)) { S.band = ch.bands[0]; toast(tr('This chapter is for {band}.', { band: bandName(S.band) })); }
   S.lesson = true; S.quest = { ch: ch.id, band: S.band }; S.wantLevel = c.level;
   route(); notice(tr('Class quest: {chapter} · {band}', { chapter: tr(ch.title), band: bandName(S.band) }));
   return true;
@@ -1859,7 +1886,7 @@ function route() {
   } else showMap(S.mapChapter);
 }
 async function toTitle() {
-  closeCard(); screen('title'); S.chapter = null; S.level = null; S.view = null; S.phase = 'idle';
+  closeCard(); screen('title'); S.gen++; S.chapter = null; S.level = null; S.view = null; S.phase = 'idle';
   try { Oomba.music('off'); } catch (e) { /* ignore */ }
   let badge = null; try { badge = Oomba.art.toCanvas('bulb', 110); } catch (e) { badge = null; }
   try { await Oomba.ui.title({ title: tr('Inside the Machine'), subtitle: tr('Parts, fixes, bits and gadgets with Gizmo the mouse'), hero: GIZMO_SPEC, titleHue: 'sky', badge }); } catch (e) { /* ignore */ }
@@ -1920,7 +1947,7 @@ function cover() {
 }
 try { Oomba.test({ state, start }); } catch (e) { /* ignore */ }
 Object.assign(window.__brbTest = window.__brbTest || {}, {
-  skipAnimations: () => { S.fast = true; return true; },
+  skipAnimations: () => { S.fast = true; return true; }, realTime: () => { S.fast = false; return true; },
   cover, answer: sol => { if (S.view && S.view.solve) S.view.solve(sol); return state(); }, tap: id => { if (S.view && S.view.tap) S.view.tap(id); return state(); },
   hint: () => { giveHint(); return S.hint; }, skip: () => { failRun(); failRun(); skipLevel(); return state(); }, code: d => applyCode(String(d)),
   check: k => { const t = document.querySelector(`.im-modal .im-check-tiles button[data-k="${k | 0}"]`); if (t) t.click(); const f = document.querySelectorAll('.im-modal .im-face-btn')[2]; if (f) f.click(); return state(); },

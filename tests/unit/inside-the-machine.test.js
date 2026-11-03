@@ -88,7 +88,7 @@ test('inside-the-machine: every level is solved by its sol with the second star,
     const v = L.judge(l, l.sol);
     assert.ok(v.ok, `${l.id} solved by sol: ${v.fails.join(', ')}`);
     assert.ok(v.good, `${l.id} sol earns the second star`);
-    if (l.starter) assert.ok(!L.judge(l, l.starter).ok, `${l.id}: the starter does not pass`);
+    if (l.wrong) assert.ok(!L.judge(l, l.wrong).ok, `${l.id}: the wrong fixture does not pass`);
     if (l.kind === 'ticket' || l.kind === 'flow') { assert.equal(l.par, L.parCost(l), `${l.id}: par is the cheapest-first cost`); assert.ok(v.cost <= l.par, `${l.id}: sol within par`); }
     else assert.ok(l.par >= L.moves(l, l.sol), `${l.id}: par >= moves(sol)`);
     if (l.kind === 'pixels') assert.equal(l.par, l.target.join('').split('').reduce((n, d) => n + +d, 0), `${l.id}: par is the number of taps the picture needs`);
@@ -124,7 +124,7 @@ test('inside-the-machine: every level is solved by its sol with the second star,
     }
   }
   for (const ch of L.CHAPTERS) for (const band of ch.bands) { const first = L.levelsFor(ch.id, band)[0]; assert.ok(first && first.learn && first.learn.title && first.learn.text, `${ch.id} ${band}: level 1 has a learn card`); }
-  assert.ok(L.LEVELS.filter(l => l.starter).length >= 7, 'starters exist on the wire, order and gadget levels');
+  assert.ok(L.LEVELS.filter(l => l.wrong).length >= 7, 'wrong fixtures exist on the wire, order and gadget levels');
 });
 
 test('inside-the-machine: a wrong answer is marked wrong and an expensive path loses the second star', () => {
@@ -139,6 +139,25 @@ test('inside-the-machine: a wrong answer is marked wrong and an expensive path l
   // shared Design Lab personas evidence a different standard per band; the Pro desk only builds toward 2-AP-10
   assert.equal(L.cstaOf(L.level('design-1'), '1b').join(), '1B-IC-19'); assert.equal(L.cstaOf(L.level('design-1'), '2').join(), '2-CS-01,2-IC-21');
   assert.equal(L.cstaOf(L.level('fixit-2-1'), '2').join(), '2-CS-03'); assert.equal(L.level('fixit-2-1').csta2.join(), '2-AP-10');
+  // Design a Gadget evidences 2-CS-01 (the user quotes and the Improve phase), not just builds toward it
+  for (const l of L.LEVELS.filter(x => x.ch === 'gadget')) { assert.equal(L.cstaOf(l, '2').join(), '2-CS-02,2-CS-01'); assert.ok(!l.csta2, `${l.id}: no toward`); }
+  // every persona names the beat that causes the trouble (a near miss in play), and it is never the struggle itself
+  for (const p of L.LEVELS.filter(l => l.kind === 'persona')) assert.ok(Number.isInteger(p.cause) && p.cause !== p.struggle && p.cause < p.beats.length, `${p.id}: a cause beat`);
+  // memory and storage never share a role (hint 2 glows a role group)
+  assert.notEqual(L.PARTS.memory.role, L.PARTS.storage.role);
+  // the second star never rewards dear checks first: most expensive first is never good, on any ticket
+  for (const l of L.LEVELS.filter(x => x.kind === 'ticket' || x.kind === 'flow')) {
+    const rel = l.checks.filter(c => c.rel && !c.help), costs = new Set(rel.map(c => c.cost)); if (costs.size < 2) continue;
+    const dear = rel.slice().sort((a, b) => b.cost - a.cost).map(c => c.id);
+    const v = L.judge(l, l.kind === 'flow' ? { flow: dear, swaps: (l.swaps || []).map(s => s.id) } : { checks: dear });
+    assert.ok(!v.good, `${l.id}: most expensive first does not earn the second star`);
+  }
+  assert.equal(L.judge(L.level('fixit-1b-6'), { checks: ['brick', 'cable', 'restart', 'fluff', 'wall', 'plugged'] }).good, false);
+  // an rgb par is at least the taps to the nearest reachable value on each light (being exact never costs the star)
+  for (const l of L.LEVELS.filter(x => x.kind === 'rgb')) {
+    const taps = l.target.reduce((n, t, i) => { let best = 0, bd = Infinity; for (let k = -20; k <= 20; k++) { const v = l.start[i] + k * l.step; if (v < 0 || v > 255) continue; const d = Math.abs(v - t); if (d < bd || (d === bd && Math.abs(k) < Math.abs(best))) { bd = d; best = k; } } return n + Math.abs(best); }, 0);
+    assert.ok(l.par >= taps, `${l.id}: par ${l.par} >= ${taps} taps to the nearest values`);
+  }
   // the frozen app: a restart is a bigger fix that also works (it costs the star, not the ticket)
   const fr = L.judge(L.level('fixit-1b-4'), { checks: ['restart'] }); assert.ok(fr.ok && !fr.good && fr.cost === 4 && fr.path[0].hit, JSON.stringify(fr));
   // the noise meter sends its log to the laptop through the cable port (2-CS-02: collect and exchange)
@@ -391,7 +410,9 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       s = await T(frame, 'state'); assert.equal(s.hint, 3);
       // the Design Lab: the key is the moment Tao is locked out (the fourth beat), and a restart also un-freezes the app
       await T(frame, 'next'); for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
-      s = await T(frame, 'start', { chapter: 'design-lab', band: '2', level: 4, seed: 4 }); await T(frame, 'tap', 1); s = await T(frame, 'state'); assert.equal(s.fails, 1, 'the design-flaw narration is not the moment');
+      s = await T(frame, 'start', { chapter: 'design-lab', band: '2', level: 4, seed: 4 }); await T(frame, 'tap', 1); s = await T(frame, 'state'); assert.equal(s.fails, 0, 'the design-flaw narration (the cause) is a near miss, not a wrong tap');
+      assert.match(await frame.evaluate(() => document.querySelector('.im-panel').textContent), /That is what causes it/);
+      await T(frame, 'tap', 2); s = await T(frame, 'state'); assert.equal(s.fails, 1, 'a scenery beat is not the moment');
       await T(frame, 'tap', 3); await T(frame, 'tap', 'testgroup'); await T(frame, 'tap', 'passcode'); await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); });
       s = await T(frame, 'state'); assert.equal(s.done, true, 'the locked-out moment plus the two best changes solve it');
       for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
@@ -454,4 +475,47 @@ test('inside-the-machine: BRB.params lock a lesson (chapter, band, lock) and the
     assert.equal(await pro.frame.$('.im-seg'), null, 'no band toggle under lock');
     assert.deepEqual(pro.errors, []);
   } finally { await pro.ctx.close(); }
+});
+
+test('inside-the-machine: review round fixes in Chromium (Pro flowchart, stale timers, daily skip, switch row, phone pill, sim hints, keypad keys)', { skip, timeout: 180_000 }, async () => {
+  const g = await open();
+  const { frame, page } = g;
+  const clear = async () => { for (let i = 0; i < 8; i++) { const s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) return; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); } };
+  const panel = () => frame.evaluate(() => document.querySelector('.im-panel').textContent);
+  try {
+    // a too-short Pro flowchart goes back to the flowchart; no swap test runs before the cheap questions are all in
+    await T(frame, 'start', { chapter: 'fixit', band: '2', level: 1, seed: 1 }); await clear();
+    await T(frame, 'tap', 'power'); await frame.evaluate(() => document.querySelector('.im-actions .ok-hot').click());
+    await frame.waitForFunction(() => window.__brbTest.state().fails === 1, null, { timeout: 5000 });
+    assert.doesNotMatch(await panel(), /Swap one part/, 'no swap phase with questions missing');
+    assert.match(await panel(), /Tap the questions in the order/);
+    // a run left behind never touches the next level
+    await T(frame, 'start', { chapter: 'fixit', band: '2', level: 1, seed: 1 }); await clear();
+    await T(frame, 'realTime'); await T(frame, 'tap', 'queue'); await frame.evaluate(() => document.querySelector('.im-actions .ok-hot').click());
+    await T(frame, 'map'); await T(frame, 'start', { chapter: 'parts', band: '2', level: 1, seed: 1 }); await clear();
+    await frame.waitForTimeout(1500);
+    let s = await T(frame, 'state'); assert.equal(s.fails, 0, 'no stale failRun on the new level'); assert.equal(s.levelId, 'parts-1');
+    // the phone pill shows the level number only
+    assert.equal(await frame.evaluate(() => getComputedStyle(document.querySelector('.im-top .im-pill > span')).display), 'none');
+    // five switches sit on one row, each at least 44px tall
+    await T(frame, 'start', { chapter: 'bits', band: '2', level: 1, seed: 1 }); await clear();
+    const sw = await frame.evaluate(() => [...document.querySelectorAll('.im-sw')].map(w => ({ top: Math.round(w.getBoundingClientRect().top), h: w.querySelector('.ok-switch').getBoundingClientRect().height })));
+    assert.equal(sw.length, 5); assert.equal(new Set(sw.map(x => x.top)).size, 1, 'one row'); for (const x of sw) assert.ok(x.h >= 44, 'a 44px switch');
+    // the gadget test run takes no hint
+    await T(frame, 'start', { chapter: 'gadget', band: '2', level: 1, seed: 1 }); await clear();
+    await T(frame, 'realTime');
+    for (const id of L.level('gadget-1').sol.picked) await T(frame, 'tap', id);
+    await frame.evaluate(() => document.querySelector('.im-actions .ok-hot').click());
+    s = await T(frame, 'state'); assert.equal(s.viewPhase, 'sim'); assert.equal(await T(frame, 'hint'), 0, 'no hint spent in the sim');
+    // a skip during the daily never marks a chapter level done
+    await T(frame, 'map'); await T(frame, 'daily'); await clear(); await T(frame, 'skip');
+    assert.deepEqual((await T(frame, 'save')).skipped, {});
+    // the quest-code keypad answers the keyboard
+    await T(frame, 'map'); await T(frame, 'questCard'); await frame.waitForTimeout(100);
+    for (const k of ['4', '1', '0']) await page.keyboard.press(k);
+    assert.equal(await frame.evaluate(() => [...document.querySelectorAll('.im-slot')].map(x => x.textContent).join('')), '410·');
+    await page.keyboard.press('Backspace');
+    assert.equal(await frame.evaluate(() => [...document.querySelectorAll('.im-slot')].map(x => x.textContent).join('')), '41··');
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
 });
