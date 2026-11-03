@@ -1,0 +1,15 @@
+{
+  "slug": "packet-post",
+  "title": "Packet Post",
+  "icon": "📮",
+  "cover": "gold",
+  "category": "learning",
+  "tags": "networks,internet,packets,routers,protocols,cybersecurity,passphrase,phishing,ciphers,computer science,learning,kids,class",
+  "description": "Run Netville's post office with Pim the owl and learn how the internet really works. Cut a picture into numbered packets, send each one down a road, reroute when a road closes, and put the pieces back in order at the other end. Say got it, ask again for lost packets, throw away extra copies and count the dots to check for damage. Then lock it up: sort what to share, build a strong passphrase from word tiles, spot trick messages in the inbox, and send secret messages with the cipher wheel. Six chapters for grades 3 to 8, with a class quest mode for teachers.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Built on the Oomba Kit 1.1.2 (pinned kit tag plus the art-props, art-animals, art-school and style-bold packs): Oomba.game with controls 'none' and a fixed camera, the kit's title, how-to, HUD (chapter progress and star count), pause, results (Oomba.ui.win per level, w.win at chapter end, so BRB.gameOver carries the chapter's stars), quiz card (the Case-closed concept check), dialogs, toasts, settings, sounds, font and day/night palette. Pim the owl (art-animals) guides. Netville's map, the packets, the ACK board, rule tiles, the cipher wheel and the pixel grid are the game's own DOM inside Oomba.ui.root(), below var(--ok-safe-top), tap-only with keyboard support, every control at least 48 px. The first classic script is window.PacketPost (the engine: seeded RNG, map instances, the packet run with hop-by-hop routing, closures, busy offices, hop budgets and sealed roads, the ACK/duplicate/resend board, the dot checksum, ordering tiles, rule sets, a routing solver, Caesar and keyed ciphers, the progress label and quest code parsing); the second is window.PacketPostLevels (CHAPTERS, LEVELS with learn/hints/check text, THEN chains per band); the third is window.PacketPostI18n (the other languages come as /vendor/data packs, English is the key). Lesson mode comes from BRB.params ({chapter, band, mode, level, lock}) or the 4-digit class quest number typed on the Quest Card keypad (hidden in live frames); lock=1 hides the chapter map and band toggle and chains into the band's next chapter at chapter end. Progress: BRB.score.submit(starsInChapter, 'n/m levels, s stars[, c/k checks]') after every solved level, BRB.gameOver({won: true, score}) at chapter end, BRB.progress(detail) when the SDK has it. Save key packet-post-v1 in BRB.storage (band, best stars per level, skipped levels). Test hooks: __brbTest.start({chapter, band, mode, level, seed, lesson}), step(n), skipAnimations(), cover(), state(), act(action), solve(), run(). Modes: play, projector (bigger, no scores), wheel (a free cipher wheel).",
+  "l10n": {}
+}
