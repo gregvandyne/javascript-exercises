@@ -2580,7 +2580,8 @@
       "progress": "Progress",
       "games": "Games",
       "students": "Students",
-      "settings": "Settings"
+      "settings": "Settings",
+      "standards": "Standards"
     },
     "classGames": {
       "text": "Games shared with this class. If one isn't right for the class, take it off: its builder can't share it here again unless you allow it.",
@@ -5912,6 +5913,87 @@
     },
     "units": {
       "h": "Units"
+    },
+    "standards": {
+      "title": "Standards",
+      "lead": "What this class did for each CSTA standard. Counts are per class: when students work in pairs, only the student who signed in is counted.",
+      "pick": "Show",
+      "show": "Show",
+      "everyone": "Whole class",
+      "levelsAll": "Show all 44 standards",
+      "levelsClass": "Only this class’s levels",
+      "csv": "Download CSV",
+      "report": "School coverage report",
+      "cols": {
+        "standard": "Standard",
+        "lessons": "Lessons",
+        "practiced": "Practiced",
+        "checked": "Checked",
+        "applied": "Applied",
+        "needsLook": "Needs a look",
+        "last": "Last",
+        "status": "Status"
+      },
+      "checkedVal": "{pct}% · {items, plural, one {# item} other {# items}} · {students, plural, one {# student} other {# students}}",
+      "appliedVal": "{mean} · {count} marked",
+      "status": {
+        "notYet": "Not yet",
+        "assigned": "Assigned",
+        "practiced": "Practiced",
+        "checked": "Checked",
+        "meets": "Meets"
+      },
+      "legend": {
+        "h": "How to read it",
+        "practiced": "Practiced: students who finished a step tagged with the standard (a game played, a question answered, a build handed in). It means they did the activity, not mastery.",
+        "checked": "Checked: right answers out of answered exit-ticket items tagged with the standard (three questions, not a test). A student meets it with at least 2 right on the most recent ticket, or all of them when fewer than 2 are tagged.",
+        "applied": "Applied: your rubric marks (0-3) on lines tagged with the standard, and how many students you marked. A mark of 2 or more meets it.",
+        "meets": "Meets: at least 80% of the class meets the standard through Checked or Applied.",
+        "needs": "Needs a look: students who answered 2 or more tagged items and got none right. Only teachers see this.",
+        "pairs": "Pairs: take turns signing in. Only the signed-in student is counted."
+      },
+      "privacy": "Only the class’s teachers and school admins see this page. It is never shown to students or on a projector, and it is deleted with the class.",
+      "noData": "no data",
+      "noDataHint": "No work in this class yet.",
+      "ticket": "{right} of {tagged} right on the last ticket",
+      "best": "best {best} · {count} marked",
+      "empty": {
+        "title": "No standards yet",
+        "text": "Assign CS Quest lessons to this class and their standards show up here."
+      },
+      "csvCols": {
+        "standard": "Standard",
+        "concept": "Concept",
+        "statement": "Statement",
+        "lessons": "Lessons",
+        "practiced": "Practiced (students)",
+        "students": "Students in class",
+        "checkedPct": "Checked accuracy %",
+        "items": "Items asked",
+        "checkedStudents": "Students checked",
+        "appliedMean": "Rubric mean (0-3)",
+        "marked": "Students marked",
+        "needsLook": "Needs a look (students)",
+        "meets": "Students meeting",
+        "last": "Last",
+        "status": "Status"
+      },
+      "reportH": {
+        "title": "Coverage report",
+        "lead": "{school}: every class, aggregate only (no student names).",
+        "classes": "Classes included",
+        "cols": {
+          "standard": "Standard",
+          "classes": "Classes",
+          "lessons": "Lessons taught",
+          "items": "Items asked",
+          "accuracy": "Accuracy",
+          "rubric": "Rubric mean",
+          "meets": "Classes meeting"
+        },
+        "rubricVal": "{mean} · {count} marks",
+        "note": "Practiced means the activity was done, not mastery. Accuracy is right answers out of answered exit-ticket items tagged with the standard."
+      }
     }
   }
 }

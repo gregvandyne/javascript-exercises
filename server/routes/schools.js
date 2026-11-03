@@ -398,15 +398,15 @@ router.get('/class/:id', requireUser, (req, res) => {
   if (c && S.canViewClass(req.user, c)) return studentClass(req, res, c);
   no(req, res);
 });
-const CLASS_TABS = ['lessons', 'progress', 'games', 'students', 'settings'];
-/** The class header and its tabs (Lessons, Progress, Games, Students, Settings), shared with the progress pages. */
+const CLASS_TABS = ['lessons', 'progress', 'standards', 'games', 'students', 'settings'];
+/** The class header and its tabs (Lessons, Progress, Standards, Games, Students, Settings), shared with the progress pages. */
 export function classHeader(req, c, active) {
   const t = req.t; const s = S.getSchool(c.school_id);
   const students = S.roster(c.id).filter(p => p.role === 'student').length;
   const requests = S.pendingRequests(c.id).length;
   const toRead = P.toReadByClass([c.id])[c.id] || 0;
-  const href = { lessons: `/class/${c.id}`, progress: `/class/${c.id}/progress`, games: `/class/${c.id}?tab=games`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
-  const icon = { lessons: '📚', progress: '📊', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
+  const href = { lessons: `/class/${c.id}`, progress: `/class/${c.id}/progress`, standards: `/class/${c.id}/standards`, games: `/class/${c.id}?tab=games`, students: `/class/${c.id}?tab=students`, settings: `/class/${c.id}?tab=settings` };
+  const icon = { lessons: '📚', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
   return html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>

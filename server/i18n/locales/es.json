@@ -2578,7 +2578,8 @@
       "progress": "Progreso",
       "games": "Juegos",
       "students": "Estudiantes",
-      "settings": "Configuración"
+      "settings": "Configuración",
+      "standards": "Estándares"
     },
     "classGames": {
       "text": "Juegos compartidos con esta clase. Si alguno no es adecuado para la clase, quítalo: no se podrá volver a compartir aquí a menos que tú lo permitas.",
@@ -5792,6 +5793,87 @@
     },
     "units": {
       "h": "Unidades"
+    },
+    "standards": {
+      "title": "Estándares",
+      "lead": "Lo que hizo esta clase en cada estándar CSTA. Se cuenta por clase: cuando trabajan en parejas, solo cuenta el alumno que inició sesión.",
+      "pick": "Ver",
+      "show": "Ver",
+      "everyone": "Toda la clase",
+      "levelsAll": "Ver los 44 estándares",
+      "levelsClass": "Solo los niveles de esta clase",
+      "csv": "Descargar CSV",
+      "report": "Informe de cobertura de la escuela",
+      "cols": {
+        "standard": "Estándar",
+        "lessons": "Lecciones",
+        "practiced": "Practicado",
+        "checked": "Comprobado",
+        "applied": "Aplicado",
+        "needsLook": "Para revisar",
+        "last": "Último",
+        "status": "Estado"
+      },
+      "checkedVal": "{pct}% · preguntas: {items} · alumnos: {students}",
+      "appliedVal": "{mean} · {count} con nota",
+      "status": {
+        "notYet": "Todavía no",
+        "assigned": "Asignado",
+        "practiced": "Practicado",
+        "checked": "Comprobado",
+        "meets": "Lo cumple"
+      },
+      "legend": {
+        "h": "Cómo leerlo",
+        "practiced": "Practicado: alumnos que terminaron un paso con este estándar (un juego jugado, una pregunta respondida, una creación entregada). Significa que hicieron la actividad, no que lo dominan.",
+        "checked": "Comprobado: respuestas correctas de las preguntas del ticket de salida con este estándar (tres preguntas, no un examen). Un alumno lo cumple con al menos 2 correctas en el ticket más reciente, o todas si hay menos de 2.",
+        "applied": "Aplicado: tus notas de rúbrica (0-3) en líneas con este estándar y cuántos alumnos tienen nota. Una nota de 2 o más lo cumple.",
+        "meets": "Lo cumple: al menos el 80% de la clase cumple el estándar por Comprobado o Aplicado.",
+        "needs": "Para revisar: alumnos que respondieron 2 o más preguntas con este estándar y no acertaron ninguna. Solo lo ven los profes.",
+        "pairs": "Parejas: turnaos para iniciar sesión. Solo cuenta el alumno que inició sesión."
+      },
+      "privacy": "Solo los profes de la clase y los administradores de la escuela ven esta página. Nunca se muestra a los alumnos ni en un proyector, y se borra con la clase.",
+      "noData": "sin datos",
+      "noDataHint": "Todavía no hay trabajo en esta clase.",
+      "ticket": "{right} de {tagged} correctas en el último ticket",
+      "best": "mejor {best} · {count} con nota",
+      "empty": {
+        "title": "Todavía no hay estándares",
+        "text": "Asigna lecciones de CS Quest a esta clase y sus estándares aparecerán aquí."
+      },
+      "csvCols": {
+        "standard": "Estándar",
+        "concept": "Concepto",
+        "statement": "Enunciado",
+        "lessons": "Lecciones",
+        "practiced": "Practicado (alumnos)",
+        "students": "Alumnos en la clase",
+        "checkedPct": "Acierto comprobado %",
+        "items": "Preguntas hechas",
+        "checkedStudents": "Alumnos comprobados",
+        "appliedMean": "Media de rúbrica (0-3)",
+        "marked": "Alumnos con nota",
+        "needsLook": "Para revisar (alumnos)",
+        "meets": "Alumnos que lo cumplen",
+        "last": "Último",
+        "status": "Estado"
+      },
+      "reportH": {
+        "title": "Informe de cobertura",
+        "lead": "{school}: todas las clases, solo totales (sin nombres de alumnos).",
+        "classes": "Clases incluidas",
+        "cols": {
+          "standard": "Estándar",
+          "classes": "Clases",
+          "lessons": "Lecciones dadas",
+          "items": "Preguntas hechas",
+          "accuracy": "Acierto",
+          "rubric": "Media de rúbrica",
+          "meets": "Clases que lo cumplen"
+        },
+        "rubricVal": "{mean} · {count} notas",
+        "note": "Practicado significa que se hizo la actividad, no que se domina. El acierto son las respuestas correctas de las preguntas del ticket de salida con este estándar."
+      }
     }
   }
 }

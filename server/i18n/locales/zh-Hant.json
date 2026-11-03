@@ -2578,7 +2578,8 @@
       "progress": "進度",
       "games": "遊戲",
       "students": "學生",
-      "settings": "設定"
+      "settings": "設定",
+      "standards": "標準"
     },
     "classGames": {
       "text": "分享給這個班級的遊戲。如果有不適合班級的，請把它移除：除非你允許，否則它不能再分享到這裡。",
@@ -5792,6 +5793,87 @@
     },
     "units": {
       "h": "單元"
+    },
+    "standards": {
+      "title": "標準",
+      "lead": "這個班在每一項 CSTA 標準上做了什麼。以班級為單位計算:兩人一組時,只計算登入的那位學生。",
+      "pick": "顯示",
+      "show": "顯示",
+      "everyone": "全班",
+      "levelsAll": "顯示全部 44 項標準",
+      "levelsClass": "只顯示這個班的等級",
+      "csv": "下載 CSV",
+      "report": "全校涵蓋報告",
+      "cols": {
+        "standard": "標準",
+        "lessons": "課程",
+        "practiced": "練習",
+        "checked": "檢核",
+        "applied": "應用",
+        "needsLook": "需要關注",
+        "last": "最近",
+        "status": "狀態"
+      },
+      "checkedVal": "{pct}% · 題數 {items} · 學生 {students}",
+      "appliedVal": "{mean} · 已評 {count}",
+      "status": {
+        "notYet": "尚未",
+        "assigned": "已指派",
+        "practiced": "已練習",
+        "checked": "已檢核",
+        "meets": "達成"
+      },
+      "legend": {
+        "h": "怎麼看",
+        "practiced": "練習:完成標有這項標準之步驟的學生(玩了遊戲、回答了問題、繳交了作品)。表示做了活動,不代表已經精熟。",
+        "checked": "檢核:標有這項標準的出場券題目中,已作答且答對的比例(只有三題,不是考試)。最近一次出場券答對至少 2 題(若標記的題目少於 2 題則需全對)即達成。",
+        "applied": "應用:您在標有這項標準的評量表項目上打的分數(0-3),以及評過分的學生人數。2 分以上即達成。",
+        "meets": "達成:全班至少 80% 透過檢核或應用達成這項標準。",
+        "needs": "需要關注:回答了 2 題以上標有這項標準的題目卻都沒答對的學生。只有老師看得到。",
+        "pairs": "兩人一組:輪流登入。只計算登入的學生。"
+      },
+      "privacy": "只有這個班的老師和學校管理員能看到這一頁。它不會顯示給學生或投影出來,並且會隨班級一起刪除。",
+      "noData": "沒有資料",
+      "noDataHint": "這個班還沒有作業紀錄。",
+      "ticket": "上一張出場券 {tagged} 題答對 {right} 題",
+      "best": "最高 {best} · 已評 {count}",
+      "empty": {
+        "title": "還沒有標準",
+        "text": "把 CS Quest 課程指派給這個班,它們的標準就會出現在這裡。"
+      },
+      "csvCols": {
+        "standard": "標準",
+        "concept": "領域",
+        "statement": "說明",
+        "lessons": "課程",
+        "practiced": "練習(學生數)",
+        "students": "班級學生數",
+        "checkedPct": "檢核答對率 %",
+        "items": "出題數",
+        "checkedStudents": "已檢核學生數",
+        "appliedMean": "評量表平均(0-3)",
+        "marked": "已評分學生數",
+        "needsLook": "需要關注(學生數)",
+        "meets": "達成學生數",
+        "last": "最近",
+        "status": "狀態"
+      },
+      "reportH": {
+        "title": "涵蓋報告",
+        "lead": "{school}:所有班級,只有總計(沒有學生姓名)。",
+        "classes": "包含的班級",
+        "cols": {
+          "standard": "標準",
+          "classes": "班級",
+          "lessons": "已上的課程",
+          "items": "出題數",
+          "accuracy": "答對率",
+          "rubric": "評量表平均",
+          "meets": "達成的班級"
+        },
+        "rubricVal": "{mean} · {count} 個分數",
+        "note": "「練習」表示做了活動,不代表已精熟。答對率是標有這項標準的出場券題目的答對比例。"
+      }
     }
   }
 }

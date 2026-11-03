@@ -215,3 +215,26 @@ section.panel>.csq-code{margin-top:var(--s3)}
 }
 /* English-first copy on a right-to-left page: keep the list marker inside the box (it would hang off the left edge) */
 [dir="rtl"] .lp-list>li[dir="ltr"]{list-style-position:inside}
+/* ---------- Class Standards tab (/class/:id/standards) and the coverage report ---------- */
+.csq-std-lead{margin:var(--s2) 0}
+.csq-std-tools{align-items:center;flex-wrap:wrap;gap:var(--s2);margin:var(--s3) 0}
+.csq-std-pick{align-items:center;gap:var(--s2);margin:0;flex-wrap:wrap}
+.csq-std-pick select{max-width:220px}
+.csq-std{min-width:100%;border-collapse:separate;border-spacing:0}
+.csq-std th,.csq-std td{text-align:start;vertical-align:top;padding:var(--s2) var(--s3);font-size:.9rem}
+.csq-std thead th{font-size:.8rem;color:var(--text-2);text-transform:none;letter-spacing:0;white-space:nowrap}
+.csq-std-concept th{background:var(--bg-2,var(--card));font-weight:800;font-size:.85rem;text-transform:none;letter-spacing:0}
+.csq-std-id{min-width:180px;max-width:320px;text-transform:none;letter-spacing:0;font-weight:400}
+.csq-std-id b{display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+.csq-std-id .small{display:block;line-height:1.3;margin-top:2px}
+.csq-std-lessons{min-width:140px;max-width:260px}
+.csq-std-quiet td,.csq-std-quiet th{opacity:.7}
+.csq-std-status{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap;background:var(--chip,rgba(127,127,127,.15))}
+.csq-std-status.st-meets{background:var(--good,#1a7f37);color:#fff}
+.csq-std-status.st-checked{background:rgba(26,127,55,.18)}
+.csq-std-status.st-practiced{background:rgba(9,105,218,.16)}
+.csq-std-legend{margin-top:var(--s3)}
+.csq-std-legend ul{display:grid;gap:4px;margin:var(--s2) 0}
+.csq-nodata{font-style:italic}
+@media (max-width:600px){.csq-std th,.csq-std td{padding:6px 8px;font-size:.84rem}.csq-std-id{min-width:150px}}
+@media print{.csq-std-report{font-size:.8rem}.csq-std-report th,.csq-std-report td{padding:3px 6px}}

@@ -2579,7 +2579,8 @@
       "progress": "Voortgang",
       "games": "Games",
       "students": "Leerlingen",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "standards": "Standaarden"
     },
     "classGames": {
       "text": "Games die met deze klas zijn gedeeld. Past er een niet bij de klas, haal hem er dan uit: hij kan hier dan niet opnieuw gedeeld worden, tenzij jij dat toestaat.",
@@ -5793,6 +5794,87 @@
     },
     "units": {
       "h": "Units"
+    },
+    "standards": {
+      "title": "Standaarden",
+      "lead": "Wat deze klas voor elke CSTA-standaard deed. Er wordt per klas geteld: bij samenwerken in tweetallen telt alleen de ingelogde leerling.",
+      "pick": "Toon",
+      "show": "Toon",
+      "everyone": "Hele klas",
+      "levelsAll": "Toon alle 44 standaarden",
+      "levelsClass": "Alleen de niveaus van deze klas",
+      "csv": "CSV downloaden",
+      "report": "Dekkingsrapport van de school",
+      "cols": {
+        "standard": "Standaard",
+        "lessons": "Lessen",
+        "practiced": "Geoefend",
+        "checked": "Getoetst",
+        "applied": "Toegepast",
+        "needsLook": "Even bekijken",
+        "last": "Laatst",
+        "status": "Stand"
+      },
+      "checkedVal": "{pct}% · vragen: {items} · leerlingen: {students}",
+      "appliedVal": "{mean} · {count} beoordeeld",
+      "status": {
+        "notYet": "Nog niet",
+        "assigned": "Toegewezen",
+        "practiced": "Geoefend",
+        "checked": "Getoetst",
+        "meets": "Gehaald"
+      },
+      "legend": {
+        "h": "Zo lees je het",
+        "practiced": "Geoefend: leerlingen die een stap met deze standaard afmaakten (een spel gespeeld, een vraag beantwoord, een maakopdracht ingeleverd). Ze deden de activiteit; het zegt niet dat ze het beheersen.",
+        "checked": "Getoetst: goede antwoorden op beantwoorde exitvragen met deze standaard (drie vragen, geen toets). Een leerling haalt het met minstens 2 goed op de nieuwste exit-ticket, of allemaal als er minder dan 2 zijn.",
+        "applied": "Toegepast: jouw rubriekscores (0-3) op regels met deze standaard en hoeveel leerlingen je beoordeelde. Een score van 2 of meer haalt het.",
+        "meets": "Gehaald: minstens 80% van de klas haalt de standaard via Getoetst of Toegepast.",
+        "needs": "Even bekijken: leerlingen die 2 of meer vragen met deze standaard beantwoordden en er geen goed hadden. Alleen leerkrachten zien dit.",
+        "pairs": "Tweetallen: om de beurt inloggen. Alleen de ingelogde leerling telt."
+      },
+      "privacy": "Alleen de leerkrachten van de klas en de schoolbeheerders zien deze pagina. Hij wordt nooit aan leerlingen of op een beamer getoond en wordt met de klas verwijderd.",
+      "noData": "geen gegevens",
+      "noDataHint": "Nog geen werk in deze klas.",
+      "ticket": "{right} van {tagged} goed op de laatste exit-ticket",
+      "best": "beste {best} · {count} beoordeeld",
+      "empty": {
+        "title": "Nog geen standaarden",
+        "text": "Wijs CS Quest-lessen aan deze klas toe en hun standaarden verschijnen hier."
+      },
+      "csvCols": {
+        "standard": "Standaard",
+        "concept": "Domein",
+        "statement": "Omschrijving",
+        "lessons": "Lessen",
+        "practiced": "Geoefend (leerlingen)",
+        "students": "Leerlingen in de klas",
+        "checkedPct": "Getoetst goed %",
+        "items": "Gestelde vragen",
+        "checkedStudents": "Getoetste leerlingen",
+        "appliedMean": "Rubriekgemiddelde (0-3)",
+        "marked": "Beoordeelde leerlingen",
+        "needsLook": "Even bekijken (leerlingen)",
+        "meets": "Leerlingen die het halen",
+        "last": "Laatst",
+        "status": "Stand"
+      },
+      "reportH": {
+        "title": "Dekkingsrapport",
+        "lead": "{school}: alle klassen, alleen totalen (geen namen van leerlingen).",
+        "classes": "Meegenomen klassen",
+        "cols": {
+          "standard": "Standaard",
+          "classes": "Klassen",
+          "lessons": "Gegeven lessen",
+          "items": "Gestelde vragen",
+          "accuracy": "Goed",
+          "rubric": "Rubriekgemiddelde",
+          "meets": "Klassen die het halen"
+        },
+        "rubricVal": "{mean} · {count} scores",
+        "note": "Geoefend betekent dat de activiteit gedaan is, niet dat ze beheerst wordt. Goed telt de goede antwoorden op exitvragen met deze standaard."
+      }
     }
   }
 }

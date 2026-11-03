@@ -2578,7 +2578,8 @@
       "progress": "Progression",
       "games": "Jeux",
       "students": "Élèves",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "standards": "Normes"
     },
     "classGames": {
       "text": "Jeux partagés avec cette classe. Si l’un d’eux ne convient pas, retirez-le : il ne pourra plus y être partagé sauf si vous le permettez.",
@@ -5792,6 +5793,87 @@
     },
     "units": {
       "h": "Unités"
+    },
+    "standards": {
+      "title": "Normes",
+      "lead": "Ce que cette classe a fait pour chaque norme CSTA. Les chiffres sont par classe : en binôme, seul l’élève connecté compte.",
+      "pick": "Afficher",
+      "show": "Afficher",
+      "everyone": "Toute la classe",
+      "levelsAll": "Afficher les 44 normes",
+      "levelsClass": "Seulement les niveaux de cette classe",
+      "csv": "Télécharger le CSV",
+      "report": "Rapport de couverture de l’école",
+      "cols": {
+        "standard": "Norme",
+        "lessons": "Leçons",
+        "practiced": "Pratiqué",
+        "checked": "Vérifié",
+        "applied": "Appliqué",
+        "needsLook": "À regarder",
+        "last": "Dernier",
+        "status": "État"
+      },
+      "checkedVal": "{pct} % · questions : {items} · élèves : {students}",
+      "appliedVal": "{mean} · {count} notés",
+      "status": {
+        "notYet": "Pas encore",
+        "assigned": "Assigné",
+        "practiced": "Pratiqué",
+        "checked": "Vérifié",
+        "meets": "Atteint"
+      },
+      "legend": {
+        "h": "Comment lire ce tableau",
+        "practiced": "Pratiqué : élèves qui ont terminé une étape liée à la norme (un jeu joué, une question répondue, une création rendue). Cela veut dire qu’ils ont fait l’activité, pas qu’ils la maîtrisent.",
+        "checked": "Vérifié : bonnes réponses parmi les questions de ticket de sortie liées à la norme (trois questions, pas un contrôle). Un élève l’atteint avec au moins 2 bonnes réponses sur le ticket le plus récent, ou toutes s’il y en a moins de 2.",
+        "applied": "Appliqué : vos notes de grille (0-3) sur les lignes liées à la norme, et le nombre d’élèves notés. Une note de 2 ou plus l’atteint.",
+        "meets": "Atteint : au moins 80 % de la classe atteint la norme par Vérifié ou Appliqué.",
+        "needs": "À regarder : élèves qui ont répondu à 2 questions liées ou plus sans aucune bonne réponse. Seuls les enseignants le voient.",
+        "pairs": "Binômes : connectez-vous à tour de rôle. Seul l’élève connecté compte."
+      },
+      "privacy": "Seuls les enseignants de la classe et les administrateurs de l’école voient cette page. Elle n’est jamais montrée aux élèves ni au projecteur, et elle est supprimée avec la classe.",
+      "noData": "pas de données",
+      "noDataHint": "Pas encore de travail dans cette classe.",
+      "ticket": "{right} sur {tagged} justes au dernier ticket",
+      "best": "meilleure {best} · {count} notés",
+      "empty": {
+        "title": "Pas encore de normes",
+        "text": "Assignez des leçons CS Quest à cette classe et leurs normes apparaîtront ici."
+      },
+      "csvCols": {
+        "standard": "Norme",
+        "concept": "Concept",
+        "statement": "Énoncé",
+        "lessons": "Leçons",
+        "practiced": "Pratiqué (élèves)",
+        "students": "Élèves de la classe",
+        "checkedPct": "Réussite vérifiée %",
+        "items": "Questions posées",
+        "checkedStudents": "Élèves vérifiés",
+        "appliedMean": "Moyenne de grille (0-3)",
+        "marked": "Élèves notés",
+        "needsLook": "À regarder (élèves)",
+        "meets": "Élèves qui l’atteignent",
+        "last": "Dernier",
+        "status": "État"
+      },
+      "reportH": {
+        "title": "Rapport de couverture",
+        "lead": "{school} : toutes les classes, totaux seulement (aucun nom d’élève).",
+        "classes": "Classes incluses",
+        "cols": {
+          "standard": "Norme",
+          "classes": "Classes",
+          "lessons": "Leçons faites",
+          "items": "Questions posées",
+          "accuracy": "Réussite",
+          "rubric": "Moyenne de grille",
+          "meets": "Classes qui l’atteignent"
+        },
+        "rubricVal": "{mean} · {count} notes",
+        "note": "Pratiqué veut dire que l’activité a été faite, pas qu’elle est maîtrisée. La réussite compte les bonnes réponses aux questions de ticket de sortie liées à la norme."
+      }
     }
   }
 }

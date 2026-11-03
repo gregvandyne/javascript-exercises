@@ -2579,7 +2579,8 @@
       "progress": "Fortschritt",
       "games": "Spiele",
       "students": "Schüler",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "standards": "Standards"
     },
     "classGames": {
       "text": "Spiele, die mit dieser Klasse geteilt sind. Wenn eins nicht passt, nimm es heraus: Dann kann es hier nicht wieder geteilt werden, außer du erlaubst es.",
@@ -5793,6 +5794,87 @@
     },
     "units": {
       "h": "Einheiten"
+    },
+    "standards": {
+      "title": "Standards",
+      "lead": "Was diese Klasse zu jedem CSTA-Standard gemacht hat. Gezählt wird pro Klasse: Bei Partnerarbeit zählt nur das angemeldete Kind.",
+      "pick": "Zeigen",
+      "show": "Zeigen",
+      "everyone": "Ganze Klasse",
+      "levelsAll": "Alle 44 Standards zeigen",
+      "levelsClass": "Nur die Stufen dieser Klasse",
+      "csv": "CSV herunterladen",
+      "report": "Abdeckungsbericht der Schule",
+      "cols": {
+        "standard": "Standard",
+        "lessons": "Lektionen",
+        "practiced": "Geübt",
+        "checked": "Geprüft",
+        "applied": "Angewendet",
+        "needsLook": "Genauer ansehen",
+        "last": "Zuletzt",
+        "status": "Stand"
+      },
+      "checkedVal": "{pct} % · Fragen: {items} · Kinder: {students}",
+      "appliedVal": "{mean} · {count} bewertet",
+      "status": {
+        "notYet": "Noch nicht",
+        "assigned": "Zugewiesen",
+        "practiced": "Geübt",
+        "checked": "Geprüft",
+        "meets": "Erreicht"
+      },
+      "legend": {
+        "h": "So liest du die Tabelle",
+        "practiced": "Geübt: Kinder, die einen Schritt mit diesem Standard abgeschlossen haben (ein Spiel gespielt, eine Frage beantwortet, ein Projekt abgegeben). Das heißt: Sie haben die Aufgabe gemacht, nicht dass sie es beherrschen.",
+        "checked": "Geprüft: richtige Antworten bei beantworteten Abschlussfragen mit diesem Standard (drei Fragen, kein Test). Ein Kind erreicht ihn mit mindestens 2 richtigen im neuesten Abschlussquiz, oder allen, wenn weniger als 2 markiert sind.",
+        "applied": "Angewendet: deine Raster-Bewertungen (0-3) auf Zeilen mit diesem Standard und wie viele Kinder bewertet sind. Eine Bewertung ab 2 erreicht ihn.",
+        "meets": "Erreicht: mindestens 80 % der Klasse erreichen den Standard über Geprüft oder Angewendet.",
+        "needs": "Genauer ansehen: Kinder, die 2 oder mehr markierte Fragen beantwortet und keine richtig haben. Nur Lehrkräfte sehen das.",
+        "pairs": "Paare: abwechselnd anmelden. Nur das angemeldete Kind wird gezählt."
+      },
+      "privacy": "Nur die Lehrkräfte der Klasse und die Schuladmins sehen diese Seite. Sie wird nie Kindern oder am Beamer gezeigt und mit der Klasse gelöscht.",
+      "noData": "keine Daten",
+      "noDataHint": "Noch keine Arbeit in dieser Klasse.",
+      "ticket": "{right} von {tagged} richtig im letzten Abschlussquiz",
+      "best": "beste {best} · {count} bewertet",
+      "empty": {
+        "title": "Noch keine Standards",
+        "text": "Weise dieser Klasse CS-Quest-Lektionen zu, dann erscheinen ihre Standards hier."
+      },
+      "csvCols": {
+        "standard": "Standard",
+        "concept": "Bereich",
+        "statement": "Beschreibung",
+        "lessons": "Lektionen",
+        "practiced": "Geübt (Kinder)",
+        "students": "Kinder in der Klasse",
+        "checkedPct": "Geprüft richtig %",
+        "items": "Gestellte Fragen",
+        "checkedStudents": "Geprüfte Kinder",
+        "appliedMean": "Raster-Mittel (0-3)",
+        "marked": "Bewertete Kinder",
+        "needsLook": "Genauer ansehen (Kinder)",
+        "meets": "Kinder, die ihn erreichen",
+        "last": "Zuletzt",
+        "status": "Stand"
+      },
+      "reportH": {
+        "title": "Abdeckungsbericht",
+        "lead": "{school}: alle Klassen, nur Summen (keine Namen von Kindern).",
+        "classes": "Enthaltene Klassen",
+        "cols": {
+          "standard": "Standard",
+          "classes": "Klassen",
+          "lessons": "Gehaltene Lektionen",
+          "items": "Gestellte Fragen",
+          "accuracy": "Richtig",
+          "rubric": "Raster-Mittel",
+          "meets": "Klassen, die ihn erreichen"
+        },
+        "rubricVal": "{mean} · {count} Bewertungen",
+        "note": "Geübt heißt, die Aufgabe wurde gemacht, nicht dass sie beherrscht wird. Richtig zählt die richtigen Antworten auf Abschlussfragen mit diesem Standard."
+      }
     }
   }
 }

@@ -147,3 +147,24 @@ Routes (`server/routes/cs-quest.js`, mounted before the lesson routes; staff of 
 Tests: `tests/unit/cs-quest-templates.test.js` (the loader, every lesson file present materialised on an in-memory database,
 the derived sets, idempotence and Add again, the QUIZ_STEPS-off and game-not-published text steps, reset, the routes) and
 `tests/unit/cs-quest-pages.test.js` (the JSON the pages read; the pages themselves are todo until they land).
+
+## Standards tab (P12)
+
+`/class/:id/standards` is a class tab (`school.classTabs.standards`) for the class's teachers and school admins
+(`S.canManageClass`); `?student=<id>` is one student's rows, `?all=1` shows all 44 ids instead of the levels the class's
+lessons tag, `.csv` downloads one row per id (counts only, formula-safe like `progress.csv`), and `?report=1` is the
+principal's coverage report across the school's classes (any staff of the school; aggregate only, no student names; print
+view). `server/services/standards.js` computes it on each request from the class's assigned lessons (`removed_at IS NULL`)
+and active students; nothing new is stored.
+
+| Tier | Counts | Student meets when |
+|---|---|---|
+| Practiced | `status='done'` on a `game` / `question` / `build` step whose `standards` carry the id (a game finished, a question answered, a build handed in). Quiz steps never count here. | (not a mastery tier) |
+| Checked | quiz marks × `items[i].cat` on lesson quiz steps, plus `live_run_scores.marks` × `live_runs.items[i].cat` on runs of a derived exit-ticket set (`CSQ … exit ticket …`). Accuracy = right / answered. | on the most recent ticket that asked the id, ≥ 2 tagged items right, or all of them when fewer than 2 are tagged |
+| Applied | rubric marks 0-3 on question / build steps whose rubric line carries the id (`rubricOf(step)[i].ids`) | a mark ≥ 2 |
+
+A student meets the id by Checked or Applied; the row's status is Not yet · Assigned · Practiced · Checked · Meets (≥ 80% of
+the class's students meet). *Needs a look* lists students with ≥ 2 answered tagged items and none right. A student with no
+work in the class shows "no data", never 0. Pairs: only the signed-in student counts (the legend says so). When a class is
+deleted the `onClassLeave` hook removes step-progress rows whose assignment is gone. Words: `cs.standards.*` via
+`scripts/i18n-add-cs-quest-standards.mjs`. Tests: `tests/unit/cs-quest-standards.test.js`.

@@ -2580,7 +2580,8 @@
       "progress": "Progresso",
       "games": "Jogos",
       "students": "Alunos",
-      "settings": "Configurações"
+      "settings": "Configurações",
+      "standards": "Padrões"
     },
     "classGames": {
       "text": "Jogos compartilhados com esta turma. Se algum não for adequado para a turma, tire-o: ele não poderá ser compartilhado aqui de novo, a não ser que você permita.",
@@ -5794,6 +5795,87 @@
     },
     "units": {
       "h": "Unidades"
+    },
+    "standards": {
+      "title": "Padrões",
+      "lead": "O que esta turma fez em cada padrão CSTA. As contagens são por turma: em duplas, só conta o aluno que entrou na conta.",
+      "pick": "Mostrar",
+      "show": "Mostrar",
+      "everyone": "Turma toda",
+      "levelsAll": "Mostrar os 44 padrões",
+      "levelsClass": "Só os níveis desta turma",
+      "csv": "Baixar CSV",
+      "report": "Relatório de cobertura da escola",
+      "cols": {
+        "standard": "Padrão",
+        "lessons": "Aulas",
+        "practiced": "Praticado",
+        "checked": "Verificado",
+        "applied": "Aplicado",
+        "needsLook": "Dar uma olhada",
+        "last": "Último",
+        "status": "Situação"
+      },
+      "checkedVal": "{pct}% · perguntas: {items} · alunos: {students}",
+      "appliedVal": "{mean} · {count} com nota",
+      "status": {
+        "notYet": "Ainda não",
+        "assigned": "Atribuído",
+        "practiced": "Praticado",
+        "checked": "Verificado",
+        "meets": "Atinge"
+      },
+      "legend": {
+        "h": "Como ler",
+        "practiced": "Praticado: alunos que terminaram uma etapa com este padrão (um jogo jogado, uma pergunta respondida, uma criação entregue). Quer dizer que fizeram a atividade, não que dominam.",
+        "checked": "Verificado: respostas certas entre as perguntas do bilhete de saída com este padrão (três perguntas, não uma prova). O aluno atinge com pelo menos 2 certas no bilhete mais recente, ou todas quando houver menos de 2.",
+        "applied": "Aplicado: suas notas de rubrica (0-3) em linhas com este padrão e quantos alunos têm nota. Nota 2 ou mais atinge.",
+        "meets": "Atinge: pelo menos 80% da turma atinge o padrão por Verificado ou Aplicado.",
+        "needs": "Dar uma olhada: alunos que responderam 2 ou mais perguntas com este padrão e não acertaram nenhuma. Só os professores veem.",
+        "pairs": "Duplas: revezem quem entra na conta. Só conta o aluno que entrou."
+      },
+      "privacy": "Só os professores da turma e os administradores da escola veem esta página. Ela nunca é mostrada aos alunos nem no projetor e é apagada com a turma.",
+      "noData": "sem dados",
+      "noDataHint": "Ainda não há trabalho nesta turma.",
+      "ticket": "{right} de {tagged} certas no último bilhete",
+      "best": "melhor {best} · {count} com nota",
+      "empty": {
+        "title": "Ainda não há padrões",
+        "text": "Atribua aulas do CS Quest a esta turma e os padrões delas aparecem aqui."
+      },
+      "csvCols": {
+        "standard": "Padrão",
+        "concept": "Área",
+        "statement": "Descrição",
+        "lessons": "Aulas",
+        "practiced": "Praticado (alunos)",
+        "students": "Alunos na turma",
+        "checkedPct": "Acerto verificado %",
+        "items": "Perguntas feitas",
+        "checkedStudents": "Alunos verificados",
+        "appliedMean": "Média da rubrica (0-3)",
+        "marked": "Alunos com nota",
+        "needsLook": "Dar uma olhada (alunos)",
+        "meets": "Alunos que atingem",
+        "last": "Último",
+        "status": "Situação"
+      },
+      "reportH": {
+        "title": "Relatório de cobertura",
+        "lead": "{school}: todas as turmas, só totais (sem nomes de alunos).",
+        "classes": "Turmas incluídas",
+        "cols": {
+          "standard": "Padrão",
+          "classes": "Turmas",
+          "lessons": "Aulas dadas",
+          "items": "Perguntas feitas",
+          "accuracy": "Acerto",
+          "rubric": "Média da rubrica",
+          "meets": "Turmas que atingem"
+        },
+        "rubricVal": "{mean} · {count} notas",
+        "note": "Praticado quer dizer que a atividade foi feita, não que é dominada. Acerto conta as respostas certas às perguntas do bilhete de saída com este padrão."
+      }
     }
   }
 }

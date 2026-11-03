@@ -2579,7 +2579,8 @@
       "progress": "Progressi",
       "games": "Giochi",
       "students": "Studenti",
-      "settings": "Impostazioni"
+      "settings": "Impostazioni",
+      "standards": "Standard"
     },
     "classGames": {
       "text": "Giochi condivisi con questa classe. Se uno non va bene per la classe, toglilo: non potrà essere condiviso di nuovo qui a meno che tu non lo permetta.",
@@ -5793,6 +5794,87 @@
     },
     "units": {
       "h": "Unità"
+    },
+    "standards": {
+      "title": "Standard",
+      "lead": "Cosa ha fatto questa classe per ogni standard CSTA. I conteggi sono per classe: nel lavoro a coppie conta solo lo studente che ha fatto l’accesso.",
+      "pick": "Mostra",
+      "show": "Mostra",
+      "everyone": "Tutta la classe",
+      "levelsAll": "Mostra tutti i 44 standard",
+      "levelsClass": "Solo i livelli di questa classe",
+      "csv": "Scarica CSV",
+      "report": "Rapporto di copertura della scuola",
+      "cols": {
+        "standard": "Standard",
+        "lessons": "Lezioni",
+        "practiced": "Praticato",
+        "checked": "Verificato",
+        "applied": "Applicato",
+        "needsLook": "Da guardare",
+        "last": "Ultimo",
+        "status": "Stato"
+      },
+      "checkedVal": "{pct}% · domande: {items} · studenti: {students}",
+      "appliedVal": "{mean} · {count} valutati",
+      "status": {
+        "notYet": "Non ancora",
+        "assigned": "Assegnato",
+        "practiced": "Praticato",
+        "checked": "Verificato",
+        "meets": "Raggiunto"
+      },
+      "legend": {
+        "h": "Come leggerlo",
+        "practiced": "Praticato: studenti che hanno finito un passaggio con questo standard (un gioco giocato, una domanda risposta, un progetto consegnato). Vuol dire che hanno fatto l’attività, non che la padroneggiano.",
+        "checked": "Verificato: risposte giuste tra le domande del biglietto d’uscita con questo standard (tre domande, non una verifica). Uno studente lo raggiunge con almeno 2 giuste nel biglietto più recente, o tutte se sono meno di 2.",
+        "applied": "Applicato: i tuoi voti della griglia (0-3) sulle righe con questo standard e quanti studenti hai valutato. Un voto di 2 o più lo raggiunge.",
+        "meets": "Raggiunto: almeno l’80% della classe raggiunge lo standard con Verificato o Applicato.",
+        "needs": "Da guardare: studenti che hanno risposto a 2 o più domande con questo standard senza nessuna giusta. Lo vedono solo gli insegnanti.",
+        "pairs": "Coppie: fate l’accesso a turno. Conta solo lo studente che ha fatto l’accesso."
+      },
+      "privacy": "Solo gli insegnanti della classe e gli amministratori della scuola vedono questa pagina. Non viene mai mostrata agli studenti o al proiettore e viene cancellata con la classe.",
+      "noData": "nessun dato",
+      "noDataHint": "Ancora nessun lavoro in questa classe.",
+      "ticket": "{right} giuste su {tagged} nell’ultimo biglietto",
+      "best": "migliore {best} · {count} valutati",
+      "empty": {
+        "title": "Ancora nessuno standard",
+        "text": "Assegna lezioni CS Quest a questa classe e i loro standard compariranno qui."
+      },
+      "csvCols": {
+        "standard": "Standard",
+        "concept": "Area",
+        "statement": "Descrizione",
+        "lessons": "Lezioni",
+        "practiced": "Praticato (studenti)",
+        "students": "Studenti della classe",
+        "checkedPct": "Verificato giuste %",
+        "items": "Domande fatte",
+        "checkedStudents": "Studenti verificati",
+        "appliedMean": "Media griglia (0-3)",
+        "marked": "Studenti valutati",
+        "needsLook": "Da guardare (studenti)",
+        "meets": "Studenti che lo raggiungono",
+        "last": "Ultimo",
+        "status": "Stato"
+      },
+      "reportH": {
+        "title": "Rapporto di copertura",
+        "lead": "{school}: tutte le classi, solo totali (nessun nome di studente).",
+        "classes": "Classi incluse",
+        "cols": {
+          "standard": "Standard",
+          "classes": "Classi",
+          "lessons": "Lezioni svolte",
+          "items": "Domande fatte",
+          "accuracy": "Giuste",
+          "rubric": "Media griglia",
+          "meets": "Classi che lo raggiungono"
+        },
+        "rubricVal": "{mean} · {count} voti",
+        "note": "Praticato vuol dire che l’attività è stata fatta, non che è padroneggiata. Giuste conta le risposte giuste alle domande del biglietto d’uscita con questo standard."
+      }
     }
   }
 }

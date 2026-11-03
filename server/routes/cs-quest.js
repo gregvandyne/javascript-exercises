@@ -23,6 +23,9 @@ import { el, lp, faqBlock, launchGame } from './teachers.js';
 import { zoneNote } from './lessons.js';
 import * as V from '../views/cs-quest.js';
 import { printBody, sheetBody, projectorBody } from '../views/cs-quest-sheets.js';
+import * as STD from '../services/standards.js';
+import { classBody as standardsBody, classCsv as standardsCsv, reportBody as standardsReport } from '../views/cs-quest-standards.js';
+import { classHeader, classBack } from './schools.js';
 
 export const router = Router();
 const b = req => req.body || {};
@@ -365,4 +368,34 @@ router.get('/teachers/cs-quest', (req, res) => {
       ])],
     },
   });
+});
+
+// ---------------------------------------------------------------- the class Standards tab (plan 9.4, P12)
+/** The class's teachers and school admins (S.canManageClass); the principal's report: any signed-in staff of the school. */
+const stdClass = (req, res, { report = false } = {}) => {
+  const c = S.getClass(String(req.params.id || ''));
+  const okay = c && (report ? ['admin', 'teacher'].includes(S.roleIn(req.user, c.school_id)) : S.canManageClass(req.user, c));
+  if (!okay) { notFound(req, res); return null; }
+  return c;
+};
+router.get('/class/:id/standards', requireUser, (req, res) => {
+  const t = req.t, all = req.query.all === '1';
+  if (req.query.report === '1') {
+    const c = stdClass(req, res, { report: true }); if (!c) return;
+    const school = S.getSchool(c.school_id);
+    const body = standardsReport(req, { school, rep: STD.schoolReport(school.id, { all }), backHref: S.canManageClass(req.user, c) ? `/class/${c.id}/standards` : '/teach' });
+    return page(req, res, { title: `${t('cs.standards.reportH.title')} · ${school.name}`, body: html`<div class="printdoc csq-print">${body}</div>`, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
+  }
+  const c = stdClass(req, res); if (!c) return;
+  const data = STD.classStandards(c.id, { all });
+  const student = req.query.student ? data.students.find(p => p.id === String(req.query.student)) || null : null;
+  const body = html`${classHeader(req, c, 'standards')}<p class="muted csq-std-lead">${t('cs.standards.lead')}</p>${standardsBody(req, { c, data, all, student })}`;
+  page(req, res, { title: `${t('cs.standards.title')} · ${c.name}`, active: 'classes', body, head: V.CSS, ...classBack(req, c) });
+});
+router.get('/class/:id/standards.csv', requireUser, (req, res) => {
+  const c = stdClass(req, res); if (!c) return;
+  const data = STD.classStandards(c.id, { all: req.query.all === '1' });
+  const file = `${c.name.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'class'}-standards.csv`;
+  res.set('Content-Type', 'text/csv; charset=utf-8').set('Cache-Control', 'no-store')
+    .set('Content-Disposition', `attachment; filename="standards.csv"; filename*=UTF-8''${encodeURIComponent(file)}`).send(standardsCsv(req.t, data));
 });

@@ -653,6 +653,23 @@
     },
     "units": {
       "h": "Units"
+    },
+    "standards": {
+      "cols": {
+        "practiced": "Practised"
+      },
+      "status": {
+        "practiced": "Practised"
+      },
+      "legend": {
+        "practiced": "Practised: students who finished a step tagged with the standard (a game played, a question answered, a build handed in). It means they did the activity, not mastery."
+      },
+      "csvCols": {
+        "practiced": "Practised (students)"
+      },
+      "reportH": {
+        "note": "Practised means the activity was done, not mastery. Accuracy is right answers out of answered exit-ticket items tagged with the standard."
+      }
     }
   }
 }
