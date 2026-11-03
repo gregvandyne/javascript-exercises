@@ -879,7 +879,7 @@ const ROOT = $('im');
 
 /* ---------- words: English is the key; the other languages are a data pack loaded with its checksum ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-pending', PACK_SRI = {};
+const PACK_VER = '1.0.0-827d98ec', PACK_SRI = {"es":"sha384-txjPK7jtPcDBZStUcjQoqtKpKhbgphtW8v6o1vPQj/nyO3LGP5G0PH+/KliiDCuI","fr":"sha384-2OKbE3K5ymEiWgRGAR8kk/Lp6U7ymNWi1vWYJti+P0Z+GaCgbreuM+ohnFK89F61","de":"sha384-rYwea77NVEDjyRICLVZoxh3SazVIepMoOF/fzM3z2AqtqWWD03fFy1lbutGYWsYW","it":"sha384-/iwidwtkCZbY03SSVlLLnGRGGY5lf0xfTkJFEqlPnySSNRoqW6T7m5DfM172pDQw","pt":"sha384-iFxNTNVDuhKBvBkpji3dx1VmcNy1ONiMj7TzpAVlvyASOKymbLx2Po61AQDYakCb","nl":"sha384-o4Y5Q+qb4sxoRXqKBQdMBNdgttGrYrsgmW+nZayglLMjkFz3LMPCLkRG2CWNvg8D","ru":"sha384-J1e9u+dSWr/tK8hemQdKCBbYtoLO7avAVBfZt/aqzhbc6TfD2PqgJXaSz/ehn34X","ja":"sha384-stkL6uY5yRdHRrkINQpKDVs6gAs6FCTzss2cOYKIxMHU/YOGMPMcQ22fKwS0Xs6m","zh-Hant":"sha384-zYEQ+gXbXymsbt8OOy+q//5qDrRfjVKfQrE844S+UQ0X7eXDaBqckNJgmXg+ISJ9","he":"sha384-dnd133EmmthJRPDVvGfFKzWhsAvSoXOALWOg+91OVdVhZdaQf1XP03fURaGbI/Gt","ar":"sha384-8sNua0xGVPOyXLjiGKnW++AMADjhjMNcP4S0LAdBPkbgUV6BSUFgHrWuV7fu7Ea+"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1102,7 +1102,7 @@ function showMap(chapterId) {
   S.mapChapter = chapterId;
   for (const c of chapters) {
     const list = levelsFor(c.id), stars = chapterStars(c.id), total = list.length * 3;
-    const t = el('button', 'im-chap' + (c.id === chapterId ? ' on' : '')); t.type = 'button';
+    const t = el('button', 'im-chap' + (c.id === chapterId ? ' on' : '')); t.type = 'button'; t.dataset.ch = c.id;
     t.appendChild(propCanvas(c.pic, 44));
     t.appendChild(el('b', '', esc(tr(c.title))));
     const st = el('span', 'im-stars' + (silverHere() ? ' im-silver' : '')); st.innerHTML = `<span class="im-star">${icon('star', { size: 18 })}</span>`; st.appendChild(document.createTextNode(num(stars) + '/' + num(total))); st.dir = 'ltr'; t.appendChild(st);

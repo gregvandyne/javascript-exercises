@@ -52,7 +52,7 @@ test('inside-the-machine: the file is a kit 1.1.2 game that passes the scanner, 
   assert.ok(META.description.length <= 600 && META.title.length <= 60);
 });
 
-test('inside-the-machine: JSON l10n has every non-English description', { skip: !Object.keys(META.l10n).length && 'translations land with the language packs' }, () => {
+test('inside-the-machine: JSON l10n has every non-English description', () => {
   for (const l of ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) assert.ok(META.l10n[l] && META.l10n[l].description, `description in ${l}`);
 });
 
@@ -244,6 +244,10 @@ async function open({ size = { width: 390, height: 844 }, lang = 'en', params = 
   const shot = async name => { if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.waitForTimeout(150); await page.screenshot({ path: path.join(SHOTS, `${name}-${size.width}x${size.height}-${lang}.png`) }); } };
   return { ctx, page, frame, errors, messages, consoleErrors, shot };
 }
+const PACK_VER = HTML.match(/const PACK_VER = '([^']+)'/)[1];
+const PACKS = {};
+const packOf = l => PACKS[l] || (PACKS[l] = (() => { const w = { window: {} }; vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'public/vendor/data/inside-the-machine', PACK_VER, l + '.js'), 'utf8'), w); return w.window.CsqPacks['inside-the-machine'][l].strings; })());
+const word = (lang, k) => lang === 'en' ? k : (packOf(lang)[k] || k);
 const T = (frame, fn, ...a) => frame.evaluate(([f, a]) => window.__brbTest[f](...a), [fn, a]);
 const solOf = id => L.level(id).sol;
 
@@ -385,11 +389,11 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       assert.equal(await T(frame, 'code', '3110'), false, 'a debug-mode code belongs to another game');
       // an unlocked class quest follows the chapter the kid picks on the map: the pill, the label noun and the gradebook agree
       await T(frame, 'map'); await frame.waitForFunction(() => window.__brbTest.state().screen === 'map');
-      await frame.evaluate(() => { [...document.querySelectorAll('.im-chap')].find(t => /Fix-It/.test(t.textContent)).click(); });
-      await frame.evaluate(() => { [...document.querySelectorAll('.ok-btn')].find(b => b.textContent.trim() === 'Play').click(); });
+      await frame.evaluate(() => { document.querySelector('.im-chap[data-ch="fixit"]').click(); });
+      await frame.evaluate(play => { [...document.querySelectorAll('.ok-btn')].find(b => b.textContent.trim() === play).click(); }, word(lang, 'Play'));
       await frame.waitForFunction(() => window.__brbTest.state().screen === 'play');
       s = await T(frame, 'state'); assert.equal(s.chapter, 'fixit'); assert.deepEqual(s.quest, { ch: 'fixit', band: '1b' }); assert.equal(s.lesson, true);
-      assert.match(await frame.evaluate(() => document.querySelector('.im-play .im-pill').getAttribute('aria-label')), /^Level \d · Class quest: Fix-It Desk · Explorer$/);
+      { const pill = await frame.evaluate(() => document.querySelector('.im-play .im-pill').getAttribute('aria-label')); if (lang === 'en') assert.match(pill, /^Level \d · Class quest: Fix-It Desk · Explorer$/); else assert.ok(pill.includes(word(lang, 'Fix-It Desk')), pill); }
       if (s.modal) await T(frame, 'closeDialog');
       await T(frame, 'answer', solOf(s.levelId)); await T(frame, 'closeDialog'); await frame.waitForFunction(() => document.querySelector('.im-modal .im-check-tiles')); await T(frame, 'check', 0);
       await frame.waitForFunction(() => window.__brbTest.state().modal === false);
@@ -398,20 +402,20 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       // the third hint costs a star, the kid is warned after the second, and the stars card says what was missed
       for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
       s = await T(frame, 'start', { chapter: 'parts', band: '1b', level: 3, seed: 4 });
-      assert.equal(await frame.evaluate(() => document.querySelector('.im-rule').textContent), 'Second star: no wire taken out.');
+      assert.equal(await frame.evaluate(() => document.querySelector('.im-rule').textContent), word(lang, 'Second star: {rule}.').replace('{rule}', word(lang, 'no wire taken out')));
       await T(frame, 'hint'); await T(frame, 'hint');
-      assert.match(await frame.evaluate(() => document.querySelector('.im-panel [role=status]').textContent), /One more hint will cost a star\.$/);
-      assert.match(await frame.evaluate(() => document.querySelector('.im-hintbtn').textContent), /costs a star/);
+      if (lang === 'en') assert.match(await frame.evaluate(() => document.querySelector('.im-panel [role=status]').textContent), /One more hint will cost a star\.$/);
+      if (lang === 'en') assert.match(await frame.evaluate(() => document.querySelector('.im-hintbtn').textContent), /costs a star/);
       await T(frame, 'hint');
-      assert.match(await frame.evaluate(() => document.querySelector('.im-panel [role=status]').textContent.trim()), /^One missing wire is drawn for you\./, 'hint 3 says what it did');
+      if (lang === 'en') assert.match(await frame.evaluate(() => document.querySelector('.im-panel [role=status]').textContent.trim()), /^One missing wire is drawn for you\./, 'hint 3 says what it did');
       await T(frame, 'tap', 'processor'); await T(frame, 'tap', 'screen'); await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); });   // the hint drew the first wire; the kid adds the second
       await frame.waitForFunction(() => document.querySelector('.ok-win .im-why'));
-      assert.equal(await frame.evaluate(() => document.querySelector('.ok-win .im-why').textContent), 'Third star next time: no third hint.');
+      assert.equal(await frame.evaluate(() => document.querySelector('.ok-win .im-why').textContent), word(lang, 'Third star next time: no third hint.'));
       s = await T(frame, 'state'); assert.equal(s.hint, 3);
       // the Design Lab: the key is the moment Tao is locked out (the fourth beat), and a restart also un-freezes the app
       await T(frame, 'next'); for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
       s = await T(frame, 'start', { chapter: 'design-lab', band: '2', level: 4, seed: 4 }); await T(frame, 'tap', 1); s = await T(frame, 'state'); assert.equal(s.fails, 0, 'the design-flaw narration (the cause) is a near miss, not a wrong tap');
-      assert.match(await frame.evaluate(() => document.querySelector('.im-panel').textContent), /That is what causes it/);
+      if (lang === 'en') assert.match(await frame.evaluate(() => document.querySelector('.im-panel').textContent), /That is what causes it/);
       await T(frame, 'tap', 2); s = await T(frame, 'state'); assert.equal(s.fails, 1, 'a scenery beat is not the moment');
       await T(frame, 'tap', 3); await T(frame, 'tap', 'testgroup'); await T(frame, 'tap', 'passcode'); await frame.evaluate(() => { document.querySelector('.im-actions .ok-hot').click(); });
       s = await T(frame, 'state'); assert.equal(s.done, true, 'the locked-out moment plus the two best changes solve it');
@@ -518,4 +522,26 @@ test('inside-the-machine: review round fixes in Chromium (Pro flowchart, stale t
     assert.equal(await frame.evaluate(() => [...document.querySelectorAll('.im-slot')].map(x => x.textContent).join('')), '41··');
     assert.deepEqual(g.errors, []);
   } finally { await g.ctx.close(); }
+});
+
+test('inside-the-machine: the language packs load in Chromium (French and Arabic words appear, Arabic mirrors, numbers and bits stay left to right) and English runs without one', { skip, timeout: 180_000 }, async () => {
+  const VER = PACK_VER, SRI = JSON.parse(HTML.match(/PACK_SRI = (\{[^;]*\});/)[1]);
+  for (const l of ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) {
+    const body = fs.readFileSync(path.join(ROOT, 'public/vendor/data/inside-the-machine', VER, l + '.js'));
+    assert.equal('sha384-' + (await import('node:crypto')).createHash('sha384').update(body).digest('base64'), SRI[l], `${l}: the pack's checksum matches the game`);
+  }
+  for (const lang of ['fr', 'ar', 'en']) {
+    const { ctx, frame, errors } = await open({ size: { width: 1180, height: 820 }, lang });
+    try {
+      await T(frame, 'start', {});
+      const chaps = await frame.evaluate(() => [...document.querySelectorAll('.im-chap')].map(t => t.textContent));
+      const want = lang === 'en' ? 'Fix-It Desk' : packOf(lang)['Fix-It Desk'];
+      assert.ok(want && chaps.some(t => t.includes(want)), `${lang}: the map shows ${want} (${chaps.join(' | ')})`);
+      assert.equal(await frame.evaluate(() => document.getElementById('im').dir), lang === 'ar' ? 'rtl' : 'ltr');
+      await T(frame, 'start', { chapter: 'bits', band: '1b', level: 1 });
+      const ltr = await frame.evaluate(() => [...document.querySelectorAll('.im-lv, .im-stars, .im-bitcard, [dir="ltr"]')].length);
+      if (lang === 'ar') assert.ok(ltr > 0 && await frame.evaluate(() => [...document.querySelectorAll('[dir="ltr"]')].every(e => getComputedStyle(e).direction === 'ltr')), 'numbers and bits stay left to right');
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
 });
