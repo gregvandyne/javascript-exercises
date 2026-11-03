@@ -25,7 +25,7 @@
   /* a phone on its side: the kit's HUD pills end at about 56px and this game never drops a banner outside a card, so its panels start right under the HUD */
   @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-panel > .pp-h { display: none; } .pp-board .pp-wheel { width: auto; height: 150px; flex: none; } .pp-cipher { font-size: 1em; letter-spacing: .06em; } .pp-itemcard { padding: 6px 10px; } .pp-shift { font-size: 1.1em; } .pp-fill { gap: 6px; padding: 8px; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
   .pp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
-  @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } }
+  @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } .pp-board.pp-board-mid { flex: 0 0 min(36%, 300px); } }
   @media (orientation: landscape) { .pp-board.pp-board-small { width: 38%; } }
   @media (orientation: portrait) and (max-width: 520px) { .pp-board.pp-board-small { display: none; } }   /* a phone upright: the rule and order tiles need the room; the map is only scenery there */
   .pp-roads { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -875,16 +875,19 @@ function applyStart(o) {
   if (o.chapter && CH_BY_ID[o.chapter]) { if (S.lesson) S.lockedChapter = o.chapter; return enterChapter(o.chapter, o.level ? o.level - 1 : null); }
   showMap();
 }
+/** The HUD: the chapter's levels done and stars in play; on the map, the band's whole game. */
 function hudSync() {
-  const w = S.w; if (!w || !w.hud || !S.chapter) return;
-  const ls = levelsFor(S.chapter, S.band), done = ls.filter(l => starsOf(l.id) > 0).length;
+  const w = S.w; if (!w || !w.hud) return;
+  const ls = S.chapter ? levelsFor(S.chapter, S.band) : LEVELS.filter(l => l.bands.includes(S.band));
+  const done = ls.filter(l => starsOf(l.id) > 0).length, stars = ls.reduce((a, l) => a + starsOf(l.id), 0);
   if (w.hud.progress) w.hud.progress.set(ls.length ? done / ls.length : 0);
-  if (w.hud.count) w.hud.count.set(chapterStars(S.chapter, S.band), ls.length * 3);
+  if (w.hud.count) w.hud.count.set(stars, ls.length * 3);
 }
 
 /* ---------- the chapter map (free play) ---------- */
 function showMap() {
   if (S.lock) return enterChapter(S.lockedChapter || S.params.chapter || 'packets', null);
+  S.chapter = null; S.level = null; S.run = null; hudSync();
   const pp = screen('map'), map = $('div', 'pp-map'); pp.appendChild(map);
   const bar = $('div', 'pp-bar'); map.appendChild(bar);
   const seg = $('div', 'pp-seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
@@ -998,7 +1001,7 @@ function renderLevel() {
   const lv = $('div', 'pp-pill'); lv.style.flex = '0 0 auto'; lv.appendChild($('span', '', tr('Level {n} of {total}', { n: S.levelIx + 1, total: levelsFor(S.chapter, S.band).length }))); bar.appendChild(lv);
   if (S.projector) { const p = $('div', 'pp-pill'); p.appendChild(iconEl('eye')); p.appendChild($('span', '', tr('Projector'))); bar.appendChild(p); }
   const main = $('div', 'pp-main'); pp.appendChild(main);
-  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
+  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
   const panel = $('div', 'pp-panel'); main.appendChild(panel);
   Object.assign(UI, { board, panel, links: {}, nodes: {}, lines: {}, packets: {}, pk: null, say: null, revealed: Infinity });
   PIECES = I.n && MAP_TYPES.includes(I.type) ? pieces(I) : null;

@@ -213,3 +213,65 @@ test('packet-post: the sort, passphrase, inbox, cipher and pixel run types solve
   run = new E.Run(FIX.read, 1); run.inst.target.forEach((b, k) => { assert.equal(run.inst.values[k] & 1, b, 'read mode hides the picture in the values'); });
   run.px(1); assert.ok(run.submit().failed && run.retry()); for (let k = 0; k < 12; k++) if (run.inst.target[k] && k !== 1) run.px(k); assert.ok(run.submit().done && !run.quality());
 });
+
+// Real Chromium inside the production frame wrapper (the gulp-city pattern): level 1 of two chapters plays through
+// __brbTest, the score label follows the grammar, and the game renders at a phone and a desktop size in English and
+// Arabic with no page errors and no kit warnings. Skipped when there is no Chromium on the machine.
+const LOCAL = ['/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'];
+const exe = process.env.BRB_CHROMIUM || LOCAL.find(f => fs.existsSync(f));
+const skip = !exe && !process.env.PLAYWRIGHT_BROWSERS_PATH ? 'no Chromium on this machine' : false;
+const { frameDocument, frameCsp, SANDBOX } = await import('../../server/services/frame.js');
+const HOST = 'http://game.invalid';
+let browser;
+test.after(async () => { if (browser) await browser.close(); });
+async function open({ size = { width: 390, height: 844 }, lang = 'en' } = {}) {
+  if (!browser) { const { chromium } = await import('playwright-core'); browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] }); }
+  const ctx = await browser.newContext({ viewport: size, hasTouch: true });
+  const doc = frameDocument(HTML, { user: { displayName: 'P', avatar: 'x', lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Packet Post' }, save: {}, canSave: false, preview: true, deviceText: { title: 'x', text: 'y' } });
+  const host = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
+  const errors = [], warnings = [], msgs = [];
+  await ctx.route('**/*', route => {
+    const u = route.request().url();
+    if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
+    if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
+    const m = /^http:\/\/game\.invalid\/(vendor\/oomba-kit\/[\w./-]+)$/.exec(u);
+    if (m && fs.existsSync(path.join(ROOT, 'public', m[1]))) return route.fulfill({ status: 200, headers: { 'content-type': m[1].endsWith('.js') ? 'text/javascript' : 'font/woff2', 'access-control-allow-origin': '*' }, body: fs.readFileSync(path.join(ROOT, 'public', m[1])) });
+    return route.abort();
+  });
+  const page = await ctx.newPage();
+  page.on('pageerror', e => errors.push(String(e.message)));
+  page.on('console', m => { if (m.type() === 'error' || /\[oomba\]/.test(m.text())) warnings.push(m.type() + ': ' + m.text().slice(0, 200)); });
+  await page.exposeFunction('__ppMsg', d => msgs.push(d));
+  await page.goto(HOST + '/', { waitUntil: 'load' });
+  await page.evaluate(() => window.addEventListener('message', e => { if (e.data && typeof e.data.type === 'string') window.__ppMsg({ type: e.data.type, score: e.data.score, label: e.data.label, won: e.data.won }); }));
+  let frame = null;
+  for (let i = 0; i < 200 && !frame; i++) { frame = page.frames().find(f => f.url() === HOST + '/frame'); if (!frame) await page.waitForTimeout(25); }
+  await frame.waitForFunction(() => window.__brbTest && window.__brbTest.state && window.__brbTest.state().ready, null, { timeout: 60_000 });
+  return { ctx, page, frame, errors, warnings, msgs };
+}
+const T = (frame, fn, ...a) => frame.evaluate(([f, a]) => window.__brbTest[f](...a), [fn, a]);
+
+test('packet-post: in Chromium, level 1 of two chapters plays through the hooks, the label follows the grammar, phone and desktop, English and Arabic', { skip, timeout: 240_000 }, async () => {
+  const LABEL = /^\d{1,2}\/\d{1,2} (levels|cases|tickets|cards), \d{1,3} stars(, \d{1,2}\/\d{1,2} checks)?$/;
+  for (const [size, lang, chapter, band] of [[{ width: 390, height: 844 }, 'en', 'packets', '1b'], [{ width: 1280, height: 800 }, 'ar', 'protocols', '2']]) {
+    const { ctx, page, frame, errors, warnings, msgs } = await open({ size, lang });
+    try {
+      const s0 = await T(frame, 'state');
+      assert.equal(s0.scene, 'title'); assert.equal(s0.lang, lang); assert.equal(s0.dir, lang === 'ar' ? 'rtl' : 'ltr');
+      assert.ok(await frame.$('.ok-title-screen .ok-hot'), 'the kit title screen with its Play button (the fit audit presses it)');
+      const s1 = await T(frame, 'start', { chapter, band, level: 1, seed: 3, lesson: false });
+      assert.equal(s1.screen, 'level'); assert.equal(s1.chapter, chapter); assert.equal(s1.level, 1); assert.equal(s1.band, band); assert.equal(s1.cards, 1, 'level 1 opens the learn card');
+      await page.waitForTimeout(300); await T(frame, 'closeCards'); await T(frame, 'skipAnimations');
+      const dir = await frame.evaluate(() => document.querySelector('.pp').getAttribute('dir')); assert.equal(dir, lang === 'ar' ? 'rtl' : 'ltr', 'the game mirrors its menus');
+      assert.equal(await frame.evaluate(() => [...document.querySelectorAll('.pp button')].filter(b => { const r = b.getBoundingClientRect(); return b.offsetParent !== null && !b.closest('[data-fit-dense]') && (r.width < 40 || r.height < 40); }).length), 0, 'every control at least 40 px');
+      const snap = await T(frame, 'solve');
+      assert.equal(snap.phase, 'done', `${chapter} level 1 solved by the solver`);
+      await page.waitForTimeout(1200);
+      const s2 = await T(frame, 'state');
+      assert.equal(s2.levelStars, 3); assert.match(s2.label, LABEL); assert.ok(s2.label.length <= 40);
+      const score = msgs.find(m => m.type === 'brb:score'); assert.ok(score && score.score === 3 && LABEL.test(score.label), `the page got the score ${JSON.stringify(score)}`);
+      assert.ok(await frame.$('.ok-win'), 'the kit results card after the level');
+      assert.deepEqual(errors, []); assert.deepEqual(warnings, []);
+    } finally { await ctx.close(); }
+  }
+});
