@@ -144,6 +144,7 @@
   .runs span.ok { background: var(--dd-go); border-radius: 50%; }
   .runs svg { width: 16px; height: 16px; }
   .off.ok svg, .off.no svg { width: 16px; height: 16px; vertical-align: middle; margin-inline-start: 4px; }
+  .mtbl th, .mtbl td { padding: 0 5px; } .mtbl .hdr { padding: 4px 5px; gap: 4px; }
   /* My Data: the question chips, the total ribbon, the pool */
   .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
   .total { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
@@ -1095,6 +1096,7 @@ function onPlay() {
 function openMap() {
   closeOwnModal();
   if (S.lock && S.chapter) { startChapter(S.chapter, S.startLevel); return; }
+  if (S.daily != null) { S.seedFixed = S.seedSaved; S.daily = null; }   // back from the daily challenge
   S.chapter = null; S.level = null; S.cs = null; S.phase = 'map';
   renderMap(); show('map');
   $('backBtn').innerHTML = icon('home'); $('backBtn').setAttribute('aria-label', tr('Title screen'));
@@ -1253,7 +1255,8 @@ function modelView(level, st, g) {
     t.appendChild(body); wrap.appendChild(t);
     return wrap;
   }
-  t.innerHTML = `<thead><tr><th><span class="hdr">${esc(tr(m.inputLabel))}${esc(unit)}</span></th><th><span class="hdr">${esc(tr('Model says'))}</span></th><th><span class="hdr">${esc(tr('Real'))}</span></th><th><span class="hdr">${esc(tr('Off by'))}</span></th></tr></thead>`;
+  wrap.classList.add('mtbl');
+  t.innerHTML = `<thead><tr><th><span class="hdr">${esc(tr(m.inputLabel))}${esc(unit)}</span></th><th><span class="hdr">${esc(tr('Model'))}</span></th><th><span class="hdr">${esc(tr('Real'))}</span></th><th><span class="hdr">${esc(tr('Off by'))}</span></th></tr></thead>`;
   const body = el('tbody');
   for (const r of E.modelRows(level, st)) {
     const tr0 = el('tr', 'row' + (st.shown[r.id] ? ' proved' : '') + ((g.row === r.id || (g.rows || []).includes(r.id)) ? ' lit' : ''));
@@ -1376,22 +1379,31 @@ function barsView(level, st, g, view) {
   const label = view === 'picto' ? tr('Pictograph') : view === 'group' ? tr('Counts by {col}', { col: tr((level.cols.find(c => c.id === st.groupBy) || {}).label || '') }) : tr('Bar chart');
   wrap.setAttribute('aria-label', label + ': ' + data.map(([c, v]) => `${trCell(c)} ${num(v)}`).join(', '));
   const scale = level.scale || 1;
-  for (const [c, v] of data) {
+  const shown = shortLabels(data.map(([c]) => trCell(c)));   // many narrow bars: 'Option A' .. 'Option H' read as A .. H under the bars
+  data.forEach(([c, v], i) => {
     const key = 'c:' + c;
     // the column (value, fill or pictures) is a plain box; the real control is the wide, short button under it (label)
     const col = el('div', 'barcol' + (st.shown[key] ? ' proved' : '') + (g.cat === c ? ' lit' : '')); col.dataset.cat = c;
     const val = el('div', 'barv num'); val.dir = 'ltr'; val.textContent = num(v); col.appendChild(val);
-    if (view === 'picto') { const p = el('div', 'picto'); const n = Math.round(v / scale); for (let i = 0; i < n; i++) p.insertAdjacentHTML('beforeend', icon('user', 20)); col.appendChild(p); }
+    if (view === 'picto') { const p = el('div', 'picto'); const n = Math.round(v / scale); for (let k = 0; k < n; k++) p.insertAdjacentHTML('beforeend', icon('user', 20)); col.appendChild(p); }
     else { const fill = el('i', 'fill'); fill.style.setProperty('--h', String(Math.round(100 * v / max * 0.82))); col.appendChild(fill); }
     const b = el('button', 'barbtn'); b.type = 'button'; b.setAttribute('aria-label', `${trCell(c)}: ${num(v)}`);
-    const l = el('span', 'barl'); l.textContent = trCell(c); b.appendChild(l); col.appendChild(b);
+    const l = el('span', 'barl'); l.textContent = shown[i]; b.appendChild(l); col.appendChild(b);
     col.addEventListener('click', () => tapBar(c));
     wrap.appendChild(col);
-  }
+  });
   const box = el('div', 'barsbox'); box.style.cssText = 'display:flex;flex-direction:column;gap:6px';
   if (view === 'picto') { const sc = el('p', 'scale'); sc.innerHTML = `${icon('user', 18)} = ${esc(tr('{n} kids', { n: scale }))}`; box.appendChild(sc); }
   box.appendChild(wrap);
   return box;
+}
+/** Seven or more labels that share their first word ('Option A' .. 'Option H') drop it under the bars (the full name stays in the aria-label). */
+function shortLabels(labels) {
+  if (labels.length < 7) return labels;
+  const words = labels.map(l => String(l).split(' '));
+  const first = words[0][0];
+  if (!words.every(w => w.length >= 2 && w[0] === first)) return labels;
+  return words.map(w => w.slice(1).join(' '));
 }
 function renderTools() {
   const level = S.level, st = S.cs, box = $('tools'); box.innerHTML = '';
