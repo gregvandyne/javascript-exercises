@@ -140,7 +140,9 @@ body{margin:0;touch-action:manipulation}
 .rr-cmp h3{margin:0;font-size:1em;font-weight:800}
 .rr-cmp .rr-list{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px;flex:1;align-content:flex-start}
 .rr-cmp .rr-list.inner{width:auto;align-self:auto;margin-inline-start:2px;padding-inline-start:6px}
-.rr-cmp .rr-blk{min-height:36px;padding:0 8px;font-size:.88em;cursor:default}
+.rr-cmp .rr-blk{min-height:30px;padding:0 8px;font-size:.84em;cursor:default}
+.rr-cmp .blocks{flex:1;min-height:0;overflow:auto}
+.rr-cmp .row{justify-content:flex-start}
 .rr-cmp .rr-list .rr-slot{display:none}
 .rr-cmp .ok-btn{min-height:48px}
 .rr-tag{display:inline-block;font-size:.72em;font-weight:700;opacity:.85;border-radius:6px;padding:1px 6px;background:var(--rr-tint)}
@@ -925,7 +927,7 @@ const LEVELS = [
   check: { q: 'Which program is shortest for three equal sides and one short side?', tiles: ['A loop of loops, then a small loop', 'Twelve move blocks', 'One big repeat 12'], answer: 0 } },
 
 /* ---------------- 3 Conditionals and events ---------------- */
-{ id: 'cond-1', ch: 'conditionals', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'repeat', 'ifelse'], needs: ['if'], repeatDefault: 6, defaultSensor: 'path', par: 4,
+{ id: 'cond-1', ch: 'conditionals', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'repeat', 'ifelse'], needs: ['if'], repeatDefault: 6, defaultSensor: 'path', fog: true, par: 4,
   rows: ['......', '......', '......', '...G..', '......', '>...#.'],
   sol: 'repeat 6 { if path { move } else { left } }',
   learn: { title: 'A conditional chooses', text: 'An if block asks a question about the world: is the path ahead clear? If yes, the blocks inside run. If no, the else blocks run. Bolt decides for itself, every time.' },
@@ -1715,6 +1717,7 @@ function blockText(b) {
 const kindOf = b => b.t === 'repeat' ? 'loop' : b.t === 'if' ? 'if' : b.t === 'when' ? 'event' : b.t === 'set' || b.t === 'change' ? 'var' : b.t === 'proc' || b.t === 'call' ? 'proc' : 'move';
 function renderProgram() {
   const root = $('#prog'); root.innerHTML = '';
+  $('#shelf').hidden = !!(S.compare && S.compare.picked == null) || (!$('#edit').hidden && compactPanel());
   if (S.compare && S.compare.picked == null) { root.appendChild(renderCompare()); syncShelf(); return; }
   if (!S.prog.length) { root.appendChild(el('div', 'rr-empty', esc(tr('Tap a block on the shelf to start your program.')))); root.appendChild(slot(S.prog, 0, tr('start here'))); syncShelf(); return; }
   root.appendChild(renderList(S.prog, true));
@@ -1752,11 +1755,11 @@ function renderCompare() {
   S.level.programs.forEach((text, i) => {
     const col = el('div', 'col'); const prog = parse(text), letter = 'AB'[i];
     col.appendChild(el('h3', '', esc(tr('Route {x}', { x: letter })) + ' · ' + esc(tr('{n} blocks', { n: E.blocks(prog) }))));
-    col.appendChild(renderList(prog, true, true));
     const row = el('div', 'row');
     row.appendChild(btn(tr('Run {x}', { x: letter }), { kind: 'quiet', icon: 'play', onPress: () => previewRoute(i) }));
     row.appendChild(btn(tr('Use {x}', { x: letter }), { kind: 'go', icon: 'check', onPress: () => useRoute(i) }));
-    col.appendChild(row); wrap.appendChild(col);
+    col.appendChild(row);
+    const list = el('div', 'blocks'); list.appendChild(renderList(prog, true, true)); col.appendChild(list); wrap.appendChild(col);
   });
   return wrap;
 }
@@ -1785,8 +1788,10 @@ function renderTray() {
   if (b.t === 'if' && !b.else) add(tr('Add else'), 'swap', () => { b.else = []; });
   add(tr('Done'), 'check', () => { S.sel = null; }, 'go');
 }
+/** On a phone the shelf makes way while a block is being changed (Done brings it back). */
+const compactPanel = () => $('#rr').classList.contains('narrow') || $('#rr').classList.contains('short');
 function renderEdit(b) {
-  const e = $('#edit'); e.innerHTML = ''; e.hidden = false; const L = S.level;
+  const e = $('#edit'); e.innerHTML = ''; e.hidden = false; $('#tray').hidden = true; if (compactPanel()) $('#shelf').hidden = true; const L = S.level;
   const refresh = () => { renderProgram(); renderEdit(b); };
   const stepper = (get, set, min, max) => { e.appendChild(btn(tr('Less'), { kind: 'icon', icon: 'minus', onPress: () => { set(Math.max(min, get() - 1)); refresh(); } })); const v = el('span', 'val', esc(Oomba.num(get()))); v.dir = 'ltr'; e.appendChild(v); e.appendChild(btn(tr('More'), { kind: 'icon', icon: 'plus', onPress: () => { set(Math.min(max, get() + 1)); refresh(); } })); };
   const tiles = (opts, cur, on) => { for (const [v, label] of opts) { const x = btn(label, { kind: 'quiet', onPress: () => { on(v); refresh(); } }); x.setAttribute('aria-pressed', String(v === cur)); e.appendChild(x); } };
@@ -1830,14 +1835,14 @@ function renderEdit(b) {
     else if (L.word) tiles(E.WORDS.map(w => [w, tr(w)]), b.val, v => { b.val = v; });
     else stepper(() => b.val | 0, v => { b.val = v; }, 0, 20);
   }
-  e.appendChild(btn(tr('Done'), { kind: 'go', icon: 'check', onPress: () => { e.hidden = true; } }));
+  e.appendChild(btn(tr('Done'), { kind: 'go', icon: 'check', onPress: () => { e.hidden = true; renderProgram(); renderTray(); } }));
 }
 /* Document it (Pro functions): a note chip per procedure, picked from four sentences */
 function renderChipEdit(b) {
-  const e = $('#edit'); e.innerHTML = ''; e.hidden = false;
+  const e = $('#edit'); e.innerHTML = ''; e.hidden = false; $('#tray').hidden = true; if (compactPanel()) $('#shelf').hidden = true;
   e.appendChild(el('span', '', esc(tr('What does {name} do?', { name: b.name }))));
   for (const k of S.level.chipOptions || []) { const x = btn(tr(CHIPS[k] || k), { kind: 'quiet', onPress: () => { b.chip = b.chip === k ? null : k; renderProgram(); renderChipEdit(b); } }); x.setAttribute('aria-pressed', String(b.chip === k)); e.appendChild(x); }
-  e.appendChild(btn(tr('Done'), { kind: 'go', icon: 'check', onPress: () => { e.hidden = true; } }));
+  e.appendChild(btn(tr('Done'), { kind: 'go', icon: 'check', onPress: () => { e.hidden = true; renderProgram(); renderTray(); } }));
 }
 /* ---------- the run bar ---------- */
 function renderRunbar() {
@@ -2037,7 +2042,7 @@ function openPlan() {
       else { t.classList.remove('rr-shake'); void t.offsetWidth; t.classList.add('rr-shake'); sfx('wrong'); }
     }); col.appendChild(t); return t; });
     if (tiles[0]) tiles[0].setAttribute('data-focus', '');
-  });
+  }, 'plan');
 }
 function openHint() {
   if (!hintsOpen()) { toast(tr('Run your program first. Hints open after a try.')); return; }

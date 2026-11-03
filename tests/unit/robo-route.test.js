@@ -351,7 +351,20 @@ test('robo-route: in Chromium a phone plays level 1 of two chapters in lesson mo
     assert.ok(await T(frame, 'shelf', 5)); assert.equal((await T(frame, 'state')).blocks, 7);
     assert.equal(await frame.evaluate(() => document.getElementById('runBtn').getAttribute('aria-disabled')), 'false');
     assert.deepEqual(await fit(frame), [], 'a functions level fits a phone');
+    await frame.evaluate(() => [...document.querySelectorAll('#tray .ok-btn')].find(b => /Change/.test(b.getAttribute('aria-label') || b.textContent)).click()); await page.waitForTimeout(150);
+    assert.deepEqual(await fit(frame), [], 'the edit row of a call fits a phone');
     await T(frame, 'solve'); await page.waitForTimeout(400); assert.equal((await T(frame, 'verdict')).ok, true);
+    await T(frame, 'closeDialog'); await page.waitForTimeout(200);
+    // the compare view, the flowchart card and the note-chip row on a phone
+    await T(frame, 'start', { chapter: 'best-route', band: '1b', seed: 3 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    assert.deepEqual(await fit(frame), [], 'two routes side by side fit a phone');
+    await T(frame, 'start', { chapter: 'best-route', band: '2', seed: 3 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    assert.equal((await T(frame, 'state')).card, 'plan'); assert.deepEqual(await fit(frame), [], 'the flowchart card fits a phone');
+    await T(frame, 'start', { chapter: 'functions', band: '2', level: 6, seed: 3 }); await T(frame, 'closeModal');
+    await T(frame, 'program', 'proc Sweep { repeat 3 { move; pick; move } }; call Sweep');
+    await frame.evaluate(() => document.querySelector('.rr-blk[data-id]').click()); await page.waitForTimeout(100);
+    await frame.evaluate(() => [...document.querySelectorAll('#tray .ok-btn')].find(b => /Note chip/.test(b.getAttribute('aria-label') || b.textContent)).click()); await page.waitForTimeout(150);
+    assert.deepEqual(await fit(frame), [], 'the note-chip row fits a phone');
     assert.deepEqual(errors, []); assert.deepEqual(consoleErrors, []);
   } finally { await ctx.close(); }
 });
