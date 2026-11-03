@@ -690,13 +690,17 @@ test('data-detective: Arabic reads right to left with numbers left to right, and
   } finally { await ctx.close(); }
 });
 
-test('data-detective: the cover hook stages a half-solved case with the claim card open', { skip, timeout: 120_000 }, async () => {
+test('data-detective: the cover hook stages a half-solved case: Pet Parade grouped by Pet, three bars with printed values in view, Dot pleased, the claim card not yet open (it would hide the data on a card-sized frame)', { skip, timeout: 120_000 }, async () => {
   const { ctx, frame, errors } = await open({ size: { width: 360, height: 480 } });
   try {
     await T(frame, 'cover');
     const s = await T(frame, 'state');
-    assert.deepEqual([s.chapter, s.level, s.view, s.claimsOpen, s.screen], ['sort', 3, 'group', true, 'play']);
-    assert.equal(await frame.evaluate(() => document.querySelectorAll('.claimtile').length), 3);
+    assert.deepEqual([s.chapter, s.level, s.view, s.evidence, s.claimsOpen, s.screen], ['sort', 3, 'group', true, false, 'play']);
+    assert.deepEqual(await frame.evaluate(() => [...document.querySelectorAll('.barcol')].map(b => b.querySelector('.barv').textContent)), ['4', '2', '2'], 'the grouped counts, printed on the bars');
+    assert.ok(await frame.evaluate(() => { const r = document.querySelector('.barcol').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; }), 'the bars are inside the card-sized frame');
+    assert.equal(await frame.evaluate(() => document.querySelector('.chip[aria-pressed="true"] .mark svg') !== null), true, 'the pressed Group chip');
+    assert.equal(await frame.evaluate(() => document.getElementById('dotSay').textContent), 'That view answers it. Pin your claim!');
+    // 360x480 is the cover tool's frame, smaller than any audit size: the work panel scrolls there, so no layout audit here (the five sizes are checked below)
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });

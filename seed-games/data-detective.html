@@ -1982,7 +1982,7 @@ Object.assign(window.__brbTest, {
     S.fast = true; closeOwnModal(); closeKitScreens(); titleOpen = false;
     S.seedFixed = 7; S.lesson = false; S.lock = false; S.band = '1b'; S.mode = 'play'; S.daily = null;
     startChapter('sort', 3);
-    doAct(['group', 'pet']); dotSay(tr('That view answers it. Pin your claim!'), false); claimCard();
+    doAct(['group', 'pet']); dotSay(tr('That view answers it. Pin your claim!'), false);   // the grouped bars with their printed values stay in the picture: the claim card would hide them on a card-sized frame
     try { if (DOT_ENT) DOT_ENT.mood('happy'); } catch (e) { /* ignore */ }
     return true;
   },
