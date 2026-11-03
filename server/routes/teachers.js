@@ -6,7 +6,7 @@
 // never a game a child made. The text is under teachers.* and learn.* in the locale files. Until a language has it, a
 // paragraph shows the English, marked lang="en" dir="ltr", and search engines are told the page is English only.
 import { liveOn } from '../services/classlive-sessions.js';
-import { canHost, GROWNUP_OPEN_MAX } from '../services/classlive-access.js';
+import { canHost, GROWNUP_OPEN_MAX, capacityFor } from '../services/classlive-access.js';
 import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
 import express, { Router } from 'express';
 import fs from 'node:fs';
@@ -256,7 +256,9 @@ router.get('/teachers/live', (req, res, next) => {
   const badges = [['✅', 'free'], ['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
   const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
   const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
-  const mode = (emoji, k) => html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}</section>`;
+  // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).
+  const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board' };
+  const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">👥 ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
   const startBtns = kid ? html`<a class="btn btn-primary btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
     : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>${!host && !familiesOn(req) ? html`<a class="btn btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a>` : ''}`;
   const body = html`<div class="lp">

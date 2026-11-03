@@ -4431,7 +4431,7 @@
       "notFound": "Wir finden kein Spiel mit diesem Code. Prüfe die Zahlen und versuch es noch mal.",
       "badCode": "Ein Spielcode hat 7 Zahlen.",
       "locked": "Das Spiel hat angefangen und der Raum ist zu. Bitte die Spielleitung, ihn zu öffnen.",
-      "full": "Dieses Spiel ist voll.",
+      "full": "Dieses Spiel ist voll ({max} Spieler).",
       "ended": "Dieses Spiel ist zu Ende.",
       "signIn": "Dieses Spiel ist für eine Klasse oder Familie. Melde dich zuerst an und gib den Code dann noch mal ein.",
       "notMember": "Dieses Spiel ist für eine Klasse oder Familie, zu der du nicht gehörst.",
@@ -4557,7 +4557,10 @@
       "maxPlayers": "Höchstens so viele Spielende",
       "openHint": "Gäste bekommen einen ausgedachten Namen aus einer sicheren Liste. Niemand kann chatten oder tippen.",
       "open": "Raum öffnen",
-      "recent": "Letzte Live-Spiele"
+      "recent": "Letzte Live-Spiele",
+      "best": "Am besten für {min}–{max} Spieler",
+      "teamsAbove": "Mehr als {n} Spieler? Mit Teams klappt es am besten.",
+      "maxHint": "Dieses Spiel hat Platz für bis zu {max} Spieler."
     },
     "mode": {
       "questRace": "Quest-Rennen",

@@ -4430,7 +4430,7 @@
       "notFound": "No encontramos ningún juego con ese código. Revisa los números e inténtalo otra vez.",
       "badCode": "Un código de juego tiene 7 números.",
       "locked": "El juego ya empezó y la sala está cerrada. Pide a quien lo dirige que la abra.",
-      "full": "Este juego está lleno.",
+      "full": "Este juego está lleno ({max} jugadores).",
       "ended": "Este juego ha terminado.",
       "signIn": "Este juego es para una clase o una familia. Inicia sesión primero y vuelve a escribir el código.",
       "notMember": "Este juego es para una clase o una familia de la que no formas parte.",
@@ -4556,7 +4556,10 @@
       "maxPlayers": "Máximo de jugadores",
       "openHint": "Los invitados reciben un nombre inventado de una lista segura. Nadie puede chatear ni escribir.",
       "open": "Abrir la sala",
-      "recent": "Juegos en vivo recientes"
+      "recent": "Juegos en vivo recientes",
+      "best": "Ideal para {min}–{max} jugadores",
+      "teamsAbove": "¿Más de {n} jugadores? Mejor por equipos.",
+      "maxHint": "Este juego admite hasta {max} jugadores."
     },
     "mode": {
       "questRace": "Carrera de misiones",

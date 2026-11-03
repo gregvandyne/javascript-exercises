@@ -4431,7 +4431,7 @@
       "notFound": "Non troviamo nessuna partita con quel codice. Controlla i numeri e riprova.",
       "badCode": "Un codice partita ha 7 numeri.",
       "locked": "La partita è iniziata e la stanza è chiusa. Chiedi a chi la guida di aprirla.",
-      "full": "Questa partita è piena.",
+      "full": "Questo gioco è pieno ({max} giocatori).",
       "ended": "Questa partita è finita.",
       "signIn": "Questa partita è per una classe o una famiglia. Prima accedi, poi scrivi di nuovo il codice.",
       "notMember": "Questa partita è per una classe o una famiglia di cui non fai parte.",
@@ -4557,7 +4557,10 @@
       "maxPlayers": "Numero massimo di giocatori",
       "openHint": "Gli ospiti ricevono un nome inventato da un elenco sicuro. Nessuno può chattare o scrivere.",
       "open": "Apri la stanza",
-      "recent": "Partite dal vivo recenti"
+      "recent": "Partite dal vivo recenti",
+      "best": "Ideale per {min}–{max} giocatori",
+      "teamsAbove": "Più di {n} giocatori? Meglio a squadre.",
+      "maxHint": "Questo gioco accoglie fino a {max} giocatori."
     },
     "mode": {
       "questRace": "Corsa delle missioni",

@@ -410,6 +410,10 @@ and everyone joins on their own device. Keep the game exactly as it is for playi
   sprite). Add the 2D meta tag and a top-down view for devices without 3D (others.draw(ctx, ...)).
 - An older 3D game on the kit's 3D bridge keeps Oomba.live.crowd(B).
 - No text boxes and no names typed by players: names come only from Oomba.live.players().
+- Made for a whole class: say how many players it holds with ready({ maxPlayers: n }) (a plain number; 30 if left out,
+  never above 60) and make it work at that size: 20-30 players on the projector stay readable (top-N leaderboard, name
+  tags only near the camera, everyone spread out, never stacked on one spot). Use a smaller number only when the game
+  really can't hold more (a small arena, taking turns).
 - Use edit_game; tell the builder in one short sentence that a teacher or grown-up can now host it live.
 
 ${withTags(KIT_LIVE_RULES_SOURCE)}`;

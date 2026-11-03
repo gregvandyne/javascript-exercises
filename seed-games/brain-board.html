@@ -217,7 +217,7 @@ window.SoloBank = (function () {
   function sfx(n) { try { O.sfx(n); } catch (e) { /* no sound */ } }
 
   // ---- the night sky: twinkling stars, and in the lobby everyone's character on a little hill ----
-  var flat = L.flat({ me: true, px: 72 }), cv = $('sky'), ctx = cv.getContext('2d'), stars = [], emotes = new Map();
+  var flat = L.flat({ me: true, px: 72 }), quiet = L.flat({ me: true, px: 48, names: false }), cv = $('sky'), ctx = cv.getContext('2d'), stars = [], emotes = new Map();
   var EMO = { wave: '👋', cheer: '🎉', jump: '⬆️', dance: '💃', clap: '👏', heart: '❤️' };
   var rnd = O.rand(7);
   for (var s0 = 0; s0 < 90; s0++) stars.push({ x: rnd.float(0, 1), y: rnd.float(0, 1), r: rnd.float(0.6, 2.2), p: rnd.float(0, 6.3) });
@@ -233,15 +233,20 @@ window.SoloBank = (function () {
     var lobby = phase === 'lobby' || phase === 'loading' || (phase === 'countdown' && !(bb() && bb().t));
     if (lobby && L.active) {
       ctx.fillStyle = '#3a8f5c'; ctx.beginPath(); ctx.ellipse(W / 2, H * 1.15, W * 0.8, H * 0.5, 0, 0, 6.3); ctx.fill();
-      var all = L.players(), n = all.length, cols = Math.max(1, Math.min(8, Math.ceil(Math.sqrt(Math.max(1, n) * W / (H * 0.6))))), rows = Math.max(1, Math.ceil(n / cols));
-      var cw = W / cols, ch = H * 0.6 / rows, r = Math.max(14, Math.min(46, Math.min(cw, ch) * 0.3));
+      // Columns: roughly square cells, at most 10, never narrower than a name tag (about 96 px). A class too big for
+      // name tags to fit (a phone, a full room) shows just the characters, closer together (docs/live-capacity.md).
+      var all = L.players(), n = all.length, sq = Math.ceil(Math.sqrt(Math.max(1, n) * W / (H * 0.6)));
+      var cols = Math.max(1, Math.min(10, Math.floor(W / 96), sq)), rows = Math.max(1, Math.ceil(n / cols));
+      var tight = H * 0.6 / rows < 46;
+      if (tight) { cols = Math.max(1, Math.min(12, Math.floor(W / 40), sq)); rows = Math.max(1, Math.ceil(n / cols)); }
+      var cw = W / cols, ch = H * 0.6 / rows, r = Math.max(14, Math.min(46, Math.min(cw, ch) * 0.3)), f = tight ? quiet : flat;
       all.forEach(function (p, i) {
         var cx = (i % cols + 0.5) * cw, cy = H * 0.32 + (Math.floor(i / cols) + 0.7) * ch;
         var hop = REDUCED ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
-        flat.place(p.seat, cx, cy - hop, 0);
+        f.place(p.seat, cx, cy - hop, 0);
         var e = emotes.get(p.seat); if (e && e.until > performance.now()) { ctx.font = Math.round(r) + 'px system-ui'; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
       });
-      flat.draw(ctx, { scale: 1, r: r });
+      f.draw(ctx, { scale: 1, r: r });
     }
     requestAnimationFrame(drawSky);
   }

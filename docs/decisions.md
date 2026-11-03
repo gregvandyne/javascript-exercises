@@ -2164,6 +2164,19 @@ a play. Now the platform plays every build itself before the build ends (`server
   itself is unchanged. Raise it, or watch `/admin/stats`, if teachers build a lot.
 - **Tests:** `tests/unit/builder-trusted.test.js`.
 
+## How many players each live game holds (3 Nov 2026)
+
+Every live game was run with 10, 20 and 30 players (`scripts/live-load.js`, `docs/live-capacity.md`) so a full classroom
+fits without crowding a game that can't hold one.
+- **One place:** `classlive-access.js` `CAPACITY` (per built-in mode and official game: `max`, the `best` range,
+  `teamsAbove`); Builder games get 30, or what they say in `Oomba.live.ready({ maxPlayers })` (2-60). Every room is capped
+  at its game's number, under `LIVE_MAX_PLAYERS`.
+- **Numbers:** Quest Race 40, Question Battle 60, Brain Board 40 (teams suggested above 16), Hero of Sunvale 30.
+- **Fixes:** the lobby crowd of Question Battle and Brain Board fits a full room (the boss shrinks, up to 10 columns,
+  characters without name tags when tags can't fit).
+- **Shown:** the game cards on `/live` and `/teachers/live` say who each game is best for; "Most players" is clamped to
+  the picked game; a full room says "This game is full (30 players)." in 13 languages.
+- **Tests:** `tests/unit/live-capacity.test.js`; `tests/e2e/live-load.spec.js` (10 players in each quiz mode).
 ## Would You Rather and Atlas Quest go live (3 Nov 2026)
 
 The owner asked to make Would You Rather and Atlas Quest live class games, playable by 10, 20 or 30 players. They are

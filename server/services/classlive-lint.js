@@ -50,6 +50,7 @@ const ALIAS_RE = /\b([A-Za-z_$][\w$]{0,30})\s*=\s*(?:[A-Za-z_$][\w$]{0,30}\s*\.\
  * fail codes: live_pack, live_ready_call, live_no_start, live_no_report, live_raw.
  * warn codes: live_presence_unused, live_no_2d, live_text, live_text_out, live_no_words, live_team_cue.
  * teams: the game draws its own team UI (ready({ teams: true })).
+ * maxPlayers: how many players the game is made for, when it says (ready({ maxPlayers: n }), 2-100), else null.
  */
 export function checkHtml(html) {
   const s = String(html || '');
@@ -79,10 +80,18 @@ export function checkHtml(html) {
   return {
     ready: !issues.some(i => i.level === 'fail'), issues,
     lobby: has(s, /\blobby\s*:\s*true\b/), quiz: has(s, /\bquiz\s*:\s*true\b/), hostView: has(s, /\bhostView\s*:\s*true\b/),
-    presence, threeD, twoD, words, teams: has(s, /\bteams\s*:\s*true\b/),
+    presence, threeD, twoD, words, teams: has(s, /\bteams\s*:\s*true\b/), maxPlayers: declaredMax(s),
   };
 }
 
+
+const MAXP_RE = /\bmaxPlayers\s*:\s*(\d{1,3})\b/;
+/** The player count a game declares in Oomba.live.ready({ maxPlayers: n }) (2-100), else null. */
+export function declaredMax(html) {
+  const m = MAXP_RE.exec(String(html || ''));
+  const n = m ? +m[1] : NaN;
+  return Number.isInteger(n) && n >= 2 && n <= 100 ? n : null;
+}
 
 /** The Builder's notes for each live-ready issue (English, like the other lint notes; the Studio shows them translated). */
 export const LIVE_NOTES = {

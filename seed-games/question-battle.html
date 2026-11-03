@@ -43,7 +43,7 @@
   .qb-a:active:not([disabled]) { transform: translateY(5px); box-shadow: 0 2px 0 #1d2340; }
   .qb-a .sh { position: relative; z-index: 1; font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
   .qb-a .tx { position: relative; z-index: 1; flex: 1; min-width: 0; overflow-wrap: break-word; hyphens: auto; }
-  .qb-a .fill { position: absolute; inset: 0; background: rgba(255,255,255,.28); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.9,.3,1); }
+  .qb-a .fill { position: absolute; inset: auto 0 0 0; height: 6px; background: rgba(255,255,255,.9); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.9,.3,1); }
   [dir="rtl"] .qb-a .fill { transform-origin: 100% 50%; }
   .qb-a:focus-visible { outline: 5px solid #ffc83d; outline-offset: 3px; }
   .qb-a[disabled] { cursor: default; opacity: .45; }
@@ -279,7 +279,7 @@ window.SoloBank = (function () {
 
   // ---- drawing: the arena (sky, the boss, the lobby crowd) and the effects layer -----------------------------------
   var cv = $('lobby'), ctx = cv.getContext('2d'), fx = $('fx'), fctx = fx.getContext('2d');
-  var flat = L.flat({ me: true, px: 72 }), emotes = new Map(), last = now();
+  var flat = L.flat({ me: true, px: 72 }), quiet = L.flat({ me: true, px: 48, names: false }), emotes = new Map(), last = now();
   var EMO = { wave: '👋', cheer: '🎉', jump: '⬆️', dance: '💃', clap: '👏', heart: '❤️' };
   L.on('emote', function (e) { emotes.set(e.from, { name: e.name, until: now() + 2000 }); });
   var INK = '#1d2340';
@@ -448,10 +448,14 @@ window.SoloBank = (function () {
     if (mood === 'dizzy') orbitStars(c, R, ts);
     if (mood === 'beaten') hearts(c, R, ts);
   }
+  // How many players the lobby crowd shows (drawLobbyCrowd): a big class needs the room, so the boss gets smaller.
+  var crowdN = 0;
   function bossBox() {
     var r = $('stage').getBoundingClientRect(), show = r.height > 20;
-    var R = Math.min(r.height * 0.46, r.width * 0.22, innerHeight * 0.2);
-    return { x: r.left + r.width / 2, y: r.top + r.height * 0.52, R: R, show: show };
+    var R = Math.min(r.height * 0.46, r.width * 0.22, innerHeight * 0.2), y = r.top + r.height * 0.52;
+    var lobbyish = phase === 'lobby' || phase === 'loading' || phase === 'countdown';
+    if (lobbyish && crowdN > (innerWidth < 600 ? 4 : 12)) { R = Math.min(R, innerHeight * (crowdN > 24 ? 0.1 : 0.13)); y = r.top + R * 1.3; }
+    return { x: r.left + r.width / 2, y: y, R: R, show: show };
   }
   function drawBoss(ts) {
     var b = bossBox(); if (!b.show) return;
@@ -477,9 +481,14 @@ window.SoloBank = (function () {
     var groups = tms.length ? tms.map(function (tm) { return { tm: tm, list: all.filter(function (p) { return p.team === tm.team; }) }; }) : [{ tm: null, list: all }];
     var loose = tms.length ? all.filter(function (p) { return !p.team; }) : [];
     if (loose.length) groups[groups.length - 1].list = groups[groups.length - 1].list.concat(loose);
-    var st = $('stage').getBoundingClientRect(), top0 = Math.max(st.bottom + 50, H * 0.42);
+    // The crowd stands between the boss and the banner (never under either), however many players there are.
+    crowdN = all.length;
+    var bb = bossBox(), ban = $('banner'), bannerTop = ban.textContent ? ban.getBoundingClientRect().top : H;
+    var top0 = Math.max(bb.y + bb.R * 1.25, H * 0.2), bottom = Math.max(top0 + 80, bannerTop - 8);
     var bc = groups.length === 1 ? 1 : W > 700 ? groups.length : Math.min(2, groups.length), br = Math.ceil(groups.length / bc);
-    var bw = W / bc, bh = (H - top0) / br, rr = 44;
+    var bw = W / bc, bh = (bottom - top0) / br, rr = 44;
+    var sqOf = function (n, h) { return Math.ceil(Math.sqrt(Math.max(1, n) * bw / Math.max(1, h))); };
+    var tight = groups.some(function (g) { var h = bh - (g.tm ? 40 : 0), c = Math.max(1, Math.min(10, Math.floor(bw / 96), sqOf(g.list.length, h))); return h / Math.max(1, Math.ceil(g.list.length / c)) < 46; });
     groups.forEach(function (g, gi) {
       var col = gi % bc, row = Math.floor(gi / bc), x0 = (RTL ? bc - 1 - col : col) * bw, y0 = top0 + row * bh, head = g.tm ? 40 : 0;
       if (g.tm) {
@@ -489,16 +498,19 @@ window.SoloBank = (function () {
         ctx.fillStyle = g.tm.ink; ctx.font = '800 17px ' + FONT; ctx.textBaseline = 'middle'; ctx.textAlign = RTL ? 'right' : 'left'; try { ctx.direction = RTL ? 'rtl' : 'ltr'; } catch (er) { /* old canvas */ }
         ctx.fillText(g.tm.icon + ' ' + g.tm.name + ' · ' + g.list.length, RTL ? x0 + bw - 46 : x0 + 46, y0 + head / 2, bw - 60); ctx.textBaseline = 'alphabetic';
       }
-      var n = g.list.length, cols = Math.max(1, Math.min(8, Math.ceil(Math.sqrt(Math.max(1, n) * bw / Math.max(1, bh - head))))), rows = Math.max(1, Math.ceil(n / cols));
+      // columns: roughly square cells, at most 10, and never narrower than a name tag (about 96 px). When the class is
+      // too big for name tags to fit (a phone, a full room), the crowd shows just the characters, closer together.
+      var n = g.list.length, sq = sqOf(n, bh - head);
+      var cols = tight ? Math.max(1, Math.min(12, Math.floor(bw / 40), sq)) : Math.max(1, Math.min(10, Math.floor(bw / 96), sq)), rows = Math.max(1, Math.ceil(n / cols));
       var cw = bw / cols, ch = (bh - head) / rows, r = Math.max(12, Math.min(40, Math.min(cw, ch) * 0.3)); rr = Math.min(rr, r);
       g.list.forEach(function (p, i) {
         var cx = x0 + (i % cols + 0.5) * cw, cy = y0 + head + (Math.floor(i / cols) + 0.7) * ch;
         var hop = REDUCED ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
-        flat.place(p.seat, cx, cy - hop, 0);
+        (tight ? quiet : flat).place(p.seat, cx, cy - hop, 0);
         var e = emotes.get(p.seat); if (e && e.until > now()) { ctx.font = Math.round(r) + 'px ' + FONT; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
       });
     });
-    flat.draw(ctx, { scale: 1, r: rr });
+    (tight ? quiet : flat).draw(ctx, { scale: 1, r: rr });
   }
 
   // ---- effects: attack stars, sparks, floating numbers ------------------------------------------------------------

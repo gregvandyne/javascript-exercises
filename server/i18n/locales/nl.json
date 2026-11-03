@@ -4431,7 +4431,7 @@
       "notFound": "We vinden geen spel met die code. Kijk de cijfers na en probeer het nog eens.",
       "badCode": "Een spelcode heeft 7 cijfers.",
       "locked": "Het spel is begonnen en de ruimte is op slot. Vraag de spelleider om hem open te zetten.",
-      "full": "Dit spel is vol.",
+      "full": "Dit spel is vol ({max} spelers).",
       "ended": "Dit spel is afgelopen.",
       "signIn": "Dit spel is voor één klas of familie. Log eerst in en typ de code dan opnieuw.",
       "notMember": "Dit spel is voor een klas of familie waar jij niet bij hoort.",
@@ -4557,7 +4557,10 @@
       "maxPlayers": "Maximaal aantal spelers",
       "openHint": "Gasten krijgen een verzonnen naam uit een veilige lijst. Niemand kan chatten of typen.",
       "open": "Ruimte openen",
-      "recent": "Recente livespellen"
+      "recent": "Recente livespellen",
+      "best": "Het leukst met {min}–{max} spelers",
+      "teamsAbove": "Meer dan {n} spelers? Speel in teams.",
+      "maxHint": "In dit spel passen tot {max} spelers."
     },
     "mode": {
       "questRace": "Questrace",

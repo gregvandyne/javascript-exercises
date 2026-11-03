@@ -4430,7 +4430,7 @@
       "notFound": "Aucune partie ne correspond à ce code. Vérifie les chiffres et réessaie.",
       "badCode": "Un code de partie a 7 chiffres.",
       "locked": "La partie a commencé et la salle est fermée. Demande à l’animateur de l’ouvrir.",
-      "full": "Cette partie est complète.",
+      "full": "Ce jeu est complet ({max} joueurs).",
       "ended": "Cette partie est terminée.",
       "signIn": "Cette partie est pour une classe ou une famille. Connecte-toi d’abord, puis tape à nouveau le code.",
       "notMember": "Cette partie est pour une classe ou une famille dont tu ne fais pas partie.",
@@ -4556,7 +4556,10 @@
       "maxPlayers": "Nombre maximum de joueurs",
       "openHint": "Les invités reçoivent un nom inventé tiré d’une liste sûre. Personne ne peut discuter ni écrire.",
       "open": "Ouvrir la salle",
-      "recent": "Parties en direct récentes"
+      "recent": "Parties en direct récentes",
+      "best": "Idéal pour {min} à {max} joueurs",
+      "teamsAbove": "Plus de {n} joueurs ? Mieux vaut jouer en équipes.",
+      "maxHint": "Ce jeu accueille jusqu’à {max} joueurs."
     },
     "mode": {
       "questRace": "Course aux quêtes",
