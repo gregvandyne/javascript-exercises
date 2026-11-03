@@ -285,4 +285,15 @@ test('inside-the-machine: BRB.params lock a lesson (chapter, band, lock) and the
     assert.equal(s.label, '6/6 levels, 21 stars, 7/7 checks', 'the chain adds stars; the label keeps the locked chapter');
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
+  // a Pro lesson boots in the bold style straight into the Pro Fix-It desk, band locked
+  const pro = await open({ size: { width: 1180, height: 820 }, lang: 'en', params: { chapter: 'fixit', band: '2', lock: 1 } });
+  try {
+    await pro.frame.click('.ok-title-screen .ok-hot');
+    await pro.frame.waitForFunction(() => window.__brbTest.state().screen === 'play');
+    const s = await T(pro.frame, 'state');
+    assert.equal(s.levelId, 'fixit-2-1'); assert.equal(s.band, '2'); assert.equal(s.kind, 'flow'); assert.equal(s.lock, true);
+    assert.ok(s.modal, 'the learn card opens on level 1');
+    assert.equal(await pro.frame.$('.im-seg'), null, 'no band toggle under lock');
+    assert.deepEqual(pro.errors, []);
+  } finally { await pro.ctx.close(); }
 });
