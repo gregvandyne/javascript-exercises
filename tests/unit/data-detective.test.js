@@ -184,9 +184,9 @@ test('data-detective: My Data composes its claims from the counts; the other cla
   assert.equal(E.evidence(l, st), false, 'a table is not a chart');
   E.act(l, st, ['view', 'picto']); assert.equal(E.evidence(l, st), true);
   const tiles = E.claimTiles(l, st);
-  assert.equal(JSON.stringify(tiles.map(t => t.vars)), JSON.stringify([{ top: 'Blue' }, { low: 'Purple' }, { top: 'Blue' }]), 'the fewest is the first of the two at zero');
-  assert.equal(JSON.stringify(tiles.map((t, i) => E.claimOk(l, st, i))), '[true,false,false]', 'fewest is a tie at 0; half of 12 is not beaten');
-  assert.equal(JSON.stringify(E.tallyShows(l, st)), JSON.stringify({ top: 'Blue', a: 6, low: 'Purple', b: 0, total: 12 }));
+  assert.equal(JSON.stringify(tiles.map(t => t.vars)), JSON.stringify([{ top: 'Blue' }, { low: 'Purple' }, { top: 'Blue' }, { a: 'Blue', b: 'Green' }]), 'the fewest is the first of the two at zero');
+  assert.equal(JSON.stringify(tiles.map((t, i) => E.claimOk(l, st, i))), '[true,false,false,false]', 'fewest is a tie at 0; half of 12 is not beaten; no tie at the top');
+  assert.equal(JSON.stringify(E.tallyShows(l, st)), JSON.stringify({ top: 'Blue', a: 6, low: 'Purple', b: 0, total: 12, tie: false }));
   // Pro: load the other class, compare shares in the table
   assert.ok(isOk(E.act(l, st, ['other']))); assert.equal(E.evidence(l, st), true, 'the other class alone keeps the chart claims');
   assert.ok(isOk(E.act(l, st, ['pct']))); assert.equal(E.evidence(l, st), false, 'the percent comparison is read in the table');
@@ -247,6 +247,77 @@ test('data-detective: every English word is in the pack master list, within budg
   for (const s of en) assert.doesNotMatch(s, UK, `US spelling: ${s}`);
   for (const s of en) { assert.doesNotMatch(s, /\d{7,}|@|https?:|\/\/\w+\./, `safe text: ${s}`); }
   for (const s of en) { assert.doesNotMatch(s, /\b(grown-ups?|parents?|guardians?|famil(y|ies)|mum|mom|dad)\b.{0,40}\bcodes?\b|\bcodes?\b.{0,40}\b(grown-ups?|parents?|guardians?|famil(y|ies)|mum|mom|dad)\b/i, `no family words near "code": ${s}`); }
+});
+
+test('data-detective: a pinned claim freezes the case; the show step re-checks it; removed typos and changed good rows are not clean; ties have a tile; tiles are shuffled per seed', () => {
+  // for every case: pin with the case's own script, then try to change the data or the view: refused, and the case still solves only as pinned
+  const edits = l => [['sort', (l.cols || [])[0] && l.cols[0].id], ['group', (l.cols || [])[1] && l.cols[1].id], ['view', 'table'], ['view', 'bar'], ['view', 'group'], ['pct'],
+    ['bar', l.cats && l.cats[0][0], 5], ['slider', 0], ['rule', l.model && l.model.rule.max], ['run'], ['tally', 'Apple', 10], ['tally', 'Grape', 10], ['preset', 'pets'], ['other'],
+    ['fix', 'r1', 'zzz'], ['merge', 'r1'], ['remove', 'r2']];
+  for (const l of LEVELS) {
+    const st = E.newCase(l, 3), i = l.sol.findIndex(a => a[0] === 'claim' || a[0] === 'pick');
+    for (const a of l.sol.slice(0, i + 1)) E.act(l, st, a);
+    if (st.solved) continue;   // a tally claim with no proof to tap
+    assert.notEqual(st.picked, null, `${l.id}: pinned`);
+    const before = JSON.stringify(st);
+    for (const a of edits(l)) assert.equal(E.act(l, st, a), false, `${l.id}: ${a[0]} after the pin is refused`);
+    assert.equal(JSON.stringify(st), before, `${l.id}: nothing changed after the pin`);
+    for (const a of l.sol.slice(i + 1)) E.act(l, st, a);
+    assert.equal(st.solved, true, `${l.id}: still solves as pinned`);
+  }
+  // the show step re-checks the pinned claim (safety net for a state changed behind the engine)
+  { const l = LV.byId['chart-2'], st = E.newCase(l, 1), i = l.sol.findIndex(a => a[0] === 'claim');
+    for (const a of l.sol.slice(0, i + 1)) E.act(l, st, a);
+    st.bars[l.cats[0][0]] += 5;
+    const r = E.act(l, st, l.sol[i + 1]); assert.equal(r.ok, false); assert.equal(st.solved, false); }
+  // My Data: a pinned tally keeps its proof
+  { const l = LV.byId['my-3'], st = E.newCase(l, 1);
+    for (const a of [['preset', 'fruit'], ['tally', 'Apple', 5], ['tally', 'Grape', 1], ['view', 'bar']]) E.act(l, st, a);
+    assert.equal(E.act(l, st, ['claim', 2]).ok, true);
+    assert.equal(E.act(l, st, ['tally', 'Grape', 10]), false);
+    assert.deepEqual([...E.proofKeys(l, st)], ['c:Apple']); }
+  // ties: every chart that counts has a supported tile
+  { const l = LV.byId['my-3'], st = E.newCase(l, 1);
+    for (const a of [['preset', 'fruit'], ['tally', 'Apple', 3], ['tally', 'Banana', 3], ['view', 'bar']]) E.act(l, st, a);
+    assert.equal(E.evidence(l, st), true);
+    const ok = E.tallyClaims(l, st).map(c => c.ok); assert.equal(JSON.stringify(ok), '[false,false,false,true]', 'the tie tile');
+    assert.equal(E.tallyShows(l, st).tie, true);
+    assert.equal(E.act(l, st, ['claim', 3]).ok, true);
+    assert.deepEqual([...E.proofKeys(l, st)], ['c:Apple', 'c:Banana']); }
+  for (const p of ['pets', 'colors', 'fruit']) {
+    const l = LV.byId['my-3'], cats = LV.presetOf(p).cats;
+    for (let seed = 0; seed < 300; seed++) {
+      const st = E.newCase(l, 1); E.act(l, st, ['preset', p]); E.act(l, st, ['view', 'bar']);
+      let x = seed * 2654435761 >>> 0; for (const c of cats) { x = (x * 1103515245 + 12345) >>> 0; E.act(l, st, ['tally', c, x % 4]); }
+      if (!E.evidence(l, st)) continue;
+      assert.ok(E.tallyClaims(l, st).some(c => c.ok), `${p} #${seed}: a supported tile`);
+    }
+  }
+  // Clean-Up: a removed typo row is still bad; a changed good row is damage
+  for (const id of ['cleanup-1', 'cleanup-4']) {
+    const l = LV.byId[id], typo = Object.keys(l.bad).find(r => l.bad[r].kind === 'typo');
+    const st = E.newCase(l, 1); for (const r of Object.keys(l.bad)) E.act(l, st, l.bad[r].kind === 'typo' ? ['remove', r] : [l.bad[r].kind === 'dup' ? 'merge' : 'remove', r]);
+    if (typo) assert.equal(E.isClean(l, st), false, `${id}: removing a typo row is not a clean-up`);
+    const st2 = E.newCase(l, 1), i = l.sol.findIndex(a => a[0] === 'claim');
+    for (const a of l.sol.slice(0, i)) E.act(l, st2, a);
+    assert.equal(E.isClean(l, st2), true);
+    const good = l.rows.map((r, k) => 'r' + (k + 1)).find(r => !l.bad[r]);
+    E.act(l, st2, ['fix', good, 'zzz']);
+    assert.equal(E.isClean(l, st2), false, `${id}: a changed good row is not clean`);
+    assert.equal(st2.removedGood, 1, `${id}: and it costs the well-made star`);
+  }
+  // input: a slider value that is not a number does nothing
+  { const l = LV.byId['claims-4'], st = E.newCase(l, 1); assert.equal(E.act(l, st, ['slider', 'x']), false); assert.ok(Number.isFinite(st.slider)); }
+  // the right claim tile and the right check tile move with the seed
+  for (const l of LEVELS.filter(x => x.claims && !x.claim && !x.predict && !x.tally && !x.pick)) {
+    const pos = new Set([...Array(12).keys()].map(seed => E.claimOrder(l, E.newCase(l, seed)).indexOf(l.answer)));
+    assert.ok(pos.size > 1, `${l.id}: the right claim is not always in the same place`);
+  }
+  for (const l of LEVELS) {
+    const pos = new Set([...Array(12).keys()].map(seed => E.checkTiles(l, seed).findIndex(t => t.ok)));
+    assert.ok(pos.size > 1, `${l.id}: the right check tile moves`);
+    assert.equal(E.checkTiles(l, 1).filter(t => t.ok).length, 1);
+  }
 });
 
 /* ---------- real Chromium, inside the production frame wrapper ---------- */
@@ -542,17 +613,13 @@ test('data-detective: My Data in the frame: tally steppers, the chart, a compose
     await frame.click('.presets .chip:nth-child(3)');
     assert.equal((await T(frame, 'state')).preset, 'fruit');
     for (const [c, n] of [['Apple', 5], ['Grape', 4], ['Melon', 2]]) await T(frame, 'act', ['tally', c, n]);
-    assert.equal(await frame.evaluate(() => !!document.getElementById('poolBtn')), true);
-    await frame.click('#poolBtn');
-    s = await T(frame, 'state');
-    assert.deepEqual([s.pool.n, s.pool.preset, s.pool.counts.Apple, s.poolView], [1, 'fruit', 5, true]);
-    await fit(frame, 'class pool 390x844');
+    assert.equal(await frame.evaluate(() => !!document.getElementById('poolBtn')), false, 'the class pool lives on the projector only');
     await T(frame, 'openChoice', 'again');
     assert.equal(await T(frame, 'solve'), true);
     await closeCard(frame, 'my-3');
     await frame.waitForFunction(() => window.__brbTest.state().charts === 3 && window.__brbTest.state().phase === 'case', null, { timeout: 10_000 });
     s = await T(frame, 'state');
-    assert.deepEqual([s.level, s.scoreCalls.at(-1).label, s.pool.n], [3, '3 charts made', 1]);
+    assert.deepEqual([s.level, s.scoreCalls.at(-1).label], [3, '3 charts made']);
     await T(frame, 'openChoice', 'next');
     assert.equal(await T(frame, 'solve'), true);
     await closeCard(frame, 'my-3');
@@ -561,6 +628,14 @@ test('data-detective: My Data in the frame: tally steppers, the chart, a compose
     assert.deepEqual([s.scoreCalls.at(-1).label, s.endCalls], ['4 charts made', [{ won: true, score: 4 }]]);
     assert.ok(s.scoreCalls.every((c, i) => !i || c.score >= s.scoreCalls[i - 1].score), 'monotonic');
     assert.match(await frame.evaluate(() => document.getElementById('endCard').textContent), /Your work is saved/);
+    // the class pool on the projector
+    await T(frame, 'start', { chapter: 'my-data', band: '1b', mode: 'projector', level: 3, seed: 1 });
+    await frame.click('.presets .chip:nth-child(3)');
+    for (const [c, n] of [['Apple', 5], ['Grape', 4], ['Melon', 2]]) await T(frame, 'act', ['tally', c, n]);
+    await frame.click('#poolBtn');
+    s = await T(frame, 'state');
+    assert.deepEqual([s.pool.n, s.pool.preset, s.pool.counts.Apple, s.poolView], [1, 'fruit', 5, true]);
+    await fit(frame, 'class pool 390x844');
     // Pro: another class, compared by percent in the table
     await T(frame, 'start', { chapter: 'my-data', band: '2', level: 2, seed: 1 });
     for (const [c, n] of [['Red', 2], ['Blue', 6], ['Green', 3], ['Yellow', 1]]) await T(frame, 'act', ['tally', c, n]);
@@ -847,13 +922,13 @@ test('data-detective: settings parity: the title cog and the HUD gear open the k
     await T(frame, 'start', { chapter: 'fair', band: '2', level: 4, seed: 1 });
     await T(frame, 'act', ['group', 'comes']); await T(frame, 'claimCard');
     await frame.waitForSelector('.claimtile', { timeout: 5_000 });
-    await frame.focus('.claimtile[data-i="0"]'); await frame.press('.claimtile[data-i="0"]', 'ArrowRight');
-    assert.equal(await frame.evaluate(() => document.activeElement.dataset.i), '1', 'ArrowRight moves to the next tile');
+    await frame.focus('.claimtile[data-key="1"]'); await frame.press('.claimtile[data-key="1"]', 'ArrowRight');
+    assert.equal(await frame.evaluate(() => document.activeElement.dataset.key), '2', 'ArrowRight moves to the next tile');
     const perRow = await frame.evaluate(() => { const t = [...document.querySelectorAll('.claimtile')], y = t[0].getBoundingClientRect().top; return t.filter(x => Math.abs(x.getBoundingClientRect().top - y) < 4).length; });
-    await frame.press('.claimtile[data-i="1"]', 'ArrowDown');
-    assert.equal(await frame.evaluate(() => document.activeElement.dataset.i), String((1 + perRow) % 4), `ArrowDown steps a whole row (${perRow} tiles across)`);
-    await frame.press(`.claimtile[data-i="${(1 + perRow) % 4}"]`, 'ArrowUp');
-    assert.equal(await frame.evaluate(() => document.activeElement.dataset.i), '1', 'ArrowUp steps back up');
+    await frame.press('.claimtile[data-key="2"]', 'ArrowDown');
+    assert.equal(await frame.evaluate(() => document.activeElement.dataset.key), String((1 + perRow) % 4 + 1), `ArrowDown steps a whole row (${perRow} tiles across)`);
+    await frame.press(`.claimtile[data-key="${(1 + perRow) % 4 + 1}"]`, 'ArrowUp');
+    assert.equal(await frame.evaluate(() => document.activeElement.dataset.key), '2', 'ArrowUp steps back up');
     await T(frame, 'closeDialog');
     // captions and read-aloud: the learn card is read while it is open (the caption strip shows its words)
     await T(frame, 'start', { chapter: 'fair', band: '2', level: 1, seed: 1 });   // level 1 of a chapter: it has a learn card

@@ -98,6 +98,10 @@
     display: flex; align-items: center; gap: 6px; text-align: start; }
   .hdr svg { width: 18px; height: 18px; }
   .hdr.on { background: var(--dd-spark); color: var(--dd-ink); }
+  .hdr .sorti { display: inline-grid; opacity: .55; transform: rotate(90deg); } .hdr .sorti svg { width: 16px; height: 16px; }
+  .frozen { opacity: .55; pointer-events: none; }
+  .work.more { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 32px), transparent); }
+  @media (max-width: 420px) { #hud .ibtn { width: 44px; height: 44px; } #hud { gap: 4px; } }
   .row { height: 40px; cursor: pointer; border-bottom: 2px solid var(--ok-line); }
   .row td { font-weight: 700; }
   .row.bad td:first-child::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--dd-wrong); margin-inline-end: 6px; }
@@ -255,7 +259,7 @@ const CHAPTERS = [
   { index: 1, id: 'sort', title: 'Sort & Group', band: '1b', csta: ['1B-DA-06'], levels: 6, icon: 'menu' },
   { index: 2, id: 'chart', title: 'Chart It', band: '1b', csta: ['1B-DA-06'], levels: 5, icon: 'flag' },
   { index: 3, id: 'claims', title: 'Clues & Claims', band: '1b', csta: ['1B-DA-07'], levels: 6, icon: 'key' },
-  { index: 4, id: 'cleanup', title: 'Clean-Up Crew', band: '2', csta: ['2-DA-08'], levels: 6, icon: 'cross' },
+  { index: 4, id: 'cleanup', title: 'Clean-Up Crew', band: '2', csta: ['2-DA-08'], levels: 6, icon: 'pencil' },
   { index: 5, id: 'models', title: 'Model Makers', band: '2', csta: ['2-DA-09'], levels: 5, icon: 'move' },
   { index: 6, id: 'fair', title: 'Fair Data', band: '2', csta: ['2-IC-21'], levels: 4, icon: 'heart' },
   { index: 7, id: 'my-data', title: 'My Data', band: 'both', csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], levels: 3, mode: 'tally', icon: 'user' },
@@ -272,7 +276,7 @@ const PRESETS = [
   { id: 'transport', title: 'How we get to school', cats: ['Walk', 'Bike', 'Bus', 'Car', 'Scooter', 'Train'], other: [7, 4, 12, 5, 1, 1] },
   { id: 'options', title: 'Our own question', cats: ['Option A', 'Option B', 'Option C', 'Option D', 'Option E', 'Option F', 'Option G', 'Option H'], other: [8, 6, 5, 4, 3, 2, 1, 1] },
 ];
-const TALLY_CLAIMS = ['Most kids picked {top}.', 'Fewest kids picked {low}.', 'More than half picked {top}.'];
+const TALLY_CLAIMS = ['Most kids picked {top}.', 'Fewest kids picked {low}.', 'More than half picked {top}.', '{a} and {b} are tied for the most.'];
 const COMPARE_CLAIMS = ['Our class has the bigger share of {ours}.', 'The other class has the bigger share of {theirs}.', 'Both classes picked {top} most.'];
 const col = (id, label, type) => ({ id, label, type: type || 'text' });
 const LEVELS = [
@@ -284,7 +288,7 @@ const LEVELS = [
   rows: [['Ari', 'Hall', '2:05'], ['Bo', 'Yard', '2:10'], ['Cy', 'Hall', '2:20'], ['Dee', 'Library', '2:30'], ['Eli', 'Hall', '2:40'], ['Fay', 'Yard', '2:45'], ['Kai', 'Hall', '2:50'], ['Gus', 'Hall', '3:10'], ['Ida', 'Library', '3:15'], ['Jo', 'Yard', '3:20']],
   random: true, evidence: { sort: 'when' }, claims: ['Gus', 'Jo', 'Eli'], answer: 0, proof: ['r8'], par: 1,
   shows: 'Sorted by When, the last Hall row is Gus at 3:10. Jo was later, but in the Yard.',
-  learn: { title: 'Data is facts in rows', text: 'A table holds facts in rows and columns. Sorting puts the rows in order, and grouping counts how many of each kind. The right view makes the answer pop out.' },
+  learn: { title: 'Data is facts in rows', text: 'A table holds facts in rows and columns. Sorting puts the rows in order, and grouping counts how many of each kind. Tap a column name to sort by it. The right view makes the answer pop out.' },
   hints: ['Which column would tell us when each kid was there?', 'The When column is glowing. Tap its header to sort by time.', 'I sorted the table by When for you. Now read the Hall rows from the bottom.'],
   glow: { col: 'when' }, move: ['sort', 'when'],
   check: { q: 'What does sorting a table do?', tiles: ['Puts the rows in order', 'Deletes rows', 'Adds new facts'], answer: 0 },
@@ -332,7 +336,7 @@ const LEVELS = [
   shows: 'Sorted by Seconds, the smallest number is 45, and that is Uma. Shoes do not matter here.',
   hints: ['Fastest means the fewest seconds. Which column has seconds?', 'Seconds is glowing. Tap it.', 'Sorted by Seconds for you. Fastest is the smallest number.'],
   glow: { col: 'lap' }, move: ['sort', 'lap'],
-  check: { q: '\u201cFastest lap\u201d means the\u2026', tiles: ['Smallest time', 'Biggest time', 'First row'], answer: 0 },
+  check: { q: 'Sorted by Seconds from small to big, the fastest runner is in the\u2026', tiles: ['Top row', 'Bottom row', 'Middle row'], answer: 0 },
   sol: [['sort', 'lap'], ['claim', 0], ['show', 'r3']] },
 { id: 'sort-6', ch: 'sort', n: 6, bands: ['1b', '2'], csta: ['1B-DA-06'], title: 'Snack Vote', kind: 'table',
   story: 'The class voted for a party snack. Dot wants to know what to skip.',
@@ -426,7 +430,7 @@ const LEVELS = [
   shows: 'Two bars is a hunch, not a case. We need more days before we can tell.',
   hints: ['How many days of data do we have?', 'Both bars are glowing. Is that enough to see a pattern?', 'Two points can make any line. Pick Can\u2019t tell yet.'],
   glow: { cat: 'Day 2' },
-  check: { q: 'Dot says: two clues is a hunch, five is a\u2026', tiles: ['Case', 'Guess', 'Chart'], answer: 0 },
+  check: { q: 'Two days of data: 3 cm, then 5 cm. \u201cIt will be 20 cm by day 10\u201d is\u2026', tiles: ['Can\u2019t tell yet', 'Supported', 'Not supported'], answer: 0 },
   sol: [['claim', 2], ['show', 'c:Day 1'], ['show', 'c:Day 2']] },
 { id: 'claims-4', ch: 'claims', n: 4, bands: ['1b'], csta: ['1B-DA-07'], title: 'Predict Day 6', kind: 'series',
   story: 'Back to the bean plant. Five days are in. What will day 6 measure?',
@@ -442,12 +446,12 @@ const LEVELS = [
   story: 'A class list has shoe sizes and books read this month. Someone sees a link.',
   cols: [col('name', 'Name'), col('shoe', 'Shoe size', 'num'), col('books', 'Books', 'num')],
   rows: [['Ari', 1, 4], ['Bo', 3, 1], ['Cy', 2, 6], ['Dee', 4, 2], ['Eli', 5, 5], ['Fay', 1, 3]],
-  claim: 'Kids with bigger shoes read more books.', answer: 1, proof: ['r2', 'r3'],
-  shows: 'Bo has size 3 and read 1 book; Cy has size 2 and read 6. Bigger shoes do not mean more books.',
-  hints: ['Does the Books column go up when Shoe size goes up?', 'Bo and Cy are glowing. Compare their two numbers.', 'Size 3 read 1, size 2 read 6. No pattern: not supported.'],
-  glow: { row: 'r2' },
+  claim: 'Kids with bigger shoes read more books.', answer: 1, proof: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6'], evidence: { sort: 'shoe' }, par: 1,
+  shows: 'Sorted by shoe size, the Books numbers go up and down: 4, 3, 6, 1, 2, 5. No pattern, so not supported.',
+  hints: ['Does the Books column go up when Shoe size goes up? Sort to find out.', 'Shoe size is glowing. Sort by it, then read the whole Books column.', 'Sorted by Shoe size for you: 4, 3, 6, 1, 2, 5. No pattern: not supported.'],
+  glow: { col: 'shoe' }, move: ['sort', 'shoe'],
   check: { q: 'Two columns in one table\u2026', tiles: ['Do not have to be connected', 'Are always connected', 'Must be sorted together'], answer: 0 },
-  sol: [['claim', 1], ['show', 'r2'], ['show', 'r3']] },
+  sol: [['sort', 'shoe'], ['claim', 1], ['show', 'r1'], ['show', 'r2'], ['show', 'r3'], ['show', 'r4'], ['show', 'r5'], ['show', 'r6']] },
 { id: 'claims-6', ch: 'claims', n: 6, bands: ['1b'], csta: ['1B-DA-07'], title: 'Hair and Laps', kind: 'table',
   story: 'Sports day again. The list has hair color and laps run. A new claim is on the board.',
   cols: [col('name', 'Name'), col('hair', 'Hair'), col('laps', 'Laps', 'num')],
@@ -456,7 +460,7 @@ const LEVELS = [
   shows: 'The smallest number in Laps is 3, so everyone ran at least 3. Hair color does not come into it.',
   hints: ['What is the smallest number in the Laps column?', 'Ida and Kai are glowing: the smallest laps.', 'The smallest is 3, which is at least 3. Supported.'],
   glow: { row: 'r2' },
-  check: { q: '\u201cAt least 3\u201d means\u2026', tiles: ['3 or more', 'Exactly 3', 'Less than 3'], answer: 0 },
+  check: { q: 'Laps: 4, 6, 2, 5. \u201cEveryone ran at least 3 laps\u201d is\u2026', tiles: ['Not supported: one ran 2', 'Supported', 'Can\u2019t tell yet'], answer: 0 },
   sol: [['claim', 0], ['show', 'r2'], ['show', 'r4']] },
 /* ---------------- Chapter 4: Clean-Up Crew (2-DA-08) ---------------- */
 { id: 'cleanup-1', ch: 'cleanup', n: 1, bands: ['2'], csta: ['2-DA-08'], title: 'Twelve Pets', kind: 'table', clean: true,
@@ -473,7 +477,7 @@ const LEVELS = [
   check: { q: '\u201cdog\u201d, \u201cDog\u201d and \u201cd0g\u201d should be\u2026', tiles: ['Fixed to one spelling', 'Counted as three pets', 'Removed'], answer: 0 },
   sol: [['fix', 'r3', 'Dog'], ['fix', 'r6', 'Dog'], ['fix', 'r10', 'Dog'], ['group', 'pet'], ['claim', 0], ['show', 'c:Dog']] },
 { id: 'cleanup-2', ch: 'cleanup', n: 2, bands: ['2'], csta: ['2-DA-08'], title: 'Double Trouble', kind: 'table', clean: true,
-  story: 'The sign-up sheet was passed round twice. Some kids are on it two times.',
+  story: 'The sign-up sheet was passed around twice. Some kids are on it two times.',
   q: 'Which club has the most kids?',
   cols: [col('name', 'Name'), col('club', 'Club')],
   rows: [['Nia', 'Art'], ['Ori', 'Chess'], ['Pia', 'Art'], ['Ori', 'Chess'], ['Rae', 'Music'], ['Sol', 'Chess'], ['Sol', 'Chess'], ['Tam', 'Art'], ['Uma', 'Music']],
@@ -580,7 +584,7 @@ const LEVELS = [
   check: { q: 'A good model lets you…', tiles: ['Predict cases you did not measure', 'Skip measuring anything', 'Change the real results'], answer: 0 },
   sol: [['run'], ['rule', 3], ['run'], ['slider', 36], ['claim', 0], ['show', 'r4'], ['show', 'r5']] },
 { id: 'models-5', ch: 'models', n: 5, bands: ['2'], csta: ['2-DA-09'], title: 'Game Balance', kind: 'model', view: 'bar',
-  story: 'Your team’s runner game is too hard. Playtesters keep falling at the gaps. Tune the jump so about 8 in 10 test runs finish.',
+  story: 'Your team’s runner game is too easy: every playtester reaches the end. Tune the jump so about 8 in 10 test runs finish.',
   q: 'Set the jump power, run 20 test runs, refine, then pin the result.',
   model: { ruleLabel: 'Jump power {k}', inputLabel: 'Run', outLabel: 'Finished', inputs: [], rule: { min: 4, max: 10, step: 1, start: 10 }, gaps: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10], rate: { lo: 75, hi: 85 }, done: 'Finished', fell: 'Fell' },
   evidence: { model: true }, claims: ['About 8 in 10 runs finish', 'Every run finishes', 'Only half the runs finish'], answer: 0, proof: ['c:Finished'], par: 5,
@@ -591,27 +595,27 @@ const LEVELS = [
   sol: [['run'], ['rule', 8], ['run'], ['claim', 0], ['show', 'c:Finished']] },
 /* ---------------- Chapter 6: Fair Data (2-IC-21): biased samples, who is missing, a system that fails for some ---------------- */
 { id: 'fair-1', ch: 'fair', n: 1, bands: ['2'], csta: ['2-IC-21'], title: 'One Grade Asked', kind: 'table',
-  story: 'A poster says the whole school wants more soccer at recess. Here is the survey behind it.',
-  q: 'Is this survey fair for the whole school?',
+  story: 'A new recess app was tested only by Grade 3 before launch. Its poster says the whole school loves the soccer button. Here are the test results.',
+  q: 'Was this app tested fairly for the whole school?',
   cols: [col('name', 'Name'), col('grade', 'Grade'), col('pick', 'Pick')],
   rows: [['Ari', 'Grade 3', 'Soccer'], ['Bo', 'Grade 3', 'Soccer'], ['Cy', 'Grade 3', 'Tag'], ['Dee', 'Grade 3', 'Soccer'], ['Eli', 'Grade 3', 'Soccer'], ['Fay', 'Grade 3', 'Art'], ['Gus', 'Grade 3', 'Soccer'], ['Ida', 'Grade 3', 'Soccer']],
-  random: true, evidence: { group: 'grade' }, claims: ['Not fair: only Grade 3 was asked', 'Fair: eight kids answered', 'Fair: Soccer won clearly'], answer: 0, proof: ['c:Grade 3'], par: 1,
-  shows: 'Grouped by Grade there is one bar: every answer came from Grade 3. The other grades were never asked.',
-  learn: { title: 'A sample should look like the whole', text: 'Data comes from the people you ask. If you only ask one group, the answer is about that group, not everyone. Before trusting a claim, check who was asked and who was left out.' },
-  hints: ['Who answered this survey? Which column tells you?', 'Group is glowing. Group by Grade to see who was asked.', 'I grouped by Grade for you. How many grades are there?'],
+  random: true, evidence: { group: 'grade' }, claims: ['Not fair: only Grade 3 tested it', 'Fair: eight kids tested it', 'Fair: Soccer won clearly'], answer: 0, proof: ['c:Grade 3'], par: 1,
+  shows: 'Grouped by Grade there is one bar: every tester was in Grade 3. The other grades never tried the app.',
+  learn: { title: 'Test technology on everyone', text: 'Apps, games and gadgets are designed from test data. If only one group tests them, they may not work for everyone. Good design is tested by many kinds of people, including people who see, hear or move differently. That is called accessibility.' },
+  hints: ['Who tested this app? Which column tells you?', 'Group is glowing. Group by Grade to see who tested it.', 'I grouped by Grade for you. How many grades are there?'],
   glow: { tool: 'group' }, move: ['group', 'grade'],
-  check: { q: 'A survey of only Grade 3 tells you about…', tiles: ['Grade 3', 'The whole school', 'Every kid in town'], answer: 0 },
+  check: { q: 'An app that only Grade 3 tested may not work well for…', tiles: ['Kids in other grades', 'Grade 3', 'Nobody at all'], answer: 0 },
   sol: [['group', 'grade'], ['claim', 0], ['show', 'c:Grade 3']] },
 { id: 'fair-2', ch: 'fair', n: 2, bands: ['2'], csta: ['2-IC-21'], title: 'Who Is Missing?', kind: 'table',
-  story: 'Burgers won the lunch vote. But the vote happened in the meat line, and some kids never got a ballot.',
-  q: 'Who was left out of the vote?',
+  story: 'Burgers won the vote on the new lunch-order screen. But the screen was set up in the meat line, and some kids never got to use it.',
+  q: 'Who was left out of the vote on the screen?',
   cols: [col('name', 'Name'), col('lunch', 'Lunch'), col('voted', 'Voted')],
   rows: [['Jo', 'Meat', 'Yes'], ['Kai', 'Meat', 'Yes'], ['Lu', 'Veggie', 'No'], ['Mo', 'Meat', 'Yes'], ['Nia', 'Veggie', 'No'], ['Ori', 'Meat', 'Yes'], ['Pia', 'Veggie', 'No'], ['Rae', 'Meat', 'Yes'], ['Sol', 'Meat', 'Yes'], ['Tam', 'Veggie', 'No']],
   random: true, evidence: { sortAny: ['voted', 'lunch'] }, claims: ['The veggie eaters never got to vote', 'Everyone voted', 'The meat eaters were left out'], answer: 0, proof: ['r3', 'r5'], par: 1,
   shows: 'Sorted, the pattern is plain: every No is a veggie eater and every Yes eats meat. The veggie kids were never asked.',
   hints: ['Which kids have No in the Voted column? What do they have in common?', 'The Voted column is glowing. Sort by it.', 'I sorted by Voted for you. Read the Lunch column of the No rows.'],
   glow: { col: 'voted' }, move: ['sort', 'voted'],
-  check: { q: 'A vote that misses one group of people is…', tiles: ['Biased: it leaves some people out', 'Fine, if most people voted', 'More accurate'], answer: 0 },
+  check: { q: 'A game’s red and green clues look the same to some players. The design…', tiles: ['Leaves some players out: add shapes too', 'Is fine for most players', 'Is more fun'], answer: 0 },
   sol: [['sort', 'voted'], ['claim', 0], ['show', 'r3'], ['show', 'r5']] },
 { id: 'fair-3', ch: 'fair', n: 3, bands: ['2'], csta: ['2-IC-21'], title: 'Works for Some', kind: 'table', pctTool: true,
   story: 'A voice helper was tested before launch. It was tested mostly on one kind of voice.',
@@ -625,15 +629,15 @@ const LEVELS = [
   check: { q: 'To find who a system fails, test it on…', tiles: ['Many different kinds of people', 'The people who built it', 'One kind of voice'], answer: 0 },
   sol: [['pct'], ['claim', 0], ['show', 'r2']] },
 { id: 'fair-4', ch: 'fair', n: 4, bands: ['2'], csta: ['2-IC-21'], title: 'Who Else to Ask', kind: 'table',
-  story: 'The council surveyed kids about a new bike shed. Every answer came from the Grade 5 bus stop.',
-  q: 'Pick the two groups the council should survey next.',
+  story: 'The council built a new bike-shed sign-up screen. Every tester came from the Grade 5 bus stop.',
+  q: 'Pick the two groups who should test the sign-up screen next.',
   cols: [col('name', 'Name'), col('grade', 'Grade'), col('comes', 'Comes by')],
   rows: [['Uma', 'Grade 5', 'Bus'], ['Vic', 'Grade 5', 'Bus'], ['Ari', 'Grade 5', 'Bus'], ['Bo', 'Grade 5', 'Bus'], ['Cy', 'Grade 5', 'Bus'], ['Dee', 'Grade 5', 'Bus'], ['Eli', 'Grade 5', 'Bus'], ['Fay', 'Grade 5', 'Bus']],
   random: true, evidence: { group: 'comes' }, pick: 2, claims: ['Kids in other grades', 'Kids who walk or bike', 'More Grade 5 bus riders', 'The same kids again'], answers: [0, 1], proof: ['c:Bus'], par: 1,
-  shows: 'Everyone asked is in Grade 5 and comes by bus. The missing voices are other grades and kids who walk or bike.',
+  shows: 'Every tester is in Grade 5 and comes by bus. The missing testers are other grades and kids who walk or bike, the very kids who will use the bike shed.',
   hints: ['Who is in this survey? Who is not?', 'Group is glowing. Group by Comes by.', 'I grouped by Comes by for you: one bar, all Bus. Pick the two groups that are missing.'],
   glow: { tool: 'group' }, move: ['group', 'comes'],
-  check: { q: 'Asking more people from the same group makes a survey…', tiles: ['Just as biased', 'Fair', 'Shorter'], answer: 0 },
+  check: { q: 'More testers from the same group make a test of new technology…', tiles: ['Just as biased', 'Fair', 'Shorter'], answer: 0 },
   sol: [['group', 'comes'], ['pick', [0, 1]], ['show', 'c:Bus']] },
 /* ---------------- Chapter 7: My Data (tally mode): the class enters its own counts, charts them, pins a fair claim ---------------- */
 { id: 'my-1', ch: 'my-data', n: 1, bands: ['1b', '2'], csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], title: 'Our Survey', kind: 'tally',
@@ -659,13 +663,13 @@ const LEVELS = [
   sol: [['tally', 'Red', 2], ['tally', 'Blue', 6], ['tally', 'Green', 3], ['tally', 'Yellow', 1], ['view', 'bar'], ['claim', 0], ['show', 'c:Blue']] },
 { id: 'my-3', ch: 'my-data', n: 3, bands: ['1b', '2'], csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], title: 'Open Tally', kind: 'tally', open: true,
   story: 'Your own survey. Pick a question, tally the class, chart it, claim it. Make as many charts as you like.',
-  q: 'Pick a question, enter the tallies, make a chart and pin a claim. Add each chart to the class pool.',
+  q: 'Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.',
   tally: { presets: ['pets', 'colors', 'fruit', 'sports', 'transport', 'options'], min: 5, other: true, pool: true },
   evidence: { tally: true }, proof: [], par: null,
   shows: 'The chart says: {top} has the most with {a}, {low} the fewest with {b}, {total} answers in all.',
   hints: ['Pick a question first, then count the answers.', 'The Bars button is glowing once you have five answers or more.', 'I switched to bars for you. Pin the claim about the tallest bar.'],
   glow: { tool: 'bar' }, move: ['view', 'bar'], starter: [['preset', 'fruit'], ['tally', 'Apple', 1], ['view', 'bar']],
-  check: { q: 'Pooling every pair’s chart on the projector is a way to…', tiles: ['Crowdsource the class data', 'Hide the results', 'Pick a winner'], answer: 0 },
+  check: { q: 'Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…', tiles: ['Crowdsource the class data', 'Hide the results', 'Pick a winner'], answer: 0 },
   sol: [['preset', 'fruit'], ['tally', 'Apple', 5], ['tally', 'Grape', 4], ['tally', 'Melon', 2], ['view', 'picto'], ['claim', 0], ['show', 'c:Apple']] },
 ];
 
@@ -714,10 +718,20 @@ function visibleRows(level, st) {
 /** The bad rows still in the list, with the mess not yet put right. */
 function badLeft(level, st) {
   return Object.keys(level.bad || {}).filter(id => {
-    if (st.removed[id]) return false;
     const b = level.bad[id];
+    if (st.removed[id]) return b.kind === 'typo';   // a misspelled row is a real answer: fix it, never throw it away
     if (b.kind === 'typo') return !(st.fixed[id] && st.fixed[id].col === b.col && st.fixed[id].value === b.fix);
     return true;   // dup and impossible rows are only right once they are gone
+  }).concat(changedGood(level, st));
+}
+/** Rows that were right and got changed by a Fix (damage: the data is not clean while one is changed). */
+function changedGood(level, st) {
+  return Object.keys(st.fixed).filter(id => {
+    if (st.removed[id]) return false;
+    const b = level.bad && level.bad[id];
+    if (b && b.kind === 'typo') return false;   // counted above
+    const fx = st.fixed[id];
+    return String(fx.value) !== String(level.rows[+id.slice(1) - 1][colIndex(level, fx.col)]);
   });
 }
 const isClean = (level, st) => badLeft(level, st).length === 0;
@@ -787,6 +801,7 @@ function tallyClaims(level, st) {
     { text: TALLY_CLAIMS[0], vars: { top }, ok: tops.length === 1 && max > 0, proof: ['c:' + top] },
     { text: TALLY_CLAIMS[1], vars: { low }, ok: lows.length === 1 && max > min, proof: ['c:' + low] },
     { text: TALLY_CLAIMS[2], vars: { top }, ok: tops.length === 1 && max * 2 > total, proof: ['c:' + top] },
+    { text: TALLY_CLAIMS[3], vars: { a: top, b: tops.length > 1 ? tops[1][0] : data.filter(x => x[0] !== top).sort((x, y) => y[1] - x[1])[0][0] }, ok: tops.length >= 2 && max > 0, proof: tops.map(x => 'c:' + x[0]) },
   ];
 }
 /** What the chart shows, for Dot after a wrong tally claim: the slots of level.shows. */
@@ -794,7 +809,7 @@ function tallyShows(level, st) {
   const data = tallyCounts(level, st);
   if (!data.length) return { top: '', a: 0, low: '', b: 0, total: 0 };
   const max = Math.max(...data.map(x => x[1])), min = Math.min(...data.map(x => x[1]));
-  return { top: data.find(x => x[1] === max)[0], a: max, low: data.find(x => x[1] === min)[0], b: min, total: tallyTotal(level, st) };
+  return { top: data.find(x => x[1] === max)[0], a: max, low: data.find(x => x[1] === min)[0], b: min, total: tallyTotal(level, st), tie: data.filter(x => x[1] === max).length > 1 };
 }
 
 /** The series on screen: [[category, value]]: built bars, the level's own series, grouped counts, trials or tallies. */
@@ -840,7 +855,7 @@ function claimOk(level, st, i) {
 }
 /** The rows or bars that prove the claim (tally claims prove themselves with the bar they name). */
 function proofKeys(level, st) {
-  if (level.tally) { if (!st || st.picked == null) return []; const c = tallyClaims(level, st)[st.picked]; return c ? c.proof : []; }
+  if (level.tally) { if (!st || st.picked == null) return []; if (st.pinnedProof) return st.pinnedProof; const c = tallyClaims(level, st)[st.picked]; return c ? c.proof : []; }
   return level.proof || [];
 }
 const proofDone = (level, st) => proofKeys(level, st).every(k => st.shown[k]);
@@ -851,23 +866,37 @@ function claimTiles(level, st) {
   if (level.tally) return st ? tallyClaims(level, st).map(c => ({ text: c.text, vars: c.vars })) : TALLY_CLAIMS.map(text => ({ text, vars: {} }));
   return level.claims.slice();
 }
+/** The order the claim tiles are shown in: shuffled per seed for the level's own claims (verdicts, predictions and
+ *  composed tally sentences keep their fixed order). Taps still name the original index. */
+function claimOrder(level, st) {
+  const n = claimTiles(level, st).length, idx = [...Array(n).keys()];
+  if (!level.claims || level.claim || level.predict || level.tally) return idx;
+  return shuffle(idx, mulberry(seedOf(String(st ? st.seed : level.id) + ':claims')));
+}
+/** The Case-closed check tiles in a per-seed order: [{ text, ok }]. */
+function checkTiles(level, seed) {
+  const c = level.check; if (!c) return [];
+  return shuffle(c.tiles.map((text, i) => ({ text, ok: i === c.answer })), mulberry(seedOf(String(seed == null ? level.id : seed) + ':ck')));
+}
 const allViews = level => level.views || (level.tally ? ['table', 'bar', 'picto'] : level.model ? ['table', 'bar'] : level.rows ? ['table', 'group'] : ['bar', 'table']);
+const FROZEN = new Set(['sort', 'group', 'view', 'bar', 'set', 'slider', 'pct', 'fix', 'merge', 'remove', 'rule', 'run', 'preset', 'tally', 'other']);
 /** Apply one tap action. Returns { ok, why } for claims and proof taps, true for the rest, false when the action does nothing. */
 function act(level, st, a) {
   if (st.solved) return false;
   const [k, x, y] = a;
+  if (st.picked != null && FROZEN.has(k)) return false;   // a pinned claim freezes the data and the view
   switch (k) {
     case 'sort': { if (!colOf(level, x) || level.model) return false; const dir = st.sortBy && st.sortBy.col === x && st.sortBy.dir === 'asc' ? 'desc' : 'asc'; st.sortBy = { col: x, dir }; st.view = 'table'; st.edits++; return true; }
     case 'group': if (!colOf(level, x) || level.model) return false; st.view = 'group'; st.groupBy = x; st.edits++; return true;
     case 'view': if (!allViews(level).includes(x)) return false; if (st.view === x) return true; st.view = x; st.edits++; return true;
     case 'bar': { if (!level.build || !(x in st.bars)) return false; const n = y == null ? 1 : y | 0; st.bars[x] = Math.max(0, Math.min(20, st.bars[x] + n)); st.edits += Math.abs(n); return true; }
     case 'set': if (!level.build || !(x in st.bars)) return false; st.bars[x] = Math.max(0, Math.min(20, y | 0)); return true;   // Dot's own move: no edit counted
-    case 'slider': if (!level.predict) return false; st.slider = Math.max(level.predict.min, Math.min(level.predict.max, +x)); return true;
+    case 'slider': { if (!level.predict) return false; const p = level.predict, v = +x; if (!isFinite(v)) return false; const step = p.step || 1; st.slider = Math.max(p.min, Math.min(p.max, Math.round((v - p.min) / step) * step + p.min)); return true; }
     case 'pct': if (!(level.pct || (level.tally && level.tally.other))) return false; st.pct = !st.pct; st.edits++; return true;
-    case 'fix': { if (st.removed[x] || !level.rows || level.model) return false; const b = level.bad && level.bad[x]; const c = b && b.col ? b.col : (level.fixCol || level.cols[1].id); st.fixed[x] = { col: c, value: y }; st.edits++; return true; }
+    case 'fix': { if (st.removed[x] || !level.rows || level.model) return false; const b = level.bad && level.bad[x]; const c = b && b.col ? b.col : (level.fixCol || level.cols[1].id); const orig = level.rows[+x.slice(1) - 1][colIndex(level, c)]; if (!(b && b.kind === 'typo') && String(y) !== String(orig)) st.removedGood++; st.fixed[x] = { col: c, value: y }; st.edits++; return true; }
     case 'merge': case 'remove': { if (st.removed[x] || !level.rows || level.model) return false; const b = level.bad && level.bad[x]; const good = !(b && (k === 'merge' ? b.kind === 'dup' : b.kind === 'impossible')); st.removed[x] = 1; if (good) st.removedGood++; st.edits++; return true; }
     // models: move the rule (free), run a batch of trials (one refinement each)
-    case 'rule': { if (!level.model) return false; const r = level.model.rule; const v = Math.max(r.min, Math.min(r.max, Math.round((+x - r.min) / r.step) * r.step + r.min)); st.rule = v; return true; }
+    case 'rule': { if (!level.model || !isFinite(+x)) return false; const r = level.model.rule; const v = Math.max(r.min, Math.min(r.max, Math.round((+x - r.min) / r.step) * r.step + r.min)); st.rule = v; return true; }
     case 'run': { if (!level.model) return false; st.last = modelBatch(level, st); st.batches++; st.edits++; return true; }
     // My Data: pick the question, count answers, load the other class
     case 'preset': { if (!level.tally || !presetOf(x) || !(level.tally.presets || [level.tally.preset]).includes(x)) return false; st.preset = x; st.counts = {}; for (const c of presetOf(x).cats) st.counts[c] = 0; st.other = false; st.pct = false; st.view = 'table'; return true; }
@@ -877,10 +906,12 @@ function act(level, st, a) {
       if (!evidence(level, st)) return { ok: false, why: 'show-me' };
       if (st.picked != null) return { ok: false, why: 'picked' };
       if (level.pick) return { ok: false, why: 'pick' };
+      if (level.tally && !tallyClaims(level, st).some(c => c.ok)) return { ok: false, why: 'tie' };   // nothing the chart supports yet
       st.runs++;
       const ok = claimOk(level, st, x | 0);
       st.lastClaim = { i: x | 0, ok };
       if (ok) st.picked = x | 0; else st.wrong++;
+      if (ok && level.tally) st.pinnedProof = tallyClaims(level, st)[x | 0].proof.slice();
       if (ok && level.tally && !proofKeys(level, st).length) st.solved = true;
       return { ok, why: ok ? (st.solved ? 'solved' : 'proof') : 'wrong' };
     }
@@ -899,6 +930,7 @@ function act(level, st, a) {
     case 'show': {
       if (st.picked == null) return { ok: false, why: 'claim-first' };
       if (!proofKeys(level, st).includes(x)) return { ok: false, why: 'not-proof' };
+      if (!evidence(level, st) || (!level.pick && !claimOk(level, st, st.picked))) return { ok: false, why: 'show-me' };   // safety net: the pinned claim must still hold
       st.shown[x] = 1;
       if (proofDone(level, st)) st.solved = true;
       return { ok: true, why: st.solved ? 'solved' : 'more' };
@@ -960,7 +992,7 @@ function allStrings() {
   return [...out];
 }
 root.DataDetectiveLevels = { CHAPTERS, LEVELS, NAMES, VERDICTS, PRESETS, TALLY_CLAIMS, COMPARE_CLAIMS, MODES, byId, levelsOf, presetOf, allStrings };
-root.DataDetectiveEngine = { newCase, act, evidence, stars, series, visibleRows, cell, active, groupCounts, badLeft, isClean, barsMatch, pctRows, proofKeys, proofDone, claimTiles, claimOk, allViews, timeVal, seedOf,
+root.DataDetectiveEngine = { claimOrder, checkTiles, changedGood, newCase, act, evidence, stars, series, visibleRows, cell, active, groupCounts, badLeft, isClean, barsMatch, pctRows, proofKeys, proofDone, claimTiles, claimOk, allViews, timeVal, seedOf,
   modelBatch, modelRows, modelFits, ruleVars, tallyCats, tallyCounts, tallyTotal, otherCounts, compareRows, comparing, tallyClaims, tallyShows, codeOf, parseCode };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
@@ -1163,9 +1195,18 @@ function renderMap() {
     t.innerHTML = `<span class="pic">${icon(ch.icon || 'book', 34)}</span><span><b>${esc(tr(ch.title))}</b><small>${soon ? esc(tr('Coming soon')) : esc(tr('{n} cases', { n: ch.levels }))} · ${esc(bandName(ch.band === 'both' ? S.band : ch.band))}</small>` +
       `<span class="stars${silver ? ' silver' : ''}" role="img" aria-label="${esc(crowned(ch.id) ? tr('Chapter crown: every star') : tr('{n} of {total} stars', { n: got, total }))}">${icon(got > 0 ? 'star' : 'star-off', 18)}<span class="num" dir="ltr">${esc(num(got))}/${esc(num(total))}</span>${crowned(ch.id) ? `<span class="crown">${icon('trophy', 18)}</span>` : ''}</span></span>`;
     if (soon) { t.setAttribute('aria-disabled', 'true'); t.addEventListener('click', () => { toast(tr('Coming soon')); }); }
+    else if (!mine && S.band === '1b') t.addEventListener('click', () => { sfx('select'); proChapter(ch.id); });
     else t.addEventListener('click', () => { sfx('select'); startChapter(ch.id); });
     tiles.appendChild(t);
   }
+}
+/** An Explorer taps a Pro chapter: say so first. */
+function proChapter(id) {
+  const m = ownModal(tr('This is a Pro chapter. Try it?'));
+  const row = el('div', 'foot'); row.style.justifyContent = 'center';
+  const no = el('button', 'btn quiet'); no.type = 'button'; no.innerHTML = icon('home', 22) + `<span>${esc(tr('Not now'))}</span>`; no.addEventListener('click', () => { closeOwnModal(); });
+  const yes = el('button', 'btn go'); yes.type = 'button'; yes.innerHTML = icon('play', 22) + `<span>${esc(tr('Try it'))}</span>`; yes.addEventListener('click', () => { closeOwnModal(); startChapter(id); });
+  row.append(no, yes); arrowNav(row); m.card.appendChild(row);
 }
 function switchBtn(on, label, fn) { const b = el('button', 'ok-switch'); b.type = 'button'; b.setAttribute('role', 'switch'); b.setAttribute('aria-label', label); b.setAttribute('aria-checked', String(!!on)); b.addEventListener('click', () => { const v = b.getAttribute('aria-checked') !== 'true'; b.setAttribute('aria-checked', String(v)); sfx('select'); fn(v); }); return b; }
 /* ---------- the Daily Crew Challenge: one deterministic case per day (UTC day number) and band, no new content ---------- */
@@ -1249,7 +1290,15 @@ function renderCase() {
   const level = S.level, st = S.cs;
   if (!$('dotPic').firstChild) $('dotPic').replaceWith(Object.assign(dotPortrait(64, 'thinking'), { id: 'dotPic' }));
   renderView(); renderTools(); renderExtra(); renderClaims(); renderFoot(); renderHud();
+  moreHint();
   void level; void st;
+}
+/** A fade at the bottom of the work column while there is more of it to scroll to. */
+function moreHint() {
+  const w = document.querySelector('#playScr .work'); if (!w) return;
+  const upd = () => w.classList.toggle('more', w.scrollHeight - w.scrollTop - w.clientHeight > 4);
+  if (!w.dataset.more) { w.dataset.more = '1'; w.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd); }
+  upd();
 }
 function glowFor() { const l = S.level, st = S.cs; return st.hint >= 2 && !st.solved ? (l.glow || {}) : {}; }
 function renderView() {
@@ -1388,7 +1437,7 @@ function tableView(level, st, g) {
   const pct = st.pct && level.pct;
   for (const c of level.cols) {
     const th = el('th'); const b = el('button', 'hdr' + (st.sortBy && st.sortBy.col === c.id ? ' on' : '') + (g.col === c.id ? ' lit' : '')); b.type = 'button';
-    b.innerHTML = `<span>${esc(tr(c.label))}</span>${st.sortBy && st.sortBy.col === c.id ? icon(st.sortBy.dir === 'asc' ? 'up' : 'down', 18) : ''}`;
+    b.innerHTML = `<span>${esc(tr(c.label))}</span>${st.sortBy && st.sortBy.col === c.id ? icon(st.sortBy.dir === 'asc' ? 'up' : 'down', 18) : level.model ? '' : `<span class="sorti">${icon('swap', 16)}</span>`}`;
     b.setAttribute('aria-label', tr('Sort by {col}', { col: tr(c.label) }));
     b.addEventListener('click', () => doAct(['sort', c.id]));
     th.appendChild(b); tr0.appendChild(th);
@@ -1457,6 +1506,7 @@ function shortLabels(labels) {
 }
 function renderTools() {
   const level = S.level, st = S.cs, box = $('tools'); box.innerHTML = '';
+  box.classList.toggle('frozen', st.picked != null); $('extra').classList.toggle('frozen', st.picked != null);
   const g = glowFor();
   const chip = (label, iconName, key, pressed, fn) => { const b = el('button', 'chip' + (g.tool === key ? ' lit' : '')); b.type = 'button'; b.innerHTML = (iconName ? icon(iconName, 20) : '') + `<span>${esc(label)}</span>`; if (pressed != null) { b.setAttribute('aria-pressed', String(pressed)); if (pressed) b.insertAdjacentHTML('beforeend', mark()); } b.addEventListener('click', fn); box.appendChild(b); return b; };
   if (level.model) {
@@ -1469,7 +1519,7 @@ function renderTools() {
     chip(tr('Pictures'), 'user', 'picto', !inPool && st.view === 'picto', () => { S.poolView = false; doAct(['view', 'picto']); });
     if (level.tally.other && S.band === '2' && st.preset) chip(tr('Another class'), 'swap', 'other', st.other, () => { S.poolView = false; doAct(['other']); });
     if (st.other) chip('%', null, 'pct', st.pct, () => { S.poolView = false; doAct(['pct']); }).setAttribute('aria-label', tr('Show percent'));
-    if (level.tally.pool && S.pool && S.pool.n) chip(tr('Class pool'), 'user', 'pool', !!S.poolView, () => { S.poolView = !S.poolView; sfx('select'); renderCase(); });
+    if (level.tally.pool && S.mode === 'projector' && S.pool && S.pool.n) chip(tr('Class pool'), 'user', 'pool', !!S.poolView, () => { S.poolView = !S.poolView; sfx('select'); renderCase(); });
   } else if (level.rows) {
     const views = level.views || ['table', 'group'];
     if (views.includes('table')) chip(tr('Table'), 'menu', 'table', st.view === 'table', () => doAct(['view', 'table']));
@@ -1491,17 +1541,23 @@ function renderExtra() {
   const g = glowFor();
   if (level.model) {
     // the rule slider (free to move), the Run button (each run is one refinement) and what the last run showed
-    const m = level.model, r = m.rule, s = el('div', 'slide' + (g.tool === 'rule' ? ' lit' : ''));
+    const m = level.model, r = m.rule, s = el('div', 'slide' + (g.tool === 'rule' ? ' lit' : '')), note = el('p');
+    S.lastSaid = null;
     const top = el('div', 'total');   // the rule's words and the Run button on one line; the slider under them
     const lab = el('label'); lab.style.cssText = 'font-weight:800;flex:1;min-width:90px'; lab.htmlFor = 'rule'; lab.textContent = tr(m.ruleLabel, E.ruleVars(level, st)); lab.dir = 'auto';
     const run = el('button', 'btn hot'); run.type = 'button'; run.id = 'runBtn'; run.style.paddingInline = '14px'; run.innerHTML = icon('play', 22) + `<span>${esc(m.gaps ? tr('Run {n} tests', { n: m.gaps.length }) : tr('Run {n} trials', { n: m.inputs.length }))}</span>`;
-    run.addEventListener('click', () => doAct(['run']));
+    run.disabled = st.picked != null; run.addEventListener('click', () => doAct(['run']));
     top.append(lab, run);
-    const inp = el('input'); inp.type = 'range'; inp.id = 'rule'; inp.min = r.min; inp.max = r.max; inp.step = r.step; inp.value = st.rule; inp.dir = 'ltr'; inp.setAttribute('aria-label', tr('Rule'));
-    inp.addEventListener('input', () => { E.act(level, st, ['rule', +inp.value]); lab.textContent = tr(m.ruleLabel, E.ruleVars(level, st)); renderView(); renderClaims(); });
+    const inp = el('input'); inp.type = 'range'; inp.id = 'rule'; inp.disabled = st.picked != null; inp.min = r.min; inp.max = r.max; inp.step = r.step; inp.value = st.rule; inp.dir = 'ltr'; inp.setAttribute('aria-label', tr('Rule'));
+    inp.addEventListener('input', () => {
+      if (!E.act(level, st, ['rule', +inp.value])) { inp.value = st.rule; return; }
+      lab.textContent = tr(m.ruleLabel, E.ruleVars(level, st)); renderView(); renderClaims();
+      const moved = !(st.last && st.last.rule === st.rule);
+      if (moved && st.last) { const line = tr('The rule moved. Run the trials again to test it.'); note.textContent = line + ' ' + tr('Runs so far: {n}.', { n: st.batches }); if (S.lastSaid !== line) { S.lastSaid = line; dotSay(line); } }
+    });
     s.append(top, inp); box.appendChild(s);
     const cur = st.last && st.last.rule === st.rule ? st.last : null;
-    const note = el('p', 'note');
+    note.className = 'note';
     if (!cur) note.textContent = st.last ? tr('The rule moved. Run the trials again to test it.') : tr('Predict first: set the rule, then run the trials.');
     else if (m.gaps) note.textContent = tr('{done} of {n} runs finished ({rate}%).', { done: cur.done, n: cur.n, rate: cur.rate }) + ' ' + (cur.fit ? tr('That is about 8 in 10: balanced!') : tr('Target: about 8 in 10 finish. Refine the jump.'));
     else note.textContent = tr('Average miss: {n}%.', { n: Math.round(cur.err * 100) }) + ' ' + (cur.fit ? tr('The model fits!') : tr('Not yet: refine the rule and run again.'));
@@ -1532,7 +1588,7 @@ function renderExtra() {
     const tot = el('div', 'total');
     const rib = el('p', 'ribbon'); rib.textContent = tr('Answers: {n}', { n: total }); tot.appendChild(rib);
     if (total < min) { const nt = el('p', 'note'); nt.textContent = tr('Five answers is the least that counts as a case.'); tot.appendChild(nt); }
-    if (level.tally.pool && total >= min) {
+    if (level.tally.pool && S.mode === 'projector' && total >= min) {
       const pb = el('button', 'btn'); pb.type = 'button'; pb.id = 'poolBtn'; pb.innerHTML = icon('plus', 20) + `<span>${esc(tr('Add to class pool'))}</span>`;
       pb.addEventListener('click', () => { addToPool(); }); tot.appendChild(pb);
     }
@@ -1558,7 +1614,7 @@ function renderExtra() {
   if (level.predict) {
     const p = level.predict, s = el('div', 'slide');
     const lab = el('label'); lab.style.fontWeight = '800'; lab.textContent = tr('My prediction for {label}', { label: tr(p.label) }); lab.htmlFor = 'slider';
-    const inp = el('input'); inp.type = 'range'; inp.id = 'slider'; inp.min = p.min; inp.max = p.max; inp.step = p.step || 1; inp.value = st.slider; inp.dir = 'ltr';
+    const inp = el('input'); inp.type = 'range'; inp.id = 'slider'; inp.disabled = st.picked != null; inp.min = p.min; inp.max = p.max; inp.step = p.step || 1; inp.value = st.slider; inp.dir = 'ltr';
     const v = el('div', 'v num'); v.dir = 'ltr'; v.textContent = num(st.slider) + ' ' + tr(level.valueLabel || '');
     inp.addEventListener('input', () => { E.act(level, st, ['slider', +inp.value]); v.textContent = num(st.slider) + ' ' + tr(level.valueLabel || ''); });
     s.append(lab, inp, v); box.appendChild(s);
@@ -1624,15 +1680,16 @@ function claimCard() {
   const level = S.level, st = S.cs; if (!level || st.solved || st.picked != null) return;
   if (!E.evidence(level, st)) { sfx('wrong'); dotSay(showMeText()); return; }   // the Show-me rule, whichever way the card is asked for
   const m = ownModal(level.claim ? tr('Is this claim supported by the chart?') : tr(level.q || ''), 'claim');
-  if (level.claim) { const c = el('p'); c.style.fontWeight = '800'; c.textContent = '\u201c' + tr(level.claim) + '\u201d'; m.card.appendChild(c); }
+  if (level.claim) { const c = el('p'); c.style.fontWeight = '800'; c.textContent = tr('\u201c{claim}\u201d', { claim: tr(level.claim) }); m.card.appendChild(c); }
   const grid = el('div', 'tiles2');
   const wrongOnes = st.wrongTiles || (st.wrongTiles = {});
   const picks = new Set();
   let pin = null;
-  E.claimTiles(level, st).forEach((t, i) => {
-    const bad = !!wrongOnes[i];
-    const b = el('button', 'claimtile pop' + (bad ? ' bad' : '')); b.type = 'button'; b.dataset.i = i; b.dataset.key = i + 1;
-    b.innerHTML = `<span class="key num" dir="ltr">${esc(num(i + 1))}</span><span>${esc(tileText(t))}</span>` + (bad ? icon('cross', 22) : '');
+  const tiles = E.claimTiles(level, st);
+  E.claimOrder(level, st).forEach((i, pos) => {
+    const t = tiles[i], bad = !!wrongOnes[i];
+    const b = el('button', 'claimtile pop' + (bad ? ' bad' : '')); b.type = 'button'; b.dataset.i = i; b.dataset.key = pos + 1;
+    b.innerHTML = `<span class="key num" dir="ltr">${esc(num(pos + 1))}</span><span>${esc(tileText(t))}</span>` + (bad ? icon('cross', 22) : '');
     if (bad) b.disabled = true;
     if (level.pick) {
       b.setAttribute('aria-pressed', 'false');
@@ -1680,13 +1737,14 @@ function prove(key) {
   if (st.solved) solved(); else { renderCase(); dotSay(tr('Yes! Keep going: tap the rest of the evidence.')); }
 }
 /** What the data shows, for Dot after a wrong claim (tally cases fill the slots from the counts). */
-const showsText = (level, st) => (level.tally ? tr(level.shows, Object.fromEntries(Object.entries(E.tallyShows(level, st)).map(([k, v]) => [k, trCell(v)]))) : tr(level.shows));
+const showsText = (level, st) => { if (!level.tally) return tr(level.shows); const v = E.tallyShows(level, st), vars = Object.fromEntries(Object.entries(v).map(([k, x]) => [k, trCell(x)])); return v.tie ? tr('The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.', vars) : tr(level.shows, vars); };
 function doAct(a) {
   const level = S.level, st = S.cs; if (!level || st.solved) return;
   const r = E.act(level, st, a);
   if (a[0] === 'claim' || a[0] === 'pick') {
     if (r && r.why === 'show-me') { sfx('wrong'); dotSay(showMeText()); return; }
     if (r && r.why === 'pick') { sfx('select'); claimCard(); return; }
+    if (r && r.why === 'tie') { sfx('select'); dotSay(tr('It is a tie. Count a few more answers, or pin the tie.')); return; }
     if (r && r.ok) { if (st.solved) { solved(); return; } sfx('correct'); renderCase(); dotSay(level.tally ? tr('Good claim! Now show me: tap the bar or row that proves it.') : tr('Good claim! Now show me: tap the evidence that proves it.')); return; }
     if (!r || r.why !== 'wrong') return;
     sfx('wrong'); S.fail = st.wrong; if (a[0] === 'claim') (st.wrongTiles || (st.wrongTiles = {}))[a[1] | 0] = 1; renderCase(); dotSay(showsText(level, st)); try { if (!reduced()) Oomba.juice.shake(0.3, $('claims')); } catch (e) { /* ignore */ } return;
@@ -1726,7 +1784,7 @@ async function finishLevel(n) {
   let v = 'next';
   if (level.open) {   // the open tally: another chart with the same question list, or finish the survey
     v = S.fast ? (S.openChoice || 'next') : await openChartDialog();
-  } else if (!S.fast) { try { v = await Oomba.ui.win({ stars: n, score: S.mode === 'tally' ? S.charts : chapterStars(S.chapter), hero: DOT.spec, title: level.tally ? tr('Chart made!') : n ? tr('Case closed!') : tr('Case skipped'), next: hasNext }); } catch (e) { v = 'next'; } }
+  } else if (!S.fast) { try { v = await Oomba.ui.win(Object.assign({ stars: n, hero: DOT.spec, title: level.tally ? tr('Chart made!') : n ? tr('Case closed!') : tr('Case skipped'), next: hasNext }, S.mode === 'tally' ? { score: S.charts } : {})); } catch (e) { v = 'next'; } }
   if (v === 'again') { startLevel(); return; }
   if (hasNext) { S.idx++; startLevel(); } else chapterEnd();
 }
@@ -1763,7 +1821,8 @@ function dailyEnd(n) {
 /** Lesson mode: one 3-tile concept check from the level, then a confidence face. */
 async function caseClosedCard(level) {
   let ok = false;
-  try { ok = await Oomba.ui.ask({ q: tr(level.check.q), choices: level.check.tiles.map(t => tr(t)), a: tr(level.check.tiles[level.check.answer]), tries: 1, who: DOT_ENT, hint: tr('Think about what the data showed you.') }); } catch (e) { ok = false; }
+  const tiles = E.checkTiles(level, S.cs ? S.cs.seed : null);
+  try { ok = await Oomba.ui.ask({ q: tr(level.check.q), choices: tiles.map(t => tr(t.text)), a: tr(tiles.find(t => t.ok).text), tries: 1, who: DOT_ENT, hint: tr('Think about what the data showed you.') }); } catch (e) { ok = false; }
   S.checks.n++; if (ok) S.checks.ok++;
   S.confidence = await confidenceFace();
   return ok;
@@ -1885,16 +1944,26 @@ function keypad() {
   draw();
   const keys = el('div', 'keys');
   const key = (label, fn, cls) => { const b = el('button', 'btn' + (cls ? ' ' + cls : '')); b.type = 'button'; if (typeof label === 'string' && label.charAt(0) === '<') b.innerHTML = label; else b.textContent = label; b.addEventListener('click', fn); keys.appendChild(b); return b; };
-  for (let d = 1; d <= 9; d++) key(num(d), () => { if (digits.length < 4) { digits.push(d); draw(); sfx('pop'); } });
-  key(icon('back', 24), () => { digits.pop(); draw(); sfx('select'); }).setAttribute('aria-label', tr('Delete'));
-  key(num(0), () => { if (digits.length < 4) { digits.push(0); draw(); sfx('pop'); } });
-  key(icon('play', 24), () => { if (digits.length === 4) { if (!applyCode(digits)) { sfx('wrong'); p.textContent = tr('That is not a case. Check the four digits with your teacher.'); } } else { sfx('wrong'); p.textContent = tr('Four digits, please.'); } }, 'hot').setAttribute('aria-label', tr('Go'));
+  const push = d => { if (digits.length >= 4) digits.length = 0; digits.push(d); draw(); sfx('pop'); };   // a fifth digit starts a new code
+  const del = () => { digits.pop(); draw(); sfx('select'); };
+  const go = () => { if (digits.length === 4) { if (!applyCode(digits)) { sfx('wrong'); p.textContent = tr('That is not a case. Check the four digits with your teacher.'); digits.length = 0; draw(); } } else { sfx('wrong'); p.textContent = tr('Four digits, please.'); } };
+  for (let d = 1; d <= 9; d++) key(num(d), () => push(d));
+  key(icon('cross', 24), del).setAttribute('aria-label', tr('Delete'));
+  key(num(0), () => push(0));
+  key(icon('play', 24), go, 'hot').setAttribute('aria-label', tr('Go'));
+  m.card.addEventListener('keydown', e => {
+    if (/^[0-9]$/.test(e.key)) { e.preventDefault(); push(+e.key); }
+    else if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); del(); }
+    else if (e.key === 'Enter') { e.preventDefault(); go(); }
+  });
   arrowNav(keys); m.card.appendChild(keys);
 }
 /** Quest code C B M L -> the same settings as the URL params (params win over codes). */
 function applyCode(d) {
   const o = E.parseCode(d.map(Number));
   if (!o || (o.chapter && !built(o.chapter))) return false;
+  const ch = o.chapter && chapterOf(o.chapter);
+  if (ch && ch.band !== 'both' && ch.band !== o.band && !(ch.id === 'sort' && o.band === '2')) return false;   // a band the chapter is not for
   if (Object.keys(PARAMS).length) { /* params win over codes */ return applyParams(PARAMS, true); }
   return applyParams({ chapter: o.chapter, band: o.band, mode: o.mode, level: o.level, lock: 0 }, true);
 }
