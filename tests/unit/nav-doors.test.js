@@ -161,7 +161,7 @@ test('"Using this in class?" on subject, age and game pages for signed-out visit
     assert.doesNotMatch((await as(k)(p)).text, /Using this in class\?/, `kid ${p}`);
     assert.doesNotMatch((await as(g)(p)).text, /Using this in class\?/, `grown-up ${p}`);
   }
-  assert.match((await as(k)('/g/sum-racer')).text, /<a class="iconbtn" href="\/build" id="makelike">/);
+  assert.match((await as(k)('/g/sum-racer')).text, /<a class="qact" href="\/build" id="makelike">/);
   assert.match((await call(null, '/g/sum-racer')).text, /id="makelike"/);
   assert.match((await as(g)('/g/sum-racer')).text, /id="makelike"/, 'grown-ups can build too');
 });

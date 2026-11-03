@@ -386,7 +386,16 @@ textarea.input{min-height:96px;resize:vertical}
 .stat{display:flex;flex-direction:column;font-size:.85rem;color:var(--muted);font-weight:600}
 .stat b{font-size:1.15rem;color:var(--text);font-weight:800}
 .playbig{min-width:min(100%,260px)}
-@media (max-width:640px){.gamehero .actions{grid-column:1/-1}.playbig{width:100%}}
+@media (max-width:640px){.gamehero .actions,.gamehero .quietacts{grid-column:1/-1}.playbig{width:100%}}
+/* Favorite, Share, Make one like this: a quiet row of text buttons under Play; Report sits at the foot of the page. */
+.quietacts{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:10px}
+.qact{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--text-2);font:800 .95rem var(--font);cursor:pointer;text-decoration:none}
+.qact .emo{font-size:1.1rem;line-height:1}
+.qact:hover{background:var(--hover)}
+.qact[aria-pressed="true"]{color:var(--link)}
+.reportline{text-align:center;margin:18px 0 4px}
+.linkbtn{border:0;background:transparent;color:var(--muted);font:700 .9rem var(--font);min-height:44px;padding:0 12px;border-radius:999px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.linkbtn:hover{background:var(--hover);color:var(--text)}
 .taglist{display:flex;gap:8px;flex-wrap:wrap}
 .tag{padding:4px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:.85rem;font-weight:700}
 .lb{list-style:none;margin:0;padding:0;counter-reset:lb}
