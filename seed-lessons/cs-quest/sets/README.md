@@ -54,6 +54,22 @@ The `r2`/`r3` review items are extra material for the unit review and for a teac
 `warmupItems` lists are the source of truth for what a derived warm-up contains. `/live?starter=bank:...` hosts the
 platform's own bank; derived sets are ordinary teacher sets picked under the "CS Quest" group of the `/live` set picker.
 
+## How the live pieces fit (owner B's platform changes)
+
+- **The "CS Quest" group** (`server/services/classlive-sets.js isCsQuest`): a set is grouped when the materialiser
+  creates it with `subject: 'cs-quest'` (`CSQ_SUBJECT`, preferred), or with a `lessonId` and a title that starts with
+  `CSQ ` (`CSQ_PREFIX`: `CSQ 1.2 warm-up · Loops (3-5)`, `CSQ Unit 1 review (6-8)`). Newest first, as in *My sets*.
+- **`/live?starter=<id>`** (`server/routes/live.js starterPre`) fills the host form from a starter the lesson plan names
+  and picks the mode it implies when the URL gives none: `wyr:<topic|topic+topic|mix>:<5|8|10|15|20>:<10|15|20|30>`
+  (lesson 6.1 `wyr:tech:8:20`, 6.3 `wyr:online:8:20`), `bank:<subject|mixed>:<a6|a8|a10|a12>:<count>`,
+  `bank:board:<level>:<subject>+<subject>`, `atlas:<region>:<level>:<kinds>:<count>:<secs>`, or `science` / `geo` /
+  `board` / `math-8` / `math-10` / `math-12`. Unknown ids are ignored. Derived sets are linked with `?set=<id>` as before.
+- **Saved runs keep `cat` and `secs`** per question (`classlive-results.itemRow`), so a class run can say which
+  standard each question practiced; "play the missed questions again" keeps them too.
+- **Would You Rather**: the dilemmas of topics `tech` and `online` live in the game's bank
+  (`scripts/data/would-you-rather/`, translated in all 11 languages); `seed-lessons/cs-quest/wyr-tech.json` adds the
+  prompt after each reveal and the CSTA ids per dilemma (`tests/unit/cs-quest-sets.test.js` checks it against both).
+
 ## Counts
 
 | bank | items | | bank | items |
