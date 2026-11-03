@@ -106,6 +106,7 @@
   .row.pick { background: var(--dd-glow); }
   .num { font-variant-numeric: tabular-nums; }
   .bars { display: flex; align-items: flex-end; gap: 6px; height: clamp(170px, 36vh, 420px); padding: 6px 4px 0; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); box-sizing: border-box; }
+  .view.compact .bars { height: clamp(150px, 26vh, 360px); }
   .barcol { flex: 1 1 0; min-width: 44px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; padding: 4px 2px 0; border-radius: 10px; cursor: pointer; }
   .barcol .barv { font-weight: 900; font-size: 1em; }
   .barcol .fill { width: 100%; max-width: 64px; min-height: 4px; height: calc(var(--h, 0) * 1%); background: var(--dd-bar); border: 3px solid var(--ok-edge); border-radius: 10px 10px 0 0; box-sizing: border-box; transition: height .3s ease; }
@@ -136,6 +137,24 @@
   .rowpanel p { margin: 0; width: 100%; font-weight: 800; }
   .rowpanel .btn { flex: 1 1 40%; padding-inline: 10px; }
   .ribbon { margin: 0; font-weight: 900; font-size: 1em; padding: 4px 12px; border-radius: 999px; background: var(--dd-spark); color: var(--dd-ink); display: inline-block; }
+  /* models: the rule slider, the run button and the result note; Game Balance's strip of test runs */
+  .slide.lit { box-shadow: 0 0 0 5px var(--dd-glow); }
+  .runs { display: flex; flex-wrap: wrap; gap: 3px; padding: 6px 8px; border-radius: 14px; background: var(--ok-card); border: 3px solid var(--ok-edge); }
+  .runs span { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 6px; background: var(--dd-tile); }
+  .runs span.ok { background: var(--dd-go); border-radius: 50%; }
+  .runs svg { width: 16px; height: 16px; }
+  .off.ok svg, .off.no svg { width: 16px; height: 16px; vertical-align: middle; margin-inline-start: 4px; }
+  /* My Data: the question chips, the total ribbon, the pool */
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .total { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+  /* pairs: whose turn */
+  .turn { display: inline-flex; align-items: center; gap: 8px; }
+  .turn canvas { width: 32px !important; height: 32px !important; border-radius: 50%; border: 2px solid var(--ok-edge); background: var(--dd-tile); }
+  .mapbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; width: min(900px, 100%); }
+  .mapbar .srow { gap: 8px; padding: 0 6px; }
+  .daily { width: min(900px, 100%); }
+  .daily .tile { width: 100%; border-style: double; border-width: 5px; }
+  .crown svg { color: var(--dd-gold); }
 
   /* own modal (quest card, keypad, end card) */
   .dd-modal { position: fixed; inset: 0; display: grid; place-items: center; padding: 12px; background: var(--ok-scrim); z-index: 20; }
@@ -157,12 +176,18 @@
   @keyframes dd-pop { from { transform: scale(.92); opacity: 0; } }
   .ok-rm .pop, .ok-rm .fill, .ok-rm .btn, .ok-rm .ibtn { animation: none; transition: none; }
   @media (max-height: 520px) { .dot { padding: 4px 8px; } .dotpic, .dotpic canvas { width: 48px !important; height: 48px !important; } .bars { min-height: 120px; } .tile { min-height: 64px; } }
+  /* short screens (a phone on its side): Dot already says what the notes say; the slider box is slimmer; a wide claim card uses two columns */
+  @media (max-height: 520px) { .claims .note, .slide + .note { display: none; } .slide { padding: 6px 10px; gap: 2px; } .slide input[type=range] { height: 40px; } .slide .total { min-height: 40px; } .work { gap: 6px; } .dotsay { font-size: .95em; line-height: 1.2; } .runs { padding: 4px 6px; } }
+  @media (max-height: 520px) and (min-width: 600px) { .tiles2 { grid-template-columns: 1fr 1fr; } }
+  /* a case with a slider or steppers under the view (models, My Data) keeps the view shorter when the panels stack */
+  @media (orientation: portrait), (max-width: 699px) { .view.compact { max-height: 46%; } }
 </style>
 <div id="game" hidden>
   <div class="bar" id="hud">
     <button class="ibtn" type="button" id="backBtn"></button>
     <div class="pill" id="prog" dir="ltr"><span id="progIcon"></span><span id="progT"></span></div>
     <div class="pill" id="questPill" hidden></div>
+    <div class="pill turn" id="turnPill" hidden></div>
     <span class="sp"></span>
     <button class="ibtn" type="button" id="learnBtn" hidden></button>
     <button class="ibtn" type="button" id="hintBtn" hidden></button>
@@ -170,8 +195,9 @@
     <button class="ibtn" type="button" id="pauseBtn" hidden></button>
   </div>
   <section class="screen" id="map" hidden>
-    <div class="seg" role="group" id="bandSeg"></div>
+    <div class="mapbar"><div class="seg" role="group" id="bandSeg"></div><div class="srow" id="pairRow"></div></div>
     <p class="ribbon" id="mapHint"></p>
+    <div class="daily" id="daily"></div>
     <div class="tiles" id="tiles"></div>
   </section>
   <section class="screen" id="play" hidden>
@@ -208,6 +234,17 @@ const CHAPTERS = [
 // Fictional short names for the tables: the same handful in every case, never a real-name shape.
 const NAMES = ['Ari', 'Bo', 'Cy', 'Dee', 'Eli', 'Fay', 'Gus', 'Ida', 'Jo', 'Kai', 'Lu', 'Mo', 'Nia', 'Ori', 'Pia', 'Rae', 'Sol', 'Tam', 'Uma', 'Vic'];
 const VERDICTS = ['Supported', 'Not supported', 'Can\u2019t tell yet'];
+// My Data: the survey questions a class can tally (at most 8 categories each) and a made-up "another class" to compare with.
+const PRESETS = [
+  { id: 'pets', title: 'Pets at home', cats: ['Dog', 'Cat', 'Fish', 'Bird', 'Rabbit', 'None'], other: [9, 7, 2, 4, 3, 5] },
+  { id: 'colors', title: 'Favorite color', cats: ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange'], other: [6, 10, 5, 3, 4, 2] },
+  { id: 'fruit', title: 'Favorite fruit', cats: ['Apple', 'Banana', 'Grape', 'Pear', 'Melon', 'Berry'], other: [8, 6, 7, 2, 4, 3] },
+  { id: 'sports', title: 'Favorite sport', cats: ['Soccer', 'Basketball', 'Swimming', 'Tennis', 'Running', 'Dance'], other: [11, 5, 6, 2, 3, 3] },
+  { id: 'transport', title: 'How we get to school', cats: ['Walk', 'Bike', 'Bus', 'Car', 'Scooter', 'Train'], other: [7, 4, 12, 5, 1, 1] },
+  { id: 'options', title: 'Our own question', cats: ['Option A', 'Option B', 'Option C', 'Option D', 'Option E', 'Option F', 'Option G', 'Option H'], other: [8, 6, 5, 4, 3, 2, 1, 1] },
+];
+const TALLY_CLAIMS = ['Most kids picked {top}.', 'Fewest kids picked {low}.', 'More than half picked {top}.'];
+const COMPARE_CLAIMS = ['Our class has the bigger share of {ours}.', 'The other class has the bigger share of {theirs}.', 'Both classes picked {top} most.'];
 const col = (id, label, type) => ({ id, label, type: type || 'text' });
 const LEVELS = [
 /* ---------------- Chapter 1: Sort & Group (1B-DA-06) ---------------- */
@@ -466,6 +503,141 @@ const LEVELS = [
   glow: { rows: ['r3'] }, move: ['remove', 'r3'],
   check: { q: '30 recycled out of 20 lunches is\u2026', tiles: ['Impossible', 'A great result', '75%'], answer: 0 },
   sol: [['remove', 'r3'], ['pct'], ['claim', 0], ['show', 'r2']] },
+/* ---------------- Chapter 5: Model Makers (2-DA-09): a rule slider, seeded trials, compare, refine ---------------- */
+{ id: 'models-1', ch: 'models', n: 1, bands: ['2'], csta: ['2-DA-09'], title: 'Ramp Rule', kind: 'model',
+  story: 'A toy car rolls off a ramp. Dot’s model says the distance it rolls is some number times the ramp height.',
+  q: 'Find the number that makes the model fit the trials, then pin the rule.',
+  model: { ruleLabel: 'Distance = {k} × height', inputLabel: 'Height', outLabel: 'Distance', unit: 'cm', inputs: [10, 20, 30, 40, 50], rule: { min: 1, max: 4, step: 1, start: 1 }, truth: 2, noise: [-3, 2, 0, 3, -2], tol: 0.12 },
+  rows: [[10], [20], [30], [40], [50]], cols: [col('input', 'Height', 'num')],
+  evidence: { model: true }, claims: ['Distance is about 2 × height', 'Distance is about 1 × height', 'Distance is about 4 × height'], answer: 0, proof: ['r1', 'r5'], par: 4,
+  shows: 'With 2 × height the model lands within a few cm of every trial. 1 × is far too short and 4 × far too long.',
+  learn: { title: 'A model is a rule that predicts', text: 'A model is a rule that guesses what will happen. Predict with it, run real trials, compare, then change the rule until the predictions fit. That is refining a model.' },
+  hints: ['Run the trials. Are the model’s predictions too short or too long?', 'The rule slider is glowing. Move it one step and run the trials again.', 'I set the rule to 2 for you. Run the trials and compare.'],
+  glow: { tool: 'rule' }, move: ['rule', 2], starter: [['run']],
+  check: { q: 'When the model’s predictions miss the real results, you should…', tiles: ['Change the rule and test again', 'Keep the rule and ignore the data', 'Delete the results'], answer: 0 },
+  sol: [['run'], ['rule', 2], ['run'], ['claim', 0], ['show', 'r1'], ['show', 'r5']] },
+{ id: 'models-2', ch: 'models', n: 2, bands: ['2'], csta: ['2-DA-09'], title: 'Plant Model', kind: 'model',
+  story: 'Dot grows bean plants in the lab. Her model: height equals some number of cm for every day.',
+  q: 'Fit the growth rule to the five measured plants, then pin it.',
+  model: { ruleLabel: 'Height = {k} cm × days', inputLabel: 'Days', outLabel: 'Height', unit: 'cm', inputs: [2, 4, 6, 8, 10], rule: { min: 1, max: 5, step: 1, start: 5 }, truth: 3, noise: [1, -1, 0, 1, -1], tol: 0.12 },
+  rows: [[2], [4], [6], [8], [10]], cols: [col('input', 'Days', 'num')],
+  evidence: { model: true }, claims: ['About 3 cm a day', 'About 5 cm a day', 'About 1 cm a day'], answer: 0, proof: ['r3', 'r5'], par: 4,
+  shows: 'At 3 cm a day the model is within 1 cm of every plant. 5 cm a day predicts far too tall.',
+  hints: ['The model starts at 5 cm a day. Compare its guesses with the real heights.', 'The rule slider is glowing. Too tall means a smaller number.', 'I set the rule to 3 for you. Run the trials and compare.'],
+  glow: { tool: 'rule' }, move: ['rule', 3], starter: [['run']],
+  check: { q: 'Your model predicts too tall every time. Refine it by…', tiles: ['Lowering the growth number', 'Raising the growth number', 'Measuring fewer plants'], answer: 0 },
+  sol: [['run'], ['rule', 3], ['run'], ['claim', 0], ['show', 'r3'], ['show', 'r5']] },
+{ id: 'models-3', ch: 'models', n: 3, bands: ['2'], csta: ['2-DA-09'], title: 'Bounce Back', kind: 'model',
+  story: 'Drop a ball and it bounces back part of the way. The model: the bounce is some percent of the drop.',
+  q: 'Find the percent that fits the drops, then pin the rule.',
+  model: { ruleLabel: 'Bounce = {k}% of the drop', inputLabel: 'Drop', outLabel: 'Bounce', unit: 'cm', inputs: [100, 80, 60, 40, 20], rule: { min: 30, max: 90, step: 10, start: 90 }, scale: 0.01, truth: 60, noise: [2, -2, 1, -1, 0], tol: 0.12 },
+  rows: [[100], [80], [60], [40], [20]], cols: [col('input', 'Drop', 'num')],
+  evidence: { model: true }, claims: ['The ball bounces about 60% of the drop', 'The ball bounces about 90% of the drop', 'The ball bounces about 30% of the drop'], answer: 0, proof: ['r1', 'r3'], par: 5,
+  shows: 'At 60% every bounce is within 2 cm of the model. 90% and 30% miss by a lot.',
+  hints: ['Does the ball bounce most of the way back, or less?', 'The rule slider is glowing. Try the middle and refine from there.', 'I set the rule to 60% for you. Run the trials and compare.'],
+  glow: { tool: 'rule' }, move: ['rule', 60], starter: [['run']],
+  check: { q: 'A model that fits five trials well is…', tiles: ['Good evidence for the rule', 'Proof it fits every ball ever', 'Useless'], answer: 0 },
+  sol: [['run'], ['rule', 60], ['run'], ['claim', 0], ['show', 'r1'], ['show', 'r3']] },
+{ id: 'models-4', ch: 'models', n: 4, bands: ['2'], csta: ['2-DA-09'], title: 'Predict Day 12', kind: 'model',
+  story: 'The bean plants again. Fit the rule, then use the model to predict a day nobody measured.',
+  q: 'Fit the growth rule, slide to your prediction for day 12, then pin it.',
+  model: { ruleLabel: 'Height = {k} cm × days', inputLabel: 'Days', outLabel: 'Height', unit: 'cm', inputs: [1, 3, 5, 7, 9], rule: { min: 1, max: 5, step: 1, start: 1 }, truth: 3, noise: [0, 1, -1, 1, 0], tol: 0.15 },
+  rows: [[1], [3], [5], [7], [9]], cols: [col('input', 'Days', 'num')],
+  predict: { label: 'Day 12', min: 0, max: 60, step: 1, lo: 33, hi: 39 }, proof: ['r4', 'r5'], par: 4,
+  evidence: { model: true },
+  shows: 'The model that fits is 3 cm a day, so day 12 should be about 36 cm.',
+  hints: ['First make the model fit the five plants.', 'The rule slider is glowing. When the model fits, 12 days times the rule is your prediction.', 'I set the rule to 3 for you. 3 times 12 is 36: slide to 36.'],
+  glow: { tool: 'rule' }, move: ['rule', 3], starter: [['run']],
+  check: { q: 'A good model lets you…', tiles: ['Predict cases you did not measure', 'Skip measuring anything', 'Change the real results'], answer: 0 },
+  sol: [['run'], ['rule', 3], ['run'], ['slider', 36], ['claim', 0], ['show', 'r4'], ['show', 'r5']] },
+{ id: 'models-5', ch: 'models', n: 5, bands: ['2'], csta: ['2-DA-09'], title: 'Game Balance', kind: 'model', view: 'bar',
+  story: 'Your team’s runner game is too hard. Playtesters keep falling at the gaps. Tune the jump so about 8 in 10 test runs finish.',
+  q: 'Set the jump power, run 20 test runs, refine, then pin the result.',
+  model: { ruleLabel: 'Jump power {k}', inputLabel: 'Run', outLabel: 'Finished', inputs: [], rule: { min: 4, max: 10, step: 1, start: 10 }, gaps: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10], rate: { lo: 75, hi: 85 }, done: 'Finished', fell: 'Fell' },
+  evidence: { model: true }, claims: ['About 8 in 10 runs finish', 'Every run finishes', 'Only half the runs finish'], answer: 0, proof: ['c:Finished'], par: 5,
+  shows: 'At jump power 8, 16 of 20 runs finish: about 8 in 10. Power 10 lets everyone finish, which is no fun.',
+  hints: ['Run 20 tests. How many finish? Too many means the game is too easy.', 'The jump slider is glowing. Lower it a step and test again.', 'I set the jump power to 8 for you. Run the tests and count the finishers.'],
+  glow: { tool: 'rule' }, move: ['rule', 8], starter: [['run']],
+  check: { q: 'Playtest data says 20 of 20 runs finish. The game is…', tiles: ['Too easy: refine the jump', 'Perfectly balanced', 'Too hard'], answer: 0 },
+  sol: [['run'], ['rule', 8], ['run'], ['claim', 0], ['show', 'c:Finished']] },
+/* ---------------- Chapter 6: Fair Data (2-IC-21): biased samples, who is missing, a system that fails for some ---------------- */
+{ id: 'fair-1', ch: 'fair', n: 1, bands: ['2'], csta: ['2-IC-21'], title: 'One Grade Asked', kind: 'table',
+  story: 'A poster says the whole school wants more soccer at recess. Here is the survey behind it.',
+  q: 'Is this survey fair for the whole school?',
+  cols: [col('name', 'Name'), col('grade', 'Grade'), col('pick', 'Pick')],
+  rows: [['Ari', 'Grade 3', 'Soccer'], ['Bo', 'Grade 3', 'Soccer'], ['Cy', 'Grade 3', 'Tag'], ['Dee', 'Grade 3', 'Soccer'], ['Eli', 'Grade 3', 'Soccer'], ['Fay', 'Grade 3', 'Art'], ['Gus', 'Grade 3', 'Soccer'], ['Ida', 'Grade 3', 'Soccer']],
+  random: true, evidence: { group: 'grade' }, claims: ['Not fair: only Grade 3 was asked', 'Fair: eight kids answered', 'Fair: Soccer won clearly'], answer: 0, proof: ['c:Grade 3'], par: 1,
+  shows: 'Grouped by Grade there is one bar: every answer came from Grade 3. The other grades were never asked.',
+  learn: { title: 'A sample should look like the whole', text: 'Data comes from the people you ask. If you only ask one group, the answer is about that group, not everyone. Before trusting a claim, check who was asked and who was left out.' },
+  hints: ['Who answered this survey? Which column tells you?', 'Group is glowing. Group by Grade to see who was asked.', 'I grouped by Grade for you. How many grades are there?'],
+  glow: { tool: 'group' }, move: ['group', 'grade'],
+  check: { q: 'A survey of only Grade 3 tells you about…', tiles: ['Grade 3', 'The whole school', 'Every kid in town'], answer: 0 },
+  sol: [['group', 'grade'], ['claim', 0], ['show', 'c:Grade 3']] },
+{ id: 'fair-2', ch: 'fair', n: 2, bands: ['2'], csta: ['2-IC-21'], title: 'Who Is Missing?', kind: 'table',
+  story: 'Burgers won the lunch vote. But the vote happened in the meat line, and some kids never got a ballot.',
+  q: 'Who was left out of the vote?',
+  cols: [col('name', 'Name'), col('lunch', 'Lunch'), col('voted', 'Voted')],
+  rows: [['Jo', 'Meat', 'Yes'], ['Kai', 'Meat', 'Yes'], ['Lu', 'Veggie', 'No'], ['Mo', 'Meat', 'Yes'], ['Nia', 'Veggie', 'No'], ['Ori', 'Meat', 'Yes'], ['Pia', 'Veggie', 'No'], ['Rae', 'Meat', 'Yes'], ['Sol', 'Meat', 'Yes'], ['Tam', 'Veggie', 'No']],
+  random: true, evidence: { sortAny: ['voted', 'lunch'] }, claims: ['The veggie eaters never got to vote', 'Everyone voted', 'The meat eaters were left out'], answer: 0, proof: ['r3', 'r5'], par: 1,
+  shows: 'Sorted, the pattern is plain: every No is a veggie eater and every Yes eats meat. The veggie kids were never asked.',
+  hints: ['Which kids have No in the Voted column? What do they have in common?', 'The Voted column is glowing. Sort by it.', 'I sorted by Voted for you. Read the Lunch column of the No rows.'],
+  glow: { col: 'voted' }, move: ['sort', 'voted'],
+  check: { q: 'A vote that misses one group of people is…', tiles: ['Biased: it leaves some people out', 'Fine, if most people voted', 'More accurate'], answer: 0 },
+  sol: [['sort', 'voted'], ['claim', 0], ['show', 'r3'], ['show', 'r5']] },
+{ id: 'fair-3', ch: 'fair', n: 3, bands: ['2'], csta: ['2-IC-21'], title: 'Works for Some', kind: 'table', pctTool: true,
+  story: 'A voice helper was tested before launch. It was tested mostly on one kind of voice.',
+  q: 'Who does the voice helper fail?',
+  cols: [col('voice', 'Testers'), col('ok', 'Worked', 'num'), col('n', 'Tested', 'num')], pct: ['ok', 'n'],
+  rows: [['Deep voices', 9, 10], ['High voices', 3, 6]],
+  evidence: { pct: true }, claims: ['It fails half the high voices', 'It works the same for everyone', 'It fails the deep voices'], answer: 0, proof: ['r2'], par: 1,
+  shows: 'As a share: 90% of deep voices worked but only 50% of high voices. Tested mostly on deep voices, it fails the others.',
+  hints: ['9 worked and 3 worked, but the groups are different sizes. What makes them fair to compare?', 'The % button is glowing.', 'Switched to percent for you: 90% against 50%.'],
+  glow: { tool: 'pct' }, move: ['pct'],
+  check: { q: 'To find who a system fails, test it on…', tiles: ['Many different kinds of people', 'The people who built it', 'One kind of voice'], answer: 0 },
+  sol: [['pct'], ['claim', 0], ['show', 'r2']] },
+{ id: 'fair-4', ch: 'fair', n: 4, bands: ['2'], csta: ['2-IC-21'], title: 'Who Else to Ask', kind: 'table',
+  story: 'The council surveyed kids about a new bike shed. Every answer came from the Grade 5 bus stop.',
+  q: 'Pick the two groups the council should survey next.',
+  cols: [col('name', 'Name'), col('grade', 'Grade'), col('comes', 'Comes by')],
+  rows: [['Uma', 'Grade 5', 'Bus'], ['Vic', 'Grade 5', 'Bus'], ['Ari', 'Grade 5', 'Bus'], ['Bo', 'Grade 5', 'Bus'], ['Cy', 'Grade 5', 'Bus'], ['Dee', 'Grade 5', 'Bus'], ['Eli', 'Grade 5', 'Bus'], ['Fay', 'Grade 5', 'Bus']],
+  random: true, evidence: { group: 'comes' }, pick: 2, claims: ['Kids in other grades', 'Kids who walk or bike', 'More Grade 5 bus riders', 'The same kids again'], answers: [0, 1], proof: ['c:Bus'], par: 1,
+  shows: 'Everyone asked is in Grade 5 and comes by bus. The missing voices are other grades and kids who walk or bike.',
+  hints: ['Who is in this survey? Who is not?', 'Group is glowing. Group by Comes by.', 'I grouped by Comes by for you: one bar, all Bus. Pick the two groups that are missing.'],
+  glow: { tool: 'group' }, move: ['group', 'comes'],
+  check: { q: 'Asking more people from the same group makes a survey…', tiles: ['Just as biased', 'Fair', 'Shorter'], answer: 0 },
+  sol: [['group', 'comes'], ['pick', [0, 1]], ['show', 'c:Bus']] },
+/* ---------------- Chapter 7: My Data (tally mode): the class enters its own counts, charts them, pins a fair claim ---------------- */
+{ id: 'my-1', ch: 'my-data', n: 1, bands: ['1b', '2'], csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], title: 'Our Survey', kind: 'tally',
+  story: 'Real data comes from real people. Count the answers from your class and chart them.',
+  q: 'Enter the tallies with the steppers, make a chart, then pin a claim the chart supports.',
+  tally: { preset: 'pets', min: 5 },
+  evidence: { tally: true }, proof: [], par: null,
+  shows: 'The chart says: {top} has the most with {a}, {low} the fewest with {b}, {total} answers in all.',
+  learn: { title: 'Collect, chart, claim', text: 'A survey turns people’s answers into data. Tally each answer, chart the counts, then pin only a claim the chart really shows. Five answers is the least that counts as a case.' },
+  hints: ['How many kids picked each one? Add them up with the steppers.', 'The Bars button is glowing: a chart shows the shape of your answers.', 'I switched to bars for you. Which bar is tallest? Pin that claim.'],
+  glow: { tool: 'bar' }, move: ['view', 'bar'], starter: [['tally', 'Dog', 2], ['view', 'bar']],
+  check: { q: 'Two kids answered. Is that enough for a claim about the class?', tiles: ['Not yet: ask more kids', 'Yes, two is plenty', 'Only if they agree'], answer: 0 },
+  sol: [['tally', 'Dog', 4], ['tally', 'Cat', 3], ['tally', 'Fish', 1], ['tally', 'None', 2], ['view', 'bar'], ['claim', 0], ['show', 'c:Dog']] },
+{ id: 'my-2', ch: 'my-data', n: 2, bands: ['1b', '2'], csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], title: 'Another Class', kind: 'tally',
+  story: 'A second question for your class. Pro detectives can also load another class and compare shares.',
+  q: 'Tally your class, chart it, and pin a claim. Pro: load the other class and compare by percent.',
+  tally: { preset: 'colors', min: 5, other: true },
+  evidence: { tally: true }, proof: [], par: null,
+  shows: 'The chart says: {top} has the most with {a}, {low} the fewest with {b}, {total} answers in all.',
+  hints: ['Count each color with the steppers, then make the chart.', 'The Bars button is glowing.', 'I switched to bars for you. Which bar wins? Pin that claim.'],
+  glow: { tool: 'bar' }, move: ['view', 'bar'], starter: [['tally', 'Blue', 3], ['view', 'bar']],
+  check: { q: 'Two classes of different sizes are compared fairly by…', tiles: ['Percent of each class', 'Raw counts', 'Who shouted loudest'], answer: 0 },
+  sol: [['tally', 'Red', 2], ['tally', 'Blue', 6], ['tally', 'Green', 3], ['tally', 'Yellow', 1], ['view', 'bar'], ['claim', 0], ['show', 'c:Blue']] },
+{ id: 'my-3', ch: 'my-data', n: 3, bands: ['1b', '2'], csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], title: 'Open Tally', kind: 'tally', open: true,
+  story: 'Your own survey. Pick a question, tally the class, chart it, claim it. Make as many charts as you like.',
+  q: 'Pick a question, enter the tallies, make a chart and pin a claim. Add each chart to the class pool.',
+  tally: { presets: ['pets', 'colors', 'fruit', 'sports', 'transport', 'options'], min: 5, other: true, pool: true },
+  evidence: { tally: true }, proof: [], par: null,
+  shows: 'The chart says: {top} has the most with {a}, {low} the fewest with {b}, {total} answers in all.',
+  hints: ['Pick a question first, then count the answers.', 'The Bars button is glowing once you have five answers or more.', 'I switched to bars for you. Pin the claim about the tallest bar.'],
+  glow: { tool: 'bar' }, move: ['view', 'bar'], starter: [['preset', 'fruit'], ['tally', 'Apple', 1], ['view', 'bar']],
+  check: { q: 'Pooling every pair’s chart on the projector is a way to…', tiles: ['Crowdsource the class data', 'Hide the results', 'Pick a winner'], answer: 0 },
+  sol: [['preset', 'fruit'], ['tally', 'Apple', 5], ['tally', 'Grape', 4], ['tally', 'Melon', 2], ['view', 'picto'], ['claim', 0], ['show', 'c:Apple']] },
 ];
 
 /* ---------- the engine ---------- */
@@ -474,10 +646,12 @@ function mulberry(a) { return function () { a = (a + 0x6D2B79F5) | 0; let t = Ma
 function shuffle(arr, f) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(f() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 const byId = Object.fromEntries(LEVELS.map(l => [l.id, l]));
 const levelsOf = ch => LEVELS.filter(l => l.ch === ch);
+const presetOf = id => PRESETS.find(p => p.id === id) || null;
 const rowIds = level => (level.rows || []).map((r, i) => 'r' + (i + 1));
 const colIndex = (level, id) => level.cols.findIndex(c => c.id === id);
 const colOf = (level, id) => level.cols[colIndex(level, id)];
 const timeVal = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s)); return m ? +m[1] * 60 + +m[2] : 0; };
+const round1 = x => Math.round(x * 10) / 10;
 
 function newCase(level, seed) {
   const f = mulberry(seedOf(seed == null ? level.id : seed));
@@ -485,9 +659,12 @@ function newCase(level, seed) {
   if (level.random && order.length) order = shuffle(order, f);
   const bars = {};
   if (level.build) for (const [c] of level.cats) bars[c] = 0;
-  return { id: level.id, seed: seed == null ? level.id : seed, order, sortBy: null, view: level.view || 'table', groupBy: level.groupBy || null, pct: false, bars,
+  const st = { id: level.id, seed: seed == null ? level.id : seed, order, sortBy: null, view: level.view || 'table', groupBy: level.groupBy || null, pct: false, bars,
     slider: level.predict ? Math.round((level.predict.min + level.predict.max) / 2) : null, fixed: {}, removed: {}, removedGood: 0, edits: 0, runs: 0, wrong: 0,
-    hint: 0, hint3: false, picked: null, shown: {}, solved: false, skipped: false, lastClaim: null };
+    hint: 0, hint3: false, picked: null, picks: [], shown: {}, solved: false, skipped: false, lastClaim: null };
+  if (level.model) { st.rule = level.model.rule.start; st.last = null; st.batches = 0; }
+  if (level.tally) { st.preset = level.tally.preset || null; st.counts = {}; st.other = false; st.view = 'table'; if (st.preset) for (const c of presetOf(st.preset).cats) st.counts[c] = 0; }
+  return st;
 }
 /** The value of one cell, after any fix. */
 function cell(level, st, rid, colId) {
@@ -521,9 +698,85 @@ function groupCounts(level, st, colId) {
   for (const id of rowIds(level)) { if (st.removed[id]) continue; const v = String(cell(level, st, id, colId)); if (!(v in seen)) { seen[v] = out.length; out.push([v, 0]); } out[seen[v]][1]++; }
   return out;
 }
-/** The series on screen: [[category, value]]: built bars, the level's own series, or grouped counts. */
+
+/* --- models: a rule slider, seeded trials, compare, refine --- */
+/** One batch of trials with the rule as it is now. Fit sims: the real result is truth x input plus a fixed set of small
+ *  offsets dealt out by the seed, so the error of a rule is the same for every seed. Rate sims (Game Balance): a run
+ *  finishes when the jump clears its gap; the 20 gaps are a fixed set, shuffled per seed. */
+function modelBatch(level, st) {
+  const m = level.model, f = mulberry(seedOf(st.seed) + 7919 * (st.batches + 1));
+  if (m.gaps) {
+    const gaps = shuffle(m.gaps, f);
+    const rows = gaps.map((g, i) => ({ i, gap: g, ok: st.rule >= g }));
+    const done = rows.filter(r => r.ok).length, rate = Math.round(100 * done / rows.length);
+    return { rule: st.rule, rows, done, n: rows.length, rate, fit: rate >= m.rate.lo && rate <= m.rate.hi };
+  }
+  const noise = shuffle(m.noise, f), scale = m.scale || 1;
+  const rows = m.inputs.map((x, i) => { const pred = round1(st.rule * scale * x), actual = round1(m.truth * scale * x + noise[i]); return { i, input: x, pred, actual, off: round1(Math.abs(pred - actual)) }; });
+  const err = rows.reduce((s, r) => s + r.off / Math.max(1, Math.abs(r.actual)), 0) / rows.length;
+  return { rule: st.rule, rows, err: Math.round(err * 100) / 100, fit: err <= m.tol };
+}
+/** The trial rows on screen (model levels): with the real results once a batch has run with the current rule. */
+function modelRows(level, st) {
+  const m = level.model, scale = m.scale || 1, cur = st.last && st.last.rule === st.rule ? st.last : null;
+  return m.inputs.map((x, i) => ({ id: 'r' + (i + 1), input: x, pred: round1(st.rule * scale * x), actual: cur ? cur.rows[i].actual : null, off: cur ? cur.rows[i].off : null }));
+}
+const modelFits = (level, st) => !!(level.model && st.last && st.last.rule === st.rule && st.last.fit);
+/** The rule text with the number in it: 'Distance = {k} x height'. */
+const ruleVars = (level, st) => ({ k: st.rule });
+
+/* --- My Data: tallies, the chart, a claim composed from the counts, another class by percent --- */
+const tallyCats = (level, st) => (st.preset ? presetOf(st.preset).cats : []);
+const tallyCounts = (level, st) => tallyCats(level, st).map(c => [c, st.counts[c] || 0]);
+const tallyTotal = (level, st) => tallyCounts(level, st).reduce((n, x) => n + x[1], 0);
+const otherCounts = (level, st) => (st.preset ? presetOf(st.preset).cats.map((c, i) => [c, presetOf(st.preset).other[i]]) : []);
+/** Ours and theirs side by side with the share of each class: [[cat, ours, theirs, ours%, theirs%]]. */
+function compareRows(level, st) {
+  const ours = tallyCounts(level, st), theirs = otherCounts(level, st);
+  const a = ours.reduce((n, x) => n + x[1], 0), b = theirs.reduce((n, x) => n + x[1], 0);
+  return ours.map(([c, v], i) => [c, v, theirs[i][1], a ? Math.round(100 * v / a) : 0, b ? Math.round(100 * theirs[i][1] / b) : 0]);
+}
+const comparing = (level, st) => !!(level.tally && level.tally.other && st.other && st.pct);
+/** The claim tiles for a tally, composed from the data: [{ text, vars, ok, proof }]. Supported = what the counts show. */
+function tallyClaims(level, st) {
+  const data = tallyCounts(level, st), total = data.reduce((n, x) => n + x[1], 0);
+  if (!data.length) return [];
+  const max = Math.max(...data.map(x => x[1])), min = Math.min(...data.map(x => x[1]));
+  const tops = data.filter(x => x[1] === max), lows = data.filter(x => x[1] === min);
+  const top = tops[0][0], low = lows[0][0];
+  if (comparing(level, st)) {
+    const rows = compareRows(level, st);
+    const best = rows.slice().sort((x, y) => (y[3] - y[4]) - (x[3] - x[4]))[0], worst = rows.slice().sort((x, y) => (y[4] - y[3]) - (x[4] - x[3]))[0];
+    const theirTop = rows.slice().sort((x, y) => y[2] - x[2])[0];
+    return [
+      { text: COMPARE_CLAIMS[0], vars: { ours: best[0] }, ok: best[3] > best[4], proof: ['r:' + best[0]] },
+      { text: COMPARE_CLAIMS[1], vars: { theirs: worst[0] }, ok: worst[4] > worst[3], proof: ['r:' + worst[0]] },
+      { text: COMPARE_CLAIMS[2], vars: { top }, ok: tops.length === 1 && theirTop[0] === top && rows.filter(r => r[2] === theirTop[2]).length === 1, proof: ['r:' + top] },
+    ];
+  }
+  return [
+    { text: TALLY_CLAIMS[0], vars: { top }, ok: tops.length === 1 && max > 0, proof: ['c:' + top] },
+    { text: TALLY_CLAIMS[1], vars: { low }, ok: lows.length === 1 && max > min, proof: ['c:' + low] },
+    { text: TALLY_CLAIMS[2], vars: { top }, ok: tops.length === 1 && max * 2 > total, proof: ['c:' + top] },
+  ];
+}
+/** What the chart shows, for Dot after a wrong tally claim: the slots of level.shows. */
+function tallyShows(level, st) {
+  const data = tallyCounts(level, st);
+  if (!data.length) return { top: '', a: 0, low: '', b: 0, total: 0 };
+  const max = Math.max(...data.map(x => x[1])), min = Math.min(...data.map(x => x[1]));
+  return { top: data.find(x => x[1] === max)[0], a: max, low: data.find(x => x[1] === min)[0], b: min, total: tallyTotal(level, st) };
+}
+
+/** The series on screen: [[category, value]]: built bars, the level's own series, grouped counts, trials or tallies. */
 function series(level, st) {
   if (level.cats) return level.build ? level.cats.map(([c]) => [c, st.bars[c] || 0]) : level.cats.map(x => x.slice());
+  if (level.tally) return tallyCounts(level, st);
+  if (level.model) {
+    const m = level.model;
+    if (m.gaps) { const cur = st.last && st.last.rule === st.rule ? st.last : null; return [[m.done, cur ? cur.done : 0], [m.fell, cur ? cur.n - cur.done : 0]]; }
+    return modelRows(level, st).map(r => [String(r.input), r.actual == null ? 0 : r.actual]);
+  }
   const g = st.groupBy || (st.view === 'group' ? st.groupBy : null);
   return g ? groupCounts(level, st, g) : [];
 }
@@ -537,46 +790,86 @@ function pctRows(level, st) {
 function evidence(level, st) {
   const e = level.evidence || {};
   if (e.sort && !(st.sortBy && st.sortBy.col === e.sort && (!e.dir || st.sortBy.dir === e.dir) && st.view === 'table')) return false;
+  if (e.sortAny && !(st.sortBy && e.sortAny.includes(st.sortBy.col) && st.view === 'table')) return false;
   if (e.group && !(st.view === 'group' && st.groupBy === e.group)) return false;
   if (e.view && !e.view.includes(st.view)) return false;
   if (e.bars && !barsMatch(level, st)) return false;
   if (e.clean && !isClean(level, st)) return false;
   if (e.pct && !st.pct) return false;
+  if (e.model && !modelFits(level, st)) return false;
+  if (e.tally) {
+    if (!st.preset || tallyTotal(level, st) < (level.tally.min || 5)) return false;
+    if (comparing(level, st) ? st.view !== 'table' : !['bar', 'picto'].includes(st.view)) return false;   // a chart for a claim; the table for a percent comparison
+  }
   return true;
 }
 function claimOk(level, st, i) {
   if (level.predict) return st.slider != null && st.slider >= level.predict.lo && st.slider <= level.predict.hi;
+  if (level.pick) return (level.answers || []).includes(i | 0);
+  if (level.tally) { const c = tallyClaims(level, st)[i | 0]; return !!(c && c.ok); }
   return i === level.answer;
 }
-const proofKeys = level => level.proof || [];
-const proofDone = (level, st) => proofKeys(level).every(k => st.shown[k]);
-const claimTiles = level => (level.claim ? VERDICTS.slice() : level.predict ? ['Pin this prediction'] : level.claims.slice());
+/** The rows or bars that prove the claim (tally claims prove themselves with the bar they name). */
+function proofKeys(level, st) {
+  if (level.tally) { if (!st || st.picked == null) return []; const c = tallyClaims(level, st)[st.picked]; return c ? c.proof : []; }
+  return level.proof || [];
+}
+const proofDone = (level, st) => proofKeys(level, st).every(k => st.shown[k]);
+/** The claim tiles: verdicts for a claim to judge, one pin for a prediction, composed sentences for a tally, else the level's. */
+function claimTiles(level, st) {
+  if (level.claim) return VERDICTS.slice();
+  if (level.predict) return ['Pin this prediction'];
+  if (level.tally) return st ? tallyClaims(level, st).map(c => ({ text: c.text, vars: c.vars })) : TALLY_CLAIMS.map(text => ({ text, vars: {} }));
+  return level.claims.slice();
+}
+const allViews = level => level.views || (level.tally ? ['table', 'bar', 'picto'] : level.model ? ['table', 'bar'] : level.rows ? ['table', 'group'] : ['bar', 'table']);
 /** Apply one tap action. Returns { ok, why } for claims and proof taps, true for the rest, false when the action does nothing. */
 function act(level, st, a) {
   if (st.solved) return false;
   const [k, x, y] = a;
   switch (k) {
-    case 'sort': { if (!colOf(level, x)) return false; const dir = st.sortBy && st.sortBy.col === x && st.sortBy.dir === 'asc' ? 'desc' : 'asc'; st.sortBy = { col: x, dir }; st.view = 'table'; st.edits++; return true; }
-    case 'group': if (!colOf(level, x)) return false; st.view = 'group'; st.groupBy = x; st.edits++; return true;
-    case 'view': if (!(level.views || ['table', 'group']).includes(x)) return false; st.view = x; st.edits++; return true;
+    case 'sort': { if (!colOf(level, x) || level.model) return false; const dir = st.sortBy && st.sortBy.col === x && st.sortBy.dir === 'asc' ? 'desc' : 'asc'; st.sortBy = { col: x, dir }; st.view = 'table'; st.edits++; return true; }
+    case 'group': if (!colOf(level, x) || level.model) return false; st.view = 'group'; st.groupBy = x; st.edits++; return true;
+    case 'view': if (!allViews(level).includes(x)) return false; if (st.view === x) return true; st.view = x; st.edits++; return true;
     case 'bar': { if (!level.build || !(x in st.bars)) return false; const n = y == null ? 1 : y | 0; st.bars[x] = Math.max(0, Math.min(20, st.bars[x] + n)); st.edits += Math.abs(n); return true; }
     case 'set': if (!level.build || !(x in st.bars)) return false; st.bars[x] = Math.max(0, Math.min(20, y | 0)); return true;   // Dot's own move: no edit counted
     case 'slider': if (!level.predict) return false; st.slider = Math.max(level.predict.min, Math.min(level.predict.max, +x)); return true;
-    case 'pct': if (!level.pct) return false; st.pct = !st.pct; st.edits++; return true;
-    case 'fix': { if (st.removed[x] || !level.rows) return false; const b = level.bad && level.bad[x]; const c = b && b.col ? b.col : (level.fixCol || level.cols[1].id); st.fixed[x] = { col: c, value: y }; st.edits++; return true; }
-    case 'merge': case 'remove': { if (st.removed[x] || !level.rows) return false; const b = level.bad && level.bad[x]; const good = !(b && (k === 'merge' ? b.kind === 'dup' : b.kind === 'impossible')); st.removed[x] = 1; if (good) st.removedGood++; st.edits++; return true; }
+    case 'pct': if (!(level.pct || (level.tally && level.tally.other))) return false; st.pct = !st.pct; st.edits++; return true;
+    case 'fix': { if (st.removed[x] || !level.rows || level.model) return false; const b = level.bad && level.bad[x]; const c = b && b.col ? b.col : (level.fixCol || level.cols[1].id); st.fixed[x] = { col: c, value: y }; st.edits++; return true; }
+    case 'merge': case 'remove': { if (st.removed[x] || !level.rows || level.model) return false; const b = level.bad && level.bad[x]; const good = !(b && (k === 'merge' ? b.kind === 'dup' : b.kind === 'impossible')); st.removed[x] = 1; if (good) st.removedGood++; st.edits++; return true; }
+    // models: move the rule (free), run a batch of trials (one refinement each)
+    case 'rule': { if (!level.model) return false; const r = level.model.rule; const v = Math.max(r.min, Math.min(r.max, Math.round((+x - r.min) / r.step) * r.step + r.min)); st.rule = v; return true; }
+    case 'run': { if (!level.model) return false; st.last = modelBatch(level, st); st.batches++; st.edits++; return true; }
+    // My Data: pick the question, count answers, load the other class
+    case 'preset': { if (!level.tally || !presetOf(x) || !(level.tally.presets || [level.tally.preset]).includes(x)) return false; st.preset = x; st.counts = {}; for (const c of presetOf(x).cats) st.counts[c] = 0; st.other = false; st.pct = false; st.view = 'table'; return true; }
+    case 'tally': { if (!level.tally || !st.preset || !(x in st.counts)) return false; const n = y == null ? 1 : y | 0; st.counts[x] = Math.max(0, Math.min(40, st.counts[x] + n)); return true; }
+    case 'other': { if (!level.tally || !level.tally.other || !st.preset) return false; st.other = !st.other; if (!st.other) st.pct = false; return true; }
     case 'claim': {
       if (!evidence(level, st)) return { ok: false, why: 'show-me' };
       if (st.picked != null) return { ok: false, why: 'picked' };
+      if (level.pick) return { ok: false, why: 'pick' };
       st.runs++;
       const ok = claimOk(level, st, x | 0);
       st.lastClaim = { i: x | 0, ok };
       if (ok) st.picked = x | 0; else st.wrong++;
+      if (ok && level.tally && !proofKeys(level, st).length) st.solved = true;
+      return { ok, why: ok ? (st.solved ? 'solved' : 'proof') : 'wrong' };
+    }
+    case 'pick': {   // two (or more) tiles at once: a set to match
+      if (!level.pick) return false;
+      if (!evidence(level, st)) return { ok: false, why: 'show-me' };
+      if (st.picked != null) return { ok: false, why: 'picked' };
+      const picks = [...new Set((Array.isArray(x) ? x : [x]).map(Number))].sort();
+      if (picks.length !== level.pick) return { ok: false, why: 'count' };
+      st.runs++;
+      const ok = picks.join() === (level.answers || []).slice().sort().join();
+      st.lastClaim = { picks, ok };
+      if (ok) { st.picked = picks[0]; st.picks = picks; } else { st.wrong++; st.picks = []; }
       return { ok, why: ok ? 'proof' : 'wrong' };
     }
     case 'show': {
       if (st.picked == null) return { ok: false, why: 'claim-first' };
-      if (!proofKeys(level).includes(x)) return { ok: false, why: 'not-proof' };
+      if (!proofKeys(level, st).includes(x)) return { ok: false, why: 'not-proof' };
       st.shown[x] = 1;
       if (proofDone(level, st)) st.solved = true;
       return { ok: true, why: st.solved ? 'solved' : 'more' };
@@ -592,11 +885,35 @@ function stars(level, st) {
   const well = st.wrong === 0 && st.removedGood === 0 && (level.par == null || st.edits <= level.par);
   return 1 + (well ? 1 : 0) + (st.hint3 ? 0 : 1);
 }
+
+/* --- the quest code C B M L: chapter index (0 = map), 1 Explorer / 2 Pro, mode (0 play, 2 tally, 3 projector), level 0-9 --- */
+const MODES = { 0: 'play', 2: 'tally', 3: 'projector' };
+/** { chapter, band, mode, level } -> [C, B, M, L] (null when it cannot be said in four digits). */
+function codeOf(o) {
+  const ch = o.chapter ? CHAPTERS.find(c => c.id === o.chapter) : null;
+  if (o.chapter && !ch) return null;
+  const m = Object.keys(MODES).find(k => MODES[k] === (o.mode || 'play'));
+  if (m == null) return null;
+  const l = Math.max(0, Math.min(9, o.level | 0));
+  return [ch ? ch.index : 0, o.band === '2' ? 2 : 1, +m, l];
+}
+/** [C, B, M, L] -> { chapter, band, mode, level } or null for a code that is not a case. */
+function parseCode(d) {
+  if (!Array.isArray(d) || d.length !== 4 || d.some(x => !Number.isInteger(x) || x < 0 || x > 9)) return null;
+  const [c, b, m, l] = d;
+  if (!(b === 1 || b === 2) || !(m in MODES)) return null;
+  const ch = c === 0 ? null : CHAPTERS.find(x => x.index === c);
+  if (c !== 0 && !ch) return null;
+  return { chapter: ch ? ch.id : '', band: b === 2 ? '2' : '1b', mode: MODES[m], level: l };
+}
+
 /** Every English text a player can read in the levels (translated through the language packs). */
 function allStrings() {
   const out = new Set(), add = s => { if (typeof s === 'string' && /\p{L}/u.test(s)) out.add(s); };
   for (const c of CHAPTERS) add(c.title);
   VERDICTS.forEach(add); add('Pin this prediction');
+  TALLY_CLAIMS.forEach(add); COMPARE_CLAIMS.forEach(add);
+  for (const p of PRESETS) { add(p.title); p.cats.forEach(add); }
   for (const l of LEVELS) {
     [l.title, l.story, l.q, l.claim, l.shows].forEach(add);
     if (l.learn) { add(l.learn.title); add(l.learn.text); }
@@ -609,11 +926,13 @@ function allStrings() {
     [l.catLabel, l.valueLabel].forEach(add);
     (l.fixOptions || []).forEach(add);
     if (l.predict) add(l.predict.label);
+    if (l.model) [l.model.ruleLabel, l.model.inputLabel, l.model.outLabel, l.model.unit, l.model.done, l.model.fell].forEach(add);
   }
   return [...out];
 }
-root.DataDetectiveLevels = { CHAPTERS, LEVELS, NAMES, VERDICTS, byId, levelsOf, allStrings };
-root.DataDetectiveEngine = { newCase, act, evidence, stars, series, visibleRows, cell, active, groupCounts, badLeft, isClean, barsMatch, pctRows, proofKeys, proofDone, claimTiles, claimOk, timeVal, seedOf };
+root.DataDetectiveLevels = { CHAPTERS, LEVELS, NAMES, VERDICTS, PRESETS, TALLY_CLAIMS, COMPARE_CLAIMS, MODES, byId, levelsOf, presetOf, allStrings };
+root.DataDetectiveEngine = { newCase, act, evidence, stars, series, visibleRows, cell, active, groupCounts, badLeft, isClean, barsMatch, pctRows, proofKeys, proofDone, claimTiles, claimOk, allViews, timeVal, seedOf,
+  modelBatch, modelRows, modelFits, ruleVars, tallyCats, tallyCounts, tallyTotal, otherCounts, compareRows, comparing, tallyClaims, tallyShows, codeOf, parseCode };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
@@ -623,7 +942,7 @@ root.DataDetectiveEngine = { newCase, act, evidence, stars, series, visibleRows,
 <script type="module">
 /* ===== Data Detective on the Oomba Kit: a stage with Dot behind DOM case cards in Oomba.ui.root(). ===== */
 const LV = window.DataDetectiveLevels, E = window.DataDetectiveEngine;
-const { CHAPTERS, LEVELS, VERDICTS } = LV;
+const { CHAPTERS, LEVELS, VERDICTS, PRESETS } = LV;
 const HAS_BRB = typeof window.BRB === 'object' && !!window.BRB;
 const PARAMS = (() => { try { return (window.BRB && BRB.params) || {}; } catch (e) { return {}; } })();
 const LIVE = (() => { try { return !!(HAS_BRB && BRB.live && BRB.live.active); } catch (e) { return false; } })();
@@ -660,7 +979,10 @@ const trCell = v => (typeof v === 'number' || /^[\d:.%\s-]+$/.test(String(v)) ? 
 /* ---------- the kit: the world behind, Dot, colors ---------- */
 let STAGE = null, DOT_ENT = null;
 const DOT = { name: 'Dot', spec: null };
-try { DOT.spec = Oomba.char({ species: 'fox', colors: { base: 'peach', belly: 'cream', accent: 'spark' }, wear: ['glasses'], mood: 'thinking' }); } catch (e) { DOT.spec = { species: 'fox' }; }
+const PAL = { name: 'Crew mate', spec: null };   // pair mode: the second player's face when they have no avatar of their own
+function dotSpec(crowned) { try { return Oomba.char({ species: 'fox', colors: { base: 'peach', belly: 'cream', accent: 'spark' }, wear: crowned ? ['glasses', 'crown'] : ['glasses'], mood: 'thinking' }); } catch (e) { return { species: 'fox' }; } }
+DOT.spec = dotSpec(false);
+try { PAL.spec = Oomba.char({ species: 'cat', colors: { base: 'sky', belly: 'cream', accent: 'spark' }, wear: ['scarf'], mood: 'happy' }); } catch (e) { PAL.spec = { species: 'cat' }; }
 try {
   STAGE = Oomba.stage({ api: 1, biome: 'forest', size: [960, 540] });
   STAGE.camera.y = -110;
@@ -670,8 +992,10 @@ try {
 } catch (e) { try { Oomba.time.start(); } catch (e2) { /* the cards still work without the world */ } }
 const C = (r, s) => { try { return Oomba.color(r, s); } catch (e) { return null; } };
 const VARS = { hot: C('hot'), go: C('go', 'light'), 'go-solid': C('go'), spark: C('spark'), ink: C('ink'), focus: C('magic'), glow: C('reward', 'light'), tile: C('interact', 'tint'),
-  bar: C('interact'), bar2: C('magic', 'light'), wrong: C('wrong'), coat: C('cocoa', 'light') || C('hot') };
+  bar: C('interact'), bar2: C('magic', 'light'), wrong: C('wrong'), coat: C('cocoa', 'light') || C('hot'), gold: C('reward') || C('spark') };
 for (const k in VARS) if (VARS[k]) document.documentElement.style.setProperty('--dd-' + k, VARS[k]);
+// chapter crowns recolor Dot's coat (cosmetic, per-game save): one crown green, two purple, three or more gold, and a crown on her head
+const COAT_BY_CROWNS = [VARS.coat, C('go') || VARS.coat, C('magic') || VARS.coat, VARS.gold];
 try { Oomba.ui.root().appendChild($('game')); } catch (e) { /* keep it in the body */ }
 const reduced = () => { try { return !!Oomba.settings.reduced; } catch (e) { return false; } };
 const syncMotion = () => { $('game').classList.toggle('ok-rm', reduced()); if (S.screen === 'play') snapRows(); };   // text size changes the row height too
@@ -693,14 +1017,15 @@ function dotPortrait(size = 64, mood = 'thinking') {
 
 /* ---------- save (per player, per game) ---------- */
 const store = { get() { try { return (HAS_BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } }, set(v) { try { if (HAS_BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* ignore */ } } };
-const SAVE = Object.assign({ band: null, stars: {}, learned: {}, pairs: false, plays: 0 }, store.get());
-if (!SAVE.stars || typeof SAVE.stars !== 'object') SAVE.stars = {};
-if (!SAVE.learned || typeof SAVE.learned !== 'object') SAVE.learned = {};
-const save = () => { if (S.mode === 'projector') return; store.set({ band: SAVE.band, stars: SAVE.stars, learned: SAVE.learned, pairs: SAVE.pairs, plays: SAVE.plays }); };
+const SAVE = Object.assign({ band: null, stars: {}, learned: {}, pairs: false, plays: 0, crowns: {}, daily: null }, store.get());
+for (const k of ['stars', 'learned', 'crowns']) if (!SAVE[k] || typeof SAVE[k] !== 'object') SAVE[k] = {};
+if (!SAVE.daily || typeof SAVE.daily !== 'object') SAVE.daily = null;
+const save = () => { if (S.mode === 'projector') return; store.set({ band: SAVE.band, stars: SAVE.stars, learned: SAVE.learned, pairs: SAVE.pairs, plays: SAVE.plays, crowns: SAVE.crowns, daily: SAVE.daily }); };
 
 /* ---------- state ---------- */
 const S = { screen: 'title', band: SAVE.band === '2' ? '2' : '1b', mode: 'play', lesson: false, lock: false, chapter: null, levels: [], idx: 0, level: null, cs: null,
-  seed: null, fast: false, checks: { ok: 0, n: 0 }, sessionStars: {}, scoreCalls: [], lastLabel: '', claimsOpen: false, rowPanel: null, phase: 'title', lastSay: '', pairCount: 0, fail: 0, confidence: 0 };
+  seed: null, fast: false, checks: { ok: 0, n: 0 }, sessionStars: {}, scoreCalls: [], lastLabel: '', claimsOpen: false, rowPanel: null, phase: 'title', lastSay: '', pairCount: 0, fail: 0, confidence: 0,
+  charts: 0, pool: null, poolView: false, daily: null, turn: 0, openChoice: null, endCalls: [] };
 const bandName = b => (b === '2' ? tr('Pro') : tr('Explorer'));
 const chapterOf = id => CHAPTERS.find(c => c.id === id);
 const built = ch => LV.levelsOf(ch).length > 0;
@@ -720,7 +1045,36 @@ function show(name) {
   $('hintBtn').hidden = !inPlay; $('learnBtn').hidden = !inPlay || !(S.level && S.level.learn); $('pauseBtn').hidden = !inPlay;
   $('prog').hidden = !inPlay && name !== 'end';
   $('questPill').hidden = !S.lesson || name === 'map';
-  $('backBtn').hidden = (name === 'map') ? false : false;
+  $('turnPill').hidden = !(inPlay && SAVE.pairs);
+  $('backBtn').hidden = false;
+}
+/** Chapter crowns: the coat color and the crown on Dot's head follow how many chapters have every star. */
+function applyCrowns() {
+  const n = Object.keys(SAVE.crowns).length;
+  const coat = COAT_BY_CROWNS[Math.min(3, n)]; if (coat) document.documentElement.style.setProperty('--dd-coat', coat);
+  const want = n > 0;
+  if (!!DOT.crowned !== want) {
+    DOT.crowned = want; DOT.spec = dotSpec(want);
+    try { if (DOT_ENT && DOT_ENT.look) DOT_ENT.look(DOT.spec); } catch (e) { /* the stage keeps the old look */ }
+    const pic = $('dotPic'); if (pic && pic.firstChild) pic.replaceWith(Object.assign(dotPortrait(64, 'thinking'), { id: 'dotPic' }));
+  }
+}
+applyCrowns();
+const crowned = ch => !!SAVE.crowns[ch];
+/* ---------- pairs: two on one device; whose turn it is, Swap! every third case ---------- */
+function turnFace(i) { try { return Oomba.ui.portrait(i === 0 ? Oomba.avatar() : PAL.spec, { size: 32 }); } catch (e) { return el('span'); } }
+function renderTurn() {
+  const p = $('turnPill'); p.innerHTML = '';
+  if (!SAVE.pairs) return;
+  const face = turnFace(S.turn); if (face && face.setAttribute) face.setAttribute('aria-hidden', 'true'); p.appendChild(face);
+  const t = el('span'); t.textContent = tr('Player {n}', { n: S.turn + 1 }); p.appendChild(t);
+  p.setAttribute('aria-label', tr('Player {n}, your turn', { n: S.turn + 1 }));
+}
+function swapTurn() {
+  S.turn = 1 - S.turn; S.swaps = (S.swaps || 0) + 1; renderTurn();
+  const text = tr('Swap! Pass the device.');
+  try { Oomba.ui.banner('correct', null, text); } catch (e) { toast(text); }
+  say(text); try { if (!reduced()) Oomba.juice.pop($('turnPill')); } catch (e) { /* ignore */ }
 }
 function closeKitScreens() { document.querySelectorAll('.ok-ui .ok-modal [data-ok-focus]').forEach(b => b.click()); }
 let titleOpen = false;
@@ -753,7 +1107,19 @@ function renderMap() {
     seg.appendChild(btn);
   }
   seg.hidden = S.lock;
+  // Two on one device: the title-side toggle for pair mode (the Quest Card has the same switch for lesson mode)
+  const pr = $('pairRow'); pr.innerHTML = '';
+  const pl = el('span'); pl.textContent = tr('Two on one device'); pr.appendChild(pl);
+  pr.appendChild(switchBtn(SAVE.pairs, tr('Two on one device'), v => { SAVE.pairs = v; S.turn = 0; save(); announce(v ? tr('Pair mode on: swap every three cases.') : tr('Pair mode off.')); }));
   $('mapHint').textContent = S.band === '2' ? tr('Pro cases: chapters 4 to 7. Chapter 1 is a warm-up.') : tr('Explorer cases: chapters 1 to 3 and My Data.');
+  // the Daily Crew Challenge: one case a day, the same for everyone, its own three stars
+  const dd = $('daily'); dd.innerHTML = '';
+  const today = dayNumber(), got0 = SAVE.daily && SAVE.daily.day === today && SAVE.daily.band === S.band ? SAVE.daily.stars : 0;
+  const d = el('button', 'tile'); d.type = 'button'; d.id = 'dailyTile';
+  d.innerHTML = `<span class="pic">${icon('spark', 34)}</span><span><b>${esc(tr('Daily Crew Challenge'))}</b><small>${esc(tr('One new case every day'))} · ${esc(bandName(S.band))}</small>` +
+    `<span class="stars" role="img" aria-label="${esc(tr('{n} of {total} stars', { n: got0, total: 3 }))}">${icon(got0 > 0 ? 'star' : 'star-off', 18)}<span class="num" dir="ltr">${esc(num(got0))}/${esc(num(3))}</span></span></span>`;
+  d.addEventListener('click', () => { sfx('select'); startDaily(today); });
+  dd.appendChild(d);
   const tiles = $('tiles'); tiles.innerHTML = '';
   for (const ch of CHAPTERS) {
     const mine = ch.band === 'both' || ch.band === S.band || (S.band === '2' && ch.id === 'sort');
@@ -762,33 +1128,52 @@ function renderMap() {
     const total = ch.levels * 3, got = chapterStars(ch.id);
     const silver = S.band === '2' && ch.band === '1b';
     t.innerHTML = `<span class="pic">${icon(ch.icon || 'book', 34)}</span><span><b>${esc(tr(ch.title))}</b><small>${soon ? esc(tr('Coming soon')) : esc(tr('{n} cases', { n: ch.levels }))} · ${esc(bandName(ch.band === 'both' ? S.band : ch.band))}</small>` +
-      `<span class="stars${silver ? ' silver' : ''}" role="img" aria-label="${esc(tr('{n} of {total} stars', { n: got, total }))}">${icon(got > 0 ? 'star' : 'star-off', 18)}<span class="num" dir="ltr">${esc(num(got))}/${esc(num(total))}</span></span></span>`;
+      `<span class="stars${silver ? ' silver' : ''}" role="img" aria-label="${esc(crowned(ch.id) ? tr('Chapter crown: every star') : tr('{n} of {total} stars', { n: got, total }))}">${icon(got > 0 ? 'star' : 'star-off', 18)}<span class="num" dir="ltr">${esc(num(got))}/${esc(num(total))}</span>${crowned(ch.id) ? `<span class="crown">${icon('trophy', 18)}</span>` : ''}</span></span>`;
     if (soon) { t.setAttribute('aria-disabled', 'true'); t.addEventListener('click', () => { toast(tr('Coming soon')); }); }
     else t.addEventListener('click', () => { sfx('select'); startChapter(ch.id); });
     tiles.appendChild(t);
   }
 }
+function switchBtn(on, label, fn) { const b = el('button', 'ok-switch'); b.type = 'button'; b.setAttribute('role', 'switch'); b.setAttribute('aria-label', label); b.setAttribute('aria-checked', String(!!on)); b.addEventListener('click', () => { const v = b.getAttribute('aria-checked') !== 'true'; b.setAttribute('aria-checked', String(v)); sfx('select'); fn(v); }); return b; }
+/* ---------- the Daily Crew Challenge: one deterministic case per day (UTC day number) and band, no new content ---------- */
+const dayNumber = () => Math.floor(new Date().getTime() / 864e5);   // the UTC day number; menus only, never next to the game clock
+function dailyLevel(day, band) {
+  const pool = LEVELS.filter(l => l.bands.includes(band) && !l.tally);
+  let i = day % pool.length;
+  try { i = Oomba.rand(day * 7 + (band === '2' ? 1 : 0)).int(0, pool.length - 1); } catch (e) { /* the plain fallback */ }
+  return pool[i];
+}
+function startDaily(day) {
+  const level = dailyLevel(day, S.band); if (!level) { openMap(); return; }
+  if (S.daily == null) S.seedSaved = S.seedFixed;
+  S.daily = day; S.lesson = false; S.lock = false; S.chapter = level.ch; S.levels = [level]; S.idx = 0; S.checks = { ok: 0, n: 0 }; S.pairCount = 0;
+  S.seedFixed = day; S.sessionStars = {}; S.poolView = false; S.mode = S.mode === 'projector' ? 'projector' : 'play';
+  startLevel();
+}
 
 /* ---------- a chapter ---------- */
 function startChapter(chId, level) {
   const ch = chapterOf(chId); if (!ch || !built(chId)) { openMap(); return; }
-  S.chapter = chId; S.levels = LV.levelsOf(chId); S.checks = { ok: 0, n: 0 }; S.pairCount = 0;
+  if (S.daily != null) { S.seedFixed = S.seedSaved; S.daily = null; }
+  S.chapter = chId; S.levels = LV.levelsOf(chId); S.checks = { ok: 0, n: 0 }; S.pairCount = 0; S.charts = 0; S.poolView = false;
+  if (ch.mode === 'tally' && S.mode !== 'projector') S.mode = 'tally'; else if (S.mode === 'tally') S.mode = 'play';
   // a named level (a quest code, the lesson's params, a test or the cover) opens straight away; the map starts at the first unfinished case
   S.idx = level ? Math.max(0, Math.min(S.levels.length - 1, (level | 0) - 1)) : firstUnfinished(chId);
   startLevel();
 }
+const isTally = () => !!(S.level && S.level.tally);
 function startLevel() {
   closeOwnModal();
   const level = S.levels[S.idx]; S.level = level;
   S.seed = S.seedFixed != null ? S.seedFixed + S.idx : Math.floor((Oomba.time.now || 0) % 100000) + S.idx;
-  S.cs = E.newCase(level, S.seed); S.claimsOpen = false; S.rowPanel = null; S.fail = 0; S.phase = 'case'; S.confidence = 0;
+  S.cs = E.newCase(level, S.seed); S.claimsOpen = false; S.rowPanel = null; S.fail = 0; S.phase = 'case'; S.confidence = 0; S.poolView = false;
   $('backBtn').innerHTML = icon(S.lock ? 'home' : 'back'); $('backBtn').setAttribute('aria-label', S.lock ? tr('Title screen') : tr('Chapter map'));
   $('hintBtn').innerHTML = icon('hint'); $('hintBtn').setAttribute('aria-label', tr('Hint'));
   $('learnBtn').innerHTML = icon('book'); $('learnBtn').setAttribute('aria-label', tr('Learn card'));
   $('pauseBtn').innerHTML = icon('pause'); $('pauseBtn').setAttribute('aria-label', tr('Pause'));
   $('questPill').textContent = tr('Class quest: {chapter} · {band}', { chapter: tr(chapterOf(S.chapter).title), band: bandName(S.band) });
-  show('play'); renderHud(); renderCase();
-  if (SAVE.pairs && S.pairCount > 0 && S.pairCount % 3 === 0) { toast(tr('Swap! Pass the device.')); say(tr('Swap! Pass the device.')); }
+  show('play'); renderTurn(); renderHud(); renderCase();
+  if (SAVE.pairs && S.pairCount > 0 && S.pairCount % 3 === 0) swapTurn();
   S.pairCount++;
   caseFile();
 }
@@ -808,11 +1193,17 @@ async function learnCard() {
   say(tr(l.learn.text));
 }
 function renderHud() {
-  const total = S.levels.length, done = S.levels.filter((l, i) => bestStars(l.id) > 0 || S.skippedIds[l.id]).length;
-  $('progIcon').innerHTML = icon('star', 22);
-  $('progT').textContent = `${num(chapterStars(S.chapter))} · ${num(S.idx + 1)}/${num(total)}`;
-  $('prog').setAttribute('aria-label', tr('Case {n} of {total}, {stars} stars', { n: S.idx + 1, total, stars: chapterStars(S.chapter) }));
-  void done;
+  const total = S.levels.length;
+  if (S.daily != null) {
+    $('progIcon').innerHTML = icon('spark', 22); $('progT').textContent = tr('Daily');
+    $('prog').setAttribute('aria-label', tr('Daily Crew Challenge'));
+  } else if (S.mode === 'tally') {
+    $('progIcon').innerHTML = icon('flag', 22); $('progT').textContent = `${num(S.charts)} · ${num(S.idx + 1)}/${num(total)}`;
+    $('prog').setAttribute('aria-label', tr('{n} charts made, question {i} of {total}', { n: S.charts, i: S.idx + 1, total }));
+  } else {
+    $('progIcon').innerHTML = icon('star', 22); $('progT').textContent = `${num(chapterStars(S.chapter))} · ${num(S.idx + 1)}/${num(total)}`;
+    $('prog').setAttribute('aria-label', tr('Case {n} of {total}, {stars} stars', { n: S.idx + 1, total, stars: chapterStars(S.chapter) }));
+  }
 }
 function dotSay(text, speak) {
   S.lastSay = text; $('dotSay').textContent = text; announce(text);
@@ -831,15 +1222,102 @@ function renderView() {
   const level = S.level, st = S.cs, v = $('view'); v.innerHTML = '';
   const g = glowFor();
   const view = st.view;
-  if (view === 'table' && level.rows) v.appendChild(tableView(level, st, g));
+  v.classList.toggle('compact', !!(level.model || level.tally));   // these cases carry a slider or steppers under the view: a shorter chart
+  if (S.poolView && S.pool) v.appendChild(poolView());
+  else if (level.model) {
+    v.appendChild(view === 'bar' ? barsView(level, st, g, 'bar') : modelView(level, st, g));
+    // Game Balance: the strip of test runs is part of the data view (a tick for each run that finished)
+    const m = level.model, cur = st.last && st.last.rule === st.rule ? st.last : null;
+    if (m.gaps && cur && view === 'bar') { const strip = el('div', 'runs'); strip.setAttribute('role', 'img'); strip.setAttribute('aria-label', tr('{done} of {n} runs finished ({rate}%).', { done: cur.done, n: cur.n, rate: cur.rate })); for (const row of cur.rows) strip.appendChild(el('span', row.ok ? 'ok' : 'no', icon(row.ok ? 'check' : 'cross', 16))); v.appendChild(strip); }
+  } else if (level.tally) v.appendChild(view === 'table' ? tallyTable(level, st, g) : barsView(level, st, g, view));
+  else if (view === 'table' && level.rows) v.appendChild(tableView(level, st, g));
   else if (view === 'table' && level.cats) v.appendChild(seriesTable(level, st, g));
   else if (view === 'group' || view === 'bar' || view === 'picto') v.appendChild(barsView(level, st, g, view));
   snapRows();   // build levels show the table's numbers next to the steppers instead of a second table under the bars
 }
-/** A table taller than its box shows whole rows only (the box scrolls inside): no half row peeking under the tools. */
+/** Models: the trial table: input, what the model says, the real result and how far off (a tick inside the tolerance). */
+function modelView(level, st, g) {
+  const m = level.model;
+  const wrap = el('div', 'tbl'); wrap.setAttribute('data-fit-dense', '');
+  const t = el('table');
+  const unit = m.unit ? ` (${tr(m.unit)})` : '';
+  if (m.gaps) {
+    // Game Balance: every test run, its gap and whether the runner cleared it
+    const cur = st.last && st.last.rule === st.rule ? st.last : null;
+    t.innerHTML = `<thead><tr><th><span class="hdr">${esc(tr(m.inputLabel))}</span></th><th><span class="hdr">${esc(tr('Gap'))}</span></th><th><span class="hdr">${esc(tr(m.outLabel))}</span></th></tr></thead>`;
+    const body = el('tbody');
+    (cur ? cur.rows : m.gaps.map((gp, i) => ({ i, gap: gp, ok: null }))).forEach((r, i) => {
+      const tr0 = el('tr', 'row'); tr0.innerHTML = `<td class="num" dir="ltr">${esc(num(i + 1))}</td><td class="num" dir="ltr">${esc(num(r.gap))}</td><td>${r.ok == null ? '–' : r.ok ? icon('check', 18) + ' ' + esc(tr(m.done)) : icon('cross', 18) + ' ' + esc(tr(m.fell))}</td>`;
+      body.appendChild(tr0);
+    });
+    t.appendChild(body); wrap.appendChild(t);
+    return wrap;
+  }
+  t.innerHTML = `<thead><tr><th><span class="hdr">${esc(tr(m.inputLabel))}${esc(unit)}</span></th><th><span class="hdr">${esc(tr('Model says'))}</span></th><th><span class="hdr">${esc(tr('Real'))}</span></th><th><span class="hdr">${esc(tr('Off by'))}</span></th></tr></thead>`;
+  const body = el('tbody');
+  for (const r of E.modelRows(level, st)) {
+    const tr0 = el('tr', 'row' + (st.shown[r.id] ? ' proved' : '') + ((g.row === r.id || (g.rows || []).includes(r.id)) ? ' lit' : ''));
+    tr0.setAttribute('role', 'button'); tr0.tabIndex = 0; tr0.dataset.row = r.id;
+    const near = r.off != null && r.off / Math.max(1, Math.abs(r.actual)) <= m.tol;
+    tr0.innerHTML = `<td class="num" dir="ltr">${esc(num(r.input))}</td><td class="num" dir="ltr">${esc(num(r.pred))}</td><td class="num" dir="ltr">${r.actual == null ? '–' : esc(num(r.actual))}</td>` +
+      `<td class="num off ${r.off == null ? '' : near ? 'ok' : 'no'}" dir="ltr">${r.off == null ? '–' : esc(num(r.off)) + icon(near ? 'check' : 'cross', 16)}</td>`;
+    const tap = () => tapRow(r.id);
+    tr0.addEventListener('click', tap); tr0.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
+    body.appendChild(tr0);
+  }
+  t.appendChild(body); wrap.appendChild(t); rowKeys(t);
+  return wrap;
+}
+/** My Data: the tally as a table; with the other class loaded, both classes side by side (and their shares with %). */
+function tallyTable(level, st, g) {
+  const wrap = el('div', 'tbl'); wrap.setAttribute('data-fit-dense', '');
+  const t = el('table'); const p = LV.presetOf(st.preset);
+  if (!p) { const e = el('p', 'note'); e.textContent = tr('Pick a question to start.'); return e; }
+  const cmp = st.other, pct = E.comparing(level, st);   // with % on, the two classes are compared by their shares (the counts were on screen before)
+  t.innerHTML = `<thead><tr><th><span class="hdr">${esc(tr(p.title))}</span></th><th><span class="hdr">${esc(cmp ? (pct ? tr('Ours %') : tr('Ours')) : tr('Count'))}</span></th>${cmp ? `<th><span class="hdr">${esc(pct ? tr('Other %') : tr('Other class'))}</span></th>` : ''}</tr></thead>`;
+  const body = el('tbody');
+  const rows = cmp ? E.compareRows(level, st) : E.tallyCounts(level, st).map(([c, v]) => [c, v]);
+  for (const r of rows) {
+    const key = 'r:' + r[0];
+    const tr0 = el('tr', 'row' + (st.shown[key] ? ' proved' : '') + (g.cat === r[0] ? ' lit' : '')); tr0.setAttribute('role', 'button'); tr0.tabIndex = 0; tr0.dataset.row = key;
+    tr0.innerHTML = `<td>${esc(trCell(r[0]))}</td>` + (pct ? `<td class="num" dir="ltr">${esc(num(r[3]))}%</td><td class="num" dir="ltr">${esc(num(r[4]))}%</td>` : `<td class="num" dir="ltr">${esc(num(r[1]))}</td>${cmp ? `<td class="num" dir="ltr">${esc(num(r[2]))}</td>` : ''}`);
+    const tap = () => tapRow(key);
+    tr0.addEventListener('click', tap); tr0.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
+    body.appendChild(tr0);
+  }
+  t.appendChild(body); wrap.appendChild(t); rowKeys(t);
+  return wrap;
+}
+/** The class pool (My Data on the projector): every pair's chart added up. */
+function poolView() {
+  const box = el('div', 'barsbox'); box.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+  const rib = el('p', 'ribbon'); rib.textContent = tr('Class pool: {n} charts, {total} answers', { n: S.pool.n, total: Object.values(S.pool.counts).reduce((a, b) => a + b, 0) }); box.appendChild(rib);
+  const fake = { cats: Object.entries(S.pool.counts) };
+  box.appendChild(barsView(fake, { shown: {}, bars: {} }, {}, 'bar'));
+  return box;
+}
+/** Arrow keys inside a table: up and down between rows, left and right between the header buttons. */
+function rowKeys(t) {
+  t.addEventListener('keydown', e => {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    const rows = [...t.querySelectorAll('tbody tr[tabindex]')], heads = [...t.querySelectorAll('thead button')];
+    const a = document.activeElement, ri = rows.indexOf(a), hi = heads.indexOf(a);
+    if (ri < 0 && hi < 0) return;
+    e.preventDefault();
+    const go = x => { if (x) x.focus({ preventScroll: false }); };
+    if (hi >= 0) { if (e.key === 'ArrowLeft') go(heads[(hi + heads.length - 1) % heads.length]); else if (e.key === 'ArrowRight') go(heads[(hi + 1) % heads.length]); else if (e.key === 'ArrowDown' || e.key === 'End') go(rows[0]); return; }
+    if (e.key === 'ArrowDown') go(rows[Math.min(rows.length - 1, ri + 1)]);
+    else if (e.key === 'ArrowUp') { if (ri === 0 && heads.length) go(heads[0]); else go(rows[Math.max(0, ri - 1)]); }
+    else if (e.key === 'Home') go(rows[0]); else if (e.key === 'End') go(rows[rows.length - 1]);
+    else if (heads.length) go(heads[0]);
+  });
+}
+/** A table taller than its box shows whole rows only (the box scrolls inside): no half row peeking under the tools.
+ *  Rows scrolled out of the box are also hidden outright, so nothing of them can read as text over the panel below. */
 function snapRows() {
   const v = $('view'), tbl = v.querySelector('.tbl'); if (!tbl || v.hidden) return;
   tbl.style.height = ''; tbl.style.marginBottom = '';
+  for (const r of tbl.querySelectorAll('tbody tr')) r.style.visibility = '';
   const room = v.clientHeight - 20;   // the view's own padding
   if (tbl.offsetHeight <= room + 1) return;
   const head = tbl.querySelector('thead'), row = tbl.querySelector('tbody tr');
@@ -848,6 +1326,9 @@ function snapRows() {
   const gap = Math.max(0, rowH - 20);   // a hidden row never reaches the tools under the view
   const n = Math.max(2, Math.floor((room - headH - frame - gap) / rowH));
   tbl.style.height = (headH + n * rowH + frame) + 'px'; tbl.style.marginBottom = gap + 'px';
+  const sweep = () => { const top = tbl.scrollTop, bottom = top + tbl.clientHeight; for (const r of tbl.querySelectorAll('tbody tr')) { const y = r.offsetTop; r.style.visibility = (y + r.offsetHeight <= top + 1 || y >= bottom - 1) ? 'hidden' : ''; } };
+  if (!tbl.dataset.sweep) { tbl.dataset.sweep = '1'; tbl.addEventListener('scroll', sweep, { passive: true }); }
+  sweep();
 }
 window.addEventListener('resize', () => { if (S.screen === 'play') snapRows(); });
 function tableView(level, st, g) {
@@ -875,7 +1356,7 @@ function tableView(level, st, g) {
     r.addEventListener('click', tap); r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
     body.appendChild(r);
   }
-  t.appendChild(body); wrap.appendChild(t);
+  t.appendChild(body); wrap.appendChild(t); rowKeys(t);
   return wrap;
 }
 function seriesTable(level, st, g, target) {
@@ -889,7 +1370,7 @@ function seriesTable(level, st, g, target) {
   return wrap;
 }
 function barsView(level, st, g, view) {
-  const data = view === 'group' ? E.groupCounts(level, st, st.groupBy) : (level.cats ? E.series(level, st) : E.groupCounts(level, st, st.groupBy || level.groupBy));
+  const data = view === 'group' ? E.groupCounts(level, st, st.groupBy) : (level.cats || level.model || level.tally ? E.series(level, st) : E.groupCounts(level, st, st.groupBy || level.groupBy));
   const max = Math.max(1, ...data.map(d => d[1]), level.build ? Math.max(...level.cats.map(c => c[1])) : 0);
   const wrap = el('div', 'bars'); wrap.setAttribute('data-fit-dense', ''); wrap.setAttribute('role', 'img');
   const label = view === 'picto' ? tr('Pictograph') : view === 'group' ? tr('Counts by {col}', { col: tr((level.cols.find(c => c.id === st.groupBy) || {}).label || '') }) : tr('Bar chart');
@@ -916,7 +1397,18 @@ function renderTools() {
   const level = S.level, st = S.cs, box = $('tools'); box.innerHTML = '';
   const g = glowFor();
   const chip = (label, iconName, key, pressed, fn) => { const b = el('button', 'chip' + (g.tool === key ? ' lit' : '')); b.type = 'button'; b.innerHTML = (iconName ? icon(iconName, 20) : '') + `<span>${esc(label)}</span>`; if (pressed != null) b.setAttribute('aria-pressed', String(pressed)); b.addEventListener('click', fn); box.appendChild(b); return b; };
-  if (level.rows) {
+  if (level.model) {
+    chip(tr('Table'), 'menu', 'table', st.view === 'table', () => doAct(['view', 'table']));
+    chip(tr('Bars'), 'flag', 'bar', st.view === 'bar', () => doAct(['view', 'bar']));
+  } else if (level.tally) {
+    const inPool = S.poolView && S.pool;
+    chip(tr('Table'), 'menu', 'table', !inPool && st.view === 'table', () => { S.poolView = false; doAct(['view', 'table']); });
+    chip(tr('Bars'), 'flag', 'bar', !inPool && st.view === 'bar', () => { S.poolView = false; doAct(['view', 'bar']); });
+    chip(tr('Pictures'), 'user', 'picto', !inPool && st.view === 'picto', () => { S.poolView = false; doAct(['view', 'picto']); });
+    if (level.tally.other && S.band === '2' && st.preset) chip(tr('Another class'), 'swap', 'other', st.other, () => { S.poolView = false; doAct(['other']); });
+    if (st.other) chip('%', null, 'pct', st.pct, () => { S.poolView = false; doAct(['pct']); }).setAttribute('aria-label', tr('Show percent'));
+    if (level.tally.pool && S.pool && S.pool.n) chip(tr('Class pool'), 'user', 'pool', !!S.poolView, () => { S.poolView = !S.poolView; sfx('select'); renderCase(); });
+  } else if (level.rows) {
     const views = level.views || ['table', 'group'];
     if (views.includes('table')) chip(tr('Table'), 'menu', 'table', st.view === 'table', () => doAct(['view', 'table']));
     // Group makes sense for a column with repeats (a pet, a day), never for a list of different names
@@ -935,6 +1427,57 @@ function renderTools() {
 function renderExtra() {
   const level = S.level, st = S.cs, box = $('extra'); box.innerHTML = '';
   const g = glowFor();
+  if (level.model) {
+    // the rule slider (free to move), the Run button (each run is one refinement) and what the last run showed
+    const m = level.model, r = m.rule, s = el('div', 'slide' + (g.tool === 'rule' ? ' lit' : ''));
+    const top = el('div', 'total');   // the rule's words and the Run button on one line; the slider under them
+    const lab = el('label'); lab.style.cssText = 'font-weight:800;flex:1;min-width:90px'; lab.htmlFor = 'rule'; lab.textContent = tr(m.ruleLabel, E.ruleVars(level, st)); lab.dir = 'auto';
+    const run = el('button', 'btn hot'); run.type = 'button'; run.id = 'runBtn'; run.style.paddingInline = '14px'; run.innerHTML = icon('play', 22) + `<span>${esc(m.gaps ? tr('Run {n} tests', { n: m.gaps.length }) : tr('Run {n} trials', { n: m.inputs.length }))}</span>`;
+    run.addEventListener('click', () => doAct(['run']));
+    top.append(lab, run);
+    const inp = el('input'); inp.type = 'range'; inp.id = 'rule'; inp.min = r.min; inp.max = r.max; inp.step = r.step; inp.value = st.rule; inp.dir = 'ltr'; inp.setAttribute('aria-label', tr('Rule'));
+    inp.addEventListener('input', () => { E.act(level, st, ['rule', +inp.value]); lab.textContent = tr(m.ruleLabel, E.ruleVars(level, st)); renderView(); renderClaims(); });
+    s.append(top, inp); box.appendChild(s);
+    const cur = st.last && st.last.rule === st.rule ? st.last : null;
+    const note = el('p', 'note');
+    if (!cur) note.textContent = st.last ? tr('The rule moved. Run the trials again to test it.') : tr('Predict first: set the rule, then run the trials.');
+    else if (m.gaps) note.textContent = tr('{done} of {n} runs finished ({rate}%).', { done: cur.done, n: cur.n, rate: cur.rate }) + ' ' + (cur.fit ? tr('That is about 8 in 10: balanced!') : tr('Target: about 8 in 10 finish. Refine the jump.'));
+    else note.textContent = tr('Average miss: {n}%.', { n: Math.round(cur.err * 100) }) + ' ' + (cur.fit ? tr('The model fits!') : tr('Not yet: refine the rule and run again.'));
+    if (st.batches) note.textContent += ' ' + tr('Runs so far: {n}.', { n: st.batches });
+    box.appendChild(note);
+    return;
+  }
+  if (level.tally) {
+    if (level.tally.presets) {
+      const row = el('div', 'presets'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', tr('Question'));
+      for (const id of level.tally.presets) { const p = LV.presetOf(id); const b = el('button', 'chip'); b.type = 'button'; b.textContent = tr(p.title); b.setAttribute('aria-pressed', String(st.preset === id)); b.addEventListener('click', () => { S.poolView = false; doAct(['preset', id]); }); row.appendChild(b); }
+      box.appendChild(row);
+    }
+    const p = LV.presetOf(st.preset);
+    if (!p) { const n = el('p', 'note'); n.textContent = tr('Pick a question to start.'); box.appendChild(n); return; }
+    const steps = el('div', 'steps');
+    for (const c of p.cats) {
+      const row = el('div', 'step');
+      const name = el('b'); name.textContent = trCell(c);
+      const lab = el('span', 'steplab'); lab.append(name); row.appendChild(lab);
+      const minus = el('button', 'ibtn', icon('minus')); minus.type = 'button'; minus.setAttribute('aria-label', tr('{cat}: one less', { cat: trCell(c) })); minus.addEventListener('click', () => doAct(['tally', c, -1]));
+      const n = el('span', 'n num'); n.dir = 'ltr'; n.textContent = num(st.counts[c] || 0); n.setAttribute('aria-live', 'polite');
+      const plus = el('button', 'ibtn', icon('plus')); plus.type = 'button'; plus.setAttribute('aria-label', tr('{cat}: one more', { cat: trCell(c) })); plus.addEventListener('click', () => doAct(['tally', c, 1]));
+      row.append(minus, n, plus); steps.appendChild(row);
+    }
+    box.appendChild(steps);
+    const total = E.tallyTotal(level, st), min = level.tally.min || 5;
+    const tot = el('div', 'total');
+    const rib = el('p', 'ribbon'); rib.textContent = tr('Answers: {n}', { n: total }); tot.appendChild(rib);
+    if (total < min) { const nt = el('p', 'note'); nt.textContent = tr('Five answers is the least that counts as a case.'); tot.appendChild(nt); }
+    if (level.tally.pool && total >= min) {
+      const pb = el('button', 'btn'); pb.type = 'button'; pb.id = 'poolBtn'; pb.innerHTML = icon('plus', 20) + `<span>${esc(tr('Add to class pool'))}</span>`;
+      pb.addEventListener('click', () => { addToPool(); }); tot.appendChild(pb);
+    }
+    if (S.pool && S.pool.n) { const pn = el('p', 'scale'); pn.textContent = tr('{n} charts pooled', { n: S.pool.n }); tot.appendChild(pn); }
+    box.appendChild(tot);
+    return;
+  }
   if (level.build) {
     const steps = el('div', 'steps');
     for (const [c] of level.cats) {
@@ -977,41 +1520,69 @@ function rowCard(id) {
   m.card.appendChild(p);
   m.onClose = () => { S.rowPanel = null; renderView(); };
 }
+/** My Data on the projector: add this pair's counts to the class pool (one question at a time). */
+function addToPool() {
+  const level = S.level, st = S.cs; if (!level.tally || !st.preset) return;
+  if (!S.pool || S.pool.preset !== st.preset) S.pool = { preset: st.preset, counts: Object.fromEntries(LV.presetOf(st.preset).cats.map(c => [c, 0])), n: 0 };
+  for (const [c, v] of E.tallyCounts(level, st)) S.pool.counts[c] += v;
+  S.pool.n++; sfx('correct');
+  toast(tr('Added. {n} charts pooled.', { n: S.pool.n })); announce(tr('Added. {n} charts pooled.', { n: S.pool.n }));
+  S.poolView = true; renderCase();
+}
+const tileText = t => (t && typeof t === 'object' ? tr(t.text, Object.fromEntries(Object.entries(t.vars || {}).map(([k, v]) => [k, trCell(v)]))) : trCell(t));
 function renderClaims() {
   const level = S.level, st = S.cs, box = $('claims'); box.innerHTML = '';
   if (st.solved) return;
   const ok = E.evidence(level, st);
   if (st.picked != null) {
-    const q = el('p', 'q'); q.textContent = tr('Show me! Tap the evidence that proves it.'); box.appendChild(q);
-    const left = E.proofKeys(level).filter(k => !st.shown[k]).length;
+    const q = el('p', 'q'); q.textContent = level.tally ? tr('Show me! Tap the bar or row that proves it.') : tr('Show me! Tap the evidence that proves it.'); box.appendChild(q);
+    const left = E.proofKeys(level, st).filter(k => !st.shown[k]).length;
     const small = el('p'); small.style.margin = '0'; small.style.fontWeight = '700'; small.textContent = tr('{n} more to tap', { n: left }); box.appendChild(small);
     try { box.scrollIntoView({ block: 'nearest' }); } catch (e) { /* ignore */ }
     return;
   }
-  const b = el('button', 'btn hot'); b.type = 'button'; b.innerHTML = icon('flag', 22) + `<span>${esc(level.predict ? tr('Pin this prediction') : tr('Pin a claim'))}</span>`;
+  const b = el('button', 'btn hot'); b.type = 'button'; b.innerHTML = icon('flag', 22) + `<span>${esc(level.predict ? tr('Pin this prediction') : level.pick ? tr('Pick {n}', { n: level.pick }) : tr('Pin a claim'))}</span>`;
   b.id = 'claimBtn';
   if (!ok) { b.setAttribute('aria-disabled', 'true'); b.classList.remove('hot'); b.classList.add('wait'); }
-  b.addEventListener('click', () => { if (!E.evidence(S.level, S.cs)) { sfx('wrong'); dotSay(tr('Show me first: get the view that answers the question on screen, then pin your claim.')); return; } if (level.predict) doAct(['claim', 0]); else { sfx('select'); claimCard(); } });
+  b.addEventListener('click', () => { if (!E.evidence(S.level, S.cs)) { sfx('wrong'); dotSay(showMeText()); return; } if (level.predict) doAct(['claim', 0]); else { sfx('select'); claimCard(); } });
   box.appendChild(b);
-  const note = el('p', 'note'); note.textContent = ok ? tr('The view supports a claim. Pin one!') : tr('Show me: the claim card opens when the view on screen answers the question.'); box.appendChild(note);
+  const note = el('p', 'note');
+  note.textContent = ok ? tr('The view supports a claim. Pin one!') : level.tally ? tr('Make a chart with at least {n} answers, then pin a claim.', { n: level.tally.min || 5 }) : level.model ? tr('Show me: the claim card opens when the model fits the trials.') : tr('Show me: the claim card opens when the view on screen answers the question.');
+  box.appendChild(note);
 }
-/** The claim card: the question (or the claim to judge) and 2-4 tiles, over the view; keys 1-4 pick a tile. */
+function showMeText() {
+  const level = S.level;
+  if (level.tally) return tr('Show me first: chart at least {n} answers, then pin your claim.', { n: level.tally.min || 5 });
+  if (level.model) return tr('Show me first: refine the rule until the model fits the trials, then pin it.');
+  return tr('Show me first: get the view that answers the question on screen, then pin your claim.');
+}
+/** The claim card: the question (or the claim to judge) and 2-4 tiles, over the view; keys 1-4 pick a tile.
+ *  Pick-two cases: the tiles toggle and a Pin button sends the pair. */
 function claimCard() {
   const level = S.level, st = S.cs; if (!level || st.solved || st.picked != null) return;
+  if (!E.evidence(level, st)) { sfx('wrong'); dotSay(showMeText()); return; }   // the Show-me rule, whichever way the card is asked for
   const m = ownModal(level.claim ? tr('Is this claim supported by the chart?') : tr(level.q || ''), 'claim');
   if (level.claim) { const c = el('p'); c.style.fontWeight = '800'; c.textContent = '\u201c' + tr(level.claim) + '\u201d'; m.card.appendChild(c); }
   const grid = el('div', 'tiles2');
   const wrongOnes = st.wrongTiles || (st.wrongTiles = {});
-  E.claimTiles(level).forEach((t, i) => {
+  const picks = new Set();
+  let pin = null;
+  E.claimTiles(level, st).forEach((t, i) => {
     const bad = !!wrongOnes[i];
     const b = el('button', 'claimtile pop' + (bad ? ' bad' : '')); b.type = 'button'; b.dataset.i = i; b.dataset.key = i + 1;
-    b.innerHTML = `<span class="key num" dir="ltr">${esc(num(i + 1))}</span><span>${esc(trCell(t))}</span>` + (bad ? icon('cross', 22) : '');
+    b.innerHTML = `<span class="key num" dir="ltr">${esc(num(i + 1))}</span><span>${esc(tileText(t))}</span>` + (bad ? icon('cross', 22) : '');
     if (bad) b.disabled = true;
-    b.addEventListener('click', () => { closeOwnModal(); doAct(['claim', i]); });
+    if (level.pick) {
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => { if (picks.has(i)) picks.delete(i); else if (picks.size < level.pick) picks.add(i); else return; b.setAttribute('aria-pressed', String(picks.has(i))); sfx('select'); pin.disabled = picks.size !== level.pick; });
+    } else b.addEventListener('click', () => { closeOwnModal(); doAct(['claim', i]); });
     grid.appendChild(b);
   });
   m.card.appendChild(grid);
-  const back = el('button', 'btn quiet'); back.type = 'button'; back.innerHTML = icon('back', 22) + `<span>${esc(tr('Look again'))}</span>`; back.addEventListener('click', closeOwnModal); m.card.appendChild(back);
+  const foot = el('div', 'foot'); foot.style.justifyContent = 'center';
+  if (level.pick) { pin = el('button', 'btn hot'); pin.type = 'button'; pin.id = 'pinBtn'; pin.disabled = true; pin.innerHTML = icon('flag', 22) + `<span>${esc(tr('Pin these {n}', { n: level.pick }))}</span>`; pin.addEventListener('click', () => { const p = [...picks]; closeOwnModal(); doAct(['pick', p]); }); foot.appendChild(pin); }
+  const back = el('button', 'btn quiet'); back.type = 'button'; back.innerHTML = icon('back', 22) + `<span>${esc(tr('Look again'))}</span>`; back.addEventListener('click', closeOwnModal); foot.appendChild(back);
+  m.card.appendChild(foot);
   S.claimsOpen = true; m.onClose = () => { S.claimsOpen = false; };
 }
 function renderFoot() {
@@ -1030,11 +1601,12 @@ function tapRow(id) {
   if (st.solved) return;
   if (st.picked != null) { prove(id); return; }
   if (level.clean) { S.rowPanel = id; sfx('select'); renderView(); rowCard(id); return; }
+  if (level.model || level.tally) { sfx('pop'); return; }
   const text = level.cols.map(c => `${tr(c.label)}: ${trCell(E.cell(level, st, id, c.id))}`).join(', ');
   announce(text); sfx('pop');
 }
 function tapBar(c) {
-  const st = S.cs; if (st.solved) return;
+  const st = S.cs; if (st.solved || S.poolView) return;
   if (st.picked != null) { prove('c:' + c); return; }
   sfx('pop');
 }
@@ -1045,42 +1617,86 @@ function prove(key) {
   sfx('correct');
   if (st.solved) solved(); else { renderCase(); dotSay(tr('Yes! Keep going: tap the rest of the evidence.')); }
 }
+/** What the data shows, for Dot after a wrong claim (tally cases fill the slots from the counts). */
+const showsText = (level, st) => (level.tally ? tr(level.shows, Object.fromEntries(Object.entries(E.tallyShows(level, st)).map(([k, v]) => [k, trCell(v)]))) : tr(level.shows));
 function doAct(a) {
   const level = S.level, st = S.cs; if (!level || st.solved) return;
   const r = E.act(level, st, a);
-  if (a[0] === 'claim') {
-    if (r && r.why === 'show-me') { sfx('wrong'); dotSay(tr('Show me first: get the view that answers the question on screen, then pin your claim.')); return; }
-    if (r && r.ok) { sfx('correct'); renderCase(); dotSay(tr('Good claim! Now show me: tap the evidence that proves it.')); return; }
-    sfx('wrong'); S.fail = st.wrong; (st.wrongTiles || (st.wrongTiles = {}))[a[1] | 0] = 1; renderCase(); dotSay(tr(level.shows)); try { if (!reduced()) Oomba.juice.shake(0.3, $('claims')); } catch (e) { /* ignore */ } return;
+  if (a[0] === 'claim' || a[0] === 'pick') {
+    if (r && r.why === 'show-me') { sfx('wrong'); dotSay(showMeText()); return; }
+    if (r && r.why === 'pick') { sfx('select'); claimCard(); return; }
+    if (r && r.ok) { if (st.solved) { solved(); return; } sfx('correct'); renderCase(); dotSay(level.tally ? tr('Good claim! Now show me: tap the bar or row that proves it.') : tr('Good claim! Now show me: tap the evidence that proves it.')); return; }
+    if (!r || r.why !== 'wrong') return;
+    sfx('wrong'); S.fail = st.wrong; if (a[0] === 'claim') (st.wrongTiles || (st.wrongTiles = {}))[a[1] | 0] = 1; renderCase(); dotSay(showsText(level, st)); try { if (!reduced()) Oomba.juice.shake(0.3, $('claims')); } catch (e) { /* ignore */ } return;
   }
   if (a[0] === 'skip') { S.skippedIds[level.id] = 1; S.sessionStars[level.id] = 0; sfx('whoosh'); dotSay(tr('Skipped. No stars this time, but the next case is open.')); finishLevel(0); return; }
   if (r === false) return;
-  sfx(a[0] === 'bar' ? 'pop' : 'select');
+  sfx(a[0] === 'bar' || a[0] === 'tally' ? 'pop' : a[0] === 'run' ? 'whoosh' : 'select');
   renderCase();
+  if (a[0] === 'run') {
+    const cur = st.last;
+    if (level.model.gaps) dotSay(cur.fit ? tr('{done} of {n} finished: about 8 in 10. Balanced! Pin the result.', { done: cur.done, n: cur.n }) : cur.rate > level.model.rate.hi ? tr('{done} of {n} finished. Too easy: lower the jump and test again.', { done: cur.done, n: cur.n }) : tr('{done} of {n} finished. Too hard: raise the jump and test again.', { done: cur.done, n: cur.n }));
+    else dotSay(cur.fit ? tr('The model fits the trials. Pin the rule!') : cur.rows[0].pred < cur.rows[0].actual ? tr('The model predicts too little. Refine the rule and run again.') : tr('The model predicts too much. Refine the rule and run again.'));
+    return;
+  }
   const okNow = E.evidence(level, st);
   if (okNow && !S.claimsOpen && st.picked == null) dotSay(tr('That view answers it. Pin your claim!'));
 }
 function solved() {
   const level = S.level, st = S.cs, n = E.stars(level, st);
   sfx('win'); try { if (STAGE && !reduced()) STAGE.burst('confetti', STAGE.camera.x, STAGE.camera.y - 120, { w: 500 }); } catch (e) { /* ignore */ }
+  if (level.tally) S.charts++;
   renderCase();
-  dotSay(tr('Case closed! {n} of 3 stars.', { n }));
+  dotSay(level.tally ? tr('Chart made! {n} so far.', { n: S.charts }) : tr('Case closed! {n} of 3 stars.', { n }));
   finishLevel(n);
 }
 async function finishLevel(n) {
   const level = S.level;
   S.sessionStars[level.id] = Math.max(S.sessionStars[level.id] || 0, n);
+  if (S.daily != null) { if (S.mode !== 'projector') { const best = SAVE.daily && SAVE.daily.day === S.daily && SAVE.daily.band === S.band ? SAVE.daily.stars : 0; SAVE.daily = { day: S.daily, band: S.band, stars: Math.max(best, n) }; save(); } S.phase = 'closed'; renderHud(); dailyEnd(n); return; }
   if (S.mode !== 'projector') { SAVE.stars[level.id] = Math.max(SAVE.stars[level.id] || 0, n); save(); }
   S.phase = 'closed';
   let check = null;
   if (S.lesson && !S.cs.skipped && level.check) check = await caseClosedCard(level);
   report(level, n, check);
-  renderHud();
+  renderHud(); earnCrown();
   const hasNext = S.idx < S.levels.length - 1;
   let v = 'next';
-  if (!S.fast) { try { v = await Oomba.ui.win({ stars: n, score: chapterStars(S.chapter), hero: DOT.spec, title: n ? tr('Case closed!') : tr('Case skipped'), next: hasNext }); } catch (e) { v = 'next'; } }
+  if (level.open) {   // the open tally: another chart with the same question list, or finish the survey
+    v = S.fast ? (S.openChoice || 'next') : await openChartDialog();
+  } else if (!S.fast) { try { v = await Oomba.ui.win({ stars: n, score: S.mode === 'tally' ? S.charts : chapterStars(S.chapter), hero: DOT.spec, title: level.tally ? tr('Chart made!') : n ? tr('Case closed!') : tr('Case skipped'), next: hasNext }); } catch (e) { v = 'next'; } }
   if (v === 'again') { startLevel(); return; }
   if (hasNext) { S.idx++; startLevel(); } else chapterEnd();
+}
+async function openChartDialog() {
+  try { return await Oomba.ui.dialog({ title: tr('Chart {n} made!', { n: S.charts }), text: tr('Make another chart, or finish and see your total.'), portrait: DOT.spec, mood: 'happy',
+    buttons: [{ label: tr('Another chart'), kind: 'hot', value: 'again', icon: 'restart' }, { label: tr('Finish'), kind: 'go', value: 'next', icon: 'check' }] }); } catch (e) { return 'next'; }
+}
+/** Every star in a chapter earns its crown: Dot's coat changes color (saved per player, cosmetic). */
+function earnCrown() {
+  const ch = chapterOf(S.chapter); if (!ch || S.mode === 'projector' || SAVE.crowns[ch.id]) return;
+  if (chapterStars(ch.id) < ch.levels * 3) return;
+  SAVE.crowns[ch.id] = 1; save(); applyCrowns();
+  const text = tr('Chapter crown! Dot’s coat has a new color.');
+  toast(text); say(text); sfx('levelup');
+  try { if (STAGE && !reduced()) STAGE.burst('sparkle', STAGE.camera.x, STAGE.camera.y - 120, { w: 500 }); } catch (e) { /* ignore */ }
+}
+/** The Daily Crew Challenge's own card: today's stars, a new case tomorrow. */
+function dailyEnd(n) {
+  S.phase = 'end';
+  const card = $('endCard'); card.innerHTML = '';
+  card.style.cssText = 'width:min(560px,100%);padding:clamp(14px,3vh,28px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;max-height:100%;overflow:auto';
+  card.appendChild(dotPortrait(96, n ? 'happy' : 'thinking'));
+  const h = el('h2'); h.style.margin = '0'; h.textContent = tr('Daily Crew Challenge'); card.appendChild(h);
+  const p = el('p'); p.style.margin = '0'; p.style.fontWeight = '700'; p.textContent = tr('{n} of 3 stars today. A new case comes tomorrow.', { n }); card.appendChild(p);
+  const stars = el('div', 'endstars'); stars.setAttribute('role', 'img'); stars.setAttribute('aria-label', tr('{n} of {total} stars', { n, total: 3 }));
+  for (let i = 0; i < 3; i++) stars.insertAdjacentHTML('beforeend', icon(n > i ? 'star' : 'star-off', 36)); card.appendChild(stars);
+  const row = el('div', 'foot'); row.style.justifyContent = 'center';
+  const again = el('button', 'btn hot'); again.type = 'button'; again.innerHTML = icon('restart', 22) + `<span>${esc(tr('Play it again'))}</span>`; again.addEventListener('click', () => { startDaily(S.daily); }); row.appendChild(again);
+  const mapB = el('button', 'btn go'); mapB.type = 'button'; mapB.innerHTML = icon('home', 22) + `<span>${esc(tr('Chapter map'))}</span>`; mapB.addEventListener('click', () => { S.seedFixed = S.seedSaved; S.daily = null; openMap(); }); row.appendChild(mapB);
+  card.appendChild(row);
+  show('end');
+  say(tr('{n} of 3 stars today. A new case comes tomorrow.', { n }));
 }
 /** Lesson mode: one 3-tile concept check from the level, then a confidence face. */
 async function caseClosedCard(level) {
@@ -1103,28 +1719,37 @@ function confidenceFace() {
   });
 }
 function report(level, n, check) {
+  if (S.daily != null) return;   // the daily challenge is its own thing: no gradebook cell
   const total = S.levels.length, done = S.levels.filter(l => bestStars(l.id) > 0 || S.skippedIds[l.id]).length;
-  const score = chapterStars(S.chapter);
-  let label = `${Math.min(99, done)}/${Math.min(99, total)} ${CONFIG.progressNoun}, ${Math.min(999, score)} stars`;
-  if (S.lesson) label += `, ${Math.min(99, S.checks.ok)}/${Math.min(99, S.checks.n)} checks`;
+  let score = chapterStars(S.chapter), label;
+  if (S.mode === 'tally') { score = Math.min(99, S.charts); label = `${score} charts made`; }
+  else {
+    label = `${Math.min(99, done)}/${Math.min(99, total)} ${CONFIG.progressNoun}, ${Math.min(999, score)} stars`;
+    if (S.lesson) label += `, ${Math.min(99, S.checks.ok)}/${Math.min(99, S.checks.n)} checks`;
+  }
   S.lastLabel = label; S.scoreCalls.push({ score, label });
   if (S.mode === 'projector') return;
   try { if (HAS_BRB) BRB.score.submit(score, label); } catch (e) { /* ignore */ }
   try {
-    if (HAS_BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'dd', chapter: S.chapter, level: S.idx + 1, stars: n, band: S.band === '2' ? 2 : 1, csta: level.csta, check: check ? 1 : 0, confidence: S.confidence || 0, hint: S.cs.hint, runs: S.cs.runs, skipped: !!S.cs.skipped });
+    const csta = S.band === '2' && level.csta2 ? level.csta2 : level.csta;
+    if (HAS_BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'dd', chapter: S.chapter, level: S.idx + 1, stars: n, band: S.band === '2' ? 2 : 1, csta, check: check ? 1 : 0, confidence: S.confidence || 0, hint: S.cs.hint, runs: S.cs.runs, skipped: !!S.cs.skipped });
   } catch (e) { /* ignore */ }
 }
 function chapterEnd() {
-  const score = chapterStars(S.chapter), ch = chapterOf(S.chapter);
+  const tally = S.mode === 'tally', ch = chapterOf(S.chapter), score = tally ? Math.min(99, S.charts) : chapterStars(S.chapter);
+  S.endCalls.push({ won: true, score });
   try { if (HAS_BRB && S.mode !== 'projector') BRB.gameOver({ won: true, score }); } catch (e) { /* ignore */ }
   S.phase = 'end';
   const card = $('endCard'); card.innerHTML = '';
   card.style.cssText = 'width:min(560px,100%);padding:clamp(14px,3vh,28px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;max-height:100%;overflow:auto';
   card.appendChild(dotPortrait(96, 'happy'));
-  const h = el('h2'); h.style.margin = '0'; h.textContent = tr('All cases closed!'); card.appendChild(h);
-  const p = el('p'); p.style.margin = '0'; p.style.fontWeight = '700'; p.textContent = tr('{chapter}: {n} of {total} stars.', { chapter: tr(ch.title), n: score, total: ch.levels * 3 }); card.appendChild(p);
-  const stars = el('div', 'endstars'); stars.setAttribute('role', 'img'); stars.setAttribute('aria-label', tr('{n} of {total} stars', { n: score, total: ch.levels * 3 }));
-  for (let i = 0; i < 3; i++) stars.insertAdjacentHTML('beforeend', icon(score >= ch.levels * (i + 1) ? 'star' : 'star-off', 36)); card.appendChild(stars);
+  const h = el('h2'); h.style.margin = '0'; h.textContent = tally ? tr('Survey done!') : tr('All cases closed!'); card.appendChild(h);
+  const p = el('p'); p.style.margin = '0'; p.style.fontWeight = '700'; p.textContent = tally ? tr('{n} charts made.', { n: S.charts }) : tr('{chapter}: {n} of {total} stars.', { chapter: tr(ch.title), n: score, total: ch.levels * 3 }); card.appendChild(p);
+  if (crowned(ch.id)) { const c = el('p', 'ribbon crown'); c.innerHTML = icon('trophy', 20) + ' ' + esc(tr('Chapter crown: every star')); card.appendChild(c); }
+  if (!tally) {
+    const stars = el('div', 'endstars'); stars.setAttribute('role', 'img'); stars.setAttribute('aria-label', tr('{n} of {total} stars', { n: score, total: ch.levels * 3 }));
+    for (let i = 0; i < 3; i++) stars.insertAdjacentHTML('beforeend', icon(score >= ch.levels * (i + 1) ? 'star' : 'star-off', 36)); card.appendChild(stars);
+  }
   if (S.lesson) { const q = el('p'); q.style.margin = '0'; q.style.fontWeight = '700'; q.textContent = tr('Your work is saved. You can go back to your class page now.'); card.appendChild(q); }
   const row = el('div', 'foot'); row.style.justifyContent = 'center';
   const again = el('button', 'btn hot'); again.type = 'button'; again.innerHTML = icon('restart', 22) + `<span>${esc(tr('Play it again'))}</span>`; again.addEventListener('click', () => { S.sessionStars = {}; startChapter(S.chapter, 1); }); row.appendChild(again);
@@ -1179,10 +1804,9 @@ function questCard() {
   const seg = el('div', 'seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
   for (const b of ['1b', '2']) { const x = el('button'); x.type = 'button'; x.textContent = bandName(b); x.setAttribute('aria-pressed', String(S.band === b)); x.disabled = S.lock; x.addEventListener('click', () => { S.band = b; SAVE.band = b; save(); sfx('select'); [...seg.children].forEach(c => c.setAttribute('aria-pressed', String(c === x))); if (S.screen === 'map') renderMap(); }); seg.appendChild(x); }
   row(tr('Band'), seg);
-  const sw = (on, label, fn) => { const b = el('button', 'ok-switch'); b.type = 'button'; b.setAttribute('role', 'switch'); b.setAttribute('aria-label', label); b.setAttribute('aria-checked', String(!!on)); b.addEventListener('click', () => { const v = b.getAttribute('aria-checked') !== 'true'; b.setAttribute('aria-checked', String(v)); sfx('select'); fn(v); }); return b; };
-  row(tr('Two on one device'), sw(SAVE.pairs, tr('Two on one device'), v => { SAVE.pairs = v; save(); }));
+  row(tr('Two on one device'), switchBtn(SAVE.pairs, tr('Two on one device'), v => { SAVE.pairs = v; S.turn = 0; save(); renderTurn(); $('turnPill').hidden = !(S.screen === 'play' && v); if (S.screen === 'map') renderMap(); }));
   let ra = true; try { ra = !!Oomba.settings.readAloud; } catch (e) { /* ignore */ }
-  row(tr('Read aloud'), sw(ra, tr('Read aloud'), v => { try { Oomba.settings.readAloud = v; } catch (e) { /* ignore */ } }));
+  row(tr('Read aloud'), switchBtn(ra, tr('Read aloud'), v => { try { Oomba.settings.readAloud = v; } catch (e) { /* ignore */ } }));
   if (!LIVE) { const kb = el('button', 'btn'); kb.type = 'button'; kb.innerHTML = icon('key', 22) + `<span>${esc(tr('Enter a quest code'))}</span>`; kb.addEventListener('click', () => keypad()); m.card.appendChild(kb); }
   const st = el('button', 'btn'); st.type = 'button'; st.innerHTML = icon('settings', 22) + `<span>${esc(tr('Settings'))}</span>`; st.addEventListener('click', async () => { closeOwnModal(); try { await Oomba.ui.settings(); } catch (e) { /* ignore */ } syncMotion(); }); m.card.appendChild(st);
   const close = el('button', 'btn go'); close.type = 'button'; close.innerHTML = icon('check', 22) + `<span>${esc(tr('Close'))}</span>`; close.addEventListener('click', closeOwnModal); m.card.appendChild(close);
@@ -1205,13 +1829,10 @@ function keypad() {
 }
 /** Quest code C B M L -> the same settings as the URL params (params win over codes). */
 function applyCode(d) {
-  const [c, b, mo, l] = d.map(Number);
-  if (!(b === 1 || b === 2) || ![0, 2, 3].includes(mo)) return false;
-  const ch = c === 0 ? null : CHAPTERS.find(x => x.index === c);
-  if (c !== 0 && !ch) return false;
-  if (ch && !built(ch.id)) return false;
+  const o = E.parseCode(d.map(Number));
+  if (!o || (o.chapter && !built(o.chapter))) return false;
   if (Object.keys(PARAMS).length) { /* params win over codes */ return applyParams(PARAMS, true); }
-  return applyParams({ chapter: ch ? ch.id : '', band: b === 2 ? '2' : '1b', mode: mo === 2 ? 'tally' : mo === 3 ? 'projector' : 'play', level: l, lock: 0 }, true);
+  return applyParams({ chapter: o.chapter, band: o.band, mode: o.mode, level: o.level, lock: 0 }, true);
 }
 /** BRB.params {chapter, band, mode, level, lock}: lesson mode = a chapter is named. lock=1 hides the map and the band toggle. */
 function applyParams(p, start) {
@@ -1221,7 +1842,7 @@ function applyParams(p, start) {
   const ch = chapterOf(chapter);
   if (band === '2' || band === '1b') { S.band = band; if (!lock) { SAVE.band = band; save(); } }
   else if (ch && ch.band !== 'both') S.band = ch.band;
-  S.mode = mode === 'tally' ? 'tally' : mode === 'projector' ? 'projector' : 'play';
+  S.mode = mode === 'projector' ? 'projector' : ch && ch.mode === 'tally' ? 'tally' : 'play';   // My Data is always the tally mode; the M digit only adds projector
   $('game').classList.toggle('proj', S.mode === 'projector');
   if (ch && built(ch.id)) { S.chapter = ch.id; S.lesson = true; S.lock = lock; S.startLevel = level || 0; }
   else { S.chapter = null; S.lesson = false; S.lock = false; S.startLevel = 0; if (ch && !built(ch.id)) return false; }
@@ -1257,10 +1878,14 @@ Oomba.test({
   state: () => ({ screen: S.screen, phase: S.phase, chapter: S.chapter, level: S.level ? S.idx + 1 : 0, levelId: S.level && S.level.id, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
     stars: S.chapter ? chapterStars(S.chapter) : 0, levelStars: S.level && S.cs ? E.stars(S.level, S.cs) : 0, evidence: !!(S.level && S.cs && E.evidence(S.level, S.cs)), solved: !!(S.cs && S.cs.solved), skipped: !!(S.cs && S.cs.skipped),
     wrong: S.cs ? S.cs.wrong : 0, edits: S.cs ? S.cs.edits : 0, runs: S.cs ? S.cs.runs : 0, hint: S.cs ? S.cs.hint : 0, view: S.cs && S.cs.view, sortBy: S.cs && S.cs.sortBy, groupBy: S.cs && S.cs.groupBy, pct: !!(S.cs && S.cs.pct), bars: S.cs && S.cs.bars, slider: S.cs && S.cs.slider,
-    picked: S.cs ? S.cs.picked : null, claimsOpen: S.claimsOpen, label: S.lastLabel, scoreCalls: S.scoreCalls.slice(), checks: Object.assign({}, S.checks), seed: S.seed, say: S.lastSay, dir: $('game').dir, live: LIVE, pairs: SAVE.pairs }),
+    picked: S.cs ? S.cs.picked : null, picks: S.cs ? S.cs.picks : [], claimsOpen: S.claimsOpen, label: S.lastLabel, scoreCalls: S.scoreCalls.slice(), endCalls: S.endCalls.slice(), checks: Object.assign({}, S.checks), seed: S.seed, say: S.lastSay, dir: $('game').dir, live: LIVE, pairs: SAVE.pairs,
+    turn: S.turn, swaps: S.swaps || 0, charts: S.charts, daily: S.daily, crowns: Object.keys(SAVE.crowns), pool: S.pool ? { preset: S.pool.preset, n: S.pool.n, counts: Object.assign({}, S.pool.counts) } : null, poolView: S.poolView,
+    rule: S.cs ? S.cs.rule : null, batches: S.cs ? S.cs.batches : 0, fit: !!(S.level && S.cs && E.modelFits(S.level, S.cs)), preset: S.cs ? S.cs.preset : null, counts: S.cs && S.cs.counts ? Object.assign({}, S.cs.counts) : null, other: !!(S.cs && S.cs.other) }),
   start: (o = {}) => {
     closeOwnModal(); closeKitScreens(); titleOpen = false;
-    S.seedFixed = o.seed != null ? +o.seed : null; S.sessionStars = {}; S.skippedIds = {}; S.scoreCalls = []; S.lastLabel = '';
+    S.seedFixed = o.seed != null ? +o.seed : null; S.sessionStars = {}; S.skippedIds = {}; S.scoreCalls = []; S.endCalls = []; S.lastLabel = ''; S.daily = null; S.openChoice = null;
+    if (o.pairs != null) { SAVE.pairs = !!o.pairs; S.turn = 0; }
+    if (o.daily) { if (o.band === '2' || o.band === '1b') S.band = o.band; S.mode = o.mode === 'projector' ? 'projector' : 'play'; $('game').classList.toggle('proj', S.mode === 'projector'); startDaily(o.day != null ? +o.day : dayNumber()); return; }
     const chapter = o.chapter || (S.lesson && S.chapter) || 'sort';
     applyParams({ chapter, band: o.band || (chapterOf(chapter) && chapterOf(chapter).band !== 'both' ? chapterOf(chapter).band : S.band), mode: o.mode || 'play', level: o.level || 0, lock: o.lock ? 1 : 0 }, false);
     S.lesson = o.lesson != null ? !!o.lesson : o.lock ? true : o.chapter ? false : S.lesson;   // start() alone keeps the frame's lesson context
@@ -1271,21 +1896,26 @@ Object.assign(window.__brbTest, {
   skipAnimations: () => { S.fast = true; try { Oomba.settings.set({ motion: 'reduce' }); } catch (e) { /* ignore */ } syncMotion(); closeKitScreens(); return true; },
   act: a => { const r = doAct(a); return E.act ? (S.cs ? { evidence: E.evidence(S.level, S.cs), solved: S.cs.solved, picked: S.cs.picked, wrong: S.cs.wrong } : r) : r; },
   tap: key => { if (/^c:/.test(key)) tapBar(key.slice(2)); else tapRow(key); return S.cs && S.cs.shown; },
-  claim: i => { closeOwnModal(); doAct(['claim', i]); return S.cs && S.cs.lastClaim; },
+  claim: i => { closeOwnModal(); doAct(Array.isArray(i) ? ['pick', i] : ['claim', i]); return S.cs && S.cs.lastClaim; },
   claimCard: () => { claimCard(); return S.claimsOpen; },
   hint: () => { giveHint(); return S.cs && S.cs.hint; },
   skip: () => { doAct(['skip']); return true; },
-  solve: () => { const l = S.level, cs = S.cs; if (!l || !cs) return false; S.claimsOpen = true; for (const a of l.sol) { if (a[0] === 'claim') doAct(a); else if (a[0] === 'show') prove(a[1]); else doAct(a); } return cs.solved; },   // cs: the next case may already be open
+  solve: () => { const l = S.level, cs = S.cs; if (!l || !cs) return false; S.claimsOpen = true; for (const a of l.sol) { if (a[0] === 'claim' || a[0] === 'pick') doAct(a); else if (a[0] === 'show') prove(a[1]); else doAct(a); } return cs.solved; },   // cs: the next case may already be open
   closeDialog: () => { closeKitScreens(); closeOwnModal(); return true; },
   params: p => applyParams(p, true),
   code: digits => applyCode(String(digits).replace(/\D/g, '').split('').map(Number)),
   questCard: () => { questCard(); return true; },
   keypad: () => { keypad(); return true; },
-  map: () => { S.lock = false; S.lesson = false; openMap(); return true; },
+  map: () => { S.lock = false; S.lesson = false; S.daily = null; openMap(); return true; },
   levels: () => LEVELS.map(l => l.id),
+  daily: day => { S.daily = null; startDaily(day != null ? +day : dayNumber()); return S.level && S.level.id; },
+  dailyLevel: (day, band) => (dailyLevel(+day, band || S.band) || {}).id,
+  openChoice: v => { S.openChoice = v; return S.openChoice; },
+  pool: () => { addToPool(); return S.pool; },
+  textSize: v => { try { Oomba.settings.set({ textSize: v }); } catch (e) { /* ignore */ } syncMotion(); if (S.screen === 'play') renderCase(); return true; },
   cover: () => {
     S.fast = true; closeOwnModal(); closeKitScreens(); titleOpen = false;
-    S.seedFixed = 7; S.lesson = false; S.lock = false; S.band = '1b'; S.mode = 'play';
+    S.seedFixed = 7; S.lesson = false; S.lock = false; S.band = '1b'; S.mode = 'play'; S.daily = null;
     startChapter('sort', 3);
     doAct(['group', 'pet']); dotSay(tr('That view answers it. Pin your claim!'), false); claimCard();
     try { if (DOT_ENT) DOT_ENT.mood('happy'); } catch (e) { /* ignore */ }
