@@ -5407,6 +5407,10 @@
         "flag": "Finde das Land mit dieser Flagge",
         "famous": "Finde das Land, das berühmt ist für {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Nach dem Stundenplan voreingestellt. Du kannst alles noch ändern."
     }
   },
   "match": {

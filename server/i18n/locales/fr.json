@@ -5406,6 +5406,10 @@
         "flag": "Trouve le pays de ce drapeau",
         "famous": "Trouve le pays célèbre pour {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Préparé d’après le plan de la leçon. Tu peux encore tout modifier."
     }
   },
   "match": {

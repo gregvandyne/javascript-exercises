@@ -58,6 +58,9 @@ export function summary(s) {
   const items = [...s.itemStats].sort((a, b) => a[0] - b[0]).map(([i, st]) => ({
     i, ...(st.q ? { q: st.q } : {}), right: st.right, answered: st.answered, ...(st.topWrong ? { topWrong: st.topWrong } : {}),
     ...(st.choices ? { choices: st.choices, answer: st.answer, secs: st.secs, counts: st.counts } : {}),
+    // P4 (CS Quest): the question's category stays with the result (a CSTA id on a lesson's set, a Brain Board column),
+    // so a saved run can say which standard each question practiced. From the loaded items: never from a device.
+    ...(s.items && s.items[i] && s.items[i].cat ? { cat: String(s.items[i].cat) } : {}),
   }));
   // Teams that ever had a member (E11), in rank order; preset numbers only (each page names them in its language).
   const teams = T.isOn(s) ? T.ranked(s).filter(r => r.ever).map(r => ({ k: r.k, p: r.p, score: r.score, sum: r.sum, avg: r.avg, bonus: r.bonus, size: r.size || seats.filter(x => x.team === r.k).length, rank: r.rank })) : [];
@@ -76,9 +79,10 @@ const settingsOf = s => {
   const st = s.settings || {};
   return { secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes };
 };
-/** A saved item: the host-written text and choices, the answer, the time and the counts (never anything a player sent). */
-const itemRow = it => ({ ...(it.q ? { q: it.q } : { i: it.i }), right: it.right, answered: it.answered, ...(it.topWrong ? { top_wrong: it.topWrong } : {}),
-  ...(it.choices ? { choices: it.choices, answer: it.answer, secs: it.secs, counts: it.counts } : {}) });
+/** A saved item: the host-written text and choices, the answer, the time, the counts and the category (never anything a
+ *  player sent). P4: cat and secs survive the save, so a CS Quest run keeps each question's standard. */
+export const itemRow = it => ({ ...(it.q ? { q: it.q } : { i: it.i }), right: it.right, answered: it.answered, ...(it.topWrong ? { top_wrong: it.topWrong } : {}),
+  ...(it.choices ? { choices: it.choices, answer: it.answer, secs: it.secs, counts: it.counts } : {}), ...(it.cat ? { cat: it.cat } : {}) });
 
 /** Save an ended session (one transaction). Class runs: scores for the class's active students. */
 export function save(s, sum = summary(s)) {
@@ -162,7 +166,7 @@ export function persisted(u, runId) {
 
 /** Questions as asked, from a saved item or a summary item: { q, choices, answer, secs } or null (older runs kept no
  *  choices). */
-export const asItem = it => (it && it.q && Array.isArray(it.choices) && Number.isInteger(it.answer) ? { q: it.q, choices: it.choices, answer: it.answer, secs: it.secs || 20 } : null);
+export const asItem = it => (it && it.q && Array.isArray(it.choices) && Number.isInteger(it.answer) ? { q: it.q, choices: it.choices, answer: it.answer, secs: it.secs || 20, ...(it.cat ? { cat: it.cat } : {}) } : null);
 /** The hardest questions first: accuracy below 100 %, lowest first, at most `max`. -> { ok, items } | { ok: false, code:
  *  'notFound' (no saved choices) | 'noMissed' (everyone got everything) }. list: summary or saved items. */
 export function missedOf(list, max = 20) {

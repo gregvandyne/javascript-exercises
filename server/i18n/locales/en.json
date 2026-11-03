@@ -5524,6 +5524,10 @@
         "flag": "Find the country with this flag",
         "famous": "Find the country famous for {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Set up from the lesson plan. You can still change anything."
     }
   },
   "match": {

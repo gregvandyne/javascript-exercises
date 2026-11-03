@@ -1,15 +1,16 @@
 // Would You Rather Live (built-in mode 'wyr', docs/decisions.md "Would You Rather and Atlas Quest go live"): the class
-// votes on dilemmas from the official game's 414-question bank (scripts/data/would-you-rather/<lang>.json, the same
+// votes on dilemmas from the official game's 444-question bank (scripts/data/would-you-rather/<lang>.json, the same
 // reviewed source the game's language packs are built from). No right answer, no points: the reveal is the class's
 // split, plus the all-time split of everyone on Oomba (server/services/polls.js, counted once per signed-in player).
-// Starter id: 'wyr:<topics joined by +, or mix>:<count>:<secs>'.
+// Starter id: 'wyr:<topics joined by +, or mix>:<count>:<secs>'. The topics tech (20) and online (10) are the CS Quest
+// ones (lessons 6.1 and 6.3, starters wyr:tech:8:20 and wyr:online:8:20; prompts in seed-lessons/cs-quest/wyr-tech.json).
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../scripts/data/would-you-rather');
-export const TOPICS = ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep'];
+export const TOPICS = ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep', 'tech', 'online'];
 export const COUNTS = [5, 8, 10, 15, 20];
 export const SECS = [10, 15, 20, 30];
 /** The official game whose polls the votes feed (its slug). */

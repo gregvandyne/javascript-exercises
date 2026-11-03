@@ -1,6 +1,6 @@
 // Oomba Live pages (routes/live.js, views/live.js): one /join for live codes and class codes, nothing sold on player
 // pages, no profile links in the host's roster, the landing for hosts only, traffic never counted, the flag.
-import { reset, call, open, config, teacher, mum, kid, mia, LS, publish, liveHtml, official } from './_live.js';
+import { reset, call, open, config, teacher, mum, kid, mia, cls, L, S, LS, publish, liveHtml, official } from './_live.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const traffic = await import('../../server/services/traffic.js');
@@ -130,4 +130,69 @@ test('/live: the question bank by subject and level; the choice is remembered fo
   const b = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:board', set: 'bank', bankBoard: ['math', 'words', 'general'], bankLevel: 'a6', audience: 'open', replace: true } });
   assert.equal(b.status, 200, b.text);
   assert.deepEqual([...new Set(LS.get(b.json.sid).items.map(it => it.cat))], ['Math', 'Reading & words', 'General knowledge']);
+});
+
+test('/live?starter=: a lesson plan preselects Would You Rather topics, the bank, Atlas or a fixed starter; unknown ids are ignored', async () => {
+  // P6 (CS Quest): 6.1 hosts wyr:tech:8:20; the mode comes from the starter when the URL names none
+  const wyr = (await call('/live?starter=wyr:tech:8:20', { user: teacher })).text;
+  assert.match(wyr, /value="mode:wyr" checked/);
+  assert.match(wyr, /name="wyrTopic" value="tech" checked/); assert.doesNotMatch(wyr, /name="wyrTopic" value="animals" checked/); assert.doesNotMatch(wyr, /name="wyrTopic" value="online" checked/);
+  assert.match(wyr, /<select id="lv-wyr-count" name="wyrCount">(?:(?!<\/select>)[\s\S])*<option value="8" selected>/);
+  assert.match(wyr, /<select id="lv-wyr-secs" name="wyrSecs">(?:(?!<\/select>)[\s\S])*<option value="20" selected>/);
+  assert.match(wyr, /id="lv-preset" data-starter="wyr:tech:8:20">Set up from the lesson plan\./);
+  const mix = (await call('/live?starter=wyr:mix:5:10', { user: teacher })).text;
+  assert.match(mix, /name="wyrTopic" value="animals" checked/); assert.match(mix, /name="wyrTopic" value="online" checked/);
+  // a bank starter fills in subject, level and count; the mode in the URL wins over the starter's
+  const bank = (await call('/live?mode=battle&starter=bank:science:a10:15', { user: teacher })).text;
+  assert.match(bank, /value="mode:battle" checked/); assert.match(bank, /<option value="bank" selected>/);
+  assert.match(bank, /<option value="science" selected>/); assert.match(bank, /<option value="a10" selected>/);
+  assert.match(bank, /<select id="lv-bank-count" name="bankCount">(?:(?!<\/select>)[\s\S])*<option value="15" selected>/);
+  const board = (await call('/live?starter=bank:board:a6:math+words', { user: teacher })).text;
+  assert.match(board, /value="mode:board" checked/); assert.match(board, /<option value="a6" selected>/);
+  assert.match(board, /name="bankBoard" value="math" checked/); assert.match(board, /name="bankBoard" value="words" checked/); assert.doesNotMatch(board, /name="bankBoard" value="science" checked/);
+  const fixed = (await call('/live?starter=science', { user: teacher })).text;
+  assert.match(fixed, /<option value="starter:science" selected>/); assert.match(fixed, /value="mode:quest-race" checked/, 'no mode implied: the first one as usual');
+  const atlas = (await call('/live?starter=atlas:eu:hard:flag+capital:5:30', { user: teacher })).text;
+  assert.match(atlas, /value="mode:atlas" checked/); assert.match(atlas, /<option value="eu" selected>/); assert.match(atlas, /<option value="hard" selected>/);
+  assert.match(atlas, /name="atlasKind" value="flag" checked/); assert.match(atlas, /name="atlasKind" value="capital" checked/); assert.doesNotMatch(atlas, /name="atlasKind" value="find" checked/);
+  assert.match(atlas, /<select id="lv-atlas-secs" name="atlasSecs">(?:(?!<\/select>)[\s\S])*<option value="30" selected>/);
+  // anything the session API would refuse is ignored: the usual landing, no preset note
+  for (const bad of ['nonsense', 'wyr:pizza:5:15', 'wyr:tech:9:20', 'bank:magic:a8:10', 'atlas:mars:easy:find:10:20', '<script>alert(1)</script>', 'x'.repeat(300)]) {
+    const page = await call(`/live?starter=${encodeURIComponent(bad)}`, { user: teacher });
+    assert.equal(page.status, 200, bad); assert.doesNotMatch(page.text, /id="lv-preset"/, bad);
+    assert.match(page.text, /<option value="bank" selected>/, bad); assert.match(page.text, /value="mode:quest-race" checked/, bad);
+    assert.ok(!page.text.includes('<script>alert'), 'escaped');
+  }
+  const { starterPre } = await import('../../server/routes/live.js');
+  assert.deepEqual(starterPre('wyr:online:8:20'), { id: 'wyr:online:8:20', kind: 'wyr', mode: 'wyr', wyr: { topics: ['online'], count: 8, secs: 20 } });
+  assert.equal(starterPre('bank:mixed:a8:10').mode, null); assert.equal(starterPre('bank:board:a8:math+science').mode, 'board');
+  assert.equal(starterPre('board').mode, 'board'); assert.equal(starterPre('math-8').kind, 'fixed');
+  assert.equal(starterPre('bank:board:a6:math words').id, 'bank:board:a6:math+words', 'an unencoded + arrives as a space');
+  for (const none of ['', undefined, null, 'wyr:', 'bank:', 42]) assert.equal(starterPre(none), null, String(none));
+});
+
+test('/live: CS Quest\'s derived sets sit under their own group in the picker; a teacher\'s own sets stay in theirs', async () => {
+  // P20 (CS Quest): the materialiser makes 35+ sets per band in a teacher's own sets (lesson_id + the CSQ title prefix,
+  // or subject cs-quest); they are grouped so they do not bury the teacher's own question sets
+  const SETS = await import('../../server/services/classlive-sets.js');
+  const items = [{ q: 'Which block repeats what is inside it?', choices: ['forward', 'repeat', 'turn', 'stop'], answer: 1, secs: 15, cat: '1B-AP-10' }];
+  const lesson = L.createLesson(teacher, S.getClass(cls.id).school_id, { title: 'Again and again' }).lesson;
+  const own = SETS.createSet(teacher, { title: 'My robots quiz', items }).set;
+  const warm = SETS.createSet(teacher, { title: 'CSQ 1.2 warm-up · Loops (3-5)', items, lessonId: lesson.id }).set;
+  const review = SETS.createSet(teacher, { title: 'CSQ Unit 1 review (3-5)', subject: SETS.CSQ_SUBJECT, items }).set;
+  const draft = SETS.createSet(teacher, { title: 'Questions from my lesson', items: [{ q: 'Why does the robot stop?', choices: [], answer: 0, secs: 20 }], lessonId: lesson.id }).set;
+  assert.ok(own && warm && review && draft, 'all four sets made');
+  assert.ok(SETS.isCsQuest(warm) && SETS.isCsQuest(review) && !SETS.isCsQuest(own) && !SETS.isCsQuest(draft) && !SETS.isCsQuest(null));
+  assert.deepEqual(SETS.listFor(teacher).mine.filter(s => s.cs).map(s => s.id).sort(), [warm.id, review.id].sort());
+  const page = (await call('/live', { user: teacher })).text;
+  const group = /<optgroup label="CS Quest" data-csq="1">([\s\S]*?)<\/optgroup>/.exec(page);
+  assert.ok(group, 'the CS Quest group');
+  assert.ok(group[1].includes(`value="set:${warm.id}"`) && group[1].includes(`value="set:${review.id}"`), group[1]);
+  assert.ok(!group[1].includes(`set:${own.id}`) && !group[1].includes(`set:${draft.id}`));
+  const mine = /<optgroup label="My question sets">([\s\S]*?)<\/optgroup>/.exec(page)[1];
+  assert.ok(mine.includes(`value="set:${own.id}"`) && mine.includes(`value="set:${draft.id}" disabled`) && !mine.includes(`set:${warm.id}`), mine);
+  // a lesson's "Host live" link still selects its set by id, wherever it is grouped
+  assert.match((await call(`/live?set=${warm.id}`, { user: teacher })).text, new RegExp(`<option value="set:${warm.id}" selected>`));
+  for (const s of [own, warm, review, draft]) SETS.archiveSet(teacher, s.id);
+  assert.doesNotMatch((await call('/live', { user: teacher })).text, /data-csq="1"/, 'no group without CS Quest sets');
 });

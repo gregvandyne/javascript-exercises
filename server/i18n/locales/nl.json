@@ -5407,6 +5407,10 @@
         "flag": "Vind het land met deze vlag",
         "famous": "Vind het land dat beroemd is om {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Ingesteld volgens het lesplan. Je kunt alles nog aanpassen."
     }
   },
   "match": {

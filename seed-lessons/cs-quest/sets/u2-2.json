@@ -1,0 +1,208 @@
+{
+ "id": "csq-u2-2",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 2,
+ "band": "2",
+ "title": "CSQ Unit 2 · Bug Hunters (6-8)",
+ "modes": [
+  "battle",
+  "quest-race",
+  "board"
+ ],
+ "cstaTags": [
+  "2-AP-17",
+  "2-AP-18",
+  "2-AP-19",
+  "2-AP-15"
+ ],
+ "items": [
+  {
+   "id": "2-u2-o1",
+   "lesson": "2.1",
+   "use": "opener",
+   "cat": "2-AP-17",
+   "topic": "Debugging",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A specific input used to check that a program works is a…",
+   "choices": [
+    "test case",
+    "parameter",
+    "packet",
+    "procedure"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-2.1-r1",
+   "lesson": "2.1",
+   "use": "review",
+   "cat": "2-AP-17",
+   "topic": "Debugging",
+   "kind": "recall",
+   "secs": 15,
+   "q": "An unusual input that often breaks programs, like an empty maze, is an…",
+   "choices": [
+    "edge case",
+    "easy case",
+    "event",
+    "argument"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-2.1-r2",
+   "lesson": "2.1",
+   "use": "review",
+   "cat": "2-AP-17",
+   "topic": "Debugging",
+   "kind": "recall",
+   "secs": 15,
+   "q": "\"Expected vs actual\" means…",
+   "choices": [
+    "fast programs vs slow programs",
+    "long programs vs short programs",
+    "easy levels vs hard levels",
+    "what should happen vs what did happen"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-2.1-e1",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "2-AP-17",
+   "topic": "Debugging",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Your program passes grids A and B but fails grid C, which has no gems. What kind of test is C?",
+   "choices": [
+    "a syntax error",
+    "an edge case",
+    "a loop",
+    "a parameter"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-2.1-e2",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "2-AP-17",
+   "topic": "Debugging",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Which test would catch a loop count that is one too many?",
+   "choices": [
+    "a wide open grid with no walls at all",
+    "a grid with extra gems to pick up",
+    "no test can catch a count bug",
+    "a grid where the goal is right before a wall"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-2.1-e3",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "2-AP-17",
+   "topic": "Debugging",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "You fixed grid C but now grid A fails. What does systematic testing say?",
+   "choices": [
+    "run all the test grids again after every fix",
+    "grid A does not matter once C passes",
+    "delete grid A from the tests",
+    "only test the newest grid, C"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-2.2-r1",
+   "lesson": "2.2",
+   "use": "review",
+   "cat": "2-AP-18",
+   "topic": "Level design",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A list of who does what by when is a…",
+   "choices": [
+    "storyboard",
+    "timeline",
+    "protocol",
+    "variable"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-2.2-r2",
+   "lesson": "2.2",
+   "use": "review",
+   "cat": "2-AP-19",
+   "topic": "Level design",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Notes that help the next person understand a program are…",
+   "choices": [
+    "encryption",
+    "a parameter",
+    "documentation",
+    "a test case"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-2.2-e1",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "2-AP-15",
+   "topic": "Level design",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Your tester found level 2 confusing. Incorporating their feedback means…",
+   "choices": [
+    "ignoring it and moving on",
+    "changing the level and testing again",
+    "blaming the tester for playing badly",
+    "deleting level 2 from the game"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-2.2-e2",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "2-AP-18",
+   "topic": "Level design",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Your pair has 18 minutes: build, test, fix. What helps most?",
+   "choices": [
+    "set a time for each part and who does it",
+    "build until the time runs out",
+    "skip testing to save time",
+    "both do the same thing together"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-2.2-e3",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "2-AP-19",
+   "topic": "Level design",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Which level note helps the next person most?",
+   "choices": [
+    "\"Level 3: the key is behind the water; you need if has key\"",
+    "\"good level\"",
+    "\"my level\"",
+    "\"hard one\""
+   ],
+   "answer": 0
+  }
+ ]
+}
