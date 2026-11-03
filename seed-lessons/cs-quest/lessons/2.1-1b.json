@@ -60,7 +60,8 @@
   ],
   "say": [
    "Programs break. Good programmers expect it and test. A mistake in a program is called a bug; finding and fixing it is debugging.",
-   "The best first move is not deleting everything. It is stepping through and asking two questions: what did we expect, and what actually happened? The bug lives where those two first split apart."
+   "The best first move is not deleting everything. Step through and ask: what did we expect, and what happened?",
+   "The bug lives where those two first split apart."
   ],
   "ask": [
    "What did we expect? What actually happened?"
@@ -140,7 +141,7 @@
  },
  "subPlan": [
   "Do Now on paper, 3 minutes: find the mistake in 2 + 2 = 5, in Teh cat sat on the mat, and in a route card that says turn left when the flag is on the right.",
-  "Play Robo Route, chapter Debug Lab, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 6 1 1 0. Goal: 4 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Play Robo Route, chapter Debug Lab, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 6 1 1 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Bug Cards, 15 minutes), then talk about the two discussion questions for 5 minutes.",
   "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
  ],
  "shortPeriod40": {

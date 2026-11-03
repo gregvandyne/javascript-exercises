@@ -20,7 +20,7 @@
  },
  "iCan": [
   "put steps in order so Bolt reaches the goal",
-  "compare two routes and say which is better and why",
+  "compare two routes and say which is better (fewer steps or safer) and why",
   "split a long route into legs"
  ],
  "questCode": "1 1 0 0",
@@ -149,7 +149,7 @@
  },
  "subPlan": [
   "Do Now on paper, 3 minutes: write the steps to make a sandwich, then swap with a neighbor and underline any step a robot could get wrong.",
-  "Play Robo Route, chapter Sequences, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 1 1 0 0. Goal: 4 levels. No warm-up and no projector needed; playing signed out is fine.",
+  "Play Robo Route, chapter Sequences, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 1 1 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Paper Robot, 15 minutes), then talk about the two discussion questions for 5 minutes.",
   "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
  ],
  "shortPeriod40": {

@@ -800,7 +800,7 @@
       "1B": [
        "1B-NI-05"
       ],
-      "2": []
+      "2": ["2-NI-05"]
      },
      "buildsToward": {
       "1B": [],
@@ -935,7 +935,7 @@
       "1B": [
        "1B-AP-16"
       ],
-      "2": []
+      "2": ["2-AP-17"]
      },
      "buildsToward": {
       "1B": [],
@@ -1006,7 +1006,7 @@
     "5.2",
     "6.1"
    ],
-   "note": "ten periods, no school plan needed; the program page lists the ids it misses"
+   "note": "Ten periods. No Builder and no school plan needed."
   },
   {
    "id": "full",
@@ -1036,7 +1036,7 @@
     "7.3",
     "7.4"
    ],
-   "note": "23 periods; unit 7 needs a school plan (optional: skip it or add it later with Add unit)"
+   "note": "23 periods. Unit 7 needs the Builder and a school plan; you can skip it or add it later."
   },
   {
    "id": "cs-ed-week",
@@ -1048,7 +1048,7 @@
     "4.1",
     "6.1"
    ],
-   "note": "five periods, no Builder"
+   "note": "Five periods. No Builder needed."
   },
   {
    "id": "device-first",
@@ -1078,7 +1078,7 @@
     "7.3",
     "7.4"
    ],
-   "note": "Computing Systems first settles device routines; Fix-It ticket 3 'no sound' is the class's own device test"
+   "note": "Computing Systems comes first to settle device routines; Fix-It ticket 3 ('no sound') is the class's own device test. Unit 7 needs the Builder and a school plan."
   }
  ],
  "retiredPaths": {

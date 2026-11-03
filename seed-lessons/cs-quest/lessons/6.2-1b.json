@@ -30,7 +30,7 @@
   "a chime for the sheet swap",
   "login cards"
  ],
- "doNow": "Close your eyes for ten seconds while your partner plays any game with the sound off. Write what you missed.",
+ "doNow": "If your partner agrees, close your eyes for ten seconds while your partner plays any game with the sound off. Write what you missed.",
  "plan": [
   ["0:00", 5, "Arrive, log in, Do Now"],
   ["0:05", 5, "Warm-up (live or projector)"],
@@ -157,7 +157,7 @@
  },
  "subPlan": [
   "Do Now on paper, 3 minutes: close your eyes for ten seconds while your partner plays any game with the sound off; write what you missed.",
-  "Play Inside the Machine, chapter Design Lab, in pairs for 18 minutes: the first 4 minutes trying the settings on the audit sheet, then the briefs. Classes, then the lesson, then Play. If the game asks, the quest code is 6 1 0 0. Goal: 2 briefs. Playing signed out is fine; at the chime pairs swap audit sheets and add one idea from the other pair.",
+  "Play Inside the Machine, chapter Design Lab, in pairs for 18 minutes: the first 4 minutes trying the settings on the audit sheet, then the briefs. Classes, then the lesson, then Play. If the game asks, the quest code is 6 1 0 0. Goal: 2 briefs. Playing signed out is fine; at the chime pairs swap audit sheets and add one idea from the other pair. No devices or no internet? Run the unplugged twin printed below (Design for Sam, 15 minutes), then talk about the two discussion questions for 5 minutes.",
   "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it with the audit sheets."
  ],
  "shortPeriod40": {
@@ -190,7 +190,7 @@
    "kind": "text",
    "title": "Today",
    "minutes": 17,
-   "body": "Do Now: Close your eyes for ten seconds while your partner plays any game with the sound off. Write what you missed.\n\nBig idea: Designing for people at the edges makes things better for everyone.\n\nWe will talk about:\n- Which setting surprised you by helping you?\n- Which improvement from the other pair did you add?"
+   "body": "Do Now: If your partner agrees, close your eyes for ten seconds while your partner plays any game with the sound off. Write what you missed.\n\nBig idea: Designing for people at the edges makes things better for everyone.\n\nWe will talk about:\n- Which setting surprised you by helping you?\n- Which improvement from the other pair did you add?"
   },
   {
    "kind": "game",

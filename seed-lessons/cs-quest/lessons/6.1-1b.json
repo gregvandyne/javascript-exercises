@@ -30,7 +30,7 @@
   "paper strips for the plus and minus notes",
   "the Would You Rather prompt sheet (printed with the plan)"
  ],
- "doNow": "Write one thing your grandparents did without a computer that you do with one.",
+ "doNow": "Write one thing an older person you know did without a computer that you do with one.",
  "plan": [
   ["0:00", 5, "Arrive, log in, Do Now"],
   ["0:05", 4, "Explore: what a tradeoff is (projector script)"],
@@ -135,7 +135,7 @@
   "printables": ["invention-timeline-cards", "wyr-tech-sheet"]
  },
  "subPlan": [
-  "Do Now on paper, 3 minutes: write one thing your grandparents did without a computer that you do with one.",
+  "Do Now on paper, 3 minutes: write one thing an older person you know did without a computer that you do with one.",
   "Run the Corners vote with the printed dilemma sheet (walk to corner A or B, count hands, two defenders every other round), then the Timeline Walk: each pair hangs its invention card on the rope with a plus strip and a minus strip. No projector and no login needed.",
   "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
  ],
@@ -170,7 +170,7 @@
    "kind": "text",
    "title": "Today",
    "minutes": 27,
-   "body": "Do Now: Write one thing your grandparents did without a computer that you do with one.\n\nBig idea: Technology changes how people live, and people change technology right back.\n\nTimeline Walk: hang your invention card on the rope where it belongs in time. Under it, hang a plus strip (one good change) and a minus strip (one worry).\n\nWe will talk about:\n- Which invention would you un-invent for a week? What would be better, and what would be worse?\n- Which vote surprised you most?"
+   "body": "Do Now: Write one thing an older person you know did without a computer that you do with one.\n\nBig idea: Technology changes how people live, and people change technology right back.\n\nTimeline Walk: hang your invention card on the rope where it belongs in time. Under it, hang a plus strip (one good change) and a minus strip (one worry).\n\nWe will talk about:\n- Which invention would you un-invent for a week? What would be better, and what would be worse?\n- Which vote surprised you most?"
   },
   {
    "kind": "game",

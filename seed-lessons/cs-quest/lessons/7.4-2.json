@@ -56,7 +56,8 @@
    "Put the template on the projector: Made by · Idea from · Art and sounds (with the license of each) · Thanks to our testers · How to play in three lines · How it works: the main rule and the variables. Fill How it works for the frog quiz with the class."
   ],
   "say": [
-   "Documentation is what lets someone else follow, test and change your game. A How it works that says it works well helps nobody; the score goes up by ten per star and lives at zero ends the game, that helps everyone.",
+   "Documentation lets someone else follow, test and change your game.",
+   "\"It works well\" helps nobody. \"The score goes up by ten per star, and zero lives ends the game\" helps everyone.",
    "Attribution is written the way each license asks: the template by its name, built-in art as built-in, a free sound with its license, an idea with the person's first name."
   ],
   "ask": [

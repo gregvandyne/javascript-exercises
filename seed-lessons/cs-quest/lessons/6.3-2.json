@@ -15,12 +15,12 @@
  "duration": 45,
  "csta": {
   "primary": ["2-IC-23", "2-AP-16"],
-  "also": [],
+  "also": ["2-NI-05"],
   "buildsToward": []
  },
  "iCan": [
-  "explain the tradeoffs of making information public or keeping it private",
-  "recognize social engineering, and give proper attribution for media and code I reuse"
+  "weigh what I gain and what I risk by making information public",
+  "reuse media and code and give credit the way the license asks"
  ],
  "questCode": null,
  "params": null,

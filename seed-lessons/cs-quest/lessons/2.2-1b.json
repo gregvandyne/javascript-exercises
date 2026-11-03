@@ -60,7 +60,8 @@
   ],
   "say": [
    "Plan, build, test with someone else, improve, explain. That is how every real game gets made.",
-   "Check proves a level can be solved and tells you its par. A tester tells you what Check cannot: whether it is fun and where it is confusing. The designer stays silent, because a tester who gets help is not testing the level."
+   "Check proves a level can be solved and tells you its par. A tester tells you what Check cannot: is it fun, and where is it confusing?",
+   "The designer stays silent. A tester who gets help is not testing the level."
   ],
   "ask": [
    "What can a tester tell you that Check cannot?"

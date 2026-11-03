@@ -142,7 +142,7 @@
    "2-3.1-e3"
   ],
   "sentencePrompt": "Pick one case you cleaned today. What did the clean data show, and what did you fix to make it show?",
-  "frame": "The data showed ___ because ___.",
+  "frame": "I fixed ___ in the data. Before, the result was ___; after cleaning, it was ___.",
   "rubric": [
    {
     "line": "Cleaning data: what was fixed and how it changed the result",
@@ -193,7 +193,7 @@
  },
  "subPlan": [
   "Do Now on paper, 3 minutes: most common shoe color in this room, how could we find out fast, and what could make the count wrong?",
-  "Play Data Detective, chapter Clean-Up Crew, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 4 2 0 0. Goal: 4 cases. No warm-up and no projector needed; playing signed out is fine.",
+  "Play Data Detective, chapter Clean-Up Crew, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 4 2 0 0. Goal: 4 cases. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Human Bar Chart, messy edition, 15 minutes), then talk about the two discussion questions for 5 minutes.",
   "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
  ],
  "shortPeriod40": {
@@ -293,7 +293,7 @@
     "2-DA-08"
    ],
    "rubric": "exit",
-   "body": "Pick one case you cleaned today. What did the clean data show, and what did you fix to make it show?\nFrame: The data showed ___ because ___."
+   "body": "Pick one case you cleaned today. What did the clean data show, and what did you fix to make it show?\nFrame: I fixed ___ in the data. Before, the result was ___; after cleaning, it was ___."
   }
  ]
 }
