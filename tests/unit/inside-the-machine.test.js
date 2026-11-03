@@ -167,7 +167,7 @@ async function open({ size = { width: 390, height: 844 }, lang = 'en', params = 
   for (let i = 0; i < 200 && !frame; i++) { frame = page.frames().find(f => f.url() === HOST + '/frame'); if (!frame) await page.waitForTimeout(25); }
   frame.on('pageerror', e => errors.push(String(e.message)));
   await frame.waitForFunction(() => window.__brbTest && typeof window.__brbTest.start === 'function' && window.__brbTest.state().ready, null, { timeout: 60_000 });
-  const shot = async name => { if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.screenshot({ path: path.join(SHOTS, `${name}-${size.width}x${size.height}-${lang}.png`) }); } };
+  const shot = async name => { if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.waitForTimeout(150); await page.screenshot({ path: path.join(SHOTS, `${name}-${size.width}x${size.height}-${lang}.png`) }); } };
   return { ctx, page, frame, errors, messages, shot };
 }
 const T = (frame, fn, ...a) => frame.evaluate(([f, a]) => window.__brbTest[f](...a), [fn, a]);

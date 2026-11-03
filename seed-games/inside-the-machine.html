@@ -30,14 +30,17 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-board{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px;min-height:0}
 .im-panel{display:flex;flex-direction:column;gap:8px;padding:12px;overflow:auto;min-height:0;scrollbar-width:thin}
 @media (orientation:landscape) and (min-width:640px){.im-body{grid-template-rows:none;grid-template-columns:minmax(0,9fr) minmax(0,11fr)}}
-@media (max-height:480px){.im-panel{padding:8px 10px;gap:6px}.im-tray{gap:6px}.im-tile{min-height:48px;padding:5px 10px 5px 12px;font-size:.95em}.im-ticket{padding:8px 12px}.im-ticket p{font-size:.85em}.im-board{padding:6px}}
+@media (max-height:480px){.im-panel{padding:8px 10px;gap:6px}.im-tray{gap:6px}.im-tile{min-height:48px;padding:5px 10px 5px 12px;font-size:.95em}.im-ticket{padding:8px 12px}.im-ticket p{font-size:.85em}.im-board{padding:6px}
+  .im-play.im-screen{top:calc(62px + env(safe-area-inset-top))}.im-play .im-top{position:fixed;top:calc(8px + env(safe-area-inset-top));inset-inline-start:calc(318px + env(safe-area-inset-left));inset-inline-end:calc(134px + env(safe-area-inset-right));justify-content:center;flex-wrap:nowrap;z-index:13;min-height:0;overflow:hidden}.im-play .im-top .im-pill{flex:0 1 auto}.im-top .ok-btn{flex:0 0 auto}
+  .im-part{min-height:60px;font-size:.76em;padding:4px 6px}.im-part svg{width:28px;height:28px}.im-device{gap:8px 12px}}
 .im-prompt{font-weight:800;font-size:clamp(1.05em,2.6vmin,1.35em);line-height:1.25;margin:0;text-wrap:balance}
 .im-prompt:empty,.im-note:empty{display:none}
 .im-note{font-weight:600;opacity:.85;margin:0;font-size:.95em}
 .im-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-top:auto}
 .im-actions .ok-btn{min-height:48px}
 /* tiles: a tray of taps (cards, checks, chain pieces) */
-.im-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.im-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:8px}
+.im-tray.im-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))}
 .im-tray.im-two{grid-template-columns:1fr 1fr}
 .im-tile{position:relative;min-height:52px;padding:8px 12px 8px 14px;border-radius:16px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:700;line-height:1.2;display:flex;align-items:center;gap:8px;text-align:start;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
 .im-tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--im-edge)}
@@ -46,6 +49,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-tile.bad{background:var(--im-coral-t)}
 .im-tile.dim{opacity:.55}
 .im-tile .im-k{position:absolute;top:1px;inset-inline-start:7px;font-size:.68em;font-weight:700;opacity:.5}
+.im-tile .im-num{position:absolute;top:-9px;inset-inline-end:-6px;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--im-sky);border:2px solid var(--im-edge);display:grid;place-items:center;font-size:.8em;font-weight:800;box-sizing:border-box}
 .im-tile .im-cost{margin-inline-start:auto;flex:none;font-size:.85em;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--im-peach-t);border:2px solid var(--im-edge);white-space:nowrap}
 .im-tile canvas,.im-tile>svg{width:34px;height:34px;flex:none}
 .im-tile .im-mark{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--im-edge);display:grid;place-items:center;background:var(--ok-card)}
@@ -60,7 +64,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-shake{animation:im-shake 240ms linear}
 .ok-rm .im-pop,.ok-rm .im-shake{animation:none}
 /* the device board: parts as big taps, wires drawn over them */
-.im-device{display:grid;gap:10px 14px;justify-content:center;align-content:center;position:relative;max-width:100%}
+.im-device{display:grid;grid-auto-flow:row dense;gap:10px 14px;justify-content:center;align-content:center;position:relative;max-width:100%}
 .im-part{position:relative;min-height:66px;min-width:76px;padding:6px 8px;border-radius:18px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:inherit;font-weight:800;font-size:.82em;line-height:1.1;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;z-index:1;text-align:center}
 .im-part svg{width:34px;height:34px;color:var(--ok-text)}
 .im-part.on{background:var(--im-sky-t);border-color:var(--im-sky)}
@@ -81,6 +85,17 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-chain .im-done{background:var(--im-mint-t)}
 .im-chain .im-fail{background:var(--im-coral-t)}
 .im-empty{min-height:48px;border:2.5px dashed var(--im-edge);border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:700;opacity:.7;padding:6px 10px;text-align:center}
+.im-flowprev{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;width:100%;max-width:480px}
+.im-chip{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:3px 10px;border-radius:12px;border:2px solid var(--im-edge);background:var(--ok-bg2);font-weight:700;font-size:.9em;max-width:100%;box-sizing:border-box}
+.im-chip>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.im-chip .im-dia{width:13px;height:13px;transform:rotate(45deg);border:2px solid var(--im-edge);background:var(--im-peach-t);flex:none;border-radius:3px;margin:0 3px}
+.im-chip.fix{background:var(--im-mint-t)}
+.im-chip.ran{background:var(--im-stone-t)}
+.im-chip.swap{border-style:dashed}
+.im-chip.cur{background:var(--im-sky-t)}
+.im-chip svg{width:16px;height:16px;flex:none}
+.im-flowprev .im-arrow{opacity:.6}
+.im-flowprev .im-arrow svg{width:16px;height:16px}
 /* the sorter: one card at a time, big bins */
 .im-deck{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
 .im-face{width:min(100%,320px);min-height:90px;border-radius:22px;border:3px solid var(--im-edge);background:var(--ok-card);display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 18px;font-weight:800;font-size:clamp(1.15em,3.2vmin,1.6em);text-align:center;box-shadow:0 5px 0 var(--im-edge);box-sizing:border-box}
@@ -984,40 +999,40 @@ const KINDS = {
   /* A Tap Travels: tap tiles into a chain, in order */
   order(l, board, panel) {
     const ui = shell(panel, tr(l.story)), A = { order: [], moves: 0 }, tiles = maybeShuffle(l, l.tiles), byId = {}; l.tiles.forEach(t => { byId[t.id] = t; });
-    const chain = el('div', 'im-chain'); board.appendChild(chain);
-    const render = () => {
-      chain.innerHTML = '';
-      A.order.forEach((id, i) => { const step = el('div', 'im-step'); step.appendChild(el('span', 'im-n', num(i + 1))); const b = tileBtn(tr(byId[id].text), byId[id].pic); b.dataset.id = id; b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: i + 1, text: tr(byId[id].text) })); b.addEventListener('click', () => remove(id)); step.appendChild(b); chain.appendChild(step); if (i < l.tiles.length - 1) chain.appendChild(el('div', 'im-arrow', icon('down', { size: 20 }))); });
-      if (A.order.length < l.tiles.length) { const e = el('div', 'im-empty'); e.textContent = tr('Step {n}', { n: A.order.length + 1 }); chain.appendChild(e); }
+    const stack = el('div', 'im-stack'), story = el('p', 'im-prompt', esc(tr(l.story))), prev = el('div', 'im-flowprev'); stack.append(story, prev); board.appendChild(stack);
+    ui.prompt.textContent = tr('Tap the steps in order. Tap a step again to take it out.');
+    const render = (marks) => {
+      prev.innerHTML = '';
+      A.order.forEach((id, i) => { if (i) prev.appendChild(el('span', 'im-arrow', icon('next', { size: 16 }))); const c = el('span', 'im-chip' + (marks && i < marks.good ? ' fix' : marks && i === marks.bad ? ' ran' : '')); c.appendChild(el('b', '', num(i + 1))); c.appendChild(el('span', '', esc(tr(byId[id].text)))); prev.appendChild(c); });
+      if (A.order.length < l.tiles.length) { const e = el('span', 'im-chip im-empty'); e.textContent = tr('Step {n}', { n: A.order.length + 1 }); prev.appendChild(e); }
       ui.tray.innerHTML = '';
-      tiles.forEach((t, k) => { const b = tileBtn(tr(t.text), t.pic, k); b.dataset.id = t.id; const used = A.order.includes(t.id); b.disabled = used; b.classList.toggle('dim', used); b.addEventListener('click', () => add(t.id)); ui.tray.appendChild(b); });
+      tiles.forEach((t, k) => { const b = tileBtn(tr(t.text), t.pic, k); b.dataset.id = t.id; const at = A.order.indexOf(t.id); b.classList.toggle('on', at >= 0); b.setAttribute('aria-pressed', String(at >= 0)); if (at >= 0) { b.insertAdjacentHTML('beforeend', `<span class="im-num">${num(at + 1)}</span>`); b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: at + 1, text: tr(t.text) })); } b.addEventListener('click', () => (A.order.includes(t.id) ? remove(t.id) : add(t.id))); ui.tray.appendChild(b); });
       ui.primary.disabled = A.order.length !== l.tiles.length;
     };
     const add = id => { if (S.done || A.order.includes(id)) return; A.order.push(id); A.moves++; sfx('select'); render(); };
     const remove = id => { if (S.done) return; const i = A.order.indexOf(id); if (i < 0) return; A.order.splice(i, 1); A.moves++; sfx('pop'); render(); };
     const check = () => {
       if (S.done || A.order.length !== l.tiles.length) return; const v = L.judge(l, A); S.lastVerdict = v;
-      if (v.ok) { [...chain.querySelectorAll('.im-tile')].forEach(b => b.classList.add('good')); finish(A); return; }
-      failRun(); sfx('wrong');
-      [...chain.querySelectorAll('.im-tile')].forEach((b, i) => { b.classList.toggle('good', i < v.firstBad); b.classList.toggle('bad', i === v.firstBad); });
+      if (v.ok) { render({ good: A.order.length, bad: -1 }); finish(A); return; }
+      failRun(); sfx('wrong'); render({ good: v.firstBad, bad: v.firstBad });
       banner('wrong', tr('Step {n} is not right yet.', { n: v.firstBad + 1 }));
     };
     ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh();
     render();
     const nextRight = () => { const sol = l.sol.order; let i = 0; while (i < A.order.length && A.order[i] === sol[i]) i++; return { i, id: sol[i] }; };
     return { intro: tr(l.story), tap: add, remove, check, answer: () => A, solve: sol => { S.fast = true; for (const id of sol.order) add(id); check(); },
-      hint2: () => { const n = nextRight(); if (n.i < A.order.length) { [...chain.querySelectorAll('.im-tile')][n.i].classList.add('im-glow'); } else { const b = ui.tray.querySelector(`[data-id="${n.id}"]`); if (b) b.classList.add('im-glow'); } },
+      hint2: () => { const n = nextRight(); const b = ui.tray.querySelector(`[data-id="${n.i < A.order.length ? A.order[n.i] : n.id}"]`); if (b) b.classList.add('im-glow'); },
       hint3: () => { const n = nextRight(); A.order.length = n.i; if (n.id) A.order.push(n.id); render(); } };
   },
   /* the Fix-It desk (Explorer): a ticket, a tray of checks with a time cost each */
   ticket(l, board, panel) {
     const ui = shell(panel, ''), A = { checks: [] }, used = new Set(), left = new Set(l.faults), btns = {}; let cost = 0;
     const stack = el('div', 'im-stack'), tk = el('div', 'im-ticket', pic(l.device)); const tb = el('div'); tb.appendChild(el('h3', '', esc(tr(l.ticket.title)))); tb.appendChild(el('p', '', esc(tr(l.ticket.text)))); tk.appendChild(tb);
-    const react = el('div', 'im-react'), clock = ui.prompt; clock.classList.add('im-clock');
-    stack.append(tk, react); board.appendChild(stack);
+    const react = el('div', 'im-react'), clock = el('div', 'im-clock');
+    stack.append(tk, react, clock); board.appendChild(stack);
     const showClock = () => { clock.innerHTML = pic('clock'); clock.appendChild(document.createTextNode(tr('Time used: {n} min', { n: cost }) + ' · ' + tr('Star at {n} min or less', { n: l.par }))); };
     const reaction = (text, ok) => { react.innerHTML = icon(ok ? 'check' : 'info', { size: 24 }); react.appendChild(document.createTextNode(text)); react.classList.remove('im-pop'); void react.offsetWidth; react.classList.add('im-pop'); announce(text); if (ok) say(text); };
-    const order = maybeShuffle(l, l.checks.filter(c => !c.help)), helper = l.checks.find(c => c.help);
+    const order = maybeShuffle(l, l.checks.filter(c => !c.help)), helper = l.checks.find(c => c.help); ui.tray.classList.add('im-list');
     order.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); b.addEventListener('click', () => tap(c.id)); btns[c.id] = b; ui.tray.appendChild(b); });
     if (helper) { const b = btn(tr(helper.label) + ' · ' + tr('{n} min', { n: helper.cost }), { kind: 'quiet', icon: 'user', onPress: () => tap(helper.id) }); b.dataset.id = helper.id; btns[helper.id] = b; ui.primary = b; ui.refresh(); }
     const tap = id => {
@@ -1039,27 +1054,26 @@ const KINDS = {
     const ui = shell(panel, ''), A = { flow: [], swaps: [] }, byId = {}; l.checks.forEach(c => { byId[c.id] = c; }); (l.swaps || []).forEach(s => { byId[s.id] = s; });
     let phase = 'build', cost = 0, left = new Set(l.faults), tried = new Set(), ran = [];
     const stack = el('div', 'im-stack'), tk = el('div', 'im-ticket', pic(l.device)); const tb = el('div'); tb.appendChild(el('h3', '', esc(tr(l.ticket.title)))); tb.appendChild(el('p', '', esc(tr(l.ticket.text)))); tk.appendChild(tb);
-    const chain = el('div', 'im-chain'), react = el('div', 'im-react'), clock = el('div', 'im-clock');
-    stack.append(tk, chain, react); board.appendChild(stack); ui.note.hidden = false; ui.note.appendChild(clock);
+    const chain = el('div', 'im-flowprev'), react = el('div', 'im-react'), clock = el('div', 'im-clock'); ui.tray.classList.add('im-list');
+    stack.append(tk, react, chain, clock); board.appendChild(stack);
     const showClock = () => { clock.innerHTML = pic('clock'); clock.appendChild(document.createTextNode(tr('Time used: {n} min', { n: cost }) + ' · ' + tr('Star at {n} min or less', { n: l.par }))); };
     const reaction = (text, ok) => { react.innerHTML = icon(ok ? 'check' : 'info', { size: 24 }); react.appendChild(document.createTextNode(text)); announce(text); if (ok) say(text); };
     const tray = maybeShuffle(l, l.checks);
     const renderChain = () => {
       chain.innerHTML = '';
       A.flow.forEach((id, i) => {
-        const step = el('div', 'im-step'); step.appendChild(el('span', 'im-diamond')); const b = tileBtn(tr(byId[id].label)); b.dataset.id = id; b.insertAdjacentHTML('beforeend', costBadge(byId[id].cost));
-        const r = ran.find(x => x.id === id); if (r) b.classList.add(r.hit ? 'good' : 'im-done'); if (r && r.hit) mark(b, true);
-        b.disabled = phase !== 'build'; b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: i + 1, text: tr(byId[id].label) })); b.addEventListener('click', () => remove(id)); step.appendChild(b); chain.appendChild(step);
-        chain.appendChild(el('div', 'im-arrow', esc(tr('fine, so')) + ' ' + icon('down', { size: 18 })));
+        if (i) chain.appendChild(el('span', 'im-arrow', icon('next', { size: 16 })));
+        const r = ran.find(x => x.id === id), c = el('span', 'im-chip' + (r ? (r.hit ? ' fix' : ' ran') : '')); c.appendChild(el('span', 'im-dia')); c.appendChild(el('b', '', num(i + 1)));
+        c.appendChild(el('span', '', esc(tr(byId[id].label)))); if (r) c.insertAdjacentHTML('beforeend', icon(r.hit ? 'spark' : 'check', { size: 16 })); chain.appendChild(c);
       });
-      if (phase === 'build') { const e = el('div', 'im-empty'); e.textContent = A.flow.length ? tr('Next question, or run it') : tr('Add the first question'); chain.appendChild(e); }
-      if (l.swaps && l.swaps.length) { const sw = el('div', 'im-step'); sw.appendChild(el('span', 'im-diamond')); const b = el('div', 'im-tile' + (phase === 'swap' ? ' on' : '')); b.textContent = tr('Still broken? Swap a part'); sw.appendChild(b); chain.appendChild(sw); }
+      if (phase === 'build') { const e = el('span', 'im-chip im-empty'); e.textContent = A.flow.length ? tr('Next question, or run it') : tr('Add the first question'); chain.appendChild(e); }
+      if (l.swaps && l.swaps.length) { if (A.flow.length) chain.appendChild(el('span', 'im-arrow', icon('next', { size: 16 }))); const c = el('span', 'im-chip swap' + (phase === 'swap' ? ' cur' : '')); c.appendChild(el('span', 'im-dia')); c.appendChild(el('span', '', esc(tr('Still broken? Swap a part')))); chain.appendChild(c); }
     };
     const renderTray = () => {
       ui.tray.innerHTML = '';
       if (phase === 'build') {
-        ui.prompt.textContent = tr('Build the flowchart: add the questions in the order you will ask them.');
-        tray.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); const used = A.flow.includes(c.id); b.disabled = used; b.classList.toggle('dim', used); b.addEventListener('click', () => add(c.id)); ui.tray.appendChild(b); });
+        ui.prompt.textContent = tr('Tap the questions in the order you will ask them.');
+        tray.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); const at = A.flow.indexOf(c.id); b.classList.toggle('on', at >= 0); b.setAttribute('aria-pressed', String(at >= 0)); if (at >= 0) { b.insertAdjacentHTML('beforeend', `<span class="im-num">${num(at + 1)}</span>`); b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: at + 1, text: tr(c.label) })); } b.addEventListener('click', () => (A.flow.includes(c.id) ? remove(c.id) : add(c.id))); ui.tray.appendChild(b); });
         ui.primary = btn(tr('Run it'), { kind: 'hot', icon: 'play', onPress: run }); ui.primary.disabled = !A.flow.length;
       } else if (phase === 'swap') {
         ui.prompt.textContent = tr('Every question said fine. Swap one part at a time, cheapest first.');
