@@ -249,7 +249,9 @@ export function createSession(host, opts = {}) {
   // The game settings extend the existing s.settings ({ maxPlayers, locked, autoLock }; late join = !autoLock).
   s.host.tier = A.controlTier(s, host) || 'full';
   s.names.set(host.id, A.adultName(s, host));
-  s.settings = ST.initial({ maxPlayers: A.maxPlayersFor(host, audience, opts.maxPlayers), locked: false, autoLock: audience === 'open' }, audience, s.nameMode, opts.settings);
+  // How many players this game is made for (docs/live-capacity.md): the room never seats more.
+  s.capacity = A.capacityFor({ mode: mode === 'game' ? null : mode, slug: game.slug, declared: check.maxPlayers });
+  s.settings = ST.initial({ maxPlayers: A.maxPlayersFor(host, audience, opts.maxPlayers, s.capacity), locked: false, autoLock: audience === 'open' }, audience, s.nameMode, opts.settings);
   // A team setup carried in (the landing's teams row, play again) and a plan (a rematch, a saved class run).
   if (teamsOn() && opts.teams && opts.teams.on !== false) T.fromSetup(s, opts.teams, opts.plan || null);
   sessions.set(s.id, s); byCode.set(s.code, s.id); hostOpen.set(host.id, s.id);

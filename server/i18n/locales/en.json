@@ -4432,7 +4432,7 @@
       "notFound": "We can't find a game with that code. Check the numbers and try again.",
       "badCode": "A game code has 7 numbers.",
       "locked": "This game has started and the room is locked. Ask the host to unlock it.",
-      "full": "This game is full.",
+      "full": "This game is full ({max} players).",
       "ended": "This game has ended.",
       "signIn": "This game is for one class or family. Sign in first, then type the code again.",
       "notMember": "This game is for one class or family, and you're not in it.",
@@ -4558,7 +4558,10 @@
       "maxPlayers": "Most players",
       "openHint": "Guests get a made-up name from a safe list. Nobody can chat or type.",
       "open": "Open the room",
-      "recent": "Recent live games"
+      "recent": "Recent live games",
+      "best": "Best for {min}–{max} players",
+      "teamsAbove": "More than {n} players? Teams play best.",
+      "maxHint": "This game takes up to {max} players."
     },
     "mode": {
       "questRace": "Quest Race",
