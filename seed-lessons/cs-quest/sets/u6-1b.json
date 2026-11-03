@@ -1,0 +1,260 @@
+{
+ "id": "csq-u6-1b",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 6,
+ "band": "1B",
+ "title": "CSQ Unit 6 · Tech Choices (3-5)",
+ "modes": [
+  "quest-race",
+  "battle",
+  "board"
+ ],
+ "cstaTags": [
+  "1B-IC-18",
+  "1B-IC-19",
+  "1B-IC-20",
+  "1B-IC-21",
+  "1B-AP-14"
+ ],
+ "items": [
+  {
+   "id": "1b-u6-o1",
+   "lesson": "6.1",
+   "use": "opener",
+   "cat": "1B-IC-18",
+   "topic": "Tech changes",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A tool or machine people invent to solve a problem is a…",
+   "choices": [
+    "tradeoff",
+    "survey",
+    "packet",
+    "technology"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-6.1-r1",
+   "lesson": "6.1",
+   "use": "review",
+   "cat": "1B-IC-18",
+   "topic": "Tech changes",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which invention first let people talk to someone far away?",
+   "choices": [
+    "the printing press",
+    "the telephone",
+    "the bicycle",
+    "the oven"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-6.1-e1",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "1B-IC-18",
+   "topic": "Tech changes",
+   "kind": "recall",
+   "secs": 15,
+   "q": "GPS changed how people…",
+   "choices": [
+    "cook their food",
+    "brush their teeth",
+    "spell words",
+    "find their way"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-6.1-e2",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "1B-IC-18",
+   "topic": "Tech changes",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "People change technology too. Which is an example?",
+   "choices": [
+    "the sun rises every day",
+    "rain falls on roofs",
+    "captions were added because viewers asked",
+    "birds build nests"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-6.1-e3",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "1B-IC-18",
+   "topic": "Tech changes",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Video calls let families far apart…",
+   "choices": [
+    "send paper letters faster",
+    "see and talk to each other every day",
+    "share one phone",
+    "drive to each other"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-6.2-r1",
+   "lesson": "6.2",
+   "use": "review",
+   "cat": "1B-IC-19",
+   "topic": "For everyone",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Something everyone can use, including people who see, hear or move differently, is…",
+   "choices": [
+    "accessible",
+    "encrypted",
+    "compressed",
+    "private"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-6.2-e1",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "1B-IC-19",
+   "topic": "For everyone",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Captions in a game help…",
+   "choices": [
+    "only the game designer",
+    "nobody at all",
+    "people who cannot hear and people in a noisy room",
+    "only people who can hear"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-6.2-e2",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "1B-IC-19",
+   "topic": "For everyone",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "A player cannot hold the tablet with two hands. Which change helps most?",
+   "choices": [
+    "brighter colors",
+    "more levels",
+    "louder music",
+    "a one-hand button layout"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-6.2-e3",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "1B-IC-20",
+   "topic": "For everyone",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Asking another pair what they think of your audit ideas is…",
+   "choices": [
+    "seeking other perspectives",
+    "cheating",
+    "debugging",
+    "encrypting"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-6.3-r1",
+   "lesson": "6.3",
+   "use": "review",
+   "cat": "1B-IC-21",
+   "topic": "Share or keep",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Saying who made the picture or music you used is giving…",
+   "choices": [
+    "a password",
+    "credit",
+    "a packet",
+    "a loop"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-6.3-r2",
+   "lesson": "6.3",
+   "use": "review",
+   "cat": "1B-AP-14",
+   "topic": "Share or keep",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You used a classmate's drawing as the background of your level. Where does their name go?",
+   "choices": [
+    "nowhere, it is your level now",
+    "hidden where nobody can see it",
+    "in place of your own name as the maker",
+    "in the credits, as the artist of the background"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-6.3-e1",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "1B-IC-21",
+   "topic": "Share or keep",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You find a picture online for your game. What first?",
+   "choices": [
+    "check you are allowed to use it, then give credit",
+    "use it, it is online",
+    "change one pixel",
+    "print it out"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-6.3-e2",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "1B-IC-21",
+   "topic": "Share or keep",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A picture marked \"public domain\" may be…",
+   "choices": [
+    "never used",
+    "used only on Fridays",
+    "sold as your own only",
+    "used freely"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-6.3-e3",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "1B-AP-14",
+   "topic": "Share or keep",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You remix a friend's level. What should you do?",
+   "choices": [
+    "hide where it came from",
+    "delete their level",
+    "credit the friend whose level it was",
+    "say you made it alone"
+   ],
+   "answer": 2
+  }
+ ]
+}

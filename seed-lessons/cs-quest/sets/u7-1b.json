@@ -1,0 +1,313 @@
+{
+ "id": "csq-u7-1b",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 7,
+ "band": "1B",
+ "title": "CSQ Unit 7 · Make Your Own Game (3-5)",
+ "modes": [
+  "quest-race",
+  "battle",
+  "board"
+ ],
+ "cstaTags": [
+  "1B-AP-13",
+  "1B-AP-16",
+  "1B-AP-11",
+  "1B-AP-15",
+  "1B-IC-20",
+  "1B-AP-17",
+  "1B-AP-14"
+ ],
+ "items": [
+  {
+   "id": "1b-u7-o1",
+   "lesson": "7.1",
+   "use": "opener",
+   "cat": "1B-AP-13",
+   "topic": "Plan",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A drawing of each screen of a game, made before building, is a…",
+   "choices": [
+    "packet",
+    "cipher",
+    "storyboard",
+    "sensor"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-7.1-r1",
+   "lesson": "7.1",
+   "use": "review",
+   "cat": "1B-AP-13",
+   "topic": "Plan",
+   "kind": "recall",
+   "secs": 15,
+   "q": "The first step of making a game for someone is…",
+   "choices": [
+    "add music",
+    "build it fast",
+    "pick a color",
+    "decide who it is for and plan"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-7.1-e1",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "1B-AP-13",
+   "topic": "Plan",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why ask \"who is this game for?\" before building?",
+   "choices": [
+    "because the Builder asks",
+    "so the game fits the player's needs",
+    "to make it longer",
+    "to skip testing"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-7.1-e2",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "1B-AP-16",
+   "topic": "Plan",
+   "kind": "apply",
+   "secs": 20,
+   "q": "In your pair, the tester/note-taker should…",
+   "choices": [
+    "type every message",
+    "decide everything alone",
+    "do nothing",
+    "play the game and write what happened"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-7.1-e3",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "1B-AP-11",
+   "topic": "Plan",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Splitting your game into \"start screen\", \"playing\" and \"winning\" is…",
+   "choices": [
+    "looping",
+    "encryption",
+    "debugging",
+    "decomposition"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-7.2-r1",
+   "lesson": "7.2",
+   "use": "review",
+   "cat": "1B-AP-15",
+   "topic": "Build",
+   "kind": "recall",
+   "secs": 15,
+   "q": "After every change to your game you should…",
+   "choices": [
+    "send two more messages",
+    "play it to test the change",
+    "close the Builder",
+    "change the title"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-7.2-e1",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "1B-AP-15",
+   "topic": "Build",
+   "kind": "apply",
+   "secs": 20,
+   "q": "The Builder made the rocket fly down instead of up. Which message is best?",
+   "choices": [
+    "\"it is wrong\"",
+    "\"I expected the rocket to fly up when I tap; it flies down. Please fix.\"",
+    "\"make it cool\"",
+    "\"add more rockets and a dog\""
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-7.2-e2",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "1B-AP-15",
+   "topic": "Build",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why send one change per message?",
+   "choices": [
+    "so you can test each change and see what fixed what",
+    "because messages are short",
+    "to use more messages",
+    "so the Builder rests"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-7.2-e3",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "1B-AP-15",
+   "topic": "Build",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A good test plan lists…",
+   "choices": [
+    "your favorite colors",
+    "the names of your friends",
+    "the game's price",
+    "things to try and what should happen"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-7.3-r1",
+   "lesson": "7.3",
+   "use": "review",
+   "cat": "1B-IC-20",
+   "topic": "Playtest",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Feedback from a tester is…",
+   "choices": [
+    "what they noticed while playing your game",
+    "a bug in the Builder",
+    "the game's score",
+    "a kind of loop"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-7.3-e1",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "1B-IC-20",
+   "topic": "Playtest",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why get feedback from different people?",
+   "choices": [
+    "one person is always enough",
+    "different players notice different things",
+    "it is faster",
+    "so nobody plays it"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-7.3-e2",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "1B-IC-20",
+   "topic": "Playtest",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Two testers said level 2 is confusing. What next?",
+   "choices": [
+    "ignore them, they played wrong",
+    "delete the game",
+    "change level 2 and test again",
+    "add more levels"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-7.3-e3",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "1B-AP-15",
+   "topic": "Playtest",
+   "kind": "apply",
+   "secs": 20,
+   "q": "While a tester plays, the maker should…",
+   "choices": [
+    "tell them every move",
+    "play instead of them",
+    "leave the room",
+    "watch where they get stuck, without helping"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-7.4-r1",
+   "lesson": "7.4",
+   "use": "review",
+   "cat": "1B-AP-17",
+   "topic": "Credits",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Explaining why you chose a timer in your game is…",
+   "choices": [
+    "debugging",
+    "encrypting",
+    "describing a design choice",
+    "sorting"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-7.4-e1",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "1B-AP-17",
+   "topic": "Credits",
+   "kind": "apply",
+   "secs": 20,
+   "q": "A good 60-second demo tells the audience…",
+   "choices": [
+    "who it is for and one choice you made and why",
+    "your password",
+    "every bug ever",
+    "nothing, just play"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-7.4-e2",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "1B-AP-17",
+   "topic": "Credits",
+   "kind": "apply",
+   "secs": 20,
+   "q": "\"How to play\" instructions should…",
+   "choices": [
+    "list every line of code",
+    "be kept secret",
+    "be longer than the game",
+    "tell a new player what to do in a few lines"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-7.4-e3",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "1B-AP-14",
+   "topic": "Credits",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Credits should list…",
+   "choices": [
+    "where your family lives",
+    "your password",
+    "people, art and ideas you used",
+    "nothing at all"
+   ],
+   "answer": 2
+  }
+ ]
+}

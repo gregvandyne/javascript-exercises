@@ -1,0 +1,241 @@
+{
+ "id": "csq-u3-1b",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 3,
+ "band": "1B",
+ "title": "CSQ Unit 3 · Data Detectives (3-5)",
+ "modes": [
+  "quest-race",
+  "battle",
+  "board"
+ ],
+ "cstaTags": [
+  "1B-DA-06",
+  "1B-DA-07",
+  "1B-IC-20"
+ ],
+ "items": [
+  {
+   "id": "1b-u3-o1",
+   "lesson": "3.1",
+   "use": "opener",
+   "cat": "1B-DA-06",
+   "topic": "Sorting data",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Facts collected in rows and columns are called…",
+   "choices": [
+    "code",
+    "packets",
+    "data",
+    "pixels"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-3.1-r1",
+   "lesson": "3.1",
+   "use": "review",
+   "cat": "1B-DA-06",
+   "topic": "Sorting data",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Putting rows in order from biggest to smallest is…",
+   "choices": [
+    "grouping",
+    "sorting",
+    "charting",
+    "cleaning"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-3.1-e1",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "1B-DA-06",
+   "topic": "Sorting data",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You want to know which month had the most rain. What do you do first?",
+   "choices": [
+    "sort by the month name",
+    "sort by the rain column",
+    "delete the months",
+    "count the rows"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-3.1-e2",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "1B-DA-06",
+   "topic": "Sorting data",
+   "kind": "apply",
+   "secs": 20,
+   "q": "To find the most common pet in the class, you should…",
+   "choices": [
+    "sort by the kid's name",
+    "draw a line chart",
+    "remove the cats",
+    "group the rows by pet and count"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-3.1-e3",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "1B-DA-06",
+   "topic": "Sorting data",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "A chart supports a claim when…",
+   "choices": [
+    "it has bright colors",
+    "the teacher says so",
+    "it has many rows",
+    "the data really shows it"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-3.2-r1",
+   "lesson": "3.2",
+   "use": "review",
+   "cat": "1B-DA-07",
+   "topic": "Predictions",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A guess about what comes next, based on data, is a…",
+   "choices": [
+    "password",
+    "packet",
+    "prediction",
+    "program"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-3.2-e1",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "1B-DA-07",
+   "topic": "Predictions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "The plant grew 2 cm each day for 5 days. On day 6 it will most likely be…",
+   "choices": [
+    "2 cm taller than day 5",
+    "the same height as day 1",
+    "10 cm shorter",
+    "impossible to say"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-3.2-e2",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "1B-DA-07",
+   "topic": "Predictions",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "The chart shows only 2 days of plant growth. Can we predict day 10?",
+   "choices": [
+    "yes, exactly",
+    "yes, it will be 10",
+    "plants do not grow",
+    "not yet, we need more days"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-3.2-e3",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "1B-DA-07",
+   "topic": "Predictions",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "The chart shows Tuesday is the tallest bar. Which claim is supported?",
+   "choices": [
+    "Friday had the most lunches",
+    "nobody ate on Tuesday",
+    "lunches cost more on Tuesday",
+    "most lunches were sold on Tuesday"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-3.3-r1",
+   "lesson": "3.3",
+   "use": "review",
+   "cat": "1B-DA-06",
+   "topic": "Surveys",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Asking many people the same question and counting the answers is a…",
+   "choices": [
+    "sort",
+    "cipher",
+    "sensor",
+    "survey"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-3.3-e1",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "1B-DA-06",
+   "topic": "Surveys",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which chart answers \"which fruit is most popular?\" fastest?",
+   "choices": [
+    "a list of every kid's name",
+    "a bar chart with one bar per fruit",
+    "a line of dates",
+    "a table sorted by name"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-3.3-e2",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "1B-DA-07",
+   "topic": "Surveys",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "12 kids said dog, 3 said cat. Which claim is fair?",
+   "choices": [
+    "everyone in the world prefers dogs",
+    "cats are the favorite",
+    "dogs are the favorite pet in our class",
+    "nobody likes cats"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-3.3-e3",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "1B-IC-20",
+   "topic": "Surveys",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why ask another pair whether your claim is fair?",
+   "choices": [
+    "so they can copy your work",
+    "because the game needs it",
+    "to finish faster",
+    "they may see something your pair missed"
+   ],
+   "answer": 3
+  }
+ ]
+}

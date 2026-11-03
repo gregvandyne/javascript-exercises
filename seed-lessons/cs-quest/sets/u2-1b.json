@@ -1,0 +1,208 @@
+{
+ "id": "csq-u2-1b",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 2,
+ "band": "1B",
+ "title": "CSQ Unit 2 · Bug Hunters (3-5)",
+ "modes": [
+  "quest-race",
+  "battle",
+  "board"
+ ],
+ "cstaTags": [
+  "1B-AP-15",
+  "1B-AP-16",
+  "1B-AP-13",
+  "1B-AP-17"
+ ],
+ "items": [
+  {
+   "id": "1b-u2-o1",
+   "lesson": "2.1",
+   "use": "opener",
+   "cat": "1B-AP-15",
+   "topic": "Debugging",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A mistake that makes a program do the wrong thing is a…",
+   "choices": [
+    "bug",
+    "loop",
+    "packet",
+    "pixel"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-2.1-r1",
+   "lesson": "2.1",
+   "use": "review",
+   "cat": "1B-AP-15",
+   "topic": "Debugging",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Running a program one block at a time to watch what happens is…",
+   "choices": [
+    "deleting blocks",
+    "guessing",
+    "starting over",
+    "stepping through"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-2.1-r2",
+   "lesson": "2.1",
+   "use": "review",
+   "cat": "1B-AP-15",
+   "topic": "Debugging",
+   "kind": "recall",
+   "secs": 15,
+   "q": "\"Expected vs actual\" means…",
+   "choices": [
+    "what should happen vs what did happen",
+    "fast vs slow programs",
+    "long vs short programs",
+    "easy vs hard levels"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-2.1-e1",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "1B-AP-15",
+   "topic": "Debugging",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Bolt should stop at the flag but walks into the lake. The best first move is…",
+   "choices": [
+    "step through and watch where it goes wrong",
+    "delete everything and start again",
+    "add more forward blocks",
+    "ask for the answer"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-2.1-e2",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "1B-AP-15",
+   "topic": "Debugging",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "A loop should run 4 times but Bolt goes one square too far. Most likely bug?",
+   "choices": [
+    "the goal is missing",
+    "Bolt needs a gem",
+    "the repeat count is one too many",
+    "the program has no turn"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-2.1-e3",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "1B-AP-15",
+   "topic": "Debugging",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "When is a program really fixed?",
+   "choices": [
+    "when it looks right",
+    "when you test it and it does what you expected",
+    "when it has fewer blocks",
+    "when a friend says so"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-2.2-r1",
+   "lesson": "2.2",
+   "use": "review",
+   "cat": "1B-AP-16",
+   "topic": "Level design",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Who is the navigator in pair programming?",
+   "choices": [
+    "the one who taps the blocks",
+    "the teacher",
+    "the fastest kid",
+    "the one who reads the plan and watches for mistakes"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-2.2-r2",
+   "lesson": "2.2",
+   "use": "review",
+   "cat": "1B-AP-13",
+   "topic": "Level design",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why plan a level on paper before building it?",
+   "choices": [
+    "because the game needs paper",
+    "to think about the player before you start",
+    "to make it take longer",
+    "to avoid testing"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-2.2-e1",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "1B-AP-13",
+   "topic": "Level design",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Your tester got stuck at the start. What next?",
+   "choices": [
+    "change the level and test it again",
+    "tell them they played wrong",
+    "delete the level",
+    "add more traps"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-2.2-e2",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "1B-AP-16",
+   "topic": "Level design",
+   "kind": "apply",
+   "secs": 20,
+   "q": "During the test, the designer should…",
+   "choices": [
+    "explain every step",
+    "watch quietly and take notes",
+    "play it themselves",
+    "fix it while the tester plays"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-2.2-e3",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "1B-AP-17",
+   "topic": "Level design",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Which designer's note explains a choice best?",
+   "choices": [
+    "\"good level\"",
+    "\"my level is hard\"",
+    "\"I put the key behind water so you must plan a path\"",
+    "\"level by me\""
+   ],
+   "answer": 2
+  }
+ ]
+}
