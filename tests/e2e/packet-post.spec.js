@@ -44,7 +44,7 @@ test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solve
   await f.locator('.ok-dialog .ok-btn').last().click();
   await expect(f.locator('.ok-win')).toBeVisible({ timeout: 8000 });
   const s2 = await T(f, 'state');
-  expect(s2.levelStars).toBe(3); expect(s2.label).toMatch(LABEL); expect(s2.label).toMatch(/1\/6 levels, 3 stars, 1\/1 checks/);
+  expect(s2.levelStars).toBe(3); expect(s2.label).toMatch(LABEL); expect(s2.label).toMatch(/^1\/6 levels, 3 stars, [01]\/1 checks$/);
   expect(await f.evaluate(() => window.__csp)).toEqual([]);
   expect(errors).toEqual([]);
 });

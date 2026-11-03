@@ -675,7 +675,7 @@ const LEVELS = [
   { id: 'pk-4', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 5, par: 15, random: true, nodes: DIAMOND('Zoo Gate'), links: DIAMOND_LINKS, from: 'S', to: 'D', sol: 'auto',
     intro: 'Five packets for the zoo. Every road here meets at the center office.',
     hints: ['Where do all the roads meet before the zoo?', 'Both first roads lead to the center office, and from there one road goes on.', 'Tap a glowing road, then the road to the center office, then the road to the zoo. Repeat for each packet.'],
-    check: { q: 'How does the house know the order of the pieces?', tiles: ['By the number on each packet', 'By the color of the road', 'By which piece looks nicest'], answer: 0 } },
+    check: { q: 'How does the house know the order of the pieces?', tiles: ['By the number on each packet', 'By how the road looks', 'By which piece looks nicest'], answer: 0 } },
   { id: 'pk-5', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 6, par: 18, random: true, nodes: TOWN("Grandma's House"), links: TOWN_LINKS, from: 'S', to: 'D', sol: 'auto',
     intro: 'Six packets across the whole town. Three hops is the fewest for each one.',
     hints: ['How many hops does the shortest way take?', 'The glowing roads are on a three hop way. Side roads between offices only add hops.', 'Tap the glowing road three times in a row for each packet, then place the six pieces by number.'],
@@ -751,12 +751,12 @@ const LEVELS = [
     check: { q: 'What happens last?', tiles: ['The packets go back in number order', 'The picture is cut up', 'A road is picked'], answer: 0 } },
   // ---- Chapter 4: Lock It (what to share and what to keep, the passphrase builder, the device, the spare copy, physical and digital measures, Share or Shield)
   { id: 'lk-1', ch: 'locks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'sort', par: 8, random: true, bins: [{ id: 'share', label: 'Share', icon: 'speak' }, { id: 'keep', label: 'Keep', icon: 'lock' }],
-    items: [{ id: 'color', text: 'Your favorite color', bin: 'share' }, { id: 'addr', text: 'Your home address', bin: 'keep' }, { id: 'draw', text: 'A drawing of your pet', bin: 'share' }, { id: 'key', text: 'Your mailbox key', bin: 'keep' },
+    items: [{ id: 'animal', text: 'Your favorite animal', bin: 'share' }, { id: 'addr', text: 'Your home address', bin: 'keep' }, { id: 'draw', text: 'A drawing of your pet', bin: 'share' }, { id: 'key', text: 'Your mailbox key', bin: 'keep' },
       { id: 'school', text: 'The name of your school', bin: 'keep' }, { id: 'book', text: 'Your favorite book', bin: 'share' }, { id: 'bday', text: 'Your birthday', bin: 'keep' }, { id: 'joke', text: 'A joke you made up', bin: 'share' }], sol: 'auto',
     learn: { title: 'Lock it up', text: 'Some things about you are private: where you live, your birthday, your mailbox key. Share the fun things, keep the private things, and protect your stuff online the way you protect it at home: lock it, keep the key, keep a spare copy.', pic: 'shield' },
     intro: 'Pim is sorting the mail. Which things are fine to share with the whole town, and which stay private?',
-    hints: ['Could a stranger use this to find you or get into your things?', 'Where you live, when you were born and your key all help a stranger. A joke or a color helps nobody.', 'Tap Keep for the address, the key, the school and the birthday. Everything else is Share.'],
-    check: { q: 'Which of these is private?', tiles: ['Your home address', 'Your favorite color', 'A joke you made up'], answer: 0 } },
+    hints: ['Could a stranger use this to find you or get into your things?', 'Where you live, when you were born and your key all help a stranger. A joke or a favorite animal helps nobody.', 'Tap Keep for the address, the key, the school and the birthday. Everything else is Share.'],
+    check: { q: 'Which of these is private?', tiles: ['Your home address', 'Your favorite animal', 'A joke you made up'], answer: 0 } },
   { id: 'lk-2', ch: 'locks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'pass', par: 5, need: 4,
     words: [{ id: 'purple', text: 'purple' }, { id: 'volcano', text: 'volcano' }, { id: 'teapot', text: 'teapot' }, { id: 'giraffe', text: 'giraffe' }, { id: 'bicycle', text: 'bicycle' }, { id: 'thunder', text: 'thunder' }, { id: 'bday', text: 'my birthday', weak: true }, { id: 'pet', text: "my pet's name", weak: true }], sol: 'auto',
     intro: 'Build a mailbox key for Pim from four word tiles. Watch the meter: it shows how long a guessing computer would need.',
@@ -936,7 +936,7 @@ const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
 
 /* ---------- words: English is the key; a language pack adds the translation (Oomba.strings) ---------- */
 const LANG0 = String(O.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '', PACK_SRI = {};
+const PACK_VER = '1.0.0-235bda6b', PACK_SRI = {"es":"sha384-jPl7XMk1knDO4L+PZyNAILjM7ihFVTWRCpBRncZCl6T9m8XEXG9yhUcX8W0Yn6Y+","fr":"sha384-eKhHM/PCubjuK1kQZpxnpb1kRyXXhuZnSRBnHmAjrsGHAe3opG1sbxDrSapzpcwp","de":"sha384-I3M1S6WYiRQ8Aee9DlPpG8NCuc8o+WYKdDInjkuIcRTKhl78HEp3HZWB/GIRIaDW","it":"sha384-t0jo8nAjb1N9QhWCLz5lsuXUpGN2aLbJdoLZB7gH34dkosIOPS27LsH4/6anF1Ce","pt":"sha384-1J+NyTYY1ZBOzC8aG78z1Vzliri4RRDaV2LXwrNifK1BvvKKcJLUSu+45AXaEbun","nl":"sha384-V0z1h0VCGAOrBYg5EE8jPmUAPAkHs2I2CI5NK6RFyEvP49KAAm9YzOPrrRLET+gy","ru":"sha384-T3p41PZb8kbR93XfDwakBsBqpPJyRJQmYvhP6/Mo+5vlhdzJFxtpvBNFM7C/5Eou","ja":"sha384-QE4ZZH9M8KbgQH2GxhVqfo77KpzCZjtoX8f1C0WBXUw96SsyUReIr0krIJ+9vnZm","zh-Hant":"sha384-xh7Ej41PdL2WLTw/TH1sf0K30rph8dhkdZ5cMogDbZgCdNU03+FoWQYdmqJTWzRd","he":"sha384-c0OWwi6FQ3vkf0QrwlKsILNNH0XaGFx4dCu2ferbjtNTuLdbAnJOxEdN0xrg1XXO","ar":"sha384-PVvI8/bKemhRVmPajrBGsrrS7eO2CxVmxZZLQsocwGnNAVe+WiNq0Wgf7y55GFqM"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_VER || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');

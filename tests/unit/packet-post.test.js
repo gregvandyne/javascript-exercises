@@ -271,7 +271,7 @@ async function open({ size = { width: 390, height: 844 }, lang = 'en' } = {}) {
     const u = route.request().url();
     if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
     if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-    const m = /^http:\/\/game\.invalid\/(vendor\/oomba-kit\/[\w./-]+)$/.exec(u);
+    const m = /^http:\/\/game\.invalid\/(vendor\/(?:oomba-kit|data)\/[\w./-]+)$/.exec(u);   // the kit and the game's language packs, from disk
     if (m && fs.existsSync(path.join(ROOT, 'public', m[1]))) return route.fulfill({ status: 200, headers: { 'content-type': m[1].endsWith('.js') ? 'text/javascript' : 'font/woff2', 'access-control-allow-origin': '*' }, body: fs.readFileSync(path.join(ROOT, 'public', m[1])) });
     return route.abort();
   });
@@ -300,6 +300,11 @@ test('packet-post: in Chromium, level 1 of two chapters plays through the hooks,
       assert.equal(s1.screen, 'level'); assert.equal(s1.chapter, chapter); assert.equal(s1.level, 1); assert.equal(s1.band, band); assert.equal(s1.cards, 1, 'level 1 opens the learn card');
       await page.waitForTimeout(300); await T(frame, 'closeCards'); await T(frame, 'skipAnimations');
       const dir = await frame.evaluate(() => document.querySelector('.pp').getAttribute('dir')); assert.equal(dir, lang === 'ar' ? 'rtl' : 'ltr', 'the game mirrors its menus');
+      // the language pack: Pim's intro line is the translation from scripts/data/cs-quest/packet-post/<lang>.json
+      const level = levelsFor(chapter, band)[0], TR = lang === 'en' ? null : JSON.parse(fs.readFileSync(path.join(ROOT, `scripts/data/cs-quest/packet-post/${lang}.json`), 'utf8')).strings;
+      const said = await frame.evaluate(() => document.querySelector('.pp-say p').textContent);
+      assert.equal(said, TR ? TR[level.intro] : level.intro, `${lang}: the intro comes from the pack`);
+      assert.ok(TR ? said !== level.intro : true, 'the pack really loaded');
       assert.equal(await frame.evaluate(() => [...document.querySelectorAll('.pp button')].filter(b => { const r = b.getBoundingClientRect(); return b.offsetParent !== null && !b.closest('[data-fit-dense]') && (r.width < 40 || r.height < 40); }).length), 0, 'every control at least 40 px');
       const snap = await T(frame, 'solve');
       assert.equal(snap.phase, 'done', `${chapter} level 1 solved by the solver`);

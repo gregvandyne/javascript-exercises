@@ -11,5 +11,50 @@
   "age_rating": "everyone",
   "featured": true,
   "notes": "Built on the Oomba Kit 1.1.2 (pinned kit tag plus the art-props, art-animals, art-school and style-bold packs): Oomba.game with controls 'none' and a fixed camera, the kit's title, how-to, HUD (chapter progress and star count), pause, results (Oomba.ui.win per level, w.win at chapter end, so BRB.gameOver carries the chapter's stars), quiz card (the Case-closed concept check), dialogs, toasts, settings, sounds, font and day/night palette. Pim the owl (art-animals) guides. Netville's map, the packets, the ACK board, rule tiles, the cipher wheel and the pixel grid are the game's own DOM inside Oomba.ui.root(), below var(--ok-safe-top), tap-only with keyboard support, every control at least 48 px. The first classic script is window.PacketPost (the engine: seeded RNG, map instances, the packet run with hop-by-hop routing, closures, busy offices, hop budgets and sealed roads, the ACK/duplicate/resend board, the dot checksum, ordering tiles, rule sets, a routing solver, Caesar and keyed ciphers, the progress label and quest code parsing); the second is window.PacketPostLevels (CHAPTERS, LEVELS with learn/hints/check text, THEN chains per band); the third is window.PacketPostI18n (the other languages come as /vendor/data packs, English is the key). Lesson mode comes from BRB.params ({chapter, band, mode, level, lock}) or the 4-digit class quest number typed on the Quest Card keypad (hidden in live frames); lock=1 hides the chapter map and band toggle and chains into the band's next chapter at chapter end. Progress: BRB.score.submit(starsInChapter, 'n/m levels, s stars[, c/k checks]') after every solved level, BRB.gameOver({won: true, score}) at chapter end, BRB.progress(detail) when the SDK has it. Save key packet-post-v1 in BRB.storage (band, best stars per level, skipped levels). Test hooks: __brbTest.start({chapter, band, mode, level, seed, lesson}), step(n), skipAnimations(), cover(), state(), act(action), solve(), run(). Modes: play, projector (bigger, no scores), wheel (a free cipher wheel).",
-  "l10n": {}
+  "l10n": {
+    "pt": {
+      "description": "Comanda os correios de Netville com a coruja Pim e descobre como a internet funciona de verdade. Corta uma imagem em pacotes numerados, envia cada um por uma estrada, muda de caminho quando uma estrada fecha e volta a montar as peças por ordem. Diz recebido, pede de novo os pacotes perdidos, deita fora as cópias a mais e conta os pontos para ver se há danos. Depois tranca tudo: separa o que partilhar, cria uma frase-chave forte com peças de palavras, descobre mensagens enganosas e envia mensagens secretas com a roda de cifra. Seis capítulos do 3.º ao 8.º ano, com um modo de missão de turma.",
+      "tags": "redes,internet,pacotes,roteadores,protocolos,cibersegurança,frase-chave,burlas,cifras,informática,aprender,crianças,turma"
+    },
+    "fr": {
+      "description": "Dirige la poste de Netville avec Pim la chouette et découvre comment fonctionne vraiment internet. Découpe une image en paquets numérotés, envoie chacun par une route, change de chemin quand une route ferme et remets les morceaux dans l’ordre à l’arrivée. Dis bien reçu, redemande les paquets perdus et jette les copies en trop. Puis verrouille tout : trie ce qui se partage, construis une phrase secrète solide avec des tuiles de mots, repère les messages piégés et envoie des messages secrets avec la roue à chiffrer. Six chapitres du CE2 à la 4e, avec un mode quête de classe.",
+      "tags": "réseaux,internet,paquets,routeurs,protocoles,cybersécurité,phrase secrète,hameçonnage,chiffrement,informatique,apprendre,enfants,classe"
+    },
+    "es": {
+      "description": "Dirige la oficina de correos de Netville con la lechuza Pim y aprende cómo funciona internet de verdad. Corta una imagen en paquetes numerados, envía cada uno por una carretera, cambia de ruta cuando una se cierra y vuelve a montar las piezas en orden. Di recibido, pide de nuevo los paquetes perdidos y tira las copias de más. Después ciérralo todo con llave: separa lo que se comparte, construye una frase clave fuerte con fichas de palabras, descubre mensajes engañosos y envía mensajes secretos con la rueda de cifrado. Seis capítulos de 3.º a 8.º, con un modo de misión de clase.",
+      "tags": "redes,internet,paquetes,enrutadores,protocolos,ciberseguridad,frase clave,estafas,cifrado,informática,aprender,niños,clase"
+    },
+    "de": {
+      "description": "Leite das Postamt von Netville mit der Eule Pim und lerne, wie das Internet wirklich funktioniert. Zerlege ein Bild in nummerierte Pakete, schicke jedes über eine Straße, weiche aus, wenn eine Straße gesperrt wird, und setze die Teile am Ziel wieder zusammen. Sage angekommen, fordere verlorene Pakete neu an und wirf doppelte Kopien weg. Dann wird abgeschlossen: Sortiere, was man teilen darf, baue eine starke Passphrase aus Wortkacheln, entlarve Trickbotschaften und verschicke Geheimbotschaften mit dem Chiffrierrad. Sechs Kapitel für die Klassen 3 bis 8, mit Klassenquest-Modus.",
+      "tags": "netzwerke,internet,pakete,router,protokolle,cybersicherheit,passphrase,phishing,geheimschrift,informatik,lernen,kinder,klasse"
+    },
+    "it": {
+      "description": "Dirigi l’ufficio postale di Netville con la civetta Pim e scopri come funziona davvero internet. Taglia un’immagine in pacchetti numerati, manda ciascuno lungo una strada, cambia percorso quando una strada chiude e rimetti i pezzi in ordine all’arrivo. Di’ ricevuto, richiedi i pacchetti persi e butta le copie in più. Poi chiudi tutto a chiave: separa cosa condividere, costruisci una frase segreta forte con tessere di parole, scopri i messaggi trappola e manda messaggi segreti con la ruota cifrante. Sei capitoli dalla terza elementare alla terza media, con una modalità missione di classe.",
+      "tags": "reti,internet,pacchetti,router,protocolli,sicurezza informatica,frase segreta,truffe,cifrari,informatica,imparare,bambini,classe"
+    },
+    "nl": {
+      "description": "Run het postkantoor van Netville met Pim de uil en ontdek hoe internet echt werkt. Knip een plaatje in genummerde pakketjes, stuur elk over een weg, kies een andere route als een weg dichtgaat en zet de stukjes weer op volgorde. Zeg ontvangen, vraag verloren pakketjes opnieuw aan en gooi dubbele kopieën weg. Doe daarna alles op slot: sorteer wat je deelt, bouw een sterke wachtwoordzin van woordtegels, ontmasker trucberichten en stuur geheime berichten met het cijferwiel. Zes hoofdstukken voor groep 5 tot en met de tweede klas, met een klasquest-stand.",
+      "tags": "netwerken,internet,pakketjes,routers,protocollen,cyberveiligheid,wachtwoordzin,phishing,geheimschrift,informatica,leren,kinderen,klas"
+    },
+    "ru": {
+      "description": "Управляй почтой Нетвилля вместе с совой Пим и узнай, как на самом деле работает интернет. Разрежь картинку на пронумерованные пакеты, отправь каждый по своей дороге, найди обход, когда дорога закрывается, и собери кусочки по порядку. Говори «получено», запрашивай потерянные пакеты заново и выбрасывай лишние копии. Потом запри всё на замок: рассортируй, чем можно делиться, собери надёжную парольную фразу из плиток со словами, распознай обманные письма и отправляй тайные послания с помощью шифровального колеса. Шесть глав для 3–8 классов и режим классного задания.",
+      "tags": "сети,интернет,пакеты,маршрутизаторы,протоколы,кибербезопасность,парольная фраза,фишинг,шифры,информатика,обучение,дети,класс"
+    },
+    "ja": {
+      "description": "フクロウのピムといっしょにネットビルの郵便局を切りもりして、インターネットのほんとうの仕組みを学ぼう。絵を番号つきのパケットに切り分け、それぞれを道に送り出し、道が閉じたら別の道を選び、とどいた先で番号どおりに組み立てなおそう。「受けとった」と伝え、なくなったパケットをもう一度たのみ、よぶんなコピーを捨て、点を数えてこわれていないか確かめよう。そのあとはしっかり鍵をかけよう。共有していいものを仕分け、言葉のタイルで強いパスフレーズを作り、だましメッセージを見やぶり、暗号ホイールでひみつのメッセージを送ろう。小学3年生から中学2年生までの6章と、先生向けのクラスクエストモードつき。",
+      "tags": "ネットワーク,インターネット,パケット,ルーター,プロトコル,サイバーセキュリティ,パスフレーズ,フィッシング,暗号,コンピュータサイエンス,学習,子ども,授業"
+    },
+    "zh-Hant": {
+      "description": "和貓頭鷹皮姆一起經營網村郵局，了解網際網路真正的運作方式。把一張圖片切成編號的小封包，讓每個封包各走一條路，道路封閉時改道，再在另一端依照編號把碎片拼回來。說「收到」、重新索取遺失的封包、丟掉多餘的副本，並數一數點點來檢查有沒有損壞。接著把一切鎖好：分辨哪些可以分享、用字詞方塊組成強大的通關密語、在收件匣裡識破詐騙訊息，再用密碼轉盤傳送秘密訊息。共六章，適合三到八年級，另有給老師的班級任務模式。",
+      "tags": "網路,網際網路,封包,路由器,通訊協定,網路安全,通關密語,網路釣魚,密碼,電腦科學,學習,兒童,班級"
+    },
+    "he": {
+      "description": "נהלו את הדואר של נטוויל יחד עם פים הינשוף וגלו איך האינטרנט באמת עובד. חתכו תמונה לחבילות ממוספרות, שלחו כל אחת בדרך משלה, מצאו דרך אחרת כשכביש נסגר והרכיבו את החלקים לפי הסדר בצד השני. אמרו התקבל, בקשו שוב חבילות שאבדו, זרקו עותקים כפולים וספרו את הנקודות כדי לבדוק נזקים. אחר כך נעלו הכול: מיינו מה משתפים, בנו משפט סיסמה חזק מאריחי מילים, זהו הודעות תרמית בתיבת הדואר ושלחו הודעות סודיות עם גלגל הצופן. שישה פרקים לכיתות ג עד ח, עם מצב משימת כיתה למורים.",
+      "tags": "רשתות,אינטרנט,חבילות,נתבים,פרוטוקולים,אבטחת סייבר,משפט סיסמה,פישינג,צפנים,מדעי המחשב,למידה,ילדים,כיתה"
+    },
+    "ar": {
+      "description": "أدِر مكتب بريد نتفيل مع البومة بيم واكتشف كيف يعمل الإنترنت فعلًا. قطّع صورة إلى حزم صغيرة مرقّمة، وأرسل كل حزمة عبر طريق، وغيّر المسار عندما يُغلق طريق، ثم أعد تركيب القطع بالترتيب في الطرف الآخر. قل وصلت، واطلب الحزم الضائعة من جديد، وتخلّص من النسخ الزائدة، وعدّ النقاط لتتأكد من عدم وجود تلف. ثم أقفل كل شيء: افرز ما يمكن مشاركته، وابنِ عبارة مرور قوية من بطاقات الكلمات، واكشف الرسائل المخادعة في صندوق الوارد، وأرسل رسائل سرية بعجلة التشفير. ستة فصول من الصف الثالث إلى الثامن، مع وضع مهمة الصف للمعلمين.",
+      "tags": "شبكات,إنترنت,حزم,موجهات,بروتوكولات,أمن سيبراني,عبارة مرور,تصيد,شفرات,علوم الحاسوب,تعلم,أطفال,صف"
+    }
+  }
 }
