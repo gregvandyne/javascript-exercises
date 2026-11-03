@@ -1,0 +1,690 @@
+{
+ "source": "CSTA K-12 Computer Science Standards, 2017 revision (levels 1B grades 3-5 and 2 grades 6-8). Statements verified against seven independent mirrors; see docs/cs-quest.md.",
+ "levels": {
+  "1B": "3-5",
+  "2": "6-8"
+ },
+ "standards": [
+  {
+   "id": "1B-CS-01",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Computing Systems",
+   "subconcept": "Devices",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.2"
+   ],
+   "statement": "Describe how internal and external parts of computing devices function to form a system.",
+   "clarification": "Computing devices often depend on other devices or components. For example, a robot depends on a physically attached light sensor to detect changes in brightness, whereas the light sensor depends on the robot for power. Keyboard input or a mouse click could cause an action to happen or information to be displayed on a screen; this could only happen because the computer has a processor to evaluate what is happening externally and produce corresponding responses. Students should describe how devices and components interact using correct terminology."
+  },
+  {
+   "id": "1B-CS-02",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Computing Systems",
+   "subconcept": "Hardware & Software",
+   "practices": [
+    4
+   ],
+   "practiceCodes": [
+    "4.4"
+   ],
+   "statement": "Model how computer hardware and software work together as a system to accomplish tasks.",
+   "clarification": "In order for a person to accomplish tasks with a computer, both hardware and software are needed. At this stage, a model should only include the basic elements of a computer system, such as input, output, processor, sensors, and storage. Students could draw a model on paper or in a drawing program, program an animation to demonstrate it, or demonstrate it by acting this out in some way."
+  },
+  {
+   "id": "1B-CS-03",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Computing Systems",
+   "subconcept": "Troubleshooting",
+   "practices": [
+    6
+   ],
+   "practiceCodes": [
+    "6.2"
+   ],
+   "statement": "Determine potential solutions to solve simple hardware and software problems using common troubleshooting strategies.",
+   "clarification": "Although computing systems may vary, common troubleshooting strategies can be used on all of them. Students should be able to identify solutions to problems such as the device not responding, no power, no network, app crashing, no sound, or password entry not working. Should errors occur at school, the goal would be that students would use various strategies, such as rebooting the device, checking for power, checking network availability, closing and reopening an app, making sure speakers are turned on or headphones are plugged in, and making sure that the caps lock key is not on, to solve these problems, when possible."
+  },
+  {
+   "id": "1B-NI-04",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Networks & the Internet",
+   "subconcept": "Network Communication & Organization",
+   "practices": [
+    4
+   ],
+   "practiceCodes": [
+    "4.4"
+   ],
+   "statement": "Model how information is broken down into smaller pieces, transmitted as packets through multiple devices over networks and the Internet, and reassembled at the destination.",
+   "clarification": "Information is sent and received over physical or wireless paths. It is broken down into smaller pieces called packets, which are sent independently and reassembled at the destination. Students should demonstrate their understanding of this flow of information by, for instance, drawing a model of the way packets are transmitted, programming an animation to show how packets are transmitted, or demonstrating this through an unplugged activity which has them act it out in some way."
+  },
+  {
+   "id": "1B-NI-05",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Networks & the Internet",
+   "subconcept": "Cybersecurity",
+   "practices": [
+    3
+   ],
+   "practiceCodes": [
+    "3.1"
+   ],
+   "statement": "Discuss real-world cybersecurity problems and how personal information can be protected.",
+   "clarification": "Just as we protect our personal property offline, we also need to protect our devices and the information stored on them. Information can be protected using various security measures. These measures can be physical and/or digital. Students could discuss or use a journaling or blogging activity to explain, orally or in writing, about topics that relate to personal cybersecurity issues. Discussion topics could be based on current events related to cybersecurity or topics that are applicable to students, such as the necessity of backing up data to guard against loss, how to create strong passwords and the importance of not sharing passwords, or why we should install and keep anti-virus software updated to protect data and systems."
+  },
+  {
+   "id": "1B-DA-06",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Data & Analysis",
+   "subconcept": "Collection Visualization & Transformation",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.1"
+   ],
+   "statement": "Organize and present collected data visually to highlight relationships and support a claim.",
+   "clarification": "Raw data has little meaning on its own. Data is often sorted or grouped to provide additional clarity. Organizing data can make interpreting and communicating it to others easier. Data points can be clustered by a number of commonalities. The same data could be manipulated in different ways to emphasize particular aspects or parts of the data set. For example, a data set of sports teams could be sorted by wins, points scored, or points allowed, and a data set of weather information could be sorted by high temperatures, low temperatures, or precipitation."
+  },
+  {
+   "id": "1B-DA-07",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Data & Analysis",
+   "subconcept": "Inference & Models",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.1"
+   ],
+   "statement": "Use data to highlight or propose cause-and-effect relationships, predict outcomes, or communicate an idea.",
+   "clarification": "The accuracy of data analysis is related to how realistically data is represented. Inferences or predictions based on data are less likely to be accurate if the data is not sufficient or if the data is incorrect in some way. Students should be able to refer to data when communicating an idea. For example, in order to explore the relationship between speed, time, and distance, students could operate a robot at uniform speed, and at increasing time intervals to predict how far the robot travels at that speed. In order to make an accurate prediction, one or two attempts of differing times would not be enough. The robot may also collect temperature data from a sensor, but that data would not be relevant for the task. Students must also make accurate measurements of the distance the robot travels in order to develop a valid prediction. Students could record the temperature at noon each day as a basis to show that temperatures are higher in certain months of the year. If temperatures are not recorded on non-school days or are recorded incorrectly or at different times of the day, the data would be incomplete and the ideas being communicated could be inaccurate. Students may also record the day of the week on which the data was collected, but this would have no relevance to whether temperatures are higher or lower. In order to have sufficient and accurate data on which to communicate the idea, students might want to use data provided by a governmental weather agency."
+  },
+  {
+   "id": "1B-AP-08",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Algorithms",
+   "practices": [
+    3,
+    6
+   ],
+   "practiceCodes": [
+    "6.3",
+    "3.3"
+   ],
+   "statement": "Compare and refine multiple algorithms for the same task and determine which is the most appropriate.",
+   "clarification": "Different algorithms can achieve the same result, though sometimes one algorithm might be most appropriate for a specific situation. Students should be able to look at different ways to solve the same task and decide which would be the best solution. For example, students could use a map and plan multiple algorithms to get from one point to another. They could look at routes suggested by mapping software and change the route to something that would be better, based on which route is shortest or fastest or would avoid a problem. Students might compare algorithms that describe how to get ready for school. Another example might be to write different algorithms to draw a regular polygon and determine which algorithm would be the easiest to modify or repurpose to draw a different polygon."
+  },
+  {
+   "id": "1B-AP-09",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Variables",
+   "practices": [
+    5
+   ],
+   "practiceCodes": [
+    "5.2"
+   ],
+   "statement": "Create programs that use variables to store and modify data.",
+   "clarification": "Variables are used to store and modify data. At this level, understanding how to use variables is sufficient. For example, students may use mathematical operations to add to the score of a game or subtract from the number of lives available in a game. The use of a variable as a countdown timer is another example."
+  },
+  {
+   "id": "1B-AP-10",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Control",
+   "practices": [
+    5
+   ],
+   "practiceCodes": [
+    "5.2"
+   ],
+   "statement": "Create programs that include sequences, events, loops, and conditionals.",
+   "clarification": "Control structures specify the order (sequence) in which instructions are executed within a program and can be combined to support the creation of more complex programs. Events allow portions of a program to run based on a specific action. For example, students could write a program to explain the water cycle and when a specific component is clicked (event), the program would show information about that part of the water cycle. Conditionals allow for the execution of a portion of code in a program when a certain condition is true. For example, students could write a math game that asks multiplication fact questions and then uses a conditional to check whether or not the answer that was entered is correct. Loops allow for the repetition of a sequence of code multiple times. For example, in a program that produces an animation about a famous historical character, students could use a loop to have the character walk across the screen as they introduce themselves."
+  },
+  {
+   "id": "1B-AP-11",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Modularity",
+   "practices": [
+    3
+   ],
+   "practiceCodes": [
+    "3.2"
+   ],
+   "statement": "Decompose (break down) problems into smaller, manageable subproblems to facilitate the program development process.",
+   "clarification": "Decomposition is the act of breaking down tasks into simpler tasks. For example, students could create an animation by separating a story into different scenes. For each scene, they would select a background, place characters, and program actions."
+  },
+  {
+   "id": "1B-AP-12",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Modularity",
+   "practices": [
+    5
+   ],
+   "practiceCodes": [
+    "5.3"
+   ],
+   "statement": "Modify, remix, or incorporate portions of an existing program into one's own work, to develop something new or add more advanced features.",
+   "clarification": "Programs can be broken down into smaller parts, which can be incorporated into new or existing programs. For example, students could modify prewritten code from a single-player game to create a two-player game with slightly different rules, remix and add another scene to an animated story, use code to make a ball bounce from another program in a new basketball game, or modify an image created by another student."
+  },
+  {
+   "id": "1B-AP-13",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    1,
+    5
+   ],
+   "practiceCodes": [
+    "1.1",
+    "5.1"
+   ],
+   "statement": "Use an iterative process to plan the development of a program by including others' perspectives and considering user preferences.",
+   "clarification": "Planning is an important part of the iterative process of program development. Students outline key features, time and resource constraints, and user expectations. Students should document the plan as, for example, a storyboard, flowchart, pseudocode, or story map."
+  },
+  {
+   "id": "1B-AP-14",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    5,
+    7
+   ],
+   "practiceCodes": [
+    "5.2",
+    "7.3"
+   ],
+   "statement": "Observe intellectual property rights and give appropriate attribution when creating or remixing programs.",
+   "clarification": "Intellectual property rights can vary by country but copyright laws give the creator of a work a set of rights that prevents others from copying the work and using it in ways that they may not like. Students should identify instances of remixing, when ideas are borrowed and iterated upon, and credit the original creator. Students should also consider common licenses that place limitations or restrictions on the use of computational artifacts, such as images and music downloaded from the Internet. At this stage, attribution should be written in the format required by the teacher and should always be included on any programs shared online."
+  },
+  {
+   "id": "1B-AP-15",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    6
+   ],
+   "practiceCodes": [
+    "6.1",
+    "6.2"
+   ],
+   "statement": "Test and debug (identify and fix errors) a program or algorithm to ensure it runs as intended.",
+   "clarification": "As students develop programs they should continuously test those programs to see that they do what was expected and fix (debug), any errors. Students should also be able to successfully debug simple errors in programs created by others."
+  },
+  {
+   "id": "1B-AP-16",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    2
+   ],
+   "practiceCodes": [
+    "2.2"
+   ],
+   "statement": "Take on varying roles, with teacher guidance, when collaborating with peers during the design, implementation, and review stages of program development.",
+   "clarification": "Collaborative computing is the process of performing a computational task by working in pairs or on teams. Because it involves asking for the contributions and feedback of others, effective collaboration can lead to better outcomes than working independently. Students should take turns in different roles during program development, such as note taker, facilitator, program tester, or \"driver\" of the computer."
+  },
+  {
+   "id": "1B-AP-17",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.2"
+   ],
+   "statement": "Describe choices made during program development using code comments, presentations, and demonstrations.",
+   "clarification": "People communicate about their code to help others understand and use their programs. Another purpose of communicating one's design choices is to show an understanding of one's work. These explanations could manifest themselves as in-line code comments for collaborators and assessors, or as part of a summative presentation, such as a code walk-through or coding journal."
+  },
+  {
+   "id": "1B-IC-18",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Impacts of Computing",
+   "subconcept": "Culture",
+   "practices": [
+    3
+   ],
+   "practiceCodes": [
+    "3.1"
+   ],
+   "statement": "Discuss computing technologies that have changed the world, and express how those technologies influence, and are influenced by, cultural practices.",
+   "clarification": "New computing technology is created and existing technologies are modified for many reasons, including to increase their benefits, decrease their risks, and meet societal needs. Students, with guidance from their teacher, should discuss topics that relate to the history of technology and the changes in the world due to technology. Topics could be based on current news content, such as robotics, wireless Internet, mobile computing devices, GPS systems, wearable computing, or how social media has influenced social and political changes."
+  },
+  {
+   "id": "1B-IC-19",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Impacts of Computing",
+   "subconcept": "Culture",
+   "practices": [
+    1
+   ],
+   "practiceCodes": [
+    "1.2"
+   ],
+   "statement": "Brainstorm ways to improve the accessibility and usability of technology products for the diverse needs and wants of users.",
+   "clarification": "The development and modification of computing technology are driven by people's needs and wants and can affect groups differently. Anticipating the needs and wants of diverse end users requires students to purposefully consider potential perspectives of users with different backgrounds, ability levels, points of view, and disabilities. For example, students may consider using both speech and text when they wish to convey information in a game. They may also wish to vary the types of programs they create, knowing that not everyone shares their own tastes."
+  },
+  {
+   "id": "1B-IC-20",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Impacts of Computing",
+   "subconcept": "Social Interactions",
+   "practices": [
+    1
+   ],
+   "practiceCodes": [
+    "1.1"
+   ],
+   "statement": "Seek diverse perspectives for the purpose of improving computational artifacts.",
+   "clarification": "Computing provides the possibility for collaboration and sharing of ideas and allows the benefit of diverse perspectives. For example, students could seek feedback from other groups in their class or students at another grade level. Or, with guidance from their teacher, they could use video conferencing tools or other online collaborative spaces, such as blogs, wikis, forums, or website comments, to gather feedback from individuals and groups about programming projects."
+  },
+  {
+   "id": "1B-IC-21",
+   "level": "1B",
+   "grades": "3-5",
+   "concept": "Impacts of Computing",
+   "subconcept": "Safety Law & Ethics",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.3"
+   ],
+   "statement": "Use public domain or creative commons media, and refrain from copying or using material created by others without permission.",
+   "clarification": "Ethical complications arise from the opportunities provided by computing. The ease of sending and receiving copies of media on the Internet, such as video, photos, and music, creates the opportunity for unauthorized use, such as online piracy, and disregard of copyrights. Students should consider the licenses on computational artifacts that they wish to use. For example, the license on a downloaded image or audio file may have restrictions that prohibit modification, require attribution, or prohibit use entirely."
+  },
+  {
+   "id": "2-CS-01",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Computing Systems",
+   "subconcept": "Devices",
+   "practices": [
+    3
+   ],
+   "practiceCodes": [
+    "3.3"
+   ],
+   "statement": "Recommend improvements to the design of computing devices, based on an analysis of how users interact with the devices.",
+   "clarification": "The study of human–computer interaction (HCI) can improve the design of devices, including both hardware and software. Students should make recommendations for existing devices (e.g., a laptop, phone, or tablet) or design their own components or interface (e.g., create their own controllers). Teachers can guide students to consider usability through several lenses, including accessibility, ergonomics, and learnability. For example, assistive devices provide capabilities such as scanning written information and converting it to speech."
+  },
+  {
+   "id": "2-CS-02",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Computing Systems",
+   "subconcept": "Hardware & Software",
+   "practices": [
+    5
+   ],
+   "practiceCodes": [
+    "5.1"
+   ],
+   "statement": "Design projects that combine hardware and software components to collect and exchange data.",
+   "clarification": "Collecting and exchanging data involves input, output, storage, and processing. When possible, students should select the hardware and software components for their project designs by considering factors such as functionality, cost, size, speed, accessibility, and aesthetics. For example, components for a mobile app could include accelerometer, GPS, and speech recognition. The choice of a device that connects wirelessly through a Bluetooth connection versus a physical USB connection involves a tradeoff between mobility and the need for an additional power source for the wireless device."
+  },
+  {
+   "id": "2-CS-03",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Computing Systems",
+   "subconcept": "Troubleshooting",
+   "practices": [
+    6
+   ],
+   "practiceCodes": [
+    "6.2"
+   ],
+   "statement": "Systematically identify and fix problems with computing devices and their components.",
+   "clarification": "Since a computing device may interact with interconnected devices within a system, problems may not be due to the specific computing device itself but to devices connected to it. Just as pilots use checklists to troubleshoot problems with aircraft systems, students should use a similar, structured process to troubleshoot problems with computing systems and ensure that potential solutions are not overlooked. Examples of troubleshooting strategies include following a troubleshooting flow diagram, making changes to software to see if hardware will work, checking connections and settings, and swapping in working components."
+  },
+  {
+   "id": "2-NI-04",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Networks & the Internet",
+   "subconcept": "Network Communication & Organization",
+   "practices": [
+    4
+   ],
+   "practiceCodes": [
+    "4.4"
+   ],
+   "statement": "Model the role of protocols in transmitting data across networks and the Internet.",
+   "clarification": "Protocols are rules that define how messages between computers are sent. They determine how quickly and securely information is transmitted across networks and the Internet, as well as how to handle errors in transmission. Students should model how data is sent using protocols to choose the fastest path, to deal with missing information, and to deliver sensitive data securely. For example, students could devise a plan for resending lost information or for interpreting a picture that has missing pieces. The priority at this grade level is understanding the purpose of protocols and how they enable secure and errorless communication. Knowledge of the details of how specific protocols work is not expected."
+  },
+  {
+   "id": "2-NI-05",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Networks & the Internet",
+   "subconcept": "Cybersecurity",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.2"
+   ],
+   "statement": "Explain how physical and digital security measures protect electronic information.",
+   "clarification": "Information that is stored online is vulnerable to unwanted access. Examples of physical security measures to protect data include keeping passwords hidden, locking doors, making backup copies on external storage devices, and erasing a storage device before it is reused. Examples of digital security measures include secure router admin passwords, firewalls that limit access to private networks, and the use of a protocol such as HTTPS to ensure secure data transmission."
+  },
+  {
+   "id": "2-NI-06",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Networks & the Internet",
+   "subconcept": "Cybersecurity",
+   "practices": [
+    4
+   ],
+   "practiceCodes": [
+    "4.4"
+   ],
+   "statement": "Apply multiple methods of encryption to model the secure transmission of information.",
+   "clarification": "Encryption can be as simple as letter substitution or as complicated as modern methods used to secure networks and the Internet. Students should encode and decode messages using a variety of encryption methods, and they should understand the different levels of complexity used to hide or secure information. For example, students could secure messages using methods such as Caesar cyphers or steganography (i.e., hiding messages inside a picture or other data). They can also model more complicated methods, such as public key encryption, through unplugged activities."
+  },
+  {
+   "id": "2-DA-07",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Data & Analysis",
+   "subconcept": "Storage",
+   "practices": [
+    4
+   ],
+   "practiceCodes": [
+    "4"
+   ],
+   "statement": "Represent data using multiple encoding schemes.",
+   "clarification": "Data representations occur at multiple levels of abstraction, from the physical storage of bits to the arrangement of information into organized formats (e.g., tables). Students should represent the same data in multiple ways. For example, students could represent the same color using binary, RGB values, hex codes (low-level representations), as well as forms understandable by people, including words, symbols, and digital displays of the color (high-level representations)."
+  },
+  {
+   "id": "2-DA-08",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Data & Analysis",
+   "subconcept": "Collection Visualization & Transformation",
+   "practices": [
+    6
+   ],
+   "practiceCodes": [
+    "6.3"
+   ],
+   "statement": "Collect data using computational tools and transform the data to make it more useful and reliable.",
+   "clarification": "As students continue to build on their ability to organize and present data visually to support a claim, they will need to understand when and how to transform data for this purpose. Students should transform data to remove errors, highlight or expose relationships, and/or make it easier for computers to process. The cleaning of data is an important transformation for ensuring consistent format and reducing noise and errors (e.g., removing irrelevant responses in a survey). An example of a transformation that highlights a relationship is representing males and females as percentages of a whole instead of as individual counts."
+  },
+  {
+   "id": "2-DA-09",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Data & Analysis",
+   "subconcept": "Inference & Models",
+   "practices": [
+    4,
+    5
+   ],
+   "practiceCodes": [
+    "5.3",
+    "4.4"
+   ],
+   "statement": "Refine computational models based on the data they have generated.",
+   "clarification": "A model may be a programmed simulation of events or a representation of how various data is related. In order to refine a model, students need to consider which data points are relevant, how data points relate to each other, and if the data is accurate. For example, students may make a prediction about how far a ball will travel based on a table of data related to the height and angle of a track. The students could then test and refine their model by comparing predicted versus actual results and considering whether other factors are relevant (e.g., size and mass of the ball). Additionally, students could refine game mechanics based on test outcomes in order to make the game more balanced or fair."
+  },
+  {
+   "id": "2-AP-10",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Algorithms",
+   "practices": [
+    4
+   ],
+   "practiceCodes": [
+    "4.4",
+    "4.1"
+   ],
+   "statement": "Use flowcharts and/or pseudocode to address complex problems as algorithms.",
+   "clarification": "Complex problems are problems that would be difficult for students to solve computationally. Students should use pseudocode and/or flowcharts to organize and sequence an algorithm that addresses a complex problem, even though they may not actually program the solutions. For example, students might express an algorithm that produces a recommendation for purchasing sneakers based on inputs such as size, colors, brand, comfort, and cost. Testing the algorithm with a wide range of inputs and users allows students to refine their recommendation algorithm and to identify other inputs they may have initially excluded."
+  },
+  {
+   "id": "2-AP-11",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Variables",
+   "practices": [
+    5
+   ],
+   "practiceCodes": [
+    "5.1",
+    "5.2"
+   ],
+   "statement": "Create clearly named variables that represent different data types and perform operations on their values.",
+   "clarification": "A variable is like a container with a name, in which the contents may change, but the name (identifier) does not. When planning and developing programs, students should decide when and how to declare and name new variables. Students should use naming conventions to improve program readability. Examples of operations include adding points to the score, combining user input with words to make a sentence, changing the size of a picture, or adding a name to a list of people."
+  },
+  {
+   "id": "2-AP-12",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Control",
+   "practices": [
+    5
+   ],
+   "practiceCodes": [
+    "5.1",
+    "5.2"
+   ],
+   "statement": "Design and iteratively develop programs that combine control structures, including nested loops and compound conditionals.",
+   "clarification": "Control structures can be combined in many ways. Nested loops are loops placed within loops. Compound conditionals combine two or more conditions in a logical relationship (e.g., using AND, OR, and NOT), and nesting conditionals within one another allows the result of one conditional to lead to another. For example, when programming an interactive story, students could use a compound conditional within a loop to unlock a door only if a character has a key AND is touching the door."
+  },
+  {
+   "id": "2-AP-13",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Modularity",
+   "practices": [
+    3
+   ],
+   "practiceCodes": [
+    "3.2"
+   ],
+   "statement": "Decompose problems and subproblems into parts to facilitate the design, implementation, and review of programs.",
+   "clarification": "Students should break down problems into subproblems, which can be further broken down to smaller parts. Decomposition facilitates aspects of program development by allowing students to focus on one piece at a time (e.g., getting input from the user, processing the data, and displaying the result to the user). Decomposition also enables different students to work on different parts at the same time. For example, animations can be decomposed into multiple scenes, which can be developed independently."
+  },
+  {
+   "id": "2-AP-14",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Modularity",
+   "practices": [
+    4
+   ],
+   "practiceCodes": [
+    "4.1",
+    "4.3"
+   ],
+   "statement": "Create procedures with parameters to organize code and make it easier to reuse.",
+   "clarification": "Students should create procedures and/or functions that are used multiple times within a program to repeat groups of instructions. These procedures can be generalized by defining parameters that create different outputs for a wide range of inputs. For example, a procedure to draw a circle involves many instructions, but all of them can be invoked with one instruction, such as \"drawCircle.\" By adding a radius parameter, the user can easily draw circles of different sizes."
+  },
+  {
+   "id": "2-AP-15",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    1,
+    2
+   ],
+   "practiceCodes": [
+    "2.3",
+    "1.1"
+   ],
+   "statement": "Seek and incorporate feedback from team members and users to refine a solution that meets user needs.",
+   "clarification": "Development teams that employ user-centered design create solutions (e.g., programs and devices) that can have a large societal impact, such as an app that allows people with speech difficulties to translate hard-to-understand pronunciation into understandable language. Students should begin to seek diverse perspectives throughout the design process to improve their computational artifacts. Considerations of the end-user may include usability, accessibility, age-appropriate content, respectful language, user perspective, pronoun use, color contrast, and ease of use."
+  },
+  {
+   "id": "2-AP-16",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    4,
+    5,
+    7
+   ],
+   "practiceCodes": [
+    "4.2",
+    "5.2",
+    "7.3"
+   ],
+   "statement": "Incorporate existing code, media, and libraries into original programs, and give attribution.",
+   "clarification": "Building on the work of others enables students to produce more interesting and powerful creations. Students should use portions of code, algorithms, and/or digital media in their own programs and websites. At this level, they may also import libraries and connect to web application program interfaces (APIs). For example, when creating a side-scrolling game, students may incorporate portions of code that create a realistic jump movement from another person's game, and they may also import Creative Commons-licensed images to use in the background. Students should give attribution to the original creators to acknowledge their contributions."
+  },
+  {
+   "id": "2-AP-17",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    6
+   ],
+   "practiceCodes": [
+    "6.1"
+   ],
+   "statement": "Systematically test and refine programs using a range of test cases.",
+   "clarification": "Use cases and test cases are created and analyzed to better meet the needs of users and to evaluate whether programs function as intended. At this level, testing should become a deliberate process that is more iterative, systematic, and proactive than at lower levels. Students should begin to test programs by considering potential errors, such as what will happen if a user enters invalid input (e.g., negative numbers and 0 instead of positive numbers)."
+  },
+  {
+   "id": "2-AP-18",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    2
+   ],
+   "practiceCodes": [
+    "2.2"
+   ],
+   "statement": "Distribute tasks and maintain a project timeline when collaboratively developing computational artifacts.",
+   "clarification": "Collaboration is a common and crucial practice in programming development. Often, many individuals and groups work on the interdependent parts of a project together. Students should assume pre-defined roles within their teams and manage the project workflow using structured timelines. With teacher guidance, they will begin to create collective goals, expectations, and equitable workloads. For example, students may divide the design stage of a game into planning the storyboard, flowchart, and different parts of the game mechanics. They can then distribute tasks and roles among members of the team and assign deadlines."
+  },
+  {
+   "id": "2-AP-19",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Algorithms & Programming",
+   "subconcept": "Program Development",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.2"
+   ],
+   "statement": "Document programs in order to make them easier to follow, test, and debug.",
+   "clarification": "Documentation allows creators and others to more easily use and understand a program. Students should provide documentation for end users that explains their artifacts and how they function. For example, students could provide a project overview and clear user instructions. They should also incorporate comments in their product and communicate their process using design documents, flowcharts, and presentations."
+  },
+  {
+   "id": "2-IC-20",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Impacts of Computing",
+   "subconcept": "Culture",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.2"
+   ],
+   "statement": "Compare tradeoffs associated with computing technologies that affect people's everyday activities and career options.",
+   "clarification": "Advancements in computer technology are neither wholly positive nor negative. However, the ways that people use computing technologies have tradeoffs. Students should consider current events related to broad ideas, including privacy, communication, and automation. For example, driverless cars can increase convenience and reduce accidents, but they are also susceptible to hacking. The emerging industry will reduce the number of taxi and shared-ride drivers, but will create more software engineering and cybersecurity jobs."
+  },
+  {
+   "id": "2-IC-21",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Impacts of Computing",
+   "subconcept": "Culture",
+   "practices": [
+    1
+   ],
+   "practiceCodes": [
+    "1.2"
+   ],
+   "statement": "Discuss issues of bias and accessibility in the design of existing technologies.",
+   "clarification": "Students should test and discuss the usability of various technology tools (e.g., apps, games, and devices) with the teacher's guidance. For example, facial recognition software that works better for lighter skin tones was likely developed with a homogeneous testing group and could be improved by sampling a more diverse population. When discussing accessibility, students may notice that allowing a user to change font sizes and colors will not only make an interface usable for people with low vision but also benefits users in various situations, such as in bright daylight or a dark room."
+  },
+  {
+   "id": "2-IC-22",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Impacts of Computing",
+   "subconcept": "Social Interactions",
+   "practices": [
+    2,
+    5
+   ],
+   "practiceCodes": [
+    "2.4",
+    "5.2"
+   ],
+   "statement": "Collaborate with many contributors through strategies such as crowdsourcing or surveys when creating a computational artifact.",
+   "clarification": "Crowdsourcing is gathering services, ideas, or content from a large group of people, especially from the online community. It can be done at the local level (e.g., classroom or school) or global level (e.g., age-appropriate online communities, like Scratch and Minecraft). For example, a group of students could combine animations to create a digital community mosaic. They could also solicit feedback from many people though use of online communities and electronic surveys."
+  },
+  {
+   "id": "2-IC-23",
+   "level": "2",
+   "grades": "6-8",
+   "concept": "Impacts of Computing",
+   "subconcept": "Safety Law & Ethics",
+   "practices": [
+    7
+   ],
+   "practiceCodes": [
+    "7.2"
+   ],
+   "statement": "Describe tradeoffs between allowing information to be public and keeping information private and secure.",
+   "clarification": "Sharing information online can help establish, maintain, and strengthen connections between people. For example, it allows artists and designers to display their talents and reach a broad audience. However, security attacks often start with personal information that is publicly available online. Social engineering is based on tricking people into revealing sensitive information and can be thwarted by being wary of attacks, such as phishing and spoofing."
+  }
+ ]
+}
