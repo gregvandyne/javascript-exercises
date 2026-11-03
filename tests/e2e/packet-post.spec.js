@@ -52,6 +52,8 @@ test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solve
 test('Packet Post: the chapter map with its six chapters and the Daily Crew Challenge, the band toggle, the wheel tool', async ({ page }) => {
   const { f, errors } = await open(page);
   await f.locator('.ok-title-screen .ok-hot').click();
+  const go = f.locator('.ok-howto .ok-hot');   // the kit's first-visit how-to card
+  await go.waitFor({ state: 'visible', timeout: 8000 }).then(() => go.click(), () => {});
   await expect(f.locator('.pp-map .pp-ch')).toHaveCount(7, { timeout: 15000 });   // six chapters and the daily tile
   await expect(f.locator('.pp-ch.pp-daily')).toBeVisible();
   await f.locator('.pp-seg button').nth(1).click();   // Pro

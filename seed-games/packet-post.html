@@ -1128,7 +1128,7 @@ function showMap() {
 }
 function startDaily(day) {
   const d = E.daily(LEVELS, S.band, day == null ? dayNumber() : day); if (!d) return showMap();
-  S.lesson = false; S.lockedChapter = null; S.range = null; S.chained = []; S.daily = d;
+  S.lesson = false; S.lock = false; S.lockedChapter = null; S.range = null; S.chained = []; S.daily = d;   // the daily is free play
   const ix = levelsFor(d.level.ch, S.band).indexOf(d.level);
   S.chapter = d.level.ch; startLevel(d.level.ch, ix, { seed: d.seed, noLearn: true });
 }
