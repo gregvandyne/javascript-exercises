@@ -360,3 +360,41 @@ test("(b') at least three bank items per CSTA id of its band, and every bank ite
   for (const s of CSTA.all()) assert.ok(count.get(s.id) >= 3, `${s.id}: ${count.get(s.id)} bank items`);
   for (const it of items.values()) assert.ok(lessons.some(l => l.n === it.lesson && l.exit.setId === it.bank), `${it.id}: lesson ${it.lesson} exists for ${it.bank}`);
 });
+
+// ---------------------------------------------------------------- the engine reads the same files (server/services/lesson-templates.js)
+const T = await import('../../server/services/lesson-templates.js');
+
+test('the catalogue loader sees exactly the lesson files on disk, in program order, with the banks and the chapter table', () => {
+  const cat = T.catalogue();
+  assert.deepEqual([...cat.lessons.keys()].sort(), lessons.map(l => l.key).sort());
+  assert.deepEqual(cat.missing.sort(), missing.map(m => m.key).sort(), 'the same missing keys as units.json promises');
+  assert.deepEqual(T.templates().map(l => l.order), [...T.templates().map(l => l.order)].sort((a, b) => a - b), 'program order');
+  assert.equal(cat.banks.size, banks.length);
+  assert.deepEqual(Object.keys(cat.games).sort(), Object.keys(GAMES).sort());
+  for (const l of lessons) {
+    const tpl = T.getTemplate(l.key);
+    assert.equal(tpl.title, l.title); assert.ok(tpl.unitTitle, 'the unit title rides along'); assert.equal(tpl.file, `lessons/${l.file}`);
+    const titles = T.setTitles(tpl);
+    for (const t of Object.values(titles)) assert.ok(t.length <= SETS.LIMITS.title && t.startsWith('CSQ '), `${t}: a derived set title`);
+    if (l.warmup && haveBanks) assert.ok(T.bankItems(l.warmup.setId, l.warmup.items), `${l.key}: the warm-up items resolve through the loader`);
+    if (haveBanks) assert.ok(T.bankItems(l.exit.setId, l.exit.items), `${l.key}: the exit items resolve through the loader`);
+  }
+  for (const u of units.units) for (const band of ['1B', '2']) { const k = T.unitKeys(u.n, band); assert.equal(k.keys.length + k.missing.length, u.lessons.length, `unit ${u.n} ${band}`); }
+  for (const p of units.paths) for (const band of ['1B', '2']) { const k = T.pathKeys(p.id, band); assert.equal(k.keys.length + k.missing.length, p.lessons.length, `path ${p.id} ${band}`); }
+});
+
+test('coverage(): 44 rows; every id present as a primary has a step carrying it and a rubric line; the practices table matches clause (i) once complete', () => {
+  const m = T.coverage();
+  assert.equal(m.ids.length, 44); assert.equal(m.lessons, lessons.length); assert.equal(m.complete, complete);
+  for (const s of m.ids) {
+    if (!s.primary.length) continue;
+    assert.ok(s.steps.length >= 1, `${s.id}: a step carries it (Practiced)`);
+    assert.ok(s.rubric.length >= 1, `${s.id}: a rubric line carries it (Applied)`);
+    for (const a of s.activities) { assert.ok(GAMES[a.slug], `${s.id}: ${a.slug}`); assert.ok(a.chapterTitle && Number.isInteger(a.levels), `${s.id}: ${a.slug} ${a.chapter} is a real chapter`); }
+    if (haveBanks) assert.ok(s.items.total >= 1, `${s.id}: a bank item`);
+  }
+  if (complete) {
+    for (const s of m.ids) assert.ok(s.primaryOutsideUnit7, `${s.id}: primary outside unit 7`);
+    for (let p = 1; p <= 7; p++) assert.ok(Object.values(m.practices[p]).filter(x => x.length).length >= 3, `practice ${p} in three units`);
+  }
+});

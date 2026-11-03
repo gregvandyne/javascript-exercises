@@ -93,3 +93,57 @@ comes back. No prices anywhere on the page.
 
 Site chrome under `cs.*` in all 13 locale files (`scripts/i18n-add-cs-quest.mjs` merges them; `npm run i18n:check`).
 Lesson text, quiz items, rubric lines and CSTA statements are English (rendered with `lang="en"`).
+
+## Curriculum: the catalogue and the materialiser
+
+The program's content is data in `seed-lessons/cs-quest/` (`README.md` there has the schema): `units.json` (7 units, 23
+lessons, 46 keys, the four paths, the period and its 40-minute cut), `lessons/<u.n>-<1b|2>.json` (one file per lesson and
+band: the whole plan page and the student-visible steps), `games.json` (the chapter table the catalogue test checks quest
+codes and step standards against), owner B's `sets/u<n>-<1b|2>.json` (the 14 unit banks) and `wyr-tech.json`. Checked by
+`node --test tests/unit/cs-quest-catalogue.test.js`; printed by `node scripts/cs-quest-coverage.js [--json] [--level 1B|2]`.
+
+`server/services/lesson-templates.js` reads it once (`catalogue()`, `getTemplate(key)`, `templates({ band, unit })`,
+`unitKeys(n, band)`, `pathKeys(id, band)`, `bankOf(setId)`, `bankItems(setId, ids)`, `setTitles(lesson)`, `coverage()`) and
+turns a lesson file into an ordinary lesson in a teacher's library:
+
+- `materialise(u, schoolId, key, { folderId, again })`: the folder **CS Quest** with a sub-folder per unit and band
+  (`Unit 1 · Think Like a Robot (Grades 3-5)`), the lesson (title `CS Quest 1.2 · …`, subject `Computer science`, grade,
+  summary, the I-can lines as objectives, `template_key` = the catalogue key, `template_version`), the derived live sets in
+  the teacher's My sets with subject `cs-quest` (`CSQ 1.2 warm-up · Loops (3-5)`: the five warm-up items at 15 s;
+  `CSQ 1.2 exit ticket (3-5)`: the three exit items with `cat`; once per unit and band `CSQ Unit 1 review (3-5)`: the whole
+  bank with `cat` replaced by the lesson topic), and the steps in the file's order: Today (text) · Warm-up (live) (a game
+  step on Quest Race at 1B / Question Battle at 2, hosted live) · Play: <chapter> (a game step with `options`, `standards`
+  and the quest code in the body) · Exit ticket (a quiz step from the exit set, `cat` and `secs` kept; with `QUIZ_STEPS=0` a
+  text step "Exit ticket (paper or live)") · In your own words (a question step with the sentence frame and one rubric line
+  per primary id). 6.1 / 6.3 put a Would You Rather (live) step there, 6.2 Pro two Play steps, 7.1 three question steps,
+  7.2 a Builder etiquette text step and a build step on the `quiz` template with the Program rubric line, 7.3 a text and a
+  question step, 7.4 a question step. A game that is not published (or not yet seeded) becomes a text step that says the
+  game is not available yet, never a skipped step. The answer carries `notes` (`gameNotPublished`, `quizStepsOff`,
+  `bankMissing`) for the plan page's state chips.
+- Idempotent per owner, school, key and version: the copy a teacher already has at the catalogue's version is answered as it
+  is (`created: false`); `again: true` makes a fresh copy; `status(u, schoolId, key)` / `libraryStatus(u, schoolId)` say
+  whether a key is in the library and whether a newer catalogue version exists ("Update available").
+  `materialiseUnit(u, schoolId, n, band)`, `materialisePath(u, schoolId, id, band)` and `materialiseMany(u, schoolId, keys)`
+  go through the same function; lesson files not written yet are reported in `missing`.
+- `resetLesson(u, lessonId)` (P21): a fresh copy of the catalogue version takes over the old copy's class assignments with
+  the same unit, `opens_at` and `due_at`; the old copy is unassigned there and keeps the students' work (it comes back if
+  the old copy is assigned again); classes the teacher does not manage keep the old copy (`kept`).
+
+Routes (`server/routes/cs-quest.js`, mounted before the lesson routes; staff of a school by membership; refusals are JSON
+`{ error, code }`):
+
+| Route | Body / answer |
+| --- | --- |
+| `POST /api/lessons/from-template/:key` | `{ schoolId?, again? }` -> `{ ok, lesson, created, notes, sets: { warmup, exit, review } }` |
+| `POST /api/lessons/from-template/unit/:unit`, `/path/:path` | `{ band: '1b' \| '2', schoolId?, again? }` -> `{ ok, lessons, skipped, missing }` |
+| `POST /api/lessons/from-template` | `{ key }` \| `{ keys }` \| `{ unit, band }` \| `{ path, band }` (+ `schoolId?`, `again?`): the same answers |
+| `POST /api/lessons/:id/reset-template` | -> `{ ok, lesson, old, moved: [{ classId, classLessonId }], kept, notes }` |
+| `POST /api/classes/:id/assign-unit` | `{ lessonIds }` \| `{ keys }` \| `{ unit, band }` \| `{ path, band }` (catalogue keys are materialised first), `unitId?` \| `unitName?` (a class unit found or made; the catalogue unit's or the path's name by default), `start?` (`YYYY-MM-DD`, today when empty), `cadence?` (`daily`, `weekdays`, `weekly`, `twice-weekly`), `dueDays?` -> `{ ok, unit, assigned: [{ lessonId, key, classLessonId, opensAt, dueAt, restored }], skipped, materialised, missing }` (`lessons.assignUnitWithCadence`) |
+| `GET /api/cs-quest/catalog` | the program for the signed-in teacher: units and lessons with each band's key, quest code, params and library status in the school, paths, period, rules, FAQ, `missing`, flags, the Builder status |
+| `GET /api/cs-quest/lessons/:key` | one lesson file, its derived set titles and library status (unit 7: the Builder status too) |
+| `GET /api/cs-quest/coverage` | `coverage()`: the 44 ids with lessons, steps, chapters, bank items, rubric lines, and the practices table |
+| `GET /api/cs-quest/builder-status` | `builderStatus()` (P18) |
+
+Tests: `tests/unit/cs-quest-templates.test.js` (the loader, every lesson file present materialised on an in-memory database,
+the derived sets, idempotence and Add again, the QUIZ_STEPS-off and game-not-published text steps, reset, the routes) and
+`tests/unit/cs-quest-pages.test.js` (the JSON the pages read; the pages themselves are todo until they land).
