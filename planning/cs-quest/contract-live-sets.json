@@ -1,0 +1,2063 @@
+{
+ "program": {
+  "name": "CS Quest",
+  "slug": "cs-quest",
+  "tagline": "Computer science, one period at a time.",
+  "standards": "CSTA K-12 CS Standards 2017, levels 1B (grades 3-5) and 2 (grades 6-8)",
+  "bands": {
+   "1B": {
+    "grade": "Grades 3-5",
+    "inGame": "Explorer",
+    "code": "1b"
+   },
+   "2": {
+    "grade": "Grades 6-8",
+    "inGame": "Pro",
+    "code": "2"
+   }
+  },
+  "units": [
+   {
+    "n": 1,
+    "title": "Think Like a Robot",
+    "lessons": [
+     "1.1",
+     "1.2",
+     "1.3",
+     "1.4",
+     "1.5"
+    ]
+   },
+   {
+    "n": 2,
+    "title": "Bug Hunters",
+    "lessons": [
+     "2.1",
+     "2.2"
+    ]
+   },
+   {
+    "n": 3,
+    "title": "Data Detectives",
+    "lessons": [
+     "3.1",
+     "3.2",
+     "3.3"
+    ]
+   },
+   {
+    "n": 4,
+    "title": "Packet Post",
+    "lessons": [
+     "4.1",
+     "4.2",
+     "4.3"
+    ]
+   },
+   {
+    "n": 5,
+    "title": "Inside the Machine",
+    "lessons": [
+     "5.1",
+     "5.2",
+     "5.3"
+    ]
+   },
+   {
+    "n": 6,
+    "title": "Tech Choices",
+    "lessons": [
+     "6.1",
+     "6.2",
+     "6.3"
+    ]
+   },
+   {
+    "n": 7,
+    "title": "Make Your Own Game",
+    "lessons": [
+     "7.1",
+     "7.2",
+     "7.3",
+     "7.4"
+    ]
+   }
+  ],
+  "paths": {
+   "full": "all 23",
+   "core10": [
+    "1.2",
+    "2.1",
+    "3.1",
+    "4.1",
+    "5.2",
+    "6.1",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ],
+   "csEdWeek": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "4.1",
+    "6.1"
+   ],
+   "deviceFirst": [
+    "5.2",
+    "5.1",
+    "5.3",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.1",
+    "4.2",
+    "4.3",
+    "6.1",
+    "6.2",
+    "6.3",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ]
+  },
+  "period": [
+   [
+    "0:00",
+    5,
+    "Arrive, log in, Do Now"
+   ],
+   [
+    "0:05",
+    5,
+    "Warm-up (live or projector)"
+   ],
+   [
+    "0:10",
+    6,
+    "Explore (projector script)"
+   ],
+   [
+    "0:16",
+    18,
+    "Play"
+   ],
+   [
+    "0:34",
+    6,
+    "Discuss"
+   ],
+   [
+    "0:40",
+    5,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "planPath": "/tmp/claude-0/-home-user-javascript-exercises/db321ed6-437e-588f-beaf-65f7e9b106cd/scratchpad/cs-quest/plan.md"
+ },
+ "sets": [
+  {
+   "id": "csq-u1-1b",
+   "kind": "quiz",
+   "unit": 1,
+   "band": "1B",
+   "title": "CSQ Unit 1 · Think Like a Robot (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-AP-10",
+    "1B-AP-08",
+    "1B-AP-09",
+    "1B-AP-11",
+    "1B-AP-12"
+   ],
+   "questionCount": 21,
+   "file": "seed-lessons/cs-quest/sets/u1-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u1-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u1-2",
+   "kind": "quiz",
+   "unit": 1,
+   "band": "2",
+   "title": "CSQ Unit 1 · Think Like a Robot (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-AP-10",
+    "2-AP-13",
+    "2-AP-12",
+    "2-AP-11",
+    "2-AP-14"
+   ],
+   "questionCount": 21,
+   "file": "seed-lessons/cs-quest/sets/u1-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u1-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u2-1b",
+   "kind": "quiz",
+   "unit": 2,
+   "band": "1B",
+   "title": "CSQ Unit 2 · Bug Hunters (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-AP-15",
+    "1B-AP-16",
+    "1B-AP-13",
+    "1B-AP-17"
+   ],
+   "questionCount": 11,
+   "file": "seed-lessons/cs-quest/sets/u2-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u2-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u2-2",
+   "kind": "quiz",
+   "unit": 2,
+   "band": "2",
+   "title": "CSQ Unit 2 · Bug Hunters (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-AP-17",
+    "2-AP-18",
+    "2-AP-19",
+    "2-AP-15"
+   ],
+   "questionCount": 11,
+   "file": "seed-lessons/cs-quest/sets/u2-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u2-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u3-1b",
+   "kind": "quiz",
+   "unit": 3,
+   "band": "1B",
+   "title": "CSQ Unit 3 · Data Detectives (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-DA-06",
+    "1B-DA-07",
+    "1B-IC-20"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u3-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u3-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u3-2",
+   "kind": "quiz",
+   "unit": 3,
+   "band": "2",
+   "title": "CSQ Unit 3 · Data Detectives (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-DA-08",
+    "2-DA-09",
+    "2-IC-22"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u3-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u3-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u4-1b",
+   "kind": "quiz",
+   "unit": 4,
+   "band": "1B",
+   "title": "CSQ Unit 4 · Packet Post (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-NI-04",
+    "1B-NI-05"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u4-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u4-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u4-2",
+   "kind": "quiz",
+   "unit": 4,
+   "band": "2",
+   "title": "CSQ Unit 4 · Packet Post (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-NI-04",
+    "2-NI-05",
+    "2-IC-23",
+    "2-NI-06"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u4-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u4-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u5-1b",
+   "kind": "quiz",
+   "unit": 5,
+   "band": "1B",
+   "title": "CSQ Unit 5 · Inside the Machine (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-CS-01",
+    "1B-CS-02",
+    "1B-CS-03"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u5-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u5-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u5-2",
+   "kind": "quiz",
+   "unit": 5,
+   "band": "2",
+   "title": "CSQ Unit 5 · Inside the Machine (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-CS-02",
+    "2-CS-01",
+    "2-CS-03",
+    "2-DA-07"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u5-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u5-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u6-1b",
+   "kind": "quiz",
+   "unit": 6,
+   "band": "1B",
+   "title": "CSQ Unit 6 · Tech Choices (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-IC-18",
+    "1B-IC-19",
+    "1B-IC-20",
+    "1B-IC-21",
+    "1B-AP-14"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u6-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u6-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u6-2",
+   "kind": "quiz",
+   "unit": 6,
+   "band": "2",
+   "title": "CSQ Unit 6 · Tech Choices (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-IC-20",
+    "2-IC-21",
+    "2-CS-01",
+    "2-IC-23",
+    "2-AP-16"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u6-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u6-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u7-1b",
+   "kind": "quiz",
+   "unit": 7,
+   "band": "1B",
+   "title": "CSQ Unit 7 · Make Your Own Game (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-AP-13",
+    "1B-AP-16",
+    "1B-AP-11",
+    "1B-AP-15",
+    "1B-IC-20",
+    "1B-AP-17",
+    "1B-AP-14"
+   ],
+   "questionCount": 17,
+   "file": "seed-lessons/cs-quest/sets/u7-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u7-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u7-2",
+   "kind": "quiz",
+   "unit": 7,
+   "band": "2",
+   "title": "CSQ Unit 7 · Make Your Own Game (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-AP-18",
+    "2-AP-13",
+    "2-AP-10",
+    "2-AP-17",
+    "2-AP-15",
+    "2-DA-09",
+    "2-IC-22",
+    "2-AP-19",
+    "2-AP-16"
+   ],
+   "questionCount": 17,
+   "file": "seed-lessons/cs-quest/sets/u7-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u7-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "wyr-tech",
+   "kind": "wyr",
+   "unit": 6,
+   "band": "both",
+   "title": "Tech choices",
+   "modes": [
+    "wyr"
+   ],
+   "starter": "wyr:tech:10:20",
+   "cstaTags": [
+    "1B-IC-18",
+    "2-IC-20",
+    "2-IC-23",
+    "1B-IC-19",
+    "2-IC-21",
+    "1B-AP-14",
+    "2-AP-16"
+   ],
+   "questionCount": 20,
+   "files": [
+    "scripts/data/would-you-rather/en.json (+ 12 locale files, English fallback per item)",
+    "scripts/data/would-you-rather/ui.json (cat.tech x13)",
+    "seed-lessons/cs-quest/wyr-tech.json (prompts + csta)"
+   ],
+   "rules": "a/b text <= 60 chars; tags from TAGS; no brands, digits, names, URLs"
+  },
+  {
+   "id": "wyr-online",
+   "kind": "wyr",
+   "unit": 6,
+   "band": "both",
+   "title": "Online: share or keep",
+   "modes": [
+    "wyr"
+   ],
+   "starter": "wyr:online:8:20",
+   "cstaTags": [
+    "2-IC-23",
+    "1B-IC-21",
+    "1B-NI-05",
+    "2-NI-05",
+    "1B-AP-14"
+   ],
+   "questionCount": 10,
+   "files": [
+    "scripts/data/would-you-rather/en.json",
+    "scripts/data/would-you-rather/ui.json (cat.online x13)",
+    "seed-lessons/cs-quest/wyr-tech.json"
+   ],
+   "rules": "same as wyr-tech"
+  }
+ ],
+ "i18n": {
+  "englishOnly": [
+   "lesson text and step bodies (seed-lessons/cs-quest/lessons/**)",
+   "quiz bank items (seed-lessons/cs-quest/sets/**)",
+   "WYR dilemma text (English fallback per item in the 12 non-English data files is allowed)",
+   "WYR prompts and CSTA tags (seed-lessons/cs-quest/wyr-tech.json)",
+   "rubric lines, planning sheet, printables (seed-lessons/cs-quest/printables/**)",
+   "CSTA ids and statements (rendered with el() as lang=en)",
+   "game level data (maps, sol, par, csta)",
+   "public landing copy under teachers.cs.* (uncounted prefix; English-first, rendered with el()/fb())"
+  ],
+  "mustBe13Languages": [
+   "cs.* (program page chrome, plan page buttons, banners, toasts, state chips, 'Your teacher hosts this live', 'game not available yet')",
+   "school.classTabs.standards and all Standards tab headings, legend, status words, CSV headers (cs.standards.*)",
+   "js.cs.* for any browser module",
+   "live.cs.* (anything B adds to /live chrome)",
+   "WYR ui.json cat.tech and cat.online",
+   "in-game strings of robo-route, data-detective, packet-post, inside-the-machine (own packs under /vendor/data/<slug>/<version>/<lang>.js, identical {slots}, <= 450 strings per game)",
+   "JSON l10n description/tags for the four games (11 non-English locales)"
+  ],
+  "namespaces": {
+   "A": [
+    "cs.*",
+    "js.cs.*",
+    "school.classTabs.standards",
+    "teachers.cs.*",
+    "learn.cs.*"
+   ],
+   "B": [
+    "live.cs.*",
+    "scripts/data/would-you-rather/ui.json"
+   ],
+   "games": [
+    "no locale files; own packs only"
+   ]
+  },
+  "rule": "each owner appends its own block at the end of every locale file; extra keys or placeholder mismatches fail npm test; run npm run i18n:check"
+ },
+ "sharedFiles": {
+  "integrationOnly": [
+   "scripts/seed.js (SEED_GAMES single-quoted array literal)",
+   "tests/unit/scanner.test.js slug list",
+   "tests/safety/scanner.test.js slug list",
+   "tests/e2e/seeds.spec.js",
+   "scripts/covers.js (recipe loader)",
+   "docs/decisions.md",
+   "docs/status.md"
+  ],
+  "localeFiles": "server/i18n/locales/*.json: each owner appends only its namespace block (see i18n.namespaces)",
+  "coversRecipes": "game owners write scripts/covers/<slug>.recipe.js; covers.js loads them (P16)",
+  "contentLint": "tests/unit/cs-quest-content-lint.test.js (owned by C) scans all four games' string literals and packs; D/E/F only add their slug to its list via integration",
+  "i18nScaffold": "scripts/cs-quest-i18n.mjs (owned by C) builds packs for all four games from scripts/data/cs-quest/<slug>/<lang>.json"
+ },
+ "platformChanges": [
+  {
+   "id": "P4",
+   "change": "keep cat (+secs) through quiz snapshots and saved live run items",
+   "files": [
+    "server/services/lessons.js (A)",
+    "server/services/classlive-results.js (B)"
+   ],
+   "owner": "A+B"
+  },
+  {
+   "id": "P6",
+   "change": "/live?starter= preselects wyr/bank starters",
+   "files": [
+    "server/routes/live.js",
+    "server/views/live.js",
+    "tests/unit/live-pages.test.js"
+   ],
+   "owner": "B"
+  },
+  {
+   "id": "P14",
+   "change": "WYR topics tech and online (data x13, ui.json, TOPICS, CATS, pack rebuild)",
+   "files": [
+    "scripts/data/would-you-rather/**",
+    "server/live/wyr.js",
+    "scripts/wyr-bank.js",
+    "tests/unit/live-wyr-atlas.test.js"
+   ],
+   "owner": "B"
+  },
+  {
+   "id": "P15",
+   "change": "catalogue + materialiser + routes + pages + CI test + coverage script",
+   "files": [
+    "seed-lessons/cs-quest/**",
+    "server/services/lesson-templates.js",
+    "server/routes/cs-quest.js",
+    "server/app.js",
+    "tests/unit/cs-quest-catalogue.test.js",
+    "scripts/cs-quest-coverage.js"
+   ],
+   "owner": "A (sets: B)"
+  }
+ ],
+ "criticAdditions": {
+  "note": "Appended by the completeness critic (3 Nov 2026). Overrides the generated sections where they conflict; see plan.md 'Critic additions' CA-1..CA-11. gen-contracts.py carries this key over on regeneration.",
+  "sets": {
+   "wyr-tech.starter": "wyr:tech:8:20",
+   "wyrDigitRule": "no runs of 2+ digits (tech-13 '3D printer' allowed)",
+   "csq-u1-1b.questionCount": 22,
+   "csq-u1-1b.add": "1b-1.1-r2, 1b-1.5-r2",
+   "csq-u6-1b.add": "1b-6.3-r2",
+   "csq-u6-2.add": "2-6.3-r2",
+   "csq-u5-2.add": "2-5.1-r2"
+  },
+  "platformChangesAdd": [
+   {
+    "id": "P5",
+    "add": "also hide the 'I played it' button (routes/progress.js:256) on MODES-slug and WYR-live steps"
+   },
+   {
+    "id": "P8",
+    "add": "copyLesson's explicit INSERT (lessons.js:191) must also copy options, standards, template"
+   },
+   {
+    "id": "P11",
+    "add": "'Also mark these teammates' multi-select; rubric lines on every lesson's sentence step"
+   },
+   {
+    "id": "P17",
+    "add": "cadence also sets due_at = day before the next lesson opens (last +7 days)"
+   },
+   {
+    "id": "P20",
+    "change": "/live set picker 'CS Quest' optgroup for sets with lesson_id",
+    "files": [
+     "server/views/live.js"
+    ],
+    "owner": "B"
+   },
+   {
+    "id": "P21",
+    "change": "Reset to the CS Quest version re-assigns the fresh copy to the same classes with the old dates and unassigns the old copy",
+    "owner": "A"
+   },
+   {
+    "id": "legal",
+    "change": "docs/legal-review.md line for the Standards tab and rubric marks (per-student education records; school-only; deletion hooks; teacher CSV only)",
+    "owner": "A"
+   }
+  ],
+  "i18n": {
+   "stringBudget": {
+    "chromePerGame": 450,
+    "levelTextPerGame": 1000,
+    "note": "level prose (learn, 3 hints, check q + 3 tiles, case files, tickets, briefs, letters, personas, quotes) is also 13-locale"
+   },
+   "translationWorkflow": "DECISION: machine translation through scripts/cs-quest-i18n.mjs + native review of 12 locales before the public page claims coverage; ~4 x 1300 x 12 strings",
+   "l10nTest": "each game's unit test asserts JSON l10n has all 11 non-English descriptions",
+   "usSpelling": {
+    "rule": "US spelling in lesson content, bank items and in-game en text; en-GB may differ",
+    "itemsToFix": [
+     "1b-1.4-r1",
+     "1b-3.1-e3",
+     "1b-3.3-e2",
+     "1b-4.1-e3",
+     "1b-6.2-e2",
+     "1b-7.1-r1",
+     "1b-7.2-e3",
+     "2-1.4-e2",
+     "2-3.1-e2",
+     "2-3.3-e2",
+     "2-5.1-e2",
+     "2-5.3-e3",
+     "2-6.3-e3"
+    ],
+    "words": [
+     "colour",
+     "favourite",
+     "grey",
+     "labelled",
+     "licence",
+     "organise",
+     "practise",
+     "neighbour",
+     "recognise",
+     "maths",
+     "centre",
+     "programme",
+     "catalogue(chrome)"
+    ]
+   },
+   "mergeScripts": "A and B each ship an i18n merge script (precedent scripts/i18n-add-live-wyr-atlas.mjs); integration runs both then npm run i18n:check",
+   "liveSetPicker": "B: /live set picker groups sets with lesson_id under a 'CS Quest' optgroup (live.cs.sets)"
+  },
+  "testsToOwn": {
+   "curriculum": [
+    "tests/e2e/how-it-works.spec.js PAGES += /teachers/cs-quest",
+    "scripts/how-shots.js --only cs materialises csq-1b-1.2 and seeds step_progress with standards/marks for the Standards-tab shot"
+   ]
+  }
+ },
+ "lessons": [
+  {
+   "id": "csq-1b-1.1",
+   "key": "csq-1b-1.1",
+   "band": "1B",
+   "title": "CS Quest 1.1 · Step by step (Sequences)",
+   "csta": [
+    "1B-AP-10",
+    "1B-AP-08"
+   ],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-u1-o1",
+    "1b-1.1-r1",
+    "1b-1.1-e1",
+    "1b-1.1-e2",
+    "1b-1.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.1-e1",
+    "1b-1.1-e2",
+    "1b-1.1-e3"
+   ]
+  },
+  {
+   "id": "csq-2-1.1",
+   "key": "csq-2-1.1",
+   "band": "2",
+   "title": "CS Quest 1.1 · Step by step (Sequences)",
+   "csta": [
+    "2-AP-10",
+    "2-AP-13"
+   ],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-u1-o1",
+    "2-1.1-r1",
+    "2-1.1-e1",
+    "2-1.1-e2",
+    "2-1.1-e3"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.1-e1",
+    "2-1.1-e2",
+    "2-1.1-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-1.2",
+   "key": "csq-1b-1.2",
+   "band": "1B",
+   "title": "CS Quest 1.2 · Again and again (Loops)",
+   "csta": [
+    "1B-AP-10"
+   ],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.1-e1",
+    "1b-1.1-e2",
+    "1b-1.2-r1",
+    "1b-1.2-e1",
+    "1b-1.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.2-e1",
+    "1b-1.2-e2",
+    "1b-1.2-e3"
+   ]
+  },
+  {
+   "id": "csq-2-1.2",
+   "key": "csq-2-1.2",
+   "band": "2",
+   "title": "CS Quest 1.2 · Again and again (Loops)",
+   "csta": [
+    "2-AP-12"
+   ],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.1-e1",
+    "2-1.1-e2",
+    "2-1.2-r1",
+    "2-1.2-e1",
+    "2-1.1-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.2-e1",
+    "2-1.2-e2",
+    "2-1.2-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-1.3",
+   "key": "csq-1b-1.3",
+   "band": "1B",
+   "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+   "csta": [
+    "1B-AP-10"
+   ],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.2-e1",
+    "1b-1.2-e2",
+    "1b-1.3-r1",
+    "1b-1.3-e1",
+    "1b-1.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.3-e1",
+    "1b-1.3-e2",
+    "1b-1.3-e3"
+   ]
+  },
+  {
+   "id": "csq-2-1.3",
+   "key": "csq-2-1.3",
+   "band": "2",
+   "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+   "csta": [
+    "2-AP-12"
+   ],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.2-e1",
+    "2-1.2-e2",
+    "2-1.3-r1",
+    "2-1.3-e1",
+    "2-1.2-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.3-e1",
+    "2-1.3-e2",
+    "2-1.3-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-1.4",
+   "key": "csq-1b-1.4",
+   "band": "1B",
+   "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+   "csta": [
+    "1B-AP-09"
+   ],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.3-e1",
+    "1b-1.3-e2",
+    "1b-1.4-r1",
+    "1b-1.4-e1",
+    "1b-1.3-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.4-e1",
+    "1b-1.4-e2",
+    "1b-1.4-e3"
+   ]
+  },
+  {
+   "id": "csq-2-1.4",
+   "key": "csq-2-1.4",
+   "band": "2",
+   "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+   "csta": [
+    "2-AP-11"
+   ],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.3-e1",
+    "2-1.3-e2",
+    "2-1.4-r1",
+    "2-1.4-e1",
+    "2-1.3-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.4-e1",
+    "2-1.4-e2",
+    "2-1.4-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-1.5",
+   "key": "csq-1b-1.5",
+   "band": "1B",
+   "title": "CS Quest 1.5 · Build a block (Functions, decomposition, remix)",
+   "csta": [
+    "1B-AP-11",
+    "1B-AP-12"
+   ],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.4-e1",
+    "1b-1.4-e2",
+    "1b-1.5-r1",
+    "1b-1.5-e1",
+    "1b-1.4-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.5-e1",
+    "1b-1.5-e2",
+    "1b-1.5-e3"
+   ]
+  },
+  {
+   "id": "csq-2-1.5",
+   "key": "csq-2-1.5",
+   "band": "2",
+   "title": "CS Quest 1.5 · Build a block (Functions, decomposition, remix)",
+   "csta": [
+    "2-AP-14",
+    "2-AP-13"
+   ],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.4-e1",
+    "2-1.4-e2",
+    "2-1.5-r1",
+    "2-1.5-e1",
+    "2-1.4-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.5-e1",
+    "2-1.5-e2",
+    "2-1.5-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-2.1",
+   "key": "csq-1b-2.1",
+   "band": "1B",
+   "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+   "csta": [
+    "1B-AP-15"
+   ],
+   "warmupSetId": "csq-u2-1b",
+   "warmupItems": [
+    "1b-u2-o1",
+    "1b-2.1-r1",
+    "1b-2.1-e1",
+    "1b-2.1-e2",
+    "1b-2.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u2-1b",
+   "exitItems": [
+    "1b-2.1-e1",
+    "1b-2.1-e2",
+    "1b-2.1-e3"
+   ]
+  },
+  {
+   "id": "csq-2-2.1",
+   "key": "csq-2-2.1",
+   "band": "2",
+   "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+   "csta": [
+    "2-AP-17"
+   ],
+   "warmupSetId": "csq-u2-2",
+   "warmupItems": [
+    "2-u2-o1",
+    "2-2.1-r1",
+    "2-2.1-e1",
+    "2-2.1-e2",
+    "2-2.1-e3"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u2-2",
+   "exitItems": [
+    "2-2.1-e1",
+    "2-2.1-e2",
+    "2-2.1-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-2.2",
+   "key": "csq-1b-2.2",
+   "band": "1B",
+   "title": "CS Quest 2.2 · Level designers (Plan, build, test, explain)",
+   "csta": [
+    "1B-AP-13",
+    "1B-AP-16",
+    "1B-AP-17"
+   ],
+   "warmupSetId": "csq-u2-1b",
+   "warmupItems": [
+    "1b-2.1-e1",
+    "1b-2.1-e2",
+    "1b-2.2-r1",
+    "1b-2.2-e1",
+    "1b-2.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u2-1b",
+   "exitItems": [
+    "1b-2.2-e1",
+    "1b-2.2-e2",
+    "1b-2.2-e3"
+   ]
+  },
+  {
+   "id": "csq-2-2.2",
+   "key": "csq-2-2.2",
+   "band": "2",
+   "title": "CS Quest 2.2 · Level designers (Plan, build, test, explain)",
+   "csta": [
+    "2-AP-15",
+    "2-AP-18",
+    "2-AP-19"
+   ],
+   "warmupSetId": "csq-u2-2",
+   "warmupItems": [
+    "2-2.1-e1",
+    "2-2.1-e2",
+    "2-2.2-r1",
+    "2-2.2-e1",
+    "2-2.1-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u2-2",
+   "exitItems": [
+    "2-2.2-e1",
+    "2-2.2-e2",
+    "2-2.2-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-3.1",
+   "key": "csq-1b-3.1",
+   "band": "1B",
+   "title": "CS Quest 3.1 · Sort it out (Organise data)",
+   "csta": [
+    "1B-DA-06"
+   ],
+   "warmupSetId": "csq-u3-1b",
+   "warmupItems": [
+    "1b-u3-o1",
+    "1b-3.1-r1",
+    "1b-3.1-e1",
+    "1b-3.1-e2",
+    "1b-3.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u3-1b",
+   "exitItems": [
+    "1b-3.1-e1",
+    "1b-3.1-e2",
+    "1b-3.1-e3"
+   ]
+  },
+  {
+   "id": "csq-2-3.1",
+   "key": "csq-2-3.1",
+   "band": "2",
+   "title": "CS Quest 3.1 · Sort it out (Organise data)",
+   "csta": [
+    "2-DA-08"
+   ],
+   "warmupSetId": "csq-u3-2",
+   "warmupItems": [
+    "2-u3-o1",
+    "2-3.1-r1",
+    "2-3.1-e1",
+    "2-3.1-e2",
+    "2-3.1-e3"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u3-2",
+   "exitItems": [
+    "2-3.1-e1",
+    "2-3.1-e2",
+    "2-3.1-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-3.2",
+   "key": "csq-1b-3.2",
+   "band": "1B",
+   "title": "CS Quest 3.2 · What does the data say? (Claims, predictions, models)",
+   "csta": [
+    "1B-DA-07"
+   ],
+   "warmupSetId": "csq-u3-1b",
+   "warmupItems": [
+    "1b-3.1-e1",
+    "1b-3.1-e2",
+    "1b-3.2-r1",
+    "1b-3.2-e1",
+    "1b-3.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u3-1b",
+   "exitItems": [
+    "1b-3.2-e1",
+    "1b-3.2-e2",
+    "1b-3.2-e3"
+   ]
+  },
+  {
+   "id": "csq-2-3.2",
+   "key": "csq-2-3.2",
+   "band": "2",
+   "title": "CS Quest 3.2 · What does the data say? (Claims, predictions, models)",
+   "csta": [
+    "2-DA-09"
+   ],
+   "warmupSetId": "csq-u3-2",
+   "warmupItems": [
+    "2-3.1-e1",
+    "2-3.1-e2",
+    "2-3.2-r1",
+    "2-3.2-e1",
+    "2-3.1-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u3-2",
+   "exitItems": [
+    "2-3.2-e1",
+    "2-3.2-e2",
+    "2-3.2-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-3.3",
+   "key": "csq-1b-3.3",
+   "band": "1B",
+   "title": "CS Quest 3.3 · Our class survey (Collect, chart, claim)",
+   "csta": [
+    "1B-DA-06",
+    "1B-DA-07",
+    "1B-IC-20"
+   ],
+   "warmupSetId": "csq-u3-1b",
+   "warmupItems": [
+    "1b-3.2-e1",
+    "1b-3.2-e2",
+    "1b-3.3-r1",
+    "1b-3.3-e1",
+    "1b-3.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u3-1b",
+   "exitItems": [
+    "1b-3.3-e1",
+    "1b-3.3-e2",
+    "1b-3.3-e3"
+   ]
+  },
+  {
+   "id": "csq-2-3.3",
+   "key": "csq-2-3.3",
+   "band": "2",
+   "title": "CS Quest 3.3 · Our class survey (Collect, chart, claim)",
+   "csta": [
+    "2-DA-08",
+    "2-IC-22"
+   ],
+   "warmupSetId": "csq-u3-2",
+   "warmupItems": [
+    "2-3.2-e1",
+    "2-3.2-e2",
+    "2-3.3-r1",
+    "2-3.3-e1",
+    "2-3.2-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u3-2",
+   "exitItems": [
+    "2-3.3-e1",
+    "2-3.3-e2",
+    "2-3.3-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-4.1",
+   "key": "csq-1b-4.1",
+   "band": "1B",
+   "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+   "csta": [
+    "1B-NI-04"
+   ],
+   "warmupSetId": "csq-u4-1b",
+   "warmupItems": [
+    "1b-u4-o1",
+    "1b-4.1-r1",
+    "1b-4.1-e1",
+    "1b-4.1-e2",
+    "1b-4.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u4-1b",
+   "exitItems": [
+    "1b-4.1-e1",
+    "1b-4.1-e2",
+    "1b-4.1-e3"
+   ]
+  },
+  {
+   "id": "csq-2-4.1",
+   "key": "csq-2-4.1",
+   "band": "2",
+   "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+   "csta": [
+    "2-NI-04"
+   ],
+   "warmupSetId": "csq-u4-2",
+   "warmupItems": [
+    "2-u4-o1",
+    "2-4.1-r1",
+    "2-4.1-e1",
+    "2-4.1-e2",
+    "2-4.1-e3"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u4-2",
+   "exitItems": [
+    "2-4.1-e1",
+    "2-4.1-e2",
+    "2-4.1-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-4.2",
+   "key": "csq-1b-4.2",
+   "band": "1B",
+   "title": "CS Quest 4.2 · Lock it up (Passphrases, private information, security)",
+   "csta": [
+    "1B-NI-05"
+   ],
+   "warmupSetId": "csq-u4-1b",
+   "warmupItems": [
+    "1b-4.1-e1",
+    "1b-4.1-e2",
+    "1b-4.2-r1",
+    "1b-4.2-e1",
+    "1b-4.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u4-1b",
+   "exitItems": [
+    "1b-4.2-e1",
+    "1b-4.2-e2",
+    "1b-4.2-e3"
+   ]
+  },
+  {
+   "id": "csq-2-4.2",
+   "key": "csq-2-4.2",
+   "band": "2",
+   "title": "CS Quest 4.2 · Lock it up (Passphrases, private information, security)",
+   "csta": [
+    "2-NI-05",
+    "2-IC-23"
+   ],
+   "warmupSetId": "csq-u4-2",
+   "warmupItems": [
+    "2-4.1-e1",
+    "2-4.1-e2",
+    "2-4.2-r1",
+    "2-4.2-e1",
+    "2-4.1-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u4-2",
+   "exitItems": [
+    "2-4.2-e1",
+    "2-4.2-e2",
+    "2-4.2-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-4.3",
+   "key": "csq-1b-4.3",
+   "band": "1B",
+   "title": "CS Quest 4.3 · Secret messages (Spotting tricks, ciphers)",
+   "csta": [
+    "1B-NI-05"
+   ],
+   "warmupSetId": "csq-u4-1b",
+   "warmupItems": [
+    "1b-4.2-e1",
+    "1b-4.2-e2",
+    "1b-4.3-r1",
+    "1b-4.3-e1",
+    "1b-4.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u4-1b",
+   "exitItems": [
+    "1b-4.3-e1",
+    "1b-4.3-e2",
+    "1b-4.3-e3"
+   ]
+  },
+  {
+   "id": "csq-2-4.3",
+   "key": "csq-2-4.3",
+   "band": "2",
+   "title": "CS Quest 4.3 · Secret messages (Spotting tricks, ciphers)",
+   "csta": [
+    "2-NI-06"
+   ],
+   "warmupSetId": "csq-u4-2",
+   "warmupItems": [
+    "2-4.2-e1",
+    "2-4.2-e2",
+    "2-4.3-r1",
+    "2-4.3-e1",
+    "2-4.2-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u4-2",
+   "exitItems": [
+    "2-4.3-e1",
+    "2-4.3-e2",
+    "2-4.3-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-5.1",
+   "key": "csq-1b-5.1",
+   "band": "1B",
+   "title": "CS Quest 5.1 · What's inside? (Parts, hardware and software, gadgets)",
+   "csta": [
+    "1B-CS-01",
+    "1B-CS-02"
+   ],
+   "warmupSetId": "csq-u5-1b",
+   "warmupItems": [
+    "1b-u5-o1",
+    "1b-5.1-r1",
+    "1b-5.1-e1",
+    "1b-5.1-e2",
+    "1b-5.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u5-1b",
+   "exitItems": [
+    "1b-5.1-e1",
+    "1b-5.1-e2",
+    "1b-5.1-e3"
+   ]
+  },
+  {
+   "id": "csq-2-5.1",
+   "key": "csq-2-5.1",
+   "band": "2",
+   "title": "CS Quest 5.1 · What's inside? (Parts, hardware and software, gadgets)",
+   "csta": [
+    "2-CS-02",
+    "2-CS-01"
+   ],
+   "warmupSetId": "csq-u5-2",
+   "warmupItems": [
+    "2-u5-o1",
+    "2-5.1-r1",
+    "2-5.1-e1",
+    "2-5.1-e2",
+    "2-5.1-e3"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u5-2",
+   "exitItems": [
+    "2-5.1-e1",
+    "2-5.1-e2",
+    "2-5.1-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-5.2",
+   "key": "csq-1b-5.2",
+   "band": "1B",
+   "title": "CS Quest 5.2 · It's not working! (Troubleshooting)",
+   "csta": [
+    "1B-CS-03"
+   ],
+   "warmupSetId": "csq-u5-1b",
+   "warmupItems": [
+    "1b-5.1-e1",
+    "1b-5.1-e2",
+    "1b-5.2-r1",
+    "1b-5.2-e1",
+    "1b-5.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u5-1b",
+   "exitItems": [
+    "1b-5.2-e1",
+    "1b-5.2-e2",
+    "1b-5.2-e3"
+   ]
+  },
+  {
+   "id": "csq-2-5.2",
+   "key": "csq-2-5.2",
+   "band": "2",
+   "title": "CS Quest 5.2 · It's not working! (Troubleshooting)",
+   "csta": [
+    "2-CS-03"
+   ],
+   "warmupSetId": "csq-u5-2",
+   "warmupItems": [
+    "2-5.1-e1",
+    "2-5.1-e2",
+    "2-5.2-r1",
+    "2-5.2-e1",
+    "2-5.1-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u5-2",
+   "exitItems": [
+    "2-5.2-e1",
+    "2-5.2-e2",
+    "2-5.2-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-5.3",
+   "key": "csq-1b-5.3",
+   "band": "1B",
+   "title": "CS Quest 5.3 · Bits and pixels (How computers store things)",
+   "csta": [
+    "1B-CS-02"
+   ],
+   "warmupSetId": "csq-u5-1b",
+   "warmupItems": [
+    "1b-5.2-e1",
+    "1b-5.2-e2",
+    "1b-5.3-r1",
+    "1b-5.3-e1",
+    "1b-5.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u5-1b",
+   "exitItems": [
+    "1b-5.3-e1",
+    "1b-5.3-e2",
+    "1b-5.3-e3"
+   ]
+  },
+  {
+   "id": "csq-2-5.3",
+   "key": "csq-2-5.3",
+   "band": "2",
+   "title": "CS Quest 5.3 · Bits and pixels (How computers store things)",
+   "csta": [
+    "2-DA-07"
+   ],
+   "warmupSetId": "csq-u5-2",
+   "warmupItems": [
+    "2-5.2-e1",
+    "2-5.2-e2",
+    "2-5.3-r1",
+    "2-5.3-e1",
+    "2-5.2-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u5-2",
+   "exitItems": [
+    "2-5.3-e1",
+    "2-5.3-e2",
+    "2-5.3-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-6.1",
+   "key": "csq-1b-6.1",
+   "band": "1B",
+   "title": "CS Quest 6.1 · Tech that changed the world",
+   "csta": [
+    "1B-IC-18"
+   ],
+   "warmupSetId": "csq-u6-1b",
+   "warmupItems": [
+    "1b-u6-o1",
+    "1b-6.1-r1",
+    "1b-6.1-e1",
+    "1b-6.1-e2",
+    "1b-6.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u6-1b",
+   "exitItems": [
+    "1b-6.1-e1",
+    "1b-6.1-e2",
+    "1b-6.1-e3"
+   ]
+  },
+  {
+   "id": "csq-2-6.1",
+   "key": "csq-2-6.1",
+   "band": "2",
+   "title": "CS Quest 6.1 · Tech that changed the world",
+   "csta": [
+    "2-IC-20"
+   ],
+   "warmupSetId": "csq-u6-2",
+   "warmupItems": [
+    "2-u6-o1",
+    "2-6.1-r1",
+    "2-6.1-e1",
+    "2-6.1-e2",
+    "2-6.1-e3"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u6-2",
+   "exitItems": [
+    "2-6.1-e1",
+    "2-6.1-e2",
+    "2-6.1-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-6.2",
+   "key": "csq-1b-6.2",
+   "band": "1B",
+   "title": "CS Quest 6.2 · Made for everyone (Accessibility, usability, bias)",
+   "csta": [
+    "1B-IC-19",
+    "1B-IC-20"
+   ],
+   "warmupSetId": "csq-u6-1b",
+   "warmupItems": [
+    "1b-6.1-e1",
+    "1b-6.1-e2",
+    "1b-6.2-r1",
+    "1b-6.2-e1",
+    "1b-6.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u6-1b",
+   "exitItems": [
+    "1b-6.2-e1",
+    "1b-6.2-e2",
+    "1b-6.2-e3"
+   ]
+  },
+  {
+   "id": "csq-2-6.2",
+   "key": "csq-2-6.2",
+   "band": "2",
+   "title": "CS Quest 6.2 · Made for everyone (Accessibility, usability, bias)",
+   "csta": [
+    "2-IC-21",
+    "2-CS-01"
+   ],
+   "warmupSetId": "csq-u6-2",
+   "warmupItems": [
+    "2-6.1-e1",
+    "2-6.1-e2",
+    "2-6.2-r1",
+    "2-6.2-e1",
+    "2-6.1-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u6-2",
+   "exitItems": [
+    "2-6.2-e1",
+    "2-6.2-e2",
+    "2-6.2-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-6.3",
+   "key": "csq-1b-6.3",
+   "band": "1B",
+   "title": "CS Quest 6.3 · Share or keep? (Public vs private, using others' work)",
+   "csta": [
+    "1B-IC-21",
+    "1B-AP-14"
+   ],
+   "warmupSetId": "csq-u6-1b",
+   "warmupItems": [
+    "1b-6.2-e1",
+    "1b-6.2-e2",
+    "1b-6.3-r1",
+    "1b-6.3-e1",
+    "1b-6.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u6-1b",
+   "exitItems": [
+    "1b-6.3-e1",
+    "1b-6.3-e2",
+    "1b-6.3-e3"
+   ]
+  },
+  {
+   "id": "csq-2-6.3",
+   "key": "csq-2-6.3",
+   "band": "2",
+   "title": "CS Quest 6.3 · Share or keep? (Public vs private, using others' work)",
+   "csta": [
+    "2-IC-23",
+    "2-AP-16"
+   ],
+   "warmupSetId": "csq-u6-2",
+   "warmupItems": [
+    "2-6.2-e1",
+    "2-6.2-e2",
+    "2-6.3-r1",
+    "2-6.3-e1",
+    "2-6.2-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u6-2",
+   "exitItems": [
+    "2-6.3-e1",
+    "2-6.3-e2",
+    "2-6.3-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-7.1",
+   "key": "csq-1b-7.1",
+   "band": "1B",
+   "title": "CS Quest 7.1 · Plan your game",
+   "csta": [
+    "1B-AP-13",
+    "1B-AP-16",
+    "1B-AP-11"
+   ],
+   "warmupSetId": "csq-u7-1b",
+   "warmupItems": [
+    "1b-u7-o1",
+    "1b-7.1-r1",
+    "1b-7.1-e1",
+    "1b-7.1-e2",
+    "1b-7.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.1-e1",
+    "1b-7.1-e2",
+    "1b-7.1-e3"
+   ]
+  },
+  {
+   "id": "csq-2-7.1",
+   "key": "csq-2-7.1",
+   "band": "2",
+   "title": "CS Quest 7.1 · Plan your game",
+   "csta": [
+    "2-AP-18",
+    "2-AP-13",
+    "2-AP-10"
+   ],
+   "warmupSetId": "csq-u7-2",
+   "warmupItems": [
+    "2-u7-o1",
+    "2-7.1-r1",
+    "2-7.1-e1",
+    "2-7.1-e2",
+    "2-7.1-e3"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.1-e1",
+    "2-7.1-e2",
+    "2-7.1-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-7.2",
+   "key": "csq-1b-7.2",
+   "band": "1B",
+   "title": "CS Quest 7.2 · Build day",
+   "csta": [
+    "1B-AP-15"
+   ],
+   "warmupSetId": null,
+   "warmupItems": [],
+   "warmupMode": null,
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.2-e1",
+    "1b-7.2-e2",
+    "1b-7.2-e3"
+   ]
+  },
+  {
+   "id": "csq-2-7.2",
+   "key": "csq-2-7.2",
+   "band": "2",
+   "title": "CS Quest 7.2 · Build day",
+   "csta": [
+    "2-AP-17"
+   ],
+   "warmupSetId": null,
+   "warmupItems": [],
+   "warmupMode": null,
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.2-e1",
+    "2-7.2-e2",
+    "2-7.2-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-7.3",
+   "key": "csq-1b-7.3",
+   "band": "1B",
+   "title": "CS Quest 7.3 · Playtest party",
+   "csta": [
+    "1B-IC-20",
+    "1B-AP-15"
+   ],
+   "warmupSetId": "csq-u7-1b",
+   "warmupItems": [
+    "1b-7.2-e1",
+    "1b-7.2-e2",
+    "1b-7.3-r1",
+    "1b-7.3-e1",
+    "1b-7.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.3-e1",
+    "1b-7.3-e2",
+    "1b-7.3-e3"
+   ]
+  },
+  {
+   "id": "csq-2-7.3",
+   "key": "csq-2-7.3",
+   "band": "2",
+   "title": "CS Quest 7.3 · Playtest party",
+   "csta": [
+    "2-AP-15",
+    "2-DA-09",
+    "2-IC-22"
+   ],
+   "warmupSetId": "csq-u7-2",
+   "warmupItems": [
+    "2-7.2-e1",
+    "2-7.2-e2",
+    "2-7.3-r1",
+    "2-7.3-e1",
+    "2-7.2-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.3-e1",
+    "2-7.3-e2",
+    "2-7.3-e3"
+   ]
+  },
+  {
+   "id": "csq-1b-7.4",
+   "key": "csq-1b-7.4",
+   "band": "1B",
+   "title": "CS Quest 7.4 · Show and credit",
+   "csta": [
+    "1B-AP-17",
+    "1B-AP-14"
+   ],
+   "warmupSetId": "csq-u7-1b",
+   "warmupItems": [
+    "1b-7.3-e1",
+    "1b-7.3-e2",
+    "1b-7.4-r1",
+    "1b-7.4-e1",
+    "1b-7.3-r1"
+   ],
+   "warmupMode": "quest-race",
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.4-e1",
+    "1b-7.4-e2",
+    "1b-7.4-e3"
+   ]
+  },
+  {
+   "id": "csq-2-7.4",
+   "key": "csq-2-7.4",
+   "band": "2",
+   "title": "CS Quest 7.4 · Show and credit",
+   "csta": [
+    "2-AP-19",
+    "2-AP-16"
+   ],
+   "warmupSetId": "csq-u7-2",
+   "warmupItems": [
+    "2-7.3-e1",
+    "2-7.3-e2",
+    "2-7.4-r1",
+    "2-7.4-e1",
+    "2-7.3-r1"
+   ],
+   "warmupMode": "battle",
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.4-e1",
+    "2-7.4-e2",
+    "2-7.4-e3"
+   ]
+  }
+ ]
+}

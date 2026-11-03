@@ -1,0 +1,1280 @@
+{
+ "program": {
+  "name": "CS Quest",
+  "slug": "cs-quest",
+  "tagline": "Computer science, one period at a time.",
+  "standards": "CSTA K-12 CS Standards 2017, levels 1B (grades 3-5) and 2 (grades 6-8)",
+  "bands": {
+   "1B": {
+    "grade": "Grades 3-5",
+    "inGame": "Explorer",
+    "code": "1b"
+   },
+   "2": {
+    "grade": "Grades 6-8",
+    "inGame": "Pro",
+    "code": "2"
+   }
+  },
+  "units": [
+   {
+    "n": 1,
+    "title": "Think Like a Robot",
+    "lessons": [
+     "1.1",
+     "1.2",
+     "1.3",
+     "1.4",
+     "1.5"
+    ]
+   },
+   {
+    "n": 2,
+    "title": "Bug Hunters",
+    "lessons": [
+     "2.1",
+     "2.2"
+    ]
+   },
+   {
+    "n": 3,
+    "title": "Data Detectives",
+    "lessons": [
+     "3.1",
+     "3.2",
+     "3.3"
+    ]
+   },
+   {
+    "n": 4,
+    "title": "Packet Post",
+    "lessons": [
+     "4.1",
+     "4.2",
+     "4.3"
+    ]
+   },
+   {
+    "n": 5,
+    "title": "Inside the Machine",
+    "lessons": [
+     "5.1",
+     "5.2",
+     "5.3"
+    ]
+   },
+   {
+    "n": 6,
+    "title": "Tech Choices",
+    "lessons": [
+     "6.1",
+     "6.2",
+     "6.3"
+    ]
+   },
+   {
+    "n": 7,
+    "title": "Make Your Own Game",
+    "lessons": [
+     "7.1",
+     "7.2",
+     "7.3",
+     "7.4"
+    ]
+   }
+  ],
+  "paths": {
+   "full": "all 23",
+   "core10": [
+    "1.2",
+    "2.1",
+    "3.1",
+    "4.1",
+    "5.2",
+    "6.1",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ],
+   "csEdWeek": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "4.1",
+    "6.1"
+   ],
+   "deviceFirst": [
+    "5.2",
+    "5.1",
+    "5.3",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.1",
+    "4.2",
+    "4.3",
+    "6.1",
+    "6.2",
+    "6.3",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ]
+  },
+  "period": [
+   [
+    "0:00",
+    5,
+    "Arrive, log in, Do Now"
+   ],
+   [
+    "0:05",
+    5,
+    "Warm-up (live or projector)"
+   ],
+   [
+    "0:10",
+    6,
+    "Explore (projector script)"
+   ],
+   [
+    "0:16",
+    18,
+    "Play"
+   ],
+   [
+    "0:34",
+    6,
+    "Discuss"
+   ],
+   [
+    "0:40",
+    5,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "planPath": "/tmp/claude-0/-home-user-javascript-exercises/db321ed6-437e-588f-beaf-65f7e9b106cd/scratchpad/cs-quest/plan.md"
+ },
+ "params": {
+  "urlKeys": [
+   "chapter",
+   "band",
+   "mode",
+   "level",
+   "lock"
+  ],
+  "valueRegex": "^[a-z0-9-]{1,16}$",
+  "band": "1b|2",
+  "level": "1-30",
+  "lock": "0|1",
+  "tokenField": "o = chapter.band.mode.level.lock (<= 40 chars, empty parts allowed)",
+  "sdk": "BRB.params frozen object, {} when absent; games read (window.BRB && BRB.params) || {}",
+  "stepColumn": "lesson_steps.options holds the query-string form; routes/progress.js appends it to the Play link",
+  "questCode": "C B M L (4 digits): C chapter index (0 map), B 1 Explorer | 2 Pro, M mode index (0 play, 1 debug, 2 maker/tally/wheel, 3 projector), L level 0-9; typed in-game; params win; hidden in live frames"
+ },
+ "progressLabelRegex": "^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$",
+ "game": {
+  "slug": "robo-route",
+  "title": "Robo Route",
+  "icon": "🛤️",
+  "cover": "mint",
+  "category": "learning",
+  "featured": true,
+  "orientation": "any",
+  "players_max": 2,
+  "age_rating": "everyone",
+  "crew": {
+   "name": "Bolt",
+   "look": "custom 3-layer SVG robot"
+  },
+  "kit": "1.1.2",
+  "kitPacks": [
+   "art-props",
+   "style-bold"
+  ],
+  "bands": [
+   "1B",
+   "2"
+  ],
+  "bandNames": {
+   "1B": "Explorer",
+   "2": "Pro"
+  },
+  "chapters": [
+   {
+    "index": 1,
+    "id": "sequences",
+    "title": "Sequences",
+    "band": "1B",
+    "csta": [
+     "1B-AP-10",
+     "1B-AP-08",
+     "1B-AP-11"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 1,
+    "id": "sequences",
+    "title": "Sequences",
+    "band": "2",
+    "csta": [
+     "2-AP-10",
+     "2-AP-13"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 2,
+    "id": "loops",
+    "title": "Loops",
+    "band": "1B",
+    "csta": [
+     "1B-AP-10"
+    ],
+    "levels": 7
+   },
+   {
+    "index": 2,
+    "id": "loops",
+    "title": "Loops",
+    "band": "2",
+    "csta": [
+     "2-AP-12"
+    ],
+    "levels": 8
+   },
+   {
+    "index": 3,
+    "id": "conditionals",
+    "title": "Conditionals & events",
+    "band": "1B",
+    "csta": [
+     "1B-AP-10"
+    ],
+    "levels": 7
+   },
+   {
+    "index": 3,
+    "id": "conditionals",
+    "title": "Conditionals & events",
+    "band": "2",
+    "csta": [
+     "2-AP-12"
+    ],
+    "levels": 7
+   },
+   {
+    "index": 4,
+    "id": "variables",
+    "title": "Variables",
+    "band": "1B",
+    "csta": [
+     "1B-AP-09"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 4,
+    "id": "variables",
+    "title": "Variables",
+    "band": "2",
+    "csta": [
+     "2-AP-11"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 5,
+    "id": "functions",
+    "title": "Functions",
+    "band": "1B",
+    "csta": [
+     "1B-AP-11",
+     "1B-AP-12"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 5,
+    "id": "functions",
+    "title": "Functions",
+    "band": "2",
+    "csta": [
+     "2-AP-14",
+     "2-AP-13",
+     "2-AP-19",
+     "2-AP-16"
+    ],
+    "levels": 7
+   },
+   {
+    "index": 6,
+    "id": "debug",
+    "title": "Debug Lab",
+    "band": "1B",
+    "csta": [
+     "1B-AP-15"
+    ],
+    "levels": 7,
+    "mode": "debug"
+   },
+   {
+    "index": 6,
+    "id": "debug",
+    "title": "Debug Lab",
+    "band": "2",
+    "csta": [
+     "2-AP-17"
+    ],
+    "levels": 7,
+    "mode": "debug"
+   },
+   {
+    "index": 7,
+    "id": "best-route",
+    "title": "Best Route",
+    "band": "1B",
+    "csta": [
+     "1B-AP-08"
+    ],
+    "levels": 5
+   },
+   {
+    "index": 7,
+    "id": "best-route",
+    "title": "Best Route",
+    "band": "2",
+    "csta": [
+     "2-AP-10",
+     "2-AP-17"
+    ],
+    "levels": 5
+   },
+   {
+    "index": 8,
+    "id": "level-maker",
+    "title": "Level Maker",
+    "band": "1B",
+    "csta": [
+     "1B-AP-13",
+     "1B-AP-12"
+    ],
+    "levels": 3,
+    "mode": "maker"
+   },
+   {
+    "index": 8,
+    "id": "level-maker",
+    "title": "Level Maker",
+    "band": "2",
+    "csta": [
+     "2-AP-15",
+     "2-AP-16"
+    ],
+    "levels": 3,
+    "mode": "maker"
+   }
+  ],
+  "params": {
+   "chapter": "one of chapters[].id",
+   "band": "1b | 2",
+   "mode": "one of modes (default play)",
+   "level": "1-30 (optional)",
+   "lock": "0 | 1 (hides chapter map and band toggle)"
+  },
+  "modes": {
+   "0": "play",
+   "1": "debug",
+   "2": "maker",
+   "3": "projector"
+  },
+  "questCode": "C B M L: C = chapters[].index (0 = map), B = 1 Explorer | 2 Pro, M = modes key, L = level 0-9 (0 = first unfinished); typed on the in-game keypad; params win over codes",
+  "progressEvents": {
+   "today": {
+    "afterEachSolvedLevel": {
+     "call": "BRB.score.submit(score, label)",
+     "score": "starsInChapter (integer, monotonic within the chapter)",
+     "label": "'<done>/<total> levels, <stars> stars' plus ', <ok>/<n> checks' in lesson mode; must match ^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$"
+    },
+    "onChapterComplete": {
+     "call": "BRB.gameOver({ won: true, score: starsInChapter })"
+    },
+    "otherModes": {
+     "maker": "BRB.score.submit(levelsTested, '<made> made, <tested> tested') matching ^\\d{1,2} made, \\d{1,2} tested$"
+    }
+   },
+   "phase2": {
+    "call": "BRB.progress(detail)",
+    "detail": {
+     "game": "rr|dd|pp|im",
+     "chapter": "<chapter id>",
+     "level": "n",
+     "stars": "0-3",
+     "band": "1|2",
+     "csta": [
+      "<ids of the level>"
+     ],
+     "check": "0|1",
+     "confidence": "1-3",
+     "hint": "0-3",
+     "runs": "n",
+     "skipped": "bool"
+    },
+    "limits": "JSON <= 1 KB; keys [a-z][a-zA-Z0-9]{0,23}; values numbers/booleans/[A-Za-z0-9-] strings; one per 2 s; forwarded only with a lesson context"
+   }
+  },
+  "testHooks": [
+   "__brbTest.start({chapter, band, mode, level, seed, lesson})",
+   "step(n)",
+   "skipAnimations()",
+   "cover()",
+   "state()"
+  ],
+  "files": {
+   "game": [
+    "seed-games/robo-route.html",
+    "seed-games/robo-route.json"
+   ],
+   "strings": [
+    "scripts/data/cs-quest/robo-route/<lang>.json",
+    "public/vendor/data/robo-route/<version>/<lang>.js"
+   ],
+   "cover": "scripts/covers/robo-route.recipe.js",
+   "tests": [
+    "tests/unit/robo-route.test.js",
+    "tests/e2e/robo-route.spec.js"
+   ]
+  },
+  "stringBudget": 450,
+  "specifics": {
+   "levelCode": "28-symbol alphabet 23456789BCDFGHJKMNPQRSTVWXYZ, 14-26 symbols, carries the whole level; BFS Check proves solvability and computes par",
+   "randomLayouts": "levels with random:true run on 3 seeded layouts; all must pass",
+   "verdictFlags": [
+    "namesOk",
+    "chipsOk",
+    "planMatch",
+    "editsFromStarter",
+    "perLayout"
+   ]
+  }
+ },
+ "criticAdditions": {
+  "note": "Appended by the completeness critic (3 Nov 2026). Overrides the generated sections where they conflict; see plan.md 'Critic additions' CA-1..CA-11. gen-contracts.py carries this key over on regeneration.",
+  "lockSemantics": {
+   "lock=1": "band locked; chapter map and band toggle hidden; start at chapter; at chapter end lesson mode continues into game.then for the band, else results + Back to class",
+   "then": {
+    "csq-1b-4.1": "routes",
+    "csq-1b-4.3": "ciphers (levels 1-3)",
+    "csq-1b-5.1": "hw-sw (levels 1-3)"
+   },
+   "scoreUnderChain": "chained chapters add stars to score (monotonic); label keeps the locked chapter's noun and totals",
+   "ciClauseFPrime": "a game step's standards is a subset of the union of csta of its chapter and its then chapters for the band",
+   "withdrawn": {
+    "csq-2-4.1.mainActivity.first": "routes 1-6 (routes level 5 is the Pro Explore demo; routes 5-6 stretch via then)"
+   }
+  },
+  "scannerRules": {
+   "linkCode": "scanner.js:47 LINK_CODE_PROMPT: grown-up(s)|parent(s)|guardian(s)|family|families|mum|mom|dad|link within 40 chars of code(s) in any string literal FAILS; Packet Post never uses the word 'code' (secret message, cipher, key wheel, shift); Robo Route 'quest code'/'level code' strings never mention family/parents/grown-ups",
+   "personalPrompt": "scanner.js:44: (enter|type|what's|tell us) (your|ur) (real name|full name|address|phone|email|school|age|birthday|password) FAILS; share/keep tiles are nouns, trick cards never say 'type your password'",
+   "contentLint": "tests/unit/cs-quest-content-lint.test.js also runs scanner.scanVersion on each game's sanitized HTML and fails on any fail issue; adds a UK-spelling rule for en strings",
+   "levelCodes": "never 5+ consecutive digit symbols; always shown/printed in groups of four with spaces"
+  },
+  "i18n": {
+   "stringBudget": {
+    "chromePerGame": 450,
+    "levelTextPerGame": 1000,
+    "note": "level prose (learn, 3 hints, check q + 3 tiles, case files, tickets, briefs, letters, personas, quotes) is also 13-locale"
+   },
+   "translationWorkflow": "DECISION: machine translation through scripts/cs-quest-i18n.mjs + native review of 12 locales before the public page claims coverage; ~4 x 1300 x 12 strings",
+   "l10nTest": "each game's unit test asserts JSON l10n has all 11 non-English descriptions",
+   "usSpelling": {
+    "rule": "US spelling in lesson content, bank items and in-game en text; en-GB may differ",
+    "itemsToFix": [
+     "1b-1.4-r1",
+     "1b-3.1-e3",
+     "1b-3.3-e2",
+     "1b-4.1-e3",
+     "1b-6.2-e2",
+     "1b-7.1-r1",
+     "1b-7.2-e3",
+     "2-1.4-e2",
+     "2-3.1-e2",
+     "2-3.3-e2",
+     "2-5.1-e2",
+     "2-5.3-e3",
+     "2-6.3-e3"
+    ],
+    "words": [
+     "colour",
+     "favourite",
+     "grey",
+     "labelled",
+     "licence",
+     "organise",
+     "practise",
+     "neighbour",
+     "recognise",
+     "maths",
+     "centre",
+     "programme",
+     "catalogue(chrome)"
+    ]
+   },
+   "mergeScripts": "A and B each ship an i18n merge script (precedent scripts/i18n-add-live-wyr-atlas.mjs); integration runs both then npm run i18n:check",
+   "liveSetPicker": "B: /live set picker groups sets with lesson_id under a 'CS Quest' optgroup (live.cs.sets)"
+  },
+  "testsToOwn": {
+   "curriculum": [
+    "tests/e2e/how-it-works.spec.js PAGES += /teachers/cs-quest",
+    "scripts/how-shots.js --only cs materialises csq-1b-1.2 and seeds step_progress with standards/marks for the Standards-tab shot"
+   ]
+  }
+ },
+ "gamesAdd": null,
+ "lessonsUsingThisGame": [
+  {
+   "id": "csq-1b-1.1",
+   "key": "csq-1b-1.1",
+   "band": "1B",
+   "title": "CS Quest 1.1 · Step by step (Sequences)",
+   "csta": [
+    "1B-AP-10",
+    "1B-AP-08"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "sequences",
+    "params": "chapter=sequences&band=1b&lock=1",
+    "questCode": "1 1 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=sequences&band=1b&lock=1",
+     "standards": [
+      "1B-AP-10",
+      "1B-AP-08"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-1.1",
+   "key": "csq-2-1.1",
+   "band": "2",
+   "title": "CS Quest 1.1 · Step by step (Sequences)",
+   "csta": [
+    "2-AP-10",
+    "2-AP-13"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "sequences",
+    "params": "chapter=sequences&band=2&lock=1",
+    "questCode": "1 2 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=sequences&band=2&lock=1",
+     "standards": [
+      "2-AP-10",
+      "2-AP-13"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-1.2",
+   "key": "csq-1b-1.2",
+   "band": "1B",
+   "title": "CS Quest 1.2 · Again and again (Loops)",
+   "csta": [
+    "1B-AP-10"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "loops",
+    "params": "chapter=loops&band=1b&lock=1",
+    "questCode": "2 1 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=loops&band=1b&lock=1",
+     "standards": [
+      "1B-AP-10"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-1.2",
+   "key": "csq-2-1.2",
+   "band": "2",
+   "title": "CS Quest 1.2 · Again and again (Loops)",
+   "csta": [
+    "2-AP-12"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "loops",
+    "params": "chapter=loops&band=2&lock=1",
+    "questCode": "2 2 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=loops&band=2&lock=1",
+     "standards": [
+      "2-AP-12"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-1.3",
+   "key": "csq-1b-1.3",
+   "band": "1B",
+   "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+   "csta": [
+    "1B-AP-10"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "conditionals",
+    "params": "chapter=conditionals&band=1b&lock=1",
+    "questCode": "3 1 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=conditionals&band=1b&lock=1",
+     "standards": [
+      "1B-AP-10"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-1.3",
+   "key": "csq-2-1.3",
+   "band": "2",
+   "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+   "csta": [
+    "2-AP-12"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "conditionals",
+    "params": "chapter=conditionals&band=2&lock=1",
+    "questCode": "3 2 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=conditionals&band=2&lock=1",
+     "standards": [
+      "2-AP-12"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-1.4",
+   "key": "csq-1b-1.4",
+   "band": "1B",
+   "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+   "csta": [
+    "1B-AP-09"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "variables",
+    "params": "chapter=variables&band=1b&lock=1",
+    "questCode": "4 1 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=variables&band=1b&lock=1",
+     "standards": [
+      "1B-AP-09"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-1.4",
+   "key": "csq-2-1.4",
+   "band": "2",
+   "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+   "csta": [
+    "2-AP-11"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "variables",
+    "params": "chapter=variables&band=2&lock=1",
+    "questCode": "4 2 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=variables&band=2&lock=1",
+     "standards": [
+      "2-AP-11"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-1.5",
+   "key": "csq-1b-1.5",
+   "band": "1B",
+   "title": "CS Quest 1.5 · Build a block (Functions, decomposition, remix)",
+   "csta": [
+    "1B-AP-11",
+    "1B-AP-12"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "functions",
+    "params": "chapter=functions&band=1b&lock=1",
+    "questCode": "5 1 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=functions&band=1b&lock=1",
+     "standards": [
+      "1B-AP-11",
+      "1B-AP-12"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-1.5",
+   "key": "csq-2-1.5",
+   "band": "2",
+   "title": "CS Quest 1.5 · Build a block (Functions, decomposition, remix)",
+   "csta": [
+    "2-AP-14",
+    "2-AP-13"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "functions",
+    "params": "chapter=functions&band=2&lock=1",
+    "questCode": "5 2 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=functions&band=2&lock=1",
+     "standards": [
+      "2-AP-14",
+      "2-AP-13"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-2.1",
+   "key": "csq-1b-2.1",
+   "band": "1B",
+   "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+   "csta": [
+    "1B-AP-15"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "debug",
+    "params": "chapter=debug&band=1b&lock=1&mode=debug",
+    "questCode": "6 1 1 0",
+    "mode": "debug"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=debug&band=1b&lock=1&mode=debug",
+     "standards": [
+      "1B-AP-15"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-2.1",
+   "key": "csq-2-2.1",
+   "band": "2",
+   "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+   "csta": [
+    "2-AP-17"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "debug",
+    "params": "chapter=debug&band=2&lock=1&mode=debug",
+    "questCode": "6 2 1 0",
+    "mode": "debug"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=debug&band=2&lock=1&mode=debug",
+     "standards": [
+      "2-AP-17"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-2.2",
+   "key": "csq-1b-2.2",
+   "band": "1B",
+   "title": "CS Quest 2.2 · Level designers (Plan, build, test, explain)",
+   "csta": [
+    "1B-AP-13",
+    "1B-AP-16",
+    "1B-AP-17"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "level-maker",
+    "params": "chapter=level-maker&band=1b&lock=1&mode=maker",
+    "questCode": "8 1 2 0",
+    "mode": "maker"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=level-maker&band=1b&lock=1&mode=maker",
+     "standards": [
+      "1B-AP-13",
+      "1B-AP-16",
+      "1B-AP-17"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-2.2",
+   "key": "csq-2-2.2",
+   "band": "2",
+   "title": "CS Quest 2.2 · Level designers (Plan, build, test, explain)",
+   "csta": [
+    "2-AP-15",
+    "2-AP-18",
+    "2-AP-19"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "level-maker",
+    "params": "chapter=level-maker&band=2&lock=1&mode=maker",
+    "questCode": "8 2 2 0",
+    "mode": "maker"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=level-maker&band=2&lock=1&mode=maker",
+     "standards": [
+      "2-AP-15",
+      "2-AP-18",
+      "2-AP-19"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  }
+ ]
+}

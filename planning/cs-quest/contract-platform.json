@@ -1,0 +1,724 @@
+{
+ "program": {
+  "name": "CS Quest",
+  "slug": "cs-quest",
+  "tagline": "Computer science, one period at a time.",
+  "standards": "CSTA K-12 CS Standards 2017, levels 1B (grades 3-5) and 2 (grades 6-8)",
+  "bands": {
+   "1B": {
+    "grade": "Grades 3-5",
+    "inGame": "Explorer",
+    "code": "1b"
+   },
+   "2": {
+    "grade": "Grades 6-8",
+    "inGame": "Pro",
+    "code": "2"
+   }
+  },
+  "units": [
+   {
+    "n": 1,
+    "title": "Think Like a Robot",
+    "lessons": [
+     "1.1",
+     "1.2",
+     "1.3",
+     "1.4",
+     "1.5"
+    ]
+   },
+   {
+    "n": 2,
+    "title": "Bug Hunters",
+    "lessons": [
+     "2.1",
+     "2.2"
+    ]
+   },
+   {
+    "n": 3,
+    "title": "Data Detectives",
+    "lessons": [
+     "3.1",
+     "3.2",
+     "3.3"
+    ]
+   },
+   {
+    "n": 4,
+    "title": "Packet Post",
+    "lessons": [
+     "4.1",
+     "4.2",
+     "4.3"
+    ]
+   },
+   {
+    "n": 5,
+    "title": "Inside the Machine",
+    "lessons": [
+     "5.1",
+     "5.2",
+     "5.3"
+    ]
+   },
+   {
+    "n": 6,
+    "title": "Tech Choices",
+    "lessons": [
+     "6.1",
+     "6.2",
+     "6.3"
+    ]
+   },
+   {
+    "n": 7,
+    "title": "Make Your Own Game",
+    "lessons": [
+     "7.1",
+     "7.2",
+     "7.3",
+     "7.4"
+    ]
+   }
+  ],
+  "paths": {
+   "full": "all 23",
+   "core10": [
+    "1.2",
+    "2.1",
+    "3.1",
+    "4.1",
+    "5.2",
+    "6.1",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ],
+   "csEdWeek": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "4.1",
+    "6.1"
+   ],
+   "deviceFirst": [
+    "5.2",
+    "5.1",
+    "5.3",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.1",
+    "4.2",
+    "4.3",
+    "6.1",
+    "6.2",
+    "6.3",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ]
+  },
+  "period": [
+   [
+    "0:00",
+    5,
+    "Arrive, log in, Do Now"
+   ],
+   [
+    "0:05",
+    5,
+    "Warm-up (live or projector)"
+   ],
+   [
+    "0:10",
+    6,
+    "Explore (projector script)"
+   ],
+   [
+    "0:16",
+    18,
+    "Play"
+   ],
+   [
+    "0:34",
+    6,
+    "Discuss"
+   ],
+   [
+    "0:40",
+    5,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "planPath": "/tmp/claude-0/-home-user-javascript-exercises/db321ed6-437e-588f-beaf-65f7e9b106cd/scratchpad/cs-quest/plan.md"
+ },
+ "params": {
+  "urlKeys": [
+   "chapter",
+   "band",
+   "mode",
+   "level",
+   "lock"
+  ],
+  "valueRegex": "^[a-z0-9-]{1,16}$",
+  "band": "1b|2",
+  "level": "1-30",
+  "lock": "0|1",
+  "tokenField": "o = chapter.band.mode.level.lock (<= 40 chars, empty parts allowed)",
+  "sdk": "BRB.params frozen object, {} when absent; games read (window.BRB && BRB.params) || {}",
+  "stepColumn": "lesson_steps.options holds the query-string form; routes/progress.js appends it to the Play link",
+  "questCode": "C B M L (4 digits): C chapter index (0 map), B 1 Explorer | 2 Pro, M mode index (0 play, 1 debug, 2 maker/tally/wheel, 3 projector), L level 0-9; typed in-game; params win; hidden in live frames"
+ },
+ "tracking": {
+  "stores": {
+   "step_progress": "status/score/label/plays/seconds/answer/feedback/marks per class_lesson x step x user (existing); marks reused for 0-3 rubric lines on question/build steps (new)",
+   "lesson_steps.options": "NEW TEXT: query-string params appended to the Play link (chapter=&band=&mode=&level=&lock=)",
+   "lesson_steps.standards": "NEW TEXT: comma list of CSTA ids set by the materialiser",
+   "lesson_steps.template": "NEW TEXT: Studio template key for build steps (quiz)",
+   "lesson_steps.items[].cat": "KEEP cat (+secs) in quiz snapshots (lessons.js addQuizStep)",
+   "live_runs.items[].cat": "KEEP cat in saved run items (classlive-results.js itemRow)",
+   "lessons.template_key / template_version": "NEW: which catalogue lesson a library copy came from",
+   "live_sets": "derived warm-up / exit / review sets per lesson owned by the teacher (existing table)",
+   "server/standards/csta.js": "NEW: loads csta.json -> id -> {level, concept, subconcept, statement, practiceCodes}",
+   "games label": "score = starsInChapter, label per Appendix C grammar (existing scores/step_progress columns)",
+   "phase2": "step_progress.detail TEXT + step_progress_events(class_lesson_id, step_id, user_id, at, detail) capped 200 per cell via brb:progress"
+  },
+  "tiers": {
+   "Practiced": "students with >= 1 done step whose standards contains the id (+ live_run_scores on runs whose items carry the id)",
+   "Checked": "mean per-item accuracy from step_progress.marks x items[i].cat and live_run_scores.marks x live_runs.items[i].cat; shown with item and student counts",
+   "Applied": "mean of 0-3 rubric marks on question/build steps whose rubric line carries the id"
+  },
+  "mastery": {
+   "student": ">= 2 of 3 items right on the most recent exit ticket tagged with the id OR rubric line >= 2",
+   "class": ">= 80% of students meet",
+   "note": "raw numbers always shown"
+  },
+  "view": {
+   "route": "/class/:id/standards",
+   "columns": [
+    "Lessons",
+    "Practiced n/m",
+    "Checked % · items · students",
+    "Applied mean · marked",
+    "Needs a look",
+    "Last",
+    "Status"
+   ],
+   "csv": "/class/:id/standards.csv",
+   "report": "?report=1 aggregate only, no names"
+  },
+  "privacy": "teacher/class-manager only; never on projector/results/public pages; per-student drill-down inside the class; deleted with the class (onClassLeave/onAccountMerge); coverage claimed per class (pairs: signed-in student only)",
+  "flags": {
+   "QUIZ_STEPS": "NEW, default on: gates quiz-step rendering and /api/lessons/:cl/steps/:step/quiz",
+   "LIVE_HOMEWORK": "unchanged: gates 'Set as homework' only"
+  },
+  "inGameCheck": "Case-closed card in lesson mode: 1 concept check (3 tiles, from level.check) + 1 confidence face; tally in the label today, per level with brb:progress",
+  "ciTest": "tests/unit/cs-quest-catalogue.test.js clauses (a)-(j) per plan §9.5; scripts/cs-quest-coverage.js prints the map"
+ },
+ "platformChanges": [
+  {
+   "id": "P1",
+   "change": "BRB.params (chapter band mode level lock) signed into the frame token as o=chapter.band.mode.level.lock (<=40), init.params, frozen SDK object",
+   "files": [
+    "server/routes/games.js",
+    "public/sdk/brb-sdk.js",
+    "docs/sdk.md",
+    "tests/unit/sdk-protocol.test.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P2",
+   "change": "lesson_steps.options TEXT appended to the Play link",
+   "files": [
+    "server/db.js",
+    "server/services/lessons.js",
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P3",
+   "change": "lesson_steps.standards TEXT + server/standards/csta.js",
+   "files": [
+    "server/db.js",
+    "server/services/lessons.js",
+    "server/standards/csta.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P4",
+   "change": "keep cat (+secs) through quiz snapshots and saved live run items",
+   "files": [
+    "server/services/lessons.js (A)",
+    "server/services/classlive-results.js (B)"
+   ],
+   "owner": "A+B"
+  },
+  {
+   "id": "P5",
+   "change": "Host-live link emits mode= via liveGameOf; student page hides Play on MODES-slug steps",
+   "files": [
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P6",
+   "change": "/live?starter= preselects wyr/bank starters",
+   "files": [
+    "server/routes/live.js",
+    "server/views/live.js",
+    "tests/unit/live-pages.test.js"
+   ],
+   "owner": "B"
+  },
+  {
+   "id": "P7",
+   "change": "QUIZ_STEPS flag default on (quiz steps + student quiz APIs); LIVE_HOMEWORK keeps homework only",
+   "files": [
+    "server/config.js",
+    "server/routes/live.js:650 (quiz step API gate moves to QUIZ_STEPS; coordinate with B)",
+    "server/routes/progress.js",
+    "README.md"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P8",
+   "change": "copyLesson copies set_id and regenerates quiz items",
+   "files": [
+    "server/services/lessons.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P9",
+   "change": "lessons.template_key, template_version",
+   "files": [
+    "server/db.js",
+    "server/services/lessons.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P10",
+   "change": "lesson_steps.template -> templateHtml(key) on the build route",
+   "files": [
+    "server/db.js",
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P11",
+   "change": "review marks 0-3 per rubric line on question/build steps (API, form, gradebook)",
+   "files": [
+    "server/services/progress.js",
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P12",
+   "change": "Standards class tab + CSV + principal report + 13-language keys + deletion hooks",
+   "files": [
+    "server/routes/schools.js (CLASS_TABS)",
+    "server/services/standards.js",
+    "server/routes/cs-quest.js",
+    "public/css/schools.css"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P13",
+   "change": "plan page, print view, projector-questions page",
+   "files": [
+    "server/routes/cs-quest.js",
+    "server/views/cs-quest.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P14",
+   "change": "WYR topics tech and online (data x13, ui.json, TOPICS, CATS, pack rebuild)",
+   "files": [
+    "scripts/data/would-you-rather/**",
+    "server/live/wyr.js",
+    "scripts/wyr-bank.js",
+    "tests/unit/live-wyr-atlas.test.js"
+   ],
+   "owner": "B"
+  },
+  {
+   "id": "P15",
+   "change": "catalogue + materialiser + routes + pages + CI test + coverage script",
+   "files": [
+    "seed-lessons/cs-quest/**",
+    "server/services/lesson-templates.js",
+    "server/routes/cs-quest.js",
+    "server/app.js",
+    "tests/unit/cs-quest-catalogue.test.js",
+    "scripts/cs-quest-coverage.js"
+   ],
+   "owner": "A (sets: B)"
+  },
+  {
+   "id": "P16",
+   "change": "covers.js merges scripts/covers/*.recipe.js",
+   "files": [
+    "scripts/covers.js"
+   ],
+   "owner": "integration"
+  },
+  {
+   "id": "P17",
+   "change": "POST /api/classes/:id/assign-unit with cadence",
+   "files": [
+    "server/routes/cs-quest.js",
+    "server/services/lessons.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P18",
+   "change": "Builder status endpoint (AI budget resting/on) for the plan page",
+   "files": [
+    "server/routes/cs-quest.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P19",
+   "change": "SEED_GAMES, scanner slug lists, seeds.spec.js, covers + OG run, decisions.md, status.md",
+   "files": [
+    "scripts/seed.js",
+    "tests/unit/scanner.test.js",
+    "tests/safety/scanner.test.js",
+    "tests/e2e/seeds.spec.js",
+    "docs/decisions.md",
+    "docs/status.md"
+   ],
+   "owner": "integration"
+  },
+  {
+   "id": "phase2",
+   "change": "brb:progress + step_progress.detail/events; class level shelf; survey mode for live sets; computing bank subject; games.standards",
+   "files": [],
+   "owner": "later"
+  }
+ ],
+ "i18n": {
+  "englishOnly": [
+   "lesson text and step bodies (seed-lessons/cs-quest/lessons/**)",
+   "quiz bank items (seed-lessons/cs-quest/sets/**)",
+   "WYR dilemma text (English fallback per item in the 12 non-English data files is allowed)",
+   "WYR prompts and CSTA tags (seed-lessons/cs-quest/wyr-tech.json)",
+   "rubric lines, planning sheet, printables (seed-lessons/cs-quest/printables/**)",
+   "CSTA ids and statements (rendered with el() as lang=en)",
+   "game level data (maps, sol, par, csta)",
+   "public landing copy under teachers.cs.* (uncounted prefix; English-first, rendered with el()/fb())"
+  ],
+  "mustBe13Languages": [
+   "cs.* (program page chrome, plan page buttons, banners, toasts, state chips, 'Your teacher hosts this live', 'game not available yet')",
+   "school.classTabs.standards and all Standards tab headings, legend, status words, CSV headers (cs.standards.*)",
+   "js.cs.* for any browser module",
+   "live.cs.* (anything B adds to /live chrome)",
+   "WYR ui.json cat.tech and cat.online",
+   "in-game strings of robo-route, data-detective, packet-post, inside-the-machine (own packs under /vendor/data/<slug>/<version>/<lang>.js, identical {slots}, <= 450 strings per game)",
+   "JSON l10n description/tags for the four games (11 non-English locales)"
+  ],
+  "namespaces": {
+   "A": [
+    "cs.*",
+    "js.cs.*",
+    "school.classTabs.standards",
+    "teachers.cs.*",
+    "learn.cs.*"
+   ],
+   "B": [
+    "live.cs.*",
+    "scripts/data/would-you-rather/ui.json"
+   ],
+   "games": [
+    "no locale files; own packs only"
+   ]
+  },
+  "rule": "each owner appends its own block at the end of every locale file; extra keys or placeholder mismatches fail npm test; run npm run i18n:check"
+ },
+ "sharedFiles": {
+  "integrationOnly": [
+   "scripts/seed.js (SEED_GAMES single-quoted array literal)",
+   "tests/unit/scanner.test.js slug list",
+   "tests/safety/scanner.test.js slug list",
+   "tests/e2e/seeds.spec.js",
+   "scripts/covers.js (recipe loader)",
+   "docs/decisions.md",
+   "docs/status.md"
+  ],
+  "localeFiles": "server/i18n/locales/*.json: each owner appends only its namespace block (see i18n.namespaces)",
+  "coversRecipes": "game owners write scripts/covers/<slug>.recipe.js; covers.js loads them (P16)",
+  "contentLint": "tests/unit/cs-quest-content-lint.test.js (owned by C) scans all four games' string literals and packs; D/E/F only add their slug to its list via integration",
+  "i18nScaffold": "scripts/cs-quest-i18n.mjs (owned by C) builds packs for all four games from scripts/data/cs-quest/<slug>/<lang>.json"
+ },
+ "capstone": {
+  "teams": {
+   "1B": 2,
+   "2": 3
+  },
+  "oneDevicePerTeam": true,
+  "startRule": "teams press Start building when their sheet is approved",
+  "paperPath": "half of 7.2 by design",
+  "template": "quiz",
+  "budget": "school plan required; Builder status line on the plan page",
+  "rubricLines": [
+   {
+    "line": "Plan",
+    "1B": [
+     "1B-AP-13",
+     "1B-AP-11"
+    ],
+    "2": [
+     "2-AP-13",
+     "2-AP-10",
+     "2-AP-15"
+    ]
+   },
+   {
+    "line": "Roles / timeline",
+    "1B": [
+     "1B-AP-16"
+    ],
+    "2": [
+     "2-AP-18"
+    ]
+   },
+   {
+    "line": "Program",
+    "buildsToward": [
+     "1B-AP-09",
+     "1B-AP-10",
+     "2-AP-11",
+     "2-AP-12"
+    ],
+    "countsAsEvidence": false
+   },
+   {
+    "line": "Test with others",
+    "1B": [
+     "1B-AP-15",
+     "1B-IC-20"
+    ],
+    "2": [
+     "2-AP-17",
+     "2-AP-15",
+     "2-DA-09",
+     "2-IC-22"
+    ]
+   },
+   {
+    "line": "Explain & credit",
+    "1B": [
+     "1B-AP-17",
+     "1B-AP-14",
+     "1B-IC-21"
+    ],
+    "2": [
+     "2-AP-19",
+     "2-AP-16"
+    ]
+   }
+  ],
+  "marks": "0-3 per line, stored in step_progress.marks for the build/question steps (P11)"
+ },
+ "criticAdditions": {
+  "note": "Appended by the completeness critic (3 Nov 2026). Overrides the generated sections where they conflict; see plan.md 'Critic additions' CA-1..CA-11. gen-contracts.py carries this key over on regeneration.",
+  "lockSemantics": {
+   "lock=1": "band locked; chapter map and band toggle hidden; start at chapter; at chapter end lesson mode continues into game.then for the band, else results + Back to class",
+   "then": {
+    "csq-1b-4.1": "routes",
+    "csq-1b-4.3": "ciphers (levels 1-3)",
+    "csq-1b-5.1": "hw-sw (levels 1-3)"
+   },
+   "scoreUnderChain": "chained chapters add stars to score (monotonic); label keeps the locked chapter's noun and totals",
+   "ciClauseFPrime": "a game step's standards is a subset of the union of csta of its chapter and its then chapters for the band",
+   "withdrawn": {
+    "csq-2-4.1.mainActivity.first": "routes 1-6 (routes level 5 is the Pro Explore demo; routes 5-6 stretch via then)"
+   }
+  },
+  "standardsOnSteps": "standards allowed on game, question and build steps; Practiced counts a question step when answered and a build step when handed in",
+  "mastery": {
+   "problem": "13 ids outside unit 7 never have 2 tagged items on one exit ticket: 1B-AP-08 1B-AP-12 1B-AP-13 1B-AP-14 1B-AP-16 1B-AP-17 1B-IC-20 2-AP-13 2-AP-15 2-AP-16 2-AP-18 2-AP-19 2-CS-01; 1B-AP-08 and 1B-AP-12 have one bank item in total",
+   "checkedRule": ">= 2 of the items tagged with the id on the most recent ticket are right, or all of them when fewer than 2 are tagged",
+   "appliedRule": "rubric line >= 2 on any question/build step (every lesson has one from the sentence step)",
+   "ciClauseBPrime": ">= 3 bank items per id per band",
+   "addItems": [
+    {
+     "id": "1b-1.1-r2",
+     "cat": "1B-AP-08"
+    },
+    {
+     "id": "1b-1.5-r2",
+     "cat": "1B-AP-12"
+    },
+    {
+     "id": "1b-6.3-r2",
+     "cat": "1B-AP-14"
+    },
+    {
+     "id": "2-6.3-r2",
+     "cat": "2-AP-16"
+    },
+    {
+     "id": "2-5.1-r2",
+     "cat": "2-CS-01"
+    }
+   ],
+   "decision": "thresholds are a human decision"
+  },
+  "capstone": {
+   "captainLogin": "one Studio game per account per build step: the team captain signs in for every unit-7 period; other members have no build cell",
+   "markTeammates": "P11 review form: 'Also mark these teammates' multi-select upserts the rubric marks onto teammates' step_progress rows (question/build steps only)",
+   "spend": "free pool $5/day site-wide; a school plan adds seats x $10/12 per month to the shared paid pool (30 seats = $25/month); 15 teams x ~8 turns x 2 periods x $0.15-0.40 = $36-96 per class capstone",
+   "throughput": "one serial build runner per instance, maxPerUser 2; ~1-3 min per turn => 15-30 turns per 30-minute block for the whole class = 1-2 turns per team per period",
+   "decisions": [
+    "measure a build turn on production hardware",
+    "per-period team cap on the Builder status line",
+    "7.2 = one good message + one fix + paper path",
+    "school plan required vs per-class AI allowance",
+    "public wording about AI cost"
+   ]
+  },
+  "platformChangesAdd": [
+   {
+    "id": "P5",
+    "add": "also hide the 'I played it' button (routes/progress.js:256) on MODES-slug and WYR-live steps"
+   },
+   {
+    "id": "P8",
+    "add": "copyLesson's explicit INSERT (lessons.js:191) must also copy options, standards, template"
+   },
+   {
+    "id": "P11",
+    "add": "'Also mark these teammates' multi-select; rubric lines on every lesson's sentence step"
+   },
+   {
+    "id": "P17",
+    "add": "cadence also sets due_at = day before the next lesson opens (last +7 days)"
+   },
+   {
+    "id": "P20",
+    "change": "/live set picker 'CS Quest' optgroup for sets with lesson_id",
+    "files": [
+     "server/views/live.js"
+    ],
+    "owner": "B"
+   },
+   {
+    "id": "P21",
+    "change": "Reset to the CS Quest version re-assigns the fresh copy to the same classes with the old dates and unassigns the old copy",
+    "owner": "A"
+   },
+   {
+    "id": "legal",
+    "change": "docs/legal-review.md line for the Standards tab and rubric marks (per-student education records; school-only; deletion hooks; teacher CSV only)",
+    "owner": "A"
+   }
+  ],
+  "program": {
+   "pathsAdd": {
+    "core10NoBuilder": [
+     "1.2",
+     "1.3",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2",
+     "4.1",
+     "4.2",
+     "5.2",
+     "6.1"
+    ]
+   },
+   "periodVariants": {
+    "short40": "projector warm-up with 2 items, one Discuss prompt, never cut the exit ticket",
+    "block80-90": "lesson + unplugged twin + 3-star stretch"
+   },
+   "faqAdd": [
+    "classes and lessons live inside a school on Oomba; set one up for free",
+    "Chromebooks without touch work (click-or-tap + keyboard)",
+    "headphones recommended; lesson mode starts with music off and captions on"
+   ]
+  },
+  "testsToOwn": {
+   "curriculum": [
+    "tests/e2e/how-it-works.spec.js PAGES += /teachers/cs-quest",
+    "scripts/how-shots.js --only cs materialises csq-1b-1.2 and seeds step_progress with standards/marks for the Standards-tab shot"
+   ]
+  },
+  "openDecisions": [
+   "mastery thresholds and per-lesson rubric as Applied evidence",
+   "capstone money/queue policy and public wording",
+   "translation production and review; launch gate",
+   "captain login + mark teammates vs a phase-2 team feature",
+   "6.1 without live warm-up (wyr:tech:8:20) and 6.2 Pro as two Play steps"
+  ],
+  "i18n": {
+   "stringBudget": {
+    "chromePerGame": 450,
+    "levelTextPerGame": 1000,
+    "note": "level prose (learn, 3 hints, check q + 3 tiles, case files, tickets, briefs, letters, personas, quotes) is also 13-locale"
+   },
+   "translationWorkflow": "DECISION: machine translation through scripts/cs-quest-i18n.mjs + native review of 12 locales before the public page claims coverage; ~4 x 1300 x 12 strings",
+   "l10nTest": "each game's unit test asserts JSON l10n has all 11 non-English descriptions",
+   "usSpelling": {
+    "rule": "US spelling in lesson content, bank items and in-game en text; en-GB may differ",
+    "itemsToFix": [
+     "1b-1.4-r1",
+     "1b-3.1-e3",
+     "1b-3.3-e2",
+     "1b-4.1-e3",
+     "1b-6.2-e2",
+     "1b-7.1-r1",
+     "1b-7.2-e3",
+     "2-1.4-e2",
+     "2-3.1-e2",
+     "2-3.3-e2",
+     "2-5.1-e2",
+     "2-5.3-e3",
+     "2-6.3-e3"
+    ],
+    "words": [
+     "colour",
+     "favourite",
+     "grey",
+     "labelled",
+     "licence",
+     "organise",
+     "practise",
+     "neighbour",
+     "recognise",
+     "maths",
+     "centre",
+     "programme",
+     "catalogue(chrome)"
+    ]
+   },
+   "mergeScripts": "A and B each ship an i18n merge script (precedent scripts/i18n-add-live-wyr-atlas.mjs); integration runs both then npm run i18n:check",
+   "liveSetPicker": "B: /live set picker groups sets with lesson_id under a 'CS Quest' optgroup (live.cs.sets)"
+  }
+ }
+}

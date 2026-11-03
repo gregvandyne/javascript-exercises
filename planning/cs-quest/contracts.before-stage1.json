@@ -1,0 +1,5974 @@
+{
+ "program": {
+  "name": "CS Quest",
+  "slug": "cs-quest",
+  "tagline": "Computer science, one period at a time.",
+  "standards": "CSTA K-12 CS Standards 2017, levels 1B (grades 3-5) and 2 (grades 6-8)",
+  "bands": {
+   "1B": {
+    "grade": "Grades 3-5",
+    "inGame": "Explorer",
+    "code": "1b"
+   },
+   "2": {
+    "grade": "Grades 6-8",
+    "inGame": "Pro",
+    "code": "2"
+   }
+  },
+  "units": [
+   {
+    "n": 1,
+    "title": "Think Like a Robot",
+    "lessons": [
+     "1.1",
+     "1.2",
+     "1.3",
+     "1.4",
+     "1.5"
+    ]
+   },
+   {
+    "n": 2,
+    "title": "Bug Hunters",
+    "lessons": [
+     "2.1",
+     "2.2"
+    ]
+   },
+   {
+    "n": 3,
+    "title": "Data Detectives",
+    "lessons": [
+     "3.1",
+     "3.2",
+     "3.3"
+    ]
+   },
+   {
+    "n": 4,
+    "title": "Packet Post",
+    "lessons": [
+     "4.1",
+     "4.2",
+     "4.3"
+    ]
+   },
+   {
+    "n": 5,
+    "title": "Inside the Machine",
+    "lessons": [
+     "5.1",
+     "5.2",
+     "5.3"
+    ]
+   },
+   {
+    "n": 6,
+    "title": "Tech Choices",
+    "lessons": [
+     "6.1",
+     "6.2",
+     "6.3"
+    ]
+   },
+   {
+    "n": 7,
+    "title": "Make Your Own Game",
+    "lessons": [
+     "7.1",
+     "7.2",
+     "7.3",
+     "7.4"
+    ]
+   }
+  ],
+  "paths": {
+   "full": "all 23",
+   "core10": [
+    "1.2",
+    "2.1",
+    "3.1",
+    "4.1",
+    "5.2",
+    "6.1",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ],
+   "csEdWeek": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "4.1",
+    "6.1"
+   ],
+   "deviceFirst": [
+    "5.2",
+    "5.1",
+    "5.3",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.1",
+    "4.2",
+    "4.3",
+    "6.1",
+    "6.2",
+    "6.3",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ]
+  },
+  "period": [
+   [
+    "0:00",
+    5,
+    "Arrive, log in, Do Now"
+   ],
+   [
+    "0:05",
+    5,
+    "Warm-up (live or projector)"
+   ],
+   [
+    "0:10",
+    6,
+    "Explore (projector script)"
+   ],
+   [
+    "0:16",
+    18,
+    "Play"
+   ],
+   [
+    "0:34",
+    6,
+    "Discuss"
+   ],
+   [
+    "0:40",
+    5,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "planPath": "/tmp/claude-0/-home-user-javascript-exercises/db321ed6-437e-588f-beaf-65f7e9b106cd/scratchpad/cs-quest/plan.md"
+ },
+ "params": {
+  "urlKeys": [
+   "chapter",
+   "band",
+   "mode",
+   "level",
+   "lock"
+  ],
+  "valueRegex": "^[a-z0-9-]{1,16}$",
+  "band": "1b|2",
+  "level": "1-30",
+  "lock": "0|1",
+  "tokenField": "o = chapter.band.mode.level.lock (<= 40 chars, empty parts allowed)",
+  "sdk": "BRB.params frozen object, {} when absent; games read (window.BRB && BRB.params) || {}",
+  "stepColumn": "lesson_steps.options holds the query-string form; routes/progress.js appends it to the Play link",
+  "questCode": "C B M L (4 digits): C chapter index (0 map), B 1 Explorer | 2 Pro, M mode index (0 play, 1 debug, 2 maker/tally/wheel, 3 projector), L level 0-9; typed in-game; params win; hidden in live frames"
+ },
+ "progressLabelRegex": "^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$",
+ "games": [
+  {
+   "slug": "robo-route",
+   "title": "Robo Route",
+   "icon": "🛤️",
+   "cover": "mint",
+   "category": "learning",
+   "featured": true,
+   "orientation": "any",
+   "players_max": 2,
+   "age_rating": "everyone",
+   "crew": {
+    "name": "Bolt",
+    "look": "custom 3-layer SVG robot"
+   },
+   "kit": "1.1.2",
+   "kitPacks": [
+    "art-props",
+    "style-bold"
+   ],
+   "bands": [
+    "1B",
+    "2"
+   ],
+   "bandNames": {
+    "1B": "Explorer",
+    "2": "Pro"
+   },
+   "chapters": [
+    {
+     "index": 1,
+     "id": "sequences",
+     "title": "Sequences",
+     "band": "1B",
+     "csta": [
+      "1B-AP-10",
+      "1B-AP-08",
+      "1B-AP-11"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 1,
+     "id": "sequences",
+     "title": "Sequences",
+     "band": "2",
+     "csta": [
+      "2-AP-10",
+      "2-AP-13"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 2,
+     "id": "loops",
+     "title": "Loops",
+     "band": "1B",
+     "csta": [
+      "1B-AP-10"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 2,
+     "id": "loops",
+     "title": "Loops",
+     "band": "2",
+     "csta": [
+      "2-AP-12"
+     ],
+     "levels": 8
+    },
+    {
+     "index": 3,
+     "id": "conditionals",
+     "title": "Conditionals & events",
+     "band": "1B",
+     "csta": [
+      "1B-AP-10"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 3,
+     "id": "conditionals",
+     "title": "Conditionals & events",
+     "band": "2",
+     "csta": [
+      "2-AP-12"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 4,
+     "id": "variables",
+     "title": "Variables",
+     "band": "1B",
+     "csta": [
+      "1B-AP-09"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 4,
+     "id": "variables",
+     "title": "Variables",
+     "band": "2",
+     "csta": [
+      "2-AP-11"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 5,
+     "id": "functions",
+     "title": "Functions",
+     "band": "1B",
+     "csta": [
+      "1B-AP-11",
+      "1B-AP-12"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 5,
+     "id": "functions",
+     "title": "Functions",
+     "band": "2",
+     "csta": [
+      "2-AP-14",
+      "2-AP-13",
+      "2-AP-19",
+      "2-AP-16"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 6,
+     "id": "debug",
+     "title": "Debug Lab",
+     "band": "1B",
+     "csta": [
+      "1B-AP-15"
+     ],
+     "levels": 7,
+     "mode": "debug"
+    },
+    {
+     "index": 6,
+     "id": "debug",
+     "title": "Debug Lab",
+     "band": "2",
+     "csta": [
+      "2-AP-17"
+     ],
+     "levels": 7,
+     "mode": "debug"
+    },
+    {
+     "index": 7,
+     "id": "best-route",
+     "title": "Best Route",
+     "band": "1B",
+     "csta": [
+      "1B-AP-08"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 7,
+     "id": "best-route",
+     "title": "Best Route",
+     "band": "2",
+     "csta": [
+      "2-AP-10",
+      "2-AP-17"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 8,
+     "id": "level-maker",
+     "title": "Level Maker",
+     "band": "1B",
+     "csta": [
+      "1B-AP-13",
+      "1B-AP-12"
+     ],
+     "levels": 3,
+     "mode": "maker"
+    },
+    {
+     "index": 8,
+     "id": "level-maker",
+     "title": "Level Maker",
+     "band": "2",
+     "csta": [
+      "2-AP-15",
+      "2-AP-16"
+     ],
+     "levels": 3,
+     "mode": "maker"
+    }
+   ],
+   "params": {
+    "chapter": "one of chapters[].id",
+    "band": "1b | 2",
+    "mode": "one of modes (default play)",
+    "level": "1-30 (optional)",
+    "lock": "0 | 1 (hides chapter map and band toggle)"
+   },
+   "modes": {
+    "0": "play",
+    "1": "debug",
+    "2": "maker",
+    "3": "projector"
+   },
+   "questCode": "C B M L: C = chapters[].index (0 = map), B = 1 Explorer | 2 Pro, M = modes key, L = level 0-9 (0 = first unfinished); typed on the in-game keypad; params win over codes",
+   "progressEvents": {
+    "today": {
+     "afterEachSolvedLevel": {
+      "call": "BRB.score.submit(score, label)",
+      "score": "starsInChapter (integer, monotonic within the chapter)",
+      "label": "'<done>/<total> levels, <stars> stars' plus ', <ok>/<n> checks' in lesson mode; must match ^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$"
+     },
+     "onChapterComplete": {
+      "call": "BRB.gameOver({ won: true, score: starsInChapter })"
+     },
+     "otherModes": {
+      "maker": "BRB.score.submit(levelsTested, '<made> made, <tested> tested') matching ^\\d{1,2} made, \\d{1,2} tested$"
+     }
+    },
+    "phase2": {
+     "call": "BRB.progress(detail)",
+     "detail": {
+      "game": "rr|dd|pp|im",
+      "chapter": "<chapter id>",
+      "level": "n",
+      "stars": "0-3",
+      "band": "1|2",
+      "csta": [
+       "<ids of the level>"
+      ],
+      "check": "0|1",
+      "confidence": "1-3",
+      "hint": "0-3",
+      "runs": "n",
+      "skipped": "bool"
+     },
+     "limits": "JSON <= 1 KB; keys [a-z][a-zA-Z0-9]{0,23}; values numbers/booleans/[A-Za-z0-9-] strings; one per 2 s; forwarded only with a lesson context"
+    }
+   },
+   "testHooks": [
+    "__brbTest.start({chapter, band, mode, level, seed, lesson})",
+    "step(n)",
+    "skipAnimations()",
+    "cover()",
+    "state()"
+   ],
+   "files": {
+    "game": [
+     "seed-games/robo-route.html",
+     "seed-games/robo-route.json"
+    ],
+    "strings": [
+     "scripts/data/cs-quest/robo-route/<lang>.json",
+     "public/vendor/data/robo-route/<version>/<lang>.js"
+    ],
+    "cover": "scripts/covers/robo-route.recipe.js",
+    "tests": [
+     "tests/unit/robo-route.test.js",
+     "tests/e2e/robo-route.spec.js"
+    ]
+   },
+   "stringBudget": 450,
+   "specifics": {
+    "levelCode": "28-symbol alphabet 23456789BCDFGHJKMNPQRSTVWXYZ, 14-26 symbols, carries the whole level; BFS Check proves solvability and computes par",
+    "randomLayouts": "levels with random:true run on 3 seeded layouts; all must pass",
+    "verdictFlags": [
+     "namesOk",
+     "chipsOk",
+     "planMatch",
+     "editsFromStarter",
+     "perLayout"
+    ]
+   }
+  },
+  {
+   "slug": "data-detective",
+   "title": "Data Detective",
+   "icon": "🔎",
+   "cover": "ocean",
+   "category": "learning",
+   "featured": true,
+   "orientation": "any",
+   "players_max": 2,
+   "age_rating": "everyone",
+   "crew": {
+    "name": "Dot",
+    "look": "kit fox + dress trench coat"
+   },
+   "kit": "1.1.2",
+   "kitPacks": [
+    "art-props",
+    "dress",
+    "style-bold"
+   ],
+   "bands": [
+    "1B",
+    "2"
+   ],
+   "bandNames": {
+    "1B": "Explorer",
+    "2": "Pro"
+   },
+   "chapters": [
+    {
+     "index": 1,
+     "id": "sort",
+     "title": "Sort & Group",
+     "band": "1B",
+     "csta": [
+      "1B-DA-06"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 2,
+     "id": "chart",
+     "title": "Chart It",
+     "band": "1B",
+     "csta": [
+      "1B-DA-06"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 3,
+     "id": "claims",
+     "title": "Clues & Claims",
+     "band": "1B",
+     "csta": [
+      "1B-DA-07"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 4,
+     "id": "cleanup",
+     "title": "Clean-Up Crew",
+     "band": "2",
+     "csta": [
+      "2-DA-08"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 5,
+     "id": "models",
+     "title": "Model Makers",
+     "band": "2",
+     "csta": [
+      "2-DA-09"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 6,
+     "id": "fair",
+     "title": "Fair Data",
+     "band": "2",
+     "csta": [
+      "2-IC-21"
+     ],
+     "levels": 4
+    },
+    {
+     "index": 7,
+     "id": "my-data",
+     "title": "My Data",
+     "band": "1B",
+     "csta": [
+      "1B-DA-06",
+      "1B-DA-07"
+     ],
+     "levels": 3,
+     "mode": "tally"
+    },
+    {
+     "index": 7,
+     "id": "my-data",
+     "title": "My Data",
+     "band": "2",
+     "csta": [
+      "2-DA-08",
+      "2-IC-22"
+     ],
+     "levels": 3,
+     "mode": "tally"
+    }
+   ],
+   "params": {
+    "chapter": "one of chapters[].id",
+    "band": "1b | 2",
+    "mode": "one of modes (default play)",
+    "level": "1-30 (optional)",
+    "lock": "0 | 1 (hides chapter map and band toggle)"
+   },
+   "modes": {
+    "0": "play",
+    "2": "tally",
+    "3": "projector"
+   },
+   "questCode": "C B M L: C = chapters[].index (0 = map), B = 1 Explorer | 2 Pro, M = modes key, L = level 0-9 (0 = first unfinished); typed on the in-game keypad; params win over codes",
+   "progressEvents": {
+    "today": {
+     "afterEachSolvedLevel": {
+      "call": "BRB.score.submit(score, label)",
+      "score": "starsInChapter (integer, monotonic within the chapter)",
+      "label": "'<done>/<total> cases, <stars> stars' plus ', <ok>/<n> checks' in lesson mode; must match ^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$"
+     },
+     "onChapterComplete": {
+      "call": "BRB.gameOver({ won: true, score: starsInChapter })"
+     },
+     "otherModes": {
+      "tally": "BRB.score.submit(chartsMade, '<n> charts made') matching ^\\d{1,2} charts made$"
+     }
+    },
+    "phase2": {
+     "call": "BRB.progress(detail)",
+     "detail": {
+      "game": "rr|dd|pp|im",
+      "chapter": "<chapter id>",
+      "level": "n",
+      "stars": "0-3",
+      "band": "1|2",
+      "csta": [
+       "<ids of the level>"
+      ],
+      "check": "0|1",
+      "confidence": "1-3",
+      "hint": "0-3",
+      "runs": "n",
+      "skipped": "bool"
+     },
+     "limits": "JSON <= 1 KB; keys [a-z][a-zA-Z0-9]{0,23}; values numbers/booleans/[A-Za-z0-9-] strings; one per 2 s; forwarded only with a lesson context"
+    }
+   },
+   "testHooks": [
+    "__brbTest.start({chapter, band, mode, level, seed, lesson})",
+    "step(n)",
+    "skipAnimations()",
+    "cover()",
+    "state()"
+   ],
+   "files": {
+    "game": [
+     "seed-games/data-detective.html",
+     "seed-games/data-detective.json"
+    ],
+    "strings": [
+     "scripts/data/cs-quest/data-detective/<lang>.json",
+     "public/vendor/data/data-detective/<version>/<lang>.js"
+    ],
+    "cover": "scripts/covers/data-detective.recipe.js",
+    "tests": [
+     "tests/unit/data-detective.test.js",
+     "tests/e2e/data-detective.spec.js"
+    ]
+   },
+   "stringBudget": 450,
+   "specifics": {
+    "showMeRule": "a claim can be pinned only when the evidence view on screen supports it",
+    "views": "DOM table/bars with printed values, never canvas"
+   }
+  },
+  {
+   "slug": "packet-post",
+   "title": "Packet Post",
+   "icon": "📮",
+   "cover": "gold",
+   "category": "learning",
+   "featured": true,
+   "orientation": "any",
+   "players_max": 1,
+   "age_rating": "everyone",
+   "crew": {
+    "name": "Pim",
+    "look": "art-animals owl with a satchel"
+   },
+   "kit": "1.1.2",
+   "kitPacks": [
+    "art-props",
+    "art-animals",
+    "art-school",
+    "style-bold"
+   ],
+   "bands": [
+    "1B",
+    "2"
+   ],
+   "bandNames": {
+    "1B": "Explorer",
+    "2": "Pro"
+   },
+   "chapters": [
+    {
+     "index": 1,
+     "id": "packets",
+     "title": "Break It Up",
+     "band": "1B",
+     "csta": [
+      "1B-NI-04"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 1,
+     "id": "packets",
+     "title": "Break It Up",
+     "band": "2",
+     "csta": [
+      "2-NI-04"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 2,
+     "id": "routes",
+     "title": "Many Roads",
+     "band": "1B",
+     "csta": [
+      "1B-NI-04"
+     ],
+     "levels": 4
+    },
+    {
+     "index": 2,
+     "id": "routes",
+     "title": "Many Roads",
+     "band": "2",
+     "csta": [
+      "2-NI-04"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 3,
+     "id": "protocols",
+     "title": "Rules of the Road",
+     "band": "1B",
+     "csta": [
+      "1B-NI-04"
+     ],
+     "levels": 2
+    },
+    {
+     "index": 3,
+     "id": "protocols",
+     "title": "Rules of the Road",
+     "band": "2",
+     "csta": [
+      "2-NI-04"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 4,
+     "id": "locks",
+     "title": "Lock It",
+     "band": "1B",
+     "csta": [
+      "1B-NI-05"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 4,
+     "id": "locks",
+     "title": "Lock It",
+     "band": "2",
+     "csta": [
+      "2-NI-05",
+      "2-IC-23"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 5,
+     "id": "tricks",
+     "title": "Spot the Trick",
+     "band": "1B",
+     "csta": [
+      "1B-NI-05"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 5,
+     "id": "tricks",
+     "title": "Spot the Trick",
+     "band": "2",
+     "csta": [
+      "2-NI-05",
+      "2-IC-23"
+     ],
+     "levels": 10
+    },
+    {
+     "index": 6,
+     "id": "ciphers",
+     "title": "Secret Messages",
+     "band": "1B",
+     "csta": [],
+     "levels": 3,
+     "enrichment": true
+    },
+    {
+     "index": 6,
+     "id": "ciphers",
+     "title": "Secret Messages",
+     "band": "2",
+     "csta": [
+      "2-NI-06"
+     ],
+     "levels": 7
+    }
+   ],
+   "params": {
+    "chapter": "one of chapters[].id",
+    "band": "1b | 2",
+    "mode": "one of modes (default play)",
+    "level": "1-30 (optional)",
+    "lock": "0 | 1 (hides chapter map and band toggle)"
+   },
+   "modes": {
+    "0": "play",
+    "2": "wheel",
+    "3": "projector"
+   },
+   "questCode": "C B M L: C = chapters[].index (0 = map), B = 1 Explorer | 2 Pro, M = modes key, L = level 0-9 (0 = first unfinished); typed on the in-game keypad; params win over codes",
+   "progressEvents": {
+    "today": {
+     "afterEachSolvedLevel": {
+      "call": "BRB.score.submit(score, label)",
+      "score": "starsInChapter (integer, monotonic within the chapter)",
+      "label": "'<done>/<total> levels (tricks chapter: cards), <stars> stars' plus ', <ok>/<n> checks' in lesson mode; must match ^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$"
+     },
+     "onChapterComplete": {
+      "call": "BRB.gameOver({ won: true, score: starsInChapter })"
+     },
+     "otherModes": {
+      "wheel": "no score (tool mode)"
+     }
+    },
+    "phase2": {
+     "call": "BRB.progress(detail)",
+     "detail": {
+      "game": "rr|dd|pp|im",
+      "chapter": "<chapter id>",
+      "level": "n",
+      "stars": "0-3",
+      "band": "1|2",
+      "csta": [
+       "<ids of the level>"
+      ],
+      "check": "0|1",
+      "confidence": "1-3",
+      "hint": "0-3",
+      "runs": "n",
+      "skipped": "bool"
+     },
+     "limits": "JSON <= 1 KB; keys [a-z][a-zA-Z0-9]{0,23}; values numbers/booleans/[A-Za-z0-9-] strings; one per 2 s; forwarded only with a lesson context"
+    }
+   },
+   "testHooks": [
+    "__brbTest.start({chapter, band, mode, level, seed, lesson})",
+    "step(n)",
+    "skipAnimations()",
+    "cover()",
+    "state()"
+   ],
+   "files": {
+    "game": [
+     "seed-games/packet-post.html",
+     "seed-games/packet-post.json"
+    ],
+    "strings": [
+     "scripts/data/cs-quest/packet-post/<lang>.json",
+     "public/vendor/data/packet-post/<version>/<lang>.js"
+    ],
+    "cover": "scripts/covers/packet-post.recipe.js",
+    "tests": [
+     "tests/unit/packet-post.test.js",
+     "tests/e2e/packet-post.spec.js"
+    ]
+   },
+   "stringBudget": 450,
+   "specifics": {
+    "enrichmentOnly": {
+     "ciphers@1B": "no 1B id claimed"
+    },
+    "safety": "no URLs/emails/@/digit runs; senders are roles; 'mailbox key' not 'password'; cipher word list screened by the 25-shift profanity check"
+   }
+  },
+  {
+   "slug": "inside-the-machine",
+   "title": "Inside the Machine",
+   "icon": "🔧",
+   "cover": "night",
+   "category": "learning",
+   "featured": true,
+   "orientation": "any",
+   "players_max": 1,
+   "age_rating": "everyone",
+   "crew": {
+    "name": "Gizmo",
+    "look": "art-animals mouse with dress goggles"
+   },
+   "kit": "1.1.2",
+   "kitPacks": [
+    "art-school",
+    "art-props",
+    "art-animals",
+    "dress",
+    "style-bold"
+   ],
+   "bands": [
+    "1B",
+    "2"
+   ],
+   "bandNames": {
+    "1B": "Explorer",
+    "2": "Pro"
+   },
+   "chapters": [
+    {
+     "index": 1,
+     "id": "parts",
+     "title": "Parts & Jobs",
+     "band": "1B",
+     "csta": [
+      "1B-CS-01"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 1,
+     "id": "parts",
+     "title": "Parts & Jobs",
+     "band": "2",
+     "csta": [
+      "1B-CS-01"
+     ],
+     "levels": 6
+    },
+    {
+     "index": 2,
+     "id": "hw-sw",
+     "title": "Hardware or Software",
+     "band": "1B",
+     "csta": [
+      "1B-CS-02"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 2,
+     "id": "hw-sw",
+     "title": "Hardware or Software",
+     "band": "2",
+     "csta": [
+      "1B-CS-02"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 3,
+     "id": "fixit",
+     "title": "Fix-It Desk",
+     "band": "1B",
+     "csta": [
+      "1B-CS-03"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 3,
+     "id": "fixit",
+     "title": "Fix-It Desk",
+     "band": "2",
+     "csta": [
+      "2-CS-03"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 4,
+     "id": "bits",
+     "title": "Bits & Pixels",
+     "band": "1B",
+     "csta": [
+      "1B-CS-02"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 4,
+     "id": "bits",
+     "title": "Bits & Pixels",
+     "band": "2",
+     "csta": [
+      "2-DA-07"
+     ],
+     "levels": 7
+    },
+    {
+     "index": 5,
+     "id": "gadget",
+     "title": "Design a Gadget",
+     "band": "2",
+     "csta": [
+      "2-CS-02",
+      "2-CS-01"
+     ],
+     "levels": 5
+    },
+    {
+     "index": 6,
+     "id": "design-lab",
+     "title": "Design Lab",
+     "band": "1B",
+     "csta": [
+      "1B-IC-19"
+     ],
+     "levels": 3
+    },
+    {
+     "index": 6,
+     "id": "design-lab",
+     "title": "Design Lab",
+     "band": "2",
+     "csta": [
+      "2-CS-01",
+      "2-IC-21"
+     ],
+     "levels": 5
+    }
+   ],
+   "params": {
+    "chapter": "one of chapters[].id",
+    "band": "1b | 2",
+    "mode": "one of modes (default play)",
+    "level": "1-30 (optional)",
+    "lock": "0 | 1 (hides chapter map and band toggle)"
+   },
+   "modes": {
+    "0": "play",
+    "3": "projector"
+   },
+   "questCode": "C B M L: C = chapters[].index (0 = map), B = 1 Explorer | 2 Pro, M = modes key, L = level 0-9 (0 = first unfinished); typed on the in-game keypad; params win over codes",
+   "progressEvents": {
+    "today": {
+     "afterEachSolvedLevel": {
+      "call": "BRB.score.submit(score, label)",
+      "score": "starsInChapter (integer, monotonic within the chapter)",
+      "label": "'<done>/<total> levels (fixit chapter: tickets), <stars> stars' plus ', <ok>/<n> checks' in lesson mode; must match ^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$"
+     },
+     "onChapterComplete": {
+      "call": "BRB.gameOver({ won: true, score: starsInChapter })"
+     }
+    },
+    "phase2": {
+     "call": "BRB.progress(detail)",
+     "detail": {
+      "game": "rr|dd|pp|im",
+      "chapter": "<chapter id>",
+      "level": "n",
+      "stars": "0-3",
+      "band": "1|2",
+      "csta": [
+       "<ids of the level>"
+      ],
+      "check": "0|1",
+      "confidence": "1-3",
+      "hint": "0-3",
+      "runs": "n",
+      "skipped": "bool"
+     },
+     "limits": "JSON <= 1 KB; keys [a-z][a-zA-Z0-9]{0,23}; values numbers/booleans/[A-Za-z0-9-] strings; one per 2 s; forwarded only with a lesson context"
+    }
+   },
+   "testHooks": [
+    "__brbTest.start({chapter, band, mode, level, seed, lesson})",
+    "step(n)",
+    "skipAnimations()",
+    "cover()",
+    "state()"
+   ],
+   "files": {
+    "game": [
+     "seed-games/inside-the-machine.html",
+     "seed-games/inside-the-machine.json"
+    ],
+    "strings": [
+     "scripts/data/cs-quest/inside-the-machine/<lang>.json",
+     "public/vendor/data/inside-the-machine/<version>/<lang>.js"
+    ],
+    "cover": "scripts/covers/inside-the-machine.recipe.js",
+    "tests": [
+     "tests/unit/inside-the-machine.test.js",
+     "tests/e2e/inside-the-machine.spec.js"
+    ]
+   },
+   "stringBudget": 450,
+   "specifics": {
+    "enrichmentOnly": {
+     "bits@1B": "binary is enrichment; items tagged 1B-CS-02 (storage in the system model)"
+    },
+    "flowchart": "band-2 fixit builds the flowchart first (builds toward 2-AP-10)"
+   }
+  }
+ ],
+ "sets": [
+  {
+   "id": "csq-u1-1b",
+   "kind": "quiz",
+   "unit": 1,
+   "band": "1B",
+   "title": "CSQ Unit 1 · Think Like a Robot (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-AP-10",
+    "1B-AP-08",
+    "1B-AP-09",
+    "1B-AP-11",
+    "1B-AP-12"
+   ],
+   "questionCount": 21,
+   "file": "seed-lessons/cs-quest/sets/u1-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u1-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u1-2",
+   "kind": "quiz",
+   "unit": 1,
+   "band": "2",
+   "title": "CSQ Unit 1 · Think Like a Robot (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-AP-10",
+    "2-AP-13",
+    "2-AP-12",
+    "2-AP-11",
+    "2-AP-14"
+   ],
+   "questionCount": 21,
+   "file": "seed-lessons/cs-quest/sets/u1-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u1-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u2-1b",
+   "kind": "quiz",
+   "unit": 2,
+   "band": "1B",
+   "title": "CSQ Unit 2 · Bug Hunters (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-AP-15",
+    "1B-AP-16",
+    "1B-AP-13",
+    "1B-AP-17"
+   ],
+   "questionCount": 11,
+   "file": "seed-lessons/cs-quest/sets/u2-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u2-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u2-2",
+   "kind": "quiz",
+   "unit": 2,
+   "band": "2",
+   "title": "CSQ Unit 2 · Bug Hunters (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-AP-17",
+    "2-AP-18",
+    "2-AP-19",
+    "2-AP-15"
+   ],
+   "questionCount": 11,
+   "file": "seed-lessons/cs-quest/sets/u2-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u2-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u3-1b",
+   "kind": "quiz",
+   "unit": 3,
+   "band": "1B",
+   "title": "CSQ Unit 3 · Data Detectives (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-DA-06",
+    "1B-DA-07",
+    "1B-IC-20"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u3-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u3-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u3-2",
+   "kind": "quiz",
+   "unit": 3,
+   "band": "2",
+   "title": "CSQ Unit 3 · Data Detectives (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-DA-08",
+    "2-DA-09",
+    "2-IC-22"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u3-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u3-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u4-1b",
+   "kind": "quiz",
+   "unit": 4,
+   "band": "1B",
+   "title": "CSQ Unit 4 · Packet Post (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-NI-04",
+    "1B-NI-05"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u4-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u4-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u4-2",
+   "kind": "quiz",
+   "unit": 4,
+   "band": "2",
+   "title": "CSQ Unit 4 · Packet Post (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-NI-04",
+    "2-NI-05",
+    "2-IC-23",
+    "2-NI-06"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u4-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u4-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u5-1b",
+   "kind": "quiz",
+   "unit": 5,
+   "band": "1B",
+   "title": "CSQ Unit 5 · Inside the Machine (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-CS-01",
+    "1B-CS-02",
+    "1B-CS-03"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u5-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u5-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u5-2",
+   "kind": "quiz",
+   "unit": 5,
+   "band": "2",
+   "title": "CSQ Unit 5 · Inside the Machine (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-CS-02",
+    "2-CS-01",
+    "2-CS-03",
+    "2-DA-07"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u5-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u5-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u6-1b",
+   "kind": "quiz",
+   "unit": 6,
+   "band": "1B",
+   "title": "CSQ Unit 6 · Tech Choices (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-IC-18",
+    "1B-IC-19",
+    "1B-IC-20",
+    "1B-IC-21",
+    "1B-AP-14"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u6-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u6-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u6-2",
+   "kind": "quiz",
+   "unit": 6,
+   "band": "2",
+   "title": "CSQ Unit 6 · Tech Choices (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-IC-20",
+    "2-IC-21",
+    "2-CS-01",
+    "2-IC-23",
+    "2-AP-16"
+   ],
+   "questionCount": 13,
+   "file": "seed-lessons/cs-quest/sets/u6-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u6-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u7-1b",
+   "kind": "quiz",
+   "unit": 7,
+   "band": "1B",
+   "title": "CSQ Unit 7 · Make Your Own Game (3-5)",
+   "modes": [
+    "quest-race",
+    "battle",
+    "board"
+   ],
+   "cstaTags": [
+    "1B-AP-13",
+    "1B-AP-16",
+    "1B-AP-11",
+    "1B-AP-15",
+    "1B-IC-20",
+    "1B-AP-17",
+    "1B-AP-14"
+   ],
+   "questionCount": 17,
+   "file": "seed-lessons/cs-quest/sets/u7-1b.json",
+   "itemSchema": {
+    "id": "1b-<lesson>-e<n> | 1b-<lesson>-r<n> | 1b-u7-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in quest-race at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "csq-u7-2",
+   "kind": "quiz",
+   "unit": 7,
+   "band": "2",
+   "title": "CSQ Unit 7 · Make Your Own Game (6-8)",
+   "modes": [
+    "battle",
+    "quest-race",
+    "board"
+   ],
+   "cstaTags": [
+    "2-AP-18",
+    "2-AP-13",
+    "2-AP-10",
+    "2-AP-17",
+    "2-AP-15",
+    "2-DA-09",
+    "2-IC-22",
+    "2-AP-19",
+    "2-AP-16"
+   ],
+   "questionCount": 17,
+   "file": "seed-lessons/cs-quest/sets/u7-2.json",
+   "itemSchema": {
+    "id": "2-<lesson>-e<n> | 2-<lesson>-r<n> | 2-u7-o1",
+    "lesson": "u.n",
+    "use": "exit | review | opener",
+    "cat": "one CSTA id, a primary id of the item's lesson",
+    "topic": "lesson short name (Brain Board column)",
+    "kind": "recall | apply | analyze",
+    "secs": "15 | 20",
+    "q": "<= 300",
+    "choices": "4 x <= 120 (right answer position varies)",
+    "answer": "index"
+   },
+   "derived": {
+    "warmup": "5 items per lesson (ids listed in the lesson JSON) hosted in battle at 15 s",
+    "exit": "3 exit items per lesson -> quiz step (cat kept) or battle 20 s or paper",
+    "review": "all items with cat replaced by topic -> board"
+   }
+  },
+  {
+   "id": "wyr-tech",
+   "kind": "wyr",
+   "unit": 6,
+   "band": "both",
+   "title": "Tech choices",
+   "modes": [
+    "wyr"
+   ],
+   "starter": "wyr:tech:10:20",
+   "cstaTags": [
+    "1B-IC-18",
+    "2-IC-20",
+    "2-IC-23",
+    "1B-IC-19",
+    "2-IC-21",
+    "1B-AP-14",
+    "2-AP-16"
+   ],
+   "questionCount": 20,
+   "files": [
+    "scripts/data/would-you-rather/en.json (+ 12 locale files, English fallback per item)",
+    "scripts/data/would-you-rather/ui.json (cat.tech x13)",
+    "seed-lessons/cs-quest/wyr-tech.json (prompts + csta)"
+   ],
+   "rules": "a/b text <= 60 chars; tags from TAGS; no brands, digits, names, URLs"
+  },
+  {
+   "id": "wyr-online",
+   "kind": "wyr",
+   "unit": 6,
+   "band": "both",
+   "title": "Online: share or keep",
+   "modes": [
+    "wyr"
+   ],
+   "starter": "wyr:online:8:20",
+   "cstaTags": [
+    "2-IC-23",
+    "1B-IC-21",
+    "1B-NI-05",
+    "2-NI-05",
+    "1B-AP-14"
+   ],
+   "questionCount": 10,
+   "files": [
+    "scripts/data/would-you-rather/en.json",
+    "scripts/data/would-you-rather/ui.json (cat.online x13)",
+    "seed-lessons/cs-quest/wyr-tech.json"
+   ],
+   "rules": "same as wyr-tech"
+  }
+ ],
+ "lessons": [
+  {
+   "id": "csq-1b-1.1",
+   "key": "csq-1b-1.1",
+   "unit": 1,
+   "order": 1,
+   "n": "1.1",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 1.1 · Step by step (Sequences)",
+   "duration": 45,
+   "csta": [
+    "1B-AP-10",
+    "1B-AP-08"
+   ],
+   "also": [
+    "1B-AP-11"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-u1-o1",
+    "1b-1.1-r1",
+    "1b-1.1-e1",
+    "1b-1.1-e2",
+    "1b-1.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "sequences",
+    "params": "chapter=sequences&band=1b&lock=1",
+    "questCode": "1 1 0 0"
+   },
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.1-e1",
+    "1b-1.1-e2",
+    "1b-1.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=sequences&band=1b&lock=1",
+     "standards": [
+      "1B-AP-10",
+      "1B-AP-08"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/1.1.json"
+  },
+  {
+   "id": "csq-2-1.1",
+   "key": "csq-2-1.1",
+   "unit": 1,
+   "order": 1,
+   "n": "1.1",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 1.1 · Step by step (Sequences)",
+   "duration": 45,
+   "csta": [
+    "2-AP-10",
+    "2-AP-13"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-u1-o1",
+    "2-1.1-r1",
+    "2-1.1-e1",
+    "2-1.1-e2",
+    "2-1.1-e3"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "sequences",
+    "params": "chapter=sequences&band=2&lock=1",
+    "questCode": "1 2 0 0"
+   },
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.1-e1",
+    "2-1.1-e2",
+    "2-1.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=sequences&band=2&lock=1",
+     "standards": [
+      "2-AP-10",
+      "2-AP-13"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/1.1.json"
+  },
+  {
+   "id": "csq-1b-1.2",
+   "key": "csq-1b-1.2",
+   "unit": 1,
+   "order": 2,
+   "n": "1.2",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 1.2 · Again and again (Loops)",
+   "duration": 45,
+   "csta": [
+    "1B-AP-10"
+   ],
+   "also": [
+    "1B-AP-16"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.1-e1",
+    "1b-1.1-e2",
+    "1b-1.2-r1",
+    "1b-1.2-e1",
+    "1b-1.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "loops",
+    "params": "chapter=loops&band=1b&lock=1",
+    "questCode": "2 1 0 0"
+   },
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.2-e1",
+    "1b-1.2-e2",
+    "1b-1.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=loops&band=1b&lock=1",
+     "standards": [
+      "1B-AP-10"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/1.2.json"
+  },
+  {
+   "id": "csq-2-1.2",
+   "key": "csq-2-1.2",
+   "unit": 1,
+   "order": 2,
+   "n": "1.2",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 1.2 · Again and again (Loops)",
+   "duration": 45,
+   "csta": [
+    "2-AP-12"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.1-e1",
+    "2-1.1-e2",
+    "2-1.2-r1",
+    "2-1.2-e1",
+    "2-1.1-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "loops",
+    "params": "chapter=loops&band=2&lock=1",
+    "questCode": "2 2 0 0"
+   },
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.2-e1",
+    "2-1.2-e2",
+    "2-1.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=loops&band=2&lock=1",
+     "standards": [
+      "2-AP-12"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/1.2.json"
+  },
+  {
+   "id": "csq-1b-1.3",
+   "key": "csq-1b-1.3",
+   "unit": 1,
+   "order": 3,
+   "n": "1.3",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+   "duration": 45,
+   "csta": [
+    "1B-AP-10"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.2-e1",
+    "1b-1.2-e2",
+    "1b-1.3-r1",
+    "1b-1.3-e1",
+    "1b-1.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "conditionals",
+    "params": "chapter=conditionals&band=1b&lock=1",
+    "questCode": "3 1 0 0"
+   },
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.3-e1",
+    "1b-1.3-e2",
+    "1b-1.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=conditionals&band=1b&lock=1",
+     "standards": [
+      "1B-AP-10"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/1.3.json"
+  },
+  {
+   "id": "csq-2-1.3",
+   "key": "csq-2-1.3",
+   "unit": 1,
+   "order": 3,
+   "n": "1.3",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 1.3 · If this, then that (Conditionals and events)",
+   "duration": 45,
+   "csta": [
+    "2-AP-12"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.2-e1",
+    "2-1.2-e2",
+    "2-1.3-r1",
+    "2-1.3-e1",
+    "2-1.2-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "conditionals",
+    "params": "chapter=conditionals&band=2&lock=1",
+    "questCode": "3 2 0 0"
+   },
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.3-e1",
+    "2-1.3-e2",
+    "2-1.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=conditionals&band=2&lock=1",
+     "standards": [
+      "2-AP-12"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/1.3.json"
+  },
+  {
+   "id": "csq-1b-1.4",
+   "key": "csq-1b-1.4",
+   "unit": 1,
+   "order": 4,
+   "n": "1.4",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+   "duration": 45,
+   "csta": [
+    "1B-AP-09"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.3-e1",
+    "1b-1.3-e2",
+    "1b-1.4-r1",
+    "1b-1.4-e1",
+    "1b-1.3-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "variables",
+    "params": "chapter=variables&band=1b&lock=1",
+    "questCode": "4 1 0 0"
+   },
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.4-e1",
+    "1b-1.4-e2",
+    "1b-1.4-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=variables&band=1b&lock=1",
+     "standards": [
+      "1B-AP-09"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/1.4.json"
+  },
+  {
+   "id": "csq-2-1.4",
+   "key": "csq-2-1.4",
+   "unit": 1,
+   "order": 4,
+   "n": "1.4",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 1.4 · Counting and remembering (Variables)",
+   "duration": 45,
+   "csta": [
+    "2-AP-11"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.3-e1",
+    "2-1.3-e2",
+    "2-1.4-r1",
+    "2-1.4-e1",
+    "2-1.3-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "variables",
+    "params": "chapter=variables&band=2&lock=1",
+    "questCode": "4 2 0 0"
+   },
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.4-e1",
+    "2-1.4-e2",
+    "2-1.4-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=variables&band=2&lock=1",
+     "standards": [
+      "2-AP-11"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/1.4.json"
+  },
+  {
+   "id": "csq-1b-1.5",
+   "key": "csq-1b-1.5",
+   "unit": 1,
+   "order": 5,
+   "n": "1.5",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 1.5 · Build a block (Functions, decomposition, remix)",
+   "duration": 45,
+   "csta": [
+    "1B-AP-11",
+    "1B-AP-12"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-1b",
+   "warmupItems": [
+    "1b-1.4-e1",
+    "1b-1.4-e2",
+    "1b-1.5-r1",
+    "1b-1.5-e1",
+    "1b-1.4-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "functions",
+    "params": "chapter=functions&band=1b&lock=1",
+    "questCode": "5 1 0 0"
+   },
+   "exitTicketSetId": "csq-u1-1b",
+   "exitItems": [
+    "1b-1.5-e1",
+    "1b-1.5-e2",
+    "1b-1.5-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=functions&band=1b&lock=1",
+     "standards": [
+      "1B-AP-11",
+      "1B-AP-12"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/1.5.json"
+  },
+  {
+   "id": "csq-2-1.5",
+   "key": "csq-2-1.5",
+   "unit": 1,
+   "order": 5,
+   "n": "1.5",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 1.5 · Build a block (Functions, decomposition, remix)",
+   "duration": 45,
+   "csta": [
+    "2-AP-14",
+    "2-AP-13"
+   ],
+   "also": [
+    "2-AP-16",
+    "2-AP-19"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u1-2",
+   "warmupItems": [
+    "2-1.4-e1",
+    "2-1.4-e2",
+    "2-1.5-r1",
+    "2-1.5-e1",
+    "2-1.4-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "functions",
+    "params": "chapter=functions&band=2&lock=1",
+    "questCode": "5 2 0 0"
+   },
+   "exitTicketSetId": "csq-u1-2",
+   "exitItems": [
+    "2-1.5-e1",
+    "2-1.5-e2",
+    "2-1.5-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=functions&band=2&lock=1",
+     "standards": [
+      "2-AP-14",
+      "2-AP-13"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/1.5.json"
+  },
+  {
+   "id": "csq-1b-2.1",
+   "key": "csq-1b-2.1",
+   "unit": 2,
+   "order": 6,
+   "n": "2.1",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+   "duration": 45,
+   "csta": [
+    "1B-AP-15"
+   ],
+   "also": [
+    "1B-AP-08"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u2-1b",
+   "warmupItems": [
+    "1b-u2-o1",
+    "1b-2.1-r1",
+    "1b-2.1-e1",
+    "1b-2.1-e2",
+    "1b-2.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "debug",
+    "params": "chapter=debug&band=1b&lock=1&mode=debug",
+    "questCode": "6 1 1 0",
+    "mode": "debug"
+   },
+   "exitTicketSetId": "csq-u2-1b",
+   "exitItems": [
+    "1b-2.1-e1",
+    "1b-2.1-e2",
+    "1b-2.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=debug&band=1b&lock=1&mode=debug",
+     "standards": [
+      "1B-AP-15"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/2.1.json"
+  },
+  {
+   "id": "csq-2-2.1",
+   "key": "csq-2-2.1",
+   "unit": 2,
+   "order": 6,
+   "n": "2.1",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 2.1 · Bug hunt (Test and debug)",
+   "duration": 45,
+   "csta": [
+    "2-AP-17"
+   ],
+   "also": [
+    "2-AP-10"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u2-2",
+   "warmupItems": [
+    "2-u2-o1",
+    "2-2.1-r1",
+    "2-2.1-e1",
+    "2-2.1-e2",
+    "2-2.1-e3"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "debug",
+    "params": "chapter=debug&band=2&lock=1&mode=debug",
+    "questCode": "6 2 1 0",
+    "mode": "debug"
+   },
+   "exitTicketSetId": "csq-u2-2",
+   "exitItems": [
+    "2-2.1-e1",
+    "2-2.1-e2",
+    "2-2.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=debug&band=2&lock=1&mode=debug",
+     "standards": [
+      "2-AP-17"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/2.1.json"
+  },
+  {
+   "id": "csq-1b-2.2",
+   "key": "csq-1b-2.2",
+   "unit": 2,
+   "order": 7,
+   "n": "2.2",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 2.2 · Level designers (Plan, build, test, explain)",
+   "duration": 45,
+   "csta": [
+    "1B-AP-13",
+    "1B-AP-16",
+    "1B-AP-17"
+   ],
+   "also": [
+    "1B-AP-12"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u2-1b",
+   "warmupItems": [
+    "1b-2.1-e1",
+    "1b-2.1-e2",
+    "1b-2.2-r1",
+    "1b-2.2-e1",
+    "1b-2.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "level-maker",
+    "params": "chapter=level-maker&band=1b&lock=1&mode=maker",
+    "questCode": "8 1 2 0",
+    "mode": "maker"
+   },
+   "exitTicketSetId": "csq-u2-1b",
+   "exitItems": [
+    "1b-2.2-e1",
+    "1b-2.2-e2",
+    "1b-2.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=level-maker&band=1b&lock=1&mode=maker",
+     "standards": [
+      "1B-AP-13",
+      "1B-AP-16",
+      "1B-AP-17"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/2.2.json"
+  },
+  {
+   "id": "csq-2-2.2",
+   "key": "csq-2-2.2",
+   "unit": 2,
+   "order": 7,
+   "n": "2.2",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 2.2 · Level designers (Plan, build, test, explain)",
+   "duration": 45,
+   "csta": [
+    "2-AP-15",
+    "2-AP-18",
+    "2-AP-19"
+   ],
+   "also": [
+    "2-AP-16"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u2-2",
+   "warmupItems": [
+    "2-2.1-e1",
+    "2-2.1-e2",
+    "2-2.2-r1",
+    "2-2.2-e1",
+    "2-2.1-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "robo-route",
+    "chapter": "level-maker",
+    "params": "chapter=level-maker&band=2&lock=1&mode=maker",
+    "questCode": "8 2 2 0",
+    "mode": "maker"
+   },
+   "exitTicketSetId": "csq-u2-2",
+   "exitItems": [
+    "2-2.2-e1",
+    "2-2.2-e2",
+    "2-2.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "robo-route",
+     "options": "chapter=level-maker&band=2&lock=1&mode=maker",
+     "standards": [
+      "2-AP-15",
+      "2-AP-18",
+      "2-AP-19"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/2.2.json"
+  },
+  {
+   "id": "csq-1b-3.1",
+   "key": "csq-1b-3.1",
+   "unit": 3,
+   "order": 8,
+   "n": "3.1",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 3.1 · Sort it out (Organise data)",
+   "duration": 45,
+   "csta": [
+    "1B-DA-06"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u3-1b",
+   "warmupItems": [
+    "1b-u3-o1",
+    "1b-3.1-r1",
+    "1b-3.1-e1",
+    "1b-3.1-e2",
+    "1b-3.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "data-detective",
+    "chapter": "sort",
+    "params": "chapter=sort&band=1b&lock=1",
+    "questCode": "1 1 0 0"
+   },
+   "exitTicketSetId": "csq-u3-1b",
+   "exitItems": [
+    "1b-3.1-e1",
+    "1b-3.1-e2",
+    "1b-3.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "data-detective",
+     "options": "chapter=sort&band=1b&lock=1",
+     "standards": [
+      "1B-DA-06"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/3.1.json"
+  },
+  {
+   "id": "csq-2-3.1",
+   "key": "csq-2-3.1",
+   "unit": 3,
+   "order": 8,
+   "n": "3.1",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 3.1 · Sort it out (Organise data)",
+   "duration": 45,
+   "csta": [
+    "2-DA-08"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u3-2",
+   "warmupItems": [
+    "2-u3-o1",
+    "2-3.1-r1",
+    "2-3.1-e1",
+    "2-3.1-e2",
+    "2-3.1-e3"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "data-detective",
+    "chapter": "cleanup",
+    "params": "chapter=cleanup&band=2&lock=1",
+    "questCode": "4 2 0 0"
+   },
+   "exitTicketSetId": "csq-u3-2",
+   "exitItems": [
+    "2-3.1-e1",
+    "2-3.1-e2",
+    "2-3.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "data-detective",
+     "options": "chapter=cleanup&band=2&lock=1",
+     "standards": [
+      "2-DA-08"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/3.1.json"
+  },
+  {
+   "id": "csq-1b-3.2",
+   "key": "csq-1b-3.2",
+   "unit": 3,
+   "order": 9,
+   "n": "3.2",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 3.2 · What does the data say? (Claims, predictions, models)",
+   "duration": 45,
+   "csta": [
+    "1B-DA-07"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u3-1b",
+   "warmupItems": [
+    "1b-3.1-e1",
+    "1b-3.1-e2",
+    "1b-3.2-r1",
+    "1b-3.2-e1",
+    "1b-3.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "data-detective",
+    "chapter": "claims",
+    "params": "chapter=claims&band=1b&lock=1",
+    "questCode": "3 1 0 0"
+   },
+   "exitTicketSetId": "csq-u3-1b",
+   "exitItems": [
+    "1b-3.2-e1",
+    "1b-3.2-e2",
+    "1b-3.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "data-detective",
+     "options": "chapter=claims&band=1b&lock=1",
+     "standards": [
+      "1B-DA-07"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/3.2.json"
+  },
+  {
+   "id": "csq-2-3.2",
+   "key": "csq-2-3.2",
+   "unit": 3,
+   "order": 9,
+   "n": "3.2",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 3.2 · What does the data say? (Claims, predictions, models)",
+   "duration": 45,
+   "csta": [
+    "2-DA-09"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u3-2",
+   "warmupItems": [
+    "2-3.1-e1",
+    "2-3.1-e2",
+    "2-3.2-r1",
+    "2-3.2-e1",
+    "2-3.1-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "data-detective",
+    "chapter": "models",
+    "params": "chapter=models&band=2&lock=1",
+    "questCode": "5 2 0 0"
+   },
+   "exitTicketSetId": "csq-u3-2",
+   "exitItems": [
+    "2-3.2-e1",
+    "2-3.2-e2",
+    "2-3.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "data-detective",
+     "options": "chapter=models&band=2&lock=1",
+     "standards": [
+      "2-DA-09"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/3.2.json"
+  },
+  {
+   "id": "csq-1b-3.3",
+   "key": "csq-1b-3.3",
+   "unit": 3,
+   "order": 10,
+   "n": "3.3",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 3.3 · Our class survey (Collect, chart, claim)",
+   "duration": 45,
+   "csta": [
+    "1B-DA-06",
+    "1B-DA-07",
+    "1B-IC-20"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u3-1b",
+   "warmupItems": [
+    "1b-3.2-e1",
+    "1b-3.2-e2",
+    "1b-3.3-r1",
+    "1b-3.3-e1",
+    "1b-3.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "data-detective",
+    "chapter": "my-data",
+    "params": "chapter=my-data&band=1b&lock=1&mode=tally",
+    "questCode": "7 1 2 0",
+    "mode": "tally",
+    "collect": "paper slips"
+   },
+   "exitTicketSetId": "csq-u3-1b",
+   "exitItems": [
+    "1b-3.3-e1",
+    "1b-3.3-e2",
+    "1b-3.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "data-detective",
+     "options": "chapter=my-data&band=1b&lock=1&mode=tally",
+     "standards": [
+      "1B-DA-06",
+      "1B-DA-07",
+      "1B-IC-20"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/3.3.json"
+  },
+  {
+   "id": "csq-2-3.3",
+   "key": "csq-2-3.3",
+   "unit": 3,
+   "order": 10,
+   "n": "3.3",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 3.3 · Our class survey (Collect, chart, claim)",
+   "duration": 45,
+   "csta": [
+    "2-DA-08",
+    "2-IC-22"
+   ],
+   "also": [
+    "2-DA-09"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u3-2",
+   "warmupItems": [
+    "2-3.2-e1",
+    "2-3.2-e2",
+    "2-3.3-r1",
+    "2-3.3-e1",
+    "2-3.2-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "data-detective",
+    "chapter": "my-data",
+    "params": "chapter=my-data&band=2&lock=1&mode=tally",
+    "questCode": "7 2 2 0",
+    "mode": "tally",
+    "collect": "paper slips or one WYR Live round"
+   },
+   "exitTicketSetId": "csq-u3-2",
+   "exitItems": [
+    "2-3.3-e1",
+    "2-3.3-e2",
+    "2-3.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "data-detective",
+     "options": "chapter=my-data&band=2&lock=1&mode=tally",
+     "standards": [
+      "2-DA-08",
+      "2-IC-22"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/3.3.json"
+  },
+  {
+   "id": "csq-1b-4.1",
+   "key": "csq-1b-4.1",
+   "unit": 4,
+   "order": 11,
+   "n": "4.1",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+   "duration": 45,
+   "csta": [
+    "1B-NI-04"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u4-1b",
+   "warmupItems": [
+    "1b-u4-o1",
+    "1b-4.1-r1",
+    "1b-4.1-e1",
+    "1b-4.1-e2",
+    "1b-4.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "packets",
+    "params": "chapter=packets&band=1b&lock=1",
+    "questCode": "1 1 0 0",
+    "then": "routes 1-4",
+    "unpluggedFirst": "Envelope Relay"
+   },
+   "exitTicketSetId": "csq-u4-1b",
+   "exitItems": [
+    "1b-4.1-e1",
+    "1b-4.1-e2",
+    "1b-4.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=packets&band=1b&lock=1",
+     "standards": [
+      "1B-NI-04"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/4.1.json"
+  },
+  {
+   "id": "csq-2-4.1",
+   "key": "csq-2-4.1",
+   "unit": 4,
+   "order": 11,
+   "n": "4.1",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+   "duration": 45,
+   "csta": [
+    "2-NI-04"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u4-2",
+   "warmupItems": [
+    "2-u4-o1",
+    "2-4.1-r1",
+    "2-4.1-e1",
+    "2-4.1-e2",
+    "2-4.1-e3"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "protocols",
+    "params": "chapter=protocols&band=2&lock=1",
+    "questCode": "3 2 0 0",
+    "first": "routes 1-6",
+    "unpluggedFirst": "Envelope Relay"
+   },
+   "exitTicketSetId": "csq-u4-2",
+   "exitItems": [
+    "2-4.1-e1",
+    "2-4.1-e2",
+    "2-4.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=protocols&band=2&lock=1",
+     "standards": [
+      "2-NI-04"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/4.1.json"
+  },
+  {
+   "id": "csq-1b-4.2",
+   "key": "csq-1b-4.2",
+   "unit": 4,
+   "order": 12,
+   "n": "4.2",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 4.2 · Lock it up (Passphrases, private information, security)",
+   "duration": 45,
+   "csta": [
+    "1B-NI-05"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u4-1b",
+   "warmupItems": [
+    "1b-4.1-e1",
+    "1b-4.1-e2",
+    "1b-4.2-r1",
+    "1b-4.2-e1",
+    "1b-4.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "locks",
+    "params": "chapter=locks&band=1b&lock=1",
+    "questCode": "4 1 0 0"
+   },
+   "exitTicketSetId": "csq-u4-1b",
+   "exitItems": [
+    "1b-4.2-e1",
+    "1b-4.2-e2",
+    "1b-4.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=locks&band=1b&lock=1",
+     "standards": [
+      "1B-NI-05"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/4.2.json"
+  },
+  {
+   "id": "csq-2-4.2",
+   "key": "csq-2-4.2",
+   "unit": 4,
+   "order": 12,
+   "n": "4.2",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 4.2 · Lock it up (Passphrases, private information, security)",
+   "duration": 45,
+   "csta": [
+    "2-NI-05",
+    "2-IC-23"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u4-2",
+   "warmupItems": [
+    "2-4.1-e1",
+    "2-4.1-e2",
+    "2-4.2-r1",
+    "2-4.2-e1",
+    "2-4.1-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "locks",
+    "params": "chapter=locks&band=2&lock=1",
+    "questCode": "4 2 0 0"
+   },
+   "exitTicketSetId": "csq-u4-2",
+   "exitItems": [
+    "2-4.2-e1",
+    "2-4.2-e2",
+    "2-4.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=locks&band=2&lock=1",
+     "standards": [
+      "2-NI-05",
+      "2-IC-23"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/4.2.json"
+  },
+  {
+   "id": "csq-1b-4.3",
+   "key": "csq-1b-4.3",
+   "unit": 4,
+   "order": 13,
+   "n": "4.3",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 4.3 · Secret messages (Spotting tricks, ciphers)",
+   "duration": 45,
+   "csta": [
+    "1B-NI-05"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u4-1b",
+   "warmupItems": [
+    "1b-4.2-e1",
+    "1b-4.2-e2",
+    "1b-4.3-r1",
+    "1b-4.3-e1",
+    "1b-4.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "tricks",
+    "params": "chapter=tricks&band=1b&lock=1",
+    "questCode": "5 1 0 0",
+    "then": "ciphers 1-3 (enrichment)"
+   },
+   "exitTicketSetId": "csq-u4-1b",
+   "exitItems": [
+    "1b-4.3-e1",
+    "1b-4.3-e2",
+    "1b-4.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=tricks&band=1b&lock=1",
+     "standards": [
+      "1B-NI-05"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/4.3.json"
+  },
+  {
+   "id": "csq-2-4.3",
+   "key": "csq-2-4.3",
+   "unit": 4,
+   "order": 13,
+   "n": "4.3",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 4.3 · Secret messages (Spotting tricks, ciphers)",
+   "duration": 45,
+   "csta": [
+    "2-NI-06"
+   ],
+   "also": [
+    "2-NI-05",
+    "2-IC-23"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u4-2",
+   "warmupItems": [
+    "2-4.2-e1",
+    "2-4.2-e2",
+    "2-4.3-r1",
+    "2-4.3-e1",
+    "2-4.2-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "ciphers",
+    "params": "chapter=ciphers&band=2&lock=1",
+    "questCode": "6 2 0 0",
+    "then": "tricks 7-10"
+   },
+   "exitTicketSetId": "csq-u4-2",
+   "exitItems": [
+    "2-4.3-e1",
+    "2-4.3-e2",
+    "2-4.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=ciphers&band=2&lock=1",
+     "standards": [
+      "2-NI-06"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/4.3.json"
+  },
+  {
+   "id": "csq-1b-5.1",
+   "key": "csq-1b-5.1",
+   "unit": 5,
+   "order": 14,
+   "n": "5.1",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 5.1 · What's inside? (Parts, hardware and software, gadgets)",
+   "duration": 45,
+   "csta": [
+    "1B-CS-01",
+    "1B-CS-02"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u5-1b",
+   "warmupItems": [
+    "1b-u5-o1",
+    "1b-5.1-r1",
+    "1b-5.1-e1",
+    "1b-5.1-e2",
+    "1b-5.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "parts",
+    "params": "chapter=parts&band=1b&lock=1",
+    "questCode": "1 1 0 0",
+    "then": "hw-sw 1-3"
+   },
+   "exitTicketSetId": "csq-u5-1b",
+   "exitItems": [
+    "1b-5.1-e1",
+    "1b-5.1-e2",
+    "1b-5.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=parts&band=1b&lock=1",
+     "standards": [
+      "1B-CS-01",
+      "1B-CS-02"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/5.1.json"
+  },
+  {
+   "id": "csq-2-5.1",
+   "key": "csq-2-5.1",
+   "unit": 5,
+   "order": 14,
+   "n": "5.1",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 5.1 · What's inside? (Parts, hardware and software, gadgets)",
+   "duration": 45,
+   "csta": [
+    "2-CS-02",
+    "2-CS-01"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u5-2",
+   "warmupItems": [
+    "2-u5-o1",
+    "2-5.1-r1",
+    "2-5.1-e1",
+    "2-5.1-e2",
+    "2-5.1-e3"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "gadget",
+    "params": "chapter=gadget&band=2&lock=1",
+    "questCode": "5 2 0 0"
+   },
+   "exitTicketSetId": "csq-u5-2",
+   "exitItems": [
+    "2-5.1-e1",
+    "2-5.1-e2",
+    "2-5.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=gadget&band=2&lock=1",
+     "standards": [
+      "2-CS-02",
+      "2-CS-01"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/5.1.json"
+  },
+  {
+   "id": "csq-1b-5.2",
+   "key": "csq-1b-5.2",
+   "unit": 5,
+   "order": 15,
+   "n": "5.2",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 5.2 · It's not working! (Troubleshooting)",
+   "duration": 45,
+   "csta": [
+    "1B-CS-03"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u5-1b",
+   "warmupItems": [
+    "1b-5.1-e1",
+    "1b-5.1-e2",
+    "1b-5.2-r1",
+    "1b-5.2-e1",
+    "1b-5.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "fixit",
+    "params": "chapter=fixit&band=1b&lock=1",
+    "questCode": "3 1 0 0"
+   },
+   "exitTicketSetId": "csq-u5-1b",
+   "exitItems": [
+    "1b-5.2-e1",
+    "1b-5.2-e2",
+    "1b-5.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=fixit&band=1b&lock=1",
+     "standards": [
+      "1B-CS-03"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/5.2.json"
+  },
+  {
+   "id": "csq-2-5.2",
+   "key": "csq-2-5.2",
+   "unit": 5,
+   "order": 15,
+   "n": "5.2",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 5.2 · It's not working! (Troubleshooting)",
+   "duration": 45,
+   "csta": [
+    "2-CS-03"
+   ],
+   "also": [],
+   "buildsToward": [
+    "2-AP-10"
+   ],
+   "warmupSetId": "csq-u5-2",
+   "warmupItems": [
+    "2-5.1-e1",
+    "2-5.1-e2",
+    "2-5.2-r1",
+    "2-5.2-e1",
+    "2-5.1-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "fixit",
+    "params": "chapter=fixit&band=2&lock=1",
+    "questCode": "3 2 0 0"
+   },
+   "exitTicketSetId": "csq-u5-2",
+   "exitItems": [
+    "2-5.2-e1",
+    "2-5.2-e2",
+    "2-5.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=fixit&band=2&lock=1",
+     "standards": [
+      "2-CS-03"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/5.2.json"
+  },
+  {
+   "id": "csq-1b-5.3",
+   "key": "csq-1b-5.3",
+   "unit": 5,
+   "order": 16,
+   "n": "5.3",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 5.3 · Bits and pixels (How computers store things)",
+   "duration": 45,
+   "csta": [
+    "1B-CS-02"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u5-1b",
+   "warmupItems": [
+    "1b-5.2-e1",
+    "1b-5.2-e2",
+    "1b-5.3-r1",
+    "1b-5.3-e1",
+    "1b-5.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "bits",
+    "params": "chapter=bits&band=1b&lock=1",
+    "questCode": "4 1 0 0",
+    "enrichment": "binary"
+   },
+   "exitTicketSetId": "csq-u5-1b",
+   "exitItems": [
+    "1b-5.3-e1",
+    "1b-5.3-e2",
+    "1b-5.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=bits&band=1b&lock=1",
+     "standards": [
+      "1B-CS-02"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/5.3.json"
+  },
+  {
+   "id": "csq-2-5.3",
+   "key": "csq-2-5.3",
+   "unit": 5,
+   "order": 16,
+   "n": "5.3",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 5.3 · Bits and pixels (How computers store things)",
+   "duration": 45,
+   "csta": [
+    "2-DA-07"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u5-2",
+   "warmupItems": [
+    "2-5.2-e1",
+    "2-5.2-e2",
+    "2-5.3-r1",
+    "2-5.3-e1",
+    "2-5.2-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "bits",
+    "params": "chapter=bits&band=2&lock=1",
+    "questCode": "4 2 0 0"
+   },
+   "exitTicketSetId": "csq-u5-2",
+   "exitItems": [
+    "2-5.3-e1",
+    "2-5.3-e2",
+    "2-5.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=bits&band=2&lock=1",
+     "standards": [
+      "2-DA-07"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/5.3.json"
+  },
+  {
+   "id": "csq-1b-6.1",
+   "key": "csq-1b-6.1",
+   "unit": 6,
+   "order": 17,
+   "n": "6.1",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 6.1 · Tech that changed the world",
+   "duration": 45,
+   "csta": [
+    "1B-IC-18"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u6-1b",
+   "warmupItems": [
+    "1b-u6-o1",
+    "1b-6.1-r1",
+    "1b-6.1-e1",
+    "1b-6.1-e2",
+    "1b-6.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "discussion",
+    "slug": "would-you-rather-live",
+    "liveMode": "wyr",
+    "starter": "wyr:tech:10:20",
+    "params": "/live?mode=wyr&starter=wyr:tech:10:20&class=<classId>"
+   },
+   "exitTicketSetId": "csq-u6-1b",
+   "exitItems": [
+    "1b-6.1-e1",
+    "1b-6.1-e2",
+    "1b-6.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Would You Rather (live)",
+     "minutes": 18,
+     "gameSlug": "would-you-rather-live",
+     "playHidden": true
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/6.1.json"
+  },
+  {
+   "id": "csq-2-6.1",
+   "key": "csq-2-6.1",
+   "unit": 6,
+   "order": 17,
+   "n": "6.1",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 6.1 · Tech that changed the world",
+   "duration": 45,
+   "csta": [
+    "2-IC-20"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u6-2",
+   "warmupItems": [
+    "2-u6-o1",
+    "2-6.1-r1",
+    "2-6.1-e1",
+    "2-6.1-e2",
+    "2-6.1-e3"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "discussion",
+    "slug": "would-you-rather-live",
+    "liveMode": "wyr",
+    "starter": "wyr:tech:10:20",
+    "params": "/live?mode=wyr&starter=wyr:tech:10:20&class=<classId>"
+   },
+   "exitTicketSetId": "csq-u6-2",
+   "exitItems": [
+    "2-6.1-e1",
+    "2-6.1-e2",
+    "2-6.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Would You Rather (live)",
+     "minutes": 18,
+     "gameSlug": "would-you-rather-live",
+     "playHidden": true
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/6.1.json"
+  },
+  {
+   "id": "csq-1b-6.2",
+   "key": "csq-1b-6.2",
+   "unit": 6,
+   "order": 18,
+   "n": "6.2",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 6.2 · Made for everyone (Accessibility, usability, bias)",
+   "duration": 45,
+   "csta": [
+    "1B-IC-19",
+    "1B-IC-20"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u6-1b",
+   "warmupItems": [
+    "1b-6.1-e1",
+    "1b-6.1-e2",
+    "1b-6.2-r1",
+    "1b-6.2-e1",
+    "1b-6.1-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "design-lab",
+    "params": "chapter=design-lab&band=1b&lock=1",
+    "questCode": "6 1 0 0",
+    "also": "settings-panel audit on any kit game"
+   },
+   "exitTicketSetId": "csq-u6-1b",
+   "exitItems": [
+    "1b-6.2-e1",
+    "1b-6.2-e2",
+    "1b-6.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=design-lab&band=1b&lock=1",
+     "standards": [
+      "1B-IC-19",
+      "1B-IC-20"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/6.2.json"
+  },
+  {
+   "id": "csq-2-6.2",
+   "key": "csq-2-6.2",
+   "unit": 6,
+   "order": 18,
+   "n": "6.2",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 6.2 · Made for everyone (Accessibility, usability, bias)",
+   "duration": 45,
+   "csta": [
+    "2-IC-21",
+    "2-CS-01"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u6-2",
+   "warmupItems": [
+    "2-6.1-e1",
+    "2-6.1-e2",
+    "2-6.2-r1",
+    "2-6.2-e1",
+    "2-6.1-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "game",
+    "slug": "inside-the-machine",
+    "chapter": "design-lab",
+    "params": "chapter=design-lab&band=2&lock=1",
+    "questCode": "6 2 0 0",
+    "also": "data-detective fair (6 2 0 0)"
+   },
+   "exitTicketSetId": "csq-u6-2",
+   "exitItems": [
+    "2-6.2-e1",
+    "2-6.2-e2",
+    "2-6.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "inside-the-machine",
+     "options": "chapter=design-lab&band=2&lock=1",
+     "standards": [
+      "2-IC-21",
+      "2-CS-01"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/6.2.json"
+  },
+  {
+   "id": "csq-1b-6.3",
+   "key": "csq-1b-6.3",
+   "unit": 6,
+   "order": 19,
+   "n": "6.3",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 6.3 · Share or keep? (Public vs private, using others' work)",
+   "duration": 45,
+   "csta": [
+    "1B-IC-21",
+    "1B-AP-14"
+   ],
+   "also": [
+    "1B-NI-05"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u6-1b",
+   "warmupItems": [
+    "1b-6.2-e1",
+    "1b-6.2-e2",
+    "1b-6.3-r1",
+    "1b-6.3-e1",
+    "1b-6.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "discussion",
+    "slug": "would-you-rather-live",
+    "liveMode": "wyr",
+    "starter": "wyr:online:8:20",
+    "params": "/live?mode=wyr&starter=wyr:online:8:20&class=<classId>"
+   },
+   "exitTicketSetId": "csq-u6-1b",
+   "exitItems": [
+    "1b-6.3-e1",
+    "1b-6.3-e2",
+    "1b-6.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Would You Rather (live)",
+     "minutes": 18,
+     "gameSlug": "would-you-rather-live",
+     "playHidden": true
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/6.3.json"
+  },
+  {
+   "id": "csq-2-6.3",
+   "key": "csq-2-6.3",
+   "unit": 6,
+   "order": 19,
+   "n": "6.3",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 6.3 · Share or keep? (Public vs private, using others' work)",
+   "duration": 45,
+   "csta": [
+    "2-IC-23",
+    "2-AP-16"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u6-2",
+   "warmupItems": [
+    "2-6.2-e1",
+    "2-6.2-e2",
+    "2-6.3-r1",
+    "2-6.3-e1",
+    "2-6.2-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "discussion",
+    "slug": "would-you-rather-live",
+    "liveMode": "wyr",
+    "starter": "wyr:online:8:20",
+    "params": "/live?mode=wyr&starter=wyr:online:8:20&class=<classId>"
+   },
+   "exitTicketSetId": "csq-u6-2",
+   "exitItems": [
+    "2-6.3-e1",
+    "2-6.3-e2",
+    "2-6.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Would You Rather (live)",
+     "minutes": 18,
+     "gameSlug": "would-you-rather-live",
+     "playHidden": true
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/6.3.json"
+  },
+  {
+   "id": "csq-1b-7.1",
+   "key": "csq-1b-7.1",
+   "unit": 7,
+   "order": 20,
+   "n": "7.1",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 7.1 · Plan your game",
+   "duration": 45,
+   "csta": [
+    "1B-AP-13",
+    "1B-AP-16",
+    "1B-AP-11"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u7-1b",
+   "warmupItems": [
+    "1b-u7-o1",
+    "1b-7.1-r1",
+    "1b-7.1-e1",
+    "1b-7.1-e2",
+    "1b-7.1-e3"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "unplugged",
+    "artefact": "planning sheet",
+    "steps": "3 question steps"
+   },
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.1-e1",
+    "1b-7.1-e2",
+    "1b-7.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "text",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/7.1.json"
+  },
+  {
+   "id": "csq-2-7.1",
+   "key": "csq-2-7.1",
+   "unit": 7,
+   "order": 20,
+   "n": "7.1",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 7.1 · Plan your game",
+   "duration": 45,
+   "csta": [
+    "2-AP-18",
+    "2-AP-13",
+    "2-AP-10"
+   ],
+   "also": [
+    "2-AP-15"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u7-2",
+   "warmupItems": [
+    "2-u7-o1",
+    "2-7.1-r1",
+    "2-7.1-e1",
+    "2-7.1-e2",
+    "2-7.1-e3"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "unplugged",
+    "artefact": "planning sheet",
+    "steps": "3 question steps"
+   },
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.1-e1",
+    "2-7.1-e2",
+    "2-7.1-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "text",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/7.1.json"
+  },
+  {
+   "id": "csq-1b-7.2",
+   "key": "csq-1b-7.2",
+   "unit": 7,
+   "order": 21,
+   "n": "7.2",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 7.2 · Build day",
+   "duration": 45,
+   "csta": [
+    "1B-AP-15"
+   ],
+   "also": [],
+   "buildsToward": [
+    "1B-AP-09",
+    "1B-AP-10"
+   ],
+   "warmupSetId": null,
+   "warmupItems": [],
+   "warmupMode": null,
+   "mainActivity": {
+    "type": "builder",
+    "template": "quiz",
+    "prefill": "the sheet's Builder message (<= 300 chars)",
+    "paperPath": true
+   },
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.2-e1",
+    "1b-7.2-e2",
+    "1b-7.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "text",
+     "title": "Builder etiquette",
+     "minutes": 5
+    },
+    {
+     "kind": "build",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/7.2.json"
+  },
+  {
+   "id": "csq-2-7.2",
+   "key": "csq-2-7.2",
+   "unit": 7,
+   "order": 21,
+   "n": "7.2",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 7.2 · Build day",
+   "duration": 45,
+   "csta": [
+    "2-AP-17"
+   ],
+   "also": [],
+   "buildsToward": [
+    "2-AP-11",
+    "2-AP-12"
+   ],
+   "warmupSetId": null,
+   "warmupItems": [],
+   "warmupMode": null,
+   "mainActivity": {
+    "type": "builder",
+    "template": "quiz",
+    "prefill": "the sheet's Builder message (<= 300 chars)",
+    "paperPath": true
+   },
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.2-e1",
+    "2-7.2-e2",
+    "2-7.2-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "text",
+     "title": "Builder etiquette",
+     "minutes": 5
+    },
+    {
+     "kind": "build",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/7.2.json"
+  },
+  {
+   "id": "csq-1b-7.3",
+   "key": "csq-1b-7.3",
+   "unit": 7,
+   "order": 22,
+   "n": "7.3",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 7.3 · Playtest party",
+   "duration": 45,
+   "csta": [
+    "1B-IC-20",
+    "1B-AP-15"
+   ],
+   "also": [
+    "1B-AP-16"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u7-1b",
+   "warmupItems": [
+    "1b-7.2-e1",
+    "1b-7.2-e2",
+    "1b-7.3-r1",
+    "1b-7.3-e1",
+    "1b-7.2-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "discussion",
+    "protocol": "peer playtest, 3 x 5 min",
+    "steps": "text + question"
+   },
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.3-e1",
+    "1b-7.3-e2",
+    "1b-7.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "text",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/7.3.json"
+  },
+  {
+   "id": "csq-2-7.3",
+   "key": "csq-2-7.3",
+   "unit": 7,
+   "order": 22,
+   "n": "7.3",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 7.3 · Playtest party",
+   "duration": 45,
+   "csta": [
+    "2-AP-15",
+    "2-DA-09",
+    "2-IC-22"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u7-2",
+   "warmupItems": [
+    "2-7.2-e1",
+    "2-7.2-e2",
+    "2-7.3-r1",
+    "2-7.3-e1",
+    "2-7.2-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "discussion",
+    "protocol": "peer playtest, 3 x 5 min, tally in data-detective my-data",
+    "steps": "text + question"
+   },
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.3-e1",
+    "2-7.3-e2",
+    "2-7.3-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "text",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/7.3.json"
+  },
+  {
+   "id": "csq-1b-7.4",
+   "key": "csq-1b-7.4",
+   "unit": 7,
+   "order": 23,
+   "n": "7.4",
+   "band": "1B",
+   "grade": "Grades 3-5",
+   "title": "CS Quest 7.4 · Show and credit",
+   "duration": 45,
+   "csta": [
+    "1B-AP-17",
+    "1B-AP-14"
+   ],
+   "also": [
+    "1B-IC-21"
+   ],
+   "buildsToward": [],
+   "warmupSetId": "csq-u7-1b",
+   "warmupItems": [
+    "1b-7.3-e1",
+    "1b-7.3-e2",
+    "1b-7.4-r1",
+    "1b-7.4-e1",
+    "1b-7.3-r1"
+   ],
+   "warmupMode": "quest-race",
+   "mainActivity": {
+    "type": "discussion",
+    "protocol": "demo circles",
+    "steps": "question (credits & how-to)"
+   },
+   "exitTicketSetId": "csq-u7-1b",
+   "exitItems": [
+    "1b-7.4-e1",
+    "1b-7.4-e2",
+    "1b-7.4-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "text",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/1b/7.4.json"
+  },
+  {
+   "id": "csq-2-7.4",
+   "key": "csq-2-7.4",
+   "unit": 7,
+   "order": 23,
+   "n": "7.4",
+   "band": "2",
+   "grade": "Grades 6-8",
+   "title": "CS Quest 7.4 · Show and credit",
+   "duration": 45,
+   "csta": [
+    "2-AP-19",
+    "2-AP-16"
+   ],
+   "also": [],
+   "buildsToward": [],
+   "warmupSetId": "csq-u7-2",
+   "warmupItems": [
+    "2-7.3-e1",
+    "2-7.3-e2",
+    "2-7.4-r1",
+    "2-7.4-e1",
+    "2-7.3-r1"
+   ],
+   "warmupMode": "battle",
+   "mainActivity": {
+    "type": "discussion",
+    "protocol": "demo circles",
+    "steps": "question (credits, how-to, how-it-works)"
+   },
+   "exitTicketSetId": "csq-u7-2",
+   "exitItems": [
+    "2-7.4-e1",
+    "2-7.4-e2",
+    "2-7.4-e3"
+   ],
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "text",
+     "title": "Play",
+     "minutes": 18
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ],
+   "printable": true,
+   "file": "seed-lessons/cs-quest/lessons/2/7.4.json"
+  }
+ ],
+ "teacherPages": [
+  {
+   "route": "/teachers/cs-quest",
+   "purpose": "public program page (indexed): promise, Byte Crew try-it buttons, units, paths, how-it-works screenshots, coverage teaser, FAQ, JSON-LD educationalAlignment; copy under teachers.cs.*",
+   "owner": "A"
+  },
+  {
+   "route": "/learn/computer-science",
+   "purpose": "public hub listing the four games (HUBS/LEARNING entries)",
+   "owner": "A"
+  },
+  {
+   "route": "/teach/cs-quest",
+   "purpose": "signed-in program page: band toggle, units with lesson rows, Add lesson/unit/path, Before-you-start checks, Builder status",
+   "owner": "A",
+   "buttons": [
+    "Add to my library",
+    "Add unit",
+    "Add Full / Core 10 / CS Ed Week / Device-first",
+    "Open plan",
+    "Preview game",
+    "Coverage map"
+   ]
+  },
+  {
+   "route": "/teach/cs-quest/coverage",
+   "purpose": "program coverage map from the catalogue (44 ids -> lessons, chapters, items, rubric lines, practices); ?print=1",
+   "owner": "A"
+  },
+  {
+   "route": "/teach/cs-quest/:key",
+   "purpose": "lesson plan page = printed plan rendered; ?print=1 print view; ?sheet=<name> printables",
+   "owner": "A",
+   "buttons": [
+    "Start warm-up (live)",
+    "Show questions on the projector",
+    "Open game at this chapter",
+    "Assign to class",
+    "Assign unit... (cadence)",
+    "Host exit ticket live",
+    "Print",
+    "Printables",
+    "Reset to the CS Quest version",
+    "band switch"
+   ]
+  },
+  {
+   "route": "/class/:id/standards",
+   "purpose": "class Standards tab: Practiced / Checked / Applied / Needs a look / Last / Status; .csv; ?report=1 principal aggregate report",
+   "owner": "A"
+  },
+  {
+   "route": "/teach/lessons/:id",
+   "purpose": "existing editor; banner 'From CS Quest x.y (vN) · Open the plan page'",
+   "owner": "A"
+  },
+  {
+   "route": "/class/:cid/lessons/:clid",
+   "purpose": "existing student page; Play carries options; Play hidden on mode-game steps",
+   "owner": "A"
+  },
+  {
+   "route": "POST /api/lessons/from-template/:key | /unit/:unit | /path/:path",
+   "purpose": "materialiser",
+   "owner": "A"
+  },
+  {
+   "route": "POST /api/classes/:id/assign-unit",
+   "purpose": "assign a unit with start date + cadence -> opens_at per lesson in the school zone",
+   "owner": "A"
+  },
+  {
+   "route": "GET /live?mode=&set=&class=&cl=&step=&starter=",
+   "purpose": "live preselect incl. the new starter= for wyr/bank ids",
+   "owner": "B"
+  }
+ ],
+ "tracking": {
+  "stores": {
+   "step_progress": "status/score/label/plays/seconds/answer/feedback/marks per class_lesson x step x user (existing); marks reused for 0-3 rubric lines on question/build steps (new)",
+   "lesson_steps.options": "NEW TEXT: query-string params appended to the Play link (chapter=&band=&mode=&level=&lock=)",
+   "lesson_steps.standards": "NEW TEXT: comma list of CSTA ids set by the materialiser",
+   "lesson_steps.template": "NEW TEXT: Studio template key for build steps (quiz)",
+   "lesson_steps.items[].cat": "KEEP cat (+secs) in quiz snapshots (lessons.js addQuizStep)",
+   "live_runs.items[].cat": "KEEP cat in saved run items (classlive-results.js itemRow)",
+   "lessons.template_key / template_version": "NEW: which catalogue lesson a library copy came from",
+   "live_sets": "derived warm-up / exit / review sets per lesson owned by the teacher (existing table)",
+   "server/standards/csta.js": "NEW: loads csta.json -> id -> {level, concept, subconcept, statement, practiceCodes}",
+   "games label": "score = starsInChapter, label per Appendix C grammar (existing scores/step_progress columns)",
+   "phase2": "step_progress.detail TEXT + step_progress_events(class_lesson_id, step_id, user_id, at, detail) capped 200 per cell via brb:progress"
+  },
+  "tiers": {
+   "Practiced": "students with >= 1 done step whose standards contains the id (+ live_run_scores on runs whose items carry the id)",
+   "Checked": "mean per-item accuracy from step_progress.marks x items[i].cat and live_run_scores.marks x live_runs.items[i].cat; shown with item and student counts",
+   "Applied": "mean of 0-3 rubric marks on question/build steps whose rubric line carries the id"
+  },
+  "mastery": {
+   "student": ">= 2 of 3 items right on the most recent exit ticket tagged with the id OR rubric line >= 2",
+   "class": ">= 80% of students meet",
+   "note": "raw numbers always shown"
+  },
+  "view": {
+   "route": "/class/:id/standards",
+   "columns": [
+    "Lessons",
+    "Practiced n/m",
+    "Checked % · items · students",
+    "Applied mean · marked",
+    "Needs a look",
+    "Last",
+    "Status"
+   ],
+   "csv": "/class/:id/standards.csv",
+   "report": "?report=1 aggregate only, no names"
+  },
+  "privacy": "teacher/class-manager only; never on projector/results/public pages; per-student drill-down inside the class; deleted with the class (onClassLeave/onAccountMerge); coverage claimed per class (pairs: signed-in student only)",
+  "flags": {
+   "QUIZ_STEPS": "NEW, default on: gates quiz-step rendering and /api/lessons/:cl/steps/:step/quiz",
+   "LIVE_HOMEWORK": "unchanged: gates 'Set as homework' only"
+  },
+  "inGameCheck": "Case-closed card in lesson mode: 1 concept check (3 tiles, from level.check) + 1 confidence face; tally in the label today, per level with brb:progress",
+  "ciTest": "tests/unit/cs-quest-catalogue.test.js clauses (a)-(j) per plan §9.5; scripts/cs-quest-coverage.js prints the map"
+ },
+ "i18n": {
+  "englishOnly": [
+   "lesson text and step bodies (seed-lessons/cs-quest/lessons/**)",
+   "quiz bank items (seed-lessons/cs-quest/sets/**)",
+   "WYR dilemma text (English fallback per item in the 12 non-English data files is allowed)",
+   "WYR prompts and CSTA tags (seed-lessons/cs-quest/wyr-tech.json)",
+   "rubric lines, planning sheet, printables (seed-lessons/cs-quest/printables/**)",
+   "CSTA ids and statements (rendered with el() as lang=en)",
+   "game level data (maps, sol, par, csta)",
+   "public landing copy under teachers.cs.* (uncounted prefix; English-first, rendered with el()/fb())"
+  ],
+  "mustBe13Languages": [
+   "cs.* (program page chrome, plan page buttons, banners, toasts, state chips, 'Your teacher hosts this live', 'game not available yet')",
+   "school.classTabs.standards and all Standards tab headings, legend, status words, CSV headers (cs.standards.*)",
+   "js.cs.* for any browser module",
+   "live.cs.* (anything B adds to /live chrome)",
+   "WYR ui.json cat.tech and cat.online",
+   "in-game strings of robo-route, data-detective, packet-post, inside-the-machine (own packs under /vendor/data/<slug>/<version>/<lang>.js, identical {slots}, <= 450 strings per game)",
+   "JSON l10n description/tags for the four games (11 non-English locales)"
+  ],
+  "namespaces": {
+   "A": [
+    "cs.*",
+    "js.cs.*",
+    "school.classTabs.standards",
+    "teachers.cs.*",
+    "learn.cs.*"
+   ],
+   "B": [
+    "live.cs.*",
+    "scripts/data/would-you-rather/ui.json"
+   ],
+   "games": [
+    "no locale files; own packs only"
+   ]
+  },
+  "rule": "each owner appends its own block at the end of every locale file; extra keys or placeholder mismatches fail npm test; run npm run i18n:check"
+ },
+ "platformChanges": [
+  {
+   "id": "P1",
+   "change": "BRB.params (chapter band mode level lock) signed into the frame token as o=chapter.band.mode.level.lock (<=40), init.params, frozen SDK object",
+   "files": [
+    "server/routes/games.js",
+    "public/sdk/brb-sdk.js",
+    "docs/sdk.md",
+    "tests/unit/sdk-protocol.test.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P2",
+   "change": "lesson_steps.options TEXT appended to the Play link",
+   "files": [
+    "server/db.js",
+    "server/services/lessons.js",
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P3",
+   "change": "lesson_steps.standards TEXT + server/standards/csta.js",
+   "files": [
+    "server/db.js",
+    "server/services/lessons.js",
+    "server/standards/csta.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P4",
+   "change": "keep cat (+secs) through quiz snapshots and saved live run items",
+   "files": [
+    "server/services/lessons.js (A)",
+    "server/services/classlive-results.js (B)"
+   ],
+   "owner": "A+B"
+  },
+  {
+   "id": "P5",
+   "change": "Host-live link emits mode= via liveGameOf; student page hides Play on MODES-slug steps",
+   "files": [
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P6",
+   "change": "/live?starter= preselects wyr/bank starters",
+   "files": [
+    "server/routes/live.js",
+    "server/views/live.js",
+    "tests/unit/live-pages.test.js"
+   ],
+   "owner": "B"
+  },
+  {
+   "id": "P7",
+   "change": "QUIZ_STEPS flag default on (quiz steps + student quiz APIs); LIVE_HOMEWORK keeps homework only",
+   "files": [
+    "server/config.js",
+    "server/routes/live.js:650 (quiz step API gate moves to QUIZ_STEPS; coordinate with B)",
+    "server/routes/progress.js",
+    "README.md"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P8",
+   "change": "copyLesson copies set_id and regenerates quiz items",
+   "files": [
+    "server/services/lessons.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P9",
+   "change": "lessons.template_key, template_version",
+   "files": [
+    "server/db.js",
+    "server/services/lessons.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P10",
+   "change": "lesson_steps.template -> templateHtml(key) on the build route",
+   "files": [
+    "server/db.js",
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P11",
+   "change": "review marks 0-3 per rubric line on question/build steps (API, form, gradebook)",
+   "files": [
+    "server/services/progress.js",
+    "server/routes/progress.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P12",
+   "change": "Standards class tab + CSV + principal report + 13-language keys + deletion hooks",
+   "files": [
+    "server/routes/schools.js (CLASS_TABS)",
+    "server/services/standards.js",
+    "server/routes/cs-quest.js",
+    "public/css/schools.css"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P13",
+   "change": "plan page, print view, projector-questions page",
+   "files": [
+    "server/routes/cs-quest.js",
+    "server/views/cs-quest.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P14",
+   "change": "WYR topics tech and online (data x13, ui.json, TOPICS, CATS, pack rebuild)",
+   "files": [
+    "scripts/data/would-you-rather/**",
+    "server/live/wyr.js",
+    "scripts/wyr-bank.js",
+    "tests/unit/live-wyr-atlas.test.js"
+   ],
+   "owner": "B"
+  },
+  {
+   "id": "P15",
+   "change": "catalogue + materialiser + routes + pages + CI test + coverage script",
+   "files": [
+    "seed-lessons/cs-quest/**",
+    "server/services/lesson-templates.js",
+    "server/routes/cs-quest.js",
+    "server/app.js",
+    "tests/unit/cs-quest-catalogue.test.js",
+    "scripts/cs-quest-coverage.js"
+   ],
+   "owner": "A (sets: B)"
+  },
+  {
+   "id": "P16",
+   "change": "covers.js merges scripts/covers/*.recipe.js",
+   "files": [
+    "scripts/covers.js"
+   ],
+   "owner": "integration"
+  },
+  {
+   "id": "P17",
+   "change": "POST /api/classes/:id/assign-unit with cadence",
+   "files": [
+    "server/routes/cs-quest.js",
+    "server/services/lessons.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P18",
+   "change": "Builder status endpoint (AI budget resting/on) for the plan page",
+   "files": [
+    "server/routes/cs-quest.js"
+   ],
+   "owner": "A"
+  },
+  {
+   "id": "P19",
+   "change": "SEED_GAMES, scanner slug lists, seeds.spec.js, covers + OG run, decisions.md, status.md",
+   "files": [
+    "scripts/seed.js",
+    "tests/unit/scanner.test.js",
+    "tests/safety/scanner.test.js",
+    "tests/e2e/seeds.spec.js",
+    "docs/decisions.md",
+    "docs/status.md"
+   ],
+   "owner": "integration"
+  },
+  {
+   "id": "phase2",
+   "change": "brb:progress + step_progress.detail/events; class level shelf; survey mode for live sets; computing bank subject; games.standards",
+   "files": [],
+   "owner": "later"
+  }
+ ],
+ "capstone": {
+  "teams": {
+   "1B": 2,
+   "2": 3
+  },
+  "oneDevicePerTeam": true,
+  "startRule": "teams press Start building when their sheet is approved",
+  "paperPath": "half of 7.2 by design",
+  "template": "quiz",
+  "budget": "school plan required; Builder status line on the plan page",
+  "rubricLines": [
+   {
+    "line": "Plan",
+    "1B": [
+     "1B-AP-13",
+     "1B-AP-11"
+    ],
+    "2": [
+     "2-AP-13",
+     "2-AP-10",
+     "2-AP-15"
+    ]
+   },
+   {
+    "line": "Roles / timeline",
+    "1B": [
+     "1B-AP-16"
+    ],
+    "2": [
+     "2-AP-18"
+    ]
+   },
+   {
+    "line": "Program",
+    "buildsToward": [
+     "1B-AP-09",
+     "1B-AP-10",
+     "2-AP-11",
+     "2-AP-12"
+    ],
+    "countsAsEvidence": false
+   },
+   {
+    "line": "Test with others",
+    "1B": [
+     "1B-AP-15",
+     "1B-IC-20"
+    ],
+    "2": [
+     "2-AP-17",
+     "2-AP-15",
+     "2-DA-09",
+     "2-IC-22"
+    ]
+   },
+   {
+    "line": "Explain & credit",
+    "1B": [
+     "1B-AP-17",
+     "1B-AP-14",
+     "1B-IC-21"
+    ],
+    "2": [
+     "2-AP-19",
+     "2-AP-16"
+    ]
+   }
+  ],
+  "marks": "0-3 per line, stored in step_progress.marks for the build/question steps (P11)"
+ },
+ "sharedFiles": {
+  "integrationOnly": [
+   "scripts/seed.js (SEED_GAMES single-quoted array literal)",
+   "tests/unit/scanner.test.js slug list",
+   "tests/safety/scanner.test.js slug list",
+   "tests/e2e/seeds.spec.js",
+   "scripts/covers.js (recipe loader)",
+   "docs/decisions.md",
+   "docs/status.md"
+  ],
+  "localeFiles": "server/i18n/locales/*.json: each owner appends only its namespace block (see i18n.namespaces)",
+  "coversRecipes": "game owners write scripts/covers/<slug>.recipe.js; covers.js loads them (P16)",
+  "contentLint": "tests/unit/cs-quest-content-lint.test.js (owned by C) scans all four games' string literals and packs; D/E/F only add their slug to its list via integration",
+  "i18nScaffold": "scripts/cs-quest-i18n.mjs (owned by C) builds packs for all four games from scripts/data/cs-quest/<slug>/<lang>.json"
+ },
+ "criticAdditions": {
+  "note": "Appended by the completeness critic (3 Nov 2026). Overrides the generated sections where they conflict; see plan.md 'Critic additions' CA-1..CA-11. gen-contracts.py carries this key over on regeneration.",
+  "verified": {
+   "cstaIds": 44,
+   "levels": {
+    "1B": 21,
+    "2": 23
+   },
+   "lessons": 46,
+   "bankItems": 202,
+   "checks": [
+    "every id primary in its band outside unit 7",
+    "every id has >= 1 bank item",
+    "exit item cat is a primary of its lesson",
+    "quest code = chapter index/band/mode",
+    "all lessons' steps sum to 45",
+    "bank counts match sets[].questionCount"
+   ]
+  },
+  "lockSemantics": {
+   "lock=1": "band locked; chapter map and band toggle hidden; start at chapter; at chapter end lesson mode continues into game.then for the band, else results + Back to class",
+   "then": {
+    "csq-1b-4.1": "routes",
+    "csq-1b-4.3": "ciphers (levels 1-3)",
+    "csq-1b-5.1": "hw-sw (levels 1-3)"
+   },
+   "scoreUnderChain": "chained chapters add stars to score (monotonic); label keeps the locked chapter's noun and totals",
+   "ciClauseFPrime": "a game step's standards is a subset of the union of csta of its chapter and its then chapters for the band",
+   "withdrawn": {
+    "csq-2-4.1.mainActivity.first": "routes 1-6 (routes level 5 is the Pro Explore demo; routes 5-6 stretch via then)"
+   }
+  },
+  "lessonOverrides": {
+   "csq-1b-2.2": {
+    "steps.Play.standards": [
+     "1B-AP-13",
+     "1B-AP-12"
+    ],
+    "steps.In your own words.standards": [
+     "1B-AP-16",
+     "1B-AP-17"
+    ]
+   },
+   "csq-2-2.2": {
+    "steps.Play.standards": [
+     "2-AP-15",
+     "2-AP-16"
+    ],
+    "steps.In your own words.standards": [
+     "2-AP-18",
+     "2-AP-19"
+    ]
+   },
+   "csq-1b-3.3": {
+    "steps.Play.standards": [
+     "1B-DA-06",
+     "1B-DA-07"
+    ],
+    "steps.In your own words.standards": [
+     "1B-IC-20"
+    ]
+   },
+   "csq-1b-6.2": {
+    "steps.Play.standards": [
+     "1B-IC-19"
+    ],
+    "steps.In your own words.standards": [
+     "1B-IC-20"
+    ]
+   },
+   "csq-2-6.2": {
+    "steps": [
+     {
+      "kind": "text",
+      "title": "Today",
+      "minutes": 17
+     },
+     {
+      "kind": "game",
+      "title": "Warm-up (live)",
+      "minutes": 5,
+      "gameSlug": "question-battle",
+      "playHidden": true
+     },
+     {
+      "kind": "game",
+      "title": "Play A: Design Lab",
+      "minutes": 10,
+      "gameSlug": "inside-the-machine",
+      "options": "chapter=design-lab&band=2&lock=1",
+      "standards": [
+       "2-CS-01"
+      ]
+     },
+     {
+      "kind": "game",
+      "title": "Play B: Fair Data",
+      "minutes": 8,
+      "gameSlug": "data-detective",
+      "options": "chapter=fair&band=2&lock=1",
+      "questCode": "6 2 0 0",
+      "standards": [
+       "2-IC-21"
+      ]
+     },
+     {
+      "kind": "quiz",
+      "title": "Exit ticket",
+      "minutes": 3
+     },
+     {
+      "kind": "question",
+      "title": "In your own words",
+      "minutes": 2
+     }
+    ]
+   },
+   "csq-1b-6.1": {
+    "warmupSetId": null,
+    "warmupMode": null,
+    "warmupItems": [],
+    "mainActivity.starter": "wyr:tech:8:20",
+    "steps": [
+     {
+      "kind": "text",
+      "title": "Today",
+      "minutes": 27
+     },
+     {
+      "kind": "game",
+      "title": "Would You Rather (live)",
+      "minutes": 13,
+      "gameSlug": "would-you-rather-live",
+      "playHidden": true
+     },
+     {
+      "kind": "quiz",
+      "title": "Exit ticket",
+      "minutes": 3
+     },
+     {
+      "kind": "question",
+      "title": "In your own words",
+      "minutes": 2
+     }
+    ]
+   },
+   "csq-2-6.1": {
+    "sameAs": "csq-1b-6.1 with question-battle items; warmup removed; starter wyr:tech:8:20"
+   },
+   "csq-1b-6.2.warmupItems": [
+    "1b-u6-o1",
+    "1b-6.1-e1",
+    "1b-6.2-r1",
+    "1b-6.2-e1",
+    "1b-6.1-r1"
+   ],
+   "csq-2-6.2.warmupItems": [
+    "2-u6-o1",
+    "2-6.1-e1",
+    "2-6.2-r1",
+    "2-6.2-e1",
+    "2-6.1-r1"
+   ],
+   "csq-*-7.1": {
+    "steps": "Today 17 · Warm-up 5 · question 'Who and what' 6 · question 'Parts and the rule' 6 · question 'Roles, timeline and test plan + Builder message' 6 · Exit 3 · In your own words 2; standards: Plan-line ids on questions 1-2, Roles-line ids on question 3"
+   },
+   "csq-*-7.2": {
+    "steps.Play": {
+     "kind": "build",
+     "template": "quiz",
+     "standards": {
+      "1B": [
+       "1B-AP-15"
+      ],
+      "2": [
+       "2-AP-17"
+      ]
+     },
+     "body": "etiquette card with the team's Builder message first (first 300 chars = prefill)"
+    }
+   },
+   "csq-*-7.3": {
+    "steps": "Today 17 · Warm-up 5 · text 'Playtest protocol' 3 · question 'Tally and the one change' 15 · Exit 3 · In your own words 2; question standards 1B [1B-IC-20, 1B-AP-15] / 2 [2-AP-15, 2-DA-09, 2-IC-22]"
+   },
+   "csq-*-7.4": {
+    "steps": "Today 17 · Warm-up 5 · question 'Credits & How-to' 18 (Pro adds How it works) · Exit 3 · In your own words 2; question standards 1B [1B-AP-17, 1B-AP-14, 1B-IC-21] / 2 [2-AP-19, 2-AP-16]"
+   },
+   "every lesson": {
+    "steps.In your own words.rubric": "[{ id: <each primary id>, levels: [4 descriptors] }] marked 0-3 (P11 storage); steps.In your own words.standards = the lesson's primary ids unless overridden above"
+   }
+  },
+  "standardsOnSteps": "standards allowed on game, question and build steps; Practiced counts a question step when answered and a build step when handed in",
+  "mastery": {
+   "problem": "13 ids outside unit 7 never have 2 tagged items on one exit ticket: 1B-AP-08 1B-AP-12 1B-AP-13 1B-AP-14 1B-AP-16 1B-AP-17 1B-IC-20 2-AP-13 2-AP-15 2-AP-16 2-AP-18 2-AP-19 2-CS-01; 1B-AP-08 and 1B-AP-12 have one bank item in total",
+   "checkedRule": ">= 2 of the items tagged with the id on the most recent ticket are right, or all of them when fewer than 2 are tagged",
+   "appliedRule": "rubric line >= 2 on any question/build step (every lesson has one from the sentence step)",
+   "ciClauseBPrime": ">= 3 bank items per id per band",
+   "addItems": [
+    {
+     "id": "1b-1.1-r2",
+     "cat": "1B-AP-08"
+    },
+    {
+     "id": "1b-1.5-r2",
+     "cat": "1B-AP-12"
+    },
+    {
+     "id": "1b-6.3-r2",
+     "cat": "1B-AP-14"
+    },
+    {
+     "id": "2-6.3-r2",
+     "cat": "2-AP-16"
+    },
+    {
+     "id": "2-5.1-r2",
+     "cat": "2-CS-01"
+    }
+   ],
+   "decision": "thresholds are a human decision"
+  },
+  "sets": {
+   "wyr-tech.starter": "wyr:tech:8:20",
+   "wyrDigitRule": "no runs of 2+ digits (tech-13 '3D printer' allowed)",
+   "csq-u1-1b.questionCount": 22,
+   "csq-u1-1b.add": "1b-1.1-r2, 1b-1.5-r2",
+   "csq-u6-1b.add": "1b-6.3-r2",
+   "csq-u6-2.add": "2-6.3-r2",
+   "csq-u5-2.add": "2-5.1-r2"
+  },
+  "capstone": {
+   "captainLogin": "one Studio game per account per build step: the team captain signs in for every unit-7 period; other members have no build cell",
+   "markTeammates": "P11 review form: 'Also mark these teammates' multi-select upserts the rubric marks onto teammates' step_progress rows (question/build steps only)",
+   "spend": "free pool $5/day site-wide; a school plan adds seats x $10/12 per month to the shared paid pool (30 seats = $25/month); 15 teams x ~8 turns x 2 periods x $0.15-0.40 = $36-96 per class capstone",
+   "throughput": "one serial build runner per instance, maxPerUser 2; ~1-3 min per turn => 15-30 turns per 30-minute block for the whole class = 1-2 turns per team per period",
+   "decisions": [
+    "measure a build turn on production hardware",
+    "per-period team cap on the Builder status line",
+    "7.2 = one good message + one fix + paper path",
+    "school plan required vs per-class AI allowance",
+    "public wording about AI cost"
+   ]
+  },
+  "scannerRules": {
+   "linkCode": "scanner.js:47 LINK_CODE_PROMPT: grown-up(s)|parent(s)|guardian(s)|family|families|mum|mom|dad|link within 40 chars of code(s) in any string literal FAILS; Packet Post never uses the word 'code' (secret message, cipher, key wheel, shift); Robo Route 'quest code'/'level code' strings never mention family/parents/grown-ups",
+   "personalPrompt": "scanner.js:44: (enter|type|what's|tell us) (your|ur) (real name|full name|address|phone|email|school|age|birthday|password) FAILS; share/keep tiles are nouns, trick cards never say 'type your password'",
+   "contentLint": "tests/unit/cs-quest-content-lint.test.js also runs scanner.scanVersion on each game's sanitized HTML and fails on any fail issue; adds a UK-spelling rule for en strings",
+   "levelCodes": "never 5+ consecutive digit symbols; always shown/printed in groups of four with spaces"
+  },
+  "i18n": {
+   "stringBudget": {
+    "chromePerGame": 450,
+    "levelTextPerGame": 1000,
+    "note": "level prose (learn, 3 hints, check q + 3 tiles, case files, tickets, briefs, letters, personas, quotes) is also 13-locale"
+   },
+   "translationWorkflow": "DECISION: machine translation through scripts/cs-quest-i18n.mjs + native review of 12 locales before the public page claims coverage; ~4 x 1300 x 12 strings",
+   "l10nTest": "each game's unit test asserts JSON l10n has all 11 non-English descriptions",
+   "usSpelling": {
+    "rule": "US spelling in lesson content, bank items and in-game en text; en-GB may differ",
+    "itemsToFix": [
+     "1b-1.4-r1",
+     "1b-3.1-e3",
+     "1b-3.3-e2",
+     "1b-4.1-e3",
+     "1b-6.2-e2",
+     "1b-7.1-r1",
+     "1b-7.2-e3",
+     "2-1.4-e2",
+     "2-3.1-e2",
+     "2-3.3-e2",
+     "2-5.1-e2",
+     "2-5.3-e3",
+     "2-6.3-e3"
+    ],
+    "words": [
+     "colour",
+     "favourite",
+     "grey",
+     "labelled",
+     "licence",
+     "organise",
+     "practise",
+     "neighbour",
+     "recognise",
+     "maths",
+     "centre",
+     "programme",
+     "catalogue(chrome)"
+    ]
+   },
+   "mergeScripts": "A and B each ship an i18n merge script (precedent scripts/i18n-add-live-wyr-atlas.mjs); integration runs both then npm run i18n:check",
+   "liveSetPicker": "B: /live set picker groups sets with lesson_id under a 'CS Quest' optgroup (live.cs.sets)"
+  },
+  "platformChangesAdd": [
+   {
+    "id": "P5",
+    "add": "also hide the 'I played it' button (routes/progress.js:256) on MODES-slug and WYR-live steps"
+   },
+   {
+    "id": "P8",
+    "add": "copyLesson's explicit INSERT (lessons.js:191) must also copy options, standards, template"
+   },
+   {
+    "id": "P11",
+    "add": "'Also mark these teammates' multi-select; rubric lines on every lesson's sentence step"
+   },
+   {
+    "id": "P17",
+    "add": "cadence also sets due_at = day before the next lesson opens (last +7 days)"
+   },
+   {
+    "id": "P20",
+    "change": "/live set picker 'CS Quest' optgroup for sets with lesson_id",
+    "files": [
+     "server/views/live.js"
+    ],
+    "owner": "B"
+   },
+   {
+    "id": "P21",
+    "change": "Reset to the CS Quest version re-assigns the fresh copy to the same classes with the old dates and unassigns the old copy",
+    "owner": "A"
+   },
+   {
+    "id": "legal",
+    "change": "docs/legal-review.md line for the Standards tab and rubric marks (per-student education records; school-only; deletion hooks; teacher CSV only)",
+    "owner": "A"
+   }
+  ],
+  "gamesAdd": {
+   "data-detective": {
+    "pauseSettings": "no Oomba.game: bind P/Esc to pause, expose Oomba.ui.settings() on title and HUD gear, call Oomba.test({state,start}) and BRB.gameOver itself",
+    "names": "fictional table names short and locale-neutral"
+   },
+   "inside-the-machine": {
+    "pauseSettings": "same as data-detective"
+   },
+   "dressPack": "dress has only hat (kit core: crown, glasses, scarf): coat, satchel and goggles are inline SVG layers",
+   "lessonModeDefaults": "music off, captions on"
+  },
+  "program": {
+   "pathsAdd": {
+    "core10NoBuilder": [
+     "1.2",
+     "1.3",
+     "2.1",
+     "2.2",
+     "3.1",
+     "3.2",
+     "4.1",
+     "4.2",
+     "5.2",
+     "6.1"
+    ]
+   },
+   "periodVariants": {
+    "short40": "projector warm-up with 2 items, one Discuss prompt, never cut the exit ticket",
+    "block80-90": "lesson + unplugged twin + 3-star stretch"
+   },
+   "faqAdd": [
+    "classes and lessons live inside a school on Oomba; set one up for free",
+    "Chromebooks without touch work (click-or-tap + keyboard)",
+    "headphones recommended; lesson mode starts with music off and captions on"
+   ]
+  },
+  "testsToOwn": {
+   "curriculum": [
+    "tests/e2e/how-it-works.spec.js PAGES += /teachers/cs-quest",
+    "scripts/how-shots.js --only cs materialises csq-1b-1.2 and seeds step_progress with standards/marks for the Standards-tab shot"
+   ]
+  },
+  "openDecisions": [
+   "mastery thresholds and per-lesson rubric as Applied evidence",
+   "capstone money/queue policy and public wording",
+   "translation production and review; launch gate",
+   "captain login + mark teammates vs a phase-2 team feature",
+   "6.1 without live warm-up (wyr:tech:8:20) and 6.2 Pro as two Play steps"
+  ]
+ }
+}

@@ -1,0 +1,803 @@
+{
+ "program": {
+  "name": "CS Quest",
+  "slug": "cs-quest",
+  "tagline": "Computer science, one period at a time.",
+  "standards": "CSTA K-12 CS Standards 2017, levels 1B (grades 3-5) and 2 (grades 6-8)",
+  "bands": {
+   "1B": {
+    "grade": "Grades 3-5",
+    "inGame": "Explorer",
+    "code": "1b"
+   },
+   "2": {
+    "grade": "Grades 6-8",
+    "inGame": "Pro",
+    "code": "2"
+   }
+  },
+  "units": [
+   {
+    "n": 1,
+    "title": "Think Like a Robot",
+    "lessons": [
+     "1.1",
+     "1.2",
+     "1.3",
+     "1.4",
+     "1.5"
+    ]
+   },
+   {
+    "n": 2,
+    "title": "Bug Hunters",
+    "lessons": [
+     "2.1",
+     "2.2"
+    ]
+   },
+   {
+    "n": 3,
+    "title": "Data Detectives",
+    "lessons": [
+     "3.1",
+     "3.2",
+     "3.3"
+    ]
+   },
+   {
+    "n": 4,
+    "title": "Packet Post",
+    "lessons": [
+     "4.1",
+     "4.2",
+     "4.3"
+    ]
+   },
+   {
+    "n": 5,
+    "title": "Inside the Machine",
+    "lessons": [
+     "5.1",
+     "5.2",
+     "5.3"
+    ]
+   },
+   {
+    "n": 6,
+    "title": "Tech Choices",
+    "lessons": [
+     "6.1",
+     "6.2",
+     "6.3"
+    ]
+   },
+   {
+    "n": 7,
+    "title": "Make Your Own Game",
+    "lessons": [
+     "7.1",
+     "7.2",
+     "7.3",
+     "7.4"
+    ]
+   }
+  ],
+  "paths": {
+   "full": "all 23",
+   "core10": [
+    "1.2",
+    "2.1",
+    "3.1",
+    "4.1",
+    "5.2",
+    "6.1",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ],
+   "csEdWeek": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "4.1",
+    "6.1"
+   ],
+   "deviceFirst": [
+    "5.2",
+    "5.1",
+    "5.3",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.1",
+    "4.2",
+    "4.3",
+    "6.1",
+    "6.2",
+    "6.3",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ]
+  },
+  "period": [
+   [
+    "0:00",
+    5,
+    "Arrive, log in, Do Now"
+   ],
+   [
+    "0:05",
+    5,
+    "Warm-up (live or projector)"
+   ],
+   [
+    "0:10",
+    6,
+    "Explore (projector script)"
+   ],
+   [
+    "0:16",
+    18,
+    "Play"
+   ],
+   [
+    "0:34",
+    6,
+    "Discuss"
+   ],
+   [
+    "0:40",
+    5,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "planPath": "/tmp/claude-0/-home-user-javascript-exercises/db321ed6-437e-588f-beaf-65f7e9b106cd/scratchpad/cs-quest/plan.md"
+ },
+ "params": {
+  "urlKeys": [
+   "chapter",
+   "band",
+   "mode",
+   "level",
+   "lock"
+  ],
+  "valueRegex": "^[a-z0-9-]{1,16}$",
+  "band": "1b|2",
+  "level": "1-30",
+  "lock": "0|1",
+  "tokenField": "o = chapter.band.mode.level.lock (<= 40 chars, empty parts allowed)",
+  "sdk": "BRB.params frozen object, {} when absent; games read (window.BRB && BRB.params) || {}",
+  "stepColumn": "lesson_steps.options holds the query-string form; routes/progress.js appends it to the Play link",
+  "questCode": "C B M L (4 digits): C chapter index (0 map), B 1 Explorer | 2 Pro, M mode index (0 play, 1 debug, 2 maker/tally/wheel, 3 projector), L level 0-9; typed in-game; params win; hidden in live frames"
+ },
+ "progressLabelRegex": "^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$",
+ "game": {
+  "slug": "packet-post",
+  "title": "Packet Post",
+  "icon": "📮",
+  "cover": "gold",
+  "category": "learning",
+  "featured": true,
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "crew": {
+   "name": "Pim",
+   "look": "art-animals owl with a satchel"
+  },
+  "kit": "1.1.2",
+  "kitPacks": [
+   "art-props",
+   "art-animals",
+   "art-school",
+   "style-bold"
+  ],
+  "bands": [
+   "1B",
+   "2"
+  ],
+  "bandNames": {
+   "1B": "Explorer",
+   "2": "Pro"
+  },
+  "chapters": [
+   {
+    "index": 1,
+    "id": "packets",
+    "title": "Break It Up",
+    "band": "1B",
+    "csta": [
+     "1B-NI-04"
+    ],
+    "levels": 5
+   },
+   {
+    "index": 1,
+    "id": "packets",
+    "title": "Break It Up",
+    "band": "2",
+    "csta": [
+     "2-NI-04"
+    ],
+    "levels": 5
+   },
+   {
+    "index": 2,
+    "id": "routes",
+    "title": "Many Roads",
+    "band": "1B",
+    "csta": [
+     "1B-NI-04"
+    ],
+    "levels": 4
+   },
+   {
+    "index": 2,
+    "id": "routes",
+    "title": "Many Roads",
+    "band": "2",
+    "csta": [
+     "2-NI-04"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 3,
+    "id": "protocols",
+    "title": "Rules of the Road",
+    "band": "1B",
+    "csta": [
+     "1B-NI-04"
+    ],
+    "levels": 2
+   },
+   {
+    "index": 3,
+    "id": "protocols",
+    "title": "Rules of the Road",
+    "band": "2",
+    "csta": [
+     "2-NI-04"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 4,
+    "id": "locks",
+    "title": "Lock It",
+    "band": "1B",
+    "csta": [
+     "1B-NI-05"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 4,
+    "id": "locks",
+    "title": "Lock It",
+    "band": "2",
+    "csta": [
+     "2-NI-05",
+     "2-IC-23"
+    ],
+    "levels": 7
+   },
+   {
+    "index": 5,
+    "id": "tricks",
+    "title": "Spot the Trick",
+    "band": "1B",
+    "csta": [
+     "1B-NI-05"
+    ],
+    "levels": 6
+   },
+   {
+    "index": 5,
+    "id": "tricks",
+    "title": "Spot the Trick",
+    "band": "2",
+    "csta": [
+     "2-NI-05",
+     "2-IC-23"
+    ],
+    "levels": 10
+   },
+   {
+    "index": 6,
+    "id": "ciphers",
+    "title": "Secret Messages",
+    "band": "1B",
+    "csta": [],
+    "levels": 3,
+    "enrichment": true
+   },
+   {
+    "index": 6,
+    "id": "ciphers",
+    "title": "Secret Messages",
+    "band": "2",
+    "csta": [
+     "2-NI-06"
+    ],
+    "levels": 7
+   }
+  ],
+  "params": {
+   "chapter": "one of chapters[].id",
+   "band": "1b | 2",
+   "mode": "one of modes (default play)",
+   "level": "1-30 (optional)",
+   "lock": "0 | 1 (hides chapter map and band toggle)"
+  },
+  "modes": {
+   "0": "play",
+   "2": "wheel",
+   "3": "projector"
+  },
+  "questCode": "C B M L: C = chapters[].index (0 = map), B = 1 Explorer | 2 Pro, M = modes key, L = level 0-9 (0 = first unfinished); typed on the in-game keypad; params win over codes",
+  "progressEvents": {
+   "today": {
+    "afterEachSolvedLevel": {
+     "call": "BRB.score.submit(score, label)",
+     "score": "starsInChapter (integer, monotonic within the chapter)",
+     "label": "'<done>/<total> levels (tricks chapter: cards), <stars> stars' plus ', <ok>/<n> checks' in lesson mode; must match ^\\d{1,2}/\\d{1,2} (levels|cases|tickets|cards), \\d{1,3} stars(, \\d{1,2}/\\d{1,2} checks)?$"
+    },
+    "onChapterComplete": {
+     "call": "BRB.gameOver({ won: true, score: starsInChapter })"
+    },
+    "otherModes": {
+     "wheel": "no score (tool mode)"
+    }
+   },
+   "phase2": {
+    "call": "BRB.progress(detail)",
+    "detail": {
+     "game": "rr|dd|pp|im",
+     "chapter": "<chapter id>",
+     "level": "n",
+     "stars": "0-3",
+     "band": "1|2",
+     "csta": [
+      "<ids of the level>"
+     ],
+     "check": "0|1",
+     "confidence": "1-3",
+     "hint": "0-3",
+     "runs": "n",
+     "skipped": "bool"
+    },
+    "limits": "JSON <= 1 KB; keys [a-z][a-zA-Z0-9]{0,23}; values numbers/booleans/[A-Za-z0-9-] strings; one per 2 s; forwarded only with a lesson context"
+   }
+  },
+  "testHooks": [
+   "__brbTest.start({chapter, band, mode, level, seed, lesson})",
+   "step(n)",
+   "skipAnimations()",
+   "cover()",
+   "state()"
+  ],
+  "files": {
+   "game": [
+    "seed-games/packet-post.html",
+    "seed-games/packet-post.json"
+   ],
+   "strings": [
+    "scripts/data/cs-quest/packet-post/<lang>.json",
+    "public/vendor/data/packet-post/<version>/<lang>.js"
+   ],
+   "cover": "scripts/covers/packet-post.recipe.js",
+   "tests": [
+    "tests/unit/packet-post.test.js",
+    "tests/e2e/packet-post.spec.js"
+   ]
+  },
+  "stringBudget": 450,
+  "specifics": {
+   "enrichmentOnly": {
+    "ciphers@1B": "no 1B id claimed"
+   },
+   "safety": "no URLs/emails/@/digit runs; senders are roles; 'mailbox key' not 'password'; cipher word list screened by the 25-shift profanity check"
+  }
+ },
+ "criticAdditions": {
+  "note": "Appended by the completeness critic (3 Nov 2026). Overrides the generated sections where they conflict; see plan.md 'Critic additions' CA-1..CA-11. gen-contracts.py carries this key over on regeneration.",
+  "lockSemantics": {
+   "lock=1": "band locked; chapter map and band toggle hidden; start at chapter; at chapter end lesson mode continues into game.then for the band, else results + Back to class",
+   "then": {
+    "csq-1b-4.1": "routes",
+    "csq-1b-4.3": "ciphers (levels 1-3)",
+    "csq-1b-5.1": "hw-sw (levels 1-3)"
+   },
+   "scoreUnderChain": "chained chapters add stars to score (monotonic); label keeps the locked chapter's noun and totals",
+   "ciClauseFPrime": "a game step's standards is a subset of the union of csta of its chapter and its then chapters for the band",
+   "withdrawn": {
+    "csq-2-4.1.mainActivity.first": "routes 1-6 (routes level 5 is the Pro Explore demo; routes 5-6 stretch via then)"
+   }
+  },
+  "scannerRules": {
+   "linkCode": "scanner.js:47 LINK_CODE_PROMPT: grown-up(s)|parent(s)|guardian(s)|family|families|mum|mom|dad|link within 40 chars of code(s) in any string literal FAILS; Packet Post never uses the word 'code' (secret message, cipher, key wheel, shift); Robo Route 'quest code'/'level code' strings never mention family/parents/grown-ups",
+   "personalPrompt": "scanner.js:44: (enter|type|what's|tell us) (your|ur) (real name|full name|address|phone|email|school|age|birthday|password) FAILS; share/keep tiles are nouns, trick cards never say 'type your password'",
+   "contentLint": "tests/unit/cs-quest-content-lint.test.js also runs scanner.scanVersion on each game's sanitized HTML and fails on any fail issue; adds a UK-spelling rule for en strings",
+   "levelCodes": "never 5+ consecutive digit symbols; always shown/printed in groups of four with spaces"
+  },
+  "i18n": {
+   "stringBudget": {
+    "chromePerGame": 450,
+    "levelTextPerGame": 1000,
+    "note": "level prose (learn, 3 hints, check q + 3 tiles, case files, tickets, briefs, letters, personas, quotes) is also 13-locale"
+   },
+   "translationWorkflow": "DECISION: machine translation through scripts/cs-quest-i18n.mjs + native review of 12 locales before the public page claims coverage; ~4 x 1300 x 12 strings",
+   "l10nTest": "each game's unit test asserts JSON l10n has all 11 non-English descriptions",
+   "usSpelling": {
+    "rule": "US spelling in lesson content, bank items and in-game en text; en-GB may differ",
+    "itemsToFix": [
+     "1b-1.4-r1",
+     "1b-3.1-e3",
+     "1b-3.3-e2",
+     "1b-4.1-e3",
+     "1b-6.2-e2",
+     "1b-7.1-r1",
+     "1b-7.2-e3",
+     "2-1.4-e2",
+     "2-3.1-e2",
+     "2-3.3-e2",
+     "2-5.1-e2",
+     "2-5.3-e3",
+     "2-6.3-e3"
+    ],
+    "words": [
+     "colour",
+     "favourite",
+     "grey",
+     "labelled",
+     "licence",
+     "organise",
+     "practise",
+     "neighbour",
+     "recognise",
+     "maths",
+     "centre",
+     "programme",
+     "catalogue(chrome)"
+    ]
+   },
+   "mergeScripts": "A and B each ship an i18n merge script (precedent scripts/i18n-add-live-wyr-atlas.mjs); integration runs both then npm run i18n:check",
+   "liveSetPicker": "B: /live set picker groups sets with lesson_id under a 'CS Quest' optgroup (live.cs.sets)"
+  },
+  "testsToOwn": {
+   "curriculum": [
+    "tests/e2e/how-it-works.spec.js PAGES += /teachers/cs-quest",
+    "scripts/how-shots.js --only cs materialises csq-1b-1.2 and seeds step_progress with standards/marks for the Standards-tab shot"
+   ]
+  }
+ },
+ "gamesAdd": null,
+ "lessonsUsingThisGame": [
+  {
+   "id": "csq-1b-4.1",
+   "key": "csq-1b-4.1",
+   "band": "1B",
+   "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+   "csta": [
+    "1B-NI-04"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "packets",
+    "params": "chapter=packets&band=1b&lock=1",
+    "questCode": "1 1 0 0",
+    "then": "routes 1-4",
+    "unpluggedFirst": "Envelope Relay"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=packets&band=1b&lock=1",
+     "standards": [
+      "1B-NI-04"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-4.1",
+   "key": "csq-2-4.1",
+   "band": "2",
+   "title": "CS Quest 4.1 · How a message travels (Packets, routes, protocols)",
+   "csta": [
+    "2-NI-04"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "protocols",
+    "params": "chapter=protocols&band=2&lock=1",
+    "questCode": "3 2 0 0",
+    "first": "routes 1-6",
+    "unpluggedFirst": "Envelope Relay"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=protocols&band=2&lock=1",
+     "standards": [
+      "2-NI-04"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-4.2",
+   "key": "csq-1b-4.2",
+   "band": "1B",
+   "title": "CS Quest 4.2 · Lock it up (Passphrases, private information, security)",
+   "csta": [
+    "1B-NI-05"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "locks",
+    "params": "chapter=locks&band=1b&lock=1",
+    "questCode": "4 1 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=locks&band=1b&lock=1",
+     "standards": [
+      "1B-NI-05"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-4.2",
+   "key": "csq-2-4.2",
+   "band": "2",
+   "title": "CS Quest 4.2 · Lock it up (Passphrases, private information, security)",
+   "csta": [
+    "2-NI-05",
+    "2-IC-23"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "locks",
+    "params": "chapter=locks&band=2&lock=1",
+    "questCode": "4 2 0 0"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=locks&band=2&lock=1",
+     "standards": [
+      "2-NI-05",
+      "2-IC-23"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-1b-4.3",
+   "key": "csq-1b-4.3",
+   "band": "1B",
+   "title": "CS Quest 4.3 · Secret messages (Spotting tricks, ciphers)",
+   "csta": [
+    "1B-NI-05"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "tricks",
+    "params": "chapter=tricks&band=1b&lock=1",
+    "questCode": "5 1 0 0",
+    "then": "ciphers 1-3 (enrichment)"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "quest-race",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=tricks&band=1b&lock=1",
+     "standards": [
+      "1B-NI-05"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  },
+  {
+   "id": "csq-2-4.3",
+   "key": "csq-2-4.3",
+   "band": "2",
+   "title": "CS Quest 4.3 · Secret messages (Spotting tricks, ciphers)",
+   "csta": [
+    "2-NI-06"
+   ],
+   "mainActivity": {
+    "type": "game",
+    "slug": "packet-post",
+    "chapter": "ciphers",
+    "params": "chapter=ciphers&band=2&lock=1",
+    "questCode": "6 2 0 0",
+    "then": "tricks 7-10"
+   },
+   "steps": [
+    {
+     "kind": "text",
+     "title": "Today",
+     "minutes": 17
+    },
+    {
+     "kind": "game",
+     "title": "Warm-up (live)",
+     "minutes": 5,
+     "gameSlug": "question-battle",
+     "playHidden": true
+    },
+    {
+     "kind": "game",
+     "title": "Play",
+     "minutes": 18,
+     "gameSlug": "packet-post",
+     "options": "chapter=ciphers&band=2&lock=1",
+     "standards": [
+      "2-NI-06"
+     ]
+    },
+    {
+     "kind": "quiz",
+     "title": "Exit ticket",
+     "minutes": 3,
+     "fallbackWhenQuizStepsOff": "text step + live/paper"
+    },
+    {
+     "kind": "question",
+     "title": "In your own words",
+     "minutes": 2
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,104 @@
+export const meta = {
+  name: 'cs-quest-curriculum',
+  description: 'Build the CS Quest curriculum: lesson catalogue (46 variants), materialiser and routes, teacher pages, class Standards tab, coverage CI test, 13-locale chrome, with a 3-lens review and fix loop',
+  phases: [
+    { title: 'Reconcile', detail: 'contracts + catalogue schema + units/paths' },
+    { title: 'Lessons', detail: '46 lesson plans in three parallel writers' },
+    { title: 'Engine', detail: 'catalogue test, materialiser, routes, assign-unit, Builder status' },
+    { title: 'Pages', detail: 'teacher pages, print, projector, learn hub, SEO' },
+    { title: 'Standards tab', detail: 'class Standards tab, CSV, principal report' },
+    { title: 'Review', detail: 'teacher walkthrough, pedagogy/standards, code' },
+    { title: 'Fix', detail: 'fix findings, re-verify' },
+    { title: 'Gates', detail: 'npm test, i18n, report' },
+  ],
+}
+const BRIEF = '/tmp/claude-0/-home-user-javascript-exercises/db321ed6-437e-588f-beaf-65f7e9b106cd/scratchpad/cs-quest/phase2-brief.md'
+const DIR = '/tmp/claude-0/-home-user-javascript-exercises/db321ed6-437e-588f-beaf-65f7e9b106cd/scratchpad/cs-quest'
+const WT = '/home/user/javascript-exercises/.worktrees/curriculum'
+const COMMON = `You are owner A building the **curriculum** of the CS Quest program on Oomba Academy (Node/Express/SQLite, server-rendered views, 13 UI languages).
+Work ONLY in the git worktree ${WT} (branch cs-quest/curriculum, created from main AFTER the platform slice merged, so BRB.params, lesson_steps.options/standards/template/rubric, QUIZ_STEPS, rubric marks, assignUnitWithCadence and builderStatus already exist). Local port 3171.
+Read, in this order: (1) ${BRIEF} (whole file; especially "Decisions already made"); (2) ${DIR}/platform-api-notes.md (whole file: the exact platform surface you build on) and docs/cs-quest.md in the worktree; (3) ${DIR}/contract-platform.json and the lessons/sets/teacherPages parts of ${DIR}/contracts.json (python3 -c to print c['lessons'], c['sets'], c['teacherPages'], c['tracking'], c['capstone'], c['criticAdditions']); (4) ${DIR}/plan.md: lines 1,192 (decisions, identity, scope, standards matrix), 192,668 (every lesson), 891,913 and 1189,1245 (sets shape, live hosting, WYR), 1245,1460 (capstone, assessment, how teachers reach it, platform list, i18n rules), 1495,1561 (appendices), 1561,1730 (critic additions; they override earlier text); (5) ${DIR}/map-teach.md (whole file).
+The 14 quiz banks from owner B are present locally in seed-lessons/cs-quest/sets/ (plus wyr-tech.json) as IGNORED, UNCOMMITTED files copied from the branch origin/cs-quest/live-sets; read seed-lessons/cs-quest/sets/README.md for their shape and the derived-set rules. NEVER commit them and never git add -A (always git add explicit paths); they merge from B's branch. Do not import symbols that exist only on B's branch (check with git show origin/cs-quest/live-sets:server/services/classlive-sets.js if you need to know the subject constant; use the literal 'cs-quest' subject string B documents).
+Never edit integration-only files (scripts/seed.js, scanner tests, seeds.spec.js, covers.js, docs/decisions.md, docs/status.md) or locale keys outside cs.*, js.cs.*, teachers.cs.*, learn.cs*, school.classTabs.standards; append your keys at the END of each of the 13 locale files (there is a scripts/i18n-add-cs-quest.mjs pattern from the platform slice you may extend) and keep npm run i18n:check green. US spelling. Kids never see "CS Quest" or standard codes; teachers do. Commit in chunks with the trailer lines from the brief; push at the end of each stage (git push -u origin cs-quest/curriculum). No pull requests.`
+const REPORT = { type: 'object', properties: { summary: { type: 'string' }, done: { type: 'array', items: { type: 'string' } }, notDone: { type: 'array', items: { type: 'string' } }, commits: { type: 'array', items: { type: 'string' } }, pushed: { type: 'boolean' }, tests: { type: 'string' }, openIssues: { type: 'array', items: { type: 'string' } }, crossOwnerRequests: { type: 'array', items: { type: 'string' } }, apiNotes: { type: 'string' } }, required: ['summary', 'done', 'notDone', 'pushed', 'openIssues'] }
+const FINDINGS = { type: 'object', properties: { findings: { type: 'array', items: { type: 'object', properties: { severity: { type: 'string', enum: ['blocker', 'major', 'minor'] }, area: { type: 'string' }, what: { type: 'string' }, where: { type: 'string' }, how_to_fix: { type: 'string' } }, required: ['severity', 'what', 'where'] } }, verdict: { type: 'string' } }, required: ['findings', 'verdict'] }
+
+phase('Reconcile')
+const rec = await agent(`${COMMON}
+
+STAGE 1 of 8 — reconcile and define the catalogue. (a) Update ${DIR}/gen-contracts.py so the critic additions (CA-1 lock chains and 4.1/6.2 Pro changes, CA-2 standards-on-steps, CA-3 unit 7 step shapes, CA-5 mastery + 5 review items, CA-9 timing: 6.1 wyr:tech:8:20 and no live warm-up) are baked into the base data, regenerate ${DIR}/contracts.json and confirm the criticAdditions overrides are now redundant (keep them for the record). (b) Define the in-repo catalogue: seed-lessons/cs-quest/README.md (schema), seed-lessons/cs-quest/units.json (7 units, 4 paths incl. "Core 10 (no Builder)" shown first, period table, 40-minute cut rule, materials, FAQ lines from CA-8), and the per-lesson JSON schema (Appendix A + CA-2/CA-3 shapes: id, key, unit, order, band, grade, title, duration 45, csta primary/also/buildsToward, iCan, questCode, params, doNow, warmup {setId, items, mode, projectorOk}, explore {say, do, ask, bigIdea, vocab}, play {game, chapter, goal, stretch, lookFors, misconception}, discuss, exit {setId, items, sentencePrompt, frame, rubric 0-3}, differentiation, unpluggedTwin, subPlan, shortPeriod40, steps[]). Write ONE complete example lesson JSON (1.2 Explorer) and a tests/unit/cs-quest-catalogue.test.js skeleton that validates schema + the CI clauses (a)-(j) from plan §9.5 and CA (ids exist in csta-2017.json, every id has a primary lesson outside unit 7 and >= 3 bank items, steps sum to 45, quest codes match chapter index/band/mode in contracts.json games[].chapters, warmup/exit item ids resolve in the local sets, US spelling, no digits runs) so the lesson writers can run it. (c) Write ${DIR}/lesson-writer-guide.md: the exact JSON shape, the file naming (seed-lessons/cs-quest/lessons/<unit>.<n>-<1b|2>.json), the voice rules (teacher-facing, plain, imperative script lines "Say:", "Do:", "Ask:"), per-band vocabulary, the quest-code/params per lesson from contracts.json, and the list of which plan.md lines hold each lesson. Commit and push.`, { label: 'curriculum:reconcile', phase: 'Reconcile', schema: REPORT })
+log(`reconcile: ${rec ? rec.summary.slice(0, 160) : 'no result'}`)
+
+phase('Lessons')
+const GROUPS = [
+  { key: 'units-1-2', units: 'units 1 and 2 (lessons 1.1-1.5, 2.1-2.2; both bands = 14 files)', lines: '200,360' },
+  { key: 'units-3-5', units: 'units 3, 4 and 5 (lessons 3.1-3.3, 4.1-4.3, 5.1-5.3; both bands = 18 files)', lines: '360,539' },
+  { key: 'units-6-7', units: 'units 6 and 7 (lessons 6.1-6.3, 7.1-7.4; both bands = 14 files; unit 7 uses the capstone section 1245,1303 and CA-3/CA-4)', lines: '539,668' },
+]
+const written = await parallel(GROUPS.map(g => () => agent(`${COMMON}
+
+STAGE 2 of 8 — write the lesson plans for ${g.units}. Read ${DIR}/lesson-writer-guide.md first, the example lesson, then plan.md lines ${g.lines} (and 1561,1730 for the critic's overrides). Write every lesson JSON for your units in seed-lessons/cs-quest/lessons/ fully specified for BOTH bands (no placeholders, no "TBD"): standards, I-can, quest code/params from the contract, Do Now, warm-up item ids, Say/Do/Ask script, play goal + stretch, look-fors + misconception, discuss prompts, exit item ids + sentence frame + 0-3 rubric descriptors, differentiation, unplugged twin, boxed sub plan, 40-minute cut, steps summing to 45. Teacher voice: plain, concrete, no jargon without a gloss, US spelling, nothing that needs a brand or a URL. Run node --test tests/unit/cs-quest-catalogue.test.js until your files pass every clause that applies to them. IMPORTANT: other writers work in this same worktree at the same time: do NOT run any git command (no add, commit, stash, checkout); only write your files. Report the files written.`, { label: `curriculum:write:${g.key}`, phase: 'Lessons', schema: REPORT })))
+log(`lessons written by ${written.filter(Boolean).length}/3 writers`)
+
+phase('Engine')
+const engine = await agent(`${COMMON}
+
+STAGE 3 of 8 — commit the lessons and build the engine. First: git add seed-lessons/cs-quest/lessons tests/unit/cs-quest-catalogue.test.js and commit the writers' work (writers' reports: ${JSON.stringify(written.filter(Boolean).map(w => ({ done: w.done, openIssues: w.openIssues })))}); fix any catalogue test failure across all 46 files. Then build:
+(1) server/services/lesson-templates.js: the catalogue loader + the materialiser (plan §10.4 / P15): from a lesson JSON creates a teacher lesson (template_key/version set) with the five steps (Today text, Warm-up (live) game step on quest-race at 1B / question-battle at 2 with Play hidden by the platform, Play game step with options/standards/body incl. "Quest code C B M L", Exit ticket quiz step with cat kept — or the QUIZ_STEPS-off text step, In your own words question step with rubric), the derived teacher sets (warm-up 5, exit 3, unit review) from the local banks with subject 'cs-quest', the variants (6.1/6.3 WYR-live step, 7.1 three question steps, 7.2 build step with template quiz and rubric, 7.3 text + question, 7.4 question), "game not available yet" text step when a game slug is not published; idempotent re-materialise; copy/reset semantics using template_key/version.
+(2) server/routes/cs-quest.js mounted in app.js: POST /api/lessons/from-template (one lesson or a path), POST /api/classes/:id/assign-unit (cadence via assignUnitWithCadence), GET /api/cs-quest/builder-status (builderStatus), plus JSON for the pages stage.
+(3) scripts/cs-quest-coverage.js printing the 44-id matrix and the P1-P7 practices table from the data (used by the pages).
+(4) Extend tests/unit/cs-quest-catalogue.test.js and add tests/unit/cs-quest-pages.test.js skeleton; unit tests for the materialiser on a temp DB (every one of the 46 lessons materialises, steps sum to 45, options grammar valid, cat kept, 7.2 build step has the template).
+npm test must have no NEW failures. Commit, push. apiNotes: the route surface and the materialiser's function signatures.`, { label: 'curriculum:engine', phase: 'Engine', schema: REPORT })
+log(`engine: ${engine ? engine.summary.slice(0, 160) : 'no result'}`)
+
+phase('Pages')
+const pages = await agent(`${COMMON}
+
+STAGE 4 of 8 — the teacher-facing pages (plan §10, teacherPages in contracts.json, CA-8 US classroom rows). Engine notes: ${JSON.stringify(engine && engine.apiNotes)}.
+Build with the existing view helpers and CSS conventions (look at server/routes/teachers.js, server/views/*.js, server/routes/lessons.js, public/css/schools.css):
+- /teachers/cs-quest (public landing: what it is, the seven units, the four paths with Core 10 (no Builder) first, period table, what a teacher can honestly claim, FAQ incl. "lessons need a school", materials incl. headphones; CSTA alignment stated factually; no prices), /learn/computer-science hub entry, SEO registration (server/seo.js, routes/seo.js, tests/unit/seo.test.js, tests/e2e/seo.spec.js lists) and how-it-works registration if the pattern requires it (scripts/how-shots.js, server/views/how.js, tests/unit/how-it-works.test.js).
+- /teach/cs-quest (signed-in program page: Before you start, units and paths with "Add to my library" one-click per path/unit/lesson, coverage link, Builder status line "Builder: on / resting · about N teams can build this period"), /teach/cs-quest/coverage (the 44-id matrix and practices table from scripts/cs-quest-coverage.js, with Practiced/Checked/Applied legend), /teach/cs-quest/:key (the plan page: I-can, standards badge "CS Quest · CSTA 1B/2", Do Now, Start warm-up (live) and Show questions on the projector as two equal buttons, Explore script, Open game at chapter (projector mode), Assign to class, Assign unit with cadence, Host exit ticket live, Print, Printables (planning sheet, etiquette card, half-sheet exit ticket, unplugged twin, sub plan), Reset to the CS Quest version, 40-minute cut box), the print view (.printdoc + public/js/print.js if that is the pattern) and the projector-questions page (big type, one item at a time, no answers until revealed).
+- Editor banner on /teach/lessons/:id for template lessons (template_key) with Reset.
+- All chrome in cs.* / teachers.cs.* / learn.cs* keys in 13 locale files; lesson content stays English (render with the el() lang="en" pattern).
+- public/js/cs.js only if needed (js.cs.* keys).
+Tests: tests/unit/cs-quest-pages.test.js (every page 200 for a teacher, 403/redirect for a student, strings present, the four path buttons create the right lessons, print view has no nav), e2e tests/e2e/cs-quest.spec.js (teacher adds Core 10, opens a plan page, prints, assigns a unit; student sees the five steps). Run the fit of these pages at 390 px wide (no sideways scroll). npm test no NEW failures, npm run i18n:check green. Commit, push.`, { label: 'curriculum:pages', phase: 'Pages', schema: REPORT })
+log(`pages: ${pages ? pages.summary.slice(0, 160) : 'no result'}`)
+
+phase('Standards tab')
+const tab = await agent(`${COMMON}
+
+STAGE 5 of 8 — the class Standards tab (plan §9.4, P12, CA-5 mastery as decided in the brief, CA-10 privacy/legal line). Build server/services/standards.js (per class: for each CSTA id, Practiced = answered question steps and handed-in builds and finished game steps whose step standards include the id, Checked = the brief's rule over the most recent exit ticket items with that cat, Applied = rubric marks 0-3 on steps whose rubric lines carry the id; counts per student but shown per class with honest column names; deletion hooks when a student/class is deleted), the route /class/:id/standards (+ .csv, ?report=1 aggregate principal report across the school's classes, signed-in staff only), the tab in routes/schools.js CLASS_TABS with school.classTabs.standards in 13 locales, CSS, and one line in docs/legal-review.md describing what the tab stores and shows. Unit tests on a temp DB with a materialised lesson, a played game step, a scored exit ticket and marked rubric lines (all three tiers move; nothing counts the wrong activity; a student who never signed in shows as "no data", not 0). npm test no NEW failures, i18n green. Commit, push.`, { label: 'curriculum:standards-tab', phase: 'Standards tab', schema: REPORT })
+log(`standards tab: ${tab ? tab.summary.slice(0, 160) : 'no result'}`)
+
+const LENSES = [
+  { key: 'teacher-walkthrough', prompt: `Lens: a real teacher's first week, in Chromium (playwright-core, /opt/pw-browsers/chromium, --no-sandbox), against a fresh seeded local DB on port 3181 with a school, a teacher, a class of 3 students. Do the whole flow with real clicks and screenshots into ${DIR}/review-curriculum/: /teachers/cs-quest, sign in, /teach/cs-quest, add "Core 10 (no Builder)", open the 1.2 plan page, press every button (Start warm-up (live) lands on /live with the right set preselected or a clear message; Show questions on the projector; Open game (the games are not seeded yet: the link must still be sane and the page must say so); Assign to class; Assign unit with cadence; Host exit ticket live; Print; each printable; Reset), then as a student open the lesson: five steps, Play hidden on the warm-up with "Your teacher hosts this live", the Play step body shows the quest code, exit ticket quiz works and keeps cat, the sentence step, then as the teacher mark the rubric and open the Standards tab and CSV. Phone width 390 px for the student page and the plan page (no sideways scroll). Report everything confusing, broken, slow, mislabeled or missing.` },
+  { key: 'pedagogy-standards', prompt: `Lens: curriculum reviewer who teaches grades 3-8 CS. Read all 46 lesson JSONs and the public/program pages. For each lesson: does the 45 minutes add up and feel realistic (login, warm-up, explore, 18 min play, discuss, exit)? Are Say/Do/Ask lines sayable and age-right? Does the I-can match the primary CSTA ids (open server/standards/csta-2017.json)? Do the exit items (read the local banks) assess those ids? Is the unplugged twin and sub plan usable with no devices? Any brands, URLs, UK spelling, jargon without gloss, missing 40-minute cut, Explorer/Pro vocabulary mismatch, misleading claims about CSTA (the pages may say "aligned to", never "approved by")? Check the coverage page's matrix against the data (run scripts/cs-quest-coverage.js). List every lesson with a concrete rewrite.` },
+  { key: 'code', prompt: `Lens: senior engineer. Review the diff (git diff origin/main) for: authz on every new route (students cannot reach teacher pages or other classes' standards; staff of another school cannot), SQL correctness and N+1 on the Standards tab for a class of 30 x 23 lessons, materialiser idempotence and reset semantics (re-running never duplicates lessons or sets; reset keeps student progress or says it will not), options grammar always valid for /play, QUIZ_STEPS off path, i18n keys complete in 13 files (npm run i18n:check), no English chrome hard-coded in views, print view and projector page safe (no answers leaked to the projector before reveal), e2e/unit coverage, no edits to integration-only files or B's files. Run npm test and report failures vs the known list.` },
+]
+phase('Review')
+const reviews = (await parallel(LENSES.map(l => () => agent(`${COMMON}
+
+STAGE 6 of 8 — independent review, read-only (no edits or commits in the worktree; scratch under /tmp/claude-0/curriculum-review/). Stage reports: ${JSON.stringify({ engine: engine && engine.openIssues, pages: pages && pages.openIssues, tab: tab && tab.openIssues })}.
+${l.prompt}
+Be concrete: file:line or URL + selector, what you saw, how to reproduce, how to fix.`, { label: `curriculum:review:${l.key}`, phase: 'Review', schema: FINDINGS })))).filter(Boolean)
+let findings = reviews.flatMap(r => r.findings)
+log(`curriculum review: ${findings.filter(f => f.severity === 'blocker').length} blockers, ${findings.filter(f => f.severity === 'major').length} majors, ${findings.filter(f => f.severity === 'minor').length} minors`)
+
+phase('Fix')
+let fixReport = null
+for (let round = 1; round <= 2 && findings.some(f => f.severity !== 'minor'); round++) {
+  fixReport = await agent(`${COMMON}
+
+STAGE 7 of 8 — fix round ${round}. Findings (JSON): ${JSON.stringify(findings)}. Reproduce each blocker/major first; fix all blockers and majors and the cheap minors (apply the lesson rewrites you agree with; say why when you do not); re-run the catalogue, pages, standards and materialiser tests, npm test, npm run i18n:check. Commit, push.`, { label: `curriculum:fix${round}`, phase: 'Fix', schema: REPORT })
+  const verify = await agent(`${COMMON}
+
+STAGE 7 of 8 — verification after fix round ${round} (read-only). Findings to be fixed: ${JSON.stringify(findings.filter(f => f.severity !== 'minor'))}. Fixer's report: ${JSON.stringify(fixReport)}. Reproduce each on the current branch (browser or tests); return only what is still open plus regressions (same shape).`, { label: `curriculum:verify${round}`, phase: 'Fix', schema: FINDINGS })
+  findings = verify ? verify.findings : []
+  log(`curriculum after fix round ${round}: ${findings.filter(f => f.severity !== 'minor').length} non-minor open`)
+}
+
+phase('Gates')
+const final = await agent(`${COMMON}
+
+STAGE 8 of 8 — gates and hand-off. npm test (no NEW failures vs the brief's known list), npm run i18n:check, npx playwright test tests/e2e/cs-quest.spec.js (local server), node scripts/cs-quest-coverage.js. Confirm git diff origin/main --stat touches no integration-only files and that seed-lessons/cs-quest/sets and wyr-tech.json are NOT in any commit (git log --stat -- seed-lessons/cs-quest/sets must be empty). Push. Write ${DIR}/curriculum-notes.md: routes, pages, flags, the materialiser API, what integration must do (seed games -> "game not available yet" steps disappear on re-materialise? say exactly how), and release notes for the owner (teacher-facing summary, behaviour changes). Report.`, { label: 'curriculum:final', phase: 'Gates', schema: REPORT })
+return { rec, written, engine, pages, tab, reviewFindings: reviews.flatMap(r => r.findings), openAfterFix: findings, final }
