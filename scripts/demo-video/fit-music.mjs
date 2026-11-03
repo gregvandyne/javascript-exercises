@@ -2,6 +2,7 @@
 //   --start S     begin S seconds into the track (default 0)
 //   --cut A,B     remove A..B seconds of the track (a whole number of bars keeps the beat), 60 ms crossfade
 //   --hit T       shift so the track's moment T (e.g. a downbeat) lands on the end card
+//   --fade-in S   fade in over S seconds (default 0.05; longer when the excerpt starts mid-phrase)
 //   --out FILE    default <project dir>/music.wav
 // The result is exactly as long as the video, fades out over the last 1.5 s and is left unmastered (mix.mjs normalises).
 import { execFileSync } from 'node:child_process';
@@ -26,6 +27,7 @@ const out = opt('--out') || path.join(P.dir, 'music.wav');
 const FADE = 1.5;
 let f = `[0:a]aformat=sample_rates=48000:channel_layouts=stereo[s]`;
 if (cut) f += `;[s]asplit[a][b];[a]atrim=0:${cut[0] + 0.03},asetpts=PTS-STARTPTS[a1];[b]atrim=${cut[1] - 0.03},asetpts=PTS-STARTPTS[b1];[a1][b1]acrossfade=d=0.06:c1=tri:c2=tri[s]`;
-f += `;[s]atrim=start=${start.toFixed(3)},asetpts=PTS-STARTPTS,apad=whole_dur=${total.toFixed(3)},atrim=0:${total.toFixed(3)},afade=t=in:st=0:d=0.05,afade=t=out:st=${(total - FADE).toFixed(3)}:d=${FADE}[out]`;
+const fadeIn = +(opt('--fade-in') || 0.05);   // a longer fade-in when the excerpt starts mid-phrase
+f += `;[s]atrim=start=${start.toFixed(3)},asetpts=PTS-STARTPTS,apad=whole_dur=${total.toFixed(3)},atrim=0:${total.toFixed(3)},afade=t=in:st=0:d=${fadeIn},afade=t=out:st=${(total - FADE).toFixed(3)}:d=${FADE}[out]`;
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', track, '-filter_complex', f, '-map', '[out]', '-c:a', 'pcm_s16le', out], { stdio: 'inherit' });
 console.log(out, dur(out).toFixed(2) + ' s', `(video ${total.toFixed(2)} s, end card at ${endCard} s, track from ${start.toFixed(2)} s${cut ? `, cut ${cut.join('-')}` : ''})`);
