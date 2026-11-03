@@ -5537,5 +5537,18 @@
   },
   "tts": {
     "sample": "Hi! I'm your guide at Oomba Academy. Let's explore, solve puzzles and have fun together!"
+  },
+  "cs": {
+    "step": {
+      "hostedLive": "Your teacher hosts this live"
+    },
+    "review": {
+      "rubric": "Rubric marks",
+      "notMarked": "Not marked",
+      "marksTitle": "Rubric marks: {marks}",
+      "alsoMark": "Also mark these teammates",
+      "alsoMarkHint": "They get the same rubric marks on this step. Your written feedback stays with this student.",
+      "noHandIns": "Nothing handed in yet."
+    }
   }
 }

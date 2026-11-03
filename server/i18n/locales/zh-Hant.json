@@ -5535,5 +5535,18 @@
   },
   "tts": {
     "sample": "嗨！我是你在 Oomba Academy 的小嚮導。我們一起去探險、解謎題，開開心心地玩吧！"
+  },
+  "cs": {
+    "step": {
+      "hostedLive": "老師會在課堂上即時主持這一關"
+    },
+    "review": {
+      "rubric": "評量表分數",
+      "notMarked": "未評分",
+      "marksTitle": "評量表分數：{marks}",
+      "alsoMark": "也為這些隊友打同樣的分數",
+      "alsoMarkHint": "他們在這個步驟會得到相同的評量表分數。你寫的回饋只會給這位學生。",
+      "noHandIns": "還沒有人繳交。"
+    }
   }
 }

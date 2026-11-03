@@ -5537,5 +5537,18 @@
   },
   "tts": {
     "sample": "Oi! Eu sou seu guia na Oomba Academy. Vamos explorar, resolver enigmas e nos divertir juntos!"
+  },
+  "cs": {
+    "step": {
+      "hostedLive": "Seu professor conduz isto ao vivo"
+    },
+    "review": {
+      "rubric": "Notas da rubrica",
+      "notMarked": "Sem nota",
+      "marksTitle": "Notas da rubrica: {marks}",
+      "alsoMark": "Dar a mesma nota a estes colegas de equipe",
+      "alsoMarkHint": "Eles recebem as mesmas notas de rubrica nesta etapa. O comentário escrito fica só com este aluno.",
+      "noHandIns": "Nada entregue ainda."
+    }
   }
 }

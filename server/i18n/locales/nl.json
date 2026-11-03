@@ -5536,5 +5536,18 @@
   },
   "tts": {
     "sample": "Hoi! Ik ben je gids bij Oomba Academy. Kom, we gaan samen op ontdekkingsreis, puzzels oplossen en plezier maken!"
+  },
+  "cs": {
+    "step": {
+      "hostedLive": "Je leerkracht speelt dit live met de klas"
+    },
+    "review": {
+      "rubric": "Rubriekscores",
+      "notMarked": "Niet beoordeeld",
+      "marksTitle": "Rubriekscores: {marks}",
+      "alsoMark": "Geef deze teamgenoten dezelfde score",
+      "alsoMarkHint": "Zij krijgen dezelfde rubriekscores voor deze stap. Je geschreven feedback blijft bij deze leerling.",
+      "noHandIns": "Nog niets ingeleverd."
+    }
   }
 }

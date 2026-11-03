@@ -464,3 +464,18 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 .gjoin{margin-top:12px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex-basis:100%}
 .gsteps{padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
 .gclient{overflow-wrap:anywhere}
+/* CS Quest: rubric marks on the lesson progress page (routes/progress.js reviewForm) and "Your teacher hosts this live" */
+.st-marks{font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:.02em}
+.rubric{display:grid;gap:var(--s2)}
+.rubric-line{border:0;padding:0;margin:0;min-width:0}
+.rubric-line legend{padding:0;margin-bottom:4px}
+.rubric-opts{display:flex;flex-wrap:wrap;gap:6px}
+.rubric-opts label{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:40px;padding:0 10px;border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer;font-weight:700;font-variant-numeric:tabular-nums}
+.rubric-opts label.on,.rubric-opts label:has(input:checked){background:var(--accent-soft,var(--surface-2));box-shadow:inset 0 0 0 2px var(--accent-line)}
+.rubric-opts input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.rubric-opts label:has(input:focus-visible){outline:2px solid var(--accent-line);outline-offset:2px}
+.rubric-levels{margin:4px 0 0}
+.rubric-also summary{cursor:pointer}
+.rubric-mates{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px}
+.rubric-mates .chk{display:inline-flex;align-items:center;gap:6px;min-height:36px}
+.sc-hosted{margin:0}
