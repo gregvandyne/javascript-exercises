@@ -456,13 +456,25 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   const lastBank = (prefs && prefs.bank) || {};
   const okSet = v => typeof v === 'string' && (v === 'bank' || [...sets.mine, ...sets.school].some(x => x.ready && `set:${x.id}` === v));
   const chosen = pre.set && (pre.set === 'bank' || pre.set.startsWith('set:') || pre.set.startsWith('starter:')) ? pre.set : okSet(lastBank.set) ? lastBank.set : bank ? 'bank' : '';
+  // P20: CS Quest's derived sets (classlive-sets.isCsQuest) under their own group, newest first, so they don't bury the
+  // teacher's own sets.
+  const own = sets.mine.filter(s => !s.cs), csq = sets.mine.filter(s => s.cs);
   const ids = bank ? bank.subjects.map(x => x.id) : [];
+  // P6: a ?starter= from a lesson plan (routes/live.js starterPre) beats what the host chose last time.
+  const st = pre.starter || null;
+  const stBank = st && st.kind === 'bank' ? st.bank : null, wy = st && st.kind === 'wyr' ? st.wyr : null, at = st && st.kind === 'atlas' ? st.atlas : null;
+  const want = stBank ? { subject: stBank.subject, level: stBank.level, count: stBank.count, board: stBank.subjects } : lastBank;
   const bk = {
-    subject: lastBank.subject === 'mixed' || ids.includes(lastBank.subject) ? lastBank.subject : 'mixed',
-    level: ['a6', 'a8', 'a10', 'a12'].includes(lastBank.level) ? lastBank.level : 'a8',
-    count: bank && bank.counts.includes(lastBank.count) ? lastBank.count : 10,
-    board: Array.isArray(lastBank.board) && lastBank.board.filter(x => ids.includes(x)).length >= 2 ? lastBank.board.filter(x => ids.includes(x)) : ids.slice(0, 5),
+    subject: want.subject === 'mixed' || ids.includes(want.subject) ? want.subject : 'mixed',
+    level: ['a6', 'a8', 'a10', 'a12'].includes(want.level) ? want.level : 'a8',
+    count: bank && bank.counts.includes(want.count) ? want.count : 10,
+    board: Array.isArray(want.board) && want.board.filter(x => ids.includes(x)).length >= 2 ? want.board.filter(x => ids.includes(x)) : ids.slice(0, 5),
   };
+  // Would You Rather Live / Atlas Quest Live options: the starter's, else every topic (a mix), 10 at 15 s / 20 s.
+  const wyrOn = id => !wy || !wy.topics.length || wy.topics.includes(id);
+  const wyrCount = wy ? wy.count : 10, wyrSecs = wy ? wy.secs : 15;
+  const atlasOn = (id, i) => (at ? at.kinds.includes(id) : i < 3);
+  const atlasSel = (k, dflt) => (at ? at[k] : dflt);
   const audiences = [classes.length ? 'class' : null, family ? 'family' : null, 'open'].filter(Boolean);
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
   return html`<div class="lv lv-landing" data-lv-page="landing">
@@ -471,24 +483,25 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   ${ch.on.map(x => html`<p class="notice lv-cohost-on" data-lv-cohost-on="${x.sid}">${t('live.cohost.landingOn', { title: x.title })} <a class="btn btn-sm" href="/live/host/${x.sid}/dash">${t('live.cohost.openDash')}</a></p>`)}
   <p class="muted">${t('live.landing.intro', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>
   <form class="stack" id="lv-new" data-api="/api/live/sessions" novalidate>
+    ${st ? html`<p class="notice lv-preset" id="lv-preset" data-starter="${st.id}">${t('live.cs.preset')}</p>` : ''}
     <fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
       ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true, m.cap, !!m.own))}
     </div></fieldset>
     ${wyr ? html`<fieldset class="lv-group lv-own" id="lv-wyr-opts" data-own-mode="wyr" hidden><legend>${t('live.wyrUi.legend')}</legend>
       <fieldset class="lv-bank-board"><legend>${t('live.wyrUi.topics')}</legend><div class="lv-bank-subs">
-        ${wyr.topics.map(x => html`<label class="lv-check"><input type="checkbox" name="wyrTopic" value="${x.id}" checked> ${x.name}</label>`)}</div>
+        ${wyr.topics.map(x => html`<label class="lv-check"><input type="checkbox" name="wyrTopic" value="${x.id}"${wyrOn(x.id) ? raw(' checked') : ''}> ${x.name}</label>`)}</div>
         <p class="small muted">${t('live.wyrUi.topicsHint')}</p></fieldset>
-      <div class="field"><label for="lv-wyr-count">${t('live.wyrUi.count')}</label><select id="lv-wyr-count" name="wyrCount">${wyr.counts.map(n => html`<option value="${n}"${n === 10 ? raw(' selected') : ''}>${n}</option>`)}</select></div>
-      <div class="field"><label for="lv-wyr-secs">${t('live.wyrUi.secs')}</label><select id="lv-wyr-secs" name="wyrSecs">${wyr.secs.map(n => html`<option value="${n}"${n === 15 ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+      <div class="field"><label for="lv-wyr-count">${t('live.wyrUi.count')}</label><select id="lv-wyr-count" name="wyrCount">${wyr.counts.map(n => html`<option value="${n}"${n === wyrCount ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+      <div class="field"><label for="lv-wyr-secs">${t('live.wyrUi.secs')}</label><select id="lv-wyr-secs" name="wyrSecs">${wyr.secs.map(n => html`<option value="${n}"${n === wyrSecs ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
       <p class="small muted">${t('live.wyrUi.hint')}</p>
     </fieldset>` : ''}
     ${atlas ? html`<fieldset class="lv-group lv-own" id="lv-atlas-opts" data-own-mode="atlas" hidden><legend>${t('live.atlasUi.legend')}</legend>
-      <div class="field"><label for="lv-atlas-region">${t('live.atlasUi.region')}</label><select id="lv-atlas-region" name="atlasRegion">${atlas.regions.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select></div>
-      <div class="field"><label for="lv-atlas-level">${t('live.atlasUi.level')}</label><select id="lv-atlas-level" name="atlasLevel">${atlas.levels.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select></div>
+      <div class="field"><label for="lv-atlas-region">${t('live.atlasUi.region')}</label><select id="lv-atlas-region" name="atlasRegion">${atlas.regions.map(x => html`<option value="${x.id}"${x.id === atlasSel('region', 'world') ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      <div class="field"><label for="lv-atlas-level">${t('live.atlasUi.level')}</label><select id="lv-atlas-level" name="atlasLevel">${atlas.levels.map(x => html`<option value="${x.id}"${x.id === atlasSel('level', 'easy') ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
       <fieldset class="lv-bank-board"><legend>${t('live.atlasUi.kinds')}</legend><div class="lv-bank-subs">
-        ${atlas.kinds.map((x, i) => html`<label class="lv-check"><input type="checkbox" name="atlasKind" value="${x.id}"${i < 3 ? raw(' checked') : ''}> ${x.name}</label>`)}</div></fieldset>
-      <div class="field"><label for="lv-atlas-count">${t('live.atlasUi.count')}</label><select id="lv-atlas-count" name="atlasCount">${atlas.counts.map(n => html`<option value="${n}"${n === 10 ? raw(' selected') : ''}>${n}</option>`)}</select></div>
-      <div class="field"><label for="lv-atlas-secs">${t('live.atlasUi.secs')}</label><select id="lv-atlas-secs" name="atlasSecs">${atlas.secs.map(n => html`<option value="${n}"${n === 20 ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+        ${atlas.kinds.map((x, i) => html`<label class="lv-check"><input type="checkbox" name="atlasKind" value="${x.id}"${atlasOn(x.id, i) ? raw(' checked') : ''}> ${x.name}</label>`)}</div></fieldset>
+      <div class="field"><label for="lv-atlas-count">${t('live.atlasUi.count')}</label><select id="lv-atlas-count" name="atlasCount">${atlas.counts.map(n => html`<option value="${n}"${n === atlasSel('count', 10) ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+      <div class="field"><label for="lv-atlas-secs">${t('live.atlasUi.secs')}</label><select id="lv-atlas-secs" name="atlasSecs">${atlas.secs.map(n => html`<option value="${n}"${n === atlasSel('secs', 20) ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
       <p class="small muted">${t('live.atlasUi.hint')}</p>
     </fieldset>` : ''}
     ${groups.filter(g => g.games.length || !modes.length).map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams, x.cap))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
@@ -496,7 +509,8 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
       <div class="field"><label for="lv-set">${t('live.landing.questionsLabel')}</label>
         <select id="lv-set" name="set">
           ${bank ? html`<optgroup label="${t('live.bankUi.bankGroup')}"><option value="bank"${chosen === 'bank' ? raw(' selected') : ''}>${t('live.bankUi.bank')}</option></optgroup>` : ''}
-          ${sets.mine.length ? html`<optgroup label="${t('live.landing.mySets')}">${sets.mine.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
+          ${own.length ? html`<optgroup label="${t('live.landing.mySets')}">${own.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
+          ${csq.length ? html`<optgroup label="${t('live.cs.sets')}" data-csq="1">${csq.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}${s.ready ? '' : ` (${t('live.sets.draft')})`}</option>`)}</optgroup>` : ''}
           ${sets.school.length ? html`<optgroup label="${t('live.landing.schoolSets')}">${sets.school.map(s => html`<option value="set:${s.id}"${s.ready ? '' : raw(' disabled')}${chosen === `set:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>` : ''}
           ${pre.set && pre.set.startsWith('starter:') ? html`<optgroup label="${t('live.landing.starters')}">${starters.map(s => html`<option value="starter:${s.id}"${pre.set === `starter:${s.id}` ? raw(' selected') : ''}>${s.title}</option>`)}</optgroup>` : ''}
         </select></div>

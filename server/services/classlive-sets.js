@@ -9,6 +9,16 @@ import * as L from './lessons.js';
 
 export const LIMITS = { items: 100, q: 300, choice: 120, title: 80, cat: 40, bytes: 120 * 1024 };
 export const SECS = [5, 10, 15, 20, 30, 45, 60, 90, 120];
+/**
+ * CS Quest's derived sets (P20): the lesson materialiser (server/services/lesson-templates.js) makes a warm-up, an exit
+ * ticket and a unit review per lesson in the teacher's own sets, 35+ of them per band. They are grouped under one
+ * "CS Quest" optgroup in the /live picker instead of cluttering "My sets". A set is CS Quest's when the materialiser
+ * says so with subject 'cs-quest' (the program slug), or when it was made from a lesson (lesson_id) and its title
+ * carries the plan's prefix ('CSQ 1.2 warm-up · Loops (3-5)', 'CSQ Unit 1 review (6-8)').
+ */
+export const CSQ_SUBJECT = 'cs-quest';
+export const CSQ_PREFIX = 'CSQ ';
+export const isCsQuest = r => !!r && (r.subject === CSQ_SUBJECT || (!!r.lesson_id && String(r.title || '').startsWith(CSQ_PREFIX)));
 
 const fail = code => ({ ok: false, code });
 export const getSet = id => (id ? q.get('SELECT * FROM live_sets WHERE id=?', String(id)) : null) || null;
@@ -99,7 +109,7 @@ export function listFor(u) {
   const mine = q.all('SELECT * FROM live_sets WHERE owner_id=? AND archived_at IS NULL ORDER BY updated_at DESC LIMIT 200', u.id);
   const school = S.isSchoolStaff(u) ? q.all(`SELECT l.* FROM live_sets l JOIN school_members m ON m.school_id=l.school_id AND m.user_id=? AND m.status='active' AND m.role!='student'
     WHERE l.shared=1 AND l.archived_at IS NULL AND l.owner_id!=? ORDER BY l.updated_at DESC LIMIT 200`, u.id, u.id) : [];
-  const shape = r => { const its = itemsOf(r); return { id: r.id, title: r.title, subject: r.subject, grade: r.grade, count: its.length, ready: its.length > 0 && its.every(complete), shared: !!r.shared, mine: r.owner_id === u.id }; };
+  const shape = r => { const its = itemsOf(r); return { id: r.id, title: r.title, subject: r.subject, grade: r.grade, count: its.length, ready: its.length > 0 && its.every(complete), shared: !!r.shared, mine: r.owner_id === u.id, cs: isCsQuest(r) }; };
   return { mine: mine.map(shape), school: school.map(shape) };
 }
 /** A draft set from a lesson's question steps (up to 50): the questions only; the teacher adds the choices. */
