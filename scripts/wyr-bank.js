@@ -18,7 +18,8 @@ const SRC = path.join(ROOT, 'scripts/data/would-you-rather');
 const OUT = path.join(ROOT, 'public/vendor/data/would-you-rather');
 const GAME = path.join(ROOT, 'seed-games/would-you-rather.html');
 export const TAGS = ['brave', 'think', 'make', 'animal', 'food', 'fast', 'kind', 'calm', 'fun', 'nature', 'tech', 'social'];
-export const CATS = ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep'];
+// tech and online: the CS Quest topics (lessons 6.1 and 6.3; prompts and CSTA ids in seed-lessons/cs-quest/wyr-tech.json).
+export const CATS = ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep', 'tech', 'online'];
 
 const read = f => JSON.parse(fs.readFileSync(path.join(SRC, f), 'utf8'));
 const en = read('en.json').items, ui = read('ui.json');
@@ -27,11 +28,16 @@ const ids = new Set();
 for (const it of en) {
   if (ids.has(it.id)) fail(`duplicate id ${it.id}`); ids.add(it.id);
   if (!CATS.includes(it.cat)) fail(`${it.id}: unknown category ${it.cat}`);
+  if (!it.id.startsWith(`${it.cat}-`)) fail(`${it.id}: the id does not start with its category`);
   for (const o of [it.a, it.b]) {
     if (!o.text || o.text.length > 60) fail(`${it.id}: an option is empty or over 60 characters`);
+    // No runs of two or more digits (a single one, as in "3D", is fine): nothing here may read as a number, a year or
+    // a code when it is shown on a class screen.
+    if (/\d{2,}/.test(o.text)) fail(`${it.id}: an option has a run of digits`);
     for (const t of o.tags) if (!TAGS.includes(t)) fail(`${it.id}: unknown tag ${t}`);
   }
 }
+for (const lang of Object.keys(ui)) for (const c of CATS) if (lang !== 'en-GB' && !ui[lang][`cat.${c}`]) fail(`ui.json ${lang} has no name for the topic ${c}`);
 // The English bank in the game: [id, cat, aText, aTags, bText, bTags] (tags as one string).
 const bank = en.map(it => [it.id, it.cat, it.a.text, it.a.tags.join(' '), it.b.text, it.b.tags.join(' ')]);
 

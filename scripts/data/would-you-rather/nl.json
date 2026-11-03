@@ -7451,6 +7451,546 @@
      "think"
     ]
    }
+  },
+  {
+   "id": "tech-1",
+   "cat": "tech",
+   "a": {
+    "text": "Een robot die je kamer opruimt",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een robot die je avondeten kookt",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-2",
+   "cat": "tech",
+   "a": {
+    "text": "Een telefoon die nooit opgeladen hoeft",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Internet dat nooit uitvalt",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-3",
+   "cat": "tech",
+   "a": {
+    "text": "Een zelfrijdende schoolbus",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een bus met een chauffeur die je kent",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "tech-4",
+   "cat": "tech",
+   "a": {
+    "text": "Leren van een video die je kunt pauzeren",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Leren van iemand aan wie je iets kunt vragen",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-5",
+   "cat": "tech",
+   "a": {
+    "text": "Een horloge dat je stappen telt",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een horloge dat zegt dat je water moet drinken",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "tech-6",
+   "cat": "tech",
+   "a": {
+    "text": "Elke dag videobellen met opa en oma",
+    "tags": [
+     "social",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Ze één keer per maand bezoeken",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "tech-7",
+   "cat": "tech",
+   "a": {
+    "text": "Een spraakhulp die alles weet",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een die alleen luistert als je op een knop drukt",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-8",
+   "cat": "tech",
+   "a": {
+    "text": "Een gratis spel met reclame",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een spel dat je één keer koopt, zonder reclame",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "tech-9",
+   "cat": "tech",
+   "a": {
+    "text": "Een week in een stad zonder internet",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Een week in een stad zonder auto’s",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "tech-10",
+   "cat": "tech",
+   "a": {
+    "text": "Een robotjuf of -meester voor een dag",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Een robotscheidsrechter bij een wedstrijd",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-11",
+   "cat": "tech",
+   "a": {
+    "text": "Een kaart-app die je route kiest",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een papieren kaart en je eigen keuzes",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "tech-12",
+   "cat": "tech",
+   "a": {
+    "text": "Elke taal vertalen met je telefoon",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Eén taal echt goed leren",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "tech-13",
+   "cat": "tech",
+   "a": {
+    "text": "Een printer die nieuw speelgoed maakt",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Een printer die onderdelen maakt om dingen te repareren",
+    "tags": [
+     "make",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "tech-14",
+   "cat": "tech",
+   "a": {
+    "text": "Een koptelefoon die alle geluid tegenhoudt",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een koptelefoon die veilige geluiden doorlaat",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-15",
+   "cat": "tech",
+   "a": {
+    "text": "Een drone die je lunch bezorgt",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een vriend die hem op de fiets brengt",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "tech-16",
+   "cat": "tech",
+   "a": {
+    "text": "Een slimme koelkast die eten bestelt",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Een boodschappenlijstje op papier",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-17",
+   "cat": "tech",
+   "a": {
+    "text": "Elke les op een tablet",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Elke les op papier",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "tech-18",
+   "cat": "tech",
+   "a": {
+    "text": "Een robotarm die een dokter helpt",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een robot die een boer helpt",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-19",
+   "cat": "tech",
+   "a": {
+    "text": "Computers die liedjes schrijven",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Computers die alleen liedjes van mensen spelen",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "tech-20",
+   "cat": "tech",
+   "a": {
+    "text": "Een baan waarin je robots bouwt",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een baan waarin je robots repareert",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "online-1",
+   "cat": "online",
+   "a": {
+    "text": "Iedereen online kan je tekening zien",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Alleen je familie kan hem zien",
+    "tags": [
+     "social",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "online-2",
+   "cat": "online",
+   "a": {
+    "text": "Eén foto delen met de hele wereld",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Tien foto’s delen met tien vrienden",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "online-3",
+   "cat": "online",
+   "a": {
+    "text": "Een online bijnaam die niemand kent",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Je echte voornaam online",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "online-4",
+   "cat": "online",
+   "a": {
+    "text": "Een gratis app die weet waar je bent",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Een app die iets kost en het nooit weet",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "online-5",
+   "cat": "online",
+   "a": {
+    "text": "Voor elke download een volwassene vragen",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Nooit iets downloaden",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "online-6",
+   "cat": "online",
+   "a": {
+    "text": "Een vriend je wachtwoord geven zodat hij helpt",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Het zelf oplossen en er langer over doen",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "online-7",
+   "cat": "online",
+   "a": {
+    "text": "Je foto’s alleen op je tablet bewaren",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Ook een kopie op een veilige plek bewaren",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "online-8",
+   "cat": "online",
+   "a": {
+    "text": "Een plaatje van een ander gebruiken en de naam noemen",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Zelf tekenen, ook al is het minder mooi",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "online-9",
+   "cat": "online",
+   "a": {
+    "text": "Een klassenpagina waar iedereen kan reageren",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Een waar alleen je klas kan reageren",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "online-10",
+   "cat": "online",
+   "a": {
+    "text": "Een oud bericht verwijderen waar je je voor schaamt",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Het laten staan en erom lachen",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
   }
  ]
 }

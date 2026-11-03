@@ -242,3 +242,41 @@ test('kid-safe text: no digit runs, handles or links; US spelling; the real scan
   const r = scanVersion(probe);
   assert.equal(r.status, 'pass', JSON.stringify(r.issues || r, null, 1));
 });
+
+// ---------------------------------------------------------------- Would You Rather (plan §7): seed-lessons/cs-quest/wyr-tech.json
+// The dilemmas live in the official game's bank (scripts/data/would-you-rather, topics tech and online, checked in
+// tests/unit/live-wyr-atlas.test.js); this file adds the teacher's prompt after each reveal and the CSTA ids.
+const WYR = await import('../../server/live/wyr.js');
+const WYR_FILE = path.join(ROOT, 'seed-lessons/cs-quest/wyr-tech.json');
+
+test('wyr-tech.json: the two CS Quest sets name every dilemma of their topic, with a prompt and real CSTA ids; starters parse', () => {
+  const doc = JSON.parse(fs.readFileSync(WYR_FILE, 'utf8'));
+  assert.equal(doc.program, 'cs-quest'); assert.equal(doc.kind, 'wyr');
+  const bank = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/would-you-rather/en.json'), 'utf8')).items;
+  const expect = [['wyr-tech', 'tech', '6.1', 'wyr:tech:8:20', 20], ['wyr-online', 'online', '6.3', 'wyr:online:8:20', 10]];
+  assert.deepEqual(doc.sets.map(s => [s.id, s.topic, s.lesson, s.starter, s.items.length]), expect);
+  for (const s of doc.sets) {
+    assert.ok(WYR.TOPICS.includes(s.topic), `${s.id}: ${s.topic} is a live topic`);
+    const p = WYR.parseId(s.starter);
+    assert.deepEqual(p && p.topics, [s.topic], `${s.id}: its starter hosts its topic`);
+    assert.equal(p.secs, 20);
+    if (s.blockDayStarter) assert.deepEqual(WYR.parseId(s.blockDayStarter).topics, [s.topic]);
+    // exactly the bank's dilemmas of that topic, in the bank's order
+    assert.deepEqual(s.items.map(it => it.id), bank.filter(it => it.cat === s.topic).map(it => it.id), `${s.id}: ids match the bank`);
+    const used = new Set();
+    for (const it of s.items) {
+      assert.ok(typeof it.prompt === 'string' && it.prompt.length >= 8 && it.prompt.length <= 300 && /\?$/.test(it.prompt), `${it.id}: a prompt that asks something`);
+      for (const [re, why] of BAD) assert.ok(!re.test(it.prompt), `${it.id} has ${why}`);
+      assert.ok(!UK.test(it.prompt), `${it.id}: US spelling please: ${it.prompt}`);
+      assert.ok(Array.isArray(it.csta) && it.csta.length >= 1, `${it.id}: csta ids`);
+      for (const id of it.csta) { assert.ok(BY_ID.has(id), `${it.id}: ${id} is a CSTA 2017 id`); assert.ok(s.cstaTags.includes(id), `${it.id}: ${id} is in ${s.id}'s cstaTags`); used.add(id); }
+    }
+    assert.deepEqual([...s.cstaTags].sort(), [...used].sort(), `${s.id}: cstaTags are exactly the ids its dilemmas practice`);
+    assert.ok(s.cstaTags.some(id => BY_ID.get(id).level === '1B') && s.cstaTags.some(id => BY_ID.get(id).level === '2'), `${s.id}: both bands`);
+  }
+  // the scaffold and every prompt pass the real scanner (no personal-info or family-code prompts, no contact info)
+  const strings = [...doc.sets.flatMap(s => s.items.map(it => it.prompt)), ...doc.scaffold.both, ...Object.values(doc.scaffold['2']), doc.scaffold.defend];
+  const r = scanVersion(`<title>T</title><canvas></canvas><script>const S=${JSON.stringify(strings)};</script>`);
+  assert.equal(r.status, 'pass', JSON.stringify(r.issues || r, null, 1));
+  assert.ok(!strings.some(s => /CS Quest/.test(s)), 'kids never hear the program name');
+});

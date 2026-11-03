@@ -7451,6 +7451,546 @@
      "think"
     ]
    }
+  },
+  {
+   "id": "tech-1",
+   "cat": "tech",
+   "a": {
+    "text": "Un robot che pulisce la tua stanza",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un robot che cucina la tua cena",
+    "tags": [
+     "food",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-2",
+   "cat": "tech",
+   "a": {
+    "text": "Un telefono che non va mai ricaricato",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Internet che non cade mai",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-3",
+   "cat": "tech",
+   "a": {
+    "text": "Uno scuolabus che si guida da solo",
+    "tags": [
+     "brave",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un autobus con un autista che conosci",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "tech-4",
+   "cat": "tech",
+   "a": {
+    "text": "Imparare da un video che puoi mettere in pausa",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Imparare da una persona a cui puoi chiedere",
+    "tags": [
+     "social",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-5",
+   "cat": "tech",
+   "a": {
+    "text": "Un orologio che conta i tuoi passi",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un orologio che ti ricorda di bere acqua",
+    "tags": [
+     "kind",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "tech-6",
+   "cat": "tech",
+   "a": {
+    "text": "Videochiamare i nonni ogni giorno",
+    "tags": [
+     "social",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Andare a trovarli una volta al mese",
+    "tags": [
+     "kind",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "tech-7",
+   "cat": "tech",
+   "a": {
+    "text": "Un assistente vocale che sa tutto",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Uno che ascolta solo se premi un pulsante",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-8",
+   "cat": "tech",
+   "a": {
+    "text": "Un gioco gratis ma con le pubblicità",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un gioco che paghi una volta, senza pubblicità",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "tech-9",
+   "cat": "tech",
+   "a": {
+    "text": "Una settimana in una città senza internet",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Una settimana in una città senza auto",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "tech-10",
+   "cat": "tech",
+   "a": {
+    "text": "Un robot maestro per un giorno",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Un robot arbitro per una partita",
+    "tags": [
+     "fun",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-11",
+   "cat": "tech",
+   "a": {
+    "text": "Un’app di mappe che sceglie la strada",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Una mappa di carta e le tue scelte",
+    "tags": [
+     "think",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "tech-12",
+   "cat": "tech",
+   "a": {
+    "text": "Tradurre ogni lingua con il telefono",
+    "tags": [
+     "tech",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Imparare davvero bene una sola lingua",
+    "tags": [
+     "think",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "tech-13",
+   "cat": "tech",
+   "a": {
+    "text": "Una stampante che crea giocattoli nuovi",
+    "tags": [
+     "fun",
+     "make"
+    ]
+   },
+   "b": {
+    "text": "Una stampante che crea pezzi per riparare le cose",
+    "tags": [
+     "make",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "tech-14",
+   "cat": "tech",
+   "a": {
+    "text": "Cuffie che bloccano ogni rumore",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Cuffie che lasciano passare i suoni utili",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-15",
+   "cat": "tech",
+   "a": {
+    "text": "Un drone che ti porta il pranzo",
+    "tags": [
+     "fast",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un amico che te lo porta in bici",
+    "tags": [
+     "social",
+     "kind"
+    ]
+   }
+  },
+  {
+   "id": "tech-16",
+   "cat": "tech",
+   "a": {
+    "text": "Un frigo intelligente che ordina il cibo",
+    "tags": [
+     "tech",
+     "food"
+    ]
+   },
+   "b": {
+    "text": "Una lista della spesa su carta",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "tech-17",
+   "cat": "tech",
+   "a": {
+    "text": "Tutte le lezioni su un tablet",
+    "tags": [
+     "tech",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Tutte le lezioni su carta",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "tech-18",
+   "cat": "tech",
+   "a": {
+    "text": "Un braccio robot che aiuta un medico",
+    "tags": [
+     "kind",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un robot che aiuta un contadino",
+    "tags": [
+     "nature",
+     "tech"
+    ]
+   }
+  },
+  {
+   "id": "tech-19",
+   "cat": "tech",
+   "a": {
+    "text": "Computer che scrivono canzoni",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Computer che suonano solo canzoni scritte da persone",
+    "tags": [
+     "think",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "tech-20",
+   "cat": "tech",
+   "a": {
+    "text": "Un lavoro: costruire robot",
+    "tags": [
+     "make",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un lavoro: riparare robot",
+    "tags": [
+     "tech",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "online-1",
+   "cat": "online",
+   "a": {
+    "text": "Tutti online possono vedere il tuo disegno",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Solo la tua famiglia può vederlo",
+    "tags": [
+     "social",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "online-2",
+   "cat": "online",
+   "a": {
+    "text": "Condividere una foto con il mondo intero",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Condividere dieci foto con dieci amici",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "online-3",
+   "cat": "online",
+   "a": {
+    "text": "Un soprannome online che nessuno conosce",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Il tuo vero nome online",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "online-4",
+   "cat": "online",
+   "a": {
+    "text": "Un’app gratis se sa dove sei",
+    "tags": [
+     "think",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Un’app che costa poco e non lo sa mai",
+    "tags": [
+     "calm",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "online-5",
+   "cat": "online",
+   "a": {
+    "text": "Chiedere a un adulto prima di ogni download",
+    "tags": [
+     "kind",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Non scaricare mai niente",
+    "tags": [
+     "calm",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "online-6",
+   "cat": "online",
+   "a": {
+    "text": "Dire la tua password a un amico perché ti aiuti",
+    "tags": [
+     "brave",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Risolvere da solo e metterci di più",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "online-7",
+   "cat": "online",
+   "a": {
+    "text": "Salvare le foto solo sul tuo tablet",
+    "tags": [
+     "calm",
+     "tech"
+    ]
+   },
+   "b": {
+    "text": "Tenere anche una copia in un posto sicuro",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   }
+  },
+  {
+   "id": "online-8",
+   "cat": "online",
+   "a": {
+    "text": "Usare un disegno di un altro e citarlo",
+    "tags": [
+     "make",
+     "social"
+    ]
+   },
+   "b": {
+    "text": "Disegnare il tuo, anche se viene peggio",
+    "tags": [
+     "kind",
+     "make"
+    ]
+   }
+  },
+  {
+   "id": "online-9",
+   "cat": "online",
+   "a": {
+    "text": "Una pagina di classe dove tutti commentano",
+    "tags": [
+     "social",
+     "brave"
+    ]
+   },
+   "b": {
+    "text": "Una dove commenta solo la tua classe",
+    "tags": [
+     "calm",
+     "social"
+    ]
+   }
+  },
+  {
+   "id": "online-10",
+   "cat": "online",
+   "a": {
+    "text": "Cancellare un vecchio post imbarazzante",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   },
+   "b": {
+    "text": "Lasciarlo e riderci su",
+    "tags": [
+     "fun",
+     "calm"
+    ]
+   }
   }
  ]
 }

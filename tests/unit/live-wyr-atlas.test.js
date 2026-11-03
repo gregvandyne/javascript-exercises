@@ -4,8 +4,16 @@
 // classes: 30 players per session with bounded messages.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { reset, open, hostSocket, player, publish, official, liveHtml, teacher, kid, mum, q, call, sleep, LS } from './_live.js';
 
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const WYR_DIR = path.join(ROOT, 'scripts/data/would-you-rather');
+const LANGS = ['en', 'en-GB', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he'];
+// scripts/wyr-bank.js TAGS (not imported: that script builds the game when loaded)
+const WYR_TAGS = ['brave', 'think', 'make', 'animal', 'food', 'fast', 'kind', 'calm', 'fun', 'nature', 'tech', 'social'];
 const WYR = await import('../../server/live/wyr.js');
 const ATL = await import('../../server/live/atlas.js');
 const POLLS = await import('../../server/services/polls.js');
@@ -35,10 +43,61 @@ test('Would You Rather questions: the official bank, by topic, in every language
     assert.equal(it.answer, -1); assert.equal(it.choices.length, 2); assert.match(it.wyr, /^food-\d+$/); assert.equal(it.q, 'Tu préfères ?');
     assert.ok(it.choices.every(c => c && c.length < 140));
   }
-  for (const lang of ['en', 'en-GB', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he']) {
+  for (const lang of LANGS) {
     assert.equal(WYR.wyrItems('wyr:mix:20:15', lang).length, 20, lang);
     assert.equal(WYR.topicsFor(lang).length, WYR.TOPICS.length);
   }
+});
+
+test('CS Quest topics: tech (20) and online (10) in the bank, named in every language, hosted by the lesson starters', () => {
+  assert.equal(WYR.TOPICS.length, 13); assert.deepEqual(WYR.TOPICS.slice(-2), ['tech', 'online']);
+  const en = WYR.topicsFor('en');
+  assert.equal(en.find(x => x.id === 'tech').n, 20); assert.equal(en.find(x => x.id === 'online').n, 10);
+  assert.equal(en.find(x => x.id === 'tech').name, 'Tech choices'); assert.equal(en.find(x => x.id === 'online').name, 'Online: share or keep');
+  assert.equal(WYR.itemsFor('en').length, 444, 'the bank');
+  // cat.tech / cat.online in ui.json: a real name in each of the 13 languages (en-GB reads the English one)
+  for (const lang of LANGS) {
+    const ts = WYR.topicsFor(lang), tech = ts.find(x => x.id === 'tech'), online = ts.find(x => x.id === 'online');
+    assert.ok(tech.name && tech.name !== 'tech' && online.name && online.name !== 'online' && tech.name !== online.name, lang);
+    if (!['en', 'en-GB'].includes(lang)) assert.notEqual(tech.name, 'Tech choices', `${lang} names the topic in its own language`);
+    assert.equal(tech.n, 20, lang); assert.equal(online.n, 10, lang);
+  }
+  // the lesson starters: 6.1 wyr:tech:8:20 (CA-9), 6.3 wyr:online:8:20; both topics together for a block day
+  assert.deepEqual(WYR.parseId('wyr:tech:8:20'), { topics: ['tech'], count: 8, secs: 20 });
+  assert.deepEqual(WYR.parseId('wyr:online:8:20'), { topics: ['online'], count: 8, secs: 20 });
+  assert.deepEqual(WYR.parseId('wyr:tech+online:10:20').topics, ['tech', 'online']);
+  assert.equal(WYR.makeId({ topics: ['tech'], count: 8, secs: 20 }), 'wyr:tech:8:20');
+  assert.equal(WYR.makeId({ topics: ['online'], count: 8, secs: 20 }), 'wyr:online:8:20');
+  const tech = WYR.wyrItems('wyr:tech:8:20', 'en');
+  assert.equal(tech.length, 8); assert.ok(tech.every(it => /^tech-\d+$/.test(it.wyr) && it.secs === 20 && it.answer === -1 && it.choices.length === 2));
+  assert.equal(new Set(tech.map(it => it.wyr)).size, 8, 'no dilemma twice');
+  const online = WYR.wyrItems('wyr:online:10:20', 'ja');
+  assert.equal(online.length, 10); assert.ok(online.every(it => it.wyr.startsWith('online-')));
+  const enOnline = new Map(WYR.itemsFor('en').filter(it => it.cat === 'online').map(it => [it.id, it]));
+  assert.ok(online.every(it => it.choices[0] !== enOnline.get(it.wyr).a && it.choices[1] !== enOnline.get(it.wyr).b), 'translated, not the English fallback');
+  assert.equal(WYR.wyrItems('wyr:tech:20:20', 'en').length, 20, 'all twenty on a block day');
+  // the data rules (plan §7, CA-10): ids tech-1..20 / online-1..10 in order, a/b <= 60 characters, no run of 2+ digits,
+  // no handles or links, tags from the bank's list; every one of the 11 translation files translates every one of them
+  const src = JSON.parse(fs.readFileSync(path.join(WYR_DIR, 'en.json'), 'utf8')).items.filter(it => ['tech', 'online'].includes(it.cat));
+  assert.deepEqual(src.map(it => it.id), [...Array.from({ length: 20 }, (_, i) => `tech-${i + 1}`), ...Array.from({ length: 10 }, (_, i) => `online-${i + 1}`)]);
+  for (const it of src) for (const o of [it.a, it.b]) {
+    assert.ok(o.text.length >= 3 && o.text.length <= 60, `${it.id}: ${o.text}`);
+    assert.doesNotMatch(o.text, /\d{2,}|@|https?:|www\.|\/\//, it.id);
+    assert.ok(o.tags.length >= 1 && o.tags.every(tg => WYR_TAGS.includes(tg)), `${it.id}: tags ${o.tags}`);
+  }
+  const files = fs.readdirSync(WYR_DIR).filter(f => /^[a-z]{2}(-[A-Za-z]+)?\.json$/.test(f) && f !== 'en.json' && f !== 'ui.json');
+  assert.equal(files.length, 11, files.join(' '));
+  for (const f of files) {
+    const byId = new Map(JSON.parse(fs.readFileSync(path.join(WYR_DIR, f), 'utf8')).items.map(it => [it.id, it]));
+    for (const it of src) { const x = byId.get(it.id); assert.ok(x && x.a.text && x.b.text && x.a.text !== it.a.text, `${f} translates ${it.id}`); }
+  }
+  // the game and its live twin carry the rebuilt packs (scripts/wyr-bank.js): the same pinned version, tech/online in the game
+  const game = fs.readFileSync(path.join(ROOT, 'seed-games/would-you-rather.html'), 'utf8');
+  const live = fs.readFileSync(path.join(ROOT, 'seed-games/would-you-rather-live.html'), 'utf8');
+  const ver = /WYR_PACK_VER = "([^"]+)"/.exec(game)[1];
+  assert.equal(/WYR_PACK_VER = "([^"]+)"/.exec(live)[1], ver, 'both games pin the same pack version');
+  assert.ok(fs.existsSync(path.join(ROOT, 'public/vendor/data/would-you-rather', ver, 'fr.js')), `packs on disk for ${ver}`);
+  assert.match(game, /cats: \[[^\]]*'tech', 'online'\]/); assert.match(game, /"cat\.online":"Online: share or keep"/); assert.match(game, /\["tech-1","tech",/);
 });
 
 test('Atlas questions: the region, the level and the kinds; choices are every country in one order', () => {
@@ -164,7 +223,8 @@ test('the landing offers both, with their own options; a form makes the right qu
   reset();
   const page = await call('/live', { user: teacher });
   assert.equal(page.status, 200);
-  for (const re of [/value="mode:wyr"/, /value="mode:atlas"/, /id="lv-wyr-opts"/, /id="lv-atlas-opts"/, /name="wyrTopic" value="space"/, /name="atlasKind" value="flag"/]) assert.match(page.text, re);
+  for (const re of [/value="mode:wyr"/, /value="mode:atlas"/, /id="lv-wyr-opts"/, /id="lv-atlas-opts"/, /name="wyrTopic" value="space" checked/, /name="wyrTopic" value="tech" checked> Tech choices/, /name="wyrTopic" value="online" checked> Online: share or keep/, /name="atlasKind" value="flag"/]) assert.match(page.text, re);
+  assert.doesNotMatch(page.text, /id="lv-preset"/, 'no preset note without ?starter=');
   const r = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:atlas', atlasRegion: 'af', atlasLevel: 'hard', atlasKind: ['capital', 'famous'], atlasCount: '8', atlasSecs: '30', audience: 'open', set: 'bank' } });
   assert.equal(r.status, 200, r.text);
   const s = LS.get(r.json.sid);

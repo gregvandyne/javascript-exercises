@@ -1,0 +1,69 @@
+{
+ "program": "cs-quest",
+ "kind": "wyr",
+ "about": "Would You Rather (Live) for CS Quest unit 6 (plan section 7). The dilemmas themselves live in the official game's bank (scripts/data/would-you-rather/en.json, topics tech and online, translated in the 11 other data files); this file adds what the WYR format has no room for: the teacher's prompt after each reveal and the CSTA 2017 ids each dilemma practices. Unscored: the reveal is the class split plus the all-time split. The lesson materialiser links these starters from the Would You Rather (live) step; the prompts print with the lesson.",
+ "sets": [
+  {
+   "id": "wyr-tech",
+   "topic": "tech",
+   "title": "Tech choices",
+   "lesson": "6.1",
+   "band": "both",
+   "starter": "wyr:tech:8:20",
+   "blockDayStarter": "wyr:tech:10:20",
+   "cstaTags": ["1B-IC-18", "2-IC-20", "2-IC-23", "1B-IC-19", "2-IC-21", "1B-AP-14", "2-AP-16"],
+   "items": [
+    { "id": "tech-1", "prompt": "Who is helped? What would the robot need to sense?", "csta": ["1B-IC-18", "2-IC-20"] },
+    { "id": "tech-2", "prompt": "Which one changed how people live more?", "csta": ["1B-IC-18"] },
+    { "id": "tech-3", "prompt": "Who gains, who loses a job, who do you trust?", "csta": ["2-IC-20"] },
+    { "id": "tech-4", "prompt": "How has technology changed learning? What did it not change?", "csta": ["1B-IC-18"] },
+    { "id": "tech-5", "prompt": "What data does each collect? Who should see it?", "csta": ["2-IC-23"] },
+    { "id": "tech-6", "prompt": "What did people do before video calls?", "csta": ["1B-IC-18"] },
+    { "id": "tech-7", "prompt": "What is the tradeoff between handy and private?", "csta": ["2-IC-23"] },
+    { "id": "tech-8", "prompt": "How does the free game make money?", "csta": ["2-IC-20"] },
+    { "id": "tech-9", "prompt": "Which would change your day more? Why?", "csta": ["1B-IC-18"] },
+    { "id": "tech-10", "prompt": "What can a robot not do well here?", "csta": ["2-IC-20"] },
+    { "id": "tech-11", "prompt": "What skill might you lose? What do you gain?", "csta": ["2-IC-20"] },
+    { "id": "tech-12", "prompt": "How might this change jobs for translators?", "csta": ["2-IC-20"] },
+    { "id": "tech-13", "prompt": "Which helps more people?", "csta": ["1B-IC-18"] },
+    { "id": "tech-14", "prompt": "Who needs to hear the street? Who needs quiet?", "csta": ["1B-IC-19"] },
+    { "id": "tech-15", "prompt": "What job changes? What is nicer?", "csta": ["2-IC-20"] },
+    { "id": "tech-16", "prompt": "What does the fridge know about you?", "csta": ["2-IC-23"] },
+    { "id": "tech-17", "prompt": "What is better on each? Who is left out by each?", "csta": ["1B-IC-19", "2-IC-21"] },
+    { "id": "tech-18", "prompt": "Which jobs change? Which get safer?", "csta": ["2-IC-20"] },
+    { "id": "tech-19", "prompt": "Who should get the credit for a computer-made song?", "csta": ["1B-AP-14", "2-AP-16"] },
+    { "id": "tech-20", "prompt": "Which skills from this program does each need?", "csta": ["2-IC-20"] }
+   ]
+  },
+  {
+   "id": "wyr-online",
+   "topic": "online",
+   "title": "Online: share or keep",
+   "lesson": "6.3",
+   "band": "both",
+   "starter": "wyr:online:8:20",
+   "cstaTags": ["2-IC-23", "1B-IC-21", "1B-NI-05", "2-NI-05", "1B-AP-14"],
+   "items": [
+    { "id": "online-1", "prompt": "What could go right? What could go wrong?", "csta": ["2-IC-23", "1B-IC-21"] },
+    { "id": "online-2", "prompt": "Who else might see them later?", "csta": ["2-IC-23"] },
+    { "id": "online-3", "prompt": "What does a stranger learn from a real name?", "csta": ["1B-NI-05", "2-IC-23"] },
+    { "id": "online-4", "prompt": "What are you paying with?", "csta": ["2-IC-23"] },
+    { "id": "online-5", "prompt": "What is the middle path?", "csta": ["1B-NI-05"] },
+    { "id": "online-6", "prompt": "Who may know your passphrase?", "csta": ["1B-NI-05", "2-NI-05"] },
+    { "id": "online-7", "prompt": "What happens when the tablet breaks?", "csta": ["1B-NI-05", "2-NI-05"] },
+    { "id": "online-8", "prompt": "What does credit do for the artist?", "csta": ["1B-IC-21", "1B-AP-14"] },
+    { "id": "online-9", "prompt": "Who might comment? Who moderates?", "csta": ["2-IC-23"] },
+    { "id": "online-10", "prompt": "Is anything online ever really gone?", "csta": ["2-IC-23"] }
+   ]
+  }
+ ],
+ "scaffold": {
+  "both": ["Who chose A and why?", "What could go wrong with A? With B?"],
+  "2": {
+   "wyr-tech": "Who is helped, who is hurt, what job changes?",
+   "wyr-online": "What is public, what is private, who else could see it?"
+  },
+  "defend": "Defend on every other reveal: one student for A, one for B, thirty seconds each.",
+  "note": "The tech set keeps 20 dilemmas; the lesson hosts 8 at 20 seconds (CA-9). Teachers may host 10 on a block day."
+ }
+}
