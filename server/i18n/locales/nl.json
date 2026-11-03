@@ -4570,9 +4570,9 @@
       "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst.",
       "board": "Breinbord",
       "boardText": "Een bord vol categorieën: kies een vakje en iedereen antwoordt. Grotere vakjes zijn moeilijker en leveren meer op, en een verstopte Geluksster verdubbelt de punten.",
-      "wyr": "Wat heb je liever? live",
+      "wyr": "Wat heb je liever? (Live)",
       "wyrText": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden, geen punten: gewoon praten.",
-      "atlas": "Atlas Quest live",
+      "atlas": "Atlas Quest (Live)",
       "atlasText": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land zelf, de vlag, de hoofdstad of waar het beroemd om is. Er net naast levert ook een beetje op."
     },
     "starter": {
@@ -5343,7 +5343,7 @@
       "bankHint": "Elk spel nieuwe vragen, geschreven voor elke leeftijd."
     },
     "wyrUi": {
-      "legend": "Wat heb je liever? live",
+      "legend": "Wat heb je liever? (Live)",
       "topics": "Onderwerpen",
       "topicsHint": "Laat ze allemaal aangevinkt voor een mix.",
       "count": "Hoeveel dilemma’s",
@@ -5352,7 +5352,7 @@
       "hint": "Na elke stemming ziet de klas de verdeling: een goed moment om een paar kinderen te vragen waarom ze dat kozen."
     },
     "atlasUi": {
-      "legend": "Atlas Quest live",
+      "legend": "Atlas Quest (Live)",
       "region": "Waar op de wereld",
       "level": "Niveau",
       "kinds": "Soorten vragen",
@@ -5469,11 +5469,11 @@
         "p": "Een bord vol categorieën op het scherm. Kies een vakje (of laat het snelste goede antwoord kiezen) en de vraag gaat open op elk apparaat. Moeilijkere vakjes leveren meer op, en een verstopte Geluksster verdubbelt de punten."
       },
       "wyr": {
-        "h": "Wat heb je liever? live",
+        "h": "Wat heb je liever? (Live)",
         "p": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden en geen punten: een kant-en-klaar gespreksonderwerp."
       },
       "atlas": {
-        "h": "Atlas Quest live",
+        "h": "Atlas Quest (Live)",
         "p": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land, de vlag, de hoofdstad of waar het beroemd om is. Het grote scherm laat zien waar de hele klas tikte, en er net naast telt ook."
       }
     },

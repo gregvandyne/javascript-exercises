@@ -125,8 +125,14 @@ test('Atlas Quest Live with 30 players: taps scored by the server (right, near, 
   assert.equal(qm.choices.length, 195);
   // the flag to show and the region to open on, as shared state (never in the question)
   const atl = s.state.atl;
-  assert.equal(atl.i, qm.i); assert.equal(atl.k, 'flag'); assert.equal(atl.reg, 'eu'); assert.equal(ATL.codes().indexOf(atl.fl), s.qz.cur.answer);
-  assert.ok(!qm.q.includes(ATL.countryName(atl.fl, 'en')));
+  assert.equal(atl.i, qm.i); assert.equal(atl.k, 'flag'); assert.equal(atl.reg, 'eu');
+  // the flag's country code goes to the projector only: never in the shared state, a phone's messages or its welcome
+  assert.equal(atl.fl, undefined);
+  assert.equal(s.projState.atlf.i, qm.i); assert.equal(ATL.codes().indexOf(s.projState.atlf.fl), s.qz.cur.answer);
+  const flagCode = s.projState.atlf.fl;
+  assert.ok(ps.every(p => !p.msgs.some(m => m.t === 'st' && m.d && m.d.atlf)), 'no atlf to phones');
+  await sleep(50); assert.ok(h.msgs.some(m => m.t === 'st' && m.d && m.d.atlf && m.d.atlf.fl === flagCode), 'the projector gets it: ' + JSON.stringify(h.msgs.filter(m => m.t === 'st')).slice(0, 300));
+  assert.ok(!qm.q.includes(ATL.countryName(flagCode, 'en')));
   const answer = s.qz.cur.answer, codes = ATL.codes();
   const near = codes.indexOf((ATL.data().C[answer][11] || '').split(',').filter(Boolean)[0] || 'ZZ');
   const far = codes.indexOf(codes[answer] === 'JP' ? 'BR' : 'JP');

@@ -107,7 +107,12 @@ export function ask(s, io, i) {
   s.qz.cur = { i, q: it.q, choices: order.map(k => it.choices[k]), answer: order.indexOf(it.answer), secs: it.secs, base: it.secs, own: it.own || it.secs, at, deadline: at + it.secs * 1000 + GRACE_MS, teamAt: T.snapshot(s), wyr: it.wyr || null, atlas: it.atlas || null };
   s.qz.answers = new Map();
   // Atlas Quest Live: the flag to show (a flag question) and the region the maps open on, as shared state.
-  if (isMap(s) && io.publish) io.publish(s, { atl: { i, k: (it.atlas && it.atlas.k) || 'find', reg: (it.atlas && it.atlas.reg) || 'world', ...(it.atlas && it.atlas.fl ? { fl: it.atlas.fl } : {}) } });
+  // The flag's country code goes to the projector only (io.projectorState): a phone gets the region and the kind, never
+  // the code, so a flag question can't be answered from the page's data.
+  if (isMap(s) && io.publish) {
+    io.publish(s, { atl: { i, k: (it.atlas && it.atlas.k) || 'find', reg: (it.atlas && it.atlas.reg) || 'world' } });
+    if (io.projectorState) io.projectorState(s, { atlf: it.atlas && it.atlas.fl ? { i, fl: it.atlas.fl } : null });
+  }
   io.setPhase(s, 'playing', { at });
   sendQuestion(s, io);
   io.toDash(s, D.dqMsg(s));

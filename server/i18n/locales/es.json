@@ -4569,9 +4569,9 @@
       "battleText": "Preguntas en la pantalla grande, respuestas en cada dispositivo y una clasificación después de cada una.",
       "board": "Tablero Cerebro",
       "boardText": "Un tablero de categorías: elige una casilla y todos responden. Las casillas más altas son más difíciles y valen más, y una Estrella de la suerte escondida duplica los puntos.",
-      "wyr": "¿Qué prefieres? en vivo",
+      "wyr": "¿Qué prefieres? (En vivo)",
       "wyrText": "La clase vota dilemas divertidos y ve cómo se reparte, y qué eligió todo el mundo en Oomba. Sin respuestas correctas ni puntos: solo para conversar.",
-      "atlas": "Atlas Quest en vivo",
+      "atlas": "Atlas Quest (En vivo)",
       "atlasText": "Todos tocan el país en su propio mapa del mundo: encuéntralo, su bandera, su capital o por qué es famoso. Acercarse también suma un poco."
     },
     "starter": {
@@ -5342,7 +5342,7 @@
       "bankHint": "Preguntas nuevas en cada partida, escritas para cada edad."
     },
     "wyrUi": {
-      "legend": "¿Qué prefieres? en vivo",
+      "legend": "¿Qué prefieres? (En vivo)",
       "topics": "Temas",
       "topicsHint": "Déjalos todos marcados para una mezcla.",
       "count": "Cuántos dilemas",
@@ -5351,7 +5351,7 @@
       "hint": "Después de cada votación la clase ve el resultado: buen momento para preguntar a algunos niños por qué lo eligieron."
     },
     "atlasUi": {
-      "legend": "Atlas Quest en vivo",
+      "legend": "Atlas Quest (En vivo)",
       "region": "En qué parte del mundo",
       "level": "Nivel",
       "kinds": "Tipos de pregunta",
@@ -5468,11 +5468,11 @@
         "p": "Un tablero de categorías en la pantalla. Elija una casilla (o deje que elija quien acierte más rápido) y su pregunta se abre en todos los dispositivos. Las casillas más difíciles valen más, y una Estrella de la suerte escondida duplica los puntos."
       },
       "wyr": {
-        "h": "¿Qué prefieres? en vivo",
+        "h": "¿Qué prefieres? (En vivo)",
         "p": "La clase vota dilemas divertidos y ve cómo se reparte, y qué eligió todo el mundo en Oomba. Sin respuestas correctas ni puntos: una conversación lista para empezar."
       },
       "atlas": {
-        "h": "Atlas Quest en vivo",
+        "h": "Atlas Quest (En vivo)",
         "p": "Todos tocan el país en su propio mapa del mundo: el país, su bandera, su capital o por qué es famoso. La pantalla grande muestra dónde tocó toda la clase, y acercarse también suma."
       }
     },

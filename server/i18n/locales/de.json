@@ -4570,9 +4570,9 @@
       "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste.",
       "board": "Denkbrett",
       "boardText": "Ein Brett mit Kategorien: Feld wählen, alle antworten. Größere Felder sind schwerer und bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte.",
-      "wyr": "Was wäre dir lieber? live",
+      "wyr": "Was wäre dir lieber? (Live)",
       "wyrText": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: einfach darüber reden.",
-      "atlas": "Atlas Quest live",
+      "atlas": "Atlas Quest (Live)",
       "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte."
     },
     "starter": {
@@ -5343,7 +5343,7 @@
       "bankHint": "Jedes Spiel neue Fragen, passend für jedes Alter geschrieben."
     },
     "wyrUi": {
-      "legend": "Was wäre dir lieber? live",
+      "legend": "Was wäre dir lieber? (Live)",
       "topics": "Themen",
       "topicsHint": "Lass alle angehakt für eine Mischung.",
       "count": "Wie viele Fragen",
@@ -5352,7 +5352,7 @@
       "hint": "Nach jeder Abstimmung sieht die Klasse die Aufteilung: ein guter Moment, ein paar Kinder zu fragen, warum sie so gewählt haben."
     },
     "atlasUi": {
-      "legend": "Atlas Quest live",
+      "legend": "Atlas Quest (Live)",
       "region": "Wo auf der Welt",
       "level": "Stufe",
       "kinds": "Fragearten",
@@ -5469,11 +5469,11 @@
         "p": "Ein Brett mit Kategorien auf dem Bildschirm. Wählen Sie ein Feld (oder lassen Sie die schnellste richtige Antwort wählen), und seine Frage öffnet sich auf allen Geräten. Schwerere Felder bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte."
       },
       "wyr": {
-        "h": "Was wäre dir lieber? live",
+        "h": "Was wäre dir lieber? (Live)",
         "p": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: ein fertiger Gesprächsanlass."
       },
       "atlas": {
-        "h": "Atlas Quest live",
+        "h": "Atlas Quest (Live)",
         "p": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Der große Bildschirm zeigt, wo die ganze Klasse getippt hat, und knapp daneben zählt auch."
       }
     },

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Would You Rather Live</title>
+<title>Would You Rather? (Live)</title>
 <style>
   :root { --ink: #1d2340; --card: #fffdf7; --bg1: #ffe7b8; --bg2: #ffd0e0; --a: #17a58c; --a2: #d9f7ef; --b: #8a5cf6; --b2: #ece4ff; --muted: rgba(29,35,64,.7); }
   html.dark { --ink: #f4f1e6; --card: #262a48; --bg1: #2a2552; --bg2: #43255a; --a2: #164a42; --b2: #3a2c6b; --muted: rgba(244,241,230,.75); }
@@ -121,7 +121,7 @@
   var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, total = 0, ringTimer = 0, history = [];
   var REDUCED = !!(O.settings && O.settings.reduced);
   document.title = t('title');
-  $('title').textContent = t('title') + (L.active ? ' · ' + t('live') : '');
+  $('title').textContent = t('title') + (L.active ? ' (' + t('live') + ')' : '');
   $('or').textContent = t('or'); $('taga').textContent = 'A'; $('tagb').textContent = 'B';
   function banner(s) { $('banner').textContent = s || ''; }
   function say(s) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = s; }, 30); }
