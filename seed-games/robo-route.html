@@ -123,13 +123,65 @@ body{margin:0;touch-action:manipulation}
 @keyframes rr-pulse{50%{transform:scale(1.04)}}
 @keyframes rr-shake{25%,75%{translate:-6px}50%{translate:6px}}
 .ok-rm .rr-titlebolt svg,.ok-rm .rr-bolt.bump svg,.ok-rm .rr-blk.hl,.ok-rm .rr-shelf .hl,.ok-rm .rr-shake{animation:none}
-/* a phone on its side: the panel starts right under the HUD, the program flows as wrapped chips, the tray takes the run bar's row */
-.rr-play.short .rr-prog .rr-list{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px}
-.rr-play.short .rr-list.inner{width:auto;align-self:auto;margin-inline-start:2px;padding-inline-start:6px;border-inline-start-width:4px}
+/* stage 2: pair mode, test tabs, the compare view, flowchart tiles, the Level Maker, the symbol pad */
+.rr-pairbtn{position:fixed;bottom:max(3vh,14px);inset-inline-end:max(4vw,14px);z-index:21;min-height:48px}
+.rr-pairbtn[aria-pressed=true]{background:var(--rr-go)}
+.rr-pairpill{display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 8px;border-radius:999px;border:2px solid var(--ok-edge);background:var(--ok-card);font-weight:800;font-size:.85em}
+.rr-pairpill .av{width:30px;height:30px;border-radius:50%;overflow:hidden;opacity:.45;display:grid;place-items:center;background:var(--ok-bg2)}
+.rr-pairpill .av canvas{width:100%;height:100%;display:block}
+.rr-pairpill .av.on{opacity:1;outline:3px solid var(--rr-go);outline-offset:1px}
+.rr-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.rr-tabs .ok-btn{min-height:44px;padding:0 12px;font-size:.92em}
+.rr-tabs .ok-btn[aria-pressed=true]{background:var(--rr-tint)}
+.rr-tabs .ok-btn svg{width:1.1em;height:1.1em}
+.rr-pill.edits{background:var(--rr-var-tint)}
+.rr-cmp{display:flex;gap:8px;width:100%;min-height:0;flex:1}
+.rr-cmp .col{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;border-radius:12px;border:2px solid var(--ok-edge);padding:6px;background:var(--ok-card)}
+.rr-cmp h3{margin:0;font-size:1em;font-weight:800}
+.rr-cmp .rr-list{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px;flex:1;align-content:flex-start}
+.rr-cmp .rr-list.inner{width:auto;align-self:auto;margin-inline-start:2px;padding-inline-start:6px}
+.rr-cmp .rr-blk{min-height:36px;padding:0 8px;font-size:.88em;cursor:default}
+.rr-cmp .rr-list .rr-slot{display:none}
+.rr-cmp .ok-btn{min-height:48px}
+.rr-tag{display:inline-block;font-size:.72em;font-weight:700;opacity:.85;border-radius:6px;padding:1px 6px;background:var(--rr-tint)}
+.rr-tag.chip{background:var(--rr-go-tint)}
+.rr-fc.diamond .k{border-radius:4px;transform:rotate(45deg)}
+.rr-fc.round .k{border-radius:999px}
+.rr-plan ol.flow li{list-style:none;position:relative;padding:4px 10px;margin:2px 0;border:2px solid var(--ok-edge);border-radius:10px;background:var(--ok-card)}
+.rr-plan ol.flow li.diamond{border-radius:4px;border-style:dashed}
+.rr-plan ol.flow li.round{border-radius:999px;text-align:center}
+.rr-plan ol.flow{padding:0;max-height:34vh;overflow:auto}
+.rr-task{margin:0;font-weight:700;line-height:1.3;font-size:.95em}
+.rr-mgrid .rr-cell{appearance:none;border:0;padding:0;font:inherit;color:var(--ok-text);cursor:pointer;min-width:0;min-height:0}
+.rr-mgrid .rr-cell:focus-visible{outline:3px solid var(--ok-focus);outline-offset:-3px;z-index:1}
+.rr-mgrid .rr-cell .bt{position:absolute;inset:14%;display:grid;place-items:center;border-radius:50%;background:var(--rr-bolt);border:2px solid var(--ok-edge)}
+.rr-mgrid .rr-cell .bt svg{width:70%;height:70%}
+#mkPalette .ok-btn[aria-pressed=true]{background:var(--rr-sel);outline:3px solid var(--ok-focus);outline-offset:1px}
+#mkResult .rr-pill{white-space:normal;min-height:34px;padding:4px 12px}
+#mkResult .rr-pill.good{background:var(--rr-go-tint)}#mkResult .rr-pill.bad{background:var(--rr-wrong-tint)}
+.rr-sym{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rr-sym .ok-btn{min-height:48px;min-width:48px;padding:0 10px}
+.rr-sym .ok-btn[aria-pressed=true]{background:var(--rr-tint)}
+.rr-code.small{font-size:1.4em;letter-spacing:.15em;word-break:break-all}
+.rr-codes{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rr-codes .ok-btn{justify-content:flex-start;letter-spacing:.12em}
+.rr-tile.daily .ic{background:var(--rr-go-tint)}
+.rr-tile .st.silver{color:var(--rr-silver)}
+.rr-tile .crownic{flex:none;width:26px;height:26px;color:var(--rr-k-loop)}
+.rr-grid.fog .rr-cell:not(.seen)::after{content:"";position:absolute;inset:0;background:var(--rr-fog);opacity:.75;border-radius:inherit}
+.rr-grid.fog .rr-cell.seen{transition:none}
+/* a phone (on its side or upright): the program flows as wrapped chips, the tray takes the run bar's row; on its side the
+   panel also starts right under the HUD */
+.rr-play.short .rr-prog .rr-list,.rr-play.narrow .rr-prog .rr-list{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px}
+.rr-play.short .rr-list.inner,.rr-play.narrow .rr-list.inner{width:auto;align-self:auto;margin-inline-start:2px;padding-inline-start:6px;border-inline-start-width:4px}
+.rr-play.narrow.portrait .rr-board{flex:0 0 41%}
+.rr-play.narrow .rr-shelf .ok-btn{padding:0 10px;font-size:.92em}
+.rr-play.narrow .rr-panel{gap:5px}
 @media (max-height:460px){.rr-play{gap:6px}.rr-panel{padding:6px;gap:4px}.rr-shelf .ok-btn{min-height:48px;padding:0 10px;font-size:.92em}.rr-top .rr-pill{min-height:30px;font-size:.85em}}
 </style>
 <div id="game">
   <div class="rr-titlebolt" id="titleBolt" aria-hidden="true"></div>
+  <button type="button" class="ok-btn ok-quiet rr-pairbtn" id="pairBtn" hidden></button>
   <section class="rr-map" id="map" hidden>
     <div class="rr-maphead">
       <h2 id="mapTitle"></h2>
@@ -140,7 +192,8 @@ body{margin:0;touch-action:manipulation}
   </section>
   <section class="rr-play" id="rr" hidden>
     <div class="rr-board" id="board">
-      <div class="rr-top"><span class="rr-pill" id="lvlPill"></span><span class="rr-pill quest" id="questPill" hidden></span></div>
+      <div class="rr-top"><span class="rr-pill" id="lvlPill"></span><span class="rr-pill quest" id="questPill" hidden></span><span class="rr-pill edits" id="editPill" hidden dir="ltr"></span><span class="rr-pairpill" id="pairPill" hidden></span></div>
+      <div class="rr-tabs" id="tabs" hidden></div>
       <div class="rr-gridwrap"><div class="rr-gridbox"><div class="rr-grid" id="grid" data-fit-dense dir="ltr"></div><div class="rr-bolt" id="bolt" aria-hidden="true"></div></div></div>
       <div class="rr-watch" id="watch" dir="ltr" aria-live="polite"></div>
     </div>
@@ -150,6 +203,18 @@ body{margin:0;touch-action:manipulation}
       <div class="rr-tray" id="tray" hidden></div>
       <div class="rr-edit" id="edit" hidden></div>
       <div class="rr-run" id="runbar"></div>
+    </div>
+  </section>
+  <section class="rr-play rr-maker" id="mk" hidden>
+    <div class="rr-board">
+      <div class="rr-top"><span class="rr-pill" id="mkPill"></span><span class="rr-pill quest" id="mkQuest" hidden></span></div>
+      <div class="rr-gridwrap"><div class="rr-gridbox"><div class="rr-grid rr-mgrid" id="mgrid" data-fit-dense dir="ltr"></div></div></div>
+      <div class="rr-watch" id="mkResult" aria-live="polite"></div>
+    </div>
+    <div class="rr-panel" id="mkPanel">
+      <p class="rr-task" id="mkTask"></p>
+      <div class="rr-shelf" id="mkPalette" aria-label="Tiles"></div>
+      <div class="rr-run" id="mkActions"></div>
     </div>
   </section>
   <section class="ok-modal ok-scrim" id="scrim" hidden><div class="ok-card rr-card" id="modal" role="dialog" aria-modal="true"></div></section>
@@ -228,7 +293,7 @@ function compile(blocks) {
     const out = { t: b.t, id };
     if (COMMANDS.includes(b.t)) return out;
     if (b.t === 'repeat') {
-      if (b.until) { if (!['goal', 'gem', 'wall', 'path', 'paint', 'plate', 'key'].includes(b.until)) throw new CompileError('bad'); out.until = b.until; usesUntil = true; }
+      if (b.until) { if (typeof b.until === 'string') { if (!['goal', 'gem', 'wall', 'path', 'paint', 'plate', 'key'].includes(b.until)) throw new CompileError('bad'); out.until = b.until; } else out.until = cond(b.until); usesUntil = true; }
       else out.n = (b.n && typeof b.n === 'object') ? { p: String(b.n.p) } : Math.max(0, Math.min(LIMITS.loop, b.n | 0));
       out.body = walk(b.body || [], id + '.', inProc);
       if (out.body.some(x => x.t === 'repeat')) types.add('nested');
@@ -271,6 +336,53 @@ function compile(blocks) {
 }
 /** How many blocks a program has (containers count one each, plus what is inside them). */
 function blocks(list) { let n = 0; for (const b of list || []) { n++; if (b.body) n += blocks(b.body); if (b.else) n += blocks(b.else); } return n; }
+/** A program as a flat list of tokens (one per block, plus brackets), for counting edits and comparing shapes. */
+const condKey = c => !c ? '' : c.op ? '(' + condKey(c.a) + ' ' + c.op + ' ' + condKey(c.b) + ')' : (c.not ? '!' : '') + (c.s === 'var' ? 'var:' + c.v + (c.word != null ? '=' + c.word : c.flag != null ? '=' + (c.flag ? 'on' : 'off') : (c.op || '=') + (c.n | 0)) : c.s);
+const numKey = n => (n && typeof n === 'object' ? 'p:' + n.p : String(n | 0));
+function flatten(list, out = []) {
+  for (const b of list || []) {
+    if (!b || typeof b !== 'object') continue;
+    let tok = b.t;
+    if (b.t === 'repeat') tok += b.until ? ':until:' + (typeof b.until === 'string' ? b.until : condKey(b.until)) : ':' + numKey(b.n);
+    else if (b.t === 'if') tok += ':' + condKey(b.c);
+    else if (b.t === 'when') tok += ':' + b.ev;
+    else if (b.t === 'set') tok += ':' + b.v + ':' + (typeof b.val === 'object' && b.val ? 'p:' + b.val.p : String(b.val));
+    else if (b.t === 'change') tok += ':' + b.v + ':' + numKey(b.n);
+    else if (b.t === 'proc') tok += ':' + b.name + ':' + (b.params || []).join(',') + ':' + (b.chip || '') + ':' + (b.credit || '');
+    else if (b.t === 'call') tok += ':' + b.f + ':' + (b.args || []).map(numKey).join(',');
+    out.push(tok);
+    if (b.body) { out.push('{'); flatten(b.body, out); out.push('}'); }
+    if (b.else) { out.push('else{'); flatten(b.else, out); out.push('}'); }
+  }
+  return out;
+}
+/** How many single-block edits (add, remove, change) turn program a into program b. */
+function edits(a, b) {
+  const x = flatten(a), y = flatten(b);
+  let prev = Array.from({ length: y.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= x.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= y.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[y.length];
+}
+/** The shape of a program: what it does, with numbers and names left out, so a flowchart can be checked against it.
+ *  m l r p d are the commands; R{..} repeat, U:x{..} repeat until, I:c{..}E{..} if / else, W:ev{..} when, S set, C change, K call. */
+const shapeCond = c => !c ? '' : c.op ? '(' + shapeCond(c.a) + (c.op === 'and' ? '&' : '|') + shapeCond(c.b) + ')' : (c.not ? '!' : '') + (c.s === 'var' ? 'var' : c.s);
+const fullShape = ast => Object.keys(ast.when).sort().map(ev => 'W:' + ev + '{' + shape(ast.when[ev].body) + '}').join('') + shape(ast.main);
+function shape(list) {
+  let out = '';
+  for (const b of list || []) {
+    if (!b || typeof b !== 'object') continue;
+    if (b.t === 'move') out += 'm'; else if (b.t === 'left') out += 'l'; else if (b.t === 'right') out += 'r'; else if (b.t === 'pick') out += 'p'; else if (b.t === 'drop') out += 'd';
+    else if (b.t === 'repeat') out += (b.until ? 'U:' + (typeof b.until === 'string' ? b.until : shapeCond(b.until)) : 'R') + '{' + shape(b.body) + '}';
+    else if (b.t === 'if') out += 'I:' + shapeCond(b.c) + '{' + shape(b.body) + '}' + (b.else ? 'E{' + shape(b.else) + '}' : '');
+    else if (b.t === 'when') out += 'W:' + b.ev + '{' + shape(b.body) + '}';
+    else if (b.t === 'set') out += 'S'; else if (b.t === 'change') out += 'C'; else if (b.t === 'call') out += 'K'; else if (b.t === 'proc') out += 'P{' + shape(b.body) + '}';
+  }
+  return out;
+}
 
 /* ---------- the simulation ---------- */
 class Stop extends Error { constructor(reason) { super(reason); this.reason = reason; } }
@@ -344,7 +456,7 @@ function runOne(level, ast, g, opt = {}) {
         if (st.hasKey && !g.items[st.x + ',' + st.y]) { st.hasKey = false; g.items[st.x + ',' + st.y] = 'key'; ev({ k: 'drop', id: b.id, x: st.x, y: st.y, item: 'key' }); ev({ k: 'key', has: false }); }
         else ev({ k: 'nothing', id: b.id, x: st.x, y: st.y });
       } else if (b.t === 'repeat') {
-        if (b.until) { let i = 0; while (!sense({ s: b.until })) { if (++i > LIMITS.loop) throw new Stop('loop'); ev({ k: 'loop', id: b.id, i }); exec(b.body, env, depth + 1); } }
+        if (b.until) { let i = 0; const u = typeof b.until === 'string' ? { s: b.until } : b.until; while (!sense(u)) { if (++i > LIMITS.loop) throw new Stop('loop'); ev({ k: 'loop', id: b.id, i }); exec(b.body, env, depth + 1); } }
         else { const n = Math.min(LIMITS.loop, num(b.n, env)); for (let i = 0; i < n; i++) { ev({ k: 'loop', id: b.id, i: i + 1, n }); exec(b.body, env, depth + 1); } }
       } else if (b.t === 'if') {
         const yes = sense(b.c); ev({ k: 'test', id: b.id, yes });
@@ -371,20 +483,30 @@ function judge(level, ast, r, opt) {
   const st = r.st, v = { ok: false, reachedGoal: r.onGoal, gemsLeft: r.gemsLeft, bumps: st.bumps, handledBumps: st.handled, splash: st.splash, commandsRun: st.cmds, failStep: st.failStep, failReason: null, vars: Object.assign({}, st.vars), stop: r.stop };
   const need = (level.needs || []).filter(t => !ast.types.includes(t));
   const badName = level.names ? Object.keys(ast.vars).find(n => !level.names.good.includes(n)) : null;
+  const procs = Object.values(ast.procs);
+  const keepMissing = (level.keep || []).find(n => !ast.procs[n]) || null;
+  const badCredit = level.credits ? procs.find(p => level.credits[p.name] && p.credit !== level.credits[p.name]) : null;
+  const calledNames = new Set(); (function walk(list) { for (const b of list) { if (b.t === 'call') calledNames.add(b.f); if (b.body) walk(b.body); if (b.else) walk(b.else); } })(ast.main);
+  const remixed = level.remix ? Object.keys(level.remix).some(n => ast.procs[n] && calledNames.has(n) && shape(ast.procs[n].body) !== shape(level.remix[n])) : true;
+  const noChip = level.chips ? procs.find(p => !p.chip) : null;
   if (r.stop === 'deep') v.failReason = 'deep';
   else if (st.splash) v.failReason = 'splash';
   else if (st.bumps > 0 && !level.allowBumps) v.failReason = st.bumpDoor ? 'door' : 'bump';
+  else if (st.handled > 0 && level.noBump) v.failReason = 'bump';
   else if (st.fumbles > 0 && !level.allowFumble) v.failReason = 'nothing';
   else if (r.stop === 'limit' || r.stop === 'loop') v.failReason = 'limit';
   else if (badName) { v.failReason = 'name'; v.badName = badName; }
-  else if (level.plan && !opt.planMatch) v.failReason = 'plan';
   else if (need.length) { v.failReason = 'needs'; v.needBlock = need[0]; }
   else if (level.minProcs && Object.keys(ast.procs).length < level.minProcs) v.failReason = 'procs';
+  else if (keepMissing) { v.failReason = 'credit'; v.name = keepMissing; }
+  else if (badCredit) { v.failReason = 'credit'; v.name = badCredit.name; }
+  else if (level.remix && !remixed) { v.failReason = 'remix'; v.name = Object.keys(level.remix)[0]; }
+  else if (level.chips && noChip) { v.failReason = 'chip0'; v.name = noChip.name; }
   else if (level.chips && Object.values(ast.procs).some(p => level.chips[p.name] && p.chip !== level.chips[p.name])) v.failReason = 'chips';
   else if (r.gemsLeft > 0) v.failReason = 'gems';
   else if (!r.onGoal) v.failReason = 'goal';
   v.ok = !v.failReason;
-  v.namesOk = v.failReason !== 'name'; v.planMatch = !(level.plan && !opt.planMatch); v.chipsOk = v.failReason !== 'chips';
+  v.namesOk = v.failReason !== 'name'; v.chipsOk = v.failReason !== 'chips' && v.failReason !== 'chip0'; v.creditOk = v.failReason !== 'credit';
   return v;
 }
 
@@ -394,7 +516,7 @@ function run(level, prog, opt = {}) {
   let ast;
   try { ast = compile(prog); } catch (e) {
     const reason = e instanceof CompileError ? e.reason : 'bad';
-    return { verdict: { ok: false, failReason: reason, compileError: true, vars: {}, perLayout: [], blocksUsed: 0, namesOk: true, planMatch: true, chipsOk: true, vars2: e.vars || {} }, events: [], results: [], ast: null };
+    return { verdict: { ok: false, failReason: reason, compileError: true, vars: {}, perLayout: [], blocksUsed: 0, namesOk: true, planMatch: true, chipsOk: true, flowMatch: true, creditOk: true, name: (e.vars || {}).name, vars2: e.vars || {} }, events: [], results: [], ast: null };
   }
   const grids = layoutsOf(level), results = [];
   for (let i = 0; i < grids.length; i++) {
@@ -403,16 +525,22 @@ function run(level, prog, opt = {}) {
     results.push({ grid: g, events: r.st.events, verdict: judge(level, ast, r, opt), vars: r.st.vars });
   }
   const bad = results.find(r => !r.verdict.ok), first = results[0];
-  const verdict = Object.assign({}, (bad || first).verdict, { perLayout: results.map(r => r.verdict.ok), failLayout: bad ? results.indexOf(bad) : -1, blocksUsed: blocks(prog), calls: ast.calls, types: ast.types, editsFromStarter: opt.edits | 0 });
+  const verdict = Object.assign({}, (bad || first).verdict, { perLayout: results.map(r => r.verdict.ok), failLayout: bad ? results.indexOf(bad) : -1, blocksUsed: blocks(prog), calls: ast.calls, types: ast.types, editsFromStarter: opt.edits != null ? opt.edits | 0 : opt.starter ? edits(opt.starter, prog) : 0 });
   verdict.ok = results.every(r => r.verdict.ok);
+  // the plan card and the flowchart are checked once for the whole level, after the boards: the per-board marks stay honest
+  verdict.planMatch = !(level.plan && !opt.planMatch); verdict.flowMatch = !(level.flow && fullShape(ast) !== level.flow.shape);
+  if (verdict.ok && !verdict.planMatch) { verdict.ok = false; verdict.failReason = 'plan'; }
+  else if (verdict.ok && !verdict.flowMatch) { verdict.ok = false; verdict.failReason = 'flow'; }
   return { verdict, events: (bad || first).events, results, ast };
 }
 
-/** Stars: 1 solved, 2 also at or under par, 3 also without the third hint (which shows a move). */
+/** Stars: 1 solved, 2 also well made (at or under par; in the Debug Lab, few edits from the starter), 3 also without the
+ *  third hint (which shows a move). */
 function parOf(level, band) { return band === '2' && level.parPro != null ? level.parPro : level.par; }
 function stars(level, band, prog, verdict, o = {}) {
   if (!verdict.ok) return 0;
-  let s = 1; if (blocks(prog) <= parOf(level, band)) s++; if (!o.hint3) s++;
+  const well = level.maxEdits != null ? (verdict.editsFromStarter | 0) <= level.maxEdits : blocks(prog) <= parOf(level, band);
+  let s = 1; if (well) s++; if (!o.hint3) s++;
   return s;
 }
 
@@ -521,13 +649,17 @@ function failText(verdict) {
     case 'needs': return ['This level needs a {block} block. The learn card shows how.', { block: verdict.needBlock || '?' }];
     case 'procs': return ['Split the route into named blocks first.', {}];
     case 'chips': return ['A note chip does not match what its block does.', {}];
+    case 'chip0': return ['Add a note chip to {name}: what does that block do?', { name: verdict.name || '?' }];
+    case 'credit': return ['Keep the block {name} and its credit line: it says where the block came from.', { name: verdict.name || '?' }];
+    case 'remix': return ['Remix means change something. {name} is still exactly the starter block.', { name: verdict.name || '?' }];
+    case 'flow': return ['The program does not follow the flowchart. Check each box and diamond against your blocks.', {}];
     case 'nocall': return ['A block is called that was never made.', {}];
     case 'empty': return ['The program is empty. Tap a block on the shelf.', {}];
     default: return ['Something in the program is not a block Bolt knows.', {}];
   }
 }
 
-root.RoboRoute = { rng, parseGrid, layoutsOf, compile, blocks, run, stars, parOf, bfs, check, encode, decode, failText, ALPHABET, LIMITS, SENSORS, EVENTS, COMMANDS, GOOD_NAMES, BAD_NAMES, WORDS, gemCount, at, DIRS };
+root.RoboRoute = { rng, parseGrid, layoutsOf, compile, blocks, flatten, edits, shape, fullShape, run, stars, parOf, bfs, check, encode, decode, failText, ALPHABET, LIMITS, SENSORS, EVENTS, COMMANDS, GOOD_NAMES, BAD_NAMES, WORDS, gemCount, at, DIRS };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>
@@ -563,12 +695,12 @@ function parse(text) {
   const stmt = () => {
     const t = next();
     if (['move', 'left', 'right', 'pick', 'drop'].includes(t)) return { t };
-    if (t === 'repeat') { if (peek() === 'until') { next(); const s = next(); return { t: 'repeat', until: s, body: block() }; } const n = numOrParam(); return { t: 'repeat', n, body: block() }; }
+    if (t === 'repeat') { if (peek() === 'until') { next(); const c = term(); return { t: 'repeat', until: c.s !== 'var' && !c.not ? c.s : c, body: block() }; } const n = numOrParam(); return { t: 'repeat', n, body: block() }; }
     if (t === 'if') { const c = cond(); const body = block(); const o = { t: 'if', c, body }; if (peek() === 'else') { next(); o.else = peek() === 'if' ? [stmt()] : block(); } return o; }
     if (t === 'when') { const ev = next(); return { t: 'when', ev, body: block() }; }
     if (t === 'set') { const v = next(); const x = next(); const val = x === 'on' ? true : x === 'off' ? false : /^-?\d+$/.test(x) ? +x : E.WORDS.includes(x) ? x : { p: x }; return { t: 'set', v, val }; }
     if (t === 'change') { const v = next(); return { t: 'change', v, n: numOrParam() }; }
-    if (t === 'proc') { const name = next(); const params = []; if (peek() === '(') { next(); while (peek() !== ')') { params.push(next()); if (peek() === ',') next(); } next(); } return { t: 'proc', name, params, body: block() }; }
+    if (t === 'proc') { const name = next(); const params = []; if (peek() === '(') { next(); while (peek() !== ')') { params.push(next()); if (peek() === ',') next(); } next(); } const o = { t: 'proc', name, params }; while (peek() === 'credit' || peek() === 'chip') { const k = next(); o[k] = next(); } o.body = block(); return o; }
     if (t === 'call') { const f = next(); const args = []; if (peek() === '(') { next(); while (peek() !== ')') { args.push(numOrParam()); if (peek() === ',') next(); } next(); } return { t: 'call', f, args }; }
     throw new Error('parse: unknown word ' + t);
   };
@@ -626,6 +758,10 @@ const G = {
   paintOrWall: n => r => { const cells = spiral(n, r.int(n * 2, 4 * n - 4), true); const rows = blank(n, '.'); const marks = {}; const cs = corners(cells); for (const i of cs) { const [x, y] = cells[i]; if (r.chance(0.5)) marks[x + ',' + y] = 'P'; else { const [px, py] = cells[i - 1]; const wx = x + (x - px), wy = y + (y - py); if (wx >= 0 && wy >= 0 && wx < n && wy < n) put(rows, wx, wy, '#'); else marks[x + ',' + y] = 'P'; } } const out = pathBoard(n, cells, '.', marks); for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (rows[y][x] === '#' && !cells.some(c => c[0] === x && c[1] === y)) put(out, x, y, '#'); return out; },
   // Pro: a key somewhere on a right-turn spiral, the door at the end
   keyMaze: n => r => { const cells = spiral(n, r.int(n * 2 + 2, 4 * n - 4), true); const rows = pathBoard(n, cells, '#'); const [kx, ky] = cells[r.int(2, cells.length - 4)]; put(rows, kx, ky, 'K'); const [dx, dy] = cells[cells.length - 2]; put(rows, dx, dy, 'D'); return rows; },
+  // a right-turn spiral maze with gems on some squares of the way
+  gemSpiral: n => r => { const cells = spiral(n, r.int(n * 2 + 2, 4 * n - 4), true); const marks = {}; for (const [x, y] of r.shuffle(cells.slice(1, -1)).slice(0, r.int(2, 4))) marks[x + ',' + y] = '*'; return pathBoard(n, cells, '#', marks); },
+  // the gap L (east, then north) with gems along the way
+  gemGapL: n => r => { const a = r.int(2, n - 2), b = r.int(2, n - 2); const cells = lPath(n, a, b); const marks = {}; for (const [x, y] of r.shuffle(cells.slice(1, -1)).slice(0, r.int(1, 3))) marks[x + ',' + y] = '*'; return pathBoard(n, cells, '~', marks); },
   // Pro: corners with a gem mean "turn right", bare corners mean "turn left" (a zigzag down the board)
   gemCorners: n => r => {
     // runs on even rows, a two-square drop between them; a corner that turns right (east then down, or down then
@@ -651,11 +787,17 @@ const CHAPTERS = [
   { id: 'loops', index: 2, title: 'Loops', icon: 'restart', csta: { '1b': ['1B-AP-10'], '2': ['2-AP-12'] } },
   { id: 'conditionals', index: 3, title: 'Conditionals & events', icon: 'question', csta: { '1b': ['1B-AP-10'], '2': ['2-AP-12'] } },
   { id: 'variables', index: 4, title: 'Variables', icon: 'pencil', csta: { '1b': ['1B-AP-09'], '2': ['2-AP-11'] } },
-  { id: 'functions', index: 5, title: 'Functions', icon: 'book', csta: { '1b': ['1B-AP-11', '1B-AP-12'], '2': ['2-AP-14', '2-AP-13', '2-AP-19', '2-AP-16'] }, soon: true },
-  { id: 'debug', index: 6, title: 'Debug Lab', icon: 'hint', mode: 'debug', csta: { '1b': ['1B-AP-15'], '2': ['2-AP-17'] }, soon: true },
-  { id: 'best-route', index: 7, title: 'Best Route', icon: 'flag', csta: { '1b': ['1B-AP-08'], '2': ['2-AP-10', '2-AP-17'] }, soon: true },
-  { id: 'level-maker', index: 8, title: 'Level Maker', icon: 'pencil', mode: 'maker', csta: { '1b': ['1B-AP-13', '1B-AP-12'], '2': ['2-AP-15', '2-AP-16'] }, soon: true },
+  { id: 'functions', index: 5, title: 'Functions', icon: 'book', csta: { '1b': ['1B-AP-11', '1B-AP-12'], '2': ['2-AP-14', '2-AP-13', '2-AP-19', '2-AP-16'] } },
+  { id: 'debug', index: 6, title: 'Debug Lab', icon: 'hint', mode: 'debug', csta: { '1b': ['1B-AP-15'], '2': ['2-AP-17'] } },
+  { id: 'best-route', index: 7, title: 'Best Route', icon: 'flag', csta: { '1b': ['1B-AP-08'], '2': ['2-AP-10', '2-AP-17'] } },
+  { id: 'level-maker', index: 8, title: 'Level Maker', icon: 'pencil', mode: 'maker', csta: { '1b': ['1B-AP-13', '1B-AP-12'], '2': ['2-AP-15', '2-AP-16'] } },
 ];
+/** Note chips a Pro player pins on a procedure (2-AP-19) and the credit lines of shared blocks (2-AP-16 / 1B-AP-12). */
+const CHIPS = { collect: 'Picks up the gems', down: 'Drives down the side', home: 'Drives to the goal', turn: 'Spins around on the spot', zig: 'Climbs a zigzag staircase', up: 'Drives straight up' };
+const CREDITS = { starter: 'based on Starter blocks', team: 'by the Robo Route team' };
+const PROC_NAMES = ['MyBlock', 'Stair', 'Side', 'Room', 'Legs'];
+/** Three fixed boards from a generator (the Debug Lab's test grids). */
+const lay = (gen, seed) => [1, 2, 3].map(k => gen(E.rng(k * 7919 + seed)));
 
 const SEQ = ['move', 'left', 'right'], SEQP = ['move', 'left', 'right', 'pick'];
 const LEVELS = [
@@ -907,6 +1049,235 @@ const LEVELS = [
   sol: 'set count 0; repeat 7 { move; pick; change count 1 }; right; move; move',
   hints: ['This program works, but a partner cannot read it. What is x?', 'Tap a set or change block and give the box a name that says what it holds.', 'Rename x to count in every block that uses it.'],
   check: { q: 'Why is x a bad name here?', tiles: ['It does not say what the box holds', 'It is too long', 'Letters are not allowed'], answer: 0 } },
+/* ---------------- 5 Functions ---------------- */
+{ id: 'fn-1', ch: 'functions', bands: ['1b', '2'], csta: ['1B-AP-11'], csta2: ['2-AP-14'], shelf: ['move', 'left', 'right', 'pick', 'proc', 'call'], needs: ['call'], par: 9, procNames: ['Stair', 'Side', 'Room'],
+  rows: ['######', '######', '##*G##', '#*.###', '*.####', '^#####'],
+  starter: 'proc Stair { move; pick; right; move; left }',
+  sol: 'proc Stair { move; pick; right; move; left }; call Stair; call Stair; call Stair',
+  learn: { title: 'Name a group of steps once, use it everywhere', text: 'A My Block is a group of steps with a name. Make it once; then a call block runs the whole group wherever you put it. Here the block Stair is already made for you: call it for every stair.' },
+  hints: ['The block Stair is already made. How do you run it?', 'Tap call on the shelf: one call runs everything inside Stair.', 'Call Stair three times, once for each stair.'],
+  check: { q: 'A My Block is...', tiles: ['a group of steps with a name you can use again', 'a kind of wall', 'the goal flag'], answer: 0 },
+  pro: { rows: ['########', '########', '########', '########', '########', '#*#*#*##', '#.#.#.##', '>......G'], par: 16, procNames: ['Room', 'Side', 'Stair'],
+    starter: 'proc Room { move; left; move; move; pick; right; right; move; move; left; move }',
+    sol: 'proc Room { move; left; move; move; pick; right; right; move; move; left; move }; call Room; call Room; call Room; move',
+    learn: { title: 'Name a group of steps once, use it everywhere', text: 'A procedure is a group of steps with a name. Define it once; a call runs the whole group. Three identical rooms, one block named Room: call it three times, then one more move to the goal.' },
+    hints: ['The block Room is already made. How do you run it?', 'Tap call on the shelf: one call runs everything inside Room.', 'Call Room three times, then one move to the goal.'] } },
+{ id: 'fn-2', ch: 'functions', bands: ['1b', '2'], csta: ['1B-AP-11'], csta2: ['2-AP-14'], shelf: ['move', 'left', 'right', 'pick', 'proc', 'call'], needs: ['call'], par: 10, procNames: ['Side', 'Stair', 'Room'],
+  rows: ['######', '#....#', '#.##.#', '#.##.#', '#^G..#', '######'],
+  starter: 'proc Side { move; move; move; right }',
+  sol: 'proc Side { move; move; move; right }; call Side; call Side; call Side; move; move',
+  hints: ['Bolt drives round three sides of a square. What is one side?', 'The block Side is one side and a turn. After three calls Bolt still needs two moves.', 'Call Side three times, then move twice.'],
+  check: { q: 'What does a call block do?', tiles: ['Runs all the steps inside the named block', 'Deletes the block', 'Makes Bolt call for help'], answer: 0 },
+  pro: { rows: ['########', '#......#', '#.####.#', '#.####.#', '#.####.#', '#.####.#', '#^.G...#', '########'], shelf: ['move', 'left', 'right', 'repeat', 'proc', 'call'], par: 9, starter: null, procNames: ['Side', 'Room', 'Lap'],
+    sol: 'proc Side { repeat 5 { move }; right }; call Side; call Side; call Side; repeat 3 { move }',
+    hints: ['Three sides of a big square. Make one block for a side.', 'Inside Side: repeat 5 with move, then turn right. Call it three times.', 'Side is repeat 5 move, right. Call Side three times, then repeat 3 move.'] } },
+{ id: 'fn-3', ch: 'functions', bands: ['1b'], csta: ['1B-AP-11'], shelf: ['move', 'left', 'right', 'repeat', 'proc', 'call'], needs: ['call'], minProcs: 2, par: 13, procNames: ['Up', 'Across', 'Down', 'Side'],
+  rows: ['######', '....G#', '.#####', '.#####', '.#####', '^#####'],
+  sol: 'proc Up { move; move; move; move }; proc Across { right; move; move; move; move }; call Up; call Across',
+  hints: ['This route has two legs. What would you name each leg?', 'Make one block for going up and one for going across. Then call both.', 'Up is four moves. Across is turn right and four moves. Call Up, then Across.'],
+  check: { q: 'Why split a long route into named parts?', tiles: ['Each part is easier to check and to use again', 'Bolt drives faster', 'You must use more blocks'], answer: 0 } },
+{ id: 'fn-3p', ch: 'functions', bands: ['2'], csta2: ['2-AP-14'], shelf: ['move', 'left', 'right', 'pick', 'repeat', 'proc', 'call'], needs: ['call'], params: true, paramName: 'steps', par: 16, procNames: ['Room', 'Nook', 'Side'],
+  rows: ['########', '########', '########', '########', '###*####', '###.#*##', '#*#.#.##', '>......G'],
+  sol: 'proc Room(steps) { move; left; repeat steps { move }; pick; right; right; repeat steps { move }; left; move }; call Room(1); call Room(3); call Room(2); move',
+  learn: { title: 'A parameter: one block, many jobs', text: 'These rooms have different depths. Instead of three blocks, make one block Room that takes a number: steps. Inside, repeat steps times. Each call gives its own number: Room(1), Room(3), Room(2).' },
+  hints: ['The rooms are 1, 3 and 2 deep. One block for all three?', 'Give Room a number, steps. Inside, repeat steps with move, both going in and coming back.', 'Room(steps): move, left, repeat steps move, pick, right, right, repeat steps move, left, move. Call Room 1, Room 3, Room 2, then move.'],
+  check: { q: 'A parameter lets one block...', tiles: ['do the same job with a different number each time', 'run without being called', 'change the board'], answer: 0 } },
+{ id: 'fn-4', ch: 'functions', bands: ['1b'], csta: ['1B-AP-12'], shelf: ['move', 'left', 'right', 'repeat', 'proc', 'call'], needs: ['call'], par: 13, procNames: ['Zig', 'Zag', 'Stair'], credits: { Zig: 'starter', Zag: 'starter' }, remix: { Zig: parse('move; right; move; left'), Zag: parse('move; left; move; right') },
+  rows: ['######', '#.G###', '#.####', '..####', '.#####', '^#####'],
+  starter: 'proc Zig credit starter { move; right; move; left }; proc Zag credit starter { move; left; move; right }',
+  sol: 'proc Zig credit starter { move; move; right; move; left }; proc Zag credit starter { move; left; move; right }; call Zig; call Zig',
+  learn: { title: 'Remix a starter block', text: 'The Starter blocks shelf gives you blocks other people made. You may change them: that is a remix. Keep the line that says where the block came from, so everyone knows who started it.' },
+  hints: ['Zig climbs one square, then steps across. These stairs are two squares tall.', 'Open Zig and add one more move at the start. Keep its credit line on.', 'Zig becomes move, move, right, move, left. Call Zig twice.'],
+  check: { q: 'When you remix a block someone else made, you...', tiles: ['change it and keep the line saying where it came from', 'must never change it', 'delete the credit line'], answer: 0 } },
+{ id: 'fn-4p', ch: 'functions', bands: ['2'], csta2: ['2-AP-14'], shelf: ['move', 'left', 'right', 'pick', 'repeat', 'proc', 'call'], needs: ['call'], params: true, paramName: 'n', par: 9, procNames: ['Dash', 'Run', 'Side'],
+  rows: ['>.......', '#######.', '##...G#.', '##.####.', '##.####.', '##.####.', '##......', '########'],
+  sol: 'proc Dash(n) { repeat n { move }; right }; call Dash(7); call Dash(6); call Dash(5); call Dash(4); call Dash(3)',
+  hints: ['Every straight run ends with a right turn. Only the length changes.', 'Make Dash(n): repeat n move, then turn right. Call it with each length.', 'Dash(n) is repeat n move, right. Call Dash 7, 6, 5, 4, 3.'],
+  check: { q: 'Dash(7) and Dash(3) run the same block with...', tiles: ['a different number', 'a different robot', 'no difference'], answer: 0 } },
+{ id: 'fn-5', ch: 'functions', bands: ['1b'], csta: ['1B-AP-12'], shelf: ['move', 'left', 'right', 'repeat', 'proc', 'call'], needs: ['call'], par: 11, procNames: ['Dash', 'Turn', 'Stair'], credits: { Dash: 'starter', Turn: 'starter' }, remix: { Dash: parse('move; move; move'), Turn: parse('left; move') },
+  rows: ['####G#', '####.#', '####.#', '####.#', '####.#', '>....#'],
+  starter: 'proc Dash credit starter { move; move; move }; proc Turn credit starter { left; move }',
+  sol: 'proc Dash credit starter { move; move; move; move }; proc Turn credit starter { left; move }; call Dash; call Turn; call Dash',
+  hints: ['The starter blocks almost fit. Which one is one step short?', 'Dash is three moves; this corridor is four. Remix Dash, keep the credit line.', 'Dash becomes four moves. Call Dash, Turn, Dash.'],
+  check: { q: 'A remix is...', tiles: ['someone else\'s block, changed to fit a new job', 'a brand new block', 'a mistake'], answer: 0 } },
+{ id: 'fn-5p', ch: 'functions', bands: ['2'], csta2: ['2-AP-13'], shelf: ['move', 'left', 'right', 'pick', 'repeat', 'proc', 'call'], needs: ['call'], minProcs: 3, par: 17, procNames: ['GetGems', 'Climb', 'Cross', 'Spin'],
+  rows: ['######G#', '######.#', '######.#', '######.#', '#####..#', '####..##', '###..###', '>***####'],
+  sol: 'proc GetGems { repeat 3 { move; pick } }; proc Climb { repeat 3 { left; move; right; move } }; proc Cross { left; repeat 4 { move } }; call GetGems; call Climb; call Cross',
+  learn: { title: 'Three subgoals', text: 'A big job is easier as three small ones: collect the gems, climb the stairs, cross to the goal. Make one block for each subgoal and give it a name that says what it does. Then the main program is just three calls.' },
+  hints: ['Name the three parts of this route before you build anything.', 'One block collects the gems, one climbs, one crosses. The main program calls them in order.', 'GetGems: repeat 3 move, pick. Climb: repeat 3 left, move, right, move. Cross: left, repeat 4 move.'],
+  check: { q: 'Decomposition means...', tiles: ['splitting a big problem into smaller parts', 'making the program longer', 'deleting blocks'], answer: 0 } },
+{ id: 'fn-6', ch: 'functions', bands: ['1b'], csta: ['1B-AP-11'], shelf: ['move', 'left', 'right', 'pick', 'repeat', 'proc', 'call'], needs: ['call'], minProcs: 3, par: 20, procNames: ['Up', 'Across', 'Down', 'Side'],
+  rows: ['######', '..*..#', '.###.#', '.###.#', '.###G#', '^#####'],
+  sol: 'proc Up { move; move; move; move }; proc Across { right; move; move; pick; move; move }; proc Down { right; move; move; move }; call Up; call Across; call Down',
+  hints: ['Three legs: up, across, down. Which leg has the gem?', 'Make a block for each leg. Across picks up the gem halfway.', 'Up: four moves. Across: right, two moves, pick, two moves. Down: right, three moves.'],
+  check: { q: 'Three named legs make a program...', tiles: ['easier to read and to fix', 'slower', 'impossible to run'], answer: 0 } },
+{ id: 'fn-6p', ch: 'functions', bands: ['2'], csta2: ['2-AP-19', '2-AP-13'], shelf: ['move', 'left', 'right', 'pick', 'repeat', 'proc', 'call'], needs: ['call'], minProcs: 3, par: 16, procNames: ['Sweep', 'Drop', 'Home', 'Spin'], chipOptions: ['collect', 'down', 'home', 'turn'], chips: { Sweep: 'collect', Drop: 'down', Home: 'home' },
+  rows: ['>*.*.*.#', '######.#', '######.#', '######.#', '######.#', '######.#', '######.#', '#G.....#'],
+  sol: 'proc Sweep chip collect { repeat 3 { move; pick; move } }; proc Drop chip down { right; repeat 7 { move } }; proc Home chip home { right; repeat 5 { move } }; call Sweep; call Drop; call Home',
+  learn: { title: 'Document it', text: 'A note chip on a block tells a partner what the block does without reading every step. Pin the chip that matches each block: the level checks that your notes tell the truth.' },
+  hints: ['Three blocks, three jobs: along the top, down the side, home. Each needs a note chip.', 'Open a block, tap Note chip and pick the sentence that says what it really does.', 'Sweep gets Picks up the gems; Drop gets Drives down the side; Home gets Drives to the goal.'],
+  check: { q: 'A note chip on a block should say...', tiles: ['what the block does, truthfully', 'how many stars you have', 'the name of the robot'], answer: 0 } },
+{ id: 'fn-7p', ch: 'functions', bands: ['2'], csta2: ['2-AP-16', '2-AP-19'], shelf: ['move', 'left', 'right', 'pick', 'repeat', 'proc', 'call'], needs: ['call'], minProcs: 2, par: 11, params: true, paramName: 'n', procNames: ['Finish', 'Climb', 'Sweep', 'Spin'], chipOptions: ['zig', 'up', 'collect', 'turn'], chips: { Zigzag: 'zig', Finish: 'up' }, keep: ['Zigzag'], credits: { Zigzag: 'team' },
+  rows: ['#####G##', '#####.##', '####..##', '###..###', '##..####', '#..#####', '..######', '^#######'],
+  starter: 'proc Zigzag(n) credit team chip zig { repeat n { move; right; move; left } }',
+  sol: 'proc Zigzag(n) credit team chip zig { repeat n { move; right; move; left } }; proc Finish chip up { repeat 2 { move } }; call Zigzag(5); call Finish',
+  hints: ['The shelf block Zigzag was made by someone else. How many zigs does this staircase have?', 'Call Zigzag with 5. Then make your own block for the last two squares, with its own note chip. Leave the credit line on Zigzag alone.', 'Call Zigzag 5. Finish is repeat 2 move with the chip Drives straight up. Call Finish.'],
+  check: { q: 'When you use a block someone else made, the credit line...', tiles: ['stays on, so everyone knows who made it', 'should be deleted', 'makes Bolt slower'], answer: 0 } },
+
+/* ---------------- 6 Debug Lab ---------------- */
+{ id: 'dbg-1', ch: 'debug', bands: ['1b'], csta: ['1B-AP-15'], shelf: ['move', 'left', 'right'], par: 7, maxEdits: 1,
+  rows: ['######', '######', '...G##', '.#####', '.#####', '^#####'],
+  starter: 'move; move; move; left; move; move; move', sol: 'move; move; move; right; move; move; move',
+  learn: { title: 'Expected and actual', text: 'This program has a bug. Press Step to run it one block at a time and watch where Bolt first does something you did not expect. Fix only that block: the fewest edits earn the most stars.' },
+  hints: ['Step through it. At which block does Bolt first go the wrong way?', 'After three moves Bolt should turn toward the flag. Which way is that?', 'Change the turn left into turn right.'],
+  check: { q: 'A bug is...', tiles: ['a mistake in a program', 'an insect on the board', 'a kind of block'], answer: 0 } },
+{ id: 'dbg-2', ch: 'debug', bands: ['1b'], csta: ['1B-AP-15'], shelf: ['move', 'repeat'], par: 2, maxEdits: 1,
+  rows: ['######', '######', '>....G', '######', '######', '######'],
+  starter: 'repeat 6 { move }', sol: 'repeat 5 { move }',
+  hints: ['Bolt bumps right at the end. One too many of what?', 'Count the squares between Bolt and the flag, then look at the repeat number.', 'Change the repeat from 6 to 5.'],
+  check: { q: 'Bolt bumped the wall one step after the flag. The bug is...', tiles: ['the loop runs one time too many', 'the flag is in the wrong place', 'move is broken'], answer: 0 } },
+{ id: 'dbg-3', ch: 'debug', bands: ['1b'], csta: ['1B-AP-15'], shelf: ['move', 'left', 'right', 'pick'], par: 5, maxEdits: 1,
+  rows: ['######', '######', '######', '>.*.G#', '######', '######'],
+  starter: 'move; move; move; move', sol: 'move; move; pick; move; move',
+  hints: ['Bolt reached the flag but the level is not done. What is still on the board?', 'Bolt drove over the gem. Which block is missing, and where?', 'Add a pick up after the second move.'],
+  check: { q: 'Bolt finished on the flag but a gem was left. The fix is...', tiles: ['add the missing block in the right place', 'delete everything and start again', 'add more moves'], answer: 0 } },
+{ id: 'dbg-4', ch: 'debug', bands: ['1b'], csta: ['1B-AP-15'], shelf: ['move', 'left', 'right', 'until', 'ifelse'], defaultSensor: 'path', par: 4, maxEdits: 1,
+  rows: ['######', '######', '###G##', '###.##', '###.##', '>...##'],
+  starter: 'repeat until goal { if wall { move } else { left } }', sol: 'repeat until goal { if path { move } else { left } }',
+  hints: ['Bolt turns when it should move and moves when it should turn. Look at the question in the if.', 'The if asks wall ahead. What should it ask so that yes means move?', 'Change the condition from wall ahead to path ahead.'],
+  check: { q: 'The program moved when it should have turned. The bug was in...', tiles: ['the condition of the if', 'the number of gems', 'the color of Bolt'], answer: 0 } },
+{ id: 'dbg-5', ch: 'debug', bands: ['1b'], csta: ['1B-AP-15'], shelf: ['move', 'left', 'right'], par: 5, maxEdits: 2,
+  rows: ['######', '######', '######', '..G###', '.#####', '^#####'],
+  starter: 'move; right; move; move; move', sol: 'move; move; right; move; move',
+  hints: ['All the right blocks are here. Is one of them in the wrong place?', 'Bolt turns too early. Move the turn right down one place.', 'Move the turn right so it comes after the second move.'],
+  check: { q: 'Every block was right but the order was wrong. That is...', tiles: ['still a bug: order matters', 'fine: order never matters', 'impossible'], answer: 0 } },
+{ id: 'dbg-6', ch: 'debug', bands: ['1b'], csta: ['1B-AP-15'], shelf: ['move', 'left', 'right', 'repeat'], par: 5, maxEdits: 1,
+  rows: ['......', '......', '...G..', '...##.', '..####', '^#####'],
+  starter: 'repeat 3 { move; right; move; left; left }', sol: 'repeat 3 { move; right; move; left }',
+  hints: ['Step through one stair. Does Bolt end up facing the right way?', 'There is one block too many inside the loop. Which one?', 'Delete the second turn left inside the repeat.'],
+  check: { q: 'An extra block inside a loop...', tiles: ['runs every time round, so it breaks every stair', 'runs only once', 'does nothing'], answer: 0 } },
+{ id: 'dbg-7', ch: 'debug', bands: ['1b'], csta: ['1B-AP-15'], shelf: ['move', 'right', 'pick', 'repeat', 'if', 'when'], defaultSensor: 'gem', defaultEvent: 'gem', par: 6, maxEdits: 2,
+  rows: ['>..*..', '###.~~', '###.~~', '.G.*~~', '~~~~~~', '~~~~~~'],
+  starter: 'when gem { left }; repeat 6 { move; if gem { pick } }', sol: 'when gem { right }; repeat 8 { move; if gem { pick } }',
+  hints: ['Two bugs this time. Watch the first gem: which way should Bolt turn?', 'The when block turns the wrong way. And is the loop long enough to reach the flag?', 'Change left to right in the when block, and the repeat from 6 to 8.'],
+  check: { q: 'After fixing one bug Bolt still fails. You should...', tiles: ['test again and look for the next bug', 'give up', 'add random blocks'], answer: 0 } },
+{ id: 'dbgp-1', ch: 'debug', bands: ['2'], csta2: ['2-AP-17'], shelf: ['move', 'left', 'right', 'until', 'ifelse'], defaultSensor: 'path', par: 4, maxEdits: 1, layouts: lay(G.gapL(8), 50),
+  starter: 'repeat until goal { if path { move } else { right } }', sol: 'repeat until goal { if path { move } else { left } }',
+  learn: { title: 'Test cases', text: 'One program, three test boards. A fix must pass them all: the tabs above the board show a tick or a cross for each test after a run. Find the test that fails, step through it, and change as little as you can.' },
+  hints: ['Which test board fails? Run and read the tabs.', 'At the corner Bolt turns the wrong way on every board. Which turn is it?', 'Change turn right to turn left in the else part.'],
+  check: { q: 'Why test a program on more than one board?', tiles: ['A bug may only show on some inputs', 'It makes the program longer', 'Bolt likes it'], answer: 0 } },
+{ id: 'dbgp-2', ch: 'debug', bands: ['2'], csta2: ['2-AP-17'], shelf: ['move', 'pick', 'until', 'if'], defaultSensor: 'gem', par: 5, maxEdits: 3, allowFumble: false, layouts: lay(G.gemRow(8), 60),
+  starter: 'repeat until goal { move; pick }', sol: 'repeat until goal { move; if gem { pick } }',
+  hints: ['Bolt reaches down on every square. What is wrong with that?', 'Pick up only when there is a gem: wrap the pick in an if.', 'Put the pick up inside an if on a gem.'],
+  check: { q: 'Picking up where there is no gem is...', tiles: ['an error the tests catch', 'always fine', 'a way to find gems'], answer: 0 } },
+{ id: 'dbgp-3', ch: 'debug', bands: ['2'], csta2: ['2-AP-17'], shelf: ['move', 'pick', 'until', 'if', 'set', 'change'], vars: ['count'], defaultSensor: 'gem', par: 7, maxEdits: 1, layouts: lay(G.countRow(8), 70), door: { var: 'count', n: 'all' },
+  starter: 'set count 0; repeat until goal { if gem { pick }; move }', sol: 'set count 0; repeat until goal { if gem { pick; change count 1 }; move }',
+  hints: ['The door reads the count box. Watch the pill: does the box ever change?', 'Bolt picks gems but never counts them. Which block is missing inside the if?', 'Add change count by 1 right after the pick up.'],
+  check: { q: 'The watch pill never moved. That tells you...', tiles: ['the variable is never changed', 'the door is broken', 'Bolt is slow'], answer: 0 } },
+{ id: 'dbgp-4', ch: 'debug', bands: ['2'], csta2: ['2-AP-17'], shelf: ['move', 'left', 'right', 'pick', 'until', 'ifelse'], defaultSensor: 'wall', compound: true, par: 9, maxEdits: 1, layouts: lay(G.gemCorners(8), 80),
+  starter: 'repeat until goal { if wall or gem { pick; right } else { if wall { left } else { move } } }', sol: 'repeat until goal { if wall and gem { pick; right } else { if wall { left } else { move } } }',
+  hints: ['Bolt turns right on a gem that is not at a corner. Read the first condition aloud.', 'Wall ahead OR on a gem is true too often. Which word should join the two questions?', 'Change or to and in the first if.'],
+  check: { q: 'OR was true too often. AND is true only when...', tiles: ['both parts are true', 'either part is true', 'neither is true'], answer: 0 } },
+{ id: 'dbgp-5', ch: 'debug', bands: ['2'], csta2: ['2-AP-17'], shelf: ['move', 'pick', 'until', 'if', 'set', 'change'], vars: ['gems', 'count'], defaultSensor: 'gem', par: 7, maxEdits: 1, layouts: lay(G.countRow(8), 90), door: { var: 'gems', n: 'all' },
+  starter: 'set gems 0; repeat until goal { if gem { pick; change count 1 }; move }', sol: 'set gems 0; repeat until goal { if gem { pick; change gems 1 }; move }',
+  hints: ['Two boxes: gems and count. Which one does the door read?', 'The program counts into the wrong box. Which block names count?', 'Change count by 1 should be change gems by 1.'],
+  check: { q: 'The program counted into the wrong variable. The door...', tiles: ['read a box that stayed at 0', 'opened anyway', 'counted for itself'], answer: 0 } },
+{ id: 'dbgp-6', ch: 'debug', bands: ['2'], csta2: ['2-AP-17'], shelf: ['move', 'pick', 'until', 'if', 'set', 'change'], vars: ['count'], defaultSensor: 'gem', par: 7, maxEdits: 1,
+  layouts: [['########', '########', '########', '>.*..*G.', '########', '########', '########', '########'], ['########', '########', '########', '>*...*G.', '########', '########', '########', '########'], ['########', '########', '########', '>.....G.', '########', '########', '########', '########']],
+  starter: 'set count 0; repeat until count = 2 { if gem { pick; change count 1 }; move }', sol: 'set count 0; repeat until goal { if gem { pick; change count 1 }; move }',
+  hints: ['Tests 1 and 2 pass. What is different about test 3?', 'Test 3 has no gems at all, so the count never reaches 2. When should the loop really stop?', 'Change repeat until count = 2 into repeat until on the goal.'],
+  check: { q: 'An edge case is...', tiles: ['an unusual input that breaks a hidden assumption', 'the border of the board', 'a very long program'], answer: 0 } },
+{ id: 'dbgp-7', ch: 'debug', bands: ['2'], csta2: ['2-AP-17'], shelf: ['move', 'left', 'right', 'until', 'if', 'when'], defaultSensor: 'wall', defaultEvent: 'bump', par: 6, maxEdits: 4, noBump: true, layouts: lay(G.rightMaze(8), 100),
+  starter: 'when bump { right }; repeat until goal { move }', sol: 'when bump { right }; repeat until goal { if wall { right }; move }',
+  hints: ['Bolt reaches the goal on every board, but only by bumping into each corner. This level says: never bump.', 'Bolt only turns after a bump. Make it look before it moves: ask about the wall inside the loop.', 'Inside the loop, before the move, add: if wall ahead, turn right.'],
+  check: { q: 'Bolt reached the goal but bumped on the way. For this test that is...', tiles: ['a fail: the rule was never bump', 'a pass', 'extra points'], answer: 0 } },
+
+/* ---------------- 7 Best Route ---------------- */
+{ id: 'br-1', ch: 'best-route', bands: ['1b'], csta: ['1B-AP-08'], shelf: ['move', 'left', 'right', 'repeat'], par: 6, programs: ['move; move; move; right; move; move; move', 'right; move; move; move; left; move; move; move'],
+  rows: ['######', '######', '...G##', '.##.##', '.##.##', '^...##'],
+  sol: 'repeat 3 { move }; right; repeat 3 { move }',
+  learn: { title: 'Two routes, one better', text: 'Two programs can both reach the flag. Run each one and count: which is shorter, which has fewer blocks, which avoids trouble? Pick the better one, then make it better still.' },
+  hints: ['Run both routes. Count the blocks in each.', 'Route A goes up and across in seven blocks. Can a repeat make it shorter?', 'Repeat 3 move, turn right, repeat 3 move.'],
+  check: { q: 'Two programs both work. The better one is usually the one that...', tiles: ['does the job with fewer steps or blocks', 'has the most blocks', 'was written first'], answer: 0 } },
+{ id: 'br-2', ch: 'best-route', bands: ['1b'], csta: ['1B-AP-08'], shelf: ['move', 'left', 'right', 'repeat'], par: 6, programs: ['move; move; move; move; left; move; move; move; move', 'repeat 3 { move }; left; repeat 4 { move }'],
+  rows: ['######', '####G#', '####.#', '####.#', '####.#', '>....#'],
+  sol: 'repeat 4 { move }; left; repeat 4 { move }',
+  hints: ['Route A works but is long. Route B is short but bumps. Which is easier to fix?', 'Route B turns one square too early. Fix its first repeat number.', 'Repeat 4 move, turn left, repeat 4 move.'],
+  check: { q: 'A short program with one bug is often...', tiles: ['the better start: fix the bug and keep it short', 'useless', 'the same as a long one'], answer: 0 } },
+{ id: 'br-3', ch: 'best-route', bands: ['1b'], csta: ['1B-AP-08'], shelf: ['move', 'left', 'right', 'repeat'], par: 10, programs: ['move; move; move; move', 'move; right; move; left; move; move; left; move; right; left; right; move'],
+  rows: ['######', '######', '>.~.G#', '....##', '######', '######'],
+  sol: 'move; right; move; left; move; move; left; move; right; move',
+  hints: ['Route A is short. Why does it not count?', 'Route B works but spins on the spot near the end. Which turns cancel each other?', 'Delete the turn left and turn right that come right after each other.'],
+  check: { q: 'The shortest program drove into the water. Shortest is best only if...', tiles: ['it still works', 'it has a loop', 'it has no turns'], answer: 0 } },
+{ id: 'br-4', ch: 'best-route', bands: ['1b'], csta: ['1B-AP-08'], shelf: ['move', 'left', 'right', 'repeat'], par: 5, programs: ['repeat 3 { move; right; move; left }', 'move; right; move; left; move; right; move; left; move; right; move; left; move; right; move; left'],
+  rows: ['######', '###.G#', '##..##', '#..###', '..####', '^#####'],
+  sol: 'repeat 4 { move; right; move; left }',
+  hints: ['Route B works with sixteen blocks. Route A has five but stops short.', 'Count the stairs. Route A repeats one stair too few.', 'Change Route A to repeat 4.'],
+  check: { q: 'Compared to sixteen single blocks, a loop that does the same thing is...', tiles: ['easier to read and to fix', 'slower for Bolt', 'less exact'], answer: 0 } },
+{ id: 'br-5', ch: 'best-route', bands: ['1b'], csta: ['1B-AP-08'], shelf: ['move', 'left', 'right', 'pick', 'repeat'], par: 7, programs: ['repeat 4 { move }; left; move; move', 'move; move; pick; move; move; pick; left; move; move'],
+  rows: ['######', '######', '######', '####G#', '####.#', '>.*.*#'],
+  sol: 'repeat 2 { move; move; pick }; left; move; move',
+  hints: ['Route A reaches the flag quickly. Why is the level not done?', 'Route B picks up both gems. Which part of it repeats?', 'Repeat 2 move, move, pick. Then turn left and two moves.'],
+  check: { q: 'Route A was fast but left the gems. Comparing routes means checking...', tiles: ['that they do the whole job, then how well', 'only the speed', 'only the number of turns'], answer: 0 } },
+{ id: 'brp-1', ch: 'best-route', bands: ['2'], csta2: ['2-AP-10'], shelf: ['move', 'left', 'right', 'until', 'ifelse'], defaultSensor: 'path', par: 4, random: true, gen: G.rightMaze(8),
+  plan: ['Start', 'Is Bolt on the goal? Yes: stop', 'Is the path ahead clear?', 'Yes: move forward', 'No: turn right', 'Back to the top'], flow: { shape: 'U:goal{I:path{m}E{r}}' },
+  sol: 'repeat until goal { if path { move } else { right } }', fixed: 'move; move; move; move; move; move; move; right; move; move; move; move; move; move; move; right; move; move; move; move; move; move',
+  learn: { title: 'A flowchart is a plan with shapes', text: 'Boxes are actions. Diamonds are questions with a yes way and a no way. Build the flowchart first by putting its tiles in order. Then your blocks must follow it exactly: the level checks the program against the chart.' },
+  hints: ['Follow the chart with your finger: what happens at the diamond?', 'The chart says: until the goal, if path ahead then move, else turn right. Your blocks must say the same.', 'Repeat until goal with: if path ahead move, else turn right.'],
+  check: { q: 'In a flowchart, a diamond is...', tiles: ['a question with a yes way and a no way', 'an action', 'the end'], answer: 0 } },
+{ id: 'brp-2', ch: 'best-route', bands: ['2'], csta2: ['2-AP-10'], shelf: ['move', 'left', 'right', 'pick', 'until', 'if', 'ifelse'], defaultSensor: 'gem', par: 7, random: true, gen: G.gemSpiral(8),
+  plan: ['Start', 'Is Bolt on the goal? Yes: stop', 'Is there a gem here? Yes: pick it up', 'Is the path ahead clear?', 'Yes: move forward', 'No: turn right', 'Back to the top'], flow: { shape: 'U:goal{I:gem{p}I:path{m}E{r}}' },
+  sol: 'repeat until goal { if gem { pick }; if path { move } else { right } }', fixed: 'move; move; pick; move; move; move; move; move; right; move; move; pick; move; move; move; move; right; move; move; move; move; move; move',
+  hints: ['Two diamonds this time. Which question comes first in the chart?', 'First: if on a gem, pick up. Then: if path ahead move, else turn right.', 'Repeat until goal with: if on a gem pick up; if path ahead move, else turn right.'],
+  check: { q: 'Two diamonds in a row mean...', tiles: ['two questions asked one after the other every time round', 'one question asked twice', 'the chart is broken'], answer: 0 } },
+{ id: 'brp-3', ch: 'best-route', bands: ['2'], csta2: ['2-AP-10'], shelf: ['move', 'left', 'right', 'until', 'when'], defaultEvent: 'bump', par: 4, random: true, gen: G.bumpSpiral(8),
+  plan: ['Start', 'When Bolt bumps: turn left', 'Is Bolt on the goal? Yes: stop', 'Move forward', 'Back to the top'], flow: { shape: 'W:bump{l}U:goal{m}' },
+  sol: 'when bump { left }; repeat until goal { move }', fixed: 'move; move; move; move; move; move; move; left; move; move; move; move; move; move; move; left; move; move; move; move; move; move',
+  hints: ['The chart has a side branch that starts with When. Which block is that?', 'When Bolt bumps, turn left. The main loop just moves until the goal.', 'When bump: turn left. Repeat until goal: move.'],
+  check: { q: 'A When branch in the chart runs...', tiles: ['whenever its event happens, wherever the main loop is', 'once at the start', 'only at the end'], answer: 0 } },
+{ id: 'brp-4', ch: 'best-route', bands: ['2'], csta2: ['2-AP-17', '2-AP-10'], shelf: ['move', 'left', 'right', 'repeat', 'untilwall', 'until'], par: 5,
+  layouts: [['########', '########', '########', '########', '####G###', '####.###', '####.###', '>....###'], ['########', '########', '########', '########', '######G#', '######.#', '######.#', '>......#']],
+  plan: ['Start', 'Is there a wall ahead? No: move forward and ask again', 'Yes: turn left', 'Is Bolt on the goal? No: move forward and ask again', 'Yes: stop'], flow: { shape: 'U:wall{m}lU:goal{m}' },
+  starter: 'repeat 4 { move }; left; repeat 3 { move }', sol: 'repeat until wall { move }; left; repeat until goal { move }',
+  learn: { title: 'Now the hallway is two squares longer', text: 'A program that counts squares breaks when the hallway grows. Test 2 is the same level with a longer hallway. Follow the flowchart: drive until the wall, turn, drive until the goal. Then both tests pass.' },
+  hints: ['The old program passes test 1. Run test 2. What changed?', 'Counting four moves only fits the short hallway. The chart says drive until the wall.', 'Repeat until wall ahead: move. Turn left. Repeat until goal: move.'],
+  check: { q: 'A program that passes test 1 and fails test 2...', tiles: ['is not finished yet', 'is finished', 'needs more moves'], answer: 0 } },
+{ id: 'brp-5', ch: 'best-route', bands: ['2'], csta2: ['2-AP-17', '2-AP-10'], shelf: ['move', 'left', 'right', 'pick', 'until', 'if', 'ifelse'], defaultSensor: 'gem', par: 7, random: true, gen: G.gemGapL(8),
+  plan: ['Start', 'Is Bolt on the goal? Yes: stop', 'Is there a gem here? Yes: pick it up', 'Is the path ahead clear?', 'Yes: move forward', 'No: turn left', 'Back to the top'], flow: { shape: 'U:goal{I:gem{p}I:path{m}E{l}}' },
+  sol: 'repeat until goal { if gem { pick }; if path { move } else { left } }', fixed: 'move; pick; move; move; pick; left; move; move; move; move',
+  hints: ['Three tests: the corner and the gems move. Only a chart-shaped program passes all three.', 'Pick up if on a gem. Then: if path ahead move, else turn left.', 'Repeat until goal with: if on a gem pick up; if path ahead move, else turn left.'],
+  check: { q: 'The same program passed three different boards because...', tiles: ['it asked questions instead of counting', 'the boards were the same', 'it was long'], answer: 0 } },
+
+/* ---------------- 8 Level Maker: three fix-this-level tasks, then free building ---------------- */
+{ id: 'mk-1', ch: 'level-maker', bands: ['1b', '2'], csta: ['1B-AP-13'], csta2: ['2-AP-15'], maker: true, shelf: ['floor', 'wall'], par: 1,
+  rows: ['######', '#....#', '#.####', '#.#G##', '#.####', '#^####'], rule: { solvable: true },
+  task: 'The goal is walled in. Open one wall so Bolt can reach it, then press Check.',
+  sol: ['######', '#....#', '#.####', '#..G##', '#.####', '#^####'],
+  learn: { title: 'Plan, build, test, improve', text: 'In the Level Maker you paint the board: pick a tile, tap a square. Check proves a level can be solved and tells you its par. Test with a friend hands the device over. Nothing is typed: a level code carries the whole board.' },
+  hints: ['Where is the goal? Which squares around it are walls?', 'Pick the floor tile and tap one wall next to the goal that touches the corridor.', 'Tap the wall on the left of the goal, then press Check.'],
+  check: { q: 'Check turns red and says no way to the goal. That means...', tiles: ['no program could ever solve the level', 'the level is hard', 'Bolt is tired'], answer: 0 },
+  pro: { rows: ['########', '#......#', '#.######', '#.##G###', '#.######', '#.######', '#.######', '#^######'], sol: ['########', '#......#', '#.######', '#...G###', '#.######', '#.######', '#.######', '#^######'], rule: { solvable: true },
+    task: 'The goal is walled in. Open walls so Bolt can reach it, then press Check.', hints: ['Where is the goal? Which squares around it are walls?', 'Pick the floor tile and open a way from the corridor to the goal.', 'Open the two walls between the corridor and the goal, then press Check.'] } },
+{ id: 'mk-2', ch: 'level-maker', bands: ['1b', '2'], csta: ['1B-AP-13'], csta2: ['2-AP-15'], maker: true, shelf: ['floor', 'wall', 'goal'], par: 1,
+  rows: ['######', '######', '#>G..#', '#....#', '#....#', '######'], rule: { solvable: true, minPar: 6 },
+  task: 'Too easy: par is 1. Move the goal or add walls until par is at least 6. Keep it solvable.',
+  sol: ['######', '######', '#>...#', '#.##.#', '#...G#', '######'],
+  hints: ['Par is the fewest commands a perfect program needs. How do you make Bolt work harder?', 'Move the goal to the far corner, or put walls in the straight way.', 'Put the goal in the bottom corner and a wall in the middle, then press Check.'],
+  check: { q: 'Par in the Level Maker is...', tiles: ['the fewest commands any program needs to solve it', 'the number of walls', 'how many friends tested it'], answer: 0 },
+  pro: { rows: ['########', '########', '#>G....#', '#......#', '#......#', '#......#', '########', '########'], rule: { solvable: true, minPar: 10 }, sol: ['########', '########', '#>.....#', '######.#', '#......#', '#G.....#', '########', '########'],
+    task: 'Too easy: par is 1. Move the goal or add walls until par is at least 10. Keep it solvable.', hints: ['Par is the fewest commands a perfect program needs. How do you make Bolt work harder?', 'Move the goal far away and put a wall across the straight way.', 'Put the goal in the bottom corner and a long wall in the middle, then press Check.'] } },
+{ id: 'mk-3', ch: 'level-maker', bands: ['1b'], csta: ['1B-AP-13', '1B-AP-12'], maker: true, shelf: ['floor', 'wall', 'gem', 'key', 'door'], par: 1,
+  rows: ['######', '#>...#', '#.##.#', '#.##.#', '#...G#', '######'], rule: { solvable: true, gems: 1, key: true, door: true },
+  task: 'Make it a quest: add a gem, a key and a door on the way to the goal. Keep it solvable.',
+  sol: ['######', '#>*..#', '#.##.#', '#K##.#', '#..DG#', '######'],
+  hints: ['A door only opens for a key. Where must the key be?', 'Put the key before the door on the way, and a gem anywhere Bolt can reach.', 'Gem next to Bolt, key on the left side, door right before the goal. Then Check.'],
+  check: { q: 'A level with a door and no key is...', tiles: ['unsolvable: Check will refuse it', 'harder', 'fine'], answer: 0 } },
+{ id: 'mk-3p', ch: 'level-maker', bands: ['2'], csta2: ['2-AP-16', '2-AP-15'], maker: true, shelf: ['floor', 'wall', 'water', 'gem', 'key', 'door', 'goal'], par: 1,
+  rows: ['########', '#>.....#', '#.####.#', '#.####.#', '#.####.#', '#.####.#', '#.....G#', '########'], rule: { solvable: true, remix: 3 }, remixBase: true,
+  task: 'Remix: this level came from a code. Change at least three squares, keep it solvable, and keep the based-on stamp.',
+  sol: ['########', '#>.*...#', '#.####.#', '#.####.#', '#.####.#', '#.####*#', '#...~.G#', '########'],
+  hints: ['A remix keeps the based-on stamp and changes something real.', 'Add gems, a puddle or a wall: three squares or more. Then Check.', 'Put two gems on the way and a puddle in the bottom row, then press Check.'],
+  check: { q: 'The based-on stamp on a remixed level...', tiles: ['credits the level it came from', 'makes it harder', 'is the par'], answer: 0 } },
 ];
 
 /** The levels of a chapter for a band, with the Pro overrides folded in. */
@@ -920,15 +1291,59 @@ function levelsFor(chapterId, band) {
 const BLOCKS = {
   move: { label: 'move', icon: 'up', kind: 'move' }, left: { label: 'turn left', icon: 'left', kind: 'move' }, right: { label: 'turn right', icon: 'right', kind: 'move' },
   pick: { label: 'pick up', icon: 'gem', kind: 'move' }, drop: { label: 'drop', icon: 'down', kind: 'move' },
-  repeat: { label: 'repeat', icon: 'restart', kind: 'loop' }, until: { label: 'repeat until goal', icon: 'flag', kind: 'loop' },
+  repeat: { label: 'repeat', icon: 'restart', kind: 'loop' }, until: { label: 'repeat until goal', icon: 'flag', kind: 'loop' }, untilwall: { label: 'repeat until wall ahead', icon: 'lock', kind: 'loop' },
   if: { label: 'if', icon: 'question', kind: 'if' }, ifelse: { label: 'if / else', icon: 'swap', kind: 'if' }, when: { label: 'when', icon: 'spark', kind: 'event' },
   set: { label: 'set', icon: 'pencil', kind: 'var' }, change: { label: 'change by', icon: 'plus', kind: 'var' },
   proc: { label: 'My Block', icon: 'book', kind: 'proc' }, call: { label: 'call', icon: 'play', kind: 'proc' },
 };
 const SENSOR_LABELS = { path: 'path ahead', wall: 'wall ahead', gem: 'on a gem', pickup: 'something to pick up', paint: 'on paint', key: 'I have the key', plate: 'on the button', goal: 'on the goal' };
 const EVENT_LABELS = { gem: 'a gem is picked up', bump: 'Bolt bumps', plate: 'the button is pressed' };
+/** The Level Maker's tiles (a palette of at most eight) and the words for them. */
+const TILES = { floor: { ch: '.', label: 'floor', icon: 'move' }, wall: { ch: '#', label: 'wall', icon: 'lock' }, water: { ch: '~', label: 'water', icon: 'drag' }, gem: { ch: '*', label: 'gem', icon: 'gem' }, key: { ch: 'K', label: 'key', icon: 'key' }, door: { ch: 'D', label: 'door', icon: 'unlock' }, goal: { ch: 'G', label: 'goal', icon: 'flag' }, bolt: { ch: '>', label: 'Bolt', icon: 'user' } };
+const MAKER_SHELF = ['move', 'left', 'right', 'pick', 'repeat', 'until', 'ifelse'];
+/** The door rule of a painted board: a key opens it when there is one, else it wants every gem. */
+const doorRuleOf = rows => (rows.some(r => r.includes('K')) ? 'key' : { gems: Math.min(4, rows.join('').split('*').length - 1) });
+/** What Check says (English keys the game translates). */
+const WHY = { bolt: 'Place Bolt first.', goal: 'Place the goal flag.', door: 'A door needs a key, or gems to count.', path: 'No way to the goal. Open a path, or put the key before the door.', par: 'Solvable, but par is only {n}. Make it harder.', gem: 'Add a gem.', key: 'Add a key.', needDoor: 'Add a door.', remix: 'Change at least {n} squares.', ok: 'Solvable! Par {n}.' };
+/** The maker's own hints: free building, and the level a friend tests. */
+const MAKER_HINTS = {
+  free: ['What should a player have to figure out on your board?', 'Place Bolt and the goal first, then press Check. Walls and water make the route; gems and a key make a quest.', 'A good first level: one corner, one gem, a par of six or more.'],
+  test: ['Count the squares, or let a loop count them.', 'A corner needs a turn. A gem needs a pick up where Bolt stands.', 'Drive to the first turn, turn, then drive again.'],
+};
+const DAILY_HINTS = ['What changes from day to day on this board? Bolt has to notice it as it drives.', 'Build the loop first, then put the if or when inside it.'];
+/** Does a painted board do what a maker task asks? -> { ok, why, n, check } (why is a message key). */
+function makerOk(level, rows) {
+  const rule = level.rule || { solvable: true }, text = rows.join('');
+  const g = E.parseGrid(rows);
+  if (!g.start) return { ok: false, why: WHY.bolt };
+  if (!g.goal) return { ok: false, why: WHY.goal };
+  if (text.includes('D') && !text.includes('K') && !text.includes('*')) return { ok: false, why: WHY.door };
+  const check = E.check({ rows, door: doorRuleOf(rows) });
+  if (!check.solvable) return { ok: false, why: WHY.path, check };
+  if (rule.minPar && check.par < rule.minPar) return { ok: false, why: WHY.par, n: check.par, check };
+  if (rule.gems && (text.split('*').length - 1) < rule.gems) return { ok: false, why: WHY.gem, check };
+  if (rule.key && !text.includes('K')) return { ok: false, why: WHY.key, check };
+  if (rule.door && !text.includes('D')) return { ok: false, why: WHY.needDoor, check };
+  if (rule.remix) { const base = level.rows.join(''); let diff = 0; for (let i = 0; i < text.length; i++) if (text[i] !== base[i]) diff++; if (diff < rule.remix) return { ok: false, why: WHY.remix, n: rule.remix, check }; }
+  return { ok: true, why: WHY.ok, n: check.par, check };
+}
+/** The Daily Crew Challenge: one board a day from these templates, seeded by the day number. No new words needed. */
+const DAILY = [
+  { gen: 'gapL', shelf: ['move', 'left', 'right', 'until', 'ifelse'], par: 4, defaultSensor: 'path', hint: 'The corner is somewhere along the way. Let Bolt feel for it with an if.' },
+  { gen: 'paintSpiral', shelf: ['move', 'left', 'right', 'until', 'if'], par: 4, defaultSensor: 'paint', hint: 'Paint marks the corners. Move, then ask: on paint?' },
+  { gen: 'bumpSpiral', shelf: ['move', 'left', 'right', 'until', 'when'], par: 4, defaultEvent: 'bump', hint: 'A bump can be useful: catch it with a when block and turn.' },
+  { gen: 'gemRow', shelf: ['move', 'pick', 'until', 'if'], par: 5, defaultSensor: 'gem', hint: 'Pick up only when there is a gem under Bolt.' },
+  { gen: 'rightMaze', shelf: ['move', 'left', 'right', 'until', 'ifelse'], par: 4, defaultSensor: 'path', hint: 'One rule for every wall: if the path is clear move, else turn.' },
+  { gen: 'countRow', shelf: ['move', 'pick', 'until', 'if', 'set', 'change'], par: 7, defaultSensor: 'gem', vars: ['count'], door: { var: 'count', n: 'all' }, hint: 'The door wants the true number of gems in the count box.' },
+  { gen: 'gemSpiral', shelf: ['move', 'left', 'right', 'pick', 'until', 'if', 'ifelse'], par: 7, defaultSensor: 'gem', hint: 'Two questions every step: a gem here? a path ahead?' },
+];
+function dailyLevel(day, band) {
+  const t = DAILY[((day % DAILY.length) + DAILY.length) % DAILY.length], n = band === '2' ? 8 : 6;
+  const rows = G[t.gen](n)(E.rng(day * 131 + 17));
+  return Object.assign({ id: 'daily', ch: 'daily', bands: ['1b', '2'], csta: [], csta2: [], layouts: [rows], day, hints: [DAILY_HINTS[0], t.hint, DAILY_HINTS[1]] }, t, { gen: undefined });
+}
 
-root.RoboRouteLevels = { CHAPTERS, LEVELS, BLOCKS, SENSOR_LABELS, EVENT_LABELS, parse, levelsFor, gens: G, spiral };
+root.RoboRouteLevels = { CHAPTERS, LEVELS, BLOCKS, SENSOR_LABELS, EVENT_LABELS, CHIPS, CREDITS, PROC_NAMES, TILES, MAKER_SHELF, DAILY, WHY, MAKER_HINTS, DAILY_HINTS, parse, levelsFor, gens: G, spiral, doorRuleOf, makerOk, dailyLevel };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>
@@ -940,7 +1355,7 @@ root.RoboRouteLevels = { CHAPTERS, LEVELS, BLOCKS, SENSOR_LABELS, EVENT_LABELS, 
    and the board, block shelf, program and cards as kit DOM. Everything the player taps is a real button; nothing is
    ever typed. ===== */
 const E = window.RoboRoute, LV = window.RoboRouteLevels;
-const { CHAPTERS, BLOCKS, SENSOR_LABELS, EVENT_LABELS, parse, levelsFor } = LV;
+const { CHAPTERS, BLOCKS, SENSOR_LABELS, EVENT_LABELS, CHIPS, CREDITS, PROC_NAMES, TILES, MAKER_SHELF, MAKER_HINTS, parse, levelsFor, makerOk, dailyLevel, doorRuleOf } = LV;
 const HAS_BRB = typeof window.BRB === 'object' && !!window.BRB;
 const PARAMS = (window.BRB && BRB.params) || {};
 const LIVE = !!(HAS_BRB && BRB.live && BRB.live.active);
@@ -974,28 +1389,11 @@ function tr(s, v) {
 }
 window.RoboRouteT = tr;
 
-/* ---------- kit: the world behind, colors ---------- */
-Oomba.ui.root().appendChild($('#game'));
-let STAGE = null;
-try { STAGE = Oomba.stage({ api: 1, biome: 'meadow', size: [960, 540], dress: 'off' }); STAGE.camera.y = -90; } catch (e) { /* the page works without the world */ }
-const C = (hue, step) => { try { return Oomba.color(hue, step); } catch (e) { return null; } };
-const VARS = { go: C('mint', 'light'), 'go-tint': C('mint', 'tint'), hot: C('spark', 'light'), tint: C('sky', 'tint'), sel: C('spark', 'tint'), 'wrong-tint': C('coral', 'tint'),
-  frame: C('cocoa', 'shade'), wall: C('stone', 'base'), wall2: C('stone', 'shade'), water: C('sky', 'light'), water2: C('sky', 'base'), paint: C('grape', 'tint'), paint2: C('grape', 'light'),
-  plate: C('peach', 'light'), door: C('cocoa', 'light'), bolt: C('sky', 'base'), visor: C('stone', 'shade'), paintjob: C('spark', 'base'), rail: C('stone', 'light'), 'var-tint': C('peach', 'tint'),
-  'k-move': C('sky', 'base'), 'k-loop': C('spark', 'base'), 'k-if': C('grape', 'base'), 'k-event': C('coral', 'base'), 'k-var': C('peach', 'base'), 'k-proc': C('mint', 'base') };
-for (const k in VARS) if (VARS[k]) document.documentElement.style.setProperty('--rr-' + k, VARS[k]);
-const BOLT_SVG = (paint = 0) => `<svg viewBox="0 0 64 64" aria-hidden="true"><g class="rr-b1"><rect x="13" y="20" width="38" height="34" rx="9"/><rect x="23" y="7" width="18" height="15" rx="5"/><line x1="32" y1="7" x2="32" y2="2"/><circle cx="32" cy="2" r="2.4"/></g><g class="rr-b2"><rect x="18" y="27" width="28" height="13" rx="5"/><rect x="6" y="30" width="7" height="18" rx="3"/><rect x="51" y="30" width="7" height="18" rx="3"/></g><circle class="rr-eye" cx="26" cy="33.5" r="3"/><circle class="rr-eye" cx="38" cy="33.5" r="3"/><g class="rr-b3" data-paint="${paint}"><rect x="22" y="43" width="20" height="6" rx="3"/><rect x="28" y="10" width="8" height="4" rx="2"/></g></svg>`;
-$('#titleBolt').innerHTML = BOLT_SVG();
-$('#bolt').innerHTML = BOLT_SVG();
-const announce = s => { try { Oomba.ui.announce(s); } catch (e) { /* ignore */ } };
-const sfx = (n, o) => { try { Oomba.sfx(n, o); } catch (e) { /* ignore */ } };
-const btn = (label, o) => Oomba.ui.button(label, o);
-
 /* ---------- save ---------- */
 function loadSave() { try { const v = HAS_BRB ? BRB.storage.get(SAVE_KEY) : null; return v && typeof v === 'object' ? v : null; } catch (e) { return null; } }
-const SAVE = Object.assign({ v: 1, band: '1b', stars: { '1b': {}, '2': {} }, learned: {}, paint: 0 }, loadSave() || {});
-if (!SAVE.stars['1b']) SAVE.stars['1b'] = {}; if (!SAVE.stars['2']) SAVE.stars['2'] = {};
-const save = () => { try { if (HAS_BRB && !S.lesson) BRB.storage.set(SAVE_KEY, SAVE); else if (HAS_BRB) BRB.storage.set(SAVE_KEY, SAVE); } catch (e) { /* full or off */ } };
+const SAVE = Object.assign({ v: 1, band: '1b', stars: { '1b': {}, '2': {} }, learned: {}, paint: 0, levels: [], pair: false, daily: null, lessonPrefs: 0 }, loadSave() || {});
+if (!SAVE.stars['1b']) SAVE.stars['1b'] = {}; if (!SAVE.stars['2']) SAVE.stars['2'] = {}; if (!Array.isArray(SAVE.levels)) SAVE.levels = [];
+const save = () => { try { if (HAS_BRB) BRB.storage.set(SAVE_KEY, SAVE); } catch (e) { /* full or off */ } };
 const rec = (band, ch) => (SAVE.stars[band][ch] = SAVE.stars[band][ch] || { s: [], d: [] });
 
 /* ---------- params and quest codes ---------- */
@@ -1009,11 +1407,38 @@ function readParams(p) {
   return { chapter, band, mode, level, lock, any: !!(chapter || band || mode || level || lock) };
 }
 const P = readParams(PARAMS);
+// the Pro band plays in the kit's Bold style (chosen before the stage is made; a band switch on the map applies on the next visit)
+const BAND0 = P.band || (SAVE.band === '2' ? '2' : '1b');
+if (BAND0 === '2') { try { Oomba.style('bold'); } catch (e) { /* the playful style then */ } }
+
+/* ---------- kit: the world behind, colors ---------- */
+Oomba.ui.root().appendChild($('#game'));
+let STAGE = null;
+try { STAGE = Oomba.stage({ api: 1, biome: 'meadow', size: [960, 540], dress: 'off' }); STAGE.camera.y = -90; } catch (e) { /* the page works without the world */ }
+const C = (hue, step) => { try { return Oomba.color(hue, step); } catch (e) { return null; } };
+const VARS = { go: C('mint', 'light'), 'go-tint': C('mint', 'tint'), hot: C('spark', 'light'), tint: C('sky', 'tint'), sel: C('spark', 'tint'), 'wrong-tint': C('coral', 'tint'),
+  frame: C('cocoa', 'shade'), wall: C('stone', 'base'), wall2: C('stone', 'shade'), water: C('sky', 'light'), water2: C('sky', 'base'), paint: C('grape', 'tint'), paint2: C('grape', 'light'),
+  plate: C('peach', 'light'), door: C('cocoa', 'light'), bolt: C('sky', 'base'), visor: C('stone', 'shade'), paintjob: C('spark', 'base'), rail: C('stone', 'light'), 'var-tint': C('peach', 'tint'),
+  'k-move': C('sky', 'base'), 'k-loop': C('spark', 'base'), 'k-if': C('grape', 'base'), 'k-event': C('coral', 'base'), 'k-var': C('peach', 'base'), 'k-proc': C('mint', 'base'), silver: C('stone', 'light'), fog: C('stone', 'shade') };
+for (const k in VARS) if (VARS[k]) document.documentElement.style.setProperty('--rr-' + k, VARS[k]);
+/** Chapter crowns recolor Bolt's paint job: one color per crown, cosmetic, kept in the save. */
+const PAINTS = [C('spark', 'base'), C('coral', 'base'), C('grape', 'base'), C('mint', 'base'), C('sky', 'light'), C('peach', 'base'), C('stone', 'light'), C('coral', 'light'), C('grape', 'light')];
+function crownCount() { let n = 0; for (const ch of CHAPTERS) for (const b of ['1b', '2']) { const lv = levelsFor(ch.id, b), r = rec(b, ch.id); if (lv.length && lv.every((_, i) => (r.s[i] | 0) === 3)) n++; } return n; }
+const crowned = ch => ['1b', '2'].some(b => { const lv = levelsFor(ch.id, b), r = rec(b, ch.id); return lv.length && lv.every((_, i) => (r.s[i] | 0) === 3); });
+function applyPaint() { const c = PAINTS[crownCount() % PAINTS.length]; if (c) document.documentElement.style.setProperty('--rr-paintjob', c); SAVE.paint = crownCount(); }
+const BOLT_SVG = (paint = 0) => `<svg viewBox="0 0 64 64" aria-hidden="true"><g class="rr-b1"><rect x="13" y="20" width="38" height="34" rx="9"/><rect x="23" y="7" width="18" height="15" rx="5"/><line x1="32" y1="7" x2="32" y2="2"/><circle cx="32" cy="2" r="2.4"/></g><g class="rr-b2"><rect x="18" y="27" width="28" height="13" rx="5"/><rect x="6" y="30" width="7" height="18" rx="3"/><rect x="51" y="30" width="7" height="18" rx="3"/></g><circle class="rr-eye" cx="26" cy="33.5" r="3"/><circle class="rr-eye" cx="38" cy="33.5" r="3"/><g class="rr-b3" data-paint="${paint}"><rect x="22" y="43" width="20" height="6" rx="3"/><rect x="28" y="10" width="8" height="4" rx="2"/></g></svg>`;
+$('#titleBolt').innerHTML = BOLT_SVG();
+$('#bolt').innerHTML = BOLT_SVG();
+const announce = s => { try { Oomba.ui.announce(s); } catch (e) { /* ignore */ } };
+const sfx = (n, o) => { try { Oomba.sfx(n, o); } catch (e) { /* ignore */ } };
+const btn = (label, o) => Oomba.ui.button(label, o);
+
 
 /* ---------- state ---------- */
 const S = { screen: 'boot', band: P.band || (SAVE.band === '2' ? '2' : '1b'), lesson: P.any, lock: P.lock, mode: P.mode || 'play', chapter: null, levels: [], li: 0, level: null, grid: null, layout: 0,
   prog: [], sel: null, cur: null, runs: 0, fails: 0, hint: 0, hint3: false, checks: { ok: 0, n: 0 }, seed: 1, rng: E.rng(1), instant: false, playing: false, abort: false, lastRun: null,
-  planDone: true, predicted: true, stepEvents: null, stepI: 0, startBlocks: 0, hud: null, questLabel: '', ids: 0, chained: 0 };
+  planDone: true, predicted: true, stepEvents: null, stepI: 0, startBlocks: 0, hud: null, questLabel: '', ids: 0, chained: 0, compare: null, starter0: null, testing: null, pairCount: 0, driver: 0, winStamp: 0 };
+applyPaint();
 if (S.mode === 'projector') document.documentElement.classList.add('rr-projector');
 const isPro = () => S.band === '2';
 const bandName = b => tr((b || S.band) === '2' ? 'Pro' : 'Explorer');
@@ -1024,19 +1449,22 @@ const nextOpen = () => { const r = rec(S.band, S.chapter.id); const i = S.levels
 const levelOpen = i => i === 0 || !!rec(S.band, S.chapter.id).d[i - 1];
 
 /* ---------- screens ---------- */
-const SCREENS = ['map', 'rr'];
-function showOnly(name) { for (const id of SCREENS) $('#' + id).hidden = id !== name; $('#titleBolt').hidden = name !== 'title'; }
+const SCREENS = ['map', 'rr', 'mk'];
+function showOnly(name) { for (const id of SCREENS) $('#' + id).hidden = id !== name; $('#titleBolt').hidden = name !== 'title'; $('#pairBtn').hidden = name !== 'title' || LIVE; }
 const closeKitScreens = () => document.querySelectorAll('.ok-ui .ok-modal:not(#scrim) [data-ok-focus]').forEach(b => b.click());
 function removeHud() { if (S.hud) { try { S.hud.root.remove(); } catch (e) { /* ignore */ } S.hud = null; } }
 let titleOpen = false;
+function renderPairBtn() { const b = $('#pairBtn'); b.innerHTML = ICON('user') + '<span>' + esc(tr('Two on one device')) + '</span>'; b.setAttribute('aria-pressed', String(!!SAVE.pair)); b.onclick = () => { SAVE.pair = !SAVE.pair; save(); sfx('select'); renderPairBtn(); announce(SAVE.pair ? tr('Pair mode on: take turns driving.') : tr('Pair mode off')); }; }
 async function goTitle() {
-  closeCard(); removeHud(); S.screen = 'title'; showOnly('title'); Oomba.scene = 'title';
+  closeCard(); removeHud(); S.screen = 'title'; showOnly('title'); Oomba.scene = 'title'; renderPairBtn();
   if (titleOpen) return; titleOpen = true;
   await Oomba.ui.title({ title: 'Robo Route', subtitle: tr('Snap blocks together and drive Bolt the robot to the goal!'), hero: false, titleHue: 'mint' });
   titleOpen = false;
   if (S.screen === 'title') onPlay();
 }
 function onPlay() {
+  // a class quest starts quiet: music off, captions on (once; the player's own choices stay after that)
+  if (S.lesson && !SAVE.lessonPrefs) { SAVE.lessonPrefs = 1; save(); try { Oomba.settings.set({ music: false, captions: true }); } catch (e) { /* ignore */ } }
   if (S.lesson) startChapter(P.chapter || (S.quest && S.quest.chapter) || 'sequences', { level: P.level || (S.quest && S.quest.level) || null });
   else goMap();
 }
@@ -1056,49 +1484,96 @@ function renderMap() {
   }
   const gs = $('#gearSlot'); gs.innerHTML = ''; gs.appendChild(btn(tr('Quest Card'), { kind: 'icon', icon: 'settings', onPress: openQuestCard }));
   const tiles = $('#tiles'); tiles.innerHTML = '';
+  const day = dayNumber(), dstars = SAVE.daily && SAVE.daily.day === day ? SAVE.daily.stars : 0;
+  const d = el('button', 'rr-tile daily'); d.type = 'button';
+  d.innerHTML = `<span class="ic">${ICON('spark')}</span><span><b>${esc(tr('Daily Crew Challenge'))}</b><small>${esc(dstars ? tr('{n} stars', { n: dstars }) : tr('One new board today'))}</small></span>`;
+  d.addEventListener('click', startDaily); tiles.appendChild(d);
   for (const ch of CHAPTERS) {
     const t = el('button', 'rr-tile'); t.type = 'button';
     const r = rec(S.band, ch.id), n = levelsFor(ch.id, S.band).length, done = r.d.filter(Boolean).length, stars = r.s.reduce((a, b) => a + (b > 0 ? b : 0), 0);
-    const silver = S.band === '2' ? '' : '';
-    t.innerHTML = `<span class="ic">${ICON(ch.icon)}</span><span><b>${esc(chapterTitle(ch))}</b><small>${ch.soon ? esc(tr('Coming soon')) : esc(tr('{done}/{total} levels', { done, total: n })) + ' · ' + esc(tr('{n} stars', { n: stars }))}</small></span>`;
-    if (ch.soon) t.disabled = true; else t.addEventListener('click', () => startChapter(ch.id));
-    if (!ch.soon && n && stars === n * 3) t.classList.add('crown');
-    t.setAttribute('aria-label', chapterTitle(ch) + (ch.soon ? ', ' + tr('Coming soon') : ''));
+    // Explorer stars earned by a Pro player show silver next to the Pro count
+    const other = S.band === '2' ? rec('1b', ch.id).s.reduce((a, b) => a + (b > 0 ? b : 0), 0) : 0;
+    const silver = other ? ` <span class="st silver" aria-label="${esc(tr('{n} Explorer stars', { n: other }))}">${ICON('star')} ${Oomba.num(other)}</span>` : '';
+    const noun = ch.mode === 'maker' ? tr('{done}/{total} tasks', { done, total: n }) : tr('{done}/{total} levels', { done, total: n });
+    t.innerHTML = `<span class="ic">${ICON(ch.icon)}</span><span><b>${esc(chapterTitle(ch))}</b><small>${esc(noun)} · ${esc(tr('{n} stars', { n: stars }))}${silver}</small></span>${crowned(ch) ? `<span class="crownic" aria-label="${esc(tr('Crown'))}">${ICON('trophy')}</span>` : ''}`;
+    t.addEventListener('click', () => startChapter(ch.id));
+    if (n && stars === n * 3) t.classList.add('crown');
+    t.setAttribute('aria-label', chapterTitle(ch) + (crowned(ch) ? ', ' + tr('Crown') : ''));
     tiles.appendChild(t);
   }
+}
+/* ---------- the Daily Crew Challenge: one board a day for everyone, from the UTC day number ---------- */
+function dayNumber() { return Math.floor(new Date().getTime() / 86400000); }
+function startDaily() {
+  const day = dayNumber(), lv = dailyLevel(day, S.band);
+  S.chapter = { id: 'daily', index: 0, title: 'Daily Crew Challenge', icon: 'spark', csta: { '1b': [], '2': [] } }; S.levels = [lv];
+  if (!S.hud) S.hud = Oomba.ui.hud(['progress', 'count:star'], { onPause: v => { if (v === 'restart') startLevel(S.li); if (v === 'quit') { S.quest = null; goTitle(); } } });
+  startLevel(0);
 }
 
 /* ---------- a chapter and its levels ---------- */
 function startChapter(id, o = {}) {
-  const ch = CHAPTERS.find(c => c.id === id && !c.soon) || CHAPTERS[0];
-  S.chapter = ch; S.levels = levelsFor(ch.id, S.band);
+  const ch = CHAPTERS.find(c => c.id === id) || CHAPTERS[0];
+  S.chapter = ch; S.levels = levelsFor(ch.id, S.band); S.testing = null;
   if (!S.levels.length) return goMap();
+  if (!S.hud) { S.hud = Oomba.ui.hud(['progress', 'count:star'], { onPause: v => { if (v === 'restart') { if (S.screen === 'maker') startMaker(M.free ? 'free' : M.ti); else startLevel(S.li); } if (v === 'quit') { S.quest = null; goTitle(); } } }); }
   // a level asked for by name (a teacher's level param, a quest code's last digit, a test) opens even when the ones
   // before it are not done; otherwise the chapter's first unfinished level
+  if (ch.mode === 'maker') { const r = rec(S.band, ch.id); const allDone = S.levels.every((_, i) => r.d[i]); return startMaker(o.level ? Math.min(S.levels.length, o.level) - 1 : allDone ? 'free' : nextOpen()); }
   const i = o.level ? Math.min(S.levels.length, o.level) - 1 : nextOpen();
-  if (!S.hud) { S.hud = Oomba.ui.hud(['progress', 'count:star'], { onPause: v => { if (v === 'restart') startLevel(S.li); if (v === 'quit') { S.quest = null; goTitle(); } } }); }
   startLevel(i);
 }
-function startLevel(i) {
-  closeCard(); S.li = i; S.level = S.levels[i]; S.screen = 'play'; Oomba.scene = 'play'; showOnly('rr');
-  S.prog = S.level.starter ? withIds(parse(S.level.starter)) : []; S.startBlocks = E.blocks(S.prog); S.sel = null; S.cur = null;
-  S.runs = 0; S.fails = 0; S.hint = 0; S.hint3 = false; S.layout = 0; S.planDone = !S.level.plan; S.predicted = !S.level.predict; S.stepEvents = null; S.lastRun = null; S.playing = false;
-  $('#lvlPill').textContent = tr('{chapter} · Level {n}', { chapter: chapterTitle(S.chapter), n: i + 1 });
-  const q = $('#questPill'); q.hidden = !S.lesson; if (S.lesson) q.textContent = tr('Class quest: {chapter} · {band}', { chapter: chapterTitle(S.chapter), band: bandName() });
+function startLevel(i, record) {
+  closeCard(); S.winStamp++; S.li = i; S.level = record || S.levels[i]; S.screen = 'play'; Oomba.scene = 'play'; showOnly('rr');
+  S.starter0 = S.level.starter ? parse(S.level.starter) : null;
+  S.prog = S.starter0 ? withIds(JSON.parse(JSON.stringify(S.starter0))) : []; S.startBlocks = E.blocks(S.prog); S.sel = null; S.cur = null;
+  S.runs = 0; S.fails = 0; S.hint = 0; S.hint3 = false; S.layout = 0; S.planDone = !S.level.plan; S.predicted = !S.level.predict; S.stepEvents = null; S.lastRun = null; S.playing = false; S.watchVars = {};
+  S.compare = S.level.programs ? { picked: null } : null;
+  const title = S.testing ? tr('A friend tests your level') : S.chapter.id === 'daily' ? tr('Daily Crew Challenge') : tr('{chapter} · Level {n}', { chapter: chapterTitle(S.chapter), n: i + 1 });
+  $('#lvlPill').textContent = title;
+  const q = $('#questPill'); q.hidden = !S.lesson || !!S.testing; if (S.lesson) q.textContent = tr('Class quest: {chapter} · {band}', { chapter: chapterTitle(S.chapter), band: bandName() });
+  renderPair(); renderTabs();
   layoutClass(); buildBoard(); renderShelf(); renderProgram(); renderTray(); renderRunbar(); renderWatch(); updateHud(); after(0, fitGrid);
-  announce(tr('{chapter} · Level {n}', { chapter: chapterTitle(S.chapter), n: i + 1 }));
+  announce(title);
   if (S.level.learn && !SAVE.learned[S.level.id + ':' + S.band]) openLearn(); else if (S.level.plan) openPlan();
+  // pair mode: the Swap! banner every three levels, and the other avatar takes the wheel
+  if (SAVE.pair && !S.testing && S.chapter.id !== 'daily') { S.pairCount++; if (S.pairCount > 1 && (S.pairCount - 1) % 3 === 0) { S.driver = S.driver ? 0 : 1; renderPair(); after(350, () => { try { Oomba.ui.banner('correct', null, tr('Swap! The navigator drives now.')); } catch (e) { /* ignore */ } sfx('levelup'); }); } }
 }
+/* two avatars when two play on one device: the driver is lit */
+let AVATARS = null;
+function renderPair() {
+  const p = $('#pairPill'); p.hidden = !SAVE.pair || !!S.testing; if (p.hidden) return;
+  if (!AVATARS) { AVATARS = []; try { AVATARS.push(Oomba.ui.portrait(Oomba.avatar(), { size: 30 })); } catch (e) { AVATARS.push(null); } try { AVATARS.push(Oomba.ui.portrait(Oomba.char({ species: 'fox', mood: 'happy' }), { size: 30 })); } catch (e) { AVATARS.push(null); } }
+  p.innerHTML = '';
+  AVATARS.forEach((c, i) => { const a = el('span', 'av' + (S.driver === i ? ' on' : '')); if (c) a.appendChild(c); else a.innerHTML = ICON('user'); a.setAttribute('aria-label', S.driver === i ? tr('Driver') : tr('Navigator')); p.appendChild(a); });
+  p.appendChild(el('span', '', esc(tr('Driver'))));
+  p.setAttribute('aria-label', tr('Pair mode: player {n} drives', { n: S.driver + 1 }));
+}
+/* the Debug Lab's test grids and Best Route's re-tests: one tab per board, a tick or a cross after a run */
+function renderTabs() {
+  const t = $('#tabs'); t.innerHTML = '';
+  const lays = S.level.layouts && !S.level.random ? E.layoutsOf(S.level) : null; t.hidden = !lays || lays.length < 2; if (t.hidden) return;
+  const marks = S.lastRun && S.lastRun.verdict.perLayout.length === lays.length ? S.lastRun.verdict.perLayout : null;
+  lays.forEach((g, i) => {
+    const mark = marks ? (marks[i] ? ICON('check') : ICON('cross')) : '';
+    const b = btn(tr('Test {n}', { n: i + 1 }), { kind: 'quiet', onPress: () => { if (S.playing) return; S.layout = i; S.stepEvents = null; buildBoard(); renderTabs(); announce(tr('Test {n}', { n: i + 1 }) + (marks ? ': ' + (marks[i] ? tr('passed') : tr('failed')) : '')); } });
+    b.setAttribute('aria-pressed', String(S.layout === i)); if (mark) { b.insertAdjacentHTML('beforeend', mark); b.setAttribute('aria-label', tr('Test {n}', { n: i + 1 }) + ': ' + (marks[i] ? tr('passed') : tr('failed'))); }
+    t.appendChild(b);
+  });
+}
+function renderEditPill() { const e = $('#editPill'); e.hidden = S.level.maxEdits == null || !S.starter0; if (!e.hidden) { const n = E.edits(S.starter0, S.prog); e.textContent = tr('Edits: {n}', { n }); e.setAttribute('aria-label', tr('{n} edits from the starter program', { n })); } }
 function layoutClass() {
-  const p = $('#rr'); const land = innerWidth > innerHeight * 1.15, short = innerHeight < 500;
-  p.classList.toggle('landscape', land); p.classList.toggle('portrait', !land); p.classList.toggle('short', short);
-  // on a phone held sideways the kit's safe band would leave no room: the panel starts right under the HUD instead
-  if (short) { const parts = [...document.querySelectorAll('.ok-ui .ok-hud .ok-pill, .ok-ui .ok-hud .ok-btn')]; const b = Math.max(50, ...parts.map(e => e.getBoundingClientRect().bottom)); p.style.top = Math.min(140, Math.round(b + 6)) + 'px'; } else p.style.top = '';
+  const land = innerWidth > innerHeight * 1.15, short = innerHeight < 500, narrow = innerWidth < 560;
+  for (const p of [$('#rr'), $('#mk')]) {
+    p.classList.toggle('landscape', land); p.classList.toggle('portrait', !land); p.classList.toggle('short', short); p.classList.toggle('narrow', narrow);
+    // on a phone held sideways the kit's safe band would leave no room: the panel starts right under the HUD instead
+    if (short) { const parts = [...document.querySelectorAll('.ok-ui .ok-hud .ok-pill, .ok-ui .ok-hud .ok-btn')]; const b = Math.max(50, ...parts.map(e => e.getBoundingClientRect().bottom)); p.style.top = Math.min(140, Math.round(b + 6)) + 'px'; } else p.style.top = '';
+  }
   fitGrid();
 }
 /** The board is a square as big as its box allows (a percentage aspect ratio does not survive a flex parent's height clamp). */
-function fitGrid() { const wrap = document.querySelector('.rr-gridwrap'), box = document.querySelector('.rr-gridbox'); if (!wrap || !box) return; const s = Math.max(60, Math.floor(Math.min(wrap.clientWidth, wrap.clientHeight))); box.style.width = box.style.height = s + 'px'; }
-addEventListener('resize', () => { if (S.screen === 'play') { layoutClass(); placeBolt(); } });
+function fitGrid() { for (const wrap of document.querySelectorAll('.rr-gridwrap')) { const box = wrap.querySelector('.rr-gridbox'); if (!box || wrap.offsetParent === null) continue; const s = Math.max(60, Math.floor(Math.min(wrap.clientWidth, wrap.clientHeight))); box.style.width = box.style.height = s + 'px'; } }
+addEventListener('resize', () => { if (S.screen === 'play' || S.screen === 'maker') { layoutClass(); placeBolt(); } });
 function updateHud() {
   if (!S.hud) return;
   const done = chapterDone(), total = S.levels.length;
@@ -1113,7 +1588,8 @@ function buildBoard() {
   const grid = $('#grid'); grid.innerHTML = ''; grid.style.gridTemplateColumns = `repeat(${g.w}, 1fr)`;
   grid.setAttribute('aria-label', tr('The board: {w} by {h} squares', { w: g.w, h: g.h }));
   const ghost = new Set();
-  if (S.level.ghost && !isPro()) { const r = E.run(S.level, parse(S.level.sol), { planMatch: true }); for (const e of r.results[S.layout].events) if (e.k === 'move') ghost.add(e.x + ',' + e.y); }
+  if (S.level.ghost && S.level.sol && !isPro()) { const r = E.run(S.level, parse(S.level.sol), { planMatch: true }); for (const e of r.results[S.layout].events) if (e.k === 'move') ghost.add(e.x + ',' + e.y); }
+  grid.classList.toggle('fog', !!S.level.fog);
   const rule = S.level.door || 'key';
   for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
     const t = g.cells[y * g.w + x], c = el('div', 'rr-cell ' + t); c.dataset.x = x; c.dataset.y = y;
@@ -1133,8 +1609,11 @@ function resetBoard() {
   for (const d of document.querySelectorAll('#grid .rr-cell.door')) d.classList.remove('open');
   const b = $('#bolt'); b.classList.remove('bump', 'splash'); placeBolt();
   for (const x of document.querySelectorAll('.rr-blk.running')) x.classList.remove('running');
+  if (S.level.fog) { for (const c of document.querySelectorAll('#grid .rr-cell.seen')) c.classList.remove('seen'); reveal(g.start.x, g.start.y); }
   renderWatch({});
 }
+/** Fog (conditionals level 1): Bolt only sees the squares around it, so the program has to ask instead of look. */
+function reveal(x, y) { if (!S.level.fog) return; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const c = cellEl(x + dx, y + dy); if (c) c.classList.add('seen'); } }
 function placeBolt() {
   const g = S.grid; if (!g) return; const b = $('#bolt');
   b.style.width = (100 / g.w) + '%'; b.style.height = (100 / g.h) + '%';
@@ -1164,7 +1643,7 @@ function renderShelf() {
   });
   syncShelf();
 }
-function syncShelf() { for (const b of document.querySelectorAll('#shelf .ok-btn')) b.setAttribute('aria-disabled', String(!S.planDone || S.playing)); }
+function syncShelf() { for (const b of document.querySelectorAll('#shelf .ok-btn')) b.setAttribute('aria-disabled', String(!S.planDone || S.playing || !!(S.compare && S.compare.picked == null))); const r = $('#runBtn'); if (r && !S.playing) r.setAttribute('aria-disabled', String(needsCall())); if (S.level) renderEditPill(); }
 function newBlock(id) {
   const L = S.level, b = { id: ++S.ids };
   switch (id) {
@@ -1175,12 +1654,21 @@ function newBlock(id) {
     case 'when': return Object.assign(b, { t: 'when', ev: L.defaultEvent || 'gem', body: [] });
     case 'set': return Object.assign(b, { t: 'set', v: (L.vars || ['count'])[0], val: L.flag ? false : L.word ? E.WORDS[0] : 0 });
     case 'change': return Object.assign(b, { t: 'change', v: (L.vars || ['count'])[0], n: 1 });
-    case 'proc': return Object.assign(b, { t: 'proc', name: 'MyBlock', params: [], body: [] });
-    case 'call': return Object.assign(b, { t: 'call', f: 'MyBlock', args: [] });
+    case 'untilwall': return Object.assign(b, { t: 'repeat', until: 'wall', body: [] });
+    case 'proc': { const used = new Set(procsIn().map(p => p.name)); const names = procNamesOf(); return Object.assign(b, { t: 'proc', name: names.find(n => !used.has(n)) || names[0], params: [], body: [], chip: null, credit: null }); }
+    case 'call': { const p = procsIn()[0]; return Object.assign(b, { t: 'call', f: p ? p.name : procNamesOf()[0], args: p && p.params.length ? [1] : [] }); }
     default: return Object.assign(b, { t: id });
   }
 }
 function withIds(list) { for (const b of list) { b.id = ++S.ids; if (b.body) withIds(b.body); if (b.else) withIds(b.else); } return list; }
+const procsIn = () => S.prog.filter(b => b && b.t === 'proc');
+const procNamesOf = () => S.level.procNames || PROC_NAMES;
+const hasCall = list => (list || []).some(b => b.t === 'call' || hasCall(b.body) || hasCall(b.else));
+/** A level whose shelf has call blocks runs only once the program calls something (the learn card says why). */
+const needsCall = () => !S.testing && shelfOf().includes('call') && !hasCall(S.prog);
+/** The procedure a block sits in, if any (its parameter can then be used as a count). */
+function procOf(b) { for (const p of procsIn()) if (find(b.id, p.body, p)) return p; return null; }
+function renameProc(from, to) { const walk = list => { for (const b of list) { if (b.t === 'call' && b.f === from) b.f = to; if (b.body) walk(b.body); if (b.else) walk(b.else); } }; walk(S.prog); }
 const isContainer = b => !!(b && (b.body || b.else));
 /** Where things go: a list and an index. find() gives the parent list of a block. */
 function find(id, list = S.prog, parent = null) {
@@ -1197,8 +1685,8 @@ function insertPoint() {
 }
 function addFromShelf(id) {
   if (!S.planDone) { toast(tr('Put the plan lines in order first.')); return; }
+  if (S.compare && S.compare.picked == null) { toast(tr('Pick a route first: run both and choose one.')); return; }
   if (S.playing) return;
-  if (S.level.names && (id === 'set' || id === 'change')) { /* names are chosen in the edit row */ }
   const b = newBlock(id), p = insertPoint();
   p.list.splice(p.i, 0, b); S.cur = null; S.sel = b.id; sfx('pop');
   renderProgram(); renderTray(); announce(tr('Added {block}', { block: blockText(b) }));
@@ -1219,14 +1707,15 @@ function blockText(b) {
     case 'when': return tr('when {e}', { e: tr(EVENT_LABELS[b.ev] || b.ev) });
     case 'set': return tr('set {v} to {x}', { v: b.v, x: typeof b.val === 'boolean' ? tr(b.val ? 'on' : 'off') : typeof b.val === 'string' ? tr(b.val) : typeof b.val === 'object' ? b.val.p : b.val });
     case 'change': return tr('change {v} by {n}', { v: b.v, n: typeof b.n === 'object' ? b.n.p : b.n });
-    case 'proc': return tr('My Block {name}', { name: b.name });
-    case 'call': return tr('call {name}', { name: b.f });
+    case 'proc': return tr('My Block {name}', { name: b.name + (b.params && b.params.length ? ' (' + b.params.join(', ') + ')' : '') });
+    case 'call': return tr('call {name}', { name: b.f + (b.args && b.args.length ? ' (' + b.args.map(a => (a && typeof a === 'object' ? a.p : Oomba.num(a | 0))).join(', ') + ')' : '') });
     default: return tr(BLOCKS[b.t] ? BLOCKS[b.t].label : b.t);
   }
 }
 const kindOf = b => b.t === 'repeat' ? 'loop' : b.t === 'if' ? 'if' : b.t === 'when' ? 'event' : b.t === 'set' || b.t === 'change' ? 'var' : b.t === 'proc' || b.t === 'call' ? 'proc' : 'move';
 function renderProgram() {
   const root = $('#prog'); root.innerHTML = '';
+  if (S.compare && S.compare.picked == null) { root.appendChild(renderCompare()); syncShelf(); return; }
   if (!S.prog.length) { root.appendChild(el('div', 'rr-empty', esc(tr('Tap a block on the shelf to start your program.')))); root.appendChild(slot(S.prog, 0, tr('start here'))); syncShelf(); return; }
   root.appendChild(renderList(S.prog, true));
   syncShelf();
@@ -1239,32 +1728,57 @@ function slot(list, i, label) {
   s.addEventListener('click', pick); s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
   return s;
 }
-function renderList(list, top) {
+function renderList(list, top, readOnly) {
   const ul = el('div', 'rr-list' + (top ? '' : ' inner'));
   list.forEach(b => {
-    const x = el('button', 'rr-blk rr-k-' + kindOf(b)); x.type = 'button'; x.dataset.id = b.id;
-    const info = BLOCKS[b.t === 'repeat' && b.until ? 'until' : b.t === 'if' && b.else ? 'ifelse' : b.t] || BLOCKS.move;
-    x.innerHTML = (isPro() ? '<span class="rr-shape"></span>' : ICON(info.icon)) + `<span>${esc(blockText(b))}</span>`;
-    if (String(S.sel) === String(b.id)) { x.classList.add('sel'); x.setAttribute('aria-pressed', 'true'); }
-    x.addEventListener('click', () => { S.cur = null; S.sel = String(S.sel) === String(b.id) ? null : b.id; renderProgram(); renderTray(); });
+    const x = el(readOnly ? 'span' : 'button', 'rr-blk rr-k-' + kindOf(b)); if (!readOnly) { x.type = 'button'; x.dataset.id = b.id; }
+    const info = BLOCKS[b.t === 'repeat' && b.until ? (b.until === 'wall' ? 'untilwall' : 'until') : b.t === 'if' && b.else ? 'ifelse' : b.t] || BLOCKS.move;
+    const tags = b.t === 'proc' ? (b.credit ? `<small class="rr-tag">${esc(tr(CREDITS[b.credit] || b.credit))}</small>` : '') + (b.chip ? `<small class="rr-tag chip">${esc(tr(CHIPS[b.chip] || b.chip))}</small>` : '') : '';
+    x.innerHTML = (isPro() ? '<span class="rr-shape"></span>' : ICON(info.icon)) + `<span>${esc(blockText(b))}</span>` + tags;
+    if (!readOnly) {
+      if (String(S.sel) === String(b.id)) { x.classList.add('sel'); x.setAttribute('aria-pressed', 'true'); }
+      x.addEventListener('click', () => { S.cur = null; S.sel = String(S.sel) === String(b.id) ? null : b.id; renderProgram(); renderTray(); });
+    }
     ul.appendChild(x);
-    if (b.body) { const inner = renderList(b.body, false); inner.appendChild(slot(b.body, b.body.length, b.body.length ? '+' : tr('inside'))); ul.appendChild(inner); }
-    if (b.else) { const e = el('div', 'rr-blk rr-k-if', `<span>${esc(tr('else'))}</span>`); e.setAttribute('role', 'presentation'); ul.appendChild(e); const inner = renderList(b.else, false); inner.appendChild(slot(b.else, b.else.length, b.else.length ? '+' : tr('inside'))); ul.appendChild(inner); }
+    if (b.body) { const inner = renderList(b.body, false, readOnly); if (!readOnly) inner.appendChild(slot(b.body, b.body.length, b.body.length ? '+' : tr('inside'))); ul.appendChild(inner); }
+    if (b.else) { const e = el('div', 'rr-blk rr-k-if', `<span>${esc(tr('else'))}</span>`); e.setAttribute('role', 'presentation'); ul.appendChild(e); const inner = renderList(b.else, false, readOnly); if (!readOnly) inner.appendChild(slot(b.else, b.else.length, b.else.length ? '+' : tr('inside'))); ul.appendChild(inner); }
   });
-  if (top) ul.appendChild(slot(list, list.length, tr('end')));
+  if (top && !readOnly) ul.appendChild(slot(list, list.length, tr('end')));
   return ul;
 }
+/* ---------- Best Route (Explorer): two given programs side by side; run each, pick one, then improve it ---------- */
+function renderCompare() {
+  const wrap = el('div', 'rr-cmp');
+  S.level.programs.forEach((text, i) => {
+    const col = el('div', 'col'); const prog = parse(text), letter = 'AB'[i];
+    col.appendChild(el('h3', '', esc(tr('Route {x}', { x: letter })) + ' · ' + esc(tr('{n} blocks', { n: E.blocks(prog) }))));
+    col.appendChild(renderList(prog, true, true));
+    const row = el('div', 'row');
+    row.appendChild(btn(tr('Run {x}', { x: letter }), { kind: 'quiet', icon: 'play', onPress: () => previewRoute(i) }));
+    row.appendChild(btn(tr('Use {x}', { x: letter }), { kind: 'go', icon: 'check', onPress: () => useRoute(i) }));
+    col.appendChild(row); wrap.appendChild(col);
+  });
+  return wrap;
+}
+async function previewRoute(i) {
+  if (S.playing) return;
+  S.prog = withIds(parse(S.level.programs[i])); S.compare.preview = i;
+  await runProgram({ preview: true });
+}
+function useRoute(i) { if (S.playing) return; S.prog = withIds(parse(S.level.programs[i])); S.compare.picked = i; S.sel = null; S.cur = null; sfx('select'); renderProgram(); renderTray(); renderRunbar(); announce(tr('Route {x} is in the program. Make it better, then run it.', { x: 'AB'[i] })); }
 /* ---------- the tray: up, down, delete, edit, into, out ---------- */
 function renderTray() {
   const t = $('#tray'); t.innerHTML = ''; $('#edit').hidden = true;
   const f = S.sel != null ? find(S.sel) : null;
-  t.hidden = !f; $('#runbar').hidden = !!f && $('#rr').classList.contains('short'); if (!f) return;
+  t.hidden = !f; $('#runbar').hidden = !!f && ($('#rr').classList.contains('short') || $('#rr').classList.contains('narrow')); if (!f) return;
   const b = f.b;
   const add = (label, icon, fn, kind = 'icon') => { const x = btn(label, { kind, icon, onPress: () => { if (S.playing) return; fn(); renderProgram(); renderTray(); } }); t.appendChild(x); return x; };
   add(tr('Move up'), 'up', () => { if (f.i > 0) { f.list.splice(f.i, 1); f.list.splice(f.i - 1, 0, b); } });
   add(tr('Move down'), 'down', () => { if (f.i < f.list.length - 1) { f.list.splice(f.i, 1); f.list.splice(f.i + 1, 0, b); } });
   add(tr('Delete block'), 'cross', () => { f.list.splice(f.i, 1); S.sel = null; sfx('pop'); });
   if (['repeat', 'if', 'when', 'set', 'change', 'proc', 'call'].includes(b.t)) add(tr('Change'), 'pencil', () => { after(0, () => renderEdit(b)); });
+  if (b.t === 'proc' && S.level.chipOptions) add(tr('Note chip'), 'book', () => { after(0, () => renderChipEdit(b)); });
+  if (b.t === 'proc' && (b.credit || b.credit0)) { const c = add(tr('Credit line'), 'user', () => { if (b.credit) { b.credit0 = b.credit; b.credit = null; } else { b.credit = b.credit0; b.credit0 = null; } }); c.setAttribute('aria-pressed', String(!!b.credit)); }
   const prev = f.list[f.i - 1];
   if (isContainer(prev)) add(tr('Move into the block above'), 'next', () => { f.list.splice(f.i, 1); (prev.else || prev.body).push(b); });
   if (f.parent) add(tr('Move out of its block'), 'back', () => { f.list.splice(f.i, 1); const pf = find(f.parent.id); pf.list.splice(pf.i + 1, 0, b); });
@@ -1276,7 +1790,28 @@ function renderEdit(b) {
   const refresh = () => { renderProgram(); renderEdit(b); };
   const stepper = (get, set, min, max) => { e.appendChild(btn(tr('Less'), { kind: 'icon', icon: 'minus', onPress: () => { set(Math.max(min, get() - 1)); refresh(); } })); const v = el('span', 'val', esc(Oomba.num(get()))); v.dir = 'ltr'; e.appendChild(v); e.appendChild(btn(tr('More'), { kind: 'icon', icon: 'plus', onPress: () => { set(Math.min(max, get() + 1)); refresh(); } })); };
   const tiles = (opts, cur, on) => { for (const [v, label] of opts) { const x = btn(label, { kind: 'quiet', onPress: () => { on(v); refresh(); } }); x.setAttribute('aria-pressed', String(v === cur)); e.appendChild(x); } };
-  if (b.t === 'repeat' && !b.until) { e.appendChild(el('span', '', esc(tr('How many times?')))); stepper(() => b.n, v => { b.n = v; }, 1, 20); }
+  if (b.t === 'repeat' && !b.until) {
+    const owner = procOf(b), pn = owner && owner.params[0];
+    e.appendChild(el('span', '', esc(tr('How many times?'))));
+    if (typeof b.n !== 'object') stepper(() => b.n, v => { b.n = v; }, 1, 20);
+    if (pn) { const x = btn(tr('Use {p}', { p: pn }), { kind: 'quiet', onPress: () => { b.n = typeof b.n === 'object' ? (L.repeatDefault || 3) : { p: pn }; refresh(); } }); x.setAttribute('aria-pressed', String(typeof b.n === 'object')); e.appendChild(x); }
+  }
+  else if (b.t === 'repeat' && b.until) {
+    const opts = Array.from(new Set(['goal', 'wall', 'gem', 'paint'].concat(L.vars ? ['var'] : []))).slice(0, 5);
+    const cur = typeof b.until === 'string' ? b.until : 'var';
+    tiles(opts.map(x => [x, x === 'var' ? tr('a box') : tr(SENSOR_LABELS[x])]), cur, x => { b.until = x === 'var' ? { s: 'var', v: (L.vars || ['count'])[0], op: '=', n: 0 } : x; });
+    if (typeof b.until === 'object') { const term = b.until; tiles((L.vars || ['count']).filter(v => !(L.names && L.names.bad.includes(v))).map(v => [v, v]), term.v, v => { term.v = v; }); stepper(() => term.n | 0, v => { term.n = v; }, 0, 20); }
+  }
+  else if (b.t === 'proc') {
+    tiles(procNamesOf().filter(n => n === b.name || !procsIn().some(p => p.name === n)).slice(0, 5).map(n => [n, n]), b.name, n => { renameProc(b.name, n); b.name = n; });
+    if (L.params) { const pn = L.paramName || 'n', on = b.params.length > 0; const x = btn(tr('Takes a number: {p}', { p: pn }), { kind: 'quiet', onPress: () => { b.params = on ? [] : [pn]; refresh(); } }); x.setAttribute('aria-pressed', String(on)); e.appendChild(x); }
+  }
+  else if (b.t === 'call') {
+    const ps = procsIn();
+    tiles((ps.length ? ps.map(p => p.name) : [b.f]).slice(0, 5).map(n => [n, n]), b.f, n => { b.f = n; const p = ps.find(q => q.name === n); b.args = p && p.params.length ? [b.args && b.args.length ? b.args[0] : 1] : []; });
+    const p = ps.find(q => q.name === b.f);
+    if (p && p.params.length) { if (!b.args.length) b.args = [1]; e.appendChild(el('span', '', esc(p.params[0] + ' ='))); stepper(() => (typeof b.args[0] === 'object' ? 0 : b.args[0] | 0), v => { b.args[0] = v; }, 0, 9); }
+  }
   else if (b.t === 'if') {
     const sensors = L.sensors || Array.from(new Set([L.defaultSensor || 'path', 'path', 'wall', 'gem', 'paint'].concat(L.vars ? ['var'] : []))).slice(0, L.compound ? 4 : 6);
     const term = b.c.op ? b.c.b : b.c;
@@ -1297,17 +1832,25 @@ function renderEdit(b) {
   }
   e.appendChild(btn(tr('Done'), { kind: 'go', icon: 'check', onPress: () => { e.hidden = true; } }));
 }
+/* Document it (Pro functions): a note chip per procedure, picked from four sentences */
+function renderChipEdit(b) {
+  const e = $('#edit'); e.innerHTML = ''; e.hidden = false;
+  e.appendChild(el('span', '', esc(tr('What does {name} do?', { name: b.name }))));
+  for (const k of S.level.chipOptions || []) { const x = btn(tr(CHIPS[k] || k), { kind: 'quiet', onPress: () => { b.chip = b.chip === k ? null : k; renderProgram(); renderChipEdit(b); } }); x.setAttribute('aria-pressed', String(b.chip === k)); e.appendChild(x); }
+  e.appendChild(btn(tr('Done'), { kind: 'go', icon: 'check', onPress: () => { e.hidden = true; } }));
+}
 /* ---------- the run bar ---------- */
 function renderRunbar() {
   const r = $('#runbar'); r.innerHTML = '';
-  const run = btn(tr(S.playing ? 'Stop' : 'Run'), { kind: S.playing ? 'quiet' : 'go', icon: S.playing ? 'pause' : 'play', onPress: () => { if (S.playing) { S.abort = true; } else runProgram(); } }); run.id = 'runBtn'; r.appendChild(run);
+  const run = btn(S.playing ? tr('Stop') : tr('Run'), { kind: S.playing ? 'quiet' : 'go', icon: S.playing ? 'pause' : 'play', onPress: () => { if (S.playing) { S.abort = true; } else if (needsCall()) toast(tr('Make a block, then call it. Run wakes up when the program calls a block.')); else runProgram(); } }); run.id = 'runBtn'; run.setAttribute('aria-disabled', String(!S.playing && needsCall())); r.appendChild(run);
+  if (S.compare && S.compare.picked != null) r.appendChild(btn(tr('Routes'), { kind: 'icon', icon: 'swap', onPress: () => { if (S.playing) return; S.compare.picked = null; S.prog = []; S.sel = null; renderProgram(); renderTray(); renderRunbar(); } }));
   r.appendChild(btn(tr('Step'), { kind: 'icon', icon: 'next', onPress: stepOnce }));
   r.appendChild(btn(tr('Reset'), { kind: 'icon', icon: 'restart', onPress: () => { S.stepEvents = null; resetBoard(); } }));
   const hintBtn = btn(tr('Hint'), { kind: 'icon', icon: 'hint', onPress: openHint }); hintBtn.id = 'hintBtn'; hintBtn.setAttribute('aria-disabled', String(!hintsOpen())); r.appendChild(hintBtn);
   const learn = learnFor(); if (learn) r.appendChild(btn(tr('Learn'), { kind: 'icon', icon: 'book', onPress: () => openLearn(true) }));
   r.appendChild(el('span', 'rr-spacer'));
-  if (S.fails >= 2 && !S.lock) { const sk = btn(tr('Skip level'), { kind: 'quiet', onPress: skipLevel }); sk.id = 'skipBtn'; r.appendChild(sk); }
-  else if (S.fails >= 2) { const sk = btn(tr('Skip level'), { kind: 'quiet', onPress: skipLevel }); sk.id = 'skipBtn'; r.appendChild(sk); }
+  if (S.testing) { r.appendChild(btn(tr('Back to the maker'), { kind: 'quiet', icon: 'back', onPress: () => startMaker(M.free ? 'free' : M.ti, { keep: true }) })); return; }
+  if (S.fails >= 2) { const sk = btn(tr('Skip level'), { kind: 'quiet', onPress: skipLevel }); sk.id = 'skipBtn'; r.appendChild(sk); }
   if (!S.lock) r.appendChild(btn(tr('Chapter map'), { kind: 'icon', icon: 'home', onPress: goMap }));
 }
 const hintsOpen = () => S.fails >= (isPro() ? 2 : 1);
@@ -1316,19 +1859,21 @@ const learnFor = () => (S.levels.find(l => l.learn && S.levels.indexOf(l) <= S.l
 /* ---------- running: the engine judges, the board replays ---------- */
 const stepMs = () => (S.instant ? 0 : reduced() ? 80 : 240);
 function toast(s) { try { Oomba.ui.toast(s); } catch (e) { /* ignore */ } }
-async function runProgram() {
+async function runProgram(o = {}) {
   if (S.playing || S.screen !== 'play') return;
   if (!S.planDone) { openPlan(); return; }
+  if (S.compare && S.compare.picked == null && !o.preview) { toast(tr('Pick a route first: run both and choose one.')); return; }
   if (!S.prog.length) { Oomba.ui.banner('wrong', null, tr('The program is empty. Tap a block on the shelf.')); return; }
   if (!S.predicted) { S.predicted = true; try { await Oomba.ui.ask({ q: tr(S.level.predict.q), choices: S.level.predict.tiles.map(x => tr(x)), index: S.level.predict.answer, tries: 1 }); } catch (e) { /* ignore */ } }
-  const res = E.run(S.level, S.prog, { planMatch: S.planDone, edits: Math.abs(E.blocks(S.prog) - S.startBlocks) });
-  S.lastRun = res; S.runs++; S.stepEvents = null;
+  const res = E.run(S.level, S.prog, { planMatch: S.planDone, starter: S.starter0 });
+  S.lastRun = res; S.runs++; S.stepEvents = null; renderTabs();
   const li = res.verdict.ok || res.verdict.failLayout < 0 ? S.layout : res.verdict.failLayout;
   if (li !== S.layout) { S.layout = li; buildBoard(); if (!S.instant) toast(tr('Board {n} of {total}', { n: li + 1, total: res.results.length })); }
   S.playing = true; S.abort = false; S.sel = null; renderTray(); renderRunbar(); syncShelf();
   resetBoard();
   await replay(res.results[li] ? res.results[li].events : []);
   S.playing = false; renderRunbar(); syncShelf();
+  if (o.preview) { const ft = E.failText(res.verdict); const x = 'AB'[S.compare.preview]; const text = res.verdict.ok ? tr('Route {x} works: {n} blocks.', { x, n: E.blocks(S.prog) }) : tr('Route {x} fails. {why}', { x, why: ft ? tr(ft[0], ft[1]) : '' }); S.prog = []; renderProgram(); toast(text); announce(text); return; }
   if (!S.abort) afterRun(res); else { resetBoard(); }
 }
 function highlight(id) { for (const x of document.querySelectorAll('.rr-blk.running')) x.classList.remove('running'); if (id == null) return; const b = document.querySelector(`.rr-blk[data-id="${id}"]`); if (b) { b.classList.add('running'); if (!S.instant) b.scrollIntoView({ block: 'nearest' }); } }
@@ -1338,7 +1883,7 @@ async function applyEvent(e, ms) {
   if (e.k === 'move') {
     const from = { x: BOLT.x, y: BOLT.y }; BOLT.x = e.x; BOLT.y = e.y;
     if (ms > 0) { const o = { t: 0 }; await Oomba.tween(o, { t: 1 }, { ms, ease: 'quadInOut', onUpdate: () => { const g = S.grid; b.style.left = ((from.x + (e.x - from.x) * o.t) * 100 / g.w) + '%'; b.style.top = ((from.y + (e.y - from.y) * o.t) * 100 / g.h) + '%'; } }); }
-    placeBolt(); sfx('step', { volume: 0.4, caption: false });
+    placeBolt(); reveal(e.x, e.y); sfx('step', { volume: 0.4, caption: false });
   } else if (e.k === 'turn') {
     BOLT.d = e.d; placeBolt(); if (ms > 0) await Oomba.wait(ms * 0.6);
   } else if (e.k === 'bump') {
@@ -1367,7 +1912,8 @@ async function stepOnce() {
   if (S.playing || S.screen !== 'play') return;
   if (!S.stepEvents) {
     if (!S.prog.length) { Oomba.ui.banner('wrong', null, tr('The program is empty. Tap a block on the shelf.')); return; }
-    const res = E.run(S.level, S.prog, { planMatch: S.planDone }); S.lastRun = res; S.runs++;
+    if (S.compare && S.compare.picked == null) { toast(tr('Pick a route first: run both and choose one.')); return; }
+    const res = E.run(S.level, S.prog, { planMatch: S.planDone, starter: S.starter0 }); S.lastRun = res; S.runs++; renderTabs();
     S.stepEvents = (res.results[S.layout] || res.results[0]).events.filter(e => VISIBLE.has(e.k)); S.stepI = 0; S.watchVars = {}; resetBoard();
   }
   if (S.stepI >= S.stepEvents.length) { const res = S.lastRun; S.stepEvents = null; afterRun(res); return; }
@@ -1386,23 +1932,34 @@ function afterRun(res) {
 }
 function onSolved(v) {
   const stars = E.stars(S.level, S.band, S.prog, v, { hint3: S.hint3 });
-  const r = rec(S.band, S.chapter.id), before = r.s[S.li] || 0;
-  r.d[S.li] = true; r.s[S.li] = Math.max(before, stars); save();
+  const daily = S.chapter.id === 'daily';
+  if (S.testing) { M.tested[S.testing.code] = 1; reportMaker(); }
+  else if (daily) { SAVE.daily = { day: S.level.day, stars: Math.max(stars, SAVE.daily && SAVE.daily.day === S.level.day ? SAVE.daily.stars | 0 : 0) }; save(); }
+  else { const r = rec(S.band, S.chapter.id), before = r.s[S.li] || 0; r.d[S.li] = true; r.s[S.li] = Math.max(before, stars); save(); applyPaint(); }
   updateHud(); sfx('win'); if (STAGE && !reduced()) try { STAGE.burst('confetti', STAGE.camera.x, STAGE.camera.y - STAGE.view.vh * 0.4, { w: STAGE.view.vw * 0.8 }); } catch (e) { /* ignore */ }
-  Oomba.ui.banner('correct', null, tr('Bolt made it!'));
+  Oomba.ui.banner('correct', null, S.testing ? tr('Tested! Your friend solved it.') : tr('Bolt made it!'));
   const finish = (checkOk, confidence) => {
-    reportProgress({ stars, check: checkOk, confidence, skipped: false });
+    if (!S.testing && !daily) reportProgress({ stars, check: checkOk, confidence, skipped: false });
+    // the results card belongs to this level: if something else starts a level meanwhile (a test hook, a quest code),
+    // the card stays shut or its answer is dropped
+    const stamp = ++S.winStamp; const stale = () => S.winStamp !== stamp || S.screen !== 'play';
     after(400, async () => {
+      if (stale()) return;
+      if (S.testing) { await Oomba.ui.win({ stars, score: Object.keys(M.tested).length, hero: false, title: tr('Level tested!'), next: false }); return stale() ? null : startMaker(M.free ? 'free' : M.ti, { keep: true }); }
+      if (daily) { await Oomba.ui.win({ stars, score: stars, hero: false, title: tr('Daily Crew Challenge done!'), next: false }); return stale() ? null : goMap(); }
       const last = S.li >= S.levels.length - 1;
       const what = await Oomba.ui.win({ stars, score: chapterStars(), hero: false, title: tr('Level {n} done!', { n: S.li + 1 }), next: !last });
+      if (stale()) return;
       if (what === 'next' && !last) startLevel(S.li + 1);
       else if (last) chapterEnd();
       else startLevel(S.li);
     });
   };
-  if (S.lesson && S.level.check) caseClosed(finish); else finish(null, null);
+  if (S.lesson && S.level.check && !S.testing) caseClosed(finish); else finish(null, null);
 }
 function skipLevel() {
+  if (S.testing) return startMaker(M.free ? 'free' : M.ti, { keep: true });
+  if (S.chapter.id === 'daily') return goMap();
   const r = rec(S.band, S.chapter.id); r.d[S.li] = true; r.s[S.li] = r.s[S.li] || 0; save(); updateHud();
   reportProgress({ stars: 0, check: null, confidence: null, skipped: true });
   announce(tr('Level skipped'));
@@ -1419,13 +1976,12 @@ async function chapterEnd() {
   goMap();
 }
 /* ---------- progress out: one score + a short label per solved level; the chapter total at the end ---------- */
-function reportProgress({ stars, check, confidence, skipped }) {
+function reportProgress({ stars, check, confidence, skipped, maker }) {
   const done = chapterDone(), total = S.levels.length, sc = chapterStars() + S.chained;
   if (check != null) { S.checks.n++; if (check) S.checks.ok++; }
   let label = `${done}/${total} levels, ${sc} stars`;
   if (S.lesson) label += `, ${S.checks.ok}/${S.checks.n} checks`;
-  try { if (HAS_BRB) BRB.score.submit(sc, label); } catch (e) { /* fine */ }
-  S.lastLabel = label;
+  if (maker) reportMaker(); else { try { if (HAS_BRB) BRB.score.submit(sc, label); } catch (e) { /* fine */ } S.lastLabel = label; }
   try {
     if (HAS_BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'rr', chapter: S.chapter.id, level: S.li + 1, stars, band: isPro() ? 2 : 1, csta: (isPro() ? S.level.csta2 : S.level.csta) || [], check: check ? 1 : 0, confidence: confidence || 0, hint: S.hint, runs: S.runs, skipped: !!skipped });
   } catch (e) { /* fine */ }
@@ -1433,15 +1989,16 @@ function reportProgress({ stars, check, confidence, skipped }) {
 
 /* ---------- cards: learn, plan, hint, case closed, quest card ---------- */
 let cardOpen = null;
-function openCard(build) {
+function openCard(build, kind) {
   closeCard();
-  const m = $('#modal'); m.innerHTML = ''; $('#scrim').hidden = false; cardOpen = true;
+  const m = $('#modal'); m.innerHTML = ''; $('#scrim').hidden = false; cardOpen = kind || 'card';
   build(m);
   after(0, () => { const f = m.querySelector('[data-focus]') || m.querySelector('button'); if (f) f.focus({ preventScroll: true }); });
 }
 function closeCard() { $('#scrim').hidden = true; $('#modal').innerHTML = ''; cardOpen = null; }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !$('#scrim').hidden) { e.stopPropagation(); closeCard(); return; }
+  if (S.screen === 'maker' && $('#scrim').hidden && !Oomba.ui.open) { if (/^[1-8]$/.test(e.key) && !e.repeat) { const b = document.querySelectorAll('#mkPalette .ok-btn')[+e.key - 1]; if (b) { e.preventDefault(); b.click(); } } return; }
   if (S.screen !== 'play' || !$('#scrim').hidden || Oomba.ui.open) return;
   const tag = document.activeElement && document.activeElement.tagName;
   if (/^[1-8]$/.test(e.key) && !e.repeat) { const b = document.querySelectorAll('#shelf .ok-btn')[+e.key - 1]; if (b) { e.preventDefault(); b.click(); } }
@@ -1457,24 +2014,26 @@ function openLearn(again) {
   openCard(m => {
     m.appendChild(el('h2', '', esc(tr(learn.title))));
     const pic = el('div', 'pic');
-    for (const id of shelfOf().slice(-2)) { const info = BLOCKS[id]; const b = el('span', 'rr-blk rr-k-' + info.kind, ICON(info.icon) + `<span>${esc(tr(info.label))}</span>`); pic.appendChild(b); }
+    for (const id of shelfOf().slice(-2)) { const info = BLOCKS[id] || TILES[id]; if (!info) continue; const b = el('span', 'rr-blk rr-k-' + (info.kind || 'move'), ICON(info.icon) + `<span>${esc(tr(info.label))}</span>`); pic.appendChild(b); }
     m.appendChild(pic);
     m.appendChild(el('p', '', esc(tr(learn.text))));
-    const go = btn(tr("Let's go!"), { kind: 'hot', icon: 'play', big: true, onPress: () => { closeCard(); if (S.level.plan && !S.planDone) openPlan(); } }); go.setAttribute('data-focus', ''); m.appendChild(go);
+    const go = btn(tr("Let's go!"), { kind: 'hot', icon: 'play', big: true, onPress: () => { closeCard(); if (S.screen === 'play' && S.level.plan && !S.planDone) openPlan(); } }); go.setAttribute('data-focus', ''); m.appendChild(go);
     try { Oomba.say(tr(learn.title) + '. ' + tr(learn.text)); } catch (e) { /* ignore */ }
-  });
+  }, 'learn');
 }
 function openPlan() {
   const lines = S.level.plan; if (!lines || S.planDone) return;
   const order = S.rng.shuffle(lines.map((_, i) => i)); let next = 0;
+  const flow = !!S.level.flow;
+  const kind = line => (/^(Start|Yes: stop|.*: stop)$/.test(line) ? 'round' : /\?/.test(line) ? 'diamond' : 'box');
   openCard(m => {
     m.classList.add('rr-plan');
-    m.appendChild(el('h2', '', esc(tr('Plan first'))));
-    m.appendChild(el('p', '', esc(tr('Tap the plan lines in the order Bolt should do them. Then the shelf opens.'))));
-    const done = el('ol'); m.appendChild(done);
+    m.appendChild(el('h2', '', esc(flow ? tr('Build the flowchart') : tr('Plan first'))));
+    m.appendChild(el('p', '', esc(flow ? tr('Tap the shapes in the order the chart runs them: boxes are actions, diamonds are questions. Then the shelf opens, and your blocks must follow the chart.') : tr('Tap the plan lines in the order Bolt should do them. Then the shelf opens.'))));
+    const done = el('ol', flow ? 'flow' : ''); m.appendChild(done);
     const col = el('div', 'col'); m.appendChild(col);
-    const tiles = order.map(i => { const t = el('button', 'rr-tile2'); t.type = 'button'; t.innerHTML = `<span class="k">${ICON('question')}</span><span>${esc(tr(lines[i]))}</span>`; t.addEventListener('click', () => {
-      if (i === next) { t.disabled = true; t.classList.add('right'); const li = el('li', '', esc(tr(lines[i]))); done.appendChild(li); next++; sfx('correct'); if (next === lines.length) { S.planDone = true; after(500, () => { closeCard(); renderProgram(); announce(tr('The shelf is open.')); }); } }
+    const tiles = order.map(i => { const t = el('button', 'rr-tile2' + (flow ? ' rr-fc ' + kind(lines[i]) : '')); t.type = 'button'; t.innerHTML = `<span class="k">${ICON(flow && kind(lines[i]) === 'diamond' ? 'question' : flow ? 'next' : 'question')}</span><span>${esc(tr(lines[i]))}</span>`; t.addEventListener('click', () => {
+      if (i === next) { t.disabled = true; t.classList.add('right'); const li = el('li', flow ? kind(lines[i]) : '', esc(tr(lines[i]))); done.appendChild(li); next++; sfx('correct'); if (next === lines.length) { S.planDone = true; after(500, () => { closeCard(); renderProgram(); announce(tr('The shelf is open.')); }); } }
       else { t.classList.remove('rr-shake'); void t.offsetWidth; t.classList.add('rr-shake'); sfx('wrong'); }
     }); col.appendChild(t); return t; });
     if (tiles[0]) tiles[0].setAttribute('data-focus', '');
@@ -1484,7 +2043,7 @@ function openHint() {
   if (!hintsOpen()) { toast(tr('Run your program first. Hints open after a try.')); return; }
   const tier = Math.min(3, S.hint + 1); S.hint = tier;
   const text = tr(S.level.hints[tier - 1]);
-  if (tier === 2) { const want = (S.level.hl || shelfOf().slice(-1)[0]); const b = document.querySelector(`#shelf [data-shelf="${want}"]`); if (b) { b.classList.add('hl'); after(6000, () => b.classList.remove('hl')); } }
+  if (tier === 2) { const want = (S.level.hl || shelfOf().slice(-1)[0]); const b = document.querySelector(S.screen === 'maker' ? `#mkPalette [data-tool="${want}"]` : `#shelf [data-shelf="${want}"]`); if (b) { b.classList.add('hl'); after(6000, () => b.classList.remove('hl')); } }
   if (tier === 3) S.hint3 = true;
   openCard(m => {
     m.appendChild(el('h2', '', esc(tr('Hint {n} of 3', { n: tier }))));
@@ -1541,7 +2100,7 @@ function openQuestCard() {
 }
 function applyQuestCode(digits) {
   const [c, b, mo, l] = digits.split('').map(Number);
-  const ch = c === 0 ? null : CHAPTERS.find(x => x.index === c && !x.soon);
+  const ch = c === 0 ? null : CHAPTERS.find(x => x.index === c);
   if (c !== 0 && !ch) { toast(tr('No chapter has that number yet.')); sfx('wrong'); return; }
   if (b === 1 || b === 2) { S.band = b === 2 ? '2' : '1b'; SAVE.band = S.band; save(); }
   S.mode = MODES[mo] || 'play'; document.documentElement.classList.toggle('rr-projector', S.mode === 'projector');
@@ -1552,13 +2111,201 @@ function applyQuestCode(digits) {
   startChapter(ch.id, { level: l || null });
 }
 
+/* ---------- the Level Maker: paint a board, Check (the engine's search proves it solvable and gives par), a level code
+   on a symbol pad, Test with a friend, remix stamps. Three fix-this-level tasks first, then free building. ---------- */
+const M = { rows: [], tool: 'wall', base: null, task: null, ti: 0, free: false, made: {}, tested: {}, checks: 0, result: null, page: 0, typed: '' };
+const blankRows = n => Array.from({ length: n }, () => '.'.repeat(n));
+const putCh = (rows, x, y, ch) => { rows[y] = rows[y].slice(0, x) + ch + rows[y].slice(x + 1); };
+const codeOf = rows => E.encode({ rows, door: doorRuleOf(rows) });
+const mkCount = (made, tested) => `${Math.min(99, made)} made, ${Math.min(99, tested)} tested`;
+function reportMaker() {
+  const made = Object.keys(M.made).length, tested = Object.keys(M.tested).length, label = mkCount(made, tested);
+  try { if (HAS_BRB) BRB.score.submit(Math.min(99, tested), label); } catch (e) { /* fine */ }
+  S.lastLabel = label;
+}
+function startMaker(i, o = {}) {
+  closeCard(); S.winStamp++; S.screen = 'maker'; Oomba.scene = 'maker'; showOnly('mk'); S.testing = null; S.playing = false;
+  const free = i === 'free' || i >= S.levels.length;
+  if (!o.keep) {
+    M.free = free; M.task = free ? null : S.levels[i]; M.ti = free ? S.levels.length - 1 : i;
+    M.rows = M.task ? M.task.rows.slice() : blankRows(isPro() ? 8 : 6);
+    M.base = M.task && M.task.remixBase ? codeOf(M.task.rows) : null;
+    M.result = null; M.checks = 0; S.hint = 0; S.hint3 = false; S.fails = 0; S.runs = 0;
+    M.tool = M.task ? (M.task.shelf[1] || 'floor') : 'wall';
+  }
+  S.li = M.ti; S.level = M.task || Object.assign({}, S.levels[S.levels.length - 1], { id: 'maker-free', hints: MAKER_HINTS.free, learn: null, check: null, task: null });
+  $('#mkPill').textContent = M.task ? tr('Task {n} of {total}', { n: M.ti + 1, total: S.levels.length }) : tr('Your own level');
+  const q = $('#mkQuest'); q.hidden = !S.lesson; if (S.lesson) q.textContent = tr('Class quest: {chapter} · {band}', { chapter: chapterTitle(S.chapter), band: bandName() });
+  $('#mkTask').textContent = M.task ? tr(M.task.task) : tr('Paint a board, press Check, then hand the device to a friend to test it.');
+  layoutClass(); renderMaker(); updateHud(); after(0, fitGrid);
+  announce($('#mkPill').textContent + '. ' + $('#mkTask').textContent);
+  if (M.task && M.task.learn && !SAVE.learned[M.task.id + ':' + S.band]) openLearn();
+}
+function renderMaker() { renderMakerGrid(); renderPalette(); renderMakerActions(); renderMakerResult(); }
+function renderMakerGrid() {
+  const grid = $('#mgrid'); grid.innerHTML = ''; const n = M.rows.length; grid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+  grid.setAttribute('aria-label', tr('The board: {w} by {h} squares', { w: n, h: n }));
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const ch = M.rows[y][x], t = ch === '#' ? 'wall' : ch === '~' ? 'water' : ch === 'D' ? 'door' : 'floor';
+    const c = el('button', 'rr-cell ' + t); c.type = 'button'; c.dataset.x = x; c.dataset.y = y;
+    let what = tr(TILES[t === 'door' ? 'door' : t === 'floor' ? 'floor' : t].label);
+    if (ch === 'G') { c.classList.add('goal'); c.appendChild(el('span', 'it', ICON('flag'))); what = tr('goal'); }
+    if (ch === '*') { c.appendChild(el('span', 'it', ICON('gem'))); what = tr('gem'); }
+    if (ch === 'K') { c.appendChild(el('span', 'it', ICON('key'))); what = tr('key'); }
+    if (ch === 'D') c.appendChild(el('span', 'dr'));
+    if ('^>v<'.includes(ch)) { c.appendChild(el('span', 'bt', ICON(['up', 'right', 'down', 'left']['^>v<'.indexOf(ch)]))); what = tr('Bolt'); }
+    c.setAttribute('aria-label', tr('Square {x}, {y}: {what}', { x: x + 1, y: y + 1, what }));
+    c.addEventListener('click', () => paintCell(x, y));
+    grid.appendChild(c);
+  }
+}
+function renderPalette() {
+  const pal = $('#mkPalette'); pal.innerHTML = '';
+  const tools = (M.task ? M.task.shelf : Object.keys(TILES)).slice(0, 8);
+  if (!tools.includes(M.tool)) M.tool = tools[0];
+  tools.forEach((id, i) => { const info = TILES[id]; const b = btn(tr(info.label), { kind: 'quiet', icon: info.icon, onPress: () => { M.tool = id; renderPalette(); announce(tr('{tile} tile', { tile: tr(info.label) })); } }); b.dataset.tool = id; b.setAttribute('aria-pressed', String(M.tool === id)); b.setAttribute('aria-label', tr(info.label) + ' (' + Oomba.num(i + 1) + ')'); pal.appendChild(b); });
+}
+function renderMakerActions() {
+  const r = $('#mkActions'); r.innerHTML = '';
+  const ck = btn(tr('Check'), { kind: 'go', icon: 'check', onPress: mkCheck }); ck.id = 'mkCheck'; r.appendChild(ck);
+  r.appendChild(btn(tr('Test with a friend'), { kind: 'quiet', icon: 'user', onPress: mkTest }));
+  r.appendChild(btn(tr('Level code'), { kind: 'icon', icon: 'key', onPress: openCodeCard }));
+  const hintBtn = btn(tr('Hint'), { kind: 'icon', icon: 'hint', onPress: openHint }); hintBtn.id = 'hintBtn'; hintBtn.setAttribute('aria-disabled', String(!hintsOpen())); r.appendChild(hintBtn);
+  r.appendChild(btn(tr('More'), { kind: 'icon', icon: 'menu', onPress: openMoreCard }));
+}
+/* the maker's second row of actions lives in a card, so it fits a phone held sideways too */
+function openMoreCard() {
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr('More'))));
+    const col = el('div', 'row'); m.appendChild(col);
+    const go = (label, icon, fn, kind = 'quiet') => { const b = btn(label, { kind, icon, onPress: () => { closeCard(); fn(); } }); col.appendChild(b); return b; };
+    go(tr('Save level'), 'check', mkSave).setAttribute('data-focus', '');
+    go(tr('My levels'), 'book', openMyLevels);
+    go(tr('Enter a code'), 'key', openSymbolPad);
+    go(tr('Clear board'), 'restart', () => { M.rows = blankRows(M.rows.length); M.result = null; M.base = null; renderMaker(); });
+    if (M.task && learnFor()) go(tr('Learn'), 'book', () => openLearn(true));
+    if (M.task && rec(S.band, S.chapter.id).d[M.ti] && M.ti < S.levels.length - 1) go(tr('Next task'), 'next', () => startMaker(M.ti + 1), 'hot');
+    if (M.task && S.levels.every((_, i) => rec(S.band, S.chapter.id).d[i])) go(tr('Your own level'), 'pencil', () => startMaker('free'), 'hot');
+    if (!M.task && !S.lock) go(tr('The tasks'), 'back', () => startMaker(0));
+    if (!S.lock) go(tr('Chapter map'), 'home', goMap);
+    m.appendChild(btn(tr('Close'), { kind: 'go', icon: 'check', onPress: closeCard }));
+  });
+}
+function renderMakerResult() {
+  const r = $('#mkResult'); r.innerHTML = ''; if (!M.result) return;
+  const p = el('span', 'rr-pill ' + (M.result.ok ? 'good' : 'bad'), (M.result.ok ? ICON('check') : ICON('cross')) + '<span>' + esc(tr(M.result.why, { n: M.result.n })) + '</span>'); r.appendChild(p);
+  if (M.base) r.appendChild(el('span', 'rr-pill', esc(tr('based on {code}', { code: M.base }))));
+}
+function paintCell(x, y) {
+  const rows = M.rows, ch = rows[y][x], t = M.tool; const has = c => rows.join('').includes(c);
+  const clearAll = chars => { for (let yy = 0; yy < rows.length; yy++) for (let xx = 0; xx < rows.length; xx++) if (chars.includes(rows[yy][xx])) putCh(rows, xx, yy, '.'); };
+  if (t === 'bolt') { if ('^>v<'.includes(ch)) putCh(rows, x, y, '^>v<'[('^>v<'.indexOf(ch) + 1) % 4]); else { clearAll('^>v<'); putCh(rows, x, y, '>'); } }
+  else if (t === 'goal' || t === 'key' || t === 'door') { const c = TILES[t].ch; if (ch === c) putCh(rows, x, y, '.'); else { clearAll(c); putCh(rows, x, y, c); } }
+  else if (t === 'gem') { if (ch === '*') putCh(rows, x, y, '.'); else if ((rows.join('').split('*').length - 1) >= 4) { toast(tr('Four gems at most.')); return; } else putCh(rows, x, y, '*'); }
+  else putCh(rows, x, y, ch === TILES[t].ch ? '.' : TILES[t].ch);
+  void has; M.result = null; sfx('pop', { volume: 0.5, caption: false }); renderMakerGrid(); renderMakerResult();
+}
+function mkCheck() {
+  const res = makerOk(M.task || { rule: { solvable: true } }, M.rows); M.result = res; M.checks++;
+  if (res.check && res.check.solvable) { const code = codeOf(M.rows); if (code) M.made[code] = 1; }
+  renderMakerResult(); announce(tr(res.why, { n: res.n }));
+  if (!res.ok) { S.fails++; sfx('wrong'); if (S.fails === (isPro() ? 2 : 1)) toast(tr('Hints are open now.')); renderMakerActions(); return; }
+  sfx('correct'); reportMaker();
+  if (!M.task) return;
+  const r = rec(S.band, S.chapter.id); if (r.d[M.ti]) { renderMakerActions(); return; }
+  const stars = 1 + (M.checks <= 3 ? 1 : 0) + (S.hint3 ? 0 : 1);
+  r.d[M.ti] = true; r.s[M.ti] = Math.max(r.s[M.ti] || 0, stars); save(); applyPaint(); updateHud(); renderMakerActions();
+  sfx('win'); if (STAGE && !reduced()) try { STAGE.burst('confetti', STAGE.camera.x, STAGE.camera.y - STAGE.view.vh * 0.4, { w: STAGE.view.vw * 0.8 }); } catch (e) { /* ignore */ }
+  Oomba.ui.banner('correct', null, tr('Level fixed!'));
+  const finish = (checkOk, confidence) => {
+    reportProgress({ stars, check: checkOk, confidence, skipped: false, maker: true });
+    const stamp = ++S.winStamp, last = M.ti >= S.levels.length - 1;
+    after(400, async () => {
+      if (S.winStamp !== stamp || S.screen !== 'maker') return;
+      const what = await Oomba.ui.win({ stars, score: chapterStars(), hero: false, title: tr('Task {n} done!', { n: M.ti + 1 }), next: !last });
+      if (S.winStamp !== stamp || S.screen !== 'maker') return;
+      if (last) { try { if (HAS_BRB) BRB.gameOver({ won: true, score: Math.min(99, Object.keys(M.tested).length) }); } catch (e) { /* fine */ } await Oomba.ui.dialog({ title: tr('Now make your own!'), text: tr('Plan it on paper, paint it, press Check, then hand the device to a friend to test it.'), buttons: [{ label: tr("Let's go!"), kind: 'hot', value: 'go', icon: 'pencil' }] }); return startMaker('free'); }
+      if (what === 'next') startMaker(M.ti + 1); else startMaker(M.ti);
+    });
+  };
+  if (S.lesson && M.task.check) caseClosed(finish); else finish(null, null);
+}
+function mkTest() {
+  const res = M.result && M.result.check && M.result.check.solvable ? M.result : null;
+  if (!res) { toast(tr('Press Check first: a level must be solvable before a friend tests it.')); return; }
+  const code = codeOf(M.rows) || 'x';
+  Oomba.ui.dialog({ title: tr('Test with a friend'), text: tr('Hand the device to your tester. Stay quiet and watch: say nothing until they are done.'), buttons: [{ label: tr('Ready'), kind: 'hot', value: 'go', icon: 'play' }, { label: tr('Not now'), kind: 'quiet', value: 'no' }] }).then(v => {
+    if (v !== 'go') return;
+    const rows = M.rows.slice(), door = doorRuleOf(rows);
+    const lv = { id: 'maker-test', ch: S.chapter.id, bands: ['1b', '2'], csta: [], csta2: [], layouts: [rows], door, shelf: MAKER_SHELF, par: Math.max(1, res.check.par), repeatDefault: 3, defaultSensor: 'path', vars: [], hints: MAKER_HINTS.test, check: null };
+    S.testing = { code }; startLevel(S.li, lv);
+  });
+}
+function openCodeCard() {
+  const code = codeOf(M.rows);
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr('Level code'))));
+    if (code) { const c = el('div', 'rr-code small', esc(code)); c.dir = 'ltr'; m.appendChild(c); m.appendChild(el('p', '', esc(tr('Read it out or write it on the board: a friend types it in with Enter a code on their device.')))); }
+    else m.appendChild(el('p', '', esc(tr('Place Bolt and the goal first. Then the board gets a code.'))));
+    if (M.base) m.appendChild(el('p', '', esc(tr('based on {code}', { code: M.base }))));
+    const row = el('div', 'row');
+    if (code) row.appendChild(btn(tr('Save level'), { kind: 'quiet', icon: 'check', onPress: () => { mkSave(); closeCard(); } }));
+    row.appendChild(btn(tr('Enter a code'), { kind: 'quiet', icon: 'key', onPress: openSymbolPad }));
+    const close = btn(tr('Close'), { kind: 'go', icon: 'check', big: true, onPress: closeCard }); close.setAttribute('data-focus', ''); row.appendChild(close);
+    m.appendChild(row);
+  });
+}
+const SYM_PAGES = [0, 7, 14, 21].map(i => E.ALPHABET.slice(i, i + 7));
+function openSymbolPad() {
+  M.typed = ''; M.page = 0;
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr('Enter a code'))));
+    const show = el('div', 'rr-code small'); show.dir = 'ltr'; show.setAttribute('aria-live', 'polite'); m.appendChild(show);
+    const tabs = el('div', 'rr-sym'), keys = el('div', 'rr-sym'), row = el('div', 'row');
+    const draw = () => {
+      show.textContent = M.typed ? M.typed.replace(/(.{4})(?=.)/g, '$1 ') : '____';
+      tabs.innerHTML = ''; SYM_PAGES.forEach((pg, i) => { const b = btn(pg[0] + ' - ' + pg[pg.length - 1], { kind: 'quiet', onPress: () => { M.page = i; draw(); } }); b.dir = 'ltr'; b.setAttribute('aria-pressed', String(M.page === i)); tabs.appendChild(b); });
+      keys.innerHTML = ''; for (const ch of SYM_PAGES[M.page]) { const b = btn(ch, { kind: 'quiet', onPress: () => { if (M.typed.length < 44) { M.typed += ch; draw(); } } }); b.dir = 'ltr'; keys.appendChild(b); }
+    };
+    draw(); m.appendChild(tabs); m.appendChild(keys);
+    row.appendChild(btn(tr('Delete'), { kind: 'quiet', icon: 'back', onPress: () => { M.typed = M.typed.slice(0, -1); draw(); } }));
+    row.appendChild(btn(tr('Open level'), { kind: 'hot', icon: 'play', onPress: () => { if (mkLoad(M.typed)) closeCard(); } }));
+    row.appendChild(btn(tr('Close'), { kind: 'go', icon: 'check', onPress: closeCard }));
+    m.appendChild(row);
+  });
+}
+function mkLoad(code) {
+  const d = E.decode(code);
+  if (!d) { toast(tr('That code does not open a level. Check every symbol.')); sfx('wrong'); return false; }
+  M.rows = d.rows; M.base = codeOf(d.rows); M.result = null; M.task = null; M.free = true; M.checks = 0;
+  $('#mkPill').textContent = tr('Your own level'); $('#mkTask').textContent = tr('A remix: change the board, keep the based-on stamp, press Check.');
+  renderMaker(); announce(tr('Level opened.')); return true;
+}
+function mkSave() {
+  const code = codeOf(M.rows); if (!code) { toast(tr('Place Bolt and the goal first. Then the board gets a code.')); return; }
+  SAVE.levels = [code].concat(SAVE.levels.filter(c => c !== code)).slice(0, 20); save();
+  toast(tr('Saved. {n} levels in your box.', { n: SAVE.levels.length })); sfx('correct');
+}
+function openMyLevels() {
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr('My levels'))));
+    if (!SAVE.levels.length) m.appendChild(el('p', '', esc(tr('No saved levels yet. Press Save level in the maker.'))));
+    const col = el('div', 'rr-codes');
+    SAVE.levels.slice(0, 8).forEach(code => { const b = btn(code, { kind: 'quiet', icon: 'play', onPress: () => { if (mkLoad(code)) closeCard(); } }); b.dir = 'ltr'; col.appendChild(b); });
+    m.appendChild(col);
+    const close = btn(tr('Close'), { kind: 'go', icon: 'check', big: true, onPress: closeCard }); close.setAttribute('data-focus', ''); m.appendChild(close);
+  });
+}
+
 /* ---------- go ---------- */
 if (S.lesson) S.checks = { ok: 0, n: 0 };
 Oomba.fonts.ready.then(() => { goTitle(); });
 
 /* ---------- test hooks: the kit's (step, setLang, ...) plus the game's own; deterministic from a seed ---------- */
 const stateObj = () => ({ screen: S.screen, chapter: S.chapter ? S.chapter.id : null, level: S.li + 1, levelId: S.level ? S.level.id : null, stars: S.chapter ? chapterStars() : 0, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
-  phase: S.playing ? 'running' : cardOpen ? 'card' : S.screen, blocks: E.blocks(S.prog), runs: S.runs, fails: S.fails, hint: S.hint, done: S.chapter ? chapterDone() : 0, total: S.levels.length, label: S.lastLabel || null, checks: Object.assign({}, S.checks), layout: S.layout, bolt: Object.assign({}, BOLT), planDone: S.planDone, ready: true });
+  phase: S.playing ? 'running' : cardOpen ? 'card' : S.screen, card: cardOpen, blocks: E.blocks(S.prog), runs: S.runs, fails: S.fails, hint: S.hint, done: S.chapter ? chapterDone() : 0, total: S.levels.length, label: S.lastLabel || null, checks: Object.assign({}, S.checks), layout: S.layout, bolt: Object.assign({}, BOLT), planDone: S.planDone,
+  edits: S.starter0 ? E.edits(S.starter0, S.prog) : 0, compare: S.compare ? S.compare.picked : null, testing: !!S.testing, pair: !!SAVE.pair, driver: S.driver, crowns: crownCount(), tabs: $('#tabs').hidden ? 0 : $('#tabs').children.length,
+  maker: S.screen === 'maker' ? { task: M.task ? M.task.id : null, free: M.free, tool: M.tool, rows: M.rows.slice(), result: M.result ? { ok: M.result.ok, why: M.result.why, n: M.result.n } : null, base: M.base, made: Object.keys(M.made).length, tested: Object.keys(M.tested).length } : null, ready: true });
 Oomba.test({ state: stateObj, start: () => { closeKitScreens(); closeCard(); S.lesson = false; S.lock = false; startChapter('sequences'); } });
 Object.assign(window.__brbTest, {
   start: (o = {}) => {
@@ -1584,13 +2331,29 @@ Object.assign(window.__brbTest, {
   check: i => { const b = document.querySelector(`#modal .rr-tile2[data-tile="${i}"]`); if (b) b.click(); return !!b; },
   confidence: i => { const b = document.querySelectorAll('#modal .rr-faces .ok-btn')[(i | 0) - 1]; if (b) b.click(); return !!b; },
   plan: () => { const lines = S.level.plan || []; for (const line of lines) { const t = [...document.querySelectorAll('#modal .rr-tile2')].find(x => !x.disabled && x.textContent.includes(tr(line))); if (t) t.click(); } return S.planDone; },
-  closeModal: () => { closeKitScreens(); closeCard(); },
+  closeModal: () => { closeKitScreens(); const wasLearn = cardOpen === 'learn'; closeCard(); if (wasLearn && S.screen === 'play' && S.level.plan && !S.planDone) openPlan(); },
   closeDialog: () => closeKitScreens(),
   map: () => { closeKitScreens(); S.lock = false; goMap(); },
   title: () => { goTitle(); },
   questCode: d => { openQuestCard(); applyQuestCode(String(d).replace(/\D/g, '').padStart(4, '0').slice(0, 4)); },
   band: b => { S.band = b === '2' ? '2' : '1b'; if (S.screen === 'map') renderMap(); },
   unlockAll: () => { for (const ch of CHAPTERS) for (const b of ['1b', '2']) { const r = rec(b, ch.id); levelsFor(ch.id, b).forEach((_, i) => { r.d[i] = true; r.s[i] = r.s[i] || 1; }); } },
+  // stage 2 hooks: the Level Maker, routes, tests, the daily, pair mode
+  tool: t => { M.tool = t; renderPalette(); return M.tool; },
+  paint: (x, y) => { if (S.screen !== 'maker') return false; paintCell(x, y); return M.rows.slice(); },
+  mkRows: rows => { if (S.screen !== 'maker') return false; M.rows = rows.slice(); M.result = null; renderMaker(); return true; },
+  mkCheck: () => { mkCheck(); return M.result ? { ok: M.result.ok, why: M.result.why, n: M.result.n } : null; },
+  mkCode: () => codeOf(M.rows),
+  mkLoad: code => mkLoad(code),
+  mkTest: async () => { mkTest(); await Oomba.time.real.wait(80); const b = [...document.querySelectorAll('.ok-ui .ok-modal:not(#scrim) .ok-hot')].pop(); if (b) b.click(); await Oomba.time.real.wait(80); return !!S.testing; },
+  mkSave: () => { mkSave(); return SAVE.levels.slice(); },
+  maker: i => { closeKitScreens(); closeCard(); if (!S.chapter || S.chapter.id !== 'level-maker') { S.chapter = CHAPTERS.find(c => c.id === 'level-maker'); S.levels = levelsFor('level-maker', S.band); if (!S.hud) S.hud = Oomba.ui.hud(['progress', 'count:star'], {}); } startMaker(i == null ? 'free' : i); return stateObj(); },
+  route: i => { useRoute(i); return S.compare ? S.compare.picked : null; },
+  previewRoute: i => previewRoute(i),
+  test: i => { const b = document.querySelectorAll('#tabs .ok-btn')[i]; if (b) b.click(); return S.layout; },
+  daily: () => { closeKitScreens(); closeCard(); startDaily(); return stateObj(); },
+  pair: on => { SAVE.pair = !!on; renderPairBtn(); renderPair(); return SAVE.pair; },
+  chip: (id, k) => { const f = find(id); if (!f || f.b.t !== 'proc') return false; f.b.chip = k; renderProgram(); return true; },
   cover: () => {
     closeKitScreens(); closeCard(); S.instant = true; S.lesson = false; S.lock = false; S.band = '1b';
     startChapter('loops', { level: 4 });

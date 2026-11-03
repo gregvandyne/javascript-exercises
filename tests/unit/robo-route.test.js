@@ -1,7 +1,8 @@
-// Robo Route (seed-games/robo-route.html): the block-program engine, the grid simulation, every level of the four built
-// chapters in both bands, the level codec, the English string list and the game in real Chromium inside the production
-// frame wrapper. The data tests run the game's own classic scripts in a vm (no browser); the Chromium tests are skipped
-// when there is no local Chromium.
+// Robo Route (seed-games/robo-route.html): the block-program engine, the grid simulation, every level of the eight
+// chapters in both bands (the Debug Lab's edit counts, Best Route's routes and flowcharts, the Level Maker's tasks), the
+// level codec, the daily board, the English string list and the game in real Chromium inside the production frame
+// wrapper. The data tests run the game's own classic scripts in a vm (no browser); the Chromium tests are skipped when
+// there is no local Chromium.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -13,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const HTML = fs.readFileSync(path.join(ROOT, 'seed-games/robo-route.html'), 'utf8');
 const META = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-games/robo-route.json'), 'utf8'));
-const CONTRACT_COUNTS = { sequences: { '1b': 6, '2': 6 }, loops: { '1b': 7, '2': 8 }, conditionals: { '1b': 7, '2': 7 }, variables: { '1b': 6, '2': 6 } };
+const CONTRACT_COUNTS = { sequences: { '1b': 6, '2': 6 }, loops: { '1b': 7, '2': 8 }, conditionals: { '1b': 7, '2': 7 }, variables: { '1b': 6, '2': 6 }, functions: { '1b': 6, '2': 7 }, debug: { '1b': 7, '2': 7 }, 'best-route': { '1b': 5, '2': 5 }, 'level-maker': { '1b': 3, '2': 3 } };
 const BUILT = Object.keys(CONTRACT_COUNTS);
 const ctx = vm.createContext({ window: {} });
 for (const m of HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], ctx);
@@ -21,24 +22,47 @@ const E = ctx.window.RoboRoute, LV = ctx.window.RoboRouteLevels;
 const { CHAPTERS, LEVELS, parse, levelsFor } = LV;
 const CSTA = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'server/standards/csta-2017.json'), 'utf8')).standards.map(s => s.id));
 const run = (level, text, o = { planMatch: true }) => E.run(level, parse(text), o);
-const everyLevel = () => BUILT.flatMap(ch => ['1b', '2'].flatMap(band => levelsFor(ch, band).map(l => [ch, band, l])));
+const everyLevel = () => BUILT.flatMap(ch => ['1b', '2'].flatMap(band => levelsFor(ch, band).filter(l => !l.maker).map(l => [ch, band, l])));
+const makerLevels = () => ['1b', '2'].flatMap(band => levelsFor('level-maker', band).map(l => [band, l]));
+const solve = (l, text) => { const starter = l.starter ? parse(l.starter) : null; const sol = parse(text); return { sol, r: E.run(l, sol, { planMatch: true, starter }) }; };
 
-test('robo-route: the four built chapters have the contract\'s level counts in both bands, every level is solved by its answer on every board, within par', () => {
+test('robo-route: all eight chapters have the contract\'s level counts in both bands, every level is solved by its answer on every board, within par, with three stars', () => {
   for (const ch of BUILT) for (const band of ['1b', '2']) assert.equal(levelsFor(ch, band).length, CONTRACT_COUNTS[ch][band], `${ch} ${band} levels`);
+  assert.equal(everyLevel().length + makerLevels().length, 6 + 6 + 7 + 8 + 7 + 7 + 6 + 6 + 6 + 7 + 7 + 7 + 5 + 5 + 3 + 3);
   for (const [ch, band, l] of everyLevel()) {
-    const sol = parse(l.sol), r = E.run(l, sol, { planMatch: true });
+    const { sol, r } = solve(l, l.sol);
     assert.ok(r.verdict.ok, `${ch}/${band}/${l.id}: ${r.verdict.failReason} on board ${r.verdict.failLayout + 1}`);
     assert.ok(E.blocks(sol) <= E.parOf(l, band), `${ch}/${band}/${l.id}: par ${E.parOf(l, band)} >= blocks ${E.blocks(sol)}`);
-    assert.equal(E.stars(l, band, sol, r.verdict, {}), 3, `${ch}/${band}/${l.id}: three stars for the answer`);
+    assert.equal(E.stars(l, band, sol, r.verdict, {}), 3, `${ch}/${band}/${l.id}: three stars for the answer (edits ${r.verdict.editsFromStarter}, max ${l.maxEdits})`);
+    assert.equal(E.stars(l, band, sol, r.verdict, { hint3: true }), 2, `${ch}/${band}/${l.id}: the third hint costs a star`);
     const ck = E.check(l); assert.ok(ck.solvable, `${ch}/${band}/${l.id}: the board check proves it solvable`);
     const cmds = r.results.map(x => x.verdict.commandsRun); assert.ok(ck.par <= Math.max(...cmds), `${ch}/${band}/${l.id}: BFS par ${ck.par} is a lower bound (answer runs ${cmds})`);
     for (const t of l.needs || []) assert.ok(r.ast.types.includes(t), `${ch}/${band}/${l.id}: the answer uses ${t}`);
+    if (l.minProcs) assert.ok(Object.keys(r.ast.procs).length >= l.minProcs, `${ch}/${band}/${l.id}: the answer has ${l.minProcs} procedures`);
+    if (l.flow) assert.equal(E.fullShape(r.ast), l.flow.shape, `${ch}/${band}/${l.id}: the answer has the flowchart's shape`);
+  }
+  // the Level Maker's three tasks: the given board fails the task, the fixed board passes it, and the fixed board has a code
+  for (const [band, l] of makerLevels()) {
+    assert.ok(l.maker && l.task && l.rule && Array.isArray(l.sol), `${band}/${l.id}: a maker task`);
+    assert.equal(LV.makerOk(l, l.rows).ok, false, `${band}/${l.id}: the task board is not done yet`);
+    const ok = LV.makerOk(l, l.sol); assert.ok(ok.ok, `${band}/${l.id}: the fixed board passes (${ok.why})`);
+    assert.ok(ok.check.par >= 1 && ok.n === ok.check.par);
+    const code = E.encode({ rows: l.sol, door: LV.doorRuleOf(l.sol) }); assert.ok(code, `${band}/${l.id}: the fixed board has a level code`);
+    assert.deepEqual(E.decode(code).rows, l.sol);
+    for (const t of l.shelf) assert.ok(LV.TILES[t], `${band}/${l.id}: ${t} is a tile`);
   }
 });
 
-test('robo-route: starters do not pass, random levels run on three different boards and a fixed list of moves fails at least one', () => {
+test('robo-route: starters do not pass (and the Debug Lab fix stays within the edit budget), random levels run on three different boards and a fixed list of moves fails at least one', () => {
   for (const [ch, band, l] of everyLevel()) {
     if (l.starter) assert.ok(!run(l, l.starter).verdict.ok, `${ch}/${band}/${l.id}: the starter should not pass`);
+    if (l.maxEdits != null) {
+      assert.ok(l.starter, `${ch}/${band}/${l.id}: a debug level has a starter`);
+      const e = E.edits(parse(l.starter), parse(l.sol)); assert.ok(e >= 1 && e <= l.maxEdits, `${ch}/${band}/${l.id}: the fix is ${e} edits, budget ${l.maxEdits}`);
+      assert.equal(E.edits(parse(l.starter), parse(l.starter)), 0);
+    }
+    if (ch === 'debug' && band === '2') { const v = run(l, l.starter).verdict; assert.equal(E.layoutsOf(l).length, 3, `${l.id}: three test grids`); assert.ok(v.perLayout.some(x => !x), `${l.id}: a test grid catches the bug`); }
+    if (l.programs) { const vs = l.programs.map(p => run(l, p).verdict); assert.equal(vs.length, 2); assert.ok(vs.some(v => v.ok), `${l.id}: one of the two routes works`); for (const [i, p] of l.programs.entries()) if (vs[i].ok) assert.ok(E.blocks(parse(p)) > l.par, `${l.id}: route ${'AB'[i]} works but can be improved`); }
     if (l.random) {
       const boards = E.layoutsOf(l);
       assert.equal(boards.length, 3, `${ch}/${band}/${l.id}: three boards`);
@@ -46,7 +70,7 @@ test('robo-route: starters do not pass, random levels run on three different boa
       assert.ok(l.fixed, `${ch}/${band}/${l.id}: has a fixed counter-example`);
       const f = run(l, l.fixed); assert.ok(!f.verdict.ok, `${ch}/${band}/${l.id}: a fixed sequence fails somewhere`);
       assert.ok(f.verdict.perLayout.length === 3, 'perLayout flags');
-    } else assert.equal(E.layoutsOf(l).length, 1);
+    } else if (!l.layouts) assert.equal(E.layoutsOf(l).length, 1);
   }
 });
 
@@ -61,9 +85,65 @@ test('robo-route: every level has three hints, a three-tile check, real CSTA ids
     for (const id of ids) assert.ok(chapter.csta[band].includes(id), `${ch}/${band}/${l.id}: ${id} is one of the chapter's standards`);
     assert.ok(l.shelf.length >= 2 && l.shelf.length <= 8, `${ch}/${band}/${l.id}: 2-8 shelf blocks`);
   }
+  for (const [band, l] of makerLevels()) {
+    assert.ok(l.hints.length === 3 && l.check && l.check.tiles.length === 3, `${band}/${l.id}: hints and a check`);
+    const ids = band === '2' ? l.csta2 : l.csta; for (const id of ids) assert.ok(CSTA.has(id) && CHAPTERS.find(c => c.id === 'level-maker').csta[band].includes(id), `${band}/${l.id}: ${id}`);
+  }
   for (const ch of BUILT) for (const band of ['1b', '2']) assert.ok(levelsFor(ch, band)[0].learn, `${ch} ${band}: level 1 has a learn card`);
-  for (const c of CHAPTERS) for (const band of ['1b', '2']) for (const id of c.csta[band]) assert.ok(CSTA.has(id), `${c.id} ${band} ${id}`);
+  for (const c of CHAPTERS) { for (const band of ['1b', '2']) for (const id of c.csta[band]) assert.ok(CSTA.has(id), `${c.id} ${band} ${id}`); assert.ok(!c.soon, `${c.id} is open`); }
   assert.equal(JSON.stringify(CHAPTERS.map(c => c.index)), '[1,2,3,4,5,6,7,8]');
+  assert.equal(CHAPTERS.find(c => c.id === 'debug').mode, 'debug'); assert.equal(CHAPTERS.find(c => c.id === 'level-maker').mode, 'maker');
+  // chip and credit keys named by levels exist in the word tables
+  for (const l of LEVELS) { for (const k of l.chipOptions || []) assert.ok(LV.CHIPS[k], `${l.id}: chip ${k}`); for (const k of Object.values(l.chips || {})) assert.ok(LV.CHIPS[k], `${l.id}: chip ${k}`); for (const k of Object.values(l.credits || {})) assert.ok(LV.CREDITS[k], `${l.id}: credit ${k}`); }
+});
+
+test('robo-route: functions, Debug Lab and Best Route verdicts: procedures and parameters, remix keeps the credit line, note chips must tell the truth, few edits earn the star, the flowchart must match', () => {
+  const L = (ch, band, id) => levelsFor(ch, band).find(l => l.id === id);
+  const fn4 = L('functions', '1b', 'fn-4');
+  assert.equal(run(fn4, 'proc Zig { move; move; right; move; left }; call Zig; call Zig').verdict.failReason, 'credit', 'the remix must keep its credit line');
+  assert.equal(run(fn4, 'proc Zig { move; move; right; move; left }; call Zig; call Zig').verdict.creditOk, false);
+  assert.ok(run(fn4, 'proc Zig credit starter { move; right; move; left }; proc Zag credit starter { move; move; right; move; left }; call Zag; call Zag').verdict.ok, 'either starter block may be remixed');
+  assert.equal(run({ rows: ['>..G'], remix: { Go: parse('move; move; move') } }, 'proc Go { move; move; move }; call Go').verdict.failReason, 'remix', 'an unchanged starter block is not a remix');
+  const fn7 = L('functions', '2', 'fn-7p');
+  assert.equal(run(fn7, 'proc Zigzag(n) chip zig { repeat n { move; right; move; left } }; proc Finish chip up { repeat 2 { move } }; call Zigzag(5); call Finish').verdict.failReason, 'credit');
+  assert.equal(run(fn7, fn7.starter + '; proc Finish { repeat 2 { move } }; call Zigzag(5); call Finish').verdict.failReason, 'chip0', 'every block needs a note chip');
+  const fn6 = L('functions', '2', 'fn-6p');
+  const wrong = run(fn6, 'proc Sweep chip down { repeat 3 { move; pick; move } }; proc Drop chip down { right; repeat 7 { move } }; proc Home chip home { right; repeat 5 { move } }; call Sweep; call Drop; call Home').verdict;
+  assert.equal(wrong.failReason, 'chips'); assert.equal(wrong.chipsOk, false);
+  assert.equal(run(fn6, 'proc Sweep chip collect { repeat 3 { move; pick; move }; right; repeat 7 { move } }; proc Home chip home { right; repeat 5 { move } }; call Sweep; call Home').verdict.failReason, 'procs', 'three subgoals need three procedures');
+  const fn3 = L('functions', '2', 'fn-3p');
+  assert.ok(run(fn3, 'proc Room(steps) { move; left; repeat steps { move }; pick; right; right; repeat steps { move }; left; move }; call Room(1); call Room(3); call Room(2); move').verdict.ok);
+  assert.equal(run(fn3, 'proc Room(steps) { move; left; repeat steps { move }; pick; right; right; repeat steps { move }; left; move }; call Room(1); call Room(1); call Room(2); move').verdict.failReason, 'nothing', 'the wrong argument reaches for a gem that is not there');
+  // the Debug Lab: the edit counter is a token edit distance (change = 1, move = 2, wrap = 3)
+  assert.equal(E.edits(parse('move; move; right'), parse('move; move; left')), 1);
+  assert.equal(E.edits(parse('move; right; move; move'), parse('move; move; right; move')), 2);
+  assert.equal(E.edits(parse('repeat until goal { move; pick }'), parse('repeat until goal { move; if gem { pick } }')), 3);
+  const d1 = L('debug', '1b', 'dbg-1'); const { sol, r } = solve(d1, d1.sol); assert.equal(r.verdict.editsFromStarter, 1); assert.equal(E.stars(d1, '1b', sol, r.verdict, {}), 3);
+  const long = parse('move; move; move; right; move; move; move; left; right'); const r2 = E.run(d1, long, { planMatch: true, starter: parse(d1.starter) }); assert.ok(r2.verdict.ok); assert.equal(E.stars(d1, '1b', long, r2.verdict, {}), 2, 'too many edits: no second star');
+  const d6 = L('debug', '2', 'dbgp-6'); assert.equal(JSON.stringify(run(d6, d6.starter).verdict.perLayout), '[true,true,false]', 'the edge case is the third test grid');
+  const d7 = L('debug', '2', 'dbgp-7'); const v7 = run(d7, d7.starter).verdict; assert.equal(v7.failReason, 'bump'); assert.ok(v7.handledBumps > 0, 'never bump: handled bumps count against the starter');
+  assert.ok(run({ rows: ['>..#', '##.#', '##G#'] }, 'when bump { right }; repeat until goal { move }').verdict.ok, 'elsewhere a handled bump is fine');
+  // repeat until a box reaches a value
+  assert.ok(run({ rows: ['>*.*G'] }, 'set count 0; repeat until count = 2 { if gem { pick; change count 1 }; move }').verdict.ok);
+  // Best Route: the flowchart gate is level-wide, so the per-board marks stay honest
+  const b4 = L('best-route', '2', 'brp-4'); const s4 = run(b4, b4.starter).verdict; assert.equal(JSON.stringify(s4.perLayout), '[true,false]'); assert.equal(s4.failReason, 'bump');
+  const b1 = L('best-route', '2', 'brp-1'); const f1 = run(b1, 'repeat until goal { if wall { right } else { move } }').verdict; assert.equal(f1.failReason, 'flow'); assert.equal(f1.flowMatch, false); assert.equal(JSON.stringify(f1.perLayout), '[true,true,true]');
+  assert.equal(E.fullShape(E.run(b1, parse(b1.sol)).ast), 'U:goal{I:path{m}E{r}}');
+  assert.equal(E.shape(parse('when bump { left }; repeat 3 { if path and not gem { move } else { right } }; set x 1; call Go')), 'W:bump{l}R{I:(path&!gem){m}E{r}}SK');
+  assert.match(E.failText(f1)[0], /flowchart/);
+  for (const r of ['credit', 'remix', 'chip0']) assert.match(E.failText({ failReason: r, name: 'Zig' })[1].name, /Zig/);
+});
+
+test('robo-route: the Daily Crew Challenge is one solvable board per day per band, the same for everyone', () => {
+  for (let day = 20000; day < 20040; day++) for (const band of ['1b', '2']) {
+    const a = LV.dailyLevel(day, band), b = LV.dailyLevel(day, band);
+    assert.deepEqual(E.layoutsOf(a)[0].rows, E.layoutsOf(b)[0].rows, 'deterministic');
+    assert.equal(E.layoutsOf(a)[0].w, band === '2' ? 8 : 6);
+    assert.ok(E.check(a).solvable, `day ${day} ${band} solvable`);
+    assert.ok(a.hints.length === 3 && a.shelf.length >= 3 && a.shelf.length <= 8 && a.par >= 2);
+  }
+  assert.notDeepEqual(E.layoutsOf(LV.dailyLevel(20001, '1b'))[0].rows, E.layoutsOf(LV.dailyLevel(20008, '1b'))[0].rows, 'the same template on another day is another board');
+  assert.equal(LV.DAILY.length, 7);
 });
 
 test('robo-route: the verdict says why (bump, splash, nothing to pick up, gems left, not on the goal, bad name, plan first, needs a block)', () => {
@@ -145,21 +225,24 @@ test('robo-route: en.json lists every English string the game shows (and nothing
   const game = HTML.slice(HTML.indexOf('<script type="module">'));
   const unq = s => s.replace(/\\'/g, "'").replace(/\\"/g, '"');
   for (const m of game.matchAll(/\btr\((?:'((?:\\.|[^'\\\n])+)'|"((?:\\.|[^"\\\n])+)")/g)) want.add(unq(m[1] != null ? m[1] : m[2]));
+  for (const m of game.matchAll(/\btr\([^()'"\n]*\?\s*'((?:\\.|[^'\\\n])+)'\s*:\s*'((?:\\.|[^'\\\n])+)'/g)) { want.add(unq(m[1])); want.add(unq(m[2])); }
   for (const c of CHAPTERS) want.add(c.title);
   for (const b of Object.values(LV.BLOCKS)) want.add(b.label);
-  for (const s of [...Object.values(LV.SENSOR_LABELS), ...Object.values(LV.EVENT_LABELS), ...E.WORDS, 'on', 'off', 'and', 'or', 'Explorer', 'Pro']) want.add(s);
+  for (const t of Object.values(LV.TILES)) want.add(t.label);
+  for (const s of [...Object.values(LV.SENSOR_LABELS), ...Object.values(LV.EVENT_LABELS), ...Object.values(LV.CHIPS), ...Object.values(LV.CREDITS), ...Object.values(LV.WHY), ...LV.MAKER_HINTS.free, ...LV.MAKER_HINTS.test, ...LV.DAILY_HINTS, ...LV.DAILY.map(d => d.hint), ...E.WORDS, 'on', 'off', 'and', 'or', 'Explorer', 'Pro']) want.add(s);
   for (const l of LEVELS) for (const v of [l, l.pro || {}]) {
     if (v.learn) { want.add(v.learn.title); want.add(v.learn.text); }
     for (const h of v.hints || []) want.add(h);
     if (v.check) { want.add(v.check.q); for (const t of v.check.tiles) want.add(t); }
     for (const p of v.plan || []) want.add(p);
     if (v.predict) { want.add(v.predict.q); for (const t of v.predict.tiles) want.add(t); }
+    if (v.task) want.add(v.task);
   }
-  for (const r of ['bump', 'door', 'splash', 'nothing', 'gems', 'goal', 'limit', 'deep', 'name', 'plan', 'needs', 'procs', 'chips', 'nocall', 'empty', 'bad']) for (const left of [1, 2]) { const t = E.failText({ failReason: r, failStep: 1, gemsLeft: left }); if (t) want.add(t[0]); }
+  for (const r of ['bump', 'door', 'splash', 'nothing', 'gems', 'goal', 'limit', 'deep', 'name', 'plan', 'needs', 'procs', 'chips', 'chip0', 'credit', 'remix', 'flow', 'nocall', 'empty', 'bad']) for (const left of [1, 2]) { const t = E.failText({ failReason: r, failStep: 1, gemsLeft: left }); if (t) want.add(t[0]); }
   const missing = [...want].filter(s => !have.has(s)), stale = en.filter(s => !want.has(s));
   assert.deepEqual(missing, [], 'strings the game shows but en.json lacks');
   assert.deepEqual(stale, [], 'strings in en.json the game no longer shows');
-  assert.ok(en.length <= 1450, `${en.length} strings`);
+  assert.ok(en.length <= 1450 && en.length >= 850, `${en.length} strings`);
   const UK = /\b(colou?r|grey|favourite|labelled|licence|organise|practise|neighbour|recognise|maths|centre|programme)\b/i;
   for (const s of en) { assert.ok(!UK.test(s) || /\bcolor\b/.test(s) && !/colour/.test(s), `US spelling: ${s}`); assert.doesNotMatch(s, /\d{7,}|@|https?:|\/\/\w+\./, s); assert.doesNotMatch(s, /\b(grown[\s-]?ups?|parents?|guardians?|family|families|mum|mom|dad)\b/i, `no family words near codes: ${s}`); }
 });
@@ -191,11 +274,11 @@ const skip = !exe && !process.env.PLAYWRIGHT_BROWSERS_PATH ? 'no Chromium on thi
 const HOST = 'http://game.invalid';
 let browser;
 test.after(async () => { if (browser) await browser.close(); });
-async function open({ size = { width: 390, height: 844 }, lang = 'en' } = {}) {
+async function open({ size = { width: 390, height: 844 }, lang = 'en', save = {} } = {}) {
   const { frameDocument, frameCsp, SANDBOX } = await import('../../server/services/frame.js');
   if (!browser) { const { chromium } = await import('playwright-core'); browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] }); }
   const ctx = await browser.newContext({ viewport: size, hasTouch: true });
-  const doc = frameDocument(HTML, { user: { displayName: 'P', avatar: 'x', lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Robo Route' }, save: {}, canSave: false, preview: true, deviceText: { title: 'x', text: 'y' } });
+  const doc = frameDocument(HTML, { user: { displayName: 'P', avatar: 'x', lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Robo Route' }, save, canSave: false, preview: true, deviceText: { title: 'x', text: 'y' } });
   const host = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
   const errors = [], consoleErrors = [], csp = [];
   await ctx.route('**/*', route => {
@@ -230,7 +313,8 @@ test('robo-route: in Chromium a phone plays level 1 of two chapters in lesson mo
     await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
     s = await T(frame, 'state'); assert.equal(s.screen, 'map');
     assert.deepEqual(await fit(frame), [], 'the chapter map fits a phone');
-    assert.equal(await frame.evaluate(() => document.querySelectorAll('#tiles .rr-tile').length), 8);
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#tiles .rr-tile').length), 9, 'eight chapters and the daily');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#tiles .rr-tile[disabled]').length), 0, 'every chapter is open');
     await T(frame, 'start', { chapter: 'sequences', band: '1b', seed: 3, lesson: true });
     s = await T(frame, 'state'); assert.equal(s.phase, 'card', 'the learn card opens on level 1');
     await T(frame, 'closeModal'); await page.waitForTimeout(300);
@@ -260,7 +344,118 @@ test('robo-route: in Chromium a phone plays level 1 of two chapters in lesson mo
     await T(frame, 'solve'); await page.waitForTimeout(400);
     assert.ok(await T(frame, 'check', 1)); await page.waitForTimeout(150); await T(frame, 'confidence', 2); await page.waitForTimeout(800);
     s = await T(frame, 'state'); assert.equal(s.label, '1/8 levels, 3 stars, 0/1 checks');
+    // functions at Explorer: the block is given, Run sleeps until the program calls it
+    await T(frame, 'start', { chapter: 'functions', band: '1b', seed: 3, lesson: true }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.levelId, 'fn-1'); assert.equal(s.blocks, 6, 'the starter procedure');
+    assert.equal(await frame.evaluate(() => document.getElementById('runBtn').getAttribute('aria-disabled')), 'true', 'Run is dimmed until a call exists');
+    assert.ok(await T(frame, 'shelf', 5)); assert.equal((await T(frame, 'state')).blocks, 7);
+    assert.equal(await frame.evaluate(() => document.getElementById('runBtn').getAttribute('aria-disabled')), 'false');
+    assert.deepEqual(await fit(frame), [], 'a functions level fits a phone');
+    await T(frame, 'solve'); await page.waitForTimeout(400); assert.equal((await T(frame, 'verdict')).ok, true);
     assert.deepEqual(errors, []); assert.deepEqual(consoleErrors, []);
+  } finally { await ctx.close(); }
+});
+
+test('robo-route: in Chromium a tablet runs the Debug Lab test tabs, Best Route\'s two routes and flowchart, the Level Maker (tasks, code, symbol pad, a friend\'s test), the daily and pair mode', { skip, timeout: 240_000 }, async () => {
+  const { ctx, page, frame, errors, consoleErrors } = await open({ size: { width: 820, height: 1180 }, lang: 'en' });
+  try {
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(400);
+    await T(frame, 'skipAnimations');
+    // Debug Lab at Pro: three test grids, the starter fails one, the tabs say which
+    await T(frame, 'start', { chapter: 'debug', band: '2', seed: 2 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    let s = await T(frame, 'state'); assert.equal(s.levelId, 'dbgp-1'); assert.equal(s.tabs, 3); assert.equal(s.edits, 0);
+    assert.ok(await frame.evaluate(() => !document.getElementById('editPill').hidden), 'the edit counter shows');
+    await T(frame, 'run'); await page.waitForTimeout(300);
+    let v = await T(frame, 'verdict'); assert.equal(v.ok, false); assert.ok(v.perLayout.some(x => !x));
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#tabs .ok-btn svg').length), 3, 'a mark on every tab after a run');
+    assert.equal(await T(frame, 'test', 1), 1, 'tapping a tab shows that board');
+    assert.deepEqual(await fit(frame), [], 'the Debug Lab fits a tablet');
+    await T(frame, 'solve'); await page.waitForTimeout(600); v = await T(frame, 'verdict'); assert.equal(v.ok, true); assert.equal(v.editsFromStarter, 1);
+    assert.ok(await frame.evaluate(() => !!document.querySelector('.ok-ui .ok-modal.ok-win')), 'the results card'); await T(frame, 'closeDialog'); await page.waitForTimeout(200);
+    // Best Route at Explorer: two routes side by side, preview one, pick one, improve it
+    await T(frame, 'start', { chapter: 'best-route', band: '1b', seed: 2 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.levelId, 'br-1'); assert.equal(s.compare, null);
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('.rr-cmp .col').length), 2);
+    assert.deepEqual(await fit(frame), [], 'the compare view fits a tablet');
+    await T(frame, 'previewRoute', 0); await page.waitForTimeout(400);
+    assert.equal((await T(frame, 'state')).fails, 0, 'a preview is not a failed run');
+    assert.equal(await T(frame, 'route', 1), 1); assert.equal((await T(frame, 'state')).blocks, 8);
+    await T(frame, 'solve'); await page.waitForTimeout(600); assert.equal((await T(frame, 'verdict')).ok, true);
+    await T(frame, 'closeDialog'); await page.waitForTimeout(200);
+    // Best Route at Pro: the flowchart card, then the re-test with the longer hallway
+    await T(frame, 'start', { chapter: 'best-route', band: '2', level: 4, seed: 2 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.levelId, 'brp-4'); assert.equal(s.phase, 'card', 'the flowchart card');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#modal .rr-fc').length), 5);
+    assert.deepEqual(await fit(frame), [], 'the flowchart card fits a tablet');
+    assert.equal(await T(frame, 'plan'), true); await page.waitForTimeout(700);
+    s = await T(frame, 'state'); assert.equal(s.planDone, true); assert.equal(s.tabs, 2); assert.equal(s.blocks, 5, 'the counting starter');
+    await T(frame, 'run'); await page.waitForTimeout(300); v = await T(frame, 'verdict'); assert.deepEqual(v.perLayout, [true, false]);
+    await T(frame, 'program', 'repeat until goal { if path { move } else { left } }'); await T(frame, 'run'); await page.waitForTimeout(300);
+    v = await T(frame, 'verdict'); assert.equal(v.failReason, 'flow', 'it works on both boards but does not follow the chart');
+    await T(frame, 'solve'); await page.waitForTimeout(600); assert.equal((await T(frame, 'verdict')).ok, true);
+    await T(frame, 'closeDialog'); await page.waitForTimeout(200);
+    // the Level Maker in lesson mode: task 1, the code, the symbol pad, a friend's test, the maker label
+    await T(frame, 'start', { chapter: 'level-maker', band: '1b', seed: 2, lesson: true }); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.screen, 'maker'); assert.equal(s.phase, 'card', 'the learn card on task 1');
+    await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.maker.task, 'mk-1'); assert.equal(s.maker.tool, 'wall');
+    assert.deepEqual(await fit(frame), [], 'the maker fits a tablet');
+    let res = await T(frame, 'mkCheck'); assert.equal(res.ok, false); assert.match(res.why, /No way/);
+    assert.equal(await T(frame, 'tool', 'floor'), 'floor'); await T(frame, 'paint', 2, 3);
+    res = await T(frame, 'mkCheck'); assert.equal(res.ok, true); assert.equal(res.n, 5, 'par: two up, a turn, two across'); await page.waitForTimeout(300);
+    s = await T(frame, 'state'); assert.equal(s.phase, 'card', 'the Case-closed card after a fixed level');
+    assert.ok(await T(frame, 'check', 0)); await page.waitForTimeout(150); assert.ok(await T(frame, 'confidence', 3)); await page.waitForTimeout(800);
+    s = await T(frame, 'state'); assert.equal(s.label, '1 made, 0 tested'); assert.equal(s.done, 1);
+    await frame.evaluate(() => document.querySelector('.ok-ui .ok-modal.ok-win .ok-row .ok-hot').click()); await page.waitForTimeout(400);
+    s = await T(frame, 'state'); assert.equal(s.maker.task, 'mk-2');
+    const code = await T(frame, 'mkCode'); assert.match(code, /^([2-9B-DF-HJ-NP-TV-Z]{4} )*[2-9B-DF-HJ-NP-TV-Z]{1,4}$/); assert.doesNotMatch(code, /\d{5}/);
+    await frame.evaluate(() => [...document.querySelectorAll('#mkActions .ok-btn')].find(b => /code/i.test(b.getAttribute('aria-label') || b.textContent)).click()); await page.waitForTimeout(200);
+    assert.deepEqual(await fit(frame), [], 'the code card fits a tablet');
+    await frame.evaluate(() => [...document.querySelectorAll('#modal .ok-btn')].find(b => /Enter a code/.test(b.textContent)).click()); await page.waitForTimeout(200);
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#modal .rr-sym .ok-btn').length), 11, 'four pages of seven symbols');
+    assert.deepEqual(await fit(frame), [], 'the symbol pad fits a tablet');
+    await T(frame, 'closeModal');
+    assert.ok(await T(frame, 'mkLoad', code), 'a code opens its board'); s = await T(frame, 'state'); assert.equal(s.maker.base, code); assert.equal(s.maker.free, true);
+    res = await T(frame, 'mkCheck'); assert.equal(res.ok, true);
+    assert.equal(await T(frame, 'mkTest'), true, 'hand over to a friend'); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.screen, 'play'); assert.equal(s.testing, true); assert.equal(s.levelId, 'maker-test');
+    assert.deepEqual(await fit(frame), [], 'a friend\'s test fits a tablet');
+    await T(frame, 'program', 'repeat until goal { if path { move } else { left } }'); await T(frame, 'run'); await page.waitForTimeout(400);
+    assert.equal((await T(frame, 'verdict')).ok, true); s = await T(frame, 'state'); assert.equal(s.label, '2 made, 1 tested', 'two boards passed Check, one was tested');
+    await page.waitForTimeout(300); await T(frame, 'closeDialog'); await page.waitForTimeout(300); s = await T(frame, 'state'); assert.equal(s.screen, 'maker'); assert.equal(s.maker.tested, 1);
+    assert.deepEqual((await T(frame, 'mkSave')).length, 1);
+    // the daily and pair mode
+    s = await T(frame, 'daily'); assert.equal(s.levelId, 'daily'); assert.equal(s.chapter, 'daily');
+    assert.deepEqual(await fit(frame), [], 'the daily fits a tablet');
+    assert.equal(await T(frame, 'pair', true), true);
+    await T(frame, 'start', { chapter: 'sequences', band: '1b', seed: 2 }); await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    assert.ok(await frame.evaluate(() => !document.getElementById('pairPill').hidden && document.querySelectorAll('#pairPill .av').length === 2), 'two avatars');
+    assert.deepEqual(await fit(frame), [], 'a pair level fits a tablet');
+    for (let i = 0; i < 3; i++) { await T(frame, 'solve'); await page.waitForTimeout(600); await frame.evaluate(() => document.querySelector('.ok-ui .ok-modal.ok-win .ok-row .ok-hot').click()); await page.waitForTimeout(500); }
+    s = await T(frame, 'state'); assert.equal(s.level, 4); assert.equal(s.driver, 1, 'Swap! after three levels');
+    assert.deepEqual(errors, []); assert.deepEqual(consoleErrors, []);
+  } finally { await ctx.close(); }
+});
+
+test('robo-route: in Chromium a Pro player boots in the kit\'s Bold style and sees Explorer stars in silver', { skip, timeout: 120_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 1180, height: 820 }, lang: 'en', save: { 'robo-route-v1': JSON.stringify({ v: 1, band: '2', stars: { '1b': { loops: { s: [3, 3, 2], d: [true, true, true] } }, '2': {} } }) } });
+  try {
+    assert.equal(await frame.evaluate(() => Oomba.style()), 'bold');
+    assert.ok(await frame.evaluate(() => document.querySelector('.ok-ui').classList.contains('ok-bold')));
+    await page.waitForTimeout(600); assert.deepEqual(await fit(frame), [], 'the Bold title fits');
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
+    const s = await T(frame, 'state'); assert.equal(s.band, '2'); assert.equal(s.screen, 'map');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('#tiles .st.silver').length), 1, 'the Explorer stars of Loops show silver at Pro');
+    assert.deepEqual(await fit(frame), [], 'the Bold map fits');
+    await T(frame, 'start', { chapter: 'functions', band: '2', level: 6, seed: 1 }); await T(frame, 'closeModal'); await page.waitForTimeout(300);
+    assert.equal((await T(frame, 'state')).levelId, 'fn-6p');
+    await T(frame, 'program', 'proc Sweep { repeat 3 { move; pick; move } }; proc Drop { right; repeat 7 { move } }; proc Home { right; repeat 5 { move } }; call Sweep; call Drop; call Home');
+    await frame.evaluate(() => document.querySelector('.rr-blk[data-id]').click()); await page.waitForTimeout(150);
+    assert.ok(await frame.evaluate(() => !![...document.querySelectorAll('#tray .ok-btn')].find(b => /Note chip/.test(b.getAttribute('aria-label') || b.textContent))), 'the Note chip tray button');
+    assert.deepEqual(await fit(frame), [], 'a Pro functions level with the tray fits');
+    await T(frame, 'skipAnimations'); await T(frame, 'run'); await page.waitForTimeout(300);
+    assert.equal((await T(frame, 'verdict')).failReason, 'chip0');
+    assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });
 
@@ -294,6 +489,11 @@ test('robo-route: in Chromium the densest level (Pro conditionals, an 8 by 8 boa
       // the program's first block selected: the tray shows below it
       await frame.evaluate(() => document.querySelector('.rr-blk[data-id]').click()); await page.waitForTimeout(200);
       assert.deepEqual(await fit(frame), [], `${size.width}x${size.height} ${lang}${big ? ' 150%' : ''} fits`);
+      // the Level Maker's free board at Pro: an 8 by 8 board of buttons, an eight-tile palette and the action row
+      await T(frame, 'band', '2'); await T(frame, 'maker', null); await page.waitForTimeout(300);
+      const m = await T(frame, 'state'); assert.equal(m.screen, 'maker'); assert.equal(m.maker.rows.length, 8);
+      await frame.evaluate(() => [...document.querySelectorAll('#mkActions .ok-btn')].find(b => /More/.test(b.getAttribute('aria-label') || b.textContent)).click()); await page.waitForTimeout(150);
+      assert.deepEqual(await fit(frame), [], `${size.width}x${size.height} ${lang}${big ? ' 150%' : ''}: the maker fits`);
       assert.deepEqual(errors, []);
     } finally { await ctx.close(); }
   }
