@@ -1463,7 +1463,7 @@ function tableView(level, st, g) {
 function seriesTable(level, st, g, target) {
   const wrap = el('div', 'tbl'); wrap.setAttribute('data-fit-dense', '');
   const t = el('table');
-  t.innerHTML = `<thead><tr><th><span class="hdr">${esc(tr(level.catLabel || 'Kind'))}</span></th><th><span class="hdr">${esc(tr(level.valueLabel || 'Count'))}</span></th></tr></thead>`;
+  t.innerHTML = `<thead><tr><th><span class="hdr">${esc(level.catLabel ? tr(level.catLabel) : tr('Kind'))}</span></th><th><span class="hdr">${esc(level.valueLabel ? tr(level.valueLabel) : tr('Count'))}</span></th></tr></thead>`;
   const body = el('tbody');
   const data = target ? level.cats : E.series(level, st);
   for (const [c, v] of data) { const r = el('tr', 'row' + (g.cat === c ? ' lit' : '')); r.setAttribute('role', 'button'); r.tabIndex = 0; r.innerHTML = `<td>${esc(trCell(c))}</td><td class="num" dir="ltr">${esc(num(v))}</td>`; const tap = () => tapBar(c); r.addEventListener('click', tap); r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } }); body.appendChild(r); }
