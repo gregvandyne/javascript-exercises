@@ -63,7 +63,7 @@ test('catalogue loader: units, paths, the lesson files present, missing keys, ba
   assert.equal(cat.program.slug, 'cs-quest');
   assert.equal(cat.units.length, 7); assert.equal(cat.paths.length, 4);
   assert.equal(present.length + cat.missing.length, 46, 'every key is present or missing');
-  assert.ok(present.length >= 29, `${present.length} lesson files`);
+  assert.equal(present.length, 46, `${present.length} lesson files`); assert.deepEqual(cat.missing, [], 'no missing keys');
   for (const l of present) { assert.ok(T.isKey(l.key)); assert.equal(T.getTemplate(l.key), l); assert.equal(T.getTemplate(l.key.toUpperCase()), l, 'keys are case-insensitive'); assert.ok(l.unitTitle && l.file); }
   assert.equal(T.getTemplate('csq-3-9.9'), null); assert.equal(T.getTemplate(''), null);
   assert.deepEqual(present.slice(0, 4).map(l => l.key), ['csq-1b-1.1', 'csq-2-1.1', 'csq-1b-1.2', 'csq-2-1.2'], 'program order: lesson, then band');
