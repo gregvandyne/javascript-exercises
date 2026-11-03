@@ -4,7 +4,7 @@
 // looks for text or controls off the screen, text cut off, things on top of each other and squashed buttons
 // (tests/e2e/frame-fit.js), and on the page for sideways scrolling. Saves a screenshot of every check.
 //
-//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... OUT=/tmp/live-layout [MODES=board,battle,quest-race] \
+//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... OUT=/tmp/live-layout [MODES=board,battle,quest-race,wyr,atlas] [PLAYERS=3] \
 //   node scripts/live-layout-audit.js        exit code 1 when anything is wrong (tests/e2e/live-layout.spec.js runs it too)
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
@@ -12,7 +12,10 @@ import { frameProblems, pageScrollsSideways } from '../tests/e2e/frame-fit.js';
 const B = (process.env.BASE || 'http://localhost:3000').replace(/\/$/, ''), OUT = process.env.OUT || '/tmp/live-layout';
 fs.mkdirSync(OUT, { recursive: true });
 const SIZES = { phone: [390, 844], 'small-phone': [360, 640], 'tablet-portrait': [820, 1180], 'tablet-landscape': [1180, 820], desktop: [1280, 800], projector: [1920, 1080] };
-const MODES = (process.env.MODES || 'board,battle,quest-race').split(',');
+const MODES = (process.env.MODES || 'board,battle,quest-race,wyr,atlas').split(',');
+// Would You Rather Live and Atlas Quest Live make their own questions (the longest time each allows).
+const OWN = { wyr: 'wyr:mix:5:30', atlas: 'atlas:world:easy:find+flag:5:30' };
+const PLAYERS = Math.max(1, Math.min(40, +process.env.PLAYERS || 3));
 // Our own questions with 2 minutes each, so a question stays open while every size is checked. Long ones too, and
 // categories for the board.
 const LONG = 'A scientist leaves a glass of water, a glass of salty water and a glass of sugary water on a sunny windowsill for a week. Which glass will have the least water left at the end?';
@@ -34,10 +37,10 @@ const report = [];
     const hc = await br.newContext({ viewport: { width: 1280, height: 800 } }); const host = await hc.newPage();
     await host.request.post(B + '/api/auth/login', { data: { username: process.env.ADMIN_USER || 'admin', password: process.env.ADMIN_PASS || '' }, headers: { 'sec-fetch-site': 'same-origin' } });
     await host.goto(B + '/live');
-    const r = await host.request.post(B + '/api/live/sessions', { data: { pick: `mode:${mode}`, items: ITEMS, audience: 'open', replace: true }, headers: { Origin: B } });
+    const r = await host.request.post(B + '/api/live/sessions', { data: { pick: `mode:${mode}`, ...(OWN[mode] ? { starter: OWN[mode] } : { items: ITEMS }), audience: 'open', replace: true }, headers: { Origin: B } });
     await host.goto(B + (await r.json()).redirect); const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
     const players = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < PLAYERS; i++) {
       const c = await br.newContext({ viewport: { width: 390, height: 844 }, extraHTTPHeaders: { 'x-forwarded-for': `10.1.${MODES.indexOf(mode)}.${i + 5}` } }); const p = await c.newPage();
       await p.goto(`${B}/join#${code}`); await p.click('#lv-join button[type=submit]'); await p.click('#lv-go'); await p.waitForURL(/\/live\/play\//); players.push(p);
     }

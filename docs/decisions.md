@@ -2163,3 +2163,38 @@ a play. Now the platform plays every build itself before the build ends (`server
   with more calls costs several times a normal one, so a few teacher builds can reach the daily cap sooner; the cap
   itself is unchanged. Raise it, or watch `/admin/stats`, if teachers build a lot.
 - **Tests:** `tests/unit/builder-trusted.test.js`.
+
+## Would You Rather and Atlas Quest go live (3 Nov 2026)
+
+The owner asked to make Would You Rather and Atlas Quest live class games, playable by 10, 20 or 30 players. They are
+two new built-in modes on the quiz machinery (the platform times, checks, scores and reveals; the games only draw):
+
+- **Would You Rather Live** (`mode: 'wyr'`, seed game `would-you-rather-live`). The server makes the questions from the
+  official game's reviewed bank (`server/live/wyr.js`, starter `wyr:<topics|mix>:<count>:<secs>`, every language): two
+  choices, `answer: -1`. A vote is never right or wrong: no points, no streaks, no "needs help", no team banking, and
+  the answers are never shuffled (so A and B stay the poll's A and B). After each reveal the server counts each
+  signed-in player's vote once in the game's all-time poll (`polls.vote`, the same table and rule as the game: one vote
+  per account and dilemma; guests have no account and don't count) and shares everyone's split as state `wyr`
+  `{ i, a, b, n }` (percentages only from `MIN_SHOWN` votes). The projector names nobody: only the split, how many, a
+  fixed talk prompt, and at the end the most agreed and the closest dilemma. Results show votes, not accuracy, and no
+  "play the missed ones".
+- **Atlas Quest Live** (`mode: 'atlas'`, seed game `atlas-quest-live`). The server makes the questions from Atlas
+  Quest's own data (`server/live/atlas.js`, starter `atlas:<region>:<level>:<kinds>:<count>:<secs>`; kinds find,
+  capital, flag, famous). A question's choices are every country's code in Atlas Quest's order, so a tap on the map is
+  an ordinary answer: the index of the country (the protocol's `an.c` now goes to 255; the quiz still checks it against
+  the open question's choices, and a 2-4 choice question refuses anything else). The right country scores 500-1000 by
+  speed plus the streak, like every quiz; a near miss scores 0-300 (under 2,000 km, a neighbour at least 150), never a
+  streak. The flag to show and the region the maps open on are shared state `atl` `{ i, k, reg, fl? }` (a flag
+  question's text never names the country; a determined child could read the code from the frame, like any client
+  game: acceptable for a class geography game). Phones get a 2D world map (pan, pinch, + / − / whole map) where a tap
+  picks a country and Lock in sends it; the name shows only at the reveal, so finding it on the map is the challenge.
+  The projector shows one bubble per tapped country (size = how many) rather than a pin per player, so 30 or 60
+  players stay readable, plus the top five and "and N more answered". Results keep a short version of each question
+  (the right country and the most tapped wrong ones, by name).
+- **Full classes.** Both were run with 30 players (unit test over the real socket, and `scripts/live-crowd.js`: 30
+  bots plus a real phone on a running server, layout checked at five sizes). A player receives a handful of messages
+  per question (the question, its own ack and result, the reveal, the state patch), the biggest well under 2 KB even
+  for Atlas (the reveal's 195 counts). Both allow the room's usual maximum (60).
+- Play again keeps the same questions (`trusted` items: the platform's own, carried over unchanged); the page's and
+  the dashboard's read-aloud and answer bars treat a question with more than 4 choices as a map (question only; the
+  dashboard lists the most tapped countries by name with `Intl.DisplayNames`).

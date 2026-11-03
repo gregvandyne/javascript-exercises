@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Would You Rather Live</title>
+<style>
+  :root { --ink: #1d2340; --card: #fffdf7; --bg1: #ffe7b8; --bg2: #ffd0e0; --a: #17a58c; --a2: #d9f7ef; --b: #8a5cf6; --b2: #ece4ff; --muted: rgba(29,35,64,.7); }
+  html.dark { --ink: #f4f1e6; --card: #262a48; --bg1: #2a2552; --bg2: #43255a; --a2: #164a42; --b2: #3a2c6b; --muted: rgba(244,241,230,.75); }
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); color: var(--ink); background: linear-gradient(160deg, var(--bg1), var(--bg2)); }
+  [hidden] { display: none !important; }
+  .wl { position: fixed; inset: 0; display: flex; flex-direction: column; gap: clamp(6px, 1.4vh, 12px); padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); box-sizing: border-box; }
+  .wl-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; min-height: 34px; }
+  .wl-top .sp { flex: 1; }
+  .wl-pill { background: var(--card); border: 3px solid var(--ink); border-radius: 999px; padding: 3px 12px; box-shadow: 0 3px 0 var(--ink); font-weight: 800; font-size: clamp(13px, min(2.6vw, 2.6vh), 22px); white-space: nowrap; }
+  .wl-title { font-size: clamp(15px, min(3.4vw, 3.4vh), 28px); }
+  .wl-ring { width: clamp(40px, 7vh, 64px); height: clamp(40px, 7vh, 64px); position: relative; flex: none; }
+  .wl-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .wl-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(14px, 2.6vh, 22px); }
+  .wl-banner { margin: 0 auto; background: var(--ink); color: var(--card); border-radius: 18px; padding: 8px 18px; font-weight: 800; font-size: clamp(15px, min(4vw, 4vh), 34px); text-align: center; max-width: 92vw; flex-shrink: 0; overflow-wrap: anywhere; }
+  .wl-banner:empty { display: none; }
+  .wl-cards { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: clamp(8px, 1.6vw, 18px); }
+  .wl-or { align-self: center; display: grid; place-items: center; width: clamp(44px, 7vmin, 80px); height: clamp(44px, 7vmin, 80px); border-radius: 50%; background: var(--card); border: 4px solid var(--ink); font-weight: 900; font-size: clamp(14px, 2.6vmin, 26px); box-shadow: 0 4px 0 var(--ink); z-index: 1; }
+  /* side by side, a card is never more than half again as tall as it is wide */
+  .wl-cards > .wl-c { align-self: center; height: 100%; max-height: 62vw; }
+  .wl-c { position: relative; overflow: hidden; border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 6px 0 var(--ink); background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: clamp(10px, 2vh, 22px); text-align: center; font: inherit; color: inherit; min-height: 0; min-width: 0; }
+  button.wl-c { cursor: pointer; }
+  button.wl-c:active:not([disabled]) { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+  button.wl-c:focus-visible { outline: 4px solid #ffc83d; outline-offset: 3px; }
+  .wl-c.a { background: var(--a2); } .wl-c.b { background: var(--b2); }
+  .wl-c .tx { position: relative; z-index: 1; font-weight: 900; font-size: clamp(17px, min(4.2vw, 5vh), 52px); line-height: 1.15; overflow-wrap: anywhere; }
+  .wl-c .tag { position: relative; z-index: 1; font-weight: 900; font-size: clamp(13px, 2.2vh, 22px); color: #fff; border-radius: 999px; padding: 2px 14px; }
+  .wl-c.a .tag { background: var(--a); } .wl-c.b .tag { background: var(--b); }
+  .wl-c .fill { position: absolute; inset: auto 0 0 0; height: 0; transition: height 1s cubic-bezier(.2,1,.4,1); opacity: .38; }
+  .wl-c.a .fill { background: var(--a); } .wl-c.b .fill { background: var(--b); }
+  .wl-c .pct { position: relative; z-index: 1; font-weight: 900; font-size: clamp(30px, min(9vw, 11vh), 120px); line-height: 1; }
+  .wl-c .n { position: relative; z-index: 1; font-weight: 800; font-size: clamp(13px, 2.2vh, 22px); color: var(--muted); }
+  .wl-c.win { box-shadow: 0 0 0 5px #ffc83d, 0 6px 0 var(--ink); }
+  .wl-c.mine::after { content: '✓'; position: absolute; top: 8px; inset-inline-end: 12px; font-weight: 900; font-size: 26px; z-index: 2; }
+  .wl-c.dim { opacity: .55; }
+  .wl-foot { flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .wl-world { width: min(720px, 100%); background: var(--card); border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 3px 0 var(--ink); padding: 6px 12px; box-sizing: border-box; font-weight: 800; font-size: clamp(13px, 2vh, 20px); }
+  .wl-world .bar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; border: 2px solid var(--ink); margin-top: 4px; }
+  .wl-world .bar i { display: block; height: 100%; } .wl-world .bar i:first-child { background: var(--a); } .wl-world .bar i:last-child { background: var(--b); }
+  .wl-world .row { display: flex; justify-content: space-between; gap: 8px; }
+  .wl-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(14px, 2.4vh, 24px); min-height: 1.2em; overflow-wrap: anywhere; }
+  .wl-talk { margin: 0; text-align: center; font-weight: 800; font-size: clamp(15px, 2.8vh, 28px); background: var(--card); border: 3px dashed var(--ink); border-radius: 16px; padding: 6px 14px; max-width: 900px; }
+  .wl-sum { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .wl-sum h2 { margin: 0; font-size: clamp(22px, 4vh, 42px); text-align: center; }
+  .wl-sum .box { width: min(760px, 100%); box-sizing: border-box; background: var(--card); border: 4px solid var(--ink); border-radius: 22px; box-shadow: 0 5px 0 var(--ink); padding: 10px 16px; }
+  .wl-sum .box h3 { margin: 0 0 4px; font-size: clamp(15px, 2.4vh, 22px); }
+  .wl-sum .box p { margin: 0; font-weight: 700; font-size: clamp(14px, 2.2vh, 20px); overflow-wrap: anywhere; }
+  .wl-btn { min-height: 52px; min-width: 52px; border: 3px solid var(--ink); border-radius: 999px; background: #ffc83d; color: #1d2340; font: inherit; font-weight: 900; font-size: 18px; padding: 8px 22px; box-shadow: 0 4px 0 var(--ink); cursor: pointer; }
+  .wl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* phones and portrait screens: the two choices one above the other */
+  @media (max-aspect-ratio: 1/1) {
+    .wl-cards { grid-template-columns: 1fr; grid-template-rows: 1fr auto 1fr; }
+    .wl-cards > .wl-c { height: auto; max-height: none; align-self: stretch; }
+    .wl-or { justify-self: center; margin: -10px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .wl-c .fill { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wl" id="ui">
+  <div class="wl-top"><span class="wl-pill wl-title" id="title"></span><span class="wl-pill" id="qnum" hidden></span><span class="sp"></span><span class="wl-pill" id="count" hidden></span>
+    <div class="wl-ring" id="ringbox" hidden aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="var(--card)" stroke="rgba(0,0,0,.15)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="#ffc83d" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.25" stroke-dashoffset="0"/></svg><b id="secs"></b></div></div>
+  <p class="wl-banner" id="banner" role="status" aria-live="polite"></p>
+  <section class="wl-cards" id="cards" hidden aria-labelledby="title">
+    <button class="wl-c a" id="ca" type="button"><span class="fill" id="fa"></span><span class="tag" id="taga"></span><span class="tx" id="xa" dir="auto"></span><span class="pct" id="pa" hidden></span><span class="n" id="na" hidden></span></button>
+    <span class="wl-or" id="or" aria-hidden="true"></span>
+    <button class="wl-c b" id="cb" type="button"><span class="fill" id="fb"></span><span class="tag" id="tagb"></span><span class="tx" id="xb" dir="auto"></span><span class="pct" id="pb" hidden></span><span class="n" id="nb" hidden></span></button>
+  </section>
+  <div class="wl-foot" id="foot">
+    <div class="wl-world" id="world" hidden><div class="row"><span id="wlab"></span><span id="wnums"></span></div><div class="bar" aria-hidden="true"><i id="wa"></i><i id="wb"></i></div></div>
+    <p class="wl-talk" id="talk" hidden></p>
+    <p class="wl-note" id="note" aria-live="polite"></p>
+  </div>
+  <section class="wl-sum" id="sum" hidden><h2 id="sumh"></h2><div class="box" id="agree"><h3 id="agreeh"></h3><p id="agreet" dir="auto"></p></div><div class="box" id="close"><h3 id="closeh"></h3><p id="closet" dir="auto"></p></div><p class="wl-note" id="sumn"></p><button class="wl-btn" id="again" type="button" hidden></button></section>
+</div>
+<p class="wl-sr" id="sr" aria-live="assertive"></p>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/live.js" integrity="sha384-YsmClLSiQSdFK30eih8Rq+M0n5fKDuFHqKQNfz5WdmxYjdvLba6zuBqqS6IFU4IM" crossorigin="anonymous"></script>
+<script>
+/* WOULD YOU RATHER LIVE: built-in Oomba Live mode 'wyr' (docs/decisions.md "Would You Rather and Atlas Quest go live").
+   The server asks the dilemmas (the official game's reviewed 414, in the class's language) as quiz questions with two
+   choices and no right answer; this frame only shows them. The projector: the two choices big, how many voted, then
+   the class's split (bars, percentages, how many) and the split of everyone on Oomba (shared state wyr, from the game's
+   all-time poll; nobody is ever named), and a question to talk about. Phones: two big buttons, then your side.
+   At the end: the class's most agreed and closest dilemmas. No points, no winners, no names: a vote is never wrong.
+   Played alone, it is a short practice round (the dilemmas below, in the player's language from the game's packs). */
+(function () {
+  'use strict';
+  var O = window.Oomba, L = O.live, $ = function (id) { return document.getElementById(id); };
+  /* wyr-live:begin */
+  var WYR_PACK_VER = "v1-gcnidmjp", WYR_PACK_SRI = {"ar":"sha384-fqxtD+zASYJNWw/XEMO3spfUM2YDcSRgxmSadJDwk8GFvdRErnE6gBkE/yYFoBpb","de":"sha384-+vVyc/segKwa9Sl6i7uLW7t9AWu3K6LMCqavIKDfhOE72tjCA6Jrh6myC0PrtQRn","es":"sha384-oAcKzOlA5mTRtuoeE2og+u1pGN9Ige2MaVnWjCL+MM04aeshT7ihg+QpOSg4CRYw","fr":"sha384-DFSSg4/Lkahd0qu+7kS1eUxAEk6uUJuMJzXWEhmr3G+iDkXuWd/PfpCmNp5/J/PJ","he":"sha384-7XIm9jogoWsyIPWJkfv4jV1ftEu8f5OlcUYuuhdcwbmv5Jkkze9cHuc0bhduvAze","it":"sha384-6zgM/uWZ1/pt9AS2QTmKBGSMjhC2elfKnYSdvNu3P+LevWxy1iT6VXSsl+7WvrUb","ja":"sha384-D+vXulV0C0ILO13fIvUzMKHqi00e60EUjk1TqplQwOiokTefEZEd4aRlXmNlBHmD","nl":"sha384-9alnqdShatRH+g7pRNpfQeLOHZ2uy8TqAjNTWenbBRZsXovNZCHp5ANWIt2vIyy9","pt":"sha384-KlIhGU3oS4c2GOVzIUwRhfKD6zgXd70wo0VWYWXaaxmMIwp5kxg+sUdfnCZR5UT1","ru":"sha384-+xb/Aybr5swKsEmAEI442ybhfOqvl10XjZ/a0U+YTYpAWTT4OT+RUp1CnytmeIXt","zh-Hant":"sha384-hb+MLE+B/LVDu5Zt9mX56M+ucz1qvYw7j4rVAFHUUP5sPmSoajIwqSLIcRu4uH3J"};
+  /* wyr-live:end */
+  var PRACTICE = [["animals-2","Have a pet dragon the size of a cat","Have a pet cat the size of a horse"],["food-1","Eat only sweet food forever","Eat only salty food forever"],["powers-1","Fly","Be invisible"],["school-3","Learn only through games","Learn only through songs"],["travel-2","Visit the North Pole","Visit a tropical island"],["silly-1","Have spaghetti for hair","Have marshmallows for toes"],["sports-1","Score the winning goal","Make the winning save"],["space-2","See a shooting star","See a whale jump out of the sea"],["future-1","Have a robot best friend","Have a dinosaur best friend"],["family-2","Plan a surprise party","Get a surprise party"],["animals-5","Be a cheetah for a day","Be an owl for a day"],["food-4","Never eat ice cream again","Never eat pizza again"]];
+  var STR = {
+    en: { title: 'Would You Rather?', live: 'Live', qnum: '{n} / {total}', or: 'OR', voted: '🗳 {n} / {total}', vote: 'Vote sent! Look at the big screen.', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', timeUp: 'Voting closed!', pick: 'Tap the one you would rather!', yourPick: 'Your pick', withYou: 'You chose this, with {pct}% of your class', world: 'Everyone on Oomba', worldFew: 'Your class is one of the first to vote on this one!', t0: 'Why did you choose it? Tell a partner!', t1: 'Can anyone change your mind?', t2: 'Hands up if it was a hard choice!', t3: 'What would make you switch sides?', sum: 'Your class’s choices', agree: 'Most agreed', close: 'Closest split', thanks: 'Thanks for voting! There were no wrong answers.', practice: 'Practice round: pick one!', host: 'Host it live with your class to see how everyone votes.', again: 'Play again', none: 'Nobody voted', pctSplit: '{a}% · {b}%' },
+    'en-GB': {},
+    es: { title: '¿Qué prefieres?', live: 'En vivo', qnum: '{n} / {total}', or: 'O', voted: '🗳 {n} / {total}', vote: '¡Voto enviado! Mira la pantalla grande.', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', timeUp: '¡Votación cerrada!', pick: '¡Toca lo que prefieres!', yourPick: 'Tu elección', withYou: 'Elegiste esto, con el {pct}% de tu clase', world: 'Todos en Oomba', worldFew: '¡Tu clase es de las primeras en votar esto!', t0: '¿Por qué lo elegiste? ¡Cuéntaselo a un compañero!', t1: '¿Alguien puede hacerte cambiar de idea?', t2: '¡Mano arriba si fue difícil elegir!', t3: '¿Qué te haría cambiar de lado?', sum: 'Lo que eligió tu clase', agree: 'Más de acuerdo', close: 'Más reñido', thanks: '¡Gracias por votar! No había respuestas incorrectas.', practice: 'Ronda de práctica: ¡elige una!', host: 'Juega en vivo con tu clase para ver cómo vota todo el mundo.', again: 'Jugar otra vez', none: 'Nadie votó', pctSplit: '{a}% · {b}%' },
+    fr: { title: 'Tu préfères ?', live: 'En direct', qnum: '{n} / {total}', or: 'OU', voted: '🗳 {n} / {total}', vote: 'Vote envoyé ! Regarde le grand écran.', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', timeUp: 'Vote terminé !', pick: 'Touche ce que tu préfères !', yourPick: 'Ton choix', withYou: 'Tu as choisi ça, avec {pct} % de ta classe', world: 'Tous les joueurs d’Oomba', worldFew: 'Ta classe est l’une des premières à voter pour celui-ci !', t0: 'Pourquoi as-tu choisi ça ? Dis-le à un voisin !', t1: 'Quelqu’un peut-il te faire changer d’avis ?', t2: 'Lève la main si c’était un choix difficile !', t3: 'Qu’est-ce qui te ferait changer de camp ?', sum: 'Les choix de ta classe', agree: 'Le plus d’accord', close: 'Le plus serré', thanks: 'Merci d’avoir voté ! Il n’y avait pas de mauvaise réponse.', practice: 'Manche d’essai : choisis !', host: 'Lance-le en direct avec ta classe pour voir comment chacun vote.', again: 'Rejouer', none: 'Personne n’a voté', pctSplit: '{a} % · {b} %' },
+    de: { title: 'Was wäre dir lieber?', live: 'Live', qnum: '{n} / {total}', or: 'ODER', voted: '🗳 {n} / {total}', vote: 'Stimme abgegeben! Schau auf den großen Bildschirm.', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', timeUp: 'Abstimmung beendet!', pick: 'Tippe an, was dir lieber wäre!', yourPick: 'Deine Wahl', withYou: 'Das hast du gewählt, mit {pct} % deiner Klasse', world: 'Alle auf Oomba', worldFew: 'Deine Klasse gehört zu den Ersten, die hier abstimmen!', t0: 'Warum hast du das gewählt? Erzähl es jemandem neben dir!', t1: 'Kann dich jemand umstimmen?', t2: 'Hand hoch, wenn die Wahl schwer war!', t3: 'Was würde dich die Seite wechseln lassen?', sum: 'Die Wahl deiner Klasse', agree: 'Am meisten einig', close: 'Am knappsten', thanks: 'Danke fürs Abstimmen! Es gab keine falschen Antworten.', practice: 'Übungsrunde: Wähle eins!', host: 'Spielt es live in der Klasse, um zu sehen, wie alle abstimmen.', again: 'Nochmal', none: 'Niemand hat abgestimmt', pctSplit: '{a} % · {b} %' },
+    it: { title: 'Preferiresti?', live: 'Dal vivo', qnum: '{n} / {total}', or: 'O', voted: '🗳 {n} / {total}', vote: 'Voto inviato! Guarda lo schermo grande.', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', timeUp: 'Votazione chiusa!', pick: 'Tocca quello che preferisci!', yourPick: 'La tua scelta', withYou: 'Hai scelto questo, con il {pct}% della tua classe', world: 'Tutti su Oomba', worldFew: 'La tua classe è tra le prime a votare questo!', t0: 'Perché l’hai scelto? Dillo a un compagno!', t1: 'Qualcuno riesce a farti cambiare idea?', t2: 'Alzi la mano chi ha trovato difficile scegliere!', t3: 'Cosa ti farebbe cambiare lato?', sum: 'Le scelte della tua classe', agree: 'Più d’accordo', close: 'Più combattuto', thanks: 'Grazie per aver votato! Non c’erano risposte sbagliate.', practice: 'Turno di prova: scegli!', host: 'Giocalo dal vivo con la classe per vedere come votano tutti.', again: 'Gioca ancora', none: 'Nessuno ha votato', pctSplit: '{a}% · {b}%' },
+    pt: { title: 'O que você prefere?', live: 'Ao vivo', qnum: '{n} / {total}', or: 'OU', voted: '🗳 {n} / {total}', vote: 'Voto enviado! Olhe para a tela grande.', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', timeUp: 'Votação encerrada!', pick: 'Toque no que você prefere!', yourPick: 'Sua escolha', withYou: 'Você escolheu isto, com {pct}% da sua turma', world: 'Todo mundo no Oomba', worldFew: 'Sua turma é uma das primeiras a votar nesta!', t0: 'Por que você escolheu? Conte a um colega!', t1: 'Alguém consegue fazer você mudar de ideia?', t2: 'Mão para cima se foi difícil escolher!', t3: 'O que faria você mudar de lado?', sum: 'As escolhas da sua turma', agree: 'Mais de acordo', close: 'Mais dividido', thanks: 'Obrigado por votar! Não havia respostas erradas.', practice: 'Rodada de treino: escolha!', host: 'Jogue ao vivo com a turma para ver como todo mundo vota.', again: 'Jogar de novo', none: 'Ninguém votou', pctSplit: '{a}% · {b}%' },
+    nl: { title: 'Wat heb je liever?', live: 'Live', qnum: '{n} / {total}', or: 'OF', voted: '🗳 {n} / {total}', vote: 'Stem verstuurd! Kijk naar het grote scherm.', wait: 'Wachten tot de spelleider begint…', ready: 'Maak je klaar!', go: 'Start!', timeUp: 'Stemmen gesloten!', pick: 'Tik op wat je liever hebt!', yourPick: 'Jouw keuze', withYou: 'Dit koos jij, samen met {pct}% van je klas', world: 'Iedereen op Oomba', worldFew: 'Jouw klas is een van de eersten die hierover stemt!', t0: 'Waarom koos je het? Vertel het je buur!', t1: 'Kan iemand je van gedachten doen veranderen?', t2: 'Handen omhoog als het een moeilijke keuze was!', t3: 'Waardoor zou je van kant wisselen?', sum: 'De keuzes van je klas', agree: 'Meest eens', close: 'Het spannendst', thanks: 'Bedankt voor het stemmen! Er waren geen foute antwoorden.', practice: 'Oefenronde: kies er een!', host: 'Speel het live met je klas om te zien hoe iedereen stemt.', again: 'Nog een keer', none: 'Niemand stemde', pctSplit: '{a}% · {b}%' },
+    ru: { title: 'Что бы ты выбрал?', live: 'Вживую', qnum: '{n} / {total}', or: 'ИЛИ', voted: '🗳 {n} / {total}', vote: 'Голос отправлен! Смотри на большой экран.', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', timeUp: 'Голосование закрыто!', pick: 'Нажми на то, что тебе больше нравится!', yourPick: 'Твой выбор', withYou: 'Ты выбрал это, как и {pct}% твоего класса', world: 'Все на Oomba', worldFew: 'Твой класс — один из первых, кто голосует за это!', t0: 'Почему ты это выбрал? Расскажи соседу!', t1: 'Кто-нибудь может тебя переубедить?', t2: 'Поднимите руку, если выбрать было трудно!', t3: 'Что заставило бы тебя передумать?', sum: 'Выбор твоего класса', agree: 'Больше всего согласия', close: 'Почти поровну', thanks: 'Спасибо за голоса! Неправильных ответов не было.', practice: 'Тренировка: выбери!', host: 'Сыграйте вживую всем классом, чтобы увидеть, кто как голосует.', again: 'Ещё раз', none: 'Никто не голосовал', pctSplit: '{a}% · {b}%' },
+    ja: { title: 'どっちがいい？', live: 'ライブ', qnum: '{n} / {total}', or: 'or', voted: '🗳 {n} / {total}', vote: '投票したよ！大きな画面を見よう。', wait: 'ホストが始めるのを待っています…', ready: 'よーい！', go: 'スタート！', timeUp: '投票しめきり！', pick: 'いいほうをタップしよう！', yourPick: 'きみのえらんだほう', withYou: 'クラスの{pct}%と同じ、これをえらんだよ', world: 'Oomba のみんな', worldFew: 'この問題に投票するのは、きみのクラスが最初のほうだよ！', t0: 'どうしてえらんだの？となりの人に話してみよう！', t1: 'だれか、きみの考えを変えられるかな？', t2: 'えらぶのがむずかしかった人、手をあげて！', t3: 'どうなったら、反対のほうにする？', sum: 'クラスのえらんだもの', agree: 'いちばん意見がそろった', close: 'いちばん分かれた', thanks: '投票ありがとう！まちがいの答えはありません。', practice: 'れんしゅう：どっちかえらぼう！', host: 'クラスでライブであそぶと、みんなの投票が見られるよ。', again: 'もういちど', none: 'だれも投票しなかった', pctSplit: '{a}% · {b}%' },
+    'zh-Hant': { title: '你比較想要哪個？', live: '即時版', qnum: '{n} / {total}', or: '或', voted: '🗳 {n} / {total}', vote: '已投票！請看大螢幕。', wait: '等待主持人開始…', ready: '準備！', go: '開始！', timeUp: '投票結束！', pick: '點你比較想要的那個！', yourPick: '你的選擇', withYou: '你選了這個，和全班 {pct}% 的人一樣', world: 'Oomba 上的所有人', worldFew: '你們班是最早為這題投票的班級之一！', t0: '你為什麼這樣選？告訴旁邊的同學！', t1: '有人能讓你改變主意嗎？', t2: '覺得很難選的人請舉手！', t3: '怎樣才會讓你換到另一邊？', sum: '全班的選擇', agree: '最一致', close: '最接近', thanks: '謝謝投票！沒有錯的答案。', practice: '練習回合：選一個！', host: '和全班一起即時玩，就能看到大家怎麼投票。', again: '再玩一次', none: '沒有人投票', pctSplit: '{a}% · {b}%' },
+    ar: { title: 'ماذا تفضّل؟', live: 'مباشرة', qnum: '{n} / {total}', or: 'أو', voted: '🗳 {n} / {total}', vote: 'تم إرسال صوتك! انظر إلى الشاشة الكبيرة.', wait: 'ننتظر أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', timeUp: 'انتهى التصويت!', pick: 'المس ما تفضّله!', yourPick: 'اختيارك', withYou: 'اخترت هذا، مع {pct}% من صفك', world: 'الجميع على Oomba', worldFew: 'صفك من أوائل من صوّتوا على هذا!', t0: 'لماذا اخترته؟ أخبر زميلك!', t1: 'هل يستطيع أحد أن يغيّر رأيك؟', t2: 'ارفع يدك إن كان الاختيار صعبًا!', t3: 'ما الذي يجعلك تغيّر رأيك؟', sum: 'اختيارات صفك', agree: 'الأكثر اتفاقًا', close: 'الأكثر تقاربًا', thanks: 'شكرًا على التصويت! لم تكن هناك إجابات خاطئة.', practice: 'جولة تدريب: اختر واحدًا!', host: 'العبها مباشرة مع صفك لترى كيف يصوّت الجميع.', again: 'العب مرة أخرى', none: 'لم يصوّت أحد', pctSplit: '{a}% · {b}%' },
+    he: { title: 'מה הייתם מעדיפים?', live: 'בשידור חי', qnum: '{n} / {total}', or: 'או', voted: '🗳 {n} / {total}', vote: 'ההצבעה נשלחה! הסתכלו על המסך הגדול.', wait: 'מחכים שהמנחה יתחיל…', ready: 'היכון!', go: 'יוצאים!', timeUp: 'ההצבעה נסגרה!', pick: 'געו במה שהייתם מעדיפים!', yourPick: 'הבחירה שלך', withYou: 'בחרת בזה, יחד עם {pct}% מהכיתה', world: 'כולם ב-Oomba', worldFew: 'הכיתה שלך בין הראשונות שמצביעות על זה!', t0: 'למה בחרתם בזה? ספרו לחבר!', t1: 'מישהו יכול לשנות את דעתכם?', t2: 'הרימו יד אם היה קשה לבחור!', t3: 'מה היה גורם לכם לעבור צד?', sum: 'הבחירות של הכיתה', agree: 'הכי הרבה הסכמה', close: 'הכי צמוד', thanks: 'תודה שהצבעתם! לא היו תשובות לא נכונות.', practice: 'סבב אימון: בחרו!', host: 'שחקו בשידור חי עם הכיתה כדי לראות איך כולם מצביעים.', again: 'שחקו שוב', none: 'אף אחד לא הצביע', pctSplit: '{a}% · {b}%' }
+  };
+  STR['en-GB'] = STR.en;
+  var LANG = (O.lang || 'en'), W = STR[LANG] || STR[LANG.split('-')[0]] || STR.en;
+  function t(k, v) { var s = W[k] != null ? W[k] : STR.en[k]; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
+  document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
+  function theme() { document.documentElement.classList.toggle('dark', O.theme && O.theme.mode === 'dark'); }
+  theme(); if (O.theme && O.theme.on) O.theme.on('change', theme);
+
+  var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, total = 0, ringTimer = 0, history = [];
+  var REDUCED = !!(O.settings && O.settings.reduced);
+  document.title = t('title');
+  $('title').textContent = t('title') + (L.active ? ' · ' + t('live') : '');
+  $('or').textContent = t('or'); $('taga').textContent = 'A'; $('tagb').textContent = 'B';
+  function banner(s) { $('banner').textContent = s || ''; }
+  function say(s) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = s; }, 30); }
+  function sfx(n) { try { O.sfx(n, { volume: 0.5 }); } catch (e) { /* no sound */ } }
+  function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not allowed */ } }
+  var connected = function () { return L.players().filter(function (p) { return p.connected; }).length; };
+
+  // ---- a dilemma ----------------------------------------------------------------------------------------------------
+  function resetCards() {
+    ['a', 'b'].forEach(function (k) {
+      var c = $('c' + k); c.classList.remove('win', 'mine', 'dim'); c.disabled = host;
+      $('f' + k).style.height = '0'; $('p' + k).hidden = true; $('n' + k).hidden = true;
+    });
+    $('world').hidden = true; $('talk').hidden = true; $('note').textContent = '';
+  }
+  function show(q) {
+    // the same dilemma again (a resume, more time): keep the player's vote
+    var same = Q && Q.i === q.i && $('pa').hidden;
+    Q = q; if (!same) myPick = -1;
+    $('sum').hidden = true; $('cards').hidden = false; resetCards();
+    $('xa').textContent = q.choices[0] || ''; $('xb').textContent = q.choices[1] || '';
+    $('ca').setAttribute('aria-label', 'A: ' + (q.choices[0] || '')); $('cb').setAttribute('aria-label', 'B: ' + (q.choices[1] || ''));
+    total = q.n || total;
+    $('qnum').hidden = !total; $('qnum').textContent = t('qnum', { n: q.i + 1, total: total });
+    banner(''); $('note').textContent = host ? '' : t('pick');
+    if (host) { $('count').hidden = false; $('count').textContent = t('voted', { n: 0, total: connected() }); }
+    if (!host && (q.answered || myPick >= 0)) locked(myPick);
+    $('ca').disabled = $('cb').disabled = host || !!q.answered || myPick >= 0;
+    ring(q); say(t('title') + ' ' + q.choices[0] + ', ' + t('or') + ', ' + q.choices[1]);
+  }
+  function ring(q) {
+    clearInterval(ringTimer); $('ringbox').hidden = false;
+    var tick = function () {
+      var left = q.secs * 1000 - (L.active ? L.since(q.at) : (performance.now() - q.at));
+      var f = Math.max(0, Math.min(1, left / (q.secs * 1000)));
+      $('ring').setAttribute('stroke-dashoffset', String(94.25 * (1 - f)));
+      $('secs').textContent = String(Math.max(0, Math.ceil(left / 1000)));
+      if (left <= 0) clearInterval(ringTimer);
+    };
+    tick(); ringTimer = setInterval(tick, 200);
+  }
+  function locked(k) {
+    $('ca').disabled = $('cb').disabled = true;
+    if (k >= 0) { $(k ? 'cb' : 'ca').classList.add('mine'); $(k ? 'ca' : 'cb').classList.add('dim'); }
+    $('note').textContent = t('vote');
+  }
+  function choose(k) {
+    if (host || !Q || myPick >= 0) return;
+    if (L.active) { if (!L.quiz.answer(k)) return; } else practiceVote(k);
+    myPick = k; locked(k); sfx('select'); buzz(20);
+  }
+  $('ca').addEventListener('click', function () { choose(0); });
+  $('cb').addEventListener('click', function () { choose(1); });
+
+  // ---- the reveal: the class's split, everyone on Oomba, something to talk about --------------------------------------
+  var talkN = 0;
+  function reveal(r) {
+    if (!Q || r.i !== Q.i) return;
+    clearInterval(ringTimer); $('ringbox').hidden = true;
+    var c = r.counts || [0, 0], a = c[0] || 0, b = c[1] || 0, n = a + b;
+    var pa = n ? Math.round(a * 100 / n) : 0, pb = n ? 100 - pa : 0;
+    history.push({ q: Q.choices.slice(), a: a, b: b });
+    $('ca').disabled = $('cb').disabled = true;
+    [['a', a, pa], ['b', b, pb]].forEach(function (x) {
+      var k = x[0];
+      $('p' + k).hidden = false; $('p' + k).textContent = n ? x[2] + '%' : '–';
+      $('n' + k).hidden = false; $('n' + k).textContent = '👥 ' + O.num(x[1]);
+      var f = $('f' + k); if (REDUCED) f.style.height = x[2] + '%'; else setTimeout(function () { f.style.height = x[2] + '%'; }, 60);
+    });
+    if (n && a !== b) $(a > b ? 'ca' : 'cb').classList.add('win');
+    banner(n ? '' : t('none'));
+    if (myPick >= 0) { $(myPick ? 'cb' : 'ca').classList.add('mine'); $('note').textContent = t('withYou', { pct: myPick ? pb : pa }); }
+    else $('note').textContent = n ? '' : t('timeUp');
+    world(Q.i);
+    if (host) { $('talk').hidden = false; $('talk').textContent = '💬 ' + t('t' + (talkN++ % 4)); }
+    sfx('spark'); say(t('pctSplit', { a: pa, b: pb }));
+  }
+  function world(i) {
+    var w = L.state && L.state.wyr;
+    // nobody on Oomba has an account vote on this one yet (a class of guests): nothing to compare with
+    if (!w || w.i !== i || !L.active || !w.n) { $('world').hidden = true; return; }
+    $('world').hidden = false;
+    if (w.a == null) { $('wlab').textContent = t('worldFew'); $('wnums').textContent = ''; $('wa').style.width = '50%'; $('wb').style.width = '50%'; return; }
+    $('wlab').textContent = t('world'); $('wnums').textContent = t('pctSplit', { a: w.a, b: w.b });
+    $('wa').style.width = w.a + '%'; $('wb').style.width = w.b + '%';
+  }
+  L.on('state', function () { if (Q && phase === 'between') world(Q.i); });
+
+  // ---- the end: the class's most agreed and closest dilemmas ----------------------------------------------------------
+  function summary() {
+    clearInterval(ringTimer); $('ringbox').hidden = true; $('cards').hidden = true; $('foot').hidden = false;
+    $('world').hidden = true; $('talk').hidden = true; $('note').textContent = ''; $('count').hidden = true; banner('');
+    $('sum').hidden = false; $('sumh').textContent = t('sum');
+    var voted = history.filter(function (h) { return h.a + h.b > 0; });
+    var share = function (h) { return Math.max(h.a, h.b) / (h.a + h.b); };
+    var line = function (h) { var n = h.a + h.b, pa = Math.round(h.a * 100 / n); return h.q[0] + ' (' + pa + '%) · ' + h.q[1] + ' (' + (100 - pa) + '%)'; };
+    if (voted.length) {
+      var most = voted.slice().sort(function (x, y) { return share(y) - share(x); })[0], close = voted.slice().sort(function (x, y) { return share(x) - share(y); })[0];
+      $('agree').hidden = false; $('agreeh').textContent = '🤝 ' + t('agree'); $('agreet').textContent = line(most);
+      $('close').hidden = voted.length < 2; $('closeh').textContent = '⚖️ ' + t('close'); $('closet').textContent = line(close);
+    } else { $('agree').hidden = true; $('close').hidden = true; }
+    $('sumn').textContent = L.active ? t('thanks') : t('host');
+    $('again').hidden = L.active; $('again').textContent = t('again');
+    sfx('win');
+  }
+  $('again').addEventListener('click', function () { startPractice(); });
+
+  // ---- the session ----------------------------------------------------------------------------------------------------
+  L.on('phase', function (e) {
+    phase = e.phase;
+    if (phase === 'lobby') { $('cards').hidden = true; banner(host ? t('title') : t('wait')); }
+    if (phase === 'loading' || phase === 'countdown') { $('sum').hidden = true; banner(t('ready')); }
+    if (phase === 'paused') clearInterval(ringTimer);
+  });
+  // 3, 2, 1, Go! (the Go! goes away by itself, and never covers a question that is already open)
+  L.on('countdown', function (e) { var tick = function () { var left = Math.ceil((e.at - L.now()) / 1000); if (left > 0) { banner(String(left)); setTimeout(tick, 250); } else { if (!Q || phase !== 'playing') banner(t('go')); setTimeout(function () { if ($('banner').textContent === t('go')) banner(''); }, 900); } }; tick(); });
+  L.on('question', show);
+  L.on('answers', function (a) { if (host && Q && a.i === Q.i) $('count').textContent = t('voted', { n: a.n, total: Math.max(a.n, connected()) }); });
+  L.on('reveal', function (r) { if (r.skipped) { clearInterval(ringTimer); $('cards').hidden = true; return; } reveal(r); });
+  L.on('end', summary);
+  L.on('welcome', function () { if (L.quiz.current) show(L.quiz.current); });
+
+  // ---- alone: a practice round from the dilemmas above (in the player's language when its pack loads) -----------------
+  var practice = { list: [], i: 0, timer: 0 };
+  function loadPack(done) {
+    var code = WYR_PACK_SRI[LANG] ? LANG : WYR_PACK_SRI[LANG.split('-')[0]] ? LANG.split('-')[0] : '';
+    if (!code) return done();
+    var s = document.createElement('script'), fin = false, end = function () { if (!fin) { fin = true; done(); } };
+    s.src = '/vendor/data/would-you-rather/' + WYR_PACK_VER + '/' + code + '.js'; s.integrity = WYR_PACK_SRI[code]; s.crossOrigin = 'anonymous';
+    s.onload = function () { var rows = (window.WyrPacks || {})[code] || []; var by = {}; rows.forEach(function (r) { by[r[0]] = r; }); PRACTICE = PRACTICE.map(function (p) { return by[p[0]] ? [p[0], by[p[0]][1], by[p[0]][2]] : p; }); end(); };
+    s.onerror = end; setTimeout(end, 6000); document.head.appendChild(s);
+  }
+  function startPractice() {
+    var pool = PRACTICE.slice(); for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = pool[i]; pool[i] = pool[j]; pool[j] = x; }
+    practice.list = pool.slice(0, 5); practice.i = 0; history = []; banner(t('practice')); setTimeout(practiceNext, 900);
+  }
+  function practiceNext() {
+    if (practice.i >= practice.list.length) return summary();
+    var p = practice.list[practice.i];
+    show({ i: practice.i, n: practice.list.length, q: t('title'), choices: [p[1], p[2]], secs: 15, at: performance.now() });
+    clearTimeout(practice.timer); practice.timer = setTimeout(function () { practiceReveal(-1); }, 15000);
+  }
+  function practiceVote(k) { clearTimeout(practice.timer); setTimeout(function () { practiceReveal(k); }, 500); }
+  function practiceReveal(k) {
+    // alone there is no class: your own choice is the whole split
+    reveal({ i: practice.i, counts: k < 0 ? [0, 0] : k ? [0, 1] : [1, 0] });
+    $('note').textContent = t('host');
+    practice.i++; practice.timer = setTimeout(practiceNext, 2600);
+  }
+
+  L.ready({ quiz: true, hostView: true, words: [] });
+  if (!L.active) L.on('start', function () { loadPack(startPractice); });
+  else if (phase === 'lobby') banner(host ? t('title') : t('wait'));
+  O.test({
+    state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, choices: Q.choices.slice(), picked: myPick } : null, revealed: !$('pa').hidden, world: !$('world').hidden, summary: !$('sum').hidden, history: history.length }; },
+    start: function () { return true; },
+  });
+  window.__brbTest.answer = function (k) { choose(k); };
+})();
+</script>
+</body>
+</html>

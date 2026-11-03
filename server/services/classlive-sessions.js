@@ -47,6 +47,9 @@ import { audit } from '../db.js';
 import * as L from './lessons.js';
 import * as S from './schools.js';
 import { cleanText, personalInfo } from './textfilter.js';
+import * as POLLS from './polls.js';
+import { POLL_SLUG } from '../live/wyr.js';
+import { countryName } from '../live/atlas.js';
 
 export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3, lingerMs: 120e3,
   // part 4: the host's grace before the longest-standing co-host takes over; another controller's toggle within
@@ -214,7 +217,12 @@ export function createSession(host, opts = {}) {
   const quiz = mode !== 'game' || check.quiz;
   let items = null, setId = null;
   if (quiz) {
-    const loaded = Q.loadItems(host, { setId: opts.setId, starter: opts.starter, items: opts.items, lang: opts.lang });
+    // Would You Rather Live and Atlas Quest Live: the platform's own questions (a starter of their kind; a default one
+    // when none is given), never a question set.
+    const own = A.OWN_QUESTIONS.has(mode);
+    const ownStarter = own ? (opts.starter && String(opts.starter).startsWith(`${mode}:`) ? opts.starter : mode === 'wyr' ? 'wyr:mix:10:15' : 'atlas:world:easy:find:10:20') : null;
+    const loaded = own ? Q.loadItems(host, { starter: ownStarter, lang: opts.lang, trusted: opts.trusted || null })
+      : Q.loadItems(host, { setId: opts.setId, starter: opts.starter, items: opts.items, lang: opts.lang });
     if (!loaded.ok) return { ok: false, code: loaded.code };
     items = loaded.items; setId = loaded.setId || null;
   }
@@ -800,7 +808,36 @@ export function controllerFor(s, tok, u) {
 }
 
 // The way the quiz module talks to devices (no import cycle).
-const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s) };
+const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s),
+  publish: (s, patch) => publish(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
+
+/** Platform-made shared state (Atlas Quest Live's flag and region, Would You Rather Live's all-time split): merged into
+ *  s.state and sent to every device and the projector, like the Brain Board. Only fixed codes and numbers. */
+function publish(s, patch) {
+  s.state = { ...s.state, ...patch }; s.stateBytes = JSON.stringify(s.state).length;
+  broadcast(s, { t: 'st', d: patch });
+}
+/**
+ * Would You Rather Live, after a reveal: each signed-in player's vote counts once in the game's all-time poll (the
+ * same table and rule as the game itself: one vote per account and dilemma; guests have no account and don't count),
+ * then everyone sees the split of everyone on Oomba (shared state wyr: { i, a, b, n }; a and b are percentages, only
+ * from POLLS.MIN_SHOWN votes on).
+ */
+function wyrVoted(s, c, answers) {
+  if (!c.wyr || !POLLS.ITEM.test(c.wyr)) return;
+  let tot = null;
+  try {
+    const g = games.getGameBySlug(POLL_SLUG);
+    if (!g) return;
+    for (const [no, a] of answers) {
+      const seat = s.seats.get(no);
+      if (seat && seat.userId && (a.c === 0 || a.c === 1)) POLLS.vote(g.id, seat.userId, c.wyr, a.c, 0);
+    }
+    tot = POLLS.totals(g.id, c.wyr);
+  } catch (e) { hooks.log('warn', 'live poll failed', { sid: s.id, error: e.message }); return; }
+  const n = tot.total, a = n ? Math.round(tot.a * 100 / n) : 0;
+  publish(s, { wyr: n >= POLLS.MIN_SHOWN ? { i: c.i, a, b: 100 - a, n } : { i: c.i, n } });
+}
 
 // ---------------------------------------------------------------- Brain Board (classlive-board.js)
 /** The board everyone sees (s.state.bb), sent with the usual shared-state message to every device and the projector. */
@@ -1331,7 +1368,10 @@ export function rematch(old, host, { shuffle = false } = {}) {
   const snap = old.again;
   const teams = T.setupOf(old);
   const r = createSession(host, {
-    mode: old.mode, gameId: old.gameId, ...(old.allItems ? { items: old.allItems.map(it => ({ q: it.q, choices: it.choices, answer: it.answer, secs: it.own || it.secs })) } : {}),
+    mode: old.mode, gameId: old.gameId,
+    // Would You Rather Live and Atlas Quest Live: the platform's own questions as they were (votes, map codes).
+    ...(old.allItems && (old.mode === 'wyr' || old.mode === 'atlas') ? { trusted: old.allItems.map(it => ({ ...it, secs: it.own || it.secs })) }
+      : old.allItems ? { items: old.allItems.map(it => ({ q: it.q, choices: it.choices, answer: it.answer, secs: it.own || it.secs })) } : {}),
     audience: old.audience, classId: old.classId, clId: old.clId, stepId: old.stepId, maxPlayers: old.settings.maxPlayers, lang: old.lang, title: old.title,
     settings: ST.view(old.settings), teams, replace: true,
   });

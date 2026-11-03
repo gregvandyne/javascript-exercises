@@ -5,7 +5,9 @@
 /** Why a seat may need help: '' (no), 'lowScore', 'wrongRun', 'missRun'.
  *  Quiz: at least 3 answered and under half right; 2 wrong in a row; 2 missed in a row while connected.
  *  Game modes: at least 3 items and under half right (no idle rule: games have their own pace). */
-export function needsHelp(seat, { quiz = true } = {}) {
+export function needsHelp(seat, { quiz = true, vote = false } = {}) {
+  // Would You Rather Live is a vote: nothing is right or wrong, nobody needs help.
+  if (vote) return '';
   if (seat.answered >= 3 && seat.correct / seat.answered < 0.5) return 'lowScore';
   if (!quiz) return '';
   if ((seat.wrongRun || 0) >= 2) return 'wrongRun';
@@ -14,7 +16,7 @@ export function needsHelp(seat, { quiz = true } = {}) {
 }
 
 /** dp: every seat's progress [[seat, answered, correct, wrongRun, missRun, flag]]. */
-export const dpMsg = s => ({ t: 'dp', p: [...s.seats.values()].map(x => [x.no, x.answered, x.correct, x.wrongRun || 0, x.missRun || 0, needsHelp(x, { quiz: !!s.quiz })]) });
+export const dpMsg = s => ({ t: 'dp', p: [...s.seats.values()].map(x => [x.no, x.answered, x.correct, x.wrongRun || 0, x.missRun || 0, needsHelp(x, { quiz: !!s.quiz, vote: s.mode === 'wyr' })]) });
 
 /** dq: the open question's live answer counts and who has answered (the dashboard's answer bars), and the right answer
  *  (the dashboard keeps it behind "Show answer"; it never reaches a player, the projector or a frame). */

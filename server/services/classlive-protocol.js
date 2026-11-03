@@ -135,7 +135,8 @@ export function parse(raw, role = 'player') {
     }
     case 'sc': return num(m.n, 0, 1e6) ? { t: 'sc', n: Math.floor(m.n) } : null;
     case 'it': return int(m.i, 0, 199) && typeof m.ok === 'boolean' ? { t: 'it', i: m.i, ok: m.ok } : null;
-    case 'an': return int(m.i, 0, 199) && int(m.c, 0, 3) && num(m.e, 0, 600000) ? { t: 'an', i: m.i, c: m.c, e: Math.floor(m.e) } : null;
+    // c: a choice (0-3), or a country on Atlas Quest Live's map (up to 255); the quiz checks it against the open question.
+    case 'an': return int(m.i, 0, 199) && int(m.c, 0, 255) && num(m.e, 0, 600000) ? { t: 'an', i: m.i, c: m.c, e: Math.floor(m.e) } : null;
     case 'em': return int(m.e, 0, EMOTES.length - 1) ? { t: 'em', e: m.e } : null;
     case 'pi': return num(m.c, 0, 1e15) ? { t: 'pi', c: m.c } : null;
     case 'fr': return m.f === undefined || m.f === 'game' || m.f === 'lobby' ? { t: 'fr', f: m.f || 'game' } : null;

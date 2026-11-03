@@ -4564,7 +4564,11 @@
       "battle": "Bataille de questions",
       "battleText": "Les questions sur le grand écran, les réponses sur chaque appareil, et un classement après chaque question.",
       "board": "Plateau Cerveau",
-      "boardText": "Un plateau de catégories : choisis une case, tout le monde répond. Les grosses cases sont plus difficiles et rapportent plus, et une Étoile chance cachée double les points."
+      "boardText": "Un plateau de catégories : choisis une case, tout le monde répond. Les grosses cases sont plus difficiles et rapportent plus, et une Étoile chance cachée double les points.",
+      "wyr": "Tu préfères ? en direct",
+      "wyrText": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse, pas de points : on discute.",
+      "atlas": "Atlas Quest en direct",
+      "atlasText": "Chacun touche le pays sur sa propre carte du monde : trouve-le, son drapeau, sa capitale ou ce qui le rend célèbre. Viser juste à côté rapporte un peu aussi."
     },
     "starter": {
       "title": {
@@ -4767,7 +4771,8 @@
       "stillHere": "{count, plural, one {# joueur encore là} other {# joueurs encore là}}",
       "playAgainTeams": "Rejouer avec ces équipes",
       "newGame": "Nouveau jeu",
-      "homework": "Donner en devoir"
+      "homework": "Donner en devoir",
+      "votes": "{count, plural, one {# vote} other {# votes}}"
     },
     "sets": {
       "title": "Séries de questions",
@@ -5325,6 +5330,52 @@
       "count": "Nombre de questions",
       "boardSubjects": "Matières du plateau (de 2 à 6)",
       "bankHint": "De nouvelles questions à chaque partie, écrites pour chaque âge."
+    },
+    "wyrUi": {
+      "legend": "Tu préfères ? en direct",
+      "topics": "Thèmes",
+      "topicsHint": "Laisse-les tous cochés pour un mélange.",
+      "count": "Combien de dilemmes",
+      "secs": "Temps pour choisir",
+      "secsN": "{n} secondes",
+      "hint": "Après chaque vote, la classe voit le partage : un bon moment pour demander à quelques enfants pourquoi ils ont choisi."
+    },
+    "atlasUi": {
+      "legend": "Atlas Quest en direct",
+      "region": "Où dans le monde",
+      "level": "Niveau",
+      "kinds": "Types de questions",
+      "count": "Combien de questions",
+      "secs": "Temps par question",
+      "hint": "Chaque joueur touche le pays sur une carte du monde qu’il peut agrandir. L’écran de la classe montre où chacun a touché."
+    },
+    "atlas": {
+      "region": {
+        "world": "Le monde entier",
+        "af": "Afrique",
+        "as": "Asie",
+        "eu": "Europe",
+        "na": "Amérique du Nord",
+        "sa": "Amérique du Sud",
+        "oc": "Océanie"
+      },
+      "level": {
+        "easy": "Facile : pays célèbres",
+        "medium": "Moyen : pays célèbres et grands pays",
+        "hard": "Difficile : tous les pays"
+      },
+      "kind": {
+        "find": "Trouver le pays",
+        "capital": "Capitales",
+        "flag": "Drapeaux",
+        "famous": "Célèbre pour…"
+      },
+      "q": {
+        "find": "Trouve ce pays : {name}",
+        "capital": "Trouve le pays dont la capitale est {city}",
+        "flag": "Trouve le pays de ce drapeau",
+        "famous": "Trouve le pays célèbre pour {thing}"
+      }
     }
   },
   "match": {
@@ -5393,7 +5444,7 @@
       }
     },
     "modes": {
-      "h": "Trois façons de jouer",
+      "h": "Cinq façons de jouer",
       "race": {
         "h": "Course aux quêtes",
         "p": "Une course sur une île en 3D. Chaque bonne réponse rapporte des gemmes et un coup d’accélérateur, et toute la classe suit les coureurs au tableau."
@@ -5405,6 +5456,14 @@
       "board": {
         "h": "Plateau Cerveau",
         "p": "Un plateau de catégories à l’écran. Choisissez une case (ou laissez la réponse juste la plus rapide choisir) : sa question s’ouvre sur tous les appareils. Les cases difficiles rapportent plus, et une Étoile chance cachée double les points."
+      },
+      "wyr": {
+        "h": "Tu préfères ? en direct",
+        "p": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse ni de points : une discussion toute prête."
+      },
+      "atlas": {
+        "h": "Atlas Quest en direct",
+        "p": "Chacun touche le pays sur sa propre carte du monde : le pays, son drapeau, sa capitale ou ce qui le rend célèbre. Le grand écran montre où toute la classe a touché, et viser tout près rapporte aussi."
       }
     },
     "tools": {

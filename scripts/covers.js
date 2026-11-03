@@ -171,6 +171,19 @@ const RECIPES = {
     await until(f, s => s.question); await f.evaluate(() => window.__brbTest.answer(0)); await wait(4500);
     await until(f, s => s.question); await wait(1400);
   } },
+  // Would You Rather Live alone: a dilemma just voted on, with the split showing.
+  'would-you-rather-live': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f); await wait(600);
+    await until(f, s => s.question); await wait(900);
+    await f.evaluate(() => window.__brbTest.answer(0)); await wait(1800);
+  } },
+  // Atlas Quest Live alone: the right country found on the map, named in green.
+  'atlas-quest-live': { viewport: PORTRAIT, touch: true, async prep(f) {
+    await hook(f); await wait(600);
+    await until(f, s => s.question && s.practiceAnswer, 12000); await wait(700);
+    await f.evaluate(() => { const s = window.__brbTest.state(); window.__brbTest.pick(s.practiceAnswer); window.__brbTest.lock(); });
+    await wait(2000);
+  } },
   'brain-board': { viewport: PORTRAIT, touch: true, async prep(f) {
     await hook(f); await play(f);
     // The board of categories with a few tiles already won.

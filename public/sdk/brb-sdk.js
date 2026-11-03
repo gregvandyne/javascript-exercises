@@ -186,7 +186,8 @@
       return JSON.stringify(o).length <= 600 ? o : null; },
     sc: function (m) { return isInt(m.n, 0, 1e6) ? { n: m.n } : null; },
     it: function (m) { return isInt(m.i, 0, 199) ? { i: m.i, ok: !!m.ok } : null; },
-    an: function (m) { return isInt(m.i, 0, 1000) && isInt(m.c, 0, 3) && isInt(m.e, 0, 600000) ? { i: m.i, c: m.c, e: m.e } : null; },
+    // c: a choice (0-3), or a country on a map question (Atlas Quest Live: up to 255)
+    an: function (m) { return isInt(m.i, 0, 1000) && isInt(m.c, 0, 255) && isInt(m.e, 0, 600000) ? { i: m.i, c: m.c, e: m.e } : null; },
     em: function (m) { return isInt(m.e, 0, 5) ? { e: m.e } : null; },
     st: function (m) { return LIVE.role === 'host' && m.d && typeof m.d === 'object' ? { d: JSON.parse(JSON.stringify(m.d)) } : null; }
   };

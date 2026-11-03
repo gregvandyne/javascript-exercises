@@ -253,7 +253,12 @@ function drawQuestion() {
   const right = q.revealed !== undefined ? q.revealed : dq && dq.i === q.i ? dq.answer : -1;
   const total = counts.reduce((a, b) => a + b, 0) || 1;
   bars.textContent = '';
-  q.choices.forEach((c, i) => {
+  // A map question (Atlas Quest Live: every country's code): the right country and the most tapped ones, by name.
+  const map = q.choices.length > 4;
+  const rows = map ? q.choices.map((c, i) => [c, i]).filter(([, i]) => counts[i] || (showAnswer && i === right)).sort((a, b) => (counts[b[1]] || 0) - (counts[a[1]] || 0)).slice(0, 6) : q.choices.map((c, i) => [c, i]);
+  let names = null; try { names = map ? new Intl.DisplayNames([document.documentElement.lang || 'en'], { type: 'region' }) : null; } catch { names = null; }
+  rows.forEach(([code, i]) => {
+    const c = map && names ? (names.of(code) || code) : code;
     const li = document.createElement('li'); li.className = 'lv-dbar';
     const isRight = showAnswer && i === right;
     li.classList.toggle('is-right', isRight);

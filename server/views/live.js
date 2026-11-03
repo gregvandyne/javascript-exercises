@@ -439,7 +439,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
 
 /** /live: pick a game or mode, a question set, who can join, then open the room (a data-api form: works without the
  *  page script). */
-export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null }) {
+export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null, wyr = null, atlas = null }) {
   const t = req.t;
   // part 4: invites to co-host and games this account co-hosts (only inside Oomba: no email, no push)
   const ch = cohost || { invites: [], on: [] };
@@ -447,7 +447,7 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   // room's rules again when it opens).
   const values = { secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed', board: 'all', late: true, names: classes.length ? 'names' : 'nicknames', sound: true, emotes: true, ...((prefs && prefs.settings) || {}) };
   const radio = (name, value, checked) => raw(`<input type="radio" name="${name}" value="${value}"${checked ? ' checked' : ''}>`);
-  const card = (value, icon, title, text, checked, quiz = false, teams = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
+  const card = (value, icon, title, text, checked, quiz = false, teams = false, own = false) => html`<label class="lv-pick"${quiz ? raw(' data-quiz="1"') : ''}${own ? raw(' data-own="1"') : ''}>${radio('pick', value, checked)}<span class="lv-pick-icon" aria-hidden="true">${icon}</span><span class="lv-pick-t">${title}</span>${text ? html`<span class="small muted">${text}</span>` : ''}${teams && teamsOn ? html`<span class="badge lv-teams-badge">${t('live.team.madeFor')}</span>` : ''}</label>`;
   const anyPicked = !!pre.pick;
   // Questions: what the host chose last time (prefs.bank), else the question bank.
   const lastBank = (prefs && prefs.bank) || {};
@@ -469,8 +469,25 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   <p class="muted">${t('live.landing.intro', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>
   <form class="stack" id="lv-new" data-api="/api/live/sessions" novalidate>
     <fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
-      ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true))}
+      ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true, !!m.own))}
     </div></fieldset>
+    ${wyr ? html`<fieldset class="lv-group lv-own" id="lv-wyr-opts" data-own-mode="wyr" hidden><legend>${t('live.wyrUi.legend')}</legend>
+      <fieldset class="lv-bank-board"><legend>${t('live.wyrUi.topics')}</legend><div class="lv-bank-subs">
+        ${wyr.topics.map(x => html`<label class="lv-check"><input type="checkbox" name="wyrTopic" value="${x.id}" checked> ${x.name}</label>`)}</div>
+        <p class="small muted">${t('live.wyrUi.topicsHint')}</p></fieldset>
+      <div class="field"><label for="lv-wyr-count">${t('live.wyrUi.count')}</label><select id="lv-wyr-count" name="wyrCount">${wyr.counts.map(n => html`<option value="${n}"${n === 10 ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+      <div class="field"><label for="lv-wyr-secs">${t('live.wyrUi.secs')}</label><select id="lv-wyr-secs" name="wyrSecs">${wyr.secs.map(n => html`<option value="${n}"${n === 15 ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+      <p class="small muted">${t('live.wyrUi.hint')}</p>
+    </fieldset>` : ''}
+    ${atlas ? html`<fieldset class="lv-group lv-own" id="lv-atlas-opts" data-own-mode="atlas" hidden><legend>${t('live.atlasUi.legend')}</legend>
+      <div class="field"><label for="lv-atlas-region">${t('live.atlasUi.region')}</label><select id="lv-atlas-region" name="atlasRegion">${atlas.regions.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select></div>
+      <div class="field"><label for="lv-atlas-level">${t('live.atlasUi.level')}</label><select id="lv-atlas-level" name="atlasLevel">${atlas.levels.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select></div>
+      <fieldset class="lv-bank-board"><legend>${t('live.atlasUi.kinds')}</legend><div class="lv-bank-subs">
+        ${atlas.kinds.map((x, i) => html`<label class="lv-check"><input type="checkbox" name="atlasKind" value="${x.id}"${i < 3 ? raw(' checked') : ''}> ${x.name}</label>`)}</div></fieldset>
+      <div class="field"><label for="lv-atlas-count">${t('live.atlasUi.count')}</label><select id="lv-atlas-count" name="atlasCount">${atlas.counts.map(n => html`<option value="${n}"${n === 10 ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+      <div class="field"><label for="lv-atlas-secs">${t('live.atlasUi.secs')}</label><select id="lv-atlas-secs" name="atlasSecs">${atlas.secs.map(n => html`<option value="${n}"${n === 20 ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
+      <p class="small muted">${t('live.atlasUi.hint')}</p>
+    </fieldset>` : ''}
     ${groups.filter(g => g.games.length || !modes.length).map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
     <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>
       <div class="field"><label for="lv-set">${t('live.landing.questionsLabel')}</label>
@@ -531,13 +548,17 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   const nameOf = p => (typeof p.name === 'number' ? nicks[p.name] || '' : p.name || '');
   const chip = k => { const x = teams.find(r => r.k === k); return x && presets[x.p] ? teamChip(presets, x) : ''; };
   const podium = teams.filter(x => x.rank >= 1 && x.rank <= 3).slice(0, 3);
-  const hard = items.filter(it => it.answered).sort((a, b) => (a.right / a.answered) - (b.right / b.answered) || a.i - b.i).slice(0, 3);
-  const L = i => String.fromCharCode(65 + i);
+  // Would You Rather Live is a vote (no right answer: the class's split only); Atlas Quest Live's review lists the
+  // right country and the most tapped wrong ones (no letters).
+  const vote = mode === 'wyr', map = mode === 'atlas';
+  const hard = vote ? [] : items.filter(it => it.answered).sort((a, b) => (a.right / a.answered) - (b.right / b.answered) || a.i - b.i).slice(0, 3);
+  const L = i => (map ? '' : `${String.fromCharCode(65 + i)}. `);
+  const tally = it => (vote ? t('live.results.votes', { count: it.answered }) : t('live.results.accuracy', { right: it.right, answered: it.answered }));
   const pctOf = (n, d) => (d ? Math.round((100 * n) / d) : 0);
   const mark = c => (c === '1' ? html`<span class="lv-mark lv-mark-right" title="${t('live.results.markRight')}">✓<span class="sr-only"> ${t('live.results.markRight')}</span></span>`
     : c === '0' ? html`<span class="lv-mark lv-mark-wrong" title="${t('live.results.markWrong')}">✗<span class="sr-only"> ${t('live.results.markWrong')}</span></span>`
       : html`<span class="lv-mark lv-mark-none" title="${t('live.results.markNone')}">–<span class="sr-only"> ${t('live.results.markNone')}</span></span>`);
-  const missedOk = quiz && items.some(it => Array.isArray(it.choices) && it.answered && it.right < it.answered);
+  const missedOk = quiz && !vote && !map && items.some(it => Array.isArray(it.choices) && it.answered && it.right < it.answered);
   const help = players.filter(p => p.help);
   return html`<div class="lv lv-results" data-lv-page="results" data-run="${id}">
   ${shapesSprite()}
@@ -554,8 +575,8 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
     <ol class="lv-hardest" id="lv-hardest">${hard.map(it => html`<li>${it.q ? html`<span>${it.q}</span> ` : ''}<span class="small">${t('live.results.accuracy', { right: it.right, answered: it.answered })}</span>${it.topWrong || it.top_wrong ? html` <span class="small muted">${t('live.results.topWrong', { answer: it.topWrong || it.top_wrong })}</span>` : ''}</li>`)}</ol></section>` : ''}
   ${items.length ? html`<section class="lv-group" aria-labelledby="lv-review-h"><h2 id="lv-review-h">${quiz ? t('live.results.review') : t('live.results.questions')}</h2>
     <ol class="lv-items lv-review" id="lv-review">${items.map(it => html`<li class="lv-review-item">${it.q ? html`<p class="lv-review-q">${it.q}</p>` : ''}
-      <p class="small">${t('live.results.accuracy', { right: it.right, answered: it.answered })}${it.topWrong || it.top_wrong ? html` · <span class="muted">${t('live.results.topWrong', { answer: it.topWrong || it.top_wrong })}</span>` : ''}</p>
-      ${Array.isArray(it.choices) ? html`<div class="lv-bars" role="list">${it.choices.map((c, i) => html`<div role="listitem" class="lv-bar${i === it.answer ? ' lv-bar-right' : ''}"><span class="lv-bar-label">${L(i)}. ${c}${i === it.answer ? html` <span class="lv-bar-ok">✓ ${t('live.results.markRight')}</span>` : ''}</span><span class="lv-bar-fill" style="--w:${pctOf((it.counts || [])[i] || 0, it.answered)}%"></span><span class="lv-bar-n">${(it.counts || [])[i] || 0} (${pctOf((it.counts || [])[i] || 0, it.answered)}%)</span></div>`)}</div>` : ''}
+      <p class="small">${tally(it)}${!vote && (it.topWrong || it.top_wrong) ? html` · <span class="muted">${t('live.results.topWrong', { answer: it.topWrong || it.top_wrong })}</span>` : ''}</p>
+      ${Array.isArray(it.choices) ? html`<div class="lv-bars" role="list">${it.choices.map((c, i) => html`<div role="listitem" class="lv-bar${i === it.answer ? ' lv-bar-right' : ''}"><span class="lv-bar-label">${L(i)}${c}${i === it.answer ? html` <span class="lv-bar-ok">✓ ${t('live.results.markRight')}</span>` : ''}</span><span class="lv-bar-fill" style="--w:${pctOf((it.counts || [])[i] || 0, it.answered)}%"></span><span class="lv-bar-n">${(it.counts || [])[i] || 0} (${pctOf((it.counts || [])[i] || 0, it.answered)}%)</span></div>`)}</div>` : ''}
     </li>`)}</ol></section>` : ''}
   ${guests ? html`<p class="muted">${t('live.results.guests', { count: guests })}</p>` : ''}
   <div class="lv-results-acts" id="lv-results-acts">
@@ -577,7 +598,7 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
     <summary>${t('live.results.details')}</summary>
     <p class="notice warn">${t('live.results.detailsHint')}</p>
     ${players.length ? html`<div class="lv-table-wrap"><table class="table lv-table" id="lv-student-table"><thead><tr><th scope="col">${t('live.results.rank')}</th><th scope="col">${t('live.results.player')}</th>${teams.length ? html`<th scope="col">${t('live.results.team')}</th>` : ''}<th scope="col">${t('live.results.score')}</th><th scope="col">${t('live.results.bonus')}</th><th scope="col">${t('live.results.correct')}</th>${saved ? '' : html`<th scope="col">${t('live.results.scoredBy')}</th>`}<th scope="col">${t('live.results.marks')}</th></tr></thead>
-      <tbody>${players.map(p => html`<tr><td>${p.rank}</td><td>${nameOf(p)}${p.left ? html` <span class="small muted">(${t('live.results.left')})</span>` : ''}</td>${teams.length ? html`<td>${chip(p.team)}</td>` : ''}<td>${p.score}</td><td>${p.bonus || 0}</td><td>${p.answered ? t('live.results.accuracy', { right: p.correct, answered: p.answered }) : '–'}</td>${saved ? '' : html`<td>${t(p.scoredBy === 'game' ? 'live.results.byGame' : 'live.results.byLive')}</td>`}<td class="lv-marks" dir="ltr">${[...(p.marks || '')].map(mark)}</td></tr>`)}</tbody></table></div>` : ''}
+      <tbody>${players.map(p => html`<tr><td>${p.rank}</td><td>${nameOf(p)}${p.left ? html` <span class="small muted">(${t('live.results.left')})</span>` : ''}</td>${teams.length ? html`<td>${chip(p.team)}</td>` : ''}<td>${p.score}</td><td>${p.bonus || 0}</td><td>${p.answered ? (vote ? t('live.results.votes', { count: p.answered }) : t('live.results.accuracy', { right: p.correct, answered: p.answered })) : '–'}</td>${saved ? '' : html`<td>${t(p.scoredBy === 'game' ? 'live.results.byGame' : 'live.results.byLive')}</td>`}<td class="lv-marks" dir="ltr">${[...(p.marks || '')].map(mark)}</td></tr>`)}</tbody></table></div>` : ''}
     ${help.length ? html`<h3>${t('live.results.needsHelp')}</h3><ul class="lv-needs-help" id="lv-needs-help">${help.map(p => html`<li>${nameOf(p)} <span class="small muted">${t(`live.dash.why.${p.help}`)}</span></li>`)}</ul>` : ''}
     ${csv ? html`<p><a class="btn" href="${csv}" download>${t('live.results.csv')}</a></p>` : ''}
   </details>`}

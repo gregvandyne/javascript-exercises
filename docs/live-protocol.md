@@ -57,7 +57,7 @@ removed, `4404` no session/seat, `4409` replaced by another device, `4413` messa
 | `ev` | `k: /^[a-z][a-z0-9_-]{0,23}$/`, `d`, `to?` | all | 10 | `d`: numbers, booleans, `null`, tokens `/^[a-z0-9_-]{1,24}$/`, arrays/objects (token keys) depth ≤ 2, ≤ 512 B. A player's `k`, every string and every key longer than 2 must be one of the game's words (`ready({ words })`, read from the game's code when the session opens); the host's strings must pass the text filter. Player `to: 'host'`; host `to: <seat>` or everyone. |
 | `sc` | `n: 0..1e6` | player | 2 | Game-reported score (not in quiz modes); rises at most `maxScorePerSec` × the seconds actually played since the last report (lobby, loading, countdown, pauses and the gaps between rounds count nothing). |
 | `it` | `i: 0..199, ok` | player | 4 | Game-reported item result, first report per item counts. |
-| `an` | `i, c: 0..3, e: ms` | player | 2 | Quiz answer to the open question `i`. Once. |
+| `an` | `i, c: 0..255, e: ms` | player | 2 | Quiz answer to the open question `i`: a choice (0-3), or a country on an Atlas Quest Live map question (its place in the question's choices). Once. |
 | `em` | `e: 0..5` | player | 1 | `EMOTES = ['wave','cheer','jump','dance','clap','heart']`. |
 | `pi` | `c` | all | 1 | Clock ping → `po`. |
 | `fr` | `f?: 'game'|'lobby'` | all | 1 | A fresh frame token → `fr`. |
@@ -330,3 +330,17 @@ number of the question open now (`q.i`). The server builds the text from the tea
 the text the page already shows. `#lv-play-data` and `#lv-host-data` carry `tts: { langs }` when AI voices are on.
 Lesson quiz steps use `{ ctx: 'lesson', clId, stepId, i }` (`.lv-qstep[data-tts]`).
 
+
+### Would You Rather Live (`wyr`) and Atlas Quest Live (`atlas`)
+
+Built-in quiz modes whose questions the platform makes (`server/live/wyr.js`, `server/live/atlas.js`; never a question
+set): `POST /api/live/sessions` with `pick: 'mode:wyr'` takes `wyrTopic` (repeated), `wyrCount`, `wyrSecs` (or `starter:
+'wyr:<topics|mix>:<count>:<secs>'`); `pick: 'mode:atlas'` takes `atlasRegion`, `atlasLevel`, `atlasKind` (repeated),
+`atlasCount`, `atlasSecs` (or `starter: 'atlas:<region>:<level>:<kinds>:<count>:<secs>'`). Any set, items or other starter
+is ignored for these modes.
+
+- `wyr`: `q.choices` has 2 entries, never shuffled; `rv.answer` is `-1`; `you.points` always 0. After the reveal, state
+  `wyr: { i, n }` or `{ i, a, b, n }` (percent of everyone on Oomba, from 5 votes) comes before `rv`.
+- `atlas`: `q.choices` is every country's code (195, Atlas Quest's order); `an.c` is the tapped country's index;
+  `rv.counts` has 195 entries. Before each `q`: state `atl: { i, k: 'find'|'capital'|'flag'|'famous', reg, fl? }`.
+  `you.points` may be above 0 with `ok: false` (a near miss).

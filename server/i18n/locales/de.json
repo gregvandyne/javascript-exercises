@@ -4565,7 +4565,11 @@
       "battle": "Fragen-Duell",
       "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste.",
       "board": "Denkbrett",
-      "boardText": "Ein Brett mit Kategorien: Feld wählen, alle antworten. Größere Felder sind schwerer und bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte."
+      "boardText": "Ein Brett mit Kategorien: Feld wählen, alle antworten. Größere Felder sind schwerer und bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte.",
+      "wyr": "Was wäre dir lieber? live",
+      "wyrText": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: einfach darüber reden.",
+      "atlas": "Atlas Quest live",
+      "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte."
     },
     "starter": {
       "title": {
@@ -4768,7 +4772,8 @@
       "stillHere": "{count, plural, one {# Spieler ist noch da} other {# Spieler sind noch da}}",
       "playAgainTeams": "Nochmal mit diesen Teams",
       "newGame": "Neues Spiel",
-      "homework": "Als Hausaufgabe geben"
+      "homework": "Als Hausaufgabe geben",
+      "votes": "{count, plural, one {# Stimme} other {# Stimmen}}"
     },
     "sets": {
       "title": "Fragensets",
@@ -5326,6 +5331,52 @@
       "count": "Anzahl der Fragen",
       "boardSubjects": "Fächer auf dem Brett (2 bis 6)",
       "bankHint": "Jedes Spiel neue Fragen, passend für jedes Alter geschrieben."
+    },
+    "wyrUi": {
+      "legend": "Was wäre dir lieber? live",
+      "topics": "Themen",
+      "topicsHint": "Lass alle angehakt für eine Mischung.",
+      "count": "Wie viele Fragen",
+      "secs": "Zeit zum Wählen",
+      "secsN": "{n} Sekunden",
+      "hint": "Nach jeder Abstimmung sieht die Klasse die Aufteilung: ein guter Moment, ein paar Kinder zu fragen, warum sie so gewählt haben."
+    },
+    "atlasUi": {
+      "legend": "Atlas Quest live",
+      "region": "Wo auf der Welt",
+      "level": "Stufe",
+      "kinds": "Fragearten",
+      "count": "Wie viele Fragen",
+      "secs": "Zeit pro Frage",
+      "hint": "Alle tippen das Land auf einer Weltkarte an, die sie vergrößern können. Der Klassenbildschirm zeigt, wo alle getippt haben."
+    },
+    "atlas": {
+      "region": {
+        "world": "Die ganze Welt",
+        "af": "Afrika",
+        "as": "Asien",
+        "eu": "Europa",
+        "na": "Nordamerika",
+        "sa": "Südamerika",
+        "oc": "Ozeanien"
+      },
+      "level": {
+        "easy": "Leicht: bekannte Länder",
+        "medium": "Mittel: bekannte und große Länder",
+        "hard": "Schwer: alle Länder"
+      },
+      "kind": {
+        "find": "Finde das Land",
+        "capital": "Hauptstädte",
+        "flag": "Flaggen",
+        "famous": "Berühmt für …"
+      },
+      "q": {
+        "find": "Finde {name}",
+        "capital": "Finde das Land mit der Hauptstadt {city}",
+        "flag": "Finde das Land mit dieser Flagge",
+        "famous": "Finde das Land, das berühmt ist für {thing}"
+      }
     }
   },
   "match": {
@@ -5394,7 +5445,7 @@
       }
     },
     "modes": {
-      "h": "Drei Spielarten",
+      "h": "Fünf Spielarten",
       "race": {
         "h": "Quest-Rennen",
         "p": "Ein Inselrennen in 3D. Jede richtige Antwort bringt Edelsteine und einen Schub, und die ganze Klasse verfolgt die Läufer an der Tafel."
@@ -5406,6 +5457,14 @@
       "board": {
         "h": "Denkbrett",
         "p": "Ein Brett mit Kategorien auf dem Bildschirm. Wählen Sie ein Feld (oder lassen Sie die schnellste richtige Antwort wählen), und seine Frage öffnet sich auf allen Geräten. Schwerere Felder bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte."
+      },
+      "wyr": {
+        "h": "Was wäre dir lieber? live",
+        "p": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: ein fertiger Gesprächsanlass."
+      },
+      "atlas": {
+        "h": "Atlas Quest live",
+        "p": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Der große Bildschirm zeigt, wo die ganze Klasse getippt hat, und knapp daneben zählt auch."
       }
     },
     "tools": {

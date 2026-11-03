@@ -12,23 +12,40 @@ import * as D from './classlive-dash.js';
 import * as B from './classlive-board.js';
 import { starterItems, STARTERS } from '../live/starters.js';
 import { bankItems } from '../live/bank/index.js';
+import { wyrItems } from '../live/wyr.js';
+import { atlasItems, closePoints } from '../live/atlas.js';
 
 /** Extra time after the deadline for answers already on their way. */
 export const GRACE_MS = 600;
 export { SECS } from './classlive-sets.js';
 export const STREAK = { step: 50, max: 200 };
+/** Would You Rather Live: a vote, never a right answer or points. Atlas Quest Live: a tap on the world map (choices are
+ *  every country's code; a near miss scores a little). Both keep their choices in order (no shuffle). */
+export const isVote = s => s.mode === 'wyr';
+export const isMap = s => s.mode === 'atlas';
+const keepOrder = s => isVote(s) || isMap(s);
 
 /**
  * The questions for a session: a saved set the host may use, a starter set, or items given directly (a quick set the
  * host typed, checked like a saved one). -> { ok: true, items, setId? } | { ok: false, code: 'noSet'|'setIncomplete' }
  */
-export function loadItems(host, { setId = null, starter = null, items = null, lang = 'en' } = {}) {
+export function loadItems(host, { setId = null, starter = null, items = null, lang = 'en', trusted = null } = {}) {
+  // Play again in Would You Rather Live or Atlas Quest Live: the platform's own questions, carried over as they were.
+  if (Array.isArray(trusted) && trusted.length) return { ok: true, items: trusted.map(it => ({ ...it })) };
   if (setId) {
     const set = sets.getSet(setId);
     if (!set || !sets.canUse(host, set)) return { ok: false, code: 'noSet' };
     const list = sets.itemsOf(set);
     if (!list.length || list.some(it => !sets.complete(it))) return { ok: false, code: 'setIncomplete' };
     return { ok: true, items: list, setId: set.id };
+  }
+  if (starter && String(starter).startsWith('wyr:')) {
+    const list = wyrItems(starter, lang);
+    return list && list.length ? { ok: true, items: list } : { ok: false, code: 'noSet' };
+  }
+  if (starter && String(starter).startsWith('atlas:')) {
+    const list = atlasItems(starter, lang);
+    return list && list.length ? { ok: true, items: list } : { ok: false, code: 'noSet' };
   }
   if (starter && String(starter).startsWith('bank:')) {
     const list = bankItems(starter, lang);
@@ -83,12 +100,14 @@ function sendQuestion(s, io) {
 export function ask(s, io, i) {
   if (!s.items || i >= s.items.length) return io.end(s, 'ended');
   const it = s.items[i];
-  const order = s.settings && s.settings.shuffleA === false ? [...it.choices.keys()] : shuffle(it.choices.length);
+  const order = keepOrder(s) || (s.settings && s.settings.shuffleA === false) ? [...it.choices.keys()] : shuffle(it.choices.length);
   const at = io.now();
   if (!s.qz) s.qz = { i: -1, cur: null, answers: new Map() };
   s.qz.i = i;
-  s.qz.cur = { i, q: it.q, choices: order.map(k => it.choices[k]), answer: order.indexOf(it.answer), secs: it.secs, base: it.secs, own: it.own || it.secs, at, deadline: at + it.secs * 1000 + GRACE_MS, teamAt: T.snapshot(s) };
+  s.qz.cur = { i, q: it.q, choices: order.map(k => it.choices[k]), answer: order.indexOf(it.answer), secs: it.secs, base: it.secs, own: it.own || it.secs, at, deadline: at + it.secs * 1000 + GRACE_MS, teamAt: T.snapshot(s), wyr: it.wyr || null, atlas: it.atlas || null };
   s.qz.answers = new Map();
+  // Atlas Quest Live: the flag to show (a flag question) and the region the maps open on, as shared state.
+  if (isMap(s) && io.publish) io.publish(s, { atl: { i, k: (it.atlas && it.atlas.k) || 'find', reg: (it.atlas && it.atlas.reg) || 'world', ...(it.atlas && it.atlas.fl ? { fl: it.atlas.fl } : {}) } });
   io.setPhase(s, 'playing', { at });
   sendQuestion(s, io);
   io.toDash(s, D.dqMsg(s));
@@ -135,7 +154,8 @@ export function answer(s, io, seat, m, recvAt = io.now()) {
   if (recvAt > c.deadline + (limit - c.secs * 1000)) return false;
   const serverElapsed = Math.max(0, recvAt - c.at);
   const elapsed = Math.min(limit, Math.max(0, serverElapsed - (seat.rtt || 0) - 500, Math.min(m.e, serverElapsed)));
-  const ok = m.c === c.answer;
+  // A vote has no right answer (ok stays null); a map answer is right only on the right country.
+  const ok = isVote(s) ? null : m.c === c.answer;
   s.qz.answers.set(seat.no, { c: m.c, elapsed, ok });
   io.toSeat(s, seat.no, { t: 'ack', i: c.i });
   io.toHosts(s, { t: 'ac', i: c.i, n: s.qz.answers.size });
@@ -176,24 +196,38 @@ export function reveal(s, io) {
     seat.answered++;
     let p = 0;
     const limit = limitOf(c, seat);
+    // Would You Rather Live: a vote. Nothing is right or wrong and nobody scores; the vote may count in the game's
+    // all-time poll (once per signed-in player and dilemma: the poll hook).
+    if (isVote(s)) { mine.set(seat.no, { ok: false, points: 0, vote: a.c }); continue; }
     if (a.ok) {
       seat.streak++; seat.correct++; seat.wrongRun = 0;
       // Speed points against the question's own time (and the seat's extra time), never the added time.
       p = s.board ? B.points(s, a.elapsed, (c.base * pct(seat)) / 100, { accuracy }) : points(a.elapsed, (c.base * pct(seat)) / 100, seat.streak, { accuracy });
       seat.score += p;
       if (s.race) { const r = s.race.get(seat.no) || { prog: 0, gems: 0 }; r.prog = Math.min(1000, r.prog + (0.8 * 1000) / n + ((0.2 * 1000) / n) * (1 - Math.max(0, a.elapsed - limit / 3) / (limit * 2 / 3))); r.gems += a.elapsed < limit / 3 ? 2 : 1; s.race.set(seat.no, r); }
-    } else { seat.streak = 0; seat.wrongRun = (seat.wrongRun || 0) + 1; }
+    } else {
+      seat.streak = 0; seat.wrongRun = (seat.wrongRun || 0) + 1;
+      // Atlas Quest Live: a near miss scores a little (never a right answer, never a streak).
+      if (isMap(s)) { p = accuracy ? 0 : closePoints(a.c, c.answer); seat.score += p; }
+    }
     seat.items.set(c.i, a.ok);
     pts.set(seat.no, p);
     mine.set(seat.no, { ok: a.ok, points: p });
   }
-  T.bankQuiz(s, c.teamAt, pts, new Set(s.qz.answers.keys()));
-  const right = counts[c.answer];
+  if (!isVote(s)) T.bankQuiz(s, c.teamAt, pts, new Set(s.qz.answers.keys()));
+  const right = c.answer >= 0 ? counts[c.answer] : 0;
   const answered = counts.reduce((x, y) => x + y, 0);
   let topWrong = null;
   counts.forEach((k, i) => { if (i !== c.answer && k > 0 && (topWrong === null || k > counts[topWrong])) topWrong = i; });
   // The question as the class saw it (host-written text only), for the question review and "play the missed ones".
-  s.itemStats.set(c.i, { q: c.q, choices: c.choices, answer: c.answer, secs: c.own, counts, right, answered, topWrong: topWrong === null ? null : c.choices[topWrong] });
+  // Atlas Quest Live keeps a short version: the right country and the most tapped wrong ones, by name.
+  if (isMap(s)) {
+    const name = io.countryName || (x => x);
+    const wrong = counts.map((k, i) => [i, k]).filter(([i, k]) => k > 0 && i !== c.answer).sort((x, y) => y[1] - x[1]).slice(0, 3);
+    s.itemStats.set(c.i, { q: c.q, choices: [c.choices[c.answer], ...wrong.map(([i]) => c.choices[i])].map(cc => name(cc, s.lang)), answer: 0, secs: c.own, counts: [right, ...wrong.map(([, k]) => k)], right, answered, topWrong: topWrong === null ? null : name(c.choices[topWrong], s.lang), map: true });
+  } else s.itemStats.set(c.i, { q: c.q, choices: c.choices, answer: c.answer, secs: c.own, counts, right, answered, topWrong: topWrong === null ? null : c.choices[topWrong], ...(isVote(s) ? { vote: true } : {}) });
+  // Would You Rather Live: count the votes in the game's all-time poll, then share everyone's split (shared state wyr).
+  if (isVote(s) && io.voted) io.voted(s, c, s.qz.answers);
   if (s.board) B.closeTile(s, s.qz.answers);
   s.qz.cur = null;
   s.scoresDirty = false;

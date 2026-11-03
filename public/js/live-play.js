@@ -8,7 +8,7 @@
 // automatic for a seat whose support says so), and Play again (a private token moves this page to the new game).
 // The seat's own support (me / wel.me.acc) stays on this page: it is never passed into the game frame.
 import { api, toast, t } from '/js/app.js';
-import { connect, gameFrame, can3d, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, paintTeam, teamsOf, scoresOf, readAloud, stopReading, voiceFor, aiOn, flash } from '/js/live-common.js';
+import { connect, gameFrame, can3d, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, paintTeam, teamsOf, scoresOf, readAloud, stopReading, voiceFor, aiOn, flash, welTracker } from '/js/live-common.js';
 
 const D = readJson('lv-play-data');
 const $ = id => document.getElementById(id);
@@ -59,7 +59,10 @@ function frameToken(f) {
   });
 }
 
+// what a game frame loaded later must know (players who joined, teams, state, the phase): live-common welTracker
+const track = welTracker();
 function onMessage(m) {
+  track.observe(m);
   switch (m.t) {
     case 'wel': welcome(m); break;
     case 'fr': { const r = frameReq.get(m.f); if (r) { frameReq.delete(m.f); r(m.tok); } return; }
@@ -122,7 +125,7 @@ function loadFrame(kind, token) {
   });
   frame.load(token, kind, view);
   // the welcome (and the clock) go to each new frame: it starts from where the session is
-  if (wel) { frame.send(wel); frame.clock(sock.serverNow()); }
+  if (wel) { frame.send(track.wel(wel)); frame.clock(sock.serverNow()); }
 }
 
 async function onPhase(m, first = false) {
@@ -357,7 +360,8 @@ function showRead() {
 function readQuestion() {
   if (!question) return;
   const L2 = i => String.fromCharCode(65 + i);
-  const text = `${question.q}. ${question.choices.map((c, i) => `${L2(i)}: ${c}`).join('. ')}`;
+  // a map question (Atlas Quest Live: every country's code) reads the question only
+  const text = question.choices.length > 4 ? question.q : `${question.q}. ${question.choices.map((c, i) => `${L2(i)}: ${c}`).join('. ')}`;
   readAloud({ text, lang: readLang(), ai: aiHere() ? { langs: D.tts.langs, body: { ctx: 'live', sid, tok, i: question.i } } : null });
 }
 readBtn && readBtn.addEventListener('click', () => { tapped = true; readQuestion(); readBtn.textContent = `🔊 ${TX.readAgain}`; });

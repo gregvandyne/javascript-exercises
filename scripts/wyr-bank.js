@@ -61,5 +61,12 @@ const block = `/* wyr-data:begin */\nvar WYR_PACK_VER = ${JSON.stringify(ver)}, 
 const html = fs.readFileSync(GAME, 'utf8');
 if (!/\/\* wyr-data:begin \*\/[\s\S]*?\/\* wyr-data:end \*\//.test(html)) fail('no wyr-data markers in the game');
 fs.writeFileSync(GAME, html.replace(/\/\* wyr-data:begin \*\/[\s\S]*?\/\* wyr-data:end \*\//, () => block));
+// Would You Rather Live (seed-games/would-you-rather-live.html) loads the same packs for its practice round.
+const LIVE = path.join(ROOT, 'seed-games/would-you-rather-live.html');
+if (fs.existsSync(LIVE)) {
+  const live = fs.readFileSync(LIVE, 'utf8'), re = /\/\* wyr-live:begin \*\/[\s\S]*?\/\* wyr-live:end \*\//;
+  if (!re.test(live)) fail('no wyr-live markers in would-you-rather-live.html');
+  fs.writeFileSync(LIVE, live.replace(re, () => `/* wyr-live:begin */\n  var WYR_PACK_VER = ${JSON.stringify(ver)}, WYR_PACK_SRI = ${JSON.stringify(sri)};\n  /* wyr-live:end */`));
+}
 const per = {}; for (const it of en) per[it.cat] = (per[it.cat] || 0) + 1;
 console.log(`would-you-rather: ${en.length} dilemmas (${Object.entries(per).map(([k, v]) => `${k} ${v}`).join(', ')}), UI in ${Object.keys(ui).length} languages, ${Object.keys(packs).length} translated packs${ver ? ` (${ver})` : ''}`);
