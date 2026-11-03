@@ -1091,6 +1091,7 @@
       "pickReason": "Pick a reason."
     },
     "makeLike": "Make a game like this",
+    "makeLikeShort": "Make one like this",
     "grownupBuilder": "Grown-up builder"
   },
   "play": {

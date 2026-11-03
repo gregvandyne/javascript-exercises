@@ -1091,6 +1091,7 @@
       "pickReason": "Wähl einen Grund."
     },
     "makeLike": "Bau ein Spiel wie dieses",
+    "makeLikeShort": "Bau so eins",
     "grownupBuilder": "Von Erwachsenen gebaut"
   },
   "play": {
