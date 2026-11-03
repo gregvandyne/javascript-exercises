@@ -42,7 +42,7 @@ test('Inside the Machine runs on the kit: pinned tags, the chapter map, a lesson
   // a lesson: Hardware or Software, Explorer, played with the hooks; every level ends on the Case-closed card
   let s = await T(f, 'start', { chapter: 'hw-sw', band: '1b', level: 1, seed: 3, lesson: true, lock: true });
   expect([s.screen, s.levelId, s.lock, s.lesson]).toEqual(['play', 'hwsw-1', true, true]);
-  await expect(f.locator('.im-pill').first()).toContainText('Class quest');
+  await expect(f.locator('.im-play .im-pill').first()).toContainText('Class quest');
   await expect(f.locator('.im-play .ok-btn[aria-label="Chapter map"]')).toHaveCount(0);
   if (s.modal) { await T(f, 'closeDialog'); await expect.poll(() => f.evaluate(() => __brbTest.state().modal)).toBe(false); }
   await T(f, 'skipAnimations');
@@ -75,7 +75,12 @@ test('Inside the Machine runs on the kit: pinned tags, the chapter map, a lesson
   s = await T(f, 'daily'); expect(s.levelId).toBe(pick.id); expect(s.daily).toBe(pick.day);
   await T(f, 'answer', await sol(f, s.levelId));
   s = await T(f, 'state'); expect(s.done).toBe(true);
-  await expect.poll(async () => (await f.locator('.im-modal h2').allTextContents()).join(' ')).toContain('Daily Crew Challenge');
+  // a ticket, a persona or a gadget shows its verdict card first; the daily card follows
+  const heading = async () => (await f.locator('.im-modal h2').allTextContents()).join(' ');
+  await expect.poll(heading).not.toBe('');
+  if (!(await heading()).includes('Daily Crew Challenge')) await T(f, 'closeDialog');
+  await expect.poll(heading).toContain('Daily Crew Challenge');
+  await expect(f.locator('.im-modal .im-stars')).toBeVisible();
   expect(await f.evaluate(() => window.__csp)).toEqual([]);
   expect(errors).toEqual([]);
 });
