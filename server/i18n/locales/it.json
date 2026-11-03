@@ -4570,9 +4570,9 @@
       "battleText": "Domande sul grande schermo, risposte su ogni dispositivo e una classifica dopo ognuna.",
       "board": "Tabellone Cervello",
       "boardText": "Un tabellone di categorie: scegli una casella e rispondono tutti. Le caselle più alte sono più difficili e valgono di più, e una Stella fortunata nascosta raddoppia i punti.",
-      "wyr": "Preferiresti? dal vivo",
+      "wyr": "Preferiresti? (Dal vivo)",
       "wyrText": "La classe vota su dilemmi divertenti e vede come si divide, e cosa hanno scelto tutti su Oomba. Niente risposte giuste, niente punti: solo per parlarne.",
-      "atlas": "Atlas Quest dal vivo",
+      "atlas": "Atlas Quest (Dal vivo)",
       "atlasText": "Tutti toccano il paese sulla propria mappa del mondo: trovalo, la sua bandiera, la sua capitale o ciò per cui è famoso. Andarci vicino vale comunque qualcosa."
     },
     "starter": {
@@ -5337,7 +5337,7 @@
       "bankHint": "Domande nuove a ogni partita, scritte per ogni età."
     },
     "wyrUi": {
-      "legend": "Preferiresti? dal vivo",
+      "legend": "Preferiresti? (Dal vivo)",
       "topics": "Argomenti",
       "topicsHint": "Lasciali tutti selezionati per un mix.",
       "count": "Quanti dilemmi",
@@ -5346,7 +5346,7 @@
       "hint": "Dopo ogni voto la classe vede come si è divisa: un buon momento per chiedere ad alcuni bambini perché hanno scelto così."
     },
     "atlasUi": {
-      "legend": "Atlas Quest dal vivo",
+      "legend": "Atlas Quest (Dal vivo)",
       "region": "Dove nel mondo",
       "level": "Livello",
       "kinds": "Tipi di domanda",
@@ -5463,11 +5463,11 @@
         "p": "Un tabellone di categorie sullo schermo. Scelga una casella (o lasci scegliere a chi risponde giusto più in fretta) e la sua domanda si apre su tutti i dispositivi. Le caselle difficili valgono di più, e una Stella fortunata nascosta raddoppia i punti."
       },
       "wyr": {
-        "h": "Preferiresti? dal vivo",
+        "h": "Preferiresti? (Dal vivo)",
         "p": "La classe vota su dilemmi divertenti e vede come si divide, e cosa hanno scelto tutti su Oomba. Niente risposte giuste né punti: uno spunto di conversazione già pronto."
       },
       "atlas": {
-        "h": "Atlas Quest dal vivo",
+        "h": "Atlas Quest (Dal vivo)",
         "p": "Tutti toccano il paese sulla propria mappa del mondo: il paese, la bandiera, la capitale o ciò per cui è famoso. Lo schermo grande mostra dove ha toccato tutta la classe, e andarci vicino vale comunque."
       }
     },

@@ -342,5 +342,5 @@ is ignored for these modes.
 - `wyr`: `q.choices` has 2 entries, never shuffled; `rv.answer` is `-1`; `you.points` always 0. After the reveal, state
   `wyr: { i, n }` or `{ i, a, b, n }` (percent of everyone on Oomba, from 5 votes) comes before `rv`.
 - `atlas`: `q.choices` is every country's code (195, Atlas Quest's order); `an.c` is the tapped country's index;
-  `rv.counts` has 195 entries. Before each `q`: state `atl: { i, k: 'find'|'capital'|'flag'|'famous', reg, fl? }`.
+  `rv.counts` has 195 entries. Before each `q`: state `atl: { i, k: 'find'|'capital'|'flag'|'famous', reg }`; the projector alone also gets `atlf: { i, fl }` (a flag question's flag, or null).
   `you.points` may be above 0 with `ok: false` (a near miss).
