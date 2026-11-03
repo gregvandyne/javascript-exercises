@@ -134,7 +134,7 @@ test('robo-route: level codes round-trip 200 random boards, never five digits in
   assert.equal(E.decode(''), null);
   // the Level Maker's check: an unreachable goal is refused, par counts commands
   assert.equal(E.check({ rows: ['>.#G'] }).solvable, false);
-  assert.deepEqual(E.check({ rows: ['>..G'] }), { solvable: true, par: 3, perLayout: [{ solvable: true, par: 3 }] });
+  assert.equal(JSON.stringify(E.check({ rows: ['>..G'] })), JSON.stringify({ solvable: true, par: 3, perLayout: [{ solvable: true, par: 3 }] }));
   assert.equal(E.check({ rows: ['>.*.G'] }).par, 5, 'a pick is a command');
 });
 
