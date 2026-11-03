@@ -41,7 +41,7 @@
   @keyframes wyr-bob { 50% { transform: translateY(-6px) rotate(-4deg); } }
   .modes { width: 100%; display: grid; gap: 10px; }
   .mode { display: flex; align-items: center; gap: 14px; text-align: start; width: 100%; min-height: 64px; padding: 10px 16px; border-radius: 22px; border: 3px solid var(--ok-edge, #1d2340);
-    box-shadow: 0 4px 0 var(--ok-edge, #1d2340); background: var(--ok-card, #fffaf0); color: var(--wyr-ink); font: inherit; cursor: pointer; }
+    box-shadow: 0 4px 0 var(--ok-edge, #1d2340); background: var(--ok-card, #fffaf0); color: var(--ok-text, #1d2340); font: inherit; cursor: pointer; }
   .mode .em { font-size: 34px; flex: none; }
   .mode b { display: block; font-size: clamp(18px, min(2.8vw, 3.4vh), 24px); }
   .mode small { display: block; font-size: clamp(13px, min(2vw, 2.6vh), 16px); font-weight: 600; opacity: .85; }
@@ -101,7 +101,7 @@
   .or { align-self: center; justify-self: center; display: grid; place-items: center; min-width: 58px; height: 58px; padding: 0 10px; border-radius: 999px; font-weight: 900; font-size: 20px;
     background: var(--ok-edge, #1d2340); color: var(--ok-card, #fffaf0); z-index: 1; margin: -14px 0; }
   @media (orientation: landscape) { .or { margin: 0 -14px; } }
-  .react { margin: 0; text-align: center; font-weight: 900; font-size: clamp(18px, min(3vw, 3.6vh), 28px); min-height: 1.3em; flex: none; color: var(--wyr-ink); }
+  .react { margin: 0; text-align: center; font-weight: 900; font-size: clamp(18px, min(3vw, 3.6vh), 28px); min-height: 1.3em; flex: none; color: var(--ok-text, #1d2340); }
   .react span { display: inline-block; background: var(--ok-card, #fffaf0); border: 3px solid var(--ok-edge, #1d2340); border-radius: 999px; padding: 2px 16px; animation: wyr-pop .35s cubic-bezier(.3, 1.6, .5, 1); }
   @keyframes wyr-pop { from { transform: scale(.4); opacity: 0; } }
   .foot { display: flex; align-items: center; justify-content: center; gap: 10px; flex: none; width: min(1100px, 100%); flex-wrap: wrap; }
