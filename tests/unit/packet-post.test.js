@@ -144,7 +144,7 @@ test('packet-post: the progress label grammar, the class quest number and the pa
   assert.deepEqual(J(E.questCode('3200', CHAPTERS)), { chapter: 'protocols', band: '2', mode: 'play', level: 0 });
   assert.deepEqual(J(E.questCode('0230', CHAPTERS)), { chapter: null, band: '2', mode: 'projector', level: 0 });
   assert.deepEqual(J(E.questCode('6225', CHAPTERS)), { chapter: 'ciphers', band: '2', mode: 'wheel', level: 5 });
-  for (const bad of ['7100', '1300', '110', '11000', 'abcd', '']) assert.equal(E.questCode(bad, CHAPTERS), null, bad);
+  for (const bad of ['7100', '1300', '1190', '1150', '1110', '110', '11000', 'abcd', '']) assert.equal(E.questCode(bad, CHAPTERS), null, bad);
   // the quest number round-trips through its digits (chapter, band, mode, level), and the lessons' numbers point where the contract says
   for (const q of [{ chapter: 'packets', band: '1b', mode: 'play', level: 0 }, { chapter: 'protocols', band: '2', mode: 'play', level: 0 }, { chapter: 'locks', band: '1b', mode: 'play', level: 0 }, { chapter: 'locks', band: '2', mode: 'play', level: 0 }, { chapter: 'tricks', band: '1b', mode: 'play', level: 0 }, { chapter: 'ciphers', band: '2', mode: 'play', level: 0 }, { chapter: null, band: '2', mode: 'projector', level: 0 }, { chapter: 'ciphers', band: '2', mode: 'wheel', level: 5 }]) { const d = E.questDigits(q, CHAPTERS); assert.match(d, /^\d{4}$/); assert.deepEqual(J(E.questCode(d, CHAPTERS)), q); }
   assert.deepEqual([['packets', '1b'], ['protocols', '2'], ['locks', '1b'], ['locks', '2'], ['tricks', '1b'], ['ciphers', '2']].map(([c, b]) => E.questDigits({ chapter: c, band: b }, CHAPTERS)), ['1100', '3200', '4100', '4200', '5100', '6200']);
@@ -152,7 +152,8 @@ test('packet-post: the progress label grammar, the class quest number and the pa
   for (const band of ['1b', '2']) { const a = E.daily(LEVELS, band, 20760), b = E.daily(LEVELS, band, 20760); assert.equal(a.level.id, b.level.id); assert.equal(a.seed, b.seed); assert.ok(a.level.random && a.level.bands.includes(band)); const ids = new Set([20760, 20761, 20762, 20763, 20764, 20765, 20766].map(d => E.daily(LEVELS, band, d).level.id)); assert.ok(ids.size >= 3, `${band}: the daily moves around (${[...ids]})`); }
   assert.deepEqual(J(E.cleanParams({ chapter: 'packets', band: '1b', lock: 1 }, CHAPTERS)), { chapter: 'packets', band: '1b', lock: 1, present: true });
   assert.deepEqual(J(E.cleanParams({ chapter: 'protocols', band: '2', level: 3, lock: '0', mode: 'projector' }, CHAPTERS)), { chapter: 'protocols', band: '2', level: 3, mode: 'projector', lock: 0, present: true });
-  assert.deepEqual(J(E.cleanParams({ chapter: 'nope', band: '9', level: 99, mode: 'fly' }, CHAPTERS)), { lock: 0, present: true });
+  assert.deepEqual(J(E.cleanParams({ chapter: 'nope', band: '9', level: 99, mode: 'fly' }, CHAPTERS)), { lock: 0, present: false });   // nothing valid: no lesson mode
+  assert.equal(E.cleanParams({ level: '31' }, CHAPTERS).present, false);
   assert.deepEqual(J(E.cleanParams(undefined, CHAPTERS)), { lock: 0, present: false });
   assert.match(HTML, /\(window\.BRB && BRB\.params\) \|\| \{\}/, 'reads BRB.params defensively');
   assert.match(HTML, /BRB\.score\.submit\(score, lab\)/); assert.match(HTML, /w\.win\(\{/);
@@ -316,4 +317,45 @@ test('packet-post: in Chromium, level 1 of two chapters plays through the hooks,
       assert.deepEqual(errors, []); assert.deepEqual(warnings, []);
     } finally { await ctx.close(); }
   }
+});
+
+test('packet-post fix round 1: asking a grown-up never fails an inbox level, tk-5 needs one, resend stays in range, no joke distractors', () => {
+  for (const l of LEVELS.filter(l => l.type === 'inbox')) for (const seed of [1, 2, 3]) { const r = E.play(l, [{ t: 'verdict', v: 'ask' }], seed); assert.ok(r.done && !r.failed, `${l.id}: ask a grown-up solves it`); }
+  const tk5 = LEVELS.find(l => l.id === 'tk-5'); assert.ok(E.play(tk5, [{ t: 'verdict', v: 'trick' }], 1).failed, 'tk-5: a meet-up request needs a grown-up, Trick alone is not enough');
+  for (const id of ['tk-3', 'tk-6']) { const l = LEVELS.find(x => x.id === id); const r = E.play(l, [{ t: 'verdict', v: 'ask' }], 1); assert.ok(r.done && !r.quality(), `${id}: ask solves the safe letter without the second star`); }
+  for (const l of LEVELS.filter(l => l.type === 'ack')) { const r = new E.Run(l, 1); assert.equal(r.resend(0).err, 'noslot'); assert.equal(r.resend(r.inst.n + 1).err, 'noslot'); }
+  for (const l of LEVELS) if (l.check) assert.ok(!l.check.tiles.some(x => /company|fresh air|Dragons|waste time|prettier/.test(x)), `${l.id}: no joke distractors`);
+});
+
+test('packet-post: in Chromium, an ack level started for real lets its packets ride in, and a locked chapter ends with labelled scores only', { skip, timeout: 240_000 }, async () => {
+  const LABEL = /^\d{1,2}\/\d{1,2} (levels|cases|tickets|cards), \d{1,3} stars(, \d{1,2}\/\d{1,2} checks)?$/;
+  let { ctx, page, frame, errors, msgs } = await open();
+  try {
+    // the real level flow (no act, no skipAnimations): a real tap on Let's go, then the packets ride into the Inbox
+    await T(frame, 'start', { chapter: 'protocols', band: '1b', level: 1, seed: 1, lesson: false });
+    await page.waitForTimeout(400); await frame.tap('.pp-card .ok-hot');
+    for (let i = 0; i < 60 && !(await frame.$('[data-card]')); i++) await page.waitForTimeout(250);
+    assert.ok(await frame.$('[data-card]'), 'packets in the Inbox');
+    assert.ok(await frame.evaluate(() => document.querySelector('.pp-say p').textContent.length > 0), 'Pim says the intro after the learn card');
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+  ({ ctx, page, frame, errors, msgs } = await open());
+  try {
+    await T(frame, 'start', { chapter: 'protocols', band: '1b', lock: 1, seed: 1 });
+    const over = () => msgs.find(m => m.type === 'brb:gameover' || m.type === 'brb:over');
+    for (let i = 0; i < 60 && !over(); i++) {
+      await page.waitForTimeout(300); await T(frame, 'closeCards'); await T(frame, 'skipAnimations');
+      const st = await T(frame, 'state');
+      if (st.screen === 'level' && st.phase === 'play' && !st.busy) { await T(frame, 'solve'); continue; }
+      // the kit's cards in turn: the Case-closed check, How sure were you, the results card (its main button goes on)
+      await frame.evaluate(() => { const cs = [...document.querySelectorAll('.ok-card')].filter(c => c.offsetParent !== null); const c = cs[cs.length - 1]; if (!c) return; const b = c.querySelector('.ok-hot') || c.querySelector('button'); if (b) b.click(); });
+    }
+    const scores = msgs.filter(m => m.type === 'brb:score'), end = over();
+    assert.ok(scores.length >= 2, `scores ${JSON.stringify(msgs)}`);
+    for (const s of scores) assert.match(String(s.label), LABEL, `every score carries a progress label: ${JSON.stringify(s)}`);
+    for (let k = 1; k < scores.length; k++) assert.ok(scores[k].score >= scores[k - 1].score, 'the chained score never goes down');
+    assert.ok(end && end.won === true && end.score === null, `gameOver ${JSON.stringify(end)}: won, and no second unlabelled score`);
+    assert.ok(msgs.indexOf(end) > msgs.indexOf(scores.at(-1)) && !msgs.slice(msgs.indexOf(end)).some(m => m.type === 'brb:score'), 'the labelled score comes first and nothing follows the game over');
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
 });
