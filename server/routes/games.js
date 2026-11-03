@@ -92,10 +92,12 @@ router.get('/g/:slug', (req, res) => {
         <div class="row actions">
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
           ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">📡 ${t('live.entry.hostLive')}</a>` : ''}
-          ${grownup ? '' : html`<button class="iconbtn" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
-          <button class="iconbtn" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
-          ${isOwner ? html`<a class="iconbtn" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : html`<button class="iconbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span>${t('game.report.button')}</button>`}
-          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="iconbtn" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t('game.makeLike')}</a>`}
+        </div>
+        <div class="quietacts">
+          ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
+          <button class="qact" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
+          ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : ''}
+          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t('game.makeLike')}</a>`}
         </div>
         ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
@@ -124,6 +126,7 @@ router.get('/g/:slug', (req, res) => {
         ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, {})}</section>` : ''}
       </aside>
     </div>
+    ${isOwner ? '' : html`<p class="reportline"><button class="linkbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span> ${t('game.report.button')}</button></p>`}
   </article>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
   if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
