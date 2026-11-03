@@ -125,17 +125,65 @@ export function buildGame(u, clId, stepId, gameId) {
 
 // ---------------------------------------------------------------- teachers
 const managed = (u, clId) => { const cl = L.getClassLesson(clId); const c = cl && S.getClass(cl.class_id); return c && S.canManageClass(u, c) ? { cl, c } : null; };
-/** Feedback on a student's answer; marks it reviewed. Empty feedback just marks it reviewed. */
-export function review(u, clId, stepId, userId, feedback = '') {
+/** Rubric marks as stored: one character per rubric line, '0'-'3' or '-' (not marked). From an array (numbers, digit
+ *  strings; null / '' / '-' = not marked) or such a string; shorter input is padded with '-'. null when malformed. */
+export function cleanMarks(marks, lines) {
+  const n = Math.max(0, lines | 0);
+  const list = typeof marks === 'string' ? [...marks] : Array.isArray(marks) ? marks : null;
+  if (!list || list.length > n) return null;
+  let out = '';
+  for (const v of list) {
+    if (v === null || v === undefined || v === '' || v === '-') { out += '-'; continue; }
+    const s = String(v).trim();
+    if (!/^[0-3]$/.test(s)) return null;
+    out += s;
+  }
+  return out.padEnd(n, '-');
+}
+/** The marks a step can take: its rubric's lines (question and build steps only), else 0. */
+const rubricLines = step => (L.RUBRIC_KINDS.includes(step.kind) ? L.rubricOf(step).length : 0);
+/**
+ * A teacher's review of one student's step: feedback (empty just marks it read) and, on question and build steps with a
+ * rubric, a 0-3 mark per rubric line (marks: [2, 3, null, 1] or '23-1'; left out = unchanged). alsoMark: classmates who
+ * get the same marks on this step (a capstone team: the captain handed the game in; the others never opened the step), a
+ * row is made for them if they have none; the feedback stays with the one student. -> { ok, marks, alsoMarked: [ids] }
+ */
+export function review(u, clId, stepId, userId, feedback = '', { marks, alsoMark = [] } = {}) {
   const m = managed(u, clId); if (!m) return fail('notFound');
-  const row = get(clId, stepId, userId); if (!row || !row.answer) return fail('notFound');
-  upsert(clId, stepId, userId, { feedback: clipText(feedback, 2000), reviewed_at: now(), reviewed_by: u.id });
-  audit(u.id, 'progress.review', clId, { step: stepId, user: userId });
-  return ok();
+  const step = L.getStep(stepId); if (!step || step.lesson_id !== m.cl.lesson_id) return fail('notFound');
+  const row = get(clId, stepId, userId);
+  const lines = rubricLines(step);
+  let clean = null;
+  if (marks !== undefined && marks !== null) {
+    if (lines) { clean = cleanMarks(marks, lines); if (clean === null) return fail('badMarks'); }
+    else {
+      // No rubric on this step: only "nothing marked" is accepted (a form with no radios sends nothing; an API sending digits is wrong).
+      const list = typeof marks === 'string' ? [...marks] : Array.isArray(marks) ? marks : null;
+      if (!list || list.some(v => !(v === null || v === undefined || v === '' || v === '-'))) return fail('badMarks');
+    }
+  }
+  // Something to review: an answer, a build row (started or handed in), or marks for a student of the class.
+  const student = id => { const cm = S.classMember(m.c.id, id); return !!cm && cm.role === 'student'; };
+  if (!row && !(clean !== null && student(userId))) return fail('notFound');
+  if (row && !row.answer && step.kind === 'question' && clean === null) return fail('notFound');
+  const t = now();
+  upsert(clId, stepId, userId, { feedback: clipText(feedback, 2000), reviewed_at: t, reviewed_by: u.id });
+  if (clean !== null) q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', clean, clId, stepId, userId);
+  const also = [];
+  if (clean !== null && lines) {
+    for (const id of [...new Set([].concat(alsoMark || []).map(String))]) {
+      if (!id || id === userId || !student(id)) continue;
+      upsert(clId, stepId, id, { reviewed_at: t, reviewed_by: u.id });
+      q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', clean, clId, stepId, id);
+      also.push(id);
+    }
+  }
+  audit(u.id, 'progress.review', clId, { step: stepId, user: userId, ...(clean !== null ? { marks: clean } : {}), ...(also.length ? { also: also.length } : {}) });
+  return ok({ marks: clean === null ? (row && row.marks) || '' : clean, alsoMarked: also });
 }
 
 /** Steps that count for a lesson (all its steps, in order). */
-const stepsOf = lessonId => q.all('SELECT id, kind, title, game_id, position FROM lesson_steps WHERE lesson_id=? ORDER BY position, created_at', lessonId);
+const stepsOf = lessonId => q.all('SELECT id, kind, title, game_id, position, rubric, standards FROM lesson_steps WHERE lesson_id=? ORDER BY position, created_at', lessonId);
 const studentsOf = classId => S.roster(classId).filter(p => p.role === 'student');
 
 /** One assigned lesson: its steps, the class's students, and every student's progress on every step. */

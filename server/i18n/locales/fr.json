@@ -5531,5 +5531,18 @@
   },
   "tts": {
     "sample": "Salut ! Je suis ton guide à l’Oomba Academy. Allons explorer, résoudre des énigmes et nous amuser ensemble !"
+  },
+  "cs": {
+    "step": {
+      "hostedLive": "Ton enseignant anime ceci en direct"
+    },
+    "review": {
+      "rubric": "Notes de la grille",
+      "notMarked": "Non noté",
+      "marksTitle": "Notes de la grille : {marks}",
+      "alsoMark": "Noter aussi ces coéquipiers",
+      "alsoMarkHint": "Ils reçoivent les mêmes notes de grille pour cette étape. Le commentaire écrit reste avec cet élève.",
+      "noHandIns": "Rien n’a encore été rendu."
+    }
   }
 }
