@@ -1014,7 +1014,7 @@ const CONFIG = { storeKey: 'data-detective-v1', progressNoun: 'cases', maxLevels
 
 /* ---------- words: English is the key; other languages come as reviewed data packs (window.CsqPacks) ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '0.0.0', PACK_SRI = {};
+const PACK_VER = '1.0.0-cec9769c', PACK_SRI = {"es":"sha384-NF5IuSuy0cLKVGuMwv0ppmsBQ3yUW+KyRRwHzRPlyC+LPcj5b0gLphl4I7UNI9eY","fr":"sha384-YPLOcvErFUPLBqie5mVTfPGDRvZ4LhOC4Yz4VcD0cklpRvBdAH7mKmyL0WtDZugA","de":"sha384-R9kHRa1fF7NSVjVK8UrXlOZWtlYfvfKU6ZwFC9Ho2zBFcfwGJBY1o7sKLr9TEmu4","it":"sha384-ygFuhqxqLg2w5jfW/MrQe7SCELFTAeVEWLFVk8k3vSDIxkEHxtkhrbT9ZZp6JIIN","pt":"sha384-fI+NOQh+wjviVtVp+ldoOkKKH8V2IqeWhFsJ78B34SjX7R4k9f+78gCi7+kbx95K","nl":"sha384-K+6M+trcJ1Njk5rYtoO1dl+OjL9rSxLLO1CYVez02lTvXavrn94iZ88sF2qgJsxz","ru":"sha384-jxZUWgXP0VuOTqziim9XDGssIhwBaJ0S2vmIlC72lM77zpmLBwpV5SbGqmJOUCGt","ja":"sha384-aB7xLHnDwR+Zo12hBeDhjhRu1+vLlKos7zCxATQPbB6d0hpTkknhAD28WFwnowxj","zh-Hant":"sha384-PPspHtUrArv2w4KY2XFA+8F7kAufixD6ILznFdJEQmmo6Z+5W+36HATkO+8i1tHq","he":"sha384-6MxSZXEU3FGHKypZ6ZFv71aEuryfyG3vcGFAVMr+cGt0U4ViVEMZuA84rS5zaNgM","ar":"sha384-YUTu1L9DxCxCCphk7/ws9DjZl4UwPrKGSokidhkUHWkiSROX9OTnkRxZetRzjSO1"};
 const realAfter = (ms, fn) => { try { return Oomba.time.real.after(ms, fn); } catch (e) { return null; } };
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);

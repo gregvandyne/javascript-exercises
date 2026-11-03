@@ -48,7 +48,7 @@ test('data-detective: kit 1.1.2 byte-exact tags, the scanner passes, the metadat
   assert.ok(META.description.length <= 600);
 });
 
-test('data-detective: the 11 non-English descriptions in the JSON l10n', { skip: !Object.keys(META.l10n || {}).length && 'l10n lands with the translation stage' }, () => {
+test('data-detective: the 11 non-English descriptions in the JSON l10n', () => {
   for (const l of ['pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) assert.ok(META.l10n[l] && META.l10n[l].description, `description in ${l}`);
 });
 
@@ -342,7 +342,7 @@ async function open({ size = { width: 844, height: 390 }, lang = 'en', params = 
     const u = route.request().url();
     if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
     if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
-    const m = /^http:\/\/game\.invalid\/vendor\/(oomba-kit\/[\w./-]+)$/.exec(u);
+    const m = /^http:\/\/game\.invalid\/vendor\/((?:oomba-kit|data\/data-detective)\/[\w./-]+)$/.exec(u);
     if (m) {
       const f = path.join(ROOT, 'public/vendor', m[1]);
       if (!fs.existsSync(f)) return route.abort();
@@ -744,7 +744,8 @@ test('data-detective: Arabic reads right to left with numbers left to right, and
     await T(frame, 'skipAnimations');
     await T(frame, 'start', { chapter: 'sort', band: '1b', level: 1, seed: 1 });
     const r = await frame.evaluate(() => ({ dir: document.getElementById('game').dir, lang: document.documentElement.lang, num: document.querySelector('td.num').dir, prog: document.getElementById('prog').dir }));
-    assert.deepEqual(r, { dir: 'rtl', lang: 'en', num: 'ltr', prog: 'ltr' });   // no Arabic pack yet: English words, mirrored chrome
+    assert.deepEqual(r, { dir: 'rtl', lang: 'ar', num: 'ltr', prog: 'ltr' });   // the Arabic pack: Arabic words, mirrored chrome, numbers left to right
+    assert.match(await frame.evaluate(() => document.getElementById('game').textContent), /[\u0600-\u06FF]{3}/, 'pack strings on the case screen');
     await fit(frame, 'sort-1 ar 390x844');
     assert.equal(await T(frame, 'solve'), true);
     await T(frame, 'start', { chapter: 'models', band: '2', level: 5, seed: 1 });
@@ -763,6 +764,22 @@ test('data-detective: Arabic reads right to left with numbers left to right, and
     await fit(frame, 'keypad ar 390x844');
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
+});
+
+test('data-detective: French comes from the pinned pack, English plays without one', { skip, timeout: 120_000 }, async () => {
+  for (const lang of ['fr', 'en']) {
+    const { ctx, frame, errors } = await open({ lang });
+    try {
+      await T(frame, 'skipAnimations');
+      await T(frame, 'start', { chapter: 'sort', band: '1b', level: 1, seed: 1 });
+      const r = await frame.evaluate(() => ({ lang: document.documentElement.lang, dir: document.getElementById('game').dir, text: document.getElementById('game').textContent }));
+      assert.equal(r.dir, 'ltr');
+      if (lang === 'fr') { assert.equal(r.lang, 'fr'); assert.match(r.text, /Indice/); assert.doesNotMatch(r.text, /Sort & Group|Class quest/); }
+      else { assert.equal(r.lang, 'en'); assert.match(r.text, /Class quest: Sort & Group/); }
+      assert.equal(await T(frame, 'solve'), true);
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
 });
 
 test('data-detective: the cover hook stages a half-solved case: Pet Parade grouped by Pet, three bars with printed values in view, Dot pleased, the claim card not yet open (it would hide the data on a card-sized frame)', { skip, timeout: 120_000 }, async () => {
