@@ -289,9 +289,9 @@ async function open({ size = { width: 390, height: 844 }, lang = 'en' } = {}) {
 }
 const T = (frame, fn, ...a) => frame.evaluate(([f, a]) => window.__brbTest[f](...a), [fn, a]);
 
-test('packet-post: in Chromium, level 1 of two chapters plays through the hooks, the label follows the grammar, phone and desktop, English and Arabic', { skip, timeout: 240_000 }, async () => {
+test('packet-post: in Chromium, level 1 of two chapters plays through the hooks, the label follows the grammar, phone and desktop, English, French and Arabic', { skip, timeout: 240_000 }, async () => {
   const LABEL = /^\d{1,2}\/\d{1,2} (levels|cases|tickets|cards), \d{1,3} stars(, \d{1,2}\/\d{1,2} checks)?$/;
-  for (const [size, lang, chapter, band] of [[{ width: 390, height: 844 }, 'en', 'packets', '1b'], [{ width: 1280, height: 800 }, 'ar', 'protocols', '2']]) {
+  for (const [size, lang, chapter, band] of [[{ width: 390, height: 844 }, 'en', 'packets', '1b'], [{ width: 390, height: 844 }, 'fr', 'protocols', '1b'], [{ width: 1280, height: 800 }, 'ar', 'protocols', '2']]) {
     const { ctx, page, frame, errors, warnings, msgs } = await open({ size, lang });
     try {
       const s0 = await T(frame, 'state');
