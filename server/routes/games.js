@@ -247,9 +247,11 @@ router.get('/play/:slug', (req, res) => {
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
   // AI voices (routes/tts.js): official games only, when TTS is on and a language is switched on; absent otherwise.
   const ttsData = ttsPlayData(u, g);
-  // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step.
+  // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step. Not for a
+  // hosted-live step (Quest Race, Would You Rather Live…): the teacher's live run writes that cell, so a hand-typed URL
+  // plays the game without the lesson context (services/progress.js hostedLive).
   const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
-  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
+  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
   const body = html`
   <div class="playbar">
     <a class="iconbtn" href="${lesson ? lesson.back : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>

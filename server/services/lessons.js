@@ -291,14 +291,16 @@ function cleanStep(u, input, old = {}) {
     template: input.template !== undefined ? clip(input.template, 20).toLowerCase() : old.template || '',
     rubric: input.rubric !== undefined ? cleanRubric(input.rubric) : old.rubric || '',
   };
-  if (v.options === null) return fail('stepOptions');
-  if (v.standards === null) return fail('stepStandards');
-  if (v.rubric === null) return fail('stepRubric');
-  if (v.template && !TEMPLATE_KEYS.includes(v.template)) return fail('stepTemplate');
+  // A field that does not belong to this kind is dropped before it is checked (a text step sent a template is not refused);
+  // on the kinds that keep it, a bad value refuses the step so a catalogue mistake shows up.
   if (kind !== 'game') { v.game_id = null; v.options = ''; }
   if (kind !== 'build') v.template = '';
   if (!STANDARDS_KINDS.includes(kind)) v.standards = '';
   if (!RUBRIC_KINDS.includes(kind)) v.rubric = '';
+  if (v.options === null) return fail('stepOptions');
+  if (v.standards === null) return fail('stepStandards');
+  if (v.rubric === null) return fail('stepRubric');
+  if (v.template && !TEMPLATE_KEYS.includes(v.template)) return fail('stepTemplate');
   if (kind === 'game') {
     if (!v.game_id) return fail('pickGame');
     const g = games.getGame(v.game_id);
@@ -527,9 +529,12 @@ export function assignUnitWithCadence(u, classId, lessonIds, { unitId = null, st
   const all = Array.isArray(lessonIds) ? [...new Set(lessonIds.map(String).filter(Boolean))] : [];
   if (!all.length || all.length > 60) return fail('badRequest');
   if (unitId) { const un = getUnit(unitId); if (!un || un.class_id !== c.id) return fail('notFound'); }
-  // An id that is no lesson takes no day; a lesson already in the class keeps its day (it is there on that day anyway).
-  const skipped = all.filter(id => !getLesson(id)).map(lessonId => ({ lessonId, code: 'notFound' }));
-  const ids = all.filter(id => getLesson(id));
+  // Only a lesson assign() will take gets a day (the same rule: this school's, and editable by the teacher or coming back
+  // after a removal); the rest are reported as not found and the following lessons keep their dates. A lesson already in
+  // the class keeps its day (it is there on that day anyway).
+  const takes = id => { const l = getLesson(id); return !!l && l.school_id === c.school_id && !!(canEditLesson(u, l) || q.get('SELECT 1 FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NOT NULL', c.id, l.id)); };
+  const ids = all.filter(takes);
+  const skipped = all.filter(id => !ids.includes(id)).map(lessonId => ({ lessonId, code: 'notFound' }));
   const days = cadenceDates(start, ids.length, cadence);
   if (!days) return fail(CADENCES.includes(cadence) ? 'badDate' : 'badCadence');
   const dd = dueDays === null || dueDays === undefined || dueDays === '' ? null : Math.floor(+dueDays);

@@ -11,10 +11,23 @@
 import { q, now, audit } from '../db.js';
 import * as S from './schools.js';
 import * as L from './lessons.js';
+import * as games from './games.js';
+import { MODES } from './classlive-access.js';
 
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
 export const PLAYED_ENOUGH = 120; // seconds of play that count a game step as done
+/** Official games a class plays only when the teacher hosts them live (the Oomba Live built-in modes and Would You Rather
+ *  Live). A lesson step on one of them says "Your teacher hosts this live" instead of Play, and its cell is written by the
+ *  live run alone (classlive-results -> gameScore with the label 'live'): a student cannot open it with the lesson context,
+ *  time it out, score it or mark it done by hand (CS Quest P5; routes/progress.js and routes/games.js refuse too). */
+export const HOSTED_LIVE = new Set([...Object.values(MODES), 'would-you-rather-live']);
+/** Is this step hosted live? Takes a joined step row (lessons.steps: game_slug / game_source) or a bare one (getStep). */
+export function hostedLive(step) {
+  if (!step || step.kind !== 'game' || !step.game_id) return false;
+  const g = 'game_slug' in step ? { slug: step.game_slug, source: step.game_source } : games.getGame(step.game_id);
+  return !!g && g.source === 'seed' && HOSTED_LIVE.has(g.slug);
+}
 const clipText = (s, n) => String(s == null ? '' : s).replace(/\r\n/g, '\n').replace(/[ \t]+/g, ' ').replace(/\n{4,}/g, '\n\n\n').trim().slice(0, n);
 
 export const get = (clId, stepId, userId) => q.get('SELECT * FROM step_progress WHERE class_lesson_id=? AND step_id=? AND user_id=?', clId, stepId, userId) || null;
@@ -51,6 +64,7 @@ const done = old => ({ status: 'done', done_at: (old && old.done_at) || now() })
 export function markDone(u, clId, stepId, isDone = true) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
   if (c.step.kind === 'question') return fail('answerFirst');
+  if (hostedLive(c.step)) return fail('notFound');   // the live run writes this cell
   const old = get(clId, stepId, u.id);
   if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { status: 'started', done_at: null }) });
   return ok({ row: upsert(clId, stepId, u.id, done(old)) });
@@ -95,19 +109,21 @@ export function quizAnswer(u, clId, stepId, i, c) {
 /** The student opened a game step's game from the lesson. */
 export function gameStarted(u, clId, stepId) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
-  if (c.step.kind !== 'game') return fail('notFound');
+  if (c.step.kind !== 'game' || hostedLive(c.step)) return fail('notFound');
   const old = get(clId, stepId, u.id);
   return ok({ row: upsert(clId, stepId, u.id, { plays: ((old && old.plays) || 0) + 1 }) });
 }
 /** Time played (the play page reports every 30 seconds); 2 minutes counts as done. */
 export function gameTime(u, clId, stepId, seconds) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
-  if (c.step.kind !== 'game') return fail('notFound');
+  if (c.step.kind !== 'game' || hostedLive(c.step)) return fail('notFound');
   const old = get(clId, stepId, u.id);
   const total = Math.min(24 * 3600, ((old && old.seconds) || 0) + Math.max(0, Math.min(60, Math.round(+seconds || 0))));
   return ok({ row: upsert(clId, stepId, u.id, { seconds: total, ...(total >= PLAYED_ENOUGH ? done(old) : {}) }) });
 }
-/** A score (best kept) or the end of a game: the step is done. score null = a game ended without a score. */
+/** A score (best kept) or the end of a game: the step is done. score null = a game ended without a score. Also how a
+ *  live run writes a hosted-live step's cell (classlive-results.js, label 'live'); the student-facing route refuses such
+ *  steps before it gets here (routes/progress.js). */
 export function gameScore(u, clId, stepId, score, label = '') {
   const c = context(u, clId, stepId); if (!c.ok) return c;
   if (c.step.kind !== 'game') return fail('notFound');
@@ -126,36 +142,50 @@ export function buildGame(u, clId, stepId, gameId) {
 // ---------------------------------------------------------------- teachers
 const managed = (u, clId) => { const cl = L.getClassLesson(clId); const c = cl && S.getClass(cl.class_id); return c && S.canManageClass(u, c) ? { cl, c } : null; };
 /** Rubric marks as stored: one character per rubric line, '0'-'3' or '-' (not marked). From an array (numbers, digit
- *  strings; null / '' / '-' = not marked) or such a string; shorter input is padded with '-'. null when malformed. */
-export function cleanMarks(marks, lines) {
+ *  strings; null / '' / '-' = not marked; undefined = unchanged) or such a string. Lines the input leaves out (a shorter
+ *  list, a form missing a line) keep what `existing` has ('-' when there is nothing), so a caller never un-marks a line by
+ *  not mentioning it. null when malformed: a value outside 0-3, or more lines than the rubric has. */
+export function cleanMarks(marks, lines, existing = '') {
   const n = Math.max(0, lines | 0);
   const list = typeof marks === 'string' ? [...marks] : Array.isArray(marks) ? marks : null;
   if (!list || list.length > n) return null;
+  const was = [...String(existing || '').padEnd(n, '-').slice(0, n)].map(ch => (/^[0-3]$/.test(ch) ? ch : '-'));
   let out = '';
-  for (const v of list) {
-    if (v === null || v === undefined || v === '' || v === '-') { out += '-'; continue; }
+  for (let i = 0; i < n; i++) {
+    const v = list[i];
+    if (v === undefined) { out += was[i]; continue; }
+    if (v === null || v === '' || v === '-') { out += '-'; continue; }
     const s = String(v).trim();
     if (!/^[0-3]$/.test(s)) return null;
     out += s;
   }
-  return out.padEnd(n, '-');
+  return out;
 }
 /** The marks a step can take: its rubric's lines (question and build steps only), else 0. */
 const rubricLines = step => (L.RUBRIC_KINDS.includes(step.kind) ? L.rubricOf(step).length : 0);
+/** The maximum number of teammates one review can mark along (a roster, never more). */
+export const ALSO_MARK_MAX = 60;
 /**
- * A teacher's review of one student's step: feedback (empty just marks it read) and, on question and build steps with a
- * rubric, a 0-3 mark per rubric line (marks: [2, 3, null, 1] or '23-1'; left out = unchanged). alsoMark: classmates who
- * get the same marks on this step (a capstone team: the captain handed the game in; the others never opened the step), a
- * row is made for them if they have none; the feedback stays with the one student. -> { ok, marks, alsoMarked: [ids] }
+ * A teacher's review of one student's step (question and build steps only). feedback: a string replaces the feedback,
+ * even '' (the form's Send with an empty box, which also marks the answer read, as always); left out (undefined) it is
+ * kept. marks, on steps with a rubric: a 0-3 mark per rubric line ([2, 3, null, 1] or '23-1'; a line left out or
+ * undefined is unchanged, null / '' / '-' un-marks it; marks left out = unchanged). reviewed_at ("the teacher has seen
+ * this") is set when feedback is sent and otherwise only on a row with no unread answer: marks alone (a bulk tool,
+ * "Also mark these teammates") never take an unread answer off the to-review list or tell the student it was read.
+ * alsoMark: up to ALSO_MARK_MAX classmates who get the same marks on this step (a capstone team: the captain handed the
+ * game in; the others never opened the step), a row is made for them if they have none; the feedback stays with the one
+ * student; nothing happens when every mark is '-'. -> { ok, marks, alsoMarked: [ids] }
  */
-export function review(u, clId, stepId, userId, feedback = '', { marks, alsoMark = [] } = {}) {
+export function review(u, clId, stepId, userId, feedback, { marks, alsoMark = [] } = {}) {
   const m = managed(u, clId); if (!m) return fail('notFound');
   const step = L.getStep(stepId); if (!step || step.lesson_id !== m.cl.lesson_id) return fail('notFound');
+  // Only question and build steps have anything to review (a text or game step row never takes feedback, as before).
+  if (!L.RUBRIC_KINDS.includes(step.kind)) return fail('notFound');
   const row = get(clId, stepId, userId);
   const lines = rubricLines(step);
   let clean = null;
   if (marks !== undefined && marks !== null) {
-    if (lines) { clean = cleanMarks(marks, lines); if (clean === null) return fail('badMarks'); }
+    if (lines) { clean = cleanMarks(marks, lines, row && row.marks); if (clean === null) return fail('badMarks'); }
     else {
       // No rubric on this step: only "nothing marked" is accepted (a form with no radios sends nothing; an API sending digits is wrong).
       const list = typeof marks === 'string' ? [...marks] : Array.isArray(marks) ? marks : null;
@@ -167,13 +197,15 @@ export function review(u, clId, stepId, userId, feedback = '', { marks, alsoMark
   if (!row && !(clean !== null && student(userId))) return fail('notFound');
   if (row && !row.answer && step.kind === 'question' && clean === null) return fail('notFound');
   const t = now();
-  upsert(clId, stepId, userId, { feedback: clipText(feedback, 2000), reviewed_at: t, reviewed_by: u.id });
+  const unread = r => !!(r && r.answer && !r.reviewed_at);
+  const seen = { reviewed_at: t, reviewed_by: u.id };
+  upsert(clId, stepId, userId, { ...(feedback !== undefined ? { feedback: clipText(feedback, 2000) } : {}), ...(feedback !== undefined || !unread(row) ? seen : {}) });
   if (clean !== null) q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', clean, clId, stepId, userId);
   const also = [];
-  if (clean !== null && lines) {
-    for (const id of [...new Set([].concat(alsoMark || []).map(String))]) {
+  if (clean !== null && lines && /[0-3]/.test(clean)) {
+    for (const id of [...new Set([].concat(alsoMark || []).map(String))].slice(0, ALSO_MARK_MAX)) {
       if (!id || id === userId || !student(id)) continue;
-      upsert(clId, stepId, id, { reviewed_at: t, reviewed_by: u.id });
+      upsert(clId, stepId, id, unread(get(clId, stepId, id)) ? {} : seen);
       q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', clean, clId, stepId, id);
       also.push(id);
     }

@@ -60,6 +60,11 @@ test('packing: o = chapter.band.mode.level.lock with empty parts, at most 40 cha
   assert.equal(PP.cleanOptions('chapter=loops&evil=1'), null, 'a step refuses unknown keys');
   assert.equal(PP.cleanOptions('band=3'), null, 'and bad values');
   assert.equal(PP.cleanOptions(`chapter=${'a'.repeat(17)}`), null);
+  assert.equal(PP.cleanOptions('chapter=loops&' + 'band=1b&'.repeat(23)), 'chapter=loops&band=1b', '198 characters of valid keys are fine');
+  assert.equal(PP.cleanOptions('chapter=loops&' + 'band=1b&'.repeat(30)), null, 'over 200 characters is refused before parsing');
+  // without mode the longest form is 25 characters, so dropping mode is the only fallback ever needed
+  assert.equal(PP.packParams({ chapter: 'a'.repeat(16), band: '1b', mode: 'b'.repeat(16), level: 30, lock: 1 }), `${'a'.repeat(16)}.1b..30.1`);
+  assert.equal(PP.packParams({ chapter: 'a'.repeat(16), band: '1b', mode: 'b'.repeat(16), level: 30, lock: 1 }).length, 25);
 });
 
 test('SDK: BRB.params is built from init.params alone, keys allow-listed, level and lock numbers, {} when absent', () => {

@@ -35,16 +35,14 @@ export function parseParams(query) {
 /** Are these params worth carrying (at least one key)? */
 export const hasParams = p => !!p && KEYS.some(k => p[k] !== undefined);
 /** The token field: "chapter.band.mode.level.lock" with empty parts, or '' when there is nothing to carry. Two 16-character
- *  ids with everything else make 41: then mode, and if need be level, are left out so chapter, band and lock still arrive. */
+ *  ids with everything else make 41: then mode is left out, and the rest always fits (chapter, band, level and lock are
+ *  at most 16 + 1 + 2 + 1 + 1 + 2 + 1 + 1 = 25 characters). */
 export function packParams(p) {
   const c = parseParams(p || {});
   if (!hasParams(c)) return '';
   const pack = o => KEYS.map(k => (o[k] === undefined ? '' : String(o[k]))).join('.');
-  for (const drop of [[], ['mode'], ['mode', 'level']]) {
-    const o = { ...c }; for (const k of drop) delete o[k];
-    const s = pack(o); if (s.length <= MAX_PACKED) return s;
-  }
-  return '';
+  const s = pack(c);
+  return s.length <= MAX_PACKED ? s : pack({ ...c, mode: undefined });
 }
 /** The token field back to params; anything malformed gives {} (never throws). */
 export function unpackParams(o) {

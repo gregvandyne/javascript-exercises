@@ -229,7 +229,8 @@ export const config = {
   liveSaveSupport: liveSaveSupport.on,
   liveHomework: liveHomework.on,
   // CS Quest (docs/cs-quest.md). QUIZ_STEPS (default on) gates quiz steps on the student lesson page and the student quiz
-  // APIs (/api/progress/:cl/:step/quiz); LIVE_HOMEWORK only gates "Set as homework" from a live results page.
+  // APIs under /api/progress/:cl/:step/quiz; LIVE_HOMEWORK only gates "Set as homework" from a live results page (and,
+  // until they move to QUIZ_STEPS, the older /api/lessons/:cl/steps/:step/quiz routes in routes/live.js).
   // CS_QUEST_BUILD_TEAMS_PER_PERIOD (1-60, default 8): how many capstone teams the plan page says can build this period
   // (services/builder-status.js builderStatus()).
   quizSteps: quizSteps.on,

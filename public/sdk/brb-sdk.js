@@ -945,7 +945,9 @@
     var out = {};
     if (!p || typeof p !== 'object') return out;
     var str = function (v) { if (typeof v === 'number' && isFinite(v)) v = String(v); return typeof v === 'string' && /^[a-z0-9-]{1,16}$/.test(v) ? v : null; };
-    var chapter = str(p.chapter), band = str(p.band), mode = str(p.mode), level = str(p.level), lock = str(p.lock);
+    // Own properties only: nothing arrives through a prototype (the server sends a plain object; this is belt and braces).
+    var own = function (k) { return Object.prototype.hasOwnProperty.call(p, k) ? p[k] : undefined; };
+    var chapter = str(own('chapter')), band = str(own('band')), mode = str(own('mode')), level = str(own('level')), lock = str(own('lock'));
     if (chapter) out.chapter = chapter;
     if (band === '1b' || band === '2') out.band = band;
     if (mode) out.mode = mode;

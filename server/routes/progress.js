@@ -25,7 +25,6 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { onLocales as ttsOnLocales } from '../services/tts.js';
 import { config } from '../config.js';
-import { MODES } from '../services/classlive-access.js';
 import { liveGameOf } from '../live/live-games.js';
 import { templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
 import { scanVersion } from '../services/scanner.js';
@@ -40,9 +39,11 @@ const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
 const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩' };
 /** Official games a class plays only when the teacher hosts them live (the Oomba Live built-in modes, Would You Rather
- *  Live among them): a lesson step on one of them shows "Your teacher hosts this live" instead of Play (CS Quest P5). */
-export const HOSTED_LIVE = new Set([...Object.values(MODES), 'would-you-rather-live']);
-const hostedLive = s => s.kind === 'game' && s.game_source === 'seed' && HOSTED_LIVE.has(s.game_slug);
+ *  Live among them): a lesson step on one of them shows "Your teacher hosts this live" instead of Play and "I played it",
+ *  and the server refuses the student's own progress calls on it: the live run writes that cell (CS Quest P5;
+ *  services/progress.js hostedLive, also used by /play in routes/games.js). */
+export const HOSTED_LIVE = P.HOSTED_LIVE;
+const hostedLive = P.hostedLive;
 /** A game step's Play link: the lesson context for the gradebook, then the step's lesson parameters (lesson_steps.options,
  *  services/play-params.js) so the game opens at the right chapter. */
 const playHref = (s, cl) => `/play/${s.game_slug}${cl ? `?lesson=${cl.id}&step=${s.id}${s.options ? `&${s.options}` : ''}` : s.options ? `?${s.options}` : ''}`;
@@ -57,10 +58,13 @@ const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ 
 // ================================================================ student actions
 router.post('/api/progress/:clid/:sid/done', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.markDone(req.user, req.params.clid, req.params.sid, b(req).done !== false && b(req).done !== '0')));
 router.post('/api/progress/:clid/:sid/answer', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.answer(req.user, req.params.clid, req.params.sid, b(req).answer)));
-/** From the play page: { event: 'start' | 'time' | 'score' | 'end', seconds, score, label }. */
+/** From the play page: { event: 'start' | 'time' | 'score' | 'end', seconds, score, label }. Never for a hosted-live
+ *  step (Quest Race, Would You Rather Live…): only the teacher's live run writes that cell (services/progress.js). */
 router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
   const { event, seconds, score, label } = b(req);
   const u = req.user, { clid, sid } = req.params;
+  const c = P.context(u, clid, sid);
+  if (!c.ok || hostedLive(c.step)) return no(req, res);
   const r = event === 'start' ? P.gameStarted(u, clid, sid) : event === 'time' ? P.gameTime(u, clid, sid, seconds)
     : event === 'score' ? P.gameScore(u, clid, sid, score, label) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null) : { ok: false, code: 'notFound' };
   send(req, res, r);
@@ -274,14 +278,16 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
 });
 
-/** Feedback and, on question / build steps with a rubric, marks: { feedback, marks: [2, 3, '-', 1] | '23-1' } or the
- *  form's mark-<i> fields; alsoMark: classmates who get the same marks (CS Quest P11). */
+/** Feedback and, on question / build steps with a rubric, marks: { feedback?, marks?: [2, 3, '-', 1] | '23-1' } or the
+ *  form's mark-<i> fields; alsoMark?: classmates who get the same marks (CS Quest P11). A field left out is left as it
+ *  is: no feedback key keeps the feedback, a line with no mark keeps its mark; '-' un-marks a line, '' clears the feedback
+ *  (the form always sends both, so the page behaves as it always did). See services/progress.js review(). */
 router.post('/api/progress/:clid/:sid/:uid/review', requireUser, (req, res) => {
   const body = b(req);
   let marks = body.marks;
   if (marks === undefined) {
     const idx = Object.keys(body).map(k => /^mark-(\d{1,2})$/.exec(k)).filter(Boolean).map(m => +m[1]);
-    if (idx.length) { marks = []; for (let i = 0; i <= Math.max(...idx); i++) marks.push(body[`mark-${i}`] === undefined ? '-' : String(body[`mark-${i}`])); }
+    if (idx.length) { marks = []; for (let i = 0; i <= Math.max(...idx); i++) marks.push(body[`mark-${i}`] === undefined ? undefined : String(body[`mark-${i}`])); }
   }
   const alsoMark = body.alsoMark === undefined ? [] : [].concat(body.alsoMark).map(String);
   const r = P.review(req.user, req.params.clid, req.params.sid, req.params.uid, body.feedback, { marks, alsoMark });
@@ -340,7 +346,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
         <textarea class="input" id="ans-${s.id}" name="answer" rows="4" maxlength="3000" placeholder="${t('progress.student.answerPlaceholder')}" required>${x ? x.answer : ''}</textarea><span class="err" id="ans-${s.id}-err"></span>
         <div class="row"><button class="btn btn-primary" type="submit">${x && x.answer ? `✏️ ${t('progress.student.updateAnswer')}` : `📨 ${t('progress.student.sendAnswer')}`}</button>${x && x.answer ? html`<span class="small muted">${t('progress.student.sentAgo', { when: f.ago(x.updated_at) })}</span>` : ''}</div>
       </form>
-      ${x && x.reviewed_at ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b>${x.feedback ? html`<p dir="auto">${x.feedback}</p>` : html`<p class="muted">${t('progress.student.readNoFeedback')}</p>`}</div>` : ''}`;
+      ${x && x.answer && x.reviewed_at ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b>${x.feedback ? html`<p dir="auto">${x.feedback}</p>` : html`<p class="muted">${t('progress.student.readNoFeedback')}</p>`}</div>` : ''}`;
     return '';
   };
   // Teachers see the lesson as students do, with nothing that saves work; a game step gets a plain Play link (no lesson
@@ -383,8 +389,10 @@ router.get('/api/progress/:clid/:sid/quiz', requireUser, quizStepsOn, (req, res)
   res.set('Cache-Control', 'no-store');
   res.json({ items: r.items, marks: r.marks });
 });
+/** A whole number as the quiz script sends it (a number or a digit string); anything else is NaN, which quizAnswer refuses. */
+const whole = v => (typeof v === 'number' || (typeof v === 'string' && /^\d{1,6}$/.test(v)) ? +v : NaN);
 router.post('/api/progress/:clid/:sid/quiz', requireUser, quizStepsOn, rateLimit('progress', 240, 60e3), (req, res) => {
-  const r = P.quizAnswer(req.user, req.params.clid, req.params.sid, +b(req).i, +b(req).c);
+  const r = P.quizAnswer(req.user, req.params.clid, req.params.sid, whole(b(req).i), whole(b(req).c));
   if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   res.json({ ok: r.right, answer: r.answer, next: r.next, score: r.score });
 });

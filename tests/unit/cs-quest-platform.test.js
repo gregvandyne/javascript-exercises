@@ -127,6 +127,20 @@ test('P2/P5 student page: Play carries the step options; live-only games show "Y
   assert.match(teacher.text, new RegExp(`href="/live\\?cl=${cl.id}&(amp;)?step=${warm.id}&(amp;)?mode=wyr"`), 'Would You Rather Live hosts as the wyr mode');
   assert.match(teacher.text, new RegExp(`href="/live\\?cl=${cl.id}&(amp;)?step=${race.id}&(amp;)?mode=quest-race"`));
   assert.doesNotMatch(teacher.text, new RegExp(`game=${wyrLive.id}`), 'never ?game= for a mode game');
+  // the server, not only the page: a hosted-live step cannot be opened with the lesson context, timed, scored or marked done by hand
+  const kidApi = as(mia);
+  assert.ok(P.hostedLive(L.getStep(race.id)) && P.hostedLive(L.steps(l.id).find(s => s.id === warm.id)) && !P.hostedLive(L.getStep(play.id)), 'bare and joined step rows');
+  let r = await kidApi(`/play/quest-race?lesson=${cl.id}&step=${race.id}`);
+  assert.equal(r.status, 200); assert.doesNotMatch(r.text, new RegExp(`"cl":"${cl.id}"`), 'the game opens without the lesson context');
+  r = await kidApi(`/play/robo-route?lesson=${cl.id}&step=${play.id}`);
+  assert.match(r.text, new RegExp(`"cl":"${cl.id}"`), 'an ordinary game step keeps it');
+  for (const body of [{ event: 'start' }, { event: 'time', seconds: 30 }, { event: 'score', score: 9 }, { event: 'end', score: 9 }]) assert.equal((await kidApi(`/api/progress/${cl.id}/${race.id}/game`, { method: 'POST', body })).status, 404, body.event);
+  assert.equal((await kidApi(`/api/progress/${cl.id}/${race.id}/done`, { method: 'POST', body: { done: 1 } })).status, 404);
+  assert.equal(P.markDone(mia, cl.id, race.id).code, 'notFound'); assert.equal(P.gameTime(mia, cl.id, race.id, 30).code, 'notFound'); assert.equal(P.gameStarted(mia, cl.id, race.id).code, 'notFound');
+  assert.equal(P.get(cl.id, race.id, mia.id), null, 'no row was made');
+  assert.ok(P.gameScore(mia, cl.id, race.id, 12, 'live').ok, 'the live run (server side) still writes the cell');
+  assert.equal(P.get(cl.id, race.id, mia.id).status, 'done');
+  assert.equal((await kidApi(`/api/progress/${cl.id}/${play.id}/game`, { method: 'POST', body: { event: 'time', seconds: 30 } })).status, 200, 'ordinary steps as before');
   L.unassign(ana, cl.id);
 });
 
@@ -285,6 +299,59 @@ test('P11 rubric marks: 0-3 per line on question and build steps, teammates get 
   L.unassign(ana, cl.id);
 });
 
+test('P11 marks are not a reading: alsoMark and marks-only leave unread answers waiting; feedback left out is kept; shorter marks merge; nothing marked marks nobody', async () => {
+  const l = L.createLesson(ana, oak.id, { title: 'Own words' }).lesson;
+  const ask = L.addStep(ana, l.id, { kind: 'question', body: 'In your own words', rubric: [{ line: 'Explains' }, { line: 'Example' }] }).step;
+  const cl = L.assign(ana, cls.id, l.id).classLesson;
+  assert.ok(P.answer(mia, cl.id, ask.id, 'Mia says').ok); assert.ok(P.answer(leo, cl.id, ask.id, 'Leo says').ok);
+  const toRead = () => (P.toReadByLesson(cls.id).find(r => r.cl === cl.id) || { n: 0 }).n;
+  const url = who => `/api/progress/${cl.id}/${ask.id}/${who.id}/review`;
+  assert.equal(toRead(), 2);
+  const teacher = as(ana);
+  let x = await teacher(url(mia), { method: 'POST', body: { feedback: 'Nice', 'mark-0': '3', 'mark-1': '2', alsoMark: [leo.id, kim.id] } });
+  assert.equal(x.status, 200, x.text); assert.deepEqual(x.json.alsoMarked.sort(), [leo.id, kim.id].sort());
+  assert.equal(toRead(), 1, "Leo's unread answer still waits for the teacher");
+  assert.equal(P.firstNewAnswers(cls.id)[`${leo.id}:${cl.id}`], ask.id);
+  assert.equal(P.lessonProgress(cl.id).students.find(p => p.id === leo.id).toRead, 1);
+  assert.equal(P.classProgress(cls.id).toRead, 1);
+  const leoRow = P.get(cl.id, ask.id, leo.id); assert.equal(leoRow.marks, '32'); assert.equal(leoRow.reviewed_at, null, 'marks copied, the answer not read');
+  assert.doesNotMatch((await as(leo)(`/class/${cls.id}/lessons/${cl.id}`)).text, /Your teacher has seen your answer/);
+  const kimRow = P.get(cl.id, ask.id, kim.id); assert.equal(kimRow.marks, '32'); assert.equal(kimRow.answer, ''); assert.equal(kimRow.status, 'started');
+  assert.doesNotMatch((await as(kim)(`/class/${cls.id}/lessons/${cl.id}`)).text, /Your teacher has seen your answer|💬 Feedback/, 'no answer: no feedback block');
+  assert.match((await as(mia)(`/class/${cls.id}/lessons/${cl.id}`)).text, /Nice/);
+  // marks alone (no feedback key): the marks change, an unread answer stays unread, the feedback is kept
+  x = await teacher(url(leo), { method: 'POST', body: { marks: ['1', '1'] } });
+  assert.equal(x.status, 200); assert.equal(x.json.marks, '11'); assert.equal(P.get(cl.id, ask.id, leo.id).reviewed_at, null); assert.equal(toRead(), 1);
+  assert.ok(P.review(ana, cl.id, ask.id, leo.id, undefined, { marks: [2, 2] }).ok); assert.equal(P.get(cl.id, ask.id, leo.id).reviewed_at, null, 'the service too');
+  x = await teacher(url(mia), { method: 'POST', body: { marks: ['1', '1'] } });
+  assert.equal(x.status, 200); assert.equal(P.get(cl.id, ask.id, mia.id).feedback, 'Nice', 'feedback left out = kept');
+  // a marks-only row for a student with no answer never says the teacher has seen an answer
+  const zoe = S.createSchoolAccount(ana, oak.id, { rosterName: 'Zoe Pupil' }).user; S.addToClass(ana, cls.id, zoe.id);
+  assert.ok(P.review(ana, cl.id, ask.id, zoe.id, undefined, { marks: [1, 1] }).ok);
+  assert.doesNotMatch((await as(zoe)(`/class/${cls.id}/lessons/${cl.id}`)).text, /Your teacher has seen your answer|💬 Feedback/);
+  // the form's Send with an empty box still marks the answer read and clears the feedback, as it always did
+  x = await teacher(url(leo), { method: 'POST', body: { feedback: '', 'mark-0': '1', 'mark-1': '1' } });
+  assert.equal(x.status, 200); assert.ok(P.get(cl.id, ask.id, leo.id).reviewed_at); assert.equal(toRead(), 0);
+  assert.match((await as(leo)(`/class/${cls.id}/lessons/${cl.id}`)).text, /Your teacher has seen your answer/);
+  // a shorter list, or a form missing a line, keeps the other lines; '-' un-marks one
+  x = await teacher(url(mia), { method: 'POST', body: { marks: ['2'] } }); assert.equal(x.json.marks, '21');
+  x = await teacher(url(mia), { method: 'POST', body: { 'mark-1': '3' } }); assert.equal(x.json.marks, '23');
+  x = await teacher(url(mia), { method: 'POST', body: { marks: ['-'] } }); assert.equal(x.json.marks, '-3');
+  assert.equal(P.cleanMarks([undefined, 2], 2, '1-'), '12'); assert.equal(P.cleanMarks([], 2, '13'), '13'); assert.equal(P.cleanMarks([null], 2, '13'), '-3');
+  assert.equal(P.cleanMarks([], 2, 'x9'), '--', 'only marks are kept from what is stored'); assert.equal(P.cleanMarks([1, 2, 3], 2, ''), null);
+  // nothing marked + alsoMark: nobody else gets a row; the list is capped at 60
+  x = await teacher(url(mia), { method: 'POST', body: { marks: ['-', '-'], alsoMark: [kim.id, zed.id] } });
+  assert.equal(x.status, 200); assert.deepEqual(x.json.alsoMarked, []);
+  const r = P.review(ana, cl.id, ask.id, mia.id, undefined, { marks: [1, 1], alsoMark: Array.from({ length: P.ALSO_MARK_MAX }, (_, i) => `ghost${i}`).concat(kim.id) });
+  assert.ok(r.ok); assert.deepEqual(r.alsoMarked, [], 'the 61st id is never looked at');
+  assert.deepEqual(P.review(ana, cl.id, ask.id, mia.id, undefined, { marks: [1, 1], alsoMark: Array.from({ length: P.ALSO_MARK_MAX - 1 }, (_, i) => `ghost${i}`).concat(kim.id) }).alsoMarked, [kim.id]);
+  // a text step row never takes feedback (as before P11)
+  const txt = L.addStep(ana, l.id, { kind: 'text', body: 'Read' }).step; assert.ok(P.markDone(mia, cl.id, txt.id).ok);
+  assert.equal(P.review(ana, cl.id, txt.id, mia.id, 'x').code, 'notFound');
+  S.removeFromClass(ana, cls.id, zoe.id);
+  L.unassign(ana, cl.id);
+});
+
 test('P17 cadence dates and assignUnitWithCadence: opens_at per lesson, due the day before the next opens (last +7), or dueDays', () => {
   const D = 86400e3, day = s => Date.parse(`${s}T00:00:00Z`);
   assert.deepEqual(L.cadenceDates('2026-01-05', 3, 'daily'), [day('2026-01-05'), day('2026-01-06'), day('2026-01-07')]);
@@ -303,8 +370,14 @@ test('P17 cadence dates and assignUnitWithCadence: opens_at per lesson, due the 
   assert.equal(L.assignUnitWithCadence(ana, uc.id, [a.id], { cadence: 'monthly' }).code, 'badCadence');
   assert.equal(L.assignUnitWithCadence(ana, uc.id, [a.id], { start: 'not a day' }).code, 'badDate');
   assert.equal(L.assignUnitWithCadence(ana, uc.id, [a.id], { start: '2026-02-02', dueDays: -1 }).code, 'badDate');
-  const r = L.assignUnitWithCadence(ana, uc.id, [a.id, b.id, 'missing', c.id, c.id], { unitId: unit.id, start: '2026-02-02', cadence: 'twice-weekly' });
-  assert.ok(r.ok); assert.deepEqual(r.skipped, [{ lessonId: 'missing', code: 'notFound' }], 'an unknown id takes no day; a repeated id counts once');
+  assert.equal(L.assignUnitWithCadence(ana, uc.id, [a.id], { start: '2026-02-02', dueDays: 366 }).code, 'badDate');
+  const bensUnit = L.createUnit(ben, other.id, 'Ben unit').unit;
+  assert.equal(L.assignUnitWithCadence(ana, uc.id, [a.id], { unitId: bensUnit.id, start: '2026-02-02' }).code, 'notFound', 'a unit of another class');
+  assert.deepEqual(L.cadenceDates(day('2026-01-05') + 3600e3, 2, 'daily'), [day('2026-01-05'), day('2026-01-06')], 'a numeric start is cut to its day');
+  // a lesson that exists but that assign() would refuse (a colleague's private lesson) takes no day either: the next lesson keeps its date
+  const bensOwn = L.createLesson(ben, oak.id, { title: 'Ben private' }).lesson;
+  const r = L.assignUnitWithCadence(ana, uc.id, [a.id, b.id, 'missing', bensOwn.id, c.id, c.id], { unitId: unit.id, start: '2026-02-02', cadence: 'twice-weekly' });
+  assert.ok(r.ok); assert.deepEqual(r.skipped, [{ lessonId: 'missing', code: 'notFound' }, { lessonId: bensOwn.id, code: 'notFound' }], 'an unknown or refused id takes no day; a repeated id counts once');
   assert.deepEqual(r.assigned.map(x => [x.opensAt, x.dueAt]), [[day('2026-02-02'), day('2026-02-04')], [day('2026-02-05'), day('2026-02-08')], [day('2026-02-09'), day('2026-02-16')]], 'due the day before the next opens; the last a week on');
   const rows = L.classLessons(uc.id);
   assert.deepEqual(rows.map(x => [x.title, x.opens_at, x.due_at, x.unit_id]), [['U1 1.1', day('2026-02-02'), day('2026-02-04'), unit.id], ['U1 1.2', day('2026-02-05'), day('2026-02-08'), unit.id], ['U1 1.3', day('2026-02-09'), day('2026-02-16'), unit.id]]);
@@ -334,7 +407,39 @@ test('P18 builderStatus: resting without a key or at the budget cap; on otherwis
     s = builderStatus(Date.parse('2031-05-07T01:00:00Z'));
     assert.deepEqual([s.on, s.why, s.resetsAt], [false, 'monthly', Date.UTC(2031, 5, 1)], 'the month spent: back on the 1st');
   } finally { config.anthropicKey = ''; }
+  // a school plan pays into the paid pool: the Builder stays on while the free pool rests; the site-wide hard ceiling stops both
+  config.anthropicKey = 'test-key';
+  aiBudget.registerPaidBudget('csq-test', () => 25);
+  try {
+    const d2 = '2032-01-05';
+    aiBudget.recordUsage('claude-sonnet-5-5', { output_tokens: 10_000_000 }, d2);   // the free pool's day is spent ($100)
+    s = builderStatus(Date.parse(`${d2}T10:00:00Z`));
+    assert.deepEqual([s.on, s.state, s.why, s.resetsAt, s.pools], [true, 'on', null, null, { free: false, paid: true }]);
+    const hardWas = config.aiHardMonthlyUsd; config.aiHardMonthlyUsd = 50;
+    try {
+      s = builderStatus(Date.parse('2032-01-06T10:00:00Z'));   // the next day: the free pool's own day is clean, but the month is over the hard ceiling
+      assert.deepEqual([s.on, s.why, s.resetsAt, s.pools], [false, 'hard', Date.UTC(2032, 1, 1), { free: false, paid: false }]);
+    } finally { config.aiHardMonthlyUsd = hardWas; }
+  } finally { aiBudget.registerPaidBudget('csq-test', () => 0); config.anthropicKey = ''; }
   const was = config.csQuestBuildTeamsPerPeriod;
   config.csQuestBuildTeamsPerPeriod = 12;
   try { assert.equal(builderStatus().teamsPerPeriod, 12); } finally { config.csQuestBuildTeamsPerPeriod = was; }
+});
+
+test('migration 0044 adds each column once: run twice on a pre-CS-Quest schema it is a no-op the second time, and the columns are empty by default', async () => {
+  const { MIGRATIONS } = await import('../../server/db.js');
+  const Database = (await import('better-sqlite3')).default;
+  const conn = new Database(':memory:');
+  conn.exec(`CREATE TABLE lessons (id TEXT PRIMARY KEY, title TEXT NOT NULL);
+    CREATE TABLE lesson_steps (id TEXT PRIMARY KEY, lesson_id TEXT NOT NULL, kind TEXT NOT NULL, items TEXT NOT NULL DEFAULT '');`);
+  const m = MIGRATIONS.find(x => x[0] === '0044_cs_quest_steps');
+  assert.ok(m && m[1] === '' && typeof m[2] === 'function', 'a function migration with no SQL');
+  const cols = tbl => conn.prepare(`PRAGMA table_info(${tbl})`).all().map(c => c.name);
+  m[2](conn); m[2](conn);
+  assert.deepEqual(cols('lesson_steps'), ['id', 'lesson_id', 'kind', 'items', 'options', 'standards', 'template', 'rubric'], 'each column once');
+  assert.deepEqual(cols('lessons'), ['id', 'title', 'template_key', 'template_version']);
+  conn.exec("INSERT INTO lesson_steps(id, lesson_id, kind) VALUES ('s', 'l', 'text'); INSERT INTO lessons(id, title) VALUES ('l', 'L')");
+  assert.deepEqual(conn.prepare('SELECT options, standards, template, rubric FROM lesson_steps').get(), { options: '', standards: '', template: '', rubric: '' }, 'empty = today\'s behaviour');
+  assert.deepEqual(conn.prepare('SELECT template_key, template_version FROM lessons').get(), { template_key: '', template_version: 0 });
+  conn.close();
 });
