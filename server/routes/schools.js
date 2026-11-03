@@ -356,7 +356,7 @@ router.get('/teach', requireUser, (req, res) => {
   const canCreate = schools.filter(x => S.canCreateClass(u, x.id));
   const admins = schools.filter(x => S.canManageSchool(u, x.id));
   const body = html`
-  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${makeGameBtn(t)}${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${t('school.teach.manage', { school: x.name })}</a>`)}</div></div>
+  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a><a class="btn" href="/teach/cs-quest">💻 ${t('cs.program.title')}</a>${makeGameBtn(t)}${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${t('school.teach.manage', { school: x.name })}</a>`)}</div></div>
   ${admins.map(x => teachPlanCard(req, x))}
   ${schools.map(x => askPanel(req, x))}
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<div class="panel classcard">

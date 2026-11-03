@@ -244,7 +244,7 @@ export function materialise(u, schoolId, key, { folderId = null, again = false }
   if (!tpl || !u || !schoolId || !isStaffOf(u, schoolId)) return fail('notFound');
   if (!again) {
     const have = copiesOf(u, schoolId, tpl.key).find(c => c.template_version === tpl.version);
-    if (have) return ok({ lesson: have, created: false, steps: L.steps(have.id), sets: setsOf(u, tpl), notes: [] });
+    if (have) return ok({ lesson: have, created: false, steps: L.steps(have.id), sets: derivedSetsOf(u, tpl), notes: [] });
   }
   const notes = [];
   try {
@@ -263,8 +263,8 @@ export function materialise(u, schoolId, key, { folderId = null, again = false }
     throw e;
   }
 }
-/** The teacher's derived sets for a lesson file, by title (null where there is none yet). */
-function setsOf(u, tpl) { const t = setTitles(tpl); return { warmup: tpl.warmup ? findSet(u, t.warmup) : null, exit: findSet(u, t.exit), review: findSet(u, t.review) }; }
+/** The teacher's derived sets for a lesson file, by title: { warmup, exit, review } (null where there is none yet). */
+export function derivedSetsOf(u, tpl) { const t = setTitles(tpl); return { warmup: tpl.warmup ? findSet(u, t.warmup) : null, exit: findSet(u, t.exit), review: findSet(u, t.review) }; }
 /** Several keys in order (a unit, a path): each through materialise(); a failure skips that key and the rest go on.
  *  -> { ok: true, lessons: [{ key, lesson, created, notes }], skipped: [{ key, code }] } */
 export function materialiseMany(u, schoolId, keys, opts = {}) {

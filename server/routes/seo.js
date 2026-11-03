@@ -48,6 +48,8 @@ export function sitemapEntries() {
     { path: '/', langs: langsWithKey('home.intro.heading'), lastmod: newest ? day(newest) : null, images: ['/og/site.jpg'] },
     { path: '/teachers', langs: langsWithKey('teachers.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] },
     ...(liveOn() ? [{ path: '/teachers/live', langs: langsWithKey('teachersLive.h1'), lastmod: CONTENT_UPDATED, images: [fs.existsSync(new URL('../../public/og/teachers-live.jpg', import.meta.url)) ? '/og/teachers-live.jpg' : '/og/teachers.jpg'] }] : []),
+    // The CS Quest program page (routes/cs-quest.js): English-first copy under teachers.cs.*, so hreflang lists only the languages that have it.
+    { path: '/teachers/cs-quest', langs: langsWithKey('teachers.cs.h1'), lastmod: CONTENT_UPDATED, images: [fs.existsSync(new URL('../../public/og/teachers-cs-quest.jpg', import.meta.url)) ? '/og/teachers-cs-quest.jpg' : '/og/teachers.jpg'] },
     { path: '/learn', langs: langsWithKey('learn.index.h1'), lastmod: CONTENT_UPDATED },
     ...HUBS.map(h => ({ path: `/learn/${h.slug}`, langs: langsWithKey(`learn.hubs.${h.key}.h1`), lastmod: CONTENT_UPDATED })),
     ...list.map(g => {

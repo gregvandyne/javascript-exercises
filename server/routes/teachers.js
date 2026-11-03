@@ -341,6 +341,11 @@ const builder = (req, t) => html`<section class="panel" id="how" aria-labelledby
   <section class="panel" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'learn.hubs.makeAGame.safe.h', {}, ' id="safe-h"')}${el(t, 'p', 'learn.hubs.makeAGame.safe.p')}
     <p>${t.own('learn.hubs.makeAGame.safeLink') ? html`<a href="${lp(req, '/parents/ai-builder-safety')}">${t('learn.hubs.makeAGame.safeLink')}</a> · ` : ''}<a href="${lp(req, '/safety')}">${t('learn.safetyLink')}</a></p></section>`;
 
+/** The computer-science page: the four games are chapters of CS Quest, the teacher program (hub.extra === 'cs'). */
+const csTeaser = (req, t) => html`<section class="panel" id="cs-quest" aria-labelledby="csq-h">${el(t, 'h2', 'learn.hubs.cs.program.h', {}, ' id="csq-h"')}${el(t, 'p', 'learn.hubs.cs.program.p')}
+    <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `learn.hubs.cs.program.li${n}`))}</ul>
+    <p><a class="btn btn-primary" href="${lp(req, '/teachers/cs-quest')}">💻 ${t('learn.hubs.cs.program.link')}</a></p></section>`;
+
 /** "Using this in class? See Oomba Academy for teachers." on the subject, age and game pages, for signed-out visitors
  *  and guests (a teacher who found a game from a search); empty for anyone with an account, and in a language that
  *  hasn't got the sentence yet (a translated page stays in one language). */
@@ -411,6 +416,7 @@ router.get('/learn/:hub', (req, res) => {
     </section>
     ${hub.extra === 'builder' ? builder(req, t) : html`<section class="lp-sec" aria-label="${t('learn.gamesHeading')}">${list.length ? list.map(gameItem) : html`<p class="notice">${t('learn.noGames')}</p>`}</section>`}
     ${hub.extra === 'tracks' ? tracks(t) : ''}
+    ${hub.extra === 'cs' ? csTeaser(req, t) : ''}
     <section class="panel" id="classroom" aria-labelledby="cls-h">${el(t, 'h2', 'learn.tipsHeading', {}, ' id="cls-h"')}${el(t, 'p', `${k}.tips`)}</section>
     ${HOME_TIPS.includes(hub.key) && t.own(`${k}.home`) ? html`<section class="panel" id="home" aria-labelledby="home-h">${el(t, 'h2', 'learn.homeHeading', {}, ' id="home-h"')}${el(t, 'p', `${k}.home`)}</section>` : ''}
     ${faq.markup}
