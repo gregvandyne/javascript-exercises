@@ -183,7 +183,7 @@ function rng(seed) {
   return { float: f, int: (lo, hi) => lo + Math.floor(f() * (hi - lo + 1)), pick: arr => arr[Math.floor(f() * arr.length)], chance: p => f() < p,
     shuffle(arr) { const x = arr.slice(); for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(f() * (i + 1)); const t = x[i]; x[i] = x[j]; x[j] = t; } return x; } };
 }
-function seedOf(s) { let h = 0x811c9dc5; const str = String(s); for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); } return h >>> 0; }
+function seedOf(s) { let h = 0x811c9dc5; const str = String(s); for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x1000193); } return h >>> 0; }
 const PICTURES = ['apple', 'cupcake', 'melon', 'cookie', 'grapes', 'banana', 'ufo', 'sandcastle', 'tower', 'globe', 'schoolbag', 'pumpkin'];
 const MODES = { 0: 'play', 2: 'wheel', 3: 'projector' };
 const lid = (a, b) => a + '-' + b;
