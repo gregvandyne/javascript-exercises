@@ -77,7 +77,7 @@ router.get('/g/:slug', (req, res) => {
   <article>
     ${crumbs ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}" style="margin-bottom:var(--s3)"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
     <div class="gamehero">
-      <div style="position:relative">${coverArt(d, '', { eager: true })}</div>
+      <div class="gh-cover" style="position:relative">${coverArt(d, '', { eager: true })}</div>
       <div>
         <h1>${g.title}</h1>
         ${byGrownup ? html`<span class="person ownerchip ownerchip-grownup">${avatar(owner, 32)}<span class="nm"><bdi>${owner.display_name}</bdi></span><span class="gu-tag"${fbl('game.grownupBuilder')}>🧑 ${t('game.grownupBuilder')}</span></span>`
@@ -93,14 +93,14 @@ router.get('/g/:slug', (req, res) => {
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="/play/${g.slug}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
           ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">📡 ${t('live.entry.hostLive')}</a>` : ''}
         </div>
-        <div class="quietacts">
+        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
+      </div>
+      <div class="quietacts">
           ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
           <button class="qact" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
           ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : ''}
-          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t('game.makeLike')}</a>`}
+          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t.own('game.makeLikeShort') ? t('game.makeLikeShort') : t('game.makeLike')}</a>`}
         </div>
-        ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
-      </div>
     </div>
     <div class="grid2">
       <div class="stack">

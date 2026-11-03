@@ -1090,6 +1090,7 @@
       "pickReason": "Choisis une raison."
     },
     "makeLike": "Crée un jeu comme celui-ci",
+    "makeLikeShort": "Fais-en un pareil",
     "grownupBuilder": "Créateur adulte"
   },
   "play": {

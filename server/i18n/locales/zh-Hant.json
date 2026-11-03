@@ -1090,6 +1090,7 @@
       "pickReason": "請選一個原因。"
     },
     "makeLike": "做一個像這樣的遊戲",
+    "makeLikeShort": "做一個類似的",
     "grownupBuilder": "大人製作者"
   },
   "play": {

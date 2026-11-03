@@ -631,6 +631,7 @@
   "learn.index.description": "Meta description for search engines, max ~155 chars.",
   "learn.inClass": "Small line on subject, age and game pages, shown to visitors who are not signed in (often a teacher arriving from a search). {href} is the teacher page.",
   "game.makeLike": "Button on a game's page, max ~24 chars: opens the Builder, where a kid can make their own game.",
+  "game.makeLikeShort": "Short form of game.makeLike for the one-line row under Play on phones, max ~18 chars ('make one like this').",
   "family.signup.signInName": "Label of the name field on the parents' (grown-up) sign-up and sign-in forms. Unlike kids, grown-ups may use their real name.",
   "family.signup.signInNameHint": "Hint under the parents' sign-up name field. Only letters A–Z, digits and _ work (no spaces, no accents): say so plainly in your language.",
   "teachers.setup.lead": "Intro to the \"Set up my school\" form on the teachers page, read by teachers and school leaders (adults). \"1 school day\" means one working day of the school week.",
