@@ -12,7 +12,7 @@
     padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
     box-sizing: border-box; gap: 8px; pointer-events: auto; font-size: calc(16px * var(--ok-ts, 1)); }
   #game.proj { font-size: calc(21px * var(--ok-ts, 1)); }
-  .bar { display: flex; align-items: center; gap: 8px; min-height: 48px; flex: none; flex-wrap: wrap; }
+  .bar { display: flex; align-items: center; gap: 6px; min-height: 48px; flex: none; flex-wrap: wrap; }
   .bar .sp { flex: 1; min-width: 0; }
   .pill { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge);
     font-weight: 800; font-size: 1em; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
@@ -28,7 +28,8 @@
   .btn svg { width: 22px; height: 22px; }
   .btn.hot { background: var(--dd-hot); color: var(--dd-ink); }
   .btn.go { background: var(--dd-go); color: var(--dd-ink); }
-  .btn.quiet { box-shadow: none; opacity: .92; }
+  .btn.quiet { box-shadow: none; }
+  .btn.wait { background: var(--ok-card); color: var(--ok-text); border-style: dashed; box-shadow: none; }
   .btn[aria-pressed="true"], .chip[aria-pressed="true"] { background: var(--dd-spark); color: var(--dd-ink); }
   .btn:disabled { opacity: .5; cursor: default; }
   .btn:active, .ibtn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ok-edge); }
@@ -48,16 +49,20 @@
   .tile small { display: block; font-weight: 700; opacity: .85; font-size: .9em; }
   .tile .stars { display: inline-flex; gap: 2px; margin-top: 2px; }
   .tile .stars svg { width: 18px; height: 18px; }
-  .tile.other { opacity: .78; }
-  .tile.soon { opacity: .55; cursor: default; }
+  .tile.other { box-shadow: none; }
+  .tile.other .pic, .tile.soon .pic { filter: saturate(.2); }
+  .tile.soon { cursor: default; border-style: dashed; box-shadow: none; }
+  .tile.soon b, .tile.soon small { opacity: .62; }
   .silver svg { filter: saturate(0) brightness(1.15); }
 
   /* a case */
   #play { justify-content: flex-start; align-items: stretch; }
-  .case { flex: 1; min-height: 0; display: grid; gap: 10px; grid-template-rows: minmax(0, 1fr) auto; }
-  @media (orientation: landscape) and (min-width: 700px) { .case { grid-template-rows: none; grid-template-columns: minmax(0, 11fr) minmax(300px, 9fr); } }
-  .view { min-height: 0; min-width: 0; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 20px; }
-  .work { min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: auto; }
+  /* portrait: the data view on top (at most 55% of the height, it scrolls inside), the work panel below; landscape: side by side */
+  .case { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+  .view { flex: 0 0 auto; max-height: 55%; min-height: 150px; min-width: 0; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 20px; }
+  .view > * { flex: none; }
+  .work { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: auto; padding-bottom: 4px; }
+  @media (orientation: landscape) and (min-width: 700px) { .case { flex-direction: row; } .view { flex: 11 1 0; max-height: none; } .work { flex: 9 1 0; min-width: 300px; } }
   .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .chip { font: inherit; font-weight: 800; min-height: 48px; padding: 6px 16px; border-radius: 999px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
     box-shadow: 0 3px 0 var(--ok-edge); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
@@ -96,28 +101,36 @@
   .row.proved { background: var(--dd-go); color: var(--dd-ink); }
   .row.pick { background: var(--dd-glow); }
   .num { font-variant-numeric: tabular-nums; }
-  .bars { display: flex; align-items: flex-end; gap: 6px; min-height: 180px; height: 100%; padding: 6px 4px 0; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); flex: 1; }
-  .barbtn { flex: 1 1 0; min-width: 44px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; padding: 4px 2px; border: 0; border-radius: 10px; background: transparent; color: var(--ok-text); font: inherit; cursor: pointer; }
-  .barbtn .barv { font-weight: 900; font-size: 1em; }
-  .barbtn .fill { width: 100%; max-width: 64px; min-height: 4px; height: calc(var(--h, 0) * 1%); background: var(--dd-bar); border: 3px solid var(--ok-edge); border-radius: 10px 10px 0 0; box-sizing: border-box; transition: height .3s ease; }
-  .barbtn:nth-child(2n) .fill { background: var(--dd-bar2); }
-  .barbtn.proved .fill { background: var(--dd-go-solid); }
-  .barbtn.pick .fill { outline: 4px solid var(--dd-glow); }
-  .barbtn .barl { font-weight: 800; font-size: .85em; border-top: 3px solid var(--ok-edge); width: 100%; text-align: center; padding-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: clamp(170px, 36vh, 420px); padding: 6px 4px 0; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); box-sizing: border-box; }
+  .barcol { flex: 1 1 0; min-width: 44px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; padding: 4px 2px 0; border-radius: 10px; cursor: pointer; }
+  .barcol .barv { font-weight: 900; font-size: 1em; }
+  .barcol .fill { width: 100%; max-width: 64px; min-height: 4px; height: calc(var(--h, 0) * 1%); background: var(--dd-bar); border: 3px solid var(--ok-edge); border-radius: 10px 10px 0 0; box-sizing: border-box; transition: height .3s ease; }
+  .barcol:nth-child(2n) .fill { background: var(--dd-bar2); }
+  .barcol.proved .fill { background: var(--dd-go-solid); }
+  .barcol.proved .barbtn { background: var(--dd-go); }
+  .barcol.lit .fill { box-shadow: 0 0 0 5px var(--dd-glow); }
+  .barbtn { width: 100%; min-height: 44px; margin: 0; padding: 4px 2px; border: 0; border-top: 3px solid var(--ok-edge); border-radius: 0 0 8px 8px; background: transparent; color: var(--ok-text); font: inherit; cursor: pointer; display: grid; place-items: center; }
+  .barbtn .barl { font-weight: 800; font-size: .85em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .picto { display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-end; gap: 2px; width: 100%; flex: 1; }
   .picto svg { width: 20px; height: 20px; }
   .scale { margin: 0; font-weight: 700; font-size: .9em; opacity: .85; }
   .steps { display: grid; gap: 6px; }
   .step { display: grid; grid-template-columns: minmax(0, 1fr) 48px 48px 48px; align-items: center; gap: 6px; padding: 2px 6px; border-radius: 14px; background: var(--ok-card); border: 3px solid var(--ok-edge); }
   .step b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .steplab { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; padding: 4px 0; }
+  .steplab small { font-weight: 700; opacity: .85; font-size: .85em; }
   .step .n { text-align: center; font-weight: 900; font-size: 1.1em; }
   .step .ibtn { width: 48px; height: 48px; box-shadow: none; }
   .slide { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 16px; background: var(--ok-card); border: 3px solid var(--ok-edge); }
-  .slide input[type=range] { width: 100%; height: 48px; margin: 0; accent-color: var(--dd-bar); cursor: pointer; }
-  .slide input[type=range]::-webkit-slider-thumb { width: 48px; height: 48px; }
+  .slide input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 48px; margin: 0; background: transparent; cursor: pointer; }
+  .slide input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 99px; background: var(--dd-tile); border: 3px solid var(--ok-edge); }
+  .slide input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; margin-top: -18px; border-radius: 50%; background: var(--dd-bar); border: 3px solid var(--ok-edge); box-shadow: 0 3px 0 var(--ok-edge); }
+  .slide input[type=range]::-moz-range-track { height: 14px; border-radius: 99px; background: var(--dd-tile); border: 3px solid var(--ok-edge); }
+  .slide input[type=range]::-moz-range-thumb { width: 44px; height: 44px; border-radius: 50%; background: var(--dd-bar); border: 3px solid var(--ok-edge); }
   .slide .v { font-weight: 900; font-size: 1.2em; text-align: center; }
   .rowpanel { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; border-radius: 16px; border: 3px dashed var(--ok-edge); background: var(--ok-card); }
   .rowpanel p { margin: 0; width: 100%; font-weight: 800; }
+  .rowpanel .btn { flex: 1 1 40%; padding-inline: 10px; }
   .ribbon { margin: 0; font-weight: 900; font-size: 1em; padding: 4px 12px; border-radius: 999px; background: var(--dd-spark); color: var(--dd-ink); display: inline-block; }
 
   /* own modal (quest card, keypad, end card) */
@@ -657,7 +670,7 @@ const VARS = { hot: C('hot'), go: C('go', 'light'), 'go-solid': C('go'), spark: 
 for (const k in VARS) if (VARS[k]) document.documentElement.style.setProperty('--dd-' + k, VARS[k]);
 try { Oomba.ui.root().appendChild($('game')); } catch (e) { /* keep it in the body */ }
 const reduced = () => { try { return !!Oomba.settings.reduced; } catch (e) { return false; } };
-const syncMotion = () => $('game').classList.toggle('ok-rm', reduced());
+const syncMotion = () => { $('game').classList.toggle('ok-rm', reduced()); if (S.screen === 'play') snapRows(); };   // text size changes the row height too
 try { Oomba.settings.on('change', syncMotion); } catch (e) { /* ignore */ }
 function sfx(name) { try { Oomba.sfx(name, { caption: false }); } catch (e) { /* ignore */ } }
 function icon(name, size = 24) { try { return Oomba.icon(name, { size }); } catch (e) { return ''; } }
@@ -817,9 +830,22 @@ function renderView() {
   if (view === 'table' && level.rows) v.appendChild(tableView(level, st, g));
   else if (view === 'table' && level.cats) v.appendChild(seriesTable(level, st, g));
   else if (view === 'group' || view === 'bar' || view === 'picto') v.appendChild(barsView(level, st, g, view));
-  if (level.cats && level.build && view === 'bar') v.appendChild(seriesTable(level, st, g, true));
-  if (level.rows && (view === 'bar' || view === 'picto') && level.groupBy) { /* grouped from rows */ }
+  snapRows();   // build levels show the table's numbers next to the steppers instead of a second table under the bars
 }
+/** A table taller than its box shows whole rows only (the box scrolls inside): no half row peeking under the tools. */
+function snapRows() {
+  const v = $('view'), tbl = v.querySelector('.tbl'); if (!tbl || v.hidden) return;
+  tbl.style.height = ''; tbl.style.marginBottom = '';
+  const room = v.clientHeight - 20;   // the view's own padding
+  if (tbl.offsetHeight <= room + 1) return;
+  const head = tbl.querySelector('thead'), row = tbl.querySelector('tbody tr');
+  if (!head || !row) return;
+  const rowH = row.offsetHeight || 40, headH = head.offsetHeight, frame = tbl.offsetHeight - tbl.clientHeight;
+  const gap = Math.max(0, rowH - 20);   // a hidden row never reaches the tools under the view
+  const n = Math.max(2, Math.floor((room - headH - frame - gap) / rowH));
+  tbl.style.height = (headH + n * rowH + frame) + 'px'; tbl.style.marginBottom = gap + 'px';
+}
+window.addEventListener('resize', () => { if (S.screen === 'play') snapRows(); });
 function tableView(level, st, g) {
   const wrap = el('div', 'tbl'); wrap.setAttribute('data-fit-dense', '');
   const t = el('table'); const thead = el('thead'), tr0 = el('tr');
@@ -867,16 +893,17 @@ function barsView(level, st, g, view) {
   const scale = level.scale || 1;
   for (const [c, v] of data) {
     const key = 'c:' + c;
-    const b = el('button', 'barbtn' + (st.shown[key] ? ' proved' : '') + (g.cat === c ? ' lit' : '')); b.type = 'button'; b.dataset.cat = c;
-    b.setAttribute('aria-label', `${trCell(c)}: ${num(v)}`);
-    if (view === 'picto') { const p = el('div', 'picto'); const n = Math.round(v / scale); for (let i = 0; i < n; i++) p.insertAdjacentHTML('beforeend', icon('user', 20)); b.appendChild(p); }
-    const val = el('span', 'barv num'); val.dir = 'ltr'; val.textContent = num(v);
-    if (view !== 'picto') { const fill = el('i', 'fill'); fill.style.setProperty('--h', String(Math.round(100 * v / max * 0.82))); b.appendChild(val); b.appendChild(fill); } else b.prepend(val);
-    const l = el('span', 'barl'); l.textContent = trCell(c); b.appendChild(l);
-    b.addEventListener('click', () => tapBar(c));
-    wrap.appendChild(b);
+    // the column (value, fill or pictures) is a plain box; the real control is the wide, short button under it (label)
+    const col = el('div', 'barcol' + (st.shown[key] ? ' proved' : '') + (g.cat === c ? ' lit' : '')); col.dataset.cat = c;
+    const val = el('div', 'barv num'); val.dir = 'ltr'; val.textContent = num(v); col.appendChild(val);
+    if (view === 'picto') { const p = el('div', 'picto'); const n = Math.round(v / scale); for (let i = 0; i < n; i++) p.insertAdjacentHTML('beforeend', icon('user', 20)); col.appendChild(p); }
+    else { const fill = el('i', 'fill'); fill.style.setProperty('--h', String(Math.round(100 * v / max * 0.82))); col.appendChild(fill); }
+    const b = el('button', 'barbtn'); b.type = 'button'; b.setAttribute('aria-label', `${trCell(c)}: ${num(v)}`);
+    const l = el('span', 'barl'); l.textContent = trCell(c); b.appendChild(l); col.appendChild(b);
+    col.addEventListener('click', () => tapBar(c));
+    wrap.appendChild(col);
   }
-  const box = el('div'); box.style.cssText = 'display:flex;flex-direction:column;gap:6px;flex:1;min-height:0';
+  const box = el('div'); box.style.cssText = 'display:flex;flex-direction:column;gap:6px';
   if (view === 'picto') { const sc = el('p', 'scale'); sc.innerHTML = `${icon('user', 18)} = ${esc(tr('{n} kids', { n: scale }))}`; box.appendChild(sc); }
   box.appendChild(wrap);
   return box;
@@ -888,7 +915,9 @@ function renderTools() {
   if (level.rows) {
     const views = level.views || ['table', 'group'];
     if (views.includes('table')) chip(tr('Table'), 'menu', 'table', st.view === 'table', () => doAct(['view', 'table']));
-    if (views.includes('group')) for (const c of level.cols.filter(c => c.type === 'text' || level.evidence && level.evidence.group === c.id).slice(0, 2)) chip(tr('Group by {col}', { col: tr(c.label) }), 'flag', 'group', st.view === 'group' && st.groupBy === c.id, () => doAct(['group', c.id]));
+    // Group makes sense for a column with repeats (a pet, a day), never for a list of different names
+    const groupable = c => (level.evidence && level.evidence.group === c.id) || (c.type !== 'time' && E.groupCounts(level, st, c.id).length < E.active(level, st).length);
+    if (views.includes('group')) for (const c of level.cols.filter(groupable).slice(0, 2)) chip(tr('Group by {col}', { col: tr(c.label) }), 'flag', 'group', st.view === 'group' && st.groupBy === c.id, () => doAct(['group', c.id]));
     if (views.includes('bar')) chip(tr('Bars'), 'flag', 'bar', st.view === 'bar', () => doAct(['view', 'bar']));
     if (views.includes('picto')) chip(tr('Pictures'), 'user', 'picto', st.view === 'picto', () => doAct(['view', 'picto']));
     if (level.pct) chip('%', null, 'pct', st.pct, () => doAct(['pct'])).setAttribute('aria-label', tr('Show percent'));
@@ -906,7 +935,10 @@ function renderExtra() {
     const steps = el('div', 'steps');
     for (const [c] of level.cats) {
       const row = el('div', 'step' + (g.cat === c ? ' lit' : ''));
-      const name = el('b'); name.textContent = trCell(c); row.appendChild(name);
+      const name = el('b'); name.textContent = trCell(c);
+      const want = level.cats.find(x => x[0] === c)[1];
+      const tgt = el('small', 'num'); tgt.dir = 'ltr'; tgt.textContent = tr('Table: {n}', { n: want });
+      const lab = el('span', 'steplab'); lab.append(name, tgt); row.appendChild(lab);
       const minus = el('button', 'ibtn', icon('minus')); minus.type = 'button'; minus.setAttribute('aria-label', tr('{cat}: one less', { cat: trCell(c) })); minus.addEventListener('click', () => doAct(['bar', c, -1]));
       const n = el('span', 'n num'); n.dir = 'ltr'; n.textContent = num(st.bars[c] || 0); n.setAttribute('aria-live', 'polite');
       const plus = el('button', 'ibtn', icon('plus')); plus.type = 'button'; plus.setAttribute('aria-label', tr('{cat}: one more', { cat: trCell(c) })); plus.addEventListener('click', () => doAct(['bar', c, 1]));
@@ -922,20 +954,24 @@ function renderExtra() {
     inp.addEventListener('input', () => { E.act(level, st, ['slider', +inp.value]); v.textContent = num(st.slider) + ' ' + tr(level.valueLabel || ''); });
     s.append(lab, inp, v); box.appendChild(s);
   }
-  if (S.rowPanel && level.clean) box.appendChild(rowPanel(S.rowPanel));
 }
-function rowPanel(id) {
-  const level = S.level, st = S.cs, p = el('div', 'rowpanel pop');
-  const name = trCell(E.cell(level, st, id, level.cols[0].id));
-  const t = el('p'); t.textContent = tr('Row: {name}. What should happen to it?', { name }); p.appendChild(t);
-  const mk = (label, iconName, kind, fn) => { const b = el('button', 'btn ' + kind); b.type = 'button'; b.innerHTML = icon(iconName, 20) + `<span>${esc(label)}</span>`; b.addEventListener('click', fn); p.appendChild(b); };
+/** Clean-up: a tapped row's card over the view: Fix to (a right spelling), Merge (a repeat), Remove (impossible), Keep. */
+function rowCard(id) {
+  const level = S.level, st = S.cs;
+  const cells = level.cols.map(c => trCell(E.cell(level, st, id, c.id)));
+  const m = ownModal(tr('Row: {name}. What should happen to it?', { name: cells[0] }), 'row');
+  const line = el('p'); line.dir = 'ltr'; line.textContent = cells.join(' · '); m.card.appendChild(line);
+  const p = el('div', 'rowpanel'); const t = el('p'); t.textContent = tr('Fix, merge, remove, or keep it as it is.'); p.appendChild(t);
+  const done = () => { closeOwnModal(); S.rowPanel = null; renderCase(); };
+  const mk = (label, iconName, kind, fn) => { const b = el('button', 'btn ' + kind); b.type = 'button'; b.innerHTML = icon(iconName, 20) + `<span>${esc(label)}</span>`; b.addEventListener('click', () => { fn(); done(); }); p.appendChild(b); };
   const fixCol = (level.bad && level.bad[id] && level.bad[id].col) || level.fixCol || level.cols[1].id;
   const fixable = level.cols.find(c => c.id === fixCol).type === 'text';
-  if (fixable) for (const opt of (level.fixOptions || []).slice(0, 3)) mk(tr('Fix to {value}', { value: tr(opt) }), 'pencil', 'go', () => { doAct(['fix', id, opt]); S.rowPanel = null; renderCase(); });
-  mk(tr('Merge (a repeat)'), 'swap', 'quiet', () => { doAct(['merge', id]); S.rowPanel = null; renderCase(); });
-  mk(tr('Remove (impossible)'), 'cross', 'quiet', () => { doAct(['remove', id]); S.rowPanel = null; renderCase(); });
-  mk(tr('Keep it'), 'check', 'quiet', () => { S.rowPanel = null; renderCase(); });
-  return p;
+  if (fixable) for (const opt of (level.fixOptions || []).slice(0, 3)) mk(tr('Fix to {value}', { value: tr(opt) }), 'pencil', 'go', () => doAct(['fix', id, opt]));
+  mk(tr('Merge (a repeat)'), 'swap', 'quiet', () => doAct(['merge', id]));
+  mk(tr('Remove (impossible)'), 'cross', 'quiet', () => doAct(['remove', id]));
+  mk(tr('Keep it'), 'check', 'quiet', () => {});
+  m.card.appendChild(p);
+  m.onClose = () => { S.rowPanel = null; renderView(); };
 }
 function renderClaims() {
   const level = S.level, st = S.cs, box = $('claims'); box.innerHTML = '';
@@ -945,28 +981,34 @@ function renderClaims() {
     const q = el('p', 'q'); q.textContent = tr('Show me! Tap the evidence that proves it.'); box.appendChild(q);
     const left = E.proofKeys(level).filter(k => !st.shown[k]).length;
     const small = el('p'); small.style.margin = '0'; small.style.fontWeight = '700'; small.textContent = tr('{n} more to tap', { n: left }); box.appendChild(small);
+    try { box.scrollIntoView({ block: 'nearest' }); } catch (e) { /* ignore */ }
     return;
   }
-  if (!S.claimsOpen) {
-    const b = el('button', 'btn hot'); b.type = 'button'; b.innerHTML = icon('flag', 22) + `<span>${esc(level.predict ? tr('Pin this prediction') : tr('Pin a claim'))}</span>`;
-    b.id = 'claimBtn';
-    if (!ok) { b.setAttribute('aria-disabled', 'true'); b.classList.add('quiet'); }
-    b.addEventListener('click', () => { if (!E.evidence(S.level, S.cs)) { sfx('wrong'); dotSay(tr('Show me first: get the view that answers the question on screen, then pin your claim.')); return; } if (level.predict) doAct(['claim', 0]); else { S.claimsOpen = true; sfx('select'); renderClaims(); } });
-    box.appendChild(b);
-    const note = el('p'); note.style.margin = '0'; note.style.fontWeight = '700'; note.style.opacity = '.85'; note.textContent = ok ? tr('The view supports a claim. Pin one!') : tr('Show me: the claim card opens when the view on screen answers the question.'); box.appendChild(note);
-    return;
-  }
-  const q = el('p', 'q'); q.textContent = level.claim ? tr('Is this claim supported by the chart?') : tr(level.q || ''); box.appendChild(q);
-  if (level.claim) { const c = el('p'); c.style.margin = '0'; c.style.fontWeight = '800'; c.textContent = '\u201c' + tr(level.claim) + '\u201d'; box.appendChild(c); }
+  const b = el('button', 'btn hot'); b.type = 'button'; b.innerHTML = icon('flag', 22) + `<span>${esc(level.predict ? tr('Pin this prediction') : tr('Pin a claim'))}</span>`;
+  b.id = 'claimBtn';
+  if (!ok) { b.setAttribute('aria-disabled', 'true'); b.classList.remove('hot'); b.classList.add('wait'); }
+  b.addEventListener('click', () => { if (!E.evidence(S.level, S.cs)) { sfx('wrong'); dotSay(tr('Show me first: get the view that answers the question on screen, then pin your claim.')); return; } if (level.predict) doAct(['claim', 0]); else { sfx('select'); claimCard(); } });
+  box.appendChild(b);
+  const note = el('p'); note.style.margin = '0'; note.style.fontWeight = '700'; note.style.opacity = '.85'; note.textContent = ok ? tr('The view supports a claim. Pin one!') : tr('Show me: the claim card opens when the view on screen answers the question.'); box.appendChild(note);
+}
+/** The claim card: the question (or the claim to judge) and 2-4 tiles, over the view; keys 1-4 pick a tile. */
+function claimCard() {
+  const level = S.level, st = S.cs; if (!level || st.solved || st.picked != null) return;
+  const m = ownModal(level.claim ? tr('Is this claim supported by the chart?') : tr(level.q || ''), 'claim');
+  if (level.claim) { const c = el('p'); c.style.fontWeight = '800'; c.textContent = '\u201c' + tr(level.claim) + '\u201d'; m.card.appendChild(c); }
   const grid = el('div', 'tiles2');
+  const wrongOnes = st.wrongTiles || (st.wrongTiles = {});
   E.claimTiles(level).forEach((t, i) => {
-    const b = el('button', 'claimtile pop' + (st.lastClaim && !st.lastClaim.ok && st.lastClaim.i === i ? ' bad' : '')); b.type = 'button'; b.dataset.i = i;
-    b.innerHTML = `<span class="key num" dir="ltr">${esc(num(i + 1))}</span><span>${esc(trCell(t))}</span>` + (st.lastClaim && !st.lastClaim.ok && st.lastClaim.i === i ? icon('cross', 22) : '');
-    if (st.lastClaim && !st.lastClaim.ok && st.lastClaim.i === i) b.disabled = true;
-    b.addEventListener('click', () => doAct(['claim', i]));
+    const bad = !!wrongOnes[i];
+    const b = el('button', 'claimtile pop' + (bad ? ' bad' : '')); b.type = 'button'; b.dataset.i = i; b.dataset.key = i + 1;
+    b.innerHTML = `<span class="key num" dir="ltr">${esc(num(i + 1))}</span><span>${esc(trCell(t))}</span>` + (bad ? icon('cross', 22) : '');
+    if (bad) b.disabled = true;
+    b.addEventListener('click', () => { closeOwnModal(); doAct(['claim', i]); });
     grid.appendChild(b);
   });
-  box.appendChild(grid);
+  m.card.appendChild(grid);
+  const back = el('button', 'btn quiet'); back.type = 'button'; back.innerHTML = icon('back', 22) + `<span>${esc(tr('Look again'))}</span>`; back.addEventListener('click', closeOwnModal); m.card.appendChild(back);
+  S.claimsOpen = true; m.onClose = () => { S.claimsOpen = false; };
 }
 function renderFoot() {
   const st = S.cs, box = $('foot'); box.innerHTML = '';
@@ -983,7 +1025,7 @@ function tapRow(id) {
   const level = S.level, st = S.cs;
   if (st.solved) return;
   if (st.picked != null) { prove(id); return; }
-  if (level.clean) { S.rowPanel = S.rowPanel === id ? null : id; sfx('select'); renderCase(); return; }
+  if (level.clean) { S.rowPanel = id; sfx('select'); renderView(); rowCard(id); return; }
   const text = level.cols.map(c => `${tr(c.label)}: ${trCell(E.cell(level, st, id, c.id))}`).join(', ');
   announce(text); sfx('pop');
 }
@@ -1005,7 +1047,7 @@ function doAct(a) {
   if (a[0] === 'claim') {
     if (r && r.why === 'show-me') { sfx('wrong'); dotSay(tr('Show me first: get the view that answers the question on screen, then pin your claim.')); return; }
     if (r && r.ok) { sfx('correct'); renderCase(); dotSay(tr('Good claim! Now show me: tap the evidence that proves it.')); return; }
-    sfx('wrong'); S.fail = st.wrong; renderCase(); dotSay(tr(level.shows)); try { if (!reduced()) Oomba.juice.shake(0.3, $('claims')); } catch (e) { /* ignore */ } return;
+    sfx('wrong'); S.fail = st.wrong; (st.wrongTiles || (st.wrongTiles = {}))[a[1] | 0] = 1; renderCase(); dotSay(tr(level.shows)); try { if (!reduced()) Oomba.juice.shake(0.3, $('claims')); } catch (e) { /* ignore */ } return;
   }
   if (a[0] === 'skip') { S.skippedIds[level.id] = 1; S.sessionStars[level.id] = 0; sfx('whoosh'); dotSay(tr('Skipped. No stars this time, but the next case is open.')); finishLevel(0); return; }
   if (r === false) return;
@@ -1103,16 +1145,22 @@ function giveHint() {
 
 /* ---------- Quest Card (gear): band, pairs, read-aloud, quest code, settings ---------- */
 let MODAL = null;
-function ownModal(title) {
+function ownModal(title, kind) {
   closeOwnModal();
   const root = el('div', 'dd-modal'); root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true');
   const card = el('div', 'card pop'); root.appendChild(card);
   if (title) { const h = el('h2'); h.textContent = title; card.appendChild(h); root.setAttribute('aria-label', title); }
   const prev = document.activeElement;
-  const keys = e => { if (e.key === 'Escape') { e.preventDefault(); closeOwnModal(); } e.stopPropagation(); };
+  // Escape closes; digits 1-4 press the tile with that number (the claim card); Tab stays inside the card
+  const keys = e => {
+    if (e.key === 'Escape') { e.preventDefault(); closeOwnModal(); }
+    else if (/^[1-9]$/.test(e.key)) { const b = card.querySelector(`[data-key="${e.key}"]`); if (b && !b.disabled) { e.preventDefault(); b.click(); } }
+    else if (e.key === 'Tab') { const bs = [...card.querySelectorAll('button:not([disabled])')]; if (bs.length) { const i = bs.indexOf(document.activeElement); e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); } }
+    e.stopPropagation();
+  };
   root.addEventListener('keydown', keys);
   $('game').appendChild(root);
-  MODAL = { root, card, prev, onClose: null };
+  MODAL = { root, card, prev, kind: kind || 'card', onClose: null };
   realAfter(0, () => { const f = card.querySelector('button'); if (f) f.focus({ preventScroll: true }); });
   return MODAL;
 }
@@ -1196,9 +1244,7 @@ async function openPause() {
 $('pauseBtn').addEventListener('click', openPause);
 document.addEventListener('keydown', e => {
   if (e.repeat || MODAL) return;
-  if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { openPause(); return; }
-  if (S.screen !== 'play' || !S.claimsOpen) return;
-  const n = +e.key; if (n >= 1 && n <= 4) { const b = document.querySelector(`.claimtile[data-i="${n - 1}"]`); if (b && !b.disabled) b.click(); }
+  if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') openPause();   // digits 1-4 pick a tile inside the claim card (its own key handler)
 });
 syncMotion();
 
@@ -1221,7 +1267,8 @@ Object.assign(window.__brbTest, {
   skipAnimations: () => { S.fast = true; try { Oomba.settings.set({ motion: 'reduce' }); } catch (e) { /* ignore */ } syncMotion(); closeKitScreens(); return true; },
   act: a => { const r = doAct(a); return E.act ? (S.cs ? { evidence: E.evidence(S.level, S.cs), solved: S.cs.solved, picked: S.cs.picked, wrong: S.cs.wrong } : r) : r; },
   tap: key => { if (/^c:/.test(key)) tapBar(key.slice(2)); else tapRow(key); return S.cs && S.cs.shown; },
-  claim: i => { if (!S.claimsOpen && S.cs && E.evidence(S.level, S.cs)) { S.claimsOpen = true; renderClaims(); } doAct(['claim', i]); return S.cs && S.cs.lastClaim; },
+  claim: i => { closeOwnModal(); doAct(['claim', i]); return S.cs && S.cs.lastClaim; },
+  claimCard: () => { claimCard(); return S.claimsOpen; },
   hint: () => { giveHint(); return S.cs && S.cs.hint; },
   skip: () => { doAct(['skip']); return true; },
   solve: () => { const l = S.level, cs = S.cs; if (!l || !cs) return false; S.claimsOpen = true; for (const a of l.sol) { if (a[0] === 'claim') doAct(a); else if (a[0] === 'show') prove(a[1]); else doAct(a); } return cs.solved; },   // cs: the next case may already be open
@@ -1236,7 +1283,7 @@ Object.assign(window.__brbTest, {
     S.fast = true; closeOwnModal(); closeKitScreens(); titleOpen = false;
     S.seedFixed = 7; S.lesson = false; S.lock = false; S.band = '1b'; S.mode = 'play';
     startChapter('sort', 3);
-    doAct(['group', 'pet']); S.claimsOpen = true; renderCase(); dotSay(tr('That view answers it. Pin your claim!'), false);
+    doAct(['group', 'pet']); dotSay(tr('That view answers it. Pin your claim!'), false); claimCard();
     try { if (DOT_ENT) DOT_ENT.mood('happy'); } catch (e) { /* ignore */ }
     return true;
   },
