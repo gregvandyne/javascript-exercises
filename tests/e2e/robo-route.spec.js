@@ -29,7 +29,7 @@ test('Robo Route runs on the kit: pinned tags, a quest code, a solved level with
   expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.2', 'art-props,style-bold', 'function']);
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   await f.locator('.ok-title-screen .ok-hot').click();
-  await expect(f.locator('#tiles .rr-tile')).toHaveCount(9);
+  await expect(f.locator('#tiles .rr-tile')).toHaveCount(10); // eight chapters, the daily and the quest code
   // a quest code: chapter 2 (loops), Explorer, play, first unfinished level
   await T(f, 'questCode', '2100');
   await expect.poll(() => T(f, 'state').then(s => s.levelId)).toBe('loop-1');
