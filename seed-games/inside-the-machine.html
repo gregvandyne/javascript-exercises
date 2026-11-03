@@ -891,6 +891,8 @@ const chapterStars = (ch, band) => levelsFor(ch, band).reduce((n, l) => n + star
 const chapterFull = (ch, band) => levelsFor(ch, band).length > 0 && levelsFor(ch, band).every(l => starsOf(l, band) === 3);
 const firstOpen = list => { const i = list.findIndex(l => !isDone(l)); return i < 0 ? Math.max(0, list.length - 1) : i; };
 const bandName = b => (b === '2' ? tr('Pro') : tr('Explorer'));
+// Explorer stars earned by a Pro player (the band they chose for themselves) show silver on the map
+const silverHere = () => SAVE.band === '2' && S.band === '1b';
 
 /* ---------- the kit: the workbench behind, Gizmo, colors as CSS variables ---------- */
 try { if (S.band === '2') Oomba.style('bold'); } catch (e) { /* the playful style is fine too */ }
@@ -1048,7 +1050,7 @@ function showMap(chapterId) {
     const t = el('button', 'im-chap' + (c.id === chapterId ? ' on' : '')); t.type = 'button';
     t.appendChild(propCanvas(c.pic, 44));
     t.appendChild(el('b', '', esc(tr(c.title))));
-    const st = el('span', 'im-stars'); st.innerHTML = `<span class="im-star">${icon('star', { size: 18 })}</span>`; st.appendChild(document.createTextNode(num(stars) + '/' + num(total))); st.dir = 'ltr'; t.appendChild(st);
+    const st = el('span', 'im-stars' + (silverHere() ? ' im-silver' : '')); st.innerHTML = `<span class="im-star">${icon('star', { size: 18 })}</span>`; st.appendChild(document.createTextNode(num(stars) + '/' + num(total))); st.dir = 'ltr'; t.appendChild(st);
     if (chapterFull(c.id)) t.insertAdjacentHTML('beforeend', `<span class="im-crown">${icon('trophy')}</span>`);
     t.setAttribute('aria-label', tr(c.title) + ', ' + tr('{n} stars', { n: stars }));
     t.setAttribute('aria-pressed', String(c.id === chapterId));
@@ -1062,7 +1064,7 @@ function showMap(chapterId) {
     const b = el('button', 'im-lv' + (st ? ' done' : skipped ? ' skip' : '') + (open ? '' : ' lock')); b.type = 'button'; b.dir = 'ltr';
     b.innerHTML = open ? num(i + 1) : icon('lock', { size: 22 }); b.disabled = !open;
     b.setAttribute('aria-label', tr('Level {n}', { n: i + 1 }) + (open ? ', ' + tr('{n} stars', { n: st }) : ', ' + tr('Locked')));
-    if (st) { const s = el('span', 'im-s' + (SAVE.band === '2' && S.band === '1b' ? ' im-silver' : '')); for (let k = 0; k < st; k++) s.insertAdjacentHTML('beforeend', `<span class="im-star">${icon('star', { size: 11 })}</span>`); b.appendChild(s); }
+    if (st) { const s = el('span', 'im-s' + (silverHere() ? ' im-silver' : '')); for (let k = 0; k < st; k++) s.insertAdjacentHTML('beforeend', `<span class="im-star">${icon('star', { size: 11 })}</span>`); b.appendChild(s); }
     b.addEventListener('click', () => { if (!open) return; sfx('select'); S.quest = S.lesson ? S.quest : { ch: chapterId, band: S.band }; startLevel(chapterId, i); });
     strip.appendChild(b);
   });
@@ -1071,7 +1073,7 @@ function showMap(chapterId) {
   const dp = dailyPick(), dd = SAVE.daily && SAVE.daily.day === dp.day ? SAVE.daily : null;
   const daily = el('button', 'im-daily'); daily.type = 'button'; daily.insertAdjacentHTML('beforeend', icon('spark', { size: 26 }));
   const dt = el('span'); dt.appendChild(el('b', '', esc(tr('Daily Crew Challenge')))); dt.appendChild(el('span', 'im-note', esc(dd ? tr('Done today') : tr(L.chapter(dp.level.ch).title)))); daily.appendChild(dt);
-  daily.appendChild(starRow(dd ? dd.stars | 0 : 0)); daily.setAttribute('aria-label', tr('Daily Crew Challenge') + ', ' + tr('{n} stars', { n: dd ? dd.stars | 0 : 0 }));
+  daily.appendChild(starRow(dd ? dd.stars | 0 : 0, silverHere())); daily.setAttribute('aria-label', tr('Daily Crew Challenge') + ', ' + tr('{n} stars', { n: dd ? dd.stars | 0 : 0 }));
   daily.addEventListener('click', () => { sfx('select'); startDaily(); });
   row.appendChild(daily);
   M.append(strip, row);
