@@ -56,7 +56,7 @@
   .silver svg { filter: saturate(0) brightness(1.15); }
 
   /* a case */
-  #play { justify-content: flex-start; align-items: stretch; }
+  #playScr { justify-content: flex-start; align-items: stretch; }
   /* portrait: the data view on top (at most 55% of the height, it scrolls inside), the work panel below; landscape: side by side */
   .case { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
   .view { flex: 0 0 auto; max-height: 55%; min-height: 150px; min-width: 0; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 20px; }
@@ -177,12 +177,25 @@
   .pop { animation: dd-pop .32s cubic-bezier(.3, 1.5, .5, 1); }
   @keyframes dd-pop { from { transform: scale(.92); opacity: 0; } }
   .ok-rm .pop, .ok-rm .fill, .ok-rm .btn, .ok-rm .ibtn { animation: none; transition: none; }
+  /* left-handed (the kit setting): the HUD's buttons, the steppers' - and + and, side by side, the work panel sit on the left (a right-to-left page already has them there) */
+  #game.lefty:not([dir="rtl"]) .bar { flex-direction: row-reverse; }
+  #game.lefty:not([dir="rtl"]) .step { grid-template-columns: 48px 48px 48px minmax(0, 1fr); } #game.lefty:not([dir="rtl"]) .step .steplab { order: 4; }
+  @media (orientation: landscape) and (min-width: 700px) { #game.lefty:not([dir="rtl"]) .case { flex-direction: row-reverse; } }
+  /* a shape next to every color: a check on proved rows and bars and on a pressed chip or band button */
+  .mark { display: inline-grid; place-items: center; width: 18px; height: 18px; margin-inline-start: 4px; vertical-align: middle; flex: none; }
+  .mark svg { width: 16px; height: 16px; }
   @media (max-height: 520px) { .dot { padding: 4px 8px; } .dotpic, .dotpic canvas { width: 48px !important; height: 48px !important; } .bars { min-height: 120px; } .tile { min-height: 64px; } }
   /* short screens (a phone on its side): Dot already says what the notes say; the slider box is slimmer; a wide claim card uses two columns */
   @media (max-height: 520px) { .claims .note, .slide + .note { display: none; } .slide { padding: 6px 10px; gap: 2px; } .slide input[type=range] { height: 40px; } .slide .total { min-height: 40px; } .work { gap: 6px; } .dotsay { font-size: .95em; line-height: 1.2; } .runs { padding: 4px 6px; } }
   @media (max-height: 520px) and (min-width: 600px) { .tiles2 { grid-template-columns: 1fr 1fr; } }
   /* a case with a slider or steppers under the view (models, My Data) keeps the view shorter when the panels stack */
   @media (orientation: portrait), (max-width: 699px) { .view.compact { max-height: 46%; } }
+  /* enlarged text (125% / 150%) on a phone: the notes go (Dot says the same), a chart or table with a panel under it gives a little room, and on a short screen the claim button sits above Dot's bubble */
+  @media (max-width: 699px) { #game.big .claims .note, #game.big .slide + .note { display: none; } #game.big .view.compact { max-height: 38%; } }
+  @media (max-height: 520px) { #game.big .work .dot { order: 5; } }
+  /* short screens: the row card's six choices three to a row (the title already asks), the Quest Card's rows and buttons closer together */
+  @media (max-height: 520px) { .rowpanel p { display: none; } .rowpanel .btn { flex: 1 1 30%; } .dd-modal .card { gap: 8px; padding: 10px 14px; } .dd-modal .srow { min-height: 44px; } .dd-modal h2 { font-size: 1.3em; } }
+  .bars.many .picto svg { width: 14px; height: 14px; }   /* eight narrow columns: smaller pictures, two to a row */
 </style>
 <div id="game" hidden>
   <div class="bar" id="hud">
@@ -202,7 +215,7 @@
     <div class="daily" id="daily"></div>
     <div class="tiles" id="tiles"></div>
   </section>
-  <section class="screen" id="play" hidden>
+  <section class="screen" id="playScr" hidden>
     <div class="case">
       <div class="view" id="view"></div>
       <div class="work">
@@ -1000,10 +1013,13 @@ for (const k in VARS) if (VARS[k]) document.documentElement.style.setProperty('-
 const COAT_BY_CROWNS = [VARS.coat, C('go') || VARS.coat, C('magic') || VARS.coat, VARS.gold];
 try { Oomba.ui.root().appendChild($('game')); } catch (e) { /* keep it in the body */ }
 const reduced = () => { try { return !!Oomba.settings.reduced; } catch (e) { return false; } };
-const syncMotion = () => { $('game').classList.toggle('ok-rm', reduced()); if (S.screen === 'play') snapRows(); };   // text size changes the row height too
+const lefty = () => { try { const v = Oomba.settings.leftHanded; return v != null ? !!v : !!(Oomba.settings.get && Oomba.settings.get('leftHanded')); } catch (e) { return false; } };
+const textSize = () => { try { return +Oomba.settings.textSize || 1; } catch (e) { return 1; } };
+const syncMotion = () => { $('game').classList.toggle('ok-rm', reduced()); $('game').classList.toggle('lefty', lefty()); $('game').classList.toggle('big', textSize() > 1); if (S.screen === 'play') snapRows(); };   // text size changes the row height too; left-handed moves the buttons
 try { Oomba.settings.on('change', syncMotion); } catch (e) { /* ignore */ }
-function sfx(name) { try { Oomba.sfx(name, { caption: false }); } catch (e) { /* ignore */ } }
+function sfx(name) { try { Oomba.sfx(name, /^(correct|wrong|win|levelup|spark)$/.test(name) ? {} : { caption: false }); } catch (e) { /* ignore */ } }   // the key sounds carry the kit's captions
 function icon(name, size = 24) { try { return Oomba.icon(name, { size }); } catch (e) { return ''; } }
+const mark = () => `<span class="mark" aria-hidden="true">${icon('check', 16)}</span>`;   // a shape next to a color: proved rows and bars, pressed chips and band buttons
 function announce(text) { try { Oomba.ui.announce(text); } catch (e) { /* ignore */ } }
 function toast(text) { try { Oomba.ui.toast(text); } catch (e) { /* ignore */ } }
 function say(text) { try { Oomba.say(text, { who: DOT_ENT }); } catch (e) { /* ignore */ } }
@@ -1040,7 +1056,7 @@ const firstUnfinished = ch => { const ls = LV.levelsOf(ch); const i = ls.findInd
 
 /* ---------- screens ---------- */
 function show(name) {
-  for (const id of ['map', 'play', 'end']) $(id).hidden = id !== name;
+  for (const id of ['map', 'play', 'end']) $(id === 'play' ? 'playScr' : id).hidden = id !== name;   // not id="play": the layout audit presses #play as a start button
   S.screen = name; try { Oomba.scene = name; } catch (e) { /* ignore */ }
   $('game').hidden = false;
   const inPlay = name === 'play';
@@ -1105,7 +1121,7 @@ function openMap() {
 function renderMap() {
   const seg = $('bandSeg'); seg.innerHTML = '';
   for (const b of ['1b', '2']) {
-    const btn = el('button'); btn.type = 'button'; btn.textContent = bandName(b); btn.setAttribute('aria-pressed', String(S.band === b));
+    const btn = el('button'); btn.type = 'button'; btn.textContent = bandName(b); btn.setAttribute('aria-pressed', String(S.band === b)); if (S.band === b) btn.insertAdjacentHTML('beforeend', mark());
     btn.addEventListener('click', () => { if (S.lock) return; S.band = b; SAVE.band = b; save(); sfx('select'); renderMap(); announce(tr('Band: {band}', { band: bandName(b) })); });
     seg.appendChild(btn);
   }
@@ -1184,16 +1200,17 @@ async function caseFile() {
   const level = S.level;
   if (S.fast) { if (level.learn) { SAVE.learned[level.id] = 1; } dotSay(level.q ? tr(level.q) : tr('Is this claim supported by the chart?'), false); return; }
   if (level.learn && !SAVE.learned[level.id]) { SAVE.learned[level.id] = 1; save(); await learnCard(); }
+  const text = tr(level.story) + (level.q ? ' ' + tr(level.q) : level.claim ? ' ' + tr('The claim: \u201c{claim}\u201d', { claim: tr(level.claim) }) : '');
+  say(text);   // the case file is read aloud (and captioned) while it is open
   try {
-    await Oomba.ui.dialog({ title: tr(level.title), text: tr(level.story) + (level.q ? ' ' + tr(level.q) : level.claim ? ' ' + tr('The claim: \u201c{claim}\u201d', { claim: tr(level.claim) }) : ''), portrait: DOT.spec, mood: 'thinking',
-      buttons: [{ label: tr('Investigate'), kind: 'hot', value: true, icon: 'play' }] });
+    await Oomba.ui.dialog({ title: tr(level.title), text, portrait: DOT.spec, mood: 'thinking', buttons: [{ label: tr('Investigate'), kind: 'hot', value: true, icon: 'play' }] });
   } catch (e) { /* ignore */ }
-  dotSay(level.q ? tr(level.q) : tr('Is this claim supported by the chart?'), true);
+  dotSay(level.q ? tr(level.q) : tr('Is this claim supported by the chart?'), false);   // the question was read with the file
 }
 async function learnCard() {
   const l = S.level; if (!l || !l.learn) return;
+  say(tr(l.learn.title) + '. ' + tr(l.learn.text));   // read aloud (and captioned) while the card is open
   try { await Oomba.ui.dialog({ title: tr(l.learn.title), text: tr(l.learn.text), portrait: DOT.spec, buttons: [{ label: tr('Got it'), kind: 'go', value: true, icon: 'check' }] }); } catch (e) { /* ignore */ }
-  say(tr(l.learn.text));
 }
 function renderHud() {
   const total = S.levels.length;
@@ -1263,7 +1280,7 @@ function modelView(level, st, g) {
     const tr0 = el('tr', 'row' + (st.shown[r.id] ? ' proved' : '') + ((g.row === r.id || (g.rows || []).includes(r.id)) ? ' lit' : ''));
     tr0.setAttribute('role', 'button'); tr0.tabIndex = 0; tr0.dataset.row = r.id;
     const near = r.off != null && r.off / Math.max(1, Math.abs(r.actual)) <= m.tol;
-    tr0.innerHTML = `<td class="num" dir="ltr">${esc(num(r.input))}</td><td class="num" dir="ltr">${esc(num(r.pred))}</td><td class="num" dir="ltr">${r.actual == null ? '–' : esc(num(r.actual))}</td>` +
+    tr0.innerHTML = `<td class="num" dir="ltr">${esc(num(r.input))}${st.shown[r.id] ? mark() : ''}</td><td class="num" dir="ltr">${esc(num(r.pred))}</td><td class="num" dir="ltr">${r.actual == null ? '–' : esc(num(r.actual))}</td>` +
       `<td class="num off ${r.off == null ? '' : near ? 'ok' : 'no'}" dir="ltr">${r.off == null ? '–' : esc(num(r.off)) + icon(near ? 'check' : 'cross', 16)}</td>`;
     const tap = () => tapRow(r.id);
     tr0.addEventListener('click', tap); tr0.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
@@ -1284,7 +1301,7 @@ function tallyTable(level, st, g) {
   for (const r of rows) {
     const key = 'r:' + r[0];
     const tr0 = el('tr', 'row' + (st.shown[key] ? ' proved' : '') + (g.cat === r[0] ? ' lit' : '')); tr0.setAttribute('role', 'button'); tr0.tabIndex = 0; tr0.dataset.row = key;
-    tr0.innerHTML = `<td>${esc(trCell(r[0]))}</td>` + (pct ? `<td class="num" dir="ltr">${esc(num(r[3]))}%</td><td class="num" dir="ltr">${esc(num(r[4]))}%</td>` : `<td class="num" dir="ltr">${esc(num(r[1]))}</td>${cmp ? `<td class="num" dir="ltr">${esc(num(r[2]))}</td>` : ''}`);
+    tr0.innerHTML = `<td>${esc(trCell(r[0]))}${st.shown[key] ? mark() : ''}</td>` + (pct ? `<td class="num" dir="ltr">${esc(num(r[3]))}%</td><td class="num" dir="ltr">${esc(num(r[4]))}%</td>` : `<td class="num" dir="ltr">${esc(num(r[1]))}</td>${cmp ? `<td class="num" dir="ltr">${esc(num(r[2]))}</td>` : ''}`);
     const tap = () => tapRow(key);
     tr0.addEventListener('click', tap); tr0.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
     body.appendChild(tr0);
@@ -1314,6 +1331,22 @@ function rowKeys(t) {
     else if (e.key === 'ArrowUp') { if (ri === 0 && heads.length) go(heads[0]); else go(rows[Math.max(0, ri - 1)]); }
     else if (e.key === 'Home') go(rows[0]); else if (e.key === 'End') go(rows[rows.length - 1]);
     else if (heads.length) go(heads[0]);
+  });
+}
+/** Arrow keys move between the buttons of one row or grid (tools, steppers, bars, claim tiles, the keypad, the faces, the chapter tiles);
+ *  Tab moves between panels. Up and down step a whole visual row; the move wraps round. */
+function arrowNav(box) {
+  if (!box || box.dataset.arrows) return; box.dataset.arrows = '1';
+  box.addEventListener('keydown', e => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key) || e.altKey || e.ctrlKey || e.metaKey) return;
+    const bs = [...box.querySelectorAll('button:not([disabled])')].filter(b => b.offsetParent !== null), i = bs.indexOf(document.activeElement);
+    if (i < 0 || bs.length < 2) return;
+    e.preventDefault(); e.stopPropagation();
+    const top = bs[i].getBoundingClientRect().top, perRow = Math.max(1, bs.filter(x => Math.abs(x.getBoundingClientRect().top - top) < 4).length);   // up and down step a whole visual row
+    const vertical = e.key === 'ArrowUp' || e.key === 'ArrowDown', rtl = $('game').dir === 'rtl';
+    const fwd = e.key === 'ArrowDown' || e.key === (rtl ? 'ArrowLeft' : 'ArrowRight');
+    const step = vertical ? perRow : 1, j = i + (fwd ? step : -step);
+    bs[((j % bs.length) + bs.length) % bs.length].focus();
   });
 }
 /** A table taller than its box shows whole rows only (the box scrolls inside): no half row peeking under the tools.
@@ -1356,6 +1389,7 @@ function tableView(level, st, g) {
     r.setAttribute('role', 'button'); r.tabIndex = 0; r.dataset.row = id;
     for (const c of level.cols) { const td = el('td'); const val = E.cell(level, st, id, c.id); td.textContent = trCell(val); if (c.type !== 'text') { td.className = 'num'; td.dir = 'ltr'; } r.appendChild(td); }
     if (pct) { const td = el('td', 'num'); td.dir = 'ltr'; td.textContent = num(pcts[id]) + '%'; r.appendChild(td); }
+    if (st.shown[id]) r.firstChild.insertAdjacentHTML('beforeend', mark());
     const tap = () => tapRow(id);
     r.addEventListener('click', tap); r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
     body.appendChild(r);
@@ -1385,14 +1419,15 @@ function barsView(level, st, g, view) {
     const key = 'c:' + c;
     // the column (value, fill or pictures) is a plain box; the real control is the wide, short button under it (label)
     const col = el('div', 'barcol' + (st.shown[key] ? ' proved' : '') + (g.cat === c ? ' lit' : '')); col.dataset.cat = c;
-    const val = el('div', 'barv num'); val.dir = 'ltr'; val.textContent = num(v); col.appendChild(val);
-    if (view === 'picto') { const p = el('div', 'picto'); const n = Math.round(v / scale); for (let k = 0; k < n; k++) p.insertAdjacentHTML('beforeend', icon('user', 20)); col.appendChild(p); }
+    const val = el('div', 'barv num'); val.dir = 'ltr'; val.textContent = num(v); if (st.shown[key]) val.insertAdjacentHTML('beforeend', mark()); col.appendChild(val);
+    if (view === 'picto') { const p = el('div', 'picto'); const n = Math.round(v / scale); for (let k = 0; k < n; k++) p.insertAdjacentHTML('beforeend', icon('user', data.length >= 7 ? 14 : 20)); col.appendChild(p); }
     else { const fill = el('i', 'fill'); fill.style.setProperty('--h', String(Math.round(100 * v / max * 0.82))); col.appendChild(fill); }
     const b = el('button', 'barbtn'); b.type = 'button'; b.setAttribute('aria-label', `${trCell(c)}: ${num(v)}`);
     const l = el('span', 'barl'); l.textContent = shown[i]; b.appendChild(l); col.appendChild(b);
     col.addEventListener('click', () => tapBar(c));
     wrap.appendChild(col);
   });
+  arrowNav(wrap);
   const box = el('div', 'barsbox'); box.style.cssText = 'display:flex;flex-direction:column;gap:6px';
   if (view === 'picto') { const sc = el('p', 'scale'); sc.innerHTML = `${icon('user', 18)} = ${esc(tr('{n} kids', { n: scale }))}`; box.appendChild(sc); }
   box.appendChild(wrap);
@@ -1409,7 +1444,7 @@ function shortLabels(labels) {
 function renderTools() {
   const level = S.level, st = S.cs, box = $('tools'); box.innerHTML = '';
   const g = glowFor();
-  const chip = (label, iconName, key, pressed, fn) => { const b = el('button', 'chip' + (g.tool === key ? ' lit' : '')); b.type = 'button'; b.innerHTML = (iconName ? icon(iconName, 20) : '') + `<span>${esc(label)}</span>`; if (pressed != null) b.setAttribute('aria-pressed', String(pressed)); b.addEventListener('click', fn); box.appendChild(b); return b; };
+  const chip = (label, iconName, key, pressed, fn) => { const b = el('button', 'chip' + (g.tool === key ? ' lit' : '')); b.type = 'button'; b.innerHTML = (iconName ? icon(iconName, 20) : '') + `<span>${esc(label)}</span>`; if (pressed != null) { b.setAttribute('aria-pressed', String(pressed)); if (pressed) b.insertAdjacentHTML('beforeend', mark()); } b.addEventListener('click', fn); box.appendChild(b); return b; };
   if (level.model) {
     chip(tr('Table'), 'menu', 'table', st.view === 'table', () => doAct(['view', 'table']));
     chip(tr('Bars'), 'flag', 'bar', st.view === 'bar', () => doAct(['view', 'bar']));
@@ -1463,7 +1498,7 @@ function renderExtra() {
   if (level.tally) {
     if (level.tally.presets) {
       const row = el('div', 'presets'); row.setAttribute('role', 'group'); row.setAttribute('aria-label', tr('Question'));
-      for (const id of level.tally.presets) { const p = LV.presetOf(id); const b = el('button', 'chip'); b.type = 'button'; b.textContent = tr(p.title); b.setAttribute('aria-pressed', String(st.preset === id)); b.addEventListener('click', () => { S.poolView = false; doAct(['preset', id]); }); row.appendChild(b); }
+      for (const id of level.tally.presets) { const p = LV.presetOf(id); const b = el('button', 'chip'); b.type = 'button'; b.textContent = tr(p.title); b.setAttribute('aria-pressed', String(st.preset === id)); if (st.preset === id) b.insertAdjacentHTML('beforeend', mark()); b.addEventListener('click', () => { S.poolView = false; doAct(['preset', id]); }); row.appendChild(b); }
       box.appendChild(row);
     }
     const p = LV.presetOf(st.preset);
@@ -1591,7 +1626,7 @@ function claimCard() {
     } else b.addEventListener('click', () => { closeOwnModal(); doAct(['claim', i]); });
     grid.appendChild(b);
   });
-  m.card.appendChild(grid);
+  arrowNav(grid); m.card.appendChild(grid);
   const foot = el('div', 'foot'); foot.style.justifyContent = 'center';
   if (level.pick) { pin = el('button', 'btn hot'); pin.type = 'button'; pin.id = 'pinBtn'; pin.disabled = true; pin.innerHTML = icon('flag', 22) + `<span>${esc(tr('Pin these {n}', { n: level.pick }))}</span>`; pin.addEventListener('click', () => { const p = [...picks]; closeOwnModal(); doAct(['pick', p]); }); foot.appendChild(pin); }
   const back = el('button', 'btn quiet'); back.type = 'button'; back.innerHTML = icon('back', 22) + `<span>${esc(tr('Look again'))}</span>`; back.addEventListener('click', closeOwnModal); foot.appendChild(back);
@@ -1727,7 +1762,7 @@ function confidenceFace() {
       const b = el('button', 'btn' + (v === 3 ? ' go' : '')); b.type = 'button'; b.innerHTML = icon(ic, 30) + `<span>${esc(label)}</span>`;
       b.addEventListener('click', () => { closeOwnModal(); res(v); }); row.appendChild(b);
     });
-    m.card.appendChild(row);
+    arrowNav(row); m.card.appendChild(row);
     m.onClose = () => res(0);
   });
 }
@@ -1815,14 +1850,16 @@ function questCard() {
   const m = ownModal(tr('Quest Card'));
   const row = (label, ctl) => { const r = el('div', 'srow'); const s = el('span'); s.textContent = label; r.append(s, ctl); m.card.appendChild(r); };
   const seg = el('div', 'seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
-  for (const b of ['1b', '2']) { const x = el('button'); x.type = 'button'; x.textContent = bandName(b); x.setAttribute('aria-pressed', String(S.band === b)); x.disabled = S.lock; x.addEventListener('click', () => { S.band = b; SAVE.band = b; save(); sfx('select'); [...seg.children].forEach(c => c.setAttribute('aria-pressed', String(c === x))); if (S.screen === 'map') renderMap(); }); seg.appendChild(x); }
+  for (const b of ['1b', '2']) { const x = el('button'); x.type = 'button'; x.textContent = bandName(b); x.setAttribute('aria-pressed', String(S.band === b)); if (S.band === b) x.insertAdjacentHTML('beforeend', mark()); x.disabled = S.lock; x.addEventListener('click', () => { S.band = b; SAVE.band = b; save(); sfx('select'); [...seg.children].forEach(c => { c.setAttribute('aria-pressed', String(c === x)); const old = c.querySelector('.mark'); if (old) old.remove(); if (c === x) c.insertAdjacentHTML('beforeend', mark()); }); if (S.screen === 'map') renderMap(); }); seg.appendChild(x); }
   row(tr('Band'), seg);
   row(tr('Two on one device'), switchBtn(SAVE.pairs, tr('Two on one device'), v => { SAVE.pairs = v; S.turn = 0; save(); renderTurn(); $('turnPill').hidden = !(S.screen === 'play' && v); if (S.screen === 'map') renderMap(); }));
   let ra = true; try { ra = !!Oomba.settings.readAloud; } catch (e) { /* ignore */ }
   row(tr('Read aloud'), switchBtn(ra, tr('Read aloud'), v => { try { Oomba.settings.readAloud = v; } catch (e) { /* ignore */ } }));
-  if (!LIVE) { const kb = el('button', 'btn'); kb.type = 'button'; kb.innerHTML = icon('key', 22) + `<span>${esc(tr('Enter a quest code'))}</span>`; kb.addEventListener('click', () => keypad()); m.card.appendChild(kb); }
-  const st = el('button', 'btn'); st.type = 'button'; st.innerHTML = icon('settings', 22) + `<span>${esc(tr('Settings'))}</span>`; st.addEventListener('click', async () => { closeOwnModal(); try { await Oomba.ui.settings(); } catch (e) { /* ignore */ } syncMotion(); }); m.card.appendChild(st);
-  const close = el('button', 'btn go'); close.type = 'button'; close.innerHTML = icon('check', 22) + `<span>${esc(tr('Close'))}</span>`; close.addEventListener('click', closeOwnModal); m.card.appendChild(close);
+  const acts = el('div', 'foot'); acts.style.justifyContent = 'center';   // the buttons share a row where there is room (a phone on its side)
+  if (!LIVE) { const kb = el('button', 'btn'); kb.type = 'button'; kb.innerHTML = icon('key', 22) + `<span>${esc(tr('Enter a quest code'))}</span>`; kb.addEventListener('click', () => keypad()); acts.appendChild(kb); }
+  const st = el('button', 'btn'); st.type = 'button'; st.innerHTML = icon('settings', 22) + `<span>${esc(tr('Settings'))}</span>`; st.addEventListener('click', async () => { closeOwnModal(); try { await Oomba.ui.settings(); } catch (e) { /* ignore */ } syncMotion(); }); acts.appendChild(st);
+  const close = el('button', 'btn go'); close.type = 'button'; close.innerHTML = icon('check', 22) + `<span>${esc(tr('Close'))}</span>`; close.addEventListener('click', closeOwnModal); acts.appendChild(close);
+  arrowNav(acts); m.card.appendChild(acts);
 }
 /** The 4-digit quest code: C B M L. Never seven digits; shown in groups with spaces. Hidden in live frames. */
 function keypad() {
@@ -1838,7 +1875,7 @@ function keypad() {
   key(icon('back', 24), () => { digits.pop(); draw(); sfx('select'); }).setAttribute('aria-label', tr('Delete'));
   key(num(0), () => { if (digits.length < 4) { digits.push(0); draw(); sfx('pop'); } });
   key(icon('play', 24), () => { if (digits.length === 4) { if (!applyCode(digits)) { sfx('wrong'); p.textContent = tr('That is not a case. Check the four digits with your teacher.'); } } else { sfx('wrong'); p.textContent = tr('Four digits, please.'); } }, 'hot').setAttribute('aria-label', tr('Go'));
-  m.card.appendChild(keys);
+  arrowNav(keys); m.card.appendChild(keys);
 }
 /** Quest code C B M L -> the same settings as the URL params (params win over codes). */
 function applyCode(d) {
@@ -1870,6 +1907,7 @@ $('gearBtn').addEventListener('click', () => { sfx('select'); questCard(); });
 $('backBtn').addEventListener('click', () => { sfx('select'); if (S.screen === 'map' || S.lock) goTitle(); else { S.lesson = S.lesson && S.lock; openMap(); } });
 $('hintBtn').addEventListener('click', giveHint);
 $('learnBtn').addEventListener('click', () => { sfx('select'); learnCard(); });
+for (const id of ['tools', 'extra', 'tiles', 'foot']) arrowNav($(id));   // arrow keys inside the panels; the tables have their own (rowKeys)
 async function openPause() {
   if (S.screen !== 'play') return;
   try { if (Oomba.ui.open) return; } catch (e) { /* ignore */ }

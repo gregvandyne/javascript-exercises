@@ -294,7 +294,8 @@ const untilLevel = (frame, n) => frame.waitForFunction(n => window.__brbTest.sta
 async function closeCard(frame, levelId) {
   const l = LEVELS.find(x => x.id === levelId);
   await frame.waitForSelector('.ok-ask .ok-tile', { timeout: 10_000 });
-  await frame.evaluate(txt => { const t = [...document.querySelectorAll('.ok-ask .ok-tile')].find(b => b.textContent.includes(txt)); t.click(); }, l.check.tiles[l.check.answer]);
+  // the right tile by its English key, through the game's own tr() so a language pack cannot break the test
+  await frame.evaluate(txt => { const want = window.DataDetectiveT(txt); const t = [...document.querySelectorAll('.ok-ask .ok-tile')].find(x => x.textContent.includes(want)); t.click(); }, l.check.tiles[l.check.answer]);
   await frame.waitForSelector('.dd-modal .faces button', { timeout: 10_000 });
   await frame.evaluate(() => document.querySelectorAll('.dd-modal .faces button')[2].click());
 }
@@ -695,6 +696,168 @@ test('data-detective: the cover hook stages a half-solved case with the claim ca
     const s = await T(frame, 'state');
     assert.deepEqual([s.chapter, s.level, s.view, s.claimsOpen, s.screen], ['sort', 3, 'group', true, 'play']);
     assert.equal(await frame.evaluate(() => document.querySelectorAll('.claimtile').length), 3);
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+/* ---------- the contract's frame matrix: level 1 of two chapters at a phone and a desktop size, in English and Arabic (right to left) ---------- */
+for (const [w, h] of [[390, 844], [1280, 800]]) for (const lang of ['en', 'ar']) {
+  test(`data-detective: ${w}x${h} ${lang}: level 1 of Sort & Group (lesson mode) and of Clues & Claims through __brbTest, the label grammar, the layout, no console errors`, { skip, timeout: 150_000 }, async () => {
+    const { ctx, frame, errors, kit } = await open({ size: { width: w, height: h }, lang });
+    try {
+      assert.ok(kit.some(k => k.endsWith('/oomba-kit.js')) && kit.filter(k => k.includes('/packs/')).length === 3, 'the pinned kit and its three packs, served from public/vendor/oomba-kit');
+      await fit(frame, `title ${w}x${h} ${lang}`);
+      await T(frame, 'skipAnimations');
+      await T(frame, 'start', { chapter: 'sort', band: '1b', level: 1, seed: 1, lesson: true });
+      let s = await T(frame, 'state');
+      assert.deepEqual([s.screen, s.chapter, s.level, s.lesson, s.dir], ['play', 'sort', 1, true, lang === 'ar' ? 'rtl' : 'ltr']);
+      assert.equal(await frame.evaluate(() => document.querySelector('td.num').dir), 'ltr', 'numbers read left to right in every language');
+      await fit(frame, `sort-1 ${w}x${h} ${lang}`);
+      assert.equal(await T(frame, 'solve'), true);
+      await closeCard(frame, 'sort-1');
+      await untilLevel(frame, 2);
+      s = await T(frame, 'state');
+      assert.equal(s.scoreCalls.length, 1, 'one BRB.score.submit per solved case');
+      assert.equal(s.scoreCalls[0].label, '1/6 cases, 3 stars, 1/1 checks');
+      assert.match(s.scoreCalls[0].label, LABEL);
+      assert.ok(s.label.length <= 40 && /^[\x20-\x7e]+$/.test(s.label), 'ASCII, at most 40 characters, whatever the language');
+      await T(frame, 'start', { chapter: 'claims', band: '1b', level: 1, seed: 1 });
+      s = await T(frame, 'state');
+      assert.deepEqual([s.chapter, s.level, s.lesson, s.view], ['claims', 1, false, 'bar']);
+      await fit(frame, `claims-1 ${w}x${h} ${lang}`);
+      assert.equal(await T(frame, 'solve'), true);
+      await untilLevel(frame, 2);
+      s = await T(frame, 'state');
+      assert.equal(s.scoreCalls.at(-1).label, '1/6 cases, 3 stars');
+      assert.match(s.scoreCalls.at(-1).label, LABEL);
+      assert.ok(s.scoreCalls.at(-1).score <= 999 && Number.isInteger(s.scoreCalls.at(-1).score));
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  });
+}
+
+/* ---------- the five audit sizes on the densest screens, at 100% and 150% text ---------- */
+const SIZES = { 'phone-portrait': [390, 844], 'phone-landscape': [844, 390], 'tablet-portrait': [820, 1180], 'tablet-landscape': [1180, 820], desktop: [1280, 800] };
+test('data-detective: the densest screens fit all five audit sizes at 100% and 150% text: the 12-row clean-up table and its row card, the 20-run Game Balance table and bars, eight steppers, eight bars and pictographs, the percent comparison, the four-tile pick-two card, the keypad', { skip, timeout: 600_000 }, async () => {
+  for (const [name, [w, h]] of Object.entries(SIZES)) {
+    const { ctx, frame, errors } = await open({ size: { width: w, height: h } });
+    try {
+      await T(frame, 'skipAnimations');
+      const dense = async tag => {
+        await T(frame, 'start', { chapter: 'cleanup', band: '2', level: 1, seed: 5 });
+        assert.equal(await frame.evaluate(() => document.querySelectorAll('tr[data-row]').length), 12, 'the longest table');
+        await fit(frame, `cleanup-1 ${name} ${tag}`);
+        await frame.click('tr[data-row="r3"]');
+        await frame.waitForSelector('.dd-modal .rowpanel', { timeout: 5_000 });
+        await fit(frame, `row card ${name} ${tag}`);
+        await T(frame, 'closeDialog');
+        await T(frame, 'start', { chapter: 'models', band: '2', level: 5, seed: 1 });
+        await T(frame, 'act', ['run']); await T(frame, 'act', ['view', 'table']);
+        assert.equal(await frame.evaluate(() => document.querySelectorAll('tbody tr').length), 20, 'twenty test runs');
+        await fit(frame, `game balance table ${name} ${tag}`);
+        await T(frame, 'act', ['view', 'bar']);
+        assert.equal(await frame.evaluate(() => document.querySelectorAll('.runs span').length), 20, 'the strip of twenty runs');
+        await fit(frame, `game balance bars ${name} ${tag}`);
+        await T(frame, 'start', { chapter: 'my-data', band: '2', level: 3, seed: 1 });
+        await T(frame, 'act', ['preset', 'options']);
+        for (const [c, n] of [['Option A', 4], ['Option B', 7], ['Option C', 2], ['Option D', 5], ['Option E', 1], ['Option F', 3], ['Option G', 6], ['Option H', 2]]) await T(frame, 'act', ['tally', c, n]);
+        assert.equal(await frame.evaluate(() => document.querySelectorAll('.step').length), 8, 'eight steppers (the most categories a question has)');
+        await fit(frame, `eight steppers ${name} ${tag}`);
+        await T(frame, 'act', ['view', 'bar']);
+        assert.equal(await frame.evaluate(() => document.querySelectorAll('.barcol').length), 8);
+        await fit(frame, `eight bars ${name} ${tag}`);
+        await T(frame, 'act', ['view', 'picto']);
+        await fit(frame, `eight pictographs ${name} ${tag}`);
+        await T(frame, 'act', ['other']); await T(frame, 'act', ['pct']); await T(frame, 'act', ['view', 'table']);
+        assert.equal(await frame.evaluate(() => document.querySelectorAll('thead th').length), 3);
+        await fit(frame, `compare eight rows ${name} ${tag}`);
+        await T(frame, 'start', { chapter: 'fair', band: '2', level: 4, seed: 1 });
+        await T(frame, 'act', ['group', 'comes']); await T(frame, 'claimCard');
+        assert.equal(await frame.evaluate(() => document.querySelectorAll('.claimtile').length), 4, 'the widest claim card');
+        await fit(frame, `pick two card ${name} ${tag}`);
+        await T(frame, 'closeDialog');
+        await T(frame, 'keypad');
+        await fit(frame, `keypad ${name} ${tag}`);
+        await T(frame, 'closeDialog');
+      };
+      await dense('100%');
+      await T(frame, 'textSize', 1.5);
+      assert.equal(await frame.evaluate(() => Math.round(parseFloat(getComputedStyle(document.getElementById('game')).fontSize))), 24, 'the game text follows the kit text size (16 px at 100%, 24 px at 150%)');
+      await dense('150%');
+      await T(frame, 'textSize', 1);
+      assert.deepEqual(errors, [], name);
+    } finally { await ctx.close(); }
+  }
+});
+
+/* ---------- settings parity with kit games (map-games.md section 7) ---------- */
+test('data-detective: settings parity: the title cog and the HUD gear open the kit settings, left-handed mirrors the controls, proved rows and pressed chips carry a shape, the learn card is captioned and read aloud, arrow keys walk the bars and the claim tiles', { skip, timeout: 150_000 }, async () => {
+  const { ctx, frame, errors } = await open({ size: { width: 844, height: 390 } });   // a phone on its side: the panels sit side by side
+  try {
+    // the kit title's settings cog
+    await frame.click('.ok-title-screen .ok-corner button');
+    await frame.waitForSelector('.ok-settings [role="switch"]', { timeout: 10_000 });
+    assert.ok(await frame.evaluate(() => document.querySelectorAll('.ok-settings [role="switch"]').length >= 5), 'the kit settings panel: music, captions, read aloud, contrast, color cues, left-handed');
+    await T(frame, 'closeDialog');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('.ok-settings').length), 0, 'closed again');
+    await T(frame, 'skipAnimations');
+    await T(frame, 'start', { chapter: 'models', band: '2', level: 1, seed: 2 });
+    // the HUD gear: the Quest Card, with Settings on it
+    await frame.click('#gearBtn');
+    await frame.waitForSelector('.dd-modal', { timeout: 5_000 });
+    assert.ok(await frame.evaluate(() => [...document.querySelectorAll('.dd-modal .srow')].length >= 3), 'band, pairs, read aloud');
+    await frame.click('.dd-modal .btn:has-text("Settings")');
+    await frame.waitForSelector('.ok-settings [role="switch"]', { timeout: 10_000 });
+    await T(frame, 'closeDialog');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('.ok-settings, .dd-modal').length), 0, 'both cards closed');
+    // left-handed: the HUD's buttons and the work panel move to the left (and back)
+    assert.equal(await frame.evaluate(() => getComputedStyle(document.getElementById('hud')).flexDirection), 'row');
+    await frame.evaluate(() => Oomba.settings.set({ leftHanded: true }));
+    assert.equal(await frame.evaluate(() => document.getElementById('game').classList.contains('lefty')), true);
+    assert.equal(await frame.evaluate(() => getComputedStyle(document.getElementById('hud')).flexDirection), 'row-reverse');
+    assert.equal(await frame.evaluate(() => getComputedStyle(document.querySelector('.case')).flexDirection), 'row-reverse', 'side by side: the work panel on the left');
+    assert.ok(await frame.evaluate(() => document.getElementById('runBtn').getBoundingClientRect().left < innerWidth / 2), 'Run is on the left half');
+    await fit(frame, 'left-handed 844x390');
+    await frame.evaluate(() => Oomba.settings.set({ leftHanded: false }));
+    assert.equal(await frame.evaluate(() => [document.getElementById('game').classList.contains('lefty'), getComputedStyle(document.getElementById('hud')).flexDirection].join()), 'false,row');
+    // shapes next to colors: a pressed chip, a trial inside the tolerance, a proved row
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('.chip[aria-pressed="true"] .mark svg').length), 1, 'the pressed view chip carries a check');
+    await T(frame, 'act', ['rule', 2]); await T(frame, 'act', ['run']);
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('td.off.ok svg').length), 5, 'every trial inside the tolerance shows a check, not only a color');
+    await T(frame, 'claim', 0); await T(frame, 'tap', 'r1');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('tr.proved[data-row="r1"] .mark svg').length), 1, 'the proved row carries a check');
+    await T(frame, 'start', { chapter: 'claims', band: '1b', level: 1, seed: 1 });   // a bar chart case with two bars to prove
+    await T(frame, 'claim', 0); await T(frame, 'tap', 'c:Day 2');
+    assert.equal(await frame.evaluate(() => document.querySelectorAll('.barcol.proved .mark svg').length), 1, 'so does the proved bar');
+    // arrow keys walk the bars (left and right) and the claim tiles (down and up)
+    await frame.focus('.barbtn'); await frame.press('.barbtn', 'ArrowRight');
+    assert.equal(await frame.evaluate(() => document.activeElement === document.querySelectorAll('.barbtn')[1]), true, 'ArrowRight moves to the next bar');
+    await frame.press('.barcol:nth-child(2) .barbtn', 'ArrowLeft');
+    assert.equal(await frame.evaluate(() => document.activeElement === document.querySelectorAll('.barbtn')[0]), true, 'ArrowLeft moves back');
+    await T(frame, 'start', { chapter: 'fair', band: '2', level: 4, seed: 1 });
+    await T(frame, 'act', ['group', 'comes']); await T(frame, 'claimCard');
+    await frame.waitForSelector('.claimtile', { timeout: 5_000 });
+    await frame.focus('.claimtile[data-i="0"]'); await frame.press('.claimtile[data-i="0"]', 'ArrowRight');
+    assert.equal(await frame.evaluate(() => document.activeElement.dataset.i), '1', 'ArrowRight moves to the next tile');
+    const perRow = await frame.evaluate(() => { const t = [...document.querySelectorAll('.claimtile')], y = t[0].getBoundingClientRect().top; return t.filter(x => Math.abs(x.getBoundingClientRect().top - y) < 4).length; });
+    await frame.press('.claimtile[data-i="1"]', 'ArrowDown');
+    assert.equal(await frame.evaluate(() => document.activeElement.dataset.i), String((1 + perRow) % 4), `ArrowDown steps a whole row (${perRow} tiles across)`);
+    await frame.press(`.claimtile[data-i="${(1 + perRow) % 4}"]`, 'ArrowUp');
+    assert.equal(await frame.evaluate(() => document.activeElement.dataset.i), '1', 'ArrowUp steps back up');
+    await T(frame, 'closeDialog');
+    // captions and read-aloud: the learn card is read while it is open (the caption strip shows its words)
+    await T(frame, 'start', { chapter: 'fair', band: '2', level: 1, seed: 1 });   // level 1 of a chapter: it has a learn card
+    assert.equal(await frame.evaluate(() => document.getElementById('learnBtn').hidden), false, 'the learn card button in the HUD');
+    await frame.evaluate(() => Oomba.settings.set({ captions: true }));
+    await frame.click('#learnBtn');
+    await frame.waitForSelector('.ok-ui .ok-modal', { timeout: 5_000 });
+    const learn = LEVELS.find(l => l.id === 'fair-1').learn;
+    assert.notEqual(learn, undefined);
+    // Dot's earlier lines are still being read (a caption holds for its reading time, one line after another), so the learn card's turn comes within a few seconds
+    const shown = await frame.waitForFunction(want => { const c = document.querySelector('.ok-caption'); return c && c.classList.contains('on') && c.textContent.includes(want) && c.textContent; }, learn.text.slice(0, 24), { timeout: 30_000 });
+    assert.ok(String(await shown.jsonValue()).includes(learn.title), 'the caption strip reads the learn card, its title first');
+    await T(frame, 'closeDialog');
+    await frame.evaluate(() => Oomba.settings.set({ captions: false }));
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });
