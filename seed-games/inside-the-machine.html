@@ -1,0 +1,1336 @@
+<title>Inside the Machine</title>
+<style>
+/* Inside the Machine on the Oomba Kit: a DOM-first systems game (parts, hardware and software, the Fix-It desk, bits,
+   gadgets, the Design Lab) with Gizmo the mouse. The kit draws the workbench behind, Gizmo, the title, pause, results,
+   settings, buttons, icons, sounds and the type. This file lays out only the game's own pieces: the chapter map, the
+   play screen (a board and a work panel), the tap-wiring board, the card sorter, the tile chain, the Fix-It tray and
+   flowchart, the quest keypad and the Case-closed card. No color codes and no fonts here: kit variables only
+   (the --im-* ones are set once from Oomba.color at start). */
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+#im{position:fixed;inset:0;pointer-events:none;font-family:var(--ok-font);color:var(--ok-text);--im-top:var(--ok-safe-top);--im-edge:var(--ok-edge);font-size:calc(16px * var(--ok-ts,1));line-height:1.25}
+#im>*{pointer-events:auto}
+#im button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color:var(--ok-text)}
+#im button:disabled{cursor:default}
+#im svg{display:block}
+#im.im-proj{font-size:calc(20px * var(--ok-ts,1))}
+.ok-night #im{--im-edge:color-mix(in srgb,var(--ok-edge) 38%,transparent)}
+@media (max-height:480px),(max-width:480px){#im{--im-top:calc(var(--ok-safe-top) - 56px)}}
+@media (max-width:480px){.im-hintword{display:none}.im-top .ok-quiet{padding:0 12px}}
+.im-screen{position:absolute;left:0;right:0;top:var(--im-top);bottom:0;padding:0 calc(10px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));box-sizing:border-box;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.im-box{background:var(--ok-card);color:var(--ok-text);border:3px solid var(--im-edge);border-radius:24px;box-shadow:0 4px 0 var(--im-edge);box-sizing:border-box}
+.im-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-height:48px;flex:0 0 auto}
+.im-pill{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;background:var(--ok-card);border:2px solid var(--im-edge);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;box-sizing:border-box;flex:0 1 auto;min-width:0}
+.im-pill>span{overflow:hidden;text-overflow:ellipsis}
+.im-play .im-top .im-pill{flex:1 1 0}
+.im-pill svg{width:22px;height:22px;flex:none}
+.im-grow{flex:1 1 auto}
+.im-body{flex:1 1 0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) fit-content(66%);gap:8px}
+.im-board{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:10px;min-height:0}
+.im-panel{display:flex;flex-direction:column;gap:8px;padding:12px;overflow:auto;min-height:0;scrollbar-width:thin}
+@media (orientation:landscape) and (min-width:640px){.im-body{grid-template-rows:none;grid-template-columns:minmax(0,9fr) minmax(0,11fr)}}
+@media (max-height:480px){.im-panel{padding:8px 10px;gap:6px}.im-tray{gap:6px}.im-tile{min-height:48px;padding:5px 10px 5px 12px;font-size:.95em}.im-ticket{padding:8px 12px}.im-ticket p{font-size:.85em}.im-board{padding:6px}}
+.im-prompt{font-weight:800;font-size:clamp(1.05em,2.6vmin,1.35em);line-height:1.25;margin:0;text-wrap:balance}
+.im-prompt:empty,.im-note:empty{display:none}
+.im-note{font-weight:600;opacity:.85;margin:0;font-size:.95em}
+.im-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-top:auto}
+.im-actions .ok-btn{min-height:48px}
+/* tiles: a tray of taps (cards, checks, chain pieces) */
+.im-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.im-tray.im-two{grid-template-columns:1fr 1fr}
+.im-tile{position:relative;min-height:52px;padding:8px 12px 8px 14px;border-radius:16px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:700;line-height:1.2;display:flex;align-items:center;gap:8px;text-align:start;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
+.im-tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--im-edge)}
+.im-tile.on{background:var(--im-sky-t);border-color:var(--im-sky)}
+.im-tile.good{background:var(--im-mint-t)}
+.im-tile.bad{background:var(--im-coral-t)}
+.im-tile.dim{opacity:.55}
+.im-tile .im-k{position:absolute;top:1px;inset-inline-start:7px;font-size:.68em;font-weight:700;opacity:.5}
+.im-tile .im-cost{margin-inline-start:auto;flex:none;font-size:.85em;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--im-peach-t);border:2px solid var(--im-edge);white-space:nowrap}
+.im-tile canvas,.im-tile>svg{width:34px;height:34px;flex:none}
+.im-tile .im-mark{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--im-edge);display:grid;place-items:center;background:var(--ok-card)}
+.im-tile .im-mark svg{width:18px;height:18px}
+.im-tile .im-mark.bad{border-radius:6px}
+.im-glow{outline:4px solid var(--im-spark);outline-offset:2px;animation:im-glow .9s ease-in-out infinite alternate}
+.ok-rm .im-glow{animation:none}
+@keyframes im-glow{from{outline-color:var(--im-spark)}to{outline-color:transparent}}
+@keyframes im-pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes im-shake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.im-pop{animation:im-pop 260ms cubic-bezier(.34,1.56,.64,1)}
+.im-shake{animation:im-shake 240ms linear}
+.ok-rm .im-pop,.ok-rm .im-shake{animation:none}
+/* the device board: parts as big taps, wires drawn over them */
+.im-device{display:grid;gap:10px 14px;justify-content:center;align-content:center;position:relative;max-width:100%}
+.im-part{position:relative;min-height:66px;min-width:76px;padding:6px 8px;border-radius:18px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:inherit;font-weight:800;font-size:.82em;line-height:1.1;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;z-index:1;text-align:center}
+.im-part svg{width:34px;height:34px;color:var(--ok-text)}
+.im-part.on{background:var(--im-sky-t);border-color:var(--im-sky)}
+.im-part.good{background:var(--im-mint-t)}
+.im-part.bad{background:var(--im-coral-t)}
+.im-part .im-role{position:absolute;top:-9px;inset-inline-end:-6px;font-size:.62em;padding:1px 7px;border-radius:999px;border:2px solid var(--im-edge);background:var(--ok-card);line-height:1.3}
+.im-wires{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:0}
+.im-wires line{stroke:var(--im-sky);stroke-width:6;stroke-linecap:round}
+.im-wires line.need{stroke:var(--im-mint)}
+.im-wires circle{fill:var(--im-sky)}
+/* the chain (A Tap Travels, the flowchart) */
+.im-chain{display:flex;flex-direction:column;gap:6px;align-items:stretch;width:100%;max-width:420px}
+.im-chain .im-step{display:flex;align-items:center;gap:8px}
+.im-chain .im-n{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--im-edge);display:grid;place-items:center;font-weight:800;font-size:.8em;background:var(--ok-card)}
+.im-chain .im-tile{flex:1 1 auto;min-height:48px}
+.im-diamond{flex:none;width:26px;height:26px;transform:rotate(45deg);border:2.5px solid var(--im-edge);background:var(--im-peach-t);border-radius:5px;margin:0 6px}
+.im-arrow{text-align:center;opacity:.7;line-height:1;font-weight:800}
+.im-chain .im-done{background:var(--im-mint-t)}
+.im-chain .im-fail{background:var(--im-coral-t)}
+.im-empty{min-height:48px;border:2.5px dashed var(--im-edge);border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:700;opacity:.7;padding:6px 10px;text-align:center}
+/* the sorter: one card at a time, big bins */
+.im-deck{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.im-face{width:min(100%,320px);min-height:90px;border-radius:22px;border:3px solid var(--im-edge);background:var(--ok-card);display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 18px;font-weight:800;font-size:clamp(1.15em,3.2vmin,1.6em);text-align:center;box-shadow:0 5px 0 var(--im-edge);box-sizing:border-box}
+.im-face canvas,.im-face svg{width:48px;height:48px;flex:none}
+.im-bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;width:100%}
+.im-bin{min-height:56px;padding:8px 10px;border-radius:18px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 3px 0 var(--im-edge);box-sizing:border-box;text-align:center}
+.im-bin .im-count{font-size:.8em;opacity:.75;font-weight:700}
+.im-bin.good{background:var(--im-mint-t)}
+.im-bin.bad{background:var(--im-coral-t)}
+/* the Fix-It desk */
+.im-ticket{width:100%;max-width:440px;border-radius:20px;border:3px solid var(--im-edge);background:var(--im-peach-t);padding:12px 16px;box-sizing:border-box;display:flex;gap:12px;align-items:center;text-align:start}
+.im-ticket canvas,.im-ticket>svg{width:56px;height:56px;flex:none}
+.im-ticket h3{margin:0;font-size:1.05em;font-weight:800}
+.im-ticket p{margin:2px 0 0;font-weight:600;font-size:.88em}
+.im-react{width:100%;max-width:440px;min-height:40px;border-radius:16px;border:2px dashed var(--im-edge);padding:6px 10px;box-sizing:border-box;font-weight:700;display:flex;align-items:center;gap:8px}
+.im-react svg{width:24px;height:24px;flex:none}
+.im-clock{display:inline-flex;align-items:center;gap:6px;font-weight:800;flex-wrap:wrap;font-size:1em}
+.im-clock svg{width:22px;height:22px}
+.im-stack{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;min-height:0;max-height:100%;overflow:auto;scrollbar-width:thin}
+/* chapter map */
+.im-map{overflow:auto;scrollbar-width:thin;align-items:center}
+.im-map .im-top{width:min(820px,100%)}
+.im-seg{display:inline-flex;border:2.5px solid var(--im-edge);border-radius:999px;overflow:hidden;background:var(--ok-card)}
+.im-seg button{min-height:44px;min-width:92px;padding:0 14px;border:0;background:transparent;font:inherit;font-weight:800}
+.im-seg button+button{border-inline-start:2.5px solid var(--im-edge)}
+.im-seg button[aria-pressed=true]{background:var(--im-mint)}
+.im-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;width:min(820px,100%)}
+.im-chap{min-height:112px;padding:10px 10px 12px;border-radius:22px;border:3px solid var(--im-edge);background:var(--ok-card);font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 4px 0 var(--im-edge);text-align:center;box-sizing:border-box;position:relative}
+.im-chap canvas{height:44px;width:auto}
+.im-chap b{font-weight:800;font-size:.95em;line-height:1.15}
+.im-chap .im-stars{font-size:.85em;font-weight:700;display:inline-flex;align-items:center;gap:4px;opacity:.9}
+.im-chap .im-stars svg{width:18px;height:18px}
+.im-chap.on{background:var(--im-sky-t);border-color:var(--im-sky)}
+.im-chap .im-crown{position:absolute;top:-10px;inset-inline-end:-6px;width:30px;height:30px;color:var(--im-spark)}
+.im-levels{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:min(820px,100%);padding:4px 0}
+.im-lv{width:52px;height:52px;border-radius:50%;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:800;font-size:1.05em;display:grid;place-items:center;box-shadow:0 3px 0 var(--im-edge);position:relative}
+.im-lv.done{background:var(--im-mint-t)}
+.im-lv.skip{background:var(--im-stone-t)}
+.im-lv.lock{opacity:.5}
+.im-lv .im-s{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);display:flex;gap:0;background:var(--ok-card);border-radius:999px;padding:0 3px;border:1.5px solid var(--im-edge)}
+.im-lv .im-s svg{width:11px;height:11px}
+.im-star{color:var(--im-spark);--ok-fill:var(--im-spark)}
+.im-silver{filter:grayscale(1) brightness(1.1)}
+.im-star-off{opacity:.3}
+/* our own modal cards (the quest card, the learn card, the case-closed card) reuse the kit's modal look */
+.im-modal{position:fixed;inset:0;z-index:21;display:flex;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));background:var(--ok-scrim);box-sizing:border-box}
+.im-modal .im-card{position:relative;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--im-edge);border-radius:28px;box-shadow:0 8px 0 var(--im-edge);padding:20px 18px 18px;width:min(520px,100%);max-height:100%;overflow:auto;scrollbar-width:thin;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;box-sizing:border-box;animation:im-pop 260ms cubic-bezier(.34,1.56,.64,1)}
+.ok-rm .im-modal .im-card{animation:none}
+.im-card h2{margin:0;font-size:1.5em;font-weight:800;line-height:1.1;text-wrap:balance}
+.im-card p{margin:0;font-weight:600;line-height:1.4;max-width:36ch;text-wrap:pretty}
+.im-card .im-pic{height:84px;display:flex;align-items:center;gap:12px}
+.im-card .im-pic canvas,.im-card .im-pic svg{height:84px;width:auto}
+.im-card .im-pic svg{width:84px}
+.im-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;width:100%}
+.im-srow{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;width:100%;padding:6px 0;border-bottom:2px dashed var(--ok-line);font-weight:700;text-align:start}
+.im-slots{display:flex;gap:10px;justify-content:center;direction:ltr}
+.im-slot{width:40px;height:54px;border-bottom:4px solid var(--im-edge);font-size:2em;font-weight:800;line-height:54px;text-align:center;font-variant-numeric:tabular-nums}
+.im-pad{display:grid;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center;direction:ltr}
+.im-key{min-height:52px;border-radius:16px;border:2.5px solid var(--im-edge);background:var(--ok-bg2);font:inherit;font-weight:800;font-size:1.3em;box-shadow:0 3px 0 var(--im-edge);display:grid;place-items:center}
+.im-key:active{transform:translateY(2px);box-shadow:0 1px 0 var(--im-edge)}
+.im-key.go{background:var(--im-mint)}
+.im-key svg{width:26px;height:26px}
+.im-check-tiles,.im-pick-tiles{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
+.im-check-tiles .im-tile,.im-pick-tiles .im-tile{min-height:56px;justify-content:center;text-align:center;font-size:1.05em}
+.im-faces{display:flex;gap:10px;justify-content:center}
+.im-face-btn{width:72px;height:72px;border-radius:50%;border:2.5px solid var(--im-edge);background:var(--ok-bg2);display:grid;place-items:center;box-shadow:0 3px 0 var(--im-edge);padding:0}
+.im-face-btn svg{width:46px;height:46px;color:var(--ok-text)}
+.im-face-btn.on{background:var(--im-mint)}
+.im-flowview{display:flex;flex-direction:column;gap:4px;width:100%;max-width:360px;text-align:start;font-weight:700;font-size:.95em}
+.im-flowview .im-fv{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:var(--ok-bg2);border:2px solid var(--im-edge)}
+.im-flowview .im-fv.fix{background:var(--im-mint-t)}
+.im-flowview .im-fv svg{width:20px;height:20px;flex:none}
+.im-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.im-switches{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.im-sw{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800}
+.im-sw .ok-switch{width:64px;height:40px}
+.im-sw b{font-size:.9em;opacity:.8}
+.im-grid{display:grid;gap:3px;background:var(--im-edge);padding:3px;border-radius:10px}
+.im-px{width:100%;aspect-ratio:1;background:var(--ok-card);border:0;padding:0;border-radius:3px}
+.im-px.on{background:var(--ok-text)}
+.im-meter{display:flex;align-items:center;gap:8px;font-weight:700;width:100%}
+.im-meter .im-bar{flex:1;height:14px;border-radius:999px;border:2px solid var(--im-edge);overflow:hidden;background:var(--ok-bg2)}
+.im-meter .im-bar i{display:block;height:100%;background:var(--im-mint)}
+.im-meter .im-bar i.over{background:var(--im-coral)}
+.im-swatch{width:88px;height:64px;border-radius:14px;border:3px solid var(--im-edge)}
+.im-stepper{display:inline-flex;align-items:center;gap:6px}
+.im-stepper .ok-btn{min-width:48px;padding:0 12px}
+.im-stepper b{min-width:2.2em;text-align:center;font-variant-numeric:tabular-nums;font-size:1.1em}
+</style>
+<div id="game"><div id="im" hidden></div></div>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-school.js" integrity="sha384-xbmoMTLjBXfyHbxMV8HIl3jSzcl3bxEMMdgGu+KgGuyZY+WNXrh9ogBhRTpyMWO8" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-props.js" integrity="sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/dress.js" integrity="sha384-JZ2+9mOMVNO4iOIJ8Geoa/9ryqx6ygcPzCxDnZ1XmwOKuMJSCM3llSYH2L4SUAYV" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/style-bold.js" integrity="sha384-pFXgoNOZ/kWWctAb2ucgoE+wLssJGKLBbeZJppwZQlTGTPqBEFYA0dOtLTst2DiH" crossorigin="anonymous"></script>
+<script>
+/* ===== Inside the Machine: the chapters, every level and the judges that mark an answer. Plain data and pure
+   functions in a classic script (no DOM, no kit), so tests load it with vm and solve every level with its sol. ===== */
+window.InsideTheMachineLevels = (function () {
+  'use strict';
+  const BOTH = ['1b', '2'];
+  // Chapter table. index = the first digit of a quest code (0 = the map). noun = the word in the progress label.
+  // then = where lesson mode (lock=1 or a quest code) continues at chapter end, per band (plan CA-1).
+  const CHAPTERS = [
+    { index: 1, id: 'parts', title: 'Parts & Jobs', noun: 'levels', bands: BOTH, csta: { '1b': ['1B-CS-01'], '2': ['1B-CS-01'] }, pic: 'bulb', then: { '1b': { ch: 'hw-sw', from: 1, to: 3 } } },
+    { index: 2, id: 'hw-sw', title: 'Hardware or Software', noun: 'levels', bands: BOTH, csta: { '1b': ['1B-CS-02'], '2': ['1B-CS-02'] }, pic: 'book' },
+    { index: 3, id: 'fixit', title: 'Fix-It Desk', noun: 'tickets', bands: BOTH, csta: { '1b': ['1B-CS-03'], '2': ['2-CS-03'] }, pic: 'magnifier' },
+    { index: 4, id: 'bits', title: 'Bits & Pixels', noun: 'levels', bands: BOTH, csta: { '1b': ['1B-CS-02'], '2': ['2-DA-07'] }, pic: 'abacus' },
+    { index: 5, id: 'gadget', title: 'Design a Gadget', noun: 'levels', bands: ['2'], csta: { '2': ['2-CS-02', '2-CS-01'] }, pic: 'drone' },
+    { index: 6, id: 'design-lab', title: 'Design Lab', noun: 'levels', bands: BOTH, csta: { '1b': ['1B-IC-19'], '2': ['2-CS-01', '2-IC-21'] }, pic: 'globe' },
+  ];
+  const MODES = { 0: 'play', 3: 'projector' };
+  const BANDS = { 1: '1b', 2: '2' };
+  // The parts a device is made of (name shown on the board, role for the color-blind-safe badge and the group hint).
+  const PARTS = {
+    screen: { name: 'Screen', role: 'output' }, camera: { name: 'Camera', role: 'input' }, speaker: { name: 'Speaker', role: 'output' },
+    mic: { name: 'Microphone', role: 'input' }, battery: { name: 'Battery', role: 'power' }, touch: { name: 'Touch sensor', role: 'input' },
+    processor: { name: 'Processor', role: 'process' }, memory: { name: 'Memory', role: 'storage' }, storage: { name: 'Storage', role: 'storage' },
+    keyboard: { name: 'Keyboard', role: 'input' }, mouse: { name: 'Mouse', role: 'input' }, printer: { name: 'Printer', role: 'output' },
+    cable: { name: 'Cable', role: 'link' }, network: { name: 'Network box', role: 'link' }, light: { name: 'Light sensor', role: 'input' },
+    motor: { name: 'Motor', role: 'output' }, tablet: { name: 'Tablet', role: 'process' }, power: { name: 'Power plug', role: 'power' },
+    paper: { name: 'Paper tray', role: 'storage' }, charger: { name: 'Charger', role: 'power' }, wheels: { name: 'Wheels', role: 'output' },
+  };
+  const ROLE_NAMES = { input: 'Input', process: 'Process', output: 'Output', storage: 'Storage', power: 'Power', link: 'Link' };
+  // small builders (the English text IS the translation key, so every word here is a string the packs translate)
+  const ck = (q, right, w1, w2) => ({ q, tiles: [right, w1, w2], answer: 0 });
+  const rd = (q, right, w1, w2) => ({ q, tiles: [right, w1, w2], answer: 0 });
+  const job = (q, a) => ({ q, a });
+  const card = (id, text, bin, pic) => ({ id, text, bin, pic });
+  const tile = (id, text, pic) => ({ id, text, pic });
+  const chk = (id, label, cost, rel, ok, fix) => ({ id, label, cost, rel: rel !== false, help: rel === 'help', ok, fix });
+  const swp = (id, label, cost, fix) => ({ id, label, cost, fix });
+  const LEVELS = [];
+  const add = l => { LEVELS.push(l); return l; };
+
+  /* ---------- Chapter 1: Parts & Jobs (1B-CS-01) ---------- */
+  add({ id: 'parts-1', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'tap', random: true, par: 6, device: 'tablet',
+    parts: ['screen', 'camera', 'speaker', 'mic', 'battery', 'touch'],
+    jobs: [job('Which part shows you the photo?', 'screen'), job('Which part takes the photo?', 'camera'), job('Which part plays the song?', 'speaker'),
+      job('Which part hears your voice?', 'mic'), job('Which part keeps the tablet running without a plug?', 'battery'), job('Which part feels your finger?', 'touch')],
+    learn: { title: 'Every part has a job', text: 'A tablet is a team of parts. Inputs take things in: the touch sensor, the camera, the microphone. Outputs give things out: the screen, the speaker. The processor thinks, storage remembers, and the battery powers it all.' },
+    hints: ['Does this job take something in, or give something out?', 'The parts that do this kind of job are glowing.', 'The glowing part is the one. Tap it.'],
+    check: ck('Which of these is an input?', 'The camera', 'The screen', 'The speaker'),
+    sol: { picks: ['screen', 'camera', 'speaker', 'mic', 'battery', 'touch'], wrong: 0 } });
+  add({ id: 'parts-2', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'tap', random: true, par: 4, device: 'inside',
+    parts: ['processor', 'memory', 'storage', 'battery', 'speaker', 'screen'],
+    jobs: [job('Which part does the thinking?', 'processor'), job('Which part keeps your photos safe when the tablet is off?', 'storage'),
+      job('Which part holds what the tablet is working on right now?', 'memory'), job('Which part gives the power?', 'battery')],
+    hints: ['Think: is this job about thinking, remembering or powering?', 'The parts that do this kind of job are glowing.', 'The glowing part is the one. Tap it.'],
+    check: ck('Where do your photos stay when the tablet is off?', 'In storage', 'In memory', 'On the screen'),
+    sol: { picks: ['processor', 'storage', 'memory', 'battery'], wrong: 0 } });
+  add({ id: 'parts-3', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'wire', par: 2, device: 'pad',
+    story: 'Build a drawing pad: your finger draws a line on the screen.',
+    parts: ['touch', 'processor', 'screen', 'speaker', 'camera'],
+    need: [['touch', 'processor'], ['processor', 'screen']],
+    hints: ['Where does the finger press go first, and what has to think about it?', 'The two parts that still need a wire are glowing.', 'Tap the touch sensor, then tap the processor.'],
+    check: ck('Which part sits in the middle of every path?', 'The processor', 'The battery', 'The speaker'),
+    sol: { wires: [['touch', 'processor'], ['processor', 'screen']], edits: 0 } });
+  add({ id: 'parts-4', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'pick', random: true, par: 4,
+    story: 'What if it is missing?',
+    rounds: [rd('The speaker is missing. What stops working?', 'Playing a song', 'Taking a photo', 'Drawing a line'),
+      rd('The touch sensor is missing. What stops working?', 'Tapping an app', 'Hearing a song', 'Seeing a photo'),
+      rd('The storage is missing. What happens after you turn the tablet off and on?', 'Your photos are gone', 'The screen is bigger', 'It gets louder'),
+      rd('The processor is missing. What happens?', 'Nothing works at all', 'Only the camera works', 'Only the sound stops')],
+    hints: ['Which job did that part do?', 'Think about the job of the missing part, not the others.', 'The answer names the job the missing part used to do.'],
+    check: ck('Which part can a tablet NOT work without?', 'The processor', 'The camera', 'The speaker'),
+    sol: { picks: [0, 0, 0, 0], wrong: 0 } });
+  add({ id: 'parts-5', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'wire', par: 3, device: 'robot',
+    story: 'This robot should drive toward the light. Plug in the light sensor and wire the robot up.',
+    parts: ['light', 'processor', 'motor', 'battery', 'speaker'],
+    need: [['light', 'processor'], ['processor', 'motor'], ['battery', 'processor']],
+    hints: ['A sensor is an input. What does every input talk to?', 'The parts that still need a wire are glowing.', 'Wire the light sensor to the processor, the processor to the motor, and the battery to the processor.'],
+    check: ck('The light sensor is unplugged. What does the robot do?', 'It cannot find the light', 'It drives faster', 'It beeps'),
+    sol: { wires: [['light', 'processor'], ['processor', 'motor'], ['battery', 'processor']], edits: 0 } });
+  add({ id: 'parts-6', ch: 'parts', bands: BOTH, csta: ['1B-CS-01'], kind: 'wire', par: 4, device: 'desk',
+    story: 'Set up the printer so the tablet can print a photo. A printer needs the tablet, a cable, power and paper.',
+    parts: ['tablet', 'cable', 'printer', 'power', 'paper', 'speaker'],
+    need: [['tablet', 'cable'], ['cable', 'printer'], ['power', 'printer'], ['paper', 'printer']],
+    hints: ['The tablet sends the page. What does the page travel through?', 'The parts that still need a wire are glowing.', 'Tablet to cable, cable to printer, power to printer, paper tray to printer.'],
+    check: ck('The printer has no paper. What happens to the photo?', 'Nothing prints until paper is added', 'The tablet prints it itself', 'The tablet screen turns off'),
+    sol: { wires: [['tablet', 'cable'], ['cable', 'printer'], ['power', 'printer'], ['paper', 'printer']], edits: 0 } });
+
+  /* ---------- Chapter 2: Hardware or Software (1B-CS-02) ---------- */
+  const HW = 'hw', SW = 'sw';
+  add({ id: 'hwsw-1', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'sort', random: true, par: 12,
+    story: 'Sort the cards: hardware you can touch, or software that tells it what to do?',
+    bins: [{ id: HW, name: 'Hardware' }, { id: SW, name: 'Software' }],
+    cards: [card('c1', 'Screen', HW, 'screen'), card('c2', 'Keyboard', HW, 'keyboard'), card('c3', 'Battery', HW, 'battery'), card('c4', 'Camera', HW, 'camera'),
+      card('c5', 'Speaker', HW, 'speaker'), card('c6', 'Processor chip', HW, 'processor'), card('c7', 'Printer', HW, 'printer'),
+      card('c8', 'A drawing app', SW, 'app'), card('c9', 'The rules of a game', SW, 'app'), card('c10', 'A calculator app', SW, 'app'),
+      card('c11', 'The instructions that make the clock tick', SW, 'app'), card('c12', 'A video call app', SW, 'app')],
+    learn: { title: 'Hardware and software', text: 'Hardware is what you can touch: the screen, the keyboard, the battery, the chips. Software is the instructions that tell the hardware what to do: apps and programs. Every task needs both.' },
+    hints: ['Could you hold this in your hand?', 'Hardware cards show a part. Software cards talk about instructions or an app.', 'If it is an app or a set of instructions, it goes in Software.'],
+    check: ck('Which one is software?', 'A drawing app', 'A keyboard', 'A battery'),
+    sol: { placed: { c1: HW, c2: HW, c3: HW, c4: HW, c5: HW, c6: HW, c7: HW, c8: SW, c9: SW, c10: SW, c11: SW, c12: SW }, wrong: 0 } });
+  add({ id: 'hwsw-2', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'order', random: true, par: 5,
+    story: 'A Tap Travels: you tap to take a photo. Put the steps in order.',
+    tiles: [tile('finger', 'Your finger taps', 'tap'), tile('touch', 'The touch sensor feels it', 'touch'), tile('cpu', 'The processor works it out', 'processor'),
+      tile('app', 'The camera app says: take a photo', 'app'), tile('screen', 'The screen shows the photo', 'screen')],
+    hints: ['What happens first: the tap, or the photo on the screen?', 'Hardware feels the tap, then the processor, then the app (software), then the screen.', 'Start with the finger, end with the screen.'],
+    check: ck('Which step is software?', 'The camera app', 'The touch sensor', 'The screen'),
+    sol: { order: ['finger', 'touch', 'cpu', 'app', 'screen'], moves: 5 } });
+  add({ id: 'hwsw-3', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'sort', random: true, par: 12,
+    story: 'Sort the parts by job: input, process, output or storage.',
+    bins: [{ id: 'input', name: 'Input' }, { id: 'process', name: 'Process' }, { id: 'output', name: 'Output' }, { id: 'storage', name: 'Storage' }],
+    cards: [card('k1', 'Keyboard', 'input', 'keyboard'), card('k2', 'Mouse', 'input', 'mouse'), card('k3', 'Microphone', 'input', 'mic'), card('k4', 'Camera', 'input', 'camera'),
+      card('k5', 'Touch sensor', 'input', 'touch'), card('k6', 'Light sensor', 'input', 'light'), card('k7', 'Processor', 'process', 'processor'),
+      card('k8', 'Screen', 'output', 'screen'), card('k9', 'Speaker', 'output', 'speaker'), card('k10', 'Printer', 'output', 'printer'),
+      card('k11', 'Hard drive', 'storage', 'storage'), card('k12', 'Memory card', 'storage', 'memory')],
+    hints: ['Does it take something in, think, give something out, or keep things?', 'Sensors, keys and cameras take things in. Screens, speakers and printers give things out.', 'Anything that keeps files when the power is off is Storage.'],
+    check: ck('Which part is an output?', 'The speaker', 'The microphone', 'The hard drive'),
+    sol: { placed: { k1: 'input', k2: 'input', k3: 'input', k4: 'input', k5: 'input', k6: 'input', k7: 'process', k8: 'output', k9: 'output', k10: 'output', k11: 'storage', k12: 'storage' }, wrong: 0 } });
+  add({ id: 'hwsw-4', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'order', random: true, par: 5,
+    story: 'A Tap Travels: you tap to play a song. Put the steps in order.',
+    tiles: [tile('finger', 'Your finger taps', 'tap'), tile('touch', 'The touch sensor feels it', 'touch'), tile('cpu', 'The processor works it out', 'processor'),
+      tile('app', 'The music app picks the song', 'app'), tile('speaker', 'The speaker plays it', 'speaker')],
+    hints: ['What happens first: the tap, or the music?', 'Hardware feels the tap, then the processor, then the app (software), then the speaker.', 'Start with the finger, end with the speaker.'],
+    check: ck('Which part is hardware here?', 'The speaker', 'The music app', 'The song choice'),
+    sol: { order: ['finger', 'touch', 'cpu', 'app', 'speaker'], moves: 5 } });
+  add({ id: 'hwsw-5', ch: 'hw-sw', bands: BOTH, csta: ['1B-CS-02'], kind: 'order', random: true, par: 6,
+    story: 'A video call: your friend waves. How does the wave reach your screen? Put the steps in order.',
+    tiles: [tile('wave', 'Your friend waves', 'tap'), tile('cam', 'Their camera sees it', 'camera'), tile('net', 'The network carries it', 'network'),
+      tile('cpu', 'Your processor gets it', 'processor'), tile('app', 'The video app shows it', 'app'), tile('screen', 'Your screen lights up', 'screen')],
+    hints: ['Where does the wave start, and where does it end up?', 'Camera first (input), network in the middle, app and screen at the end (output).', 'Friend, camera, network, processor, app, screen.'],
+    check: ck('Which step carries the wave between the two devices?', 'The network', 'The screen', 'The video app'),
+    sol: { order: ['wave', 'cam', 'net', 'cpu', 'app', 'screen'], moves: 6 } });
+
+  /* ---------- Chapter 3: Fix-It Desk. Explorer: 1B-CS-03 (a tray of checks, cheap first). ---------- */
+  const H = 'help';
+  const T1 = (id, n, ticket, device, checks, faults, check, hints, extra) => add(Object.assign({ id, ch: 'fixit', bands: ['1b'], csta: ['1B-CS-03'], kind: 'ticket', random: true, ticket, device, checks, faults, check, hints }, extra || {}));
+  T1('fixit-1b-1', 1, { title: 'It will not turn on', text: 'My tablet shows a black screen and nothing happens when I press the button.' }, 'tablet',
+    [chk('plug', 'Is it plugged in?', 1, true, 'It is plugged in.', 'It was unplugged! Plugged in, it turns on.'),
+      chk('hold', 'Hold the power button', 1, true, 'Still a black screen.'),
+      chk('bright', 'Turn the brightness up', 1, true, 'The brightness was already up.'),
+      chk('socket', 'Try another wall socket', 3, true, 'Same with another socket.'),
+      chk('charge', 'Leave it charging a while', 10, true, 'Still nothing after charging.'),
+      chk('paper', 'Add paper to the printer', 2, false, 'The printer has paper. That changed nothing.'),
+      chk(H, 'Ask the teacher', 30, H, 'The teacher fixed it, but you did not learn what was wrong.')],
+    ['plug'], ck('Which check should come first?', 'The quickest one', 'The most expensive one', 'The last one you think of'),
+    ['Which check is quickest?', 'The cheapest useful check is glowing.', 'The quickest check is chosen for you.'],
+    { learn: { title: 'Check the cheap things first', text: 'When something stops working, do not panic. Try the quick checks first: is it plugged in, is it on, is it muted? Change one thing at a time. Ask for help last.' }, par: 3 });
+  T1('fixit-1b-2', 2, { title: 'No wireless connection', text: 'The tablet cannot reach the internet. The one next to it can.' }, 'tablet',
+    [chk('airplane', 'Is airplane mode off?', 1, true, 'Airplane mode is off.', 'Airplane mode was on! Off again, the tablet connects.'),
+      chk('wifi', 'Is wireless switched on?', 1, true, 'Wireless is on.'),
+      chk('closer', 'Move closer to the network box', 2, true, 'Closer made no difference.'),
+      chk('restart', 'Restart the tablet', 3, true, 'Restarted, still no connection.'),
+      chk('router', 'Restart the network box', 5, true, 'The network box is back and the other tablet still works.'),
+      chk('volume', 'Turn the volume up', 1, false, 'Louder, but still no connection.'),
+      chk(H, 'Ask the teacher', 30, H, 'The teacher fixed it, but you did not learn what was wrong.')],
+    ['airplane'], ck('The tablet next to it works. What does that tell you?', 'The problem is on this tablet', 'The internet is down everywhere', 'The volume is too low'),
+    ['Which check is quickest?', 'The cheapest useful check is glowing.', 'The quickest check is chosen for you.'], { par: 2 });
+  T1('fixit-1b-3', 3, { title: 'No sound in the headphones', text: 'I can see the video, but I cannot hear anything in my headphones.' }, 'headphones',
+    [chk('plugged', 'Are the headphones plugged in all the way?', 1, true, 'They are plugged in all the way.'),
+      chk('volume', 'Turn the volume up', 1, true, 'The volume is up.'),
+      chk('mute', 'Is mute off?', 1, true, 'Mute is off.', 'Mute was on! Off again, the sound is back.'),
+      chk('restart', 'Restart the tablet', 3, true, 'Restarted, still silent.'),
+      chk('other', 'Try other headphones', 4, true, 'Other headphones are silent too.'),
+      chk('bright', 'Turn the brightness up', 1, false, 'Brighter, but still silent.'),
+      chk(H, 'Ask the teacher', 30, H, 'The teacher fixed it, but you did not learn what was wrong.')],
+    ['mute'], ck('Why try the quick checks before swapping the headphones?', 'They cost almost no time', 'Swapping is always wrong', 'Quick checks are more fun'),
+    ['Which check is quickest?', 'The cheapest useful check is glowing.', 'The quickest check is chosen for you.'], { par: 3 });
+  T1('fixit-1b-4', 4, { title: 'The app is frozen', text: 'The drawing app stopped moving. Taps do nothing.' }, 'tablet',
+    [chk('wait', 'Wait ten seconds', 1, true, 'Still frozen.'),
+      chk('close', 'Close the app and open it again', 2, true, 'It opened again and works.', 'Closed and opened again: it works!'),
+      chk('restart', 'Restart the tablet', 3, true, 'Restarted. It works, but that took longer.'),
+      chk('update', 'Update the app', 8, true, 'Updated. That took a while.'),
+      chk('reinstall', 'Remove and reinstall the app', 10, true, 'Reinstalled. Your drawings are gone.'),
+      chk('charger', 'Change the charger', 5, false, 'A new charger changed nothing.'),
+      chk(H, 'Ask the teacher', 30, H, 'The teacher fixed it, but you did not learn what was wrong.')],
+    ['close'], ck('An app is frozen. What is the smallest fix to try?', 'Close it and open it again', 'Remove and reinstall it', 'Buy a new tablet'),
+    ['Which check is quickest?', 'The cheapest useful check is glowing.', 'The quickest check is chosen for you.'], { par: 3 });
+  T1('fixit-1b-5', 5, { title: 'The passphrase does not work', text: 'I know my passphrase, but the login screen says it is wrong.' }, 'keyboard',
+    [chk('caps', 'Is caps lock on?', 1, true, 'Caps lock is off.', 'Caps lock was on! Off again, the login works.'),
+      chk('again', 'Try it again, slowly', 1, true, 'Slowly, still wrong.'),
+      chk('layout', 'Is the keyboard language right?', 2, true, 'The keyboard language is right.'),
+      chk('restart', 'Restart the device', 3, true, 'Restarted, still wrong.'),
+      chk('reset', 'Reset the passphrase', 10, true, 'Reset. That took a long time.'),
+      chk('paper', 'Add paper to the printer', 2, false, 'Paper added. Still cannot log in.'),
+      chk(H, 'Ask the teacher', 30, H, 'The teacher fixed it, but you did not learn what was wrong.')],
+    ['caps'], ck('Why does caps lock break a passphrase?', 'Big and small letters are different', 'It turns the keyboard off', 'It makes the screen dark'),
+    ['Which check is quickest?', 'The cheapest useful check is glowing.', 'The quickest check is chosen for you.'], { par: 2 });
+  T1('fixit-1b-6', 6, { title: 'It will not charge', text: 'The tablet is plugged in, but the battery is not filling up.' }, 'charger',
+    [chk('both', 'Is the cable pushed in at both ends?', 1, true, 'Both ends are in.'),
+      chk('wall', 'Is the wall socket switched on?', 1, true, 'The socket is on.'),
+      chk('fluff', 'Clean fluff out of the port', 2, true, 'The port is clean.'),
+      chk('restart', 'Restart the tablet', 3, true, 'Restarted, still not charging.'),
+      chk('cable', 'Try another cable', 4, true, 'Another cable works.', 'Another cable works! The old cable was broken inside.'),
+      chk('brick', 'Try another charger brick', 5, true, 'Another brick changed nothing.'),
+      chk(H, 'Ask the teacher', 30, H, 'The teacher fixed it, but you did not learn what was wrong.')],
+    ['cable'], ck('Swapping the cable made it work. What was broken?', 'The cable', 'The battery', 'The screen'),
+    ['Which check is quickest?', 'The cheapest useful check is glowing.', 'The quickest check is chosen for you.'], { par: 11 });
+  T1('fixit-1b-7', 7, { title: 'No sound in the video', text: 'The video plays, but there is no sound at all. Two things might be wrong.' }, 'tablet',
+    [chk('volume', 'Turn the volume up', 1, true, 'The volume is up.', 'The volume was all the way down. Up it goes.'),
+      chk('mute', 'Is mute off?', 1, true, 'Mute is off.'),
+      chk('hp', 'Are headphones plugged in by mistake?', 1, true, 'No headphones are plugged in.'),
+      chk('appvol', 'Turn the sound on inside the video app', 2, true, 'The app sound is on.', 'The video app had its own sound switched off. On again!'),
+      chk('restart', 'Restart the tablet', 3, true, 'Restarted. No change.'),
+      chk('bright', 'Turn the brightness up', 1, false, 'Brighter, still silent.'),
+      chk(H, 'Ask the teacher', 30, H, 'The teacher fixed it, but you did not learn what was wrong.')],
+    ['volume', 'appvol'], ck('You fixed one thing and it is still broken. What now?', 'Keep checking: there may be two faults', 'Give up', 'Undo the first fix'),
+    ['Which check is quickest?', 'The cheapest useful check is glowing.', 'The quickest check is chosen for you.'], { par: 5 });
+
+  /* ---------- Chapter 3, Pro: 2-CS-03 (build the flowchart first, run it, then swap a part to isolate the fault). ---------- */
+  const T2 = (id, ticket, device, checks, swaps, faults, check, hints, extra) => add(Object.assign({ id, ch: 'fixit', bands: ['2'], csta: ['2-CS-03'], csta2: ['2-AP-10'], kind: 'flow', random: true, ticket, device, checks, swaps, faults, check, hints }, extra || {}));
+  const FH = ['Which question belongs first in a flowchart?', 'The cheapest useful question is glowing: it goes next.', 'The chain is sorted cheapest first for you. Run it, then swap the cheapest part first.'];
+  T2('fixit-2-1', { title: 'The printer prints nothing', text: 'The laptop says the page was sent, but the printer sits there quietly.' }, 'printer',
+    [chk('power', 'Is the printer on?', 1, true, 'The printer is on.'),
+      chk('paper', 'Is there paper?', 1, true, 'There is paper.', 'The paper tray was empty! Loaded, the page prints.'),
+      chk('queue', 'Is the job stuck in the print queue?', 2, true, 'The queue is moving.'),
+      chk('which', 'Is the right printer selected?', 2, true, 'The right printer is selected.'),
+      chk('restartp', 'Restart the printer', 4, true, 'Restarted. Still nothing.'),
+      chk('volume', 'Turn the laptop volume up', 1, false, 'Louder, but nothing prints.')],
+    [swp('cable', 'Swap the printer cable', 3, 'A new cable, same silence.'), swp('printer', 'Swap in another printer', 8, 'Another printer prints: so the first one was the problem.')],
+    ['paper'], ck('Why build the flowchart before touching anything?', 'So every check happens in a sensible order', 'Because flowcharts look nice', 'So you can skip the cheap checks'), FH,
+    { learn: { title: 'Follow a flowchart', text: 'Fixers do not guess. They build a chain of yes/no questions, cheapest first, and follow it. When a part might be broken, they swap it for one that works: a swap test shows which part is at fault.' }, par: 2 });
+  T2('fixit-2-2', { title: 'No internet on the laptop', text: 'The laptop has no internet. The tablet next to it is online.' }, 'laptop',
+    [chk('wifi', 'Is wireless on?', 1, true, 'Wireless is on.'),
+      chk('airplane', 'Is airplane mode off?', 1, true, 'Airplane mode is off.'),
+      chk('network', 'Is it on the right network?', 2, true, 'It is on the right network.', 'It had joined the wrong network! Switched, it is online.'),
+      chk('restartl', 'Restart the laptop', 4, true, 'Restarted. Still offline.'),
+      chk('router', 'Restart the network box', 5, false, 'The tablet was already online, so the network box was fine.'),
+      chk('bright', 'Turn the brightness up', 1, false, 'Brighter, still offline.')],
+    [swp('laptop', 'Swap in another laptop', 10, 'Another laptop goes online.')],
+    ['network'], ck('The tablet next to it is online. Which check is wasted?', 'Restarting the network box', 'Checking airplane mode', 'Checking the network name'), FH, { par: 4 });
+  T2('fixit-2-3', { title: 'Black screen on the dock', text: 'When the laptop sits in the dock, the big display stays black. The user brought their own cable.' }, 'dock',
+    [chk('dockpower', 'Is the dock powered?', 1, true, 'The dock light is on.'),
+      chk('displayon', 'Is the display on?', 1, true, 'The display is on.'),
+      chk('input', 'Is the display on the right input?', 2, true, 'The right input is selected.'),
+      chk('restartl', 'Restart the laptop', 4, true, 'Restarted. Still black.'),
+      chk('paper', 'Is there paper in the printer?', 1, false, 'Paper has nothing to do with the display.')],
+    [swp('cable', 'Swap the cable', 2, 'With a known-good cable the display lights up! The user\'s own cable was the fault.'), swp('dock', 'Swap the dock', 6, 'Another dock, same black screen.'), swp('laptop', 'Swap the laptop', 10, 'Another laptop, same black screen.')],
+    ['cable'], ck('What is a swap test?', 'Replace one part with a working one to see if the fault moves', 'Swap the user for another user', 'Turn two parts around'), FH, { par: 10 });
+  T2('fixit-2-4', { title: 'Charging very slowly', text: 'The tablet is plugged in all night and gains almost nothing.' }, 'charger',
+    [chk('both', 'Is the cable pushed in at both ends?', 1, true, 'Both ends are in.'),
+      chk('screenoff', 'Is the screen off while charging?', 1, true, 'The screen is off.'),
+      chk('apps', 'Close the apps that are running', 2, true, 'Apps closed. Still slow.'),
+      chk('restart', 'Restart the tablet', 3, true, 'Restarted. Still slow.'),
+      chk('volume', 'Turn the volume down', 1, false, 'Quieter, still slow.')],
+    [swp('cable', 'Swap the cable', 2, 'New cable, still slow.'), swp('brick', 'Swap the charger brick', 3, 'With a proper brick it charges fast! The old brick was too weak.'), swp('tablet', 'Swap the tablet', 10, 'Another tablet charges fine with the original brick.')],
+    ['brick'], ck('Which part do you swap first?', 'The cheapest one', 'The most expensive one', 'All of them at once'), FH, { par: 12 });
+  T2('fixit-2-5', { title: 'The headset microphone is silent', text: 'In the video call, nobody can hear the user. The headset is plugged in.' }, 'headphones',
+    [chk('muteswitch', 'Is the mute switch on the headset off?', 1, true, 'The switch is off.', 'The headset\'s own mute switch was on! Off, and everyone hears the user.'),
+      chk('plugged', 'Is it plugged in all the way?', 1, true, 'Plugged in all the way.'),
+      chk('appmic', 'Is the right microphone chosen in the app?', 2, true, 'The right microphone is chosen.'),
+      chk('perm', 'Did the app get permission to use the microphone?', 2, true, 'Permission is granted.'),
+      chk('restart', 'Restart the laptop', 3, true, 'Restarted. Still silent.'),
+      chk('paper', 'Is there paper in the printer?', 1, false, 'Paper has nothing to do with the microphone.')],
+    [swp('headset', 'Swap the headset', 4, 'Another headset is silent too.'), swp('laptop', 'Swap the laptop', 10, 'Another laptop, still silent.')],
+    ['muteswitch'], ck('Why check the mute switch before swapping the headset?', 'It takes one second and often is the fault', 'Headsets cannot be swapped', 'Swapping always breaks things'), FH, { par: 2 });
+  T2('fixit-2-6', { title: 'The printer prints blank pages', text: 'Pages come out, but they are white.' }, 'printer',
+    [chk('paperway', 'Is the paper loaded the right way up?', 1, true, 'The paper is the right way up.'),
+      chk('preview', 'Does the page look right on the screen?', 1, true, 'The preview looks right.'),
+      chk('clean', 'Run the print head clean', 3, true, 'Cleaned. Still blank.'),
+      chk('restartp', 'Restart the printer', 4, true, 'Restarted. Still blank.'),
+      chk('wifi', 'Is wireless on?', 1, false, 'Wireless is on. The pages still come out, so this was never the problem.')],
+    [swp('cable', 'Swap the cable', 2, 'New cable, still blank.'), swp('cartridge', 'Swap the ink cartridge', 3, 'A new cartridge prints! The old one was empty.'), swp('printer', 'Swap in another printer', 8, 'Another printer prints fine.')],
+    ['cartridge'], ck('The pages come out blank. Which part is most likely empty?', 'The ink cartridge', 'The paper tray', 'The battery'), FH, { par: 14 });
+  T2('fixit-2-7', { title: 'No picture on the class display', text: 'The laptop is plugged into the big display, but the display shows nothing. Two things may be wrong.' }, 'dock',
+    [chk('displayon', 'Is the display on?', 1, true, 'The display is on.'),
+      chk('input', 'Is the right input selected?', 2, true, 'The right input is selected.', 'The display was on the wrong input! Switched. Still dark, though.'),
+      chk('mirror', 'Is the laptop set to show on a second screen?', 2, true, 'The laptop is set to show on a second screen.'),
+      chk('restartl', 'Restart the laptop', 4, true, 'Restarted. Still nothing.'),
+      chk('volume', 'Turn the display volume up', 1, false, 'Louder, still no picture.')],
+    [swp('adapter', 'Swap the adapter', 2, 'A new adapter: the picture appears! The adapter was broken too.'), swp('cable', 'Swap the cable', 2, 'New cable, still nothing.'), swp('display', 'Swap the display', 15, 'Another display: no picture either.')],
+    ['input', 'adapter'], ck('You fixed the input and it is still dark. What does that mean?', 'There is a second fault', 'The first fix was wrong', 'Displays never work with laptops'), FH, { par: 13 });
+
+  /* ---------- helpers ---------- */
+  const chapter = id => CHAPTERS.find(c => c.id === id) || null;
+  const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
+  const level = id => LEVELS.find(l => l.id === id) || null;
+  const byCost = list => list.slice().sort((a, b) => a.cost - b.cost);
+  /** The author's par for a ticket: the cost of checking cheapest first (ties included) up to the last fault, then
+   *  swapping cheapest first up to the faulty part. Any cheapest-first order costs this or less. */
+  function parCost(l) {
+    if (l.kind !== 'ticket' && l.kind !== 'flow') return l.par;
+    const rel = l.checks.filter(c => c.rel && !c.help), swaps = l.swaps || [];
+    const cf = l.faults.filter(f => rel.some(c => c.id === f)), sf = l.faults.filter(f => swaps.some(s => s.id === f));
+    const sum = xs => xs.reduce((n, x) => n + x.cost, 0);
+    if (sf.length) { const top = Math.max(...sf.map(f => swaps.find(s => s.id === f).cost)); return sum(rel) + sum(swaps.filter(s => s.cost <= top)); }
+    const top = Math.max(...cf.map(f => rel.find(c => c.id === f).cost));
+    return sum(rel.filter(c => c.cost <= top));
+  }
+  /** The cheapest-first answer for a ticket (what a careful fixer does). */
+  function cheapest(l) {
+    const rel = byCost(l.checks.filter(c => c.rel && !c.help)).map(c => c.id);
+    return l.kind === 'flow' ? { flow: rel, swaps: byCost(l.swaps || []).map(s => s.id) } : { checks: rel };
+  }
+  for (const l of LEVELS) if ((l.kind === 'ticket' || l.kind === 'flow') && !l.sol) l.sol = cheapest(l);
+  /** Runs a ticket answer: checks in order (flow: the chain), then swaps, until every fault is fixed. */
+  function runTicket(l, a) {
+    const faults = new Set(l.faults), path = []; let cost = 0, helped = false;
+    const walk = (ids, list, kind) => {
+      for (const id of ids || []) {
+        if (!faults.size) break;
+        const c = list.find(x => x.id === id); if (!c) continue;
+        cost += c.cost; const hit = faults.has(id); if (hit) faults.delete(id);
+        if (c.help) { helped = true; faults.clear(); }
+        path.push({ id, kind, hit, help: !!c.help, cost: c.cost });
+      }
+    };
+    walk(l.kind === 'flow' ? a.flow : a.checks, l.checks, 'check');
+    if (l.kind === 'flow') walk(a.swaps, l.swaps || [], 'swap');
+    const ok = !faults.size;
+    return { ok, fails: ok ? [] : ['still broken'], cost, path, helped, left: faults.size, good: ok && !helped && cost <= l.par };
+  }
+  /** judge(level, answer) -> { ok, fails[], good (the second star) , ...details }. Pure. */
+  function judge(l, a) {
+    a = a || {};
+    switch (l.kind) {
+      case 'tap': case 'pick': {
+        const want = l.kind === 'tap' ? l.jobs.map(j => j.a) : l.rounds.map(r => r.answer), picks = Array.isArray(a.picks) ? a.picks : [];
+        const fails = []; want.forEach((w, i) => { if (picks[i] !== w) fails.push('round ' + (i + 1)); });
+        return { ok: !fails.length, fails, good: !fails.length && !(a.wrong > 0) };
+      }
+      case 'wire': {
+        const key = e => e.slice().sort().join('>');
+        const need = new Set(l.need.map(key)), have = new Set((a.wires || []).map(key));
+        const missing = [...need].filter(k => !have.has(k)), extra = [...have].filter(k => !need.has(k));
+        const fails = missing.map(k => 'missing ' + k).concat(extra.map(k => 'extra ' + k));
+        return { ok: !fails.length, fails, missing, extra, good: !fails.length && !(a.edits > 0) };
+      }
+      case 'sort': {
+        const placed = a.placed || {}, wrong = l.cards.filter(c => placed[c.id] !== c.bin).map(c => c.id);
+        return { ok: !wrong.length, fails: wrong.map(id => 'card ' + id), wrongCards: wrong, good: !wrong.length && !(a.wrong > 0) };
+      }
+      case 'order': {
+        const order = a.order || [], sol = l.sol.order; let firstBad = -1;
+        for (let i = 0; i < sol.length; i++) if (order[i] !== sol[i]) { firstBad = i; break; }
+        const ok = firstBad < 0 && order.length === sol.length;
+        return { ok, fails: ok ? [] : ['step ' + (firstBad < 0 ? order.length : firstBad + 1)], firstBad, good: ok && (a.moves == null || a.moves <= l.par) };
+      }
+      case 'ticket': case 'flow': return runTicket(l, a);
+      default: return { ok: false, fails: ['unknown kind ' + l.kind], good: false };
+    }
+  }
+  /** How many moves an answer holds (par >= moves(sol) for the tap-and-build kinds). */
+  const moves = (l, a) => l.kind === 'wire' ? (a.wires || []).length : l.kind === 'sort' ? Object.keys(a.placed || {}).length : l.kind === 'order' ? (a.order || []).length : l.kind === 'tap' || l.kind === 'pick' ? (a.picks || []).length : 0;
+  /* quest codes: C B M L. C = chapter index (0 = map), B = 1 Explorer | 2 Pro, M = mode (0 play, 3 projector), L = level (0 = first unfinished). */
+  function parseCode(s) {
+    const d = String(s || '').replace(/\D/g, ''); if (d.length !== 4) return null;
+    const ch = CHAPTERS.find(c => c.index === +d[0]) || null;
+    return { chapter: +d[0] === 0 ? null : (ch ? ch.id : null), band: BANDS[+d[1]] || null, mode: MODES[+d[2]] || 'play', level: +d[3] };
+  }
+  function codeFor(o) {
+    const ch = chapter(o.chapter); const c = ch ? ch.index : 0, b = o.band === '2' ? 2 : 1, m = o.mode === 'projector' ? 3 : 0, l = Math.max(0, Math.min(9, o.level | 0));
+    return String(c) + String(b) + String(m) + String(l);
+  }
+  /** Every English sentence and label in the data (the packs translate these; the test keeps en.json equal to them). */
+  const TEXT = new Set(['title', 'text', 'q', 'story', 'label', 'name', 'ok', 'fix', 'tiles', 'hints']);
+  function strings() {
+    const out = new Set();
+    const walk = (v, key) => {
+      if (v == null) return;
+      if (typeof v === 'string') { if (TEXT.has(key)) out.add(v); return; }
+      if (Array.isArray(v)) { v.forEach(x => walk(x, key)); return; }
+      if (typeof v === 'object') for (const k of Object.keys(v)) { if (k === 'sol') continue; walk(v[k], k); }
+    };
+    walk(CHAPTERS, ''); walk(LEVELS, ''); walk(Object.values(PARTS), ''); walk(Object.values(ROLE_NAMES).map(name => ({ name })), '');
+    return [...out];
+  }
+  return { CHAPTERS, LEVELS, PARTS, ROLE_NAMES, MODES, BANDS, chapter, level, levelsFor, judge, moves, parCost, cheapest, parseCode, codeFor, strings };
+})();
+</script>
+<script type="module">
+(async () => {
+'use strict';
+/* The game. One value per line in CONFIG is what a builder may change; the hex values are only fallbacks for when the
+   kit's colors cannot be read (the kit's own palette is used when it can). */
+const CONFIG = {
+  title: 'Inside the Machine',
+  crew: { species: 'mouse', wear: ['glasses'], colors: { base: 'stone', belly: 'snow', accent: 'sky' }, mood: 'happy', seed: 5 },
+  biome: 'meadow',
+  storeKey: 'inside-the-machine-v1',
+  fallback: { ink: '#1D2340', card: '#FFFDF2', mint: '#3FC380', sky: '#4AA3E8', coral: '#F06A5A', grape: '#7B5CFF', peach: '#F0A860', stone: '#9A9A90', spark: '#FFD24A' },
+};
+const L = window.InsideTheMachineLevels;
+const $ = id => document.getElementById(id);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ROOT = $('im');
+
+/* ---------- words: English is the key; the other languages are a data pack loaded with its checksum ---------- */
+const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
+const PACK_VER = '1.0.0-pending', PACK_SRI = {};
+const PACK = await new Promise(res => {
+  if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
+  const s = document.createElement('script');
+  s.src = `/vendor/data/inside-the-machine/${PACK_VER}/${LANG0}.js`; s.integrity = PACK_SRI[LANG0]; s.crossOrigin = 'anonymous';
+  s.onload = () => res(((window.CsqPacks || {})['inside-the-machine'] || {})[LANG0] || null); s.onerror = () => res(null);
+  document.head.appendChild(s); Oomba.time.real.after(9000, () => res(null));
+});
+if (PACK) Oomba.strings({ [LANG0]: PACK.strings });
+const num = n => { try { return Oomba.num(n); } catch (e) { return String(n); } };
+const fillIn = (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : s);
+function tr(s, v) {
+  if (s == null || s === '') return '';
+  const sv = v && Object.fromEntries(Object.entries(v).map(([k, x]) => [k, typeof x === 'number' ? num(x) : String(x)]));
+  const r = Oomba.t(s, v && Object.assign({}, v, sv));
+  return r === s && sv ? fillIn(s, sv) : r;
+}
+const announce = s => { try { Oomba.ui.announce(s); } catch (e) { /* ignore */ } };
+const sfx = (n, o) => { try { Oomba.sfx(n, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } };
+const icon = (n, o) => { try { return Oomba.icon(n, o); } catch (e) { return ''; } };
+const reduced = () => { try { return !!Oomba.settings.reduced; } catch (e) { return false; } };
+const say = (text) => { try { Oomba.say(text, { who: GIZMO && GIZMO.state ? GIZMO : null }); } catch (e) { /* ignore */ } };
+
+/* ---------- the platform's options for this play (a lesson's Play link): read defensively ---------- */
+const P0 = (window.BRB && BRB.params) || {}, PR = {};
+for (const k of ['chapter', 'band', 'mode', 'level', 'lock']) { if (P0[k] == null) continue; const v = String(P0[k]); if (/^[a-z0-9-]{1,16}$/.test(v)) PR[k] = v; }
+const HAS_PARAMS = Object.keys(PR).length > 0;
+const IN_LIVE = !!(window.BRB && BRB.live && BRB.live.active);
+
+/* ---------- save (per player, per game) ---------- */
+const store = { get() { try { return (window.BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } }, set(v) { try { if (window.BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* ignore */ } } };
+const SAVE = Object.assign({ v: 1, band: '1b', stars: {}, skipped: {}, seen: {}, last: null }, store.get());
+for (const k of ['stars', 'skipped', 'seen']) if (!SAVE[k] || typeof SAVE[k] !== 'object') SAVE[k] = {};
+const save = () => store.set({ v: 1, band: SAVE.band, stars: SAVE.stars, skipped: SAVE.skipped, seen: SAVE.seen, last: SAVE.last });
+
+/* ---------- state ---------- */
+const S = {
+  screen: 'title', band: '1b', chapter: null, levelIdx: 0, level: null, mode: 'play',
+  lesson: false, lock: false, quest: null, chain: null, wantLevel: 0,
+  phase: 'idle', fails: 0, hint: 0, usedHint3: false, wrong: 0, runs: 0, done: false,
+  checks: { n: 0, ok: 0 }, seed: 1, rng: null, fast: false, scores: [], lastLabel: '', lastProgress: null, view: null, hud: null, modal: null, mapChapter: null,
+};
+{
+  const b = PR.band === '2' ? '2' : PR.band === '1b' ? '1b' : (SAVE.band === '2' ? '2' : '1b');
+  S.band = b; S.mode = PR.mode === 'projector' ? 'projector' : 'play'; S.wantLevel = clamp(+PR.level || 0, 0, 30); S.lock = PR.lock === '1';
+  const ch = L.chapter(PR.chapter);
+  if (ch) { if (!ch.bands.includes(S.band)) S.band = ch.bands[0]; S.lesson = true; S.quest = { ch: ch.id, band: S.band }; }
+  else S.lock = false;
+}
+const levelsFor = (ch, band) => L.levelsFor(ch, band || S.band);
+const starKey = (l, band) => (band || S.band) + ':' + l.id;
+const starsOf = (l, band) => SAVE.stars[starKey(l, band)] | 0;
+const isDone = (l, band) => starsOf(l, band) > 0 || !!SAVE.skipped[starKey(l, band)];
+const chapterStars = (ch, band) => levelsFor(ch, band).reduce((n, l) => n + starsOf(l, band), 0);
+const chapterFull = (ch, band) => levelsFor(ch, band).length > 0 && levelsFor(ch, band).every(l => starsOf(l, band) === 3);
+const firstOpen = list => { const i = list.findIndex(l => !isDone(l)); return i < 0 ? Math.max(0, list.length - 1) : i; };
+const bandName = b => (b === '2' ? tr('Pro') : tr('Explorer'));
+
+/* ---------- the kit: the workbench behind, Gizmo, colors as CSS variables ---------- */
+try { if (S.band === '2') Oomba.style('bold'); } catch (e) { /* the playful style is fine too */ }
+const GIZMO_SPEC = (() => { try { return Oomba.char(CONFIG.crew); } catch (e) { return CONFIG.crew; } })();
+let STAGE = null, GIZMO = null;
+try {
+  STAGE = Oomba.stage({ api: 1, biome: CONFIG.biome, size: [960, 540], seed: 7 });
+  STAGE.camera.y = -110;
+  STAGE.add('chalkboard', { x: 400, y: 30, size: 140, layer: 'near' });
+  STAGE.add('schoolbag', { x: -420, y: 40, size: 76, layer: 'near' });
+  GIZMO = STAGE.add(GIZMO_SPEC, { x: -330, y: 44, size: 124, layer: 'near' });
+} catch (e) { /* the game works without the world */ }
+const C = (r, s) => { try { return Oomba.color(r, s); } catch (e) { return null; } };
+const F = CONFIG.fallback;
+const VARS = { ink: C('ink') || F.ink, mint: C('mint') || F.mint, 'mint-t': C('mint', 'light') || F.mint, sky: C('sky') || F.sky, 'sky-t': C('sky', 'light') || F.sky,
+  coral: C('coral') || F.coral, 'coral-t': C('coral', 'light') || F.coral, grape: C('grape') || F.grape, 'grape-t': C('grape', 'light') || F.grape,
+  peach: C('peach') || F.peach, 'peach-t': C('peach', 'light') || F.peach, stone: C('stone') || F.stone, 'stone-t': C('stone', 'light') || F.stone, spark: C('spark') || F.spark };
+for (const k in VARS) document.documentElement.style.setProperty('--im-' + k, VARS[k]);
+try { Oomba.ui.root().appendChild($('game')); } catch (e) { /* ignore */ }
+ROOT.dir = Oomba.dir || 'ltr';
+ROOT.lang = Oomba.lang || 'en';
+const syncMotion = () => ROOT.classList.toggle('ok-rm', reduced());
+try { Oomba.settings.on('change', syncMotion); } catch (e) { /* ignore */ }
+syncMotion();
+Oomba.scene = 'title';
+// play beats run on the game clock (they stop with the pause screen); skipAnimations() makes them immediate
+const later = (ms, fn) => { if (S.fast || reduced() && ms < 400) { fn(); return () => {}; } try { return Oomba.after(ms, fn); } catch (e) { fn(); return () => {}; } };
+
+/* ---------- pictures: kit props where the kit has them, small inline SVG parts elsewhere (currentColor + kit vars) ---------- */
+const SV = body => `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+const PIC = {
+  screen: SV('<rect x="6" y="9" width="36" height="26" rx="4" fill="var(--im-sky-t)"/><path d="M18 41h12M24 35v6"/>'),
+  camera: SV('<rect x="6" y="14" width="36" height="26" rx="5" fill="var(--im-grape-t)"/><circle cx="24" cy="27" r="8"/><circle cx="24" cy="27" r="3" fill="currentColor"/><path d="M16 14l3-5h10l3 5"/>'),
+  speaker: SV('<path d="M8 19h8l10-8v26l-10-8H8z" fill="var(--im-peach-t)"/><path d="M31 18a9 9 0 0 1 0 12M35 13a15 15 0 0 1 0 22"/>'),
+  mic: SV('<rect x="18" y="6" width="12" height="22" rx="6" fill="var(--im-coral-t)"/><path d="M12 22a12 12 0 0 0 24 0M24 34v8M17 42h14"/>'),
+  battery: SV('<rect x="6" y="15" width="32" height="18" rx="4" fill="var(--im-mint-t)"/><path d="M38 21h4v6h-4"/><path d="M12 20v8M18 20v8M24 20v8" stroke-width="4"/>'),
+  touch: SV('<path d="M20 26V11a3 3 0 0 1 6 0v13"/><path d="M26 22a3 3 0 0 1 6 0v6a3 3 0 0 1 6 0v6c0 6-4 10-10 10h-4c-4 0-6-2-9-6l-5-7a3 3 0 0 1 5-4l5 5" fill="var(--im-peach-t)"/>'),
+  processor: SV('<rect x="12" y="12" width="24" height="24" rx="4" fill="var(--im-grape-t)"/><rect x="19" y="19" width="10" height="10"/><path d="M18 12V6M24 12V6M30 12V6M18 42v-6M24 42v-6M30 42v-6M12 18H6M12 24H6M12 30H6M42 18h-6M42 24h-6M42 30h-6"/>'),
+  memory: SV('<rect x="6" y="16" width="36" height="16" rx="3" fill="var(--im-sky-t)"/><path d="M12 32v6M18 32v6M24 32v6M30 32v6M36 32v6"/><rect x="11" y="20" width="6" height="8"/><rect x="21" y="20" width="6" height="8"/><rect x="31" y="20" width="6" height="8"/>'),
+  storage: SV('<rect x="8" y="10" width="32" height="28" rx="4" fill="var(--im-stone-t)"/><circle cx="24" cy="24" r="8"/><circle cx="24" cy="24" r="2" fill="currentColor"/>'),
+  keyboard: SV('<rect x="4" y="14" width="40" height="20" rx="4" fill="var(--im-sky-t)"/><path d="M10 20h2M16 20h2M22 20h2M28 20h2M34 20h2M10 26h2M16 26h16M34 26h2"/>'),
+  mouse: SV('<rect x="14" y="6" width="20" height="36" rx="10" fill="var(--im-stone-t)"/><path d="M24 6v12M14 18h20"/>'),
+  printer: SV('<path d="M14 18V8h20v10"/><rect x="6" y="18" width="36" height="16" rx="3" fill="var(--im-mint-t)"/><rect x="14" y="28" width="20" height="12" fill="var(--ok-card)"/><circle cx="36" cy="24" r="1.5" fill="currentColor"/>'),
+  cable: SV('<path d="M6 36c8 0 8-24 18-24s10 24 18 24"/><rect x="4" y="32" width="8" height="8" rx="2" fill="var(--im-peach-t)"/><rect x="36" y="32" width="8" height="8" rx="2" fill="var(--im-peach-t)"/>'),
+  network: SV('<rect x="6" y="26" width="36" height="12" rx="3" fill="var(--im-grape-t)"/><path d="M14 26V14M34 26V10"/><circle cx="14" cy="32" r="1.5" fill="currentColor"/><circle cx="20" cy="32" r="1.5" fill="currentColor"/><path d="M18 14a8 8 0 0 1 12 0M15 9a13 13 0 0 1 18 0"/>'),
+  light: SV('<circle cx="24" cy="22" r="9" fill="var(--im-spark)"/><path d="M24 5v4M24 35v4M7 22h4M37 22h4M12 10l3 3M33 31l3 3M12 34l3-3M33 13l3-3"/>'),
+  motor: SV('<rect x="8" y="16" width="26" height="18" rx="4" fill="var(--im-coral-t)"/><circle cx="21" cy="25" r="5"/><path d="M34 22h8v6h-8M12 34v6M30 34v6"/>'),
+  tablet: SV('<rect x="10" y="4" width="28" height="40" rx="4" fill="var(--im-sky-t)"/><rect x="14" y="9" width="20" height="28" fill="var(--ok-card)"/><circle cx="24" cy="40.5" r="1.5" fill="currentColor"/>'),
+  power: SV('<path d="M16 22V8M32 22V8" stroke-width="4"/><rect x="10" y="22" width="28" height="12" rx="4" fill="var(--im-peach-t)"/><path d="M24 34v10"/>'),
+  paper: SV('<path d="M8 30h32l-4 10H12z" fill="var(--im-stone-t)"/><path d="M12 30V12h18l6 6v12"/><path d="M30 12v6h6"/>'),
+  charger: SV('<rect x="8" y="26" width="18" height="14" rx="3" fill="var(--im-peach-t)"/><path d="M13 26v-6M21 26v-6M26 33h6c6 0 6-20 10-20"/>'),
+  wheels: SV('<circle cx="14" cy="30" r="8" fill="var(--im-stone-t)"/><circle cx="34" cy="30" r="8" fill="var(--im-stone-t)"/><path d="M14 22V12h20v10M14 30h20"/>'),
+  app: SV('<rect x="8" y="8" width="32" height="32" rx="8" fill="var(--im-grape-t)"/><path d="M17 24l5 5 9-10"/>'),
+  headphones: SV('<path d="M10 30v-6a14 14 0 0 1 28 0v6"/><rect x="6" y="28" width="10" height="14" rx="4" fill="var(--im-coral-t)"/><rect x="32" y="28" width="10" height="14" rx="4" fill="var(--im-coral-t)"/>'),
+  laptop: SV('<rect x="10" y="10" width="28" height="20" rx="3" fill="var(--im-sky-t)"/><path d="M4 36h40l-3 4H7z" fill="var(--im-stone-t)"/>'),
+  dock: SV('<rect x="4" y="30" width="40" height="10" rx="3" fill="var(--im-stone-t)"/><rect x="12" y="8" width="24" height="18" rx="2" fill="var(--im-sky-t)"/><path d="M24 26v4"/>'),
+  tap: SV('<path d="M20 26V11a3 3 0 0 1 6 0v13"/><path d="M26 22a3 3 0 0 1 6 0v6a3 3 0 0 1 6 0v6c0 6-4 10-10 10h-4c-4 0-6-2-9-6l-5-7a3 3 0 0 1 5-4l5 5" fill="var(--im-sky-t)"/><path d="M12 8l-3-3M34 8l3-3"/>'),
+  clock: SV('<circle cx="24" cy="24" r="17" fill="var(--im-peach-t)"/><path d="M24 13v11l7 5"/>'),
+  robot: SV('<rect x="10" y="14" width="28" height="22" rx="5" fill="var(--im-sky-t)"/><circle cx="18" cy="24" r="3" fill="currentColor"/><circle cx="30" cy="24" r="3" fill="currentColor"/><path d="M24 14V7M18 36v6M30 36v6M20 30h8"/>'),
+  faceLow: SV('<circle cx="24" cy="24" r="18" fill="var(--im-peach-t)"/><circle cx="17" cy="20" r="2" fill="currentColor"/><circle cx="31" cy="20" r="2" fill="currentColor"/><path d="M17 32q7-5 14 0"/>'),
+  faceMid: SV('<circle cx="24" cy="24" r="18" fill="var(--im-sky-t)"/><circle cx="17" cy="20" r="2" fill="currentColor"/><circle cx="31" cy="20" r="2" fill="currentColor"/><path d="M17 31h14"/>'),
+  faceHigh: SV('<circle cx="24" cy="24" r="18" fill="var(--im-mint-t)"/><circle cx="17" cy="20" r="2" fill="currentColor"/><circle cx="31" cy="20" r="2" fill="currentColor"/><path d="M16 29q8 8 16 0"/>'),
+};
+PIC.inside = PIC.processor; PIC.pad = PIC.touch; PIC.desk = PIC.printer;
+const pic = name => PIC[name] || PIC.app;
+const propCanvas = (name, px, variant) => { try { return Oomba.art.toCanvas(name, px, variant); } catch (e) { return el('span'); } };
+const portrait = (size, mood) => { try { return Oomba.ui.portrait(GIZMO_SPEC, { size, mood }); } catch (e) { return el('span'); } };
+const starRow = (n, silver) => { const r = el('span', 'im-stars' + (silver ? ' im-silver' : '')); r.setAttribute('role', 'img'); r.setAttribute('aria-label', tr('{n} stars', { n })); for (let i = 0; i < 3; i++) r.insertAdjacentHTML('beforeend', `<span class="${i < n ? 'im-star' : 'im-star-off'}">${icon(i < n ? 'star' : 'star-off', { size: 18 })}</span>`); return r; };
+
+/* ---------- our modal cards (focus kept inside, Escape closes when allowed; the kit's cards are used where they fit) ---------- */
+function openCard(build, { onEscape = null, cls = '' } = {}) {
+  closeCard();
+  const m = el('div', 'im-modal'), card = el('div', 'im-card ' + cls); m.appendChild(card);
+  m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
+  const prev = document.activeElement;
+  let resolve; const done = new Promise(r => { resolve = r; });
+  const keys = e => {
+    if (!m.isConnected) return;
+    const bs = [...card.querySelectorAll('button:not([disabled])')].filter(b => b.offsetParent !== null);
+    const i = bs.indexOf(document.activeElement);
+    if (e.key === 'Tab' && bs.length) { e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); }
+    else if (e.key === 'Escape') { if (onEscape) { e.preventDefault(); onEscape(); } }
+    else if (/^[1-9]$/.test(e.key)) { const t = card.querySelectorAll('.im-check-tiles button, .im-key')[+e.key - 1]; if (t && card.querySelector('.im-check-tiles')) t.click(); else return; }
+    else return;
+    e.stopPropagation();
+  };
+  document.addEventListener('keydown', keys, true);
+  const close = v => { if (!m.isConnected) return; m.remove(); document.removeEventListener('keydown', keys, true); if (S.modal === api) S.modal = null; try { if (prev && prev.focus) prev.focus({ preventScroll: true }); } catch (e) { /* gone */ } resolve(v); };
+  const api = { root: m, card, close, done };
+  build(card, close);
+  ROOT.appendChild(m); S.modal = api;
+  const f = card.querySelector('[data-focus]') || card.querySelector('button'); if (f) Oomba.time.real.after(0, () => f.focus({ preventScroll: true }));
+  return api;
+}
+function closeCard() { if (S.modal) S.modal.close(undefined); }
+const btn = (label, o = {}) => { try { return Oomba.ui.button(label, o); } catch (e) { const b = el('button', 'ok-btn ok-' + (o.kind || 'go')); b.type = 'button'; b.textContent = label; b.addEventListener('click', o.onPress || (() => {})); return b; } };
+
+/* ---------- screens ---------- */
+const SCREENS = {};
+function screen(name) {
+  for (const k in SCREENS) SCREENS[k].hidden = k !== name;
+  S.screen = name; Oomba.scene = name;
+  if (name !== 'play' && S.hud) { try { S.hud.root.remove(); } catch (e) { /* ignore */ } S.hud = null; }
+}
+function makeScreens() {
+  ROOT.hidden = false;
+  SCREENS.map = el('div', 'im-screen im-map'); SCREENS.map.hidden = true;
+  SCREENS.play = el('div', 'im-screen im-play'); SCREENS.play.hidden = true;
+  ROOT.append(SCREENS.map, SCREENS.play);
+}
+const gear = () => btn(tr('Quest Card'), { kind: 'icon', icon: 'settings', onPress: openQuestCard });
+
+/* the chapter map: big tiles, the band toggle, a level strip under the chosen chapter */
+function showMap(chapterId) {
+  S.chapter = null; S.level = null; S.view = null; S.phase = 'idle';
+  const M = SCREENS.map; M.innerHTML = '';
+  const top = el('div', 'im-top');
+  const me = el('div', 'im-pill'); me.appendChild(portrait(36, 'happy')); me.appendChild(document.createTextNode(tr('Gizmo')));
+  top.appendChild(me);
+  if (!S.lock) {
+    const seg = el('div', 'im-seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
+    for (const b of ['1b', '2']) { const x = el('button'); x.type = 'button'; x.textContent = bandName(b); x.setAttribute('aria-pressed', String(S.band === b)); x.addEventListener('click', () => { if (S.band === b) return; S.band = b; SAVE.band = b; save(); sfx('select'); announce(bandName(b)); showMap(S.mapChapter); }); seg.appendChild(x); }
+    top.appendChild(seg);
+  }
+  top.appendChild(el('span', 'im-grow'));
+  top.appendChild(gear());
+  M.appendChild(top);
+  const tiles = el('div', 'im-tiles');
+  const chapters = L.CHAPTERS.filter(c => c.bands.includes(S.band) && levelsFor(c.id).length);
+  if (!chapters.some(c => c.id === chapterId)) chapterId = (chapters.some(c => c.id === SAVE.last) ? SAVE.last : chapters[0].id);
+  S.mapChapter = chapterId;
+  for (const c of chapters) {
+    const list = levelsFor(c.id), stars = chapterStars(c.id), total = list.length * 3;
+    const t = el('button', 'im-chap' + (c.id === chapterId ? ' on' : '')); t.type = 'button';
+    t.appendChild(propCanvas(c.pic, 44));
+    t.appendChild(el('b', '', esc(tr(c.title))));
+    const st = el('span', 'im-stars'); st.innerHTML = `<span class="im-star">${icon('star', { size: 18 })}</span>`; st.appendChild(document.createTextNode(num(stars) + '/' + num(total))); st.dir = 'ltr'; t.appendChild(st);
+    if (chapterFull(c.id)) t.insertAdjacentHTML('beforeend', `<span class="im-crown">${icon('trophy')}</span>`);
+    t.setAttribute('aria-label', tr(c.title) + ', ' + tr('{n} stars', { n: stars }));
+    t.setAttribute('aria-pressed', String(c.id === chapterId));
+    t.addEventListener('click', () => { sfx('select'); showMap(c.id); });
+    tiles.appendChild(t);
+  }
+  M.appendChild(tiles);
+  const strip = el('div', 'im-levels'); const list = levelsFor(chapterId);
+  list.forEach((l, i) => {
+    const open = i === 0 || isDone(list[i - 1]), st = starsOf(l), skipped = !!SAVE.skipped[starKey(l)];
+    const b = el('button', 'im-lv' + (st ? ' done' : skipped ? ' skip' : '') + (open ? '' : ' lock')); b.type = 'button'; b.dir = 'ltr';
+    b.innerHTML = open ? num(i + 1) : icon('lock', { size: 22 }); b.disabled = !open;
+    b.setAttribute('aria-label', tr('Level {n}', { n: i + 1 }) + (open ? ', ' + tr('{n} stars', { n: st }) : ', ' + tr('Locked')));
+    if (st) { const s = el('span', 'im-s' + (SAVE.band === '2' && S.band === '1b' ? ' im-silver' : '')); for (let k = 0; k < st; k++) s.insertAdjacentHTML('beforeend', `<span class="im-star">${icon('star', { size: 11 })}</span>`); b.appendChild(s); }
+    b.addEventListener('click', () => { if (!open) return; sfx('select'); S.quest = S.lesson ? S.quest : { ch: chapterId, band: S.band }; startLevel(chapterId, i); });
+    strip.appendChild(b);
+  });
+  const go = btn(tr('Play'), { kind: 'hot', big: true, icon: 'play', onPress: () => { S.quest = S.lesson ? S.quest : { ch: chapterId, band: S.band }; startLevel(chapterId, firstOpen(list)); } });
+  const row = el('div', 'im-row'); row.appendChild(go);
+  M.append(strip, row);
+  screen('map');
+  announce(tr('Chapter map') + '. ' + tr(L.chapter(chapterId).title));
+}
+
+/* ---------- play: one level on the board + the work panel ---------- */
+const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor((S.rng ? S.rng.float() : Math.random()) * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const maybeShuffle = (l, arr) => (l.random ? shuffle(arr) : arr.slice());
+const chapterLearn = ch => { const l0 = levelsFor(ch)[0]; return l0 && l0.learn ? l0.learn : null; };
+const questChapter = () => (S.quest || { ch: S.chapter, band: S.band });
+function starsInChapter() {
+  const q = questChapter(); if (!q.ch) return 0;
+  let n = chapterStars(q.ch, q.band);
+  const ch = L.chapter(q.ch), then = ch && ch.then && ch.then[q.band];
+  if (S.lesson && then) n += levelsFor(then.ch, q.band).slice(then.from - 1, then.to).reduce((s, l) => s + starsOf(l, q.band), 0);
+  return n;
+}
+function progressLabel() {
+  const q = questChapter(), ch = L.chapter(q.ch), list = levelsFor(q.ch, q.band);
+  const done = list.filter(x => isDone(x, q.band)).length;
+  let s = done + '/' + list.length + ' ' + ch.noun + ', ' + starsInChapter() + ' stars';
+  if (S.lesson && S.checks.n) s += ', ' + S.checks.ok + '/' + S.checks.n + ' checks';
+  return s;
+}
+function syncHud() {
+  if (!S.hud) return;
+  const list = levelsFor(S.chapter), done = list.filter(x => isDone(x)).length;
+  try { S.hud.progress.set(list.length ? done / list.length : 0); S.hud.count.set(starsInChapter()); } catch (e) { /* ignore */ }
+}
+function report(l, stars, extra, skipped) {
+  if (S.mode === 'projector') return;
+  const label = progressLabel(), score = starsInChapter();
+  S.lastLabel = label; S.scores.push({ score, label });
+  try { if (window.BRB && BRB.score) BRB.score.submit(score, label); } catch (e) { /* ignore */ }
+  const detail = { game: 'im', chapter: S.chapter, level: S.levelIdx + 1, stars, band: S.band === '2' ? 2 : 1, csta: (l.csta || []).concat(l.csta2 || []), check: extra && extra.check ? 1 : 0, confidence: extra && extra.confidence ? extra.confidence : 0, hint: S.hint, runs: S.runs, skipped: !!skipped };
+  S.lastProgress = detail;
+  try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress(detail); } catch (e) { /* ignore */ }
+  syncHud();
+}
+function gameOver() { if (S.mode === 'projector') return; try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true, score: starsInChapter() }); } catch (e) { /* ignore */ } }
+const toast = s => { try { Oomba.ui.toast(s, { ms: 1800 }); } catch (e) { /* ignore */ } announce(s); };
+const banner = (kind, text) => { try { Oomba.ui.banner(kind, null, text); } catch (e) { /* ignore */ } };
+
+function startLevel(chId, idx, o = {}) {
+  const list = levelsFor(chId), l = list[idx]; if (!l) return showMap(chId);
+  closeCard();
+  Object.assign(S, { chapter: chId, levelIdx: idx, level: l, phase: 'play', fails: 0, hint: 0, usedHint3: false, wrong: 0, runs: 0, done: false, view: null, lastVerdict: null });
+  SAVE.last = chId; save();
+  try { S.rng = Oomba.rand(Oomba.seedOf(l.id) + S.seed * 7919); } catch (e) { S.rng = { float: Math.random }; }
+  const PL = SCREENS.play; PL.innerHTML = '';
+  const top = el('div', 'im-top');
+  if (!S.lock) top.appendChild(btn(tr('Chapter map'), { kind: 'icon', icon: 'home', onPress: () => showMap(chId) }));
+  const where = el('span', 'im-pill', S.lesson ? icon('flag', { size: 22 }) : '');
+  const whereText = S.lesson && S.quest ? tr('Class quest: {chapter} · {band}', { chapter: tr(L.chapter(S.quest.ch).title), band: bandName(S.quest.band) }) + ' · ' + tr('Level {n}', { n: idx + 1 }) : tr(L.chapter(chId).title) + ' · ' + tr('Level {n}', { n: idx + 1 });
+  where.appendChild(el('span', '', esc(whereText))); where.title = whereText; top.appendChild(where);
+  const learn = chapterLearn(chId);
+  if (learn) top.appendChild(btn(tr('Learn card'), { kind: 'icon', icon: 'book', onPress: () => openLearn(learn, false) }));
+  const hintBtn = btn(tr('Hint'), { kind: 'quiet', icon: 'hint', onPress: giveHint }); hintBtn.setAttribute('aria-label', tr('Hint')); const hw = hintBtn.lastChild; if (hw && hw.nodeType === 3) { const sp = el('span', 'im-hintword'); sp.textContent = hw.textContent; hintBtn.replaceChild(sp, hw); } top.appendChild(hintBtn);
+  top.appendChild(gear());
+  const body = el('div', 'im-body'), board = el('div', 'im-box im-board'), panel = el('div', 'im-box im-panel');
+  body.append(board, panel); PL.append(top, body);
+  screen('play');
+  try { S.hud = Oomba.ui.hud(['progress', 'count:star'], { pause: true, sound: true }); } catch (e) { S.hud = null; }
+  syncHud();
+  if (GIZMO) { try { GIZMO.mood('happy'); } catch (e) { /* ignore */ } }
+  S.view = KINDS[l.kind](l, board, panel);
+  const seenKey = chId + ':' + S.band;
+  if (learn && idx === 0 && !SAVE.seen[seenKey] && !o.noLearn) { SAVE.seen[seenKey] = 1; save(); openLearn(learn, true); }
+  else if (S.view.intro) { announce(S.view.intro); say(S.view.intro); }
+}
+/* the work panel's fixed pieces: the prompt, a note line, the hint line, the tray and the action row */
+function shell(panel, promptText) {
+  const prompt = el('p', 'im-prompt', esc(promptText)), note = el('p', 'im-note'), hint = el('p', 'im-note'); note.hidden = true; hint.hidden = true;
+  hint.setAttribute('role', 'status');
+  const tray = el('div', 'im-tray'), actions = el('div', 'im-actions');
+  panel.append(prompt, note, hint, tray, actions);
+  const ui = { prompt, note, hint, tray, actions, primary: null, refresh };
+  function refresh() {
+    actions.innerHTML = '';
+    if (ui.primary && !S.done) actions.appendChild(ui.primary);
+    if (S.mode === 'projector' && !S.done) actions.appendChild(btn(tr('Next'), { kind: 'quiet', icon: 'next', onPress: () => nextLevel() }));
+    else if (S.fails >= 2 && !S.done) actions.appendChild(btn(tr('Skip level'), { kind: 'quiet', icon: 'next', onPress: skipLevel }));
+  }
+  refresh();
+  S.ui = ui;
+  return ui;
+}
+const setNote = (ui, text) => { ui.note.hidden = !text; ui.note.textContent = text || ''; if (text) announce(text); };
+function failRun() { S.fails++; S.runs++; if (S.ui) S.ui.refresh(); if (GIZMO) { try { GIZMO.mood('surprised'); } catch (e) { /* ignore */ } } }
+const digitKey = (b, i) => { if (i < 9) b.insertAdjacentHTML('afterbegin', `<span class="im-k" aria-hidden="true">${num(i + 1)}</span>`); };
+const tileBtn = (text, picName, i) => { const b = el('button', 'im-tile'); b.type = 'button'; if (picName) b.insertAdjacentHTML('beforeend', pic(picName)); b.appendChild(el('span', '', esc(text))); if (i != null) digitKey(b, i); return b; };
+const costBadge = n => `<span class="im-cost" dir="ltr">${esc(tr('{n} min', { n }))}</span>`;
+const mark = (b, ok) => { const m = el('span', 'im-mark' + (ok ? '' : ' bad'), icon(ok ? 'check' : 'cross', { stroke: 3 })); b.appendChild(m); };
+
+const KINDS = {
+  /* tap the part that does the job (rounds) */
+  tap(l, board, panel) {
+    const ui = shell(panel, ''), parts = maybeShuffle(l, l.parts), btns = {}, A = { picks: [], wrong: 0 }; let i = 0;
+    const dev = el('div', 'im-device'); dev.style.gridTemplateColumns = `repeat(${parts.length > 4 ? 3 : 2}, minmax(76px, 124px))`;
+    parts.forEach((id, k) => { const p = L.PARTS[id], b = el('button', 'im-part', pic(id)); b.type = 'button'; b.dataset.id = id; b.appendChild(el('span', '', esc(tr(p.name)))); digitKey(b, k); b.addEventListener('click', () => tap(id)); btns[id] = b; dev.appendChild(b); });
+    board.appendChild(dev);
+    const show = () => { for (const id in btns) btns[id].classList.remove('im-glow', 'good', 'bad'); ui.prompt.textContent = tr(l.jobs[i].q); ui.prompt.classList.remove('im-pop'); void ui.prompt.offsetWidth; ui.prompt.classList.add('im-pop'); setNote(ui, tr('{n} of {total}', { n: i + 1, total: l.jobs.length })); announce(tr(l.jobs[i].q)); };
+    const tap = id => {
+      if (S.done || i >= l.jobs.length || !btns[id]) return;
+      const b = btns[id], want = l.jobs[i].a;
+      if (id === want) { A.picks.push(id); b.classList.add('good'); sfx('correct'); i++; later(600, () => { if (i >= l.jobs.length) finish(A); else show(); }); }
+      else { A.wrong++; b.classList.add('bad', 'im-shake'); sfx('wrong'); banner('wrong', tr('Not that one. Try another part.')); failRun(); later(500, () => b.classList.remove('bad', 'im-shake')); }
+    };
+    show();
+    return { intro: tr(l.jobs[0].q), tap, answer: () => A, solve: sol => { S.fast = true; for (const id of sol.picks) tap(id); },
+      hint2: () => { const role = L.PARTS[l.jobs[i].a].role; for (const id in btns) btns[id].classList.toggle('im-glow', L.PARTS[id].role === role); },
+      hint3: () => { for (const id in btns) btns[id].classList.toggle('im-glow', id === l.jobs[i].a); } };
+  },
+  /* three tiles per round */
+  pick(l, board, panel) {
+    const ui = shell(panel, ''), A = { picks: [], wrong: 0 }; let i = 0, order = [];
+    const stack = el('div', 'im-stack'); stack.appendChild(portrait(72, 'thinking')); const q = el('p', 'im-prompt'); stack.appendChild(q); const story = el('p', 'im-note', esc(tr(l.story || ''))); stack.appendChild(story); board.appendChild(stack);
+    ui.tray.classList.add('im-pick-tiles');
+    const show = () => {
+      const r = l.rounds[i]; order = maybeShuffle(l, r.tiles.map((t, k) => k)); ui.tray.innerHTML = '';
+      q.textContent = tr(r.q); ui.prompt.textContent = tr('{n} of {total}', { n: i + 1, total: l.rounds.length }); announce(tr(r.q));
+      order.forEach((k, pos) => { const b = tileBtn(tr(r.tiles[k]), null, pos); b.dataset.k = k; b.addEventListener('click', () => tap(k)); ui.tray.appendChild(b); });
+    };
+    const tap = k => {
+      if (S.done || i >= l.rounds.length) return;
+      const b = ui.tray.querySelector(`[data-k="${k}"]`); if (!b || b.disabled) return;
+      if (k === l.rounds[i].answer) { A.picks.push(k); b.classList.add('good'); mark(b, true); sfx('correct'); i++; later(650, () => { if (i >= l.rounds.length) finish(A); else show(); }); }
+      else { A.wrong++; b.classList.add('bad', 'im-shake'); mark(b, false); b.disabled = true; sfx('wrong'); banner('wrong', tr('Not quite. Think about the job that part did.')); failRun(); }
+    };
+    show();
+    return { intro: tr(l.rounds[0].q), tap, answer: () => A, solve: sol => { S.fast = true; for (const k of sol.picks) tap(k); },
+      hint2: () => { const wrong = [...ui.tray.children].filter(b => +b.dataset.k !== l.rounds[i].answer && !b.disabled); if (wrong[0]) wrong[0].classList.add('dim'); },
+      hint3: () => { for (const b of ui.tray.children) b.classList.toggle('dim', +b.dataset.k !== l.rounds[i].answer); } };
+  },
+  /* Build-a-Device: tap a part, tap another to wire them */
+  wire(l, board, panel) {
+    const ui = shell(panel, tr(l.story)), A = { wires: [], edits: 0 }, btns = {}; let sel = null;
+    const col = id => { const r = L.PARTS[id].role; return r === 'input' || r === 'power' ? 1 : r === 'process' || r === 'link' ? 2 : 3; };
+    const dev = el('div', 'im-device'); dev.style.gridTemplateColumns = 'repeat(3, minmax(76px, 124px))';
+    const wrap = el('div', '', '<svg class="im-wires" aria-hidden="true"></svg>'), svg = wrap.firstChild; dev.appendChild(svg);
+    const parts = maybeShuffle(l, l.parts).sort((a, b) => col(a) - col(b));
+    parts.forEach((id, k) => { const p = L.PARTS[id], b = el('button', 'im-part', pic(id)); b.type = 'button'; b.dataset.id = id; b.style.gridColumn = String(col(id)); b.appendChild(el('span', '', esc(tr(p.name)))); b.insertAdjacentHTML('beforeend', `<span class="im-role">${esc(tr(L.ROLE_NAMES[p.role]))}</span>`); digitKey(b, k); b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => tap(id)); btns[id] = b; dev.appendChild(b); });
+    board.appendChild(dev);
+    const key = e => e.slice().sort().join('>');
+    const center = id => { const r = btns[id].getBoundingClientRect(), d = dev.getBoundingClientRect(); return [r.left - d.left + r.width / 2, r.top - d.top + r.height / 2]; };
+    const draw = () => {
+      const d = dev.getBoundingClientRect(); svg.setAttribute('viewBox', `0 0 ${Math.max(1, d.width)} ${Math.max(1, d.height)}`); svg.style.width = d.width + 'px'; svg.style.height = d.height + 'px'; svg.innerHTML = '';
+      const extra = new Set((S.lastVerdict && S.lastVerdict.extra) || []);
+      for (const w of A.wires) { const [x1, y1] = center(w[0]), [x2, y2] = center(w[1]); svg.insertAdjacentHTML('beforeend', `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"${extra.has(key(w)) ? ' style="stroke:var(--im-coral)"' : ''}/>`); }
+      setNote(ui, A.wires.length ? tr('{n} wires', { n: A.wires.length }) : tr('Tap a part, then tap the part it connects to.'));
+    };
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => draw()) : null; if (ro) ro.observe(dev);
+    const tap = id => {
+      if (S.done || !btns[id]) return;
+      if (!sel) { sel = id; btns[id].classList.add('on'); btns[id].setAttribute('aria-pressed', 'true'); sfx('select'); return; }
+      if (sel === id) { btns[id].classList.remove('on'); btns[id].setAttribute('aria-pressed', 'false'); sel = null; return; }
+      const k = key([sel, id]), at = A.wires.findIndex(w => key(w) === k);
+      if (at >= 0) { A.wires.splice(at, 1); A.edits++; sfx('pop'); } else { A.wires.push([sel, id]); sfx('spark'); }
+      btns[sel].classList.remove('on'); btns[sel].setAttribute('aria-pressed', 'false'); sel = null; S.lastVerdict = null; draw();
+    };
+    const check = () => {
+      if (S.done) return; const v = L.judge(l, A); S.lastVerdict = v;
+      if (v.ok) { finish(A); return; }
+      failRun(); sfx('wrong'); draw();
+      banner('wrong', v.missing.length ? tr('{n} wires are still missing.', { n: v.missing.length }) : tr('{n} wires do not belong.', { n: v.extra.length }));
+    };
+    ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh();
+    Oomba.time.real.after(0, draw);
+    return { intro: tr(l.story), tap, check, answer: () => A, solve: sol => { S.fast = true; for (const w of sol.wires) { tap(w[0]); tap(w[1]); } check(); },
+      hint2: () => { const v = L.judge(l, A); const ends = new Set(); l.need.forEach(e => { if (v.missing.includes(key(e))) { ends.add(e[0]); ends.add(e[1]); } }); for (const id in btns) btns[id].classList.toggle('im-glow', ends.has(id)); },
+      hint3: () => { const v = L.judge(l, A); const e = l.need.find(x => v.missing.includes(key(x))); if (e) { A.wires.push(e.slice()); draw(); } } };
+  },
+  /* the card sorter: one card at a time, tap its bin; a wrong bin bounces the card back after the check */
+  sort(l, board, panel) {
+    const ui = shell(panel, tr(l.story)), A = { placed: {}, wrong: 0 }, bins = {}; let queue = maybeShuffle(l, l.cards);
+    const deck = el('div', 'im-deck'), face = el('div', 'im-face'), left = el('p', 'im-note'); deck.append(face, left); board.appendChild(deck);
+    ui.tray.classList.add('im-bins'); ui.tray.classList.remove('im-tray');
+    l.bins.forEach((bn, k) => { const b = el('button', 'im-bin'); b.type = 'button'; b.dataset.id = bn.id; b.appendChild(el('b', '', esc(tr(bn.name)))); const c = el('span', 'im-count'); b.appendChild(c); digitKey(b, k); b.addEventListener('click', () => tapBin(bn.id)); bins[bn.id] = { b, c }; ui.tray.appendChild(b); });
+    const counts = () => { for (const id in bins) { const n = Object.values(A.placed).filter(x => x === id).length; bins[id].c.textContent = n ? tr('{n} cards', { n }) : ''; } };
+    const show = () => {
+      face.innerHTML = ''; for (const id in bins) bins[id].b.classList.remove('im-glow', 'dim', 'good', 'bad');
+      const cur = queue[0]; if (!cur) return;
+      if (cur.pic) face.insertAdjacentHTML('beforeend', pic(cur.pic)); face.appendChild(el('span', '', esc(tr(cur.text)))); face.classList.remove('im-pop'); void face.offsetWidth; face.classList.add('im-pop');
+      left.textContent = tr('{n} cards to go', { n: queue.length }); announce(tr(cur.text)); counts();
+    };
+    const tapBin = id => {
+      if (S.done || !queue.length || !bins[id]) return;
+      const cur = queue.shift(); A.placed[cur.id] = id; sfx('pop'); bins[id].b.classList.add('im-pop'); later(300, () => bins[id].b.classList.remove('im-pop'));
+      if (queue.length) show(); else check();
+    };
+    const check = () => {
+      const v = L.judge(l, A); S.lastVerdict = v;
+      if (v.ok) { counts(); face.innerHTML = icon('check', { size: 48 }); left.textContent = ''; finish(A); return; }
+      A.wrong += v.wrongCards.length; failRun(); sfx('wrong');
+      banner('wrong', tr('{n} cards are in the wrong bin. Try them again.', { n: v.wrongCards.length }));
+      queue = l.cards.filter(c => v.wrongCards.includes(c.id)); for (const c of queue) delete A.placed[c.id]; show();
+    };
+    show();
+    return { intro: tr(l.story), tap: tapBin, answer: () => A, solve: sol => { S.fast = true; let guard = 0; while (queue.length && guard++ < 100) tapBin(sol.placed[queue[0].id]); },
+      hint2: () => { const cur = queue[0]; if (!cur) return; const wrong = l.bins.filter(b => b.id !== cur.bin); wrong.slice(0, Math.max(0, wrong.length - 1)).forEach(b => bins[b.id].b.classList.add('dim')); },
+      hint3: () => { const cur = queue[0]; if (cur) bins[cur.bin].b.classList.add('im-glow'); } };
+  },
+  /* A Tap Travels: tap tiles into a chain, in order */
+  order(l, board, panel) {
+    const ui = shell(panel, tr(l.story)), A = { order: [], moves: 0 }, tiles = maybeShuffle(l, l.tiles), byId = {}; l.tiles.forEach(t => { byId[t.id] = t; });
+    const chain = el('div', 'im-chain'); board.appendChild(chain);
+    const render = () => {
+      chain.innerHTML = '';
+      A.order.forEach((id, i) => { const step = el('div', 'im-step'); step.appendChild(el('span', 'im-n', num(i + 1))); const b = tileBtn(tr(byId[id].text), byId[id].pic); b.dataset.id = id; b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: i + 1, text: tr(byId[id].text) })); b.addEventListener('click', () => remove(id)); step.appendChild(b); chain.appendChild(step); if (i < l.tiles.length - 1) chain.appendChild(el('div', 'im-arrow', icon('down', { size: 20 }))); });
+      if (A.order.length < l.tiles.length) { const e = el('div', 'im-empty'); e.textContent = tr('Step {n}', { n: A.order.length + 1 }); chain.appendChild(e); }
+      ui.tray.innerHTML = '';
+      tiles.forEach((t, k) => { const b = tileBtn(tr(t.text), t.pic, k); b.dataset.id = t.id; const used = A.order.includes(t.id); b.disabled = used; b.classList.toggle('dim', used); b.addEventListener('click', () => add(t.id)); ui.tray.appendChild(b); });
+      ui.primary.disabled = A.order.length !== l.tiles.length;
+    };
+    const add = id => { if (S.done || A.order.includes(id)) return; A.order.push(id); A.moves++; sfx('select'); render(); };
+    const remove = id => { if (S.done) return; const i = A.order.indexOf(id); if (i < 0) return; A.order.splice(i, 1); A.moves++; sfx('pop'); render(); };
+    const check = () => {
+      if (S.done || A.order.length !== l.tiles.length) return; const v = L.judge(l, A); S.lastVerdict = v;
+      if (v.ok) { [...chain.querySelectorAll('.im-tile')].forEach(b => b.classList.add('good')); finish(A); return; }
+      failRun(); sfx('wrong');
+      [...chain.querySelectorAll('.im-tile')].forEach((b, i) => { b.classList.toggle('good', i < v.firstBad); b.classList.toggle('bad', i === v.firstBad); });
+      banner('wrong', tr('Step {n} is not right yet.', { n: v.firstBad + 1 }));
+    };
+    ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh();
+    render();
+    const nextRight = () => { const sol = l.sol.order; let i = 0; while (i < A.order.length && A.order[i] === sol[i]) i++; return { i, id: sol[i] }; };
+    return { intro: tr(l.story), tap: add, remove, check, answer: () => A, solve: sol => { S.fast = true; for (const id of sol.order) add(id); check(); },
+      hint2: () => { const n = nextRight(); if (n.i < A.order.length) { [...chain.querySelectorAll('.im-tile')][n.i].classList.add('im-glow'); } else { const b = ui.tray.querySelector(`[data-id="${n.id}"]`); if (b) b.classList.add('im-glow'); } },
+      hint3: () => { const n = nextRight(); A.order.length = n.i; if (n.id) A.order.push(n.id); render(); } };
+  },
+  /* the Fix-It desk (Explorer): a ticket, a tray of checks with a time cost each */
+  ticket(l, board, panel) {
+    const ui = shell(panel, ''), A = { checks: [] }, used = new Set(), left = new Set(l.faults), btns = {}; let cost = 0;
+    const stack = el('div', 'im-stack'), tk = el('div', 'im-ticket', pic(l.device)); const tb = el('div'); tb.appendChild(el('h3', '', esc(tr(l.ticket.title)))); tb.appendChild(el('p', '', esc(tr(l.ticket.text)))); tk.appendChild(tb);
+    const react = el('div', 'im-react'), clock = ui.prompt; clock.classList.add('im-clock');
+    stack.append(tk, react); board.appendChild(stack);
+    const showClock = () => { clock.innerHTML = pic('clock'); clock.appendChild(document.createTextNode(tr('Time used: {n} min', { n: cost }) + ' · ' + tr('Star at {n} min or less', { n: l.par }))); };
+    const reaction = (text, ok) => { react.innerHTML = icon(ok ? 'check' : 'info', { size: 24 }); react.appendChild(document.createTextNode(text)); react.classList.remove('im-pop'); void react.offsetWidth; react.classList.add('im-pop'); announce(text); if (ok) say(text); };
+    const order = maybeShuffle(l, l.checks.filter(c => !c.help)), helper = l.checks.find(c => c.help);
+    order.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); b.addEventListener('click', () => tap(c.id)); btns[c.id] = b; ui.tray.appendChild(b); });
+    if (helper) { const b = btn(tr(helper.label) + ' · ' + tr('{n} min', { n: helper.cost }), { kind: 'quiet', icon: 'user', onPress: () => tap(helper.id) }); b.dataset.id = helper.id; btns[helper.id] = b; ui.primary = b; ui.refresh(); }
+    const tap = id => {
+      const c = l.checks.find(x => x.id === id); if (!c || S.done || used.has(id)) return;
+      used.add(id); A.checks.push(id); cost += c.cost; const b = btns[id]; b.disabled = true; b.classList.add('dim'); for (const x in btns) btns[x].classList.remove('im-glow');
+      tk.classList.remove('im-shake'); void tk.offsetWidth; tk.classList.add('im-shake'); showClock();
+      if (left.has(id)) { left.delete(id); b.classList.remove('dim'); b.classList.add('good'); mark(b, true); sfx('correct'); reaction(tr(c.fix || c.ok), true); if (!left.size) later(700, () => finish(A)); else banner('correct', tr('One fault fixed. Something is still wrong.')); }
+      else if (c.help) { sfx('select'); reaction(tr(c.ok), false); later(700, () => finish(A)); }
+      else if (!c.rel) { b.classList.remove('dim'); b.classList.add('bad'); mark(b, false); sfx('wrong'); reaction(tr(c.ok), false); failRun(); }
+      else { sfx('select'); reaction(tr(c.ok), false); }
+    };
+    showClock(); reaction(tr('The desk is waiting. Quick and cheap checks first!'), false);
+    const cheapestLeft = () => l.checks.filter(c => c.rel && !c.help && !used.has(c.id)).sort((a, b) => a.cost - b.cost)[0];
+    return { intro: tr(l.ticket.title) + '. ' + tr(l.ticket.text), tap, answer: () => A, solve: sol => { S.fast = true; for (const id of sol.checks) { if (S.done) break; tap(id); } },
+      hint2: () => { const c = cheapestLeft(); if (c) btns[c.id].classList.add('im-glow'); }, hint3: () => { const c = cheapestLeft(); if (c) tap(c.id); } };
+  },
+  /* the Fix-It desk (Pro): build the flowchart first, run it, then swap a part to isolate the fault */
+  flow(l, board, panel) {
+    const ui = shell(panel, ''), A = { flow: [], swaps: [] }, byId = {}; l.checks.forEach(c => { byId[c.id] = c; }); (l.swaps || []).forEach(s => { byId[s.id] = s; });
+    let phase = 'build', cost = 0, left = new Set(l.faults), tried = new Set(), ran = [];
+    const stack = el('div', 'im-stack'), tk = el('div', 'im-ticket', pic(l.device)); const tb = el('div'); tb.appendChild(el('h3', '', esc(tr(l.ticket.title)))); tb.appendChild(el('p', '', esc(tr(l.ticket.text)))); tk.appendChild(tb);
+    const chain = el('div', 'im-chain'), react = el('div', 'im-react'), clock = el('div', 'im-clock');
+    stack.append(tk, chain, react); board.appendChild(stack); ui.note.hidden = false; ui.note.appendChild(clock);
+    const showClock = () => { clock.innerHTML = pic('clock'); clock.appendChild(document.createTextNode(tr('Time used: {n} min', { n: cost }) + ' · ' + tr('Star at {n} min or less', { n: l.par }))); };
+    const reaction = (text, ok) => { react.innerHTML = icon(ok ? 'check' : 'info', { size: 24 }); react.appendChild(document.createTextNode(text)); announce(text); if (ok) say(text); };
+    const tray = maybeShuffle(l, l.checks);
+    const renderChain = () => {
+      chain.innerHTML = '';
+      A.flow.forEach((id, i) => {
+        const step = el('div', 'im-step'); step.appendChild(el('span', 'im-diamond')); const b = tileBtn(tr(byId[id].label)); b.dataset.id = id; b.insertAdjacentHTML('beforeend', costBadge(byId[id].cost));
+        const r = ran.find(x => x.id === id); if (r) b.classList.add(r.hit ? 'good' : 'im-done'); if (r && r.hit) mark(b, true);
+        b.disabled = phase !== 'build'; b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: i + 1, text: tr(byId[id].label) })); b.addEventListener('click', () => remove(id)); step.appendChild(b); chain.appendChild(step);
+        chain.appendChild(el('div', 'im-arrow', esc(tr('fine, so')) + ' ' + icon('down', { size: 18 })));
+      });
+      if (phase === 'build') { const e = el('div', 'im-empty'); e.textContent = A.flow.length ? tr('Next question, or run it') : tr('Add the first question'); chain.appendChild(e); }
+      if (l.swaps && l.swaps.length) { const sw = el('div', 'im-step'); sw.appendChild(el('span', 'im-diamond')); const b = el('div', 'im-tile' + (phase === 'swap' ? ' on' : '')); b.textContent = tr('Still broken? Swap a part'); sw.appendChild(b); chain.appendChild(sw); }
+    };
+    const renderTray = () => {
+      ui.tray.innerHTML = '';
+      if (phase === 'build') {
+        ui.prompt.textContent = tr('Build the flowchart: add the questions in the order you will ask them.');
+        tray.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); const used = A.flow.includes(c.id); b.disabled = used; b.classList.toggle('dim', used); b.addEventListener('click', () => add(c.id)); ui.tray.appendChild(b); });
+        ui.primary = btn(tr('Run it'), { kind: 'hot', icon: 'play', onPress: run }); ui.primary.disabled = !A.flow.length;
+      } else if (phase === 'swap') {
+        ui.prompt.textContent = tr('Every question said fine. Swap one part at a time, cheapest first.');
+        (l.swaps || []).forEach((s, k) => { const b = tileBtn(tr(s.label), null, k); b.dataset.id = s.id; b.insertAdjacentHTML('beforeend', costBadge(s.cost)); b.disabled = tried.has(s.id); b.classList.toggle('dim', tried.has(s.id)); b.addEventListener('click', () => swap(s.id)); ui.tray.appendChild(b); });
+        ui.primary = btn(tr('Add a question'), { kind: 'quiet', icon: 'back', onPress: rebuild });
+      } else { ui.prompt.textContent = tr('Running the flowchart...'); ui.primary = null; }
+      ui.refresh();
+    };
+    const add = id => { if (S.done || phase !== 'build' || A.flow.includes(id)) return; A.flow.push(id); sfx('select'); renderChain(); renderTray(); };
+    const remove = id => { if (S.done || phase !== 'build') return; const i = A.flow.indexOf(id); if (i < 0) return; A.flow.splice(i, 1); sfx('pop'); renderChain(); renderTray(); };
+    const reset = () => { cost = 0; left = new Set(l.faults); tried = new Set(); ran = []; A.swaps = []; showClock(); };
+    const rebuild = () => { phase = 'build'; reset(); renderChain(); renderTray(); reaction(tr('Back to the flowchart. Which question is missing?'), false); };
+    const run = () => {
+      if (S.done || phase !== 'build' || !A.flow.length) return;
+      phase = 'run'; reset(); renderTray(); renderChain(); S.runs++;
+      const steps = A.flow.slice(); let i = 0;
+      const stepOn = () => {
+        if (S.done) return;
+        if (i >= steps.length) { if (l.swaps && l.swaps.length) { phase = 'swap'; renderChain(); renderTray(); reaction(tr('Every question said fine. Time for a swap test.'), false); } else stuck(); return; }
+        const id = steps[i++], c = byId[id]; cost += c.cost; const hit = left.has(id); if (hit) left.delete(id);
+        ran.push({ id, hit }); showClock(); renderChain(); tk.classList.remove('im-shake'); void tk.offsetWidth; tk.classList.add('im-shake');
+        reaction(tr(hit ? (c.fix || c.ok) : c.ok), hit); if (hit) sfx('correct'); else sfx('step');
+        if (!left.size) { later(700, () => finish(A)); return; }
+        later(650, stepOn);
+      };
+      stepOn();
+    };
+    const stuck = () => { failRun(); sfx('wrong'); banner('wrong', tr('Still broken. A question is missing from the flowchart.')); phase = 'build'; renderChain(); renderTray(); };
+    const swap = id => {
+      const s = (l.swaps || []).find(x => x.id === id); if (!s || S.done || phase !== 'swap' || tried.has(id)) return;
+      tried.add(id); A.swaps.push(id); cost += s.cost; showClock(); S.runs++;
+      const hit = left.has(id); if (hit) left.delete(id);
+      reaction(tr(s.fix), hit); sfx(hit ? 'correct' : 'step'); renderTray();
+      if (!left.size) { later(700, () => finish(A)); return; }
+      if (hit) banner('correct', tr('One fault fixed. Something is still wrong.'));
+      if (tried.size >= (l.swaps || []).length) stuck();
+    };
+    renderChain(); renderTray(); showClock(); reaction(tr('The desk is waiting. Build your flowchart first.'), false);
+    const nextCheck = () => l.checks.filter(c => c.rel && !A.flow.includes(c.id)).sort((a, b) => a.cost - b.cost)[0];
+    const nextSwap = () => (l.swaps || []).filter(s => !tried.has(s.id)).sort((a, b) => a.cost - b.cost)[0];
+    return { intro: tr(l.ticket.title) + '. ' + tr(l.ticket.text), tap: id => (phase === 'swap' ? swap(id) : add(id)), run, remove, answer: () => A,
+      solve: sol => { S.fast = true; for (const id of sol.flow) add(id); run(); for (const id of sol.swaps || []) { if (S.done) break; swap(id); } },
+      hint2: () => { const c = phase === 'swap' ? nextSwap() : nextCheck(); if (!c) return; const b = ui.tray.querySelector(`[data-id="${c.id}"]`); if (b) b.classList.add('im-glow'); },
+      hint3: () => { if (phase === 'swap') { const s = nextSwap(); if (s) swap(s.id); } else if (phase === 'build') { const rel = l.checks.filter(c => c.rel).sort((a, b) => a.cost - b.cost).map(c => c.id); A.flow = rel.filter(id => A.flow.includes(id)).concat(rel.filter(id => !A.flow.includes(id))).slice(0, A.flow.length + 1); renderChain(); renderTray(); } } };
+  },
+};
+
+/* ---------- hints, skipping, finishing ---------- */
+function giveHint() {
+  const l = S.level; if (!l || S.done || !S.view) return;
+  if (S.hint >= 3) { toast(tr('No more hints for this level.')); return; }
+  S.hint++; const t = S.hint, text = tr(l.hints[t - 1]);
+  S.ui.hint.hidden = false; S.ui.hint.innerHTML = icon('hint', { size: 20 }) + ' '; S.ui.hint.appendChild(document.createTextNode(text));
+  say(text); announce(text); if (GIZMO) { try { GIZMO.mood('thinking'); } catch (e) { /* ignore */ } }
+  if (t === 2 && S.view.hint2) S.view.hint2();
+  if (t === 3) { S.usedHint3 = true; toast(tr('That hint costs a star.')); if (S.view.hint3) S.view.hint3(); }
+}
+function skipLevel() {
+  const l = S.level; if (!l || S.done) return;
+  S.done = true; S.phase = 'done'; SAVE.skipped[starKey(l)] = true; save();
+  report(l, 0, null, true); toast(tr('Skipped. You can come back to it later.'));
+  nextLevel();
+}
+function finish(answer) {
+  if (S.done || !S.level) return;
+  const l = S.level, v = L.judge(l, answer); S.lastVerdict = v;
+  if (!v.ok) return;
+  S.done = true; S.phase = 'done'; S.runs++;
+  const stars = 1 + (v.good ? 1 : 0) + (S.usedHint3 ? 0 : 1); S.lastStars = stars;
+  const key = starKey(l); if (stars > (SAVE.stars[key] | 0)) SAVE.stars[key] = stars; delete SAVE.skipped[key]; save();
+  if (S.ui) S.ui.refresh();
+  sfx('win'); if (GIZMO) { try { GIZMO.mood('cheer'); GIZMO.pop(); } catch (e) { /* ignore */ } }
+  if (STAGE && !reduced()) { try { STAGE.burst('sparkle', STAGE.camera.x, STAGE.camera.y, { n: 24 }); } catch (e) { /* ignore */ } }
+  const go = () => { if (S.lesson && S.mode !== 'projector') caseClosed(l, stars); else { report(l, stars, null); showWin(stars); } };
+  if (l.kind === 'ticket' || l.kind === 'flow') caseFile(l, v).then(go); else later(500, go);
+}
+/* the Fix-It verdict: the path taken as a small flowchart */
+function caseFile(l, v) {
+  return openCard((card, close) => {
+    card.appendChild(portrait(80, 'cheer'));
+    card.appendChild(el('h2', '', esc(tr('Fixed in {n} min', { n: v.cost }))));
+    card.appendChild(el('p', '', esc(v.good ? tr('Cheap checks first: that is how a fixer works.') : v.helped ? tr('The teacher fixed it this time. Next time, try the quick checks first.') : tr('Fixed! A careful fixer could do it in {n} min.', { n: l.par }))));
+    const fv = el('div', 'im-flowview');
+    for (const p of v.path) { const c = (l.checks.find(x => x.id === p.id) || (l.swaps || []).find(x => x.id === p.id)); if (!c) continue; const row = el('div', 'im-fv' + (p.hit ? ' fix' : '')); row.innerHTML = icon(p.hit ? 'check' : 'cross', { size: 20 }); row.appendChild(el('span', '', esc(tr(c.label)) + ' · ' + esc(p.hit ? tr('found it!') : tr('fine')))); fv.appendChild(row); }
+    card.appendChild(fv);
+    const b = btn(tr('Continue'), { kind: 'hot', big: true, icon: 'next', onPress: () => close(true) }); b.setAttribute('data-focus', ''); card.appendChild(b);
+  }).done;
+}
+/* lesson mode: the Case-closed card (one concept check + a confidence face) before the stars */
+function caseClosed(l, stars) {
+  const c = l.check; let right = null, conf = 0; const order = maybeShuffle(l, c.tiles.map((t, k) => k));
+  openCard((card, close) => {
+    card.appendChild(el('h2', '', esc(tr('Case closed!'))));
+    const q = el('p', 'im-prompt', esc(tr(c.q))); card.appendChild(q);
+    const tiles = el('div', 'im-check-tiles'); card.appendChild(tiles);
+    const faces = el('div'); faces.hidden = true; faces.appendChild(el('p', '', esc(tr('How sure were you?'))));
+    const fr = el('div', 'im-faces'); faces.appendChild(fr); card.appendChild(faces);
+    [['faceLow', tr('Not sure'), 1], ['faceMid', tr('Fairly sure'), 2], ['faceHigh', tr('Very sure'), 3]].forEach(([p, label, n]) => { const b = el('button', 'im-face-btn', pic(p)); b.type = 'button'; b.setAttribute('aria-label', label); b.addEventListener('click', () => { if (conf) return; conf = n; b.classList.add('on'); sfx('select'); later(350, () => close(true)); }); fr.appendChild(b); });
+    order.forEach((k, pos) => {
+      const b = tileBtn(tr(c.tiles[k]), null, pos); b.dataset.k = k;
+      b.addEventListener('click', () => {
+        if (right != null) return; right = k === c.answer; S.checks.n++; if (right) S.checks.ok++;
+        [...tiles.children].forEach(x => { x.disabled = true; if (+x.dataset.k === c.answer) { x.classList.add('good'); mark(x, true); } });
+        if (!right) { b.classList.add('bad'); mark(b, false); sfx('wrong'); } else sfx('correct');
+        q.textContent = right ? tr('Right!') : tr('Not quite. The answer is marked.'); announce(q.textContent);
+        faces.hidden = false; const f = fr.querySelector('button'); if (f) f.focus({ preventScroll: true });
+      });
+      tiles.appendChild(b);
+    });
+    announce(tr('Case closed!') + ' ' + tr(c.q)); say(tr(c.q));
+  }).done.then(() => { report(l, stars, { check: !!right, confidence: conf || 1 }); showWin(stars); });
+}
+function showWin(stars) {
+  const title = S.levelIdx + 1 >= chainEnd() ? tr('Chapter complete!') : tr('Level done!');
+  let p; try { p = Oomba.ui.win({ stars, score: starsInChapter(), hero: GIZMO_SPEC, title, next: true }); } catch (e) { p = Promise.resolve('next'); }
+  p.then(r => { if (r === 'again') startLevel(S.chapter, S.levelIdx, { noLearn: true }); else nextLevel(); });
+}
+const chainEnd = () => { const list = levelsFor(S.chapter); return S.chain && S.chain.ch === S.chapter ? Math.min(S.chain.to, list.length) : list.length; };
+function nextLevel() {
+  if (!S.chapter) return showMap();
+  if (S.levelIdx + 1 < chainEnd()) return startLevel(S.chapter, S.levelIdx + 1);
+  chapterEnd();
+}
+function chapterEnd() {
+  const ch = L.chapter(S.chapter); gameOver();
+  if (S.lesson && !S.chain) { const then = ch && ch.then && ch.then[S.band]; if (then && levelsFor(then.ch).length) { S.chain = { ch: then.ch, from: then.from, to: then.to }; return openBonus(then); } }
+  S.chain = null; questDone();
+}
+function openBonus(then) {
+  const t = L.chapter(then.ch);
+  openCard((card, close) => {
+    card.appendChild(portrait(84, 'cheer')); card.appendChild(el('h2', '', esc(tr('Bonus quest!'))));
+    card.appendChild(el('p', '', esc(tr('Keep going: {chapter}, levels {a} to {b}.', { chapter: tr(t.title), a: then.from, b: then.to }))));
+    const b = btn(tr("Let's go"), { kind: 'hot', big: true, icon: 'play', onPress: () => close(true) }); b.setAttribute('data-focus', ''); card.appendChild(b);
+  }).done.then(() => startLevel(then.ch, then.from - 1));
+}
+function questDone() {
+  if (STAGE && !reduced()) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } }
+  if (!S.lesson) return showMap(S.chapter);
+  const q = S.quest;
+  openCard((card, close) => {
+    card.appendChild(portrait(84, 'cheer')); card.appendChild(el('h2', '', esc(tr('Quest complete!'))));
+    card.appendChild(el('p', '', esc(tr('Great work. Tell your teacher you finished.'))));
+    const row = el('div', 'im-row');
+    row.appendChild(btn(tr('Play again'), { kind: 'quiet', icon: 'restart', onPress: () => close('again') }));
+    const b = btn(S.lock ? tr('Back to the start') : tr('Chapter map'), { kind: 'hot', big: true, icon: 'home', onPress: () => close('home') }); b.setAttribute('data-focus', ''); row.appendChild(b);
+    card.appendChild(row);
+  }).done.then(r => { if (r === 'again') startLevel(q.ch, 0, { noLearn: true }); else if (S.lock) toTitle(); else showMap(q.ch); });
+}
+/* the learn card: the chapter's big idea, read aloud when read-aloud is on */
+function openLearn(learn, first) {
+  openCard((card, close) => {
+    const pics = el('div', 'im-pic'); pics.appendChild(portrait(84, 'happy')); pics.appendChild(propCanvas(L.chapter(S.chapter).pic, 72)); card.appendChild(pics);
+    card.appendChild(el('h2', '', esc(tr(learn.title)))); card.appendChild(el('p', '', esc(tr(learn.text))));
+    const b = btn(first ? tr("Let's go") : tr('Close'), { kind: 'hot', big: true, icon: first ? 'play' : 'check', onPress: () => close(true) }); b.setAttribute('data-focus', ''); card.appendChild(b);
+    announce(tr(learn.title) + '. ' + tr(learn.text)); say(tr(learn.title) + '. ' + tr(learn.text));
+  }, { onEscape: closeCard }).done.then(() => { if (first && S.view && S.view.intro) { announce(S.view.intro); } });
+}
+/* the Quest Card: band, read-aloud, music, settings and the 4-digit quest keypad (never in a live frame) */
+function openQuestCard() {
+  let code = '';
+  openCard((card, close) => {
+    card.appendChild(el('h2', '', esc(tr('Quest Card'))));
+    const seg = el('div', 'im-seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
+    for (const b of ['1b', '2']) { const x = el('button'); x.type = 'button'; x.textContent = bandName(b); x.setAttribute('aria-pressed', String(S.band === b)); x.disabled = S.lock || !!PR.band; x.addEventListener('click', () => { if (S.band === b) return; S.band = b; SAVE.band = b; save(); sfx('select'); [...seg.children].forEach((c, j) => c.setAttribute('aria-pressed', String(['1b', '2'][j] === S.band))); if (S.screen === 'map') showMap(S.mapChapter); }); seg.appendChild(x); }
+    card.appendChild(seg);
+    const sw = (label, get, set) => { const row = el('div', 'im-srow'); row.appendChild(el('span', '', esc(label))); const b = el('button', 'ok-switch'); b.type = 'button'; b.setAttribute('role', 'switch'); b.setAttribute('aria-label', label); b.setAttribute('aria-checked', String(!!get())); b.addEventListener('click', () => { set(!get()); b.setAttribute('aria-checked', String(!!get())); sfx('select'); }); row.appendChild(b); card.appendChild(row); };
+    sw(tr('Read aloud'), () => { try { return Oomba.settings.readAloud; } catch (e) { return false; } }, v => { try { Oomba.settings.readAloud = v; } catch (e) { /* ignore */ } });
+    sw(tr('Music'), () => { try { return Oomba.settings.music; } catch (e) { return false; } }, v => { try { Oomba.settings.music = v; Oomba.music(v && !S.lesson ? 'calm' : 'off'); } catch (e) { /* ignore */ } });
+    const srow = el('div', 'im-srow'); srow.appendChild(el('span', '', esc(tr('More settings')))); srow.appendChild(btn(tr('Settings'), { kind: 'quiet', icon: 'settings', onPress: async () => { try { await Oomba.ui.settings(); } catch (e) { /* ignore */ } syncMotion(); } })); card.appendChild(srow);
+    if (!IN_LIVE) {
+      card.appendChild(el('p', 'im-prompt', esc(tr('Enter a quest code'))));
+      if (HAS_PARAMS) card.appendChild(el('p', 'im-note', esc(tr('Your teacher set this quest.'))));
+      const slots = el('div', 'im-slots'); slots.setAttribute('aria-live', 'polite'); const sl = [0, 1, 2, 3].map(() => { const s = el('span', 'im-slot', '·'); slots.appendChild(s); return s; }); card.appendChild(slots);
+      const show = () => sl.forEach((s, i) => { s.textContent = code[i] || '·'; });
+      const pad = el('div', 'im-pad');
+      const key = (label, fn, cls) => { const k = el('button', 'im-key' + (cls ? ' ' + cls : '')); k.type = 'button'; k.innerHTML = label; k.disabled = HAS_PARAMS; k.addEventListener('click', fn); pad.appendChild(k); return k; };
+      for (let d = 1; d <= 9; d++) key(String(d), () => { if (code.length < 4) { code += String(d); sfx('select'); show(); } });
+      const back = key(icon('back', { size: 26 }), () => { code = code.slice(0, -1); sfx('pop'); show(); }); back.setAttribute('aria-label', tr('Delete'));
+      key('0', () => { if (code.length < 4) { code += '0'; sfx('select'); show(); } });
+      const go = key(icon('check', { size: 26 }), () => { if (code.length === 4) { close(code); } else toast(tr('A quest code has four digits.')); }, 'go'); go.setAttribute('aria-label', tr('Go'));
+      card.appendChild(pad);
+    }
+    const c = btn(tr('Close'), { kind: 'go', big: true, icon: 'check', onPress: () => close(null) }); c.setAttribute('data-focus', ''); card.appendChild(c);
+  }, { onEscape: closeCard }).done.then(v => { if (v && /^\d{4}$/.test(v)) applyCode(v); });
+}
+function applyCode(code) {
+  const c = L.parseCode(code);
+  if (!c || (c.chapter === null && +code[0] !== 0) || !c.band) { toast(tr('That is not a quest code.')); return false; }
+  if (HAS_PARAMS) { toast(tr('Your teacher set this quest.')); return false; }
+  closeCard();
+  if (!S.lock) { S.band = c.band; SAVE.band = c.band; save(); }
+  S.mode = c.mode; S.chain = null; S.checks = { n: 0, ok: 0 };
+  if (!c.chapter) { S.lesson = false; S.quest = null; route(); return true; }
+  const ch = L.chapter(c.chapter); if (!ch.bands.includes(S.band)) S.band = ch.bands[0];
+  S.lesson = true; S.quest = { ch: ch.id, band: S.band }; S.wantLevel = c.level;
+  toast(tr('Class quest: {chapter} · {band}', { chapter: tr(ch.title), band: bandName(S.band) }));
+  route(); return true;
+}
+function route() {
+  ROOT.classList.toggle('im-proj', S.mode === 'projector');
+  if (S.lesson && S.quest) {
+    const list = levelsFor(S.quest.ch, S.band); if (!list.length) { S.lesson = false; return showMap(); }
+    const idx = S.wantLevel ? clamp(S.wantLevel - 1, 0, list.length - 1) : firstOpen(list); S.wantLevel = 0;
+    startLevel(S.quest.ch, idx);
+  } else showMap(S.mapChapter);
+}
+async function toTitle() {
+  closeCard(); screen('title'); S.chapter = null; S.level = null; S.view = null; S.phase = 'idle';
+  try { Oomba.music('off'); } catch (e) { /* ignore */ }
+  let badge = null; try { badge = Oomba.art.toCanvas('bulb', 110); } catch (e) { badge = null; }
+  try { await Oomba.ui.title({ title: tr('Inside the Machine'), subtitle: tr('Parts, fixes, bits and gadgets with Gizmo the mouse'), hero: GIZMO_SPEC, titleHue: 'sky', badge }); } catch (e) { /* ignore */ }
+  onPlay();
+}
+function onPlay() {
+  if (S.lesson) { try { Oomba.settings.captions = true; } catch (e) { /* ignore */ } }
+  else { try { Oomba.music('calm'); } catch (e) { /* ignore */ } }
+  if (S.screen === 'title') route();
+}
+try { Oomba.on('pause', v => { if (v === 'quit') toTitle(); else if (v === 'restart' && S.level) startLevel(S.chapter, S.levelIdx, { noLearn: true }); }); } catch (e) { /* ignore */ }
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || S.modal || Oomba.ui.open || S.screen !== 'play' || !S.ui) return;
+  if (/^[1-9]$/.test(e.key)) {
+    const live = [...SCREENS.play.querySelectorAll('.im-tray button, .im-bins button, .im-device button')].filter(b => !b.disabled && b.offsetParent !== null);
+    const b = live[+e.key - 1]; if (b) { e.preventDefault(); b.click(); }
+  } else if (e.key === 'Enter' && S.ui.primary && !S.ui.primary.disabled && document.activeElement && document.activeElement.tagName !== 'BUTTON') { e.preventDefault(); S.ui.primary.click(); }
+});
+
+/* ---------- test hooks (the cover, the playtest, the unit test): deterministic from a seed ---------- */
+function state() {
+  return { ready: true, screen: S.screen, chapter: S.chapter, level: S.level ? S.levelIdx + 1 : 0, levelId: S.level ? S.level.id : null, kind: S.level ? S.level.kind : null, phase: S.phase, done: S.done,
+    stars: S.chapter || S.quest ? starsInChapter() : 0, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock, fails: S.fails, hint: S.hint, label: S.lastLabel, checks: Object.assign({}, S.checks),
+    quest: S.quest, chain: S.chain, modal: !!S.modal, kitOpen: !!Oomba.ui.open, levels: S.chapter ? levelsFor(S.chapter).length : 0, hasParams: HAS_PARAMS };
+}
+const closeTitle = () => { const b = document.querySelector('.ok-title-screen .ok-hot'); if (b) b.click(); };
+function start(o = {}) {
+  closeTitle(); closeCard(); S.fast = true;
+  if (o.seed != null) S.seed = (+o.seed || 1) | 0;
+  if (o.band) S.band = o.band === '2' ? '2' : '1b';
+  if (o.mode) S.mode = o.mode === 'projector' ? 'projector' : 'play';
+  S.lock = !!o.lock; S.lesson = !!o.lesson || !!o.lock; S.chain = null; S.checks = { n: 0, ok: 0 };
+  ROOT.classList.toggle('im-proj', S.mode === 'projector');
+  const ch = L.chapter(o.chapter);
+  if (!ch) { S.quest = null; S.lesson = false; showMap(); return state(); }
+  if (!ch.bands.includes(S.band)) S.band = ch.bands[0];
+  S.quest = { ch: ch.id, band: S.band };
+  const list = levelsFor(ch.id); const idx = o.level ? clamp((o.level | 0) - 1, 0, list.length - 1) : firstOpen(list);
+  startLevel(ch.id, idx, { noLearn: o.learn !== true });
+  return state();
+}
+function cover() {
+  start({ chapter: 'fixit', band: '1b', level: 3, seed: 3 });
+  if (S.view) { S.view.tap('plugged'); S.view.tap('volume'); }
+  if (GIZMO) { try { GIZMO.mood('cheer'); GIZMO.look('pointer'); } catch (e) { /* ignore */ } }
+  return state();
+}
+try { Oomba.test({ state, start }); } catch (e) { /* ignore */ }
+Object.assign(window.__brbTest = window.__brbTest || {}, {
+  skipAnimations: () => { S.fast = true; return true; },
+  cover, answer: sol => { if (S.view && S.view.solve) S.view.solve(sol); return state(); }, tap: id => { if (S.view && S.view.tap) S.view.tap(id); return state(); },
+  hint: () => { giveHint(); return S.hint; }, skip: () => { failRun(); failRun(); skipLevel(); return state(); }, code: d => applyCode(String(d)),
+  check: k => { const t = document.querySelector(`.im-modal .im-check-tiles button[data-k="${k | 0}"]`); if (t) t.click(); const f = document.querySelectorAll('.im-modal .im-face-btn')[2]; if (f) f.click(); return state(); },
+  next: () => { const b = document.querySelector('.ok-win .ok-hot') || (S.modal && S.modal.card.querySelector('[data-focus]')) || document.querySelector('.ok-modal .ok-hot'); if (b) b.click(); return state(); },
+  closeDialog: () => { if (S.modal) { const b = S.modal.card.querySelector('[data-focus]') || S.modal.card.querySelector('button'); if (b) b.click(); return true; } const k = [...document.querySelectorAll('.ok-modal button')].pop(); if (k) { k.click(); return true; } return false; },
+  label: () => S.lastLabel, scores: () => S.scores.slice(), verdict: () => S.lastVerdict, progress: () => S.lastProgress, map: () => { showMap(); return state(); }, questCard: () => { openQuestCard(); return state(); },
+  levels: (ch, band) => levelsFor(ch, band).map(l => l.id), save: () => JSON.parse(JSON.stringify(SAVE)),
+});
+
+/* ---------- go ---------- */
+makeScreens();
+toTitle();
+try { if (window.BRB && BRB.ready) BRB.ready(); } catch (e) { /* ignore */ }
+})();
+</script>

@@ -1,0 +1,15 @@
+{
+  "slug": "inside-the-machine",
+  "title": "Inside the Machine",
+  "icon": "🔧",
+  "cover": "night",
+  "category": "learning",
+  "tags": "computers,hardware,software,troubleshooting,binary,pixels,gadgets,design,systems,learning,computer science",
+  "description": "Open up the machine with Gizmo the mouse. Tap the part that does each job and wire up a drawing pad, a robot and a printer. Sort hardware from software and follow a tap all the way from your finger to the screen. Run the Fix-It Desk: pick the quick checks first, build a flowchart and swap a part to find the fault. Then flip bits into pixels and colors, design a gadget from a parts bin, and test designs for people who see, hear and move differently. Explorer levels for grades 3 to 5, Pro levels for grades 6 to 8, with learn cards, hints and stars.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Built on the Oomba Kit 1.1.2 (pinned kit tag plus the art-school, art-props, art-animals, dress and style-bold packs): a DOM-first game in Oomba.ui.root() over a quiet kit workbench (Oomba.stage), with Gizmo (art-animals mouse with glasses as goggles) as the crew member; the kit's title, pause, results (Oomba.ui.win), settings, HUD, buttons, icons, sounds, captions, read-aloud and the 13-language chrome. Levels are data in window.InsideTheMachineLevels (a classic script: chapters parts, hw-sw, fixit, bits, gadget, design-lab; level kinds tap, pick, wire, sort, order, ticket, flow; pure judge(level, answer) and parCost(level) functions the unit test uses to solve every level with its sol). Lesson mode comes from BRB.params ({chapter, band 1b|2, mode play|projector, level, lock}) or a 4-digit quest code typed on the in-game keypad (chapter index, band, mode, level; hidden in live frames; params win): it skips the chapter map, shows the Class quest pill, adds the Case-closed card (one 3-tile check plus a confidence face) and with lock=1 hides the map and band toggle; at chapter end it continues into the chapter's then chain for the band (parts to hw-sw 1-3 for Explorer). Progress: after every solved or skipped level BRB.score.submit(starsInChapter, 'n/m levels|tickets, s stars[, k/n checks]'), BRB.gameOver({won:true, score}) at chapter end, BRB.progress(detail) when the SDK has it. Save in BRB.storage inside-the-machine-v1 (band, stars per band and level, skipped, learn cards seen). Test hooks: __brbTest.start({chapter, band, mode, level, seed, lesson, lock}), step(n), skipAnimations(), cover(), state(), answer(sol), tap(id), hint(), skip(), check(i), next(), closeDialog(), code(digits), label(), scores(), verdict(), progress(), levels(ch, band). Words: English keys through tr() (Oomba.strings); other languages are CS Quest data packs under /vendor/data/inside-the-machine/ built by scripts/cs-quest-i18n.mjs.",
+  "l10n": {}
+}
