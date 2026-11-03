@@ -80,6 +80,8 @@ test('inside-the-machine: every level is solved by its sol with the second star,
     if (l.starter) assert.ok(!L.judge(l, l.starter).ok, `${l.id}: the starter does not pass`);
     if (l.kind === 'ticket' || l.kind === 'flow') { assert.equal(l.par, L.parCost(l), `${l.id}: par is the cheapest-first cost`); assert.ok(v.cost <= l.par, `${l.id}: sol within par`); }
     else assert.ok(l.par >= L.moves(l, l.sol), `${l.id}: par >= moves(sol)`);
+    if (l.kind === 'pixels') assert.equal(l.par, l.target.join('').replace(/0/g, '').length, `${l.id}: par is the number of lit pixels`);
+    if (l.kind === 'bin') { const cheapest = Math.min(...[l.sol].map(a => L.moves(l, a))); assert.equal(l.par, cheapest, `${l.id}: par is the cost of the sol`); assert.ok(L.judge(l, { picked: [] }).met === 0 && L.judge(l, { picked: l.sol.picked.slice(0, 2) }).met < L.judge(l, l.sol).met, `${l.id}: the score is monotone in the needs met`); }
     assert.equal(l.hints.length, 3, `${l.id}: three hint tiers`); l.hints.forEach(h => assert.ok(h && typeof h === 'string'));
     assert.ok(l.check && l.check.q && l.check.tiles.length === 3 && l.check.answer >= 0 && l.check.answer < 3, `${l.id}: a 3-tile check`);
     if (l.kind === 'ticket' || l.kind === 'flow') {
@@ -131,7 +133,7 @@ test('inside-the-machine: en.json is exactly the English the game shows (level t
   assert.deepEqual([...have].filter(s => !want.has(s)), [], 'strings in en.json the game no longer shows');
   assert.ok(lits.size <= 450, `chrome strings ${lits.size} <= 450`);
   assert.ok(en.length <= 1450, `strings ${en.length} <= 1450`);
-  for (const s of en) { assert.doesNotMatch(s, /\d{7,}|@|https?:/); assert.doesNotMatch(s, /\b(colou?r|grey|favourite|labelled|practis|organis|recognis|centre|maths)\b/i); }
+  for (const s of en) { assert.doesNotMatch(s, /\d{7,}|@|https?:/); assert.doesNotMatch(s, /\b(colour|colours|grey|favourite|labelled|practis(e|ed|ing)|organis(e|ed|ing)|recognis(e|ed|ing)|centre|maths)\b/i); }
 });
 
 /* ---------- part two: the real game in Chromium, inside the production frame wrapper ---------- */
@@ -224,6 +226,16 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       await T(frame, 'answer', solOf('fixit-2-3'));
       s = await T(frame, 'state'); assert.equal(s.done, true);
       const v2 = await T(frame, 'verdict'); assert.ok(v2.ok && v2.good && v2.path.some(p => p.kind === 'swap' && p.hit), JSON.stringify(v2));
+      // one level of every other kind: the switch board, the pixel grid, the RGB panel, the parts bin, the Design Lab
+      for (const [chapter, band, level, id] of [['bits', '1b', 1, 'bits-1b-1'], ['bits', '1b', 2, 'bits-1b-2'], ['bits', '2', 2, 'bits-2-2'], ['gadget', '2', 1, 'gadget-1'], ['design-lab', '1b', 1, 'design-1b-1']]) {
+        for (let i = 0; i < 6; i++) { s = await T(frame, 'state'); if (!s.modal && !s.kitOpen) break; await T(frame, 'closeDialog'); await frame.waitForTimeout(60); }
+        s = await T(frame, 'start', { chapter, band, level, seed: 4 }); assert.equal(s.levelId, id);
+        await shot(id);
+        await T(frame, 'answer', solOf(id));
+        s = await T(frame, 'state'); assert.equal(s.done, true, `${id} solved by its sol in the browser`);
+        const vk = await T(frame, 'verdict'); assert.ok(vk.ok && vk.good, `${id}: ${JSON.stringify(vk)}`);
+      }
+      await T(frame, 'closeDialog');
       // the quest keypad: 1 1 0 0 opens Parts & Jobs, Explorer; a map code goes to the map
       await T(frame, 'closeDialog'); await frame.waitForFunction(() => window.__brbTest.state().modal === false);
       assert.equal(await T(frame, 'code', '1100'), true);

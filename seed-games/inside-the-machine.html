@@ -463,6 +463,65 @@ window.InsideTheMachineLevels = (function () {
     [swp('adapter', 'Swap the adapter', 2, 'A new adapter: the picture appears! The adapter was broken too.'), swp('cable', 'Swap the cable', 2, 'New cable, still nothing.'), swp('display', 'Swap the display', 15, 'Another display: no picture either.')],
     ['input', 'adapter'], ck('You fixed the input and it is still dark. What does that mean?', 'There is a second fault', 'The first fix was wrong', 'Displays never work with laptops'), FH, { par: 13 });
 
+  /* ---------- Chapter 4: Bits & Pixels (Explorer: storage in the system model, 1B-CS-02; Pro: 2-DA-07) ---------- */
+  add({ id: 'bits-1b-1', ch: 'bits', bands: ['1b'], csta: ['1B-CS-02'], kind: 'switches', bits: 5, par: 3,
+    story: 'Five switches, five cards: 16, 8, 4, 2 and 1. A switch that is on adds its card.',
+    rounds: [{ q: 'Make the number 5', target: 5 }, { q: 'Make the number 9', target: 9 }, { q: 'Make the number 13', target: 13 }],
+    learn: { title: 'Everything is on or off', text: 'Inside a computer every number, letter and picture is kept as tiny switches that are on or off: bits. Five switches can make any number from 0 to 31. Storage keeps the switches set even when the power is off.' },
+    hints: ['Which is the biggest card that fits in the number?', 'The biggest card that still fits is glowing. Turn it on, then do the same with what is left.', 'The biggest card that fits is switched on for you.'],
+    check: ck('How many switches does the number 8 need on?', 'One: the 8 card', 'Eight switches', 'None'),
+    sol: { values: [5, 9, 13], wrong: 0 } });
+  add({ id: 'bits-1b-2', ch: 'bits', bands: ['1b'], csta: ['1B-CS-02'], kind: 'pixels', cols: 5, rows: 5, par: 16,
+    story: 'A picture is a grid of pixels. Copy each row: 1 means a dark pixel, 0 means a light one.',
+    target: ['01010', '11111', '11111', '01110', '00100'],
+    hints: ['Read one row at a time, left to right.', 'The first row that does not match is glowing.', 'That row is filled in for you.'],
+    check: ck('What is a pixel?', 'One tiny square of a picture', 'A kind of battery', 'A sound'),
+    sol: { grid: ['01010', '11111', '11111', '01110', '00100'], toggles: 16 } });
+  add({ id: 'bits-2-1', ch: 'bits', bands: ['2'], csta: ['2-DA-07'], kind: 'switches', bits: 5, par: 3,
+    story: 'Five bits: 16, 8, 4, 2 and 1. A bit that is on adds its value. Letters are numbers too: A is 1, B is 2, and so on.',
+    rounds: [{ q: 'Make the number 21', target: 21 }, { q: 'Send the letter H', target: 8, show: 'letter' }, { q: 'Send the letter S', target: 19, show: 'letter' }],
+    learn: { title: 'One thing, many codes', text: 'The same data can be written many ways: a number in decimal, the same number in binary bits, a letter as its place in the alphabet, a color as three numbers. Computers store all of them as bits.' },
+    hints: ['Which is the biggest value that fits?', 'The biggest value that still fits is glowing. Switch it on, then do the same with what is left.', 'The biggest value that fits is switched on for you.'],
+    check: ck('How many different numbers can 5 bits make?', '32', '5', '10'),
+    sol: { values: [21, 8, 19], wrong: 0 } });
+  add({ id: 'bits-2-2', ch: 'bits', bands: ['2'], csta: ['2-DA-07'], kind: 'rgb', par: 7, tol: 24, step: 20, start: [100, 100, 100], target: [220, 90, 40],
+    story: 'A screen mixes red, green and blue light. Match the swatch: each color is a number from 0 to 255.',
+    hints: ['Which of the three lights is furthest from the target?', 'The light that is furthest off is glowing.', 'That light moves one step the right way for you.'],
+    check: ck('Why does a color need three numbers?', 'A pixel mixes red, green and blue light', 'Three is lucky', 'One number is for brightness, two are spare'),
+    sol: { rgb: [200, 100, 60], moves: 7 } });
+
+  /* ---------- Chapter 5: Design a Gadget (Pro, 2-CS-02 with 2-CS-01) ---------- */
+  const part = (id, name, cat, cost, battery, size, pic) => ({ id, name, cat, cost, battery, size, pic });
+  const BIN = [part('motion', 'Motion sensor', 'sensor', 3, 1, 1, 'motion'), part('lightsensor', 'Light sensor', 'sensor', 2, 1, 1, 'light'), part('thermo', 'Temperature sensor', 'sensor', 2, 1, 1, 'thermo'),
+    part('button', 'Push button', 'input', 1, 0, 1, 'button'), part('screen', 'Tiny screen', 'output', 4, 2, 2, 'screen'), part('buzzer', 'Buzzer', 'output', 1, 1, 1, 'speaker'), part('led', 'Little light', 'output', 1, 1, 1, 'light'),
+    part('memcard', 'Memory card', 'storage', 2, 0, 1, 'memory'), part('wireless', 'Wireless chip', 'connection', 5, 3, 1, 'network'), part('port', 'Cable port', 'connection', 1, 0, 1, 'cable'),
+    part('smallbatt', 'Small battery', 'power', 2, 0, 1, 'battery'), part('bigbatt', 'Big battery', 'power', 4, 0, 3, 'battery'), part('cpu', 'Processor', 'process', 3, 1, 1, 'processor')];
+  const CATS = { sensor: 'Sensor', input: 'Input', output: 'Output', storage: 'Storage', connection: 'Connection', power: 'Power', process: 'Process' };
+  add({ id: 'gadget-1', ch: 'gadget', bands: ['2'], csta: ['2-CS-02'], csta2: ['2-CS-01'], kind: 'bin', par: 9, random: true,
+    brief: { title: 'Step counter', text: 'A clip for a shoe that counts steps and tells the walker when they reach a thousand. Small, cheap, and it must last all day.' },
+    parts: BIN, needs: [{ cat: 'sensor', any: ['motion'], text: 'Something that feels each step' }, { cat: 'output', text: 'A way to tell the walker' }, { cat: 'power', text: 'Power' }, { id: 'cpu', text: 'A processor to count' }],
+    budget: { cost: 12, battery: 5, size: 6 },
+    learn: { title: 'Design a gadget', text: 'A gadget is inputs and sensors, a processor, outputs, maybe storage and a connection, and power. Every part costs money, battery and space. Designers read the brief, pick the parts that do the job, and give up what the brief does not need.' },
+    hints: ['Read the brief again: what must the gadget sense, and how will it tell the walker?', 'The cheapest part that fills the first missing need is glowing.', 'That part is added for you.'],
+    check: ck('Which sensor can count steps?', 'A motion sensor', 'A light sensor', 'A temperature sensor'),
+    sol: { picked: ['motion', 'buzzer', 'smallbatt', 'cpu'] } });
+
+  /* ---------- Chapter 6: Design Lab (Explorer: 1B-IC-19; Pro: 2-CS-01 and 2-IC-21) ---------- */
+  const change = (id, text, helps) => ({ id, text, helps });
+  const CHANGES = [change('bigtext', 'Bigger text', 'Bigger text also helps anyone on a small phone, on a bus, or in bright sun.'), change('contrast', 'High-contrast colors', 'Strong contrast also helps in bright sun and on a cheap screen.'),
+    change('readaloud', 'Read the menu aloud', 'Reading aloud also helps new readers and anyone whose hands are busy.'), change('bigbutton', 'A bigger Play button', 'A big button also helps on a bumpy bus and for small hands.'),
+    change('captions', 'Captions for sounds', 'Captions also help in a noisy room or with the sound off.'), change('onehand', 'All controls on one side', 'One-side controls also help anyone holding a drink or a rail.'),
+    change('levels', 'More levels', 'More levels are fun, but they do not help someone who cannot read the menu.'), change('music', 'Faster music', 'Faster music changes nothing for someone who cannot read the menu.'),
+    change('timer', 'A countdown timer', 'A timer makes things harder for anyone who needs more time.')];
+  add({ id: 'design-1b-1', ch: 'design-lab', bands: ['1b'], csta: ['1B-IC-19'], kind: 'persona', par: 3, random: true,
+    persona: { name: 'Ana', intro: 'Ana loves puzzle games. Small text is a blur to her, even with her glasses.' },
+    beats: ['Ana opens the game and the music starts.', 'The menu is tiny gray text on a light background.', 'Ana squints, taps the wrong thing, and puts the tablet down.'], struggle: 1,
+    changes: CHANGES, best: ['bigtext', 'contrast'],
+    learn: { title: 'Made for everyone', text: 'People see, hear, read and move in different ways. Watch where a user struggles, then change the design. A change made for someone at the edge usually helps everyone.' },
+    hints: ['At which moment does Ana stop having fun?', 'The moment Ana struggles is glowing. Then pick two changes that fix THAT.', 'The two best changes are glowing.'],
+    check: ck('Who else does bigger text help?', 'Anyone on a small screen or in bright sun', 'Only Ana', 'Nobody else'),
+    sol: { beat: 1, changes: ['bigtext', 'contrast'], wrong: 0 } });
+
   /* ---------- helpers ---------- */
   const chapter = id => CHAPTERS.find(c => c.id === id) || null;
   const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
@@ -529,11 +588,36 @@ window.InsideTheMachineLevels = (function () {
         return { ok, fails: ok ? [] : ['step ' + (firstBad < 0 ? order.length : firstBad + 1)], firstBad, good: ok && (a.moves == null || a.moves <= l.par) };
       }
       case 'ticket': case 'flow': return runTicket(l, a);
+      case 'switches': {
+        const values = a.values || [], fails = []; l.rounds.forEach((r, i) => { if (values[i] !== r.target) fails.push('round ' + (i + 1)); });
+        return { ok: !fails.length, fails, good: !fails.length && !(a.wrong > 0) };
+      }
+      case 'pixels': {
+        const grid = a.grid || [], fails = []; l.target.forEach((row, i) => { if (grid[i] !== row) fails.push('row ' + (i + 1)); });
+        return { ok: !fails.length, fails, firstBad: fails.length ? l.target.findIndex((row, i) => grid[i] !== row) : -1, good: !fails.length && (a.toggles == null || a.toggles <= l.par) };
+      }
+      case 'rgb': {
+        const rgb = a.rgb || [], off = l.target.map((t, i) => Math.abs((rgb[i] | 0) - t)), fails = off.map((d, i) => (d > l.tol ? ['red', 'green', 'blue'][i] : null)).filter(Boolean);
+        return { ok: !fails.length, fails, off, good: !fails.length && (a.moves == null || a.moves <= l.par) };
+      }
+      case 'bin': {
+        const picked = new Set(a.picked || []), parts = l.parts.filter(p => picked.has(p.id));
+        const sum = k => parts.reduce((n, p) => n + p[k], 0), totals = { cost: sum('cost'), battery: sum('battery'), size: sum('size') };
+        const metNeed = n => (n.id ? picked.has(n.id) : parts.some(p => p.cat === n.cat && (!n.any || n.any.includes(p.id))));
+        const unmet = l.needs.filter(n => !metNeed(n)), over = Object.keys(l.budget).filter(k => totals[k] > l.budget[k]);
+        const fails = unmet.map(n => 'need ' + (n.id || n.cat)).concat(over.map(k => 'over ' + k));
+        return { ok: !fails.length, fails, met: l.needs.length - unmet.length, unmet, over, totals, good: !fails.length && totals.cost <= l.par };
+      }
+      case 'persona': {
+        const changes = [...new Set(a.changes || [])], best = changes.filter(c => l.best.includes(c)).length;
+        const fails = []; if (a.beat !== l.struggle) fails.push('moment'); if (changes.length !== 2) fails.push('two changes'); else if (!best) fails.push('changes');
+        return { ok: !fails.length, fails, best, good: !fails.length && best === 2 && !(a.wrong > 0) };
+      }
       default: return { ok: false, fails: ['unknown kind ' + l.kind], good: false };
     }
   }
   /** How many moves an answer holds (par >= moves(sol) for the tap-and-build kinds). */
-  const moves = (l, a) => l.kind === 'wire' ? (a.wires || []).length : l.kind === 'sort' ? Object.keys(a.placed || {}).length : l.kind === 'order' ? (a.order || []).length : l.kind === 'tap' || l.kind === 'pick' ? (a.picks || []).length : 0;
+  const moves = (l, a) => l.kind === 'wire' ? (a.wires || []).length : l.kind === 'sort' ? Object.keys(a.placed || {}).length : l.kind === 'order' ? (a.order || []).length : l.kind === 'tap' || l.kind === 'pick' ? (a.picks || []).length : l.kind === 'switches' ? (a.values || []).length : l.kind === 'pixels' ? (a.toggles | 0) : l.kind === 'rgb' ? (a.moves | 0) : l.kind === 'bin' ? l.parts.filter(p => (a.picked || []).includes(p.id)).reduce((n, p) => n + p.cost, 0) : l.kind === 'persona' ? 3 : 0;
   /* quest codes: C B M L. C = chapter index (0 = map), B = 1 Explorer | 2 Pro, M = mode (0 play, 3 projector), L = level (0 = first unfinished). */
   function parseCode(s) {
     const d = String(s || '').replace(/\D/g, ''); if (d.length !== 4) return null;
@@ -545,7 +629,7 @@ window.InsideTheMachineLevels = (function () {
     return String(c) + String(b) + String(m) + String(l);
   }
   /** Every English sentence and label in the data (the packs translate these; the test keeps en.json equal to them). */
-  const TEXT = new Set(['title', 'text', 'q', 'story', 'label', 'name', 'ok', 'fix', 'tiles', 'hints']);
+  const TEXT = new Set(['title', 'text', 'q', 'story', 'label', 'name', 'ok', 'fix', 'tiles', 'hints', 'intro', 'beats', 'helps']);
   function strings() {
     const out = new Set();
     const walk = (v, key) => {
@@ -554,10 +638,10 @@ window.InsideTheMachineLevels = (function () {
       if (Array.isArray(v)) { v.forEach(x => walk(x, key)); return; }
       if (typeof v === 'object') for (const k of Object.keys(v)) { if (k === 'sol') continue; walk(v[k], k); }
     };
-    walk(CHAPTERS, ''); walk(LEVELS, ''); walk(Object.values(PARTS), ''); walk(Object.values(ROLE_NAMES).map(name => ({ name })), '');
+    walk(CHAPTERS, ''); walk(LEVELS, ''); walk(Object.values(PARTS), ''); walk(Object.values(ROLE_NAMES).concat(Object.values(CATS)).map(name => ({ name })), '');
     return [...out];
   }
-  return { CHAPTERS, LEVELS, PARTS, ROLE_NAMES, MODES, BANDS, chapter, level, levelsFor, judge, moves, parCost, cheapest, parseCode, codeFor, strings };
+  return { CHAPTERS, LEVELS, PARTS, ROLE_NAMES, CATS, MODES, BANDS, chapter, level, levelsFor, judge, moves, parCost, cheapest, parseCode, codeFor, strings };
 })();
 </script>
 <script type="module">
@@ -701,6 +785,9 @@ const PIC = {
   faceMid: SV('<circle cx="24" cy="24" r="18" fill="var(--im-sky-t)"/><circle cx="17" cy="20" r="2" fill="currentColor"/><circle cx="31" cy="20" r="2" fill="currentColor"/><path d="M17 31h14"/>'),
   faceHigh: SV('<circle cx="24" cy="24" r="18" fill="var(--im-mint-t)"/><circle cx="17" cy="20" r="2" fill="currentColor"/><circle cx="31" cy="20" r="2" fill="currentColor"/><path d="M16 29q8 8 16 0"/>'),
 };
+PIC.motion = SV('<circle cx="24" cy="24" r="6" fill="var(--im-coral-t)"/><path d="M13 13a16 16 0 0 0 0 22M35 13a16 16 0 0 1 0 22M8 8a23 23 0 0 0 0 32M40 8a23 23 0 0 1 0 32"/>');
+PIC.thermo = SV('<rect x="19" y="6" width="10" height="24" rx="5" fill="var(--im-sky-t)"/><circle cx="24" cy="36" r="7" fill="var(--im-coral-t)"/><path d="M24 18v18"/>');
+PIC.button = SV('<rect x="8" y="22" width="32" height="14" rx="4" fill="var(--im-stone-t)"/><rect x="14" y="14" width="20" height="12" rx="4" fill="var(--im-coral-t)"/>');
 PIC.inside = PIC.processor; PIC.pad = PIC.touch; PIC.desk = PIC.printer;
 const pic = name => PIC[name] || PIC.app;
 const propCanvas = (name, px, variant) => { try { return Oomba.art.toCanvas(name, px, variant); } catch (e) { return el('span'); } };
@@ -1119,6 +1206,117 @@ const KINDS = {
       hint2: () => { const c = phase === 'swap' ? nextSwap() : nextCheck(); if (!c) return; const b = ui.tray.querySelector(`[data-id="${c.id}"]`); if (b) b.classList.add('im-glow'); },
       hint3: () => { if (phase === 'swap') { const s = nextSwap(); if (s) swap(s.id); } else if (phase === 'build') { const rel = l.checks.filter(c => c.rel).sort((a, b) => a.cost - b.cost).map(c => c.id); A.flow = rel.filter(id => A.flow.includes(id)).concat(rel.filter(id => !A.flow.includes(id))).slice(0, A.flow.length + 1); renderChain(); renderTray(); } } };
   },
+  /* the switch board: bits make a number (or a letter) */
+  switches(l, board, panel) {
+    const ui = shell(panel, ''), A = { values: [], wrong: 0 }, n = l.bits || 5, bits = new Array(n).fill(false), sw = []; let i = 0;
+    const vals = Array.from({ length: n }, (_, k) => 1 << (n - 1 - k)), value = () => bits.reduce((t, on, k) => t + (on ? vals[k] : 0), 0);
+    const stack = el('div', 'im-stack'), story = el('p', 'im-note', esc(tr(l.story))), row = el('div', 'im-switches'), out = el('p', 'im-prompt'); out.dir = 'ltr'; stack.append(story, row, out); board.appendChild(stack);
+    const letter = v => (v >= 1 && v <= 26 ? String.fromCharCode(64 + v) : '·');
+    const show = () => { const v = value(); const r = l.rounds[i]; out.textContent = (r && r.show === 'letter') ? `= ${num(v)} = ${letter(v)}` : `= ${num(v)}`; sw.forEach((b, k) => { b.setAttribute('aria-checked', String(bits[k])); b.parentElement.classList.toggle('on', bits[k]); }); };
+    vals.forEach((v, k) => { const w = el('div', 'im-sw'); w.appendChild(el('b', '', num(v))); const b = el('button', 'ok-switch'); b.type = 'button'; b.setAttribute('role', 'switch'); b.setAttribute('aria-label', tr('{n} card', { n: v })); b.addEventListener('click', () => tap(k)); w.appendChild(b); w.appendChild(el('span', 'im-sr', esc(tr('on')))); row.appendChild(w); sw.push(b); });
+    const round = () => { const r = l.rounds[i]; ui.prompt.textContent = tr(r.q); setNote(ui, tr('{n} of {total}', { n: i + 1, total: l.rounds.length })); bits.fill(false); sw.forEach(b => b.classList.remove('im-glow')); show(); announce(tr(r.q)); };
+    const tap = k => { if (S.done || i >= l.rounds.length) return; bits[k] = !bits[k]; sfx('select'); show(); };
+    const check = () => {
+      if (S.done || i >= l.rounds.length) return; const v = value(), r = l.rounds[i];
+      if (v === r.target) { A.values.push(v); sfx('correct'); out.classList.add('im-pop'); i++; later(600, () => { out.classList.remove('im-pop'); if (i >= l.rounds.length) finish(A); else round(); }); }
+      else { A.wrong++; sfx('wrong'); failRun(); banner('wrong', v > r.target ? tr('Too big. Switch something off.') : tr('Too small. Switch something on.')); }
+    };
+    ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh(); round();
+    const biggestFit = () => { const t = l.rounds[i].target, have = value(); return vals.findIndex((v, k) => !bits[k] && v <= t - have && v <= t); };
+    return { intro: tr(l.story), tap, check, set: v => { vals.forEach((x, k) => { bits[k] = !!(v & x); }); show(); }, answer: () => A,
+      solve: sol => { S.fast = true; for (const v of sol.values) { if (S.done) break; vals.forEach((x, k) => { bits[k] = !!(v & x); }); show(); check(); } },
+      hint2: () => { const k = biggestFit(); if (k >= 0) sw[k].classList.add('im-glow'); }, hint3: () => { const k = biggestFit(); if (k >= 0 && !bits[k]) tap(k); } };
+  },
+  /* the pixel grid: rows of 0 and 1 make a picture */
+  pixels(l, board, panel) {
+    const ui = shell(panel, tr(l.story)), A = { grid: [], toggles: 0 }, levels = l.levels || 2, cells = [];
+    const rows = l.rows || l.target.length, cols = l.cols || l.target[0].length, grid = Array.from({ length: rows }, () => new Array(cols).fill(0));
+    const g = el('div', 'im-grid'); g.setAttribute('data-fit-dense', ''); g.setAttribute('role', 'grid'); g.style.gridTemplateColumns = `repeat(${cols}, minmax(28px, 44px))`; g.style.width = 'min(100%, ' + (cols * 46) + 'px)'; board.appendChild(g);
+    const paint = () => { cells.forEach((c, k) => { const v = grid[Math.floor(k / cols)][k % cols]; c.classList.toggle('on', v > 0); c.style.opacity = v > 0 ? String(0.4 + 0.6 * v / (levels - 1)) : ''; c.setAttribute('aria-label', tr('Row {r}, column {c}: {v}', { r: Math.floor(k / cols) + 1, c: k % cols + 1, v })); }); A.grid = grid.map(r => r.join('')); };
+    for (let k = 0; k < rows * cols; k++) { const c = el('button', 'im-px'); c.type = 'button'; c.addEventListener('click', () => tap(Math.floor(k / cols), k % cols)); g.appendChild(c); cells.push(c); }
+    const list = el('div', 'im-tray im-list'); ui.tray.replaceWith(list); ui.tray = list;
+    l.target.forEach((row, r) => { const t = el('div', 'im-tile im-rowtxt'); t.dir = 'ltr'; t.appendChild(el('span', '', esc(tr('Row {n}', { n: r + 1 })) + ': ' + row.split('').join(' '))); list.appendChild(t); });
+    const tap = (r, c) => { if (S.done) return; grid[r][c] = (grid[r][c] + 1) % levels; A.toggles++; sfx('pop'); paint(); };
+    const check = () => { if (S.done) return; const v = L.judge(l, A); if (v.ok) { finish(A); return; } failRun(); sfx('wrong'); banner('wrong', tr('Row {n} does not match yet.', { n: v.firstBad + 1 })); };
+    ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh(); paint();
+    const fixRow = r => { l.target[r].split('').forEach((d, c) => { grid[r][c] = +d; }); A.toggles += l.target[r].split('').filter(d => +d).length; paint(); };
+    return { intro: tr(l.story), tap, check, answer: () => A, solve: sol => { S.fast = true; sol.grid.forEach((row, r) => row.split('').forEach((d, c) => { if (+d !== grid[r][c]) tap(r, c); })); check(); },
+      hint2: () => { const v = L.judge(l, A); if (v.firstBad >= 0) list.children[v.firstBad].classList.add('im-glow'); }, hint3: () => { const v = L.judge(l, A); if (v.firstBad >= 0) fixRow(v.firstBad); } };
+  },
+  /* the RGB panel: three lights make a color */
+  rgb(l, board, panel) {
+    const ui = shell(panel, tr(l.story)), A = { rgb: l.start.slice(), moves: 0 }, names = [tr('Red'), tr('Green'), tr('Blue')];
+    const stack = el('div', 'im-stack'), swatches = el('div', 'im-row'); const mk = label => { const w = el('div', 'im-sw'); const sw = el('div', 'im-swatch'); w.append(sw, el('b', '', esc(label))); return [w, sw]; };
+    const [tw, tsw] = mk(tr('Target')), [yw, ysw] = mk(tr('Yours')); swatches.append(tw, yw); stack.appendChild(swatches);
+    const tnum = el('p', 'im-note'); tnum.dir = 'ltr'; tnum.textContent = tr('Target: {r} {g} {b}', { r: l.target[0], g: l.target[1], b: l.target[2] }); stack.appendChild(tnum); board.appendChild(stack);
+    tsw.style.background = `rgb(${l.target.join(',')})`;
+    const steppers = [], step = l.step || 16;
+    const paint = () => { ysw.style.background = `rgb(${A.rgb.join(',')})`; steppers.forEach((st, i) => { st.textContent = num(A.rgb[i]); }); };
+    ui.tray.classList.add('im-list');
+    names.forEach((nm, i) => {
+      const row = el('div', 'im-tile'); const lab = el('span', '', esc(nm)); const sp = el('span', 'im-stepper'); sp.dir = 'ltr';
+      const minus = btn('−', { kind: 'quiet', onPress: () => bump(i, -1) }); minus.setAttribute('aria-label', tr('{color} down', { color: nm }));
+      const plus = btn('+', { kind: 'quiet', onPress: () => bump(i, 1) }); plus.setAttribute('aria-label', tr('{color} up', { color: nm }));
+      const val = el('b', '', '0'); sp.append(minus, val, plus); row.append(lab, sp); row.style.justifyContent = 'space-between'; ui.tray.appendChild(row); steppers.push(val);
+    });
+    const bump = (i, d) => { if (S.done) return; A.rgb[i] = clamp(A.rgb[i] + d * step, 0, 255); A.moves++; sfx('select'); paint(); };
+    const check = () => { if (S.done) return; const v = L.judge(l, A); if (v.ok) { finish(A); return; } failRun(); sfx('wrong'); banner('wrong', tr('Not the same yet: {list} still off.', { list: v.fails.map(f => tr(f === 'red' ? 'Red' : f === 'green' ? 'Green' : 'Blue')).join(', ') })); };
+    ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh(); paint();
+    const worst = () => { let k = 0, best = -1; l.target.forEach((t, i) => { const d = Math.abs(t - A.rgb[i]); if (d > best) { best = d; k = i; } }); return k; };
+    return { intro: tr(l.story), tap: bump, check, answer: () => A, solve: sol => { S.fast = true; sol.rgb.forEach((v, i) => { let guard = 0; while (A.rgb[i] !== v && guard++ < 40) bump(i, v > A.rgb[i] ? 1 : -1); }); check(); },
+      hint2: () => { const k = worst(); ui.tray.children[k].classList.add('im-glow'); }, hint3: () => { const k = worst(); bump(k, l.target[k] > A.rgb[k] ? 1 : -1); } };
+  },
+  /* the parts bin: build a gadget to a brief within cost, battery and size */
+  bin(l, board, panel) {
+    const ui = shell(panel, tr('Tap parts to add them. Tap again to take one out.')), A = { picked: [] }, btns = {};
+    const stack = el('div', 'im-stack'), brief = el('div', 'im-ticket', icon('book', { size: 40 })); const bt = el('div'); bt.appendChild(el('h3', '', esc(tr(l.brief.title)))); bt.appendChild(el('p', '', esc(tr(l.brief.text)))); brief.appendChild(bt);
+    const needs = el('div', 'im-flowprev'), meters = el('div', 'im-stack'); stack.append(brief, needs, meters); board.appendChild(stack);
+    const parts = maybeShuffle(l, l.parts);
+    parts.forEach((p, k) => { const b = tileBtn(tr(p.name), p.pic, k); b.dataset.id = p.id; b.insertAdjacentHTML('beforeend', `<span class="im-cost" dir="ltr">${esc(tr(L.CATS[p.cat]))} · ${num(p.cost)}</span>`); b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => tap(p.id)); btns[p.id] = b; ui.tray.appendChild(b); });
+    ui.tray.classList.add('im-list');
+    const paint = () => {
+      const v = L.judge(l, A); needs.innerHTML = ''; meters.innerHTML = '';
+      l.needs.forEach(n => { const met = !v.unmet.includes(n); const c = el('span', 'im-chip' + (met ? ' fix' : '')); c.innerHTML = icon(met ? 'check' : 'question', { size: 16 }); c.appendChild(el('span', '', esc(tr(n.text)))); needs.appendChild(c); });
+      for (const k of ['cost', 'battery', 'size']) { const m = el('div', 'im-meter'); m.dir = 'ltr'; const lab = el('span', '', esc(k === 'cost' ? tr('Cost') : k === 'battery' ? tr('Battery') : tr('Size'))); const bar = el('div', 'im-bar'); const fill = el('i', v.totals[k] > l.budget[k] ? 'over' : ''); fill.style.width = Math.min(100, 100 * v.totals[k] / l.budget[k]) + '%'; bar.appendChild(fill); m.append(lab, bar, el('b', '', num(v.totals[k]) + '/' + num(l.budget[k]))); meters.appendChild(m); }
+      for (const id in btns) { const on = A.picked.includes(id); btns[id].classList.toggle('on', on); btns[id].setAttribute('aria-pressed', String(on)); }
+    };
+    const tap = id => { if (S.done || !btns[id]) return; const i = A.picked.indexOf(id); if (i >= 0) A.picked.splice(i, 1); else A.picked.push(id); sfx(i >= 0 ? 'pop' : 'select'); paint(); };
+    const check = () => { if (S.done) return; const v = L.judge(l, A); if (v.ok) { finish(A); return; } failRun(); sfx('wrong'); banner('wrong', v.unmet.length ? tr('The brief still needs: {text}', { text: tr(v.unmet[0].text) }) : tr('Over the budget: {k}', { k: v.over.map(k => (k === 'cost' ? tr('Cost') : k === 'battery' ? tr('Battery') : tr('Size'))).join(', ') })); };
+    ui.primary = btn(tr('Build it'), { kind: 'hot', icon: 'check', onPress: check }); ui.refresh(); paint();
+    const cheapestFor = () => { const v = L.judge(l, A); const n = v.unmet[0]; if (!n) return null; return l.parts.filter(p => (n.id ? p.id === n.id : p.cat === n.cat && (!n.any || n.any.includes(p.id)))).sort((a, b) => a.cost - b.cost)[0]; };
+    return { intro: tr(l.brief.title) + '. ' + tr(l.brief.text), tap, check, answer: () => A, solve: sol => { S.fast = true; for (const id of sol.picked) if (!A.picked.includes(id)) tap(id); check(); },
+      hint2: () => { const p = cheapestFor(); if (p) btns[p.id].classList.add('im-glow'); }, hint3: () => { const p = cheapestFor(); if (p) tap(p.id); } };
+  },
+  /* the Design Lab: watch a user, tap the moment they struggle, pick two changes */
+  persona(l, board, panel) {
+    const ui = shell(panel, ''), A = { beat: -1, changes: [], wrong: 0 }, beats = []; let phase = 'watch';
+    const stack = el('div', 'im-stack'), who = el('div', 'im-ticket', portrait(56, 'thinking').outerHTML ? '' : ''); who.innerHTML = ''; who.appendChild(portrait(56, 'thinking')); const wt = el('div'); wt.appendChild(el('h3', '', esc(tr(l.persona.name)))); wt.appendChild(el('p', '', esc(tr(l.persona.intro)))); who.appendChild(wt);
+    const scene = el('div', 'im-tray im-list'); stack.append(who, scene); board.appendChild(stack);
+    ui.prompt.textContent = tr('Watch {name}. Tap the moment they struggle.', { name: tr(l.persona.name) });
+    l.beats.forEach((t, k) => { const b = tileBtn(tr(t), null, k); b.hidden = true; b.addEventListener('click', () => tapBeat(k)); scene.appendChild(b); beats.push(b); });
+    const reveal = k => { if (k >= beats.length) return; beats[k].hidden = false; beats[k].classList.add('im-pop'); announce(tr(l.beats[k])); later(650, () => reveal(k + 1)); };
+    const tapBeat = k => {
+      if (S.done || phase !== 'watch') return;
+      if (k === l.struggle) { A.beat = k; beats[k].classList.add('good'); mark(beats[k], true); sfx('correct'); phase = 'fix'; later(500, showChanges); }
+      else { A.wrong++; beats[k].classList.add('bad', 'im-shake'); sfx('wrong'); failRun(); banner('wrong', tr('Look again: when does it stop being fun?')); later(500, () => beats[k].classList.remove('bad', 'im-shake')); }
+    };
+    const cbtns = {};
+    const showChanges = () => {
+      // the scene becomes a read-only strip with the struggling moment marked; the work moves to the change tiles
+      scene.className = 'im-flowprev'; scene.innerHTML = '';
+      l.beats.forEach((t, k) => { const c = el('span', 'im-chip' + (k === l.struggle ? ' fix' : '')); c.appendChild(el('b', '', num(k + 1))); c.appendChild(el('span', '', esc(tr(t)))); scene.appendChild(c); });
+      ui.prompt.textContent = tr('Pick two changes that would help {name} most.', { name: tr(l.persona.name) }); ui.tray.innerHTML = '';
+      maybeShuffle(l, l.changes).forEach((c, k) => { const b = tileBtn(tr(c.text), null, k); b.dataset.id = c.id; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => tapChange(c.id)); cbtns[c.id] = b; ui.tray.appendChild(b); });
+      ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.primary.disabled = true; ui.refresh();
+    };
+    const tapChange = id => { if (S.done || phase !== 'fix') return; const i = A.changes.indexOf(id); if (i >= 0) A.changes.splice(i, 1); else if (A.changes.length < 2) A.changes.push(id); else return; sfx('select'); for (const x in cbtns) { cbtns[x].classList.toggle('on', A.changes.includes(x)); cbtns[x].setAttribute('aria-pressed', String(A.changes.includes(x))); } ui.primary.disabled = A.changes.length !== 2; };
+    const check = () => { if (S.done || A.changes.length !== 2) return; const v = L.judge(l, A); if (v.ok) { finish(A); return; } A.wrong++; failRun(); sfx('wrong'); banner('wrong', tr('Would those two really help at that moment? Try again.')); };
+    reveal(0);
+    return { intro: tr(l.persona.intro), tap: id => (phase === 'watch' ? tapBeat(+id) : tapChange(id)), check, answer: () => A,
+      solve: sol => { S.fast = true; tapBeat(sol.beat); for (const id of sol.changes) tapChange(id); check(); },
+      hint2: () => { if (phase === 'watch') beats[l.struggle].classList.add('im-glow'); else l.best.forEach(id => { if (cbtns[id] && !A.changes.includes(id)) cbtns[id].classList.add('im-glow'); }); },
+      hint3: () => { if (phase === 'watch') tapBeat(l.struggle); else { A.changes.length = 0; l.best.forEach(id => tapChange(id)); } } };
+  },
 };
 
 /* ---------- hints, skipping, finishing ---------- */
@@ -1148,7 +1346,15 @@ function finish(answer) {
   sfx('win'); if (GIZMO) { try { GIZMO.mood('cheer'); GIZMO.pop(); } catch (e) { /* ignore */ } }
   if (STAGE && !reduced()) { try { STAGE.burst('sparkle', STAGE.camera.x, STAGE.camera.y, { n: 24 }); } catch (e) { /* ignore */ } }
   const go = () => { if (S.lesson && S.mode !== 'projector') caseClosed(l, stars); else { report(l, stars, null); showWin(stars); } };
-  if (l.kind === 'ticket' || l.kind === 'flow') caseFile(l, v).then(go); else later(500, go);
+  if (l.kind === 'ticket' || l.kind === 'flow') caseFile(l, v).then(go); else if (l.kind === 'persona') helpsCard(l, answer).then(go); else later(500, go);
+}
+/* the Design Lab verdict: who else each change helps */
+function helpsCard(l, a) {
+  return openCard((card, close) => {
+    card.appendChild(portrait(80, 'cheer')); card.appendChild(el('h2', '', esc(tr('Good changes!'))));
+    for (const id of a.changes || []) { const c = l.changes.find(x => x.id === id); if (!c) continue; const row = el('div', 'im-fv' + (l.best.includes(id) ? ' fix' : '')); row.innerHTML = icon(l.best.includes(id) ? 'check' : 'info', { size: 20 }); row.appendChild(el('span', '', '<b>' + esc(tr(c.text)) + '</b> · ' + esc(tr(c.helps)))); const fv = el('div', 'im-flowview'); fv.appendChild(row); card.appendChild(fv); }
+    const b = btn(tr('Continue'), { kind: 'hot', big: true, icon: 'next', onPress: () => close(true) }); b.setAttribute('data-focus', ''); card.appendChild(b);
+  }).done;
 }
 /* the Fix-It verdict: the path taken as a small flowchart */
 function caseFile(l, v) {
