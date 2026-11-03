@@ -86,7 +86,7 @@ body{margin:0;touch-action:manipulation}
 .rr-blk.sel{outline:3px solid var(--ok-focus);outline-offset:2px;background:var(--rr-sel)}
 .rr-blk.running{background:var(--rr-go)}
 .rr-blk.hl,.rr-shelf .hl{animation:rr-pulse 1s ease-in-out infinite;box-shadow:0 0 0 4px var(--rr-hot)}
-.rr-slot{min-height:28px;min-width:40px;border-radius:8px;border:2px dashed var(--ok-line);background:transparent;color:var(--ok-text);opacity:.7;font-weight:700;font-size:.85em;padding:0 8px;cursor:pointer}
+.rr-slot{min-height:44px;min-width:48px;border-radius:8px;border:2px dashed var(--ok-line);background:transparent;color:var(--ok-text);opacity:.7;font-weight:700;font-size:.85em;padding:0 8px;cursor:pointer}
 .rr-slot.cur{border-color:var(--ok-focus);opacity:1;border-style:solid}
 .rr-empty{font-weight:600;opacity:.7;font-size:.92em;padding:6px 4px}
 .rr-tray{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -367,16 +367,17 @@ function runOne(level, ast, g, opt = {}) {
 function judge(level, ast, r, opt) {
   const st = r.st, v = { ok: false, reachedGoal: r.onGoal, gemsLeft: r.gemsLeft, bumps: st.bumps, handledBumps: st.handled, splash: st.splash, commandsRun: st.cmds, failStep: st.failStep, failReason: null, vars: Object.assign({}, st.vars), stop: r.stop };
   const need = (level.needs || []).filter(t => !ast.types.includes(t));
-  if (r.stop === 'limit' || r.stop === 'loop') v.failReason = 'limit';
-  else if (r.stop === 'deep') v.failReason = 'deep';
+  const badName = level.names ? Object.keys(ast.vars).find(n => !level.names.good.includes(n)) : null;
+  if (r.stop === 'deep') v.failReason = 'deep';
   else if (st.splash) v.failReason = 'splash';
-  else if (level.names && Object.keys(ast.vars).some(n => !level.names.good.includes(n))) { v.failReason = 'name'; v.badName = Object.keys(ast.vars).find(n => !level.names.good.includes(n)); }
+  else if (st.bumps > 0 && !level.allowBumps) v.failReason = st.bumpDoor ? 'door' : 'bump';
+  else if (st.fumbles > 0 && !level.allowFumble) v.failReason = 'nothing';
+  else if (r.stop === 'limit' || r.stop === 'loop') v.failReason = 'limit';
+  else if (badName) { v.failReason = 'name'; v.badName = badName; }
   else if (level.plan && !opt.planMatch) v.failReason = 'plan';
   else if (need.length) { v.failReason = 'needs'; v.needBlock = need[0]; }
   else if (level.minProcs && Object.keys(ast.procs).length < level.minProcs) v.failReason = 'procs';
   else if (level.chips && Object.values(ast.procs).some(p => level.chips[p.name] && p.chip !== level.chips[p.name])) v.failReason = 'chips';
-  else if (st.bumps > 0 && !level.allowBumps) v.failReason = st.bumpDoor ? 'door' : 'bump';
-  else if (st.fumbles > 0 && !level.allowFumble) v.failReason = 'nothing';
   else if (r.gemsLeft > 0) v.failReason = 'gems';
   else if (!r.onGoal) v.failReason = 'goal';
   v.ok = !v.failReason;
@@ -447,14 +448,14 @@ function check(level) { const gs = layoutsOf(level); const rs = gs.map(g => bfs(
    four. The second symbol is a shift picked so no five digit symbols ever stand in a row. ---------- */
 const bigMulAdd = (num, mul, add) => { let carry = add; for (let i = 0; i < num.length; i++) { const v = num[i] * mul + carry; num[i] = v % 28; carry = Math.floor(v / 28); } while (carry) { num.push(carry % 28); carry = Math.floor(carry / 28); } };
 const bigDivMod = (num, div) => { let rem = 0; for (let i = num.length - 1; i >= 0; i--) { const v = rem * 28 + num[i]; num[i] = Math.floor(v / div); rem = v % div; } while (num.length && !num[num.length - 1]) num.pop(); return rem; };
-const CELL_CODE = { floor: 0, wall: 1, water: 2, paint: 3, plate: 4 };
-const CELL_CHAR = ['.', '#', '~', 'P', 'B'];
+const CELL_CODE = { floor: 0, wall: 1, water: 2, paint: 0, plate: 0 };
+const CELL_CHAR = ['.', '#', '~'];
 function encode(level) {
   const g = level.rows ? parseGrid(level.rows) : level;
   const w = g.w, n = w * g.h, big = [];
   if (!(w === 6 || w === 8) || g.h !== w || !g.start || !g.goal) return null;
   const fields = [];
-  for (let i = 0; i < n; i++) fields.push([CELL_CODE[g.cells[i]] ?? 0, 5]);
+  for (let i = 0; i < n; i++) fields.push([CELL_CODE[g.cells[i]] ?? 0, 3]);
   fields.push([g.start.y * w + g.start.x, n], [g.start.d, 4], [g.goal.y * w + g.goal.x, n]);
   const gems = Object.keys(g.items).filter(k => g.items[k] === 'gem').slice(0, 4), key = Object.keys(g.items).find(k => g.items[k] === 'key');
   for (const k of gems) { const [x, y] = k.split(',').map(Number); fields.push([y * w + x, n]); }
@@ -462,6 +463,10 @@ function encode(level) {
   if (key) { const [x, y] = key.split(',').map(Number); fields.push([y * w + x, n]); } fields.push([key ? 1 : 0, 2]);
   const door = g.cells.indexOf('door'); if (door >= 0) fields.push([door, n]); fields.push([door >= 0 ? 1 : 0, 2]);
   const rule = level.door || 'key'; fields.push([rule === 'plate' ? 2 : rule.gems != null ? 1 : 0, 3], [rule.gems != null ? Math.min(4, rule.gems) : 0, 5]);
+  const specials = []; g.cells.forEach((t, i) => { if (t === 'paint' || t === 'plate') specials.push([i, t === 'paint' ? 0 : 1]); });
+  if (specials.length > 7) return null;
+  for (const [i, t] of specials) fields.push([i, n], [t, 2]);
+  fields.push([specials.length, 8]);
   for (const [v, r] of fields) bigMulAdd(big, r, v);
   const body = big.length ? big.slice().reverse() : [0];
   const head = w === 6 ? 0 : 1;
@@ -481,16 +486,17 @@ function decode(code) {
   const head = syms.shift(), k = syms.shift(), w = head === 0 ? 6 : head === 1 ? 8 : 0; if (!w) return null;
   const n = w * w, big = syms.map(d => (d - k + 28) % 28).reverse();
   const take = r => bigDivMod(big, r);
+  const nSpecials = take(8), specials = [];
+  for (let i = 0; i < nSpecials; i++) { const t = take(2), pos = take(n); specials.unshift([pos, t]); }
   const ruleN = take(5), ruleT = take(3), hasDoor = take(2), door = hasDoor ? take(n) : -1, hasKey = take(2), key = hasKey ? take(n) : -1, nGems = take(5);
   if (nGems > 4) return null;
   const gems = []; for (let i = 0; i < nGems; i++) gems.unshift(take(n));
   const goal = take(n), d = take(4), start = take(n);
-  const cells = []; for (let i = 0; i < n; i++) cells.unshift(take(5));
-  if (big.length) return null;
+  const cells = []; for (let i = 0; i < n; i++) cells.unshift(take(3));
+  if (big.length || start === goal || gems.includes(start) || gems.includes(goal) || key === start || door === start || door === goal) return null;
   const rows = [];
-  for (let y = 0; y < w; y++) { let row = ''; for (let x = 0; x < w; x++) { const i = y * w + x; let ch = CELL_CHAR[cells[i]] || '.'; if (i === door) ch = 'D'; if (gems.includes(i)) ch = '*'; if (i === key) ch = 'K'; if (i === goal) ch = 'G'; if (i === start) ch = '^>v<'[d]; row += ch; } rows.push(row); }
-  const level = { rows, door: ruleT === 2 ? 'plate' : ruleT === 1 ? { gems: ruleN } : 'key' };
-  return level;
+  for (let y = 0; y < w; y++) { let row = ''; for (let x = 0; x < w; x++) { const i = y * w + x; let ch = CELL_CHAR[cells[i]] || '.'; const sp = specials.find(s => s[0] === i); if (sp) ch = sp[1] ? 'B' : 'P'; if (i === door) ch = 'D'; if (gems.includes(i)) ch = '*'; if (i === key) ch = 'K'; if (i === goal) ch = 'G'; if (i === start) ch = '^>v<'[d]; row += ch; } rows.push(row); }
+  return { rows, door: ruleT === 2 ? 'plate' : ruleT === 1 ? { gems: ruleN } : 'key' };
 }
 
 /** The fail message key and its slots for a verdict (the game translates the key). */
@@ -1197,16 +1203,15 @@ function condText(c) {
   return c.not ? tr('not {x}', { x: t }) : t;
 }
 function blockText(b) {
-  const L = tr;
   switch (b.t) {
-    case 'repeat': return b.until ? L('repeat until {x}', { x: L(SENSOR_LABELS[b.until] || b.until) }) : L('repeat {n} times', { n: typeof b.n === 'object' ? b.n.p : b.n });
-    case 'if': return L('if {c}', { c: condText(b.c) });
-    case 'when': return L('when {e}', { e: L(EVENT_LABELS[b.ev] || b.ev) });
-    case 'set': return L('set {v} to {x}', { v: b.v, x: typeof b.val === 'boolean' ? L(b.val ? 'on' : 'off') : typeof b.val === 'string' ? L(b.val) : typeof b.val === 'object' ? b.val.p : b.val });
-    case 'change': return L('change {v} by {n}', { v: b.v, n: typeof b.n === 'object' ? b.n.p : b.n });
-    case 'proc': return L('My Block {name}', { name: b.name });
-    case 'call': return L('call {name}', { name: b.f });
-    default: return L(BLOCKS[b.t] ? BLOCKS[b.t].label : b.t);
+    case 'repeat': return b.until ? tr('repeat until {x}', { x: tr(SENSOR_LABELS[b.until] || b.until) }) : tr('repeat {n} times', { n: typeof b.n === 'object' ? b.n.p : b.n });
+    case 'if': return tr('if {c}', { c: condText(b.c) });
+    case 'when': return tr('when {e}', { e: tr(EVENT_LABELS[b.ev] || b.ev) });
+    case 'set': return tr('set {v} to {x}', { v: b.v, x: typeof b.val === 'boolean' ? tr(b.val ? 'on' : 'off') : typeof b.val === 'string' ? tr(b.val) : typeof b.val === 'object' ? b.val.p : b.val });
+    case 'change': return tr('change {v} by {n}', { v: b.v, n: typeof b.n === 'object' ? b.n.p : b.n });
+    case 'proc': return tr('My Block {name}', { name: b.name });
+    case 'call': return tr('call {name}', { name: b.f });
+    default: return tr(BLOCKS[b.t] ? BLOCKS[b.t].label : b.t);
   }
 }
 const kindOf = b => b.t === 'repeat' ? 'loop' : b.t === 'if' ? 'if' : b.t === 'when' ? 'event' : b.t === 'set' || b.t === 'change' ? 'var' : b.t === 'proc' || b.t === 'call' ? 'proc' : 'move';
