@@ -1291,9 +1291,9 @@ const KINDS = {
   persona(l, board, panel) {
     const ui = shell(panel, ''), A = { beat: -1, changes: [], wrong: 0 }, beats = []; let phase = 'watch';
     const stack = el('div', 'im-stack'), who = el('div', 'im-ticket', portrait(56, 'thinking').outerHTML ? '' : ''); who.innerHTML = ''; who.appendChild(portrait(56, 'thinking')); const wt = el('div'); wt.appendChild(el('h3', '', esc(tr(l.persona.name)))); wt.appendChild(el('p', '', esc(tr(l.persona.intro)))); who.appendChild(wt);
-    const scene = el('div', 'im-tray im-list'); stack.append(who, scene); board.appendChild(stack);
+    const scene = el('div', 'im-flowprev'); stack.append(who, scene); board.appendChild(stack); ui.tray.classList.add('im-list');
     ui.prompt.textContent = tr('Watch {name}. Tap the moment they struggle.', { name: tr(l.persona.name) });
-    l.beats.forEach((t, k) => { const b = tileBtn(tr(t), null, k); b.hidden = true; b.addEventListener('click', () => tapBeat(k)); scene.appendChild(b); beats.push(b); });
+    l.beats.forEach((t, k) => { const b = tileBtn(tr(t), null, k); b.hidden = true; b.addEventListener('click', () => tapBeat(k)); ui.tray.appendChild(b); beats.push(b); });
     const reveal = k => { if (k >= beats.length) return; beats[k].hidden = false; beats[k].classList.add('im-pop'); announce(tr(l.beats[k])); later(650, () => reveal(k + 1)); };
     const tapBeat = k => {
       if (S.done || phase !== 'watch') return;
@@ -1303,9 +1303,9 @@ const KINDS = {
     const cbtns = {};
     const showChanges = () => {
       // the scene becomes a read-only strip with the struggling moment marked; the work moves to the change tiles
-      scene.className = 'im-flowprev'; scene.innerHTML = '';
+      scene.innerHTML = '';
       l.beats.forEach((t, k) => { const c = el('span', 'im-chip' + (k === l.struggle ? ' fix' : '')); c.appendChild(el('b', '', num(k + 1))); c.appendChild(el('span', '', esc(tr(t)))); scene.appendChild(c); });
-      ui.prompt.textContent = tr('Pick two changes that would help {name} most.', { name: tr(l.persona.name) }); ui.tray.innerHTML = '';
+      ui.prompt.textContent = tr('Pick two changes that would help {name} most.', { name: tr(l.persona.name) }); ui.tray.innerHTML = ''; ui.tray.classList.remove('im-list');
       maybeShuffle(l, l.changes).forEach((c, k) => { const b = tileBtn(tr(c.text), null, k); b.dataset.id = c.id; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => tapChange(c.id)); cbtns[c.id] = b; ui.tray.appendChild(b); });
       ui.primary = btn(tr('Check'), { kind: 'hot', icon: 'check', onPress: check }); ui.primary.disabled = true; ui.refresh();
     };
