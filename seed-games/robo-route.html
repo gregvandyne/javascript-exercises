@@ -1,0 +1,1587 @@
+<title>Robo Route</title>
+<style>
+/* ===== Robo Route on the Oomba Kit: a meadow stage behind, and the board, block shelf, program and cards as kit DOM
+   inside Oomba.ui.root() (kit font, day and night variables, text size, reduced motion). Colors come from the kit's
+   --ok-* variables plus --rr-* set once from Oomba.color() in the script. ===== */
+[hidden]{display:none!important}
+html,body{height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent}
+body{margin:0;touch-action:manipulation}
+#game{font-family:var(--ok-font);color:var(--ok-text)}
+#game button{font:inherit}
+/* the title's Bolt (the kit's title card has no slot for a hand-drawn hero) */
+.rr-titlebolt{position:fixed;bottom:max(3vh,14px);inset-inline-start:max(4vw,14px);width:clamp(96px,18vmin,180px);pointer-events:none;z-index:2}
+.rr-titlebolt svg{width:100%;height:auto;display:block;animation:rr-bob 2.4s ease-in-out infinite}
+/* ---- the chapter map ---- */
+.rr-map{position:fixed;inset:0;top:calc(14px + env(safe-area-inset-top));padding:0 calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:10px;overflow:auto}
+.rr-maphead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rr-maphead h2{margin:0;font-weight:800;font-size:1.5em;line-height:1.1;flex:1;min-width:8ch}
+.rr-seg{display:inline-flex;border:2px solid var(--ok-edge);border-radius:999px;overflow:hidden;background:var(--ok-card)}
+.rr-seg button{min-height:48px;min-width:48px;padding:0 16px;border:0;background:transparent;color:var(--ok-text);font-weight:800;cursor:pointer}
+.rr-seg button[aria-pressed=true]{background:var(--rr-go)}
+.rr-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;align-content:start}
+.rr-tile{min-height:64px;padding:10px 12px;border-radius:20px;border:2px solid var(--ok-edge);background:var(--ok-card);color:var(--ok-text);text-align:start;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 0 var(--ok-edge)}
+.rr-tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ok-edge)}
+.rr-tile[disabled]{opacity:.55;cursor:default}
+.rr-tile .ic{flex:none;width:40px;height:40px;border-radius:12px;background:var(--rr-tint);display:grid;place-items:center}
+.rr-tile .ic svg{width:26px;height:26px}
+.rr-tile b{display:block;font-weight:800;font-size:1.05em;line-height:1.15}
+.rr-tile small{display:block;font-weight:600;font-size:.85em;opacity:.85;line-height:1.2}
+.rr-tile .st{display:inline-flex;gap:1px;vertical-align:middle}.rr-tile .st svg{width:14px;height:14px}
+.rr-tile.crown{background:var(--rr-go-tint)}
+/* ---- the level screen: board and work panel ---- */
+.rr-play{position:fixed;left:calc(6px + env(safe-area-inset-left));right:calc(6px + env(safe-area-inset-right));top:var(--ok-safe-top);bottom:calc(6px + env(safe-area-inset-bottom));display:flex;gap:8px}
+.rr-play.portrait{flex-direction:column}
+.rr-play.landscape{flex-direction:row}
+.rr-board{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
+.rr-play.landscape .rr-board{flex:0 0 52%}
+.rr-play.portrait .rr-board{flex:0 0 46%}
+.rr-top{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rr-pill{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;border:2px solid var(--ok-edge);background:var(--ok-card);font-weight:800;font-size:.92em;white-space:nowrap}
+.rr-pill svg{width:18px;height:18px}
+.rr-pill.quest{background:var(--rr-tint)}
+.rr-gridwrap{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.rr-gridbox{position:relative;width:200px;height:200px}
+.rr-grid{position:absolute;inset:0;display:grid;gap:2px;padding:4px;border-radius:14px;background:var(--rr-frame);border:3px solid var(--ok-edge);box-sizing:border-box}
+.rr-cell{position:relative;border-radius:6px;background:var(--ok-bg2);overflow:hidden;min-width:0;min-height:0}
+.rr-cell.wall{background:var(--rr-wall);background-image:repeating-linear-gradient(45deg,transparent 0 6px,var(--rr-wall2) 6px 8px)}
+.rr-cell.water{background:var(--rr-water);background-image:repeating-linear-gradient(0deg,transparent 0 7px,var(--rr-water2) 7px 9px)}
+.rr-cell.paint{background:var(--rr-paint);background-image:radial-gradient(var(--rr-paint2) 18%,transparent 20%);background-size:10px 10px}
+.rr-cell.plate{background:var(--rr-plate)}
+.rr-cell.plate::after{content:"";position:absolute;inset:22%;border-radius:50%;border:3px solid var(--ok-edge)}
+.rr-cell.goal{background:var(--rr-go-tint)}
+.rr-cell.door{background:var(--rr-door)}
+.rr-cell.door.open{background:var(--rr-go-tint);opacity:.9}
+.rr-cell.ghost::before{content:"";position:absolute;inset:34%;border-radius:50%;border:3px dotted var(--ok-edge);opacity:.55}
+.rr-cell .it{position:absolute;inset:12%;display:grid;place-items:center}
+.rr-cell .it svg{width:100%;height:100%}
+.rr-cell .it.gone{display:none}
+.rr-cell .num{position:absolute;left:3px;top:1px;font-size:.62em;font-weight:700;opacity:.5;line-height:1}
+.rr-cell .word{position:absolute;inset:auto 0 2px 0;text-align:center;font-size:.6em;font-weight:800;line-height:1;color:var(--ok-text)}
+.rr-cell.door .dr{position:absolute;inset:14% 22%;border-radius:4px 4px 0 0;border:3px solid var(--ok-edge);border-bottom:0;box-sizing:border-box}
+.rr-bolt{position:absolute;pointer-events:none;z-index:2}
+.rr-bolt svg{position:absolute;inset:8%;width:84%;height:84%;display:block;overflow:visible;transform-origin:50% 50%}
+.rr-bolt.bump svg{animation:rr-wobble 360ms ease-out}
+.rr-bolt.splash{opacity:.35}
+.rr-b1{fill:var(--rr-bolt);stroke:var(--ok-edge);stroke-width:2.5;stroke-linejoin:round}
+.rr-b2{fill:var(--rr-visor);stroke:var(--ok-edge);stroke-width:2}
+.rr-b3{fill:var(--rr-paintjob);stroke:var(--ok-edge);stroke-width:1.5}
+.rr-eye{fill:var(--ok-card)}
+.rr-watch{display:flex;gap:6px;flex-wrap:wrap;min-height:0}
+.rr-watch .rr-pill{background:var(--rr-var-tint)}
+/* work panel */
+.rr-panel{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;gap:6px;background:var(--ok-card);border:3px solid var(--ok-edge);border-radius:20px;padding:8px;box-sizing:border-box}
+.rr-shelf{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.rr-shelf .ok-btn{min-height:48px;padding:0 12px;font-size:1em}
+.rr-shelf .ok-btn[aria-disabled=true]{opacity:.45}
+.rr-blk,.rr-shelf .ok-btn{border-inline-start-width:8px}
+.rr-k-move{border-inline-start-color:var(--rr-k-move)}.rr-k-loop{border-inline-start-color:var(--rr-k-loop)}.rr-k-if{border-inline-start-color:var(--rr-k-if)}.rr-k-event{border-inline-start-color:var(--rr-k-event)}.rr-k-var{border-inline-start-color:var(--rr-k-var)}.rr-k-proc{border-inline-start-color:var(--rr-k-proc)}
+.rr-shape{display:inline-block;width:.7em;height:.7em;flex:none;border:2px solid currentColor}
+.rr-k-move .rr-shape{border-radius:50%}.rr-k-loop .rr-shape{border-radius:2px;border-style:dashed}.rr-k-if .rr-shape{transform:rotate(45deg) scale(.85)}.rr-k-event .rr-shape{border-radius:0 50% 50% 0}.rr-k-var .rr-shape{border-radius:3px;border-bottom-width:5px}.rr-k-proc .rr-shape{border-radius:40% 40% 0 0}
+.rr-prog{flex:1;min-height:48px;overflow:auto;border-radius:12px;background:var(--ok-bg2);padding:6px;display:flex;flex-direction:column;gap:4px;align-items:flex-start;scrollbar-width:thin}
+.rr-list{display:flex;flex-direction:column;gap:4px;align-items:flex-start;width:100%}
+.rr-list.inner{padding-inline-start:14px;border-inline-start:4px solid var(--rr-rail);margin-inline-start:12px;width:auto;align-self:stretch}
+.rr-blk{min-height:44px;padding:0 12px;border-radius:12px;border:2px solid var(--ok-edge);background:var(--ok-card);color:var(--ok-text);font-weight:700;display:inline-flex;align-items:center;gap:6px;cursor:pointer;text-align:start;max-width:100%}
+.rr-blk svg{width:1.2em;height:1.2em;flex:none}
+.rr-blk .n{font-weight:800;background:var(--rr-tint);border-radius:8px;padding:0 6px;min-width:1.2em;text-align:center}
+.rr-blk.sel{outline:3px solid var(--ok-focus);outline-offset:2px;background:var(--rr-sel)}
+.rr-blk.running{background:var(--rr-go)}
+.rr-blk.hl,.rr-shelf .hl{animation:rr-pulse 1s ease-in-out infinite;box-shadow:0 0 0 4px var(--rr-hot)}
+.rr-slot{min-height:28px;min-width:40px;border-radius:8px;border:2px dashed var(--ok-line);background:transparent;color:var(--ok-text);opacity:.7;font-weight:700;font-size:.85em;padding:0 8px;cursor:pointer}
+.rr-slot.cur{border-color:var(--ok-focus);opacity:1;border-style:solid}
+.rr-empty{font-weight:600;opacity:.7;font-size:.92em;padding:6px 4px}
+.rr-tray{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rr-tray .ok-btn.ok-icon,.rr-run .ok-btn.ok-icon{width:48px}
+.rr-edit{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:6px;border-radius:12px;background:var(--rr-tint)}
+.rr-edit .ok-btn{min-height:44px;padding:0 12px;font-size:.95em}
+.rr-edit .ok-btn[aria-pressed=true]{background:var(--rr-go)}
+.rr-edit .val{font-weight:800;min-width:2ch;text-align:center;font-size:1.2em}
+.rr-run{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rr-run .ok-btn[aria-disabled=true]{opacity:.45}
+.rr-spacer{flex:1}
+/* cards (learn, plan, quest card, case closed) share the kit's modal look */
+.rr-card{text-align:start;align-items:stretch;gap:12px;max-width:520px}
+.rr-card h2{margin:0;font-weight:800;font-size:1.5em;line-height:1.1;text-align:center}
+.rr-card p{margin:0;font-weight:600;line-height:1.4}
+.rr-card .pic{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.rr-card .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.rr-card .col{display:flex;flex-direction:column;gap:8px}
+.rr-tile2{min-height:52px;padding:8px 14px;border-radius:14px;border:2px solid var(--ok-edge);background:var(--ok-card);color:var(--ok-text);font-weight:700;text-align:start;display:flex;align-items:center;gap:10px;cursor:pointer;line-height:1.25}
+.rr-tile2 .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--rr-tint);display:grid;place-items:center;font-weight:800;font-size:.9em}
+.rr-tile2.right{background:var(--rr-go-tint)}.rr-tile2.wrong{background:var(--rr-wrong-tint)}
+.rr-tile2[disabled]{cursor:default}
+.rr-tile2 svg{width:22px;height:22px;flex:none}
+.rr-plan ol{margin:0;padding-inline-start:22px;font-weight:700;line-height:1.5}
+.rr-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:260px;margin:0 auto}
+.rr-keypad .ok-btn{min-height:52px;padding:0}
+.rr-code{font-size:2em;font-weight:800;letter-spacing:.3em;text-align:center;min-height:1.3em}
+.rr-faces{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.rr-faces .ok-btn{min-height:52px}
+.rr-shake{animation:rr-shake 320ms}
+.rr-projector #game{font-size:1.25em}
+@keyframes rr-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes rr-wobble{0%{transform:rotate(var(--r)) translateX(0)}30%{transform:rotate(var(--r)) translateX(-8%)}60%{transform:rotate(var(--r)) translateX(8%)}100%{transform:rotate(var(--r)) translateX(0)}}
+@keyframes rr-pulse{50%{transform:scale(1.04)}}
+@keyframes rr-shake{25%,75%{translate:-6px}50%{translate:6px}}
+.ok-rm .rr-titlebolt svg,.ok-rm .rr-bolt.bump svg,.ok-rm .rr-blk.hl,.ok-rm .rr-shelf .hl,.ok-rm .rr-shake{animation:none}
+@media (max-height:460px){.rr-play{gap:6px}.rr-panel{padding:6px;gap:4px}.rr-shelf .ok-btn{min-height:48px;padding:0 10px;font-size:.92em}.rr-top .rr-pill{min-height:30px;font-size:.85em}}
+</style>
+<div id="game">
+  <div class="rr-titlebolt" id="titleBolt" aria-hidden="true"></div>
+  <section class="rr-map" id="map" hidden>
+    <div class="rr-maphead">
+      <h2 id="mapTitle"></h2>
+      <div class="rr-seg" id="bandSeg" role="group"></div>
+      <span id="gearSlot"></span>
+    </div>
+    <div class="rr-tiles" id="tiles"></div>
+  </section>
+  <section class="rr-play" id="rr" hidden>
+    <div class="rr-board" id="board">
+      <div class="rr-top"><span class="rr-pill" id="lvlPill"></span><span class="rr-pill quest" id="questPill" hidden></span></div>
+      <div class="rr-gridwrap"><div class="rr-gridbox"><div class="rr-grid" id="grid" data-fit-dense dir="ltr"></div><div class="rr-bolt" id="bolt" aria-hidden="true"></div></div></div>
+      <div class="rr-watch" id="watch" dir="ltr" aria-live="polite"></div>
+    </div>
+    <div class="rr-panel" id="panel">
+      <div class="rr-shelf" id="shelf" aria-label="Blocks"></div>
+      <div class="rr-prog" id="prog" dir="ltr"></div>
+      <div class="rr-tray" id="tray" hidden></div>
+      <div class="rr-edit" id="edit" hidden></div>
+      <div class="rr-run" id="runbar"></div>
+    </div>
+  </section>
+  <section class="ok-modal ok-scrim" id="scrim" hidden><div class="ok-card rr-card" id="modal" role="dialog" aria-modal="true"></div></section>
+</div>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-props.js" integrity="sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/style-bold.js" integrity="sha384-pFXgoNOZ/kWWctAb2ucgoE+wLssJGKLBbeZJppwZQlTGTPqBEFYA0dOtLTst2DiH" crossorigin="anonymous"></script>
+<script>
+/* ===== Robo Route engine: block programs -> a grid simulation -> a verdict. No DOM here (the unit test runs this part
+   in Node). Kids' programs are plain data (never JavaScript): this walker reads them block by block with limits on
+   commands, loop turns and call depth, and records every move as an event the game replays on the board. ===== */
+(function (root) {
+'use strict';
+const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];   // N E S W
+const LIMITS = { commands: 500, depth: 64, loop: 200 };
+const ALPHABET = Array.from({ length: 8 }, (_, i) => String(i + 2)).join('') + 'BCDFGHJKMNPQRSTVWXYZ';   // 2-9 then consonants: no vowels, no 0 O 1 I
+const SENSORS = ['path', 'wall', 'gem', 'pickup', 'paint', 'key', 'plate', 'goal', 'var'];
+const EVENTS = ['gem', 'bump', 'plate'];
+const COMMANDS = ['move', 'left', 'right', 'pick', 'drop'];
+const GOOD_NAMES = ['count', 'gems', 'gemsLeft', 'steps', 'lives', 'bumps', 'keys', 'hasKey', 'doorOpen', 'color', 'turns', 'rooms'];
+const BAD_NAMES = ['x', 'y', 'thing', 'stuff', 'number1', 'a', 'b', 'it', 'box', 'n'];
+const WORDS = ['red', 'blue', 'green', 'yellow'];
+
+/* ---------- a small seeded random (the same seed makes the same layout, in the game and in Node) ---------- */
+function rng(seed) {
+  let s = Math.imul((seed >>> 0) ^ 0x9E3779B9, 0x85EBCA6B) >>> 0;
+  const float = () => { s += 0x6D2B79F5; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  for (let i = 0; i < 4; i++) float();
+  const int = (a, b) => a + Math.floor(float() * (b - a + 1));
+  const pick = arr => arr[Math.floor(float() * arr.length)];
+  const shuffle = arr => { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(float() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+  const chance = p => float() < p;
+  return { float, int, pick, shuffle, chance };
+}
+
+/* ---------- grids: rows of characters. . floor  # wall  ~ water  P paint  B plate  D door  G goal  * gem  K key
+   ^ > v < Bolt's start square and the way it faces ---------- */
+function parseGrid(rows) {
+  const h = rows.length, w = Math.max(...rows.map(r => r.length));
+  const cells = [], items = {}; let start = null, goal = null;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const ch = rows[y][x] || '#'; let t = 'floor';
+    if (ch === '#') t = 'wall'; else if (ch === '~') t = 'water'; else if (ch === 'P') t = 'paint'; else if (ch === 'B') t = 'plate'; else if (ch === 'D') t = 'door';
+    else if (ch === 'G') goal = { x, y };
+    else if ('^>v<'.includes(ch)) start = { x, y, d: '^>v<'.indexOf(ch) };
+    else if (ch === '*') items[x + ',' + y] = 'gem'; else if (ch === 'K') items[x + ',' + y] = 'key';
+    cells.push(t);
+  }
+  return { w, h, cells, start, goal, items, rows: rows.slice() };
+}
+const at = (g, x, y) => (x < 0 || y < 0 || x >= g.w || y >= g.h ? 'wall' : g.cells[y * g.w + x]);
+const gemCount = g => Object.values(g.items).filter(v => v === 'gem').length;
+
+/** The boards a level runs on: one, or three seeded ones for a random level (all three must pass). */
+function layoutsOf(level) {
+  if (level.layouts) return level.layouts.map(parseGrid);
+  if (level.gen) return [1, 2, 3].map(s => parseGrid(level.gen(rng(s * 7919 + (level.seed || 0)))));
+  return [parseGrid(level.rows)];
+}
+
+/* ---------- compile: the editor's block list -> a checked program. Unknown blocks are an error, never code. ---------- */
+class CompileError extends Error { constructor(reason, vars) { super(reason); this.reason = reason; this.vars = vars || {}; } }
+function num(v, env) {
+  if (typeof v === 'number') return v | 0;
+  if (v && typeof v === 'object' && typeof v.p === 'string') { const n = env && env[v.p]; return typeof n === 'number' ? n : 0; }
+  return 0;
+}
+function compile(blocks) {
+  if (!Array.isArray(blocks)) throw new CompileError('empty');
+  const main = [], when = {}, procs = {}, vars = {}; let count = 0, calls = 0, usesUntil = false;
+  const types = new Set();
+  const walk = (list, path, inProc) => list.map((b, i) => {
+    if (!b || typeof b !== 'object' || typeof b.t !== 'string') throw new CompileError('bad');
+    count++; types.add(b.t);
+    const id = b.id != null ? String(b.id) : path + i;
+    const out = { t: b.t, id };
+    if (COMMANDS.includes(b.t)) return out;
+    if (b.t === 'repeat') {
+      if (b.until) { if (!['goal', 'gem', 'wall', 'path', 'paint', 'plate', 'key'].includes(b.until)) throw new CompileError('bad'); out.until = b.until; usesUntil = true; }
+      else out.n = (b.n && typeof b.n === 'object') ? { p: String(b.n.p) } : Math.max(0, Math.min(LIMITS.loop, b.n | 0));
+      out.body = walk(b.body || [], id + '.', inProc);
+      if (out.body.some(x => x.t === 'repeat')) types.add('nested');
+      return out;
+    }
+    if (b.t === 'if') { out.c = cond(b.c); out.body = walk(b.body || [], id + '.', inProc); if (b.else) out.else = walk(b.else, id + ':', inProc); return out; }
+    if (b.t === 'when') {
+      if (!EVENTS.includes(b.ev) || inProc || path !== '') throw new CompileError('bad');
+      out.ev = b.ev; out.body = walk(b.body || [], id + '.', inProc); when[b.ev] = out; return out;
+    }
+    if (b.t === 'set' || b.t === 'change') {
+      if (typeof b.v !== 'string' || !/^[A-Za-z][A-Za-z0-9]{0,15}$/.test(b.v)) throw new CompileError('bad');
+      out.v = b.v;
+      if (b.t === 'set') { out.val = typeof b.val === 'boolean' ? b.val : typeof b.val === 'string' ? (WORDS.includes(b.val) ? b.val : 'red') : (b.val && typeof b.val === 'object' ? { p: String(b.val.p) } : (b.val | 0)); }
+      else out.n = (b.n && typeof b.n === 'object') ? { p: String(b.n.p) } : Math.max(-99, Math.min(99, b.n | 0));
+      const ty = typeof out.val === 'boolean' ? 'flag' : typeof out.val === 'string' ? 'word' : 'number';
+      vars[b.v] = vars[b.v] || ty; return out;
+    }
+    if (b.t === 'proc') {
+      if (typeof b.name !== 'string' || !/^[A-Za-z][A-Za-z0-9]{0,15}$/.test(b.name) || inProc || path !== '') throw new CompileError('bad');
+      out.name = b.name; out.params = (b.params || []).slice(0, 2).map(String); out.chip = b.chip == null ? null : String(b.chip); out.credit = b.credit == null ? null : String(b.credit);
+      out.body = walk(b.body || [], id + '.', true); procs[b.name] = out; return out;
+    }
+    if (b.t === 'call') { if (typeof b.f !== 'string') throw new CompileError('bad'); out.f = b.f; out.args = (b.args || []).slice(0, 2).map(a => (a && typeof a === 'object') ? { p: String(a.p) } : (a | 0)); calls++; return out; }
+    throw new CompileError('bad');
+  });
+  const cond = c => {
+    if (!c || typeof c !== 'object') throw new CompileError('bad');
+    if (c.op === 'and' || c.op === 'or') return { op: c.op, a: cond(c.a), b: cond(c.b) };
+    if (!SENSORS.includes(c.s)) throw new CompileError('bad');
+    const o = { s: c.s, not: !!c.not };
+    if (c.s === 'var') { if (typeof c.v !== 'string') throw new CompileError('bad'); o.v = c.v; o.op = ['=', '<', '>'].includes(c.op) ? c.op : '='; if (typeof c.word === 'string') o.word = c.word; else if (typeof c.flag === 'boolean') o.flag = c.flag; else o.n = c.n | 0; }
+    return o;
+  };
+  const tree = walk(blocks, '', false);
+  for (const b of tree) if (b.t !== 'when' && b.t !== 'proc') main.push(b);
+  const checkCalls = list => { for (const b of list) { if (b.t === 'call' && !procs[b.f]) throw new CompileError('nocall', { name: b.f }); if (b.body) checkCalls(b.body); if (b.else) checkCalls(b.else); } };
+  checkCalls(tree); for (const p of Object.values(procs)) checkCalls(p.body);
+  return { main, when, procs, vars, count, calls, types: [...types], usesUntil };
+}
+/** How many blocks a program has (containers count one each, plus what is inside them). */
+function blocks(list) { let n = 0; for (const b of list || []) { n++; if (b.body) n += blocks(b.body); if (b.else) n += blocks(b.else); } return n; }
+
+/* ---------- the simulation ---------- */
+class Stop extends Error { constructor(reason) { super(reason); this.reason = reason; } }
+function doorOpen(level, st, g) {
+  const rule = level.door || 'key';
+  if (rule === 'key') return st.hasKey;
+  if (rule === 'plate') return st.pressed;
+  if (rule.gems != null) return st.picked >= rule.gems;
+  if (rule.var) {
+    if (rule.andKey && !st.hasKey) return false;
+    const v = st.vars[rule.var];
+    if (rule.word != null) return v === rule.word;
+    if (rule.flag != null) return !!v === rule.flag;
+    return v === (rule.n === 'all' ? gemCount(g) : rule.n);
+  }
+  return false;
+}
+function runOne(level, ast, g, opt = {}) {
+  const st = { x: g.start.x, y: g.start.y, d: g.start.d, picked: 0, gems: {}, hasKey: false, pressed: false, doors: false, vars: {}, bumps: 0, handled: 0, fumbles: 0, splash: false, cmds: 0, events: [], failStep: 0, nearest: null };
+  const ev = e => st.events.push(e);
+  const total = gemCount(g);
+  const itemAt = (x, y) => { const k = x + ',' + y; const it = g.items[k]; return it && !st.gems[k] ? it : null; };
+  const command = id => { st.cmds++; if (st.cmds > LIMITS.commands) throw new Stop('limit'); return st.cmds; };
+  const ahead = () => ({ x: st.x + DIRS[st.d][0], y: st.y + DIRS[st.d][1] });
+  const walkable = (x, y) => { const t = at(g, x, y); return t === 'floor' || t === 'paint' || t === 'plate' || t === 'water' || (t === 'door' && (st.doors || doorOpen(level, st, g))); };
+  const sense = c => {
+    if (c.op === 'and') return sense(c.a) && sense(c.b);
+    if (c.op === 'or') return sense(c.a) || sense(c.b);
+    let v;
+    const a = ahead();
+    if (c.s === 'path') v = walkable(a.x, a.y) && at(g, a.x, a.y) !== 'water';
+    else if (c.s === 'wall') v = !walkable(a.x, a.y);
+    else if (c.s === 'gem') v = itemAt(st.x, st.y) === 'gem';
+    else if (c.s === 'pickup') v = !!itemAt(st.x, st.y);
+    else if (c.s === 'paint') v = at(g, st.x, st.y) === 'paint';
+    else if (c.s === 'key') v = st.hasKey;
+    else if (c.s === 'plate') v = at(g, st.x, st.y) === 'plate';
+    else if (c.s === 'goal') v = !!g.goal && st.x === g.goal.x && st.y === g.goal.y;
+    else if (c.s === 'var') { const x = st.vars[c.v]; if (c.word != null) v = x === c.word; else if (c.flag != null) v = !!x === c.flag; else v = c.op === '<' ? (x | 0) < c.n : c.op === '>' ? (x | 0) > c.n : (x | 0) === c.n; }
+    return c.not ? !v : !!v;
+  };
+  const fire = (name, depth) => { const h = ast.when[name]; if (!h) return false; ev({ k: 'event', ev: name, id: h.id }); exec(h.body, null, depth + 1); return true; };
+  const exec = (list, env, depth) => {
+    if (depth > LIMITS.depth) throw new Stop('deep');
+    for (const b of list) {
+      if (b.t === 'move') {
+        const n = command(b.id), a = ahead();
+        if (walkable(a.x, a.y)) {
+          const t = at(g, a.x, a.y);
+          if (t === 'door' && !st.doors) { st.doors = true; if ((level.door || 'key') === 'key') { st.hasKey = false; ev({ k: 'key', has: false }); } ev({ k: 'open', x: a.x, y: a.y, id: b.id }); }
+          st.x = a.x; st.y = a.y; ev({ k: 'move', id: b.id, x: st.x, y: st.y, d: st.d, step: n });
+          if (t === 'water') { st.splash = true; st.failStep = st.failStep || n; ev({ k: 'splash', id: b.id, x: st.x, y: st.y }); throw new Stop('splash'); }
+          if (t === 'plate') { st.pressed = true; ev({ k: 'plate', id: b.id, x: st.x, y: st.y }); fire('plate', depth); }
+        } else {
+          const door = at(g, a.x, a.y) === 'door';
+          ev({ k: 'bump', id: b.id, x: st.x, y: st.y, d: st.d, step: n, door });
+          if (fire('bump', depth)) st.handled++; else { st.bumps++; if (!st.failStep) { st.failStep = n; st.bumpDoor = door; } }
+        }
+      } else if (b.t === 'left' || b.t === 'right') {
+        command(b.id); st.d = (st.d + (b.t === 'left' ? 3 : 1)) % 4; ev({ k: 'turn', id: b.id, d: st.d, x: st.x, y: st.y });
+      } else if (b.t === 'pick') {
+        const n = command(b.id), it = itemAt(st.x, st.y);
+        if (it) {
+          st.gems[st.x + ',' + st.y] = true;
+          if (it === 'gem') st.picked++; else { st.hasKey = true; ev({ k: 'key', has: true }); }
+          ev({ k: 'pick', id: b.id, x: st.x, y: st.y, item: it, step: n });
+          if (it === 'gem') fire('gem', depth);
+        } else { ev({ k: 'nothing', id: b.id, x: st.x, y: st.y }); st.fumbles++; if (!st.failStep) st.failStep = n; }
+      } else if (b.t === 'drop') {
+        command(b.id);
+        if (st.hasKey && !g.items[st.x + ',' + st.y]) { st.hasKey = false; g.items[st.x + ',' + st.y] = 'key'; ev({ k: 'drop', id: b.id, x: st.x, y: st.y, item: 'key' }); ev({ k: 'key', has: false }); }
+        else ev({ k: 'nothing', id: b.id, x: st.x, y: st.y });
+      } else if (b.t === 'repeat') {
+        if (b.until) { let i = 0; while (!sense({ s: b.until })) { if (++i > LIMITS.loop) throw new Stop('loop'); ev({ k: 'loop', id: b.id, i }); exec(b.body, env, depth + 1); } }
+        else { const n = Math.min(LIMITS.loop, num(b.n, env)); for (let i = 0; i < n; i++) { ev({ k: 'loop', id: b.id, i: i + 1, n }); exec(b.body, env, depth + 1); } }
+      } else if (b.t === 'if') {
+        const yes = sense(b.c); ev({ k: 'test', id: b.id, yes });
+        if (yes) exec(b.body, env, depth + 1); else if (b.else) exec(b.else, env, depth + 1);
+      } else if (b.t === 'set') {
+        command(b.id); st.vars[b.v] = typeof b.val === 'object' && b.val ? num(b.val, env) : b.val; ev({ k: 'var', id: b.id, v: b.v, val: st.vars[b.v] });
+      } else if (b.t === 'change') {
+        command(b.id); st.vars[b.v] = (st.vars[b.v] | 0) + num(b.n, env); ev({ k: 'var', id: b.id, v: b.v, val: st.vars[b.v] });
+      } else if (b.t === 'call') {
+        const p = ast.procs[b.f]; if (!p) throw new Stop('nocall');
+        const e2 = {}; p.params.forEach((name, i) => { e2[name] = num(b.args[i] == null ? 0 : b.args[i], env); });
+        ev({ k: 'call', id: b.id, f: b.f }); exec(p.body, e2, depth + 1);
+      }
+    }
+  };
+  let stop = null;
+  try { exec(ast.main, null, 0); } catch (e) { if (e instanceof Stop) stop = e.reason; else throw e; }
+  const onGoal = !!g.goal && st.x === g.goal.x && st.y === g.goal.y;
+  return { st, stop, onGoal, gemsLeft: total - st.picked, total };
+}
+
+/** verdict flags for one program on one board */
+function judge(level, ast, r, opt) {
+  const st = r.st, v = { ok: false, reachedGoal: r.onGoal, gemsLeft: r.gemsLeft, bumps: st.bumps, handledBumps: st.handled, splash: st.splash, commandsRun: st.cmds, failStep: st.failStep, failReason: null, vars: Object.assign({}, st.vars), stop: r.stop };
+  const need = (level.needs || []).filter(t => !ast.types.includes(t));
+  if (r.stop === 'limit' || r.stop === 'loop') v.failReason = 'limit';
+  else if (r.stop === 'deep') v.failReason = 'deep';
+  else if (st.splash) v.failReason = 'splash';
+  else if (level.names && Object.keys(ast.vars).some(n => !level.names.good.includes(n))) { v.failReason = 'name'; v.badName = Object.keys(ast.vars).find(n => !level.names.good.includes(n)); }
+  else if (level.plan && !opt.planMatch) v.failReason = 'plan';
+  else if (need.length) { v.failReason = 'needs'; v.needBlock = need[0]; }
+  else if (level.minProcs && Object.keys(ast.procs).length < level.minProcs) v.failReason = 'procs';
+  else if (level.chips && Object.values(ast.procs).some(p => level.chips[p.name] && p.chip !== level.chips[p.name])) v.failReason = 'chips';
+  else if (st.bumps > 0 && !level.allowBumps) v.failReason = st.bumpDoor ? 'door' : 'bump';
+  else if (st.fumbles > 0 && !level.allowFumble) v.failReason = 'nothing';
+  else if (r.gemsLeft > 0) v.failReason = 'gems';
+  else if (!r.onGoal) v.failReason = 'goal';
+  v.ok = !v.failReason;
+  v.namesOk = v.failReason !== 'name'; v.planMatch = !(level.plan && !opt.planMatch); v.chipsOk = v.failReason !== 'chips';
+  return v;
+}
+
+/** run(level, blocks, {layout, planMatch}) -> { verdict, events, ast, results[] }: every board of the level (three for a
+ *  random level); the replay streams results[layout].events. */
+function run(level, prog, opt = {}) {
+  let ast;
+  try { ast = compile(prog); } catch (e) {
+    const reason = e instanceof CompileError ? e.reason : 'bad';
+    return { verdict: { ok: false, failReason: reason, compileError: true, vars: {}, perLayout: [], blocksUsed: 0, namesOk: true, planMatch: true, chipsOk: true, vars2: e.vars || {} }, events: [], results: [], ast: null };
+  }
+  const grids = layoutsOf(level), results = [];
+  for (let i = 0; i < grids.length; i++) {
+    const g = grids[i]; g.items = Object.assign({}, g.items);
+    const r = runOne(level, ast, g, opt);
+    results.push({ grid: g, events: r.st.events, verdict: judge(level, ast, r, opt), vars: r.st.vars });
+  }
+  const bad = results.find(r => !r.verdict.ok), first = results[0];
+  const verdict = Object.assign({}, (bad || first).verdict, { perLayout: results.map(r => r.verdict.ok), failLayout: bad ? results.indexOf(bad) : -1, blocksUsed: blocks(prog), calls: ast.calls, types: ast.types, editsFromStarter: opt.edits | 0 });
+  verdict.ok = results.every(r => r.verdict.ok);
+  return { verdict, events: (bad || first).events, results, ast };
+}
+
+/** Stars: 1 solved, 2 also at or under par, 3 also without the third hint (which shows a move). */
+function parOf(level, band) { return band === '2' && level.parPro != null ? level.parPro : level.par; }
+function stars(level, band, prog, verdict, o = {}) {
+  if (!verdict.ok) return 0;
+  let s = 1; if (blocks(prog) <= parOf(level, band)) s++; if (!o.hint3) s++;
+  return s;
+}
+
+/* ---------- Level check: a breadth-first search over Bolt's states proves a board solvable and gives par
+   (the fewest commands: move, turn, pick). Doors that read a kid's variable count as open. ---------- */
+function bfs(level, g) {
+  const keys = Object.keys(g.items), nGems = keys.length;
+  if (!g.start || !g.goal || nGems > 8) return { solvable: false, par: 0 };
+  const rule = level.door || 'key', gemIdx = Object.fromEntries(keys.map((k, i) => [k, i])), full = (1 << nGems) - 1;
+  const need0 = keys.filter(k => g.items[k] === 'gem').reduce((n, k, i) => n | (1 << i), 0);
+  const gemMaskOf = m => keys.reduce((n, k, i) => n + ((m >> i) & 1 && g.items[k] === 'gem' ? 1 : 0), 0);
+  const open = s => rule === 'key' ? s.key : rule === 'plate' ? s.pressed : rule.gems != null ? gemMaskOf(s.m) >= rule.gems : rule.var && rule.n === 'all' ? (s.m & need0) === need0 : rule.var && rule.andKey ? s.key : true;
+  const canEnter = (s, x, y) => { const t = at(g, x, y); return t === 'floor' || t === 'paint' || t === 'plate' || (t === 'door' && (s.open || open(s))); };
+  const need = keys.filter(k => g.items[k] === 'gem').reduce((n, k) => n | (1 << gemIdx[k]), 0);
+  const key0 = s => `${s.x},${s.y},${s.d},${s.m},${s.key ? 1 : 0},${s.open ? 1 : 0},${s.pressed ? 1 : 0}`;
+  const start = { x: g.start.x, y: g.start.y, d: g.start.d, m: 0, key: false, open: false, pressed: false };
+  const seen = new Set([key0(start)]); let frontier = [start], dist = 0;
+  while (frontier.length && dist < 400) {
+    const next = [];
+    for (const s of frontier) {
+      if (s.x === g.goal.x && s.y === g.goal.y && (s.m & need) === need) return { solvable: true, par: dist };
+      const push = n => { const k = key0(n); if (!seen.has(k)) { seen.add(k); next.push(n); } };
+      push(Object.assign({}, s, { d: (s.d + 1) % 4 })); push(Object.assign({}, s, { d: (s.d + 3) % 4 }));
+      const x = s.x + DIRS[s.d][0], y = s.y + DIRS[s.d][1];
+      if (canEnter(s, x, y)) { const t = at(g, x, y); push(Object.assign({}, s, { x, y, open: s.open || t === 'door', key: t === 'door' && rule === 'key' && !s.open ? false : s.key, pressed: s.pressed || t === 'plate' })); }
+      const k = s.x + ',' + s.y;
+      if (g.items[k] && !((s.m >> gemIdx[k]) & 1)) push(Object.assign({}, s, { m: s.m | (1 << gemIdx[k]), key: s.key || g.items[k] === 'key' }));
+    }
+    frontier = next; dist++;
+  }
+  return { solvable: false, par: 0, full };
+}
+function check(level) { const gs = layoutsOf(level); const rs = gs.map(g => bfs(level, g)); return { solvable: rs.every(r => r.solvable), par: Math.max(...rs.map(r => r.par)), perLayout: rs }; }
+
+/* ---------- Level codes: 28 symbols (no vowels, no 0 O 1 I), the board packed as one big number, shown in groups of
+   four. The second symbol is a shift picked so no five digit symbols ever stand in a row. ---------- */
+const bigMulAdd = (num, mul, add) => { let carry = add; for (let i = 0; i < num.length; i++) { const v = num[i] * mul + carry; num[i] = v % 28; carry = Math.floor(v / 28); } while (carry) { num.push(carry % 28); carry = Math.floor(carry / 28); } };
+const bigDivMod = (num, div) => { let rem = 0; for (let i = num.length - 1; i >= 0; i--) { const v = rem * 28 + num[i]; num[i] = Math.floor(v / div); rem = v % div; } while (num.length && !num[num.length - 1]) num.pop(); return rem; };
+const CELL_CODE = { floor: 0, wall: 1, water: 2, paint: 3, plate: 4 };
+const CELL_CHAR = ['.', '#', '~', 'P', 'B'];
+function encode(level) {
+  const g = level.rows ? parseGrid(level.rows) : level;
+  const w = g.w, n = w * g.h, big = [];
+  if (!(w === 6 || w === 8) || g.h !== w || !g.start || !g.goal) return null;
+  const fields = [];
+  for (let i = 0; i < n; i++) fields.push([CELL_CODE[g.cells[i]] ?? 0, 5]);
+  fields.push([g.start.y * w + g.start.x, n], [g.start.d, 4], [g.goal.y * w + g.goal.x, n]);
+  const gems = Object.keys(g.items).filter(k => g.items[k] === 'gem').slice(0, 4), key = Object.keys(g.items).find(k => g.items[k] === 'key');
+  for (const k of gems) { const [x, y] = k.split(',').map(Number); fields.push([y * w + x, n]); }
+  fields.push([gems.length, 5]);
+  if (key) { const [x, y] = key.split(',').map(Number); fields.push([y * w + x, n]); } fields.push([key ? 1 : 0, 2]);
+  const door = g.cells.indexOf('door'); if (door >= 0) fields.push([door, n]); fields.push([door >= 0 ? 1 : 0, 2]);
+  const rule = level.door || 'key'; fields.push([rule === 'plate' ? 2 : rule.gems != null ? 1 : 0, 3], [rule.gems != null ? Math.min(4, rule.gems) : 0, 5]);
+  for (const [v, r] of fields) bigMulAdd(big, r, v);
+  const body = big.length ? big.slice().reverse() : [0];
+  const head = w === 6 ? 0 : 1;
+  for (let k = 0; k < 28; k++) {
+    const syms = [head, k, ...body.map(d => (d + k) % 28)];
+    syms.push(syms.reduce((a, b) => a + b, 0) % 28);
+    const text = syms.map(i => ALPHABET[i]).join('');
+    if (!/[2-9]{5}/.test(text)) return text.replace(/(.{4})(?=.)/g, '$1 ');
+  }
+  return null;
+}
+function decode(code) {
+  const text = String(code || '').toUpperCase().replace(/[^2-9BCDFGHJKMNPQRSTVWXYZ]/g, '');
+  if (text.length < 6) return null;
+  const syms = [...text].map(c => ALPHABET.indexOf(c));
+  const check = syms.pop(); if (syms.reduce((a, b) => a + b, 0) % 28 !== check) return null;
+  const head = syms.shift(), k = syms.shift(), w = head === 0 ? 6 : head === 1 ? 8 : 0; if (!w) return null;
+  const n = w * w, big = syms.map(d => (d - k + 28) % 28).reverse();
+  const take = r => bigDivMod(big, r);
+  const ruleN = take(5), ruleT = take(3), hasDoor = take(2), door = hasDoor ? take(n) : -1, hasKey = take(2), key = hasKey ? take(n) : -1, nGems = take(5);
+  if (nGems > 4) return null;
+  const gems = []; for (let i = 0; i < nGems; i++) gems.unshift(take(n));
+  const goal = take(n), d = take(4), start = take(n);
+  const cells = []; for (let i = 0; i < n; i++) cells.unshift(take(5));
+  if (big.length) return null;
+  const rows = [];
+  for (let y = 0; y < w; y++) { let row = ''; for (let x = 0; x < w; x++) { const i = y * w + x; let ch = CELL_CHAR[cells[i]] || '.'; if (i === door) ch = 'D'; if (gems.includes(i)) ch = '*'; if (i === key) ch = 'K'; if (i === goal) ch = 'G'; if (i === start) ch = '^>v<'[d]; row += ch; } rows.push(row); }
+  const level = { rows, door: ruleT === 2 ? 'plate' : ruleT === 1 ? { gems: ruleN } : 'key' };
+  return level;
+}
+
+/** The fail message key and its slots for a verdict (the game translates the key). */
+function failText(verdict) {
+  const r = verdict.failReason;
+  if (!r) return null;
+  const n = verdict.failStep || 0;
+  switch (r) {
+    case 'bump': return ['Bump! A wall after step {n}. Bolt did exactly what the blocks said.', { n }];
+    case 'door': return ['The door is shut. What does it need before Bolt can go through?', {}];
+    case 'splash': return ['Splash! Bolt drove into the water after step {n}.', { n }];
+    case 'nothing': return ['Bolt reached down after step {n}, but there was nothing to pick up there.', { n }];
+    case 'gems': return verdict.gemsLeft === 1 ? ['One gem is still out there.', {}] : ['{n} gems are still out there.', { n: verdict.gemsLeft }];
+    case 'goal': return ['Bolt stopped, but not on the goal.', {}];
+    case 'limit': return ['Bolt ran out of energy: more than {n} steps. Is a loop going round and round?', { n: LIMITS.commands }];
+    case 'deep': return ['The blocks call each other too deeply.', {}];
+    case 'name': return ['{name} is not a clear name. A partner could not tell what is in that box.', { name: verdict.badName || '?' }];
+    case 'plan': return ['Put the plan lines in order first.', {}];
+    case 'needs': return ['This level needs a {block} block. The learn card shows how.', { block: verdict.needBlock || '?' }];
+    case 'procs': return ['Split the route into named blocks first.', {}];
+    case 'chips': return ['A note chip does not match what its block does.', {}];
+    case 'nocall': return ['A block is called that was never made.', {}];
+    case 'empty': return ['The program is empty. Tap a block on the shelf.', {}];
+    default: return ['Something in the program is not a block Bolt knows.', {}];
+  }
+}
+
+root.RoboRoute = { rng, parseGrid, layoutsOf, compile, blocks, run, stars, parOf, bfs, check, encode, decode, failText, ALPHABET, LIMITS, SENSORS, EVENTS, COMMANDS, GOOD_NAMES, BAD_NAMES, WORDS, gemCount, at, DIRS };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ===== Robo Route levels: chapters, boards and words. Levels are data (the unit test loads this part in Node).
+   Boards: . floor  # wall  ~ water  P paint  B plate  D door  G goal  * gem  K key  ^ > v < Bolt and the way it faces.
+   Solutions are written in a tiny block language (parse() below turns it into the editor's blocks):
+     move; left; right; pick; drop; repeat 4 { ... }; repeat until goal { ... }; if path { ... } else { ... };
+     when bump { ... }; set count 0; change count 1; if count = 5 { ... }; if wall and gem { ... } ===== */
+(function (root) {
+'use strict';
+const E = root.RoboRoute;
+const SENS = ['path', 'wall', 'gem', 'pickup', 'paint', 'key', 'plate', 'goal'];
+
+/* ---------- the authoring language -> blocks ---------- */
+function parse(text) {
+  const toks = String(text).match(/[A-Za-z][A-Za-z0-9]*|-?\d+|[{}();=<>,]/g) || [];
+  let i = 0;
+  const peek = () => toks[i], next = () => toks[i++];
+  const expect = t => { const x = next(); if (x !== t) throw new Error(`parse: expected ${t} near ${toks.slice(Math.max(0, i - 4), i + 3).join(' ')}`); };
+  const numOrParam = () => { const t = next(); return /^-?\d+$/.test(t) ? +t : { p: t }; };
+  const block = () => { expect('{'); const out = stmts(() => peek() === '}'); expect('}'); return out; };
+  const term = () => {
+    if (peek() === 'not') { next(); const c = term(); c.not = !c.not; return c; }
+    const t = next();
+    if (SENS.includes(t)) return { s: t };
+    const op = next(); if (!['=', '<', '>'].includes(op)) throw new Error('parse: condition ' + t);
+    const v = next();
+    if (v === 'on' || v === 'off') return { s: 'var', v: t, flag: v === 'on' };
+    if (/^-?\d+$/.test(v)) return { s: 'var', v: t, op, n: +v };
+    return { s: 'var', v: t, word: v };
+  };
+  const cond = () => { let c = term(); while (peek() === 'and' || peek() === 'or') { const op = next(); c = { op, a: c, b: term() }; } return c; };
+  const stmt = () => {
+    const t = next();
+    if (['move', 'left', 'right', 'pick', 'drop'].includes(t)) return { t };
+    if (t === 'repeat') { if (peek() === 'until') { next(); const s = next(); return { t: 'repeat', until: s, body: block() }; } const n = numOrParam(); return { t: 'repeat', n, body: block() }; }
+    if (t === 'if') { const c = cond(); const body = block(); const o = { t: 'if', c, body }; if (peek() === 'else') { next(); o.else = peek() === 'if' ? [stmt()] : block(); } return o; }
+    if (t === 'when') { const ev = next(); return { t: 'when', ev, body: block() }; }
+    if (t === 'set') { const v = next(); const x = next(); const val = x === 'on' ? true : x === 'off' ? false : /^-?\d+$/.test(x) ? +x : E.WORDS.includes(x) ? x : { p: x }; return { t: 'set', v, val }; }
+    if (t === 'change') { const v = next(); return { t: 'change', v, n: numOrParam() }; }
+    if (t === 'proc') { const name = next(); const params = []; if (peek() === '(') { next(); while (peek() !== ')') { params.push(next()); if (peek() === ',') next(); } next(); } return { t: 'proc', name, params, body: block() }; }
+    if (t === 'call') { const f = next(); const args = []; if (peek() === '(') { next(); while (peek() !== ')') { args.push(numOrParam()); if (peek() === ',') next(); } next(); } return { t: 'call', f, args }; }
+    throw new Error('parse: unknown word ' + t);
+  };
+  const stmts = stop => { const out = []; while (i < toks.length && !stop()) { if (peek() === ';') { next(); continue; } out.push(stmt()); } return out; };
+  return stmts(() => false);
+}
+
+/* ---------- board helpers for random layouts ---------- */
+const blank = (n, ch = '.') => Array.from({ length: n }, () => ch.repeat(n));
+const put = (rows, x, y, ch) => { rows[y] = rows[y].slice(0, x) + ch + rows[y].slice(x + 1); };
+const D4 = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+/** A spiral path cut after `len` squares; returns the squares in order. */
+function spiral(n, len, cw) {
+  // clockwise: from the top-left corner heading east, right turns; counter-clockwise: from the bottom-left heading east, left turns
+  const cells = [], seen = new Set(); let x = 0, y = cw ? 0 : n - 1, d = 1;
+  const ok = (x, y) => x >= 0 && y >= 0 && x < n && y < n && !seen.has(x + ',' + y);
+  cells.push([x, y]); seen.add(x + ',' + y);
+  while (cells.length < len) {
+    let nx = x + D4[d][0], ny = y + D4[d][1];
+    if (!ok(nx, ny)) { d = cw ? (d + 1) % 4 : (d + 3) % 4; nx = x + D4[d][0]; ny = y + D4[d][1]; if (!ok(nx, ny)) break; }
+    x = nx; y = ny; cells.push([x, y]); seen.add(x + ',' + y);
+  }
+  return cells;
+}
+const corners = cells => cells.map((c, i) => i > 0 && i < cells.length - 1 && (cells[i - 1][0] - c[0]) * (cells[i + 1][0] - c[0]) === 0 && (cells[i - 1][1] - c[1]) * (cells[i + 1][1] - c[1]) === 0 ? i : null).filter(i => i != null);
+/** A board that is all `fill` except the path; Bolt at the first square facing the second; the goal at the last. */
+function pathBoard(n, cells, fill, marks = {}) {
+  const rows = blank(n, fill);
+  for (const [x, y] of cells) put(rows, x, y, '.');
+  for (const [k, ch] of Object.entries(marks)) { const [x, y] = k.split(',').map(Number); put(rows, x, y, ch); }
+  const [x0, y0] = cells[0], [x1, y1] = cells[1];
+  put(rows, x0, y0, '^>v<'[D4.findIndex(d => d[0] === x1 - x0 && d[1] === y1 - y0)]);
+  const [gx, gy] = cells[cells.length - 1]; put(rows, gx, gy, 'G');
+  return rows;
+}
+/** An L: east `a` squares from the bottom-left corner, then north `b` squares. */
+const lPath = (n, a, b) => { const cells = []; for (let x = 0; x <= a; x++) cells.push([x, n - 1]); for (let y = n - 2; y >= n - 1 - b; y--) cells.push([a, y]); return cells; };
+
+const G = {
+  // the gap: east a random way, then north to the goal (the turn comes at a different square each time)
+  gapL: n => r => { const a = r.int(2, n - 2), b = r.int(2, n - 2); return pathBoard(n, lPath(n, a, b), '~'); },
+  // a clockwise spiral cut short at a random length; paint on every turn square
+  paintSpiral: n => r => { const cells = spiral(n, r.int(n * 2, 4 * n - 4), true); const marks = {}; for (const i of corners(cells)) marks[cells[i].join(',')] = 'P'; return pathBoard(n, cells, '~', marks); },
+  // a counter-clockwise spiral in solid wall: Bolt bumps at every turn
+  bumpSpiral: n => r => { const cells = spiral(n, r.int(n * 2, 4 * n - 4), false); return pathBoard(n, cells, '#'); },
+  // a straight corridor with gems on some squares (never the same ones)
+  gemRow: n => r => { const y = Math.floor(n / 2), rows = blank(n, '~'); for (let x = 0; x < n; x++) put(rows, x, y, '.'); const slots = []; for (let x = 1; x < n - 1; x++) slots.push(x); for (const x of r.shuffle(slots).slice(0, r.int(2, n - 3))) put(rows, x, y, '*'); put(rows, 0, y, '>'); put(rows, n - 1, y, 'G'); return rows; },
+  // a clockwise spiral maze in wall (right turns only), random length
+  rightMaze: n => r => { const cells = spiral(n, r.int(n * 2 + 2, 4 * n - 4), true); return pathBoard(n, cells, '#'); },
+  // gems and a door that counts them: a corridor east with 1-3 gems, the door before the goal
+  countRow: n => r => { const y = Math.floor(n / 2), rows = blank(n, '~'); for (let x = 0; x < n; x++) put(rows, x, y, '.'); const slots = []; for (let x = 1; x < n - 2; x++) slots.push(x); for (const x of r.shuffle(slots).slice(0, r.int(1, Math.min(3, n - 3)))) put(rows, x, y, '*'); put(rows, 0, y, '>'); put(rows, n - 2, y, 'D'); put(rows, n - 1, y, 'G'); return rows; },
+  // an L with gems scattered on it and a door before the goal; a wall at the corner makes Bolt bump there
+  countL: n => r => { const a = r.int(2, n - 2), b = r.int(2, n - 2); const cells = lPath(n, a, b); const rows = pathBoard(n, cells, '#'); const slots = cells.slice(1, -2).filter(([x, y]) => !(x === a && y === n - 1)); for (const [x, y] of r.shuffle(slots).slice(0, r.int(1, 3))) put(rows, x, y, '*'); const [dx, dy] = cells[cells.length - 2]; put(rows, dx, dy, 'D'); return rows; },
+  // Pro: a right-turn path where some corners are open ground marked with paint and the others are walls
+  paintOrWall: n => r => { const cells = spiral(n, r.int(n * 2, 4 * n - 4), true); const rows = blank(n, '.'); const marks = {}; const cs = corners(cells); for (const i of cs) { const [x, y] = cells[i]; if (r.chance(0.5)) marks[x + ',' + y] = 'P'; else { const [px, py] = cells[i - 1]; const wx = x + (x - px), wy = y + (y - py); if (wx >= 0 && wy >= 0 && wx < n && wy < n) put(rows, wx, wy, '#'); else marks[x + ',' + y] = 'P'; } } const out = pathBoard(n, cells, '.', marks); for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (rows[y][x] === '#' && !cells.some(c => c[0] === x && c[1] === y)) put(out, x, y, '#'); return out; },
+  // Pro: a key somewhere on a right-turn spiral, the door at the end
+  keyMaze: n => r => { const cells = spiral(n, r.int(n * 2 + 2, 4 * n - 4), true); const rows = pathBoard(n, cells, '#'); const [kx, ky] = cells[r.int(2, cells.length - 4)]; put(rows, kx, ky, 'K'); const [dx, dy] = cells[cells.length - 2]; put(rows, dx, dy, 'D'); return rows; },
+  // Pro: corners with a gem mean "turn right", bare corners mean "turn left" (a zigzag down the board)
+  gemCorners: n => r => {
+    // runs on even rows, a two-square drop between them; a corner that turns right (east then down, or down then
+    // west) gets a gem, a corner that turns left stays bare
+    const cells = [[0, 0]]; let x = 0, y = 0, d = 1; const marks = {};
+    while (true) {
+      const room = d === 1 ? n - 1 - x : x; const run = Math.min(room, r.int(1, 3));
+      for (let k = 0; k < run; k++) { x += d; cells.push([x, y]); }
+      if (y >= n - 2) break;
+      if (d === 1) marks[x + ',' + y] = '*';
+      cells.push([x, y + 1], [x, y + 2]); y += 2;
+      const canW = x >= 1, canE = x <= n - 2;
+      d = canW && canE ? (r.chance(0.5) ? -1 : 1) : canW ? -1 : 1;
+      if (d === -1) marks[x + ',' + y] = '*';
+    }
+    return pathBoard(n, cells, '#', marks);
+  },
+};
+
+/* ---------- chapters ---------- */
+const CHAPTERS = [
+  { id: 'sequences', index: 1, title: 'Sequences', icon: 'next', csta: { '1b': ['1B-AP-10', '1B-AP-08', '1B-AP-11'], '2': ['2-AP-10', '2-AP-13'] } },
+  { id: 'loops', index: 2, title: 'Loops', icon: 'restart', csta: { '1b': ['1B-AP-10'], '2': ['2-AP-12'] } },
+  { id: 'conditionals', index: 3, title: 'Conditionals & events', icon: 'question', csta: { '1b': ['1B-AP-10'], '2': ['2-AP-12'] } },
+  { id: 'variables', index: 4, title: 'Variables', icon: 'pencil', csta: { '1b': ['1B-AP-09'], '2': ['2-AP-11'] } },
+  { id: 'functions', index: 5, title: 'Functions', icon: 'book', csta: { '1b': ['1B-AP-11', '1B-AP-12'], '2': ['2-AP-14', '2-AP-13', '2-AP-19', '2-AP-16'] }, soon: true },
+  { id: 'debug', index: 6, title: 'Debug Lab', icon: 'hint', mode: 'debug', csta: { '1b': ['1B-AP-15'], '2': ['2-AP-17'] }, soon: true },
+  { id: 'best-route', index: 7, title: 'Best Route', icon: 'flag', csta: { '1b': ['1B-AP-08'], '2': ['2-AP-10', '2-AP-17'] }, soon: true },
+  { id: 'level-maker', index: 8, title: 'Level Maker', icon: 'pencil', mode: 'maker', csta: { '1b': ['1B-AP-13', '1B-AP-12'], '2': ['2-AP-15', '2-AP-16'] }, soon: true },
+];
+
+const SEQ = ['move', 'left', 'right'], SEQP = ['move', 'left', 'right', 'pick'];
+const LEVELS = [
+/* ---------------- 1 Sequences ---------------- */
+{ id: 'seq-1', ch: 'sequences', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-10'], shelf: SEQ, ghost: true, par: 4,
+  rows: ['......', '......', '>...G.', '......', '......', '......'],
+  sol: 'move; move; move; move',
+  learn: { title: 'An algorithm is a list of steps in order', text: 'Bolt does exactly what the blocks say, one after another, from the top. Tap a block on the shelf to add it to the program, then press Run.' },
+  hints: ['How many squares are between Bolt and the flag?', 'Count the squares, then count your move blocks.', 'Four move blocks take Bolt to the flag.'],
+  check: { q: 'Bolt runs the blocks...', tiles: ['in order, from the top', 'all at the same time', 'in any order it likes'], answer: 0 },
+  pro: { rows: ['........', '........', '........', '>......G', '........', '........', '........', '........'], par: 7, sol: 'move; move; move; move; move; move; move', hints: ['How many squares are between Bolt and the flag?', 'Count the squares, then count your move blocks.', 'Seven move blocks take Bolt to the flag.'] } },
+{ id: 'seq-2', ch: 'sequences', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-10'], shelf: SEQ, ghost: true, par: 7,
+  rows: ['......', '....G.', '......', '>.....', '......', '......'],
+  sol: 'move; move; move; move; left; move; move',
+  hints: ['Does a turn block move Bolt forward?', 'A turn spins Bolt on the spot. After the turn, Bolt still needs move blocks.', 'Four moves, turn left, then two moves.'],
+  check: { q: 'What does turn left do?', tiles: ['Bolt spins to face left and stays on its square', 'Bolt moves one square to the left', 'Bolt goes back to the start'], answer: 0 },
+  pro: { rows: ['........', '........', '.....G..', '........', '........', '>...*...', '........', '........'], shelf: SEQP, par: 10, sol: 'move; move; move; move; pick; move; left; move; move; move',
+    hints: ['Does a turn block move Bolt forward?', 'Stand on the gem, then pick it up. Bolt only picks up what is under it.', 'Four moves, pick, one move, turn left, three moves.'] } },
+{ id: 'seq-3', ch: 'sequences', bands: ['1b'], csta: ['1B-AP-10'], shelf: SEQP, par: 8,
+  rows: ['......', '...G..', '.##...', '.##...', '>.*...', '......'],
+  sol: 'move; move; pick; move; left; move; move; move',
+  hints: ['Where does Bolt have to be when it picks up the gem?', 'Pick up works only on the square Bolt is standing on.', 'Move, move, pick, move, turn left, then three moves.'],
+  check: { q: 'When does pick up work?', tiles: ['When Bolt stands on the gem', 'When Bolt is next to the gem', 'Any time'], answer: 0 } },
+{ id: 'seq-3p', ch: 'sequences', bands: ['2'], csta2: ['2-AP-10'], shelf: SEQP, par: 21,
+  rows: ['........', '.....*..', '........', '........', '..G.....', '........', '>...*...', '........'],
+  plan: ['Drive to the first gem and pick it up', 'Turn and drive up to the second gem', 'Turn toward the goal and drive there'],
+  sol: 'move; move; move; move; pick; move; left; move; move; move; move; move; pick; left; move; move; move; left; move; move; move',
+  learn: { title: 'Plan first, then program', text: 'Pro programmers write the plan in plain words before they touch the blocks: this is called pseudocode. Put the plan lines in order and the shelf opens.' },
+  hints: ['Which plan line comes first?', 'Each plan line becomes a run of blocks. Finish one line before you start the next.', 'Line 1 is four moves and a pick. Line 2 starts with a move and a turn left.'],
+  check: { q: 'Pseudocode is...', tiles: ['the plan in plain words', 'a secret robot language', 'the fastest route'], answer: 0 } },
+{ id: 'seq-4', ch: 'sequences', bands: ['1b'], csta: ['1B-AP-10'], shelf: SEQ, par: 5,
+  rows: ['......', '.~~~..', '.~G~..', '......', '>.....', '......'],
+  sol: 'move; move; left; move; move',
+  hints: ['Which squares are water? Bolt cannot swim.', 'Only one square leads into the flag without a splash: the one below it.', 'Two moves, turn left, two moves.'],
+  check: { q: 'A program is a set of...', tiles: ['exact steps for the computer', 'ideas the computer guesses from', 'pictures'], answer: 0 } },
+{ id: 'seq-4p', ch: 'sequences', bands: ['2'], csta2: ['2-AP-10'], shelf: SEQP, par: 28,
+  rows: ['>......~', '~~~~~~.~', '......*~', '.~~~~~~~', '.......G', '~~~~~~~~', '~~~~~~~~', '~~~~~~~~'],
+  plan: ['Drive east along the top', 'Go down and pick up the gem', 'Drive back west, then down', 'Drive east to the goal'],
+  sol: 'move; move; move; move; move; move; right; move; move; pick; right; move; move; move; move; move; move; left; move; move; left; move; move; move; move; move; move; move',
+  hints: ['How many squares is each leg of the plan?', 'Count each straight run before you add its moves. Water is a splash.', 'The first leg is six moves, then turn right and two moves.'],
+  check: { q: 'Why write the plan first?', tiles: ['It splits a long job into parts you can check', 'It makes Bolt faster', 'Bolt reads the plan'], answer: 0 } },
+{ id: 'seq-5', ch: 'sequences', bands: ['1b', '2'], csta: ['1B-AP-08', '1B-AP-10'], csta2: ['2-AP-10'], shelf: SEQ, par: 10,
+  rows: ['>....#', '.###.#', '.#...#', '.#.###', '...G..', '######'],
+  sol: 'right; move; move; move; move; left; move; move; move',
+  hints: ['There are two ways to the flag. Which one has fewer steps?', 'Going down the left side first is shorter than going along the top.', 'Turn right, four moves, turn left, three moves.'],
+  check: { q: 'Two programs both reach the flag. Which is better?', tiles: ['The one with fewer steps that still works', 'The one with more blocks', 'They are always the same'], answer: 0 },
+  pro: { rows: ['>......#', '.#####.#', '.#.....#', '.#.#####', '.....G..', '.#######', '........', '########'], par: 11, plan: ['Compare the two routes', 'Pick the shorter one', 'Program it'],
+    sol: 'right; move; move; move; move; left; move; move; move; move; move', hints: ['Count the steps of both routes before you choose.', 'The route along the top needs four turns; the route down the left needs one.', 'Turn right, four moves, turn left, five moves.'] } },
+{ id: 'seq-6', ch: 'sequences', bands: ['1b', '2'], csta: ['1B-AP-11', '1B-AP-10'], csta2: ['2-AP-13', '2-AP-10'], shelf: SEQP, par: 14,
+  rows: ['>..*.#', '####.#', 'G.*...', '~~~~~.', '~~~~~.', '~~~~~~'],
+  sol: 'move; move; move; pick; move; right; move; move; right; move; move; pick; move; move',
+  hints: ['This route has three legs. What is the first leg?', 'Leg 1: along the top to the corner. Leg 2: down. Leg 3: back along the middle to the flag.', 'Leg 1 is three moves, pick, one move. Then turn right.'],
+  check: { q: 'Splitting a long route into legs helps because...', tiles: ['you can check each small part', 'Bolt moves faster', 'it uses fewer gems'], answer: 0 },
+  pro: { rows: ['>...*..#', '######.#', 'G.*....#', '########', '~~~~~~~~', '~~~~~~~~', '~~~~~~~~', '~~~~~~~~'], par: 18, plan: ['Leg 1: east along the top, pick up the gem', 'Leg 2: turn and go down', 'Leg 3: turn and go west to the goal, picking up the gem'],
+    sol: 'move; move; move; move; pick; move; move; right; move; move; right; move; move; move; move; pick; move; move', hints: ['Name the three legs before you build.', 'Each leg ends with a turn. Count the squares of each leg.', 'Leg 1: four moves, pick, two moves. Then turn right.'] } },
+
+/* ---------------- 2 Loops ---------------- */
+{ id: 'loop-1', ch: 'loops', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'repeat'], needs: ['repeat'], repeatDefault: 5, par: 2,
+  rows: ['......', '######', '>....G', '######', '......', '......'],
+  sol: 'repeat 5 { move }',
+  learn: { title: 'A loop repeats steps', text: 'Writing move five times is boring. A repeat block runs the blocks inside it again and again. The number says how many times.' },
+  hints: ['How many times does the move block need to run?', 'Put one move block inside the repeat and set its number to the number of squares.', 'Repeat 5 with one move inside.'],
+  check: { q: 'The number on a repeat block means...', tiles: ['how many times the blocks inside run', 'how many squares Bolt moves in one step', 'how many blocks you may use'], answer: 0 },
+  pro: { rows: ['........', '########', '>......G', '########', '........', '........', '........', '........'], repeatDefault: 7, sol: 'repeat 7 { move }', hints: ['How many times does the move block need to run?', 'Put one move block inside the repeat and set its number to the number of squares.', 'Repeat 7 with one move inside.'] } },
+{ id: 'loop-2', ch: 'loops', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'repeat'], needs: ['repeat'], repeatDefault: 3, par: 5,
+  rows: ['......', '......', '...G..', '...##.', '..####', '^#####'],
+  sol: 'repeat 3 { move; right; move; left }',
+  hints: ['Which steps happen again and again on these stairs?', 'One stair is: move, turn right, move, turn left. The staircase is that stair three times.', 'Repeat 3 with move, right, move, left inside.'],
+  check: { q: 'What goes inside a repeat block?', tiles: ['The steps that happen again and again', 'Only one move block', 'The goal'], answer: 0 } },
+{ id: 'loop-2p', ch: 'loops', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'repeat'], needs: ['repeat'], repeatDefault: 3, par: 5,
+  rows: ['........', '.>......', '..##....', '..##....', '.G......', '........', '........', '........'],
+  sol: 'repeat 3 { move; move; move; right }',
+  hints: ['Bolt goes round three sides of a square. What repeats?', 'Each side is three moves and a turn right.', 'Repeat 3 with three moves and a right turn inside.'],
+  check: { q: 'What goes inside a repeat block?', tiles: ['The steps that happen again and again', 'Only one move block', 'The goal'], answer: 0 } },
+{ id: 'loop-3', ch: 'loops', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'pick', 'repeat'], needs: ['repeat'], repeatDefault: 2, par: 5,
+  rows: ['......', '######', '>.*.*G', '######', '......', '......'],
+  sol: 'repeat 2 { move; move; pick }; move',
+  hints: ['Look at the gems. Is there a pattern?', 'Every gem is two squares apart: move, move, pick.', 'Repeat 2 with move, move, pick, then one more move.'],
+  check: { q: 'Bolt picks up a gem on every second square. A good loop body is...', tiles: ['move, move, pick', 'pick, pick', 'move'], answer: 0 },
+  pro: { rows: ['........', '########', '>.*.*.*G', '########', '........', '........', '........', '........'], repeatDefault: 3, sol: 'repeat 3 { move; move; pick }; move', hints: ['Look at the gems. Is there a pattern?', 'Every gem is two squares apart: move, move, pick.', 'Repeat 3 with move, move, pick, then one more move.'] } },
+{ id: 'loop-4', ch: 'loops', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'pick', 'repeat'], needs: ['repeat'], repeatDefault: 4, par: 6,
+  rows: ['......', '......', '....G.', '......', '>****.', '......'],
+  predict: { q: 'The loop will say repeat 4 with move and pick inside. How many gems will Bolt pick up?', tiles: ['2', '4', '8'], answer: 1 },
+  sol: 'repeat 4 { move; pick }; left; move; move',
+  hints: ['Four gems in a row: what two blocks repeat?', 'Move then pick, four times. After the loop, Bolt still needs to turn and go up.', 'Repeat 4 with move and pick, then turn left and two moves.'],
+  check: { q: 'Repeat 4 with move and pick inside picks up...', tiles: ['4 gems', '2 gems', '8 gems'], answer: 0 },
+  pro: { rows: ['........', '........', '......G.', '........', '........', '>*****..', '........', '........'], repeatDefault: 5, par: 8, sol: 'repeat 5 { move; pick }; move; left; move; move; move',
+    predict: { q: 'Repeat 5 with move and pick inside: how many move steps run?', tiles: ['5', '10', '1'], answer: 0 },
+    hints: ['Five gems in a row: what two blocks repeat?', 'Move then pick, five times. Then one more move before the turn.', 'Repeat 5 with move and pick, then move, turn left, three moves.'] } },
+{ id: 'loop-5', ch: 'loops', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'pick', 'repeat'], needs: ['repeat'], repeatDefault: 2, par: 9,
+  rows: ['......', '.>..*.', '..##..', '..##..', '.G..*.', '......'],
+  sol: 'repeat 2 { move; move; move; pick; right }; move; move; move',
+  hints: ['Bolt drives round the room. Which steps come again?', 'Each side is three moves, a pick and a turn right. The last side has no gem.', 'Repeat 2 with move, move, move, pick, right. Then three moves.'],
+  check: { q: 'After a loop ends, Bolt...', tiles: ['carries on with the blocks after the loop', 'goes back to the start', 'stops for good'], answer: 0 } },
+{ id: 'loop-6', ch: 'loops', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'repeat'], needs: ['repeat'], repeatDefault: 2, par: 7,
+  rows: ['>..###', '##...#', '####.G', '~~~~~~', '~~~~~~', '~~~~~~'],
+  sol: 'repeat 2 { move; move; right; move; left }; move',
+  hints: ['The path zigzags. What is one zig?', 'One zig is: move, move, turn right, move, turn left.', 'Repeat 2 with move, move, right, move, left. Then one move.'],
+  check: { q: 'The repeat count is how many times...', tiles: ['the whole bracket runs', 'Bolt turns', 'you tap Run'], answer: 0 } },
+{ id: 'loop-7', ch: 'loops', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'repeat'], needs: ['repeat'], repeatDefault: 5, par: 5,
+  rows: ['.....G', '.....~', '....~~', '...~~~', '..~~~~', '^~~~~~'],
+  sol: 'repeat 5 { move; right; move; left }',
+  hints: ['A long staircase. How many stairs?', 'One stair: move, turn right, move, turn left. Count the stairs for the repeat number.', 'Repeat 5 with move, right, move, left.'],
+  check: { q: 'A loop saved you blocks because...', tiles: ['the same steps were written once and run many times', 'Bolt skipped squares', 'turns are free'], answer: 0 } },
+{ id: 'loop-5p', ch: 'loops', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'repeat'], needs: ['nested'], repeatDefault: 2, par: 6,
+  rows: ['....####', '...G####', '...#####', '...#####', '..######', '..######', '.#######', '^#######'],
+  sol: 'repeat 3 { repeat 2 { move }; right; move; left }',
+  learn: { title: 'A loop inside a loop', text: 'The inner loop makes one stair. The outer loop makes the staircase. To know how many moves really ran, multiply: 3 stairs with 2 moves each is 6 moves.' },
+  hints: ['Each stair goes up two, then across one. Can a loop make the up part?', 'Put repeat 2 with a move inside the outer repeat. Then turn right, move, turn left.', 'Repeat 3 containing: repeat 2 with move, then right, move, left.'],
+  check: { q: 'Repeat 3 with repeat 2 with move inside: how many moves run?', tiles: ['6', '5', '9'], answer: 0 } },
+{ id: 'loop-6p', ch: 'loops', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'pick', 'repeat'], needs: ['nested'], repeatDefault: 2, par: 12,
+  rows: ['........', '>***....', '........', '.***....', '........', 'G.......', '........', '........'],
+  sol: 'repeat 2 { repeat 3 { move; pick }; right; move; right; repeat 3 { move }; left; move; left }',
+  hints: ['Two rows of gems. What does Bolt do for one row?', 'One row: pick three gems, turn and come back, then step down. The outer loop does that for both rows.', 'Outer repeat 2. Inside: repeat 3 with move and pick, right, move, right, repeat 3 with move, left, move, left.'],
+  check: { q: 'In a nested loop, the inner loop...', tiles: ['runs completely every time the outer loop runs once', 'runs only once', 'runs after the outer loop ends'], answer: 0 } },
+{ id: 'loop-7p', ch: 'loops', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'pick', 'repeat'], needs: ['nested'], repeatDefault: 2, par: 7,
+  rows: ['....####', '..*G####', '..*#####', '.*.#####', '.*######', '*.######', '*#######', '^#######'],
+  sol: 'repeat 3 { repeat 2 { move; pick }; right; move; left }',
+  hints: ['Each stair has two gems going up.', 'The inner loop climbs and picks twice; the outer loop makes three stairs.', 'Repeat 3 containing: repeat 2 with move and pick, then right, move, left.'],
+  check: { q: 'Repeat 3 with repeat 2 with move and pick inside picks up...', tiles: ['6 gems', '5 gems', '3 gems'], answer: 0 } },
+{ id: 'loop-8p', ch: 'loops', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'repeat'], needs: ['nested'], repeatDefault: 3, par: 6,
+  rows: ['........', '........', '..>.....', '..G.....', '........', '........', '........', '........'],
+  sol: 'repeat 3 { repeat 3 { move }; right }; repeat 2 { move }',
+  hints: ['Par challenge: six blocks or fewer. Bolt goes round a square of three.', 'Three sides are the same: repeat 3 with move inside, then turn right. The last side is shorter.', 'Repeat 3 containing repeat 3 with move and right. Then repeat 2 with move.'],
+  check: { q: 'Which program is shortest for three equal sides and one short side?', tiles: ['A loop of loops, then a small loop', 'Twelve move blocks', 'One big repeat 12'], answer: 0 } },
+
+/* ---------------- 3 Conditionals and events ---------------- */
+{ id: 'cond-1', ch: 'conditionals', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'repeat', 'ifelse'], needs: ['if'], repeatDefault: 6, defaultSensor: 'path', par: 4,
+  rows: ['......', '......', '......', '...G..', '......', '>...#.'],
+  sol: 'repeat 6 { if path { move } else { left } }',
+  learn: { title: 'A conditional chooses', text: 'An if block asks a question about the world: is the path ahead clear? If yes, the blocks inside run. If no, the else blocks run. Bolt decides for itself, every time.' },
+  hints: ['What should Bolt do when the path ahead is blocked?', 'Inside the loop: if path ahead, move; else, turn left.', 'Repeat 6 with: if path ahead move, else turn left.'],
+  check: { q: 'An if block...', tiles: ['checks a condition and chooses what to run', 'repeats blocks', 'moves Bolt'], answer: 0 },
+  pro: { rows: ['........', '........', '........', '...G....', '........', '........', '........', '>...#...'], repeatDefault: 8, sol: 'repeat 8 { if path { move } else { left } }', hints: ['What should Bolt do when the path ahead is blocked?', 'Inside the loop: if path ahead, move; else, turn left.', 'Repeat 8 with: if path ahead move, else turn left.'] } },
+{ id: 'cond-2', ch: 'conditionals', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'right', 'pick', 'repeat', 'if', 'when'], needs: ['when'], repeatDefault: 8, defaultSensor: 'gem', defaultEvent: 'gem', par: 6,
+  rows: ['>..*..', '###.~~', '###.~~', '.G.*~~', '~~~~~~', '~~~~~~'],
+  sol: 'when gem { right }; repeat 8 { move; if gem { pick } }',
+  learn: { title: 'An event starts a piece of program', text: 'A when block waits for something to happen in the world. When Bolt picks up a gem, the blocks inside run right then. An if asks; a when listens.' },
+  hints: ['Every gem sits on a corner. What should happen when Bolt picks one up?', 'A when gem block with turn right inside. The loop keeps moving and picking.', 'When gem: turn right. Repeat 8: move, if on a gem pick.'],
+  check: { q: 'What is the difference between if and when?', tiles: ['If asks a question now; when waits for something to happen', 'They are the same', 'When is for turning only'], answer: 0 },
+  pro: { rows: ['>...*...', '####.~~~', '####.~~~', '####.~~~', '.G..*~~~', '~~~~~~~~', '~~~~~~~~', '~~~~~~~~'], repeatDefault: 11, sol: 'when gem { right }; repeat 11 { move; if gem { pick } }', hints: ['Every gem sits on a corner. What should happen when Bolt picks one up?', 'A when gem block with turn right inside. The loop keeps moving and picking.', 'When gem: turn right. Repeat 11: move, if on a gem pick.'] } },
+{ id: 'cond-3', ch: 'conditionals', bands: ['1b', '2'], csta: ['1B-AP-10'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'until', 'ifelse'], random: true, gen: G.gapL(6), defaultSensor: 'path', par: 4,
+  sol: 'repeat until goal { if path { move } else { left } }',
+  fixed: 'move; move; move; left; move; move; move; move; move',
+  hints: ['The corner is in a different place each time. Can Bolt feel it?', 'Repeat until goal. Inside: if path ahead move, else turn left.', 'Repeat until goal with: if path ahead move, else turn left.'],
+  check: { q: 'Why did a fixed list of moves fail on one of the boards?', tiles: ['The corner moved, and the list could not notice', 'Bolt was too slow', 'The goal disappeared'], answer: 0 },
+  pro: { gen: G.gapL(8) } },
+{ id: 'cond-4', ch: 'conditionals', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'until', 'if'], random: true, gen: G.paintSpiral(6), defaultSensor: 'paint', par: 4,
+  sol: 'repeat until goal { move; if paint { right } }',
+  fixed: 'move; move; move; move; move; right; move; move; move; move; move; right; move; move',
+  hints: ['The paint marks the corners. What should Bolt do on paint?', 'Move, then: if on paint, turn right. Keep going until the goal.', 'Repeat until goal with: move, if on paint turn right.'],
+  check: { q: 'On every loop turn, the if block...', tiles: ['checks the paint again', 'checks only the first time', 'never checks'], answer: 0 },
+},
+{ id: 'cond-5', ch: 'conditionals', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'until', 'when'], random: true, gen: G.bumpSpiral(6), defaultEvent: 'bump', par: 4,
+  sol: 'when bump { left }; repeat until goal { move }',
+  fixed: 'move; move; move; move; move; left; move; move; move; move; move; left; move; move; move',
+  hints: ['Bolt is going to bump. Can a bump be useful?', 'A when bump block with turn left inside. Then just keep moving until the goal.', 'When bump: turn left. Repeat until goal: move.'],
+  check: { q: 'A when bump block runs...', tiles: ['each time Bolt bumps into something', 'once at the start', 'when you press Run'], answer: 0 },
+},
+{ id: 'cond-6', ch: 'conditionals', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'pick', 'until', 'if'], random: true, gen: G.gemRow(6), defaultSensor: 'gem', par: 5,
+  sol: 'repeat until goal { if gem { pick }; move }',
+  fixed: 'move; pick; move; pick; move; pick; move; pick; move',
+  hints: ['The gems are on different squares each time. When should Bolt pick?', 'Only pick when there is a gem: if on a gem, pick. Then move.', 'Repeat until goal with: if on a gem pick, then move.'],
+  check: { q: 'Pick up with no gem under Bolt is...', tiles: ['a mistake: check first with if', 'fine', 'a way to find gems'], answer: 0 },
+},
+{ id: 'cond-7', ch: 'conditionals', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'until', 'ifelse'], random: true, gen: G.rightMaze(6), defaultSensor: 'path', par: 4,
+  sol: 'repeat until goal { if path { move } else { right } }',
+  fixed: 'move; move; move; move; move; right; move; move; move; move; move; right; move; move; move; move; right; move; move; move',
+  hints: ['One program for three different mazes. What is the rule at every wall?', 'If the path ahead is clear, move. Else, turn right. Until the goal.', 'Repeat until goal with: if path ahead move, else turn right.'],
+  check: { q: 'One program solved three mazes because...', tiles: ['it checked the wall every step instead of counting', 'the mazes were the same', 'it was long'], answer: 0 } },
+{ id: 'cond-4p', ch: 'conditionals', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'pick', 'until', 'ifelse'], random: true, gen: G.gemCorners(8), defaultSensor: 'wall', compound: true, par: 9,
+  sol: 'repeat until goal { if wall and gem { pick; right } else { if wall { left } else { move } } }',
+  fixed: 'move; move; pick; right; move; left; move; pick; right; move; left; move; move; left',
+  learn: { title: 'AND, OR and NOT', text: 'Two questions can be joined. Wall ahead AND on a gem is true only when both are true. Wall OR paint is true when either is. NOT flips an answer.' },
+  hints: ['A gem on a corner means turn right. A bare corner means turn left. How does Bolt tell them apart?', 'If wall ahead AND on a gem: pick, turn right. Else if wall ahead: turn left. Else: move.', 'Repeat until goal with: if wall and gem, pick and right; else if wall, left; else move.'],
+  check: { q: 'Wall ahead AND on a gem is true when...', tiles: ['both are true', 'either one is true', 'neither is true'], answer: 0 } },
+{ id: 'cond-5p', ch: 'conditionals', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'until', 'ifelse'], random: true, gen: G.paintOrWall(8), defaultSensor: 'path', compound: true, par: 4,
+  sol: 'repeat until goal { move; if not path or paint { right } }',
+  fixed: 'move; move; move; move; move; move; move; right; move; move; move; move; move; move; move; right; move; move; move; move; move; move',
+  hints: ['Some corners have a wall, some have paint. Bolt turns right at both.', 'Move first. Then: if NOT path ahead OR on paint, turn right.', 'Repeat until goal with: move, then if not path or paint, turn right.'],
+  check: { q: 'NOT path ahead OR on paint is true when...', tiles: ['the way is blocked, or Bolt stands on paint, or both', 'only when both happen', 'never'], answer: 0 } },
+{ id: 'cond-6p', ch: 'conditionals', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'until', 'ifelse'], random: true, gen: G.rightMaze(8), defaultSensor: 'path', par: 4,
+  sol: 'repeat until goal { if path { move } else { right } }',
+  fixed: 'move; move; move; move; move; move; move; right; move; move; move; move; move; move; move; right; move; move; move; move; move; move; right; move; move; move; move; move',
+  hints: ['One program, three mazes. What is the rule at every wall?', 'Put the if inside the loop so it is checked at every step.', 'Repeat until goal with: if path ahead move, else turn right.'],
+  check: { q: 'An if inside a loop is checked...', tiles: ['every time round the loop', 'only once', 'at the end'], answer: 0 } },
+{ id: 'cond-7p', ch: 'conditionals', bands: ['2'], csta2: ['2-AP-12'], shelf: ['move', 'left', 'right', 'pick', 'until', 'if', 'ifelse'], random: true, gen: G.keyMaze(8), defaultSensor: 'pickup', par: 7,
+  sol: 'repeat until goal { if pickup { pick }; if path { move } else { right } }',
+  fixed: 'move; move; move; pick; move; move; move; move; right; move; move; move; move; move; move; move; right; move; move; move; move; move; move; right; move; move; move; move',
+  hints: ['The door needs the key, and the key is somewhere on the way.', 'If there is something to pick up, pick it. Then the usual: if path move, else turn right.', 'Repeat until goal with: if something to pick up pick; if path ahead move else turn right.'],
+  check: { q: 'The door opened because...', tiles: ['Bolt had picked up the key before reaching it', 'Bolt bumped it', 'doors always open'], answer: 0 } },
+
+/* ---------------- 4 Variables ---------------- */
+{ id: 'var-1', ch: 'variables', bands: ['1b', '2'], csta: ['1B-AP-09'], csta2: ['2-AP-11'], shelf: ['move', 'right', 'pick', 'repeat', 'set', 'change'], needs: ['change'], vars: ['count'], repeatDefault: 5, par: 8,
+  rows: ['*DG...', '*.....', '*.....', '*.....', '*.....', '^.....'], door: { var: 'count', n: 5 },
+  sol: 'set count 0; repeat 5 { move; pick; change count 1 }; right; move; move',
+  learn: { title: 'A variable is a labeled box', text: 'A variable is a box with a name. Set puts a number in the box. Change by adds to it. The watch pill shows what is inside right now. This door opens only when the count box says 5.' },
+  hints: ['How will Bolt know it has five gems?', 'Set count to 0 first. Each time Bolt picks a gem, change count by 1.', 'Set count 0. Repeat 5: move, pick, change count by 1. Then turn right and two moves.'],
+  check: { q: 'Change count by 1 means...', tiles: ['add 1 to what is in the box', 'put 1 in the box', 'empty the box'], answer: 0 },
+  pro: { rows: ['*DG.....', '*.......', '*.......', '*.......', '*.......', '*.......', '*.......', '^.......'], repeatDefault: 7, par: 8, door: { var: 'count', n: 7 }, names: { good: ['count', 'gems'], bad: ['x', 'thing', 'number1'] }, vars: ['count', 'gems', 'x', 'thing', 'number1'],
+    sol: 'set count 0; repeat 7 { move; pick; change count 1 }; right; move; move', hints: ['How will Bolt know it has seven gems? And what will you call the box?', 'Pick a name a partner would understand, like count. Set it to 0, then change it by 1 for each gem.', 'Set count 0. Repeat 7: move, pick, change count by 1. Turn right, two moves.'] } },
+{ id: 'var-2', ch: 'variables', bands: ['1b', '2'], csta: ['1B-AP-09'], csta2: ['2-AP-11'], shelf: ['move', 'pick', 'until', 'if', 'set', 'change'], random: true, gen: G.countRow(6), vars: ['count'], defaultSensor: 'gem', par: 6,
+  door: { var: 'count', n: 'all' },
+  sol: 'set count 0; repeat until goal { if gem { pick; change count 1 }; move }',
+  fixed: 'set count 0; move; pick; change count 1; move; pick; change count 1; move; move; move',
+  hints: ['The door opens when the box holds the true number of gems. The number changes each time.', 'Count only when there really is a gem: if on a gem, pick and change count by 1.', 'Set count 0. Repeat until goal: if on a gem, pick and change count by 1; then move.'],
+  check: { q: 'What is in the count box at the end?', tiles: ['The number of gems Bolt picked up', 'Always 5', 'The number of moves'], answer: 0 },
+  pro: { gen: G.countRow(8), names: { good: ['count', 'gems', 'gemsLeft'], bad: ['x', 'thing', 'number1'] }, vars: ['count', 'gems', 'x', 'thing'] } },
+{ id: 'var-3', ch: 'variables', bands: ['1b', '2'], csta: ['1B-AP-09'], csta2: ['2-AP-11'], shelf: ['move', 'repeat', 'set', 'change'], needs: ['set', 'change'], vars: ['steps'], repeatDefault: 4, par: 5,
+  rows: ['......', '......', '>...DG', '......', '......', '......'], door: { var: 'steps', n: 0 },
+  sol: 'set steps 4; repeat 4 { change steps -1; move }; move',
+  hints: ['This door opens when the steps box reaches 0. Start high, count down.', 'Set steps to 4. Each time round, change steps by -1 before you move.', 'Set steps 4. Repeat 4: change steps by -1, move. Then one more move.'],
+  check: { q: 'Set empties the box and puts in a new number. Change...', tiles: ['adds to or takes from what is there', 'does the same as set', 'deletes the box'], answer: 0 },
+  pro: { rows: ['........', '........', '........', '>.....DG', '........', '........', '........', '........'], repeatDefault: 6, door: { var: 'steps', n: 0 }, names: { good: ['steps', 'count'], bad: ['x', 'thing', 'number1'] }, vars: ['steps', 'count', 'x', 'thing'],
+    sol: 'set steps 6; repeat 6 { change steps -1; move }; move', hints: ['This door opens when the steps box reaches 0. Start high, count down.', 'Set steps to 6. Each time round, change steps by -1 before you move.', 'Set steps 6. Repeat 6: change steps by -1, move. Then one more move.'] } },
+{ id: 'var-4', ch: 'variables', bands: ['1b'], csta: ['1B-AP-09'], shelf: ['move', 'right', 'until', 'when', 'set', 'change'], needs: ['when'], vars: ['bumps'], defaultEvent: 'bump', par: 6,
+  rows: ['######', '######', '....##', '.##D##', '.##G##', '^#####'], door: { var: 'bumps', n: 2 },
+  sol: 'set bumps 0; when bump { change bumps 1; right }; repeat until goal { move }',
+  hints: ['This door opens after exactly two bumps. Who counts them?', 'When bump: change bumps by 1 and turn right. The loop just moves.', 'Set bumps 0. When bump: change bumps by 1, turn right. Repeat until goal: move.'],
+  check: { q: 'The bumps box went up because...', tiles: ['the when bump block changed it each time', 'Bolt moved', 'it counts on its own'], answer: 0 } },
+{ id: 'var-5', ch: 'variables', bands: ['1b'], csta: ['1B-AP-09'], shelf: ['move', 'right', 'pick', 'until', 'if', 'when', 'set', 'change'], vars: ['gems', 'turns'], defaultSensor: 'gem', defaultEvent: 'gem', par: 12,
+  rows: ['>.*...', '#####.', '#####*', '#####.', '#GD...', '######'], door: { var: 'gems', n: 2 },
+  sol: 'set gems 0; set turns 0; when bump { change turns 1; right }; repeat until goal { if gem { pick; change gems 1 }; move }',
+  learn: { title: 'Two boxes at once', text: 'A program can keep many boxes. Here gems counts the gems and turns counts the corners. Each box has its own name, so you always know which is which.' },
+  hints: ['Two things to count: gems and turns. Two boxes.', 'When bump: change turns by 1 and turn right. In the loop: if on a gem, pick and change gems by 1.', 'Set gems 0, set turns 0. When bump: change turns 1, right. Repeat until goal: if gem, pick, change gems 1; move.'],
+  check: { q: 'Why give each box its own name?', tiles: ['So you know which number is which', 'Boxes need names to exist', 'Names make Bolt faster'], answer: 0 } },
+{ id: 'var-6', ch: 'variables', bands: ['1b'], csta: ['1B-AP-09'], shelf: ['move', 'right', 'pick', 'until', 'if', 'when', 'set', 'change'], random: true, gen: G.countL(6), vars: ['count'], defaultSensor: 'gem', defaultEvent: 'bump', par: 8,
+  door: { var: 'count', n: 'all' },
+  sol: 'set count 0; when bump { left }; repeat until goal { if gem { pick; change count 1 }; move }',
+  fixed: 'set count 0; move; pick; change count 1; move; left; move; pick; change count 1; move; move',
+  hints: ['Gems in different places, a corner, and a door that wants the true count.', 'When bump: turn left. In the loop: if on a gem, pick and change count by 1. Then move.', 'Set count 0. When bump: left. Repeat until goal: if gem, pick and change count 1; move.'],
+  check: { q: 'A variable is useful when...', tiles: ['a number changes while the program runs', 'the number never changes', 'there are no gems'], answer: 0 } },
+{ id: 'var-4p', ch: 'variables', bands: ['2'], csta2: ['2-AP-11'], shelf: ['move', 'right', 'pick', 'until', 'if', 'set', 'change'], random: true, gen: G.keyMaze(8), vars: ['hasKey', 'gotKey', 'x', 'thing', 'flag1'], names: { good: ['hasKey', 'gotKey'], bad: ['x', 'thing', 'flag1'] }, defaultSensor: 'pickup', flag: true, par: 8,
+  door: { var: 'hasKey', flag: true, andKey: true },
+  sol: 'set hasKey off; repeat until goal { if pickup { pick; set hasKey on }; if path { move } else { right } }',
+  fixed: 'repeat until goal { if pickup { pick }; if path { move } else { right } }',
+  learn: { title: 'Three kinds of boxes', text: 'A number box holds a count. A flag box is on or off, like hasKey. A word box holds a word from a list, like color. Pick the kind that fits what you store.' },
+  hints: ['The door reads a flag: hasKey must be on, and Bolt must really hold the key. When does the flag become true?', 'Set hasKey off at the start. When Bolt picks the key up, set hasKey on.', 'Set hasKey off. Repeat until goal: if something to pick up, pick and set hasKey on; if path move else right.'],
+  check: { q: 'A flag variable holds...', tiles: ['on or off', 'any number', 'a picture'], answer: 0 } },
+{ id: 'var-5p', ch: 'variables', bands: ['2'], csta2: ['2-AP-11'], shelf: ['move', 'repeat', 'set'], needs: ['set'], vars: ['color', 'x', 'thing'], names: { good: ['color', 'paint'], bad: ['x', 'thing'] }, word: true, par: 4,
+  rows: ['........', '........', '........', '>.....DG', '........', '........', '........', '........'], door: { var: 'color', word: 'blue' },
+  sol: 'set color blue; repeat 6 { move }; move',
+  fixed: 'set color red; repeat 6 { move }; move',
+  hints: ['The door shows the word it wants. Which box holds words?', 'Set color to the word on the door, then drive.', 'Set color blue. Repeat 6: move. Then one more move.'],
+  check: { q: 'A word variable holds...', tiles: ['a word from a list', 'a number', 'on or off'], answer: 0 } },
+{ id: 'var-6p', ch: 'variables', bands: ['2'], csta2: ['2-AP-11'], shelf: ['move', 'right', 'pick', 'repeat', 'set', 'change'], vars: ['count', 'gems', 'x', 'thing', 'number1'], names: { good: ['count', 'gems', 'gemsLeft', 'steps'], bad: ['x', 'thing', 'number1'] }, repeatDefault: 7, par: 8,
+  rows: ['*DG.....', '*.......', '*.......', '*.......', '*.......', '*.......', '*.......', '^.......'], door: { var: 'count', n: 7 },
+  starter: 'set x 0; repeat 7 { move; pick; change x 1 }; right; move; move',
+  sol: 'set count 0; repeat 7 { move; pick; change count 1 }; right; move; move',
+  hints: ['This program works, but a partner cannot read it. What is x?', 'Tap a set or change block and give the box a name that says what it holds.', 'Rename x to count in every block that uses it.'],
+  check: { q: 'Why is x a bad name here?', tiles: ['It does not say what the box holds', 'It is too long', 'Letters are not allowed'], answer: 0 } },
+];
+
+/** The levels of a chapter for a band, with the Pro overrides folded in. */
+function levelsFor(chapterId, band) {
+  return LEVELS.filter(l => l.ch === chapterId && l.bands.includes(band)).map(l => {
+    const o = Object.assign({}, l);
+    if (band === '2' && l.pro) Object.assign(o, l.pro);
+    o.band = band; delete o.pro; return o;
+  });
+}
+const BLOCKS = {
+  move: { label: 'move', icon: 'up', kind: 'move' }, left: { label: 'turn left', icon: 'left', kind: 'move' }, right: { label: 'turn right', icon: 'right', kind: 'move' },
+  pick: { label: 'pick up', icon: 'gem', kind: 'move' }, drop: { label: 'drop', icon: 'down', kind: 'move' },
+  repeat: { label: 'repeat', icon: 'restart', kind: 'loop' }, until: { label: 'repeat until goal', icon: 'flag', kind: 'loop' },
+  if: { label: 'if', icon: 'question', kind: 'if' }, ifelse: { label: 'if / else', icon: 'swap', kind: 'if' }, when: { label: 'when', icon: 'spark', kind: 'event' },
+  set: { label: 'set', icon: 'pencil', kind: 'var' }, change: { label: 'change by', icon: 'plus', kind: 'var' },
+  proc: { label: 'My Block', icon: 'book', kind: 'proc' }, call: { label: 'call', icon: 'play', kind: 'proc' },
+};
+const SENSOR_LABELS = { path: 'path ahead', wall: 'wall ahead', gem: 'on a gem', pickup: 'something to pick up', paint: 'on paint', key: 'I have the key', plate: 'on the button', goal: 'on the goal' };
+const EVENT_LABELS = { gem: 'a gem is picked up', bump: 'Bolt bumps', plate: 'the button is pressed' };
+
+root.RoboRouteLevels = { CHAPTERS, LEVELS, BLOCKS, SENSOR_LABELS, EVENT_LABELS, parse, levelsFor, gens: G, spiral };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ===== Robo Route in the kit's other languages: filled at run time from the reviewed language packs (window.CsqPacks). ===== */
+(typeof window !== 'undefined' ? window : globalThis).RoboRouteI18n = {};
+</script>
+<script type="module">
+/* ===== Robo Route on the Oomba Kit: a meadow stage behind, the kit's title, HUD, results, settings and pause screens,
+   and the board, block shelf, program and cards as kit DOM. Everything the player taps is a real button; nothing is
+   ever typed. ===== */
+const E = window.RoboRoute, LV = window.RoboRouteLevels;
+const { CHAPTERS, BLOCKS, SENSOR_LABELS, EVENT_LABELS, parse, levelsFor } = LV;
+const HAS_BRB = typeof window.BRB === 'object' && !!window.BRB;
+const PARAMS = (window.BRB && BRB.params) || {};
+const LIVE = !!(HAS_BRB && BRB.live && BRB.live.active);
+const $ = s => document.querySelector(s);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const ICON = (name, o) => Oomba.icon(name, o);
+const reduced = () => !!Oomba.settings.reduced;
+const after = (ms, fn) => Oomba.time.real.after(ms, fn);   // menus and cards: the real clock
+const SAVE_KEY = 'robo-route-v1';
+
+/* ---------- Words: English is the key; the player's language is a reviewed data pack on the site (loaded with its
+   checksum, 9 s then English), handed to the kit's Oomba.strings. The game runs without the pack. ---------- */
+const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
+const PACK_VER = '1.0.0-pending', PACK_SRI = {};
+const PACK = await new Promise(res => {
+  if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
+  const s = document.createElement('script');
+  s.src = `/vendor/data/robo-route/${PACK_VER}/${LANG0}.js`; s.integrity = PACK_SRI[LANG0]; s.crossOrigin = 'anonymous';
+  s.onload = () => res(((window.CsqPacks || {})['robo-route'] || {})[LANG0] || null); s.onerror = () => res(null);
+  document.head.appendChild(s); after(9000, () => res(null));
+});
+if (PACK) Oomba.strings({ [LANG0]: PACK.strings });
+Oomba.strings(window.RoboRouteI18n || {});
+const fillIn = (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : s);
+function tr(s, v) {
+  if (s == null || s === '') return s;
+  const sv = v && Object.fromEntries(Object.entries(v).map(([k, x]) => [k, typeof x === 'number' ? Oomba.num(x) : String(x)]));
+  const r = Oomba.t(s, sv);
+  return r === s && sv ? fillIn(s, sv) : r;
+}
+window.RoboRouteT = tr;
+
+/* ---------- kit: the world behind, colors ---------- */
+Oomba.ui.root().appendChild($('#game'));
+let STAGE = null;
+try { STAGE = Oomba.stage({ api: 1, biome: 'meadow', size: [960, 540], dress: 'off' }); STAGE.camera.y = -90; } catch (e) { /* the page works without the world */ }
+const C = (hue, step) => { try { return Oomba.color(hue, step); } catch (e) { return null; } };
+const VARS = { go: C('mint', 'light'), 'go-tint': C('mint', 'tint'), hot: C('spark', 'light'), tint: C('sky', 'tint'), sel: C('spark', 'tint'), 'wrong-tint': C('coral', 'tint'),
+  frame: C('cocoa', 'shade'), wall: C('stone', 'base'), wall2: C('stone', 'shade'), water: C('sky', 'light'), water2: C('sky', 'base'), paint: C('grape', 'tint'), paint2: C('grape', 'light'),
+  plate: C('peach', 'light'), door: C('cocoa', 'light'), bolt: C('sky', 'base'), visor: C('stone', 'shade'), paintjob: C('spark', 'base'), rail: C('stone', 'light'), 'var-tint': C('peach', 'tint'),
+  'k-move': C('sky', 'base'), 'k-loop': C('spark', 'base'), 'k-if': C('grape', 'base'), 'k-event': C('coral', 'base'), 'k-var': C('peach', 'base'), 'k-proc': C('mint', 'base') };
+for (const k in VARS) if (VARS[k]) document.documentElement.style.setProperty('--rr-' + k, VARS[k]);
+const BOLT_SVG = (paint = 0) => `<svg viewBox="0 0 64 64" aria-hidden="true"><g class="rr-b1"><rect x="13" y="20" width="38" height="34" rx="9"/><rect x="23" y="7" width="18" height="15" rx="5"/><line x1="32" y1="7" x2="32" y2="2"/><circle cx="32" cy="2" r="2.4"/></g><g class="rr-b2"><rect x="18" y="27" width="28" height="13" rx="5"/><rect x="6" y="30" width="7" height="18" rx="3"/><rect x="51" y="30" width="7" height="18" rx="3"/></g><circle class="rr-eye" cx="26" cy="33.5" r="3"/><circle class="rr-eye" cx="38" cy="33.5" r="3"/><g class="rr-b3" data-paint="${paint}"><rect x="22" y="43" width="20" height="6" rx="3"/><rect x="28" y="10" width="8" height="4" rx="2"/></g></svg>`;
+$('#titleBolt').innerHTML = BOLT_SVG();
+$('#bolt').innerHTML = BOLT_SVG();
+const announce = s => { try { Oomba.ui.announce(s); } catch (e) { /* ignore */ } };
+const sfx = (n, o) => { try { Oomba.sfx(n, o); } catch (e) { /* ignore */ } };
+const btn = (label, o) => Oomba.ui.button(label, o);
+
+/* ---------- save ---------- */
+function loadSave() { try { const v = HAS_BRB ? BRB.storage.get(SAVE_KEY) : null; return v && typeof v === 'object' ? v : null; } catch (e) { return null; } }
+const SAVE = Object.assign({ v: 1, band: '1b', stars: { '1b': {}, '2': {} }, learned: {}, paint: 0 }, loadSave() || {});
+if (!SAVE.stars['1b']) SAVE.stars['1b'] = {}; if (!SAVE.stars['2']) SAVE.stars['2'] = {};
+const save = () => { try { if (HAS_BRB && !S.lesson) BRB.storage.set(SAVE_KEY, SAVE); else if (HAS_BRB) BRB.storage.set(SAVE_KEY, SAVE); } catch (e) { /* full or off */ } };
+const rec = (band, ch) => (SAVE.stars[band][ch] = SAVE.stars[band][ch] || { s: [], d: [] });
+
+/* ---------- params and quest codes ---------- */
+const MODES = ['play', 'debug', 'maker', 'projector'];
+function readParams(p) {
+  const chapter = CHAPTERS.find(c => c.id === String(p.chapter)) ? String(p.chapter) : null;
+  const band = String(p.band) === '2' ? '2' : String(p.band) === '1b' ? '1b' : null;
+  const mode = MODES.includes(String(p.mode)) ? String(p.mode) : null;
+  const level = +p.level >= 1 ? Math.min(30, Math.floor(+p.level)) : null;
+  const lock = String(p.lock) === '1';
+  return { chapter, band, mode, level, lock, any: !!(chapter || band || mode || level || lock) };
+}
+const P = readParams(PARAMS);
+
+/* ---------- state ---------- */
+const S = { screen: 'boot', band: P.band || (SAVE.band === '2' ? '2' : '1b'), lesson: P.any, lock: P.lock, mode: P.mode || 'play', chapter: null, levels: [], li: 0, level: null, grid: null, layout: 0,
+  prog: [], sel: null, cur: null, runs: 0, fails: 0, hint: 0, hint3: false, checks: { ok: 0, n: 0 }, seed: 1, rng: E.rng(1), instant: false, playing: false, abort: false, lastRun: null,
+  planDone: true, predicted: true, stepEvents: null, stepI: 0, startBlocks: 0, hud: null, questLabel: '', ids: 0, chained: 0 };
+if (S.mode === 'projector') document.documentElement.classList.add('rr-projector');
+const isPro = () => S.band === '2';
+const bandName = b => tr((b || S.band) === '2' ? 'Pro' : 'Explorer');
+const chapterTitle = ch => tr(ch.title);
+const chapterStars = (band = S.band, ch = S.chapter) => { const r = rec(band, ch.id); return r.s.reduce((a, b) => a + (b > 0 ? b : 0), 0); };
+const chapterDone = (band = S.band, ch = S.chapter) => rec(band, ch.id).d.filter(Boolean).length;
+const nextOpen = () => { const r = rec(S.band, S.chapter.id); const i = S.levels.findIndex((l, i) => !r.d[i]); return i < 0 ? 0 : i; };
+const levelOpen = i => i === 0 || !!rec(S.band, S.chapter.id).d[i - 1];
+
+/* ---------- screens ---------- */
+const SCREENS = ['map', 'rr'];
+function showOnly(name) { for (const id of SCREENS) $('#' + id).hidden = id !== name; $('#titleBolt').hidden = name !== 'title'; }
+const closeKitScreens = () => document.querySelectorAll('.ok-ui .ok-modal:not(#scrim) [data-ok-focus]').forEach(b => b.click());
+function removeHud() { if (S.hud) { try { S.hud.root.remove(); } catch (e) { /* ignore */ } S.hud = null; } }
+let titleOpen = false;
+async function goTitle() {
+  closeCard(); removeHud(); S.screen = 'title'; showOnly('title'); Oomba.scene = 'title';
+  if (titleOpen) return; titleOpen = true;
+  await Oomba.ui.title({ title: 'Robo Route', subtitle: tr('Snap blocks together and drive Bolt the robot to the goal!'), hero: false, titleHue: 'mint' });
+  titleOpen = false;
+  if (S.screen === 'title') onPlay();
+}
+function onPlay() {
+  if (S.lesson) startChapter(P.chapter || (S.quest && S.quest.chapter) || 'sequences', { level: P.level || (S.quest && S.quest.level) || null });
+  else goMap();
+}
+
+/* ---------- the chapter map ---------- */
+function goMap() {
+  if (S.lock) return startChapter(S.chapter ? S.chapter.id : 'sequences');
+  closeCard(); removeHud(); S.screen = 'map'; showOnly('map'); Oomba.scene = 'map'; renderMap();
+}
+function renderMap() {
+  $('#mapTitle').textContent = tr('Pick a chapter');
+  const seg = $('#bandSeg'); seg.innerHTML = ''; seg.setAttribute('aria-label', tr('Grade band'));
+  for (const b of ['1b', '2']) {
+    const x = el('button', '', esc(bandName(b))); x.type = 'button'; x.setAttribute('aria-pressed', String(S.band === b));
+    x.addEventListener('click', () => { if (S.band === b) return; S.band = b; SAVE.band = b; save(); sfx('select'); renderMap(); announce(tr('{band} band', { band: bandName(b) })); });
+    seg.appendChild(x);
+  }
+  const gs = $('#gearSlot'); gs.innerHTML = ''; gs.appendChild(btn(tr('Quest Card'), { kind: 'icon', icon: 'settings', onPress: openQuestCard }));
+  const tiles = $('#tiles'); tiles.innerHTML = '';
+  for (const ch of CHAPTERS) {
+    const t = el('button', 'rr-tile'); t.type = 'button';
+    const r = rec(S.band, ch.id), n = levelsFor(ch.id, S.band).length, done = r.d.filter(Boolean).length, stars = r.s.reduce((a, b) => a + (b > 0 ? b : 0), 0);
+    const silver = S.band === '2' ? '' : '';
+    t.innerHTML = `<span class="ic">${ICON(ch.icon)}</span><span><b>${esc(chapterTitle(ch))}</b><small>${ch.soon ? esc(tr('Coming soon')) : esc(tr('{done}/{total} levels', { done, total: n })) + ' · ' + esc(tr('{n} stars', { n: stars }))}</small></span>`;
+    if (ch.soon) t.disabled = true; else t.addEventListener('click', () => startChapter(ch.id));
+    if (!ch.soon && n && stars === n * 3) t.classList.add('crown');
+    t.setAttribute('aria-label', chapterTitle(ch) + (ch.soon ? ', ' + tr('Coming soon') : ''));
+    tiles.appendChild(t);
+  }
+}
+
+/* ---------- a chapter and its levels ---------- */
+function startChapter(id, o = {}) {
+  const ch = CHAPTERS.find(c => c.id === id && !c.soon) || CHAPTERS[0];
+  S.chapter = ch; S.levels = levelsFor(ch.id, S.band);
+  if (!S.levels.length) return goMap();
+  let i = o.level ? Math.min(S.levels.length, o.level) - 1 : nextOpen();
+  if (!levelOpen(i)) i = nextOpen();
+  if (!S.hud) { S.hud = Oomba.ui.hud(['progress', 'count:star'], { onPause: v => { if (v === 'restart') startLevel(S.li); if (v === 'quit') { S.quest = null; goTitle(); } } }); }
+  startLevel(i);
+}
+function startLevel(i) {
+  closeCard(); S.li = i; S.level = S.levels[i]; S.screen = 'play'; Oomba.scene = 'play'; showOnly('rr');
+  S.prog = S.level.starter ? withIds(parse(S.level.starter)) : []; S.startBlocks = E.blocks(S.prog); S.sel = null; S.cur = null;
+  S.runs = 0; S.fails = 0; S.hint = 0; S.hint3 = false; S.layout = 0; S.planDone = !S.level.plan; S.predicted = !S.level.predict; S.stepEvents = null; S.lastRun = null; S.playing = false;
+  $('#lvlPill').textContent = tr('{chapter} · Level {n}', { chapter: chapterTitle(S.chapter), n: i + 1 });
+  const q = $('#questPill'); q.hidden = !S.lesson; if (S.lesson) q.textContent = tr('Class quest: {chapter} · {band}', { chapter: chapterTitle(S.chapter), band: bandName() });
+  layoutClass(); buildBoard(); renderShelf(); renderProgram(); renderTray(); renderRunbar(); renderWatch(); updateHud(); after(0, fitGrid);
+  announce(tr('{chapter} · Level {n}', { chapter: chapterTitle(S.chapter), n: i + 1 }));
+  if (S.level.learn && !SAVE.learned[S.level.id + ':' + S.band]) openLearn(); else if (S.level.plan) openPlan();
+}
+function layoutClass() { const p = $('#rr'); const land = innerWidth > innerHeight * 1.15; p.classList.toggle('landscape', land); p.classList.toggle('portrait', !land); fitGrid(); }
+/** The board is a square as big as its box allows (a percentage aspect ratio does not survive a flex parent's height clamp). */
+function fitGrid() { const wrap = document.querySelector('.rr-gridwrap'), box = document.querySelector('.rr-gridbox'); if (!wrap || !box) return; const s = Math.max(60, Math.floor(Math.min(wrap.clientWidth, wrap.clientHeight))); box.style.width = box.style.height = s + 'px'; }
+addEventListener('resize', () => { if (S.screen === 'play') { layoutClass(); placeBolt(); } });
+function updateHud() {
+  if (!S.hud) return;
+  const done = chapterDone(), total = S.levels.length;
+  if (S.hud.progress) S.hud.progress.set(total ? done / total : 0);
+  if (S.hud.count) S.hud.count.set(chapterStars(), 0);
+}
+
+/* ---------- the board ---------- */
+let BOLT = { x: 0, y: 0, d: 0 };
+function buildBoard() {
+  const g = E.layoutsOf(S.level)[S.layout]; S.grid = g;
+  const grid = $('#grid'); grid.innerHTML = ''; grid.style.gridTemplateColumns = `repeat(${g.w}, 1fr)`;
+  grid.setAttribute('aria-label', tr('The board: {w} by {h} squares', { w: g.w, h: g.h }));
+  const ghost = new Set();
+  if (S.level.ghost && !isPro()) { const r = E.run(S.level, parse(S.level.sol), { planMatch: true }); for (const e of r.results[S.layout].events) if (e.k === 'move') ghost.add(e.x + ',' + e.y); }
+  const rule = S.level.door || 'key';
+  for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
+    const t = g.cells[y * g.w + x], c = el('div', 'rr-cell ' + t); c.dataset.x = x; c.dataset.y = y;
+    if (g.goal && g.goal.x === x && g.goal.y === y) { c.classList.add('goal'); c.appendChild(el('span', 'it', ICON('flag'))); }
+    const item = g.items[x + ',' + y];
+    if (item) { const it = el('span', 'it', ICON(item === 'gem' ? 'gem' : 'key')); it.dataset.item = x + ',' + y; c.appendChild(it); }
+    if (t === 'door') { c.appendChild(el('span', 'dr')); if (rule.word) c.appendChild(el('span', 'word', esc(tr(rule.word)))); else if (rule.var && rule.n != null) c.appendChild(el('span', 'word', esc(rule.var + ' = ' + (rule.n === 'all' ? E.gemCount(g) : rule.n)))); }
+    if (ghost.has(x + ',' + y)) c.classList.add('ghost');
+    if (!isPro() && (t === 'floor' || t === 'paint' || t === 'plate') && y === g.start.y && !item && !(g.goal && g.goal.x === x && g.goal.y === y)) c.appendChild(el('span', 'num', String(Math.abs(x - g.start.x) || '')));
+    grid.appendChild(c);
+  }
+  resetBoard();
+}
+function resetBoard() {
+  const g = S.grid; BOLT = { x: g.start.x, y: g.start.y, d: g.start.d };
+  for (const it of document.querySelectorAll('#grid .it[data-item]')) it.classList.remove('gone');
+  for (const d of document.querySelectorAll('#grid .rr-cell.door')) d.classList.remove('open');
+  const b = $('#bolt'); b.classList.remove('bump', 'splash'); placeBolt();
+  for (const x of document.querySelectorAll('.rr-blk.running')) x.classList.remove('running');
+  renderWatch({});
+}
+function placeBolt() {
+  const g = S.grid; if (!g) return; const b = $('#bolt');
+  b.style.width = (100 / g.w) + '%'; b.style.height = (100 / g.h) + '%';
+  b.style.left = (BOLT.x * 100 / g.w) + '%'; b.style.top = (BOLT.y * 100 / g.h) + '%';
+  b.style.setProperty('--r', (BOLT.d * 90) + 'deg'); b.querySelector('svg').style.transform = `rotate(${BOLT.d * 90}deg)`;
+}
+const cellEl = (x, y) => document.querySelector(`#grid .rr-cell[data-x="${x}"][data-y="${y}"]`);
+const itemEl = (x, y) => document.querySelector(`#grid .it[data-item="${x},${y}"]`);
+function renderWatch(vars) {
+  const w = $('#watch'); w.innerHTML = '';
+  const names = S.level.vars || []; const v = vars || {};
+  if (!names.length && !Object.keys(v).length) return;
+  const shown = Object.keys(v).length ? Object.keys(v) : [];
+  for (const n of shown) { const val = v[n]; const p = el('span', 'rr-pill', `${esc(n)} = <b>${esc(typeof val === 'boolean' ? tr(val ? 'on' : 'off') : typeof val === 'string' ? tr(val) : Oomba.num(val))}</b>`); p.setAttribute('aria-label', tr('{name} is {value}', { name: n, value: typeof val === 'boolean' ? tr(val ? 'on' : 'off') : typeof val === 'string' ? tr(val) : val })); w.appendChild(p); }
+}
+
+/* ---------- the shelf ---------- */
+function shelfOf() { return (S.level.shelf || ['move', 'left', 'right']).slice(0, 8); }
+function renderShelf() {
+  const sh = $('#shelf'); sh.innerHTML = '';
+  shelfOf().forEach((id, i) => {
+    const info = BLOCKS[id]; const b = btn(tr(info.label), { kind: 'quiet', icon: isPro() ? undefined : info.icon, onPress: () => addFromShelf(id) });
+    b.classList.add('rr-k-' + info.kind); b.dataset.shelf = id;
+    if (isPro()) b.prepend(el('span', 'rr-shape'));
+    b.setAttribute('aria-label', tr(info.label) + ' (' + Oomba.num(i + 1) + ')');
+    sh.appendChild(b);
+  });
+  syncShelf();
+}
+function syncShelf() { for (const b of document.querySelectorAll('#shelf .ok-btn')) b.setAttribute('aria-disabled', String(!S.planDone || S.playing)); }
+function newBlock(id) {
+  const L = S.level, b = { id: ++S.ids };
+  switch (id) {
+    case 'repeat': return Object.assign(b, { t: 'repeat', n: L.repeatDefault || 3, body: [] });
+    case 'until': return Object.assign(b, { t: 'repeat', until: 'goal', body: [] });
+    case 'if': return Object.assign(b, { t: 'if', c: { s: L.defaultSensor || 'path' }, body: [] });
+    case 'ifelse': return Object.assign(b, { t: 'if', c: { s: L.defaultSensor || 'path' }, body: [], else: [] });
+    case 'when': return Object.assign(b, { t: 'when', ev: L.defaultEvent || 'gem', body: [] });
+    case 'set': return Object.assign(b, { t: 'set', v: (L.vars || ['count'])[0], val: L.flag ? false : L.word ? E.WORDS[0] : 0 });
+    case 'change': return Object.assign(b, { t: 'change', v: (L.vars || ['count'])[0], n: 1 });
+    case 'proc': return Object.assign(b, { t: 'proc', name: 'MyBlock', params: [], body: [] });
+    case 'call': return Object.assign(b, { t: 'call', f: 'MyBlock', args: [] });
+    default: return Object.assign(b, { t: id });
+  }
+}
+function withIds(list) { for (const b of list) { b.id = ++S.ids; if (b.body) withIds(b.body); if (b.else) withIds(b.else); } return list; }
+const isContainer = b => !!(b && (b.body || b.else));
+/** Where things go: a list and an index. find() gives the parent list of a block. */
+function find(id, list = S.prog, parent = null) {
+  for (let i = 0; i < list.length; i++) {
+    const b = list[i]; if (String(b.id) === String(id)) return { list, i, b, parent };
+    for (const k of ['body', 'else']) if (b[k]) { const r = find(id, b[k], b); if (r) return r; }
+  }
+  return null;
+}
+function insertPoint() {
+  if (S.cur) return S.cur;
+  if (S.sel != null) { const f = find(S.sel); if (f) { if (isContainer(f.b) && !f.b.body.length) return { list: f.b.body, i: 0 }; return { list: f.list, i: f.i + 1 }; } }
+  return { list: S.prog, i: S.prog.length };
+}
+function addFromShelf(id) {
+  if (!S.planDone) { toast(tr('Put the plan lines in order first.')); return; }
+  if (S.playing) return;
+  if (S.level.names && (id === 'set' || id === 'change')) { /* names are chosen in the edit row */ }
+  const b = newBlock(id), p = insertPoint();
+  p.list.splice(p.i, 0, b); S.cur = null; S.sel = b.id; sfx('pop');
+  renderProgram(); renderTray(); announce(tr('Added {block}', { block: blockText(b) }));
+}
+/* ---------- the program ---------- */
+function condText(c) {
+  if (!c) return '';
+  if (c.op) return tr('{a} {op} {b}', { a: condText(c.a), op: tr(c.op === 'and' ? 'and' : 'or'), b: condText(c.b) });
+  let t;
+  if (c.s === 'var') t = c.word != null ? `${c.v} = ${tr(c.word)}` : c.flag != null ? `${c.v} = ${tr(c.flag ? 'on' : 'off')}` : `${c.v} ${c.op || '='} ${Oomba.num(c.n | 0)}`;
+  else t = tr(SENSOR_LABELS[c.s] || c.s);
+  return c.not ? tr('not {x}', { x: t }) : t;
+}
+function blockText(b) {
+  const L = tr;
+  switch (b.t) {
+    case 'repeat': return b.until ? L('repeat until {x}', { x: L(SENSOR_LABELS[b.until] || b.until) }) : L('repeat {n} times', { n: typeof b.n === 'object' ? b.n.p : b.n });
+    case 'if': return L('if {c}', { c: condText(b.c) });
+    case 'when': return L('when {e}', { e: L(EVENT_LABELS[b.ev] || b.ev) });
+    case 'set': return L('set {v} to {x}', { v: b.v, x: typeof b.val === 'boolean' ? L(b.val ? 'on' : 'off') : typeof b.val === 'string' ? L(b.val) : typeof b.val === 'object' ? b.val.p : b.val });
+    case 'change': return L('change {v} by {n}', { v: b.v, n: typeof b.n === 'object' ? b.n.p : b.n });
+    case 'proc': return L('My Block {name}', { name: b.name });
+    case 'call': return L('call {name}', { name: b.f });
+    default: return L(BLOCKS[b.t] ? BLOCKS[b.t].label : b.t);
+  }
+}
+const kindOf = b => b.t === 'repeat' ? 'loop' : b.t === 'if' ? 'if' : b.t === 'when' ? 'event' : b.t === 'set' || b.t === 'change' ? 'var' : b.t === 'proc' || b.t === 'call' ? 'proc' : 'move';
+function renderProgram() {
+  const root = $('#prog'); root.innerHTML = '';
+  if (!S.prog.length) { root.appendChild(el('div', 'rr-empty', esc(tr('Tap a block on the shelf to start your program.')))); root.appendChild(slot(S.prog, 0, tr('start here'))); syncShelf(); return; }
+  root.appendChild(renderList(S.prog, true));
+  syncShelf();
+}
+function slot(list, i, label) {
+  const s = el('button', 'rr-slot', esc(label || '+')); s.type = 'button'; s.setAttribute('aria-label', tr('Put the next block here'));
+  if (S.cur && S.cur.list === list && S.cur.i === i) s.classList.add('cur');
+  s.addEventListener('click', () => { S.cur = { list, i }; S.sel = null; renderProgram(); renderTray(); });
+  return s;
+}
+function renderList(list, top) {
+  const ul = el('div', 'rr-list' + (top ? '' : ' inner'));
+  list.forEach(b => {
+    const x = el('button', 'rr-blk rr-k-' + kindOf(b)); x.type = 'button'; x.dataset.id = b.id;
+    const info = BLOCKS[b.t === 'repeat' && b.until ? 'until' : b.t === 'if' && b.else ? 'ifelse' : b.t] || BLOCKS.move;
+    x.innerHTML = (isPro() ? '<span class="rr-shape"></span>' : ICON(info.icon)) + `<span>${esc(blockText(b))}</span>`;
+    if (String(S.sel) === String(b.id)) { x.classList.add('sel'); x.setAttribute('aria-pressed', 'true'); }
+    x.addEventListener('click', () => { S.cur = null; S.sel = String(S.sel) === String(b.id) ? null : b.id; renderProgram(); renderTray(); });
+    ul.appendChild(x);
+    if (b.body) { const inner = renderList(b.body, false); inner.appendChild(slot(b.body, b.body.length, b.body.length ? '+' : tr('inside'))); ul.appendChild(inner); }
+    if (b.else) { const e = el('div', 'rr-blk rr-k-if', `<span>${esc(tr('else'))}</span>`); e.setAttribute('role', 'presentation'); ul.appendChild(e); const inner = renderList(b.else, false); inner.appendChild(slot(b.else, b.else.length, b.else.length ? '+' : tr('inside'))); ul.appendChild(inner); }
+  });
+  if (top) ul.appendChild(slot(list, list.length, tr('end')));
+  return ul;
+}
+/* ---------- the tray: up, down, delete, edit, into, out ---------- */
+function renderTray() {
+  const t = $('#tray'); t.innerHTML = ''; $('#edit').hidden = true;
+  const f = S.sel != null ? find(S.sel) : null;
+  t.hidden = !f; if (!f) return;
+  const b = f.b;
+  const add = (label, icon, fn, kind = 'icon') => { const x = btn(label, { kind, icon, onPress: () => { if (S.playing) return; fn(); renderProgram(); renderTray(); } }); t.appendChild(x); return x; };
+  add(tr('Move up'), 'up', () => { if (f.i > 0) { f.list.splice(f.i, 1); f.list.splice(f.i - 1, 0, b); } });
+  add(tr('Move down'), 'down', () => { if (f.i < f.list.length - 1) { f.list.splice(f.i, 1); f.list.splice(f.i + 1, 0, b); } });
+  add(tr('Delete block'), 'cross', () => { f.list.splice(f.i, 1); S.sel = null; sfx('pop'); });
+  if (['repeat', 'if', 'when', 'set', 'change', 'proc', 'call'].includes(b.t)) add(tr('Change'), 'pencil', () => { after(0, () => renderEdit(b)); });
+  const prev = f.list[f.i - 1];
+  if (isContainer(prev)) add(tr('Move into the block above'), 'next', () => { f.list.splice(f.i, 1); (prev.else || prev.body).push(b); });
+  if (f.parent) add(tr('Move out of its block'), 'back', () => { f.list.splice(f.i, 1); const pf = find(f.parent.id); pf.list.splice(pf.i + 1, 0, b); });
+  if (b.t === 'if' && !b.else) add(tr('Add else'), 'swap', () => { b.else = []; });
+  add(tr('Done'), 'check', () => { S.sel = null; }, 'go');
+}
+function renderEdit(b) {
+  const e = $('#edit'); e.innerHTML = ''; e.hidden = false; const L = S.level;
+  const refresh = () => { renderProgram(); renderEdit(b); };
+  const stepper = (get, set, min, max) => { e.appendChild(btn(tr('Less'), { kind: 'icon', icon: 'minus', onPress: () => { set(Math.max(min, get() - 1)); refresh(); } })); const v = el('span', 'val', esc(Oomba.num(get()))); v.dir = 'ltr'; e.appendChild(v); e.appendChild(btn(tr('More'), { kind: 'icon', icon: 'plus', onPress: () => { set(Math.min(max, get() + 1)); refresh(); } })); };
+  const tiles = (opts, cur, on) => { for (const [v, label] of opts) { const x = btn(label, { kind: 'quiet', onPress: () => { on(v); refresh(); } }); x.setAttribute('aria-pressed', String(v === cur)); e.appendChild(x); } };
+  if (b.t === 'repeat' && !b.until) { e.appendChild(el('span', '', esc(tr('How many times?')))); stepper(() => b.n, v => { b.n = v; }, 1, 20); }
+  else if (b.t === 'if') {
+    const sensors = L.sensors || Array.from(new Set([L.defaultSensor || 'path', 'path', 'wall', 'gem', 'paint'].concat(L.vars ? ['var'] : []))).slice(0, L.compound ? 4 : 6);
+    const term = b.c.op ? b.c.b : b.c;
+    tiles(sensors.map(s => [s, s === 'var' ? tr('a box') : tr(SENSOR_LABELS[s])]), term.s, s => { const nt = s === 'var' ? { s: 'var', v: (L.vars || ['count'])[0], op: '=', n: 0 } : { s }; if (b.c.op) b.c.b = nt; else b.c = nt; });
+    if (term.s === 'var') { tiles((L.vars || ['count']).filter(v => !(L.names && L.names.bad.includes(v))).map(v => [v, v]), term.v, v => { term.v = v; }); if (L.flag) tiles([[true, tr('on')], [false, tr('off')]], term.flag, v => { term.flag = v; delete term.n; }); else stepper(() => term.n | 0, v => { term.n = v; }, 0, 20); }
+    if (L.compound) {
+      const n = btn(tr('not'), { kind: 'quiet', onPress: () => { term.not = !term.not; refresh(); } }); n.setAttribute('aria-pressed', String(!!term.not)); e.appendChild(n);
+      for (const op of ['and', 'or']) { const x = btn(tr(op), { kind: 'quiet', onPress: () => { if (b.c.op === op) b.c = b.c.a; else if (b.c.op) b.c.op = op; else b.c = { op, a: b.c, b: { s: 'wall' } }; refresh(); } }); x.setAttribute('aria-pressed', String(b.c.op === op)); e.appendChild(x); }
+    }
+  } else if (b.t === 'when') tiles(['gem', 'bump', 'plate'].filter(ev => ev !== 'plate' || (L.rows || []).some(r => r.includes('B'))).map(ev => [ev, tr(EVENT_LABELS[ev])]), b.ev, v => { b.ev = v; });
+  else if (b.t === 'set' || b.t === 'change') {
+    const names = L.names ? S.rng.shuffle(L.names.good.concat(L.names.bad).slice()) : (L.vars || ['count']);
+    tiles(names.map(v => [v, v]), b.v, v => { b.v = v; });
+    if (b.t === 'change') stepper(() => b.n, v => { b.n = v; }, -9, 9);
+    else if (L.flag) tiles([[true, tr('on')], [false, tr('off')]], b.val, v => { b.val = v; });
+    else if (L.word) tiles(E.WORDS.map(w => [w, tr(w)]), b.val, v => { b.val = v; });
+    else stepper(() => b.val | 0, v => { b.val = v; }, 0, 20);
+  }
+  e.appendChild(btn(tr('Done'), { kind: 'go', icon: 'check', onPress: () => { e.hidden = true; } }));
+}
+/* ---------- the run bar ---------- */
+function renderRunbar() {
+  const r = $('#runbar'); r.innerHTML = '';
+  const run = btn(tr(S.playing ? 'Stop' : 'Run'), { kind: S.playing ? 'quiet' : 'go', icon: S.playing ? 'pause' : 'play', onPress: () => { if (S.playing) { S.abort = true; } else runProgram(); } }); run.id = 'runBtn'; r.appendChild(run);
+  r.appendChild(btn(tr('Step'), { kind: 'icon', icon: 'next', onPress: stepOnce }));
+  r.appendChild(btn(tr('Reset'), { kind: 'icon', icon: 'restart', onPress: () => { S.stepEvents = null; resetBoard(); } }));
+  const hintBtn = btn(tr('Hint'), { kind: 'icon', icon: 'hint', onPress: openHint }); hintBtn.id = 'hintBtn'; hintBtn.setAttribute('aria-disabled', String(!hintsOpen())); r.appendChild(hintBtn);
+  const learn = learnFor(); if (learn) r.appendChild(btn(tr('Learn'), { kind: 'icon', icon: 'book', onPress: () => openLearn(true) }));
+  r.appendChild(el('span', 'rr-spacer'));
+  if (S.fails >= 2 && !S.lock) { const sk = btn(tr('Skip level'), { kind: 'quiet', onPress: skipLevel }); sk.id = 'skipBtn'; r.appendChild(sk); }
+  else if (S.fails >= 2) { const sk = btn(tr('Skip level'), { kind: 'quiet', onPress: skipLevel }); sk.id = 'skipBtn'; r.appendChild(sk); }
+  if (!S.lock) r.appendChild(btn(tr('Chapter map'), { kind: 'icon', icon: 'home', onPress: goMap }));
+}
+const hintsOpen = () => S.fails >= (isPro() ? 2 : 1);
+const learnFor = () => (S.levels.find(l => l.learn && S.levels.indexOf(l) <= S.li) || {}).learn ? S.levels.slice(0, S.li + 1).reverse().find(l => l.learn) : null;
+
+/* ---------- running: the engine judges, the board replays ---------- */
+const stepMs = () => (S.instant ? 0 : reduced() ? 80 : 240);
+function toast(s) { try { Oomba.ui.toast(s); } catch (e) { /* ignore */ } }
+async function runProgram() {
+  if (S.playing || S.screen !== 'play') return;
+  if (!S.planDone) { openPlan(); return; }
+  if (!S.prog.length) { Oomba.ui.banner('wrong', null, tr('The program is empty. Tap a block on the shelf.')); return; }
+  if (!S.predicted) { S.predicted = true; try { await Oomba.ui.ask({ q: tr(S.level.predict.q), choices: S.level.predict.tiles.map(x => tr(x)), index: S.level.predict.answer, tries: 1 }); } catch (e) { /* ignore */ } }
+  const res = E.run(S.level, S.prog, { planMatch: S.planDone, edits: Math.abs(E.blocks(S.prog) - S.startBlocks) });
+  S.lastRun = res; S.runs++; S.stepEvents = null;
+  const li = res.verdict.ok || res.verdict.failLayout < 0 ? S.layout : res.verdict.failLayout;
+  if (li !== S.layout) { S.layout = li; buildBoard(); if (!S.instant) toast(tr('Board {n} of {total}', { n: li + 1, total: res.results.length })); }
+  S.playing = true; S.abort = false; S.sel = null; renderTray(); renderRunbar(); syncShelf();
+  resetBoard();
+  await replay(res.results[li] ? res.results[li].events : []);
+  S.playing = false; renderRunbar(); syncShelf();
+  if (!S.abort) afterRun(res); else { resetBoard(); }
+}
+function highlight(id) { for (const x of document.querySelectorAll('.rr-blk.running')) x.classList.remove('running'); if (id == null) return; const b = document.querySelector(`.rr-blk[data-id="${id}"]`); if (b) { b.classList.add('running'); if (!S.instant) b.scrollIntoView({ block: 'nearest' }); } }
+async function applyEvent(e, ms) {
+  const b = $('#bolt');
+  if (e.id != null && e.k !== 'loop' && e.k !== 'test') highlight(e.id);
+  if (e.k === 'move') {
+    const from = { x: BOLT.x, y: BOLT.y }; BOLT.x = e.x; BOLT.y = e.y;
+    if (ms > 0) { const o = { t: 0 }; await Oomba.tween(o, { t: 1 }, { ms, ease: 'quadInOut', onUpdate: () => { const g = S.grid; b.style.left = ((from.x + (e.x - from.x) * o.t) * 100 / g.w) + '%'; b.style.top = ((from.y + (e.y - from.y) * o.t) * 100 / g.h) + '%'; } }); }
+    placeBolt(); sfx('step', { volume: 0.4, caption: false });
+  } else if (e.k === 'turn') {
+    BOLT.d = e.d; placeBolt(); if (ms > 0) await Oomba.wait(ms * 0.6);
+  } else if (e.k === 'bump') {
+    b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); sfx('wrong', { caption: false });
+    Oomba.ui.caption(tr('Bump! A wall after step {n}.', { n: e.step })); if (ms > 0) await Oomba.wait(ms);
+  } else if (e.k === 'pick') {
+    const it = itemEl(e.x, e.y); if (it) it.classList.add('gone');
+    sfx(e.item === 'gem' ? 'coin' : 'select'); if (STAGE && !reduced() && !S.instant) try { STAGE.burst('sparkle', STAGE.camera.x, STAGE.camera.y, { n: 10 }); } catch (x) { /* ignore */ }
+    if (ms > 0) await Oomba.wait(ms * 0.5);
+  } else if (e.k === 'drop') { const c = cellEl(e.x, e.y); if (c) { const it = el('span', 'it', ICON('key')); it.dataset.item = e.x + ',' + e.y; c.appendChild(it); } }
+  else if (e.k === 'splash') { b.classList.add('splash'); sfx('splash'); Oomba.ui.caption(tr('Splash!')); if (ms > 0) await Oomba.wait(ms); }
+  else if (e.k === 'open') { const c = cellEl(e.x, e.y); if (c) c.classList.add('open'); sfx('gate'); if (ms > 0) await Oomba.wait(ms * 0.5); }
+  else if (e.k === 'plate') { sfx('select'); }
+  else if (e.k === 'var') { S.watchVars = Object.assign({}, S.watchVars || {}, { [e.v]: e.val }); renderWatch(S.watchVars); if (ms > 0) await Oomba.wait(ms * 0.3); }
+  else if (e.k === 'event') { const h = document.querySelector(`.rr-blk[data-id="${e.id}"]`); if (h) { h.classList.add('running'); } if (ms > 0) await Oomba.wait(ms * 0.3); }
+  else if (e.k === 'nothing') { sfx('wrong', { caption: false }); Oomba.ui.caption(tr('Nothing to pick up here.')); if (ms > 0) await Oomba.wait(ms * 0.6); }
+}
+async function replay(events) {
+  S.watchVars = {};
+  const ms = stepMs();
+  for (const e of events) { if (S.abort) return; await applyEvent(e, ms); }
+  highlight(null);
+}
+const VISIBLE = new Set(['move', 'turn', 'bump', 'pick', 'drop', 'splash', 'open', 'var', 'nothing', 'event', 'plate']);
+async function stepOnce() {
+  if (S.playing || S.screen !== 'play') return;
+  if (!S.stepEvents) {
+    if (!S.prog.length) { Oomba.ui.banner('wrong', null, tr('The program is empty. Tap a block on the shelf.')); return; }
+    const res = E.run(S.level, S.prog, { planMatch: S.planDone }); S.lastRun = res; S.runs++;
+    S.stepEvents = (res.results[S.layout] || res.results[0]).events.filter(e => VISIBLE.has(e.k)); S.stepI = 0; S.watchVars = {}; resetBoard();
+  }
+  if (S.stepI >= S.stepEvents.length) { const res = S.lastRun; S.stepEvents = null; afterRun(res); return; }
+  S.playing = true; await applyEvent(S.stepEvents[S.stepI++], stepMs()); S.playing = false;
+  if (S.stepI >= S.stepEvents.length) { const res = S.lastRun; S.stepEvents = null; afterRun(res); }
+}
+function afterRun(res) {
+  const v = res.verdict;
+  if (v.ok) return onSolved(v);
+  S.fails++;
+  const ft = E.failText(v); const text = ft ? tr(ft[0], ft[1]) : tr('Not yet.');
+  Oomba.ui.banner('wrong', null, text); announce(text); sfx('wrong');
+  if (v.compileError && v.failReason === 'nocall') { /* a call with no block */ }
+  renderRunbar();
+  if (S.fails === (isPro() ? 2 : 1)) toast(tr('Hints are open now.'));
+}
+function onSolved(v) {
+  const stars = E.stars(S.level, S.band, S.prog, v, { hint3: S.hint3 });
+  const r = rec(S.band, S.chapter.id), before = r.s[S.li] || 0;
+  r.d[S.li] = true; r.s[S.li] = Math.max(before, stars); save();
+  updateHud(); sfx('win'); if (STAGE && !reduced()) try { STAGE.burst('confetti', STAGE.camera.x, STAGE.camera.y - STAGE.view.vh * 0.4, { w: STAGE.view.vw * 0.8 }); } catch (e) { /* ignore */ }
+  Oomba.ui.banner('correct', null, tr('Bolt made it!'));
+  const finish = (checkOk, confidence) => {
+    reportProgress({ stars, check: checkOk, confidence, skipped: false });
+    after(400, async () => {
+      const last = S.li >= S.levels.length - 1;
+      const what = await Oomba.ui.win({ stars, score: chapterStars(), hero: false, title: tr('Level {n} done!', { n: S.li + 1 }), next: !last });
+      if (what === 'next' && !last) startLevel(S.li + 1);
+      else if (last) chapterEnd();
+      else startLevel(S.li);
+    });
+  };
+  if (S.lesson && S.level.check) caseClosed(finish); else finish(null, null);
+}
+function skipLevel() {
+  const r = rec(S.band, S.chapter.id); r.d[S.li] = true; r.s[S.li] = r.s[S.li] || 0; save(); updateHud();
+  reportProgress({ stars: 0, check: null, confidence: null, skipped: true });
+  announce(tr('Level skipped'));
+  if (S.li >= S.levels.length - 1) chapterEnd(); else startLevel(S.li + 1);
+}
+async function chapterEnd() {
+  const score = chapterStars(), all = S.levels.length * 3;
+  try { if (HAS_BRB) BRB.gameOver({ won: true, score }); } catch (e) { /* fine */ }
+  const what = await Oomba.ui.win({ stars: score >= all ? 3 : score >= all * 0.6 ? 2 : 1, score, hero: false, title: tr('{chapter} complete!', { chapter: chapterTitle(S.chapter) }), next: false });
+  const then = (S.level && S.level.then) || null;
+  if (S.lesson && then && CHAPTERS.some(c => c.id === then)) { S.chained += score; return startChapter(then); }
+  if (S.lock) { await Oomba.ui.dialog({ title: tr('Quest complete!'), text: tr('Great work. Tell your teacher you finished, or play the chapter again for more stars.'), buttons: [{ label: tr('Play again'), kind: 'hot', value: 'again', icon: 'restart' }] }); return startChapter(S.chapter.id, { level: 1 }); }
+  if (what === 'again') return startChapter(S.chapter.id, { level: 1 });
+  goMap();
+}
+/* ---------- progress out: one score + a short label per solved level; the chapter total at the end ---------- */
+function reportProgress({ stars, check, confidence, skipped }) {
+  const done = chapterDone(), total = S.levels.length, sc = chapterStars() + S.chained;
+  if (check != null) { S.checks.n++; if (check) S.checks.ok++; }
+  let label = `${done}/${total} levels, ${sc} stars`;
+  if (S.lesson) label += `, ${S.checks.ok}/${S.checks.n} checks`;
+  try { if (HAS_BRB) BRB.score.submit(sc, label); } catch (e) { /* fine */ }
+  S.lastLabel = label;
+  try {
+    if (HAS_BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'rr', chapter: S.chapter.id, level: S.li + 1, stars, band: isPro() ? 2 : 1, csta: (isPro() ? S.level.csta2 : S.level.csta) || [], check: check ? 1 : 0, confidence: confidence || 0, hint: S.hint, runs: S.runs, skipped: !!skipped });
+  } catch (e) { /* fine */ }
+}
+
+/* ---------- cards: learn, plan, hint, case closed, quest card ---------- */
+let cardOpen = null;
+function openCard(build) {
+  closeCard();
+  const m = $('#modal'); m.innerHTML = ''; $('#scrim').hidden = false; cardOpen = true;
+  build(m);
+  after(0, () => { const f = m.querySelector('[data-focus]') || m.querySelector('button'); if (f) f.focus({ preventScroll: true }); });
+}
+function closeCard() { $('#scrim').hidden = true; $('#modal').innerHTML = ''; cardOpen = null; }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !$('#scrim').hidden) { e.stopPropagation(); closeCard(); return; }
+  if (S.screen !== 'play' || !$('#scrim').hidden || Oomba.ui.open) return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (/^[1-8]$/.test(e.key) && !e.repeat) { const b = document.querySelectorAll('#shelf .ok-btn')[+e.key - 1]; if (b) { e.preventDefault(); b.click(); } }
+  else if ((e.key === 'Delete' || e.key === 'Backspace') && S.sel != null) { const f = find(S.sel); if (f) { f.list.splice(f.i, 1); S.sel = null; renderProgram(); renderTray(); } }
+  else if (e.key === 'Enter' && e.ctrlKey) runProgram();
+  else if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && tag === 'BUTTON' && document.activeElement.classList.contains('rr-blk')) {
+    const all = [...document.querySelectorAll('.rr-blk[data-id]')], i = all.indexOf(document.activeElement), n = all[i + (e.key === 'ArrowDown' ? 1 : -1)]; if (n) { e.preventDefault(); n.focus(); }
+  }
+});
+function openLearn(again) {
+  const learn = again ? learnFor() : S.level.learn; if (!learn) return;
+  SAVE.learned[S.level.id + ':' + S.band] = 1; save();
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr(learn.title))));
+    const pic = el('div', 'pic');
+    for (const id of shelfOf().slice(-2)) { const info = BLOCKS[id]; const b = el('span', 'rr-blk rr-k-' + info.kind, ICON(info.icon) + `<span>${esc(tr(info.label))}</span>`); pic.appendChild(b); }
+    m.appendChild(pic);
+    m.appendChild(el('p', '', esc(tr(learn.text))));
+    const go = btn(tr("Let's go!"), { kind: 'hot', icon: 'play', big: true, onPress: () => { closeCard(); if (S.level.plan && !S.planDone) openPlan(); } }); go.setAttribute('data-focus', ''); m.appendChild(go);
+    try { Oomba.say(tr(learn.title) + '. ' + tr(learn.text)); } catch (e) { /* ignore */ }
+  });
+}
+function openPlan() {
+  const lines = S.level.plan; if (!lines || S.planDone) return;
+  const order = S.rng.shuffle(lines.map((_, i) => i)); let next = 0;
+  openCard(m => {
+    m.classList.add('rr-plan');
+    m.appendChild(el('h2', '', esc(tr('Plan first'))));
+    m.appendChild(el('p', '', esc(tr('Tap the plan lines in the order Bolt should do them. Then the shelf opens.'))));
+    const done = el('ol'); m.appendChild(done);
+    const col = el('div', 'col'); m.appendChild(col);
+    const tiles = order.map(i => { const t = el('button', 'rr-tile2'); t.type = 'button'; t.innerHTML = `<span class="k">${ICON('question')}</span><span>${esc(tr(lines[i]))}</span>`; t.addEventListener('click', () => {
+      if (i === next) { t.disabled = true; t.classList.add('right'); const li = el('li', '', esc(tr(lines[i]))); done.appendChild(li); next++; sfx('correct'); if (next === lines.length) { S.planDone = true; after(500, () => { closeCard(); renderProgram(); announce(tr('The shelf is open.')); }); } }
+      else { t.classList.remove('rr-shake'); void t.offsetWidth; t.classList.add('rr-shake'); sfx('wrong'); }
+    }); col.appendChild(t); return t; });
+    if (tiles[0]) tiles[0].setAttribute('data-focus', '');
+  });
+}
+function openHint() {
+  if (!hintsOpen()) { toast(tr('Run your program first. Hints open after a try.')); return; }
+  const tier = Math.min(3, S.hint + 1); S.hint = tier;
+  const text = tr(S.level.hints[tier - 1]);
+  if (tier === 2) { const want = (S.level.hl || shelfOf().slice(-1)[0]); const b = document.querySelector(`#shelf [data-shelf="${want}"]`); if (b) { b.classList.add('hl'); after(6000, () => b.classList.remove('hl')); } }
+  if (tier === 3) S.hint3 = true;
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr('Hint {n} of 3', { n: tier }))));
+    m.appendChild(el('p', '', esc(text)));
+    if (tier === 3) m.appendChild(el('p', '', esc(tr('This hint shows a move, so the third star stays in the box this time.'))));
+    const ok = btn(tr('Got it'), { kind: 'go', icon: 'check', big: true, onPress: closeCard }); ok.setAttribute('data-focus', ''); m.appendChild(ok);
+    try { Oomba.say(text); } catch (e) { /* ignore */ }
+  });
+  announce(text);
+}
+function caseClosed(done) {
+  const ck = S.level.check; let first = null;
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr('Case closed?'))));
+    m.appendChild(el('p', '', esc(tr(ck.q))));
+    const col = el('div', 'col'); m.appendChild(col);
+    const faces = el('div', 'rr-faces'); faces.hidden = true;
+    const tiles = ck.tiles.map((t, i) => { const b = el('button', 'rr-tile2'); b.type = 'button'; b.dataset.tile = i; b.innerHTML = `<span class="k">${Oomba.num(i + 1)}</span><span>${esc(tr(t))}</span>`; b.addEventListener('click', () => {
+      if (first !== null) return; first = i; const right = i === ck.answer;
+      b.classList.add(right ? 'right' : 'wrong'); if (!right) tiles[ck.answer].classList.add('right'); sfx(right ? 'correct' : 'wrong');
+      Oomba.ui.banner(right ? 'correct' : 'wrong'); tiles.forEach(x => { x.disabled = true; });
+      faces.hidden = false; const f = faces.querySelector('button'); if (f) f.focus();
+    }); col.appendChild(b); return b; });
+    m.appendChild(el('p', '', esc(tr('How sure were you?'))));
+    [[1, tr('Not yet')], [2, tr('Getting it')], [3, tr('Got it!')]].forEach(([v, label]) => faces.appendChild(btn(label, { kind: v === 3 ? 'go' : 'quiet', onPress: () => { closeCard(); done(first === ck.answer, v); } })));
+    m.appendChild(faces);
+    if (tiles[0]) tiles[0].setAttribute('data-focus', '');
+  });
+}
+function openQuestCard() {
+  openCard(m => {
+    m.appendChild(el('h2', '', esc(tr('Quest Card'))));
+    const row = el('div', 'row');
+    const seg = el('div', 'rr-seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Grade band'));
+    for (const b of ['1b', '2']) { const x = el('button', '', esc(bandName(b))); x.type = 'button'; x.setAttribute('aria-pressed', String(S.band === b)); x.addEventListener('click', () => { S.band = b; SAVE.band = b; save(); sfx('select'); for (const y of seg.children) y.setAttribute('aria-pressed', String(y === x)); if (S.screen === 'map') renderMap(); }); seg.appendChild(x); }
+    if (!S.lock) row.appendChild(seg);
+    const ra = btn(tr('Read aloud'), { kind: 'quiet', icon: 'speak', onPress: () => { const on = !Oomba.settings.readAloud; Oomba.settings.set({ readAloud: on }); ra.setAttribute('aria-pressed', String(on)); } }); ra.setAttribute('aria-pressed', String(!!Oomba.settings.readAloud)); row.appendChild(ra);
+    row.appendChild(btn(tr('Sound and more'), { kind: 'quiet', icon: 'settings', onPress: () => Oomba.ui.settings() }));
+    m.appendChild(row);
+    if (!LIVE && !P.any) {
+      m.appendChild(el('p', '', esc(tr('Enter a quest code'))));
+      const code = el('div', 'rr-code'); code.dir = 'ltr'; code.setAttribute('aria-live', 'polite'); let digits = '';
+      const show = () => { code.textContent = (digits + '____').slice(0, 4).split('').join(' '); };
+      show(); m.appendChild(code);
+      const pad = el('div', 'rr-keypad'); pad.dir = 'ltr';
+      for (const d of ['1', '2', '3', '4', '5', '6', '7', '8', '9']) pad.appendChild(btn(d, { kind: 'quiet', onPress: () => { if (digits.length < 4) { digits += d; show(); } } }));
+      pad.appendChild(btn(tr('Delete'), { kind: 'quiet', icon: 'back', onPress: () => { digits = digits.slice(0, -1); show(); } }));
+      pad.appendChild(btn('0', { kind: 'quiet', onPress: () => { if (digits.length < 4) { digits += '0'; show(); } } }));
+      const go = btn(tr('Go'), { kind: 'hot', icon: 'play', onPress: () => { if (digits.length === 4) applyQuestCode(digits); else toast(tr('Four digits, please.')); } }); pad.appendChild(go);
+      m.appendChild(pad);
+    }
+    const close = btn(tr('Close'), { kind: 'go', icon: 'check', big: true, onPress: closeCard }); close.setAttribute('data-focus', ''); m.appendChild(close);
+  });
+}
+function applyQuestCode(digits) {
+  const [c, b, mo, l] = digits.split('').map(Number);
+  const ch = c === 0 ? null : CHAPTERS.find(x => x.index === c && !x.soon);
+  if (c !== 0 && !ch) { toast(tr('No chapter has that number yet.')); sfx('wrong'); return; }
+  if (b === 1 || b === 2) { S.band = b === 2 ? '2' : '1b'; SAVE.band = S.band; save(); }
+  S.mode = MODES[mo] || 'play'; document.documentElement.classList.toggle('rr-projector', S.mode === 'projector');
+  closeCard();
+  if (!ch) { S.lesson = false; S.quest = null; goMap(); return; }
+  S.lesson = true; S.quest = { chapter: ch.id, level: l || null }; S.checks = { ok: 0, n: 0 };
+  announce(tr('Class quest: {chapter} · {band}', { chapter: chapterTitle(ch), band: bandName() }));
+  startChapter(ch.id, { level: l || null });
+}
+
+/* ---------- go ---------- */
+if (S.lesson) S.checks = { ok: 0, n: 0 };
+Oomba.fonts.ready.then(() => { goTitle(); });
+
+/* ---------- test hooks: the kit's (step, setLang, ...) plus the game's own; deterministic from a seed ---------- */
+const stateObj = () => ({ screen: S.screen, chapter: S.chapter ? S.chapter.id : null, level: S.li + 1, levelId: S.level ? S.level.id : null, stars: S.chapter ? chapterStars() : 0, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
+  phase: S.playing ? 'running' : cardOpen ? 'card' : S.screen, blocks: E.blocks(S.prog), runs: S.runs, fails: S.fails, hint: S.hint, done: S.chapter ? chapterDone() : 0, total: S.levels.length, label: S.lastLabel || null, checks: Object.assign({}, S.checks), layout: S.layout, bolt: Object.assign({}, BOLT), planDone: S.planDone, ready: true });
+Oomba.test({ state: stateObj, start: () => { closeKitScreens(); closeCard(); S.lesson = false; S.lock = false; startChapter('sequences'); } });
+Object.assign(window.__brbTest, {
+  start: (o = {}) => {
+    closeKitScreens(); closeCard();
+    if (o.seed != null) { S.seed = o.seed | 0; S.rng = E.rng(S.seed); }
+    if (o.band) { S.band = o.band === '2' ? '2' : '1b'; }
+    S.lesson = !!o.lesson; S.lock = !!o.lock; S.mode = o.mode || 'play'; S.checks = { ok: 0, n: 0 }; S.chained = 0;
+    document.documentElement.classList.toggle('rr-projector', S.mode === 'projector');
+    startChapter(o.chapter || 'sequences', { level: o.level || null });
+  },
+  skipAnimations: () => { S.instant = true; },
+  program: p => { const list = typeof p === 'string' ? parse(p) : JSON.parse(JSON.stringify(p)); S.prog = withIds(list); S.sel = null; S.cur = null; renderProgram(); renderTray(); return E.blocks(S.prog); },
+  run: () => runProgram(),
+  stepOnce: () => stepOnce(),
+  verdict: () => (S.lastRun ? S.lastRun.verdict : null),
+  tap: id => { const b = document.querySelector(`.rr-blk[data-id="${id}"]`); if (b) b.click(); return !!b; },
+  shelf: i => { const b = document.querySelectorAll('#shelf .ok-btn')[i]; if (b) b.click(); return !!b; },
+  tray: label => { const b = [...document.querySelectorAll('#tray .ok-btn')].find(x => (x.getAttribute('aria-label') || x.textContent).trim() === label); if (b) b.click(); return !!b; },
+  levels: () => S.levels.map(l => l.id),
+  solve: async () => { window.__brbTest.program(S.level.sol); S.planDone = true; S.predicted = true; await runProgram(); return stateObj(); },
+  hint: () => { S.fails = Math.max(S.fails, 2); openHint(); return S.hint; },
+  skip: () => { S.fails = 2; skipLevel(); },
+  check: i => { const b = document.querySelector(`#modal .rr-tile2[data-tile="${i}"]`); if (b) b.click(); return !!b; },
+  confidence: i => { const b = document.querySelectorAll('#modal .rr-faces .ok-btn')[(i | 0) - 1]; if (b) b.click(); return !!b; },
+  plan: () => { const lines = S.level.plan || []; for (const line of lines) { const t = [...document.querySelectorAll('#modal .rr-tile2')].find(x => !x.disabled && x.textContent.includes(tr(line))); if (t) t.click(); } return S.planDone; },
+  closeModal: () => { closeKitScreens(); closeCard(); },
+  closeDialog: () => closeKitScreens(),
+  map: () => { closeKitScreens(); S.lock = false; goMap(); },
+  title: () => { goTitle(); },
+  questCode: d => { openQuestCard(); applyQuestCode(String(d).replace(/\D/g, '').padStart(4, '0').slice(0, 4)); },
+  band: b => { S.band = b === '2' ? '2' : '1b'; if (S.screen === 'map') renderMap(); },
+  unlockAll: () => { for (const ch of CHAPTERS) for (const b of ['1b', '2']) { const r = rec(b, ch.id); levelsFor(ch.id, b).forEach((_, i) => { r.d[i] = true; r.s[i] = r.s[i] || 1; }); } },
+  cover: () => {
+    closeKitScreens(); closeCard(); S.instant = true; S.lesson = false; S.lock = false; S.band = '1b';
+    startChapter('loops', { level: 4 });
+    window.__brbTest.program('repeat 4 { move; pick }');
+    const r = E.run(S.level, S.prog, { planMatch: true }); const ev = r.results[0].events.filter(e => VISIBLE.has(e.k)).slice(0, 4);
+    S.watchVars = {}; for (const e of ev) applyEvent(e, 0);
+    if (STAGE) try { STAGE.burst('sparkle', STAGE.camera.x, STAGE.camera.y, { n: 24 }); } catch (e) { /* ignore */ }
+    S.instant = false;
+  },
+});
+</script>

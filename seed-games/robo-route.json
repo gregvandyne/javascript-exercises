@@ -1,0 +1,15 @@
+{
+  "slug": "robo-route",
+  "title": "Robo Route",
+  "icon": "🛤️",
+  "cover": "mint",
+  "category": "learning",
+  "tags": "coding,blocks,robot,loops,conditionals,variables,functions,debugging,algorithms,learning,class",
+  "description": "Snap blocks together and drive Bolt the robot across the board to the goal. Eight chapters build up real programming ideas one at a time: sequences, loops, conditionals and events, variables, functions, a Debug Lab, Best Route and a Level Maker. Two bands, Explorer (grades 3-5) and Pro (grades 6-8), with learn cards, hints, stars for short programs and a Class quest mode for lessons. Tap only: nothing to type.",
+  "orientation": "any",
+  "players_max": 2,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Built on the Oomba Kit 1.1.2 (pinned kit tag plus the art-props and style-bold packs): a meadow stage behind, the kit's title, HUD (progress, stars), results, settings and pause screens, and the board, block shelf, program and cards as kit DOM inside Oomba.ui.root(). Engine: window.RoboRoute (classic script, vm-loadable) compiles the editor's block list to a checked program and walks it over a grid simulation with limits (500 commands, 200 loop turns, 64 calls); kids' programs are data, never JavaScript. Levels: window.RoboRouteLevels (chapters, boards, learn/hint/check prose; levels with random: true run on three seeded boards and pass only when all three pass; parse() is the authoring language for sol/starter). BFS check() proves a board solvable and gives par; encode()/decode() carry a board as a 28-symbol level code (no vowels, no 0/O/1/I, never five digits in a row). Saves in BRB.storage['robo-route-v1'] (band, stars and done per band and chapter, learn cards seen). Params (window.BRB && BRB.params) || {}: chapter, band 1b|2, mode play|debug|maker|projector, level, lock; a 4-digit quest code C B M L on the in-game keypad (hidden in live frames) does the same. Lesson mode (params or a quest code): skip the map, Class quest pill, Case-closed check card after each level; lock=1 hides the map and the band toggle. Progress: BRB.score.submit(starsInChapter, 'd/t levels, s stars[, c/k checks]') after every solved level, BRB.gameOver({won:true, score}) at chapter end, BRB.progress(detail) when the SDK offers it. Test hooks: __brbTest.start({chapter, band, mode, level, seed, lesson, lock}), step(n) (kit), skipAnimations(), cover(), state(), program(blocksOrText), run(), stepOnce(), verdict(), tap(id), shelf(i), tray(label), solve(), hint(), skip(), check(i), confidence(n), plan(), closeModal(), map(), title(), questCode(d), unlockAll().",
+  "l10n": {}
+}
