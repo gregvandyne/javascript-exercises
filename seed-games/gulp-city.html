@@ -42,6 +42,13 @@ button{font:inherit;font-weight:800;cursor:pointer;color:var(--g-text)}
 .toggle[aria-pressed=true]{background:var(--g-good);color:#08210f}
 .stars{font-size:34px;letter-spacing:4px;line-height:1}
 .big{font-size:calc(20px * var(--ts))}
+.btn:disabled{opacity:.5;cursor:default;box-shadow:0 4px 0 var(--g-edge);transform:none}
+.load{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font-size:calc(15px * var(--ts))}
+.load[hidden]{display:none!important}
+.lbar{flex:1;max-width:200px;height:10px;border-radius:10px;background:var(--g-bar);border:2px solid var(--g-edge);overflow:hidden}
+#loadFill{display:block;height:100%;width:3%;background:linear-gradient(90deg,#7c5cff,#5cf2ff);transition:width .25s}
+#loadPct{min-width:3ch;text-align:end;font-variant-numeric:tabular-nums}
+.failicon{font-size:48px;line-height:1}
 #hud{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;align-items:flex-start;gap:8px;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left));pointer-events:none}
 #hud .gap{flex:1}
 #hud button{pointer-events:auto}
@@ -93,11 +100,13 @@ button{font:inherit;font-weight:800;cursor:pointer;color:var(--g-text)}
 <div class="screen" id="titleScreen"><div class="card">
   <div class="logo"><span class="swirl" aria-hidden="true"></span><h1 id="titleText"></h1></div>
   <p class="tag" id="tagText"></p>
-  <div class="row"><button class="btn" id="playBtn" type="button"></button><button class="btn hot" id="freeBtn" type="button"></button></div>
+  <div class="row"><button class="btn" id="playBtn" type="button" disabled></button><button class="btn hot" id="freeBtn" type="button" disabled></button></div>
+  <div class="load" id="loadRow" role="status"><span id="loadText"></span><span class="lbar" aria-hidden="true"><span id="loadFill"></span></span><span id="loadPct"></span></div>
   <div class="row" style="align-items:center"><span class="seglabel" id="rivalsLabel"></span><div class="seg" id="diffSeg" role="group"><button type="button" data-d="easy"></button><button type="button" data-d="normal"></button><button type="button" data-d="hard"></button></div></div>
   <div class="row"><button class="btn ghost" id="howBtn" type="button"></button><button class="btn ghost" id="setBtn" type="button"></button></div>
   <p id="bestText"></p>
 </div></div>
+<div class="screen" id="failScreen" hidden role="alert"><div class="card"><div class="failicon" aria-hidden="true">🌀</div><h2 id="failTitle"></h2><p id="failText"></p><button class="btn" id="failBtn" type="button"></button></div></div>
 <div class="screen" id="howScreen" hidden><div class="card"><h2 id="howTitle"></h2><ul class="how" id="howList"></ul><button class="btn" id="howDone" type="button"></button></div></div>
 <div class="screen" id="setScreen" hidden><div class="card"><h2 id="setTitle"></h2><div class="set" id="setGrid"></div><button class="btn" id="setDone" type="button"></button></div></div>
 <div class="screen" id="pauseScreen" hidden><div class="card"><h2 id="pausedText"></h2><div class="row"><button class="btn" id="resumeBtn" type="button"></button></div><div class="row"><button class="btn ghost" id="pSetBtn" type="button"></button><button class="btn ghost" id="finishBtn" type="button"></button><button class="btn ghost" id="menuBtn" type="button"></button></div></div></div>
@@ -115,98 +124,110 @@ const I18N = {
     sizeLabel: 'Size', meters: '{n} m', next: 'Next', max: 'Biggest!', leader: 'Biggest holes', you: 'You', paused: 'Paused', resume: 'Keep playing', menu: 'Menu', finish: 'See results', pause: 'Pause', sound: 'Sound on or off',
     unlock: 'Now you can swallow {what}!', g0: 'fire hydrants, cones and lamp posts', g1: 'benches, bikes and trees', g2: 'cars and fountains', g3: 'vans and fire trucks', g4: 'buses and houses', g5: 'buildings', g6: 'skyscrapers', g7: 'landmarks and the stadium',
     tooBig: 'Too big! Grow first.', gulpTitle: 'Gulp!', gulpText: '{name} swallowed you!', gulpKeep: 'You start again, a little smaller.', keepGoing: 'Keep going', ateRival: 'You swallowed {name}!',
-    timeUp: "Time's up!", freeDone: 'Free roam', rank: 'You are #{rank} of {total}!', winner: 'You are the biggest hole!', endSize: 'Biggest size: {n} m', endCity: 'City swallowed: {n}%', endPoints: 'Points: {score} · Best: {best}', again: 'Play again', stars: '{n} of 3 stars',
+    timeUp: "Time's up!", freeDone: 'Free roam', rank: 'You are #{rank} of {total}!', winner: 'You are the biggest hole!', endSize: 'Biggest size: {n} m', endCity: 'Things swallowed: {n}', endPoints: 'Points: {score} · Best: {best}', again: 'Play again', stars: '{n} of 3 stars',
     setTitle: 'Settings', soundSet: 'Sound', music: 'Music', readAloud: 'Read aloud', motion: 'Motion', motionAuto: 'Auto', motionLess: 'Less', contrast: 'High contrast', textSize: 'Text size', on: 'On', off: 'Off', done: 'Done',
-    hintTouch: 'Drag anywhere to move', hintKeys: 'Move: arrow keys, WASD or drag', world: 'A city seen from above, with your black hole' },
+    hintTouch: 'Drag anywhere to move', hintKeys: 'Move: arrow keys, WASD or drag', world: 'A city seen from above, with your black hole',
+    loading: 'Building the city…', failTitle: 'Gulp City couldn’t start on this device', failText: 'The device may be busy or low on memory. Close other apps or tabs, then try again.', retry: 'Try again' },
   'en-GB': {},
   pt: { title: 'Gulp City', tagline: 'Você é um buraco negro pequenininho. Engula a cidade e cresça!', play: 'Jogar', playSub: '2½ minutos', free: 'Passeio livre', freeSub: 'Sem relógio', rivals: 'Rivais', easy: 'Fácil', normal: 'Normal', hard: 'Difícil', how: 'Como jogar', settings: 'Ajustes', best: 'Recorde: {n} pontos', bestSize: 'Maior buraco: {n} m',
     howTitle: 'Como jogar', how1Touch: 'Arraste em qualquer lugar para mover o seu buraco.', how1Keys: 'Mova com as setas, WASD ou arrastando.', how2: 'Engula coisas menores que você para crescer.', how3: 'Buracos maiores podem engolir os menores. Fique longe deles!', how4: 'Seja o maior buraco quando o tempo acabar!', gotIt: 'Entendi!',
     sizeLabel: 'Tamanho', meters: '{n} m', next: 'Próximo', max: 'O maior!', leader: 'Maiores buracos', you: 'Você', paused: 'Pausado', resume: 'Continuar', menu: 'Menu', finish: 'Ver resultado', pause: 'Pausar', sound: 'Som ligado ou desligado',
     unlock: 'Agora você pode engolir {what}!', g0: 'hidrantes, cones e postes', g1: 'bancos, bicicletas e árvores', g2: 'carros e fontes', g3: 'vans e caminhões de bombeiro', g4: 'ônibus e casas', g5: 'prédios', g6: 'arranha-céus', g7: 'monumentos e o estádio',
     tooBig: 'Grande demais! Cresça primeiro.', gulpTitle: 'Glup!', gulpText: '{name} engoliu você!', gulpKeep: 'Você recomeça um pouco menor.', keepGoing: 'Continuar', ateRival: 'Você engoliu {name}!',
-    timeUp: 'Acabou o tempo!', freeDone: 'Passeio livre', rank: 'Você ficou em #{rank} de {total}!', winner: 'Você é o maior buraco!', endSize: 'Maior tamanho: {n} m', endCity: 'Cidade engolida: {n}%', endPoints: 'Pontos: {score} · Recorde: {best}', again: 'Jogar de novo', stars: '{n} de 3 estrelas',
+    timeUp: 'Acabou o tempo!', freeDone: 'Passeio livre', rank: 'Você ficou em #{rank} de {total}!', winner: 'Você é o maior buraco!', endSize: 'Maior tamanho: {n} m', endCity: 'Coisas engolidas: {n}', endPoints: 'Pontos: {score} · Recorde: {best}', again: 'Jogar de novo', stars: '{n} de 3 estrelas',
     setTitle: 'Ajustes', soundSet: 'Som', music: 'Música', readAloud: 'Ler em voz alta', motion: 'Movimento', motionAuto: 'Automático', motionLess: 'Menos', contrast: 'Alto contraste', textSize: 'Tamanho do texto', on: 'Ligado', off: 'Desligado', done: 'Pronto',
-    hintTouch: 'Arraste para se mover', hintKeys: 'Mover: setas, WASD ou arrastar', world: 'Uma cidade vista de cima, com o seu buraco negro' },
+    hintTouch: 'Arraste para se mover', hintKeys: 'Mover: setas, WASD ou arrastar', world: 'Uma cidade vista de cima, com o seu buraco negro',
+    loading: 'Construindo a cidade…', failTitle: 'Gulp City não conseguiu abrir neste aparelho', failText: 'O aparelho pode estar ocupado ou com pouca memória. Feche outros apps ou abas e tente de novo.', retry: 'Tentar de novo' },
   fr: { title: 'Gulp City', tagline: 'Tu es un tout petit trou noir. Avale la ville et grandis !', play: 'Jouer', playSub: '2 min 30', free: 'Balade libre', freeSub: 'Sans chrono', rivals: 'Rivaux', easy: 'Facile', normal: 'Normal', hard: 'Difficile', how: 'Comment jouer', settings: 'Réglages', best: 'Record : {n} points', bestSize: 'Plus grand trou : {n} m',
     howTitle: 'Comment jouer', how1Touch: 'Glisse ton doigt n’importe où pour déplacer ton trou.', how1Keys: 'Déplace-toi avec les flèches, ZQSD/WASD ou en glissant.', how2: 'Avale ce qui est plus petit que toi pour grandir.', how3: 'Les trous plus grands peuvent avaler les plus petits. Éloigne-toi d’eux !', how4: 'Sois le plus grand trou quand le temps est fini !', gotIt: 'Compris !',
     sizeLabel: 'Taille', meters: '{n} m', next: 'Ensuite', max: 'Le plus grand !', leader: 'Plus grands trous', you: 'Toi', paused: 'Pause', resume: 'Continuer', menu: 'Menu', finish: 'Voir le résultat', pause: 'Pause', sound: 'Son activé ou coupé',
     unlock: 'Tu peux maintenant avaler {what} !', g0: 'les bouches d’incendie, les cônes et les lampadaires', g1: 'les bancs, les vélos et les arbres', g2: 'les voitures et les fontaines', g3: 'les camionnettes et les camions de pompiers', g4: 'les bus et les maisons', g5: 'les immeubles', g6: 'les gratte-ciel', g7: 'les monuments et le stade',
     tooBig: 'Trop grand ! Grandis d’abord.', gulpTitle: 'Glouf !', gulpText: '{name} t’a avalé !', gulpKeep: 'Tu recommences, un peu plus petit.', keepGoing: 'Continuer', ateRival: 'Tu as avalé {name} !',
-    timeUp: 'Temps écoulé !', freeDone: 'Balade libre', rank: 'Tu es n° {rank} sur {total} !', winner: 'Tu es le plus grand trou !', endSize: 'Plus grande taille : {n} m', endCity: 'Ville avalée : {n} %', endPoints: 'Points : {score} · Record : {best}', again: 'Rejouer', stars: '{n} étoile(s) sur 3',
+    timeUp: 'Temps écoulé !', freeDone: 'Balade libre', rank: 'Tu es n° {rank} sur {total} !', winner: 'Tu es le plus grand trou !', endSize: 'Plus grande taille : {n} m', endCity: 'Choses avalées : {n}', endPoints: 'Points : {score} · Record : {best}', again: 'Rejouer', stars: '{n} étoile(s) sur 3',
     setTitle: 'Réglages', soundSet: 'Son', music: 'Musique', readAloud: 'Lecture à voix haute', motion: 'Mouvement', motionAuto: 'Auto', motionLess: 'Moins', contrast: 'Contraste élevé', textSize: 'Taille du texte', on: 'Oui', off: 'Non', done: 'OK',
-    hintTouch: 'Glisse pour te déplacer', hintKeys: 'Bouger : flèches, ZQSD/WASD ou glisser', world: 'Une ville vue du ciel, avec ton trou noir' },
+    hintTouch: 'Glisse pour te déplacer', hintKeys: 'Bouger : flèches, ZQSD/WASD ou glisser', world: 'Une ville vue du ciel, avec ton trou noir',
+    loading: 'Construction de la ville…', failTitle: 'Gulp City n’a pas pu démarrer sur cet appareil', failText: 'L’appareil est peut-être occupé ou manque de mémoire. Ferme d’autres applis ou onglets, puis réessaie.', retry: 'Réessayer' },
   es: { title: 'Gulp City', tagline: 'Eres un agujero negro diminuto. ¡Trágate la ciudad y crece!', play: 'Jugar', playSub: '2½ minutos', free: 'Paseo libre', freeSub: 'Sin reloj', rivals: 'Rivales', easy: 'Fácil', normal: 'Normal', hard: 'Difícil', how: 'Cómo jugar', settings: 'Ajustes', best: 'Récord: {n} puntos', bestSize: 'Agujero más grande: {n} m',
     howTitle: 'Cómo jugar', how1Touch: 'Arrastra en cualquier parte para mover tu agujero.', how1Keys: 'Muévete con las flechas, WASD o arrastrando.', how2: 'Trágate cosas más pequeñas que tú para crecer.', how3: 'Los agujeros más grandes pueden tragarse a los pequeños. ¡Aléjate de ellos!', how4: '¡Sé el agujero más grande cuando se acabe el tiempo!', gotIt: '¡Entendido!',
     sizeLabel: 'Tamaño', meters: '{n} m', next: 'Siguiente', max: '¡El más grande!', leader: 'Agujeros más grandes', you: 'Tú', paused: 'En pausa', resume: 'Seguir jugando', menu: 'Menú', finish: 'Ver resultado', pause: 'Pausa', sound: 'Sonido sí o no',
     unlock: '¡Ahora puedes tragarte {what}!', g0: 'bocas de incendio, conos y farolas', g1: 'bancos, bicis y árboles', g2: 'coches y fuentes', g3: 'furgonetas y camiones de bomberos', g4: 'autobuses y casas', g5: 'edificios', g6: 'rascacielos', g7: 'monumentos y el estadio',
     tooBig: '¡Demasiado grande! Crece primero.', gulpTitle: '¡Glup!', gulpText: '¡{name} te tragó!', gulpKeep: 'Empiezas otra vez, un poco más pequeño.', keepGoing: 'Seguir', ateRival: '¡Te tragaste a {name}!',
-    timeUp: '¡Se acabó el tiempo!', freeDone: 'Paseo libre', rank: '¡Quedaste #{rank} de {total}!', winner: '¡Eres el agujero más grande!', endSize: 'Tamaño máximo: {n} m', endCity: 'Ciudad tragada: {n} %', endPoints: 'Puntos: {score} · Récord: {best}', again: 'Jugar otra vez', stars: '{n} de 3 estrellas',
+    timeUp: '¡Se acabó el tiempo!', freeDone: 'Paseo libre', rank: '¡Quedaste #{rank} de {total}!', winner: '¡Eres el agujero más grande!', endSize: 'Tamaño máximo: {n} m', endCity: 'Cosas tragadas: {n}', endPoints: 'Puntos: {score} · Récord: {best}', again: 'Jugar otra vez', stars: '{n} de 3 estrellas',
     setTitle: 'Ajustes', soundSet: 'Sonido', music: 'Música', readAloud: 'Leer en voz alta', motion: 'Movimiento', motionAuto: 'Auto', motionLess: 'Menos', contrast: 'Alto contraste', textSize: 'Tamaño del texto', on: 'Sí', off: 'No', done: 'Listo',
-    hintTouch: 'Arrastra para moverte', hintKeys: 'Moverse: flechas, WASD o arrastrar', world: 'Una ciudad vista desde arriba, con tu agujero negro' },
+    hintTouch: 'Arrastra para moverte', hintKeys: 'Moverse: flechas, WASD o arrastrar', world: 'Una ciudad vista desde arriba, con tu agujero negro',
+    loading: 'Construyendo la ciudad…', failTitle: 'Gulp City no pudo empezar en este dispositivo', failText: 'Puede que el dispositivo esté ocupado o le falte memoria. Cierra otras apps o pestañas y vuelve a intentarlo.', retry: 'Intentar de nuevo' },
   de: { title: 'Gulp City', tagline: 'Du bist ein winziges Schwarzes Loch. Verschling die Stadt und wachse!', play: 'Spielen', playSub: '2½ Minuten', free: 'Freies Spiel', freeSub: 'Ohne Uhr', rivals: 'Gegner', easy: 'Leicht', normal: 'Normal', hard: 'Schwer', how: 'So geht’s', settings: 'Einstellungen', best: 'Rekord: {n} Punkte', bestSize: 'Größtes Loch: {n} m',
     howTitle: 'So geht’s', how1Touch: 'Zieh irgendwo, um dein Loch zu bewegen.', how1Keys: 'Bewegen mit Pfeiltasten, WASD oder Ziehen.', how2: 'Verschling Dinge, die kleiner sind als du, und wachse.', how3: 'Größere Löcher können kleinere verschlingen. Halte Abstand!', how4: 'Sei das größte Loch, wenn die Zeit um ist!', gotIt: 'Alles klar!',
     sizeLabel: 'Größe', meters: '{n} m', next: 'Als Nächstes', max: 'Am größten!', leader: 'Größte Löcher', you: 'Du', paused: 'Pause', resume: 'Weiterspielen', menu: 'Menü', finish: 'Ergebnis ansehen', pause: 'Pause', sound: 'Ton an oder aus',
     unlock: 'Jetzt kannst du {what} verschlingen!', g0: 'Hydranten, Hütchen und Laternen', g1: 'Bänke, Fahrräder und Bäume', g2: 'Autos und Brunnen', g3: 'Lieferwagen und Feuerwehrautos', g4: 'Busse und Häuser', g5: 'Gebäude', g6: 'Wolkenkratzer', g7: 'Wahrzeichen und das Stadion',
     tooBig: 'Zu groß! Erst wachsen.', gulpTitle: 'Schluck!', gulpText: '{name} hat dich verschlungen!', gulpKeep: 'Du fängst wieder an, etwas kleiner.', keepGoing: 'Weiter', ateRival: 'Du hast {name} verschlungen!',
-    timeUp: 'Die Zeit ist um!', freeDone: 'Freies Spiel', rank: 'Du bist Platz {rank} von {total}!', winner: 'Du bist das größte Loch!', endSize: 'Größte Größe: {n} m', endCity: 'Verschlungene Stadt: {n} %', endPoints: 'Punkte: {score} · Rekord: {best}', again: 'Nochmal spielen', stars: '{n} von 3 Sternen',
+    timeUp: 'Die Zeit ist um!', freeDone: 'Freies Spiel', rank: 'Du bist Platz {rank} von {total}!', winner: 'Du bist das größte Loch!', endSize: 'Größte Größe: {n} m', endCity: 'Verschlungene Dinge: {n}', endPoints: 'Punkte: {score} · Rekord: {best}', again: 'Nochmal spielen', stars: '{n} von 3 Sternen',
     setTitle: 'Einstellungen', soundSet: 'Ton', music: 'Musik', readAloud: 'Vorlesen', motion: 'Bewegung', motionAuto: 'Auto', motionLess: 'Weniger', contrast: 'Hoher Kontrast', textSize: 'Textgröße', on: 'An', off: 'Aus', done: 'Fertig',
-    hintTouch: 'Zum Bewegen ziehen', hintKeys: 'Bewegen: Pfeiltasten, WASD oder Ziehen', world: 'Eine Stadt von oben, mit deinem Schwarzen Loch' },
+    hintTouch: 'Zum Bewegen ziehen', hintKeys: 'Bewegen: Pfeiltasten, WASD oder Ziehen', world: 'Eine Stadt von oben, mit deinem Schwarzen Loch',
+    loading: 'Die Stadt wird gebaut …', failTitle: 'Gulp City konnte auf diesem Gerät nicht starten', failText: 'Das Gerät ist vielleicht beschäftigt oder hat zu wenig Speicher. Schließe andere Apps oder Tabs und versuche es noch einmal.', retry: 'Nochmal versuchen' },
   he: { title: 'Gulp City', tagline: 'אתם חור שחור קטנטן. בלעו את העיר וגדלו!', play: 'שחקו', playSub: '2.5 דקות', free: 'שיטוט חופשי', freeSub: 'בלי שעון', rivals: 'יריבים', easy: 'קל', normal: 'רגיל', hard: 'קשה', how: 'איך משחקים', settings: 'הגדרות', best: 'שיא: {n} נקודות', bestSize: 'החור הכי גדול: {n} מ׳',
     howTitle: 'איך משחקים', how1Touch: 'גררו בכל מקום כדי להזיז את החור.', how1Keys: 'זזים עם החיצים, WASD או בגרירה.', how2: 'בלעו דברים קטנים מכם כדי לגדול.', how3: 'חורים גדולים יכולים לבלוע קטנים יותר. התרחקו מהם!', how4: 'היו החור הכי גדול כשהזמן נגמר!', gotIt: 'הבנתי!',
     sizeLabel: 'גודל', meters: '{n} מ׳', next: 'הבא', max: 'הכי גדול!', leader: 'החורים הכי גדולים', you: 'אתם', paused: 'מושהה', resume: 'המשיכו לשחק', menu: 'תפריט', finish: 'לתוצאות', pause: 'השהיה', sound: 'צליל פועל או כבוי',
     unlock: 'עכשיו אפשר לבלוע {what}!', g0: 'ברזי כיבוי, קונוסים ועמודי תאורה', g1: 'ספסלים, אופניים ועצים', g2: 'מכוניות ומזרקות', g3: 'טנדרים וכבאיות', g4: 'אוטובוסים ובתים', g5: 'בניינים', g6: 'גורדי שחקים', g7: 'אתרים מפורסמים ואת האצטדיון',
     tooBig: 'גדול מדי! קודם צריך לגדול.', gulpTitle: 'גלופ!', gulpText: '{name} בלע אתכם!', gulpKeep: 'מתחילים שוב, קצת יותר קטנים.', keepGoing: 'ממשיכים', ateRival: 'בלעתם את {name}!',
-    timeUp: 'נגמר הזמן!', freeDone: 'שיטוט חופשי', rank: 'אתם במקום {rank} מתוך {total}!', winner: 'אתם החור הכי גדול!', endSize: 'הגודל הכי גדול: {n} מ׳', endCity: 'העיר שנבלעה: {n}%', endPoints: 'נקודות: {score} · שיא: {best}', again: 'שחקו שוב', stars: '{n} מתוך 3 כוכבים',
+    timeUp: 'נגמר הזמן!', freeDone: 'שיטוט חופשי', rank: 'אתם במקום {rank} מתוך {total}!', winner: 'אתם החור הכי גדול!', endSize: 'הגודל הכי גדול: {n} מ׳', endCity: 'דברים שנבלעו: {n}', endPoints: 'נקודות: {score} · שיא: {best}', again: 'שחקו שוב', stars: '{n} מתוך 3 כוכבים',
     setTitle: 'הגדרות', soundSet: 'צליל', music: 'מוזיקה', readAloud: 'הקראה', motion: 'תנועה', motionAuto: 'אוטומטי', motionLess: 'פחות', contrast: 'ניגודיות גבוהה', textSize: 'גודל טקסט', on: 'פועל', off: 'כבוי', done: 'סיום',
-    hintTouch: 'גררו כדי לזוז', hintKeys: 'תזוזה: חיצים, WASD או גרירה', world: 'עיר במבט מלמעלה, עם החור השחור שלכם' },
+    hintTouch: 'גררו כדי לזוז', hintKeys: 'תזוזה: חיצים, WASD או גרירה', world: 'עיר במבט מלמעלה, עם החור השחור שלכם',
+    loading: 'בונים את העיר…', failTitle: 'Gulp City לא הצליח להתחיל במכשיר הזה', failText: 'ייתכן שהמכשיר עסוק או שחסר לו זיכרון. סגרו אפליקציות או כרטיסיות אחרות ונסו שוב.', retry: 'לנסות שוב' },
   ja: { title: 'Gulp City', tagline: 'きみは ちいさな ブラックホール。まちを のみこんで おおきく なろう！', play: 'あそぶ', playSub: '2ふん30びょう', free: 'じゆうに あそぶ', freeSub: 'じかん せいげん なし', rivals: 'ライバル', easy: 'かんたん', normal: 'ふつう', hard: 'むずかしい', how: 'あそびかた', settings: 'せってい', best: 'ベスト：{n}てん', bestSize: 'いちばん おおきい あな：{n} m',
     howTitle: 'あそびかた', how1Touch: 'どこでも ドラッグして あなを うごかそう。', how1Keys: 'やじるしキー、WASD、または ドラッグで うごくよ。', how2: 'じぶんより ちいさい ものを のみこむと おおきく なるよ。', how3: 'おおきい あなは ちいさい あなを のみこめる。ちかづかないでね！', how4: 'じかん ぎれの とき、いちばん おおきい あなに なろう！', gotIt: 'わかった！',
     sizeLabel: 'おおきさ', meters: '{n} m', next: 'つぎ', max: 'いちばん！', leader: 'おおきい あな ランキング', you: 'きみ', paused: 'ちょっと やすみ', resume: 'つづける', menu: 'メニュー', finish: 'けっかを みる', pause: 'とめる', sound: 'おとの オン・オフ',
     unlock: '{what}を のみこめるように なったよ！', g0: 'しょうかせん、コーン、がいとう', g1: 'ベンチ、じてんしゃ、き', g2: 'くるまと ふんすい', g3: 'バンと しょうぼうしゃ', g4: 'バスと いえ', g5: 'ビル', g6: 'こうそうビル', g7: 'めいしょと スタジアム',
     tooBig: 'おおきすぎる！まず おおきく なろう。', gulpTitle: 'ゴクン！', gulpText: '{name}に のみこまれた！', gulpKeep: 'すこし ちいさく なって また スタート。', keepGoing: 'つづける', ateRival: '{name}を のみこんだ！',
-    timeUp: 'じかん ぎれ！', freeDone: 'じゆうに あそぶ', rank: '{total}つ ちゅう {rank}い！', winner: 'きみが いちばん おおきい あな！', endSize: 'いちばん おおきい サイズ：{n} m', endCity: 'のみこんだ まち：{n}%', endPoints: 'てんすう：{score} ・ ベスト：{best}', again: 'もういちど', stars: 'ほし 3つ ちゅう {n}つ',
+    timeUp: 'じかん ぎれ！', freeDone: 'じゆうに あそぶ', rank: '{total}つ ちゅう {rank}い！', winner: 'きみが いちばん おおきい あな！', endSize: 'いちばん おおきい サイズ：{n} m', endCity: 'のみこんだ もの：{n}こ', endPoints: 'てんすう：{score} ・ ベスト：{best}', again: 'もういちど', stars: 'ほし 3つ ちゅう {n}つ',
     setTitle: 'せってい', soundSet: 'おと', music: 'おんがく', readAloud: 'よみあげ', motion: 'うごき', motionAuto: 'じどう', motionLess: 'すくなめ', contrast: 'くっきり ひょうじ', textSize: 'もじの おおきさ', on: 'オン', off: 'オフ', done: 'OK',
-    hintTouch: 'ドラッグで うごく', hintKeys: 'うごく：やじるし、WASD、ドラッグ', world: 'うえから みた まちと きみの ブラックホール' },
+    hintTouch: 'ドラッグで うごく', hintKeys: 'うごく：やじるし、WASD、ドラッグ', world: 'うえから みた まちと きみの ブラックホール',
+    loading: 'まちを つくっています…', failTitle: 'この きかいでは Gulp City を はじめられませんでした', failText: 'きかいが いそがしいか、メモリが たりないかも しれません。ほかの アプリや タブを とじて、もう いちど ためしてね。', retry: 'もう いちど' },
   ar: { title: 'Gulp City', tagline: 'أنت ثقب أسود صغير جدًا. ابتلع المدينة وكبُر!', play: 'العب', playSub: 'دقيقتان ونصف', free: 'تجوّل حر', freeSub: 'بلا وقت', rivals: 'المنافسون', easy: 'سهل', normal: 'عادي', hard: 'صعب', how: 'طريقة اللعب', settings: 'الإعدادات', best: 'الأفضل: {n} نقطة', bestSize: 'أكبر ثقب: {n} م',
     howTitle: 'طريقة اللعب', how1Touch: 'اسحب في أي مكان لتحريك ثقبك.', how1Keys: 'تحرّك بالأسهم أو WASD أو بالسحب.', how2: 'ابتلع الأشياء الأصغر منك لتكبر.', how3: 'الثقوب الأكبر تستطيع ابتلاع الأصغر. ابتعد عنها!', how4: 'كن أكبر ثقب عندما ينتهي الوقت!', gotIt: 'فهمت!',
     sizeLabel: 'الحجم', meters: '{n} م', next: 'التالي', max: 'الأكبر!', leader: 'أكبر الثقوب', you: 'أنت', paused: 'متوقف مؤقتًا', resume: 'تابع اللعب', menu: 'القائمة', finish: 'شاهد النتيجة', pause: 'إيقاف مؤقت', sound: 'تشغيل الصوت أو إيقافه',
     unlock: 'الآن يمكنك ابتلاع {what}!', g0: 'صنابير الإطفاء والأقماع وأعمدة الإنارة', g1: 'المقاعد والدراجات والأشجار', g2: 'السيارات والنوافير', g3: 'الشاحنات الصغيرة وسيارات الإطفاء', g4: 'الحافلات والبيوت', g5: 'المباني', g6: 'ناطحات السحاب', g7: 'المعالم والملعب',
     tooBig: 'كبير جدًا! اكبر أولًا.', gulpTitle: 'غلب!', gulpText: 'ابتلعك {name}!', gulpKeep: 'تبدأ من جديد وأنت أصغر قليلًا.', keepGoing: 'تابع', ateRival: 'ابتلعت {name}!',
-    timeUp: 'انتهى الوقت!', freeDone: 'تجوّل حر', rank: 'أنت رقم {rank} من {total}!', winner: 'أنت أكبر ثقب!', endSize: 'أكبر حجم: {n} م', endCity: 'المدينة المبتلعة: {n}%', endPoints: 'النقاط: {score} · الأفضل: {best}', again: 'العب مرة أخرى', stars: '{n} من 3 نجوم',
+    timeUp: 'انتهى الوقت!', freeDone: 'تجوّل حر', rank: 'أنت رقم {rank} من {total}!', winner: 'أنت أكبر ثقب!', endSize: 'أكبر حجم: {n} م', endCity: 'الأشياء المبتلعة: {n}', endPoints: 'النقاط: {score} · الأفضل: {best}', again: 'العب مرة أخرى', stars: '{n} من 3 نجوم',
     setTitle: 'الإعدادات', soundSet: 'الصوت', music: 'الموسيقى', readAloud: 'القراءة بصوت عالٍ', motion: 'الحركة', motionAuto: 'تلقائي', motionLess: 'أقل', contrast: 'تباين عالٍ', textSize: 'حجم النص', on: 'تشغيل', off: 'إيقاف', done: 'تم',
-    hintTouch: 'اسحب لتتحرك', hintKeys: 'الحركة: الأسهم أو WASD أو السحب', world: 'مدينة من الأعلى مع ثقبك الأسود' },
+    hintTouch: 'اسحب لتتحرك', hintKeys: 'الحركة: الأسهم أو WASD أو السحب', world: 'مدينة من الأعلى مع ثقبك الأسود',
+    loading: 'جارٍ بناء المدينة…', failTitle: 'تعذّر تشغيل Gulp City على هذا الجهاز', failText: 'قد يكون الجهاز مشغولًا أو ذاكرته ممتلئة. أغلق التطبيقات أو علامات التبويب الأخرى ثم حاول مرة أخرى.', retry: 'حاول مرة أخرى' },
   ru: { title: 'Gulp City', tagline: 'Ты крошечная чёрная дыра. Проглоти город и вырасти!', play: 'Играть', playSub: '2,5 минуты', free: 'Свободная игра', freeSub: 'Без часов', rivals: 'Соперники', easy: 'Легко', normal: 'Обычно', hard: 'Сложно', how: 'Как играть', settings: 'Настройки', best: 'Рекорд: {n} очков', bestSize: 'Самая большая дыра: {n} м',
     howTitle: 'Как играть', how1Touch: 'Тяни где угодно, чтобы двигать дыру.', how1Keys: 'Двигайся стрелками, WASD или тяни.', how2: 'Глотай то, что меньше тебя, и расти.', how3: 'Большие дыры могут проглотить маленькие. Держись от них подальше!', how4: 'Будь самой большой дырой, когда время закончится!', gotIt: 'Понятно!',
     sizeLabel: 'Размер', meters: '{n} м', next: 'Дальше', max: 'Самая большая!', leader: 'Самые большие дыры', you: 'Ты', paused: 'Пауза', resume: 'Играть дальше', menu: 'Меню', finish: 'Итоги', pause: 'Пауза', sound: 'Звук вкл. или выкл.',
     unlock: 'Теперь можно глотать {what}!', g0: 'гидранты, конусы и фонари', g1: 'скамейки, велосипеды и деревья', g2: 'машины и фонтаны', g3: 'фургоны и пожарные машины', g4: 'автобусы и дома', g5: 'здания', g6: 'небоскрёбы', g7: 'достопримечательности и стадион',
     tooBig: 'Слишком большое! Сначала подрасти.', gulpTitle: 'Глоть!', gulpText: '{name} проглотил тебя!', gulpKeep: 'Ты начинаешь снова, чуть меньше.', keepGoing: 'Дальше', ateRival: 'Ты проглотил {name}!',
-    timeUp: 'Время вышло!', freeDone: 'Свободная игра', rank: 'Ты на {rank} месте из {total}!', winner: 'Ты самая большая дыра!', endSize: 'Самый большой размер: {n} м', endCity: 'Проглочено города: {n} %', endPoints: 'Очки: {score} · Рекорд: {best}', again: 'Ещё раз', stars: '{n} из 3 звёзд',
+    timeUp: 'Время вышло!', freeDone: 'Свободная игра', rank: 'Ты на {rank} месте из {total}!', winner: 'Ты самая большая дыра!', endSize: 'Самый большой размер: {n} м', endCity: 'Проглочено вещей: {n}', endPoints: 'Очки: {score} · Рекорд: {best}', again: 'Ещё раз', stars: '{n} из 3 звёзд',
     setTitle: 'Настройки', soundSet: 'Звук', music: 'Музыка', readAloud: 'Читать вслух', motion: 'Движение', motionAuto: 'Авто', motionLess: 'Меньше', contrast: 'Высокий контраст', textSize: 'Размер текста', on: 'Вкл.', off: 'Выкл.', done: 'Готово',
-    hintTouch: 'Тяни, чтобы двигаться', hintKeys: 'Движение: стрелки, WASD или тяни', world: 'Город сверху и твоя чёрная дыра' },
+    hintTouch: 'Тяни, чтобы двигаться', hintKeys: 'Движение: стрелки, WASD или тяни', world: 'Город сверху и твоя чёрная дыра',
+    loading: 'Строим город…', failTitle: 'Gulp City не запустилась на этом устройстве', failText: 'Возможно, устройство занято или ему не хватает памяти. Закрой другие приложения или вкладки и попробуй ещё раз.', retry: 'Попробовать ещё раз' },
   it: { title: 'Gulp City', tagline: 'Sei un minuscolo buco nero. Inghiotti la città e diventa enorme!', play: 'Gioca', playSub: '2 minuti e ½', free: 'Giro libero', freeSub: 'Senza orologio', rivals: 'Rivali', easy: 'Facile', normal: 'Normale', hard: 'Difficile', how: 'Come si gioca', settings: 'Impostazioni', best: 'Record: {n} punti', bestSize: 'Buco più grande: {n} m',
     howTitle: 'Come si gioca', how1Touch: 'Trascina dove vuoi per muovere il tuo buco.', how1Keys: 'Muoviti con le frecce, WASD o trascinando.', how2: 'Inghiotti le cose più piccole di te per crescere.', how3: 'I buchi più grandi possono inghiottire quelli piccoli. Stagli lontano!', how4: 'Sii il buco più grande quando finisce il tempo!', gotIt: 'Capito!',
     sizeLabel: 'Grandezza', meters: '{n} m', next: 'Prossimo', max: 'Il più grande!', leader: 'Buchi più grandi', you: 'Tu', paused: 'In pausa', resume: 'Continua a giocare', menu: 'Menu', finish: 'Vedi il risultato', pause: 'Pausa', sound: 'Suono sì o no',
     unlock: 'Ora puoi inghiottire {what}!', g0: 'idranti, coni e lampioni', g1: 'panchine, biciclette e alberi', g2: 'auto e fontane', g3: 'furgoni e camion dei pompieri', g4: 'autobus e case', g5: 'palazzi', g6: 'grattacieli', g7: 'monumenti e lo stadio',
     tooBig: 'Troppo grande! Prima cresci.', gulpTitle: 'Gulp!', gulpText: '{name} ti ha inghiottito!', gulpKeep: 'Ricominci un po’ più piccolo.', keepGoing: 'Continua', ateRival: 'Hai inghiottito {name}!',
-    timeUp: 'Tempo scaduto!', freeDone: 'Giro libero', rank: 'Sei n. {rank} su {total}!', winner: 'Sei il buco più grande!', endSize: 'Grandezza massima: {n} m', endCity: 'Città inghiottita: {n}%', endPoints: 'Punti: {score} · Record: {best}', again: 'Gioca ancora', stars: '{n} stelle su 3',
+    timeUp: 'Tempo scaduto!', freeDone: 'Giro libero', rank: 'Sei n. {rank} su {total}!', winner: 'Sei il buco più grande!', endSize: 'Grandezza massima: {n} m', endCity: 'Cose inghiottite: {n}', endPoints: 'Punti: {score} · Record: {best}', again: 'Gioca ancora', stars: '{n} stelle su 3',
     setTitle: 'Impostazioni', soundSet: 'Suono', music: 'Musica', readAloud: 'Leggi ad alta voce', motion: 'Movimento', motionAuto: 'Auto', motionLess: 'Meno', contrast: 'Contrasto alto', textSize: 'Grandezza del testo', on: 'Sì', off: 'No', done: 'Fatto',
-    hintTouch: 'Trascina per muoverti', hintKeys: 'Muoviti: frecce, WASD o trascina', world: 'Una città vista dall’alto, con il tuo buco nero' },
+    hintTouch: 'Trascina per muoverti', hintKeys: 'Muoviti: frecce, WASD o trascina', world: 'Una città vista dall’alto, con il tuo buco nero',
+    loading: 'Costruisco la città…', failTitle: 'Gulp City non è riuscita a partire su questo dispositivo', failText: 'Il dispositivo potrebbe essere occupato o avere poca memoria. Chiudi altre app o schede e riprova.', retry: 'Riprova' },
   'zh-Hant': { title: 'Gulp City', tagline: '你是一個小小的黑洞。把城市吞下去，越長越大！', play: '開始', playSub: '2分30秒', free: '自由探索', freeSub: '沒有時間限制', rivals: '對手', easy: '簡單', normal: '普通', hard: '困難', how: '玩法', settings: '設定', best: '最高分：{n} 分', bestSize: '最大的洞：{n} 公尺',
     howTitle: '玩法', how1Touch: '在任何地方拖曳來移動你的黑洞。', how1Keys: '用方向鍵、WASD 或拖曳來移動。', how2: '吞下比你小的東西就會變大。', how3: '比較大的洞可以吞掉比較小的洞。離它們遠一點！', how4: '時間到的時候，當最大的黑洞！', gotIt: '知道了！',
     sizeLabel: '大小', meters: '{n} 公尺', next: '下一個', max: '最大了！', leader: '最大的黑洞', you: '你', paused: '暫停中', resume: '繼續玩', menu: '選單', finish: '看結果', pause: '暫停', sound: '聲音開關',
     unlock: '現在可以吞下{what}了！', g0: '消防栓、三角錐和路燈', g1: '長椅、腳踏車和樹', g2: '汽車和噴水池', g3: '廂型車和消防車', g4: '公車和房子', g5: '大樓', g6: '摩天大樓', g7: '地標和體育場',
     tooBig: '太大了！先長大吧。', gulpTitle: '咕嚕！', gulpText: '{name}把你吞下去了！', gulpKeep: '你重新開始，變小了一點。', keepGoing: '繼續', ateRival: '你吞下了{name}！',
-    timeUp: '時間到！', freeDone: '自由探索', rank: '你是 {total} 個中的第 {rank} 名！', winner: '你是最大的黑洞！', endSize: '最大尺寸：{n} 公尺', endCity: '吞下的城市：{n}%', endPoints: '分數：{score} · 最高分：{best}', again: '再玩一次', stars: '3 顆星中的 {n} 顆',
+    timeUp: '時間到！', freeDone: '自由探索', rank: '你是 {total} 個中的第 {rank} 名！', winner: '你是最大的黑洞！', endSize: '最大尺寸：{n} 公尺', endCity: '吞下的東西：{n} 個', endPoints: '分數：{score} · 最高分：{best}', again: '再玩一次', stars: '3 顆星中的 {n} 顆',
     setTitle: '設定', soundSet: '聲音', music: '音樂', readAloud: '朗讀', motion: '動態', motionAuto: '自動', motionLess: '較少', contrast: '高對比', textSize: '文字大小', on: '開', off: '關', done: '完成',
-    hintTouch: '拖曳來移動', hintKeys: '移動：方向鍵、WASD 或拖曳', world: '從上面看的城市和你的黑洞' },
+    hintTouch: '拖曳來移動', hintKeys: '移動：方向鍵、WASD 或拖曳', world: '從上面看的城市和你的黑洞',
+    loading: '正在建造城市…', failTitle: 'Gulp City 無法在這台裝置上啟動', failText: '裝置可能太忙或記憶體不足。關掉其他 App 或分頁，再試一次。', retry: '再試一次' },
   nl: { title: 'Gulp City', tagline: 'Jij bent een piepklein zwart gat. Slok de stad op en groei!', play: 'Spelen', playSub: '2½ minuut', free: 'Vrij spelen', freeSub: 'Zonder klok', rivals: 'Tegenstanders', easy: 'Makkelijk', normal: 'Normaal', hard: 'Moeilijk', how: 'Hoe speel je?', settings: 'Instellingen', best: 'Record: {n} punten', bestSize: 'Grootste gat: {n} m',
     howTitle: 'Hoe speel je?', how1Touch: 'Sleep waar je wilt om je gat te bewegen.', how1Keys: 'Bewegen met de pijltjes, WASD of slepen.', how2: 'Slok dingen op die kleiner zijn dan jij en groei.', how3: 'Grotere gaten kunnen kleinere opslokken. Blijf bij ze uit de buurt!', how4: 'Wees het grootste gat als de tijd om is!', gotIt: 'Begrepen!',
     sizeLabel: 'Grootte', meters: '{n} m', next: 'Hierna', max: 'Het grootst!', leader: 'Grootste gaten', you: 'Jij', paused: 'Pauze', resume: 'Verder spelen', menu: 'Menu', finish: 'Uitslag bekijken', pause: 'Pauze', sound: 'Geluid aan of uit',
     unlock: 'Nu kun je {what} opslokken!', g0: 'brandkranen, pionnen en lantaarnpalen', g1: 'bankjes, fietsen en bomen', g2: 'auto’s en fonteinen', g3: 'busjes en brandweerauto’s', g4: 'bussen en huizen', g5: 'gebouwen', g6: 'wolkenkrabbers', g7: 'bezienswaardigheden en het stadion',
     tooBig: 'Te groot! Eerst groeien.', gulpTitle: 'Slok!', gulpText: '{name} heeft je opgeslokt!', gulpKeep: 'Je begint opnieuw, een beetje kleiner.', keepGoing: 'Verder', ateRival: 'Je hebt {name} opgeslokt!',
-    timeUp: 'De tijd is om!', freeDone: 'Vrij spelen', rank: 'Je bent nummer {rank} van {total}!', winner: 'Jij bent het grootste gat!', endSize: 'Grootste grootte: {n} m', endCity: 'Stad opgeslokt: {n}%', endPoints: 'Punten: {score} · Record: {best}', again: 'Nog een keer', stars: '{n} van 3 sterren',
+    timeUp: 'De tijd is om!', freeDone: 'Vrij spelen', rank: 'Je bent nummer {rank} van {total}!', winner: 'Jij bent het grootste gat!', endSize: 'Grootste grootte: {n} m', endCity: 'Opgeslokte dingen: {n}', endPoints: 'Punten: {score} · Record: {best}', again: 'Nog een keer', stars: '{n} van 3 sterren',
     setTitle: 'Instellingen', soundSet: 'Geluid', music: 'Muziek', readAloud: 'Voorlezen', motion: 'Beweging', motionAuto: 'Auto', motionLess: 'Minder', contrast: 'Hoog contrast', textSize: 'Tekstgrootte', on: 'Aan', off: 'Uit', done: 'Klaar',
-    hintTouch: 'Sleep om te bewegen', hintKeys: 'Bewegen: pijltjes, WASD of slepen', world: 'Een stad van bovenaf, met jouw zwarte gat' },
+    hintTouch: 'Sleep om te bewegen', hintKeys: 'Bewegen: pijltjes, WASD of slepen', world: 'Een stad van bovenaf, met jouw zwarte gat',
+    loading: 'De stad wordt gebouwd…', failTitle: 'Gulp City kon niet starten op dit apparaat', failText: 'Het apparaat is misschien druk of heeft te weinig geheugen. Sluit andere apps of tabbladen en probeer het opnieuw.', retry: 'Opnieuw proberen' },
 };
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
 const I18N_CHAIN = [I18N[LANG], I18N[LANG.split('-')[0]], I18N.en].filter(Boolean);
@@ -224,7 +245,55 @@ document.documentElement.dir = (window.BRB && BRB.user && BRB.user.dir) || 'ltr'
 // Light or dark, like the site (BRB.theme; '' follows the device).
 (function () { const th = (window.BRB && BRB.theme) || ''; const dark = th ? th === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.classList.toggle('dark', dark); })();
 // Until the 3D city is ready, a start() from the platform is remembered and done as soon as it is.
-window.__brbTest = { state: () => ({ screen: 'loading', ready: false }), start(o) { window.__gulpStartWanted = o || {}; } };
+window.__brbTest = { state: () => ({ screen: 'loading', ready: false, load: GULP_LOAD.p, failed: GULP_LOAD.failed }), start(o) { window.__gulpStartWanted = o || {}; } };
+
+/* ---------- loading: the title card has its words at once (before Three.js and the city, which take a few seconds
+   on a phone); Play waits with a progress bar the city build moves on. If the 3D part can't start (no import maps,
+   a failed download, no WebGL, the picture lost, an error while building, or nothing moving for a long time), a
+   card in the player's language says so, with Try again. ---------- */
+var GULP_LOAD = { p: 0, ready: false, failed: '', at: Date.now() };
+(function () {
+  const el = id => document.getElementById(id);
+  function words() {
+    let set = {}, best = {}; try { set = BRB.storage.get('gulp-city-settings') || {}; best = BRB.storage.get('gulp-city-v1') || {}; } catch { /* preview */ }
+    el('titleText').textContent = t('title'); el('tagText').textContent = t('tagline');
+    for (const [id, a, b] of [['playBtn', 'play', 'playSub'], ['freeBtn', 'free', 'freeSub']]) { const btn = el(id); btn.textContent = t(a); const sm = document.createElement('small'); sm.textContent = t(b); btn.append(sm); }
+    el('rivalsLabel').textContent = t('rivals'); el('diffSeg').setAttribute('aria-label', t('rivals'));
+    for (const b of document.querySelectorAll('#diffSeg button')) { b.textContent = t(b.dataset.d); b.setAttribute('aria-pressed', String(b.dataset.d === (set.diff || 'normal'))); }
+    el('howBtn').textContent = t('how'); el('setBtn').textContent = t('settings');
+    if (+best.best) el('bestText').textContent = t('best', { n: +best.best }) + (+best.bestSize ? ' · ' + t('bestSize', { n: fmt1(+best.bestSize) }) : '');
+    el('loadText').textContent = t('loading');
+    el('failTitle').textContent = t('failTitle'); el('failText').textContent = t('failText'); el('failBtn').textContent = t('retry');
+    // the title's own buttons work only once the city is there
+    el('howBtn').disabled = el('setBtn').disabled = true;
+  }
+  words();
+  window.__gulpProgress = function (p) {
+    if (GULP_LOAD.ready || GULP_LOAD.failed) return;
+    GULP_LOAD.p = Math.max(GULP_LOAD.p, Math.min(1, p)); GULP_LOAD.at = Date.now();
+    el('loadFill').style.width = Math.max(3, Math.round(GULP_LOAD.p * 100)) + '%'; el('loadPct').textContent = fmt(Math.round(GULP_LOAD.p * 100)) + '%';
+  };
+  window.__gulpReady = function () {
+    if (GULP_LOAD.failed) return;
+    GULP_LOAD.ready = true; GULP_LOAD.p = 1; el('loadRow').hidden = true;
+    for (const id of ['playBtn', 'freeBtn', 'howBtn', 'setBtn']) el(id).disabled = false;
+  };
+  window.__gulpFail = function (why) {
+    if (GULP_LOAD.ready || GULP_LOAD.failed) return;
+    GULP_LOAD.failed = String(why || 'error').slice(0, 40);
+    for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== 'failScreen';
+    el('failBtn').focus();
+  };
+  // Try again: the play page reloads the game (a reload from in here would go without the sign-in).
+  el('failBtn').onclick = () => { if (window.BRB && typeof BRB.retry === 'function') BRB.retry(); else location.reload(); };
+  // Before the city is ready, any error (also a script that fails to load, caught on the way down) means it won't start.
+  addEventListener('error', e => { if (GULP_LOAD.ready) return; const tg = e.target; if (tg && tg !== window && tg.tagName && tg.tagName !== 'SCRIPT') return; window.__gulpFail(tg && tg.tagName === 'SCRIPT' ? 'load' : 'error'); }, true);
+  addEventListener('unhandledrejection', () => { if (!GULP_LOAD.ready) window.__gulpFail('error'); });
+  // No import maps at all: the module can't even start.
+  try { if (HTMLScriptElement.supports && !HTMLScriptElement.supports('importmap')) setTimeout(() => window.__gulpFail('importmap'), 0); } catch { /* unknown: let it try */ }
+  // Nothing moving: 45 s before the 3D part starts (a slow download), then 25 s without progress while building.
+  setInterval(() => { if (GULP_LOAD.ready || GULP_LOAD.failed) return; if (document.hidden) { GULP_LOAD.at = Date.now(); return; } if (Date.now() - GULP_LOAD.at > (GULP_LOAD.p > 0 ? 25000 : 45000)) window.__gulpFail('slow'); }, 2000);
+})();
 </script>
 <script type="importmap">
 { "imports": { "three": "/vendor/three/0.185.1/three.module.min.js" },
@@ -234,6 +303,10 @@ window.__brbTest = { state: () => ({ screen: 'loading', ready: false }), start(o
 </script>
 <script type="module">
 import * as THREE from 'three';
+window.__gulpProgress(0.04);
+// Building the city is split into slices with a breath between them, so the card's progress bar moves and a phone
+// never sees one long frozen task.
+const tick = p => new Promise(res => { window.__gulpProgress(p); let done = false; const go = () => { if (!done) { done = true; res(); } }; requestAnimationFrame(() => setTimeout(go, 0)); setTimeout(go, 150); });
 
 /* =====================================================================
    CONFIG: the numbers of the game.
@@ -260,6 +333,7 @@ const CONFIG = {
   chaseSeconds: { easy: 2.5, normal: 4, hard: 6 },   // a rival gives up a chase after this long ...
   chaseRest: 7,          // ... and leaves that hole alone for this long
   chaseSpeed: 0.9,       // a chasing rival moves this much slower than usual (so a quick player can get away)
+  respawnSeconds: 10,    // a swallowed thing comes back on its spot this long after (once no hole is over it)
 };
 const RIVAL_NAMES = ['Zorp', 'Bloop', 'Nomi', 'Gobbo', 'Swirla', 'Mochi', 'Pip', 'Vortz', 'Dot', 'Munchy'];
 const RIVAL_COLORS = ['#ff5c8a', '#ffb020', '#3ddc97', '#4cc9ff', '#c38bff', '#ff7a45', '#9be15d', '#f15bb5', '#00d1c1', '#ffd166'];
@@ -293,7 +367,7 @@ scene.fog = new THREE.Fog(SKY, 60, 200);
 const camera = new THREE.PerspectiveCamera(50, 16 / 9, 0.5, 4000);
 let portrait = false;
 const fit = BRB.fx.fit3d(renderer, camera, { maxDpr: 1.5, onResize(w, h) { portrait = w / h < 0.85; camera.fov = portrait ? 62 : 50; camera.updateProjectionMatrix(); } });
-canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); S.lost = true; pause(); });
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); if (!window.GULP_LOAD.ready) { window.__gulpFail('lost'); return; } S.lost = true; pause(); });
 canvas.addEventListener('webglcontextrestored', () => { S.lost = false; });
 scene.add(new THREE.HemisphereLight('#ffffff', '#b7a98d', 1.55));
 const sun = new THREE.DirectionalLight('#fff3dc', 1.9); sun.position.set(0.45, 1, 0.3); scene.add(sun);
@@ -427,7 +501,9 @@ const TYPES = [
     box(70, 0.3, 50, '#3fae4f', 0, 0.05); box(56, 0.32, 0.5, C.white, 0, 0.06); cyl(6, 0.33, '#3fae4f', 0, 0.06); for (const [x, z] of [[-40, -34], [40, -34], [-40, 34], [40, 34]]) { box(1.2, 32, 1.2, C.grey, x, 0, z); box(5, 2.5, 1, '#fff7c2', x, 31, z); } } },
 ];
 const TI = Object.fromEntries(TYPES.map((t, i) => [t.id, i]));
-for (const T of TYPES) {
+await tick(0.08);
+for (const [ti, T] of TYPES.entries()) {
+  if (ti % 8 === 7) await tick(0.08 + 0.12 * ti / TYPES.length);
   PARTS = []; T.build();
   T.geoPlain = mergeParts(PARTS.filter(p => !p.win)); T.geoWin = mergeParts(PARTS.filter(p => p.win));
   T.pts = Math.round(5 + T.s * T.s * 8);
@@ -477,7 +553,9 @@ const SIDE_ITEMS = {
   [DIST.plaza]: [['bench', 3], ['pot', 3], ['tree', 3], ['trash', 2], ['cart', 1]],
 };
 const PARK_CHANCE = { [DIST.downtown]: 0.55, [DIST.midtown]: 0.55, [DIST.suburb]: 0.35, [DIST.park]: 0.3, [DIST.harbor]: 0.25, [DIST.stadium]: 0.5, [DIST.plaza]: 0.3 };
+await tick(0.22);
 for (let bz = 0; bz < N; bz++) for (let bx = 0; bx < N; bx++) {
+  if (bx === 0 && bz % 3 === 2) await tick(0.22 + 0.5 * bz / N);
   const k = district[bz * N + bx], g = mgroup[bz * N + bx], X0 = -HALF + bx * B, Z0 = -HALF + bz * B;
   // the four sidewalks: lamps, a hydrant at a corner, then small things; parked cars in the curb lane
   const sides = [[0, -1], [0, 1], [-1, 0], [1, 0]];
@@ -561,12 +639,12 @@ for (let bz = 0; bz < N; bz++) for (let bx = 0; bx < N; bx++) {
     for (let i = 0; i < 14; i++) { const x = X0 + R(9, 51), z = Z0 + R(9, 51); if (Math.hypot(x - cx, z - cz) > 24 && Math.hypot(Math.abs(x) - 34, Math.abs(z) - 34) > 4) place(pick(['bench', 'pot', 'tree', 'kiosk', 'cart', 'trash']), x, z, R(0, 6.28)); }
   }
 }
+await tick(0.74);
 // ---- pack into typed arrays ----
 const NOBJ = PX.length;
 const OX = Float32Array.from(PX), OZ = Float32Array.from(PZ), ORT = Float32Array.from(PR), OSC = Float32Array.from(PS), OT = Uint8Array.from(PT);
 const OST = new Uint8Array(NOBJ);   // 0 standing, 1 falling, 2 swallowed
 const OSET = new Int32Array(NOBJ), OIDX = new Int32Array(NOBJ), OWOB = new Float32Array(NOBJ);
-let TOTAL_PTS = 0; for (let i = 0; i < NOBJ; i++) TOTAL_PTS += TYPES[OT[i]].pts;
 
 /* ---------- instanced meshes: one per kind of thing per region of the map (so far-away regions are culled) ---------- */
 const REG = 16, REG0 = -800, REGS = 1600 / REG;
@@ -600,7 +678,9 @@ function standAll() {
   for (let i = 0; i < NOBJ; i++) { OST[i] = 0; OWOB[i] = 0; setMatrix(i, composeAt(i, OX[i], 0, OZ[i], ORT[i], 0, 0, 0, OSC[i])); }
   for (const st of SETS) for (const im of [st.plain, st.win]) if (im) { im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); }
 }
+await tick(0.84);
 standAll();
+await tick(0.9);
 
 // ---- a grid of the standing things, for quick "what is near this hole" questions ----
 const CELL = 24, GOFF = -800, GN = Math.ceil(1600 / CELL);
@@ -837,7 +917,39 @@ function updateFalls(dt) {
       if (f.kind === 0) { OST[f.ref] = 2; setMatrix(f.ref, ZERO); } else { f.ref.state = 2; f.ref.st.plain.setMatrixAt(f.ref.idx, ZERO); f.ref.st.dirty = true; }
       FALL[k] = FALL[FALL.length - 1]; FALL.pop();
       swallowed(f.h, f.s, f.pts);
+      RESP.push({ kind: f.kind, ref: f.ref, at: S.time + CONFIG.respawnSeconds });
     }
+  }
+}
+// ---- swallowed things come back: CONFIG.respawnSeconds after they went down, on their own spot, once no hole is
+// over it (checked every second), growing in with a little pop (at once with less motion). The delay is the same for
+// everything, so RESP stays in time order and only its front is looked at; things waiting for a hole to move on go to
+// WAITQ. GROWQ holds the ones growing in. ----
+const RESP = [], WAITQ = [], GROWQ = []; let respHead = 0;
+const thingXZ = q => (q.kind === 0 ? [OX[q.ref], OZ[q.ref]] : [q.ref.x, q.ref.z]);
+function spotFree(q) {
+  const [x, z] = thingXZ(q), s = TYPES[q.kind === 0 ? OT[q.ref] : q.ref.t].s;
+  for (const h of holes) { if (!h.alive) continue; const d = h.r + s + 1.5, dx = x - h.x, dz = z - h.z; if (dx * dx + dz * dz < d * d) return false; }
+  return true;
+}
+function comeBack(q) {
+  if (q.kind === 0) { OST[q.ref] = 0; OWOB[q.ref] = 0; } else q.ref.state = 0;
+  q.t = reduced() ? 1 : 0; GROWQ.push(q); growStep(q, 0);
+}
+function growStep(q, dt) {
+  q.t = Math.min(1, q.t + dt / 0.5);
+  const u = q.t, e = u >= 1 ? 1 : Math.max(0.02, 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2));   // ease out with a small overshoot
+  if (q.kind === 0) setMatrix(q.ref, composeAt(q.ref, OX[q.ref], 0, OZ[q.ref], ORT[q.ref], 0, 0, 0, OSC[q.ref] * e));
+  else { q.ref.st.plain.setMatrixAt(q.ref.idx, moverMatrix(q.ref, 0, e)); q.ref.st.dirty = true; }
+}
+function updateRespawns(dt) {
+  while (respHead < RESP.length && RESP[respHead].at <= S.time) { const q = RESP[respHead++]; if (spotFree(q)) comeBack(q); else { q.at = S.time + 1; WAITQ.push(q); } }
+  if (respHead > 512 && respHead * 2 > RESP.length) { RESP.splice(0, respHead); respHead = 0; }
+  for (let k = WAITQ.length - 1; k >= 0; k--) { const q = WAITQ[k]; if (q.at > S.time) continue; WAITQ[k] = WAITQ[WAITQ.length - 1]; WAITQ.pop(); if (spotFree(q)) comeBack(q); else { q.at = S.time + 1; WAITQ.push(q); } }
+  for (let k = GROWQ.length - 1; k >= 0; k--) {
+    const q = GROWQ[k], gone = q.kind === 0 ? OST[q.ref] !== 0 : q.ref.state !== 0;   // swallowed again while growing in
+    if (!gone) growStep(q, dt);
+    if (gone || q.t >= 1) { GROWQ[k] = GROWQ[GROWQ.length - 1]; GROWQ.pop(); }
   }
 }
 function grow(h, s, mul = 1) { const slow = 1 / (1 + Math.pow(h.rT / CONFIG.slowAt, CONFIG.slowPow)); h.rT = Math.min(CONFIG.maxSize, Math.sqrt(h.rT * h.rT + CONFIG.growth * s * s * h.gmul * mul * slow)); }
@@ -1054,7 +1166,7 @@ const SCREENS = ['titleScreen', 'howScreen', 'setScreen', 'pauseScreen', 'gulpSc
 const show = id => { for (const s of SCREENS) $(s).hidden = s !== id; };
 function setPlayingUI(on) { $('hud').hidden = !on; $('side').hidden = !on; $('mapBox').hidden = !on; document.body.classList.toggle('playing', on); if (!on) { $('stickBase').style.display = 'none'; stick.id = null; } }
 function resetWorld() {
-  standAll(); resetTraffic(); FALL.length = 0;
+  standAll(); resetTraffic(); FALL.length = 0; RESP.length = 0; respHead = 0; WAITQ.length = 0; GROWQ.length = 0;
   for (let i = 0; i < PN; i++) { pLife[i] = 0; pPos[i * 3 + 1] = -999; }
 }
 function setupRivals(count, keepPlayer) {
@@ -1095,13 +1207,13 @@ function endGame() {
   if (S.screen !== 'play' && S.screen !== 'pause') return;
   const { rank, total } = rankOf(), stars = rank === 1 ? 3 : rank <= 3 ? 2 : 1;
   S.screen = 'end'; setPlayingUI(false);
-  const size = player.best * 2, pct = Math.min(100, S.points / TOTAL_PTS * 100);
+  const size = player.best * 2;
   if (S.points > S.best) S.best = S.points; if (size > S.bestSize) S.bestSize = size; saveBest();
   if (S.mode === 'round') BRB.gameOver({ won: rank === 1, score: S.points }); else BRB.score.submit(S.points, 'points');
   $('endTitle').textContent = S.mode === 'round' ? t('timeUp') : t('freeDone');
   $('endStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars); $('endStars').setAttribute('aria-label', t('stars', { n: stars })); $('endStars').hidden = S.mode !== 'round';
   $('endRank').textContent = rank === 1 ? t('winner') : t('rank', { rank, total });
-  $('endSize').textContent = t('endSize', { n: fmt1(size) }); $('endCity').textContent = t('endCity', { n: pct < 1 ? fmt1(pct) : Math.round(pct) });
+  $('endSize').textContent = t('endSize', { n: fmt1(size) }); $('endCity').textContent = t('endCity', { n: S.eaten });
   $('endPoints').textContent = t('endPoints', { score: S.points, best: S.best });
   show('endScreen'); BRB.sfx.play(rank === 1 ? 'win' : 'lose'); if (rank === 1 && S.mode === 'round') BRB.fx.confetti();
   say($('endTitle').textContent + ' ' + $('endRank').textContent);
@@ -1181,7 +1293,7 @@ function step(dt) {
       h.r += (h.rT - h.r) * Math.min(1, dt * 5); h.best = Math.max(h.best, h.rT);
     }
     holeFights();
-    updateFalls(dt); updateWobble(dt); updateParticles(dt);
+    updateFalls(dt); updateRespawns(dt); updateWobble(dt); updateParticles(dt);
     if (playing) { checkUnlocks(); S.uiT -= dt; if (S.uiT <= 0) { S.uiT = 0.2; hud(); } S.mapT -= dt; if (S.mapT <= 0) { S.mapT = 0.25; drawMap(); } }
   }
   S.tipCool -= dt;
@@ -1266,9 +1378,11 @@ $('soundBtn').onclick = () => { BRB.sfx.mute(); soundIcon(); audioOn(); };
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 
 /* ---------- go ---------- */
+await tick(0.95);
 staticTexts(); soundIcon(); toTitle();
 renderer.setAnimationLoop(frame);
 S.ready = true;
+window.__gulpReady();
 
 /* ---------- test hook (the platform's playtests, the layout checks and the cover picture) ---------- */
 function nearest(test) {

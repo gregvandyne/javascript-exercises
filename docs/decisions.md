@@ -2096,6 +2096,19 @@ expansive map) and asked for it rebuilt as an official game. `seed-games/gulp-ci
 - **Tests:** `tests/unit/gulp-city.test.js` (scan, words in every language, swallowing, big things waiting, rivals,
   the clock, free roam, draw budget, Arabic); `scripts/games-fit-audit.js` covers it at the 5 sizes; a screenshot cover
   (`scripts/covers.js`).
+- **Loading (3 Nov):** on an iPhone the title card showed with no words, because every word was filled in only after
+  Three.js had downloaded and the whole city was built. The words now come from the plain script before the 3D part;
+  Play and Free roam wait (disabled) with a "Building the city…" bar the build moves on, and the build runs in slices
+  with a breath between them (top-level `await`), so the bar moves and the phone never sees one long frozen task. If
+  the 3D part can't start (no import maps, a failed download, no WebGL, the picture lost while building, an error, or
+  no progress for a long time), a card in the player's language says so with Try again (`BRB.retry()`, new in the SDK:
+  the play page reloads the game). No automatic lower-quality retry: the city is a fixed size and, measured on a CPU slowed 6x at
+  phone size, is ready in about 1.6 s; the pixel-ratio cap and the quality ladder already cover slow phones.
+- **Things come back (3 Nov):** a swallowed thing returns to its spot 10 s later (`CONFIG.respawnSeconds`), growing
+  in with a small pop (at once with less motion), and waits while any hole is over the spot; vehicles come back where
+  they were swallowed and drive on. Same delay for everything, so one time-ordered queue is enough. The results show
+  "Things swallowed: n" instead of a percentage of the city (which no longer means much). Autopilot balance after the
+  change: easy won, normal close (the player just ahead), hard the rivals ahead.
 
 ## The Builder playtests every build by itself (November 2026)
 

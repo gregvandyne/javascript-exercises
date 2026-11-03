@@ -968,6 +968,9 @@
     score: { submit: function (score, label) { var n = Math.floor(+score); if (!isFinite(n) || n < 0) return; send('brb:score', { score: n, label: String(label || '').slice(0, 40) }); } },
     gameOver: function (r) { r = r || {}; send('brb:gameover', { won: !!r.won, score: isFinite(+r.score) ? Math.floor(+r.score) : null }); if (r.score != null) BRB.score.submit(r.score); },
     fullscreen: function () { return askFullscreen(); },
+    // Start the game over from scratch (a "Try again" after the game could not start): the play page reloads it. Only
+    // after a tap (the page checks), so a game can never reload itself in a loop.
+    retry: function () { send('brb:retry'); },
     orientation: function (o) { send('brb:orientation', { value: String(o || 'any') }); },
     fx: fx,
     sfx: fx.sfx,
