@@ -56,6 +56,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.score.submit(score, label)` | Leaderboard entry (best score only, whole numbers ≥ 0). |
 | `BRB.gameOver({ won, score })` | Call at the end of each round (also submits the score). |
 | `BRB.fullscreen()` | Asks the page to go full screen. `element.requestFullscreen()` is routed here too. |
+| `BRB.retry()` | Asks the page to load the game again from scratch, for a "Try again" button when the game could not start (a reload from inside the frame would go without the sign-in). Works only right after a tap. |
 | `BRB.orientation('landscape')` | Tells the page the game wants landscape (it shows a "turn your phone" hint). |
 | `BRB.fx.confetti(opts?)` | Confetti burst (skipped when the player prefers reduced motion). |
 | `BRB.fx.shake(element, strength?)` | A short shake. |

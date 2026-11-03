@@ -22,7 +22,7 @@ const HOST = 'http://game.invalid';
 
 let browser;
 test.after(async () => { if (browser) await browser.close(); });
-async function open({ size = { width: 844, height: 390 }, lang = 'en' } = {}) {
+async function open({ size = { width: 844, height: 390 }, lang = 'en', block3 = false, early = null } = {}) {
   if (!browser) { const { chromium } = await import('playwright-core'); browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] }); }
   const ctx = await browser.newContext({ viewport: size });
   const doc = frameDocument(HTML, { user: { displayName: 'P', avatar: 'x', lang, dir: lang === 'ar' ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Gulp City' }, save: {}, canSave: false, preview: true, deviceText: { title: 'x', text: 'y' } });
@@ -33,6 +33,7 @@ async function open({ size = { width: 844, height: 390 }, lang = 'en' } = {}) {
     if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
     if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
     const m = /^http:\/\/game\.invalid\/vendor\/three\/([\d.]+)\/([\w.]+)$/.exec(u);
+    if (m && block3) return route.abort();
     if (m) return route.fulfill({ status: 200, headers: { 'content-type': 'text/javascript', 'access-control-allow-origin': '*' }, body: fs.readFileSync(path.join(ROOT, 'public/vendor/three', m[1], m[2])) });
     if (u.includes('/oomba-kit/')) kit.push(u);
     return route.abort();
@@ -41,8 +42,9 @@ async function open({ size = { width: 844, height: 390 }, lang = 'en' } = {}) {
   page.on('pageerror', e => errors.push(String(e.message)));
   await page.goto(HOST + '/', { waitUntil: 'load' });
   let frame = null;
-  for (let i = 0; i < 80 && !frame; i++) { frame = page.frames().find(f => f.url() === HOST + '/frame'); if (!frame) await page.waitForTimeout(100); }
-  await frame.waitForFunction(() => window.__brbTest && window.__brbTest.state().ready, null, { timeout: 60_000 });
+  for (let i = 0; i < 200 && !frame; i++) { frame = page.frames().find(f => f.url() === HOST + '/frame'); if (!frame) await page.waitForTimeout(25); }
+  if (early) await early(frame);
+  await frame.waitForFunction(() => window.__brbTest && (window.__brbTest.state().ready || window.__brbTest.state().failed), null, { timeout: 60_000 });
   return { ctx, page, frame, errors, kit };
 }
 const T = (frame, fn, ...a) => frame.evaluate(([f, a]) => window.__brbTest[f](...a), [fn, a]);
@@ -162,6 +164,61 @@ test('gulp-city: Arabic reads right to left with its own words', { skip, timeout
     assert.equal(r.dir, 'rtl');
     assert.match(r.tag, /ثقب أسود/);
     assert.match(r.play, /العب/);
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+const card = frame => frame.evaluate(() => {
+  const $ = id => document.getElementById(id);
+  return { title: $('titleText').textContent, tag: $('tagText').textContent, play: $('playBtn').textContent, playOff: $('playBtn').disabled, freeOff: $('freeBtn').disabled,
+    diff: [...document.querySelectorAll('#diffSeg button')].map(b => b.textContent), how: $('howBtn').textContent, load: !$('loadRow').hidden,
+    fail: !$('failScreen').hidden, title2: !$('titleScreen').hidden, failTitle: $('failTitle').textContent, retry: $('failBtn').textContent };
+});
+
+test('gulp-city: the title card has its words before the 3D part runs, Play waits for the city, and a failed start says so', { skip, timeout: 120_000 }, async () => {
+  // Three.js never arrives: the words are there anyway, and a "couldn't start" card with Try again replaces the title.
+  let first = null;
+  const a = await open({ block3: true, size: { width: 390, height: 844 }, early: async f => { await f.waitForFunction(() => document.getElementById('titleText').textContent); first = await card(f); } });
+  try {
+    assert.equal(first.title, 'Gulp City'); assert.match(first.tag, /black hole/); assert.match(first.play, /Play/);
+    assert.deepEqual(first.diff, ['Easy', 'Normal', 'Hard']); assert.equal(first.how, 'How to play');
+    assert.equal(first.playOff, true, 'Play waits for the city'); assert.equal(first.freeOff, true);
+    await a.frame.waitForFunction(() => window.__brbTest.state().failed, null, { timeout: 30_000 });
+    const c = await card(a.frame);
+    assert.equal(c.fail, true); assert.equal(c.title2, false);
+    assert.match(c.failTitle, /couldn.t start/); assert.equal(c.retry, 'Try again');
+  } finally { await a.ctx.close(); }
+  // The city gets built: the progress row goes, the buttons work.
+  const b = await open({ size: { width: 390, height: 844 } });
+  try {
+    const c = await card(b.frame);
+    assert.equal(c.load, false); assert.equal(c.playOff, false); assert.equal(c.freeOff, false); assert.equal(c.fail, false);
+    assert.deepEqual(b.errors, []);
+  } finally { await b.ctx.close(); }
+});
+
+test('gulp-city: swallowed things come back after about 10 s, but never under a hole', { skip, timeout: 120_000 }, async () => {
+  const { ctx, frame, errors } = await open();
+  try {
+    await T(frame, 'start', { mode: 'free', seed: 21 }); await T(frame, 'freezeRivals', true); await T(frame, 'setGrace', 999);
+    const n = await T(frame, 'nearest', { maxS: 0.5 });
+    await T(frame, 'teleport', n.x, n.z); await T(frame, 'sim', 1.2);
+    assert.equal((await T(frame, 'objectState', n.i)).st, 2, `the ${n.type} was swallowed`);
+    // move well away: it is still gone a few seconds later, and back after about 10 s
+    await T(frame, 'teleport', n.x + 120, n.z + 120); await T(frame, 'sim', 6);
+    assert.equal((await T(frame, 'objectState', n.i)).st, 2, 'not back yet');
+    await T(frame, 'sim', 5);
+    assert.equal((await T(frame, 'objectState', n.i)).st, 0, 'back on its spot');
+    // swallowed again, with the hole staying on the spot: it waits until the hole has gone
+    await T(frame, 'teleport', n.x, n.z); await T(frame, 'sim', 1.2);
+    assert.equal((await T(frame, 'objectState', n.i)).st, 2);
+    await T(frame, 'sim', 13);
+    assert.equal((await T(frame, 'objectState', n.i)).st, 2, 'never comes back inside a hole');
+    await T(frame, 'teleport', n.x + 120, n.z + 120); await T(frame, 'sim', 1.5);
+    assert.equal((await T(frame, 'objectState', n.i)).st, 0, 'back once the hole has moved on');
+    // the results count the things swallowed
+    await T(frame, 'finish');
+    assert.match(await frame.evaluate(() => document.getElementById('endCity').textContent), /Things swallowed: \d+/);
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });
