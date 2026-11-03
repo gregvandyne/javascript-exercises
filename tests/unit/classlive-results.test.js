@@ -48,7 +48,10 @@ test('a saved class run keeps cat and secs per question; the summary and the mis
   assert.ok(missed.ok && missed.items.length === 3);
   assert.equal(missed.items.find(it => it.q === items[0].q).cat, '1B-AP-10');
   assert.ok(!('cat' in missed.items.find(it => it.q === items[2].q)));
-  assert.deepEqual(R.asItem(saved[2]), { q: 'No category here', choices: ['yes', 'no'], answer: 0, secs: 10 });
+  // (choices were shuffled once when the question opened: compare by the right answer's text, not its slot)
+  const plain = R.asItem(saved[2]);
+  assert.deepEqual(Object.keys(plain).sort(), ['answer', 'choices', 'q', 'secs']);
+  assert.equal(plain.choices[plain.answer], 'yes'); assert.equal(plain.secs, 10);
   for (const c of [h, a, b]) c.ws.close();
 });
 
