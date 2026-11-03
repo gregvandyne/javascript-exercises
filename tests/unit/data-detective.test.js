@@ -258,13 +258,14 @@ const HOST = 'http://game.invalid';
 const TYPES = { js: 'text/javascript', woff2: 'font/woff2', css: 'text/css', json: 'application/json' };
 let browser;
 test.after(async () => { if (browser) await browser.close(); });
-async function open({ size = { width: 844, height: 390 }, lang = 'en', params = null } = {}) {
+/** bar: the height of the play page's own bar above the frame (52 px on the site), so the frame is shorter than the viewport. */
+async function open({ size = { width: 844, height: 390 }, lang = 'en', params = null, bar = 0 } = {}) {
   if (!browser) { const { chromium } = await import('playwright-core'); browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] }); }
   const ctx = await browser.newContext({ viewport: size, reducedMotion: 'reduce' });
   const init = { user: { displayName: 'P', avatar: 'x', lang, dir: lang === 'ar' || lang === 'he' ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Data Detective' }, save: {}, canSave: false, preview: true };
   if (params) init.params = params;
   const doc = frameDocument(HTML, init);
-  const host = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
+  const host = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:calc(100% - ${bar}px);display:block}.bar{height:${bar}px;background:#222}</style>${bar ? '<div class=bar></div>' : ''}<iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
   const errors = [], kit = [];
   await ctx.route('**/*', route => {
     const u = route.request().url();
@@ -737,10 +738,12 @@ for (const [w, h] of [[390, 844], [1280, 800]]) for (const lang of ['en', 'ar'])
 }
 
 /* ---------- the five audit sizes on the densest screens, at 100% and 150% text ---------- */
-const SIZES = { 'phone-portrait': [390, 844], 'phone-landscape': [844, 390], 'tablet-portrait': [820, 1180], 'tablet-landscape': [1180, 820], desktop: [1280, 800] };
-test('data-detective: the densest screens fit all five audit sizes at 100% and 150% text: the 12-row clean-up table and its row card, the 20-run Game Balance table and bars, eight steppers, eight bars and pictographs, the percent comparison, the four-tile pick-two card, the keypad', { skip, timeout: 600_000 }, async () => {
-  for (const [name, [w, h]] of Object.entries(SIZES)) {
-    const { ctx, frame, errors } = await open({ size: { width: w, height: h } });
+// The five audit sizes, plus a phone on its side under the play page's 52 px bar: the frame is then only 338 px tall, the shortest a case ever gets.
+const SIZES = { 'phone-portrait': [390, 844], 'phone-landscape': [844, 390], 'phone-landscape under the play bar': [844, 390, 52], 'tablet-portrait': [820, 1180], 'tablet-landscape': [1180, 820], desktop: [1280, 800] };
+test('data-detective: the densest screens fit all five audit sizes (and a phone on its side under the play bar) at 100% and 150% text: the 12-row clean-up table and its row card, the 20-run Game Balance table and bars, eight steppers, eight bars and pictographs, the percent comparison, the four-tile pick-two card, the keypad, the Quest Card', { skip, timeout: 600_000 }, async () => {
+  for (const [name, [w, h, bar]] of Object.entries(SIZES)) {
+    const { ctx, frame, errors } = await open({ size: { width: w, height: h }, bar });
+    if (bar) assert.equal(await frame.evaluate(() => innerHeight), h - bar, 'the frame sits under the bar');
     try {
       await T(frame, 'skipAnimations');
       const dense = async tag => {
@@ -778,6 +781,9 @@ test('data-detective: the densest screens fit all five audit sizes at 100% and 1
         await T(frame, 'closeDialog');
         await T(frame, 'keypad');
         await fit(frame, `keypad ${name} ${tag}`);
+        await T(frame, 'closeDialog');
+        await T(frame, 'questCard');
+        await fit(frame, `quest card ${name} ${tag}`);
         await T(frame, 'closeDialog');
       };
       await dense('100%');
