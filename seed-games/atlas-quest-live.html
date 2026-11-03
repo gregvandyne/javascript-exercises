@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Atlas Quest Live</title>
+<title>Atlas Quest (Live)</title>
 <style>
   :root { --ink: #1d2340; --card: #fffdf7; --sea: #9fd8ff; --muted: rgba(29,35,64,.7); --go: #ffc83d; }
   html.dark { --ink: #f4f1e6; --card: #262a48; --sea: #1f3d63; --muted: rgba(244,241,230,.75); }
-  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); color: var(--ink); background: var(--sea); }
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); color: var(--ink); background: var(--sea); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  button { touch-action: manipulation; }
+  .al-board, .al-end { touch-action: pan-y; }
   [hidden] { display: none !important; }
   .al { position: fixed; inset: 0; display: flex; flex-direction: column; gap: clamp(4px, 1vh, 10px); padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); box-sizing: border-box; }
   .al-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; min-height: 34px; }
@@ -18,6 +20,10 @@
   .al-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(14px, 2.6vh, 22px); }
   .al-q { flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 12px; background: var(--card); border: 4px solid var(--ink); border-radius: 22px; box-shadow: 0 5px 0 var(--ink); padding: clamp(6px, 1.2vh, 12px) 16px; max-width: 1100px; width: 100%; margin: 0 auto; box-sizing: border-box; }
   .al-q img { height: clamp(40px, 9vh, 110px); width: auto; border-radius: 6px; border: 2px solid var(--ink); flex: none; }
+  .host .al-q img.big { height: clamp(90px, 24vh, 300px); border-width: 4px; border-radius: 10px; }
+  .al-pickbar { display: flex; align-items: center; gap: 8px; background: var(--card); border: 3px solid var(--ink); border-radius: 18px; padding: 4px 14px 4px 8px; box-shadow: 0 3px 0 var(--ink); font-weight: 900; font-size: clamp(14px, 2.2vh, 20px); max-width: 100%; min-width: 0; }
+  .al-pickbar img { height: 30px; width: auto; border-radius: 4px; border: 2px solid var(--ink); flex: none; }
+  .al-pickbar span { min-width: 0; overflow-wrap: anywhere; line-height: 1.2; }
   .al-q p { margin: 0; font-weight: 900; font-size: clamp(17px, min(4.2vw, 4.4vh), 44px); text-align: center; overflow-wrap: anywhere; line-height: 1.15; }
   .al-banner { margin: 0 auto; background: var(--ink); color: var(--card); border-radius: 16px; padding: 6px 16px; font-weight: 800; font-size: clamp(15px, min(3.8vw, 3.8vh), 30px); text-align: center; max-width: 92vw; flex-shrink: 0; overflow-wrap: anywhere; }
   .al-banner:empty { display: none; }
@@ -59,7 +65,7 @@
     <aside class="al-board" id="board" hidden><h2 id="boardh"></h2><ol id="rows"></ol><p id="more"></p></aside>
   </div>
   <section class="al-end" id="end" hidden><h2 id="endh"></h2><ol id="endrows"></ol><p class="al-note" id="endn"></p><button class="al-btn" id="again" type="button" hidden></button></section>
-  <div class="al-bottom" id="bottom"><p class="al-note" id="note" aria-live="polite"></p><button class="al-btn" id="lock" type="button" hidden></button></div>
+  <div class="al-bottom" id="bottom"><p class="al-note" id="note" aria-live="polite"></p><span class="al-pickbar" id="pickbar" hidden><img id="pickflag" alt="" hidden><span id="pickname"></span></span><button class="al-btn" id="lock" type="button" hidden></button></div>
 </div>
 <p class="al-sr" id="sr" aria-live="assertive"></p>
 <script>
@@ -99,6 +105,22 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     ar: { title: 'أطلس كويست', live: 'مباشرة', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'تأكيد', tap: 'المس البلد على الخريطة', locked: 'تم إرسال إجابتك! انظر إلى الشاشة الكبيرة.', wait: 'ننتظر أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', timeUp: 'انتهى الوقت!', right: 'صحيح! +{points}', close: 'قريب جدًا! +{points}', wrong: 'ليس هذه المرة!', away: 'على بعد {km} كم', was: 'كان البلد: {name}', top: 'أفضل خمسة', more: 'وأجاب {n} آخرون', podium: 'الفائزون', place: 'جئت في المركز {rank} من {count}!', practice: 'جولة تدريب: جد البلدان!', host: 'العبها مباشرة مع صفك لتلعبوا معًا.', score: '⭐ {n}', again: 'العب مرة أخرى', zin: 'تكبير', zout: 'تصغير', zfit: 'الخريطة كلها', map: 'خريطة العالم', nobody: 'لم يجب أحد', find: 'جد {name}', picked: 'اختيارك' },
     he: { title: 'אטלס קווסט', live: 'בשידור חי', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'אישור', tap: 'געו במדינה במפה', locked: 'התשובה נשלחה! הסתכלו על המסך הגדול.', wait: 'מחכים שהמנחה יתחיל…', ready: 'היכון!', go: 'יוצאים!', timeUp: 'נגמר הזמן!', right: 'נכון! +{points}', close: 'כמעט! +{points}', wrong: 'לא הפעם!', away: 'במרחק {km} ק״מ', was: 'זו הייתה {name}', top: 'חמשת הראשונים', more: 'ועוד {n} ענו', podium: 'המנצחים', place: 'הגעת למקום {rank} מתוך {count}!', practice: 'סבב אימון: מצאו את המדינות!', host: 'שחקו בשידור חי עם הכיתה כדי לשחק יחד.', score: '⭐ {n}', again: 'שחקו שוב', zin: 'הגדלה', zout: 'הקטנה', zfit: 'כל המפה', map: 'מפת העולם', nobody: 'אף אחד לא ענה', find: 'מצאו את {name}', picked: 'הבחירה שלך' }
   };
+  // Newer words: a flag question on a phone (the flag is on the big screen only), the picked-country bar, the answer.
+  var MORE = {
+    en: { flagBoard: 'Look at the flag on the big screen, then tap its country', picked2: 'Selected: Lock in, or tap another country', mine: 'Your answer: {name}' },
+    es: { flagBoard: 'Mira la bandera en la pantalla grande y toca su país', picked2: 'Seleccionado: confirma o toca otro país', mine: 'Tu respuesta: {name}' },
+    fr: { flagBoard: 'Regarde le drapeau sur le grand écran, puis touche son pays', picked2: 'Sélectionné : valide ou touche un autre pays', mine: 'Ta réponse : {name}' },
+    de: { flagBoard: 'Schau dir die Flagge auf dem großen Bildschirm an und tippe auf ihr Land', picked2: 'Ausgewählt: festlegen oder ein anderes Land antippen', mine: 'Deine Antwort: {name}' },
+    it: { flagBoard: 'Guarda la bandiera sul grande schermo, poi tocca il suo paese', picked2: 'Selezionato: conferma o tocca un altro paese', mine: 'La tua risposta: {name}' },
+    pt: { flagBoard: 'Olhe a bandeira na tela grande e toque no país dela', picked2: 'Selecionado: confirme ou toque em outro país', mine: 'Sua resposta: {name}' },
+    nl: { flagBoard: 'Kijk naar de vlag op het grote scherm en tik op het land', picked2: 'Gekozen: zet vast of tik op een ander land', mine: 'Jouw antwoord: {name}' },
+    ru: { flagBoard: 'Посмотри на флаг на большом экране и нажми на его страну', picked2: 'Выбрано: подтверди или нажми другую страну', mine: 'Твой ответ: {name}' },
+    ja: { flagBoard: 'おおきな がめんの はたを みて、その くにを タップしよう', picked2: 'えらんだよ。けってい するか、ほかの くにを タップしてね', mine: 'きみの こたえ：{name}' },
+    'zh-Hant': { flagBoard: '看大螢幕上的國旗，再點它的國家', picked2: '已選好：按確定，或點其他國家', mine: '你的答案：{name}' },
+    ar: { flagBoard: 'انظر إلى العلم على الشاشة الكبيرة، ثم المس بلده', picked2: 'تم الاختيار: أكّد أو المس بلدًا آخر', mine: 'إجابتك: {name}' },
+    he: { flagBoard: 'הסתכלו על הדגל במסך הגדול, ואז געו בארץ שלו', picked2: 'נבחר: אשרו או געו בארץ אחרת', mine: 'התשובה שלך: {name}' },
+  };
+  Object.keys(MORE).forEach(function (k) { STR[k] = Object.assign(STR[k] || {}, MORE[k]); });
   STR['en-GB'] = STR.en;
   var LANG = (O.lang || 'en'), W = STR[LANG] || STR[LANG.split('-')[0]] || STR.en;
   function t(k, v) { var s = W[k] != null ? W[k] : STR.en[k]; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
@@ -131,6 +153,14 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     rings.forEach(function (r) { for (var i = 0; i < r.length; i += 2) { x0 = Math.min(x0, r[i]); x1 = Math.max(x1, r[i]); y0 = Math.min(y0, r[i + 1]); y1 = Math.max(y1, r[i + 1]); if (i === 0) path.moveTo(r[i], -r[i + 1]); else path.lineTo(r[i], -r[i + 1]); } path.closePath(); });
     SH[k] = { rings: rings, box: [x0, y0, x1, y1], path: path, shifts: [0].concat(x1 > 180 ? [-360] : [], x0 < -180 ? [360] : []) };
   });
+  var FLAGIM = {};
+  var flagSrc = function (cc) { var d = AL.FLAG[cc]; return !d ? '' : d.indexOf('data:') === 0 ? d : 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(d); };
+  function flagIm(cc) {
+    if (!AL.FLAG[cc]) return null;
+    var f = FLAGIM[cc];
+    if (!f) { f = FLAGIM[cc] = new Image(); f.onload = function () { dirty = true; }; f.src = flagSrc(cc); }
+    return f.complete && f.naturalWidth ? f : null;
+  }
   var TINY = {};
   C.forEach(function (c) { var s = SH[c[0]]; if (!s || (s.box[2] - s.box[0] < 1.6 && s.box[3] - s.box[1] < 1.6) || c[5] < 3) TINY[c[0]] = true; });
   function countryAt(lat, lng) {
@@ -196,15 +226,25 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
       else if (i != null && i === state.pick) fill = P.pick;
       ctx.fillStyle = fill; ctx.fill(SH[k].path); ctx.stroke(SH[k].path);
     });
+    // the answer filled with its flag (as in Atlas Quest), then strong outlines: the answer green, the pick dark, or red
+    if (state.answer >= 0) flagFill(state.answer);
+    [[state.pick, state.answer >= 0 ? (state.pick === state.answer ? P.right : P.wrong) : P.ink], [state.answer, P.right]].forEach(function (o) {
+      var i = o[0]; if (i == null || i < 0) return; var sh = SH[C[i][0]]; if (!sh || TINY[C[i][0]]) return;
+      ctx.lineWidth = 4 / view.k; ctx.strokeStyle = o[1]; ctx.stroke(sh.path);
+    });
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // tiny countries: dots you can tap
-    var r = Math.max(4, Math.min(9, view.k * 0.9));
+    // tiny countries: dots you can tap (the answer's dot shows its flag)
+    var r = dotR();
     C.forEach(function (c, i) {
       if (!TINY[c[0]]) return;
       var s = toScreen(c[3], c[2]); if (s[0] < -10 || s[1] < -10 || s[0] > W0 + 10 || s[1] > H0 + 10) return;
-      ctx.beginPath(); ctx.arc(s[0], s[1], r, 0, Math.PI * 2);
+      var big = i === state.answer || i === state.pick, rr = big ? r * 1.6 : r;
+      ctx.beginPath(); ctx.arc(s[0], s[1], rr, 0, Math.PI * 2);
       ctx.fillStyle = i === state.answer ? P.right : i === state.pick ? (state.answer >= 0 ? P.wrong : P.pick) : (state.region !== 'world' && c[4] !== state.region ? P.dim : P.land);
-      ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = P.edge; ctx.stroke();
+      ctx.fill();
+      var im = i === state.answer ? flagIm(c[0]) : null;
+      if (im) { ctx.save(); ctx.clip(); ctx.drawImage(im, s[0] - rr * 1.4, s[1] - rr, rr * 2.8, rr * 2); ctx.restore(); ctx.beginPath(); ctx.arc(s[0], s[1], rr, 0, Math.PI * 2); }
+      ctx.lineWidth = big ? 3 : 1.5; ctx.strokeStyle = big ? (i === state.answer ? P.right : state.answer >= 0 ? P.wrong : P.ink) : P.edge; ctx.stroke();
     });
     // the reveal on the projector: a bubble on every country someone tapped (bigger = more), the right one green
     if (state.counts && host) {
@@ -220,48 +260,95 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     if (state.answer >= 0) { label(state.answer, P.right); if (state.pick >= 0 && state.pick !== state.answer) label(state.pick, P.wrong); }
   }
   var FONT = getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+  function dotR() { return Math.max(5, Math.min(10, view.k * 0.9)); }
+  /** Atlas Quest's flag fill: the flag inside the country's shape, covering its box (stretched no more than 2:1). */
+  function flagFill(i) {
+    var cc = C[i][0], sh = SH[cc], im = flagIm(cc); if (!sh || !im || TINY[cc]) return;
+    var b = sh.box, A = im.naturalWidth / im.naturalHeight || 1.5;
+    ctx.save(); ctx.clip(sh.path);
+    sh.shifts.forEach(function (d) {
+      var w = b[2] - b[0], h = b[3] - b[1], fw = w, fh = h;
+      if (w / h > A) fh = Math.max(h, w / (A * 2)); else fw = Math.max(w, h * A / 2);
+      var cx = (b[0] + b[2]) / 2 + d, cy = -(b[1] + b[3]) / 2;
+      ctx.drawImage(im, cx - fw * 0.52, cy - fh * 0.52, fw * 1.04, fh * 1.04);
+    });
+    ctx.restore();
+  }
   function label(i, col) {
-    var c = C[i], s = toScreen(c[3], c[2]), txt = name(c[0]);
+    var c = C[i], s = toScreen(c[3], c[2]), txt = name(c[0]), im = flagIm(c[0]);
     ctx.font = '900 ' + (host ? 22 : 16) + 'px ' + FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-    var w = ctx.measureText(txt).width + 18, h = host ? 32 : 26, x = Math.max(w / 2 + 4, Math.min(W0 - w / 2 - 4, s[0])), y = Math.max(h + 4, s[1] - (host ? 34 : 14));
+    var h = host ? 36 : 28, fh = h - 10, fw = im ? Math.round(fh * im.naturalWidth / im.naturalHeight) : 0, tw = ctx.measureText(txt).width;
+    var w = tw + 18 + (fw ? fw + 8 : 0), x = Math.max(w / 2 + 4, Math.min(W0 - w / 2 - 4, s[0])), y = Math.max(h + 4, s[1] - (host ? 34 : 14));
     ctx.fillStyle = col; ctx.strokeStyle = '#1d2340'; ctx.lineWidth = 3;
     ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x - w / 2, y - h, w, h, 10); else ctx.rect(x - w / 2, y - h, w, h); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#fff'; ctx.fillText(txt, x, y - 5);
+    if (fw) { ctx.drawImage(im, x - w / 2 + 9, y - h + 5, fw, fh); ctx.lineWidth = 1.5; ctx.strokeRect(x - w / 2 + 9, y - h + 5, fw, fh); }
+    ctx.fillStyle = '#fff'; ctx.fillText(txt, x + (fw ? (fw + 8) / 2 : 0), y - (host ? 7 : 6));
   }
   function loop() { if (dirty) draw(); requestAnimationFrame(loop); }
-  // gestures
-  var ptrs = new Map(), gest = null;
+  // gestures (pointer events: touch, pen and mouse). Positions come from clientX/Y and the canvas's own box, so they
+  // match the drawing at any devicePixelRatio, page zoom or frame size. A touch that stays within SLOP px is a tap at the
+  // spot it went down (a little finger wobble never turns it into a pan); past SLOP it pans. Two fingers pinch and pan.
+  var ptrs = new Map(), gest = null, SLOP = 12, fling = 0, lastTap = { t: 0, x: 0, y: 0 };
+  function pos(e) { var r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (W0 / (r.width || W0)), y: (e.clientY - r.top) * (H0 / (r.height || H0)) }; }
+  var onZoom = function (e) { return e.target && e.target.closest && e.target.closest('#zoom'); };
+  box.addEventListener('touchstart', function (e) { if (!onZoom(e)) e.preventDefault(); }, { passive: false });
+  box.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
   box.addEventListener('pointerdown', function (e) {
-    if (host) return; box.setPointerCapture && box.setPointerCapture(e.pointerId);
-    ptrs.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
-    gest = { moved: 0, t: performance.now(), start: snapshot() };
+    if (host || onZoom(e)) return;
+    cancelAnimationFrame(fling); fling = 0;
+    try { box.setPointerCapture(e.pointerId); } catch (x) { /* fine */ }
+    var p = pos(e); ptrs.set(e.pointerId, p);
+    if (ptrs.size === 1) gest = { sx: p.x, sy: p.y, t: performance.now(), panning: false, multi: false, vx: 0, vy: 0, lt: performance.now() };
+    else if (gest) { gest.multi = true; gest.panning = true; }
   });
   box.addEventListener('pointermove', function (e) {
     if (host || !ptrs.has(e.pointerId)) return;
-    var prev = ptrs.get(e.pointerId), now = { x: e.offsetX, y: e.offsetY };
-    if (ptrs.size === 1) { view.cx -= (now.x - prev.x) / view.k; view.cy -= (now.y - prev.y) / view.k; if (gest) gest.moved += Math.abs(now.x - prev.x) + Math.abs(now.y - prev.y); }
-    else if (ptrs.size === 2) {
+    var prev = ptrs.get(e.pointerId), now = pos(e);
+    ptrs.set(e.pointerId, now);
+    if (!gest) return;
+    if (ptrs.size === 1) {
+      if (!gest.panning && Math.hypot(now.x - gest.sx, now.y - gest.sy) <= SLOP) return;
+      if (!gest.panning) { gest.panning = true; prev = { x: gest.sx, y: gest.sy }; }
+      var dx = now.x - prev.x, dy = now.y - prev.y, tn = performance.now(), dt = Math.max(1, tn - gest.lt);
+      view.cx -= dx / view.k; view.cy -= dy / view.k;
+      gest.vx = gest.vx * 0.6 + (dx / dt) * 0.4; gest.vy = gest.vy * 0.6 + (dy / dt) * 0.4; gest.lt = tn;
+    } else if (ptrs.size === 2) {
       var other = Array.from(ptrs.entries()).find(function (x) { return x[0] !== e.pointerId; })[1];
       var d0 = Math.hypot(prev.x - other.x, prev.y - other.y), d1 = Math.hypot(now.x - other.x, now.y - other.y);
-      if (d0 > 10) zoomAt((now.x + other.x) / 2, (now.y + other.y) / 2, d1 / d0);
-      if (gest) gest.moved += 99;
+      var m0 = { x: (prev.x + other.x) / 2, y: (prev.y + other.y) / 2 }, m1 = { x: (now.x + other.x) / 2, y: (now.y + other.y) / 2 };
+      if (d0 > 10) zoomAt(m0.x, m0.y, d1 / d0);
+      view.cx -= (m1.x - m0.x) / view.k; view.cy -= (m1.y - m0.y) / view.k;
+      gest.vx = gest.vy = 0;
     }
-    ptrs.set(e.pointerId, now); clampView(); dirty = true;
+    clampView(); dirty = true;
   });
-  var lastTap = 0;
   function up(e) {
     if (host || !ptrs.has(e.pointerId)) return;
     ptrs.delete(e.pointerId);
     if (ptrs.size || !gest) return;
     var g = gest; gest = null;
-    if (g.moved < 10 && performance.now() - g.t < 600) {
+    if (e.type === 'pointercancel') return;
+    if (!g.panning && !g.multi) {
       var nowT = performance.now();
-      if (nowT - lastTap < 300) { zoomAt(e.offsetX, e.offsetY, 2); lastTap = 0; return; }
-      lastTap = nowT; tapAt(e.offsetX, e.offsetY);
+      // a second tap on the same spot zooms in there (the pick stays); any other tap picks
+      if (nowT - lastTap.t < 350 && Math.hypot(g.sx - lastTap.x, g.sy - lastTap.y) < 30) { zoomAt(g.sx, g.sy, 2); lastTap.t = 0; return; }
+      lastTap = { t: nowT, x: g.sx, y: g.sy }; tapAt(g.sx, g.sy); return;
+    }
+    // a flick keeps gliding a little
+    var vx = g.vx, vy = g.vy;
+    if (!g.multi && Math.hypot(vx, vy) > 0.25 && performance.now() - g.lt < 80) {
+      var last = performance.now();
+      var glide = function () {
+        var tn = performance.now(), dt = Math.min(40, tn - last); last = tn;
+        view.cx -= vx * dt / view.k; view.cy -= vy * dt / view.k; vx *= Math.pow(0.94, dt / 16); vy *= Math.pow(0.94, dt / 16);
+        clampView(); dirty = true;
+        fling = Math.hypot(vx, vy) > 0.02 ? requestAnimationFrame(glide) : 0;
+      };
+      fling = requestAnimationFrame(glide);
     }
   }
   box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
-  box.addEventListener('wheel', function (e) { if (host) return; e.preventDefault(); zoomAt(e.offsetX, e.offsetY, e.deltaY < 0 ? 1.25 : 0.8); }, { passive: false });
+  box.addEventListener('wheel', function (e) { if (host) return; e.preventDefault(); var p = pos(e); zoomAt(p.x, p.y, e.deltaY < 0 ? 1.25 : 0.8); }, { passive: false });
   function snapshot() { return { cx: view.cx, cy: view.cy, k: view.k }; }
   function zoomAt(x, y, f) { var m = toMap(x, y); view.k = Math.max(minK(), Math.min(60, view.k * f)); view.cx = m[0] - (x - W0 / 2) / view.k; view.cy = -m[1] - (y - H0 / 2) / view.k; clampView(); dirty = true; }
   $('zin').addEventListener('click', function () { zoomAt(W0 / 2, H0 / 2, 1.6); });
@@ -269,14 +356,50 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   $('zfit').addEventListener('click', function () { fit(REGION_BOX[state.region] || REGION_BOX.world); });
   $('zin').setAttribute('aria-label', t('zin')); $('zout').setAttribute('aria-label', t('zout')); $('zfit').setAttribute('aria-label', t('zfit'));
   cv.setAttribute('aria-label', t('map'));
+  var TOUCH = 24;
+  /** The country at screen point (x, y), or -1: a tiny country's dot under the finger, else the shape under it (the same
+   *  shapes that are drawn), else the nearest shape edge or dot within TOUCH px (the sea, a border, a small island). */
+  function pickAt(x, y) {
+    var r = dotR(), best = -1, bd = r + 6;
+    C.forEach(function (c, i) { if (!TINY[c[0]]) return; var s = toScreen(c[3], c[2]), d = Math.hypot(s[0] - x, s[1] - y); if (d < bd) { bd = d; best = i; } });
+    if (best >= 0) return best;
+    var m = toMap(x, y), hit = countryAt(m[1], m[0]);
+    if (hit >= 0) return hit;
+    var lim = TOUCH / view.k; bd = TOUCH;
+    C.forEach(function (c, i) {
+      if (TINY[c[0]]) { var s = toScreen(c[3], c[2]), d = Math.hypot(s[0] - x, s[1] - y) - r; if (d < bd) { bd = d; best = i; } return; }
+      var sh = SH[c[0]]; if (!sh) return;
+      for (var q = 0; q < sh.shifts.length; q++) {
+        var lx = m[0] - sh.shifts[q], ly = m[1], b = sh.box;
+        if (lx < b[0] - lim || lx > b[2] + lim || ly < b[1] - lim || ly > b[3] + lim) continue;
+        for (var rr = 0; rr < sh.rings.length; rr++) {
+          var R = sh.rings[rr];
+          for (var a = 0, j = R.length - 2; a < R.length; j = a, a += 2) {
+            var x1 = R[j], y1 = R[j + 1], ex = R[a] - x1, ey = R[a + 1] - y1, L2 = ex * ex + ey * ey;
+            var tt = L2 ? Math.max(0, Math.min(1, ((lx - x1) * ex + (ly - y1) * ey) / L2)) : 0, px = x1 + tt * ex - lx, py = y1 + tt * ey - ly;
+            var dd = Math.sqrt(px * px + py * py) * view.k;
+            if (dd < bd) { bd = dd; best = i; }
+          }
+        }
+      }
+    });
+    return best;
+  }
   function tapAt(x, y) {
     if (!Q || state.locked || state.answer >= 0) return;
-    // a tiny country's dot first (it is drawn on top), then the shapes
-    var best = -1, bd = 22;
-    C.forEach(function (c, i) { if (!TINY[c[0]]) return; var s = toScreen(c[3], c[2]), d = Math.hypot(s[0] - x, s[1] - y); if (d < bd) { bd = d; best = i; } });
-    if (best < 0) { var m = toMap(x, y); best = countryAt(m[1], m[0]); }
+    var best = pickAt(x, y);
     if (best < 0) return;
-    state.pick = best; dirty = true; $('lock').disabled = false; sfx('select'); buzz(10);
+    state.pick = best; dirty = true; $('lock').disabled = false; pickBar(); sfx('select'); buzz(10);
+  }
+  /** The bar beside Lock in: before locking it only says a country is picked (its name or flag would give the answer
+   *  away); once locked it shows the flag and the name. */
+  function pickBar() {
+    var on = !host && state.pick >= 0 && state.answer < 0;
+    $('pickbar').hidden = !on; if (!on) return;
+    var shown = state.locked, cc = C[state.pick][0];
+    $('pickflag').hidden = !shown; if (shown) $('pickflag').src = flagSrc(cc);
+    $('pickname').textContent = shown ? t('mine', { name: name(cc) }) : t('picked2');
+    $('note').hidden = true;
   }
 
   // ---- questions, answers, reveals -----------------------------------------------------------------------------------
@@ -287,6 +410,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not allowed */ } }
   var connected = function () { return L.players().filter(function (p) { return p.connected; }).length; };
   function atl(i) { var a = L.state && L.state.atl; return a && a.i === i ? a : null; }
+  function flagOf(i) { var a = L.state && L.state.atlf; return a && a.i === i && AL.FLAG[a.fl] ? a.fl : null; }
   function show(q, meta) {
     // the same question again (a resume, more time): keep the player's pick and the view
     var same = Q && Q.i === q.i && state.answer < 0;
@@ -296,16 +420,19 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     state.region = meta.reg || 'world';
     $('end').hidden = true; $('main').hidden = false; $('bottom').hidden = false;
     $('qcard').hidden = false; $('qtext').textContent = q.q;
-    var fl = meta.fl && AL.FLAG[meta.fl];
-    $('flag').hidden = !fl; if (fl) { $('flag').src = fl.indexOf('data:') === 0 ? fl : 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(fl); $('flag').alt = ''; }
+    // the flag of a flag question: on the projector only (its code never reaches a phone)
+    var flc = host ? flagOf(q.i) : null;
+    $('flag').hidden = !flc; $('flag').classList.toggle('big', !!flc); if (flc) { $('flag').src = flagSrc(flc); $('flag').alt = ''; }
+    if (!host && meta.k === 'flag') $('qtext').textContent = q.q + ' · ' + t('flagBoard');
     total = q.n || total;
     $('qnum').hidden = !total; $('qnum').textContent = t('qnum', { n: q.i + 1, total: total });
     banner(''); $('board').hidden = true;
     if (host) { $('count').hidden = false; $('count').textContent = t('answered', { n: 0, total: connected() }); $('note').textContent = ''; $('lock').hidden = true; }
-    else { $('lock').hidden = state.locked; $('lock').disabled = true; $('note').textContent = state.locked ? t('locked') : t('tap'); }
+    else { $('lock').hidden = state.locked; $('lock').disabled = true; $('note').hidden = false; $('note').textContent = state.locked ? t('locked') : t('tap'); }
     $('zoom').hidden = host;
     if (!same) fit(REGION_BOX[state.region] || REGION_BOX.world);
     if (!host && !state.locked && state.pick >= 0) $('lock').disabled = false;
+    pickBar();
     ring(q); if (!same) say(q.q);
   }
   function ring(q) {
@@ -322,7 +449,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   function lockIn() {
     if (host || !Q || state.locked || state.pick < 0) return;
     if (L.active) { if (!L.quiz.answer(state.pick)) return; } else practiceAnswer(state.pick);
-    state.locked = true; state.myPick = state.pick; $('lock').hidden = true; $('note').textContent = t('locked'); sfx('pop'); buzz(20);
+    state.locked = true; state.myPick = state.pick; $('lock').hidden = true; $('note').textContent = t('locked'); pickBar(); sfx('pop'); buzz(20);
   }
   $('lock').textContent = t('lock');
   $('lock').addEventListener('click', lockIn);
@@ -341,10 +468,11 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     fit(b, 0.35);
     var nm = name(C[r.answer][0]);
     banner(n || !host ? t('was', { name: nm }) : t('nobody'));
+    $('flag').hidden = false; $('flag').classList.toggle('big', host); $('flag').src = flagSrc(C[r.answer][0]); $('flag').alt = nm;
     if (host) { $('count').textContent = t('answered', { n: n, total: Math.max(n, connected()) }); topFive(r.top || [], n); }
     else if (state.pick >= 0 && state.pick !== r.answer && state.locked) $('note').textContent = t('away', { km: Math.round(km(state.pick, r.answer)) });
     else if (!state.locked) $('note').textContent = t('timeUp');
-    $('lock').hidden = true; dirty = true; sfx('spark'); say(t('was', { name: nm }));
+    $('lock').hidden = true; $('pickbar').hidden = true; $('note').hidden = false; dirty = true; flagIm(C[r.answer][0]); sfx('spark'); say(t('was', { name: nm }));
   }
   function result(m) {
     if (host) return;
@@ -384,7 +512,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   L.on('countdown', function (e) { var tick = function () { var left = Math.ceil((e.at - L.now()) / 1000); if (left > 0) { banner(String(left)); setTimeout(tick, 250); } else { if (!Q || phase !== 'playing') banner(t('go')); setTimeout(function () { if ($('banner').textContent === t('go')) banner(''); }, 900); } }; tick(); });
   L.on('question', function (q) { show(q); });
   // the flag or the region came after the question: show them (keeps the player's pick)
-  L.on('state', function () { if (!Q || state.answer >= 0) return; var a = atl(Q.i); if (a && ((a.fl && $('flag').hidden) || a.reg !== state.region)) show(Q, a); });
+  L.on('state', function () { if (!Q || state.answer >= 0) return; var a = atl(Q.i); if (a && ((host && flagOf(Q.i) && $('flag').hidden) || a.reg !== state.region)) show(Q, a); });
   L.on('answers', function (a) { if (host && Q && a.i === Q.i) $('count').textContent = t('answered', { n: a.n, total: Math.max(a.n, connected()) }); });
   L.on('reveal', function (r) { if (r.skipped) { clearInterval(ringTimer); return; } reveal(r); });
   L.on('result', result);
@@ -419,10 +547,12 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
 
   window.addEventListener('resize', function () { size(); if (Q && state.answer < 0) fit(REGION_BOX[state.region] || REGION_BOX.world); });
   size(); fit(REGION_BOX.world); requestAnimationFrame(loop);
-  $('title').textContent = t('title') + (L.active ? ' · ' + t('live') : '');
+  var titled = function () { return t('title') + (L.active ? ' (' + t('live') + ')' : ''); };
+  $('title').textContent = titled();
   document.title = t('title');
   L.ready({ quiz: true, hostView: true, words: [] });
-  loadNames(function () { $('title').textContent = t('title') + (L.active ? ' · ' + t('live') : ''); });
+  loadNames(function () { $('title').textContent = titled(); });
+  document.body.classList.toggle('host', host);
   if (!L.active) { $('zoom').hidden = false; L.on('start', function () { loadNames(startPractice); }); }
   else { $('zoom').hidden = host; if (phase === 'lobby') banner(host ? t('title') : t('wait')); }
   O.test({
@@ -437,6 +567,34 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   /** tests and the layout audit: answer with the k-th country of the list */
   window.__brbTest.answer = function (k) { if (window.__brbTest.pick(CODES[k | 0])) lockIn(); };
   window.__brbTest.tapAt = function (lat, lng) { var s = toScreen(lng, lat); tapAt(s[0], s[1]); return state.pick >= 0 ? CODES[state.pick] : null; };
+  /** tests: where (lat, lng) is on the page (client px); the country a point is inside (the hit-test's own shapes) */
+  window.__brbTest.clientOf = function (lat, lng) { var s = toScreen(lng, lat), r = cv.getBoundingClientRect(); return { x: r.left + s[0] * r.width / W0, y: r.top + s[1] * r.height / H0 }; };
+  window.__brbTest.inside = function (lat, lng) { var i = countryAt(lat, lng); return i >= 0 ? CODES[i] : null; };
+  /** tests: n random points well inside drawn shapes, in view, clear of tiny countries' dots and of borders by 3 px */
+  window.__brbTest.samples = function (n, seed) {
+    var out = [], x = seed || 7, rnd = function () { x = (x * 16807) % 2147483647; return x / 2147483647; }, tries = 0;
+    while (out.length < n && tries++ < n * 600) {
+      var c = C[Math.floor(rnd() * C.length)], sh = SH[c[0]]; if (!sh || TINY[c[0]]) continue;
+      var b = sh.box, lng = b[0] + rnd() * (b[2] - b[0]), lat = b[1] + rnd() * (b[3] - b[1]);
+      if (countryAt(lat, lng) !== IDX[c[0]]) continue;
+      var sc = toScreen(lng, lat); if (sc[0] < 6 || sc[1] < 6 || sc[0] > W0 - 64 || sc[1] > H0 - 6) continue;
+      if (C.some(function (d) { if (!TINY[d[0]]) return false; var p = toScreen(d[3], d[2]); return Math.hypot(p[0] - sc[0], p[1] - sc[1]) < dotR() + 9; })) continue;
+      var ok = [[3, 0], [-3, 0], [0, 3], [0, -3]].every(function (o) { var mm = toMap(sc[0] + o[0], sc[1] + o[1]); return countryAt(mm[1], mm[0]) === IDX[c[0]]; });
+      if (ok) out.push({ cc: c[0], lat: lat, lng: lng });
+    }
+    return out;
+  };
+  window.__brbTest.practice = function () { startPractice(); };
+  /** tests: a country's own point (its dot, or its label place) on the page, and a sea point px off its east coast */
+  window.__brbTest.centreOf = function (cc) { var c = C[IDX[cc]]; return window.__brbTest.clientOf(c[2], c[3]); };
+  window.__brbTest.offCoast = function (cc, px) {
+    var c = C[IDX[cc]], s = toScreen(c[3], c[2]), x = s[0];
+    while (x < W0 && pickInside(x, s[1]) === IDX[cc]) x += 1;
+    x += px; if (x >= W0 || pickInside(x, s[1]) >= 0) return null;
+    var r = cv.getBoundingClientRect(); return { x: r.left + x * r.width / W0, y: r.top + s[1] * r.height / H0 };
+  };
+  function pickInside(x, y) { var m = toMap(x, y); return countryAt(m[1], m[0]); }
+  window.__brbTest.fitTo = function (b) { fit(b, 0.05); };
 })();
 </script>
 </body>

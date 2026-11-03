@@ -2197,10 +2197,16 @@ two new built-in modes on the quiz machinery (the platform times, checks, scores
   an ordinary answer: the index of the country (the protocol's `an.c` now goes to 255; the quiz still checks it against
   the open question's choices, and a 2-4 choice question refuses anything else). The right country scores 500-1000 by
   speed plus the streak, like every quiz; a near miss scores 0-300 (under 2,000 km, a neighbour at least 150), never a
-  streak. The flag to show and the region the maps open on are shared state `atl` `{ i, k, reg, fl? }` (a flag
-  question's text never names the country; a determined child could read the code from the frame, like any client
-  game: acceptable for a class geography game). Phones get a 2D world map (pan, pinch, + / − / whole map) where a tap
-  picks a country and Lock in sends it; the name shows only at the reveal, so finding it on the map is the challenge.
+  streak. The region the maps open on is shared state `atl` `{ i, k, reg }`; a flag question's flag code goes to the
+  projector only (`atlf` `{ i, fl }`, kept out of `s.state` and of every phone's welcome), so the answer is never in a
+  phone's data: a phone says to look at the big screen. Phones get a 2D world map (pan with a glide, pinch, a second
+  tap on the same spot zooms, + / − / whole map). A tap is a touch that moved under 12 px (counted from where it went
+  down, so a wobbling finger still taps); it picks a tiny country's dot under the finger, else the drawn shape under
+  it, else the nearest shape edge or dot within 24 px. (Before, any tiny country's dot within 22 px won the tap, which on
+  a phone's world map took about a third of all land taps away from the country under the finger, and a wobble of 10 px
+  in total turned a tap into a pan.) Before Lock in the bar only says a country is picked (its name or flag would give
+  the answer away); once locked it shows the flag and name. At the reveal the right country fills with its flag, as in
+  Atlas Quest, and its label carries the flag. Titles say "(Live)" in parentheses.
   The projector shows one bubble per tapped country (size = how many) rather than a pin per player, so 30 or 60
   players stay readable, plus the top five and "and N more answered". Results keep a short version of each question
   (the right country and the most tapped wrong ones, by name).

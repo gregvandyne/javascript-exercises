@@ -4571,9 +4571,9 @@
       "battleText": "Perguntas na tela grande, respostas em cada aparelho e um placar depois de cada uma.",
       "board": "Tabuleiro Cérebro",
       "boardText": "Um tabuleiro de categorias: escolha uma casa e todos respondem. As casas maiores são mais difíceis e valem mais, e uma Estrela da sorte escondida dobra os pontos.",
-      "wyr": "O que você prefere? ao vivo",
+      "wyr": "O que você prefere? (Ao vivo)",
       "wyrText": "A turma vota em dilemas divertidos e vê como se divide, e o que todo mundo no Oomba escolheu. Sem respostas certas, sem pontos: só para conversar.",
-      "atlas": "Atlas Quest ao vivo",
+      "atlas": "Atlas Quest (Ao vivo)",
       "atlasText": "Todos tocam o país no seu próprio mapa-múndi: encontre o país, a bandeira, a capital ou aquilo pelo que é famoso. Chegar perto também vale um pouco."
     },
     "starter": {
@@ -5338,7 +5338,7 @@
       "bankHint": "Perguntas novas a cada partida, escritas para cada idade."
     },
     "wyrUi": {
-      "legend": "O que você prefere? ao vivo",
+      "legend": "O que você prefere? (Ao vivo)",
       "topics": "Temas",
       "topicsHint": "Deixe todos marcados para uma mistura.",
       "count": "Quantos dilemas",
@@ -5347,7 +5347,7 @@
       "hint": "Depois de cada votação a turma vê como se dividiu: um bom momento para perguntar a algumas crianças por que escolheram."
     },
     "atlasUi": {
-      "legend": "Atlas Quest ao vivo",
+      "legend": "Atlas Quest (Ao vivo)",
       "region": "Onde no mundo",
       "level": "Nível",
       "kinds": "Tipos de pergunta",
@@ -5464,11 +5464,11 @@
         "p": "Um tabuleiro de categorias na tela. Escolha uma casa (ou deixe quem acertar mais rápido escolher) e a pergunta abre em todos os aparelhos. As casas mais difíceis valem mais, e uma Estrela da sorte escondida dobra os pontos."
       },
       "wyr": {
-        "h": "O que você prefere? ao vivo",
+        "h": "O que você prefere? (Ao vivo)",
         "p": "A turma vota em dilemas divertidos e vê como se divide, e o que todo mundo no Oomba escolheu. Sem respostas certas nem pontos: uma conversa pronta para começar."
       },
       "atlas": {
-        "h": "Atlas Quest ao vivo",
+        "h": "Atlas Quest (Ao vivo)",
         "p": "Todos tocam o país no seu próprio mapa-múndi: o país, a bandeira, a capital ou aquilo pelo que é famoso. A tela grande mostra onde a turma toda tocou, e chegar perto também vale."
       }
     },

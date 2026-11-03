@@ -4571,9 +4571,9 @@
       "battleText": "Questions on the big screen, answers on every device, and a leaderboard after each one.",
       "board": "Brain Board",
       "boardText": "A board of categories: pick a tile, everyone answers. Bigger tiles are harder and worth more, and a hidden Lucky Star doubles the points.",
-      "wyr": "Would You Rather Live",
+      "wyr": "Would You Rather? (Live)",
       "wyrText": "The class votes on fun dilemmas and sees how it splits, and how everyone on Oomba chose. No right answers, no points: just talking.",
-      "atlas": "Atlas Quest Live",
+      "atlas": "Atlas Quest (Live)",
       "atlasText": "Everyone taps the country on their own world map: find it, its flag, its capital or what it is famous for. Close guesses still score a little."
     },
     "starter": {
@@ -5338,7 +5338,7 @@
       "bankHint": "Fresh questions every game, written for each age group."
     },
     "wyrUi": {
-      "legend": "Would You Rather Live",
+      "legend": "Would You Rather? (Live)",
       "topics": "Topics",
       "topicsHint": "Leave them all ticked for a mix.",
       "count": "How many dilemmas",
@@ -5347,7 +5347,7 @@
       "hint": "After each vote the class sees its split: a good moment to ask a few children why they chose it."
     },
     "atlasUi": {
-      "legend": "Atlas Quest Live",
+      "legend": "Atlas Quest (Live)",
       "region": "Where in the world",
       "level": "Level",
       "kinds": "Question types",
@@ -5464,11 +5464,11 @@
         "p": "A board of categories on the screen. Pick a tile (or let the fastest right answer pick), and its question opens on every device. Harder tiles are worth more, and a hidden Lucky Star doubles the points."
       },
       "wyr": {
-        "h": "Would You Rather Live",
+        "h": "Would You Rather? (Live)",
         "p": "The class votes on fun dilemmas and sees how it splits, and how everyone on Oomba chose. No right answers and no points: a ready-made conversation starter."
       },
       "atlas": {
-        "h": "Atlas Quest Live",
+        "h": "Atlas Quest (Live)",
         "p": "Everyone taps the country on their own world map: find it, its flag, its capital or what it is famous for. The big screen shows where the whole class tapped, and close guesses still score."
       }
     },

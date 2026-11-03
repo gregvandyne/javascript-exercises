@@ -10,7 +10,7 @@
 // Screenshots of the projector at a question go to OUT (live<N>-<mode>.png). Exit code 1 when a check fails.
 //
 //   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... [MODES=quest-race,battle,board,wyr,atlas] [SIZES=10,20,30]
-//   [QUESTIONS=3] [SECS=12] [PHONE=1 (one real phone among the bots, with screenshots)] [LAYOUT=1] [SERVER_PID=1234] [OUT=/tmp/live-load] node scripts/live-load.js
+//   [QUESTIONS=3] [SECS=12] [STARTER=atlas:eu:easy:flag:3:20 (the platform's own questions for that mode)] [PHONE=1 (one real phone among the bots, with screenshots)] [LAYOUT=1] [SERVER_PID=1234] [OUT=/tmp/live-load] node scripts/live-load.js
 import WebSocket from 'ws';
 import fs from 'node:fs';
 import { frameProblems } from '../tests/e2e/frame-fit.js';
@@ -19,6 +19,7 @@ const B = (process.env.BASE || 'http://localhost:3000').replace(/\/$/, '');
 const MODES = (process.env.MODES || 'quest-race,battle,board').split(',').filter(Boolean);
 const SIZES = (process.env.SIZES || '10,20,30').split(',').map(Number).filter(n => n > 0);
 const QUESTIONS = Math.max(1, +process.env.QUESTIONS || 3);
+const STARTER = process.env.STARTER || '';
 const OUT = process.env.OUT || '/tmp/live-load';
 const PID = +process.env.SERVER_PID || 0;
 const SECS = +process.env.SECS || 12;
@@ -74,7 +75,7 @@ async function bot(code, i, tag) {
 }
 
 async function run(browser, cookie, mode, n, tag) {
-  const r = await fetch(B + '/api/live/sessions', { method: 'POST', headers: { 'content-type': 'application/json', cookie, origin: B }, body: JSON.stringify({ pick: mode.startsWith('game:') ? mode : `mode:${mode}`, items: ITEMS.slice(0, mode === 'board' ? 30 : Math.max(QUESTIONS, 3)), audience: 'open', replace: true, maxPlayers: 100, settings: { count: mode === 'board' ? 30 : QUESTIONS } }) });
+  const r = await fetch(B + '/api/live/sessions', { method: 'POST', headers: { 'content-type': 'application/json', cookie, origin: B }, body: JSON.stringify({ pick: mode.startsWith('game:') ? mode : `mode:${mode}`, items: ITEMS.slice(0, mode === 'board' ? 30 : Math.max(QUESTIONS, 3)), audience: 'open', replace: true, maxPlayers: 100, settings: { count: mode === 'board' ? 30 : QUESTIONS }, ...(STARTER && STARTER.split(':')[0] === mode ? { starter: STARTER } : {}) }) });
   const made = await r.json();
   if (!r.ok) throw new Error(`session ${r.status} ${JSON.stringify(made)}`);
   let page = null, ctx = null, code = null;

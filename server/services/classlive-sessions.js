@@ -524,7 +524,7 @@ export function welcome(s, seat, view = 'projector', who = null) {
   const v = seat || lim ? 'player' : view;
   const tms = T.tmsMsg(s); delete tms.t;
   const base = {
-    t: 'wel', v: P.V, phase: s.phase, seq: s.seq, round: s.round, at: s.at, clock: t, players: roster(s, v), state: s.state,
+    t: 'wel', v: P.V, phase: s.phase, seq: s.seq, round: s.round, at: s.at, clock: t, players: roster(s, v), state: !seat && view === 'projector' && s.projState ? { ...s.state, ...s.projState } : s.state,
     nameMode: nameModeFor(s, v), audience: s.audience, mode: s.mode, title: s.title, cfg: s.cfg, locked: s.settings.locked, max: s.settings.maxPlayers,
     teams: tms, eyes: s.eyes, lang: s.lang,
   };
@@ -811,13 +811,19 @@ export function controllerFor(s, tok, u) {
 
 // The way the quiz module talks to devices (no import cycle).
 const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s),
-  publish: (s, patch) => publish(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
+  publish: (s, patch) => publish(s, patch), projectorState: (s, patch) => projectorState(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
 
 /** Platform-made shared state (Atlas Quest Live's flag and region, Would You Rather Live's all-time split): merged into
  *  s.state and sent to every device and the projector, like the Brain Board. Only fixed codes and numbers. */
 function publish(s, patch) {
   s.state = { ...s.state, ...patch }; s.stateBytes = JSON.stringify(s.state).length;
   broadcast(s, { t: 'st', d: patch });
+}
+/** Shared state for the projector only (Atlas Quest Live's flag code): kept apart from s.state so a phone never gets it,
+ *  in its welcome or after. */
+function projectorState(s, patch) {
+  s.projState = { ...(s.projState || {}), ...patch };
+  toProjector(s, { t: 'st', d: patch });
 }
 /**
  * Would You Rather Live, after a reveal: each signed-in player's vote counts once in the game's all-time poll (the
