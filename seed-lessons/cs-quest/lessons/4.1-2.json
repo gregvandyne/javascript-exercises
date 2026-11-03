@@ -1,0 +1,304 @@
+{
+ "id": "csq-2-4.1",
+ "key": "csq-2-4.1",
+ "version": 1,
+ "unit": 4,
+ "order": 11,
+ "n": "4.1",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "4.1 · How a message travels (Packets, routes, protocols)",
+ "name": "How a message travels (Packets, routes, protocols)",
+ "short": "Packets",
+ "summary": "Students run the Envelope Relay with a lost packet the receiver must ask for again, then learn what protocols are for in Packet Post's Rules of the Road: numbering, acknowledging, resending only the missing packet, catching damaged packets with a checksum and choosing a faster path past a busy router. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-NI-04"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "explain what a protocol is for: numbering, acknowledging and resending packets",
+  "say how a checksum spots a damaged packet and why every router needs the same rules"
+ ],
+ "questCode": "3 2 0 0",
+ "params": "chapter=protocols&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Envelope Relay kit: one printed picture cut into 4 numbered pieces and 4 envelopes",
+  "login cards"
+ ],
+ "doNow": "How does a picture get from your tablet to a friend's tablet across town? Draw it in 3 boxes. What could go wrong on the way?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: Envelope Relay with a lost packet, then Many Roads level 5"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Rules of the Road"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u4-2",
+  "items": [
+   "2-u4-o1",
+   "2-4.1-r1",
+   "2-4.1-e1",
+   "2-4.1-e2",
+   "2-4.1-e3"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so before you start"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "routes",
+   "level": 5
+  },
+  "do": [
+   "Run the Envelope Relay with 4 numbered pieces and four student routers. Hold back envelope 3. The receiver must say what arrived (got 1, got 2, got 4) and ask the sender for piece 3 again.",
+   "Open Packet Post at Many Roads, level 5, on the projector. The packets must arrive within a hop budget: ask the class for a path that stays inside it and avoids the busy router, then send."
+  ],
+  "say": [
+   "A protocol is a set of rules every computer on the network agrees on: number the packets, say got it, and ask again for anything missing.",
+   "Without the same rules everywhere, a packet from one network could not be passed on or rebuilt on another."
+  ],
+  "ask": [
+   "Our receiver said got 1, got 2, got 4. What should the sender do next, and how does it know?"
+  ],
+  "afterAsk": "Take answers until someone says resend only packet 3. Write ACK = got it on the board. That is the first rule in today's chapter, Rules of the Road.",
+  "bigIdea": "Protocols are the shared rules that get every packet delivered: number it, acknowledge it, resend what is missing.",
+  "vocab": [
+   "protocol",
+   "acknowledge",
+   "resend",
+   "checksum",
+   "packet"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "packet-post",
+  "chapter": "protocols",
+  "chapterTitle": "Rules of the Road",
+  "then": {
+   "chapter": "routes",
+   "levels": "5-6",
+   "stretch": true
+  },
+  "levels": 6,
+  "goal": "4 levels",
+  "stretch": "the chapter, then Many Roads levels 5-6 with the hop budget",
+  "solo": "one device per student; a neighbor may read the ACK cards out loud, never touch your screen",
+  "lookFors": [
+   "resending every packet instead of only the missing one",
+   "keeping a duplicate packet as if it were new information",
+   "skipping the dot count on a packet that may be damaged"
+  ],
+  "misconception": "A protocol is not the road a packet takes: it is the rules both ends follow, like numbering, acknowledging and resending only the missing packet.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What would happen with no numbers on the packets?",
+  "Why do all routers need the same rules? What would break if one used its own?"
+ ],
+ "showMe": "One student shows the level with the ACK cards on the projector; the class calls out which packet to resend before the student taps.",
+ "exit": {
+  "setId": "csq-u4-2",
+  "items": [
+   "2-4.1-e1",
+   "2-4.1-e2",
+   "2-4.1-e3"
+  ],
+  "sentencePrompt": "What is a protocol for? Give one rule from today and what would go wrong without it.",
+  "frame": "A protocol ___; without the rule ___, ___.",
+  "rubric": [
+   {
+    "line": "Protocols: what the rules do and why every router needs them",
+    "ids": [
+     "2-NI-04"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says a protocol is a set of rules",
+     "Names one rule (numbering, acknowledging, resending or a checksum) and what it does",
+     "Also says what goes wrong without it, or why every router must share the rules"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "a printed card of the five rules on every desk",
+   "3-packet levels first",
+   "hint 1 lists the packets that arrived"
+  ],
+  "stretch": [
+   "Many Roads levels 5-6 with the hop budget",
+   "order the five rule cards and explain each in one line"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Envelope Relay with rules",
+  "minutes": 15,
+  "materials": [
+   "one printed picture cut into 6 numbered pieces",
+   "envelopes",
+   "ACK cards (got 1 to got 6)",
+   "a dot count on each piece as a checksum"
+  ],
+  "steps": [
+   "Run the relay with six numbered pieces. The receiver sends an ACK card back for each piece that arrives.",
+   "Hold back one envelope. The sender waits for the missing ACK and resends only that piece.",
+   "Damage one piece: tear off a corner. The receiver counts the dots, finds the count is wrong and asks for that piece again.",
+   "Send a duplicate piece. The receiver keeps one copy and throws away the other.",
+   "Share: write the class's rules on the board in order. That list is a protocol."
+  ],
+  "printables": [
+   "relay-picture",
+   "ack-cards",
+   "rule-cards"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: how does a picture get from your tablet to a friend's tablet across town, and what could go wrong on the way? Draw it in 3 boxes.",
+  "Play Packet Post, chapter Rules of the Road, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 3 2 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Envelope Relay with rules, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Rules of the Road"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-u4-o1",
+   "2-4.1-r1"
+  ],
+  "discuss": "What would happen with no numbers on the packets?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Envelope Relay with rules (15 minutes) before Play",
+   "Many Roads levels 5-6 after Play",
+   "10 minutes of the Unit 3 review on Brain Board as retrieval"
+  ]
+ },
+ "notes": [
+  "The locked chapter is Rules of the Road; Many Roads level 5 is only the Explore demo on the projector, and levels 5-6 are the stretch.",
+  "Say many computers and cables, not a one-word name for it; no real site names on the board.",
+  "The warm-up is a pre-test for unit 4: nobody is expected to know the answers yet. Say so before you start.",
+  "Vocabulary beyond the five on the learn card: network, route, router, reassemble, sequence number.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: How does a picture get from your tablet to a friend's tablet across town? Draw it in 3 boxes. What could go wrong on the way?\n\nBig idea: Protocols are the shared rules that get every packet delivered: number it, acknowledge it, resend what is missing.\n\nWe will talk about:\n- What would happen with no numbers on the packets?\n- Why do all routers need the same rules? What would break if one used its own?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. It is fine not to know them yet: we check again at the end."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Rules of the Road",
+   "minutes": 18,
+   "gameSlug": "packet-post",
+   "options": "chapter=protocols&band=2&lock=1",
+   "questCode": "3 2 0 0",
+   "standards": [
+    "2-NI-04"
+   ],
+   "body": "Goal: 4 levels. Stretch: finish the chapter, then Many Roads levels 5 and 6.\nIf the game asks for a quest code, it is 3 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about protocols."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-NI-04"
+   ],
+   "rubric": "exit",
+   "body": "What is a protocol for? Give one rule from today and what would go wrong without it.\nFrame: A protocol ___; without the rule ___, ___."
+  }
+ ]
+}

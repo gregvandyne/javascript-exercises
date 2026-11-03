@@ -1,0 +1,215 @@
+{
+ "id": "csq-2-2.1",
+ "key": "csq-2-2.1",
+ "version": 1,
+ "unit": 2,
+ "order": 6,
+ "n": "2.1",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "2.1 · Bug hunt (Test and debug)",
+ "name": "Bug hunt (Test and debug)",
+ "short": "Debugging",
+ "summary": "Students test one program against three test boards and fix it without breaking the others. In the Debug Lab every level starts with a broken program and three tabs that show a check mark or an X per test after each run; level 6 is an edge case, an odd board that breaks a hidden assumption about the gems, and level 7 adds the rule never bump. Fewest edits earn the most stars. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-17"],
+  "also": ["2-AP-10"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "test one program against several test boards and read the results",
+  "find the input that breaks a program, including the odd one out",
+  "fix a bug without breaking the tests that already passed"
+ ],
+ "questCode": "6 2 1 0",
+ "params": "chapter=debug&band=2&mode=debug&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Bug Cards printable (printed programs with three test boards each, a test table, fix stickers)",
+  "login cards"
+ ],
+ "doNow": "Find the mistake in each one: 2 + 2 = 5. Teh cat sat on the mat. A route that says turn left when the flag is on the right. Then write one test you would run to prove each fix.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: one program, three test boards, one fix"],
+  ["0:16", 18, "Play: Debug Lab"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u2-2",
+  "items": ["2-u2-o1", "2-2.1-r1", "2-2.1-e1", "2-2.1-e2", "2-2.1-e3"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "debug", "level": 1},
+  "do": [
+   "Open Robo Route at Debug Lab on the projector (Open game at this chapter). Level 1 already has a program and three tabs above the board: three test boards. Press Run and read the tabs out loud: a check mark for a test that passes, an X for one that fails. Open a failing test and press Step until Bolt turns the wrong way at the corner.",
+   "Change only that block: turn right becomes turn left in the else part. Run again and watch all three tabs turn to check marks. Point at the edits counter: one edit, three stars. Then describe level 6 in one sentence: tests 1 and 2 pass, test 3 has a different number of gems, and the program assumed every board had the same gems before the goal."
+  ],
+  "say": [
+   "Programs break. Good programmers expect it and test on purpose. A test case is one board with a known right answer; one board can hide a bug, three boards catch it.",
+   "An edge case is the unusual input, like a maze with no gems or a hallway two squares longer.",
+   "It breaks an assumption you did not know you had made. A fix is finished only when every test passes again."
+  ],
+  "ask": [
+   "Which test board caught the bug, and why did we need more than one?"
+  ],
+  "afterAsk": "Write a test table on the board with three rows: test, expected, actual, pass? Fill it for level 1 before and after the fix. Leave it up for Play.",
+  "bigIdea": "Test a program against several boards, find the one that fails, fix the smallest thing, and run every test again.",
+  "vocab": ["bug", "test case", "edge case", "expected", "actual"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "debug",
+  "chapterTitle": "Debug Lab",
+  "mode": "debug",
+  "levels": 7,
+  "goal": "4 levels",
+  "stretch": "the chapter, then 3 stars: the fewest edits on every level; level 6 is the edge case, level 7 says never bump",
+  "solo": "one device per student; every level has three test boards; a neighbor may read your program and the tabs out loud, never touch your screen",
+  "lookFors": [
+   "fixing for test 1 and never running tests 2 and 3, then moving on with an X still showing",
+   "deleting the whole program instead of stepping through the failing test",
+   "adding blocks around the bug instead of changing the wrong one: the edits counter goes up and the stars go down"
+  ],
+  "misconception": "A program that passes one test is not finished: a fix must pass every test board, including the odd one, and the tests run again after every change.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Which test board caught your bug on level 4, and what would have happened with only one board?",
+  "Level 6: tests 1 and 2 passed and test 3 did not. What hidden assumption about the gems did the program make, and how did the fix remove it?"
+ ],
+ "showMe": "One student shows level 6 on the projector: the three tabs before the fix, the step-through of test 3, and the tabs after.",
+ "exit": {
+  "setId": "csq-u2-2",
+  "items": ["2-2.1-e1", "2-2.1-e2", "2-2.1-e3"],
+  "sentencePrompt": "Pick one bug you fixed today. Which test caught it, what did you expect and what did Bolt do, what did you change, and what did you run afterward?",
+  "frame": "Test ___ caught it: I expected ___ but Bolt ___, so I changed ___. Then I ran ___ again.",
+  "rubric": [
+   {
+    "line": "Systematic testing: the test, expected vs actual, the fix",
+    "ids": ["2-AP-17"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a bug or a fix with no test behind it",
+     "Names the test that caught the bug, what was expected and what happened, and the change made",
+     "Also says every test was run again after the fix, or names the edge case and the assumption it broke"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "hint 1 names the failing test; step mode on that board shows the first wrong block",
+   "the test table from Explore stays on the board; read-aloud on",
+   "every level has exactly one bug; the fix takes one to four edits"
+  ],
+  "stretch": [
+   "3 stars on every level: the fewest edits",
+   "level 7: never bump on any board, then explain why the when block alone was not enough",
+   "design one more test board that would break a neighbor's fix, and say which assumption it attacks"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Bug Cards, three tests",
+  "minutes": 15,
+  "materials": ["printed programs with three small test boards each", "a paper Bolt token", "a test table per pair (test, expected, actual, pass?)", "fix stickers"],
+  "steps": [
+   "Each pair gets a bug card: one program and three boards. One partner runs the token through board 1 line by line while the other fills in the test table row: expected, actual, pass or fail. Then boards 2 and 3.",
+   "Find the board that fails and the first line where expected and actual split apart. Fix only that line with a sticker.",
+   "Run all three boards again from the top. A fix that breaks a board that used to pass is not a fix. Count the stickers: fewest wins.",
+   "Edge case round: each pair draws a fourth board meant to break another pair's program (no gems, a longer hallway, the flag right before a wall) and swaps. Share: which assumption did your board attack?"
+  ],
+  "printables": ["bug-cards-pro", "test-table", "fix-stickers"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: find the mistake in 2 + 2 = 5, in Teh cat sat on the mat, and in a route that says turn left when the flag is on the right, then write one test that would prove each fix.",
+  "Play Robo Route, chapter Debug Lab (Pro), one device each, for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 6 2 1 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Bug Cards, three tests, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Debug Lab"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-u2-o1", "2-2.1-r1"],
+  "discuss": "Which test board caught your bug on level 4, and what would have happened with only one board?",
+  "keep": "the exit ticket is never cut; in 5 minutes of Explore fix level 1 and only describe level 6"
+ },
+ "block": {
+  "add": [
+   "the Bug Cards, three tests twin (15 minutes) before Play",
+   "the fewest-edits stretch and level 7 after Play",
+   "Best Route, the next chapter, for 10 minutes (quest code 7 2 0 0 from the game's own menu): build the flowchart first, then a program that must match it on every test board"
+  ]
+ },
+ "notes": [
+  "Stars count edits: the fewest edits from the starter program earn three stars, so deleting everything is the slow and starless path.",
+  "The warm-up is a pre-test for unit 2: nobody is expected to know the answers yet. Say so before you start.",
+  "Best Route at this band is the flowchart chapter: the program is checked against a chart the student builds first. It is the stretch here and the twin of the planning id from 1.1.",
+  "Vocabulary beyond the five on the learn card: debug, step mode, assumption.",
+  "Debug mode works signed out, so the sub plan needs no login. One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Find the mistake in each one: 2 + 2 = 5. Teh cat sat on the mat. A route that says turn left when the flag is on the right. Then write one test you would run to prove each fix.\n\nBig idea: Test a program against several boards, find the one that fails, fix the smallest thing, and run every test again.\n\nWe will talk about:\n- Which test board caught your bug, and what would have happened with only one board?\n- Level 6: what hidden assumption did the program make, and how did the fix remove it?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. Nobody is expected to know them all yet."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Debug Lab",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=debug&band=2&mode=debug&lock=1",
+   "questCode": "6 2 1 0",
+   "standards": ["2-AP-17"],
+   "body": "Goal: 4 levels. Stretch: finish the chapter, then 3 stars: the fewest edits on every level. Level 6 is the edge case; level 7 says never bump.\nIf the game asks for a quest code, it is 6 2 1 0.\nEvery level starts with a broken program and three test boards. Run, read the tabs, open the failing test, press Step to the first wrong block, change only that, and run all three again."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about test cases, edge cases and fixing without breaking."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-17"],
+   "rubric": "exit",
+   "body": "Pick one bug you fixed today. Which test caught it, what did you expect and what did Bolt do, what did you change, and what did you run afterward?\nFrame: Test ___ caught it: I expected ___ but Bolt ___, so I changed ___. Then I ran ___ again."
+  }
+ ]
+}

@@ -46,7 +46,7 @@ const ld = html => [...html.matchAll(/<script type="application\/ld\+json">([\s\
 const nodes = html => ld(html).flatMap(d => d['@graph'] || [d]);
 const ofType = (html, type) => nodes(html).filter(n => [].concat(n['@type']).includes(type));
 
-const PUBLIC = ['/', '/teachers', '/teachers/live', ...HUBS.map(h => `/learn/${h.slug}`), '/g/sum-racer', '/g/castle-clash', '/safety', '/parents', '/privacy', '/terms', '/refunds', '/sdk/'];
+const PUBLIC = ['/', '/teachers', '/teachers/live', '/teachers/cs-quest', ...HUBS.map(h => `/learn/${h.slug}`), '/g/sum-racer', '/g/castle-clash', '/safety', '/parents', '/privacy', '/terms', '/refunds', '/sdk/'];
 
 test('robots.txt: private app paths disallowed, the rest allowed, the sitemap named', async () => {
   const r = await get('/robots.txt');

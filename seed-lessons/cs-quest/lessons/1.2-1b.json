@@ -1,0 +1,209 @@
+{
+ "id": "csq-1b-1.2",
+ "key": "csq-1b-1.2",
+ "version": 1,
+ "unit": 1,
+ "order": 2,
+ "n": "1.2",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "1.2 · Again and again (Loops)",
+ "name": "Again and again (Loops)",
+ "short": "Loops",
+ "summary": "Students spot steps that repeat and replace them with a repeat block in Robo Route. Pairs share one device: the navigator says the loop in words before the driver builds it.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-AP-10"],
+  "also": ["1B-AP-16"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "spot steps that repeat and replace them with a repeat block",
+  "say how many times a loop runs"
+ ],
+ "questCode": "2 1 0 0",
+ "params": "chapter=loops&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Loop Cards printable (grid mats, arrow cards, three repeat bracket cards)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Write something you do again and again at school. How many times a day?",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (projector or live)"],
+  ["0:10", 6, "Explore: five forward blocks, then one loop"],
+  ["0:16", 18, "Play: Loops"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u1-1b",
+  "items": ["1b-1.1-e1", "1b-1.1-e2", "1b-1.2-r1", "1b-1.2-e1", "1b-1.1-r1"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "projector",
+  "why": "two retrieval items from 1.1, one vocabulary item, one preview of today, one more from 1.1; the first weeks use the projector form (hands up, no join code)"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "loops", "level": 1},
+  "do": [
+   "Open Robo Route at Loops on the projector (Open game at this chapter). Level 1 is a straight corridor of 5 squares. Ask the class for the program. Add five forward blocks. Run it.",
+   "Delete all five forward blocks: tap a block, then tap Delete block. Tap repeat on the shelf: an empty repeat block appears, already set to 5. With the repeat block still selected, tap forward, and it drops inside the repeat. Run it."
+  ],
+  "say": [
+   "That works. A programmer would be annoyed: we wrote the same thing five times.",
+   "A loop repeats steps so we do not have to write them again."
+  ],
+  "ask": [
+   "What does the number mean? What if I put 6?"
+  ],
+  "afterAsk": "Tap the number, set it to 6 and run it. Bolt bumps the wall and the caption says Bump! A wall after step 6. Bolt did exactly what we said.",
+  "bigIdea": "A loop repeats steps so we do not have to write them again.",
+  "vocab": ["loop", "repeat", "times", "pattern"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "loops",
+  "chapterTitle": "Loops",
+  "levels": 7,
+  "goal": "4 levels",
+  "stretch": "the chapter, then 3 stars",
+  "pairs": "driver and navigator on one device; the Swap! banner shows every 3 levels; the navigator holds the Loop Cards and says the loop in words before the driver builds it",
+  "lookFors": [
+   "the repeat placed after the steps instead of around them",
+   "miscounted squares: count the squares Bolt moves, not the blocks"
+  ],
+  "misconception": "The number on a loop is how many times the whole bracket runs, not the number of squares.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Show me a level where a loop saved you the most blocks. Count the blocks with and without the loop.",
+  "Where else do loops happen: songs, dances, a school day?"
+ ],
+ "showMe": "One pair shows level 3 on the projector with and without the loop; the class counts the blocks out loud.",
+ "exit": {
+  "setId": "csq-u1-1b",
+  "items": ["1b-1.2-e1", "1b-1.2-e2", "1b-1.2-e3"],
+  "sentencePrompt": "What does a loop do, and why do programmers like loops?",
+  "frame": "A loop ___, and programmers like it because ___.",
+  "rubric": [
+   {
+    "line": "Loops: what a loop does and why it helps",
+    "ids": ["1B-AP-10"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says a loop repeats steps",
+     "Says a loop repeats steps and why that helps: fewer blocks, fewer mistakes",
+     "Also gives a real example or says how many times a loop ran"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the repeat count is pre-set on levels 1-2",
+   "hint 1 asks which steps happen again and again",
+   "read-aloud on; the navigator reads the Loop Cards"
+  ],
+  "stretch": [
+   "3-star par on every level",
+   "level 7, then invent a loop for the walk back to the start"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Loop Cards",
+  "minutes": 15,
+  "materials": ["one 6 by 6 paper grid per pair", "arrow cards", "three repeat bracket cards with a number dial"],
+  "steps": [
+   "Pairs get a grid with a start and a goal, arrow cards and three repeat bracket cards with a number dial.",
+   "Round 1: one partner lays out the whole route with arrow cards only; the other counts the cards.",
+   "Round 2, shrink the program: replace every run of the same card with a bracket card and a number; count again.",
+   "Share: which pair shrank their program the most? Where did a bracket go wrong, and what did the robot do?"
+  ],
+  "printables": ["grid-mat", "arrow-cards", "loop-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: write something you do again and again at school and how many times a day.",
+  "Play Robo Route, chapter Loops, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 2 1 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Loop Cards, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Loops"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-1.1-e1", "1b-1.2-r1"],
+  "discuss": "Show me a level where a loop saved you the most blocks. Count the blocks with and without the loop.",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Loop Cards twin (15 minutes) before Play",
+   "the 3-star stretch and level 7 after Play",
+   "10 minutes of the Unit 1 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Off-by-one bumps are the lesson's best moments: Bolt did exactly what you said.",
+  "Most pairs reach level 5 of 7 in 18 minutes: that is success.",
+  "Shared devices: this is an even lesson, so partner B signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Write something you do again and again at school. How many times a day?\n\nBig idea: A loop repeats steps so we do not have to write them again.\n\nWe will talk about:\n- Show me a level where a loop saved you the most blocks.\n- Where else do loops happen: songs, dances, a school day?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Loops",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=loops&band=1b&lock=1",
+   "questCode": "2 1 0 0",
+   "standards": ["1B-AP-10"],
+   "body": "Goal: 4 levels. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 2 1 0 0.\nPairs: driver and navigator. Swap when the Swap! banner shows. The navigator says the loop in words before the driver builds it."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about loops."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-AP-10"],
+   "rubric": "exit",
+   "body": "What does a loop do, and why do programmers like loops?\nFrame: A loop ___, and programmers like it because ___."
+  }
+ ]
+}

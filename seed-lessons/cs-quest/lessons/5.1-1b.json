@@ -1,0 +1,315 @@
+{
+ "id": "csq-1b-5.1",
+ "key": "csq-1b-5.1",
+ "version": 1,
+ "unit": 5,
+ "order": 14,
+ "n": "5.1",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "5.1 · What's inside? (Parts, hardware and software, gadgets)",
+ "name": "What's inside? (Parts, hardware and software, gadgets)",
+ "short": "Parts",
+ "summary": "Students follow a tap through a tablet, from the finger to the touch sensor, the processor, the app and the screen, and learn that hardware is what you can touch and software is the instructions. In Inside the Machine they match parts to jobs, wire a device from input to output, then sort hardware from software. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "1B-CS-01",
+   "1B-CS-02"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "name the parts of a device and the job each one does",
+  "explain that hardware and software work together to do a task"
+ ],
+ "questCode": "1 1 0 0",
+ "params": "chapter=parts&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Be the Computer role cards (input, processor, storage, output, software)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "List everything a tablet needs to show you a photo when you tap it.",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: A Tap Travels, then Parts & Jobs level 1"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Parts & Jobs"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u5-1b",
+  "items": [
+   "1b-u5-o1",
+   "1b-5.1-r1",
+   "1b-5.1-e1",
+   "1b-5.1-e2",
+   "1b-5.1-e3"
+  ],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so before you start"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "parts",
+   "level": 1
+  },
+  "do": [
+   "Draw five boxes in a row on the board: finger, touch sensor, processor, the app, screen. Walk a tap through them with the class: A Tap Travels.",
+   "Open Inside the Machine at Parts & Jobs on the projector (Open game at this chapter). Play level 1 with the class: tap the part that does each job."
+  ],
+  "say": [
+   "Hardware is what you can touch. Software is the instructions that tell the hardware what to do.",
+   "Every task needs both: the camera takes the picture, and the camera app tells it when."
+  ],
+  "ask": [
+   "Which of these boxes is software? What happens if the screen is missing?"
+  ],
+  "afterAsk": "Circle the app: it is the only box you cannot touch. Cross out the screen and ask where the photo went: it is still in storage, but there is no output, so nobody can see it.",
+  "bigIdea": "Hardware is what you can touch, software is the instructions, and a task needs both.",
+  "vocab": [
+   "input",
+   "output",
+   "processor",
+   "storage",
+   "hardware",
+   "software"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "inside-the-machine",
+  "chapter": "parts",
+  "chapterTitle": "Parts & Jobs",
+  "then": {
+   "chapter": "hw-sw",
+   "levels": "1-3"
+  },
+  "levels": 6,
+  "goal": "4 levels",
+  "stretch": "Parts & Jobs, then Hardware or Software levels 1-3",
+  "pairs": "driver and navigator on one device; swap at the chime every 2 levels; the navigator names the job before the driver taps the part",
+  "lookFors": [
+   "calling the screen the computer: the processor does the thinking",
+   "sorting an app as hardware because you can see it on the screen",
+   "wiring the output before the input in Build-a-Device"
+  ],
+  "misconception": "Seeing something is not touching it: an app on the screen is software, and the screen itself is hardware.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Act it out: five of you are the five parts. What happens when the processor sits down?",
+  "Which part keeps your photos when the tablet is off?"
+ ],
+ "showMe": "Five students hold the Be the Computer cards at the front and pass a paper tap along the line; the processor sits down and the class says what stops.",
+ "exit": {
+  "setId": "csq-u5-1b",
+  "items": [
+   "1b-5.1-e1",
+   "1b-5.1-e2",
+   "1b-5.1-e3"
+  ],
+  "sentencePrompt": "Name one piece of hardware and one piece of software that work together to do a task.",
+  "frame": "The ___ is hardware; the ___ is software.",
+  "rubric": [
+   {
+    "line": "Parts: naming a part and its job",
+    "ids": [
+     "1B-CS-01"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a part of a device",
+     "Names a part and the job it does",
+     "Names two or more parts and how they pass the task along"
+    ]
+   },
+   {
+    "line": "Hardware and software working together",
+    "ids": [
+     "1B-CS-02"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names hardware or software",
+     "Names one of each correctly",
+     "Also says how they work together for one task"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "picture tiles read aloud",
+   "the five A Tap Travels boxes stay on the board during Play",
+   "hint 1 names the job in other words"
+  ],
+  "stretch": [
+   "a 7-tile model: add storage and the battery to A Tap Travels",
+   "3 stars on every level"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Be the Computer",
+  "minutes": 15,
+  "materials": [
+   "role cards: input (touch sensor), processor, storage, software (instruction card), output (screen)",
+   "a paper photo"
+  ],
+  "steps": [
+   "Five students take the role cards and stand in a line in the order of a tap.",
+   "The input passes a paper tap to the processor, who reads the software card and asks storage for the photo.",
+   "Storage hands the paper photo to the output, who holds it up for the class.",
+   "Break it: the processor sits down, then the software card is taken away. What happens each time?",
+   "Share: which cards are hardware and which is software?"
+  ],
+  "printables": [
+   "be-the-computer-cards"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: list everything a tablet needs to show you a photo when you tap it.",
+  "Play Inside the Machine, chapter Parts & Jobs, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 1 1 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Be the Computer, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Parts & Jobs"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "1b-u5-o1",
+   "1b-5.1-r1"
+  ],
+  "discuss": "Act it out: five of you are the five parts. What happens when the processor sits down?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Be the Computer twin (15 minutes) before Play",
+   "Hardware or Software levels 4-5 after Play",
+   "10 minutes of the Unit 4 review on Brain Board as retrieval"
+  ]
+ },
+ "notes": [
+  "No brand or product names, ever: say tablet, laptop, phone.",
+  "The warm-up is a pre-test for unit 5: nobody is expected to know the answers yet. Say so before you start.",
+  "The plan lists six vocabulary words for this lesson, so the learn card carries six.",
+  "Shared devices: this is an odd lesson in the unit, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: List everything a tablet needs to show you a photo when you tap it.\n\nBig idea: Hardware is what you can touch, software is the instructions, and a task needs both.\n\nWe will talk about:\n- Act it out: five of you are the five parts. What happens when the processor sits down?\n- Which part keeps your photos when the tablet is off?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. It is fine not to know them yet: we check again at the end."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Parts & Jobs",
+   "minutes": 18,
+   "gameSlug": "inside-the-machine",
+   "options": "chapter=parts&band=1b&lock=1",
+   "questCode": "1 1 0 0",
+   "standards": [
+    "1B-CS-01",
+    "1B-CS-02"
+   ],
+   "body": "Goal: 4 levels. Stretch: finish Parts & Jobs. Then the game takes you to Hardware or Software.\nIf the game asks for a quest code, it is 1 1 0 0.\nPairs: driver and navigator. Swap when you hear the chime. The navigator names the job before the driver taps."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about the parts of a computer."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "1B-CS-01",
+    "1B-CS-02"
+   ],
+   "rubric": "exit",
+   "body": "Name one piece of hardware and one piece of software that work together to do a task.\nFrame: The ___ is hardware; the ___ is software."
+  }
+ ]
+}

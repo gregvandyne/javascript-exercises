@@ -1,0 +1,235 @@
+{
+ "id": "csq-2-2.2",
+ "key": "csq-2-2.2",
+ "version": 1,
+ "unit": 2,
+ "order": 7,
+ "n": "2.2",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "2.2 · Level designers (Plan, build, test, explain)",
+ "name": "Level designers (Plan, build, test, explain)",
+ "short": "Level design",
+ "summary": "A mini-project in one period with a timeline. Students plan a level on paper, build it in the Robo Route Level Maker, press Check to prove it can be solved, swap devices with a partner who tests in silence, then change one thing because of the feedback and write the level note the next player needs. Pairs keep a three-line timeline card: build by 6, test by 12, fix by 18. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-15", "2-AP-18", "2-AP-19"],
+  "also": ["2-AP-16"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "get feedback from a tester and change my level because of it",
+  "split roles with a partner and keep a timeline",
+  "write a level note that helps the next person play or remix it"
+ ],
+ "questCode": "8 2 2 0",
+ "params": "chapter=level-maker&band=2&mode=maker&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Level Plan printable (an 8 by 8 grid, a timeline card, a tester card, a level note slip)",
+  "a chime for the timeline marks",
+  "login cards"
+ ],
+ "doNow": "Draw a tiny 4 by 4 maze on the printed grid: a start, a goal and one trap. Then fill in the timeline card for today: build by minute 6, test by 12, fix by 18. Who in your pair does what in each part?",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now (the paper plan and the timeline card)"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: paint, Check, Test with a friend, the based on stamp"],
+  ["0:16", 18, "Play: Level Maker (build by 6, test by 12, fix by 18)"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u2-2",
+  "items": ["2-2.1-e1", "2-2.1-e2", "2-2.2-r1", "2-2.2-e1", "2-2.1-r1"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 2.1, one vocabulary item, one preview of today, one more from 2.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "level-maker", "level": 1},
+  "do": [
+   "Open Robo Route at Level Maker on the projector (Open game at this chapter). Level 1 is a goal walled in. Press Check first: red, no way to the goal. Open the walls, Check again: green, and the par shows. Press Test with a friend and hand the device to a student; stay silent while they play. Then show task 3: a level that came from a code, with a based on stamp that stays when you remix it.",
+   "Hold up the timeline card: build by 6, test by 12, fix by 18, and a name next to each part. Ring the chime once so everyone knows the sound for the marks."
+  ],
+  "say": [
+   "Plan, build, test with someone else, improve, explain. Real teams add two things: a timeline that says who does what by when, and a note so the next person can understand the work.",
+   "Feedback is not a grade. It is information about where a player got stuck, and the level is not finished until that information changed something and the change was tested again."
+  ],
+  "ask": [
+   "What does a tester tell you that Check cannot, and what do you write down so the next person understands your level?"
+  ],
+  "afterAsk": "Collect answers for both halves. Put two examples of a level note on the board: hard one, and the key is behind the water; you need if has key. Ask which one the next player can use.",
+  "bigIdea": "Plan it, build it on a timeline, let a tester find what you cannot see, change it, and write the note the next person needs.",
+  "vocab": ["iteration", "feedback", "timeline", "documentation", "remix"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "level-maker",
+  "chapterTitle": "Level Maker",
+  "mode": "maker",
+  "levels": 3,
+  "goal": "the three maker tasks (open the walls; make par 10 or more; remix a coded level by at least three squares), then one level of your own from the paper plan, tested by your partner, with a level note",
+  "stretch": "remix your partner's level from its code, change at least three squares and keep the based on stamp; a level whose par is 12 or more",
+  "solo": "one device per student and pairs for roles: both partners build their own level until the first chime (build by 6); at the chime they swap devices and each tests the other's level in silence, then says one fun thing and one confusing thing (test by 12); at the second chime devices go back and each designer changes one thing, presses Check and writes the level note on the slip (fix by 18)",
+  "lookFors": [
+   "designers coaching the tester with words or a pointing finger: the tester card says silent",
+   "the timeline ignored: still building at minute 12, so the test round never happens",
+   "level notes like hard one or my level: ask what the next player needs to know; a remix that changes nothing"
+  ],
+  "misconception": "Feedback is not a verdict on the level: it is information about where the player got stuck, and the level is not done until that feedback changed something that was tested again.",
+  "earlyFinishers": [
+   "earn 3 stars on every maker task",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What did your tester find that you did not expect, and what did you change because of it?",
+  "Did your pair keep the timeline? Which mark slipped, and what would you move next time?"
+ ],
+ "showMe": "One student shows their level on the projector before and after the change and reads the level note; the class says whether they could play it from the note alone.",
+ "exit": {
+  "setId": "csq-u2-2",
+  "items": ["2-2.2-e1", "2-2.2-e2", "2-2.2-e3"],
+  "sentencePrompt": "Say how your pair kept the timeline and who did what. Say what your tester found and what you changed. Then write the level note the next person needs.",
+  "frame": "By minute ___ I had ___, and my partner ___. My tester found ___, so I changed ___. Level note: ___.",
+  "rubric": [
+   {
+    "line": "Feedback from a tester, incorporated",
+    "ids": ["2-AP-15"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says a tester played, with no finding or no change",
+     "Names what the tester found and the change made because of it",
+     "Also says the change was tested again, or what the next tester should check"
+    ]
+   },
+   {
+    "line": "Roles and timeline",
+    "ids": ["2-AP-18"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a role or a time, not both",
+     "Names who did what and the timeline marks the pair kept: build by 6, test by 12, fix by 18",
+     "Also says which mark slipped and how the pair would plan it next time"
+    ]
+   },
+   {
+    "line": "Documentation: the level note",
+    "ids": ["2-AP-19"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "A note with no help for the next person, like hard one",
+     "A note that names the key idea of the level and what the player needs, like the key is behind the water; you need if has key",
+     "Also names the trap or the par, or says how to remix it"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the first maker task needs only walls and the goal; task 2 asks for a par of 10 or more and task 3 is a remix of a level that came from a code",
+   "the timeline card has the three marks printed and a chime at each one; the tester card has the two sentences to finish",
+   "the maker task hints say which squares to open; read-aloud on"
+  ],
+  "stretch": [
+   "remix your partner's level from its code: change at least three squares, keep the based on stamp, and write what you changed in the note",
+   "a level whose par is 12 or more, so a nested loop beats single blocks",
+   "write a second level note for a classmate's level and compare it with theirs"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper mazes on a timeline",
+  "minutes": 15,
+  "materials": ["one 8 by 8 grid per student", "arrow cards", "a timeline card (build by 5, test by 10, fix by 15)", "a tester card", "a level note slip"],
+  "steps": [
+   "Build by 5: each student draws a level: start, goal, walls, a gem, a key and a door. Trace a route with a finger to prove it can be solved. Check off the first mark on the timeline card.",
+   "Test by 10: swap grids with a partner. The tester solves it with arrow cards in silence while the designer watches and notes where the tester hesitates. The tester fills in the card: one fun thing, one confusing thing. Check off the second mark.",
+   "Fix by 15: the designer changes one thing because of the card and writes the level note the next player needs. Check off the last mark. Say which mark slipped, if any.",
+   "Share: read two level notes out loud and let the class say whether they could play the level from the note alone."
+  ],
+  "printables": ["grid-mat", "arrow-cards", "timeline-card", "tester-card", "level-note"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: draw a tiny 4 by 4 maze on the printed grid with a start, a goal and one trap, then fill in the timeline card: build by 6, test by 12, fix by 18, and who does what.",
+  "Paper mazes for 20 minutes, no devices needed: each student draws an 8 by 8 level, swaps with a partner who solves it in silence and writes one fun thing and one confusing thing, then the designer changes one thing and writes the level note. If devices are out anyway, Robo Route chapter Level Maker (Pro) works signed out with the quest code 8 2 2 0.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it with the mazes and the timeline cards."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now (the paper plan and the timeline card)"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Level Maker (build by 5, test by 10, fix by 16)"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-2.1-e1", "2-2.2-r1"],
+  "discuss": "What did your tester find that you did not expect, and what did you change because of it?",
+  "keep": "the exit ticket is never cut; shorten the build and test rounds, never the fix round, because the level note needs the change"
+ },
+ "block": {
+  "add": [
+   "the Paper mazes on a timeline twin (15 minutes) before Play, so the paper plan is already tested once",
+   "a remix round after Play: each student remixes their partner's level from its code and keeps the based on stamp",
+   "10 minutes of the Unit 2 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "The maker never asks for text: level names do not exist and a level code carries grid squares only. The level note is written on paper and in the sentence step, never in the game.",
+  "Sharing a level: swap devices, or enter the code on the partner's device from the symbol pad. Both work signed out.",
+  "Task 3 and the remix stretch also practice using someone else's work with credit; that id is listed as also and is counted from the game step.",
+  "Vocabulary beyond the five on the learn card: plan, tester, par, based on stamp.",
+  "One device per student at this band; the Standards tab counts each student's own play."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Draw a tiny 4 by 4 maze on the printed grid: a start, a goal and one trap. Then fill in the timeline card for today: build by minute 6, test by 12, fix by 18. Who in your pair does what in each part?\n\nBig idea: Plan it, build it on a timeline, let a tester find what you cannot see, change it, and write the note the next person needs.\n\nWe will talk about:\n- What did your tester find that you did not expect, and what did you change?\n- Did your pair keep the timeline? Which mark slipped?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Level Maker",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=level-maker&band=2&mode=maker&lock=1",
+   "questCode": "8 2 2 0",
+   "standards": ["2-AP-15", "2-AP-16"],
+   "body": "Goal: the three maker tasks (open the walls, make par 10 or more, remix a coded level by at least three squares), then one level of your own from your paper plan, tested by your partner, with a level note. Stretch: remix your partner's level from its code, change at least three squares and keep the based on stamp.\nIf the game asks for a quest code, it is 8 2 2 0.\nTimeline: build by 6 (paint your plan, press Check). Chime: swap devices. Test by 12 (play your partner's level in silence, then say one fun thing and one confusing thing). Chime: devices back. Fix by 18 (change one thing, Check again, write your level note on the slip)."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about feedback, timelines and level notes."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-18", "2-AP-19"],
+   "rubric": "exit",
+   "body": "Say how your pair kept the timeline and who did what. Say what your tester found and what you changed. Then write the level note the next person needs.\nFrame: By minute ___ I had ___, and my partner ___. My tester found ___, so I changed ___. Level note: ___."
+  }
+ ]
+}

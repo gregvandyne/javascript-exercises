@@ -1,0 +1,250 @@
+{
+ "id": "csq-2-7.3",
+ "key": "csq-2-7.3",
+ "version": 1,
+ "unit": 7,
+ "order": 22,
+ "n": "7.3",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "7.3 · Playtest party",
+ "name": "Playtest party",
+ "short": "Playtest",
+ "summary": "Teams of three hand in first, then three rotations: hosts and players swap, and each player fills a Playtest Tally (fun 1 to 5, too easy to too hard, where I got stuck on a storyboard panel, one wish). Makers enter the tallies in My Data, read the bar chart, write the claim and send the one fix the data supports; the class pools every team's counts on the board.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-15", "2-DA-09", "2-IC-22"],
+  "also": ["2-AP-17"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "collect feedback from many players with a tally sheet",
+  "use the numbers to refine one rule and explain the change",
+  "say what pooling the whole class's tallies shows that one team's cards cannot"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Playtest Tally printable (fun 1 to 5; too easy, about right, too hard; I got stuck at; one wish; four per tester)",
+  "the playtest protocol printable (one per team) and the role cards: Player, Watcher, Note-taker",
+  "the team folders with the captains' login cards",
+  "the class tally drawn on the board: fun, too hard, most common wish"
+ ],
+ "doNow": "What is the hardest part of watching someone play your game? Then: how many testers would it take before you trust what they say?",
+ "plan": [
+  ["0:00", 5, "Arrive, captains log in and hand in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: the protocol, the tally sheet and one row in My Data"],
+  ["0:16", 18, "Playtest: two rotations of 5 minutes, then tally, claim and one fix (8)"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u7-2",
+  "items": ["2-7.2-e1", "2-7.2-e2", "2-7.3-r1", "2-7.3-e1", "2-7.2-r1"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from build day (which had no warm-up of its own), one vocabulary item, one preview of today, one more from build day"
+ },
+ "explore": {
+  "minutes": 6,
+  "do": [
+   "Put the protocol on the projector: hand in first; three rotations; Player, Watcher (the maker, silent) and Note-taker; be specific, be kind, say what not who, never write a name.",
+   "Hold up the Playtest Tally: fun 1 to 5; too easy, about right, too hard; I got stuck at, tapped on a storyboard panel; one wish. Fill one for the frog quiz with the class and enter it as the first row of a My Data tally in Data Detective on the projector."
+  ],
+  "say": [
+   "One tester is a story; nine testers are data. Tally the sheets, chart them, and let the bar tell you which one thing to change.",
+   "A change the data supports sounds like this: seven of nine found level 2 too hard, so level 2 gets easier, then we test again. Not: add a level 3."
+  ],
+  "ask": [
+   "Seven of nine testers rated level 2 too hard. What change does the data support, and what change does it not?"
+  ],
+  "afterAsk": "An easier level 2, then test again; not a harder level 1, not a new level 3, not a new title. Write the claim frame on the board: ___ of ___ testers ___, so we ___.",
+  "bigIdea": "Many testers make data; the data picks the one change.",
+  "vocab": ["playtest", "tally", "sample", "claim", "refine"]
+ },
+ "play": {
+  "type": "discussion",
+  "protocol": "peer playtest, three rotations, the tally in My Data",
+  "handIn": "captains hand in at the start of the period: a clean scan is visible to the class at once; a flagged build waits for a human and is played from the maker's screen",
+  "rotations": [
+   "Rotation 1 (5 minutes): half the teams host; the other half play two games each and fill a Playtest Tally for each.",
+   "Rotation 2 (5 minutes): swap hosts and players.",
+   "Rotation 3 (8 minutes): makers enter their tallies as a My Data tally in Data Detective (one row per tester), read the bar chart, write the claim (seven of nine found level 2 too hard), send the one fix message the data supports, play it, and hand in again. One teammate adds the team's counts to the class tally on the board."
+  ],
+  "myData": "Data Detective, chapter My Data (Pro), tally mode; if the game asks for a quest code, it is 7 2 2 0. The tally stays on the maker's device; nothing crosses players",
+  "pooled": "the class tally on the board (how many games were rated too hard, the average fun, the most common wish) is the crowdsourced view no single team's sheets give",
+  "roles": "Player · Watcher (the maker: silent, notes where the player gets stuck) · Note-taker; the roles rotate, so everyone watches once",
+  "rules": "be specific, be kind, say what not who, never write a name; the maker says thank you only",
+  "lookFors": [
+   "a fix the tally does not support (a new feature, a new title): point at the bar",
+   "a tally with one row: send them to play one more game before rotation 3 ends",
+   "a Watcher explaining the game to the tester"
+  ],
+  "misconception": "Students think more testers just means more opinions; the point is that many tallies become a sample you can count, and the count, not the loudest tester, picks the change.",
+  "earlyFinishers": [
+   "play a third game and add a row to that team's tally",
+   "read the class tally on the board and write one claim about the whole class's games"
+  ]
+ },
+ "discuss": [
+  "What did players do that you never expected?",
+  "What does the class tally show that no single team's sheets could?"
+ ],
+ "showMe": "One team shows its My Data bar chart on the projector, reads the claim, and names the one fix message it sent.",
+ "exit": {
+  "setId": "csq-u7-2",
+  "items": ["2-7.3-e1", "2-7.3-e2", "2-7.3-e3"],
+  "sentencePrompt": "Write your claim from the tally, the one change the data supports, and what the pooled class tally added.",
+  "frame": "___ of ___ testers said ___, so we changed ___. The class tally showed ___.",
+  "rubric": [
+   {
+    "line": "Feedback: incorporates what users said",
+    "ids": ["2-AP-15"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one thing a tester said",
+     "Names what several testers said and the change made because of it",
+     "Also says what was not changed and why the feedback did not support it"
+    ]
+   },
+   {
+    "line": "Refine with data: a change the tally supports",
+    "ids": ["2-DA-09"],
+    "levels": [
+     "Nothing yet, or no numbers",
+     "Gives a count without a change, or a change without a count",
+     "States a claim with the count (how many of how many) and the change it supports",
+     "Also reports a second round of ratings after the change, or the claim from the bar chart"
+    ]
+   },
+   {
+    "line": "Crowdsourcing: what many testers and the pooled tally show",
+    "ids": ["2-IC-22"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says more testers are better",
+     "Says what the pooled class tally showed",
+     "Says what the pooled tally showed that one team's sheets could not, and why that matters"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the tally sheet is circles and one tap on a panel; the wish may be a word",
+   "the claim frame printed on the sheet: ___ of ___ testers ___, so we ___",
+   "a team with few rows pools its sheets with a neighbor team's and writes a claim about both games"
+  ],
+  "stretch": [
+   "a second round of ratings after the fix, entered as new rows, and the two bars compared",
+   "write a claim about the class tally and say which teams it does not apply to"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper prototypes and a paper tally",
+  "minutes": 18,
+  "materials": ["each team's paper prototype from build day", "Playtest Tally sheets", "a tally grid per team and the class tally on the board"],
+  "steps": [
+   "Rotation 1: half the teams host their paper prototype (the maker turns the panels and stays silent); the others play two and fill a tally sheet for each.",
+   "Rotation 2: swap.",
+   "Rotation 3: makers count their sheets on the tally grid, draw the bar by hand, write the claim, change one panel, and add their counts to the class tally."
+  ],
+  "printables": ["playtest-tally", "playtest-protocol", "role-cards", "tally-grid"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: the hardest part of watching someone play your game, and how many testers it would take before you trust what they say.",
+  "Playtest with the paper prototypes: half the teams host (the maker turns the panels and does not talk), the others play two prototypes and fill a Playtest Tally for each; swap after five minutes; then makers count their sheets on the tally grid, draw the bar, write the claim and change one panel. No projector, no Builder and no login needed; the fix message waits for the teacher.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it with the tally sheets."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore: the protocol and the tally sheet"],
+   ["0:12", 16, "Playtest: two rotations of 4, then tally, claim and one fix (8)"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-7.2-e1", "2-7.3-r1"],
+  "discuss": "What did players do that you never expected?",
+  "keep": "the exit ticket is never cut; shorten the play rotations to four minutes, never the tally and the claim"
+ },
+ "block": {
+  "add": [
+   "a third play rotation so every team gets four or more sheets",
+   "a second round of ratings after the fix, entered as new rows and compared",
+   "10 minutes of the Unit 7 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Hand in at the start: a clean scan is visible to the class at once; a flagged build waits for a human and is played from the maker's screen today.",
+  "Watch the class Games tab during rotation 1: remove is one tap, and so is put back.",
+  "Testers' words reach the maker only through the paper sheets or this lesson's question step; there is no in-game chat.",
+  "My Data is the maker's own tally in Data Detective: per-player save, nothing crosses players, so the pooled class tally lives on the board.",
+  "Captains sign in; the question step is the team's. Mark the Test with others line on it and use Also mark these teammates.",
+  "Collect the sheets: four or more sheets, a charted tally and one justified change is the Test with others line at 2; a second round of ratings after the change is a 3.",
+  "Vocabulary beyond the five on the learn card: feedback, crowdsourcing."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: What is the hardest part of watching someone play your game? Then: how many testers would it take before you trust what they say?\n\nBig idea: Many testers make data; the data picks the one change.\n\nToday: hand in first, then three rotations. Host, play, then tally, claim and fix one thing.\n\nWe will talk about:\n- What did players do that you never expected?\n- What does the class tally show that no single team's sheets could?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "text",
+   "title": "Playtest protocol",
+   "minutes": 3,
+   "body": "Hand in your game first.\n\nTwo rotations, then the tally:\n- Rotation 1: half the teams host, half play. Play two games. Fill one Playtest Tally for each: fun 1 to 5; too easy, about right or too hard; I got stuck at (tap the storyboard panel); one wish.\n- Rotation 2: swap.\n- Then: makers enter the tallies in My Data, read the bar, write the claim, send one fix message, play it, hand in again. One teammate adds your counts to the class tally on the board.\n\nRoles: Player · Watcher (the maker: silent, note where the player gets stuck) · Note-taker.\n\nRules: be specific, be kind, say what not who, never write a name. The maker says thank you, and nothing else."
+  },
+  {
+   "kind": "question",
+   "title": "Tally and the one change",
+   "minutes": 15,
+   "standards": ["2-AP-15", "2-DA-09", "2-IC-22"],
+   "rubric": [
+    {
+     "line": "Test with others",
+     "ids": ["2-AP-17", "2-AP-15", "2-DA-09", "2-IC-22"],
+     "levels": [
+      "Nothing yet: no tally sheets",
+      "Attempted: fewer than four sheets, or sheets with no tally",
+      "Meets: four or more sheets tallied and charted, one change the tally supports made and explained, the team's counts in the class tally",
+      "Exceeds: a second round of ratings recorded after the change"
+     ]
+    }
+   ],
+   "body": "Write your tally:\n- How many sheets did you get?\n- Fun: how many of each score from 1 to 5? Too easy, about right, too hard: how many of each?\n- Which panel did players get stuck at most? Which wish came up most?\n- Your claim: ___ of ___ testers ___.\n- The one change the data supports, and the fix message you sent.\n- What happened when you played it after the fix?\n- What did the class tally on the board show that your own sheets did not?"
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about feedback, tallies and the changes they support."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-15", "2-DA-09", "2-IC-22"],
+   "rubric": "exit",
+   "body": "Write your claim from the tally, the one change the data supports, and what the pooled class tally added.\nFrame: ___ of ___ testers said ___, so we changed ___. The class tally showed ___."
+  }
+ ]
+}

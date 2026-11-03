@@ -1,0 +1,297 @@
+{
+ "id": "csq-1b-4.2",
+ "key": "csq-1b-4.2",
+ "version": 1,
+ "unit": 4,
+ "order": 12,
+ "n": "4.2",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "4.2 · Lock it up (Passphrases, private information, security)",
+ "name": "Lock it up (Passphrases, private information, security)",
+ "short": "Passphrases",
+ "summary": "Students sort what is private from what is fine to share, build a strong passphrase from four word tiles and watch the guess time grow, and learn the three habits of keeping their stuff safe: lock it, keep the key to yourself and keep a spare copy. Played in Packet Post's Lock It chapter. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "1B-NI-05"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "say what information is private and who may know it",
+  "build a strong passphrase from four random words and keep it to myself",
+  "name ways to protect a device and my files, like a lock and a backup"
+ ],
+ "questCode": "4 1 0 0",
+ "params": "chapter=locks&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Lock Sort cards and the four-word passphrase dice (for the twin or the block day)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Which would you NOT tell a stranger: favorite color, address, pet's name, birthday? Why?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: share or keep, then the passphrase builder"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Lock It"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u4-1b",
+  "items": [
+   "1b-4.1-e1",
+   "1b-4.1-e2",
+   "1b-4.2-r1",
+   "1b-4.2-e1",
+   "1b-4.1-r1"
+  ],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 4.1, one vocabulary item, one preview of today, one more from 4.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "locks",
+   "level": 1
+  },
+  "do": [
+   "Open Packet Post at Lock It on the projector (Open game at this chapter). Play level 1 with the class: thumbs up for share, thumbs down for keep, then sort each card.",
+   "Play level 2, the passphrase builder: pick four word tiles that do not belong together. Watch the guess time on the meter grow from seconds to centuries. Nothing is typed."
+  ],
+  "say": [
+   "Protect your stuff online like at home: lock it, keep the key, keep a spare copy.",
+   "A passphrase is four random words. It is long, so it is hard to guess, and it makes a funny picture in your head, so it is easy to remember.",
+   "Keep your passphrase secret from friends. A parent, a guardian or your teacher may know it: your teacher made your login card."
+  ],
+  "ask": [
+   "Why is a common word with one number on the end weak, even with the number?"
+  ],
+  "afterAsk": "Take answers: guessing programs try common words and numbers first, so they find it in seconds. Point at the meter: seconds for one word, centuries for four random words.",
+  "bigIdea": "Lock it, keep the key to yourself, and keep a spare copy.",
+  "vocab": [
+   "private",
+   "passphrase",
+   "backup"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "packet-post",
+  "chapter": "locks",
+  "chapterTitle": "Lock It",
+  "levels": 6,
+  "goal": "4 levels",
+  "stretch": "the chapter, then 3 stars",
+  "pairs": "driver and navigator on one device; swap at the chime every 2 levels; the navigator reads each card out loud before the driver sorts",
+  "lookFors": [
+   "four words that belong together, like a sentence or a song line",
+   "thinking telling a best friend still counts as keeping it private",
+   "rushing the backup level because the tablet works fine today"
+  ],
+  "misconception": "A strong passphrase is not a short word with a number added: long and random beats short and clever, and you share it only with a trusted adult.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What makes a passphrase strong and easy to remember?",
+  "Who may you tell your passphrase? Why not your best friend?"
+ ],
+ "showMe": "One pair builds a passphrase on the projector with the word tiles; the class watches the guess time and says why it grew.",
+ "exit": {
+  "setId": "csq-u4-1b",
+  "items": [
+   "1b-4.2-e1",
+   "1b-4.2-e2",
+   "1b-4.2-e3"
+  ],
+  "sentencePrompt": "Name one thing you keep private. Why do you keep it private, and how do you protect it?",
+  "frame": "I keep ___ private because ___.",
+  "rubric": [
+   {
+    "line": "Keeping information private and safe",
+    "ids": [
+     "1B-NI-05"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names something private",
+     "Names something private and says why, or how they protect it",
+     "Says why and how: a strong passphrase, a lock or a backup, and who may know"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "picture scenario tiles read aloud",
+   "a printed Share / Keep mat on the desk",
+   "hint 1 asks: could a stranger use this to find you?"
+  ],
+  "stretch": [
+   "the bonus Password Detective level: spot the weak ones",
+   "3 stars on every level"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Lock Sort and Passphrase Dice",
+  "minutes": 15,
+  "materials": [
+   "Lock Sort cards (things to share and things to keep)",
+   "a Share / Keep mat per pair",
+   "one die and a four-word list per pair"
+  ],
+  "steps": [
+   "Pairs sort the Lock Sort cards onto the Share and Keep sides of the mat and say why for each.",
+   "Check together: address, birthday and passphrases go on Keep; a favorite color can go on Share.",
+   "Passphrase dice: roll four times and write the word for each roll from the list. Read the four words as a silly picture.",
+   "Do not use the dice passphrase for anything real; it is practice. Share: which four-word picture was easiest to remember?"
+  ],
+  "printables": [
+   "lock-sort-cards",
+   "share-keep-mat",
+   "passphrase-dice-words"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: which would you not tell a stranger: favorite color, address, pet's name, birthday? Why?",
+  "Play Packet Post, chapter Lock It, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 4 1 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Lock Sort and Passphrase Dice, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Lock It"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "1b-4.1-e1",
+   "1b-4.2-r1"
+  ],
+  "discuss": "What makes a passphrase strong and easy to remember?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Lock Sort and Passphrase Dice twin (15 minutes) before Play",
+   "the Password Detective bonus after Play",
+   "10 minutes of the Unit 4 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Never ask students to say or type a real passphrase. The game never does: the word tiles are tapped, not typed.",
+  "The bank item says a parent or guardian; in class, say a trusted adult.",
+  "Most pairs reach level 5 of 6 in 18 minutes: that is success.",
+  "Shared devices: this is an even lesson in the unit, so partner B signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Which would you NOT tell a stranger: favorite color, address, pet's name, birthday? Why?\n\nBig idea: Lock it, keep the key to yourself, and keep a spare copy.\n\nWe will talk about:\n- What makes a passphrase strong and easy to remember?\n- Who may you tell your passphrase? Why not your best friend?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Lock It",
+   "minutes": 18,
+   "gameSlug": "packet-post",
+   "options": "chapter=locks&band=1b&lock=1",
+   "questCode": "4 1 0 0",
+   "standards": [
+    "1B-NI-05"
+   ],
+   "body": "Goal: 4 levels. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 4 1 0 0.\nPairs: driver and navigator. Swap when you hear the chime. The navigator reads each card out loud."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about keeping things private."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "1B-NI-05"
+   ],
+   "rubric": "exit",
+   "body": "Name one thing you keep private. Why do you keep it private, and how do you protect it?\nFrame: I keep ___ private because ___."
+  }
+ ]
+}

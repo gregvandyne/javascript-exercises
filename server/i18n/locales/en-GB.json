@@ -163,6 +163,11 @@
       "aiTopicHint": "e.g. Causes of the First World War, the water cycle, Spanish food words, solving linear equations",
       "aiLevel": "Year or level",
       "aiLevelHint": "e.g. Year 4, Year 9, GCSE chemistry"
+    },
+    "cs": {
+      "of": "{n} of {count}",
+      "reveal": "Show the answer",
+      "hide": "Hide the answer"
     }
   },
   "favorites": {
@@ -263,12 +268,19 @@
         "leader": "Head teacher or principal",
         "district": "Multi-academy trust or school group"
       }
+    },
+    "cs": {
+      "cstaNote": "Standards: CSTA K-12 Computer Science Standards (2017), levels 1B and 2. This programme is not made, reviewed or endorsed by CSTA."
     }
   },
   "learn": {
     "practise": "What it practises:",
     "games": {
-      "sumRacer": "Maths facts from adding to 10 up to times tables and division, as a kart race. Two players can race on one screen."
+      "sumRacer": "Maths facts from adding to 10 up to times tables and division, as a kart race. Two players can race on one screen.",
+      "roboRoute": "Guide a robot with blocks: sequences, loops, conditionals, variables and functions, then fix the bugs.",
+      "dataDetective": "Sort, chart and clean data, then make claims the evidence supports.",
+      "packetPost": "Send packets across a network, pick strong passphrases and spot online tricks.",
+      "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone."
     },
     "hubs": {
       "math": {
@@ -300,6 +312,13 @@
         "ideas": {
           "li2": "A quiz about my favourite animals",
           "li5": "A puzzle where you sort colours into jars"
+        }
+      },
+      "cs": {
+        "name": "Computer science games",
+        "short": "Code, data, networks and how computers work",
+        "program": {
+          "link": "CS Quest for teachers"
         }
       }
     },
@@ -404,6 +423,256 @@
       "alsoMark": "Also mark these teammates",
       "alsoMarkHint": "They get the same rubric marks on this step. Your written feedback stays with this student.",
       "noHandIns": "Nothing handed in yet."
+    },
+    "add": "Add to my library",
+    "band": {
+      "label": "Grade band",
+      "b1": "Grades 3-5",
+      "b2": "Grades 6-8"
+    },
+    "before": {
+      "h": "Before you start",
+      "gamesOk": "All four games are published. Try one signed out on a student device: /play/robo-route.",
+      "gamesMissing": "Not published yet: {games}. Lessons that use them show a note until they are.",
+      "liveOn": "Live hosting is on: warm-ups and exit tickets can run as a live room.",
+      "liveOff": "Live hosting is off on this site: use \"Show questions on the projector\" instead.",
+      "quizOn": "Quiz steps are on: exit tickets are scored in the gradebook.",
+      "quizOff": "Quiz steps are off: exit tickets come as written questions until they are on.",
+      "classes": "{count, plural, one {You teach # class (live hosting needs one).} other {You teach # classes (live hosting needs one).}}",
+      "zone": "School time zone: {zone}. Dates open and close in this zone.",
+      "zoneNone": "No school time zone set yet: dates use the server time.",
+      "headphones": "Headphones help. Lesson mode starts with music off and captions on.",
+      "unit7": "Unit 7 (the capstone) uses the Builder and needs a school plan; every other unit works without it."
+    },
+    "builder": {
+      "on": "Builder: on",
+      "resting": "Builder: resting",
+      "teams": "{count, plural, one {about # team can build this period} other {about # teams can build this period}}",
+      "noKey": "the Builder is not set up on this site"
+    },
+    "buttons": {
+      "warmup": "Start warm-up (live)",
+      "projector": "Show questions on the projector",
+      "wyr": "Start Would You Rather (live)",
+      "game": "Open game at this chapter",
+      "exitLive": "Host exit ticket live",
+      "review": "Host review live",
+      "exitProjector": "Exit ticket on the projector",
+      "print": "Print",
+      "printables": "Printables",
+      "assign": "Assign to class",
+      "assignUnit": "Assign unit..."
+    },
+    "coverage": {
+      "title": "Coverage map",
+      "lead": "{ids} standards, {lessons} lesson files, {banks} question banks.",
+      "level": "CSTA level {level} ({grades})",
+      "both": "Both levels",
+      "legendH": "How to read it",
+      "practiced": "Practiced",
+      "practicedText": "a student finished a step tagged with the standard (pairs: take turns signing in). Not mastery.",
+      "checked": "Checked",
+      "checkedText": "quiz or live items tagged with the standard were answered; accuracy is shown per class.",
+      "applied": "Applied",
+      "appliedText": "a rubric line for the standard was marked 0-3 by the teacher.",
+      "bold": "Bold lessons teach the standard; plain ones also touch it; faded ones build toward it.",
+      "itemsNote": "Items: exit · review · warm-up.",
+      "noBanks": "banks not loaded",
+      "missing": "{count, plural, one {# lesson file is missing:} other {# lesson files are missing:}}",
+      "complete": "Every lesson file is present.",
+      "noPrimary": "Taught only in unit 7:",
+      "practicesH": "Practices by unit",
+      "practice": "Practice",
+      "units": "Units",
+      "cols": {
+        "id": "Standard",
+        "concept": "Concept",
+        "practices": "Practices",
+        "lessons": "Lessons",
+        "activity": "Activity",
+        "items": "Items",
+        "rubric": "Rubric lines"
+      }
+    },
+    "editor": {
+      "from": "From CS Quest {n} (v{version})",
+      "newer": "version {version} is available",
+      "plan": "Open the plan page"
+    },
+    "lesson": {
+      "openPlan": "Open plan",
+      "preview": "Preview game"
+    },
+    "paths": {
+      "h": "Paths",
+      "lead": "A path adds its lessons for {band} to your library in one click.",
+      "recommended": "Start here",
+      "periods": "{count, plural, one {# period} other {# periods}}",
+      "misses": "Leaves out:",
+      "coversAll": "Covers every standard of this band."
+    },
+    "plan": {
+      "actions": "Run this lesson",
+      "iCan": "I can",
+      "standards": "Standards",
+      "also": "Also:",
+      "toward": "Builds toward:",
+      "vocab": "Vocabulary:",
+      "materials": "Materials",
+      "doNow": "Do Now",
+      "period": "The 45-minute period",
+      "clock": "Clock",
+      "min": "Min",
+      "segment": "What happens",
+      "short40": "Short period (40 min)",
+      "block": "Block (80-90 min)",
+      "discuss": "Discuss",
+      "warmup": "Warm-up questions",
+      "warmupHow": "Live as {mode}, {secs} seconds a question, or on the projector.",
+      "explore": "Explore (projector script)",
+      "demo": "Demo",
+      "do": "Do this",
+      "say": "Say this",
+      "ask": "Ask this",
+      "afterAsk": "Then",
+      "bigIdea": "Big idea",
+      "play": "Play",
+      "game": "Game",
+      "levelN": "level {n}",
+      "levelsN": "{count, plural, one {# level} other {# levels}}",
+      "starter": "Starter",
+      "goal": "Goal",
+      "stretch": "Stretch",
+      "pairs": "Grouping",
+      "lookFors": "Look-fors",
+      "misconception": "Misconception of the day",
+      "early": "Early finishers",
+      "showMe": "Show me:",
+      "exit": "Exit ticket",
+      "sentence": "Sentence:",
+      "frame": "Frame:",
+      "rubric": "Rubric",
+      "rubricHow": "Mark each line 0-3 on the step in the gradebook.",
+      "rubricLine": "Line",
+      "diff": "Differentiation",
+      "support": "Support",
+      "unplugged": "Unplugged twin",
+      "sub": "Sub plan",
+      "notes": "Teacher notes",
+      "steps": "What students see",
+      "stepsNote": "The steps your copy gives students. Edit them in your library after you add the lesson.",
+      "questCode": "Quest code",
+      "liveClass": "Class for live and assign:",
+      "liveOff": "Live hosting is off on this site; show the questions on the projector instead.",
+      "assignNote": "Adds the lesson to your library first if it is not there yet.",
+      "bankMissing": "The question bank for this lesson is not loaded yet.",
+      "gameNotYet": "{game} is not published yet; students see a note until it is.",
+      "notWritten": "This lesson is not written yet.",
+      "switchBand": "Switch to {band}"
+    },
+    "print": {
+      "back": "Back",
+      "print": "Print",
+      "page2": "page 2",
+      "key": "Answer key (teacher only)",
+      "loginCards": "Students sign in with their class login cards."
+    },
+    "program": {
+      "title": "CS Quest",
+      "tagline": "Computer science for grades 3-8",
+      "counts": "{lessons} lessons in {units} units",
+      "lead": "Each lesson is one 45-minute period: Do Now, a projector demo, a game chapter in pairs, a short discussion and an exit ticket.",
+      "inLibrary": "{count, plural, one {# lesson of this band in your library} other {# lessons of this band in your library}}",
+      "coverage": "Coverage map",
+      "footer": "Lessons you add are your copies: edit them freely.",
+      "public": "About CS Quest"
+    },
+    "projector": {
+      "warmup": "Warm-up",
+      "exit": "Exit ticket",
+      "of": "{n} of {count}",
+      "reveal": "Show the answer",
+      "prev": "Previous",
+      "next": "Next",
+      "nav": "Questions",
+      "keys": "Arrow keys move, Space shows the answer."
+    },
+    "sheets": {
+      "exit-half": "Exit ticket (half sheets)",
+      "sub-plan": "Sub plan",
+      "unplugged": "Unplugged twin",
+      "rubric": "Rubric",
+      "planning-sheet": "Planning sheet",
+      "etiquette-card": "Builder etiquette card",
+      "exitHalfTitle": "Exit ticket",
+      "steps": "Steps",
+      "alsoPrint": "Also print:",
+      "wyrMissing": "The prompts are not loaded; write them in the table.",
+      "fields": {
+        "name": "Name",
+        "date": "Date",
+        "team": "Team"
+      }
+    },
+    "state": {
+      "notAdded": "Not in your library",
+      "inLibrary": "In your library",
+      "update": "Update available",
+      "added": "Added",
+      "open": "Open",
+      "soon": "Coming soon",
+      "gameNotYet": "{game} not published yet",
+      "reset": "Reset to the CS Quest version",
+      "resetConfirm": "Make a fresh copy from CS Quest? Your classes and dates move to it; the old copy keeps the students' work.",
+      "resetDone": "Reset to the CS Quest version."
+    },
+    "toast": {
+      "one": "Added to your library.",
+      "many": "Added to your library."
+    },
+    "unit": {
+      "n": "Unit {n}",
+      "add": "Add unit",
+      "assign": "Assign unit...",
+      "lessonsN": "{count, plural, one {# lesson} other {# lessons}}",
+      "optional": "Optional",
+      "needsPlan": "Needs a school plan"
+    },
+    "unitForm": {
+      "what": "What",
+      "start": "First lesson opens",
+      "cadence": "Then one lesson",
+      "dueDays": "Due after (days)",
+      "dueAuto": "next lesson",
+      "button": "Assign",
+      "note": "Each lesson opens on its own date.",
+      "done": "{count, plural, one {# lesson assigned to {class}.} other {# lessons assigned to {class}.}}",
+      "cadences": {
+        "weekdays": "every school day",
+        "daily": "every day",
+        "twiceweekly": "twice a week",
+        "weekly": "every week"
+      }
+    },
+    "units": {
+      "h": "Units"
+    },
+    "standards": {
+      "cols": {
+        "practiced": "Practised"
+      },
+      "status": {
+        "practiced": "Practised"
+      },
+      "legend": {
+        "practiced": "Practised: students who finished a step tagged with the standard (a game played, a question answered, a build handed in). It means they did the activity, not mastery."
+      },
+      "csvCols": {
+        "practiced": "Practised (students)"
+      },
+      "reportH": {
+        "note": "Practised means the activity was done, not mastery. Accuracy is right answers out of answered exit-ticket items tagged with the standard."
+      }
     }
   }
 }

@@ -1,0 +1,295 @@
+{
+ "id": "csq-2-5.3",
+ "key": "csq-2-5.3",
+ "version": 1,
+ "unit": 5,
+ "order": 16,
+ "n": "5.3",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "5.3 · Bits and pixels (How computers store things)",
+ "name": "Bits and pixels (How computers store things)",
+ "short": "Bits and pixels",
+ "summary": "Students represent the same data several ways: binary and decimal, 0/1 pictures, gray levels from 0 to 255, RGB sliders to match a color swatch, and one color as a name, three numbers and a code. They work out how many colors a number of bits can show. Played in Inside the Machine's Bits & Pixels. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-DA-07"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "represent the same data several ways: binary, decimal, pixels, gray levels and RGB",
+  "say how many values a number of bits can show"
+ ],
+ "questCode": "4 2 0 0",
+ "params": "chapter=bits&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "binary cards (16 8 4 2 1), one set for the board",
+  "8 by 8 pixel grids (for the twin or the block day)",
+  "login cards"
+ ],
+ "doNow": "Send the word HI across the room with only a flashlight that turns on and off. How many flashes per letter?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: binary cards, then a color as three numbers"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Bits & Pixels"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u5-2",
+  "items": [
+   "2-5.2-e1",
+   "2-5.2-e2",
+   "2-5.3-r1",
+   "2-5.3-e1",
+   "2-5.2-r1"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 5.2, one vocabulary item, one preview of today, one more from 5.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "bits",
+   "level": 1
+  },
+  "do": [
+   "Give five students the binary cards 16 8 4 2 1; face up is on (1). Make the class's grade number, then write it in binary on the board.",
+   "Write 255, 0, 0 on the board and ask the question below. Then open Inside the Machine at Bits & Pixels on the projector (Open game at this chapter) and play level 1."
+  ],
+  "say": [
+   "Everything in a computer is numbers, and every number is on/off switches.",
+   "The same data can be written many ways: a color name, three RGB numbers and a row of bits can all be the same color."
+  ],
+  "ask": [
+   "Why does a color need three numbers?"
+  ],
+  "afterAsk": "Take answers until someone says red, green and blue. Each number says how much of one light, from 0 to 255; 255, 0, 0 is pure red.",
+  "bigIdea": "The same data can be encoded many ways: binary, decimal, pixels and RGB.",
+  "vocab": [
+   "bit",
+   "byte",
+   "binary",
+   "RGB",
+   "encoding"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "inside-the-machine",
+  "chapter": "bits",
+  "chapterTitle": "Bits & Pixels",
+  "levels": 7,
+  "goal": "4 levels",
+  "stretch": "the chapter, then 3 stars",
+  "solo": "one device per student; a neighbor may read the numbers out loud, never touch your screen",
+  "lookFors": [
+   "doubling wrong when reading binary: each card is twice the one to its right",
+   "thinking 2 bits give 2 colors (they give 4)",
+   "moving all three RGB sliders together and getting only grays"
+  ],
+  "misconception": "Each extra bit does not add one more value: it doubles how many values you can show.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Why three numbers for a color?",
+  "How many colors can 2 bits show? How many with 3?"
+ ],
+ "showMe": "One student matches a swatch with the RGB sliders on the projector while the class calls out more red, less green.",
+ "exit": {
+  "setId": "csq-u5-2",
+  "items": [
+   "2-5.3-e1",
+   "2-5.3-e2",
+   "2-5.3-e3"
+  ],
+  "sentencePrompt": "Pick one color or number from today and write it in two different ways.",
+  "frame": "___ can be written as ___ or as ___.",
+  "rubric": [
+   {
+    "line": "Encoding: the same data in different forms",
+    "ids": [
+     "2-DA-07"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Writes a number or a color in one form",
+     "Writes the same data correctly in two forms",
+     "Also says how many values a number of bits can show, or why a color needs three numbers"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the binary cards on the board during Play",
+   "a printed doubling strip: 1, 2, 4, 8, 16",
+   "hint 1 sets one RGB slider for you"
+  ],
+  "stretch": [
+   "write your initials as 8-bit letters",
+   "how many colors with 8 bits per pixel? Work it out by doubling"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Binary Cards and Pixel Grids",
+  "minutes": 15,
+  "materials": [
+   "binary cards (16 8 4 2 1) per pair",
+   "8 by 8 pixel grids",
+   "gray and color pencils"
+  ],
+  "steps": [
+   "Pairs convert five numbers between binary and decimal with the cards.",
+   "They color a pixel grid from rows of 0s and 1s, then recolor it with four gray levels using 2 bits per pixel.",
+   "They write the code for each gray level and count how many levels 3 bits would give.",
+   "Share: one picture, three encodings. Which takes the most bits?"
+  ],
+  "printables": [
+   "binary-cards",
+   "pixel-grid"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: how could you send the word HI across the room with only a flashlight that turns on and off, and how many flashes per letter?",
+  "Play Inside the Machine, chapter Bits & Pixels, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 4 2 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Binary Cards and Pixel Grids, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Bits & Pixels"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-5.2-e1",
+   "2-5.3-r1"
+  ],
+  "discuss": "Why three numbers for a color?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Binary Cards and Pixel Grids twin (15 minutes) before Play",
+   "the 8-bit letters stretch after Play",
+   "10 minutes of the Unit 5 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Digits in game text are spaced, like 255 0 128, and RGB on the board is written 255, 0, 128.",
+  "Vocabulary beyond the five on the learn card: pixel, storage, gray level, decimal.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Send the word HI across the room with only a flashlight that turns on and off. How many flashes per letter?\n\nBig idea: The same data can be encoded many ways: binary, decimal, pixels and RGB.\n\nWe will talk about:\n- Why three numbers for a color?\n- How many colors can 2 bits show? How many with 3?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Bits & Pixels",
+   "minutes": 18,
+   "gameSlug": "inside-the-machine",
+   "options": "chapter=bits&band=2&lock=1",
+   "questCode": "4 2 0 0",
+   "standards": [
+    "2-DA-07"
+   ],
+   "body": "Goal: 4 levels. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 4 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about bits, colors and encoding."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-DA-07"
+   ],
+   "rubric": "exit",
+   "body": "Pick one color or number from today and write it in two different ways.\nFrame: ___ can be written as ___ or as ___."
+  }
+ ]
+}

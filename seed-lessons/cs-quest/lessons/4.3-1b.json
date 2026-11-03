@@ -1,0 +1,304 @@
+{
+ "id": "csq-1b-4.3",
+ "key": "csq-1b-4.3",
+ "version": 1,
+ "unit": 4,
+ "order": 13,
+ "n": "4.3",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "4.3 · Secret messages (Spotting tricks, ciphers)",
+ "name": "Secret messages (Spotting tricks, ciphers)",
+ "short": "Secret messages",
+ "summary": "Students learn the signs of a trick message: hurry, a prize, a request for private information, a sender they do not know. In Packet Post's Spot the Trick they tap the cues on each card and choose safe, trick or ask for help; then, for fun, they make and read a secret message on a cipher wheel. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "1B-NI-05"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "spot the signs of a trick message",
+  "say what to do: do not reply, and tell a trusted adult",
+  "make and read a secret message with a cipher wheel (for fun)"
+ ],
+ "questCode": "5 1 0 0",
+ "params": "chapter=tricks&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Cipher Wheels printable (one per pair, with a paper fastener)",
+  "Trick or Treat cards and a printed cue checklist",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "A message says: You won a free tablet! Reply with your mailbox key to claim it. What do you do?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: vote safe or trick on three cards, then the cipher wheel"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Spot the Trick"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u4-1b",
+  "items": [
+   "1b-4.2-e1",
+   "1b-4.2-e2",
+   "1b-4.3-r1",
+   "1b-4.3-e1",
+   "1b-4.2-r1"
+  ],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 4.2, one vocabulary item, one preview of today, one more from 4.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "tricks",
+   "level": 1
+  },
+  "do": [
+   "Open Packet Post at Spot the Trick on the projector (Open game at this chapter). Show card 1. The class votes with thumbs: up for safe, down for trick. Tap the cues the class finds, then choose. Do cards 2 and 3 the same way.",
+   "Hold up a paper cipher wheel. Turn it 3 and decode a short word with the class."
+  ],
+  "say": [
+   "Real companies never ask for your passphrase. A message that says hurry, you won, or reply with your key is a trick.",
+   "When in doubt, do not reply and do not tap. Tell a trusted adult.",
+   "A trick message that fishes for your passphrase is called phishing."
+  ],
+  "ask": [
+   "What gave card 1 away? Which word or button made you suspicious?"
+  ],
+  "afterAsk": "List the cues on the board as they come: hurry, a prize, asks for private information, a sender you do not know. Leave the list up during Play.",
+  "bigIdea": "Real companies never ask for your passphrase; when in doubt, ask a trusted adult.",
+  "vocab": [
+   "trick",
+   "phishing",
+   "cipher",
+   "key"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "packet-post",
+  "chapter": "tricks",
+  "chapterTitle": "Spot the Trick",
+  "then": {
+   "chapter": "ciphers",
+   "levels": "1-3",
+   "enrichment": true
+  },
+  "levels": 6,
+  "goal": "4 cards",
+  "stretch": "all 6 cards, then Secret Messages levels 1-3 for fun",
+  "pairs": "driver and navigator on one device; swap at the chime every 2 cards; the navigator reads the card out loud and names a cue before the driver chooses",
+  "lookFors": [
+   "calling a message safe because it has a friendly picture or a name they know",
+   "choosing safe for a message that only asks you to tap a button",
+   "never choosing the ask-for-help answer, even when unsure"
+  ],
+  "misconception": "A trick message does not look scary: it looks friendly and exciting, and the sign is what it asks for, like hurrying or private information.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Which cue gave the trick away most often?",
+  "What do you do when you are not sure a message is safe?"
+ ],
+ "showMe": "One pair shows a card they got wrong on the projector; the class finds the cue they missed.",
+ "exit": {
+  "setId": "csq-u4-1b",
+  "items": [
+   "1b-4.3-e1",
+   "1b-4.3-e2",
+   "1b-4.3-e3"
+  ],
+  "sentencePrompt": "What does a trick message often do, and what should you do when you get one?",
+  "frame": "A trick message often ___, so I ___.",
+  "rubric": [
+   {
+    "line": "Spotting trick messages and what to do",
+    "ids": [
+     "1B-NI-05"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one sign of a trick message",
+     "Names a sign and says what to do: do not reply, tell a trusted adult",
+     "Names two or more signs and explains why a real company would not ask"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "a printed cue checklist on the desk: hurry, prize, private information, unknown sender",
+   "read-aloud on",
+   "hint 1 circles the part of the card to read again"
+  ],
+  "stretch": [
+   "write a secret message on the cipher wheel for a neighbor pair to decode",
+   "3 stars on every card"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Cipher Wheels and Trick or Treat",
+  "minutes": 15,
+  "materials": [
+   "Cipher Wheels printable and a paper fastener per pair",
+   "Trick or Treat cards",
+   "the cue checklist"
+  ],
+  "steps": [
+   "Pairs sort the Trick or Treat cards into safe and trick, and circle the cue on each trick card.",
+   "Check together with the cue checklist; for every trick card, say what to do.",
+   "Build the cipher wheel. One partner turns it to a key and writes a short word in code; the other decodes it with the same key.",
+   "Share: why can only the person with the key read the message?"
+  ],
+  "printables": [
+   "cipher-wheel",
+   "trick-or-treat-cards",
+   "cue-checklist"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: a message says you won a free tablet and asks you to reply with your mailbox key to claim it. What do you do?",
+  "Play Packet Post, chapter Spot the Trick, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 5 1 0 0. Goal: 4 cards. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Cipher Wheels and Trick or Treat, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Spot the Trick"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "1b-4.2-e1",
+   "1b-4.3-r1"
+  ],
+  "discuss": "Which cue gave the trick away most often?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Cipher Wheels and Trick or Treat twin (15 minutes) before Play",
+   "the secret message swap after Play",
+   "10 minutes of the Unit 4 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Senders on the cards are roles (Prize Team, Your bank) and buttons are verbs (Claim now); no real names appear.",
+  "The cipher wheel is for fun: it is not part of the exit evidence for this band, though one exit item asks why the key keeps a message private.",
+  "Never use the words a trick message uses to ask for a passphrase; the Do Now says mailbox key on purpose.",
+  "Shared devices: this is an odd lesson in the unit, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: A message says: You won a free tablet! Reply with your mailbox key to claim it. What do you do?\n\nBig idea: Real companies never ask for your passphrase; when in doubt, ask a trusted adult.\n\nWe will talk about:\n- Which cue gave the trick away most often?\n- What do you do when you are not sure a message is safe?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Spot the Trick",
+   "minutes": 18,
+   "gameSlug": "packet-post",
+   "options": "chapter=tricks&band=1b&lock=1",
+   "questCode": "5 1 0 0",
+   "standards": [
+    "1B-NI-05"
+   ],
+   "body": "Goal: 4 cards. Stretch: all 6 cards. Then the game takes you to secret messages, just for fun.\nIf the game asks for a quest code, it is 5 1 0 0.\nPairs: driver and navigator. Swap when you hear the chime. The navigator reads the card out loud and names a clue."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about trick messages."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "1B-NI-05"
+   ],
+   "rubric": "exit",
+   "body": "What does a trick message often do, and what should you do when you get one?\nFrame: A trick message often ___, so I ___."
+  }
+ ]
+}

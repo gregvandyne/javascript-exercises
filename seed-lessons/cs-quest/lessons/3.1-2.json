@@ -1,0 +1,299 @@
+{
+ "id": "csq-2-3.1",
+ "key": "csq-2-3.1",
+ "version": 1,
+ "unit": 3,
+ "order": 8,
+ "n": "3.1",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "3.1 · Sort it out (Organize data)",
+ "name": "Sort it out (Organize data)",
+ "short": "Sorting data",
+ "summary": "Students learn that real data is messy and must be cleaned before it is charted. In Data Detective's Clean-Up Crew they fix typos, merge repeated rows and remove impossible values, then turn counts into percentages before comparing groups of different sizes. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-DA-08"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "clean a messy data set: fix typos, merge repeated rows and remove impossible values",
+  "turn counts into percentages before comparing groups of different sizes",
+  "say what the clean data showed and why"
+ ],
+ "questCode": "4 2 0 0",
+ "params": "chapter=cleanup&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Human Bar Chart cards (one fruit card per student plus three messy cards, for the twin or the block day)",
+  "login cards"
+ ],
+ "doNow": "Most common shoe color in this room: how could we find out fast? Name one thing that could make the count wrong.",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: a messy pet survey, chart it, clean it, chart it again"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Clean-Up Crew"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u3-2",
+  "items": [
+   "2-u3-o1",
+   "2-3.1-r1",
+   "2-3.1-e1",
+   "2-3.1-e2",
+   "2-3.1-e3"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so before you start"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "cleanup",
+   "level": 1
+  },
+  "do": [
+   "Open Data Detective at Clean-Up Crew on the projector (Open game at this chapter). Case 1 is a pet survey with a row that says twelvety pets and three spellings of dog. Read the question out loud: what is the most common pet?",
+   "Chart it as it is first: dog splits into three short bars. Then fix the spellings, merge the repeated row and remove the impossible one. Chart it again and pin the claim."
+  ],
+  "say": [
+   "Real data is messy. People make typos, answer twice or write a number that cannot be true.",
+   "Clean first, then chart. And never remove a row just because you do not like its answer."
+  ],
+  "ask": [
+   "Which rows should we fix, which should we merge and which should we remove? How do you know?"
+  ],
+  "afterAsk": "Take three answers. Name the three moves on the board: a typo gets fixed, a repeat gets merged, an impossible value gets removed. Point at the clean chart: one tall dog bar where the messy one had three short ones.",
+  "bigIdea": "Clean the data first, or the chart tells the wrong story.",
+  "vocab": [
+   "data",
+   "clean",
+   "outlier",
+   "percent",
+   "table"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "data-detective",
+  "chapter": "cleanup",
+  "chapterTitle": "Clean-Up Crew",
+  "levels": 6,
+  "goal": "4 cases",
+  "stretch": "the chapter, then 3 stars: the star goes to students who never remove a good row",
+  "solo": "one device per student; a neighbor may read the question out loud, never touch your screen",
+  "lookFors": [
+   "removing every odd-looking row, including true answers that are just unusual",
+   "comparing raw counts between two classes of different sizes instead of percentages",
+   "merging rows that only look alike: two students with the same answer are not a repeat"
+  ],
+  "misconception": "Cleaning is not deleting what you do not like: fix typos, merge true repeats, remove only values that cannot be true, and compare groups of different sizes by percent, not by count.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What would have gone wrong if we kept the messy rows? Show me a case where the messy chart told the wrong story.",
+  "One class has 20 students and another has 30. Why compare percentages instead of counts?"
+ ],
+ "showMe": "One student shows case 4 on the projector, the messy chart first and the clean one second; the class says what changed.",
+ "exit": {
+  "setId": "csq-u3-2",
+  "items": [
+   "2-3.1-e1",
+   "2-3.1-e2",
+   "2-3.1-e3"
+  ],
+  "sentencePrompt": "Pick one case you cleaned today. What did the clean data show, and what did you fix to make it show?",
+  "frame": "I fixed ___ in the data. Before, the result was ___; after cleaning, it was ___.",
+  "rubric": [
+   {
+    "line": "Cleaning data: what was fixed and how it changed the result",
+    "ids": [
+     "2-DA-08"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one fix: a typo, a repeat or an impossible value",
+     "Names a fix and says how it changed the chart or the claim",
+     "Also says why counts became percentages, or why an unusual but true row stays"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "cases 1-3 glow the rows that need a fix",
+   "a printed Fix / Merge / Remove card on every desk",
+   "hint 1 asks: could this value be true?"
+  ],
+  "stretch": [
+   "3 stars on every case: no good row removed",
+   "case 6 compares two classes of different sizes; students write the percent claim on paper before they pin it"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Human Bar Chart, messy edition",
+  "minutes": 15,
+  "materials": [
+   "one fruit card per student (four fruits)",
+   "three messy cards: a misspelled fruit, an impossible count, a second card for one student",
+   "masking tape or chalk for a baseline"
+  ],
+  "steps": [
+   "Every student gets a fruit card; hand the three messy cards to three volunteers as well. Ask: which fruit is the most popular in our class?",
+   "Group: students line up behind the sign for their fruit on the baseline. The messy cards make a fifth line and a doubled student.",
+   "Clean: the class decides for each messy card whether to fix it, merge it or remove it, and says why. Line up again.",
+   "Percent: tell the class another class of 20 had 10 apples. Work out what percent of our class chose apples and compare fairly.",
+   "Share: what would the chart have said if we kept the messy cards? Write the clean claim on the board."
+  ],
+  "printables": [
+   "fruit-cards",
+   "messy-cards",
+   "question-cards"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: most common shoe color in this room, how could we find out fast, and what could make the count wrong?",
+  "Play Data Detective, chapter Clean-Up Crew, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 4 2 0 0. Goal: 4 cases. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Human Bar Chart, messy edition, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Clean-Up Crew"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-u3-o1",
+   "2-3.1-r1"
+  ],
+  "discuss": "What would have gone wrong if we kept the messy rows? Show me a case where the messy chart told the wrong story.",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Human Bar Chart twin (15 minutes) before Play",
+   "the 3-star stretch and case 6 after Play",
+   "10 minutes of chapter Model Makers (quest code 5 2 0 0) as a preview for students who finish"
+  ]
+ },
+ "notes": [
+  "The charts in the game are bars with the numbers printed on them, so they read fine on a washed-out projector and with a screen reader.",
+  "The warm-up is a pre-test for unit 3: nobody is expected to know the answers yet. Say so before you start.",
+  "Vocabulary beyond the five on the learn card: sort, group.",
+  "Most students reach case 4 or 5 of 6 in 18 minutes: that is success.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Most common shoe color in this room: how could we find out fast? Name one thing that could make the count wrong.\n\nBig idea: Clean the data first, or the chart tells the wrong story.\n\nWe will talk about:\n- What would have gone wrong if we kept the messy rows? Show me a case where the messy chart told the wrong story.\n- One class has 20 students and another has 30. Why compare percentages instead of counts?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. It is fine not to know them yet: we check again at the end."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Clean-Up Crew",
+   "minutes": 18,
+   "gameSlug": "data-detective",
+   "options": "chapter=cleanup&band=2&lock=1",
+   "questCode": "4 2 0 0",
+   "standards": [
+    "2-DA-08"
+   ],
+   "body": "Goal: 4 cases. Stretch: finish the chapter, then 3 stars. Never remove a good row.\nIf the game asks for a quest code, it is 4 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about cleaning data."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-DA-08"
+   ],
+   "rubric": "exit",
+   "body": "Pick one case you cleaned today. What did the clean data show, and what did you fix to make it show?\nFrame: I fixed ___ in the data. Before, the result was ___; after cleaning, it was ___."
+  }
+ ]
+}

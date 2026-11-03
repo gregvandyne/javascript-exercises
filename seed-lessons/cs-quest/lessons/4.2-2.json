@@ -1,0 +1,313 @@
+{
+ "id": "csq-2-4.2",
+ "key": "csq-2-4.2",
+ "version": 1,
+ "unit": 4,
+ "order": 12,
+ "n": "4.2",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "4.2 · Lock it up (Passphrases, private information, security)",
+ "name": "Lock it up (Passphrases, private information, security)",
+ "short": "Passphrases",
+ "summary": "Students sort twelve security measures into physical and digital, see why a sealed connection matters on a shop page, set a router passphrase and a backup rule, and finish with Share or Shield: six pieces of information, each with a benefit and a risk, to decide public or private and pick the reason. Played in Packet Post's Lock It chapter. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-NI-05",
+   "2-IC-23"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "explain how physical and digital measures protect information, and why",
+  "weigh the benefit and the risk before making information public"
+ ],
+ "questCode": "4 2 0 0",
+ "params": "chapter=locks&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Lock Sort cards with the twelve measures (for the twin or the block day)",
+  "login cards"
+ ],
+ "doNow": "Which would you NOT tell a stranger: favorite color, address, pet's name, birthday? Which one could a stranger use to find you?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: physical or digital, and the padlock on a page"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Lock It"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u4-2",
+  "items": [
+   "2-4.1-e1",
+   "2-4.1-e2",
+   "2-4.2-r1",
+   "2-4.2-e1",
+   "2-4.1-r1"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 4.1, one vocabulary item, one preview of today, one more from 4.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "locks",
+   "level": 1
+  },
+  "do": [
+   "Open Packet Post at Lock It on the projector (Open game at this chapter). Level 1 sorts twelve security measures into physical and digital. Sort the first five with the class.",
+   "Hold the locked door card back. Ask the question below before you sort it."
+  ],
+  "say": [
+   "Security has two halves. Physical security protects the machine: a locked door, a locked cart.",
+   "Digital security protects the data: a passphrase, two-step sign-in, a firewall, a sealed connection.",
+   "The padlock means the connection is sealed. It does not mean the shop is honest.",
+   "HTTPS is the padlock on a page: your details travel in a sealed envelope instead of an open postcard. It seals the trip; it does not make the shop honest."
+  ],
+  "ask": [
+   "Why is a locked door a cybersecurity measure?"
+  ],
+  "afterAsk": "Take answers until someone says whoever can touch the machine can get at the data. Drop the card in Physical and finish the sort.",
+  "bigIdea": "Protect information two ways, lock the machine and lock the data, and think before you make anything public.",
+  "vocab": [
+   "physical vs digital",
+   "firewall",
+   "HTTPS",
+   "two-step",
+   "passphrase"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "packet-post",
+  "chapter": "locks",
+  "chapterTitle": "Lock It",
+  "levels": 7,
+  "goal": "4 levels",
+  "stretch": "the chapter, ending with Share or Shield (level 7), then 3 stars",
+  "solo": "one device per student; a neighbor may read the scenario out loud, never touch your screen",
+  "lookFors": [
+   "sorting a locked server room as not security because it is not on a screen",
+   "thinking the padlock means the shop is honest",
+   "in Share or Shield, choosing public or private without a reason tile that fits"
+  ],
+  "misconception": "HTTPS seals the trip, not the shop: it keeps your details private on the way, but it does not make a dishonest site safe.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "In Share or Shield, which piece of information was hardest to decide? What was the benefit and what was the risk?",
+  "Why is a locked door a cybersecurity measure?"
+ ],
+ "showMe": "One student plays Share or Shield on the projector; for each piece, the class votes public or private before the student picks the reason tile.",
+ "exit": {
+  "setId": "csq-u4-2",
+  "items": [
+   "2-4.2-e1",
+   "2-4.2-e2",
+   "2-4.2-e3"
+  ],
+  "sentencePrompt": "Pick one piece of information from Share or Shield. Do you keep it private or make it public, and why? Name one measure that protects it.",
+  "frame": "I keep ___ private because ___, and I protect it with ___.",
+  "rubric": [
+   {
+    "line": "Security measures: physical and digital, and why they work",
+    "ids": [
+     "2-NI-05"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a security measure",
+     "Names a measure, says whether it is physical or digital and what it protects",
+     "Also explains why it works, or what a sealed connection does and does not do"
+    ]
+   },
+   {
+    "line": "Public or private: weighing the benefit and the risk",
+    "ids": [
+     "2-IC-23"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says public or private for one piece of information",
+     "Gives a reason that names a benefit or a risk",
+     "Weighs both the benefit and the risk before deciding"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "picture tiles for the twelve measures",
+   "a printed Physical / Digital mat",
+   "hint 1 asks: can you touch it?"
+  ],
+  "stretch": [
+   "3 stars on Share or Shield: every reason tile right",
+   "write a seventh Share or Shield card with its own benefit and risk"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Lock Sort: physical or digital",
+  "minutes": 15,
+  "materials": [
+   "twelve measure cards",
+   "a Physical / Digital mat per pair",
+   "six Share or Shield cards with a benefit and a risk each"
+  ],
+  "steps": [
+   "Pairs sort the twelve measure cards onto Physical and Digital and say what each protects.",
+   "Check together; argue about the tricky ones, like a locked cart full of devices.",
+   "Share or Shield: for each of the six cards, pairs read the benefit and the risk, decide public or private and write one reason.",
+   "Share: which card split the class? What would change your mind?"
+  ],
+  "printables": [
+   "lock-sort-cards",
+   "physical-digital-mat",
+   "share-or-shield-cards"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: which would you not tell a stranger: favorite color, address, pet's name, birthday? Which could a stranger use to find you?",
+  "Play Packet Post, chapter Lock It, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 4 2 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Lock Sort: physical or digital, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Lock It"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-4.1-e1",
+   "2-4.2-r1"
+  ],
+  "discuss": "In Share or Shield, which piece of information was hardest to decide? What was the benefit and what was the risk?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Lock Sort twin (15 minutes) before Play",
+   "the seventh Share or Shield card after Play",
+   "10 minutes of the Unit 4 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Never ask students to say or type a real passphrase. The game never does.",
+  "Vocabulary beyond the five on the learn card: private, backup, router passphrase.",
+  "Share or Shield (level 7) is the evidence for weighing public and private; give it time even if it means skipping level 6.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Which would you NOT tell a stranger: favorite color, address, pet's name, birthday? Which one could a stranger use to find you?\n\nBig idea: Protect information two ways, lock the machine and lock the data, and think before you make anything public.\n\nWe will talk about:\n- In Share or Shield, which piece of information was hardest to decide? What was the benefit and what was the risk?\n- Why is a locked door a cybersecurity measure?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Lock It",
+   "minutes": 18,
+   "gameSlug": "packet-post",
+   "options": "chapter=locks&band=2&lock=1",
+   "questCode": "4 2 0 0",
+   "standards": [
+    "2-NI-05",
+    "2-IC-23"
+   ],
+   "body": "Goal: 4 levels. Stretch: finish the chapter. Level 7 is Share or Shield.\nIf the game asks for a quest code, it is 4 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about security and privacy."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-NI-05",
+    "2-IC-23"
+   ],
+   "rubric": "exit",
+   "body": "Pick one piece of information from Share or Shield. Do you keep it private or make it public, and why? Name one measure that protects it.\nFrame: I keep ___ private because ___, and I protect it with ___."
+  }
+ ]
+}

@@ -1,0 +1,296 @@
+{
+ "id": "csq-1b-5.2",
+ "key": "csq-1b-5.2",
+ "version": 1,
+ "unit": 5,
+ "order": 15,
+ "n": "5.2",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "5.2 · It's not working! (Troubleshooting)",
+ "name": "It's not working! (Troubleshooting)",
+ "short": "Troubleshooting",
+ "summary": "Students learn that troubleshooting is a checklist, not a guess: try the quick, cheap checks first. At Inside the Machine's Fix-It Desk they work through seven tickets, a device that will not turn on, no internet, a frozen app, caps lock, no sound, no charging and a passphrase that keeps failing, choosing checks in a sensible order. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "1B-CS-03"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "try the common fixes in order before asking for help",
+  "say why the quick and cheap checks come first"
+ ],
+ "questCode": "3 1 0 0",
+ "params": "chapter=fixit&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Help Desk printed tickets and check cards",
+  "a large sheet for the class flowchart",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Your tablet has no sound. Write 3 things to check.",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: order the checks for no sound, then ticket 1"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Fix-It Desk"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u5-1b",
+  "items": [
+   "1b-5.1-e1",
+   "1b-5.1-e2",
+   "1b-5.2-r1",
+   "1b-5.2-e1",
+   "1b-5.1-r1"
+  ],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 5.1, one vocabulary item, one preview of today, one more from 5.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "fixit",
+   "level": 1
+  },
+  "do": [
+   "Write the class's Do Now checks for no sound on the board. Put them in order together: volume, headphones, mute, restart, ask for help.",
+   "Open Inside the Machine at Fix-It Desk on the projector (Open game at this chapter). Read ticket 1 out loud. Before tapping, ask the class which check comes first; each check shows how much time it costs."
+  ],
+  "say": [
+   "Good fixers check the cheap things first.",
+   "Troubleshooting is a checklist, not a guess."
+  ],
+  "ask": [
+   "Which check should come first, and why that one?"
+  ],
+  "afterAsk": "Take answers until someone says it is quick. Tap that check first and point at the time it cost. Then let the class order the rest.",
+  "bigIdea": "Troubleshooting is a checklist: try the quick, cheap checks first.",
+  "vocab": [
+   "restart",
+   "reconnect",
+   "check",
+   "troubleshoot"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "inside-the-machine",
+  "chapter": "fixit",
+  "chapterTitle": "Fix-It Desk",
+  "levels": 7,
+  "goal": "4 tickets",
+  "stretch": "the chapter, then 3 stars",
+  "pairs": "driver and navigator on one device; swap at the chime every 2 tickets; the navigator reads the ticket out loud and says the first check before the driver taps",
+  "lookFors": [
+   "choosing restart or ask for help first on every ticket",
+   "doing several checks at once and not knowing which one fixed it",
+   "on the passphrase ticket, missing that caps lock is on"
+  ],
+  "misconception": "Restarting is not the first fix for everything: check the quick, likely things first, like the volume, the cable or caps lock.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What did you check first and why?",
+  "Which ticket would you have asked for help on before today? What would you try now?"
+ ],
+ "showMe": "One pair plays the no sound ticket on the projector; the class calls each check before the driver taps it.",
+ "exit": {
+  "setId": "csq-u5-1b",
+  "items": [
+   "1b-5.2-e1",
+   "1b-5.2-e2",
+   "1b-5.2-e3"
+  ],
+  "sentencePrompt": "A device stops working. What do you check before asking for help?",
+  "frame": "Before asking for help I check ___, then ___.",
+  "rubric": [
+   {
+    "line": "Troubleshooting: checks in a sensible order",
+    "ids": [
+     "1B-CS-03"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one check",
+     "Names two checks in a sensible order, quick ones first",
+     "Also says why that order, or when it is time to ask for help"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "picture check cards",
+   "the class order for no sound stays on the board",
+   "hint 1 asks: what is the quickest thing to check?"
+  ],
+  "stretch": [
+   "the two-faults ticket",
+   "3 stars on every ticket: the fewest wasted checks"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Help Desk",
+  "minutes": 15,
+  "materials": [
+   "printed tickets",
+   "check cards",
+   "a large sheet for the class flowchart"
+  ],
+  "steps": [
+   "Pairs get a ticket and a handful of check cards and put the cards in the order they would try them.",
+   "Two pairs compare their orders and agree on one.",
+   "The class builds a wall flowchart for no sound: each check card goes up with a yes and a no arrow.",
+   "Share: which check is first on every ticket? Hang the flowchart by the device cart."
+  ],
+  "printables": [
+   "help-desk-tickets",
+   "check-cards"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: your tablet has no sound; write 3 things to check.",
+  "Play Inside the Machine, chapter Fix-It Desk, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 3 1 0 0. Goal: 4 tickets. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Help Desk, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Fix-It Desk"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "1b-5.1-e1",
+   "1b-5.2-r1"
+  ],
+  "discuss": "What did you check first and why?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Help Desk twin (15 minutes) before Play",
+   "the two-faults ticket after Play",
+   "10 minutes of the Unit 5 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Hang the class flowchart by the device cart; this lesson pays back all year.",
+  "Ticket 3, no sound with headphones, doubles as the class device test for the Device-first path.",
+  "Most pairs reach ticket 5 of 7 in 18 minutes: that is success.",
+  "Shared devices: this is an even lesson in the unit, so partner B signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Your tablet has no sound. Write 3 things to check.\n\nBig idea: Troubleshooting is a checklist: try the quick, cheap checks first.\n\nWe will talk about:\n- What did you check first and why?\n- Which ticket would you have asked for help on before today? What would you try now?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Fix-It Desk",
+   "minutes": 18,
+   "gameSlug": "inside-the-machine",
+   "options": "chapter=fixit&band=1b&lock=1",
+   "questCode": "3 1 0 0",
+   "standards": [
+    "1B-CS-03"
+   ],
+   "body": "Goal: 4 tickets. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 3 1 0 0.\nPairs: driver and navigator. Swap when you hear the chime. The navigator reads the ticket and says the first check."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about fixing problems."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "1B-CS-03"
+   ],
+   "rubric": "exit",
+   "body": "A device stops working. What do you check before asking for help?\nFrame: Before asking for help I check ___, then ___."
+  }
+ ]
+}

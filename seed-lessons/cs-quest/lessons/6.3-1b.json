@@ -1,0 +1,227 @@
+{
+ "id": "csq-1b-6.3",
+ "key": "csq-1b-6.3",
+ "version": 1,
+ "unit": 6,
+ "order": 19,
+ "n": "6.3",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "6.3 · Share or keep? (Public vs private, using others' work)",
+ "name": "Share or keep? (Public vs private, using others' work)",
+ "short": "Share or keep",
+ "summary": "Students vote on eight sharing dilemmas in Would You Rather (live) with a thirty-second turn-and-talk after each reveal, then sort six media cards with license badges into use freely, use with credit, ask first, and do not use. The lesson sets the credit line the capstone uses: Art: ___. Idea: ___.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-IC-21", "1B-AP-14"],
+  "also": ["1B-NI-05"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "use pictures and music I am allowed to use, and give credit",
+  "keep private information private and say why"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Credit Card sort printable: 6 media cards with license badges and a sorting mat (one set per pair)",
+  "the Would You Rather prompt sheet (printed with the plan)",
+  "login cards"
+ ],
+ "doNow": "You drew a great picture. A classmate copies it and puts their name on it. How do you feel? Now imagine the picture is a song on the internet.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: four badges on the board"],
+  ["0:16", 18, "Would You Rather (live): 8 sharing dilemmas, then the Credit Card sort"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u6-1b",
+  "items": ["1b-6.2-e1", "1b-6.2-e2", "1b-6.3-r1", "1b-6.3-e1", "1b-6.2-r1"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 6.2, one vocabulary item, one preview of today, one more from 6.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "do": [
+   "Draw four badges on the board: public domain (anyone may use it), creative commons with credit (use it and say who made it), all rights reserved (ask first), made by me. Hold up one media card for each and sort it with the class.",
+   "Hold up the found on a search card. Ask where it goes. Put it on ask first, and say why: a search result is not a permission."
+  ],
+  "say": [
+   "A picture, a song or a level belongs to the person who made it. Some makers say yes to everyone, some say yes if you give credit, and some want to be asked.",
+   "Credit is two words: who made it. It costs nothing, and it is how makers get found."
+  ],
+  "ask": [
+   "You used a classmate's drawing as your level background. Where does their name go?"
+  ],
+  "afterAsk": "In the credits, as the artist of the background. Write the credit line on the board the way the capstone will use it: Art: their first name. Idea: your first name.",
+  "bigIdea": "Use what you are allowed to use, give credit, and keep private things private.",
+  "vocab": ["permission", "credit", "public domain", "creative commons"]
+ },
+ "play": {
+  "type": "live",
+  "game": "would-you-rather-live",
+  "starter": "wyr:online:8:20",
+  "count": 8,
+  "secs": 20,
+  "prompts": "wyr-tech.json",
+  "talk": "after every reveal: thirty seconds of turn-and-talk, what could go wrong and what could go right",
+  "room": "start the room from the plan page with your class picked so the run lands in class history; an open room is fine when students are not signed in",
+  "creditSort": {
+   "minutes": 8,
+   "steps": [
+    "Pairs get 6 media cards: public domain, creative commons with credit, all rights reserved, made by me, made by my friend who said yes, found on a search.",
+    "They sort them on the mat into four piles: use freely, use with credit, ask first, do not use.",
+    "Check as a class: one pair reads a pile, the others show thumbs. The found on a search card is the one most pairs get wrong."
+   ]
+  },
+  "lookFors": [
+   "found on a search sorted into use freely: ask who made it and whether they said yes",
+   "a pair that thinks credit fixes everything: all rights reserved stays ask first even with credit"
+  ],
+  "misconception": "If it is online, anyone may use it; in fact a search result is not a permission, and the license badge, not the website, says what you may do.",
+  "earlyFinishers": [
+   "write the credit line for a game that uses two of the cards",
+   "add a seventh card, something you made with a friend, and decide which pile it goes in"
+  ]
+ },
+ "discuss": [
+  "Why share anything at all? What is worth the risk?",
+  "Which card was hardest to sort, and what would you need to know to be sure?"
+ ],
+ "showMe": "Show the class split for the nickname versus real first name dilemma; one student per side says what a stranger learns from each.",
+ "exit": {
+  "setId": "csq-u6-1b",
+  "items": ["1b-6.3-e1", "1b-6.3-e2", "1b-6.3-e3"],
+  "sentencePrompt": "Write the credit line for a game you might make: who made the art, and whose idea it was. Then say one thing you would keep private online, and why.",
+  "frame": "Art: ___. Idea: ___. I keep ___ private because ___.",
+  "rubric": [
+   {
+    "line": "Permission: uses allowed media and knows what the badge allows",
+    "ids": ["1B-IC-21"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says you should ask or check before using something",
+     "Says what a badge allows (public domain or creative commons) and that a search result is not a permission",
+     "Also names what to keep private online and why"
+    ]
+   },
+   {
+    "line": "Credit: gives attribution for art, ideas and remixes",
+    "ids": ["1B-AP-14"],
+    "levels": [
+     "Nothing yet, or no credit",
+     "Names who made the art or the idea",
+     "Writes a credit line naming the artist and the idea",
+     "The credit line also covers a remix or a template, and says where the credit goes in the game"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "badge pictures on the cards and on the mat",
+   "the credit line frame printed on the mat: Art: ___. Idea: ___.",
+   "pairs who are stuck sort two cards first: made by me and all rights reserved"
+  ],
+  "stretch": [
+   "write the full credit line your capstone game will use: template, art, ideas, testers",
+   "sort a seventh card: a song a computer made from other people's songs"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Corners vote and the Credit Card sort",
+  "minutes": 15,
+  "materials": [
+   "the printed dilemma sheet (the 8 sharing dilemmas)",
+   "a sign for corner A and a sign for corner B",
+   "the Credit Card sort cards and mat"
+  ],
+  "steps": [
+   "Read a sharing dilemma out loud; students walk to corner A or B; count hands; thirty seconds of what could go wrong and what could go right.",
+   "After four dilemmas, pairs do the Credit Card sort on the mat.",
+   "Check the piles as a class and write the credit line on the board: Art: first name. Idea: first name."
+  ],
+  "printables": ["license-badges", "credit-sort-mat", "wyr-online-sheet"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: a classmate copies your great picture and puts their name on it; how do you feel, and what if the picture were a song on the internet?",
+  "Run the Corners vote with the printed sharing dilemmas (walk to corner A or B, count hands, thirty seconds of what could go wrong and what could go right), then pairs sort the six media cards on the mat into use freely, use with credit, ask first, do not use. No projector and no login needed.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore: four badges"],
+   ["0:12", 16, "Would You Rather (live), 6 dilemmas, then the Credit Card sort"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-6.2-e1", "1b-6.3-r1"],
+  "discuss": "Why share anything at all? What is worth the risk?",
+  "keep": "the exit ticket is never cut; host 6 dilemmas instead of 8 and keep the whole sort"
+ },
+ "block": {
+  "add": [
+   "all 10 sharing dilemmas, with defenders on every other reveal",
+   "Packet Post, chapter Spot the Trick, on the projector as a class game",
+   "10 minutes of the Unit 6 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "This lesson sets the credit line the capstone uses in 7.4: Art: first name. Idea: first name.",
+  "Start the room from the plan page with your class picked; the step is completed by participation.",
+  "The online dilemmas revisit passphrases, backups and real names from Unit 4; today's exit items are about permission and credit.",
+  "Shared devices: this is an odd lesson, so partner A signs in."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: You drew a great picture. A classmate copies it and puts their name on it. How do you feel? Now imagine the picture is a song on the internet.\n\nBig idea: Use what you are allowed to use, give credit, and keep private things private.\n\nWe will talk about:\n- Why share anything at all? What is worth the risk?\n- Which card was hardest to sort?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Would You Rather (live)",
+   "minutes": 18,
+   "gameSlug": "would-you-rather-live",
+   "live": "wyr",
+   "playHidden": true,
+   "starter": "wyr:online:8:20",
+   "body": "Eight dilemmas about sharing online. Vote, then turn and talk for thirty seconds: what could go wrong, what could go right.\nAfter the dilemmas: the Credit Card sort with your partner. Four piles: use freely, use with credit, ask first, do not use."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about permission and credit."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-IC-21", "1B-AP-14"],
+   "rubric": "exit",
+   "body": "Write the credit line for a game you might make: who made the art, and whose idea it was. Then say one thing you would keep private online, and why.\nFrame: Art: ___. Idea: ___. I keep ___ private because ___."
+  }
+ ]
+}

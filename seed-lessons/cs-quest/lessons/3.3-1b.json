@@ -1,0 +1,329 @@
+{
+ "id": "csq-1b-3.3",
+ "key": "csq-1b-3.3",
+ "version": 1,
+ "unit": 3,
+ "order": 10,
+ "n": "3.3",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "3.3 · Our class survey (Collect, chart, claim)",
+ "name": "Our class survey (Collect, chart, claim)",
+ "short": "Surveys",
+ "summary": "Students collect real data from the whole class with a two-question survey on paper slips, enter the tallies in Data Detective's My Data, choose a chart and pick a claim. Before they finish, each pair asks another pair whether their claim is fair and writes down the answer and the reason. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "1B-DA-06",
+   "1B-DA-07",
+   "1B-IC-20"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "collect answers from the whole class with tally marks",
+  "put the numbers in a chart and make a claim the data shows",
+  "ask another pair if our claim is fair and listen to the reason"
+ ],
+ "questCode": "7 1 2 0",
+ "params": "chapter=my-data&band=1b&mode=tally&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "survey slips with the two provided questions (one slip per student per question)",
+  "tally sheets (one per pair)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Vote on the board with one tally mark: which pet do you like best, dog, cat, other or none?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: My Data with the Do Now tallies"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: My Data"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u3-1b",
+  "items": [
+   "1b-3.2-e1",
+   "1b-3.2-e2",
+   "1b-3.3-r1",
+   "1b-3.3-e1",
+   "1b-3.2-r1"
+  ],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 3.2, one vocabulary item, one preview of today, one more from 3.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "my-data",
+   "level": 1
+  },
+  "do": [
+   "Open Data Detective at My Data on the projector (Open game at this chapter). Count the Do Now tally marks with the class in fives and enter each number with the steppers; pick the labels from the list: dog, cat, other, none.",
+   "Choose the bar chart. Read the claims on the screen out loud and ask the question below."
+  ],
+  "say": [
+   "Real data comes from real people. Collecting it well is half the job.",
+   "A fair claim says only what the chart shows, about the people we asked."
+  ],
+  "ask": [
+   "Is the claim most kids in the world like dogs fair? What can we really say from our chart?"
+  ],
+  "afterAsk": "Take answers until someone says we only asked our class. Pick the claim about our class and pin it. Then hand out the survey slips.",
+  "bigIdea": "Real data comes from real people, and a fair claim says only what the data shows.",
+  "vocab": [
+   "survey",
+   "tally",
+   "category",
+   "data",
+   "claim"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "data-detective",
+  "chapter": "my-data",
+  "chapterTitle": "My Data",
+  "mode": "tally",
+  "levels": 3,
+  "goal": "both survey questions charted and one claim checked by another pair",
+  "stretch": "a claim that uses both charts",
+  "pairs": "pairs hand out and collect the slips for 5 minutes, then share one device: the navigator reads the tally sheet out loud while the driver enters the numbers; swap for the second question at the chime",
+  "lookFors": [
+   "tally marks miscounted: count them in fives",
+   "claims about everyone when only our class was asked",
+   "a pair skipping the is-our-claim-fair check because they are sure they are right"
+  ],
+  "misconception": "A survey of our class tells us about our class, not about everyone, and a claim is fair only when the chart shows it.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Did everyone's chart say the same thing? Why not?",
+  "What did the other pair say about your claim? Did you change it?"
+ ],
+ "showMe": "Two pairs with different charts for the same question show them side by side on the projector; the class finds where the numbers differ and why.",
+ "exit": {
+  "setId": "csq-u3-1b",
+  "items": [
+   "1b-3.3-e1",
+   "1b-3.3-e2",
+   "1b-3.3-e3"
+  ],
+  "sentencePrompt": "What is your pair's claim? Did another pair say it is fair? Write yes or no and their reason.",
+  "frame": "Our claim is ___; another pair said ___.",
+  "rubric": [
+   {
+    "line": "Collecting and charting: a chart that answers the question",
+    "ids": [
+     "1B-DA-06"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Collected answers or made a chart",
+     "Made a chart from the class tallies that answers the question",
+     "Also says why that chart shows the answer best"
+    ]
+   },
+   {
+    "line": "Claims: a claim the chart supports",
+    "ids": [
+     "1B-DA-07"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Writes a claim",
+     "Writes a claim the chart shows, about the class",
+     "Also names the numbers that back it up"
+    ]
+   },
+   {
+    "line": "Feedback: asking another pair if the claim is fair",
+    "ids": [
+     "1B-IC-20"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says another pair looked at the claim",
+     "Writes the other pair's answer and their reason",
+     "Also says what the pair kept or changed because of it"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the two provided questions and a printed tally sheet with the categories filled in",
+   "count the tallies in fives with a finger on each group",
+   "claim tiles to pick from instead of writing one"
+  ],
+  "stretch": [
+   "a claim that uses both charts",
+   "a third question of the pair's own, with three categories and an other"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Tally and Grid",
+  "minutes": 20,
+  "materials": [
+   "survey slips",
+   "tally sheets",
+   "grid paper",
+   "crayons or colored pencils"
+  ],
+  "steps": [
+   "Pairs hand out the two survey questions on slips and collect them.",
+   "They tally the answers on the tally sheet, counting in fives.",
+   "They color one square per answer on grid paper to make a bar chart, with labels.",
+   "They write a claim under the chart, then swap with another pair, who writes yes or no and one reason.",
+   "Share: hang the charts in a row. Which claims did the other pairs say were fair?"
+  ],
+  "printables": [
+   "survey-slips",
+   "tally-sheet",
+   "grid-paper"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: vote with one tally mark on the board for a favorite pet: dog, cat, other or none",
+  "Survey on paper, 25 minutes: pairs hand out the two survey questions on slips, tally the answers, color a bar chart on grid paper and write a claim; then they ask another pair if the claim is fair and write the answer. If devices are out, Data Detective, chapter My Data, quest code 7 1 2 0, takes the tallies; playing signed out is fine.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: My Data"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "1b-3.2-e1",
+   "1b-3.3-r1"
+  ],
+  "discuss": "Did everyone's chart say the same thing? Why not?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the third question stretch after Play",
+   "the Tally and Grid twin as a paper copy to hang in the room",
+   "10 minutes of the Unit 3 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "No names on the slips: the survey counts answers, not people.",
+  "No no-right-answer poll exists in the live sets yet, so the survey runs on paper slips.",
+  "The fairness check is the question step evidence: one yes or no and one reason from another pair.",
+  "Shared devices: this is an odd lesson in the unit, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Vote on the board with one tally mark: which pet do you like best, dog, cat, other or none?\n\nBig idea: Real data comes from real people, and a fair claim says only what the data shows.\n\nWe will talk about:\n- Did everyone's chart say the same thing? Why not?\n- What did the other pair say about your claim? Did you change it?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: My Data",
+   "minutes": 18,
+   "gameSlug": "data-detective",
+   "options": "chapter=my-data&band=1b&mode=tally&lock=1",
+   "questCode": "7 1 2 0",
+   "standards": [
+    "1B-DA-06",
+    "1B-DA-07"
+   ],
+   "body": "Goal: both survey questions charted and one claim checked by another pair. Stretch: write one claim that uses both charts.\nIf the game asks for a quest code, it is 7 1 2 0.\nPairs: hand out the slips, collect them and tally them. The navigator reads the tally sheet; the driver enters the numbers. Swap for the second question. Before you finish, ask another pair: is our claim fair? Write their answer and their reason."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about surveys and fair claims."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "1B-IC-20"
+   ],
+   "rubric": "exit",
+   "body": "What is your pair's claim? Did another pair say it is fair? Write yes or no and their reason.\nFrame: Our claim is ___; another pair said ___."
+  }
+ ]
+}

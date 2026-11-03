@@ -388,6 +388,7 @@ Owner decisions for parent-made accounts (no lawyer needed):
       school-facing privacy text? (4) A "second grown-up in a family" feature (needed before family co-hosting does
       anything) needs its own review.
     - **Question:** do the school terms already cover teachers' saved groups ((a)), or do they need a sentence?
+43a. **CS Quest class Standards tab and rubric marks (`/class/:id/standards`, `.csv`, `?report=1`).** Stores nothing new beyond the rubric marks 0-3 (`step_progress.marks`, P11); it reads the class's step progress, quiz marks and live exit-ticket scores and shows, per CSTA standard, how many students practiced, the class's exit-ticket accuracy, rubric means and (teachers only) the names of students who got none right. Seen only by the class's teachers and school admins (never students, the projector or public pages); the CSV holds counts only; the school report is aggregate with no names; rows go with the class (`onClassLeave` hook) and a student who leaves stops showing, like the gradebook. Education records under FERPA: please confirm no new notice is needed.
 ### AI voices: games, lessons and Oomba Live reading their own words aloud (2026-11, server part; not yet reviewed)
 
 44. **AI voices (text to speech with OpenAI).** docs/decisions.md "AI voices", docs/tts-design.md. **Off** until the

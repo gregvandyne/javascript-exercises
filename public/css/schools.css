@@ -115,10 +115,10 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .reqhead>form{margin:0}
 .classtabs a{gap:2px}
 .tabbadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-inline-start:6px;border-radius:999px;background:var(--spark);color:var(--on-accent);font-size:.78rem;font-weight:800}
-/* Phones: the five class tabs share the width, icon above the label. Words are never broken: a tab is at least as
+/* Phones: the six class tabs share the width, icon above the label. Words are never broken: a tab is at least as
    wide as its longest word (German "Einstellungen"), and on the narrowest phones the row scrolls instead. */
 @media (max-width:600px){
-  .classtabs{display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:0}
+  .classtabs{display:grid;grid-template-columns:repeat(6,minmax(min-content,1fr));gap:0}
   .classtabs a{flex-direction:column;justify-content:center;gap:2px;padding:6px 3px;min-height:56px;font-size:.78rem;text-align:center;white-space:normal;line-height:1.15;position:relative}
   .classtabs a>[aria-hidden]{font-size:1.2rem}
   .classtabs .tabbadge{position:absolute;top:2px;inset-inline-end:calc(50% - 26px);margin:0;min-width:18px;height:18px;font-size:.7rem}

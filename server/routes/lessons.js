@@ -18,6 +18,9 @@ import { audit } from '../db.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 
+import * as T from '../services/lesson-templates.js';
+import { editorBanner } from '../views/cs-quest.js';
+
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
@@ -105,6 +108,7 @@ router.get('/teach/lessons', requireUser, (req, res) => {
           <label class="sr-only" for="nf">${t('lessons.folder.name')}</label><input class="input grow" id="nf" name="name" maxlength="60" placeholder="${t('lessons.folder.newPlaceholder')}" required>
           <button class="btn btn-primary" type="submit">📁 ${t('lessons.folder.new')}</button></form>
         <p class="small muted">${t('lessons.folder.hint')}</p></details>
+      <a class="btn" href="/teach/cs-quest?school=${school.id}">💻 ${t('cs.program.title')}</a>
       <details class="libdrop aidraft" ${open === 'ai' ? raw('open') : ''}><summary class="btn">✨ ${t('lessons.ai.button')}</summary>
         <form class="formgrid aiform" data-api="/api/lessons/draft" novalidate><input type="hidden" name="schoolId" value="${school.id}"><input type="hidden" name="folderId" value="${folder ? folder.id : ''}"><input type="hidden" name="classId" value="${classId}">
           <div class="field wide"><label for="ai-t">${t('lessons.ai.topic')}</label><input class="input" id="ai-t" name="topic" maxlength="200" required placeholder="${t('lessons.ai.topicPlaceholder')}" ${open === 'ai' ? raw('autofocus') : ''}><span class="err" id="ai-t-err"></span></div>
@@ -273,6 +277,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
       <form id="lv-q-${l.id}" hidden data-api="/api/live/sets/from-lesson/${l.id}"></form>`
       : html`<form data-api="/api/lessons/${l.id}/copy"><button class="btn btn-primary" type="submit">📄 ${t('lessons.shared.copy')}</button></form>`}</div>
   ${edit && req.query.copied ? html`<p class="notice good">📄 ${t('lessons.lesson.copiedNotice')}</p>` : ''}
+  ${l.template_key && T.getTemplate(l.template_key) ? editorBanner(req, l, T.getTemplate(l.template_key), { edit }) : ''}
   ${drafted ? html`<p class="notice ${drafted === 'ai' ? '' : 'warn'}">${drafted === 'ai' ? `✨ ${t('lessons.ai.done')}` : t('lessons.ai.template')}</p>` : ''}
   ${assigned.length ? html`<p class="notice livenote">📌 ${tHtml(t, 'lessons.editor.live', { classes: progressLinks, count: started })}</p>` : ''}
   ${edit ? html`<details class="panel lessondetails"><summary>✏️ ${t('lessons.lesson.editDetails')}</summary>

@@ -1,0 +1,297 @@
+{
+ "id": "csq-2-3.2",
+ "key": "csq-2-3.2",
+ "version": 1,
+ "unit": 3,
+ "order": 9,
+ "n": "3.2",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "3.2 · What does the data say? (Claims, predictions, models)",
+ "name": "What does the data say? (Claims, predictions, models)",
+ "short": "Predictions",
+ "summary": "Students test a model's prediction against results and refine it. In Data Detective's Model Makers they set a ramp rule with a slider, run five trials, compare, and change the rule; case 5, Game Balance, tunes a runner's jump so about 80 percent of 20 test runs finish, a preview of playtesting their own game. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-DA-09"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "test a model's prediction against results",
+  "change the model when the results disagree, and test it again"
+ ],
+ "questCode": "5 2 0 0",
+ "params": "chapter=models&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Paper Predictions kit (a book ramp, a toy car and a ruler per group, and a ramp rule card, for the twin or the block day)",
+  "login cards"
+ ],
+ "doNow": "It rained the last 3 Mondays. Will it rain next Monday? How sure are you, and what rule are you using to predict?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: the ramp rule, five trials, refine"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Model Makers"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u3-2",
+  "items": [
+   "2-3.1-e1",
+   "2-3.1-e2",
+   "2-3.2-r1",
+   "2-3.2-e1",
+   "2-3.1-r1"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 3.1, one vocabulary item, one preview of today, one more from 3.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "models",
+   "level": 1
+  },
+  "do": [
+   "Open Data Detective at Model Makers on the projector (Open game at this chapter). Case 1 is the ramp: the rule says distance = 2 × height. Set a height, read the prediction out loud, then run 5 trials.",
+   "Compare the trials with the prediction. Let the class change the rule with the slider, run 5 trials again and watch the error get smaller."
+  ],
+  "say": [
+   "A model is a rule that predicts what will happen. A simulation runs the rule so we can check it against results.",
+   "When the results disagree with the model, we do not ignore the results. We refine the model and test again."
+  ],
+  "ask": [
+   "The rule predicted one distance and every trial landed farther. Is the rule wrong, or were the trials unlucky? How many trials before you trust it?"
+  ],
+  "afterAsk": "Take three answers. Agree that one trial can be unlucky, but five trials that all land farther are a pattern. Move the slider one step and run the trials again.",
+  "bigIdea": "A model is only as good as its last test: predict, compare, refine.",
+  "vocab": [
+   "model",
+   "simulation",
+   "refine",
+   "predict",
+   "evidence"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "data-detective",
+  "chapter": "models",
+  "chapterTitle": "Model Makers",
+  "levels": 5,
+  "goal": "3 cases",
+  "stretch": "the chapter, then 3 stars; case 5 is Game Balance",
+  "solo": "one device per student; a neighbor may read the results out loud, never touch your screen",
+  "lookFors": [
+   "changing the rule after one trial",
+   "changing two things at once and not knowing which change helped",
+   "in Game Balance, tuning until one run finishes instead of about 16 of 20"
+  ],
+  "misconception": "One good trial does not prove a model: you compare it with many results, and when they disagree you change the model, not the data.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "How many trials before you trusted your rule?",
+  "In Game Balance, why test 20 runs instead of one? What does that tell you about testing a game you make?"
+ ],
+ "showMe": "One student shows Game Balance on the projector: the first jump rule, the 20 runs, the change and the 20 runs again.",
+ "exit": {
+  "setId": "csq-u3-2",
+  "items": [
+   "2-3.2-e1",
+   "2-3.2-e2",
+   "2-3.2-e3"
+  ],
+  "sentencePrompt": "Pick one model from today. What did it predict, what happened, and what did you change?",
+  "frame": "My model predicted ___, the results showed ___, so I ___.",
+  "rubric": [
+   {
+    "line": "Models: testing and refining a prediction",
+    "ids": [
+     "2-DA-09"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says what the model predicted or what happened",
+     "Compares the prediction with the results and names a change to the model",
+     "Also says the change was tested again and whether the error got smaller"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "a printed rule card with the ramp rule and an empty results table",
+   "change one thing at a time: only the slider moves",
+   "hint 1 shows the average of the trials next to the prediction"
+  ],
+  "stretch": [
+   "case 5, Game Balance: about 16 of 20 test runs finish",
+   "write a better plant rule on paper and test it in case 4"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper Predictions: the ramp",
+  "minutes": 15,
+  "materials": [
+   "a ramp made from a book and a board",
+   "a toy car",
+   "a ruler or a tape measure",
+   "a ramp rule card: distance = 2 × height"
+  ],
+  "steps": [
+   "Groups measure the ramp height and use the rule card to predict how far the car rolls.",
+   "Run 5 trials, measure each and write them in the table. Work out the average.",
+   "Compare the average with the prediction. If they disagree, change the number in the rule.",
+   "Change the height, predict with the new rule and run 5 more trials. Did the error get smaller?",
+   "Share: which group's rule fits best? Write it on the board with its error."
+  ],
+  "printables": [
+   "ramp-rule-card",
+   "results-table"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: it rained the last 3 Mondays; will it rain next Monday, how sure are you, and what rule are you using?",
+  "Play Data Detective, chapter Model Makers, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 5 2 0 0. Goal: 3 cases. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Paper Predictions: the ramp, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Model Makers"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-3.1-e1",
+   "2-3.2-r1"
+  ],
+  "discuss": "How many trials before you trusted your rule?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the ramp twin (15 minutes) before Play",
+   "Game Balance and the plant rule stretch after Play",
+   "10 minutes of chapter Clean-Up Crew (quest code 4 2 0 0) as review"
+  ]
+ },
+ "notes": [
+  "Game Balance previews the capstone playtest: about 80 percent of test runs finishing is a fair target for a game, too.",
+  "Vocabulary beyond the five on the learn card: claim, error, trial.",
+  "Most students reach case 4 of 5 in 18 minutes: that is success.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: It rained the last 3 Mondays. Will it rain next Monday? How sure are you, and what rule are you using to predict?\n\nBig idea: A model is only as good as its last test: predict, compare, refine.\n\nWe will talk about:\n- How many trials before you trusted your rule?\n- In Game Balance, why test 20 runs instead of one? What does that tell you about testing a game you make?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Model Makers",
+   "minutes": 18,
+   "gameSlug": "data-detective",
+   "options": "chapter=models&band=2&lock=1",
+   "questCode": "5 2 0 0",
+   "standards": [
+    "2-DA-09"
+   ],
+   "body": "Goal: 3 cases. Stretch: finish the chapter, then 3 stars. Case 5 is Game Balance.\nIf the game asks for a quest code, it is 5 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about models and predictions."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-DA-09"
+   ],
+   "rubric": "exit",
+   "body": "Pick one model from today. What did it predict, what happened, and what did you change?\nFrame: My model predicted ___, the results showed ___, so I ___."
+  }
+ ]
+}

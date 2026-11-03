@@ -8,7 +8,7 @@ import path from 'node:path';
 import { findTouching } from './touching.js';
 
 const SHOTS = process.env.SEO_SHOTS || 'test-results/seo-shots';
-const PAGES = ['/teachers', '/learn/math-games', '/learn/word-games', '/learn/make-a-game', '/', '/g/sum-racer'];
+const PAGES = ['/teachers', '/learn/math-games', '/learn/word-games', '/learn/make-a-game', '/learn/computer-science', '/teachers/cs-quest', '/', '/g/sum-racer'];
 const VIEWS = [
   { width: 360, height: 780, scheme: 'light' }, { width: 360, height: 780, scheme: 'dark' },
   { width: 1280, height: 860, scheme: 'light' }, { width: 1280, height: 860, scheme: 'dark' },

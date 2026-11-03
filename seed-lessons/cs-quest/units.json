@@ -1,0 +1,1207 @@
+{
+ "about": "CS Quest catalogue index: the seven units, their 23 lessons (46 lesson files, one per band), the published paths, the period and its variants, the program-wide rules, materials and FAQ lines. Owner A (curriculum). Schema in README.md; checked by tests/unit/cs-quest-catalogue.test.js. Kids never see the program name in a game or a standard code; teachers see 'CS Quest · CSTA 1B/2'.",
+ "program": {
+  "name": "CS Quest",
+  "slug": "cs-quest",
+  "tagline": "Computer science, one period at a time.",
+  "standards": "CSTA K-12 CS Standards 2017, levels 1B (grades 3-5) and 2 (grades 6-8)",
+  "version": 1,
+  "teacherBadge": "CS Quest · CSTA 1B/2"
+ },
+ "bands": {
+  "1B": {
+   "code": "1b",
+   "grade": "Grades 3-5",
+   "grades": "3-5",
+   "inGame": "Explorer",
+   "warmupMode": "quest-race",
+   "warmupGame": "quest-race",
+   "teams": 2
+  },
+  "2": {
+   "code": "2",
+   "grade": "Grades 6-8",
+   "grades": "6-8",
+   "inGame": "Pro",
+   "warmupMode": "battle",
+   "warmupGame": "question-battle",
+   "teams": 3
+  }
+ },
+ "units": [
+  {
+   "n": 1,
+   "title": "Think Like a Robot",
+   "tool": "robo-route",
+   "optional": false,
+   "needsSchoolPlan": false,
+   "banks": {
+    "1B": "sets/u1-1b.json",
+    "2": "sets/u1-2.json"
+   },
+   "lessons": [
+    {
+     "n": "1.1",
+     "order": 1,
+     "title": "Step by step (Sequences)",
+     "short": "Sequences",
+     "keys": {
+      "1B": "csq-1b-1.1",
+      "2": "csq-2-1.1"
+     },
+     "files": {
+      "1B": "lessons/1.1-1b.json",
+      "2": "lessons/1.1-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-10",
+       "1B-AP-08"
+      ],
+      "2": [
+       "2-AP-10",
+       "2-AP-13"
+      ]
+     },
+     "also": {
+      "1B": [
+       "1B-AP-11"
+      ],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "1.2",
+     "order": 2,
+     "title": "Again and again (Loops)",
+     "short": "Loops",
+     "keys": {
+      "1B": "csq-1b-1.2",
+      "2": "csq-2-1.2"
+     },
+     "files": {
+      "1B": "lessons/1.2-1b.json",
+      "2": "lessons/1.2-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-10"
+      ],
+      "2": [
+       "2-AP-12"
+      ]
+     },
+     "also": {
+      "1B": [
+       "1B-AP-16"
+      ],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "1.3",
+     "order": 3,
+     "title": "If this, then that (Conditionals and events)",
+     "short": "Conditionals",
+     "keys": {
+      "1B": "csq-1b-1.3",
+      "2": "csq-2-1.3"
+     },
+     "files": {
+      "1B": "lessons/1.3-1b.json",
+      "2": "lessons/1.3-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-10"
+      ],
+      "2": [
+       "2-AP-12"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "1.4",
+     "order": 4,
+     "title": "Counting and remembering (Variables)",
+     "short": "Variables",
+     "keys": {
+      "1B": "csq-1b-1.4",
+      "2": "csq-2-1.4"
+     },
+     "files": {
+      "1B": "lessons/1.4-1b.json",
+      "2": "lessons/1.4-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-09"
+      ],
+      "2": [
+       "2-AP-11"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "1.5",
+     "order": 5,
+     "title": "Build a block (Functions, decomposition, remix)",
+     "short": "Functions",
+     "keys": {
+      "1B": "csq-1b-1.5",
+      "2": "csq-2-1.5"
+     },
+     "files": {
+      "1B": "lessons/1.5-1b.json",
+      "2": "lessons/1.5-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-11",
+       "1B-AP-12"
+      ],
+      "2": [
+       "2-AP-14",
+       "2-AP-13"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": [
+       "2-AP-16",
+       "2-AP-19"
+      ]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "title": "Bug Hunters",
+   "tool": "robo-route",
+   "optional": false,
+   "needsSchoolPlan": false,
+   "banks": {
+    "1B": "sets/u2-1b.json",
+    "2": "sets/u2-2.json"
+   },
+   "lessons": [
+    {
+     "n": "2.1",
+     "order": 6,
+     "title": "Bug hunt (Test and debug)",
+     "short": "Debugging",
+     "keys": {
+      "1B": "csq-1b-2.1",
+      "2": "csq-2-2.1"
+     },
+     "files": {
+      "1B": "lessons/2.1-1b.json",
+      "2": "lessons/2.1-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-15"
+      ],
+      "2": [
+       "2-AP-17"
+      ]
+     },
+     "also": {
+      "1B": [
+       "1B-AP-08"
+      ],
+      "2": [
+       "2-AP-10"
+      ]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "2.2",
+     "order": 7,
+     "title": "Level designers (Plan, build, test, explain)",
+     "short": "Level design",
+     "keys": {
+      "1B": "csq-1b-2.2",
+      "2": "csq-2-2.2"
+     },
+     "files": {
+      "1B": "lessons/2.2-1b.json",
+      "2": "lessons/2.2-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-13",
+       "1B-AP-16",
+       "1B-AP-17"
+      ],
+      "2": [
+       "2-AP-15",
+       "2-AP-18",
+       "2-AP-19"
+      ]
+     },
+     "also": {
+      "1B": [
+       "1B-AP-12"
+      ],
+      "2": [
+       "2-AP-16"
+      ]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "title": "Data Detectives",
+   "tool": "data-detective",
+   "optional": false,
+   "needsSchoolPlan": false,
+   "banks": {
+    "1B": "sets/u3-1b.json",
+    "2": "sets/u3-2.json"
+   },
+   "lessons": [
+    {
+     "n": "3.1",
+     "order": 8,
+     "title": "Sort it out (Organize data)",
+     "short": "Sorting data",
+     "keys": {
+      "1B": "csq-1b-3.1",
+      "2": "csq-2-3.1"
+     },
+     "files": {
+      "1B": "lessons/3.1-1b.json",
+      "2": "lessons/3.1-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-DA-06"
+      ],
+      "2": [
+       "2-DA-08"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "3.2",
+     "order": 9,
+     "title": "What does the data say? (Claims, predictions, models)",
+     "short": "Predictions",
+     "keys": {
+      "1B": "csq-1b-3.2",
+      "2": "csq-2-3.2"
+     },
+     "files": {
+      "1B": "lessons/3.2-1b.json",
+      "2": "lessons/3.2-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-DA-07"
+      ],
+      "2": [
+       "2-DA-09"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "3.3",
+     "order": 10,
+     "title": "Our class survey (Collect, chart, claim)",
+     "short": "Surveys",
+     "keys": {
+      "1B": "csq-1b-3.3",
+      "2": "csq-2-3.3"
+     },
+     "files": {
+      "1B": "lessons/3.3-1b.json",
+      "2": "lessons/3.3-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-DA-06",
+       "1B-DA-07",
+       "1B-IC-20"
+      ],
+      "2": [
+       "2-DA-08",
+       "2-IC-22"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": [
+       "2-DA-09"
+      ]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "title": "Packet Post",
+   "tool": "packet-post",
+   "optional": false,
+   "needsSchoolPlan": false,
+   "banks": {
+    "1B": "sets/u4-1b.json",
+    "2": "sets/u4-2.json"
+   },
+   "lessons": [
+    {
+     "n": "4.1",
+     "order": 11,
+     "title": "How a message travels (Packets, routes, protocols)",
+     "short": "Packets",
+     "keys": {
+      "1B": "csq-1b-4.1",
+      "2": "csq-2-4.1"
+     },
+     "files": {
+      "1B": "lessons/4.1-1b.json",
+      "2": "lessons/4.1-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-NI-04"
+      ],
+      "2": [
+       "2-NI-04"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "4.2",
+     "order": 12,
+     "title": "Lock it up (Passphrases, private information, security)",
+     "short": "Passphrases",
+     "keys": {
+      "1B": "csq-1b-4.2",
+      "2": "csq-2-4.2"
+     },
+     "files": {
+      "1B": "lessons/4.2-1b.json",
+      "2": "lessons/4.2-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-NI-05"
+      ],
+      "2": [
+       "2-NI-05",
+       "2-IC-23"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "4.3",
+     "order": 13,
+     "title": "Secret messages (Spotting tricks, ciphers)",
+     "short": "Secret messages",
+     "keys": {
+      "1B": "csq-1b-4.3",
+      "2": "csq-2-4.3"
+     },
+     "files": {
+      "1B": "lessons/4.3-1b.json",
+      "2": "lessons/4.3-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-NI-05"
+      ],
+      "2": [
+       "2-NI-06"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": [
+       "2-NI-05",
+       "2-IC-23"
+      ]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "title": "Inside the Machine",
+   "tool": "inside-the-machine",
+   "optional": false,
+   "needsSchoolPlan": false,
+   "banks": {
+    "1B": "sets/u5-1b.json",
+    "2": "sets/u5-2.json"
+   },
+   "lessons": [
+    {
+     "n": "5.1",
+     "order": 14,
+     "title": "What's inside? (Parts, hardware and software, gadgets)",
+     "short": "Parts",
+     "keys": {
+      "1B": "csq-1b-5.1",
+      "2": "csq-2-5.1"
+     },
+     "files": {
+      "1B": "lessons/5.1-1b.json",
+      "2": "lessons/5.1-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-CS-01",
+       "1B-CS-02"
+      ],
+      "2": [
+       "2-CS-02",
+       "2-CS-01"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "5.2",
+     "order": 15,
+     "title": "It's not working! (Troubleshooting)",
+     "short": "Troubleshooting",
+     "keys": {
+      "1B": "csq-1b-5.2",
+      "2": "csq-2-5.2"
+     },
+     "files": {
+      "1B": "lessons/5.2-1b.json",
+      "2": "lessons/5.2-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-CS-03"
+      ],
+      "2": [
+       "2-CS-03"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": [
+       "2-AP-10"
+      ]
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "5.3",
+     "order": 16,
+     "title": "Bits and pixels (How computers store things)",
+     "short": "Bits and pixels",
+     "keys": {
+      "1B": "csq-1b-5.3",
+      "2": "csq-2-5.3"
+     },
+     "files": {
+      "1B": "lessons/5.3-1b.json",
+      "2": "lessons/5.3-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-CS-02"
+      ],
+      "2": [
+       "2-DA-07"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "title": "Tech Choices",
+   "tool": "would-you-rather-live + inside-the-machine + data-detective",
+   "optional": false,
+   "needsSchoolPlan": false,
+   "banks": {
+    "1B": "sets/u6-1b.json",
+    "2": "sets/u6-2.json"
+   },
+   "lessons": [
+    {
+     "n": "6.1",
+     "order": 17,
+     "title": "Tech that changed the world",
+     "short": "Tech changes",
+     "keys": {
+      "1B": "csq-1b-6.1",
+      "2": "csq-2-6.1"
+     },
+     "files": {
+      "1B": "lessons/6.1-1b.json",
+      "2": "lessons/6.1-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-IC-18"
+      ],
+      "2": [
+       "2-IC-20"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "discussion",
+      "2": "discussion"
+     },
+     "warmup": false
+    },
+    {
+     "n": "6.2",
+     "order": 18,
+     "title": "Made for everyone (Accessibility, usability, bias)",
+     "short": "For everyone",
+     "keys": {
+      "1B": "csq-1b-6.2",
+      "2": "csq-2-6.2"
+     },
+     "files": {
+      "1B": "lessons/6.2-1b.json",
+      "2": "lessons/6.2-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-IC-19",
+       "1B-IC-20"
+      ],
+      "2": [
+       "2-IC-21",
+       "2-CS-01"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "game",
+      "2": "game"
+     },
+     "warmup": true
+    },
+    {
+     "n": "6.3",
+     "order": 19,
+     "title": "Share or keep? (Public vs private, using others' work)",
+     "short": "Share or keep",
+     "keys": {
+      "1B": "csq-1b-6.3",
+      "2": "csq-2-6.3"
+     },
+     "files": {
+      "1B": "lessons/6.3-1b.json",
+      "2": "lessons/6.3-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-IC-21",
+       "1B-AP-14"
+      ],
+      "2": [
+       "2-IC-23",
+       "2-AP-16"
+      ]
+     },
+     "also": {
+      "1B": [
+       "1B-NI-05"
+      ],
+      "2": ["2-NI-05"]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "discussion",
+      "2": "discussion"
+     },
+     "warmup": true
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "title": "Make Your Own Game",
+   "tool": "builder (Quiz Show template)",
+   "optional": true,
+   "needsSchoolPlan": true,
+   "banks": {
+    "1B": "sets/u7-1b.json",
+    "2": "sets/u7-2.json"
+   },
+   "lessons": [
+    {
+     "n": "7.1",
+     "order": 20,
+     "title": "Plan your game",
+     "short": "Plan",
+     "keys": {
+      "1B": "csq-1b-7.1",
+      "2": "csq-2-7.1"
+     },
+     "files": {
+      "1B": "lessons/7.1-1b.json",
+      "2": "lessons/7.1-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-13",
+       "1B-AP-16",
+       "1B-AP-11"
+      ],
+      "2": [
+       "2-AP-18",
+       "2-AP-13",
+       "2-AP-10"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": [
+       "2-AP-15"
+      ]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "unplugged",
+      "2": "unplugged"
+     },
+     "warmup": true
+    },
+    {
+     "n": "7.2",
+     "order": 21,
+     "title": "Build day",
+     "short": "Build",
+     "keys": {
+      "1B": "csq-1b-7.2",
+      "2": "csq-2-7.2"
+     },
+     "files": {
+      "1B": "lessons/7.2-1b.json",
+      "2": "lessons/7.2-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-15"
+      ],
+      "2": [
+       "2-AP-17"
+      ]
+     },
+     "also": {
+      "1B": [],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [
+       "1B-AP-09",
+       "1B-AP-10"
+      ],
+      "2": [
+       "2-AP-11",
+       "2-AP-12"
+      ]
+     },
+     "main": {
+      "1B": "builder",
+      "2": "builder"
+     },
+     "warmup": false
+    },
+    {
+     "n": "7.3",
+     "order": 22,
+     "title": "Playtest party",
+     "short": "Playtest",
+     "keys": {
+      "1B": "csq-1b-7.3",
+      "2": "csq-2-7.3"
+     },
+     "files": {
+      "1B": "lessons/7.3-1b.json",
+      "2": "lessons/7.3-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-IC-20",
+       "1B-AP-15"
+      ],
+      "2": [
+       "2-AP-15",
+       "2-DA-09",
+       "2-IC-22"
+      ]
+     },
+     "also": {
+      "1B": [
+       "1B-AP-16"
+      ],
+      "2": ["2-AP-17"]
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "discussion",
+      "2": "discussion"
+     },
+     "warmup": true
+    },
+    {
+     "n": "7.4",
+     "order": 23,
+     "title": "Show and credit",
+     "short": "Credits",
+     "keys": {
+      "1B": "csq-1b-7.4",
+      "2": "csq-2-7.4"
+     },
+     "files": {
+      "1B": "lessons/7.4-1b.json",
+      "2": "lessons/7.4-2.json"
+     },
+     "primary": {
+      "1B": [
+       "1B-AP-17",
+       "1B-AP-14"
+      ],
+      "2": [
+       "2-AP-19",
+       "2-AP-16"
+      ]
+     },
+     "also": {
+      "1B": [
+       "1B-IC-21"
+      ],
+      "2": []
+     },
+     "buildsToward": {
+      "1B": [],
+      "2": []
+     },
+     "main": {
+      "1B": "discussion",
+      "2": "discussion"
+     },
+     "warmup": true
+    }
+   ]
+  }
+ ],
+ "paths": [
+  {
+   "id": "core10-no-builder",
+   "title": "Core 10 (no Builder)",
+   "default": true,
+   "lessons": [
+    "1.2",
+    "1.3",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "4.1",
+    "4.2",
+    "5.2",
+    "6.1"
+   ],
+   "note": "Ten periods. No Builder and no school plan needed."
+  },
+  {
+   "id": "full",
+   "title": "Full",
+   "lessons": [
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.1",
+    "4.2",
+    "4.3",
+    "5.1",
+    "5.2",
+    "5.3",
+    "6.1",
+    "6.2",
+    "6.3",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ],
+   "note": "23 periods. Unit 7 needs the Builder and a school plan; you can skip it or add it later."
+  },
+  {
+   "id": "cs-ed-week",
+   "title": "CS Ed Week",
+   "lessons": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "4.1",
+    "6.1"
+   ],
+   "note": "Five periods. No Builder needed."
+  },
+  {
+   "id": "device-first",
+   "title": "Device-first",
+   "lessons": [
+    "5.2",
+    "5.1",
+    "5.3",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "2.1",
+    "2.2",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.1",
+    "4.2",
+    "4.3",
+    "6.1",
+    "6.2",
+    "6.3",
+    "7.1",
+    "7.2",
+    "7.3",
+    "7.4"
+   ],
+   "note": "Computing Systems comes first to settle device routines; Fix-It ticket 3 ('no sound') is the class's own device test. Unit 7 needs the Builder and a school plan."
+  }
+ ],
+ "retiredPaths": {
+  "core10": "Core 10 with the four Builder lessons (1.2, 2.1, 3.1, 4.1, 5.2, 6.1, 7.1-7.4) is not published: unit 7 is optional and needs a school plan; teachers add it with Add unit"
+ },
+ "period": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore (projector script)"
+  ],
+  [
+   "0:16",
+   18,
+   "Play"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "periodVariants": {
+  "short40": {
+   "rule": "projector warm-up with 2 items, one Discuss prompt, Play 16 minutes, never cut the exit ticket",
+   "table": [
+    [
+     "0:00",
+     4,
+     "Do Now"
+    ],
+    [
+     "0:04",
+     3,
+     "Warm-up on the projector (2 items)"
+    ],
+    [
+     "0:07",
+     5,
+     "Explore"
+    ],
+    [
+     "0:12",
+     16,
+     "Play"
+    ],
+    [
+     "0:28",
+     6,
+     "Discuss (one prompt)"
+    ],
+    [
+     "0:34",
+     6,
+     "Exit ticket + pack up"
+    ]
+   ]
+  },
+  "block80-90": {
+   "rule": "the lesson + the unplugged twin + the 3-star stretch (+ the unit review on Brain Board)"
+  },
+  "lesson6.1": "Today 27 (Do Now 5, Timeline Walk 10, discuss) · Would You Rather (live) 13 · Exit 3 · In your own words 2",
+  "lesson7.2": "Do Now 5 · etiquette 4 · build or paper prototype 30 (two rotations) · Discuss 1 · Exit 5"
+ },
+ "rules": [
+  "The program is sold as 45 minutes; every plan page documents the 40-minute cut.",
+  "The first two periods lose 3-5 minutes to login: run the Do Now longer, cut Discuss to one prompt, never the exit ticket.",
+  "Early finishers always have the same two moves: earn 3 stars, or help a neighbor without touching their screen (a role).",
+  "Nothing depends on homework.",
+  "Shared devices: alternate who signs in (odd lessons partner A, even lessons partner B); the Standards tab counts the signed-in student only and says so.",
+  "Lesson mode starts with music off and captions on; headphones recommended.",
+  "Kids never see the program name in a game or a standard code anywhere; teachers see 'CS Quest · CSTA 1B/2'.",
+  "Lesson text says 'trusted adult'; in-game text keeps 'grown-up' (never within 40 characters of the word 'code').",
+  "US spelling everywhere in lesson content, bank items and in-game English (color, gray, favorite, labeled, practiced, neighbor, recognize, math, catalog, center)."
+ ],
+ "materials": [
+  "projector",
+  "one device per pair (grades 3-5) or per student (grades 6-8)",
+  "headphones",
+  "login cards (/cards/:k)",
+  "the lesson's printables (plan page > Printables)",
+  "paper and pencils for the Do Now and the exit half-sheet"
+ ],
+ "faq": [
+  "Classes and lessons live inside a school on Oomba; set one up for free (one teacher is enough).",
+  "Chromebooks without touch work: everything is click-or-tap plus keyboard.",
+  "Headphones recommended; lesson mode starts with music off and captions on.",
+  "No CS background needed: every plan page has a projector script (Say / Do / Ask), look-fors and the misconception of the day.",
+  "Unit 7 (the Builder capstone) is optional and needs a school plan; the plan page says 'Builder: on / resting' and about how many teams can build this period. No prices on any page.",
+  "Privacy: the Standards tab is teacher-only, inside the class, deleted with the class; coverage is claimed per class."
+ ],
+ "lessonModeDefaults": {
+  "music": "off",
+  "captions": "on"
+ },
+ "derivedSets": {
+  "subject": "cs-quest",
+  "warmup": "CSQ <u.n> warm-up · <short> (<grades>)",
+  "exit": "CSQ <u.n> exit ticket (<grades>)",
+  "review": "CSQ Unit <u> review (<grades>)",
+  "note": "created per lesson in the teacher's My sets by the materialiser (lesson_id set, subject cs-quest); warm-up: the lesson JSON's warmup.items in order, 15 s, shuffle off; exit: exit.items with cat kept; review: the whole unit bank with cat replaced by topic"
+ },
+ "wyr": {
+  "file": "wyr-tech.json",
+  "starters": {
+   "6.1": "wyr:tech:8:20",
+   "6.1-block": "wyr:tech:10:20",
+   "6.3": "wyr:online:8:20"
+  }
+ }
+}

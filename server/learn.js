@@ -19,6 +19,11 @@ export const LEARNING = {
   'beat-lanes': { key: 'beatLanes', teaches: ['Rhythm', 'Timing'], level: 'Grades 1-8' },
   'swish-flick': { key: 'swishFlick', teaches: ['Aim and force', 'Hand-eye coordination'], level: 'Grades 2-8', fun: true },
   'munch-maze': { key: 'munchMaze', teaches: ['Route planning'], level: 'Grades 2-8', fun: true },
+  // The CS Quest games (docs/cs-quest.md): each chapter is a lesson of the program, grades 3-5 (Explorer) and 6-8 (Pro).
+  'robo-route': { key: 'roboRoute', teaches: ['Sequences', 'Loops', 'Conditionals', 'Variables', 'Functions', 'Debugging'], level: 'Grades 3-8' },
+  'data-detective': { key: 'dataDetective', teaches: ['Organizing data', 'Charts', 'Claims from data', 'Cleaning data', 'Fairness in data'], level: 'Grades 3-8' },
+  'packet-post': { key: 'packetPost', teaches: ['Packets', 'Routing', 'Protocols', 'Passphrases', 'Spotting tricks', 'Ciphers'], level: 'Grades 3-8' },
+  'inside-the-machine': { key: 'insideTheMachine', teaches: ['Computer parts', 'Hardware and software', 'Troubleshooting', 'Bits and pixels', 'Designing for everyone'], level: 'Grades 3-8' },
 };
 /** The grade band of some launch games, for the visible "Grades 1–5" line: { from, to } ('K' or a number), or null. */
 export function gradeBand(slugs) {
@@ -39,6 +44,8 @@ export const HUBS = [
   { slug: 'word-games', key: 'words', emoji: '🔤', games: ['shark-plank', 'word-hunt', 'word-peek'] },
   { slug: 'strategy-games', key: 'strategy', emoji: '♟️', games: ['castle-clash', 'connect-four', 'brick-drop'] },
   { slug: 'music-games', key: 'music', emoji: '🎵', games: ['loop-lab', 'beat-lanes'] },
+  // The four CS Quest games; the page also points teachers at the program (/teachers/cs-quest).
+  { slug: 'computer-science', key: 'cs', emoji: '💻', games: ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine'], extra: 'cs' },
   { slug: 'brain-break-games', key: 'brainBreaks', emoji: '⏱️', games: ['beat-lanes', 'swish-flick', 'brick-drop', 'munch-maze', 'word-peek'] },
   { slug: 'make-a-game', key: 'makeAGame', emoji: '🛠️', games: [], extra: 'builder' },
 ];
@@ -46,12 +53,12 @@ export const hubBySlug = slug => HUBS.find(h => h.slug === slug) || null;
 /** The teacher page's "Play to learn" cards, in order. */
 export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes'];
 /** Questions on each page (learn.hubs.<key>.faq.q<n> / a<n>, teachers.faq.q<n> / a<n>). */
-export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, brainBreaks: 2, makeAGame: 7 };
+export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainBreaks: 2, makeAGame: 7 };
 /** Subject pages with an "At home" paragraph for parents (learn.hubs.<key>.home). */
 export const HOME_TIPS = ['math', 'words', 'strategy', 'music'];
 export const TEACHER_FAQ = 9;
 /** Last change to the teacher and subject pages' text (sitemap lastmod). Change it with the text. */
-export const CONTENT_UPDATED = '2026-10-28';
+export const CONTENT_UPDATED = '2026-11-03';
 
 // ---------------------------------------------------------------------------------------------------- parents
 // The parent pages (routes/parents.js): /parents, the guides under /parents/<guide>, and the age pages

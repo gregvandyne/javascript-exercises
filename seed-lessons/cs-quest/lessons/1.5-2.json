@@ -1,0 +1,223 @@
+{
+ "id": "csq-2-1.5",
+ "key": "csq-2-1.5",
+ "version": 1,
+ "unit": 1,
+ "order": 5,
+ "n": "1.5",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "1.5 · Build a block (Functions, decomposition, remix)",
+ "name": "Build a block (Functions, decomposition, remix)",
+ "short": "Functions",
+ "summary": "Students define procedures and give them parameters so one block does many jobs: Room(1), Room(3), Room(2). In Robo Route they split a level into three subgoals with one procedure each, pin a note chip on every block that must tell the truth about what it does, and use a shelf block made by someone else while its credit line stays on. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-AP-14", "2-AP-13"],
+  "also": ["2-AP-16", "2-AP-19"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "make a procedure with a parameter so one block does many jobs",
+  "split a level into subgoals and make one procedure for each",
+  "label what each block does and credit a block that came from someone else"
+ ],
+ "questCode": "5 2 0 0",
+ "params": "chapter=functions&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Dance Blocks printable (move cards, a block name card with a parameter slot, a note chip card, a credit tag)",
+  "login cards"
+ ],
+ "doNow": "Name three things that getting ready for school is made of. For one of them, write a version that takes a number, like Brush(2) for two minutes. What does the number change?",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: call Room three times, then give Room a parameter"],
+  ["0:16", 18, "Play: Functions"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u1-2",
+  "items": ["2-1.4-e1", "2-1.4-e2", "2-1.5-r1", "2-1.5-e1", "2-1.4-r1"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 1.4, one vocabulary item, one preview of today, one more from 1.4"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "functions", "level": 1},
+  "do": [
+   "Open Robo Route at Functions on the projector (Open game at this chapter). Level 1 is three identical rooms and a procedure named Room is already made. Tap call three times, add one forward, run it. Open Room to show the steps inside.",
+   "Open level 3: the rooms are 1, 3 and 2 squares deep. Show that three separate blocks would work, then build the one block Room that takes a number, steps, with repeat steps inside, and call Room(1), Room(3), Room(2). Run it."
+  ],
+  "say": [
+   "Name a group of steps once, use it everywhere. A procedure is a group of steps with a name; a call runs the whole group.",
+   "A parameter is a number you hand to the block each time you call it, so one block does many jobs. Room(1) and Room(3) run the same steps with a different number."
+  ],
+  "ask": [
+   "What would you name this block so a friend understands it, and what should its parameter be called?"
+  ],
+  "afterAsk": "Collect names that say what the block does and parameter names that say what the number means: steps, depth, count. Reject n only after asking who has to read it later.",
+  "bigIdea": "Name a group of steps once, give it a parameter, and one block does many jobs.",
+  "vocab": ["procedure", "parameter", "argument", "decompose", "comment"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "functions",
+  "chapterTitle": "Functions",
+  "levels": 7,
+  "goal": "4 levels, so everyone makes a block with a parameter",
+  "stretch": "the chapter, then 3 stars; level 6 pins note chips, level 7 uses a shelf block made by someone else",
+  "solo": "one device per student; levels 1-2 are define and call, 3-4 parameters, 5 three subgoals, 6 note chips, 7 a credited shelf block; a neighbor may read your block names and say whether they make sense, never touch your screen",
+  "lookFors": [
+   "defining a procedure and never calling it: Run stays dimmed until a call exists and the hint says why",
+   "a parameter set on the block but never used inside it, so every call does the same thing",
+   "on level 5, one giant procedure instead of three; on level 6, a note chip that does not say what the block really does; on level 7, the credit line deleted"
+  ],
+  "misconception": "A parameter is not a fixed number saved inside the block: it is a slot that each call fills with its own number, so Room(1) and Room(3) run the same block differently.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What changed when you added the parameter? What would level 3 look like without it?",
+  "Level 6 made you pin a note chip that tells the truth about each block. Who is the note for, and what goes wrong when it lies?"
+ ],
+ "showMe": "One student shows level 5 on the projector: the three subgoals as three named procedures and a main program that is just three calls.",
+ "exit": {
+  "setId": "csq-u1-2",
+  "items": ["2-1.5-e1", "2-1.5-e2", "2-1.5-e3"],
+  "sentencePrompt": "Name a procedure you made with a parameter and say what the parameter changes. Then name the parts you split a level into.",
+  "frame": "My block ___ takes ___, which changes ___. I split the level into ___, ___ and ___.",
+  "rubric": [
+   {
+    "line": "Procedures with parameters: one block, many jobs",
+    "ids": ["2-AP-14"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a procedure with no parameter, or a parameter with no job",
+     "Names the procedure and its parameter and says what the parameter changes",
+     "Also says why the parameter beats three separate blocks, or gives two calls with different arguments and their results"
+    ]
+   },
+   {
+    "line": "Decomposing: the parts of a level",
+    "ids": ["2-AP-13"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one part of the level",
+     "Names the subgoals the level was split into, one procedure each",
+     "Also says how the split helped: testing one part at a time, or reusing a part in another level"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "levels 1 and 2 pre-define the block; the student only calls it",
+   "hint 1 on level 3 names the parameter and where it goes inside the block; read-aloud on",
+   "a neighbor reads the block names out loud and says what each one would do"
+  ],
+  "stretch": [
+   "3-star par on every level",
+   "rebuild level 5 so one procedure with a parameter does two of the three subgoals",
+   "write a note chip for a neighbor's level 6 blocks and check that each chip tells the truth"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Dance Blocks with a parameter",
+  "minutes": 15,
+  "materials": ["move cards (step, clap, spin, hop, freeze)", "one block name card per group with a parameter slot", "note chip cards", "a credit tag"],
+  "steps": [
+   "Each group invents a four-move dance and names it. One move takes a number: Hop(2) means hop twice. Practice Hop(1) and Hop(3) so everyone sees the same block do a different amount.",
+   "The class is the program: the caller calls Spin! Hop(2)! Wave! and the owning group performs. Then a big routine is decomposed: entrance, middle, finish, one group per part, called in order.",
+   "Documentation round: each group writes a note chip for its dance in one sentence that tells the truth. Swap chips: can another group perform the dance from the chip alone?",
+   "Credit round: borrow one move from another group, clip the credit tag to it, and perform. Share: what did the parameter change, and what did the chip have to say to be useful?"
+  ],
+  "printables": ["dance-cards", "block-name-card", "note-chip-cards", "credit-tag"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: name three things that getting ready for school is made of, then write one of them with a number, like Brush(2), and say what the number changes.",
+  "Play Robo Route, chapter Functions (Pro), one device each, for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 5 2 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Dance Blocks with a parameter, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Functions"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-1.4-e1", "2-1.5-r1"],
+  "discuss": "What changed when you added the parameter? What would level 3 look like without it?",
+  "keep": "the exit ticket is never cut; in 5 minutes of Explore skip level 1 and go straight to the parameter on level 3"
+ },
+ "block": {
+  "add": [
+   "the Dance Blocks with a parameter twin (15 minutes) before Play",
+   "the 3-star stretch and levels 6 and 7 after Play",
+   "10 minutes of the Unit 1 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Run stays dimmed while a procedure is defined but never called; let students find that nudge.",
+  "Levels 6 and 7 also practice documenting (note chips) and crediting a shelf block made by someone else; those ids are listed as also, and the Standards tab counts them from the game step only if you add them to it in your copy.",
+  "In the game a comment is called a note chip: a short sentence pinned on a block that the level checks against what the block really does.",
+  "Vocabulary beyond the five on the learn card: define, call, reuse, credit line, subgoal.",
+  "One device per student at this band; the Standards tab counts each student's own play."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Name three things that getting ready for school is made of. For one of them, write a version that takes a number, like Brush(2) for two minutes. What does the number change?\n\nBig idea: Name a group of steps once, give it a parameter, and one block does many jobs.\n\nWe will talk about:\n- What changed when you added the parameter?\n- Who is a note chip for, and what goes wrong when it lies?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Functions",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=functions&band=2&lock=1",
+   "questCode": "5 2 0 0",
+   "standards": ["2-AP-14", "2-AP-13"],
+   "body": "Goal: 4 levels, so you make a block with a parameter. Stretch: finish the chapter, then 3 stars. Level 6 pins note chips; level 7 uses a block someone else made.\nIf the game asks for a quest code, it is 5 2 0 0.\nA procedure only runs when you call it. Name each block for what it does. Keep the credit line on any block that came from the shelf."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about procedures, parameters and splitting a level into parts."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-AP-14", "2-AP-13"],
+   "rubric": "exit",
+   "body": "Name a procedure you made with a parameter and say what the parameter changes. Then name the parts you split a level into.\nFrame: My block ___ takes ___, which changes ___. I split the level into ___, ___ and ___."
+  }
+ ]
+}

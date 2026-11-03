@@ -1,0 +1,300 @@
+{
+ "id": "csq-2-5.2",
+ "key": "csq-2-5.2",
+ "version": 1,
+ "unit": 5,
+ "order": 15,
+ "n": "5.2",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "5.2 · It's not working! (Troubleshooting)",
+ "name": "It's not working! (Troubleshooting)",
+ "short": "Troubleshooting",
+ "summary": "Students troubleshoot systematically: build a flowchart from yes/no checks first, then run it, change one thing at a time and use a swap test to isolate the fault, including faults in a connected device such as a printer or a router. At Inside the Machine's Fix-It Desk one ticket is a trick: the fault is the user's own cable. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-CS-03"
+  ],
+  "also": [],
+  "buildsToward": [
+   "2-AP-10"
+  ]
+ },
+ "iCan": [
+  "follow a checklist or flowchart and change one thing at a time",
+  "use a swap test to isolate the fault, including in a connected device"
+ ],
+ "questCode": "3 2 0 0",
+ "params": "chapter=fixit&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Help Desk printed tickets and check cards",
+  "a large sheet for the class flowchart",
+  "login cards"
+ ],
+ "doNow": "Your tablet has no sound. Write 3 things to check, in the order you would check them.",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: build the flowchart for ticket 1, then run it"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Fix-It Desk"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u5-2",
+  "items": [
+   "2-5.1-e1",
+   "2-5.1-e2",
+   "2-5.2-r1",
+   "2-5.2-e1",
+   "2-5.1-r1"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 5.1, one vocabulary item, one preview of today, one more from 5.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "fixit",
+   "level": 1
+  },
+  "do": [
+   "Open Inside the Machine at Fix-It Desk on the projector (Open game at this chapter). Read ticket 1 out loud. Build the flowchart first with the class from the yes/no diamonds, cheapest check at the top.",
+   "Run the flowchart. When a check says no, fix that one thing and run the ticket again."
+  ],
+  "say": [
+   "Good fixers check the cheap things first, and change one thing at a time so they know what fixed it.",
+   "A swap test replaces a part with one you know works. If the problem moves with the part, you found the fault."
+  ],
+  "ask": [
+   "The headphones are silent on this tablet. How could you tell whether the headphones or the tablet is the problem?"
+  ],
+  "afterAsk": "Take answers until someone says try these headphones on another device, or another pair on this one. Name it on the board: a swap test.",
+  "bigIdea": "Troubleshooting is a flowchart: cheap checks first, one change at a time, and swap a part to isolate the fault.",
+  "vocab": [
+   "isolate",
+   "swap test",
+   "flowchart",
+   "restart",
+   "reconnect"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "inside-the-machine",
+  "chapter": "fixit",
+  "chapterTitle": "Fix-It Desk",
+  "levels": 7,
+  "goal": "4 tickets",
+  "stretch": "the chapter, then 3 stars; one ticket is a trick: the fault is the user's own cable",
+  "solo": "one device per student; a neighbor may read the ticket out loud, never touch your screen",
+  "lookFors": [
+   "skipping the flowchart and guessing",
+   "changing two things at once",
+   "blaming the computer when the fault is in the connected device or the cable"
+  ],
+  "misconception": "Changing several things at once is not faster: when it works you will not know which change fixed it, so change one thing and test again.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "Which ticket fooled you? What is a swap test?",
+  "Why build the flowchart before you start checking?"
+ ],
+ "showMe": "One student shows the printer ticket on the projector; the class predicts where the fault is before each swap.",
+ "exit": {
+  "setId": "csq-u5-2",
+  "items": [
+   "2-5.2-e1",
+   "2-5.2-e2",
+   "2-5.2-e3"
+  ],
+  "sentencePrompt": "Describe how you found the fault in one ticket. What did you check first, and how did you isolate it?",
+  "frame": "I checked ___ first because ___, then I isolated the fault by ___.",
+  "rubric": [
+   {
+    "line": "Troubleshooting: a step-by-step process to isolate a fault",
+    "ids": [
+     "2-CS-03"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a check or a fix",
+     "Describes checks in a sensible order, cheap ones first",
+     "Also isolates the fault with one change at a time or a swap test, and says why it worked"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "picture check cards and a half-built flowchart for tickets 1-2",
+   "the class flowchart stays on the board",
+   "hint 1 asks: what changed since it last worked?"
+  ],
+  "stretch": [
+   "the two-faults ticket",
+   "draw the flowchart for a new ticket on paper and test it on a neighbor"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Help Desk",
+  "minutes": 15,
+  "materials": [
+   "printed tickets with a connected device each",
+   "check cards and yes/no diamond cards",
+   "a large sheet for the class flowchart"
+  ],
+  "steps": [
+   "Pairs build a flowchart for their ticket from the check cards and the yes/no diamonds.",
+   "They trade flowcharts with another pair, who runs it on the ticket and says where it got stuck.",
+   "For the printer ticket, plan a swap test: what do you swap, and what does each result tell you?",
+   "Share: build one class flowchart on the wall and hang it by the device cart."
+  ],
+  "printables": [
+   "help-desk-tickets",
+   "check-cards",
+   "flowchart-diamonds"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: your tablet has no sound; write 3 things to check, in the order you would check them.",
+  "Play Inside the Machine, chapter Fix-It Desk, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 3 2 0 0. Goal: 4 tickets. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Help Desk, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Fix-It Desk"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-5.1-e1",
+   "2-5.2-r1"
+  ],
+  "discuss": "Which ticket fooled you? What is a swap test?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Help Desk twin (15 minutes) before Play",
+   "the two-faults ticket after Play",
+   "10 minutes of the Unit 5 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Hang the class flowchart by the device cart; this lesson pays back all year.",
+  "Building the flowchart first builds toward planning programs with flowcharts in later lessons.",
+  "Ticket 3, no sound with headphones, doubles as the class device test for the Device-first path.",
+  "Vocabulary beyond the five on the learn card: connected device, fault.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Your tablet has no sound. Write 3 things to check, in the order you would check them.\n\nBig idea: Troubleshooting is a flowchart: cheap checks first, one change at a time, and swap a part to isolate the fault.\n\nWe will talk about:\n- Which ticket fooled you? What is a swap test?\n- Why build the flowchart before you start checking?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Fix-It Desk",
+   "minutes": 18,
+   "gameSlug": "inside-the-machine",
+   "options": "chapter=fixit&band=2&lock=1",
+   "questCode": "3 2 0 0",
+   "standards": [
+    "2-CS-03"
+   ],
+   "body": "Goal: 4 tickets. Stretch: finish the chapter, then 3 stars. Watch out: one ticket is a trick.\nIf the game asks for a quest code, it is 3 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about troubleshooting."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-CS-03"
+   ],
+   "rubric": "exit",
+   "body": "Describe how you found the fault in one ticket. What did you check first, and how did you isolate it?\nFrame: I checked ___ first because ___, then I isolated the fault by ___."
+  }
+ ]
+}

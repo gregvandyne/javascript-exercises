@@ -2309,6 +2309,11 @@
       "waitingFor": "On attend que {name} dise oui…",
       "cancel": "Annuler",
       "ended": "Cette partie en ligne est terminée."
+    },
+    "cs": {
+      "of": "{n} sur {count}",
+      "reveal": "Afficher la réponse",
+      "hide": "Masquer la réponse"
     }
   },
   "favorites": {
@@ -2573,7 +2578,8 @@
       "progress": "Progression",
       "games": "Jeux",
       "students": "Élèves",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "standards": "Normes"
     },
     "classGames": {
       "text": "Jeux partagés avec cette classe. Si l’un d’eux ne convient pas, retirez-le : il ne pourra plus y être partagé sauf si vous le permettez.",
@@ -3799,6 +3805,9 @@
       "li2": "Utilisez une série de départ, tapez une série rapide ou transformez les questions d’une leçon en quiz en direct.",
       "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement.",
       "more": "Voir comment fonctionne Oomba Live"
+    },
+    "cs": {
+      "cstaNote": "Normes : CSTA K-12 Computer Science Standards (2017), niveaux 1B et 2. Ce programme n’est ni créé, ni relu, ni approuvé par la CSTA."
     }
   },
   "learn": {
@@ -3825,7 +3834,11 @@
       "beatLanes": "Taper en rythme sur neuf chansons, d’Ah ! vous dirai-je, maman au French cancan.",
       "swishFlick": "Glisser pour marquer des paniers : la direction vise et la vitesse décide jusqu’où la balle vole.",
       "munchMaze": "Une course-poursuite dans un labyrinthe : prévoir un trajet, manger toutes les pastilles et éviter les Gloops.",
-      "heroOfSunvale": "Une grande aventure en 3D : explorer un royaume, aider les villageois dans leurs missions et gagner des combats amicaux pour libérer la princesse."
+      "heroOfSunvale": "Une grande aventure en 3D : explorer un royaume, aider les villageois dans leurs missions et gagner des combats amicaux pour libérer la princesse.",
+      "roboRoute": "Guidez un robot avec des blocs : séquences, boucles, conditions, variables et fonctions, puis corrigez les bugs.",
+      "dataDetective": "Triez, représentez et nettoyez des données, puis faites des affirmations que les preuves soutiennent.",
+      "packetPost": "Envoyez des paquets sur un réseau, choisissez des phrases de passe solides et repérez les pièges en ligne.",
+      "insideTheMachine": "Montez et réparez des ordinateurs : composants, entrées et sorties, bits et pixels, conception pour tous."
     },
     "hubs": {
       "math": {
@@ -3992,6 +4005,13 @@
           "p": "Scratch et Code.org apprennent à coder avec des blocs. Le Constructeur est différent : les enfants conçoivent avec des mots, et le Constructeur écrit le jeu en montrant ses étapes. Beaucoup d’enfants font les deux, et le Constructeur peut être une première étape avant le code."
         },
         "safeLink": "Le Constructeur IA est-il sans danger ? Le guide pour les parents"
+      },
+      "cs": {
+        "name": "Jeux d’informatique",
+        "short": "Code, données, réseaux et fonctionnement des ordinateurs",
+        "program": {
+          "link": "CS Quest pour les enseignants"
+        }
       }
     },
     "grades": "Grades US {from}–{to}",
@@ -5547,6 +5567,350 @@
       "alsoMark": "Noter aussi ces coéquipiers",
       "alsoMarkHint": "Ils reçoivent les mêmes notes de grille pour cette étape. Le commentaire écrit reste avec cet élève.",
       "noHandIns": "Rien n’a encore été rendu."
+    },
+    "add": "Ajouter à ma bibliothèque",
+    "band": {
+      "label": "Niveau",
+      "b1": "CE2-CM2 (grades 3-5)",
+      "b2": "6e-4e (grades 6-8)"
+    },
+    "before": {
+      "h": "Avant de commencer",
+      "gamesOk": "Les quatre jeux sont publiés. Essayez-en un sans connexion sur un appareil d’élève : /play/robo-route.",
+      "gamesMissing": "Pas encore publiés : {games}. Les leçons qui les utilisent affichent une note en attendant.",
+      "liveOn": "Le direct est activé : échauffements et tickets de sortie peuvent se faire en salle en direct.",
+      "liveOff": "Le direct est désactivé sur ce site : utilisez « Afficher les questions au projecteur ».",
+      "quizOn": "Les étapes quiz sont activées : les tickets de sortie sont notés dans le carnet de notes.",
+      "quizOff": "Les étapes quiz sont désactivées : les tickets de sortie arrivent comme questions écrites.",
+      "classes": "Classes que vous enseignez : {count} (le direct en demande une).",
+      "zone": "Fuseau horaire de l’école : {zone}. Les dates s’ouvrent et se ferment dans ce fuseau.",
+      "zoneNone": "Pas encore de fuseau horaire pour l’école : les dates suivent l’heure du serveur.",
+      "headphones": "Les casques aident. Le mode leçon démarre sans musique et avec sous-titres.",
+      "unit7": "L’unité 7 (le projet final) utilise le Builder et demande un forfait école ; les autres unités fonctionnent sans."
+    },
+    "builder": {
+      "on": "Builder : actif",
+      "resting": "Builder : au repos",
+      "teams": "environ {count} équipes peuvent créer pendant ce cours",
+      "noKey": "L’unité 7 a besoin du Builder ; il n’est pas encore configuré sur ce site."
+    },
+    "buttons": {
+      "warmup": "Lancer l’échauffement (direct)",
+      "projector": "Afficher les questions au projecteur",
+      "wyr": "Lancer Tu préfères (direct)",
+      "game": "Ouvrir le jeu à ce chapitre",
+      "exitLive": "Ticket de sortie en direct",
+      "review": "Révision en direct",
+      "exitProjector": "Ticket de sortie au projecteur",
+      "print": "Imprimer",
+      "printables": "À imprimer",
+      "assign": "Assigner à la classe",
+      "assignUnit": "Assigner l’unité...",
+      "gameNotYet": "Ouvrir le jeu (pas encore sorti)"
+    },
+    "coverage": {
+      "title": "Carte de couverture",
+      "lead": "{ids} standards, {lessons} fichiers de leçon, {banks} banques de questions.",
+      "level": "Niveau CSTA {level} ({grades})",
+      "both": "Les deux niveaux",
+      "legendH": "Comment la lire",
+      "practiced": "Pratiqué",
+      "practicedText": "un élève a terminé une étape liée au standard (en binôme : connectez-vous à tour de rôle). Pas une maîtrise.",
+      "checked": "Vérifié",
+      "checkedText": "des questions liées au standard ont reçu une réponse ; la réussite est affichée par classe.",
+      "applied": "Appliqué",
+      "appliedText": "l’enseignant a noté de 0 à 3 une ligne de grille pour ce standard.",
+      "bold": "Les leçons en gras enseignent le standard ; les autres l’abordent ; les grisées y préparent.",
+      "itemsNote": "Questions : sortie · révision · échauffement.",
+      "noBanks": "banques non chargées",
+      "missing": "Fichiers de leçon manquants ({count}) :",
+      "complete": "Tous les fichiers de leçon sont présents.",
+      "noPrimary": "Enseigné seulement dans l’unité 7 :",
+      "practicesH": "Pratiques par unité",
+      "practice": "Pratique",
+      "units": "Unités",
+      "cols": {
+        "id": "Standard",
+        "concept": "Concept",
+        "practices": "Pratiques",
+        "lessons": "Leçons",
+        "activity": "Activité",
+        "items": "Questions",
+        "rubric": "Lignes de grille"
+      }
+    },
+    "editor": {
+      "from": "Issu de CS Quest {n} (v{version})",
+      "newer": "la version {version} est disponible",
+      "plan": "Ouvrir la fiche"
+    },
+    "lesson": {
+      "openPlan": "Ouvrir la fiche",
+      "preview": "Voir le jeu"
+    },
+    "paths": {
+      "h": "Parcours",
+      "lead": "Un parcours ajoute ses leçons pour {band} à votre bibliothèque en un clic.",
+      "recommended": "Commencez ici",
+      "periods": "Séances : {count}",
+      "misses": "Laisse de côté :",
+      "coversAll": "Couvre tous les standards de ce niveau."
+    },
+    "plan": {
+      "actions": "Mener cette leçon",
+      "iCan": "Je sais",
+      "standards": "Standards",
+      "also": "Aussi :",
+      "toward": "Prépare à :",
+      "vocab": "Vocabulaire :",
+      "materials": "Matériel",
+      "doNow": "Rituel d’entrée",
+      "period": "La séance de 45 minutes",
+      "clock": "Horloge",
+      "min": "Min",
+      "segment": "Déroulé",
+      "short40": "Séance courte (40 min)",
+      "block": "Bloc (80-90 min)",
+      "discuss": "Discussion",
+      "warmup": "Questions d’échauffement",
+      "warmupHow": "En direct en {mode}, {secs} secondes par question, ou au projecteur.",
+      "explore": "Explorer (script du projecteur)",
+      "demo": "Démo",
+      "do": "Faites",
+      "say": "Dites",
+      "ask": "Demandez",
+      "afterAsk": "Ensuite",
+      "bigIdea": "Idée clé",
+      "play": "Jouer",
+      "game": "Jeu",
+      "levelN": "niveau {n}",
+      "levelsN": "Niveaux : {count}",
+      "starter": "Lancement",
+      "goal": "Objectif",
+      "stretch": "Défi",
+      "pairs": "Groupes",
+      "lookFors": "À observer",
+      "misconception": "Idée reçue du jour",
+      "early": "Pour ceux qui finissent tôt",
+      "showMe": "Montre-moi :",
+      "exit": "Ticket de sortie",
+      "sentence": "Phrase :",
+      "frame": "Amorce :",
+      "rubric": "Grille",
+      "rubricHow": "Notez chaque ligne de 0 à 3 sur l’étape dans le carnet de notes.",
+      "rubricLine": "Ligne",
+      "diff": "Différenciation",
+      "support": "Soutien",
+      "unplugged": "Version débranchée",
+      "sub": "Plan pour remplaçant",
+      "notes": "Notes de l’enseignant",
+      "steps": "Ce que voient les élèves",
+      "stepsNote": "Les étapes que votre copie donne aux élèves. Modifiez-les dans votre bibliothèque après l’ajout.",
+      "questCode": "Code de quête",
+      "liveClass": "Classe pour le direct et l’assignation :",
+      "liveOff": "Le direct est désactivé sur ce site ; affichez les questions au projecteur.",
+      "assignNote": "Ajoute d’abord la leçon à votre bibliothèque si elle n’y est pas.",
+      "bankMissing": "La banque de questions de cette leçon n’est pas encore chargée.",
+      "gameNotYet": "{game} n’est pas encore publié ; les élèves voient une note en attendant.",
+      "notWritten": "Cette leçon n’est pas encore écrite.",
+      "switchBand": "Passer à {band}",
+      "gamesReady": "Le jeu est sorti : étapes de texte de votre copie qui peuvent devenir des étapes de jeu : {count}. Les élèves gardent leur travail.",
+      "gameLater": "Une fois publié, appuyez sur « Activer le jeu » ici ou dans l’éditeur de leçon.",
+      "liveNotAssigned": "Attribuez d’abord la leçon à la classe pour que l’échauffement compte dans la progression.",
+      "questCodeHint": "Les élèves le saisissent si le jeu le demande.",
+      "playKeys": {
+        "protocol": "Protocole",
+        "artifact": "Ce qu’ils créent",
+        "shape": "Forme",
+        "message": "Message",
+        "partnerNote": "Note pour le binôme",
+        "handIn": "À rendre",
+        "roles": "Rôles",
+        "rules": "Règles",
+        "defend": "Justifier",
+        "room": "Salle",
+        "builderStatus": "État du Builder",
+        "prefill": "Prérempli",
+        "paperPath": "Parcours papier",
+        "rotations": "Rotations",
+        "etiquette": "Savoir-vivre",
+        "sheet": "Fiche",
+        "creditsTemplate": "Modèle de crédits",
+        "demoCircles": "Cercles de démo",
+        "audit": "Vérification",
+        "timelineWalk": "Parcours de la frise"
+      }
+    },
+    "print": {
+      "back": "Retour",
+      "print": "Imprimer",
+      "page2": "page 2",
+      "key": "Corrigé (enseignant seulement)",
+      "loginCards": "Les élèves se connectent avec leurs cartes de connexion de classe."
+    },
+    "program": {
+      "title": "CS Quest",
+      "tagline": "L’informatique du CE2 à la 4e (grades 3-8)",
+      "counts": "{lessons} leçons en {units} unités",
+      "lead": "Chaque leçon tient en une séance de 45 minutes : rituel d’entrée, démo au projecteur, un chapitre du jeu en binôme, une courte discussion et un ticket de sortie.",
+      "inLibrary": "Leçons de ce niveau dans votre bibliothèque : {count}",
+      "coverage": "Carte de couverture",
+      "footer": "Les leçons ajoutées sont vos copies : modifiez-les librement.",
+      "public": "À propos de CS Quest"
+    },
+    "projector": {
+      "warmup": "Échauffement",
+      "exit": "Ticket de sortie",
+      "of": "{n} sur {count}",
+      "reveal": "Afficher la réponse",
+      "prev": "Précédente",
+      "next": "Suivante",
+      "nav": "Questions",
+      "keys": "Flèches pour avancer, Espace pour la réponse."
+    },
+    "sheets": {
+      "exit-half": "Ticket de sortie (demi-feuilles)",
+      "sub-plan": "Plan pour remplaçant",
+      "unplugged": "Version débranchée",
+      "rubric": "Grille",
+      "planning-sheet": "Fiche de planification",
+      "etiquette-card": "Carte des règles du Builder",
+      "exitHalfTitle": "Ticket de sortie",
+      "steps": "Étapes",
+      "alsoPrint": "Imprimez aussi :",
+      "wyrMissing": "Les propositions ne sont pas chargées ; écrivez-les dans le tableau.",
+      "fields": {
+        "name": "Nom",
+        "date": "Date",
+        "team": "Équipe"
+      }
+    },
+    "state": {
+      "notAdded": "Pas dans votre bibliothèque",
+      "inLibrary": "Dans votre bibliothèque",
+      "update": "Mise à jour disponible",
+      "added": "Ajoutée",
+      "open": "Ouvrir",
+      "soon": "Bientôt",
+      "gameNotYet": "{game} pas encore publié",
+      "reset": "Revenir à la version CS Quest",
+      "resetConfirm": "Créer une nouvelle copie depuis CS Quest ? Vos classes et vos dates y passent. Les élèves recommencent la nouvelle copie depuis le début ; leur travail sur l’ancienne copie est conservé et revient si vous réattribuez l’ancienne copie.",
+      "resetDone": "Version CS Quest rétablie.",
+      "switchOn": "Activer le jeu",
+      "gamesOn": "Étapes de jeu activées : {count}."
+    },
+    "toast": {
+      "one": "Ajoutée à votre bibliothèque.",
+      "many": "Ajoutées à votre bibliothèque."
+    },
+    "unit": {
+      "n": "Unité {n}",
+      "add": "Ajouter l’unité",
+      "assign": "Assigner l’unité...",
+      "lessonsN": "Leçons : {count}",
+      "optional": "Facultative",
+      "needsPlan": "Demande un forfait école"
+    },
+    "unitForm": {
+      "what": "Quoi",
+      "start": "La première leçon ouvre le",
+      "cadence": "Puis une leçon",
+      "dueDays": "À rendre après (jours)",
+      "dueAuto": "leçon suivante",
+      "button": "Assigner",
+      "note": "Chaque leçon ouvre à sa propre date.",
+      "done": "Leçons assignées à {class} : {count}.",
+      "cadences": {
+        "weekdays": "chaque jour d’école",
+        "daily": "chaque jour",
+        "twiceweekly": "deux fois par semaine",
+        "weekly": "chaque semaine"
+      },
+      "skipped": "Déjà attribuées : {count} ({list})."
+    },
+    "units": {
+      "h": "Unités"
+    },
+    "standards": {
+      "title": "Normes",
+      "lead": "Ce que cette classe a fait pour chaque norme CSTA. Les chiffres sont par classe : en binôme, seul l’élève connecté compte.",
+      "pick": "Afficher",
+      "show": "Afficher",
+      "everyone": "Toute la classe",
+      "levelsAll": "Afficher les 44 normes",
+      "levelsClass": "Seulement les niveaux de cette classe",
+      "csv": "Télécharger le CSV",
+      "report": "Rapport de couverture de l’école",
+      "cols": {
+        "standard": "Norme",
+        "lessons": "Leçons",
+        "practiced": "Pratiqué",
+        "checked": "Vérifié",
+        "applied": "Appliqué",
+        "needsLook": "À regarder",
+        "last": "Dernier",
+        "status": "État"
+      },
+      "checkedVal": "{pct} % · questions : {items} · élèves : {students}",
+      "appliedVal": "{mean} · {count} notés",
+      "status": {
+        "notYet": "Pas encore",
+        "assigned": "Assigné",
+        "practiced": "Pratiqué",
+        "checked": "Vérifié",
+        "meets": "Atteint"
+      },
+      "legend": {
+        "h": "Comment lire ce tableau",
+        "practiced": "Pratiqué : élèves qui ont terminé une étape liée à la norme (un jeu joué, une question répondue, une création rendue). Cela veut dire qu’ils ont fait l’activité, pas qu’ils la maîtrisent.",
+        "checked": "Vérifié : bonnes réponses parmi les questions de ticket de sortie liées à la norme (trois questions, pas un contrôle). Un élève l’atteint avec au moins 2 bonnes réponses sur le ticket le plus récent, ou toutes s’il y en a moins de 2.",
+        "applied": "Appliqué : vos notes de grille (0-3) sur les lignes liées à la norme, et le nombre d’élèves notés. Une note de 2 ou plus l’atteint.",
+        "meets": "Atteint : au moins 80 % de la classe atteint la norme par Vérifié ou Appliqué.",
+        "needs": "À regarder : élèves qui ont répondu à 2 questions liées ou plus sans aucune bonne réponse. Seuls les enseignants le voient.",
+        "pairs": "Binômes : connectez-vous à tour de rôle. Seul l’élève connecté compte."
+      },
+      "privacy": "Seuls les enseignants de la classe et les administrateurs de l’école voient cette page. Elle n’est jamais montrée aux élèves ni au projecteur, et elle est supprimée avec la classe.",
+      "noData": "pas de données",
+      "noDataHint": "Pas encore de travail dans cette classe.",
+      "ticket": "{right} sur {tagged} justes au dernier ticket",
+      "best": "meilleure {best} · {count} notés",
+      "empty": {
+        "title": "Pas encore de normes",
+        "text": "Assignez des leçons CS Quest à cette classe et leurs normes apparaîtront ici."
+      },
+      "csvCols": {
+        "standard": "Norme",
+        "concept": "Concept",
+        "statement": "Énoncé",
+        "lessons": "Leçons",
+        "practiced": "Pratiqué (élèves)",
+        "students": "Élèves de la classe",
+        "checkedPct": "Réussite vérifiée %",
+        "items": "Questions posées",
+        "checkedStudents": "Élèves vérifiés",
+        "appliedMean": "Moyenne de grille (0-3)",
+        "marked": "Élèves notés",
+        "needsLook": "À regarder (élèves)",
+        "meets": "Élèves qui l’atteignent",
+        "last": "Dernier",
+        "status": "État"
+      },
+      "reportH": {
+        "title": "Rapport de couverture",
+        "lead": "{school} : toutes les classes, totaux seulement (aucun nom d’élève).",
+        "classes": "Classes incluses",
+        "cols": {
+          "standard": "Norme",
+          "classes": "Classes",
+          "lessons": "Leçons faites",
+          "items": "Questions posées",
+          "accuracy": "Réussite",
+          "rubric": "Moyenne de grille",
+          "meets": "Classes qui l’atteignent"
+        },
+        "rubricVal": "{mean} · {count} notes",
+        "note": "Pratiqué veut dire que l’activité a été faite, pas qu’elle est maîtrisée. La réussite compte les bonnes réponses aux questions de ticket de sortie liées à la norme."
+      }
     }
   }
 }

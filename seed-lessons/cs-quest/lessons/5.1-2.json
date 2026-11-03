@@ -1,0 +1,312 @@
+{
+ "id": "csq-2-5.1",
+ "key": "csq-2-5.1",
+ "version": 1,
+ "unit": 5,
+ "order": 14,
+ "n": "5.1",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "5.1 · What's inside? (Parts, hardware and software, gadgets)",
+ "name": "What's inside? (Parts, hardware and software, gadgets)",
+ "short": "Parts",
+ "summary": "Students design gadgets from a brief, a step counter, a plant waterer, a door alarm, a noise meter and a lunchbox thermometer, by choosing inputs, outputs, storage, processing and a connection from a parts bin with cost, battery and size meters. Each gadget runs a short test; then three user quotes ask for improvements and students pick two. Played in Inside the Machine's Design a Gadget. One device per student.",
+ "duration": 45,
+ "csta": {
+  "primary": [
+   "2-CS-02",
+   "2-CS-01"
+  ],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "design a gadget by choosing inputs, outputs, storage, processing and a connection",
+  "explain the tradeoffs I made in cost, battery and size",
+  "improve a design from what users say"
+ ],
+ "questCode": "5 2 0 0",
+ "params": "chapter=gadget&band=2&lock=1",
+ "materials": [
+  "projector",
+  "one device per student",
+  "headphones",
+  "Be the Computer role cards (for the twin or the block day)",
+  "login cards"
+ ],
+ "doNow": "List everything a tablet needs to show you a photo when you tap it. Which part would you drop to make it cheaper?",
+ "plan": [
+  [
+   "0:00",
+   5,
+   "Arrive, log in, Do Now"
+  ],
+  [
+   "0:05",
+   5,
+   "Warm-up (live or projector)"
+  ],
+  [
+   "0:10",
+   6,
+   "Explore: the step counter brief, wireless or cable"
+  ],
+  [
+   "0:16",
+   18,
+   "Play: Design a Gadget"
+  ],
+  [
+   "0:34",
+   6,
+   "Discuss"
+  ],
+  [
+   "0:40",
+   5,
+   "Exit ticket + pack up"
+  ]
+ ],
+ "warmup": {
+  "setId": "csq-u5-2",
+  "items": [
+   "2-u5-o1",
+   "2-5.1-r1",
+   "2-5.1-e1",
+   "2-5.1-e2",
+   "2-5.1-e3"
+  ],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so before you start"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {
+   "chapter": "gadget",
+   "level": 1
+  },
+  "do": [
+   "Open Inside the Machine at Design a Gadget on the projector (Open game at this chapter). Brief 1 is the step counter. Ask the class for the parts, drag them from the parts bin and watch the cost, battery and size meters.",
+   "Run the test. Then swap the cable for wireless and run it again: the battery meter drops."
+  ],
+  "say": [
+   "Every design is a set of tradeoffs: you give up one good thing to get another.",
+   "A gadget is not finished when it works. It is finished when the people who use it can use it, so we read what users say and improve it."
+  ],
+  "ask": [
+   "Wireless or a cable for the step counter? What do we gain, and what do we give up?"
+  ],
+  "afterAsk": "Take one answer for each side. Write gain and give up on the board with the answers under each. Keep the class choice and run the test.",
+  "bigIdea": "Every design is a tradeoff, and users tell you what to improve next.",
+  "vocab": [
+   "sensor",
+   "tradeoff",
+   "wireless vs cable",
+   "input",
+   "output"
+  ]
+ },
+ "play": {
+  "type": "game",
+  "game": "inside-the-machine",
+  "chapter": "gadget",
+  "chapterTitle": "Design a Gadget",
+  "levels": 5,
+  "goal": "3 briefs",
+  "stretch": "all 5 briefs, then 3 stars: under budget and every user quote answered",
+  "solo": "one device per student; a neighbor may read the brief out loud, never touch your screen",
+  "lookFors": [
+   "adding every part just in case and going over budget",
+   "choosing improvements the users did not ask for",
+   "a sensor that measures the wrong thing for the brief, like light for a dry-soil alarm"
+  ],
+  "misconception": "More parts do not make a better gadget: the best design meets the brief with the fewest tradeoffs and fixes what users actually said.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What did you give up to make the gadget cheaper?",
+  "Read one user quote you got. Which two improvements did you choose, and why those?"
+ ],
+ "showMe": "Two students show the same brief on the projector with different parts; the class compares the meters and says which tradeoff they would choose.",
+ "exit": {
+  "setId": "csq-u5-2",
+  "items": [
+   "2-5.1-e1",
+   "2-5.1-e2",
+   "2-5.1-e3"
+  ],
+  "sentencePrompt": "Describe one gadget you designed: one part you chose, the tradeoff it cost you, and one improvement users asked for.",
+  "frame": "I chose ___, which cost me ___; users asked for ___, so I ___.",
+  "rubric": [
+   {
+    "line": "Designing a system: parts and tradeoffs",
+    "ids": [
+     "2-CS-02"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a part chosen for the gadget",
+     "Names a part and the tradeoff it cost (cost, battery or size)",
+     "Explains why the part fits the brief and why the tradeoff was worth it"
+    ]
+   },
+   {
+    "line": "Improving a design from what users say",
+    "ids": [
+     "2-CS-01"
+    ],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a user complaint or an improvement",
+     "Links an improvement to what a user said",
+     "Also says why that improvement matters more than another"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "a printed parts list with what each part does",
+   "brief 1 and 2 show the budget line on the meter",
+   "hint 1 rereads the brief and underlines what it must measure"
+  ],
+  "stretch": [
+   "3 stars on every brief",
+   "design a sixth gadget on paper: the brief, the parts and one tradeoff"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper Gadget",
+  "minutes": 15,
+  "materials": [
+   "a brief card per group",
+   "parts cards with a cost, battery and size number each",
+   "a budget sheet"
+  ],
+  "steps": [
+   "Groups read their brief and pick parts cards: an input, a processor, storage, an output and a connection.",
+   "They add up cost, battery and size on the budget sheet and swap parts until they are under budget.",
+   "The teacher reads three user quotes for each brief; groups choose two improvements and say what they cost.",
+   "Share: what did each group give up, and was it worth it?"
+  ],
+  "printables": [
+   "gadget-briefs",
+   "parts-cards",
+   "budget-sheet"
+  ]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: list everything a tablet needs to show you a photo when you tap it; which part would you drop to make it cheaper?",
+  "Play Inside the Machine, chapter Design a Gadget, on your own for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 5 2 0 0. Goal: 3 briefs. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Paper Gadget, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   [
+    "0:00",
+    4,
+    "Do Now"
+   ],
+   [
+    "0:04",
+    3,
+    "Warm-up on the projector, 2 items"
+   ],
+   [
+    "0:07",
+    5,
+    "Explore"
+   ],
+   [
+    "0:12",
+    16,
+    "Play: Design a Gadget"
+   ],
+   [
+    "0:28",
+    6,
+    "Discuss, one prompt"
+   ],
+   [
+    "0:34",
+    6,
+    "Exit ticket + pack up"
+   ]
+  ],
+  "warmupItems": [
+   "2-u5-o1",
+   "2-5.1-r1"
+  ],
+  "discuss": "What did you give up to make the gadget cheaper?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Paper Gadget twin (15 minutes) before Play",
+   "the sixth gadget on paper after Play",
+   "10 minutes of the Unit 4 review on Brain Board as retrieval"
+  ]
+ },
+ "notes": [
+  "No brand or product names, ever: say wireless, not a brand of wireless.",
+  "The warm-up is a pre-test for unit 5: nobody is expected to know the answers yet. Say so before you start.",
+  "Vocabulary beyond the five on the learn card: processor, storage, hardware, software.",
+  "One device per student at this band."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: List everything a tablet needs to show you a photo when you tap it. Which part would you drop to make it cheaper?\n\nBig idea: Every design is a tradeoff, and users tell you what to improve next.\n\nWe will talk about:\n- What did you give up to make the gadget cheaper?\n- Read one user quote you got. Which two improvements did you choose, and why those?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. It is fine not to know them yet: we check again at the end."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Design a Gadget",
+   "minutes": 18,
+   "gameSlug": "inside-the-machine",
+   "options": "chapter=gadget&band=2&lock=1",
+   "questCode": "5 2 0 0",
+   "standards": [
+    "2-CS-02",
+    "2-CS-01"
+   ],
+   "body": "Goal: 3 briefs. Stretch: all 5 briefs, then 3 stars.\nIf the game asks for a quest code, it is 5 2 0 0.\nOne device each. A neighbor may help you think, but only you touch your screen."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about designing gadgets."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": [
+    "2-CS-02",
+    "2-CS-01"
+   ],
+   "rubric": "exit",
+   "body": "Describe one gadget you designed: one part you chose, the tradeoff it cost you, and one improvement users asked for.\nFrame: I chose ___, which cost me ___; users asked for ___, so I ___."
+  }
+ ]
+}

@@ -1,0 +1,236 @@
+{
+ "id": "csq-2-6.3",
+ "key": "csq-2-6.3",
+ "version": 1,
+ "unit": 6,
+ "order": 19,
+ "n": "6.3",
+ "band": "2",
+ "bandCode": "2",
+ "grade": "Grades 6-8",
+ "title": "6.3 · Share or keep? (Public vs private, using others' work)",
+ "name": "Share or keep? (Public vs private, using others' work)",
+ "short": "Share or keep",
+ "summary": "Students vote on eight sharing dilemmas in Would You Rather (live) and name the tradeoff after each reveal: what sharing gets you, what it risks. Then the Credit Card sort (six media cards with license badges) and Spot the Spoof: the two spoof cards of Packet Post on the projector. The lesson sets the credit block the capstone uses.",
+ "duration": 45,
+ "csta": {
+  "primary": ["2-IC-23", "2-AP-16"],
+  "also": ["2-NI-05"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "weigh what I gain and what I risk by making information public",
+  "reuse media and code and give credit the way the license asks"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Credit Card sort printable: 6 media cards with license badges and a sorting mat (one set per pair)",
+  "Packet Post on the projector for Spot the Spoof (chapter Spot the Trick, Pro, the last two cards)",
+  "the Would You Rather prompt sheet (printed with the plan)",
+  "login cards"
+ ],
+ "doNow": "You drew a great picture. A classmate copies it and puts their name on it. How do you feel? Now the picture is a song on the internet, and someone is making money from it.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: the public or private T-chart and four badges"],
+  ["0:16", 18, "Would You Rather (live): 8 dilemmas · Credit Card sort · Spot the Spoof"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u6-2",
+  "items": ["2-6.2-e1", "2-6.2-e2", "2-6.3-r1", "2-6.3-e1", "2-6.2-r1"],
+  "mode": "battle",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 6.2, one vocabulary item, one preview of today, one more from 6.2"
+ },
+ "explore": {
+  "minutes": 6,
+  "do": [
+   "Draw a T-chart on the board: public (people find you, your work gets seen, you can compete) and private (nobody can use it to trick you, nobody sees when you played). Fill one row for a public high-score board with the class.",
+   "Draw the four badges (public domain, creative commons with credit, all rights reserved, made by me) and sort two media cards and a card that says a sound library with the class."
+  ],
+  "say": [
+   "Sharing online connects people and gets your work seen. The tradeoff is that most tricks start with information that is already public: a name, a school, a daily route.",
+   "Building on other people's work is how real programs get made. The license tells you what you may do, and attribution is how you say thank you: the credit, written the way the license asks."
+  ],
+  "ask": [
+   "A message says it is from the office and asks for your login to fix a problem. What makes it a trick, and what public information made it believable?"
+  ],
+  "afterAsk": "Name it: social engineering, the trick that works on people, not computers. Spoofing is pretending to be someone you trust. Both are on today's Spot the Spoof cards.",
+  "bigIdea": "Public gets you seen and found; private keeps you safe; a good choice names the tradeoff.",
+  "vocab": ["permission", "credit", "social engineering", "spoofing", "footprint"]
+ },
+ "play": {
+  "type": "live",
+  "game": "would-you-rather-live",
+  "starter": "wyr:online:8:20",
+  "count": 8,
+  "secs": 20,
+  "prompts": "wyr-tech.json",
+  "talk": "after every reveal: thirty seconds of turn-and-talk with the scaffold for this band: what is public, what is private, who else could see it",
+  "room": "start the room from the plan page with your class picked so the run lands in class history; an open room is fine when students are not signed in",
+  "creditSort": {
+   "minutes": 6,
+   "steps": [
+    "Pairs get 6 media cards: public domain, creative commons with credit, all rights reserved, made by me, made by my friend who said yes, found on a search.",
+    "They sort them on the mat into four piles: use freely, use with credit, ask first, do not use, and write the credit line each pile needs.",
+    "Check as a class: one pair reads a pile, the others show thumbs."
+   ]
+  },
+  "spoof": {
+   "minutes": 4,
+   "steps": [
+    "Open Packet Post, chapter Spot the Trick (Pro), on the projector and show the last two cards: the spoof cards.",
+    "The class votes safe, trick or ask a trusted adult; then one student names the public information that made the spoof believable."
+   ]
+  },
+  "lookFors": [
+   "a tradeoff with only the private side: ask what sharing would get them",
+   "credit written as a thank-you only: attribution also needs what the license asked for, such as the maker's name, where it came from, or the same license on your work"
+  ],
+  "misconception": "Students think private is always safer and public is always risky; the point of the lesson is that both are tradeoffs: public gets you found and seen, private protects you, and the choice depends on what the information can be used for.",
+  "earlyFinishers": [
+   "write the credit block for a game that reuses a template, a picture and a free sound, each with its license",
+   "find the one public fact in each spoof card and say how to make it harmless"
+  ]
+ },
+ "discuss": [
+  "Why share anything at all? What is worth the risk?",
+  "Which spoof card fooled the most people, and what one public fact made it work?"
+ ],
+ "showMe": "Show the class split for the public high-scores dilemma; one student per side names the benefit and the risk.",
+ "exit": {
+  "setId": "csq-u6-2",
+  "items": ["2-6.3-e1", "2-6.3-e2", "2-6.3-e3"],
+  "sentencePrompt": "Write the credit line for a game that reuses a template, some art and a free sound, the way the licenses ask. Then name one thing you keep private online and the tradeoff of keeping it private.",
+  "frame": "Art: ___. Idea: ___. Sound: ___ (license: ___). I keep ___ private; the tradeoff is ___.",
+  "rubric": [
+   {
+    "line": "Public vs private: names a tradeoff and recognizes social engineering",
+    "ids": ["2-IC-23"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names something to keep private, or something risky about sharing",
+     "Names a benefit of sharing and a risk of the same information",
+     "Names both sides and how a trick (social engineering or spoofing) would use the public information"
+    ]
+   },
+   {
+    "line": "Attribution: credits reused code, media and ideas as the license asks",
+    "ids": ["2-AP-16"],
+    "levels": [
+     "Nothing yet, or no credit",
+     "Names a source for something reused",
+     "Credits each reused thing with its maker and what the license allows",
+     "The credit line follows each license's terms and says where it appears in the game"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "badge pictures and the credit-line frame on the mat",
+   "the T-chart stays on the board",
+   "read the spoof cards out loud twice before the vote"
+  ],
+  "stretch": [
+   "write the full capstone credit block: template, ideas, built-in art, free sounds, testers, each with its license",
+   "find the one public fact in each spoof card and say how to make it harmless"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Corners vote, the Credit Card sort and paper spoofs",
+  "minutes": 15,
+  "materials": [
+   "the printed dilemma sheet (the 8 sharing dilemmas)",
+   "a sign for corner A and a sign for corner B",
+   "the Credit Card sort cards and mat",
+   "two printed spoof messages"
+  ],
+  "steps": [
+   "Read a sharing dilemma out loud; students walk to corner A or B; count hands; thirty seconds with the scaffold: what is public, what is private, who else could see it.",
+   "After four dilemmas, pairs do the Credit Card sort on the mat and write the credit line each pile needs.",
+   "Read the two printed spoof messages; the class votes safe, trick or ask a trusted adult, and names the public fact that made each one believable."
+  ],
+  "printables": ["license-badges", "credit-sort-mat", "wyr-online-sheet", "spoof-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: a classmate copies your great picture and puts their name on it; how do you feel, and what if the picture were a song someone is making money from?",
+  "Run the Corners vote with the printed sharing dilemmas (walk to corner A or B, count hands, thirty seconds: what is public, what is private, who else could see it), then pairs sort the six media cards on the mat into use freely, use with credit, ask first, do not use, and write the credit line each pile needs. No projector and no login needed.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore: the T-chart and four badges"],
+   ["0:12", 16, "Would You Rather (live), 6 dilemmas · Credit Card sort · one spoof card"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["2-6.2-e1", "2-6.3-r1"],
+  "discuss": "Why share anything at all? What is worth the risk?",
+  "keep": "the exit ticket is never cut; host 6 dilemmas instead of 8 and show one spoof card instead of two"
+ },
+ "block": {
+  "add": [
+   "all 10 sharing dilemmas, with defenders on every other reveal",
+   "Packet Post, chapter Spot the Trick (Pro), played through as a class on the projector",
+   "10 minutes of the Unit 6 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "Vocabulary beyond the five on the learn card: public domain, creative commons, license, attribution.",
+  "Spot the Spoof uses Packet Post on the projector only; no student device needs that game today. The last two cards of the Pro chapter Spot the Trick are the spoof cards.",
+  "This lesson sets the credit block the capstone uses in 7.4: template, art, ideas, sounds, testers, each with its license.",
+  "Posting a full name, school and daily route, public high scores and a library license are the exit items: use them in Explore."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: You drew a great picture. A classmate copies it and puts their name on it. How do you feel? Now the picture is a song on the internet, and someone is making money from it.\n\nBig idea: Public gets you seen and found; private keeps you safe; a good choice names the tradeoff.\n\nWe will talk about:\n- Why share anything at all? What is worth the risk?\n- Which spoof card fooled the most people, and what one public fact made it work?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "question-battle",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Would You Rather (live)",
+   "minutes": 18,
+   "gameSlug": "would-you-rather-live",
+   "live": "wyr",
+   "playHidden": true,
+   "starter": "wyr:online:8:20",
+   "body": "Eight dilemmas about sharing online. Vote, then turn and talk for thirty seconds: what is public, what is private, who else could see it.\nAfter the dilemmas: the Credit Card sort with your partner (use freely, use with credit, ask first, do not use), then Spot the Spoof on the projector."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about public, private and credit."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["2-IC-23", "2-AP-16"],
+   "rubric": "exit",
+   "body": "Write the credit line for a game that reuses a template, some art and a free sound, the way the licenses ask. Then name one thing you keep private online and the tradeoff of keeping it private.\nFrame: Art: ___. Idea: ___. Sound: ___ (license: ___). I keep ___ private; the tradeoff is ___."
+  }
+ ]
+}

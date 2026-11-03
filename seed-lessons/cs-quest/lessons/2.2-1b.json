@@ -1,0 +1,235 @@
+{
+ "id": "csq-1b-2.2",
+ "key": "csq-1b-2.2",
+ "version": 1,
+ "unit": 2,
+ "order": 7,
+ "n": "2.2",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "2.2 · Level designers (Plan, build, test, explain)",
+ "name": "Level designers (Plan, build, test, explain)",
+ "short": "Level design",
+ "summary": "A mini-project in one period. Students plan a level on paper, build it in the Robo Route Level Maker, press Check to prove it can be solved, hand the device to a tester who plays in silence while the designer watches, then fix one thing and write a one-line designer's note that explains a choice. Roles swap at the chime. Pairs share one device.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-AP-13", "1B-AP-16", "1B-AP-17"],
+  "also": ["1B-AP-12"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "plan a level on paper before I build it, and change it after a tester plays",
+  "take a role, designer or tester, and do what that role does",
+  "explain one choice I made in my level and why"
+ ],
+ "questCode": "8 1 2 0",
+ "params": "chapter=level-maker&band=1b&mode=maker&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Level Plan printable (a 6 by 6 grid, a tester card, designer and tester role cards)",
+  "a chime for the three rounds",
+  "login cards"
+ ],
+ "doNow": "Draw a tiny 4 by 4 maze on the printed grid: a start, a goal and one trap. Can Bolt get from the start to the goal? Trace it with your finger.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now (the paper plan)"],
+  ["0:05", 5, "Warm-up (live or projector)"],
+  ["0:10", 6, "Explore: paint, Check, Test with a friend"],
+  ["0:16", 18, "Play: Level Maker (build 6, test 6, fix 6)"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u2-1b",
+  "items": ["1b-2.1-e1", "1b-2.1-e2", "1b-2.2-r1", "1b-2.2-e1", "1b-2.1-r1"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "two retrieval items from 2.1, one vocabulary item, one preview of today, one more from 2.1"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "level-maker", "level": 1},
+  "do": [
+   "Open Robo Route at Level Maker on the projector (Open game at this chapter). Level 1 is a goal walled in. Press Check first: it turns red and says there is no way to the goal. Pick the floor tile, open one wall, press Check again: green, and it shows the par. Then press Test with a friend and hand the device to a student. Stay silent while they play.",
+   "Hold up the role cards. Designer: builds from the paper plan, then watches in silence and takes notes. Tester: plays, then says one fun thing and one confusing thing. Ring the chime once so everyone knows the sound for the swap."
+  ],
+  "say": [
+   "Plan, build, test with someone else, improve, explain. That is how every real game gets made.",
+   "Check proves a level can be solved and tells you its par. A tester tells you what Check cannot: is it fun, and where is it confusing?",
+   "The designer stays silent. A tester who gets help is not testing the level."
+  ],
+  "ask": [
+   "What can a tester tell you that Check cannot?"
+  ],
+  "afterAsk": "Collect answers: fun, too easy, too hard, confusing, where I got stuck. Write one fun thing and one confusing thing on the board as the tester's script.",
+  "bigIdea": "Plan it, build it, let someone else test it in silence, fix one thing, then explain your choice.",
+  "vocab": ["plan", "build", "tester", "feedback", "par"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "level-maker",
+  "chapterTitle": "Level Maker",
+  "mode": "maker",
+  "levels": 3,
+  "goal": "the three maker tasks (open a wall; make par 6 or more; add a gem, a key and a door), then one level of your own from the paper plan, tested by your partner",
+  "stretch": "a level whose par is 8 or more, so a loop beats single blocks; remix your partner's level and keep the based on stamp",
+  "pairs": "designer and tester today, not driver and navigator: round 1 (6 minutes) the designer builds from the paper plan and presses Check; at the chime, round 2 (6 minutes) the device goes to the tester, who plays while the designer watches in silence, then says one fun thing and one confusing thing; at the chime, round 3 (6 minutes) the designer fixes one thing, presses Check again and says the designer's note out loud; the second partner's level is built in the block version or next time",
+  "lookFors": [
+   "designers helping the tester with words or a pointing finger: the role card says silent",
+   "testers who only say good: ask for the one confusing square",
+   "a level that Check refuses three times in a row: help the pair open a path before the chime"
+  ],
+  "misconception": "Testing is not the designer playing their own level: the designer stays silent while someone else plays, because the tester finds what the designer cannot see.",
+  "earlyFinishers": [
+   "earn 3 stars on every maker task",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "What did your tester find that you did not expect?",
+  "Which role was harder, designer or tester, and why?"
+ ],
+ "showMe": "One pair shows their level on the projector before and after the tester's note and reads the designer's note out loud.",
+ "exit": {
+  "setId": "csq-u2-1b",
+  "items": ["1b-2.2-e1", "1b-2.2-e2", "1b-2.2-e3"],
+  "sentencePrompt": "Which role did you take? What did your tester find, and what did you change? Then explain one choice in your level and why you made it.",
+  "frame": "I was the ___. My tester found ___, so I changed ___. In my level I chose ___ because ___.",
+  "rubric": [
+   {
+    "line": "Planning and improving with a tester's perspective",
+    "ids": ["1B-AP-13"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says a level was built, with no plan and no change",
+     "Says the level came from the paper plan and names the change made after the tester's note",
+     "Also says why the change fits what the tester saw, or what to test next time"
+    ]
+   },
+   {
+    "line": "Roles: designer and tester",
+    "ids": ["1B-AP-16"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a role with nothing about what it did",
+     "Names the role taken and what it did: built and watched in silence, or played and gave one fun and one confusing thing",
+     "Also says what the other role did and how the swap changed the level"
+    ]
+   },
+   {
+    "line": "Describing a design choice",
+    "ids": ["1B-AP-17"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a thing in the level with no reason, like good level or my level is hard",
+     "Names a design choice and a reason, like I put the key behind the water so you must plan a path",
+     "Also says how a player would notice the choice, or what was tried first and dropped"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "a 6 by 6 grid; the first two maker tasks need only walls and the goal, and the key and door come in task 3",
+   "the paper plan has a start, a goal and one trap only; role cards with pictures",
+   "the maker task hints say which square to open; read-aloud on"
+  ],
+  "stretch": [
+   "a level whose par is 8 or more, so a loop beats single blocks",
+   "remix your partner's level from its code, change three squares, keep the based on stamp",
+   "write a second designer's note for the trap: why there, why that kind"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper mazes",
+  "minutes": 15,
+  "materials": ["one 6 by 6 grid per student", "arrow cards", "a tester card (one fun thing, one confusing thing)", "designer and tester role cards"],
+  "steps": [
+   "Round 1, build: each student draws a level on the grid: a start, a goal, walls, one gem and one trap. Trace a route with a finger to prove it can be solved.",
+   "Round 2, test: swap grids with a partner. The tester solves it with arrow cards while the designer watches in silence and notes where the tester hesitates. The tester fills in the tester card.",
+   "Round 3, fix and explain: the designer changes one thing because of the card and writes a one-line note: In my level I chose ___ because ___.",
+   "Share: read two designer's notes out loud and let the class guess which square each note is about."
+  ],
+  "printables": ["grid-mat", "arrow-cards", "tester-card", "role-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: draw a tiny 4 by 4 maze on the printed grid with a start, a goal and one trap, and trace a route with your finger.",
+  "Paper mazes for 20 minutes, no devices needed: each student draws a 6 by 6 level, swaps with a partner who solves it in silence and writes one fun thing and one confusing thing, then the designer fixes one thing and writes one line that starts In my level I chose. If devices are out anyway, Robo Route chapter Level Maker works signed out with the quest code 8 1 2 0.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it with the mazes."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now (the paper plan)"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Level Maker (build 5, test 5, fix 6)"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-2.1-e1", "1b-2.2-r1"],
+  "discuss": "What did your tester find that you did not expect?",
+  "keep": "the exit ticket is never cut; shorten the build and test rounds, never the fix round, because the designer's note needs the change"
+ },
+ "block": {
+  "add": [
+   "the Paper mazes twin (15 minutes) before Play, so the paper plan is already tested once",
+   "a second rotation after Play so the other partner builds their level",
+   "10 minutes of the Unit 2 review on Brain Board"
+  ]
+ },
+ "notes": [
+  "The maker never asks for text: level names do not exist and a level code carries grid squares only, so there is nothing a tester can type that reaches another student.",
+  "Sharing a level: pass the device, or enter the code on the tester's device from the symbol pad. Both work signed out.",
+  "In one period only one partner's level gets the full build, test, fix. Say so up front, and let the other partner build in the block version or during the next free play.",
+  "Shared devices: this is an odd lesson, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Draw a tiny 4 by 4 maze on the printed grid: a start, a goal and one trap. Can Bolt get from the start to the goal? Trace it with your finger.\n\nBig idea: Plan it, build it, let someone else test it in silence, fix one thing, then explain your choice.\n\nWe will talk about:\n- What did your tester find that you did not expect?\n- Which role was harder, designer or tester, and why?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Level Maker",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=level-maker&band=1b&mode=maker&lock=1",
+   "questCode": "8 1 2 0",
+   "standards": ["1B-AP-13", "1B-AP-12"],
+   "body": "Goal: the three maker tasks (open a wall, make par 6 or more, add a gem, a key and a door), then one level of your own from your paper plan. Stretch: a level with a par of 8 or more, or remix your partner's level and keep the based on stamp.\nIf the game asks for a quest code, it is 8 1 2 0.\nRoles: designer and tester. Build 6 minutes: paint your plan, press Check. Chime: hand the device over. Test 6 minutes: the tester plays, the designer watches in silence, then the tester says one fun thing and one confusing thing. Chime. Fix 6 minutes: change one thing, Check again, and say your designer's note out loud."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about planning, testing with a partner and explaining a choice."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-AP-16", "1B-AP-17"],
+   "rubric": "exit",
+   "body": "Which role did you take? What did your tester find, and what did you change? Then explain one choice in your level and why you made it.\nFrame: I was the ___. My tester found ___, so I changed ___. In my level I chose ___ because ___."
+  }
+ ]
+}

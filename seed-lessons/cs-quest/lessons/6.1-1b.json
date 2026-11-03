@@ -1,0 +1,201 @@
+{
+ "id": "csq-1b-6.1",
+ "key": "csq-1b-6.1",
+ "version": 1,
+ "unit": 6,
+ "order": 17,
+ "n": "6.1",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "6.1 · Tech that changed the world",
+ "name": "Tech that changed the world",
+ "short": "Tech changes",
+ "summary": "Students vote on eight technology dilemmas in Would You Rather (live), defend a side, and build a rope timeline of inventions with one good change and one worry for each. No game and no live warm-up today: the vote is the warm-up and the discussion is the lesson.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-IC-18"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "name technologies that changed how people live",
+  "say one way a technology changed people, and one way people changed it"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Invention timeline cards printable (12 cards, one per pair)",
+  "a rope or long string across the room, with clothespins or tape",
+  "paper strips for the plus and minus notes",
+  "the Would You Rather prompt sheet (printed with the plan)"
+ ],
+ "doNow": "Write one thing an older person you know did without a computer that you do with one.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 4, "Explore: what a tradeoff is (projector script)"],
+  ["0:09", 10, "Timeline Walk: invention cards on the rope"],
+  ["0:19", 13, "Would You Rather (live): Tech choices, 8 dilemmas"],
+  ["0:32", 8, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": null,
+ "explore": {
+  "minutes": 4,
+  "do": [
+   "Hold up two cards from the timeline set, the telephone and the video call. Ask who has used each. Hang them on the rope at opposite ends.",
+   "Write the word tradeoff on the board with a plus column and a minus column. Fill one row for the video call with the class: plus, you can see your cousin far away; minus, you need a device and a connection."
+  ],
+  "say": [
+   "Technology is anything people invent to solve a problem. Every one of these cards changed how people live.",
+   "People change technology too: captions were added to videos because viewers asked for them."
+  ],
+  "ask": [
+   "Pick any card on the rope. What did people do before it?"
+  ],
+  "afterAsk": "Take three answers. Point out that every answer is a tradeoff: something got easier, something got lost. That is the sentence they will write at the end.",
+  "bigIdea": "Technology changes how people live, and people change technology right back.",
+  "vocab": ["technology", "invention", "tradeoff"]
+ },
+ "play": {
+  "type": "live",
+  "game": "would-you-rather-live",
+  "starter": "wyr:tech:8:20",
+  "count": 8,
+  "secs": 20,
+  "prompts": "wyr-tech.json",
+  "defend": "every other reveal: one student for A, one for B, thirty seconds each",
+  "room": "start the room from the plan page with your class picked so the run lands in class history; an open room is fine when students are not signed in",
+  "timelineWalk": {
+   "minutes": 10,
+   "steps": [
+    "Each pair gets one invention card. Pairs hang it on the rope where they think it belongs in time, oldest on the left.",
+    "Pairs write two strips for their card: a plus strip (one good change) and a minus strip (one worry), and hang them under the card.",
+    "Walk the rope together for two minutes: read the plus and minus strips out loud, and move any card the class thinks is in the wrong place."
+   ]
+  },
+  "lookFors": [
+   "a minus strip that is really a plus in disguise (it is too much fun): push for a real worry such as cost, safety or something lost",
+   "a pair that cannot say what people did before their invention: send them to a neighbor card for a clue"
+  ],
+  "misconception": "Kids think new technology is simply better than old; the point of the lesson is that every technology is a tradeoff: it makes something easier and changes or loses something else.",
+  "earlyFinishers": [
+   "add a second plus and minus strip to a neighbor's card",
+   "put an invention nobody brought on the rope and say where it goes in time"
+  ]
+ },
+ "discuss": [
+  "Which invention on the rope would you un-invent for a week? What would be better, and what would be worse?",
+  "Which vote surprised you most? Why do you think the class split that way?"
+ ],
+ "showMe": "Show the class split for the dilemma with the closest vote on the projector; two students say one sentence each for their side.",
+ "exit": {
+  "setId": "csq-u6-1b",
+  "items": ["1b-6.1-e1", "1b-6.1-e2", "1b-6.1-e3"],
+  "sentencePrompt": "Pick one invention from today. How did it change what people do?",
+  "frame": "___ changed how people ___.",
+  "rubric": [
+   {
+    "line": "Tech changes: a technology and how it changed people",
+    "ids": ["1B-IC-18"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a technology",
+     "Names a technology and says one way it changed what people do",
+     "Also says how people changed the technology, or names a tradeoff"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "a frame on the board for the strips: Before this, people ___; now people ___",
+   "pairs who find defending hard get the printed prompt and thirty seconds to plan together first",
+   "the host reads each dilemma out loud before the timer starts"
+  ],
+  "stretch": [
+   "influenced by culture: ask why emoji exist and who decided what they look like",
+   "put a date guess on your card and check it against the answer card at the end"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Corners vote",
+  "minutes": 15,
+  "materials": [
+   "the printed dilemma sheet (the 8 dilemmas of the live run)",
+   "a sign for corner A and a sign for corner B",
+   "the invention timeline cards, the rope and the paper strips"
+  ],
+  "steps": [
+   "Read a dilemma out loud. Students walk to corner A or corner B. Count hands out loud and write the split on the board.",
+   "After every other dilemma, one student from each corner has thirty seconds to defend their side; nobody changes corners until both have spoken.",
+   "Finish with the Timeline Walk as in the plan: the rope, the cards, the plus and minus strips."
+  ],
+  "printables": ["invention-timeline-cards", "wyr-tech-sheet"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: write one thing an older person you know did without a computer that you do with one.",
+  "Run the Corners vote with the printed dilemma sheet (walk to corner A or B, count hands, two defenders every other round), then the Timeline Walk: each pair hangs its invention card on the rope with a plus strip and a minus strip. No projector and no login needed.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Explore: tradeoff, one row on the board"],
+   ["0:07", 8, "Timeline Walk"],
+   ["0:15", 13, "Would You Rather (live), 8 dilemmas"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": [],
+  "discuss": "Which invention on the rope would you un-invent for a week? What would be better, and what would be worse?",
+  "keep": "the exit ticket is never cut; shorten the walk along the rope, not the strips"
+ },
+ "block": {
+  "add": [
+   "host 10 dilemmas instead of 8 (the plan page's block-day starter) with defenders on every reveal",
+   "the full Timeline Walk with a date guess on every card",
+   "10 minutes of the Unit 6 pre-test: the unit opener and review items on the projector"
+  ]
+ },
+ "notes": [
+  "No live warm-up today on purpose: the vote is the warm-up. The warm-up of 6.2 opens with this unit's opener item.",
+  "Start the room from the plan page with your class picked so the run lands in class history; an open room is fine when students are not signed in, and the step is then completed by participation.",
+  "The timer is 20 seconds a dilemma; the defenders make it a discussion, so keep them to thirty seconds each and alternate which side goes first.",
+  "The telephone, video calls and captions all appear in the exit items: use those words during the walk."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 27,
+   "body": "Do Now: Write one thing an older person you know did without a computer that you do with one.\n\nBig idea: Technology changes how people live, and people change technology right back.\n\nTimeline Walk: hang your invention card on the rope where it belongs in time. Under it, hang a plus strip (one good change) and a minus strip (one worry).\n\nWe will talk about:\n- Which invention would you un-invent for a week? What would be better, and what would be worse?\n- Which vote surprised you most?"
+  },
+  {
+   "kind": "game",
+   "title": "Would You Rather (live)",
+   "minutes": 13,
+   "gameSlug": "would-you-rather-live",
+   "live": "wyr",
+   "playHidden": true,
+   "starter": "wyr:tech:8:20",
+   "body": "Eight dilemmas about technology. Vote, then look at how the class split. When your teacher picks you, defend your side for thirty seconds."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about technology that changed the world."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-IC-18"],
+   "rubric": "exit",
+   "body": "Pick one invention from today. How did it change what people do?\nFrame: ___ changed how people ___."
+  }
+ ]
+}

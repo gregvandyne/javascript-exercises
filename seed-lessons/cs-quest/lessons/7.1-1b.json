@@ -1,0 +1,288 @@
+{
+ "id": "csq-1b-7.1",
+ "key": "csq-1b-7.1",
+ "version": 1,
+ "unit": 7,
+ "order": 20,
+ "n": "7.1",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "7.1 · Plan your game",
+ "name": "Plan your game",
+ "short": "Plan",
+ "summary": "Teams of two plan a game before anyone touches the Builder: who it is for, the one-sentence game, three or four parts, the if-then rule, roles and three things to test. The planning sheet is paper first, then typed into three question steps so it is saved and marked. The last box is one short message to the Builder.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-AP-13", "1B-AP-16", "1B-AP-11"],
+  "also": [],
+  "buildsToward": []
+ },
+ "iCan": [
+  "plan a game on the sheet: who it is for, the goal and three parts",
+  "choose roles with my partner and say who does what",
+  "write the main rule as if this, then that"
+ ],
+ "questCode": null,
+ "params": null,
+ "materials": [
+  "Planning sheet printable (one per team)",
+  "role cards: designer/typist and tester/note-taker",
+  "one folder per team for the sheet and the captain's login card",
+  "the Builder open on the projector (Make a game)"
+ ],
+ "doNow": "Think of your favorite simple game. Write the goal, what can go wrong, and how you win.",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up (live or projector): the unit pre-test"],
+  ["0:10", 6, "Explore: one message to the Builder on the projector"],
+  ["0:16", 18, "Plan: the planning sheet on paper, then the three question steps"],
+  ["0:34", 6, "Discuss: three messages read aloud"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u7-1b",
+  "items": ["1b-u7-o1", "1b-7.1-r1", "1b-7.1-e1", "1b-7.1-e2", "1b-7.1-e3"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "live",
+  "why": "the unit pre-test: the opener, the vocabulary item and today's three exit items; build day has no warm-up, so this is the unit's only pre-test"
+ },
+ "explore": {
+  "minutes": 6,
+  "do": [
+   "Open the Builder on the projector (Make a game). Send one message: a quiz with three questions about frogs. Narrate while it builds: it is writing the whole game from those few words.",
+   "When it is ready, let the automatic playtest run and play one question with the class. Point at what the message never said: no title, no score, no end screen. The Builder guessed all of them."
+  ],
+  "say": [
+   "A good message to the Builder comes from a good plan. The Builder only knows what you tell it, so the plan is the real work.",
+   "Today nobody builds. Today your team decides who the game is for, what it is about, which parts it has and who does what."
+  ],
+  "ask": [
+   "What did the Builder guess that we never asked for? What should our message have said?"
+  ],
+  "afterAsk": "Collect three answers on the board as the first lines of a good message: who plays, what you do, how you win. Leave them up during the planning sheet.",
+  "bigIdea": "A good message to the Builder comes from a good plan.",
+  "vocab": ["audience", "goal", "parts", "rule", "role"]
+ },
+ "play": {
+  "type": "unplugged",
+  "artifact": "planning sheet",
+  "teams": "pairs, one sheet per team; the captain signs in and types the three question steps while the partner reads from the sheet",
+  "sheet": [
+   "Working title (no names in it)",
+   "Who is it for? A player type (a younger kid, a grandparent, a friend who likes animals) or one of the people you designed for in Made for everyone",
+   "The one-sentence game: You are a ___ who must ___ before ___",
+   "Parts, 3 or 4 boxes: start screen, playing, winning, losing",
+   "The main rule: if ___ then ___",
+   "One thing the player can see change: score, lives or time",
+   "What the player sees first, in one sentence",
+   "Roles: designer/typist and tester/note-taker; swap on build day",
+   "Reused and credited: I reused ___ (the template, a classmate's idea)",
+   "Accessibility check: big buttons, read-aloud on, shapes next to colors",
+   "The message to the Builder, at most 300 characters",
+   "Three things to test, and what should happen for each"
+  ],
+  "message": "at most 300 characters: who plays, what the player does, how they win, and one thing the player can see; the teacher pastes it into build day",
+  "partnerNote": "at minute 14 pairs swap sheets with the next team for one have-you-thought-about note; the owners write their answer on their own sheet",
+  "lookFors": [
+   "a message that lists features instead of a plan (add a dog, add music): send the team back to who plays and how you win",
+   "parts that are all the same thing (level 1, level 2, level 3): the parts are start screen, playing, winning, losing",
+   "a sheet with a rule but no then: the rule needs what happens"
+  ],
+  "misconception": "Kids think the plan is a drawing of the game they want; the plan is the message the Builder will read, so every box has to end up in words.",
+  "earlyFinishers": [
+   "write the three things you will test on build day on the back of the sheet, with what should happen",
+   "read your message to a neighbor team without showing the sheet: can they say what the game is?"
+  ]
+ },
+ "discuss": [
+  "Three messages read aloud: which one would a robot misunderstand, and what word is missing?",
+  "What did the partner note make you change?"
+ ],
+ "showMe": "Three teams read their Builder message from the third question step on the projector; the class says what a robot would get wrong in each.",
+ "exit": {
+  "setId": "csq-u7-1b",
+  "items": ["1b-7.1-e1", "1b-7.1-e2", "1b-7.1-e3"],
+  "sentencePrompt": "Who is your game for, and what are its parts? Then name your role.",
+  "frame": "My game is for ___. Its parts are ___, ___ and ___. My role is ___.",
+  "rubric": [
+   {
+    "line": "Plan: who the game is for and what the player does",
+    "ids": ["1B-AP-13"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names a player or a goal",
+     "Names who the game is for and what the player must do to win",
+     "Also says what the partner note changed in the plan"
+    ]
+   },
+   {
+    "line": "Roles: who does what in the team",
+    "ids": ["1B-AP-16"],
+    "levels": [
+     "Nothing yet, or no role named",
+     "Names their own role",
+     "Names their role and their partner's role",
+     "Says what each role did today and when the roles swap"
+    ]
+   },
+   {
+    "line": "Parts: the game split into pieces",
+    "ids": ["1B-AP-11"],
+    "levels": [
+     "Nothing yet, or one big piece",
+     "Names one or two parts",
+     "Names three parts (start screen, playing, winning or losing)",
+     "Names three or four parts and the rule that joins them"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "the planning sheet has a picture icon per box and the one-sentence frame printed: You are a ___ who must ___ before ___",
+   "a word bank of game verbs on the board: catch, dodge, collect, guess, race, sort",
+   "the message box has three starter lines: A game for ___. You ___. You win when ___."
+  ],
+  "stretch": [
+   "the grades 6-8 boxes: a user card with age and device, and the main rule as six boxes",
+   "write a second message for a harder version of the game and say what changed"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper plan and pitch",
+  "minutes": 20,
+  "materials": ["the planning sheet (one per team)", "role cards: designer/typist, tester/note-taker", "pencils"],
+  "steps": [
+   "Teams fill the planning sheet on paper: title, who it is for, the one-sentence game, 3 or 4 parts, the if-then rule, one visible variable, what the player sees first, roles, what is reused, the accessibility check, the message, three things to test.",
+   "Pairs swap sheets with the next team for one have-you-thought-about note and write the answer on their own sheet.",
+   "Each team reads its message aloud in thirty seconds; the class says what a robot would misunderstand.",
+   "Sheets go in the team folder with the captain's login card, ready for build day."
+  ],
+  "printables": ["planning-sheet", "role-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: your favorite simple game: the goal, what can go wrong, how you win.",
+  "Teams of two fill the planning sheet on paper for 20 minutes: who it is for, the one-sentence game, three or four parts, the if-then rule, roles, three things to test, and a message of at most 300 characters. Pairs swap sheets for one have-you-thought-about note. No projector, no Builder and no login needed; the sheets stay in the team folders.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore: one message on the projector"],
+   ["0:12", 16, "Plan: the sheet, then the three question steps"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-u7-o1", "1b-7.1-r1"],
+  "discuss": "Three messages read aloud: which one would a robot misunderstand, and what word is missing?",
+  "keep": "the exit ticket is never cut; shorten the partner note swap to one minute, never the message box"
+ },
+ "block": {
+  "add": [
+   "a second message on the projector that fixes one thing the Builder guessed",
+   "every team pitches its message to the class in thirty seconds",
+   "the grades 6-8 boxes (user card, six-box rule, variables table) for teams who finish"
+  ]
+ },
+ "notes": [
+  "Unit 7 is optional and needs a school plan; the plan page shows Builder: on / resting and about how many teams can build this period.",
+  "The team captain signs in for every period of this unit: the captain types the three question steps today and presses Start building on build day, so the team's work sits in one gradebook row. Use Also mark these teammates on the review form so every member gets the rubric marks.",
+  "The message, not the plan, is what the Builder sees. Before build day, copy each team's message from the third question step into the top of that lesson's Build your game step, or let the captain paste it from the sheet.",
+  "Approve the sheet, not the message alone: a team with no parts or no rule builds on paper first on build day.",
+  "Mark the Plan line on the first two question steps and the Roles / timeline line on the third; the sentence step carries the lesson's own three lines."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Think of your favorite simple game. Write the goal, what can go wrong, and how you win.\n\nBig idea: A good message to the Builder comes from a good plan.\n\nToday your team plans the game on paper first, then types the plan into the three steps below. Nobody builds today.\n\nWe will talk about:\n- Three messages read aloud: which one would a robot misunderstand?\n- What did the partner note make you change?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live."
+  },
+  {
+   "kind": "question",
+   "title": "Who and what",
+   "minutes": 6,
+   "standards": ["1B-AP-13", "1B-AP-11"],
+   "rubric": [
+    {
+     "line": "Plan",
+     "ids": ["1B-AP-13", "1B-AP-11"],
+     "levels": [
+      "Nothing yet: no sheet, or the boxes are empty",
+      "Attempted: a player or a goal is named, but the parts or the rule are missing",
+      "Meets: who it is for, the one-sentence game, three or four parts and an if-then rule, written before any building",
+      "Exceeds: the plan changed after the partner note, and the change is visible in the game"
+     ]
+    }
+   ],
+   "body": "Copy from your sheet:\n- Working title (no names in it).\n- Who is it for? A player type, or one of the people you designed for in Made for everyone.\n- The one-sentence game: You are a ___ who must ___ before ___.\n- What the player sees first, in one sentence."
+  },
+  {
+   "kind": "question",
+   "title": "Parts and the rule",
+   "minutes": 6,
+   "standards": ["1B-AP-13", "1B-AP-11"],
+   "rubric": [
+    {
+     "line": "Plan",
+     "ids": ["1B-AP-13", "1B-AP-11"],
+     "levels": [
+      "Nothing yet: no sheet, or the boxes are empty",
+      "Attempted: a player or a goal is named, but the parts or the rule are missing",
+      "Meets: who it is for, the one-sentence game, three or four parts and an if-then rule, written before any building",
+      "Exceeds: the plan changed after the partner note, and the change is visible in the game"
+     ]
+    }
+   ],
+   "body": "Copy from your sheet:\n- The parts of your game, 3 or 4 boxes: start screen, playing, winning, losing.\n- The main rule: if ___ then ___.\n- One thing the player can see change: score, lives or time.\n- Accessibility check: big buttons, read-aloud on, shapes next to colors. Write the ones you ticked."
+  },
+  {
+   "kind": "question",
+   "title": "Roles and test plan",
+   "minutes": 6,
+   "standards": ["1B-AP-16"],
+   "rubric": [
+    {
+     "line": "Roles / timeline",
+     "ids": ["1B-AP-16"],
+     "levels": [
+      "Nothing yet: no roles named",
+      "Attempted: roles named, but nobody can say who did what",
+      "Meets: designer/typist and tester/note-taker named, swapped on build day, and three things to test written down",
+      "Exceeds: three roles over the project, and each person can say what they did in each one"
+     ]
+    }
+   ],
+   "body": "Copy from your sheet:\n- Roles: who is designer/typist and who is tester/note-taker today. You swap on build day.\n- Reused and credited: I reused ___ (the template, a classmate's idea).\n- Three things to test on build day, and what should happen for each.\n- Your message to the Builder, up to 300 characters: who plays, what the player does, how they win, and one thing the player can see. Your teacher pastes this message into build day."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about planning a game."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-AP-13", "1B-AP-16", "1B-AP-11"],
+   "rubric": "exit",
+   "body": "Who is your game for, and what are its parts? Then name your role.\nFrame: My game is for ___. Its parts are ___, ___ and ___. My role is ___."
+  }
+ ]
+}

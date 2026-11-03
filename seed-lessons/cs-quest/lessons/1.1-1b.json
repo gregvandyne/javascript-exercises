@@ -1,0 +1,223 @@
+{
+ "id": "csq-1b-1.1",
+ "key": "csq-1b-1.1",
+ "version": 1,
+ "unit": 1,
+ "order": 1,
+ "n": "1.1",
+ "band": "1B",
+ "bandCode": "1b",
+ "grade": "Grades 3-5",
+ "title": "1.1 · Step by step (Sequences)",
+ "name": "Step by step (Sequences)",
+ "short": "Sequences",
+ "summary": "Students meet Bolt, a robot that does exactly what the blocks say, in order. They program routes to the flag in Robo Route, learn that a turn does not move the robot, compare two routes that both work, and split a long route into legs. Pairs share one device; this is the first period, so the Do Now runs long and the warm-up is on the projector.",
+ "duration": 45,
+ "csta": {
+  "primary": ["1B-AP-10", "1B-AP-08"],
+  "also": ["1B-AP-11"],
+  "buildsToward": []
+ },
+ "iCan": [
+  "put steps in order so Bolt reaches the goal",
+  "compare two routes and say which is better (fewer steps or safer) and why",
+  "split a long route into legs"
+ ],
+ "questCode": "1 1 0 0",
+ "params": "chapter=sequences&band=1b&lock=1",
+ "materials": [
+  "projector",
+  "one device per pair",
+  "headphones",
+  "Paper Robot printable (grid mats, arrow cards, a paper Bolt token)",
+  "a chime for pair swaps",
+  "login cards"
+ ],
+ "doNow": "Write the steps to make a sandwich. Swap with a neighbor: could a robot follow your steps exactly as written?",
+ "plan": [
+  ["0:00", 5, "Arrive, log in, Do Now"],
+  ["0:05", 5, "Warm-up on the projector (a pre-test, hands up)"],
+  ["0:10", 6, "Explore: be the robot, then level 1 on the projector"],
+  ["0:16", 18, "Play: Sequences"],
+  ["0:34", 6, "Discuss"],
+  ["0:40", 5, "Exit ticket + pack up"]
+ ],
+ "warmup": {
+  "setId": "csq-u1-1b",
+  "items": ["1b-u1-o1", "1b-1.1-r1", "1b-1.1-e1", "1b-1.1-e2", "1b-1.1-e3"],
+  "mode": "quest-race",
+  "secs": 15,
+  "projectorOk": true,
+  "default": "projector",
+  "why": "first lesson of the unit: the unit opener, the vocabulary item and today's three exit items as a pre-test; nobody is expected to know them yet, so say so; the first period uses the projector form (hands up, no join code)"
+ },
+ "explore": {
+  "minutes": 6,
+  "demo": {"chapter": "sequences", "level": 1},
+  "do": [
+   "Pick one Do Now sandwich and be the robot: a volunteer reads the steps and you follow them exactly, word for word. Spread with the lid still on the jar if the steps say so. Stop after three steps.",
+   "Open Robo Route at Sequences on the projector (Open game at this chapter). Level 1 is a straight corridor: Bolt on the left, the flag four squares away. Ask the class for the program and add the blocks they call out: forward, forward, forward, forward. Run it."
+  ],
+  "say": [
+   "A computer does exactly what the steps say, in order. It does not guess what you meant.",
+   "A list of steps in order is called an algorithm. Your program is the algorithm written in blocks."
+  ],
+  "ask": [
+   "Does turning move Bolt?"
+  ],
+  "afterAsk": "Take votes, then add a turn left block and run it: Bolt spins in place with a sound and stays on its square. Say: a turn changes which way Bolt faces; only forward moves it. Level 2 needs that turn.",
+  "bigIdea": "An algorithm is a list of steps in order, and the computer follows it exactly.",
+  "vocab": ["algorithm", "sequence", "step", "program"]
+ },
+ "play": {
+  "type": "game",
+  "game": "robo-route",
+  "chapter": "sequences",
+  "chapterTitle": "Sequences",
+  "levels": 6,
+  "goal": "4 levels",
+  "stretch": "the chapter, then 3 stars",
+  "pairs": "driver and navigator on one device; the Swap! banner shows every 3 levels; the navigator counts the squares out loud before the driver adds the blocks",
+  "lookFors": [
+   "turn-vs-move confusion: a pair adds turn left and expects Bolt to slide one square to the left",
+   "counting squares from the wrong tile: count the squares Bolt moves into, not the one it stands on",
+   "on level 5, pairs who take the first route that works without looking for the shorter one"
+  ],
+  "misconception": "A turn block does not move Bolt: it spins Bolt in place to face a new way, and only a forward block moves it one square.",
+  "earlyFinishers": [
+   "earn 3 stars on every level",
+   "help a neighbor without touching their screen"
+  ]
+ },
+ "discuss": [
+  "On level 5 two routes both reached the flag. Which is better and why: shorter, fewer turns, or easier to get right?",
+  "Where in your day do you follow steps in order? What happens if two of the steps swap places?"
+ ],
+ "showMe": "One pair shows level 5 on the projector and runs both routes; the class counts the blocks of each out loud.",
+ "exit": {
+  "setId": "csq-u1-1b",
+  "items": ["1b-1.1-e1", "1b-1.1-e2", "1b-1.1-e3"],
+  "sentencePrompt": "What is an algorithm? When two routes both work, how do you pick the better one?",
+  "frame": "An algorithm is ___. The better route is the one that ___.",
+  "rubric": [
+   {
+    "line": "Sequences: what an algorithm is and that order matters",
+    "ids": ["1B-AP-10"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Says an algorithm is steps or instructions, nothing about order",
+     "Says an algorithm is a list of steps in order that the computer follows exactly",
+     "Also gives an example from today, such as a turn that did not move Bolt or a step that was in the wrong place"
+    ]
+   },
+   {
+    "line": "Comparing routes: picks the better route with a reason",
+    "ids": ["1B-AP-08"],
+    "levels": [
+     "Nothing yet, or off topic",
+     "Names one route as better with no reason, or a reason that is not about the task",
+     "Picks the better route and gives a reason: fewer steps, fewer turns, or it avoids the water",
+     "Compares the routes on more than one point and says when the other route would be the better choice"
+    ]
+   }
+  ],
+  "paper": "exit half-sheet (two per page) with the three items and the sentence frame"
+ },
+ "differentiation": {
+  "support": [
+   "levels 1-2 show a ghost path to trace",
+   "tap-to-add blocks; the navigator counts the squares out loud before every block",
+   "read-aloud on; hint 1 asks how many squares are between Bolt and the flag"
+  ],
+  "stretch": [
+   "par stars on every level",
+   "level 6 has three legs: the navigator names the legs out loud before the driver builds anything",
+   "program the walk back from the flag to the start with as few blocks as the way there"
+  ]
+ },
+ "unpluggedTwin": {
+  "title": "Paper Robot",
+  "minutes": 15,
+  "materials": ["one 6 by 6 paper grid per pair with a start and a goal", "arrow cards (forward, turn left, turn right)", "a paper Bolt token"],
+  "steps": [
+   "One partner lays arrow cards from the start to the goal. The other partner is the robot: finger on the token, follow the cards exactly, one card at a time, no fixing as you go.",
+   "The robot says Bump! and stops when a card leads into a wall. The programmer fixes that one card and the robot starts again from the top.",
+   "Two routes race: both partners build a route to the same goal on their own grid. Count the cards. Pick the better route and say why: fewer cards, fewer turns, or it stays out of the water.",
+   "Share: which pair found a route with the fewest cards? Did a turn card ever get mistaken for a move?"
+  ],
+  "printables": ["grid-mat", "arrow-cards"]
+ },
+ "subPlan": [
+  "Do Now on paper, 3 minutes: write the steps to make a sandwich, then swap with a neighbor and underline any step a robot could get wrong.",
+  "Play Robo Route, chapter Sequences, in pairs for 20 minutes. Classes, then the lesson, then Play. If the game asks, the quest code is 1 1 0 0. Goal: 4 levels. No warm-up and no projector needed; sign in with the login cards so the work is saved (signed out is fine only if the cards are missing). No devices or no internet? Run the unplugged twin printed below (Paper Robot, 15 minutes), then talk about the two discussion questions for 5 minutes.",
+  "Paper exit ticket: the half-sheet with three questions and the sentence frame. Collect it."
+ ],
+ "shortPeriod40": {
+  "table": [
+   ["0:00", 4, "Do Now"],
+   ["0:04", 3, "Warm-up on the projector, 2 items"],
+   ["0:07", 5, "Explore"],
+   ["0:12", 16, "Play: Sequences"],
+   ["0:28", 6, "Discuss, one prompt"],
+   ["0:34", 6, "Exit ticket + pack up"]
+  ],
+  "warmupItems": ["1b-u1-o1", "1b-1.1-r1"],
+  "discuss": "On level 5 two routes both reached the flag. Which is better and why: shorter, fewer turns, or easier to get right?",
+  "keep": "the exit ticket is never cut"
+ },
+ "block": {
+  "add": [
+   "the Paper Robot twin (15 minutes) before Play",
+   "the 3-star stretch and the level 6 legs after Play",
+   "a second two-routes race on paper with a puddle drawn in"
+  ]
+ },
+ "notes": [
+  "Turning does not move the robot; the game makes a turn visible with a spin and a sound, so let the first turn-vs-move mistake happen on the projector.",
+  "The first period loses 3 to 5 minutes to login: run the Do Now longer and cut Discuss to one prompt, never the exit ticket.",
+  "The warm-up is a pre-test: nobody is expected to know the answers yet. Say so before you start.",
+  "Shared devices: this is an odd lesson, so partner A signs in; the gradebook and the Standards tab count the signed-in student."
+ ],
+ "steps": [
+  {
+   "kind": "text",
+   "title": "Today",
+   "minutes": 17,
+   "body": "Do Now: Write the steps to make a sandwich. Swap with a neighbor: could a robot follow your steps exactly as written?\n\nBig idea: An algorithm is a list of steps in order, and the computer follows it exactly.\n\nWe will talk about:\n- Two routes both reached the flag. Which is better and why?\n- Where in your day do you follow steps in order? What happens if two steps swap places?"
+  },
+  {
+   "kind": "game",
+   "title": "Warm-up (live)",
+   "minutes": 5,
+   "gameSlug": "quest-race",
+   "live": "warmup",
+   "playHidden": true,
+   "body": "Five quick questions. Your teacher shows them on the projector or starts them live. Nobody is expected to know them all yet."
+  },
+  {
+   "kind": "game",
+   "title": "Play: Sequences",
+   "minutes": 18,
+   "gameSlug": "robo-route",
+   "options": "chapter=sequences&band=1b&lock=1",
+   "questCode": "1 1 0 0",
+   "standards": ["1B-AP-10", "1B-AP-08"],
+   "body": "Goal: 4 levels. Stretch: finish the chapter, then 3 stars.\nIf the game asks for a quest code, it is 1 1 0 0.\nPairs: driver and navigator. Swap when the Swap! banner shows. The navigator counts the squares out loud before the driver adds the blocks.\nRemember: a turn spins Bolt in place. Only forward moves it."
+  },
+  {
+   "kind": "quiz",
+   "title": "Exit ticket",
+   "minutes": 3,
+   "set": "exit",
+   "body": "Three quick questions about steps in order and picking the better route."
+  },
+  {
+   "kind": "question",
+   "title": "In your own words",
+   "minutes": 2,
+   "standards": ["1B-AP-10", "1B-AP-08"],
+   "rubric": "exit",
+   "body": "What is an algorithm? When two routes both work, how do you pick the better one?\nFrame: An algorithm is ___. The better route is the one that ___."
+  }
+ ]
+}
