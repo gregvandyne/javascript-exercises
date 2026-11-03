@@ -43,7 +43,7 @@
   .qb-a:active:not([disabled]) { transform: translateY(5px); box-shadow: 0 2px 0 #1d2340; }
   .qb-a .sh { position: relative; z-index: 1; font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
   .qb-a .tx { position: relative; z-index: 1; flex: 1; min-width: 0; overflow-wrap: break-word; hyphens: auto; }
-  .qb-a .fill { position: absolute; inset: 0; background: rgba(255,255,255,.28); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.9,.3,1); }
+  .qb-a .fill { position: absolute; inset: auto 0 0 0; height: 6px; background: rgba(255,255,255,.9); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.9,.3,1); }
   [dir="rtl"] .qb-a .fill { transform-origin: 100% 50%; }
   .qb-a:focus-visible { outline: 5px solid #ffc83d; outline-offset: 3px; }
   .qb-a[disabled] { cursor: default; opacity: .45; }
