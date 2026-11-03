@@ -1,0 +1,241 @@
+{
+ "id": "csq-u5-1b",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 5,
+ "band": "1B",
+ "title": "CSQ Unit 5 · Inside the Machine (3-5)",
+ "modes": [
+  "quest-race",
+  "battle",
+  "board"
+ ],
+ "cstaTags": [
+  "1B-CS-01",
+  "1B-CS-02",
+  "1B-CS-03"
+ ],
+ "items": [
+  {
+   "id": "1b-u5-o1",
+   "lesson": "5.1",
+   "use": "opener",
+   "cat": "1B-CS-01",
+   "topic": "Parts",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Parts of a computer you can touch are called…",
+   "choices": [
+    "software",
+    "data",
+    "hardware",
+    "packets"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-5.1-r1",
+   "lesson": "5.1",
+   "use": "review",
+   "cat": "1B-CS-01",
+   "topic": "Parts",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which part does the thinking?",
+   "choices": [
+    "the screen",
+    "the speaker",
+    "the cable",
+    "the processor"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-5.1-e1",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "1B-CS-01",
+   "topic": "Parts",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which part keeps your photos when the tablet is off?",
+   "choices": [
+    "storage",
+    "the processor",
+    "the speaker",
+    "the touch sensor"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-5.1-e2",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "1B-CS-01",
+   "topic": "Parts",
+   "kind": "apply",
+   "secs": 20,
+   "q": "A robot's light sensor needs the robot for…",
+   "choices": [
+    "light",
+    "power",
+    "sound",
+    "wheels"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-5.1-e3",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "1B-CS-02",
+   "topic": "Parts",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Taking a photo needs the camera (hardware) and…",
+   "choices": [
+    "a second camera at the back",
+    "a printer plugged in",
+    "the camera app (software)",
+    "a passphrase for the photo"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-5.2-r1",
+   "lesson": "5.2",
+   "use": "review",
+   "cat": "1B-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Turning a device off and on again is a…",
+   "choices": [
+    "backup",
+    "restart",
+    "download",
+    "loop"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-5.2-e1",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "1B-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "apply",
+   "secs": 20,
+   "q": "The tablet has no sound. Best first check?",
+   "choices": [
+    "buy a new tablet",
+    "delete the app",
+    "volume up and headphones unplugged?",
+    "reset the network passphrase"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-5.2-e2",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "1B-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Your passphrase keeps failing even though you know it. What should you check?",
+   "choices": [
+    "whether the screen is broken",
+    "whether caps lock is on",
+    "whether the speaker works",
+    "whether the battery is full"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-5.2-e3",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "1B-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "apply",
+   "secs": 20,
+   "q": "The app is frozen. Which check comes first?",
+   "choices": [
+    "close the app and open it again",
+    "throw the tablet away",
+    "change the wallpaper",
+    "unplug the printer"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-5.3-r1",
+   "lesson": "5.3",
+   "use": "review",
+   "cat": "1B-CS-02",
+   "topic": "Bits and pixels",
+   "kind": "recall",
+   "secs": 15,
+   "q": "The smallest piece of computer storage, an on or an off, is a…",
+   "choices": [
+    "byte",
+    "bit",
+    "pixel",
+    "packet"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-5.3-e1",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "1B-CS-02",
+   "topic": "Bits and pixels",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Where is a photo kept when the tablet is switched off?",
+   "choices": [
+    "on the screen, where you saw it",
+    "inside the speaker",
+    "in storage, as on/off switches",
+    "nowhere, it is gone"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-5.3-e2",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "1B-CS-02",
+   "topic": "Bits and pixels",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A picture on a screen is made of tiny dots called…",
+   "choices": [
+    "packets",
+    "routers",
+    "loops",
+    "pixels"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-5.3-e3",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "1B-CS-02",
+   "topic": "Bits and pixels",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "You tap a photo and it appears. Which order is right?",
+   "choices": [
+    "touch sensor, processor, storage, screen",
+    "screen, storage, sensor, processor",
+    "storage, screen, sensor, processor",
+    "processor, sensor, screen, storage"
+   ],
+   "answer": 0
+  }
+ ]
+}

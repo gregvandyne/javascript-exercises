@@ -5387,6 +5387,10 @@
         "flag": "Trova il paese di questa bandiera",
         "famous": "Trova il paese famoso per {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Impostato dal piano della lezione. Puoi ancora cambiare tutto."
     }
   },
   "match": {

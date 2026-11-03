@@ -5388,6 +5388,10 @@
         "flag": "Encontre o país desta bandeira",
         "famous": "Encontre o país famoso por {thing}"
       }
+    },
+    "cs": {
+      "sets": "CS Quest",
+      "preset": "Preparado a partir do plano da aula. Você ainda pode mudar tudo."
     }
   },
   "match": {

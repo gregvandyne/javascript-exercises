@@ -1,0 +1,259 @@
+{
+ "id": "csq-u5-2",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 5,
+ "band": "2",
+ "title": "CSQ Unit 5 · Inside the Machine (6-8)",
+ "modes": [
+  "battle",
+  "quest-race",
+  "board"
+ ],
+ "cstaTags": [
+  "2-CS-02",
+  "2-CS-01",
+  "2-CS-03",
+  "2-DA-07"
+ ],
+ "items": [
+  {
+   "id": "2-u5-o1",
+   "lesson": "5.1",
+   "use": "opener",
+   "cat": "2-CS-02",
+   "topic": "Parts",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A part that measures something in the world, like light or soil moisture, is a…",
+   "choices": [
+    "speaker",
+    "processor",
+    "sensor",
+    "screen"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-5.1-r1",
+   "lesson": "5.1",
+   "use": "review",
+   "cat": "2-CS-02",
+   "topic": "Parts",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Giving up one good thing to get another, like battery life for wireless, is a…",
+   "choices": [
+    "protocol",
+    "tradeoff",
+    "checksum",
+    "variable"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-5.1-r2",
+   "lesson": "5.1",
+   "use": "review",
+   "cat": "2-CS-01",
+   "topic": "Parts",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Users keep pressing the wrong button on a gadget because two buttons look the same. Best recommendation?",
+   "choices": [
+    "print smaller labels on both buttons",
+    "move both buttons to the back",
+    "ask users to be more careful",
+    "give the two buttons different shapes"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-5.1-e1",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "2-CS-02",
+   "topic": "Parts",
+   "kind": "apply",
+   "secs": 20,
+   "q": "A plant-watering gadget needs to know if soil is dry. Which part?",
+   "choices": [
+    "a speaker",
+    "a moisture sensor",
+    "a screen",
+    "a bigger battery"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-5.1-e2",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "2-CS-02",
+   "topic": "Parts",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "A wireless sensor vs a cable: the tradeoff is…",
+   "choices": [
+    "the color vs the size",
+    "mobility vs extra battery use",
+    "the sound vs the picture",
+    "the price, nothing else"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-5.1-e3",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "2-CS-01",
+   "topic": "Parts",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Users say the gadget's text is too small outdoors. Best improvement?",
+   "choices": [
+    "a bigger, brighter text option",
+    "more buttons on the front",
+    "a longer charging cable",
+    "a cheaper plastic case"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-5.2-r1",
+   "lesson": "5.2",
+   "use": "review",
+   "cat": "2-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Replacing a part with one you know works, to find the fault, is a…",
+   "choices": [
+    "restart",
+    "backup",
+    "swap test",
+    "checksum"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-5.2-e1",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "2-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "The printer prints from one laptop but not from the other. Where is the fault most likely?",
+   "choices": [
+    "the printer, since it is the shared part",
+    "the paper tray, since both laptops use it",
+    "the building's power, since both plug into it",
+    "the laptop that cannot print, or its connection"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-5.2-e2",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "2-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "What does \"change one thing at a time\" do for troubleshooting?",
+   "choices": [
+    "makes it faster",
+    "shows which change fixed it",
+    "fixes everything at once",
+    "avoids testing"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-5.2-e3",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "2-CS-03",
+   "topic": "Troubleshooting",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "\"Is it plugged in?\" or \"replace the main board\": which check comes first, and why?",
+   "choices": [
+    "replace the board, because it is thorough",
+    "both at the same time",
+    "is it plugged in, because it is cheap and quick",
+    "neither, ask for help first"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-5.3-r1",
+   "lesson": "5.3",
+   "use": "review",
+   "cat": "2-DA-07",
+   "topic": "Bits and pixels",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Showing the same data in a different form, like binary or RGB, is a different…",
+   "choices": [
+    "packet",
+    "password",
+    "encoding",
+    "processor"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-5.3-e1",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "2-DA-07",
+   "topic": "Bits and pixels",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Binary 1010 is…",
+   "choices": [
+    "10",
+    "5",
+    "12",
+    "101"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-5.3-e2",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "2-DA-07",
+   "topic": "Bits and pixels",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which three numbers make pure red in RGB?",
+   "choices": [
+    "0, 255, 0",
+    "0, 0, 255",
+    "255, 255, 255",
+    "255, 0, 0"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-5.3-e3",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "2-DA-07",
+   "topic": "Bits and pixels",
+   "kind": "apply",
+   "secs": 20,
+   "q": "How many different colors can 2 bits per pixel show?",
+   "choices": [
+    "2",
+    "8",
+    "4",
+    "16"
+   ],
+   "answer": 2
+  }
+ ]
+}

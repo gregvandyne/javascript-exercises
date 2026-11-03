@@ -1,0 +1,447 @@
+{
+ "id": "csq-u1-1b",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 1,
+ "band": "1B",
+ "title": "CSQ Unit 1 · Think Like a Robot (3-5)",
+ "modes": [
+  "quest-race",
+  "battle",
+  "board"
+ ],
+ "cstaTags": [
+  "1B-AP-10",
+  "1B-AP-08",
+  "1B-AP-09",
+  "1B-AP-11",
+  "1B-AP-12"
+ ],
+ "items": [
+  {
+   "id": "1b-u1-o1",
+   "lesson": "1.1",
+   "use": "opener",
+   "cat": "1B-AP-10",
+   "topic": "Sequences",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A list of steps a robot follows in order is called…",
+   "choices": [
+    "an algorithm",
+    "a password",
+    "a pixel",
+    "a packet"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-1.1-r1",
+   "lesson": "1.1",
+   "use": "review",
+   "cat": "1B-AP-10",
+   "topic": "Sequences",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which block takes Bolt one square ahead?",
+   "choices": [
+    "turn left",
+    "repeat",
+    "if",
+    "move"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-1.1-r2",
+   "lesson": "1.1",
+   "use": "review",
+   "cat": "1B-AP-08",
+   "topic": "Sequences",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Plan A uses 5 blocks. Plan B uses 12 blocks. Both reach the gem and keep Bolt safe. Which plan is better?",
+   "choices": [
+    "Plan B, more blocks is always better",
+    "Plan A, it does the same job in fewer steps",
+    "Neither, both plans reach the gem",
+    "Plan B, longer plans are safer"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-1.1-r3",
+   "lesson": "1.1",
+   "use": "review",
+   "cat": "1B-AP-08",
+   "topic": "Sequences",
+   "kind": "apply",
+   "secs": 20,
+   "q": "The level asks for every gem. Route A and Route B both reach the flag. Route A misses one gem. Route B gets every gem but uses 3 more blocks. Which route is right?",
+   "choices": [
+    "Route A, fewer blocks always wins",
+    "Route B, it does everything the level asks",
+    "Either, they both reach the flag",
+    "Neither, the gems do not matter"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-1.1-e1",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Sequences",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Bolt faces a wall. The gem is two squares to the right. Which program reaches it?",
+   "choices": [
+    "move, move, turn right",
+    "turn right, move, move",
+    "turn left, move, move",
+    "move, turn right, turn right"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-1.1-e2",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Sequences",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What does the block \"turn left\" do to Bolt?",
+   "choices": [
+    "moves Bolt one square left",
+    "moves Bolt back one square",
+    "spins Bolt in place to the left",
+    "makes Bolt pick up a gem"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-1.1-e3",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "1B-AP-08",
+   "topic": "Sequences",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Route A has 9 steps. Route B has 6 steps but crosses the puddle. Bolt must stay dry. Which route?",
+   "choices": [
+    "Route B, it is shorter",
+    "Both routes are the same",
+    "Neither route works",
+    "Route A, it keeps Bolt dry"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-1.2-r1",
+   "lesson": "1.2",
+   "use": "review",
+   "cat": "1B-AP-10",
+   "topic": "Loops",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which word means \"do the same steps again\"?",
+   "choices": [
+    "loop",
+    "event",
+    "variable",
+    "sensor"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-1.2-e1",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Loops",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which program moves Bolt 8 squares with the fewest blocks?",
+   "choices": [
+    "eight move blocks",
+    "repeat 4 { move }",
+    "repeat 8 { move }",
+    "repeat 7 { move }, move"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-1.2-e2",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Loops",
+   "kind": "apply",
+   "secs": 20,
+   "q": "How many squares does repeat 3 { move, move } take Bolt?",
+   "choices": [
+    "3",
+    "6",
+    "5",
+    "9"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-1.2-e3",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Loops",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Bolt should move 4 squares, but it spins in place 4 times and stays put. What is the bug?",
+   "choices": [
+    "the repeat is around the turn, not the move",
+    "the loop count is too small",
+    "Bolt needs more gems first",
+    "the goal is in the wrong place"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-1.3-r1",
+   "lesson": "1.3",
+   "use": "review",
+   "cat": "1B-AP-10",
+   "topic": "Conditionals",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A block that lets Bolt choose what to do is…",
+   "choices": [
+    "a repeat block",
+    "a move block",
+    "an if block",
+    "a stop block"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-1.3-e1",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Conditionals",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You do not know where the walls are. Which program never bumps a wall?",
+   "choices": [
+    "move, move, move, move",
+    "if path ahead: move, else: turn left",
+    "repeat 4 { move, move }",
+    "turn left, move, move, move"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-1.3-e2",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Conditionals",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "What is the difference between \"when\" and \"if\"?",
+   "choices": [
+    "when runs once at the start; if runs at the end",
+    "they are the same block with two names",
+    "when is for gems; if is for walls",
+    "when waits for something to happen; if checks now"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-1.3-e3",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "1B-AP-10",
+   "topic": "Conditionals",
+   "kind": "apply",
+   "secs": 20,
+   "q": "\"when a gem is picked up: open door\". When does the door open?",
+   "choices": [
+    "the moment Bolt picks up a gem",
+    "at the start of the program",
+    "after every move",
+    "never, the door stays shut"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-1.4-r1",
+   "lesson": "1.4",
+   "use": "review",
+   "cat": "1B-AP-09",
+   "topic": "Variables",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A labeled box the program can look in and change is a…",
+   "choices": [
+    "loop",
+    "event",
+    "variable",
+    "block"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-1.4-e1",
+   "lesson": "1.4",
+   "use": "exit",
+   "cat": "1B-AP-09",
+   "topic": "Variables",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What does \"change score by 1\" do?",
+   "choices": [
+    "sets the score to 1",
+    "adds one to the score",
+    "deletes the score",
+    "repeats once"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-1.4-e2",
+   "lesson": "1.4",
+   "use": "exit",
+   "cat": "1B-AP-09",
+   "topic": "Variables",
+   "kind": "apply",
+   "secs": 20,
+   "q": "gems is 0. Bolt picks up 3 gems; each time \"change gems by 1\" runs. What is gems now?",
+   "choices": [
+    "3",
+    "0",
+    "1",
+    "4"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-1.4-e3",
+   "lesson": "1.4",
+   "use": "exit",
+   "cat": "1B-AP-09",
+   "topic": "Variables",
+   "kind": "apply",
+   "secs": 20,
+   "q": "What does \"set lives to 3\" do?",
+   "choices": [
+    "adds 3 to the lives box",
+    "takes 3 away from lives",
+    "counts how many lives there are",
+    "puts exactly 3 in the lives box"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "1b-1.5-r1",
+   "lesson": "1.5",
+   "use": "review",
+   "cat": "1B-AP-11",
+   "topic": "Functions",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Breaking a big job into smaller parts is called…",
+   "choices": [
+    "decomposing",
+    "looping",
+    "debugging",
+    "encrypting"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "1b-1.5-r2",
+   "lesson": "1.5",
+   "use": "review",
+   "cat": "1B-AP-12",
+   "topic": "Functions",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Changing part of a program someone else made so it does something new is called…",
+   "choices": [
+    "debugging",
+    "looping",
+    "remixing",
+    "decomposing"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-1.5-r3",
+   "lesson": "1.5",
+   "use": "review",
+   "cat": "1B-AP-12",
+   "topic": "Functions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Which of these is a remix?",
+   "choices": [
+    "writing every step yourself on a blank grid",
+    "deleting a block you do not like",
+    "changing a classmate's My Block so it also opens the door",
+    "running the same program twice"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-1.5-e1",
+   "lesson": "1.5",
+   "use": "exit",
+   "cat": "1B-AP-11",
+   "topic": "Functions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Bolt must cross four identical rooms. What is the smart move?",
+   "choices": [
+    "write out every step four times in a row",
+    "make one My Block: Room and call it 4 times",
+    "use one very long move block",
+    "skip the rooms"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "1b-1.5-e2",
+   "lesson": "1.5",
+   "use": "exit",
+   "cat": "1B-AP-11",
+   "topic": "Functions",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Which group of steps most deserves its own named block?",
+   "choices": [
+    "the very first step of the program",
+    "a single turn in the middle",
+    "steps that repeat in several places",
+    "only the very last step"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "1b-1.5-e3",
+   "lesson": "1.5",
+   "use": "exit",
+   "cat": "1B-AP-12",
+   "topic": "Functions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "You take a My Block the game gives you that crosses one room, and add a gem pick-up to it. What have you made?",
+   "choices": [
+    "a copy with nothing new in it",
+    "a remix: the old block plus something new",
+    "a bug in the old block",
+    "a block built from nothing"
+   ],
+   "answer": 1
+  }
+ ]
+}

@@ -1,0 +1,241 @@
+{
+ "id": "csq-u3-2",
+ "program": "cs-quest",
+ "kind": "quiz",
+ "unit": 3,
+ "band": "2",
+ "title": "CSQ Unit 3 · Data Detectives (6-8)",
+ "modes": [
+  "battle",
+  "quest-race",
+  "board"
+ ],
+ "cstaTags": [
+  "2-DA-08",
+  "2-DA-09",
+  "2-IC-22"
+ ],
+ "items": [
+  {
+   "id": "2-u3-o1",
+   "lesson": "3.1",
+   "use": "opener",
+   "cat": "2-DA-08",
+   "topic": "Sorting data",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Fixing typos, removing duplicates and dropping impossible values is…",
+   "choices": [
+    "cleaning data",
+    "sorting data",
+    "charting data",
+    "encrypting data"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-3.1-r1",
+   "lesson": "3.1",
+   "use": "review",
+   "cat": "2-DA-08",
+   "topic": "Sorting data",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A value far outside the rest, like \"200 lunches\" on a normal day, is an…",
+   "choices": [
+    "outlier",
+    "average",
+    "argument",
+    "event"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-3.1-e1",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "2-DA-08",
+   "topic": "Sorting data",
+   "kind": "apply",
+   "secs": 20,
+   "q": "A survey row says a student has \"twelvety\" pets. What should you do?",
+   "choices": [
+    "keep it, every row is data",
+    "change every row to match it",
+    "fix or remove the row before charting",
+    "make it the chart's title"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "2-3.1-e2",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "2-DA-08",
+   "topic": "Sorting data",
+   "kind": "apply",
+   "secs": 20,
+   "q": "\"Blue\", \"blue\" and \"Blu\" appear in one column. Before charting you should…",
+   "choices": [
+    "delete all three",
+    "merge them into one spelling",
+    "chart them as three colors",
+    "sort them by length"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-3.1-e3",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "2-DA-08",
+   "topic": "Sorting data",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Comparing 12 of 20 in one class and 15 of 30 in another fairly needs…",
+   "choices": [
+    "percentages",
+    "raw counts",
+    "dates",
+    "the class names"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-3.2-r1",
+   "lesson": "3.2",
+   "use": "review",
+   "cat": "2-DA-09",
+   "topic": "Predictions",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A rule or simulation that predicts what will happen is a…",
+   "choices": [
+    "survey",
+    "checksum",
+    "router",
+    "model"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-3.2-e1",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "2-DA-09",
+   "topic": "Predictions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Your paper ramp rule predicted 40 cm; five trials averaged 52 cm. What next?",
+   "choices": [
+    "keep the rule as it is",
+    "stop measuring",
+    "run one more trial only",
+    "change the rule and test again"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-3.2-e2",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "2-DA-09",
+   "topic": "Predictions",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "After a change, the model's error went from 12 to 3. What does that show?",
+   "choices": [
+    "the refined model fits the data better",
+    "the data from the trials is wrong",
+    "the model now predicts perfectly",
+    "the trials were too short to count"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-3.2-e3",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "2-DA-09",
+   "topic": "Predictions",
+   "kind": "apply",
+   "secs": 20,
+   "q": "Your runner's jump rule: only 4 of 20 test runs finished; the target is about 16. You should…",
+   "choices": [
+    "ship it, a hard game is a good game",
+    "change the jump rule and run the 20 tests again",
+    "run 2 more tests and call it done",
+    "remove the jump from the game"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-3.3-r1",
+   "lesson": "3.3",
+   "use": "review",
+   "cat": "2-IC-22",
+   "topic": "Surveys",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Getting ideas or answers from many people, like a class survey, is…",
+   "choices": [
+    "debugging",
+    "encrypting",
+    "routing",
+    "crowdsourcing"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "2-3.3-e1",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "2-IC-22",
+   "topic": "Surveys",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Which survey question is biased?",
+   "choices": [
+    "\"How long should recess be?\"",
+    "\"Don't you agree recess is too short?\"",
+    "\"What do you do at recess?\"",
+    "\"Do you like recess? yes/no\""
+   ],
+   "answer": 1
+  },
+  {
+   "id": "2-3.3-e2",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "2-IC-22",
+   "topic": "Surveys",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "Why pool every pair's results on the projector?",
+   "choices": [
+    "many contributors make a bigger, fairer sample",
+    "one pair's data is always enough",
+    "to find the fastest pair",
+    "because charts need color"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "2-3.3-e3",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "2-DA-08",
+   "topic": "Surveys",
+   "kind": "analyze",
+   "secs": 20,
+   "q": "28 of 30 students answered. The two missing answers…",
+   "choices": [
+    "never matter",
+    "mean the data is fake",
+    "are an error in the app",
+    "could change a close result"
+   ],
+   "answer": 3
+  }
+ ]
+}
