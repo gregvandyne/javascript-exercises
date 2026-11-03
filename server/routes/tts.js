@@ -72,7 +72,8 @@ const whoFor = (req, b) => {
 const fail = (res, status, code) => res.status(status).json({ code });
 const LETTERS = ['A', 'B', 'C', 'D'];
 /** A quiz question read aloud: the question, then each choice with its letter. */
-export const questionText = (qq, choices = []) => [String(qq || ''), ...choices.map((c, k) => `${LETTERS[k] || k + 1}: ${c}`)].map(s => tts.tidy(s)).filter(Boolean).map(s => (/[.!?。！？]$/.test(s) ? s : s + '.')).join(' ');
+// A map question (Atlas Quest Live: every country's code as its choices) is read without them.
+export const questionText = (qq, choices = []) => [String(qq || ''), ...(choices.length > 4 ? [] : choices).map((c, k) => `${LETTERS[k] || k + 1}: ${c}`)].map(s => tts.tidy(s)).filter(Boolean).map(s => (/[.!?。！？]$/.test(s) ? s : s + '.')).join(' ');
 
 /** -> { text, locale, role, rate } or { error: [status, code] }. */
 function resolve(req, b) {

@@ -47,7 +47,7 @@ export function summary(s) {
   const rows = seats.map(seat => ({
     seat: seat.no, name: s.nameMode === 'accounts' && seat.name ? seat.name : seat.nick, avatar: seat.avatar, kind: seat.kind,
     score: seat.score, bonus: seat.bonus || 0, total: seat.score + (seat.bonus || 0), team: seat.team || 0, marks: marksOf(seat, n),
-    correct: seat.correct, answered: seat.answered, scoredBy: seat.scoredBy, help: needsHelp({ ...seat, conn: null }, { quiz: !!s.quiz }),
+    correct: seat.correct, answered: seat.answered, scoredBy: seat.scoredBy, help: needsHelp({ ...seat, conn: null }, { quiz: !!s.quiz, vote: s.mode === 'wyr' }),
     ...(race ? { progress: Math.min(1000, Math.round((race.get(seat.no) || { prog: 0 }).prog)), gems: (race.get(seat.no) || { gems: 0 }).gems } : {}),
     ...(s.seats.has(seat.no) ? {} : { left: true }),
   }));

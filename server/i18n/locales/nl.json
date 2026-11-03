@@ -4569,7 +4569,11 @@
       "battle": "Vragenduel",
       "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst.",
       "board": "Breinbord",
-      "boardText": "Een bord vol categorieën: kies een vakje en iedereen antwoordt. Grotere vakjes zijn moeilijker en leveren meer op, en een verstopte Geluksster verdubbelt de punten."
+      "boardText": "Een bord vol categorieën: kies een vakje en iedereen antwoordt. Grotere vakjes zijn moeilijker en leveren meer op, en een verstopte Geluksster verdubbelt de punten.",
+      "wyr": "Wat heb je liever? live",
+      "wyrText": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden, geen punten: gewoon praten.",
+      "atlas": "Atlas Quest live",
+      "atlasText": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land zelf, de vlag, de hoofdstad of waar het beroemd om is. Er net naast levert ook een beetje op."
     },
     "starter": {
       "title": {
@@ -4772,7 +4776,8 @@
       "stillHere": "{count, plural, one {# speler is er nog} other {# spelers zijn er nog}}",
       "playAgainTeams": "Nog eens met deze teams",
       "newGame": "Nieuw spel",
-      "homework": "Als huiswerk geven"
+      "homework": "Als huiswerk geven",
+      "votes": "{count, plural, one {# stem} other {# stemmen}}"
     },
     "sets": {
       "title": "Vragensets",
@@ -5330,6 +5335,52 @@
       "count": "Aantal vragen",
       "boardSubjects": "Vakken op het bord (kies 2 tot 6)",
       "bankHint": "Elk spel nieuwe vragen, geschreven voor elke leeftijd."
+    },
+    "wyrUi": {
+      "legend": "Wat heb je liever? live",
+      "topics": "Onderwerpen",
+      "topicsHint": "Laat ze allemaal aangevinkt voor een mix.",
+      "count": "Hoeveel dilemma’s",
+      "secs": "Tijd om te kiezen",
+      "secsN": "{n} seconden",
+      "hint": "Na elke stemming ziet de klas de verdeling: een goed moment om een paar kinderen te vragen waarom ze dat kozen."
+    },
+    "atlasUi": {
+      "legend": "Atlas Quest live",
+      "region": "Waar op de wereld",
+      "level": "Niveau",
+      "kinds": "Soorten vragen",
+      "count": "Hoeveel vragen",
+      "secs": "Tijd per vraag",
+      "hint": "Iedereen tikt het land aan op een wereldkaart waarop je kunt inzoomen. Het klasscherm laat zien waar iedereen tikte."
+    },
+    "atlas": {
+      "region": {
+        "world": "De hele wereld",
+        "af": "Afrika",
+        "as": "Azië",
+        "eu": "Europa",
+        "na": "Noord-Amerika",
+        "sa": "Zuid-Amerika",
+        "oc": "Oceanië"
+      },
+      "level": {
+        "easy": "Makkelijk: bekende landen",
+        "medium": "Gemiddeld: bekende en grote landen",
+        "hard": "Moeilijk: alle landen"
+      },
+      "kind": {
+        "find": "Vind het land",
+        "capital": "Hoofdsteden",
+        "flag": "Vlaggen",
+        "famous": "Beroemd om…"
+      },
+      "q": {
+        "find": "Vind {name}",
+        "capital": "Vind het land met hoofdstad {city}",
+        "flag": "Vind het land met deze vlag",
+        "famous": "Vind het land dat beroemd is om {thing}"
+      }
     }
   },
   "match": {
@@ -5398,7 +5449,7 @@
       }
     },
     "modes": {
-      "h": "Drie manieren om te spelen",
+      "h": "Vijf manieren om te spelen",
       "race": {
         "h": "Questrace",
         "p": "Een race over een 3D-eiland. Elk goed antwoord levert edelstenen en een boost op, en de hele klas volgt de lopers op het bord."
@@ -5410,6 +5461,14 @@
       "board": {
         "h": "Breinbord",
         "p": "Een bord vol categorieën op het scherm. Kies een vakje (of laat het snelste goede antwoord kiezen) en de vraag gaat open op elk apparaat. Moeilijkere vakjes leveren meer op, en een verstopte Geluksster verdubbelt de punten."
+      },
+      "wyr": {
+        "h": "Wat heb je liever? live",
+        "p": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden en geen punten: een kant-en-klaar gespreksonderwerp."
+      },
+      "atlas": {
+        "h": "Atlas Quest live",
+        "p": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land, de vlag, de hoofdstad of waar het beroemd om is. Het grote scherm laat zien waar de hele klas tikte, en er net naast telt ook."
       }
     },
     "tools": {

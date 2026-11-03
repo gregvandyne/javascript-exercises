@@ -253,3 +253,50 @@ export function flash(el, text, ms = 4000) {
   if (!el) return; el.textContent = text; el.hidden = false;
   clearTimeout(el._lvT); el._lvT = setTimeout(() => { el.hidden = true; }, ms);
 }
+
+/**
+ * The welcome a newly loaded game frame gets. A page keeps its first wel, but players join, the host sets teams and the
+ * game shares state while the platform's lobby frame (or an earlier game frame) is up: a game frame loaded later (at
+ * loading, or reloaded after it navigated) must start from now, not from when the page connected. observe(m) every
+ * message from the server; wel(base) -> base with the roster, shared state, teams, team scores, phase and open
+ * question as they are now.
+ */
+export function welTracker() {
+  let players = null, state = null, teams = null, ts = null, ph = null, quiz;
+  const merge = (a, p) => {
+    if (!p || typeof p !== 'object' || Array.isArray(p)) return p;
+    const out = a && typeof a === 'object' && !Array.isArray(a) ? { ...a } : {};
+    for (const [k, v] of Object.entries(p)) { if (v === null) delete out[k]; else out[k] = merge(out[k], v); }
+    return out;
+  };
+  return {
+    observe(m) {
+      if (!m || typeof m.t !== 'string') return;
+      switch (m.t) {
+        case 'wel': players = new Map((m.players || []).map(P => [P[0], P])); state = m.state || {}; teams = m.teams || null; ts = m.ts || null; ph = null; quiz = undefined; break;
+        case 'pj': case 'pu': if (players && Array.isArray(m.p)) players.set(m.p[0], m.p); break;
+        case 'pl': if (players) players.delete(m.n); break;
+        case 'ros': if (Array.isArray(m.players)) players = new Map(m.players.map(P => [P[0], P])); break;
+        case 'st': state = merge(state || {}, m.d); break;
+        case 'tms': { const { t, ...rest } = m; teams = rest; break; }
+        case 'ts': ts = m.s; break;
+        case 'ph': ph = { phase: m.phase, seq: m.seq, round: m.round, at: m.at }; if (m.phase !== 'playing' && m.phase !== 'paused') quiz = null; break;
+        case 'q': quiz = { q: { i: m.i, n: m.n, q: m.q, choices: m.choices, secs: m.secs, at: m.at }, answered: quiz && quiz.q && quiz.q.i === m.i ? quiz.answered : false }; break;
+        case 'ack': if (quiz && quiz.q && quiz.q.i === m.i) quiz = { ...quiz, answered: true }; break;
+        case 'rv': quiz = null; break;
+        default: break;
+      }
+    },
+    wel(base) {
+      if (!base) return base;
+      const out = { ...base };
+      if (players) out.players = [...players.values()];
+      if (state) out.state = state;
+      if (teams) out.teams = teams;
+      if (ts) out.ts = ts;
+      if (ph) Object.assign(out, ph);
+      if (quiz !== undefined) { if (quiz) out.quiz = quiz; else delete out.quiz; }
+      return out;
+    },
+  };
+}

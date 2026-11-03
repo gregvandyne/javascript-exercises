@@ -1,0 +1,15 @@
+{
+  "slug": "atlas-quest-live",
+  "title": "Atlas Quest Live",
+  "icon": "🌍",
+  "cover": "space",
+  "category": "learning",
+  "tags": "live,class,geography,map,countries,flags,capitals,world,atlas,teams",
+  "description": "A live class map challenge: everyone taps the country on their own world map. Find it, its flag, its capital or what it is famous for. Quick and right scores most, close guesses still score a little, and the big screen shows where the whole class tapped. Played alone, it is a five-country practice round.",
+  "orientation": "any",
+  "players_max": 60,
+  "age_rating": "everyone",
+  "featured": false,
+  "notes": "Oomba Live built-in mode 'atlas', 2D on the Oomba Kit 1.1.2 with the live pack. The server makes the questions from Atlas Quest's data (server/live/atlas.js: region, level, question kinds, how many, time; starter 'atlas:<region>:<level>:<kinds>:<count>:<secs>') as quiz questions whose choices are every country's code in Atlas Quest's order (the data block, copied from Atlas Quest by scripts/atlas-live-data.js); the answer is the tapped country's place in that list (an answer may be 0-255). Points: the right country 500-1000 by speed plus the streak; a near miss (under 2,000 km, or a neighbour) 0-300. Shared state atl {i, k, reg, fl?}: the flag to show and the region the maps open on. Projector: the question (and flag), the region's map, then a bubble per tapped country (size = how many), the right one green, the top five and how many more answered; at the end the top five (and teams). Phones: a world map that pans and pinch-zooms (+, -, whole map buttons), tap a country then Lock in; names only at the reveal. Uses Oomba.live ready({quiz, hostView}), question / answers / reveal / result / state / end, quiz.answer. Played alone: 5 famous countries, scored the same way. Test hooks: window.__brbTest.state(), pick(cc), lock(), tapAt(lat, lng).",
+  "l10n": {}
+}

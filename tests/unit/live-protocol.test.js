@@ -32,7 +32,7 @@ test('every bad case is refused', () => {
     j({ t: 'ev', k: 'Bad Kind', d: 1 }), j({ t: 'ev', k: 'x', d: 'two words' }), j({ t: 'ev', k: 'x', d: 'Capital' }), j({ t: 'ev', k: 'x', d: { a: { b: { c: 1 } } } }),
     j({ t: 'ev', k: 'x', d: { 'bad key': 1 } }), j({ t: 'ev', k: 'x', d: Array(65).fill(1) }), j({ t: 'ev', k: 'x', d: Array(60).fill(123456789) }), j({ t: 'ev', k: 'x', d: 1, to: 3 }),
     j({ t: 'sc', n: -1 }), j({ t: 'sc', n: 2e6 }), j({ t: 'it', i: 200, ok: true }), j({ t: 'it', i: 1, ok: 1 }),
-    j({ t: 'an', i: 0, c: 4, e: 0 }), j({ t: 'an', i: 0, c: 0, e: -1 }), j({ t: 'em', e: 6 }), j({ t: 'fr', f: 'other' }),
+    j({ t: 'an', i: 0, c: 256, e: 0 }), j({ t: 'an', i: 0, c: 0, e: -1 }), j({ t: 'em', e: 6 }), j({ t: 'fr', f: 'other' }),
     j({ t: 'h', a: 'start' }), j({ t: 'st', d: { a: 1 } }), // host-only types from a player
     'x'.repeat(2049),
   ];

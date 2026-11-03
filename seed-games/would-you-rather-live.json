@@ -1,0 +1,15 @@
+{
+  "slug": "would-you-rather-live",
+  "title": "Would You Rather Live",
+  "icon": "🤔",
+  "cover": "space",
+  "category": "learning",
+  "tags": "live,class,would you rather,vote,poll,discussion,talk,dilemmas",
+  "description": "A live class vote: everyone picks between two fun dilemmas on their own device, then the big screen shows how the class split, and how everyone on Oomba chose. No right answers and no points, just a great way to start talking. Played alone, it is a short practice round.",
+  "orientation": "any",
+  "players_max": 60,
+  "age_rating": "everyone",
+  "featured": false,
+  "notes": "Oomba Live built-in mode 'wyr', 2D on the Oomba Kit 1.1.2 with the live pack. The server makes the questions from the official Would You Rather's reviewed bank (server/live/wyr.js: topics, how many, time; starter 'wyr:<topics|mix>:<count>:<secs>') as quiz questions with two choices and no right answer (answer -1): nobody scores, nothing is marked wrong, answers are never shuffled. After each reveal the server counts each signed-in player's vote once in the game's all-time poll and shares everyone's split as state wyr {i, a, b, n} (a, b percentages only from 5 votes). Projector: the two choices, how many voted, the class's split (bars, percentages, how many), everyone on Oomba, a fixed question to talk about; at the end the most agreed and the closest split. Phones: two big buttons, your side. Never any names. Uses Oomba.live ready({quiz, hostView}), the question / answers / reveal / state / end events and quiz.answer. Played alone: 5 practice dilemmas (the game's packs for the player's language). Test hooks: window.__brbTest.state(), answer(k).",
+  "l10n": {}
+}

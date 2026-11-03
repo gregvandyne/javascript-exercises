@@ -15,7 +15,10 @@ import { config } from '../config.js';
 
 export const AUDIENCES = ['open', 'class', 'family'];
 /** Built-in modes, and the official game each one runs as (seed-games/<slug>.html). */
-export const MODES = { 'quest-race': 'quest-race', battle: 'question-battle', board: 'brain-board' };
+export const MODES = { 'quest-race': 'quest-race', battle: 'question-battle', board: 'brain-board', wyr: 'would-you-rather-live', atlas: 'atlas-quest-live' };
+/** Built-in modes whose questions the platform makes (not a question set): Would You Rather Live (the class votes on
+ *  dilemmas) and Atlas Quest Live (everyone taps the country on a world map). */
+export const OWN_QUESTIONS = new Set(['wyr', 'atlas']);
 /** Official games made for fun, not for class: never hosted for a class room, and left out of a teacher's live picker
  *  (a parent may still host them for their family or an open room). */
 export const NOT_FOR_CLASS = new Set(['hero-of-sunvale']);
@@ -93,6 +96,10 @@ export const CAPACITY = {
   battle: { max: 60, best: [2, 60] },
   board: { max: 40, best: [2, 40], teamsAbove: 16 },
   'hero-of-sunvale': { max: 30, best: [2, 30] },
+  // a vote: two buttons and two bars, the same small messages for 2 or 60 (docs/live-capacity.md)
+  wyr: { max: 60, best: [2, 60] },
+  // a map: the projector shows one bubble per tapped country (not a pin per player), so a big class stays readable
+  atlas: { max: 60, best: [2, 60] },
 };
 export const BUILDER_DEFAULT_MAX = 30;
 /** The capacity of a game: by mode (built-in), by slug (official), else declared by the game (2-60), else 30. */

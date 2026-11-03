@@ -13,11 +13,19 @@ const $ = id => document.getElementById(id);
 const form = $('lv-new');
 if (form) {
   const sets = $('lv-sets'), cls = $('lv-class');
-  const sync = () => {
+  const sync = ev => {
     const pick = (form.querySelector('input[name="pick"]:checked') || {}).value || '';
     const card = pick && form.querySelector(`input[name="pick"][value="${CSS.escape(pick)}"]`);
     const quiz = pick.startsWith('mode:') || (card && card.closest('.lv-pick') && card.closest('.lv-pick').dataset.quiz === '1');
-    if (sets) sets.hidden = !quiz;
+    // Would You Rather Live and Atlas Quest Live make their own questions: their options instead of a question set.
+    const own = !!(card && card.closest('.lv-pick') && card.closest('.lv-pick').dataset.own === '1');
+    if (sets) sets.hidden = !quiz || own;
+    for (const box of form.querySelectorAll('.lv-own')) box.hidden = pick !== `mode:${box.dataset.ownMode}`;
+    // at least one topic / question kind stays ticked (unticking the last one ticks it again)
+    for (const name of ['wyrTopic', 'atlasKind']) {
+      const boxes = [...form.querySelectorAll(`input[name="${name}"]`)];
+      if (boxes.length && !boxes.some(x => x.checked)) ((ev && ev.target && boxes.includes(ev.target)) ? ev.target : boxes[0]).checked = true;
+    }
     // The question bank: subject, level and how many; a board (Brain Board) ticks its subjects instead.
     const bank = $('lv-bank'), setSel = $('lv-set');
     if (bank && setSel) {

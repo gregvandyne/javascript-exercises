@@ -9,7 +9,7 @@
 //   - the projector: frames per second of the host's game frame while N players play.
 // Screenshots of the projector at a question go to OUT (live<N>-<mode>.png). Exit code 1 when a check fails.
 //
-//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... [MODES=quest-race,battle,board] [SIZES=10,20,30]
+//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... [MODES=quest-race,battle,board,wyr,atlas] [SIZES=10,20,30]
 //   [QUESTIONS=3] [SECS=12] [PHONE=1 (one real phone among the bots, with screenshots)] [LAYOUT=1] [SERVER_PID=1234] [OUT=/tmp/live-load] node scripts/live-load.js
 import WebSocket from 'ws';
 import fs from 'node:fs';
@@ -63,7 +63,7 @@ async function bot(code, i, tag) {
     if (m.t === 'q' && !b.qs.has(m.i)) {
       b.qs.add(m.i);
       const wait = 1000 + Math.random() * 5000, right = Math.random() < 0.7;
-      setTimeout(() => { if (ws.readyState === 1) { ws.send(JSON.stringify({ t: 'an', i: m.i, c: right ? 0 : 1 + Math.floor(Math.random() * 3), e: Math.round(wait) })); b.answered.add(m.i); } }, wait);
+      setTimeout(() => { if (ws.readyState === 1) { ws.send(JSON.stringify({ t: 'an', i: m.i, c: right ? 0 : 1 + Math.floor(Math.random() * Math.min(3, (m.choices || []).length - 1)), e: Math.round(wait) })); b.answered.add(m.i); } }, wait);
     }
     if (m.t === 'lb') b.lbN = Math.max(b.lbN, m.n || 0);
   });

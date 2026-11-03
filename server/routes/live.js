@@ -38,6 +38,8 @@ import { SAY, BONUS_REASONS } from '../services/classlive-protocol.js';
 import { nicksFor } from '../services/classlive-names.js';
 import { STARTERS } from '../live/starters.js';
 import { pickerFor, SUBJECTS as BANK_SUBJECTS, LEVELS as BANK_LEVELS, COUNTS as BANK_COUNTS } from '../live/bank/index.js';
+import * as WYR from '../live/wyr.js';
+import * as ATL from '../live/atlas.js';
 import { familyOfOwner, familiesOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
 import * as V from '../views/live.js';
@@ -155,6 +157,8 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
     { id: 'quest-race', icon: '🏝️', title: t('live.mode.questRace'), text: t('live.mode.questRaceText') },
     { id: 'battle', icon: '⚡', title: t('live.mode.battle'), text: t('live.mode.battleText') },
     { id: 'board', icon: '🌟', title: t('live.mode.board'), text: t('live.mode.boardText') },
+    { id: 'wyr', icon: '🤔', title: t('live.mode.wyr'), text: t('live.mode.wyrText'), own: true },
+    { id: 'atlas', icon: '🌍', title: t('live.mode.atlas'), text: t('live.mode.atlasText'), own: true },
   ].map(m => ({ ...m, cap: A.capacityFor({ mode: m.id }) }));
   const starters = STARTERS.map(id => ({ id, title: t(`live.starter.title.${id.replace('-', '')}`) }));
   const q = req.query;
@@ -169,7 +173,7 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   noStore(res);
   page(req, res, { title: t('live.landing.title'), active: 'classes', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
     body: V.landingBody(req, { modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
-      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale),
+      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req),
       cohost: { invites: CH.invitesFor(u).map(x => ({ sid: x.s.id, title: x.s.title, from: x.from })), on: CH.cohostingFor(u).map(x => ({ sid: x.id, title: x.title })) } }) });
 });
 
@@ -183,6 +187,18 @@ export function bankChoice(b, pick) {
   const count = BANK_COUNTS.includes(+b.bankCount) ? +b.bankCount : 10;
   return { board, level, subject, count, subs: [...new Set(subs)].slice(0, 6) };
 }
+/** The Would You Rather Live and Atlas Quest Live options on the landing (their own questions, no question set). */
+const wyrPicker = req => ({ topics: WYR.topicsFor(req.locale), counts: WYR.COUNTS, secs: WYR.SECS });
+const atlasPicker = req => {
+  const t = req.t;
+  return { regions: ATL.REGIONS.map(id => ({ id, name: t(`live.atlas.region.${id}`) })), levels: ATL.LEVELS.map(id => ({ id, name: t(`live.atlas.level.${id}`) })),
+    kinds: ATL.KINDS.map(id => ({ id, name: t(`live.atlas.kind.${id}`) })), counts: ATL.COUNTS, secs: ATL.SECS };
+};
+const many = v => [].concat(v ?? []).map(String);
+/** The landing form's Would You Rather Live / Atlas Quest Live fields -> their starter id. */
+export const ownStarter = (b, mode) => (mode === 'wyr'
+  ? WYR.makeId({ topics: many(b.wyrTopic), count: +b.wyrCount || 10, secs: +b.wyrSecs || 15 })
+  : ATL.makeId({ region: String(b.atlasRegion || 'world'), level: String(b.atlasLevel || 'easy'), kinds: many(b.atlasKind), count: +b.atlasCount || 10, secs: +b.atlasSecs || 20 }));
 const bankStarter = (b, pick) => { const c = bankChoice(b, pick); return c.board ? `bank:board:${c.level}:${(c.subs.length >= 2 ? c.subs : BANK_SUBJECTS.slice(0, 5)).join('+')}` : `bank:${c.subject}:${c.level}:${c.count}`; };
 
 /** The landing's form ({ pick: 'mode:<id>'|'game:<id>', set: 'starter:<id>'|'set:<id>', audience, classId, ... }) or
@@ -201,6 +217,11 @@ function sessionOpts(b, req) {
   if (b.setId) o.setId = String(b.setId);
   if (b.starter) o.starter = String(b.starter);
   if (Array.isArray(b.items)) o.items = b.items;
+  // Would You Rather Live and Atlas Quest Live make their own questions: never a set, a starter or typed items.
+  if (A.OWN_QUESTIONS.has(o.mode)) {
+    const own = b.starter && String(b.starter).startsWith(`${o.mode}:`) ? String(b.starter) : ownStarter(b, o.mode);
+    o.starter = own; delete o.setId; delete o.items;
+  }
   // Game settings: a JSON object, or the landing form's flat fields (classlive-settings checks every value).
   const flat = Object.fromEntries(Object.keys(ST.KEYS).filter(k => b[k] !== undefined).map(k => [k, b[k]]));
   o.settings = b.settings && typeof b.settings === 'object' && !Array.isArray(b.settings) ? b.settings : flat;
@@ -238,6 +259,10 @@ function fromRunOpts(req, b) {
   const o = { mode: run.mode, gameId: run.mode === 'game' ? run.game_id : null, audience: run.audience, classId: run.class_id, lang: req.locale, replace: true, title: run.title,
     ...(settings ? { settings } : {}), ...(teamCfg && teamCfg.n >= 2 ? { teams: teamCfg } : {}) };
   if (run.audience === 'class' && !run.class_id) return { ok: false, status: 400, code: 'noClass' };
+  // Would You Rather Live (a vote) and Atlas Quest Live (a map): nothing to play "missed"; play again asks the same
+  // questions while the run is in memory, new ones of the same kind otherwise.
+  if (b.fromRun && A.OWN_QUESTIONS.has(run.mode)) return { ok: false, status: 400, code: 'noMissed' };
+  if (A.OWN_QUESTIONS.has(run.mode) && mine && mine.allItems) o.trusted = mine.allItems.map(it => ({ ...it, secs: it.own || it.secs }));
   if (b.fromRun) {
     const m = R.missedOf(mine ? mine.summary.items : saved.items);
     if (!m.ok) return { ok: false, status: 400, code: m.code };

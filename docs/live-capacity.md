@@ -39,6 +39,8 @@ BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... SIZES=10,20,30 PHONE=
 | Brain Board | 1.3 / 1.6 / 1.9 | 0.29 |
 | Quest Race | under 1.3 | 0.20 |
 | Hero of Sunvale (all walking) | 9 | 5.7 |
+| Would You Rather Live | 0.7 / 0.7 / 0.9 (1.4 at 60) | 0.13 (0.22 at 60) |
+| Atlas Quest Live | 1.3 / 1.5 / 1.9 (2.8 at 60) | 0.36 (0.57 at 60) |
 
 Position updates are already batched (one 10 Hz snapshot of the players who moved, the same string for everyone, and
 5 Hz above 40 players that moved), so the network cost grows gently.
@@ -57,6 +59,8 @@ instanced shapes for the rest, and at most 8 name tags.
 | **Question Battle** | yes / yes / yes | the lobby crowd was squeezed into a thin strip at the bottom of the projector, with names on top of each other and hidden under the banner; on a phone 30 names overlapped in 3 narrow columns | the boss gets smaller when the room is big; the crowd fills the space between the boss and the banner, in up to 10 columns, never narrower than a name tag; when name tags can't fit (a phone, a full room), the crowd shows just the characters, closer together | **60** (the site's ceiling) | 2-60 |
 | **Brain Board** | yes / yes / yes | everyone answers every tile (fastest right answer picks next, when players pick), so the board works for a whole class; but the lobby crowd on a phone overlapped and ran off both edges | the same crowd fix as Question Battle | **40** | 2-40 (teams suggested above 16) |
 | **Hero of Sunvale** (family and open rooms only) | yes / yes / yes | a shared 3D world: about 6 KB a second per player at 30, and more players crowd its paths and quests | none needed at 30 | **30** | 2-30 |
+| **Would You Rather Live** | yes / yes / yes (and 60) | none: a vote is two buttons and two bars, and the projector shows the split, never a name or a crowd | none needed | **60** (the site's ceiling) | 2-60 |
+| **Atlas Quest Live** | yes / yes / yes (and 60) | designed for a full class: the projector draws one bubble per tapped country (bigger = more players), not a pin per player, and lists the top five plus "and N more answered"; each phone draws only its own map | none needed | **60** (the site's ceiling) | 2-60 |
 | **Builder-made live games** | depends on the game | a Builder game could be anything, from a 1-v-1 duel to a big arena | default **30**; the game can say its own number with `Oomba.live.ready({ maxPlayers: n })` (2-60); the Builder is told to state it and to design for a full class (readable top-N, nearest name tags only, players spread out) | **30**, or the game's own number | 2-30 |
 
 ## Where the numbers live

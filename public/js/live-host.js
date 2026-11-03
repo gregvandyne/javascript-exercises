@@ -9,7 +9,7 @@
 // Part 4: co-hosts. The host's "Co-hosts" dialog shows adults' names only behind a gate ("check the class can't see your
 // screen"), and closing it hides them again; no activity line ever shows here. A co-host may use this page when the
 // projector slot is free (else it says so and points to the Teacher view); the host's own projector takes it back.
-import { connect, gameFrame, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, teamChip, teamsOf, scoresOf, flash, paintTeam, readAloud, stopReading, voiceFor, aiOn } from '/js/live-common.js';
+import { connect, gameFrame, readJson, portraits, avatarCanvas, playerOf, nameOf, fill, shapeSvg, teamChip, teamsOf, scoresOf, flash, paintTeam, readAloud, stopReading, voiceFor, aiOn, welTracker } from '/js/live-common.js';
 import { board as teamBoard, teamBars } from '/js/live-teams-ui.js';
 import { cohostPanel, actText, namesOf } from '/js/live-cohost.js';
 
@@ -43,7 +43,10 @@ setInterval(() => { if (frame && sock) frame.clock(sock.serverNow()); }, 5000);
 function frameToken(f) {
   return new Promise(res => { frameReq.set(f, res); if (!sock.send('fr', { f })) res(null); setTimeout(() => { if (frameReq.get(f) === res) { frameReq.delete(f); res(null); } }, 8000); });
 }
+// what a game frame loaded later must know (players who joined, teams, state, the phase): live-common welTracker
+const track = welTracker();
 function onMessage(m) {
+  track.observe(m);
   switch (m.t) {
     case 'wel': welcome(m); break;
     case 'fr': { const r = frameReq.get(m.f); if (r) { frameReq.delete(m.f); r(m.tok); } return; }
@@ -110,7 +113,7 @@ function loadFrame(kind, token) {
     onOut: (t2, m) => sock.send(t2, m),
   });
   frame.load(token, kind, '3d');
-  if (wel) { frame.send(wel); frame.clock(sock.serverNow()); }
+  if (wel) { frame.send(track.wel(wel)); frame.clock(sock.serverNow()); }
 }
 
 async function onPhase(m, first = false) {
@@ -238,7 +241,8 @@ function showRead() {
 }
 $('lv-host-read') && $('lv-host-read').addEventListener('click', () => {
   if (!question) return;
-  const text = `${question.q}. ${question.choices.map((c, i) => `${String.fromCharCode(65 + i)}: ${c}`).join('. ')}`;
+  // a map question (Atlas Quest Live: every country's code) reads the question only
+  const text = question.choices.length > 4 ? question.q : `${question.q}. ${question.choices.map((c, i) => `${String.fromCharCode(65 + i)}: ${c}`).join('. ')}`;
   readAloud({ text, lang: lng(), ai: aiHere() ? { langs: D.tts.langs, body: { ctx: 'live', sid: D.sid, tok: D.tok, i: question.i } } : null });
 });
 
