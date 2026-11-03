@@ -30,8 +30,11 @@ timeline (`glide`, `setCursor`).
    `timeline.json` (scene starts) and the captions (`.en.vtt`).
 5. Music: `node scripts/demo-video/fit-music.mjs <teacher|parents> <track> [--start S] [--cut A,B] [--hit T]` writes the
    project's `music.wav`, exactly as long as the video with a 1.5 s fade out (`--hit T` puts the track's moment T, such as
-   a downbeat, on the end card). `compose-music.py` makes the original synthesized track. Any downloaded track must be
-   CC0 or CC BY 4.0 and credited in `docs/media-credits.md` (and on the page, for CC BY).
+   a downbeat, on the end card). `compose-music.py` makes the original synthesized track. Any third-party track needs
+   a licence that allows commercial use and a row in `docs/media-credits.md` (and an on-page credit if it requires one).
+   Both videos now use the site owner's track (AtlasAudio via Pixabay), with its bright section's first downbeat
+   (101.16 s into the track) on each end card:
+   `fit-music.mjs teacher <track> --hit 101.16 --fade-in 0.5` and `fit-music.mjs parents <track> --hit 101.16 --fade-in 0.5`.
 6. Mix: `node scripts/demo-video/mix.mjs <teacher|parents>` (music only) writes `<prefix>-16x9.mp4`, `-9x16.mp4` and the
    720p `-web.mp4`, normalised to -16 LUFS. Copy the web cut, poster and captions to `public/video/`.
 7. Check: `node scripts/demo-video/sheet.mjs 0.5 5x5 384 <video>` makes a contact sheet; look at it, and run
