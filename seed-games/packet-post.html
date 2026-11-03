@@ -23,11 +23,15 @@
   @media (orientation: portrait) { .pp-tools { order: 3; width: 100%; } }
   @media (orientation: landscape) { .pp-tools { flex-direction: column; flex-wrap: wrap; height: 100%; width: auto; align-content: flex-start; margin-top: 0; padding-top: 0; } }
   /* a phone on its side: the kit's HUD pills end at about 56px and this game never drops a banner outside a card, so its panels start right under the HUD */
-  @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-panel > .pp-h { display: none; } .pp-board .pp-wheel { width: auto; height: 150px; flex: none; } .pp-cipher { font-size: 1em; letter-spacing: .06em; } .pp-itemcard { padding: 6px 10px; } .pp-shift { font-size: 1.1em; } .pp-fill { gap: 6px; padding: 8px; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
+  @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-panel > .pp-h { display: none; } .pp-cipher { font-size: 1em; letter-spacing: .06em; } .pp-itemcard { padding: 6px 10px; } .pp-shift { font-size: 1.1em; } .pp-fill { gap: 6px; padding: 8px; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
   .pp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
   @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } .pp-board.pp-board-mid { flex: 0 0 min(36%, 300px); } }
   @media (orientation: landscape) { .pp-board.pp-board-small { width: 38%; } }
-  @media (orientation: portrait) and (max-width: 520px) { .pp-board.pp-board-small { display: none; } }   /* a phone upright: the rule and order tiles need the room; the map is only scenery there */
+  @media (orientation: portrait) and (max-width: 520px) { .pp-board.pp-board-small, .pp-board.pp-board-card { display: none; } .pp-cipher { font-size: 1.05em; letter-spacing: .08em; } .pp-board.pp-board-wheel { flex: 0 0 min(38%, 360px); } .pp-say p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; } .pp-pxrow { display: flex; gap: 10px; align-items: center; flex: none; } .pp-pxrow .pp-h { flex: 1; min-width: 0; } }   /* a phone upright: the rule and order tiles need the room; the letter, phrase and sort cards move into the panel */
+  .pp-fillcard { display: flex; flex-direction: column; gap: 8px; flex: none; }
+  .pp-fillcard.pp-center { align-items: center; }
+  .pp-verdicts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; flex: none; }
+  .pp-verdicts .ok-btn { padding: 0 8px; min-width: 0; text-align: center; }
   .pp-roads { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   .pp-roads line { stroke: var(--pp-road); stroke-width: 12; stroke-linecap: round; }
   .pp-roads line.pp-sealed { stroke: var(--pp-sealed); }
@@ -145,7 +149,7 @@
   .pp-digits span { width: 44px; height: 52px; border: 3px solid var(--ok-edge); border-radius: 12px; display: grid; place-items: center; font-size: 1.4em; font-weight: 800; background: var(--ok-bg2); }
   .pp-pad { display: grid; grid-template-columns: repeat(3, 64px); gap: 8px; }
   .pp-pad .ok-btn { min-height: 52px; padding: 0; font-size: 1.2em; }
-  .pp-wheel { width: min(62vmin, 400px); height: min(62vmin, 400px); max-height: 100%; }
+  .pp-wheel { flex: 1 1 0; min-height: 96px; width: 100%; max-width: 400px; max-height: 400px; height: auto; }
   .pp-wheel text { font-family: inherit; font-weight: 800; font-size: 13px; text-anchor: middle; fill: var(--ok-text); }
   .pp-wheel .pp-ring { fill: var(--ok-card); stroke: var(--ok-edge); stroke-width: 3; }
   .pp-wheel .pp-inner-ring { fill: var(--pp-go); }
@@ -1222,7 +1226,7 @@ function renderLevel() {
   const lv = $('div', 'pp-pill'); lv.style.flex = '0 0 auto'; lv.appendChild($('span', '', S.daily ? tr(ch.title) : ch.noun === 'cards' ? tr('Card {n} of {total}', lvv) : tr('Level {n} of {total}', lvv))); bar.appendChild(lv);
   if (S.projector) { const p = $('div', 'pp-pill'); p.appendChild(iconEl('eye')); p.appendChild($('span', '', tr('Projector'))); bar.appendChild(p); }
   const main = $('div', 'pp-main'); pp.appendChild(main);
-  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
+  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid pp-board-card' : I.type === 'pass' || (I.type === 'cipher' && I.kind === 'keyed') ? ' pp-board-card' : I.type === 'cipher' ? ' pp-board-wheel' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
   const panel = $('div', 'pp-panel'); main.appendChild(panel);
   Object.assign(UI, { board, panel, links: {}, nodes: {}, lines: {}, packets: {}, pk: null, say: null, revealed: Infinity });
   PIECES = I.n && MAP_TYPES.includes(I.type) ? pieces(I) : null;
@@ -1294,7 +1298,7 @@ function renderPanel() {
 /* ----- sort levels: share or keep, physical or digital, Share or Shield ----- */
 function renderSortPanel() {
   const panel = UI.panel, board = UI.board; board.innerHTML = '';
-  const fill = $('div', 'pp-fill'); board.appendChild(fill);
+  const fill = cardHost(false);
   UI.item = $('div', 'pp-itemcard'); fill.appendChild(UI.item);
   UI.doneList = $('div', 'pp-seq'); UI.doneList.setAttribute('aria-label', tr('Sorted so far')); fill.appendChild(UI.doneList);
   const prog = $('div', 'pp-pill'); prog.appendChild(iconEl('check')); prog.appendChild($('span', '', '')); panel.appendChild(prog); UI.prog = prog.lastChild;
@@ -1326,7 +1330,7 @@ function syncSort() {
 const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'many years', 'centuries'];
 function renderPassPanel() {
   const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
-  const fill = $('div', 'pp-fill pp-center'); board.appendChild(fill);
+  const fill = cardHost(true); fill.style.width = '100%';
   fill.appendChild($('p', 'pp-h', tr('Your passphrase')));
   UI.phrase = $('div', 'pp-seq'); UI.phrase.style.width = '100%'; UI.phrase.setAttribute('aria-label', tr('Your passphrase')); fill.appendChild(UI.phrase);
   UI.meter = $('div', 'pp-meter'); UI.meter.style.width = '100%'; UI.meter.setAttribute('role', 'progressbar'); UI.meter.setAttribute('aria-valuemin', '0'); UI.meter.setAttribute('aria-valuemax', '4'); UI.meter.appendChild($('i')); fill.appendChild(UI.meter);
@@ -1349,7 +1353,7 @@ function syncPass() {
 /* ----- inbox levels: spot the trick ----- */
 function renderInboxPanel() {
   const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
-  const fill = $('div', 'pp-fill'); board.appendChild(fill);
+  const fill = cardHost(false);
   const L = I.letter, card = $('div', 'pp-letter'); fill.appendChild(card);
   const from = $('div', 'pp-from'); from.appendChild(document.createTextNode(tr('From:'))); const badge = $('span', 'pp-badge'); badge.appendChild(iconEl('user')); badge.appendChild(document.createTextNode(tr(L.from))); from.appendChild(badge);
   if (L.badge) { const b2 = $('span', 'pp-badge'); b2.appendChild(iconEl(L.badge === 'odd' ? 'question' : 'check')); b2.appendChild(document.createTextNode(L.badge === 'odd' ? tr('unknown sender') : tr('known sender'))); from.appendChild(b2); }
@@ -1360,7 +1364,7 @@ function renderInboxPanel() {
   panel.appendChild($('p', 'pp-h', tr('Tap every cue you can find')));
   const cues = $('div', 'pp-tiles'); panel.appendChild(cues); UI.tiles = {};
   for (const c of I.cues) { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.cue = c.id; b.setAttribute('aria-pressed', 'false'); b.textContent = tr(c.text); b.addEventListener('click', () => doAction({ t: 'cue', id: c.id })); cues.appendChild(b); UI.tiles[c.id] = b; }
-  const row = $('div', 'pp-row'); panel.appendChild(row);
+  const row = $('div', 'pp-verdicts'); panel.appendChild(row);
   for (const [v, label, kind, ic] of [['safe', tr('Safe'), 'go', 'check'], ['trick', tr('Trick'), 'quiet', 'cross'], ['ask', tr('Ask a grown-up'), 'quiet', 'question']]) { const b = btn(label, { kind, icon: ic, onPress: () => doAction({ t: 'verdict', v }) }); b.dataset.verdict = v; row.appendChild(b); }
   syncInbox();
 }
@@ -1374,24 +1378,23 @@ function wheelMarkup(cls) {
 function setWheel(svg, shift) { svg.querySelector('.pp-inner').style.transform = `rotate(${-shift * 360 / 26}deg)`; svg.setAttribute('aria-label', tr('Key wheel, shift {n}', { n: shift })); }
 function renderCipherPanel() {
   const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
-  const fill = $('div', 'pp-fill pp-center'); board.appendChild(fill);
+  const fill = I.kind === 'keyed' ? cardHost(true) : (() => { const f = $('div', 'pp-fill pp-center'); board.appendChild(f); return f; })();
   if (I.kind === 'keyed') {
     fill.appendChild($('p', 'pp-h', tr('Key card')));
     const key = $('div', 'pp-key'); key.dir = 'ltr'; key.setAttribute('aria-label', tr('Key card')); fill.appendChild(key);
     for (let half = 0; half < 2; half++) { for (let k = 0; k < 13; k++) key.appendChild($('span', '', E.ABC[half * 13 + k])); for (let k = 0; k < 13; k++) key.appendChild($('span', 'pp-k2', I.key[half * 13 + k])); }
   } else { fill.insertAdjacentHTML('beforeend', wheelMarkup('pp-wheel')); UI.wheel = fill.querySelector('.pp-wheel'); }
-  UI.shiftLabel = $('div', 'pp-shift'); UI.shiftLabel.dir = 'ltr'; if (I.kind !== 'keyed') fill.appendChild(UI.shiftLabel);
+  UI.shiftLabel = $('div', 'pp-shift'); UI.shiftLabel.dir = 'ltr';
   const msg = $('div', 'pp-itemcard'); panel.appendChild(msg);
   msg.appendChild($('p', 'pp-h', I.mode === 'encode' ? tr('Message to send') : tr('Secret message')));
   const ct = $('div', 'pp-cipher'); ct.dir = 'ltr'; ct.textContent = I.mode === 'encode' ? I.plain : I.cipher; msg.appendChild(ct);
   if (!I.choices) { msg.appendChild($('p', 'pp-h', tr('Your reading'))); UI.reading = $('div', 'pp-cipher'); UI.reading.dir = 'ltr'; msg.appendChild(UI.reading); }
-  UI.countLine = $('p', 'pp-h'); msg.appendChild(UI.countLine);
   const row = $('div', 'pp-row'); panel.appendChild(row);
   // a phone on its side: the turn buttons (icons) and the letter count sit under the wheel, so the panel keeps the message and its buttons in view
-  const compact = landscape() && window.innerHeight < 520;
-  const turnHost = compact ? (() => { const r = $('div', 'pp-row pp-center'); fill.appendChild(r); return r; })() : row;
-  if (I.kind !== 'keyed') { turnHost.appendChild(btn(tr('Turn back'), { kind: compact ? 'icon' : 'quiet', icon: 'minus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift - 1 }) })); const fwd = btn(tr('Turn forward'), { kind: compact ? 'icon' : 'quiet', icon: 'plus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift + 1 }) }); fwd.dataset.turn = '1'; turnHost.appendChild(fwd); }
-  if (I.mode === 'crack') { const cb = btn(tr('Count the letters'), { kind: 'quiet', icon: 'eye', onPress: () => doAction({ t: 'count' }) }); cb.dataset.count = '1'; turnHost.appendChild(cb); }
+  const compact = window.innerWidth < 520 || (landscape() && window.innerHeight < 520);
+  const turnHost = I.kind === 'keyed' ? row : (() => { const r = $('div', 'pp-row pp-center'); fill.appendChild(r); return r; })();
+  if (I.kind !== 'keyed') { turnHost.appendChild(btn(tr('Turn back'), { kind: 'icon', icon: 'minus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift - 1 }) })); turnHost.appendChild(UI.shiftLabel); const fwd = btn(tr('Turn forward'), { kind: 'icon', icon: 'plus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift + 1 }) }); fwd.dataset.turn = '1'; turnHost.appendChild(fwd); }
+  if (I.mode === 'crack') { const cb = btn(tr('Count the letters'), { kind: compact ? 'icon' : 'quiet', icon: 'eye', onPress: () => doAction({ t: 'count' }) }); cb.dataset.count = '1'; if (compact) cb.title = tr('Count the letters'); turnHost.appendChild(cb); }
   if (I.choices) { const tiles = $('div', 'pp-tiles'); panel.appendChild(tiles); UI.tiles = {}; I.choices.forEach((c, k) => { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dir = 'ltr'; b.dataset.choice = String(k); b.textContent = c; b.addEventListener('click', () => doAction({ t: 'choose', k })); tiles.appendChild(b); UI.tiles[k] = b; }); }
   else row.appendChild(btn(tr("That's it!"), { kind: 'hot', icon: 'check', onPress: () => doAction({ t: 'submit' }) }));
   syncCipher();
@@ -1399,9 +1402,9 @@ function renderCipherPanel() {
 function syncCipher(counts) {
   const run = S.run, I = run.inst, s = run.s;
   if (UI.wheel) setWheel(UI.wheel, s.shift);
-  UI.shiftLabel.textContent = tr('Shift {n}', { n: s.shift });
+  UI.shiftLabel.textContent = tr('Shift {n}', { n: s.shift }); if (!UI.wheel) UI.shiftLabel.hidden = true;
   if (UI.reading) UI.reading.textContent = E.caesar(I.cipher, -s.shift);
-  if (counts) { const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]; UI.countLine.textContent = top ? tr('Most common letter here: {letter}. In English it is usually E.', { letter: top[0] }) : ''; }
+  if (counts) { const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]; if (top) pimSay(tr('Most common letter here: {letter}. In English it is usually E.', { letter: top[0] })); }   // Pim reads the count out
 }
 
 /* ----- pixel levels: hide it in the picture ----- */
@@ -1411,8 +1414,9 @@ function renderPixelPanel() {
   const grid = $('div', 'pp-pxgrid'); grid.setAttribute('data-fit-dense', ''); grid.dir = 'ltr'; grid.style.gridTemplateColumns = `repeat(${I.w}, 40px)`; grid.setAttribute('aria-label', tr('Pixel grid')); fill.appendChild(grid); UI.px = [];
   for (let k = 0; k < I.w * I.h; k++) { const b = $('button', 'pp-px'); b.type = 'button'; b.dataset.px = String(k); b.addEventListener('click', () => doAction({ t: 'px', i: k })); grid.appendChild(b); UI.px.push(b); }
   if (I.mode === 'hide') {
-    panel.appendChild($('p', 'pp-h', tr('Make the last bit of each pixel match the picture: odd is a dot, even is blank.')));
-    const tg = $('div', 'pp-target'); tg.style.gridTemplateColumns = `repeat(${I.w}, 12px)`; tg.setAttribute('role', 'img'); tg.setAttribute('aria-label', tr('The picture to hide')); panel.appendChild(tg);
+    const host = narrow() ? $('div', 'pp-pxrow') : panel; if (host !== panel) panel.appendChild(host);
+    const tg = $('div', 'pp-target'); tg.style.gridTemplateColumns = `repeat(${I.w}, 12px)`; tg.setAttribute('role', 'img'); tg.setAttribute('aria-label', tr('The picture to hide')); host.appendChild(tg);
+    host.appendChild($('p', 'pp-h', tr('Make the last bit of each pixel match the picture: odd is a dot, even is blank.')));
     for (const b of I.target) tg.appendChild($('span', b ? 'pp-on' : ''));
   } else panel.appendChild($('p', 'pp-h', tr('Tap every pixel with an odd value. The odd ones hide the picture.')));
   const row = $('div', 'pp-row'); panel.appendChild(row);
@@ -1424,20 +1428,26 @@ function syncPixel() {
   s.values.forEach((v, k) => { const b = UI.px[k]; b.innerHTML = ''; b.style.background = `rgb(${v}, ${v}, ${v})`; b.style.color = v < 150 ? 'var(--ok-card)' : 'var(--ok-text)'; b.appendChild(document.createTextNode(num(v))); if (I.mode === 'hide' && (v & 1)) b.appendChild($('i')); b.setAttribute('aria-label', tr('Pixel {n}: {v}', { n: k + 1, v })); if (I.mode === 'read') b.setAttribute('aria-pressed', String(s.marked.includes(k))); });
 }
 const landscape = () => window.innerWidth > window.innerHeight;
+const narrow = () => !landscape() && window.innerWidth < 520;   // a phone upright
+/** Where a level's card (the letter, the phrase, the item) goes: the board, or on a phone upright the top of the panel (the board hides). */
+function cardHost(center) {
+  if (narrow()) { const c = $('div', 'pp-fillcard' + (center ? ' pp-center' : '')); UI.panel.appendChild(c); return c; }
+  const f = $('div', 'pp-fill' + (center ? ' pp-center' : '')); UI.board.appendChild(f); return f;
+}
 function renderTools() {
   const main = UI.board && UI.board.parentNode; if (!main) return; const old = main.querySelector('.pp-tools'); if (old) old.remove();
   const tools = $('div', 'pp-tools'); tools.setAttribute('role', 'group'); tools.setAttribute('aria-label', tr('Level tools')); main.appendChild(tools);
-  const kind = landscape() ? 'icon' : 'quiet';   // on a phone on its side the tools are a column of icon buttons beside the panel
+  const kind = landscape() || narrow() ? 'icon' : 'quiet';   // on a phone the tools are icon buttons: a column beside the panel on its side, one row under it upright
   const add = (label, ic, onPress) => { const b = btn(label, { kind, icon: ic, onPress }); if (kind === 'icon') b.title = label; tools.appendChild(b); return b; };
   if (S.level.learn) add(tr('Learn'), 'book', () => learnCard(S.level.learn));
   UI.hintBtn = add(tr('Hint'), 'hint', () => giveHint()); UI.hintBtn.disabled = S.hint >= 3 || !S.run || S.run.done;
   add(tr('Start over'), 'restart', () => startOver());
   if (S.fails >= 2 && !S.projector && !S.daily) add(tr('Skip level'), 'next', () => skipLevel());
   if (!S.lock) add(tr('Map'), 'home', () => { S.lockedChapter = null; showMap(); });
-  UI.toolsLandscape = landscape();
+  UI.toolsLandscape = landscape(); UI.toolsNarrow = narrow();
 }
 let resizeT = null;
-window.addEventListener('resize', () => { if (resizeT) resizeT(); resizeT = O.time.real.after(80, () => { resizeT = null; if (S.screen === 'level' && S.run && UI.toolsLandscape !== landscape()) renderTools(); }); });
+window.addEventListener('resize', () => { if (resizeT) resizeT(); resizeT = O.time.real.after(80, () => { resizeT = null; if (S.screen === 'level' && S.run && (UI.toolsLandscape !== landscape() || UI.toolsNarrow !== narrow())) renderTools(); }); });
 
 /* ----- route levels ----- */
 let PIECES = null;
