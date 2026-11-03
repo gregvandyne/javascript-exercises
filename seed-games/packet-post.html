@@ -23,7 +23,7 @@
   @media (orientation: portrait) { .pp-tools { order: 3; width: 100%; } }
   @media (orientation: landscape) { .pp-tools { flex-direction: column; flex-wrap: wrap; height: 100%; width: auto; align-content: flex-start; margin-top: 0; padding-top: 0; } }
   /* a phone on its side: the kit's HUD pills end at about 56px and this game never drops a banner outside a card, so its panels start right under the HUD */
-  @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-h { display: none; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
+  @media (orientation: landscape) and (max-height: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .pp-lvbar { display: none; } .pp-panel { gap: 6px; } .pp-panel > .pp-h { display: none; } .pp-board .pp-wheel { width: auto; height: 170px; flex: none; } .pp-fill { gap: 6px; padding: 8px; } .pp-say { min-height: 44px; padding: 4px 8px; } .pp-say p { font-size: .85em; } .pp-say canvas { width: 32px; height: 32px; } .pp-seq { min-height: 36px; padding: 4px; } .pp-row, .pp-tiles { gap: 6px; } .pp-tile.pp-wide { min-height: 48px; } }
   .pp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
   @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } }
   @media (orientation: landscape) { .pp-board.pp-board-small { width: 38%; } }
@@ -112,6 +112,33 @@
   .pp-card p { margin: 0; font-weight: 600; font-size: 1.05em; line-height: 1.4; max-width: 36ch; }
   .pp-card canvas.pp-pic { width: 96px; height: 96px; object-fit: contain; }
   @media (max-height: 520px) { .pp-card > div { padding: 12px 14px; gap: 8px; } .pp-card canvas.ok-portrait { display: none; } .pp-card canvas.pp-pic { width: 56px; height: 56px; } .pp-card h2 { font-size: 1.2em; } .pp-card p { font-size: .95em; line-height: 1.3; } }
+  .pp-fill { position: absolute; inset: 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow: auto; align-items: stretch; }
+  .pp-fill.pp-center { align-items: center; justify-content: center; }
+  .pp-itemcard { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 16px; padding: 10px 12px; font-size: 1.05em; }
+  .pp-itemcard b { display: block; font-size: 1.15em; }
+  .pp-itemcard p { margin: 4px 0 0; font-weight: 600; font-size: .9em; }
+  .pp-meter { height: 18px; border: 3px solid var(--ok-edge); border-radius: 999px; background: var(--ok-bg2); overflow: hidden; }
+  .pp-meter i { display: block; height: 100%; width: 0; background: var(--pp-bad); transition: width .3s; }
+  .pp-meter.pp-t2 i { background: var(--pp-num); } .pp-meter.pp-t3 i, .pp-meter.pp-t4 i { background: var(--pp-go); }
+  .ok-rm .pp-meter i { transition: none; }
+  .pp-letter { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .pp-letter .pp-from { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: .9em; flex-wrap: wrap; }
+  .pp-letter .pp-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--ok-card); border: 2px solid var(--ok-edge); border-radius: 999px; padding: 2px 10px; }
+  .pp-letter .pp-badge svg { width: 18px; height: 18px; }
+  .pp-letter b { font-size: 1.05em; }
+  .pp-letter p { margin: 0; font-weight: 600; line-height: 1.35; }
+  .pp-letter .pp-fakebtn { align-self: flex-start; background: var(--pp-num); border: 2px solid var(--ok-edge); border-radius: 999px; padding: 6px 14px; font-weight: 800; }
+  .pp-cipher { letter-spacing: .12em; font-weight: 800; font-size: 1.2em; overflow-wrap: anywhere; }
+  .pp-key { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 2px; font-size: .75em; font-weight: 800; text-align: center; }
+  .pp-key span { background: var(--ok-bg2); border-radius: 4px; padding: 2px 0; }
+  .pp-key span.pp-k2 { background: var(--pp-go); }
+  .pp-pxgrid { display: grid; gap: 3px; width: max-content; max-width: 100%; margin: auto; }
+  .pp-px { width: 40px; height: 40px; border: 2px solid var(--ok-edge); border-radius: 6px; font: inherit; font-weight: 800; font-size: .72em; padding: 0; cursor: pointer; display: grid; place-items: center; position: relative; }
+  .pp-px[aria-pressed="true"] { outline: 4px solid var(--pp-lit); outline-offset: -4px; }
+  .pp-px i { position: absolute; right: 3px; top: 3px; width: 8px; height: 8px; border-radius: 50%; background: var(--pp-lit); border: 1px solid var(--ok-edge); }
+  .pp-target { display: grid; gap: 2px; width: max-content; }
+  .pp-target span { width: 12px; height: 12px; border-radius: 3px; background: var(--ok-bg2); border: 1px solid var(--ok-edge); }
+  .pp-target span.pp-on { background: var(--ok-text); }
   .pp-digits { display: flex; gap: 8px; }
   .pp-digits span { width: 44px; height: 52px; border: 3px solid var(--ok-edge); border-radius: 12px; display: grid; place-items: center; font-size: 1.4em; font-weight: 800; background: var(--ok-bg2); }
   .pp-pad { display: grid; grid-template-columns: repeat(3, 64px); gap: 8px; }
@@ -185,6 +212,36 @@ function instance(level, seed) {
   } else if (I.type === 'rules') {
     I.rules = level.rules.map(t => ({ id: t.id, text: t.text })); I.needed = level.needed.slice(); I.budget = level.budget; I.events = level.events.map(e => ({ text: e.text, needs: e.needs.slice() }));
     I.shown = r.shuffle(I.rules.map(t => t.id));
+  } else if (I.type === 'sort') {
+    // share or keep, physical or digital, public or private: every item has its bin and maybe a reason tile
+    I.bins = level.bins.map(b => ({ id: b.id, label: b.label, icon: b.icon || null }));
+    I.items = level.items.map(t => ({ id: t.id, text: t.text, bin: t.bin, benefit: t.benefit || null, risk: t.risk || null, reasons: t.reasons ? t.reasons.slice() : null, answer: t.answer == null ? null : t.answer }));
+    I.shown = rnd ? r.shuffle(I.items.map(t => t.id)) : I.items.map(t => t.id);
+  } else if (I.type === 'pass') {
+    // the passphrase builder: word tiles, some of them weak (things about you, or too common)
+    I.need = level.need || 4; I.words = level.words.map(w => ({ id: w.id, text: w.text, weak: !!w.weak }));
+    I.shown = r.shuffle(I.words.map(w => w.id));
+  } else if (I.type === 'inbox') {
+    // a pretend message: a role as the sender, cue chips under the text, then safe / trick / ask a grown-up
+    I.letter = { from: level.from, subject: level.subject, body: level.body, button: level.button || null, badge: level.badge || null };
+    I.cues = level.cues.map(c => ({ id: c.id, text: c.text, trick: !!c.trick })); I.verdict = level.verdict;
+    I.accept = level.accept ? level.accept.slice() : (level.verdict === 'trick' ? ['trick', 'ask'] : [level.verdict]);
+  } else if (I.type === 'cipher') {
+    I.kind = level.kind || 'caesar'; I.mode = level.mode || 'decode'; I.plain = String(level.plain || '').toUpperCase();
+    I.shift = level.shift != null ? level.shift : (rnd ? r.int(1, 25) : 3); I.key = level.key || null;
+    I.cipher = I.kind === 'keyed' ? substitute(I.plain, I.key) : caesar(I.plain, I.shift);
+    if (level.choices) { I.choices = level.choices.slice(); I.answer = level.answer; }
+    else if (I.mode === 'encode' || I.kind === 'keyed') {   // three readings: the right one and two near misses, placed by the seed
+      const right = I.mode === 'encode' ? I.cipher : I.plain;
+      const wrongs = I.mode === 'encode' ? [caesar(I.plain, I.shift + 1), caesar(I.plain, I.shift - 1)] : [caesar(I.plain, 1), caesar(I.plain, 25)];
+      I.answer = r.int(0, 2); I.choices = wrongs.slice(); I.choices.splice(I.answer, 0, right);
+    }
+    I.startShift = I.mode === 'encode' ? I.shift : (I.shift + 7 + r.int(0, 11)) % 26;
+  } else if (I.type === 'pixel') {
+    I.w = level.w || 6; I.h = level.h || 6; I.mode = level.mode || 'hide';
+    const n = I.w * I.h, target = (level.target || []).slice(0, n); while (target.length < n) target.push(0);
+    I.target = target.map(b => (b ? 1 : 0));
+    I.values = []; for (let k = 0; k < n; k++) { const base = 120 + r.int(0, 100); const v = (base & ~1) | (I.mode === 'read' ? I.target[k] : (rnd ? r.int(0, 1) : (k % 3 === 0 ? 1 : 0))); I.values.push(v); }
   }
   return I;
 }
@@ -199,6 +256,73 @@ class Run {
     else if (this.type === 'check') s.flagged = [];
     else if (this.type === 'order') s.seq = [];
     else if (this.type === 'rules') { s.chosen = []; s.caught = null; }
+    else if (this.type === 'sort') { s.assigned = {}; s.why = {}; }
+    else if (this.type === 'pass') { s.chosen = []; s.submits = 0; }
+    else if (this.type === 'inbox') { s.flags = []; s.verdict = null; }
+    else if (this.type === 'cipher') { s.shift = I.startShift || 0; s.counted = false; s.submits = 0; s.turns = 0; }
+    else if (this.type === 'pixel') { s.values = I.values.slice(); s.marked = []; s.submits = 0; }
+  }
+  // ---- sort levels: each item to its bin, then (Share or Shield) the reason
+  item(id) { return this.inst.items.find(t => t.id === id) || null; }
+  resolved(t) { const s = this.s; return s.assigned[t.id] != null && (!t.reasons || s.why[t.id] != null); }
+  bin(id, binId) {
+    const s = this.s; if (s.phase !== 'play' || this.type !== 'sort') return { err: 'phase' }; const t = this.item(id); if (!t || s.assigned[id] != null) return { err: 'noitem' };
+    this.actions.push({ t: 'bin', id, bin: binId });
+    if (binId !== t.bin) { s.wrong++; return { wrong: true, id }; }
+    s.assigned[id] = binId; if (this.inst.items.every(x => this.resolved(x))) s.phase = 'done';
+    return { binned: id, bin: binId, why: !!t.reasons, done: s.phase === 'done' };
+  }
+  why(id, k) {
+    const s = this.s; if (s.phase !== 'play' || this.type !== 'sort') return { err: 'phase' }; const t = this.item(id); if (!t || !t.reasons || s.assigned[id] == null || s.why[id] != null) return { err: 'noitem' };
+    this.actions.push({ t: 'why', id, k });
+    if (k !== t.answer) { s.wrong++; return { wrong: true, id }; }
+    s.why[id] = k; if (this.inst.items.every(x => this.resolved(x))) s.phase = 'done';
+    return { why: id, done: s.phase === 'done' };
+  }
+  // ---- pass levels: pick word tiles, watch the meter, lock it in
+  pick(id) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'pass') return { err: 'phase' }; if (!I.words.some(w => w.id === id)) return { err: 'noword' };
+    const k = s.chosen.indexOf(id);
+    if (k < 0 && s.chosen.length >= I.need) return { full: true };
+    this.actions.push({ t: 'pick', id }); s.toggles++;
+    if (k >= 0) s.chosen.splice(k, 1); else s.chosen.push(id);
+    return { chosen: s.chosen.slice(), strength: this.strength() };
+  }
+  /** How long a guessing computer would need: 0 seconds · 1 minutes · 2 days · 3 years · 4 centuries (a weak word spoils it all). */
+  strength() {
+    const I = this.inst, words = this.s.chosen.map(id => I.words.find(w => w.id === id)).filter(Boolean);
+    const weak = words.some(w => w.weak), letters = words.reduce((t, w) => t + w.text.replace(/[^\p{L}\p{N}]/gu, '').length, 0);
+    const tier = weak ? 0 : letters >= 16 ? 4 : letters >= 12 ? 3 : letters >= 8 ? 2 : letters >= 5 ? 1 : 0;
+    return { tier, letters, weak, count: words.length };
+  }
+  // ---- inbox levels: tap the cues, then say safe, trick or ask a grown-up
+  cue(id) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'inbox') return { err: 'phase' }; if (!I.cues.some(c => c.id === id)) return { err: 'nocue' };
+    this.actions.push({ t: 'cue', id }); s.toggles++;
+    const k = s.flags.indexOf(id); if (k >= 0) s.flags.splice(k, 1); else s.flags.push(id);
+    return { flags: s.flags.slice() };
+  }
+  verdict(v) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'inbox') return { err: 'phase' };
+    this.actions.push({ t: 'verdict', v }); s.verdict = v;
+    if (I.accept.includes(v)) { s.phase = 'done'; return { done: true, verdict: v, missed: I.cues.filter(c => c.trick && !s.flags.includes(c.id)).map(c => c.id) }; }
+    s.phase = 'failed'; s.fails.push('verdict'); return { failed: true, verdict: v, want: I.verdict };
+  }
+  // ---- cipher levels: turn the wheel, count the letters, choose the reading
+  shiftTo(n) { const s = this.s; if (s.phase !== 'play' || this.type !== 'cipher') return { err: 'phase' }; this.actions.push({ t: 'shiftTo', n }); s.turns++; s.shift = ((n % 26) + 26) % 26; return { shift: s.shift, reading: caesar(this.inst.cipher, -s.shift) }; }
+  count() { const s = this.s; if (s.phase !== 'play' || this.type !== 'cipher') return { err: 'phase' }; this.actions.push({ t: 'count' }); s.counted = true; return { counts: letterCounts(this.inst.cipher), guess: guessShift(this.inst.cipher) }; }
+  choose(k) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'cipher' || !I.choices) return { err: 'phase' };
+    this.actions.push({ t: 'choose', k });
+    if (k !== I.answer) { s.wrong++; return { wrong: true, k }; }
+    s.phase = 'done'; return { done: true, k };
+  }
+  // ---- pixel levels: the last bit of every pixel hides the picture
+  px(i) {
+    const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'pixel') return { err: 'phase' }; if (!(i >= 0 && i < s.values.length)) return { err: 'nopixel' };
+    this.actions.push({ t: 'px', i }); s.toggles++;
+    if (I.mode === 'read') { const k = s.marked.indexOf(i); if (k >= 0) s.marked.splice(k, 1); else s.marked.push(i); return { marked: s.marked.slice() }; }
+    s.values[i] ^= 1; return { value: s.values[i], bit: s.values[i] & 1 };
   }
   // ---- the map
   closed(link) { return link.closedAfter != null && this.s.delivered >= link.closedAfter; }
@@ -310,15 +434,33 @@ class Run {
       if (caught.every(c => c.ok) && !over) { s.phase = 'done'; return { done: true, caught }; }
       s.phase = 'failed'; s.fails.push(over ? 'budget' : 'rules'); return { failed: true, caught, over };
     }
+    if (this.type === 'pass') {
+      const st = this.strength(); s.submits++;
+      if (st.count === I.need && st.tier >= 3) { s.phase = 'done'; return { done: true, strength: st }; }
+      s.phase = 'failed'; s.fails.push(st.weak ? 'weak' : st.count < I.need ? 'count' : 'short'); return { failed: true, strength: st, why: s.fails[s.fails.length - 1] };
+    }
+    if (this.type === 'cipher') {
+      s.submits++;
+      if (s.shift === I.shift) { s.phase = 'done'; return { done: true, reading: I.plain }; }
+      s.phase = 'failed'; s.fails.push('shift'); return { failed: true, reading: caesar(I.cipher, -s.shift) };
+    }
+    if (this.type === 'pixel') {
+      s.submits++;
+      const ok = I.mode === 'read' ? I.target.every((b, k) => (b === 1) === s.marked.includes(k)) : I.target.every((b, k) => (s.values[k] & 1) === b);
+      if (ok) { s.phase = 'done'; return { done: true }; }
+      s.phase = 'failed'; s.fails.push('pixels'); return { failed: true, off: I.target.map((b, k) => k).filter(k => (I.mode === 'read' ? (I.target[k] === 1) !== s.marked.includes(k) : (s.values[k] & 1) !== I.target[k])).length };
+    }
     return { err: 'type' };
   }
-  /** Reset after a failed check or rule run (the picks stay, the run goes on). */
-  retry() { const s = this.s; if (s.phase !== 'failed') return false; if (this.type === 'check' || this.type === 'rules') { s.phase = 'play'; return true; } return false; }
+  /** Reset after a failed try (the picks stay, the run goes on) on the levels that check a whole answer at once. */
+  retry() { const s = this.s; if (s.phase !== 'failed') return false; if (['check', 'rules', 'pass', 'cipher', 'pixel', 'inbox'].includes(this.type)) { s.phase = 'play'; return true; } return false; }
   /** One action object: {t: 'hop', id} | {t: 'place', n} | {t: 'ack', id} | {t: 'discard', id} | {t: 'resend', n} | {t: 'flag', n} | {t: 'put', id} | {t: 'toggle', id} | {t: 'submit'}. */
   act(a) {
     switch (a && a.t) {
       case 'hop': return this.hop(a.id); case 'place': return this.place(a.n); case 'ack': return this.ack(a.id); case 'discard': return this.discard(a.id);
       case 'resend': return this.resend(a.n); case 'flag': return this.flag(a.n); case 'put': return this.put(a.id); case 'toggle': return this.toggle(a.id); case 'submit': return this.submit();
+      case 'bin': return this.bin(a.id, a.bin); case 'why': return this.why(a.id, a.k); case 'pick': return this.pick(a.id); case 'cue': return this.cue(a.id); case 'verdict': return this.verdict(a.v);
+      case 'shiftTo': return this.shiftTo(a.n); case 'count': return this.count(); case 'choose': return this.choose(a.k); case 'px': return this.px(a.i);
       default: return { err: 'unknown' };
     }
   }
@@ -350,6 +492,31 @@ class Run {
       const extra = s.chosen.find(id => !I.needed.includes(id)); if (extra) return { t: 'toggle', id: extra };
       return { t: 'submit' };
     }
+    if (s.phase === 'failed') return null;
+    if (this.type === 'sort') {
+      const id = I.shown.find(x => !this.resolved(this.item(x))); if (!id) return null; const t = this.item(id);
+      return s.assigned[id] == null ? { t: 'bin', id, bin: t.bin } : { t: 'why', id, k: t.answer };
+    }
+    if (this.type === 'pass') {
+      const weak = s.chosen.find(id => I.words.find(w => w.id === id).weak); if (weak) return { t: 'pick', id: weak };
+      if (s.chosen.length < I.need) { const best = I.words.filter(w => !w.weak && !s.chosen.includes(w.id)).sort((p, q) => q.text.length - p.text.length)[0]; return best ? { t: 'pick', id: best.id } : null; }
+      return { t: 'submit' };
+    }
+    if (this.type === 'inbox') {
+      const miss = I.cues.find(c => c.trick && !s.flags.includes(c.id)); if (miss) return { t: 'cue', id: miss.id };
+      const extra = s.flags.find(id => !I.cues.find(c => c.id === id).trick); if (extra) return { t: 'cue', id: extra };
+      return { t: 'verdict', v: I.verdict };
+    }
+    if (this.type === 'cipher') {
+      if (I.choices) return { t: 'choose', k: I.answer };
+      if (I.mode === 'crack' && !s.counted) return { t: 'count' };
+      if (s.shift !== I.shift) return { t: 'shiftTo', n: I.shift };
+      return { t: 'submit' };
+    }
+    if (this.type === 'pixel') {
+      for (let k = 0; k < I.target.length; k++) { const want = I.target[k] === 1, has = I.mode === 'read' ? s.marked.includes(k) : (s.values[k] & 1) === 1; if (want !== has) return { t: 'px', i: k }; }
+      return { t: 'submit' };
+    }
     return null;
   }
   get done() { return this.s.phase === 'done'; }
@@ -365,12 +532,16 @@ class Run {
     if (s.wrong || s.wasted || s.bounced) return false;
     if (this.type === 'route') return s.hops <= this.optimal() && !s.peeked.length;
     if (this.type === 'check' || this.type === 'rules') return s.toggles <= this.optimal() - 1;
+    if (this.type === 'pass') return s.toggles <= this.inst.need && s.submits <= 1;
+    if (this.type === 'inbox') { const I = this.inst; return I.cues.filter(c => c.trick).every(c => s.flags.includes(c.id)) && s.flags.every(id => I.cues.find(c => c.id === id).trick) && s.toggles <= I.cues.filter(c => c.trick).length; }
+    if (this.type === 'cipher') return s.submits <= 1;
+    if (this.type === 'pixel') return s.submits <= 1 && s.toggles <= this.optimal() - 1;
     return true;
   }
   /** Stars without the hint rule: 0 unsolved, 1 solved, 2 well made (the game adds the third for no tier-3 hint). */
   stars(noThirdTierHint = true) { if (!this.done) return 0; return 1 + (this.quality() ? 1 : 0) + (noThirdTierHint ? 1 : 0); }
   static cost(run) { if (run.type === 'route') return run.actions.filter(a => a.t === 'hop').reduce((t, a) => t + (run.inst.links[a.id] ? run.inst.links[a.id].cost : 0), 0); return run.actions.length; }
-  snapshot() { const s = this.s; return JSON.parse(JSON.stringify({ type: this.type, phase: s.phase, i: s.i, at: s.at, hops: s.hops, placed: s.placed, tray: s.tray, wrong: s.wrong, wasted: s.wasted, bounced: s.bounced, acked: s.acked, flagged: s.flagged, seq: s.seq, chosen: s.chosen, fails: s.fails, cards: s.cards })); }
+  snapshot() { const s = this.s; return JSON.parse(JSON.stringify({ type: this.type, phase: s.phase, i: s.i, at: s.at, hops: s.hops, placed: s.placed, tray: s.tray, wrong: s.wrong, wasted: s.wasted, bounced: s.bounced, acked: s.acked, flagged: s.flagged, seq: s.seq, chosen: s.chosen, fails: s.fails, cards: s.cards, assigned: s.assigned, flags: s.flags, verdict: s.verdict, shift: s.shift, marked: s.marked, submits: s.submits })); }
 }
 
 /** The actions that solve a level for a seed: the level's own sol (a list of tile or rule ids) or the solver's moves. */
@@ -827,12 +998,13 @@ function renderLevel() {
   const lv = $('div', 'pp-pill'); lv.style.flex = '0 0 auto'; lv.appendChild($('span', '', tr('Level {n} of {total}', { n: S.levelIx + 1, total: levelsFor(S.chapter, S.band).length }))); bar.appendChild(lv);
   if (S.projector) { const p = $('div', 'pp-pill'); p.appendChild(iconEl('eye')); p.appendChild($('span', '', tr('Projector'))); bar.appendChild(p); }
   const main = $('div', 'pp-main'); pp.appendChild(main);
-  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : '')); board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
+  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
   const panel = $('div', 'pp-panel'); main.appendChild(panel);
   Object.assign(UI, { board, panel, links: {}, nodes: {}, lines: {}, packets: {}, pk: null, say: null, revealed: Infinity });
-  PIECES = I.n ? pieces(I) : null;
-  renderBoard(I);
+  PIECES = I.n && MAP_TYPES.includes(I.type) ? pieces(I) : null;
+  if (MAP_TYPES.includes(I.type)) renderBoard(I);
 }
+const MAP_TYPES = ['route', 'ack', 'check', 'order', 'rules'];
 const pct = v => (v * 100).toFixed(2) + '%';
 function renderBoard(I) {
   const board = UI.board; board.innerHTML = ''; UI.links = {}; UI.nodes = {}; UI.lines = {};
@@ -885,7 +1057,145 @@ function renderPanel() {
   else if (run.type === 'check') renderCheckPanel();
   else if (run.type === 'order') renderOrderPanel();
   else if (run.type === 'rules') renderRulesPanel();
+  else if (run.type === 'sort') renderSortPanel();
+  else if (run.type === 'pass') renderPassPanel();
+  else if (run.type === 'inbox') renderInboxPanel();
+  else if (run.type === 'cipher') renderCipherPanel();
+  else if (run.type === 'pixel') renderPixelPanel();
+  // a phone on its side: on the card levels Pim's line sits in the board with the card, so the panel keeps its buttons in view
+  const fill = UI.board.querySelector('.pp-fill'); if (fill && run.type !== 'pixel' && landscape() && window.innerHeight < 520) fill.prepend(say);
   renderTools();
+}
+
+/* ----- sort levels: share or keep, physical or digital, Share or Shield ----- */
+function renderSortPanel() {
+  const panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = $('div', 'pp-fill'); board.appendChild(fill);
+  UI.item = $('div', 'pp-itemcard'); fill.appendChild(UI.item);
+  UI.doneList = $('div', 'pp-seq'); UI.doneList.setAttribute('aria-label', tr('Sorted so far')); fill.appendChild(UI.doneList);
+  const prog = $('div', 'pp-pill'); prog.appendChild(iconEl('check')); prog.appendChild($('span', '', '')); panel.appendChild(prog); UI.prog = prog.lastChild;
+  UI.binRow = $('div', 'pp-row'); panel.appendChild(UI.binRow);
+  UI.whyBox = $('div', 'pp-tiles'); panel.appendChild(UI.whyBox);
+  syncSort();
+}
+function currentItem() { const run = S.run, id = run.inst.shown.find(x => !run.resolved(run.item(x))); return id ? run.item(id) : null; }
+function syncSort() {
+  const run = S.run, I = run.inst, s = run.s, t = currentItem(), done = I.items.filter(x => run.resolved(x)).length;
+  UI.prog.textContent = tr('Sorted {n} of {total}', { n: done, total: I.items.length });
+  UI.item.innerHTML = ''; UI.binRow.innerHTML = ''; UI.whyBox.innerHTML = '';
+  UI.doneList.innerHTML = '';
+  for (const x of I.items) if (run.resolved(x)) { const sp = $('span'); sp.textContent = tr(x.text) + ' → ' + tr(I.bins.find(b => b.id === s.assigned[x.id]).label); UI.doneList.appendChild(sp); }
+  if (!UI.doneList.children.length) UI.doneList.appendChild($('span', 'pp-lesson-note', tr('Nothing sorted yet')));
+  if (!t) return;
+  UI.item.appendChild($('b', '', tr(t.text)));
+  if (t.benefit) UI.item.appendChild($('p', '', tr('Good side: {text}', { text: tr(t.benefit) })));
+  if (t.risk) UI.item.appendChild($('p', '', tr('Risk: {text}', { text: tr(t.risk) })));
+  if (s.assigned[t.id] == null) { I.bins.forEach((bn, k) => { const b = btn(tr(bn.label), { kind: k === 0 ? 'go' : 'quiet', icon: bn.icon || undefined, onPress: () => doAction({ t: 'bin', id: t.id, bin: bn.id }) }); b.dataset.bin = bn.id; UI.binRow.appendChild(b); }); }
+  else {
+    const pill = $('div', 'pp-pill'); pill.appendChild(iconEl('check')); pill.appendChild($('span', '', tr(I.bins.find(x => x.id === s.assigned[t.id]).label))); UI.binRow.appendChild(pill); UI.binRow.appendChild($('p', 'pp-h', tr('Why?')));
+    (t.reasons || []).forEach((r, k) => { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.why = String(k); b.textContent = tr(r); b.addEventListener('click', () => doAction({ t: 'why', id: t.id, k })); UI.whyBox.appendChild(b); });
+  }
+}
+
+/* ----- pass levels: the passphrase builder ----- */
+const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'many years', 'centuries'];
+function renderPassPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = $('div', 'pp-fill pp-center'); board.appendChild(fill);
+  fill.appendChild($('p', 'pp-h', tr('Your passphrase')));
+  UI.phrase = $('div', 'pp-seq'); UI.phrase.style.width = '100%'; UI.phrase.setAttribute('aria-label', tr('Your passphrase')); fill.appendChild(UI.phrase);
+  UI.meter = $('div', 'pp-meter'); UI.meter.style.width = '100%'; UI.meter.setAttribute('role', 'progressbar'); UI.meter.setAttribute('aria-valuemin', '0'); UI.meter.setAttribute('aria-valuemax', '4'); UI.meter.appendChild($('i')); fill.appendChild(UI.meter);
+  UI.meterText = $('p', 'pp-h'); fill.appendChild(UI.meterText);
+  const grid = $('div', 'pp-tiles'); panel.appendChild(grid); UI.tiles = {};
+  for (const id of I.shown) { const w = I.words.find(x => x.id === id), b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.word = id; b.setAttribute('aria-pressed', 'false'); b.textContent = tr(w.text); b.addEventListener('click', () => doAction({ t: 'pick', id })); grid.appendChild(b); UI.tiles[id] = b; }
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  row.appendChild(btn(tr('Lock it in'), { kind: 'hot', icon: 'lock', onPress: () => doAction({ t: 'submit' }) }));
+  syncPass();
+}
+function syncPass() {
+  const run = S.run, I = run.inst, s = run.s, st = run.strength();
+  UI.phrase.innerHTML = ''; for (const id of s.chosen) { const sp = $('span'); sp.textContent = tr(I.words.find(w => w.id === id).text); UI.phrase.appendChild(sp); }
+  if (!s.chosen.length) UI.phrase.appendChild($('span', 'pp-lesson-note', tr('Pick {n} words', { n: I.need })));
+  UI.meter.className = 'pp-meter pp-t' + st.tier; UI.meter.firstChild.style.width = ((st.tier + 1) / 5 * 100) + '%'; UI.meter.setAttribute('aria-valuenow', String(st.tier));
+  UI.meterText.textContent = st.weak ? tr('A word about you makes it easy to guess') : st.count ? tr('A computer would need about {time}', { time: tr(GUESS_TIME[st.tier]) }) : tr('Words nobody could guess about you, the more letters the better');
+  for (const id in UI.tiles) UI.tiles[id].setAttribute('aria-pressed', String(s.chosen.includes(id)));
+}
+
+/* ----- inbox levels: spot the trick ----- */
+function renderInboxPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = $('div', 'pp-fill'); board.appendChild(fill);
+  const L = I.letter, card = $('div', 'pp-letter'); fill.appendChild(card);
+  const from = $('div', 'pp-from'); from.appendChild(document.createTextNode(tr('From:'))); const badge = $('span', 'pp-badge'); badge.appendChild(iconEl('user')); badge.appendChild(document.createTextNode(tr(L.from))); from.appendChild(badge);
+  if (L.badge) { const b2 = $('span', 'pp-badge'); b2.appendChild(iconEl(L.badge === 'odd' ? 'question' : 'check')); b2.appendChild(document.createTextNode(L.badge === 'odd' ? tr('unknown sender') : tr('known sender'))); from.appendChild(b2); }
+  card.appendChild(from);
+  if (L.subject) card.appendChild($('b', '', tr(L.subject)));
+  card.appendChild($('p', '', tr(L.body)));
+  if (L.button) card.appendChild($('span', 'pp-fakebtn', tr(L.button)));
+  panel.appendChild($('p', 'pp-h', tr('Tap every cue you can find')));
+  const cues = $('div', 'pp-tiles'); panel.appendChild(cues); UI.tiles = {};
+  for (const c of I.cues) { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.cue = c.id; b.setAttribute('aria-pressed', 'false'); b.textContent = tr(c.text); b.addEventListener('click', () => doAction({ t: 'cue', id: c.id })); cues.appendChild(b); UI.tiles[c.id] = b; }
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  row.appendChild(btn(tr('Safe'), { kind: 'go', icon: 'check', onPress: () => doAction({ t: 'verdict', v: 'safe' }) }));
+  row.appendChild(btn(tr('Trick'), { kind: 'quiet', icon: 'cross', onPress: () => doAction({ t: 'verdict', v: 'trick' }) }));
+  row.appendChild(btn(tr('Ask a grown-up'), { kind: 'quiet', icon: 'question', onPress: () => doAction({ t: 'verdict', v: 'ask' }) }));
+  syncInbox();
+}
+function syncInbox() { const s = S.run.s; for (const id in UI.tiles) UI.tiles[id].setAttribute('aria-pressed', String(s.flags.includes(id))); }
+
+/* ----- cipher levels: the key wheel, the key card, the readings ----- */
+function wheelMarkup(cls) {
+  const letters = (r, bold) => E.ABC.split('').map((ch, k) => { const a = (k / 26) * Math.PI * 2 - Math.PI / 2; return `<text x="${(150 + Math.cos(a) * r).toFixed(1)}" y="${(150 + Math.sin(a) * r + 5).toFixed(1)}"${bold ? ' font-size="14"' : ''}>${ch}</text>`; }).join('');
+  return `<svg class="${cls}" viewBox="0 0 300 300" role="img"><circle cx="150" cy="150" r="146" class="pp-ring"></circle>${letters(126, true)}<g class="pp-inner"><circle cx="150" cy="150" r="104" class="pp-ring pp-inner-ring"></circle>${letters(86, false)}</g></svg>`;
+}
+function setWheel(svg, shift) { svg.querySelector('.pp-inner').style.transform = `rotate(${-shift * 360 / 26}deg)`; svg.setAttribute('aria-label', tr('Key wheel, shift {n}', { n: shift })); }
+function renderCipherPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = $('div', 'pp-fill pp-center'); board.appendChild(fill);
+  if (I.kind === 'keyed') {
+    fill.appendChild($('p', 'pp-h', tr('Key card')));
+    const key = $('div', 'pp-key'); key.dir = 'ltr'; key.setAttribute('aria-label', tr('Key card')); fill.appendChild(key);
+    for (let half = 0; half < 2; half++) { for (let k = 0; k < 13; k++) key.appendChild($('span', '', E.ABC[half * 13 + k])); for (let k = 0; k < 13; k++) key.appendChild($('span', 'pp-k2', I.key[half * 13 + k])); }
+  } else { fill.insertAdjacentHTML('beforeend', wheelMarkup('pp-wheel')); UI.wheel = fill.querySelector('.pp-wheel'); }
+  UI.shiftLabel = $('div', 'pp-shift'); UI.shiftLabel.dir = 'ltr'; if (I.kind !== 'keyed') fill.appendChild(UI.shiftLabel);
+  const msg = $('div', 'pp-itemcard'); panel.appendChild(msg);
+  msg.appendChild($('p', 'pp-h', I.mode === 'encode' ? tr('Message to send') : tr('Secret message')));
+  const ct = $('div', 'pp-cipher'); ct.dir = 'ltr'; ct.textContent = I.mode === 'encode' ? I.plain : I.cipher; msg.appendChild(ct);
+  if (!I.choices) { msg.appendChild($('p', 'pp-h', tr('Your reading'))); UI.reading = $('div', 'pp-cipher'); UI.reading.dir = 'ltr'; msg.appendChild(UI.reading); }
+  UI.countLine = $('p', 'pp-h'); msg.appendChild(UI.countLine);
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  if (I.kind !== 'keyed') { row.appendChild(btn(tr('Turn back'), { kind: 'quiet', icon: 'minus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift - 1 }) })); row.appendChild(btn(tr('Turn forward'), { kind: 'quiet', icon: 'plus', onPress: () => doAction({ t: 'shiftTo', n: run.s.shift + 1 }) })); }
+  if (I.mode === 'crack') row.appendChild(btn(tr('Count the letters'), { kind: 'quiet', icon: 'eye', onPress: () => doAction({ t: 'count' }) }));
+  if (I.choices) { const tiles = $('div', 'pp-tiles'); panel.appendChild(tiles); UI.tiles = {}; I.choices.forEach((c, k) => { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dir = 'ltr'; b.dataset.choice = String(k); b.textContent = c; b.addEventListener('click', () => doAction({ t: 'choose', k })); tiles.appendChild(b); UI.tiles[k] = b; }); }
+  else row.appendChild(btn(tr("That's it!"), { kind: 'hot', icon: 'check', onPress: () => doAction({ t: 'submit' }) }));
+  syncCipher();
+}
+function syncCipher(counts) {
+  const run = S.run, I = run.inst, s = run.s;
+  if (UI.wheel) setWheel(UI.wheel, s.shift);
+  UI.shiftLabel.textContent = tr('Shift {n}', { n: s.shift });
+  if (UI.reading) UI.reading.textContent = E.caesar(I.cipher, -s.shift);
+  if (counts) { const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]; UI.countLine.textContent = top ? tr('Most common letter here: {letter}. In English it is usually E.', { letter: top[0] }) : ''; }
+}
+
+/* ----- pixel levels: hide it in the picture ----- */
+function renderPixelPanel() {
+  const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
+  const fill = $('div', 'pp-fill pp-center'); board.appendChild(fill);
+  const grid = $('div', 'pp-pxgrid'); grid.setAttribute('data-fit-dense', ''); grid.dir = 'ltr'; grid.style.gridTemplateColumns = `repeat(${I.w}, 40px)`; grid.setAttribute('aria-label', tr('Pixel grid')); fill.appendChild(grid); UI.px = [];
+  for (let k = 0; k < I.w * I.h; k++) { const b = $('button', 'pp-px'); b.type = 'button'; b.dataset.px = String(k); b.addEventListener('click', () => doAction({ t: 'px', i: k })); grid.appendChild(b); UI.px.push(b); }
+  if (I.mode === 'hide') {
+    panel.appendChild($('p', 'pp-h', tr('Make the last bit of each pixel match the picture: odd is a dot, even is blank.')));
+    const tg = $('div', 'pp-target'); tg.style.gridTemplateColumns = `repeat(${I.w}, 12px)`; tg.setAttribute('role', 'img'); tg.setAttribute('aria-label', tr('The picture to hide')); panel.appendChild(tg);
+    for (const b of I.target) tg.appendChild($('span', b ? 'pp-on' : ''));
+  } else panel.appendChild($('p', 'pp-h', tr('Tap every pixel with an odd value. The odd ones hide the picture.')));
+  const row = $('div', 'pp-row'); panel.appendChild(row);
+  row.appendChild(btn(tr('Check the picture'), { kind: 'hot', icon: 'check', onPress: () => doAction({ t: 'submit' }) }));
+  syncPixel();
+}
+function syncPixel() {
+  const run = S.run, I = run.inst, s = run.s;
+  s.values.forEach((v, k) => { const b = UI.px[k]; b.innerHTML = ''; b.style.background = `rgb(${v}, ${v}, ${v})`; b.style.color = v < 150 ? 'var(--ok-card)' : 'var(--ok-text)'; b.appendChild(document.createTextNode(num(v))); if (I.mode === 'hide' && (v & 1)) b.appendChild($('i')); b.setAttribute('aria-label', tr('Pixel {n}: {v}', { n: k + 1, v })); if (I.mode === 'read') b.setAttribute('aria-pressed', String(s.marked.includes(k))); });
 }
 const landscape = () => window.innerWidth > window.innerHeight;
 function renderTools() {
@@ -1091,6 +1401,26 @@ async function doAction(a) {
       else if (r.failed) { syncRules(r.caught); const bad = r.caught.find(c => !c.ok); fail(r.over ? tr('Too many rules! Keep only the ones the problems need.') : tr('{event} Nothing in your rules catches that.', { event: tr(bad.text) }), true); return r; }
       else if (r.done) syncRules(r.caught);
     }
+    else if (run.type === 'sort') {
+      if (r.wrong) { sfx('wrong', { volume: 0.5 }); toast(a.t === 'bin' ? tr('Think again: where does that belong?') : tr('Not that reason. Think about what could go wrong.')); const el = a.t === 'bin' ? UI.binRow.querySelector(`[data-bin="${a.bin}"]`) : UI.whyBox.querySelector(`[data-why="${a.k}"]`); if (el) O.juice.shake(0.3, el); }
+      else { sfx('correct', { volume: 0.6 }); syncSort(); }
+    } else if (run.type === 'pass') {
+      if (r.full) toast(tr('{n} words is enough. Tap a word to swap it.', { n: run.inst.need }));
+      else if (r.chosen) { sfx('select'); syncPass(); }
+      else if (r.failed) { fail(r.why === 'weak' ? tr('A word about you is easy to guess. Swap it for a random word.') : r.why === 'count' ? tr('Pick {n} words.', { n: run.inst.need }) : tr('Longer words make a stronger passphrase.'), true); return r; }
+    } else if (run.type === 'inbox') {
+      if (r.flags) { sfx('select'); syncInbox(); }
+      else if (r.failed) { fail(r.want === 'trick' ? tr('That message is a trick! Look at the cues again.') : tr('This one is friendly. Not every message is a trick.'), true); return r; }
+      else if (r.done && r.missed && r.missed.length) toast(tr('Right! Next time find every cue first.'));
+    } else if (run.type === 'cipher') {
+      if (r.shift != null) { sfx('select'); syncCipher(); }
+      else if (r.counts) { sfx('spark', { volume: 0.5 }); syncCipher(r.counts); }
+      else if (r.wrong) { sfx('wrong', { volume: 0.5 }); const el = UI.tiles && UI.tiles[a.k]; if (el) { O.juice.shake(0.3, el); el.classList.add('pp-dim'); } toast(tr('Not that reading. Check it letter by letter.')); }
+      else if (r.failed) { fail(tr('Not yet: with that shift it reads {text}', { text: r.reading }), true); return r; }
+    } else if (run.type === 'pixel') {
+      if (r.value != null || r.marked) { sfx('select'); syncPixel(); }
+      else if (r.failed) { fail(tr('{n} pixels are still off. Compare the last bits.', { n: r.off }), true); return r; }
+    }
     if (run.done && before !== 'done') solved(flow);   // the results flow runs on its own (taps are ignored once the run is done)
   } finally { if (flow === S.flow) S.busy = false; }
   return r;
@@ -1223,15 +1553,14 @@ function showWheel() {
   const bar = $('div', 'pp-bar'); map.appendChild(bar);
   if (!S.lock) bar.appendChild(btn(tr('Map'), { kind: 'quiet', icon: 'home', onPress: () => { S.mode = 'play'; showMap(); } }));
   const pill = $('div', 'pp-pill'); pill.appendChild(iconEl('key')); pill.appendChild($('span', '', tr('Key wheel'))); bar.appendChild(pill);
-  const letters = (r, bold) => E.ABC.split('').map((ch, k) => { const a = (k / 26) * Math.PI * 2 - Math.PI / 2; return `<text x="${(150 + Math.cos(a) * r).toFixed(1)}" y="${(150 + Math.sin(a) * r + 5).toFixed(1)}"${bold ? ' font-size="14"' : ''}>${ch}</text>`; }).join('');
-  map.insertAdjacentHTML('beforeend', `<svg class="pp-wheel" viewBox="0 0 300 300" role="img"><circle cx="150" cy="150" r="146" class="pp-ring"></circle>${letters(126, true)}<g class="pp-inner"><circle cx="150" cy="150" r="104" class="pp-ring pp-inner-ring"></circle>${letters(86, false)}</g></svg>`);
-  const svg = map.querySelector('.pp-wheel'), inner = svg.querySelector('.pp-inner');
+  map.insertAdjacentHTML('beforeend', wheelMarkup('pp-wheel'));
+  const svg = map.querySelector('.pp-wheel');
   const row = $('div', 'pp-row pp-center'); map.appendChild(row);
   const minus = btn(tr('Turn back'), { kind: 'quiet', icon: 'minus', onPress: () => turn(-1) }), label = $('div', 'pp-shift'); label.dir = 'ltr';
   const plus = btn(tr('Turn forward'), { kind: 'quiet', icon: 'plus', onPress: () => turn(1) });
   row.append(minus, label, plus);
   const ex = $('p', 'pp-lesson-note'); map.appendChild(ex);
-  const sync = () => { inner.style.transform = `rotate(${-shift * 360 / 26}deg)`; label.textContent = tr('Shift {n}', { n: shift }); ex.textContent = tr('{a} becomes {b}', { a: 'A', b: E.caesar('A', shift) }) + ' · ' + tr('{a} becomes {b}', { a: 'E', b: E.caesar('E', shift) }); svg.setAttribute('aria-label', tr('Key wheel, shift {n}', { n: shift })); };
+  const sync = () => { setWheel(svg, shift); label.textContent = tr('Shift {n}', { n: shift }); ex.textContent = tr('{a} becomes {b}', { a: 'A', b: E.caesar('A', shift) }) + ' · ' + tr('{a} becomes {b}', { a: 'E', b: E.caesar('E', shift) }); };
   const turn = d => { shift = ((shift + d) % 26 + 26) % 26; sfx('select'); sync(); announce(tr('Shift {n}', { n: shift })); };
   const keys = e => { if (S.screen !== 'wheel') { document.removeEventListener('keydown', keys); return; } if (e.key === 'ArrowRight' || e.key === 'ArrowUp') turn(1); else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') turn(-1); };
   document.addEventListener('keydown', keys);
@@ -1251,6 +1580,14 @@ Object.assign(window.__brbTest, {
   act(a) { return doAction(a); },
   advice() { return S.run ? S.run.advice() : null; },
   hint() { giveHint(); return S.hint; },
+  /** play(record, {band, seed}): run one level record that is not in the chapters yet (the engine's other level types). */
+  play(rec, o = {}) {
+    const band = o.band === '2' ? '2' : '1b';
+    const r = Object.assign({ ch: 'locks', bands: ['1b', '2'], csta: ['1B-NI-05'], par: 99, intro: 'Test level', hints: ['One', 'Two', 'Three'], check: { q: 'Which?', tiles: ['This', 'That', 'Other'], answer: 0 } }, rec);
+    if (!LEVELS.includes(r)) LEVELS.push(r);
+    S.fast = true; S.pending = { chapter: r.ch, band, level: levelsFor(r.ch, band).length, seed: o.seed != null ? o.seed : 1, lesson: !!o.lesson };
+    game.start(); return testState();
+  },
   run() { return S.run ? S.run.snapshot() : null; },
   async solve() { S.fast = true; let guard = 0; while (S.run && !S.run.done && !S.run.failed && guard++ < 300) { while (S.busy) await O.time.real.wait(16); const a = S.run.advice(); if (!a) break; if (S.run.type === 'ack' && UI.sel == null) { /* the UI needs no selection for act() */ } await doAction(a); } return S.run ? S.run.snapshot() : null; },
   closeCards() { closeCards(); return true; },

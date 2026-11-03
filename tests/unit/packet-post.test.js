@@ -156,3 +156,60 @@ test('packet-post: every English string is listed in en.json, inside the budget'
   // every key with {slots} is used with those slots in the game
   for (const s of c.chrome) for (const slot of s.match(/\{\w+\}/g) || []) assert.ok(/^\{[a-z]+\}$/.test(slot), `${s}: simple slots`);
 });
+
+// The engine's other level types (the Lock It, Spot the Trick and Secret Messages chapters land in the next stage): a
+// share-or-keep sort with reason tiles, the passphrase builder and its meter, an inbox letter with cue chips, the
+// Caesar wheel (decode, encode, crack) and a keyed card, the pixel grid (hide and read).
+const FIX = {
+  sort: { id: 'fx-sort', type: 'sort', par: 5, random: true, bins: [{ id: 'share', label: 'Share' }, { id: 'keep', label: 'Keep' }],
+    items: [{ id: 'color', text: 'favorite color', bin: 'share' }, { id: 'addr', text: 'home address', bin: 'keep' }, { id: 'pet', text: 'a drawing of your pet', bin: 'share', reasons: ['It tells nobody where you live', 'It is a secret', 'Drawings are boring'], answer: 0 }] },
+  pass: { id: 'fx-pass', type: 'pass', par: 5, need: 4, words: [{ id: 'a', text: 'purple' }, { id: 'b', text: 'volcano' }, { id: 'c', text: 'teapot' }, { id: 'd', text: 'giraffe' }, { id: 'e', text: 'my birthday', weak: true }, { id: 'f', text: 'the name of my pet', weak: true }, { id: 'g', text: 'ok' }, { id: 'h', text: 'bicycle' }] },
+  inbox: { id: 'fx-inbox', type: 'inbox', par: 3, from: 'Prize Team', subject: 'You won!', body: 'Reply with your mailbox key in the next ten minutes to claim your prize.', button: 'Claim now', verdict: 'trick',
+    cues: [{ id: 'hurry', text: 'Hurry! Only ten minutes', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'hello', text: 'Says hello', trick: false }] },
+  friendly: { id: 'fx-friendly', type: 'inbox', par: 1, from: 'Your teacher', subject: 'Field trip', body: 'Bring a packed lunch on Friday.', verdict: 'safe', cues: [{ id: 'lunch', text: 'Mentions lunch', trick: false }] },
+  decode: { id: 'fx-decode', type: 'cipher', par: 2, kind: 'caesar', mode: 'decode', plain: 'APPLE', shift: 4 },
+  encode: { id: 'fx-encode', type: 'cipher', par: 1, kind: 'caesar', mode: 'encode', plain: 'MOON', shift: 2 },
+  crack: { id: 'fx-crack', type: 'cipher', par: 3, kind: 'caesar', mode: 'crack', plain: 'THE EAGLE SEES THE SEA EVERY EVENING', random: true },
+  keyed: { id: 'fx-keyed', type: 'cipher', par: 1, kind: 'keyed', mode: 'decode', plain: 'TOWER', key: 'QWERTYUIOPASDFGHJKLZXCVBNM' },
+  hide: { id: 'fx-hide', type: 'pixel', par: 40, w: 4, h: 3, mode: 'hide', random: true, target: [1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1] },
+  read: { id: 'fx-read', type: 'pixel', par: 8, w: 4, h: 3, mode: 'read', target: [0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0] },
+};
+
+test('packet-post: the sort, passphrase, inbox, cipher and pixel run types solve, score and fail the way the chapters need', () => {
+  for (const [name, fx] of Object.entries(FIX)) for (const seed of SEEDS) {
+    const run = E.play(fx, E.solve(fx, seed), seed);
+    assert.ok(run.done, `${name} seed ${seed}: solved (${run.s.phase} ${run.s.fails})`);
+    assert.ok(run.quality(), `${name} seed ${seed}: well made`);
+    assert.ok(E.Run.cost(run) <= fx.par, `${name}: par ${fx.par} >= cost ${E.Run.cost(run)}`);
+    assert.ok(!E.play(fx, [], seed).done, `${name}: nothing done is not a solution`);
+  }
+  // sort: a wrong bin and a wrong reason cost the second star, the item waits
+  let run = new E.Run(FIX.sort, 1);
+  assert.ok(run.bin('addr', 'share').wrong && run.s.assigned.addr == null); assert.ok(run.bin('addr', 'keep').binned);
+  assert.ok(run.bin('pet', 'share').why, 'a Share or Shield item asks why'); assert.ok(run.why('pet', 2).wrong); assert.ok(run.why('pet', 0).why); assert.ok(run.bin('color', 'share').done);
+  assert.ok(run.done && !run.quality() && run.stars() === 2);
+  // pass: the meter grows with letters, a weak word spoils it, four strong words lock in
+  run = new E.Run(FIX.pass, 1);
+  assert.equal(run.strength().tier, 0); run.pick('g'); assert.equal(run.strength().tier, 0); run.pick('a'); assert.equal(run.strength().tier, 2, 'ok + purple: 8 letters, a few days');
+  run.pick('e'); assert.ok(run.strength().weak && run.strength().tier === 0, 'my birthday makes it weak');
+  run.pick('b'); assert.ok(run.submit().failed && run.s.fails.includes('weak')); assert.ok(run.retry());
+  run.pick('e'); run.pick('c'); assert.equal(run.strength().count, 4); assert.ok(run.strength().tier >= 3); assert.ok(run.submit().done);
+  assert.ok(run.done && !run.quality(), 'a failed lock-in costs the second star');
+  assert.ok(new E.Run(FIX.pass, 1).pick('zz').err, 'unknown words are refused');
+  run = new E.Run(FIX.pass, 2); for (const id of ['a', 'b', 'c', 'd']) run.pick(id); assert.ok(run.pick('h').full, 'four is enough'); assert.ok(run.submit().done && run.quality());
+  // inbox: all cues then the verdict; a false positive or a missed cue costs the star; the wrong verdict fails
+  run = new E.Run(FIX.inbox, 1); run.cue('hurry'); run.cue('key'); run.cue('hello');
+  assert.ok(run.verdict('trick').done && !run.quality(), 'a cue that is no cue costs the second star');
+  run = new E.Run(FIX.inbox, 1); run.cue('hurry'); const v = run.verdict('ask'); assert.ok(v.done && v.missed.includes('key') && !run.quality(), 'ask a grown-up is right for a trick, the missed cue costs the star');
+  run = new E.Run(FIX.inbox, 1); assert.ok(run.verdict('safe').failed && run.retry()); run.cue('hurry'); run.cue('key'); assert.ok(run.verdict('trick').done);
+  run = new E.Run(FIX.friendly, 1); assert.ok(run.verdict('trick').failed, 'a friendly letter is not a trick'); assert.ok(run.retry() && run.verdict('safe').done);
+  // cipher: the wheel reading changes with the shift; a wrong shift fails and can be retried; a wrong choice is just wrong
+  run = new E.Run(FIX.decode, 1); assert.equal(run.inst.cipher, 'ETTPI'); assert.equal(run.shiftTo(3).reading, 'BQQMF'); assert.ok(run.submit().failed && run.retry()); assert.equal(run.shiftTo(4).reading, 'APPLE'); assert.ok(run.submit().done && !run.quality());
+  run = new E.Run(FIX.encode, 1); assert.equal(run.inst.choices[run.inst.answer], 'OQQP'); assert.equal(new Set(run.inst.choices).size, 3); assert.ok(run.choose((run.inst.answer + 1) % 3).wrong); assert.ok(run.choose(run.inst.answer).done && !run.quality());
+  run = new E.Run(FIX.crack, 3); const c = run.count(); assert.equal(c.guess, run.inst.shift, 'counting E finds the shift'); assert.ok(run.inst.shift >= 1 && run.inst.shift <= 25);
+  run = new E.Run(FIX.keyed, 1); assert.equal(run.inst.cipher, E.substitute('TOWER', FIX.keyed.key)); assert.equal(run.inst.choices[run.inst.answer], 'TOWER');
+  // pixel: hide flips the last bit only; read marks the odd pixels
+  run = new E.Run(FIX.hide, 1); const v0 = run.s.values[0]; run.px(0); assert.equal(Math.abs(run.s.values[0] - v0), 1); assert.equal(run.s.values[0] >> 1, v0 >> 1, 'only the last bit changes');
+  run = new E.Run(FIX.read, 1); run.inst.target.forEach((b, k) => { assert.equal(run.inst.values[k] & 1, b, 'read mode hides the picture in the values'); });
+  run.px(1); assert.ok(run.submit().failed && run.retry()); for (let k = 0; k < 12; k++) if (run.inst.target[k] && k !== 1) run.px(k); assert.ok(run.submit().done && !run.quality());
+});
