@@ -1426,7 +1426,7 @@ const SAVE_KEY = 'robo-route-v1';
 /* ---------- Words: English is the key; the player's language is a reviewed data pack on the site (loaded with its
    checksum, 9 s then English), handed to the kit's Oomba.strings. The game runs without the pack. ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-pending', PACK_SRI = {};
+const PACK_VER = '1.0.0-90d39890', PACK_SRI = {"es":"sha384-1KxH5LI/TVLxvxcdNsniY3rd/DoQqdWFHNwz+Go4Kgs4aOqVLfNoQg2kCpEeCsbC","fr":"sha384-hRlzvVP5+T8f2CYB1agmKTILna1keFYEo7HIGS6pxpO+U8eaBOvAP2d1AXVA7SOL","de":"sha384-HFArghdJxv50LLJcBvUVtr8EYDLliydlTDSXz61QAFZU+zJspHfyqB77F6N1tBrP","it":"sha384-e9+zgWaxf9ChIs9G/PeCWbmj604m9ReTHgFcJ4bjWRw8dXBOduxV2iakELEVUiGJ","pt":"sha384-hEtM3CeWEdgtMBLgg2qNaSlTR4U/7Ou/bqj7NsgNtsfbx1FWPFAERJJFmdrY7KBV","nl":"sha384-bhOTtETcG4Re9fBytSJNf+6Nw6LTxqALg0+kBWdwAG/P3Qe1uIBUCsJTsH2Cc8Mk","ru":"sha384-0j1NU0bTf7sFJ2a6+gUcbQcMhBaD1TPzkwI19ivTpVRxSD35wNyaPGKjNCLctKxU","ja":"sha384-c5bByqu5ap6nwY6ZZpTSSAmrjfWU1zeptaXETLx/aO2OxTpIpcKku7vMXccxmbiY","zh-Hant":"sha384-AJXWNg7HSO9rkGfWvRilPP1+LdTFNQNqXD/Pp2hV3qSSHPy+n1qLyxtkD7qFdZDg","he":"sha384-NxMwj7PpR1ajddvzHjkUiLAQyzkAE0xPNVpSMVS4iZ8wHn00LM8OTyxQUuWfHNId","ar":"sha384-0ykkmo63moAXUED/1NfwCfmvxuUfkRDzhs1XadhPv7XeUkYTjh4pxBSVs21dhJ37"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');

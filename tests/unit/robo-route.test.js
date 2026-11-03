@@ -337,7 +337,8 @@ async function open({ size = { width: 390, height: 844 }, lang = 'en', save = {}
     if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
     const m = /^http:\/\/game\.invalid\/vendor\/oomba-kit\/(.+)$/.exec(u);
     if (m) { const f = path.join(ROOT, 'public/vendor/oomba-kit', m[1]); if (fs.existsSync(f)) return route.fulfill({ status: 200, headers: { 'content-type': f.endsWith('.js') ? 'text/javascript' : f.endsWith('.woff2') ? 'font/woff2' : 'application/octet-stream', 'access-control-allow-origin': '*' }, body: fs.readFileSync(f) }); }
-    if (u.includes('/vendor/data/')) return route.abort();
+    const d = /^http:\/\/game\.invalid\/vendor\/data\/(.+)$/.exec(u);
+    if (d) { const f = path.join(ROOT, 'public/vendor/data', d[1]); if (fs.existsSync(f)) return route.fulfill({ status: 200, headers: { 'content-type': 'text/javascript', 'access-control-allow-origin': '*' }, body: fs.readFileSync(f) }); }
     return route.abort();
   });
   const page = await ctx.newPage();
@@ -579,6 +580,7 @@ test('robo-route: in Chromium a desktop in Arabic mirrors the chrome, keeps the 
   try {
     await page.waitForTimeout(900);
     assert.equal(await frame.evaluate(() => document.querySelector('.ok-ui').getAttribute('dir')), 'rtl');
+    assert.ok(await frame.evaluate(() => !!(window.CsqPacks && CsqPacks['robo-route'] && CsqPacks['robo-route'].ar)), 'the Arabic pack loaded with its checksum');
     assert.deepEqual(await fit(frame), [], 'the title fits a desktop');
     await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
     assert.deepEqual(await fit(frame), [], 'the map fits a desktop');
@@ -660,9 +662,24 @@ test('robo-route: in Chromium the densest level (Pro conditionals, an 8 by 8 boa
       // the Level Maker's free board at Pro: an 8 by 8 board of buttons, an eight-tile palette and the action row
       await T(frame, 'band', '2'); await T(frame, 'maker', null); await page.waitForTimeout(300);
       const m = await T(frame, 'state'); assert.equal(m.screen, 'maker'); assert.equal(m.maker.rows.length, 8);
-      await frame.evaluate(() => [...document.querySelectorAll('#mkActions .ok-btn')].find(b => /More/.test(b.getAttribute('aria-label') || b.textContent)).click()); await page.waitForTimeout(150);
+      await frame.evaluate(() => { const more = Oomba.t('More'); [...document.querySelectorAll('#mkActions .ok-btn')].find(b => (b.getAttribute('aria-label') || b.textContent).includes(more)).click(); }); await page.waitForTimeout(150);
       assert.deepEqual(await fit(frame), [], `${size.width}x${size.height} ${lang}${big ? ' 150%' : ''}: the maker fits`);
       assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
+});
+
+test('robo-route: in Chromium French reads from its checked pack, and English runs with no pack at all', { skip, timeout: 120_000 }, async () => {
+  for (const lang of ['fr', 'en']) {
+    const { ctx, page, frame, errors, consoleErrors } = await open({ size: { width: 390, height: 844 }, lang });
+    try {
+      await page.waitForTimeout(700);
+      const loaded = await frame.evaluate(() => !!(window.CsqPacks && CsqPacks['robo-route']));
+      const text = await frame.evaluate(() => document.body.innerText);
+      if (lang === 'fr') { assert.ok(loaded, 'the French pack loaded'); assert.match(text, /Assemble des blocs/); }
+      else { assert.equal(loaded, false, 'English needs no pack'); assert.match(text, /Snap blocks together/); }
+      assert.equal(await frame.evaluate(() => document.querySelector('.ok-ui').getAttribute('dir')), 'ltr');
+      assert.deepEqual(errors, []); assert.deepEqual(consoleErrors, []);
     } finally { await ctx.close(); }
   }
 });
