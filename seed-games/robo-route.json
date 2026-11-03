@@ -1,0 +1,60 @@
+{
+ "slug": "robo-route",
+ "title": "Robo Route",
+ "icon": "🛤️",
+ "cover": "mint",
+ "category": "learning",
+ "tags": "coding,blocks,robot,loops,conditionals,variables,functions,debugging,algorithms,learning,class",
+ "description": "Snap blocks together and drive Bolt the robot across the board to the goal. Eight chapters build up real programming ideas one at a time: sequences, loops, conditionals and events, variables, functions, a Debug Lab, Best Route and a Level Maker. Two bands, Explorer (grades 3-5) and Pro (grades 6-8), with learn cards, hints, stars for short programs and a Class quest mode for lessons. Tap only: nothing to type.",
+ "orientation": "any",
+ "players_max": 2,
+ "age_rating": "everyone",
+ "featured": true,
+ "notes": "Imported. Robo Route: block coding on a grid for CS Quest (CSTA 1B and 2). Oomba Kit 1.1.2 (art-props, style-bold; the Pro band boots in the Bold style), a meadow stage behind kit DOM: board, shelf, program, tray and cards in Oomba.ui.root(). Engine window.RoboRoute (pure, vm-loadable): compile(blocks) refuses unknown blocks, run(level, blocks, {planMatch, starter}) with limits (500 commands, 200 loop turns, 64 call depth), typed variables, procedures with up to two parameters, events (gem, bump, plate), door rules, verdict {ok, reachedGoal, gemsLeft, bumps, commandsRun, blocksUsed, editsFromStarter, namesOk, chipsOk, planMatch, flowMatch, creditOk, perLayout, failReason}, edits() (token edit distance), shape()/fullShape() (flowchart matching), BFS check() (solvable, par), encode()/decode() level codes (28-symbol consonant alphabet, groups of four, never five digits in a row, a check symbol). Levels window.RoboRouteLevels: 8 chapters (sequences 6/6, loops 7/8, conditionals 7/7, variables 6/6, functions 6/7, debug 7/7, best-route 5/5, level-maker 3 tasks + free building), Explorer 6x6 and Pro 8x8, random levels on three seeded boards, Debug Lab starters with maxEdits and three test grids at Pro, Best Route with two given programs (Explorer) or flowchart tiles whose shape the program must match (Pro), maker tasks with rules, the Daily Crew Challenge from the UTC day number, chips, credits, parse() authoring language. Modes: play, debug, maker, projector. Lesson mode = BRB.params ((window.BRB && BRB.params) || {}: chapter, band, mode, level, lock) or a 4-digit quest code C B M L on the in-game keypad (hidden in live frames); lock=1 hides the map and band toggle. Learn card on level 1 of every chapter, hint tiers 1/2/3 (3 costs the third star), Skip after two failed runs, Case-closed card (3 tiles + confidence) in lesson mode, pair mode (Two on one device, Swap! every 3 levels), chapter crowns repaint Bolt, Explorer stars silver at Pro. Saves: BRB.storage['robo-route-v1'] {band, stars, learned, levels (maker codes, 20), pair, daily, lessonPrefs}. Score: BRB.score.submit(starsInChapter, 'd/t levels, s stars[, c/k checks]') after every solved level; maker: submit(tested, 'n made, n tested'); BRB.gameOver({won:true, score}) at chapter end; BRB.progress(detail) when the SDK offers it. Strings through tr() with a reviewed language pack per locale (PACK_VER/PACK_SRI, window.CsqPacks, 9 s fallback to English); scripts/data/cs-quest/robo-route/en.json is the master list. __brbTest: start({chapter, band, mode, level, seed, lesson, lock}), step, skipAnimations, cover, state, program, run, stepOnce, verdict, tap, shelf, tray, solve, hint, skip, check, confidence, plan, closeModal, closeDialog, map, title, questCode, band, unlockAll, tool, paint, mkRows, mkCheck, mkCode, mkLoad, mkTest, mkSave, maker, route, previewRoute, test, daily, pair, chip.",
+ "l10n": {
+  "pt": {
+   "description": "Encaixe blocos e leve o robô Bolt pelo tabuleiro até a chegada. Oito capítulos ensinam ideias reais de programação, uma de cada vez: sequências, repetições, condições e eventos, variáveis, funções, um Laboratório de Erros, a Melhor Rota e um Criador de Fases. Dois níveis, Explorador (3º ao 5º ano) e Pro (6º ao 8º ano), com cartões de aprendizagem, dicas e estrelas para programas curtos. Só tocar: nada para digitar.",
+   "tags": "programação,blocos,robô,repetições,condições,variáveis,funções,depuração,algoritmos,aprender,turma"
+  },
+  "fr": {
+   "description": "Assemble des blocs et guide Bolt le robot jusqu’à l’arrivée. Huit chapitres présentent de vraies idées de programmation, une à la fois : séquences, boucles, conditions et événements, variables, fonctions, un Labo des bugs, le Meilleur trajet et un Créateur de niveaux. Deux niveaux, Explorateur (8 à 11 ans) et Pro (11 à 14 ans), avec des fiches pour apprendre, des indices et des étoiles pour les programmes courts. Tout se fait au toucher : rien à écrire.",
+   "tags": "programmation,blocs,robot,boucles,conditions,variables,fonctions,débogage,algorithmes,apprendre,classe"
+  },
+  "es": {
+   "description": "Une bloques y lleva al robot Bolt por el tablero hasta la meta. Ocho capítulos presentan ideas reales de programación, una a la vez: secuencias, bucles, condicionales y eventos, variables, funciones, un Laboratorio de errores, la Mejor ruta y un Creador de niveles. Dos niveles, Explorador (3.º a 5.º grado) y Pro (6.º a 8.º grado), con tarjetas para aprender, pistas y estrellas por programas cortos. Solo tocar: no hay nada que escribir.",
+   "tags": "programación,bloques,robot,bucles,condicionales,variables,funciones,depuración,algoritmos,aprender,clase"
+  },
+  "de": {
+   "description": "Stecke Blöcke zusammen und steuere den Roboter Bolt über das Spielfeld ins Ziel. Acht Kapitel bringen echte Ideen des Programmierens, eine nach der anderen: Abfolgen, Schleifen, Bedingungen und Ereignisse, Variablen, Funktionen, ein Fehlerlabor, die Beste Route und ein Level-Baukasten. Zwei Stufen, Entdecker (8 bis 11 Jahre) und Profi (11 bis 14 Jahre), mit Lernkarten, Tipps und Sternen für kurze Programme. Nur tippen: nichts zu schreiben.",
+   "tags": "programmieren,blöcke,roboter,schleifen,bedingungen,variablen,funktionen,fehlersuche,algorithmen,lernen,klasse"
+  },
+  "he": {
+   "description": "חברו בלוקים והובילו את הרובוט בולט על הלוח עד לדגל. שמונה פרקים מלמדים רעיונות אמיתיים של תכנות, אחד בכל פעם: רצפים, לולאות, תנאים ואירועים, משתנים, פונקציות, מעבדת באגים, המסלול הטוב ביותר ויוצר שלבים. שתי רמות, חוקר (כיתות ג׳ עד ה׳) ומקצוען (כיתות ו׳ עד ח׳), עם כרטיסי לימוד, רמזים וכוכבים על תוכניות קצרות. רק לגעת: אין מה להקליד.",
+   "tags": "תכנות,בלוקים,רובוט,לולאות,תנאים,משתנים,פונקציות,ניפוי באגים,אלגוריתמים,לימוד,כיתה"
+  },
+  "ja": {
+   "description": "ブロックをつなげて、ロボットのボルトをゴールまで動かそう。8つの章で、本物のプログラミングの考え方を1つずつ学べます。順番、くり返し、条件とイベント、変数、関数、バグ研究所、ベストルート、ステージメーカー。エクスプローラー（小学3〜5年）とプロ（小学6年〜中学2年）の2つのレベルがあり、学習カード、ヒント、短いプログラムでもらえる星つき。タップだけで遊べて、文字の入力はありません。",
+   "tags": "プログラミング,ブロック,ロボット,くり返し,条件,変数,関数,デバッグ,アルゴリズム,学習,クラス"
+  },
+  "ar": {
+   "description": "ركّب المكعبات وقُد الروبوت بولت عبر اللوحة حتى الهدف. ثمانية فصول تقدّم أفكار البرمجة الحقيقية واحدة تلو الأخرى: التسلسل والتكرار والشروط والأحداث والمتغيرات والدوال ومختبر الأخطاء وأفضل طريق وصانع المراحل. مستويان، المستكشف (الصفوف من الثالث إلى الخامس) والمحترف (الصفوف من السادس إلى الثامن)، مع بطاقات تعلّم وتلميحات ونجوم للبرامج القصيرة. باللمس فقط: لا شيء للكتابة.",
+   "tags": "برمجة,مكعبات,روبوت,تكرار,شروط,متغيرات,دوال,تصحيح الأخطاء,خوارزميات,تعلم,صف"
+  },
+  "ru": {
+   "description": "Собирай блоки и веди робота Болта по полю к флажку. Восемь глав знакомят с настоящими идеями программирования по одной: последовательности, циклы, условия и события, переменные, функции, Лаборатория ошибок, Лучший маршрут и Конструктор уровней. Два уровня, Исследователь (3–5 класс) и Профи (6–8 класс), с карточками, подсказками и звёздами за короткие программы. Только касания: ничего печатать не нужно.",
+   "tags": "программирование,блоки,робот,циклы,условия,переменные,функции,отладка,алгоритмы,учёба,класс"
+  },
+  "it": {
+   "description": "Unisci i blocchi e guida il robot Bolt sul tabellone fino al traguardo. Otto capitoli presentano vere idee di programmazione, una alla volta: sequenze, cicli, condizioni ed eventi, variabili, funzioni, un Laboratorio dei bug, il Percorso migliore e un Crea livelli. Due livelli, Esploratore (8-11 anni) e Pro (11-14 anni), con schede per imparare, suggerimenti e stelle per i programmi corti. Solo tocchi: niente da scrivere.",
+   "tags": "programmazione,blocchi,robot,cicli,condizioni,variabili,funzioni,debug,algoritmi,imparare,classe"
+  },
+  "zh-Hant": {
+   "description": "把積木拼起來，帶機器人波特穿過棋盤抵達終點。八個章節一次介紹一個真正的程式設計概念：順序、迴圈、條件與事件、變數、函式、除錯實驗室、最佳路線和關卡製作器。兩個程度：探索者（三到五年級）和高手（六到八年級），有學習卡、提示，短程式還能得到星星。只要點一點，不用打字。",
+   "tags": "程式設計,積木,機器人,迴圈,條件,變數,函式,除錯,演算法,學習,班級"
+  },
+  "nl": {
+   "description": "Klik blokken aan elkaar en stuur robot Bolt over het bord naar de finish. Acht hoofdstukken leren echte programmeerideeën, één voor één: volgordes, herhalingen, voorwaarden en gebeurtenissen, variabelen, functies, een Foutenlab, de Beste route en een Levelmaker. Twee niveaus, Ontdekker (8 tot 11 jaar) en Pro (11 tot 14 jaar), met leerkaarten, hints en sterren voor korte programma’s. Alleen tikken: niets te typen.",
+   "tags": "programmeren,blokken,robot,herhalingen,voorwaarden,variabelen,functies,debuggen,algoritmes,leren,klas"
+  }
+ }
+}

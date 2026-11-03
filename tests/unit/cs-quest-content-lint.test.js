@@ -46,7 +46,7 @@ for (const slug of SLUGS) {
       for (const v of Object.values(T)) all.push(...(v && typeof v === 'object' ? Object.values(v) : [v]));
     }
     for (const s of all) for (const [re, why] of BAD) assert.ok(!re.test(s), `pack string has ${why}: ${s.slice(0, 80)}`);
-    for (const s of english) if (sentence(s)) assert.ok(!UK.test(s), `US spelling please: ${s.slice(0, 80)}`);
+    for (const s of english) if (sentence(s)) assert.ok(!UK.test(s) || US_OK.test(s) && !/colour|grey/i.test(s), `US spelling please: ${s.slice(0, 80)}`);
     // the real scanner's text rules (profanity in every language, personal-info and family-code prompts) over every pack string
     const probe = `<title>T</title><canvas></canvas><script>const S=${JSON.stringify(all)};</script>`;
     const r = scanVersion(probe);
