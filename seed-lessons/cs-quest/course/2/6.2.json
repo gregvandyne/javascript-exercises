@@ -1,0 +1,76 @@
+{
+ "key": "2-6.2",
+ "n": "6.2",
+ "band": "2",
+ "title": "Made for everyone",
+ "topic": "For everyone",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Design for real people",
+   "text": "Good design starts with how real people use a thing, including people who see, hear, read or move differently.",
+   "art": "people"
+  },
+  {
+   "title": "Edges help everyone",
+   "text": "A high-contrast mode made for low vision is the mode everyone uses in bright sun. Designing for people at the edges makes things better for everyone.",
+   "art": "star"
+  },
+  {
+   "title": "Bias",
+   "text": "Bias is when technology works worse for some people because of how it was built or tested. It usually comes from who was missing from the testing group.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "example",
+   "title": "Who was missing?",
+   "text": "Find the gap in the testing group, then widen it.",
+   "art": "people",
+   "steps": [
+    "face unlock fails for some skin tones",
+    "testers all looked alike",
+    "fix: test with many kinds of people"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "accessible",
+     "means": "usable by people who see, hear, read or move differently"
+    },
+    {
+     "word": "bias",
+     "means": "working worse for some groups because of design or testing"
+    },
+    {
+     "word": "assistive technology",
+     "means": "tools like screen readers or switches that help people use devices"
+    },
+    {
+     "word": "testing group",
+     "means": "the people who try a design before it is finished"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve 2 briefs. Base each recommendation on what the user said.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-6.2-e1",
+  "2-6.2-e2",
+  "2-6.2-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "design-lab",
+  "params": "chapter=design-lab&band=2&lock=1"
+ }
+}

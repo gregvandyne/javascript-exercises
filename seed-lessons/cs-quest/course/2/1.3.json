@@ -1,0 +1,81 @@
+{
+ "key": "2-1.3",
+ "n": "1.3",
+ "band": "2",
+ "title": "If this, then that",
+ "topic": "Conditionals",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Decide at every step",
+   "text": "In a maze you have never seen, a fixed list of moves fails. An if asks a question about right now, and an if inside a loop asks it again at every step.",
+   "art": "branch"
+  },
+  {
+   "title": "If asks, when listens",
+   "text": "An if checks a condition now. A when block waits for an event, like a gem being picked up, and runs right then.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Joining questions",
+   "text": "AND is true only when both parts are true. OR is true when at least one is. NOT flips an answer: NOT wall ahead means the way is clear.",
+   "art": "gears"
+  },
+  {
+   "kind": "example",
+   "title": "Any maze, one program",
+   "text": "This program never needs to know the maze. It checks the path at every step until Bolt reaches the goal.",
+   "art": "grid",
+   "steps": [
+    "repeat until goal:",
+    "if path ahead: move",
+    "else: turn left"
+   ]
+  },
+  {
+   "title": "Both or one?",
+   "text": "A porch light turns on if it is dark AND someone is outside. Dark, but nobody there? It stays off: AND needs both parts at the same moment.",
+   "art": "table"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "condition",
+     "means": "a question that is true or false"
+    },
+    {
+     "word": "compound condition",
+     "means": "two questions joined with AND or OR"
+    },
+    {
+     "word": "AND / OR",
+     "means": "AND needs both parts true; OR needs at least one"
+    },
+    {
+     "word": "NOT",
+     "means": "flips true to false and false to true"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Conditionals & events and finish 4 levels, including one rule built with AND. Say each rule as a sentence before you build it.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-1.3-e1",
+  "2-1.3-e2",
+  "2-1.3-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "conditionals",
+  "params": "chapter=conditionals&band=2&lock=1"
+ }
+}

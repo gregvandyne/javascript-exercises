@@ -1,0 +1,81 @@
+{
+ "key": "2-1.5",
+ "n": "1.5",
+ "band": "2",
+ "title": "Build a block",
+ "topic": "Functions",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Name it once",
+   "text": "A procedure is a group of steps with a name. Define it once, then call it wherever you need it. In Robo Route you build it as a My Block.",
+   "art": "wrench"
+  },
+  {
+   "title": "One block, many jobs",
+   "text": "Rooms of different depths? Do not make three blocks. Make one block, Room, that takes a number called steps. Each call hands it its own number.",
+   "art": "gears"
+  },
+  {
+   "kind": "example",
+   "title": "Three rooms, one block",
+   "text": "Inside Room is repeat steps times. Room(1) and Room(3) run the same block with different numbers. That slot is a parameter.",
+   "art": "grid",
+   "steps": [
+    "call Room(1)",
+    "call Room(3)",
+    "call Room(2)"
+   ]
+  },
+  {
+   "title": "Split into subgoals",
+   "text": "A big level is easier as small jobs: collect the gems, climb the stairs, cross to the goal. Make one procedure per subgoal, and the main program is just calls.",
+   "art": "map"
+  },
+  {
+   "title": "Notes and credit",
+   "text": "Pin a note that tells the truth about each block. If a block came from someone else, keep the line that credits them.",
+   "art": "pencil"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "procedure",
+     "means": "a named group of steps you can call"
+    },
+    {
+     "word": "parameter",
+     "means": "a slot in a procedure that each call fills"
+    },
+    {
+     "word": "argument",
+     "means": "the number a call puts in the slot, like the 3 in Room(3)"
+    },
+    {
+     "word": "decompose",
+     "means": "split a problem into subgoals"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Functions and finish 4 levels, including one where you make a block with a parameter.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-1.5-e1",
+  "2-1.5-e2",
+  "2-1.5-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "functions",
+  "params": "chapter=functions&band=2&lock=1"
+ }
+}

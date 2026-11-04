@@ -1,0 +1,78 @@
+{
+ "key": "1b-4.2",
+ "n": "4.2",
+ "band": "1b",
+ "title": "Lock it up",
+ "topic": "Passphrases",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Lock it up",
+   "text": "At home you lock the door and keep the key safe. Online you do the same: lock it, keep the key, keep a spare copy.",
+   "art": "lock"
+  },
+  {
+   "title": "Private or fine to share?",
+   "text": "Some things are private: where you live, your birthday, your passphrase. Fun things, like your favorite animal or a joke you made up, are fine to share.",
+   "art": "shield"
+  },
+  {
+   "kind": "example",
+   "title": "Build a passphrase",
+   "text": "Pick four random words that do not belong together. It is long, so it is hard to guess. The funny picture makes it easy to remember.",
+   "art": "key",
+   "steps": [
+    "purple",
+    "volcano",
+    "teapot",
+    "giraffe"
+   ]
+  },
+  {
+   "title": "Who may know it?",
+   "text": "Keep your passphrase secret, even from your best friend. Only a parent or another trusted adult may know it.",
+   "art": "key"
+  },
+  {
+   "title": "Keep a spare copy",
+   "text": "A backup is a spare copy kept somewhere else. If the tablet breaks, your photos are still safe.",
+   "art": "box"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "private",
+     "means": "only for you and the trusted adults who look after you"
+    },
+    {
+     "word": "passphrase",
+     "means": "a secret key made of several random words"
+    },
+    {
+     "word": "backup",
+     "means": "a spare copy kept in another place"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-4.2-e1",
+  "1b-4.2-e2",
+  "1b-4.2-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=1b&lock=1"
+ }
+}

@@ -1,0 +1,77 @@
+{
+ "key": "1b-4.1",
+ "n": "4.1",
+ "band": "1b",
+ "title": "How a message travels",
+ "topic": "Packets",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Meet Pim",
+   "text": "Pim the owl runs the post office in Netville. Pim's job is to get every message to the right house.",
+   "art": "envelope"
+  },
+  {
+   "title": "Too big to send",
+   "text": "A picture is too big to send in one piece. The network cuts it into small pieces called packets and gives each one a number.",
+   "art": "pixel"
+  },
+  {
+   "title": "Many roads",
+   "text": "Each packet can take a different road through many post offices, called routers. If a road closes, a packet just takes another one.",
+   "art": "network"
+  },
+  {
+   "kind": "example",
+   "title": "Back in order",
+   "text": "Packets can arrive mixed up. The numbers tell the other end how to put the picture back together.",
+   "art": "envelope",
+   "steps": [
+    "arrives: 3",
+    "arrives: 1",
+    "arrives: 2",
+    "put back: 1, 2, 3"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "packet",
+     "means": "a small numbered piece of a message"
+    },
+    {
+     "word": "network",
+     "means": "computers joined by roads, so they can send messages"
+    },
+    {
+     "word": "router",
+     "means": "a post office that passes packets along"
+    },
+    {
+     "word": "reassemble",
+     "means": "put the pieces back together in order"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Break It Up, then play 2 levels of Many Roads. Watch the number on every packet.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-4.1-e1",
+  "1b-4.1-e2",
+  "1b-4.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "packets",
+  "params": "chapter=packets&band=1b&lock=1"
+ }
+}

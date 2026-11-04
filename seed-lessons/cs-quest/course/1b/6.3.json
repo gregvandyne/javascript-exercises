@@ -1,0 +1,73 @@
+{
+ "key": "1b-6.3",
+ "n": "6.3",
+ "band": "1b",
+ "title": "Share or keep?",
+ "topic": "Share or keep",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Who made it?",
+   "text": "A picture, a song or a game level belongs to the person who made it. Finding it online does not mean you may use it.",
+   "art": "pencil"
+  },
+  {
+   "title": "Read the badge",
+   "text": "Public domain: anyone may use it. Creative commons with credit: use it and say who made it. All rights reserved: ask first.",
+   "art": "shield"
+  },
+  {
+   "kind": "example",
+   "title": "Write a credit line",
+   "text": "A credit says what it is and who made it. It costs nothing, and it is how makers get found.",
+   "art": "star",
+   "steps": [
+    "art: dragon drawing by my friend",
+    "song: public domain",
+    "level idea: remix of my cousin's level"
+   ]
+  },
+  {
+   "title": "Keep private things private",
+   "text": "Your games can be shared. Where you live, your school and your passphrase stay private.",
+   "art": "lock"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "permission",
+     "means": "a yes from the maker to use their work"
+    },
+    {
+     "word": "credit",
+     "means": "saying who made it"
+    },
+    {
+     "word": "public domain",
+     "means": "free for anyone to use"
+    },
+    {
+     "word": "creative commons",
+     "means": "a badge that says how you may use the work"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Write the credit line for a game you might make: who made the art, and whose idea it was. Then name one thing you keep private online.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-6.3-e1",
+  "1b-6.3-e2",
+  "1b-6.3-e3"
+ ],
+ "game": null,
+ "talk": "Why share anything at all? What is worth the risk?"
+}

@@ -1,0 +1,78 @@
+{
+ "key": "2-2.1",
+ "n": "2.1",
+ "band": "2",
+ "title": "Bug hunt",
+ "topic": "Debugging",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Expect bugs",
+   "text": "Programs break, and good programmers test on purpose. A test case is one board with a known right answer.",
+   "art": "bug"
+  },
+  {
+   "title": "One board can hide a bug",
+   "text": "A program can pass one board and fail another. Three test boards catch what one board misses.",
+   "art": "grid"
+  },
+  {
+   "title": "Edge cases",
+   "text": "An edge case is an unusual input: a maze with no gems, a longer hallway, a goal right before a wall. It breaks assumptions you did not know you made.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "example",
+   "title": "The debug loop",
+   "text": "The tabs above the board show a check mark or a cross for each test. A fix is done only when every tab passes.",
+   "art": "loop",
+   "steps": [
+    "run all tests",
+    "open a failing test",
+    "step to the first surprise",
+    "change the smallest thing",
+    "run all tests again"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "test case",
+     "means": "one input with a known right answer"
+    },
+    {
+     "word": "edge case",
+     "means": "an unusual input that can break a program"
+    },
+    {
+     "word": "expected",
+     "means": "what the program should do"
+    },
+    {
+     "word": "actual",
+     "means": "what the program really did"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Debug Lab and fix 4 levels. After every change, run all the test boards again, and keep your edits few.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-2.1-e1",
+  "2-2.1-e2",
+  "2-2.1-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "debug",
+  "params": "chapter=debug&band=2&mode=debug&lock=1"
+ }
+}

@@ -1,0 +1,83 @@
+{
+ "key": "1b-5.1",
+ "n": "5.1",
+ "band": "1b",
+ "title": "What's inside?",
+ "topic": "Parts",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Meet Gizmo",
+   "text": "Gizmo the mouse fixes gadgets in a little workshop. Gizmo knows that every device is a team of parts.",
+   "art": "wrench"
+  },
+  {
+   "title": "Every part has a job",
+   "text": "Inputs take things in, like the touch sensor and camera. Outputs give things out, like the screen. The processor thinks, storage remembers and the battery powers it all.",
+   "art": "chip"
+  },
+  {
+   "kind": "example",
+   "title": "A tap travels",
+   "text": "Follow one tap from your finger to the screen. Each part does its job, then passes it on.",
+   "art": "screen",
+   "steps": [
+    "finger",
+    "touch sensor",
+    "processor",
+    "the app",
+    "screen"
+   ]
+  },
+  {
+   "title": "Hardware and software",
+   "text": "Hardware is what you can touch, like the screen. Software is the instructions, like an app. You see an app on the screen, but the app is software.",
+   "art": "gears"
+  },
+  {
+   "title": "Every task needs both",
+   "text": "A photo needs the camera (hardware) and the camera app (software). And no part works without power from the battery.",
+   "art": "battery"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "input",
+     "means": "a part that takes things in, like a camera"
+    },
+    {
+     "word": "output",
+     "means": "a part that gives things out, like a speaker"
+    },
+    {
+     "word": "processor",
+     "means": "the part that follows the instructions"
+    },
+    {
+     "word": "storage",
+     "means": "the part that remembers, even when the power is off"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Parts & Jobs and finish 4 levels. Tap the part that does each job, then sort hardware from software.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-5.1-e1",
+  "1b-5.1-e2",
+  "1b-5.1-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "parts",
+  "params": "chapter=parts&band=1b&lock=1"
+ }
+}

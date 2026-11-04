@@ -1,0 +1,81 @@
+{
+ "key": "1b-1.1",
+ "n": "1.1",
+ "band": "1b",
+ "title": "Step by step",
+ "topic": "Sequences",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Meet Bolt",
+   "text": "Bolt is a robot. Bolt does exactly what you tell it, one step at a time. It never guesses what you meant.",
+   "art": "robot"
+  },
+  {
+   "title": "Steps in order",
+   "text": "A list of steps in order is called an algorithm. When you join blocks together for Bolt, you write a program: the algorithm in blocks.",
+   "art": "map"
+  },
+  {
+   "kind": "example",
+   "title": "Two squares to the right",
+   "text": "Bolt faces a wall. The gem is two squares to the right. First Bolt turns, then it moves two times.",
+   "art": "grid",
+   "steps": [
+    "turn right",
+    "move",
+    "move"
+   ]
+  },
+  {
+   "title": "A turn does not move",
+   "text": "A turn block spins Bolt in place to face a new way. Only a move block takes Bolt to the next square.",
+   "art": "gears"
+  },
+  {
+   "title": "Pick the better route",
+   "text": "Two routes can both reach the flag. The better one is shorter, safer or easier to get right. A long dry route beats a short wet one! Split a long route into legs.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "algorithm",
+     "means": "a list of steps in order"
+    },
+    {
+     "word": "sequence",
+     "means": "the order the steps go in"
+    },
+    {
+     "word": "step",
+     "means": "one thing to do, like one block"
+    },
+    {
+     "word": "program",
+     "means": "an algorithm written for a computer, like your blocks"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Sequences and finish 4 levels. Before you press Run, point at each block and say what Bolt will do.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-1.1-e1",
+  "1b-1.1-e2",
+  "1b-1.1-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "sequences",
+  "params": "chapter=sequences&band=1b&lock=1"
+ }
+}

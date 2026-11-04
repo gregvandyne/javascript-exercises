@@ -1,0 +1,82 @@
+{
+ "key": "1b-3.1",
+ "n": "3.1",
+ "band": "1b",
+ "title": "Sort it out",
+ "topic": "Sorting data",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Meet Dot",
+   "text": "Dot the fox is a data detective. Dot solves cases with facts, not guesses.",
+   "art": "magnifier"
+  },
+  {
+   "title": "Data is facts in rows",
+   "text": "A table holds facts in rows and columns. A table full of facts does not answer anything yet. You have to make the answer show.",
+   "art": "table"
+  },
+  {
+   "title": "Sort or group",
+   "text": "Sorting puts the rows in order, like smallest to biggest. Grouping puts rows of the same kind together and counts them.",
+   "art": "chart"
+  },
+  {
+   "kind": "example",
+   "title": "Who was in the lunchroom last?",
+   "text": "Sort by the column the question asks about. The question says last, so sort by time.",
+   "art": "table",
+   "steps": [
+    "read the question",
+    "find the column: time",
+    "sort by time",
+    "read the last row"
+   ]
+  },
+  {
+   "title": "Show me first",
+   "text": "Dot has one rule: you can only pin a claim when the view on the screen shows it. Most of each kind? Group and count.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "data",
+     "means": "facts, like names, times and numbers"
+    },
+    {
+     "word": "table",
+     "means": "data in rows and columns"
+    },
+    {
+     "word": "sort",
+     "means": "put rows in order by one column"
+    },
+    {
+     "word": "group",
+     "means": "put the same kinds together and count them"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Data Detective at Sort & Group and solve 4 cases. For each one ask: which column is the question about?",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-3.1-e1",
+  "1b-3.1-e2",
+  "1b-3.1-e3"
+ ],
+ "game": {
+  "slug": "data-detective",
+  "chapter": "sort",
+  "params": "chapter=sort&band=1b&lock=1"
+ }
+}

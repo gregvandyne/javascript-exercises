@@ -1,0 +1,83 @@
+{
+ "key": "2-5.1",
+ "n": "5.1",
+ "band": "2",
+ "title": "What's inside?",
+ "topic": "Parts",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "What makes a gadget",
+   "text": "A gadget has sensors and inputs that collect data, a processor, outputs, maybe storage and a connection, and power.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Sensors",
+   "text": "A sensor measures the world: light, motion, sound, moisture. A plant waterer needs a moisture sensor to know when the soil is dry.",
+   "art": "chip"
+  },
+  {
+   "title": "Tradeoffs",
+   "text": "Every part costs money, battery and space. Wireless lets a gadget move freely but uses more battery than a cable. That is a tradeoff.",
+   "art": "battery"
+  },
+  {
+   "kind": "example",
+   "title": "A step counter",
+   "text": "The brief says: small, cheap, lasts all day. Pick only the parts the brief needs.",
+   "art": "gears",
+   "steps": [
+    "motion sensor",
+    "processor",
+    "small screen",
+    "coin battery",
+    "no cable"
+   ]
+  },
+  {
+   "title": "Users decide what is next",
+   "text": "A gadget is finished when people can use it. Read what users say, and make that your next improvement.",
+   "art": "people"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "sensor",
+     "means": "an input that measures something in the world"
+    },
+    {
+     "word": "tradeoff",
+     "means": "giving up one good thing to get another"
+    },
+    {
+     "word": "input",
+     "means": "a part that brings data in"
+    },
+    {
+     "word": "output",
+     "means": "a part that shows or does something"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Design a Gadget and complete 3 briefs. Watch the cost, battery and size meters as you add each part.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-5.1-e1",
+  "2-5.1-e2",
+  "2-5.1-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "gadget",
+  "params": "chapter=gadget&band=2&lock=1"
+ }
+}
