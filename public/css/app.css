@@ -1096,6 +1096,10 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .sart-main{position:relative;font-size:84px;line-height:1}
 .sart-a,.sart-b{position:relative;font-size:34px;line-height:1}
 .sart-a{align-self:flex-start;margin-top:22px} .sart-b{align-self:flex-end;margin-bottom:22px}
+/* A slide's in-game picture (replaces the emoji art when the slide carries one): a 16/9 media frame, the shot's
+   teaching element kept in the central crop-safe zone by the capture spec. */
+.smedia{margin:0;border-radius:var(--r);overflow:hidden;background:var(--card-2)}
+.simg{display:block;width:100%;aspect-ratio:16/9;max-height:300px;object-fit:cover}
 .deck-nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 8px;background:var(--bar);border:2px solid var(--line);border-radius:var(--r);padding:4px 8px 8px;box-shadow:var(--shadow)}
 .deck-nav[hidden]{display:none}
 .deck-nav .btn{min-height:48px;padding:0 16px}
