@@ -2254,13 +2254,18 @@ from the lesson's exit ticket in the quiz banks (two right passes; unlimited tri
 then its game module: one locked chapter of a game (6.1 and 6.3 have none and end with a "talk about it" prompt).
 - The band is picked once (Explorer grades 3-5 = 1b, Pro grades 6-8 = 2) and can be switched on the course map; the two
   bands keep separate progress. Picking a band without a session makes a guest, like one tap on Play.
-- Step i opens when step i-1 is complete: slides read, check passed, and its game module opened from the step. Stored
-  per player in course_progress / course_bands (migration 0045), removed on account deletion, moved on a school-account
-  merge. Grading is on the server; the page never holds an answer before the player has answered.
+- Step i opens when step i-1 is complete: slides read, check passed, and (if it has one) its game module finished.
+  Opening the module only starts it (played_at); the step completes when the game itself reports its assigned
+  chapter won — every course game sends brb:gameover (won) exactly at the end of the chapter a step assigns, the
+  play page posts that to /api/courses/<slug>/<step>/complete, and the endpoint records completed_at only for a
+  player whose check is passed and who did enter the game from the step (migration 0046; before this, merely
+  opening the module completed the step). Stored per player in course_progress / course_bands (migration 0045),
+  removed on account deletion, moved on a school-account merge. Grading is on the server; the page never holds an
+  answer before the player has answered.
 - Where a step comes from: its lesson file (order, game module, params: the source of truth for the gate), its slide deck
   (seed-lessons/cs-quest/course/<band>/<u.n>.json; a missing deck falls back to one made from the lesson file) and the
   banks (questions). services/courses.js deckProblems() lists a deck that disagrees with its lesson.
-- /play/<course game> opens only from an open step whose check is passed (?course=&cstep=, which sets played_at), from
+- /play/<course game> opens only from an open step whose check is passed (?course=&cstep=, which sets played_at = the module was started; the win comes back through the play page and sets completed_at), from
   a class lesson step of that game (?lesson=&step=), for school staff with lesson parameters (?chapter=...), for the
   platform admin, or in an online match the player is seated in. Everything else goes to the course map. "?course=" or
   "?chapter=" alone no longer opens a course game.

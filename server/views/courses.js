@@ -77,7 +77,7 @@ function stateTag(t, state) {
 function mapStep(t, c, s, total) {
   const { step } = s;
   const lesson = !s.open ? 'locked' : s.checked ? 'done' : 'next';
-  const game = !step.game ? null : s.played ? 'done' : s.open && s.checked ? 'next' : 'locked';
+  const game = !step.game ? null : s.won ? 'done' : s.open && s.checked ? 'next' : 'locked';
   const href = `/courses/${c.slug}/${step.key}`;
   const cls = s.complete ? 'is-done' : s.open ? 'is-next' : 'is-locked';
   return html`<li class="cmap-step ${cls}" id="step-${step.key}">
@@ -211,7 +211,7 @@ export function afterSection(t, c, step, s, next) {
   return html`<section class="cl-after" id="play" aria-labelledby="play-h">
     <h2 id="play-h">${s.complete ? html`✓ ${t('courses.lesson.complete')}` : step.game ? t('courses.lesson.unlocked') : t('courses.lesson.talk')}</h2>
     ${step.game ? html`<a class="btn btn-hot btn-big cl-play" href="${play}" id="cl-play">▶ ${t('courses.play', { game: step.game.title, chapter: step.game.chapterTitle })}</a>
-      ${s.played ? '' : html`<p class="muted small">${t('courses.lesson.playToFinish')}</p>`}`
+      ${s.won ? '' : html`<p class="muted small">${t('courses.lesson.playToFinish')}</p>`}`
       : html`<p class="cl-talk"${en}>💬 ${step.talk}</p>`}
     ${next ? html`<a class="btn ${s.complete ? 'btn-primary' : ''}" href="/courses/${c.slug}/${next.key}" id="cl-next" ${s.complete ? '' : raw('hidden')}>${t('courses.lesson.nextStep')} ›</a>` : ''}
     <a class="btn btn-ghost" href="/courses/${c.slug}#step-${step.key}">${t('courses.lesson.map')}</a>

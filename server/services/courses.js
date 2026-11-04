@@ -198,15 +198,18 @@ function rows(user, course) {
   if (!user) return new Map();
   return new Map(q.all('SELECT * FROM course_progress WHERE user_id=? AND course=?', user.id, course.slug).map(r => [r.step, r]));
 }
-/** Is this step done: slides read, check passed and (if it has one) its game module opened from the step. */
-export const isComplete = (step, r) => !!(r && r.read_at && r.checked_at && (!step.game || r.played_at));
-/** Every step of the band with its state: { step, row, read, checked, played, complete, open }. */
+/** Is this step done: slides read, check passed and (if it has one) its game module finished — the game itself
+ *  reported the assigned chapter complete. Merely opening the module (played_at) starts it; it does not finish
+ *  it, so a student has to actually play the module through. */
+export const isComplete = (step, r) => !!(r && r.read_at && r.checked_at && (!step.game || r.completed_at));
+/** Every step of the band with its state: { step, row, read, checked, played (module opened = started),
+ *  won (module finished), complete, open }. */
 export function states(user, course, band) {
   const all = steps(course, band); const rs = rows(user, course);
   let prevDone = true;
   return all.map(step => {
     const r = rs.get(step.key) || null;
-    const s = { step, row: r, read: !!(r && r.read_at), checked: !!(r && r.checked_at), played: !!(r && r.played_at), complete: isComplete(step, r), open: prevDone };
+    const s = { step, row: r, read: !!(r && r.read_at), checked: !!(r && r.checked_at), played: !!(r && r.played_at), won: !!(r && r.completed_at), complete: isComplete(step, r), open: prevDone };
     prevDone = s.complete;
     return s;
   });
@@ -225,15 +228,18 @@ export function stateOf(user, course, key) {
 
 function upsert(user, course, step, fields) {
   const t = now();
-  q.run('INSERT OR IGNORE INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at) VALUES (?,?,?,?,NULL,NULL,0,NULL)', user.id, course.slug, step.key, step.band);
+  q.run('INSERT OR IGNORE INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?,?,?,?,NULL,NULL,0,NULL,NULL)', user.id, course.slug, step.key, step.band);
   const sets = Object.keys(fields).map(k => `${k}=${fields[k] === 'now' ? `COALESCE(${k}, ${t})` : '?'}`);
   const vals = Object.values(fields).filter(v => v !== 'now');
   q.run(`UPDATE course_progress SET ${sets.join(', ')} WHERE user_id=? AND course=? AND step=?`, ...vals, user.id, course.slug, step.key);
 }
 /** The slides were read (the first time is kept). */
 export function markRead(user, course, step) { upsert(user, course, step, { read_at: 'now' }); }
-/** The game module was opened from this step. */
+/** The game module was opened from this step: started, not finished. The step completes only at markCompleted. */
 export function markPlayed(user, course, step) { upsert(user, course, step, { played_at: 'now' }); }
+/** The game itself reported this step's assigned module finished (its chapter won): the step's game part is
+ *  done. Recorded only for a player who started the module (markPlayed) — see the /complete API. */
+export function markCompleted(user, course, step) { upsert(user, course, step, { completed_at: 'now' }); }
 
 /** A seeded order of a question's four choices: the same for this player, step and try, different on the next try. */
 export function choiceOrder(seed, n = 4) {
