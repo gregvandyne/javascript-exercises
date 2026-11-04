@@ -30,6 +30,7 @@ import { playData as ttsPlayData, frameData as ttsFrameData, listedGame as ttsLi
 import { parseParams, packParams, unpackParams, hasParams } from '../services/play-params.js';
 import * as ttsGames from '../services/tts-games.js';
 
+import { courseOfSlug } from '../services/course-catalog.js';
 export const router = Router();
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
 /** [key, label] pairs in the reader's language (English by default; the admin panel uses English). */
@@ -43,6 +44,9 @@ function loadViewable(req, res) {
 }
 
 router.get('/g/:slug', (req, res) => {
+  // A course game (services/course-catalog.js) has no page of its own: it lives on its course's page.
+  const course = courseOfSlug(req.params.slug);
+  if (course && !(req.user && req.user.role === 'admin')) return res.redirect(302, `/courses/${course.slug}#${req.params.slug}`);
   const g = loadViewable(req, res); if (!g) return;
   const t = req.t, f = req.fmt;
   const u = req.user;
@@ -230,6 +234,11 @@ router.get('/play/:slug', (req, res) => {
   }
   const u = req.user;
   const isOwner = u && (u.id === g.owner_id || u.role === 'admin');
+  // A course game is played as part of its course: from the course (?course=), a class lesson (?lesson=&step=) or a
+  // teacher's lesson link (?chapter=...). Opened on its own, it goes to the course page.
+  const course = courseOfSlug(g.slug);
+  if (course && !isOwner && !['course', 'lesson', 'chapter', 'match'].some(k => req.query[k])) return res.redirect(302, `/courses/${course.slug}`);
+  const inCourse = course && req.query.course === course.slug ? { course, n: course.games.findIndex(x => x.slug === g.slug) + 1, total: course.games.length } : null;
   const versionId = g.published_version_id || (isOwner ? g.current_version_id : null);
   if (!versionId) return notFound(req, res, t('game.notReadyYet'));
   // An online match (?match=<id>, routes/match.js): only its two players, while it lasts; anyone else gets the game.
@@ -254,8 +263,8 @@ router.get('/play/:slug', (req, res) => {
   const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
   const body = html`
   <div class="playbar">
-    <a class="iconbtn" href="${lesson ? lesson.back : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
-    <span class="ptitle">${g.icon} ${g.title}</span>
+    <a class="iconbtn" href="${lesson ? lesson.back : course ? `/courses/${course.slug}` : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
+    <span class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${course.slug}">📚 ${t('courses.step', { course: t(`${course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</span>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
     <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>`}

@@ -88,5 +88,20 @@ test('Hero of Sunvale speaks every line with the role the warm-up and the server
   assert.equal(lines.allowedLine('hero-of-sunvale', 'en', 'Find Mia more Sun Gems and I can make it!'), null);
   assert.equal(lines.allowedLine('hero-of-sunvale', 'en', 'Hello, I am a kid typing'), null);
   assert.equal(lines.allowedLine('word-hunt', 'en', 'Find the word!'), null, 'only listed games');
-  assert.deepEqual([...lines.TTS_GAMES], ['hero-of-sunvale']);
+  assert.deepEqual([...lines.TTS_GAMES], ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'hero-of-sunvale']);
+});
+
+test('the CS Quest games use AI voices for their own language-pack lines only', () => {
+  for (const slug of ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine']) {
+    assert.ok(lines.TTS_GAMES.has(slug), `${slug} may use AI voices`);
+    const g = lines.readGame(slug);
+    const en = lines.gameLines(slug, 'en', g), es = lines.gameLines(slug, 'es', g), ar = lines.gameLines(slug, 'ar', g);
+    assert.ok(en.length > 300 && es.length === en.length && ar.length === en.length, `${slug}: every line in every pack`);
+    assert.ok(lines.allowedLine(slug, 'en', en[10].text) && lines.allowedLine(slug, 'es', es[10].text));
+    assert.equal(lines.allowedLine(slug, 'en', 'Tell me your secret password now'), null);
+    assert.equal(lines.allowedLine(slug, 'en', `${en[10].text}. Anything else at all`), null, 'a join needs every part to be the game\'s own');
+  }
+  const rr = lines.gameLines('robo-route', 'en').map(x => x.text);
+  const title = rr.find(x => x.startsWith('An algorithm')), body = rr.find(x => x.startsWith('Bolt does exactly'));
+  assert.ok(lines.allowedLine('robo-route', 'en', `${title}. ${body}`), 'a learn card read as one line');
 });

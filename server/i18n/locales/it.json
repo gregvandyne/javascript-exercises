@@ -5913,5 +5913,32 @@
         "note": "Praticato vuol dire che l’attività è stata fatta, non che è padroneggiata. Giuste conta le risposte giuste alle domande del biglietto d’uscita con questo standard."
       }
     }
+  },
+  "courses": {
+    "row": "Corsi",
+    "start": "Inizia il corso",
+    "continue": "Continua",
+    "about": "Il corso",
+    "started": "Iniziato",
+    "progress": "{n} giochi iniziati su {total}",
+    "home": "Home",
+    "topics": {
+      "coding": "Programmazione",
+      "data": "Dati",
+      "networks": "Reti e sicurezza",
+      "computers": "Come funzionano i computer"
+    },
+    "teachers": {
+      "h": "Per gli insegnanti",
+      "link": "Piani di lezione e standard"
+    },
+    "cs": {
+      "title": "CS Quest",
+      "sub": "Informatica in quattro giochi · dalla 3ª elementare alla 2ª media",
+      "about": "Programma un robot, risolvi misteri con i dati, invia messaggi attraverso una città e scopri dentro le macchine che usiamo ogni giorno. Gioca in ordine o parti da uno qualsiasi.",
+      "teachers": "Ogni gioco ha piani di lezione per un’ora di 45 minuti, con riscaldamenti dal vivo, domande di uscita e una vista degli standard della tua classe."
+    },
+    "back": "Torna a {course}",
+    "step": "{course} · gioco {n} di {total}"
   }
 }

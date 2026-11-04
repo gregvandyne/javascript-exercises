@@ -5913,5 +5913,32 @@
         "note": "Geübt heißt, die Aufgabe wurde gemacht, nicht dass sie beherrscht wird. Richtig zählt die richtigen Antworten auf Abschlussfragen mit diesem Standard."
       }
     }
+  },
+  "courses": {
+    "row": "Kurse",
+    "start": "Kurs starten",
+    "continue": "Weiter",
+    "about": "Über den Kurs",
+    "started": "Begonnen",
+    "progress": "{n} von {total} Spielen begonnen",
+    "home": "Start",
+    "topics": {
+      "coding": "Programmieren",
+      "data": "Daten",
+      "networks": "Netzwerke und Sicherheit",
+      "computers": "Wie Computer funktionieren"
+    },
+    "teachers": {
+      "h": "Für Lehrkräfte",
+      "link": "Unterrichtspläne und Standards"
+    },
+    "cs": {
+      "title": "CS Quest",
+      "sub": "Informatik in vier Spielen · Klassen 3 bis 8",
+      "about": "Programmiere einen Roboter, löse Rätsel mit Daten, schicke Nachrichten durch eine Stadt und schau in die Geräte, die wir jeden Tag benutzen. Spiel der Reihe nach oder fang mit irgendeinem an.",
+      "teachers": "Zu jedem Spiel gibt es Unterrichtspläne für eine 45-Minuten-Stunde, mit Live-Aufwärmrunden, Abschlussfragen und einer Standards-Übersicht für deine Klasse."
+    },
+    "back": "Zurück zu {course}",
+    "step": "{course} · Spiel {n} von {total}"
   }
 }

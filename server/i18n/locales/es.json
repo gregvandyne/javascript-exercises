@@ -5912,5 +5912,32 @@
         "note": "Practicado significa que se hizo la actividad, no que se domina. El acierto son las respuestas correctas de las preguntas del ticket de salida con este estándar."
       }
     }
+  },
+  "courses": {
+    "row": "Cursos",
+    "start": "Empezar el curso",
+    "continue": "Seguir",
+    "about": "Sobre el curso",
+    "started": "Empezado",
+    "progress": "{n} de {total} juegos empezados",
+    "home": "Inicio",
+    "topics": {
+      "coding": "Programación",
+      "data": "Datos",
+      "networks": "Redes y seguridad",
+      "computers": "Cómo funcionan las computadoras"
+    },
+    "teachers": {
+      "h": "Para docentes",
+      "link": "Planes de clase y estándares"
+    },
+    "cs": {
+      "title": "CS Quest",
+      "sub": "Ciencias de la computación en cuatro juegos · de 3.º a 8.º grado",
+      "about": "Programa un robot, resuelve misterios con datos, envía mensajes por una ciudad y descubre por dentro las máquinas que usamos cada día. Juega en orden o empieza por cualquiera.",
+      "teachers": "Cada juego tiene planes de clase para una sesión de 45 minutos, con calentamientos en vivo, tickets de salida y una vista de estándares de tu clase."
+    },
+    "back": "Volver a {course}",
+    "step": "{course} · juego {n} de {total}"
   }
 }
