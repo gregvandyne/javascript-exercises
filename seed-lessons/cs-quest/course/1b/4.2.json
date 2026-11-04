@@ -9,12 +9,16 @@
   {
    "title": "Lock it up",
    "text": "At home you lock the door and keep the key safe. Online you do the same: lock it, keep the key, keep a spare copy.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
   },
   {
    "title": "Private or fine to share?",
    "text": "Some things are private: where you live, your birthday, your passphrase. Fun things, like your favorite animal or a joke you made up, are fine to share.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/packet-post/locks-1b-sort",
+   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
   },
   {
    "kind": "example",
@@ -26,17 +30,23 @@
     "volcano",
     "teapot",
     "giraffe"
-   ]
+   ],
+   "img": "csq/packet-post/locks-1b-built",
+   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess."
   },
   {
    "title": "Who may know it?",
    "text": "Keep your passphrase secret, even from your best friend. Only a parent or another trusted adult may know it.",
-   "art": "key"
+   "art": "key",
+   "img": "csq/packet-post/locks-1b-tell",
+   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share."
   },
   {
    "title": "Keep a spare copy",
    "text": "A backup is a spare copy kept somewhere else. If the tablet breaks, your photos are still safe.",
-   "art": "box"
+   "art": "box",
+   "img": "csq/packet-post/locks-1b-backup",
+   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not."
   },
   {
    "kind": "words",
@@ -62,7 +72,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
   }
  ],
  "check": [

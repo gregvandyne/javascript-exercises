@@ -9,7 +9,9 @@
   {
    "title": "Who made it?",
    "text": "A picture, a song or a game level belongs to the person who made it. Finding it online does not mean you may use it.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/robo-route/functions-1b-remix-credit",
+   "alt": "Two My Blocks named Zig sit in the tray, and the second carries a based-on Starter blocks stamp: a remix keeps its credit."
   },
   {
    "title": "Read the badge",
@@ -25,12 +27,16 @@
     "art: dragon drawing by my friend",
     "song: public domain",
     "level idea: remix of my cousin's level"
-   ]
+   ],
+   "img": "csq/would-you-rather/online-1b-first",
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
   },
   {
    "title": "Keep private things private",
    "text": "Your games can be shared. Where you live, your school and your passphrase stay private.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
   },
   {
    "kind": "words",
@@ -60,7 +66,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Write the credit line for a game you might make: who made the art, and whose idea it was. Then name one thing you keep private online.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-1b-first",
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
   }
  ],
  "check": [

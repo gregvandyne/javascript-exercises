@@ -9,12 +9,16 @@
   {
    "title": "Programs break",
    "text": "Every programmer makes mistakes. A mistake in a program is called a bug. Finding and fixing it is called debugging.",
-   "art": "bug"
+   "art": "bug",
+   "img": "csq/robo-route/debug-1b-key",
+   "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
   },
   {
    "title": "Expected and actual",
    "text": "Ask two questions. What did I expect Bolt to do? What did Bolt actually do? The bug is where those two first split apart.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/robo-route/debug-1b-midrun",
+   "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised."
   },
   {
    "kind": "example",
@@ -27,17 +31,23 @@
     "stop at the surprise",
     "change only that block",
     "run it again"
-   ]
+   ],
+   "img": "csq/robo-route/debug-1b-step",
+   "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square."
   },
   {
    "title": "One too many",
    "text": "Bolt goes one square too far? Look at the numbers. A repeat count that is one too big is a very common bug.",
-   "art": "loop"
+   "art": "loop",
+   "img": "csq/robo-route/debug-1b-count",
+   "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many."
   },
   {
    "title": "Done means tested",
    "text": "A fix is not done when it looks right. It is done when you run it again and Bolt does what you expected.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/robo-route/debug-1b-fixed",
+   "alt": "The fixed program sits in the tray: the wrong turn left has become turn right, ready to run again and be tested."
   },
   {
    "kind": "words",
@@ -67,7 +77,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Debug Lab and fix 4 programs. Use Step, change as few blocks as you can, and run it again to test.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/debug-1b-key",
+   "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
   }
  ],
  "check": [

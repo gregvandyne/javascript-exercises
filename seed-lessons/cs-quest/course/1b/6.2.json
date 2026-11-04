@@ -9,17 +9,23 @@
   {
    "title": "Made for everyone",
    "text": "People see, hear, read and move in different ways. A good game works for all of them.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/inside-the-machine/design-1b-key",
+   "alt": "Design Lab opens with a user to design for: their needs come first, before any setting is touched."
   },
   {
    "title": "Every switch is for someone",
    "text": "Open a game's settings: captions, read-aloud, text size, contrast. Each switch was made for someone.",
-   "art": "screen"
+   "art": "screen",
+   "img": "csq/inside-the-machine/design-1b-audit",
+   "alt": "The audit round: a real game is checked setting by setting \u2014 captions, text size, contrast \u2014 for who each helps."
   },
   {
    "title": "Help one, help many",
    "text": "Captions were made for people who can not hear. They also help anyone in a noisy room. A change for one person usually helps many.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/inside-the-machine/design-1b-second",
+   "alt": "A second Design Lab user: a change made for one person usually turns out to help many more."
   },
   {
    "kind": "example",
@@ -30,12 +36,16 @@
     "captions: can not hear, noisy room",
     "big text: hard to see, bright sun",
     "one-hand buttons: one hand free"
-   ]
+   ],
+   "img": "csq/inside-the-machine/design-1b-second",
+   "alt": "A second Design Lab user: a change made for one person usually turns out to help many more."
   },
   {
    "title": "Ask for ideas",
    "text": "Ask someone else what they would change. Other people's ideas, called perspectives, spot things you did not think of.",
-   "art": "lightbulb"
+   "art": "lightbulb",
+   "img": "csq/inside-the-machine/design-1b-audit",
+   "alt": "The audit round: a real game is checked setting by setting \u2014 captions, text size, contrast \u2014 for who each helps."
   },
   {
    "kind": "words",
@@ -65,7 +75,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve briefs 1 and 2. Watch where the user struggles.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/inside-the-machine/design-1b-key",
+   "alt": "Design Lab opens with a user to design for: their needs come first, before any setting is touched."
   }
  ],
  "check": [

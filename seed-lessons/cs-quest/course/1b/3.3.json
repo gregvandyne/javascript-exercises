@@ -9,12 +9,16 @@
   {
    "title": "Data from real people",
    "text": "Today the data comes from real people: you and the people around you. Collecting it well is half the job.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/data-detective/mydata-1b-key",
+   "alt": "My Data opens a class survey: one question, and answer rows waiting for the class to fill them in."
   },
   {
    "title": "Tally marks",
    "text": "A survey asks people one question. Each answer gets a tally mark. Count the marks in fives: four lines, then one across.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/data-detective/mydata-1b-tally",
+   "alt": "Tallying the survey: answers are counted with the steppers, each one adding to its row of the class data."
   },
   {
    "kind": "example",
@@ -26,17 +30,23 @@
     "cat: 3",
     "other: 4",
     "none: 2"
-   ]
+   ],
+   "img": "csq/data-detective/mydata-1b-chart",
+   "alt": "The survey tallies turned into a bar chart: one bar per pet, and the dog bar towers over the rest."
   },
   {
    "title": "Fair claims",
    "text": "A fair claim says only what the chart shows, about the people you asked. Dogs are the favorite pet in our class is fair. Dogs are everyone's favorite is not.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/data-detective/mydata-1b-chart",
+   "alt": "The survey tallies turned into a bar chart: one bar per pet, and the dog bar towers over the rest."
   },
   {
    "title": "Ask someone else",
    "text": "Show your claim to someone else and ask: is it fair? They may see something you missed.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/data-detective/mydata-1b-second",
+   "alt": "A second survey question waits in My Data: fresh answers to collect before anyone pins a claim about them."
   },
   {
    "kind": "words",
@@ -66,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Data Detective at My Data. Chart both survey questions with the steppers. Pin one claim, then ask someone if it is fair.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/data-detective/mydata-1b-key",
+   "alt": "My Data opens a class survey: one question, and answer rows waiting for the class to fill them in."
   }
  ],
  "check": [
