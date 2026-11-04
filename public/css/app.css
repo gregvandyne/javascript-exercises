@@ -1177,7 +1177,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .story-stage::before{content:"";position:absolute;inset:0;background:#141414;opacity:0;pointer-events:none;z-index:3}
 .story[data-scene="drain"] .story-stage::before{opacity:.16}
 .story[data-story-arm][data-scene="drain"] .story-stage::before{opacity:0}
-.story[data-story-on][data-scene="drain"] .story-stage::before{animation:storyDarken 2.8s ease-out .2s both}
+.story[data-story-on][data-scene="drain"] .story-stage::before{animation:storyDarken 3.2s ease-out .2s both}
 @keyframes storyDarken{from{opacity:0}to{opacity:.16}}
 .story-town{position:absolute;left:0;right:0;bottom:9%;width:100%;height:17%;fill:#141414;opacity:.13}
 /* The Spark: one reusable motif, as bright as the story has made it (data-lit = pieces lit, 0-4). */
@@ -1185,6 +1185,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .story[data-scene="team"] .story-spark,.story[data-scene="handoff"] .story-spark{width:19cqw;top:4%}
 .story[data-scene="relight"] .story-spark{width:38cqw;top:7%}
 .story[data-scene="celebrate"] .story-spark,.story[data-scene="finale"] .story-spark{width:24cqw;top:5%}
+.story[data-scene="map"] .story-spark{width:19cqw;top:3%}
 .spark-svg{width:100%;height:100%;overflow:visible;display:block}
 .spark-star{fill:#FFD23F;stroke:#141414;stroke-width:2;stroke-linejoin:round}
 .spark-core{fill:#FFF3B0}
@@ -1196,8 +1197,8 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .story[data-lit="4"] .spark-star{filter:drop-shadow(0 0 8px rgba(255,210,63,.95))}
 .story[data-story-on][data-scene="dim"] .spark-star{animation:storyFlicker 3.4s linear infinite}
 @keyframes storyFlicker{0%,100%{opacity:.32}7%{opacity:.52}11%{opacity:.27}43%{opacity:.46}50%{opacity:.29}76%{opacity:.5}83%{opacity:.33}}
-.story[data-story-on][data-scene="drain"] .spark-star{animation:storyDrain 2.8s ease-out .2s both}
-@keyframes storyDrain{from{opacity:1;filter:saturate(1) drop-shadow(0 0 8px rgba(255,210,63,.95))}to{opacity:.34;filter:saturate(.35)}}
+.story[data-story-on][data-scene="drain"] .spark-star{animation:storyDrain 3.2s ease-out .2s both}
+@keyframes storyDrain{0%{opacity:1;filter:saturate(1) drop-shadow(0 0 8px rgba(255,210,63,.95))}22%{opacity:.57;filter:saturate(.7) drop-shadow(0 0 4px rgba(255,210,63,.5))}38%{opacity:.74;filter:saturate(.82) drop-shadow(0 0 5px rgba(255,210,63,.62))}62%{opacity:.41;filter:saturate(.47)}80%{opacity:.52;filter:saturate(.55)}100%{opacity:.34;filter:saturate(.35)}}
 .story[data-story-on][data-scene="relight"] .spark-svg{animation:storyBloom 2.4s ease-out both}
 @keyframes storyBloom{0%{transform:scale(.72)}55%{transform:scale(1.1)}75%{transform:scale(.97)}100%{transform:scale(1)}}
 .story[data-scene="relight"] .story-spark::after{content:"";position:absolute;inset:6%;border:3px solid rgba(255,210,63,.85);border-radius:50%;opacity:0}
@@ -1205,9 +1206,10 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 @keyframes storyRing{from{opacity:.9;transform:scale(.45)}to{opacity:0;transform:scale(1.7)}}
 .story-ember{position:absolute;width:4.5%;aspect-ratio:1;border-radius:50%;background:#FFD23F;opacity:.55}
 .story-ember.e1{left:16%;top:64%}.story-ember.e2{left:76%;top:52%}.story-ember.e3{left:52%;top:80%}
-.story[data-story-on] .story-ember{animation:storyEmber 3.2s ease-in-out infinite}
-.story-ember.e2{animation-delay:.7s}.story-ember.e3{animation-delay:1.3s}
-@keyframes storyEmber{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.6cqw)}}
+.story-ember.e4{left:30%;top:88%}.story-ember.e5{left:88%;top:74%}
+.story[data-story-on] .story-ember{animation:storyEmber 4.6s ease-in-out infinite}
+.story-ember.e2{animation-delay:.9s}.story-ember.e3{animation-delay:1.7s}.story-ember.e4{animation-delay:2.5s}.story-ember.e5{animation-delay:3.3s}
+@keyframes storyEmber{0%,100%{transform:translateY(0) scale(1);opacity:.5;box-shadow:0 0 0 0 rgba(255,210,63,0)}28%{transform:translateY(-2.4cqw) scale(1.5);opacity:.95;box-shadow:0 0 7px 2px rgba(255,210,63,.5)}52%{transform:translateY(-1.2cqw) scale(1.05);opacity:.55;box-shadow:0 0 0 0 rgba(255,210,63,0)}}
 /* The four pieces around the Spark: diamonds in each character's colour, lit or waiting. */
 .story-piece{position:absolute;width:15%;aspect-ratio:1;transform:rotate(45deg);border-radius:22%;border:2.5px solid #141414;background:var(--pc);z-index:2}
 .story-piece--bolt{--pc:#4FA8F0;left:1%;top:-1%}
@@ -1283,6 +1285,74 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .story[data-story-arm] .story-gem.is-new{transform:translate(calc(var(--fx)*1cqw),-21cqw) rotate(45deg) scale(1.55)}
 .story[data-story-on] .story-gem.is-new{animation:storySlotFly 1.2s cubic-bezier(.35,.7,.4,1) .95s both}
 @keyframes storySlotFly{0%{transform:translate(calc(var(--fx)*1cqw),-21cqw) rotate(45deg) scale(1.55)}55%{transform:translate(calc(var(--fx)*.45cqw),-27cqw) rotate(45deg) scale(1.25)}82%{transform:translate(0,0) rotate(45deg) scale(1.14);filter:drop-shadow(0 0 9px var(--pc))}100%{transform:rotate(45deg) scale(1)}}
+/* Intro enrichment: the three quiet stages get texture and micro-events. The discipline is unchanged —
+   the unarmed stage is the finished frame (windows settled, threads gone, the route drawn soft), the
+   armed stage holds the start positions, and [data-story-on] plays the event once; what loops after
+   that is only a very subtle ambient idle. */
+/* The Spark's halo: a soft disc of light behind the star. In dim it breathes against the flicker; in
+   drain it dies with the glow (base opacity 0 there — the finished frame has no halo left). */
+.story-spark::before{content:"";position:absolute;inset:-16%;border-radius:50%;background:radial-gradient(circle,rgba(255,210,63,.5) 0%,rgba(255,210,63,0) 65%);opacity:0;z-index:-1;pointer-events:none}
+.story[data-scene="dim"] .story-spark::before{opacity:.3}
+.story[data-story-on][data-scene="dim"] .story-spark::before{animation:storyHalo 3.4s ease-in-out infinite}
+@keyframes storyHalo{0%,100%{opacity:.22;transform:scale(.96)}38%{opacity:.48;transform:scale(1.05)}64%{opacity:.18;transform:scale(.94)}}
+.story[data-story-on][data-scene="drain"] .story-spark::before{animation:storyHaloDrain 3.2s ease-out .2s both}
+@keyframes storyHaloDrain{from{opacity:.55;transform:scale(1.06)}to{opacity:0;transform:scale(.8)}}
+/* The sky: little stars that twinkle over the town in dim, and gutter out as the Spark drains. */
+.story-sky{position:absolute;inset:0}
+.story-tw{position:absolute;width:1.7cqw;aspect-ratio:1;border-radius:50%;background:#FFF3B0;opacity:.32}
+.story[data-story-on][data-scene="dim"] .story-tw{animation:storyTwinkle 3.8s ease-in-out infinite;animation-delay:calc(var(--d)*.47s)}
+@keyframes storyTwinkle{0%,100%{opacity:.16;transform:scale(.78)}50%{opacity:.8;transform:scale(1.18)}}
+.story[data-story-on][data-scene="drain"] .story-tw{animation:storyTwinkleOut 3.2s ease-out .2s both}
+@keyframes storyTwinkleOut{0%{opacity:.6}30%{opacity:.15}55%{opacity:.5}100%{opacity:.07}}
+/* The town's windows: lit when the stage is armed, they go out one by one — slowly on the dim morning,
+   fast as the drain strikes. Two stay faintly lit (is-late): Netville is dim, not dead. */
+.story-windows{position:absolute;left:0;right:0;bottom:9%;width:100%;height:17%}
+.story-win{fill:#FFD23F;opacity:var(--wo,.12)}
+.story-win.is-late{--wo:.42}
+.story[data-story-arm] .story-win{opacity:.95}
+.story[data-story-on][data-scene="dim"] .story-win{animation:storyWinOut .55s ease-out both;animation-delay:calc(.55s + var(--d)*.21s)}
+.story[data-story-on][data-scene="drain"] .story-win{animation:storyWinOut .3s ease-out both;animation-delay:calc(.3s + var(--d)*.08s)}
+@keyframes storyWinOut{from{opacity:.95}to{opacity:var(--wo,.12)}}
+/* The unlit pieces answer the struggling Spark with a faint pulse of their own colour, in turn. */
+.story[data-story-on][data-scene="dim"] .story-piece.is-off{animation:storyAnswer 3.4s ease-in-out infinite;animation-delay:calc(var(--d)*.45s)}
+@keyframes storyAnswer{0%,100%{opacity:.45;filter:none}12%{opacity:.7;filter:drop-shadow(0 0 4px var(--pc))}26%{opacity:.45;filter:none}}
+/* The drain made visible: threads of energy stream out of the Spark and are gone (base opacity 0 is
+   the finished frame), and each piece flares once — its last glimmer — then drifts toward its world
+   corner of the stage and settles there, dimmed, foreshadowing the quest. */
+.story-thread{position:absolute;left:50%;top:50%;width:4.2%;aspect-ratio:1;border-radius:50%;background:#FFD23F;opacity:0}
+.story[data-story-on][data-scene="drain"] .story-thread{animation:storyThread 1.5s ease-out both;animation-delay:calc(.35s + var(--d)*.18s)}
+@keyframes storyThread{0%{opacity:0;transform:translate(-50%,-50%) scale(1)}14%{opacity:.9}100%{opacity:0;transform:translate(calc(-50% + var(--tx)*1cqw),calc(-50% + var(--ty)*1cqw)) scale(.45)}}
+.story[data-scene="drain"] .story-piece--bolt{--sx:-18cqw;--sy:-2.2cqw}
+.story[data-scene="drain"] .story-piece--dot{--sx:18cqw;--sy:-2.2cqw}
+.story[data-scene="drain"] .story-piece--pim{--sx:-18cqw;--sy:8.5cqw}
+.story[data-scene="drain"] .story-piece--gizmo{--sx:18cqw;--sy:8.5cqw}
+.story[data-story-on][data-scene="drain"] .story-piece{animation:storyScatter 3.2s ease-in-out .25s both}
+@keyframes storyScatter{0%{transform:rotate(45deg) scale(1);opacity:.45}16%{transform:rotate(45deg) scale(1.14);opacity:.95;filter:drop-shadow(0 0 7px var(--pc));background-color:var(--pc)}30%{background-color:transparent}100%{transform:translate(var(--sx),var(--sy)) rotate(45deg) scale(.92);opacity:.32;filter:saturate(.4)}}
+/* The map: the Spark shrinks to a home marker and the journey takes the stage — a dotted route with a
+   bright copy that draws itself from world to world, each world's gem flaring as the light reaches it,
+   and the next world (the first, while nothing is lit) bouncing gently to say "start here". */
+.story-map{position:absolute;inset:0;z-index:2}
+.story-route{position:absolute;inset:0;width:100%;height:100%}
+.story-route path{fill:none;stroke-linecap:round}
+.story-route-base{stroke:rgba(20,20,20,.35);stroke-width:2.6;stroke-dasharray:.1 3.4}
+.story-route-draw{stroke:#FFD23F;stroke-width:2.6;stroke-dasharray:100;stroke-dashoffset:0;opacity:.38;filter:drop-shadow(0 0 3px rgba(255,210,63,.75))}
+.story[data-story-arm] .story-route-draw{stroke-dashoffset:100;opacity:.95}
+.story[data-story-on] .story-route-draw{animation:storyRouteDraw 2.6s ease-in-out .35s both}
+@keyframes storyRouteDraw{from{stroke-dashoffset:100;opacity:.95}to{stroke-dashoffset:0;opacity:.38}}
+.story-world{position:absolute;width:15cqw;transform:translate(-50%,-50%);z-index:2}
+.story-world-in{position:relative;display:grid;justify-items:center}
+.story-world-disc{position:absolute;left:50%;top:38%;width:11.5cqw;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:color-mix(in srgb,var(--pc) 32%,var(--card));border:2.5px solid #141414}
+.story-world--bolt{--pc:#4FA8F0}.story-world--dot{--pc:#F2994A}.story-world--pim{--pc:#FFD23F}.story-world--gizmo{--pc:#8FC1F5}
+.story-world .story-char{height:11.5cqw;z-index:1}
+.story[data-scene="map"] .story-name{visibility:visible}
+.story-world .story-name{bottom:-1.55em;font-size:clamp(10px,2.8cqw,13px);padding:1px 8px}
+.story-world .story-piece{left:auto;right:-4%;top:-9%;bottom:auto;width:36%;z-index:2}
+.story[data-story-on][data-scene="map"] .story-world .story-piece{animation:storyWorldFlare .95s ease-out both;animation-delay:calc(1s + var(--d)*.62s)}
+@keyframes storyWorldFlare{0%{transform:rotate(45deg) scale(1)}35%{transform:rotate(45deg) scale(1.5);filter:drop-shadow(0 0 8px var(--pc));background-color:var(--pc)}100%{transform:rotate(45deg) scale(1);background-color:transparent}}
+.story[data-story-on][data-scene="map"] .story-world-disc{animation:storyDiscFlare .95s ease-out both;animation-delay:calc(1s + var(--d)*.62s)}
+@keyframes storyDiscFlare{0%,100%{box-shadow:0 0 0 0 rgba(255,210,63,0)}35%{box-shadow:0 0 10px 3px var(--pc)}}
+.story[data-story-on][data-scene="map"] .story-world--bolt .story-world-in{animation:storyNextBounce 1.7s ease-in-out 3.7s infinite}
+@keyframes storyNextBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-.9cqw)}}
 /* Reduced motion: the finished frame, exactly as unarmed — kill every story animation, idle loops included. */
 @media (prefers-reduced-motion: reduce){
   .story-stage *,.story-stage *::before,.story-stage *::after{animation:none !important}
