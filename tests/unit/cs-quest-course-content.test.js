@@ -39,7 +39,7 @@ for (const band of BANDS) for (const s of STEPS) {
   const file = path.join(DIR, band, `${s.n}.json`);
   decks.push({ band, step: s, file, deck: fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null });
 }
-const stringsOf = d => [d.title, d.topic, d.talk, ...d.slides.flatMap(sl => [sl.title, sl.text, sl.say, sl.alt, ...(sl.steps || []), ...(sl.words || []).flatMap(w => [w.word, w.means])])].filter(s => s != null);
+const stringsOf = d => [d.title, d.topic, d.talk, ...d.slides.flatMap(sl => [sl.title, sl.text, sl.say, sl.alt, ...(sl.steps || []), ...(sl.focus || []).map(f => f.cue), ...(sl.words || []).flatMap(w => [w.word, w.means])])].filter(s => s != null);
 // Slide pictures (the image plan): a slide may carry img (a csq/<game>/<state> manifest key) + alt. The manifest is
 // the register of captured in-game shots; the file lives at public/img/<key>.webp.
 const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -85,7 +85,7 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'focus'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'focus'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'focus'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'focus'] }[s.kind || 'text'];
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
@@ -98,6 +98,24 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
         assert.ok(entry, `${at}: img ${s.img} is registered in public/img/csq/manifest.json`);
         assert.equal(entry.alt, s.alt, `${at}: the deck alt matches the manifest alt for ${s.img}`);
         assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${s.img}.webp`)), `${at}: public/img/${s.img}.webp exists`);
+      }
+      if (s.focus != null) {
+        // Guided focus: animation steps over the slide's picture. Only on a pictured slide; the geometry is in
+        // % of the 16:9 frame and must stay inside it, matching what cleanSlide() keeps.
+        assert.ok(s.img, `${at}: focus needs the slide's img`);
+        assert.ok(Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4, `${at}: 1-4 focus steps`);
+        for (const [fi, f] of s.focus.entries()) {
+          const fat = `${at} focus ${fi + 1}`;
+          assert.deepEqual(Object.keys(f).sort(), f.path ? ['box', 'cue', 'path'] : ['box', 'cue'], `${fat}: cue, box, optional path only`);
+          assert.ok(typeof f.cue === 'string' && f.cue.trim() === f.cue && f.cue.length >= 1 && f.cue.length <= 80, `${fat}: cue 1-80 chars, trimmed`);
+          assert.ok(Array.isArray(f.box) && f.box.length === 4 && f.box.every(v => typeof v === 'number' && Number.isFinite(v)), `${fat}: box is 4 numbers`);
+          const [x, y, w, h] = f.box;
+          assert.ok(x >= 0 && y >= 0 && w >= 2 && h >= 2 && x + w <= 100 && y + h <= 100, `${fat}: box inside the frame, at least 2% wide/tall`);
+          if (f.path != null) {
+            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 8, `${fat}: path of 2-8 points`);
+            for (const p of f.path) assert.ok(Array.isArray(p) && p.length === 2 && p.every(v => typeof v === 'number' && v >= 0 && v <= 100), `${fat}: path points in % inside the frame`);
+          }
+        }
       }
       if (s.say != null) assert.ok(typeof s.say === 'string' && s.say.length >= 8 && s.say.length <= 400 && s.say !== s.text, `${at}: say differs from text, <= 400 chars`);
       const n = sentences(s.text);

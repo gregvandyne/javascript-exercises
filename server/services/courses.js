@@ -83,6 +83,31 @@ function cleanSlide(s) {
   const img = typeof s.img === 'string' ? s.img.trim() : '';
   const alt = str(s.alt, 160);
   if (IMG_KEY.test(img) && alt && alt === (typeof s.alt === 'string' ? s.alt.trim() : '')) { out.img = img; out.alt = alt; }
+  // Guided focus: optional animation steps over the picture (only alongside a valid img). Each step is a short cue
+  // (<= 80 chars), a target box in % of the frame (inside it, at least 2% wide/tall) and an optional dotted path of
+  // 2-8 points in %. 1-4 steps. Anything malformed drops the whole focus and the slide keeps its plain picture
+  // (fromDeck reports the loss, like a dropped img).
+  if (out.img && Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4) {
+    const num = v => typeof v === 'number' && Number.isFinite(v);
+    const pct = v => num(v) && v >= 0 && v <= 100;
+    const r1 = v => Math.round(v * 10) / 10;
+    const steps = [];
+    let ok = true;
+    for (const st of s.focus) {
+      const cue = st && typeof st.cue === 'string' ? st.cue : '';
+      const b = st && st.box;
+      const boxOk = Array.isArray(b) && b.length === 4 && b.every(num)
+        && b[0] >= 0 && b[1] >= 0 && b[2] >= 2 && b[3] >= 2 && b[0] + b[2] <= 100 && b[1] + b[3] <= 100;
+      let path;
+      if (st && st.path != null) {
+        if (Array.isArray(st.path) && st.path.length >= 2 && st.path.length <= 8 && st.path.every(p => Array.isArray(p) && p.length === 2 && p.every(pct))) path = st.path.map(p => [r1(p[0]), r1(p[1])]);
+        else ok = false;
+      }
+      if (!ok || !cue || cue !== cue.trim() || cue.length > 80 || !boxOk) { ok = false; break; }
+      steps.push(path ? { cue, box: b.map(r1), path } : { cue, box: b.map(r1) });
+    }
+    if (ok) out.focus = steps;
+  }
   if (kind === 'example') {
     if (Array.isArray(s.steps)) out.steps = s.steps.map(x => str(String(x), 60)).filter(Boolean).slice(0, 12);
     const rows = Array.isArray(s.rows) ? s.rows : Array.isArray(s.table) ? s.table : null;
@@ -107,6 +132,7 @@ function fromDeck(key, l, d, game, items, problems) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
     if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
+    if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (check !== d.check) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
