@@ -36,7 +36,12 @@ frame.addEventListener('load', () => {
   }
   framePins = 2; frame.src = 'about:blank'; setTimeout(() => { frame.src = frameSrc; }, 30);
 });
-frame.src = frameSrc; stage.prepend(frame);
+frame.src = frameSrc;
+// The frame goes AFTER the fullscreen back link, not before it: in fullscreen the browser tabs only within
+// the stage, so the back link must be the first stop — otherwise a keyboard player has to tab through the
+// whole game to reach the way out. Both are absolutely positioned; the visual stack is unchanged.
+const fsb = stage.querySelector('.fsback');
+if (fsb) fsb.after(frame); else stage.prepend(frame);
 function stopGame() {
   stopped = true; frame.src = 'about:blank';
   const box = document.createElement('div'); box.className = 'game-stopped'; box.setAttribute('role', 'alert'); box.dir = document.documentElement.dir || 'ltr';
@@ -120,7 +125,7 @@ addEventListener('message', e => {
       break;
     }
     case 'brb:fullscreen': m.on ? goFull() : (document.fullscreenElement && document.exitFullscreen().catch(() => {})); break;
-    case 'brb:orientation': if (m.value.startsWith('landscape')) $('#orient').classList.add('show'); break;
+    case 'brb:orientation': if (m.value.startsWith('landscape')) { $('#orient').classList.add('show'); orientDismissed = false; orientSync(); } break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
     case 'brb:retry': if (tappedJustNow()) location.reload(); break;
   }
@@ -134,7 +139,28 @@ function goFull() {
   Promise.resolve(req.call(el)).then(() => { try { screen.orientation.lock && screen.orientation.lock(document.body.classList.contains('wants-landscape') ? 'landscape' : 'any').catch(() => {}); } catch { /* ignore */ } }).catch(() => toast(t('js.play.tapFullscreen')));
 }
 $('#p-full').addEventListener('click', goFull);
-$('#orient-ok') && $('#orient-ok').addEventListener('click', () => $('#orient').classList.remove('show'));
+// The turn-your-device hint (a dialog over the stage): while it is actually on screen — the CSS shows it only
+// in portrait on a narrow screen — keyboard focus belongs on its OK button, not inside the game it covers
+// (the game takes focus at load, and Tab would cycle through the covered game first). Dismissing hands focus
+// back to the game frame, where play continues. On touch devices none of this is visible: the button just
+// gains the focus a keyboard or switch user needs.
+const orientEl = $('#orient'), orientOk = $('#orient-ok');
+const orientMq = matchMedia('(orientation: portrait) and (max-width: 820px)');
+let orientDismissed = false;
+function orientSync() {
+  if (!orientEl || !orientOk || orientDismissed) return;
+  if (orientEl.classList.contains('show') && orientMq.matches && document.activeElement !== orientOk) orientOk.focus();
+}
+if (orientEl && orientOk) {
+  orientSync();
+  // The game takes focus for itself when its document loads — if the hint is up, take it back for the hint.
+  frame.addEventListener('load', orientSync);
+  orientMq.addEventListener && orientMq.addEventListener('change', () => {
+    if (!orientMq.matches && orientEl.contains(document.activeElement)) frame.focus();
+    orientSync();
+  });
+  orientOk.addEventListener('click', () => { orientDismissed = true; orientEl.classList.remove('show'); frame.focus(); });
+}
 $('#p-like') && $('#p-like').addEventListener('click', async () => {
   if (!d.signedIn) return toast(t('js.play.signInToLike'));
   try { const r = await api(`/api/games/${d.gameId}/like`, { method: 'POST', body: {} }); const b = $('#p-like'); b.setAttribute('aria-pressed', String(r.liked)); b.querySelector('.emo').textContent = r.liked ? '❤️' : '🤍'; toast(r.liked ? t('js.play.liked') : t('js.play.unliked')); } catch (err) { toast(err.message, { bad: true }); }

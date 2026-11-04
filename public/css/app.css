@@ -23,7 +23,7 @@
   --current:#141414; --on-current:#FFFDF2;
   /* Spark: badges, stars, the "go" button (.btn-hot). Its edge is the Ink outline round the logo's spark (none in dark). */
   --spark:#FFD23F; --spark-hover:#FFDB66; --spark-press:#C99A00; --spark-edge:#141414; --spark-soft:#FFF3C4;
-  --logo-sub:#1F9D63; --focus:#141414;
+  --logo-sub:#14744A; --focus:#141414;
   /* Status: success, danger and the text on it, the red and amber chips, the stats chart bars. */
   --ok:#14744A; --ok-bg:#E1F1E1; --danger:#BE3329; --on-danger:#FFFDF2; --bad-bg:#F9E3DC; --bad-ink:#A12A20;
   --warn-bg:#FFF0B8; --warn-ink:#6B4C00; --viz-1:#1F9D63;
@@ -70,6 +70,10 @@ body{margin:0;font:450 17px/1.5 var(--font);font-optical-sizing:auto;color:var(-
 img,svg{max-width:100%}
 input[type=checkbox],input[type=radio]{accent-color:var(--accent-line)}
 a{color:var(--link);text-decoration:none} a:hover{text-decoration:underline}
+/* Links inside running prose carry an underline, not colour alone: --link against --text is only ~1.2:1, so a
+   colour-only link in a paragraph is invisible as a link to a low-vision reader (WCAG 1.4.1). Component links
+   (buttons, cards, nav, menus — they all carry a class) keep the plain look. */
+main p a:not([class]),main li a:not([class]),main dd a:not([class]){text-decoration:underline;text-underline-offset:3px}
 h1,h2,h3{font-weight:800;line-height:1.15;letter-spacing:-.01em;margin:0 0 .4em;overflow-wrap:anywhere}
 h1{font-size:clamp(1.6rem,4.5vw,2.4rem);letter-spacing:-.02em} h2{font-size:clamp(1.2rem,3vw,1.5rem)} h3{font-size:1.1rem;letter-spacing:0}
 p{margin:0 0 .8em}
@@ -218,7 +222,7 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
 .btn-ghost{background:transparent;box-shadow:none} .btn-ghost:hover{background:var(--hover)}
 .btn-danger{color:var(--danger);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--danger) 35%,transparent)}
 .btn-big{min-height:64px;padding:0 36px;font-size:1.35rem;border-radius:var(--r)}
-.btn-sm{min-height:36px;padding:0 14px;font-size:.9rem}
+.btn-sm{min-height:44px;padding:0 14px;font-size:.9rem}
 .btn-block{width:100%}
 .iconbtn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:56px;min-height:52px;padding:4px 10px;border-radius:var(--r-sm);border:0;background:transparent;color:var(--text-2);font:700 .78rem var(--font);cursor:pointer}
 .iconbtn .emo{font-size:1.35rem;line-height:1}
@@ -250,7 +254,7 @@ textarea.input{min-height:96px;resize:vertical}
 .form-err{display:block;flex-basis:100%;font-size:.92rem;color:var(--danger);font-weight:600}
 .form-err:empty{display:none}
 .seg{display:inline-flex;background:var(--card-2);border:2px solid var(--line);border-radius:999px;padding:3px;gap:2px}
-.seg button,.seg>a{min-height:38px;padding:0 14px;border:0;border-radius:999px;background:transparent;font:700 .9rem var(--font);color:var(--text-2);cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+.seg button,.seg>a{min-height:44px;padding:0 14px;border:0;border-radius:999px;background:transparent;font:700 .9rem var(--font);color:var(--text-2);cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
 .seg button[aria-pressed="true"],.seg>a[aria-current="page"]{background:var(--current);color:var(--on-current)}
 /* Phones: a segmented control never pushes the page sideways; long labels wrap inside their segment instead. */
 @media (max-width:480px){.seg{max-width:100%}.seg button,.seg>a{white-space:normal;line-height:1.15;text-align:center;justify-content:center;padding:4px 10px}}
@@ -311,7 +315,7 @@ textarea.input{min-height:96px;resize:vertical}
 .rail-head h2{margin:0;flex:1;font-size:clamp(1.15rem,2.6vw,1.4rem)}
 .rail-head .more{font-weight:700;min-height:44px;display:inline-flex;align-items:center;padding:0 8px}
 .rail-arrows{display:flex;gap:6px}
-.rail-arrows button{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--text);font-size:1.1rem;cursor:pointer}
+.rail-arrows button{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--text);font-size:1.1rem;cursor:pointer}
 .rail-arrows button:hover{border-color:var(--accent-line)}
 @media (hover:none),(max-width:820px){.rail-arrows{display:none}}
 .rail-track{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(140px,38vw,186px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;padding:6px 16px 10px;margin:0 -16px;scrollbar-width:none;overscroll-behavior-x:contain}
@@ -415,7 +419,7 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .playbar .iconbtn{color:var(--brand-cream);min-height:44px;min-width:44px;flex-direction:row;font-size:.85rem;gap:6px;padding:0 10px}
 .playbar .iconbtn:hover{background:color-mix(in srgb,var(--brand-cream) 10%,var(--brand-ink))}
 .playbar .iconbtn[aria-pressed="true"]{color:var(--brand-mint)}
-.playbar .ptitle{flex:1;min-width:0;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.playbar .ptitle{flex:1;min-width:0;margin:0;font-size:1.05rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .playbar .livecount{font-size:.82rem;font-weight:700;color:var(--brand-mint);white-space:nowrap}
 .playbar .lbl{display:inline}
 .playbar :focus-visible{outline-color:var(--brand-spark)}
@@ -428,6 +432,9 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .fsback{display:none}
 .stage:fullscreen .fsback{display:inline-flex;position:absolute;top:calc(10px + env(safe-area-inset-top));inset-inline-start:10px;z-index:2;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--brand-ink);color:var(--brand-cream);border:1px solid color-mix(in srgb,var(--brand-cream) 25%,var(--brand-ink));font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.45)}
 .stage:fullscreen .fsback:hover{background:#000}
+/* The global focus ring is Ink in the light theme — on this Ink pill it would be invisible. Spark reads on Ink
+   (and the play bar's own controls already use it, .playbar :focus-visible above). */
+.stage:fullscreen .fsback:focus-visible{outline:3px solid var(--brand-spark);outline-offset:2px}
 .orient-hint{position:fixed;inset:52px 0 0;z-index:5;display:none;place-items:center;text-align:center;background:rgba(20,20,20,.94);color:var(--brand-cream);padding:24px}
 .game-stopped{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:rgba(20,20,20,.94);color:var(--brand-cream);padding:24px}
 .game-stopped p{font-size:1.2rem;font-weight:700;margin:0 0 16px}
@@ -1011,6 +1018,10 @@ ol.steps li{margin-bottom:var(--s2)}
   .course-n{position:static;flex:none}
   .course-foot .btn{flex:1 1 auto;justify-content:center}
 }
+/* The course pages' own Back link (views/courses.js): a full 44px target, like the layout's .backlink — as a
+   bare inline link it was only ~22px tall. */
+.course-page>.back,.cl-page>.back{display:inline-flex;align-items:center;gap:6px;justify-self:start;min-height:44px;padding:0 12px;margin-inline-start:-12px;border-radius:999px;font-weight:700;color:var(--text-2);text-decoration:none}
+.course-page>.back:hover,.cl-page>.back:hover{background:var(--hover);text-decoration:none}
 /* The course page */
 .course-page{max-width:960px;margin:0 auto;display:grid;gap:18px}
 .course-hero{display:flex;gap:16px;align-items:flex-start}
@@ -1018,7 +1029,7 @@ ol.steps li{margin-bottom:var(--s2)}
 .course-hero .lead{font-weight:700;margin:4px 0}
 .course-teach{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px}
 .course-teach h2{margin:0 0 6px;font-size:1.15rem}
-.ptitle .pcourse{font-size:.8em;font-weight:700;margin-inline-start:8px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);text-decoration:none;white-space:nowrap}
+.ptitle .pcourse{font-size:.8em;font-weight:700;margin-inline-start:8px;padding:6px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);text-decoration:none;white-space:nowrap}
 @media (max-width:520px){.ptitle .pcourse{display:none}}
 /* Course progress bar (home card and course map) */
 .cprog{height:10px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
@@ -1079,6 +1090,10 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .slide{position:relative;display:grid;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:var(--r-lg);padding:18px;scroll-margin-top:calc(var(--top) + 12px)}
 .deck-js .slide{min-height:min(480px,calc(100svh - var(--top) - var(--tabbar) - 150px));align-content:start}
 .slide-h{margin:0;font-size:clamp(1.4rem,5.5vw,1.9rem);outline:none}
+/* The slide heading and the check's legends take programmatic focus (slide changes, question changes): a
+   keyboard user lands there and needs to see it. :focus-visible's heuristic keeps the ring off for pointer
+   users, who already see the whole slide/question change. */
+.slide-h:focus-visible,.qq legend:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:8px}
 .slide-p{margin:0;font-size:1.2rem;line-height:1.5}
 .slide-say{justify-self:start;min-height:48px}
 .slide-mission{margin:0;padding:10px 14px;border-radius:var(--r-sm);background:var(--accent-soft);color:var(--text);font-weight:600}
@@ -1135,8 +1150,11 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
    never hides the thing it is pointing at. The cue always carries the step number in its own bubble. */
 .gf-cue--top{top:10px;bottom:auto;max-width:calc(100% - 20px)}
 .gf-cue-n{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:#FFD23F;color:#141414;font-size:12px;font-weight:800}
-.gf-replay{position:absolute;right:8px;bottom:8px;z-index:2;border:1px solid rgba(255,253,242,.35);background:rgba(20,20,20,.72);color:#FFFDF2;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer}
+.gf-replay{position:absolute;right:8px;bottom:8px;z-index:2;display:inline-flex;align-items:center;gap:6px;min-height:44px;border:1px solid rgba(255,253,242,.35);background:rgba(20,20,20,.72);color:#FFFDF2;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer}
 .gf-replay:hover{background:rgba(20,20,20,.9)}
+/* Focus on the picture: a Spark ring with a dark halo, so it reads on bright and dark frames of a screenshot
+   alike (the global Ink ring can vanish on a dark game scene). */
+.gf-replay:focus-visible{outline:3px solid var(--brand-spark);outline-offset:2px;box-shadow:0 0 0 5px rgba(20,20,20,.85)}
 .gf-cues{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 /* Small screens: at phone size the desktop dim greys out nearly the whole picture, so it fades right
    back and the active box gets a glow to carry the highlight instead; the cue chip shrinks a step too.

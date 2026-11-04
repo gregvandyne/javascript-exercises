@@ -86,7 +86,7 @@ test('HTTP: data-theme and color-scheme only follow an explicit choice', async (
     const v = games.addVersion(g.id, '<div>hi</div>', { createdBy: owner.id, safetyStatus: 'pass' });
     q.run("UPDATE games SET visibility='public', status='published', published_version_id=? WHERE id=?", v.id, g.id);
     h = await head(await s.get(`/play/${games.getGame(g.id).slug}`, { Cookie: 'theme=light' }));
-    assert.match(h.body, /<div class="playbar">/, 'the play page');
+    assert.match(h.body, /<header class="playbar">/, 'the play page');
     assert.equal(h.html, '<html lang="en" dir="ltr" data-theme="light">'); assert.equal(h.scheme, 'light');
     assert.deepEqual(themeColors(h.body), [[BAR_COLORS.dark, null]], 'its bar is Ink in both themes: one Ink toolbar colour');
   } finally { await s.close(); }
