@@ -16,19 +16,19 @@
     {
      "cue": "A picture's journey, in five rule cards",
      "box": [
-      41,
-      29,
-      46,
-      19
+      50,
+      40,
+      39,
+      20
      ]
     },
     {
      "cue": "Put them in the order they happen",
      "box": [
-      41,
-      27,
-      46,
-      6
+      50,
+      34,
+      39,
+      9
      ]
     }
    ]
@@ -50,19 +50,19 @@
     {
      "cue": "In transit: the picture travels a sealed road",
      "box": [
-      9,
       30,
-      43,
-      55
+      33,
+      23,
+      34
      ]
     },
     {
      "cue": "The padlock streets keep readers out",
      "box": [
-      34,
-      34,
-      13,
-      15
+      17,
+      43,
+      27,
+      11
      ]
     }
    ]
@@ -77,19 +77,19 @@
     {
      "cue": "A copy in another place: the borrowed vault",
      "box": [
-      41,
-      32,
-      46,
-      22
+      50,
+      48,
+      16,
+      11
      ]
     },
     {
      "cue": "The line runs from Pim's Post to Grandma's House",
      "box": [
-      7,
-      61,
-      33,
-      11
+      10,
+      59,
+      34,
+      12
      ]
     }
    ]
@@ -105,18 +105,18 @@
      "cue": "Photos only on your tablet",
      "box": [
       6,
-      17,
-      42,
-      71
+      14,
+      43,
+      69
      ]
     },
     {
      "cue": "Or a copy on a service someone else runs",
      "box": [
-      52,
-      17,
-      42,
-      71
+      51,
+      14,
+      43,
+      69
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "The Magpie watches the roads between offices",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      33,
+      46,
+      57
      ]
     },
     {
      "cue": "Every room and every road needs its check",
      "box": [
-      55,
-      19,
-      34,
-      9
+      54,
+      25,
+      35,
+      11
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Play Many Roads: name the room before each run",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      34,
+      46,
+      56
      ]
     }
    ]

@@ -16,32 +16,40 @@
     {
      "cue": "A photo waits at Pim's Post, ready to travel",
      "box": [
-      9,
-      30,
-      20,
-      34
+      10,
+      55,
+      8,
+      14
      ]
     },
     {
      "cue": "Its trip: across the roads to Grandma's House",
      "box": [
-      30,
-      30,
-      22,
-      45
+      9,
+      43,
+      44,
+      29
      ],
      "path": [
       [
-       12,
-       60
+       13,
+       61
       ],
       [
-       24,
-       42
-      ],
-      [
-       44,
+       23,
        56
+      ],
+      [
+       31,
+       49
+      ],
+      [
+       42,
+       55
+      ],
+      [
+       49,
+       62
       ]
      ]
     }
@@ -57,19 +65,19 @@
     {
      "cue": "One photo, three packets: each takes its own road",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      34,
+      46,
+      56
      ]
     },
     {
      "cue": "Packet 1 of 3: every packet wears its number",
      "box": [
-      55,
-      32,
-      18,
-      11
+      54,
+      35,
+      11,
+      8
      ]
     }
    ]
@@ -84,19 +92,19 @@
     {
      "cue": "Packets travel the roads from office to office",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      34,
+      46,
+      56
      ]
     },
     {
      "cue": "If a road closes, another road can carry them",
      "box": [
-      55,
-      20,
-      33,
-      14
+      54,
+      25,
+      35,
+      11
      ]
     }
    ]
@@ -118,28 +126,28 @@
     {
      "cue": "Packets can arrive mixed up at the far end",
      "box": [
-      9,
-      30,
-      43,
-      40
+      8,
+      33,
+      46,
+      57
      ]
     },
     {
      "cue": "Their numbers show the right order",
      "box": [
-      55,
-      37,
-      10,
-      16
+      54,
+      40,
+      17,
+      17
      ]
     },
     {
-     "cue": "Put back together, the photo is whole again",
+     "cue": "The far end rebuilds the photo from the numbers",
      "box": [
+      46,
       55,
-      19,
-      34,
-      9
+      9,
+      13
      ]
     }
    ]
@@ -154,18 +162,18 @@
     {
      "cue": "Every road here meets at the center office",
      "box": [
-      19,
-      51,
-      11,
-      11
+      21,
+      55,
+      8,
+      12
      ]
     },
     {
      "cue": "Many hands carry each packet on its way",
      "box": [
-      9,
-      30,
-      43,
+      8,
+      35,
+      46,
       55
      ]
     }
@@ -206,10 +214,10 @@
     {
      "cue": "Play Break It Up: watch the number on every packet",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      42,
+      45,
+      28
      ]
     }
    ]

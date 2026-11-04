@@ -16,19 +16,19 @@
     {
      "cue": "One drawing sets off across the roads",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      34,
+      46,
+      56
      ]
     },
     {
      "cue": "A copy is kept at every stop along the way",
      "box": [
-      55,
-      19,
-      34,
-      9
+      9,
+      35,
+      44,
+      32
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Sorting spare copies: which way keeps them safe?",
      "box": [
-      9,
-      28,
-      43,
-      40
+      8,
+      26,
+      45,
+      10
      ]
     },
     {
      "cue": "A copy in another place survives a broken tablet",
      "box": [
-      55,
-      31,
-      33,
-      20
+      54,
+      25,
+      35,
+      13
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "Packet 2 waits at Hill Office, two hops done",
      "box": [
-      22,
-      40,
+      30,
+      34,
       9,
-      13
+      12
      ]
     },
     {
      "cue": "Packet 2 of 4: its number travels with it",
      "box": [
-      55,
-      32,
-      20,
-      11
+      54,
+      35,
+      11,
+      8
      ]
     }
    ]
@@ -104,18 +104,18 @@
      "cue": "Share a drawing so everyone can see it",
      "box": [
       6,
-      17,
-      42,
-      71
+      14,
+      43,
+      69
      ]
     },
     {
      "cue": "Or show it only to your family",
      "box": [
-      52,
-      17,
-      42,
-      71
+      51,
+      14,
+      43,
+      69
      ]
     }
    ]
@@ -131,17 +131,17 @@
      "cue": "A stranger's card, fishing for a shiny secret",
      "box": [
       8,
-      27,
-      47,
-      9
+      25,
+      45,
+      19
      ]
     },
     {
      "cue": "It asks where you live: a fact to keep private",
      "box": [
-      8,
+      9,
       36,
-      47,
+      43,
       8
      ]
     }
@@ -182,10 +182,10 @@
     {
      "cue": "Play Many Roads: trace every copy's journey",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      34,
+      46,
+      56
      ]
     }
    ]
