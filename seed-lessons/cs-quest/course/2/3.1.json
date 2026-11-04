@@ -1,0 +1,77 @@
+{
+ "key": "2-3.1",
+ "n": "3.1",
+ "band": "2",
+ "title": "Sort it out",
+ "topic": "Sorting data",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Real data is messy",
+   "text": "People make typos, answer twice or write numbers that can not be true. Chart messy data and the chart tells the wrong story.",
+   "art": "magnifier"
+  },
+  {
+   "title": "Clean it first",
+   "text": "Fix typos, merge true repeats and remove values that can not be true. Never remove a row just because you do not like its answer.",
+   "art": "wrench"
+  },
+  {
+   "kind": "example",
+   "title": "Pet survey clean-up",
+   "text": "Three spellings of dog split one bar into three short bars. Clean first, then chart.",
+   "art": "table",
+   "steps": [
+    "dog, Dog, dgo: one spelling",
+    "same student twice: keep one",
+    "twelvety pets: remove",
+    "then chart"
+   ]
+  },
+  {
+   "title": "Compare by percent",
+   "text": "Class A: 9 of 20 like chess. Class B: 12 of 40. B has more, but A is 45% and B is 30%. Percent is part divided by whole, times 100.",
+   "art": "chart"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "clean",
+     "means": "fix and tidy data before you use it"
+    },
+    {
+     "word": "outlier",
+     "means": "a value far from the rest; check if it is real"
+    },
+    {
+     "word": "percent",
+     "means": "how many out of 100"
+    },
+    {
+     "word": "data set",
+     "means": "all the data for one question"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Data Detective at Clean-Up Crew and solve 4 cases. Chart the data as it is first, then clean it and chart it again. What changed?",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-3.1-e1",
+  "2-3.1-e2",
+  "2-3.1-e3"
+ ],
+ "game": {
+  "slug": "data-detective",
+  "chapter": "cleanup",
+  "params": "chapter=cleanup&band=2&lock=1"
+ }
+}

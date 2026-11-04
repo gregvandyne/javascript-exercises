@@ -1,0 +1,83 @@
+{
+ "key": "1b-2.1",
+ "n": "2.1",
+ "band": "1b",
+ "title": "Bug hunt",
+ "topic": "Debugging",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Programs break",
+   "text": "Every programmer makes mistakes. A mistake in a program is called a bug. Finding and fixing it is called debugging.",
+   "art": "bug"
+  },
+  {
+   "title": "Expected and actual",
+   "text": "Ask two questions. What did I expect Bolt to do? What did Bolt actually do? The bug is where those two first split apart.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "example",
+   "title": "Step, stop, fix",
+   "text": "Do not delete everything. Step through the program one block at a time and stop at the first surprise.",
+   "art": "robot",
+   "steps": [
+    "press Step",
+    "watch each block",
+    "stop at the surprise",
+    "change only that block",
+    "run it again"
+   ]
+  },
+  {
+   "title": "One too many",
+   "text": "Bolt goes one square too far? Look at the numbers. A repeat count that is one too big is a very common bug.",
+   "art": "loop"
+  },
+  {
+   "title": "Done means tested",
+   "text": "A fix is not done when it looks right. It is done when you run it again and Bolt does what you expected.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "bug",
+     "means": "a mistake in a program"
+    },
+    {
+     "word": "debug",
+     "means": "find a bug and fix it"
+    },
+    {
+     "word": "expected",
+     "means": "what you thought would happen"
+    },
+    {
+     "word": "actual",
+     "means": "what really happened"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Debug Lab and fix 4 programs. Use Step, change as few blocks as you can, and run it again to test.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-2.1-e1",
+  "1b-2.1-e2",
+  "1b-2.1-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "debug",
+  "params": "chapter=debug&band=1b&mode=debug&lock=1"
+ }
+}

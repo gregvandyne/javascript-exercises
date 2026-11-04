@@ -1,0 +1,85 @@
+{
+ "key": "2-2.2",
+ "n": "2.2",
+ "band": "2",
+ "title": "Level designers",
+ "topic": "Level design",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Design for someone else",
+   "text": "Today you are the designer. Real teams plan, build, test with someone else, improve the work and document it.",
+   "art": "pencil"
+  },
+  {
+   "title": "Keep a timeline",
+   "text": "Split the work and set times: build by minute 6, test by 12, fix by 18. Write who does each part.",
+   "art": "chart"
+  },
+  {
+   "title": "Feedback is information",
+   "text": "Feedback is not a grade. It shows where a player got stuck. A level is done when that feedback changed something and you tested it again.",
+   "art": "people"
+  },
+  {
+   "kind": "example",
+   "title": "Iterate",
+   "text": "Going round this loop is called iteration. Check proves the level can be solved and shows its par.",
+   "art": "loop",
+   "steps": [
+    "plan",
+    "build",
+    "Check",
+    "test",
+    "change",
+    "test again",
+    "write the note"
+   ]
+  },
+  {
+   "title": "Write the level note",
+   "text": "A good note helps the next person play or remix it, like: Level 2: count the gems before the door. Remixed levels keep their based-on stamp.",
+   "art": "envelope"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "iteration",
+     "means": "one more round of build, test and improve"
+    },
+    {
+     "word": "feedback",
+     "means": "what testers tell you about where they got stuck"
+    },
+    {
+     "word": "timeline",
+     "means": "who does what, by when"
+    },
+    {
+     "word": "documentation",
+     "means": "notes that explain your work to the next person"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Level Maker. Do the three maker tasks, then build your own level from a plan. Let someone test it in silence, change one thing and write a level note.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-2.2-e1",
+  "2-2.2-e2",
+  "2-2.2-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "level-maker",
+  "params": "chapter=level-maker&band=2&mode=maker&lock=1"
+ }
+}

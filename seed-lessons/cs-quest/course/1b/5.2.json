@@ -1,0 +1,78 @@
+{
+ "key": "1b-5.2",
+ "n": "5.2",
+ "band": "1b",
+ "title": "It's not working!",
+ "topic": "Troubleshooting",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "It is not working!",
+   "text": "Every device stops working sometimes. Do not panic. Good fixers have a plan.",
+   "art": "wrench"
+  },
+  {
+   "title": "Quick checks first",
+   "text": "Try the quick, easy checks first: is it on, is it plugged in, is it muted? Restarting takes longer, so it comes later.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "example",
+   "title": "No sound",
+   "text": "Troubleshooting is a checklist, not a guess. Go down the list in order.",
+   "art": "screen",
+   "steps": [
+    "volume up?",
+    "headphones plugged in?",
+    "muted?",
+    "restart",
+    "ask for help"
+   ]
+  },
+  {
+   "title": "Small clues",
+   "text": "Your passphrase fails, but you know it? Check caps lock. An app is frozen? Close the app and open it again.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "troubleshoot",
+     "means": "find out why something is not working and fix it"
+    },
+    {
+     "word": "check",
+     "means": "one thing you test, like the volume"
+    },
+    {
+     "word": "restart",
+     "means": "turn it off and on again"
+    },
+    {
+     "word": "reconnect",
+     "means": "plug it in or join the network again"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Fix-It Desk and solve 4 tickets. Before you tap, ask: which check is quick and most likely?",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-5.2-e1",
+  "1b-5.2-e2",
+  "1b-5.2-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "fixit",
+  "params": "chapter=fixit&band=1b&lock=1"
+ }
+}

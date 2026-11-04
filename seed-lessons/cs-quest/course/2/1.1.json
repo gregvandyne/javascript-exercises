@@ -1,0 +1,76 @@
+{
+ "key": "2-1.1",
+ "n": "1.1",
+ "band": "2",
+ "title": "Step by step",
+ "topic": "Sequences",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Bolt follows orders",
+   "text": "Bolt does exactly what the program says, in order, and never guesses what you meant. The order of your steps is everything.",
+   "art": "robot"
+  },
+  {
+   "title": "Plan in plain words",
+   "text": "Pro programmers write the plan in plain words before they touch a block. That plan is called pseudocode. A flowchart is the same plan drawn with boxes and diamonds.",
+   "art": "pencil"
+  },
+  {
+   "kind": "example",
+   "title": "From plan to blocks",
+   "text": "Each plan line becomes one run of blocks you can test on its own. Splitting a big problem into parts like this is called decomposing.",
+   "art": "map",
+   "steps": [
+    "1. reach the key",
+    "2. open the door",
+    "3. reach the goal"
+   ]
+  },
+  {
+   "title": "Compare routes",
+   "text": "When two routes both work, compare them: fewer steps, fewer turns, fewer chances to go wrong. Count, then pick.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "algorithm",
+     "means": "a sequence of steps that solves a problem"
+    },
+    {
+     "word": "pseudocode",
+     "means": "a plan written in plain words, one line per part"
+    },
+    {
+     "word": "flowchart",
+     "means": "a plan drawn with boxes for actions and diamonds for questions"
+    },
+    {
+     "word": "decompose",
+     "means": "split a big problem into smaller parts"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Sequences and finish 4 levels. When a level shows plan lines, put them in order first, then build one plan line at a time.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-1.1-e1",
+  "2-1.1-e2",
+  "2-1.1-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "sequences",
+  "params": "chapter=sequences&band=2&lock=1"
+ }
+}

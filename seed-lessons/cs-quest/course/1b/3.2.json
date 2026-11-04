@@ -1,0 +1,75 @@
+{
+ "key": "1b-3.2",
+ "n": "3.2",
+ "band": "1b",
+ "title": "What does the data say?",
+ "topic": "Predictions",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Is it true?",
+   "text": "A claim is something you say is true, like: the plant grows every day. Evidence is the data that backs it up.",
+   "art": "magnifier"
+  },
+  {
+   "title": "Enough data?",
+   "text": "Two bars are a hunch, not a case. When there is too little data, the honest answer is: we can not tell yet.",
+   "art": "chart"
+  },
+  {
+   "kind": "example",
+   "title": "Predict the plant",
+   "text": "The plant grows 2 cm every day. So day 6 will most likely be 2 cm taller than day 5.",
+   "art": "chart",
+   "steps": [
+    "day 1: 2 cm",
+    "day 2: 4 cm",
+    "day 3: 6 cm",
+    "day 4: 8 cm",
+    "day 5: 10 cm",
+    "day 6: ?"
+   ]
+  },
+  {
+   "title": "Say only what it shows",
+   "text": "If Saturday has the tallest bar in a chart of park visitors, the chart supports: most visitors came on Saturday. It does not say why.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "claim",
+     "means": "something you say is true"
+    },
+    {
+     "word": "evidence",
+     "means": "the data that backs up a claim"
+    },
+    {
+     "word": "predict",
+     "means": "use data to say what will happen next"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Data Detective at Clues & Claims and solve 4 cases. Before you pin a claim, ask: does the chart really show it, or can we not tell yet?",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-3.2-e1",
+  "1b-3.2-e2",
+  "1b-3.2-e3"
+ ],
+ "game": {
+  "slug": "data-detective",
+  "chapter": "claims",
+  "params": "chapter=claims&band=1b&lock=1"
+ }
+}

@@ -1,0 +1,82 @@
+{
+ "key": "2-4.3",
+ "n": "4.3",
+ "band": "2",
+ "title": "Secret messages",
+ "topic": "Secret messages",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Scramble it",
+   "text": "Encryption scrambles a message so only someone with the key can read it. Decrypting turns it back.",
+   "art": "cipher"
+  },
+  {
+   "kind": "example",
+   "title": "A shift of 3",
+   "text": "A shift cipher moves every letter along the alphabet. The key is how far to shift.",
+   "art": "cipher",
+   "steps": [
+    "A → D",
+    "B → E",
+    "C → F",
+    "CAT → FDW"
+   ]
+  },
+  {
+   "title": "Brute force",
+   "text": "A shift has only 25 keys, so you can try them all. That is brute force. A keyed substitution has so many keys that trying them all takes far too long.",
+   "art": "chip"
+  },
+  {
+   "title": "Hiding is not scrambling",
+   "text": "Steganography hides a message, for example in a picture's pixels. Anyone who finds it can read it. Encryption makes it unreadable without the key.",
+   "art": "pixel"
+  },
+  {
+   "title": "Faked senders",
+   "text": "A trick message can fake its sender name. That is spoofing. It may also use facts from a public profile to seem friendly.",
+   "art": "mask"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "encryption",
+     "means": "scrambling a message so only the key opens it"
+    },
+    {
+     "word": "cipher",
+     "means": "a method for scrambling messages"
+    },
+    {
+     "word": "key",
+     "means": "the secret that scrambles and unscrambles"
+    },
+    {
+     "word": "brute force",
+     "means": "trying every possible key"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Secret Messages and finish 4 levels with the key wheel. Then check the trick cards for faked senders.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-4.3-e1",
+  "2-4.3-e2",
+  "2-4.3-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "ciphers",
+  "params": "chapter=ciphers&band=2&lock=1"
+ }
+}

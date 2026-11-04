@@ -1,0 +1,73 @@
+{
+ "key": "2-6.1",
+ "n": "6.1",
+ "band": "2",
+ "title": "Tech that changed the world",
+ "topic": "Tech changes",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Tradeoffs everywhere",
+   "text": "Technology is neither all good nor all bad. Every advance has a benefit for someone and a cost for someone else.",
+   "art": "globe"
+  },
+  {
+   "title": "Automation",
+   "text": "Automation means a machine does a task people used to do. It changes jobs more than it erases them.",
+   "art": "robot"
+  },
+  {
+   "kind": "example",
+   "title": "Self-checkout",
+   "text": "Look at both sides: what it does for daily life, and what it does to jobs.",
+   "art": "table",
+   "steps": [
+    "daily life: shorter lines",
+    "careers: fewer cashier jobs",
+    "careers: new technician jobs"
+   ]
+  },
+  {
+   "title": "Hidden costs",
+   "text": "A map app saves time, but you may stop learning your way around. Driverless cars might prevent some crashes and change drivers' jobs.",
+   "art": "map"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "tradeoff",
+     "means": "a benefit in one place, a cost in another"
+    },
+    {
+     "word": "automation",
+     "means": "a machine doing a task people used to do"
+    },
+    {
+     "word": "privacy",
+     "means": "control over who knows things about you"
+    },
+    {
+     "word": "career",
+     "means": "the kind of work a person does over many years"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Pick one technology you used today. Name one benefit for everyday life and one cost for someone's job or privacy. Then talk about it.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-6.1-e1",
+  "2-6.1-e2",
+  "2-6.1-e3"
+ ],
+ "game": null,
+ "talk": "Which invention would you un-invent for a week? Who would be better off, and who would be worse off?"
+}
