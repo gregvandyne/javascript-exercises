@@ -57,11 +57,11 @@ export function itemView(it, { showAnswer = true, n = null } = {}) {
 /** The Builder status line (P18): on / resting, and about how many teams can build this period. No prices. */
 export function builderLine(t, b) {
   if (!b) return '';
-  return html`<p class="csq-builder ${b.on ? 'is-on' : 'is-resting'}"><span>${b.on ? '🟢' : '🟡'} ${t(b.on ? 'cs.builder.on' : 'cs.builder.resting')}</span>${b.on ? html`<span>· ${t('cs.builder.teams', { count: b.teamsPerPeriod })}</span>` : ''}${!b.on && b.why === 'noKey' ? html`<span class="small muted">· ${t('cs.builder.noKey')}</span>` : ''}</p>`;
+  return html`<p class="csq-builder ${b.on ? 'is-on' : 'is-resting'}"><span><span aria-hidden="true">${b.on ? '🟢' : '🟡'}</span> ${t(b.on ? 'cs.builder.on' : 'cs.builder.resting')}</span>${b.on ? html`<span>· ${t('cs.builder.teams', { count: b.teamsPerPeriod })}</span>` : ''}${!b.on && b.why === 'noKey' ? html`<span class="small muted">· ${t('cs.builder.noKey')}</span>` : ''}</p>`;
 }
 const lessonUrl = (key, extra = '') => `/teach/cs-quest/${key}${extra}`;
 const stateChip = (t, st) => (!st || !st.inLibrary ? html`<span class="chip-s">${t('cs.state.notAdded')}</span>`
-  : st.updateAvailable ? html`<span class="chip-s warn">⬆️ ${t('cs.state.update')}</span>` : html`<span class="chip-s csq-chip-ok">✅ ${t('cs.state.inLibrary')}</span>`);
+  : st.updateAvailable ? html`<span class="chip-s warn"><span aria-hidden="true">⬆️</span> ${t('cs.state.update')}</span>` : html`<span class="chip-s csq-chip-ok"><span aria-hidden="true">✅</span> ${t('cs.state.inLibrary')}</span>`);
 
 // ---------------------------------------------------------------- the program page (/teach/cs-quest)
 /**
@@ -77,13 +77,13 @@ export function programBody(req, d) {
   const missingGames = ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine'].filter(s => !d.published[s]).map(s => cat.games[s]?.title || s);
   const before = html`<section class="panel csq-before" aria-labelledby="before-h"><h2 id="before-h">🧭 ${t('cs.before.h')}</h2>
     <ul class="csq-plain">
-      <li><span>${missingGames.length ? '⚠️' : '✅'}</span><span>${missingGames.length ? t('cs.before.gamesMissing', { games: missingGames.join(', ') }) : t('cs.before.gamesOk')}</span></li>
-      <li><span>${d.flags.live ? '✅' : 'ℹ️'}</span><span>${t(d.flags.live ? 'cs.before.liveOn' : 'cs.before.liveOff')}</span></li>
-      <li><span>${d.flags.quizSteps ? '✅' : 'ℹ️'}</span><span>${t(d.flags.quizSteps ? 'cs.before.quizOn' : 'cs.before.quizOff')}</span></li>
-      <li><span>${d.classes.length ? '✅' : '⚠️'}</span><span>${t('cs.before.classes', { count: d.classes.length })} ${d.classes.length ? '' : html`<a href="/teach">${t('school.teach.title')}</a>`}</span></li>
-      <li><span>${d.zone ? '✅' : 'ℹ️'}</span><span>${d.zone ? t('cs.before.zone', { zone: d.zone.replace(/_/g, ' ') }) : t('cs.before.zoneNone')}</span></li>
-      <li><span>🎧</span><span>${t('cs.before.headphones')}</span></li>
-      <li><span>🛠️</span><span>${t('cs.before.unit7')}</span></li>
+      <li><span aria-hidden="true">${missingGames.length ? '⚠️' : '✅'}</span><span>${missingGames.length ? t('cs.before.gamesMissing', { games: missingGames.join(', ') }) : t('cs.before.gamesOk')}</span></li>
+      <li><span aria-hidden="true">${d.flags.live ? '✅' : 'ℹ️'}</span><span>${t(d.flags.live ? 'cs.before.liveOn' : 'cs.before.liveOff')}</span></li>
+      <li><span aria-hidden="true">${d.flags.quizSteps ? '✅' : 'ℹ️'}</span><span>${t(d.flags.quizSteps ? 'cs.before.quizOn' : 'cs.before.quizOff')}</span></li>
+      <li><span aria-hidden="true">${d.classes.length ? '✅' : '⚠️'}</span><span>${t('cs.before.classes', { count: d.classes.length })} ${d.classes.length ? '' : html`<a href="/teach">${t('school.teach.title')}</a>`}</span></li>
+      <li><span aria-hidden="true">${d.zone ? '✅' : 'ℹ️'}</span><span>${d.zone ? t('cs.before.zone', { zone: d.zone.replace(/_/g, ' ') }) : t('cs.before.zoneNone')}</span></li>
+      <li><span aria-hidden="true">🎧</span><span>${t('cs.before.headphones')}</span></li>
+      <li><span aria-hidden="true">🛠️</span><span>${t('cs.before.unit7')}</span></li>
     </ul>
     ${builderLine(t, d.builder)}</section>`;
   const pathCard = p => {
@@ -103,7 +103,7 @@ export function programBody(req, d) {
     return html`<li class="csq-lrow" id="l-${key}">
       <div class="csq-lmain"><b lang="en" dir="ltr">${l.n} · ${l.title}</b>
         <span class="small muted">${idChips(l.primary[band])}${game ? html` · <span lang="en" dir="ltr">${GAME_EMOJI[game] || '🎮'} ${cat.games[game]?.title || game}</span>` : ''}</span>
-        ${tpl ? stateChip(t, st) : html`<span class="chip-s">${t('cs.state.soon')}</span>`}${game && !pub ? html` <span class="chip-s warn">⚠️ ${t('cs.state.gameNotYet', { game: cat.games[game]?.title || game })}</span>` : ''}</div>
+        ${tpl ? stateChip(t, st) : html`<span class="chip-s">${t('cs.state.soon')}</span>`}${game && !pub ? html` <span class="chip-s warn"><span aria-hidden="true">⚠️</span> ${t('cs.state.gameNotYet', { game: cat.games[game]?.title || game })}</span>` : ''}</div>
       ${tpl ? html`<span class="acts">
         <a class="btn btn-sm" href="${lessonUrl(key)}">📋 ${t('cs.lesson.openPlan')}</a>
         ${pub && tpl.params ? html`<a class="btn btn-sm" href="/play/${game}?${tpl.params}&mode=projector" target="_blank" rel="noopener">▶ ${t('cs.lesson.preview')}</a>` : ''}

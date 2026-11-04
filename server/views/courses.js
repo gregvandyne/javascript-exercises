@@ -242,10 +242,10 @@ function slide(t, s, i, n, step) {
 /** The quick check: one fieldset per question, choices in a seeded order, no answers. A plain form without the script. */
 function checkForm(t, c, step, qs) {
   return html`<form class="qcheck" method="post" action="/courses/${c.slug}/${step.key}/check" id="qcheck">
-    ${qs.map((qq, qi) => html`<fieldset class="qq" data-q="${qq.id}" id="q-${qi + 1}">
+    ${qs.map((qq, qi) => html`<fieldset class="qq" data-q="${qq.id}" id="q-${qi + 1}" aria-describedby="q-${qi + 1}-fb">
       <legend><span class="qq-n">${t('courses.check.q', { n: qi + 1, total: qs.length })}</span><span class="qq-t"${en}>${qq.q}</span></legend>
       <div class="qq-choices"${en}>${qq.choices.map(ch => html`<label class="qchoice"><input type="radio" name="${qq.id}" value="${ch.i}" required><span>${ch.text}</span></label>`)}</div>
-      <p class="qq-fb" role="status" aria-live="polite"></p>
+      <p class="qq-fb" id="q-${qi + 1}-fb" role="status" aria-live="polite"></p>
     </fieldset>`)}
     <button class="btn btn-primary btn-big" type="submit" id="qcheck-send">${t('courses.check.send')}</button>
   </form>`;
@@ -276,7 +276,7 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn }) 
       <p class="cl-kicker">${t(`${c.key}.title`)} · ${t('courses.lesson.of', { n: step.index + 1, total })} · <span${en}>${step.topic}</span></p>
       <h1${en}>${step.title}</h1>
     </header>
-    <div class="deck" id="deck" lang="en" dir="ltr" aria-roledescription="carousel" aria-label="${step.title}">
+    <div class="deck" id="deck" lang="en" dir="ltr" role="region" aria-roledescription="carousel" aria-label="${step.title}">
       ${step.slides.map((sl, i) => slide(t, sl, i, n, step))}
     </div>
     <nav class="deck-nav" id="deck-nav" hidden aria-label="${t('courses.lesson.slides')}">

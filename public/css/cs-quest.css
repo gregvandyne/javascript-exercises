@@ -58,7 +58,7 @@
 .csq-lrow>.csq-lmain{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}
 .csq-lrow b{overflow-wrap:anywhere}
 .csq-lrow>.acts{margin-inline-start:auto}
-.csq-lrow .acts .btn-sm{min-height:40px}
+.csq-lrow .acts .btn-sm{min-height:44px}
 .csq-before li{display:flex;gap:var(--s2);align-items:flex-start}
 .csq-before li>span:first-child{flex:none}
 .csq-builder{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3);align-items:center;padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-weight:700}
