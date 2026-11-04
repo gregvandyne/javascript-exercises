@@ -272,3 +272,21 @@ test('warm-up: one run at a time; it stops at the daily characters', async () =>
   const st = lines.status();
   assert.equal(st.stopped, 'budget'); assert.ok(st.done < st.total); assert.ok(st.chars <= 1000);
 });
+
+test('course lesson slides: the server reads the slide of an open step in English with the game character voice', async () => {
+  reset(); on(['en']);
+  const C = await import('../../server/services/courses.js');
+  const c = C.getCourse('cs-quest');
+  C.setBand(mia, c, '1b');
+  const first = C.steps(c, '1b')[0], second = C.steps(c, '1b')[1];
+  const r = await say(mia, { ctx: 'course', course: 'cs-quest', step: first.key, i: 0 });
+  assert.equal(r.status, 200); assert.match(r.json.u, /^\/tts\/[0-9a-f]{64}\.mp3$/);
+  // a locked step, a slide that is not there, a stranger without an account: the device's voice
+  assert.deepEqual((await say(mia, { ctx: 'course', course: 'cs-quest', step: second.key, i: 0 })).json, { code: 'off' });
+  assert.deepEqual((await say(mia, { ctx: 'course', course: 'cs-quest', step: first.key, i: 99 })).json, { code: 'off' });
+  assert.deepEqual((await say(null, { ctx: 'course', course: 'cs-quest', step: first.key, i: 0 })).json, { code: 'off' });
+  // the page never sends text: a text field is ignored
+  const again = await say(mia, { ctx: 'course', course: 'cs-quest', step: first.key, i: 0, text: 'something else' });
+  assert.equal(again.json.u, r.json.u);
+  off();
+});
