@@ -9,17 +9,23 @@
   {
    "title": "Three kinds of false",
    "text": "Some false posts want different things. A scam wants your tap, a hoax wants your belief, and rage-bait wants your reaction and your share.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-2-parcel",
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
   },
   {
    "title": "Adverts wear costumes too",
    "text": "Not every friendly post is a friend talking. Sponsored posts are paid adverts in a costume, and a glowing plug may be paid for too. Ask who benefits if you tap or buy.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/packet-post/tricks-2-quiz",
+   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play."
   },
   {
    "title": "Check the source, not the pixels",
    "text": "Edited and AI-made pictures can look perfect now, because fakes are cheap to make. So do not judge by the pixels. Judge by the source: who posted it, and can anyone else confirm it?",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/packet-post/ciphers-2-pixels",
+   "alt": "Hide a heart in the open: a grid of squares where a heart appears when the brightness numbers are typed in."
   },
   {
    "title": "Stop before you share",
@@ -38,7 +44,9 @@
     "Find another source: the real notice board",
     "No other source backs it up",
     "Decide: do not share; tell Pim"
-   ]
+   ],
+   "img": "csq/packet-post/tricks-2-safe",
+   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush."
   },
   {
    "kind": "words",

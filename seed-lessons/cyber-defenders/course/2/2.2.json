@@ -9,7 +9,9 @@
   {
    "title": "Two questions at the counter",
    "text": "When you collect a parcel, Pim checks two different things. Authentication proves it is really you. Authorization checks the list to see if this parcel is yours to open.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/locks-2-shield",
+   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private."
   },
   {
    "kind": "example",
@@ -28,12 +30,16 @@
   {
    "title": "Passkeys, honestly",
    "text": "A passkey lives on your device, which proves it is you without sharing a copyable secret. A fake page cannot trick you into handing it over, because there is nothing to hand over.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/locks-2-router",
+   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles."
   },
   {
    "title": "Shared screens, separate doors",
    "text": "On a shared tablet or class account, profiles and permissions matter. Your profile keeps your work, messages and settings separate from everyone else who uses the same screen.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/packet-post/locks-1b-protect",
+   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?"
   },
   {
    "kind": "words",

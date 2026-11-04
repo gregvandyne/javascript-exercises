@@ -16,17 +16,23 @@
   {
    "title": "When lists leak",
    "text": "In a breach, a service is broken into and its passphrases are copied. Stolen lists are traded, then tried on other accounts to find people who reused a key.",
-   "art": "network"
+   "art": "network",
+   "img": "csq/packet-post/locks-2-shield",
+   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private."
   },
   {
    "title": "Real keys stay secret",
    "text": "Your real passphrase is never for practice. In Packet Post it is called your mailbox key, and you build it by tapping tiles, so nothing real is shared.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/locks-2-router",
+   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles."
   },
   {
    "title": "One safe drawer",
    "text": "A password manager is the spare-key drawer done properly. It stores a different strong passphrase for each account, so a trusted adult only has to remember one main key.",
-   "art": "box"
+   "art": "box",
+   "img": "csq/packet-post/locks-2-backup",
+   "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh."
   },
   {
    "kind": "example",

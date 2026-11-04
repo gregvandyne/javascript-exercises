@@ -259,6 +259,7 @@ function loadCyber(items) {
     for (const it of readJson(path.join(CD, 'sets', f)).items || []) items.set(it.id, it);
   }
   const reg = readJson(path.join(CD, 'units.json'));
+  const registry = readJson(path.join(CD, 'standards.json'));
   const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
   const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}) }));
   const steps = {};
@@ -283,7 +284,7 @@ function loadCyber(items) {
       return { ...base, ...fromCyberDeck(key, s, band, deck, game, items, problems[band]) };
     });
   }
-  return { steps, problems, groups };
+  return { steps, problems, groups, catalogue: { program: reg.program, units: reg.units || [], registry } };
 }
 /** One Cyber Defenders deck, cleaned and checked against its units.json entry (the same rules as fromDeck). */
 function fromCyberDeck(key, s, band, d, game, items, problems) {
@@ -344,6 +345,9 @@ export function getStep(course, key) {
 export const item = id => load().items.get(id) || null;
 /** What the decks say that does not fit their course data (empty when every deck is right). */
 export const deckProblems = (band, slug = 'cs-quest') => (slug === 'cyber-defenders' ? load().cyber.problems[band] : load().csq.problems[band]) || [];
+/** Cyber Defenders' teacher-facing catalogue: the program line, the units with their steps, standards and
+ *  teacher notes, and the standards registry — the data the teacher page renders (units.json + standards.json). */
+export const cyberCatalogue = () => load().cyber.catalogue;
 /** Forget the loaded files (tests that write decks). */
 export const reload = () => { cache = null; };
 

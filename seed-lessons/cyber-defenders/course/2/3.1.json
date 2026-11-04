@@ -9,7 +9,9 @@
   {
    "title": "Facts that point at you",
    "text": "Pim calls these facts PII: your full name, where you live, school, birthday, location, photos and voice. Each one points at one person: you.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/would-you-rather/online-name-2",
+   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?"
   },
   {
    "title": "Sharing buys real things",
@@ -35,12 +37,16 @@
     "asks your birth month",
     "asks the street you live on",
     "those answers can unlock accounts"
-   ]
+   ],
+   "img": "csq/packet-post/tricks-2-quiz",
+   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play."
   },
   {
    "title": "Fixing an overshare",
    "text": "Some sharing can be undone: delete the post and ask the service to remove its copies. Some cannot, so tell a trusted adult fast, and in some places the law can help too.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/would-you-rather/online-delete-2",
+   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?"
   },
   {
    "kind": "words",
@@ -70,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Would You Rather and choose the Online topic: play Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
   }
  ],
  "check": [

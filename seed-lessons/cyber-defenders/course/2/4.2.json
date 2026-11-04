@@ -9,12 +9,16 @@
   {
    "title": "Pim's notebook of tricksters",
    "text": "Some tricks are not accidents. Behind each one is a threat actor: a person or group trying to get something they should not have.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
   },
   {
    "title": "Four kinds of actor",
    "text": "Meet the gallery in plain words: the scammer wants money, the account thief wants in, the vandal wants damage, and the spy wants secrets. None of them is glamorous. Each is simply trying to take what is not theirs.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/packet-post/tricks-2-parcel",
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
   },
   {
    "kind": "example",
@@ -34,12 +38,16 @@
   {
    "title": "Permission is the whole difference",
    "text": "Testing a network's locks can be ethical or malicious, and permission is the whole difference. With permission it is defense work. Without it, it is breaking in, whatever the reason given.",
-   "art": "key"
+   "art": "key",
+   "img": "csq/packet-post/locks-2-shield",
+   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private."
   },
   {
    "title": "Not like the films",
    "text": "Films dress hacking up as instant magic, which is a costume too. Real defense is slow, careful and lawful, and it is a real job people are paid to do well.",
-   "art": "screen"
+   "art": "screen",
+   "img": "csq/packet-post/protocols-2-design",
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them."
   },
   {
    "kind": "words",

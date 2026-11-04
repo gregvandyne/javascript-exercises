@@ -9,12 +9,16 @@
   {
    "title": "Doors only staff may open",
    "text": "At the post office, some doors only staff may open. That rule decides who can get to the letters inside, and who must stay out.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/locks-1b-tell",
+   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share."
   },
   {
    "title": "Your tablet does it too",
    "text": "A tablet lock screen does the same job at home. Only a person with permission, and the right key or code, can open it and see inside.",
-   "art": "screen"
+   "art": "screen",
+   "img": "csq/packet-post/locks-1b-protect",
+   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?"
   },
   {
    "kind": "example",
@@ -27,7 +31,9 @@
     "a second lock asks for a code",
     "a code arrives on a phone at home",
     "the mailbox stays shut"
-   ]
+   ],
+   "img": "csq/packet-post/locks-1b-built",
+   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess."
   },
   {
    "title": "A spare copy, kept elsewhere",
@@ -39,7 +45,9 @@
   {
    "title": "The wrong person",
    "text": "Finding a tablet on a bench does not make it yours to open. Borrowing a friend's game account is the same: no permission means hands off.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/packet-post/locks-1b-habits",
+   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky."
   },
   {
    "kind": "words",

@@ -40,6 +40,7 @@ import { router as kitRoutes } from './routes/kit.js';
 import { router as liveRoutes } from './routes/live.js';
 import { router as ttsRoutes } from './routes/tts.js';
 import { router as csQuestRoutes } from './routes/cs-quest.js';
+import { router as cyberRoutes } from './routes/cyber-defenders.js';
 import { pathLocale, privateNoindex } from './seo.js';
 import { compressPublicPages, staticAssets, versionedCache } from './services/compress.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
@@ -183,7 +184,7 @@ export function createApp() {
   app.use(grownupGuard);
 
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
-  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, discoverRoutes, courseRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, discoverRoutes, courseRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, cyberRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

@@ -11,17 +11,81 @@
    "text": "You send one drawing to a friend. The network keeps a copy at each stop along the way, like stamps in Pim's sorting book.",
    "art": "map",
    "img": "csq/packet-post/routes-1b-roads",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "focus": [
+    {
+     "cue": "One drawing sets off across the roads",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "A copy is kept at every stop along the way",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "Copies kept safe",
    "text": "The cloud is someone else's very big post office that keeps copies safe for you. A backup there saves your photos when a tablet breaks.",
-   "art": "box"
+   "art": "box",
+   "img": "csq/packet-post/locks-1b-backup",
+   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
+   "focus": [
+    {
+     "cue": "Sorting spare copies: which way keeps them safe?",
+     "box": [
+      9,
+      28,
+      43,
+      40
+     ]
+    },
+    {
+     "cue": "A copy in another place survives a broken tablet",
+     "box": [
+      55,
+      31,
+      33,
+      20
+     ]
+    }
+   ]
   },
   {
    "title": "Passed on without you",
    "text": "A copy you send to a friend can be forwarded to others without you knowing. Once a copy travels on, you cannot call it back.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/packet-post/routes-1b-journey",
+   "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
+   "focus": [
+    {
+     "cue": "Packet 2 waits at Hill Office, two hops done",
+     "box": [
+      22,
+      40,
+      9,
+      13
+     ]
+    },
+    {
+     "cue": "Packet 2 of 4: its number travels with it",
+     "box": [
+      55,
+      32,
+      20,
+      11
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -32,12 +96,56 @@
     "a sunny drawing of a dog: fine to send",
     "a private secret about a friend: keep it",
     "not sure: ask a trusted adult first"
+   ],
+   "img": "csq/would-you-rather/online-drawing-1b",
+   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "focus": [
+    {
+     "cue": "Share a drawing so everyone can see it",
+     "box": [
+      6,
+      17,
+      42,
+      71
+     ]
+    },
+    {
+     "cue": "Or show it only to your family",
+     "box": [
+      52,
+      17,
+      42,
+      71
+     ]
+    }
    ]
   },
   {
    "title": "The Magpie's nest",
    "text": "Pim warns that the Magpie keeps a copy of every shiny secret it finds. In its nest, those copies stay pinned up, forever.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-1b-stranger",
+   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+   "focus": [
+    {
+     "cue": "A stranger's card, fishing for a shiny secret",
+     "box": [
+      8,
+      27,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "It asks where you live: a fact to keep private",
+     "box": [
+      8,
+      36,
+      47,
+      8
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -67,7 +175,20 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Play Many Roads in Packet Post for 2 levels, tracing every copy's journey. Name one thing you would never send, because copies cannot come back.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/routes-1b-roads",
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "focus": [
+    {
+     "cue": "Play Many Roads: trace every copy's journey",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -23,7 +23,9 @@
   {
    "title": "Clues three and four",
    "text": "Clue three: it comes from someone you do not know. Clue four asks for your key. Real companies and real games never ask for your passphrase.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-1b-coins",
+   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them."
   },
   {
    "kind": "example",
@@ -44,7 +46,7 @@
    "text": "When you spot a trick, do not reply and do not tap anything. Show it to a trusted adult. A trick that fishes for secrets is called phishing.",
    "art": "shield",
    "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same \u2014 stop, do not reply, and tell a trusted adult."
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult."
   },
   {
    "kind": "words",
@@ -74,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Spot the Trick and check 4 cards. Tap every clue you find, then decide if each card is a trick or safe.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
   }
  ],
  "check": [

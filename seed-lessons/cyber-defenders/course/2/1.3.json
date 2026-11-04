@@ -9,7 +9,29 @@
   {
    "title": "Three rooms for data",
    "text": "Pim sorts data into three rooms. The van is data in transit, the vault is data at rest, and the reading desk is data in use, open while you work with it.",
-   "art": "box"
+   "art": "box",
+   "img": "csq/packet-post/protocols-2-journey",
+   "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
+   "focus": [
+    {
+     "cue": "A picture's journey, in five rule cards",
+     "box": [
+      41,
+      29,
+      46,
+      19
+     ]
+    },
+    {
+     "cue": "Put them in the order they happen",
+     "box": [
+      41,
+      27,
+      46,
+      6
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -21,22 +43,110 @@
     "in the van, in transit: seal the trip",
     "in the vault, at rest: lock the storage",
     "same photo, three different locks"
+   ],
+   "img": "csq/packet-post/routes-2-sealed",
+   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "focus": [
+    {
+     "cue": "In transit: the picture travels a sealed road",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "The padlock streets keep readers out",
+     "box": [
+      34,
+      34,
+      13,
+      15
+     ]
+    }
    ]
   },
   {
    "title": "The cloud is a borrowed vault",
    "text": "The cloud is a vault in someone else's building. Backups and sharing get easy, but you trust their locks and their workers to keep your data safe.",
-   "art": "globe"
+   "art": "globe",
+   "img": "csq/packet-post/locks-2-backup",
+   "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
+   "focus": [
+    {
+     "cue": "A copy in another place: the borrowed vault",
+     "box": [
+      41,
+      32,
+      46,
+      22
+     ]
+    },
+    {
+     "cue": "The line runs from Pim's Post to Grandma's House",
+     "box": [
+      7,
+      61,
+      33,
+      11
+     ]
+    }
+   ]
   },
   {
    "title": "Photos that upload themselves",
    "text": "Many devices send photos to the cloud by themselves. Choosing what belongs in which vault is a Cyber Defender decision, not a default to leave switched on.",
-   "art": "screen"
+   "art": "screen",
+   "img": "csq/would-you-rather/online-cloud-2",
+   "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
+   "focus": [
+    {
+     "cue": "Photos only on your tablet",
+     "box": [
+      6,
+      17,
+      42,
+      71
+     ]
+    },
+    {
+     "cue": "Or a copy on a service someone else runs",
+     "box": [
+      52,
+      17,
+      42,
+      71
+     ]
+    }
+   ]
   },
   {
    "title": "The Magpie watches all three",
    "text": "The Magpie does not care which room a secret is in. It watches the van, the vault and the desk, hunting shiny secrets, so a Defender checks every room's lock.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/routes-2-budget",
+   "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
+   "focus": [
+    {
+     "cue": "The Magpie watches the roads between offices",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "Every room and every road needs its check",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -68,7 +178,18 @@
    "text": "Open Packet Post at Many Roads and play one run for each room: in transit, at rest and in use. Before each run, name the room and its lock.",
    "art": "trophy",
    "img": "csq/packet-post/routes-2-hops",
-   "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget."
+   "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget.",
+   "focus": [
+    {
+     "cue": "Play Many Roads: name the room before each run",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    }
+   ]
   }
  ],
  "check": [

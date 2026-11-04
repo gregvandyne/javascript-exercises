@@ -9,7 +9,9 @@
   {
    "title": "A key for your house",
    "text": "Your house key opens your front door, and only your front door. Pim says a good key is kept safe, never lent out, and never left lying around.",
-   "art": "key"
+   "art": "key",
+   "img": "csq/packet-post/locks-1b-protect",
+   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?"
   },
   {
    "title": "A key for your mailbox",

@@ -16,7 +16,7 @@ export const COURSES = Object.freeze([
     ],
   },
   {
-    slug: 'cyber-defenders', emoji: '🦉', key: 'courses.cd', teacherPath: '/teachers',
+    slug: 'cyber-defenders', emoji: '🦉', key: 'courses.cd', teacherPath: '/teachers/cyber-defenders',
     // The order the units teach them in (units 1-2 and 4 play Packet Post; unit 3 plays Would You Rather).
     games: [
       { slug: 'packet-post', topic: 'networks', shared: true },

@@ -11,21 +11,95 @@
    "text": "Pim the owl sorts the morning post at the Netville post office. Every message must reach the right house, safe and whole.",
    "art": "envelope",
    "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "focus": [
+    {
+     "cue": "A photo waits at Pim's Post, ready to travel",
+     "box": [
+      9,
+      30,
+      20,
+      34
+     ]
+    },
+    {
+     "cue": "Its trip: across the roads to Grandma's House",
+     "box": [
+      30,
+      30,
+      22,
+      45
+     ],
+     "path": [
+      [
+       12,
+       60
+      ],
+      [
+       24,
+       42
+      ],
+      [
+       44,
+       56
+      ]
+     ]
+    }
+   ]
   },
   {
    "title": "Too big for one envelope",
    "text": "A photo is too big for one envelope. Pim cuts it into small numbered pieces called packets, so each piece can travel on its own.",
    "art": "pixel",
    "img": "csq/packet-post/packets-1b-split",
-   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office."
+   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office.",
+   "focus": [
+    {
+     "cue": "One photo, three packets: each takes its own road",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "Packet 1 of 3: every packet wears its number",
+     "box": [
+      55,
+      32,
+      18,
+      11
+     ]
+    }
+   ]
   },
   {
    "title": "Different roads",
    "text": "Packets travel different roads through routers, which are other post offices along the way. If one road closes, a packet can take another road instead.",
    "art": "network",
    "img": "csq/packet-post/routes-1b-roads",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "focus": [
+    {
+     "cue": "Packets travel the roads from office to office",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "If a road closes, another road can carry them",
+     "box": [
+      55,
+      20,
+      33,
+      14
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -39,12 +113,63 @@
     "rebuild in order: 1, 2, 3"
    ],
    "img": "csq/packet-post/packets-1b-order",
-   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
+   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order.",
+   "focus": [
+    {
+     "cue": "Packets can arrive mixed up at the far end",
+     "box": [
+      9,
+      30,
+      43,
+      40
+     ]
+    },
+    {
+     "cue": "Their numbers show the right order",
+     "box": [
+      55,
+      37,
+      10,
+      16
+     ]
+    },
+    {
+     "cue": "Put back together, the photo is whole again",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "Hands that could peek",
    "text": "Every hand that carries a packet could peek inside it. That is why later steps teach seals and locks to keep messages private.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/packets-1b-center",
+   "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
+   "focus": [
+    {
+     "cue": "Every road here meets at the center office",
+     "box": [
+      19,
+      51,
+      11,
+      11
+     ]
+    },
+    {
+     "cue": "Many hands carry each packet on its way",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -74,7 +199,20 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Break It Up, then play 2 levels of Many Roads. Watch the number on every packet.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "focus": [
+    {
+     "cue": "Play Break It Up: watch the number on every packet",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -9,12 +9,56 @@
   {
    "title": "On Pim's counter",
    "text": "On Pim's counter sit a postcard and a sealed envelope. Anyone can read the postcard, but the envelope keeps its words hidden.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/protocols-1b-key",
+   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+   "focus": [
+    {
+     "cue": "Three packets were sent on this road",
+     "box": [
+      8,
+      37,
+      45,
+      27
+     ]
+    },
+    {
+     "cue": "Each packet gets its own mail slot",
+     "box": [
+      54,
+      28,
+      19,
+      11
+     ]
+    }
+   ]
   },
   {
    "title": "Open like a postcard",
    "text": "An open network is like a postcard. Anyone nearby could read what travels on it, so it is not a place for private things.",
-   "art": "network"
+   "art": "network",
+   "img": "csq/packet-post/protocols-1b-twice",
+   "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
+   "focus": [
+    {
+     "cue": "Four packets this time, travelling one road",
+     "box": [
+      8,
+      37,
+      45,
+      27
+     ]
+    },
+    {
+     "cue": "One arrived twice: the extra copy goes in the bin",
+     "box": [
+      54,
+      39,
+      19,
+      11
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -25,17 +69,83 @@
     "no padlock: treat it as a postcard",
     "padlock showing: the trip is sealed",
     "not sure: stop and ask a trusted adult"
+   ],
+   "img": "csq/packet-post/routes-2-sealed",
+   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "focus": [
+    {
+     "cue": "Sealed roads wear a padlock",
+     "box": [
+      36,
+      36,
+      12,
+      15
+     ]
+    },
+    {
+     "cue": "Open roads have a snoopy cat who reads packets",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
    ]
   },
   {
    "title": "What a seal cannot promise",
    "text": "A sealed envelope proves the trip is private. It does not prove the sender is kind, so still think before you trust a message.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/packet-post/tricks-1b-card",
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "focus": [
+    {
+     "cue": "This message wears a bank's name",
+     "box": [
+      9,
+      28,
+      43,
+      24
+     ]
+    },
+    {
+     "cue": "A seal on the trip says nothing about the sender",
+     "box": [
+      55,
+      30,
+      33,
+      30
+     ]
+    }
+   ]
   },
   {
    "title": "The most open road",
    "text": "Public networks in cafés and trains are the most open road of all. Save private things for your home network instead.",
-   "art": "globe"
+   "art": "globe",
+   "img": "csq/packet-post/routes-1b-town",
+   "alt": "The big town map: roadworks all over town, and Pim warns that two roads will close.",
+   "focus": [
+    {
+     "cue": "The whole town's roads, open to everyone",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "Roadworks close two roads while you play",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -65,7 +175,20 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Rules of the Road and play 2 levels of seal-check duty. Look for the padlock on every trip.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/protocols-1b-key",
+   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+   "focus": [
+    {
+     "cue": "Play Rules of the Road: look for the padlock",
+     "box": [
+      8,
+      37,
+      45,
+      27
+     ]
+    }
+   ]
   }
  ],
  "check": [
