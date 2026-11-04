@@ -1,0 +1,78 @@
+{
+ "key": "2-5.2",
+ "n": "5.2",
+ "band": "2",
+ "title": "It's not working!",
+ "topic": "Troubleshooting",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Fixers do not guess",
+   "text": "When something breaks, good fixers follow a flowchart: a chain of yes/no questions, cheapest check first.",
+   "art": "wrench"
+  },
+  {
+   "title": "One change at a time",
+   "text": "Change three things and it works? Now you do not know which change fixed it. Change one thing, then test again.",
+   "art": "gears"
+  },
+  {
+   "kind": "example",
+   "title": "The printer prints nothing",
+   "text": "Cheap, quick checks come before slow, expensive ones.",
+   "art": "screen",
+   "steps": [
+    "is it on?",
+    "is it plugged in?",
+    "is there paper?",
+    "restart it",
+    "swap the cable"
+   ]
+  },
+  {
+   "title": "The swap test",
+   "text": "Swap a part for one you know works. If the problem moves with the part, you found the fault. One laptop prints and another does not? Look at the one that fails.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "isolate",
+     "means": "narrow a problem down to one part"
+    },
+    {
+     "word": "swap test",
+     "means": "trade a part for a working one to see if the fault moves"
+    },
+    {
+     "word": "flowchart",
+     "means": "yes/no questions in order, cheapest first"
+    },
+    {
+     "word": "restart",
+     "means": "turn it off and on to clear a stuck state"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Fix-It Desk and solve 4 tickets. Build the flowchart first, with the cheapest check at the top.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-5.2-e1",
+  "2-5.2-e2",
+  "2-5.2-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "fixit",
+  "params": "chapter=fixit&band=2&lock=1"
+ }
+}

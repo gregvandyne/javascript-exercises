@@ -1,0 +1,82 @@
+{
+ "key": "2-4.2",
+ "n": "4.2",
+ "band": "2",
+ "title": "Lock it up",
+ "topic": "Passphrases",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Two halves of security",
+   "text": "Physical security protects the machine: a locked door, a cable lock. Digital security protects the data: a passphrase, two-step sign-in, a firewall.",
+   "art": "shield"
+  },
+  {
+   "kind": "example",
+   "title": "Physical or digital?",
+   "text": "Sort each measure by what it protects: the machine or the data.",
+   "art": "lock",
+   "steps": [
+    "locked server room: physical",
+    "entry badge: physical",
+    "firewall: digital",
+    "two-step sign-in: digital"
+   ]
+  },
+  {
+   "title": "The padlock",
+   "text": "HTTPS shows as a padlock. Your details travel in a sealed envelope instead of an open postcard. It seals the trip; it does not make the shop honest.",
+   "art": "lock"
+  },
+  {
+   "title": "Strong passphrases",
+   "text": "Four random words beat a short word with a number added. Use a different one for each account, so one leak can not open everything.",
+   "art": "key"
+  },
+  {
+   "title": "Think before you post",
+   "text": "Making something public has a benefit and a risk. Posting where you will be helps friends find you, and it tells strangers too.",
+   "art": "globe"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "physical vs digital",
+     "means": "protecting the machine vs protecting the data"
+    },
+    {
+     "word": "firewall",
+     "means": "a guard that blocks unwanted traffic to a network"
+    },
+    {
+     "word": "HTTPS",
+     "means": "a sealed connection, shown by the padlock"
+    },
+    {
+     "word": "two-step sign-in",
+     "means": "a second check, like a code sent to your device"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. For each choice, name the benefit and the risk.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-4.2-e1",
+  "2-4.2-e2",
+  "2-4.2-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=2&lock=1"
+ }
+}

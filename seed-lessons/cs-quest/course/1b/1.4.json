@@ -1,0 +1,78 @@
+{
+ "key": "1b-1.4",
+ "n": "1.4",
+ "band": "1b",
+ "title": "Counting and remembering",
+ "topic": "Variables",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Bolt needs to remember",
+   "text": "Some doors open only when Bolt has 5 gems. How does a program remember how many it has? It uses a variable.",
+   "art": "robot"
+  },
+  {
+   "title": "A box with a name",
+   "text": "A variable is a box with a name on it, like count. The program can look inside and change it while it runs. The number inside is its value.",
+   "art": "box"
+  },
+  {
+   "title": "Set or change?",
+   "text": "Set puts a new number in the box: set count to 0. Change by adds to what is already there: change count by 1 makes 3 into 4.",
+   "art": "gears"
+  },
+  {
+   "kind": "example",
+   "title": "Counting gems",
+   "text": "Every time Bolt picks up a gem, count goes up by one. Watch the watch pill: 1, 2, 3, 4, 5!",
+   "art": "grid",
+   "steps": [
+    "set count to 0",
+    "repeat 5 times:",
+    "move",
+    "pick up",
+    "change count by 1"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "variable",
+     "means": "a box with a name that a program can look in and change"
+    },
+    {
+     "word": "value",
+     "means": "what is inside the box right now"
+    },
+    {
+     "word": "set",
+     "means": "put a new value in the box"
+    },
+    {
+     "word": "change by",
+     "means": "add to the value that is already there"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Variables and finish 4 levels. Press Step and read the watch pill after each block: what is in the box now?",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-1.4-e1",
+  "1b-1.4-e2",
+  "1b-1.4-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "variables",
+  "params": "chapter=variables&band=1b&lock=1"
+ }
+}

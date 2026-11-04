@@ -1,0 +1,81 @@
+{
+ "key": "1b-6.2",
+ "n": "6.2",
+ "band": "1b",
+ "title": "Made for everyone",
+ "topic": "For everyone",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Made for everyone",
+   "text": "People see, hear, read and move in different ways. A good game works for all of them.",
+   "art": "people"
+  },
+  {
+   "title": "Every switch is for someone",
+   "text": "Open a game's settings: captions, read-aloud, text size, contrast. Each switch was made for someone.",
+   "art": "screen"
+  },
+  {
+   "title": "Help one, help many",
+   "text": "Captions were made for people who can not hear. They also help anyone in a noisy room. A change for one person usually helps many.",
+   "art": "star"
+  },
+  {
+   "kind": "example",
+   "title": "Who does it help?",
+   "text": "Match each change to the people it helps. Most changes help more than one group.",
+   "art": "people",
+   "steps": [
+    "captions: can not hear, noisy room",
+    "big text: hard to see, bright sun",
+    "one-hand buttons: one hand free"
+   ]
+  },
+  {
+   "title": "Ask for ideas",
+   "text": "Ask someone else what they would change. Other people's ideas, called perspectives, spot things you did not think of.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "accessible",
+     "means": "easy to use for people who see, hear or move differently"
+    },
+    {
+     "word": "usable",
+     "means": "easy for people to figure out and use"
+    },
+    {
+     "word": "caption",
+     "means": "words on the screen that show what is said"
+    },
+    {
+     "word": "contrast",
+     "means": "how much the text stands out from the background"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve briefs 1 and 2. Watch where the user struggles.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-6.2-e1",
+  "1b-6.2-e2",
+  "1b-6.2-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "design-lab",
+  "params": "chapter=design-lab&band=1b&lock=1"
+ }
+}

@@ -1,0 +1,76 @@
+{
+ "key": "1b-1.3",
+ "n": "1.3",
+ "band": "1b",
+ "title": "If this, then that",
+ "topic": "Conditionals",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Bolt in the fog",
+   "text": "In the fog, Bolt cannot see the walls. A plain list of moves would bump into one. Bolt needs to decide for itself.",
+   "art": "robot"
+  },
+  {
+   "title": "An if asks a question",
+   "text": "An if block asks a question about right now: is the path ahead clear? If yes, one thing happens. If no, the else part happens.",
+   "art": "branch"
+  },
+  {
+   "kind": "example",
+   "title": "A fog-proof program",
+   "text": "Put an if / else inside a repeat. Bolt checks again at every square, so it turns by itself at each wall.",
+   "art": "grid",
+   "steps": [
+    "repeat 6 times:",
+    "if path ahead: move",
+    "else: turn left"
+   ]
+  },
+  {
+   "title": "A when listens",
+   "text": "A when block waits for something to happen, like a gem being picked up. Then its blocks run right away. An if asks; a when listens.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "condition",
+     "means": "a question with a yes or no answer"
+    },
+    {
+     "word": "if",
+     "means": "a block that runs its steps only when the answer is yes"
+    },
+    {
+     "word": "else",
+     "means": "the steps that run when the answer is no"
+    },
+    {
+     "word": "event",
+     "means": "something that happens, like a gem being picked up"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Conditionals & events and finish 4 levels. Say each rule out loud first: if ___, then Bolt ___.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-1.3-e1",
+  "1b-1.3-e2",
+  "1b-1.3-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "conditionals",
+  "params": "chapter=conditionals&band=1b&lock=1"
+ }
+}

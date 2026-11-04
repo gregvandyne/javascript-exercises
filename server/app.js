@@ -16,6 +16,7 @@ import { frameSafeHeaders } from './services/frame.js';
 import { middleware as theme } from './theme.js';
 import { router as authRoutes } from './routes/auth.js';
 import { router as discoverRoutes } from './routes/discover.js';
+import { router as courseRoutes } from './routes/courses.js';
 import { router as gameRoutes } from './routes/games.js';
 import { router as studioRoutes } from './routes/studio.js';
 import { router as socialRoutes } from './routes/social.js';
@@ -182,7 +183,7 @@ export function createApp() {
   app.use(grownupGuard);
 
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
-  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, discoverRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, discoverRoutes, courseRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

@@ -1,0 +1,83 @@
+{
+ "key": "2-4.1",
+ "n": "4.1",
+ "band": "2",
+ "title": "How a message travels",
+ "topic": "Packets",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Messages in packets",
+   "text": "Every message on the internet is cut into numbered packets. They travel through routers and are rebuilt at the other end.",
+   "art": "envelope"
+  },
+  {
+   "title": "Rules everyone follows",
+   "text": "A protocol is a set of rules every computer on the network agrees on. Without the same rules everywhere, a packet could not be passed on or rebuilt.",
+   "art": "network"
+  },
+  {
+   "kind": "example",
+   "title": "Say got it",
+   "text": "The receiver says got it for each packet and asks again for a missing one. Extra copies are thrown away.",
+   "art": "envelope",
+   "steps": [
+    "got 1",
+    "got 2",
+    "got 4",
+    "please send 3 again",
+    "got 3"
+   ]
+  },
+  {
+   "title": "Damaged on the way?",
+   "text": "A checksum is a count sent along with a packet. If the count does not match when it arrives, the packet was damaged, so it is sent again.",
+   "art": "magnifier"
+  },
+  {
+   "title": "Hops",
+   "text": "Each jump from one router to the next is a hop. If a router is busy, pick another path that still fits the hop budget.",
+   "art": "map"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "protocol",
+     "means": "shared rules computers follow to talk"
+    },
+    {
+     "word": "acknowledge",
+     "means": "say got it when a packet arrives"
+    },
+    {
+     "word": "resend",
+     "means": "send a missing or damaged packet again"
+    },
+    {
+     "word": "checksum",
+     "means": "a count that shows if a packet was damaged"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Rules of the Road and finish 4 levels, then two Many Roads levels with a hop budget.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-4.1-e1",
+  "2-4.1-e2",
+  "2-4.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "protocols",
+  "params": "chapter=protocols&band=2&lock=1"
+ }
+}

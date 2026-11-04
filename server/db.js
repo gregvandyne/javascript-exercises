@@ -478,6 +478,14 @@ export const MIGRATIONS = [
     add('lessons', 'template_key', "TEXT NOT NULL DEFAULT ''");
     add('lessons', 'template_version', 'INTEGER NOT NULL DEFAULT 0');
   }],
+  // The course flow (services/courses.js, docs/decisions.md "Course flow"): per player and course step, when the slides
+  // were read, when the quick check was passed (and the best score of 3), when the game module was opened from the
+  // step; and the grade band the player picked for the course. Removed with the account (services/account-delete.js).
+  ['0045_course_progress', `CREATE TABLE IF NOT EXISTS course_progress (user_id TEXT NOT NULL, course TEXT NOT NULL, step TEXT NOT NULL,
+      band TEXT NOT NULL, read_at INTEGER, checked_at INTEGER, check_score INTEGER NOT NULL DEFAULT 0, played_at INTEGER,
+      PRIMARY KEY (user_id, course, step));
+    CREATE TABLE IF NOT EXISTS course_bands (user_id TEXT NOT NULL, course TEXT NOT NULL, band TEXT NOT NULL, updated_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, course));`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

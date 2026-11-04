@@ -1,0 +1,77 @@
+{
+ "key": "2-1.4",
+ "n": "1.4",
+ "band": "2",
+ "title": "Counting and remembering",
+ "topic": "Variables",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Programs need memory",
+   "text": "A variable is a named box that holds a value while the program runs. The program can read it and change it.",
+   "art": "box"
+  },
+  {
+   "title": "Names are for people",
+   "text": "The computer is happy with x. The person reading your program is not. gemsLeft says exactly what the box holds.",
+   "art": "pencil"
+  },
+  {
+   "title": "Boxes have types",
+   "text": "A number box counts. A flag box (a Boolean) is on or off, like hasKey. A word box holds one word from a list, like color. Pick the type that fits.",
+   "art": "table"
+  },
+  {
+   "kind": "example",
+   "title": "Watch the value",
+   "text": "Set puts a value in. Change by adds to what is there, and a negative number takes away.",
+   "art": "box",
+   "steps": [
+    "set fuel to 12",
+    "change fuel by -3",
+    "change fuel by -3",
+    "fuel is now 6"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "variable",
+     "means": "a named box that holds a value"
+    },
+    {
+     "word": "data type",
+     "means": "the kind of value: a number, a flag or a word"
+    },
+    {
+     "word": "Boolean",
+     "means": "a flag that is only true or false, on or off"
+    },
+    {
+     "word": "change by",
+     "means": "add a number (or take one away) from the value"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Variables and finish 4 levels, so you meet the on/off flag. When the shelf offers names, pick the one a partner would understand.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-1.4-e1",
+  "2-1.4-e2",
+  "2-1.4-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "variables",
+  "params": "chapter=variables&band=2&lock=1"
+ }
+}

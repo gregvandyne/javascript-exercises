@@ -2314,6 +2314,17 @@
       "of": "{n} de {count}",
       "reveal": "Mostrar la respuesta",
       "hide": "Ocultar la respuesta"
+    },
+    "course": {
+      "right": "¡Correcto!",
+      "wrong": "Casi. La respuesta correcta es: {answer}",
+      "next": "Siguiente pregunta",
+      "finish": "Ver mi resultado",
+      "listen": "Leer en voz alta",
+      "stop": "Dejar de leer",
+      "again": "Intentar de nuevo",
+      "passed": "¡Lo lograste! {score} de {total} bien.",
+      "failed": "{score} de {total} bien. Necesitas {pass}. ¡Inténtalo otra vez!"
     }
   },
   "favorites": {
@@ -5918,8 +5929,6 @@
     "start": "Empezar el curso",
     "continue": "Seguir",
     "about": "Sobre el curso",
-    "started": "Empezado",
-    "progress": "{n} de {total} juegos empezados",
     "home": "Inicio",
     "topics": {
       "coding": "Programación",
@@ -5934,10 +5943,64 @@
     "cs": {
       "title": "CS Quest",
       "sub": "Ciencias de la computación en cuatro juegos · de 3.º a 8.º grado",
-      "about": "Programa un robot, resuelve misterios con datos, envía mensajes por una ciudad y descubre por dentro las máquinas que usamos cada día. Juega en orden o empieza por cualquiera.",
+      "about": "Programa un robot, resuelve misterios con datos, envía mensajes por una ciudad y descubre por dentro las máquinas que usamos cada día. Cada paso es una lección corta, una prueba rápida y luego un módulo de juego.",
       "teachers": "Cada juego tiene planes de clase para una sesión de 45 minutos, con calentamientos en vivo, tickets de salida y una vista de estándares de tu clase."
     },
     "back": "Volver a {course}",
-    "step": "{course} · juego {n} de {total}"
+    "step": "{course} · juego {n} de {total}",
+    "stepsDone": "{n} de {total} pasos hechos",
+    "band": {
+      "h": "Elige tu nivel",
+      "text": "Puedes cambiarlo después en esta página.",
+      "explorer": "Explorador",
+      "explorerSub": "Grados 3–5",
+      "pro": "Pro",
+      "proSub": "Grados 6–8",
+      "switch": "Cambiar a {band}"
+    },
+    "map": {
+      "h": "Mapa del curso",
+      "lesson": "Lección",
+      "game": "Módulo de juego",
+      "talk": "Hablen de esto",
+      "done": "Hecho",
+      "next": "Siguiente",
+      "locked": "Bloqueado",
+      "unit": "Unidad {n}",
+      "units": "Unidades {from}–{to}",
+      "build": {
+        "h": "Crea tu propio juego",
+        "text": "¿Terminaste el curso? Crea un juego tuyo en el Estudio.",
+        "go": "Abrir el Estudio"
+      }
+    },
+    "groups": {
+      "techChoices": "Decisiones sobre la tecnología"
+    },
+    "lesson": {
+      "of": "Paso {n} de {total}",
+      "map": "Mapa del curso",
+      "slides": "Diapositivas",
+      "slide": "Diapositiva {n} de {total}",
+      "next": "Siguiente",
+      "back": "Atrás",
+      "toCheck": "Prueba rápida",
+      "listen": "Leer en voz alta",
+      "unlocked": "¡Módulo de juego abierto!",
+      "talk": "Hablen de esto",
+      "complete": "Paso hecho",
+      "playToFinish": "Juégalo para terminar este paso.",
+      "nextStep": "Siguiente paso"
+    },
+    "check": {
+      "h": "Prueba rápida",
+      "intro": "Tres preguntas. Acierta dos para abrir el módulo de juego.",
+      "q": "Pregunta {n} de {total}",
+      "send": "Revisar mis respuestas",
+      "done": "Prueba superada",
+      "passed": "¡Lo lograste! {score} de {total} bien.",
+      "failed": "{score} de {total} bien. Mira las respuestas correctas y vuelve a intentarlo."
+    },
+    "play": "Jugar: {game} · {chapter}"
   }
 }

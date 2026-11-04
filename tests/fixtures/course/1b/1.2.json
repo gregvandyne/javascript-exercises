@@ -1,0 +1,13 @@
+{ "key": "1b-1.2", "n": "1.2", "band": "1b", "title": "Again and again", "topic": "Loops", "minutes": 6,
+  "slides": [
+    { "title": "Robots get bored? Not Bolt!", "text": "Sometimes Bolt must do the same steps again and again. Writing them all out takes a long time.", "art": "robot" },
+    { "title": "Spot the pattern", "text": "Look for steps that repeat. A pattern is a group of steps that shows up more than once.", "art": "magnifier" },
+    { "kind": "example", "title": "Fewer blocks", "text": "Four move blocks do the same job as one repeat block.", "art": "loop", "steps": ["repeat 4", "move"] },
+    { "title": "Count the times", "text": "The number on a loop is how many times the whole bracket runs. It is not the number of squares.", "art": "bits" },
+    { "kind": "words", "title": "Words to know", "text": "These words help you talk about loops.", "art": "pencil",
+      "words": [{ "word": "loop", "means": "steps that repeat" }, { "word": "repeat", "means": "do it again" }, { "word": "pattern", "means": "a group of steps that shows up again" }] },
+    { "kind": "mission", "title": "Your mission", "text": "Use repeat blocks to get Bolt to the flag with as few blocks as you can.", "art": "star" }
+  ],
+  "check": ["1b-1.2-e1", "1b-1.2-e2", "1b-1.2-e3"],
+  "game": { "slug": "robo-route", "chapter": "loops", "params": "chapter=loops&band=1b&lock=1" }
+}

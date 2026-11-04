@@ -2314,6 +2314,17 @@
       "of": "{n} / {count}",
       "reveal": "顯示答案",
       "hide": "隱藏答案"
+    },
+    "course": {
+      "right": "答對了！",
+      "wrong": "差一點。正確答案是：{answer}",
+      "next": "下一題",
+      "finish": "看我的分數",
+      "listen": "朗讀",
+      "stop": "停止朗讀",
+      "again": "再試一次",
+      "passed": "通過了！答對 {score}／{total} 題。",
+      "failed": "答對 {score}／{total} 題。需要答對 {pass} 題，再試一次！"
     }
   },
   "favorites": {
@@ -5918,8 +5929,6 @@
     "start": "開始課程",
     "continue": "繼續",
     "about": "關於課程",
-    "started": "已開始",
-    "progress": "已開始 {n}／{total} 款遊戲",
     "home": "首頁",
     "topics": {
       "coding": "程式設計",
@@ -5934,10 +5943,64 @@
     "cs": {
       "title": "CS Quest",
       "sub": "用四款遊戲學電腦科學・三到八年級",
-      "about": "替機器人寫程式、用資料破解謎團、把訊息送遍整座城鎮，還能打開每天使用的機器看看裡面。可以照順序玩，也可以從任何一款開始。",
+      "about": "寫程式控制機器人、用資料解開謎題、在城鎮裡傳送訊息，還能看看每天使用的機器裡面有什麼。每一步都是一堂短課、一個小測驗，然後是一個遊戲關卡。",
       "teachers": "每款遊戲都有45分鐘一堂課的教案，包含即時暖身、出場券，以及全班的標準檢視。"
     },
     "back": "回到 {course}",
-    "step": "{course}・第 {n}／{total} 款遊戲"
+    "step": "{course}・第 {n}／{total} 款遊戲",
+    "stepsDone": "已完成 {n}／{total} 個步驟",
+    "band": {
+      "h": "選擇你的等級",
+      "text": "之後可以在這一頁更改。",
+      "explorer": "探險家",
+      "explorerSub": "3–5 年級",
+      "pro": "高手",
+      "proSub": "6–8 年級",
+      "switch": "切換到{band}"
+    },
+    "map": {
+      "h": "課程地圖",
+      "lesson": "課程",
+      "game": "遊戲關卡",
+      "talk": "一起討論",
+      "done": "完成",
+      "next": "下一個",
+      "locked": "未解鎖",
+      "unit": "第 {n} 單元",
+      "units": "第 {from}–{to} 單元",
+      "build": {
+        "h": "製作你自己的遊戲",
+        "text": "完成課程了嗎？到工作室做一個屬於你的遊戲吧。",
+        "go": "打開工作室"
+      }
+    },
+    "groups": {
+      "techChoices": "科技與選擇"
+    },
+    "lesson": {
+      "of": "第 {n} 步，共 {total} 步",
+      "map": "課程地圖",
+      "slides": "投影片",
+      "slide": "第 {n} 張，共 {total} 張",
+      "next": "下一張",
+      "back": "上一張",
+      "toCheck": "小測驗",
+      "listen": "朗讀",
+      "unlocked": "遊戲關卡解鎖了！",
+      "talk": "一起討論",
+      "complete": "這一步完成了",
+      "playToFinish": "玩過就能完成這一步。",
+      "nextStep": "下一步"
+    },
+    "check": {
+      "h": "小測驗",
+      "intro": "三個問題，答對兩題就能解鎖遊戲關卡。",
+      "q": "第 {n} 題，共 {total} 題",
+      "send": "檢查我的答案",
+      "done": "測驗通過",
+      "passed": "通過了！答對 {score}／{total} 題。",
+      "failed": "答對 {score}／{total} 題。看看正確答案，再試一次。"
+    },
+    "play": "開始玩：{game}・{chapter}"
   }
 }

@@ -1,0 +1,78 @@
+{
+ "key": "2-1.2",
+ "n": "1.2",
+ "band": "2",
+ "title": "Again and again",
+ "topic": "Loops",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Loops save work",
+   "text": "Seven move blocks in a row works, but it is clumsy. A repeat block runs the blocks inside it as many times as its number says.",
+   "art": "loop"
+  },
+  {
+   "title": "A loop inside a loop",
+   "text": "Put a repeat inside another repeat and you have a nested loop. The inner loop runs all the way through every time the outer loop goes round once.",
+   "art": "loop"
+  },
+  {
+   "kind": "example",
+   "title": "A staircase",
+   "text": "The inner loop makes one stair; the outer loop makes the staircase. To count the moves, multiply: 3 stairs of 2 moves is 6 moves, not 5.",
+   "art": "grid",
+   "steps": [
+    "outer: repeat 3",
+    "inner: repeat 2",
+    "move",
+    "3 × 2 = 6 moves"
+   ]
+  },
+  {
+   "title": "Predict before you run",
+   "text": "A repeat 5 around a repeat 3 with pick up inside makes 5 × 3 = 15 pick-ups. Multiply first, then press Step to check.",
+   "art": "magnifier",
+   "say": "A repeat 5 around a repeat 3 with pick up inside makes 5 times 3, which is 15 pick-ups. Multiply first, then press Step to check."
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "loop",
+     "means": "steps that repeat a set number of times"
+    },
+    {
+     "word": "nested loop",
+     "means": "a loop inside another loop"
+    },
+    {
+     "word": "inner loop",
+     "means": "the loop inside; it runs fully each time round"
+    },
+    {
+     "word": "outer loop",
+     "means": "the loop outside; it decides how many times the inner one runs"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Loops and finish 5 levels, so you build at least one nested loop. Aim for the fewest blocks.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-1.2-e1",
+  "2-1.2-e2",
+  "2-1.2-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "loops",
+  "params": "chapter=loops&band=2&lock=1"
+ }
+}

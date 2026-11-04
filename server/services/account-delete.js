@@ -12,8 +12,8 @@
 //      other child's safety (legal-review item 35);
 //   5. the child's games, hard deleted: versions, Builder chats, uploads, saves, scores, plays, ratings, likes, class
 //      shares and reports on them;
-//   6. the child's rows on other games: saves, scores, ratings and likes (the games' totals adjusted); plays and the
-//      reports they filed are kept without their user id;
+//   6. the child's rows on other games: saves, scores, ratings and likes (the games' totals adjusted), and their course
+//      progress and band (services/courses.js); plays and the reports they filed are kept without their user id;
 //   7. Builder turns keep only what the family and AI-spend totals add up from (id, user, charged to, day, weight,
 //      refunded); their request text goes. The per-day counters (builder_usage, ai_usage) hold no content and stay;
 //   8. the profile photo; 9. Google sign-in rows, invites and class join requests;
@@ -75,7 +75,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // 6. the child's rows on other games
     for (const r of q.all('SELECT game_id FROM likes WHERE user_id=?', u.id)) q.run('UPDATE games SET likes=MAX(0, likes-1) WHERE id=?', r.game_id);
     for (const r of q.all('SELECT game_id, stars FROM ratings WHERE user_id=?', u.id)) q.run('UPDATE games SET rating_sum=MAX(0, rating_sum-?), rating_count=MAX(0, rating_count-1) WHERE id=?', r.stars, r.game_id);
-    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
+    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
     q.run('UPDATE plays SET user_id=NULL WHERE user_id=?', u.id);
     q.run('UPDATE reports SET user_id=NULL WHERE user_id=?', u.id);
     // 7. Builder turns: totals only

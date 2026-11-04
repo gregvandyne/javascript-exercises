@@ -2244,3 +2244,25 @@ Course games are played only as part of their course: they are left out of the o
 "similar", playing now, the sitemap's game entries), /g/<slug> redirects to the course page, and /play/<slug> opened on
 its own goes to the course page. They open from the course (?course=), a class lesson (?lesson=&step=) or a teacher's
 lesson link (?chapter=...); in the course, the play bar's back button returns to the course and shows "game n of 4".
+
+## Course flow (Nov 2026)
+The games only make sense as practice for something learned, so a course is now read, then played: course content ->
+game module -> course content -> game module. CS Quest has 19 steps per grade band, from the teacher lessons 1.1-6.3
+(unit 7, the Builder capstone, is the optional "Make your own game" card that ends the map). A step is a short slide deck
+(5-7 slides, English for now with lang="en", read aloud with the device's English voice), a quick check of three items
+from the lesson's exit ticket in the quiz banks (two right passes; unlimited tries; a wrong answer shows the right one),
+then its game module: one locked chapter of a game (6.1 and 6.3 have none and end with a "talk about it" prompt).
+- The band is picked once (Explorer grades 3-5 = 1b, Pro grades 6-8 = 2) and can be switched on the course map; the two
+  bands keep separate progress. Picking a band without a session makes a guest, like one tap on Play.
+- Step i opens when step i-1 is complete: slides read, check passed, and its game module opened from the step. Stored
+  per player in course_progress / course_bands (migration 0045), removed on account deletion, moved on a school-account
+  merge. Grading is on the server; the page never holds an answer before the player has answered.
+- Where a step comes from: its lesson file (order, game module, params: the source of truth for the gate), its slide deck
+  (seed-lessons/cs-quest/course/<band>/<u.n>.json; a missing deck falls back to one made from the lesson file) and the
+  banks (questions). services/courses.js deckProblems() lists a deck that disagrees with its lesson.
+- /play/<course game> opens only from an open step whose check is passed (?course=&cstep=, which sets played_at), from
+  a class lesson step of that game (?lesson=&step=), for school staff with lesson parameters (?chapter=...), for the
+  platform admin, or in an online match the player is seated in. Everything else goes to the course map. "?course=" or
+  "?chapter=" alone no longer opens a course game.
+- The home card shows steps done of 19 and Start / Keep going to the next open step (or the band picker); its game list
+  is the unit overview and links to the map's units.

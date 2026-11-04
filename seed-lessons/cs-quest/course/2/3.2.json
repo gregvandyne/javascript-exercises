@@ -1,0 +1,79 @@
+{
+ "key": "2-3.2",
+ "n": "3.2",
+ "band": "2",
+ "title": "What does the data say?",
+ "topic": "Predictions",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Rules that predict",
+   "text": "A model is a rule that predicts what will happen, like: distance = 2 × height. A simulation runs the rule so you can check it.",
+   "art": "chart",
+   "say": "A model is a rule that predicts what will happen, like: distance is 2 times the height. A simulation runs the rule so you can check it."
+  },
+  {
+   "title": "Predict, compare, refine",
+   "text": "Predict with the model. Run real trials. Compare. If they disagree, change the model, not the data, and test again.",
+   "art": "gears"
+  },
+  {
+   "kind": "example",
+   "title": "The ramp",
+   "text": "Every trial went farther than predicted, so the rule is too low. Refine it, and the error gets smaller.",
+   "art": "chart",
+   "steps": [
+    "rule: distance = 2 × height",
+    "predict: 20 cm",
+    "trials: 27, 25, 26, 28, 24",
+    "change the rule",
+    "test again"
+   ]
+  },
+  {
+   "title": "One trial is not proof",
+   "text": "One lucky trial proves nothing. Compare the model with many results. To balance a game, test 20 runs, not one.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "model",
+     "means": "a rule that predicts what will happen"
+    },
+    {
+     "word": "simulation",
+     "means": "running the model to see what it predicts"
+    },
+    {
+     "word": "refine",
+     "means": "change the model so it fits the results better"
+    },
+    {
+     "word": "evidence",
+     "means": "the trial results you compare the model with"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Data Detective at Model Makers and solve 3 cases. Watch the error number: your job is to make it smaller.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-3.2-e1",
+  "2-3.2-e2",
+  "2-3.2-e3"
+ ],
+ "game": {
+  "slug": "data-detective",
+  "chapter": "models",
+  "params": "chapter=models&band=2&lock=1"
+ }
+}

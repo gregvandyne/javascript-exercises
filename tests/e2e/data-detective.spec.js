@@ -3,7 +3,7 @@
 // label grammar, the quest-code keypad, no page errors and no CSP violations. Skips until the game is in the seed list.
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
-import { gameFrame } from './helpers.js';
+import { gameFrame, login, ADMIN } from './helpers.js';
 
 const exe = ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', process.env.BRB_CHROMIUM].find(p => p && fs.existsSync(p));
 test.use({ launchOptions: { ...(exe ? { executablePath: exe } : {}), args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] } });
@@ -14,6 +14,7 @@ async function open(page) {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  await login(page, ADMIN.username, ADMIN.password);   // a course game opens only inside the course; the admin may open it directly
   const res = await page.goto('/play/data-detective');
   test.skip(!res || res.status() === 404, 'Data Detective is not in the seed list yet');
   const f = await gameFrame(page);

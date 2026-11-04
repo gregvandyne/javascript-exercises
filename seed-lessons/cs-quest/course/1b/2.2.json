@@ -1,0 +1,84 @@
+{
+ "key": "1b-2.2",
+ "n": "2.2",
+ "band": "1b",
+ "title": "Level designers",
+ "topic": "Level design",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Be the game designer",
+   "text": "Today you build a level for someone else to play. Real games are made this way: plan, build, test, fix and explain.",
+   "art": "pencil"
+  },
+  {
+   "title": "Plan it first",
+   "text": "Sketch your level on paper first. Where does Bolt start? Where is the goal? What is the one tricky part?",
+   "art": "map"
+  },
+  {
+   "kind": "example",
+   "title": "The maker loop",
+   "text": "Check proves your level can be solved and shows its par. A tester shows what Check cannot: is it fun, and where is it confusing?",
+   "art": "loop",
+   "steps": [
+    "plan",
+    "build",
+    "Check",
+    "test with a friend",
+    "fix one thing",
+    "explain"
+   ]
+  },
+  {
+   "title": "The designer stays quiet",
+   "text": "While your tester plays, do not help. Watch quietly and take notes. A tester who gets help is not really testing the level.",
+   "art": "people"
+  },
+  {
+   "title": "Explain your choice",
+   "text": "Say why you made one choice. For example: I put the key behind the water so you have to plan a path.",
+   "art": "lightbulb"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "plan",
+     "means": "what you decide before you build"
+    },
+    {
+     "word": "tester",
+     "means": "the person who plays your level to find problems"
+    },
+    {
+     "word": "feedback",
+     "means": "what the tester tells you: one fun thing, one confusing thing"
+    },
+    {
+     "word": "par",
+     "means": "the fewest blocks that solve a level"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Level Maker. Do the three maker tasks, then build your own level from your plan. Let a friend or someone at home test it, then fix one thing.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-2.2-e1",
+  "1b-2.2-e2",
+  "1b-2.2-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "level-maker",
+  "params": "chapter=level-maker&band=1b&mode=maker&lock=1"
+ }
+}

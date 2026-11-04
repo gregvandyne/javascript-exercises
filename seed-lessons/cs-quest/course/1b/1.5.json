@@ -1,0 +1,81 @@
+{
+ "key": "1b-1.5",
+ "n": "1.5",
+ "band": "1b",
+ "title": "Build a block",
+ "topic": "Functions",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Stairs, stairs, stairs",
+   "text": "Bolt has to climb three stairs that all look the same. Building every stair block by block takes forever.",
+   "art": "robot"
+  },
+  {
+   "title": "Make your own block",
+   "text": "A My Block is a group of steps with a name, like Stair. Make it once. Then a call block runs the whole group wherever you put it.",
+   "art": "wrench"
+  },
+  {
+   "kind": "example",
+   "title": "Climb three stairs",
+   "text": "The Stair block holds the steps for one stair. Three calls climb all three stairs.",
+   "art": "grid",
+   "steps": [
+    "call Stair",
+    "call Stair",
+    "call Stair"
+   ]
+  },
+  {
+   "title": "Nothing happens until you call",
+   "text": "Making a My Block does nothing by itself. Bolt only does its steps when a call block is in the program.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Remix and give credit",
+   "text": "You may change a block someone else made. That is a remix. Keep the line that says where it came from, so everyone knows who started it.",
+   "art": "people"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "My Block",
+     "means": "a group of steps you name once and use again"
+    },
+    {
+     "word": "call",
+     "means": "the block that runs a My Block"
+    },
+    {
+     "word": "function",
+     "means": "the name programmers use for a named group of steps"
+    },
+    {
+     "word": "remix",
+     "means": "changing something someone else made and giving them credit"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Functions and finish 4 levels, including the one where you remix a starter block. Split each route into named parts first.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-1.5-e1",
+  "1b-1.5-e2",
+  "1b-1.5-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "functions",
+  "params": "chapter=functions&band=1b&lock=1"
+ }
+}

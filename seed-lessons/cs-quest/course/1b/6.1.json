@@ -1,0 +1,69 @@
+{
+ "key": "1b-6.1",
+ "n": "6.1",
+ "band": "1b",
+ "title": "Tech that changed the world",
+ "topic": "Tech changes",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "What is technology?",
+   "text": "Technology is anything people invent to solve a problem. A pencil, a bike and a tablet are all technology.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Tech changes how we live",
+   "text": "The telephone let people talk from far away. Video calls let families see each other every day. Maps on a device changed how people find their way.",
+   "art": "globe"
+  },
+  {
+   "kind": "example",
+   "title": "Plus and minus",
+   "text": "Every invention is a tradeoff. It makes something easier and changes something else.",
+   "art": "table",
+   "steps": [
+    "video call",
+    "plus: see your cousin far away",
+    "minus: you need a device and a connection"
+   ]
+  },
+  {
+   "title": "People change tech too",
+   "text": "People change technology right back. Captions were added to videos because viewers asked for them.",
+   "art": "people"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Three words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "technology",
+     "means": "anything people invent to solve a problem"
+    },
+    {
+     "word": "invention",
+     "means": "something new that someone made"
+    },
+    {
+     "word": "tradeoff",
+     "means": "you get one good thing but give up another"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Pick one invention you use every day. Think of one way it changed how people live, and one thing it made harder. Then talk about it.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-6.1-e1",
+  "1b-6.1-e2",
+  "1b-6.1-e3"
+ ],
+ "game": null,
+ "talk": "Which invention would you un-invent for a week? What would be better, and what would be worse?"
+}

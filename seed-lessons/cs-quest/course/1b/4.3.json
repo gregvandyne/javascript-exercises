@@ -1,0 +1,81 @@
+{
+ "key": "1b-4.3",
+ "n": "4.3",
+ "band": "1b",
+ "title": "Secret messages",
+ "topic": "Secret messages",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Some messages are tricks",
+   "text": "Some messages look friendly and exciting, but they are tricks. They want you to hurry, or to give away something private.",
+   "art": "mask"
+  },
+  {
+   "title": "Clues of a trick",
+   "text": "Look for clues. It says hurry, or it promises a prize you never tried to win. It asks for your passphrase. It comes from someone you do not know.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "example",
+   "title": "Trick or safe?",
+   "text": "This message has three clues: a surprise prize, a rush and a request for your key. It is a trick.",
+   "art": "envelope",
+   "steps": [
+    "You won a prize!",
+    "Only ten minutes left!",
+    "Send your passphrase"
+   ]
+  },
+  {
+   "title": "What to do",
+   "text": "Real companies never ask for your passphrase. Do not reply or tap, and tell a trusted adult. A trick that fishes for secrets is called phishing.",
+   "art": "shield"
+  },
+  {
+   "title": "Secret codes for fun",
+   "text": "A cipher wheel turns letters into a secret code. Shift each letter by 3 and A becomes D. Only someone who knows the key can read it.",
+   "art": "cipher"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "trick",
+     "means": "a message that tries to fool you"
+    },
+    {
+     "word": "phishing",
+     "means": "a trick message that fishes for your secrets"
+    },
+    {
+     "word": "cipher",
+     "means": "a way to turn a message into a secret code"
+    },
+    {
+     "word": "key",
+     "means": "the secret that unlocks a code"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Spot the Trick and check 4 cards. Tap every clue you find, then choose. After that, crack a few secret messages with the key wheel.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-4.3-e1",
+  "1b-4.3-e2",
+  "1b-4.3-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "tricks",
+  "params": "chapter=tricks&band=1b&lock=1"
+ }
+}

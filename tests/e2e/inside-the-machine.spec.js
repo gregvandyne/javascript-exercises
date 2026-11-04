@@ -4,7 +4,7 @@
 // keypad, and the Daily Crew Challenge. No page errors anywhere.
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
-import { gameFrame } from './helpers.js';
+import { gameFrame, login, ADMIN } from './helpers.js';
 
 const exe = ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', process.env.BRB_CHROMIUM].find(p => p && fs.existsSync(p));
 test.use({ launchOptions: { ...(exe ? { executablePath: exe } : {}), args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] } });
@@ -15,6 +15,7 @@ async function open(page) {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  await login(page, ADMIN.username, ADMIN.password);   // a course game opens only inside the course; the admin may open it directly
   await page.goto('/play/inside-the-machine');
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.Oomba && window.__brbTest && window.__brbTest.state && window.__brbTest.state().ready, null, { timeout: 30000 });

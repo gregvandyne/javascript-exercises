@@ -2315,6 +2315,17 @@
       "of": "{n} von {count}",
       "reveal": "Antwort zeigen",
       "hide": "Antwort verbergen"
+    },
+    "course": {
+      "right": "Richtig!",
+      "wrong": "Nicht ganz. Richtig ist: {answer}",
+      "next": "Nächste Frage",
+      "finish": "Mein Ergebnis",
+      "listen": "Vorlesen",
+      "stop": "Vorlesen stoppen",
+      "again": "Noch mal versuchen",
+      "passed": "Bestanden! {score} von {total} richtig.",
+      "failed": "{score} von {total} richtig. Du brauchst {pass}. Versuch es noch mal!"
     }
   },
   "favorites": {
@@ -5919,8 +5930,6 @@
     "start": "Kurs starten",
     "continue": "Weiter",
     "about": "Über den Kurs",
-    "started": "Begonnen",
-    "progress": "{n} von {total} Spielen begonnen",
     "home": "Start",
     "topics": {
       "coding": "Programmieren",
@@ -5935,10 +5944,64 @@
     "cs": {
       "title": "CS Quest",
       "sub": "Informatik in vier Spielen · Klassen 3 bis 8",
-      "about": "Programmiere einen Roboter, löse Rätsel mit Daten, schicke Nachrichten durch eine Stadt und schau in die Geräte, die wir jeden Tag benutzen. Spiel der Reihe nach oder fang mit irgendeinem an.",
+      "about": "Programmiere einen Roboter, löse Rätsel mit Daten, schicke Nachrichten durch eine Stadt und schau in die Geräte, die wir jeden Tag benutzen. Jeder Schritt ist eine kurze Lektion, ein kurzer Test und dann ein Spielmodul.",
       "teachers": "Zu jedem Spiel gibt es Unterrichtspläne für eine 45-Minuten-Stunde, mit Live-Aufwärmrunden, Abschlussfragen und einer Standards-Übersicht für deine Klasse."
     },
     "back": "Zurück zu {course}",
-    "step": "{course} · Spiel {n} von {total}"
+    "step": "{course} · Spiel {n} von {total}",
+    "stepsDone": "{n} von {total} Schritten geschafft",
+    "band": {
+      "h": "Wähl dein Level",
+      "text": "Du kannst es später auf dieser Seite ändern.",
+      "explorer": "Entdecker",
+      "explorerSub": "Klassen 3–5",
+      "pro": "Profi",
+      "proSub": "Klassen 6–8",
+      "switch": "Zu {band} wechseln"
+    },
+    "map": {
+      "h": "Kurskarte",
+      "lesson": "Lektion",
+      "game": "Spielmodul",
+      "talk": "Sprecht darüber",
+      "done": "Fertig",
+      "next": "Weiter",
+      "locked": "Gesperrt",
+      "unit": "Einheit {n}",
+      "units": "Einheiten {from}–{to}",
+      "build": {
+        "h": "Bau dein eigenes Spiel",
+        "text": "Kurs geschafft? Bau im Studio ein eigenes Spiel.",
+        "go": "Studio öffnen"
+      }
+    },
+    "groups": {
+      "techChoices": "Technik und wir"
+    },
+    "lesson": {
+      "of": "Schritt {n} von {total}",
+      "map": "Kurskarte",
+      "slides": "Folien",
+      "slide": "Folie {n} von {total}",
+      "next": "Weiter",
+      "back": "Zurück",
+      "toCheck": "Kurzer Test",
+      "listen": "Vorlesen",
+      "unlocked": "Spielmodul offen!",
+      "talk": "Sprecht darüber",
+      "complete": "Schritt geschafft",
+      "playToFinish": "Spiel es, um diesen Schritt abzuschließen.",
+      "nextStep": "Nächster Schritt"
+    },
+    "check": {
+      "h": "Kurzer Test",
+      "intro": "Drei Fragen. Zwei richtige öffnen das Spielmodul.",
+      "q": "Frage {n} von {total}",
+      "send": "Antworten prüfen",
+      "done": "Test bestanden",
+      "passed": "Bestanden! {score} von {total} richtig.",
+      "failed": "{score} von {total} richtig. Schau dir die richtigen Antworten an und versuch es noch mal."
+    },
+    "play": "Spielen: {game} · {chapter}"
   }
 }

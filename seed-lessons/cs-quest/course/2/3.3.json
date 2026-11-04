@@ -1,0 +1,80 @@
+{
+ "key": "2-3.3",
+ "n": "3.3",
+ "band": "2",
+ "title": "Our class survey",
+ "topic": "Surveys",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Fair questions first",
+   "text": "A survey asks people questions. The answers can only be fair if the questions are fair.",
+   "art": "people"
+  },
+  {
+   "title": "Leading questions",
+   "text": "A question that pushes people toward one answer is a leading question. It builds bias into the data before anyone counts.",
+   "art": "mask"
+  },
+  {
+   "kind": "example",
+   "title": "Fix the question",
+   "text": "Ask in a way that lets every answer feel equally welcome.",
+   "art": "pencil",
+   "steps": [
+    "leading: Don't you agree homework is too long?",
+    "fair: Is homework too long, about right or too short?"
+   ]
+  },
+  {
+   "title": "A bigger, fairer sample",
+   "text": "More answers from more kinds of people make a fairer sample. Even a few missing answers can change a close result.",
+   "art": "chart"
+  },
+  {
+   "title": "Compare by percent",
+   "text": "Your class: 18 of 25 walk to school. Another class: 20 of 40. Compare 72% with 50%, not 18 with 20.",
+   "art": "table"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "sample",
+     "means": "the people you actually asked"
+    },
+    {
+     "word": "bias",
+     "means": "something that pushes results unfairly one way"
+    },
+    {
+     "word": "respondent",
+     "means": "a person who answers a survey"
+    },
+    {
+     "word": "percent",
+     "means": "how many out of 100, for fair comparisons"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Data Detective at My Data. Chart one survey question, clean it, and compare it with another class by percent.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-3.3-e1",
+  "2-3.3-e2",
+  "2-3.3-e3"
+ ],
+ "game": {
+  "slug": "data-detective",
+  "chapter": "my-data",
+  "params": "chapter=my-data&band=2&mode=tally&lock=1"
+ }
+}

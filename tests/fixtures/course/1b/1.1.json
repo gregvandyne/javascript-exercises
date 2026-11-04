@@ -1,0 +1,13 @@
+{ "key": "1b-1.1", "n": "1.1", "band": "1b", "title": "Step by step", "topic": "Sequences", "minutes": 6,
+  "slides": [
+    { "title": "Meet Bolt", "text": "Bolt is a robot. Bolt does exactly what the blocks say, one step at a time, in order.", "art": "robot" },
+    { "title": "Steps in order", "text": "A list of steps in order is called an algorithm. If two steps swap places, Bolt ends up somewhere else.", "art": "map", "say": "A list of steps in order is called an algorithm. If two steps swap places, Bolt ends up somewhere else." },
+    { "kind": "example", "title": "Try it in your head", "text": "The flag is three squares ahead. This program gets Bolt there.", "art": "grid", "steps": ["move", "move", "move"] },
+    { "title": "Turning is not moving", "text": "The block turn left spins Bolt in place. Only move takes Bolt to a new square.", "art": "gears" },
+    { "kind": "words", "title": "Words to know", "text": "Use these words in the game.", "art": "pencil",
+      "words": [{ "word": "algorithm", "means": "a list of steps in order" }, { "word": "program", "means": "an algorithm written in blocks" }, { "word": "step", "means": "one thing to do" }] },
+    { "kind": "mission", "title": "Your mission", "text": "Help Bolt reach the flag on each level. When two routes work, pick the one with fewer steps.", "art": "trophy" }
+  ],
+  "check": ["1b-1.1-e1", "1b-1.1-e2", "1b-1.1-e3"],
+  "game": { "slug": "robo-route", "chapter": "sequences", "params": "chapter=sequences&band=1b&lock=1" }
+}

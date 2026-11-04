@@ -2315,6 +2315,17 @@
       "of": "{n} van {count}",
       "reveal": "Antwoord tonen",
       "hide": "Antwoord verbergen"
+    },
+    "course": {
+      "right": "Goed zo!",
+      "wrong": "Bijna. Het goede antwoord is: {answer}",
+      "next": "Volgende vraag",
+      "finish": "Bekijk mijn score",
+      "listen": "Voorlezen",
+      "stop": "Stop met voorlezen",
+      "again": "Probeer opnieuw",
+      "passed": "Gehaald! {score} van de {total} goed.",
+      "failed": "{score} van de {total} goed. Je hebt er {pass} nodig. Probeer het opnieuw!"
     }
   },
   "favorites": {
@@ -5919,8 +5930,6 @@
     "start": "Begin de cursus",
     "continue": "Verder",
     "about": "Over de cursus",
-    "started": "Begonnen",
-    "progress": "{n} van {total} spellen begonnen",
     "home": "Home",
     "topics": {
       "coding": "Programmeren",
@@ -5935,10 +5944,64 @@
     "cs": {
       "title": "CS Quest",
       "sub": "Informatica in vier spellen · groep 5 tot en met klas 2",
-      "about": "Programmeer een robot, los raadsels op met data, stuur berichten door een stad en kijk in de apparaten die we elke dag gebruiken. Speel op volgorde of begin met welk spel je wilt.",
+      "about": "Programmeer een robot, los raadsels op met data, stuur berichten door een stad en kijk in de apparaten die we elke dag gebruiken. Elke stap is een korte les, een snelle check en dan een spelmodule.",
       "teachers": "Bij elk spel horen lesplannen voor een les van 45 minuten, met live opwarmers, exitvragen en een overzicht van de standaarden voor je klas."
     },
     "back": "Terug naar {course}",
-    "step": "{course} · spel {n} van {total}"
+    "step": "{course} · spel {n} van {total}",
+    "stepsDone": "{n} van {total} stappen klaar",
+    "band": {
+      "h": "Kies je niveau",
+      "text": "Je kunt het later op deze pagina veranderen.",
+      "explorer": "Ontdekker",
+      "explorerSub": "Groep 5–7",
+      "pro": "Pro",
+      "proSub": "Groep 8 tot klas 2",
+      "switch": "Wissel naar {band}"
+    },
+    "map": {
+      "h": "Cursuskaart",
+      "lesson": "Les",
+      "game": "Spelmodule",
+      "talk": "Praat erover",
+      "done": "Klaar",
+      "next": "Volgende",
+      "locked": "Op slot",
+      "unit": "Unit {n}",
+      "units": "Units {from}–{to}",
+      "build": {
+        "h": "Maak je eigen game",
+        "text": "Klaar met de cursus? Maak je eigen game in de Studio.",
+        "go": "Open de Studio"
+      }
+    },
+    "groups": {
+      "techChoices": "Keuzes over techniek"
+    },
+    "lesson": {
+      "of": "Stap {n} van {total}",
+      "map": "Cursuskaart",
+      "slides": "Dia’s",
+      "slide": "Dia {n} van {total}",
+      "next": "Volgende",
+      "back": "Terug",
+      "toCheck": "Snelle check",
+      "listen": "Voorlezen",
+      "unlocked": "Spelmodule open!",
+      "talk": "Praat erover",
+      "complete": "Stap klaar",
+      "playToFinish": "Speel het om deze stap af te ronden.",
+      "nextStep": "Volgende stap"
+    },
+    "check": {
+      "h": "Snelle check",
+      "intro": "Drie vragen. Heb er twee goed en de spelmodule gaat open.",
+      "q": "Vraag {n} van {total}",
+      "send": "Check mijn antwoorden",
+      "done": "Check gehaald",
+      "passed": "Gehaald! {score} van de {total} goed.",
+      "failed": "{score} van de {total} goed. Bekijk de goede antwoorden en probeer het opnieuw."
+    },
+    "play": "Speel: {game} · {chapter}"
   }
 }

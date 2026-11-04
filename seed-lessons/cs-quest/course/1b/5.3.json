@@ -1,0 +1,83 @@
+{
+ "key": "1b-5.3",
+ "n": "5.3",
+ "band": "1b",
+ "title": "Bits and pixels",
+ "topic": "Bits and pixels",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "On or off",
+   "text": "Inside a computer, everything is kept as tiny switches that are on or off. Each switch is called a bit.",
+   "art": "bits"
+  },
+  {
+   "title": "Counting with bits",
+   "text": "Counting with bits is called binary. Five switches worth 16, 8, 4, 2 and 1 can make any number from 0 to 31.",
+   "art": "bits"
+  },
+  {
+   "kind": "example",
+   "title": "Make the number 5",
+   "text": "Turn on the switches that add up to your number. 4 and 1 make 5.",
+   "art": "bits",
+   "steps": [
+    "16: off",
+    "8: off",
+    "4: on",
+    "2: off",
+    "1: on"
+   ]
+  },
+  {
+   "title": "Pictures are dots",
+   "text": "A picture on a screen is made of tiny dots called pixels. The software tells the screen which pixels to light, and in which color.",
+   "art": "pixel"
+  },
+  {
+   "title": "Where does a photo live?",
+   "text": "The screen only shows a photo. The photo is kept in storage as bits, so it is still there when the tablet is off. Tap it: the touch sensor feels it, the processor gets the bits from storage, the screen lights the pixels.",
+   "art": "chip"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "bit",
+     "means": "one tiny switch: on (1) or off (0)"
+    },
+    {
+     "word": "binary",
+     "means": "counting with only 0 and 1"
+    },
+    {
+     "word": "pixel",
+     "means": "one tiny dot of a picture"
+    },
+    {
+     "word": "storage",
+     "means": "where bits are kept, even with the power off"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Bits & Pixels and finish 3 levels. Flip the switches to make each number or letter.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-5.3-e1",
+  "1b-5.3-e2",
+  "1b-5.3-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "bits",
+  "params": "chapter=bits&band=1b&lock=1"
+ }
+}

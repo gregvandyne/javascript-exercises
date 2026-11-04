@@ -1,0 +1,80 @@
+{
+ "key": "1b-1.2",
+ "n": "1.2",
+ "band": "1b",
+ "title": "Again and again",
+ "topic": "Loops",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "The same block again?",
+   "text": "Bolt has to go 5 squares in a straight line. You could use move, move, move, move, move. That is a lot of the same block!",
+   "art": "robot"
+  },
+  {
+   "title": "Meet the loop",
+   "text": "A loop repeats steps so you do not have to write them again. In Robo Route the loop block is called repeat.",
+   "art": "loop"
+  },
+  {
+   "kind": "example",
+   "title": "Five blocks become two",
+   "text": "Put one move inside a repeat set to 5. Bolt goes 5 squares, and you only used two blocks.",
+   "art": "grid",
+   "steps": [
+    "repeat 5 times:",
+    "move"
+   ]
+  },
+  {
+   "title": "What the number means",
+   "text": "The number says how many times the whole loop runs. A repeat 3 with move, move inside makes 6 moves, not 3.",
+   "art": "star"
+  },
+  {
+   "title": "Inside or outside?",
+   "text": "Only the blocks inside the repeat get repeated. If the turn is inside instead of the move, Bolt just spins in place!",
+   "art": "bug"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "loop",
+     "means": "steps that run again and again"
+    },
+    {
+     "word": "repeat",
+     "means": "the Robo Route block that makes a loop"
+    },
+    {
+     "word": "times",
+     "means": "the number on the loop: how often it runs"
+    },
+    {
+     "word": "pattern",
+     "means": "steps that happen the same way again"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Robo Route at Loops and finish 4 levels. First look for the pattern: which blocks happen again and again? Put those inside a repeat.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "1b-1.2-e1",
+  "1b-1.2-e2",
+  "1b-1.2-e3"
+ ],
+ "game": {
+  "slug": "robo-route",
+  "chapter": "loops",
+  "params": "chapter=loops&band=1b&lock=1"
+ }
+}

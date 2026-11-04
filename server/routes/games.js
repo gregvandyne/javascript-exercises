@@ -31,6 +31,8 @@ import { parseParams, packParams, unpackParams, hasParams } from '../services/pl
 import * as ttsGames from '../services/tts-games.js';
 
 import { courseOfSlug } from '../services/course-catalog.js';
+import * as courses from '../services/courses.js';
+import { isStaff } from '../services/schools.js';
 export const router = Router();
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
 /** [key, label] pairs in the reader's language (English by default; the admin panel uses English). */
@@ -234,10 +236,28 @@ router.get('/play/:slug', (req, res) => {
   }
   const u = req.user;
   const isOwner = u && (u.id === g.owner_id || u.role === 'admin');
-  // A course game is played as part of its course: from the course (?course=), a class lesson (?lesson=&step=) or a
-  // teacher's lesson link (?chapter=...). Opened on its own, it goes to the course page.
+  // A course game is played as part of its course (docs/decisions.md "Course flow"). It opens only
+  //   (a) from an open course step whose quick check is passed and whose game module is this game
+  //       (?course=<slug>&cstep=<key>): the step's played_at is set, which completes it;
+  //   (b) from a class lesson step of this game (?lesson=&step=, checked below);
+  //   (c) for a teacher (school staff) with lesson parameters (?chapter=...), as on their lesson pages;
+  //   (d) for the platform admin (isOwner);
+  //   and in an online match the player is seated in (?match=, checked below).
+  // Anything else goes to the course map.
   const course = courseOfSlug(g.slug);
-  if (course && !isOwner && !['course', 'lesson', 'chapter', 'match'].some(k => req.query[k])) return res.redirect(302, `/courses/${course.slug}`);
+  // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step. Not for a
+  // hosted-live step (Quest Race, Would You Rather Live…): the teacher's live run writes that cell, so a hand-typed URL
+  // plays the game without the lesson context (services/progress.js hostedLive).
+  const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
+  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
+  let cstep = null;
+  if (course && !isOwner) {
+    cstep = req.query.course === course.slug && req.query.cstep ? courses.playable(u, course, String(req.query.cstep), g.slug) : null;
+    const teacher = !!req.query.chapter && isStaff(u);
+    const inMatchQ = !!req.query.match && (() => { const m = match.get(req.query.match); return !!m && match.seatOf(m, u) >= 0 && m.gameId === g.id; })();
+    if (!cstep && !lesson && !teacher && !inMatchQ) return res.redirect(302, `/courses/${course.slug}`);
+    if (cstep) courses.markPlayed(u, course, cstep);
+  }
   const inCourse = course && req.query.course === course.slug ? { course, n: course.games.findIndex(x => x.slug === g.slug) + 1, total: course.games.length } : null;
   const versionId = g.published_version_id || (isOwner ? g.current_version_id : null);
   if (!versionId) return notFound(req, res, t('game.notReadyYet'));
@@ -256,14 +276,9 @@ router.get('/play/:slug', (req, res) => {
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
   // AI voices (routes/tts.js): official games only, when TTS is on and a language is switched on; absent otherwise.
   const ttsData = ttsPlayData(u, g);
-  // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step. Not for a
-  // hosted-live step (Quest Race, Would You Rather Live…): the teacher's live run writes that cell, so a hand-typed URL
-  // plays the game without the lesson context (services/progress.js hostedLive).
-  const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
-  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
   const body = html`
   <div class="playbar">
-    <a class="iconbtn" href="${lesson ? lesson.back : course ? `/courses/${course.slug}` : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
+    <a class="iconbtn" href="${lesson ? lesson.back : cstep ? `/courses/${course.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <span class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${course.slug}">📚 ${t('courses.step', { course: t(`${course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</span>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>

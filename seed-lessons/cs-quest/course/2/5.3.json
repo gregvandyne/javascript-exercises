@@ -1,0 +1,76 @@
+{
+ "key": "2-5.3",
+ "n": "5.3",
+ "band": "2",
+ "title": "Bits and pixels",
+ "topic": "Bits and pixels",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Everything is numbers",
+   "text": "Inside a computer, every number, letter and color is stored as bits: switches that are on (1) or off (0).",
+   "art": "bits"
+  },
+  {
+   "title": "Binary place values",
+   "text": "In binary each place is worth double the one to its right: 16, 8, 4, 2, 1. So 1101 means 8 + 4 + 1, which is 13.",
+   "art": "bits"
+  },
+  {
+   "title": "More bits, more values",
+   "text": "One bit shows 2 values. Each extra bit doubles that: 2 bits show 4, 3 bits show 8. Eight bits, a byte, show 256.",
+   "art": "chart"
+  },
+  {
+   "kind": "example",
+   "title": "One thing, many codes",
+   "text": "The same data can be written many ways. Each way is an encoding. A color can be three numbers too: 255, 0, 0 is pure red.",
+   "art": "pixel",
+   "steps": [
+    "decimal: 13",
+    "binary: 1101",
+    "letter: M, the 13th"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "bit",
+     "means": "one on/off switch: 1 or 0"
+    },
+    {
+     "word": "byte",
+     "means": "eight bits together"
+    },
+    {
+     "word": "encoding",
+     "means": "one way of writing data as numbers"
+    },
+    {
+     "word": "RGB",
+     "means": "a color as three numbers: red, green and blue"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Inside the Machine at Bits & Pixels and finish 4 levels. Flip switches to send numbers, letters and gray levels.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-5.3-e1",
+  "2-5.3-e2",
+  "2-5.3-e3"
+ ],
+ "game": {
+  "slug": "inside-the-machine",
+  "chapter": "bits",
+  "params": "chapter=bits&band=2&lock=1"
+ }
+}

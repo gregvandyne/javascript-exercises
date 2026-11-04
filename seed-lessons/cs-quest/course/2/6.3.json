@@ -1,0 +1,78 @@
+{
+ "key": "2-6.3",
+ "n": "6.3",
+ "band": "2",
+ "title": "Share or keep?",
+ "topic": "Share or keep",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Public or private?",
+   "text": "Public gets you seen and found. Private keeps you safe. A good choice names the tradeoff.",
+   "art": "globe"
+  },
+  {
+   "title": "Tricks start with public facts",
+   "text": "Most tricks start with facts that are already public: a name, a school, a daily route. Fooling people into giving away more is social engineering.",
+   "art": "mask"
+  },
+  {
+   "kind": "example",
+   "title": "Post your art?",
+   "text": "Weigh both sides before you make something public.",
+   "art": "table",
+   "steps": [
+    "benefit: people enjoy your art",
+    "benefit: you get feedback",
+    "risk: a school logo in the photo shows where you are"
+   ]
+  },
+  {
+   "title": "Build on others' work",
+   "text": "Real programs reuse other people's code, art and sound. The license says what you may do. Attribution is credit written the way the license asks.",
+   "art": "pencil"
+  },
+  {
+   "title": "Your footprint",
+   "text": "Everything you post adds to your digital footprint. Before you post, ask: what could someone do with this?",
+   "art": "map"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "social engineering",
+     "means": "tricking people into giving away information"
+    },
+    {
+     "word": "spoofing",
+     "means": "faking who a message is from"
+    },
+    {
+     "word": "footprint",
+     "means": "everything about you that can be found online"
+    },
+    {
+     "word": "attribution",
+     "means": "credit given the way the license asks"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Write the credit line for a game that reuses a template, some art and a free sound. Then name one thing you keep private online and the tradeoff of keeping it private.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "2-6.3-e1",
+  "2-6.3-e2",
+  "2-6.3-e3"
+ ],
+ "game": null,
+ "talk": "Why share anything at all? What is worth the risk?"
+}
