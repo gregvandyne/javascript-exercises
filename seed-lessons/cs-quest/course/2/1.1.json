@@ -9,18 +9,24 @@
   {
    "title": "Bolt follows orders",
    "text": "Bolt does exactly what the program says, in order, and never guesses what you meant. The order of your steps is everything.",
-   "art": "robot"
+   "art": "robot",
+   "img": "csq/robo-route/sequences-2-key",
+   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time."
   },
   {
    "title": "Plan in plain words",
    "text": "Pro programmers write the plan in plain words before they touch a block. That plan is called pseudocode. A flowchart is the same plan drawn with boxes and diamonds.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/robo-route/sequences-2-plan-lines",
+   "alt": "A plan card lists three plain-language plan lines for the level, waiting to be tapped into the order Bolt should do them."
   },
   {
    "kind": "example",
    "title": "From plan to blocks",
    "text": "Each plan line becomes one run of blocks you can test on its own. Splitting a big problem into parts like this is called decomposing.",
    "art": "map",
+   "img": "csq/robo-route/sequences-2-plan-to-blocks",
+   "alt": "The finished program for the plan level fills the tray: twenty-one blocks that follow the plan lines in order.",
    "steps": [
     "1. reach the key",
     "2. open the door",
@@ -30,7 +36,9 @@
   {
    "title": "Compare routes",
    "text": "When two routes both work, compare them: fewer steps, fewer turns, fewer chances to go wrong. Count, then pick.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/robo-route/sequences-2-compare-routes",
+   "alt": "A walled maze with two ways around the walls to the flag, one shorter than the other."
   },
   {
    "kind": "words",
@@ -60,7 +68,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Sequences and finish 4 levels. When a level shows plan lines, put them in order first, then build one plan line at a time.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/sequences-2-key",
+   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time."
   }
  ],
  "check": [

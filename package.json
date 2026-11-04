@@ -21,6 +21,7 @@
     "screenshots": "node scripts/screenshots.js",
     "how-shots": "node scripts/how-shots.js",
     "covers": "BRB_DB=:memory: BRB_SILENT=1 node scripts/covers.js",
+    "csq:check": "node scripts/csq-manifest-check.js",
     "i18n:check": "node scripts/i18n-check.js",
     "hooks": "git config core.hooksPath scripts/hooks",
     "check-keys": "node scripts/check-keys.js",

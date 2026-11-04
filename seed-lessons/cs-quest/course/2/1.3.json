@@ -9,23 +9,31 @@
   {
    "title": "Decide at every step",
    "text": "In a maze you have never seen, a fixed list of moves fails. An if asks a question about right now, and an if inside a loop asks it again at every step.",
-   "art": "branch"
+   "art": "branch",
+   "img": "csq/robo-route/conditionals-2-decide",
+   "alt": "The maze program checks at every step: repeat until goal, if path ahead move, else turn left, on a water board."
   },
   {
    "title": "If asks, when listens",
    "text": "An if checks a condition now. A when block waits for an event, like a gem being picked up, and runs right then.",
-   "art": "lightbulb"
+   "art": "lightbulb",
+   "img": "csq/robo-route/conditionals-2-when-if",
+   "alt": "The Pro event program: a when block for picking up a gem, over a repeat loop whose if block picks up gems Bolt stands on."
   },
   {
    "title": "Joining questions",
    "text": "AND is true only when both parts are true. OR is true when at least one is. NOT flips an answer: NOT wall ahead means the way is clear.",
-   "art": "gears"
+   "art": "gears",
+   "img": "csq/robo-route/conditionals-2-and",
+   "alt": "A two-question check in the tray: if wall ahead AND on a gem, pick up and turn; the spiral maze waits on the board."
   },
   {
    "kind": "example",
    "title": "Any maze, one program",
    "text": "This program never needs to know the maze. It checks the path at every step until Bolt reaches the goal.",
    "art": "grid",
+   "img": "csq/robo-route/conditionals-2-any-maze",
+   "alt": "The short sense-and-steer program beside the maze: repeat until goal, if path ahead move, else turn right.",
    "steps": [
     "repeat until goal:",
     "if path ahead: move",
@@ -35,7 +43,9 @@
   {
    "title": "Both or one?",
    "text": "A porch light turns on if it is dark AND someone is outside. Dark, but nobody there? It stays off: AND needs both parts at the same moment.",
-   "art": "table"
+   "art": "table",
+   "img": "csq/robo-route/conditionals-2-or-not",
+   "alt": "The check reads if NOT path ahead OR on paint, turn right: one block asking two questions at once."
   },
   {
    "kind": "words",
@@ -65,7 +75,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Conditionals & events and finish 4 levels, including one rule built with AND. Say each rule as a sentence before you build it.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/conditionals-2-key",
+   "alt": "A big walled maze with Bolt penned in one corner and the flag far away: no fixed route can be written for this."
   }
  ],
  "check": [

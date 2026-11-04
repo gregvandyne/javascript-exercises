@@ -9,18 +9,24 @@
   {
    "title": "Stairs, stairs, stairs",
    "text": "Bolt has to climb three stairs that all look the same. Building every stair block by block takes forever.",
-   "art": "robot"
+   "art": "robot",
+   "img": "csq/robo-route/functions-1b-key",
+   "alt": "Three gem steps climb like stairs to the flag, and Bolt's program tray is empty: climbing all three the long way takes a lot of blocks."
   },
   {
    "title": "Make your own block",
    "text": "A My Block is a group of steps with a name, like Stair. Make it once. Then a call block runs the whole group wherever you put it.",
-   "art": "wrench"
+   "art": "wrench",
+   "img": "csq/robo-route/functions-1b-my-block",
+   "alt": "The My Block named Stair is built in the tray: move, pick up, turn right, move, turn left: one named packet of blocks."
   },
   {
    "kind": "example",
    "title": "Climb three stairs",
    "text": "The Stair block holds the steps for one stair. Three calls climb all three stairs.",
    "art": "grid",
+   "img": "csq/robo-route/functions-1b-three-stairs",
+   "alt": "The Stair block is defined once, then called three times in a row at the bottom of the tray: call Stair, call Stair, call Stair.",
    "steps": [
     "call Stair",
     "call Stair",
@@ -30,12 +36,16 @@
   {
    "title": "Nothing happens until you call",
    "text": "Making a My Block does nothing by itself. Bolt only does its steps when a call block is in the program.",
-   "art": "lightbulb"
+   "art": "lightbulb",
+   "img": "csq/robo-route/functions-1b-defined-not-called",
+   "alt": "The My Block named Side is defined in the tray, but nothing calls it, and Bolt has not moved: a definition alone does nothing."
   },
   {
    "title": "Remix and give credit",
    "text": "You may change a block someone else made. That is a remix. Keep the line that says where it came from, so everyone knows who started it.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/robo-route/functions-1b-remix-credit",
+   "alt": "Two My Blocks named Zig sit in the tray, and the second carries a based-on Starter blocks stamp: a remix keeps its credit."
   },
   {
    "kind": "words",
@@ -65,7 +75,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Functions and finish 4 levels, including the one where you remix a starter block. Split each route into named parts first.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/functions-1b-key",
+   "alt": "Three gem steps climb like stairs to the flag, and Bolt's program tray is empty: climbing all three the long way takes a lot of blocks."
   }
  ],
  "check": [
