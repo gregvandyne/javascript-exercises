@@ -1,0 +1,686 @@
+{
+ "about": "Cyber Defenders catalogue index: the units and steps of Oomba Academy's cybersecurity and online-safety course (grades 3-5 = band 1b, \"Explorer\"; grades 6-8 = band 2, \"Pro\"), each step's standards (CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 and Common Sense Education digital citizenship topics, plus CSTA 2017 codes inherited where a step re-frames a CS Quest deck), its game module, and the teacher notes. Schema in README.md; checked by tests/unit/cyber-defenders-course-content.test.js. Phase 1: the intro and units 1-4 (13 steps per band). Units 5-6 and the finale are specced in the course spec, not built yet. Kids never see a standard code or a framework name; teachers see 'Cyber Defenders · CYBER.ORG v1.0'.",
+ "bands": {
+  "1b": {
+   "grade": "Grades 3-5",
+   "grades": "3-5",
+   "inGame": "Explorer"
+  },
+  "2": {
+   "grade": "Grades 6-8",
+   "grades": "6-8",
+   "inGame": "Pro"
+  }
+ },
+ "program": {
+  "name": "Cyber Defenders",
+  "slug": "cyber-defenders",
+  "standards": "CYBER.ORG K-12 Cybersecurity Learning Standards v1.0, bands 3-5 (Explorer) and 6-8 (Pro), and Common Sense Education digital citizenship topics",
+  "tagline": "Keep the messages safe. Keep each other safe.",
+  "teacherBadge": "Cyber Defenders · CYBER.ORG v1.0",
+  "version": 1
+ },
+ "units": [
+  {
+   "emoji": "🦉",
+   "group": "post-office",
+   "n": 0,
+   "stamp": null,
+   "steps": [
+    {
+     "game": {
+      "1b": null,
+      "2": null
+     },
+     "n": "0.1",
+     "order": 1,
+     "shorts": {
+      "1b": "Welcome",
+      "2": "Welcome back"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.PPI"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "6-8.DC.THRT"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Welcome to the Post Office",
+      "2": "Welcome back to the Post Office"
+     }
+    }
+   ],
+   "sub": "Start here",
+   "teacherNotes": [
+    "Cyber Defenders is a standalone course: no CS Quest knowledge is needed, and the intro re-teaches the small amount of networking the course uses.",
+    "The course's standing rule, stated in the decks: children never type a real password, passphrase or account detail anywhere. All key practice uses Packet Post's mailbox key, built by tapping tiles in the game."
+   ],
+   "title": "Welcome to the Post Office",
+   "tool": null
+  },
+  {
+   "emoji": "✉️",
+   "group": "unit-1",
+   "n": 1,
+   "stamp": "Roadwise",
+   "steps": [
+    {
+     "game": {
+      "1b": {
+       "chapter": "packets",
+       "chapterTitle": "Break It Up",
+       "params": "chapter=packets&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "protocols",
+       "chapterTitle": "Rules of the Road",
+       "params": "chapter=protocols&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "1.1",
+     "order": 2,
+     "shorts": {
+      "1b": "Packets",
+      "2": "Packets"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "1B-NI-04"
+       ],
+       "cyberorg": [
+        "3-5.CS.COMM",
+        "3-5.CS.COMP"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "2-NI-04"
+       ],
+       "cyberorg": [
+        "6-8.CS.PROT",
+        "6-8.SEC.NET"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "How a message travels",
+      "2": "Packets, with the lights on"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "protocols",
+       "chapterTitle": "Rules of the Road",
+       "params": "chapter=protocols&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "protocols",
+       "chapterTitle": "Rules of the Road",
+       "params": "chapter=protocols&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "1.2",
+     "order": 3,
+     "shorts": {
+      "1b": "Sealed or open",
+      "2": "The padlock"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "1B-NI-04"
+       ],
+       "cyberorg": [
+        "3-5.SEC.NET",
+        "3-5.CS.PROT"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "2-NI-05"
+       ],
+       "cyberorg": [
+        "6-8.SEC.NET",
+        "6-8.CS.PROT"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Sealed or open?",
+      "2": "The padlock and its limits"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "routes",
+       "chapterTitle": "Many Roads",
+       "params": "chapter=routes&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "routes",
+       "chapterTitle": "Many Roads",
+       "params": "chapter=routes&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "1.3",
+     "order": 4,
+     "shorts": {
+      "1b": "Copies",
+      "2": "Data states"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Digital Footprint & Identity",
+       "csta": [],
+       "cyberorg": [
+        "3-5.CS.CC.2",
+        "3-5.SEC.DATA"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "6-8.SEC.DATA",
+        "6-8.CS.CC"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Many hands, many copies",
+      "2": "Data on the move, at rest, in use"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Private on paper first: before the unit, have the class address a postcard and a sealed envelope, and talk about who could read each one on its journey.",
+    "The unit's habit to repeat aloud: every hand that carries a packet could peek, which is why later units teach seals, locks and copies."
+   ],
+   "title": "Messages on the move",
+   "tool": "packet-post"
+  },
+  {
+   "emoji": "🔑",
+   "group": "unit-2",
+   "n": 2,
+   "stamp": "Keykeeper",
+   "steps": [
+    {
+     "game": {
+      "1b": {
+       "chapter": "locks",
+       "chapterTitle": "Lock It",
+       "params": "chapter=locks&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "locks",
+       "chapterTitle": "Lock It",
+       "params": "chapter=locks&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "2.1",
+     "order": 5,
+     "shorts": {
+      "1b": "Passphrases",
+      "2": "Passphrases"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "1B-NI-05"
+       ],
+       "cyberorg": [
+        "3-5.SEC.AUTH",
+        "3-5.SEC.ACC"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "2-NI-05",
+        "2-IC-23"
+       ],
+       "cyberorg": [
+        "6-8.SEC.AUTH"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Passphrases that protect",
+      "2": "Strong, separate, secret"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "locks",
+       "chapterTitle": "Lock It",
+       "params": "chapter=locks&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "locks",
+       "chapterTitle": "Lock It",
+       "params": "chapter=locks&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "2.2",
+     "order": 6,
+     "shorts": {
+      "1b": "Who may open it",
+      "2": "Proving it's you"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "1B-NI-05"
+       ],
+       "cyberorg": [
+        "3-5.SEC.ACC",
+        "3-5.SEC.CTRL",
+        "3-5.CS.LOSS"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "2-NI-05"
+       ],
+       "cyberorg": [
+        "6-8.SEC.AUTH",
+        "6-8.SEC.ACC"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Who may open it?",
+      "2": "Prove it's you"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "ciphers",
+       "chapterTitle": "Secret Messages",
+       "params": "chapter=ciphers&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "ciphers",
+       "chapterTitle": "Secret Messages",
+       "params": "chapter=ciphers&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "2.3",
+     "order": 7,
+     "shorts": {
+      "1b": "Secret codes",
+      "2": "Encryption"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "1B-NI-05"
+       ],
+       "cyberorg": [
+        "3-5.SEC.CRYP"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "2-NI-06"
+       ],
+       "cyberorg": [
+        "6-8.SEC.CRYP"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Secret codes",
+      "2": "Encryption everywhere"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Children never type a real passphrase anywhere in this unit. In Packet Post the passphrase is the mailbox key, built by tapping word tiles, so nothing real is ever shared.",
+    "No step asks a child to log into, check or change a real account. If a child tells you their real passphrase during the lesson, treat it as a passphrase that must now be changed with a trusted adult at home, and move on without repeating it aloud."
+   ],
+   "title": "Keys and secret codes",
+   "tool": "packet-post"
+  },
+  {
+   "emoji": "🔒",
+   "group": "unit-3",
+   "n": 3,
+   "stamp": "Private",
+   "steps": [
+    {
+     "game": {
+      "1b": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      },
+      "2": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      }
+     },
+     "n": "3.1",
+     "order": 8,
+     "shorts": {
+      "1b": "Private facts",
+      "2": "PII"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "1B-NI-05"
+       ],
+       "cyberorg": [
+        "3-5.DC.PPI",
+        "3-5.SEC.ACC"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "2-IC-23"
+       ],
+       "cyberorg": [
+        "6-8.DC.PPI.1",
+        "6-8.DC.PPI.2"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "What's private?",
+      "2": "PII: the risks and the benefits"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      },
+      "2": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      }
+     },
+     "n": "3.2",
+     "order": 9,
+     "shorts": {
+      "1b": "Footprints",
+      "2": "Footprints"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Digital Footprint & Identity",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.FOOT"
+       ]
+      },
+      "2": {
+       "commonSense": "Digital Footprint & Identity",
+       "csta": [
+        "2-IC-23"
+       ],
+       "cyberorg": [
+        "6-8.DC.FOOT.1",
+        "6-8.DC.FOOT.2"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Footprints in the snow",
+      "2": "Your footprint, your reputation"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      },
+      "2": {
+       "chapter": "tricks",
+       "chapterTitle": "Spot the Trick",
+       "params": "chapter=tricks&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "3.3",
+     "order": 10,
+     "shorts": {
+      "1b": "Share or keep",
+      "2": "Social engineering"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Digital Footprint & Identity",
+       "csta": [
+        "1B-IC-21"
+       ],
+       "cyberorg": [
+        "3-5.DC.IP",
+        "3-5.DC.PPI"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "2-IC-23"
+       ],
+       "cyberorg": [
+        "6-8.DC.PPI.2",
+        "6-8.SEC.INFO"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Share or keep?",
+      "2": "Social engineering"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Never ask children to disclose their own private facts as examples. Every example in this unit is fictional; if a child offers a real fact about themselves, thank them and steer back to the made-up ones.",
+    "The Would You Rather missions use the game's Online: share or keep topic, whose dilemmas are fictional too. There are no right answers in the game; the learning is in the talking afterwards."
+   ],
+   "title": "Private means private",
+   "tool": "would-you-rather"
+  },
+  {
+   "emoji": "🔍",
+   "group": "unit-4",
+   "n": 4,
+   "stamp": "Trickspotter",
+   "steps": [
+    {
+     "game": {
+      "1b": {
+       "chapter": "tricks",
+       "chapterTitle": "Spot the Trick",
+       "params": "chapter=tricks&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "tricks",
+       "chapterTitle": "Spot the Trick",
+       "params": "chapter=tricks&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "4.1",
+     "order": 11,
+     "shorts": {
+      "1b": "Tricks",
+      "2": "Phishing"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [
+        "1B-NI-05"
+       ],
+       "cyberorg": [
+        "3-5.SEC.INFO",
+        "3-5.DC.ETH"
+       ]
+      },
+      "2": {
+       "commonSense": "News & Media Literacy",
+       "csta": [
+        "2-NI-05"
+       ],
+       "cyberorg": [
+        "6-8.SEC.INFO",
+        "6-8.DC.ETH"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Spot the trick",
+      "2": "Phishing and faked senders"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "tricks",
+       "chapterTitle": "Spot the Trick",
+       "params": "chapter=tricks&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      }
+     },
+     "n": "4.2",
+     "order": 12,
+     "shorts": {
+      "1b": "Motives",
+      "2": "Threat actors"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "News & Media Literacy",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.THRT"
+       ]
+      },
+      "2": {
+       "commonSense": "News & Media Literacy",
+       "csta": [],
+       "cyberorg": [
+        "6-8.DC.THRT",
+        "6-8.DC.ETH"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Why do tricksters trick?",
+      "2": "Threat actors"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      },
+      "2": {
+       "chapter": "online",
+       "chapterTitle": "Online: share or keep",
+       "params": "",
+       "slug": "would-you-rather"
+      }
+     },
+     "n": "4.3",
+     "order": 13,
+     "shorts": {
+      "1b": "Too good to be true",
+      "2": "Fake news"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "News & Media Literacy",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.ETH",
+        "3-5.SEC.INFO"
+       ]
+      },
+      "2": {
+       "commonSense": "News & Media Literacy",
+       "csta": [],
+       "cyberorg": [
+        "6-8.DC.ETH"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Too good to be true",
+      "2": "Fake news, ads and AI fakes"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Some children will have seen real phishing at home. The lesson's line is: your family did nothing wrong; tricks are built to fool adults too.",
+    "Every trick in this unit is shown after the fact, with its clues named. The aim is clue-spotting, never fear, and the correct response is always the same calm routine: do not reply, do not tap, tell a trusted adult."
+   ],
+   "title": "Tricks and tricksters",
+   "tool": "packet-post"
+  }
+ ]
+}

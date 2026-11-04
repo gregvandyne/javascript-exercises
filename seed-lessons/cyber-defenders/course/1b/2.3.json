@@ -1,0 +1,87 @@
+{
+ "key": "1b-2.3",
+ "n": "2.3",
+ "band": "1b",
+ "title": "Secret codes",
+ "topic": "Secret codes",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "A note anyone can read",
+   "text": "Mina passes a plain note in class, and anyone who finds it can read every word. Some messages need more than paper to stay private.",
+   "art": "envelope"
+  },
+  {
+   "kind": "example",
+   "title": "Turn the cipher wheel",
+   "text": "A cipher wheel shifts every letter by the same number. Shift by 3, and A becomes D, so a plain word turns into a secret one.",
+   "art": "cipher",
+   "steps": [
+    "plain word: CAT",
+    "shift C by 3: F",
+    "shift A by 3: D",
+    "shift T by 3: W",
+    "secret word: FDW"
+   ],
+   "img": "csq/packet-post/ciphers-1b-wheel",
+   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one."
+  },
+  {
+   "title": "Only the key can read it",
+   "text": "A friend with the same shift of 3 can turn the letters back and read the note. Computers scramble messages the same way but with much bigger keys, and the padlock on a message does this too.",
+   "art": "lock"
+  },
+  {
+   "title": "Codes are for privacy",
+   "text": "Secret codes are for keeping messages private, not for being sneaky. Never use a code to hide an unkind message about someone else.",
+   "art": "shield"
+  },
+  {
+   "title": "A scrambled note",
+   "text": "This morning, the post sack held a note written in a scramble. Only the Magpie can read it, and Pim wonders what shiny secret it is hiding.",
+   "art": "mask"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "cipher",
+     "means": "a way to turn a message into a secret code"
+    },
+    {
+     "word": "key",
+     "means": "the secret setting, like shift by 3, that locks and unlocks a code"
+    },
+    {
+     "word": "scramble",
+     "means": "to mix up letters so a message cannot be read"
+    },
+    {
+     "word": "code",
+     "means": "letters or symbols that stand for a hidden message"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Secret Messages and crack the wheel levels. Use the key on the wheel to turn scrambled letters back into words.",
+   "art": "trophy",
+   "img": "csq/packet-post/ciphers-1b-wheel",
+   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one."
+  }
+ ],
+ "check": [
+  "cd-1b-2.3-e1",
+  "cd-1b-2.3-e2",
+  "cd-1b-2.3-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "ciphers",
+  "params": "chapter=ciphers&band=1b&lock=1"
+ }
+}

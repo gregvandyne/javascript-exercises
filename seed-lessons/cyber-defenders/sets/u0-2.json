@@ -1,0 +1,61 @@
+{
+ "id": "cd-u0-2",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 0,
+ "band": "2",
+ "title": "Cyber Defenders Intro · Welcome to the Post Office (6-8)",
+ "items": [
+  {
+   "id": "cd-2-0.1-e1",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "6-8.DC.THRT",
+   "topic": "Welcome back",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What has changed at the post office since the Explorer course?",
+   "choices": [
+    "The post office closed and Pim retired last spring",
+    "There is more post, and the tricks are bigger and better organized",
+    "The Magpie moved away and the post is fully safe now",
+    "Letters stopped arriving and Netville uses no post"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-0.1-e2",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "6-8.DC.THRT",
+   "topic": "Welcome back",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why is saying it will never happen to me not a defense?",
+   "choices": [
+    "Because only unlucky people are ever targeted online",
+    "Because attacks stop once you feel confident about them",
+    "Because a defense is a system, and hoping is not a system",
+    "Because every message is checked by the Magpie first"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-0.1-e3",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "6-8.DC.THRT",
+   "topic": "Welcome back",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What is each step in this course made of?",
+   "choices": [
+    "Story slides, then words, a quick check, and a mission",
+    "A long test, then a video, then free time to play",
+    "One game level, repeated until the time runs out",
+    "A lecture, a worksheet, and a stamp for showing up"
+   ],
+   "answer": 0
+  }
+ ]
+}

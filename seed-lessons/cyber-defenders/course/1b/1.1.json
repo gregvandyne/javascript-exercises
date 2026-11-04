@@ -1,0 +1,90 @@
+{
+ "key": "1b-1.1",
+ "n": "1.1",
+ "band": "1b",
+ "title": "How a message travels",
+ "topic": "Packets",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Pim sorts the post",
+   "text": "Pim the owl sorts the morning post at the Netville post office. Every message must reach the right house, safe and whole.",
+   "art": "envelope",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+  },
+  {
+   "title": "Too big for one envelope",
+   "text": "A photo is too big for one envelope. Pim cuts it into small numbered pieces called packets, so each piece can travel on its own.",
+   "art": "pixel",
+   "img": "csq/packet-post/packets-1b-split",
+   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office."
+  },
+  {
+   "title": "Different roads",
+   "text": "Packets travel different roads through routers, which are other post offices along the way. If one road closes, a packet can take another road instead.",
+   "art": "network",
+   "img": "csq/packet-post/routes-1b-roads",
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
+  },
+  {
+   "kind": "example",
+   "title": "Back together again",
+   "text": "Packets can arrive mixed up at the far end. Their numbers show the right order, so the far end can rebuild the whole photo.",
+   "art": "envelope",
+   "steps": [
+    "packet 3 arrives first",
+    "packet 1 arrives next",
+    "packet 2 arrives last",
+    "rebuild in order: 1, 2, 3"
+   ],
+   "img": "csq/packet-post/packets-1b-order",
+   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
+  },
+  {
+   "title": "Hands that could peek",
+   "text": "Every hand that carries a packet could peek inside it. That is why later steps teach seals and locks to keep messages private.",
+   "art": "lock"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "packet",
+     "means": "a small numbered piece of a message"
+    },
+    {
+     "word": "network",
+     "means": "computers joined by roads, so they can send messages"
+    },
+    {
+     "word": "router",
+     "means": "a post office that passes packets along"
+    },
+    {
+     "word": "reassemble",
+     "means": "put the pieces back together in order"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Break It Up, then play 2 levels of Many Roads. Watch the number on every packet.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-1b-1.1-e1",
+  "cd-1b-1.1-e2",
+  "cd-1b-1.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "packets",
+  "params": "chapter=packets&band=1b&lock=1"
+ }
+}

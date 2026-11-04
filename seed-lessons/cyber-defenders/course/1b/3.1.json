@@ -1,0 +1,81 @@
+{
+ "key": "1b-3.1",
+ "n": "3.1",
+ "band": "1b",
+ "title": "What's private?",
+ "topic": "Private facts",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Me-facts point at you",
+   "text": "Pim says some facts are me-facts. Your name, your school, where you live and your birthday are all me-facts. Together, they can point straight at you.",
+   "art": "shield"
+  },
+  {
+   "kind": "example",
+   "title": "Sort the postcards",
+   "text": "Pim sorts her postcards into two trays. Fun facts go in the Share tray. Me-facts go in the Keep Private tray.",
+   "art": "table",
+   "steps": [
+    "Share: a favorite animal",
+    "Share: a joke you invented",
+    "Keep private: where you live",
+    "Keep private: a school name",
+    "Keep private: a birthday",
+    "Keep private: a photo in school uniform"
+   ],
+   "img": "csq/packet-post/locks-1b-sort",
+   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
+  },
+  {
+   "title": "Small facts can join up",
+   "text": "One fact alone may look harmless. Add two more, and the three together can point at one child. That is why me-facts stay private online.",
+   "art": "magnifier"
+  },
+  {
+   "title": "Games do not need me-facts",
+   "text": "Some games and sites ask for me-facts before you can play. A real game never needs your address to let you play. If a game asks, stop and tell a trusted adult.",
+   "art": "screen"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "private",
+     "means": "only for you and the trusted adults who look after you"
+    },
+    {
+     "word": "personal information",
+     "means": "facts about you, like your name, school or birthday"
+    },
+    {
+     "word": "share",
+     "means": "to show or give something to other people"
+    },
+    {
+     "word": "fact",
+     "means": "something that is true about a person or a thing"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. For each choice, ask: could this point at me?",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-1b-3.1-e1",
+  "cd-1b-3.1-e2",
+  "cd-1b-3.1-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

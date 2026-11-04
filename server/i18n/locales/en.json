@@ -6052,7 +6052,8 @@
       "coding": "Coding",
       "data": "Data",
       "networks": "Networks and safety",
-      "computers": "How computers work"
+      "computers": "How computers work",
+      "choices": "Choices and staying safe"
     },
     "teachers": {
       "h": "For teachers",
@@ -6063,6 +6064,12 @@
       "sub": "Computer science in four games · grades 3–8",
       "about": "Code a robot, solve mysteries with data, send messages across a town, and open up the machines we use every day. Each step is a short lesson, a quick check and then a game module.",
       "teachers": "Every game has lesson plans you can teach in a 45-minute class, with live warm-ups, exit tickets and a standards view for your class."
+    },
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cybersecurity and online safety · grades 3–8",
+      "about": "Join Pim the owl at the Netville post office and learn to keep messages — and each other — safe: how messages travel, passphrases and secret codes, what stays private, and how to spot a trick. Each step is a short lesson, a quick check and then a game module.",
+      "teachers": "Every step is mapped to the CYBER.ORG K-12 Cybersecurity Learning Standards and Common Sense Education's digital citizenship topics, with a teacher note for every unit."
     },
     "back": "Back to {course}",
     "step": "{course} · game {n} of {total}",

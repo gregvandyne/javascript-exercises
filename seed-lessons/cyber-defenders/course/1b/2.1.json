@@ -1,0 +1,85 @@
+{
+ "key": "1b-2.1",
+ "n": "2.1",
+ "band": "1b",
+ "title": "Passphrases that protect",
+ "topic": "Passphrases",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "A key for your house",
+   "text": "Your house key opens your front door, and only your front door. Pim says a good key is kept safe, never lent out, and never left lying around.",
+   "art": "key"
+  },
+  {
+   "title": "A key for your mailbox",
+   "text": "In Netville, your mailbox has a key too, and that key is a passphrase. It locks your letters away so only the right person can open them.",
+   "art": "lock",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
+  },
+  {
+   "kind": "example",
+   "title": "Build a passphrase",
+   "text": "Pick four random words that do not belong together. Picture them in one funny scene, like a purple volcano in a teapot hat beside a giraffe.",
+   "art": "key",
+   "steps": [
+    "purple",
+    "volcano",
+    "teapot",
+    "giraffe"
+   ],
+   "img": "csq/packet-post/locks-1b-built",
+   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess."
+  },
+  {
+   "title": "Who may know it?",
+   "text": "Only you and a trusted adult may know your passphrase. Never share it with your best friend, even if they promise to keep it secret.",
+   "art": "shield",
+   "img": "csq/packet-post/locks-1b-tell",
+   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share."
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "passphrase",
+     "means": "a secret key made of several random words"
+    },
+    {
+     "word": "private",
+     "means": "only for you and the trusted adults who look after you"
+    },
+    {
+     "word": "secret",
+     "means": "something only you and a trusted adult should know"
+    },
+    {
+     "word": "trusted adult",
+     "means": "an adult you trust who helps keep you safe, like a parent or teacher"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
+   "art": "trophy",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
+  }
+ ],
+ "check": [
+  "cd-1b-2.1-e1",
+  "cd-1b-2.1-e2",
+  "cd-1b-2.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=1b&lock=1"
+ }
+}

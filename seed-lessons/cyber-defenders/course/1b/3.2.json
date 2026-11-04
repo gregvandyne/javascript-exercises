@@ -1,0 +1,79 @@
+{
+ "key": "1b-3.2",
+ "n": "3.2",
+ "band": "1b",
+ "title": "Footprints in the snow",
+ "topic": "Footprints",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "A trail in the snow",
+   "text": "Pim walks home through fresh snow. By morning, the whole town can see where she went. Her footprints tell the story of her walk.",
+   "art": "map"
+  },
+  {
+   "title": "Posts leave footprints",
+   "text": "Online, your posts, photos, scores and comments are footprints. Each one shows a small piece of where you have been. Together, they make a trail.",
+   "art": "screen"
+  },
+  {
+   "kind": "example",
+   "title": "Footprints that last",
+   "text": "Snow footprints melt and fade away. Online footprints do not fade, and a screenshot can copy one and carry it far away.",
+   "art": "magnifier",
+   "steps": [
+    "snow print: melts away",
+    "online post: stays put",
+    "screenshot: copies it",
+    "copied print: travels far"
+   ]
+  },
+  {
+   "title": "Who follows the trail?",
+   "text": "Friends follow footprints, but strangers can follow them too. The Magpie loves a clear trail, because it points to shiny secrets. Before you post, picture the whole trail.",
+   "art": "people"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "footprint",
+     "means": "a mark you leave that shows where you have been"
+    },
+    {
+     "word": "post",
+     "means": "something you share online for others to see"
+    },
+    {
+     "word": "screenshot",
+     "means": "a picture that copies what is on a screen"
+    },
+    {
+     "word": "trail",
+     "means": "a line of marks that others can follow"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Before each choice, picture the footprint it would leave.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-1b-first",
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
+  }
+ ],
+ "check": [
+  "cd-1b-3.2-e1",
+  "cd-1b-3.2-e2",
+  "cd-1b-3.2-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

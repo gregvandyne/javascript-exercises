@@ -1,0 +1,81 @@
+{
+ "key": "2-2.2",
+ "n": "2.2",
+ "band": "2",
+ "title": "Prove it's you",
+ "topic": "Proving it's you",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Two questions at the counter",
+   "text": "When you collect a parcel, Pim checks two different things. Authentication proves it is really you. Authorization checks the list to see if this parcel is yours to open.",
+   "art": "envelope"
+  },
+  {
+   "kind": "example",
+   "title": "Know, have, are",
+   "text": "Sign-in checks come in three kinds. Two different kinds protect you far better than two of the same kind.",
+   "art": "key",
+   "steps": [
+    "passphrase: something you know",
+    "code sent to a phone: something you have",
+    "fingerprint: something you are",
+    "know + have beats know + know"
+   ],
+   "img": "csq/packet-post/locks-2-pass",
+   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key."
+  },
+  {
+   "title": "Passkeys, honestly",
+   "text": "A passkey lives on your device, which proves it is you without sharing a copyable secret. A fake page cannot trick you into handing it over, because there is nothing to hand over.",
+   "art": "lock"
+  },
+  {
+   "title": "Shared screens, separate doors",
+   "text": "On a shared tablet or class account, profiles and permissions matter. Your profile keeps your work, messages and settings separate from everyone else who uses the same screen.",
+   "art": "people"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "authentication",
+     "means": "proving it is really you, not someone pretending to be you"
+    },
+    {
+     "word": "authorization",
+     "means": "checking that you are allowed to see or do something"
+    },
+    {
+     "word": "two-step sign-in",
+     "means": "signing in with two different kinds of check, not just one"
+    },
+    {
+     "word": "passkey",
+     "means": "a key kept on your device that proves it is you"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and play the levels you have not played yet. Notice each check: is it proving who you are, or checking what you may open?",
+   "art": "trophy",
+   "img": "csq/packet-post/locks-2-key",
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
+  }
+ ],
+ "check": [
+  "cd-2-2.2-e1",
+  "cd-2-2.2-e2",
+  "cd-2-2.2-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=2&lock=1"
+ }
+}

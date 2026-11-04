@@ -1,0 +1,82 @@
+{
+ "key": "2-0.1",
+ "n": "0.1",
+ "band": "2",
+ "title": "Welcome back to the Post Office",
+ "topic": "Welcome back",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "One year on",
+   "text": "Welcome back to Pim's post office in Netville. A year has passed, and the post is bigger than ever. So are the tricks hiding inside it.",
+   "art": "map",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+  },
+  {
+   "title": "The Magpie has help",
+   "text": "The Magpie no longer works alone. Its flock copies real letters, fakes the postmarks, and sends them out from fake accounts. Each fake looks almost right at first glance.",
+   "art": "mask"
+  },
+  {
+   "kind": "example",
+   "title": "Anatomy of a trick",
+   "text": "Here is one of the flock's tricks, taken apart after it failed. Every step of it left a small clue behind.",
+   "art": "magnifier",
+   "steps": [
+    "a real letter is copied word for word",
+    "the postmark is faked to match it",
+    "a fake account sends the copy on",
+    "the reply is meant to leak a secret",
+    "the clue: the postmark date is wrong"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "threat",
+     "means": "something that could harm people, messages or accounts"
+    },
+    {
+     "word": "system",
+     "means": "joined parts that work together, like the whole post network"
+    },
+    {
+     "word": "professional",
+     "means": "a trained person who does a skilled job with care"
+    },
+    {
+     "word": "defense",
+     "means": "the plan and tools used to keep something safe"
+    }
+   ]
+  },
+  {
+   "title": "Think in systems",
+   "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
+   "art": "gears"
+  },
+  {
+   "title": "Six stamps, Pro cut",
+   "text": "Six stamps wait for you, one for each unit, and every one is set at Pro level. Each step works the same way: story slides first, then words, a quick check, and a mission.",
+   "art": "star"
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "There is no game this time. Open the course map and study the six stamps, one for each unit. Think about which stamp you want most.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-2-0.1-e1",
+  "cd-2-0.1-e2",
+  "cd-2-0.1-e3"
+ ],
+ "game": null,
+ "talk": "Which of the six stamps do you most want to earn, and why does that one matter to you?"
+}

@@ -111,14 +111,14 @@ export function coursePage({ course: c, games, ov, canPick }) {
       <p class="cmap-count">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</p>
       ${ov.next ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
-    ${C.GROUPS.map(gr => {
+    ${C.groupsFor(c).map(gr => {
       const list = ov.list.filter(s => s.step.group === gr.id);
       if (!list.length) return '';
       const g = gr.game && bySlug.get(gr.game);
       return html`<section class="cmap-group" id="${gr.id}" aria-labelledby="${gr.id}-h">
         <header class="cmap-gh">
-          ${g ? html`<span class="cmap-cover">${coverArt(g)}</span>` : html`<span class="cmap-cover cmap-cover-e" aria-hidden="true">💡</span>`}
-          <div><h3 id="${gr.id}-h">${g ? g.title : t('courses.groups.techChoices')}</h3><p class="muted small">${unitsLabel(gr.units)}</p></div>
+          ${g ? html`<span class="cmap-cover">${coverArt(g)}</span>` : html`<span class="cmap-cover cmap-cover-e" aria-hidden="true">${gr.emoji || '💡'}</span>`}
+          <div><h3 id="${gr.id}-h">${gr.title ? html`<span${en}>${gr.title}</span>` : g ? g.title : t('courses.groups.techChoices')}</h3><p class="muted small">${gr.sub ? html`<span${en}>${gr.sub}</span>` : unitsLabel(gr.units)}</p></div>
         </header>
         <ol class="cmap-steps">${list.map(s => mapStep(t, c, s, ov.total))}</ol>
       </section>`;

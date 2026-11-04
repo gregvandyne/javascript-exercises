@@ -1,0 +1,88 @@
+{
+ "key": "2-2.1",
+ "n": "2.1",
+ "band": "2",
+ "title": "Strong, separate, secret",
+ "topic": "Passphrases",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Four words win",
+   "text": "A passphrase of four random words is long and hard to guess, beating a short word with a number added. Use a different one for every account.",
+   "art": "key",
+   "img": "csq/packet-post/locks-2-pass",
+   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key."
+  },
+  {
+   "title": "When lists leak",
+   "text": "In a breach, a service is broken into and its passphrases are copied. Stolen lists are traded, then tried on other accounts to find people who reused a key.",
+   "art": "network"
+  },
+  {
+   "title": "Real keys stay secret",
+   "text": "Your real passphrase is never for practice. In Packet Post it is called your mailbox key, and you build it by tapping tiles, so nothing real is shared.",
+   "art": "lock"
+  },
+  {
+   "title": "One safe drawer",
+   "text": "A password manager is the spare-key drawer done properly. It stores a different strong passphrase for each account, so a trusted adult only has to remember one main key.",
+   "art": "box"
+  },
+  {
+   "kind": "example",
+   "title": "Physical or digital?",
+   "text": "Sort each measure by what it protects: the machine itself, or the data inside it.",
+   "art": "shield",
+   "steps": [
+    "locked post office door: physical",
+    "cable lock on a laptop: physical",
+    "firewall guarding the network: digital",
+    "a passphrase for an account: digital"
+   ],
+   "img": "csq/packet-post/locks-2-sort",
+   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls."
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "passphrase",
+     "means": "a secret made of several words, used to open an account"
+    },
+    {
+     "word": "unique",
+     "means": "different from all the others and used for one account only"
+    },
+    {
+     "word": "breach",
+     "means": "a break-in where private information is copied or taken"
+    },
+    {
+     "word": "password manager",
+     "means": "a safe tool that stores a different passphrase for each account"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and finish 4 levels. Your passphrase there is called your mailbox key, and you only tap tiles, so nothing real is ever shared.",
+   "art": "trophy",
+   "img": "csq/packet-post/locks-2-key",
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
+  }
+ ],
+ "check": [
+  "cd-2-2.1-e1",
+  "cd-2-2.1-e2",
+  "cd-2-2.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=2&lock=1"
+ }
+}

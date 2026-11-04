@@ -1,0 +1,90 @@
+{
+ "key": "1b-4.1",
+ "n": "4.1",
+ "band": "1b",
+ "title": "Spot the trick",
+ "topic": "Tricks",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "A letter that sparkles",
+   "text": "A letter lands in the Netville post with big, exciting words. Pim reads it slowly. Exciting does not always mean true, says Pim.",
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+  },
+  {
+   "title": "Clues one and two",
+   "text": "Clue one is a rush: reply in ten minutes or lose it! Clue two is a prize for a contest you never entered.",
+   "art": "magnifier",
+   "img": "csq/packet-post/tricks-1b-clues",
+   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find."
+  },
+  {
+   "title": "Clues three and four",
+   "text": "Clue three: it comes from someone you do not know. Clue four asks for your key. Real companies and real games never ask for your passphrase.",
+   "art": "mask"
+  },
+  {
+   "kind": "example",
+   "title": "Count the clues",
+   "text": "Pim reads one more letter out loud. Count the clues hiding inside its friendly words before Pim decides.",
+   "art": "envelope",
+   "steps": [
+    "Hurry: reply right now!",
+    "A prize you never entered for",
+    "A sender you do not know",
+    "Please send your key"
+   ],
+   "img": "csq/packet-post/tricks-1b-card",
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?"
+  },
+  {
+   "title": "What to do",
+   "text": "When you spot a trick, do not reply and do not tap anything. Show it to a trusted adult. A trick that fishes for secrets is called phishing.",
+   "art": "shield",
+   "img": "csq/packet-post/tricks-1b-next",
+   "alt": "A third trick card: the safe move is always the same \u2014 stop, do not reply, and tell a trusted adult."
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "trick",
+     "means": "a message that tries to fool you"
+    },
+    {
+     "word": "phishing",
+     "means": "a trick message that fishes for your secrets"
+    },
+    {
+     "word": "clue",
+     "means": "a hint that something is not what it seems"
+    },
+    {
+     "word": "prize",
+     "means": "something you win in a game or a draw"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Spot the Trick and check 4 cards. Tap every clue you find, then decide if each card is a trick or safe.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-1b-4.1-e1",
+  "cd-1b-4.1-e2",
+  "cd-1b-4.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "tricks",
+  "params": "chapter=tricks&band=1b&lock=1"
+ }
+}
