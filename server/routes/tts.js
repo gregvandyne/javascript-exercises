@@ -10,6 +10,9 @@
 //     ctx 'live'   { sid, tok, i }  the live question i (only the one open now), by number: the server reads the
 //                  teacher's question and its answer choices, in the session's language. tok: the player's seat token or
 //                  the host/co-host token.
+//     ctx 'course' { course, step, i }  slide i of a course step's lesson (seed-lessons/cs-quest/course), read in English
+//                  with the voice of that step's game character; only a step the player has open (staff and the admin:
+//                  any step). The server reads the slide: the page never sends text.
 //     ctx 'lesson' { clId, stepId, i }  a lesson quiz step's question i, behind the same access as its quiz API, in the
 //                  page's language.
 //   GET /tts/<sha256>.mp3   the cached audio (same-origin only; immutable).
@@ -34,6 +37,9 @@ import * as PROG from '../services/progress.js';
 import * as aiBudget from '../services/ai-budget.js';
 import { LOCALES } from '../i18n/index.js';
 import { COMMUNITY_CSS } from './social.js';
+import * as COURSES from '../services/courses.js';
+import { sayOf } from '../views/courses.js';
+import { isStaff } from '../services/schools.js';
 
 export const router = Router();
 
@@ -109,6 +115,20 @@ function resolve(req, b) {
     if (!cur || !Number.isInteger(b.i) || b.i !== cur.i) return { error: [404, 'notNow'] };
     // The session's language only (the text is never translated: another language would only be a wrong accent).
     return { text: questionText(cur.q, cur.choices), locale: V.ttsLocale(s.lang) || 'en', role: 'narrator', rate: 'normal' };
+  }
+  if (b.ctx === 'course') {
+    if (!req.user) return { error: [404, 'off'] };
+    const c = COURSES.getCourse(String(b.course || ''));
+    const step = c && COURSES.getStep(c, String(b.step || ''));
+    if (!step) return { error: [404, 'off'] };
+    const st = COURSES.stateOf(req.user, c, step.key);
+    const preview = req.user.role === 'admin' || isStaff(req.user);
+    if (!preview && !(st && st.open)) return { error: [404, 'off'] };
+    const slide = Number.isInteger(b.i) ? (step.slides || [])[b.i] : null;
+    if (!slide) return { error: [404, 'off'] };
+    const g = step.game && lines.GAMES[step.game.slug];
+    // Lesson slides are English (the course content is English first): read with the English voice.
+    return { text: sayOf(slide), locale: 'en', role: (g && g.role) || 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'lesson') {
     if (!req.user || !config.liveHomework) return { error: [404, 'off'] };

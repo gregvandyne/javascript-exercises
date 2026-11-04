@@ -1,5 +1,5 @@
 // A course step (server/views/courses.js stepPage): the slides one at a time (Next / Back, dots, swipe, arrow keys,
-// read-aloud with the device's English voice), then the quick check one question at a time, graded by the server.
+// read-aloud with the site's AI voice, else the device's English voice), then the quick check one question at a time, graded by the server.
 // Without this script the page still works: the slides are a scrolling page and the check is a plain form.
 import { api, pageData, $, $$, t, toast } from '/js/app.js';
 
@@ -10,29 +10,50 @@ const slides = $$('.slide', deck);
 let at = 0;
 
 // ---------------------------------------------------------------------------------------------- read-aloud
+// The site's AI voice first (POST /api/tts ctx 'course': the server reads the slide itself, with the voice of the step's
+// game character); the device's English voice when AI voices are off, the player is signed out, or it does not come.
 const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
-let speaking = null;
+let speaking = null, audio = null, ticket = 0;
 function stopSpeaking() {
-  if (!synth) return;
-  synth.cancel();
+  ticket++;
+  if (audio) { audio.pause(); audio = null; }
+  if (synth) synth.cancel();
   if (speaking) { speaking.querySelector('.lbl').textContent = t('js.course.listen'); speaking.setAttribute('aria-pressed', 'false'); speaking = null; }
 }
-function speak(btn, text) {
-  if (speaking === btn) return stopSpeaking();
-  stopSpeaking();
+function deviceVoice(btn, text) {
+  if (!synth) return stopSpeaking();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US'; u.rate = 0.95;
   const v = synth.getVoices().find(x => /^en(-|_)US/i.test(x.lang)) || synth.getVoices().find(x => /^en/i.test(x.lang));
   if (v) u.voice = v;
   u.onend = u.onerror = () => { if (speaking === btn) stopSpeaking(); };
-  speaking = btn; btn.setAttribute('aria-pressed', 'true'); btn.querySelector('.lbl').textContent = t('js.course.stop');
   synth.speak(u);
 }
-if (synth) for (const s of slides) {
-  const b = s.querySelector('[data-say-btn]'); if (!b) continue;
-  b.hidden = false; b.setAttribute('aria-pressed', 'false');
-  b.addEventListener('click', () => speak(b, s.dataset.say));
+async function speak(btn, i, text) {
+  if (speaking === btn) return stopSpeaking();
+  stopSpeaking();
+  const mine = ++ticket;
+  speaking = btn; btn.setAttribute('aria-pressed', 'true'); btn.querySelector('.lbl').textContent = t('js.course.stop');
+  try {
+    const r = await fetch('/api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ ctx: 'course', course: d.course, step: d.step, i }) });
+    if (mine !== ticket) return;
+    if (r.ok) {
+      const { u } = await r.json();
+      if (mine !== ticket) return;
+      audio = new Audio(u);
+      audio.onended = () => { if (speaking === btn) stopSpeaking(); };
+      audio.onerror = () => { if (mine === ticket) { audio = null; deviceVoice(btn, text); } };
+      await audio.play();
+      return;
+    }
+  } catch (e) { if (mine !== ticket) return; }
+  if (mine === ticket) deviceVoice(btn, text);
 }
+slides.forEach((s, i) => {
+  const b = s.querySelector('[data-say-btn]'); if (!b) return;
+  b.hidden = false; b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => speak(b, i, s.dataset.say));
+});
 
 // ---------------------------------------------------------------------------------------------- the slides
 const dots = $$('.dot', nav), back = $('#deck-back'), next = $('#deck-next');
