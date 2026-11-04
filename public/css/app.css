@@ -317,6 +317,7 @@ textarea.input{min-height:96px;resize:vertical}
 .rail-arrows{display:flex;gap:6px}
 .rail-arrows button{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--text);font-size:1.1rem;cursor:pointer}
 .rail-arrows button:hover{border-color:var(--accent-line)}
+.rail-arrows[hidden]{display:none}
 @media (hover:none),(max-width:820px){.rail-arrows{display:none}}
 .rail-track{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(140px,38vw,186px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;padding:6px 16px 10px;margin:0 -16px;scrollbar-width:none;overscroll-behavior-x:contain}
 .rail-track::-webkit-scrollbar{display:none}
@@ -993,7 +994,13 @@ ol.steps li{margin-bottom:var(--s2)}
 .tv-grid .tv-one{display:none}
 @media (max-width:600px){.tv-grid .tv-v{display:none}.tv-grid .tv-one{display:table-cell}}
 
-/* Courses (server/views/courses.js): one wide card per course on the home page, its games nested in order. */
+/* Courses (server/views/courses.js): the wide course cards side by side in one snap-scrolled rail on the home page,
+   each card's games nested in order. The card width is fixed (never shrunk or wrapped) and sized so the next card
+   always peeks at the rail's end edge on desktop; .course-rail adds a soft end-edge fade while the rail can scroll. */
+.course-rail{position:relative}
+.course-track{grid-auto-columns:min(660px,88vw)}
+.course-rail.has-more::after{content:"";position:absolute;top:0;bottom:0;inset-inline-end:-16px;width:56px;pointer-events:none;z-index:2;background:linear-gradient(to right,transparent,var(--bg))}
+[dir="rtl"] .course-rail.has-more::after{background:linear-gradient(to left,transparent,var(--bg))}
 .course-card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:16px;display:grid;gap:14px}
 .course-head{display:flex;gap:12px;align-items:center}
 .course-emo{font-size:2rem;line-height:1;flex:none}

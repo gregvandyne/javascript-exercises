@@ -79,8 +79,22 @@ on(document, 'click', e => {
   const b = e.target.closest('[data-rail]'); if (!b) return;
   const track = document.getElementById(b.dataset.rail); if (!track) return;
   // In right-to-left pages "forward" scrolls toward the left.
-  track.scrollBy({ left: +b.dataset.dir * (RTL ? -1 : 1) * track.clientWidth * 0.85, behavior: 'smooth' });
+  const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  track.scrollBy({ left: +b.dataset.dir * (RTL ? -1 : 1) * track.clientWidth * 0.85, behavior });
 });
+
+// ---- Rail arrows that hide when their track has nothing to scroll (the home courses rail opts in) ----
+// The same check flags the track's wrapper (.has-more) so CSS can fade the rail's end edge only while it can scroll.
+if (FIRST) {
+  const navs = $$('[data-railnav]');
+  if (navs.length) {
+    const sync = () => { for (const nav of navs) { const track = document.getElementById(nav.dataset.railnav); if (!track) continue;
+      const can = track.scrollWidth - track.clientWidth > 1;
+      nav.hidden = !can; track.parentElement?.classList.toggle('has-more', can); } };
+    if (window.ResizeObserver) { const ro = new ResizeObserver(sync); for (const nav of navs) { const tr = document.getElementById(nav.dataset.railnav); if (tr) ro.observe(tr); } }
+    addEventListener('resize', sync); sync();
+  }
+}
 
 // ---- Live player counts: refresh every 30 s without reloads ----
 export async function refreshLive() {

@@ -12,13 +12,19 @@ const bandGrades = (t, band) => t(`courses.band.${BAND_INFO[band].key}Sub`);
 /** Text still in English on this language's page is marked so. */
 const en = raw(' lang="en" dir="ltr"');
 
-/** The home page's "Courses" row: each course as one wide card, its games nested in order as the unit overview (links to
- *  the course map's units), progress in steps, and Start / Keep going to the next open step (or the band picker). */
+/** The home page's "Courses" row: the wide course cards side by side in one snap-scrolled rail (the shared .rail-track,
+ *  at course-card width), each card's games nested in order as the unit overview (links to the course map's units),
+ *  progress in steps, and Start / Keep going to the next open step (or the band picker). The track is a labelled,
+ *  focusable scroll region; the arrows ride the shared rail-arrow wiring and hide when the rail has nothing to scroll. */
 export function courseRow(items) {
   const { t } = current();
   if (!items.some(it => it.games.length)) return '';
-  return html`<section class="rail courses" aria-labelledby="courses-h">
-    <div class="rail-head"><h2 id="courses-h">📚 ${t('courses.row')}</h2></div>
+  const title = t('courses.row');
+  return html`<section class="rail courses">
+    <div class="rail-head"><h2 id="courses-h">📚 ${title}</h2>
+      <div class="rail-arrows" data-railnav="courses-track" hidden><button type="button" data-rail="courses-track" data-dir="-1" aria-label="${t('cards.scrollBack', { title })}"><span class="flip" aria-hidden="true">←</span></button><button type="button" data-rail="courses-track" data-dir="1" aria-label="${t('cards.scrollForward', { title })}"><span class="flip" aria-hidden="true">→</span></button></div>
+    </div>
+    <div class="course-rail"><div class="rail-track course-track" id="courses-track" role="region" aria-label="${title}" tabindex="0">
     ${items.filter(it => it.games.length).map(({ course: c, games, ov }) => {
       const go = ov.next ? `/courses/${c.slug}/${ov.next.step.key}` : `/courses/${c.slug}`;
       const begun = ov.list.some(s => s.read || s.checked);
@@ -40,6 +46,7 @@ export function courseRow(items) {
         </div>
       </article>`;
     })}
+    </div></div>
   </section>`;
 }
 
