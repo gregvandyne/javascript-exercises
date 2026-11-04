@@ -953,6 +953,9 @@
   "change the level using what they said, then test again",
   "tell them they played it wrong",
   "start a new level and never test it",
-  "A level with a door, no key and no gems is..."
+  "A level with a door, no key and no gems is...",
+  "Clear program",
+  "Start over",
+  "Undo"
  ]
 }

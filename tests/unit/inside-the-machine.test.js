@@ -319,6 +319,11 @@ test('inside-the-machine: Chromium plays level 1 of Parts & Jobs and the Fix-It 
       await frame.press('.im-tray button:nth-child(2)', 'ArrowDown'); assert.ok(await focused() > 1, 'down moves a row');
       await frame.press('.im-tray button:focus', 'Enter');
       assert.deepEqual(await frame.evaluate(() => { const b = document.querySelector('.im-tray button[aria-pressed="true"]'); return [!!b, b && b.querySelector('.im-num') !== null, b && getComputedStyle(b, '::before').content]; }), [true, true, 'none'], 'Enter picks the step; a chosen step shows its number badge (and no second badge)');
+      // Start over takes every step out in one tap, and is not a try (no fail)
+      const fails0 = (await T(frame, 'state')).fails;
+      assert.ok(await frame.evaluate(() => { const b = [...document.querySelectorAll('.im-actions .ok-btn')].find(x => /Start over|ابدأ من جديد/.test(x.textContent)); if (b) b.click(); return !!b; }), 'a Start over button once a step is in');
+      assert.equal(await frame.evaluate(() => document.querySelectorAll('.im-tray button[aria-pressed="true"]').length), 0, 'every step is out again');
+      assert.equal((await T(frame, 'state')).fails, fails0, 'starting over is not a failed try');
       s = await T(frame, 'start', { chapter: 'gadget', band: '2', level: 1, seed: 4 }); await T(frame, 'tap', solOf('gadget-1').picked[0]);
       assert.equal(await frame.evaluate(() => { const b = document.querySelector('.im-tray button[aria-pressed="true"]'); return b && getComputedStyle(b, '::before').content; }), '""', 'a chosen part shows a check badge, not only a color');
       await frame.evaluate(() => { Oomba.settings.leftHanded = true; });

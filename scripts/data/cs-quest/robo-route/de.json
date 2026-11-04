@@ -980,6 +980,9 @@
   "change the level using what they said, then test again": "das Level nach seinen Worten ändern und dann wieder testen",
   "tell them they played it wrong": "ihm sagen, dass er falsch gespielt hat",
   "start a new level and never test it": "ein neues Level anfangen und es nie testen",
-  "A level with a door, no key and no gems is...": "Ein Level mit einer Tür, ohne Schlüssel und ohne Edelsteine ist..."
+  "A level with a door, no key and no gems is...": "Ein Level mit einer Tür, ohne Schlüssel und ohne Edelsteine ist...",
+  "Clear program": "Programm löschen",
+  "Start over": "Neu anfangen",
+  "Undo": "Rückgängig"
  }
 }

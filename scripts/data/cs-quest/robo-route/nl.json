@@ -980,6 +980,9 @@
   "change the level using what they said, then test again": "het level veranderen met wat hij zei en dan opnieuw testen",
   "tell them they played it wrong": "zeggen dat hij het verkeerd speelde",
   "start a new level and never test it": "een nieuw level beginnen en het nooit testen",
-  "A level with a door, no key and no gems is...": "Een level met een deur, zonder sleutel en zonder edelstenen is..."
+  "A level with a door, no key and no gems is...": "Een level met een deur, zonder sleutel en zonder edelstenen is...",
+  "Clear program": "Programma wissen",
+  "Start over": "Opnieuw beginnen",
+  "Undo": "Ongedaan maken"
  }
 }

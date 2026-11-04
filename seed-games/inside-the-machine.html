@@ -11,7 +11,8 @@ html,body{height:100%}
 body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 #im{position:fixed;inset:0;pointer-events:none;font-family:var(--ok-font);color:var(--ok-text);--im-top:var(--ok-safe-top);--im-edge:var(--ok-edge);font-size:calc(16px * var(--ok-ts,1));line-height:1.25}
 #im>*{pointer-events:auto}
-#im button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color:var(--ok-text)}
+#im button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#im button:not(.ok-btn){color:var(--ok-text)}
 #im button:disabled{cursor:default}
 #im svg{display:block}
 #im.im-proj{font-size:calc(20px * var(--ok-ts,1))}
@@ -230,6 +231,16 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .im-why{margin:0;font-weight:700;font-size:.95em;opacity:.9;max-width:34ch;text-wrap:balance;text-align:center}
 /* a landscape phone: a tighter work panel so the action row never sits on the scroll edge; the star rule waits for the stars card */
 @media (max-height:480px){.im-prompt{font-size:1em;line-height:1.2}.im-panel{padding:4px 10px 6px;gap:4px}.im-rule{display:none}}
+/* readable tinted surfaces: the --im-*-t tints (and the mint and sky fills) stay pale in day and night, so anything on
+   one takes dark ink, never the night theme's light text (the kit's own buttons keep their own ink) */
+#im{--im-ink:#141414}
+#im .im-tile.on,#im .im-tile.good,#im .im-tile.bad,#im .im-tile .im-cost,#im .im-tile .im-num,#im .im-part.on,#im .im-part.good,#im .im-part.bad,#im .im-chain .im-done,#im .im-chain .im-fail,#im .im-chip.fix,#im .im-chip.ran,#im .im-chip.cur,#im .im-bin.good,#im .im-bin.bad,#im .im-ticket,#im .im-chap.on,#im .im-seg button[aria-pressed=true],#im .im-lv.done,#im .im-lv.skip,#im .im-key.go,#im .im-face-btn.on,#im .im-flowview .im-fv.fix,#im .im-bitcard.on,#im .im-daily{color:var(--im-ink)}
+#im .im-part.on svg,#im .im-part.good svg,#im .im-part.bad svg,#im .im-face-btn.on svg,#im .im-tile.on svg{color:var(--im-ink)}
+/* an upright phone: the board and the work panel are as tall as what they hold (no empty boxes), the panel right under
+   the board; a long tray still scrolls inside its panel */
+@media (max-width:480px) and (orientation:portrait){.im-play .im-body{grid-template-rows:minmax(0,max-content) minmax(0,max-content);align-content:start}}
+/* the kit's banner: a card as wide as the words need (up to the screen), not a pill squeezed into half the width */
+.ok-ui .ok-banner{width:max-content;max-width:calc(100vw - 24px);box-sizing:border-box;border-radius:20px;line-height:1.3}
 </style>
 <div id="game"><div id="im" hidden></div></div>
 <script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
@@ -879,7 +890,7 @@ const ROOT = $('im');
 
 /* ---------- words: English is the key; the other languages are a data pack loaded with its checksum ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-827d98ec', PACK_SRI = {"es":"sha384-txjPK7jtPcDBZStUcjQoqtKpKhbgphtW8v6o1vPQj/nyO3LGP5G0PH+/KliiDCuI","fr":"sha384-2OKbE3K5ymEiWgRGAR8kk/Lp6U7ymNWi1vWYJti+P0Z+GaCgbreuM+ohnFK89F61","de":"sha384-rYwea77NVEDjyRICLVZoxh3SazVIepMoOF/fzM3z2AqtqWWD03fFy1lbutGYWsYW","it":"sha384-/iwidwtkCZbY03SSVlLLnGRGGY5lf0xfTkJFEqlPnySSNRoqW6T7m5DfM172pDQw","pt":"sha384-iFxNTNVDuhKBvBkpji3dx1VmcNy1ONiMj7TzpAVlvyASOKymbLx2Po61AQDYakCb","nl":"sha384-o4Y5Q+qb4sxoRXqKBQdMBNdgttGrYrsgmW+nZayglLMjkFz3LMPCLkRG2CWNvg8D","ru":"sha384-J1e9u+dSWr/tK8hemQdKCBbYtoLO7avAVBfZt/aqzhbc6TfD2PqgJXaSz/ehn34X","ja":"sha384-stkL6uY5yRdHRrkINQpKDVs6gAs6FCTzss2cOYKIxMHU/YOGMPMcQ22fKwS0Xs6m","zh-Hant":"sha384-zYEQ+gXbXymsbt8OOy+q//5qDrRfjVKfQrE844S+UQ0X7eXDaBqckNJgmXg+ISJ9","he":"sha384-dnd133EmmthJRPDVvGfFKzWhsAvSoXOALWOg+91OVdVhZdaQf1XP03fURaGbI/Gt","ar":"sha384-8sNua0xGVPOyXLjiGKnW++AMADjhjMNcP4S0LAdBPkbgUV6BSUFgHrWuV7fu7Ea+"};
+const PACK_VER = '1.0.0-b7c5c79c', PACK_SRI = {"es":"sha384-a31+RSThsWiGFStHKjYJKhvXQD5FPKsKVJK7YGvLjui2g0C9m9L4XN6/Yk/9mLnz","fr":"sha384-CLb9DZV+LEmN0fkUlMJrzF8Rem6UKZ8m7t2ieLJyzczebw9xxLzCkNks4b4ZK/9B","de":"sha384-2X2Id7PuI3Vq8MXqGcwOmCILeNqlsWmuPTJJ7m8WNwFkgFHGu6Oi0thI4RNYA5n2","it":"sha384-ZhvLOYSSCOV+QXPIZrradiTo5RWIPJM9rUoj8gZ4hT6U01zzOeO1g+pkjoy/pJK7","pt":"sha384-7eNS6pBrIXfiIOz2n9rg2FzFqUFrd5rJQu/dpWTFWgmUsYdN0/UZznCyFs1LeVjS","nl":"sha384-5cRiHMxM0O/8XBHi8vQsHx9wqdreNuZ95flUBhNQ+jZq5ZVFLT7bw3eODOweUOR9","ru":"sha384-p16JR52w/tfO2K5UAb9OBN/o6QggdyVSiD2mp7D81t4N9MrCrxIesWwY8iaGREWp","ja":"sha384-E9Ke/GNTiLXb8yFaWJcenuPY9zqfvGtMY6WYWevYDw55w9EF1KVUvH7qRoBryN4K","zh-Hant":"sha384-bECIKRPZ0Vn/thd94XF9v2gZ5y/np2QNt3bXf5bCaz9THGicQ1qfphjIheB9Da2D","he":"sha384-qeYIC3QFNI6zJhs3cjp1hxcBwQT4heklrlml5YYnyVyxb28GpBdr/07SJNAIntoS","ar":"sha384-5mR95Tjxk3fxEGA/CrutjQpM3etnOxN14uH3mA7ZPa4EvL1uYOJTk3BSPU0cqWi0"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1239,9 +1250,10 @@ function shell(panel, promptText) {
   hint.setAttribute('role', 'status');
   const tray = el('div', 'im-tray'), actions = el('div', 'im-actions');
   panel.append(prompt, rule, note, hint, tray, actions);
-  const ui = { prompt, rule, note, hint, tray, actions, primary: null, refresh };
+  const ui = { prompt, rule, note, hint, tray, actions, primary: null, secondary: null, refresh };
   function refresh() {
     actions.innerHTML = '';
+    if (ui.secondary && !S.done) actions.appendChild(ui.secondary);
     if (ui.primary && !S.done) actions.appendChild(ui.primary);
     if (S.mode === 'projector' && !S.done) actions.appendChild(btn(tr('Next'), { kind: 'quiet', icon: 'next', onPress: () => nextLevel() }));
     else if (S.fails >= 2 && !S.done) actions.appendChild(btn(tr('Skip level'), { kind: 'quiet', icon: 'next', onPress: skipLevel }));
@@ -1250,6 +1262,7 @@ function shell(panel, promptText) {
   S.ui = ui;
   return ui;
 }
+const startOverBtn = fn => btn(tr('Start over'), { kind: 'quiet', icon: 'restart', onPress: () => { if (S.done) return; sfx('pop'); fn(); } });
 const setNote = (ui, text) => { ui.note.hidden = !text; ui.note.textContent = text || ''; if (text) announce(text); };
 function failRun() { S.fails++; S.runs++; if (S.ui) S.ui.refresh(); if (GIZMO) { try { GIZMO.mood('surprised'); } catch (e) { /* ignore */ } } }
 const digitKey = (b, i) => { if (i < 9) b.insertAdjacentHTML('afterbegin', `<span class="im-k" aria-hidden="true">${num(i + 1)}</span>`); };
@@ -1386,6 +1399,8 @@ const KINDS = {
       ui.tray.innerHTML = '';
       tiles.forEach((t, k) => { const b = tileBtn(tr(t.text), t.pic, k); b.dataset.id = t.id; const at = A.order.indexOf(t.id); b.classList.toggle('on', at >= 0); b.setAttribute('aria-pressed', String(at >= 0)); if (at >= 0) { b.insertAdjacentHTML('beforeend', `<span class="im-num">${num(at + 1)}</span>`); b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: at + 1, text: tr(t.text) })); } b.addEventListener('click', () => (A.order.includes(t.id) ? remove(t.id) : add(t.id))); ui.tray.appendChild(b); });
       ui.primary.disabled = A.order.length !== l.tiles.length;
+      // start over in one tap (not a try: no fail, no star lost)
+      ui.secondary = A.order.length && !S.done ? startOverBtn(() => { A.order = []; render(); }) : null; ui.refresh();
     };
     const add = id => { if (S.done || A.order.includes(id)) return; A.order.push(id); A.moves++; sfx('select'); render(); };
     const remove = id => { if (S.done) return; const i = A.order.indexOf(id); if (i < 0) return; A.order.splice(i, 1); A.moves++; sfx('pop'); render(); };
@@ -1455,11 +1470,13 @@ const KINDS = {
         ui.prompt.textContent = tr('Tap the questions in the order you will ask them.');
         tray.forEach((c, k) => { const b = tileBtn(tr(c.label), null, k); b.dataset.id = c.id; b.insertAdjacentHTML('beforeend', costBadge(c.cost)); const at = A.flow.indexOf(c.id); b.classList.toggle('on', at >= 0); b.setAttribute('aria-pressed', String(at >= 0)); if (at >= 0) { b.insertAdjacentHTML('beforeend', `<span class="im-num">${num(at + 1)}</span>`); b.setAttribute('aria-label', tr('Remove step {n}: {text}', { n: at + 1, text: tr(c.label) })); } b.addEventListener('click', () => (A.flow.includes(c.id) ? remove(c.id) : add(c.id))); ui.tray.appendChild(b); });
         ui.primary = btn(tr('Run it'), { kind: 'hot', icon: 'play', onPress: run }); ui.primary.disabled = !A.flow.length;
+        ui.secondary = A.flow.length ? startOverBtn(() => { A.flow = []; renderChain(); renderTray(); }) : null;
       } else if (phase === 'swap') {
+        ui.secondary = null;
         ui.prompt.textContent = tr('Every question said fine. Swap one part at a time, cheapest first.');
         (l.swaps || []).forEach((s, k) => { const b = tileBtn(tr(s.label), null, k); b.dataset.id = s.id; b.insertAdjacentHTML('beforeend', costBadge(s.cost)); b.disabled = tried.has(s.id); b.classList.toggle('dim', tried.has(s.id)); b.addEventListener('click', () => swap(s.id)); ui.tray.appendChild(b); });
         ui.primary = btn(tr('Add a question'), { kind: 'quiet', icon: 'back', onPress: rebuild });
-      } else { ui.prompt.textContent = tr('Running the flowchart...'); ui.primary = null; }
+      } else { ui.prompt.textContent = tr('Running the flowchart...'); ui.primary = null; ui.secondary = null; }
       ui.refresh();
     };
     const add = id => { if (S.done || phase !== 'build' || A.flow.includes(id)) return; A.flow.push(id); sfx('select'); renderChain(); renderTray(); };
