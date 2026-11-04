@@ -27,7 +27,8 @@
     "check-keys": "node scripts/check-keys.js",
     "kit-rules": "node scripts/build-kit-rules.js",
     "layout:live": "node scripts/live-layout-audit.js",
-    "layout:games": "node scripts/games-fit-audit.js"
+    "layout:games": "node scripts/games-fit-audit.js",
+    "focus:sheet": "node scripts/focus-sheet.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",
