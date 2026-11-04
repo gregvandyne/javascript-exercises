@@ -11,14 +11,88 @@
    "text": "A procedure is a group of steps with a name. Define it once, then call it wherever you need it. In Robo Route you build it as a My Block.",
    "art": "wrench",
    "img": "csq/robo-route/functions-2-key",
-   "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board."
+   "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board.",
+   "focus": [
+    {
+     "cue": "Zigzag (n), by the Robo Route team: defined once.",
+     "box": [
+      54.1,
+      37.1,
+      39.2,
+      6.0
+     ]
+    },
+    {
+     "cue": "One block climbs the whole zigzag staircase.",
+     "box": [
+      5.9,
+      25.4,
+      35.4,
+      72.4
+     ],
+     "path": [
+      [
+       8.5,
+       93.2
+      ],
+      [
+       13.6,
+       84.0
+      ],
+      [
+       18.6,
+       75.0
+      ],
+      [
+       23.7,
+       66.2
+      ],
+      [
+       28.8,
+       57.3
+      ],
+      [
+       33.8,
+       48.2
+      ],
+      [
+       33.8,
+       39.2
+      ],
+      [
+       33.8,
+       30.1
+      ]
+     ]
+    }
+   ]
   },
   {
    "title": "One block, many jobs",
    "text": "Rooms of different depths? Do not make three blocks. Make one block, Room, that takes a number called steps. Each call hands it its own number.",
    "art": "gears",
    "img": "csq/robo-route/functions-2-parameter",
-   "alt": "My Block Dash (n) repeats n moves, and the calls underneath feed it different numbers: call Dash (7), (6), (5), (4), (3)."
+   "alt": "My Block Dash (n) repeats n moves, and the calls underneath feed it different numbers: call Dash (7), (6), (5), (4), (3).",
+   "focus": [
+    {
+     "cue": "Inside Dash, n is a slot: repeat n times.",
+     "box": [
+      55.0,
+      51.0,
+      11.6,
+      5.9
+     ]
+    },
+    {
+     "cue": "Each call hands Dash a different number: 7, 6, 5, 4, 3.",
+     "box": [
+      54.1,
+      58.2,
+      42.9,
+      13.2
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -31,6 +105,35 @@
     "call Room(1)",
     "call Room(3)",
     "call Room(2)"
+   ],
+   "focus": [
+    {
+     "cue": "Room is defined once, with a slot named steps.",
+     "box": [
+      54.1,
+      43.8,
+      16.5,
+      5.9
+     ]
+    },
+    {
+     "cue": "Inside, repeat uses the number the call hands it.",
+     "box": [
+      70.7,
+      51.0,
+      14.0,
+      5.9
+     ]
+    },
+    {
+     "cue": "Three calls, three numbers: Room (1), Room (3), Room (2).",
+     "box": [
+      54.1,
+      72.6,
+      33.0,
+      6.0
+     ]
+    }
    ]
   },
   {
@@ -38,14 +141,72 @@
    "text": "A big level is easier as small jobs: collect the gems, climb the stairs, cross to the goal. Make one procedure per subgoal, and the main program is just calls.",
    "art": "map",
    "img": "csq/robo-route/functions-2-subgoals",
-   "alt": "Three named My Blocks split the job: GetGems, Climb and Cross, each defined in the tray and called in turn below."
+   "alt": "Three named My Blocks split the job: GetGems, Climb and Cross, each defined in the tray and called in turn below.",
+   "focus": [
+    {
+     "cue": "Job one has its own block: GetGems.",
+     "box": [
+      54.1,
+      43.8,
+      28.6,
+      13.1
+     ]
+    },
+    {
+     "cue": "Job two: Climb.",
+     "box": [
+      54.1,
+      58.2,
+      33.2,
+      20.4
+     ]
+    },
+    {
+     "cue": "Job three: Cross. The main program is just calls.",
+     "box": [
+      54.1,
+      79.9,
+      12.2,
+      5.9
+     ]
+    }
+   ]
   },
   {
    "title": "Notes and credit",
    "text": "Pin a note that tells the truth about each block. If a block came from someone else, keep the line that credits them.",
    "art": "pencil",
    "img": "csq/robo-route/functions-2-notes-credit",
-   "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal."
+   "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal.",
+   "focus": [
+    {
+     "cue": "Sweep's note tells the truth: Picks up the gems.",
+     "box": [
+      54.1,
+      43.8,
+      22.3,
+      5.9
+     ]
+    },
+    {
+     "cue": "Drop's note: Drives down the side.",
+     "box": [
+      54.1,
+      65.4,
+      22.4,
+      6.0
+     ]
+    },
+    {
+     "cue": "Home's note: Drives to the goal. Notes keep blocks honest.",
+     "box": [
+      54.1,
+      79.9,
+      21.5,
+      5.9
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -77,7 +238,18 @@
    "text": "Open Robo Route at Functions and finish 4 levels, including one where you make a block with a parameter.",
    "art": "trophy",
    "img": "csq/robo-route/functions-2-key",
-   "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board."
+   "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board.",
+   "focus": [
+    {
+     "cue": "Your turn: make a block with a number slot of your own.",
+     "box": [
+      54.1,
+      37.1,
+      39.2,
+      6.0
+     ]
+    }
+   ]
   }
  ],
  "check": [

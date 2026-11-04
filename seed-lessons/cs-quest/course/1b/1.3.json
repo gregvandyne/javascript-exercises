@@ -11,14 +11,54 @@
    "text": "In the fog, Bolt cannot see the walls. A plain list of moves would bump into one. Bolt needs to decide for itself.",
    "art": "robot",
    "img": "csq/robo-route/conditionals-1b-fog",
-   "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here."
+   "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",
+   "focus": [
+    {
+     "cue": "Bolt can only see the squares right around it.",
+     "box": [
+      5.9,
+      73.6,
+      13.7,
+      24.2
+     ]
+    },
+    {
+     "cue": "The rest is fog: walls could hide anywhere.",
+     "box": [
+      19.5,
+      25.4,
+      27.1,
+      72.4
+     ]
+    }
+   ]
   },
   {
    "title": "An if asks a question",
    "text": "An if block asks a question about right now: is the path ahead clear? If yes, one thing happens. If no, the else part happens.",
    "art": "branch",
    "img": "csq/robo-route/conditionals-1b-if-else",
-   "alt": "One if / else block in the tray: if path ahead, move; else, turn left. Bolt checks and picks a side every time it runs."
+   "alt": "One if / else block in the tray: if path ahead, move; else, turn left. Bolt checks and picks a side every time it runs.",
+   "focus": [
+    {
+     "cue": "If the path ahead is clear, Bolt moves.",
+     "box": [
+      54.1,
+      43.8,
+      11.6,
+      13.1
+     ]
+    },
+    {
+     "cue": "Else — no clear path — Bolt turns left instead.",
+     "box": [
+      54.1,
+      65.4,
+      10.8,
+      13.2
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -31,6 +71,35 @@
     "repeat 6 times:",
     "if path ahead: move",
     "else: turn left"
+   ],
+   "focus": [
+    {
+     "cue": "Repeat until the goal: it never stops checking.",
+     "box": [
+      54.1,
+      43.8,
+      17.5,
+      5.9
+     ]
+    },
+    {
+     "cue": "At every square: path ahead? Move. No path? Turn.",
+     "box": [
+      56.4,
+      51.0,
+      11.6,
+      34.8
+     ]
+    },
+    {
+     "cue": "The goal waits in the water: checking finds the way.",
+     "box": [
+      26.3,
+      49.7,
+      6.7,
+      12.0
+     ]
+    }
    ]
   },
   {
@@ -38,7 +107,36 @@
    "text": "A when block waits for something to happen, like a gem being picked up. Then its blocks run right away. An if asks; a when listens.",
    "art": "lightbulb",
    "img": "csq/robo-route/conditionals-1b-when",
-   "alt": "A when block waits at the top of the program: when a gem is picked up, turn right, with the driving loop underneath it."
+   "alt": "A when block waits at the top of the program: when a gem is picked up, turn right, with the driving loop underneath it.",
+   "focus": [
+    {
+     "cue": "The when block waits at the top, listening.",
+     "box": [
+      54.1,
+      43.8,
+      18.2,
+      5.9
+     ]
+    },
+    {
+     "cue": "The moment a gem is picked up, Bolt turns right.",
+     "box": [
+      56.4,
+      51.0,
+      9.3,
+      5.9
+     ]
+    },
+    {
+     "cue": "A gem on the board is what sets it off.",
+     "box": [
+      26.3,
+      25.4,
+      6.7,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -70,7 +168,18 @@
    "text": "Open Robo Route at Conditionals & events and finish 4 levels. Say each rule out loud first: if ___, then Bolt ___.",
    "art": "trophy",
    "img": "csq/robo-route/conditionals-1b-fog",
-   "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here."
+   "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",
+   "focus": [
+    {
+     "cue": "Your turn: say the rule out loud first — if, then.",
+     "box": [
+      54.1,
+      28.8,
+      8.2,
+      5.9
+     ]
+    }
+   ]
   }
  ],
  "check": [
