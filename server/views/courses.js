@@ -146,10 +146,30 @@ function art(id) {
   return html`<div class="sart sart-${tone}" aria-hidden="true"><span class="sart-shape"></span><span class="sart-a">${a}</span><span class="sart-main">${main}</span><span class="sart-b">${b}</span></div>`;
 }
 /** A slide's picture: the in-game screenshot when the slide carries one (img = manifest key, file at
- *  /img/<key>.webp), else the emoji art above, which stays as every slide's fallback. */
-function slideArt(s) {
-  if (s.img) return html`<figure class="smedia"><img class="simg" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async"></figure>`;
-  return art(s.art);
+ *  /img/<key>.webp), else the emoji art above, which stays as every slide's fallback. A slide with guided
+ *  focus steps also gets the overlay layer (boxes, dotted paths, cue chips — public/js/course.js plays them
+ *  once per view; the CSS static mode serves reduced motion), a replay button, and its cues as a real list
+ *  inside the figure (visually hidden while the animation can run, visible in the static mode) so the cue
+ *  text is never animation-only. The overlay layer itself is aria-hidden decoration. A step whose box
+ *  centre sits in the picture's bottom third (centre y > 66%) gets its cue chip at the top of the
+ *  picture instead (gf-cue--top), so the chip never covers the target it points at; the box also carries
+ *  its own % position as --bx/--by so the CSS can keep the corner badge inside the frame at the edges. */
+function slideArt(t, s) {
+  if (!s.img) return art(s.art);
+  const img = html`<img class="simg" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async">`;
+  if (!s.focus) return html`<figure class="smedia">${img}</figure>`;
+  return html`<figure class="smedia gf" data-gf>
+    ${img}
+    <div class="gf-layer" aria-hidden="true">${s.focus.map((st, i) => html`
+      <div class="gf-step" data-i="${i}">
+        ${st.path ? html`<svg class="gf-path" viewBox="0 0 100 56.25" preserveAspectRatio="none"><polyline points="${st.path.map(p => `${p[0]},${p[1] * 0.5625}`).join(' ')}" pathLength="100" vector-effect="non-scaling-stroke"></polyline></svg>` : ''}
+        <div class="gf-box" style="--bx:${st.box[0]};--by:${st.box[1]};left:${st.box[0]}%;top:${st.box[1]}%;width:${st.box[2]}%;height:${st.box[3]}%"><span class="gf-badge">${i + 1}</span></div>
+        <div class="gf-cue${st.box[1] + st.box[3] / 2 > 66 ? ' gf-cue--top' : ''}"><span class="gf-cue-n">${i + 1}</span>${st.cue}</div>
+      </div>`)}
+    </div>
+    <button class="gf-replay" type="button" hidden><span aria-hidden="true">↻</span> ${t('courses.lesson.replayFocus')}</button>
+    <figcaption class="gf-cues"><ol>${s.focus.map(st => html`<li>${st.cue}</li>`)}</ol></figcaption>
+  </figure>`;
 }
 /** What read-aloud says for a slide: its own line if it has one, else its title and text (and the words). */
 export function sayOf(s) {
@@ -160,7 +180,7 @@ export function sayOf(s) {
 }
 function slide(t, s, i, n, step) {
   return html`<section class="slide slide--${s.kind}" id="slide-${i + 1}" aria-roledescription="slide" aria-label="${t('courses.lesson.slide', { n: i + 1, total: n })}" data-say="${sayOf(s)}">
-    ${slideArt(s)}
+    ${slideArt(t, s)}
     <div class="slide-body">
       <h2 class="slide-h">${s.title}</h2>
       ${s.text ? html`<p class="slide-p">${s.text}</p>` : ''}

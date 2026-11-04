@@ -11,21 +11,160 @@
    "text": "Some doors open only when Bolt has 5 gems. How does a program remember how many it has? It uses a variable.",
    "art": "robot",
    "img": "csq/robo-route/variables-1b-key",
-   "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts."
+   "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",
+   "focus": [
+    {
+     "cue": "The door's counter: count = 3. Three gems open it.",
+     "box": [
+      0.5,
+      94,
+      11,
+      5.5
+     ]
+    },
+    {
+     "cue": "Three gems, then the door, then the flag.",
+     "box": [
+      13.6,
+      59.2,
+      31.6,
+      11.1
+     ],
+     "path": [
+      [
+       10.4,
+       64.8
+      ],
+      [
+       16.7,
+       64.8
+      ],
+      [
+       23.1,
+       64.8
+      ],
+      [
+       29.4,
+       64.8
+      ],
+      [
+       35.7,
+       64.8
+      ],
+      [
+       41.9,
+       64.8
+      ]
+     ]
+    },
+    {
+     "cue": "The program starts by setting count to 0.",
+     "box": [
+      54.1,
+      37.1,
+      12.0,
+      6.0
+     ]
+    }
+   ]
   },
   {
    "title": "A box with a name",
    "text": "A variable is a box with a name on it, like count. The program can look inside and change it while it runs. The number inside is its value.",
    "art": "box",
    "img": "csq/robo-route/variables-1b-named-box",
-   "alt": "The program names its box: set count to 0, then repeat 5 times move, pick up, and change count by 1, beside the gem column."
+   "alt": "The program names its box: set count to 0, then repeat 5 times move, pick up, and change count by 1, beside the gem column.",
+   "focus": [
+    {
+     "cue": "The box is named count. It starts at 0.",
+     "box": [
+      54.1,
+      43.8,
+      12.0,
+      5.9
+     ]
+    },
+    {
+     "cue": "Every pick-up changes count by 1.",
+     "box": [
+      71.6,
+      51.0,
+      14.3,
+      5.9
+     ]
+    },
+    {
+     "cue": "Five gems up the column: count climbs 1, 2, 3, 4, 5.",
+     "box": [
+      7.2,
+      25.4,
+      6.4,
+      67.7
+     ],
+     "path": [
+      [
+       10.4,
+       87.4
+      ],
+      [
+       10.4,
+       76.0
+      ],
+      [
+       10.4,
+       64.8
+      ],
+      [
+       10.4,
+       53.7
+      ],
+      [
+       10.4,
+       42.5
+      ],
+      [
+       10.4,
+       31.2
+      ]
+     ]
+    }
+   ]
   },
   {
    "title": "Set or change?",
    "text": "Set puts a new number in the box: set count to 0. Change by adds to what is already there: change count by 1 makes 3 into 4.",
    "art": "gears",
    "img": "csq/robo-route/variables-1b-set-change",
-   "alt": "Bolt stands by the door with the counter strip reading steps = 2: set steps to 4 started it, and change steps by -1 ticks it down."
+   "alt": "Bolt stands by the door with the counter strip reading steps = 2: set steps to 4 started it, and change steps by -1 ticks it down.",
+   "focus": [
+    {
+     "cue": "Set puts a brand-new number in: steps = 4.",
+     "box": [
+      54.1,
+      36.2,
+      11.7,
+      6.0
+     ]
+    },
+    {
+     "cue": "Change by -1 takes one away each time.",
+     "box": [
+      56.4,
+      50.7,
+      14.6,
+      6.0
+     ]
+    },
+    {
+     "cue": "The watch pill shows what is in the box now: steps = 2.",
+     "box": [
+      11,
+      94.5,
+      8.5,
+      5.3
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -40,6 +179,53 @@
     "move",
     "pick up",
     "change count by 1"
+   ],
+   "focus": [
+    {
+     "cue": "The watch pill says count = 2: two gems counted.",
+     "box": [
+      11,
+      94.5,
+      8.5,
+      5.3
+     ]
+    },
+    {
+     "cue": "This block just ran: change count by 1.",
+     "box": [
+      71.6,
+      51.0,
+      14.3,
+      5.9
+     ]
+    },
+    {
+     "cue": "Bolt keeps climbing: 3, 4, 5 still to count.",
+     "box": [
+      7.2,
+      25.4,
+      6.4,
+      33.7
+     ],
+     "path": [
+      [
+       10.4,
+       64.8
+      ],
+      [
+       10.4,
+       53.7
+      ],
+      [
+       10.4,
+       42.5
+      ],
+      [
+       10.4,
+       31.2
+      ]
+     ]
+    }
    ]
   },
   {
@@ -72,7 +258,18 @@
    "text": "Open Robo Route at Variables and finish 4 levels. Press Step and read the watch pill after each block: what is in the box now?",
    "art": "trophy",
    "img": "csq/robo-route/variables-1b-key",
-   "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts."
+   "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",
+   "focus": [
+    {
+     "cue": "Your turn: press Step and read the counter each time.",
+     "box": [
+      0.5,
+      94,
+      11,
+      5.5
+     ]
+    }
+   ]
   }
  ],
  "check": [

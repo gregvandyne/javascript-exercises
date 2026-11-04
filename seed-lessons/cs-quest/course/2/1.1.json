@@ -11,14 +11,88 @@
    "text": "Bolt does exactly what the program says, in order, and never guesses what you meant. The order of your steps is everything.",
    "art": "robot",
    "img": "csq/robo-route/sequences-2-key",
-   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time."
+   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time.",
+   "focus": [
+    {
+     "cue": "Bolt starts here. The order of your steps is everything.",
+     "box": [
+      5.9,
+      52.8,
+      5.2,
+      8.9
+     ]
+    },
+    {
+     "cue": "The flag waits seven squares away, in a straight line.",
+     "box": [
+      41.3,
+      52.8,
+      5.3,
+      8.9
+     ],
+     "path": [
+      [
+       8.5,
+       57.3
+      ],
+      [
+       13.6,
+       57.3
+      ],
+      [
+       18.6,
+       57.3
+      ],
+      [
+       23.7,
+       57.3
+      ],
+      [
+       28.8,
+       57.3
+      ],
+      [
+       33.8,
+       57.3
+      ],
+      [
+       38.8,
+       57.3
+      ],
+      [
+       44.0,
+       57.3
+      ]
+     ]
+    }
+   ]
   },
   {
    "title": "Plan in plain words",
    "text": "Pro programmers write the plan in plain words before they touch a block. That plan is called pseudocode. A flowchart is the same plan drawn with boxes and diamonds.",
    "art": "pencil",
    "img": "csq/robo-route/sequences-2-plan-lines",
-   "alt": "A plan card lists three plain-language plan lines for the level, waiting to be tapped into the order Bolt should do them."
+   "alt": "A plan card lists three plain-language plan lines for the level, waiting to be tapped into the order Bolt should do them.",
+   "focus": [
+    {
+     "cue": "Three plan lines, waiting to be put in order.",
+     "box": [
+      36.6,
+      46.5,
+      26.7,
+      23.2
+     ]
+    },
+    {
+     "cue": "Start with this one: Bolt's first job is the first gem.",
+     "box": [
+      36.6,
+      63.2,
+      26.7,
+      6.5
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -31,6 +105,52 @@
     "1. reach the key",
     "2. open the door",
     "3. reach the goal"
+   ],
+   "focus": [
+    {
+     "cue": "Every plan line became a run of blocks: 21 in all.",
+     "box": [
+      54.1,
+      36.2,
+      43.4,
+      27.7
+     ]
+    },
+    {
+     "cue": "The blocks take Bolt gem to gem, then to the flag.",
+     "box": [
+      5.9,
+      34.7,
+      35.4,
+      54.8
+     ],
+     "path": [
+      [
+       8.5,
+       84.0
+      ],
+      [
+       28.8,
+       84.0
+      ],
+      [
+       33.8,
+       84.0
+      ],
+      [
+       33.8,
+       39.2
+      ],
+      [
+       18.6,
+       39.2
+      ],
+      [
+       18.6,
+       66.2
+      ]
+     ]
+    }
    ]
   },
   {
@@ -38,7 +158,67 @@
    "text": "When two routes both work, compare them: fewer steps, fewer turns, fewer chances to go wrong. Count, then pick.",
    "art": "star",
    "img": "csq/robo-route/sequences-2-compare-routes",
-   "alt": "A walled maze with two ways around the walls to the flag, one shorter than the other."
+   "alt": "A walled maze with two ways around the walls to the flag, one shorter than the other.",
+   "focus": [
+    {
+     "cue": "One way goes over the top and down the side.",
+     "box": [
+      5.9,
+      25.4,
+      40.7,
+      27.4
+     ],
+     "path": [
+      [
+       8.5,
+       30.1
+      ],
+      [
+       38.8,
+       30.1
+      ],
+      [
+       38.8,
+       48.2
+      ],
+      [
+       18.6,
+       48.2
+      ],
+      [
+       18.6,
+       66.2
+      ],
+      [
+       33.8,
+       66.2
+      ]
+     ]
+    },
+    {
+     "cue": "The other way drops down and along the bottom.",
+     "box": [
+      5.9,
+      61.7,
+      33.1,
+      8.9
+     ],
+     "path": [
+      [
+       8.5,
+       30.1
+      ],
+      [
+       8.5,
+       66.2
+      ],
+      [
+       33.8,
+       66.2
+      ]
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -70,7 +250,18 @@
    "text": "Open Robo Route at Sequences and finish 4 levels. When a level shows plan lines, put them in order first, then build one plan line at a time.",
    "art": "trophy",
    "img": "csq/robo-route/sequences-2-key",
-   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time."
+   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time.",
+   "focus": [
+    {
+     "cue": "Your turn: plan lines first, then one run at a time.",
+     "box": [
+      5.9,
+      52.8,
+      5.2,
+      8.9
+     ]
+    }
+   ]
   }
  ],
  "check": [

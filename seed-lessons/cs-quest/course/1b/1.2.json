@@ -11,14 +11,80 @@
    "text": "Bolt has to go 5 squares in a straight line. You could use move, move, move, move, move. That is a lot of the same block!",
    "art": "robot",
    "img": "csq/robo-route/loops-1b-five-moves",
-   "alt": "Five separate move blocks stacked in the tray do the same job as one repeat block, but take five times the room."
+   "alt": "Five separate move blocks stacked in the tray do the same job as one repeat block, but take five times the room.",
+   "focus": [
+    {
+     "cue": "Five move blocks, all the same.",
+     "box": [
+      54.1,
+      36.2,
+      7.1,
+      34.9
+     ]
+    },
+    {
+     "cue": "They walk Bolt five squares to the flag.",
+     "box": [
+      5.9,
+      49.7,
+      40.7,
+      12.0
+     ],
+     "path": [
+      [
+       9.4,
+       55.7
+      ],
+      [
+       16.2,
+       55.7
+      ],
+      [
+       22.9,
+       55.7
+      ],
+      [
+       29.6,
+       55.7
+      ],
+      [
+       36.4,
+       55.7
+      ],
+      [
+       43.1,
+       55.7
+      ]
+     ]
+    }
+   ]
   },
   {
    "title": "Meet the loop",
    "text": "A loop repeats steps so you do not have to write them again. In Robo Route the loop block is called repeat.",
    "art": "loop",
    "img": "csq/robo-route/loops-1b-repeat-bracket",
-   "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead."
+   "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
+   "focus": [
+    {
+     "cue": "Meet the repeat: it runs its inside again and again.",
+     "box": [
+      54.1,
+      36.2,
+      12.1,
+      13.2
+     ]
+    },
+    {
+     "cue": "The move sits inside, so the move is what repeats.",
+     "box": [
+      56.4,
+      43.5,
+      7.1,
+      5.9
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -30,6 +96,26 @@
    "steps": [
     "repeat 5 times:",
     "move"
+   ],
+   "focus": [
+    {
+     "cue": "Two blocks do the whole job: repeat 5, with move inside.",
+     "box": [
+      54.1,
+      36.2,
+      12.1,
+      13.2
+     ]
+    },
+    {
+     "cue": "The counter says Blocks: 2 — not 5.",
+     "box": [
+      10.9,
+      19.4,
+      16.9,
+      5.0
+     ]
+    }
    ]
   },
   {
@@ -37,14 +123,54 @@
    "text": "The number says how many times the whole loop runs. A repeat 3 with move, move inside makes 6 moves, not 3.",
    "art": "star",
    "img": "csq/robo-route/loops-1b-repeat-number",
-   "alt": "A repeat 3 times bracket holds two move blocks, so Bolt drives six squares in all: the number times the blocks inside."
+   "alt": "A repeat 3 times bracket holds two move blocks, so Bolt drives six squares in all: the number times the blocks inside.",
+   "focus": [
+    {
+     "cue": "Repeat 3 times: the whole loop runs three times.",
+     "box": [
+      54.1,
+      36.2,
+      12.1,
+      6.0
+     ]
+    },
+    {
+     "cue": "Two moves inside, so 3 × 2 = 6 moves in all.",
+     "box": [
+      56.4,
+      43.5,
+      7.1,
+      13.2
+     ]
+    }
+   ]
   },
   {
    "title": "Inside or outside?",
    "text": "Only the blocks inside the repeat get repeated. If the turn is inside instead of the move, Bolt just spins in place!",
    "art": "bug",
    "img": "csq/robo-route/loops-1b-turn-inside",
-   "alt": "The repeat bracket holds turn right instead of move, so Bolt would spin on one square instead of driving anywhere."
+   "alt": "The repeat bracket holds turn right instead of move, so Bolt would spin on one square instead of driving anywhere.",
+   "focus": [
+    {
+     "cue": "The block inside the repeat is turn right — not move.",
+     "box": [
+      56.4,
+      43.5,
+      9.3,
+      5.9
+     ]
+    },
+    {
+     "cue": "So Bolt would spin on this one square, five times.",
+     "box": [
+      5.9,
+      49.7,
+      6.9,
+      12.0
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -76,7 +202,18 @@
    "text": "Open Robo Route at Loops and finish 4 levels. First look for the pattern: which blocks happen again and again? Put those inside a repeat.",
    "art": "trophy",
    "img": "csq/robo-route/loops-1b-repeat-bracket",
-   "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead."
+   "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
+   "focus": [
+    {
+     "cue": "Your turn: find the pattern, then put it inside a repeat.",
+     "box": [
+      54.1,
+      36.2,
+      12.1,
+      13.2
+     ]
+    }
+   ]
   }
  ],
  "check": [

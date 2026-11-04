@@ -1100,6 +1100,66 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
    teaching element kept in the central crop-safe zone by the capture spec. */
 .smedia{margin:0;border-radius:var(--r);overflow:hidden;background:var(--card-2);aspect-ratio:16/9}
 .simg{display:block;width:100%;height:100%;object-fit:cover}
+/* Guided focus: a short played-once tour over a slide picture (steps authored per slide, played by
+   public/js/course.js). The figure carries data-gf-step while a step is on show; no attribute = clean picture. */
+.smedia.gf{position:relative;container-type:inline-size}
+.gf-layer{position:absolute;inset:0;pointer-events:none}
+.gf-step{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
+.gf[data-gf-step="0"] .gf-step[data-i="0"],.gf[data-gf-step="1"] .gf-step[data-i="1"],.gf[data-gf-step="2"] .gf-step[data-i="2"],.gf[data-gf-step="3"] .gf-step[data-i="3"]{opacity:1}
+.gf-box{position:absolute;border-radius:10px;box-shadow:0 0 0 999px rgba(8,14,10,.42)}
+/* The visible ring is the box's ::after, outset 8px on every side: its 3px border then runs 5-8px
+   OUTSIDE the target's own pixels, so the outline frames the teaching element instead of tracing over
+   it (on a phone a small block is only ~23px wide — a border drawn on the box itself covered the very
+   thing it pointed at). The box element itself stays invisible: its box-shadow keeps the dim hole
+   aligned to the true box, and the pulse plays on the ring, expanding outward from it. */
+.gf-box::after{content:"";position:absolute;inset:-8px;border:3px solid #FFD23F;border-radius:18px;animation:gfPulse 1s ease-in-out infinite alternate}
+@keyframes gfPulse{from{outline:3px solid rgba(255,210,63,.0);outline-offset:0}to{outline:3px solid rgba(255,210,63,.45);outline-offset:5px}}
+/* The badge parks fully OUTSIDE the ring's top-left corner — its bottom-right corner touching the
+   ring's top-left corner — so it never sits on the target or the ring either. Where container queries
+   are available it is sized off the figure (the figure is a size container): 5.6cqw of the figure's
+   width, clamped 15-22px, so a phone-sized box keeps a phone-sized badge. --bx/--by are the box's own
+   % position (set inline by the renderer); they clamp the parked position on all four sides so a box
+   touching the frame's edge slides its badge along the outside of the ring instead of clipping it. */
+.gf-badge{position:absolute;top:-30px;left:-30px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#FFD23F;color:#141414;font-size:13px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+@supports (width:1cqw){.gf-badge{--r:calc(clamp(15px,5.6cqw,22px)/2);width:calc(var(--r)*2);height:calc(var(--r)*2);font-size:clamp(10px,3.8cqw,13px);left:max(calc(var(--bx,0)*-1cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--bx,0))*1cqw - var(--r)*2)));top:max(calc(var(--by,0)*-.5625cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--by,0))*.5625cqw - var(--r)*2)))}}
+.gf-path{position:absolute;inset:0;width:100%;height:100%}
+.gf-path polyline{fill:none;stroke:#FFD23F;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3 2.2;filter:drop-shadow(0 1px 1px rgba(20,20,20,.55));animation:gfMarch 1s linear infinite}
+@keyframes gfMarch{to{stroke-dashoffset:-10.4}}
+.gf-cue{position:absolute;left:10px;bottom:10px;max-width:calc(100% - 120px);display:flex;align-items:center;gap:7px;background:rgba(20,20,20,.88);color:#FFFDF2;border:1px solid rgba(255,253,242,.25);border-radius:999px;padding:6px 11px;font-size:14px;font-weight:600;line-height:1.25}
+/* A step whose target sits in the picture's bottom third gets its cue at the top instead, so the chip
+   never hides the thing it is pointing at. The cue always carries the step number in its own bubble. */
+.gf-cue--top{top:10px;bottom:auto;max-width:calc(100% - 20px)}
+.gf-cue-n{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:#FFD23F;color:#141414;font-size:12px;font-weight:800}
+.gf-replay{position:absolute;right:8px;bottom:8px;z-index:2;border:1px solid rgba(255,253,242,.35);background:rgba(20,20,20,.72);color:#FFFDF2;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer}
+.gf-replay:hover{background:rgba(20,20,20,.9)}
+.gf-cues{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* Small screens: at phone size the desktop dim greys out nearly the whole picture, so it fades right
+   back and the active box gets a glow to carry the highlight instead; the cue chip shrinks a step too.
+   (Placed before the reduced-motion block so the static mode's undimmed boxes still win when both apply.) */
+@media (max-width:639px){
+  .gf-box{box-shadow:0 0 0 999px rgba(8,14,10,.28)}
+  .gf-box::after{box-shadow:0 0 18px 5px rgba(255,210,63,.5)}
+  .gf-cue{font-size:13px;padding:5px 10px}
+  .gf-cue-n{width:17px;height:17px;font-size:11px}
+}
+/* Reduced motion (and the no-JS static mode the script adds): no tour — every step's box stays on the
+   picture with its number badge, the paths sit still, and the cues become a plain list under the picture. */
+@media (prefers-reduced-motion: reduce){
+  .smedia.gf{aspect-ratio:auto;overflow:visible}
+  .smedia.gf .simg{height:auto;aspect-ratio:16/9;border-radius:var(--r)}
+  /* The cue list flows inside the figure in this mode, so the figure grows taller than the picture;
+     the overlay layer must stay the picture's own box or every box's % top/height would map over
+     figure + list and land below its target. The layer's width is the figure's, so the 16/9 ratio
+     gives it exactly the image's height (the badge's cqw clamps assume the same geometry). */
+  .gf-layer{bottom:auto;aspect-ratio:16/9}
+  .gf-step{opacity:1;transition:none}
+  .gf-box{box-shadow:none}
+  .gf-box::after{animation:none;box-shadow:none}
+  .gf-path polyline{animation:none}
+  .gf-cue{display:none}
+  .gf-cues{position:static;width:auto;height:auto;margin:8px 2px 0;overflow:visible;clip-path:none;white-space:normal}
+  .gf-cues ol{margin:0;padding-left:22px;display:grid;gap:2px}
+}
 .deck-nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 8px;background:var(--bar);border:2px solid var(--line);border-radius:var(--r);padding:4px 8px 8px;box-shadow:var(--shadow)}
 .deck-nav[hidden]{display:none}
 .deck-nav .btn{min-height:48px;padding:0 16px}
