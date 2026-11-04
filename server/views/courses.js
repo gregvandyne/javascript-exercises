@@ -154,7 +154,53 @@ function art(id) {
  *  centre sits in the picture's bottom third (centre y > 66%) gets its cue chip at the top of the
  *  picture instead (gf-cue--top), so the chip never covers the target it points at; the box also carries
  *  its own % position as --bx/--by so the CSS can keep the corner badge inside the frame at the edges. */
+/** The story layer's cast, in course order: name and piece colour (sprites extracted from their own games —
+ *  scripts/csq-sprites.js — at /img/csq/chars/<id>.webp). */
+const CHAR_META = {
+  bolt: { name: 'Bolt', color: '#4FA8F0' }, dot: { name: 'Dot', color: '#F2994A' },
+  pim: { name: 'Pim', color: '#FFD23F' }, gizmo: { name: 'Gizmo', color: '#8FC1F5' },
+};
+const CHAR_ORDER = ['bolt', 'dot', 'pim', 'gizmo'];
+/** Where each character's centre stands on the handoff stage (cqw): the flown piece's start offset is
+ *  computed from it, so the piece begins above its owner's head and lands in its progress slot. */
+const CHAR_CX = { bolt: 23, dot: 19.5, pim: 23, gizmo: 21.5 };
+/** A character on the story stage: its game sprite, its name chip (the team scene shows them) and, for Bolt,
+ *  the little antenna light his signature move blinks. --d is the entrance delay step. */
+const storyChar = (id, d, extra = '') => html`<span class="story-char story-char--${id} ${extra}" style="--d:${d}"><img src="/img/csq/chars/${id}.webp" alt="" loading="lazy" decoding="async">${id === 'bolt' ? html`<span class="story-antenna"></span>` : ''}<span class="story-name">${CHAR_META[id].name}</span></span>`;
+/** The Spark motif: one reusable glowing spark (SVG) with the four piece gems around it. A piece is lit when
+ *  its index is below the scene's lit count; on the relight scene every piece flies in from its corner. */
+function sparkHtml(st) {
+  const orbit = st.scene !== 'handoff';
+  return html`<div class="story-spark">
+    <svg class="spark-svg" viewBox="0 0 100 100" aria-hidden="true"><path class="spark-star" d="M50 4 C55 33 67 45 96 50 C67 55 55 67 50 96 C45 67 33 55 4 50 C33 45 45 33 50 4 Z"/><circle class="spark-core" cx="50" cy="50" r="7"/></svg>
+    ${st.scene === 'dim' ? html`<span class="story-ember e1"></span><span class="story-ember e2"></span><span class="story-ember e3"></span>` : ''}
+    ${orbit ? CHAR_ORDER.map((id, i) => html`<span class="story-piece story-piece--${id}${i < st.lit ? ' is-lit' : ' is-off'}${st.scene === 'relight' ? ' is-fly' : ''}${st.scene === 'map' ? ' is-pulse' : ''}" style="--d:${i}"></span>`) : ''}
+  </div>`;
+}
+/** A slide's story stage (the story & intro pack): the Spark, its pieces and the characters, animated by
+ *  public/js/course.js + CSS keyframes when the stage scrolls into view. The stage is decoration (aria-hidden):
+ *  the slide's title and text always carry the story in words. With no script, or under reduced motion, the
+ *  CSS shows the finished frame — pieces lit per the scene's count, the cast in place, the Spark as bright as
+ *  the story has made it. The script first arms the stage (start positions) and then plays it once per view. */
+function storyArt(t, s) {
+  const st = s.story;
+  const town = ['dim', 'drain', 'team', 'map'].includes(st.scene);
+  return html`<figure class="smedia story" data-story data-scene="${st.scene}" data-lit="${st.lit}">
+    <div class="story-stage" aria-hidden="true">
+      ${town ? html`<svg class="story-town" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 V34 h30 V20 h8 v14 h26 V28 h34 v6 h24 V16 h10 v18 h30 V30 h36 v4 h22 V24 h40 v10 h28 V26 h34 v8 h26 V20 h10 v14 h30 V32 h34 v28 Z"/></svg>` : ''}
+      ${sparkHtml(st)}
+      ${st.scene === 'handoff' ? html`
+      <div class="story-cast story-cast--handoff">
+        ${st.out ? storyChar(st.out, 0, 'is-out') : ''}
+        ${st.in ? storyChar(st.in, 0, 'is-in') : ''}
+      </div>
+      <div class="story-progress">${CHAR_ORDER.map((id, i) => html`<span class="story-slot"><span class="story-gem story-gem--${id}${st.fly === id ? ' is-new' : i < st.lit ? ' is-lit' : ' is-off'}" style="--fx:${((CHAR_CX[st.out] || 22) - (36.5 + i * 9)).toFixed(1)}"></span></span>`)}</div>` : html`
+      <div class="story-cast">${st.chars.map((id, i) => storyChar(id, i))}</div>`}
+    </div>
+  </figure>`;
+}
 function slideArt(t, s) {
+  if (s.story) return storyArt(t, s);
   if (!s.img) return art(s.art);
   const img = html`<img class="simg" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async">`;
   if (!s.focus) return html`<figure class="smedia">${img}</figure>`;

@@ -74,6 +74,18 @@
    ]
   },
   {
+   "title": "The Spark is whole",
+   "text": "Gizmo's piece flies home — all four pieces are lit, and Netville is shining again. One step is left: come and see what you have done.",
+   "art": "chip",
+   "story": {
+    "scene": "handoff",
+    "lit": 4,
+    "chars": [],
+    "out": "gizmo",
+    "fly": "gizmo"
+   }
+  },
+  {
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Inside the Machine at Bits & Pixels and finish 3 levels. Flip the switches to make each number or letter.",

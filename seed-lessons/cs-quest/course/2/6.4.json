@@ -1,0 +1,111 @@
+{
+ "key": "2-6.4",
+ "n": "6.4",
+ "band": "2",
+ "title": "The Spark is back",
+ "topic": "The Spark is back",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "The last piece",
+   "text": "The last piece locks in and the Spark comes back all at once: light, warmth, and every game in Netville humming again. You coded your way here.",
+   "art": "star",
+   "story": {
+    "scene": "relight",
+    "lit": 4,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  },
+  {
+   "title": "Bolt says thanks",
+   "text": "Bolt's antenna is spinning. You took his roads from single steps to loops inside loops, and you never once gave up on a bug. That is what coders do.",
+   "art": "robot"
+  },
+  {
+   "title": "The whole team",
+   "text": "Dot solved her last case, Pim delivered every letter, and Gizmo's machines are purring. Four worlds, four pieces, one coder who finished: you.",
+   "art": "people",
+   "story": {
+    "scene": "celebrate",
+    "lit": 4,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  },
+  {
+   "kind": "example",
+   "title": "Look what you can do",
+   "text": "You decompose big problems, debug code that almost works, and choose technology with its costs in mind. Those are the skills every coder builds on.",
+   "art": "trophy",
+   "steps": [
+    "Sequences and loops",
+    "Conditions and events",
+    "Data and patterns",
+    "Packets and networks",
+    "Debugging",
+    "Decomposing problems"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four big words that are yours now.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "algorithm",
+     "means": "A list of steps, in order, that solves a problem."
+    },
+    {
+     "word": "decompose",
+     "means": "To break a big problem into smaller parts you can solve."
+    },
+    {
+     "word": "packet",
+     "means": "A small piece of a message, sent across a network with its address."
+    },
+    {
+     "word": "debug",
+     "means": "To find and fix the mistake in code that almost works."
+    }
+   ]
+  },
+  {
+   "title": "You are a coder now",
+   "text": "The Spark runs on code, and code is written by people who started exactly where you started. You finished every world. The next step is yours.",
+   "art": "star"
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Coders do not only play games; they build them. The Builder is ready, with every world in Netville behind you. What will you make first?",
+   "art": "trophy",
+   "story": {
+    "scene": "finale",
+    "lit": 4,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  }
+ ],
+ "check": [
+  "2-6.4-e1",
+  "2-6.4-e2",
+  "2-6.4-e3"
+ ],
+ "game": null,
+ "talk": "Which world taught you the most, and which idea will you use first in your own game?"
+}

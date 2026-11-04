@@ -38,7 +38,7 @@
    "text": "Real companies never ask for your passphrase. Do not reply or tap, and tell a trusted adult. A trick that fishes for secrets is called phishing.",
    "art": "shield",
    "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same \u2014 stop, do not reply, and tell a trusted adult."
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult."
   },
   {
    "title": "Secret codes for fun",
@@ -70,6 +70,19 @@
      "means": "the secret that unlocks a code"
     }
    ]
+  },
+  {
+   "title": "Pim's piece lights up",
+   "text": "Three pieces lit. Pim bows, and the Spark is nearly whole. One world is left: Gizmo the mouse is waiting inside the machine, where everything is very, very small.",
+   "art": "envelope",
+   "story": {
+    "scene": "handoff",
+    "lit": 3,
+    "chars": [],
+    "out": "pim",
+    "in": "gizmo",
+    "fly": "pim"
+   }
   },
   {
    "kind": "mission",

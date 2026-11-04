@@ -1,0 +1,106 @@
+{
+ "key": "1b-0.1",
+ "n": "0.1",
+ "band": "1b",
+ "title": "Welcome to Netville",
+ "topic": "Meet Netville and the Spark",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A town called Netville",
+   "text": "Netville is a friendly town where the houses are small computers and the roads are wires. Messages zoom from house to house, and everyone talks to everyone.",
+   "art": "map",
+   "story": {
+    "scene": "dim",
+    "lit": 0,
+    "chars": []
+   }
+  },
+  {
+   "title": "The morning the Spark went dim",
+   "text": "One morning, the town's Spark went dim: the big, warm light that keeps every game in Netville running. The games stopped, and nobody in town can code. But you can learn — and every game you code lights one piece of the Spark again.",
+   "art": "lightbulb",
+   "story": {
+    "scene": "drain",
+    "lit": 0,
+    "chars": []
+   }
+  },
+  {
+   "title": "Meet your team",
+   "text": "Four friends will travel with you. Bolt the robot, Dot the fox, Pim the owl and Gizmo the mouse know their worlds by heart, but none of them can code. That part is yours.",
+   "art": "people",
+   "story": {
+    "scene": "team",
+    "lit": 0,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  },
+  {
+   "kind": "example",
+   "title": "How each step works",
+   "text": "Every step is a short story with a job to do. First you read and look. Then comes a quick check: get two out of three right to open the mission.",
+   "art": "map",
+   "steps": [
+    "Read the story",
+    "Look at the pictures",
+    "Pass the check: 2 of 3",
+    "Play the mission"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words you will see in every step of the course.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "Spark",
+     "means": "The warm light that keeps Netville's games running."
+    },
+    {
+     "word": "coder",
+     "means": "A person who tells a computer what to do, step by step."
+    },
+    {
+     "word": "check",
+     "means": "Three quick questions that open the mission."
+    },
+    {
+     "word": "mission",
+     "means": "The game you play at the end of a step."
+    }
+   ]
+  },
+  {
+   "title": "Follow the map",
+   "text": "This map is your journey. Each world you finish lights one piece of the Spark. Light all four, and Netville shines again.",
+   "art": "map",
+   "story": {
+    "scene": "map",
+    "lit": 0,
+    "chars": []
+   }
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Say hello to Bolt. He is waiting at the start of Robo Route, and his first road is ready. Show him what a coder does.",
+   "art": "robot",
+   "img": "csq/robo-route/sequences-1b-key",
+   "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray."
+  }
+ ],
+ "check": [
+  "1b-0.1-e1",
+  "1b-0.1-e2",
+  "1b-0.1-e3"
+ ],
+ "game": null,
+ "talk": "If the Spark in your town went dim, who would you ask for help, and why?"
+}

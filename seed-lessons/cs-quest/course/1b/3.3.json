@@ -73,6 +73,19 @@
    ]
   },
   {
+   "title": "Dot's piece lights up",
+   "text": "Dot's piece clicks into place — two of four, and the Spark is shining. Next, Pim the owl is waiting at the post office, with a town full of letters to deliver.",
+   "art": "chart",
+   "story": {
+    "scene": "handoff",
+    "lit": 2,
+    "chars": [],
+    "out": "dot",
+    "in": "pim",
+    "fly": "dot"
+   }
+  },
+  {
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Data Detective at My Data. Chart both survey questions with the steppers. Pin one claim, then ask someone if it is fair.",

@@ -19,10 +19,10 @@
    "text": "A shift cipher moves every letter along the alphabet. The key is how far to shift.",
    "art": "cipher",
    "steps": [
-    "A \u2192 D",
-    "B \u2192 E",
-    "C \u2192 F",
-    "CAT \u2192 FDW"
+    "A → D",
+    "B → E",
+    "C → F",
+    "CAT → FDW"
    ],
    "img": "csq/packet-post/ciphers-2-shift",
    "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code."
@@ -32,7 +32,7 @@
    "text": "A shift has only 25 keys, so you can try them all. That is brute force. A keyed substitution has so many keys that trying them all takes far too long.",
    "art": "chip",
    "img": "csq/packet-post/ciphers-2-brute",
-   "alt": "A later cipher level: with so few keys, trying every one is a real way in \u2014 for a shift cipher."
+   "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher."
   },
   {
    "title": "Hiding is not scrambling",
@@ -71,6 +71,19 @@
      "means": "trying every possible key"
     }
    ]
+  },
+  {
+   "title": "Pim's piece lights up",
+   "text": "Three pieces lit. Pim bows, and the Spark is nearly whole. One world is left: Gizmo the mouse is waiting inside the machine, where everything is very, very small.",
+   "art": "envelope",
+   "story": {
+    "scene": "handoff",
+    "lit": 3,
+    "chars": [],
+    "out": "pim",
+    "in": "gizmo",
+    "fly": "pim"
+   }
   },
   {
    "kind": "mission",
