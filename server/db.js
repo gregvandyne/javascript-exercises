@@ -486,6 +486,11 @@ export const MIGRATIONS = [
       PRIMARY KEY (user_id, course, step));
     CREATE TABLE IF NOT EXISTS course_bands (user_id TEXT NOT NULL, course TEXT NOT NULL, band TEXT NOT NULL, updated_at INTEGER NOT NULL,
       PRIMARY KEY (user_id, course));`],
+  // A course step used to complete when its game module was merely opened (played_at). played_at now means only
+  // "started"; a step with a game completes when the game itself reports the assigned chapter finished, recorded
+  // here (set by POST /api/courses/:slug/:step/complete from the play page's brb:gameover). No backfill: a step
+  // that was only ever opened is not finished, and there is no way to tell the two apart in the old rows.
+  ['0046_course_completed_at', `ALTER TABLE course_progress ADD COLUMN completed_at INTEGER;`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

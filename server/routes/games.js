@@ -238,7 +238,9 @@ router.get('/play/:slug', (req, res) => {
   const isOwner = u && (u.id === g.owner_id || u.role === 'admin');
   // A course game is played as part of its course (docs/decisions.md "Course flow"). It opens only
   //   (a) from an open course step whose quick check is passed and whose game module is this game
-  //       (?course=<slug>&cstep=<key>): the step's played_at is set, which completes it;
+  //       (?course=<slug>&cstep=<key>): opening sets the step's played_at (the module is started, not
+  //       finished); the step completes only when the game reports its chapter won — the play page posts
+  //       that to /api/courses/<slug>/<step>/complete, which sets completed_at;
   //   (b) from a class lesson step of this game (?lesson=&step=, checked below);
   //   (c) for a teacher (school staff) with lesson parameters (?chapter=...), as on their lesson pages;
   //   (d) for the platform admin (isOwner);
@@ -276,9 +278,15 @@ router.get('/play/:slug', (req, res) => {
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
   // AI voices (routes/tts.js): official games only, when TTS is on and a language is switched on; absent otherwise.
   const ttsData = ttsPlayData(u, g);
+  // The way back (to the lesson, the course step, the course map or the game's page). It appears twice: in the
+  // playbar, and again inside the stage (.fsback) — fullscreen paints only the stage's subtree, so the playbar
+  // never shows there, and without the second link a player in fullscreen has no way back but the browser's own
+  // escape (the game's own screens offer only Play again / Next).
+  const backHref = lesson ? lesson.back : cstep ? `/courses/${course.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
+  const backLabel = lesson ? t('progress.play.backToLesson') : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
   const body = html`
   <div class="playbar">
-    <a class="iconbtn" href="${lesson ? lesson.back : cstep ? `/courses/${course.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`}" aria-label="${lesson ? t('progress.play.backToLesson') : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title })}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
+    <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <span class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${course.slug}">📚 ${t('courses.step', { course: t(`${course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</span>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
@@ -287,10 +295,11 @@ router.get('/play/:slug', (req, res) => {
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </div>
   <div class="stage" id="stage" dir="ltr">
+    <a class="fsback" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(ttsData ? { tts: ttsData } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: course.slug, step: cstep.key } } : {}), ...(ttsData ? { tts: ttsData } : {}) })}`;
   page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: ['js.match'] });
 });
 

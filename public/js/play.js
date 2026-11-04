@@ -111,7 +111,14 @@ addEventListener('message', e => {
       lessonEvent({ event: 'score', score: m.score, label: m.label || '' });
       break;
     }
-    case 'brb:gameover': lessonEvent({ event: 'end', score: m.score }); break;
+    case 'brb:gameover': {
+      lessonEvent({ event: 'end', score: m.score });
+      // A course step is finished only when its game reports the assigned chapter won: opening the module
+      // merely started it. The endpoint checks server-side that this player passed the step's check and did
+      // enter the game from the step, so this call alone completes nothing.
+      if (m.won && d.cstep) api(`/api/courses/${d.cstep.course}/${d.cstep.step}/complete`, { method: 'POST', body: {} }).catch(() => {});
+      break;
+    }
     case 'brb:fullscreen': m.on ? goFull() : (document.fullscreenElement && document.exitFullscreen().catch(() => {})); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) $('#orient').classList.add('show'); break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.

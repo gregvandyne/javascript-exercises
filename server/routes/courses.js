@@ -106,6 +106,17 @@ router.post('/api/courses/:slug/:step/check', ...api, (req, res) => {
   const s = C.stateOf(x.u, x.c, x.step.key);
   res.json({ score: g.score, total: g.results.length, passed: g.passed, results: g.results, play: s.checked ? C.playHref(x.c, x.step) : null, html: s.checked ? String(afterHtml(x.c, x.step, s)) : '' });
 });
+/** The game module was finished: the play page posts this when the game itself reports its assigned chapter
+ *  complete (brb:gameover, won — public/js/play.js). Opening the module only starts it (played_at, set when /play
+ *  loads), so this refuses a player who never entered the game from this step, and a step whose check is not
+ *  passed: a bare call completes nothing. Steps without a game finish at their check, never here. */
+router.post('/api/courses/:slug/:step/complete', ...api, (req, res) => {
+  const x = apiStep(req, res); if (!x) return;
+  if (!x.step.game) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  if (!x.s.checked || !x.s.played) return res.status(409).json({ error: req.t('errors.api.badRequest') });
+  C.markCompleted(x.u, x.c, x.step);
+  res.json({ ok: true, complete: true });
+});
 // The same check as a plain form (no page script): back to the step with the score.
 router.post('/courses/:slug/:step/check', rateLimit('course', 120, 60e3), form, (req, res) => {
   const c = C.getCourse(req.params.slug);

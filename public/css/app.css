@@ -423,6 +423,11 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .stage:fullscreen{top:0}
+/* The playbar's back link again, inside the stage: fullscreen paints only the stage's subtree, so the playbar
+   never shows there. Shown only in fullscreen, over the game's top-start corner, in the playbar's own colours. */
+.fsback{display:none}
+.stage:fullscreen .fsback{display:inline-flex;position:absolute;top:calc(10px + env(safe-area-inset-top));inset-inline-start:10px;z-index:2;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--brand-ink);color:var(--brand-cream);border:1px solid color-mix(in srgb,var(--brand-cream) 25%,var(--brand-ink));font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.45)}
+.stage:fullscreen .fsback:hover{background:#000}
 .orient-hint{position:fixed;inset:52px 0 0;z-index:5;display:none;place-items:center;text-align:center;background:rgba(20,20,20,.94);color:var(--brand-cream);padding:24px}
 .game-stopped{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:rgba(20,20,20,.94);color:var(--brand-cream);padding:24px}
 .game-stopped p{font-size:1.2rem;font-weight:700;margin:0 0 16px}

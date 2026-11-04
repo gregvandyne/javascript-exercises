@@ -152,25 +152,55 @@ test('read -> check (graded on the server) -> game module -> the next step opens
   assert.match(after.text, /href="\/play\/robo-route\?course=cs-quest&amp;cstep=1b-1\.1&amp;chapter=sequences&amp;band=1b&amp;lock=1"/);
   assert.match(after.text, /Play: Robo Route · Sequences/);
 
-  // Opening the game module from the step completes it, and the next step opens.
+  // The module cannot be finished before it is entered: the completion call is refused (the check is passed,
+  // but the game was never opened from this step).
+  assert.equal((await post('/api/courses/cs-quest/1b-1.1/complete', kid, {})).status, 409);
+
+  // Opening the game module from the step only starts it: the step is not complete and the next step stays shut.
   const play = await get('/play/robo-route?course=cs-quest&cstep=1b-1.1&chapter=sequences&band=1b&lock=1', kid);
   assert.equal(play.status, 200);
   assert.match(play.text, /href="\/courses\/cs-quest\/1b-1\.1#play"/, 'back goes to the step');
+  assert.match(play.text, /"cstep":\{"course":"cs-quest","step":"1b-1\.1"\}/, 'the play page carries the course step, so a win can be reported for it');
   const row = q.get('SELECT * FROM course_progress WHERE user_id=? AND step=?', kid.id, '1b-1.1');
   assert.ok(row.played_at > 0 && row.check_score === 2);
+  assert.equal(row.completed_at, null);
+  const started = C.stateOf(kid, course, '1b-1.1');
+  assert.ok(started.played && !started.won && !started.complete, 'entered is not finished');
+  assert.equal(C.stateOf(kid, course, '1b-1.2').open, false);
+  let map = await get('/courses/cs-quest', kid);
+  assert.doesNotMatch(map.text, /class="cmap-step is-done" id="step-1b-1\.1"/);
+  assert.match(map.text, /0 of 19 steps done/);
+
+  // The game reports the module finished (the play page posts the win): now the step completes and the next opens.
+  assert.deepEqual((await post('/api/courses/cs-quest/1b-1.1/complete', kid, {})).json, { ok: true, complete: true });
+  assert.ok(q.get('SELECT completed_at FROM course_progress WHERE user_id=? AND step=?', kid.id, '1b-1.1').completed_at > 0);
   assert.ok(C.stateOf(kid, course, '1b-1.1').complete);
   assert.equal(C.stateOf(kid, course, '1b-1.2').open, true);
   assert.equal((await get('/courses/cs-quest/1b-1.2', kid)).status, 200);
+  // Reporting the same win again is harmless.
+  assert.equal((await post('/api/courses/cs-quest/1b-1.1/complete', kid, {})).status, 200);
   // The wrong game for the step, or a step whose check is not passed, still goes to the map.
   assert.equal((await get('/play/data-detective?course=cs-quest&cstep=1b-1.1', kid)).location, '/courses/cs-quest');
   assert.equal((await get('/play/robo-route?course=cs-quest&cstep=1b-1.2&chapter=loops', kid)).location, '/courses/cs-quest');
 
-  const map = await get('/courses/cs-quest', kid);
+  map = await get('/courses/cs-quest', kid);
   assert.match(map.text, /class="cmap-step is-done" id="step-1b-1\.1"/);
   assert.match(map.text, /class="cmap-step is-next" id="step-1b-1\.2"/);
   assert.match(map.text, /1 of 19 steps done/);
   const home = await get('/', kid);
   assert.match(home.text, /href="\/courses\/cs-quest\/1b-1\.2" id="course-cs-quest-go">▶ Keep going/);
+});
+
+test('the completion endpoint: only an entered, check-passed game step can be finished', async () => {
+  const kid = newKid(); C.setBand(kid, course, '1b');
+  // The step is open, but its check is not passed and its game was never entered.
+  assert.equal((await post('/api/courses/cs-quest/1b-1.1/complete', kid, {})).status, 409);
+  // A locked step is refused like the other step APIs.
+  assert.equal((await post('/api/courses/cs-quest/1b-1.2/complete', kid, {})).status, 403);
+  // Signed out is refused.
+  assert.equal((await post('/api/courses/cs-quest/1b-1.1/complete', null, {})).status, 401);
+  // Nothing was recorded.
+  assert.equal(q.get('SELECT completed_at FROM course_progress WHERE user_id=? AND step=?', kid.id, '1b-1.1'), undefined);
 });
 
 test('the check also works as a plain form (no page script)', async () => {
@@ -186,11 +216,13 @@ test('the check also works as a plain form (no page script)', async () => {
   assert.ok(C.stateOf(kid, course, '1b-1.1').checked && C.stateOf(kid, course, '1b-1.1').read, 'reaching the check counts as reading');
 });
 
-test('a step without a game is complete after its check; locks follow the order', () => {
+test('a step without a game is complete after its check; locks follow the order', async () => {
   const kid = newKid();
   const list = C.steps(course, '2');
-  // Everything before 6.1 done by hand.
-  for (const s of list.slice(0, 16)) q.run('INSERT INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at) VALUES (?,?,?,?,?,?,3,?)', kid.id, 'cs-quest', s.key, '2', now(), now(), now());
+  // Everything before 6.1 done by hand (read, checked and — for the steps with a game — the module finished).
+  for (const s of list.slice(0, 16)) q.run('INSERT INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?,?,?,?,?,?,3,?,?)', kid.id, 'cs-quest', s.key, '2', now(), now(), now(), now());
+  // A step without a game never completes through the game endpoint: it finishes at its check.
+  assert.equal((await post('/api/courses/cs-quest/2-6.1/complete', kid, {})).status, 400);
   let st = C.states(kid, course, '2');
   assert.equal(st[16].step.n, '6.1'); assert.ok(st[16].open); assert.ok(!st[17].open);
   C.recordCheck(kid, course, list[16], C.grade(list[16], allRight(list[16])));
