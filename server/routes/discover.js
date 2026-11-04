@@ -16,6 +16,7 @@ import { liveOn } from '../services/classlive-sessions.js';
 import { liveGameOf } from '../live/live-games.js';
 import { isStaff } from '../services/schools.js';
 import * as courses from '../services/courses.js';
+import { log } from '../services/log.js';
 import { courseRow } from '../views/courses.js';
 
 export const router = Router();
@@ -51,7 +52,8 @@ router.get('/', (req, res) => {
   const rails = [
     u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, id: 'favorites', more: '/favorites' }) : '',
     rail({ title: t('home.rails.featured'), emoji: '⭐', games: featured, user: u, id: 'featured' }),
-    courseRow(courses.COURSES.map(c => ({ course: c, games: courses.courseGames(u, c), ov: courses.overview(u, c) }))),
+    // The course row never takes the home page down: if a course's files cannot be read, the row is left out.
+    (() => { try { return courseRow(courses.COURSES.map(c => ({ course: c, games: courses.courseGames(u, c), ov: courses.overview(u, c) }))); } catch (e) { log('error', 'course row', { error: e.message }); return ''; } })(),
     buildBanner(req),
     rail({ title: t('home.rails.playing'), emoji: '🟢', games: games.playingNow(u, 12), user: u, id: 'playing', more: '/search?sort=playing' }),
     rail({ title: t('home.rails.friends'), emoji: '👫', games: games.fromFriends(u, 12), user: u, id: 'friends' }),
