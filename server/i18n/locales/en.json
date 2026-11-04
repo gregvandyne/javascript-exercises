@@ -2315,6 +2315,17 @@
       "of": "{n} of {count}",
       "reveal": "Show the answer",
       "hide": "Hide the answer"
+    },
+    "course": {
+      "right": "Right!",
+      "wrong": "Not quite. The right answer is: {answer}",
+      "next": "Next question",
+      "finish": "See my score",
+      "listen": "Read aloud",
+      "stop": "Stop reading",
+      "again": "Try again",
+      "passed": "You passed! {score} of {total} right.",
+      "failed": "{score} of {total} right. You need {pass} to pass. Try again!"
     }
   },
   "favorites": {
@@ -6036,8 +6047,6 @@
     "start": "Start the course",
     "continue": "Keep going",
     "about": "About the course",
-    "started": "Started",
-    "progress": "{n} of {total} games started",
     "home": "Home",
     "topics": {
       "coding": "Coding",
@@ -6052,10 +6061,64 @@
     "cs": {
       "title": "CS Quest",
       "sub": "Computer science in four games · grades 3–8",
-      "about": "Code a robot, solve mysteries with data, send messages across a town, and open up the machines we use every day. Play the games in order or start with any one.",
+      "about": "Code a robot, solve mysteries with data, send messages across a town, and open up the machines we use every day. Each step is a short lesson, a quick check and then a game module.",
       "teachers": "Every game has lesson plans you can teach in a 45-minute class, with live warm-ups, exit tickets and a standards view for your class."
     },
     "back": "Back to {course}",
-    "step": "{course} · game {n} of {total}"
+    "step": "{course} · game {n} of {total}",
+    "stepsDone": "{n} of {total} steps done",
+    "band": {
+      "h": "Pick your level",
+      "text": "You can switch later from this page.",
+      "explorer": "Explorer",
+      "explorerSub": "Grades 3–5",
+      "pro": "Pro",
+      "proSub": "Grades 6–8",
+      "switch": "Switch to {band}"
+    },
+    "map": {
+      "h": "Course map",
+      "lesson": "Lesson",
+      "game": "Game module",
+      "talk": "Talk about it",
+      "done": "Done",
+      "next": "Next",
+      "locked": "Locked",
+      "unit": "Unit {n}",
+      "units": "Units {from}–{to}",
+      "build": {
+        "h": "Make your own game",
+        "text": "Done with the course? Build a game of your own in the Studio.",
+        "go": "Open the Studio"
+      }
+    },
+    "groups": {
+      "techChoices": "Tech choices"
+    },
+    "lesson": {
+      "of": "Step {n} of {total}",
+      "map": "Course map",
+      "slides": "Slides",
+      "slide": "Slide {n} of {total}",
+      "next": "Next",
+      "back": "Back",
+      "toCheck": "Quick check",
+      "listen": "Read aloud",
+      "unlocked": "Game module open!",
+      "talk": "Talk about it",
+      "complete": "Step done",
+      "playToFinish": "Play it to finish this step.",
+      "nextStep": "Next step"
+    },
+    "check": {
+      "h": "Quick check",
+      "intro": "Three questions. Get two right to open the game module.",
+      "q": "Question {n} of {total}",
+      "send": "Check my answers",
+      "done": "Check passed",
+      "passed": "You passed! {score} of {total} right.",
+      "failed": "{score} of {total} right. Look at the right answers, then try again."
+    },
+    "play": "Play: {game} · {chapter}"
   }
 }

@@ -2314,6 +2314,17 @@
       "of": "{n} sur {count}",
       "reveal": "Afficher la réponse",
       "hide": "Masquer la réponse"
+    },
+    "course": {
+      "right": "Bravo !",
+      "wrong": "Presque. La bonne réponse est : {answer}",
+      "next": "Question suivante",
+      "finish": "Voir mon score",
+      "listen": "Lire à voix haute",
+      "stop": "Arrêter la lecture",
+      "again": "Réessayer",
+      "passed": "Réussi ! {score} bonnes réponses sur {total}.",
+      "failed": "{score} bonnes réponses sur {total}. Il en faut {pass}. Réessaie !"
     }
   },
   "favorites": {
@@ -5918,8 +5929,6 @@
     "start": "Commencer le cours",
     "continue": "Continuer",
     "about": "À propos du cours",
-    "started": "Commencé",
-    "progress": "{n} jeux commencés sur {total}",
     "home": "Accueil",
     "topics": {
       "coding": "Programmation",
@@ -5934,10 +5943,64 @@
     "cs": {
       "title": "CS Quest",
       "sub": "L’informatique en quatre jeux · du CE2 à la 4e",
-      "about": "Programme un robot, résous des mystères avec des données, envoie des messages à travers une ville et ouvre les machines que nous utilisons chaque jour. Joue dans l’ordre ou commence par n’importe lequel.",
+      "about": "Programme un robot, résous des mystères avec des données, envoie des messages à travers une ville et découvre l’intérieur des machines de tous les jours. Chaque étape, c’est une courte leçon, un petit quiz, puis un module de jeu.",
       "teachers": "Chaque jeu a des plans de cours pour une séance de 45 minutes, avec des échauffements en direct, des tickets de sortie et une vue des standards pour ta classe."
     },
     "back": "Retour à {course}",
-    "step": "{course} · jeu {n} sur {total}"
+    "step": "{course} · jeu {n} sur {total}",
+    "stepsDone": "{n} étapes finies sur {total}",
+    "band": {
+      "h": "Choisis ton niveau",
+      "text": "Tu pourras changer plus tard sur cette page.",
+      "explorer": "Explorateur",
+      "explorerSub": "Du CE2 au CM2",
+      "pro": "Pro",
+      "proSub": "De la 6e à la 4e",
+      "switch": "Passer en {band}"
+    },
+    "map": {
+      "h": "Carte du cours",
+      "lesson": "Leçon",
+      "game": "Module de jeu",
+      "talk": "Parlons-en",
+      "done": "Fini",
+      "next": "Suivant",
+      "locked": "Verrouillé",
+      "unit": "Unité {n}",
+      "units": "Unités {from} à {to}",
+      "build": {
+        "h": "Crée ton propre jeu",
+        "text": "Tu as fini le cours ? Crée ton propre jeu dans le Studio.",
+        "go": "Ouvrir le Studio"
+      }
+    },
+    "groups": {
+      "techChoices": "Nos choix numériques"
+    },
+    "lesson": {
+      "of": "Étape {n} sur {total}",
+      "map": "Carte du cours",
+      "slides": "Diapos",
+      "slide": "Diapo {n} sur {total}",
+      "next": "Suivant",
+      "back": "Retour",
+      "toCheck": "Petit quiz",
+      "listen": "Lire à voix haute",
+      "unlocked": "Module de jeu ouvert !",
+      "talk": "Parlons-en",
+      "complete": "Étape finie",
+      "playToFinish": "Joue-le pour finir cette étape.",
+      "nextStep": "Étape suivante"
+    },
+    "check": {
+      "h": "Petit quiz",
+      "intro": "Trois questions. Deux bonnes réponses ouvrent le module de jeu.",
+      "q": "Question {n} sur {total}",
+      "send": "Vérifier mes réponses",
+      "done": "Quiz réussi",
+      "passed": "Réussi ! {score} bonnes réponses sur {total}.",
+      "failed": "{score} bonnes réponses sur {total}. Regarde les bonnes réponses, puis réessaie."
+    },
+    "play": "Jouer : {game} · {chapter}"
   }
 }

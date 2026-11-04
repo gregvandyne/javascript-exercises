@@ -50,6 +50,8 @@ export default defineConfig({
       STT_PROVIDER: 'mock', STT_API_KEY: '', STT_MODEL: '', BUILDER_WEB_SEARCH: '',
       // AI voices with the test-only provider (a silent MP3, no network). Every language stays off until a test switches it
       // on at /admin/voices (tests/e2e/tts.spec.js switches them off again), so other specs keep the device's voice.
+      // Course slide decks: the two fixtures (tests/e2e/course-flow.spec.js).
+      BRB_COURSE_DIR: 'tests/fixtures/course',
       TTS_ENABLED: '1', TTS_PROVIDER: 'mock', TTS_API_KEY: '', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
       // Co-host handoff after 3 s instead of 2 minutes, so live-cohost.spec.js can watch it happen.
       LIVE_HANDOFF_SECS: process.env.LIVE_HANDOFF_SECS || '3',

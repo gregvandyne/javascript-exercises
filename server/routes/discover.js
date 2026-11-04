@@ -16,7 +16,7 @@ import { liveOn } from '../services/classlive-sessions.js';
 import { liveGameOf } from '../live/live-games.js';
 import { isStaff } from '../services/schools.js';
 import * as courses from '../services/courses.js';
-import { courseRow, coursePage } from '../views/courses.js';
+import { courseRow } from '../views/courses.js';
 
 export const router = Router();
 
@@ -51,7 +51,7 @@ router.get('/', (req, res) => {
   const rails = [
     u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, id: 'favorites', more: '/favorites' }) : '',
     rail({ title: t('home.rails.featured'), emoji: '⭐', games: featured, user: u, id: 'featured' }),
-    courseRow(courses.COURSES.map(c => { const g = courses.courseGames(u, c); return { course: c, games: g, started: courses.startedIds(u, g) }; })),
+    courseRow(courses.COURSES.map(c => ({ course: c, games: courses.courseGames(u, c), ov: courses.overview(u, c) }))),
     buildBanner(req),
     rail({ title: t('home.rails.playing'), emoji: '🟢', games: games.playingNow(u, 12), user: u, id: 'playing', more: '/search?sort=playing' }),
     rail({ title: t('home.rails.friends'), emoji: '👫', games: games.fromFriends(u, 12), user: u, id: 'friends' }),
@@ -99,18 +99,6 @@ router.get('/', (req, res) => {
     index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),
     jsonld: [seo.graph([seo.organizationLd(req), seo.websiteLd(req, req.locale)])],
   } });
-});
-
-// ---------------------------------------------------------------------------------------------------- courses
-// A course's page: its games in order, what the player has started, and the way in for teachers.
-router.get('/courses', (req, res) => res.redirect(302, `/courses/${courses.COURSES[0].slug}`));
-router.get('/courses/:slug', (req, res) => {
-  const c = courses.getCourse(req.params.slug);
-  if (!c) return notFound(req, res);
-  const t = req.t, u = req.user;
-  const list = courses.courseGames(u, c);
-  page(req, res, { title: t(`${c.key}.title`), active: 'home', body: coursePage({ course: c, games: list, started: courses.startedIds(u, list) }),
-    description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
 });
 
 // ---------------------------------------------------------------------------------------------------- home doors

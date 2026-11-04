@@ -1,13 +1,259 @@
-// Courses: a few official games played in order as one course (docs/decisions.md "Courses on the home page").
-// A course is listed on the home page as one wide card with its games nested inside it, and has its own page
-// (/courses/<slug>). Nothing is stored: a game counts as started when the player has a play of it.
-import { q } from '../db.js';
+// Courses: a few official games taught as one course (docs/decisions.md "Courses on the home page" and "Course flow").
+// A course is listed on the home page as one wide card and has its own page (/courses/<slug>): a band picker the first
+// time, then the course map. Each step is a short slide deck, a quick check of three questions and then one game module
+// (a chapter of a game, locked). Step i opens when step i-1 is complete.
+//
+// Where a step comes from:
+//   - the teacher lesson file (seed-lessons/cs-quest/lessons/<u.n>-<band>.json, units 1-6): the order, the game module
+//     (play.game + play.chapter + params) and the exit items; this is the source of truth for the /play gate;
+//   - the slide deck (seed-lessons/cs-quest/course/<band>/<u.n>.json, written for kids): title, slides, check, talk.
+//     A step whose deck is not there yet gets a short deck made from its lesson file, so the course always works;
+//   - the quiz banks (seed-lessons/cs-quest/sets/*.json): the check questions. Answers never leave the server before
+//     the player has answered (grade(), answerOne()).
+// Progress (course_progress, course_bands) is per player, guests included.
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { q, now } from '../db.js';
 import * as games from './games.js';
+import { onAccountMerge } from './schools.js';
 
 import { COURSES, courseOfSlug } from './course-catalog.js';
 export { COURSES, courseOfSlug };
 export const getCourse = slug => COURSES.find(c => c.slug === slug) || null;
 
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '../..');
+const CSQ = path.join(ROOT, 'seed-lessons/cs-quest');
+export const BANDS = Object.freeze(['1b', '2']);
+/** A check passes with this many right out of three. */
+export const PASS = 2;
+
+// ------------------------------------------------------------------------------------------------- loading
+let deckDir = process.env.BRB_COURSE_DIR ? path.resolve(ROOT, process.env.BRB_COURSE_DIR) : path.join(CSQ, 'course');
+let cache = null;
+/** Read the slide decks from another folder (tests use tests/fixtures/course). */
+export function useDeckDir(dir) { deckDir = path.resolve(ROOT, dir); cache = null; }
+export const deckDirNow = () => deckDir;
+const readJson = f => JSON.parse(fs.readFileSync(f, 'utf8'));
+
+function load() {
+  if (cache) return cache;
+  const items = new Map();
+  for (const f of fs.readdirSync(path.join(CSQ, 'sets')).filter(f => /^u\d-(1b|2)\.json$/.test(f))) {
+    for (const it of readJson(path.join(CSQ, 'sets', f)).items || []) items.set(it.id, it);
+  }
+  const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
+  const steps = {};
+  const problems = {};
+  for (const band of BANDS) {
+    const lessons = fs.readdirSync(path.join(CSQ, 'lessons')).filter(f => f.endsWith(`-${band}.json`))
+      .map(f => readJson(path.join(CSQ, 'lessons', f))).filter(l => l.unit >= 1 && l.unit <= 6)
+      .sort((a, b) => a.unit - b.unit || a.order - b.order);
+    problems[band] = [];
+    steps[band] = lessons.map((l, index) => {
+      const key = `${band}-${l.n}`;
+      const file = path.join(deckDir, band, `${l.n}.json`);
+      let deck = null;
+      if (fs.existsSync(file)) {
+        try { deck = readJson(file); } catch (e) { problems[band].push(`${key}: ${e.message}`); }
+      }
+      const play = l.play && l.play.type === 'game' ? l.play : null;
+      const game = play ? { slug: play.game, chapter: play.chapter, chapterTitle: play.chapterTitle || play.chapter, params: l.params || '', title: (gameInfo[play.game] || {}).title || play.game } : null;
+      const step = deck ? fromDeck(key, l, deck, game, items, problems[band]) : fromLesson(key, l, game);
+      return { ...step, key, n: l.n, unit: l.unit, band, index, game, lesson: l.key, group: groupOf(l.unit) };
+    });
+  }
+  cache = { items, steps, problems };
+  return cache;
+}
+
+const ART = new Set(['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy']);
+export const ART_IDS = Object.freeze([...ART]);
+const str = (v, max = 600) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+/** One slide, cleaned: only the fields the viewer draws. */
+function cleanSlide(s) {
+  const kind = ['example', 'words', 'mission'].includes(s && s.kind) ? s.kind : 'text';
+  const out = { kind, title: str(s.title, 120), text: str(s.text, 400), art: ART.has(s.art) ? s.art : 'lightbulb', say: str(s.say, 600) };
+  if (kind === 'example') {
+    if (Array.isArray(s.steps)) out.steps = s.steps.map(x => str(String(x), 60)).filter(Boolean).slice(0, 12);
+    const rows = Array.isArray(s.rows) ? s.rows : Array.isArray(s.table) ? s.table : null;
+    if (rows) out.rows = rows.filter(Array.isArray).slice(0, 8).map(r => r.slice(0, 5).map(c => str(String(c), 40)));
+  }
+  if (kind === 'words') out.words = (Array.isArray(s.words) ? s.words : []).filter(w => w && w.word).slice(0, 6).map(w => ({ word: str(w.word, 40), means: str(w.means, 160) }));
+  return out;
+}
+function fromDeck(key, l, d, game, items, problems) {
+  const slides = (Array.isArray(d.slides) ? d.slides : []).filter(s => s && typeof s === 'object').map(cleanSlide);
+  const check = Array.isArray(d.check) && d.check.length === 3 && d.check.every(id => items.has(id)) ? d.check : l.exit.items;
+  // What a deck says that does not match its lesson (reported by deckProblems; the lesson file wins).
+  const say = m => problems.push(`${key}: ${m}`);
+  if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);
+  if (d.n !== l.n) say(`n is ${JSON.stringify(d.n)}`);
+  if (d.band !== l.bandCode) say(`band is ${JSON.stringify(d.band)}`);
+  if (slides.length < 5 || slides.length > 7) say(`${slides.length} slides (5-7 expected)`);
+  if (slides.filter(s => s.kind === 'example').length !== 1) say('needs exactly one example slide');
+  if (slides.filter(s => s.kind === 'words').length !== 1) say('needs exactly one words slide');
+  if (!slides.length || slides[slides.length - 1].kind !== 'mission') say('the last slide must be the mission');
+  for (const [i, s] of (d.slides || []).entries()) {
+    if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
+    else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
+    if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
+  }
+  if (check !== d.check) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
+  else for (const id of check) if (items.get(id).lesson !== l.n || !id.startsWith(`${l.bandCode}-`)) say(`check item ${id} is not from lesson ${l.n}`);
+  const want = game ? { slug: game.slug, chapter: game.chapter, params: game.params } : null;
+  const got = d.game ? { slug: d.game.slug, chapter: d.game.chapter, params: d.game.params } : null;
+  if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match the lesson (${JSON.stringify(want)})`);
+  if (!game && !str(d.talk)) say('a step without a game needs "talk"');
+  return { title: str(d.title, 80) || l.short, topic: str(d.topic, 40) || l.short, minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
+}
+/** No deck yet: a short one from the lesson file (its big idea, words and mission), so the step still works. */
+function fromLesson(key, l, game) {
+  const ex = l.explore || {};
+  const slides = [
+    { kind: 'text', title: l.short, text: ex.bigIdea || l.summary.split('. ')[0] + '.', art: 'lightbulb', say: '' },
+    ...(ex.vocab && ex.vocab.length ? [{ kind: 'words', title: l.short, text: '', art: 'pencil', say: '', words: ex.vocab.slice(0, 4).map(w => ({ word: w, means: '' })) }] : []),
+    { kind: 'mission', title: l.short, text: (l.iCan || []).join('. ') + '.', art: game ? 'trophy' : 'people', say: '' },
+  ];
+  return { title: l.short, topic: l.short, minutes: 4, slides, check: l.exit.items, talk: game ? '' : (l.discuss || [])[0] || '', deck: false };
+}
+
+/** The unit groups on the course map, each headed by its game (unit 6 by its theme). */
+export const GROUPS = Object.freeze([
+  { id: 'robo-route', units: [1, 2], game: 'robo-route' },
+  { id: 'data-detective', units: [3], game: 'data-detective' },
+  { id: 'packet-post', units: [4], game: 'packet-post' },
+  { id: 'inside-the-machine', units: [5], game: 'inside-the-machine' },
+  { id: 'tech-choices', units: [6], game: null },
+]);
+const groupOf = unit => (GROUPS.find(g => g.units.includes(unit)) || GROUPS[0]).id;
+
+/** The course's steps for a band, in order. */
+export function steps(course, band) {
+  if (!course || course.slug !== 'cs-quest' || !BANDS.includes(band)) return [];
+  return load().steps[band];
+}
+/** One step by key ("1b-1.2"), or null. */
+export function getStep(course, key) {
+  const m = /^(1b|2)-(\d\.\d)$/.exec(String(key || ''));
+  return m ? steps(course, m[1]).find(s => s.n === m[2]) || null : null;
+}
+/** A bank item by id (with its answer: server side only). */
+export const item = id => load().items.get(id) || null;
+/** What the decks say that does not fit their lessons (empty when every deck is right). */
+export const deckProblems = band => load().problems[band] || [];
+/** Forget the loaded files (tests that write decks). */
+export const reload = () => { cache = null; };
+
+// ------------------------------------------------------------------------------------------------- band
+export function getBand(user, course) {
+  if (!user || !course) return null;
+  const r = q.get('SELECT band FROM course_bands WHERE user_id=? AND course=?', user.id, course.slug);
+  return r && BANDS.includes(r.band) ? r.band : null;
+}
+export function setBand(user, course, band) {
+  if (!user || !course || !BANDS.includes(band)) return false;
+  q.run('INSERT INTO course_bands(user_id, course, band, updated_at) VALUES (?,?,?,?) ON CONFLICT(user_id, course) DO UPDATE SET band=excluded.band, updated_at=excluded.updated_at', user.id, course.slug, band, now());
+  return true;
+}
+
+// ------------------------------------------------------------------------------------------------- progress
+function rows(user, course) {
+  if (!user) return new Map();
+  return new Map(q.all('SELECT * FROM course_progress WHERE user_id=? AND course=?', user.id, course.slug).map(r => [r.step, r]));
+}
+/** Is this step done: slides read, check passed and (if it has one) its game module opened from the step. */
+export const isComplete = (step, r) => !!(r && r.read_at && r.checked_at && (!step.game || r.played_at));
+/** Every step of the band with its state: { step, row, read, checked, played, complete, open }. */
+export function states(user, course, band) {
+  const all = steps(course, band); const rs = rows(user, course);
+  let prevDone = true;
+  return all.map(step => {
+    const r = rs.get(step.key) || null;
+    const s = { step, row: r, read: !!(r && r.read_at), checked: !!(r && r.checked_at), played: !!(r && r.played_at), complete: isComplete(step, r), open: prevDone };
+    prevDone = s.complete;
+    return s;
+  });
+}
+/** The course map's summary: { band, list, done, total, next } (next: the first open step not complete, or null). */
+export function overview(user, course, band = getBand(user, course)) {
+  if (!band) return { band: null, list: [], done: 0, total: steps(course, '1b').length, next: null };
+  const list = states(user, course, band);
+  return { band, list, done: list.filter(s => s.complete).length, total: list.length, next: (list.find(s => s.open && !s.complete) || null) };
+}
+/** One step's state for this player (open, read, checked...), or null when the key is unknown. */
+export function stateOf(user, course, key) {
+  const step = getStep(course, key);
+  return step ? states(user, course, step.band)[step.index] : null;
+}
+
+function upsert(user, course, step, fields) {
+  const t = now();
+  q.run('INSERT OR IGNORE INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at) VALUES (?,?,?,?,NULL,NULL,0,NULL)', user.id, course.slug, step.key, step.band);
+  const sets = Object.keys(fields).map(k => `${k}=${fields[k] === 'now' ? `COALESCE(${k}, ${t})` : '?'}`);
+  const vals = Object.values(fields).filter(v => v !== 'now');
+  q.run(`UPDATE course_progress SET ${sets.join(', ')} WHERE user_id=? AND course=? AND step=?`, ...vals, user.id, course.slug, step.key);
+}
+/** The slides were read (the first time is kept). */
+export function markRead(user, course, step) { upsert(user, course, step, { read_at: 'now' }); }
+/** The game module was opened from this step. */
+export function markPlayed(user, course, step) { upsert(user, course, step, { played_at: 'now' }); }
+
+/** A seeded order of a question's four choices: the same for this player, step and try, different on the next try. */
+export function choiceOrder(seed, n = 4) {
+  const h = crypto.createHash('sha256').update(String(seed)).digest();
+  const order = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) { const j = h[i] % (i + 1); [order[i], order[j]] = [order[j], order[i]]; }
+  return order;
+}
+/** The check's questions as the page shows them: no answers. choices: [{ i (index in the bank), text }] in a seeded order. */
+export function questions(step, seed = '') {
+  return step.check.map(id => {
+    const it = item(id);
+    return { id, q: it.q, choices: choiceOrder(`${seed}|${step.key}|${id}`, it.choices.length).map(i => ({ i, text: it.choices[i] })) };
+  });
+}
+/** One answer, graded: { right, answer (the right choice's bank index), text (the right answer) } or null if not this check's. */
+export function answerOne(step, id, choice) {
+  if (!step.check.includes(id)) return null;
+  const it = item(id);
+  return { right: Number.isInteger(choice) && choice === it.answer, answer: it.answer, text: it.choices[it.answer] };
+}
+/** All three answers ({ id: choice }), graded on the server: { score, passed, results: [{ id, right, answer, text }] }. */
+export function grade(step, answers) {
+  const results = step.check.map(id => ({ id, ...answerOne(step, id, answers && typeof answers === 'object' ? toInt(answers[id]) : null) }));
+  const score = results.filter(r => r.right).length;
+  return { score, passed: score >= PASS, results };
+}
+const toInt = v => (v === '' || v === null || v === undefined ? null : Number.isInteger(+v) ? +v : null);
+/** Record a graded check. Reaching the check counts as having read the slides; a pass is kept once earned; the best
+ *  score is kept. */
+export function recordCheck(user, course, step, { score, passed }) {
+  upsert(user, course, step, { read_at: 'now', ...(passed ? { checked_at: 'now' } : {}) });
+  q.run('UPDATE course_progress SET check_score=MAX(check_score, ?) WHERE user_id=? AND course=? AND step=?', score, user.id, course.slug, step.key);
+}
+
+/** May this player open this game from this step (/play?course=&cstep=)? The step must be open, its check passed and
+ *  its game module this game. -> the step, or null. */
+export function playable(user, course, key, slug) {
+  if (!user) return null;
+  const s = stateOf(user, course, key);
+  return s && s.open && s.checked && s.step.game && s.step.game.slug === slug ? s.step : null;
+}
+/** The Play link of a step's game module. */
+export const playHref = (course, step) => (step.game ? `/play/${step.game.slug}?course=${course.slug}&cstep=${step.key}${step.game.params ? `&${step.game.params}` : ''}` : null);
+
+// A school account merged into a student's own account brings its course progress (the student's own rows win).
+onAccountMerge(({ from, into }) => {
+  q.run('UPDATE OR IGNORE course_progress SET user_id=? WHERE user_id=?', into, from);
+  q.run('DELETE FROM course_progress WHERE user_id=?', from);
+  q.run('UPDATE OR IGNORE course_bands SET user_id=? WHERE user_id=?', into, from);
+  q.run('DELETE FROM course_bands WHERE user_id=?', from);
+});
+
+// ------------------------------------------------------------------------------------------------- the games
 /** The course's games the viewer may see, in course order, decorated like any card (localized, rated, plays). */
 export function courseGames(user, course) {
   const slugs = course.games.map(g => g.slug);
@@ -15,11 +261,4 @@ export function courseGames(user, course) {
   const rows = q.all(`${games.SELECT} WHERE g.slug IN (${slugs.map(() => '?').join(',')}) AND ${v.sql}`, ...slugs, ...v.params);
   const bySlug = new Map(games.decorate(rows).map(g => [g.slug, g]));
   return course.games.map((cg, i) => bySlug.get(cg.slug) && { ...bySlug.get(cg.slug), step: i + 1, topic: cg.topic }).filter(Boolean);
-}
-
-/** Which of these games the player has started (a play on record). Guests and signed-out players: none. */
-export function startedIds(user, list) {
-  if (!user || !list.length) return new Set();
-  const ids = list.map(g => g.id);
-  return new Set(q.all(`SELECT DISTINCT game_id FROM plays WHERE user_id=? AND game_id IN (${ids.map(() => '?').join(',')})`, user.id, ...ids).map(r => r.game_id));
 }
