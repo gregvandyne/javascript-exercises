@@ -39,7 +39,12 @@ for (const band of BANDS) for (const s of STEPS) {
   const file = path.join(DIR, band, `${s.n}.json`);
   decks.push({ band, step: s, file, deck: fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null });
 }
-const stringsOf = d => [d.title, d.topic, d.talk, ...d.slides.flatMap(sl => [sl.title, sl.text, sl.say, ...(sl.steps || []), ...(sl.words || []).flatMap(w => [w.word, w.means])])].filter(s => s != null);
+const stringsOf = d => [d.title, d.topic, d.talk, ...d.slides.flatMap(sl => [sl.title, sl.text, sl.say, sl.alt, ...(sl.steps || []), ...(sl.words || []).flatMap(w => [w.word, w.means])])].filter(s => s != null);
+// Slide pictures (the image plan): a slide may carry img (a csq/<game>/<state> manifest key) + alt. The manifest is
+// the register of captured in-game shots; the file lives at public/img/<key>.webp.
+const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MANIFEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'img', 'csq', 'manifest.json'), 'utf8'));
+const manifestByKey = new Map((MANIFEST.images || []).map(e => [e.key, e]));
 const sentences = t => t.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).filter(Boolean).length;
 
 test('19 steps (lessons 1.1-6.3) in two bands: 38 files, nothing else in the course folder', () => {
@@ -80,12 +85,20 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say'], example: ['kind', 'title', 'text', 'art', 'steps', 'say'], words: ['kind', 'title', 'text', 'art', 'words', 'say'], mission: ['kind', 'title', 'text', 'art', 'say'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt'] }[s.kind || 'text'];
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
       assert.ok(typeof s.text === 'string' && s.text.length >= 8 && s.text.length <= 280, `${at}: text 8..280 chars (${s.text.length})`);
       assert.ok(ART.includes(s.art), `${at}: art id ${s.art} is one the engine draws`);
+      if (s.img != null || s.alt != null) {
+        assert.ok(typeof s.img === 'string' && IMG_KEY.test(s.img), `${at}: img ${JSON.stringify(s.img)} is a csq/<game>/<state> key`);
+        assert.ok(typeof s.alt === 'string' && s.alt.trim() === s.alt && s.alt.length >= 1 && s.alt.length <= 160, `${at}: an img slide needs its alt, 1-160 chars`);
+        const entry = manifestByKey.get(s.img);
+        assert.ok(entry, `${at}: img ${s.img} is registered in public/img/csq/manifest.json`);
+        assert.equal(entry.alt, s.alt, `${at}: the deck alt matches the manifest alt for ${s.img}`);
+        assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${s.img}.webp`)), `${at}: public/img/${s.img}.webp exists`);
+      }
       if (s.say != null) assert.ok(typeof s.say === 'string' && s.say.length >= 8 && s.say.length <= 400 && s.say !== s.text, `${at}: say differs from text, <= 400 chars`);
       const n = sentences(s.text);
       assert.ok(n <= 4, `${at}: at most 4 sentences (${n}): ${s.text}`);
@@ -184,5 +197,18 @@ test('Explorer decks read at a grade 3-5 level: short sentences', () => {
       const parts = s.text.split(/(?<=[.!?])\s+/);
       for (const p of parts) assert.ok(p.split(/\s+/).length <= 26, `1b-${step.n} "${s.title}": a sentence of ${p.split(/\s+/).length} words: ${p}`);
     }
+  }
+});
+
+test('the csq picture manifest is well formed: complete entries, files on disk, near the weight budget', () => {
+  const seen = new Set();
+  for (const e of MANIFEST.images || []) {
+    assert.ok(e && IMG_KEY.test(e.key || ''), `manifest: key ${JSON.stringify(e && e.key)} is csq/<game>/<state>`);
+    assert.ok(!seen.has(e.key), `manifest: ${e.key} twice`); seen.add(e.key);
+    for (const f of ['game', 'chapter', 'band', 'state', 'concept']) assert.ok(typeof e[f] === 'string' && e[f], `manifest ${e.key}: ${f} present`);
+    assert.ok(typeof e.alt === 'string' && e.alt.length >= 1 && e.alt.length <= 160, `manifest ${e.key}: alt 1-160 chars`);
+    const file = path.join(ROOT, 'public', 'img', `${e.key}.webp`);
+    assert.ok(fs.existsSync(file), `manifest ${e.key}: public/img/${e.key}.webp exists`);
+    assert.ok(fs.statSync(file).size <= 200 * 1024, `manifest ${e.key}: WebP under the 200 KB hard limit`);
   }
 });

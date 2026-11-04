@@ -9,18 +9,24 @@
   {
    "title": "Name it once",
    "text": "A procedure is a group of steps with a name. Define it once, then call it wherever you need it. In Robo Route you build it as a My Block.",
-   "art": "wrench"
+   "art": "wrench",
+   "img": "csq/robo-route/functions-2-key",
+   "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board."
   },
   {
    "title": "One block, many jobs",
    "text": "Rooms of different depths? Do not make three blocks. Make one block, Room, that takes a number called steps. Each call hands it its own number.",
-   "art": "gears"
+   "art": "gears",
+   "img": "csq/robo-route/functions-2-parameter",
+   "alt": "My Block Dash (n) repeats n moves, and the calls underneath feed it different numbers: call Dash (7), (6), (5), (4), (3)."
   },
   {
    "kind": "example",
    "title": "Three rooms, one block",
    "text": "Inside Room is repeat steps times. Room(1) and Room(3) run the same block with different numbers. That slot is a parameter.",
    "art": "grid",
+   "img": "csq/robo-route/functions-2-three-rooms",
+   "alt": "Room (steps) is defined once with steps inside it, then called three ways: call Room (1), call Room (3), call Room (2).",
    "steps": [
     "call Room(1)",
     "call Room(3)",
@@ -30,12 +36,16 @@
   {
    "title": "Split into subgoals",
    "text": "A big level is easier as small jobs: collect the gems, climb the stairs, cross to the goal. Make one procedure per subgoal, and the main program is just calls.",
-   "art": "map"
+   "art": "map",
+   "img": "csq/robo-route/functions-2-subgoals",
+   "alt": "Three named My Blocks split the job: GetGems, Climb and Cross, each defined in the tray and called in turn below."
   },
   {
    "title": "Notes and credit",
    "text": "Pin a note that tells the truth about each block. If a block came from someone else, keep the line that credits them.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/robo-route/functions-2-notes-credit",
+   "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal."
   },
   {
    "kind": "words",
@@ -65,7 +75,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Functions and finish 4 levels, including one where you make a block with a parameter.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/functions-2-key",
+   "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board."
   }
  ],
  "check": [

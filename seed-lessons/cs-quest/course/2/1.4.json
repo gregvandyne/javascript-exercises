@@ -9,23 +9,31 @@
   {
    "title": "Programs need memory",
    "text": "A variable is a named box that holds a value while the program runs. The program can read it and change it.",
-   "art": "box"
+   "art": "box",
+   "img": "csq/robo-route/variables-2-key",
+   "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing."
   },
   {
    "title": "Names are for people",
    "text": "The computer is happy with x. The person reading your program is not. gemsLeft says exactly what the box holds.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/robo-route/variables-2-names",
+   "alt": "The same counting program with the box named count: set count to 0 and change count by 1 read like a sentence."
   },
   {
    "title": "Boxes have types",
    "text": "A number box counts. A flag box (a Boolean) is on or off, like hasKey. A word box holds one word from a list, like color. Pick the type that fits.",
-   "art": "table"
+   "art": "table",
+   "img": "csq/robo-route/variables-2-types",
+   "alt": "A flag variable in the tray: set hasKey to Off at the start, and set hasKey to On inside the if block that picks the key up."
   },
   {
    "kind": "example",
    "title": "Watch the value",
    "text": "Set puts a value in. Change by adds to what is there, and a negative number takes away.",
    "art": "box",
+   "img": "csq/robo-route/variables-2-watch-value",
+   "alt": "The watch strip reads steps = 4 after two changes: the plan set steps to 6, and each change steps by -1 brings it down.",
    "steps": [
     "set fuel to 12",
     "change fuel by -3",
@@ -61,7 +69,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Variables and finish 4 levels, so you meet the on/off flag. When the shelf offers names, pick the one a partner would understand.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/variables-2-key",
+   "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing."
   }
  ],
  "check": [

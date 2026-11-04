@@ -9,18 +9,24 @@
   {
    "title": "Bolt in the fog",
    "text": "In the fog, Bolt cannot see the walls. A plain list of moves would bump into one. Bolt needs to decide for itself.",
-   "art": "robot"
+   "art": "robot",
+   "img": "csq/robo-route/conditionals-1b-fog",
+   "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here."
   },
   {
    "title": "An if asks a question",
    "text": "An if block asks a question about right now: is the path ahead clear? If yes, one thing happens. If no, the else part happens.",
-   "art": "branch"
+   "art": "branch",
+   "img": "csq/robo-route/conditionals-1b-if-else",
+   "alt": "One if / else block in the tray: if path ahead, move; else, turn left. Bolt checks and picks a side every time it runs."
   },
   {
    "kind": "example",
    "title": "A fog-proof program",
    "text": "Put an if / else inside a repeat. Bolt checks again at every square, so it turns by itself at each wall.",
    "art": "grid",
+   "img": "csq/robo-route/conditionals-1b-fog-proof",
+   "alt": "The repeat until goal program with the if / else inside it, ready to feel its way across a water board it cannot fully see.",
    "steps": [
     "repeat 6 times:",
     "if path ahead: move",
@@ -30,7 +36,9 @@
   {
    "title": "A when listens",
    "text": "A when block waits for something to happen, like a gem being picked up. Then its blocks run right away. An if asks; a when listens.",
-   "art": "lightbulb"
+   "art": "lightbulb",
+   "img": "csq/robo-route/conditionals-1b-when",
+   "alt": "A when block waits at the top of the program: when a gem is picked up, turn right, with the driving loop underneath it."
   },
   {
    "kind": "words",
@@ -60,7 +68,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Conditionals & events and finish 4 levels. Say each rule out loud first: if ___, then Bolt ___.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/conditionals-1b-fog",
+   "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here."
   }
  ],
  "check": [

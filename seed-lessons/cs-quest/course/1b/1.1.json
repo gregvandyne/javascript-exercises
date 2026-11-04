@@ -9,18 +9,24 @@
   {
    "title": "Meet Bolt",
    "text": "Bolt is a robot. Bolt does exactly what you tell it, one step at a time. It never guesses what you meant.",
-   "art": "robot"
+   "art": "robot",
+   "img": "csq/robo-route/sequences-1b-key",
+   "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray."
   },
   {
    "title": "Steps in order",
    "text": "A list of steps in order is called an algorithm. When you join blocks together for Bolt, you write a program: the algorithm in blocks.",
-   "art": "map"
+   "art": "map",
+   "img": "csq/robo-route/sequences-1b-program-order",
+   "alt": "Bolt's program tray holds four move blocks stacked in order, matching the four dotted squares between Bolt and the flag."
   },
   {
    "kind": "example",
    "title": "Two squares to the right",
    "text": "Bolt faces a wall. The gem is two squares to the right. First Bolt turns, then it moves two times.",
    "art": "grid",
+   "img": "csq/robo-route/sequences-1b-turn-then-move",
+   "alt": "Bolt sits in a walled maze while the tray shows turn right, then move, then move: the turn aims Bolt before any step.",
    "steps": [
     "turn right",
     "move",
@@ -30,12 +36,16 @@
   {
    "title": "A turn does not move",
    "text": "A turn block spins Bolt in place to face a new way. Only a move block takes Bolt to the next square.",
-   "art": "gears"
+   "art": "gears",
+   "img": "csq/robo-route/sequences-1b-turn-in-place",
+   "alt": "Bolt has driven four squares, then turned left in the same square to face the flag; the turn block is lit in the tray."
   },
   {
    "title": "Pick the better route",
    "text": "Two routes can both reach the flag. The better one is shorter, safer or easier to get right. A long dry route beats a short wet one! Split a long route into legs.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/robo-route/sequences-1b-better-route",
+   "alt": "The compare screen shows Route A with 7 blocks and Route B with 8 blocks for the same board, and Route A is picked."
   },
   {
    "kind": "words",
@@ -65,7 +75,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Sequences and finish 4 levels. Before you press Run, point at each block and say what Bolt will do.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/sequences-1b-key",
+   "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray."
   }
  ],
  "check": [

@@ -72,10 +72,17 @@ function load() {
 const ART = new Set(['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy']);
 export const ART_IDS = Object.freeze([...ART]);
 const str = (v, max = 600) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+/** A slide picture's manifest key: "csq/<game>/<state>" -> public/img/csq/<game>/<state>.webp (see public/img/csq/manifest.json). */
+export const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /** One slide, cleaned: only the fields the viewer draws. */
 function cleanSlide(s) {
   const kind = ['example', 'words', 'mission'].includes(s && s.kind) ? s.kind : 'text';
   const out = { kind, title: str(s.title, 120), text: str(s.text, 400), art: ART.has(s.art) ? s.art : 'lightbulb', say: str(s.say, 600) };
+  // An in-game picture replaces the emoji art only when it is well formed: a manifest key plus its own alt text
+  // (required, <= 160 chars). Anything else is dropped and the slide keeps its art (fromDeck reports the loss).
+  const img = typeof s.img === 'string' ? s.img.trim() : '';
+  const alt = str(s.alt, 160);
+  if (IMG_KEY.test(img) && alt && alt === (typeof s.alt === 'string' ? s.alt.trim() : '')) { out.img = img; out.alt = alt; }
   if (kind === 'example') {
     if (Array.isArray(s.steps)) out.steps = s.steps.map(x => str(String(x), 60)).filter(Boolean).slice(0, 12);
     const rows = Array.isArray(s.rows) ? s.rows : Array.isArray(s.table) ? s.table : null;
@@ -99,6 +106,7 @@ function fromDeck(key, l, d, game, items, problems) {
   for (const [i, s] of (d.slides || []).entries()) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
+    if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (check !== d.check) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);

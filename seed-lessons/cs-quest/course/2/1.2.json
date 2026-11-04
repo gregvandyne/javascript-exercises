@@ -9,18 +9,24 @@
   {
    "title": "Loops save work",
    "text": "Seven move blocks in a row works, but it is clumsy. A repeat block runs the blocks inside it as many times as its number says.",
-   "art": "loop"
+   "art": "loop",
+   "img": "csq/robo-route/loops-2-key",
+   "alt": "A repeat 7 times block with one move inside crosses Bolt's whole row; written out longhand it would take seven blocks."
   },
   {
    "title": "A loop inside a loop",
    "text": "Put a repeat inside another repeat and you have a nested loop. The inner loop runs all the way through every time the outer loop goes round once.",
-   "art": "loop"
+   "art": "loop",
+   "img": "csq/robo-route/loops-2-nested",
+   "alt": "A repeat 3 times bracket holds a second repeat 3 times bracket with move inside it, then turn right: a loop in a loop."
   },
   {
    "kind": "example",
    "title": "A staircase",
    "text": "The inner loop makes one stair; the outer loop makes the staircase. To count the moves, multiply: 3 stairs of 2 moves is 6 moves, not 5.",
    "art": "grid",
+   "img": "csq/robo-route/loops-2-staircase",
+   "alt": "The nested-loop program beside a walled staircase board: the inner repeat climbs, the turn starts the next step up.",
    "steps": [
     "outer: repeat 3",
     "inner: repeat 2",
@@ -32,6 +38,8 @@
    "title": "Predict before you run",
    "text": "A repeat 5 around a repeat 3 with pick up inside makes 5 × 3 = 15 pick-ups. Multiply first, then press Step to check.",
    "art": "magnifier",
+   "img": "csq/robo-route/loops-2-predict",
+   "alt": "A nested repeat program next to a staircase of gems: repeat 3 times outside, repeat 2 times with move and pick up inside.",
    "say": "A repeat 5 around a repeat 3 with pick up inside makes 5 times 3, which is 15 pick-ups. Multiply first, then press Step to check."
   },
   {
@@ -62,7 +70,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Loops and finish 5 levels, so you build at least one nested loop. Aim for the fewest blocks.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/loops-2-key",
+   "alt": "A repeat 7 times block with one move inside crosses Bolt's whole row; written out longhand it would take seven blocks."
   }
  ],
  "check": [
