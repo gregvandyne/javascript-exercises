@@ -164,17 +164,45 @@ const CHAR_ORDER = ['bolt', 'dot', 'pim', 'gizmo'];
 /** Where each character's centre stands on the handoff stage (cqw): the flown piece's start offset is
  *  computed from it, so the piece begins above its owner's head and lands in its progress slot. */
 const CHAR_CX = { bolt: 23, dot: 19.5, pim: 23, gizmo: 21.5 };
+/** Twinkling stars for the two quiet intro scenes (dim, drain): [left%, top%] spread across the sky. */
+const TWINKLES = [[7, 14], [20, 7], [29, 22], [44, 5], [68, 10], [79, 20], [90, 9], [95, 26]];
+/** Lit windows on the Netville skyline for dim/drain: [x, y] in the town SVG's 400x60 space (the band
+ *  y 36-54 is solid skyline everywhere). Two windows stay faintly lit after the rest go out. */
+const WINDOWS = [[24, 40], [52, 46], [84, 38], [112, 48], [140, 42], [172, 50], [206, 40], [238, 47], [272, 39], [306, 49], [338, 43], [372, 46]];
+const LATE_WINDOWS = new Set([4, 9]);
+/** Drain threads: the Spark's energy streaming out of it — [x, y] travel in cqw, one wave step each. */
+const THREADS = [[-26, -4], [24, -10], [-18, 10], [28, 6], [-8, -14], [12, 14]];
+/** The map scene: where each world stands on the stage ([left%, top%], the same points the route
+ *  visits, in course order), and the route itself, drawn from under the Spark through all four. */
+const WORLD_POS = { bolt: [15.5, 54], dot: [37, 80], pim: [62.5, 56], gizmo: [85, 81] };
+const ROUTE_D = 'M50 22.5 C40 27 25 23 15.5 30.5 C24 37 29 41 37 45 C45 49 53 38 62.5 31.5 C71 26 78 35 85 45.5';
 /** A character on the story stage: its game sprite, its name chip (the team scene shows them) and, for Bolt,
  *  the little antenna light his signature move blinks. --d is the entrance delay step. */
 const storyChar = (id, d, extra = '') => html`<span class="story-char story-char--${id} ${extra}" style="--d:${d}"><img src="/img/csq/chars/${id}.webp" alt="" loading="lazy" decoding="async">${id === 'bolt' ? html`<span class="story-antenna"></span>` : ''}<span class="story-name">${CHAR_META[id].name}</span></span>`;
 /** The Spark motif: one reusable glowing spark (SVG) with the four piece gems around it. A piece is lit when
  *  its index is below the scene's lit count; on the relight scene every piece flies in from its corner. */
 function sparkHtml(st) {
-  const orbit = st.scene !== 'handoff';
+  const orbit = st.scene !== 'handoff' && st.scene !== 'map';
   return html`<div class="story-spark">
     <svg class="spark-svg" viewBox="0 0 100 100" aria-hidden="true"><path class="spark-star" d="M50 4 C55 33 67 45 96 50 C67 55 55 67 50 96 C45 67 33 55 4 50 C33 45 45 33 50 4 Z"/><circle class="spark-core" cx="50" cy="50" r="7"/></svg>
-    ${st.scene === 'dim' ? html`<span class="story-ember e1"></span><span class="story-ember e2"></span><span class="story-ember e3"></span>` : ''}
-    ${orbit ? CHAR_ORDER.map((id, i) => html`<span class="story-piece story-piece--${id}${i < st.lit ? ' is-lit' : ' is-off'}${st.scene === 'relight' ? ' is-fly' : ''}${st.scene === 'map' ? ' is-pulse' : ''}" style="--d:${i}"></span>`) : ''}
+    ${st.scene === 'dim' ? html`<span class="story-ember e1"></span><span class="story-ember e2"></span><span class="story-ember e3"></span><span class="story-ember e4"></span><span class="story-ember e5"></span>` : ''}
+    ${st.scene === 'drain' ? THREADS.map((th, i) => html`<span class="story-thread" style="--tx:${th[0]};--ty:${th[1]};--d:${i}"></span>`) : ''}
+    ${orbit ? CHAR_ORDER.map((id, i) => html`<span class="story-piece story-piece--${id}${i < st.lit ? ' is-lit' : ' is-off'}${st.scene === 'relight' ? ' is-fly' : ''}" style="--d:${i}"></span>`) : ''}
+  </div>`;
+}
+/** The sky over Netville on the quiet scenes: stars that twinkle (and die as the Spark drains). */
+const skyHtml = () => html`<div class="story-sky">${TWINKLES.map((p, i) => html`<span class="story-tw" style="left:${p[0]}%;top:${p[1]}%;--d:${i}"></span>`)}</div>`;
+/** The town's lit windows, in the town SVG's own geometry so they sit inside the skyline's houses. */
+const windowsHtml = () => html`<svg class="story-windows" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true">${WINDOWS.map((w, i) => html`<rect class="story-win${LATE_WINDOWS.has(i) ? ' is-late' : ''}" x="${w[0]}" y="${w[1]}" width="7" height="9" rx="1.5" style="--d:${i}"/>`)}</svg>`;
+/** The map scene's journey layer: the dotted route (a bright copy draws itself over it once) from the
+ *  Spark through the four worlds in course order, and a node for each world — the friend's own sprite
+ *  on a tinted disc, its name, and the piece gem that world will light. */
+function mapHtml(st) {
+  return html`<div class="story-map">
+    <svg class="story-route" viewBox="0 0 100 56.25" preserveAspectRatio="none" aria-hidden="true"><path class="story-route-base" d="${ROUTE_D}" pathLength="100" vector-effect="non-scaling-stroke"/><path class="story-route-draw" d="${ROUTE_D}" pathLength="100" vector-effect="non-scaling-stroke"/></svg>
+    ${CHAR_ORDER.map((id, i) => html`<div class="story-world story-world--${id}" style="left:${WORLD_POS[id][0]}%;top:${WORLD_POS[id][1]}%">
+      <div class="story-world-in"><span class="story-world-disc"></span>${storyChar(id, i)}<span class="story-piece story-piece--${id}${i < st.lit ? ' is-lit' : ' is-off'}" style="--d:${i}"></span></div>
+    </div>`)}
   </div>`;
 }
 /** A slide's story stage (the story & intro pack): the Spark, its pieces and the characters, animated by
@@ -185,16 +213,19 @@ function sparkHtml(st) {
 function storyArt(t, s) {
   const st = s.story;
   const town = ['dim', 'drain', 'team', 'map'].includes(st.scene);
+  const quiet = st.scene === 'dim' || st.scene === 'drain';
   return html`<figure class="smedia story" data-story data-scene="${st.scene}" data-lit="${st.lit}">
     <div class="story-stage" aria-hidden="true">
       ${town ? html`<svg class="story-town" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 V34 h30 V20 h8 v14 h26 V28 h34 v6 h24 V16 h10 v18 h30 V30 h36 v4 h22 V24 h40 v10 h28 V26 h34 v8 h26 V20 h10 v14 h30 V32 h34 v28 Z"/></svg>` : ''}
+      ${quiet ? skyHtml() : ''}
+      ${quiet ? windowsHtml() : ''}
       ${sparkHtml(st)}
       ${st.scene === 'handoff' ? html`
       <div class="story-cast story-cast--handoff">
         ${st.out ? storyChar(st.out, 0, 'is-out') : ''}
         ${st.in ? storyChar(st.in, 0, 'is-in') : ''}
       </div>
-      <div class="story-progress">${CHAR_ORDER.map((id, i) => html`<span class="story-slot"><span class="story-gem story-gem--${id}${st.fly === id ? ' is-new' : i < st.lit ? ' is-lit' : ' is-off'}" style="--fx:${((CHAR_CX[st.out] || 22) - (36.5 + i * 9)).toFixed(1)}"></span></span>`)}</div>` : html`
+      <div class="story-progress">${CHAR_ORDER.map((id, i) => html`<span class="story-slot"><span class="story-gem story-gem--${id}${st.fly === id ? ' is-new' : i < st.lit ? ' is-lit' : ' is-off'}" style="--fx:${((CHAR_CX[st.out] || 22) - (36.5 + i * 9)).toFixed(1)}"></span></span>`)}</div>` : st.scene === 'map' ? mapHtml(st) : html`
       <div class="story-cast">${st.chars.map((id, i) => storyChar(id, i))}</div>`}
     </div>
   </figure>`;
