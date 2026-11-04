@@ -214,6 +214,14 @@
     .k-keypad h2 { grid-area: 1 / 1; text-align: start; } .k-keypad .code { grid-area: 1 / 2; font-size: 1.6em; letter-spacing: .2em; }
     .k-keypad p { grid-area: 2 / 1 / 2 / -1; } .k-keypad .keys { grid-area: 3 / 1 / 3 / -1; gap: 6px; } .k-keypad .keys .btn { min-height: 48px; font-size: 1.2em; }
   }
+  /* readable tinted surfaces: the --dd-tile, glow and go tints stay pale in day and night, so text on them takes dark ink */
+  .hdr, .ibtn.lit, .tile .pic, .claimtile .key, .row.pick, .barcol.proved .barbtn, .runs span { color: var(--dd-ink); }
+  /* Dot's questions under the case never sit bare on the scenery */
+  .claims .q, .claims > p:not([class]) { background: var(--ok-card); border: 2px solid var(--ok-line); border-radius: 12px; padding: 4px 12px; }
+  /* the kit's banner: a card as wide as the words need (up to the screen), not a pill squeezed into half the width */
+  .ok-ui .ok-banner { width: max-content; max-width: calc(100vw - 24px); box-sizing: border-box; border-radius: 20px; line-height: 1.3; }
+  /* a phone: the class-quest pill takes its own line under the buttons, so the HUD is two rows, not three */
+  @media (max-width: 520px) { #questPill { order: 20; flex: 1 1 100%; justify-content: center; min-height: 36px; font-size: .9em; white-space: normal; text-align: center; } }
 </style>
 <div id="game" hidden>
   <div class="bar" id="hud">
