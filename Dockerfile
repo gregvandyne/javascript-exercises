@@ -30,6 +30,7 @@ COPY server ./server
 COPY public ./public
 COPY scripts ./scripts
 COPY seed-games ./seed-games
+COPY seed-lessons ./seed-lessons
 # The Oomba Kit preview scenes (/kit, server/routes/kit.js reads kit/demo/*.html at run time).
 COPY kit/demo ./kit/demo
 COPY kit/src ./kit/src
