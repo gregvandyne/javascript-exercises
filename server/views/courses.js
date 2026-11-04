@@ -145,6 +145,12 @@ function art(id) {
   const [main, a, b, tone] = ART[id] || ART.lightbulb;
   return html`<div class="sart sart-${tone}" aria-hidden="true"><span class="sart-shape"></span><span class="sart-a">${a}</span><span class="sart-main">${main}</span><span class="sart-b">${b}</span></div>`;
 }
+/** A slide's picture: the in-game screenshot when the slide carries one (img = manifest key, file at
+ *  /img/<key>.webp), else the emoji art above, which stays as every slide's fallback. */
+function slideArt(s) {
+  if (s.img) return html`<figure class="smedia"><img class="simg" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async"></figure>`;
+  return art(s.art);
+}
 /** What read-aloud says for a slide: its own line if it has one, else its title and text (and the words). */
 export function sayOf(s) {
   if (s.say) return s.say;
@@ -154,7 +160,7 @@ export function sayOf(s) {
 }
 function slide(t, s, i, n, step) {
   return html`<section class="slide slide--${s.kind}" id="slide-${i + 1}" aria-roledescription="slide" aria-label="${t('courses.lesson.slide', { n: i + 1, total: n })}" data-say="${sayOf(s)}">
-    ${art(s.art)}
+    ${slideArt(s)}
     <div class="slide-body">
       <h2 class="slide-h">${s.title}</h2>
       ${s.text ? html`<p class="slide-p">${s.text}</p>` : ''}
