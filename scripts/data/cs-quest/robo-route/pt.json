@@ -980,6 +980,9 @@
   "change the level using what they said, then test again": "mudar a fase usando o que a pessoa disse e testar de novo",
   "tell them they played it wrong": "dizer que a pessoa jogou errado",
   "start a new level and never test it": "começar uma fase nova e nunca testar",
-  "A level with a door, no key and no gems is...": "Uma fase com uma porta, sem chave e sem gemas é..."
+  "A level with a door, no key and no gems is...": "Uma fase com uma porta, sem chave e sem gemas é...",
+  "Clear program": "Limpar programa",
+  "Start over": "Recomeçar",
+  "Undo": "Desfazer"
  }
 }

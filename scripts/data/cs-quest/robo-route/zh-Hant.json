@@ -953,6 +953,9 @@
   "change the level using what they said, then test again": "照他們說的修改關卡，再測試一次",
   "tell them they played it wrong": "告訴他們玩錯了",
   "start a new level and never test it": "做一個新關卡，而且永遠不測試",
-  "A level with a door, no key and no gems is...": "一個有門、卻沒有鑰匙也沒有寶石的關卡是..."
+  "A level with a door, no key and no gems is...": "一個有門、卻沒有鑰匙也沒有寶石的關卡是...",
+  "Clear program": "清除程式",
+  "Start over": "重新開始",
+  "Undo": "復原"
  }
 }

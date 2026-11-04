@@ -998,6 +998,9 @@
   "change the level using what they said, then test again": "לשנות את השלב לפי מה שהוא אמר, ואז לבדוק שוב",
   "tell them they played it wrong": "להגיד לו ששיחק לא נכון",
   "start a new level and never test it": "להתחיל שלב חדש ואף פעם לא לבדוק אותו",
-  "A level with a door, no key and no gems is...": "שלב עם דלת, בלי מפתח ובלי יהלומים, הוא..."
+  "A level with a door, no key and no gems is...": "שלב עם דלת, בלי מפתח ובלי יהלומים, הוא...",
+  "Clear program": "נקה תוכנית",
+  "Start over": "להתחיל מחדש",
+  "Undo": "בטל"
  }
 }
