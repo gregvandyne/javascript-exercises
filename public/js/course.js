@@ -151,6 +151,25 @@ if (gfFigs.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   }
 }
 
+// ---------------------------------------------------------------------------------------------- story layer
+// A story slide's stage (the Spark, its pieces, the characters) plays its scene once per view: the script
+// first arms every stage (its start positions — characters off stage, the flown piece still with its owner),
+// then an IntersectionObserver plays a stage when it scrolls (or pages) into view and resets it when it
+// leaves, so it can play again next time — the same discipline as the guided-focus tour above. The CSS holds
+// every animation under [data-story-on] with fill both, so a played stage rests on its finished frame.
+// Reduced motion: nothing is armed or played at all — the unarmed CSS *is* the finished frame.
+const storyFigs = $$('.smedia.story');
+if (storyFigs.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  for (const fig of storyFigs) fig.setAttribute('data-story-arm', '');
+  const storyIO = new IntersectionObserver(es => {
+    for (const e of es) {
+      if (e.isIntersecting) { if (!e.target.dataset.storyPlayed) { e.target.dataset.storyPlayed = '1'; e.target.setAttribute('data-story-on', ''); } }
+      else if (e.target.dataset.storyPlayed) { delete e.target.dataset.storyPlayed; e.target.removeAttribute('data-story-on'); }
+    }
+  }, { threshold: 0.35 });
+  for (const fig of storyFigs) storyIO.observe(fig);
+}
+
 // ---------------------------------------------------------------------------------------------- the quick check
 const form = $('#qcheck');
 if (form) {

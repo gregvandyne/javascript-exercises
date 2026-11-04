@@ -45,6 +45,16 @@ function load() {
     for (const it of readJson(path.join(CSQ, 'sets', f)).items || []) items.set(it.id, it);
   }
   const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
+  // Course-only steps (extras.json in the deck folder): their check items join the item map first, so decks
+  // can point at them like any bank item. A deck folder without extras.json simply has none (test fixtures).
+  let extras = [], extrasError = null;
+  const extrasFile = path.join(deckDir, 'extras.json');
+  if (fs.existsSync(extrasFile)) {
+    try {
+      extras = readJson(extrasFile).steps || [];
+      for (const x of extras) for (const band of BANDS) for (const it of (x.items && x.items[band]) || []) items.set(it.id, { ...it, lesson: x.n });
+    } catch (e) { extras = []; extrasError = e.message; }
+  }
   const steps = {};
   const problems = {};
   for (const band of BANDS) {
@@ -52,6 +62,7 @@ function load() {
       .map(f => readJson(path.join(CSQ, 'lessons', f))).filter(l => l.unit >= 1 && l.unit <= 6)
       .sort((a, b) => a.unit - b.unit || a.order - b.order);
     problems[band] = [];
+    if (extrasError) problems[band].push(`extras.json: ${extrasError}`);
     steps[band] = lessons.map((l, index) => {
       const key = `${band}-${l.n}`;
       const file = path.join(deckDir, band, `${l.n}.json`);
@@ -64,6 +75,18 @@ function load() {
       const step = deck ? fromDeck(key, l, deck, game, items, problems[band]) : fromLesson(key, l, game);
       return { ...step, key, n: l.n, unit: l.unit, band, index, game, lesson: l.key, group: groupOf(l.unit) };
     });
+    // Splice the course-only steps in (intro first, finale last) and renumber: stateOf() indexes by step.index.
+    for (const x of extras) {
+      const key = `${band}-${x.n}`;
+      const file = path.join(deckDir, band, `${x.n}.json`);
+      let deck = null;
+      if (fs.existsSync(file)) { try { deck = readJson(file); } catch (e) { problems[band].push(`${key}: ${e.message}`); } }
+      if (!deck) { problems[band].push(`${key}: a course-only step needs its deck`); continue; }
+      const step = fromExtra(key, x, deck, ((x.items || {})[band] || []).map(it => it.id), items, problems[band]);
+      const full = { ...step, key, n: x.n, unit: x.unit, band, index: -1, game: null, lesson: null, group: groupOf(x.unit), extra: true };
+      if (x.pos === 'first') steps[band].unshift(full); else steps[band].push(full);
+    }
+    steps[band].forEach((s, i) => { s.index = i; });
   }
   cache = { items, steps, problems };
   return cache;
@@ -71,6 +94,11 @@ function load() {
 
 const ART = new Set(['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy']);
 export const ART_IDS = Object.freeze([...ART]);
+/** The story layer (the course's story & intro pack): the four characters, in course order, and the scenes a
+ *  slide's `story` stage can play. Sprites are extracted from the characters' own games (scripts/csq-sprites.js)
+ *  at public/img/csq/chars/<id>.webp. */
+export const CHAR_IDS = Object.freeze(['bolt', 'dot', 'pim', 'gizmo']);
+export const STORY_SCENES = Object.freeze(['dim', 'drain', 'team', 'map', 'handoff', 'relight', 'celebrate', 'finale']);
 const str = (v, max = 600) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 /** A slide picture's manifest key: "csq/<game>/<state>" -> public/img/csq/<game>/<state>.webp (see public/img/csq/manifest.json). */
 export const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -108,6 +136,26 @@ function cleanSlide(s) {
     }
     if (ok) out.focus = steps;
   }
+  // Story stage: an optional animated scene (the Spark, its four pieces, the characters) that replaces the
+  // slide's art. Only the intro step, the five unit transition beats and the finale carry one — teaching
+  // slides keep guided focus only. Shape: { scene, lit (pieces lit after the scene, 0-4), chars (the cast on
+  // stage, in entrance order), out / in / fly (the handoff's actors and the piece that flies) }. Anything
+  // malformed drops the whole story and the slide keeps its art (fromDeck / fromExtra report the loss).
+  if (s.story != null && typeof s.story === 'object' && !Array.isArray(s.story)) {
+    const st = s.story;
+    const charOk = v => CHAR_IDS.includes(v);
+    const chars = st.chars == null ? [] : st.chars;
+    const storyOk = STORY_SCENES.includes(st.scene)
+      && Number.isInteger(st.lit) && st.lit >= 0 && st.lit <= 4
+      && Array.isArray(chars) && chars.length <= 4 && chars.every(charOk) && new Set(chars).size === chars.length
+      && (st.out == null || charOk(st.out)) && (st.in == null || charOk(st.in)) && (st.fly == null || charOk(st.fly));
+    if (storyOk) {
+      out.story = { scene: st.scene, lit: st.lit, chars: [...chars] };
+      if (st.out) out.story.out = st.out;
+      if (st.in) out.story.in = st.in;
+      if (st.fly) out.story.fly = st.fly;
+    }
+  }
   if (kind === 'example') {
     if (Array.isArray(s.steps)) out.steps = s.steps.map(x => str(String(x), 60)).filter(Boolean).slice(0, 12);
     const rows = Array.isArray(s.rows) ? s.rows : Array.isArray(s.table) ? s.table : null;
@@ -124,7 +172,12 @@ function fromDeck(key, l, d, game, items, problems) {
   if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);
   if (d.n !== l.n) say(`n is ${JSON.stringify(d.n)}`);
   if (d.band !== l.bandCode) say(`band is ${JSON.stringify(d.band)}`);
-  if (slides.length < 5 || slides.length > 7) say(`${slides.length} slides (5-7 expected)`);
+  if (slides.length < 5 || slides.length > 7) {
+    // A deck carrying a story transition beat (the story pack) gets one extra slide: the beat is a story
+    // moment inserted before the mission, not a teaching slide.
+    const beats = slides.filter(s => s.story && s.story.scene === 'handoff').length;
+    if (!(slides.length === 8 && beats === 1)) say(`${slides.length} slides (5-7 expected)`);
+  }
   if (slides.filter(s => s.kind === 'example').length !== 1) say('needs exactly one example slide');
   if (slides.filter(s => s.kind === 'words').length !== 1) say('needs exactly one words slide');
   if (!slides.length || slides[slides.length - 1].kind !== 'mission') say('the last slide must be the mission');
@@ -133,6 +186,7 @@ function fromDeck(key, l, d, game, items, problems) {
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
     if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
     if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (check !== d.check) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
@@ -142,6 +196,36 @@ function fromDeck(key, l, d, game, items, problems) {
   if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match the lesson (${JSON.stringify(want)})`);
   if (!game && !str(d.talk)) say('a step without a game needs "talk"');
   return { title: str(d.title, 80) || l.short, topic: str(d.topic, 40) || l.short, minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
+}
+/** A course-only step (the story pack's intro 0.1 and finale 6.4): no teacher lesson file stands behind it —
+ *  the 23-lesson catalogue is a CSTA program and these two steps carry no standards — so its definition lives
+ *  in the deck folder's extras.json (title, topic, unit, position and the check items themselves), and its
+ *  deck is validated the same way as a lesson deck, against the extras entry instead of a lesson. */
+function fromExtra(key, x, d, wantIds, items, problems) {
+  const slides = (Array.isArray(d.slides) ? d.slides : []).filter(s => s && typeof s === 'object').map(cleanSlide);
+  const check = Array.isArray(d.check) && JSON.stringify(d.check) === JSON.stringify(wantIds) ? d.check : wantIds;
+  const say = m => problems.push(`${key}: ${m}`);
+  if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);
+  if (d.n !== x.n) say(`n is ${JSON.stringify(d.n)}`);
+  if (d.band !== key.slice(0, key.indexOf('-'))) say(`band is ${JSON.stringify(d.band)}`);
+  if (str(d.title, 80) !== x.title) say(`title ${JSON.stringify(d.title)} does not match extras.json (${JSON.stringify(x.title)})`);
+  if (str(d.topic, 40) !== x.topic) say(`topic ${JSON.stringify(d.topic)} does not match extras.json (${JSON.stringify(x.topic)})`);
+  if (slides.length < 5 || slides.length > 7) say(`${slides.length} slides (5-7 expected)`);
+  if (slides.filter(s => s.kind === 'example').length !== 1) say('needs exactly one example slide');
+  if (slides.filter(s => s.kind === 'words').length !== 1) say('needs exactly one words slide');
+  if (!slides.length || slides[slides.length - 1].kind !== 'mission') say('the last slide must be the mission');
+  for (const [i, s] of (d.slides || []).entries()) {
+    if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
+    else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
+    if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
+    if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
+    if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
+  }
+  if (check !== d.check) say(`check ${JSON.stringify(d.check)} is not the step's 3 extras item ids`);
+  else for (const id of check) if (items.get(id).lesson !== x.n) say(`check item ${id} is not from step ${x.n}`);
+  if (d.game != null) say('a course-only step has no game module');
+  if (!str(d.talk)) say('a step without a game needs "talk"');
+  return { title: x.title, topic: x.topic, minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
 }
 /** No deck yet: a short one from the lesson file (its big idea, words and mission), so the step still works. */
 function fromLesson(key, l, game) {

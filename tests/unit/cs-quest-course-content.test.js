@@ -5,6 +5,9 @@
 // lesson file's game, chapter and params (6.1 and 6.3 have none and carry a talk prompt instead); lengths; kid-safe text
 // (the real game scanner and the free-text filter over every string, no links, handles, long digit runs, brands, program
 // name or standard codes); US spelling; and Robo Route's block names ("move", never the plan's "forward").
+// The story pack adds two course-only steps (0.1 intro, 6.4 finale, defined in course/extras.json — no teacher
+// lesson stands behind them) and one story transition beat before the mission of 1.5, 2.2, 3.3, 4.3, 5.3;
+// those are checked in their own block at the end (story schema, scope, piece counts, extras items).
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -47,14 +50,14 @@ const MANIFEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'img', 'cs
 const manifestByKey = new Map((MANIFEST.images || []).map(e => [e.key, e]));
 const sentences = t => t.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).filter(Boolean).length;
 
-test('19 steps (lessons 1.1-6.3) in two bands: 38 files, nothing else in the course folder', () => {
+test('19 steps (lessons 1.1-6.3) in two bands: 38 files, plus the two story steps and extras.json', () => {
   assert.equal(STEPS.length, 19);
   for (const d of decks) assert.ok(d.deck, `${path.relative(ROOT, d.file)} exists`);
   for (const band of BANDS) {
     const files = fs.readdirSync(path.join(DIR, band)).sort();
-    assert.deepEqual(files, STEPS.map(s => `${s.n}.json`).sort(), `course/${band} holds exactly the 19 step files`);
+    assert.deepEqual(files, STEPS.map(s => `${s.n}.json`).concat(['0.1.json', '6.4.json']).sort(), `course/${band} holds the 19 step files and the two story steps`);
   }
-  assert.deepEqual(fs.readdirSync(DIR).sort(), BANDS);
+  assert.deepEqual(fs.readdirSync(DIR).sort(), BANDS.concat(['extras.json']).sort());
 });
 
 test('every deck matches the schema: key, n, band, title, topic, minutes, slides, check, game / talk', () => {
@@ -74,7 +77,9 @@ test('every deck matches the schema: key, n, band, title, topic, minutes, slides
 test('5-7 slides: one worked example with chips, one words slide with 2-4 words, the mission last; art ids and lengths', () => {
   for (const { band, step, deck: d } of decks) {
     const where = `${band}-${step.n}`;
-    assert.ok(Array.isArray(d.slides) && d.slides.length >= 5 && d.slides.length <= 7, `${where}: 5-7 slides (${d.slides.length})`);
+    // A deck with a story transition beat carries one extra slide (the beat sits before the mission).
+    const beats = d.slides.filter(s => s.story && s.story.scene === 'handoff').length;
+    assert.ok(Array.isArray(d.slides) && d.slides.length >= 5 && (d.slides.length <= 7 || (d.slides.length === 8 && beats === 1)), `${where}: 5-7 slides, 8 with a story beat (${d.slides.length})`);
     const kinds = d.slides.map(s => s.kind || 'text');
     assert.equal(kinds.filter(k => k === 'example').length, 1, `${where}: one example slide`);
     assert.equal(kinds.filter(k => k === 'words').length, 1, `${where}: one words slide`);
@@ -85,7 +90,7 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'focus'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'focus'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'focus'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'focus'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'] }[s.kind || 'text'];
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
@@ -228,5 +233,95 @@ test('the csq picture manifest is well formed: complete entries, files on disk, 
     const file = path.join(ROOT, 'public', 'img', `${e.key}.webp`);
     assert.ok(fs.existsSync(file), `manifest ${e.key}: public/img/${e.key}.webp exists`);
     assert.ok(fs.statSync(file).size <= 200 * 1024, `manifest ${e.key}: WebP under the 200 KB hard limit`);
+  }
+});
+
+// --------------------------------------------------------------------------------------------------- story pack
+// The story layer: `story` fields are valid everywhere they appear, appear ONLY where the pack puts them
+// (the intro, the finale, and one handoff beat in each of 1.5 / 2.2 / 3.3 / 4.3 / 5.3 — teaching slides keep
+// guided focus only), and the two course-only steps match extras.json.
+const CHAR_IDS = ['bolt', 'dot', 'pim', 'gizmo'];
+const SCENES = ['dim', 'drain', 'team', 'map', 'handoff', 'relight', 'celebrate', 'finale'];
+const BEAT_LIT = { '1.5': 1, '2.2': 1, '3.3': 2, '4.3': 3, '5.3': 4 };
+function checkStory(st, at) {
+  assert.ok(st && typeof st === 'object' && !Array.isArray(st), `${at}: a story object`);
+  for (const k of Object.keys(st)) assert.ok(['scene', 'lit', 'chars', 'out', 'in', 'fly'].includes(k), `${at}: unexpected story field ${k}`);
+  assert.ok(SCENES.includes(st.scene), `${at}: scene ${st.scene} is known`);
+  assert.ok(Number.isInteger(st.lit) && st.lit >= 0 && st.lit <= 4, `${at}: lit 0-4`);
+  assert.ok(Array.isArray(st.chars) && st.chars.length <= 4 && st.chars.every(c => CHAR_IDS.includes(c)) && new Set(st.chars).size === st.chars.length, `${at}: chars are known, unique, at most 4`);
+  for (const k of ['out', 'in', 'fly']) if (st[k] != null) assert.ok(CHAR_IDS.includes(st[k]), `${at}: ${k} names a character`);
+  if (st.fly != null) assert.equal(CHAR_IDS[st.lit - 1], st.fly, `${at}: the flown piece is the one this scene lights`);
+}
+test('story scope: beats only in the five unit decks, before the mission, with the pack\'s piece counts', () => {
+  for (const { band, step, deck: d } of decks) {
+    const where = `${band}-${step.n}`;
+    const withStory = d.slides.map((s, i) => [s, i]).filter(([s]) => s.story != null);
+    if (!(step.n in BEAT_LIT)) { assert.equal(withStory.length, 0, `${where}: no story slides outside the story steps and beats`); continue; }
+    assert.equal(withStory.length, 1, `${where}: exactly one beat slide`);
+    const [beat, i] = withStory[0];
+    assert.equal(i, d.slides.length - 2, `${where}: the beat sits right before the mission`);
+    checkStory(beat.story, `${where} beat`);
+    assert.equal(beat.story.scene, 'handoff', `${where}: the beat is a handoff`);
+    assert.ok(beat.story.out, `${where}: the beat names the outgoing character`);
+    assert.equal(beat.story.lit, BEAT_LIT[step.n], `${where}: ${BEAT_LIT[step.n]} piece(s) lit after this beat`);
+  }
+});
+
+test('the story steps (0.1, 6.4): extras.json defines them, the decks match it, the items are sound and kid-safe', () => {
+  const extras = JSON.parse(fs.readFileSync(path.join(DIR, 'extras.json'), 'utf8'));
+  assert.deepEqual(extras.steps.map(x => [x.n, x.pos, x.unit]), [['0.1', 'first', 1], ['6.4', 'last', 6]], 'the intro opens the course, the finale closes it');
+  const kidSafe = (s, at) => {
+    for (const [re, why] of BAD) assert.ok(!re.test(s), `${at} has ${why}: ${s}`);
+    assert.ok(!UK.test(s), `${at}: US spelling please: ${s}`);
+    assert.ok(!BRAND.test(s), `${at}: no brand names: ${s}`);
+    const c = cleanText(s, 1000); assert.ok(c.ok && c.value === s, `${at}: the text filter refuses: ${s}`);
+  };
+  for (const x of extras.steps) {
+    for (const band of BANDS) {
+      const where = `${band}-${x.n}`;
+      const items = x.items[band];
+      assert.ok(Array.isArray(items) && items.length === 3, `${where}: three check items in extras.json`);
+      assert.deepEqual(items.map(it => it.id), [1, 2, 3].map(k => `${band}-${x.n}-e${k}`), `${where}: item ids`);
+      for (const it of items) {
+        assert.ok(typeof it.q === 'string' && it.q.length >= 8 && it.q.length <= 200, `${where} ${it.id}: a real question`);
+        assert.ok(Array.isArray(it.choices) && it.choices.length === 4 && new Set(it.choices).size === 4, `${where} ${it.id}: four different choices`);
+        assert.ok(Number.isInteger(it.answer) && it.answer >= 0 && it.answer <= 3, `${where} ${it.id}: the answer is one of the choices`);
+        kidSafe(it.q, `${where} ${it.id}`); for (const ch of it.choices) kidSafe(ch, `${where} ${it.id}`);
+      }
+      const d = JSON.parse(fs.readFileSync(path.join(DIR, band, `${x.n}.json`), 'utf8'));
+      assert.deepEqual(Object.keys(d), ['key', 'n', 'band', 'title', 'topic', 'minutes', 'slides', 'check', 'game', 'talk'], `${where}: fields in order`);
+      assert.equal(d.key, where); assert.equal(d.n, x.n); assert.equal(d.band, band);
+      assert.equal(d.title, x.title, `${where}: title from extras.json`); assert.equal(d.topic, x.topic, `${where}: topic from extras.json`);
+      assert.ok(Number.isInteger(d.minutes) && d.minutes >= 4 && d.minutes <= 10, `${where}: minutes 4..10`);
+      assert.equal(d.game, null, `${where}: no game module`);
+      assert.ok(typeof d.talk === 'string' && d.talk.length >= 20 && d.talk.length <= 280 && /\?$/.test(d.talk), `${where}: a talk prompt that asks something`);
+      assert.deepEqual(d.check, items.map(it => it.id), `${where}: the check is the extras items`);
+      const kinds = d.slides.map(s => s.kind || 'text');
+      assert.ok(d.slides.length >= 5 && d.slides.length <= 7, `${where}: 5-7 slides`);
+      assert.equal(kinds.filter(k => k === 'example').length, 1, `${where}: one example`);
+      assert.equal(kinds.filter(k => k === 'words').length, 1, `${where}: one words slide`);
+      assert.equal(kinds.at(-1), 'mission', `${where}: the mission is last`);
+      const titles = new Set();
+      for (const [i, s] of d.slides.entries()) {
+        const at = `${where} slide ${i + 1}`;
+        assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48 && !titles.has(s.title.toLowerCase()), `${at}: title 3..48, unique`); titles.add(s.title.toLowerCase());
+        assert.ok(typeof s.text === 'string' && s.text.length >= 8 && s.text.length <= 280, `${at}: text 8..280 chars`);
+        assert.ok(sentences(s.text) <= 4, `${at}: at most 4 sentences`);
+        assert.ok(ART.includes(s.art), `${at}: art id known`);
+        if (s.story != null) checkStory(s.story, at);
+        if (s.img != null) {
+          const entry = manifestByKey.get(s.img);
+          assert.ok(entry && entry.alt === s.alt, `${at}: img registered, alt matches the manifest`);
+          assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${s.img}.webp`)), `${at}: the picture exists`);
+        }
+        if (s.kind === 'example') assert.ok(Array.isArray(s.steps) && s.steps.length >= 2 && s.steps.length <= 8, `${at}: 2-8 chips`);
+        if (s.kind === 'words') assert.ok(Array.isArray(s.words) && s.words.length >= 2 && s.words.length <= 4, `${at}: 2-4 words`);
+      }
+      for (const s of stringsOf(d)) kidSafe(s, where);
+      // The pack's scene arc, per step.
+      const scenes = d.slides.filter(s => s.story).map(s => s.story.scene);
+      if (x.n === '0.1') assert.deepEqual(scenes, ['dim', 'drain', 'team', 'map'], `${where}: the intro arc`);
+      if (x.n === '6.4') assert.deepEqual(scenes, ['relight', 'celebrate', 'finale'], `${where}: the finale arc`);
+    }
   }
 });

@@ -1,0 +1,110 @@
+{
+ "key": "1b-6.4",
+ "n": "6.4",
+ "band": "1b",
+ "title": "The Spark is back",
+ "topic": "The Spark is back",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "The last piece",
+   "text": "You did it. The last piece flies home, the Spark flares up, and all over Netville the games hum back to life.",
+   "art": "star",
+   "story": {
+    "scene": "relight",
+    "lit": 4,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  },
+  {
+   "title": "Bolt says thanks",
+   "text": "Bolt spins his antenna. You taught my roads to run again, he says. Every loop and every careful turn — that was you.",
+   "art": "robot"
+  },
+  {
+   "title": "Dot, Pim and Gizmo",
+   "text": "Dot's tail is wagging, Pim's wings are wide, and Gizmo is bouncing too high to sit still. Four pieces, four worlds, one coder: you.",
+   "art": "people",
+   "story": {
+    "scene": "celebrate",
+    "lit": 4,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  },
+  {
+   "kind": "example",
+   "title": "Look what you can do",
+   "text": "Look how far you have come. You can write steps in order and use loops to repeat them. You can make decisions with if and else, fix bugs, and send packets across a network.",
+   "art": "trophy",
+   "steps": [
+    "Steps in order",
+    "Loops that repeat",
+    "If and else decisions",
+    "Fixing bugs",
+    "Packets and data"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four big words that are yours now.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "algorithm",
+     "means": "A list of steps, in order, that solves a problem."
+    },
+    {
+     "word": "packet",
+     "means": "A small piece of a message, sent across a network."
+    },
+    {
+     "word": "input",
+     "means": "What goes into a computer: a tap, a key, a sound."
+    },
+    {
+     "word": "debug",
+     "means": "To find and fix a mistake in your code."
+    }
+   ]
+  },
+  {
+   "title": "You are a coder now",
+   "text": "The Spark was never magic. It runs on code, and code is written by people who learned, one step at a time. Now you are one of them.",
+   "art": "star"
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "One thing is left. In Netville, coders do not just play games — they build them. Your building tools are ready. What will you make?",
+   "art": "trophy",
+   "story": {
+    "scene": "finale",
+    "lit": 4,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  }
+ ],
+ "check": [
+  "1b-6.4-e1",
+  "1b-6.4-e2",
+  "1b-6.4-e3"
+ ],
+ "game": null,
+ "talk": "If you could build any game for Netville, what would it be about?"
+}

@@ -76,7 +76,7 @@
       54.1,
       37.1,
       12.2,
-      6.0
+      6
      ]
     },
     {
@@ -118,7 +118,7 @@
       54.1,
       65.4,
       27.9,
-      6.0
+      6
      ]
     }
    ]
@@ -136,7 +136,7 @@
       54.1,
       37.1,
       12.1,
-      48.0
+      48
      ]
     },
     {
@@ -145,7 +145,7 @@
       12.8,
       73.6,
       6.7,
-      12.0
+      12
      ]
     }
    ]
@@ -163,7 +163,7 @@
       54.1,
       37.1,
       23.2,
-      6.0
+      6
      ]
     },
     {
@@ -172,7 +172,7 @@
       54.1,
       51.5,
       23.6,
-      6.0
+      6
      ]
     }
    ]
@@ -200,6 +200,18 @@
      "means": "changing something someone else made and giving them credit"
     }
    ]
+  },
+  {
+   "title": "Bolt's piece lights up",
+   "text": "Bolt's piece of the Spark is lit — the first of four. His roads are only the start: next comes the Bug Hunters trail, where Bolt learns to hunt for mistakes.",
+   "art": "robot",
+   "story": {
+    "scene": "handoff",
+    "lit": 1,
+    "chars": [],
+    "out": "bolt",
+    "fly": "bolt"
+   }
   },
   {
    "kind": "mission",

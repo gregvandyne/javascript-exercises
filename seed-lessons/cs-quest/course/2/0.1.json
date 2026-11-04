@@ -1,0 +1,106 @@
+{
+ "key": "2-0.1",
+ "n": "0.1",
+ "band": "2",
+ "title": "Welcome to Netville",
+ "topic": "Meet Netville and the Spark",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "A town called Netville",
+   "text": "Netville runs on messages. Its houses are small computers, its roads are wires, and everything in town talks to everything else.",
+   "art": "network",
+   "story": {
+    "scene": "dim",
+    "lit": 0,
+    "chars": []
+   }
+  },
+  {
+   "title": "The morning the Spark went dim",
+   "text": "One morning the Spark went dim, and every game in town stopped. The Spark's light is what the games run on. The four friends know their worlds, but not one of them can code. You are the coder Netville needs.",
+   "art": "lightbulb",
+   "story": {
+    "scene": "drain",
+    "lit": 0,
+    "chars": []
+   }
+  },
+  {
+   "title": "Meet your team",
+   "text": "Bolt, Dot, Pim and Gizmo will guide you, one world each. They know every road, clue, letter and wire in Netville. What they cannot do is code. That is your job.",
+   "art": "people",
+   "story": {
+    "scene": "team",
+    "lit": 0,
+    "chars": [
+     "bolt",
+     "dot",
+     "pim",
+     "gizmo"
+    ]
+   }
+  },
+  {
+   "kind": "example",
+   "title": "How each step works",
+   "text": "Each step teaches one idea, then checks it, then lets you use it in a game. Read the slides, watch the highlighted parts, and answer the check: two out of three opens the mission.",
+   "art": "map",
+   "steps": [
+    "Read and look",
+    "Watch the highlights",
+    "Pass the check: 2 of 3",
+    "Play the mission"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words the whole course is built on.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "Spark",
+     "means": "The warm light that keeps Netville's games running."
+    },
+    {
+     "word": "coder",
+     "means": "Someone who writes the instructions a computer follows."
+    },
+    {
+     "word": "algorithm",
+     "means": "A list of steps, in order, that solves a problem."
+    },
+    {
+     "word": "mission",
+     "means": "The game at the end of a step, where you use the idea."
+    }
+   ]
+  },
+  {
+   "title": "Follow the map",
+   "text": "The Spark has four pieces, one in each world: Robo Route, Data Detective, Packet Post and Inside the Machine. Finish a world and its piece lights up. Light all four to bring the Spark back.",
+   "art": "map",
+   "story": {
+    "scene": "map",
+    "lit": 0,
+    "chars": []
+   }
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Bolt is waiting at the start of Robo Route. His roads, loops and decisions are the first piece of the Spark. Go and light it.",
+   "art": "robot",
+   "img": "csq/robo-route/sequences-2-key",
+   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time."
+  }
+ ],
+ "check": [
+  "2-0.1-e1",
+  "2-0.1-e2",
+  "2-0.1-e3"
+ ],
+ "game": null,
+ "talk": "The friends know their worlds but cannot code. What can a coder do that they cannot?"
+}

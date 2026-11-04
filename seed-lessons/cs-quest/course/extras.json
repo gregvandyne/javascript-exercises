@@ -1,0 +1,162 @@
+{
+ "steps": [
+  {
+   "n": "0.1",
+   "pos": "first",
+   "unit": 1,
+   "title": "Welcome to Netville",
+   "topic": "Meet Netville and the Spark",
+   "items": {
+    "2": [
+     {
+      "id": "2-0.1-e1",
+      "q": "Why did the Spark go dim?",
+      "choices": [
+       "The town's batteries ran out",
+       "Nobody in Netville can code",
+       "The Spark got bored",
+       "A storm knocked it out"
+      ],
+      "answer": 1
+     },
+     {
+      "id": "2-0.1-e2",
+      "q": "How many pieces does the Spark have?",
+      "choices": [
+       "Four",
+       "Two",
+       "Three",
+       "Ten"
+      ],
+      "answer": 0
+     },
+     {
+      "id": "2-0.1-e3",
+      "q": "What must you score on the check to open the mission?",
+      "choices": [
+       "Every answer right",
+       "One out of three",
+       "Two out of three",
+       "There is no check"
+      ],
+      "answer": 2
+     }
+    ],
+    "1b": [
+     {
+      "id": "1b-0.1-e1",
+      "q": "What happened to Netville's Spark?",
+      "choices": [
+       "It grew too big",
+       "It went dim",
+       "It turned into a game",
+       "Nothing happened"
+      ],
+      "answer": 1
+     },
+     {
+      "id": "1b-0.1-e2",
+      "q": "Who relights the Spark?",
+      "choices": [
+       "You do, by coding the games",
+       "Bolt does, all by himself",
+       "Dot does, with her magnifying glass",
+       "It lights itself"
+      ],
+      "answer": 0
+     },
+     {
+      "id": "1b-0.1-e3",
+      "q": "What do you do in each step of the course?",
+      "choices": [
+       "Just play games all day",
+       "Skip straight to the end",
+       "Read the story, pass the check, then play the mission",
+       "Guess every answer fast"
+      ],
+      "answer": 2
+     }
+    ]
+   }
+  },
+  {
+   "n": "6.4",
+   "pos": "last",
+   "unit": 6,
+   "title": "The Spark is back",
+   "topic": "The Spark is back",
+   "items": {
+    "2": [
+     {
+      "id": "2-6.4-e1",
+      "q": "What do you do with a program that almost works?",
+      "choices": [
+       "Make it longer",
+       "Delete it and give up",
+       "Debug it: find and fix the mistake",
+       "Change every line"
+      ],
+      "answer": 2
+     },
+     {
+      "id": "2-6.4-e2",
+      "q": "What is a packet?",
+      "choices": [
+       "A whole message sent at once",
+       "A small piece of a message, sent across the network",
+       "A kind of password",
+       "A game level"
+      ],
+      "answer": 1
+     },
+     {
+      "id": "2-6.4-e3",
+      "q": "What do coders do when a problem is too big to hold at once?",
+      "choices": [
+       "Break it into smaller parts",
+       "Ignore the hard parts",
+       "Guess and hope",
+       "Ask the computer to guess"
+      ],
+      "answer": 0
+     }
+    ],
+    "1b": [
+     {
+      "id": "1b-6.4-e1",
+      "q": "How many pieces of the Spark did you light?",
+      "choices": [
+       "One",
+       "Two",
+       "Three",
+       "Four"
+      ],
+      "answer": 3
+     },
+     {
+      "id": "1b-6.4-e2",
+      "q": "Who coded the games that lit the Spark?",
+      "choices": [
+       "Bolt did",
+       "Dot did",
+       "You did",
+       "The games coded themselves"
+      ],
+      "answer": 2
+     },
+     {
+      "id": "1b-6.4-e3",
+      "q": "What can you do now?",
+      "choices": [
+       "Build your own game in the Builder",
+       "Nothing at all",
+       "Start the course over",
+       "Hide the Spark"
+      ],
+      "answer": 0
+     }
+    ]
+   }
+  }
+ ]
+}
