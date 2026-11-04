@@ -1015,3 +1015,5 @@ ol.steps li{margin-bottom:var(--s2)}
 .course-steps-big{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .course-teach{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px}
 .course-teach h2{margin:0 0 6px;font-size:1.15rem}
+.ptitle .pcourse{font-size:.8em;font-weight:700;margin-inline-start:8px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);text-decoration:none;white-space:nowrap}
+@media (max-width:520px){.ptitle .pcourse{display:none}}

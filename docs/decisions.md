@@ -2240,3 +2240,7 @@ games nested in course order (Robo Route, Data Detective, Packet Post, Inside th
 button (the first game not yet played) and a link to the course page /courses/<slug>, which repeats the games larger
 and points teachers to /teachers/cs-quest. Shown to everyone. Nothing new is stored: a game counts as started when the
 player has a play of it. Courses are declared in server/services/courses.js.
+Course games are played only as part of their course: they are left out of the open lists (home rails, search,
+"similar", playing now, the sitemap's game entries), /g/<slug> redirects to the course page, and /play/<slug> opened on
+its own goes to the course page. They open from the course (?course=), a class lesson (?lesson=&step=) or a teacher's
+lesson link (?chapter=...); in the course, the play bar's back button returns to the course and shows "game n of 4".

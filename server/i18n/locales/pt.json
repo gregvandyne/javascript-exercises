@@ -5938,6 +5938,8 @@
       "sub": "Ciência da computação em quatro jogos · do 3º ao 8º ano",
       "about": "Programe um robô, resolva mistérios com dados, envie mensagens por uma cidade e veja por dentro as máquinas que usamos todo dia. Jogue em ordem ou comece por qualquer um.",
       "teachers": "Cada jogo tem planos de aula para uma aula de 45 minutos, com aquecimentos ao vivo, tickets de saída e uma visão dos padrões da sua turma."
-    }
+    },
+    "back": "Voltar para {course}",
+    "step": "{course} · jogo {n} de {total}"
   }
 }

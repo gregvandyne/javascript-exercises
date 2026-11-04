@@ -5936,6 +5936,8 @@
       "sub": "L’informatique en quatre jeux · du CE2 à la 4e",
       "about": "Programme un robot, résous des mystères avec des données, envoie des messages à travers une ville et ouvre les machines que nous utilisons chaque jour. Joue dans l’ordre ou commence par n’importe lequel.",
       "teachers": "Chaque jeu a des plans de cours pour une séance de 45 minutes, avec des échauffements en direct, des tickets de sortie et une vue des standards pour ta classe."
-    }
+    },
+    "back": "Retour à {course}",
+    "step": "{course} · jeu {n} sur {total}"
   }
 }

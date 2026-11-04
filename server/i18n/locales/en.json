@@ -6054,6 +6054,8 @@
       "sub": "Computer science in four games · grades 3–8",
       "about": "Code a robot, solve mysteries with data, send messages across a town, and open up the machines we use every day. Play the games in order or start with any one.",
       "teachers": "Every game has lesson plans you can teach in a 45-minute class, with live warm-ups, exit tickets and a standards view for your class."
-    }
+    },
+    "back": "Back to {course}",
+    "step": "{course} · game {n} of {total}"
   }
 }

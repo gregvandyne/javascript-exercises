@@ -9,6 +9,7 @@ import { OFFICIAL } from '../auth.js';
 import * as funnel from './funnel.js';
 import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 
+import { COURSE_GAME_SLUGS } from './course-catalog.js';
 export const CATEGORIES = [
   ['arcade', '🕹️', 'Arcade'], ['sports', '⚽', 'Sports'], ['puzzle', '🧩', 'Puzzle'], ['words', '🔤', 'Words'],
   ['board', '🎲', 'Board'], ['adventure', '🗺️', 'Adventure'], ['learning', '📚', 'Learning'], ['music', '🎵', 'Music'], ['silly', '🤪', 'Silly']
@@ -156,8 +157,10 @@ const ORDERS = {
   rated: 'CASE WHEN g.rating_count>0 THEN (g.rating_sum*1.0+3*2)/(g.rating_count+2) ELSE 0 END DESC, g.rating_count DESC, g.plays DESC',
   likes: 'g.likes DESC', title: 'g.title ASC'
 };
+/** Course games (services/course-catalog.js) are played only inside their course, so open lists leave them out. */
+const NOT_COURSE = () => (COURSE_GAME_SLUGS.length ? ` AND g.slug NOT IN (${COURSE_GAME_SLUGS.map(x => `'${x.replace(/'/g, '')}'`).join(',')})` : '');
 export function listVisible(user, { order = 'popular', limit = 24, category = null, ownerId = null, featured = false, offset = 0, official = false } = {}) {
-  const v = visibleWhere(user); const params = [...v.params]; let where = v.sql;
+  const v = visibleWhere(user); const params = [...v.params]; let where = v.sql + NOT_COURSE();
   if (official) { where += " AND g.source='seed' AND u.username=?"; params.push(OFFICIAL); }   // launch games only
   if (category) { where += ' AND g.category=?'; params.push(category); }
   if (ownerId) { where += ' AND g.owner_id=?'; params.push(ownerId); }
@@ -167,7 +170,7 @@ export function listVisible(user, { order = 'popular', limit = 24, category = nu
 export function playingNow(user, limit = 12) {
   const top = presence.top(60); if (!top.length) return [];
   const ids = top.map(t => t[0]); const v = visibleWhere(user);
-  const rows = q.all(`${SELECT} WHERE ${v.sql} AND g.id IN (${ids.map(() => '?').join(',')})`, ...v.params, ...ids);
+  const rows = q.all(`${SELECT} WHERE ${v.sql}${NOT_COURSE()} AND g.id IN (${ids.map(() => '?').join(',')})`, ...v.params, ...ids);
   const order = new Map(top); return decorate(rows).sort((a, b) => (order.get(b.id) || 0) - (order.get(a.id) || 0)).slice(0, limit);
 }
 export function fromFriends(user, limit = 12) {
@@ -189,7 +192,7 @@ export function myGames(userId, limit = 50) {
 }
 const likeEsc = t => `%${t.replace(/[\\%_]/g, '')}%`;
 export function search(user, { text = '', category = null, order = 'relevance', limit = 40 } = {}) {
-  const v = visibleWhere(user); const params = [...v.params]; let where = v.sql;
+  const v = visibleWhere(user); const params = [...v.params]; let where = v.sql + NOT_COURSE();
   const t = String(text || '').trim().slice(0, 60);
   if (t) {
     const like = likeEsc(t);

@@ -4,18 +4,8 @@
 import { q } from '../db.js';
 import * as games from './games.js';
 
-export const COURSES = Object.freeze([
-  {
-    slug: 'cs-quest', emoji: '💻', key: 'courses.cs', teacherPath: '/teachers/cs-quest',
-    // The order the lessons teach them in (units 1-2, 3, 4, 5).
-    games: [
-      { slug: 'robo-route', topic: 'coding' },
-      { slug: 'data-detective', topic: 'data' },
-      { slug: 'packet-post', topic: 'networks' },
-      { slug: 'inside-the-machine', topic: 'computers' },
-    ],
-  },
-]);
+import { COURSES, courseOfSlug } from './course-catalog.js';
+export { COURSES, courseOfSlug };
 export const getCourse = slug => COURSES.find(c => c.slug === slug) || null;
 
 /** The course's games the viewer may see, in course order, decorated like any card (localized, rated, plays). */
