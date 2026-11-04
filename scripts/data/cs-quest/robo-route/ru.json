@@ -998,6 +998,9 @@
   "change the level using what they said, then test again": "изменить уровень по его словам и снова проверить",
   "tell them they played it wrong": "сказать ему, что он неправильно играл",
   "start a new level and never test it": "начать новый уровень и никогда его не проверять",
-  "A level with a door, no key and no gems is...": "Уровень с дверью, без ключа и без кристаллов, — это..."
+  "A level with a door, no key and no gems is...": "Уровень с дверью, без ключа и без кристаллов, — это...",
+  "Clear program": "Очистить программу",
+  "Start over": "Начать заново",
+  "Undo": "Отменить"
  }
 }

@@ -1016,6 +1016,9 @@
   "change the level using what they said, then test again": "أن تغيّر المستوى بحسب ما قاله، ثم تجرّبه مرة أخرى",
   "tell them they played it wrong": "أن تقول له إنه لعب بطريقة خاطئة",
   "start a new level and never test it": "أن تبدأ مستوى جديدًا ولا تجرّبه أبدًا",
-  "A level with a door, no key and no gems is...": "مستوى فيه باب، بلا مفتاح ولا جواهر، هو..."
+  "A level with a door, no key and no gems is...": "مستوى فيه باب، بلا مفتاح ولا جواهر، هو...",
+  "Clear program": "امسح البرنامج",
+  "Start over": "ابدأ من جديد",
+  "Undo": "تراجع"
  }
 }

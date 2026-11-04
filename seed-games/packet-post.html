@@ -163,6 +163,11 @@
   .ok-rm .pp-link.pp-ok { animation: none; }
   .ok-rm .pp-wheel .pp-inner { transition: none; }
   .ok-rm .pp-link:active, .ok-rm .pp-tile:active { transform: none; }
+  /* readable tinted surfaces: the --pp-* accents are pale in day and night, so text and icons on them take dark ink */
+  .pp-link.pp-ok, .pp-link.pp-closed, .pp-link.pp-sealedb, .pp-tile[aria-pressed="true"], .pp-tile.pp-done, .pp-tile.pp-flag, .pp-slotb.pp-have, .pp-seq span, .pp-seg button[aria-pressed="true"], .pp-key span.pp-k2, .pp-node.pp-house .pp-ico, .pp-node .pp-busy { color: var(--pp-ink); }
+  .pp-slot.pp-empty { opacity: .7; }
+  /* an upright phone: like a phone on its side, the panels start right under the kit's HUD (no banner drops outside a card) */
+  @media (orientation: portrait) and (max-width: 520px) { .pp { top: calc(64px + env(safe-area-inset-top)); } }
 </style>
 <div id="game"></div>
 <script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>

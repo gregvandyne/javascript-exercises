@@ -99,6 +99,9 @@ body{margin:0;touch-action:manipulation}
 .rr-blk.hl,.rr-shelf .hl{animation:rr-pulse 1s ease-in-out infinite;box-shadow:0 0 0 4px var(--rr-hot)}
 .rr-slot{display:inline-flex;align-items:center;justify-content:center;min-height:48px;min-width:48px;border-radius:8px;border:2px dashed var(--ok-line);background:transparent;color:var(--ok-text);opacity:.7;font-weight:700;font-size:.85em;padding:0 8px;cursor:pointer}
 .rr-slot.cur{border-color:var(--ok-focus);opacity:1;border-style:solid}
+.rr-run .ok-btn.rr-attn{box-shadow:0 0 0 4px var(--rr-hot),0 4px 0 var(--ok-press)}
+.rr-proghead{position:sticky;top:-6px;z-index:1;align-self:stretch;display:flex;justify-content:flex-end;margin:-6px -6px 0;padding:4px 4px 2px;background:var(--ok-bg2)}
+.rr-proghead .ok-btn{min-height:44px;padding:0 14px;font-size:.88em;gap:6px}
 .rr-empty{font-weight:600;opacity:.7;font-size:.92em;padding:6px 4px}
 .rr-tray{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .rr-tray .ok-btn.ok-icon,.rr-run .ok-btn.ok-icon{width:48px}
@@ -214,6 +217,39 @@ body{margin:0;touch-action:manipulation}
 .rr-play.portrait .rr-list.inner,.rr-prog.long .rr-list.inner{width:auto;align-self:auto;margin-inline-start:2px;padding-inline-start:6px;border-inline-start-width:4px}
 .rr-play.narrow .rr-shelf .ok-btn{padding:0 10px;font-size:.92em}
 .rr-play.narrow .rr-foot{gap:5px}
+/* readable tinted surfaces: the --rr-*-tint colors stay pale in day and night, so anything drawn on one (status pills, the
+   verdict line, pressed and picked chips, the goal square) takes dark ink, never the night theme's light text */
+#game{--rr-ink:#141414}
+.rr-verdict,.rr-pill.quest,.rr-pill.edits,.rr-pill.over,.rr-watch .rr-pill,#mkResult .rr-pill.good,#mkResult .rr-pill.bad,.rr-seg button[aria-pressed=true],.rr-tile.crown,.rr-tile2.right,.rr-tile2.wrong,.rr-tile2 .k,.rr-blk.sel,.rr-blk.running,.rr-blk .n,.rr-edit,.rr-edit .ok-btn[aria-pressed=true],.rr-tabs .ok-btn[aria-pressed=true],.rr-tag,.rr-sym .ok-btn[aria-pressed=true],#mkPalette .ok-btn[aria-pressed=true],.rr-pairbtn[aria-pressed=true],.rr-cell.goal,.rr-cell.door.open,.rr-cell.plate,.rr-cell.paint{color:var(--rr-ink)}
+.rr-cell .word{color:inherit}.rr-cell .num{opacity:.72}
+/* the verdict line as a callout: a colored edge and mark (a diamond for "not yet", a dot for "made it") */
+.rr-verdict{display:flex;align-items:center;gap:8px;border:2px solid var(--ok-edge);border-inline-start-width:6px;padding:5px 10px}
+.rr-verdict.wrong{border-inline-start-color:var(--rr-k-event)}.rr-verdict.good{border-inline-start-color:var(--rr-k-proc)}
+.rr-verdict.wrong::before,.rr-verdict.good::before{content:"";flex:none;width:.7em;height:.7em;border:2px solid var(--rr-ink);background:var(--rr-k-event);border-radius:3px;transform:rotate(45deg)}
+.rr-verdict.good::before{background:var(--rr-k-proc);border-radius:50%;transform:none}
+/* the kit's banner: a card as wide as the words need (up to the screen), not a pill squeezed into half the width */
+.ok-ui .ok-banner{width:max-content;max-width:calc(100vw - 24px);box-sizing:border-box;border-radius:20px;line-height:1.3}
+/* an upright phone: the play area starts right under the HUD (script), the status pills share one line, the board is as
+   wide as the screen allows while the work panel keeps room for a two-row shelf, the program and the run bar; the
+   program scrolls inside the panel, so the shelf and the run bar never cover it */
+.rr-play.narrow.portrait{gap:6px}
+.rr-play.narrow.portrait .rr-board{flex:0 20 calc(min(100vw - 20px, 100vh - 400px) + 40px);min-height:max(210px,min(62vw,40vh));gap:5px}
+.rr-play.narrow.portrait .rr-top{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:5px}
+.rr-play.narrow.portrait .rr-top::-webkit-scrollbar{display:none}
+.rr-play.narrow.portrait .rr-top .rr-pill{min-height:30px;padding:0 10px;font-size:.84em;flex:none}
+.rr-play.narrow.portrait .rr-top .quest{order:5}
+.rr-play.narrow.portrait .rr-gridwrap{flex:1 1 0;min-height:0}
+.rr-play.narrow.portrait .rr-verdict{font-size:.86em;padding:3px 8px}
+.rr-play.narrow.portrait .rr-panel{flex:1 1 auto;padding:0 6px;border-radius:18px}
+.rr-play.narrow.portrait #shelf{padding:6px 0 8px;gap:5px;box-shadow:0 6px 6px -6px var(--ok-scrim)}
+.rr-play.narrow.portrait .rr-shelf .ok-btn{min-height:44px;padding:0 9px;font-size:.86em;gap:5px}
+.rr-play.narrow.portrait .rr-prog{min-height:64px;flex:1 0 auto}
+.rr-play.narrow.portrait .rr-foot{padding:8px 0 6px;box-shadow:0 -6px 6px -6px var(--ok-scrim)}
+.rr-play.narrow.portrait .rr-run{gap:4px}
+.rr-play.narrow.portrait .rr-run .ok-btn.ok-icon,.rr-play.narrow.portrait .rr-tray .ok-btn.ok-icon{width:44px;min-height:44px;height:44px}
+.rr-play.narrow.portrait .rr-run .ok-btn:not(.ok-icon){min-height:44px;padding:0 14px}
+.rr-play.narrow.portrait .rr-edit{padding:4px;gap:4px}
+.rr-play.narrow .rr-proghead,.rr-play.short .rr-proghead{position:static;margin:0;padding:0;background:none}
 @media (max-height:460px){.rr-play{gap:6px}.rr-panel{padding:6px 6px 0}#mkPanel{padding:6px;gap:4px}.rr-foot{gap:4px;padding:4px 0 6px}#shelf{padding-bottom:4px}.rr-play.short #shelf{padding:6px 0 20px}.rr-play.short .rr-foot{padding:20px 0 24px}.rr-shelf .ok-btn{min-height:48px;padding:0 10px;font-size:.92em}.rr-top .rr-pill{min-height:30px;font-size:.85em}}
 </style>
 <div id="game">
@@ -1426,7 +1462,7 @@ const SAVE_KEY = 'robo-route-v1';
 /* ---------- Words: English is the key; the player's language is a reviewed data pack on the site (loaded with its
    checksum, 9 s then English), handed to the kit's Oomba.strings. The game runs without the pack. ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-90d39890', PACK_SRI = {"es":"sha384-1KxH5LI/TVLxvxcdNsniY3rd/DoQqdWFHNwz+Go4Kgs4aOqVLfNoQg2kCpEeCsbC","fr":"sha384-hRlzvVP5+T8f2CYB1agmKTILna1keFYEo7HIGS6pxpO+U8eaBOvAP2d1AXVA7SOL","de":"sha384-HFArghdJxv50LLJcBvUVtr8EYDLliydlTDSXz61QAFZU+zJspHfyqB77F6N1tBrP","it":"sha384-e9+zgWaxf9ChIs9G/PeCWbmj604m9ReTHgFcJ4bjWRw8dXBOduxV2iakELEVUiGJ","pt":"sha384-hEtM3CeWEdgtMBLgg2qNaSlTR4U/7Ou/bqj7NsgNtsfbx1FWPFAERJJFmdrY7KBV","nl":"sha384-bhOTtETcG4Re9fBytSJNf+6Nw6LTxqALg0+kBWdwAG/P3Qe1uIBUCsJTsH2Cc8Mk","ru":"sha384-0j1NU0bTf7sFJ2a6+gUcbQcMhBaD1TPzkwI19ivTpVRxSD35wNyaPGKjNCLctKxU","ja":"sha384-c5bByqu5ap6nwY6ZZpTSSAmrjfWU1zeptaXETLx/aO2OxTpIpcKku7vMXccxmbiY","zh-Hant":"sha384-AJXWNg7HSO9rkGfWvRilPP1+LdTFNQNqXD/Pp2hV3qSSHPy+n1qLyxtkD7qFdZDg","he":"sha384-NxMwj7PpR1ajddvzHjkUiLAQyzkAE0xPNVpSMVS4iZ8wHn00LM8OTyxQUuWfHNId","ar":"sha384-0ykkmo63moAXUED/1NfwCfmvxuUfkRDzhs1XadhPv7XeUkYTjh4pxBSVs21dhJ37"};
+const PACK_VER = '1.0.0-61a52251', PACK_SRI = {"es":"sha384-PoMyRpJr0SexpB9odgVX+ZCTJUBIQEEtyf+07bWPB2eeBP6VavaMOkGEUoQvFCae","fr":"sha384-xuq5Eg4m+3DyJTBw6cR4X2sucHe5Dyaf0fxnOkYmvAiM69JyB6XygK2f1YxGMMPT","de":"sha384-mxLBHvwnylZCz7scBrHhDHG55CtuGRS7NhrkfCWxthhsswV5M6MpIsKsnW/EYaty","it":"sha384-Th/LIxWClqEuPICK1PmDY8TvfwGQvju5K8s4M0ybpYQw9qn3PABG0n8hvF8ogK4n","pt":"sha384-1Ax6tXxzJw59ipcLmbET7rIrB2pm49VB0w761bRMJNWzRtRfrE3UWfs6esH2lBqQ","nl":"sha384-jii2OalVpicRMb2YFlkLuXVXisiVVBF5RFAG4/o4fGz4ssuqkr92TBn/FMtes3jJ","ru":"sha384-briE3qjOMkf3sFnokW+dZTB2EIZlKqmLoX12WwgSjBRiyrxd7A9WOs0x9Bof5473","ja":"sha384-8Z6LC7G51hqBydNL+S5t0VcctUc8DK2ywdBMXB80QJ4BnvZ8r7ys1bMa2GcbxNkN","zh-Hant":"sha384-oL64abfHQ/eToPveJtH4+cdtrEgLtIjYPB66ODIbNxa2IhIi/3bdQ0DkuSeluAEv","he":"sha384-Y+LZNqtGyZIZUcRj7lb+3zmbs8glzkP9VgGm6Dha89Ri/YJuKe7qmXqlBCnepPQY","ar":"sha384-4OsLRT2hTqBx0o0uuukBsr2soD1XQG8JunehuAoIJy0Z7GYnktH4pb28mXZ+FO7+"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1589,7 +1625,7 @@ function startChapter(id, o = {}) {
 function startLevel(i, record) {
   closeCard(); S.winStamp++; S.li = i; S.level = record || S.levels[i]; S.screen = 'play'; Oomba.scene = 'play'; showOnly('rr');
   S.starter0 = S.level.starter ? parse(S.level.starter) : null;
-  S.prog = S.starter0 ? withIds(JSON.parse(JSON.stringify(S.starter0))) : []; S.startBlocks = E.blocks(S.prog); S.sel = null; S.cur = null;
+  S.undo = null; S.prog = S.starter0 ? withIds(JSON.parse(JSON.stringify(S.starter0))) : []; S.startBlocks = E.blocks(S.prog); S.sel = null; S.cur = null;
   S.runs = 0; S.fails = 0; S.hint = 0; S.hint3 = false; S.layout = 0; S.planDone = !S.level.plan; S.predicted = !S.level.predict; S.stepEvents = null; S.lastRun = null; S.playing = false; S.watchVars = {};
   S.compare = S.level.programs ? { picked: null } : null;
   S.nameOrder = S.level.names ? S.rng.shuffle(S.level.names.good.concat(S.level.names.bad).slice()) : null;
@@ -1641,13 +1677,15 @@ function layoutClass() {
   for (const p of [$('#rr'), $('#mk')]) {
     p.classList.toggle('landscape', land); p.classList.toggle('portrait', !land); p.classList.toggle('short', short); p.classList.toggle('narrow', narrow);
     // on a phone held sideways the kit's safe band would leave no room: the panel starts right under the HUD instead
-    if (short) { const parts = [...document.querySelectorAll('.ok-ui .ok-hud .ok-pill, .ok-ui .ok-hud .ok-btn')]; const b = Math.max(50, ...parts.map(e => e.getBoundingClientRect().bottom)); p.style.top = Math.min(140, Math.round(b + 6)) + 'px'; } else p.style.top = '';
+    if (short || (narrow && !land)) { const parts = [...document.querySelectorAll('.ok-ui .ok-hud .ok-pill, .ok-ui .ok-hud .ok-btn')]; const b = Math.max(50, ...parts.map(e => e.getBoundingClientRect().bottom)); p.style.top = Math.min(140, Math.round(b + 6)) + 'px'; } else p.style.top = '';
   }
   fitGrid();
 }
 /** The board is a square as big as its box allows (a percentage aspect ratio does not survive a flex parent's height clamp). */
 function fitGrid() { for (const wrap of document.querySelectorAll('.rr-gridwrap')) { const box = wrap.querySelector('.rr-gridbox'); if (!box || wrap.offsetParent === null) continue; const s = Math.max(60, Math.floor(Math.min(wrap.clientWidth, wrap.clientHeight))); box.style.width = box.style.height = s + 'px'; } }
 addEventListener('resize', () => { if (S.screen === 'play' || S.screen === 'maker') { layoutClass(); placeBolt(); } });
+// the board's box also changes when the program grows or the verdict line appears (an upright phone gives the program room first)
+if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (S.screen === 'play' || S.screen === 'maker') fitGrid(); }); for (const w of document.querySelectorAll('.rr-gridwrap')) ro.observe(w); }
 function updateHud() {
   if (!S.hud) return;
   const done = chapterDone(), total = S.levels.length;
@@ -1686,7 +1724,7 @@ function resetBoard() {
   const g = S.grid; BOLT = { x: g.start.x, y: g.start.y, d: g.start.d };
   for (const it of document.querySelectorAll('#grid .it[data-item]')) it.classList.remove('gone');
   for (const d of document.querySelectorAll('#grid .rr-cell.door')) d.classList.remove('open');
-  const b = $('#bolt'); b.classList.remove('bump', 'splash'); placeBolt();
+  const b = $('#bolt'); b.classList.remove('bump', 'splash'); placeBolt(); const rs = $('#resetBtn'); if (rs) rs.classList.remove('rr-attn');
   for (const x of document.querySelectorAll('.rr-blk.running')) x.classList.remove('running');
   if (S.level.fog) { for (const c of document.querySelectorAll('#grid .rr-cell.seen')) c.classList.remove('seen'); reveal(g.start.x, g.start.y); }
   renderWatch({});
@@ -1811,10 +1849,33 @@ function renderProgram() {
   const root = $('#prog'); root.innerHTML = '';
   $('#shelf').hidden = !!(S.compare && S.compare.picked == null) || ((S.sel != null || !$('#edit').hidden) && compactPanel());
   if (S.compare && S.compare.picked == null) { root.appendChild(renderCompare()); syncShelf(); return; }
+  const head = progHead(); if (head) root.appendChild(head);
   if (!S.prog.length) { root.appendChild(el('div', 'rr-empty', esc(tr('Tap a block on the shelf to start your program.')))); root.appendChild(slot(S.prog, 0, tr('start here'))); syncShelf(); return; }
   root.appendChild(renderList(S.prog, true));
   root.classList.toggle('long', E.blocks(S.prog) >= 7);
   syncShelf();
+}
+/** Start over in one tap: Clear program empties it (Start over brings back a Debug Lab starter), Bolt goes back to the start,
+ *  and Undo brings the program back until the next change. It is not a run: no fail, no star lost. */
+const TRASH = '<svg class="ok-i" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+const progKey = () => JSON.stringify(S.prog, (k, v) => (k === 'id' ? undefined : v));
+function progHead() {
+  if (S.undo && S.undo.after !== progKey()) S.undo = null;
+  const fresh = S.starter0 ? progKey() === JSON.stringify(S.starter0) : !S.prog.length;
+  if (!S.undo && fresh) return null;
+  const h = el('div', 'rr-proghead');
+  if (S.undo) { const u = btn(tr('Undo'), { kind: 'quiet', icon: 'back', onPress: () => { if (S.playing || !S.undo) return; S.prog = S.undo.prog; S.undo = null; S.sel = null; S.cur = null; renderProgram(); renderTray(); renderEditPill(); } }); u.id = 'undoBtn'; h.appendChild(u); return h; }
+  const c = btn(S.starter0 ? tr('Start over') : tr('Clear program'), { kind: 'quiet', icon: 'cross', onPress: clearProgram }); c.id = 'clearBtn';
+  const ic = c.querySelector('svg'); if (ic) ic.outerHTML = TRASH;
+  h.appendChild(c); return h;
+}
+function clearProgram() {
+  if (S.playing) return;
+  const prog = S.prog;
+  S.prog = S.starter0 ? withIds(JSON.parse(JSON.stringify(S.starter0))) : []; S.sel = null; S.cur = null; S.stepEvents = null;
+  S.undo = { prog, after: progKey() };
+  sfx('pop'); resetBoard(); setVerdict(''); renderProgram(); renderTray(); renderEditPill();
+  const u = $('#undoBtn'); if (u) u.focus();
 }
 function slot(list, i, label) {
   // an insertion point (not a button: the real controls are the blocks and the tray; Enter or Space works on it too)
@@ -1951,7 +2012,10 @@ function renderRunbar() {
   const run = btn(S.playing ? tr('Stop') : tr('Run'), { kind: S.playing ? 'quiet' : 'go', icon: S.playing ? 'pause' : 'play', onPress: () => { if (S.playing) { S.abort = true; } else if (needsCall()) toast(tr('Make a block, then call it. Run wakes up when the program calls a block.')); else runProgram(); } }); run.id = 'runBtn'; run.setAttribute('aria-disabled', String(!S.playing && needsCall())); r.appendChild(run);
   if (S.compare && S.compare.picked != null) r.appendChild(btn(tr('Routes'), { kind: 'icon', icon: 'swap', onPress: () => { if (S.playing) return; S.compare.picked = null; S.prog = []; S.sel = null; renderProgram(); renderTray(); renderRunbar(); } }));
   r.appendChild(btn(tr('Step'), { kind: 'icon', icon: 'next', onPress: stepOnce }));
-  r.appendChild(btn(tr('Reset'), { kind: 'icon', icon: 'restart', onPress: () => { S.stepEvents = null; resetBoard(); } }));
+  const rs = btn(tr('Reset'), { kind: 'icon', icon: 'restart', onPress: () => { S.stepEvents = null; resetBoard(); } }); rs.id = 'resetBtn';
+  // after a run Bolt waits where it stopped: the Reset button glows until Bolt is back at the start
+  const st = S.grid && S.grid.start; if (!S.playing && st && BOLT && (BOLT.x !== st.x || BOLT.y !== st.y || BOLT.d !== st.d)) rs.classList.add('rr-attn');
+  r.appendChild(rs);
   const hintBtn = btn(tr('Hint'), { kind: 'icon', icon: 'hint', onPress: openHint }); hintBtn.id = 'hintBtn'; hintBtn.setAttribute('aria-disabled', String(!hintsOpen())); if (!hintsOpen()) hintBtn.setAttribute('aria-label', hintLockText()); r.appendChild(hintBtn);
   const learn = learnFor(); if (learn) r.appendChild(btn(tr('Learn'), { kind: 'icon', icon: 'book', onPress: () => openLearn(true) }));
   r.appendChild(el('span', 'rr-spacer'));
@@ -2540,6 +2604,8 @@ Object.assign(window.__brbTest, {
   daily: day => { if (day != null) S.dayOverride = day | 0; closeKitScreens(); closeCard(); startDaily(); return stateObj(); },
   pair: on => { SAVE.pair = !!on; renderPairBtn(); renderPair(); return SAVE.pair; },
   chip: (id, k) => { const f = find(id); if (!f || f.b.t !== 'proc') return false; f.b.chip = k; renderProgram(); return true; },
+  clear: () => { clearProgram(); return E.blocks(S.prog); },
+  undo: () => { const u = $('#undoBtn'); if (u) u.click(); return !!u; },
   verdictText: () => ($('#' + (S.screen === 'maker' ? 'mkNote' : 'verdict')).textContent || ''),
   banner: () => { const b = document.querySelector('.ok-ui .ok-banner'); return b ? b.textContent.trim() : ''; },
   editTiles: () => [...document.querySelectorAll('#edit .ok-btn')].map(b => b.textContent.trim()),

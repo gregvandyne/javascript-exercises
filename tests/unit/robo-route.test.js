@@ -373,6 +373,15 @@ test('robo-route: in Chromium a phone plays level 1 of two chapters in lesson mo
     s = await T(frame, 'state'); assert.equal(s.screen, 'play'); assert.equal(s.levelId, 'seq-1'); assert.equal(s.lesson, true);
     assert.deepEqual(await fit(frame), [], 'the level fits a phone');
     assert.ok(await frame.evaluate(() => /Class quest/.test(document.getElementById('questPill').textContent)));
+    // start over in one tap: Clear program empties the box (not a run: no fail), Undo brings it back
+    await T(frame, 'program', 'move; move');
+    assert.ok(await frame.evaluate(() => /Clear program/.test(document.getElementById('clearBtn').textContent)));
+    assert.equal(await T(frame, 'clear'), 0);
+    assert.equal((await T(frame, 'state')).fails, 0, 'clearing is not a failed run');
+    assert.deepEqual(await fit(frame), [], 'the Undo button fits a phone');
+    assert.ok(await T(frame, 'undo')); assert.equal((await T(frame, 'state')).blocks, 2, 'Undo brings the program back');
+    await T(frame, 'program', []);
+    assert.equal(await frame.evaluate(() => !!document.getElementById('clearBtn')), false, 'an empty program has nothing to clear');
     // tap-built program: three shelf taps, a wrong run, then the answer
     for (let i = 0; i < 3; i++) await T(frame, 'shelf', 0);
     assert.equal((await T(frame, 'state')).blocks, 3);

@@ -953,6 +953,9 @@
   "change the level using what they said, then test again": "言われたことをもとにレベルをかえて、もう一度テストする",
   "tell them they played it wrong": "あそび方がまちがっていると言う",
   "start a new level and never test it": "新しいレベルを始めて、ずっとテストしない",
-  "A level with a door, no key and no gems is...": "とびらがあって、かぎも宝石もないレベルは..."
+  "A level with a door, no key and no gems is...": "とびらがあって、かぎも宝石もないレベルは...",
+  "Clear program": "プログラムをけす",
+  "Start over": "やり直す",
+  "Undo": "もとにもどす"
  }
 }
