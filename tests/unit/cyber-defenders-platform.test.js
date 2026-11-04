@@ -56,8 +56,8 @@ test('13 steps per band from units.json, decks clean, games as catalogued', () =
   assert.equal(C.getStep(course, '1b-3.1').game.title, 'Would You Rather?');
   assert.equal(C.getStep(course, '2-3.3').game.chapter, 'tricks');
   assert.equal(C.getStep(course, '1b-9.9'), null);
-  // CS Quest is untouched: 19 steps, no problems, its own decks.
-  assert.equal(C.steps(csq, '1b').length, 19);
+  // CS Quest is untouched by Cyber: 21 steps (19 lessons + story intro/finale from extras), no problems, its own decks.
+  assert.equal(C.steps(csq, '1b').length, 21);
   assert.deepEqual(C.deckProblems('1b'), []);
   assert.deepEqual(C.groupsFor(course).map(g => g.id), ['post-office', 'unit-1', 'unit-2', 'unit-3', 'unit-4']);
   assert.deepEqual(C.groupsFor(csq).map(g => g.id), ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'tech-choices']);
