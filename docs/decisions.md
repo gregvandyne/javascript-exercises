@@ -2271,3 +2271,18 @@ then its game module: one locked chapter of a game (6.1 and 6.3 have none and en
   "?chapter=" alone no longer opens a course game.
 - The home card shows steps done of 19 and Start / Keep going to the next open step (or the band picker); its game list
   is the unit overview and links to the map's units.
+
+## A second course: Cyber Defenders (Nov 2026)
+Cyber Defenders (seed-lessons/cyber-defenders) is a standalone cybersecurity / online-safety course on the same
+machinery: same deck shape, check rule, band picker, map and progress tables. It is deck-native — no teacher lesson
+files — so its units.json is the source of truth for each step's order, game module and standards (CYBER.ORG v1.0
+codes and a Common Sense topic per step, registered in its standards.json; CSTA codes only where inherited from a
+re-framed CS Quest deck), and services/courses.js loads it beside CS Quest (deckProblems(band, slug)).
+A course's game list may mark a game "shared" (course-catalog.js): the course's steps play it, but the course does
+not own it — it keeps its own page and its place in the open lists, and /play's gate is unchanged for it. Cyber
+Defenders shares both of its games: Packet Post (owned by CS Quest) and Would You Rather (an open game; the solo
+game takes no lesson params, so a Defender mission names its "Online: share or keep" topic and the student picks
+it). Because a step's game can now belong to another course, /play resolves the step against the course named in
+?course= (the step's own course), not only against the game's owner: the gate, the played_at mark, the back link
+and the "game n of m" badge all follow the step's course. A blocked attempt returns to the step's course map when
+one was named, else the owner's.

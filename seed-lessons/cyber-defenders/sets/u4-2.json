@@ -1,0 +1,163 @@
+{
+ "id": "cd-u4-2",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 4,
+ "band": "2",
+ "title": "Cyber Defenders Unit 4 · Tricks and tricksters (6-8)",
+ "items": [
+  {
+   "id": "cd-2-4.1-e1",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "6-8.SEC.INFO",
+   "topic": "Phishing",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A message shows the sender name 'School Office', but the real address behind it belongs to a stranger. What is the costume here?",
+   "choices": [
+    "The real address behind the name",
+    "The friendly sender name",
+    "The time the message arrived",
+    "The spelling in the subject line"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-4.1-e2",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "6-8.SEC.INFO",
+   "topic": "Phishing",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A link's words say 'Library prize page', but the address behind the words leads somewhere else entirely. What should you trust?",
+   "choices": [
+    "The words written on the link",
+    "Its bright, official-looking colors",
+    "The real address the link leads to",
+    "How many people shared it"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-4.1-e3",
+   "lesson": "4.1",
+   "use": "exit",
+   "cat": "6-8.SEC.INFO",
+   "topic": "Phishing",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A message you did not expect arrives with a file attached and asks you to open it fast. What is the verify-first response?",
+   "choices": [
+    "Open it quickly before it expires",
+    "Reply and ask the sender for more files",
+    "Forward it to friends so they can check it",
+    "Do not open it; check with the real sender another way and tell a trusted adult"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "cd-2-4.2-e1",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "6-8.DC.THRT",
+   "topic": "Threat actors",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A trickster sends fake prize messages hoping people will hand over money. Which threat actor is this?",
+   "choices": [
+    "The spy, who wants secrets",
+    "The vandal, who wants damage",
+    "The scammer, who wants money",
+    "The account thief, who wants in"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-4.2-e2",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "6-8.DC.THRT",
+   "topic": "Threat actors",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Two people test a school network's locks. One has clear permission and the other does not. What makes one of them ethical?",
+   "choices": [
+    "Working at night",
+    "Having permission",
+    "Using faster tools",
+    "Knowing more secrets"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-4.2-e3",
+   "lesson": "4.2",
+   "use": "exit",
+   "cat": "6-8.DC.THRT",
+   "topic": "Threat actors",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "An account thief keeps trying to get into students' accounts. Which defense fits this actor best?",
+   "choices": [
+    "Strong, separate passphrases and a second proof step",
+    "Sharing posts as widely as possible",
+    "Opening every attachment to check it",
+    "Turning off every lock to save time"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-4.3-e1",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "6-8.DC.ETH",
+   "topic": "Fake news",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A post claims a famous singer is giving away prizes, but only if you tap its link and share it within ten minutes. What kind of false is this?",
+   "choices": [
+    "A hoax that wants your belief",
+    "Rage-bait that wants your reaction",
+    "A scam that wants your tap",
+    "A fine, ordinary post"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-4.3-e2",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "6-8.DC.ETH",
+   "topic": "Fake news",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A shocking claim about your school is spreading fast. What is the first check?",
+   "choices": [
+    "Share it before it disappears",
+    "Find another trusted source saying the same thing",
+    "Judge it by how real the picture looks",
+    "Count how many friends have shared it"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-4.3-e3",
+   "lesson": "4.3",
+   "use": "exit",
+   "cat": "6-8.DC.ETH",
+   "topic": "Fake news",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why is sharing a fake post the payload the trickster is counting on?",
+   "choices": [
+    "Sharing deletes the fake for everyone",
+    "Sharing proves the post must be true",
+    "Sharing makes the picture clearer",
+    "Sharing carries the fake to everyone who trusts you"
+   ],
+   "answer": 3
+  }
+ ]
+}

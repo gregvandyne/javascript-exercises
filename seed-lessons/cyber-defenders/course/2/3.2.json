@@ -1,0 +1,85 @@
+{
+ "key": "2-3.2",
+ "n": "3.2",
+ "band": "2",
+ "title": "Your footprint, your reputation",
+ "topic": "Footprints",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Three authors, one trail",
+   "text": "Your footprint is written by three authors: you, in your own posts; other people, in posts about you; and services, collecting scores, locations and likes.",
+   "art": "map"
+  },
+  {
+   "kind": "example",
+   "title": "Who wrote this clue?",
+   "text": "Pim found three clues in one trail. Each clue has a different author.",
+   "art": "table",
+   "steps": [
+    "you share your race photo: you",
+    "a friend tags you in theirs: a friend",
+    "a game saves your top score: a service"
+   ]
+  },
+  {
+   "title": "Delete is not erase",
+   "text": "Deleting a post is asking nicely for it to go. Copies, screenshots and shares can keep it alive long after your own copy is gone.",
+   "art": "shield"
+  },
+  {
+   "title": "Future readers",
+   "text": "That drawing you posted for feedback stays in your trail. Years later, teammates, schools and employers may read old posts as part of who you are.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-2-second",
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
+  },
+  {
+   "title": "Ask before you post",
+   "text": "Public gets you seen and found; private keeps you safe. Before you post, ask the Cyber Defender question: what could someone do with this?",
+   "art": "globe",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "footprint",
+     "means": "everything about you that can be found online"
+    },
+    {
+     "word": "permanent",
+     "means": "lasting a very long time, even after deleting"
+    },
+    {
+     "word": "reputation",
+     "means": "what people think of you, based on what they find"
+    },
+    {
+     "word": "audience",
+     "means": "everyone who can see what you shared, now or later"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Would You Rather and choose the Online topic: play Online: share or keep. For one dilemma, say how a future audience might read that post.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-2-3.2-e1",
+  "cd-2-3.2-e2",
+  "cd-2-3.2-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

@@ -1,0 +1,81 @@
+{
+ "key": "1b-1.2",
+ "n": "1.2",
+ "band": "1b",
+ "title": "Sealed or open?",
+ "topic": "Sealed or open",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "On Pim's counter",
+   "text": "On Pim's counter sit a postcard and a sealed envelope. Anyone can read the postcard, but the envelope keeps its words hidden.",
+   "art": "envelope"
+  },
+  {
+   "title": "Open like a postcard",
+   "text": "An open network is like a postcard. Anyone nearby could read what travels on it, so it is not a place for private things.",
+   "art": "network"
+  },
+  {
+   "kind": "example",
+   "title": "Spot the seal",
+   "text": "Before typing anything private, Pim looks for one small symbol. The padlock means this connection is sealed, like an envelope.",
+   "art": "lock",
+   "steps": [
+    "no padlock: treat it as a postcard",
+    "padlock showing: the trip is sealed",
+    "not sure: stop and ask a trusted adult"
+   ]
+  },
+  {
+   "title": "What a seal cannot promise",
+   "text": "A sealed envelope proves the trip is private. It does not prove the sender is kind, so still think before you trust a message.",
+   "art": "shield"
+  },
+  {
+   "title": "The most open road",
+   "text": "Public networks in cafés and trains are the most open road of all. Save private things for your home network instead.",
+   "art": "globe"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "sealed",
+     "means": "closed tight, so no one can peek inside on the trip"
+    },
+    {
+     "word": "postcard",
+     "means": "an open message that anyone carrying it can read"
+    },
+    {
+     "word": "padlock",
+     "means": "a small lock symbol that shows a connection is sealed"
+    },
+    {
+     "word": "public network",
+     "means": "a shared network in a public place, open to many people"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Rules of the Road and play 2 levels of seal-check duty. Look for the padlock on every trip.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-1b-1.2-e1",
+  "cd-1b-1.2-e2",
+  "cd-1b-1.2-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "protocols",
+  "params": "chapter=protocols&band=1b&lock=1"
+ }
+}

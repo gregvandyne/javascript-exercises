@@ -1,0 +1,163 @@
+{
+ "id": "cd-u3-1b",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 3,
+ "band": "1B",
+ "title": "Cyber Defenders Unit 3 · Private means private (3-5)",
+ "items": [
+  {
+   "id": "cd-1b-3.1-e1",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Private facts",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Which of these is fine to share in a game chat?",
+   "choices": [
+    "Where you live",
+    "A favorite animal",
+    "Your school name",
+    "Your birthday"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-3.1-e2",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Private facts",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A card shows a photo of a child wearing a school uniform. Which tray should Pim choose?",
+   "choices": [
+    "The Share tray, because the photo is cheerful",
+    "The Share tray, if the child in it is smiling",
+    "Either tray, because one photo says very little",
+    "The Keep Private tray, because it can point to the child's school"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "cd-1b-3.1-e3",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Private facts",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Sam shares his first name, his school, and the street he lives on. Each fact seems small. Why is sharing all three a problem?",
+   "choices": [
+    "Together they can point straight at Sam",
+    "Three facts are too long for anyone to read",
+    "Games never allow groups of three facts",
+    "Only teachers may ever know three facts"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-3.2-e1",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "3-5.DC.FOOT",
+   "topic": "Footprints",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which of these actions leaves an online footprint?",
+   "choices": [
+    "Thinking about a game at home",
+    "Posting a photo for others to see",
+    "Watching snow fall outside",
+    "Drawing on paper and keeping it in a drawer"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-3.2-e2",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "3-5.DC.FOOT",
+   "topic": "Footprints",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why does an online footprint last longer than a footprint in snow?",
+   "choices": [
+    "Snow footprints are harder to see",
+    "Screens are brighter than snow",
+    "Online posts stay, and screenshots can copy them",
+    "Only owls can follow an online trail"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-3.2-e3",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "3-5.DC.FOOT",
+   "topic": "Footprints",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Mina posts a silly photo that feels fine today. Why might it read differently in a year?",
+   "choices": [
+    "Mina may feel differently later, and others may have copied it",
+    "Photos slowly change their colors over time",
+    "A year turns every photo into a secret",
+    "New posts erase all the older posts"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-3.3-e1",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "3-5.DC.IP",
+   "topic": "Share or keep",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "You want to post a photo of your friend at the park. Whose yes do you need first?",
+   "choices": [
+    "Nobody's, because you took the photo",
+    "Your friend's yes, because the photo shows them",
+    "The park's yes, because it happened there",
+    "Any classmate's yes will do"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-3.3-e2",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "3-5.DC.IP",
+   "topic": "Share or keep",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What does a credit line do?",
+   "choices": [
+    "It makes the work yours",
+    "It hides who made the work",
+    "It says who made the work, so makers can be found",
+    "It turns any work into public domain work"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-3.3-e3",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "3-5.DC.IP",
+   "topic": "Share or keep",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A friend posts a photo of you that you do not like. What is the best first move?",
+   "choices": [
+    "Ask your friend to take it down",
+    "Post an unkind photo of them back",
+    "Never speak to your friend again",
+    "Share the photo with even more people"
+   ],
+   "answer": 0
+  }
+ ]
+}

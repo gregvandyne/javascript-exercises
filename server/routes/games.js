@@ -240,27 +240,33 @@ router.get('/play/:slug', (req, res) => {
   //   (a) from an open course step whose quick check is passed and whose game module is this game
   //       (?course=<slug>&cstep=<key>): opening sets the step's played_at (the module is started, not
   //       finished); the step completes only when the game reports its chapter won — the play page posts
-  //       that to /api/courses/<slug>/<step>/complete, which sets completed_at;
+  //       that to /api/courses/<slug>/<step>/complete, which sets completed_at. The course in the URL
+  //       need not be the game's owner: a course may share another course's game (Cyber Defenders plays
+  //       Packet Post) or an open game (Would You Rather), and the step's own course is what counts;
   //   (b) from a class lesson step of this game (?lesson=&step=, checked below);
   //   (c) for a teacher (school staff) with lesson parameters (?chapter=...), as on their lesson pages;
   //   (d) for the platform admin (isOwner);
   //   and in an online match the player is seated in (?match=, checked below).
-  // Anything else goes to the course map.
+  // Anything else goes to the course map. An open (unowned) game has no gate at all, but a valid step
+  // context still marks the step started, and its mission then completes the same way as any other:
+  // when the game reports the chapter won (above).
   const course = courseOfSlug(g.slug);
   // Opened from a lesson step (?lesson=<class lesson>&step=<step>): play time and scores count for that step. Not for a
   // hosted-live step (Quest Race, Would You Rather Live…): the teacher's live run writes that cell, so a hand-typed URL
   // plays the game without the lesson context (services/progress.js hostedLive).
   const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
   const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
+  const asked = req.query.course ? courses.getCourse(String(req.query.course)) : null;
   let cstep = null;
+  if (asked && !isOwner && req.query.cstep) cstep = courses.playable(u, asked, String(req.query.cstep), g.slug);
   if (course && !isOwner) {
-    cstep = req.query.course === course.slug && req.query.cstep ? courses.playable(u, course, String(req.query.cstep), g.slug) : null;
     const teacher = !!req.query.chapter && isStaff(u);
     const inMatchQ = !!req.query.match && (() => { const m = match.get(req.query.match); return !!m && match.seatOf(m, u) >= 0 && m.gameId === g.id; })();
-    if (!cstep && !lesson && !teacher && !inMatchQ) return res.redirect(302, `/courses/${course.slug}`);
-    if (cstep) courses.markPlayed(u, course, cstep);
+    if (!cstep && !lesson && !teacher && !inMatchQ) return res.redirect(302, `/courses/${asked && asked.slug !== course.slug ? asked.slug : course.slug}`);
   }
-  const inCourse = course && req.query.course === course.slug ? { course, n: course.games.findIndex(x => x.slug === g.slug) + 1, total: course.games.length } : null;
+  if (cstep) courses.markPlayed(u, asked, cstep);
+  const badge = cstep ? asked : (course && req.query.course === course.slug ? course : null);
+  const inCourse = badge ? { course: badge, n: badge.games.findIndex(x => x.slug === g.slug) + 1, total: badge.games.length } : null;
   const versionId = g.published_version_id || (isOwner ? g.current_version_id : null);
   if (!versionId) return notFound(req, res, t('game.notReadyYet'));
   // An online match (?match=<id>, routes/match.js): only its two players, while it lasts; anyone else gets the game.
@@ -282,12 +288,12 @@ router.get('/play/:slug', (req, res) => {
   // playbar, and again inside the stage (.fsback) — fullscreen paints only the stage's subtree, so the playbar
   // never shows there, and without the second link a player in fullscreen has no way back but the browser's own
   // escape (the game's own screens offer only Play again / Next).
-  const backHref = lesson ? lesson.back : cstep ? `/courses/${course.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
-  const backLabel = lesson ? t('progress.play.backToLesson') : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
+  const backHref = lesson ? lesson.back : cstep ? `/courses/${asked.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
+  const backLabel = lesson ? t('progress.play.backToLesson') : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
   const body = html`
   <div class="playbar">
     <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
-    <span class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${course.slug}">📚 ${t('courses.step', { course: t(`${course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</span>
+    <span class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${inCourse.course.slug}">📚 ${t('courses.step', { course: t(`${inCourse.course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</span>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
     <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>`}
@@ -299,7 +305,7 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient"><div><div class="emo" aria-hidden="true">📱</div><h2>${t('play.turn.heading')}</h2><p>${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: course.slug, step: cstep.key } } : {}), ...(ttsData ? { tts: ttsData } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...(ttsData ? { tts: ttsData } : {}) })}`;
   page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: ['js.match'] });
 });
 

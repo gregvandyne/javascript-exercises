@@ -1,0 +1,84 @@
+{
+ "key": "2-4.1",
+ "n": "4.1",
+ "band": "2",
+ "title": "Phishing and faked senders",
+ "topic": "Phishing",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "A sender in a costume",
+   "text": "Pim sorts a message that claims to be from the school office. The name on it looks right, but a claimed sender is a costume. That faking is called spoofing, and the real address tells the truth.",
+   "art": "mask",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+  },
+  {
+   "kind": "example",
+   "title": "Where does the link go?",
+   "text": "The words on a link can say one name while the address behind them goes somewhere else. Check the address, not the words.",
+   "art": "magnifier",
+   "steps": [
+    "Words say: library prize page",
+    "Address behind them: a stranger's place",
+    "The two do not match",
+    "Do not tap; verify another way"
+   ]
+  },
+  {
+   "title": "Aimed at one person",
+   "text": "Spear phishing uses the same trick recipe, but built for one person. It may use your name, your club or a recent post, then add a rush and a request.",
+   "art": "people"
+  },
+  {
+   "title": "The attachment rule",
+   "text": "An unexpected file is not opened, even if the message begs you to hurry. Verify first through a different door: ask the real sender in person, or tell a trusted adult.",
+   "art": "envelope"
+  },
+  {
+   "title": "Reporting protects everyone",
+   "text": "Reporting a phishing message is a Defender act. One report can warn the whole school and stop the same costume reaching your friends.",
+   "art": "shield"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "spoofing",
+     "means": "pretending to be a sender you trust"
+    },
+    {
+     "word": "phishing",
+     "means": "fake messages that fish for taps, replies or secrets"
+    },
+    {
+     "word": "spear phishing",
+     "means": "a fake message built for one person, using details about them"
+    },
+    {
+     "word": "attachment",
+     "means": "a file sent along with a message"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Spot the Trick and play the Pro cards. For every message, check the real sender before you judge it.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-2-4.1-e1",
+  "cd-2-4.1-e2",
+  "cd-2-4.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "tricks",
+  "params": "chapter=tricks&band=2&lock=1"
+ }
+}

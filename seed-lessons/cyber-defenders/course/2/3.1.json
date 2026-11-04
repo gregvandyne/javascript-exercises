@@ -1,0 +1,86 @@
+{
+ "key": "2-3.1",
+ "n": "3.1",
+ "band": "2",
+ "title": "PII: the risks and the benefits",
+ "topic": "PII",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Facts that point at you",
+   "text": "Pim calls these facts PII: your full name, where you live, school, birthday, location, photos and voice. Each one points at one person: you.",
+   "art": "people"
+  },
+  {
+   "title": "Sharing buys real things",
+   "text": "Sharing PII can buy real things: an account, a delivery at your door, or friends finding you. Posting your work can even bring kind, useful feedback.",
+   "art": "globe",
+   "img": "csq/would-you-rather/online-2-second",
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
+  },
+  {
+   "title": "Risk grows in combinations",
+   "text": "One fact alone is a small risk, but combined facts can map your whole day. The wider the audience that sees them, the more people can join the dots.",
+   "art": "map",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+  },
+  {
+   "kind": "example",
+   "title": "Spot the harvest",
+   "text": "A fun quiz promises your secret nickname. Watch what its questions collect along the way.",
+   "art": "magnifier",
+   "steps": [
+    "asks your pet's name",
+    "asks your birth month",
+    "asks the street you live on",
+    "those answers can unlock accounts"
+   ]
+  },
+  {
+   "title": "Fixing an overshare",
+   "text": "Some sharing can be undone: delete the post and ask the service to remove its copies. Some cannot, so tell a trusted adult fast, and in some places the law can help too.",
+   "art": "shield"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "PII",
+     "means": "personally identifiable information, facts that point at one person"
+    },
+    {
+     "word": "disclose",
+     "means": "to share a fact about someone, on purpose or by accident"
+    },
+    {
+     "word": "harvest",
+     "means": "to gather facts about people, often without them noticing"
+    },
+    {
+     "word": "audience",
+     "means": "everyone who can see what you shared, now or later"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Would You Rather and choose the Online topic: play Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-2-3.1-e1",
+  "cd-2-3.1-e2",
+  "cd-2-3.1-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

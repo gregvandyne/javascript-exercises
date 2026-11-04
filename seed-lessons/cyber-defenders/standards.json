@@ -1,0 +1,65 @@
+{
+ "about": "The standards registry for Cyber Defenders: the frameworks the course maps to, and the CYBER.ORG code set the course's units.json may cite. Codes are band.concept.subconcept as published in CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 (2021-08-04): band 3-5 for Explorer (band key 1b), 6-8 for Pro (band key 2). The course publishes its mapping on v1.0; CYBER.ORG v2.0 codes are to-verify and are never cited here. Checked by tests/unit/cyber-defenders-course-content.test.js: every code in units.json must be listed here, and every code here must be well formed.",
+ "frameworks": {
+  "cyberorg": {
+   "name": "CYBER.ORG K-12 Cybersecurity Learning Standards",
+   "version": "1.0 (2021-08-04)",
+   "bands": {
+    "1b": "3-5",
+    "2": "6-8"
+   }
+  },
+  "commonSense": {
+   "name": "Common Sense Education Digital Citizenship Curriculum",
+   "topics": [
+    "Media Balance & Well-Being",
+    "Privacy & Security",
+    "Digital Footprint & Identity",
+    "Relationships & Communication",
+    "Cyberbullying, Digital Drama & Hate Speech",
+    "News & Media Literacy"
+   ]
+  },
+  "csta": {
+   "name": "CSTA K-12 CS Standards 2017 (inherited only, where a step re-frames a CS Quest deck)",
+   "registry": "server/standards/csta-2017.json"
+  }
+ },
+ "cyberorgCodes": {
+  "1b": [
+   "3-5.CS.CC.2",
+   "3-5.CS.COMM",
+   "3-5.CS.COMP",
+   "3-5.CS.LOSS",
+   "3-5.CS.PROT",
+   "3-5.DC.ETH",
+   "3-5.DC.FOOT",
+   "3-5.DC.IP",
+   "3-5.DC.PPI",
+   "3-5.DC.THRT",
+   "3-5.SEC.ACC",
+   "3-5.SEC.AUTH",
+   "3-5.SEC.CRYP",
+   "3-5.SEC.CTRL",
+   "3-5.SEC.DATA",
+   "3-5.SEC.INFO",
+   "3-5.SEC.NET"
+  ],
+  "2": [
+   "6-8.CS.CC",
+   "6-8.CS.PROT",
+   "6-8.DC.ETH",
+   "6-8.DC.FOOT.1",
+   "6-8.DC.FOOT.2",
+   "6-8.DC.PPI.1",
+   "6-8.DC.PPI.2",
+   "6-8.DC.THRT",
+   "6-8.SEC.ACC",
+   "6-8.SEC.AUTH",
+   "6-8.SEC.CRYP",
+   "6-8.SEC.DATA",
+   "6-8.SEC.INFO",
+   "6-8.SEC.NET"
+  ]
+ }
+}

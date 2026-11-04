@@ -1,0 +1,83 @@
+{
+ "key": "1b-0.1",
+ "n": "0.1",
+ "band": "1b",
+ "title": "Welcome to the Post Office",
+ "topic": "Welcome",
+ "minutes": 5,
+ "slides": [
+  {
+   "title": "Meet Pim",
+   "text": "Pim the owl runs the post office in Netville. Every day Pim carries letters and messages between the houses. Keeping them safe is Pim's whole job.",
+   "art": "map",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+  },
+  {
+   "title": "Letters nobody wrote",
+   "text": "This morning the post sack held a surprise. Some letters inside were never written by the senders named on them. Someone had slipped in fakes when nobody was looking.",
+   "art": "envelope"
+  },
+  {
+   "title": "Meet the Magpie",
+   "text": "Meet the Magpie, the post office pest. The Magpie slips fake letters into the post and collects shiny secrets. Shiny secrets are private facts and mailbox keys.",
+   "art": "mask"
+  },
+  {
+   "kind": "example",
+   "title": "Shiny or safe?",
+   "text": "Some post is fine to share, and some must stay private. Sort these the way a Cyber Defender would.",
+   "art": "shield",
+   "steps": [
+    "where you live: shiny secret",
+    "a mailbox key: shiny secret",
+    "your school and class: shiny secret",
+    "a joke for everyone: safe post",
+    "a drawing of a rainbow: safe post",
+    "a hello card for a friend: safe post"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "defender",
+     "means": "a person who keeps people and messages safe"
+    },
+    {
+     "word": "message",
+     "means": "words or a picture sent from one person to another"
+    },
+    {
+     "word": "private",
+     "means": "only for the people it is meant for, not for everyone"
+    },
+    {
+     "word": "trick",
+     "means": "something fake that tries to fool you"
+    }
+   ]
+  },
+  {
+   "title": "Your new job",
+   "text": "Pim is hiring you as a Cyber Defender. You will earn six stamps, one for each unit you finish. Every step starts with story slides, then words, a quick check, and a mission.",
+   "art": "star"
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "There is no game this time. Open the course map, find the six stamps, and say hello to each one. Your first stamp is waiting in the next unit.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-1b-0.1-e1",
+  "cd-1b-0.1-e2",
+  "cd-1b-0.1-e3"
+ ],
+ "game": null,
+ "talk": "If you could write one letter that only one person may ever open, what would you put in it and who would it be for?"
+}

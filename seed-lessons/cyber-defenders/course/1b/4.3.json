@@ -1,0 +1,86 @@
+{
+ "key": "1b-4.3",
+ "n": "4.3",
+ "band": "1b",
+ "title": "Too good to be true",
+ "topic": "Too good to be true",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Posters overnight",
+   "text": "Posters appear all over Netville overnight, promising free game gems to everyone. Pim tilts her head. Free gems for the whole town sounds too good.",
+   "art": "star"
+  },
+  {
+   "title": "The crown jewels",
+   "text": "Real shops sell their best gems to stay open, so they do not give away the crown jewels. Too-good posters share clues: a miracle prize, a famous singer's face, or you are the millionth visitor.",
+   "art": "trophy"
+  },
+  {
+   "title": "Check the facts",
+   "text": "Adverts are allowed to exaggerate to sound exciting. A fact is different: facts need a second source you can trust before you believe them.",
+   "art": "magnifier"
+  },
+  {
+   "kind": "example",
+   "title": "The Defender pause",
+   "text": "An amazing claim is a signal to pause, not to share. Slow down and check it like a Cyber Defender.",
+   "art": "shield",
+   "steps": [
+    "Stop before you share",
+    "Check with a trusted adult",
+    "Check a trusted site",
+    "Believe it only if it checks out"
+   ],
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+  },
+  {
+   "title": "Gems of gravel",
+   "text": "Then Pim finds gravel scattered behind the posters, and one cheeky feather. The posters were the Magpie's work, and the gems were only gravel.",
+   "art": "mask"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "advert",
+     "means": "a poster or message that tries to sell or promote something"
+    },
+    {
+     "word": "claim",
+     "means": "something said as if it were true"
+    },
+    {
+     "word": "source",
+     "means": "where a fact or story comes from"
+    },
+    {
+     "word": "free",
+     "means": "costing nothing at all"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Would You Rather first: choose the Online topic and play Online: share or keep. Then open Packet Post at Spot the Trick and check the prize cards.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-1b-first",
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
+  }
+ ],
+ "check": [
+  "cd-1b-4.3-e1",
+  "cd-1b-4.3-e2",
+  "cd-1b-4.3-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

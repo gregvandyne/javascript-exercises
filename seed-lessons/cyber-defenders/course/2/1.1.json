@@ -1,0 +1,90 @@
+{
+ "key": "2-1.1",
+ "n": "1.1",
+ "band": "2",
+ "title": "Packets, with the lights on",
+ "topic": "Packets",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "The road, in one minute",
+   "text": "Fast recap, because this band moves quickly. Messages travel as numbered packets, routers pass them hop by hop, and a protocol is the shared rules every stop follows.",
+   "art": "network",
+   "img": "csq/packet-post/protocols-2-key",
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+  },
+  {
+   "kind": "example",
+   "title": "Got it, and spot the gap",
+   "text": "The receiver says got it for each packet. A missing number is asked for again, and extra copies are thrown away.",
+   "art": "envelope",
+   "steps": [
+    "sent: packets 1, 2, 3, 4",
+    "got it: 1, 2, 4",
+    "a gap: please send 3 again",
+    "got 3: the message is whole"
+   ],
+   "img": "csq/packet-post/protocols-2-ack",
+   "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap."
+  },
+  {
+   "title": "Three things on an open road",
+   "text": "Unsealed, a packet is a postcard on an open road. An interceptor can read it, copy it and keep the copy, or change its words before it travels on.",
+   "art": "mask"
+  },
+  {
+   "title": "A count catches accidents",
+   "text": "A checksum catches packets damaged by accident, when the count no longer matches. An enemy who changes a packet can fix the count too, so integrity needs more than a count.",
+   "art": "magnifier",
+   "img": "csq/packet-post/protocols-2-check",
+   "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again."
+  },
+  {
+   "title": "Roads you do not control",
+   "text": "Every network you do not control is part of the threat surface. This unit asks one question: what closes each hole? Sealing comes next, and copies after that.",
+   "art": "globe"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "protocol",
+     "means": "shared rules computers follow to talk"
+    },
+    {
+     "word": "integrity",
+     "means": "arriving unchanged, exactly as the sender sent it"
+    },
+    {
+     "word": "intercept",
+     "means": "to stop and catch something while it is on its way"
+    },
+    {
+     "word": "surface",
+     "means": "the places where a packet can be reached while it travels"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Rules of the Road and finish 4 levels. Each time a packet is resent, say why: missing, or damaged?",
+   "art": "trophy",
+   "img": "csq/packet-post/protocols-2-rules",
+   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on."
+  }
+ ],
+ "check": [
+  "cd-2-1.1-e1",
+  "cd-2-1.1-e2",
+  "cd-2-1.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "protocols",
+  "params": "chapter=protocols&band=2&lock=1"
+ }
+}

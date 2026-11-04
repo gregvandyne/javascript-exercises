@@ -1,0 +1,163 @@
+{
+ "id": "cd-u2-1b",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 2,
+ "band": "1B",
+ "title": "Cyber Defenders Unit 2 · Keys and secret codes (3-5)",
+ "items": [
+  {
+   "id": "cd-1b-2.1-e1",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "3-5.SEC.AUTH",
+   "topic": "Passphrases",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which of these passphrases is the strongest?",
+   "choices": [
+    "cat, because it is short and easy to type",
+    "purple volcano teapot giraffe, because four random words make it long and hard to guess",
+    "birthday123, because numbers always make it safe",
+    "my best friend's name, because it feels personal"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-2.1-e2",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "3-5.SEC.AUTH",
+   "topic": "Passphrases",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Who may know your passphrase?",
+   "choices": [
+    "Your best friend, if they promise not to tell",
+    "Your teammates, so they can play as you",
+    "Only you and a trusted adult",
+    "Anyone online who asks for it nicely"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-2.1-e3",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "3-5.SEC.AUTH",
+   "topic": "Passphrases",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Your best friend asks for your passphrase so they can play as you. What should you do?",
+   "choices": [
+    "Say no and keep it secret, and tell a trusted adult if they keep asking",
+    "Share it, because best friends share everything",
+    "Share half of it, so it stays a bit secret",
+    "Share it just once, then forget about it"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-2.2-e1",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "3-5.SEC.ACC",
+   "topic": "Who may open it",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Sam's mailbox holds Sam's private letters. Who should be able to open it?",
+   "choices": [
+    "Anyone who finds the key on the road",
+    "Sam and the trusted adult who helps Sam",
+    "Any visitor who is curious about the letters",
+    "A friend who wants to borrow Sam's account"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-2.2-e2",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "3-5.SEC.ACC",
+   "topic": "Who may open it",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Why does a second lock help if a mailbox key is lost?",
+   "choices": [
+    "The finder still needs the second step sent to a phone at home, so the key alone is not enough",
+    "It makes the lost key grow longer and stronger",
+    "It lets anyone open the mailbox without a key",
+    "It makes a spare copy of all the letters inside"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-2.2-e3",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "3-5.SEC.ACC",
+   "topic": "Who may open it",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which one is a spare copy of your things, kept somewhere else?",
+   "choices": [
+    "A passphrase",
+    "A second lock",
+    "A cipher",
+    "A backup"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "cd-1b-2.3-e1",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "3-5.SEC.CRYP",
+   "topic": "Secret codes",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A code shifts each plain letter forward by 3 to make the secret word FDW. What plain word does FDW say?",
+   "choices": [
+    "PIG",
+    "HEN",
+    "CAT",
+    "FOX"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-2.3-e2",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "3-5.SEC.CRYP",
+   "topic": "Secret codes",
+   "kind": "recall",
+   "secs": 15,
+   "q": "In a cipher, what is the key?",
+   "choices": [
+    "The secret setting, like shift by 3, that you need to read the code",
+    "The envelope the message travels in",
+    "The road the message takes to a friend",
+    "The funny picture that helps you remember words"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-2.3-e3",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "3-5.SEC.CRYP",
+   "topic": "Secret codes",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Why does scrambling protect a message traveling on an open road?",
+   "choices": [
+    "Nobody carrying it can see the message at all",
+    "Anyone who peeks sees only mixed-up letters they cannot read without the key",
+    "The message travels much faster than plain letters",
+    "The letters turn into pictures that only owls can read"
+   ],
+   "answer": 1
+  }
+ ]
+}

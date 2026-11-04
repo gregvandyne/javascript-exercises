@@ -1,0 +1,86 @@
+{
+ "key": "1b-4.2",
+ "n": "4.2",
+ "band": "1b",
+ "title": "Why do tricksters trick?",
+ "topic": "Motives",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Four messy nests",
+   "text": "Behind the post office, Pim finds four messy nests built by the Magpie. Each nest holds a trick, and each trick has a motive.",
+   "art": "map"
+  },
+  {
+   "title": "Keys and prizes",
+   "text": "The key-hunter wants into your mailbox, so its letters beg for your key. The prize-faker wants you to tap and type, so it dangles a fake reward.",
+   "art": "key"
+  },
+  {
+   "title": "Reactions and shares",
+   "text": "The giggler wants a reaction, so it sends teasing tricks to make you reply fast. The forwarder wants you to share its trick with all your friends.",
+   "art": "people"
+  },
+  {
+   "kind": "example",
+   "title": "Name the motive",
+   "text": "Pim finds a card that cries: tap here and type your name to claim your prize! Name its motive before you judge the card.",
+   "art": "envelope",
+   "steps": [
+    "It dangles a fake prize",
+    "It wants a tap and typing",
+    "Its motive: the prize-faker",
+    "So do not tap it"
+   ],
+   "img": "csq/packet-post/tricks-1b-card",
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?"
+  },
+  {
+   "title": "Starve the trick",
+   "text": "Knowing the motive tells you the defense: starve it. Do not reply, do not tap, and do not share, and the trick gets nothing it wanted.",
+   "art": "shield",
+   "img": "csq/packet-post/tricks-1b-next",
+   "alt": "A third trick card: the safe move is always the same \u2014 stop, do not reply, and tell a trusted adult."
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "motive",
+     "means": "the reason someone does something"
+    },
+    {
+     "word": "fake",
+     "means": "not real, but made to look real"
+    },
+    {
+     "word": "reward",
+     "means": "something good you get for doing something"
+    },
+    {
+     "word": "reaction",
+     "means": "what you do or feel in reply to something"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Spot the Trick and play the cards you have not checked yet. Name each card's motive before you decide if it is a trick.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-1b-4.2-e1",
+  "cd-1b-4.2-e2",
+  "cd-1b-4.2-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "tricks",
+  "params": "chapter=tricks&band=1b&lock=1"
+ }
+}

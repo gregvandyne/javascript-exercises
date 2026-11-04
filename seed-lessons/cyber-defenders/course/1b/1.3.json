@@ -1,0 +1,83 @@
+{
+ "key": "1b-1.3",
+ "n": "1.3",
+ "band": "1b",
+ "title": "Many hands, many copies",
+ "topic": "Copies",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "One drawing, many copies",
+   "text": "You send one drawing to a friend. The network keeps a copy at each stop along the way, like stamps in Pim's sorting book.",
+   "art": "map",
+   "img": "csq/packet-post/routes-1b-roads",
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
+  },
+  {
+   "title": "Copies kept safe",
+   "text": "The cloud is someone else's very big post office that keeps copies safe for you. A backup there saves your photos when a tablet breaks.",
+   "art": "box"
+  },
+  {
+   "title": "Passed on without you",
+   "text": "A copy you send to a friend can be forwarded to others without you knowing. Once a copy travels on, you cannot call it back.",
+   "art": "people"
+  },
+  {
+   "kind": "example",
+   "title": "The noticeboard test",
+   "text": "Before Pim sends a copy, Pim asks one question. Would this look fine pinned on the town noticeboard?",
+   "art": "lightbulb",
+   "steps": [
+    "a sunny drawing of a dog: fine to send",
+    "a private secret about a friend: keep it",
+    "not sure: ask a trusted adult first"
+   ]
+  },
+  {
+   "title": "The Magpie's nest",
+   "text": "Pim warns that the Magpie keeps a copy of every shiny secret it finds. In its nest, those copies stay pinned up, forever.",
+   "art": "mask"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "copy",
+     "means": "one more version of the same photo or message"
+    },
+    {
+     "word": "cloud",
+     "means": "someone else's big computers that keep copies safe for you"
+    },
+    {
+     "word": "backup",
+     "means": "a spare copy kept safe in case the first one is lost"
+    },
+    {
+     "word": "forward",
+     "means": "to pass a copy on to someone else"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Many Roads in Packet Post for 2 levels, tracing every copy's journey. Name one thing you would never send, because copies cannot come back.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "cd-1b-1.3-e1",
+  "cd-1b-1.3-e2",
+  "cd-1b-1.3-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "routes",
+  "params": "chapter=routes&band=1b&lock=1"
+ }
+}

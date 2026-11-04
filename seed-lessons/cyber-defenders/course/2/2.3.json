@@ -1,0 +1,90 @@
+{
+ "key": "2-2.3",
+ "n": "2.3",
+ "band": "2",
+ "title": "Encryption everywhere",
+ "topic": "Encryption",
+ "minutes": 7,
+ "slides": [
+  {
+   "kind": "example",
+   "title": "Scramble and unscramble",
+   "text": "Encryption scrambles a message with a key, and decryption unscrambles it with the same key. A shift cipher moves every letter along by the key.",
+   "art": "cipher",
+   "steps": [
+    "plain word: DOG",
+    "shift each letter by 3",
+    "D to G, O to R, G to J",
+    "scrambled word: GRJ"
+   ],
+   "img": "csq/packet-post/ciphers-2-shift",
+   "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code."
+  },
+  {
+   "title": "Trying every key",
+   "text": "A shift cipher has only 25 possible keys, so trying them all is quick. That is brute force, and it only works because the key space is tiny.",
+   "art": "chip",
+   "img": "csq/packet-post/ciphers-2-brute",
+   "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher."
+  },
+  {
+   "title": "Hiding is not scrambling",
+   "text": "Steganography hides a message, for example inside a picture, but anyone who finds it can read it. Encryption scrambles it, so finding it is not enough without the key.",
+   "art": "pixel",
+   "img": "csq/packet-post/ciphers-2-hide",
+   "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message."
+  },
+  {
+   "title": "End to end, with limits",
+   "text": "With end-to-end encryption, only the sender and receiver can read a message. Even the service carrying it cannot. It still cannot protect someone who is tricked into handing over the plain words.",
+   "art": "envelope"
+  },
+  {
+   "title": "The Magpie scrambles too",
+   "text": "The Magpie has started scrambling its own notes with a little wheel. It wishes it had not taught you how wheels work, because now you can spot its tricks.",
+   "art": "mask"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "encryption",
+     "means": "scrambling a message so only someone with the key can read it"
+    },
+    {
+     "word": "decryption",
+     "means": "unscrambling a scrambled message back into plain words"
+    },
+    {
+     "word": "brute force",
+     "means": "trying every possible key until one of them works"
+    },
+    {
+     "word": "end-to-end",
+     "means": "only the sender and the receiver can read the message"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Secret Messages and finish 4 levels. Use the wheel to unscramble each message, and think about how many keys a trickster would have to try.",
+   "art": "trophy",
+   "img": "csq/packet-post/ciphers-2-key",
+   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
+  }
+ ],
+ "check": [
+  "cd-2-2.3-e1",
+  "cd-2-2.3-e2",
+  "cd-2-2.3-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "ciphers",
+  "params": "chapter=ciphers&band=2&lock=1"
+ }
+}

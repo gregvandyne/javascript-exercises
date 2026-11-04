@@ -1,0 +1,163 @@
+{
+ "id": "cd-u2-2",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 2,
+ "band": "2",
+ "title": "Cyber Defenders Unit 2 · Keys and secret codes (6-8)",
+ "items": [
+  {
+   "id": "cd-2-2.1-e1",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "6-8.SEC.AUTH",
+   "topic": "Passphrases",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Mina ranks 'maple river stone lamp' first, 'maple7' second, and 'maple' last. Why is her ranking right?",
+   "choices": [
+    "A number at the end always beats extra words",
+    "Four random words are long, so a computer has far more guesses to make",
+    "A familiar single word is hardest to guess",
+    "Short passphrases are safer because they are easier to remember"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-2.1-e2",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "6-8.SEC.AUTH",
+   "topic": "Passphrases",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "One service has a breach and its passphrase list is copied. Why is reuse the real danger?",
+   "choices": [
+    "The leaked service will close every account at once",
+    "Nothing changes, because stolen lists are never shared",
+    "The list can be traded and tried on other accounts, so one leak opens them all",
+    "A breach only matters if you lose your device"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-2.1-e3",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "6-8.SEC.AUTH",
+   "topic": "Passphrases",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A locked server room door and a firewall: how should they be classified?",
+   "choices": [
+    "The door is physical security and the firewall is digital security",
+    "Both are digital security, because both use computers",
+    "The door is digital security and the firewall is physical security",
+    "Both are physical security, because both block entry"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-2.2-e1",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "6-8.SEC.AUTH",
+   "topic": "Proving it's you",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Sam proves it is him with a fingerprint, then a clerk checks the list to see if the parcel is his. What are the two checks, in order?",
+   "choices": [
+    "Authorization, then authentication",
+    "Encryption, then authorization",
+    "Authentication, then authorization",
+    "Both checks are authentication"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-2.2-e2",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "6-8.SEC.AUTH",
+   "topic": "Proving it's you",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Why does a code sent to your phone protect you better than a second passphrase?",
+   "choices": [
+    "Phone codes are longer than any passphrase",
+    "It adds a second passphrase that is easier to remember",
+    "It is faster, so attackers give up sooner",
+    "It is a different kind of check: something you have, not just something you know"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "cd-2-2.2-e3",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "6-8.SEC.AUTH",
+   "topic": "Proving it's you",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Why can a fake page not steal a passkey the way it can steal a passphrase?",
+   "choices": [
+    "Fake pages are blocked on every device",
+    "Your device keeps the key and proves it is you, so there is no copyable secret to hand over",
+    "Passkeys are longer, so no page can copy them",
+    "A passkey is hidden inside a picture"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-2.3-e1",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "6-8.SEC.CRYP",
+   "topic": "Encryption",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Why is brute force a real threat to a shift cipher but not to a modern cipher?",
+   "choices": [
+    "Shift ciphers use letters and modern ciphers use numbers",
+    "Trying keys only works when a trusted adult allows it",
+    "A shift cipher has only 25 keys to try, while a real key space is far too large to try in time",
+    "Modern ciphers have no keys, so there is nothing to try"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-2.3-e2",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "6-8.SEC.CRYP",
+   "topic": "Encryption",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A note is hidden inside a picture but the words are unchanged. What is true?",
+   "choices": [
+    "That is hiding, not scrambling: anyone who finds it can read it",
+    "That is encryption, because the picture acts as a key",
+    "That is decryption, because the words are plain",
+    "That is brute force, because finding it takes time"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-2.3-e3",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "6-8.SEC.CRYP",
+   "topic": "Encryption",
+   "kind": "recall",
+   "secs": 15,
+   "q": "A message uses end-to-end encryption. What can the service carrying it read?",
+   "choices": [
+    "Everything, because it delivers the message",
+    "Only the sender name, but all of the words",
+    "The plain words, if the receiver agrees later",
+    "None of the plain message: only the sender and receiver can read it"
+   ],
+   "answer": 3
+  }
+ ]
+}

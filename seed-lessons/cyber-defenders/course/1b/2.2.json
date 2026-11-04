@@ -1,0 +1,87 @@
+{
+ "key": "1b-2.2",
+ "n": "2.2",
+ "band": "1b",
+ "title": "Who may open it?",
+ "topic": "Who may open it",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Doors only staff may open",
+   "text": "At the post office, some doors only staff may open. That rule decides who can get to the letters inside, and who must stay out.",
+   "art": "lock"
+  },
+  {
+   "title": "Your tablet does it too",
+   "text": "A tablet lock screen does the same job at home. Only a person with permission, and the right key or code, can open it and see inside.",
+   "art": "screen"
+  },
+  {
+   "kind": "example",
+   "title": "A found key is not enough",
+   "text": "Mina loses her mailbox key, and a stranger finds it. A second lock still keeps her mailbox shut, because the stranger is missing one more thing.",
+   "art": "key",
+   "steps": [
+    "the key is found",
+    "the finder tries the mailbox",
+    "a second lock asks for a code",
+    "a code arrives on a phone at home",
+    "the mailbox stays shut"
+   ]
+  },
+  {
+   "title": "A spare copy, kept elsewhere",
+   "text": "A backup is a spare copy of your things, kept somewhere else, like photos saved in another place. A backup is for your things, never for your secrets.",
+   "art": "box",
+   "img": "csq/packet-post/locks-1b-backup",
+   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not."
+  },
+  {
+   "title": "The wrong person",
+   "text": "Finding a tablet on a bench does not make it yours to open. Borrowing a friend's game account is the same: no permission means hands off.",
+   "art": "people"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "permission",
+     "means": "a yes from the owner that you may open or use something"
+    },
+    {
+     "word": "access",
+     "means": "being able to get to or open something"
+    },
+    {
+     "word": "second lock",
+     "means": "an extra check, like a code, before something opens"
+    },
+    {
+     "word": "backup",
+     "means": "a spare copy kept in another place"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and play the levels you have not played yet. Look for the doors, locks and spare copies Pim shows you.",
+   "art": "trophy",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
+  }
+ ],
+ "check": [
+  "cd-1b-2.2-e1",
+  "cd-1b-2.2-e2",
+  "cd-1b-2.2-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=1b&lock=1"
+ }
+}

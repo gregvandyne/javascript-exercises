@@ -10,6 +10,10 @@
 //     A step whose deck is not there yet gets a short deck made from its lesson file, so the course always works;
 //   - the quiz banks (seed-lessons/cs-quest/sets/*.json): the check questions. Answers never leave the server before
 //     the player has answered (grade(), answerOne()).
+// Cyber Defenders (seed-lessons/cyber-defenders) is a second, deck-native course on the same machinery: its
+// units.json is the source of truth for the order, the game module and the standards of each step, its decks and
+// check banks live beside it, and its steps play games it shares with CS Quest and the open catalogue
+// (course-catalog.js "shared"), so nothing about it is read from CS Quest's lesson files.
 // Progress (course_progress, course_bands) is per player, guests included.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -26,6 +30,7 @@ export const getCourse = slug => COURSES.find(c => c.slug === slug) || null;
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
 const CSQ = path.join(ROOT, 'seed-lessons/cs-quest');
+const CD = path.join(ROOT, 'seed-lessons/cyber-defenders');
 export const BANDS = Object.freeze(['1b', '2']);
 /** A check passes with this many right out of three. */
 export const PASS = 2;
@@ -44,6 +49,11 @@ function load() {
   for (const f of fs.readdirSync(path.join(CSQ, 'sets')).filter(f => /^u\d-(1b|2)\.json$/.test(f))) {
     for (const it of readJson(path.join(CSQ, 'sets', f)).items || []) items.set(it.id, it);
   }
+  cache = { items, csq: loadCsq(items), cyber: loadCyber(items) };
+  return cache;
+}
+
+function loadCsq(items) {
   const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
   // Course-only steps (extras.json in the deck folder): their check items join the item map first, so decks
   // can point at them like any bank item. A deck folder without extras.json simply has none (test fixtures).
@@ -88,8 +98,7 @@ function load() {
     }
     steps[band].forEach((s, i) => { s.index = i; });
   }
-  cache = { items, steps, problems };
-  return cache;
+  return { steps, problems };
 }
 
 const ART = new Set(['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy']);
@@ -238,6 +247,72 @@ function fromLesson(key, l, game) {
   return { title: l.short, topic: l.short, minutes: 4, slides, check: l.exit.items, talk: game ? '' : (l.discuss || [])[0] || '', deck: false };
 }
 
+/** A game's display title: CS Quest's chapter table first, then the game's own seed file (Would You Rather). */
+function gameTitle(slug, gameInfo) {
+  if ((gameInfo[slug] || {}).title) return gameInfo[slug].title;
+  try { return readJson(path.join(ROOT, 'seed-games', `${slug}.json`)).title || slug; } catch { return slug; }
+}
+
+/** Cyber Defenders: steps come from its units.json (order, game module, standards) plus its decks and banks. */
+function loadCyber(items) {
+  for (const f of fs.readdirSync(path.join(CD, 'sets')).filter(f => /^u\d-(1b|2)\.json$/.test(f))) {
+    for (const it of readJson(path.join(CD, 'sets', f)).items || []) items.set(it.id, it);
+  }
+  const reg = readJson(path.join(CD, 'units.json'));
+  const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
+  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}) }));
+  const steps = {};
+  const problems = {};
+  for (const band of BANDS) {
+    problems[band] = [];
+    const flat = (reg.units || []).flatMap(u => (u.steps || []).map(s => ({ u, s }))).sort((a, b) => a.s.order - b.s.order);
+    steps[band] = flat.map(({ u, s }, index) => {
+      const key = `${band}-${s.n}`;
+      const spec = (s.game || {})[band] || null;
+      const game = spec ? { slug: spec.slug, chapter: spec.chapter, chapterTitle: spec.chapterTitle || spec.chapter, params: spec.params || '', title: gameTitle(spec.slug, gameInfo) } : null;
+      const file = path.join(CD, 'course', band, `${s.n}.json`);
+      let deck = null;
+      if (fs.existsSync(file)) {
+        try { deck = readJson(file); } catch (e) { problems[band].push(`${key}: ${e.message}`); }
+      }
+      const base = { key, n: s.n, unit: u.n, band, index, game, lesson: null, group: u.group, standards: (s.standards || {})[band] || null };
+      if (!deck) {
+        problems[band].push(`${key}: no deck at course/${band}/${s.n}.json`);
+        return { ...base, title: (s.titles || {})[band] || s.n, topic: (s.shorts || {})[band] || '', minutes: 6, slides: [{ kind: 'text', title: (s.titles || {})[band] || s.n, text: reg.program.tagline, art: 'shield', say: '' }], check: [], talk: '', deck: false };
+      }
+      return { ...base, ...fromCyberDeck(key, s, band, deck, game, items, problems[band]) };
+    });
+  }
+  return { steps, problems, groups };
+}
+/** One Cyber Defenders deck, cleaned and checked against its units.json entry (the same rules as fromDeck). */
+function fromCyberDeck(key, s, band, d, game, items, problems) {
+  const slides = (Array.isArray(d.slides) ? d.slides : []).filter(x => x && typeof x === 'object').map(cleanSlide);
+  const check = Array.isArray(d.check) && d.check.length === 3 && d.check.every(id => items.has(id)) ? d.check : [];
+  const say = m => problems.push(`${key}: ${m}`);
+  if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);
+  if (d.n !== s.n) say(`n is ${JSON.stringify(d.n)}`);
+  if (d.band !== band) say(`band is ${JSON.stringify(d.band)}`);
+  if (slides.length < 5 || slides.length > 7) say(`${slides.length} slides (5-7 expected)`);
+  if (slides.filter(x => x.kind === 'example').length !== 1) say('needs exactly one example slide');
+  if (slides.filter(x => x.kind === 'words').length !== 1) say('needs exactly one words slide');
+  if (!slides.length || slides[slides.length - 1].kind !== 'mission') say('the last slide must be the mission');
+  for (const [i, sl] of (d.slides || []).entries()) {
+    if (!sl || !sl.title || !sl.text) say(`slide ${i + 1} has no title or text`);
+    else if (!ART.has(sl.art)) say(`slide ${i + 1} art ${JSON.stringify(sl.art)} is not a known art id`);
+    if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
+    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
+  }
+  if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
+  else for (const id of check) if (items.get(id).lesson !== s.n || !id.startsWith(`cd-${band}-`)) say(`check item ${id} is not from step ${s.n}`);
+  const want = game ? { slug: game.slug, chapter: game.chapter, params: game.params } : null;
+  const got = d.game ? { slug: d.game.slug, chapter: d.game.chapter, params: d.game.params } : null;
+  if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match units.json (${JSON.stringify(want)})`);
+  if (!game && !str(d.talk)) say('a step without a game needs "talk"');
+  return { title: str(d.title, 80) || (s.titles || {})[band] || s.n, topic: str(d.topic, 40) || (s.shorts || {})[band] || '', minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
+}
+
 /** The unit groups on the course map, each headed by its game (unit 6 by its theme). */
 export const GROUPS = Object.freeze([
   { id: 'robo-route', units: [1, 2], game: 'robo-route' },
@@ -247,11 +322,18 @@ export const GROUPS = Object.freeze([
   { id: 'tech-choices', units: [6], game: null },
 ]);
 const groupOf = unit => (GROUPS.find(g => g.units.includes(unit)) || GROUPS[0]).id;
+/** The course map's groups for a course: CS Quest's game worlds, Cyber Defenders' units from its units.json. */
+export function groupsFor(course) {
+  if (course && course.slug === 'cyber-defenders') return load().cyber.groups;
+  return GROUPS;
+}
 
 /** The course's steps for a band, in order. */
 export function steps(course, band) {
-  if (!course || course.slug !== 'cs-quest' || !BANDS.includes(band)) return [];
-  return load().steps[band];
+  if (!course || !BANDS.includes(band)) return [];
+  if (course.slug === 'cs-quest') return load().csq.steps[band];
+  if (course.slug === 'cyber-defenders') return load().cyber.steps[band];
+  return [];
 }
 /** One step by key ("1b-1.2"), or null. */
 export function getStep(course, key) {
@@ -260,8 +342,8 @@ export function getStep(course, key) {
 }
 /** A bank item by id (with its answer: server side only). */
 export const item = id => load().items.get(id) || null;
-/** What the decks say that does not fit their lessons (empty when every deck is right). */
-export const deckProblems = band => load().problems[band] || [];
+/** What the decks say that does not fit their course data (empty when every deck is right). */
+export const deckProblems = (band, slug = 'cs-quest') => (slug === 'cyber-defenders' ? load().cyber.problems[band] : load().csq.problems[band]) || [];
 /** Forget the loaded files (tests that write decks). */
 export const reload = () => { cache = null; };
 

@@ -1,0 +1,163 @@
+{
+ "id": "cd-u3-2",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 3,
+ "band": "2",
+ "title": "Cyber Defenders Unit 3 · Private means private (6-8)",
+ "items": [
+  {
+   "id": "cd-2-3.1-e1",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.1",
+   "topic": "PII",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A game offers a free badge if you share your school name and birthday. What is the best way to price this trade?",
+   "choices": [
+    "Share both: a free badge is always worth it",
+    "Weigh the small benefit against facts that point at you, and keep them",
+    "Share your birthday only if the badge is rare",
+    "Ask a friend to share their facts instead"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-3.1-e2",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.1",
+   "topic": "PII",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A fun quiz asks for your pet's name, your birth month and the street you live on. What are those questions really doing?",
+   "choices": [
+    "Guessing your nickname from your favorite color",
+    "Making the quiz harder so it feels like a real test",
+    "Harvesting facts that can point at you or help unlock accounts",
+    "Checking that you are old enough to play"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-3.1-e3",
+   "lesson": "3.1",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.1",
+   "topic": "PII",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "You shared too much in a post last night. What is true about fixing it?",
+   "choices": [
+    "You can delete it and ask for help, but copies may still exist",
+    "Deleting it erases every copy everywhere at once",
+    "Nothing at all can be done, so there is no point trying",
+    "Posting lots more will bury it forever"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-3.2-e1",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "6-8.DC.FOOT.1",
+   "topic": "Footprints",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A service quietly saves your game scores and the places you play from. Who wrote that part of your footprint?",
+   "choices": [
+    "You did, in a post you wrote",
+    "A friend did, by tagging you",
+    "The service did, by collecting data about you",
+    "Nobody: scores and places leave no trail"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-3.2-e2",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "6-8.DC.FOOT.1",
+   "topic": "Footprints",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why is deleting a post not the same as erasing it?",
+   "choices": [
+    "Copies and screenshots can live on after your copy is gone",
+    "Deleted posts always come back the next day",
+    "Only a trusted adult is allowed to press delete",
+    "Deleting only works on posts with pictures"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-3.2-e3",
+   "lesson": "3.2",
+   "use": "exit",
+   "cat": "6-8.DC.FOOT.1",
+   "topic": "Footprints",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Years from now, a school reads your old post teasing a classmate. How will it most likely read that post?",
+   "choices": [
+    "As a joke that says nothing about you",
+    "As part of your reputation, shaping what it thinks of you",
+    "As proof that someone else used your account",
+    "It cannot: old posts vanish after a year"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-3.3-e1",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.2",
+   "topic": "Social engineering",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A message says: this is your coach, hurry, send the mailbox key now or the team loses its place. Which levers is it pulling?",
+   "choices": [
+    "Kindness and fear only",
+    "Authority and urgency",
+    "No levers: it sounds like a normal message",
+    "Research and a recipe"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-3.3-e2",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.2",
+   "topic": "Social engineering",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A trickster knows your name, your school and the route you walk home. Where did those facts most likely come from?",
+   "choices": [
+    "Facts already shared in public, like posts and profiles",
+    "A locked mailbox that was broken open",
+    "Pure guessing: nobody could ever know all three",
+    "A trusted adult who handed them over"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-3.3-e3",
+   "lesson": "3.3",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.2",
+   "topic": "Social engineering",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A friendly message asks you to confirm a private fact right away. What is the move that defeats the trick?",
+   "choices": [
+    "Reply fast, before the deadline in the message passes",
+    "Ask another friend in the same chat to confirm it",
+    "Verify through a different channel, like asking the person in real life",
+    "Send half the fact and see what happens"
+   ],
+   "answer": 2
+  }
+ ]
+}

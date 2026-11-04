@@ -1,0 +1,61 @@
+{
+ "id": "cd-u0-1b",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 0,
+ "band": "1B",
+ "title": "Cyber Defenders Intro · Welcome to the Post Office (3-5)",
+ "items": [
+  {
+   "id": "cd-1b-0.1-e1",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Welcome",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What does a Cyber Defender protect?",
+   "choices": [
+    "only the post office building",
+    "messages and the people who send them",
+    "the Magpie and its shiny nest",
+    "every road in Netville"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-0.1-e2",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Welcome",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Who is the Magpie and what does it collect?",
+   "choices": [
+    "a helper owl who delivers the post at night",
+    "a new post worker who sorts the mail",
+    "a pest who collects shiny secrets",
+    "a robin who collects bright ribbons"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-0.1-e3",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Welcome",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "During a check in this course, you are not sure which answer is right. What should you do?",
+   "choices": [
+    "Ask a trusted adult instead of guessing",
+    "Pick the longest answer every time",
+    "Skip the check and open a game",
+    "Copy the answer from a friend"
+   ],
+   "answer": 0
+  }
+ ]
+}

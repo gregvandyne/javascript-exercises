@@ -1,0 +1,163 @@
+{
+ "id": "cd-u1-1b",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 1,
+ "band": "1B",
+ "title": "Cyber Defenders Unit 1 · Messages on the move (3-5)",
+ "items": [
+  {
+   "id": "cd-1b-1.1-e1",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "3-5.CS.COMM",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What is a packet?",
+   "choices": [
+    "A small numbered piece of a message",
+    "A very big envelope for one photo",
+    "A road between two houses",
+    "A lock that seals a message"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-1.1-e2",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "3-5.CS.COMM",
+   "topic": "Packets",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why does every packet carry a number?",
+   "choices": [
+    "So routers can charge for each road",
+    "So the far end can rebuild the message in order",
+    "So the message travels much faster",
+    "So anyone can read it easily"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-1.1-e3",
+   "lesson": "1.1",
+   "use": "exit",
+   "cat": "3-5.CS.COMM",
+   "topic": "Packets",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Why does a private message need protection on its journey?",
+   "choices": [
+    "It does not, because packets are too small to read",
+    "Because numbers hide the words inside each packet",
+    "Because every hand that carries a packet could peek",
+    "Because routers always lose the first packet"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-1.2-e1",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "3-5.SEC.NET",
+   "topic": "Sealed or open",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Which symbol shows a connection is sealed?",
+   "choices": [
+    "A postcard picture",
+    "A padlock",
+    "A road sign",
+    "An open envelope"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-1.2-e2",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "3-5.SEC.NET",
+   "topic": "Sealed or open",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Sam is about to send something private on an open network. What is that network like?",
+   "choices": [
+    "A sealed envelope",
+    "A locked box",
+    "A postcard anyone can read",
+    "A private letter"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-1.2-e3",
+   "lesson": "1.2",
+   "use": "exit",
+   "cat": "3-5.SEC.NET",
+   "topic": "Sealed or open",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What does the padlock NOT promise?",
+   "choices": [
+    "That the sender is kind and honest",
+    "That the trip is sealed",
+    "That others cannot peek on the trip",
+    "That the envelope stays closed on the way"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-1.3-e1",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "3-5.CS.CC.2",
+   "topic": "Copies",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What is the cloud, really?",
+   "choices": [
+    "A soft place in the sky that holds photos",
+    "A kind of rain that carries messages",
+    "Someone else's big computers that keep copies safe",
+    "A folder that only exists on your tablet"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-1.3-e2",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "3-5.CS.CC.2",
+   "topic": "Copies",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why can a sent photo not be unsent?",
+   "choices": [
+    "Copies can be forwarded, and you cannot call them back",
+    "Photos always vanish after one day",
+    "Friends never share copies with others",
+    "The cloud deletes every copy at once"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-1.3-e3",
+   "lesson": "1.3",
+   "use": "exit",
+   "cat": "3-5.CS.CC.2",
+   "topic": "Copies",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Which picture passes the noticeboard test?",
+   "choices": [
+    "A private secret about a friend",
+    "A sunny drawing you would happily pin up in town",
+    "A photo your friend asked you to keep private",
+    "A shiny secret you found by accident"
+   ],
+   "answer": 1
+  }
+ ]
+}

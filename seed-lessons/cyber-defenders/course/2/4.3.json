@@ -1,0 +1,86 @@
+{
+ "key": "2-4.3",
+ "n": "4.3",
+ "band": "2",
+ "title": "Fake news, ads and AI fakes",
+ "topic": "Fake news",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Three kinds of false",
+   "text": "Some false posts want different things. A scam wants your tap, a hoax wants your belief, and rage-bait wants your reaction and your share.",
+   "art": "mask"
+  },
+  {
+   "title": "Adverts wear costumes too",
+   "text": "Not every friendly post is a friend talking. Sponsored posts are paid adverts in a costume, and a glowing plug may be paid for too. Ask who benefits if you tap or buy.",
+   "art": "star"
+  },
+  {
+   "title": "Check the source, not the pixels",
+   "text": "Edited and AI-made pictures can look perfect now, because fakes are cheap to make. So do not judge by the pixels. Judge by the source: who posted it, and can anyone else confirm it?",
+   "art": "magnifier"
+  },
+  {
+   "title": "Stop before you share",
+   "text": "Use three moves on anything shocking: Stop. Find another source. Decide before sharing. A post you do not pass on cannot use you to travel.",
+   "art": "shield",
+   "img": "csq/would-you-rather/online-2-second",
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
+  },
+  {
+   "kind": "example",
+   "title": "The Magpie's fake photo",
+   "text": "This morning the Magpie slipped a fake photo into Netville's post: Pim, it claimed, was closing the post office early. Here is how a Defender checked it.",
+   "art": "pixel",
+   "steps": [
+    "Stop: do not share it yet",
+    "Find another source: the real notice board",
+    "No other source backs it up",
+    "Decide: do not share; tell Pim"
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "hoax",
+     "means": "a false story made to be believed and passed on"
+    },
+    {
+     "word": "sponsored",
+     "means": "paid for, so a post or plug is really an advert"
+    },
+    {
+     "word": "source",
+     "means": "where a claim or picture really came from"
+    },
+    {
+     "word": "verify",
+     "means": "to check a claim against another trusted source"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Before you would share any post, run the three moves: stop, find another source, then decide.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+  }
+ ],
+ "check": [
+  "cd-2-4.3-e1",
+  "cd-2-4.3-e2",
+  "cd-2-4.3-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

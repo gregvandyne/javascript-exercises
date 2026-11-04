@@ -1,0 +1,87 @@
+{
+ "key": "2-4.2",
+ "n": "4.2",
+ "band": "2",
+ "title": "Threat actors",
+ "topic": "Threat actors",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Pim's notebook of tricksters",
+   "text": "Some tricks are not accidents. Behind each one is a threat actor: a person or group trying to get something they should not have.",
+   "art": "mask"
+  },
+  {
+   "title": "Four kinds of actor",
+   "text": "Meet the gallery in plain words: the scammer wants money, the account thief wants in, the vandal wants damage, and the spy wants secrets. None of them is glamorous. Each is simply trying to take what is not theirs.",
+   "art": "people"
+  },
+  {
+   "kind": "example",
+   "title": "Name the want, pick the guard",
+   "text": "A fake message from the school office asks for account details. Work out who is behind it before you act.",
+   "art": "magnifier",
+   "steps": [
+    "Sender name looks official",
+    "Real address is a stranger's",
+    "Actor: an account thief",
+    "Want: a way into accounts",
+    "Guard: do not reply; report it"
+   ],
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+  },
+  {
+   "title": "Permission is the whole difference",
+   "text": "Testing a network's locks can be ethical or malicious, and permission is the whole difference. With permission it is defense work. Without it, it is breaking in, whatever the reason given.",
+   "art": "key"
+  },
+  {
+   "title": "Not like the films",
+   "text": "Films dress hacking up as instant magic, which is a costume too. Real defense is slow, careful and lawful, and it is a real job people are paid to do well.",
+   "art": "screen"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "threat actor",
+     "means": "a person or group behind an attack or trick"
+    },
+    {
+     "word": "motive",
+     "means": "the thing someone wants, which drives what they do"
+    },
+    {
+     "word": "ethical",
+     "means": "doing what is right, including asking permission first"
+    },
+    {
+     "word": "permission",
+     "means": "being allowed, clearly, by the person in charge"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Then replay Packet Post at Spot the Trick on Pro, and name the actor behind each trick.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+  }
+ ],
+ "check": [
+  "cd-2-4.2-e1",
+  "cd-2-4.2-e2",
+  "cd-2-4.2-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}
