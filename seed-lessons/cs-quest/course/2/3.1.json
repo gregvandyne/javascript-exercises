@@ -9,12 +9,16 @@
   {
    "title": "Real data is messy",
    "text": "People make typos, answer twice or write numbers that can not be true. Chart messy data and the chart tells the wrong story.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/data-detective/cleanup-2-key",
+   "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings."
   },
   {
    "title": "Clean it first",
    "text": "Fix typos, merge true repeats and remove values that can not be true. Never remove a row just because you do not like its answer.",
-   "art": "wrench"
+   "art": "wrench",
+   "img": "csq/data-detective/cleanup-2-edit",
+   "alt": "Double Trouble: a second messy case, where the same student answered twice and one row must go."
   },
   {
    "kind": "example",
@@ -26,12 +30,16 @@
     "same student twice: keep one",
     "twelvety pets: remove",
     "then chart"
-   ]
+   ],
+   "img": "csq/data-detective/cleanup-2-pets",
+   "alt": "The cleaned pet chart: the three misspelled dogs are fixed to one spelling, and the Dog bar counts all seven."
   },
   {
    "title": "Compare by percent",
    "text": "Class A: 9 of 20 like chess. Class B: 12 of 40. B has more, but A is 45% and B is 30%. Percent is part divided by whole, times 100.",
-   "art": "chart"
+   "art": "chart",
+   "img": "csq/data-detective/cleanup-2-percent",
+   "alt": "Tidy, Then Compare: two cleaned sets side by side, the case where comparing fairly means comparing percents."
   },
   {
    "kind": "words",
@@ -61,7 +69,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Data Detective at Clean-Up Crew and solve 4 cases. Chart the data as it is first, then clean it and chart it again. What changed?",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/data-detective/cleanup-2-key",
+   "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings."
   }
  ],
  "check": [

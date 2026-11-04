@@ -9,12 +9,16 @@
   {
    "title": "Public or private?",
    "text": "Public gets you seen and found. Private keeps you safe. A good choice names the tradeoff.",
-   "art": "globe"
+   "art": "globe",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe \u2014 a real tradeoff."
   },
   {
    "title": "Tricks start with public facts",
    "text": "Most tricks start with facts that are already public: a name, a school, a daily route. Fooling people into giving away more is social engineering.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
   },
   {
    "kind": "example",
@@ -25,17 +29,23 @@
     "benefit: people enjoy your art",
     "benefit: you get feedback",
     "risk: a school logo in the photo shows where you are"
-   ]
+   ],
+   "img": "csq/would-you-rather/online-2-second",
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
   },
   {
    "title": "Build on others' work",
    "text": "Real programs reuse other people's code, art and sound. The license says what you may do. Attribution is credit written the way the license asks.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/robo-route/functions-2-notes-credit",
+   "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal."
   },
   {
    "title": "Your footprint",
    "text": "Everything you post adds to your digital footprint. Before you post, ask: what could someone do with this?",
-   "art": "map"
+   "art": "map",
+   "img": "csq/packet-post/locks-2-key",
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
   },
   {
    "kind": "words",
@@ -65,7 +75,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Write the credit line for a game that reuses a template, some art and a free sound. Then name one thing you keep private online and the tradeoff of keeping it private.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe \u2014 a real tradeoff."
   }
  ],
  "check": [

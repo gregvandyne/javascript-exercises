@@ -9,12 +9,16 @@
   {
    "title": "Fixers do not guess",
    "text": "When something breaks, good fixers follow a flowchart: a chain of yes/no questions, cheapest check first.",
-   "art": "wrench"
+   "art": "wrench",
+   "img": "csq/inside-the-machine/fixit-2-key",
+   "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first."
   },
   {
    "title": "One change at a time",
    "text": "Change three things and it works? Now you do not know which change fixed it. Change one thing, then test again.",
-   "art": "gears"
+   "art": "gears",
+   "img": "csq/inside-the-machine/fixit-2-flow",
+   "alt": "A second Pro ticket: the flowchart way means one change, one test, and knowing what fixed it."
   },
   {
    "kind": "example",
@@ -27,12 +31,16 @@
     "is there paper?",
     "restart it",
     "swap the cable"
-   ]
+   ],
+   "img": "csq/inside-the-machine/fixit-2-third",
+   "alt": "A third Pro ticket at the desk: its story hides the clue, and the cheap checks come before the slow ones."
   },
   {
    "title": "The swap test",
    "text": "Swap a part for one you know works. If the problem moves with the part, you found the fault. One laptop prints and another does not? Look at the one that fails.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/inside-the-machine/fixit-2-swap",
+   "alt": "A later Pro ticket: the kind where swapping in a known-good part tells you where the fault lives."
   },
   {
    "kind": "words",
@@ -62,7 +70,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Inside the Machine at Fix-It Desk and solve 4 tickets. Build the flowchart first, with the cheapest check at the top.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/inside-the-machine/fixit-2-key",
+   "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first."
   }
  ],
  "check": [
