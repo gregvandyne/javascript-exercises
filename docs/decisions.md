@@ -2233,3 +2233,10 @@ class's code. Now:
   button, with words from 1400px; on phones the search field becomes the round 🔎 button beside it. Signed in, the
   home page also has the big "Join a game" door above the featured game.
 - Tests: tests/unit/live-entry.test.js.
+
+## Courses on the home page (Nov 2026)
+CS Quest is listed as a course: a "Courses" row right after the featured row holds one wide card per course with its
+games nested in course order (Robo Route, Data Detective, Packet Post, Inside the Machine), a Start / Keep going
+button (the first game not yet played) and a link to the course page /courses/<slug>, which repeats the games larger
+and points teachers to /teachers/cs-quest. Shown to everyone. Nothing new is stored: a game counts as started when the
+player has a play of it. Courses are declared in server/services/courses.js.

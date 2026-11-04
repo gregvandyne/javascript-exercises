@@ -6030,5 +6030,30 @@
         "note": "Practiced means the activity was done, not mastery. Accuracy is right answers out of answered exit-ticket items tagged with the standard."
       }
     }
+  },
+  "courses": {
+    "row": "Courses",
+    "start": "Start the course",
+    "continue": "Keep going",
+    "about": "About the course",
+    "started": "Started",
+    "progress": "{n} of {total} games started",
+    "home": "Home",
+    "topics": {
+      "coding": "Coding",
+      "data": "Data",
+      "networks": "Networks and safety",
+      "computers": "How computers work"
+    },
+    "teachers": {
+      "h": "For teachers",
+      "link": "Lesson plans and standards"
+    },
+    "cs": {
+      "title": "CS Quest",
+      "sub": "Computer science in four games · grades 3–8",
+      "about": "Code a robot, solve mysteries with data, send messages across a town, and open up the machines we use every day. Play the games in order or start with any one.",
+      "teachers": "Every game has lesson plans you can teach in a 45-minute class, with live warm-ups, exit tickets and a standards view for your class."
+    }
   }
 }
