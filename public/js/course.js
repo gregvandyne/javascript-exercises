@@ -104,6 +104,53 @@ if (deck && slides.length) {
   deck.addEventListener('pointercancel', () => { x0 = null; });
 }
 
+// ---------------------------------------------------------------------------------------------- guided focus
+// A slide picture with focus steps plays a short tour once per view: the clean picture first (~1s), then each
+// step's box, dotted path and cue in order (~1.9s each), then the clean picture again — and only then does
+// the figure's Replay button appear (scrolling away mid-tour ends the tour the same way). An
+// IntersectionObserver starts it when the figure scrolls (or pages, in the deck above) into view and
+// resets it when it leaves, so the same code serves the paged deck and the plain scrolling page. Reduced
+// motion: no tour at all — the CSS static mode shows every step's box with its badge and the cues as a
+// list under the picture.
+const gfTimers = new WeakMap();
+function gfStop(fig) {
+  for (const id of gfTimers.get(fig) || []) clearTimeout(id);
+  gfTimers.delete(fig);
+  fig.removeAttribute('data-gf-step');
+}
+function gfFinish(fig) {
+  gfStop(fig);
+  const btn = fig.querySelector('.gf-replay');
+  if (btn) btn.hidden = false;
+}
+function gfPlay(fig) {
+  gfStop(fig);
+  const btn = fig.querySelector('.gf-replay');
+  if (btn) btn.hidden = true;
+  const n = fig.querySelectorAll('.gf-step').length;
+  if (!n) return;
+  const ids = [];
+  let at = 1000;
+  for (let i = 0; i < n; i++) { ids.push(setTimeout(() => fig.setAttribute('data-gf-step', String(i)), at)); at += 1900; }
+  ids.push(setTimeout(() => gfFinish(fig), at));
+  gfTimers.set(fig, ids);
+}
+const gfFigs = $$('.smedia.gf');
+if (gfFigs.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const gfIO = new IntersectionObserver(es => {
+    for (const e of es) {
+      if (e.isIntersecting) { if (!e.target.dataset.gfPlayed) { e.target.dataset.gfPlayed = '1'; gfPlay(e.target); } }
+      else if (e.target.dataset.gfPlayed) { delete e.target.dataset.gfPlayed; gfFinish(e.target); }
+      else gfStop(e.target);
+    }
+  }, { threshold: 0.35 });
+  for (const fig of gfFigs) {
+    gfIO.observe(fig);
+    const btn = fig.querySelector('.gf-replay');
+    if (btn) btn.addEventListener('click', () => { fig.dataset.gfPlayed = '1'; gfPlay(fig); });
+  }
+}
+
 // ---------------------------------------------------------------------------------------------- the quick check
 const form = $('#qcheck');
 if (form) {
