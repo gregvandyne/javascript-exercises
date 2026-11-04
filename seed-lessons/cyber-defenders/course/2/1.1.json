@@ -17,18 +17,18 @@
      "cue": "A handshake opens the trip: hello, are you there?",
      "box": [
       8,
-      37,
-      45,
-      27
+      44,
+      35,
+      28
      ]
     },
     {
      "cue": "Then each packet is numbered for its journey",
      "box": [
-      55,
-      33,
-      32,
-      11
+      54,
+      36,
+      38,
+      14
      ]
     }
    ]
@@ -48,30 +48,30 @@
    "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap.",
    "focus": [
     {
-     "cue": "Said got it: four slots are filled green",
+     "cue": "Said got it: arrived packets turn their slot green",
      "box": [
-      55,
-      33,
-      32,
-      11
+      54,
+      36,
+      38,
+      14
      ]
     },
     {
      "cue": "Slot 3 stayed empty: ask for that packet again",
      "box": [
       67,
-      33,
-      8,
-      11
+      38,
+      9,
+      13
      ]
     },
     {
      "cue": "Extra copies wait in the inbox, then are binned",
      "box": [
       54,
-      44,
-      24,
-      12
+      49,
+      30,
+      11
      ]
     }
    ]
@@ -87,18 +87,18 @@
      "cue": "On an open road, a packet can be read",
      "box": [
       9,
-      30,
-      43,
-      55
+      55,
+      44,
+      34
      ]
     },
     {
      "cue": "It can be copied, or changed, on its way",
      "box": [
-      55,
-      19,
-      34,
-      9
+      54,
+      25,
+      35,
+      16
      ]
     }
    ]
@@ -113,19 +113,19 @@
     {
      "cue": "Every packet carries a dot count",
      "box": [
-      55,
-      25,
-      33,
-      24
+      54,
+      45,
+      28,
+      23
      ]
     },
     {
      "cue": "Count again at the far end: a match means whole",
      "box": [
-      55,
-      50,
-      33,
-      22
+      54,
+      68,
+      23,
+      9
      ]
     }
    ]
@@ -140,19 +140,19 @@
     {
      "cue": "Three things go wrong on this road",
      "box": [
-      41,
-      27,
-      31,
-      20
+      51,
+      35,
+      21,
+      16
      ]
     },
     {
      "cue": "Pick the rules that catch every one",
      "box": [
-      41,
-      48,
-      45,
-      30
+      51,
+      50,
+      38,
+      27
      ]
     }
    ]
@@ -193,9 +193,9 @@
      "cue": "Play Rules of the Road: name why a packet is resent",
      "box": [
       8,
-      37,
-      45,
-      27
+      44,
+      35,
+      28
      ]
     }
    ]

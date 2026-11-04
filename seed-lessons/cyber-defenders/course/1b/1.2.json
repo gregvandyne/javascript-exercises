@@ -17,18 +17,18 @@
      "cue": "Three packets were sent on this road",
      "box": [
       8,
-      37,
-      45,
-      27
+      44,
+      35,
+      28
      ]
     },
     {
      "cue": "Each packet gets its own mail slot",
      "box": [
       54,
-      28,
-      19,
-      11
+      37,
+      24,
+      13
      ]
     }
    ]
@@ -44,17 +44,17 @@
      "cue": "Four packets this time, travelling one road",
      "box": [
       8,
-      37,
-      45,
-      27
+      44,
+      35,
+      28
      ]
     },
     {
      "cue": "One arrived twice: the extra copy goes in the bin",
      "box": [
-      54,
-      39,
-      19,
+      60,
+      50,
+      13,
       11
      ]
     }
@@ -76,19 +76,19 @@
     {
      "cue": "Sealed roads wear a padlock",
      "box": [
-      36,
-      36,
-      12,
-      15
+      17,
+      43,
+      27,
+      11
      ]
     },
     {
      "cue": "Open roads have a snoopy cat who reads packets",
      "box": [
-      55,
-      19,
-      34,
-      9
+      54,
+      25,
+      35,
+      16
      ]
     }
    ]
@@ -104,18 +104,18 @@
      "cue": "This message wears a bank's name",
      "box": [
       9,
-      28,
-      43,
-      24
+      27,
+      38,
+      6
      ]
     },
     {
      "cue": "A seal on the trip says nothing about the sender",
      "box": [
-      55,
-      30,
-      33,
-      30
+      27,
+      27,
+      20,
+      7
      ]
     }
    ]
@@ -130,19 +130,19 @@
     {
      "cue": "The whole town's roads, open to everyone",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      33,
+      46,
+      57
      ]
     },
     {
      "cue": "Roadworks close two roads while you play",
      "box": [
-      55,
-      19,
-      34,
-      9
+      54,
+      25,
+      35,
+      11
      ]
     }
    ]
@@ -183,9 +183,9 @@
      "cue": "Play Rules of the Road: look for the padlock",
      "box": [
       8,
-      37,
-      45,
-      27
+      44,
+      35,
+      28
      ]
     }
    ]

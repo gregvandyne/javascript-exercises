@@ -17,18 +17,18 @@
      "cue": "The sealed route: padlocks guard the road",
      "box": [
       9,
-      30,
-      43,
-      50
+      55,
+      48,
+      34
      ]
     },
     {
      "cue": "What travels sealed cannot be read on the way",
      "box": [
-      55,
-      19,
-      34,
-      9
+      54,
+      25,
+      35,
+      16
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "The padlock certifies the trip is sealed",
      "box": [
-      34,
-      34,
-      13,
-      15
+      17,
+      43,
+      27,
+      11
      ]
     },
     {
      "cue": "And that the office at the end is who it claims",
      "box": [
-      55,
-      19,
-      34,
-      9
+      54,
+      25,
+      35,
+      16
      ]
     }
    ]
@@ -77,28 +77,28 @@
     {
      "cue": "The two-key lockbox: anyone can click it shut",
      "box": [
-      7,
-      27,
-      46,
-      17
+      8,
+      25,
+      45,
+      15
      ]
     },
     {
      "cue": "Only the owner holds the key that opens it",
      "box": [
-      7,
-      46,
-      46,
-      12
+      9,
+      31,
+      43,
+      9
      ]
     },
     {
      "cue": "Real sealed roads work the two-key way",
      "box": [
-      55,
-      19,
-      34,
-      9
+      54,
+      25,
+      35,
+      13
      ]
     }
    ]
@@ -113,19 +113,19 @@
     {
      "cue": "The sender wears a bank's name",
      "box": [
-      8,
+      9,
       27,
-      47,
-      24
+      38,
+      6
      ]
     },
     {
      "cue": "The badge says the sender is unknown",
      "box": [
-      24,
       28,
-      14,
-      6
+      27,
+      18,
+      7
      ]
     }
    ]
@@ -140,19 +140,19 @@
     {
      "cue": "A town full of roads you do not control",
      "box": [
-      9,
-      30,
-      43,
-      55
+      8,
+      33,
+      46,
+      57
      ]
     },
     {
      "cue": "The hop budget counts every road you take",
      "box": [
-      55,
-      36,
+      63,
+      35,
       17,
-      12
+      8
      ]
     }
    ]
@@ -193,9 +193,9 @@
      "cue": "Play Rules of the Road: name what its padlock certifies",
      "box": [
       8,
-      37,
-      45,
-      27
+      44,
+      35,
+      28
      ]
     }
    ]
