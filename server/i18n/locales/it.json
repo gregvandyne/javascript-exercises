@@ -5937,6 +5937,8 @@
       "sub": "Informatica in quattro giochi · dalla 3ª elementare alla 2ª media",
       "about": "Programma un robot, risolvi misteri con i dati, invia messaggi attraverso una città e scopri dentro le macchine che usiamo ogni giorno. Gioca in ordine o parti da uno qualsiasi.",
       "teachers": "Ogni gioco ha piani di lezione per un’ora di 45 minuti, con riscaldamenti dal vivo, domande di uscita e una vista degli standard della tua classe."
-    }
+    },
+    "back": "Torna a {course}",
+    "step": "{course} · gioco {n} di {total}"
   }
 }

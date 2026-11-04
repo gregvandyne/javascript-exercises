@@ -27,6 +27,13 @@ export const SEED_DIR = path.join(ROOT, 'seed-games');
 
 /** Games that can be warmed and which of their keys are spoken. */
 export const GAMES = {
+  // The CS Quest games (one course, server/services/course-catalog.js) keep their words in language packs: English is
+  // the key (scripts/data/cs-quest/<slug>/en.json) and each language a reviewed translation (<lang>.json). Every line is
+  // the game's own (chrome, learn cards, hints, case files); one voice per game, the crew member who speaks.
+  'robo-route': { title: 'Robo Route', pack: 'scripts/data/cs-quest/robo-route', role: 'bright', spoken: /./ },
+  'data-detective': { title: 'Data Detective', pack: 'scripts/data/cs-quest/data-detective', role: 'friendly', spoken: /./ },
+  'packet-post': { title: 'Packet Post', pack: 'scripts/data/cs-quest/packet-post', role: 'wise', spoken: /./ },
+  'inside-the-machine': { title: 'Inside the Machine', pack: 'scripts/data/cs-quest/inside-the-machine', role: 'friendly', spoken: /./ },
   'hero-of-sunvale': { title: 'Hero of Sunvale', spoken: /^(intro\.\d+|end\.(\d+|free)|d\.[a-z]+\.[a-z0-9]+|hint\.[a-z0-9]+|say\.[a-zA-Z0-9]+|mg\.[a-z]+|sw\.[a-z0-9]+|cinder\.[a-z]+)$/ },
 };
 /** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose
@@ -49,7 +56,24 @@ const run = (code, name) => vm.runInNewContext(`${code}\n;${name}`, Object.creat
 /** A game's I18N object and voice roles, from its file in seed-games/. */
 export function readGame(slug, dir = SEED_DIR) {
   if (!GAMES[slug]) return null;
+  if (GAMES[slug].pack) return readPack(GAMES[slug]);
   return parseGame(fs.readFileSync(path.join(dir, `${slug}.html`), 'utf8'));
+}
+/** A language-pack game: { strings: { en: { text: text }, <lang>: { text: translation } }, one role for every line }.
+ *  Plural objects ({ one, other }) are left out: they change per count, so the device's voice reads them. */
+function readPack({ pack, role }) {
+  const d = path.join(ROOT, pack);
+  let en; try { en = JSON.parse(fs.readFileSync(path.join(d, 'en.json'), 'utf8')).strings; } catch { return null; }
+  if (!Array.isArray(en)) return null;
+  const strings = { en: Object.fromEntries(en.filter(x => typeof x === 'string').map(x => [x, x])) };
+  for (const f of fs.readdirSync(d)) {
+    const m = /^([a-zA-Z-]+)\.json$/.exec(f); if (!m || m[1] === 'en') continue;
+    try {
+      const tr = JSON.parse(fs.readFileSync(path.join(d, f), 'utf8')).strings || {};
+      strings[m[1]] = Object.fromEntries(Object.entries(tr).filter(([k, v]) => typeof v === 'string' && strings.en[k] !== undefined));
+    } catch { /* a broken file keeps the device's voice for that language */ }
+  }
+  return { strings, roles: { story: role }, keyRoles: {} };
 }
 function parseGame(src) {
   const i18n = block(src, '// ==== I18N START ====', '// ==== I18N END ====');
@@ -96,7 +120,9 @@ const memo = new Map();   // `${slug}|${locale}` -> { mtime, exact: Map(text -> 
 export function allowlist(slug, locale, dir = SEED_DIR) {
   if (!GAMES[slug]) return null;
   const file = path.join(dir, `${slug}.html`);
-  let mtime; try { mtime = fs.statSync(file).mtimeMs; } catch { return null; }
+  let mtime; try {
+    mtime = GAMES[slug].pack ? Math.max(...fs.readdirSync(path.join(ROOT, GAMES[slug].pack)).map(f => fs.statSync(path.join(ROOT, GAMES[slug].pack, f)).mtimeMs)) : fs.statSync(file).mtimeMs;
+  } catch { return null; }
   const k = `${slug}|${locale}|${dir}`, hit = memo.get(k);
   if (hit && hit.mtime === mtime) return hit;
   const exact = new Map(), tpl = [];
@@ -124,7 +150,27 @@ export function allowedLine(slug, locale, text, askedRole = null) {
   const pick = roles => ({ text: s, role: roles.includes(askedRole) ? askedRole : roles[0] });
   const ex = a.exact.get(s); if (ex) return pick(ex);
   const t = a.tpl.find(y => y.re.test(s));
-  return t ? pick(t.roles) : null;
+  if (t) return pick(t.roles);
+  // A language-pack game reads a card as one line ("Title. Text"): at most MAX_PARTS of its own lines, joined at
+  // sentence ends, each one whole (a title may lose or gain its closing period). Never a piece of a line.
+  if (GAMES[slug] && GAMES[slug].pack) { const r = joined(a, s); if (r) return pick(r); }
+  return null;
+}
+const MAX_PARTS = 4;
+function joined(a, s) {
+  const cuts = [0]; const re = /[.!?…。！？](?=\s)/gu; let m;
+  while ((m = re.exec(s))) cuts.push(m.index + 1);
+  cuts.push(s.length);
+  const has = part => { const p = part.trim(); if (!p) return null; return a.exact.get(p) || a.exact.get(p.replace(/[.。]$/u, '')) || a.exact.get(p + '.') || null; };
+  // best[i]: roles of a split of s[0..cuts[i]) into whole lines, with how many parts
+  const best = new Array(cuts.length).fill(null); best[0] = { roles: null, n: 0 };
+  for (let i = 1; i < cuts.length; i++) for (let j = 0; j < i; j++) {
+    if (!best[j] || best[j].n >= MAX_PARTS) continue;
+    const r = has(s.slice(cuts[j], cuts[i])); if (!r) continue;
+    if (!best[i] || best[j].n + 1 < best[i].n) best[i] = { roles: best[j].roles || r, n: best[j].n + 1 };
+  }
+  const end = best[cuts.length - 1];
+  return end && end.n > 1 ? end.roles : null;
 }
 
 // ---------------------------------------------------------------- the warm-up run
