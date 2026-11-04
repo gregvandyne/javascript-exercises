@@ -5913,5 +5913,30 @@
         "note": "Geoefend betekent dat de activiteit gedaan is, niet dat ze beheerst wordt. Goed telt de goede antwoorden op exitvragen met deze standaard."
       }
     }
+  },
+  "courses": {
+    "row": "Cursussen",
+    "start": "Begin de cursus",
+    "continue": "Verder",
+    "about": "Over de cursus",
+    "started": "Begonnen",
+    "progress": "{n} van {total} spellen begonnen",
+    "home": "Home",
+    "topics": {
+      "coding": "Programmeren",
+      "data": "Data",
+      "networks": "Netwerken en veiligheid",
+      "computers": "Hoe computers werken"
+    },
+    "teachers": {
+      "h": "Voor leraren",
+      "link": "Lesplannen en standaarden"
+    },
+    "cs": {
+      "title": "CS Quest",
+      "sub": "Informatica in vier spellen · groep 5 tot en met klas 2",
+      "about": "Programmeer een robot, los raadsels op met data, stuur berichten door een stad en kijk in de apparaten die we elke dag gebruiken. Speel op volgorde of begin met welk spel je wilt.",
+      "teachers": "Bij elk spel horen lesplannen voor een les van 45 minuten, met live opwarmers, exitvragen en een overzicht van de standaarden voor je klas."
+    }
   }
 }

@@ -5912,5 +5912,30 @@
         "note": "Pratiqué veut dire que l’activité a été faite, pas qu’elle est maîtrisée. La réussite compte les bonnes réponses aux questions de ticket de sortie liées à la norme."
       }
     }
+  },
+  "courses": {
+    "row": "Cours",
+    "start": "Commencer le cours",
+    "continue": "Continuer",
+    "about": "À propos du cours",
+    "started": "Commencé",
+    "progress": "{n} jeux commencés sur {total}",
+    "home": "Accueil",
+    "topics": {
+      "coding": "Programmation",
+      "data": "Données",
+      "networks": "Réseaux et sécurité",
+      "computers": "Comment marchent les ordinateurs"
+    },
+    "teachers": {
+      "h": "Pour les enseignants",
+      "link": "Plans de cours et standards"
+    },
+    "cs": {
+      "title": "CS Quest",
+      "sub": "L’informatique en quatre jeux · du CE2 à la 4e",
+      "about": "Programme un robot, résous des mystères avec des données, envoie des messages à travers une ville et ouvre les machines que nous utilisons chaque jour. Joue dans l’ordre ou commence par n’importe lequel.",
+      "teachers": "Chaque jeu a des plans de cours pour une séance de 45 minutes, avec des échauffements en direct, des tickets de sortie et une vue des standards pour ta classe."
+    }
   }
 }
