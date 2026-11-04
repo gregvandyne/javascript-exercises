@@ -1,0 +1,446 @@
+[
+ {
+  "actions": [],
+  "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
+  "band": "1b",
+  "chapter": "title",
+  "concept": "the title screen",
+  "game": "packet-post",
+  "level": 0,
+  "state": "home",
+  "title": true
+ },
+ {
+  "actions": [],
+  "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+  "band": "1b",
+  "chapter": "protocols",
+  "concept": "say got it, the first round",
+  "game": "packet-post",
+  "level": 1,
+  "state": "protocols-1b-key"
+ },
+ {
+  "actions": [],
+  "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
+  "band": "1b",
+  "chapter": "protocols",
+  "concept": "one lost, one arrived twice",
+  "game": "packet-post",
+  "level": 2,
+  "state": "protocols-1b-twice"
+ },
+ {
+  "actions": [],
+  "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+  "band": "2",
+  "chapter": "protocols",
+  "concept": "design the rule set",
+  "game": "packet-post",
+  "level": 5,
+  "state": "protocols-2-design"
+ },
+ {
+  "actions": [],
+  "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
+  "band": "2",
+  "chapter": "protocols",
+  "concept": "the whole journey of a picture",
+  "game": "packet-post",
+  "level": 6,
+  "state": "protocols-2-journey"
+ },
+ {
+  "actions": [],
+  "alt": "The big town map: roadworks all over town, and Pim warns that two roads will close.",
+  "band": "1b",
+  "chapter": "routes",
+  "concept": "the big town map",
+  "game": "packet-post",
+  "level": 3,
+  "state": "routes-1b-town"
+ },
+ {
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
+  "band": "1b",
+  "chapter": "routes",
+  "concept": "a packet on its journey",
+  "game": "packet-post",
+  "level": 1,
+  "state": "routes-1b-journey"
+ },
+ {
+  "actions": [],
+  "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
+  "band": "2",
+  "chapter": "routes",
+  "concept": "a town map with a hop budget",
+  "game": "packet-post",
+  "level": 5,
+  "state": "routes-2-budget"
+ },
+ {
+  "actions": [],
+  "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+  "band": "2",
+  "chapter": "routes",
+  "concept": "sealed roads wear padlocks",
+  "game": "packet-post",
+  "level": 6,
+  "state": "routes-2-sealed"
+ },
+ {
+  "actions": [],
+  "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
+  "band": "1b",
+  "chapter": "packets",
+  "concept": "every road meets at the center office",
+  "game": "packet-post",
+  "level": 4,
+  "state": "packets-1b-center"
+ },
+ {
+  "actions": [],
+  "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "habits that protect a tablet",
+  "game": "packet-post",
+  "level": 3,
+  "state": "locks-1b-protect"
+ },
+ {
+  "actions": [],
+  "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "one key for every door",
+  "game": "packet-post",
+  "level": 6,
+  "state": "locks-1b-habits"
+ },
+ {
+  "actions": [],
+  "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles.",
+  "band": "2",
+  "chapter": "locks",
+  "concept": "build a new key from word tiles",
+  "game": "packet-post",
+  "level": 5,
+  "state": "locks-2-router"
+ },
+ {
+  "actions": [],
+  "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
+  "band": "2",
+  "chapter": "locks",
+  "concept": "the backup rule in four steps",
+  "game": "packet-post",
+  "level": 6,
+  "state": "locks-2-backup"
+ },
+ {
+  "actions": [],
+  "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+  "band": "2",
+  "chapter": "locks",
+  "concept": "share or shield: the mailbox key",
+  "game": "packet-post",
+  "level": 7,
+  "state": "locks-2-shield"
+ },
+ {
+  "actions": [],
+  "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
+  "band": "1b",
+  "chapter": "ciphers",
+  "concept": "a note anyone can read",
+  "game": "packet-post",
+  "level": 2,
+  "state": "ciphers-1b-send"
+ },
+ {
+  "actions": [],
+  "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
+  "band": "1b",
+  "chapter": "ciphers",
+  "concept": "a secret word, shift unknown",
+  "game": "packet-post",
+  "level": 3,
+  "state": "ciphers-1b-unknown"
+ },
+ {
+  "actions": [
+   {
+    "acts": 4
+   }
+  ],
+  "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
+  "band": "2",
+  "chapter": "ciphers",
+  "concept": "the two-key lockbox card",
+  "game": "packet-post",
+  "level": 7,
+  "state": "ciphers-2-lockbox"
+ },
+ {
+  "actions": [],
+  "alt": "Crack it by counting: a scrambled message, the Caesar wheel, and a button that counts how often letters appear.",
+  "band": "2",
+  "chapter": "ciphers",
+  "concept": "crack it by counting letters",
+  "game": "packet-post",
+  "level": 6,
+  "state": "ciphers-2-crack"
+ },
+ {
+  "actions": [],
+  "alt": "Hide a heart in the open: a grid of squares where a heart appears when the brightness numbers are typed in.",
+  "band": "2",
+  "chapter": "ciphers",
+  "concept": "hide a heart in the pixels",
+  "game": "packet-post",
+  "level": 5,
+  "state": "ciphers-2-pixels"
+ },
+ {
+  "actions": [],
+  "alt": "Spot the trick: the lesson card names what trick messages do. They rush you, promise prizes and fish for your key.",
+  "band": "1b",
+  "cards": "open",
+  "chapter": "tricks",
+  "concept": "what trick messages do",
+  "game": "packet-post",
+  "level": 1,
+  "state": "tricks-1b-learn"
+ },
+ {
+  "actions": [],
+  "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
+  "band": "1b",
+  "chapter": "tricks",
+  "concept": "free coins today only",
+  "game": "packet-post",
+  "level": 4,
+  "state": "tricks-1b-coins"
+ },
+ {
+  "actions": [],
+  "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+  "band": "1b",
+  "chapter": "tricks",
+  "concept": "a stranger asks for your street",
+  "game": "packet-post",
+  "level": 5,
+  "state": "tricks-1b-stranger"
+ },
+ {
+  "actions": [],
+  "alt": "Spot the trick, Pro style: the lesson card names the levers. Rush, prizes, and asking for your mailbox key.",
+  "band": "2",
+  "cards": "open",
+  "chapter": "tricks",
+  "concept": "the levers every trick pulls",
+  "game": "packet-post",
+  "level": 1,
+  "state": "tricks-2-learn"
+ },
+ {
+  "actions": [],
+  "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+  "band": "2",
+  "chapter": "tricks",
+  "concept": "a trick wearing a bank's name",
+  "game": "packet-post",
+  "level": 7,
+  "state": "tricks-2-bank"
+ },
+ {
+  "actions": [],
+  "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+  "band": "2",
+  "chapter": "tricks",
+  "concept": "a parcel you never ordered",
+  "game": "packet-post",
+  "level": 8,
+  "state": "tricks-2-parcel"
+ },
+ {
+  "actions": [],
+  "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile.",
+  "band": "2",
+  "chapter": "tricks",
+  "concept": "it knows your dog and your birthday",
+  "game": "packet-post",
+  "level": 9,
+  "state": "tricks-2-profile"
+ },
+ {
+  "actions": [],
+  "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
+  "band": "2",
+  "chapter": "tricks",
+  "concept": "a quiz that harvests facts",
+  "game": "packet-post",
+  "level": 10,
+  "state": "tricks-2-quiz"
+ },
+ {
+  "actions": [],
+  "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+  "band": "2",
+  "chapter": "tricks",
+  "concept": "a real message from your teacher",
+  "game": "packet-post",
+  "level": 3,
+  "state": "tricks-2-safe"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "nickname or real first name",
+  "dilemma": "online-3",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-name-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+  "band": "2",
+  "chapter": "online",
+  "concept": "nickname or real first name",
+  "dilemma": "online-3",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-name-2"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "one photo for the world, or ten for friends",
+  "dilemma": "online-2",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-photo-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+  "band": "2",
+  "chapter": "online",
+  "concept": "one photo for the world, or ten for friends",
+  "dilemma": "online-2",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-photo-2"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "a page anyone can comment on",
+  "dilemma": "online-9",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-comments-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+  "band": "2",
+  "chapter": "online",
+  "concept": "a page anyone can comment on",
+  "dilemma": "online-9",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-comments-2"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "delete an old post, or leave it",
+  "dilemma": "online-10",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-delete-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+  "band": "2",
+  "chapter": "online",
+  "concept": "delete an old post, or leave it",
+  "dilemma": "online-10",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-delete-2"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "a drawing for everyone, or family only",
+  "dilemma": "online-1",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-drawing-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "a free game that sees where you are",
+  "dilemma": "online-4",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-location-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "ask before every download",
+  "dilemma": "online-5",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-download-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "credit a picture, or draw your own",
+  "dilemma": "online-8",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-credit-1b"
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
+  "band": "2",
+  "chapter": "online",
+  "concept": "photos on your tablet, or a copy elsewhere",
+  "dilemma": "online-7",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-cloud-2"
+ }
+]

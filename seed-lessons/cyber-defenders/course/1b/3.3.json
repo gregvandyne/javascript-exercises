@@ -9,7 +9,9 @@
   {
    "title": "You made it, it is yours",
    "text": "A drawing you make is yours, because you made it. Finding something online does not make it yours. The maker decides how their work may be used.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/would-you-rather/online-drawing-1b",
+   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?"
   },
   {
    "kind": "example",
@@ -20,12 +22,16 @@
     "no badge: ask first",
     "credit badge: use it and give credit",
     "public domain: free for anyone"
-   ]
+   ],
+   "img": "csq/would-you-rather/online-credit-1b",
+   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?"
   },
   {
    "title": "Photos need a yes",
    "text": "Sharing a photo of someone else needs their yes, always. If a friend posts a photo of you that you do not like, ask them to take it down. If it stays up, tell a trusted adult, who can help report it.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/would-you-rather/online-photo-1b",
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?"
   },
   {
    "title": "My keep-private rule",
@@ -37,7 +43,9 @@
   {
    "title": "The Magpie's nest",
    "text": "The Magpie pins photos of other birds in its nest without asking. Now the other birds have stopped visiting. Asking first is how sharers keep their friends.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/would-you-rather/online-photo-1b",
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?"
   },
   {
    "kind": "words",

@@ -69,6 +69,7 @@ test('the course page: band picker first, then the map with unit groups and 13 s
   assert.match(anon.text, /Cyber Defenders/);
   assert.match(anon.text, /<form method="post" action="\/courses\/cyber-defenders\/band"/);
   assert.match(anon.text, /href="\/teachers"/);
+  assert.match(anon.text, /href="\/teachers\/cyber-defenders"/, 'the course page links the Cyber Defenders teacher page');
 
   const kid = newKid(); C.setBand(kid, course, '1b');
   const map = await get('/courses/cyber-defenders', kid);
@@ -152,6 +153,38 @@ test('shared games keep their place in the open lists; owned course games stay o
   assert.ok(!slugs.includes('packet-post'), 'Packet Post is still course-only');
   assert.equal(C.courseOfSlug('would-you-rather'), null, 'no course owns the shared game');
   assert.equal(C.courseOfSlug('packet-post').slug, 'cs-quest', 'Packet Post is still owned by CS Quest');
+});
+
+test('the teacher page: the published v1.0 mapping, the teacher notes and the printed pack; CS Quest untouched', async () => {
+  const page1 = await get('/teachers/cyber-defenders');
+  assert.equal(page1.status, 200);
+  assert.match(page1.text, /Cyber Defenders: online safety you can teach tomorrow/);
+  // The published mapping, from units.json: a CYBER.ORG v1.0 code per band, a Common Sense topic, inherited CSTA.
+  assert.match(page1.text, /3-5\.CS\.COMM/, 'an Explorer CYBER.ORG v1.0 code');
+  assert.match(page1.text, /6-8\.SEC\.NET/, 'a Pro CYBER.ORG v1.0 code');
+  assert.match(page1.text, /Privacy &amp; Security/, 'a Common Sense topic');
+  assert.match(page1.text, /<td lang="en" dir="ltr">Privacy &amp; Security<\/td>/, 'the topic renders as a real table cell, escaped once');
+  assert.doesNotMatch(page1.text, /&lt;(td|tr|table)/, 'the map markup is markup, not escaped text');
+  assert.match(page1.text, /1B-NI-04/, 'an inherited CSTA code');
+  assert.match(page1.text, /CYBER\.ORG K-12 Cybersecurity Learning Standards v1\.0/, 'the mapping names its version');
+  assert.match(page1.text, /Private on paper first/, 'the unit 1 teacher note');
+  assert.match(page1.text, /Printed materials/, 'the printed-materials section');
+  const print = await get('/teachers/cyber-defenders?print=1');
+  assert.equal(print.status, 200);
+  assert.match(print.text, /3-5\.CS\.COMM/, 'the print view carries the map');
+  assert.match(print.text, /Private on paper first/, 'the print view carries the notes');
+  assert.equal((await get('/teachers/cs-quest')).status, 200, 'the CS Quest teacher page is unchanged');
+});
+
+test('guided focus renders on a Cyber Defenders unit 1 step page (shared renderer)', async () => {
+  const kid = newKid(); C.setBand(kid, course, '1b');
+  doneByHand(kid, C.getStep(course, '1b-0.1'));
+  const page = await get('/courses/cyber-defenders/1b-1.1', kid);
+  assert.equal(page.status, 200);
+  assert.match(page.text, /<figure class="smedia gf" data-gf>/, 'a guided-focus figure');
+  assert.match(page.text, /<div class="gf-layer" aria-hidden="true">/, 'the overlay layer');
+  assert.ok(page.text.includes('A photo waits at Pim&#39;s Post, ready to travel') || page.text.includes("A photo waits at Pim's Post, ready to travel"), 'the first cue is on the page');
+  assert.match(page.text, /<button class="gf-replay" type="button" hidden>/, 'the replay button');
 });
 
 test('the home page shows both course cards', async () => {

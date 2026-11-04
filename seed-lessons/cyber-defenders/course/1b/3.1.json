@@ -9,7 +9,9 @@
   {
    "title": "Me-facts point at you",
    "text": "Pim says some facts are me-facts. Your name, your school, where you live and your birthday are all me-facts. Together, they can point straight at you.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/would-you-rather/online-name-1b",
+   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?"
   },
   {
    "kind": "example",
@@ -30,12 +32,16 @@
   {
    "title": "Small facts can join up",
    "text": "One fact alone may look harmless. Add two more, and the three together can point at one child. That is why me-facts stay private online.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/would-you-rather/online-location-1b",
+   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?"
   },
   {
    "title": "Games do not need me-facts",
    "text": "Some games and sites ask for me-facts before you can play. A real game never needs your address to let you play. If a game asks, stop and tell a trusted adult.",
-   "art": "screen"
+   "art": "screen",
+   "img": "csq/would-you-rather/online-download-1b",
+   "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?"
   },
   {
    "kind": "words",
@@ -65,7 +71,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. For each choice, ask: could this point at me?",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-1b-first",
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
   }
  ],
  "check": [

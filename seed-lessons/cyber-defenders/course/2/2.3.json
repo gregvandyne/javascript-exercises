@@ -37,12 +37,16 @@
   {
    "title": "End to end, with limits",
    "text": "With end-to-end encryption, only the sender and receiver can read a message. Even the service carrying it cannot. It still cannot protect someone who is tricked into handing over the plain words.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/ciphers-2-lockbox",
+   "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it."
   },
   {
    "title": "The Magpie scrambles too",
    "text": "The Magpie has started scrambling its own notes with a little wheel. It wishes it had not taught you how wheels work, because now you can spot its tricks.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/ciphers-2-crack",
+   "alt": "Crack it by counting: a scrambled message, the Caesar wheel, and a button that counts how often letters appear."
   },
   {
    "kind": "words",

@@ -23,22 +23,30 @@
     "Address behind them: a stranger's place",
     "The two do not match",
     "Do not tap; verify another way"
-   ]
+   ],
+   "img": "csq/packet-post/tricks-2-bank",
+   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday."
   },
   {
    "title": "Aimed at one person",
    "text": "Spear phishing uses the same trick recipe, but built for one person. It may use your name, your club or a recent post, then add a rush and a request.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/packet-post/tricks-2-profile",
+   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile."
   },
   {
    "title": "The attachment rule",
    "text": "An unexpected file is not opened, even if the message begs you to hurry. Verify first through a different door: ask the real sender in person, or tell a trusted adult.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-2-parcel",
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
   },
   {
    "title": "Reporting protects everyone",
    "text": "Reporting a phishing message is a Defender act. One report can warn the whole school and stop the same costume reaching your friends.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/packet-post/tricks-2-bank",
+   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday."
   },
   {
    "kind": "words",
@@ -68,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Spot the Trick and play the Pro cards. For every message, check the real sender before you judge it.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
   }
  ],
  "check": [

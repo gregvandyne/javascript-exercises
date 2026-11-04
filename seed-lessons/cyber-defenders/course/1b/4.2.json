@@ -9,17 +9,23 @@
   {
    "title": "Four messy nests",
    "text": "Behind the post office, Pim finds four messy nests built by the Magpie. Each nest holds a trick, and each trick has a motive.",
-   "art": "map"
+   "art": "map",
+   "img": "csq/packet-post/tricks-1b-learn",
+   "alt": "Spot the trick: the lesson card names what trick messages do. They rush you, promise prizes and fish for your key."
   },
   {
    "title": "Keys and prizes",
    "text": "The key-hunter wants into your mailbox, so its letters beg for your key. The prize-faker wants you to tap and type, so it dangles a fake reward.",
-   "art": "key"
+   "art": "key",
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
   },
   {
    "title": "Reactions and shares",
    "text": "The giggler wants a reaction, so it sends teasing tricks to make you reply fast. The forwarder wants you to share its trick with all your friends.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/packet-post/tricks-1b-card",
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?"
   },
   {
    "kind": "example",
@@ -40,7 +46,7 @@
    "text": "Knowing the motive tells you the defense: starve it. Do not reply, do not tap, and do not share, and the trick gets nothing it wanted.",
    "art": "shield",
    "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same \u2014 stop, do not reply, and tell a trusted adult."
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult."
   },
   {
    "kind": "words",
@@ -70,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Spot the Trick and play the cards you have not checked yet. Name each card's motive before you decide if it is a trick.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
   }
  ],
  "check": [

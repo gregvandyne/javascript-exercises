@@ -9,7 +9,9 @@
   {
    "title": "A note anyone can read",
    "text": "Mina passes a plain note in class, and anyone who finds it can read every word. Some messages need more than paper to stay private.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/ciphers-1b-send",
+   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5."
   },
   {
    "kind": "example",
@@ -29,17 +31,23 @@
   {
    "title": "Only the key can read it",
    "text": "A friend with the same shift of 3 can turn the letters back and read the note. Computers scramble messages the same way but with much bigger keys, and the padlock on a message does this too.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/ciphers-1b-unknown",
+   "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says."
   },
   {
    "title": "Codes are for privacy",
    "text": "Secret codes are for keeping messages private, not for being sneaky. Never use a code to hide an unkind message about someone else.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/packet-post/ciphers-1b-send",
+   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5."
   },
   {
    "title": "A scrambled note",
    "text": "This morning, the post sack held a note written in a scramble. Only the Magpie can read it, and Pim wonders what shiny secret it is hiding.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/ciphers-1b-unknown",
+   "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says."
   },
   {
    "kind": "words",

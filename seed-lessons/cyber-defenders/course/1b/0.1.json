@@ -16,12 +16,16 @@
   {
    "title": "Letters nobody wrote",
    "text": "This morning the post sack held a surprise. Some letters inside were never written by the senders named on them. Someone had slipped in fakes when nobody was looking.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
   },
   {
    "title": "Meet the Magpie",
    "text": "Meet the Magpie, the post office pest. The Magpie slips fake letters into the post and collects shiny secrets. Shiny secrets are private facts and mailbox keys.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-1b-stranger",
+   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on."
   },
   {
    "kind": "example",
@@ -35,7 +39,9 @@
     "a joke for everyone: safe post",
     "a drawing of a rainbow: safe post",
     "a hello card for a friend: safe post"
-   ]
+   ],
+   "img": "csq/packet-post/locks-1b-sort",
+   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
   },
   {
    "kind": "words",
@@ -64,13 +70,17 @@
   {
    "title": "Your new job",
    "text": "Pim is hiring you as a Cyber Defender. You will earn six stamps, one for each unit you finish. Every step starts with story slides, then words, a quick check, and a mission.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/packet-post/home",
+   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret."
   },
   {
    "kind": "mission",
    "title": "Your mission",
    "text": "There is no game this time. Open the course map, find the six stamps, and say hello to each one. Your first stamp is waiting in the next unit.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/routes-1b-roads",
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
   }
  ],
  "check": [

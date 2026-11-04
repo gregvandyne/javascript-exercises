@@ -11,12 +11,54 @@
    "text": "An unsealed message is a postcard: every hand on the road can read it. A sealed message travels scrambled, and only the right reader can unscramble it.",
    "art": "envelope",
    "img": "csq/packet-post/locks-2-sealed",
-   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey."
+   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
+   "focus": [
+    {
+     "cue": "The sealed route: padlocks guard the road",
+     "box": [
+      9,
+      30,
+      43,
+      50
+     ]
+    },
+    {
+     "cue": "What travels sealed cannot be read on the way",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "What the padlock certifies",
    "text": "The padlock certifies two things. The trip is encrypted, and the site has proved it controls the name in its address. That is the whole promise.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/routes-2-sealed",
+   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "focus": [
+    {
+     "cue": "The padlock certifies the trip is sealed",
+     "box": [
+      34,
+      34,
+      13,
+      15
+     ]
+    },
+    {
+     "cue": "And that the office at the end is who it claims",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -28,17 +70,92 @@
     "the site controls its name: covered",
     "the site is honest: not covered",
     "what it sells is safe: not covered"
+   ],
+   "img": "csq/packet-post/ciphers-2-lockbox",
+   "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
+   "focus": [
+    {
+     "cue": "The two-key lockbox: anyone can click it shut",
+     "box": [
+      7,
+      27,
+      46,
+      17
+     ]
+    },
+    {
+     "cue": "Only the owner holds the key that opens it",
+     "box": [
+      7,
+      46,
+      46,
+      12
+     ]
+    },
+    {
+     "cue": "Real sealed roads work the two-key way",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
    ]
   },
   {
    "title": "An honest-looking trick",
    "text": "A scam site can have a working padlock and a sealed trip. The padlock never certifies honesty, quality, or the safety of what a site sells or says.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-2-bank",
+   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+   "focus": [
+    {
+     "cue": "The sender wears a bank's name",
+     "box": [
+      8,
+      27,
+      47,
+      24
+     ]
+    },
+    {
+     "cue": "The badge says the sender is unknown",
+     "box": [
+      24,
+      28,
+      14,
+      6
+     ]
+    }
+   ]
   },
   {
    "title": "Café networks, Pro eyes",
    "text": "On a café network, sealed apps are fine, and anything unsealed is a postcard for strangers. Checking an address letter by letter beats trusting a padlock.",
-   "art": "globe"
+   "art": "globe",
+   "img": "csq/packet-post/routes-2-budget",
+   "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
+   "focus": [
+    {
+     "cue": "A town full of roads you do not control",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "The hop budget counts every road you take",
+     "box": [
+      55,
+      36,
+      17,
+      12
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -68,7 +185,20 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Rules of the Road and play the levels you have not played yet. After each level, name one thing its padlock would certify, and one it would not.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/protocols-2-key",
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
+   "focus": [
+    {
+     "cue": "Play Rules of the Road: name what its padlock certifies",
+     "box": [
+      8,
+      37,
+      45,
+      27
+     ]
+    }
+   ]
   }
  ],
  "check": [

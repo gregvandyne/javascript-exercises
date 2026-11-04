@@ -3918,6 +3918,86 @@
         "staff": "Open CS Quest and add the Core 10 path to your library."
       },
       "cstaNote": "Standards: CSTA K-12 Computer Science Standards (2017), levels 1B and 2. This program is not made, reviewed or endorsed by CSTA."
+    },
+    "cd": {
+      "title": "Cyber Defenders: cybersecurity lessons for grades 3-8",
+      "description": "Cyber Defenders is a free cybersecurity and online-safety course for grades 3-8: 13 short steps in two bands, played through Packet Post and Would You Rather, mapped to CYBER.ORG v1.0 and Common Sense Education.",
+      "crumb": "Cyber Defenders",
+      "kicker": "For teachers · grades 3-8",
+      "h1": "Cyber Defenders: online safety you can teach tomorrow",
+      "lead": "A short course about how messages travel, how keys and codes protect them, what stays private, and how to spot a trick. Students join Pim the owl at the Netville post office, play real game missions, and earn a Defender stamp for every unit.",
+      "badges": {
+        "steps": "13 steps in each band",
+        "units": "An intro and 4 units",
+        "games": "Two games",
+        "minutes": "About 15 minutes a step",
+        "free": "Free · no ads"
+      },
+      "cta": { "open": "Open the course" },
+      "promise": {
+        "h": "What you get",
+        "li1": "One story all the way through: Pim's post office, a magpie who slips fake letters into the post, and a stamp to earn in every unit.",
+        "li2": "Every step in two bands: Explorer for grades 3-5 and Pro for grades 6-8, with Pro wording and harder questions.",
+        "li3": "Short reading decks with real screenshots from the games, then a three-question check, then the game mission itself.",
+        "li4": "A step only counts as finished when the student has read the deck, passed the check and actually completed the game chapter. Opening the game is not enough.",
+        "li5": "The full standards map on this page: every step mapped to CYBER.ORG v1.0 and a Common Sense Education topic, ready to show a department head or a data-protection officer.",
+        "li6": "A teacher note for every unit: what to say first, what to watch for, and the lines that keep the hard topics calm."
+      },
+      "crew": {
+        "h": "Two games carry the course",
+        "p": "Packet Post is the post-office game the story lives in. Would You Rather carries the judgement calls of unit 3, where there are no right answers and the learning is in the talking afterwards.",
+        "packetPost": "Deliver packets across Netville: how messages travel, what a seal promises, strong passphrases built by tapping word tiles, simple ciphers, and spotting trick messages.",
+        "wouldYouRather": "Short dilemmas about sharing, photos, footprints and credit. The Online: share or keep set carries unit 3.",
+        "try": "Try it",
+        "inCourse": "Play it in the course"
+      },
+      "units": {
+        "h": "The intro and four units",
+        "p": "Thirteen steps in each band, in order. When the Pro title differs from the Explorer one, it is shown after it.",
+        "stamp": "{stamp} stamp"
+      },
+      "map": {
+        "h": "The standards map",
+        "p": "Every step, mapped. CYBER.ORG codes are shown per band; each step also carries its Common Sense Education topic, and an inherited CSTA code where the step re-frames a CS Quest lesson.",
+        "cols": { "step": "Step", "title": "Title", "cyberorg": "CYBER.ORG v1.0", "cs": "Common Sense topic", "csta": "CSTA (inherited)" },
+        "v1": "This map is published on CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 (August 2021), the version CYBER.ORG publishes. If the course is re-mapped to a newer version, this page will say so.",
+        "rename": "Common Sense Education's newer Digital Literacy & Well-Being Curriculum renames the same six areas: Healthy Habits; Privacy & Safety; Digital Footprint; Relationships & Communication; Cyberbullying & Online Harm; Information & Media Literacy. The map uses the classic six names; each matches the new name in the same order."
+      },
+      "standards": { "b1": "CYBER.ORG codes · Explorer (3-5)", "b2": "CYBER.ORG codes · Pro (6-8)", "topics": "Common Sense topics" },
+      "notes": {
+        "h": "Teacher notes",
+        "p": "One short note per unit, written to print: say this first, watch for this. The same notes print with the standards map."
+      },
+      "safety": {
+        "h": "Safe by its own rules",
+        "li1": "Children never type a real password, passphrase or account detail anywhere in the course. All key practice happens inside Packet Post, with a pretend mailbox key built by tapping tiles.",
+        "li2": "No step asks a child to open, check or change a real account as homework. Every example is fictional: no real brands, people, schools or addresses.",
+        "li3": "The course collects nothing new. Progress and checks use the same kid-safe machinery as the rest of Oomba Academy: no chat, no ads, no third parties.",
+        "li4": "The Magpie is a comic bird, never a person, and every trick is shown after the fact with its clues named. The aim is clue-spotting, never fear."
+      },
+      "print": {
+        "h": "Printed materials",
+        "p": "The standards map and the teacher notes are the printed pack for this course: one map to file with your planning, and one short note per unit to read before the lesson. They print on their own page, without the site around them.",
+        "button": "Print the map and notes"
+      },
+      "faq": {
+        "h": "Questions teachers ask",
+        "q1": "Do I need a cybersecurity background?",
+        "a1": "No. Each step teaches its own idea in plain words before the game, and the teacher note for the unit tells you what to say first and what to watch for.",
+        "q2": "Does it need a school account?",
+        "a2": "No. Cyber Defenders stands alone: no CS Quest knowledge and no school setup needed. Students open the course, pick the Explorer or Pro band, and start; signing in just keeps their progress.",
+        "q3": "How long does a step take?",
+        "a3": "About 15 minutes: a short deck, a three-question check, and one game chapter. The intro and the four units make 13 steps per band, so the whole course fits in about three hours, or one step a week for a term.",
+        "q4": "Which standards does it teach?",
+        "a4": "CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 for grades 3-5 and 6-8, with each step also tagged to a Common Sense Education digital citizenship topic. The full map is on this page.",
+        "q5": "Is it really free?",
+        "a5": "Yes: free for classrooms, with no ads and nothing to install. It runs in the browser on any device, including Chromebooks."
+      },
+      "start": {
+        "h": "Start when you are ready",
+        "p": "Open the course, pick a band, and read the first step with your class. The teacher note for the intro is above.",
+        "staff": "Open the course, pick a band, and read the first step with your class. The teacher note for the intro is above."
+      }
     }
   },
   "learn": {

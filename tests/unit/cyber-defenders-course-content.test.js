@@ -4,8 +4,10 @@
 // schema (5-7 slides, exactly one worked example, one words slide with the step's four words, the mission last);
 // the quick check is three exit items of the step's own bank file whose cat is one of the step's CYBER.ORG codes;
 // the game module is the one units.json names (a Packet Post chapter with canonical params, or Would You Rather's
-// "online" topic), and the mission names the game and chapter as the game shows them; a slide picture may only
-// reuse a CS Quest manifest shot whose game state matches, with the manifest's alt; kid-safe text (the real game
+// "online" topic), and the mission names the game and chapter as the game shows them; every slide but the words
+// slides is pictured from the shared manifest — CS Quest shots reused where the state matches, plus Cyber's own
+// captures (scripts/cyber-shots-spec.json) — always with the manifest's alt, and guided focus covers unit 1 with
+// CS Quest's schema; kid-safe text (the real game
 // scanner and the free-text filter over every string, no links, handles, long digit runs, brands, framework names,
 // standard codes or the program name); US spelling; the Magpie beat in the intro and in each unit's last step;
 // teacher notes on the intro and units 1-4.
@@ -139,7 +141,23 @@ test('5-7 slides: one worked example with chips, one words slide with four words
         assert.equal(s.alt, entry.alt, `${at}: a reused shot keeps the manifest's alt, verbatim`);
         assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${s.img}.webp`)), `${at}: public/img/${s.img}.webp exists`);
       }
-      assert.equal(s.focus, undefined, `${at}: no guided focus in phase 1 (captures come later)`);
+      if (s.focus != null) {
+        // Guided focus: animation steps over the slide's picture, same schema as CS Quest's (cleanSlide's rules).
+        assert.ok(s.img, `${at}: focus needs the slide's img`);
+        assert.ok(Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4, `${at}: 1-4 focus steps`);
+        for (const [fi, f] of s.focus.entries()) {
+          const fat = `${at} focus ${fi + 1}`;
+          assert.deepEqual(Object.keys(f).sort(), f.path ? ['box', 'cue', 'path'] : ['box', 'cue'], `${fat}: cue, box, optional path only`);
+          assert.ok(typeof f.cue === 'string' && f.cue.trim() === f.cue && f.cue.length >= 1 && f.cue.length <= 80, `${fat}: cue 1-80 chars, trimmed`);
+          assert.ok(Array.isArray(f.box) && f.box.length === 4 && f.box.every(v => typeof v === 'number' && Number.isFinite(v)), `${fat}: box is 4 numbers`);
+          const [x, y, w, h] = f.box;
+          assert.ok(x >= 0 && y >= 0 && w >= 2 && h >= 2 && x + w <= 100 && y + h <= 100, `${fat}: box inside the frame, at least 2% wide/tall`);
+          if (f.path != null) {
+            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 8, `${fat}: path of 2-8 points`);
+            for (const p of f.path) assert.ok(Array.isArray(p) && p.length === 2 && p.every(v => typeof v === 'number' && v >= 0 && v <= 100), `${fat}: path points in % inside the frame`);
+          }
+        }
+      }
       if (s.say != null) assert.ok(typeof s.say === 'string' && s.say.length >= 8 && s.say.length <= 400 && s.say !== s.text, `${at}: say differs from text, <= 400 chars`);
       const n = sentences(s.text);
       assert.ok(n <= 4, `${at}: at most 4 sentences (${n}): ${s.text}`);
@@ -160,6 +178,23 @@ test('5-7 slides: one worked example with chips, one words slide with four words
       }
     }
     assert.ok(short >= d.slides.length - 1, `${where}: most slides are 1-3 sentences`);
+  }
+});
+
+test('parity: every slide is pictured except the words slides, and guided focus covers unit 1 like CS Quest', () => {
+  for (const { band, step, deck: d } of decks) {
+    const where = `${band}-${step.n}`;
+    for (const [i, s] of d.slides.entries()) {
+      const at = `${where} slide ${i + 1}`;
+      if (s.kind === 'words') assert.equal(s.img, undefined, `${at}: words slides stay typographic, as in CS Quest`);
+      else assert.ok(s.img && s.alt, `${at}: a pictured slide (the Phase 1.5 captures landed)`);
+      if (['1.1', '1.2', '1.3'].includes(step.n)) {
+        assert.ok(s.img ? Array.isArray(s.focus) : true, `${at}: unit 1's pictured slides carry guided focus`);
+        if (s.kind === 'mission') assert.equal((s.focus || []).length, 1, `${at}: a mission slide gets exactly one focus step`);
+      } else {
+        assert.equal(s.focus, undefined, `${at}: guided focus is unit 1 only for now (units 2-4 are future work)`);
+      }
+    }
   }
 });
 

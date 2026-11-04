@@ -11,7 +11,27 @@
    "text": "Fast recap, because this band moves quickly. Messages travel as numbered packets, routers pass them hop by hop, and a protocol is the shared rules every stop follows.",
    "art": "network",
    "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
+   "focus": [
+    {
+     "cue": "A handshake opens the trip: hello, are you there?",
+     "box": [
+      8,
+      37,
+      45,
+      27
+     ]
+    },
+    {
+     "cue": "Then each packet is numbered for its journey",
+     "box": [
+      55,
+      33,
+      32,
+      11
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -25,24 +45,117 @@
     "got 3: the message is whole"
    ],
    "img": "csq/packet-post/protocols-2-ack",
-   "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap."
+   "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap.",
+   "focus": [
+    {
+     "cue": "Said got it: four slots are filled green",
+     "box": [
+      55,
+      33,
+      32,
+      11
+     ]
+    },
+    {
+     "cue": "Slot 3 stayed empty: ask for that packet again",
+     "box": [
+      67,
+      33,
+      8,
+      11
+     ]
+    },
+    {
+     "cue": "Extra copies wait in the inbox, then are binned",
+     "box": [
+      54,
+      44,
+      24,
+      12
+     ]
+    }
+   ]
   },
   {
    "title": "Three things on an open road",
    "text": "Unsealed, a packet is a postcard on an open road. An interceptor can read it, copy it and keep the copy, or change its words before it travels on.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/routes-2-sealed",
+   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "focus": [
+    {
+     "cue": "On an open road, a packet can be read",
+     "box": [
+      9,
+      30,
+      43,
+      55
+     ]
+    },
+    {
+     "cue": "It can be copied, or changed, on its way",
+     "box": [
+      55,
+      19,
+      34,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "A count catches accidents",
    "text": "A checksum catches packets damaged by accident, when the count no longer matches. An enemy who changes a packet can fix the count too, so integrity needs more than a count.",
    "art": "magnifier",
    "img": "csq/packet-post/protocols-2-check",
-   "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again."
+   "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again.",
+   "focus": [
+    {
+     "cue": "Every packet carries a dot count",
+     "box": [
+      55,
+      25,
+      33,
+      24
+     ]
+    },
+    {
+     "cue": "Count again at the far end: a match means whole",
+     "box": [
+      55,
+      50,
+      33,
+      22
+     ]
+    }
+   ]
   },
   {
    "title": "Roads you do not control",
    "text": "Every network you do not control is part of the threat surface. This unit asks one question: what closes each hole? Sealing comes next, and copies after that.",
-   "art": "globe"
+   "art": "globe",
+   "img": "csq/packet-post/protocols-2-design",
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+   "focus": [
+    {
+     "cue": "Three things go wrong on this road",
+     "box": [
+      41,
+      27,
+      31,
+      20
+     ]
+    },
+    {
+     "cue": "Pick the rules that catch every one",
+     "box": [
+      41,
+      48,
+      45,
+      30
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -74,7 +187,18 @@
    "text": "Open Packet Post at Rules of the Road and finish 4 levels. Each time a packet is resent, say why: missing, or damaged?",
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-rules",
-   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on."
+   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",
+   "focus": [
+    {
+     "cue": "Play Rules of the Road: name why a packet is resent",
+     "box": [
+      8,
+      37,
+      45,
+      27
+     ]
+    }
+   ]
   }
  ],
  "check": [

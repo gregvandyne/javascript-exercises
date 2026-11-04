@@ -16,7 +16,9 @@
   {
    "title": "The Magpie has help",
    "text": "The Magpie no longer works alone. Its flock copies real letters, fakes the postmarks, and sends them out from fake accounts. Each fake looks almost right at first glance.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-2-bank",
+   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday."
   },
   {
    "kind": "example",
@@ -29,7 +31,9 @@
     "a fake account sends the copy on",
     "the reply is meant to leak a secret",
     "the clue: the postmark date is wrong"
-   ]
+   ],
+   "img": "csq/packet-post/tricks-2-learn",
+   "alt": "Spot the trick, Pro style: the lesson card names the levers. Rush, prizes, and asking for your mailbox key."
   },
   {
    "kind": "words",
@@ -58,18 +62,24 @@
   {
    "title": "Think in systems",
    "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
-   "art": "gears"
+   "art": "gears",
+   "img": "csq/packet-post/protocols-2-design",
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them."
   },
   {
    "title": "Six stamps, Pro cut",
    "text": "Six stamps wait for you, one for each unit, and every one is set at Pro level. Each step works the same way: story slides first, then words, a quick check, and a mission.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/packet-post/home",
+   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret."
   },
   {
    "kind": "mission",
    "title": "Your mission",
    "text": "There is no game this time. Open the course map and study the six stamps, one for each unit. Think about which stamp you want most.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/routes-2-hops",
+   "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget."
   }
  ],
  "check": [

@@ -16,7 +16,9 @@
     "approach: a friendly message",
     "urgency: act right now",
     "request: share the secret"
-   ]
+   ],
+   "img": "csq/packet-post/tricks-2-profile",
+   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile."
   },
   {
    "title": "Four pressure levers",
@@ -28,17 +30,23 @@
   {
    "title": "A made-up reason",
    "text": "A pretext is a made-up reason that makes a strange request sound normal. It might borrow a real event, like a lost bag, to explain why help is needed fast.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-2-parcel",
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
   },
   {
    "title": "Check another way",
    "text": "One move defeats every lever: verify through a different channel. Ask the person in real life, or type the real address yourself instead of tapping the link you were sent.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/packet-post/tricks-2-safe",
+   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush."
   },
   {
    "title": "The Magpie asks nicely",
    "text": "Last week the Magpie tried a new trick: no fake letters, just friendly questions about Pim's route. The clue was the pattern: every question fished for a private fact.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/packet-post/tricks-2-quiz",
+   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play."
   },
   {
    "kind": "words",
@@ -68,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Spot the Trick and play the Pro trick cards. For each card, name the pressure lever pushing you before you choose.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
   }
  ],
  "check": [

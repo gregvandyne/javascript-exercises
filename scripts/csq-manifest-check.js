@@ -1,8 +1,9 @@
 // CS Quest slide pictures: validate public/img/csq/manifest.json against the files on disk and the decks.
 // Every manifest entry must be complete (game, chapter, band, state, concept, alt), its WebP must exist at
 // public/img/<key>.webp and stay near the plan's weight budget (warn over 120 KB, fail over 200 KB); every
-// slide img key in seed-lessons/cs-quest/course must resolve to a manifest entry and carry a valid alt in
-// the deck itself; manifest entries no slide uses are reported as orphans (a warning, not a failure).
+// slide img key in the course decks (CS Quest and Cyber Defenders, which shares this manifest) must resolve
+// to a manifest entry and carry a valid alt in the deck itself; manifest entries no slide uses are reported
+// as orphans (a warning, not a failure).
 // Usage: node scripts/csq-manifest-check.js   (or npm run csq:check). Exit 1 on any error.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,7 +12,10 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MANIFEST = path.join(ROOT, 'public', 'img', 'csq', 'manifest.json');
-const COURSE = path.join(ROOT, 'seed-lessons', 'cs-quest', 'course');
+const COURSES = [
+  { label: 'course', dir: path.join(ROOT, 'seed-lessons', 'cs-quest', 'course') },
+  { label: 'cyber-defenders/course', dir: path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course') },
+];
 const WARN_BYTES = 120 * 1024, FAIL_BYTES = 200 * 1024;
 
 const errors = [], warnings = [];
@@ -44,20 +48,23 @@ for (const [i, e] of entries.entries()) {
 
 // The decks: every img a slide names must be in the manifest, with the deck's own alt valid too.
 const used = new Set();
-for (const band of fs.readdirSync(COURSE).sort()) {
-  const dir = path.join(COURSE, band);
-  if (!fs.statSync(dir).isDirectory()) continue;
-  for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json')).sort()) {
-    const deck = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
-    for (const [i, s] of (deck.slides || []).entries()) {
-      if (s.img == null) continue;
-      const at = `course/${band}/${f} slide ${i + 1} (${s.title})`;
-      used.add(s.img);
-      if (!IMG_KEY.test(s.img)) fail(`${at}: img ${JSON.stringify(s.img)} is not a csq/<game>/<state> key`);
-      else if (!byKey.has(s.img)) fail(`${at}: img ${s.img} has no manifest entry`);
-      if (typeof s.alt !== 'string' || !s.alt.trim()) fail(`${at}: an img slide needs its alt in the deck`);
-      else if (s.alt.trim().length > 160) fail(`${at}: alt is ${s.alt.trim().length} chars (max 160)`);
-      else if (byKey.has(s.img) && byKey.get(s.img).alt !== s.alt) warn(`${at}: deck alt differs from the manifest alt for ${s.img}; keep them in sync`);
+for (const { label, dir: COURSE } of COURSES) {
+  if (!fs.existsSync(COURSE)) continue;
+  for (const band of fs.readdirSync(COURSE).sort()) {
+    const dir = path.join(COURSE, band);
+    if (!fs.statSync(dir).isDirectory()) continue;
+    for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json')).sort()) {
+      const deck = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+      for (const [i, s] of (deck.slides || []).entries()) {
+        if (s.img == null) continue;
+        const at = `${label}/${band}/${f} slide ${i + 1} (${s.title})`;
+        used.add(s.img);
+        if (!IMG_KEY.test(s.img)) fail(`${at}: img ${JSON.stringify(s.img)} is not a csq/<game>/<state> key`);
+        else if (!byKey.has(s.img)) fail(`${at}: img ${s.img} has no manifest entry`);
+        if (typeof s.alt !== 'string' || !s.alt.trim()) fail(`${at}: an img slide needs its alt in the deck`);
+        else if (s.alt.trim().length > 160) fail(`${at}: alt is ${s.alt.trim().length} chars (max 160)`);
+        else if (byKey.has(s.img) && byKey.get(s.img).alt !== s.alt) warn(`${at}: deck alt differs from the manifest alt for ${s.img}; keep them in sync`);
+      }
     }
   }
 }
