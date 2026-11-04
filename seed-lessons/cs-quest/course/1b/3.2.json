@@ -9,12 +9,16 @@
   {
    "title": "Is it true?",
    "text": "A claim is something you say is true, like: the plant grows every day. Evidence is the data that backs it up.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/data-detective/claims-1b-key",
+   "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it."
   },
   {
    "title": "Enough data?",
    "text": "Two bars are a hunch, not a case. When there is too little data, the honest answer is: we can not tell yet.",
-   "art": "chart"
+   "art": "chart",
+   "img": "csq/data-detective/claims-1b-small",
+   "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we can not tell yet."
   },
   {
    "kind": "example",
@@ -28,12 +32,16 @@
     "day 4: 8 cm",
     "day 5: 10 cm",
     "day 6: ?"
-   ]
+   ],
+   "img": "csq/data-detective/claims-1b-plant",
+   "alt": "Predict Day 6: the plant chart climbs the same amount every day, so the next bar can be predicted from the pattern."
   },
   {
    "title": "Say only what it shows",
    "text": "If Saturday has the tallest bar in a chart of park visitors, the chart supports: most visitors came on Saturday. It does not say why.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/data-detective/claims-1b-card",
+   "alt": "The claim card beside the plant chart: each claim must match what the bars actually show, nothing more."
   },
   {
    "kind": "words",
@@ -59,7 +67,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Data Detective at Clues & Claims and solve 4 cases. Before you pin a claim, ask: does the chart really show it, or can we not tell yet?",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/data-detective/claims-1b-key",
+   "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it."
   }
  ],
  "check": [

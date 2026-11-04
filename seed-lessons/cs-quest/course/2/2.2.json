@@ -9,17 +9,23 @@
   {
    "title": "Design for someone else",
    "text": "Today you are the designer. Real teams plan, build, test with someone else, improve the work and document it.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/robo-route/maker-2-key",
+   "alt": "The Pro Level Maker opens its first task: a blank canvas and the tools to build a level for someone else."
   },
   {
    "title": "Keep a timeline",
    "text": "Split the work and set times: build by minute 6, test by 12, fix by 18. Write who does each part.",
-   "art": "chart"
+   "art": "chart",
+   "img": "csq/robo-route/maker-2-task",
+   "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when."
   },
   {
    "title": "Feedback is information",
    "text": "Feedback is not a grade. It shows where a player got stuck. A level is done when that feedback changed something and you tested it again.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/robo-route/maker-2-feedback",
+   "alt": "After the test play, the maker rates the level: the feedback card records how fun and how hard the tester found it."
   },
   {
    "kind": "example",
@@ -34,12 +40,16 @@
     "change",
     "test again",
     "write the note"
-   ]
+   ],
+   "img": "csq/robo-route/maker-2-built",
+   "alt": "A Pro maker level built and checked: the board holds a full design and Check has judged whether it can be solved."
   },
   {
    "title": "Write the level note",
    "text": "A good note helps the next person play or remix it, like: Level 2: count the gems before the door. Remixed levels keep their based-on stamp.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/robo-route/maker-2-task",
+   "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when."
   },
   {
    "kind": "words",
@@ -69,7 +79,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Level Maker. Do the three maker tasks, then build your own level from a plan. Let someone test it in silence, change one thing and write a level note.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/maker-2-key",
+   "alt": "The Pro Level Maker opens its first task: a blank canvas and the tools to build a level for someone else."
   }
  ],
  "check": [

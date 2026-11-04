@@ -9,12 +9,16 @@
   {
    "title": "Messages in packets",
    "text": "Every message on the internet is cut into numbered packets. They travel through routers and are rebuilt at the other end.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/protocols-2-key",
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
   },
   {
    "title": "Rules everyone follows",
    "text": "A protocol is a set of rules every computer on the network agrees on. Without the same rules everywhere, a packet could not be passed on or rebuilt.",
-   "art": "network"
+   "art": "network",
+   "img": "csq/packet-post/protocols-2-rules",
+   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on."
   },
   {
    "kind": "example",
@@ -27,17 +31,23 @@
     "got 4",
     "please send 3 again",
     "got 3"
-   ]
+   ],
+   "img": "csq/packet-post/protocols-2-ack",
+   "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap."
   },
   {
    "title": "Damaged on the way?",
    "text": "A checksum is a count sent along with a packet. If the count does not match when it arrives, the packet was damaged, so it is sent again.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/packet-post/protocols-2-check",
+   "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again."
   },
   {
    "title": "Hops",
    "text": "Each jump from one router to the next is a hop. If a router is busy, pick another path that still fits the hop budget.",
-   "art": "map"
+   "art": "map",
+   "img": "csq/packet-post/routes-2-hops",
+   "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget."
   },
   {
    "kind": "words",
@@ -67,7 +77,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Rules of the Road and finish 4 levels, then two Many Roads levels with a hop budget.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/protocols-2-key",
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
   }
  ],
  "check": [

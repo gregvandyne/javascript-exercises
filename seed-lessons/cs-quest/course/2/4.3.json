@@ -9,7 +9,9 @@
   {
    "title": "Scramble it",
    "text": "Encryption scrambles a message so only someone with the key can read it. Decrypting turns it back.",
-   "art": "cipher"
+   "art": "cipher",
+   "img": "csq/packet-post/ciphers-2-key",
+   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
   },
   {
    "kind": "example",
@@ -17,26 +19,34 @@
    "text": "A shift cipher moves every letter along the alphabet. The key is how far to shift.",
    "art": "cipher",
    "steps": [
-    "A → D",
-    "B → E",
-    "C → F",
-    "CAT → FDW"
-   ]
+    "A \u2192 D",
+    "B \u2192 E",
+    "C \u2192 F",
+    "CAT \u2192 FDW"
+   ],
+   "img": "csq/packet-post/ciphers-2-shift",
+   "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code."
   },
   {
    "title": "Brute force",
    "text": "A shift has only 25 keys, so you can try them all. That is brute force. A keyed substitution has so many keys that trying them all takes far too long.",
-   "art": "chip"
+   "art": "chip",
+   "img": "csq/packet-post/ciphers-2-brute",
+   "alt": "A later cipher level: with so few keys, trying every one is a real way in \u2014 for a shift cipher."
   },
   {
    "title": "Hiding is not scrambling",
    "text": "Steganography hides a message, for example in a picture's pixels. Anyone who finds it can read it. Encryption makes it unreadable without the key.",
-   "art": "pixel"
+   "art": "pixel",
+   "img": "csq/packet-post/ciphers-2-hide",
+   "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message."
   },
   {
    "title": "Faked senders",
    "text": "A trick message can fake its sender name. That is spoofing. It may also use facts from a public profile to seem friendly.",
-   "art": "mask"
+   "art": "mask",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
   },
   {
    "kind": "words",
@@ -66,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Secret Messages and finish 4 levels with the key wheel. Then check the trick cards for faked senders.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/ciphers-2-key",
+   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
   }
  ],
  "check": [

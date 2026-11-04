@@ -9,7 +9,9 @@
   {
    "title": "Two halves of security",
    "text": "Physical security protects the machine: a locked door, a cable lock. Digital security protects the data: a passphrase, two-step sign-in, a firewall.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/packet-post/locks-2-key",
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
   },
   {
    "kind": "example",
@@ -21,22 +23,30 @@
     "entry badge: physical",
     "firewall: digital",
     "two-step sign-in: digital"
-   ]
+   ],
+   "img": "csq/packet-post/locks-2-sort",
+   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls."
   },
   {
    "title": "The padlock",
    "text": "HTTPS shows as a padlock. Your details travel in a sealed envelope instead of an open postcard. It seals the trip; it does not make the shop honest.",
-   "art": "lock"
+   "art": "lock",
+   "img": "csq/packet-post/locks-2-sealed",
+   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey."
   },
   {
    "title": "Strong passphrases",
    "text": "Four random words beat a short word with a number added. Use a different one for each account, so one leak can not open everything.",
-   "art": "key"
+   "art": "key",
+   "img": "csq/packet-post/locks-2-pass",
+   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key."
   },
   {
    "title": "Think before you post",
    "text": "Making something public has a benefit and a risk. Posting where you will be helps friends find you, and it tells strangers too.",
-   "art": "globe"
+   "art": "globe",
+   "img": "csq/packet-post/locks-2-post",
+   "alt": "The last Lock It sort in Pro: judging what is safe to do, the habit of naming a risk before you act."
   },
   {
    "kind": "words",
@@ -66,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. For each choice, name the benefit and the risk.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/locks-2-key",
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
   }
  ],
  "check": [

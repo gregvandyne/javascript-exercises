@@ -9,17 +9,23 @@
   {
    "title": "Meet Dot",
    "text": "Dot the fox is a data detective. Dot solves cases with facts, not guesses.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "img": "csq/data-detective/sort-1b-key",
+   "alt": "Dot opens the first case: a table of lunchroom facts in rows and columns, with the case question at the top."
   },
   {
    "title": "Data is facts in rows",
    "text": "A table holds facts in rows and columns. A table full of facts does not answer anything yet. You have to make the answer show.",
-   "art": "table"
+   "art": "table",
+   "img": "csq/data-detective/sort-1b-rows",
+   "alt": "Another case table: every row is one tower of blocks, every column one kind of fact about it."
   },
   {
    "title": "Sort or group",
    "text": "Sorting puts the rows in order, like smallest to biggest. Grouping puts rows of the same kind together and counts them.",
-   "art": "chart"
+   "art": "chart",
+   "img": "csq/data-detective/sort-1b-grouped",
+   "alt": "The pet case grouped: one bar per kind of pet, counted, so the most common pet jumps out of the chart."
   },
   {
    "kind": "example",
@@ -31,12 +37,16 @@
     "find the column: time",
     "sort by time",
     "read the last row"
-   ]
+   ],
+   "img": "csq/data-detective/sort-1b-sorted",
+   "alt": "The lunchbox case sorted by time: the rows now run in time order, so the last row answers the question."
   },
   {
    "title": "Show me first",
    "text": "Dot has one rule: you can only pin a claim when the view on the screen shows it. Most of each kind? Group and count.",
-   "art": "star"
+   "art": "star",
+   "img": "csq/data-detective/sort-1b-claim",
+   "alt": "With the grouped chart showing the evidence, the claim card opens: Dot will only pin a claim the view proves."
   },
   {
    "kind": "words",
@@ -66,7 +76,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Data Detective at Sort & Group and solve 4 cases. For each one ask: which column is the question about?",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/data-detective/sort-1b-key",
+   "alt": "Dot opens the first case: a table of lunchroom facts in rows and columns, with the case question at the top."
   }
  ],
  "check": [

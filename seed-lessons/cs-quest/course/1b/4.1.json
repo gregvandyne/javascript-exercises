@@ -9,17 +9,23 @@
   {
    "title": "Meet Pim",
    "text": "Pim the owl runs the post office in Netville. Pim's job is to get every message to the right house.",
-   "art": "envelope"
+   "art": "envelope",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
   },
   {
    "title": "Too big to send",
    "text": "A picture is too big to send in one piece. The network cuts it into small pieces called packets and gives each one a number.",
-   "art": "pixel"
+   "art": "pixel",
+   "img": "csq/packet-post/packets-1b-split",
+   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office."
   },
   {
    "title": "Many roads",
    "text": "Each packet can take a different road through many post offices, called routers. If a road closes, a packet just takes another one.",
-   "art": "network"
+   "art": "network",
+   "img": "csq/packet-post/routes-1b-roads",
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
   },
   {
    "kind": "example",
@@ -31,7 +37,9 @@
     "arrives: 1",
     "arrives: 2",
     "put back: 1, 2, 3"
-   ]
+   ],
+   "img": "csq/packet-post/packets-1b-order",
+   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
   },
   {
    "kind": "words",
@@ -61,7 +69,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Packet Post at Break It Up, then play 2 levels of Many Roads. Watch the number on every packet.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
   }
  ],
  "check": [

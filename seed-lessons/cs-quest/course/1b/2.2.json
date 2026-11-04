@@ -9,12 +9,16 @@
   {
    "title": "Be the game designer",
    "text": "Today you build a level for someone else to play. Real games are made this way: plan, build, test, fix and explain.",
-   "art": "pencil"
+   "art": "pencil",
+   "img": "csq/robo-route/maker-1b-key",
+   "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed."
   },
   {
    "title": "Plan it first",
    "text": "Sketch your level on paper first. Where does Bolt start? Where is the goal? What is the one tricky part?",
-   "art": "map"
+   "art": "map",
+   "img": "csq/robo-route/maker-1b-task",
+   "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted."
   },
   {
    "kind": "example",
@@ -28,17 +32,23 @@
     "test with a friend",
     "fix one thing",
     "explain"
-   ]
+   ],
+   "img": "csq/robo-route/maker-1b-built",
+   "alt": "A level built in the maker: walls, start, goal, key and door placed on the board, with Check run on the design."
   },
   {
    "title": "The designer stays quiet",
    "text": "While your tester plays, do not help. Watch quietly and take notes. A tester who gets help is not really testing the level.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/robo-route/maker-1b-test",
+   "alt": "The built level handed to a tester: Bolt plays the design while its maker watches without helping."
   },
   {
    "title": "Explain your choice",
    "text": "Say why you made one choice. For example: I put the key behind the water so you have to plan a path.",
-   "art": "lightbulb"
+   "art": "lightbulb",
+   "img": "csq/robo-route/maker-1b-task",
+   "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted."
   },
   {
    "kind": "words",
@@ -68,7 +78,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Robo Route at Level Maker. Do the three maker tasks, then build your own level from your plan. Let a friend or someone at home test it, then fix one thing.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/robo-route/maker-1b-key",
+   "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed."
   }
  ],
  "check": [

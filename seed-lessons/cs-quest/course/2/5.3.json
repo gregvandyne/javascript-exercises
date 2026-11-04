@@ -9,17 +9,23 @@
   {
    "title": "Everything is numbers",
    "text": "Inside a computer, every number, letter and color is stored as bits: switches that are on (1) or off (0).",
-   "art": "bits"
+   "art": "bits",
+   "img": "csq/inside-the-machine/bits-2-key",
+   "alt": "Pro bits opens with five switches and a bigger ask: make 21, where every place is worth double the last."
   },
   {
    "title": "Binary place values",
    "text": "In binary each place is worth double the one to its right: 16, 8, 4, 2, 1. So 1101 means 8 + 4 + 1, which is 13.",
-   "art": "bits"
+   "art": "bits",
+   "img": "csq/inside-the-machine/bits-2-rgb",
+   "alt": "The color round: a swatch to match with three numbers, because a pixel mixes red, green and blue light."
   },
   {
    "title": "More bits, more values",
    "text": "One bit shows 2 values. Each extra bit doubles that: 2 bits show 4, 3 bits show 8. Eight bits, a byte, show 256.",
-   "art": "chart"
+   "art": "chart",
+   "img": "csq/inside-the-machine/bits-2-byte",
+   "alt": "Eight switches in a row: a full byte, worth 0 to 255. Only the 128 switch is on, making the middle gray."
   },
   {
    "kind": "example",
@@ -30,7 +36,9 @@
     "decimal: 13",
     "binary: 1101",
     "letter: M, the 13th"
-   ]
+   ],
+   "img": "csq/inside-the-machine/bits-2-codes",
+   "alt": "The switches read 16, 4 and 1 switched on: the number 21 written in bits instead of decimal."
   },
   {
    "kind": "words",
@@ -60,7 +68,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Inside the Machine at Bits & Pixels and finish 4 levels. Flip switches to send numbers, letters and gray levels.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/inside-the-machine/bits-2-key",
+   "alt": "Pro bits opens with five switches and a bigger ask: make 21, where every place is worth double the last."
   }
  ],
  "check": [

@@ -9,12 +9,16 @@
   {
    "title": "What is technology?",
    "text": "Technology is anything people invent to solve a problem. A pencil, a bike and a tablet are all technology.",
-   "art": "lightbulb"
+   "art": "lightbulb",
+   "img": "csq/would-you-rather/tech-1b-first",
+   "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides."
   },
   {
    "title": "Tech changes how we live",
    "text": "The telephone let people talk from far away. Video calls let families see each other every day. Maps on a device changed how people find their way.",
-   "art": "globe"
+   "art": "globe",
+   "img": "csq/would-you-rather/tech-1b-second",
+   "alt": "A second technology dilemma: a new choice about how an invention changes the way people live."
   },
   {
    "kind": "example",
@@ -30,7 +34,9 @@
   {
    "title": "People change tech too",
    "text": "People change technology right back. Captions were added to videos because viewers asked for them.",
-   "art": "people"
+   "art": "people",
+   "img": "csq/would-you-rather/tech-1b-second",
+   "alt": "A second technology dilemma: a new choice about how an invention changes the way people live."
   },
   {
    "kind": "words",
@@ -56,7 +62,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Pick one invention you use every day. Think of one way it changed how people live, and one thing it made harder. Then talk about it.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "csq/would-you-rather/tech-1b-first",
+   "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides."
   }
  ],
  "check": [
