@@ -195,6 +195,8 @@
    "title": "Your mission",
    "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on timetable questions, with no picking first. Read every start time out loud before you hop.",
    "art": "trophy",
+   "img": "nq/quest-race/timetable-race",
+   "alt": "Quest Race on the island course: a timetable question on screen, four answers to pick from, the runners on the track below.",
    "kind": "mission"
   }
  ],

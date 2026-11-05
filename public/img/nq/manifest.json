@@ -132,6 +132,105 @@
       "game": "fraction-factory",
       "key": "nq/fraction-factory/recipe-maths",
       "state": "recipe-maths"
+    },
+    {
+      "alt": "Brain Board in play: the Measures board, categories Centimeters, Kilograms, Liters, Add the measure and Which is longer, a centimeters question open.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "5.1",
+      "commit": "29bc200",
+      "concept": "The 5.1 Measures board, a centimeters tile open",
+      "game": "brain-board",
+      "key": "nq/brain-board/measures-board",
+      "state": "measures-board"
+    },
+    {
+      "alt": "Quest Race on the island course: a timetable question on screen, four answers to pick from, the runners on the track below.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "5.2",
+      "commit": "29bc200",
+      "concept": "Practice Race on timetable questions (nq-5-2), a timetable question live",
+      "game": "quest-race",
+      "key": "nq/quest-race/timetable-race",
+      "state": "timetable-race"
+    },
+    {
+      "alt": "Brain Board in play: the Money board, categories Coin values, Make the price, Change back, Add the prices and Dollars and cents, a coin values question open.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "5.3",
+      "commit": "29bc200",
+      "concept": "The 5.3 Money board, a coin values tile open",
+      "game": "brain-board",
+      "key": "nq/brain-board/money-board",
+      "state": "money-board"
+    },
+    {
+      "alt": "Brain Board in play: the Around & Inside board, categories Fence it, Carpet it, Count the squares, Missing side and Same fence, a fence question open.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "6.2",
+      "commit": "29bc200",
+      "concept": "The 6.2 Around & Inside board, a fence (perimeter) tile open",
+      "game": "brain-board",
+      "key": "nq/brain-board/around-inside-board",
+      "state": "around-inside-board"
+    },
+    {
+      "alt": "Brain Board in play: the Lines & Grids board, categories Parallel or not, Fold it, Grid addresses, Turns and Shape families, a parallel lines question open.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "6.3",
+      "commit": "29bc200",
+      "concept": "The 6.3 Lines & Grids board, a parallel lines tile open",
+      "game": "brain-board",
+      "key": "nq/brain-board/lines-grids-board",
+      "state": "lines-grids-board"
+    },
+    {
+      "alt": "Data Detective, Chart It: a case's counts shown as a bar chart, the Bars view picked, a claim ready to pin.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "7.1",
+      "commit": "29bc200",
+      "concept": "Chart It, case 1 (Fruit Bowl): the fruit counts in the bar view",
+      "game": "data-detective",
+      "key": "nq/data-detective/chart-it",
+      "state": "chart-it"
+    },
+    {
+      "alt": "Data Detective, My Data: a class survey tallied with the steppers and built into a bar chart, a claim ready to pin.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "7.2",
+      "commit": "29bc200",
+      "concept": "My Data, case 1 (Our Survey): the pet survey tallied and charted",
+      "game": "data-detective",
+      "key": "nq/data-detective/my-data",
+      "state": "my-data"
+    },
+    {
+      "alt": "Would You Rather, the Numbers topic: a numbers choice on screen, two big cards to pick from, at the start of a run.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "7.3",
+      "commit": "29bc200",
+      "concept": "The Numbers topic, a run's first choice on screen",
+      "game": "would-you-rather",
+      "key": "nq/would-you-rather/numbers",
+      "state": "numbers"
+    },
+    {
+      "alt": "Quest Race on the island course: a Vault Run lock question on screen, four answers to pick from, the runners on the track below.",
+      "band": "explorer",
+      "capturedAt": "2026-11-05",
+      "chapter": "7.4",
+      "commit": "29bc200",
+      "concept": "Practice Race, the Vault Run (nq-7-4): a lock question live",
+      "game": "quest-race",
+      "key": "nq/quest-race/vault-run",
+      "state": "vault-run"
     }
   ],
   "version": 1

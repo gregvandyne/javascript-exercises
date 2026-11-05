@@ -13,14 +13,15 @@
 // And in the other direction: every manifest entry is carried by some deck, so a stale entry cannot
 // linger after its slide is gone, and every deck with a game has its mission slide pictured.
 //
-// One named exception, kept loud on purpose: the Phase 2 decks (Units 5-7 + the Vault of Measures
-// finale, PR #202) were authored just before this imagery platform landed, so their mission slides
-// carry no captures yet. MISSION_CAPTURES_OWED below names each deck and the exact capture the
-// follow-up sweep owes it. An owed deck's missing mission picture is reported as an OWED note on
-// every run instead of a failure; every other deck (and every other check for the owed decks) still
-// fails hard. When the sweep lands a deck's capture, delete its line here — the stale-entry note at
-// the bottom will say so. 6.1 is not owed anything: it has no game (the Builder's Yard is unbuilt),
-// so the mission-picture rule does not apply to it.
+// One named exception mechanism, kept loud on purpose: a deck authored before its capture could be
+// taken can be named in MISSION_CAPTURES_OWED below, with the exact capture owed it; its missing
+// mission picture is then reported as an OWED note on every run instead of a failure, while every
+// other deck (and every other check for the owed deck) still fails hard. When a sweep lands a deck's
+// capture, delete its line — the stale-entry note at the bottom will say so. The register stands
+// EMPTY: the Phase 2 decks (Units 5-7 + the Vault of Measures finale, PR #202) were authored just
+// before this imagery platform landed, and the follow-up sweep has since taken all nine captures
+// they owed (5.1, 5.2, 5.3, 6.2, 6.3, 7.1, 7.2, 7.3, 7.4). 6.1 never owed anything: it has no game
+// (the Builder's Yard is unbuilt), so the mission-picture rule does not apply to it.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,19 +31,9 @@ const IMG_DIR = path.join(ROOT, 'public', 'img');
 const problems = [];
 const notes = [];
 
-// Mission captures owed by the follow-up sweep for the Phase 2 decks (see the header note).
-// Key: deck file. Value: the capture owed, in the mode the deck's mission assigns.
-const MISSION_CAPTURES_OWED = new Map([
-  ['5.1.json', 'nq/brain-board: Practice Board in mode nq-5-1 (the Measures board)'],
-  ['5.2.json', 'nq/quest-race: Practice Race in mode nq-5-2 (timetable questions)'],
-  ['5.3.json', 'nq/brain-board: Practice Board in mode nq-5-3 (the Money board)'],
-  ['6.2.json', 'nq/brain-board: Practice Board in mode nq-6-2 (the Around & Inside board)'],
-  ['6.3.json', 'nq/brain-board: Practice Board in mode nq-6-3 (the Lines & Grids board)'],
-  ['7.1.json', 'nq/data-detective: the Chart It chapter (chapter=chart, band=1b) — a new game folder in the manifest'],
-  ['7.2.json', 'nq/data-detective: the My Data chapter (chapter=my-data, band=1b) — a new game folder in the manifest'],
-  ['7.3.json', 'nq/would-you-rather: the Numbers topic — a new game folder in the manifest'],
-  ['7.4.json', 'nq/quest-race: Practice Race (the Vault Run) in mode nq-7-4'],
-]);
+// Mission captures owed to decks named here (see the header note). Key: deck file. Value: the
+// capture owed, in the mode the deck's mission assigns. Empty since the Phase 2 sweep landed.
+const MISSION_CAPTURES_OWED = new Map([]);
 const owedStillMissing = new Set();
 
 const manifest = JSON.parse(fs.readFileSync(path.join(IMG_DIR, 'nq', 'manifest.json'), 'utf8'));

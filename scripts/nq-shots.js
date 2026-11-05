@@ -47,6 +47,18 @@ const SHOTS = [
   { step: '4.1', state: 'first-cuts', slug: 'fraction-factory', params: 'chapter=first-cuts&band=1b&lock=1', prep: fractionFactory },
   { step: '4.2', state: 're-slice', slug: 'fraction-factory', params: 'chapter=re-slice&band=1b&lock=1', prep: fractionFactory },
   { step: '4.3', state: 'recipe-maths', slug: 'fraction-factory', params: 'chapter=recipe&band=1b&lock=1', prep: fractionFactory },
+  // The Phase 2 sweep (Units 5-7 + the Vault of Measures finale): the same discipline, the decks' own
+  // game.params. Data Detective and Would You Rather join the pipeline here, in the chapters and topic
+  // their missions assign.
+  { step: '5.1', state: 'measures-board', slug: 'brain-board', params: 'mode=nq-5-1&lock=1', prep: brainBoard },
+  { step: '5.2', state: 'timetable-race', slug: 'quest-race', params: 'mode=nq-5-2&lock=1', prep: questRace, cdp: true },
+  { step: '5.3', state: 'money-board', slug: 'brain-board', params: 'mode=nq-5-3&lock=1', prep: brainBoard },
+  { step: '6.2', state: 'around-inside-board', slug: 'brain-board', params: 'mode=nq-6-2&lock=1', prep: brainBoard },
+  { step: '6.3', state: 'lines-grids-board', slug: 'brain-board', params: 'mode=nq-6-3&lock=1', prep: brainBoard },
+  { step: '7.1', state: 'chart-it', slug: 'data-detective', params: 'chapter=chart&band=1b&lock=1', prep: dataDetective },
+  { step: '7.2', state: 'my-data', slug: 'data-detective', params: 'chapter=my-data&band=1b&lock=1', prep: dataDetective },
+  { step: '7.3', state: 'numbers', slug: 'would-you-rather', params: '', prep: wouldYouRather },
+  { step: '7.4', state: 'vault-run', slug: 'quest-race', params: 'mode=nq-7-4&lock=1', prep: questRace, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -89,6 +101,42 @@ async function fractionFactory(f) {
   await wait(500);
   await f.evaluate(() => { const t = window.__brbTest; const a = t.advice && t.advice(); if (a) t.act(a); });
   await wait(900);
+}
+
+async function dataDetective(f) {
+  // A lesson arrival opens the locked chapter at once, on its first case. Clear the case's opening
+  // card if one is up, then take evidence the way the case teaches, so the photograph is mid-case:
+  // Chart It switches the fruit counts to the bar view; My Data tallies its pet survey (past the
+  // five-answer minimum) and charts it, the claim still unpinned.
+  // The game's fast flag (its own cover() discipline): a case then opens straight on its workspace,
+  // with no story or learn dialog over the chart the photograph needs to show.
+  await f.evaluate(() => { try { window.__brbTest.skipAnimations(); } catch { /* hook not ready */ } });
+  await play(f);
+  await until(f, s => s.screen === 'play' && s.level >= 1, 20000);
+  await f.evaluate(() => { try { window.__brbTest.closeDialog(); } catch { /* no card up */ } });
+  await wait(400);
+  const chapter = await f.evaluate(() => window.__brbTest.state().chapter);
+  if (chapter === 'my-data') {
+    await f.evaluate(() => { const t = window.__brbTest; for (const a of [['tally', 'Dog', 4], ['tally', 'Cat', 3], ['tally', 'Fish', 1], ['tally', 'None', 2], ['view', 'bar']]) t.act(a); });
+  } else {
+    await f.evaluate(() => window.__brbTest.act(['view', 'bar']));
+  }
+  await until(f, s => s.view === 'bar' && s.evidence, 8000);
+  await wait(700);
+}
+async function wouldYouRather(f) {
+  // No lesson parameters: the mission sends the student to choose the Numbers topic in the game, so
+  // the photograph does the same through the game's own start (play alone, the Numbers topic only),
+  // then waits inside the page for the first question card to be fully dealt before shooting.
+  await play(f);
+  await until(f, s => s.bank > 0, 20000);
+  await f.evaluate(() => window.__brbTest.start('alone', { topics: ['numbers'] }));
+  await until(f, s => s.cur && /^numbers-/.test(s.cur) && s.n >= 1, 15000);
+  await f.evaluate(() => new Promise(res => {
+    const t = setInterval(() => { const a = document.querySelector('#optA .tx'), b = document.querySelector('#optB .tx'); if (a && b && a.textContent.trim() && b.textContent.trim()) { clearInterval(t); res(true); } }, 50);
+    setTimeout(() => { clearInterval(t); res(false); }, 15000);
+  }));
+  await wait(500);
 }
 
 async function capture(browser, shot) {

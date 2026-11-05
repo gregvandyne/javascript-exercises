@@ -10,8 +10,13 @@
 // on the check). Every distractor carries a misconception tag and every item a `why`, so a miss teaches.
 // Kid-safe text (US spelling, no brands, links, codes or framework names in anything a child reads), the
 // unit Jumble beats (5.3 misreads $2.05, 6.3 swaps a grid address, 7.3 calls a one-in-six chance
-// impossible) and the arc's resolution in the finale, and the media rule: decks carry NO img — the
-// pictorial step is a DRAWN diagram (slide.visual) with guided focus (slide.focus) over it. The missions
+// impossible) and the arc's resolution in the finale, and the media rule (Greg, 2026-11-05;
+// docs/decisions.md): drawn diagrams teach, real pictures carry missions and story — the pictorial
+// step on a TEACHING slide is a DRAWN diagram (slide.visual) with guided focus (slide.focus) over
+// it; the MISSION slide carries a real screenshot of the assigned game in its assigned mode
+// (slide.img, an nq/<game>/<state> key from public/img/nq/manifest.json, captured by
+// scripts/nq-shots.js); a STORY slide may carry the story stage (slide.story). No other slide
+// carries img or story, and neither ever displaces a drawn diagram or its focus. The missions
 // wire to real carriers: Brain Board and Quest Race step generators in the game files, Data Detective's
 // real chapters, and Would You Rather's Numbers bank (built into the game by scripts/wyr-bank.js).
 import test from 'node:test';
@@ -94,7 +99,7 @@ test('the mission carriers are real: game step generators, Data Detective chapte
   assert.ok(decks.find(d => d.step.n === '7.2').deck.slides.at(-1).text.includes('all 3 survey cases'), '7.2 mission states 3 cases');
 });
 
-test('5-7 slides: one example, one words slide with four words, one Stretch slide, the mission last; no img, drawn visuals carry the focus', () => {
+test('5-7 slides: one example, one words slide with four words, one Stretch slide, the mission last; diagrams teach, missions and story carry the real pictures', () => {
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     assert.ok(d.slides.length >= 5 && d.slides.length <= 7, `${where}: 5-7 slides`);
@@ -107,7 +112,23 @@ test('5-7 slides: one example, one words slide with four words, one Stretch slid
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      assert.ok(!('img' in s), `${at}: no screenshot img — the pictorial step here is a drawn diagram, never a redrawn character`);
+      // The media rule itself (Greg, 2026-11-05; docs/decisions.md): an img belongs on the mission
+      // slide only, and the mission of a deck with a game must carry one — the assigned game's own
+      // screenshot, an nq/<that game>/<state> key, with a truthful alt. A story layer belongs on story
+      // beats only and never displaces a drawn diagram (the teaching visual) or its guided focus; in
+      // these decks a story is Tally alone on the Numberworks street.
+      if ('img' in s) {
+        assert.equal(s.kind, 'mission', `${at}: a screenshot belongs on the mission slide only`);
+        assert.ok(d.game && s.img.startsWith(`nq/${d.game.slug}/`), `${at}: img ${s.img} is the assigned game's own key`);
+        assert.ok(typeof s.alt === 'string' && s.alt.length >= 10 && s.alt.length <= 160, `${at}: a truthful alt of 10..160 chars`);
+      }
+      if (s.kind === 'mission') assert.equal('img' in s, !!d.game, `${at}: the mission carries its game's screenshot (and a game-less mission carries none)`);
+      if ('story' in s) {
+        assert.ok(!('visual' in s) && !('img' in s) && !('focus' in s), `${at}: story never displaces a drawn diagram, a screenshot or guided focus`);
+        assert.equal(s.story.scene, 'street', `${at}: the Numberworks street scene`);
+        assert.deepEqual(s.story.chars, ['tally'], `${at}: Tally alone on the street`);
+        assert.ok(Number.isInteger(s.story.lit) && s.story.lit >= 0 && s.story.lit <= 4, `${at}: street lit 0..4`);
+      }
       assert.ok(!('focus' in s) || 'visual' in s, `${at}: guided focus only ever sits on a drawn diagram in these decks`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: titles differ`); titles.add(s.title.toLowerCase());

@@ -186,6 +186,8 @@
    "title": "Your mission",
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Measures board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Then measure one real thing nearby and tell a partner its measure.",
    "art": "trophy",
+   "img": "nq/brain-board/measures-board",
+   "alt": "Brain Board in play: the Measures board, categories Centimeters, Kilograms, Liters, Add the measure and Which is longer, a centimeters question open.",
    "kind": "mission"
   }
  ],
