@@ -35,9 +35,39 @@ export const GAMES = {
   'packet-post': { title: 'Packet Post', pack: 'scripts/data/cs-quest/packet-post', role: 'wise', spoken: /./ },
   'inside-the-machine': { title: 'Inside the Machine', pack: 'scripts/data/cs-quest/inside-the-machine', role: 'friendly', spoken: /./ },
   'hero-of-sunvale': { title: 'Hero of Sunvale', spoken: /^(intro\.\d+|end\.(\d+|free)|d\.[a-z]+\.[a-z0-9]+|hint\.[a-z0-9]+|say\.[a-zA-Z0-9]+|mg\.[a-z]+|sw\.[a-z0-9]+|cinder\.[a-z]+)$/ },
+  // Every other official game (Greg's rule, 2026-11-05: ALL official games use the AI voice, and every game built
+  // for a course ships registered here from day one — see docs/decisions.md). These keep their words in the marked
+  // I18N block of their own file; every line in the block is the game's own, so the whole table is spoken. Roles:
+  // the game's host or character where it has one (its VOICES block, where present), narrator where it has none.
+  'atlas-quest': { title: 'Atlas Quest', role: 'narrator', spoken: /./ },
+  'atlas-quest-live': { title: 'Atlas Quest (Live)', role: 'narrator', spoken: /./ },
+  'beat-lanes': { title: 'Beat Lanes', role: 'narrator', spoken: /./ },
+  'brain-board': { title: 'Brain Board', role: 'narrator', spoken: /./ },
+  'brick-drop': { title: 'Brick Drop', role: 'narrator', spoken: /./ },
+  'castle-clash': { title: 'Castle Clash', role: 'narrator', spoken: /./ },
+  'code-isle': { title: 'Code Isle', role: 'bright', spoken: /./ },
+  'connect-four': { title: 'Drop Four', role: 'friendly', spoken: /./ },
+  'escape-the-post-office': { title: 'Escape the Post Office', role: 'wise', spoken: /./ },
+  'footy-tycoon': { title: 'Footy Tycoon', role: 'narrator', spoken: /./ },
+  'gulp-city': { title: 'Gulp City', role: 'friendly', spoken: /./ },
+  'happy-putt': { title: 'Happy Putt', role: 'narrator', spoken: /./ },
+  'loop-lab': { title: 'Loop Lab', role: 'narrator', spoken: /./ },
+  'munch-maze': { title: 'Munch Maze', role: 'narrator', spoken: /./ },
+  'quest-race': { title: 'Quest Race', role: 'narrator', spoken: /./ },
+  'question-battle': { title: 'Question Battle', role: 'narrator', spoken: /./ },
+  'ring-rumble': { title: 'Ring Rumble', role: 'narrator', spoken: /./ },
+  'shark-plank': { title: 'Shark Plank', role: 'deep', spoken: /./ },
+  'sum-racer': { title: 'Sum Racer', role: 'bright', spoken: /./ },
+  'swish-flick': { title: 'Swish Flick', role: 'narrator', spoken: /./ },
+  'trick-inbox': { title: 'Trick Inbox', role: 'wise', spoken: /./ },
+  'word-hunt': { title: 'Word Hunt', role: 'narrator', spoken: /./ },
+  'word-peek': { title: 'Word Peek', role: 'narrator', spoken: /./ },
+  'would-you-rather': { title: 'Would You Rather?', role: 'narrator', spoken: /./ },
+  'would-you-rather-live': { title: 'Would You Rather? (Live)', role: 'narrator', spoken: /./ },
 };
 /** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose
- *  spoken lines the server knows. Every other game keeps the device's voice. */
+ *  spoken lines the server knows. Every official game is listed (the coverage test in tests/unit/tts-coverage.test.js
+ *  fails if one is missing), so an unlisted official game is a bug, not a design choice. */
 export const TTS_GAMES = new Set(Object.keys(GAMES));
 /** Lines said under another character's key (used until the game has its own VOICE_KEY_ROLES). hint.* lines are read
  *  by the narrator in every character's card. */

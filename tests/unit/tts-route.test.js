@@ -17,8 +17,12 @@ const R = await import('../../server/routes/tts.js');
 
 const GAME_HTML = '<!doctype html><title>t</title><p>hi</p><script>BRB.speak("Hello there!")</script>';
 const seedGame = publish(official, GAME_HTML, { source: 'seed', slug: 'hero-of-sunvale', title: 'Hero of Sunvale' });
-// An official game not written for AI voices (a kid types the secret word in its two-player mode): device voice only.
-const sharkGame = publish(official, GAME_HTML, { source: 'seed', slug: 'shark-plank', title: 'Shark Plank' });
+// An official game missing from the AI voices list (a bug: every official game must be registered — the coverage
+// test in tts-coverage.test.js guards it): no token, device voice only.
+const unlistedGame = publish(official, GAME_HTML, { source: 'seed', slug: 'unlisted-test-game', title: 'Unlisted' });
+// Two games registered by the all-games rule (5 Nov 2026): a word game and a kit-built course game.
+const wordHuntGame = publish(official, GAME_HTML, { source: 'seed', slug: 'word-hunt', title: 'Word Hunt' });
+const trickGame = publish(official, GAME_HTML, { source: 'seed', slug: 'trick-inbox', title: 'Trick Inbox' });
 const kidGame = publish(kid, GAME_HTML, { source: 'studio', slug: 'tts-kid-game', title: 'Mine' });
 tts.hooks.log = () => {};
 
@@ -76,10 +80,9 @@ test('game: an official game\'s token works for its own player only; Builder gam
   assert.equal((await say(null, { ctx: 'game', tok: d.tok, text: CHEER, lang: 'en' })).status, 403);
   const forged = auth.signToken({ k: 'tts', g: kidGame.id, u: mia.id }, 60);
   assert.equal((await say(mia, { ctx: 'game', tok: forged, text: CHEER, lang: 'en' })).json.code, 'off', 'a token for a Builder game is refused');
-  // An official game that isn't listed for AI voices (shark-plank speaks a word a kid types): no data, and a token
-  // minted for it anyway is refused.
-  assert.equal(R.playData(mia, sharkGame), null); assert.equal(R.frameData(mia, sharkGame), null);
-  assert.equal((await say(mia, { ctx: 'game', tok: auth.signToken({ k: 'tts', g: sharkGame.id, u: mia.id }, 60), text: CHEER, lang: 'en' })).status, 404);
+  // An official game that isn't listed for AI voices: no data, and a token minted for it anyway is refused.
+  assert.equal(R.playData(mia, unlistedGame), null); assert.equal(R.frameData(mia, unlistedGame), null);
+  assert.equal((await say(mia, { ctx: 'game', tok: auth.signToken({ k: 'tts', g: unlistedGame.id, u: mia.id }, 60), text: CHEER, lang: 'en' })).status, 404);
   assert.equal((await say(mia, { ctx: 'game', tok: auth.signToken({ g: seedGame.id, u: mia.id }, 60), text: 'Hi', lang: 'en' })).status, 403, 'not a tts token');
   // A locale that is off (fr), or one TTS can't speak (zh-CN): 404 off.
   assert.equal((await say(mia, { ctx: 'game', tok: d.tok, text: 'Bonjour !', lang: 'fr' })).json.code, 'off');
@@ -96,6 +99,25 @@ test('game: an official game\'s token works for its own player only; Builder gam
   q.run("UPDATE games SET hidden_reason='' WHERE id=?", seedGame.id);
 });
 
+test('the all-games rule: a word game and a kit course game get tokens; only their own lines are read', async () => {
+  on(['en']);
+  // Word Hunt (registered 5 Nov 2026; before, it kept the device voice): the play page mints a token, and the
+  // request for one of its own lines goes to the AI-voices route with the line's role (narrator).
+  const d = R.playData(mia, wordHuntGame);
+  assert.ok(d && d.tok, 'word-hunt gets a token now'); assert.deepEqual(d.langs, ['en']);
+  const tag = lines.gameLines('word-hunt', 'en').find(x => x.key === 'tag').text;
+  const r = await say(mia, { ctx: 'game', tok: d.tok, text: tag, lang: 'en' });
+  assert.equal(r.status, 200, r.text);
+  assert.equal(r.json.u, tts.urlOf(tts.plan({ text: tag, locale: 'en', role: 'narrator' }).hash), 'read with the narrator role');
+  // A word a kid could type is not one of its lines: refused, so it falls back to the device voice in the game.
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: d.tok, text: 'elephant', lang: 'en' })).json, { code: 'filtered' });
+  // Trick Inbox (a kit-built course game, registered the same day): it is inside the system (token minted), but
+  // it has no extractable line table, so no text is readable in game context — never free text.
+  const td = R.playData(mia, trickGame);
+  assert.ok(td && td.tok, 'trick-inbox gets a token now');
+  assert.deepEqual((await say(mia, { ctx: 'game', tok: td.tok, text: 'Is this email safe?', lang: 'en' })).json, { code: 'filtered' });
+});
+
 test('play page and frame: the token and INIT.tts only for an official game with a locale on', async () => {
   on(['en', 'fr']);
   const page = await call('/play/hero-of-sunvale', { user: mia });
@@ -109,8 +131,8 @@ test('play page and frame: the token and INIT.tts only for an official game with
   assert.ok(!kidPage.text.includes('"tts"'));
   const kidFrame = await call(/data-src="(\/frame\/[^"]+)"/.exec(kidPage.text)[1], { user: mia });
   assert.ok(!kidFrame.text.includes('"tts":{'), 'no INIT.tts for a Builder game');
-  const sharkPage = await call('/play/shark-plank', { user: mia });
-  assert.ok(!sharkPage.text.includes('"tts"') && !sharkPage.text.includes('id="p-voices"'), 'no tts and no Voices button for an official game not listed');
+  const unlistedPage = await call('/play/unlisted-test-game', { user: mia });
+  assert.ok(!unlistedPage.text.includes('"tts"') && !unlistedPage.text.includes('id="p-voices"'), 'no tts and no Voices button for an official game not listed');
 });
 
 test('GET /tts/<hash>.mp3: audio/mpeg, immutable, same-origin only; unknown hashes 404', async () => {

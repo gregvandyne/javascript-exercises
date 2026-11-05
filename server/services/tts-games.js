@@ -1,7 +1,7 @@
 // AI voices for one chosen game that is not an official seed game (docs/decisions.md "AI voices for a chosen game").
 // The site owner (platform admin) switches a game on at /admin/voices or on the game's own page (/g/<slug>); every
 // switch is audited. Only a game made by a teacher, school staff or the admin can be switched on: a student's game never,
-// because its words are a kid's; an official game never (it has its own known lines, or keeps the device's voice).
+// because its words are a kid's; an official game never (it has its own known lines, registered in tts-lines).
 // - Stored in settings 'tts.games' as { <game id>: { by, at } }.
 // - What may be read: only the game's OWN words, taken from its PUBLISHED version's HTML (string literals in its
 //   scripts, text and a few text attributes in its markup), cached per published version id, so publishing a new version
@@ -38,9 +38,9 @@ export const isOn = id => !!id && Object.prototype.hasOwnProperty.call(switched(
  *  the platform admin. -> null (ok) or a sentence for the admin. */
 export function whyNot(g) {
   if (!g) return 'No such game.';
-  // Official games read their own known lines (tts-lines GAMES), or keep the device's voice by design: in a word game
-  // the player types the word, so its dictionary must never become a sentence kit.
-  if (isOfficial(g)) return TTS_GAMES.has(g.slug) ? 'This official game already has AI voices: its known lines are read (tts-lines).' : 'Official games not on the AI voices list keep the device\'s voice by design (in word games a player types the word).';
+  // Official games read their own known lines (tts-lines GAMES). Every official game is registered (Greg's rule,
+  // 2026-11-05), so the not-listed answer below reports a bug, not a design choice.
+  if (isOfficial(g)) return TTS_GAMES.has(g.slug) ? 'This official game already has AI voices: its known lines are read (tts-lines).' : 'This official game is missing from the AI voices list (tts-lines GAMES). That is a bug: every official game must be registered.';
   const owner = q.get('SELECT * FROM users WHERE id=?', g.owner_id);
   if (!owner || owner.is_guest || owner.banned) return 'This game\'s maker has no account in good standing, so it keeps the device\'s voice.';
   if (owner.role === 'admin' || isStaff(owner)) return null;

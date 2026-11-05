@@ -35,7 +35,7 @@ test('Hero of Sunvale: spoken lines in every locale, no placeholders, valid role
   // Every character with lines has a role (objects such as gates and crystals are read by the narrator).
   const npcs = new Set([...keys].map(k => /^d\.([a-z]+)\./.exec(k)?.[1]).filter(Boolean));
   for (const n of npcs) if (!['gate', 'crystal', 'door', 'shop'].includes(n)) assert.ok(lines.DEFAULT_VOICE_ROLES[n], `role for ${n}`);
-  assert.equal(lines.readGame('word-hunt'), null, 'only listed games');
+  assert.equal(lines.readGame('no-such-game'), null, 'only listed games');
 });
 
 test('a VOICES block sets roles; the I18N block runs sandboxed with a time limit', () => {
@@ -87,8 +87,12 @@ test('Hero of Sunvale speaks every line with the role the warm-up and the server
   assert.deepEqual(lines.allowedLine('hero-of-sunvale', 'en', 'Find 12 more Sun Gems and I can make it!'), { text: 'Find 12 more Sun Gems and I can make it!', role: 'deep' });
   assert.equal(lines.allowedLine('hero-of-sunvale', 'en', 'Find Mia more Sun Gems and I can make it!'), null);
   assert.equal(lines.allowedLine('hero-of-sunvale', 'en', 'Hello, I am a kid typing'), null);
-  assert.equal(lines.allowedLine('word-hunt', 'en', 'Find the word!'), null, 'only listed games');
-  assert.deepEqual([...lines.TTS_GAMES], ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'hero-of-sunvale']);
+  assert.equal(lines.allowedLine('no-such-game', 'en', 'Find the word!'), null, 'only listed games');
+  assert.deepEqual([...lines.TTS_GAMES], ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'hero-of-sunvale',
+    'atlas-quest', 'atlas-quest-live', 'beat-lanes', 'brain-board', 'brick-drop', 'castle-clash', 'code-isle',
+    'connect-four', 'escape-the-post-office', 'footy-tycoon', 'gulp-city', 'happy-putt', 'loop-lab', 'munch-maze',
+    'quest-race', 'question-battle', 'ring-rumble', 'shark-plank', 'sum-racer', 'swish-flick', 'trick-inbox',
+    'word-hunt', 'word-peek', 'would-you-rather', 'would-you-rather-live']);
 });
 
 test('the CS Quest games use AI voices for their own language-pack lines only', () => {
