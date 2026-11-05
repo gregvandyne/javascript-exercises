@@ -20,19 +20,19 @@
     {
      "cue": "One row is one tray, filled the same as every other.",
      "box": [
-      12,
-      12.4,
-      76,
-      22
+      20.9,
+      24.2,
+      58.2,
+      7.3
      ]
     },
     {
      "cue": "Tray after tray, the count never changes.",
      "box": [
-      12,
-      12.4,
-      76,
-      71.1
+      20.9,
+      24.2,
+      58.2,
+      47.6
      ]
     }
    ]
@@ -51,19 +51,19 @@
     {
      "cue": "One row is one tray: 5 rolls.",
      "box": [
-      12,
-      12.4,
-      76,
-      16.0
+      19.1,
+      21.6,
+      61.8,
+      7.4
      ]
     },
     {
      "cue": "4 trays of 5 is 20 rolls in all.",
      "box": [
-      12,
-      12.4,
-      76,
-      71.1
+      19.1,
+      21.6,
+      61.8,
+      52.8
      ]
     }
    ]
@@ -89,19 +89,19 @@
     {
      "cue": "Each row is a tray of 7. Skip-count: 7, 14, 21...",
      "box": [
-      12,
-      12.4,
-      76,
-      12.4
+      17,
+      19.1,
+      66,
+      7.4
      ]
     },
     {
      "cue": "Six rows of 7: 6 x 7 = 42 rolls in all.",
      "box": [
-      12,
-      12.4,
-      76,
-      64.0
+      17,
+      19.1,
+      66,
+      57.8
      ]
     }
    ]
@@ -120,19 +120,19 @@
     {
      "cue": "Each row holds 7. Skip-count the rows: 7, 14, 21...",
      "box": [
-      12,
-      16.5,
-      76,
-      12.5
+      17,
+      19.1,
+      66,
+      7.4
      ]
     },
     {
      "cue": "Six rows of seven is 42, and seven rows of six is 42 too.",
      "box": [
-      12,
-      12.4,
-      76,
-      66.5
+      17,
+      19.1,
+      66,
+      57.8
      ]
     }
    ]
@@ -166,19 +166,19 @@
     {
      "cue": "Split 23 into 20 and 3. 20 x 4 = 80.",
      "box": [
-      5,
-      34.7,
-      76.5,
-      19.6
+      6,
+      37.3,
+      76.6,
+      15.2
      ]
     },
     {
      "cue": "3 x 4 = 12. Join them: 80 + 12 = 92.",
      "box": [
-      82,
-      34.7,
-      12.5,
-      19.6
+      82.5,
+      37.3,
+      11.5,
+      15.2
      ]
     }
    ]

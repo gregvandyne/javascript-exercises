@@ -260,6 +260,12 @@ function gfLayer(t, s) {
  *  every label is a number or word the slide's text teaches. Layouts are fixed per type so the authored
  *  focus boxes (percent space) land on the part they name. Tones cycle the brand palette. */
 const VF_TONES = ['#66C792', '#FFD23F', '#8FC1F5', '#F2A65A'];
+/** The one drawn caption a diagram carries (tiles and array visuals) is centred over the frame, so
+ *  at the standard 3.8 units a long caption overflows the 100-wide frame and clips at both edges —
+ *  measured on the rendered slides: a 69-character caption renders 120 units wide. The fit size
+ *  below comes from the measured per-character width of the slide font at weight 700 (worst observed
+ *  0.52em across every caption in the decks, with headroom); short captions keep the standard size. */
+const labelFs = s => Math.min(3.8, 168 / String(s).length);
 function visualSvg(v) {
   const ink = '#141414', leaf = '#1F9D63';
   const tx = (x, y, str, size, anchor = 'middle', weight = 700, fill = ink) =>
@@ -275,14 +281,41 @@ function visualSvg(v) {
     }).join('');
   } else if (v.type === 'numberline') {
     const X = at => 6 + ((at - v.min) / (v.max - v.min)) * 88;
+    // Mark labels are centred on their ticks; where two ticks sit close together (287 and 300 on the
+    // counting-up line) the centred labels print over each other — measured overlap 1.7 units — so
+    // label centres are nudged apart until they clear. The ticks stay at their true positions;
+    // only the words move, and only on lines whose labels actually collide.
+    const mlabels = (v.marks || []).map(m => ({ at: m.at, label: m.label, cx: X(m.at), hw: Math.max(1.7, String(m.label).length * 1.12), y: 45 }));
+    const byX = [...mlabels].sort((a, b) => a.cx - b.cx);
+    const trueCx = byX.map(c => c.cx);
+    for (let i = 1; i < byX.length; i++) { const p = byX[i - 1], c = byX[i]; const min = p.cx + p.hw + 1.2 + c.hw; if (c.cx < min) c.cx = min; }
+    for (let i = byX.length - 1; i >= 0; i--) {
+      const c = byX[i];
+      if (c.cx > 99.3 - c.hw) c.cx = 99.3 - c.hw;
+      if (i > 0) { const p = byX[i - 1]; const maxP = c.cx - c.hw - 1.2 - p.hw; if (p.cx > maxP) p.cx = maxP; }
+    }
+    for (const c of byX) if (c.cx < 0.7 + c.hw) c.cx = 0.7 + c.hw;
+    // A cluster of ticks so close that nudging would shove a label more than 4 units off its own
+    // tick (398 and 400 on the 398–703 line: centres 0.6 apart, labels 6.7 wide, measured print
+    // overlap 49 units²) reads worse than the collision it fixes — the word ends up nearer the
+    // neighbour's tick than its own. Those clusters keep their true centres and take turns on a
+    // second row instead, the way textbooks stagger crowded axis labels.
+    for (let i = 0; i < byX.length; i++) {
+      let j = i;
+      while (j + 1 < byX.length && trueCx[j + 1] - byX[j + 1].hw < trueCx[j] + byX[j].hw) j++;
+      if (j > i && Math.max(...byX.slice(i, j + 1).map((c, k) => Math.abs(c.cx - trueCx[i + k]))) > 4) {
+        byX.slice(i, j + 1).forEach((c, k) => { c.cx = trueCx[i + k]; c.y = k % 2 ? 52.3 : 45; });
+      }
+      i = j;
+    }
     body = raw(`<line x1="6" y1="36" x2="94" y2="36" stroke="${ink}" stroke-width="0.8"/><path d="M94 36 l-3 -1.8 v3.6 z" fill="${ink}"/>`)
       + (v.hops || []).map(h => {
         const x1 = X(h.from), x2 = X(h.to), mid = (x1 + x2) / 2;
         return raw(`<path d="M${x1.toFixed(2)} 34 Q${mid.toFixed(2)} 20 ${x2.toFixed(2)} 34" fill="none" stroke="${leaf}" stroke-width="0.9"/>`)
           + tx(mid, 17.5, h.label, 3.8, 'middle', 800, leaf);
       }).join('')
-      + (v.marks || []).map(m => raw(`<line x1="${X(m.at).toFixed(2)}" y1="33.4" x2="${X(m.at).toFixed(2)}" y2="38.6" stroke="${ink}" stroke-width="0.7"/>`)
-        + tx(X(m.at), 45, m.label, 3.6, 'middle', 700)).join('')
+      + mlabels.map(m => raw(`<line x1="${X(m.at).toFixed(2)}" y1="33.4" x2="${X(m.at).toFixed(2)}" y2="38.6" stroke="${ink}" stroke-width="0.7"/>`)
+        + tx(m.cx, m.y, m.label, 3.6, 'middle', 700)).join('')
       + (v.point ? raw(`<circle cx="${X(v.point.at).toFixed(2)}" cy="36" r="2.3" fill="#FFD23F" stroke="${ink}" stroke-width="0.7"/>`)
         + tx(X(v.point.at), 28.5, v.point.label, 4.6, 'middle', 800) : '');
   } else if (v.type === 'bars' || v.type === 'fraction') {
@@ -311,7 +344,7 @@ function visualSvg(v) {
       dots += raw(`<circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="2.05" fill="${VF_TONES[0]}" stroke="${ink}" stroke-width="0.45"/>`);
     }
     if (v.extra) dots += raw(`<circle cx="50" cy="50.5" r="2.05" fill="#FFD23F" stroke="${ink}" stroke-width="0.6"/>`) + tx(55, 52, v.extraLabel || '1 left over', 3.6, 'start', 800, leaf);
-    body = dots + (v.label ? tx(50, 6.5, v.label, 3.8, 'middle', 700) : '');
+    body = dots + (v.label ? tx(50, 6.5, v.label, labelFs(v.label), 'middle', 700) : '');
   } else if (v.type === 'tiles') {
     const n = v.values.length, bw = (88 - (n - 1) * 2) / n;
     body = v.values.map((val, i) => {
@@ -319,7 +352,7 @@ function visualSvg(v) {
       return raw(`<rect x="${x.toFixed(2)}" y="18" width="${bw.toFixed(2)}" height="15" rx="1.8" fill="${bad ? '#FFE1D6' : '#FFFFFF'}" stroke="${bad ? '#C2431F' : ink}" stroke-width="${bad ? 1 : 0.7}"${bad ? ' stroke-dasharray="2 1.4"' : ''}/>`)
         + tx(x + bw / 2, 28, val, String(val).length > 7 ? 2.9 : 3.8)
         + (bad ? tx(x + bw / 2, 40, 'swapped!', 3.4, 'middle', 800, '#C2431F') : '');
-    }).join('') + (v.label ? tx(50, 10, v.label, 3.8, 'middle', 700) : '');
+    }).join('') + (v.label ? tx(50, 10, v.label, labelFs(v.label), 'middle', 700) : '');
   }
   return raw(`<svg class="vf-svg" viewBox="0 0 100 56.25" role="img" aria-label="${String(v.label || '').replace(/"/g, '&quot;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
 }
