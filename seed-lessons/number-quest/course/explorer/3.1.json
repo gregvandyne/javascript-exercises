@@ -211,7 +211,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Sum Racer. It opens on the 2, 5 and 10 times tables track, and it stays there. Win the race: picture the trays of groups before you answer each fact.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/sum-racer/times-tables-track",
+   "alt": "Sum Racer on the times tables track: a multiplication question on screen, four answers to pick from, the race under way."
   }
  ],
  "check": [

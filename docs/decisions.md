@@ -2377,6 +2377,35 @@ for AI voices from day one**. This supersedes the word-game carve-out in the AI-
 - A word game's dictionary still never becomes a sentence kit: only the game's own scripted lines are read.
   A word or letter a player types is never spoken by the AI voice.
 
+## Number Quest deck pictures: diagrams teach, real pictures carry missions and story (5 Nov 2026)
+
+Owner's rule (2026-11-05), replacing the blanket no-images rule the Number Quest deck tests used to pin:
+**drawn diagrams remain the pictorial step on TEACHING slides; real imagery is allowed, and expected, on
+MISSION slides and STORY slides.** A mission slide carries a real screenshot of the game the mission
+assigns, photographed in the mode the mission assigns (the track, board, pattern set or chapter the lesson
+parameters open). A story slide may carry the story stage: Tally in a Numberworks scene. No other slide
+carries a photograph, and a slide with a drawn diagram (visual) carries neither img nor story.
+
+What the platform needed, and now has:
+- Deck image keys extend beyond CS Quest: `nq/<game>/<state>` joins `csq/<game>/<state>` in the deck
+  validator. Number Quest pictures keep their own manifest (`public/img/nq/manifest.json`, checked by
+  `npm run nq:check`, the twin of the CSQ check) and their own capture pipeline (`scripts/nq-shots.js`),
+  which boots each game with the deck's own lesson parameters so the photograph shows the assigned mode.
+- The story stage's cast extends by one: Tally (`/img/csq/chars/tally.webp`, the sprite that already
+  existed) and one Numberworks scene, `street` — the workshop street, its windows lit per the beat
+  (data-lit 0-4, the drain scene's quiet-dark discipline at 0). The extension is additive: CS Quest and
+  Cyber casts, scenes, decks and rendering are unchanged.
+- Animation is the story mechanism's own CSS (entrance + idle on the sprite); Tally pads in and purrs.
+  A beat whose teaching visual is a diagram keeps the diagram: a story layer never displaces a visual
+  or its guided focus.
+
+Scope: the 13 built Explorer decks (0.1-4.3). Every mission slide of a deck with a game carries that
+game's screenshot; 0.1's two opening beats carry Tally on the street (lit 1, then 0 as the workshops go
+quiet). Phase 2 decks (Units 5-7, the finale) were authored in parallel, just before this platform
+landed, and their mission slides carry no captures yet: a capture sweep is owed for 5.1, 5.2, 5.3, 6.2,
+6.3, 7.1, 7.2, 7.3 and 7.4 (6.1 has no game, so the rule does not reach it), and
+scripts/nq-manifest-check.js names each owed capture on every run until it lands. The sweep also
+flips the no-img pin in tests/unit/number-quest-decks-c.test.js to this rule for those decks.
 ## Brain Board lessons complete at a points goal, and the board saves (5 Nov 2026)
 
 Owner's amendment, for **Brain Board's Number Quest lessons only** (steps 1.1 and 2.3): clearing all

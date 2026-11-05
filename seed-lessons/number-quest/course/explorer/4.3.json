@@ -213,7 +213,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Fraction Factory at Recipe Maths, then serve the orders. Re-slice until the pieces match before you add any two shares.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/fraction-factory/recipe-maths",
+   "alt": "Fraction Factory, Recipe Maths: the recipe order adds two fractions of a cake, shown as fraction bars over the whole cake, on one tray."
   }
  ],
  "check": [

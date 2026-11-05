@@ -229,7 +229,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Sum Racer. It opens on the Rounding Run track, a track of nothing but rounding questions, and it stays there. Win the race: say each number out loud, rounded, before your kart moves.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/sum-racer/rounding-run",
+   "alt": "Sum Racer on the Rounding Run track: a rounding question on screen, four answers to pick from, the karts just off the start line, lap 1 of 3."
   }
  ],
  "check": [

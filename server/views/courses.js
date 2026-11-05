@@ -169,6 +169,7 @@ function art(id) {
 const CHAR_META = {
   bolt: { name: 'Bolt', color: '#4FA8F0' }, dot: { name: 'Dot', color: '#F2994A' },
   pim: { name: 'Pim', color: '#FFD23F' }, gizmo: { name: 'Gizmo', color: '#8FC1F5' },
+  tally: { name: 'Tally', color: '#66C792' },
 };
 const CHAR_ORDER = ['bolt', 'dot', 'pim', 'gizmo'];
 /** Where each character's centre stands on the handoff stage (cqw): the flown piece's start offset is
@@ -215,6 +216,30 @@ function mapHtml(st) {
     </div>`)}
   </div>`;
 }
+/** The Numberworks street (Number Quest's story scene): four workshop fronts — roofs, shutter doors, one
+ *  window each — drawn in the town silhouette's own ink, with the windows lit per the scene's lit count
+ *  (0-4: how many workshops are awake). Tally stands in front of them in the usual cast row. No Spark, no
+ *  pieces: that plot is CS Quest's; the street is Number Quest's own stage, animated by the same CSS
+ *  discipline (entrance under [data-story-on], her purr idle on the sprite, the finished frame otherwise). */
+function streetHtml(st) {
+  const front = (x, i) => html`<g>
+    <path d="M${x - 4} 48 L${x + 44} 16 L${x + 92} 48 Z"/>
+    <rect x="${x}" y="48" width="88" height="102"/>
+    <rect x="${x + 27}" y="70" width="34" height="12"/>
+    <rect x="${x + 29}" y="92" width="30" height="58"/>
+    ${[102, 114, 126, 138].map(y => html`<line x1="${x + 31}" y1="${y}" x2="${x + 57}" y2="${y}" stroke-width="2"/>`)}
+    <rect class="story-swin${i < st.lit ? ' is-lit' : ''}" x="${x + 10}" y="56" width="24" height="20" rx="2"/>
+  </g>`;
+  return html`<svg class="story-street" viewBox="0 0 400 150" preserveAspectRatio="none" aria-hidden="true">${[8, 106, 204, 302].map((x, i) => front(x, i))}</svg>`;
+}
+function streetArt(st) {
+  return html`<figure class="smedia story" data-story data-scene="street" data-lit="${st.lit}">
+    <div class="story-stage" aria-hidden="true">
+      ${streetHtml(st)}
+      <div class="story-cast">${st.chars.map((id, i) => storyChar(id, i))}</div>
+    </div>
+  </figure>`;
+}
 /** A slide's story stage (the story & intro pack): the Spark, its pieces and the characters, animated by
  *  public/js/course.js + CSS keyframes when the stage scrolls into view. The stage is decoration (aria-hidden):
  *  the slide's title and text always carry the story in words. With no script, or under reduced motion, the
@@ -222,6 +247,7 @@ function mapHtml(st) {
  *  the story has made it. The script first arms the stage (start positions) and then plays it once per view. */
 function storyArt(t, s) {
   const st = s.story;
+  if (st.scene === 'street') return streetArt(st);
   const town = ['dim', 'drain', 'team', 'map'].includes(st.scene);
   const quiet = st.scene === 'dim' || st.scene === 'drain';
   return html`<figure class="smedia story" data-story data-scene="${st.scene}" data-lit="${st.lit}">

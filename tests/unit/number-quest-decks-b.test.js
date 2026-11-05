@@ -6,8 +6,12 @@
 // of the step's LOCKED primary codes (standards.json explorerCodes), every distractor carries a
 // misconception tag, kid-safe text (US spelling, no brands, links, codes or framework names in anything
 // a child reads), the unit Jumble beats (3.3 races itself, 4.3 adds the bottoms too), and the media
-// rule: decks carry NO img (no redrawn or substituted character, ever) — the pictorial step is a DRAWN
-// diagram (slide.visual) with guided focus (slide.focus) over it. Unit 4 missions wire to
+// rule (Greg, 2026-11-05; docs/decisions.md): drawn diagrams teach, real pictures carry missions and
+// story — the pictorial step on a TEACHING slide is a DRAWN diagram (slide.visual) with guided focus
+// (slide.focus) over it; the MISSION slide carries a real screenshot of the assigned game in its
+// assigned mode (slide.img, an nq/<game>/<state> key from public/img/nq/manifest.json, captured by
+// scripts/nq-shots.js); a STORY slide may carry the story stage (slide.story). No other slide carries
+// img or story, and neither ever displaces a drawn diagram or its focus. Unit 4 missions wire to
 // Fraction Factory, which IS present in seed-games (built in parallel): the chapter names in units.json
 // (First Cuts, Re-Slice, Recipe Maths) must be real chapters in the game file.
 import test from 'node:test';
@@ -77,7 +81,7 @@ test('Fraction Factory chapters named in units.json are real chapters in the gam
   }
 });
 
-test('5-7 slides: one example, one words slide with four words, one Stretch slide, the mission last; no img, drawn visuals carry the focus', () => {
+test('5-7 slides: one example, one words slide with four words, one Stretch slide, the mission last; diagrams teach, missions and story carry the real pictures', () => {
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     assert.ok(d.slides.length >= 5 && d.slides.length <= 7, `${where}: 5-7 slides`);
@@ -90,7 +94,23 @@ test('5-7 slides: one example, one words slide with four words, one Stretch slid
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      assert.ok(!('img' in s), `${at}: no screenshot img — the pictorial step here is a drawn diagram, never a redrawn character`);
+      // The media rule itself (Greg, 2026-11-05; docs/decisions.md): an img belongs on the mission
+      // slide only, and the mission of a deck with a game must carry one — the assigned game's own
+      // screenshot, an nq/<that game>/<state> key, with a truthful alt. A story layer belongs on story
+      // beats only and never displaces a drawn diagram (the teaching visual) or its guided focus; in
+      // these decks a story is Tally alone on the Numberworks street.
+      if ('img' in s) {
+        assert.equal(s.kind, 'mission', `${at}: a screenshot belongs on the mission slide only`);
+        assert.ok(d.game && s.img.startsWith(`nq/${d.game.slug}/`), `${at}: img ${s.img} is the assigned game's own key`);
+        assert.ok(typeof s.alt === 'string' && s.alt.length >= 10 && s.alt.length <= 160, `${at}: a truthful alt of 10..160 chars`);
+      }
+      if (s.kind === 'mission') assert.equal('img' in s, !!d.game, `${at}: the mission carries its game's screenshot (and a game-less mission carries none)`);
+      if ('story' in s) {
+        assert.ok(!('visual' in s) && !('img' in s) && !('focus' in s), `${at}: story never displaces a drawn diagram, a screenshot or guided focus`);
+        assert.equal(s.story.scene, 'street', `${at}: the Numberworks street scene`);
+        assert.deepEqual(s.story.chars, ['tally'], `${at}: Tally alone on the street`);
+        assert.ok(Number.isInteger(s.story.lit) && s.story.lit >= 0 && s.story.lit <= 4, `${at}: street lit 0..4`);
+      }
       assert.ok(!('focus' in s) || 'visual' in s, `${at}: guided focus only ever sits on a drawn diagram in these decks`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: titles differ`); titles.add(s.title.toLowerCase());

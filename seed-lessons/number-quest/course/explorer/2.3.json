@@ -250,7 +250,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your story board: every tile tells a story, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Sketch each story as a bar before you pick an answer.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/brain-board/story-board",
+   "alt": "Brain Board in play: the story board, categories Draw the story, Joining stories, Gap stories, Two steps and Estimate first, a story question open."
   }
  ],
  "check": [

@@ -223,7 +223,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your place value board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. When a big number appears, read out its place values before you answer.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/brain-board/place-value-board",
+   "alt": "Brain Board in play: the place value board, categories Digit value, Expanded form, Bigger number, Where it sits and Round it, a digit value question open."
   }
  ],
  "check": [
