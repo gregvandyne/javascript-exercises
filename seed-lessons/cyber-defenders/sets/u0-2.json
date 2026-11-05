@@ -21,7 +21,8 @@
     "The Magpie moved away and the post is fully safe now",
     "Letters stopped arriving and Netville uses no post"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The Pro course opens a year on: more post is moving, and the Magpie's tricks are bigger and organized."
   },
   {
    "id": "cd-2-0.1-e2",
@@ -38,7 +39,8 @@
     "Because a defense is a system, and hoping is not a system",
     "Because every message is checked by the Magpie first"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A defense is a system that works even on a bad day. Hoping it never happens is not a system."
   },
   {
    "id": "cd-2-0.1-e3",
@@ -55,7 +57,8 @@
     "One game level, repeated until the time runs out",
     "A lecture, a worksheet, and a stamp for showing up"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Every step follows the same shape: story, new words, a quick check, then the mission."
   }
  ]
 }

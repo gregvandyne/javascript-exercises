@@ -65,7 +65,8 @@
     "fix or remove the row before charting",
     "make it the chart's title"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "'Twelvety' is not a number, so the row would poison the chart. Fix it or take it out first."
   },
   {
    "id": "2-3.1-e2",
@@ -82,7 +83,8 @@
     "chart them as three colors",
     "sort them by length"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The three spellings mean one color. Merging them makes one honest count instead of three small ones."
   },
   {
    "id": "2-3.1-e3",
@@ -99,7 +101,8 @@
     "dates",
     "the class names"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "The classes are different sizes, so raw counts mislead. Percentages put both on the same scale."
   },
   {
    "id": "2-3.2-r1",
@@ -133,7 +136,8 @@
     "run one more trial only",
     "change the rule and test again"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "The trials beat the rule by a lot, so the rule is wrong somewhere. Change it, then test the new rule."
   },
   {
    "id": "2-3.2-e2",
@@ -150,7 +154,8 @@
     "the model now predicts perfectly",
     "the trials were too short to count"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Error measures the gap between the model and the data. A smaller error means the model fits better."
   },
   {
    "id": "2-3.2-e3",
@@ -167,7 +172,8 @@
     "run 2 more tests and call it done",
     "remove the jump from the game"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The rule fails most runs, far from the target. Change the rule and rerun the full set of tests."
   },
   {
    "id": "2-3.3-r1",
@@ -201,7 +207,8 @@
     "\"What do you do at recess?\"",
     "\"Do you like recess? yes/no\""
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The question pushes toward one answer ('Don't you agree'), so it leads people instead of asking fairly."
   },
   {
    "id": "2-3.3-e2",
@@ -218,7 +225,8 @@
     "to find the fastest pair",
     "because charts need color"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "More answers from more people make the sample bigger and fairer, so the claim stands on more ground."
   },
   {
    "id": "2-3.3-e3",
@@ -235,7 +243,8 @@
     "are an error in the app",
     "could change a close result"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Two answers can flip a close result, so missing answers matter most when the counts are near."
   }
  ]
 }

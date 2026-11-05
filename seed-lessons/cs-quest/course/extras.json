@@ -10,14 +10,15 @@
     "2": [
      {
       "id": "2-0.1-e1",
-      "q": "Why did the Spark go dim?",
+      "q": "Bolt, Dot, Pim and Gizmo know their worlds. What can none of them do?",
       "choices": [
-       "The town's batteries ran out",
-       "Nobody in Netville can code",
-       "The Spark got bored",
-       "A storm knocked it out"
+       "Code: that is your job",
+       "Read a map",
+       "Ride the post van",
+       "Count the Spark's pieces"
       ],
-      "answer": 1
+      "answer": 0,
+      "why": "The four friends know their own worlds, but none of them can code. Coding the games is your job."
      },
      {
       "id": "2-0.1-e2",
@@ -28,7 +29,8 @@
        "Three",
        "Ten"
       ],
-      "answer": 0
+      "answer": 0,
+      "why": "The Spark is broken into four pieces, one for each world you will visit."
      },
      {
       "id": "2-0.1-e3",
@@ -39,7 +41,8 @@
        "Two out of three",
        "There is no check"
       ],
-      "answer": 2
+      "answer": 2,
+      "why": "Two out of three opens the mission. The check makes sure the ideas landed before you play."
      }
     ],
     "1b": [
@@ -52,7 +55,8 @@
        "It turned into a game",
        "Nothing happened"
       ],
-      "answer": 1
+      "answer": 1,
+      "why": "The story says the Spark went dim, and coding the games is how it comes back."
      },
      {
       "id": "1b-0.1-e2",
@@ -63,7 +67,8 @@
        "Dot does, with her magnifying glass",
        "It lights itself"
       ],
-      "answer": 0
+      "answer": 0,
+      "why": "Bolt, Dot, Pim and Gizmo need a coder. That coder is you."
      },
      {
       "id": "1b-0.1-e3",
@@ -74,7 +79,8 @@
        "Read the story, pass the check, then play the mission",
        "Guess every answer fast"
       ],
-      "answer": 2
+      "answer": 2,
+      "why": "Every step works the same way: story first, then the check, then the mission game."
      }
     ]
    }

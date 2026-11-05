@@ -76,7 +76,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road and finish 4 levels, then two Many Roads levels with a hop budget.",
+   "text": "Open Packet Post at Rules of the Road and finish all 6 levels, then two Many Roads levels with a hop budget.",
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-key",
    "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."

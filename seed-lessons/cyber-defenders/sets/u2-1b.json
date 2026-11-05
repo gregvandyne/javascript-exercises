@@ -21,7 +21,8 @@
     "birthday123, because numbers always make it safe",
     "my best friend's name, because it feels personal"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Length beats cleverness. Four random words are far harder to guess than a short name or a birthday."
   },
   {
    "id": "cd-1b-2.1-e2",
@@ -38,7 +39,8 @@
     "Only you and a trusted adult",
     "Anyone online who asks for it nicely"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A passphrase is private. Only you, and a trusted adult who helps you, should know it."
   },
   {
    "id": "cd-1b-2.1-e3",
@@ -55,7 +57,8 @@
     "Share half of it, so it stays a bit secret",
     "Share it just once, then forget about it"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Playing as you means being you online. The answer stays no, even for a best friend."
   },
   {
    "id": "cd-1b-2.2-e1",
@@ -72,7 +75,8 @@
     "Any visitor who is curious about the letters",
     "A friend who wants to borrow Sam's account"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Private letters belong to their owner. A found key or a curious visitor does not earn a look."
   },
   {
    "id": "cd-1b-2.2-e2",
@@ -89,7 +93,8 @@
     "It lets anyone open the mailbox without a key",
     "It makes a spare copy of all the letters inside"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Two different steps guard the box. The lost key alone cannot open it without the code sent home."
   },
   {
    "id": "cd-1b-2.2-e3",
@@ -106,7 +111,8 @@
     "A cipher",
     "A backup"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A backup is the spare copy kept somewhere else, ready for the day the first copy is lost."
   },
   {
    "id": "cd-1b-2.3-e1",
@@ -123,7 +129,8 @@
     "CAT",
     "FOX"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Shift each letter of FDW back by 3: F to C, D to A, W to T. The plain word is CAT."
   },
   {
    "id": "cd-1b-2.3-e2",
@@ -140,7 +147,8 @@
     "The road the message takes to a friend",
     "The funny picture that helps you remember words"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "The key is the secret setting of the cipher. Without it, the scrambled letters stay scrambled."
   },
   {
    "id": "cd-1b-2.3-e3",
@@ -157,7 +165,8 @@
     "The message travels much faster than plain letters",
     "The letters turn into pictures that only owls can read"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Scrambling turns the words into mixed-up letters. A peeker without the key cannot read them."
   }
  ]
 }

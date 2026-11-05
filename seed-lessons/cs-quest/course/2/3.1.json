@@ -68,7 +68,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Data Detective at Clean-Up Crew and solve 4 cases. Chart the data as it is first, then clean it and chart it again. What changed?",
+   "text": "Open Data Detective at Clean-Up Crew and solve all 6 cases. Chart the data as it is first, then clean it and chart it again. What changed?",
    "art": "trophy",
    "img": "csq/data-detective/cleanup-2-key",
    "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings."

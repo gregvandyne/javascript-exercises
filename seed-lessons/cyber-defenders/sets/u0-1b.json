@@ -21,7 +21,8 @@
     "the Magpie and its shiny nest",
     "every road in Netville"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A Defender's job is bigger than one building: the messages, and the people sending them."
   },
   {
    "id": "cd-1b-0.1-e2",
@@ -38,7 +39,8 @@
     "a pest who collects shiny secrets",
     "a robin who collects bright ribbons"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The Magpie is the pest of the story: it collects shiny secrets that are not its to keep."
   },
   {
    "id": "cd-1b-0.1-e3",
@@ -48,14 +50,15 @@
    "topic": "Welcome",
    "kind": "scenario",
    "secs": 15,
-   "q": "During a check in this course, you are not sure which answer is right. What should you do?",
+   "q": "Someone online you have never met says they are your friend and asks where you live. What should you do?",
    "choices": [
-    "Ask a trusted adult instead of guessing",
-    "Pick the longest answer every time",
-    "Skip the check and open a game",
-    "Copy the answer from a friend"
+    "Never share it, and tell a trusted adult",
+    "Share it, because they said they are a friend",
+    "Share just the street, not the number",
+    "Ask them a question only a real friend could answer"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "People online can pretend to be anyone. Where you live stays private, and a trusted adult should hear about the ask."
   }
  ]
 }

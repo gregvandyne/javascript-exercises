@@ -75,7 +75,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. For each choice, name the benefit and the risk.",
+   "text": "Open Packet Post at Lock It and finish all 7 levels. In the game your passphrase is called your mailbox key. For each choice, name the benefit and the risk.",
    "art": "trophy",
    "img": "csq/packet-post/locks-2-key",
    "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."

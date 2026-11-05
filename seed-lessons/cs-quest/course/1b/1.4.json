@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "Bolt needs to remember",
-   "text": "Some doors open only when Bolt has 5 gems. How does a program remember how many it has? It uses a variable.",
+   "text": "Some doors open only when Bolt has picked up every gem on the way. How does a program remember how many it has? It uses a variable.",
    "art": "robot",
    "img": "csq/robo-route/variables-1b-key",
    "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",
@@ -255,7 +255,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Variables and finish 4 levels. Press Step and read the watch pill after each block: what is in the box now?",
+   "text": "Open Robo Route at Variables and finish all 6 levels. Press Step and read the watch pill after each block: what is in the box now?",
    "art": "trophy",
    "img": "csq/robo-route/variables-1b-key",
    "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",

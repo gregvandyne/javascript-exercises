@@ -66,9 +66,9 @@
    "text": "Put an if / else inside a repeat. Bolt checks again at every square, so it turns by itself at each wall.",
    "art": "grid",
    "img": "csq/robo-route/conditionals-1b-fog-proof",
-   "alt": "The repeat until goal program with the if / else inside it, ready to feel its way across a water board it cannot fully see.",
+   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the dry path across a board of water.",
    "steps": [
-    "repeat 6 times:",
+    "repeat until goal:",
     "if path ahead: move",
     "else: turn left"
    ],
@@ -92,7 +92,7 @@
      ]
     },
     {
-     "cue": "The goal waits in the water: checking finds the way.",
+     "cue": "The goal waits on a dry square past the water: checking finds the way.",
      "box": [
       26.3,
       49.7,
@@ -165,7 +165,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Conditionals & events and finish 4 levels. Say each rule out loud first: if ___, then Bolt ___.",
+   "text": "Open Robo Route at Conditionals & events and finish all 7 levels. Say each rule out loud first: if ___, then Bolt ___.",
    "art": "trophy",
    "img": "csq/robo-route/conditionals-1b-fog",
    "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",

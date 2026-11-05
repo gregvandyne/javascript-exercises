@@ -75,14 +75,15 @@
    "topic": "Parts",
    "kind": "apply",
    "secs": 20,
-   "q": "A robot's light sensor needs the robot for…",
+   "q": "A robot's light sensor is one part of the robot. What does every part need from the battery so it can work?",
    "choices": [
     "light",
     "power",
     "sound",
     "wheels"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "No part works without power from the battery, not even a sensor. Sensing light is the sensor's job; power is what lets it do that job."
   },
   {
    "id": "1b-5.1-e3",
