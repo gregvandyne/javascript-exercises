@@ -132,7 +132,7 @@ export function visibleWhere(user) {
     params: [user.id, user.id, user.id, user.id, user.id, user.id]
   };
 }
-const COLS = `g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
+const COLS = `g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.course_only, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
   u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color, u.photo_at AS owner_photo_at, u.account_type AS owner_type`;
 export const SELECT = `SELECT ${COLS} FROM games g JOIN users u ON u.id=g.owner_id`;
 
@@ -157,8 +157,11 @@ const ORDERS = {
   rated: 'CASE WHEN g.rating_count>0 THEN (g.rating_sum*1.0+3*2)/(g.rating_count+2) ELSE 0 END DESC, g.rating_count DESC, g.plays DESC',
   likes: 'g.likes DESC', title: 'g.title ASC'
 };
-/** Course games (services/course-catalog.js) are played only inside their course, so open lists leave them out. */
-const NOT_COURSE = () => (COURSE_GAME_SLUGS.length ? ` AND g.slug NOT IN (${COURSE_GAME_SLUGS.map(x => `'${x.replace(/'/g, '')}'`).join(',')})` : '');
+/** Course games are played only inside their course, so open lists leave them out: both the games a course owns
+ *  in services/course-catalog.js (unshared entries) and any game flagged course_only on its row (migration 0047:
+ *  games built solely as a course's modules, e.g. Cyber Defenders' Trick Inbox and Escape the Post Office).
+ *  Every public catalogue surface (rails, search, similar, playing now, the sitemap) must apply this fragment. */
+export const NOT_COURSE = () => ` AND g.course_only=0${COURSE_GAME_SLUGS.length ? ` AND g.slug NOT IN (${COURSE_GAME_SLUGS.map(x => `'${x.replace(/'/g, '')}'`).join(',')})` : ''}`;
 export function listVisible(user, { order = 'popular', limit = 24, category = null, ownerId = null, featured = false, offset = 0, official = false } = {}) {
   const v = visibleWhere(user); const params = [...v.params]; let where = v.sql + NOT_COURSE();
   if (official) { where += " AND g.source='seed' AND u.username=?"; params.push(OFFICIAL); }   // launch games only
@@ -175,7 +178,7 @@ export function playingNow(user, limit = 12) {
 }
 export function fromFriends(user, limit = 12) {
   if (!user) return [];
-  return decorate(q.all(`${SELECT} WHERE g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason='' AND g.visibility IN ('public','friends') AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted') ORDER BY g.published_at DESC LIMIT ?`, user.id, limit));
+  return decorate(q.all(`${SELECT} WHERE g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason=''${NOT_COURSE()} AND g.visibility IN ('public','friends') AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted') ORDER BY g.published_at DESC LIMIT ?`, user.id, limit));
 }
 /** A player's favorites (the games they tapped ❤️ on), newest first. Only games this viewer may still see. */
 export function favorites(viewer, userId, limit = 24, offset = 0) {
@@ -214,7 +217,7 @@ export function searchBuilders(user, text, limit = 8) {
   const t = String(text || '').trim().slice(0, 40); if (t.length < 2) return [];
   const v = visibleWhere(user); const like = likeEsc(t);
   return q.all(`SELECT u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, COUNT(g.id) AS games, COALESCE(SUM(g.plays),0) AS plays
-    FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql} AND u.account_type!='grownup' AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
+    FROM users u JOIN games g ON g.owner_id=u.id WHERE ${v.sql}${NOT_COURSE()} AND u.account_type!='grownup' AND (u.username LIKE ? OR u.display_name LIKE ?) GROUP BY u.id ORDER BY plays DESC LIMIT ?`, ...v.params, like, like, limit);
 }
 /** official: only launch games (an indexed page shown signed out carries no text a child wrote). */
 export function similar(user, game, limit = 6, { official = false } = {}) {

@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import { liveOn } from '../services/classlive-sessions.js';
 import { config } from '../config.js';
 import { q } from '../db.js';
-import { visibleWhere } from '../services/games.js';
+import { visibleWhere, NOT_COURSE } from '../services/games.js';
 import { OFFICIAL } from '../auth.js';
 import { esc } from '../views/html.js';
 import { HUBS, AGES, PARENT_GUIDES, CONTENT_UPDATED } from '../learn.js';
@@ -39,7 +39,7 @@ router.get('/robots.txt', (req, res) => {
 const day = ms => new Date(ms).toISOString().slice(0, 10);
 /** Official launch games that anyone may open now, most played first. */
 export const launchGames = () => q.all(`SELECT g.slug, g.l10n, g.updated_at, g.published_at FROM games g JOIN users u ON u.id=g.owner_id
-  WHERE ${visibleWhere(null).sql} AND g.source='seed' AND u.username=? ORDER BY g.featured DESC, g.plays DESC, g.slug`, ...visibleWhere(null).params, OFFICIAL);
+  WHERE ${visibleWhere(null).sql}${NOT_COURSE()} AND g.source='seed' AND u.username=? ORDER BY g.featured DESC, g.plays DESC, g.slug`, ...visibleWhere(null).params, OFFICIAL);
 
 /** Every indexable page: { path, langs, lastmod, images }. */
 export function sitemapEntries() {

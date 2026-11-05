@@ -491,6 +491,15 @@ export const MIGRATIONS = [
   // here (set by POST /api/courses/:slug/:step/complete from the play page's brb:gameover). No backfill: a step
   // that was only ever opened is not finished, and there is no way to tell the two apart in the old rows.
   ['0046_course_completed_at', `ALTER TABLE course_progress ADD COLUMN completed_at INTEGER;`],
+  // Course-only games (built solely as a course's game modules: Cyber Defenders' Trick Inbox and Escape the Post
+  // Office) carry course_only=1: they are played only inside their course and stay out of every public catalogue
+  // surface (services/games.js NOT_COURSE, the sitemap, the /g page redirect). Set here for existing databases and
+  // in the seed JSONs ("course_only": true, scripts/import-game.js) for fresh ones. NOTE: the unmerged
+  // number-quest branch also numbers its migrations from 0047; renumber one side when that branch integrates.
+  ['0047_course_only_games', '', conn => {
+    if (!conn.prepare('PRAGMA table_info(games)').all().some(c => c.name === 'course_only')) conn.exec('ALTER TABLE games ADD COLUMN course_only INTEGER NOT NULL DEFAULT 0;');
+    conn.exec(`UPDATE games SET course_only=1 WHERE slug IN ('trick-inbox', 'escape-the-post-office')`);
+  }],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
