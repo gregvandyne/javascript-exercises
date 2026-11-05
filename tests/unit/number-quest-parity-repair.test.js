@@ -30,10 +30,14 @@ test('every mission game reports completion: gameOver call sites in all four mis
   assert.equal((read('seed-games/fraction-factory.html').match(/BRB\.gameOver\(/g) || []).length, 1);
   // Sum Racer fires at race end with won = place 1.
   assert.match(read('seed-games/sum-racer.html'), /BRB\.gameOver\(\{ won: place === 1/);
-  // Brain Board: the cleared practice board reports a finished round, score submitted first.
+  // Brain Board (Greg, 5 Nov 2026): a LESSON board reports the moment its points goal is reached —
+  // the latched pass fires before any board-cleared branch — and a cleared non-lesson practice board
+  // still reports a finished round. Exactly two report sites, no more.
   const bb = read('seed-games/brain-board.html');
+  assert.equal((bb.match(/BRB\.gameOver\(/g) || []).length, 2, 'the lesson pass and the practice clear are the only reports');
   assert.match(bb, /BRB\.gameOver\(\{ won: true, score: p\.score \}\)/);
-  assert.ok(bb.indexOf('BRB.gameOver') > bb.indexOf('if (!b.left)'), 'the board-cleared branch is what reports');
+  assert.match(bb, /if \(!nqPassed && p\.score >= NQ_GOAL\) \{ nqPassed = true; justPassed = true; \}/, 'the lesson pass is latched at the goal');
+  assert.ok(bb.indexOf('justPassed') < bb.indexOf('if (!b.left)'), 'the lesson reports at its goal, not at the clear');
   // Quest Race: the solo practice race reports at its end, guarded to solo (a live class race must not).
   const qr = read('seed-games/quest-race.html');
   assert.match(qr, /if \(solo\) \{ try \{[^}]*BRB\.gameOver\(\{ won: true/);
@@ -63,7 +67,7 @@ test('Sum Racer missions are locked to the taught skill in units.json and in eve
   // The practice-round missions say what finishing means, and name no bank the game does not have.
   for (const n of ['1.1', '2.3']) {
     const deck = JSON.parse(read(`seed-lessons/number-quest/course/explorer/${n}.json`));
-    assert.match(deck.slides.at(-1).text, /Practice Board and finish the whole board/, n);
+    assert.match(deck.slides.at(-1).text, /Practice Board and score 3,000 points to finish/, n);
     assert.equal(deck.game.chapter, 'Practice Board', n);
   }
   const d13 = JSON.parse(read('seed-lessons/number-quest/course/explorer/1.3.json'));
@@ -181,7 +185,7 @@ test('Brain Board lesson boards: a Number Quest step opens its own skill board, 
   assert.match(bb, /BRB\.params\.mode/, 'the lesson is read from BRB.params.mode (the allow-listed key that reaches the frame)');
   assert.match(bb, /NQ_STEP === 'explorer-1\.1'/);
   assert.match(bb, /NQ_STEP === 'explorer-2\.3'/);
-  assert.match(bb, /practice = boardFrom\(nq\)/, 'the lesson board goes through the game\u2019s own board builder');
+  assert.match(bb, /practice = nqRestore\(\) \|\| boardFrom\(nq\)/, 'the lesson board restores its saved progress first, else goes through the game\u2019s own board builder');
   const startBlock = bb.slice(bb.indexOf("L.on('start'"));
   assert.ok(startBlock.indexOf('boardFrom(nq)') > -1 && startBlock.indexOf('boardFrom(nq)') < startBlock.indexOf('SoloBank.choose'), 'the lesson board is tried before the picker is ever shown');
   // Run the real generator in a stub kit world and check its arithmetic the way a child meets it.
