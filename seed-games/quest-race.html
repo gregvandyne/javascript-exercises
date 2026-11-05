@@ -831,10 +831,93 @@ window.SoloBank = (function () {
     mk('The Jumble hid a tile: ' + a + ', ' + (a + d) + ', ' + (a + 2 * d) + ', ?, ' + (a + 4 * d) + '. What did it hide?', a + 3 * d, [a + 2 * d + 1, a + 4 * d, a + 3 * d - 2]);
     return out;
   }
+  // ---- Number Quest lesson race, step 5.2 (Time and timetables): eight generated timetable questions
+  // (end times, elapsed times, start times, one minutes-to-hours swap), answers as clock strings, so a
+  // lesson arrival practises elapsed time as hops on the hour, not a general bank.
+  function nqTimetableItems(rnd) {
+    var out = [];
+    var mkS = function (q, ans, wrong) {
+      var all = [ans]; wrong.forEach(function (w) { if (all.indexOf(w) < 0) all.push(w); });
+      var sh = rnd.shuffle(all.slice(0, 4));
+      while (sh.length < 4) sh.push(ans + ' x' + sh.length);
+      out.push({ q: q, choices: sh, answer: sh.indexOf(ans), secs: 25 });
+    };
+    var fmt = function (mins) { var h = Math.floor(mins / 60), m = mins % 60; return h + ':' + (m < 10 ? '0' : '') + m; };
+    var raw = function (mins) { var h = Math.floor(mins / 60), m = mins % 60; return h + ':' + m; }; // the no-trade error: minutes past 60 left raw
+    var start, dur, end, i;
+    for (i = 0; i < 3; i++) { // End times: hop forward from the start.
+      start = (rnd.int(8, 10)) * 60 + [5, 15, 25, 35, 40, 50][rnd.int(0, 5)];
+      dur = [35, 40, 45, 50, 25, 30][rnd.int(0, 5)]; end = start + dur;
+      mkS('A bus leaves at ' + fmt(start) + '. The ride takes ' + dur + ' minutes. When does it arrive?',
+        fmt(end), [raw(end) !== fmt(end) ? raw(end) : fmt(end + 20), fmt(end + 10), fmt(end - 10)]);
+    }
+    for (i = 0; i < 2; i++) { // Elapsed: the distance between two times.
+      start = rnd.int(8, 10) * 60 + [10, 20, 30, 40, 50][rnd.int(0, 4)];
+      dur = [50, 65, 80, 90, 100][rnd.int(0, 4)]; end = start + dur;
+      mkS('Practice runs from ' + fmt(start) + ' to ' + fmt(end) + '. How many minutes is that?',
+        dur + ' minutes', [(dur + 10) + ' minutes', (dur - 10) + ' minutes', (dur + 30) + ' minutes']);
+    }
+    for (i = 0; i < 2; i++) { // Start times: hop backwards from the end.
+      end = rnd.int(10, 12) * 60 + [0, 5, 15, 30][rnd.int(0, 3)];
+      dur = [30, 35, 45, 50][rnd.int(0, 3)]; start = end - dur;
+      mkS('A film ends at ' + fmt(end) + ' and lasts ' + dur + ' minutes. When did it start?',
+        fmt(start), [fmt(start + 10), fmt(start - 10), fmt(end - 15)]);
+    }
+    // One swap: minutes named as hours and minutes.
+    var tot = [75, 90, 105, 120, 135][rnd.int(0, 4)], hh = Math.floor(tot / 60), mm = tot % 60;
+    mkS('How long is ' + tot + ' minutes, in hours and minutes?', hh + (hh === 1 ? ' hour ' : ' hours ') + mm + ' minutes',
+      [hh + (hh === 1 ? ' hour ' : ' hours ') + (mm + 10) + ' minutes', (hh + 1) + ' hours ' + mm + ' minutes', tot + ' hours']);
+    return out;
+  }
+  // ---- Number Quest lesson race, step 7.4 (the Vault of Measures): the sequenced mixed mission that
+  // stands in for the Vault game until it ships - eight questions, one lock per workshop in street
+  // order (place, join, groups, shares, measures, shapes, charts) and the Honest Wheel to close.
+  function nqVaultItems(rnd) {
+    var out = [];
+    var mkS = function (q, ans, wrong) {
+      var all = [String(ans)]; wrong.map(String).forEach(function (w) { if (all.indexOf(w) < 0) all.push(w); });
+      var sh = rnd.shuffle(all.slice(0, 4));
+      while (sh.length < 4) sh.push(String(ans) + ' x' + sh.length);
+      out.push({ q: q, choices: sh, answer: sh.indexOf(String(ans)), secs: 25 });
+    };
+    var fmt = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
+    var a, b, c;
+    // Lock 1 (Unit 1, place value): the value of one digit where it sits. The named digit must occur
+    // ONCE in the number (the Brain Board 1.1 guard): if it repeats at another place, "the value of
+    // the 7" has a second defensible reading and the x10 / /10 distractors can be genuinely right.
+    var digs = null, pos = 0, guard = 0;
+    do { digs = [rnd.int(2, 9), rnd.int(1, 9), rnd.int(1, 9), rnd.int(1, 9)]; pos = rnd.int(0, 3); guard++; }
+    while (digs.filter(function (d) { return d === digs[pos]; }).length > 1 && guard < 60);
+    var num = digs[0] * 1000 + digs[1] * 100 + digs[2] * 10 + digs[3], place = Math.pow(10, 3 - pos), val = digs[pos] * place;
+    mkS('LOCK 1 · In ' + fmt(num) + ', what is the value of the ' + digs[pos] + '?', fmt(val), [fmt(digs[pos]), fmt(val * 10), fmt(Math.max(1, val / 10))]);
+    // Lock 2 (Unit 2, the ledger gap): how many more to reach the whole?
+    a = rnd.int(320, 640); b = rnd.int(120, a - 120);
+    mkS('LOCK 2 · The ledger needs ' + a + ' stamps and holds ' + b + '. How many more stamps are needed?', a - b, [a + b, a - b + 20, a - b - 20]);
+    // Lock 3 (Unit 3, tray trouble): groups of groups.
+    a = rnd.int(3, 9); b = rnd.int(3, 9);
+    mkS('LOCK 3 · ' + a + ' trays hold ' + b + ' rolls each. How many rolls in all?', a * b, [a + b, a * b + a, a * b - b]);
+    // Lock 4 (Unit 4, the fair cake): a fraction of one whole.
+    c = [4, 6, 8][rnd.int(0, 2)]; a = rnd.int(2, c - 1);
+    mkS('LOCK 4 · A cake is cut into ' + c + ' equal parts. You take ' + a + ' of them. What fraction of the cake did you take?', a + '/' + c, [c + '/' + a, '1/' + c, a + '/' + (c + a)]);
+    // Lock 5 (Unit 5, the heavy sack): a conversion.
+    a = rnd.int(2, 7);
+    mkS('LOCK 5 · A sack is marked ' + a + ' kilograms. How many grams is that?', fmt(a * 1000) + ' grams', [fmt(a * 100) + ' grams', fmt(a * 1000 - 100) + ' grams', fmt(a * 1000 + 1000) + ' grams']);
+    // Lock 6 (Unit 6, fence the garden): the perimeter.
+    a = rnd.int(4, 9); b = rnd.int(3, 8); if (b === a) b += 1;
+    mkS('LOCK 6 · A garden is ' + a + ' by ' + b + ' meters. How many meters of fence go around it?', 2 * (a + b), [a * b, a + b, 2 * (a + b) + 4]);
+    // Lock 7 (Unit 7, charts that answer): how many more.
+    a = rnd.int(11, 19); b = rnd.int(4, a - 4); if (a === 2 * b) b += 1; // a = 2b would make the b distractor equal the key
+    mkS('LOCK 7 · A chart shows ' + a + ' rides on Saturday and ' + b + ' on Sunday. How many more rides on Saturday?', a - b, [a + b, a - b + 2, b]);
+    // The Honest Wheel (Unit 7.3): chance words, honestly named.
+    mkS('THE HONEST WHEEL · A spinner has 6 equal parts and 1 part is red. Landing on red is...', 'Unlikely', ['Certain', 'Impossible', 'An even chance']);
+    return out;
+  }
   // Playing alone: choose the questions first (subject, level, how many), then race.
   function practiceStart() {
     practice.on = true; phase = 'lobby';
     if (NQ_STEP === 'explorer-1.3') { practiceGo(nqPatternItems(practice.rnd)); return; }
+    if (NQ_STEP === 'explorer-5.2') { practiceGo(nqTimetableItems(practice.rnd)); return; }
+    if (NQ_STEP === 'explorer-7.4') { practiceGo(nqVaultItems(practice.rnd)); return; }
     window.SoloBank.choose({}, function (items) { practiceGo(items && items.length ? items : null); });
   }
   function practiceGo(items) {

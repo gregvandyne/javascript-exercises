@@ -170,7 +170,7 @@ function cleanSlide(s) {
         && v.rows.every(r => r && str(r.label, 60) && Array.isArray(r.parts) && r.parts.length >= 1 && r.parts.length <= 4
           && r.parts.every(p => p && num(p.w) && p.w > 0 && p.w <= 1 && (p.tone == null || (Number.isInteger(p.tone) && p.tone >= -1 && p.tone <= 3)))
           && r.parts.reduce((sum, p) => sum + p.w, 0) <= 1.02)) {
-        vis = { type: 'bars', label, rows: v.rows.map(r => ({ label: str(r.label, 60), parts: r.parts.map(p => ({ w: p.w, label: str(p.label, 20), ...(p.tone != null ? { tone: p.tone } : {}), ...(p.unknown ? { unknown: true } : {}) })) })) };
+        vis = { type: 'bars', label, ...(v.half ? { half: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), parts: r.parts.map(p => ({ w: p.w, label: str(p.label, 20), ...(p.tone != null ? { tone: p.tone } : {}), ...(p.unknown ? { unknown: true } : {}) })) })) };
       } else if (v.type === 'fraction' && Array.isArray(v.rows) && v.rows.length >= 1 && v.rows.length <= 3
         && v.rows.every(r => r && str(r.label, 60) && Number.isInteger(r.cuts) && r.cuts >= 2 && r.cuts <= 12 && Number.isInteger(r.shaded) && r.shaded >= 0 && r.shaded <= r.cuts)) {
         vis = { type: 'fraction', label, ...(v.half ? { half: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), cuts: r.cuts, shaded: r.shaded })) };
@@ -528,13 +528,13 @@ export function states(user, course, band) {
   // Number Quest's placement promise, kept here so every reader of step state (path, step pages,
   // play, the step APIs) agrees: the workshops at and before the learner's placed start stay open
   // for games, laps and test-out, even before the steps in front of them are finished. The start
-  // node is read from the placement row directly (no service import, so no cycle); a stored
-  // 'explorer-5.1' from before repair round 3 reads as the furthest built workshop, as the
-  // placement service itself now normalises it.
+  // node is read from the placement row directly (no service import, so no cycle). A stored
+  // 'explorer-5.1' read as Unit 4's door while Unit 5 was unbuilt (repair round 3); since Phase 2
+  // built Unit 5, the node reads as itself, exactly as the placement service now reads it.
   let placedIdx = -1;
   if (course.slug === 'number-quest' && user && user.id) {
     const pr = q.get('SELECT start_node FROM nq_placement WHERE user_id=?', user.id);
-    const node = pr && (pr.start_node === 'explorer-5.1' ? 'explorer-4.1' : pr.start_node);
+    const node = pr && pr.start_node;
     if (node) placedIdx = all.findIndex(s => s.key === node);
   }
   // The platform admin tests the courses themselves (Greg, 2026-11-05): for the admin account every step

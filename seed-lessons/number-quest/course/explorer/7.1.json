@@ -1,0 +1,218 @@
+{
+ "key": "explorer-7.1",
+ "n": "7.1",
+ "band": "explorer",
+ "title": "Charts that answer",
+ "topic": "Charts and graphs",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "The Fairground",
+   "text": "The last workshop on the street is the Fairground, where every stall keeps a chart. A good chart answers a question before anyone asks it. A bad chart just stands there looking busy.",
+   "art": "chart"
+  },
+  {
+   "title": "Bars that speak",
+   "text": "Each bar's length is its count. Bananas sold 20, the longest bar on the chart. Read a bar by running your finger to the end of it, then down to its number. The scale tells you how much each step is worth.",
+   "art": "chart",
+   "visual": {
+    "type": "bars",
+    "label": "A bar graph of fruit sold at a stall: apples 12, bananas 20, pears 16; the longest bar makes 20",
+    "rows": [
+     {
+      "label": "Apples",
+      "parts": [
+       {
+        "w": 0.6,
+        "label": "12"
+       }
+      ]
+     },
+     {
+      "label": "Bananas",
+      "parts": [
+       {
+        "w": 1,
+        "label": "20"
+       }
+      ]
+     },
+     {
+      "label": "Pears",
+      "parts": [
+       {
+        "w": 0.8,
+        "label": "16"
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Apples: the bar stops at 12 on the scale.",
+     "box": [
+      5.8,
+      4.8,
+      53.2,
+      24.7
+     ]
+    },
+    {
+     "cue": "The longest bar: bananas, 20 sold.",
+     "box": [
+      5.8,
+      35.0,
+      88.4,
+      24.8
+     ]
+    },
+    {
+     "cue": "Pears: 16 sold, between apples and bananas.",
+     "box": [
+      5.8,
+      65.3,
+      70.8,
+      24.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Worked example: ribbons end to end",
+   "text": "Rough first: four short ribbons should make a bit more than a yard. Lay them on the line: a half, another half, then two quarters. The halves make a whole yard, and the quarters make another half.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "First ribbon: 1/2 yard, landing at the 1/2 mark",
+    "Second ribbon: 1/2 more, landing at 1 yard",
+    "Two ribbons of 1/4: another 1/2 yard",
+    "In all: 1 1/2 yards"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 0 to 2 yards with hops laying ribbons of 1/2, 1/2, 1/4 and 1/4 end to end, landing at 1 1/2",
+    "min": 0,
+    "max": 2,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 0.5,
+      "label": "1/2"
+     },
+     {
+      "at": 1,
+      "label": "1"
+     },
+     {
+      "at": 1.5,
+      "label": "1 1/2"
+     },
+     {
+      "at": 2,
+      "label": "2"
+     }
+    ],
+    "hops": [
+     {
+      "from": 0,
+      "to": 0.5,
+      "label": "+1/2"
+     },
+     {
+      "from": 0.5,
+      "to": 1,
+      "label": "+1/2"
+     },
+     {
+      "from": 1,
+      "to": 1.5,
+      "label": "+1/2"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Lay the first ribbon: it reaches the 1/2 mark.",
+     "box": [
+      5.8,
+      24.4,
+      22.4,
+      36.2
+     ]
+    },
+    {
+     "cue": "Two quarter ribbons in a row: another half yard.",
+     "box": [
+      49.8,
+      24.4,
+      22.4,
+      36.2
+     ]
+    },
+    {
+     "cue": "The ribbons end at 1 1/2 yards in all.",
+     "box": [
+      68.4,
+      59.2,
+      7.2,
+      22.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "How many more?",
+   "text": "The question charts answer best is a comparison. Tuesday sold 20 lunches and Monday sold 12. How many more is a subtraction wearing a chart's clothes: 20 - 12 = 8. Always ask which two bars the question compares.",
+   "art": "magnifier"
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words for the chart stalls.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "data",
+     "means": "facts collected by counting or measuring, before anyone charts them"
+    },
+    {
+     "word": "scale",
+     "means": "what each step or picture on a graph is worth"
+    },
+    {
+     "word": "bar graph",
+     "means": "a chart that shows counts as bars whose lengths you compare"
+    },
+    {
+     "word": "line plot",
+     "means": "a chart that stacks marks over a number line at each value"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: the sneaky scale",
+   "text": "Stretch: a picture graph uses one picture for every 5 points. A row shows 7 pictures. How many points is that, and why does the scale matter more than the pictures? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Data Detective at Chart It and finish all 5 cases. Each case hands you a messy stall and asks for the chart that answers. Read the scale before you read any bar.",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-7.1-e1",
+  "nq-explorer-7.1-e2",
+  "nq-explorer-7.1-e3"
+ ],
+ "game": {
+  "slug": "data-detective",
+  "chapter": "Chart It",
+  "params": "chapter=chart&band=1b&lock=1"
+ }
+}

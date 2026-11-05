@@ -49,13 +49,15 @@ test('Would You Rather questions: the official bank, by topic, in every language
   }
 });
 
-test('CS Quest topics: tech (20) and online (10) in the bank, named in every language, hosted by the lesson starters', () => {
-  assert.equal(WYR.TOPICS.length, 13); assert.deepEqual(WYR.TOPICS.slice(-2), ['tech', 'online']);
+test('course topics: tech (20), online (10) and numbers (12) in the bank, named in every language, hosted by the lesson starters', () => {
+  assert.equal(WYR.TOPICS.length, 14); assert.deepEqual(WYR.TOPICS.slice(-3), ['tech', 'online', 'numbers']);
   assert.deepEqual(WYR.TOPICS, WYR_CATS, 'the live topics are the bank builder\'s categories, in the same order');
   const en = WYR.topicsFor('en');
   assert.equal(en.find(x => x.id === 'tech').n, 20); assert.equal(en.find(x => x.id === 'online').n, 10);
   assert.equal(en.find(x => x.id === 'tech').name, 'Tech choices'); assert.equal(en.find(x => x.id === 'online').name, 'Online: share or keep');
-  assert.equal(WYR.itemsFor('en').length, 444, 'the bank');
+  assert.equal(en.find(x => x.id === 'numbers').n, 12, 'the Number Quest Unit 7 bank');
+  assert.equal(en.find(x => x.id === 'numbers').name, 'Numbers');
+  assert.equal(WYR.itemsFor('en').length, 456, 'the bank');
   // cat.tech / cat.online in ui.json: a real name in each of the 13 languages (en-GB reads the English one)
   for (const lang of LANGS) {
     const ts = WYR.topicsFor(lang), tech = ts.find(x => x.id === 'tech'), online = ts.find(x => x.id === 'online');

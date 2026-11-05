@@ -1,8 +1,9 @@
 // The Number Quest teacher page (/teachers/number-quest): the public program page, built like Cyber
 // Defenders' (routes/cyber-defenders.js) from the course data (seed-lessons/number-quest, via
-// courses.numberQuestCatalogue()): the overview, the four games, the units and steps, the published CCSS-M
-// map for Explorer Units 1-4 (primary / also covers / builds toward kept separate and labelled — builds
-// toward is preparation, never coverage), each step's Mathematical Practice spotlight, the per-unit teacher
+// courses.numberQuestCatalogue()): the overview, the six games, the units and steps, the published CCSS-M
+// map for Explorer Units 1-7 plus the Vault of Measures finale (primary / also covers / builds toward kept
+// separate and labelled — builds toward is preparation, never coverage; step 7.3 is flagged enrichment
+// and cites no code), each step's Mathematical Practice spotlight, the per-unit teacher
 // notes, and the printed pack (?print=1: the map and the notes on their own page). Copy under teachers.nq.*
 // (English-first, marked lang="en" until a language has it); unit and step titles, codes and notes are
 // English data, rendered lang="en". Anyone may read the page: Number Quest is a standalone course.
@@ -28,8 +29,14 @@ export function mapTable(req, cat) {
       const st = (s.standards || {}).explorer || {};
       const mp = s.mp && reg.frameworks.practices.codes[s.mp]
         ? raw(`<span class="csq-badge csq-ids" lang="en" dir="ltr" title="${esc(reg.frameworks.practices.codes[s.mp])}">${esc(s.mp)}</span> <span lang="en" dir="ltr">${esc(reg.frameworks.practices.codes[s.mp])}</span>`) : html`<span class="muted">—</span>`;
+      // A step flagged enrichment (7.3, chance language) cites no code anywhere: its primary cell says
+      // so in words instead of showing the bare dash a framing step like the intro gets, so no reader
+      // mistakes the empty cell for coverage or for an omission.
+      const primaryCell = st.flag === 'enrichment' && !(st.primary || []).length
+        ? html`<span lang="en" dir="ltr">Enrichment — no CCSS code (probability is first codable at 7.SP.C; SP begins in grade 6)</span>`
+        : codeChips(reg, st.primary);
       return html`<tr><td dir="ltr">${s.n}</td><td lang="en" dir="ltr">${(s.titles || {}).explorer || s.n}</td>
-        <td>${codeChips(reg, st.primary)}</td><td>${codeChips(reg, st.also)}</td><td>${codeChips(reg, st.buildsToward)}</td>
+        <td>${primaryCell}</td><td>${codeChips(reg, st.also)}</td><td>${codeChips(reg, st.buildsToward)}</td>
         <td>${mp}</td></tr>`;
     }).join('');
     return raw(head) + body;
@@ -48,7 +55,7 @@ export function placementMatrix() {
       <td>${form === 'launchpad' ? 'Short form (audio-first)' : 'Standard form'}</td>
       <td>${strands}</td>
       <td dir="ltr">${P.rungLabel(P.seedRung(g))}</td>
-      <td>${g <= 2 ? 'Starts at Welcome to the Numberworks; a start in the Launchpad gardens is flagged on the note, because that tier is still being built' : 'The first Explorer unit (1–4) whose entry profile the four rungs do not fully meet, or Unit 5\u2019s door when all four are met'}</td></tr>`;
+      <td>${g <= 2 ? 'Starts at Welcome to the Numberworks; a start in the Launchpad gardens is flagged on the note, because that tier is still being built' : 'The first Explorer unit (1–7) whose entry profile the four rungs do not fully meet, or the Vault of Measures door (the finale) when all seven are met'}</td></tr>`;
   }).join('');
   return html`<div class="csq-tbl"><table class="tbl csq-cov"><thead><tr><th>Grade named</th><th>Form played</th><th>Strands visited</th><th>First questions start at rung</th><th>Where the start point can land</th></tr></thead><tbody>${raw(rows)}</tbody></table></div>`;
 }
@@ -66,7 +73,7 @@ export function placementSection() {
       <li>Four strands, visited in turn rather than as four exams: Number, Algebra &amp; Patterns, Shape &amp; Measure, and Data &amp; Chance. Each strand is its own small staircase over half-grade rungs, seeded half a rung below the named grade so the first questions feel winnable. A right answer steps up half a rung, a wrong one steps down; a rung counts as settled on two right answers at it. Grades K–2 play a shorter, audio-first form (3–4 questions a strand, Algebra folded into Number); grades 3–8 play up to 5 a strand, at most 20 questions in all, and a strand stops sooner once both its ends are found.</li>
       <li>Every third question is a hands-on one where the bank has one at that rung: count-out items the learner taps as they count, and build items shown as counters and ten-frames, not bare text.</li>
       <li>The child never sees a score, a percentage, a timer or a rung. Tally reacts to the trying, shows how far along the game they are, and at the end simply names a starting workshop. A "Stop and start playing" button is always there: a stopped game still places, strand by strand, and the street can be started from the very beginning instead, always.</li>
-      <li>The four placed rungs combine into one start point through the course's locked crosswalk: the first Explorer unit whose entry profile is not fully met, with near-misses resolving to the lower unit. If every strand points past Unit 4, the start is Unit 4's door, the furthest workshop built so far: the child and this note both hear that the workshops beyond it are still being built. Workshops before the start point stay open for games, laps and test-out. If the first two checks at the placed start go badly, Tally quietly suggests warming up in the previous unit first; the placement itself does not move, and nothing is recorded as a failure.</li>
+      <li>The four placed rungs combine into one start point through the course's locked crosswalk: the first Explorer unit whose entry profile is not fully met, with near-misses resolving to the lower unit. If every strand points past Unit 7, the start is the Vault of Measures, the finale door at the end of the street: the child hears that every workshop is open and the Vault is waiting. Workshops before the start point stay open for games, laps and test-out. If the first two checks at the placed start go badly, Tally quietly suggests warming up in the previous unit first; the placement itself does not move, and nothing is recorded as a failure.</li>
     </ul>
     <p class="nq-caveat">${P.CAVEAT}</p>
     <p>Rungs are curriculum-order judgements by the course writers, refined by item data after launch. They are not certified grades, and the Starting Point note a parent or teacher sees says the same, strand by strand, in plain words.</p>

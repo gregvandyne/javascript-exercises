@@ -1,0 +1,164 @@
+{
+ "key": "explorer-6.2",
+ "n": "6.2",
+ "band": "explorer",
+ "title": "Around and inside",
+ "topic": "Perimeter and area",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "Fences and carpets",
+   "text": "The yard's oldest argument starts every morning. The fence crew measures around a garden. The carpet crew measures inside it. Both crews are right, and they are never measuring the same thing.",
+   "art": "wrench"
+  },
+  {
+   "title": "Around: add the sides",
+   "text": "Perimeter is the fence: walk the edge and add every side. This garden is 6 meters by 4 meters. Join its sides into one bar and the whole walk shows at once: 20 meters of fence.",
+   "art": "grid",
+   "visual": {
+    "type": "bars",
+    "label": "A bar joining the four sides of a 6 by 4 garden: 6 meters, 4 meters, 6 meters and 4 meters making 20 meters of perimeter",
+    "rows": [
+     {
+      "label": "Around the garden: add every side",
+      "parts": [
+       {
+        "w": 0.3,
+        "label": "6 m"
+       },
+       {
+        "w": 0.2,
+        "label": "4 m"
+       },
+       {
+        "w": 0.3,
+        "label": "6 m"
+       },
+       {
+        "w": 0.2,
+        "label": "4 m"
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start along the long side: 6 meters.",
+     "box": [
+      5.8,
+      37.1,
+      26.8,
+      15.5
+     ]
+    },
+    {
+     "cue": "The side opposite matches it: another 6 meters.",
+     "box": [
+      49.8,
+      37.1,
+      26.8,
+      15.5
+     ]
+    },
+    {
+     "cue": "All four sides joined: 6 + 4 + 6 + 4 = 20 meters around.",
+     "box": [
+      5.8,
+      27.9,
+      88.4,
+      24.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Worked example: carpet the garden",
+   "text": "Rough first: the garden holds about twenty squares, so an answer like 10 or 40 smells wrong. Cover it with unit squares: 3 rows of 7. Area counts the covering squares, not the edge.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "One row holds 7 squares",
+    "The garden has 3 rows",
+    "Area = 3 x 7 = 21 square units",
+    "The fence would be 7 + 3 + 7 + 3 = 20 units"
+   ],
+   "visual": {
+    "type": "array",
+    "label": "A garden drawn as 3 rows of 7 dots, one dot for each square unit of area: 21 square units",
+    "rows": 3,
+    "cols": 7
+   },
+   "focus": [
+    {
+     "cue": "One row holds 7 squares.",
+     "box": [
+      16.9,
+      24.0,
+      66.2,
+      7.7
+     ]
+    },
+    {
+     "cue": "Three rows of 7: 3 x 7 = 21 squares cover the garden.",
+     "box": [
+      16.9,
+      24.0,
+      66.2,
+      48.0
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Same fence, new shape",
+   "text": "Two gardens can share one fence and hold different carpets. A long thin garden and a square garden can both take 20 meters of fence. The square one always holds more carpet. Test it on grid paper.",
+   "art": "loop"
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words the two crews shout across the yard.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "perimeter",
+     "means": "the distance all the way around a shape"
+    },
+    {
+     "word": "area",
+     "means": "the amount of surface a shape covers"
+    },
+    {
+     "word": "square unit",
+     "means": "one square with sides of 1 unit, the counter for area"
+    },
+    {
+     "word": "formula",
+     "means": "a rule written once that works for every case"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: the biggest carpet",
+   "text": "Stretch: with exactly 20 meters of fence, what rectangle holds the most carpet? Try 9 by 1, then 8 by 2, then 5 by 5. Which wins? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Around & Inside board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Ask of every tile: is this the fence, or is this the carpet?",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-6.2-e1",
+  "nq-explorer-6.2-e2",
+  "nq-explorer-6.2-e3"
+ ],
+ "game": {
+  "slug": "brain-board",
+  "chapter": "Practice Board",
+  "params": "mode=nq-6-2&lock=1"
+ }
+}

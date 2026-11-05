@@ -4048,12 +4048,12 @@
     },
     "nq": {
       "title": "Number Quest: maths lessons for grades 3–5, mapped to CCSS-M",
-      "description": "Number Quest is a free maths course for grades 3–5: 13 short steps through the Numberworks, played through Brain Board, Sum Racer, Quest Race and Fraction Factory, with every step of Units 1–4 mapped to the Common Core State Standards for Mathematics.",
+      "description": "Number Quest is a free maths course for grades 3–5: 23 short steps through the Numberworks, played through Brain Board, Sum Racer, Quest Race, Fraction Factory, Data Detective and Would You Rather, with every step of Units 1–7 and the finale mapped to the Common Core State Standards for Mathematics. One step (7.3, chance language) is flagged enrichment and maps to no standard, and the map says so.",
       "crumb": "Number Quest",
       "kicker": "For teachers · grades 3–5",
       "h1": "Number Quest: maths with a map you can show anyone",
-      "lead": "A winding path through Netville's Numberworks with Tally the cat: place value, joining and splitting, groups and shares, and fractions at the Bakery. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
-      "badges": { "steps": "13 steps", "units": "An intro and 4 units", "games": "Four games", "minutes": "About 10 minutes a step", "free": "Free · no ads" },
+      "lead": "A winding path through Netville's Numberworks with Tally the cat: place value, joining and splitting, groups and shares, fractions at the Bakery, measuring at the Measure Shop, shapes at the Building Yard, data at the Fairground, and the Vault of Measures at the street's end. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
+      "badges": { "steps": "23 steps", "units": "An intro and 7 units", "games": "Six games", "minutes": "About 10 minutes a step", "free": "Free · no ads" },
       "cta": { "open": "Open the course" },
       "promise": {
         "h": "What you get",
@@ -4065,24 +4065,26 @@
         "li6": "The full standards map on this page: every step's primary CCSS-M statements, the statements it also covers, and the ones it builds toward, labelled as preparation and never counted as coverage."
       },
       "crew": {
-        "h": "Four games carry the course",
-        "p": "Three are quiz and fluency engines the school may already know from the open library; the fourth, Fraction Factory, was built for this course and is where Tally makes her home.",
-        "brainBoard": "A category quiz board, played solo as a practice board. In Number Quest it is the fluency mission for steps 1.1 and 2.3: the step's own deck and check teach the skill (place value, the bar model), and finishing the whole board, every tile, is what completes the mission.",
+        "h": "Six games carry the course",
+        "p": "Four are quiz, race and fluency engines the school may already know from the open library; the fifth, Fraction Factory, was built for this course and is where Tally makes her home. The Fairground borrows two more: Data Detective from CS Quest for its data cases, and Would You Rather, whose Numbers bank was written for the chance step.",
+        "brainBoard": "A category quiz board, played solo as a practice board. In Number Quest it is the fluency mission for steps 1.1 and 2.3 and for the Measure Shop and Building Yard boards of Units 5 and 6 (measures, money, perimeter and area, lines and grids): the step's own deck and check teach the skill, and scoring 3,000 points on the board is what completes the mission, and the board saves as the student plays, so a lesson can span sittings.",
         "sumRacer": "An arithmetic kart racer. Its Number Quest missions are locked to the taught skill: a Rounding Run track built for step 1.2, addition-only and subtraction-only races to 100 in Unit 2, and the 2, 5 and 10 tables, sharing and mixed Grand Prix tracks of Unit 3. The game opens on the step's track and stays there, so the win that completes the mission is a win at that skill.",
-        "questRace": "An island race, played solo as a practice race against three island racers. In Number Quest it is step 1.3's mission: the deck and check teach the patterns, and finishing the whole race, all the way to the podium, is what completes it.",
+        "questRace": "An island race, played solo as a practice race against three island racers. In Number Quest it carries steps 1.3 (patterns), 5.2 (timetables) and the finale 7.4, the Vault Run: the deck and check teach the skill, and finishing the whole race, all the way to the podium, is what completes it.",
+        "dataDetective": "CS Quest's data cases, borrowed for the Fairground: sort a messy table, chart it, and spot the claim the data does not support. In Number Quest it carries steps 7.1 (Chart It) and 7.2 (My Data, the student's own class survey), with its cases untouched.",
+        "wouldYouRather": "The dilemma game, played for judgement rather than right answers. Its Numbers topic, a bank of sure-thing-versus-chance dilemmas written for Number Quest step 7.3, asks the student to name how sure they are before each pick: certain, likely, an even chance, unlikely or impossible.",
         "fractionFactory": "Tally's Bakery production line: cut wholes into fair shares, re-slice to make sizes match, and add slices for real orders. The whole of Unit 4, and the course's flagship Jumble beat: adding the bottoms too.",
         "try": "Try it",
         "inCourse": "Play it in the course"
       },
-      "units": { "h": "The intro and four units", "p": "Thirteen steps, in order, each ending in its game mission. A unit's stone is planted when its three steps are done.", "stamp": "{stamp}" },
+      "units": { "h": "The intro and seven units", "p": "Twenty-three steps, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done, and the street ends inside Unit 7, at the Vault of Measures finale.", "stamp": "{stamp}" },
       "map": {
         "h": "The standards map",
         "p": "Every step, mapped. “Primary” is what the step teaches and its check assesses. “Also covers” is practised inside the step but taught as primary elsewhere. “Builds toward” is preparation only: the course names it so you can see the road ahead, and never counts it as coverage. The practice named is the step's Mathematical Practice spotlight.",
         "cols": { "step": "Step", "title": "Title", "primary": "Primary (CCSS-M)", "also": "Also covers", "toward": "Builds toward", "mp": "Practice" },
-        "codes": "locked CCSS-M statements, Units 1–4",
+        "codes": "locked CCSS-M statements, Units 1–7 + the finale",
         "statSteps": "steps in the map",
         "statUnits": "stones to plant",
-        "lock": "This map publishes the Phase 0 standards lock (2026-11-04): the Explorer Units 1–4 statement codes, verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Units 5–7, the Launchpad and Pro tiers are specced but not built yet, and their codes are not cited here until their own locks land."
+        "lock": "This map publishes the Phase 0 standards lock (2026-11-04) and the Phase 2 lock (2026-11-05): the Explorer Units 1–7 and finale statement codes, verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Step 7.3 cites no code anywhere: chance language has no CCSS home before grade 6, so it is published as enrichment, plainly flagged. The Launchpad and Pro tiers are specced but not built yet, and their codes are not cited here until their own locks land."
       },
       "notes": { "h": "Teacher notes", "p": "One short note per unit, written to print: the habit to open with and the trap to watch for. The same notes print with the standards map." },
       "safety": {
@@ -4098,9 +4100,9 @@
         "q1": "Do I need to be a maths specialist?",
         "a1": "No. Each step teaches its own idea in plain words before the game, and the teacher note for the unit tells you the habit to open with and the trap to watch for.",
         "q2": "Which standards does it teach?",
-        "a2": "The Common Core State Standards for Mathematics for grades 3–5. Every step of Units 1–4 lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labelled.",
+        "a2": "The Common Core State Standards for Mathematics for grades 3–5. Every step of Units 1–7 and the finale lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labelled. One step lists none: 7.3 teaches chance language, which has no standard before grade 6, and it is flagged as enrichment so no one mistakes it for coverage.",
         "q3": "How long does a step take?",
-        "a3": "About ten minutes: a short deck, a three-question check, and one game chapter. The intro and the four units make 13 steps, so the built part of the course is roughly two hours of lessons, and mastery laps stretch it much further for students who finish early.",
+        "a3": "About ten minutes: a short deck, a three-question check, and one game chapter. The intro and the seven units make 23 steps, so the course is just under four hours of lessons, and mastery laps stretch it much further for students who finish early.",
         "q4": "What are Tally Marks and laps?",
         "a4": "Tally Marks are points for doing: a passed check, a finished mission, a completed lap. They are never spent and never ranked. Finishing a unit records Lap 1 of its mastery laps. Laps 2 (bigger numbers) and 3 (a mixed circuit with a boss round) are designed but still being built; the course labels them as such until they can really be played.",
         "q5": "Is it really free?",

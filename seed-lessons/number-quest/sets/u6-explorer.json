@@ -1,0 +1,226 @@
+{
+ "id": "nq-u6-explorer",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 6,
+ "band": "Explorer",
+ "title": "Number Quest Unit 6 · The Building Yard (Explorer)",
+ "items": [
+  {
+   "id": "nq-explorer-6.1-e1",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "3.G.A.1",
+   "topic": "Quadrilaterals",
+   "kind": "recall",
+   "secs": 20,
+   "q": "Which shape is NOT a quadrilateral?",
+   "choices": [
+    "Square",
+    "Triangle",
+    "Rectangle",
+    "Rhombus"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "a square has 4 sides, so it is a quadrilateral",
+    "correct",
+    "a rectangle has 4 sides, so it is a quadrilateral",
+    "a rhombus has 4 sides, so it is a quadrilateral"
+   ],
+   "why": "Quadrilateral means four sides. A square, a rectangle and a rhombus all have 4 sides; a triangle has only 3."
+  },
+  {
+   "id": "nq-explorer-6.1-e2",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "4.G.A.2",
+   "topic": "Parallel sides",
+   "kind": "recall",
+   "secs": 20,
+   "q": "Which shape has no parallel sides at all?",
+   "choices": [
+    "Rectangle",
+    "Square",
+    "Parallelogram",
+    "Triangle"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "both pairs of sides are parallel in a rectangle",
+    "both pairs of sides are parallel in a square",
+    "parallel is in its name: both pairs run side by side",
+    "correct"
+   ],
+   "why": "Rectangles, squares and parallelograms all have parallel sides. A triangle's sides all meet, so none of them run parallel."
+  },
+  {
+   "id": "nq-explorer-6.1-e3",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "3.G.A.1",
+   "topic": "Shape families",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A square is a kind of rectangle. Why is that true?",
+   "choices": [
+    "It is bigger than other rectangles",
+    "It has 4 sides and 4 square corners, like every rectangle",
+    "It has 4 equal sides, and rectangles never do",
+    "Its name is shorter"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "size is not what makes a shape family",
+    "correct",
+    "a square itself is a rectangle with 4 equal sides, so rectangles can",
+    "names do not decide families; properties do"
+   ],
+   "why": "A family is decided by properties. Every rectangle has 4 sides and 4 square corners, and a square has both, so a square belongs in the rectangle family."
+  },
+  {
+   "id": "nq-explorer-6.2-e1",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "3.MD.C.7",
+   "topic": "Area",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A garden is 6 meters long and 4 meters wide. What is its area?",
+   "choices": [
+    "20 square meters",
+    "10 square meters",
+    "24 square meters",
+    "46 square meters"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "that is the perimeter: the fence, not the carpet",
+    "added the sides instead of multiplying them",
+    "correct",
+    "multiplied and then added the sides as well"
+   ],
+   "why": "Area is the carpet: multiply the sides. 6 x 4 = 24 square meters. (Adding around the edge, 20, would give the perimeter.)"
+  },
+  {
+   "id": "nq-explorer-6.2-e2",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "3.MD.D.8",
+   "topic": "Perimeter",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A square painting has sides of 5 inches. What is its perimeter?",
+   "choices": [
+    "10 inches",
+    "15 inches",
+    "25 inches",
+    "20 inches"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "counted only two of the four sides",
+    "counted only three of the four sides",
+    "that is the area: 5 x 5 counts the squares inside",
+    "correct"
+   ],
+   "why": "Perimeter walks all the way around: 5 + 5 + 5 + 5 = 20 inches. (25 would be the area, the squares inside.)"
+  },
+  {
+   "id": "nq-explorer-6.2-e3",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "4.MD.A.3",
+   "topic": "Fence and carpet",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A rug is 8 feet long and 3 feet wide. Which pair is right?",
+   "choices": [
+    "Perimeter 24 feet, area 22 square feet",
+    "Perimeter 11 feet, area 24 square feet",
+    "Perimeter 22 feet, area 24 square feet",
+    "Perimeter 22 feet, area 11 square feet"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "swapped the two answers: 24 is the area, not the fence",
+    "11 is one length plus one width, only half the fence",
+    "correct",
+    "11 is the half-way measure, not the count of squares inside"
+   ],
+   "why": "Fence first: 8 + 3 + 8 + 3 = 22 feet of perimeter. Carpet second: 8 x 3 = 24 square feet of area."
+  },
+  {
+   "id": "nq-explorer-6.3-e1",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "4.G.A.1",
+   "topic": "Parallel lines",
+   "kind": "recall",
+   "secs": 20,
+   "q": "Two roads on a map run side by side and never cross. What kind of lines are they?",
+   "choices": [
+    "Perpendicular lines",
+    "Parallel lines",
+    "Rays",
+    "Curved lines"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "perpendicular lines cross at a square corner",
+    "correct",
+    "a ray is a part of a line with one end, not a way two lines sit",
+    "these roads are straight, not curved"
+   ],
+   "why": "Lines that run side by side and never meet are parallel. Perpendicular lines are the ones that cross at a square corner."
+  },
+  {
+   "id": "nq-explorer-6.3-e2",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "4.G.A.3",
+   "topic": "Symmetry",
+   "kind": "recall",
+   "secs": 20,
+   "q": "Which letter folds exactly in half, both sides matching?",
+   "choices": [
+    "F",
+    "G",
+    "A",
+    "J"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "the top and bottom arms differ, so F cannot fold onto itself",
+    "the open side has no matching part",
+    "correct",
+    "the hook has no matching side"
+   ],
+   "why": "The letter A folds along a line down its middle: the two halves match exactly. F, G and J have parts with nothing to fold onto."
+  },
+  {
+   "id": "nq-explorer-6.3-e3",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "5.G.A.1",
+   "topic": "Grid addresses",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A treasure hides at the point (4, 2) on a grid. Starting at (0, 0), how do you walk to it?",
+   "choices": [
+    "2 steps right, then 4 steps up",
+    "4 steps right, then 2 steps up",
+    "4 steps right, then 2 steps down",
+    "6 steps right, then 0 steps up"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "swapped the pair: the first number always names the rightward walk",
+    "correct",
+    "the second number counts steps up, never down",
+    "added the pair together instead of walking each part"
+   ],
+   "why": "In a grid address, the first number counts steps right and the second counts steps up: (4, 2) is 4 right, then 2 up."
+  }
+ ]
+}

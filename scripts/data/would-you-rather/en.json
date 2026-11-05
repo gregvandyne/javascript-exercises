@@ -7991,6 +7991,222 @@
      "calm"
     ]
    }
+  },
+  {
+   "id": "numbers-1",
+   "cat": "numbers",
+   "a": {
+    "text": "Get five points for sure",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Spin a wheel for twenty points or nothing at all",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "numbers-2",
+   "cat": "numbers",
+   "a": {
+    "text": "Win three gems every single time",
+    "tags": [
+     "calm",
+     "fun"
+    ]
+   },
+   "b": {
+    "text": "Win ten gems half the time and none the rest",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "numbers-3",
+   "cat": "numbers",
+   "a": {
+    "text": "Take the small prize right now",
+    "tags": [
+     "calm",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Flip a coin for the big prize or nothing",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "numbers-4",
+   "cat": "numbers",
+   "a": {
+    "text": "Score two goals for certain",
+    "tags": [
+     "fast",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Score five goals only if the dice agree",
+    "tags": [
+     "brave",
+     "fast"
+    ]
+   }
+  },
+  {
+   "id": "numbers-5",
+   "cat": "numbers",
+   "a": {
+    "text": "Get one wish that always works",
+    "tags": [
+     "make",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Get three wishes that work half the time",
+    "tags": [
+     "think",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "numbers-6",
+   "cat": "numbers",
+   "a": {
+    "text": "Find four coins on the path every day",
+    "tags": [
+     "nature",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Find forty coins on one day in ten",
+    "tags": [
+     "brave",
+     "nature"
+    ]
+   }
+  },
+  {
+   "id": "numbers-7",
+   "cat": "numbers",
+   "a": {
+    "text": "Always guess the weather right",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Guess the winning numbers right just once",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "numbers-8",
+   "cat": "numbers",
+   "a": {
+    "text": "Land on the safe square every turn",
+    "tags": [
+     "calm",
+     "fast"
+    ]
+   },
+   "b": {
+    "text": "Land on the jackpot square one roll in six",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "numbers-9",
+   "cat": "numbers",
+   "a": {
+    "text": "Get eight slices of cake for sure",
+    "tags": [
+     "food",
+     "kind"
+    ]
+   },
+   "b": {
+    "text": "Get the whole cake if a spinner lands on red",
+    "tags": [
+     "food",
+     "brave"
+    ]
+   }
+  },
+  {
+   "id": "numbers-10",
+   "cat": "numbers",
+   "a": {
+    "text": "Trade your points for double, no risk at all",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Trade your points for triple or lose them all",
+    "tags": [
+     "brave",
+     "think"
+    ]
+   }
+  },
+  {
+   "id": "numbers-11",
+   "cat": "numbers",
+   "a": {
+    "text": "Know one answer for sure",
+    "tags": [
+     "think",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Guess at five answers with a coin flip for each",
+    "tags": [
+     "brave",
+     "fun"
+    ]
+   }
+  },
+  {
+   "id": "numbers-12",
+   "cat": "numbers",
+   "a": {
+    "text": "Take ten steps forward every turn",
+    "tags": [
+     "fast",
+     "calm"
+    ]
+   },
+   "b": {
+    "text": "Take thirty steps on a high roll, else stay put",
+    "tags": [
+     "fast",
+     "brave"
+    ]
+   }
   }
  ]
 }

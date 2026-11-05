@@ -1,0 +1,156 @@
+{
+ "key": "explorer-6.3",
+ "n": "6.3",
+ "band": "explorer",
+ "title": "Lines, symmetry, grids",
+ "topic": "Lines and grids",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "Lines that never meet",
+   "text": "The yard paints two kinds of lines on every plan. Parallel lines run side by side and never meet, like rails. Perpendicular lines cross at a square corner, like the corner of a door.",
+   "art": "branch"
+  },
+  {
+   "title": "Symmetry is a fold",
+   "text": "A shape has symmetry when a fold makes its two halves land exactly on each other. The fold line is the line of symmetry. This bar folds on its dashed line, and the halves match.",
+   "art": "grid",
+   "visual": {
+    "type": "bars",
+    "label": "A bar split into two equal halves with a dashed fold line down the middle, marked halfway",
+    "rows": [
+     {
+      "label": "One folded shape: two matching halves",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "half"
+       },
+       {
+        "w": 0.5,
+        "label": "half"
+       }
+      ]
+     }
+    ],
+    "half": true
+   },
+   "focus": [
+    {
+     "cue": "Fold on the dashed line: this half lands exactly on the other.",
+     "box": [
+      5.8,
+      37.1,
+      44.4,
+      15.5
+     ]
+    },
+    {
+     "cue": "The fold line is the line of symmetry.",
+     "box": [
+      43.5,
+      23.5,
+      13.0,
+      33.6
+     ]
+    },
+    {
+     "cue": "The matching half: same size, same shape, flipped.",
+     "box": [
+      49.8,
+      37.1,
+      44.4,
+      15.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Worked example: the treasure grid",
+   "text": "Rough first: the first number is probably the sideways walk, because addresses are read left to right. The treasure sits at (3, 2). Walk 3 steps right, then climb 2 steps up, in that order.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "First number: 3 steps right",
+    "Second number: 2 steps up",
+    "The treasure sits at (3, 2)"
+   ],
+   "visual": {
+    "type": "array",
+    "label": "A grid of dots in 5 columns and 4 rows, for reading the grid address (3, 2): 3 steps right, 2 steps up",
+    "rows": 4,
+    "cols": 5
+   },
+   "focus": [
+    {
+     "cue": "First number 3: walk to the third column.",
+     "box": [
+      47.8,
+      21.5,
+      4.5,
+      53.0
+     ]
+    },
+    {
+     "cue": "Second number 2: climb two rows up. The treasure sits here.",
+     "box": [
+      47.8,
+      36.6,
+      4.5,
+      7.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The Jumble delivers a parcel",
+   "text": "The Jumble read an address as (2, 4) when the card said (4, 2). It walked 2 right and 4 up, and left the parcel two squares off in both directions. A swapped pair is a different square, every time.",
+   "art": "bug"
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words for plans and grids.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "parallel",
+     "means": "running side by side, always the same distance apart, never meeting"
+    },
+    {
+     "word": "perpendicular",
+     "means": "crossing at a square corner, like the corner of a door"
+    },
+    {
+     "word": "symmetry",
+     "means": "a fold that makes two halves land exactly on each other"
+    },
+    {
+     "word": "axis",
+     "means": "one of the two number lines that make a grid's addresses"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: the swap trap",
+   "text": "Stretch: plot the points (2, 5) and (5, 2) on grid paper. Are they the same square? Draw both and settle the Jumble's argument for good. Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Lines & Grids board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Read every grid address out loud: right first, then up.",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-6.3-e1",
+  "nq-explorer-6.3-e2",
+  "nq-explorer-6.3-e3"
+ ],
+ "game": {
+  "slug": "brain-board",
+  "chapter": "Practice Board",
+  "params": "mode=nq-6-3&lock=1"
+ }
+}

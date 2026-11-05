@@ -35,6 +35,12 @@
 //      settles against the ring and badge only; both are screenshot-verified readable and are
 //      listed as named exceptions in the perfection report.
 // Report: ~/workspace/goals/oomba-academy-leading-interactive-educational-app/hidden_files/nq-focus-perfection/nq-focus-perfection-report.md
+// Phase 2 addendum (2026-11-05): the ten Phase 2 decks (5.1-7.4, Units 5-7 + the Vault of Measures
+// finale) are registered below in the same format: 57 more steps, measured on rendered step pages
+// at 390/834/1280 (getBBox on the served SVG) before the perfection pass landed, against the same
+// standard (box = measured bounds, 0.6%/side tolerance). Registry totals: 23 decks, 71 visual
+// slides, 161 focus steps. Two by-geometry adjacencies are recorded with the Phase 2 entries: hop
+// arcs that graze their own endpoint point label (5.2 slide 3 step 2, 7.4 slide 4 step 2).
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -67,8 +73,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 51, 'visual focus slides across the 13 Explorer decks');
-  assert.equal(steps, 104, 'focus steps across the 13 Explorer decks');
+  assert.equal(slides, 71, 'visual focus slides across the 23 Explorer decks');
+  assert.equal(steps, 161, 'focus steps across the 23 Explorer decks');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -185,9 +191,67 @@ const REGISTRY = [
   ['4.3', 2, 1, [6, 65.47, 94, 89.78], [6, 65.4, 88, 24.4]],
   ['4.3', 4, 0, [6, 32, 64, 58.67], [6, 32, 58, 26.7]],
   ['4.3', 4, 1, [66, 32, 94, 58.67], [66, 32, 28, 26.7]],
+  // Phase 2 (Units 5-7 + the finale), measured the same way: [deck, slideIdx, stepIdx, measured, box]
+  ['5.1', 1, 0, [4.77, 59.38, 7.22, 81.63], [4.6, 59.2, 2.8, 22.6]],
+  ['5.1', 1, 1, [47.7, 59.38, 52.3, 81.63], [47.5, 59.2, 5, 22.6]],
+  ['5.1', 1, 2, [6, 24.57, 94, 60.44], [5.8, 24.4, 88.4, 36.2]],
+  ['5.1', 2, 0, [6, 13.91, 94, 38.22], [5.8, 13.7, 88.4, 24.7]],
+  ['5.1', 2, 1, [6, 53.33, 50, 68.44], [5.8, 53.1, 44.4, 15.5]],
+  ['5.1', 2, 2, [6, 44.13, 94, 68.44], [5.8, 43.9, 88.4, 24.7]],
+  ['5.2', 1, 0, [6, 24.57, 50, 60.44], [5.8, 24.4, 44.4, 36.2]],
+  ['5.2', 1, 1, [46.01, 59.38, 53.99, 81.63], [45.8, 59.2, 8.4, 22.6]],
+  ['5.2', 1, 2, [50, 24.57, 72, 60.44], [49.8, 24.4, 22.4, 36.2]],
+  ['5.2', 2, 0, [19.43, 43.03, 29.25, 68.09], [19.2, 42.8, 10.2, 25.5]],
+  ['5.2', 2, 1, [24.33, 24.57, 50, 60.44], [24.1, 24.4, 26.1, 36.2]],
+  ['5.2', 2, 2, [45.25, 59.38, 54.76, 81.63], [45, 59.2, 10, 22.6]],
+  ['5.3', 1, 0, [6, 37.33, 28, 52.44], [5.8, 37.1, 22.4, 15.5]],
+  ['5.3', 1, 1, [6, 37.33, 50, 52.44], [5.8, 37.1, 44.4, 15.5]],
+  ['5.3', 1, 2, [6, 28.13, 94, 52.44], [5.8, 27.9, 88.4, 24.7]],
+  ['5.3', 2, 0, [6, 13.91, 94, 38.22], [5.8, 13.7, 88.4, 24.7]],
+  ['5.3', 2, 1, [6, 53.33, 63.2, 68.44], [5.8, 53.1, 57.6, 15.5]],
+  ['5.3', 2, 2, [63.2, 53.33, 94, 68.44], [63, 53.1, 31.2, 15.5]],
+  ['6.1', 1, 0, [6, 32, 26.5, 58.67], [5.8, 31.8, 20.9, 27.1]],
+  ['6.1', 1, 1, [28.5, 32, 49, 58.67], [28.3, 31.8, 20.9, 27.1]],
+  ['6.1', 1, 2, [73.5, 32, 94, 58.67], [73.3, 31.8, 20.9, 27.1]],
+  ['6.1', 2, 0, [50, 23.11, 94, 38.22], [49.8, 22.9, 44.4, 15.5]],
+  ['6.1', 2, 1, [50, 53.33, 94, 68.44], [49.8, 53.1, 44.4, 15.5]],
+  ['6.1', 2, 2, [6, 13.91, 94, 68.44], [5.8, 13.7, 88.4, 54.9]],
+  ['6.2', 1, 0, [6, 37.33, 32.4, 52.44], [5.8, 37.1, 26.8, 15.5]],
+  ['6.2', 1, 1, [50, 37.33, 76.4, 52.44], [49.8, 37.1, 26.8, 15.5]],
+  ['6.2', 1, 2, [6, 28.13, 94, 52.44], [5.8, 27.9, 88.4, 24.7]],
+  ['6.2', 2, 0, [17.09, 24.21, 82.91, 31.5], [16.9, 24, 66.2, 7.7]],
+  ['6.2', 2, 1, [17.09, 24.21, 82.91, 71.79], [16.9, 24, 66.2, 48]],
+  ['6.3', 1, 0, [6, 37.33, 50, 52.44], [5.8, 37.1, 44.4, 15.5]],
+  ['6.3', 1, 1, [43.71, 23.7, 56.29, 56.89], [43.5, 23.5, 13, 33.6]],
+  ['6.3', 1, 2, [50, 37.33, 94, 52.44], [49.8, 37.1, 44.4, 15.5]],
+  ['6.3', 2, 0, [47.95, 21.69, 52.05, 74.31], [47.8, 21.5, 4.5, 53]],
+  ['6.3', 2, 1, [47.95, 36.8, 52.05, 44.09], [47.8, 36.6, 4.5, 7.7]],
+  ['7.1', 1, 0, [6, 5.02, 58.8, 29.33], [5.8, 4.8, 53.2, 24.7]],
+  ['7.1', 1, 1, [6, 35.25, 94, 59.55], [5.8, 35, 88.4, 24.8]],
+  ['7.1', 1, 2, [6, 65.47, 76.4, 89.78], [5.8, 65.3, 70.8, 24.7]],
+  ['7.1', 2, 0, [6, 24.57, 28, 60.44], [5.8, 24.4, 22.4, 36.2]],
+  ['7.1', 2, 1, [50, 24.57, 72, 60.44], [49.8, 24.4, 22.4, 36.2]],
+  ['7.1', 2, 2, [68.63, 59.38, 75.38, 81.63], [68.4, 59.2, 7.2, 22.6]],
+  ['7.2', 1, 0, [6, 5.02, 72, 29.33], [5.8, 4.8, 66.4, 24.7]],
+  ['7.2', 1, 1, [6, 35.25, 94, 59.55], [5.8, 35, 88.4, 24.8]],
+  ['7.2', 1, 2, [6, 65.47, 35.3, 89.78], [5.8, 65.3, 29.7, 24.7]],
+  ['7.2', 2, 0, [4.93, 59.38, 7.08, 81.63], [4.7, 59.2, 2.6, 22.6]],
+  ['7.2', 2, 1, [29.2, 43.03, 41.47, 68.09], [29, 42.8, 12.7, 25.5]],
+  ['7.2', 2, 2, [92.77, 59.38, 95.22, 81.63], [92.6, 59.2, 2.8, 22.6]],
+  ['7.3', 1, 0, [6, 37.33, 20.67, 52.44], [5.8, 37.1, 15.1, 15.5]],
+  ['7.3', 1, 1, [20.67, 37.33, 94, 52.44], [20.5, 37.1, 73.7, 15.5]],
+  ['7.3', 1, 2, [6, 28.13, 94, 52.44], [5.8, 27.9, 88.4, 24.7]],
+  ['7.3', 2, 0, [6, 32, 26.5, 58.67], [5.8, 31.8, 20.9, 27.1]],
+  ['7.3', 2, 1, [51, 32, 71.5, 58.67], [50.8, 31.8, 20.9, 27.1]],
+  ['7.4', 2, 0, [6, 13.91, 94, 38.22], [5.8, 13.7, 88.4, 24.7]],
+  ['7.4', 2, 1, [6, 53.33, 83.62, 68.44], [5.8, 53.1, 78, 15.5]],
+  ['7.4', 2, 2, [83.62, 53.33, 94, 68.44], [83.4, 53.1, 10.8, 15.5]],
+  ['7.4', 3, 0, [45.4, 59.38, 54.6, 81.63], [45.2, 59.2, 9.6, 22.6]],
+  ['7.4', 3, 1, [50, 24.57, 88.5, 60.44], [49.8, 24.4, 38.9, 36.2]],
+  ['7.4', 3, 2, [84.21, 43.03, 92.8, 68.09], [84, 42.8, 9, 25.5]],
 ];
-test('every authored box matches its measured target bounds within 0.6%/side (104-step registry)', () => {
-  assert.equal(REGISTRY.length, 104);
+test('every authored box matches its measured target bounds within 0.6%/side (161-step registry)', () => {
+  assert.equal(REGISTRY.length, 161);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -207,7 +271,7 @@ test('every authored box matches its measured target bounds within 0.6%/side (10
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 104);
+  assert.equal(total, 161);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

@@ -281,38 +281,42 @@ export function gradeServed(templateId, itemSeed, answer) {
 // ------------------------------------------------------------------------------------------------- the crosswalk
 const unitTitle = n => { const u = UNITS.units.find(x => x.n === n); return u ? u.title : null; };
 /** Every start node the game (or an override) can name, in path order. Only BUILT workshops are
- *  nameable: a start node is a place a child can actually open, so the list stops at Unit 4. A run
- *  whose strands point past the built street lands at Unit 4's door instead (see crosswalk) — it
- *  never names an unbuilt node, and never shows a child a fallback label in place of a workshop. */
-export const START_NODES = Object.freeze([0, 1, 2, 3, 4].map(n => Object.freeze({
+ *  nameable: a start node is a place a child can actually open. Phase 2 (2026-11-05) built out the
+ *  street, so the list runs to Unit 7's door — plus one more node that is not a unit door at all:
+ *  the finale door, explorer-7.4 (the Vault of Measures), where a run lands when its strands meet
+ *  every unit's entry profile (see crosswalk). It never names an unbuilt node, and never shows a
+ *  child a fallback label in place of a workshop. */
+export const START_NODES = Object.freeze([...[0, 1, 2, 3, 4, 5, 6, 7].map(n => Object.freeze({
   node: `explorer-${n}.1`, unit: n,
   workshop: unitTitle(n),
   built: true,
-})));
+})), Object.freeze({ node: 'explorer-7.4', unit: 7, workshop: 'The Vault of Measures', built: true, finale: true })]);
 export const nodeInfo = node => START_NODES.find(x => x.node === node) || START_NODES[0];
 
-/** The locked crosswalk (placement.json): the start node is the first Explorer unit (1–4) whose entry
+/** The locked crosswalk (placement.json): the start node is the first Explorer unit (1–7) whose entry
  *  profile the four placed rungs do not fully meet — a near-miss counts as not met, so ties resolve to the
  *  LOWER unit. Any rung below 2.5 puts the start in the Launchpad tier, whose content is still being built:
- *  the learner starts at the intro and the note flags the gap. All profiles met → the strands point PAST
- *  the built street: the start is Unit 4's door (the furthest built workshop) and `beyondBuilt` rides
- *  along so the child and the grown-up note can both say honestly that the rest is still being built.
+ *  the learner starts at the intro and the note flags the gap. All seven profiles met → the strands point
+ *  past every workshop: the start is the finale door (explorer-7.4, the Vault of Measures) and
+ *  `finaleDoor` rides along so the child and the grown-up note can both say the street is finished and
+ *  the Vault is waiting. (Phase 1, when Units 5–7 were unbuilt, landed such a run at Unit 4's door with
+ *  a "still being built" note; that copy retired with Phase 2.)
  *  The Launchpad form has no Algebra staircase: its Number rung speaks for the folded strand. */
 export function crosswalk(rungs) {
   const eff = { ...rungs };
   if (typeof eff.algebra !== 'number' && typeof eff.number === 'number') eff.algebra = eff.number;
   const vals = STRANDS.map(k => eff[k]).filter(v => typeof v === 'number');
-  if (vals.length && Math.min(...vals) < 2.5) return { node: 'explorer-0.1', launchpadGap: true, beyondBuilt: false };
+  if (vals.length && Math.min(...vals) < 2.5) return { node: 'explorer-0.1', launchpadGap: true, finaleDoor: false };
   const profiles = PLACEMENT_LOCK.crosswalk.entryProfiles;
-  for (const n of [1, 2, 3, 4]) {
+  for (const n of [1, 2, 3, 4, 5, 6, 7]) {
     const profile = profiles[`explorer-${n}.1`] || {};
     const met = Object.entries(profile).every(([label, need]) => {
       const key = Object.keys(STRAND_LABELS).find(k => STRAND_LABELS[k] === label);
       return typeof eff[key] === 'number' && eff[key] >= need;
     });
-    if (!met) return { node: `explorer-${n}.1`, launchpadGap: false, beyondBuilt: false };
+    if (!met) return { node: `explorer-${n}.1`, launchpadGap: false, finaleDoor: false };
   }
-  return { node: 'explorer-4.1', launchpadGap: false, beyondBuilt: true };
+  return { node: 'explorer-7.4', launchpadGap: false, finaleDoor: true };
 }
 
 /** One strand of the Starting Point note, in plain words: "solid to grade 4" when a whole rung confirmed,
@@ -353,23 +357,23 @@ export function strandPicture(state) {
 export function finishRun(state, { partial = false } = {}) {
   const rungs = {}, placed = {};
   for (const key of Object.keys(state.strands)) { placed[key] = placedRung(state.strands[key]); rungs[key] = placed[key].rung; }
-  const { node, launchpadGap, beyondBuilt } = crosswalk(rungs);
+  const { node, launchpadGap, finaleDoor } = crosswalk(rungs);
   const info = nodeInfo(node);
   const note = {
     lines: Object.keys(state.strands).map(k => strandNoteWords(STRAND_LABELS[k], placed[k], rungs)),
-    placedUnit: beyondBuilt
-      ? `Past Unit 4: every strand pointed beyond the built street. The workshops past Unit 4 are still being built, so the start is Unit ${info.unit} (${info.workshop}), the furthest workshop there is, and Units 1–4 stay open for games, laps and test-out.`
+    placedUnit: finaleDoor
+      ? `Past Unit 7: every strand pointed beyond the Explorer street's workshops. The start is the Vault of Measures, the finale at the end of Unit 7 (The Fairground), and every workshop stays open for games, laps and test-out.`
       : `Unit ${info.unit}: ${info.workshop}`,
-    startNode: node, launchpadGap, beyondBuilt: !!beyondBuilt,
+    startNode: node, launchpadGap, finaleDoor: !!finaleDoor,
     launchpadLine: launchpadGap ? 'One or more strands landed below the Explorer starting line. The Launchpad gardens (kindergarten to grade 2) are still being built, so for now this learner starts at Welcome to the Numberworks, and this note flags the gap honestly rather than hiding it.' : null,
     partial: partial ? 'The game was stopped early. Strands place independently, so this start point still stands; a strand that had not settled starts at its seed rung.' : null,
     caveat: CAVEAT,
   };
   return { grade: state.grade, form: state.form, rungs, confirmed: Object.fromEntries(Object.entries(placed).map(([k, v]) => [k, v.confirmed])), startNode: node, workshop: info.workshop,
-    // Past the built street: the child hears the honest version too — the next workshops are still
-    // being built, this is the last one there is, and the whole street behind them is open.
-    beyondBuilt: !!beyondBuilt,
-    beyondLine: beyondBuilt ? `You raced to the very end of the built street! The workshops past ${info.workshop} are still being built, so you start at ${info.workshop}, and every workshop behind you is open for games.` : null,
+    // Past every workshop: the child hears the honest version too — the street is finished, every
+    // workshop behind them is open, and the Vault of Measures at its end is where they start.
+    finaleDoor: !!finaleDoor,
+    finaleLine: finaleDoor ? `You raced to the very end of the street! Every workshop is open to you, and the Vault of Measures is waiting: seven locks, one for every workshop. You start at the Vault.` : null,
     note, picture: strandPicture(state) };
 }
 
@@ -387,9 +391,10 @@ export function getPlacement(user) {
     // (declaredGrade + gradeDeclaredAt) rides along so a screen can say when it was named.
     grade: deriveGrade(r.grade, r.grade_declared_at), declaredGrade: r.grade, gradeDeclaredAt: r.grade_declared_at,
     rungs: parse(r.rungs, {}),
-    // Rows saved before repair round 3 could name the unbuilt Unit 5 door; read them as the furthest
-    // built workshop, the start those runs would land on today.
-    startNode: r.start_node === 'explorer-5.1' ? 'explorer-4.1' : r.start_node, source: r.source,
+    // Rows saved before Phase 2 could name 'explorer-5.1' when it was still an unbuilt door the old
+    // crosswalk pointed past; Unit 5 is built now, so the node reads as itself, the door those runs
+    // were always aiming at. (Repair round 3 read such rows as Unit 4's door while 5.1 was unbuilt.)
+    startNode: r.start_node, source: r.source,
     disabled: !!r.disabled, startFails: r.start_fails, softLandNode: r.soft_land_node, updatedAt: r.updated_at,
   };
 }
@@ -421,8 +426,9 @@ function savePlacement(user, { grade, rungs, startNode, source, reanchorGrade = 
 export function placeAtBeginning(user, grade) {
   const g = seedGrade(grade);
   // Grades 6–8 would begin in the Pro tier, which is not built yet: they begin at the furthest built
-  // workshop, Unit 4's door, never at an unbuilt node.
-  const node = g <= 2 ? 'explorer-0.1' : g <= 5 ? 'explorer-1.1' : 'explorer-4.1';
+  // workshop door, Unit 7's door, never at an unbuilt node. The finale door is NOT a beginning: the
+  // Vault unlocks in course order, so a beginning start names Unit 7's first step, not 7.4.
+  const node = g <= 2 ? 'explorer-0.1' : g <= 5 ? 'explorer-1.1' : 'explorer-7.1';
   return savePlacement(user, { grade: g, rungs: {}, startNode: node, source: 'beginning' });
 }
 
@@ -566,8 +572,8 @@ export function recordStartCheck(user, stepKey, passed) {
 // ------------------------------------------------------------------------------------------------- test-out (§4.6)
 /** The 5 test-out items for a unit: one per strand at the rung the crosswalk asks of that unit's door,
  *  plus a second Number item (the strand every unit leans on hardest). Deterministic in the seed; the
- *  public shape hides the keys exactly as the Sorting Game does. Units 1–4 only — their profiles are the
- *  locked ones. */
+ *  public shape hides the keys exactly as the Sorting Game does. Any unit with a locked entry profile
+ *  can be tested out of — Units 1–7 since the Phase 2 lock; the finale has no profile and no test-out. */
 export function testOutItems(unit, seed = 'testout') {
   const profile = (PLACEMENT_LOCK.crosswalk.entryProfiles || {})[`explorer-${unit}.1`];
   if (!profile) return [];

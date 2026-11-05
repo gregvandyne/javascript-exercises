@@ -1,0 +1,194 @@
+{
+ "key": "explorer-5.3",
+ "n": "5.3",
+ "band": "explorer",
+ "title": "Coins and change",
+ "topic": "Money and change",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "The shop till",
+   "text": "At the till, money is measured like everything else in this shop. A dollar is a whole, and the coins are its parts. Four quarters fill it exactly, the way four quarters filled a cake in Unit 4.",
+   "art": "box"
+  },
+  {
+   "title": "One dollar, four quarters",
+   "text": "A quarter is worth 25 cents, and a dollar is worth 100 cents. Watch the bar fill: each quarter paints 25 of the 100 cents. Coins are just measures with pictures on them.",
+   "art": "grid",
+   "visual": {
+    "type": "bars",
+    "label": "A bar for one dollar split into four equal parts of 25 cents, one for each quarter",
+    "rows": [
+     {
+      "label": "One dollar: 100 cents",
+      "parts": [
+       {
+        "w": 0.25,
+        "label": "25 cents"
+       },
+       {
+        "w": 0.25,
+        "label": "25 cents"
+       },
+       {
+        "w": 0.25,
+        "label": "25 cents"
+       },
+       {
+        "w": 0.25,
+        "label": "25 cents"
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One quarter: 25 of the 100 cents.",
+     "box": [
+      5.8,
+      37.1,
+      22.4,
+      15.5
+     ]
+    },
+    {
+     "cue": "Two quarters: half the dollar, 50 cents.",
+     "box": [
+      5.8,
+      37.1,
+      44.4,
+      15.5
+     ]
+    },
+    {
+     "cue": "Four quarters fill the dollar: 100 cents.",
+     "box": [
+      5.8,
+      27.9,
+      88.4,
+      24.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Worked example: change for a toy",
+   "text": "Rough first: the toy costs more than half a dollar, so the change is less than 50 cents. You pay 100 cents for a 65-cent toy. The change is the gap between 65 and 100 on the bar.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "Count up from 65 to 70: that is 5 cents",
+    "Count up from 70 to 100: that is 30 cents",
+    "Change = 5 + 30 = 35 cents"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "A bar model for change: a dollar bar on top, and below it a bar where 65 cents is the price and the dashed part is the change",
+    "rows": [
+     {
+      "label": "You pay with 100 cents",
+      "parts": [
+       {
+        "w": 1,
+        "label": "100 cents"
+       }
+      ]
+     },
+     {
+      "label": "Toy: 65 cents",
+      "parts": [
+       {
+        "w": 0.65,
+        "label": "65 cents"
+       },
+       {
+        "w": 0.35,
+        "unknown": true
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "You hand over one whole dollar: 100 cents.",
+     "box": [
+      5.8,
+      13.7,
+      88.4,
+      24.7
+     ]
+    },
+    {
+     "cue": "The price takes 65 of the 100 cents.",
+     "box": [
+      5.8,
+      53.1,
+      57.6,
+      15.5
+     ]
+    },
+    {
+     "cue": "The empty part is the change. Count up from 65 to find it.",
+     "box": [
+      63.0,
+      53.1,
+      31.2,
+      15.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The Jumble at the till",
+   "text": "The Jumble tried to help by ringing up a sticker priced at $2.05. It charged 235 cents, as if the price said $2.35. The zero matters: it holds the tens place, so $2.05 is 205 cents, not 235.",
+   "art": "bug"
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words for the till.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "coin",
+     "means": "a flat piece of money with a set value in cents"
+    },
+    {
+     "word": "cent",
+     "means": "the smallest money unit here; 100 cents make one dollar"
+    },
+    {
+     "word": "change",
+     "means": "the money handed back when you pay more than the price"
+    },
+    {
+     "word": "price",
+     "means": "what a thing costs, in dollars and cents"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: fewest coins",
+   "text": "Stretch: make 87 cents using the fewest coins you can. Quarters first, then dimes, then nickels, then pennies. How few did you manage? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Money board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Count every change answer up from the price before you pick a tile.",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-5.3-e1",
+  "nq-explorer-5.3-e2",
+  "nq-explorer-5.3-e3"
+ ],
+ "game": {
+  "slug": "brain-board",
+  "chapter": "Practice Board",
+  "params": "mode=nq-5-3&lock=1"
+ }
+}

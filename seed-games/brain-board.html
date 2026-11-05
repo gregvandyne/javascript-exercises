@@ -683,6 +683,135 @@ window.SoloBank = (function () {
       }
       return out;
     }
+    if (NQ_STEP === 'explorer-5.1') { // The Measure Shop (Unit 5.1): measuring is counting units, and a
+      // conversion is the same measure wearing a new name (x100 for cm, x1000 for g and ml).
+      for (i = 0; i < 5; i++) { // Centimeters: meters renamed in centimeters.
+        a = ri(2, 9);
+        out.push(nqItem('A ribbon is ' + a + ' meters long. How many centimeters is that?', nqFmt(a * 100),
+          [nqFmt(a * 10), nqFmt(a * 1000), nqFmt(a * 100 + 10)], 'Centimeters'));
+      }
+      for (i = 0; i < 5; i++) { // Kilograms: the shop's heavy unit, renamed in grams.
+        a = ri(2, 8);
+        out.push(nqItem('How many grams are in ' + a + ' kilograms?', nqFmt(a * 1000),
+          [nqFmt(a * 100), nqFmt(a * 1000 - 100), nqFmt(a * 1000 + 1000)], 'Kilograms'));
+      }
+      for (i = 0; i < 5; i++) { // Liters: the same renaming for poured measures.
+        a = ri(2, 9);
+        out.push(nqItem('A jug holds ' + a + ' liters. How many milliliters is that?', nqFmt(a * 1000),
+          [nqFmt(a * 100), nqFmt(a * 10), nqFmt(a * 1000 + 100)], 'Liters'));
+      }
+      for (i = 0; i < 5; i++) { // Add the measure: two lengths, one unit, joined.
+        a = ri(24, 88); b = ri(15, 96);
+        out.push(nqItem('A ribbon of ' + a + ' cm is tied to one of ' + b + ' cm. How long together?', (a + b) + ' cm',
+          [(a + b + 10) + ' cm', (a + b - 10) + ' cm', Math.abs(a - b) + ' cm'], 'Add the measure'));
+      }
+      for (i = 0; i < 5; i++) { // Which is longer: units must be renamed before they can be compared.
+        a = ri(3, 7);
+        out.push(nqItem('Which is the longest?', a + ' meters',
+          [(a * 100 - 40) + ' centimeters', (a - 1) + ' meters 90 centimeters', (a * 100 - 150) + ' centimeters'], 'Which is longer'));
+      }
+      return out;
+    }
+    if (NQ_STEP === 'explorer-5.3') { // Coins and change (Unit 5.3): a dollar is a whole of 100 cents,
+      // coins are its parts, and change is the gap counted up from the price.
+      var coinQs = [[1, 25], [2, 50], [3, 75], [4, 100], [5, 125]];
+      for (i = 0; i < 5; i++) { // Coin values: quarters counted in cents.
+        var qn = coinQs[i][0];
+        out.push(nqItem('How many cents is ' + qn + (qn === 1 ? ' quarter?' : ' quarters?'), coinQs[i][1] + ' cents',
+          [(qn * 10) + ' cents', (coinQs[i][1] - 15) + ' cents', (coinQs[i][1] + 25) + ' cents'], 'Coin values'));
+      }
+      for (i = 0; i < 5; i++) { // Make the price: count a handful of coins.
+        var cq = ri(1, 3), cd = ri(0, 2), cn = ri(0, 2), cp = ri(0, 4), tot = cq * 25 + cd * 10 + cn * 5 + cp;
+        var handful = cq + (cq === 1 ? ' quarter, ' : ' quarters, ') + cd + (cd === 1 ? ' dime' : ' dimes') + ' and ' + cn + (cn === 1 ? ' nickel' : ' nickels') + (cp ? ' and ' + cp + (cp === 1 ? ' penny' : ' pennies') : '');
+        out.push(nqItem('You hold ' + handful + '. How many cents do you hold?', tot + ' cents',
+          [(tot + 10) + ' cents', (tot - 5) + ' cents', (tot + 25) + ' cents'], 'Make the price'));
+      }
+      for (i = 0; i < 5; i++) { // Change back: the gap between the price and 100.
+        a = ri(35, 92);
+        out.push(nqItem('A toy costs ' + a + ' cents. You pay with 100 cents. How much change do you get?', (100 - a) + ' cents',
+          [(100 - a + 10) + ' cents', (100 - a - 10 > 0 ? 100 - a - 10 : 100 - a + 20) + ' cents', a + ' cents'], 'Change back'));
+      }
+      for (i = 0; i < 5; i++) { // Add the prices: two costs, one total.
+        a = ri(22, 68); b = ri(15, 58);
+        out.push(nqItem('A pen costs ' + a + ' cents and a book costs ' + b + ' cents. How much do they cost together?', (a + b) + ' cents',
+          [(a + b + 10) + ' cents', (a + b - 10) + ' cents', Math.abs(a - b) + ' cents'], 'Add the prices'));
+      }
+      for (i = 0; i < 5; i++) { // Dollars and cents: the zero holds the tens place (the Jumble's error).
+        var dol = ri(2, 6), cents = [35, 5, 65, 25, 85][i], full = dol * 100 + cents;
+        var dropped = cents < 10 ? dol * 100 + 50 : dol * 100 + (cents % 10);
+        out.push(nqItem('How many cents is $' + dol + '.' + (cents < 10 ? '0' : '') + cents + '?', full + ' cents',
+          [dropped + ' cents', (full + 100) + ' cents', (full - 10) + ' cents'], 'Dollars and cents'));
+      }
+      return out;
+    }
+    if (NQ_STEP === 'explorer-6.2') { // Around and inside (Unit 6.2): perimeter is the fence (add the
+      // sides), area is the carpet (multiply them) - the two crews' famous mix-up is the lesson.
+      for (i = 0; i < 5; i++) { // Fence it: all the way around.
+        a = ri(3, 9); b = ri(2, 8); if (b === a) b += 1;
+        if (a * b === 2 * (a + b)) b += 1; // area would equal the fence: the signature distractor must not be the key
+        out.push(nqItem('A garden is ' + a + ' by ' + b + ' meters. How many meters of fence go around it?', 2 * (a + b),
+          [a * b, a + b, 2 * (a + b) + 2], 'Fence it'));
+      }
+      for (i = 0; i < 5; i++) { // Carpet it: the covering squares.
+        a = ri(3, 9); b = ri(2, 8); if (b === a) b += 1;
+        if (a * b === 2 * (a + b)) b += 1; // perimeter would equal the carpet: same guard, other direction
+        out.push(nqItem('A rug is ' + a + ' by ' + b + ' meters. What is its area in square meters?', a * b,
+          [2 * (a + b), a + b, a * b + 10], 'Carpet it'));
+      }
+      for (i = 0; i < 5; i++) { // Count the squares: rows of squares, multiplied.
+        a = ri(3, 8); b = ri(3, 9);
+        out.push(nqItem('A garden has ' + a + ' rows of ' + b + ' square tiles. What is its area in square tiles?', a * b,
+          [a + b, a * b - b, a * b + 10], 'Count the squares'));
+      }
+      for (i = 0; i < 5; i++) { // Missing side: the fence total and one side name the other.
+        a = ri(3, 9); b = ri(2, 8); if (b === a) b += 1;
+        out.push(nqItem('A rectangle\u2019s perimeter is ' + (2 * (a + b)) + '. One side is ' + a + '. How long is the side next to it?', b,
+          [2 * b, a + b, a], 'Missing side'));
+      }
+      for (i = 0; i < 5; i++) { // Same fence: with one fence, the square holds the most carpet.
+        var s = [4, 5, 6, 4, 5][i], per = 4 * s;
+        out.push(nqItem('Which rectangle with perimeter ' + per + ' has the biggest area?', s + ' by ' + s,
+          [(s + 2) + ' by ' + (s - 2), (s + 1) + ' by ' + (s - 1), (s + 3) + ' by ' + (s - 3)], 'Same fence'));
+      }
+      return out;
+    }
+    if (NQ_STEP === 'explorer-6.3') { // Lines, symmetry, grids (Unit 6.3): lines by how they sit, symmetry
+      // as a fold, and grid addresses read right first, then up (the Jumble's swap is the trap).
+      var lineQs = [
+        ['Which pair of lines never meets, no matter how far it runs?', 'Parallel lines', ['Perpendicular lines', 'Crossing lines', 'Curved lines']],
+        ['Which pair of lines crosses at a square corner?', 'Perpendicular lines', ['Parallel lines', 'Side-by-side lines', 'Curved lines']],
+        ['Two rails on a straight track run side by side and never meet. They are...', 'Parallel lines', ['Perpendicular lines', 'Rays', 'Circles']],
+        ['The corner of a door is where two edges meet at a square corner. They are...', 'Perpendicular lines', ['Parallel lines', 'Long lines', 'Wavy lines']],
+        ['Which of these is a part of a line with one end and one arrow?', 'A ray', ['A segment with two ends', 'A circle', 'A fold line']],
+      ];
+      for (i = 0; i < 5; i++) out.push(nqItem(lineQs[i][0], lineQs[i][1], lineQs[i][2], 'Parallel or not'));
+      var goodLetters = ['A', 'H', 'O', 'D', 'M'], badLetters = [['F', 'G', 'J'], ['L', 'P', 'R'], ['S', 'F', 'Z'], ['G', 'N', 'J'], ['P', 'S', 'L']];
+      for (i = 0; i < 5; i++) { // Fold it: one letter of five folds exactly in half.
+        out.push(nqItem('Which letter folds exactly in half, both sides matching?', goodLetters[i], badLetters[i], 'Fold it'));
+      }
+      for (i = 0; i < 5; i++) { // Grid addresses: first number right, second number up.
+        a = ri(2, 6); b = ri(2, 5); if (b === a) b += 1;
+        out.push(nqItem('Which point is ' + a + ' steps right and ' + b + ' steps up from (0, 0)?', '(' + a + ', ' + b + ')',
+          ['(' + b + ', ' + a + ')', '(' + a + ', ' + a + ')', '(' + b + ', ' + b + ')'], 'Grid addresses'));
+      }
+      var turnQs = [
+        ['A square corner is what kind of turn?', 'A quarter turn', ['A half turn', 'A full turn', 'No turn at all']],
+        ['You face the door and make two quarter turns. What turn is that in all?', 'A half turn', ['A quarter turn', 'A full turn', 'Three turns']],
+        ['Four quarter turns, one after another, make...', 'A full turn', ['A half turn', 'A quarter turn', 'No turn at all']],
+        ['You face the door. Which turn makes you face the opposite wall?', 'A half turn', ['A quarter turn', 'A full turn', 'A tiny turn']],
+        ['An angle is measured as a...', 'Turn', ['Length', 'Weight', 'Count']],
+      ];
+      for (i = 0; i < 5; i++) out.push(nqItem(turnQs[i][0], turnQs[i][1], turnQs[i][2], 'Turns'));
+      var famQs = [
+        ['A square is always a kind of...', 'Rectangle', ['Circle', 'Triangle', 'Pentagon']],
+        ['Squares, rectangles and rhombuses all belong to which family?', 'Quadrilaterals', ['Triangles', 'Circles', 'Pentagons']],
+        ['Which shape is NOT a quadrilateral?', 'Pentagon', ['Rhombus', 'Square', 'Rectangle']],
+        ['A shape has 4 sides and 4 square corners, and its sides are not all equal. It is a...', 'Rectangle', ['Triangle', 'Circle', 'Hexagon']],
+        ['Why is a square a kind of rectangle?', 'It has 4 sides and 4 square corners', ['It is bigger', 'It has the nicest name', 'It has 3 sides']],
+      ];
+      for (i = 0; i < 5; i++) out.push(nqItem(famQs[i][0], famQs[i][1], famQs[i][2], 'Shape families'));
+      return out;
+    }
     return null;
   }
 

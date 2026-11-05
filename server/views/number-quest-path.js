@@ -1,7 +1,9 @@
 // The Number Quest path home (/courses/number-quest): the Numberworks street (math course spec §6.1) — a
 // winding path of workshop units, each a cluster of three step nodes, with the Duolingo-lite layer on top:
 // Tally Marks in the header, today's daily-goal progress, mastery-lap rings around each workshop, the
-// placement start Tally chose, and the units still being built shown greyed at the top of the street.
+// placement start Tally chose. Phase 2 (2026-11-05) completed the Explorer street: all seven workshops
+// and the Vault of Measures finale (Unit 7's fourth step) are real nodes now, so the greyed
+// "still being built" placeholders that stood for Units 5-7 and the Vault are gone.
 // It reuses the course page's shell, panels, buttons and tokens (views/courses.js idioms); its own rules
 // live in public/css/number-quest.css. Course copy is English data, rendered lang="en" like the decks.
 // Character art: Tally's sprite is extracted from her own game, Fraction Factory (scripts/csq-sprites.js,
@@ -63,13 +65,6 @@ function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut }) {
   </li>`;
 }
 
-/** A workshop still being built: on the street, greyed, honestly labelled — never a door. */
-const futureUnit = n => html`<li class="nqp-unit nqp-unit-future" aria-disabled="true">
-  <header class="nqp-unit-h"><span class="nqp-medal nqp-medal-future" aria-hidden="true"><span class="nqp-medal-in">🚧</span></span>
-    <div class="nqp-unit-t"><h3>Unit ${n}</h3><p class="small muted nqp-laps">Still being built. The Numberworks crew is on it.</p></div>
-    <span class="nqp-stone">Coming later</span></header>
-</li>`;
-
 /** The path home. d: { course, ov (the Explorer overview), marks, daily, laps (unit -> lapState),
  *  placement, testedOut (unit numbers), canPick, bandSet } */
 export function pathPage(d) {
@@ -117,12 +112,6 @@ export function pathPage(d) {
 
     <ol class="nqp-path" aria-label="The Numberworks street, Explorer">
       ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n) }))}
-      ${[5, 6, 7].map(futureUnit)}
-      <li class="nqp-unit nqp-unit-future" aria-disabled="true">
-        <header class="nqp-unit-h"><span class="nqp-medal nqp-medal-future" aria-hidden="true"><span class="nqp-medal-in">🔐</span></span>
-          <div class="nqp-unit-t"><h3 lang="en" dir="ltr">The Vault of Measures</h3><p class="small muted nqp-laps">The street's end, for now: seven locks, one for every workshop, opened by the seven stones. Still being built.</p></div>
-          <span class="nqp-stone">Coming later</span></header>
-      </li>
     </ol>
 
     <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>

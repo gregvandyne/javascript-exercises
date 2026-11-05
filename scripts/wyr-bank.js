@@ -22,7 +22,7 @@ const GAME = path.join(ROOT, 'seed-games/would-you-rather.html');
 export const TAGS = ['brave', 'think', 'make', 'animal', 'food', 'fast', 'kind', 'calm', 'fun', 'nature', 'tech', 'social'];
 // tech and online: the CS Quest topics (lessons 6.1 and 6.3; prompts and CSTA ids in seed-lessons/cs-quest/wyr-tech.json).
 // The live mode's TOPICS (server/live/wyr.js) is the same list; tests/unit/live-wyr-atlas.test.js checks they agree.
-export const CATS = ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep', 'tech', 'online'];
+export const CATS = ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep', 'tech', 'online', 'numbers'];
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) build();
 
