@@ -1,0 +1,180 @@
+/* Oomba Breathe & Bend (/move): the index cards and the Episode player. Poses are settled CSS
+   transforms on the Remy stage (server/views/move.js), switched by data-pose / data-seated on
+   .mv-stage; slow transitions glide between them, and reduced motion (the OS setting, mirrored
+   by the player as data-motion="reduced") removes the glide and every loop, leaving the same
+   finished frame for each segment. Captions sit in their own bar under the stage, never over Remy. */
+
+.mv-hero { text-align: center; padding: 1.2rem 0 .4rem; }
+.mv-hero h1 { margin-bottom: .3rem; }
+.mv-cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 1rem 0; }
+.mv-card { display: block; border: 2px solid var(--line, #d8e6dc); border-radius: 18px; overflow: hidden; background: var(--panel, #fff); text-decoration: none; color: inherit; }
+.mv-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.mv-card-art { display: block; }
+.mv-card-art .mv-art { display: block; width: 100%; height: auto; }
+.mv-card .mv-card-body { padding: .8rem 1rem 1rem; }
+.mv-card h3 { margin: 0 0 .25rem; }
+.mv-soon { opacity: .75; }
+.mv-done-badge { display: inline-block; background: #1F9D63; color: #fff; border-radius: 999px; padding: .1rem .6rem; font-size: .85rem; font-weight: 700; }
+
+.mv-wrap { max-width: 880px; margin: 0 auto; }
+.mv-stagebox { position: relative; border-radius: 22px; overflow: hidden; border: 2px solid #d8e6dc; background: #FFFDF2; }
+.mv-stage { display: block; }
+.mv-stage .mv-art, .mv-mini .mv-art { display: block; width: 100%; height: auto; }
+
+/* Rendered 3D frames (Greg's art direction): one still per pose, crossfaded by the player. The
+   movement is player-applied: the whole frame breathes (a slow scale and sway, slightly larger
+   than the box so edges never show), a warm light layer drifts the other way for parallax, and
+   each pose lands with a short bounce that squashes at the bottom. During a "Your turn" hold
+   every animation pauses. Reduced motion removes all of it: one still frame per segment. */
+.mv-frames { position: relative; aspect-ratio: 3 / 2; overflow: hidden; animation: mv-breathe 4.6s ease-in-out infinite alternate; }
+.mv-framewrap { position: absolute; inset: 0; }
+.mv-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .45s ease; }
+.mv-frame.on { opacity: 1; }
+/* A segment's real video clip (Greg's generated mp4) sits in the same slot, over its still
+   (the still is the video's poster), centre-cropped like the stills. */
+.mv-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #141414; }
+.mv-frame-light { position: absolute; inset: -6%; background: radial-gradient(ellipse 55% 45% at 78% 16%, rgba(255, 210, 63, .20), rgba(255, 210, 63, 0) 70%); animation: mv-lightdrift 7s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes mv-breathe { from { transform: scale(1.045) translate(0, 0); } to { transform: scale(1.062) translate(-.45%, -.7%); } }
+@keyframes mv-lightdrift { from { transform: translate(.6%, .3%); } to { transform: translate(-.9%, -.5%); } }
+.mv-framewrap.mv-bounce { animation: mv-bounce .62s ease; }
+@keyframes mv-bounce {
+  0% { transform: translateY(0) scale(1, 1); }
+  30% { transform: translateY(1.1%) scale(1.015, .962); }
+  55% { transform: translateY(-1.7%) scale(.995, 1.018); }
+  78% { transform: translateY(.45%) scale(1.006, .988); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+.mv-frames.hold .mv-framewrap, .mv-frames.hold { animation-play-state: paused; }
+.mv-frames[data-motion="reduced"], .mv-frames[data-motion="reduced"] .mv-framewrap, .mv-frames[data-motion="reduced"] .mv-frame-light { animation: none !important; }
+.mv-mini-img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 16px; border: 3px solid #1F9D63; background: #FFFDF2; }
+@media (prefers-reduced-motion: reduce) {
+  .mv-frames, .mv-framewrap, .mv-frame-light { animation: none !important; }
+}
+
+/* seated inset: a small circle, bottom left, above the ground line, never over Remy's face */
+.mv-mini { position: absolute; left: 10px; bottom: 10px; width: 27%; max-width: 168px; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; border: 3px solid #1F9D63; background: #FFFDF2; box-shadow: 0 2px 10px rgba(20,20,20,.18); }
+.mv-mini-label { position: absolute; left: 10px; bottom: calc(10px + 27% * 0); transform: translateY(0); background: #1F9D63; color: #fff; font-size: .78rem; font-weight: 700; padding: .12rem .55rem; border-radius: 999px; }
+.mv-mini-wrap { position: absolute; inset: auto auto 0 0; }
+.mv-mini-cap { position: absolute; left: 10px; bottom: 10px; width: 27%; max-width: 168px; }
+.mv-mini-cap .mv-mini { position: static; width: 100%; }
+.mv-mini-cap p { margin: .3rem 0 0; font-size: .8rem; background: rgba(255,253,242,.92); border-radius: 8px; padding: .15rem .4rem; }
+
+.mv-yourturn { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; gap: .4rem; background: rgba(255,253,242,.45); text-align: center; }
+.mv-yourturn.on { display: flex; }
+.mv-yourturn svg { width: 118px; height: 118px; }
+.mv-yourturn .ring-bg { stroke: #d8e6dc; }
+.mv-yourturn .ring-fg { stroke: #1F9D63; transform: rotate(-90deg); transform-origin: center; }
+.mv-yourturn p { font-weight: 800; font-size: 1.15rem; margin: 0; background: rgba(255,253,242,.9); padding: .2rem .8rem; border-radius: 999px; }
+
+.mv-endcard { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; gap: .6rem; background: rgba(255,253,242,.88); text-align: center; padding: 1rem; }
+.mv-endcard.on { display: flex; }
+.mv-endcard h2 { margin: 0; }
+
+.mv-caption { min-height: 3.4em; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.12rem; font-weight: 600; padding: .55rem .9rem; margin-top: .6rem; background: var(--panel, #fff); border: 2px solid #d8e6dc; border-radius: 14px; }
+.mv-caption:empty::before { content: "\00a0"; }
+.mv-meta { display: flex; align-items: center; gap: .7rem; margin-top: .55rem; }
+.mv-meta .mv-segname { font-weight: 800; white-space: nowrap; }
+.mv-progress { flex: 1; height: 10px; border-radius: 999px; background: #e3efe7; overflow: hidden; }
+.mv-progress i { display: block; height: 100%; width: 0; background: #1F9D63; border-radius: 999px; }
+.mv-time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mv-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .7rem; }
+.mv-controls .btn[aria-pressed="true"] { outline: 3px solid #FFD23F; outline-offset: 1px; }
+.mv-status { margin-top: .6rem; }
+.mv-calm { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .8rem 0; }
+.mv-calm .btn[aria-pressed="true"] { outline: 3px solid #FFD23F; outline-offset: 1px; }
+
+/* ---- Remy poses: settled frames, one per data-pose ---- */
+.mv-stage .remy, .mv-stage .torso, .mv-stage .arm-l, .mv-stage .arm-r, .mv-stage .leg-l, .mv-stage .leg-r,
+.mv-stage .sun, .mv-stage .sky, .mv-stage .sparkstar, .mv-stage .roots, .mv-stage .twinkles, .mv-stage .chair,
+.mv-stage .seated-feet, .mv-stage .eye { transition: transform 1.1s ease, opacity .7s ease, fill 1.1s ease; }
+.mv-stage .torso { transform-box: view-box; transform-origin: 200px 228px; }
+.mv-stage .remy { transform-box: view-box; transform-origin: 200px 262px; }
+.mv-stage .arm-l { transform-box: fill-box; transform-origin: 72% 10%; transform: rotate(14deg); }
+.mv-stage .arm-r { transform-box: fill-box; transform-origin: 28% 10%; transform: rotate(-14deg); }
+.mv-stage .leg-l, .mv-stage .leg-r { transform-box: fill-box; transform-origin: 50% 8%; }
+.mv-stage .eye { transform-box: fill-box; transform-origin: center; }
+
+.mv-stage[data-pose="intro"] .arm-r { animation: mv-wave 1.8s ease-in-out infinite alternate; }
+@keyframes mv-wave { from { transform: rotate(-138deg); } to { transform: rotate(-162deg); } }
+
+.mv-stage[data-pose="spark"] .sparkstar { opacity: 1; }
+.mv-stage[data-pose="spark"] .trace { animation: mv-spin 7s linear infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes mv-spin { to { transform: rotate(360deg); } }
+.mv-stage[data-pose="spark"] .torso { transform: translateY(10px); }
+.mv-stage[data-pose="spark"] .leg-l { transform: rotate(26deg) translate(9px, -7px); }
+.mv-stage[data-pose="spark"] .leg-r { transform: rotate(-26deg) translate(-9px, -7px); }
+.mv-stage[data-pose="spark"] .arm-r { transform: rotate(-96deg); }
+
+.mv-stage[data-pose="mountain"] .arm-l { transform: rotate(172deg); }
+.mv-stage[data-pose="mountain"] .arm-r { transform: rotate(-172deg); }
+.mv-stage[data-pose="mountain"] .roots { opacity: 1; }
+
+.mv-stage[data-pose="tree"] .leg-r { transform: rotate(-52deg) translate(-10px, -18px); }
+.mv-stage[data-pose="tree"] .arm-l { transform: rotate(60deg); }
+.mv-stage[data-pose="tree"] .arm-r { transform: rotate(-60deg); }
+.mv-stage[data-pose="tree"] .torso { animation: mv-wobble 3.2s ease-in-out infinite; }
+@keyframes mv-wobble { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(2.4deg); } 65% { transform: rotate(-2deg); } }
+.mv-stage[data-pose="tree"].hold .torso { animation: none; transform: rotate(0deg); }
+
+.mv-stage[data-pose="star"] .arm-l { transform: rotate(98deg); }
+.mv-stage[data-pose="star"] .arm-r { transform: rotate(-98deg); }
+.mv-stage[data-pose="star"] .leg-l { transform: translateX(-13px) rotate(9deg); }
+.mv-stage[data-pose="star"] .leg-r { transform: translateX(13px) rotate(-9deg); }
+.mv-stage[data-pose="star"] .twinkles { opacity: 1; }
+
+.mv-stage[data-pose="waterfall"] .torso { transform: translateY(30px) scaleY(.68); }
+.mv-stage[data-pose="waterfall"] .arm-l { transform: rotate(18deg); }
+.mv-stage[data-pose="waterfall"] .arm-r { transform: rotate(-18deg); }
+.mv-stage[data-pose="waterfall"] .leg-l { transform: translateX(-10px); }
+.mv-stage[data-pose="waterfall"] .leg-r { transform: translateX(10px); }
+
+.mv-stage[data-pose="butterfly"] .torso { transform: translateY(13px); }
+.mv-stage[data-pose="butterfly"] .leg-l { transform: rotate(60deg) translate(6px, -10px); animation: mv-flap-l 2.6s ease-in-out infinite alternate; }
+.mv-stage[data-pose="butterfly"] .leg-r { transform: rotate(-60deg) translate(-6px, -10px); animation: mv-flap-r 2.6s ease-in-out infinite alternate-reverse; }
+@keyframes mv-flap-l { from { transform: rotate(60deg) translate(6px, -10px); } to { transform: rotate(50deg) translate(6px, -8px); } }
+@keyframes mv-flap-r { from { transform: rotate(-60deg) translate(-6px, -10px); } to { transform: rotate(-50deg) translate(-6px, -8px); } }
+.mv-stage[data-pose="butterfly"].hold .leg-l, .mv-stage[data-pose="butterfly"].hold .leg-r { animation: none; }
+
+.mv-stage[data-pose="boat"] .torso { transform: rotate(-6deg); }
+.mv-stage[data-pose="boat"] .leg-l { transform: translate(4px, -52px) rotate(-6deg); }
+.mv-stage[data-pose="boat"] .leg-r { transform: translate(-4px, -52px) rotate(6deg); }
+.mv-stage[data-pose="boat"] .arm-l { transform: rotate(30deg); }
+.mv-stage[data-pose="boat"] .arm-r { transform: rotate(-30deg); }
+.mv-stage[data-pose="boat"] .remy { animation: mv-rock 3.4s ease-in-out infinite; }
+@keyframes mv-rock { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(1.6deg); } }
+.mv-stage[data-pose="boat"].hold .remy { animation: none; }
+
+.mv-stage[data-pose="cobra"] .remy { transform: translateY(30px) scaleY(.7); }
+.mv-stage[data-pose="cobra"] .torso { transform: rotate(-13deg); }
+.mv-stage[data-pose="cobra"] .arm-l { transform: rotate(24deg); }
+.mv-stage[data-pose="cobra"] .arm-r { transform: rotate(-24deg); }
+
+.mv-stage[data-pose="rest"] .sky { fill: #FFE9C4; }
+.mv-stage[data-pose="rest"] .sun { transform: translateY(30px); }
+.mv-stage[data-pose="rest"] .remy { transform: translateY(36px) scaleY(.58); }
+.mv-stage[data-pose="rest"] .arm-l { transform: rotate(102deg); }
+.mv-stage[data-pose="rest"] .arm-r { transform: rotate(-102deg); }
+.mv-stage[data-pose="rest"] .leg-l { transform: translateX(-13px) rotate(10deg); }
+.mv-stage[data-pose="rest"] .leg-r { transform: translateX(13px) rotate(-10deg); }
+.mv-stage[data-pose="rest"] .eye { transform: scaleY(.15); }
+
+/* seated mode: a chair appears, Remy sits, standing legs become feet on the floor */
+.mv-stage[data-seated="1"] .chair { opacity: 1; }
+.mv-stage[data-seated="1"] .leg-l, .mv-stage[data-seated="1"] .leg-r { opacity: 0; }
+.mv-stage[data-seated="1"] .seated-feet { opacity: 1; }
+.mv-stage[data-seated="1"] .remy { transform: translateY(6px); }
+.mv-stage[data-seated="1"][data-pose="cobra"] .remy, .mv-stage[data-seated="1"][data-pose="rest"] .remy { transform: none; }
+.mv-stage[data-seated="1"][data-pose="cobra"] .leg-l, .mv-stage[data-seated="1"][data-pose="cobra"] .leg-r,
+.mv-stage[data-seated="1"][data-pose="rest"] .leg-l, .mv-stage[data-seated="1"][data-pose="rest"] .leg-r { opacity: 1; }
+.mv-stage[data-seated="1"][data-pose="cobra"] .seated-feet, .mv-stage[data-seated="1"][data-pose="rest"] .seated-feet,
+.mv-stage[data-seated="1"][data-pose="cobra"] .chair, .mv-stage[data-seated="1"][data-pose="rest"] .chair { opacity: 0; }
+
+.mv-stage[data-motion="reduced"] *, .mv-stage[data-motion="reduced"] { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .mv-stage * { animation: none !important; transition: none !important; }
+}
+@media (max-width: 480px) {
+  .mv-caption { font-size: 1.02rem; }
+  .mv-mini-cap { width: 34%; }
+  .mv-controls .btn { flex: 1 1 42%; }
+}

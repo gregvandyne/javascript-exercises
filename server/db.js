@@ -561,6 +561,11 @@ export const MIGRATIONS = [
   ['0051_nq_grade_declared_at', `
     ALTER TABLE nq_placement ADD COLUMN grade_declared_at INTEGER;
     UPDATE nq_placement SET grade_declared_at = updated_at WHERE grade IS NOT NULL;`],
+  // Brain Breaks (Oomba Breathe & Bend, the /move area): one row per finished episode per signed-in,
+  // non-guest user, written only when playback reaches the end of the episode's Rest segment
+  // (services/move.js). Guests store nothing.
+  ['0052_brain_breaks', `CREATE TABLE IF NOT EXISTS move_completions (user_id TEXT NOT NULL, episode TEXT NOT NULL,
+    completed_at INTEGER NOT NULL, PRIMARY KEY(user_id, episode));`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

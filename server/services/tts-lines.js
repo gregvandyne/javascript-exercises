@@ -72,6 +72,26 @@ export const GAMES = {
  *  spoken lines the server knows. Every official game is listed (the coverage test in tests/unit/tts-coverage.test.js
  *  fails if one is missing), so an unlisted official game is a bug, not a design choice. */
 export const TTS_GAMES = new Set(Object.keys(GAMES));
+
+// ---------------------------------------------------------------- Brain Breaks (Oomba Breathe & Bend)
+// The narration of the Move area (/move, services/move-data.js) is registered here from day one, exactly
+// like a game's lines: this registry is the ONLY source routes/tts.js ctx 'move' reads from, by episode,
+// segment and line number, so the page never sends text and an unregistered line can never be spoken.
+// One voice for the whole series: the warm adult narrator. English first; the lines live in move-data.js
+// (pure data) so this file and the player can never drift apart. The coverage test is
+// tests/unit/move.test.js: every line in move-data must resolve here, word for word.
+import { EPISODES as MOVE_EPISODES, lineAt as moveLineAt } from './move-data.js';
+export const MOVE_TTS_ROLE = 'narrator';
+/** Every registered Brain Break narration line: [{ episode, seg, line, text, role }] in spoken order. */
+export const MOVE_LINES = MOVE_EPISODES.flatMap(e => [
+  ...e.segments.flatMap((s, si) => s.lines.map((text, li) => ({ episode: e.id, seg: si, line: li, text, role: MOVE_TTS_ROLE }))),
+  ...e.endLines.map((text, li) => ({ episode: e.id, seg: e.segments.length, line: li, text, role: MOVE_TTS_ROLE })),
+]);
+/** The registered line for (episode, segment index, line index), or null: routes/tts.js ctx 'move'. */
+export const moveLine = (episodeId, seg, line) => {
+  const text = moveLineAt(episodeId, seg, line);
+  return text == null ? null : { text, role: MOVE_TTS_ROLE };
+};
 /** Lines said under another character's key (used until the game has its own VOICE_KEY_ROLES). hint.* lines are read
  *  by the narrator in every character's card. */
 export const DEFAULT_KEY_ROLES = { 'd.shop.': 'wise', 'd.gate.open': 'bright', 'mg.': 'bright', 'say.guard': 'deep', 'say.': 'friendly', 'sw.': 'grumpy', 'cinder.': 'deep', 'hint.': 'narrator' };
