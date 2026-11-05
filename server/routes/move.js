@@ -34,9 +34,28 @@ const moveTts = () => { const langs = tts.onLocales().filter(l => l === 'en'); r
  * player's visual layer since Greg's art redirect (flat SVG Remy kept only as the fallback for a
  * pose whose frame file is missing). Maps pose key -> URL, or omits the key when the file is not
  * there, so the player can fall back per pose and a new episode's frames can land file by file.
+ *
+ * Storage note (Episode 1, 2026-11-05): the frames were pushed to GitHub through Muse's GitHub
+ * connector, which carries UTF-8 text only, so Episode 1's frames are stored as base64 text
+ * (<pose>.jpg.b64 next to where the .jpg belongs) and served decoded by the /move-frames route
+ * below. A real .jpg file always wins over its .b64 twin, so the cleanup is: commit the real
+ * JPGs with ordinary git and delete the .b64 files; no code change needed.
  */
 const FRAME_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'img', 'move', 'frames');
-const frameUrl = key => (fs.existsSync(path.join(FRAME_DIR, `${key}.jpg`)) ? `/img/move/frames/${key}.jpg` : null);
+const frameUrl = key => (fs.existsSync(path.join(FRAME_DIR, `${key}.jpg`))
+  ? `/img/move/frames/${key}.jpg`
+  : fs.existsSync(path.join(FRAME_DIR, `${key}.jpg.b64`)) ? `/move-frames/${key}.jpg` : null);
+
+/** Serves a base64-stored frame (see the storage note above) as a real JPEG. */
+router.get('/move-frames/:file', (req, res) => {
+  const key = String(req.params.file || '').replace(/\.jpg$/, '');
+  if (!/^[a-z][a-z-]*$/.test(key)) return res.status(404).end();
+  fs.readFile(path.join(FRAME_DIR, `${key}.jpg.b64`), 'utf8', (err, b64) => {
+    if (err) return res.status(404).end();
+    const bytes = Buffer.from(b64.replace(/\s+/g, ''), 'base64');
+    res.set({ 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' }).send(bytes);
+  });
+});
 
 /**
  * Greg's real video clips (public/video/move/<episode>/<slug>.mp4, names from CLIP_SLUGS in the

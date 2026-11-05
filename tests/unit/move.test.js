@@ -97,6 +97,18 @@ test('the pages serve: index lists Episode 1, the player carries the data, a bad
     assert.ok(play.includes('id="page-data"') && play.includes('Spark Breathing') && play.includes('Starfish Rest'), 'the player page carries the episode');
     assert.ok(play.includes('/js/move.js') && play.includes('/css/move.css'), 'the player assets are wired');
     assert.equal((await fetch(base + '/move/no-such')).status, 404);
+    // The 3D stills are the player's visuals for every segment (Greg's clips take the same slots
+    // later): every segment and both standing seated variants resolve to a frame URL, and the
+    // base64-stored Mountain frame decodes back to real JPEG bytes (SOI marker) over HTTP.
+    const pd = JSON.parse(play.match(/<script type="application\/json" id="page-data">(.*?)<\/script>/s)[1].replace(/\\u003c/g, '<'));
+    for (const s of EP.segments) assert.ok(pd.frames[s.pose], `frame wired for ${s.id}`);
+    assert.ok(pd.frames['mountain-seated'] && pd.frames['tree-seated'], 'seated frames wired');
+    const img = await fetch(base + pd.frames.mountain);
+    assert.equal(img.status, 200);
+    assert.match(img.headers.get('content-type') || '', /image\/jpeg/);
+    const bytes = Buffer.from(await img.arrayBuffer());
+    assert.ok(bytes.length > 100000 && bytes[0] === 0xff && bytes[1] === 0xd8, 'a real JPEG comes back');
+    assert.equal((await fetch(base + '/move-frames/nope.jpg')).status, 404);
   } finally { await close(); }
 });
 
