@@ -2361,3 +2361,28 @@ for AI voices from day one**. This supersedes the word-game carve-out in the AI-
   the device voice by accident.
 - A word game's dictionary still never becomes a sentence kit: only the game's own scripted lines are read.
   A word or letter a player types is never spoken by the AI voice.
+
+## Brain Board lessons complete at a points goal, and the board saves (5 Nov 2026)
+
+Owner's amendment, for **Brain Board's Number Quest lessons only** (steps 1.1 and 2.3): clearing all
+25 tiles in one sitting was too much work for one lesson, so these lessons no longer complete on a
+full clear. Every other game keeps the platform rule: a step completes only when the assigned game
+content is completed in full, and win-gating is untouched (no credit for opening a game, and no
+credit here without earned points either).
+
+- **The goal is 3,000 points.** A lesson board holds 7,500 face points (five columns, rows worth
+  100/200/300/400/500). 3,000 is 40% of the board: the three easiest rows across all five columns
+  sum to exactly 3,000, so an easy-tiles-only route reaches it in 15 tiles with no speed bonus;
+  the six richest tiles together max out at 2,900, so a hard-tiles route needs at least seven
+  tiles (five 500s and two 400s make 3,300). Both of the owner's routes genuinely work, and the
+  goal shows on screen during the lesson as points so far against the target.
+- **Reaching the goal fires the normal completion report exactly once**, the moment the score
+  crosses it. The student can keep playing the remaining tiles afterwards; those points still
+  count as game score, and the board shows a clear "step complete" state. A board used up below
+  the goal earns no completion and starts fresh on the next visit.
+- **Progress saves.** Every answer saves the board (questions, tiles, star, score, and whether the
+  goal was met) through the game's normal cloud save (`BRB.storage`), per student per step, and
+  re-entering the step restores it as it was left. A guest's board lives on their guest account
+  like every other game save: kept for their own view, merged into their real account on sign-in.
+- The 1.1 and 2.3 mission slides state the new requirement ("score 3,000 points to finish"), per
+  the mission-truth rule.
