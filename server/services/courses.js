@@ -86,16 +86,32 @@ function loadCsq(items) {
       const step = deck ? fromDeck(key, l, deck, game, items, problems[band]) : fromLesson(key, l, game);
       return { ...step, key, n: l.n, unit: l.unit, band, index, game, lesson: l.key, group: groupOf(l.unit) };
     });
-    // Splice the course-only steps in (intro first, finale last) and renumber: stateOf() indexes by step.index.
+    // Splice the course-only steps in (intro first, finale last, or after a named step) and renumber:
+    // stateOf() indexes by step.index. An extra may be scoped to some bands (x.bands) and may carry a
+    // game module (x.game), for a practice step that exists only in the student course (2-3.4 Fair Data).
     for (const x of extras) {
+      if (Array.isArray(x.bands) && !x.bands.includes(band)) continue;
       const key = `${band}-${x.n}`;
       const file = path.join(deckDir, band, `${x.n}.json`);
       let deck = null;
       if (fs.existsSync(file)) { try { deck = readJson(file); } catch (e) { problems[band].push(`${key}: ${e.message}`); } }
       if (!deck) { problems[band].push(`${key}: a course-only step needs its deck`); continue; }
-      const step = fromExtra(key, x, deck, ((x.items || {})[band] || []).map(it => it.id), items, problems[band]);
-      const full = { ...step, key, n: x.n, unit: x.unit, band, index: -1, game: null, lesson: null, group: groupOf(x.unit), extra: true };
-      if (x.pos === 'first') steps[band].unshift(full); else steps[band].push(full);
+      let game = null;
+      if (x.game) {
+        const info = gameInfo[x.game.slug] || {};
+        const ch = (info.chapters || []).find(c => c.id === x.game.chapter && c.band === (band === '1b' ? '1B' : '2'));
+        if (!ch) problems[band].push(`${key}: extras game chapter ${x.game.slug}/${x.game.chapter} does not exist for band ${band}`);
+        else game = { slug: x.game.slug, chapter: x.game.chapter, chapterTitle: ch.title || x.game.chapter, params: x.game.params || '', title: info.title || x.game.slug };
+      }
+      const step = fromExtra(key, x, deck, ((x.items || {})[band] || []).map(it => it.id), items, problems[band], game);
+      const full = { ...step, key, n: x.n, unit: x.unit, band, index: -1, game, lesson: null, group: groupOf(x.unit), extra: true };
+      if (x.pos === 'first') steps[band].unshift(full);
+      else if (typeof x.pos === 'string' && x.pos.startsWith('after-')) {
+        const at = steps[band].findIndex(s => s.n === x.pos.slice('after-'.length));
+        if (at < 0) { problems[band].push(`${key}: pos ${x.pos} names no step in band ${band}`); steps[band].push(full); }
+        else steps[band].splice(at + 1, 0, full);
+      }
+      else steps[band].push(full);
     }
     steps[band].forEach((s, i) => { s.index = i; });
   }
@@ -207,11 +223,12 @@ function fromDeck(key, l, d, game, items, problems) {
   if (!game && !str(d.talk)) say('a step without a game needs "talk"');
   return { title: str(d.title, 80) || l.short, topic: str(d.topic, 40) || l.short, minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
 }
-/** A course-only step (the story pack's intro 0.1 and finale 6.4): no teacher lesson file stands behind it —
- *  the 23-lesson catalogue is a CSTA program and these two steps carry no standards — so its definition lives
- *  in the deck folder's extras.json (title, topic, unit, position and the check items themselves), and its
- *  deck is validated the same way as a lesson deck, against the extras entry instead of a lesson. */
-function fromExtra(key, x, d, wantIds, items, problems) {
+/** A course-only step (the story pack's intro 0.1 and finale 6.4, and the Pro-only practice step 3.4): no
+ *  teacher lesson file stands behind it — the 23-lesson catalogue is a CSTA program in both bands and these
+ *  steps carry no standards of their own — so its definition lives in the deck folder's extras.json (title,
+ *  topic, unit, position, bands, an optional game module and the check items themselves), and its deck is
+ *  validated the same way as a lesson deck, against the extras entry instead of a lesson. */
+function fromExtra(key, x, d, wantIds, items, problems, game) {
   const slides = (Array.isArray(d.slides) ? d.slides : []).filter(s => s && typeof s === 'object').map(cleanSlide);
   const check = Array.isArray(d.check) && JSON.stringify(d.check) === JSON.stringify(wantIds) ? d.check : wantIds;
   const say = m => problems.push(`${key}: ${m}`);
@@ -233,8 +250,10 @@ function fromExtra(key, x, d, wantIds, items, problems) {
   }
   if (check !== d.check) say(`check ${JSON.stringify(d.check)} is not the step's 3 extras item ids`);
   else for (const id of check) if (items.get(id).lesson !== x.n) say(`check item ${id} is not from step ${x.n}`);
-  if (d.game != null) say('a course-only step has no game module');
-  if (!str(d.talk)) say('a step without a game needs "talk"');
+  const want = game ? { slug: game.slug, chapter: game.chapter, params: game.params } : null;
+  const got = d.game ? { slug: d.game.slug, chapter: d.game.chapter, params: d.game.params } : null;
+  if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match extras.json (${JSON.stringify(want)})`);
+  if (!game && !str(d.talk)) say('a step without a game needs "talk"');
   return { title: x.title, topic: x.topic, minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
 }
 /** No deck yet: a short one from the lesson file (its big idea, words and mission), so the step still works. */

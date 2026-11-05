@@ -163,6 +163,61 @@
      }
     ]
    }
+  },
+  {
+   "n": "3.4",
+   "pos": "after-3.3",
+   "bands": [
+    "2"
+   ],
+   "unit": 3,
+   "title": "Was the test fair?",
+   "topic": "Fair tests",
+   "game": {
+    "slug": "data-detective",
+    "chapter": "fair",
+    "params": "chapter=fair&band=2&lock=1"
+   },
+   "items": {
+    "2": [
+     {
+      "id": "2-3.4-e1",
+      "q": "An app was tested only by Grade 5 bus riders. What is wrong with the test?",
+      "choices": [
+       "It only asked one kind of user, so it can miss everyone else",
+       "Nothing: bus riders know apps best",
+       "The testers were the wrong age to test an app",
+       "One grade is always a big enough sample"
+      ],
+      "answer": 0,
+      "why": "A test is fair only when many kinds of users try the thing. One group cannot speak for everyone who will use it."
+     },
+     {
+      "id": "2-3.4-e2",
+      "q": "A voice helper worked for 9 of 10 deep voices and 3 of 6 high voices. Which comparison is fair?",
+      "choices": [
+       "90% worked for deep voices, 50% for high voices",
+       "9 worked and 3 worked, so deep voices win by 6",
+       "High voices worked better than deep voices",
+       "Both groups did just as well"
+      ],
+      "answer": 0,
+      "why": "The groups are different sizes, so compare percents: 9 of 10 is 90%, and 3 of 6 is 50%. The helper works far better for deep voices."
+     },
+     {
+      "id": "2-3.4-e3",
+      "q": "A lunch vote screen stood in the meat line, and burgers won the vote. The data is...",
+      "choices": [
+       "Biased: the veggie eaters were never asked",
+       "Fair: everybody eats lunch",
+       "Wrong: burgers never win a vote",
+       "Complete: the whole school voted"
+      ],
+      "answer": 0,
+      "why": "The screen only reached one line, so a whole group never got a vote. People who are left out make data biased."
+     }
+    ]
+   }
   }
  ]
 }
