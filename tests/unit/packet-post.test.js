@@ -405,8 +405,9 @@ test('packet-post: a check left unanswered is asked again on the next lesson ent
       assert.ok(await waitAsk(page, frame, last.check.q), 'the left-behind check is asked again on re-entry');
       const st = await T(frame, 'state');
       assert.equal(st.checks.n, withChecks - 1, 'every earlier answer survived in the save; only the left one is outstanding');
-      // answer it correctly (the tiles are shuffled; pick by the answer's text)
-      await frame.evaluate(txt => { const cs = [...document.querySelectorAll('.ok-card')].filter(c => c.offsetParent !== null); const c = cs[cs.length - 1]; const b = [...c.querySelectorAll('button')].find(x => x.textContent.trim() === txt); if (b) b.click(); }, last.check.tiles[last.check.answer]);
+      // answer it correctly (the tiles are shuffled; pick by the answer's text — the kit numbers its
+      // tile buttons, so compare with any leading number badge stripped)
+      await frame.evaluate(txt => { const cs = [...document.querySelectorAll('.ok-card')].filter(c => c.offsetParent !== null); const c = cs[cs.length - 1]; const b = [...c.querySelectorAll('button')].find(x => x.textContent.trim().replace(/^\d+/, '') === txt); if (b) b.click(); }, last.check.tiles[last.check.answer]);
       const over = () => msgs.find(m => m.type === 'brb:gameover' || m.type === 'brb:over');
       for (let i = 0; i < 40 && !over(); i++) await page.waitForTimeout(250);
       const end = over();
