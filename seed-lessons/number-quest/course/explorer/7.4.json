@@ -1,0 +1,206 @@
+{
+ "key": "explorer-7.4",
+ "n": "7.4",
+ "band": "explorer",
+ "title": "The Vault of Measures",
+ "topic": "The seven locks",
+ "minutes": 8,
+ "slides": [
+  {
+   "title": "The end of the street",
+   "text": "Behind the Fairground stands the Vault of Measures, with seven locks and seven empty sockets. You carry seven stones. Each lock asks one workshop's question, and the street has been teaching the answers since the Counting House.",
+   "art": "lock"
+  },
+  {
+   "title": "Seven locks, and a surprise",
+   "art": "key",
+   "text": "Seven locks, seven questions, one per workshop: placing, ledger gaps, grouping, sharing, weighing, fencing, charting. Inside, among the sacks, you find the Jumble, rewriting measures it could not read. Tally hands it a pencil and a job: counter-in-training, Tally as teacher."
+  },
+  {
+   "title": "Worked example: the Heavy Sack",
+   "text": "Rough first: the sack should be a bit over 3,000 grams, because of the extra 400. The fifth lock shows a sack marked 3 kilograms 400 grams, and its dial reads only grams. Convert, then add.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "3 kilograms = 3 x 1,000 = 3,000 grams",
+    "Add the extra 400 grams",
+    "The sack is 3,400 grams"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "A bar model of a sack of 3 kilograms 400 grams: one bar in kilograms, and under it the same sack as 3,000 grams plus 400 grams",
+    "rows": [
+     {
+      "label": "The Heavy Sack in kilograms",
+      "parts": [
+       {
+        "w": 1,
+        "label": "3 kg 400 g"
+       }
+      ]
+     },
+     {
+      "label": "The same sack in grams",
+      "parts": [
+       {
+        "w": 0.882,
+        "label": "3,000 g"
+       },
+       {
+        "w": 0.118,
+        "label": "400 g"
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One sack, two names: 3 kilograms 400 grams.",
+     "box": [
+      5.8,
+      13.7,
+      88.4,
+      24.7
+     ]
+    },
+    {
+     "cue": "The kilograms become 3,000 grams.",
+     "box": [
+      5.8,
+      53.1,
+      78.0,
+      15.5
+     ]
+    },
+    {
+     "cue": "The extra 400 grams ride at the end.",
+     "box": [
+      83.4,
+      53.1,
+      10.8,
+      15.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The first tour of the day",
+   "text": "The Vault's first tour leaves when the street's clock reaches the start time, and it lasts 35 minutes. Times can land between the marks on a line, and this tour's end does exactly that.",
+   "art": "map",
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 10:00 to 11:20 showing a tour starting at 10:40, hopping 35 minutes and ending at 11:15",
+    "min": 0,
+    "max": 80,
+    "marks": [
+     {
+      "at": 0,
+      "label": "10:00"
+     },
+     {
+      "at": 20,
+      "label": "10:20"
+     },
+     {
+      "at": 40,
+      "label": "10:40"
+     },
+     {
+      "at": 60,
+      "label": "11:00"
+     },
+     {
+      "at": 80,
+      "label": "11:20"
+     }
+    ],
+    "point": {
+     "at": 75,
+     "label": "11:15"
+    },
+    "hops": [
+     {
+      "from": 40,
+      "to": 75,
+      "label": "+35 min"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The tour starts at 10:40.",
+     "box": [
+      45.2,
+      59.2,
+      9.6,
+      22.6
+     ]
+    },
+    {
+     "cue": "The tour lasts 35 minutes: one long hop.",
+     "box": [
+      49.8,
+      24.4,
+      38.9,
+      36.2
+     ]
+    },
+    {
+     "cue": "It ends at 11:15, between two marks. Times can land between.",
+     "box": [
+      84.0,
+      42.8,
+      9.0,
+      25.5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words for the end of the street.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "vault",
+     "means": "a strong room where valuable things are kept safe"
+    },
+    {
+     "word": "lock",
+     "means": "a fastener that opens only to the right key or answer"
+    },
+    {
+     "word": "circuit",
+     "means": "a route that visits every stop and comes back to the start"
+    },
+    {
+     "word": "stone",
+     "means": "the marker a workshop plants when its work is truly done"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: the eighth lock",
+   "text": "Stretch: design an eighth lock for a friend who finished the street. Pick its workshop, write its question, and keep its answer a secret until they solve it. Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Quest Race and finish the Vault Run: one whole Practice Race, all the way to the podium. It opens straight on seven locks, one question per workshop, with no picking first. Name each lock's workshop before you answer it.",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-7.4-e1",
+  "nq-explorer-7.4-e2",
+  "nq-explorer-7.4-e3"
+ ],
+ "game": {
+  "slug": "quest-race",
+  "chapter": "Practice Race",
+  "params": "mode=nq-7-4&lock=1"
+ }
+}

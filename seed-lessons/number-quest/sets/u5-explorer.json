@@ -1,0 +1,226 @@
+{
+ "id": "nq-u5-explorer",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 5,
+ "band": "Explorer",
+ "title": "Number Quest Unit 5 · The Measure Shop (Explorer)",
+ "items": [
+  {
+   "id": "nq-explorer-5.1-e1",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "3.MD.A.2",
+   "topic": "Mass",
+   "kind": "recall",
+   "secs": 20,
+   "q": "A bag of rice has a mass of 2 kilograms. How many grams is that?",
+   "choices": [
+    "2,000 grams",
+    "200 grams",
+    "20 grams",
+    "2 grams"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "one zero short: a kilogram is 1,000 grams, not 100",
+    "two zeros short: the unit name changed, so the count must grow a lot",
+    "kept the same number and only swapped the unit's name"
+   ],
+   "why": "One kilogram is 1,000 grams, so 2 kilograms is 2 x 1,000 = 2,000 grams. A bigger count goes with the smaller unit."
+  },
+  {
+   "id": "nq-explorer-5.1-e2",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "3.MD.A.2",
+   "topic": "Length",
+   "kind": "recall",
+   "secs": 20,
+   "q": "A ribbon is 3 meters long. How many centimeters is that?",
+   "choices": [
+    "30 centimeters",
+    "300 centimeters",
+    "3,000 centimeters",
+    "103 centimeters"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "one zero short: a meter is 100 centimeters, not 10",
+    "correct",
+    "one zero too many: that would be 30 meters of ribbon",
+    "glued the numbers together instead of multiplying"
+   ],
+   "why": "One meter is 100 centimeters, so 3 meters is 3 x 100 = 300 centimeters."
+  },
+  {
+   "id": "nq-explorer-5.1-e3",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "4.MD.A.1",
+   "topic": "Comparing measures",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Four ribbons are measured. Which ribbon is the longest?",
+   "choices": [
+    "150 centimeters",
+    "2 meters",
+    "1 meter 20 centimeters",
+    "90 centimeters"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "compared the numbers without changing the units first",
+    "correct",
+    "1 meter 20 centimeters is 120 centimeters, shorter than 200",
+    "the smallest count, but centimeters are small units next to meters"
+   ],
+   "why": "Change everything to centimeters first: 150, 200, 120 and 90. The 2-meter ribbon, at 200 centimeters, is the longest."
+  },
+  {
+   "id": "nq-explorer-5.2-e1",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "3.MD.A.1",
+   "topic": "End times",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A film starts at 4:15 and lasts 50 minutes. When does it end?",
+   "choices": [
+    "4:65",
+    "5:15",
+    "5:05",
+    "4:55"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added the minutes but never traded 60 minutes for an hour",
+    "added an hour and kept all 50 minutes too",
+    "correct",
+    "stopped 10 minutes early: 15 + 50 is 65 minutes, not 55"
+   ],
+   "why": "Hop on the number line: 4:15 plus 45 minutes reaches 5:00, and 5 minutes more lands on 5:05."
+  },
+  {
+   "id": "nq-explorer-5.2-e2",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "3.MD.A.1",
+   "topic": "Elapsed time",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Soccer practice goes from 3:40 to 5:10. How long is practice?",
+   "choices": [
+    "1 hour 20 minutes",
+    "30 minutes",
+    "2 hours 10 minutes",
+    "1 hour 30 minutes"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "lost 10 minutes crossing the hour",
+    "counted only the minutes past 5:00",
+    "added the hour twice",
+    "correct"
+   ],
+   "why": "From 3:40 to 4:40 is one hour, and from 4:40 to 5:10 is 30 minutes more: 1 hour 30 minutes in all."
+  },
+  {
+   "id": "nq-explorer-5.2-e3",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "3.MD.A.1",
+   "topic": "Timetables",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A bus leaves at 9:25. The ride takes 35 minutes. When does the bus arrive?",
+   "choices": [
+    "9:50",
+    "9:60",
+    "10:10",
+    "10:00"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "added only 25 of the 35 minutes",
+    "never traded 60 minutes for an hour",
+    "added 45 minutes instead of 35",
+    "correct"
+   ],
+   "why": "9:25 plus 35 minutes: 25 minutes reaches 9:50, and the last 10 minutes cross the hour to 10:00."
+  },
+  {
+   "id": "nq-explorer-5.3-e1",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "4.MD.A.2",
+   "topic": "Change",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A toy costs 65 cents. You pay with 100 cents. How much change do you get?",
+   "choices": [
+    "45 cents",
+    "35 cents",
+    "25 cents",
+    "165 cents"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "counted up from 65 but stopped at the wrong ten",
+    "correct",
+    "found the gap to 90, not to 100",
+    "added the price to the money instead of finding the gap"
+   ],
+   "why": "Change is the gap between 65 and 100. Count up: 65 to 70 is 5, and 70 to 100 is 30, so the change is 35 cents."
+  },
+  {
+   "id": "nq-explorer-5.3-e2",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "4.MD.A.2",
+   "topic": "Coin values",
+   "kind": "recall",
+   "secs": 20,
+   "q": "Nia has 3 quarters. How many cents does she have?",
+   "choices": [
+    "30 cents",
+    "60 cents",
+    "75 cents",
+    "100 cents"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted each quarter as a dime",
+    "counted only two of the three quarters",
+    "correct",
+    "rounded the coins up to a whole dollar"
+   ],
+   "why": "A quarter is worth 25 cents, so 3 quarters are 25 + 25 + 25 = 75 cents."
+  },
+  {
+   "id": "nq-explorer-5.3-e3",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "4.MD.A.2",
+   "topic": "Dollars and cents",
+   "kind": "recall",
+   "secs": 20,
+   "q": "A book costs $2.35. How many cents is that?",
+   "choices": [
+    "205 cents",
+    "2,350 cents",
+    "235 cents",
+    "135 cents"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "read the price as two dollars and five cents, dropping the tens of cents",
+    "moved every digit one place too far",
+    "correct",
+    "lost the second dollar on the way"
+   ],
+   "why": "One dollar is 100 cents, so $2.35 is 200 + 35 = 235 cents. The 3 names the tens of cents and the 5 the ones."
+  }
+ ]
+}

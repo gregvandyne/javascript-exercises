@@ -17,7 +17,7 @@ const SETS = path.join(ROOT, 'seed-lessons', 'number-quest', 'sets');
 const decks = fs.readdirSync(COURSE).filter(f => f.endsWith('.json')).sort()
   .map(f => ({ file: f, deck: JSON.parse(fs.readFileSync(path.join(COURSE, f), 'utf8')) }));
 
-const rat = s => { const m = /^(-?\d+)\s*\/\s*(\d+)$/.exec(s.trim()); if (m) return Number(m[1]) / Number(m[2]); const n = Number(s.replace(/,/g, '')); return Number.isNaN(n) ? null : n; };
+const rat = s => { const t = s.trim(); const mx = /^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/.exec(t); if (mx) return Number(mx[1]) + Number(mx[2]) / Number(mx[3]); const m = /^(-?\d+)\s*\/\s*(\d+)$/.exec(t); if (m) return Number(m[1]) / Number(m[2]); const n = Number(t.replace(/,/g, '')); return Number.isNaN(n) ? null : n; };
 const NUM = String.raw`-?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?`;
 const EQ = new RegExp(`(${NUM}(?:\\s*[+\\-−x×/÷]\\s*${NUM})+)\\s*=\\s*(${NUM})`, 'g');
 function evalSide(side) {
@@ -78,8 +78,14 @@ test('number lines: points, marks and hops sit where their labels say', () => {
   for (const { file, deck } of decks) deck.slides.forEach((s, i) => {
     const v = s.visual; if (!v || v.type !== 'numberline') return;
     const where = `${file} slide ${i + 1}`;
-    for (const m of v.marks || []) { assert.ok(m.at >= v.min && m.at <= v.max, `${where}: mark out of range`); assert.equal(rat(m.label), m.at, `${where}: mark label ${m.label} at ${m.at}`); }
-    if (v.point) { assert.ok(v.point.at >= v.min && v.point.at <= v.max, `${where}: point out of range`); assert.equal(rat(v.point.label), v.point.at, `${where}: point label`); }
+    // Phase 2 time lines label a minutes axis with clock faces (9:00 at minute 0): a clock label's
+    // value is its minutes from the axis's first clock label, which must sit at that mark's position.
+    const CLOCK = /^(\d{1,2}):(\d{2})$/;
+    const firstClock = (v.marks || []).find(m => CLOCK.test(m.label || ''));
+    const clockBase = firstClock ? Number(CLOCK.exec(firstClock.label)[1]) * 60 + Number(CLOCK.exec(firstClock.label)[2]) - firstClock.at : null;
+    const labelVal = label => { const c = CLOCK.exec(label || ''); return c && clockBase != null ? Number(c[1]) * 60 + Number(c[2]) - clockBase : rat(label); };
+    for (const m of v.marks || []) { assert.ok(m.at >= v.min && m.at <= v.max, `${where}: mark out of range`); assert.equal(labelVal(m.label), m.at, `${where}: mark label ${m.label} at ${m.at}`); }
+    if (v.point) { assert.ok(v.point.at >= v.min && v.point.at <= v.max, `${where}: point out of range`); assert.equal(labelVal(v.point.label), v.point.at, `${where}: point label`); }
     const hops = v.hops || [];
     hops.forEach((h, j) => {
       assert.ok(h.from >= v.min && h.to <= v.max, `${where}: hop out of range`);

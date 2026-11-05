@@ -1,0 +1,200 @@
+{
+ "key": "explorer-7.2",
+ "n": "7.2",
+ "band": "explorer",
+ "title": "Ask a good question",
+ "topic": "Surveys and data",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "It starts with a question",
+   "text": "Every Fairground chart began as somebody's question. Ask a muddled question and you collect muddled answers. Ask a clean one, with a handful of choices, and the chart almost draws itself.",
+   "art": "people"
+  },
+  {
+   "title": "Our class, charted",
+   "text": "We asked our class one question: how do you get to school? The answers tallied into three bars. Bus is the tallest, and the chart can already answer questions nobody has asked yet.",
+   "art": "chart",
+   "visual": {
+    "type": "bars",
+    "label": "A bar graph of how a class gets to school: walk 9, bus 12, bike 4; the longest bar makes 12",
+    "rows": [
+     {
+      "label": "Walk",
+      "parts": [
+       {
+        "w": 0.75,
+        "label": "9"
+       }
+      ]
+     },
+     {
+      "label": "Bus",
+      "parts": [
+       {
+        "w": 1,
+        "label": "12"
+       }
+      ]
+     },
+     {
+      "label": "Bike",
+      "parts": [
+       {
+        "w": 0.333,
+        "label": "4"
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Walk: 9 students, counted from our own class.",
+     "box": [
+      5.8,
+      4.8,
+      66.4,
+      24.7
+     ]
+    },
+    {
+     "cue": "Bus is the tallest bar: 12 students.",
+     "box": [
+      5.8,
+      35.0,
+      88.4,
+      24.8
+     ]
+    },
+    {
+     "cue": "Bike: only 4. Small bars still count.",
+     "box": [
+      5.8,
+      65.3,
+      29.7,
+      24.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Worked example: pencil lengths",
+   "text": "Rough first: the pencils are all near 6 inches, so the marks should crowd there. We measured five pencils: 6, 7, 6, 8 and 6 inches. On the line plot, the 6 collects a stack of three marks.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "Measure every pencil the same way, from the very end",
+    "Put one mark over each length on the line",
+    "The 6-inch mark collects three pencils"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A line plot of five pencil lengths from 5 to 8 inches, with three pencils stacked at the 6 inch mark",
+    "min": 5,
+    "max": 8,
+    "marks": [
+     {
+      "at": 5,
+      "label": "5"
+     },
+     {
+      "at": 6,
+      "label": "6"
+     },
+     {
+      "at": 7,
+      "label": "7"
+     },
+     {
+      "at": 8,
+      "label": "8"
+     }
+    ],
+    "point": {
+     "at": 6,
+     "label": "6"
+    }
+   },
+   "focus": [
+    {
+     "cue": "No pencil is 5 inches long: the marks start at 6.",
+     "box": [
+      4.7,
+      59.2,
+      2.6,
+      22.6
+     ]
+    },
+    {
+     "cue": "Three pencils measure exactly 6 inches: the marks stack here.",
+     "box": [
+      29.0,
+      42.8,
+      12.7,
+      25.5
+     ]
+    },
+    {
+     "cue": "The longest pencil: 8 inches.",
+     "box": [
+      92.6,
+      59.2,
+      2.8,
+      22.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Claims the data can carry",
+   "text": "A chart earns its keep when someone makes a claim from it. Most of our class rides the bus is a claim this chart can carry. Everyone hates walking is not: the chart never asked about liking. Claim only what you counted.",
+   "art": "shield"
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words for asking and counting.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "survey",
+     "means": "asking many people the same question and collecting their answers"
+    },
+    {
+     "word": "question",
+     "means": "the ask that starts a survey; its choices decide what can be charted"
+    },
+    {
+     "word": "tally",
+     "means": "counting answers with one mark for each answer as it arrives"
+    },
+    {
+     "word": "claim",
+     "means": "a statement the data can carry, and no bigger than the data"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: twenty answers",
+   "text": "Stretch: a question with twenty different answers cannot be charted kindly. Rewrite this one so it can: what is everyone's favorite food, exactly? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Data Detective at My Data and finish all 3 survey cases. Each case is your own survey: pick the question, tally the answers, chart them, and pin only a claim the chart really shows.",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-7.2-e1",
+  "nq-explorer-7.2-e2",
+  "nq-explorer-7.2-e3"
+ ],
+ "game": {
+  "slug": "data-detective",
+  "chapter": "My Data",
+  "params": "chapter=my-data&band=1b&lock=1"
+ }
+}

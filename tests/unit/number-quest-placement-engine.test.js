@@ -137,13 +137,16 @@ test('grading through regenerated keys: pick by index, numeric by value', () => 
 test('the crosswalk: first unmet profile wins, near-misses resolve low, low rungs flag the Launchpad gap', () => {
   assert.equal(P.crosswalk({ number: 2.5, algebra: 2.5, 'shape-measure': 2.5, 'data-chance': 2.5 }).node, 'explorer-2.1');
   assert.equal(P.crosswalk({ number: 3.5, algebra: 3, 'shape-measure': 2.5, 'data-chance': 2.5 }).node, 'explorer-3.1');
-  // Every profile met: the strands point PAST the built street. The start is Unit 4's door, the
-  // furthest built workshop, with beyondBuilt set — never an unbuilt Unit 5 node (repair round 3).
-  const past = P.crosswalk({ number: 3.5, algebra: 3.5, 'shape-measure': 3, 'data-chance': 3 });
-  assert.equal(past.node, 'explorer-4.1'); assert.equal(past.beyondBuilt, true);
-  // One strand half a rung short of Unit 4's profile: still Unit 4 (the lower unit), not beyond.
+  // Units 1-4 met but Unit 5's Shape & Measure 3.5 unmet: the start is Unit 5's door (Phase 2 built it).
+  const at5 = P.crosswalk({ number: 3.5, algebra: 3.5, 'shape-measure': 3, 'data-chance': 3 });
+  assert.equal(at5.node, 'explorer-5.1'); assert.equal(at5.finaleDoor, false);
+  // Every profile met: the strands point past every workshop. The start is the finale door,
+  // explorer-7.4 (the Vault of Measures), with finaleDoor set — never a unit door faked as the end.
+  const past = P.crosswalk({ number: 4, algebra: 4, 'shape-measure': 4, 'data-chance': 3.5 });
+  assert.equal(past.node, 'explorer-7.4'); assert.equal(past.finaleDoor, true);
+  // One strand half a rung short of Unit 4's profile: still Unit 4 (the lower unit), not past it.
   const at4 = P.crosswalk({ number: 3.5, algebra: 3.5, 'shape-measure': 3, 'data-chance': 2.5 });
-  assert.equal(at4.node, 'explorer-4.1'); assert.equal(at4.beyondBuilt, false);
+  assert.equal(at4.node, 'explorer-4.1'); assert.equal(at4.finaleDoor, false);
   const low = P.crosswalk({ number: 2, algebra: 3.5, 'shape-measure': 3, 'data-chance': 3 });
   assert.equal(low.node, 'explorer-0.1'); assert.equal(low.launchpadGap, true);
 });
@@ -191,7 +194,7 @@ test('soft landing: two failed checks at the placed start offer the previous uni
   assert.equal(p.startFails, 1);
 });
 
-test('full runs: always-right lands at Unit 4 (past the built street, honestly flagged), always-wrong at the intro with the gap flagged', () => {
+test('full runs: always-right lands at the finale door (past every workshop, honestly flagged), always-wrong at the intro with the gap flagged', () => {
   const run = (kid, wantCorrect) => {
     const out = P.startRun(kid, { grade: 4 });
     let res = null, guard = 0;
@@ -204,16 +207,16 @@ test('full runs: always-right lands at Unit 4 (past the built street, honestly f
   };
   const hiKid = newKid();
   const hi = run(hiKid, true);
-  assert.ok(hi); assert.equal(hi.startNode, 'explorer-4.1');
-  // The strongest student lands on a real, named workshop, and both audiences hear the honest
-  // version: the rest is still being built (repair round 3, blocker 2).
-  assert.equal(hi.workshop, 'The Bakery');
-  assert.equal(hi.beyondBuilt, true);
-  assert.match(hi.beyondLine, /still being built/);
-  assert.match(hi.note.placedUnit, /^Past Unit 4:/);
+  assert.ok(hi); assert.equal(hi.startNode, 'explorer-7.4');
+  // The strongest student lands on the finale door, a real step on the street, and both audiences
+  // hear the honest version: the street is finished and the Vault is waiting (Phase 2).
+  assert.equal(hi.workshop, 'The Vault of Measures');
+  assert.equal(hi.finaleDoor, true);
+  assert.match(hi.finaleLine, /Vault of Measures/);
+  assert.match(hi.note.placedUnit, /^Past Unit 7:/);
   assert.ok(!JSON.stringify(hi).includes('The next workshops on the street'), 'no fallback label anywhere');
   assert.ok(!JSON.stringify(hi).match(/score|percent/i)); // no score in anything the child is shown
-  assert.equal(P.getPlacement(hiKid).startNode, 'explorer-4.1');
+  assert.equal(P.getPlacement(hiKid).startNode, 'explorer-7.4');
   const loKid = newKid();
   const lo = run(loKid, false);
   assert.ok(lo); assert.equal(lo.startNode, 'explorer-0.1'); assert.equal(lo.note.launchpadGap, true);
@@ -236,7 +239,8 @@ test('test-out: 5 items at unit depth, pass at 4, tested out — and never a sto
   const items = P.testOutItems(2, 'fixed');
   assert.equal(items.length, 5);
   assert.ok(items.every(i => i.item && !('answer' in i.item)));
-  assert.deepEqual(P.testOutItems(9, 'fixed'), []); // only the locked units 1-4 have profiles
+  assert.deepEqual(P.testOutItems(9, 'fixed'), []); // only the locked units 1-7 have profiles
+  assert.equal(P.testOutItems(6, 'fixed').length, 5, 'Phase 2 units can be tested out of too');
   const kid = newKid();
   const out = P.startRun(kid, { kind: 'testout', unit: 2 });
   let res = null, guard = 0;
@@ -293,16 +297,18 @@ test('repair round 3: no verbatim repeats inside one run, and hands-on items rea
   assert.ok(manipStrands.some(s => s === 'number' || s === 'shape-measure'), 'hands-on items land in the extended strands');
 });
 
-test('repair round 3: a placement row saved with the old unbuilt start node reads as Unit 4\u2019s door', () => {
+test('Phase 2: a stored explorer-5.1 start node reads as itself now that Unit 5 is built', () => {
   const kid = newKid();
   q.run(`INSERT INTO nq_placement(user_id, course, grade, rungs, start_node, source, start_fails, soft_land_node, updated_at) VALUES (?,?,?,?,?,?,0,NULL,?)`,
     kid.id, 'number-quest', 4, '{}', 'explorer-5.1', 'sorting-game', Date.now());
-  assert.equal(P.getPlacement(kid).startNode, 'explorer-4.1');
-  // The "very beginning" door for grades 6-8 also lands on the furthest built workshop now.
+  assert.equal(P.getPlacement(kid).startNode, 'explorer-5.1'); // the door those runs always aimed at
+  // The "very beginning" door for grades 6-8 lands on the furthest built workshop door now.
   const g7 = newKid();
-  assert.equal(P.placeAtBeginning(g7, 7).startNode, 'explorer-4.1');
-  // And no route can name an unbuilt start node any more: the override list is built workshops only.
-  assert.ok(P.START_NODES.every(n => n.built), 'every nameable start node is a built workshop');
-  assert.ok(!P.START_NODES.some(n => n.node === 'explorer-5.1'));
+  assert.equal(P.placeAtBeginning(g7, 7).startNode, 'explorer-7.1');
+  // And no route can name an unbuilt start node: the override list is built workshops plus the finale.
+  assert.ok(P.START_NODES.every(n => n.built), 'every nameable start node is built');
+  assert.ok(P.START_NODES.some(n => n.node === 'explorer-5.1' && n.workshop === 'The Measure Shop'));
+  assert.ok(P.START_NODES.some(n => n.node === 'explorer-7.4' && n.finale === true));
   assert.equal(P.nodeInfo('explorer-4.1').workshop, 'The Bakery');
+  assert.equal(P.nodeInfo('explorer-7.4').workshop, 'The Vault of Measures');
 });

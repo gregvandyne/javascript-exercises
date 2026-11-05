@@ -1,0 +1,211 @@
+{
+ "key": "explorer-5.2",
+ "n": "5.2",
+ "band": "explorer",
+ "title": "Time and timetables",
+ "topic": "Elapsed time",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "The timetable wall",
+   "text": "The Measure Shop keeps every bus, train and lesson on one big timetable wall. Tally's rule is painted over it: a time tells where, but a duration tells how long.",
+   "art": "map"
+  },
+  {
+   "title": "Elapsed time is a distance",
+   "text": "The time between two clock times is a distance on the line. From 9:00 to 9:30 is one hop of 30 minutes. Hop the whole hours first, then the minutes left over.",
+   "art": "loop",
+   "visual": {
+    "type": "numberline",
+    "label": "One hour drawn as a number line from 9:00 to 10:00, with a 30 minute hop and a 15 minute hop",
+    "min": 0,
+    "max": 60,
+    "marks": [
+     {
+      "at": 0,
+      "label": "9:00"
+     },
+     {
+      "at": 15,
+      "label": "9:15"
+     },
+     {
+      "at": 30,
+      "label": "9:30"
+     },
+     {
+      "at": 45,
+      "label": "9:45"
+     },
+     {
+      "at": 60,
+      "label": "10:00"
+     }
+    ],
+    "hops": [
+     {
+      "from": 0,
+      "to": 30,
+      "label": "30 min"
+     },
+     {
+      "from": 30,
+      "to": 45,
+      "label": "15 min"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The long hop: 30 minutes from 9:00 to 9:30.",
+     "box": [
+      5.8,
+      24.4,
+      44.4,
+      36.2
+     ]
+    },
+    {
+     "cue": "Half past nine sits halfway along the hour.",
+     "box": [
+      45.8,
+      59.2,
+      8.4,
+      22.6
+     ]
+    },
+    {
+     "cue": "A short hop of 15 minutes: a quarter of an hour.",
+     "box": [
+      49.8,
+      24.4,
+      22.4,
+      36.2
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Worked example: the late bus",
+   "text": "Rough first: 35 minutes is a bit more than half an hour, so the bus lands a bit past 10:00. It leaves at 9:25. Hop 35 minutes: 25 minutes reach 9:50, then 10 more cross the hour.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "Start at 9:25",
+    "Hop 25 minutes to 9:50",
+    "Hop 10 more minutes, across the hour",
+    "The bus arrives at 10:00"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "A number line from 9:00 to 11:00 showing a bus leaving at 9:25 and a hop of 35 minutes landing at 10:00",
+    "min": 0,
+    "max": 120,
+    "marks": [
+     {
+      "at": 0,
+      "label": "9:00"
+     },
+     {
+      "at": 60,
+      "label": "10:00"
+     },
+     {
+      "at": 120,
+      "label": "11:00"
+     }
+    ],
+    "point": {
+     "at": 25,
+     "label": "9:25"
+    },
+    "hops": [
+     {
+      "from": 25,
+      "to": 60,
+      "label": "+35 min"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The start: the bus leaves at 9:25.",
+     "box": [
+      19.2,
+      42.8,
+      10.2,
+      25.5
+     ]
+    },
+    {
+     "cue": "One hop of 35 minutes carries the whole ride.",
+     "box": [
+      24.1,
+      24.4,
+      26.1,
+      36.2
+     ]
+    },
+    {
+     "cue": "The landing: 10:00 exactly.",
+     "box": [
+      45.0,
+      59.2,
+      10.0,
+      22.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Reading a timetable",
+   "text": "A timetable is a chart of starts. Find the row for your bus, then hop forward by its ride time. The wall's hardest rows cross an hour, and the hop handles them the same way.",
+   "art": "table"
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words for telling how long.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "elapsed",
+     "means": "the time that has passed between a start and an end"
+    },
+    {
+     "word": "interval",
+     "means": "a stretch of time between two moments"
+    },
+    {
+     "word": "timetable",
+     "means": "a chart that lists the start times of trips or lessons"
+    },
+    {
+     "word": "duration",
+     "means": "how long something lasts, start to finish"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: the long film",
+   "text": "Stretch: a film starts at 11:50 and lasts 100 minutes. When does it end? Split the 100 into hops that cross noon kindly. Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on timetable questions, with no picking first. Read every start time out loud before you hop.",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-5.2-e1",
+  "nq-explorer-5.2-e2",
+  "nq-explorer-5.2-e3"
+ ],
+ "game": {
+  "slug": "quest-race",
+  "chapter": "Practice Race",
+  "params": "mode=nq-5-2&lock=1"
+ }
+}

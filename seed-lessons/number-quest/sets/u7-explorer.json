@@ -1,0 +1,298 @@
+{
+ "id": "nq-u7-explorer",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 7,
+ "band": "Explorer",
+ "title": "Number Quest Unit 7 · The Fairground (Explorer)",
+ "items": [
+  {
+   "id": "nq-explorer-7.1-e1",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "3.MD.B.3",
+   "topic": "Bar graphs",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A bar graph shows lunches sold: Monday 12, Tuesday 20, Wednesday 16. How many more lunches were sold on Tuesday than on Monday?",
+   "choices": [
+    "32",
+    "4",
+    "8",
+    "12"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added the two bars instead of comparing them",
+    "compared Tuesday with Wednesday instead",
+    "correct",
+    "read Monday's bar again instead of the difference"
+   ],
+   "why": "How many more means compare: 20 - 12 = 8 more lunches on Tuesday."
+  },
+  {
+   "id": "nq-explorer-7.1-e2",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "3.MD.B.3",
+   "topic": "Scaled graphs",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "On a picture graph, each picture stands for 2 books. One row shows 5 pictures. How many books is that?",
+   "choices": [
+    "5",
+    "7",
+    "10",
+    "25"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted the pictures and forgot each one stands for 2",
+    "added the scale to the count instead of multiplying",
+    "correct",
+    "multiplied 5 by itself instead of by the scale"
+   ],
+   "why": "The scale is the key: each picture is worth 2 books, so 5 pictures are 5 x 2 = 10 books."
+  },
+  {
+   "id": "nq-explorer-7.1-e3",
+   "lesson": "7.1",
+   "use": "exit",
+   "cat": "4.MD.B.4",
+   "topic": "Line plots",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Four ribbons measure 1/2, 1/2, 1/4 and 1/4 of a yard. Laid end to end, how long are they together?",
+   "choices": [
+    "1 yard",
+    "2 yards",
+    "3/4 of a yard",
+    "1 1/2 yards"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "kept only the two halves and dropped the quarters",
+    "rounded every piece up to a whole yard",
+    "added the tops and the bottoms, the old Jumble trick",
+    "correct"
+   ],
+   "why": "Add the like pieces: 1/2 + 1/2 = 1 yard, and 1/4 + 1/4 = 1/2 yard. Together that is 1 1/2 yards."
+  },
+  {
+   "id": "nq-explorer-7.2-e1",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "3.MD.B.4",
+   "topic": "Good questions",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A class wants to chart everyone's favorite fruit. Which question gives the best answers to chart?",
+   "choices": [
+    "Why is fruit good for you?",
+    "What did you eat on your last birthday?",
+    "Is an apple a fruit?",
+    "What is your favorite fruit: apple, banana, grape or pear?"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "its answers are reasons, not choices a chart can count",
+    "one day's eating is not a favorite, and every answer would differ",
+    "that is a yes or no fact, not a favorite to tally",
+    "correct"
+   ],
+   "why": "A good survey question offers a handful of clear choices that answers can be tallied and charted: apple, banana, grape or pear."
+  },
+  {
+   "id": "nq-explorer-7.2-e2",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "3.MD.B.4",
+   "topic": "Reading a line plot",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Five pencils measure 6, 7, 6, 8 and 6 inches. On a line plot of these lengths, how many marks stand over the 6?",
+   "choices": [
+    "5",
+    "2",
+    "3",
+    "6"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "counted every pencil, not just the ones over the 6",
+    "counted the other lengths instead",
+    "correct",
+    "read the length itself as the count"
+   ],
+   "why": "Count the pencils that measure 6 inches: the first, the third and the fifth. That is 3 marks over the 6."
+  },
+  {
+   "id": "nq-explorer-7.2-e3",
+   "lesson": "7.2",
+   "use": "exit",
+   "cat": "3.MD.B.4",
+   "topic": "Survey questions",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A class wants to know how students get to school. Which is a good survey question?",
+   "choices": [
+    "Why do buses have wheels?",
+    "How do you get to school: walk, bus, car or bike?",
+    "What time does school start?",
+    "Do you like school?"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "it asks why about a bus, not how anyone travels",
+    "correct",
+    "everyone shares one answer, so there is nothing to compare",
+    "it asks about liking, not about getting to school"
+   ],
+   "why": "The question must match the job and offer choices to tally: walk, bus, car or bike."
+  },
+  {
+   "id": "nq-explorer-7.3-e1",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "enrichment",
+   "topic": "Chance words",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A spinner has 6 equal parts and only 1 part is red. Landing on red is...",
+   "choices": [
+    "Certain",
+    "Impossible",
+    "Even chance",
+    "Unlikely"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "certain would mean every part is red",
+    "red can land, so it is not impossible",
+    "an even chance would need half the parts to be red",
+    "correct"
+   ],
+   "why": "Only 1 of the 6 equal parts is red, so red can happen but probably will not: that is unlikely."
+  },
+  {
+   "id": "nq-explorer-7.3-e2",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "enrichment",
+   "topic": "Chance words",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Every face of a cube is painted blue. Rolling a blue face is...",
+   "choices": [
+    "Likely",
+    "Certain",
+    "Unlikely",
+    "Impossible"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "likely still leaves room for another result, and there is none",
+    "correct",
+    "blue is the only face there is",
+    "blue is the only face there is, so it must land"
+   ],
+   "why": "Every face is blue, so blue is the only result there can be: that is certain."
+  },
+  {
+   "id": "nq-explorer-7.3-e3",
+   "lesson": "7.3",
+   "use": "exit",
+   "cat": "enrichment",
+   "topic": "Chance words",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A bag holds 4 red counters and 4 blue counters. Picking a red counter is...",
+   "choices": [
+    "Certain",
+    "Unlikely",
+    "An even chance",
+    "Impossible"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "half the counters are blue, so red is not certain",
+    "half the counters are red, so red is not unlikely",
+    "correct",
+    "there are red counters in the bag, so red can be picked"
+   ],
+   "why": "The bag is split in half: 4 red out of 8 counters. Half and half is an even chance."
+  },
+  {
+   "id": "nq-explorer-7.4-e1",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "5.MD.A.1",
+   "topic": "Conversions",
+   "kind": "recall",
+   "secs": 20,
+   "q": "How many meters are in 3 kilometers 400 meters?",
+   "choices": [
+    "340 meters",
+    "3,040 meters",
+    "3,400 meters",
+    "34,000 meters"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "shrunk the 400 meters to 40 on the way",
+    "put a zero where the 400's own place belongs",
+    "correct",
+    "added a zero to the whole measure"
+   ],
+   "why": "3 kilometers is 3 x 1,000 = 3,000 meters, and 3,000 + 400 = 3,400 meters."
+  },
+  {
+   "id": "nq-explorer-7.4-e2",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "4.MD.A.2",
+   "topic": "Measure problems",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A rope 3 meters long is cut into 4 equal pieces. How long is each piece?",
+   "choices": [
+    "34 centimeters",
+    "1 meter",
+    "25 centimeters",
+    "75 centimeters"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "glued the two numbers together instead of sharing the rope",
+    "kept the whole rope for one piece",
+    "shared 1 meter instead of the whole 3 meters",
+    "correct"
+   ],
+   "why": "Share 3 meters into 4 equal pieces: each is 3/4 of a meter, and 3/4 of 100 centimeters is 75 centimeters."
+  },
+  {
+   "id": "nq-explorer-7.4-e3",
+   "lesson": "7.4",
+   "use": "exit",
+   "cat": "3.MD.A.1",
+   "topic": "End times",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "The Vault tour starts at 10:40 and lasts 35 minutes. When does it end?",
+   "choices": [
+    "10:75",
+    "11:05",
+    "11:15",
+    "10:55"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added the minutes but never traded 60 for an hour",
+    "stopped 10 minutes early",
+    "correct",
+    "added only 15 of the 35 minutes"
+   ],
+   "why": "Hop the line: 10:40 plus 20 minutes reaches 11:00, and 15 minutes more lands on 11:15."
+  }
+ ]
+}

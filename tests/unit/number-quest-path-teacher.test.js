@@ -1,7 +1,7 @@
-// Number Quest Phase 1 surfaces (the Duolingo-lite UI + the teacher map): the course registered on the
+// Number Quest surfaces (the Duolingo-lite UI + the teacher map): the course registered on the
 // platform machinery with its single Explorer band, the path home rendering the street (nodes, lap rings,
-// Tally Marks, the daily goal, greyed future units), and the teacher map publishing the locked CCSS-M
-// statements for Units 1-4 with primary / also / builds-toward kept separate. The in-lesson moment wiring
+// Tally Marks, the daily goal), and the teacher map publishing the locked CCSS-M
+// statements for Units 1-7 plus the finale (Phase 2, 2026-11-05) with primary / also / builds-toward kept separate. The in-lesson moment wiring
 // itself rides the generic step APIs (routes/courses.js) and is covered end to end by the shape asserted
 // here: a passed check and a finished unit award through the progress service the path reads back.
 import './_setup.js';
@@ -19,17 +19,19 @@ const course = C.getCourse('number-quest');
 let n = 0;
 const newKid = () => auth.createUser({ username: `nqp${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Kid' });
 
-test('the course is registered: one Explorer band, 13 steps, no deck problems, other courses untouched', () => {
+test('the course is registered: one Explorer band, 23 steps, no deck problems, other courses untouched', () => {
   assert.ok(course);
   assert.equal(course.teacherPath, '/teachers/number-quest');
   assert.deepEqual(C.bandsFor(course), ['explorer']);
   assert.deepEqual(C.bandsFor(C.getCourse('cs-quest')), ['1b', '2']);
   const steps = C.steps(course, 'explorer');
-  assert.equal(steps.length, 13);
+  assert.equal(steps.length, 23);
   assert.equal(steps[0].key, 'explorer-0.1');
-  assert.equal(steps.at(-1).key, 'explorer-4.3');
+  assert.equal(steps.at(-1).key, 'explorer-7.4');
   assert.deepEqual(C.deckProblems('explorer', 'number-quest'), []);
   assert.equal(C.getStep(course, 'explorer-4.3').game.slug, 'fraction-factory');
+  assert.equal(C.getStep(course, 'explorer-7.4').game.slug, 'quest-race', 'the finale rides the Vault Run');
+  assert.equal(C.getStep(course, 'explorer-6.1').game, null, '6.1 is the TALK step until Builders Yard ships');
   assert.equal(C.getStep(course, '2-4.3'), null, 'no Pro band exists yet');
   // Cyber Defenders was completed by Phase 2 on main (Units 5-6 + finale): 20 steps per band, not the 13 of its Phase 1.
   assert.equal(C.steps(C.getCourse('cyber-defenders'), '1b').length, 20);
@@ -40,10 +42,10 @@ test('the course is registered: one Explorer band, 13 steps, no deck problems, o
   assert.equal(C.getBand(kid, course), 'explorer');
 });
 
-test('the catalogue carries the locked map: 31 statements, every cited code locked, practices named', () => {
+test('the catalogue carries the locked map: 53 statements, every cited code locked, practices named', () => {
   const cat = C.numberQuestCatalogue();
-  assert.equal(cat.units.length, 5);
-  assert.equal(Object.keys(cat.registry.explorerCodes.codes).length, 31);
+  assert.equal(cat.units.length, 8);
+  assert.equal(Object.keys(cat.registry.explorerCodes.codes).length, 53);
   const locked = new Set(Object.keys(cat.registry.explorerCodes.codes));
   const clusters = new Set(Object.values(cat.registry.clusters).flatMap(g => Object.keys(g)));
   for (const u of cat.units) for (const s of u.steps) {
@@ -54,7 +56,7 @@ test('the catalogue carries the locked map: 31 statements, every cited code lock
     for (const code of st.buildsToward) assert.ok(locked.has(code) || clusters.has(code), `${s.n} builds toward unknown ${code}`);
     assert.ok(cat.registry.frameworks.practices.codes[s.mp], `${s.n} names a real practice`);
   }
-  assert.deepEqual(cat.tier.stones, ['Counting Stone', 'Joining Stone', 'Grouping Stone', 'Sharing Stone']);
+  assert.deepEqual(cat.tier.stones, ['Counting Stone', 'Joining Stone', 'Grouping Stone', 'Sharing Stone', 'Ruler Stone', 'Compass Stone', 'Scales Stone']);
 });
 
 test('the teacher map table separates primary, also covers and builds toward, with statements on the chips', () => {
@@ -68,6 +70,9 @@ test('the teacher map table separates primary, also covers and builds toward, wi
   assert.match(html, /MP3/, 'the practice spotlight shows');
   assert.match(html, /Construct viable arguments/, 'with its plain name');
   assert.match(html, /The Bakery/, 'unit header rows group the steps');
+  assert.match(html, /The Measure Shop/, 'Phase 2 units group their steps too');
+  assert.match(html, /3\.MD\.D\.8/, 'the perimeter statement shows on the map');
+  assert.match(html, /Enrichment/, '7.3 is published as enrichment, citing no code');
 });
 
 test('the notes render unit titles escaped exactly once', () => {
@@ -87,7 +92,7 @@ test('tally bundles group marks in fives, the five-bar gate drawn across', () =>
   assert.match(String(tallyBundles(1)), /1 Tally Mark</);
 });
 
-test('the path home renders the street: HUD, nodes, lap words, stones and the greyed future', () => {
+test('the path home renders the street: HUD, nodes, lap words, stones, all seven workshops and the Vault', () => {
   const kid = newKid();
   C.setBand(kid, course, 'explorer');
   // Walk the intro and Unit 1 the win-gated way, earning what the step APIs award (check, mission, lap 1).
@@ -113,9 +118,10 @@ test('the path home renders the street: HUD, nodes, lap words, stones and the gr
   assert.match(html, /Lap 1 done · Laps 2 and 3 are being built/, 'lap state in words, honest about the unbuilt laps');
   assert.match(html, /You are here/, 'the next open step is marked');
   assert.match(html, /href="\/courses\/number-quest\/explorer-2\.1"/, 'the next step is a door');
-  assert.match(html, /Unit 5/, 'future units are on the street');
-  assert.match(html, /Still being built/);
-  assert.match(html, /Vault of Measures/);
+  assert.match(html, /Unit 5/, 'the Measure Shop is on the street as a real workshop');
+  assert.doesNotMatch(html, /Still being built/, 'the Explorer street is complete: no greyed placeholder units');
+  assert.match(html, /The Measure Shop/);
+  assert.match(html, /Vault of Measures/, 'the finale renders as Unit 7\u2019s fourth step');
   assert.match(html, /Today's goal/);
   assert.doesNotMatch(html, /🔒<\/span>\s*<span class="nqp-node-t">Big numbers/, 'a done step never shows as locked');
 });

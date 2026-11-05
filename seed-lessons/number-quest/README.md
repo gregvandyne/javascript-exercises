@@ -8,12 +8,14 @@ build brief in the same folder. This folder follows the Cyber Defenders pattern
 
 **Phase 0 scope (this lock).** Only the standards layer exists so far — no decks, no banks yet.
 Decks for Explorer Units 1–4, the placement bank and Fraction Factory are separate Phase 1
-deliverables and must cite only what this lock allows.
+deliverables and must cite only what this lock allows. The Phase 2 lock (2026-11-05) extends the
+same terms to Explorer Units 5–7 and the Vault of Measures finale; see the Phase 2 section at the
+end of this file.
 
 | File | What |
 |---|---|
-| `standards.json` | the registry: CCSS-M framework facts, the eight Mathematical Practices, every verified grades K–5 cluster heading, the LOCKED statement-level code set for Explorer Units 1–4 (`explorerCodes`), the grades 6–8 cluster headings flagged DEFERRED (`deferredClusters`), and the corrections this lock makes to the spec's shorthand |
-| `units.json` | the catalogue slice: Explorer intro 0.1 + Units 1–4 (13 steps), each step's locked codes as `primary` / `also` / `buildsToward` (the CS Quest idiom), its MP spotlight, its Measure Stone, the game mission named in spec §5.2, and per-unit teacher notes |
+| `standards.json` | the registry: CCSS-M framework facts, the eight Mathematical Practices, every verified grades K–5 cluster heading, the LOCKED statement-level code set for Explorer Units 1–7 + the finale (`explorerCodes`; Units 1–4 locked in Phase 0, Units 5–7 + finale in Phase 2), the grades 6–8 cluster headings flagged DEFERRED (`deferredClusters`), and the corrections this lock makes to the spec's shorthand |
+| `units.json` | the catalogue slice: Explorer intro 0.1 + Units 1–7 + the Vault finale (23 steps), each step's locked codes as `primary` / `also` / `buildsToward` (the CS Quest idiom), its MP spotlight, its Measure Stone, the game mission named in spec §5.2, and per-unit teacher notes |
 | `placement.json` | Tally's Sorting Game strand lock: the four strands, the half-grade rung convention, LOCKED rungs K.0–5.5 at cluster level, DEFERRED rungs 6.0–8.0, and the strand→unit crosswalk with per-unit entry profiles and the soft-landing rule |
 | `placement/templates.json` | the placement item bank (spec §4.3): 240 item templates, 60 per strand across rungs K.0–8.0 (3–4 per strand × rung cell). Each template carries strand + `strandLabel` (the `placement.json` strand name), rung, `ccssClusterCode` + cluster heading for locked rungs (`lockStatus: "locked"`, 168 templates), `ccssClusterCode: null` + a DEFERRED orientation heading for rungs 6.0–8.0 (`lockStatus: "deferred-pro-phase"`, 72 templates — authored now, not taggable as coverage until the Pro lock), the misconception its main distractor diagnoses, response type (`pick`/`numeric`/`count-out`/`drag`/`build`), reading load (`none`/`low`/`standard`), `audioFirst`/`launchpadSafe` flags, and a `gen` block of randomised-number constraints |
 | `placement/generator.js` | turns a template into one concrete item (seeded, reproducible): pick items get 4 choices — the key plus three misconception-tagged distractors; other response types return the worked key plus distractor misconceptions. The worked answer key is the generator output (`answer`, plus `answerIndex` for pick); items never exist as files |
@@ -84,3 +86,37 @@ tile strip — the lesson's own numbers, rendered by `server/views/courses.js`) 
 **guided focus** (`slide.focus`, 2–3 steps) over it. Focus boxes are verified on
 rendered screenshots at phone width 390×844 (reduced-motion static mode shows every
 box at once).
+
+## Explorer decks C — Units 5–7 + the Vault finale (Phase 2, this build)
+
+| File | What |
+|---|---|
+| `course/explorer/<step>.json` | one slide deck per step for steps 5.1–5.3, 6.1–6.3, 7.1–7.3 and the finale 7.4, in the Phase 1 idiom: story, one "Rough first" worked example, one flagged Stretch slide, one words slide (four words), mission last, drawn diagrams with guided focus, no `img` |
+| `sets/u<unit>-explorer.json` | the check banks for units 5–7 (unit 7's bank also carries the finale's three items): ids `nq-explorer-<step>-e<1..3>`, `cat` one of the step's LOCKED primary codes (7.3's items are `cat: "enrichment"` — chance has no CCSS home before grade 6, flagged in the lock, the catalogue and the teacher map), every choice misconception-tagged, and every item carrying a `why` so a miss teaches the path to the answer |
+
+Missions wire to the carriers named in `units.json`: Brain Board boards "Measures" (5.1),
+"Money" (5.3), "Around & Inside" (6.2) and "Lines & Grids" (6.3) — item generators in
+`seed-games/brain-board.html` keyed by the step's mode, in the 1.1/2.3 pattern; Quest Race
+"Timetables" (5.2) and the finale's "Vault Run" (7.4, a sequenced mixed mission: eight
+questions, one lock per workshop, standing in for the Vault game until it ships); Data
+Detective "Chart It" (7.1) and "My Data" (7.2), borrowed from CS Quest untouched; Would You
+Rather "Numbers" (7.3), a sure-thing-versus-chance bank written for this step in
+`scripts/data/would-you-rather/`. Step 6.1 ships the spec's fallback: no game yet (Builder's
+Yard is a later phase), a classroom shape-hunt TALK, and completion on its check. Jumble
+beats: misreads $2.05 at the till (5.3), swaps a grid address (6.3), calls a one-in-six
+chance impossible (7.3) — and is found inside the Vault in 7.4, relabeling measures it could
+not read, and hired as counter-in-training. Guarded by
+`tests/unit/number-quest-decks-c.test.js` and `tests/unit/number-quest-guided-focus.test.js`.
+
+**Placement.** The Phase 2 lock adds entry profiles for 5.1, 6.1 and 7.1 to
+`placement.json`'s crosswalk (monotone with Units 1–4, per-strand); the crosswalk now walks
+all seven units and lands a run that meets every profile on the finale door (explorer-7.4).
+The placement bank already sampled the new units' clusters at rungs 3.0–5.5 (Shape & Measure:
+measurement, area/perimeter, conversions, geometry, coordinates; Data & Chance: scaled
+graphs and line plots), so no template extension was needed; the validator still reports
+zero errors.
+
+**Focus.** The new decks' guided-focus boxes were authored to the measured standard of
+Cyber's PR #181: each box equals its target element's measured bounds in the drawn diagram
+(the renderer's outset supplies the breathing room), verified on rendered pages at
+390/834/1280, and pinned in the registry in `tests/unit/number-quest-guided-focus.test.js`.

@@ -1,0 +1,152 @@
+{
+ "key": "explorer-7.3",
+ "n": "7.3",
+ "band": "explorer",
+ "title": "Likely or not?",
+ "topic": "Chance words",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "The spinner stall",
+   "text": "One Fairground stall runs a spinner with 6 equal parts, and only 1 part is red. Yesterday the stall keeper called red a sure thing. Tally spun it 30 times, and red landed just 4 times.",
+   "art": "star"
+  },
+  {
+   "title": "Words for maybes",
+   "text": "Chance has its own words, and each one is a promise about the parts. Certain means every part, impossible means no part, and unlikely means a small share. This spinner gives red 1 part of 6.",
+   "art": "grid",
+   "visual": {
+    "type": "fraction",
+    "label": "A spinner drawn as a bar cut into 6 equal parts, with 1 part shaded for red",
+    "rows": [
+     {
+      "label": "Spinner: 6 equal parts, 1 red",
+      "cuts": 6,
+      "shaded": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One red part out of 6 equal parts.",
+     "box": [
+      5.8,
+      37.1,
+      15.1,
+      15.5
+     ]
+    },
+    {
+     "cue": "Every other part is not red: 5 of the 6.",
+     "box": [
+      20.5,
+      37.1,
+      73.7,
+      15.5
+     ]
+    },
+    {
+     "cue": "Six equal parts in all. Equal parts make the chance fair to judge.",
+     "box": [
+      5.8,
+      27.9,
+      88.4,
+      24.7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Worked example: sorting the words",
+   "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, half an even chance, one of 6 unlikely, none impossible.",
+   "art": "gears",
+   "kind": "example",
+   "steps": [
+    "All 6 parts red: certain",
+    "3 parts of 6 red: an even chance",
+    "1 part of 6 red: unlikely",
+    "0 parts red: impossible"
+   ],
+   "visual": {
+    "type": "tiles",
+    "label": "A strip of four chance-word tiles in order: certain, likely, unlikely, impossible",
+    "values": [
+     "certain",
+     "likely",
+     "unlikely",
+     "impossible"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Certain: it happens every single time.",
+     "box": [
+      5.8,
+      31.8,
+      20.9,
+      27.1
+     ]
+    },
+    {
+     "cue": "Unlikely: it can happen, but it probably will not.",
+     "box": [
+      50.8,
+      31.8,
+      20.9,
+      27.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The Jumble calls it impossible",
+   "text": "The Jumble watched the spinner miss red five times and called red impossible. Then it landed on the very next spin. Unlikely things happen; that is what unlikely means. Impossible is a promise the parts can actually keep.",
+   "art": "bug"
+  },
+  {
+   "title": "Words to know",
+   "text": "Four words for maybes, in order.",
+   "art": "pencil",
+   "kind": "words",
+   "words": [
+    {
+     "word": "chance",
+     "means": "how likely something is, judged from its share of the parts"
+    },
+    {
+     "word": "likely",
+     "means": "it will probably happen, because most of the parts are its"
+    },
+    {
+     "word": "unlikely",
+     "means": "it can happen, but probably will not, because few parts are its"
+    },
+    {
+     "word": "impossible",
+     "means": "it cannot happen, because no part is its"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: build a likely spinner",
+   "text": "Stretch: design a spinner where landing on red is likely but not certain. How many of its 8 parts are red, and why not all 8? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
+   "title": "Your mission",
+   "text": "Open Would You Rather, choose the Numbers topic, and play one whole run to its end card. Before each pick, say how sure you are: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
+   "art": "trophy",
+   "kind": "mission"
+  }
+ ],
+ "check": [
+  "nq-explorer-7.3-e1",
+  "nq-explorer-7.3-e2",
+  "nq-explorer-7.3-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "numbers",
+  "params": ""
+ }
+}

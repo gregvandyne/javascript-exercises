@@ -145,10 +145,10 @@ router.get('/number-quest/starting-point', (req, res) => {
 function rebuildNote(placement) {
   const placed = Object.fromEntries(Object.entries(placement.rungs).map(([k, v]) => [k, { rung: v, confirmed: placement.source !== 'beginning' }]));
   const lines = Object.entries(placed).map(([k, v]) => P.strandNoteWords(P.STRAND_LABELS[k], v, placement.rungs));
-  const { launchpadGap, beyondBuilt } = P.crosswalk(placement.rungs);
+  const { launchpadGap, finaleDoor } = P.crosswalk(placement.rungs);
   const info = P.nodeInfo(placement.startNode);
-  return { lines, placedUnit: beyondBuilt
-      ? `Past Unit 4: every strand pointed beyond the built street. The workshops past Unit 4 are still being built, so the start is Unit ${info.unit} (${info.workshop}), the furthest workshop there is, and Units 1–4 stay open for games, laps and test-out.`
+  return { lines, placedUnit: finaleDoor
+      ? `Past Unit 7: every strand pointed beyond the Explorer street's workshops. The start is the Vault of Measures, the finale at the end of Unit 7 (The Fairground), and every workshop stays open for games, laps and test-out.`
       : `Unit ${info.unit}: ${info.workshop}`,
     launchpadLine: launchpadGap ? 'One or more strands landed below the Explorer starting line; the Launchpad gardens are still being built, so this learner starts at Welcome to the Numberworks for now.' : null, partial: null };
 }
@@ -165,8 +165,8 @@ router.post('/api/number-quest/daily-goal', ...api, form, (req, res) => {
 
 // ------------------------------------------------------------------------------------------------- the teacher page
 /** /teachers/number-quest: the public program page (Cyber Defenders' page is the model): overview, the
- *  four games, the units and steps, the locked CCSS-M map for Explorer Units 1-4, the teacher notes and the
- *  printed pack (?print=1). Anyone may read it; the course stands alone. */
+ *  six games, the units and steps, the locked CCSS-M map for Explorer Units 1-7 plus the finale, the
+ *  teacher notes and the printed pack (?print=1). Anyone may read it; the course stands alone. */
 router.get('/teachers/number-quest', (req, res) => {
   const t = req.t, cat = C.numberQuestCatalogue();
   const K = 'teachers.nq';
@@ -181,6 +181,8 @@ router.get('/teachers/number-quest', (req, res) => {
     { slug: 'sum-racer', key: 'sumRacer', emoji: '🏎️', title: 'Sum Racer' },
     { slug: 'quest-race', key: 'questRace', emoji: '🏝️', title: 'Quest Race' },
     { slug: 'fraction-factory', key: 'fractionFactory', emoji: '🧁', title: 'Fraction Factory' },
+    { slug: 'data-detective', key: 'dataDetective', emoji: '🔎', title: 'Data Detective' },
+    { slug: 'would-you-rather', key: 'wouldYouRather', emoji: '🤔', title: 'Would You Rather' },
   ].map(c => ({ ...c, live: launchGame(c.slug) }));
   const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {}).explorer || s.n}</li>`)}</ol></li>`;

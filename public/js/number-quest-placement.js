@@ -154,7 +154,7 @@ function showResult(result) {
   $('nq-result-workshop').textContent = result.workshop ? `You start at: ${result.workshop}` : 'You start at the beginning of the street.';
   // Past the built street: say so plainly, right under the workshop name (never a fallback label).
   const beyondEl = $('nq-result-beyond');
-  if (beyondEl) { beyondEl.hidden = !result.beyondLine; beyondEl.textContent = result.beyondLine || ''; }
+  if (beyondEl) { beyondEl.hidden = !result.finaleLine; beyondEl.textContent = result.finaleLine || ''; }
   // The per-strand picture: what kinds of puzzles the tour visited, a paw for every one tried.
   // It carries no score and no rung — those live only in the grown-up note.
   const pic = $('nq-result-picture'), cards = $('nq-strand-cards');

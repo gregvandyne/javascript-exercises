@@ -91,13 +91,15 @@
   "d.tech": "Gadgets, robots and big ideas excite you.",
   "d.social": "You love being with friends and family.",
   "pct": "{n}% chose this",
-  "pctFirst": "You're one of the first to answer this one!"
+  "pctFirst": "You're one of the first to answer this one!",
+  "cat.numbers": "Numbers"
  },
  "en-GB": {
   "t.calm": "Cosy dreamer",
   "d.calm": "You enjoy calm, cosy and peaceful times.",
   "pct": "{n}% chose this",
-  "pctFirst": "You're one of the first to answer this one!"
+  "pctFirst": "You're one of the first to answer this one!",
+  "cat.numbers": "Numbers"
  },
  "de": {
   "title": "Was wäre dir lieber?",
@@ -191,7 +193,8 @@
   "d.tech": "Geräte, Roboter und große Ideen begeistern dich.",
   "d.social": "Du bist am liebsten mit Freunden und Familie zusammen.",
   "pct": "{n} % haben das gewählt",
-  "pctFirst": "Du gehörst zu den Ersten, die das beantworten!"
+  "pctFirst": "Du gehörst zu den Ersten, die das beantworten!",
+  "cat.numbers": "Zahlen"
  },
  "fr": {
   "title": "Tu préfères ?",
@@ -285,7 +288,8 @@
   "d.tech": "Les gadgets, les robots et les grandes idées te passionnent.",
   "d.social": "Tu adores être avec tes amis et ta famille.",
   "pct": "{n} % ont choisi ça",
-  "pctFirst": "Tu es parmi les premiers à répondre à celle-ci !"
+  "pctFirst": "Tu es parmi les premiers à répondre à celle-ci !",
+  "cat.numbers": "Nombres"
  },
  "es": {
   "title": "¿Qué prefieres?",
@@ -379,7 +383,8 @@
   "d.tech": "Los aparatos, los robots y las grandes ideas te emocionan.",
   "d.social": "Te encanta estar con tus amigos y tu familia.",
   "pct": "{n} % eligió esto",
-  "pctFirst": "¡Eres de los primeros en responder esta!"
+  "pctFirst": "¡Eres de los primeros en responder esta!",
+  "cat.numbers": "Números"
  },
  "pt": {
   "title": "O que você prefere?",
@@ -473,7 +478,8 @@
   "d.tech": "Aparelhos, robôs e grandes ideias empolgam você.",
   "d.social": "Você adora estar com amigos e família.",
   "pct": "{n}% escolheram isso",
-  "pctFirst": "Você é um dos primeiros a responder esta!"
+  "pctFirst": "Você é um dos primeiros a responder esta!",
+  "cat.numbers": "Números"
  },
  "it": {
   "title": "Preferiresti?",
@@ -567,7 +573,8 @@
   "d.tech": "Gadget, robot e grandi idee ti entusiasmano.",
   "d.social": "Ami stare con gli amici e la famiglia.",
   "pct": "{n}% ha scelto questo",
-  "pctFirst": "Sei tra i primi a rispondere a questa!"
+  "pctFirst": "Sei tra i primi a rispondere a questa!",
+  "cat.numbers": "Numeri"
  },
  "nl": {
   "title": "Wat heb je liever?",
@@ -661,7 +668,8 @@
   "d.tech": "Gadgets, robots en grote ideeën maken je blij.",
   "d.social": "Je bent graag samen met vrienden en familie.",
   "pct": "{n}% koos dit",
-  "pctFirst": "Je bent een van de eersten die dit beantwoordt!"
+  "pctFirst": "Je bent een van de eersten die dit beantwoordt!",
+  "cat.numbers": "Getallen"
  },
  "ru": {
   "title": "Что бы ты выбрал?",
@@ -755,7 +763,8 @@
   "d.tech": "Гаджеты, роботы и большие идеи тебя восхищают.",
   "d.social": "Ты обожаешь быть с друзьями и семьёй.",
   "pct": "{n}% выбрали это",
-  "pctFirst": "Ты один из первых, кто ответил на этот вопрос!"
+  "pctFirst": "Ты один из первых, кто ответил на этот вопрос!",
+  "cat.numbers": "Числа"
  },
  "ja": {
   "title": "どっちがいい？",
@@ -849,7 +858,8 @@
   "d.tech": "きかいやロボットや大きなアイデアにわくわく。",
   "d.social": "ともだちやかぞくといっしょにいるのが大すき。",
   "pct": "{n}%の人がこれをえらんだよ",
-  "pctFirst": "このしつもんにこたえた、さいしょのひとりだよ！"
+  "pctFirst": "このしつもんにこたえた、さいしょのひとりだよ！",
+  "cat.numbers": "数字"
  },
  "zh-Hant": {
   "title": "你比較想要哪個？",
@@ -943,7 +953,8 @@
   "d.tech": "機器、機器人和大點子讓你好興奮。",
   "d.social": "你最喜歡和朋友、家人在一起。",
   "pct": "{n}% 的人選了這個",
-  "pctFirst": "你是最早回答這一題的人之一！"
+  "pctFirst": "你是最早回答這一題的人之一！",
+  "cat.numbers": "數字"
  },
  "ar": {
   "title": "ماذا تفضّل؟",
@@ -1037,7 +1048,8 @@
   "d.tech": "الأجهزة والروبوتات والأفكار الكبيرة تحمّسك.",
   "d.social": "تحب أن تكون مع أصدقائك وعائلتك.",
   "pct": "{n}% اختاروا هذا",
-  "pctFirst": "أنت من أوائل من أجابوا عن هذا السؤال!"
+  "pctFirst": "أنت من أوائل من أجابوا عن هذا السؤال!",
+  "cat.numbers": "الأرقام"
  },
  "he": {
   "title": "מה הייתם מעדיפים?",
@@ -1131,6 +1143,7 @@
   "d.tech": "גאדג'טים, רובוטים ורעיונות גדולים מלהיבים אתכם.",
   "d.social": "אתם אוהבים להיות עם חברים ומשפחה.",
   "pct": "{n}% בחרו בזה",
-  "pctFirst": "אתם בין הראשונים שעונים על השאלה הזאת!"
+  "pctFirst": "אתם בין הראשונים שעונים על השאלה הזאת!",
+  "cat.numbers": "מספרים"
  }
 }

@@ -33,13 +33,18 @@ export const COURSES = Object.freeze([
   {
     slug: 'number-quest', emoji: '🔢', key: 'courses.nq', teacherPath: '/teachers/number-quest',
     // The order the units teach them in (Unit 1 plays Brain Board and Quest Race, Units 2-3 Sum Racer,
-    // Unit 4 Fraction Factory). All four are shared: three are open-library engines whose maths lives in
-    // this course's banks, and Fraction Factory keeps its own page in the library too.
+    // Unit 4 Fraction Factory, Units 5-6 Brain Board and Quest Race again, Unit 7 Data Detective and
+    // Would You Rather, the finale Quest Race). All six are shared: four are open-library engines whose
+    // maths lives in this course's banks, Fraction Factory keeps its own page in the library too, Data
+    // Detective is CS Quest's (borrowed for Unit 7's data steps), and Would You Rather is an open game
+    // whose "numbers" topic bank was written for step 7.3.
     games: [
       { slug: 'brain-board', topic: 'numbers', shared: true },
       { slug: 'quest-race', topic: 'numbers', shared: true },
       { slug: 'sum-racer', topic: 'numbers', shared: true },
       { slug: 'fraction-factory', topic: 'fractions', shared: true },
+      { slug: 'data-detective', topic: 'data', shared: true },
+      { slug: 'would-you-rather', topic: 'choices', shared: true },
     ],
   },
 ]);
