@@ -136,6 +136,8 @@
    "title": "Your mission",
    "text": "Open Would You Rather, choose the Numbers topic, and play one whole run to its end card. Before each pick, say how sure you are: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
    "art": "trophy",
+   "img": "nq/would-you-rather/numbers",
+   "alt": "Would You Rather, the Numbers topic: a numbers choice on screen, two big cards to pick from, at the start of a run.",
    "kind": "mission"
   }
  ],

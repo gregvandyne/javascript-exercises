@@ -148,6 +148,8 @@
    "title": "Your mission",
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Around & Inside board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Ask of every tile: is this the fence, or is this the carpet?",
    "art": "trophy",
+   "img": "nq/brain-board/around-inside-board",
+   "alt": "Brain Board in play: the Around & Inside board, categories Fence it, Carpet it, Count the squares, Missing side and Same fence, a fence question open.",
    "kind": "mission"
   }
  ],

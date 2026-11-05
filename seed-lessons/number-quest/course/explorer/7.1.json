@@ -202,6 +202,8 @@
    "title": "Your mission",
    "text": "Open Data Detective at Chart It and finish all 5 cases. Each case hands you a messy stall and asks for the chart that answers. Read the scale before you read any bar.",
    "art": "trophy",
+   "img": "nq/data-detective/chart-it",
+   "alt": "Data Detective, Chart It: a case's counts shown as a bar chart, the Bars view picked, a claim ready to pin.",
    "kind": "mission"
   }
  ],

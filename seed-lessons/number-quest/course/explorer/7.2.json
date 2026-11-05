@@ -184,6 +184,8 @@
    "title": "Your mission",
    "text": "Open Data Detective at My Data and finish all 3 survey cases. Each case is your own survey: pick the question, tally the answers, chart them, and pin only a claim the chart really shows.",
    "art": "trophy",
+   "img": "nq/data-detective/my-data",
+   "alt": "Data Detective, My Data: a class survey tallied with the steppers and built into a bar chart, a claim ready to pin.",
    "kind": "mission"
   }
  ],

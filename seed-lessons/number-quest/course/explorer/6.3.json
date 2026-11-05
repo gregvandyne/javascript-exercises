@@ -140,6 +140,8 @@
    "title": "Your mission",
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Lines & Grids board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Read every grid address out loud: right first, then up.",
    "art": "trophy",
+   "img": "nq/brain-board/lines-grids-board",
+   "alt": "Brain Board in play: the Lines & Grids board, categories Parallel or not, Fold it, Grid addresses, Turns and Shape families, a parallel lines question open.",
    "kind": "mission"
   }
  ],
