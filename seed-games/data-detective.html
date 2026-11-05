@@ -132,8 +132,12 @@
   .steplab small { font-weight: 700; opacity: .85; font-size: .85em; }
   .step .n { text-align: center; font-weight: 900; font-size: 1.1em; }
   .step .ibtn { width: 48px; height: 48px; box-shadow: none; }
-  .slide { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 16px; background: var(--ok-card); border: 3px solid var(--ok-edge); }
-  .slide input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 48px; margin: 0; background: transparent; cursor: pointer; }
+  .slide { display: flex; flex-direction: column; gap: 6px; padding: 12px 10px; border-radius: 16px; background: var(--ok-card); border: 3px solid var(--ok-edge); }
+  /* the slider's room: the 44px thumb (50px with its border, 3px more of shadow below) sits inside a taller
+     input box with air above and below, so the knob never hugs the card's edges; a slider that ends its card
+     (the model-fit card: the prediction card has its value line under the slider instead) gets extra room below */
+  .slide input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 54px; margin: 0; background: transparent; cursor: pointer; }
+  .slide > input[type=range]:last-child { margin-bottom: 6px; }
   .slide input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 99px; background: var(--dd-tile); border: 3px solid var(--ok-edge); }
   .slide input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; margin-top: -18px; border-radius: 50%; background: var(--dd-bar); border: 3px solid var(--ok-edge); box-shadow: 0 3px 0 var(--ok-edge); }
   .slide input[type=range]::-moz-range-track { height: 14px; border-radius: 99px; background: var(--dd-tile); border: 3px solid var(--ok-edge); }
@@ -191,7 +195,7 @@
   .mark svg { width: 16px; height: 16px; }
   @media (max-height: 520px) { .dot { padding: 4px 8px; } .dotpic, .dotpic canvas { width: 48px !important; height: 48px !important; } .bars { min-height: 120px; } .tile { min-height: 64px; } }
   /* short screens (a phone on its side): Dot already says what the notes say; the slider box is slimmer; a wide claim card uses two columns */
-  @media (max-height: 520px) { .claims .note, .slide + .note { display: none; } .slide { padding: 6px 10px; gap: 2px; } .slide input[type=range] { height: 40px; } .slide .total { min-height: 40px; } .work { gap: 6px; } .dotsay { font-size: .95em; line-height: 1.2; } .runs { padding: 4px 6px; } }
+  @media (max-height: 520px) { .claims .note, .slide + .note { display: none; } .slide { padding: 8px 10px; gap: 2px; } .slide input[type=range] { height: 48px; } .slide .total { min-height: 40px; } .work { gap: 6px; } .dotsay { font-size: .95em; line-height: 1.2; } .runs { padding: 4px 6px; } }
   @media (max-height: 520px) and (min-width: 600px) { .tiles2 { grid-template-columns: 1fr 1fr; } }
   /* a case with a slider or steppers under the view (models, My Data) keeps the view shorter when the panels stack */
   @media (orientation: portrait), (max-width: 699px) { .view.compact { max-height: 46%; } }
