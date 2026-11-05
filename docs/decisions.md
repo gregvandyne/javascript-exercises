@@ -2308,6 +2308,16 @@ then its game module: one locked chapter of a game (6.1 and 6.3 have none and en
   game is itself the finished step and is honoured like a win. In the guest's own views the facts stand in for
   progress — they open the next step and fill the street the guest is looking at — but they never enter
   course_progress, so no grown-up surface ever sees them.
+- The platform admin can open every step of every course (Greg, 2026-11-05, so he can test everything):
+  states() reports every step open for the admin account, so the course maps (and Number Quest's path),
+  the step pages and the step APIs treat the whole course as enterable in any order, regardless of the
+  admin's own progress or placement, and /play honours the admin's step context like a student's
+  (played_at is set, the win posts back and completes the step). Access only, deliberately: completion is
+  unchanged — opening a step completes nothing, a step's game still waits for its check to be passed, and
+  a win still completes through the same endpoint — the bypass writes no progress by itself and changes
+  no one else's view (the teacher gradebook reads each student's own states). It is keyed on the
+  account's role, read server-side from its user row; there is no client switch. School staff keep their
+  narrower preview: a locked step's page, but not its APIs or its game.
 
 ## A second course: Cyber Defenders (Nov 2026)
 Cyber Defenders (seed-lessons/cyber-defenders) is a standalone cybersecurity / online-safety course on the same
