@@ -182,6 +182,11 @@ router.get('/teachers', (req, res) => {
     <ul class="lp-games">${list.map(card)}</ul>
   </section>
 
+  <section class="lp-sec" id="brain-breaks" aria-labelledby="bb-h">
+    ${el(t, 'h2', 'move.teachersH', {}, ' id="bb-h"')}${el(t, 'p', 'move.teachersP')}
+    <p><a class="btn btn-primary" href="${lp(req, '/move')}">${t('move.title')}</a></p>
+  </section>
+
   <section class="lp-sec" id="subjects" aria-labelledby="subj-h">
     ${el(t, 'h2', 'teachers.subjects.h', {}, ' id="subj-h"')}
     <ul class="lp-hubs">${HUBS.map(h => html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span>${el(t, 'span', `learn.hubs.${h.key}.name`, {}, ' class="lp-hub-t"')}${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>

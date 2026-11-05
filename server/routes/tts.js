@@ -19,6 +19,10 @@
 //                  English with Tally's voice (Fraction Factory's registered role). The page never sends text.
 //     ctx 'lesson' { clId, stepId, i }  a lesson quiz step's question i, behind the same access as its quiz API, in the
 //                  page's language.
+//     ctx 'move'   { episode, seg, line }  one narration line of a Brain Break (Oomba Breathe & Bend, /move), by its
+//                  numbers only: the server reads the registered line (services/tts-lines.js MOVE_LINES, from
+//                  services/move-data.js) in English with the narrator's voice. The page never sends text.
+
 //   GET /tts/<sha256>.mp3   the cached audio (same-origin only; immutable).
 //   Admin (role admin): GET /admin/voices, POST /api/admin/tts/sample, POST /api/admin/tts/settings,
 //   GET|POST /api/admin/tts/warm, POST /api/admin/tts/warm/stop, GET|POST /api/admin/tts/games (a game's switch).
@@ -154,6 +158,14 @@ function resolve(req, b) {
     const it = Number.isInteger(b.i) ? r.items[b.i] : null;
     if (!it) return { error: [404, 'off'] };
     return { text: questionText(it.q, it.choices), locale: V.ttsLocale(req.locale) || 'en', role: 'narrator', rate: 'normal' };
+  }
+  if (b.ctx === 'move') {
+    // A Brain Break is public (guests play free in class), so no account is needed; the words are ours
+    // alone, picked by number from the registry, never sent by the page. Narration is English first:
+    // read with the English voice, in the narrator's voice, like a course lesson.
+    const line = lines.moveLine(String(b.episode || ''), b.seg, b.line);
+    if (!line) return { error: [404, 'off'] };
+    return { text: line.text, locale: 'en', role: line.role, rate: 'normal' };
   }
   return { error: [400, 'ctx'] };
 }
