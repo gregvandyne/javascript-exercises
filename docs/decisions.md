@@ -2295,6 +2295,21 @@ then its game module: one locked chapter of a game (6.1 and 6.3 have none and en
   a class lesson step of that game (?lesson=&step=), for school staff with lesson parameters (?chapter=...), for the
   platform admin, or in an online match the player is seated in. Everything else goes to the course map. "?course=" or
   "?chapter=" alone no longer opens a course game.
+- Finishing a course game must land the student back in the course, and the completion must actually register
+  (Greg's live findings, 2026-11-05). Three rules came out of that day's testing. (1) The step context is honoured
+  for every signed-in player who arrives with a valid one — the game owner and the admin included: courses.playable
+  is the gate (step open, check passed, module matches), and dropping the context for owners (the old !isOwner
+  condition in the play route) made their wins impossible to record while looking exactly like a normal session:
+  no played_at, no completion call, no error. The owner bypass still governs merely opening a course game with no
+  step context. (2) When a course step's game reports its end, the play page states the outcome itself, inside the
+  stage so fullscreen shows it too: a finish bar with the way back to the course as the primary action, in four
+  honest states (completion recorded; a guest's win banked for sign-in; the finish did not complete the step —
+  Sum Racer reports every race's end and only 1st place wins, while its results screen celebrates any finish; the
+  win could not be saved). A failed completion call is shown, never swallowed. Free play (no step context) never
+  sees the bar. (3) A "Back to class/course" button inside a game works through the page: the frame is sandboxed
+  with an opaque origin and cannot navigate, so the game asks with BRB.back (brb:back) and the page goes back only
+  on a real tap and only when the launch carried a back context. Robo Route's results-card button previously only
+  rewrote its own caption and disabled itself; Inside the Machine's went to the game's title screen.
 - The home card shows steps done of 19 and Start / Keep going to the next open step (or the band picker); its game list
   is the unit overview and links to the map's units.
 - Guests cannot complete a course (Greg, 2026-11-04). A guest browses and plays freely, but a check pass or a game

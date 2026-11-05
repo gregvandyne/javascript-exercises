@@ -191,6 +191,38 @@ test('read -> check (graded on the server) -> game module -> the next step opens
   assert.match(home.text, /href="\/courses\/cs-quest\/1b-1\.2" id="course-cs-quest-go">▶ Keep going/);
 });
 
+test('an owner/admin arrival with a step context keeps it: the win can be reported and recorded', async () => {
+  // Regression (live, 2026-11-05): the play route used to drop the course step for the game's owner and
+  // the admin (!isOwner), so their wins — earned exactly like a student's, through the step's own Play
+  // link after a passed check — could never be recorded: no played_at, no cstep in the page data, no
+  // completion call, and no sign of the failure anywhere. courses.playable is the gate for everyone.
+  const admin = auth.createUser({ username: `boss${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Boss', role: 'admin' });
+  C.setBand(admin, course, '1b');
+  const s1 = C.getStep(course, '1b-1.1');
+  // Before the check is passed the gate refuses the context for the admin exactly as for a student:
+  // the game opens as an owner preview, with nothing to complete against.
+  const early = await get('/play/robo-route?course=cs-quest&cstep=1b-1.1&chapter=sequences&band=1b&lock=1', admin);
+  assert.equal(early.status, 200);
+  assert.doesNotMatch(early.text, /"cstep"/, 'no step context before the check is passed');
+  assert.equal(q.get('SELECT played_at FROM course_progress WHERE user_id=? AND step=?', admin.id, '1b-1.1'), undefined);
+  // Pass the check (admins are not grownup accounts: the step APIs record for them), then take the
+  // step's own Play link: the context is honoured, the module is marked started, the win records.
+  await post('/api/courses/cs-quest/1b-1.1/read', admin, {});
+  assert.equal((await post('/api/courses/cs-quest/1b-1.1/check', admin, { answers: allRight(s1) })).json.passed, true);
+  const play = await get('/play/robo-route?course=cs-quest&cstep=1b-1.1&chapter=sequences&band=1b&lock=1', admin);
+  assert.equal(play.status, 200);
+  assert.match(play.text, /"cstep":\{"course":"cs-quest","step":"1b-1\.1"\}/, 'the play page carries the course step for an admin too');
+  assert.match(play.text, /"backHref":"\/courses\/cs-quest\/1b-1\.1#play"/, 'and the way back (the finish bar and BRB.back use it)');
+  const row = q.get('SELECT * FROM course_progress WHERE user_id=? AND step=?', admin.id, '1b-1.1');
+  assert.ok(row.played_at > 0 && row.completed_at === null, 'entered, not yet finished');
+  assert.deepEqual((await post('/api/courses/cs-quest/1b-1.1/complete', admin, {})).json, { ok: true, complete: true });
+  assert.ok(C.stateOf(admin, course, '1b-1.1').complete);
+  // Free play carries no back context in its page data, so the finish bar and BRB.back stay out of it.
+  const free = await get('/play/sum-racer', admin);
+  assert.equal(free.status, 200);
+  assert.doesNotMatch(free.text, /"backHref"/, 'no course back context in free play');
+});
+
 test('the completion endpoint: only an entered, check-passed game step can be finished', async () => {
   const kid = newKid(); C.setBand(kid, course, '1b');
   // The step is open, but its check is not passed and its game was never entered.

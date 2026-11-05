@@ -2190,7 +2190,8 @@ async function chapterEnd() {
   if (what === 'again') return startChapter((S.locked ? S.locked.chapter : S.chapter).id, { level: 1 });
   goMap();
 }
-/** lock=1 chapter end: a results card with Back to class (the kid stays on the results) and Play again. A replay keeps
+/** lock=1 chapter end: a results card with Back to class (the play page takes the kid back to their course
+ *  or lesson; in a preview with no way back, the kid stays on the results) and Play again. A replay keeps
  *  the checks the kid already answered, so the teacher's label never drops. */
 function lockedResults(score, all) {
   S.screen = 'results';
@@ -2201,7 +2202,15 @@ function lockedResults(score, all) {
     p.textContent = tr('{n} of {all} stars', { n: Oomba.num(score), all: Oomba.num(all) }) + (S.lesson && S.checks.n ? ' · ' + tr('{ok} of {n} checks right', { ok: Oomba.num(S.checks.ok), n: Oomba.num(S.checks.n) }) : '');
     m.appendChild(p);
     const msg = el('p', '', esc(tr('Great work. Tell your teacher you finished, or play the chapter again for more stars.'))); m.appendChild(msg);
-    const back = btn(tr('Back to class'), { kind: 'hot', icon: 'home', big: true, onPress: () => { msg.textContent = tr('All done. Your teacher can see your stars now.'); back.disabled = true; announce(msg.textContent); } });
+    const back = btn(tr('Back to class'), { kind: 'hot', icon: 'home', big: true, onPress: () => {
+      // The frame cannot navigate the page (sandboxed, opaque origin): ask the play page to go back to the
+      // course or lesson this chapter was launched from (BRB.back). If nobody takes the page away — a
+      // preview with no way back — fall back to the note, so the button is never worse than before.
+      let asked = false;
+      try { if (window.BRB && typeof BRB.back === 'function') { BRB.back(); asked = true; } } catch (e) { /* fall through */ }
+      const note = () => { msg.textContent = tr('All done. Your teacher can see your stars now.'); back.disabled = true; announce(msg.textContent); };
+      if (asked) after(900, note); else note();
+    } });
     back.setAttribute('data-focus', ''); m.appendChild(back);
     m.appendChild(btn(tr('Play again'), { kind: 'quiet', icon: 'restart', onPress: () => { closeCard(); startChapter(ch.id, { level: 1, replay: true }); } }));
   }, 'case');

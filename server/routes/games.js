@@ -258,11 +258,16 @@ router.get('/play/:slug', (req, res) => {
   const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
   const asked = req.query.course ? courses.getCourse(String(req.query.course)) : null;
   let cstep = null;
-  // A step context is resolved for the admin too when they arrive from a step: the visit is then the
-  // step's own flow (played_at is set below, the page carries the step, and the win posts back to
-  // complete it) exactly as a student's — the admin tests completions, so their course play must be
-  // real course play. Only a context-free visit is the admin/owner's free play (clause (d) above).
-  if (asked && req.query.cstep && (!isOwner || (u && u.role === 'admin'))) cstep = courses.playable(u, asked, String(req.query.cstep), g.slug);
+  // The step context is honoured for every signed-in player who arrives with one, the game's owner and
+  // the admin included: courses.playable is the gate (step open, its check passed, its module this game),
+  // so honouring it weakens nothing. Dropping it for owners (the old !isOwner condition) made the win a
+  // game reports impossible to record for exactly the people testing the course end to end — no played_at,
+  // no cstep in the page data, no completion call, and no sign anywhere that anything was missing
+  // (live finding, 2026-11-05: the admin's Sum Racer and Robo Route wins recorded nothing at all).
+  // The owner bypass further down still governs merely OPENING a course game with no step context.
+  // (PR #197 first restored the context for the admin; this keeps that and extends it to any owner,
+  // since the context only ever arrives on a URL the course itself generated.)
+  if (asked && req.query.cstep) cstep = courses.playable(u, asked, String(req.query.cstep), g.slug);
   if (course && !isOwner) {
     const teacher = !!req.query.chapter && isStaff(u);
     const inMatchQ = !!req.query.match && (() => { const m = match.get(req.query.match); return !!m && match.seatOf(m, u) >= 0 && m.gameId === g.id; })();
@@ -309,7 +314,7 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo" aria-hidden="true">📱</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...(ttsData ? { tts: ttsData } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}) })}`;
   page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: ['js.match'] });
 });
 

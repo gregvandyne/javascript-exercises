@@ -1008,6 +1008,11 @@
     // Start the game over from scratch (a "Try again" after the game could not start): the play page reloads it. Only
     // after a tap (the page checks), so a game can never reload itself in a loop.
     retry: function () { send('brb:retry'); },
+    // Ask the play page to go back to where this game was launched from (a course step or a class lesson).
+    // The frame is sandboxed with an opaque origin and cannot navigate the page itself, so a "Back to
+    // class/course" button inside the game has to ask. The page goes back only when the game was launched
+    // from somewhere with a way back, and only after a tap (the page checks) — in free play this is a no-op.
+    back: function () { send('brb:back', {}); },
     orientation: function (o) { send('brb:orientation', { value: String(o || 'any') }); },
     fx: fx,
     sfx: fx.sfx,

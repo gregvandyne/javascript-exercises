@@ -436,6 +436,14 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 /* The global focus ring is Ink in the light theme — on this Ink pill it would be invisible. Spark reads on Ink
    (and the play bar's own controls already use it, .playbar :focus-visible above). */
 .stage:fullscreen .fsback:focus-visible{outline:3px solid var(--brand-spark);outline-offset:2px}
+/* The course finish bar (public/js/play.js): shown inside the stage when a course step's game reports its
+   end, so fullscreen — which paints only the stage — shows it too. It carries the outcome the game's own
+   end screens never state (did the step count?) and the way back to the course as the primary action,
+   along the stage's bottom edge, clear of the game's centred dialogs. */
+.course-done{position:absolute;inset-inline:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:var(--brand-ink);color:var(--brand-cream);border:1px solid color-mix(in srgb,var(--brand-cream) 25%,var(--brand-ink));box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.course-done .cd-text{margin:0;font-weight:700;font-size:1rem;flex:1 1 150px}
+.course-done a.btn{text-decoration:none}
+.course-done :focus-visible{outline:3px solid var(--brand-spark);outline-offset:2px}
 .orient-hint{position:fixed;inset:52px 0 0;z-index:5;display:none;place-items:center;text-align:center;background:rgba(20,20,20,.94);color:var(--brand-cream);padding:24px}
 .game-stopped{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:rgba(20,20,20,.94);color:var(--brand-cream);padding:24px}
 .game-stopped p{font-size:1.2rem;font-weight:700;margin:0 0 16px}
