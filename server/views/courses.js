@@ -227,10 +227,10 @@ function streetHtml(st) {
     <rect x="${x}" y="48" width="88" height="102"/>
     <rect x="${x + 27}" y="70" width="34" height="12"/>
     <rect x="${x + 29}" y="92" width="30" height="58"/>
-    ${[102, 114, 126, 138].map(y => html`<line x1="${x + 31}" y1="${y}" x2="${x + 57}" y2="${y}" stroke-width="2"/>`).join('')}
+    ${[102, 114, 126, 138].map(y => html`<line x1="${x + 31}" y1="${y}" x2="${x + 57}" y2="${y}" stroke-width="2"/>`)}
     <rect class="story-swin${i < st.lit ? ' is-lit' : ''}" x="${x + 10}" y="56" width="24" height="20" rx="2"/>
   </g>`;
-  return html`<svg class="story-street" viewBox="0 0 400 150" preserveAspectRatio="none" aria-hidden="true">${[8, 106, 204, 302].map((x, i) => front(x, i)).join('')}</svg>`;
+  return html`<svg class="story-street" viewBox="0 0 400 150" preserveAspectRatio="none" aria-hidden="true">${[8, 106, 204, 302].map((x, i) => front(x, i))}</svg>`;
 }
 function streetArt(st) {
   return html`<figure class="smedia story" data-story data-scene="street" data-lit="${st.lit}">
