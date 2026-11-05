@@ -381,12 +381,14 @@ if (form) {
     if (!r.right) radio.closest('.qchoice').classList.add('is-wrong');
     f.classList.add(r.right ? 'is-right' : 'is-wrong');
     f.querySelector('.qq-fb').textContent = r.right ? t('js.course.right') : (r.why ? t('js.course.wrongWhy', { answer: r.text, why: r.why }) : t('js.course.wrong', { answer: r.text }));
-    if (r.nq && r.nq.reaction) f.querySelector('.qq-fb').textContent += ` ${r.nq.reaction.text}`;
     const last = qi === qs.length - 1;
     const go = document.createElement('button');
     go.type = 'button'; go.className = 'btn btn-primary btn-big qq-go'; go.textContent = last ? t('js.course.finish') : t('js.course.next');
     go.addEventListener('click', () => (last ? finish() : ask(qi + 1)));
     f.append(go);
+    // Number Quest: Tally's reaction line rides under the feedback text (kept apart from the
+    // feedback assignment above so this file merges cleanly with the shared course renderer).
+    if (r.nq && r.nq.reaction) f.querySelector('.qq-fb').textContent += ` ${r.nq.reaction.text}`;
     go.focus();
   });
   ask(0);
