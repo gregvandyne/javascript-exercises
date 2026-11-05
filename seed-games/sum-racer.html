@@ -92,6 +92,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .qlabel svg{width:1.15em;height:1.15em;flex:none}
 .qmain{font-size:40px;font-weight:800;line-height:1.1;white-space:nowrap;max-width:98%;display:flex;align-items:center;justify-content:center;gap:.25em;font-variant-numeric:tabular-nums}
 .qmain svg{width:.9em;height:.9em;flex:none}
+.qmain.wrap .qt{white-space:normal;min-width:0;text-wrap:balance}
 .qbox{display:inline-block;min-width:1.6em;padding:0 .2em;border-radius:12px;background:var(--sr-sparkTint);color:var(--sr-ink);border:2.5px solid var(--sr-ink);text-align:center;line-height:1.1}
 .qline.right{background:var(--sr-mint);color:var(--sr-ink);border-color:var(--sr-ink)}
 .qline.right .qlabel{color:var(--sr-ink)}
@@ -403,7 +404,8 @@ const CONFIG = {
     { id: 5, mult: 4, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'jungle' },
     { id: 6, mult: 5, lap: 600, rivalSpeed: 16.0, pace: 7.5, biome: 'desert', dusk: true },
     { id: 7, mult: 6, lap: 550, rivalSpeed: 15.0, pace: 9, biome: 'moon' },
-    { id: 8, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'beach' }
+    { id: 8, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'beach' },
+    { id: 9, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'meadow' }
   ],
   // The cast (kit character specs) and their kart colours (kit hues). Zippy the bunny, Bolt (the robot-ish Oomba)
   // and Rex the frog; player 1 drives as their own avatar, player 2 as the fox.
@@ -435,6 +437,14 @@ function makeQ(op, x, y) {
   const answer = op === '+' ? x + y : op === '-' ? x - y : op === 'x' ? x * y : x / y;
   return { op, x, y, answer, text: x + ' ' + SYM[op] + ' ' + y, key: x + op + y };
 }
+/** A rounding question (track 9, the Rounding Run): round n to the nearest ten or hundred, halves up —
+ *  the school rule the Number Quest step teaches. Rebuilt from (n, place) alone, so a missed rounding
+ *  fact saved as "tricky" comes back as the same question, never as a division (makeQ's fall-through). */
+function roundQ(n, place) {
+  const answer = Math.round(n / place) * place;
+  return { op: 'round', x: n, y: place, answer, text: 'Round ' + n + ' to the nearest ' + (place === 10 ? 'ten' : 'hundred'), key: 'round' + n + 'to' + place };
+}
+const rebuildQ = q => (q.op === 'round' ? roundQ(q.x, q.y) : makeQ(q.op, q.x, q.y));
 /** Carrying (add) or borrowing (take away) needed in the ones column? */
 function needsRegroup(op, x, y) { return op === '+' ? (x % 10) + (y % 10) >= 10 : op === '-' ? (y % 10) > (x % 10) : false; }
 /** Try a maker up to 300 times until test() passes (all makers pass long before that). */
@@ -451,8 +461,9 @@ function genQuestion(track, rng, ctx) {
     }
     case 3: {
       // Desert Dash: early in the race no carrying/borrowing, then a mix with carrying/borrowing.
+      // A lesson lock (ctx.op '+' or '-') keeps the whole race on the one operation the step taught.
       const regroup = (ctx.progress || 0) >= CONFIG.regroupFrom && rng() < 0.65;
-      if (rng() < 0.5) {
+      if (ctx.op ? ctx.op === '+' : rng() < 0.5) {
         return attempt(() => { const x = R(10, 89), y = R(rng() < 0.75 ? 10 : 2, 100 - x); return makeQ('+', x, y); },
           q => q.y >= 1 && q.answer <= (regroup ? 100 : 99) && needsRegroup('+', q.x, q.y) === regroup,
           regroup ? makeQ('+', 38, 45) : makeQ('+', 32, 41));
@@ -471,6 +482,12 @@ function genQuestion(track, rng, ctx) {
       if (k === 2) return rng() < 0.7 ? makeQ('x', R(3, 12), R(3, 12)) : makeQ('x', R(11, 25), R(2, 5));
       const d = R(3, 12), q = R(3, 12); return makeQ('/', d * q, d);
     }
+    case 9: {
+      // The Rounding Run: every question is a rounding question — to the nearest ten or the nearest
+      // hundred — so a win here is a win at rounding and nothing else.
+      const place = rng() < 0.5 ? 10 : 100;
+      return roundQ(place === 10 ? R(15, 995) : R(105, 9950), place);
+    }
     case 8: default: {
       const tables = (ctx.tables && ctx.tables.length) ? ctx.tables : CONFIG.practiceTables;
       const a = tables[R(0, tables.length - 1)], b = R(1, 12);
@@ -487,7 +504,12 @@ function plausible(v, a) { return Number.isInteger(v) && v >= 0 && v !== a && Ma
 function makeChoices(q, rng) {
   const a = q.answer, smart = [], near = [];
   const two = (u, v) => { smart.push(u); smart.push(v); };
-  if (q.op === '+' || q.op === '-') {
+  if (q.op === 'round') {
+    // The mistakes a rounder really makes: the other friendly number (rounded the wrong way), the
+    // number itself (did not round), and one place out either side.
+    const down = Math.floor(q.x / q.y) * q.y;
+    near.push(a === down ? down + q.y : down, q.x, a + q.y, a - q.y);
+  } else if (q.op === '+' || q.op === '-') {
     near.push(a + 1, a - 1, a + 2, a - 2);
     if (a >= 10 && Math.max(q.x, q.y) >= 10) two(a + 10, a - 10);                 // carry / borrow slip
     smart.push(q.op === '+' ? Math.abs(q.x - q.y) : q.x + q.y);                     // used the other sign
@@ -515,7 +537,7 @@ function makeDeck(track, rng, opts) {
   opts = opts || {};
   const R = CONFIG.repeat, due = [], recent = [];
   let n = 0;
-  (opts.tricky || []).slice(0, R.trickyMax).forEach((f, i) => due.push({ q: makeQ(f.op, f.x, f.y), at: R.trickyStart + i * R.trickyEvery, stage: 1, tricky: true }));
+  (opts.tricky || []).slice(0, R.trickyMax).forEach((f, i) => due.push({ q: rebuildQ(f), at: R.trickyStart + i * R.trickyEvery, stage: 1, tricky: true }));
   function serve(q, extra) { recent.push(q.key); if (recent.length > R.recent) recent.shift(); n++; return Object.assign({}, q, { choices: makeChoices(q, rng), track, n }, extra); }
   return {
     get served() { return n; },
@@ -527,14 +549,14 @@ function makeDeck(track, rng, opts) {
         return serve(d.q, { review: true, stage: d.stage, tricky: !!d.tricky });
       }
       let q = null;
-      for (let i = 0; i < 25; i++) { q = genQuestion(track, rng, { progress, tables: opts.tables }); if (!recent.includes(q.key) && !due.some(d => d.q.key === q.key)) break; }
+      for (let i = 0; i < 25; i++) { q = genQuestion(track, rng, { progress, tables: opts.tables, op: opts.op || null }); if (!recent.includes(q.key) && !due.some(d => d.q.key === q.key)) break; }
       return serve(q, { review: false, stage: 0, regroup: needsRegroup(q.op, q.x, q.y) });
     },
     /** Tell the deck how a question went so it can bring it back. */
     report(q, correct) {
       for (let i = due.length - 1; i >= 0; i--) if (due[i].q.key === q.key) due.splice(i, 1);
-      if (!correct) due.push({ q: makeQ(q.op, q.x, q.y), at: n + R.missGap, stage: 1 });
-      else if (q.review && q.stage === 1) due.push({ q: makeQ(q.op, q.x, q.y), at: n + R.reviewGap, stage: 2 });
+      if (!correct) due.push({ q: rebuildQ(q), at: n + R.missGap, stage: 1 });
+      else if (q.review && q.stage === 1) due.push({ q: rebuildQ(q), at: n + R.reviewGap, stage: 2 });
     }
   };
 }
@@ -606,6 +628,7 @@ function makeRace(track, humans, rng) {
    objects picked with Intl.PluralRules; lists (ord, place, cheers) are arrays; {name} placeholders
    are filled by t(key, vars). Maths symbols and digits stay as they are (Latin digits everywhere).
    ===================================================================================== */
+// ==== I18N START ====
 const I18N = {
   en: {
     tag: "Answer math questions to zoom your kart to the finish!", play: "▶ Play",
@@ -617,9 +640,9 @@ const I18N = {
     pr_text: "Pick the times tables you want to practice.", back: "⬅️ Back", race_go: "🏁 Race!", table_aria: "{n} times table",
     paused: "Paused", pause_text: "Take a breather. Your kart will wait.", resume: "▶ Keep racing", restart: "🔄 Start again", tracks: "🏁 Tracks",
     again: "🔄 Race again", next: "➡️ Next track", ready_label: "Get ready!", ready: "Ready…", kbhint: "Keys: type the answer, then press Enter.",
-    tn1: "Number Lane", tn2: "Sunny Speedway", tn3: "Desert Dash", tn4: "Snowy Summit", tn5: "Jungle Jam", tn6: "Volcano Valley", tn7: "Galaxy Grand Prix", tn8: "Practice Loop",
+    tn1: "Number Lane", tn2: "Sunny Speedway", tn3: "Desert Dash", tn4: "Snowy Summit", tn5: "Jungle Jam", tn6: "Volcano Valley", tn7: "Galaxy Grand Prix", tn8: "Practice Loop", tn9: "Rounding Run",
     ts1: "Adding to 10", ts2: "Add and take away to 20", ts3: "Add and take away to 100", ts4: "2, 5 and 10 times tables", ts5: "All times tables to 12",
-    ts6: "Sharing (division) facts", ts7: "Mixed + − × ÷", ts8: "Pick your times tables",
+    ts6: "Sharing (division) facts", ts7: "Mixed + − × ÷", ts8: "Pick your times tables", ts9: "Rounding to the nearest ten or hundred",
     rv_bunny: "Zippy", rv_robot: "Bolt", rv_dino: "Rex", you: "You", player: "Player {n}", pshort: "P{n}",
     g_start: "START", g_finish: "FINISH", g_lap: "LAP {n}", hud_lap: "Lap {n}/{total}", go: "GO!", meters: "{n}m",
     won_banner: "🏆 You won! 🏆", fin_place: "🏁 {place}!",
@@ -987,6 +1010,15 @@ const I18N = {
     ord: ["1e", "2e", "3e", "4e"], place: ["1e plaats", "2e plaats", "3e plaats", "4e plaats"]
   }
 };
+// ==== I18N END ====
+
+// ==== VOICES START ====
+// AI voices: the character voice this game's lines are read with when Oomba Academy has AI voices on for
+// this game and language. server/services/tts-lines.js reads this block to make the lines ahead of time, and
+// the server takes each line's role from it (never from the page): the longest VOICE_KEY_ROLES prefix wins,
+// else VOICE_ROLES.story. Roles: narrator, friendly, bright, deep, wise, grumpy.
+const VOICE_ROLES = { story: 'bright' };
+// ==== VOICES END ====
 
 // The table goes to the kit (Oomba.strings) under 'sr.' keys, so the game's words never replace the kit's own button
 // words. Pictures are the kit's icons and characters, not emoji: emoji in the table are left out when it is registered.
@@ -1378,7 +1410,11 @@ const SCENES = {
     }
   }
 };
-const sceneOf = track => (track === 8 ? 2 : track);
+// Tracks are nine, scenes are seven: a track's scene follows its biome. Track 8 races on the beach
+// (scene 2) and track 9, the course-only Rounding Run, races through the meadow, which is Number
+// Lane's scene (1). Mapping only track 8 left SCENES[9] undefined, and the palette draw path threw
+// ("reading 'sky'") the moment the Rounding Run tried to start, freezing its countdown forever.
+const sceneOf = track => (track === 8 ? 2 : track === 9 ? 1 : track);
 
 /* =====================================================================================
    Karts and drivers. A kart is drawn in "kart units": x from -50 (back) to +50 (front), y from -80 (top of the
@@ -1856,6 +1892,18 @@ function infosFor(race) { return race.karts.map(k => k.human ? playerInfo(k.play
 /* =====================================================================================
    Starting, answering and finishing a race
    ===================================================================================== */
+/* A course lesson can lock this game to one track and one operation (BRB.params, the play page's lesson
+   parameters: level = the track, mode = add|sub, lock = 1 — Number Quest's Explorer steps use it).
+   Locked, Play starts that track at once, the picker shows no other track, there is no "next track"
+   button after the race, and saved tricky facts from other operations stay out: the win the game
+   already reports (endRace, place 1) is then a win at the taught skill, never at any race the player
+   happened to pick. Unlocked (every other way in), nothing changes at all. */
+const LESSON = (() => {
+  const p = (window.BRB && BRB.params) || {};
+  const track = p.lock === 1 && Number.isInteger(p.level) && CONFIG.tracks.some(tc => tc.id === p.level) ? p.level : null;
+  return { track, op: track && p.mode === 'add' ? '+' : track && p.mode === 'sub' ? '-' : null };
+})();
+
 function startRace(track, opts) {
   opts = opts || {};
   closeTitle(); closeKitPause();
@@ -1864,8 +1912,9 @@ function startRace(track, opts) {
   S.race = makeRace(track, S.players, rr);
   S.infos = infosFor(S.race);
   S.laneOrder = S.race.karts.map((k, i) => i).sort((a, b) => S.race.karts[a].lane - S.race.karts[b].lane);
+  const lockedOp = LESSON.track === track ? LESSON.op : null;
   S.P = S.race.karts.filter(k => k.human).map((k, i) => ({
-    idx: i, kart: k, deck: makeDeck(track, makeRng(S.seed * 31 + i * 977 + 5), { tables: save.tables, tricky: i === 0 ? trickyFor(track) : [] }),
+    idx: i, kart: k, deck: makeDeck(track, makeRng(S.seed * 31 + i * 977 + 5), { tables: save.tables, op: lockedOp, tricky: i === 0 ? (lockedOp ? trickyFor(track).filter(f => f.op === lockedOp) : trickyFor(track)) : [] }),
     q: null, typed: '', locked: true, fb: '', fbT: 0, fbAge: 0, picked: null, correct: 0, wrong: 0, streak: 0, bestStreak: 0, times: [], missed: [],
     askedAt: 0, lap: 1, prevPlace: 0, passT: 0, finishedShown: false
   }));
@@ -1970,7 +2019,7 @@ function endRace() {
   save.totalCorrect += p1.correct; save.races++; persist();
   const per = S.P.map(p => ({ place: p.kart.place, correct: p.correct, wrong: p.wrong, acc: p.correct + p.wrong ? Math.round(100 * p.correct / (p.correct + p.wrong)) : 0,
     fastest: p.times.length ? Math.min(...p.times) : null, bestStreak: p.bestStreak, missed: p.missed.slice() }));
-  S.results = { place, points, stars, per, moveUp: place === 1 && S.track < 7 && ts.wins >= CONFIG.moveUpAfterWins && firstWins < CONFIG.moveUpAfterWins + 3, standings: race.standings().map(k => race.karts.indexOf(k)), shownAt: S.time };
+  S.results = { place, points, stars, per, moveUp: !LESSON.track && place === 1 && S.track < 7 && ts.wins >= CONFIG.moveUpAfterWins && firstWins < CONFIG.moveUpAfterWins + 3, standings: race.standings().map(k => race.karts.indexOf(k)), shownAt: S.time };
   try { BRB.score.submit(points, 'race points'); BRB.gameOver({ won: place === 1, score: points }); } catch (e) { /* ignore */ }
   showResults();
 }
@@ -1982,9 +2031,24 @@ function setMain(ui, text, box, icon) {
   ui.qmain.textContent = ''; if (icon) ui.qmain.insertAdjacentHTML('beforeend', Oomba.icon(icon));
   const t = document.createElement('span'); t.className = 'qt'; t.textContent = text; ui.qmain.append(t);
   if (box != null) { const b = document.createElement('span'); b.className = 'qbox'; b.textContent = box; ui.qmain.append(b); }
-  // shrink a long line to fit (never below 28px)
-  ui.qmain.style.fontSize = ''; let size = parseFloat(getComputedStyle(ui.qmain).fontSize) || 36;
-  while (ui.qmain.scrollWidth > ui.qmain.clientWidth + 1 && size > 28) { size -= 2; ui.qmain.style.fontSize = size + 'px'; }
+  fitMain(ui.qmain);
+}
+/** Shrink the question line until the whole of it fits its panel; never leave it clipped. The width is
+ *  measured with a Range (the text's real, unclipped width — the way fitText measures the labels) because
+ *  scrollWidth cannot be trusted here: the line sits centred in an overflow:hidden flex box, so scrollWidth
+ *  counts only the overflow on one side, and on top of that the old loop's 28px floor was still too wide
+ *  for the longest lines ("Round 9950 to the nearest hundred = ?"), which the centred box then clipped at
+ *  BOTH ends. A proportional first step lands near the right size; small steps settle it. If a line still
+ *  cannot fit at the smallest size, its words wrap onto a second line instead of running off the panel. */
+function fitMain(qm) {
+  qm.classList.remove('wrap'); qm.style.fontSize = '';
+  if (!qm.clientWidth) return;
+  const range = document.createRange(); range.selectNodeContents(qm);
+  const avail = qm.clientWidth - 2; let size = parseFloat(getComputedStyle(qm).fontSize) || 36;
+  const w0 = range.getBoundingClientRect().width;
+  if (w0 > avail) { size = Math.max(17, Math.floor(size * avail / w0)); qm.style.fontSize = size + 'px'; }
+  while (range.getBoundingClientRect().width > avail && size > 17) { size -= 0.5; qm.style.fontSize = size + 'px'; }
+  if (range.getBoundingClientRect().width > avail) qm.classList.add('wrap');
 }
 function setLabel(ui, text, icon) { ui.qlabel.textContent = text; if (icon) ui.qlabel.insertAdjacentHTML('afterbegin', Oomba.icon(icon)); }
 function renderPanel(p) {
@@ -2037,7 +2101,7 @@ function showScreen(name) {
 /** The kit's title screen (a sticker logo over the demo race), with the game's stars and right answers. */
 function openTitle() {
   if (titleOpen) return; titleOpen = true;
-  Oomba.ui.title({ title: CONFIG.title, subtitle: t('tag'), hero: false, play: () => { titleOpen = false; if (!titleSkip) showPicker(); } });
+  Oomba.ui.title({ title: CONFIG.title, subtitle: t('tag'), hero: false, play: () => { titleOpen = false; if (!titleSkip) { if (LESSON.track) startRace(LESSON.track); else showPicker(); } } });
   const scr = [...Oomba.ui.root().querySelectorAll('.ok-title-screen')].pop(); if (!scr) return;
   const block = scr.querySelector('.ok-title-block'), play = block && block.querySelector('.ok-hot');
   if (play) play.id = 'playBtn';
@@ -2107,6 +2171,8 @@ function showPicker() {
     let badge = b.querySelector('.tbadge'); if (id === sug && id !== 8) { if (!badge) { badge = document.createElement('span'); badge.className = 'tbadge'; b.append(badge); } badge.textContent = t(id === 1 && !ts.races ? 'startHere' : 'tryMe'); } else if (badge) badge.remove();
     b.setAttribute('aria-label', trackName(id) + ', ' + trackSkill(id));
   });
+  // Lesson lock: the picker offers the locked track and nothing else (Play normally skips it entirely).
+  if (LESSON.track) grid.querySelectorAll('.tcard').forEach(b => { b.hidden = +b.dataset.track !== LESSON.track; });
   document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === S.mode)));
   document.querySelectorAll('[data-players]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.players === S.players)));
   $('pickHint').textContent = t(S.players === 2 ? 'hint_2' : 'hint_1');
@@ -2201,7 +2267,7 @@ function showResults() {
   const missed = R.per[0].missed.concat(two ? R.per[1].missed : []).filter((m, i, a) => a.findIndex(o => o.key === m.key) === i).slice(0, 3);
   $('resPractise').textContent = missed.length ? t('practise', { list: missed.map(m => LTR(m.text + ' = ' + m.answer)).join(t('list_sep')) }) : t('noMistakes');
   const mu = $('resMoveUp'); mu.hidden = !R.moveUp; if (R.moveUp) { mu.innerHTML = Oomba.icon('next'); mu.append(t('moveUp', { n: CONFIG.moveUpAfterWins, track: trackName(S.track + 1) })); }
-  const hasNext = S.track < 7; $('nextBtn').hidden = !hasNext;
+  const hasNext = !LESSON.track && S.track < 7; $('nextBtn').hidden = !hasNext;
   const nextFirst = R.moveUp || R.place === 1;
   $('againBtn').className = 'ok-btn ' + (nextFirst && hasNext ? 'ok-quiet' : 'ok-hot'); $('nextBtn').className = 'ok-btn ' + (nextFirst ? 'ok-hot' : 'ok-quiet');
   const won = R.place === 1 || (two && Math.min(R.per[0].place, R.per[1].place) === 1);
@@ -2354,7 +2420,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (opts.mode === 'choice' || opts.mode === 'keypad') S.mode = opts.mode;
     if (opts.players === 1 || opts.players === 2) S.players = opts.players;
     if (Array.isArray(opts.tables) && opts.tables.length) save.tables = opts.tables.filter(n => n >= 2 && n <= 12);
-    const track = Math.max(1, Math.min(8, opts.track | 0 || S.track || 1));
+    const track = Math.max(1, Math.min(CONFIG.tracks.length, opts.track | 0 || S.track || 1));
     startRace(track, { seed: opts.seed != null ? opts.seed : nextSeed, manual: !!opts.manual });
     return this.state();
   },

@@ -284,6 +284,7 @@ const CONFIG = {
    Character names: "Munch" stays Munch where it reads well; the Gloops' names are English puns
    (fast, sneaky, tricky, sleepy), so each language has its own names with the same personalities.
    ===================================================================================== */
+// ==== I18N START ====
 const I18N = {
   en: {
     pause: "Pause", soundOff: "Turn sound off", soundOn: "Turn sound on",
@@ -587,6 +588,7 @@ const I18N = {
     munch: "Munch", gloopNames: ["Flits", "Sluipie", "Slimmie", "Suffie"]
   }
 };
+// ==== I18N END ====
 
 /** The player's language (from the platform; never from the URL) and helpers. Looked up once, never per frame. */
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
