@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "Choisis une question, entre les décomptes, fais un graphique et épingle une affirmation. Au projecteur, ajoute chaque graphique aux données de la classe.",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "Chaque binôme lit ses décomptes à voix haute et l’enseignant les réunit au projecteur. C’est une façon de…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "Le graphique dit : égalité en tête avec {a} chacun, {low} le moins avec {b}, {total} réponses en tout.",
-  "Kind": "Sorte"
+  "Kind": "Sorte",
+  "{n} more rows below": "{n} lignes de plus ci-dessous",
+  "All {n} rows shown": "Les {n} lignes sont affichées",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "Une deuxième question pour ta classe. Compte les réponses, fais un graphique et dis ce que ta classe a choisi.",
+  "Tally your class, chart it, and pin a claim.": "Dénombre ta classe, fais le graphique et épingle une affirmation.",
+  "Why does a detective put one tally mark for each answer?": "Pourquoi un détective met-il un bâton de comptage pour chaque réponse ?",
+  "So every answer counts the same": "Pour que chaque réponse compte pareil",
+  "To make the tallest chart": "Pour faire le graphique le plus haut",
+  "To finish the case faster": "Pour finir l’enquête plus vite",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "Pas celui-là. Pour une affirmation avec « tout le monde », les plus petits nombres sont la preuve."
  }
 }

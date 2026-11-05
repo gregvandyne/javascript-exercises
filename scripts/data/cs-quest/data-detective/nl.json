@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "Kies een vraag, vul de turven in, maak een grafiek en zet een bewering vast. Op het digibord voeg je elke grafiek toe aan de klassenpot.",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "Elk tweetal leest zijn turven voor en de leerkracht verzamelt ze op het digibord. Dat is een manier om…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "De grafiek zegt: gelijkspel bovenaan met elk {a}, {low} de minste met {b}, {total} antwoorden in totaal.",
-  "Kind": "Soort"
+  "Kind": "Soort",
+  "{n} more rows below": "Nog {n} rijen hieronder",
+  "All {n} rows shown": "Alle {n} rijen worden getoond",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "Een tweede vraag voor je klas. Tel de antwoorden, maak een grafiek en zeg wat je klas heeft gekozen.",
+  "Tally your class, chart it, and pin a claim.": "Turf je klas, maak de grafiek en zet een bewering vast.",
+  "Why does a detective put one tally mark for each answer?": "Waarom zet een detective voor elk antwoord één turfstreepje?",
+  "So every answer counts the same": "Zodat elk antwoord evenveel telt",
+  "To make the tallest chart": "Om de grafiek het hoogst te maken",
+  "To finish the case faster": "Om de zaak sneller af te ronden",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "Die niet. Bij een bewering met \"iedereen\" zijn de kleinste getallen het bewijs."
  }
 }

@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "選一個問題，輸入劃記，做一張圖表並釘選說法。在投影機上，把每張圖表加入班級彙整。",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "每一組讀出自己的劃記，老師在投影機上彙整。這是一種…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "圖表顯示：最多的是平手，各有 {a}；{low} 最少，有 {b}；總共 {total} 個回答。",
-  "Kind": "種類"
+  "Kind": "種類",
+  "{n} more rows below": "下方還有 {n} 列",
+  "All {n} rows shown": "已顯示全部 {n} 列",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "給你們班的第二個問題。數一數答案，把它畫成圖表，再說說你們班選了什麼。",
+  "Tally your class, chart it, and pin a claim.": "數一數你們班，把它畫成圖表，再釘上一條主張。",
+  "Why does a detective put one tally mark for each answer?": "為什麼偵探每收到一個答案就畫一條計數線？",
+  "So every answer counts the same": "讓每個答案都算得一樣",
+  "To make the tallest chart": "為了做出最高的圖表",
+  "To finish the case faster": "為了更快結案",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "不是那個。對於「每個人」的主張，最小的數字就是證據。"
  }
 }

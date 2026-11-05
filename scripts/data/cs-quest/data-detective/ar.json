@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "اختر سؤالًا، وأدخل العدّ، واصنع مخططًا وثبّت ادعاءً. على جهاز العرض، أضف كل مخطط إلى مجموعة الصف.",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "كل ثنائي يقرأ عدّه بصوت عالٍ والمعلم يجمعها على جهاز العرض. هذه طريقة لـ…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "المخطط يقول: تعادل في المركز الأول بـ{a} لكل منهما، و{low} الأقل بـ{b}، و{total} إجابة في المجموع.",
-  "Kind": "النوع"
+  "Kind": "النوع",
+  "{n} more rows below": "{n} صفوف أخرى بالأسفل",
+  "All {n} rows shown": "تظهر كل الصفوف وعددها {n}",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "سؤال ثانٍ لفصلك. عدّ الإجابات وارسمها في مخطط وقل ما اختاره فصلك.",
+  "Tally your class, chart it, and pin a claim.": "عدّ فصلك وارسم المخطط وثبّت ادعاءً.",
+  "Why does a detective put one tally mark for each answer?": "لماذا يضع المحقق علامة عدّ واحدة لكل إجابة؟",
+  "So every answer counts the same": "حتى تُحسب كل إجابة بالتساوي",
+  "To make the tallest chart": "لعمل أطول مخطط",
+  "To finish the case faster": "لإنهاء القضية بشكل أسرع",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "ليس هذا. في ادعاء بكلمة «الجميع»، تكون الأرقام الأصغر هي الدليل."
  }
 }

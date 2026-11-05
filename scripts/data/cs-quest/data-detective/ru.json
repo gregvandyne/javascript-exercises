@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "Выбери вопрос, введи подсчёт, сделай диаграмму и закрепи утверждение. На проекторе добавляй каждую диаграмму в общий банк.",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "Каждая пара зачитывает свой подсчёт, а учитель собирает всё на проекторе. Это способ…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "Диаграмма: на первом месте ничья, по {a} у каждого, меньше всего у «{low}» ({b}), всего ответов: {total}.",
-  "Kind": "Вид"
+  "Kind": "Вид",
+  "{n} more rows below": "Ещё {n} строк ниже",
+  "All {n} rows shown": "Показаны все строки: {n}",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "Второй вопрос для твоего класса. Посчитай ответы, построй диаграмму и скажи, что выбрал твой класс.",
+  "Tally your class, chart it, and pin a claim.": "Посчитай свой класс, построй диаграмму и прикрепи утверждение.",
+  "Why does a detective put one tally mark for each answer?": "Почему сыщик ставит одну счётную палочку за каждый ответ?",
+  "So every answer counts the same": "Чтобы каждый ответ считался одинаково",
+  "To make the tallest chart": "Чтобы построить самую высокую диаграмму",
+  "To finish the case faster": "Чтобы быстрее закрыть дело",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "Не этот. Для утверждения со словом «все» доказательство — самые маленькие числа."
  }
 }

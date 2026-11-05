@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.",
-  "Kind"
+  "Kind",
+  "{n} more rows below",
+  "All {n} rows shown",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.",
+  "Tally your class, chart it, and pin a claim.",
+  "Why does a detective put one tally mark for each answer?",
+  "So every answer counts the same",
+  "To make the tallest chart",
+  "To finish the case faster",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof."
  ]
 }

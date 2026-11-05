@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "Elige una pregunta, anota los conteos, haz una gráfica y fija una afirmación. En el proyector, suma cada gráfica a los datos de la clase.",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "Cada pareja lee sus conteos en voz alta y el maestro los reúne en el proyector. Esa es una forma de…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "La gráfica dice: hay un empate arriba con {a} cada uno, {low} menos con {b}, {total} respuestas en total.",
-  "Kind": "Tipo"
+  "Kind": "Tipo",
+  "{n} more rows below": "{n} filas más abajo",
+  "All {n} rows shown": "Se muestran las {n} filas",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "Una segunda pregunta para tu clase. Cuenta las respuestas, haz un gráfico y di qué eligió tu clase.",
+  "Tally your class, chart it, and pin a claim.": "Haz el conteo de tu clase, gráficalo y fija una afirmación.",
+  "Why does a detective put one tally mark for each answer?": "¿Por qué un detective pone una marca de conteo por cada respuesta?",
+  "So every answer counts the same": "Para que cada respuesta cuente lo mismo",
+  "To make the tallest chart": "Para hacer el gráfico más alto",
+  "To finish the case faster": "Para terminar el caso más rápido",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "Esa no. Para una afirmación de «todos», los números más pequeños son la prueba."
  }
 }
