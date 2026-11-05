@@ -190,21 +190,24 @@ window.SoloBank = (function () {
 (function () {
   'use strict';
   var O = window.Oomba, L = O.live;
-  O.strings({
-    en: { title: 'Brain Board', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', paused: 'Paused', practice: 'Practice board', left: '{n} tiles left', hostPick: 'Pick a tile!', youPick: 'Your pick! Tap a tile.', theyPick: '{name} picks the next tile', hostPicks: 'The host picks the next tile', watch: 'Watch the board!', col: 'Set {n}', pts: '{n}', lucky: 'Lucky Star!', luckyText: 'Double points!', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", answers: '{n} answered', skipped: 'Skipped', top: 'Scores', podium: 'Winners', done: 'Board cleared!', score: '{n} points', rank: 'You are number {rank}', turnsOn: 'Players pick: on', turnsOff: 'Players pick: off', teamPodium: 'Winning teams', yourTeam: 'Your team: {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, done' },
-    'en-GB': { title: 'Brain Board', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', paused: 'Paused', practice: 'Practice board', left: '{n} tiles left', hostPick: 'Pick a tile!', youPick: 'Your pick! Tap a tile.', theyPick: '{name} picks the next tile', hostPicks: 'The host picks the next tile', watch: 'Watch the board!', col: 'Set {n}', pts: '{n}', lucky: 'Lucky Star!', luckyText: 'Double points!', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", answers: '{n} answered', skipped: 'Skipped', top: 'Scores', podium: 'Winners', done: 'Board cleared!', score: '{n} points', rank: 'You are number {rank}', turnsOn: 'Players pick: on', turnsOff: 'Players pick: off', teamPodium: 'Winning teams', yourTeam: 'Your team: {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, done' },
-    es: { title: 'Tablero Cerebro', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', paused: 'En pausa', practice: 'Tablero de práctica', left: 'Quedan {n} casillas', hostPick: '¡Elige una casilla!', youPick: '¡Te toca elegir! Toca una casilla.', theyPick: '{name} elige la próxima casilla', hostPicks: 'El anfitrión elige la próxima casilla', watch: '¡Mira el tablero!', col: 'Grupo {n}', pts: '{n}', lucky: '¡Estrella de la suerte!', luckyText: '¡Puntos dobles!', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Esta vez no!', timeUp: '¡Se acabó el tiempo!', answers: '{n} respondieron', skipped: 'Saltada', top: 'Puntos', podium: 'Ganadores', done: '¡Tablero completado!', score: '{n} puntos', rank: 'Vas en el puesto {rank}', turnsOn: 'Eligen los jugadores: sí', turnsOff: 'Eligen los jugadores: no', teamPodium: 'Equipos ganadores', yourTeam: 'Tu equipo: {team}', tile: '{cat}, {n} puntos', tileDone: '{cat}, {n} puntos, hecha' },
-    fr: { title: 'Plateau Cerveau', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', paused: 'En pause', practice: 'Plateau d’entraînement', left: 'Encore {n} cases', hostPick: 'Choisis une case !', youPick: 'À toi de choisir ! Touche une case.', theyPick: '{name} choisit la prochaine case', hostPicks: 'L’hôte choisit la prochaine case', watch: 'Regarde le plateau !', col: 'Série {n}', pts: '{n}', lucky: 'Étoile chance !', luckyText: 'Points doublés !', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Pas cette fois !', timeUp: 'Temps écoulé !', answers: '{n} ont répondu', skipped: 'Passée', top: 'Points', podium: 'Gagnants', done: 'Plateau terminé !', score: '{n} points', rank: 'Tu es numéro {rank}', turnsOn: 'Les joueurs choisissent : oui', turnsOff: 'Les joueurs choisissent : non', teamPodium: 'Équipes gagnantes', yourTeam: 'Ton équipe : {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, faite' },
-    de: { title: 'Denkbrett', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', paused: 'Pause', practice: 'Übungsbrett', left: 'Noch {n} Felder', hostPick: 'Wähle ein Feld!', youPick: 'Du wählst! Tippe auf ein Feld.', theyPick: '{name} wählt das nächste Feld', hostPicks: 'Die Spielleitung wählt das nächste Feld', watch: 'Schau aufs Brett!', col: 'Reihe {n}', pts: '{n}', lucky: 'Glücksstern!', luckyText: 'Doppelte Punkte!', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Diesmal nicht!', timeUp: 'Zeit ist um!', answers: '{n} haben geantwortet', skipped: 'Übersprungen', top: 'Punkte', podium: 'Gewinner', done: 'Brett geschafft!', score: '{n} Punkte', rank: 'Du bist auf Platz {rank}', turnsOn: 'Spieler wählen: an', turnsOff: 'Spieler wählen: aus', teamPodium: 'Siegerteams', yourTeam: 'Dein Team: {team}', tile: '{cat}, {n} Punkte', tileDone: '{cat}, {n} Punkte, erledigt' },
-    it: { title: 'Tabellone Cervello', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', paused: 'In pausa', practice: 'Tabellone di prova', left: 'Ancora {n} caselle', hostPick: 'Scegli una casella!', youPick: 'Tocca a te! Tocca una casella.', theyPick: '{name} sceglie la prossima casella', hostPicks: 'Chi conduce sceglie la prossima casella', watch: 'Guarda il tabellone!', col: 'Gruppo {n}', pts: '{n}', lucky: 'Stella fortunata!', luckyText: 'Punti doppi!', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Non stavolta!', timeUp: 'Tempo scaduto!', answers: '{n} hanno risposto', skipped: 'Saltata', top: 'Punti', podium: 'Vincitori', done: 'Tabellone completato!', score: '{n} punti', rank: 'Sei al posto numero {rank}', turnsOn: 'Scelgono i giocatori: sì', turnsOff: 'Scelgono i giocatori: no', teamPodium: 'Squadre vincitrici', yourTeam: 'La tua squadra: {team}', tile: '{cat}, {n} punti', tileDone: '{cat}, {n} punti, fatta' },
-    pt: { title: 'Tabuleiro Cérebro', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', paused: 'Pausado', practice: 'Tabuleiro de treino', left: 'Faltam {n} casas', hostPick: 'Escolha uma casa!', youPick: 'Sua vez de escolher! Toque numa casa.', theyPick: '{name} escolhe a próxima casa', hostPicks: 'O anfitrião escolhe a próxima casa', watch: 'Olhe o tabuleiro!', col: 'Grupo {n}', pts: '{n}', lucky: 'Estrela da sorte!', luckyText: 'Pontos em dobro!', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Não foi dessa vez!', timeUp: 'Acabou o tempo!', answers: '{n} responderam', skipped: 'Pulada', top: 'Pontos', podium: 'Vencedores', done: 'Tabuleiro completo!', score: '{n} pontos', rank: 'Você está em {rank}º lugar', turnsOn: 'Jogadores escolhem: sim', turnsOff: 'Jogadores escolhem: não', teamPodium: 'Equipes vencedoras', yourTeam: 'Sua equipe: {team}', tile: '{cat}, {n} pontos', tileDone: '{cat}, {n} pontos, feita' },
-    nl: { title: 'Breinbord', wait: 'Wachten tot de host begint…', ready: 'Maak je klaar!', go: 'Start!', paused: 'Gepauzeerd', practice: 'Oefenbord', left: 'Nog {n} vakjes', hostPick: 'Kies een vakje!', youPick: 'Jij kiest! Tik op een vakje.', theyPick: '{name} kiest het volgende vakje', hostPicks: 'De host kiest het volgende vakje', watch: 'Kijk naar het bord!', col: 'Reeks {n}', pts: '{n}', lucky: 'Geluksster!', luckyText: 'Dubbele punten!', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Deze keer niet!', timeUp: 'De tijd is om!', answers: '{n} hebben geantwoord', skipped: 'Overgeslagen', top: 'Punten', podium: 'Winnaars', done: 'Bord helemaal klaar!', score: '{n} punten', rank: 'Je staat op plek {rank}', turnsOn: 'Spelers kiezen: aan', turnsOff: 'Spelers kiezen: uit', teamPodium: 'Winnende teams', yourTeam: 'Jouw team: {team}', tile: '{cat}, {n} punten', tileDone: '{cat}, {n} punten, klaar' },
-    ru: { title: 'Мозговое табло', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', paused: 'Пауза', practice: 'Тренировочное табло', left: 'Клеток осталось: {n}', hostPick: 'Выберите клетку!', youPick: 'Твой выбор! Нажми на клетку.', theyPick: '{name} выбирает следующую клетку', hostPicks: 'Следующую клетку выбирает ведущий', watch: 'Смотри на табло!', col: 'Набор {n}', pts: '{n}', lucky: 'Счастливая звезда!', luckyText: 'Двойные очки!', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'В этот раз нет!', timeUp: 'Время вышло!', answers: 'Ответили: {n}', skipped: 'Пропущен', top: 'Очки', podium: 'Победители', done: 'Табло пройдено!', score: 'Очки: {n}', rank: 'Ты на {rank}-м месте', turnsOn: 'Выбирают игроки: да', turnsOff: 'Выбирают игроки: нет', teamPodium: 'Команды-победители', yourTeam: 'Твоя команда: {team}', tile: '{cat}, очков: {n}', tileDone: '{cat}, очков: {n}, сыграно' },
-    ja: { title: 'ブレインボード', wait: 'ホストがはじめるのをまってね…', ready: 'よーい！', go: 'スタート！', paused: 'ポーズ', practice: 'れんしゅうボード', left: 'のこり {n}マス', hostPick: 'マスをえらんでね！', youPick: 'きみのばん！マスをタップしてね。', theyPick: '{name}さんがつぎのマスをえらぶよ', hostPicks: 'ホストがつぎのマスをえらぶよ', watch: 'ボードをみてね！', col: 'セット{n}', pts: '{n}', lucky: 'ラッキースター！', luckyText: 'ポイント2ばい！', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'ざんねん！', timeUp: 'じかんぎれ！', answers: '{n}人がこたえた', skipped: 'スキップ', top: 'ポイント', podium: 'ゆうしょう', done: 'ボードクリア！', score: '{n}ポイント', rank: 'いま {rank}位', turnsOn: 'プレイヤーがえらぶ：オン', turnsOff: 'プレイヤーがえらぶ：オフ', teamPodium: 'ゆうしょうチーム', yourTeam: 'きみのチーム：{team}', tile: '{cat}、{n}ポイント', tileDone: '{cat}、{n}ポイント、おわり' },
+  // ==== I18N START ====
+  var I18N = {
+    en: { title: 'Brain Board', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', paused: 'Paused', practice: 'Practice board', left: '{n} tiles left', hostPick: 'Pick a tile!', youPick: 'Your pick! Tap a tile.', theyPick: '{name} picks the next tile', hostPicks: 'The host picks the next tile', watch: 'Watch the board!', col: 'Set {n}', pts: '{n}', lucky: 'Lucky Star!', luckyText: 'Double points!', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', rightWas: 'Answer: {answer}', timeUp: "Time's up!", answers: '{n} answered', skipped: 'Skipped', top: 'Scores', podium: 'Winners', done: 'Board cleared!', score: '{n} points', rank: 'You are number {rank}', turnsOn: 'Players pick: on', turnsOff: 'Players pick: off', teamPodium: 'Winning teams', yourTeam: 'Your team: {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, done' },
+    'en-GB': { title: 'Brain Board', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', paused: 'Paused', practice: 'Practice board', left: '{n} tiles left', hostPick: 'Pick a tile!', youPick: 'Your pick! Tap a tile.', theyPick: '{name} picks the next tile', hostPicks: 'The host picks the next tile', watch: 'Watch the board!', col: 'Set {n}', pts: '{n}', lucky: 'Lucky Star!', luckyText: 'Double points!', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', rightWas: 'Answer: {answer}', timeUp: "Time's up!", answers: '{n} answered', skipped: 'Skipped', top: 'Scores', podium: 'Winners', done: 'Board cleared!', score: '{n} points', rank: 'You are number {rank}', turnsOn: 'Players pick: on', turnsOff: 'Players pick: off', teamPodium: 'Winning teams', yourTeam: 'Your team: {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, done' },
+    es: { title: 'Tablero Cerebro', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', paused: 'En pausa', practice: 'Tablero de práctica', left: 'Quedan {n} casillas', hostPick: '¡Elige una casilla!', youPick: '¡Te toca elegir! Toca una casilla.', theyPick: '{name} elige la próxima casilla', hostPicks: 'El anfitrión elige la próxima casilla', watch: '¡Mira el tablero!', col: 'Grupo {n}', pts: '{n}', lucky: '¡Estrella de la suerte!', luckyText: '¡Puntos dobles!', locked: '¡Respuesta enviada!', right: '¡Correcto! +{points}', wrong: '¡Esta vez no!', rightWas: 'Respuesta: {answer}', timeUp: '¡Se acabó el tiempo!', answers: '{n} respondieron', skipped: 'Saltada', top: 'Puntos', podium: 'Ganadores', done: '¡Tablero completado!', score: '{n} puntos', rank: 'Vas en el puesto {rank}', turnsOn: 'Eligen los jugadores: sí', turnsOff: 'Eligen los jugadores: no', teamPodium: 'Equipos ganadores', yourTeam: 'Tu equipo: {team}', tile: '{cat}, {n} puntos', tileDone: '{cat}, {n} puntos, hecha' },
+    fr: { title: 'Plateau Cerveau', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', paused: 'En pause', practice: 'Plateau d’entraînement', left: 'Encore {n} cases', hostPick: 'Choisis une case !', youPick: 'À toi de choisir ! Touche une case.', theyPick: '{name} choisit la prochaine case', hostPicks: 'L’hôte choisit la prochaine case', watch: 'Regarde le plateau !', col: 'Série {n}', pts: '{n}', lucky: 'Étoile chance !', luckyText: 'Points doublés !', locked: 'Réponse envoyée !', right: 'Bravo ! +{points}', wrong: 'Pas cette fois !', rightWas: 'Réponse : {answer}', timeUp: 'Temps écoulé !', answers: '{n} ont répondu', skipped: 'Passée', top: 'Points', podium: 'Gagnants', done: 'Plateau terminé !', score: '{n} points', rank: 'Tu es numéro {rank}', turnsOn: 'Les joueurs choisissent : oui', turnsOff: 'Les joueurs choisissent : non', teamPodium: 'Équipes gagnantes', yourTeam: 'Ton équipe : {team}', tile: '{cat}, {n} points', tileDone: '{cat}, {n} points, faite' },
+    de: { title: 'Denkbrett', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', paused: 'Pause', practice: 'Übungsbrett', left: 'Noch {n} Felder', hostPick: 'Wähle ein Feld!', youPick: 'Du wählst! Tippe auf ein Feld.', theyPick: '{name} wählt das nächste Feld', hostPicks: 'Die Spielleitung wählt das nächste Feld', watch: 'Schau aufs Brett!', col: 'Reihe {n}', pts: '{n}', lucky: 'Glücksstern!', luckyText: 'Doppelte Punkte!', locked: 'Antwort abgegeben!', right: 'Richtig! +{points}', wrong: 'Diesmal nicht!', rightWas: 'Antwort: {answer}', timeUp: 'Zeit ist um!', answers: '{n} haben geantwortet', skipped: 'Übersprungen', top: 'Punkte', podium: 'Gewinner', done: 'Brett geschafft!', score: '{n} Punkte', rank: 'Du bist auf Platz {rank}', turnsOn: 'Spieler wählen: an', turnsOff: 'Spieler wählen: aus', teamPodium: 'Siegerteams', yourTeam: 'Dein Team: {team}', tile: '{cat}, {n} Punkte', tileDone: '{cat}, {n} Punkte, erledigt' },
+    it: { title: 'Tabellone Cervello', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', paused: 'In pausa', practice: 'Tabellone di prova', left: 'Ancora {n} caselle', hostPick: 'Scegli una casella!', youPick: 'Tocca a te! Tocca una casella.', theyPick: '{name} sceglie la prossima casella', hostPicks: 'Chi conduce sceglie la prossima casella', watch: 'Guarda il tabellone!', col: 'Gruppo {n}', pts: '{n}', lucky: 'Stella fortunata!', luckyText: 'Punti doppi!', locked: 'Risposta inviata!', right: 'Giusto! +{points}', wrong: 'Non stavolta!', rightWas: 'Risposta: {answer}', timeUp: 'Tempo scaduto!', answers: '{n} hanno risposto', skipped: 'Saltata', top: 'Punti', podium: 'Vincitori', done: 'Tabellone completato!', score: '{n} punti', rank: 'Sei al posto numero {rank}', turnsOn: 'Scelgono i giocatori: sì', turnsOff: 'Scelgono i giocatori: no', teamPodium: 'Squadre vincitrici', yourTeam: 'La tua squadra: {team}', tile: '{cat}, {n} punti', tileDone: '{cat}, {n} punti, fatta' },
+    pt: { title: 'Tabuleiro Cérebro', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', paused: 'Pausado', practice: 'Tabuleiro de treino', left: 'Faltam {n} casas', hostPick: 'Escolha uma casa!', youPick: 'Sua vez de escolher! Toque numa casa.', theyPick: '{name} escolhe a próxima casa', hostPicks: 'O anfitrião escolhe a próxima casa', watch: 'Olhe o tabuleiro!', col: 'Grupo {n}', pts: '{n}', lucky: 'Estrela da sorte!', luckyText: 'Pontos em dobro!', locked: 'Resposta enviada!', right: 'Certo! +{points}', wrong: 'Não foi dessa vez!', rightWas: 'Resposta: {answer}', timeUp: 'Acabou o tempo!', answers: '{n} responderam', skipped: 'Pulada', top: 'Pontos', podium: 'Vencedores', done: 'Tabuleiro completo!', score: '{n} pontos', rank: 'Você está em {rank}º lugar', turnsOn: 'Jogadores escolhem: sim', turnsOff: 'Jogadores escolhem: não', teamPodium: 'Equipes vencedoras', yourTeam: 'Sua equipe: {team}', tile: '{cat}, {n} pontos', tileDone: '{cat}, {n} pontos, feita' },
+    nl: { title: 'Breinbord', wait: 'Wachten tot de host begint…', ready: 'Maak je klaar!', go: 'Start!', paused: 'Gepauzeerd', practice: 'Oefenbord', left: 'Nog {n} vakjes', hostPick: 'Kies een vakje!', youPick: 'Jij kiest! Tik op een vakje.', theyPick: '{name} kiest het volgende vakje', hostPicks: 'De host kiest het volgende vakje', watch: 'Kijk naar het bord!', col: 'Reeks {n}', pts: '{n}', lucky: 'Geluksster!', luckyText: 'Dubbele punten!', locked: 'Antwoord verstuurd!', right: 'Goed! +{points}', wrong: 'Deze keer niet!', rightWas: 'Antwoord: {answer}', timeUp: 'De tijd is om!', answers: '{n} hebben geantwoord', skipped: 'Overgeslagen', top: 'Punten', podium: 'Winnaars', done: 'Bord helemaal klaar!', score: '{n} punten', rank: 'Je staat op plek {rank}', turnsOn: 'Spelers kiezen: aan', turnsOff: 'Spelers kiezen: uit', teamPodium: 'Winnende teams', yourTeam: 'Jouw team: {team}', tile: '{cat}, {n} punten', tileDone: '{cat}, {n} punten, klaar' },
+    ru: { title: 'Мозговое табло', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', paused: 'Пауза', practice: 'Тренировочное табло', left: 'Клеток осталось: {n}', hostPick: 'Выберите клетку!', youPick: 'Твой выбор! Нажми на клетку.', theyPick: '{name} выбирает следующую клетку', hostPicks: 'Следующую клетку выбирает ведущий', watch: 'Смотри на табло!', col: 'Набор {n}', pts: '{n}', lucky: 'Счастливая звезда!', luckyText: 'Двойные очки!', locked: 'Ответ принят!', right: 'Верно! +{points}', wrong: 'В этот раз нет!', rightWas: 'Ответ: {answer}', timeUp: 'Время вышло!', answers: 'Ответили: {n}', skipped: 'Пропущен', top: 'Очки', podium: 'Победители', done: 'Табло пройдено!', score: 'Очки: {n}', rank: 'Ты на {rank}-м месте', turnsOn: 'Выбирают игроки: да', turnsOff: 'Выбирают игроки: нет', teamPodium: 'Команды-победители', yourTeam: 'Твоя команда: {team}', tile: '{cat}, очков: {n}', tileDone: '{cat}, очков: {n}, сыграно' },
+    ja: { title: 'ブレインボード', wait: 'ホストがはじめるのをまってね…', ready: 'よーい！', go: 'スタート！', paused: 'ポーズ', practice: 'れんしゅうボード', left: 'のこり {n}マス', hostPick: 'マスをえらんでね！', youPick: 'きみのばん！マスをタップしてね。', theyPick: '{name}さんがつぎのマスをえらぶよ', hostPicks: 'ホストがつぎのマスをえらぶよ', watch: 'ボードをみてね！', col: 'セット{n}', pts: '{n}', lucky: 'ラッキースター！', luckyText: 'ポイント2ばい！', locked: 'こたえをおくったよ！', right: 'せいかい！ +{points}', wrong: 'ざんねん！', rightWas: 'こたえ：{answer}', timeUp: 'じかんぎれ！', answers: '{n}人がこたえた', skipped: 'スキップ', top: 'ポイント', podium: 'ゆうしょう', done: 'ボードクリア！', score: '{n}ポイント', rank: 'いま {rank}位', turnsOn: 'プレイヤーがえらぶ：オン', turnsOff: 'プレイヤーがえらぶ：オフ', teamPodium: 'ゆうしょうチーム', yourTeam: 'きみのチーム：{team}', tile: '{cat}、{n}ポイント', tileDone: '{cat}、{n}ポイント、おわり' },
     'zh-Hant': { title: '腦力大板', wait: '等主持人開始…', ready: '準備！', go: '開始！', paused: '暫停', practice: '練習板', left: '還有 {n} 格', hostPick: '選一格吧！', youPick: '輪到你選！點一格。', theyPick: '{name} 選下一格', hostPicks: '主持人選下一格', watch: '看大板！', col: '第 {n} 組', pts: '{n}', lucky: '幸運星！', luckyText: '分數加倍！', locked: '答案已送出！', right: '答對了！+{points}', wrong: '這次沒答對！', timeUp: '時間到！', answers: '{n} 人已作答', skipped: '已跳過', top: '分數', podium: '優勝者', done: '全部完成！', score: '{n} 分', rank: '你是第 {rank} 名', turnsOn: '玩家選格：開', turnsOff: '玩家選格：關', teamPodium: '獲勝隊伍', yourTeam: '你的隊伍：{team}', tile: '{cat}，{n} 分', tileDone: '{cat}，{n} 分，已完成' },
-    he: { title: 'לוח המוח', wait: 'מחכים שהמארח יתחיל…', ready: 'היכון!', go: 'יוצאים!', paused: 'מושהה', practice: 'לוח אימון', left: 'נשארו {n} משבצות', hostPick: 'בחרו משבצת!', youPick: 'תורך לבחור! הקישו על משבצת.', theyPick: '{name} בוחר/ת את המשבצת הבאה', hostPicks: 'המארח בוחר את המשבצת הבאה', watch: 'הסתכלו על הלוח!', col: 'סדרה {n}', pts: '{n}', lucky: 'כוכב מזל!', luckyText: 'נקודות כפולות!', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'לא הפעם!', timeUp: 'נגמר הזמן!', answers: '{n} ענו', skipped: 'דולגה', top: 'נקודות', podium: 'המנצחים', done: 'הלוח הושלם!', score: '{n} נקודות', rank: 'את/ה במקום {rank}', turnsOn: 'השחקנים בוחרים: כן', turnsOff: 'השחקנים בוחרים: לא', teamPodium: 'הקבוצות המנצחות', yourTeam: 'הקבוצה שלך: {team}', tile: '{cat}, {n} נקודות', tileDone: '{cat}, {n} נקודות, הושלמה' },
-    ar: { title: 'لوحة الأذكياء', wait: 'بانتظار أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', paused: 'متوقف مؤقتاً', practice: 'لوحة تدريب', left: 'المربعات الباقية: {n}', hostPick: 'اختر مربعاً!', youPick: 'دورك! اضغط على مربع.', theyPick: '{name} يختار المربع التالي', hostPicks: 'المضيف يختار المربع التالي', watch: 'انظر إلى اللوحة!', col: 'المجموعة {n}', pts: '{n}', lucky: 'نجمة الحظ!', luckyText: 'نقاط مضاعفة!', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'ليس هذه المرة!', timeUp: 'انتهى الوقت!', answers: 'أجاب {n}', skipped: 'تم تخطيه', top: 'النقاط', podium: 'الفائزون', done: 'اكتملت اللوحة!', score: '{n} نقطة', rank: 'أنت في المركز {rank}', turnsOn: 'اللاعبون يختارون: نعم', turnsOff: 'اللاعبون يختارون: لا', teamPodium: 'الفرق الفائزة', yourTeam: 'فريقك: {team}', tile: '{cat}، {n} نقطة', tileDone: '{cat}، {n} نقطة، انتهى' },
-  });
+    he: { title: 'לוח המוח', wait: 'מחכים שהמארח יתחיל…', ready: 'היכון!', go: 'יוצאים!', paused: 'מושהה', practice: 'לוח אימון', left: 'נשארו {n} משבצות', hostPick: 'בחרו משבצת!', youPick: 'תורך לבחור! הקישו על משבצת.', theyPick: '{name} בוחר/ת את המשבצת הבאה', hostPicks: 'המארח בוחר את המשבצת הבאה', watch: 'הסתכלו על הלוח!', col: 'סדרה {n}', pts: '{n}', lucky: 'כוכב מזל!', luckyText: 'נקודות כפולות!', locked: 'התשובה נשלחה!', right: 'נכון! +{points}', wrong: 'לא הפעם!', rightWas: 'התשובה: {answer}', timeUp: 'נגמר הזמן!', answers: '{n} ענו', skipped: 'דולגה', top: 'נקודות', podium: 'המנצחים', done: 'הלוח הושלם!', score: '{n} נקודות', rank: 'את/ה במקום {rank}', turnsOn: 'השחקנים בוחרים: כן', turnsOff: 'השחקנים בוחרים: לא', teamPodium: 'הקבוצות המנצחות', yourTeam: 'הקבוצה שלך: {team}', tile: '{cat}, {n} נקודות', tileDone: '{cat}, {n} נקודות, הושלמה' },
+    ar: { title: 'لوحة الأذكياء', wait: 'بانتظار أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', paused: 'متوقف مؤقتاً', practice: 'لوحة تدريب', left: 'المربعات الباقية: {n}', hostPick: 'اختر مربعاً!', youPick: 'دورك! اضغط على مربع.', theyPick: '{name} يختار المربع التالي', hostPicks: 'المضيف يختار المربع التالي', watch: 'انظر إلى اللوحة!', col: 'المجموعة {n}', pts: '{n}', lucky: 'نجمة الحظ!', luckyText: 'نقاط مضاعفة!', locked: 'تم إرسال إجابتك!', right: 'صحيح! +{points}', wrong: 'ليس هذه المرة!', rightWas: 'الإجابة: {answer}', timeUp: 'انتهى الوقت!', answers: 'أجاب {n}', skipped: 'تم تخطيه', top: 'النقاط', podium: 'الفائزون', done: 'اكتملت اللوحة!', score: '{n} نقطة', rank: 'أنت في المركز {rank}', turnsOn: 'اللاعبون يختارون: نعم', turnsOff: 'اللاعبون يختارون: لا', teamPodium: 'الفرق الفائزة', yourTeam: 'فريقك: {team}', tile: '{cat}، {n} نقطة', tileDone: '{cat}، {n} نقطة، انتهى' },
+  };
+  // ==== I18N END ====
+  O.strings(I18N);
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };
   var REDUCED = !!(O.settings && O.settings.reduced) || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -212,6 +215,9 @@ window.SoloBank = (function () {
   document.documentElement.className = (BRB.theme || 'auto') + (REDUCED ? ' reduced' : '');
   document.title = t('title'); $('logo').textContent = t('title');
   var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, ringTimer = 0, myScore = 0, revealUntil = 0, lastCur = null, viewTimer = 0;
+  // The correct choice's text for the question just revealed, so a miss can NAME the answer (the
+  // Quest Race kindness: "Not this time! Answer: …") instead of a bare "Not this time!".
+  var lastAnswer = null;
   var SHAPES = ['▲', '◆', '●', '■'];
   function say(s) { $('sr').textContent = ''; setTimeout(function () { $('sr').textContent = s; }, 30); }
   function sfx(n) { try { O.sfx(n); } catch (e) { /* no sound */ } }
@@ -359,7 +365,7 @@ window.SoloBank = (function () {
     return { cat: catName(b, b.cur[0]), v: b.t[b.cur[0]][b.cur[1]][0], star: !!b.cur[2], k: b.cur[0] };
   }
   function showCard(q) {
-    Q = q; myPick = -1; revealUntil = 0;
+    Q = q; myPick = -1; revealUntil = 0; lastAnswer = null;
     var tl = tileOf(q.i) || { cat: '', v: 0, star: false, k: 0 };
     $('ccat').textContent = tl.cat; $('ccat').className = 'cat k' + (tl.k % 6); $('ccat').hidden = !tl.cat;
     $('cval').textContent = t('score', { n: tl.v }); $('cval').hidden = !tl.v;
@@ -396,6 +402,7 @@ window.SoloBank = (function () {
   }
   function showReveal(rv) {
     clearInterval(ringTimer); $('secs').textContent = '';
+    if (Q && Q.choices && rv && typeof rv.answer === 'number') lastAnswer = Q.choices[rv.answer];
     revealUntil = performance.now() + (practice ? 1900 : 4200);
     if (rv.skipped) { $('note').textContent = t('skipped'); view(); return; }
     [].forEach.call($('pad').children, function (b, k) {
@@ -409,9 +416,11 @@ window.SoloBank = (function () {
   function showResult(r) {
     if (host) return;
     var note = $('note');
-    if (r.none) { note.textContent = t('timeUp'); note.className = 'bb-note bad'; return; }
+    // A miss names the correct answer, in the same kind spirit as Quest Race's reveal.
+    var missLine = base => lastAnswer != null && lastAnswer !== '' ? base + ' ' + t('rightWas', { answer: lastAnswer }) : base;
+    if (r.none) { note.textContent = missLine(t('timeUp')); note.className = 'bb-note bad'; say(note.textContent); return; }
     myScore = typeof r.score === 'number' ? r.score : myScore + (r.points || 0);
-    note.textContent = (r.ok ? t('right', { points: r.points }) : t('wrong')) + (r.rank ? ' · ' + t('rank', { rank: r.rank }) : '');
+    note.textContent = (r.ok ? t('right', { points: r.points }) : missLine(t('wrong'))) + (r.rank ? ' · ' + t('rank', { rank: r.rank }) : '');
     note.className = 'bb-note ' + (r.ok ? 'good' : 'bad');
     $('score').hidden = false; $('score').textContent = t('score', { n: myScore });
     say(note.textContent); sfx(r.ok ? 'correct' : 'wrong');
@@ -548,15 +557,106 @@ window.SoloBank = (function () {
     showReveal({ answer: it.answer }); showResult({ ok: ok, points: pts, score: p.score, none: i < 0 });
     b.t[ci][r][1] = star ? 3 : 2; b.cur = null; b.left--;
     setTimeout(function () {
-      if (!b.left) { phase = 'ended'; Q = null; podium([{ seat: 0, name: BRB.user.displayName || t('title'), score: p.score }], t('done')); view(); sfx('win'); if (!REDUCED) { try { BRB.fx.confetti(); } catch (e) { /* none */ } } }
+      if (!b.left) { phase = 'ended'; Q = null; podium([{ seat: 0, name: BRB.user.displayName || t('title'), score: p.score }], t('done')); view(); sfx('win'); if (!REDUCED) { try { BRB.fx.confetti(); } catch (e) { /* none */ } }
+        // A finished practice board is a finished round: report it, so a course mission that sent the
+        // player here (Number Quest plays Brain Board solo) can complete. Solo practice only — a live
+        // class session ends through its host, never through this call. Won means the board was cleared:
+        // every tile answered, which is the whole of the practice round.
+        try { BRB.score.submit(p.score, 'board points'); BRB.gameOver({ won: true, score: p.score }); } catch (e) { /* none */ } }
       else view();
     }, 1950);
   }
 
+  // ---- Number Quest lesson boards: a course step that sends a player here (BRB.params carries the
+  // course and step, the play page's lesson parameters) opens STRAIGHT on a board of that step's own
+  // skill — no subject/level picker first, and no general-knowledge tiles: step 1.1 practises place
+  // value, step 2.3 practises bar-model stories. Items are generated in the live-bank shape and run
+  // through boardFrom, so the board, scoring and the finished-round report are the game's own.
+  var NQ_STEP = (window.BRB && BRB.params && /^nq-\d-\d$/.test(String(BRB.params.mode || ''))) ? 'explorer-' + String(BRB.params.mode).slice(3).replace('-', '.') : '';
+  function nqShuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function nqItem(q, ans, wrong, cat) {
+    var all = [String(ans)];
+    wrong.map(String).forEach(function (w) { if (all.indexOf(w) < 0) all.push(w); });
+    all = nqShuffle(all.slice(0, 4));
+    while (all.length < 4) { // a filtered distractor left a gap: pad with a near miss on the same pattern
+      var pad = /^[\d,]+$/.test(String(ans)) ? nqFmt(Number(String(ans).replace(/,/g, '')) + all.length * 10) : String(ans) + ' ' + all.length;
+      if (all.indexOf(pad) < 0) all.push(pad); else all.push(pad + '0');
+    }
+    return { q: q, choices: all, answer: all.indexOf(String(ans)), secs: 25, cat: cat, id: 'nq:' + cat };
+  }
+  function nqFmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function nqBoardItems() {
+    var R = O.rand((Date.now() % 100000) + 7), out = [], i, a, b, c, digs, pos, num;
+    var ri = function (lo, hi) { return R.int(lo, hi); };
+    var pickDigit = function (places) { digs = places.map(function () { return ri(1, 9); }); num = digs.reduce(function (s, d, k) { return s + d * Math.pow(10, places.length - 1 - k); }, 0); return num; };
+    if (NQ_STEP === 'explorer-1.1') {
+      for (i = 0; i < 5; i++) { // Digit value: what is this digit worth where it sits? (the digit must
+        // appear once in the number — "the 7 in 9,778" would have two different right answers)
+        do { pickDigit(i < 3 ? [0, 0, 0] : [0, 0, 0, 0]); pos = ri(0, digs.length - 1); }
+        while (digs.filter(function (d) { return d === digs[pos]; }).length > 1);
+        var place = Math.pow(10, digs.length - 1 - pos), val = digs[pos] * place;
+        out.push(nqItem('In ' + nqFmt(num) + ', what is the value of the ' + digs[pos] + '?', nqFmt(val),
+          [nqFmt(digs[pos]), nqFmt(val * 10), nqFmt(Math.max(1, val / 10))], 'Digit value'));
+      }
+      for (i = 0; i < 5; i++) { // Expanded form: the number written out as its place values.
+        pickDigit([0, 0, 0, 0]); var parts = digs.map(function (d, k) { return d * Math.pow(10, 3 - k); }).filter(function (v) { return v > 0; });
+        var good = parts.map(nqFmt).join(' + '), swapped = parts.slice().reverse().map(nqFmt).join(' + ');
+        var dropped = parts.slice(0, -1).map(nqFmt).join(' + ') + ' + ' + nqFmt(parts[parts.length - 1] + 1);
+        var off = parts.slice(); off[off.length - 1] += 10;
+        out.push(nqItem('Which shows ' + nqFmt(num) + ' in expanded form?', good, [swapped, dropped, off.map(nqFmt).join(' + ')], 'Expanded form'));
+      }
+      for (i = 0; i < 5; i++) { // Bigger number: compare numbers that share most digits.
+        a = pickDigit([0, 0, 0]); var set = {}; set[num] = 1;
+        while (Object.keys(set).length < 4) { var m = ri(100, 999); if (!set[m]) set[m] = 1; }
+        var nums = Object.keys(set).map(Number), best = Math.max.apply(null, nums);
+        out.push(nqItem('Which number is the greatest?', nqFmt(best), nums.filter(function (n) { return n !== best; }).map(nqFmt), 'Bigger number'));
+      }
+      for (i = 0; i < 5; i++) { // Where the digit lives: find the number whose digit is worth the named value.
+        var d = ri(2, 9), places = [1, 10, 100, 1000], want = places[ri(0, 3)];
+        var fd = function () { var x = ri(1, 9); return x === d ? (d % 9) + 1 : x; }; // filler digit: never d itself, or a wrong number could hold the same value
+        var mk = function (p) { return d * p + (p === 1 ? fd() * 100 : p === 10 ? fd() : p === 100 ? fd() * 10 : fd()); };
+        out.push(nqItem('Which number has a ' + d + ' worth ' + nqFmt(d * want) + '?', nqFmt(mk(want)),
+          places.filter(function (p) { return p !== want; }).map(function (p) { return nqFmt(mk(p)); }), 'Where it sits'));
+      }
+      for (i = 0; i < 5; i++) { // Round it: the unit's rounding skill, on the place-value board.
+        var unit = i % 2 ? 100 : 10; num = ri(21, 989); var ans = Math.round(num / unit) * unit;
+        out.push(nqItem('Round ' + nqFmt(num) + ' to the nearest ' + (unit === 10 ? 'ten' : 'hundred') + '.', ans, [ans - unit, ans + unit, num], 'Round it'));
+      }
+      return out;
+    }
+    if (NQ_STEP === 'explorer-2.3') {
+      var names = ['Maya', 'Sam', 'Leo', 'Ana', 'Ben'], things = [['ribbons', 'sold'], ['stickers', 'gave away'], ['cans', 'recycled'], ['books', 'lent out'], ['seeds', 'planted']];
+      for (i = 0; i < 5; i++) { // Draw the story: whole and one part given, find the other part.
+        a = ri(180, 480); b = ri(60, a - 60); var th = things[i % things.length];
+        out.push(nqItem('A shop had ' + a + ' ' + th[0] + ' and ' + th[1] + ' ' + b + '. Draw the bar: whole ' + a + ', part ' + b + ', part ?. How many are left?', a - b, [a + b, a - b + 10, a - b - 10], 'Draw the story'));
+      }
+      for (i = 0; i < 5; i++) { // Joining stories: two parts make the whole.
+        a = ri(120, 390); b = ri(40, 290);
+        out.push(nqItem(names[i % 5] + ' has ' + a + ' points and earns ' + b + ' more. The bar joins both parts. How many points in all?', a + b, [a + b - 10, a + b + 10, Math.abs(a - b)], 'Joining stories'));
+      }
+      for (i = 0; i < 5; i++) { // Gap stories: how many more to reach the whole?
+        a = ri(220, 500); b = ri(60, a - 80);
+        out.push(nqItem(names[(i + 2) % 5] + ' needs ' + a + ' points and has ' + b + '. The bar shows a gap. How many more are needed?', a - b, [a + b, a - b + 20, a - b - 20], 'Gap stories'));
+      }
+      for (i = 0; i < 5; i++) { // Two steps: join, then take away.
+        a = ri(150, 320); b = ri(40, 160); c = ri(30, 120); if (a + b - c <= 0) c = 30;
+        out.push(nqItem('A class collected ' + a + ' cans, then ' + b + ' more, then recycled ' + c + '. How many cans are left?', a + b - c, [a + b, a + b - c + 10, a - b - c > 0 ? a - b - c : a + b + c], 'Two steps'));
+      }
+      for (i = 0; i < 5; i++) { // Estimate first: the Rough first habit, rounded to the nearest hundred.
+        a = ri(140, 480); b = ri(120, 460); var est = Math.round((a + b) / 100) * 100;
+        out.push(nqItem('Best estimate for ' + a + ' + ' + b + '? Rough first!', 'About ' + est, ['About ' + (est - 100), 'About ' + (est + 100), 'About ' + (est + 200)], 'Estimate first'));
+      }
+      return out;
+    }
+    return null;
+  }
+
   L.ready({ lobby: true, quiz: true, hostView: true, teams: true, words: ['pick'] });
   if (!L.active) {
-    // Playing alone: choose the board's subjects and level first.
+    // Playing alone: a Number Quest lesson opens its own board at once; anyone else picks first.
     L.on('start', function () {
+      var nq = nqBoardItems();
+      if (nq) { practice = boardFrom(nq) || practiceBoard(); phase = 'between'; $('status').textContent = t('practice'); view(); return; }
       window.SoloBank.choose({ board: true }, function (items) {
         practice = (items && boardFrom(items)) || practiceBoard(); phase = 'between'; $('status').textContent = t('practice'); view();
       });

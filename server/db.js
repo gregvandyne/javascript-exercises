@@ -494,12 +494,73 @@ export const MIGRATIONS = [
   // Course-only games (built solely as a course's game modules: Cyber Defenders' Trick Inbox and Escape the Post
   // Office) carry course_only=1: they are played only inside their course and stay out of every public catalogue
   // surface (services/games.js NOT_COURSE, the sitemap, the /g page redirect). Set here for existing databases and
-  // in the seed JSONs ("course_only": true, scripts/import-game.js) for fresh ones. NOTE: the unmerged
-  // number-quest branch also numbers its migrations from 0047; renumber one side when that branch integrates.
+  // in the seed JSONs ("course_only": true, scripts/import-game.js) for fresh ones.
   ['0047_course_only_games', '', conn => {
     if (!conn.prepare('PRAGMA table_info(games)').all().some(c => c.name === 'course_only')) conn.exec('ALTER TABLE games ADD COLUMN course_only INTEGER NOT NULL DEFAULT 0;');
     conn.exec(`UPDATE games SET course_only=1 WHERE slug IN ('trick-inbox', 'escape-the-post-office')`);
   }],
+  // Number Quest's Duolingo-lite progress layer (spec §6; services/number-quest-progress.js). Feature-scoped:
+  // every row is keyed by course and the service only ever writes course='number-quest', so CS Quest and Cyber
+  // Defenders progress (course_progress / course_bands above) is untouched. Four small tables:
+  // - nq_xp_events: the Tally Marks ledger, one row per distinct thing done (UNIQUE on user+course+kind+ref is
+  //   what makes an award idempotent: doing the same check again never pays twice, and the amount never depends
+  //   on the score or the number of tries — marks are for doing, not for being right first time);
+  // - nq_daily_goals: the student's own daily goal, 1-3 activities (one row per player);
+  // - nq_daily_activity: one row per distinct activity on a day (day = UTC date, db.js `today`), so a day's
+  //   count is COUNT(*) and meeting the goal is count >= goal. Nothing is stored for a missed day: no streak
+  //   can break, because no streak is kept;
+  // - nq_laps: one row per completed mastery lap of a unit (tier + unit number + lap 1-3).
+  // Removed with the account (services/account-delete.js) and carried over on a school-account merge.
+  ['0048_number_quest_progress', `
+    CREATE TABLE IF NOT EXISTS nq_xp_events (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, course TEXT NOT NULL,
+      kind TEXT NOT NULL, ref TEXT NOT NULL, marks INTEGER NOT NULL, day TEXT NOT NULL, created_at INTEGER NOT NULL,
+      UNIQUE (user_id, course, kind, ref));
+    CREATE INDEX IF NOT EXISTS nq_xp_user ON nq_xp_events(user_id, course);
+    CREATE TABLE IF NOT EXISTS nq_daily_goals (user_id TEXT NOT NULL, course TEXT NOT NULL,
+      goal INTEGER NOT NULL DEFAULT 1, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, course));
+    CREATE TABLE IF NOT EXISTS nq_daily_activity (user_id TEXT NOT NULL, course TEXT NOT NULL, day TEXT NOT NULL,
+      ref TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, course, day, ref));
+    CREATE TABLE IF NOT EXISTS nq_laps (user_id TEXT NOT NULL, course TEXT NOT NULL, tier TEXT NOT NULL,
+      unit INTEGER NOT NULL, lap INTEGER NOT NULL, completed_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, course, tier, unit, lap));`],
+  // Tally's Sorting Game (spec §4; services/number-quest-placement.js). Feature-scoped the same way:
+  // - nq_placement: one row per student — the grade seed (never a birthday), the four strand rungs as JSON,
+  //   the start node, how it got there (sorting-game / beginning door / retake / grown-up override), the
+  //   soft-landing state, and whether a teacher/parent has disabled the game for this student;
+  // - nq_sort_runs: one adaptive run (or one unit test-out) in flight or finished — the staircase state as
+  //   JSON plus the item currently on screen, so grading stays on the server and a run survives a reload;
+  // - nq_testout: units the student has demonstrated with the 5-item test-out (spec §4.6). A stone is never
+  //   written here: stones live in course_progress and are earned by doing the unit's mission.
+  // Removed with the account (services/account-delete.js).
+  ['0049_number_quest_placement', `
+    CREATE TABLE IF NOT EXISTS nq_placement (user_id TEXT PRIMARY KEY, course TEXT NOT NULL,
+      grade INTEGER, rungs TEXT, start_node TEXT, source TEXT NOT NULL DEFAULT 'sorting-game',
+      disabled INTEGER NOT NULL DEFAULT 0, start_fails INTEGER NOT NULL DEFAULT 0,
+      soft_land_node TEXT, updated_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS nq_sort_runs (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, course TEXT NOT NULL,
+      kind TEXT NOT NULL, unit INTEGER, seed TEXT NOT NULL, state TEXT NOT NULL,
+      current_item TEXT, status TEXT NOT NULL DEFAULT 'active', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS nq_sort_runs_user ON nq_sort_runs(user_id, course, status);
+    CREATE TABLE IF NOT EXISTS nq_testout (user_id TEXT NOT NULL, course TEXT NOT NULL, tier TEXT NOT NULL,
+      unit INTEGER NOT NULL, passed_at INTEGER NOT NULL, PRIMARY KEY (user_id, course, tier, unit));`],
+  // Greg's addendum (2026-11-04 20:57): guests cannot complete courses. A guest's earned course facts —
+  // a check passed ('check', with its score), a game module entered from the step ('played'), a module
+  // the game reported won ('win') — are kept HERE, never in course_progress, so a guest's street shows
+  // nothing completed and no marks, laps, placement or grade are recorded. The win is honoured when the
+  // student signs in: services/courses.js applyPendingWins turns a stashed 'win' into the step's real
+  // progress (and the check that led to it), then clears the facts. Removed with the account.
+  ['0050_course_pending_wins', `
+    CREATE TABLE IF NOT EXISTS course_pending_wins (user_id TEXT NOT NULL, course TEXT NOT NULL,
+      step TEXT NOT NULL, kind TEXT NOT NULL, score INTEGER, created_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, course, step, kind));`],
+  // Greg's addendum (2026-11-04 20:55): the student's grade is stored and moves with time. nq_placement.grade
+  // becomes the DECLARED grade and this column the date it was declared; the current grade is derived
+  // (declared + 1 per September 1 rollover since the declaration, capped at grade 8) by
+  // services/number-quest-placement.js deriveGrade, never stored frozen. Existing rows start their clock
+  // at their last placement update.
+  ['0051_nq_grade_declared_at', `
+    ALTER TABLE nq_placement ADD COLUMN grade_declared_at INTEGER;
+    UPDATE nq_placement SET grade_declared_at = updated_at WHERE grade IS NOT NULL;`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

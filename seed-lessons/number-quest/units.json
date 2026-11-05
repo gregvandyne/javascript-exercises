@@ -1,0 +1,505 @@
+{
+ "about": "Number Quest catalogue index - Phase 0 standards lock slice. Scope of THIS file in Phase 0/1: the Explorer intro (0.1) and Units 1-4 (12 steps), each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'.",
+ "program": {
+  "name": "Number Quest",
+  "slug": "number-quest",
+  "standards": "Common Core State Standards for Mathematics (CCSS-M, 2010), Explorer tier grades 3-5, locked Phase 0 for Units 1-4",
+  "tagline": "Every number has a job to do.",
+  "teacherBadge": "Number Quest · CCSS-M",
+  "version": 1
+ },
+ "tiers": {
+  "explorer": {
+   "district": "The Workshops",
+   "grades": "3-5",
+   "inGame": "Explorer",
+   "stones": [
+    "Counting Stone",
+    "Joining Stone",
+    "Grouping Stone",
+    "Sharing Stone"
+   ]
+  }
+ },
+ "units": [
+  {
+   "emoji": "🔢",
+   "group": "intro",
+   "n": 0,
+   "stamp": null,
+   "steps": [
+    {
+     "game": {
+      "explorer": null
+     },
+     "mp": "MP1",
+     "n": "0.1",
+     "order": 1,
+     "shorts": {
+      "explorer": "Welcome"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "framing",
+       "primary": []
+      }
+     },
+     "titles": {
+      "explorer": "Welcome to the Numberworks"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Number Quest is a standalone course: no CS Quest or Cyber Defenders knowledge is needed. The intro frames the Numberworks, Tally the cat, the Jumble and the Vault of Measures; it teaches no standard and its check, if any, is a routing preview, never assessed coverage."
+   ],
+   "title": "Welcome to the Numberworks",
+   "tool": null
+  },
+  {
+   "emoji": "🏠",
+   "group": "unit-1",
+   "n": 1,
+   "stamp": "Counting Stone",
+   "steps": [
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Practice Board",
+       "chapterTitle": "Practice Board",
+       "params": "mode=nq-1-1&lock=1",
+       "slug": "brain-board"
+      }
+     },
+     "mp": "MP7",
+     "n": "1.1",
+     "order": 2,
+     "shorts": {
+      "explorer": "Big numbers"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [
+        "5.NBT.A.1"
+       ],
+       "flag": "coverage",
+       "primary": [
+        "4.NBT.A.1",
+        "4.NBT.A.2"
+       ],
+       "primaryNote": "A digit's value depends on where it sits. Grade 3 carries no freestanding place-value statement beyond rounding and operations (3.NBT.A), so this step's honest home is grade 4 NBT.A; grade 3 learners meet it through 4.NBT.A.2's read/write/compare work at three-digit depth in the mission scaling."
+      }
+     },
+     "titles": {
+      "explorer": "Big numbers, small digits"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Rounding Run",
+       "chapterTitle": "Rounding Run track",
+       "params": "level=9&lock=1",
+       "slug": "sum-racer"
+      }
+     },
+     "mp": "MP2",
+     "n": "1.2",
+     "order": 3,
+     "shorts": {
+      "explorer": "Round it"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [
+        "5.NBT.A.4"
+       ],
+       "flag": "coverage",
+       "primary": [
+        "3.NBT.A.1",
+        "4.NBT.A.3"
+       ],
+       "primaryNote": "Rounding is choosing the nearest friendly number - to the nearest 10 or 100 in grade 3, to any place in grade 4. Decimal rounding (5.NBT.A.4) is the stretch shadow only."
+      }
+     },
+     "titles": {
+      "explorer": "Round it!"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Practice Race",
+       "chapterTitle": "Practice Race",
+       "params": "mode=nq-1-3&lock=1",
+       "slug": "quest-race"
+      }
+     },
+     "mp": "MP8",
+     "n": "1.3",
+     "order": 4,
+     "shorts": {
+      "explorer": "Patterns"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [
+        "5.OA.B.3"
+       ],
+       "flag": "coverage",
+       "primary": [
+        "3.OA.D.9",
+        "4.OA.C.5"
+       ],
+       "primaryNote": "CORRECTION to the spec's shorthand: grade 3 patterns are 3.OA.D.9, not OA.C. Grade 5's paired-pattern graphing (5.OA.B.3) is seeded here and taught in Unit 6 step 6.3."
+      }
+     },
+     "titles": {
+      "explorer": "Patterns and number tricks"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Open every worked example with an estimate (the course's 'Rough first' habit, MP1/MP2). Place value is taught as a pattern (each place ten times the next, MP7), not as column names to memorize."
+   ],
+   "title": "The Counting House",
+   "tool": "brain-board"
+  },
+  {
+   "emoji": "➕",
+   "group": "unit-2",
+   "n": 2,
+   "stamp": "Joining Stone",
+   "steps": [
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Addition to 100",
+       "chapterTitle": "Addition to 100 track",
+       "params": "level=3&mode=add&lock=1",
+       "slug": "sum-racer"
+      }
+     },
+     "mp": "MP6",
+     "n": "2.1",
+     "order": 5,
+     "shorts": {
+      "explorer": "Joining big"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "3.NBT.A.2",
+        "4.NBT.B.4"
+       ],
+       "primaryNote": "CORRECTION to the spec's shorthand: grade 3 addition within 1000 is 3.NBT.A.2 (grade 3 has no NBT.B cluster); the standard algorithm is 4.NBT.B.4. Subtraction shares both statements and is the focus of step 2.2."
+      }
+     },
+     "titles": {
+      "explorer": "Joining big numbers"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Subtraction to 100",
+       "chapterTitle": "Subtraction to 100 track",
+       "params": "level=3&mode=sub&lock=1",
+       "slug": "sum-racer"
+      }
+     },
+     "mp": "MP2",
+     "n": "2.2",
+     "order": 6,
+     "shorts": {
+      "explorer": "Gaps"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "3.NBT.A.2",
+        "4.NBT.B.4"
+       ],
+       "primaryNote": "Subtraction taught both as taking away and as the gap between two numbers (counting up). Same two locked statements as 2.1, subtraction side; a step may share a statement with its sibling when the standard itself joins the operations."
+      }
+     },
+     "titles": {
+      "explorer": "Taking away, measuring gaps"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Practice Board",
+       "chapterTitle": "Practice Board",
+       "params": "mode=nq-2-3&lock=1",
+       "slug": "brain-board"
+      }
+     },
+     "mp": "MP4",
+     "n": "2.3",
+     "order": 7,
+     "shorts": {
+      "explorer": "Draw the story"
+     },
+     "standards": {
+      "explorer": {
+       "also": [
+        "3.NBT.A.2",
+        "4.NBT.B.4"
+       ],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "3.OA.D.8",
+        "4.OA.A.3"
+       ],
+       "primaryNote": "The bar model is introduced here and reused in every later word-problem step. The computation statements sit in 'also': the step's new teaching is the two-step / multistep problem structure and the estimation check inside 4.OA.A.3."
+      }
+     },
+     "titles": {
+      "explorer": "Story problems, drawn"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "The bar model (Singapore CPA pictorial step) is taught once, here, before symbols: draw the story, see the missing piece, then write the equation. The unit's Jumble beat lives in 2.3: it added when the story said difference - learners find, name and fix it (MP3)."
+   ],
+   "title": "Joining & Splitting",
+   "tool": "sum-racer"
+  },
+  {
+   "emoji": "✖️",
+   "group": "unit-3",
+   "n": 3,
+   "stamp": "Grouping Stone",
+   "steps": [
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Times Tables 2, 5 and 10",
+       "chapterTitle": "2, 5 and 10 times tables track",
+       "params": "level=4&lock=1",
+       "slug": "sum-racer"
+      }
+     },
+     "mp": "MP7",
+     "n": "3.1",
+     "order": 8,
+     "shorts": {
+      "explorer": "Groups"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [
+        "3.MD.C",
+        "5.NBT.B.5"
+       ],
+       "flag": "coverage",
+       "primary": [
+        "3.OA.A.1",
+        "3.OA.A.3",
+        "3.OA.B.5",
+        "4.NBT.B.5"
+       ],
+       "primaryNote": "Multiplication as equal groups and arrays. 3.MD.C (area) is buildsToward at CLUSTER level only - the array plants the seed; area itself is Unit 6 teaching under a later lock. 5.NBT.B.5 (standard algorithm fluency) is the stretch shadow."
+      }
+     },
+     "titles": {
+      "explorer": "Groups of groups"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Sharing (Division)",
+       "chapterTitle": "Sharing (division) track",
+       "params": "level=6&lock=1",
+       "slug": "sum-racer"
+      }
+     },
+     "mp": "MP1",
+     "n": "3.2",
+     "order": 9,
+     "shorts": {
+      "explorer": "Sharing"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "3.OA.A.2",
+        "3.OA.A.3",
+        "3.OA.A.4",
+        "4.NBT.B.6",
+        "4.OA.A.3"
+       ],
+       "primaryNote": "Division as sharing and grouping. Honesty note: grade 3 states quotients without naming remainders; the remainder-as-a-decision teaching is locked to 4.NBT.B.6 and 4.OA.A.3 (interpreting remainders in multistep problems), shared with step 2.3."
+      }
+     },
+     "titles": {
+      "explorer": "Sharing fairly"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Galaxy Grand Prix",
+       "chapterTitle": "Mixed Grand Prix track",
+       "params": "level=7&lock=1",
+       "slug": "sum-racer"
+      }
+     },
+     "mp": "MP8",
+     "n": "3.3",
+     "order": 10,
+     "shorts": {
+      "explorer": "Fast facts"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "3.OA.C.7",
+        "3.OA.B.5",
+        "3.OA.B.6"
+       ],
+       "primaryNote": "This is where OA.C genuinely lives: fluency within 100 (3.OA.C.7), taught as strategies - properties (3.OA.B.5) and division as unknown-factor (3.OA.B.6) - never as bare memorization (spec section 8.3)."
+      }
+     },
+     "titles": {
+      "explorer": "Fast facts, real tricks"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Fluency missions are Dash gear: learners race their own ghost, never a classmate. Strategies are named in the deck (doubling, halving, near facts) so speed grows out of structure (MP7/MP8), per NCTM's build-fluency-from-understanding practice."
+   ],
+   "title": "Groups & Shares",
+   "tool": "sum-racer"
+  },
+  {
+   "emoji": "🧁",
+   "group": "unit-4",
+   "n": 4,
+   "stamp": "Sharing Stone",
+   "steps": [
+    {
+     "game": {
+      "explorer": {
+       "chapter": "First Cuts",
+       "chapterTitle": "First Cuts",
+       "params": "chapter=first-cuts&band=1b&lock=1",
+       "slug": "fraction-factory"
+      }
+     },
+     "mp": "MP2",
+     "n": "4.1",
+     "order": 11,
+     "shorts": {
+      "explorer": "Fair shares"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "3.NF.A.1",
+        "3.NF.A.2"
+       ],
+       "primaryNote": "A fraction is a fair share of one whole AND a place on the number line - both halves of the grade 3 definition are locked and both must appear in the deck and in Fraction Factory's First Cuts."
+      }
+     },
+     "titles": {
+      "explorer": "Fair shares"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Re-Slice",
+       "chapterTitle": "Re-Slice",
+       "params": "chapter=re-slice&band=1b&lock=1",
+       "slug": "fraction-factory"
+      }
+     },
+     "mp": "MP3",
+     "n": "4.2",
+     "order": 12,
+     "shorts": {
+      "explorer": "New clothes"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "3.NF.A.3",
+        "4.NF.A.1",
+        "4.NF.A.2"
+       ],
+       "primaryNote": "Equivalence by re-cutting (the game's re-slice IS 4.NF.A.1's visual model), comparing by benchmark before machinery (4.NF.A.2). Every comparison in deck, check and game must keep the same-whole condition both standards require."
+      }
+     },
+     "titles": {
+      "explorer": "Same value, new clothes"
+     }
+    },
+    {
+     "game": {
+      "explorer": {
+       "chapter": "Recipe Maths",
+       "chapterTitle": "Recipe Maths",
+       "params": "chapter=recipe&band=1b&lock=1",
+       "slug": "fraction-factory"
+      }
+     },
+     "mp": "MP4",
+     "n": "4.3",
+     "order": 13,
+     "shorts": {
+      "explorer": "Adding slices"
+     },
+     "standards": {
+      "explorer": {
+       "also": [],
+       "buildsToward": [],
+       "flag": "coverage",
+       "primary": [
+        "4.NF.B.3",
+        "5.NF.A.1",
+        "5.NF.A.2"
+       ],
+       "primaryNote": "CORRECTION to the spec's shorthand: there is no grade 3 fraction-addition standard and no single 'NF.B' home - like-denominator addition is 4.NF.B.3, unlike-denominator addition (Fraction Factory's denominators 2, 3, 4, 6, 8 genuinely reach it) is 5.NF.A.1 with word problems and benchmark estimation in 5.NF.A.2. 4.NF.B.4 is multiplication and is never cited here. The unit's flagship Jumble beat (1/2 + 1/4 = 2/6, adding the bottoms too) diagnoses exactly the 5.NF.A.1 misconception."
+      }
+     },
+     "titles": {
+      "explorer": "Adding slices"
+     }
+    }
+   ],
+   "teacherNotes": [
+    "Cut real paper cakes before the deck: equivalence lands in hands first (CPA). Fraction Factory is this unit's home game and Tally the cat's debut - her sprite is extracted from Fraction Factory, never redrawn (house rule)."
+   ],
+   "title": "The Bakery",
+   "tool": "fraction-factory"
+  }
+ ]
+}

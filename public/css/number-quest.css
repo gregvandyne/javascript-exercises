@@ -1,0 +1,156 @@
+/* Number Quest placement (Tally's Sorting Game + the Starting Point note). Uses the site's panels,
+   buttons and tokens; only the grade cards, the question choices and the note need their own rules.
+   Sized for a phone first (390px) and comfortable on desktop. */
+.nq { max-width: 760px; margin: 0 auto; padding: 16px; }
+.nq-kicker { font-weight: 700; letter-spacing: .02em; opacity: .8; }
+.nq-grades { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
+.nq-grade { min-height: 56px; padding: 12px; border: 2px solid var(--line, #ccc); border-radius: 14px;
+  background: var(--panel, #fff); font-size: 1.05rem; font-weight: 600; cursor: pointer; }
+.nq-grade-wide { grid-column: 1 / -1; }
+.nq-grade-on { border-color: var(--accent, #1f9d63); background: var(--accent-soft, #e7f6ee); }
+.nq-doors { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+.nq-tally { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.nq-tally-img { height: 64px; width: auto; flex: none; }
+.nq-tally-says { margin: 0; font-size: 1.1rem; }
+.nq-item { margin-top: 14px; }
+.nq-prompt { font-size: 1.35rem; line-height: 1.45; }
+.nq-choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.nq-choice { min-height: 56px; height: auto; font-size: 1.2rem; white-space: normal; overflow-wrap: anywhere; line-height: 1.25; padding: 10px 12px; }
+.nq-answer-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.nq-answer { min-height: 52px; font-size: 1.25rem; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--line, #ccc); max-width: 200px; }
+.nq-feedback { min-height: 1.4em; }
+/* Tally always sits on a Cream disc (her brand ground), so she reads as her orange self on light and
+   dark themes and on a phone in bright light — never as a dark shape against a dark panel. */
+.nq-tally-img, .nqp-tally-img { background: #FFFDF2; border: 2px solid var(--line, #e5e0cc); border-radius: 999px; padding: 4px; }
+@keyframes nq-tally-bounce { 0% { transform: translateY(0); } 35% { transform: translateY(-7px) rotate(-3deg); } 70% { transform: translateY(1px); } 100% { transform: none; } }
+.nq-tally-bounce { animation: nq-tally-bounce .45s ease-out; }
+@media (prefers-reduced-motion: reduce) { .nq-tally-bounce { animation: none; } }
+/* The paw trail: how far along the Sorting Game you are. A fill, not a score — no numbers ride on it. */
+.nq-trail { position: relative; height: 14px; border-radius: 999px; border: 2px solid var(--line, #ccc); background: var(--panel, #fff); margin: 12px 0 4px; overflow: visible; }
+.nq-trail-fill { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--accent, #66C792); transition: width .4s ease; }
+.nq-trail-paw { position: absolute; right: -4px; top: -9px; font-size: 1rem; }
+@media (prefers-reduced-motion: reduce) { .nq-trail-fill { transition: none; } }
+.nq-strand { margin: 6px 0 0; font-weight: 700; }
+/* Hands-on items: tappable counters (a tap marks one counted; counted ones dim and grow a check) and
+   the build's ten-frame. Touch targets stay at least 44px. */
+.nq-manip { margin: 10px 0 14px; }
+.nq-counters { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Structured count-outs: the picture keeps the arrangement the words promise (rows of perRow).
+   Counters in a row shrink to fit one true row on a phone instead of wrapping into a false one. */
+.nq-counter-rows { display: flex; flex-direction: column; gap: 8px; }
+.nq-counter-row { display: flex; gap: 6px; }
+.nq-counter-row .nq-counter { flex: 1 1 0; min-width: 26px; max-width: 48px; min-height: 44px; padding: 0; }
+.nq-counter { min-width: 48px; min-height: 48px; font-size: 1.6rem; line-height: 1; border-radius: 14px; border: 2px solid var(--line, #ccc); background: var(--panel, #fff); cursor: pointer; position: relative; }
+.nq-counter.is-counted { opacity: .45; border-color: var(--accent-line, #1F9D63); }
+.nq-counter.is-counted::after { content: "✓"; position: absolute; right: 2px; top: 0; font-size: .85rem; font-weight: 800; color: var(--accent-line, #1F9D63); }
+.nq-tenframe { display: grid; grid-template-columns: repeat(5, 44px); gap: 6px; margin-bottom: 8px; }
+.nq-loose { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.nq-cell { width: 44px; height: 44px; display: grid; place-items: center; font-size: 1.4rem; border: 2px solid var(--line, #ccc); border-radius: 10px; background: var(--panel, #fff); }
+.nq-loose .nq-cell { border-style: dashed; }
+.nq-note-lines { font-size: 1.1rem; line-height: 1.6; }
+.nq-caveat { font-weight: 700; border-left: 4px solid var(--accent, #1f9d63); padding-left: 12px; }
+@media (max-width: 480px) { .nq-prompt { font-size: 1.2rem; } .nq-grades { grid-template-columns: 1fr 1fr; } }
+/* The result's per-strand picture: four friendly cards, one per kind of puzzle the tour visited, a paw
+   for every puzzle tried in it. No score styling anywhere — paws are a trail, not a mark. */
+.nq-result-strands { margin: 16px 0; }
+.nq-result-strands-h { font-size: 1.15rem; margin: 0 0 10px; }
+.nq-strand-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.nq-strand-card { border: 2px solid var(--line, #e5e0cc); border-radius: 14px; background: var(--panel, #fff); padding: 12px 14px; }
+.nq-strand-card-h { margin: 0 0 4px; font-weight: 800; }
+.nq-strand-card-line { margin: 0 0 6px; line-height: 1.4; }
+.nq-strand-card-paws { margin: 0; font-size: .95rem; letter-spacing: .12em; min-height: 1.2em; }
+
+/* The path home (the Numberworks street): a winding path of workshops over the site's tokens, phone first.
+   Nodes alternate around a dashed centre line; lap rings are a conic ring around each workshop's medallion. */
+.nqpath { max-width: 860px; margin: 0 auto; }
+.nqp-tally-img { height: 96px; width: auto; flex: none; align-self: center; }
+@media (max-width: 480px) { .nqp-tally-img { height: 72px; } }
+.nqp-hud { margin: 18px 0 6px; }
+.nqp-hud-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; margin-bottom: 10px; }
+@media (max-width: 560px) { .nqp-hud-row { grid-template-columns: 1fr; } }
+.nqp-hud-cell { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.nqp-hud-k { font-weight: 700; width: 100%; }
+.nqp-tally, .nqp-tl { display: inline-flex; flex-wrap: wrap; gap: 6px 7px; align-items: center; }
+.nqp-tally i, .nqp-tl i { display: inline-block; width: 3.5px; height: 20px; border-radius: 2px; background: var(--text); }
+.nqp-t5 { position: relative; display: inline-flex; gap: 3.5px; padding: 0 1px; }
+.nqp-t5 i { display: inline-block; width: 3.5px; height: 20px; border-radius: 2px; background: var(--text); }
+.nqp-t5::after { content: ""; position: absolute; left: -3px; right: -3px; top: 50%; height: 3.5px; border-radius: 2px;
+  background: var(--text); transform: rotate(-24deg); }
+.nqp-tally-none { color: var(--muted); }
+.nqp-dots { display: inline-flex; gap: 6px; }
+.nqp-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--accent-line, #1F9D63); background: transparent; }
+.nqp-dot.is-done { background: var(--accent, #66C792); }
+.nqp-goalpick { display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; }
+.nqp-goalbtn { min-width: 38px; min-height: 38px; border-radius: 999px; border: 2px solid var(--line, #ccc);
+  background: var(--card, #fff); font-weight: 700; cursor: pointer; }
+.nqp-goalbtn.is-on { border-color: var(--accent-line, #1F9D63); background: var(--accent-soft, #e7f6ee); }
+.nqp-placed { border-left: 4px solid var(--accent-line, #1F9D63); padding-left: 12px; }
+.nqp-path { list-style: none; margin: 10px 0 0; padding: 0; position: relative; }
+.nqp-path::before { content: ""; position: absolute; left: 50%; top: 12px; bottom: 12px; border-left: 3px dashed var(--line, #ddd); }
+.nqp-unit { position: relative; padding: 14px 0 4px; }
+.nqp-unit-h { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; background: var(--card, #fff); border: 1px solid var(--line, #e5e0cc);
+  border-radius: var(--r, 20px); box-shadow: var(--shadow); padding: 12px 16px; position: relative; z-index: 1; }
+.nqp-unit-h h3 { margin: 0; }
+.nqp-unit-t { flex: 1 1 170px; min-width: 0; }
+.nqp-laps { margin: 2px 0 0; }
+.nqp-medal { flex: none; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(var(--accent, #66C792) calc(var(--ring, 0%)), var(--line, #e5e0cc) 0); }
+.nqp-medal-in { width: 46px; height: 46px; border-radius: 50%; background: var(--card, #fff); display: grid; place-items: center; font-size: 1.45rem; }
+.nqp-stone { flex: none; font-size: .85rem; font-weight: 700; border: 2px solid var(--line, #ccc); border-radius: 999px; padding: 4px 10px; color: var(--muted); }
+.nqp-stone.is-planted { border-color: var(--accent-line, #1F9D63); background: var(--accent-soft, #e7f6ee); color: var(--text); }
+.nqp-stone.is-tested { border-color: var(--spark, #FFD23F); background: var(--spark-soft, #FFF3C4); color: var(--text); }
+.nqp-nodes { list-style: none; margin: 0; padding: 16px 0 10px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.nqp-step { position: relative; z-index: 1; }
+.nqp-step:nth-child(odd) { transform: translateX(-88px); }
+.nqp-step:nth-child(even) { transform: translateX(88px); }
+/* Workshop banners lean into the wind too: odd units hug the left of the street, even units the right,
+   so the whole street reads as one winding road rather than a stack of cards. */
+@media (min-width: 640px) {
+  .nqp-unit:nth-child(odd) .nqp-unit-h { margin-right: 7%; }
+  .nqp-unit:nth-child(even) .nqp-unit-h { margin-left: 7%; }
+}
+/* A begun-but-unfinished step: warm Spark wash and a dashed Leaf ring — clearly not untouched, clearly
+   not done. Its 'Started' chip matches the 'You are here' chip's shape so the street's badges agree. */
+.nqp-node-started { background: var(--spark-soft, #FFF3C4); border-color: var(--accent-line, #1F9D63); border-style: dashed; }
+.nqp-started { font-size: .78rem; font-weight: 800; background: var(--accent-soft, #e7f6ee); color: var(--text);
+  border: 2px solid var(--accent-line, #1F9D63); border-radius: 999px; padding: 2px 9px; }
+.nqp-here-tally { height: 22px; width: auto; vertical-align: -6px; margin-right: 5px; background: #FFFDF2; border-radius: 999px; padding: 1px; }
+.nqp-here { display: inline-flex; align-items: center; }
+/* A planted stone and a full lap ring celebrate: the medallion turns Spark-warm with a star, and the
+   stone chip gives a small pop whenever the street is drawn (kept still under reduced motion). */
+.nqp-medal.is-complete .nqp-medal-in { background: var(--spark-soft, #FFF3C4); }
+.nqp-medal.is-complete { position: relative; }
+.nqp-medal.is-complete::after { content: "✨"; position: absolute; right: -7px; top: -7px; font-size: 1rem; }
+.nqp-stone.is-planted { animation: nqp-stone-pop .5s ease-out; }
+@keyframes nqp-stone-pop { 0% { transform: scale(.85); } 60% { transform: scale(1.12); } 100% { transform: none; } }
+.nqp-door { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: var(--text); max-width: 150px; text-align: center; }
+.nqp-node { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; font-size: 1.5rem; font-weight: 800;
+  border: 3px solid var(--edge, #8A8573); background: var(--card-2, #F9F6EB); color: var(--text); }
+.nqp-node-open { border-color: var(--accent-line, #1F9D63); }
+.nqp-node-done { background: var(--accent, #66C792); border-color: var(--accent-press, #1F9D63); color: var(--brand-ink, #141414); }
+.nqp-node-locked { opacity: .55; }
+.nqp-node-here { background: var(--spark, #FFD23F); border-color: var(--brand-ink, #141414); color: var(--brand-ink, #141414);
+  animation: nqp-pulse 1.6s ease-in-out infinite; }
+@keyframes nqp-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); } }
+.nqp-here { font-size: .78rem; font-weight: 800; background: var(--brand-ink, #141414); color: var(--brand-cream, #FFFDF2);
+  border-radius: 999px; padding: 2px 9px; }
+.nqp-node-t { font-weight: 600; line-height: 1.25; }
+.nqp-unit-future { opacity: .62; }
+.nqp-unit-future .nqp-unit-h { box-shadow: none; border-style: dashed; }
+.nqp-medal-future { background: var(--line, #e5e0cc); }
+@media (max-width: 480px) { .nqp-step:nth-child(odd) { transform: translateX(-52px); } .nqp-step:nth-child(even) { transform: translateX(52px); } .nqp-node { width: 64px; height: 64px; } }
+@media (prefers-reduced-motion: reduce) { .nqp-node-here { animation: none; } .nqp-stone.is-planted { animation: none; } }
+
+/* Tally on the check-passed screen (the server-rendered passed state and the scripted one agree). */
+.nq-passed-tally { display: flex; align-items: center; gap: 10px; font-weight: 700; margin: 8px 0; }
+.cl-result .nq-tally-img { height: 56px; width: auto; vertical-align: middle; }
+
+/* In-lesson moments (public/js/course.js): a small card that pops, cheers and leaves on its own — it never
+   blocks the lesson, and under reduced motion it simply appears and stays a moment longer. */
+.nq-moment { display: flex; align-items: center; gap: 10px; margin: 12px 0; padding: 12px 16px; border-radius: var(--r-sm, 12px);
+  border: 2px solid var(--accent-line, #1F9D63); background: var(--accent-soft, #e7f6ee); font-weight: 700;
+  animation: nq-moment-in .35s ease-out; }
+.nq-moment-lap { border-color: var(--brand-ink, #141414); background: var(--spark-soft, #FFF3C4); }
+.nq-moment-goal { border-color: var(--accent-line, #1F9D63); background: var(--ok-bg, #E1F1E1); }
+@keyframes nq-moment-in { from { transform: translateY(8px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .nq-moment { animation: none; } }

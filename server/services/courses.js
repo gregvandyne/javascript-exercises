@@ -15,7 +15,12 @@
 // check banks live beside it, and its steps play two games it borrows (course-catalog.js "shared": CS Quest's
 // Packet Post and the open Would You Rather) plus two of its own course-only games (Trick Inbox, Escape the
 // Post Office), so nothing about it is read from CS Quest's lesson files.
-// Progress (course_progress, course_bands) is per player, guests included.
+// Progress (course_progress, course_bands) is per player. Guests play freely, but a guest's check
+// passes and game wins are NOT progress (Greg's addendum, 2026-11-04): they are kept as pending facts
+// (course_pending_wins, migration 0050) and honoured only when the student signs in — see the
+// pending-wins section below. In the guest's own views the facts stand in for progress (they open
+// the next step and fill the street the guest is looking at), but they never enter course_progress,
+// so no grown-up surface, mark, lap, placement or grade ever sees them.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -32,7 +37,12 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
 const CSQ = path.join(ROOT, 'seed-lessons/cs-quest');
 const CD = path.join(ROOT, 'seed-lessons/cyber-defenders');
+const NQD = path.join(ROOT, 'seed-lessons/number-quest');
 export const BANDS = Object.freeze(['1b', '2']);
+/** The bands a course offers: the two graded bands for CS Quest and Cyber Defenders; Number Quest's single
+ *  Explorer band (its decks and step keys are keyed "explorer", e.g. explorer-1.1 — the same node names the
+ *  placement service places students at). */
+export const bandsFor = course => (course && course.slug === 'number-quest' ? ['explorer'] : BANDS);
 /** A check passes with this many right out of three. */
 export const PASS = 2;
 
@@ -50,7 +60,7 @@ function load() {
   for (const f of fs.readdirSync(path.join(CSQ, 'sets')).filter(f => /^u\d-(1b|2)\.json$/.test(f))) {
     for (const it of readJson(path.join(CSQ, 'sets', f)).items || []) items.set(it.id, it);
   }
-  cache = { items, csq: loadCsq(items), cyber: loadCyber(items) };
+  cache = { items, csq: loadCsq(items), cyber: loadCyber(items), nq: loadNumberQuest(items) };
   return cache;
 }
 
@@ -121,11 +131,47 @@ function cleanSlide(s) {
   const img = typeof s.img === 'string' ? s.img.trim() : '';
   const alt = str(s.alt, 160);
   if (IMG_KEY.test(img) && alt && alt === (typeof s.alt === 'string' ? s.alt.trim() : '')) { out.img = img; out.alt = alt; }
-  // Guided focus: optional animation steps over the picture (only alongside a valid img). Each step is a short cue
-  // (<= 80 chars), a target box in % of the frame (inside it, at least 2% wide/tall) and an optional dotted path of
-  // 2-8 points in %. 1-4 steps. Anything malformed drops the whole focus and the slide keeps its plain picture
-  // (fromDeck reports the loss, like a dropped img).
-  if (out.img && Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4) {
+  // A drawn maths diagram (Number Quest's pictorial step): the slide's own numbers drawn as place-value
+  // cards, a number line, a bar model, fraction bars, an array or a tile strip — data the view renders
+  // as SVG (views/courses.js visualSvg), in the same frame a picture would fill. Strictly shaped per
+  // type; anything malformed drops the whole visual (fromDeck reports the loss, like a dropped img).
+  if (s.visual != null && typeof s.visual === 'object' && !Array.isArray(s.visual)) {
+    const v = s.visual, num = x => typeof x === 'number' && Number.isFinite(x);
+    const label = str(v.label, 160);
+    let vis = null;
+    if (label) {
+      if (v.type === 'places' && Array.isArray(v.cols) && v.cols.length >= 2 && v.cols.length <= 4
+        && v.cols.every(c => c && str(c.d, 2) && str(c.place, 12) && str(c.value, 8))) {
+        vis = { type: 'places', label, cols: v.cols.map(c => ({ d: str(c.d, 2), place: str(c.place, 12), value: str(c.value, 8) })) };
+      } else if (v.type === 'numberline' && num(v.min) && num(v.max) && v.min < v.max
+        && Array.isArray(v.marks) && v.marks.length <= 6 && v.marks.every(m => m && num(m.at) && m.at >= v.min && m.at <= v.max && str(m.label, 6))
+        && (v.point == null || (num(v.point.at) && v.point.at >= v.min && v.point.at <= v.max && str(v.point.label, 6)))
+        && (v.hops == null || (Array.isArray(v.hops) && v.hops.length <= 3 && v.hops.every(h => h && num(h.from) && num(h.to) && h.from >= v.min && h.to <= v.max && str(h.label, 8))))) {
+        vis = { type: 'numberline', label, min: v.min, max: v.max, marks: v.marks.map(m => ({ at: m.at, label: str(m.label, 6) })),
+          ...(v.point ? { point: { at: v.point.at, label: str(v.point.label, 6) } } : {}),
+          ...(v.hops ? { hops: v.hops.map(h => ({ from: h.from, to: h.to, label: str(h.label, 8) })) } : {}) };
+      } else if (v.type === 'bars' && Array.isArray(v.rows) && v.rows.length >= 1 && v.rows.length <= 3
+        && v.rows.every(r => r && str(r.label, 60) && Array.isArray(r.parts) && r.parts.length >= 1 && r.parts.length <= 4
+          && r.parts.every(p => p && num(p.w) && p.w > 0 && p.w <= 1 && (p.tone == null || (Number.isInteger(p.tone) && p.tone >= -1 && p.tone <= 3)))
+          && r.parts.reduce((sum, p) => sum + p.w, 0) <= 1.02)) {
+        vis = { type: 'bars', label, rows: v.rows.map(r => ({ label: str(r.label, 60), parts: r.parts.map(p => ({ w: p.w, label: str(p.label, 20), ...(p.tone != null ? { tone: p.tone } : {}), ...(p.unknown ? { unknown: true } : {}) })) })) };
+      } else if (v.type === 'fraction' && Array.isArray(v.rows) && v.rows.length >= 1 && v.rows.length <= 3
+        && v.rows.every(r => r && str(r.label, 60) && Number.isInteger(r.cuts) && r.cuts >= 2 && r.cuts <= 12 && Number.isInteger(r.shaded) && r.shaded >= 0 && r.shaded <= r.cuts)) {
+        vis = { type: 'fraction', label, ...(v.half ? { half: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), cuts: r.cuts, shaded: r.shaded })) };
+      } else if (v.type === 'array' && Number.isInteger(v.rows) && v.rows >= 1 && v.rows <= 8 && Number.isInteger(v.cols) && v.cols >= 1 && v.cols <= 10) {
+        vis = { type: 'array', label, rows: v.rows, cols: v.cols, ...(v.extra ? { extra: 1, extraLabel: str(v.extraLabel, 20) } : {}) };
+      } else if (v.type === 'tiles' && Array.isArray(v.values) && v.values.length >= 3 && v.values.length <= 7
+        && v.values.every(x => str(String(x), 10)) && (v.bad == null || (Number.isInteger(v.bad) && v.bad >= 0 && v.bad < v.values.length))) {
+        vis = { type: 'tiles', label, values: v.values.map(x => str(String(x), 10)), ...(v.bad != null ? { bad: v.bad } : {}) };
+      }
+    }
+    if (vis) out.visual = vis;
+  }
+  // Guided focus: optional animation steps over the picture (only alongside a valid img or a valid drawn
+  // visual). Each step is a short cue (<= 80 chars), a target box in % of the frame (inside it, at least
+  // 2% wide/tall) and an optional dotted path of 2-8 points in %. 1-4 steps. Anything malformed drops the
+  // whole focus and the slide keeps its plain picture (fromDeck reports the loss, like a dropped img).
+  if ((out.img || out.visual) && Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4) {
     const num = v => typeof v === 'number' && Number.isFinite(v);
     const pct = v => num(v) && v >= 0 && v <= 100;
     const r1 = v => Math.round(v * 10) / 10;
@@ -195,7 +241,8 @@ function fromDeck(key, l, d, game, items, problems) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
     if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
-    if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (s && s.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
+    if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
     if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
   }
@@ -228,6 +275,7 @@ function fromExtra(key, x, d, wantIds, items, problems) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
     if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
+    if (s && s.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
     if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
   }
@@ -303,7 +351,8 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
     if (!sl || !sl.title || !sl.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(sl.art)) say(`slide ${i + 1} art ${JSON.stringify(sl.art)} is not a known art id`);
     if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
-    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (sl && sl.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
+    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
     if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
@@ -313,6 +362,68 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
   if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match units.json (${JSON.stringify(want)})`);
   if (!game && !str(d.talk)) say('a step without a game needs "talk"');
   return { title: str(d.title, 80) || (s.titles || {})[band] || s.n, topic: str(d.topic, 40) || (s.shorts || {})[band] || '', minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
+}
+
+/** Number Quest: a third, deck-native course on the same machinery, with one difference of shape — a single
+ *  Explorer band (Phase 1 builds the Explorer intro and Units 1-4; Launchpad and Pro are specced, not built).
+ *  Its units.json is the source of truth for the order, the game module, the locked CCSS-M statements and each
+ *  step's Mathematical Practice spotlight; its decks and check banks live beside it. Step keys are
+ *  "explorer-<n>", the very node names the placement service (services/number-quest-placement.js) routes to. */
+function loadNumberQuest(items) {
+  for (const f of fs.readdirSync(path.join(NQD, 'sets')).filter(f => /^u\d-explorer\.json$/.test(f))) {
+    for (const it of readJson(path.join(NQD, 'sets', f)).items || []) items.set(it.id, it);
+  }
+  const reg = readJson(path.join(NQD, 'units.json'));
+  const registry = readJson(path.join(NQD, 'standards.json'));
+  const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
+  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title }));
+  const problems = { explorer: [] };
+  const flat = (reg.units || []).flatMap(u => (u.steps || []).map(s => ({ u, s }))).sort((a, b) => a.s.order - b.s.order);
+  const steps = flat.map(({ u, s }, index) => {
+    const key = `explorer-${s.n}`;
+    const spec = (s.game || {}).explorer || null;
+    const game = spec ? { slug: spec.slug, chapter: spec.chapter, chapterTitle: spec.chapterTitle || spec.chapter, params: spec.params || '', title: gameTitle(spec.slug, gameInfo) } : null;
+    const file = path.join(NQD, 'course', 'explorer', `${s.n}.json`);
+    let deck = null;
+    if (fs.existsSync(file)) {
+      try { deck = readJson(file); } catch (e) { problems.explorer.push(`${key}: ${e.message}`); }
+    }
+    const base = { key, n: s.n, unit: u.n, band: 'explorer', index, game, lesson: null, group: u.group, standards: (s.standards || {}).explorer || null, mp: s.mp || null };
+    if (!deck) {
+      problems.explorer.push(`${key}: no deck at course/explorer/${s.n}.json`);
+      return { ...base, title: (s.titles || {}).explorer || s.n, topic: (s.shorts || {}).explorer || '', minutes: 6, slides: [{ kind: 'text', title: (s.titles || {}).explorer || s.n, text: reg.program.tagline, art: 'star', say: '' }], check: [], talk: '', deck: false };
+    }
+    return { ...base, ...fromNqDeck(key, s, deck, game, items, problems.explorer) };
+  });
+  return { steps: { explorer: steps }, problems, groups, catalogue: { program: reg.program, units: reg.units || [], registry, tier: (reg.tiers || {}).explorer || null } };
+}
+/** One Number Quest deck, cleaned and checked against its units.json entry (the same rules as fromCyberDeck;
+ *  its check items are the step's own bank items, ids "nq-explorer-<n>-e<k>", each tagged to a locked code). */
+function fromNqDeck(key, s, d, game, items, problems) {
+  const slides = (Array.isArray(d.slides) ? d.slides : []).filter(x => x && typeof x === 'object').map(cleanSlide);
+  const check = Array.isArray(d.check) && d.check.length === 3 && d.check.every(id => items.has(id)) ? d.check : [];
+  const say = m => problems.push(`${key}: ${m}`);
+  if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);
+  if (d.n !== s.n) say(`n is ${JSON.stringify(d.n)}`);
+  if (d.band !== 'explorer') say(`band is ${JSON.stringify(d.band)}`);
+  if (slides.length < 5 || slides.length > 7) say(`${slides.length} slides (5-7 expected)`);
+  if (slides.filter(x => x.kind === 'example').length !== 1) say('needs exactly one example slide');
+  if (slides.filter(x => x.kind === 'words').length !== 1) say('needs exactly one words slide');
+  if (!slides.length || slides[slides.length - 1].kind !== 'mission') say('the last slide must be the mission');
+  for (const [i, sl] of (d.slides || []).entries()) {
+    if (!sl || !sl.title || !sl.text) say(`slide ${i + 1} has no title or text`);
+    else if (!ART.has(sl.art)) say(`slide ${i + 1} art ${JSON.stringify(sl.art)} is not a known art id`);
+    if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: Number Quest decks carry no character art until a sprite is extracted from its own game`);
+    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
+  }
+  if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
+  else for (const id of check) if (items.get(id).lesson !== s.n || !id.startsWith('nq-explorer-')) say(`check item ${id} is not from step ${s.n}`);
+  const want = game ? { slug: game.slug, chapter: game.chapter, params: game.params } : null;
+  const got = d.game ? { slug: d.game.slug, chapter: d.game.chapter, params: d.game.params } : null;
+  if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match units.json (${JSON.stringify(want)})`);
+  if (!game && !str(d.talk)) say('a step without a game needs "talk"');
+  return { title: str(d.title, 80) || (s.titles || {}).explorer || s.n, topic: str(d.topic, 40) || (s.shorts || {}).explorer || '', minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
 }
 
 /** The unit groups on the course map, each headed by its game (unit 6 by its theme). */
@@ -327,28 +438,33 @@ const groupOf = unit => (GROUPS.find(g => g.units.includes(unit)) || GROUPS[0]).
 /** The course map's groups for a course: CS Quest's game worlds, Cyber Defenders' units from its units.json. */
 export function groupsFor(course) {
   if (course && course.slug === 'cyber-defenders') return load().cyber.groups;
+  if (course && course.slug === 'number-quest') return load().nq.groups;
   return GROUPS;
 }
 
 /** The course's steps for a band, in order. */
 export function steps(course, band) {
-  if (!course || !BANDS.includes(band)) return [];
+  if (!course || !bandsFor(course).includes(band)) return [];
   if (course.slug === 'cs-quest') return load().csq.steps[band];
   if (course.slug === 'cyber-defenders') return load().cyber.steps[band];
+  if (course.slug === 'number-quest') return load().nq.steps[band];
   return [];
 }
-/** One step by key ("1b-1.2"), or null. */
+/** One step by key ("1b-1.2", "explorer-1.2"), or null. */
 export function getStep(course, key) {
-  const m = /^(1b|2)-(\d\.\d)$/.exec(String(key || ''));
+  const m = /^(1b|2|explorer)-(\d\.\d)$/.exec(String(key || ''));
   return m ? steps(course, m[1]).find(s => s.n === m[2]) || null : null;
 }
 /** A bank item by id (with its answer: server side only). */
 export const item = id => load().items.get(id) || null;
 /** What the decks say that does not fit their course data (empty when every deck is right). */
-export const deckProblems = (band, slug = 'cs-quest') => (slug === 'cyber-defenders' ? load().cyber.problems[band] : load().csq.problems[band]) || [];
+export const deckProblems = (band, slug = 'cs-quest') => (slug === 'cyber-defenders' ? load().cyber.problems[band] : slug === 'number-quest' ? load().nq.problems[band] : load().csq.problems[band]) || [];
 /** Cyber Defenders' teacher-facing catalogue: the program line, the units with their steps, standards and
  *  teacher notes, and the standards registry — the data the teacher page renders (units.json + standards.json). */
 export const cyberCatalogue = () => load().cyber.catalogue;
+/** Number Quest's teacher-facing catalogue: the program line, the Explorer units with their steps, locked
+ *  CCSS-M statements and teacher notes, and the standards registry (units.json + standards.json). */
+export const numberQuestCatalogue = () => load().nq.catalogue;
 /** Forget the loaded files (tests that write decks). */
 export const reload = () => { cache = null; };
 
@@ -356,10 +472,10 @@ export const reload = () => { cache = null; };
 export function getBand(user, course) {
   if (!user || !course) return null;
   const r = q.get('SELECT band FROM course_bands WHERE user_id=? AND course=?', user.id, course.slug);
-  return r && BANDS.includes(r.band) ? r.band : null;
+  return r && bandsFor(course).includes(r.band) ? r.band : null;
 }
 export function setBand(user, course, band) {
-  if (!user || !course || !BANDS.includes(band)) return false;
+  if (!user || !course || !bandsFor(course).includes(band)) return false;
   q.run('INSERT INTO course_bands(user_id, course, band, updated_at) VALUES (?,?,?,?) ON CONFLICT(user_id, course) DO UPDATE SET band=excluded.band, updated_at=excluded.updated_at', user.id, course.slug, band, now());
   return true;
 }
@@ -377,17 +493,42 @@ export const isComplete = (step, r) => !!(r && r.read_at && r.checked_at && (!st
  *  won (module finished), complete, open }. */
 export function states(user, course, band) {
   const all = steps(course, band); const rs = rows(user, course);
+  // A guest's pending facts stand in for their progress in their own views (see the pending-wins
+  // section): without them a guest could never open the second step of a course, since steps open in
+  // sequence and nothing of theirs is ever recorded. The overlay touches only this read — the rows
+  // are copies, course_progress itself is never written for a guest.
+  if (isGuestUser(user)) {
+    for (const f of q.all('SELECT step, kind FROM course_pending_wins WHERE user_id=? AND course=?', user.id, course.slug)) {
+      const r = rs.get(f.step) || { read_at: null, checked_at: null, check_score: 0, played_at: null, completed_at: null };
+      if (f.kind === 'check') { r.read_at = r.read_at || 1; r.checked_at = r.checked_at || 1; }
+      else if (f.kind === 'played') r.played_at = r.played_at || 1;
+      else if (f.kind === 'win') r.completed_at = r.completed_at || 1;
+      rs.set(f.step, r);
+    }
+  }
+  // Number Quest's placement promise, kept here so every reader of step state (path, step pages,
+  // play, the step APIs) agrees: the workshops at and before the learner's placed start stay open
+  // for games, laps and test-out, even before the steps in front of them are finished. The start
+  // node is read from the placement row directly (no service import, so no cycle); a stored
+  // 'explorer-5.1' from before repair round 3 reads as the furthest built workshop, as the
+  // placement service itself now normalises it.
+  let placedIdx = -1;
+  if (course.slug === 'number-quest' && user && user.id) {
+    const pr = q.get('SELECT start_node FROM nq_placement WHERE user_id=?', user.id);
+    const node = pr && (pr.start_node === 'explorer-5.1' ? 'explorer-4.1' : pr.start_node);
+    if (node) placedIdx = all.findIndex(s => s.key === node);
+  }
   let prevDone = true;
-  return all.map(step => {
+  return all.map((step, i) => {
     const r = rs.get(step.key) || null;
-    const s = { step, row: r, read: !!(r && r.read_at), checked: !!(r && r.checked_at), played: !!(r && r.played_at), won: !!(r && r.completed_at), complete: isComplete(step, r), open: prevDone };
+    const s = { step, row: r, read: !!(r && r.read_at), checked: !!(r && r.checked_at), played: !!(r && r.played_at), won: !!(r && r.completed_at), complete: isComplete(step, r), open: prevDone || i <= placedIdx };
     prevDone = s.complete;
     return s;
   });
 }
 /** The course map's summary: { band, list, done, total, next } (next: the first open step not complete, or null). */
 export function overview(user, course, band = getBand(user, course)) {
-  if (!band) return { band: null, list: [], done: 0, total: steps(course, '1b').length, next: null };
+  if (!band) return { band: null, list: [], done: 0, total: steps(course, bandsFor(course)[0]).length, next: null };
   const list = states(user, course, band);
   return { band, list, done: list.filter(s => s.complete).length, total: list.length, next: (list.find(s => s.open && !s.complete) || null) };
 }
@@ -404,13 +545,24 @@ function upsert(user, course, step, fields) {
   const vals = Object.values(fields).filter(v => v !== 'now');
   q.run(`UPDATE course_progress SET ${sets.join(', ')} WHERE user_id=? AND course=? AND step=?`, ...vals, user.id, course.slug, step.key);
 }
-/** The slides were read (the first time is kept). */
+/** The slides were read (the first time is kept). Reading is a bookmark, not progress toward a
+ *  completion, so a guest's read is recorded like anyone's (and carries over when they sign up, the
+ *  way a guest's game saves do). */
 export function markRead(user, course, step) { upsert(user, course, step, { read_at: 'now' }); }
-/** The game module was opened from this step: started, not finished. The step completes only at markCompleted. */
-export function markPlayed(user, course, step) { upsert(user, course, step, { played_at: 'now' }); }
+/** The game module was opened from this step: started, not finished. The step completes only at markCompleted.
+ *  A guest's start is a pending fact, not progress (see the pending-wins section). */
+export function markPlayed(user, course, step) {
+  if (isGuestUser(user)) { stashPendingFact(user, course, step, 'played'); return; }
+  upsert(user, course, step, { played_at: 'now' });
+}
 /** The game itself reported this step's assigned module finished (its chapter won): the step's game part is
- *  done. Recorded only for a player who started the module (markPlayed) — see the /complete API. */
-export function markCompleted(user, course, step) { upsert(user, course, step, { completed_at: 'now' }); }
+ *  done. Recorded only for a player who started the module (markPlayed) — see the /complete API.
+ *  A guest's win is never recorded here: the /complete API keeps it as a pending fact instead, and this
+ *  guard keeps the rule true for any caller. */
+export function markCompleted(user, course, step) {
+  if (isGuestUser(user)) return;
+  upsert(user, course, step, { completed_at: 'now' });
+}
 
 /** A seeded order of a question's four choices: the same for this player, step and try, different on the next try. */
 export function choiceOrder(seed, n = 4) {
@@ -440,18 +592,100 @@ export function grade(step, answers) {
 }
 const toInt = v => (v === '' || v === null || v === undefined ? null : Number.isInteger(+v) ? +v : null);
 /** Record a graded check. Reaching the check counts as having read the slides; a pass is kept once earned; the best
- *  score is kept. */
+ *  score is kept. A guest's pass is kept as a pending fact instead (with its score): it earns no
+ *  recorded progress, but it opens the step's game module for this sitting and is honoured with the
+ *  win it leads to once the student signs in. */
 export function recordCheck(user, course, step, { score, passed }) {
+  if (isGuestUser(user)) { if (passed) stashPendingFact(user, course, step, 'check', score); return; }
   upsert(user, course, step, { read_at: 'now', ...(passed ? { checked_at: 'now' } : {}) });
   q.run('UPDATE course_progress SET check_score=MAX(check_score, ?) WHERE user_id=? AND course=? AND step=?', score, user.id, course.slug, step.key);
 }
 
+// ------------------------------------------------------------------------------------------------- pending wins
+// Greg's addendum (2026-11-04 20:57): course completion requires a signed-in account, because a
+// guest's progress is not tracked. Guests still browse lessons and play games freely — what is gated
+// is the completion itself. So a guest's earned facts live in course_pending_wins (migration 0050),
+// never in course_progress: 'check' (the step's check passed, with its score), 'played' (the module
+// was entered from the step), 'win' (the game reported its assigned module won). The /complete API
+// refuses a guest with the sign-in prompt and stashes the 'win'; when the student signs in — the same
+// user row after a guest upgrade, or another account the pending facts are transferred to at login —
+// applyPendingWins turns each stashed win into the step's real progress and clears the facts. A check
+// passed on a step with a game, without its win, is cleared unrecorded: that student still owes the
+// game. (A check on a step with no game is honoured: there, the check is the finished step.)
+export const isGuestUser = u => !!u && !!u.is_guest;
+/** Keep one earned fact for a guest (idempotent; a check keeps its best score). Accounts never need
+ *  this — their facts are progress the moment they happen — so it writes nothing for them. */
+export function stashPendingFact(user, course, step, kind, score = null) {
+  if (!isGuestUser(user) || !course || !step || !['check', 'played', 'win'].includes(kind)) return;
+  q.run('INSERT OR IGNORE INTO course_pending_wins(user_id, course, step, kind, score, created_at) VALUES (?,?,?,?,?,?)',
+    user.id, course.slug, step.key, kind, Number.isInteger(score) ? score : null, now());
+  if (kind === 'check' && Number.isInteger(score)) {
+    q.run('UPDATE course_pending_wins SET score=MAX(COALESCE(score, 0), ?) WHERE user_id=? AND course=? AND step=? AND kind=?',
+      score, user.id, course.slug, step.key, kind);
+  }
+}
+/** A player's pending facts for one step: { check, played, win, checkScore }. */
+export function pendingFacts(user, course, step) {
+  const out = { check: false, played: false, win: false, checkScore: null };
+  if (!user || !user.id || !course || !step) return out;
+  for (const r of q.all('SELECT kind, score FROM course_pending_wins WHERE user_id=? AND course=? AND step=?', user.id, course.slug, step.key)) {
+    if (r.kind === 'check') { out.check = true; out.checkScore = r.score; }
+    else if (r.kind === 'played') out.played = true;
+    else if (r.kind === 'win') out.win = true;
+  }
+  return out;
+}
+/** Honour the pending wins of a student who has signed in: each stashed 'win' becomes the step's real
+ *  progress (read, check passed with its stashed score, module played and finished — the win proves
+ *  the whole flow). A stashed 'check' on a step with NO game is honoured the same way, because there
+ *  the passed check is itself the finished step; a 'check' on a game step without its win is not —
+ *  that student still owes the game, and the fact is cleared unrecorded with the rest. Guests and
+ *  unknown users keep their facts untouched.
+ *  -> [{ course, step, via }] the completions applied, in the order earned ('win' | 'check'). */
+export function applyPendingWins(user) {
+  if (!user || !user.id || user.is_guest) return [];
+  const facts = q.all('SELECT * FROM course_pending_wins WHERE user_id=? ORDER BY created_at, step', user.id);
+  if (!facts.length) return [];
+  const byStep = new Map();
+  for (const f of facts) {
+    const k = `${f.course} ${f.step}`;
+    if (!byStep.has(k)) byStep.set(k, { course: f.course, step: f.step, kinds: new Set(), score: null });
+    const e = byStep.get(k); e.kinds.add(f.kind);
+    if (f.kind === 'check' && Number.isInteger(f.score)) e.score = f.score;
+  }
+  const applied = [];
+  for (const e of byStep.values()) {
+    const course = getCourse(e.course); const step = course && getStep(course, e.step);
+    if (!step) continue;
+    const via = e.kinds.has('win') ? 'win' : (!step.game && e.kinds.has('check') ? 'check' : null);
+    if (!via) continue;
+    upsert(user, course, step, { read_at: 'now', checked_at: 'now', ...(step.game ? { played_at: 'now', completed_at: 'now' } : {}) });
+    if (Number.isInteger(e.score)) {
+      q.run('UPDATE course_progress SET check_score=MAX(check_score, ?) WHERE user_id=? AND course=? AND step=?', e.score, user.id, course.slug, step.key);
+    }
+    applied.push({ course: course.slug, step: step.key, via });
+  }
+  q.run('DELETE FROM course_pending_wins WHERE user_id=?', user.id);
+  return applied;
+}
+/** Hand a guest's pending facts to the account they signed in as (login replaces the guest session
+ *  with another account's; the win the student earned must not be stranded on the guest row). */
+export function transferPendingWins(fromId, toId) {
+  if (!fromId || !toId || fromId === toId) return;
+  q.run('UPDATE OR IGNORE course_pending_wins SET user_id=? WHERE user_id=?', toId, fromId);
+  q.run('DELETE FROM course_pending_wins WHERE user_id=?', fromId);
+}
+
 /** May this player open this game from this step (/play?course=&cstep=)? The step must be open, its check passed and
- *  its game module this game. -> the step, or null. */
+ *  its game module this game. -> the step, or null. A guest's passed check is a pending fact rather
+ *  than a recorded one, and it opens the module the same way — guests play freely; only completion
+ *  waits for an account. */
 export function playable(user, course, key, slug) {
   if (!user) return null;
   const s = stateOf(user, course, key);
-  return s && s.open && s.checked && s.step.game && s.step.game.slug === slug ? s.step : null;
+  if (!s || !s.open || !s.step.game || s.step.game.slug !== slug) return null;
+  if (s.checked) return s.step;
+  return isGuestUser(user) && pendingFacts(user, course, s.step).check ? s.step : null;
 }
 /** The Play link of a step's game module. */
 export const playHref = (course, step) => (step.game ? `/play/${step.game.slug}?course=${course.slug}&cstep=${step.key}${step.game.params ? `&${step.game.params}` : ''}` : null);
@@ -462,6 +696,8 @@ onAccountMerge(({ from, into }) => {
   q.run('DELETE FROM course_progress WHERE user_id=?', from);
   q.run('UPDATE OR IGNORE course_bands SET user_id=? WHERE user_id=?', into, from);
   q.run('DELETE FROM course_bands WHERE user_id=?', from);
+  q.run('UPDATE OR IGNORE course_pending_wins SET user_id=? WHERE user_id=?', into, from);
+  q.run('DELETE FROM course_pending_wins WHERE user_id=?', from);
 });
 
 // ------------------------------------------------------------------------------------------------- the games

@@ -57,10 +57,13 @@ const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/sta
   // Oomba Live: grown-ups host (and join) live games (routes/live.js).
   /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/,
   // Online matches: grown-ups play their own children (and other grown-ups) (routes/match.js).
-  /^\/api\/match\/(people|inbox|[^/]+\/wait)$/];
+  /^\/api\/match\/(people|inbox|[^/]+\/wait)$/,
+  // Number Quest: a grown-up reads their linked child's Starting Point note (routes/number-quest.js checks the link).
+  /^\/number-quest\/starting-point$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
+  /^\/api\/number-quest\/placement\/override$/,   // a grown-up's absolute placement override for a linked child (link checked in the route)
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report|poll)$/,
   /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections

@@ -49,6 +49,9 @@ export const GAMES = {
   'connect-four': { title: 'Drop Four', role: 'friendly', spoken: /./ },
   'escape-the-post-office': { title: 'Escape the Post Office', role: 'wise', spoken: /./ },
   'footy-tycoon': { title: 'Footy Tycoon', role: 'narrator', spoken: /./ },
+  // Number Quest's game: every line in its block is Tally the cat's, and its VOICES block gives them all the
+  // friendly role its BRB.speak calls ask for.
+  'fraction-factory': { title: 'Fraction Factory', role: 'friendly', spoken: /./ },
   'gulp-city': { title: 'Gulp City', role: 'friendly', spoken: /./ },
   'happy-putt': { title: 'Happy Putt', role: 'narrator', spoken: /./ },
   'loop-lab': { title: 'Loop Lab', role: 'narrator', spoken: /./ },

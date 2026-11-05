@@ -121,7 +121,23 @@ addEventListener('message', e => {
       // A course step is finished only when its game reports the assigned chapter won: opening the module
       // merely started it. The endpoint checks server-side that this player passed the step's check and did
       // enter the game from the step, so this call alone completes nothing.
-      if (m.won && d.cstep) api(`/api/courses/${d.cstep.course}/${d.cstep.step}/complete`, { method: 'POST', body: {} }).catch(() => {});
+      if (m.won && d.cstep) api(`/api/courses/${d.cstep.course}/${d.cstep.step}/complete`, { method: 'POST', body: {} }).then(r => {
+        // Number Quest moments (Tally Marks, the daily goal, a lap landing) as toasts: quick, cheerful,
+        // gone on their own — the game keeps the screen.
+        if (!r || !r.nq) return;
+        if (r.nq.marks && r.nq.marks.awarded) toast(t('js.play.nqMarks', { marks: r.nq.marks.marks, total: r.nq.marks.total }));
+        if (r.nq.dailyGoal && r.nq.dailyGoal.justMet) toast(t('js.play.nqGoal'));
+        if (r.nq.lap) toast(t('js.play.nqLap', { lap: r.nq.lap.lap }));
+      }).catch(e => {
+        // A guest's win is not a completion (guests cannot complete courses): the server kept the win
+        // and answered with the sign-in prompt, so the student hears that signing up is what counts it.
+        if (e && e.data && e.data.needAccount) {
+          const s = sheet({ title: t('js.play.guestWinTitle'), content: `<p>${esc(t('js.play.guestWin'))}</p>
+            <p><a class="btn btn-primary btn-big" href="${esc(e.data.signup || '/signup')}">${esc(t('js.play.guestWinAction'))}</a></p>
+            <p><button type="button" class="btn" id="guest-win-later">${esc(t('js.play.guestWinLater'))}</button></p>` });
+          const later = s.el.querySelector('#guest-win-later'); if (later) later.addEventListener('click', s.close);
+        }
+      });
       break;
     }
     case 'brb:fullscreen': m.on ? goFull() : (document.fullscreenElement && document.exitFullscreen().catch(() => {})); break;

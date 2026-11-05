@@ -6,7 +6,7 @@ import { coverArt } from './components.js';
 import { current } from '../i18n/index.js';
 import * as C from '../services/courses.js';
 
-const BAND_INFO = { '1b': { key: 'explorer', emoji: '🧭' }, 2: { key: 'pro', emoji: '🚀' } };
+const BAND_INFO = { '1b': { key: 'explorer', emoji: '🧭' }, 2: { key: 'pro', emoji: '🚀' }, explorer: { key: 'explorer', emoji: '🧭' } };
 export const bandName = (t, band) => t(`courses.band.${BAND_INFO[band].key}`);
 const bandGrades = (t, band) => t(`courses.band.${BAND_INFO[band].key}Sub`);
 /** Text still in English on this language's page is marked so. */
@@ -67,7 +67,7 @@ function bandPicker(t, c) {
     <h2 id="bandpick-h">${t('courses.band.h')}</h2>
     <p class="muted">${t('courses.band.text')}</p>
     <form method="post" action="/courses/${c.slug}/band" class="bandpick-cards">
-      ${C.BANDS.map(b => html`<button class="bandcard" type="submit" name="band" value="${b}" id="band-${b}">
+      ${C.bandsFor(c).map(b => html`<button class="bandcard" type="submit" name="band" value="${b}" id="band-${b}">
         <span class="bandcard-e" aria-hidden="true">${BAND_INFO[b].emoji}</span>
         <span class="bandcard-t"><span class="bandcard-h">${bandName(t, b)}</span><span class="bandcard-s">${bandGrades(t, b)}</span></span>
         <span class="bandcard-go flip" aria-hidden="true">›</span>
@@ -104,7 +104,7 @@ function mapStep(t, c, s, total) {
 export function coursePage({ course: c, games, ov, canPick }) {
   const { t } = current();
   const bySlug = new Map(games.map(g => [g.slug, g]));
-  const other = ov.band && C.BANDS.find(b => b !== ov.band);
+  const other = ov.band && C.bandsFor(c).find(b => b !== ov.band);
   const unitsLabel = units => (units.length > 1 ? t('courses.map.units', { from: units[0], to: units[units.length - 1] }) : t('courses.map.unit', { n: units[0] }));
   return html`<section class="course-page">
     <a class="back small" href="/">← ${t('courses.home')}</a>
@@ -113,7 +113,7 @@ export function coursePage({ course: c, games, ov, canPick }) {
     <section class="cmap-top" aria-labelledby="cmap-h">
       <h2 id="cmap-h" class="sr-only">${t('courses.map.h')}</h2>
       <div class="cmap-band"><span>${BAND_INFO[ov.band].emoji} <b>${bandName(t, ov.band)}</b> · ${bandGrades(t, ov.band)}</span>
-        <form method="post" action="/courses/${c.slug}/band"><button class="linkbtn" type="submit" name="band" value="${other}" id="band-switch">${t('courses.band.switch', { band: bandName(t, other) })}</button></form></div>
+        ${other ? html`<form method="post" action="/courses/${c.slug}/band"><button class="linkbtn" type="submit" name="band" value="${other}" id="band-switch">${t('courses.band.switch', { band: bandName(t, other) })}</button></form>` : ''}</div>
       <div class="cprog" role="progressbar" aria-valuemin="0" aria-valuemax="${ov.total}" aria-valuenow="${ov.done}" aria-label="${t('courses.stepsDone', { n: ov.done, total: ov.total })}"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>
       <p class="cmap-count">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</p>
       ${ov.next ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
@@ -237,14 +237,10 @@ function storyArt(t, s) {
     </div>
   </figure>`;
 }
-function slideArt(t, s) {
-  if (s.story) return storyArt(t, s);
-  if (!s.img) return art(s.art);
-  const img = html`<img class="simg" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async">`;
-  if (!s.focus) return html`<figure class="smedia">${img}</figure>`;
-  return html`<figure class="smedia gf" data-gf>
-    ${img}
-    <div class="gf-layer" aria-hidden="true">${s.focus.map((st, i) => html`
+/** The guided-focus overlay layer, shared by screenshot slides (img) and drawn-diagram slides (visual):
+ *  numbered boxes + cue chips over the picture, played by public/js/course.js exactly the same way. */
+function gfLayer(t, s) {
+  return html`<div class="gf-layer" aria-hidden="true">${s.focus.map((st, i) => html`
       <div class="gf-step" data-i="${i}">
         ${st.path ? html`<svg class="gf-path" viewBox="0 0 100 56.25" preserveAspectRatio="none"><polyline points="${st.path.map(p => `${p[0]},${p[1] * 0.5625}`).join(' ')}" pathLength="100" vector-effect="non-scaling-stroke"></polyline></svg>` : ''}
         <div class="gf-box" style="--bx:${st.box[0]};--by:${st.box[1]};left:${st.box[0]}%;top:${st.box[1]}%;width:${st.box[2]}%;height:${st.box[3]}%"><span class="gf-badge">${i + 1}</span></div>
@@ -252,7 +248,91 @@ function slideArt(t, s) {
       </div>`)}
     </div>
     <button class="gf-replay" type="button" hidden><span aria-hidden="true">↻</span> ${t('courses.lesson.replayFocus')}</button>
-    <figcaption class="gf-cues"><ol>${s.focus.map(st => html`<li>${st.cue}</li>`)}</ol></figcaption>
+    <figcaption class="gf-cues"><ol>${s.focus.map(st => html`<li>${st.cue}</li>`)}</ol></figcaption>`;
+}
+/** A drawn maths diagram (Number Quest's CPA pictorial step): the slide's `visual` data rendered as one
+ *  SVG in the same 100 x 56.25 space the guided-focus boxes use, on the brand Cream ground so it reads
+ *  the same in light and dark themes. These are the lesson's own worked numbers drawn — place-value
+ *  cards, a number line with hops, bar models, fraction bars, an array, a tile strip — never decoration:
+ *  every label is a number or word the slide's text teaches. Layouts are fixed per type so the authored
+ *  focus boxes (percent space) land on the part they name. Tones cycle the brand palette. */
+const VF_TONES = ['#66C792', '#FFD23F', '#8FC1F5', '#F2A65A'];
+function visualSvg(v) {
+  const ink = '#141414', leaf = '#1F9D63';
+  const tx = (x, y, str, size, anchor = 'middle', weight = 700, fill = ink) =>
+    raw(`<text x="${x}" y="${y}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" fill="${fill}">${String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`);
+  let body = '';
+  if (v.type === 'places') {
+    const n = v.cols.length, cw = 88 / n;
+    body = v.cols.map((c, i) => {
+      const x = 6 + i * cw;
+      return raw(`<rect x="${(x + 1.5).toFixed(2)}" y="9" width="${(cw - 3).toFixed(2)}" height="19" rx="2" fill="#FFFFFF" stroke="${ink}" stroke-width="0.7"/>`)
+        + tx(x + cw / 2, 23.5, c.d, 11) + tx(x + cw / 2, 35, c.place, 3.6, 'middle', 600)
+        + tx(x + cw / 2, 43, c.value, 4.2, 'middle', 800, leaf);
+    }).join('');
+  } else if (v.type === 'numberline') {
+    const X = at => 6 + ((at - v.min) / (v.max - v.min)) * 88;
+    body = raw(`<line x1="6" y1="36" x2="94" y2="36" stroke="${ink}" stroke-width="0.8"/><path d="M94 36 l-3 -1.8 v3.6 z" fill="${ink}"/>`)
+      + (v.hops || []).map(h => {
+        const x1 = X(h.from), x2 = X(h.to), mid = (x1 + x2) / 2;
+        return raw(`<path d="M${x1.toFixed(2)} 34 Q${mid.toFixed(2)} 20 ${x2.toFixed(2)} 34" fill="none" stroke="${leaf}" stroke-width="0.9"/>`)
+          + tx(mid, 17.5, h.label, 3.8, 'middle', 800, leaf);
+      }).join('')
+      + (v.marks || []).map(m => raw(`<line x1="${X(m.at).toFixed(2)}" y1="33.4" x2="${X(m.at).toFixed(2)}" y2="38.6" stroke="${ink}" stroke-width="0.7"/>`)
+        + tx(X(m.at), 45, m.label, 3.6, 'middle', 700)).join('')
+      + (v.point ? raw(`<circle cx="${X(v.point.at).toFixed(2)}" cy="36" r="2.3" fill="#FFD23F" stroke="${ink}" stroke-width="0.7"/>`)
+        + tx(X(v.point.at), 28.5, v.point.label, 4.6, 'middle', 800) : '');
+  } else if (v.type === 'bars' || v.type === 'fraction') {
+    const rows = v.type === 'fraction'
+      ? v.rows.map(r => ({ label: r.label, parts: Array.from({ length: r.cuts }, (_, i) => ({ w: 1 / r.cuts, label: '', tone: i < r.shaded ? 0 : -1 })) }))
+      : v.rows;
+    const yOff = rows.length === 1 ? 13 : rows.length === 2 ? 5 : 0;
+    body = rows.map((r, ri) => {
+      const y = 8 + yOff + ri * 17;
+      let x = 6, parts = '';
+      for (const p of r.parts) {
+        const w = p.w * 88;
+        const fill = p.unknown ? '#FFFFFF' : p.tone === -1 || p.tone == null && v.type === 'fraction' ? '#FFFFFF' : VF_TONES[(p.tone || 0) % VF_TONES.length];
+        parts += raw(`<rect x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="8.5" fill="${fill}" stroke="${ink}" stroke-width="0.6"${p.unknown ? ' stroke-dasharray="1.6 1.2"' : ''}/>`)
+          + (p.label ? tx(x + w / 2, y + 5.9, p.label, Math.min(3.6, Math.max(2.4, w / Math.max(3, String(p.label).length) * 1.5))) : '')
+          + (p.unknown ? tx(x + w / 2, y + 5.9, '?', 4.4, 'middle', 800, leaf) : '');
+        x += w;
+      }
+      return tx(6, y - 1.8, r.label, 3.7, 'start', 700) + parts;
+    }).join('') + (v.half ? raw(`<line x1="50" y1="${(4 + yOff).toFixed(1)}" x2="50" y2="${(8 + yOff + rows.length * 17 - 6).toFixed(1)}" stroke="${leaf}" stroke-width="0.7" stroke-dasharray="2 1.6"/>`) + tx(50, (3.4 + yOff).toFixed(1), 'halfway', 3.2, 'middle', 700, leaf) : '');
+  } else if (v.type === 'array') {
+    const R = v.rows, C = v.cols;
+    let dots = '';
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+      const cx = 14 + (c + 0.5) * (72 / C), cy = 10 + (r + 0.5) * (34 / R);
+      dots += raw(`<circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="2.05" fill="${VF_TONES[0]}" stroke="${ink}" stroke-width="0.45"/>`);
+    }
+    if (v.extra) dots += raw(`<circle cx="50" cy="50.5" r="2.05" fill="#FFD23F" stroke="${ink}" stroke-width="0.6"/>`) + tx(55, 52, v.extraLabel || '1 left over', 3.6, 'start', 800, leaf);
+    body = dots + (v.label ? tx(50, 6.5, v.label, 3.8, 'middle', 700) : '');
+  } else if (v.type === 'tiles') {
+    const n = v.values.length, bw = (88 - (n - 1) * 2) / n;
+    body = v.values.map((val, i) => {
+      const x = 6 + i * (bw + 2), bad = v.bad === i;
+      return raw(`<rect x="${x.toFixed(2)}" y="18" width="${bw.toFixed(2)}" height="15" rx="1.8" fill="${bad ? '#FFE1D6' : '#FFFFFF'}" stroke="${bad ? '#C2431F' : ink}" stroke-width="${bad ? 1 : 0.7}"${bad ? ' stroke-dasharray="2 1.4"' : ''}/>`)
+        + tx(x + bw / 2, 28, val, String(val).length > 7 ? 2.9 : 3.8)
+        + (bad ? tx(x + bw / 2, 40, 'swapped!', 3.4, 'middle', 800, '#C2431F') : '');
+    }).join('') + (v.label ? tx(50, 10, v.label, 3.8, 'middle', 700) : '');
+  }
+  return raw(`<svg class="vf-svg" viewBox="0 0 100 56.25" role="img" aria-label="${String(v.label || '').replace(/"/g, '&quot;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
+}
+function slideArt(t, s) {
+  if (s.story) return storyArt(t, s);
+  if (s.visual) {
+    const fig = visualSvg(s.visual);
+    if (!s.focus) return html`<figure class="smedia vf">${fig}</figure>`;
+    return html`<figure class="smedia gf vf" data-gf>${fig}${gfLayer(t, s)}</figure>`;
+  }
+  if (!s.img) return art(s.art);
+  const img = html`<img class="simg" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async">`;
+  if (!s.focus) return html`<figure class="smedia">${img}</figure>`;
+  return html`<figure class="smedia gf" data-gf>
+    ${img}
+    ${gfLayer(t, s)}
   </figure>`;
 }
 /** What read-aloud says for a slide: its own line if it has one, else its title and text (and the words). */
@@ -324,7 +404,8 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn }) 
     </nav>
     <section class="cl-check" id="check" aria-labelledby="check-h" data-done="${s.checked ? '1' : ''}" data-read="${s.read ? '1' : ''}">
       <h2 id="check-h">✅ ${t('courses.check.h')}</h2>
-      ${s.checked ? html`<p class="cl-passed">✓ ${t('courses.check.done')}</p>`
+      ${s.checked ? html`<p class="cl-passed">✓ ${t('courses.check.done')}</p>
+        ${c.slug === 'number-quest' ? html`<p class="nq-passed-tally"><img class="nq-tally-img" src="/img/csq/chars/tally.webp" alt="" width="219" height="353"> <span lang="en" dir="ltr">Tally is purring: check passed. The mission is open below.</span></p>` : ''}`
         : html`<p class="muted">${t('courses.check.intro')}</p>
         ${result ? html`<div class="cl-result ${result.passed ? 'ok' : 'bad'}" role="status">${result.passed ? t('courses.check.passed', { score: result.score, total: 3 }) : t('courses.check.failed', { score: result.score, total: 3 })}
           ${result.passed ? '' : html`<ul${en}>${result.results.filter(r => !r.right).map(r => html`<li>${C.item(r.id).q} → <b>${r.text}</b></li>`)}</ul>`}</div>` : ''}
