@@ -322,11 +322,11 @@ html[lang=ar] *{letter-spacing:0!important} /* letter spacing would pull the joi
 </div>
 </div>
 
-<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/dress.js" integrity="sha384-JZ2+9mOMVNO4iOIJ8Geoa/9ryqx6ygcPzCxDnZ1XmwOKuMJSCM3llSYH2L4SUAYV" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-props.js" integrity="sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-biomes-2.js" integrity="sha384-HLqoCO2/jj82nsj7mFOu0oYfcC9/3M5xWooNfKXjsX8roLgcEPErFyk1DoLhDHES" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/oomba-kit.js" integrity="sha384-C3W9aOBuSkvtAv0cHch+tzSi9h4GN4XCkR3u9iTN7D83Xx2nTtdr3zkPLu6EdBuH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/dress.js" integrity="sha384-9wPjHho+viJMVdJg8L4+1ENGqI/oQT3z3YT7Y5WZ+WbBv2hGK7t0HR67J5LxaylI" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-animals.js" integrity="sha384-BwLptTueADpqBmgLs41pCV8UhbJxHD65ThZMuvbASFcHB9IZgxh5pa60fE5tWGwP" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-props.js" integrity="sha384-E2lAqpLj/Q6iEwoIdyK/MXu8x8WVmey7Q1Pipb398HbA6hQ9upXgTcs5Jnxe8PGB" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-biomes-2.js" integrity="sha384-DreIwFLRxbLjCnv8CC2hfcRObpNynlew3Pj7A1vG3BxIG4E4g1s0gXQFF8hLFswn" crossorigin="anonymous"></script>
 <script>
 (function(){
 'use strict';
@@ -379,7 +379,6 @@ CONFIG.colors = CONFIG.ballHues.map(h => Oomba.color(h));
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
 const RTL = ((window.BRB && BRB.user && BRB.user.dir) || (/^(he|ar)\b/.test(LANG) ? 'rtl' : 'ltr')) === 'rtl';
 const NUM_LOCALE = LANG === 'ar' ? 'ar-u-nu-latn' : LANG; // Arabic with Latin digits, like the site
-// ==== I18N START ====
 const I18N = {
   en: {
     sub: "Country Club · 18 holes",
@@ -1014,7 +1013,6 @@ const I18N = {
     ]
   }
 };
-// ==== I18N END ====
 function tv(key) { // raw value by dotted path: the locale, then its base language, then English
   const path = key.split('.'), get = o => { for (const p of path) { if (o == null) return undefined; o = o[p]; } return o; };
   const L = I18N[LANG], B = I18N[LANG.split('-')[0]];
