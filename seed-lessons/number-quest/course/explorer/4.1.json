@@ -239,7 +239,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Fraction Factory at First Cuts, then serve the orders. Cut every whole into equal parts before you count any pieces.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/fraction-factory/first-cuts",
+   "alt": "Fraction Factory, First Cuts: Tally's order for a fraction of a cake, the whole cake cut into equal parts, the slicer buttons below."
   }
  ],
  "check": [

@@ -252,7 +252,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Fraction Factory at Re-Slice, then serve the orders. Re-slice a share before you decide if two orders match.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/fraction-factory/re-slice",
+   "alt": "Fraction Factory, Re-Slice: the order says one half but the tray only fits fourths, each half re-sliced into two, parts on the tray."
   }
  ],
  "check": [

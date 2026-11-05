@@ -214,7 +214,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Sum Racer. It opens on the Mixed Grand Prix track, a mix of everything, and it stays there. Win the race against your own best, and name the trick behind each hard fact.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/sum-racer/grand-prix",
+   "alt": "Sum Racer on the Mixed Grand Prix track: a mixed question on screen, four answers to pick from, the race under way."
   }
  ],
  "check": [

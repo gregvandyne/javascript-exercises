@@ -233,7 +233,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Sum Racer. It opens on the Subtraction to 100 track, taking-away questions only, and it stays there. Win the race: for this one race, solve every gap by counting up.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/sum-racer/subtraction-track",
+   "alt": "Sum Racer on the Subtraction to 100 track: a subtraction question on screen, four answers to pick from, the race under way."
   }
  ],
  "check": [

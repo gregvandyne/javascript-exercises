@@ -176,7 +176,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Sum Racer. It opens on the Addition to 100 track, adding questions only, and it stays there. Win the race: when a column passes ten, say the trade out loud.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/sum-racer/addition-track",
+   "alt": "Sum Racer on the Addition to 100 track: an addition question on screen, four answers to pick from, the race under way."
   }
  ],
  "check": [

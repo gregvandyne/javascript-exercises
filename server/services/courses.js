@@ -132,12 +132,18 @@ const ART = new Set(['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', '
 export const ART_IDS = Object.freeze([...ART]);
 /** The story layer (the course's story & intro pack): the four characters, in course order, and the scenes a
  *  slide's `story` stage can play. Sprites are extracted from the characters' own games (scripts/csq-sprites.js)
- *  at public/img/csq/chars/<id>.webp. */
-export const CHAR_IDS = Object.freeze(['bolt', 'dot', 'pim', 'gizmo']);
-export const STORY_SCENES = Object.freeze(['dim', 'drain', 'team', 'map', 'handoff', 'relight', 'celebrate', 'finale']);
+ *  at public/img/csq/chars/<id>.webp. Number Quest's guide joins the cast as a fifth id — 'tally', the cat who
+ *  keeps the Numberworks (her sprite is Fraction Factory's own Tally, at public/img/csq/chars/tally.webp) —
+ *  with one scene of her own, 'street': the Numberworks street, its workshop windows lit per `lit`, Tally on
+ *  stage. CS Quest's four and their eight scenes are untouched: no CSQ or Cyber deck names tally or street,
+ *  so their validation and rendering are exactly as before. */
+export const CHAR_IDS = Object.freeze(['bolt', 'dot', 'pim', 'gizmo', 'tally']);
+export const STORY_SCENES = Object.freeze(['dim', 'drain', 'team', 'map', 'handoff', 'relight', 'celebrate', 'finale', 'street']);
 const str = (v, max = 600) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
-/** A slide picture's manifest key: "csq/<game>/<state>" -> public/img/csq/<game>/<state>.webp (see public/img/csq/manifest.json). */
-export const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+/** A slide picture's manifest key: "csq/<game>/<state>" -> public/img/csq/<game>/<state>.webp (see
+ *  public/img/csq/manifest.json), or "nq/<game>/<state>" -> public/img/nq/<game>/<state>.webp for Number
+ *  Quest's own games (see public/img/nq/manifest.json; captures by scripts/nq-shots.js). */
+export const IMG_KEY = /^(?:csq|nq)\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /** One slide, cleaned: only the fields the viewer draws. */
 function cleanSlide(s) {
   const kind = ['example', 'words', 'mission'].includes(s && s.kind) ? s.kind : 'text';
@@ -256,7 +262,7 @@ function fromDeck(key, l, d, game, items, problems) {
   for (const [i, s] of (d.slides || []).entries()) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
-    if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
+    if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (s && s.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
     if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
     if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
@@ -291,7 +297,7 @@ function fromExtra(key, x, d, wantIds, items, problems, game) {
   for (const [i, s] of (d.slides || []).entries()) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
-    if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
+    if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (s && s.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
     if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
@@ -369,7 +375,7 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
   for (const [i, sl] of (d.slides || []).entries()) {
     if (!sl || !sl.title || !sl.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(sl.art)) say(`slide ${i + 1} art ${JSON.stringify(sl.art)} is not a known art id`);
-    if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: it needs a csq/<game>/<state> key and an alt of 1-160 chars`);
+    if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (sl && sl.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
     if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
     if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);

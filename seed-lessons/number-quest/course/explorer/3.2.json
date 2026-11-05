@@ -165,7 +165,9 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "Open Sum Racer. It opens on the Sharing (division) track, division questions only, and it stays there. Win the race: picture the fair shares before you answer.",
-   "art": "trophy"
+   "art": "trophy",
+   "img": "nq/sum-racer/sharing-track",
+   "alt": "Sum Racer on the Sharing (division) track: a division question on screen, four answers to pick from, the race under way."
   }
  ],
  "check": [

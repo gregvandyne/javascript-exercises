@@ -1,0 +1,157 @@
+// Number Quest slide pictures: capture the in-game screenshots the mission slides carry. Each shot boots
+// the real game inside the sandbox wrapper (the covers.js pattern) with the lesson parameters of the deck
+// whose mission assigns it (BRB.params, parsed by the site's own parseParams — mode/level/chapter/lock
+// exactly as the play page sends them), so the photograph shows the game the student is about to play, in
+// its assigned mode: Sum Racer locked to the mission's track, Brain Board opened straight on the step's
+// board, Quest Race on pattern questions, Fraction Factory inside the mission's chapter.
+//
+// Usage: node scripts/nq-shots.js [--no-webp] [state ...]
+//   masters (PNG, 1280x720) go to scripts/nq-masters/<game>/<state>.png (kept locally, the re-runnable
+//   source); each master also converts to public/img/nq/<game>/<state>.webp (WebP q80, max 1280 wide),
+//   the file the slide serves. Manifest: public/img/nq/manifest.json (check: npm run nq:check).
+// Needs the Playwright Chromium (`npx playwright install chromium`).
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { chromium } from '@playwright/test';
+import { frameDocument, frameCsp, SANDBOX } from '../server/services/frame.js';
+import { vendorFile } from '../server/services/snapshot.js';
+import { parseParams } from '../server/services/play-params.js';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const EXE = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const WEBP = !process.argv.includes('--no-webp');
+const wait = ms => new Promise(r => setTimeout(r, ms));
+/* Poll with evaluate rather than waitForFunction: its rAF polling starves in a frame whose render loop
+   is saturated (Quest Race's 3D view never fires the hook wait, though the hook is already there). */
+async function hook(f) { const t0 = Date.now(); while (Date.now() - t0 < 45000) { try { if (await f.evaluate(() => !!(window.__brbTest && window.__brbTest.state))) return; } catch { /* frame still navigating */ } await wait(250); } throw new Error('test hook never appeared'); }
+/** Wait for the game's own state to match, or go on after a few seconds (the covers.js discipline). */
+async function until(f, ok, ms = 10000) { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (ok(await f.evaluate(() => window.__brbTest.state()) || {})) return true; } catch { /* reloading */ } await wait(200); } return false; }
+/** The kit's title screen: press Play (a lesson arrival then opens its locked content at once). */
+async function play(f) { await wait(900); for (const sel of ['.ok-title-screen .ok-hot', '.ok-title-screen .ok-big', '.ok-title-screen button']) { const go = await f.$(sel); if (go) { await go.click(); await wait(1500); return; } } }
+
+// One shot per mission slide: the deck (step), the game, the lesson parameters from that deck's own
+// game.params, and how to reach the moment worth photographing — mid-play, the assigned skill on screen.
+const SHOTS = [
+  { step: '1.1', state: 'place-value-board', slug: 'brain-board', params: 'mode=nq-1-1&lock=1', prep: brainBoard },
+  { step: '1.2', state: 'rounding-run', slug: 'sum-racer', params: 'level=9&lock=1', prep: sumRacer },
+  { step: '1.3', state: 'pattern-race', slug: 'quest-race', params: 'mode=nq-1-3&lock=1', prep: questRace, cdp: true },
+  { step: '2.1', state: 'addition-track', slug: 'sum-racer', params: 'level=3&mode=add&lock=1', prep: sumRacer },
+  { step: '2.2', state: 'subtraction-track', slug: 'sum-racer', params: 'level=3&mode=sub&lock=1', prep: sumRacer },
+  { step: '2.3', state: 'story-board', slug: 'brain-board', params: 'mode=nq-2-3&lock=1', prep: brainBoard },
+  { step: '3.1', state: 'times-tables-track', slug: 'sum-racer', params: 'level=4&lock=1', prep: sumRacer },
+  { step: '3.2', state: 'sharing-track', slug: 'sum-racer', params: 'level=6&lock=1', prep: sumRacer },
+  { step: '3.3', state: 'grand-prix', slug: 'sum-racer', params: 'level=7&lock=1', prep: sumRacer },
+  { step: '4.1', state: 'first-cuts', slug: 'fraction-factory', params: 'chapter=first-cuts&band=1b&lock=1', prep: fractionFactory },
+  { step: '4.2', state: 're-slice', slug: 'fraction-factory', params: 'chapter=re-slice&band=1b&lock=1', prep: fractionFactory },
+  { step: '4.3', state: 'recipe-maths', slug: 'fraction-factory', params: 'chapter=recipe&band=1b&lock=1', prep: fractionFactory },
+];
+
+async function brainBoard(f) {
+  await play(f);
+  await until(f, s => s.board && s.phase === 'between');
+  await f.evaluate(() => window.__brbTest.pick(0, 0));   // open a tile: the step's own question on its card
+  await until(f, s => s.question && s.card);
+  await wait(700);
+}
+async function sumRacer(f) {
+  await play(f);
+  await f.evaluate(() => window.__brbTest.skipAnimations && window.__brbTest.skipAnimations());
+  await until(f, s => s.question && s.phase === 'racing');
+  // Answer one correctly so the kart is moving and the race is under way, then let the next question land.
+  await f.evaluate(() => { const t = window.__brbTest; t.answer(t.state().question.answer); t.step && t.step(1100); });
+  await until(f, s => s.question && s.phase === 'racing');
+  await wait(600);
+}
+async function questRace(f) {
+  await play(f);
+  // The race cycles questions in real time (its own runners answer), with interstitial banners between
+  // them, and each question's timer is short; the test hook's question and the visible card are not in
+  // phase, so wait INSIDE the page for the card itself (#card with its #qtext) and shoot as it lands.
+  await f.evaluate(() => new Promise(res => {
+    const t = setInterval(() => { const c = document.querySelector('#card'), q = document.querySelector('#qtext'); const cs = c ? getComputedStyle(c) : null; if (c && q && q.textContent.trim().length > 3 && c.getBoundingClientRect().height > 40 && cs.visibility !== 'hidden' && cs.display !== 'none' && +cs.opacity > 0) { clearInterval(t); res(q.textContent.trim()); } }, 50);
+    setTimeout(() => { clearInterval(t); res(''); }, 25000);
+  }));
+}
+async function fractionFactory(f) {
+  // Pressing Play on a lesson arrival enters the locked chapter at once, past the kit's how-to card
+  // (its Go! button is the actual start); clear the chapter's opening card if one is up, then take the
+  // game's own advice once so the photograph is mid-task.
+  await play(f);
+  await f.getByRole('button', { name: 'Go!' }).click({ timeout: 6000 }).catch(() => {});
+  await until(f, s => s.chapter && s.level >= 1, 15000);
+  // The chapter screen is only the doorway: start its first order so the run itself is on screen.
+  await f.getByRole('button', { name: /Start order/ }).click({ timeout: 6000 }).catch(() => {});
+  await until(f, s => s.denom > 0, 15000);
+  await f.evaluate(() => { try { window.__brbTest.closeCards(); } catch { /* no card up */ } });
+  await wait(500);
+  await f.evaluate(() => { const t = window.__brbTest; const a = t.advice && t.advice(); if (a) t.act(a); });
+  await wait(900);
+}
+
+async function capture(browser, shot) {
+  const htmlPath = path.join(ROOT, 'seed-games', `${shot.slug}.html`);
+  const params = parseParams(Object.fromEntries(new URLSearchParams(shot.params)));
+  const doc = frameDocument(fs.readFileSync(htmlPath, 'utf8'), { user: { displayName: 'Player', avatar: '🦊', isGuest: false }, game: { id: shot.slug, title: shot.slug }, save: {}, canSave: false, preview: true, params });
+  const srv = http.createServer((q, r) => {
+    const origin = `http://127.0.0.1:${srv.address().port}`;
+    if (q.url.startsWith('/g')) { r.setHeader('Content-Security-Policy', frameCsp(origin)); r.setHeader('Content-Type', 'text/html; charset=utf-8'); return r.end(doc); }
+    if (q.url.startsWith('/vendor/')) {
+      const file = vendorFile(origin + q.url.split('?')[0]);
+      if (!file) { r.statusCode = 404; return r.end(); }
+      r.setHeader('Content-Type', file.endsWith('.js') ? 'text/javascript; charset=utf-8' : file.endsWith('.woff2') ? 'font/woff2' : 'text/plain; charset=utf-8');
+      r.setHeader('Access-Control-Allow-Origin', '*'); r.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      return r.end(fs.readFileSync(file));
+    }
+    r.setHeader('Content-Type', 'text/html; charset=utf-8');
+    r.end(`<!doctype html><style>html,body{margin:0;height:100%;background:#000}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="/g"></iframe>`);
+  });
+  await new Promise(r => srv.listen(0, r));
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+  const page = await ctx.newPage();
+  await page.route(/fonts\.(googleapis|gstatic)\.com/, route => {
+    try {
+      const body = execFileSync('curl', ['-s', '-L', '-A', 'Mozilla/5.0 Chrome/140', route.request().url()], { maxBuffer: 8e6 });
+      route.fulfill({ status: 200, body, headers: { 'content-type': /gstatic/.test(route.request().url()) ? 'font/woff2' : 'text/css', 'access-control-allow-origin': '*' } });
+    } catch { route.abort(); }
+  });
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  try {
+    await page.goto(`http://127.0.0.1:${srv.address().port}/`);
+    await page.waitForTimeout(700);
+    const f = page.frames().find(x => x.url().includes('/g'));
+    await hook(f);
+    await shot.prep(f, page);
+    const st = await f.evaluate(() => window.__brbTest.state());
+    const master = path.join(ROOT, 'scripts', 'nq-masters', shot.slug, `${shot.state}.png`);
+    fs.mkdirSync(path.dirname(master), { recursive: true });
+    const frameEl = await page.$('iframe');
+    const cdpShot = async () => { // Quest Race's WebGL view never looks "stable" to Playwright's
+      // screenshot wait; a raw CDP capture takes the frame as it stands (the harness page is the
+      // iframe, full-bleed).
+      const cdp = await ctx.newCDPSession(page);
+      const shot64 = await cdp.send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync(master, Buffer.from(shot64.data, 'base64'));
+    };
+    if (shot.cdp) await cdpShot();
+    else { try { await frameEl.screenshot({ path: master, timeout: 15000 }); } catch { await cdpShot(); } }
+    let extra = '';
+    if (WEBP) {
+      const dest = path.join(ROOT, 'public', 'img', 'nq', shot.slug, `${shot.state}.webp`);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', master, '-vf', "scale='min(1280,iw)':-2", '-c:v', 'libwebp', '-quality', '80', dest]);
+      extra = ` -> public/img/nq/${shot.slug}/${shot.state}.webp (${Math.round(fs.statSync(dest).size / 1024)} KB)`;
+    }
+    console.log(`✓ ${shot.step} nq/${shot.slug}/${shot.state}: ${JSON.stringify(st).slice(0, 180)}${extra}${errors.length ? '  page errors: ' + [...new Set(errors)].join('; ') : ''}`);
+  } catch (e) {
+    console.log(`✗ ${shot.step} nq/${shot.slug}/${shot.state}: ${e.message.split('\n')[0]}`);
+  } finally { await ctx.close(); srv.close(); }
+}
+
+const wanted = process.argv.slice(2).filter(a => !a.startsWith('--'));
+const shots = wanted.length ? SHOTS.filter(s => wanted.includes(s.state)) : SHOTS;
+const browser = await chromium.launch(fs.existsSync(EXE) ? { executablePath: EXE } : {});
+for (const shot of shots) await capture(browser, shot);
+await browser.close();

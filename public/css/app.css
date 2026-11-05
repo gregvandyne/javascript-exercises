@@ -1227,6 +1227,22 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .story[data-story-on][data-scene="drain"] .story-stage::before{animation:storyDarken 3.2s ease-out .2s both}
 @keyframes storyDarken{from{opacity:0}to{opacity:.16}}
 .story-town{position:absolute;left:0;right:0;bottom:9%;width:100%;height:17%;fill:#141414;opacity:.13}
+/* The Numberworks street (Number Quest's story scene): workshop fronts in the same ink as the town, one
+   window per workshop, lit per data-lit (0-4). At lit 0 the street has gone quiet: the stage darkens as it
+   plays, exactly the drain scene's discipline, and rests dark in the finished frame. */
+.story-street{position:absolute;left:0;right:0;bottom:9%;width:100%;height:47%;fill:#141414;opacity:.16}
+.story-street line{stroke:#FFFDF2;opacity:.35}
+.story-swin{fill:#FFFDF2;opacity:.18}
+.story-swin.is-lit{fill:#FFD23F;opacity:.95;filter:drop-shadow(0 0 3px rgba(255,210,63,.8))}
+.story[data-scene="street"][data-lit="0"] .story-stage::before{opacity:.16}
+.story[data-story-arm][data-scene="street"][data-lit="0"] .story-stage::before{opacity:0}
+.story[data-story-on][data-scene="street"][data-lit="0"] .story-stage::before{animation:storyDarken 3.2s ease-out .2s both}
+.story[data-scene="street"] .story-char{height:31cqw}
+.story[data-scene="street"] .story-name{visibility:visible}
+/* Tally pads in from the left of her street, then settles. */
+.story[data-story-arm][data-scene="street"] .story-char{transform:translateX(-52cqw)}
+.story[data-story-on][data-scene="street"] .story-char{animation:storyEnterTally .9s ease-out both;animation-delay:calc(var(--d)*.55s)}
+@keyframes storyEnterTally{0%{transform:translateX(-52cqw)}55%{transform:translateX(0)}72%{transform:translateY(-2.2cqw)}100%{transform:translate(0,0)}}
 /* The Spark: one reusable motif, as bright as the story has made it (data-lit = pieces lit, 0-4). */
 .story-spark{position:absolute;left:50%;top:9%;width:32cqw;aspect-ratio:1;transform:translateX(-50%);z-index:1}
 .story[data-scene="team"] .story-spark,.story[data-scene="handoff"] .story-spark{width:19cqw;top:4%}
@@ -1297,6 +1313,8 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 @keyframes storyTilt{0%,100%{transform:rotate(0)}18%{transform:rotate(3.2deg)}36%{transform:rotate(0)}54%{transform:rotate(-2.4deg)}72%{transform:rotate(0)}}
 .story-char--gizmo img{animation:storyBounce 2.9s ease-in-out infinite}
 @keyframes storyBounce{0%,100%{transform:translateY(0) scale(1,1)}8%{transform:translateY(-4.5%) scale(.98,1.03)}16%{transform:translateY(0) scale(1.02,.97)}24%{transform:translateY(0) scale(1,1)}}
+.story-char--tally img{animation:storyPurr 3.6s ease-in-out infinite}
+@keyframes storyPurr{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-1.6%) rotate(.8deg)}}
 /* Team entrances: Bolt rolls in, Dot trots in, Pim swoops down, Gizmo pops up — in reading order (--d). */
 .story[data-story-arm][data-scene="team"] .story-char--bolt{transform:translateX(-48cqw)}
 .story[data-story-arm][data-scene="team"] .story-char--dot{transform:translateX(-48cqw)}
