@@ -22,9 +22,9 @@ async function open(page) {
 test('Brick Drop runs on the kit: title and modes, keys, the kit pause, a BRICK BLAST, results, Zen finish', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.2/oomba-kit.js', '/vendor/oomba-kit/1.1.2/packs/dress.js', '/vendor/oomba-kit/1.1.2/packs/art-props.js']);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', '/vendor/oomba-kit/1.1.3/packs/dress.js', '/vendor/oomba-kit/1.1.3/packs/art-props.js']);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), __brbTest.state().screen])).toEqual(['1.1.2', true, 'title']);
+  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), __brbTest.state().screen])).toEqual(['1.1.3', true, 'title']);
   // the kit's title with the game's three modes; the player's character stands in the corner
   await expect(f.locator('.ok-title-screen #playBtn')).toBeVisible();
   await expect(f.locator('.ok-title-screen .ok-title-hero canvas')).toHaveCount(1);
