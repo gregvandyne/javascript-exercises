@@ -1,5 +1,5 @@
 // Trick Inbox (Cyber Defenders Phase 2) in the real sandboxed frame (the packet-post pattern): the pinned kit
-// 1.1.2 tag and its four packs, no CSP violations, a full Explorer set played through __brbTest to the win
+// 1.1.3 tag and its four packs, no CSP violations, a full Explorer set played through __brbTest to the win
 // signal (and only there), a wrong Deliver costing a stamp-star with the missed clue named in the debrief, the
 // Pro boss round's eight messages, and lesson lock mode hiding the map.
 import { test, expect } from '@playwright/test';
@@ -26,9 +26,9 @@ const T = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest[fn](...a), [
 test('Trick Inbox runs on the kit: pinned tags, the set map, a full Letters round solved through the hooks', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.2/oomba-kit.js', '/vendor/oomba-kit/1.1.2/packs/art-props.js', '/vendor/oomba-kit/1.1.2/packs/art-animals.js', '/vendor/oomba-kit/1.1.2/packs/art-school.js', '/vendor/oomba-kit/1.1.2/packs/style-bold.js']);
+  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', '/vendor/oomba-kit/1.1.3/packs/art-props.js', '/vendor/oomba-kit/1.1.3/packs/art-animals.js', '/vendor/oomba-kit/1.1.3/packs/art-school.js', '/vendor/oomba-kit/1.1.3/packs/style-bold.js']);
   for (const x of tags.slice(0, 5)) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => Oomba.version)).toBe('1.1.2');
+  expect(await f.evaluate(() => Oomba.version)).toBe('1.1.3');
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   // free play: the title leads to the set map (Explorer: four sets)
   await f.locator('.ok-title-screen .ok-hot').click();

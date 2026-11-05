@@ -197,10 +197,10 @@ button.chip[aria-pressed="true"]{background:var(--sf-mintTint);color:var(--ink);
   </div>
 </div>
 </div>
-<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-props.js" integrity="sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/dress.js" integrity="sha384-JZ2+9mOMVNO4iOIJ8Geoa/9ryqx6ygcPzCxDnZ1XmwOKuMJSCM3llSYH2L4SUAYV" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/oomba-kit.js" integrity="sha384-C3W9aOBuSkvtAv0cHch+tzSi9h4GN4XCkR3u9iTN7D83Xx2nTtdr3zkPLu6EdBuH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-animals.js" integrity="sha384-BwLptTueADpqBmgLs41pCV8UhbJxHD65ThZMuvbASFcHB9IZgxh5pa60fE5tWGwP" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-props.js" integrity="sha384-E2lAqpLj/Q6iEwoIdyK/MXu8x8WVmey7Q1Pipb398HbA6hQ9upXgTcs5Jnxe8PGB" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/dress.js" integrity="sha384-9wPjHho+viJMVdJg8L4+1ENGqI/oQT3z3YT7Y5WZ+WbBv2hGK7t0HR67J5LxaylI" crossorigin="anonymous"></script>
 <script>
 (function () {
 'use strict';
@@ -229,7 +229,6 @@ const CONFIG = {
    STRINGS. Every word the player sees. Lookup: the player's language, then its base ('en-GB' -> 'en'), then English.
    Plural strings are objects keyed by Intl.PluralRules categories. Saves never store words (ids only).
    ================================================================================================ */
-// ==== I18N START ====
 const I18N = {
   en: {
     tagline: "Flick the ball. Hear the swish!", titleDesc: "Flick the ball up toward the hoop!",
@@ -787,7 +786,6 @@ const I18N = {
     "L.behind.t": "籃板後面", "L.behind.g": "加分關：從籃板後面投進！",
   },
 };
-// ==== I18N END ====
 const LANG = (() => { try { return (window.BRB && BRB.user && BRB.user.lang) || 'en'; } catch (e) { return 'en'; } })();
 const DIR = (() => { try { return (window.BRB && BRB.user && BRB.user.dir) === 'rtl' ? 'rtl' : 'ltr'; } catch (e) { return 'ltr'; } })();
 const LBASE = LANG.split('-')[0];

@@ -44,6 +44,24 @@ test('every version folder is pinned (and only grows); SRI and manifest match th
   assert.ok(Object.isFrozen(K.KIT_VERSIONS));
 });
 
+test('every HTML file that loads the kit pins exactly KIT_LATEST (a kit fix must reach the games)', () => {
+  // Kit 1.1.3 shipped with the mobile check-card and feedback fixes while every game still pinned 1.1.2, so no
+  // game ever loaded it. The seed games and the live lobby hard-pin their tags: scan them all and demand the
+  // latest version, core and packs alike (kitVersion() alone reads only the core tag).
+  const files = [];
+  const walk = d => { for (const e of fs.readdirSync(path.join(ROOT, d), { withFileTypes: true })) { const rel = `${d}/${e.name}`; if (e.isDirectory()) walk(rel); else if (e.name.endsWith('.html')) files.push(rel); } };
+  walk('seed-games'); walk('server');
+  let pinned = 0;
+  for (const rel of files) {
+    const html = fs.readFileSync(path.join(ROOT, rel), 'utf8');
+    if (!html.includes(K.KIT_PATH)) continue;
+    pinned++;
+    assert.equal(K.kitVersion(html), K.KIT_LATEST, `${rel}: pins kit ${K.kitVersion(html)}, not ${K.KIT_LATEST}`);
+    for (const m of html.matchAll(/\/vendor\/oomba-kit\/(\d+\.\d+\.\d+)\//g)) assert.equal(m[1], K.KIT_LATEST, `${rel}: loads oomba-kit/${m[1]}, not ${K.KIT_LATEST}`);
+  }
+  assert.ok(pinned >= 30, `the scan found ${pinned} kit-loading HTML files (expected the seed games and the lobby)`);
+});
+
 const SHIPPED = JSON.parse(fs.readFileSync(path.join(ROOT, 'kit/SHIPPED.json'), 'utf8')).versions;
 test('shipped versions are locked: their hash in KIT_VERSIONS never changes (kit/SHIPPED.json), and build-kit refuses to replace them', () => {
   for (const [v, h] of Object.entries(SHIPPED)) {

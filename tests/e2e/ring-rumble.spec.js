@@ -6,7 +6,7 @@ import { gameFrame } from './helpers.js';
 
 const state = f => f.evaluate(() => window.__brbTest.state());
 
-test('Ring Rumble runs on kit 1.1.2: title, select, a fight, pause, a two-round win, results, rematch and quit', async ({ page }) => {
+test('Ring Rumble runs on kit 1.1.3: title, select, a fight, pause, a two-round win, results, rematch and quit', async ({ page }) => {
   test.setTimeout(150_000);
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -15,7 +15,7 @@ test('Ring Rumble runs on kit 1.1.2: title, select, a fight, pause, a two-round 
   await page.goto('/play/ring-rumble');
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.__brbTest && window.__brbTest.fighters);
-  expect(await f.evaluate(() => [Oomba.version, ['dress', 'art-biomes-2', 'art-animals'].every(p => Oomba.packs.includes(p))])).toEqual(['1.1.2', true]);
+  expect(await f.evaluate(() => [Oomba.version, ['dress', 'art-biomes-2', 'art-animals'].every(p => Oomba.packs.includes(p))])).toEqual(['1.1.3', true]);
   // the kit's title: the lockup, "2 Players" (the kit's Play) and "Vs Computer", the key diagrams on desktop, the player's character
   await expect(f.locator('.ok-title-screen #go2')).toHaveText(/2 Players/);
   await expect(f.locator('.ok-title-screen #go1')).toHaveText(/Vs Computer/);

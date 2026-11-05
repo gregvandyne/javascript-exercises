@@ -358,11 +358,11 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   </div>
 </template>
 </div>
-<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-school.js" integrity="sha384-xbmoMTLjBXfyHbxMV8HIl3jSzcl3bxEMMdgGu+KgGuyZY+WNXrh9ogBhRTpyMWO8" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/art-biomes.js" integrity="sha384-ncXx4zVCTio0bUVqrvpQ0uAKmvm/JcWprinhR0X/rlmHV/9UfwEw3wirHq+Hhsc+" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.2/packs/dress.js" integrity="sha384-JZ2+9mOMVNO4iOIJ8Geoa/9ryqx6ygcPzCxDnZ1XmwOKuMJSCM3llSYH2L4SUAYV" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/oomba-kit.js" integrity="sha384-C3W9aOBuSkvtAv0cHch+tzSi9h4GN4XCkR3u9iTN7D83Xx2nTtdr3zkPLu6EdBuH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-animals.js" integrity="sha384-BwLptTueADpqBmgLs41pCV8UhbJxHD65ThZMuvbASFcHB9IZgxh5pa60fE5tWGwP" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-school.js" integrity="sha384-FTwR3CLpBLvzyxnwZgn3NlQmKTbLdjXWzrZQY9Mam6uQyRsWmaX0XVPnU2fizTu0" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-biomes.js" integrity="sha384-piRDUZEIHwMIV7bF6cCR8hyf9pgBRUQoxoLnL9cgowVnAHPDywpL1TZlR0hkIJRc" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/dress.js" integrity="sha384-9wPjHho+viJMVdJg8L4+1ENGqI/oQT3z3YT7Y5WZ+WbBv2hGK7t0HR67J5LxaylI" crossorigin="anonymous"></script>
 <script>
 /* @@PURE-BEGIN: CONFIG + maths + race model. No DOM in here (the Node tests run this block on its own). */
 const CONFIG = {
@@ -606,7 +606,6 @@ function makeRace(track, humans, rng) {
    objects picked with Intl.PluralRules; lists (ord, place, cheers) are arrays; {name} placeholders
    are filled by t(key, vars). Maths symbols and digits stay as they are (Latin digits everywhere).
    ===================================================================================== */
-// ==== I18N START ====
 const I18N = {
   en: {
     tag: "Answer math questions to zoom your kart to the finish!", play: "▶ Play",
@@ -988,15 +987,6 @@ const I18N = {
     ord: ["1e", "2e", "3e", "4e"], place: ["1e plaats", "2e plaats", "3e plaats", "4e plaats"]
   }
 };
-// ==== I18N END ====
-
-// ==== VOICES START ====
-// AI voices: the character voice this game's lines are read with when Oomba Academy has AI voices on for
-// this game and language. server/services/tts-lines.js reads this block to make the lines ahead of time, and
-// the server takes each line's role from it (never from the page): the longest VOICE_KEY_ROLES prefix wins,
-// else VOICE_ROLES.story. Roles: narrator, friendly, bright, deep, wise, grumpy.
-const VOICE_ROLES = { story: 'bright' };
-// ==== VOICES END ====
 
 // The table goes to the kit (Oomba.strings) under 'sr.' keys, so the game's words never replace the kit's own button
 // words. Pictures are the kit's icons and characters, not emoji: emoji in the table are left out when it is registered.

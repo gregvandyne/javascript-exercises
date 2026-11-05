@@ -24,9 +24,9 @@ const tap = (f, l) => f.locator('#k' + l).click();
 test('Shark Plank runs on the kit: title, a word won and a word lost, the results card, the saved stars', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.2/oomba-kit.js', '/vendor/oomba-kit/1.1.2/packs/art-animals.js', '/vendor/oomba-kit/1.1.2/packs/art-school.js', '/vendor/oomba-kit/1.1.2/packs/art-props.js', '/vendor/oomba-kit/1.1.2/packs/dress.js']);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', '/vendor/oomba-kit/1.1.3/packs/art-animals.js', '/vendor/oomba-kit/1.1.3/packs/art-school.js', '/vendor/oomba-kit/1.1.3/packs/art-props.js', '/vendor/oomba-kit/1.1.3/packs/dress.js']);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas')])).toEqual(['1.1.2', true]);
+  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas')])).toEqual(['1.1.3', true]);
   // the kit's title, then Play
   await expect(f.locator('.ok-title-screen h1')).toContainText('Shark');
   await f.locator('.ok-title-screen .ok-big').click();
