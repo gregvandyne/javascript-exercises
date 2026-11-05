@@ -51,19 +51,19 @@
     {
      "cue": "Turn the inner wheel until the reading makes sense",
      "box": [
-      14,
-      28,
-      33,
-      57
+      13.5,
+      24.5,
+      34.5,
+      61.5
      ]
     },
     {
      "cue": "The secret message, and the reading under it",
      "box": [
-      54,
-      35,
-      35,
-      22
+      53.5,
+      34.5,
+      35.5,
+      24
      ]
     }
    ]
@@ -87,10 +87,10 @@
     {
      "cue": "The wheel turns the scramble back into a word",
      "box": [
-      14,
-      28,
-      33,
-      57
+      13.5,
+      24.5,
+      34.5,
+      61.5
      ]
     }
    ]
@@ -114,10 +114,10 @@
     {
      "cue": "The wheel scrambles it before it travels",
      "box": [
-      14,
-      28,
-      33,
-      57
+      13.5,
+      24.5,
+      34.5,
+      61.5
      ]
     }
    ]
@@ -132,10 +132,10 @@
     {
      "cue": "A note written in a scramble: DAOWQF",
      "box": [
-      54,
-      35,
-      35,
-      22
+      53.5,
+      34.5,
+      35.5,
+      24
      ]
     },
     {
@@ -184,10 +184,10 @@
     {
      "cue": "Crack the wheel levels in Secret Messages",
      "box": [
-      14,
-      28,
-      33,
-      57
+      13.5,
+      24.5,
+      34.5,
+      61.5
      ]
     }
    ]

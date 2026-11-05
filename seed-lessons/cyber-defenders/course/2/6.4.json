@@ -104,19 +104,19 @@
     {
      "cue": "The cipher wheel, with a scrambled message",
      "box": [
-      14,
-      28,
-      33,
-      57
+      13.5,
+      24.5,
+      34.5,
+      61.5
      ]
     },
     {
      "cue": "DSSOH: turn the wheel until the reading makes sense",
      "box": [
-      54,
-      35,
-      35,
-      22
+      53.5,
+      34.5,
+      35.5,
+      24
      ]
     }
    ]
@@ -141,9 +141,9 @@
      "cue": "Padlocks mark the sealed stretch",
      "box": [
       26,
-      67,
+      65,
       22,
-      20
+      22
      ]
     }
    ]

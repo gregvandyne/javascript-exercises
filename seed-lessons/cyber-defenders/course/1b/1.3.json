@@ -28,7 +28,7 @@
       9,
       35,
       44,
-      32
+      38
      ]
     }
    ]
@@ -70,10 +70,10 @@
     {
      "cue": "Packet 2 waits at Hill Office, two hops done",
      "box": [
-      30,
-      34,
-      9,
-      12
+      26.5,
+      35,
+      7,
+      12.5
      ]
     },
     {
@@ -130,19 +130,19 @@
     {
      "cue": "A stranger's card, fishing for a shiny secret",
      "box": [
-      8,
+      7,
       25,
-      45,
-      19
+      47,
+      22
      ]
     },
     {
      "cue": "It asks where you live: a fact to keep private",
      "box": [
-      9,
-      36,
-      43,
-      8
+      8.5,
+      35,
+      44,
+      12
      ]
     }
    ]

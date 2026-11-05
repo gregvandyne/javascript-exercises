@@ -16,10 +16,10 @@
     {
      "cue": "A picture's journey, in five rule cards",
      "box": [
-      50,
-      40,
-      39,
-      20
+      51,
+      42,
+      38,
+      21
      ]
     },
     {
@@ -59,10 +59,10 @@
     {
      "cue": "The padlock streets keep readers out",
      "box": [
-      17,
-      43,
-      27,
-      11
+      24.5,
+      34,
+      22.5,
+      10.5
      ]
     }
    ]
@@ -77,19 +77,19 @@
     {
      "cue": "A copy in another place: the borrowed vault",
      "box": [
-      50,
-      48,
-      16,
-      11
+      51.5,
+      50.5,
+      20.5,
+      10
      ]
     },
     {
      "cue": "The line runs from Pim's Post to Grandma's House",
      "box": [
-      10,
-      59,
-      34,
-      12
+      9.5,
+      58,
+      40,
+      13
      ]
     }
    ]
