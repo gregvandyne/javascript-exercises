@@ -657,6 +657,20 @@
     // A game's own queued lines behave as before (no onend when there is no voice).
     list.forEach(function (a) { var ok = false; try { ok = startSpeech(a[0], a[1], a[2]); } catch (e) { /* ignore */ } if (!ok && a[1] && typeof a[1].onfail === 'function') endLater(a[1]); });
   }
+  // What a voice must never say: emoji and pictographs. A row of stars in a counting question is a
+  // picture, not words — read aloud literally it is "star star star…". The same rule as the server's
+  // tidy() and public/js/tts.js: applied where a line is taken in, so the text asked of the AI voice
+  // and the text the device's voice falls back to are the same words. A keycap digit keeps its digit
+  // ("1️⃣" speaks "1"). Built with RegExp so this file still parses on engines without \p literals.
+  var speakableText = (function () {
+    var re = null;
+    try { re = new RegExp('[\\p{Extended_Pictographic}\\u{1F1E6}-\\u{1F1FF}\\uFE0F\\u20E3\\u200D]', 'gu'); } catch (e) { /* old engine: no stripping */ }
+    return function (text) {
+      var s = String(text == null ? '' : text);
+      if (re) s = s.replace(re, ' ');
+      return s.replace(/\s+/g, ' ').trim();
+    };
+  })();
   // speak(text, { lang, rate, pitch, volume, queue, onend }): true if it started (or is waiting for the
   // device's voice list, which some browsers fill a moment after the page loads); false when there is
   // no speech here or no voice for the language. A new line stops the one playing unless queue is true.
@@ -666,7 +680,7 @@
   // Once speak() has returned true, onend comes exactly once (unless the line is stopped by a new one or stopSpeaking).
   function speak(text, opts) {
     opts = opts || {};
-    var s = String(text == null ? '' : text).replace(/\s+/g, ' ').trim(); if (!s) return false;
+    var s = speakableText(text); if (!s) return false;
     var lang = typeof opts.lang === 'string' && opts.lang ? opts.lang : USER_LANG;
     if (ttsWanted(s, lang, opts)) { try { return ttsSpeak(s, opts, lang, null); } catch (e) { /* fall through to the device */ } }
     if (!synth || !Utter) return false;
@@ -892,8 +906,11 @@
     try { if (ev && typeof u.dispatchEvent === 'function') u.dispatchEvent(ev); else if (typeof u['on' + type] === 'function') u['on' + type]({ type: type, utterance: u }); } catch (e) { /* game's own error */ }
   }
   function routeUtterance(u, orig, self) {
-    var s = String(u.text == null ? '' : u.text).replace(/\s+/g, ' ').trim(), lang = u.lang || gameLang();
+    var s = speakableText(u.text), lang = u.lang || gameLang();
     if (!s || !ttsWanted(s, lang, {})) return false;
+    // The utterance itself carries the spoken words from here: if the AI voice does not come, the
+    // device fallback below speaks this same utterance, and it must read the same emoji-free text.
+    try { u.text = s; } catch (e) { /* a read-only utterance: the AI read still uses the clean text */ }
     var opts = { lang: lang, rate: u.rate, volume: u.volume, queue: true, onend: function () { utterEvent(u, 'end'); } };
     ttsSpeak(s, opts, lang, function (fin) {
       try { upgradeUtterance(u); } catch (e) { /* ignore */ }

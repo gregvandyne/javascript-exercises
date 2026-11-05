@@ -142,6 +142,44 @@ test('speakable: empty, too long, rude words, personal info, link codes, the pla
   assert.equal(tts.tidy(' a‮ b \n\n c '), 'a b c');
 });
 
+test('spoken text never includes emoji: spokenText strips pictographs, and a star-row question is its words only', () => {
+  // Greg, live on the placement (2026-11-05): the Listen voice read a counting question's star row
+  // aloud as repeated "star". The stars are a picture; the spoken text is the words around them.
+  assert.equal(tts.spokenText('Count the stars ⭐⭐⭐⭐⭐⭐⭐⭐⭐'), 'Count the stars');
+  assert.equal(tts.spokenText('⭐⭐⭐'), '', 'a line of only pictures says nothing');
+  assert.equal(tts.spokenText('Press 1️⃣ to start'), 'Press 1 to start', 'a keycap keeps its digit');
+  assert.equal(tts.spokenText('Family 👨‍👩‍👧 time'), 'Family time', 'a joined sequence goes whole');
+  assert.equal(tts.spokenText('Go 🇬🇧 team'), 'Go team', 'a flag is a picture too');
+  assert.equal(tts.spokenText('I ❤️ maths 🎮'), 'I maths');
+  assert.equal(tts.spokenText('What is 3 × 4? Turn 6 ÷ 2 → 3'), 'What is 3 × 4? Turn 6 ÷ 2 → 3', 'maths symbols are not pictographs');
+  // tidy() itself keeps the text as written: the line matchers (tts-lines, tts-games) compare with it,
+  // and a registered line with emoji added must stay a different, refused line.
+  assert.equal(tts.tidy('Count the stars ⭐'), 'Count the stars ⭐');
+  // A placement item in Tally's voice (ctx 'placement', picked by the server from the run): its own
+  // generated digits are not a phone number or a link code; rude words still refuse it.
+  assert.equal(tts.speakable('Which is more, 123456 or 654321?', { ctx: 'placement' }), null);
+  assert.equal(tts.speakable('Count the stars ⭐⭐⭐⭐⭐⭐⭐⭐⭐', { ctx: 'placement' }), null);
+  assert.equal(tts.speakable('what the fuck', { ctx: 'placement' }), 'filtered');
+  // The plan (what is synthesized and cached) is built from the spoken text: no emoji reaches a voice.
+  const p = tts.plan({ text: 'Count the stars ⭐⭐⭐', locale: 'en', role: 'friendly' });
+  assert.equal(p.text, 'Count the stars');
+});
+
+test('the real star-counting placement item is spoken as its words only', async () => {
+  // The exact item Greg heard read wrong: the counting template deals a prompt whose counting row is
+  // star emoji — and, as generated, even its spokenPrompt carries the row. The speak path (plan) is
+  // what keeps the pictures out of the voice, for the spoken wording and the printed prompt alike.
+  const { TEMPLATES, generateItem } = await import('../../seed-lessons/number-quest/placement/generator.js');
+  const counting = TEMPLATES.find(t => t.id === 'nq-place-num-K_0-2');
+  assert.ok(counting, 'the counting template exists');
+  let full = null;
+  for (let s = 1; s <= 24 && !full; s++) { const f = generateItem(counting, `tts-star-${s}`); if (f.prompt.includes('⭐')) full = f; }
+  assert.ok(full, 'the counting template deals a star row');
+  assert.ok(full.spokenPrompt.includes('⭐'), 'as generated, the spoken wording carries the star row too');
+  assert.equal(tts.plan({ text: full.spokenPrompt, locale: 'en', role: 'friendly' }).text, 'Count the stars. How many are there?');
+  assert.equal(tts.plan({ text: full.prompt, locale: 'en', role: 'friendly' }).text, 'Count the stars. How many are there?');
+});
+
 test('cache key: stable, and changes with every part that changes the sound', () => {
   const base = { provider: 'openai', model: 'gpt-4o-mini-tts', voice: 'coral', instructions: 'x', speed: null, locale: 'en', rate: 'normal', text: 'Hi' };
   const k = tts.cacheKey(base);

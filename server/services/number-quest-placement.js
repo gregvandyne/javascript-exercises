@@ -416,8 +416,8 @@ function savePlacement(user, { grade, rungs, startNode, source, reanchorGrade = 
   return getPlacement(user);
 }
 
-/** The "Start from the very beginning" door (spec §4.1): no game; begin at the first unit of the tier
- *  matching the stated grade (Launchpad starters begin at the intro until that tier ships). */
+/** The "Just Play" door (start from the very beginning, spec §4.1): no game; begin at the first unit of
+ *  the tier matching the stated grade (Launchpad starters begin at the intro until that tier ships). */
 export function placeAtBeginning(user, grade) {
   const g = seedGrade(grade);
   // Grades 6–8 would begin in the Pro tier, which is not built yet: they begin at the furthest built
@@ -484,6 +484,22 @@ export function answerRun(user, runId, answer) {
   q.run('UPDATE nq_sort_runs SET state=?, current_item=?, status=?, updated_at=? WHERE id=?',
     JSON.stringify(state), next ? JSON.stringify(next) : null, next ? 'active' : 'finished', now(), row.id);
   return { correct: graded.correct, next: publicItem(next), result, finished: !next };
+}
+
+/** The spoken text of the item a run is serving now, for the AI voice (routes/tts.js, ctx 'placement'):
+ *  regenerated from the stored template + seed, exactly as grading re-derives the key, so the page
+ *  never sends text and the voice reads only what the server itself dealt to this student's run. A
+ *  finished run, another student's run and a run id that never existed all have nothing to say (null).
+ *  The item's spokenPrompt (the generator's audio-first wording) wins over its printed prompt. */
+export function currentSpoken(user, runId) {
+  const row = runRow(user, runId);
+  if (!row || row.status !== 'active' || !row.current_item) return null;
+  const current = parse(row.current_item, null);
+  if (!current || !current.templateId || !current.itemSeed) return null;
+  const template = TEMPLATES.find(t => t.id === current.templateId);
+  if (!template) return null;
+  const full = generateItem(template, current.itemSeed);
+  return full.spokenPrompt || full.prompt || null;
 }
 
 /** "Stop and start playing" (spec §4.2): a partial run still places — strands place independently and an

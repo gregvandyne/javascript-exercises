@@ -49,8 +49,17 @@ document.querySelectorAll('.nq-grade').forEach(b => b.addEventListener('click', 
 
 function show(id) { for (const s of ['nq-doors', 'nq-game', 'nq-result']) $(s).hidden = s !== id; }
 
+/** The AI voice reads the item (routes/tts.js, ctx 'placement'): the page sends only the run id — the
+ *  server regenerates the item it dealt this run and reads that, in Tally's voice. The text rides along
+ *  solely as readAloud's device-voice fallback (used when AI voices are off for English, or the audio
+ *  does not come); public/js/tts.js strips emoji from it there, as the server does for the AI read. */
+const ttsLangs = () => (document.querySelector('.nq')?.dataset.ttsLangs || '').split(',').filter(Boolean);
 function speak(item) {
-  try { readAloud({ text: item.spokenPrompt || item.prompt, lang: 'en' }); } catch { /* the words are on screen too */ }
+  try {
+    const langs = ttsLangs();
+    readAloud({ text: item.spokenPrompt || item.prompt, lang: 'en',
+      ai: runId && langs.length ? { body: { ctx: 'placement', runId }, langs } : null });
+  } catch { /* the words are on screen too */ }
 }
 
 /** The hands-on part of an item: count-out objects to tap as you count (each tap marks one counted —

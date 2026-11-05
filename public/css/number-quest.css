@@ -5,10 +5,14 @@
 .nq-kicker { font-weight: 700; letter-spacing: .02em; opacity: .8; }
 .nq-grades { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
 .nq-grade { min-height: 56px; padding: 12px; border: 2px solid var(--line, #ccc); border-radius: 14px;
-  background: var(--panel, #fff); font-size: 1.05rem; font-weight: 600; cursor: pointer; }
+  background: var(--card); font-size: 1.05rem; font-weight: 600; cursor: pointer; }
 .nq-grade-wide { grid-column: 1 / -1; }
 .nq-grade-on { border-color: var(--accent, #1f9d63); background: var(--accent-soft, #e7f6ee); }
-.nq-doors { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+/* The two doors stack full width: in a wrapping row each button sized to its own words, so the green
+ * "Play the Sorting Game" and the "Just Play" button came out different widths and crowded the panel
+ * above them (Greg, live 2026-11-05). One column, one width, clear air around the pair. */
+.nq-doors { display: flex; flex-direction: column; gap: 12px; margin: 18px 0 14px; }
+.nq-doors .btn { width: 100%; }
 .nq-tally { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .nq-tally-img { height: 64px; width: auto; flex: none; }
 .nq-tally-says { margin: 0; font-size: 1.1rem; }
@@ -26,7 +30,7 @@
 .nq-tally-bounce { animation: nq-tally-bounce .45s ease-out; }
 @media (prefers-reduced-motion: reduce) { .nq-tally-bounce { animation: none; } }
 /* The paw trail: how far along the Sorting Game you are. A fill, not a score — no numbers ride on it. */
-.nq-trail { position: relative; height: 14px; border-radius: 999px; border: 2px solid var(--line, #ccc); background: var(--panel, #fff); margin: 12px 0 4px; overflow: visible; }
+.nq-trail { position: relative; height: 14px; border-radius: 999px; border: 2px solid var(--line, #ccc); background: var(--card); margin: 12px 0 4px; overflow: visible; }
 .nq-trail-fill { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--accent, #66C792); transition: width .4s ease; }
 .nq-trail-paw { position: absolute; right: -4px; top: -9px; font-size: 1rem; }
 @media (prefers-reduced-motion: reduce) { .nq-trail-fill { transition: none; } }
@@ -40,12 +44,12 @@
 .nq-counter-rows { display: flex; flex-direction: column; gap: 8px; }
 .nq-counter-row { display: flex; gap: 6px; }
 .nq-counter-row .nq-counter { flex: 1 1 0; min-width: 26px; max-width: 48px; min-height: 44px; padding: 0; }
-.nq-counter { min-width: 48px; min-height: 48px; font-size: 1.6rem; line-height: 1; border-radius: 14px; border: 2px solid var(--line, #ccc); background: var(--panel, #fff); cursor: pointer; position: relative; }
+.nq-counter { min-width: 48px; min-height: 48px; font-size: 1.6rem; line-height: 1; border-radius: 14px; border: 2px solid var(--line, #ccc); background: var(--card); cursor: pointer; position: relative; }
 .nq-counter.is-counted { opacity: .45; border-color: var(--accent-line, #1F9D63); }
 .nq-counter.is-counted::after { content: "✓"; position: absolute; right: 2px; top: 0; font-size: .85rem; font-weight: 800; color: var(--accent-line, #1F9D63); }
 .nq-tenframe { display: grid; grid-template-columns: repeat(5, 44px); gap: 6px; margin-bottom: 8px; }
 .nq-loose { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
-.nq-cell { width: 44px; height: 44px; display: grid; place-items: center; font-size: 1.4rem; border: 2px solid var(--line, #ccc); border-radius: 10px; background: var(--panel, #fff); }
+.nq-cell { width: 44px; height: 44px; display: grid; place-items: center; font-size: 1.4rem; border: 2px solid var(--line, #ccc); border-radius: 10px; background: var(--card); }
 .nq-loose .nq-cell { border-style: dashed; }
 .nq-note-lines { font-size: 1.1rem; line-height: 1.6; }
 .nq-caveat { font-weight: 700; border-left: 4px solid var(--accent, #1f9d63); padding-left: 12px; }
@@ -55,7 +59,7 @@
 .nq-result-strands { margin: 16px 0; }
 .nq-result-strands-h { font-size: 1.15rem; margin: 0 0 10px; }
 .nq-strand-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-.nq-strand-card { border: 2px solid var(--line, #e5e0cc); border-radius: 14px; background: var(--panel, #fff); padding: 12px 14px; }
+.nq-strand-card { border: 2px solid var(--line, #e5e0cc); border-radius: 14px; background: var(--card); padding: 12px 14px; }
 .nq-strand-card-h { margin: 0 0 4px; font-weight: 800; }
 .nq-strand-card-line { margin: 0 0 6px; line-height: 1.4; }
 .nq-strand-card-paws { margin: 0; font-size: .95rem; letter-spacing: .12em; min-height: 1.2em; }

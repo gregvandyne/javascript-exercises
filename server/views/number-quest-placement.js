@@ -4,16 +4,21 @@
 // names a starting workshop, and that is all. The note page is where the rungs live, in plain words,
 // with the caveat the service puts in the data.
 import { html, raw, esc } from './html.js';
+import { VERSION } from './layout.js';
 import * as P from '../services/number-quest-placement.js';
 
-export const CSS = raw(`<link rel="stylesheet" href="/css/number-quest.css?v=1">`);
+// The shared per-boot cache buster, like every other stylesheet: a fixed "?v=1" would keep the old
+// sheet in returning browsers after a deploy (the strand-card contrast fix must actually arrive).
+export const CSS = raw(`<link rel="stylesheet" href="/css/number-quest.css?v=${VERSION}">`);
 
 const GRADES = [['K', 'Kindergarten'], ['1', 'Grade 1'], ['2', 'Grade 2'], ['3', 'Grade 3'], ['4', 'Grade 4'], ['5', 'Grade 5'], ['6', 'Grade 6'], ['7', 'Grade 7'], ['8', 'Grade 8']];
 
 /** The game page: three stages (doors → questions → result) swapped by public/js/number-quest-placement.js.
- *  Everything the script needs arrives through the JSON APIs; the page itself holds no item and no answer. */
-export function sortingGamePage({ placement } = {}) {
-  return html`<div class="nq" lang="en">
+ *  Everything the script needs arrives through the JSON APIs; the page itself holds no item and no answer.
+ *  `ttsLangs` is the site's AI-voice locales switched on now (services/tts.js onLocales): the script asks
+ *  /api/tts for the current item by run id only when English is among them (routes/tts.js, ctx 'placement'). */
+export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
+  return html`<div class="nq" lang="en" data-tts-langs="${esc(ttsLangs.join(','))}">
   <section class="nq-stage" id="nq-doors">
     <p class="nq-kicker">🔢 Number Quest</p>
     <h1>Tally's Sorting Game</h1>
@@ -26,7 +31,7 @@ export function sortingGamePage({ placement } = {}) {
     </div>
     <div class="nq-doors" hidden id="nq-door-row">
       <button type="button" class="btn btn-primary btn-big" id="nq-play">▶ Play the Sorting Game</button>
-      <button type="button" class="btn btn-big" id="nq-begin">Start from the very beginning</button>
+      <button type="button" class="btn btn-big" id="nq-begin">Just Play</button>
     </div>
     <p class="small muted">Skipping the game is always fine. You can play it later from the course map, whenever you like.</p>
     ${placement && placement.startNode ? html`<p class="small">You already have a starting workshop: <b>${esc(P.nodeInfo(placement.startNode).workshop)}</b>. Playing again is a retake: your old start point stays until you say to use the new one.</p>` : ''}`}

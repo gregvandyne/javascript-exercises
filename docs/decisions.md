@@ -1935,6 +1935,32 @@ switches it on, then per language at `/admin/voices`.
 - **Admin page on phones:** small ▶ buttons, the sample sentence readable (not a header style), the language column
   sticky, the narrator's ▶ marked, and under 600 px one ▶ per row that plays the narrator chosen there.
 
+### AI voices: the Number Quest placement, and spoken-text hygiene (November 2026)
+
+Greg live-testing the deployed Sorting Game (2026-11-05) found its Listen narration on the device voice
+while the AI voice worked elsewhere on the same build. Root cause: the placement page called `readAloud`
+with text and no AI context at all, and no placement context existed on the server — the page could
+never reach the AI voices. (He also found the narration reading a counting question's star row aloud as
+repeated "star".)
+- **New context `placement` (`POST /api/tts { ctx:'placement', runId }`).** Placement items are generated
+  (252 templates, tens of thousands of items), so per-line registration cannot cover them; instead the
+  server voices **the item it itself is serving**: `number-quest-placement.currentSpoken(user, runId)`
+  regenerates the run's current item from its stored template and seed — the same regeneration that
+  grades the answer — and returns its `spokenPrompt`. The page sends no text (any it sends is ignored,
+  as in ctx `course`); only the run's own student, only while the run is active; test-out runs share the
+  shape. Read in English with **Tally's voice** — Fraction Factory's registered role (`friendly`) — since
+  Tally hosts the game. The usual guards still apply: per-locale switch at /admin/voices, rate limits,
+  generation quotas, the AI budget; identical items share one cached MP3 site-wide. This does **not**
+  open voicing of arbitrary client text: the reference (a run id) names server state, not words.
+- **Spoken text never includes emoji or pictographs.** `tts.spokenText()` strips them (plus the
+  variation selector, keycap marks, flag pairs and orphaned joiners), and `plan()` — the one path
+  every context's audio is made through — is built from it, cache keys included. `tidy()` deliberately
+  does not strip: the line matchers compare with it, and a registered line with emoji added stays a
+  different, refused line. The same rule sits in the shared client paths — `deviceSpeak` in
+  `public/js/tts.js` and the SDK's `speak()`/`routeUtterance()` in `public/sdk/brb-sdk.js` — so a
+  device-voice fallback reads the same words the AI voice would. A keycap digit keeps its digit
+  ("1️⃣" speaks "1"); maths symbols (×, ÷, →) are not pictographs and survive.
+
 ## Brain Board, and fun games kept out of class rooms (November 2026)
 
 A third built-in live quiz mode, in the category-board genre, with its own name and look (a night-sky board, Lucky
