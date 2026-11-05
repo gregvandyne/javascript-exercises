@@ -258,7 +258,11 @@ router.get('/play/:slug', (req, res) => {
   const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
   const asked = req.query.course ? courses.getCourse(String(req.query.course)) : null;
   let cstep = null;
-  if (asked && !isOwner && req.query.cstep) cstep = courses.playable(u, asked, String(req.query.cstep), g.slug);
+  // A step context is resolved for the admin too when they arrive from a step: the visit is then the
+  // step's own flow (played_at is set below, the page carries the step, and the win posts back to
+  // complete it) exactly as a student's — the admin tests completions, so their course play must be
+  // real course play. Only a context-free visit is the admin/owner's free play (clause (d) above).
+  if (asked && req.query.cstep && (!isOwner || (u && u.role === 'admin'))) cstep = courses.playable(u, asked, String(req.query.cstep), g.slug);
   if (course && !isOwner) {
     const teacher = !!req.query.chapter && isStaff(u);
     const inMatchQ = !!req.query.match && (() => { const m = match.get(req.query.match); return !!m && match.seatOf(m, u) >= 0 && m.gameId === g.id; })();

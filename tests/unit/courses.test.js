@@ -258,6 +258,71 @@ test('the /play gate: (a) course step, (b) class lesson (tests/unit/cs-quest-pla
   assert.equal((await get(`/play/${other.slug}`, kid)).status, 200);
 });
 
+test('the admin account: every step of every course open, and opening completes nothing', async () => {
+  const admin = auth.createUser({ username: `boss${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', role: 'admin' });
+  const kid = newKid();
+  for (const slug of ['cs-quest', 'cyber-defenders', 'number-quest']) {
+    const c = C.getCourse(slug);
+    for (const band of C.bandsFor(c)) {
+      const st = C.states(admin, c, band);
+      assert.ok(st.length > 0, `${slug}/${band} has steps`);
+      assert.ok(st.every(s => s.open), `${slug}/${band}: every step open for the admin`);
+      assert.ok(st.every(s => !s.complete), `${slug}/${band}: nothing complete just by being open`);
+    }
+    // A student on the same data still sees the sequence locks.
+    const st = C.states(kid, c, C.bandsFor(c)[0]);
+    assert.ok(st[0].open, `${slug}: the first step is open to a student`);
+    assert.ok(st.slice(1).some(s => !s.open), `${slug}: later steps stay locked for a student`);
+  }
+  // The look wrote nothing: the admin has no progress rows at all.
+  assert.equal(q.get('SELECT COUNT(*) AS n FROM course_progress WHERE user_id=?', admin.id).n, 0);
+  // Direct entry: the admin opens a late step's page; the student is sent back to the map.
+  C.setBand(kid, course, '2');
+  assert.equal((await get('/courses/cs-quest/2-5.3', admin)).status, 200);
+  assert.equal((await get('/courses/cs-quest/2-5.3', kid)).location, '/courses/cs-quest#step-2-5.3');
+  // The step APIs answer the admin on that step and refuse the student.
+  assert.equal((await post('/api/courses/cs-quest/2-5.3/read', kid, {})).status, 403);
+  assert.equal((await post('/api/courses/cs-quest/2-5.3/read', admin, {})).status, 200);
+  // The maps render the steps as available for the admin (real links), still locked for the student.
+  C.setBand(admin, course, '2');
+  assert.ok((await get('/courses/cs-quest', admin)).text.includes('href="/courses/cs-quest/2-5.3"'), 'admin map links the late step');
+  assert.ok(!(await get('/courses/cs-quest', kid)).text.includes('href="/courses/cs-quest/2-5.3"'), 'student map does not link the locked step');
+  const cyber = C.getCourse('cyber-defenders');
+  C.setBand(admin, cyber, '2'); C.setBand(kid, cyber, '2');
+  assert.ok((await get('/courses/cyber-defenders', admin)).text.includes('href="/courses/cyber-defenders/2-6.4"'), 'admin map links the Cyber finale');
+  assert.ok(!(await get('/courses/cyber-defenders', kid)).text.includes('href="/courses/cyber-defenders/2-6.4"'), 'student map does not link the locked finale');
+  assert.ok((await get('/courses/number-quest', admin)).text.includes('href="/courses/number-quest/explorer-4.3"'), 'admin path links a late Number Quest step');
+  assert.ok(!(await get('/courses/number-quest', kid)).text.includes('href="/courses/number-quest/explorer-4.3"'), 'student path does not link the locked step');
+});
+
+test('the admin completes a step only by its own flow: check, play from the step, win', async () => {
+  const admin = auth.createUser({ username: `boss${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', role: 'admin' });
+  const kid = newKid(); C.setBand(kid, course, '1b');
+  const step = C.getStep(course, '1b-1.2'); // Robo Route: Loops — the second step, locked for a new student
+  // The student is refused at every gate of this step.
+  assert.equal((await post('/api/courses/cs-quest/1b-1.2/check', kid, { answers: allRight(step) })).status, 403);
+  assert.equal((await get(C.playHref(course, step), kid)).location, '/courses/cs-quest');
+  assert.equal((await post('/api/courses/cs-quest/1b-1.2/complete', kid, {})).status, 403);
+  // The admin opens the step: nothing is complete yet, and a bare completion call still fails.
+  assert.equal((await get('/courses/cs-quest/1b-1.2', admin)).status, 200);
+  assert.ok(!C.stateOf(admin, course, '1b-1.2').complete, 'opening completes nothing');
+  assert.equal((await post('/api/courses/cs-quest/1b-1.2/complete', admin, {})).status, 409, 'no check, no play: no completion');
+  // Pass the step's own check, then launch its game from the step: the module is marked started and
+  // the play page carries the step context the win posts back against.
+  const chk = await post('/api/courses/cs-quest/1b-1.2/check', admin, { answers: allRight(step) });
+  assert.equal(chk.status, 200); assert.equal(chk.json.passed, true);
+  assert.equal(C.playable(admin, course, '1b-1.2', 'robo-route'), step);
+  const play = await get(C.playHref(course, step), admin);
+  assert.equal(play.status, 200);
+  assert.ok(play.text.includes('"cstep":{"course":"cs-quest","step":"1b-1.2"}'), 'the play page carries the step for the admin');
+  assert.ok(C.stateOf(admin, course, '1b-1.2').played, 'opening the module from the step marks it started');
+  assert.ok(!C.stateOf(admin, course, '1b-1.2').complete, 'started is not finished');
+  // The win (what the play page posts when the game reports its chapter won) completes the step.
+  const done = await post('/api/courses/cs-quest/1b-1.2/complete', admin, {});
+  assert.equal(done.status, 200); assert.equal(done.json.complete, true);
+  assert.ok(C.stateOf(admin, course, '1b-1.2').complete);
+});
+
 test('course games stay out of the open lists', async () => {
   const anyone = q.get('SELECT * FROM users WHERE is_guest=0 LIMIT 1');
   for (const list of [G.listVisible(null, { limit: 200 }), G.listVisible(null, { featured: true, limit: 200 }), G.search(null, { text: 'Robo' }), G.search(anyone, { text: 'Packet' })])

@@ -537,10 +537,17 @@ export function states(user, course, band) {
     const node = pr && (pr.start_node === 'explorer-5.1' ? 'explorer-4.1' : pr.start_node);
     if (node) placedIdx = all.findIndex(s => s.key === node);
   }
+  // The platform admin tests the courses themselves (Greg, 2026-11-05): for the admin account every step
+  // is open — enterable from the map in any order, whatever the account's own progress or placement — so
+  // the whole course can be walked end to end. Access only, deliberately: completion is earned exactly as
+  // for a student (opening a step completes nothing; its check still gates its game and a win still
+  // completes it), the bypass writes no progress, and no other account's states change. The role is read
+  // from the account's own user row, server-side; there is no client switch. (docs/decisions.md, Course flow.)
+  const adminOpen = !!user && user.role === 'admin';
   let prevDone = true;
   return all.map((step, i) => {
     const r = rs.get(step.key) || null;
-    const s = { step, row: r, read: !!(r && r.read_at), checked: !!(r && r.checked_at), played: !!(r && r.played_at), won: !!(r && r.completed_at), complete: isComplete(step, r), open: prevDone || i <= placedIdx };
+    const s = { step, row: r, read: !!(r && r.read_at), checked: !!(r && r.checked_at), played: !!(r && r.played_at), won: !!(r && r.completed_at), complete: isComplete(step, r), open: adminOpen || prevDone || i <= placedIdx };
     prevDone = s.complete;
     return s;
   });
