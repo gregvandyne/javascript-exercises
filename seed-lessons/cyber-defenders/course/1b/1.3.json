@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "One drawing, many copies",
-   "text": "You send one drawing to a friend. The network keeps a copy at each stop along the way, like stamps in Pim's sorting book.",
+   "text": "You send one drawing to a friend. It passes through many hands on the way, and every stop could keep a copy, like stamps in Pim's sorting book. A copy sent out cannot be called back.",
    "art": "map",
    "img": "csq/packet-post/routes-1b-roads",
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
@@ -23,7 +23,7 @@
      ]
     },
     {
-     "cue": "A copy is kept at every stop along the way",
+     "cue": "Every stop could keep a copy along the way",
      "box": [
       10.0,
       37.8,
@@ -174,7 +174,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Play Many Roads in Packet Post for 2 levels, tracing every copy's journey. Name one thing you would never send, because copies cannot come back.",
+   "text": "Play Many Roads in Packet Post for all 4 levels, tracing every message's journey. Name one thing you would never send, because copies cannot come back.",
    "art": "trophy",
    "img": "csq/packet-post/routes-1b-roads",
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",

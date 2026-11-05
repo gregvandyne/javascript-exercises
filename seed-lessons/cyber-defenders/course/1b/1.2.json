@@ -174,13 +174,13 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road and play 2 levels of seal-check duty. Look for the padlock on every trip.",
+   "text": "Open Packet Post at Rules of the Road and play its 2 levels: say when each packet arrives, and resend the ones that go missing.",
    "art": "trophy",
    "img": "csq/packet-post/protocols-1b-key",
    "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
    "focus": [
     {
-     "cue": "Play Rules of the Road: look for the padlock",
+     "cue": "Play Rules of the Road: arrivals and resends",
      "box": [
       11.1,
       48.6,

@@ -175,7 +175,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Spot the Trick and play the Pro cards. For every message, check the real sender before you judge it.",
+   "text": "Open Packet Post at Spot the Trick: the same Pro cards you checked in step 3.3, so this step is already earned when the game opens. For every message, check the real sender before you judge it.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-2-fake",
    "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",

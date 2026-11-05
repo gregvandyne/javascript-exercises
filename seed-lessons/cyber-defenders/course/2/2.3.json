@@ -175,7 +175,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Secret Messages and finish 4 levels. Use the wheel to unscramble each message, and think about how many keys a trickster would have to try.",
+   "text": "Open Packet Post at Secret Messages and finish all 7 levels. Use the wheel to unscramble each message, and think about how many keys a trickster would have to try. Then the game sends you to Spot the Trick: check the 4 cards there.",
    "art": "trophy",
    "img": "csq/packet-post/ciphers-2-key",
    "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open.",
