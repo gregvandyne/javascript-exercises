@@ -72,6 +72,11 @@ function clipsFor(ep) {
   }
   return out;
 }
+/** Transition clips in boundary order (TRANSITION_SLUGS), URL or null per boundary. */
+function transitionsFor(ep) {
+  return MOVE.TRANSITION_SLUGS.slice(0, ep.segments.length - 1)
+    .map(slug => (fs.existsSync(path.join(CLIP_DIR, ep.id, `${slug}.mp4`)) ? `/video/move/${ep.id}/${slug}.mp4` : null));
+}
 function framesFor(ep) {
   const out = {};
   for (const s of ep.segments) {
@@ -134,7 +139,8 @@ router.get('/move/:episode', (req, res) => {
         <div class="mv-framewrap" id="mv-framewrap">
           <img class="mv-frame" id="mv-frame-a" alt="" draggable="false">
           <img class="mv-frame" id="mv-frame-b" alt="" draggable="false">
-          <video class="mv-video" id="mv-video" muted loop playsinline preload="auto" hidden></video>
+          <video class="mv-video" id="mv-video-a" muted playsinline preload="auto" hidden></video>
+          <video class="mv-video" id="mv-video-b" muted playsinline preload="auto" hidden></video>
           <div class="mv-frame-light" aria-hidden="true"></div>
         </div>
       </div>
@@ -179,9 +185,10 @@ router.get('/move/:episode', (req, res) => {
     <p class="mv-status" id="mv-status" role="status" ${fb(t, 'move.ready')}>${t('move.ready')}</p>
   </div>
   ${jsonData('page-data', {
-    episode: { id: ep.id, title: ep.title, endLines: ep.endLines, segments: ep.segments.map(s => ({ id: s.id, name: s.name, pose: s.pose, seconds: s.seconds, lines: s.lines, seated: s.seated || null, yourTurn: !!s.yourTurn })) },
+    episode: { id: ep.id, title: ep.title, endLines: ep.endLines, timeline: MOVE.narrationTimeline(ep), segments: ep.segments.map(s => ({ id: s.id, name: s.name, pose: s.pose, seconds: s.seconds, lines: s.lines, seated: s.seated || null, yourTurn: !!s.yourTurn })) },
     frames: framesFor(ep),
     clips: clipsFor(ep),
+    transitions: transitionsFor(ep),
     tts: moveTts(), signedIn: !!u && !u.is_guest, alreadyDone: !!done[ep.id],
     ui: { play: t('move.playBtn'), pause: t('move.pauseBtn'), yourTurn: t('move.yourTurn'),
       guestDone: t('move.guestDone'), savedDone: t('move.savedDone'), alreadyDone: t('move.alreadyDone') },

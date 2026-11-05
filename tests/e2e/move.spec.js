@@ -53,7 +53,7 @@ test('a guest hears narration and music in every segment, captions match, and th
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 844 });
   const completes = [];
-  page.on('response', async r => { if (r.url().includes('/api/move/complete')) { try { completes.push(await r.json()); } catch { /* ignore */ } });
+  page.on('response', async r => { if (r.url().includes('/api/move/complete')) { try { completes.push(await r.json()); } catch { /* ignore */ } } });
   await page.goto(EP_URL);
   const ep = await epData(page);
   const perSegMusic = {}, perSegCaption = {};
@@ -72,10 +72,45 @@ test('a guest hears narration and music in every segment, captions match, and th
   const m = await music(page);
   for (const seg of ep.segments) expect(m.perSegment[seg.id].notes, `music played during ${seg.id}`).toBeGreaterThan(0);
   expect(m.ctxState).toBe('running');
-  expect(log.some(e => e.seg === ep.segments.length && e.via === 'ai'), 'the end card line was narrated too').toBe(true);
+  // Seamless (Greg, 2026-11-05): one timeline. The bed started exactly once for the whole
+  // episode, and the narration log is the single timeline queue in order: every AI line at its
+  // global position, none repeated, none restarted at a chapter join.
+  const tl = await page.evaluate(() => window.__moveTest.timeline());
+  expect(tl.musicStarts, 'the music bed started once, never restarted at a join').toBe(1);
+  expect(m.starts).toBe(1);
+  const pos = new Map(ep.timeline.map((e, i) => [`${e.seg}:${e.line}`, i]));
+  const played = log.filter(e => e.via === 'ai').map(e => pos.get(`${e.seg}:${e.line}`));
+  expect(new Set(played).size, 'no narration line was played twice').toBe(played.length);
+  expect(played, 'narration followed the one timeline in order').toEqual([...played].sort((a, b) => a - b));
+  // The end card line is the last entry of the same queue: it follows the final Rest line in
+  // the one performance, so it can land after the end card itself appears. At this sped-up
+  // clock a cold server also hits the voice service's per-minute generation cap (20 new lines
+  // a minute; the episode has 23), and the player holds the line and retries until the cap's
+  // window clears rather than skipping it, so allow for that full retry arc.
+  await expect.poll(async () => (await narration(page)).some(e => e.seg === ep.segments.length && e.via === 'ai'), { timeout: 110_000 }).toBe(true);
   expect(completes).toHaveLength(1);
   expect(completes[0]).toMatchObject({ ok: true, stored: false });
   await expect(page.locator('#mv-done-status')).toContainText('Guests play free');
+});
+
+test('one timeline across the joins: the music starts once and the narration queue never resets', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto(EP_URL);
+  await page.click('#mv-play');
+  const samples = [];
+  let last = -1;
+  for (let i = 0; i < 200; i++) {
+    const s = await state(page);
+    if (s.segIdx !== last && s.segIdx >= 0) { last = s.segIdx; samples.push(await page.evaluate(() => window.__moveTest.timeline())); }
+    if (s.segIdx >= 4) break;
+    await page.waitForTimeout(200);
+  }
+  expect(samples.length, 'sampled at least four chapter joins').toBeGreaterThanOrEqual(4);
+  for (const t of samples) expect(t.musicStarts, 'music never restarts at a join').toBe(1);
+  const idx = samples.map(t => t.narrationIndex);
+  expect(idx, 'the narration queue only moves forward across joins').toEqual([...idx].sort((a, b) => a - b));
+  expect(samples[samples.length - 1].crossfadeMs).toBe(450);
+  expect(samples[samples.length - 1].narrationEntries).toBe(23);
 });
 
 test('music and narration mute independently; music-only keeps music and captions', async ({ page }) => {
@@ -106,7 +141,7 @@ test('music and narration mute independently; music-only keeps music and caption
 test('leaving early counts nothing; a signed-in finish stores exactly once', async ({ page }) => {
   test.setTimeout(240_000);
   const completes = [];
-  page.on('response', async r => { if (r.url().includes('/api/move/complete')) { try { completes.push(await r.json()); } catch { /* ignore */ } });
+  page.on('response', async r => { if (r.url().includes('/api/move/complete')) { try { completes.push(await r.json()); } catch { /* ignore */ } } });
   // Leave early: play two segments, navigate away, nothing is posted.
   await page.goto(EP_URL);
   await page.click('#mv-play');

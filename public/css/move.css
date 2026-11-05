@@ -31,8 +31,11 @@
 .mv-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .45s ease; }
 .mv-frame.on { opacity: 1; }
 /* A segment's real video clip (Greg's generated mp4) sits in the same slot, over its still
-   (the still is the video's poster), centre-cropped like the stills. */
-.mv-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #141414; }
+   (the still is the video's poster), centre-cropped like the stills. Two video elements
+   alternate so every join (pose clip to pose clip, or via a transition clip) is a 0.45s
+   crossfade on the one episode timeline, never a hard cut. */
+.mv-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #141414; opacity: 0; transition: opacity .45s ease; pointer-events: none; }
+.mv-video.on { opacity: 1; }
 .mv-frame-light { position: absolute; inset: -6%; background: radial-gradient(ellipse 55% 45% at 78% 16%, rgba(255, 210, 63, .20), rgba(255, 210, 63, 0) 70%); animation: mv-lightdrift 7s ease-in-out infinite alternate; pointer-events: none; }
 @keyframes mv-breathe { from { transform: scale(1.045) translate(0, 0); } to { transform: scale(1.062) translate(-.45%, -.7%); } }
 @keyframes mv-lightdrift { from { transform: translate(.6%, .3%); } to { transform: translate(-.9%, -.5%); } }
