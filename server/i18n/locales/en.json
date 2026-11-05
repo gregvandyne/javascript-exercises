@@ -2319,6 +2319,7 @@
     "course": {
       "right": "Right!",
       "wrong": "Not quite. The right answer is: {answer}",
+      "wrongWhy": "Not quite. The right answer is: {answer}. {why}",
       "next": "Next question",
       "finish": "See my score",
       "listen": "Read aloud",
@@ -2936,6 +2937,17 @@
       "done": "Done",
       "started": "Started",
       "none": "Not started"
+    },
+    "courses": {
+      "status": "Status",
+      "steps": "Steps done",
+      "checks": "Checks score",
+      "perStep": "Step by step",
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "stepDone": "completed",
+      "stepStarted": "started",
+      "note": "Course progress for this class's students: a step counts as done when its slides are read, its check is passed and its game chapter is finished. The checks score is the best recorded result per step (up to 3 per step). Students in another band see that band's steps."
     },
     "key": {
       "done": "done",
@@ -3831,7 +3843,8 @@
         "lessons": "23 lessons in 7 units",
         "minutes": "45 minutes each",
         "games": "Four games",
-        "free": "No ads"
+        "free": "No ads",
+        "note": "Why the counts differ: the 23 lessons include Unit 7, Make Your Own Game (four lessons in the AI Builder), which is not part of the student course map. The student map shows 21 steps: Units 1 to 6, plus a welcome step (0.1) and the Spark finale (6.4)."
       },
       "cta": {
         "open": "Open CS Quest"
@@ -6137,6 +6150,25 @@
         "rubricVal": "{mean} · {count} marks",
         "note": "Practiced means the activity was done, not mastery. Accuracy is right answers out of answered exit-ticket items tagged with the standard."
       }
+    }
+  },
+  "teach": {
+    "cd": {
+      "title": "Cyber Defenders",
+      "lead": "The second Oomba course, in your Teach area: cybersecurity and online safety for grades 3-8, in two bands (Explorer 3-5, Pro 6-8). Pim's post office in Netville is under attack from the Magpie; your students earn a Defender stamp in every unit and open the escape room at the end.",
+      "cta": {
+        "open": "Open the student course",
+        "public": "Teacher page",
+        "print": "Standards map and notes",
+        "tricks": "Spot the Trick pack"
+      },
+      "units": {
+        "h": "Units and steps"
+      },
+      "games": {
+        "h": "The games"
+      },
+      "note": "The full standards map (CYBER.ORG and Common Sense, step by step) and the per-unit teacher notes are on the teacher page; the two print buttons above open them ready to print."
     }
   },
   "courses": {
