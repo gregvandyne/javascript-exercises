@@ -9,7 +9,8 @@
 // Cyber Defenders is a standalone course, so there is no staff gate and nothing to add to a library.
 import { Router } from 'express';
 import { html, raw, esc } from '../views/html.js';
-import { page } from '../views/layout.js';
+import { page, notFound } from '../views/layout.js';
+import { requireUser } from '../auth.js';
 import * as S from '../services/schools.js';
 import * as C from '../services/courses.js';
 import * as seo from '../seo.js';
@@ -158,4 +159,34 @@ router.get('/teachers/cyber-defenders', (req, res) => {
       ])],
     },
   });
+});
+
+/** The signed-in Teach page (/teach/cyber-defenders): the course in the teacher's own area, next to
+ *  /teach/cs-quest. Cyber Defenders has no school library to add lessons from, so this is the program
+ *  itself — units and steps for both bands, the four games, the standards counts — with the doors a
+ *  teacher needs: the student course, the public teacher page (full standards map and per-unit notes)
+ *  and its two print views. Staff of a school only, like every /teach page. Copy under teach.cd.*
+ *  (English-first, like teachers.cd.*). */
+const staffPage = (req, res, next) => (S.isSchoolStaff(req.user) ? next() : notFound(req, res, req.t('school.errors.notTeacher')));
+router.get('/teach/cyber-defenders', requireUser, staffPage, (req, res) => {
+  const t = req.t, cat = C.cyberCatalogue(), TK = 'teach.cd';
+  const games = [
+    { slug: 'packet-post', emoji: '📮', title: 'Packet Post' },
+    { slug: 'would-you-rather', emoji: '🤔', title: 'Would You Rather?' },
+    { slug: 'trick-inbox', emoji: '📥', title: 'Trick Inbox' },
+    { slug: 'escape-the-post-office', emoji: '🔐', title: 'Escape the Post Office' },
+  ].map(g => ({ ...g, live: launchGame(g.slug) }));
+  const stepsIn = band => C.steps(C.getCourse('cyber-defenders'), band).length;
+  const body = html`
+  <div class="pagehead"><h1>🦉 ${t(`${TK}.title`)}</h1><div class="row"><a class="btn btn-primary" href="/courses/cyber-defenders">${t(`${TK}.cta.open`)}</a><a class="btn" href="/teachers/cyber-defenders">${t(`${TK}.cta.public`)}</a><a class="btn" href="/teachers/cyber-defenders?print=1" target="_blank" rel="noopener">🖨️ ${t(`${TK}.cta.print`)}</a><a class="btn" href="/teachers/cyber-defenders?print=tricks" target="_blank" rel="noopener">🖨️ ${t(`${TK}.cta.tricks`)}</a></div></div>
+  <p class="lead">${t(`${TK}.lead`)}</p>
+  <div class="csq-stats"><div class="csq-stat"><b dir="ltr">${stepsIn('1b')}</b><span>${t(`${K}.badges.steps`)}</span></div><div class="csq-stat"><b dir="ltr">${cat.registry.cyberorgCodes['1b'].length}</b>${el(t, 'span', `${K}.standards.b1`)}</div><div class="csq-stat"><b dir="ltr">${cat.registry.cyberorgCodes['2'].length}</b>${el(t, 'span', `${K}.standards.b2`)}</div><div class="csq-stat"><b dir="ltr">${cat.registry.frameworks.commonSense.topics.length}</b>${el(t, 'span', `${K}.standards.topics`)}</div></div>
+  <h2>${t(`${TK}.units.h`)}</h2>
+  <ul class="plain">${cat.units.map(u => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
+    <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {})['1b'] || s.n}${(s.titles || {})['2'] && s.titles['2'] !== s.titles['1b'] ? html` <span class="small muted">(Pro: ${s.titles['2']})</span>` : ''}</li>`)}</ol></li>`)}</ul>
+  <h2>${t(`${TK}.games.h`)}</h2>
+  <ul class="csq-crew">${games.map(g => html`<li class="panel"><span class="csq-crew-e" aria-hidden="true">${g.emoji}</span><h3 lang="en" dir="ltr">${g.title}</h3>
+    <div class="row">${g.live ? html`<a class="btn btn-primary" href="/play/${g.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : ''}</div></li>`)}</ul>
+  <p class="small muted">${t(`${TK}.note`)}</p>`;
+  page(req, res, { title: t(`${TK}.title`), active: 'classes', body, head: V.CSS, back: '/teach', backLabel: t('school.teach.title') });
 });

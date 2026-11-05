@@ -391,6 +391,30 @@ export function overview(user, course, band = getBand(user, course)) {
   const list = states(user, course, band);
   return { band, list, done: list.filter(s => s.complete).length, total: list.length, next: (list.find(s => s.open && !s.complete) || null) };
 }
+/** A teacher's view of course progress for a given set of students (a class roster — the caller decides
+ *  who is in it; this never widens the set). One row per student for one course, built on the same
+ *  states() the student map uses, so a teacher sees exactly what the platform records: the band, the
+ *  per-step states, steps complete of the band's total, a status (not-started / in-progress /
+ *  completed) and the recorded check score (check_score is 0-3 per step that has a check, so the
+ *  maximum is 3 per checked step). Any course registered in COURSES works, so a course that joins the
+ *  registry (Number Quest) appears in the teacher view with no extra plumbing. Guests never appear:
+ *  they have no accounts and no rows here. */
+export function classCourseProgress(students, course) {
+  return (students || []).map(user => {
+    let band = getBand(user, course);
+    if (!band && user && user.id != null) {
+      const r = q.get('SELECT band, COUNT(*) AS n FROM course_progress WHERE user_id=? AND course=? GROUP BY band ORDER BY n DESC LIMIT 1', user.id, course.slug);
+      band = r && BANDS.includes(r.band) ? r.band : null;
+    }
+    if (!band) return { user, band: null, status: 'not-started', done: 0, total: steps(course, '1b').length, score: 0, maxScore: 0, list: [] };
+    const list = states(user, course, band);
+    const done = list.filter(s => s.complete).length;
+    const started = list.some(s => s.row);
+    const score = list.reduce((n, s) => n + ((s.row && s.row.check_score) || 0), 0);
+    const maxScore = list.reduce((n, s) => n + (s.step.check && s.step.check.length ? 3 : 0), 0);
+    return { user, band, status: !started ? 'not-started' : done >= list.length ? 'completed' : 'in-progress', done, total: list.length, score, maxScore, list };
+  });
+}
 /** One step's state for this player (open, read, checked...), or null when the key is unknown. */
 export function stateOf(user, course, key) {
   const step = getStep(course, key);
@@ -430,7 +454,7 @@ export function questions(step, seed = '') {
 export function answerOne(step, id, choice) {
   if (!step.check.includes(id)) return null;
   const it = item(id);
-  return { right: Number.isInteger(choice) && choice === it.answer, answer: it.answer, text: it.choices[it.answer] };
+  return { right: Number.isInteger(choice) && choice === it.answer, answer: it.answer, text: it.choices[it.answer], why: it.why || '' };
 }
 /** All three answers ({ id: choice }), graded on the server: { score, passed, results: [{ id, right, answer, text }] }. */
 export function grade(step, answers) {

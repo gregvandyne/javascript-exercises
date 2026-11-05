@@ -335,6 +335,7 @@ router.get('/teachers/cs-quest', (req, res) => {
     ${el(t, 'h1', `${k}.h1`, {}, ' id="lp-h1"')}
     ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
     <ul class="lp-badges">${['csta', 'lessons', 'minutes', 'games', 'free'].map(x => html`<li>${el(t, 'span', `${k}.badges.${x}`)}</li>`)}</ul>
+    ${el(t, 'p', `${k}.badges.note`, {}, ' class="small muted"')}
     <div class="row lp-cta">${staff ? html`<a class="btn btn-primary btn-big" href="/teach/cs-quest">💻 ${t(`${k}.cta.open`)}</a>` : html`<a class="btn btn-primary btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a><a class="btn btn-big" href="/login?next=%2Fteach%2Fcs-quest">${t('layout.signIn')}</a>`}</div>
   </section>
   <section class="lp-sec" id="promise" aria-labelledby="promise-h">${el(t, 'h2', `${k}.promise.h`, {}, ' id="promise-h"')}

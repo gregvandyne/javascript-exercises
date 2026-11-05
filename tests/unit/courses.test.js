@@ -131,7 +131,7 @@ test('read -> check (graded on the server) -> game module -> the next step opens
   // One answer at a time: right or not, and only then the right answer.
   const id = s1.check[0];
   let r = await post('/api/courses/cs-quest/1b-1.1/answer', kid, { item: id, choice: wrong(id) });
-  assert.deepEqual(r.json, { right: false, answer: right(id), text: C.item(id).choices[right(id)] });
+  assert.deepEqual(r.json, { right: false, answer: right(id), text: C.item(id).choices[right(id)], why: C.item(id).why || '' }, 'a miss names the right answer and explains it (the check-feedback fix)');
   assert.equal((await post('/api/courses/cs-quest/1b-1.1/answer', kid, { item: id, choice: right(id) })).json.right, true);
   assert.equal((await post('/api/courses/cs-quest/1b-1.1/answer', kid, { item: s2.check[0], choice: 0 })).status, 400, 'only this check\'s items');
 

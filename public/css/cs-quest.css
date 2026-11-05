@@ -8,6 +8,10 @@
 .csq-grid>.panel{margin:0}
 .csq-grid>.wide{grid-column:1/-1}
 .csq-tbl{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+/* the landing shell (.lp) is a flex column, whose children otherwise refuse to shrink below their
+   widest content: a standards table would push its whole section past a phone screen (columns cut
+   mid-word) instead of scrolling inside its .csq-tbl box */
+.lp>*{min-width:0}
 .csq-tbl table{min-width:100%}
 .csq-tbl td,.csq-tbl th{vertical-align:top}
 .csq-badge{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--accent-soft);font-size:.8rem;font-weight:800;white-space:nowrap}
