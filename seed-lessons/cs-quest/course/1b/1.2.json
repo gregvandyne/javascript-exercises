@@ -199,7 +199,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Loops and finish 4 levels. First look for the pattern: which blocks happen again and again? Put those inside a repeat.",
+   "text": "Open Robo Route at Loops and finish all 7 levels. First look for the pattern: which blocks happen again and again? Put those inside a repeat.",
    "art": "trophy",
    "img": "csq/robo-route/loops-1b-repeat-bracket",
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",

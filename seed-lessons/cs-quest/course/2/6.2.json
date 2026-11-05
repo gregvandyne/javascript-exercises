@@ -67,7 +67,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve 2 briefs. Base each recommendation on what the user said.",
+   "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve all five briefs. Base each recommendation on what the user said.",
    "art": "trophy",
    "img": "csq/inside-the-machine/design-2-key",
    "alt": "Design Lab in Pro opens with a real user and their words: design starts from what people actually say."

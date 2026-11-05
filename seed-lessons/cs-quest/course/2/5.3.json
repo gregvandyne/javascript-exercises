@@ -79,7 +79,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Inside the Machine at Bits & Pixels and finish 4 levels. Flip switches to send numbers, letters and gray levels.",
+   "text": "Open Inside the Machine at Bits & Pixels and finish all 7 levels. Flip switches to send numbers, letters and gray levels.",
    "art": "trophy",
    "img": "csq/inside-the-machine/bits-2-key",
    "alt": "Pro bits opens with five switches and a bigger ask: make 21, where every place is worth double the last."

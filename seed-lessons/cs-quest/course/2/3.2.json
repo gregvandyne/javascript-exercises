@@ -70,7 +70,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Data Detective at Model Makers and solve 3 cases. Watch the error number: your job is to make it smaller.",
+   "text": "Open Data Detective at Model Makers and solve all 5 cases. Watch the error number: your job is to make it smaller.",
    "art": "trophy",
    "img": "csq/data-detective/models-2-key",
    "alt": "The Ramp Rule case: a rule that predicts how far a car rolls, with the ramp and the trials waiting."

@@ -83,7 +83,8 @@
     "add more move blocks",
     "ask for the answer"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Stepping through shows the exact square where Bolt leaves the path. Guessing or starting over hides the clue."
   },
   {
    "id": "1b-2.1-e2",
@@ -100,7 +101,8 @@
     "the repeat count is one too many",
     "the program has no turn"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Going one square too far after the right number of moves points at the count: it ran one time too many."
   },
   {
    "id": "1b-2.1-e3",
@@ -117,7 +119,8 @@
     "when it has fewer blocks than before",
     "when a friend says it is fine"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A fix is only a fix when a fresh run does what you expected. Looking right is not the same as working."
   },
   {
    "id": "1b-2.2-r1",
@@ -168,7 +171,8 @@
     "delete the level",
     "add more traps"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A stuck tester found a real problem in the level. Designers change the level, then test again."
   },
   {
    "id": "1b-2.2-e2",
@@ -185,7 +189,8 @@
     "play it themselves",
     "fix it while the tester plays"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Helping would change the test. Watching quietly shows what a player does without you."
   },
   {
    "id": "1b-2.2-e3",
@@ -202,7 +207,8 @@
     "\"I put the key behind water so you must plan a path\"",
     "\"level by me\""
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A good note names a choice you made and why, so the next person understands the design."
   }
  ]
 }

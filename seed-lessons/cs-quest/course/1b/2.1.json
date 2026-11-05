@@ -76,7 +76,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Debug Lab and fix 4 programs. Use Step, change as few blocks as you can, and run it again to test.",
+   "text": "Open Robo Route at Debug Lab and fix all 7 programs. Use Step, change as few blocks as you can, and run it again to test.",
    "art": "trophy",
    "img": "csq/robo-route/debug-1b-key",
    "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."

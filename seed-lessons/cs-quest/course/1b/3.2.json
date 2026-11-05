@@ -66,7 +66,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Data Detective at Clues & Claims and solve 4 cases. Before you pin a claim, ask: does the chart really show it, or can we not tell yet?",
+   "text": "Open Data Detective at Clues & Claims and solve all 6 cases. Before you pin a claim, ask: does the chart really show it, or can we not tell yet?",
    "art": "trophy",
    "img": "csq/data-detective/claims-1b-key",
    "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it."

@@ -83,7 +83,8 @@
     "a loop",
     "a parameter"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Grid C tests an unusual case the others miss: a grid with no gems. That is an edge case."
   },
   {
    "id": "2-2.1-e2",
@@ -100,7 +101,8 @@
     "no test can catch a count bug",
     "a grid where the goal is right before a wall"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "If the count is one too many, Bolt steps one square too far. A goal just before a wall makes that extra step fail loudly."
   },
   {
    "id": "2-2.1-e3",
@@ -117,7 +119,8 @@
     "delete grid A from the tests",
     "only test the newest grid, C"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A fix can break something that used to pass. Running every test grid again proves nothing else broke."
   },
   {
    "id": "2-2.2-r1",
@@ -168,7 +171,8 @@
     "blaming the tester for playing badly",
     "deleting level 2 from the game"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Incorporating feedback means acting on it: change the level, then test again to see if it helped."
   },
   {
    "id": "2-2.2-e2",
@@ -185,7 +189,8 @@
     "skip testing to save time",
     "both do the same thing together"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A simple plan with times and jobs keeps build, test and fix all covered before the minutes run out."
   },
   {
    "id": "2-2.2-e3",
@@ -202,7 +207,8 @@
     "\"my level\"",
     "\"hard one\""
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A helpful note points at the tricky part and the idea that solves it, so the next person is not stuck."
   }
  ]
 }

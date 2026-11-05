@@ -69,7 +69,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Inside the Machine at Fix-It Desk and solve 4 tickets. Before you tap, ask: which check is quick and most likely?",
+   "text": "Open Inside the Machine at Fix-It Desk and solve all 7 tickets. Before you tap, ask: which check is quick and most likely?",
    "art": "trophy",
    "img": "csq/inside-the-machine/fixit-1b-key",
    "alt": "The Fix-It Desk opens its first ticket: a broken gadget, its story, and the fix options with their minutes."

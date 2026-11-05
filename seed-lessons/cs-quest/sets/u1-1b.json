@@ -94,14 +94,15 @@
    "topic": "Sequences",
    "kind": "apply",
    "secs": 20,
-   "q": "Bolt faces a wall. The gem is two squares to the right. Which program reaches it?",
+   "q": "Bolt faces along the top row. The flag is below, down the left side. Which program starts toward the flag?",
    "choices": [
     "move, move, turn right",
     "turn right, move, move",
     "turn left, move, move",
     "move, turn right, turn right"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Turning first aims Bolt down the left side toward the flag. Moving first would run along the top row, away from the flag."
   },
   {
    "id": "1b-1.1-e2",
@@ -118,7 +119,8 @@
     "spins Bolt in place to the left",
     "makes Bolt pick up a gem"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A turn block only spins Bolt on the spot. Only a move block changes Bolt's square."
   },
   {
    "id": "1b-1.1-e3",
@@ -135,7 +137,8 @@
     "Neither route works",
     "Route A, it keeps Bolt dry"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Route B is shorter, but it crosses the puddle. A route only counts if Bolt stays dry, so Route A wins."
   },
   {
    "id": "1b-1.2-r1",
@@ -169,7 +172,8 @@
     "repeat 8 { move }",
     "repeat 7 { move }, move"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "One repeat block holding one move, run 8 times, moves Bolt 8 squares with just two blocks."
   },
   {
    "id": "1b-1.2-e2",
@@ -186,7 +190,8 @@
     "5",
     "9"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Each run of the repeat moves Bolt 2 squares, and it runs 3 times: 3 times 2 is 6."
   },
   {
    "id": "1b-1.2-e3",
@@ -203,7 +208,8 @@
     "Bolt needs more gems first",
     "the goal is in the wrong place"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "The repeat is wrapped around a turn, so Bolt spins 4 times and never moves. The move belongs inside the repeat."
   },
   {
    "id": "1b-1.3-r1",
@@ -237,7 +243,8 @@
     "repeat 4 { move, move }",
     "turn left, move, move, move"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Checking before each move means Bolt only steps when the way is clear, and turns when it is not."
   },
   {
    "id": "1b-1.3-e2",
@@ -254,7 +261,8 @@
     "when is for gems; if is for walls",
     "when waits for something to happen; if checks now"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "An if block asks its question right now. A when block waits and reacts the moment something happens."
   },
   {
    "id": "1b-1.3-e3",
@@ -271,7 +279,8 @@
     "after every move",
     "never, the door stays shut"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A when block watches the whole program and fires the moment its event happens: the pick-up itself."
   },
   {
    "id": "1b-1.4-r1",
@@ -305,7 +314,8 @@
     "deletes the score",
     "repeats once"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Change adds to what is already in the box. Set would replace it; change by 1 makes it one bigger."
   },
   {
    "id": "1b-1.4-e2",
@@ -322,7 +332,8 @@
     "1",
     "4"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Each pick-up runs the change once, adding 1. Three pick-ups add 3 to 0, so gems is 3."
   },
   {
    "id": "1b-1.4-e3",
@@ -339,7 +350,8 @@
     "counts how many lives there are",
     "puts exactly 3 in the lives box"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Set puts exactly the value you name into the box, whatever was there before."
   },
   {
    "id": "1b-1.5-r1",
@@ -407,7 +419,8 @@
     "use one very long move block",
     "skip the rooms"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The four rooms are the same job four times. One named block, called 4 times, does it without writing it all out."
   },
   {
    "id": "1b-1.5-e2",
@@ -424,7 +437,8 @@
     "steps that repeat in several places",
     "only the very last step"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A named block earns its name when the same steps show up again and again in different places."
   },
   {
    "id": "1b-1.5-e3",
@@ -441,7 +455,8 @@
     "a bug in the old block",
     "a block built from nothing"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Starting from a block that exists and adding something of your own is a remix."
   }
  ]
 }

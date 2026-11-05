@@ -71,7 +71,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
+   "text": "Open Packet Post at Lock It and finish all 6 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
    "art": "trophy",
    "img": "csq/packet-post/locks-1b-key",
    "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."

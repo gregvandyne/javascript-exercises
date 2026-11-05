@@ -88,7 +88,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Secret Messages and finish 4 levels with the key wheel. Then check the trick cards for faked senders.",
+   "text": "Open Packet Post at Secret Messages and finish all 7 levels with the key wheel. Then the game sends you to Spot the Trick: check the 4 trick cards there for faked senders.",
    "art": "trophy",
    "img": "csq/packet-post/ciphers-2-key",
    "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."

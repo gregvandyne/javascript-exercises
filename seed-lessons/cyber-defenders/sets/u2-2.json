@@ -21,7 +21,8 @@
     "A familiar single word is hardest to guess",
     "Short passphrases are safer because they are easier to remember"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Length wins. Four random words give a guessing computer far more combinations than a short familiar word."
   },
   {
    "id": "cd-2-2.1-e2",
@@ -38,7 +39,8 @@
     "The list can be traded and tried on other accounts, so one leak opens them all",
     "A breach only matters if you lose your device"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A reused passphrase turns one leak into many. The stolen list gets tried everywhere you used it."
   },
   {
    "id": "cd-2-2.1-e3",
@@ -55,7 +57,8 @@
     "The door is digital security and the firewall is physical security",
     "Both are physical security, because both block entry"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "One guards a place you can touch, the other guards data. Physical versus digital is about what is being protected."
   },
   {
    "id": "cd-2-2.2-e1",
@@ -72,7 +75,8 @@
     "Authentication, then authorization",
     "Both checks are authentication"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "First prove who you are (authentication), then check what you may open (authorization). The order matters."
   },
   {
    "id": "cd-2-2.2-e2",
@@ -89,7 +93,8 @@
     "It is faster, so attackers give up sooner",
     "It is a different kind of check: something you have, not just something you know"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Two checks of the same kind can fall together. A phone code is something you have, a different kind from something you know."
   },
   {
    "id": "cd-2-2.2-e3",
@@ -106,7 +111,8 @@
     "Passkeys are longer, so no page can copy them",
     "A passkey is hidden inside a picture"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A passkey never leaves your device as a typeable secret, so a fake page has nothing to copy."
   },
   {
    "id": "cd-2-2.3-e1",
@@ -123,7 +129,8 @@
     "A shift cipher has only 25 keys to try, while a real key space is far too large to try in time",
     "Modern ciphers have no keys, so there is nothing to try"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Trying every key is quick when there are only 25. A modern key space is too large to finish in time."
   },
   {
    "id": "cd-2-2.3-e2",
@@ -140,7 +147,8 @@
     "That is decryption, because the words are plain",
     "That is brute force, because finding it takes time"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Hiding keeps the words plain for anyone who finds them. Scrambling is what changes the words themselves."
   },
   {
    "id": "cd-2-2.3-e3",
@@ -157,7 +165,8 @@
     "The plain words, if the receiver agrees later",
     "None of the plain message: only the sender and receiver can read it"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "End-to-end means the middle cannot read it. Only the two ends hold the keys."
   }
  ]
 }

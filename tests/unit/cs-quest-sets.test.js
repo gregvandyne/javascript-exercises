@@ -138,7 +138,10 @@ test('every item matches the itemSchema: id grammar, lesson, use, kind, secs, le
     const prefix = BAND_PREFIX[b.band];
     for (const it of b.items) {
       const where = `${b.id} ${it.id}`;
-      assert.deepEqual(Object.keys(it), ['id', 'lesson', 'use', 'cat', 'topic', 'kind', 'secs', 'q', 'choices', 'answer'], `${where}: exactly the schema's fields, in order`);
+      const itKeys = Object.keys(it);
+      assert.deepEqual(itKeys.slice(0, 10), ['id', 'lesson', 'use', 'cat', 'topic', 'kind', 'secs', 'q', 'choices', 'answer'], `${where}: exactly the schema's fields, in order`);
+      assert.ok(itKeys.length === 10 || (itKeys.length === 11 && itKeys[10] === 'why'), `${where}: only an optional trailing why may follow the schema's fields`);
+      if (it.why !== undefined) assert.ok(typeof it.why === 'string' && it.why.length >= 20 && it.why.length <= 240, `${where}: why is a short explanation`);
       const m = new RegExp(`^${prefix}-(?:(${b.unit}\\.\\d)-([er])(\\d)|u${b.unit}-(o)(\\d))$`).exec(it.id);
       assert.ok(m, `${where}: id is ${prefix}-<lesson>-e<n>, ${prefix}-<lesson>-r<n> or ${prefix}-u${b.unit}-o<n>`);
       const lesson = m[1] || `${b.unit}.1`, letter = m[2] || m[4];
