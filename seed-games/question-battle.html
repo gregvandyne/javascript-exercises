@@ -190,6 +190,7 @@ window.SoloBank = (function () {
 (function () {
   'use strict';
   var O = window.Oomba, L = O.live;
+  // ==== I18N START ====
   var STR = {
     en: { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
     'en-GB': { title: 'Question Battle', qnum: 'Question {n} of {total}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not this time!', timeUp: "Time's up!", wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', top: 'Top five', podium: 'Winners', rank: 'You are number {rank}', score: '{n} points', practice: 'Practice round', paused: 'Paused', skipped: 'Skipped', answers: '{n} answered', done: 'Well played!', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
@@ -221,6 +222,8 @@ window.SoloBank = (function () {
   };
   NEW['en-GB'] = NEW.en;
   Object.keys(NEW).forEach(function (k) { if (STR[k]) Object.assign(STR[k], NEW[k]); });
+  var I18N = STR;
+  // ==== I18N END ====
   O.strings(STR);
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };

@@ -388,6 +388,7 @@ const CONFIG = {
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
 const BASE = LANG.split('-')[0], IS_EN = BASE === 'en';
 const DIR = (window.BRB && BRB.user && BRB.user.dir) || (BASE === 'he' || BASE === 'ar' ? 'rtl' : 'ltr');
+// ==== I18N START ====
 const I18N = {
   en: {
     pause: 'Pause', soundOff: 'Turn sound off', soundOn: 'Turn sound on',
@@ -825,6 +826,7 @@ const I18N = {
     chipNotFound: '{w}, nog niet gevonden. Tik om het te horen.', chipFound: '{w}, gevonden! Tik om het te horen.'
   }
 };
+// ==== I18N END ====
 const PLURAL = (() => { try { return new Intl.PluralRules(LANG); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
 const NUM = (() => { try { return new Intl.NumberFormat(BASE === 'ar' ? 'ar-u-nu-latn' : LANG); } catch (e) { return { format: n => String(n) }; } })();
 const fmtN = n => NUM.format(n);
@@ -1272,13 +1274,13 @@ let fast = false;      // __brbTest.skipAnimations(): no sweeps, no delays
 const later = (ms, fn) => Oomba.time.real.after(ms, fn);   // the real clock: messages and the results keep going while a menu is open
 
 /* =====================================================================================
-   Sound + speech (speechSynthesis may be missing: every use is guarded)
+   Sound + speech (speech goes through BRB.speak only: the shared path, AI voice or its device fallback)
    ===================================================================================== */
 /* Voices: BRB.speak picks the most natural voice for the language and speaks at the normal pitch.
    The game needs the SDK (it is always there on Oomba Academy). With an older SDK that has no BRB.speak, nothing is
    spoken (the word is shown instead): a lang-only utterance would let the browser pick a voice itself, often its
    most robotic one. Rates (1 = normal talking): see CONFIG.speechRate / CONFIG.talkRate. */
-function canSpeak() { try { return !!(window.speechSynthesis && window.SpeechSynthesisUtterance); } catch (e) { return false; } }
+function canSpeak() { try { return !!(window.BRB && typeof BRB.speak === 'function'); } catch (e) { return false; } }
 function speakLine(text, lang, rate, queue) {
   try {
     return typeof BRB.speak === 'function' ? BRB.speak(text, { lang, rate, queue }) : false;
@@ -1301,7 +1303,7 @@ function sayT(key, vars = {}, enKeys = ['w', 'l']) {
   return any;
 }
 function stopSpeaking() {
-  try { if (typeof BRB.stopSpeaking === 'function') BRB.stopSpeaking(); else if (canSpeak()) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+  try { if (typeof BRB.stopSpeaking === 'function') BRB.stopSpeaking(); } catch (e) { /* ignore */ }
   clearReadTimers();
 }
 let readTimers = [];

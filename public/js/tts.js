@@ -112,11 +112,12 @@ if (typeof window !== 'undefined') {
 // VOICE_REGIONS['zh-hant'] and the server's accent. Some engines don't know the tag zh-Hant at all.
 const isHant = l => /^zh-(hant|tw)\b/i.test(String(l || ''));
 const speechLang = lang => (isHant(lang) ? 'zh-TW' : lang);
-export function deviceSpeak(text, lang) {
+export function deviceSpeak(text, lang, onend) {
   try {
     const ss = window.speechSynthesis; if (!ss || !text) return false;
     const u = new SpeechSynthesisUtterance(String(text)); if (lang) u.lang = speechLang(lang);
     const v = deviceVoice(lang); if (v) u.voice = v;
+    if (onend) u.onend = u.onerror = () => { try { onend(); } catch { /* ignore */ } };
     ss.cancel(); ss.speak(u); return true;
   } catch { return false; }
 }

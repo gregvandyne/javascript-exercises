@@ -230,6 +230,7 @@ window.SoloBank = (function () {
 (function () {
   'use strict';
   var O = window.Oomba, L = O.live;
+  // ==== I18N START ====
   var STR = {
     en: { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
     'en-GB': { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
@@ -262,6 +263,8 @@ window.SoloBank = (function () {
   };
   MORE['en-GB'] = MORE.en;
   Object.keys(STR).forEach(function (k) { var m = MORE[k] || MORE.en; Object.keys(m).forEach(function (x) { STR[k][x] = m[x]; }); });
+  var I18N = STR;
+  // ==== I18N END ====
   O.strings(STR);
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };

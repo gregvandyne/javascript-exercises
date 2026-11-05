@@ -50,9 +50,9 @@ export const GAME_TOKEN_SEC = 2 * 3600;
 
 // ---------------------------------------------------------------- game tokens (minted by the play page)
 /** May this game use AI voices: an official seed game listed in tts-lines GAMES (its spoken lines are known), published
- *  and not hidden? Other official games (word games where a kid types a word, among them) keep the device's voice.
- *  Also a game the admin switched on (services/tts-games.js: made by a teacher, staff or the admin, published, not
- *  hidden; never a draft or a preview). */
+ *  and not hidden? Every official game is on the list (a coverage test fails otherwise); one missing from it gets no
+ *  token until it is registered. Also a game the admin switched on (services/tts-games.js: made by a teacher, staff
+ *  or the admin, published, not hidden; never a draft or a preview). */
 export const listedGame = g => !!g && lines.TTS_GAMES.has(g.slug) && isOfficial(g) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason;
 export const gameAllowed = g => listedGame(g) || TG.allowed(g);
 /**
@@ -221,7 +221,7 @@ router.get('/admin/voices', (req, res) => {
   </form>
   <h2 class="stats-h" id="tv-games-h">Games with AI voices</h2>
   <section class="panel" id="tv-games" aria-labelledby="tv-games-h">
-    <p class="small">Official games listed for voices (${[...lines.TTS_GAMES].join(', ')}) always have them. Here you can switch them on for one more game made by a teacher, school staff or you: it reads only that game's own words from its published version (numbers may change, and a placeholder may take one of the game's own names), never what a player types or a player's name. A student's game can't be switched on, and nor can other official games (word games keep the device's voice). You can also switch a game on or off on its own page.</p>
+    <p class="small">Official games listed for voices (${[...lines.TTS_GAMES].join(', ')}) always have them. Here you can switch them on for one more game made by a teacher, school staff or you: it reads only that game's own words from its published version (numbers may change, and a placeholder may take one of the game's own names), never what a player types or a player's name. A student's game can't be switched on, and official games don't need it: every one of them is listed for voices. You can also switch a game on or off on its own page.</p>
     ${games_.length ? html`<div class="tblwrap"><table class="tbl" id="tv-games-list"><thead><tr><th>Game</th><th>Made by</th><th>State</th><th></th></tr></thead><tbody>${games_.map(x => html`<tr data-game="${x.id}">
       <th scope="row"><a href="/g/${x.slug}">${x.title}</a> <span class="muted small">${x.slug}</span></th><td>@${x.owner}</td>
       <td class="small">${!x.ok ? html`<b>Not allowed:</b> ${x.why}` : !x.live ? 'On once published (not published, or hidden now)' : silent ? html`On, but nothing plays yet: ${silent}` : 'On'}</td>

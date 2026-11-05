@@ -2,6 +2,7 @@
 // read-aloud with the site's AI voice, else the device's English voice), then the quick check one question at a time, graded by the server.
 // Without this script the page still works: the slides are a scrolling page and the check is a plain form.
 import { api, pageData, $, $$, t, toast } from '/js/app.js';
+import { deviceSpeak, stopReading } from '/js/tts.js';
 
 const d = pageData();
 const base = `/api/courses/${d.course}/${d.step}`;
@@ -11,23 +12,17 @@ let at = 0;
 
 // ---------------------------------------------------------------------------------------------- read-aloud
 // The site's AI voice first (POST /api/tts ctx 'course': the server reads the slide itself, with the voice of the step's
-// game character); the device's English voice when AI voices are off, the player is signed out, or it does not come.
-const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
+// game character); the shared device voice (public/js/tts.js) when AI voices are off, the player is signed out, or it
+// does not come. This page never calls the device speech API itself: one voice pick, in the shared path.
 let speaking = null, audio = null, ticket = 0;
 function stopSpeaking() {
   ticket++;
   if (audio) { audio.pause(); audio = null; }
-  if (synth) synth.cancel();
+  stopReading();
   if (speaking) { speaking.querySelector('.lbl').textContent = t('js.course.listen'); speaking.setAttribute('aria-pressed', 'false'); speaking = null; }
 }
 function deviceVoice(btn, text) {
-  if (!synth) return stopSpeaking();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US'; u.rate = 0.95;
-  const v = synth.getVoices().find(x => /^en(-|_)US/i.test(x.lang)) || synth.getVoices().find(x => /^en/i.test(x.lang));
-  if (v) u.voice = v;
-  u.onend = u.onerror = () => { if (speaking === btn) stopSpeaking(); };
-  synth.speak(u);
+  if (!deviceSpeak(text, 'en-US', () => { if (speaking === btn) stopSpeaking(); })) stopSpeaking();
 }
 async function speak(btn, i, text) {
   if (speaking === btn) return stopSpeaking();

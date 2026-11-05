@@ -606,6 +606,7 @@ function makeRace(track, humans, rng) {
    objects picked with Intl.PluralRules; lists (ord, place, cheers) are arrays; {name} placeholders
    are filled by t(key, vars). Maths symbols and digits stay as they are (Latin digits everywhere).
    ===================================================================================== */
+// ==== I18N START ====
 const I18N = {
   en: {
     tag: "Answer math questions to zoom your kart to the finish!", play: "▶ Play",
@@ -987,6 +988,15 @@ const I18N = {
     ord: ["1e", "2e", "3e", "4e"], place: ["1e plaats", "2e plaats", "3e plaats", "4e plaats"]
   }
 };
+// ==== I18N END ====
+
+// ==== VOICES START ====
+// AI voices: the character voice this game's lines are read with when Oomba Academy has AI voices on for
+// this game and language. server/services/tts-lines.js reads this block to make the lines ahead of time, and
+// the server takes each line's role from it (never from the page): the longest VOICE_KEY_ROLES prefix wins,
+// else VOICE_ROLES.story. Roles: narrator, friendly, bright, deep, wise, grumpy.
+const VOICE_ROLES = { story: 'bright' };
+// ==== VOICES END ====
 
 // The table goes to the kit (Oomba.strings) under 'sr.' keys, so the game's words never replace the kit's own button
 // words. Pictures are the kit's icons and characters, not emoji: emoji in the table are left out when it is registered.

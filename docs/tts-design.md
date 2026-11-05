@@ -254,7 +254,10 @@ written with `audit()`. `tts_usage` rows older than 90 days are deleted (the `st
   intro and end cards use narrator. The NPC beep (`SND3.voice`) stays when TTS is off for this game (no `INIT.tts`),
   and is skipped when a line is spoken. Hero's existing Sound switch (`BRB.sfx.muted`) also silences voices. **No
   dialogue line uses the player's name** (checked: the `d.*` placeholders are only `{n}` and `{total}`).
-- Word games and Atlas Quest speak through `BRB.speak` as they do now (narrator); nothing changes in them.
+- Every official game is registered the same way (owner's rule, 5 Nov 2026; docs/decisions.md "AI voices for
+  every official game"): its marked I18N block is its line source, its VOICES block or GAMES entry gives the
+  role, and it speaks only through `BRB.speak`. Word games too: their scripted lines are read by the narrator;
+  their dictionaries and anything a player types are never read.
 
 ## 5. Admin voice page `/admin/voices`
 - In `routes/admin.js`, behind `requireAdmin`, with a link from `/admin`. A server-rendered table: **rows = the 13
