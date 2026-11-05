@@ -312,3 +312,29 @@ test('course lesson slides: the server reads the slide of an open step in Englis
   assert.equal(again.json.u, r.json.u);
   off();
 });
+
+test('placement items: the server voices the item a run is serving now, in Tally\'s voice, by run id only', async () => {
+  reset(); on(['en']);
+  const P = await import('../../server/services/number-quest-placement.js');
+  const started = P.startRun(kid, { grade: 4 });
+  assert.ok(started && started.runId && started.current && started.current.item, 'a run starts with an item on screen');
+  const spoken = P.currentSpoken(kid, started.runId);
+  assert.ok(spoken, 'the server can say what the run is serving');
+  // The voice is Tally's: Fraction Factory's registered role, in English, over exactly the server's text.
+  const want = tts.urlOf(tts.plan({ text: spoken, locale: 'en', role: 'friendly' }).hash);
+  const r = await say(kid, { ctx: 'placement', runId: started.runId });
+  assert.equal(r.status, 200, r.text); assert.equal(r.json.u, want);
+  assert.ok(!/[\p{Extended_Pictographic}]/u.test(tts.plan({ text: spoken, locale: 'en', role: 'friendly' }).text),
+    'the text handed to the voice carries no emoji');
+  // The page never sends text: a text field is ignored, as in ctx 'course'.
+  const again = await say(kid, { ctx: 'placement', runId: started.runId, text: 'something else entirely' });
+  assert.equal(again.json.u, want);
+  // Only the run's own student, only a real run, only while it is active: everyone else gets the device voice.
+  assert.deepEqual((await say(leo, { ctx: 'placement', runId: started.runId })).json, { code: 'off' }, 'another student');
+  assert.deepEqual((await say(null, { ctx: 'placement', runId: started.runId })).json, { code: 'off' }, 'nobody signed in');
+  assert.deepEqual((await say(kid, { ctx: 'placement', runId: 'nq_nope' })).json, { code: 'off' }, 'a run that never existed');
+  P.finishEarly(kid, started.runId);
+  assert.equal(P.currentSpoken(kid, started.runId), null, 'a finished run has nothing left to say');
+  assert.deepEqual((await say(kid, { ctx: 'placement', runId: started.runId })).json, { code: 'off' }, 'a finished run');
+  off();
+});

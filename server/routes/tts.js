@@ -13,6 +13,10 @@
 //     ctx 'course' { course, step, i }  slide i of a course step's lesson (seed-lessons/cs-quest/course), read in English
 //                  with the voice of that step's game character; only a step the player has open (staff and the admin:
 //                  any step). The server reads the slide: the page never sends text.
+//     ctx 'placement' { runId }  the item a Number Quest placement run (the Sorting Game, or a unit test-out) is
+//                  serving now, regenerated on the server from the run's stored template and seed — the same
+//                  regeneration that grades it. Only the run's own student, only while the run is active, read in
+//                  English with Tally's voice (Fraction Factory's registered role). The page never sends text.
 //     ctx 'lesson' { clId, stepId, i }  a lesson quiz step's question i, behind the same access as its quiz API, in the
 //                  page's language.
 //   GET /tts/<sha256>.mp3   the cached audio (same-origin only; immutable).
@@ -38,6 +42,7 @@ import * as aiBudget from '../services/ai-budget.js';
 import { LOCALES } from '../i18n/index.js';
 import { COMMUNITY_CSS } from './social.js';
 import * as COURSES from '../services/courses.js';
+import * as NQP from '../services/number-quest-placement.js';
 import { sayOf } from '../views/courses.js';
 import { isStaff } from '../services/schools.js';
 
@@ -129,6 +134,18 @@ function resolve(req, b) {
     const g = step.game && lines.GAMES[step.game.slug];
     // Lesson slides are English (the course content is English first): read with the English voice.
     return { text: sayOf(slide), locale: 'en', role: (g && g.role) || 'narrator', rate: 'normal' };
+  }
+  if (b.ctx === 'placement') {
+    if (!req.user) return { error: [404, 'off'] };
+    // Only the item this student's own active run is serving now: the server regenerates it from the
+    // run's template and seed (services/number-quest-placement.js currentSpoken); any text the page
+    // sent is ignored, exactly as in ctx 'course'.
+    const text = NQP.currentSpoken(req.user, String(b.runId || ''));
+    if (!text) return { error: [404, 'off'] };
+    const g = lines.GAMES['fraction-factory'];
+    // Placement is English (the course content is English first): read with the English voice, in
+    // Tally's voice — Fraction Factory is her game, and its registered role is hers.
+    return { text, locale: 'en', role: (g && g.role) || 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'lesson') {
     if (!req.user || !config.liveHomework) return { error: [404, 'off'] };

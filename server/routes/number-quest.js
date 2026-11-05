@@ -16,6 +16,7 @@ import * as NQ from '../services/number-quest-progress.js';
 import * as C from '../services/courses.js';
 import * as S from '../services/schools.js';
 import { sortingGamePage, startingPointPage, CSS } from '../views/number-quest-placement.js';
+import * as tts from '../services/tts.js';
 import { mapAndNotes, placementSection } from '../views/number-quest-teacher.js';
 import { html } from '../views/html.js';
 import * as V from '../views/cs-quest.js';
@@ -61,7 +62,7 @@ router.get('/number-quest/sorting-game', (req, res) => {
   if (req.headers['sec-fetch-mode'] === 'navigate') ensureUser(req, res);
   const placement = P.getPlacement(req.user);
   page(req, res, { title: "Tally's Sorting Game · Number Quest", active: 'home', head: CSS,
-    body: sortingGamePage({ placement }), scripts: ['/js/number-quest-placement.js'] });
+    body: sortingGamePage({ placement, ttsLangs: tts.onLocales() }), scripts: ['/js/number-quest-placement.js'] });
 });
 
 const api = [rateLimit('nq-placement', 120, 60e3)];

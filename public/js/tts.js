@@ -107,6 +107,11 @@ if (typeof window !== 'undefined') {
   };
   for (const n of ['touchend', 'click', 'keydown']) window.addEventListener(n, first, true);
 }
+/** What a voice must never say: emoji and pictographs. A row of stars in a counting question is a picture,
+ * not words — read aloud literally it is "star star star…". The same rule as the server's tidy()
+ * (services/tts.js): the text a page hands the device voice is stripped here, so the fallback reads the
+ * same words the AI voice would. A keycap digit keeps its digit ("1️⃣" speaks "1"). */
+export const spokenText = text => String(text ?? '').replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u20E3\u200D]/gu, ' ').replace(/\s+/g, ' ').trim();
 /** The device's own voice: the closest voice for the language. -> true when it will speak. */
 // zh-Hant is read as Taiwanese Mandarin (zh-TW), then Mainland Mandarin, never Cantonese first: the same as the SDK's
 // VOICE_REGIONS['zh-hant'] and the server's accent. Some engines don't know the tag zh-Hant at all.
@@ -114,8 +119,9 @@ const isHant = l => /^zh-(hant|tw)\b/i.test(String(l || ''));
 const speechLang = lang => (isHant(lang) ? 'zh-TW' : lang);
 export function deviceSpeak(text, lang, onend) {
   try {
-    const ss = window.speechSynthesis; if (!ss || !text) return false;
-    const u = new SpeechSynthesisUtterance(String(text)); if (lang) u.lang = speechLang(lang);
+    const clean = spokenText(text);
+    const ss = window.speechSynthesis; if (!ss || !clean) return false;
+    const u = new SpeechSynthesisUtterance(clean); if (lang) u.lang = speechLang(lang);
     const v = deviceVoice(lang); if (v) u.voice = v;
     if (onend) u.onend = u.onerror = () => { try { onend(); } catch { /* ignore */ } };
     ss.cancel(); ss.speak(u); return true;

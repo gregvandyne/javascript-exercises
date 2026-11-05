@@ -80,6 +80,18 @@ export const onLocales = () => (ttsEnabled() ? V.onLocales() : []);
 export function tidy(text) {
   return String(text ?? '').normalize('NFC').replace(/[\u0000-\u0008\u000b-\u001f\u007f‪-‮⁦-⁩]/g, ' ').replace(/\s+/g, ' ').trim();
 }
+/** What a voice must never say: emoji and pictographs. A row of stars in a counting question is a
+ *  picture, not words — read aloud literally it is "star star star…" (Greg, live on the placement,
+ *  2026-11-05). Stripped in spokenText(), which plan() applies to everything it hands a voice, so
+ *  every context (a game's line, a live or lesson question, a course slide, a placement item) and
+ *  every cache key use the spoken form only. tidy() itself does NOT strip: the line matchers
+ *  (tts-lines, tts-games) compare with tidy(), and a registered line with emoji added must stay a
+ *  different, refused line — the safety checks see the text as written, the voice hears it cleaned.
+ *  The variation selector and keycap mark go too (a keycap digit keeps its digit: "1️⃣" speaks "1"),
+ *  the regional-indicator pairs that make flags, and a zero-width joiner left behind by a sequence. */
+const PICTOGRAPHS = /[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u20E3\u200D]/gu;
+/** tidy(), plus the pictographs a voice must never name. The only text a voice is ever given. */
+export function spokenText(text) { return tidy(String(text ?? '').replace(PICTOGRAPHS, ' ')); }
 const latin = s => /^[\x20-\x7e]+$/.test(s);
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** Does the text contain this name (folded; whole words for Latin names, anywhere for other scripts)? 3+ characters only. */
@@ -92,12 +104,15 @@ function hasName(text, name) {
   if (latin(n)) return new RegExp(`(^|\\s)${escRe(n)}(\\s|$)`).test(t);
   return t.replace(/\s/g, '').includes(n.replace(/\s/g, ''));
 }
-/** Contexts whose text is a teacher's question set, looked up on the server by number (routes/tts.js). */
-const BY_NUMBER = new Set(['live', 'lesson']);
+/** Contexts whose text the server itself picks by reference (routes/tts.js): a teacher's question set by
+ *  number ('live', 'lesson'), or a Number Quest placement item by run id ('placement' — the item the run
+ *  is serving now, regenerated on the server from its template and seed; generated maths text, never
+ *  anything a child typed). */
+const BY_NUMBER = new Set(['live', 'lesson', 'placement']);
 /**
  * The backstop checks (the main guard is which text a route accepts). -> null (ok) | 'long' (empty or over
  * TTS_MAX_CHARS) | 'filtered' (rude words, personal info, something like a link code, the user's own name or username).
- * ctx 'live' / 'lesson': a teacher's quiz question, already on everyone's screen. Its numbers and answer letters are not
+ * ctx 'live' / 'lesson' / 'placement': a question already on the student's screen, picked by the server. Its numbers and answer letters are not
  * taken for a phone number or a family link code (a maths question with its four answers reads as "2 + 3? A: 5. B: 4. C:
  * 6. D: 7.": one long run of digits, and letter-digit pairs like a link code). Rude words, emails and links still count.
  */
@@ -124,7 +139,7 @@ export function plan({ text, locale, role = 'narrator', rate = 'normal', voice =
   const v = voice && V.VOICES.includes(voice) ? voice : V.voiceFor(r, locale);
   const instructions = isGptModel(model) ? V.instructionsFor(r, locale, bucket) : '';
   const speed = isGptModel(model) ? null : V.SPEED[bucket];
-  const s = tidy(text);
+  const s = spokenText(text);
   return { text: s, locale, role: r, rate: bucket, provider, model, voice: v, instructions, speed, hash: cacheKey({ provider, model, voice: v, instructions, speed, locale, rate: bucket, text: s }) };
 }
 /** sha256 (hex) of every part that changes the audio. */
