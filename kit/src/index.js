@@ -31,7 +31,7 @@ import { makeGame, GAME_PARTS, groundFollow, CONTROLS, KIND_NAMES } from './game
 import { grid, generate, LEGEND } from './level.js';
 import { installPacks, PACK_NAMES } from './packs.js';
 
-export const VERSION = '1.1.2', API = 1;
+export const VERSION = '1.1.3', API = 1;
 
 function parseQuery(win) {
   const out = {};

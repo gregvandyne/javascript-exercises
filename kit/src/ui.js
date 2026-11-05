@@ -30,9 +30,10 @@ export const CSS = `
   background:rgba(20,20,20,.86);color:${CREAM};padding:8px 16px;border-radius:14px;font-weight:600;line-height:1.35;text-align:center;
   opacity:0;transition:opacity 200ms;pointer-events:none}
 .ok-caption.on{opacity:1}
-.ok-toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translate(-50%,-140%);background:var(--ok-card);color:var(--ok-text);
+.ok-toast{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top));transform:translate(-50%,-140%);background:var(--ok-card);color:var(--ok-text);z-index:23;width:max-content;max-width:calc(100vw - 32px);text-align:center;line-height:1.3;
   border:2px solid ${INK};border-radius:999px;padding:10px 20px;font-weight:700;box-shadow:0 4px 0 ${INK};transition:transform 320ms cubic-bezier(.34,1.56,.64,1),visibility 0s 320ms;visibility:hidden;pointer-events:none}
 .ok-toast.on{transform:translate(-50%,0);visibility:visible;transition:transform 320ms cubic-bezier(.34,1.56,.64,1)}
+@media (max-width:600px){.ok-toast{top:calc(56px + env(safe-area-inset-top))}}   /* below the one-row phone HUD (48px); z-index keeps it readable if a game's own bar runs taller */
 .ok-touch{position:fixed;inset:0;pointer-events:none}
 .ok-touch>*{pointer-events:auto;position:absolute;opacity:.85;transition:opacity 120ms,transform 80ms ease-out}
 .ok-touch>.on{opacity:1}
