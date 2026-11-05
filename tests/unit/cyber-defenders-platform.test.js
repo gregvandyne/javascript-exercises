@@ -56,8 +56,10 @@ test('20 steps per band from units.json, decks clean, games as catalogued', () =
   assert.equal(C.getStep(course, '1b-3.1').game.title, 'Would You Rather?');
   assert.equal(C.getStep(course, '2-3.3').game.chapter, 'tricks');
   assert.equal(C.getStep(course, '1b-9.9'), null);
-  // CS Quest is untouched by Cyber: 21 steps (19 lessons + story intro/finale from extras), no problems, its own decks.
+  // CS Quest is untouched by Cyber: 21 steps in 1b (19 lessons + story intro/finale from extras) and 22 in
+  // band 2 (the Pro-only 3.4 Fair Data practice step rides along), no problems, its own decks.
   assert.equal(C.steps(csq, '1b').length, 21);
+  assert.equal(C.steps(csq, '2').length, 22);
   assert.deepEqual(C.deckProblems('1b'), []);
   assert.deepEqual(C.groupsFor(course).map(g => g.id), ['post-office', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'unit-6']);
   assert.deepEqual(C.groupsFor(csq).map(g => g.id), ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'tech-choices']);

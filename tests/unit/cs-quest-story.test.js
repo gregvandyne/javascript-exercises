@@ -45,19 +45,22 @@ test('a valid story passes cleaning untouched; the shipped course carries the pa
   C.useDeckDir('seed-lessons/cs-quest/course');
   for (const band of C.BANDS) {
     const s = C.steps(course, band);
-    assert.equal(s.length, 21, `${band}: 19 lessons + intro + finale`);
+    // Band 2 carries one extra course-only step (3.4 Fair Data, spliced after 3.3): 22 steps there, 21 in 1b.
+    assert.equal(s.length, band === '2' ? 22 : 21, `${band}: 19 lessons + intro + finale${band === '2' ? ' + the 3.4 practice step' : ''}`);
     assert.equal(s[0].n, '0.1'); assert.equal(s.at(-1).n, '6.4');
     const intro = s[0], finale = s.at(-1);
     assert.equal(intro.deck, true); assert.equal(intro.game, null); assert.equal(intro.extra, true);
     assert.deepEqual(intro.slides.filter(x => x.story).map(x => x.story.scene), ['dim', 'drain', 'team', 'map']);
     assert.deepEqual(finale.slides.filter(x => x.story).map(x => x.story.scene), ['relight', 'celebrate', 'finale']);
     for (const id of intro.check) assert.ok(C.item(id), `${band}: intro item ${id} resolves`);
-    // Scope: story slides live only in the intro, the finale and the five beat decks.
+    // Scope: story slides live only in the intro, the finale and the five beat decks. In band 2 the Dot
+    // handoff beat sits in the new 3.4 step (the last Dot step there), not in 3.3 as in band 1b.
+    const beatSteps = band === '2' ? ['1.5', '2.2', '3.4', '4.3', '5.3'] : ['1.5', '2.2', '3.3', '4.3', '5.3'];
     let beats = 0;
     for (const step of s) for (const sl of step.slides) {
       if (!sl.story) continue;
       if (step.n === '0.1' || step.n === '6.4') continue;
-      assert.ok(['1.5', '2.2', '3.3', '4.3', '5.3'].includes(step.n), `${step.key}: story outside the story steps is a beat`);
+      assert.ok(beatSteps.includes(step.n), `${step.key}: story outside the story steps is a beat`);
       assert.equal(sl.story.scene, 'handoff'); beats++;
     }
     assert.equal(beats, 5, `${band}: five beats`);
@@ -145,5 +148,54 @@ test('a beat page renders the handoff: the outgoing character, the flown piece, 
   assert.equal(finale.status, 200);
   assert.match(finale.text, /data-scene="relight" data-lit="4"/, 'the relight stage');
   assert.match(finale.text, /story-piece--gizmo is-lit is-fly/, 'the pieces fly in on the relight');
+  // Band 2: the Dot handoff renders on the new 3.4 step, and 3.3 no longer carries it.
+  const beat34 = await get('/courses/cs-quest/2-3.4', admin);
+  assert.equal(beat34.status, 200);
+  assert.match(beat34.text, /data-scene="handoff" data-lit="2"/, 'the 3.4 beat: two pieces lit after it');
+  assert.match(beat34.text, /story-char--dot is-out/, 'Dot hands over from 3.4 in band 2');
+  assert.match(beat34.text, /story-char--pim is-in/, 'Pim peeks in at 3.4 in band 2');
+  const plain33 = await get('/courses/cs-quest/2-3.3', admin);
+  assert.equal(plain33.status, 200);
+  assert.doesNotMatch(plain33.text, /data-scene="handoff"/, 'band 2 step 3.3 no longer carries the beat');
+  C.useDeckDir(tmp);
+});
+
+test('the Pro-only 3.4 step assigns Fair Data and completes only through the win gate', async () => {
+  C.useDeckDir('seed-lessons/cs-quest/course');
+  // Wiring: only band 2 has the step, spliced right after 3.3, carrying the Fair Data chapter like a sibling.
+  assert.equal(C.getStep(course, '1b-3.4'), null, 'no 3.4 in band 1b');
+  const list = C.steps(course, '2');
+  const step = C.getStep(course, '2-3.4');
+  assert.ok(step.extra, 'a course-only step');
+  assert.equal(list[list.indexOf(step) - 1].n, '3.3', 'immediately after 3.3');
+  assert.equal(list[list.indexOf(step) + 1].n, '4.1', 'immediately before 4.1');
+  assert.deepEqual(
+    { slug: step.game.slug, chapter: step.game.chapter, chapterTitle: step.game.chapterTitle, params: step.game.params },
+    { slug: 'data-detective', chapter: 'fair', chapterTitle: 'Fair Data', params: 'chapter=fair&band=2&lock=1' },
+    'the game wiring matches the sibling steps (locked course play)');
+  assert.deepEqual(step.check, ['2-3.4-e1', '2-3.4-e2', '2-3.4-e3']);
+  assert.equal(step.slides.at(-1).kind, 'mission');
+  assert.match(step.slides.at(-1).text, /solve all 4 cases/, 'the mission states the true chapter size: 4 cases');
+  assert.deepEqual(C.deckProblems('2'), []);
+  assert.deepEqual(C.deckProblems('1b'), []);
+  // Completion: the check alone does not complete it; the win gate is the standard one.
+  let n = 0;
+  const kid = auth.createUser({ username: `fairkid${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Kid' });
+  C.setBand(kid, course, '2');
+  const { now } = await import('../../server/db.js');
+  for (const s of list.slice(0, list.indexOf(step))) q.run('INSERT INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?,?,?,?,?,?,3,?,?)', kid.id, 'cs-quest', s.key, '2', now(), now(), now(), now());
+  assert.ok(C.stateOf(kid, course, '2-3.4').open, '3.4 opens after 3.3');
+  assert.equal(C.stateOf(kid, course, '2-4.1').open, false, '4.1 waits for 3.4');
+  const right = Object.fromEntries(step.check.map(id => [id, C.item(id).answer]));
+  C.recordCheck(kid, course, step, C.grade(step, right));
+  assert.ok(C.stateOf(kid, course, '2-3.4').checked && !C.stateOf(kid, course, '2-3.4').complete, 'the check alone does not complete a game step');
+  const post = async (p, u, body) => { const r = await fetch(base + p, { method: 'POST', redirect: 'manual', headers: { accept: 'text/html', 'user-agent': 'Mozilla/5.0 Chrome/141.0', 'sec-fetch-site': 'same-origin', 'content-type': 'application/json', cookie: cookieFor(u.id) }, body: JSON.stringify(body) }); const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ } return { status: r.status, json }; };
+  assert.equal((await post('/api/courses/cs-quest/2-3.4/complete', kid, {})).status, 409, 'no completion before the game is entered');
+  const play = await get('/play/data-detective?course=cs-quest&cstep=2-3.4&chapter=fair&band=2&lock=1', kid);
+  assert.equal(play.status, 200, 'the play gate admits the Fair Data chapter for this step');
+  assert.match(play.text, /"cstep":\{"course":"cs-quest","step":"2-3\.4"\}/, 'the play page carries the course step');
+  assert.deepEqual((await post('/api/courses/cs-quest/2-3.4/complete', kid, {})).json, { ok: true, complete: true }, 'the reported win completes the step');
+  assert.ok(C.stateOf(kid, course, '2-3.4').complete);
+  assert.equal(C.stateOf(kid, course, '2-4.1').open, true, '4.1 opens next');
   C.useDeckDir(tmp);
 });
