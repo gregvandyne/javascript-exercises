@@ -1,0 +1,553 @@
+<title>Escape the Post Office</title>
+<style>
+  /* Escape the Post Office: the Cyber Defenders finale, on the Oomba Kit. Only the game's own DOM pieces are
+     styled here, with the kit's variables (accents set from Oomba.color at start, like Packet Post). */
+  .ep, .ep * { box-sizing: border-box; }
+  .ep { position: fixed; left: 0; right: 0; top: var(--ok-safe-top); bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 0 10px calc(8px + env(safe-area-inset-bottom)); pointer-events: none; font-size: 1em; line-height: 1.25; }
+  .ep > * { pointer-events: auto; }
+  .ep[hidden] { display: none; }
+  .ep-bar { display: flex; align-items: center; gap: 8px; width: min(100%, 1100px); flex: none; min-height: 40px; flex-wrap: wrap; }
+  .ep-bar .ep-sp { flex: 1; min-width: 0; }
+  .ep-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge); font-weight: 800; max-width: 100%; }
+  .ep-main { width: min(100%, 900px); flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 10px; padding: 2px; }
+  .ep-say { display: flex; align-items: center; gap: 8px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 6px 10px; min-height: 52px; flex: none; }
+  .ep-say canvas { width: 40px; height: 40px; flex: none; }
+  .ep-say p { margin: 0; font-weight: 700; font-size: .95em; }
+  .ep-h { margin: 0; font-weight: 800; font-size: 1.05em; background: var(--ok-card); border-radius: 10px; padding: 2px 10px; width: fit-content; max-width: 100%; }
+  .ep-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+  @media (min-width: 700px) { .ep-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ep-lock { display: flex; flex-direction: column; gap: 4px; min-height: 96px; padding: 10px 12px; border-radius: 20px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; text-align: start; box-shadow: 0 4px 0 var(--ok-edge); cursor: pointer; min-width: 0; }
+  .ep-lock b { font-size: 1em; line-height: 1.15; }
+  .ep-lock small { font-weight: 700; opacity: .85; font-size: .8em; line-height: 1.2; }
+  .ep-lock[disabled] { opacity: .55; cursor: default; }
+  .ep-lock.ep-open { background: var(--ep-go); color: var(--ep-ink); }
+  .ep-tile { position: relative; min-width: 48px; min-height: 48px; padding: 6px 12px; border-radius: 14px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
+    font: inherit; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); text-align: start; }
+  .ep-tile:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ok-edge); }
+  .ep-tile.ep-wide { width: 100%; justify-content: flex-start; min-height: 52px; }
+  .ep-tile[aria-pressed="true"] { background: var(--ep-go); color: var(--ep-ink); }
+  .ep-tile.ep-done { background: var(--ep-go); color: var(--ep-ink); }
+  .ep-tile[disabled] { cursor: default; opacity: .55; }
+  .ep-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: none; }
+  .ep-row.ep-center { justify-content: center; }
+  .ep-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
+  .ep-board { position: relative; flex: none; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; overflow: hidden; box-shadow: 0 5px 0 var(--ok-edge); height: min(46vh, 380px); }
+  .ep-roads { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .ep-roads line { stroke: var(--ep-road); stroke-width: 12; stroke-linecap: round; }
+  .ep-roads line.ep-closed { stroke-dasharray: 4 14; opacity: .55; }
+  .ep-node { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 1; }
+  .ep-node .ep-ico { position: absolute; left: -23px; top: -23px; width: 46px; height: 46px; border-radius: 50%; background: var(--ok-card); border: 3px solid var(--ok-edge); display: grid; place-items: center; font-size: 22px; }
+  .ep-node.ep-here .ep-ico { outline: 4px solid var(--ep-lit); outline-offset: 2px; }
+  .ep-node small { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); font-weight: 800; font-size: .72em; background: var(--ok-card); border-radius: 8px; padding: 1px 6px; white-space: nowrap; }
+  .ep-link { position: absolute; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
+    display: grid; place-items: center; padding: 0; cursor: pointer; font: inherit; font-weight: 800; box-shadow: 0 3px 0 var(--ok-edge); z-index: 2; }
+  .ep-link.ep-ok { background: var(--ep-go); color: var(--ep-ink); }
+  .ep-link.ep-closed { background: var(--ep-bad); color: var(--ep-ink); }
+  .ep-card { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 16px; padding: 10px 12px; }
+  .ep-card b { display: block; font-size: 1.05em; }
+  .ep-card p { margin: 4px 0 0; font-weight: 600; font-size: .95em; line-height: 1.35; }
+  .ep-card ul { margin: 6px 0 0; padding-left: 20px; font-weight: 600; }
+  .ep-cipher { letter-spacing: .12em; font-weight: 800; font-size: 1.3em; overflow-wrap: anywhere; text-align: center; }
+  .ep-decoded { letter-spacing: .12em; font-weight: 800; font-size: 1.1em; text-align: center; min-height: 1.4em; }
+  .ep-shift { font-size: 1.3em; font-weight: 800; min-width: 110px; text-align: center; }
+  .ep-seq { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; padding: 6px; border-radius: 12px; border: 3px dashed var(--ok-edge); flex: none; }
+  .ep-seq span { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px; background: var(--ep-go); color: var(--ep-ink); font-weight: 800; font-size: .9em; }
+  .ep-seq .ep-await { background: var(--ok-card); color: var(--ok-text); border: 2px solid var(--ok-edge); }
+  @keyframes ep-wobble { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .ep-wobble { animation: ep-wobble .3s ease-in-out; }
+  .ok-rm .ep-wobble { animation: none; }
+  .ep-shield { background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ep-shield h2 { margin: 0; font-size: 1.4em; }
+  .ep-shield p { margin: 0; font-weight: 600; line-height: 1.4; }
+  .ep-tbl { width: 100%; border-collapse: collapse; font-size: .92em; }
+  .ep-tbl th, .ep-tbl td { border: 2px solid var(--ok-edge); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .ep-tbl th { background: var(--ok-bg2); }
+  .ep-feathers { font-size: 1.1em; letter-spacing: 2px; }
+  @media (orientation: portrait) and (max-width: 520px) { .ep { top: calc(64px + env(safe-area-inset-top)); } .ep-board { height: min(40vh, 320px); } }
+  @media (max-height: 520px) { .ep-say canvas { width: 32px; height: 32px; } .ep-say p { font-size: .85em; } }
+</style>
+<div id="game"></div>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-props.js" integrity="sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-school.js" integrity="sha384-xbmoMTLjBXfyHbxMV8HIl3jSzcl3bxEMMdgGu+KgGuyZY+WNXrh9ogBhRTpyMWO8" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/style-bold.js" integrity="sha384-pFXgoNOZ/kWWctAb2ucgoE+wLssJGKLBbeZJppwZQlTGTPqBEFYA0dOtLTst2DiH" crossorigin="anonymous"></script>
+<script>
+/* ===== Escape the Post Office engine: the six trick locks, their runs, the hint feathers and the shield.
+   Plain data and functions (no DOM, no kit), so the unit test can load this block on its own.
+   Fair-test rules, by construction: a Run has no failed state (a wrong try only wobbles and nudges),
+   nothing here reads a clock, and the room reports completion only when all six locks are open. ===== */
+(function (root) {
+'use strict';
+const TWO32 = 2 ** 32;
+function rng(seed) {
+  let a = (seed >>> 0) || 1;
+  const f = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / TWO32; };
+  return { float: f, int: (lo, hi) => lo + Math.floor(f() * (hi - lo + 1)), pick: arr => arr[Math.floor(f() * arr.length)], chance: p => f() < p,
+    shuffle(arr) { const x = arr.slice(); for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(f() * (i + 1)); const t = x[i]; x[i] = x[j]; x[j] = t; } return x; } };
+}
+function seedOf(s) { let h = 0x811c9dc5; const str = String(s); for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x1000193); } return h >>> 0; }
+const caesar = (text, shift) => String(text).replace(/[A-Z]/g, c => String.fromCharCode(65 + ((c.charCodeAt(0) - 65 + shift) % 26 + 26) % 26));
+const lid = (a, b) => a + '-' + b;
+
+/* The six locks, in stamp order. standards: the CYBER.ORG v1.0 codes of the step that taught the skill
+   (all of them are in the course registry, seed-lessons/cyber-defenders/standards.json). */
+const LOCKS = [
+  { id: 'sorting-gate', n: 1, name: 'Sorting Gate', unit: 1, stamp: 'Roadwise', skill: 'Route a message through the network, around a closed road',
+    topic: 'Privacy & Security', standards: { '1b': ['3-5.CS.COMM', '3-5.SEC.NET'], '2': ['6-8.CS.PROT', '6-8.SEC.NET'] },
+    intro: { '1b': 'The golden letter must cross Netville to the sorting room door. One road is closed. Find the open way.',
+             '2': 'The golden letter must cross Netville to the sorting room door. One road is closed, and the short road is not always the open one. Route it.' },
+    hint: { '1b': 'Start toward the middle of town, then turn toward the door. The closed road is never the only way.',
+            '2': 'Work backward from the door: which open roads touch it? Route toward one of those.' } },
+  { id: 'sealed-note', n: 2, name: 'Sealed Note', unit: 2, stamp: 'Keykeeper', skill: 'Use the cipher wheel to read a sealed note',
+    topic: 'Privacy & Security', standards: { '1b': ['3-5.SEC.CRYP'], '2': ['6-8.SEC.CRYP'] },
+    intro: { '1b': "The Magpie sealed a note with the cipher wheel. Turn the wheel until the note reads as real words, then open the lock.",
+             '2': "The Magpie sealed a note with the cipher wheel. Turn the wheel until the note reads as real words, then open the lock." },
+    hint: { '1b': 'The note was sealed by moving every letter forward. Try small turns first, and read after each turn.',
+            '2': 'The sealing shift is a small number. Turn, read, turn again: real words appear at exactly one shift.' } },
+  { id: 'which-pim', n: 3, name: 'Which Pim?', unit: 3, stamp: 'Private', skill: 'Use footprint clues to pick the real message',
+    topic: 'Digital Footprint & Identity', standards: { '1b': ['3-5.DC.FOOT'], '2': ['6-8.DC.FOOT.1', '6-8.DC.FOOT.2'] },
+    intro: { '1b': 'Three messages say they are from Pim. Only one really is. Read the clues on each card: the postmark, the footprint, and what the message asks for.',
+             '2': 'Three messages say they are from Pim. One wears a faked postmark. Check every clue: postmark, footprint trail, and what the message asks for.' },
+    hint: { '1b': 'Real Pim post is stamped in Netville, and Pim never asks for a shiny secret. Find the card with both clues right.',
+            '2': 'A name on a card is easy to copy. Trust the postmark and the trail, and distrust any card that fishes for a secret.' } },
+  { id: 'trick-inbox', n: 4, name: 'Trick Inbox', unit: 4, stamp: 'Trickspotter', skill: 'Choose the safe response to each message',
+    topic: 'Privacy & Security', standards: { '1b': ['3-5.SEC.INFO', '3-5.DC.ETH'], '2': ['6-8.SEC.INFO', '6-8.DC.ETH'] },
+    intro: { '1b': 'The trick inbox is full. For each message, choose what a Defender does: Deliver it, Bin it, Show Pim, or Report and block.',
+             '2': 'The trick inbox is full, and one sender is faked. For each message, choose what a Defender does: Deliver it, Bin it, Show Pim, or Report and block.' },
+    hint: { '1b': 'Ask two questions: who really sent this, and what does it want me to do? A trick always wants a tap, a reply, or a secret.',
+            '2': 'Check the sender clues before the words. A faked sender plus a rush is a report, every time.' } },
+  { id: 'five-moves', n: 5, name: 'Five Moves', unit: 5, stamp: 'Kind Screen', skill: 'Run the five moves in order when something goes wrong',
+    topic: 'Privacy & Security', standards: { '1b': ['3-5.SEC.ACC'], '2': ['6-8.SEC.INFO', '6-8.SEC.DATA'] },
+    intro: { '1b': 'Something has gone wrong in the class chat. Do the five moves in order, like a fire drill: calm, practiced, in sequence.',
+             '2': 'Something has gone wrong, and a second message is pressuring you to pass it on. Run the drill in order: contain, preserve, report, recover.' },
+    hint: { '1b': 'The drill always starts the same way: stop first. Nothing gets forwarded, ever.',
+            '2': 'Contain before you preserve, preserve before you report, and change the key only from a clean device.' } },
+  { id: 'layers', n: 6, name: 'Layers', unit: 6, stamp: 'Shield', skill: 'Match each threat to the layer that stops it',
+    topic: 'Privacy & Security', standards: { '1b': ['3-5.CS.LOSS', '3-5.SEC.CTRL'], '2': ['6-8.CS.PROT', '6-8.SEC.ACC'] },
+    intro: { '1b': 'No single lock stops every trick. Match each trouble card to the layer that stops it.',
+             '2': 'Defense in depth: no single layer stops every threat. Match each threat to the layer that stops it.' },
+    hint: { '1b': 'Ask what the trouble is trying to do: peek, guess, break, or lose. Each layer guards one of those.',
+            '2': 'Name the failure each layer covers: reading, guessing, known holes, loss, faked identity, weak keys.' } },
+];
+const ACTIONS = [
+  { id: 'deliver', label: 'Deliver it' }, { id: 'bin', label: 'Bin it' },
+  { id: 'show', label: 'Show Pim' }, { id: 'report', label: 'Report and block' },
+];
+
+/* Lock data per band. Explorer clueing is gentler: fewer, plainer items and the first cipher letter given. */
+const DATA = {
+  '1b': {
+    route: { from: 'S', to: 'D',
+      nodes: [ { id: 'S', label: 'Post Office', x: 0.12, y: 0.55, icon: '🏤' }, { id: 'A', label: 'Market', x: 0.42, y: 0.25, icon: '🏠' },
+               { id: 'B', label: 'Library', x: 0.42, y: 0.8, icon: '🏠' }, { id: 'D', label: 'Sorting Room', x: 0.85, y: 0.5, icon: '🚪' } ],
+      links: [ ['S', 'A'], ['S', 'B'], ['A', 'B'], ['A', 'D'], ['B', 'D'] ], closed: ['A-D'] },
+    cipher: { plain: 'OPEN', shift: 3, given: 1 },
+    cards: [
+      { id: 'real', from: 'Pim', text: 'Sorting help needed at the post office after lunch. Come to the front desk.', clues: [ { text: 'Postmark: Netville, today', real: true }, { text: 'Footprint: small owl prints, the trail Pim always leaves', real: true }, { text: 'Asks for: help at the post office, in the open', real: true } ] },
+      { id: 'fake-secret', from: 'Pim', text: 'Quick! Tell me your mailbox key so I can check your box from here.', clues: [ { text: 'Postmark: Netville, today', real: true }, { text: 'Footprint: big round prints, not owl prints', real: false }, { text: 'Asks for: your mailbox key, a shiny secret', real: false } ] },
+      { id: 'fake-far', from: 'Pim', text: 'Meet me at the far dock at dark. Tell nobody.', clues: [ { text: 'Postmark: a far town, last week', real: false }, { text: 'Footprint: small owl prints', real: true }, { text: 'Asks for: a secret meeting, away from trusted adults', real: false } ] },
+    ], answer: 'real',
+    inbox: [
+      { id: 'i1', from: 'Library desk', subject: 'Your book is ready', body: 'The book you asked for is on the desk. Pick it up any time this week.', action: 'deliver', accept: ['deliver'], missed: 'This one is fine: a known sender, no rush, no links, nothing asked of you.' },
+      { id: 'i2', from: 'Prize Parrot', subject: 'You won a prize!', body: 'Hurry! You won a shiny prize you never tried to win. Tap fast to claim it!', action: 'bin', accept: ['bin', 'show'], missed: 'The missed clue: a prize you never tried to win, plus a rush. That pair is a trick.' },
+      { id: 'i3', from: 'Someone new', subject: 'A question', body: 'Hi, we have never met. Tell me the street you live on so we can be friends.', action: 'show', accept: ['show', 'report'], missed: 'The missed clue: a stranger fishing for a shiny secret. Show Pim first, always.' },
+      { id: 'i4', from: 'Fix-it Fox', subject: 'Mailbox trouble', body: 'Your mailbox is broken. Send your mailbox key and I will fix it for you.', action: 'report', accept: ['report', 'show'], missed: 'The missed clue: real games and real helpers never ask for your key. Report and block.' },
+      { id: 'i5', from: 'Sam, your classmate', subject: 'Nice drawing', body: 'I liked your rainbow drawing in class today. See you at school!', action: 'deliver', accept: ['deliver'], missed: 'This one is fine: someone you know, kind words, nothing asked of you.' },
+      { id: 'i6', from: 'Gem Gnome', subject: 'Free gems', body: 'Free gems for the first tap! Everyone is getting them. Do not miss out!', action: 'bin', accept: ['bin', 'show'], missed: 'The missed clue: free shiny things for a fast tap are bait. If it sounds too good to be true, it is a trick.' },
+    ],
+    moves: { scenario: 'In the class chat, a message is unkind to Sam, and it is being passed along. You have seen it. Run the five moves.',
+      tiles: [ { id: 'stop', text: 'Stop: do not pass it on' }, { id: 'save', text: 'Save it: keep the message' }, { id: 'tell', text: 'Tell a trusted adult' }, { id: 'block', text: 'Block or report it in the app' }, { id: 'carry', text: 'Carry on: be kind to Sam' } ],
+      order: ['stop', 'save', 'tell', 'block', 'carry'] },
+    layers: { layers: [ { id: 'padlock', label: 'Padlock Gate (sealing)' }, { id: 'checker', label: 'Key Checker (two-step)' }, { id: 'patch', label: 'Patch Crew (updates)' }, { id: 'vault', label: 'Copy Vault (backups)' } ],
+      pairs: [ { id: 'p1', threat: 'A snooper tries to peek inside a sealed note on its trip', layer: 'padlock' },
+               { id: 'p2', threat: 'A guesser tries key after key on a mailbox', layer: 'checker' },
+               { id: 'p3', threat: 'An old lock has a known hole that anyone can use', layer: 'patch' },
+               { id: 'p4', threat: 'A flood soaks the only copy of a letter', layer: 'vault' } ] },
+  },
+  '2': {
+    route: { from: 'S', to: 'D',
+      nodes: [ { id: 'S', label: 'Post Office', x: 0.1, y: 0.5, icon: '🏤' }, { id: 'A', label: 'Market', x: 0.35, y: 0.2, icon: '🏠' },
+               { id: 'B', label: 'Library', x: 0.35, y: 0.8, icon: '🏠' }, { id: 'C', label: 'School', x: 0.62, y: 0.45, icon: '🏠' }, { id: 'D', label: 'Sorting Room', x: 0.88, y: 0.5, icon: '🚪' } ],
+      links: [ ['S', 'A'], ['S', 'B'], ['A', 'C'], ['B', 'C'], ['C', 'D'], ['A', 'D'], ['B', 'D'] ], closed: ['B-D', 'A-D'] },
+    cipher: { plain: 'DELIVER', shift: 5, given: 0 },
+    cards: [
+      { id: 'fake-name', from: 'Pim', text: 'Sorting help needed. Bring your mailbox key to the side gate.', clues: [ { text: 'Postmark: stamped by a hand press, not the office stamp', real: false }, { text: 'Footprint: owl-shaped prints, pressed too evenly, like a stamp', real: false }, { text: 'Asks for: your mailbox key, at a side gate', real: false } ] },
+      { id: 'real', from: 'Pim', text: 'Sorting help needed at the post office after lunch. Front desk, as always.', clues: [ { text: 'Postmark: Netville office stamp, today', real: true }, { text: 'Footprint: small owl prints with the worn left edge Pim always leaves', real: true }, { text: 'Asks for: help at the front desk, in the open', real: true } ] },
+      { id: 'fake-kind', from: 'Pim', text: 'Kind words! You are my best helper. Keep our chat secret from other adults.', clues: [ { text: 'Postmark: Netville, today', real: true }, { text: 'Footprint: small owl prints', real: true }, { text: 'Asks for: a secret kept from other trusted adults', real: false } ] },
+    ], answer: 'real',
+    inbox: [
+      { id: 'i1', from: 'Library desk', subject: 'Your book is ready', body: 'The book you asked for is on the desk. Pick it up any time this week.', action: 'deliver', accept: ['deliver'], missed: 'This one is fine: a known sender, no rush, no links, nothing asked of you.' },
+      { id: 'i2', from: 'Prize Parrot', subject: 'You won a prize!', body: 'Hurry! You won a shiny prize you never tried to win. Tap fast to claim it!', action: 'bin', accept: ['bin', 'show'], missed: 'The missed clue: a prize you never tried to win, plus a rush. That pair is a trick.' },
+      { id: 'i3', from: 'Someone new', subject: 'A question', body: 'Hi, we have never met. Tell me the street you live on so we can be friends.', action: 'show', accept: ['show', 'report'], missed: 'The missed clue: a stranger fishing for private facts. Show Pim first, always.' },
+      { id: 'i4', from: 'Fix-it Fox', subject: 'Mailbox trouble', body: 'Your mailbox is broken. Send your mailbox key and I will fix it for you.', action: 'report', accept: ['report', 'show'], missed: 'The missed clue: real services never ask for your key. Report and block.' },
+      { id: 'i5', from: 'Post Office', subject: 'Key check', body: 'This is the Post Office. Confirm your mailbox key now or lose your box.', badge: 'Sender name says Post Office; the postmark is a hand stamp from a far town', action: 'report', accept: ['report'], missed: 'The missed clue: the sender name is faked. The postmark gives it away, and real offices never ask you to confirm a key.' },
+      { id: 'i6', from: 'Team Captain', subject: 'Pass it on, fast', body: 'Send this to ten friends in five minutes or your team loses its points!', action: 'show', accept: ['show', 'bin'], missed: 'The missed clue: pressure with a countdown is a lever, not a fact. Slow down and show Pim.' },
+      { id: 'i7', from: 'Sam, your classmate', subject: 'Nice drawing', body: 'I liked your rainbow drawing in class today. See you at school!', action: 'deliver', accept: ['deliver'], missed: 'This one is fine: someone you know, kind words, nothing asked of you.' },
+      { id: 'i8', from: 'Gem Gnome', subject: 'Free gems', body: 'Free gems for the first tap! Everyone is getting them. Do not miss out!', action: 'bin', accept: ['bin', 'show'], missed: 'The missed clue: free shiny things for a fast tap are bait. Too good to be true means trick.' },
+    ],
+    moves: { scenario: 'A classmate hands you a screenshot: someone has their mailbox key and is sending messages as them. A second message pressures you: pass it on fast, or else. Run the drill.',
+      tiles: [ { id: 'stop', text: 'Stop and disconnect: end the session, pass nothing on' }, { id: 'save', text: 'Save the evidence: screenshots and times, delete nothing' }, { id: 'tell', text: 'Tell a trusted adult, fast' }, { id: 'report', text: 'Report and block on the service' }, { id: 'recover', text: 'Change the key from a clean device' }, { id: 'carry', text: 'Carry on: write a one-line log of what happened' } ],
+      order: ['stop', 'save', 'tell', 'report', 'recover', 'carry'] },
+    layers: { layers: [ { id: 'padlock', label: 'Padlock Gate (encryption)' }, { id: 'checker', label: 'Key Checker (two-step sign-in)' }, { id: 'patch', label: 'Patch Crew (updates)' }, { id: 'vault', label: 'Copy Vault (backups)' }, { id: 'stamp', label: "Pim's Stamp (verification)" }, { id: 'phrase', label: 'Long Passphrase (strong key)' } ],
+      pairs: [ { id: 'p1', threat: 'An interceptor reads a note while it travels', layer: 'padlock' },
+               { id: 'p2', threat: 'A stolen key is tried on the mailbox from a new device', layer: 'checker' },
+               { id: 'p3', threat: 'A known hole in old software lets a trick letter slip in', layer: 'patch' },
+               { id: 'p4', threat: 'A broken tablet takes the only copy of the class letters with it', layer: 'vault' },
+               { id: 'p5', threat: 'A faked postmark fools the front desk', layer: 'stamp' },
+               { id: 'p6', threat: 'A one-word key is guessed in an afternoon', layer: 'phrase' } ] },
+  },
+};
+
+/** One lock's run. s.wobbles counts wrong tries; there is deliberately no failed flag anywhere. */
+class Run {
+  constructor(lock, band, seed) {
+    this.lock = lock; this.band = band; this.data = DATA[band]; this.seed = seed == null ? 1 : seed;
+    this.s = { wobbles: 0, done: false, note: '' };
+    const d = this.data;
+    if (lock.id === 'sorting-gate') { this.s.at = d.route.from; this.s.hops = 0; }
+    if (lock.id === 'sealed-note') { this.s.shift = 0; this.cipher = caesar(d.cipher.plain, d.cipher.shift); }
+    if (lock.id === 'which-pim') { this.s.picked = null; }
+    if (lock.id === 'trick-inbox') { this.s.i = 0; this.s.debrief = ''; }
+    if (lock.id === 'five-moves') { const r = rng(seedOf(lock.id + '#' + this.seed)); let shown = r.shuffle(d.moves.order); for (let k = 0; k < 8 && shown.join() === d.moves.order.join(); k++) shown = r.shuffle(d.moves.order); this.s.shown = shown; this.s.placed = []; }
+    if (lock.id === 'layers') { this.s.i = 0; }
+  }
+  get done() { return this.s.done; }
+  wobble(note) { this.s.wobbles++; this.s.note = note; return { ok: false, wobbled: true, note }; }
+  finish(note) { this.s.done = true; this.s.note = note; return { ok: true, done: true, note }; }
+  linksAt(at) { const r = this.data.route; return r.links.map(l => lid(l[0], l[1])).filter(id => id.startsWith(at + '-') || id.endsWith('-' + at)); }
+  closed(id) { return this.data.route.closed.includes(id); }
+  other(id, at) { const [a, b] = id.split('-'); return a === at ? b : a; }
+  /** The next action that makes progress (the solver; also the test's proof the lock can be opened). */
+  advice() {
+    if (this.s.done) return null;
+    const d = this.data;
+    if (this.lock.id === 'sorting-gate') {
+      // breadth-first path over open roads, rooted at where the letter is now
+      const prev = { [this.s.at]: null }, q = [this.s.at];
+      while (q.length) { const cur = q.shift(); if (cur === d.route.to) break; for (const id of this.linksAt(cur)) { if (this.closed(id)) continue; const nx = this.other(id, cur); if (!(nx in prev)) { prev[nx] = { from: cur, id }; q.push(nx); } } }
+      if (!(d.route.to in prev) || !prev[d.route.to]) return null;
+      let cur = d.route.to; const path = []; while (prev[cur]) { path.unshift(prev[cur].id); cur = prev[cur].from; }
+      return path.length ? { t: 'hop', id: path[0] } : null;
+    }
+    if (this.lock.id === 'sealed-note') return this.s.shift === d.cipher.shift ? { t: 'submit' } : { t: 'shiftTo', n: d.cipher.shift };
+    if (this.lock.id === 'which-pim') return this.s.picked === d.answer ? { t: 'submit' } : { t: 'pick', id: d.answer };
+    if (this.lock.id === 'trick-inbox') { const it = d.inbox[this.s.i]; return it ? { t: 'act', id: it.action } : null; }
+    if (this.lock.id === 'five-moves') { const nx = d.moves.order[this.s.placed.length]; return nx ? { t: 'tap', id: nx } : null; }
+    if (this.lock.id === 'layers') { const p = d.layers.pairs[this.s.i]; return p ? { t: 'match', id: p.layer } : null; }
+    return null;
+  }
+  act(a) {
+    if (this.s.done || !a) return { ok: false, note: 'already open' };
+    const d = this.data;
+    if (this.lock.id === 'sorting-gate') {
+      if (a.t !== 'hop') return this.wobble('Tap a road to move the golden letter.');
+      if (!this.linksAt(this.s.at).includes(a.id)) return this.wobble('That road does not start here. Follow the letter.');
+      if (this.closed(a.id)) return this.wobble('That road is closed. Pim nudges: find another way round.');
+      this.s.at = this.other(a.id, this.s.at); this.s.hops++; this.s.note = '';
+      if (this.s.at === d.route.to) return this.finish('The golden letter reached the sorting room door.');
+      return { ok: true, note: '' };
+    }
+    if (this.lock.id === 'sealed-note') {
+      if (a.t === 'shiftTo') { this.s.shift = ((a.n % 26) + 26) % 26; this.s.note = ''; return { ok: true, note: '' }; }
+      if (a.t === 'submit') { if (this.s.shift === d.cipher.shift) return this.finish('The wheel clicks: the note reads "' + d.cipher.plain + '".'); return this.wobble('Those are not real words yet. Turn the wheel and read again.'); }
+      return this.wobble('Turn the wheel, then open the lock.');
+    }
+    if (this.lock.id === 'which-pim') {
+      if (a.t === 'pick') { this.s.picked = a.id; this.s.note = ''; return { ok: true, note: '' }; }
+      if (a.t === 'submit') { if (this.s.picked === d.answer) return this.finish('That is the real Pim: right postmark, right footprint, nothing secret asked.'); if (!this.s.picked) return this.wobble('Pick a card first, then check its clues.'); return this.wobble('Look again at the clues: postmark, footprint, and what it asks for.'); }
+      return this.wobble('Pick the card you trust, then open the lock.');
+    }
+    if (this.lock.id === 'trick-inbox') {
+      if (a.t !== 'act') return this.wobble('Choose what a Defender does with this message.');
+      const it = d.inbox[this.s.i]; if (!it) return { ok: false, note: '' };
+      if (it.accept.includes(a.id)) { this.s.i++; this.s.debrief = ''; this.s.note = ''; if (this.s.i >= d.inbox.length) return this.finish('Every message judged. The inbox is clean.'); return { ok: true, note: 'Right call.' }; }
+      this.s.debrief = it.missed; return this.wobble(it.missed + ' Try again: the lock stays, and so does the message.');
+    }
+    if (this.lock.id === 'five-moves') {
+      if (a.t !== 'tap') return this.wobble('Tap the next move.');
+      const want = d.moves.order[this.s.placed.length];
+      if (a.id === want) { this.s.placed.push(a.id); this.s.note = ''; if (this.s.placed.length >= d.moves.order.length) return this.finish('The drill, in order, start to finish. Calm work.'); return { ok: true, note: '' }; }
+      if (this.s.placed.includes(a.id)) return this.wobble('That move is already done. What comes next?');
+      return this.wobble('Not yet: the drill has an order. Pim nudges: what must happen before that?');
+    }
+    if (this.lock.id === 'layers') {
+      if (a.t !== 'match') return this.wobble('Tap the layer that stops this threat.');
+      const p = d.layers.pairs[this.s.i]; if (!p) return { ok: false, note: '' };
+      if (a.id === p.layer) { this.s.i++; this.s.note = ''; if (this.s.i >= d.layers.pairs.length) return this.finish('Every threat met its layer. No single lock did it alone.'); return { ok: true, note: 'That layer stops it.' }; }
+      return this.wobble('That layer guards against something else. Ask what this threat is trying to do.');
+    }
+    return { ok: false, note: '' };
+  }
+  snapshot() { return JSON.parse(JSON.stringify({ lock: this.lock.id, band: this.band, s: this.s })); }
+}
+
+/** The whole room: six locks in stamp order, three hint feathers for the whole room, per-lock saved progress. */
+class Escape {
+  constructor(band, seed) {
+    this.band = band === '2' ? '2' : '1b'; this.seed = seed == null ? 1 : seed;
+    this.open = []; this.hintsUsed = 0; this.hinted = []; this.runs = {};
+  }
+  get escaped() { return this.open.length >= LOCKS.length; }
+  get feathersLeft() { return 3 - this.hintsUsed; }
+  current() { return LOCKS.find(l => !this.open.includes(l.id)) || null; }
+  run(lockId) { if (!this.runs[lockId]) { const lock = LOCKS.find(l => l.id === lockId); this.runs[lockId] = new Run(lock, this.band, this.seed); } return this.runs[lockId]; }
+  /** Locks open in stamp order: a later lock's run cannot be played until its turn (its save still loads). */
+  playable(lockId) { const cur = this.current(); return !!cur && cur.id === lockId; }
+  act(lockId, a) {
+    if (!this.playable(lockId)) return { ok: false, note: 'That lock waits its turn: locks open in stamp order.' };
+    const r = this.run(lockId), out = r.act(a);
+    if (r.done && !this.open.includes(lockId)) this.open.push(lockId);
+    return out;
+  }
+  /** A hint feather: at most one per lock, three for the whole room, counted honestly. */
+  useHint(lockId) {
+    if (this.hinted.includes(lockId)) return { ok: false, note: 'This lock already had its feather.', hintsUsed: this.hintsUsed };
+    if (this.feathersLeft <= 0) return { ok: false, note: 'All three feathers are spent. Pim believes in you: the clues are all still here.', hintsUsed: this.hintsUsed };
+    const lock = LOCKS.find(l => l.id === lockId);
+    this.hinted.push(lockId); this.hintsUsed++;
+    return { ok: true, hint: lock.hint[this.band], hintsUsed: this.hintsUsed, feathersLeft: this.feathersLeft };
+  }
+  hintLine() { return this.hintsUsed === 0 ? 'Escaped with no hints' : this.hintsUsed === 1 ? 'Escaped with 1 hint' : 'Escaped with ' + this.hintsUsed + ' hints'; }
+  shield() { return LOCKS.map(l => ({ lock: l.name, unit: l.unit, stamp: l.stamp, skill: l.skill, topic: l.topic, standards: l.standards[this.band], open: this.open.includes(l.id) })); }
+  save() { return { band: this.band, open: this.open.slice(), hintsUsed: this.hintsUsed, hinted: this.hinted.slice() }; }
+  restore(save) { if (!save) return this; if (save.band === this.band) { this.open = (save.open || []).filter(id => LOCKS.some(l => l.id === id)); this.hintsUsed = Math.min(3, save.hintsUsed || 0); this.hinted = (save.hinted || []).filter(id => LOCKS.some(l => l.id === id)); } return this; }
+  snapshot() { return { band: this.band, open: this.open.slice(), hintsUsed: this.hintsUsed, hinted: this.hinted.slice(), escaped: this.escaped, current: (this.current() || {}).id || null }; }
+}
+/** Solve one lock from a fresh run (the completability proof the tests run for every lock and band). */
+function solveRun(lock, band, seed) { const r = new Run(lock, band, seed); let guard = 0; while (!r.done && guard++ < 200) { const a = r.advice(); if (!a) break; r.act(a); } return r; }
+
+root.EscapePostOffice = { LOCKS, ACTIONS, DATA, Run, Escape, caesar, rng, seedOf, solveRun };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script type="module">
+/* ===== Escape the Post Office: the room shell on the Oomba Kit (Packet Post is the model). Pim is the kit's
+   owl with Packet Post's own look (species owl, backpack, cocoa/spark): the character comes from its own game,
+   never redrawn. The Magpie has no kit sprite anywhere, so it is present as its feather and its locks, not as a
+   substitute drawing. Completion: BRB.gameOver fires exactly once, when the sixth lock opens. ===== */
+const E = window.EscapePostOffice, O = window.Oomba;
+const CONFIG = { title: 'Escape the Post Office', pim: { species: 'owl', wear: ['backpack'], colors: { base: 'cocoa', accent: 'spark' } }, biome: 'meadow', storeKey: 'escape-the-post-office-v1' };
+const BAND_NAME = { '1b': 'Explorer', '2': 'Pro' };
+const tr = (s, v) => { if (s == null || s === '') return ''; const r = O.t(s, v); return r === s && v ? s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : r; };
+const store = { get() { try { return (window.BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } }, set(v) { try { if (window.BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* no save */ } } };
+const SAVE0 = store.get();
+const $ = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const C = (role, step) => { try { return O.color(role, step); } catch (e) { return null; } };
+const reduced = () => !!O.settings.reduced;
+const sfx = (n) => { try { O.sfx(n, { caption: false }); } catch (e) { /* quiet */ } };
+const announce = t => O.ui.announce(t);
+
+const P = (window.BRB && BRB.params) || {};
+const S = { band: P.band === '2' ? '2' : (SAVE0.band === '2' ? '2' : '1b'), lesson: !!(P.chapter || P.lock), lockMode: !!P.lock, esc: null, screen: 'door', lockId: null, reported: false, w: null };
+function newEscape() { S.esc = new E.Escape(S.band, 1).restore(SAVE0.escape); }
+newEscape();
+function persist() { store.set({ band: S.band, escape: S.esc.save() }); }
+let PIM = O.char(CONFIG.pim);
+
+const SET = ['                      ', '                      ', '                      ', '                      ', '                      ', '                      ', '  P   N               ', '######################', '######################'];
+let game = O.game({
+  api: 1, title: CONFIG.title, subtitle: tr('Six locks. Six stamps. One way out.'), biome: CONFIG.biome,
+  controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
+  hud: ['progress', 'count:star'],
+  howTo: [{ icon: 'lock', text: tr('Open six trick locks, in stamp order') }, { icon: 'tap', text: tr('Your six stamps are the keys') }, { icon: 'star', text: tr('No timer, no failing: keep trying') }],
+  level: O.level.grid(SET, { N: Object.assign({ kind: 'npc', tag: 'pim', flip: true, size: 2.1 }, CONFIG.pim) }),
+  update: frame, testState: () => testState(),
+  on: { start: onStart, title: hideAll, results: hideAll, lose: hideAll },
+});
+function frame(w) {
+  const V = w.stage.view, Cm = w.cam, L = w.level, tall = V.vh > V.vw * 1.1, z = tall ? V.vw / (6 * w.cell) : Math.min(V.vw / (12 * w.cell), V.vh / (7 * w.cell));
+  Cm.bounds(null); Cm.zoom = z; Cm.x = L.w / 2; Cm.y = L.h - w.cell * 1.6 - V.vh / z / 2;
+  const pim = w.find('pim'); if (pim && w.hero) { const d = (tall ? 1.1 : 2.4) * w.cell; pim.x = L.w / 2 + d; w.hero.x = L.w / 2 - d; }
+}
+function onStart(w) { S.w = w; showDoor(); }
+function hideAll() { if (S.dom) S.dom.ep.hidden = true; }
+function build() {
+  if (S.dom) return S.dom;
+  const root = O.ui.root();
+  for (const [k, v] of Object.entries({ road: C('stone', 'light'), lit: C('hot'), go: C('go', 'light'), bad: C('wrong', 'light'), ink: C('ink') })) if (v) root.style.setProperty('--ep-' + k, v);
+  const ep = $('div', 'ep'); ep.id = 'ep'; ep.hidden = true; ep.dir = O.dir; root.appendChild(ep);
+  S.dom = { ep };
+  return S.dom;
+}
+function screen(name) {
+  const { ep } = build(); ep.hidden = false; ep.innerHTML = ''; S.screen = name;
+  const bar = $('div', 'ep-bar'); ep.appendChild(bar);
+  const pill = $('div', 'ep-pill'); pill.textContent = '🔒 ' + tr('{open} of 6 locks open', { open: S.esc.open.length }); bar.appendChild(pill);
+  const f = $('div', 'ep-pill'); f.innerHTML = ''; f.appendChild($('span', 'ep-feathers', '🪶'.repeat(S.esc.feathersLeft) + '🤍'.repeat(S.esc.hintsUsed))); f.appendChild($('span', '', tr('hint feathers'))); bar.appendChild(f);
+  const sp = $('div', 'ep-sp'); bar.appendChild(sp);
+  const band = $('div', 'ep-pill'); band.textContent = tr(BAND_NAME[S.band]); bar.appendChild(band);
+  if (!S.lockMode && name === 'door') { const t = O.ui.button(S.band === '1b' ? tr('Play as Pro') : tr('Play as Explorer'), { kind: 'quiet', onPress: () => { S.band = S.band === '1b' ? '2' : '1b'; newEscape(); persist(); showDoor(); } }); bar.appendChild(t); }
+  const main = $('div', 'ep-main'); ep.appendChild(main);
+  return main;
+}
+function say(main, text) { const s = $('div', 'ep-say'); try { s.appendChild(PIM.portrait(40)); } catch (e) { /* no portrait */ } s.appendChild($('p', '', tr(text))); main.appendChild(s); return s; }
+function wobble(el, note) { if (el && !reduced()) { el.classList.remove('ep-wobble'); void el.offsetWidth; el.classList.add('ep-wobble'); } if (note) announce(tr(note)); sfx('hit'); }
+function hintButton(main, lock) {
+  const row = $('div', 'ep-row'); main.appendChild(row);
+  const used = S.esc.hinted.includes(lock.id);
+  const b = O.ui.button(tr('Use a hint feather'), { kind: 'quiet', icon: 'star', onPress: () => {
+    const out = S.esc.useHint(lock.id); persist();
+    if (out.ok) { sfx('spark'); say2.textContent = tr(out.hint); announce(tr(out.hint)); b.disabled = true; }
+    else { say2.textContent = tr(out.note); announce(tr(out.note)); }
+  } });
+  if (used || S.esc.feathersLeft <= 0) b.disabled = true;
+  row.appendChild(b);
+  const say2 = $('p', 'ep-h'); say2.style.fontWeight = '700'; main.appendChild(say2);
+  if (used) say2.textContent = tr(lock.hint[S.band]);
+  return say2;
+}
+function lockDone(lock, note) {
+  persist(); sfx('win');
+  try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'ep', lock: lock.id, unit: lock.unit, band: S.band === '2' ? 2 : 1, hintsUsed: S.esc.hintsUsed }); } catch (e) { /* older SDK */ }
+  if (S.esc.escaped) return showShield();
+  showDoor(note || tr('Lock open!'));
+}
+function doAct(lock, a, el) {
+  const out = S.esc.act(lock.id, a);
+  if (out && out.ok && S.esc.open.includes(lock.id) && S.esc.run(lock.id).done) return lockDone(lock, out.note);
+  if (out && out.wobbled) { wobble(el || S.dom.ep, out.note); renderLock(lock, out.note); return out; }
+  renderLock(lock, out && out.note); return out;
+}
+
+/* ---------- the door: six locks, the stamps that are their keys, saved progress ---------- */
+function showDoor(note) {
+  const main = screen('door');
+  say(main, note || (S.esc.open.length ? tr('The Magpie locked the sorting room. Your stamps are opening it, one lock at a time.') : tr("Spark Day! The Magpie locked the sorting room with six trick locks and kept the town's real post inside. Your six Defender stamps are the keys.")));
+  const grid = $('div', 'ep-grid'); main.appendChild(grid);
+  const cur = S.esc.current();
+  for (const lock of E.LOCKS) {
+    const open = S.esc.open.includes(lock.id), isCur = cur && cur.id === lock.id;
+    const b = $('button', 'ep-lock' + (open ? ' ep-open' : '')); b.type = 'button'; b.disabled = !isCur;
+    b.appendChild($('b', '', (open ? '🔓 ' : '🔒 ') + tr('Lock {n}: {name}', { n: lock.n, name: tr(lock.name) })));
+    b.appendChild($('small', '', tr('Unit {n} stamp: {stamp}', { n: lock.unit, stamp: tr(lock.stamp) })));
+    b.appendChild($('small', '', open ? tr('Open') : isCur ? tr(lock.intro[S.band]) : tr('Opens after the locks before it')));
+    if (isCur) b.addEventListener('click', () => { sfx('select'); S.lockId = lock.id; renderLock(lock); });
+    grid.appendChild(b);
+  }
+  if (S.esc.escaped) showShield();
+}
+
+/* ---------- one lock room ---------- */
+function renderLock(lock, note) {
+  const main = screen('lock'); S.lockId = lock.id;
+  const back = O.ui.button(tr('Back to the door'), { kind: 'quiet', icon: 'home', onPress: () => showDoor() }); main.appendChild(back);
+  say(main, note || lock.intro[S.band]);
+  const run = S.esc.run(lock.id), d = E.DATA[S.band];
+  if (lock.id === 'sorting-gate') renderRoute(main, lock, run, d);
+  else if (lock.id === 'sealed-note') renderCipher(main, lock, run, d);
+  else if (lock.id === 'which-pim') renderCards(main, lock, run, d);
+  else if (lock.id === 'trick-inbox') renderInbox(main, lock, run, d);
+  else if (lock.id === 'five-moves') renderMoves(main, lock, run, d);
+  else if (lock.id === 'layers') renderLayers(main, lock, run, d);
+  if (run.s.note && note !== run.s.note) { const p = $('p', 'ep-h'); p.textContent = tr(run.s.note); main.appendChild(p); }
+  hintButton(main, lock);
+}
+function renderRoute(main, lock, run, d) {
+  const r = d.route;
+  const board = $('div', 'ep-board'); main.appendChild(board);
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'ep-roads'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
+  for (const [a, b] of r.links) { const line = document.createElementNS('http://www.w3.org/2000/svg', 'line'); const A = r.nodes.find(n => n.id === a), B = r.nodes.find(n => n.id === b); line.setAttribute('x1', A.x * 100); line.setAttribute('y1', A.y * 100); line.setAttribute('x2', B.x * 100); line.setAttribute('y2', B.y * 100); if (r.closed.includes(a + '-' + b) || r.closed.includes(b + '-' + a)) line.setAttribute('class', 'ep-closed'); svg.appendChild(line); }
+  board.appendChild(svg);
+  for (const nd of r.nodes) { const el = $('div', 'ep-node' + (run.s.at === nd.id ? ' ep-here' : '')); el.style.left = (nd.x * 100) + '%'; el.style.top = (nd.y * 100) + '%'; const ico = $('span', 'ep-ico', nd.icon); el.appendChild(ico); el.appendChild($('small', '', tr(nd.label))); board.appendChild(el); }
+  const letter = $('div', 'ep-node'); letter.style.left = ((r.nodes.find(n => n.id === run.s.at) || {}).x * 100) + '%'; letter.style.top = ((r.nodes.find(n => n.id === run.s.at) || {}).y * 100 - 9) + '%'; const li = $('span', 'ep-ico', '✉️'); li.style.background = 'var(--ep-go)'; letter.appendChild(li); board.appendChild(letter);
+  for (const id of run.linksAt(run.s.at)) { const other = run.other(id, run.s.at), nd = r.nodes.find(n => n.id === other), at = r.nodes.find(n => n.id === run.s.at); const b = $('button', 'ep-link' + (run.closed(id) ? ' ep-closed' : ' ep-ok'), run.closed(id) ? '✖' : '➜'); b.type = 'button'; b.style.left = ((at.x + nd.x) / 2 * 100) + '%'; b.style.top = ((at.y + nd.y) / 2 * 100) + '%'; b.setAttribute('aria-label', tr('Road to {place}', { place: tr(nd.label) })); b.addEventListener('click', () => doAct(lock, { t: 'hop', id }, b)); board.appendChild(b); }
+}
+function renderCipher(main, lock, run, d) {
+  const card = $('div', 'ep-card'); main.appendChild(card);
+  card.appendChild($('b', '', tr("The Magpie's sealed note")));
+  const c = $('p', 'ep-cipher', run.cipher); c.dir = 'ltr'; card.appendChild(c);
+  const dec = $('p', 'ep-decoded', E.caesar(run.cipher, -run.s.shift) || '····'); dec.dir = 'ltr'; card.appendChild(dec);
+  if (d.cipher.given) { const g = $('p', '', tr('A gift from Pim: the first letter is {letter}.', { letter: d.cipher.plain[0] })); main.appendChild(g); }
+  const row = $('div', 'ep-row ep-center'); main.appendChild(row);
+  const minus = O.ui.button(tr('Turn back'), { kind: 'quiet', icon: 'minus', onPress: () => { doAct(lock, { t: 'shiftTo', n: run.s.shift - 1 }); } });
+  const label = $('div', 'ep-shift', tr('Shift {n}', { n: run.s.shift })); label.dir = 'ltr';
+  const plus = O.ui.button(tr('Turn forward'), { kind: 'quiet', icon: 'plus', onPress: () => { doAct(lock, { t: 'shiftTo', n: run.s.shift + 1 }); } });
+  row.append(minus, label, plus);
+  const open = O.ui.button(tr('Open the lock'), { kind: 'go', onPress: () => doAct(lock, { t: 'submit' }) }); main.appendChild(open);
+}
+function renderCards(main, lock, run, d) {
+  const grid = $('div', 'ep-tiles'); main.appendChild(grid);
+  for (const card of d.cards) {
+    const el = $('div', 'ep-card');
+    el.appendChild($('b', '', tr('From: {from}', { from: card.from })));
+    el.appendChild($('p', '', tr(card.text)));
+    const ul = $('ul'); for (const clue of card.clues) ul.appendChild($('li', '', tr(clue.text))); el.appendChild(ul);
+    const b = O.ui.button(run.s.picked === card.id ? tr('This is the real Pim ✓') : tr('Pick this card'), { kind: run.s.picked === card.id ? 'go' : 'quiet', onPress: () => doAct(lock, { t: 'pick', id: card.id }) });
+    el.appendChild(b); grid.appendChild(el);
+  }
+  const open = O.ui.button(tr('Open the lock'), { kind: 'go', onPress: () => doAct(lock, { t: 'submit' }) }); main.appendChild(open);
+}
+function renderInbox(main, lock, run, d) {
+  const it = d.inbox[run.s.i];
+  if (!it) return;
+  const p = $('p', 'ep-h', tr('Message {n} of {total}', { n: run.s.i + 1, total: d.inbox.length })); main.appendChild(p);
+  const card = $('div', 'ep-card'); main.appendChild(card);
+  card.appendChild($('b', '', tr(it.subject)));
+  card.appendChild($('p', '', tr('From: {from}', { from: it.from })));
+  if (it.badge) card.appendChild($('p', '', tr(it.badge)));
+  card.appendChild($('p', '', tr(it.body)));
+  if (run.s.debrief) { const db = $('div', 'ep-card'); db.appendChild($('b', '', tr('Pim shows you the missed clue'))); db.appendChild($('p', '', tr(run.s.debrief))); main.appendChild(db); }
+  const row = $('div', 'ep-tiles'); main.appendChild(row);
+  for (const a of E.ACTIONS) { const b = $('button', 'ep-tile ep-wide', tr(a.label)); b.type = 'button'; b.addEventListener('click', () => doAct(lock, { t: 'act', id: a.id }, b)); row.appendChild(b); }
+}
+/* Lock 4 is a compact, self-contained round in the Trick Inbox idiom (same four responses, same debrief on a
+   wrong call). When the standalone Trick Inbox game ships, this round can be swapped for its engine unchanged:
+   the data shape above (from/subject/body/badge/action/accept/missed) is the interface. */
+function renderMoves(main, lock, run, d) {
+  const card = $('div', 'ep-card'); card.appendChild($('p', '', tr(d.moves.scenario))); main.appendChild(card);
+  const seq = $('div', 'ep-seq'); main.appendChild(seq);
+  for (const id of d.moves.order) { const done = run.s.placed.includes(id); const tile = d.moves.tiles.find(t => t.id === id); seq.appendChild($('span', done ? '' : 'ep-await', done ? '✓ ' + tr(tile.text) : '?')); }
+  const row = $('div', 'ep-tiles'); main.appendChild(row);
+  for (const id of run.s.shown) { if (run.s.placed.includes(id)) continue; const tile = d.moves.tiles.find(t => t.id === id); const b = $('button', 'ep-tile ep-wide', tr(tile.text)); b.type = 'button'; b.addEventListener('click', () => doAct(lock, { t: 'tap', id }, b)); row.appendChild(b); }
+}
+function renderLayers(main, lock, run, d) {
+  const pair = d.layers.pairs[run.s.i];
+  if (!pair) return;
+  const p = $('p', 'ep-h', tr('Threat {n} of {total}', { n: run.s.i + 1, total: d.layers.pairs.length })); main.appendChild(p);
+  const card = $('div', 'ep-card'); card.appendChild($('b', '', tr(pair.threat))); main.appendChild(card);
+  const row = $('div', 'ep-tiles'); main.appendChild(row);
+  for (const layer of d.layers.layers) { const b = $('button', 'ep-tile ep-wide', tr(layer.label)); b.type = 'button'; b.addEventListener('click', () => doAct(lock, { t: 'match', id: layer.id }, b)); row.appendChild(b); }
+}
+
+/* ---------- the shield: the debrief doubles as teacher evidence ---------- */
+function showShield() {
+  const main = screen('shield');
+  const box = $('div', 'ep-shield'); main.appendChild(box);
+  box.appendChild($('h2', '', '🛡️ ' + tr('Escaped — all six locks!')));
+  box.appendChild($('p', '', tr('The sorting room door swings open. The town\'s real letters are delivered, every one. Pim offers the Magpie the junk-mail route: the one pile it may collect from, honestly. The Magpie takes the job.')));
+  box.appendChild($('p', '', '🪶 ' + tr(S.esc.hintLine())));
+  const tbl = $('table', 'ep-tbl');
+  const head = $('tr'); for (const h of ['Lock', 'Stamp', 'Skill', 'Standards']) { const th = $('th', '', tr(h)); head.appendChild(th); } tbl.appendChild(head);
+  for (const row of S.esc.shield()) { const trEl = $('tr'); for (const cell of [tr(row.lock), tr(row.stamp), tr(row.skill), row.standards.join(', ') + ' · ' + tr(row.topic)]) { const td = $('td', '', cell); td.lang = 'en'; td.dir = 'ltr'; trEl.appendChild(td); } tbl.appendChild(trEl); }
+  box.appendChild(tbl);
+  if (!S.reported) {
+    S.reported = true;
+    try { if (window.BRB && BRB.score) BRB.score.submit(6, '6/6 locks, ' + S.esc.hintsUsed + ' hints used'); } catch (e) { /* no page */ }
+    try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true, score: 6 }); } catch (e) { /* no page */ }
+    sfx('win'); if (!reduced()) { try { O.juice.confetti(); } catch (e) { /* quiet */ } }
+  }
+  const again = O.ui.button(tr('Play again'), { kind: 'go', onPress: () => { S.esc = new E.Escape(S.band, 1); S.reported = false; persist(); showDoor(); } });
+  box.appendChild(again);
+}
+
+/* ---------- test hooks ---------- */
+function testState() {
+  const cur = S.esc.current();
+  return { ep: true, screen: S.screen, band: S.band, lesson: S.lesson, open: S.esc.open.slice(), hintsUsed: S.esc.hintsUsed, feathersLeft: S.esc.feathersLeft, escaped: S.esc.escaped, current: cur ? cur.id : null, lock: S.lockId, reported: S.reported, ready: true };
+}
+window.__brbTest = window.__brbTest || {};
+Object.assign(window.__brbTest, {
+  start(o = {}) { if (o.band) { S.band = o.band === '2' ? '2' : '1b'; newEscape(); } if (o.fresh) { S.esc = new E.Escape(S.band, o.seed || 1); S.reported = false; } game.start(); return testState(); },
+  skipAnimations() { return true; },
+  state: () => testState(),
+  act(a) { const cur = S.esc.current(); if (!cur) return null; if (S.screen !== 'lock' || S.lockId !== cur.id) renderLock(cur); return doAct(cur, a); },
+  hint() { const cur = S.esc.current(); return cur ? S.esc.useHint(cur.id) : null; },
+  solveLock() { const cur = S.esc.current(); if (!cur) return null; const run = S.esc.run(cur.id); let guard = 0; while (!run.done && guard++ < 200) { const a = run.advice(); if (!a) break; S.esc.act(cur.id, a); } if (run.done) lockDone(cur); return testState(); },
+  async solve() { let guard = 0; while (!S.esc.escaped && guard++ < 12) { const cur = S.esc.current(); if (!cur) break; const run = S.esc.run(cur.id); let g2 = 0; while (!run.done && g2++ < 200) { const a = run.advice(); if (!a) break; S.esc.act(cur.id, a); } if (!run.done) break; } persist(); if (S.esc.escaped) showShield(); return testState(); },
+  cover() { S.esc = new E.Escape(S.band, 1); S.esc.open = ['sorting-gate', 'sealed-note']; S.reported = false; showDoor(); return true; },
+});
+try { if (window.BRB && BRB.ready) BRB.ready(); } catch (e) { /* ignore */ }
+</script>
+</body>
+</html>

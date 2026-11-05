@@ -1,8 +1,11 @@
 // Cyber Defenders slide pictures — captures for the Phase 1.5 list (Packet Post and Would You Rather states
-// the CS Quest rollout never shot). Same sandbox-frame + __brbTest pattern as scripts/csq-shots-rollout.js:
+// the CS Quest rollout never shot), extended in Phase 2 for Trick Inbox and Escape the Post Office states.
+// Same sandbox-frame + __brbTest pattern as scripts/csq-shots-rollout.js:
 // deterministic starts, seed 7, 1280x720 masters -> WebP q80. Shot table: scripts/cyber-shots-spec.json.
 // Would You Rather has no seed: its dilemma order is shuffled, so a shot names the dilemma it wants and the
 // driver plays through the round until that dilemma is on screen, then shoots it before answering.
+// Trick Inbox shots start the named set with seed 7 and shoot the first message's hunt screen (with its
+// first clue found when the spec says "clue": true); Escape shots start a fresh run and shoot the door.
 // Usage: node scripts/cyber-shots.js [--out <masters-root>] [--webp] [--manifest] [--only state,state] [game ...]
 //   masters (PNG 1280x720) go to <masters-root>/<game>/<state>.png (default scripts/cyber-masters);
 //   --webp also writes public/img/csq/<game>/<state>.webp; --manifest registers the spec's new states in
@@ -74,6 +77,22 @@ async function runGame(browser, slug, list) {
             T.pick('a'); await wait(350); T.next(); await wait(450);
           }
           const st = T.state(); return { levelId: st.cur, chapter: 'online', screen: st.screen, missed: st.cur !== s.dilemma };
+        }
+        if (s.game === 'trick-inbox') {
+          T.start({ chapter: s.chapter, band: s.band, seed: 7 });
+          await wait(700);
+          if (s.clue) {
+            const st0 = T.state();
+            const msg = window.TrickInbox && st0.msgId ? window.TrickInbox.BY_ID[st0.msgId] : null;
+            const cs = msg ? window.TrickInbox.cluesOf(msg) : [];
+            if (cs[0]) { T.act({ t: 'clue', id: cs[0].id }); await wait(350); }
+          }
+          const st = T.state(); return { levelId: st.msgId, chapter: st.chapter, screen: st.screen };
+        }
+        if (s.game === 'escape-the-post-office') {
+          T.start({ band: s.band, fresh: true, seed: 7 });
+          await wait(700);
+          const st = T.state(); return { levelId: st.screen, chapter: 'escape', screen: st.screen };
         }
         T.start({ chapter: s.chapter, band: s.band, level: s.level, seed: 7 });
         await wait(500);

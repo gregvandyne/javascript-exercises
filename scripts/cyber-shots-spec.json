@@ -442,5 +442,39 @@
   "game": "would-you-rather",
   "level": 0,
   "state": "online-cloud-2"
+ },
+ {
+  "alt": "Trick Inbox, the Boss Round: a mean game-chat message waits in the inbox, one clue found in green and one still hiding.",
+  "band": "1b",
+  "chapter": "boss",
+  "clue": true,
+  "concept": "the boss round, first message",
+  "game": "trick-inbox",
+  "state": "boss-1b"
+ },
+ {
+  "alt": "Trick Inbox, the Boss Round at Pro: a letter claiming an account will be deleted waits in the inbox, one clue found and one still hiding.",
+  "band": "2",
+  "chapter": "boss",
+  "clue": true,
+  "concept": "the boss round, first message (Pro)",
+  "game": "trick-inbox",
+  "state": "boss-2"
+ },
+ {
+  "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+  "band": "1b",
+  "chapter": "escape",
+  "concept": "the locked sorting room door",
+  "game": "escape-the-post-office",
+  "state": "door-1b"
+ },
+ {
+  "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+  "band": "2",
+  "chapter": "escape",
+  "concept": "the locked sorting room door (Pro)",
+  "game": "escape-the-post-office",
+  "state": "door-2"
  }
 ]

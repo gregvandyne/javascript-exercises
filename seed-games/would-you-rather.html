@@ -7,6 +7,9 @@
 <!-- Would You Rather (official, Oomba Kit 1.1.0): pick one of two, with no right or wrong answers, so nothing is scored.
      Alone it ends with a "You're a…" card made from the kinds of things you picked (tags on every option); with friends
      everyone picks in secret on one device, then the picks are revealed; in "Guess my pick" one picks and the rest guess.
+     Completion: reaching that end card is a finished run, so finish() signals BRB.gameOver({ won: true }) exactly
+     once per run (no score: there is still nothing to score). Course steps that assign a run (Cyber Defenders'
+     Online: share or keep missions) complete only on that signal; opening the game completes nothing.
      The questions (444 in English) and the game's words in every site language come from scripts/data/would-you-rather
      (scripts/wyr-bank.js writes them between the wyr-data markers below; translated questions load as packs). -->
 <style>
@@ -302,7 +305,7 @@ paint();
 
 /* ---------------- state ---------------- */
 const S = { screen: 'home', mode: 'alone', topics: SAVE.topics.slice(), count: SAVE.count, players: SAVE.players,
-  queue: [], cur: null, n: 0, picks: [], people: [], turn: 0, round: [], picker: 0, guesses: {}, busy: false, timer: 0 };
+  queue: [], cur: null, n: 0, picks: [], people: [], turn: 0, round: [], picker: 0, guesses: {}, busy: false, timer: 0, gameOverSent: false };
 function toast(text) { const el = $('toast'); el.textContent = text; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 2600); }
 function show(id) {
   for (const s of ['home', 'setup', 'pass', 'playScreen', 'summary']) $(s).hidden = s !== id;
@@ -367,7 +370,7 @@ function fillQueue() {
 function nextItem() { if (!S.queue.length) fillQueue(); return S.queue.shift(); }
 function begin() {
   SAVE.topics = S.topics.slice(); SAVE.count = S.count; SAVE.players = S.players; save();
-  S.n = 0; S.picks = []; S.queue = []; S.round = [];
+  S.n = 0; S.picks = []; S.queue = []; S.round = []; S.gameOverSent = false;
   S.people = S.mode === 'alone' ? [0] : Array.from({ length: S.players }, (_, i) => i);
   S.picker = 0;
   ask();
@@ -594,6 +597,13 @@ function finish() {
   const home = document.createElement('button'); home.type = 'button'; home.className = 'btn'; home.textContent = t('home'); home.addEventListener('click', goHome);
   acts.append(again, home);
   show('summary'); sfx('win');
+  // A finished run is the game's only completion: signal it once, with no score (nothing here is scored).
+  // The play page turns this into course credit only for a step that assigned this game; a run with no
+  // picks (finish pressed before playing) signals nothing.
+  if (!S.gameOverSent && S.picks.length) {
+    S.gameOverSent = true;
+    try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ }
+  }
   if (!reduced()) { try { Oomba.juice.confetti(); } catch (e) { /* ignore */ } }
   setTimeout(() => again.focus(), 60);
 }
@@ -609,7 +619,7 @@ document.addEventListener('keydown', e => {
 
 /* ---------------- test hooks ---------------- */
 window.__brbTest = {
-  state: () => ({ screen: S.screen, mode: S.mode, n: S.n, total: total(), cur: S.cur && S.cur.id, picks: S.picks.length, players: S.people.length, topics: S.topics.slice(), bank: ITEMS.length, seen: SAVE.seen.length }),
+  state: () => ({ screen: S.screen, mode: S.mode, n: S.n, total: total(), cur: S.cur && S.cur.id, picks: S.picks.length, players: S.people.length, topics: S.topics.slice(), bank: ITEMS.length, seen: SAVE.seen.length, gameOver: S.gameOverSent }),
   start: (mode, opts) => { openSetup(mode || 'alone'); if (opts) { if (opts.count != null) S.count = opts.count; if (opts.players) S.players = opts.players; if (opts.topics) S.topics = opts.topics; } begin(); },
   pick: side => choose(side === 1 || side === 'b' ? 'b' : 'a'),
   ready: () => $('readyBtn').click(),

@@ -1,0 +1,682 @@
+<title>Trick Inbox</title>
+<style>
+  /* Trick Inbox: Pim's pretend inbox for Cyber Defenders, on the Oomba Kit. Only the game's own DOM pieces are
+     styled here, with the kit's variables (the few accents are set from Oomba.color at start). */
+  .ti, .ti * { box-sizing: border-box; }
+  .ti { position: fixed; left: 0; right: 0; top: var(--ok-safe-top); bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 0 10px calc(8px + env(safe-area-inset-bottom)); pointer-events: none; font-size: 1em; line-height: 1.25; }
+  .ti > * { pointer-events: auto; }
+  .ti[hidden] { display: none; }
+  .ti.ti-proj { font-size: 1.3em; }
+  .ti-bar { display: flex; align-items: center; gap: 8px; width: min(100%, 900px); flex: none; min-height: 40px; }
+  .ti-bar .ti-sp { flex: 1; min-width: 0; }
+  .ti-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge); font-weight: 800; max-width: 100%; min-width: 0; flex: 0 1 auto; }
+  .ti-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ti-pill svg { width: 22px; height: 22px; flex: none; }
+  .ti-pill.ti-wrap span { white-space: normal; line-height: 1.15; }
+  .ok-toast { top: calc(72px + env(safe-area-inset-top)); max-width: calc(100vw - 32px); }
+  .ti-ic { display: inline-flex; flex: none; }
+  .ti-panel { flex: 1; min-height: 0; width: min(100%, 900px); display: flex; flex-direction: column; gap: 8px; overflow: auto; padding: 2px; }
+  .ti-say { display: flex; align-items: center; gap: 8px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 6px 10px; min-height: 52px; flex: none; }
+  .ti-say canvas { width: 40px; height: 40px; flex: none; }
+  .ti-say p { margin: 0; font-weight: 700; font-size: .95em; }
+  .ti-h { margin: 0; font-weight: 800; font-size: 1.05em; background: var(--ok-card); border-radius: 10px; padding: 2px 10px; width: fit-content; max-width: 100%; }
+  .ti-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: none; }
+  .ti-row.ti-center { justify-content: center; }
+  .ti-letter { background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 20px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; flex: none; box-shadow: 0 4px 0 var(--ok-edge); }
+  .ti-letter .ti-from { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: .92em; flex-wrap: wrap; }
+  .ti-letter .ti-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--ok-bg2); border: 2px solid var(--ok-edge); border-radius: 999px; padding: 2px 10px; }
+  .ti-letter .ti-badge svg { width: 18px; height: 18px; }
+  .ti-letter .ti-addr { font-weight: 700; font-size: .85em; opacity: .85; overflow-wrap: anywhere; }
+  .ti-letter b.ti-subj { font-size: 1.12em; }
+  .ti-letter .ti-body { margin: 0; font-weight: 600; line-height: 1.5; font-size: 1.02em; }
+  .ti-clue { font: inherit; font-weight: 800; color: inherit; background: var(--ti-cluebg); border: 2px dashed var(--ok-edge); border-radius: 8px; padding: 0 6px; margin: 0 1px; cursor: pointer; min-height: 32px; display: inline-flex; align-items: center; gap: 4px; vertical-align: baseline; }
+  .ti-clue:active { transform: translateY(1px); }
+  .ti-clue.ti-found { background: var(--ti-go); border-style: solid; color: var(--ti-ink); }
+  .ti-clue svg { width: 16px; height: 16px; flex: none; }
+  .ti-linkline { font-weight: 700; font-size: .92em; background: var(--ok-bg2); border: 2px solid var(--ok-edge); border-radius: 10px; padding: 6px 10px; overflow-wrap: anywhere; }
+  .ti-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; flex: none; }
+  @media (min-width: 640px) { .ti-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .ti-actions .ok-btn { min-width: 0; text-align: center; padding: 0 6px; }
+  .ti-debrief { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; flex: none; }
+  .ti-debrief b { font-size: 1.05em; }
+  .ti-debrief p { margin: 0; font-weight: 600; line-height: 1.4; }
+  .ti-debrief .ti-missed { font-weight: 700; }
+  .ti-stars { display: inline-flex; gap: 2px; align-items: center; }
+  .ti-stars svg { width: 22px; height: 22px; }
+  .ti-stars .ti-lost { opacity: .3; }
+  .ti-map { width: min(100%, 900px); display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; min-height: 0; overflow: auto; padding: 2px; }
+  .ti-seg { display: inline-flex; border: 3px solid var(--ok-edge); border-radius: 999px; overflow: hidden; background: var(--ok-card); }
+  .ti-seg button { font: inherit; font-weight: 800; min-height: 48px; min-width: 104px; padding: 0 16px; border: 0; background: transparent; color: var(--ok-text); cursor: pointer; }
+  .ti-seg button[aria-pressed="true"] { background: var(--ti-go); color: var(--ti-ink); }
+  .ti-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+  @media (min-width: 700px) { .ti-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ti-ch { display: flex; align-items: center; gap: 10px; min-height: 72px; padding: 8px 12px; border-radius: 20px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; text-align: start; box-shadow: 0 4px 0 var(--ok-edge); cursor: pointer; min-width: 0; }
+  .ti-ch canvas { width: 44px; height: 44px; flex: none; object-fit: contain; }
+  .ti-ch > span { min-width: 0; }
+  .ti-ch b { display: block; font-size: 1em; line-height: 1.15; overflow-wrap: anywhere; }
+  .ti-ch small { display: block; font-weight: 700; opacity: .85; font-size: .8em; line-height: 1.2; }
+  .ti-ch[disabled] { opacity: .55; cursor: default; }
+  .ti-card { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--ok-scrim); z-index: 15; }
+  .ti-card > div { background: var(--ok-card); color: var(--ok-text); border: 3px solid var(--ok-edge); border-radius: 26px; padding: 18px; width: min(560px, 100%); max-height: 100%; overflow: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  .ti-card h2 { margin: 0; font-weight: 800; font-size: 1.5em; line-height: 1.1; }
+  .ti-card p { margin: 0; font-weight: 600; font-size: 1.05em; line-height: 1.4; max-width: 38ch; }
+  .ti-card canvas.ti-pic { width: 96px; height: 96px; object-fit: contain; }
+  @media (max-height: 520px) { .ti-card > div { padding: 12px 14px; gap: 8px; } .ti-card canvas.ok-portrait { display: none; } .ti-card canvas.ti-pic { width: 56px; height: 56px; } .ti-card h2 { font-size: 1.2em; } .ti-card p { font-size: .95em; line-height: 1.3; } }
+  @media (orientation: landscape) and (max-height: 520px) { .ti { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .ti-panel { gap: 6px; } .ti-say { min-height: 44px; padding: 4px 8px; } .ti-say p { font-size: .85em; } .ti-say canvas { width: 32px; height: 32px; } .ti-ch { min-height: 56px; padding: 4px 10px; } .ti-grid { gap: 6px; } .ti-map { gap: 6px; } }
+  @media (orientation: portrait) and (max-width: 520px) { .ti { top: calc(64px + env(safe-area-inset-top)); } .ti-say p { max-height: 6.6em; overflow-y: auto; overscroll-behavior: contain; } }
+  .ok-rm .ti-clue:active, .ok-rm .ti-ch:active { transform: none; }
+  .ti-clue.ti-found, .ti-seg button[aria-pressed="true"] { color: var(--ti-ink); }
+</style>
+<div id="game"></div>
+<script src="/vendor/oomba-kit/1.1.2/oomba-kit.js" integrity="sha384-AmMbwWGTsxIxVi7l6ccbsROlhaqKEr8dP6sisHytkqLuCwTd/sMLTZyFBpp+J1Q1" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-props.js" integrity="sha384-dsw3ogA6t3JcMxKaJGuXFen3ronsQ4c4p5ef15u7YgQMUPhf+Ht4tgKG9a/QuvbA" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-animals.js" integrity="sha384-LAlaHnVYonjfYXaWIgYub5WQsRg206X2TJRUsvoyCjZbyL1+pQVBpSGEJ+OgJION" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/art-school.js" integrity="sha384-xbmoMTLjBXfyHbxMV8HIl3jSzcl3bxEMMdgGu+KgGuyZY+WNXrh9ogBhRTpyMWO8" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.2/packs/style-bold.js" integrity="sha384-pFXgoNOZ/kWWctAb2ucgoE+wLssJGKLBbeZJppwZQlTGTPqBEFYA0dOtLTst2DiH" crossorigin="anonymous"></script>
+<script>
+/* ===== Trick Inbox engine and content: the message sets, the trickster motives, the judging and the scoring.
+   Plain data and functions (no DOM, no kit), so the unit test can load this block on its own.
+   Every message is scripted and fictional: no real brands, people, schools or addresses, and nothing a player
+   reads asks them for a real detail of their own. A message body is a list of segments: a plain string, or
+   { t, clue } where clue names the kind of clue that stretch of text hides. Safe messages hide no clues. ===== */
+(function (root) {
+'use strict';
+const TWO32 = 2 ** 32;
+/** A small seeded random source: the same seed deals the same inbox order. */
+function rng(seed) {
+  let a = (seed >>> 0) || 1;
+  const f = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / TWO32; };
+  return { float: f, int: (lo, hi) => lo + Math.floor(f() * (hi - lo + 1)), pick: arr => arr[Math.floor(f() * arr.length)], chance: p => f() < p,
+    shuffle(arr) { const x = arr.slice(); for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(f() * (i + 1)); const t = x[i]; x[i] = x[j]; x[j] = t; } return x; } };
+}
+function seedOf(s) { let h = 0x811c9dc5; const str = String(s); for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x1000193); } return h >>> 0; }
+
+/** The four moves, in the order the buttons show them. */
+const ACTIONS = [
+  { id: 'deliver', label: 'Deliver', icon: 'check' },
+  { id: 'bin', label: 'Bin it', icon: 'cross' },
+  { id: 'show', label: 'Show Pim', icon: 'user' },
+  { id: 'report', label: 'Report & block', icon: 'flag' },
+];
+const ACTION_IDS = ACTIONS.map(a => a.id);
+/** The clue kinds a message can hide, with the plain name the debrief uses. */
+const CLUES = {
+  rush: 'It rushes you',
+  prize: 'It promises a prize',
+  key: 'It asks for a key or a secret code',
+  money: 'It asks for money',
+  facts: 'It fishes for private facts',
+  stranger: 'It comes from a stranger',
+  secret: 'It asks you to keep a secret from adults',
+  sender: 'The sender is faked',
+  fake: 'It is made to look real, but it is not',
+  link: 'The link goes somewhere else',
+  chain: 'It begs you to pass it on',
+  dare: 'It dares or pressures you',
+  mean: 'It is mean about someone',
+  toogood: 'It sounds too good to be true',
+  authority: 'It pretends to be in charge',
+};
+/** The four trickster motives of Cyber Defenders Unit 4 (Explorer names; the forwarder is the fourth nest). */
+const MOTIVES = {
+  'key-hunter': 'the key-hunter, who wants into your mailbox',
+  'prize-faker': 'the prize-faker, who wants you to tap and type',
+  'giggler': 'the giggler, who wants a big reaction',
+  'forwarder': 'the forwarder, who wants you to share the trick with everyone',
+};
+/** The sets (the game's chapters). Explorer plays letters, chat, mix and the boss; Pro adds senders, pressure
+ *  and media, and its boss round runs longer. The boss round's engine is the one Escape the Post Office's
+ *  Lock 4 reuses (Explorer 6 messages, Pro 8, a faked sender among the Pro eight). */
+const SETS = [
+  { index: 1, id: 'letters', title: 'Prize Letters', noun: 'messages', pic: 'letterblock', bands: ['1b', '2'], blurb: 'Letters that promise prizes — and a few honest ones.' },
+  { index: 2, id: 'chat', title: 'Chat Careful', noun: 'messages', pic: 'book', bands: ['1b', '2'], blurb: 'Game chat: friendly strangers, secrets and one mean message.' },
+  { index: 3, id: 'mix', title: 'Magpie Mix', noun: 'messages', pic: 'magnifier', bands: ['1b', '2'], blurb: 'A bit of everything, the way the Magpie likes it.' },
+  { index: 4, id: 'senders', title: 'Faked Senders', noun: 'messages', pic: 'shield', bands: ['2'], blurb: 'The name looks friendly. The real sender is not.' },
+  { index: 5, id: 'pressure', title: 'Pressure', noun: 'messages', pic: 'clock', bands: ['2'], blurb: 'Rushing, daring and pretending to be in charge.' },
+  { index: 6, id: 'media', title: 'Fake or Fact?', noun: 'messages', pic: 'globe', bands: ['2'], blurb: 'Fake news, sneaky ads and made-up videos.' },
+  { index: 7, id: 'boss', title: 'Boss Round', noun: 'messages', pic: 'star', bands: ['1b', '2'], blurb: 'The Magpie throws everything it has at your inbox.' },
+];
+const BOTH = ['1b', '2'], PRO = ['2'];
+/* action: the best move. accept: other moves that also count as right. motive: a trick's Unit 4 motive (null
+   for safe messages). why: the kind explanation the debrief reads, naming the defense. */
+const MESSAGES = [
+  /* ---- Letters (Explorer + Pro) ---- */
+  { id: 'lt-1', set: 'letters', bands: BOTH, kind: 'letter', from: 'Prize Team', badge: 'odd', subject: 'You won a tablet!',
+    body: ['Congratulations! ', { t: 'You are our lucky winner.', clue: 'prize' }, ' Send us your ', { t: 'mailbox key', clue: 'key' }, ' ', { t: 'in the next ten minutes', clue: 'rush' }, ' to claim your prize.'],
+    button: 'Claim now', action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: 'Nobody gives a tablet to a stranger. The prize is the bait, the rush is the hook, and your key is what it really wants. Bin it and it gets nothing.' },
+  { id: 'lt-2', set: 'letters', bands: BOTH, kind: 'letter', from: 'The Library', badge: 'known', subject: 'Your book is ready',
+    body: ['The dinosaur book you asked for is ready at the desk. Bring your library card any time this week.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'This one is safe to deliver. The library is a sender you know, it asks for nothing private, and nothing in it rushes you.' },
+  { id: 'lt-3', set: 'letters', bands: BOTH, kind: 'letter', from: 'Post Office Team', badge: 'odd', subject: 'Your mailbox will close',
+    body: ['We found a problem with your mailbox. Send us ', { t: 'your mailbox key', clue: 'key' }, ' ', { t: 'today', clue: 'rush' }, ', or your mailbox will be closed and your letters thrown away.'],
+    button: 'Fix it now', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'The real post office never asks for your key by letter. A threat and a rush are there to stop you thinking. Bin it, and tell a trusted adult if you feel worried.' },
+  { id: 'lt-4', set: 'letters', bands: BOTH, kind: 'letter', from: 'Your Teacher', badge: 'known', subject: 'Field trip on Friday',
+    body: ['Bring a packed lunch and a raincoat. The bus leaves at nine. See you there!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. It comes from your teacher, tells you something ordinary, and asks for nothing back.' },
+  { id: 'lt-5', set: 'letters', bands: BOTH, kind: 'letter', from: 'Game Shop', badge: 'odd', subject: 'Free coins today only!',
+    body: ['Tap the button to get ', { t: 'a thousand free coins', clue: 'toogood' }, '. Hurry, ', { t: 'the offer ends in one hour', clue: 'rush' }, '!'],
+    button: 'Get coins', action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: 'A thousand free coins, gone in an hour? Real shops do not hand out treasure like that. Too good to be true, and rushed: bin it.' },
+  { id: 'lt-6', set: 'letters', bands: BOTH, kind: 'letter', from: 'A Friend of a Friend', badge: 'odd', subject: 'Pass it on!',
+    body: [{ t: 'Send this letter to ten friends', clue: 'chain' }, ' ', { t: 'before midnight', clue: 'rush' }, ', or your luck will run out. Everyone is doing it!'],
+    action: 'bin', accept: ['report'], motive: 'forwarder',
+    why: 'Luck does not travel by letter. This trick only works if you pass it on, so the kindest move for everyone is to bin it and break the chain.' },
+  { id: 'lt-7', set: 'letters', bands: PRO, kind: 'letter', from: 'Parcel Service', badge: 'odd', subject: 'Your parcel is waiting',
+    body: ['We could not deliver your parcel. ', { t: 'Pay a small fee', clue: 'money' }, ' ', { t: 'within two hours', clue: 'rush' }, ' to get it back.'],
+    button: 'Pay now', action: 'report', accept: ['bin'], motive: 'key-hunter',
+    why: 'A parcel you never ordered, a fee, and a two-hour rush: that is a defense problem, not a delivery. Report it so the sender gets blocked for everyone.' },
+  /* ---- Chat (Explorer + Pro) ---- */
+  { id: 'ch-1', set: 'chat', bands: BOTH, kind: 'chat', from: 'CoolGamer99', badge: 'odd', subject: 'Game chat',
+    body: ['Hi! Great game today. ', { t: 'Do not tell your parents we chat, okay?', clue: 'secret' }, ' ', { t: 'Meet me at the park gate', clue: 'stranger' }, ' and I will bring you a present.'],
+    action: 'show', accept: ['report'], motive: 'key-hunter',
+    why: 'Chat is for people you know in real life. A stranger who asks for secrets from adults and wants to meet is the biggest red flag there is. Show Pim — ask a trusted adult — every time.' },
+  { id: 'ch-2', set: 'chat', bands: BOTH, kind: 'chat', from: 'Mia from Class', badge: 'known', subject: 'Game chat',
+    body: ['Great game! Your tower at the end was amazing. See you at school tomorrow!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Mia is someone you know in real life, and the message is just kind words about the game.' },
+  { id: 'ch-3', set: 'chat', bands: BOTH, kind: 'chat', from: 'JokerJay', badge: 'odd', subject: 'Game chat',
+    body: [{ t: 'Everyone laugh at Pip, he plays like a baby!', clue: 'mean' }, ' ', { t: 'Share this so the whole school sees.', clue: 'chain' }],
+    action: 'report', accept: ['show'], motive: 'giggler',
+    why: 'Mean messages want an audience. Do not join in and never pass them on. A kind word to Pip helps more than any reply, and reporting tells the game to stop it. If it worries you, save it and tell a trusted adult.' },
+  { id: 'ch-4', set: 'chat', bands: BOTH, kind: 'chat', from: 'NewFriend', badge: 'odd', subject: 'Game chat',
+    body: ['You seem nice. ', { t: 'I can send you a rare game skin, free.', clue: 'prize' }, ' Just ', { t: 'keep this our secret', clue: 'secret' }, ' and send me your game key.'],
+    action: 'show', accept: ['report'], motive: 'prize-faker',
+    why: 'A free skin from a stranger, wrapped in a secret. Real friends never ask you to hide things from adults. Show Pim before you do anything else.' },
+  { id: 'ch-5', set: 'chat', bands: BOTH, kind: 'chat', from: 'Coach Rana', badge: 'known', subject: 'Team chat',
+    body: ['Practice is at four on Saturday. Bring water and your boots. Well played today, everyone!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Your coach, a normal plan, and nothing private asked for.' },
+  { id: 'ch-6', set: 'chat', bands: BOTH, kind: 'chat', from: 'Fun Quiz', badge: 'odd', subject: 'Game chat',
+    body: ['Answer three questions to find your dragon: ', { t: 'your first pet, the street you grew up on, and your birthday', clue: 'facts' }, '. Then ', { t: 'share your result with everyone!', clue: 'chain' }],
+    button: 'Start quiz', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'Those are not quiz questions, they are the answers to security questions. A trickster collects them to sneak into accounts. Bin it.' },
+  { id: 'ch-7', set: 'chat', bands: PRO, kind: 'chat', from: 'Group Chat', badge: 'odd', subject: 'Group chat',
+    body: [{ t: 'Everyone is doing it. Post the photo or you are out of the group.', clue: 'dare' }, ' And ', { t: 'do not show any adult this chat.', clue: 'secret' }],
+    action: 'report', accept: ['show'], motive: 'giggler',
+    why: 'Pressure dressed up as friendship. A group that dares you and hides from adults is not keeping you safe. Report it, and tell a trusted adult — leaving a chat like that is a strength, not a loss.' },
+  /* ---- Magpie Mix (Explorer + Pro) ---- */
+  { id: 'mx-1', set: 'mix', bands: BOTH, kind: 'letter', from: 'Lucky Letters', badge: 'odd', subject: 'The shiny chain',
+    body: [{ t: 'Pass this letter to ten friends', clue: 'chain' }, ' and ', { t: 'a shiny surprise will find you', clue: 'prize' }, ' ', { t: 'tonight', clue: 'rush' }, '. Do not break the chain!'],
+    action: 'bin', accept: ['report'], motive: 'forwarder',
+    why: 'The Magpie loves a chain: the trick does its own traveling. Bin it, and the chain ends with you — that protects ten friends at once.' },
+  { id: 'mx-2', set: 'mix', bands: BOTH, kind: 'letter', from: 'Grandma Rose', badge: 'known', subject: 'Thank you!',
+    body: ['Thank you for the drawing of the post office, dear. It is on my fridge. Come for soup on Sunday!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. A thank-you from someone you love, asking for nothing but soup.' },
+  { id: 'mx-3', set: 'mix', bands: BOTH, kind: 'letter', from: 'Account Team', badge: 'odd', subject: 'Check your account',
+    body: ['Someone may have used your account. Send us ', { t: 'your mailbox key', clue: 'key' }, ' ', { t: 'before Friday', clue: 'rush' }, ' so we can check it for you.'],
+    button: 'Check now', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'Checking an account never needs your key sent in a letter. That request is the trick itself. Bin it.' },
+  { id: 'mx-4', set: 'mix', bands: BOTH, kind: 'post', from: 'News Flash', badge: 'odd', subject: 'School is closing forever!',
+    body: ['Big news: school is closing forever and ', { t: 'there will be free sweets for everyone on Monday', clue: 'toogood' }, '! ', { t: 'Tell everyone you know!', clue: 'chain' }],
+    action: 'bin', accept: ['show'], motive: 'giggler',
+    why: 'Huge news from a sender nobody knows, with sweets on top. This one just wants a reaction and a crowd. Bin it — and if a story ever worries you, check it with a trusted adult.' },
+  { id: 'mx-5', set: 'mix', bands: BOTH, kind: 'letter', from: 'Post Office Notice', badge: 'known', subject: 'Spark Day hours',
+    body: ['The post office closes early on Spark Day, at two o clock. Letters posted before noon still travel the same day.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. An ordinary notice from the post office, with no links, no asks and no rush.' },
+  { id: 'mx-6', set: 'mix', bands: BOTH, kind: 'letter', from: 'Prize Team', badge: 'odd', subject: 'Visitor number 1000!',
+    body: ['You are ', { t: 'visitor number 1000', clue: 'toogood' }, '! Claim ', { t: 'your free games console', clue: 'prize' }, ' by tapping the button before someone else does.'],
+    button: 'Claim prize', action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: 'You did not enter anything, so you cannot have won anything. Visitor-number prizes are an old costume on the same trick. Bin it.' },
+  /* ---- Faked Senders (Pro) ---- */
+  { id: 'sd-1', set: 'senders', bands: PRO, kind: 'letter', from: 'Post Office', addr: 'post-office@freemail-box', addrClue: true, badge: 'odd', subject: 'Your mailbox key expired',
+    body: ['Your mailbox key has expired. Send us ', { t: 'your mailbox key', clue: 'key' }, ' using the button, ', { t: 'today', clue: 'rush' }, '.'],
+    button: 'Renew key', link: { shown: 'netville-post', goes: 'shiny-trap-box' }, action: 'report', accept: ['bin'], motive: 'key-hunter',
+    why: 'The name says Post Office, but the real address is a freemail box, and the button goes somewhere else entirely. That mismatch is spoofing. Report it so the faked sender is blocked.' },
+  { id: 'sd-2', set: 'senders', bands: PRO, kind: 'letter', from: 'Netville Library', addr: 'library@netville-post', badge: 'known', subject: 'Reading club on Saturday',
+    body: ['Reading club meets at ten on Saturday. This month we are building the tallest book tower in Netville. Bring a friend!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. The name and the real address match, and the message asks for nothing private.' },
+  { id: 'sd-3', set: 'senders', bands: PRO, kind: 'letter', from: 'Your Teacher', addr: 'teacher@shiny-mail-box', badge: 'odd', subject: 'Homework check',
+    body: ['This is your teacher. For the class record, reply with ', { t: 'your home address and your mailbox key', clue: 'facts' }, '.'],
+    action: 'report', accept: ['bin'], motive: 'key-hunter',
+    why: 'The friendly name hides a stranger address, and no teacher collects home addresses and keys by letter. Report it, and check with your real teacher in person.' },
+  { id: 'sd-4', set: 'senders', bands: PRO, kind: 'letter', from: 'Prize Team', addr: 'prizes@win-win-win', badge: 'odd', subject: 'You won again!',
+    body: [{ t: 'You have won a games console!', clue: 'prize' }, ' Claim it ', { t: 'in the next hour', clue: 'rush' }, ' or it goes to someone else.'],
+    button: 'Claim', action: 'report', accept: ['bin'], motive: 'prize-faker',
+    why: 'The address gives it away: win-win-win is not a real shop address. A prize, a rush and a fake sender — report it.' },
+  { id: 'sd-5', set: 'senders', bands: PRO, kind: 'letter', from: 'Game Club', addr: 'club@netville-games', badge: 'known', subject: 'Club night moved',
+    body: ['Club night moves to Thursday this week because of the hall painting. Same time, same games!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Name and address match, and it is an ordinary change of day.' },
+  { id: 'sd-6', set: 'senders', bands: PRO, kind: 'letter', from: 'Bank of Netville', addr: 'bank@secure-check-box', badge: 'odd', subject: 'Confirm it is you',
+    body: ['For your safety, send us ', { t: 'your mailbox key and your birthday', clue: 'key' }, ' so we can confirm it is you.'],
+    button: 'Confirm', action: 'report', accept: ['bin'], motive: 'key-hunter',
+    why: 'Asking for your key to prove it is you proves it is not the bank. Real banks never ask that way. Report it.' },
+  /* ---- Pressure (Pro) ---- */
+  { id: 'pr-1', set: 'pressure', bands: PRO, kind: 'letter', from: 'The Head Teacher', badge: 'odd', subject: 'At once',
+    body: [{ t: 'This is the head teacher speaking.', clue: 'authority' }, ' Send me ', { t: 'your mailbox key', clue: 'key' }, ' ', { t: 'before lunch', clue: 'rush' }, '. Do not ask questions.'],
+    action: 'report', accept: ['bin'], motive: 'key-hunter',
+    why: 'Authority is a costume here: a real head teacher never demands a key by letter, and "do not ask questions" is the loudest clue of all. Report it.' },
+  { id: 'pr-2', set: 'pressure', bands: PRO, kind: 'letter', from: 'System', badge: 'odd', subject: 'Deleted in one hour',
+    body: [{ t: 'Your account will be deleted in one hour', clue: 'rush' }, ' unless you ', { t: 'send your key', clue: 'key' }, ' right now.'],
+    button: 'Save my account', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'Fear plus a countdown is the oldest lever there is. Real systems do not delete accounts for one slow reply. Bin it, and check the real app later if you are still worried.' },
+  { id: 'pr-3', set: 'pressure', bands: PRO, kind: 'post', from: 'Fan Club', badge: 'odd', subject: 'Hello, skateboard star!',
+    body: ['We saw your profile: ', { t: 'you love skateboards, your dog is called Biscuit and you turn twelve next week', clue: 'facts' }, '. Reply with ', { t: 'your mailbox key', clue: 'key' }, ' to get your birthday prize!'],
+    button: 'Get prize', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'Everything it "knows" came from a public profile. Flattery built from your own footprint is still a trick. Bin it — and think about what your profile gives away.' },
+  { id: 'pr-4', set: 'pressure', bands: PRO, kind: 'chat', from: 'The Cool Group', badge: 'odd', subject: 'Group chat',
+    body: [{ t: 'Post a silly photo of your friend, or leave the group.', clue: 'dare' }, ' ', { t: 'Everyone will laugh.', clue: 'mean' }],
+    action: 'report', accept: ['show'], motive: 'giggler',
+    why: 'A dare that spends a friend is never a fair price for a group. Report it, and be the kind of friend who would want in their corner.' },
+  { id: 'pr-5', set: 'pressure', bands: PRO, kind: 'chat', from: 'Team Captain', badge: 'known', subject: 'Team chat',
+    body: ['No practice this week — rest up, everyone. See you next Tuesday!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. A rest week from your captain, with no dare, no rush and no asks.' },
+  { id: 'pr-6', set: 'pressure', bands: PRO, kind: 'letter', from: 'Shop Bot', badge: 'odd', subject: 'Only two left!',
+    body: [{ t: 'Only two left', clue: 'toogood' }, ' at this price! ', { t: 'Pay in the next five minutes', clue: 'rush' }, ' or lose them forever.'],
+    button: 'Pay now', action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: '"Only two left" and a five-minute clock are levers, not facts. Shops that rush you are spending your thinking time on purpose. Bin it.' },
+  /* ---- Fake or Fact? (Pro) ---- */
+  { id: 'md-1', set: 'media', bands: PRO, kind: 'post', from: 'Netville News Flash', badge: 'odd', subject: 'School to close forever!',
+    body: ['BREAKING: school closes forever and ', { t: 'every student gets free sweets for a year', clue: 'toogood' }, '. ', { t: 'Share before they delete this!', clue: 'chain' }],
+    action: 'bin', accept: ['show'], motive: 'giggler',
+    why: 'Real news does not beg to be shared before deletion, and it does not come with free sweets. Check big stories with a trusted adult or a real news page first.' },
+  { id: 'md-2', set: 'media', bands: PRO, kind: 'post', from: 'Prize Ad', badge: 'odd', subject: 'You won a phone!',
+    body: ['Tap to claim ', { t: 'your free phone', clue: 'prize' }, '. ', { t: 'Only the first fifty people', clue: 'rush' }, ' get one!'],
+    button: 'Claim', action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: 'An ad that calls you a winner is still an ad. The prize and the fifty-people rush are there to buy your tap. Bin it.' },
+  { id: 'md-3', set: 'media', bands: PRO, kind: 'post', from: 'Video Clip', badge: 'odd', subject: 'The mayor sings in a fountain!',
+    body: ['A video shows the mayor singing in the fountain. Look closely: ', { t: 'his mouth moves after the words end', clue: 'fake' }, ', and the crowd behind him never blinks.'],
+    action: 'show', accept: ['bin'], motive: 'giggler',
+    why: 'Some videos are made by computers to look real — AI fakes. Clues hide in the details, like mouths out of time. Show Pim and check a real news page before believing or sharing it.' },
+  { id: 'md-4', set: 'media', bands: PRO, kind: 'post', from: 'Netville News', badge: 'known', subject: 'New reading room',
+    body: ['The library opens its new reading room on Saturday. The mayor will cut the ribbon at eleven, and the reading club gets the first tour.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Ordinary news from the town paper: no prizes, no panic, no begging to share.' },
+  { id: 'md-5', set: 'media', bands: PRO, kind: 'post', from: 'Which Dragon Are You?', badge: 'odd', subject: 'Fun quiz',
+    body: ['Three questions and we will name your dragon: ', { t: 'your first pet, your mother\'s first name, and your birthday', clue: 'facts' }, '.'],
+    button: 'Start quiz', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'Pet names and birthdays are the bricks account-recovery questions are built from. A quiz that collects them is collecting you. Bin it.' },
+  { id: 'md-6', set: 'media', bands: PRO, kind: 'post', from: 'Top Tips Page', badge: 'odd', subject: 'Secret trick!',
+    body: ['A ', { t: 'secret trick gives free gems', clue: 'prize' }, ' in your favorite game. Just ', { t: 'tap the tiny link', clue: 'link' }, ' at the bottom and wait.'],
+    action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: 'Free gems through a tiny hidden link is a trap with a tip-shaped hat. Real game rewards are announced inside the game. Bin it.' },
+];
+/** The boss round: a fixed mixed deal per band (the Pro eight include faked senders, as Lock 4 of the escape
+ *  room requires). Ids point into MESSAGES, so the boss never drifts from the sets it mixes. */
+const BOSS = {
+  '1b': ['lt-1', 'ch-1', 'mx-1', 'lt-3', 'ch-3', 'mx-2'],
+  '2': ['sd-1', 'pr-2', 'lt-7', 'md-3', 'pr-5', 'sd-4', 'pr-3', 'mx-1'],
+};
+const BY_ID = Object.fromEntries(MESSAGES.map(m => [m.id, m]));
+const SET_BY_ID = Object.fromEntries(SETS.map(s => [s.id, s]));
+
+/** The clues a message hides: its real address first when the address itself is a clue (addrClue, the faked
+ *  senders), then the body's clue segments in order, then its button's true destination when it has one (link).
+ *  Safe messages hide none. */
+function cluesOf(msg) {
+  const out = [];
+  if (msg.addrClue && msg.addr) out.push({ id: msg.id + ':addr', kind: 'sender', text: msg.addr });
+  for (const seg of msg.body || []) if (seg && typeof seg === 'object' && seg.clue) out.push({ id: msg.id + ':' + out.length, kind: seg.clue, text: seg.t });
+  if (msg.link) out.push({ id: msg.id + ':link', kind: 'link', text: msg.link.shown + ' → ' + msg.link.goes });
+  return out;
+}
+/** One round of a set for a band and seed: the set's messages for that band, in a seeded order. */
+function round(setId, band, seed) {
+  const b = band === '2' ? '2' : '1b';
+  let list;
+  if (setId === 'boss') list = (BOSS[b] || []).map(id => BY_ID[id]).filter(Boolean);
+  else list = MESSAGES.filter(m => m.set === setId && m.bands.includes(b));
+  const r = rng(seedOf(setId + '|' + b + '|' + (seed == null ? 1 : seed)));
+  return r.shuffle(list);
+}
+/** Judge one message: { right, best, deliveredTrick, points, max, missed: [clue...] }.
+ *  points: the action is worth 2 (best or accepted), each found clue 1. A wrong Deliver on a trick is the
+ *  one move that costs a stamp-star (the caller tracks stars); it is never shamed, only explained. */
+function judge(msg, foundIds, action) {
+  const clues = cluesOf(msg);
+  const found = clues.filter(c => (foundIds || []).includes(c.id));
+  const missed = clues.filter(c => !(foundIds || []).includes(c.id));
+  const best = action === msg.action, right = best || (msg.accept || []).includes(action);
+  const trick = msg.action !== 'deliver';
+  return { right, best, deliveredTrick: trick && action === 'deliver', points: (right ? 2 : 0) + found.length, max: 2 + clues.length, found, missed };
+}
+/** Stars for a finished round: the score fraction, capped by the stamp-stars a wrong Deliver left standing. */
+function starsFor(score, max, stampStars) {
+  const f = max ? score / max : 0;
+  const byScore = f >= 0.85 ? 3 : f >= 0.55 ? 2 : 1;
+  return Math.max(1, Math.min(byScore, Math.max(1, stampStars)));
+}
+function label(done, total, noun, stars) { return `${done}/${total} ${noun}, ${stars} stars`; }
+const LABEL_RE = /^\d{1,2}\/\d{1,2} (levels|cases|tickets|cards|messages), \d{1,3} stars(, \d{1,2}\/\d{1,2} checks)?$/;
+const PARAM_RE = /^[a-z0-9-]{1,16}$/;
+function cleanParams(raw, sets) {
+  const p = raw && typeof raw === 'object' ? raw : {}, out = {};
+  for (const k of ['chapter', 'band', 'mode', 'lock']) { if (p[k] == null || p[k] === '') continue; const v = String(p[k]).toLowerCase(); if (PARAM_RE.test(v)) out[k] = v; }
+  if (out.chapter && !sets.some(s => s.id === out.chapter)) delete out.chapter;
+  if (out.band && out.band !== '1b' && out.band !== '2') delete out.band;
+  if (out.mode && !['play', 'projector'].includes(out.mode)) delete out.mode;
+  out.lock = out.lock === '1' ? 1 : 0;
+  out.present = ['chapter', 'band', 'mode'].some(k => k in out) || out.lock === 1;
+  return out;
+}
+root.TrickInbox = { rng, seedOf, ACTIONS, ACTION_IDS, CLUES, MOTIVES, SETS, SET_BY_ID, MESSAGES, BY_ID, BOSS, cluesOf, round, judge, starsFor, label, LABEL_RE, cleanParams };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script type="module">
+const E = window.TrickInbox, O = window.Oomba;
+const CONFIG = {
+  title: 'Trick Inbox',
+  pim: { species: 'owl', wear: ['backpack'], colors: { base: 'cocoa', accent: 'spark' } },
+  biome: 'meadow',
+  storeKey: 'trick-inbox-v1',
+};
+const SETS = E.SETS, SET_BY_ID = E.SET_BY_ID;
+const BAND_NAME = { '1b': 'Explorer', '2': 'Pro' };
+const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
+const tr = (s, v) => (v ? String(s).replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m)) : String(s));
+const num = n => O.num(n);
+
+/* ---------- saved progress (per player, in the cloud save) ---------- */
+const store = { get() { try { return (window.BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } }, set(v) { try { if (window.BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* no save */ } } };
+const SAVE = Object.assign({ band: '1b', stars: {} }, store.get());
+if (SAVE.band !== '1b' && SAVE.band !== '2') SAVE.band = '1b';
+const save = () => store.set({ band: SAVE.band, stars: SAVE.stars });
+const starsOf = (setId, band) => SAVE.stars[setId + ':' + band] || 0;
+
+/* ---------- helpers ---------- */
+const setsFor = band => SETS.filter(s => s.bands.includes(band));
+const reduced = () => !!O.settings.reduced;
+const $ = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const icon = (name, o) => O.icon(name, o);
+const iconEl = name => { const e = $('span', 'ti-ic'); e.innerHTML = icon(name); e.setAttribute('aria-hidden', 'true'); return e; };
+const btn = (label, o) => O.ui.button(label, o);
+const announce = t => O.ui.announce(t);
+const toast = t => O.ui.toast(t);
+const sfx = (n, o) => { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* quiet */ } };
+const C = (role, step) => { try { return O.color(role, step); } catch (e) { return null; } };
+const KIND_LABEL = { letter: 'Letter', chat: 'Chat', post: 'Post' };
+
+/* ---------- state ---------- */
+const S = {
+  params: E.cleanParams((window.BRB && BRB.params) || {}, SETS),
+  lesson: false, lock: false, mode: 'play', band: SAVE.band, projector: false,
+  set: null, run: null, seed0: 1, w: null, fast: false, dom: null, screen: 'none',
+  lastLabel: '', lastScore: 0, gameOverSent: false, pending: null, busy: false,
+};
+S.seed0 = E.seedOf(String(O.time.now) + '|' + (window.BRB && BRB.user ? BRB.user.displayName : ''));
+if (S.params.present) { S.lesson = true; S.lock = !!S.params.lock; if (S.params.band) S.band = S.params.band; S.mode = S.params.mode || 'play'; }
+S.projector = S.mode === 'projector';
+
+/* ---------- the kit game: the world behind, the title, HUD, pause and results ---------- */
+const SET_GRID = [
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '  P   N               ',
+  '######################',
+  '######################',
+];
+const PIM = O.char(CONFIG.pim);
+let game = null;
+game = O.game({
+  api: 1, title: CONFIG.title, subtitle: tr('Spot the clues. Choose the move.'), biome: CONFIG.biome,
+  controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
+  hud: ['progress', 'count:star'],
+  howTo: [{ icon: 'tap', text: tr('Tap every clue hiding in a message') }, { icon: 'question', text: tr('Then choose: deliver, bin it, show Pim, or report & block') }, { icon: 'lock', text: tr('Show Pim means ask a trusted adult') }],
+  level: O.level.grid(SET_GRID, { N: Object.assign({ kind: 'npc', tag: 'pim', flip: true, size: 2.1 }, CONFIG.pim) }),
+  update: frame,
+  testState: () => testState(),
+  on: { start: onStart, title: hideAll, results: hideAll, lose: hideAll },
+});
+function frame(w) {
+  const V = w.stage.view, Cm = w.cam, L = w.level, tall = V.vh > V.vw * 1.1, z = tall ? V.vw / (6 * w.cell) : Math.min(V.vw / (12 * w.cell), V.vh / (7 * w.cell));
+  Cm.bounds(null); Cm.zoom = z; Cm.x = L.w / 2; Cm.y = L.h - w.cell * 1.6 - V.vh / z / 2;
+  const pim = w.find('pim'); if (pim && w.hero) { const d = (tall ? 1.1 : 2.4) * w.cell; pim.x = L.w / 2 + d; w.hero.x = L.w / 2 - d; }
+}
+
+/* ---------- the game's own DOM, inside the kit's UI layer ---------- */
+function build() {
+  if (S.dom) return S.dom;
+  const root = O.ui.root();
+  for (const [k, v] of Object.entries({ go: C('go', 'light'), cluebg: C('reward', 'tint'), ink: C('ink') })) if (v) root.style.setProperty('--ti-' + k, v);
+  const ti = $('div', 'ti'); ti.id = 'ti'; ti.hidden = true; ti.dir = O.dir; if (S.projector) ti.classList.add('ti-proj');
+  root.appendChild(ti);
+  S.dom = { ti };
+  return S.dom;
+}
+function hideAll() { if (S.dom) { S.dom.ti.hidden = true; S.dom.ti.innerHTML = ''; } S.screen = 'none'; S.run = null; }
+function screen(name) { const { ti } = build(); ti.innerHTML = ''; ti.hidden = false; S.screen = name; return ti; }
+const portrait = (size, mood) => O.ui.portrait(PIM, { size, mood: mood || 'happy' });
+const pic = (name, px) => { try { return O.art.toCanvas(name, px || 96); } catch (e) { return document.createElement('canvas'); } };
+function sayRow(panel, text) {
+  const say = $('div', 'ti-say'); say.appendChild(portrait(40)); const p = $('p', '', text); say.appendChild(p); panel.appendChild(say);
+  return p;
+}
+function starsEl(n, total) {
+  const s = $('span', 'ti-stars'); s.setAttribute('aria-label', tr('{n} of {t} stamp-stars', { n, t: total }));
+  for (let i = 0; i < total; i++) { const e = $('span', i < n ? '' : 'ti-lost'); e.innerHTML = icon('star'); e.setAttribute('aria-hidden', 'true'); s.appendChild(e); }
+  return s;
+}
+
+/* ---------- the kit's start: the set map, or straight into the lesson's set ---------- */
+function onStart(w) {
+  S.w = w; hideAll(); S.gameOverSent = false;
+  const pending = S.pending; S.pending = null;
+  if (pending) { applyStart(pending); return; }
+  if (S.lesson && S.params.chapter) return startSet(S.params.chapter, {});
+  showMap();
+}
+function applyStart(o) {
+  if (o.seed != null) S.seed0 = +o.seed || 1;
+  if (o.band === '1b' || o.band === '2') S.band = o.band;
+  if (o.mode) S.mode = o.mode; S.projector = S.mode === 'projector'; if (S.dom) S.dom.ti.classList.toggle('ti-proj', S.projector);
+  if (o.lesson != null) S.lesson = !!o.lesson; if (o.lock != null) { S.lock = !!o.lock; if (S.lock) S.lesson = true; }
+  if (o.chapter && SET_BY_ID[o.chapter] && SET_BY_ID[o.chapter].bands.includes(S.band)) return startSet(o.chapter, {});
+  showMap();
+}
+function hudSync() {
+  const w = S.w; if (!w || !w.hud) return;
+  const run = S.run;
+  if (run) { if (w.hud.progress) w.hud.progress.set(run.msgs.length ? run.judged / run.msgs.length : 0); if (w.hud.count) w.hud.count.set(run.score, run.maxScore || 1); return; }
+  const sets = setsFor(S.band), total = sets.reduce((a, s) => a + E.round(s.id, S.band, 1).length, 0);
+  const done = sets.reduce((a, s) => a + (starsOf(s.id, S.band) ? E.round(s.id, S.band, 1).length : 0), 0);
+  if (w.hud.progress) w.hud.progress.set(total ? done / total : 0);
+  if (w.hud.count) w.hud.count.set(sets.reduce((a, s) => a + starsOf(s.id, S.band), 0), sets.length * 3);
+}
+
+/* ---------- the set map (free play) ---------- */
+function showMap() {
+  if (S.lock) return startSet(S.params.chapter || 'letters', {});
+  S.set = null; S.run = null; hudSync();
+  const ti = screen('map'), map = $('div', 'ti-map'); ti.appendChild(map);
+  const bar = $('div', 'ti-bar'); map.appendChild(bar);
+  const seg = $('div', 'ti-seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', tr('Band'));
+  for (const b of ['1b', '2']) { const x = $('button', '', tr(BAND_NAME[b])); x.type = 'button'; x.setAttribute('aria-pressed', String(S.band === b)); x.addEventListener('click', () => { if (S.band === b) return; S.band = b; SAVE.band = b; save(); sfx('select'); announce(tr('Band: {band}', { band: tr(BAND_NAME[b]) })); showMap(); }); seg.appendChild(x); }
+  bar.appendChild(seg);
+  const grid = $('div', 'ti-grid'); map.appendChild(grid);
+  for (const s of setsFor(S.band)) {
+    const n = E.round(s.id, S.band, 1).length, got = starsOf(s.id, S.band);
+    const b = $('button', 'ti-ch'); b.type = 'button'; b.appendChild(pic(s.pic, 44));
+    const t = $('span'); t.appendChild($('b', '', tr(s.title)));
+    const sub = tr(s.blurb) + ' · ' + (got ? tr('{n} stars', { n: got }) : tr('{n} messages', { n }));
+    const sm = $('small', '', sub); sm.dir = 'auto'; t.appendChild(sm); b.appendChild(t);
+    b.setAttribute('aria-label', tr(s.title) + '. ' + sub);
+    b.addEventListener('click', () => { sfx('select'); startSet(s.id, {}); });
+    grid.appendChild(b);
+  }
+  announce(tr('Set map. Band: {band}', { band: tr(BAND_NAME[S.band]) }));
+}
+
+/* ---------- a round: hunt for clues, choose the move, read the debrief ---------- */
+function startSet(setId, o) {
+  const msgs = E.round(setId, S.band, o.seed != null ? o.seed : S.seed0);
+  if (!msgs.length) return showMap();
+  S.set = setId;
+  S.run = { set: setId, msgs, i: 0, found: new Set(), phase: 'hunt', score: 0, maxScore: msgs.reduce((a, m) => a + E.judge(m, [], m.action).max, 0), stampStars: 3, judged: 0, last: null };
+  S.gameOverSent = false;
+  hudSync();
+  showMessage();
+}
+function cur() { return S.run ? S.run.msgs[S.run.i] : null; }
+function showMessage() {
+  const run = S.run, msg = cur(); if (!run || !msg) return setComplete();
+  run.found = new Set(); run.phase = 'hunt'; run.last = null;
+  renderMessage();
+}
+function renderMessage() {
+  const run = S.run, msg = cur(), set = SET_BY_ID[run.set];
+  const ti = screen('round'), panel = $('div', 'ti-panel'); ti.appendChild(panel);
+  const bar = $('div', 'ti-bar'); panel.appendChild(bar);
+  if (!S.lock) bar.appendChild(btn(tr('Sets'), { kind: 'quiet', icon: 'back', onPress: () => { sfx('select'); showMap(); } }));
+  const pill = $('div', 'ti-pill ti-wrap'); pill.appendChild(pic(set.pic, 28)); pill.appendChild($('span', '', tr(set.title) + ' · ' + tr(BAND_NAME[S.band]))); bar.appendChild(pill);
+  bar.appendChild($('div', 'ti-sp'));
+  const prog = $('div', 'ti-pill'); prog.appendChild($('span', '', tr('Message {a} of {b}', { a: run.i + 1, b: run.msgs.length }))); bar.appendChild(prog);
+  const sp = $('div', 'ti-pill'); sp.appendChild(starsEl(run.stampStars, 3)); bar.appendChild(sp);
+  const sayText = run.phase === 'hunt'
+    ? (msg.action === 'deliver' && !E.cluesOf(msg).length ? tr('A new message. If it hides no clues and asks for nothing, it may be safe to deliver.') : tr('A new message. Tap every clue you can find — then choose what to do.'))
+    : run.phase === 'decide' ? tr('Now choose the move. Think about what this message really wants.') : tr('Here is what that message was doing.');
+  sayRow(panel, sayText);
+  /* the message card */
+  const card = $('div', 'ti-letter'); card.id = 'ti-msg';
+  const from = $('div', 'ti-from');
+  const badge = $('span', 'ti-badge'); badge.appendChild(iconEl(msg.kind === 'chat' ? 'user' : msg.kind === 'post' ? 'spark' : 'book')); badge.appendChild($('span', '', tr(KIND_LABEL[msg.kind] || 'Letter'))); from.appendChild(badge);
+  from.appendChild($('span', '', tr('From: {from}', { from: msg.from })));
+  card.appendChild(from);
+  if (msg.addr) {
+    if (msg.addrClue) { const a = $('button', 'ti-clue ti-addr'); a.type = 'button'; a.dataset.clue = msg.id + ':addr'; a.textContent = tr('Real address: {addr}', { addr: msg.addr }); if (run.found.has(a.dataset.clue)) markFound(a); a.addEventListener('click', () => toggleClue(a.dataset.clue, a)); card.appendChild(a); }
+    else { const a = $('div', 'ti-addr', tr('Real address: {addr}', { addr: msg.addr })); card.appendChild(a); }
+  }
+  if (msg.subject) card.appendChild($('b', 'ti-subj', msg.subject));
+  const body = $('p', 'ti-body');
+  for (const seg of msg.body) {
+    if (typeof seg === 'string') body.appendChild(document.createTextNode(seg));
+    else { const c = $('button', 'ti-clue'); c.type = 'button'; c.textContent = seg.t; const cl = E.cluesOf(msg).find(x => x.text === seg.t && x.kind === seg.clue); c.dataset.clue = cl ? cl.id : ''; if (run.found.has(c.dataset.clue)) markFound(c); c.addEventListener('click', () => toggleClue(c.dataset.clue, c)); body.appendChild(c); }
+  }
+  card.appendChild(body);
+  if (msg.link) {
+    const l = $('button', 'ti-clue'); l.type = 'button'; l.dataset.clue = msg.id + ':link';
+    l.textContent = (msg.button || tr('Open')) + ' → ' + msg.link.shown;
+    if (run.found.has(l.dataset.clue)) markFound(l);
+    l.addEventListener('click', () => toggleClue(l.dataset.clue, l));
+    const wrap = $('div', 'ti-linkline'); wrap.appendChild(l); card.appendChild(wrap);
+  } else if (msg.button) { const f = $('span', 'ti-badge', msg.button); card.appendChild(f); }
+  panel.appendChild(card);
+  /* the phase controls */
+  if (run.phase === 'hunt') {
+    const row = $('div', 'ti-row ti-center'); panel.appendChild(row);
+    const clues = E.cluesOf(msg);
+    const cnt = $('div', 'ti-pill'); cnt.id = 'ti-cluecount'; cnt.appendChild($('span', '', clueCountText())); row.appendChild(cnt);
+    row.appendChild(btn(tr('Choose what to do'), { kind: 'hot', icon: 'next', onPress: () => doAct({ t: 'ready' }) }));
+    function clueCountText() { return clues.length ? tr('Clues found: {a} of {b}', { a: run.found.size, b: clues.length }) : tr('No clues hiding here'); }
+    renderMessage._count = () => { const e = document.getElementById('ti-cluecount'); if (e) e.firstChild.textContent = clueCountText(); };
+  } else if (run.phase === 'decide') {
+    const acts = $('div', 'ti-actions'); acts.id = 'ti-actions'; panel.appendChild(acts);
+    for (const a of E.ACTIONS) acts.appendChild(btn(tr(a.label), { kind: a.id === 'show' ? 'go' : 'quiet', icon: a.icon, onPress: () => doAct({ t: 'action', action: a.id }) }));
+  } else if (run.phase === 'debrief') {
+    panel.appendChild(debriefEl());
+    const row = $('div', 'ti-row ti-center'); panel.appendChild(row);
+    row.appendChild(btn(run.i + 1 >= run.msgs.length ? tr('Finish') : tr('Next message'), { kind: 'hot', icon: 'next', onPress: () => doAct({ t: 'next' }) }));
+  }
+  hudSync();
+}
+function markFound(el) { el.classList.add('ti-found'); if (!el.querySelector('svg')) el.appendChild(iconEl('check')); el.setAttribute('aria-pressed', 'true'); }
+function toggleClue(id, el) {
+  const run = S.run; if (!run || run.phase !== 'hunt' || !id) return;
+  if (run.found.has(id)) { run.found.delete(id); el.classList.remove('ti-found'); el.setAttribute('aria-pressed', 'false'); const tick = el.querySelector('.ti-ic'); if (tick) tick.remove(); }
+  else { run.found.add(id); markFound(el); sfx('spark'); }
+  if (renderMessage._count) renderMessage._count();
+}
+function debriefEl() {
+  const run = S.run, msg = cur(), j = run.last;
+  const d = $('div', 'ti-debrief'); d.id = 'ti-debrief';
+  d.appendChild($('b', '', j.best ? tr('That is the move!') : j.right ? tr('That works too.') : tr('Not this time — here is why.')));
+  if (j.deliveredTrick) d.appendChild($('p', '', tr('Delivering a trick is the one move that costs a stamp-star. No shame — spotting it next time is the skill.')));
+  d.appendChild($('p', '', msg.why));
+  if (msg.motive) d.appendChild($('p', '', tr('Behind this one: {motive}. The Magpie slipped it into the post.', { motive: tr(E.MOTIVES[msg.motive]) })));
+  if (msg.link) d.appendChild($('p', '', tr('The button said {shown}, but it really went to {goes}.', { shown: msg.link.shown, goes: msg.link.goes })));
+  if (j.missed.length) { const m = $('p', 'ti-missed', tr('Clues still hiding: ') + j.missed.map(c => tr(E.CLUES[c.kind]) + ' — “' + c.text + '”').join('; ')); d.appendChild(m); }
+  else if (E.cluesOf(msg).length) d.appendChild($('p', '', tr('You found every clue. Sharp eyes!')));
+  return d;
+}
+/** The one door for mouse, keys and tests: { t: 'clue'|'ready'|'action'|'next', ... }. */
+function doAct(a) {
+  const run = S.run; if (!run || !a) return false;
+  const msg = cur(); if (!msg) return false;
+  if (a.t === 'clue') { if (run.phase !== 'hunt') return false; const el = document.querySelector(`[data-clue="${a.id}"]`); if (el) toggleClue(a.id, el); else if (a.id) { run.found.has(a.id) ? run.found.delete(a.id) : run.found.add(a.id); } return true; }
+  if (a.t === 'ready') { if (run.phase !== 'hunt') return false; run.phase = 'decide'; sfx('select'); renderMessage(); return true; }
+  if (a.t === 'action') {
+    if (run.phase !== 'decide' || !E.ACTION_IDS.includes(a.action)) return false;
+    const j = E.judge(msg, [...run.found], a.action);
+    run.last = j; run.score += j.points; run.judged++;
+    if (j.deliveredTrick) run.stampStars = Math.max(0, run.stampStars - 1);
+    run.phase = 'debrief'; sfx(j.right ? 'spark' : 'whoosh');
+    renderMessage(); hudSync();
+    announce(j.right ? tr('Good move.') : tr('Not this time.'));
+    return true;
+  }
+  if (a.t === 'next') { if (run.phase !== 'debrief') return false; run.i++; sfx('select'); if (run.i >= run.msgs.length) setComplete(); else showMessage(); return true; }
+  return false;
+}
+/** A finished round: the stars are saved, the labelled score reported, and — only here, at genuine
+ *  completion — the win signal fires (win-gated course credit). */
+function setComplete() {
+  const run = S.run; if (!run) return;
+  const set = SET_BY_ID[run.set], stars = E.starsFor(run.score, run.maxScore, run.stampStars);
+  const key = run.set + ':' + S.band;
+  if (!S.projector && stars > (SAVE.stars[key] || 0)) { SAVE.stars[key] = stars; save(); }
+  const lab = E.label(run.msgs.length, run.msgs.length, set.noun, stars);
+  S.lastLabel = lab; S.lastScore = run.score; S.lastStars = stars; S.lastMaxScore = run.maxScore;
+  if (!S.projector && S.mode === 'play') {
+    try { if (window.BRB && BRB.score) BRB.score.submit(run.score, lab); } catch (e) { /* no page */ }
+    try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'ti', chapter: run.set, stars, band: S.band === '2' ? 2 : 1, score: run.score, stampStars: run.stampStars }); } catch (e) { /* older SDK */ }
+  }
+  const finished = run; S.run = null; S.screen = 'done'; hudSync();
+  const w = S.w;
+  if (w && !w.ended && !S.projector) { try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true, score: finished.score }); } catch (e) { /* no page */ } S.gameOverSent = true; }
+  if (w && !w.ended) w.win({ stars, score: S.projector ? 0 : finished.score, submit: false, title: tr('Inbox sorted!'), who: PIM });
+  if (!w) { hideAll(); showMap(); }
+}
+document.addEventListener('keydown', e => {
+  const run = S.run; if (!run || S.screen !== 'round' || e.repeat) return;
+  if (run.phase === 'decide' && ['1', '2', '3', '4'].includes(e.key)) { const a = E.ACTIONS[+e.key - 1]; if (a) { e.preventDefault(); doAct({ t: 'action', action: a.id }); } }
+});
+
+/* ---------- test hooks (covers, the playtest, the unit test's Chromium run) ---------- */
+function testState() {
+  const run = S.run, msg = cur();
+  return { ti: true, screen: S.screen, chapter: S.set, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
+    phase: run ? run.phase : S.screen, index: run ? run.i + 1 : 0, total: run ? run.msgs.length : 0, msgId: msg ? msg.id : null,
+    found: run ? run.found.size : 0, clues: msg ? E.cluesOf(msg).length : 0, score: run ? run.score : S.lastScore, maxScore: run ? run.maxScore : (S.lastMaxScore || 0),
+    stampStars: run ? run.stampStars : 3, stars: S.lastStars || 0, label: S.lastLabel, gameOver: S.gameOverSent, ready: true, busy: S.busy };}
+Object.assign(window.__brbTest || (window.__brbTest = {}), {
+  start(o = {}) { S.pending = Object.assign({}, o); S.fast = S.fast || !!o.fast; game.start(); return testState(); },
+  skipAnimations() { S.fast = true; return true; },
+  act(a) { return doAct(a); },
+  state() { return testState(); },
+  run() { const run = S.run; return run ? { set: run.set, i: run.i, phase: run.phase, score: run.score, maxScore: run.maxScore, stampStars: run.stampStars, msg: cur() ? cur().id : null } : null; },
+  /** Play the current round perfectly: find every clue, choose the best move, read every debrief. */
+  async solve() {
+    S.fast = true; let guard = 0;
+    while (S.run && guard++ < 200) {
+      const run = S.run, msg = cur(); if (!msg) break;
+      if (run.phase === 'hunt') { for (const c of E.cluesOf(msg)) if (!run.found.has(c.id)) doAct({ t: 'clue', id: c.id }); doAct({ t: 'ready' }); }
+      else if (run.phase === 'decide') doAct({ t: 'action', action: msg.action });
+      else if (run.phase === 'debrief') doAct({ t: 'next' });
+      else break;
+    }
+    return testState();
+  },
+  async cover() {
+    S.fast = true; S.pending = { chapter: 'letters', band: '1b', seed: 7, lesson: false };
+    game.start();
+    await O.time.real.wait(50);
+    const run = S.run; if (!run) return false;
+    const msg = cur(); if (msg) { const cs = E.cluesOf(msg); if (cs[0]) doAct({ t: 'clue', id: cs[0].id }); }
+    return true;
+  },
+});
+</script>
+</body>
+</html>
