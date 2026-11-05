@@ -16,19 +16,19 @@
     {
      "cue": "Packet Post: the post office and its locks",
      "box": [
-      33,
-      3,
-      32,
-      34
+      36.2,
+      3.2,
+      27.9,
+      31.1
      ]
     },
     {
      "cue": "Pim keeps the keys",
      "box": [
-      62,
-      72,
-      15,
-      24
+      61.3,
+      71.3,
+      15.5,
+      24.0
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "The mailbox key builder, where one layer is made",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "The meter: how long a guessing computer would need",
      "box": [
-      7,
-      63,
-      47,
-      5
+      8.0,
+      64.9,
+      45.2,
+      2.3
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "A copy in the family's online folder",
      "box": [
-      7,
-      26,
-      47,
-      9
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     },
     {
      "cue": "If the tablet breaks, which copies would save the day?",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "Picked words turn green as the stack grows",
      "box": [
-      71,
-      45,
-      18,
-      18
+      72.2,
+      46.3,
+      16.2,
+      15.8
      ]
     },
     {
      "cue": "Picked words land in your passphrase",
      "box": [
-      7,
-      55,
-      47,
-      10
+      8.2,
+      57.7,
+      44.8,
+      6.0
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "Signing out on a shared computer: one ordinary layer",
      "box": [
-      7,
-      26,
-      47,
-      9
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     },
     {
      "cue": "A second layer still stands behind the first",
      "box": [
-      54,
-      43,
-      27,
-      9
+      54.1,
+      44.6,
+      30.2,
+      6.6
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Name the layer each level teaches before you play it",
      "box": [
-      54,
-      37,
-      35,
-      34
+      54.0,
+      38.0,
+      34.4,
+      32.4
      ]
     }
    ]

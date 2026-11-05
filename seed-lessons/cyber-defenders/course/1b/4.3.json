@@ -16,19 +16,19 @@
     {
      "cue": "Free coins today only: a poster in letter form",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Too good to be true has cues: free, hurry, tap now",
      "box": [
-      54,
-      39,
-      35,
-      18
+      54.0,
+      40.2,
+      34.4,
+      16.5
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "You won a tablet: a prize for a contest you never entered",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Hurry, asks for your key, says congratulations",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      42.6,
+      34.4,
+      17.4
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "One cue found: hurry, only ten minutes",
      "box": [
-      54,
-      40,
-      18,
-      11
+      54.0,
+      42.6,
+      17.4,
+      8.2
      ]
     },
     {
      "cue": "Read the letter itself before you believe a word",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "Tap every cue that smells like a trick, then decide",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "The pause ends in a calm choice, never a fast tap",
      "box": [
-      54,
-      59,
-      35,
-      9
+      54.0,
+      61.0,
+      34.4,
+      6.9
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "From the Game Shop: an unknown sender",
      "box": [
-      7,
-      26.5,
-      34,
-      7.5
+      13.0,
+      29.8,
+      23.3,
+      3.4
      ]
     },
     {
      "cue": "The shiny promise, word for word",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Start with Online: share or keep",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

@@ -69,7 +69,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Debug Lab and fix 4 levels. After every change, run all the test boards again, and keep your edits few.",
+   "text": "Open Robo Route at Debug Lab and fix all 7 levels. After every change, run all the test boards again, and keep your edits few.",
    "art": "trophy",
    "img": "csq/robo-route/debug-2-key",
    "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one."

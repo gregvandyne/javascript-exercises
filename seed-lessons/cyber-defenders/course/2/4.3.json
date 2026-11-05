@@ -16,19 +16,19 @@
     {
      "cue": "A false post in letter form: your parcel is waiting",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Did you order anything? A scam wants your tap",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "A friendly quiz that is not a friend talking",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Dressed up as a fun quiz",
      "box": [
-      54,
-      40,
-      35,
-      22
+      54.0,
+      42.6,
+      34.4,
+      20.0
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "Every pixel is a number: fakes are made of these",
      "box": [
-      20,
-      42,
-      22,
-      38
+      20.7,
+      44.9,
+      19.9,
+      35.2
      ]
     },
     {
      "cue": "Do not judge by the pixels: judge by the source",
      "box": [
-      54,
-      25,
-      35,
-      14
+      54.0,
+      26.5,
+      34.3,
+      12.9
      ]
     }
    ]
@@ -97,19 +97,19 @@
     {
      "cue": "Stop: a post you do not pass on cannot travel",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Find another source before you decide",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "The fake claim would wear a friendly face like this one",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "Read carefully before you decide: that is the check",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -181,12 +181,12 @@
    "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
    "focus": [
     {
-     "cue": "Play Online: share or keep, and judge each pair",
+     "cue": "Play Online: judge each pair",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

@@ -16,19 +16,19 @@
     {
      "cue": "A handshake opens the trip: hello, are you there?",
      "box": [
-      8,
-      44,
-      35,
-      28
+      11.1,
+      48.6,
+      39.1,
+      22.6
      ]
     },
     {
      "cue": "Then each packet is numbered for its journey",
      "box": [
-      54,
-      36,
-      38,
-      14
+      54.1,
+      38.0,
+      25.5,
+      12.3
      ]
     }
    ]
@@ -50,28 +50,28 @@
     {
      "cue": "Said got it: arrived packets turn their slot green",
      "box": [
-      53.5,
-      41.5,
-      26.5,
-      10
+      54.1,
+      41.3,
+      25.5,
+      9.0
      ]
     },
     {
      "cue": "Slot 3 stayed empty: ask for that packet again",
      "box": [
-      64.5,
-      41.5,
-      5.5,
-      10
+      65.3,
+      41.3,
+      4.2,
+      9.0
      ]
     },
     {
      "cue": "Extra copies wait in the inbox, then are binned",
      "box": [
-      53.5,
-      50.5,
-      29,
-      13.5
+      54.1,
+      51.3,
+      25.4,
+      6.5
      ]
     }
    ]
@@ -86,19 +86,19 @@
     {
      "cue": "On an open road, a packet can be read",
      "box": [
-      9,
-      55,
-      44,
-      34
+      10.2,
+      37.7,
+      42.1,
+      51.3
      ]
     },
     {
      "cue": "It can be copied, or changed, on its way",
      "box": [
-      54,
-      25,
-      35,
-      16
+      54.0,
+      26.5,
+      34.3,
+      12.9
      ]
     }
    ]
@@ -113,19 +113,19 @@
     {
      "cue": "Every packet carries a dot count",
      "box": [
-      54,
-      45,
-      28,
-      23
+      54.1,
+      46.9,
+      32.2,
+      23.8
      ]
     },
     {
      "cue": "Count again at the far end: a match means whole",
      "box": [
-      54,
-      68,
-      23,
-      9
+      54.4,
+      70.0,
+      18.5,
+      5.9
      ]
     }
    ]
@@ -140,19 +140,19 @@
     {
      "cue": "Three things go wrong on this road",
      "box": [
-      51,
-      35,
-      21,
-      16
+      51.3,
+      35.3,
+      24.6,
+      16.5
      ]
     },
     {
      "cue": "Pick the rules that catch every one",
      "box": [
-      51,
-      50,
-      38,
-      27
+      40.6,
+      53.7,
+      47.7,
+      26.3
      ]
     }
    ]
@@ -184,7 +184,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road and finish 4 levels. Each time a packet is resent, say why: missing, or damaged?",
+   "text": "Open Packet Post at Rules of the Road and finish all 6 levels, then play the 2 Many Roads levels the game sends you to. Each time a packet is resent, say why: missing, or damaged?",
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-rules",
    "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",
@@ -192,10 +192,10 @@
     {
      "cue": "Play Rules of the Road: name why a packet is resent",
      "box": [
-      8,
-      44,
-      35,
-      28
+      9.8,
+      46.9,
+      39.7,
+      23.4
      ]
     }
    ]

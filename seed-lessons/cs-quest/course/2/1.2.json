@@ -274,7 +274,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Loops and finish 5 levels, so you build at least one nested loop. Aim for the fewest blocks.",
+   "text": "Open Robo Route at Loops and finish all 8 levels, so you build at least one nested loop. Aim for the fewest blocks.",
    "art": "trophy",
    "img": "csq/robo-route/loops-2-key",
    "alt": "A repeat 7 times block with one move inside crosses Bolt's whole row; written out longhand it would take seven blocks.",

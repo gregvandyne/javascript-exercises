@@ -64,10 +64,11 @@
    "choices": [
     "a drawing of Bolt",
     "a photo of the grid",
-    "a list of names",
+    "Drive to the first gem and pick it up",
     "IF on a gem THEN pick up"
    ],
-   "answer": 3
+   "answer": 2,
+   "why": "Pseudocode is a plan in plain words a person can read. Code symbols like IF and THEN belong to the real program."
   },
   {
    "id": "2-1.1-e2",
@@ -84,7 +85,8 @@
     "to think the steps through before building",
     "to avoid testing it"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Planning first means the hard thinking happens before the building, so the program is easier to get right."
   },
   {
    "id": "2-1.1-e3",
@@ -94,14 +96,15 @@
    "topic": "Sequences",
    "kind": "recall",
    "secs": 15,
-   "q": "Splitting a long route into \"reach the key\", \"open the door\", \"reach the goal\" is…",
+   "q": "Splitting a long route into \"Drive to the first gem and pick it up\", \"Turn and drive up to the second gem\", \"Turn toward the goal and drive there\" is…",
    "choices": [
     "debugging the program",
     "decomposing the problem",
     "encrypting the route",
     "looping the route"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Splitting one big route into smaller named parts is decomposing: each part can be built and tested on its own."
   },
   {
    "id": "2-1.2-r1",
@@ -135,7 +138,8 @@
     "6",
     "9"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The inside repeat runs 2 moves, and the outside repeat runs it 3 times: 3 times 2 is 6."
   },
   {
    "id": "2-1.2-e2",
@@ -152,7 +156,8 @@
     "2",
     "8"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Each trip around the outside loop picks up 2, and it goes around 4 times: 4 times 2 is 8."
   },
   {
    "id": "2-1.2-e3",
@@ -169,7 +174,8 @@
     "repeat 12 { move }",
     "repeat 4 { move }, turn right"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "One nested repeat does all three rooms: 4 moves and a turn, three times over, in very few blocks."
   },
   {
    "id": "2-1.3-r1",
@@ -203,7 +209,8 @@
     "only with a loop",
     "no, both parts must be true"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "AND needs both parts true at once. Having the key is only one part; Bolt must also be at the door."
   },
   {
    "id": "2-1.3-e2",
@@ -220,7 +227,8 @@
     "when there is no wall ahead",
     "only on paint"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "NOT flips the answer. Bolt moves when 'wall ahead' is false, that is, when no wall is there."
   },
   {
    "id": "2-1.3-e3",
@@ -237,7 +245,8 @@
     "repeat until goal { move }",
     "if path ahead: move, else: turn left"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "In an unseen maze the program must keep checking as it goes. A fixed list of moves only works on a maze you already know."
   },
   {
    "id": "2-1.4-r1",
@@ -271,7 +280,8 @@
     "number1",
     "gemsLeft"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A clear name says what the box holds. gemsLeft tells a reader exactly what the number means."
   },
   {
    "id": "2-1.4-e2",
@@ -288,7 +298,8 @@
     "a word",
     "a color list"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Locked or not locked has exactly two answers, so a true/false flag fits it."
   },
   {
    "id": "2-1.4-e3",
@@ -305,7 +316,8 @@
     "6",
     "16"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Each change takes 2 away from 10: 10, 8, 6, then 4 after the third run."
   },
   {
    "id": "2-1.5-r1",
@@ -339,7 +351,8 @@
     "a parameter",
     "a bug"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A value you hand to a procedure when you call it is a parameter: here, how many steps to take."
   },
   {
    "id": "2-1.5-e2",
@@ -356,7 +369,8 @@
     "so one procedure can do different amounts",
     "so it can only be called once"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A parameter lets the same procedure take different amounts, so one block covers many cases."
   },
   {
    "id": "2-1.5-e3",
@@ -373,7 +387,8 @@
     "no procedures",
     "three copies of the same steps"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Decomposing means one procedure per subgoal, so each part can be built and tested on its own."
   }
  ]
 }

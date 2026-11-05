@@ -16,19 +16,19 @@
     {
      "cue": "The first message card, with clues hiding in its text",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Practice the moves on cards like this one",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      42.6,
+      34.4,
+      17.4
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "The first clue, marked and found",
      "box": [
-      54,
-      40,
-      18,
-      11
+      54.0,
+      42.6,
+      17.4,
+      8.2
      ]
     },
     {
      "cue": "Stop: hands off; save it: the letter is the proof",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "Tell an adult: real messages get read, tricks get told",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "Not every message is a trick: telling sorts them",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -97,19 +97,19 @@
     {
      "cue": "The message card to judge, calmly",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Block or report is a button, pressed with an adult",
      "box": [
-      54,
-      57,
-      35,
-      9
+      54.0,
+      58.5,
+      34.4,
+      6.6
      ]
     }
    ]
@@ -132,19 +132,19 @@
     {
      "cue": "The trick card promising free coins today only",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Run the five moves on its cues, in order",
      "box": [
-      54,
-      39,
-      35,
-      18
+      54.0,
+      40.2,
+      34.4,
+      16.5
      ]
     }
    ]
@@ -159,19 +159,19 @@
     {
      "cue": "Speed is protection: a saved message tells fast",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "Ask a trusted adult: the button is right here",
      "box": [
-      54,
-      56,
-      35,
-      10.5
+      54.0,
+      57.7,
+      34.4,
+      6.8
      ]
     }
    ]
@@ -211,10 +211,10 @@
     {
      "cue": "The Boss Round message, with one clue found",
      "box": [
-      14,
-      36,
-      72,
-      20
+      15.1,
+      37.8,
+      70.0,
+      16.8
      ]
     }
    ]

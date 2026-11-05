@@ -159,8 +159,11 @@ function art(id) {
  *  inside the figure (visually hidden while the animation can run, visible in the static mode) so the cue
  *  text is never animation-only. The overlay layer itself is aria-hidden decoration. A step whose box
  *  centre sits in the picture's bottom third (centre y > 66%) gets its cue chip at the top of the
- *  picture instead (gf-cue--top), so the chip never covers the target it points at; the box also carries
- *  its own % position as --bx/--by so the CSS can keep the corner badge inside the frame at the edges. */
+ *  picture instead (gf-cue--top) as a first guess; public/js/course.js then settles the placement
+ *  with measured geometry each time a step activates, flipping the chip to whichever side leaves
+ *  the ring and badge uncovered (a wrapped two-line chip on a phone figure outgrows this static
+ *  rule). The box also carries its own % position as --bx/--by so the CSS can keep the corner
+ *  badge inside the frame at the edges. */
 /** The story layer's cast, in course order: name and piece colour (sprites extracted from their own games —
  *  scripts/csq-sprites.js — at /img/csq/chars/<id>.webp). */
 const CHAR_META = {

@@ -10,6 +10,8 @@
    "title": "A town called Netville",
    "text": "Netville is a friendly town where the houses are small computers and the roads are wires. Messages zoom from house to house, and everyone talks to everyone.",
    "art": "map",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
    "story": {
     "scene": "dim",
     "lit": 0,

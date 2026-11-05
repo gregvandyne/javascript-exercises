@@ -131,6 +131,117 @@ function gfPlay(fig) {
   gfTimers.set(fig, ids);
 }
 const gfFigs = $$('.smedia.gf');
+// Cue placement, settled with real geometry. The server parks each cue chip at the bottom of the
+// picture (the top when the box centre sits in the bottom third), but that static rule cannot know
+// the chip's rendered height: on a phone figure the chip wraps to two lines and grows up over the
+// ring it must never cover (measured on deck 1b/1.1 slide 0 at a 390px viewport: step 1's chip
+// overlapped its ring by ~47px², step 2's by ~1,040px², while the same steps were clear at 720px).
+// So each time a step activates, measure the chip against its ring (the box plus its outset) and
+// its badge, and settle it on the first placement that clears both, trying in order: the server's
+// side as styled; the same side at full width (a wider chip wraps less and sits lower-profile —
+// the bottom chip's CSS reserves 120px for the replay button, but that button is hidden whenever
+// a step is active, so the width is safe to use); the other side both ways; the same placements
+// anchored to the opposite corner; the chip slid sideways past the badge, which hugs the box's
+// top-left corner; the chip pulled tighter into its corner (2px from the edge); and the
+// chip slightly smaller.
+// If nothing clears, keep whichever placement overlaps least.
+function gfCueOverlap(cue, box, badge) {
+  const cr = cue.getBoundingClientRect();
+  if (!cr.width) return 0;
+  const out = Math.abs(parseFloat(getComputedStyle(box, '::after').inset.split(' ')[0])) || 0;
+  const br = box.getBoundingClientRect();
+  const gr = badge.getBoundingClientRect();
+  const targets = [
+    { left: br.left - out, top: br.top - out, right: br.right + out, bottom: br.bottom + out },
+    { left: gr.left, top: gr.top, right: gr.right, bottom: gr.bottom },
+  ];
+  let area = 0;
+  for (const r of targets) {
+    area += Math.max(0, Math.min(cr.right, r.right) - Math.max(cr.left, r.left)) *
+            Math.max(0, Math.min(cr.bottom, r.bottom) - Math.max(cr.top, r.top));
+  }
+  return area;
+}
+function gfPlaceCue(fig) {
+  const i = fig.getAttribute('data-gf-step');
+  if (i === null) return;
+  const step = fig.querySelector(`.gf-step[data-i="${i}"]`);
+  if (!step) return;
+  const cue = step.querySelector('.gf-cue'), box = step.querySelector('.gf-box'), badge = step.querySelector('.gf-badge');
+  if (!cue || !box || !badge) return;
+  if (cue.dataset.gfTop === undefined) cue.dataset.gfTop = cue.classList.contains('gf-cue--top') ? '1' : '';
+  const serverTop = cue.dataset.gfTop === '1';
+  const chip = cue.querySelector('.gf-cue-n');
+  const apply = (top, anchor, wide, shiftPx, tight, compact) => {
+    cue.classList.toggle('gf-cue--top', top);
+    cue.style.left = anchor === 'right' ? 'auto' : (shiftPx ? shiftPx + 'px' : '');
+    cue.style.right = anchor === 'right' ? '10px' : '';
+    cue.style.maxWidth = wide || shiftPx ? 'calc(100% - 20px)' : '';
+    cue.style.top = top && tight ? '2px' : '';
+    cue.style.bottom = !top && tight ? '2px' : '';
+    // Compact: a slightly smaller chip (only ever set when nothing else clears — the steps
+    // whose box leaves a free strip shorter than the standard chip is tall).
+    cue.style.fontSize = compact ? '12px' : '';
+    cue.style.lineHeight = compact ? '1.2' : '';
+    cue.style.padding = compact ? '3px 9px' : '';
+    if (chip) {
+      chip.style.width = compact ? '14px' : '';
+      chip.style.height = compact ? '14px' : '';
+      chip.style.fontSize = compact ? '10px' : '';
+    }
+  };
+  let best = null, bestArea = Infinity;
+  for (const top of [serverTop, !serverTop]) {
+    for (const [anchor, wide] of [['left', false], ['left', true], ['right', false], ['right', true]]) {
+      apply(top, anchor, wide, 0);
+      const a = gfCueOverlap(cue, box, badge);
+      if (!a) return; // first fully clear placement, in preference order
+      if (a < bestArea) { bestArea = a; best = [top, anchor, wide, 0]; }
+    }
+  }
+  // Badge dodge: slide the chip sideways past the badge (measured from the badge's live rect).
+  const shift = Math.ceil(badge.getBoundingClientRect().right - fig.getBoundingClientRect().left) + 6;
+  for (const top of [serverTop, !serverTop]) {
+    apply(top, 'left', true, shift);
+    const a = gfCueOverlap(cue, box, badge);
+    if (!a) return;
+    if (a < bestArea) { bestArea = a; best = [top, 'left', true, shift]; }
+  }
+  // Last resorts: pull the chip tighter into its corner (2px, from the styled 10px), then the
+  // same placements with a slightly smaller chip — the few steps whose box leaves a free strip
+  // only a few px taller than the chip need exactly that.
+  for (const top of [serverTop, !serverTop]) {
+    for (const anchor of ['left', 'right']) {
+      apply(top, anchor, true, 0, true);
+      const a = gfCueOverlap(cue, box, badge);
+      if (!a) return;
+      if (a < bestArea) { bestArea = a; best = [top, anchor, true, 0, true]; }
+    }
+  }
+  for (const top of [serverTop, !serverTop]) {
+    for (const anchor of ['left', 'right']) {
+      apply(top, anchor, true, 0, true, true);
+      const a = gfCueOverlap(cue, box, badge);
+      if (!a) return;
+      if (a < bestArea) { bestArea = a; best = [top, anchor, true, 0, true, true]; }
+    }
+  }
+  for (const top of [serverTop, !serverTop]) {
+    for (const tight of [false, true]) {
+      apply(top, 'left', true, shift, tight, true);
+      const a = gfCueOverlap(cue, box, badge);
+      if (!a) return;
+      if (a < bestArea) { bestArea = a; best = [top, 'left', true, shift, tight, true]; }
+    }
+  }
+  if (best) apply(...best);
+}
+if (gfFigs.length) {
+  const gfCueMO = new MutationObserver(ms => { for (const m of ms) if (m.attributeName === 'data-gf-step') gfPlaceCue(m.target); });
+  for (const fig of gfFigs) gfCueMO.observe(fig, { attributes: true, attributeFilter: ['data-gf-step'] });
+  addEventListener('resize', () => { for (const fig of gfFigs) gfPlaceCue(fig); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const fig of gfFigs) gfPlaceCue(fig); });
+}
 if (gfFigs.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const gfIO = new IntersectionObserver(es => {
     for (const e of es) {
@@ -269,7 +380,8 @@ if (form) {
     if (right) right.closest('.qchoice').classList.add('is-right');
     if (!r.right) radio.closest('.qchoice').classList.add('is-wrong');
     f.classList.add(r.right ? 'is-right' : 'is-wrong');
-    f.querySelector('.qq-fb').textContent = (r.right ? t('js.course.right') : t('js.course.wrong', { answer: r.text })) + (r.nq && r.nq.reaction ? ` ${r.nq.reaction.text}` : '');
+    f.querySelector('.qq-fb').textContent = r.right ? t('js.course.right') : (r.why ? t('js.course.wrongWhy', { answer: r.text, why: r.why }) : t('js.course.wrong', { answer: r.text }));
+    if (r.nq && r.nq.reaction) f.querySelector('.qq-fb').textContent += ` ${r.nq.reaction.text}`;
     const last = qi === qs.length - 1;
     const go = document.createElement('button');
     go.type = 'button'; go.className = 'btn btn-primary btn-big qq-go'; go.textContent = last ? t('js.course.finish') : t('js.course.next');

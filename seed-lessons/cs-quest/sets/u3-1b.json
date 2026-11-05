@@ -65,7 +65,8 @@
     "delete the months",
     "count the rows"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The question is about rain amounts, so the rain column is the one to sort by."
   },
   {
    "id": "1b-3.1-e2",
@@ -82,7 +83,8 @@
     "remove the cats",
     "group the rows by pet and count"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Most common means the biggest group. Grouping by pet and counting each group shows it."
   },
   {
    "id": "1b-3.1-e3",
@@ -99,7 +101,8 @@
     "it has many rows",
     "the data really shows it"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A claim is only fair when the data on the screen really shows it, not when it just sounds good."
   },
   {
    "id": "1b-3.2-r1",
@@ -133,7 +136,8 @@
     "10 cm shorter",
     "impossible to say"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "The pattern adds 2 cm every day, so the best guess for day 6 is day 5 plus 2 cm more."
   },
   {
    "id": "1b-3.2-e2",
@@ -150,7 +154,8 @@
     "plants do not grow",
     "not yet, we need more days"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Two days is too little data to trust a pattern. More days make the prediction safer."
   },
   {
    "id": "1b-3.2-e3",
@@ -167,7 +172,8 @@
     "lunches cost more on Tuesday",
     "most lunches were sold on Tuesday"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "The tallest bar is Tuesday's, and the chart counts lunches, so Tuesday sold the most lunches."
   },
   {
    "id": "1b-3.3-r1",
@@ -201,7 +207,8 @@
     "a line of dates",
     "a table sorted by name"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "One bar per fruit makes the tallest bar easy to spot: that fruit is the most popular."
   },
   {
    "id": "1b-3.3-e2",
@@ -218,7 +225,8 @@
     "dogs are the favorite pet in our class",
     "nobody likes cats"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The claim stays inside what the data covers: this class. It does not speak for the whole world."
   },
   {
    "id": "1b-3.3-e3",
@@ -235,7 +243,8 @@
     "to finish faster",
     "they may see something your pair missed"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Fresh eyes catch slips and unfair jumps that the pair who made the claim may miss."
   }
  ]
 }

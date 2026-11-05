@@ -89,7 +89,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Level Maker. Do the three maker tasks, then build your own level from your plan. Let a friend or someone at home test it, then fix one thing.",
+   "text": "Open Robo Route at Level Maker and do the three maker tasks to finish this step. Then, as a stretch, build your own level from your plan, let a friend or someone at home test it, and fix one thing.",
    "art": "trophy",
    "img": "csq/robo-route/maker-1b-key",
    "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed."

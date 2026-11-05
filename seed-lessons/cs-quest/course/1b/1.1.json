@@ -106,11 +106,11 @@
   },
   {
    "kind": "example",
-   "title": "Two squares to the right",
-   "text": "Bolt faces a wall. The gem is two squares to the right. First Bolt turns, then it moves two times.",
+   "title": "Turn first, then move",
+   "text": "Bolt faces along the top row, but the flag waits at the bottom of the board. First Bolt turns right to aim down the left side, then it moves.",
    "art": "grid",
    "img": "csq/robo-route/sequences-1b-turn-then-move",
-   "alt": "Bolt sits in a walled maze while the tray shows turn right, then move, then move: the turn aims Bolt before any step.",
+   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom right, and a tray that starts turn right, move, move.",
    "steps": [
     "turn right",
     "move",
@@ -209,7 +209,7 @@
    "text": "Two routes can both reach the flag. The better one is shorter, safer or easier to get right. A long dry route beats a short wet one! Split a long route into legs.",
    "art": "star",
    "img": "csq/robo-route/sequences-1b-better-route",
-   "alt": "The compare screen shows Route A with 7 blocks and Route B with 8 blocks for the same board, and Route A is picked.",
+   "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
    "focus": [
     {
      "cue": "Route A: 7 blocks.",
@@ -230,7 +230,7 @@
      ]
     },
     {
-     "cue": "Shorter wins: Route A is picked.",
+     "cue": "Tap Use under a route to load it into the tray.",
      "box": [
       64.5,
       26.7,
@@ -267,7 +267,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Sequences and finish 4 levels. Before you press Run, point at each block and say what Bolt will do.",
+   "text": "Open Robo Route at Sequences and finish all 6 levels. Before you press Run, point at each block and say what Bolt will do.",
    "art": "trophy",
    "img": "csq/robo-route/sequences-1b-key",
    "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray.",

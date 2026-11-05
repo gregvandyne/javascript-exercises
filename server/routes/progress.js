@@ -10,6 +10,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as P from '../services/progress.js';
+import * as C from '../services/courses.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
 import { classHeader, classBack, studentNotYou } from './schools.js';
@@ -148,6 +149,24 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel">${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>✍️ ${t('progress.key.toRead')}</span></p></section>`}`;
+  // Courses: per-student completion status, step progress and recorded check scores for every registered
+  // course, for this class's students only (the same roster the gradebook above is built from, and the
+  // route's own class gate decides who may look). One panel per course in the shared registry, so a
+  // course that joins it later (Number Quest) appears here with no extra plumbing.
+  const coursePanels = gb.students.length ? C.COURSES.map(course => {
+    const rows = C.classCourseProgress(gb.students, C.getCourse(course.slug));
+    const dot = s => (s.complete ? '✅' : s.row ? '🟡' : '⚪');
+    const statusChip = r => (r.status === 'completed' ? html`<span class="chip-s">✅ ${t('progress.courses.completed')}</span>` : r.status === 'in-progress' ? html`<span class="chip-s warn">${t('progress.courses.inProgress')}</span>` : html`<span class="muted">${t('progress.status.none')}</span>`);
+    return html`<section class="panel"><h2>${course.emoji} ${t(`${course.key}.title`)}</h2>
+    <div class="gbwrap" tabindex="0" role="region" aria-label="${t(`${course.key}.title`)}"><table class="tbl gradebook">
+      <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.courses.status')}</th><th scope="col">${t('progress.courses.steps')}</th><th scope="col">${t('progress.courses.checks')}</th><th scope="col">${t('progress.courses.perStep')}</th></tr></thead>
+      <tbody>${rows.map(r => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(r.user, 28)}<b>${nameOf(r.user)}</b></span></th>
+        <td>${statusChip(r)}</td>
+        <td><span class="gb-num">${r.done}/${r.total}</span>${bar(r.done, r.total)}</td>
+        <td>${r.maxScore ? html`<span class="gb-num">${r.score}/${r.maxScore}</span>` : html`<span class="muted">–</span>`}</td>
+        <td>${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
+    <p class="small muted">${t('progress.courses.note')}</p></section>`;
+  }) : '';
   // Oomba Live: the class's recent live games (results open from here; students' scores are in the saved run).
   // Part 3: a team row for team runs, "Teams for live games" (the class teams editor: live-class-teams.js) and, with
   // LIVE_SAVE_SUPPORT, how many students have saved support (counts only here) with Clear.
@@ -177,7 +196,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     ${sup.length ? html`<section class="lv-class-support" id="lv-class-support"><h3>${t('live.dash.support')}</h3><p class="small">${t('live.support.count', { count: sup.length })}</p>
       <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
   </section>` : '';
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${body}${livePanel}`, head: CSS, ...classBack(req, c), ...(teamsHere && CLASS_TEAMS_JS ? { scripts: ['/js/live-class-teams.js'] } : {}) });
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${body}${coursePanels}${livePanel}`, head: CSS, ...classBack(req, c), ...(teamsHere && CLASS_TEAMS_JS ? { scripts: ['/js/live-class-teams.js'] } : {}) });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Overall (the same

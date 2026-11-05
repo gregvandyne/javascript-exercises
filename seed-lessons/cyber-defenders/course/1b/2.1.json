@@ -16,19 +16,19 @@
     {
      "cue": "Sort the habits: which ones protect the tablet?",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "Protects it, or risky? Every habit gets a tray",
      "box": [
-      54,
-      43,
-      27,
-      9
+      54.1,
+      44.6,
+      30.2,
+      6.6
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Build a mailbox key for Pim from four word tiles",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "The word tiles to build it from",
      "box": [
-      54,
-      37,
-      35,
-      34
+      54.0,
+      38.0,
+      34.4,
+      32.4
      ]
     }
    ]
@@ -77,19 +77,19 @@
     {
      "cue": "Picked words land in your passphrase",
      "box": [
-      7,
-      55,
-      47,
-      10
+      8.2,
+      57.7,
+      44.8,
+      6.0
      ]
     },
     {
      "cue": "The meter fills: longer keys take longer to guess",
      "box": [
-      7,
-      63,
-      47,
-      5
+      8.0,
+      64.9,
+      45.2,
+      2.3
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "Only the adults who look after your account may know",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "Okay to tell, or keep it to yourself: sort each person",
      "box": [
-      54,
-      43,
-      21,
-      17
+      54.1,
+      44.6,
+      20.5,
+      14.4
      ]
     }
    ]
@@ -148,7 +148,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It and finish 4 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
+   "text": "Open Packet Post at Lock It and finish all 6 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
    "art": "trophy",
    "img": "csq/packet-post/locks-1b-key",
    "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
@@ -156,10 +156,10 @@
     {
      "cue": "Open Lock It and build mailbox keys from word tiles",
      "box": [
-      54,
-      37,
-      35,
-      34
+      54.0,
+      38.0,
+      34.4,
+      32.4
      ]
     }
    ]

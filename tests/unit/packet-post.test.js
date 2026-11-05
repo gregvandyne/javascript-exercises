@@ -359,3 +359,81 @@ test('packet-post: in Chromium, an ack level started for real lets its packets r
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });
+
+test('packet-post: a check left unanswered is asked again on the next lesson entry, and the finished chapter plus its bonus quest is credited', { skip, timeout: 240_000 }, async () => {
+  // the audited failure (CYE-6): a solved level's answer was kept only in the session, so leaving with the
+  // Case-closed card up lost it for good and the finished step never credited. Answers now persist in the
+  // save (SAVE.checks); a seeded save reproduces the returning student exactly.
+  const openSeeded = async saveObj => {
+    if (!browser) { const { chromium } = await import('playwright-core'); browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] }); }
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+    const doc = frameDocument(HTML, { user: { displayName: 'P', avatar: 'x', lang: 'en', dir: 'ltr' }, game: { id: 'g', title: 'Packet Post' }, save: { 'packet-post-v1': JSON.stringify(saveObj) }, canSave: false, preview: true, deviceText: { title: 'x', text: 'y' } });
+    const host = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
+    const errors = [], msgs = [];
+    await ctx.route('**/*', route => {
+      const u = route.request().url();
+      if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
+      if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
+      const m = /^http:\/\/game\.invalid\/(vendor\/(?:oomba-kit|data)\/[\w./-]+)$/.exec(u);
+      if (m && fs.existsSync(path.join(ROOT, 'public', m[1]))) return route.fulfill({ status: 200, headers: { 'content-type': m[1].endsWith('.js') ? 'text/javascript' : 'font/woff2', 'access-control-allow-origin': '*' }, body: fs.readFileSync(path.join(ROOT, 'public', m[1])) });
+      return route.abort();
+    });
+    const page = await ctx.newPage();
+    page.on('pageerror', e => errors.push(String(e.message)));
+    await page.exposeFunction('__ppMsg', d => msgs.push(d));
+    await page.goto(HOST + '/', { waitUntil: 'load' });
+    await page.evaluate(() => window.addEventListener('message', e => { if (e.data && typeof e.data.type === 'string') window.__ppMsg({ type: e.data.type, score: e.data.score, label: e.data.label, won: e.data.won }); }));
+    let frame = null;
+    for (let i = 0; i < 200 && !frame; i++) { frame = page.frames().find(f => f.url() === HOST + '/frame'); if (!frame) await page.waitForTimeout(25); }
+    await frame.waitForFunction(() => window.__brbTest && window.__brbTest.state && window.__brbTest.state().ready, null, { timeout: 60_000 });
+    return { ctx, page, frame, errors, msgs };
+  };
+  const askUp = (frame, q) => frame.evaluate(qq => [...document.querySelectorAll('.ok-card')].some(c => c.offsetParent !== null && c.textContent.includes(qq)), q);
+  const waitAsk = async (page, frame, q) => { for (let i = 0; i < 60 && !(await askUp(frame, q)); i++) await page.waitForTimeout(250); return askUp(frame, q); };
+  const pk = levelsFor('packets', '1b'), rt = levelsFor('routes', '1b'), required = [...pk, ...rt];
+  const withChecks = required.filter(l => l.check).length;
+  // scenario 1: the whole step (packets + the chained routes levels) is starred, every check answered
+  // except the very last one, whose card was up when the student left
+  {
+    const stars = {}, checks = {};
+    for (const l of required) stars[l.id] = { n: 3, band: '1b' };
+    for (const l of required.slice(0, -1)) if (l.check) checks[l.id] = 1;
+    const last = rt.at(-1);
+    const { ctx, page, frame, errors, msgs } = await openSeeded({ band: '1b', stars, skipped: {}, crowns: {}, daily: null, checks });
+    try {
+      await T(frame, 'start', { chapter: 'packets', band: '1b', lock: 1, seed: 3 });
+      assert.ok(await waitAsk(page, frame, last.check.q), 'the left-behind check is asked again on re-entry');
+      const st = await T(frame, 'state');
+      assert.equal(st.checks.n, withChecks - 1, 'every earlier answer survived in the save; only the left one is outstanding');
+      // answer it correctly (the tiles are shuffled; pick by the answer's text)
+      await frame.evaluate(txt => { const cs = [...document.querySelectorAll('.ok-card')].filter(c => c.offsetParent !== null); const c = cs[cs.length - 1]; const b = [...c.querySelectorAll('button')].find(x => x.textContent.trim() === txt); if (b) b.click(); }, last.check.tiles[last.check.answer]);
+      const over = () => msgs.find(m => m.type === 'brb:gameover' || m.type === 'brb:over');
+      for (let i = 0; i < 40 && !over(); i++) await page.waitForTimeout(250);
+      const end = over();
+      assert.ok(end && end.won === true, `the finished step is credited on re-entry: ${JSON.stringify(msgs.slice(-3))}`);
+      const st2 = await T(frame, 'state');
+      assert.equal(st2.checks.n, withChecks, 'every required check is recorded at the end');
+      assert.equal(st2.checks.ok, withChecks, 'and answered right');
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
+  // scenario 2: mid-chapter, one done level's check missing: it is asked, then play resumes at the first
+  // unfinished level instead of crediting or restarting the chapter
+  {
+    const stars = {}, checks = {};
+    for (const l of pk.slice(0, 4)) stars[l.id] = { n: 3, band: '1b' };
+    for (const l of pk.slice(0, 3)) if (l.check) checks[l.id] = 1;
+    const missing = pk[3];
+    const { ctx, page, frame, errors, msgs } = await openSeeded({ band: '1b', stars, skipped: {}, crowns: {}, daily: null, checks });
+    try {
+      await T(frame, 'start', { chapter: 'packets', band: '1b', lock: 1, seed: 3 });
+      assert.ok(await waitAsk(page, frame, missing.check.q), 'the missing mid-chapter check is asked on entry');
+      await frame.evaluate(() => { const cs = [...document.querySelectorAll('.ok-card')].filter(c => c.offsetParent !== null); const c = cs[cs.length - 1]; const b = c.querySelector('button'); if (b) b.click(); });
+      let st = null;
+      for (let i = 0; i < 60; i++) { await page.waitForTimeout(250); st = await T(frame, 'state'); if (st.screen === 'level' && st.level === 5 && st.checks.n === 4) break; }
+      assert.ok(st && st.level === 5 && st.checks.n === 4, `play resumes at the first unfinished level with the caught-up count: ${JSON.stringify(st)}`);
+      assert.ok(!msgs.some(m => m.type === 'brb:gameover'), 'no credit for a chapter that is not finished');
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
+});

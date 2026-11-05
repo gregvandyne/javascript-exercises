@@ -16,19 +16,19 @@
     {
      "cue": "Three packets were sent on this road",
      "box": [
-      8,
-      44,
-      35,
-      28
+      11.1,
+      48.6,
+      39.1,
+      22.6
      ]
     },
     {
      "cue": "Each packet gets its own mail slot",
      "box": [
-      54,
-      37,
-      24,
-      14
+      54.1,
+      38.0,
+      19.1,
+      12.3
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Four packets this time, travelling one road",
      "box": [
-      8,
-      44,
-      35,
-      28
+      11.1,
+      48.6,
+      39.1,
+      22.6
      ]
     },
     {
      "cue": "One arrived twice: the extra copy goes in the bin",
      "box": [
-      60,
-      50,
-      13,
-      12
+      60.4,
+      52.3,
+      11.5,
+      7.9
      ]
     }
    ]
@@ -76,19 +76,19 @@
     {
      "cue": "Sealed roads wear a padlock",
      "box": [
-      24.5,
-      34,
-      22.5,
-      10.5
+      28.9,
+      37.7,
+      23.4,
+      30.3
      ]
     },
     {
      "cue": "Open roads have a snoopy cat who reads packets",
      "box": [
-      54,
-      25,
-      35,
-      16
+      54.0,
+      26.5,
+      34.3,
+      12.9
      ]
     }
    ]
@@ -103,19 +103,19 @@
     {
      "cue": "This message wears a bank's name",
      "box": [
-      9,
-      27,
-      38,
-      6
+      13.0,
+      29.8,
+      9.1,
+      3.4
      ]
     },
     {
      "cue": "A seal on the trip says nothing about the sender",
      "box": [
-      27,
-      27,
-      20,
-      7
+      22.7,
+      29.8,
+      12.7,
+      3.4
      ]
     }
    ]
@@ -130,19 +130,19 @@
     {
      "cue": "The whole town's roads, open to everyone",
      "box": [
-      8,
-      33,
-      46,
-      57
+      8.4,
+      36.1,
+      45.5,
+      54.8
      ]
     },
     {
      "cue": "Roadworks close two roads while you play",
      "box": [
-      54,
-      25,
-      35,
-      11
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -174,18 +174,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road and play 2 levels of seal-check duty. Look for the padlock on every trip.",
+   "text": "Open Packet Post at Rules of the Road and play its 2 levels: say when each packet arrives, and resend the ones that go missing.",
    "art": "trophy",
    "img": "csq/packet-post/protocols-1b-key",
    "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
    "focus": [
     {
-     "cue": "Play Rules of the Road: look for the padlock",
+     "cue": "Play Rules of the Road: arrivals and resends",
      "box": [
-      8,
-      44,
-      35,
-      28
+      11.1,
+      48.6,
+      39.1,
+      22.6
      ]
     }
    ]

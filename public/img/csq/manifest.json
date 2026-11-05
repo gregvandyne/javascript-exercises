@@ -339,7 +339,7 @@
    "band": "1b",
    "state": "sort-1b-sorted",
    "concept": "Who was in the lunchroom last? Sort by the column the question asks about",
-   "alt": "The lunchbox case sorted by time: the rows now run in time order, so the last row answers the question.",
+   "alt": "The case sorted by time: the Hall rows now run in time order, so the last Hall row answers the question.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },
@@ -1384,7 +1384,7 @@
    "band": "1b",
    "state": "conditionals-1b-fog-proof",
    "concept": "Worked example: the fog-proof program",
-   "alt": "The repeat until goal program with the if / else inside it, ready to feel its way across a water board it cannot fully see.",
+   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the dry path across a board of water.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },
@@ -1868,7 +1868,7 @@
    "band": "1b",
    "state": "sequences-1b-better-route",
    "concept": "Pick the better route",
-   "alt": "The compare screen shows Route A with 7 blocks and Route B with 8 blocks for the same board, and Route A is picked.",
+   "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },
@@ -1912,7 +1912,7 @@
    "band": "1b",
    "state": "sequences-1b-turn-then-move",
    "concept": "Worked example: turn right, move, move",
-   "alt": "Bolt sits in a walled maze while the tray shows turn right, then move, then move: the turn aims Bolt before any step.",
+   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom right, and a tray that starts turn right, move, move.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },

@@ -30,16 +30,16 @@
   {
    "kind": "example",
    "title": "Who was in the lunchroom last?",
-   "text": "Sort by the column the question asks about. The question says last, so sort by time.",
+   "text": "First find the rows for the place in the question. Then sort those rows by time: the last one is your answer.",
    "art": "table",
    "steps": [
     "read the question",
-    "find the column: time",
-    "sort by time",
-    "read the last row"
+    "find that place's rows",
+    "sort those rows by time",
+    "read the last one"
    ],
    "img": "csq/data-detective/sort-1b-sorted",
-   "alt": "The lunchbox case sorted by time: the rows now run in time order, so the last row answers the question."
+   "alt": "The case sorted by time: the Hall rows now run in time order, so the last Hall row answers the question."
   },
   {
    "title": "Show me first",
@@ -75,7 +75,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Data Detective at Sort & Group and solve 4 cases. For each one ask: which column is the question about?",
+   "text": "Open Data Detective at Sort & Group and solve all 6 cases. For each one ask: which column is the question about?",
    "art": "trophy",
    "img": "csq/data-detective/sort-1b-key",
    "alt": "Dot opens the first case: a table of lunchroom facts in rows and columns, with the case question at the top."

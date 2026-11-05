@@ -16,19 +16,19 @@
     {
      "cue": "Three packets on the road to Grandma's House",
      "box": [
-      10,
-      46,
-      42,
-      26
+      9.8,
+      46.9,
+      39.7,
+      23.4
      ]
     },
     {
      "cue": "The rules say what staff may open, and what they must never open",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Where you live: a fact with rules around it",
      "box": [
-      7,
-      26,
-      47,
-      9
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     },
     {
      "cue": "Share, or keep private? Agreements draw the line",
      "box": [
-      54,
-      43,
-      23,
-      9
+      54.1,
+      44.5,
+      25.8,
+      6.6
      ]
     }
    ]
@@ -68,21 +68,21 @@
    "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
    "focus": [
     {
-     "cue": "Use a picture someone else made, and credit them",
+     "cue": "Use a picture, credit its maker",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Draw your own, even if it is worse",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -103,19 +103,19 @@
     {
      "cue": "Extra copies wait in the inbox, then are binned",
      "box": [
-      53.5,
-      52.5,
-      29,
-      11.5
+      54.1,
+      52.3,
+      24.7,
+      7.9
      ]
     },
     {
      "cue": "Four packets were sent; the slots keep count",
      "box": [
-      53.5,
-      40.5,
-      27,
-      11.5
+      54.1,
+      38.0,
+      25.6,
+      12.3
      ]
     }
    ]
@@ -130,19 +130,19 @@
     {
      "cue": "A page where anyone can comment",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "A page where only your class can",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -182,10 +182,10 @@
     {
      "cue": "Name the rule that helps you decide",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

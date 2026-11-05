@@ -69,7 +69,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Inside the Machine at Fix-It Desk and solve 4 tickets. Build the flowchart first, with the cheapest check at the top.",
+   "text": "Open Inside the Machine at Fix-It Desk and solve all 7 tickets. Build the flowchart first, with the cheapest check at the top.",
    "art": "trophy",
    "img": "csq/inside-the-machine/fixit-2-key",
    "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first."

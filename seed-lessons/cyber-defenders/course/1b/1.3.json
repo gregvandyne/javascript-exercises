@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "One drawing, many copies",
-   "text": "You send one drawing to a friend. The network keeps a copy at each stop along the way, like stamps in Pim's sorting book.",
+   "text": "You send one drawing to a friend. It passes through many hands on the way, and every stop could keep a copy, like stamps in Pim's sorting book. A copy sent out cannot be called back.",
    "art": "map",
    "img": "csq/packet-post/routes-1b-roads",
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
@@ -16,19 +16,19 @@
     {
      "cue": "One drawing sets off across the roads",
      "box": [
-      8,
-      34,
-      46,
-      56
+      10.0,
+      37.8,
+      41.9,
+      51.9
      ]
     },
     {
-     "cue": "A copy is kept at every stop along the way",
+     "cue": "Every stop could keep a copy along the way",
      "box": [
-      9,
-      35,
-      44,
-      38
+      10.0,
+      37.8,
+      41.9,
+      51.9
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Sorting spare copies: which way keeps them safe?",
      "box": [
-      8,
-      26,
-      45,
-      10
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     },
     {
      "cue": "A copy in another place survives a broken tablet",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "Packet 2 waits at Hill Office, two hops done",
      "box": [
-      26.5,
-      35,
-      7,
-      12.5
+      27.3,
+      36.2,
+      5.4,
+      8.8
      ]
     },
     {
      "cue": "Packet 2 of 4: its number travels with it",
      "box": [
-      54,
-      35,
-      11,
-      8
+      54.1,
+      35.7,
+      10.8,
+      5.4
      ]
     }
    ]
@@ -103,19 +103,19 @@
     {
      "cue": "Share a drawing so everyone can see it",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Or show it only to your family",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -130,19 +130,19 @@
     {
      "cue": "A stranger's card, fishing for a shiny secret",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "It asks where you live: a fact to keep private",
      "box": [
-      8.5,
-      35,
-      44,
-      12
+      9.3,
+      34.6,
+      42.7,
+      10.8
      ]
     }
    ]
@@ -174,7 +174,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Play Many Roads in Packet Post for 2 levels, tracing every copy's journey. Name one thing you would never send, because copies cannot come back.",
+   "text": "Play Many Roads in Packet Post for all 4 levels, tracing every message's journey. Name one thing you would never send, because copies cannot come back.",
    "art": "trophy",
    "img": "csq/packet-post/routes-1b-roads",
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
@@ -182,10 +182,10 @@
     {
      "cue": "Play Many Roads: trace every copy's journey",
      "box": [
-      8,
-      34,
-      46,
-      56
+      10.0,
+      37.8,
+      41.9,
+      51.9
      ]
     }
    ]

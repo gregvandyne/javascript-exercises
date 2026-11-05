@@ -102,9 +102,9 @@
    "img": "csq/robo-route/sequences-2-plan-to-blocks",
    "alt": "The finished program for the plan level fills the tray: twenty-one blocks that follow the plan lines in order.",
    "steps": [
-    "1. reach the key",
-    "2. open the door",
-    "3. reach the goal"
+    "1. Drive to the first gem and pick it up",
+    "2. Turn and drive up to the second gem",
+    "3. Turn toward the goal and drive there"
    ],
    "focus": [
     {
@@ -247,7 +247,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Sequences and finish 4 levels. When a level shows plan lines, put them in order first, then build one plan line at a time.",
+   "text": "Open Robo Route at Sequences and finish all 6 levels. When a level shows plan lines, put them in order first, then build one plan line at a time.",
    "art": "trophy",
    "img": "csq/robo-route/sequences-2-key",
    "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time.",

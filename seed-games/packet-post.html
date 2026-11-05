@@ -966,9 +966,10 @@ function tr(s, v) {
 
 /* ---------- saved progress (per player, in the cloud save) ---------- */
 const store = { get() { try { return (window.BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } }, set(v) { try { if (window.BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* no save */ } } };
-const SAVE = Object.assign({ band: '1b', stars: {}, skipped: {}, crowns: {}, daily: null }, store.get());
+const SAVE = Object.assign({ band: '1b', stars: {}, skipped: {}, crowns: {}, daily: null, checks: {} }, store.get());
 if (SAVE.band !== '1b' && SAVE.band !== '2') SAVE.band = '1b';
-const save = () => store.set({ band: SAVE.band, stars: SAVE.stars, skipped: SAVE.skipped, crowns: SAVE.crowns, daily: SAVE.daily });
+if (!SAVE.checks || typeof SAVE.checks !== 'object') SAVE.checks = {};
+const save = () => store.set({ band: SAVE.band, stars: SAVE.stars, skipped: SAVE.skipped, crowns: SAVE.crowns, daily: SAVE.daily, checks: SAVE.checks });
 
 /* ---------- helpers ---------- */
 const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
@@ -978,6 +979,13 @@ const silverOf = id => !!(SAVE.stars[id] && SAVE.stars[id].n && SAVE.stars[id].b
 const dayNumber = () => { const d = new Date(); return Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) / 864e5); };
 const chapterStars = (ch, band, lo, hi) => levelsFor(ch, band).filter((l, i) => lo == null || (i + 1 >= lo && i + 1 <= hi)).reduce((a, l) => a + starsOf(l.id), 0);
 const firstUnfinished = (ch, band) => { const ls = levelsFor(ch, band); const i = ls.findIndex(l => !starsOf(l.id) && !SAVE.skipped[l.id]); return i < 0 ? 0 : i; };
+/* Check answers persist per level (SAVE.checks[id]: 1 right, 0 wrong), not only in the session: a solve saves
+   its stars at once, so a student who leaves mid-flow keeps the solve and is asked any missing checks on the
+   next lesson entry, and a chapter finished in an earlier session is credited instead of silently incomplete. */
+const checkRecorded = id => SAVE.checks[id] != null;
+function recordCheck(id, ok) { if (!checkRecorded(id)) { SAVE.checks[id] = ok ? 1 : 0; save(); } }
+const levelDone = l => starsOf(l.id) > 0 || !!SAVE.skipped[l.id];
+function deriveChecks(chId, range) { const ls = levelsFor(chId, S.band); const inR = range ? ls.slice(range[0] - 1, range[1]) : ls; let ok = 0, n = 0; for (const l of inR) if (checkRecorded(l.id)) { n++; if (SAVE.checks[l.id]) ok++; } return { ok, n }; }
 const unlocked = (ch, band, ix) => { if (ix <= 0) return true; const p = levelsFor(ch, band)[ix - 1]; return !!p && !!(starsOf(p.id) || SAVE.skipped[p.id]); };
 const cstaOf = (level, band) => (band === '2' ? (level.csta2 || level.csta) : level.csta) || [];
 const reduced = () => !!O.settings.reduced;
@@ -1205,9 +1213,43 @@ function enterChapter(chId, ix, range) {
   const ls = levelsFor(chId, S.band);
   if (!ls.length) { toast(tr('Coming soon')); return S.lock ? null : showMap(); }
   S.chapter = chId; S.range = range || null; S.daily = null;
+  if (S.lesson && !S.projector) {
+    const main = S.lockedChapter || chId;
+    // the session's check count covers the step's whole required set (the locked chapter plus its chained
+    // chapter): derive each part once per entry, so a resumed lesson shows what is still missing truthfully
+    const addDerived = (c, r) => { const key = c + ':' + (r ? r.join('-') : 'all'); if (!S.derivedCh) S.derivedCh = new Set(); if (S.derivedCh.has(key)) return; S.derivedCh.add(key); const d = deriveChecks(c, r); S.checks.ok += d.ok; S.checks.n += d.n; };
+    if (chId === main && !range) {
+      S.checks = { ok: 0, n: 0 }; S.derivedCh = new Set(); addDerived(main, null);
+      const then = (D.THEN[S.band] || {})[main];
+      if (S.lock && then && levelsFor(then.ch, S.band).length) addDerived(then.ch, then.levels || null);
+    } else addDerived(chId, range);
+    if (S.lock && ix == null && !range && chId === main) { const plan = catchUpPlan(chId); if (plan) return runCatchUp(chId, plan); }
+  }
   let at = ix == null ? firstUnfinished(chId, S.band) : Math.max(0, Math.min(ls.length - 1, ix));
   if (S.range) { const lo = S.range[0] - 1, hi = Math.min(ls.length, S.range[1]) - 1; at = Math.max(lo, Math.min(hi, ix == null ? lo : at)); for (let k = lo; k <= hi; k++) if (!starsOf(ls[k].id) && !SAVE.skipped[ls[k].id]) { at = k; break; } }
   startLevel(chId, at, {});   // an explicit level (a teacher's level param, a test) opens even when earlier ones are unfinished
+}
+/* A lesson entry whose required work (the locked chapter plus its chained chapter) is partly or fully done
+   with checks unanswered needs a catch-up; the plan is decided synchronously so a plain entry is untouched. */
+function catchUpPlan(main) {
+  const band = S.band, then = (D.THEN[band] || {})[main];
+  const req = levelsFor(main, band).map(l => [main, l]);
+  if (then && levelsFor(then.ch, band).length) { const tls = levelsFor(then.ch, band); const sub = then.levels ? tls.slice(then.levels[0] - 1, then.levels[1]) : tls; for (const l of sub) req.push([then.ch, l]); }
+  const allDone = req.every(([, l]) => levelDone(l));
+  const missing = req.filter(([, l]) => l.check && levelDone(l) && !checkRecorded(l.id));
+  return (missing.length || allDone) ? { then, allDone, missing } : null;
+}
+async function runCatchUp(main, plan) {
+  const band = S.band;
+  try {
+    for (const [c, l] of plan.missing) {
+      if (S.level !== l) await startLevel(c, levelsFor(c, band).indexOf(l), { noLearn: true });
+      const ok = await caseClosed(l.check); recordCheck(l.id, !!ok); S.checks.n++; if (ok) S.checks.ok++;
+    }
+  } catch (e) { /* an interrupted catch-up keeps what it recorded; the rest is asked again next entry */ }
+  if (plan.allDone) { S.chapter = main; S.chained = plan.then ? [plan.then.ch] : []; chapterComplete(); return; }
+  S.chapter = main; S.range = null;
+  startLevel(main, firstUnfinished(main, band), {});
 }
 async function startLevel(chId, ix, o = {}) {
   const ls = levelsFor(chId, S.band), level = ls[ix]; if (!level) return showMap();
@@ -1761,9 +1803,9 @@ async function solved(flow) {
   }
   hudSync();
   let check = 0, conf = 0;
-  if (S.lesson && !S.projector && level.check) {
+  if (S.lesson && !S.projector && level.check && !checkRecorded(level.id)) {
     await O.wait(ms(600)); if (flow !== S.flow) return;
-    check = (await caseClosed(level.check)) ? 1 : 0; if (flow !== S.flow) return;
+    check = (await caseClosed(level.check)) ? 1 : 0; recordCheck(level.id, !!check); if (flow !== S.flow) return;
     S.checks.n++; if (check) S.checks.ok++;
     conf = await confidence(); if (flow !== S.flow) return;
   }

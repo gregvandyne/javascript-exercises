@@ -104,10 +104,10 @@
    "img": "csq/robo-route/variables-2-watch-value",
    "alt": "The watch strip reads steps = 4 after two changes: the plan set steps to 6, and each change steps by -1 brings it down.",
    "steps": [
-    "set fuel to 12",
-    "change fuel by -3",
-    "change fuel by -3",
-    "fuel is now 6"
+    "set steps to 6",
+    "change steps by -1",
+    "change steps by -1",
+    "steps is now 4"
    ],
    "focus": [
     {
@@ -166,7 +166,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Variables and finish 4 levels, so you meet the on/off flag. When the shelf offers names, pick the one a partner would understand.",
+   "text": "Open Robo Route at Variables and finish all 6 levels, so you meet the on/off flag. When the shelf offers names, pick the one a partner would understand.",
    "art": "trophy",
    "img": "csq/robo-route/variables-2-key",
    "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing.",
