@@ -1,0 +1,207 @@
+{
+ "key": "1b-6.4",
+ "n": "6.4",
+ "band": "1b",
+ "title": "The Great Trick",
+ "topic": "The Great Trick",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Spark Day trouble",
+   "text": "It is Spark Day in Netville, and the sorting room should be full of festival post. Instead, the Magpie has locked the door with six trick locks and pocketed the keys.",
+   "art": "mask",
+   "img": "csq/escape-the-post-office/door-1b",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "focus": [
+    {
+     "cue": "Spark Day: the Magpie locked the real post inside",
+     "box": [
+      14,
+      25,
+      72,
+      12
+     ]
+    },
+    {
+     "cue": "The six trick locks on the sorting room door",
+     "box": [
+      14,
+      35,
+      72,
+      34
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Your stamps are the keys",
+   "text": "Pim lays your six Defender stamps on the door, one from every unit. The stamp proves you trained the skill. Each lock now tests it, one lock per unit.",
+   "art": "star",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "focus": [
+    {
+     "cue": "A photo waits at Pim's Post, ready to travel",
+     "box": [
+      9,
+      57,
+      9,
+      14
+     ]
+    },
+    {
+     "cue": "Your stamps are keys: each lock tests one unit",
+     "box": [
+      9,
+      45,
+      44,
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Roads, codes and clues",
+   "text": "The first locks ask for your earliest skills. Route the golden letter, wheel the secret code, and pick the real message from footprint clues.",
+   "art": "map",
+   "img": "csq/packet-post/routes-1b-roads",
+   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "focus": [
+    {
+     "cue": "The town map, with more than one road",
+     "box": [
+      9,
+      36,
+      44,
+      53
+     ]
+    },
+    {
+     "cue": "Cookies for the school: one road is about to close",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Six locks, six skills",
+   "text": "Pim reads the locks aloud before you begin. Say which unit trained you for each one.",
+   "art": "key",
+   "steps": [
+    "Sorting Gate: routing, from Unit 1",
+    "Sealed Note: secret codes, from Unit 2",
+    "Which Pim?: footprints, from Unit 3",
+    "Trick Inbox: spotting tricks, from Unit 4",
+    "Five Moves: the drill, from Unit 5",
+    "Layers: stacking guards, from Unit 6"
+   ],
+   "img": "csq/packet-post/ciphers-1b-wheel",
+   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
+   "focus": [
+    {
+     "cue": "The cipher wheel, for the Sealed Note lock",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    },
+    {
+     "cue": "A secret word, and the reading it makes",
+     "box": [
+      54,
+      35,
+      35,
+      22
+     ]
+    }
+   ]
+  },
+  {
+   "title": "No lock can fail you",
+   "text": "Here is the fair promise of the sorting room: there is no fail and no timer. A wrong try only wobbles a lock, and three hint feathers are yours to spend, counted honestly on your shield.",
+   "art": "shield",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
+   "focus": [
+    {
+     "cue": "There is no fail here: build, try, and learn",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Lock it in when you are ready: no timer watches",
+     "box": [
+      54,
+      69,
+      15,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Your Defender words",
+   "text": "No new words today. These four carried the whole course.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "defender",
+     "means": "a person who keeps people and messages safe"
+    },
+    {
+     "word": "private",
+     "means": "only for the people it is meant for, not for everyone"
+    },
+    {
+     "word": "trick",
+     "means": "something fake that tries to fool you"
+    },
+    {
+     "word": "shield",
+     "means": "the award a Defender earns for finishing the course"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Escape the Post Office and play Escape the Post Office. Open all six locks, earn your Defender shield, and set the town's real post free.",
+   "art": "trophy",
+   "img": "csq/escape-the-post-office/door-1b",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "focus": [
+    {
+     "cue": "Open all six locks and earn your Defender shield",
+     "box": [
+      14,
+      35,
+      72,
+      34
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-1b-6.4-e1",
+  "cd-1b-6.4-e2",
+  "cd-1b-6.4-e3"
+ ],
+ "game": {
+  "slug": "escape-the-post-office",
+  "chapter": "escape",
+  "params": "chapter=escape&band=1b&lock=1"
+ }
+}

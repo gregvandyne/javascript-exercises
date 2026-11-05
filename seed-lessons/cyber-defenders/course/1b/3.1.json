@@ -11,7 +11,27 @@
    "text": "Pim says some facts are me-facts. Your name, your school, where you live and your birthday are all me-facts. Together, they can point straight at you.",
    "art": "shield",
    "img": "csq/would-you-rather/online-name-1b",
-   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?"
+   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+   "focus": [
+    {
+     "cue": "One choice: a nickname nobody can trace to you",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "The other: your real first name, for all to see",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -27,21 +47,81 @@
     "Keep private: a photo in school uniform"
    ],
    "img": "csq/packet-post/locks-1b-sort",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
+   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
+   "focus": [
+    {
+     "cue": "The first card to sort: where you live",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "Share, or keep private? Every card gets a tray",
+     "box": [
+      54,
+      43,
+      23,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "Small facts can join up",
    "text": "One fact alone may look harmless. Add two more, and the three together can point at one child. That is why me-facts stay private online.",
    "art": "magnifier",
    "img": "csq/would-you-rather/online-location-1b",
-   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?"
+   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+   "focus": [
+    {
+     "cue": "Free, if the app can see where you are",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or pay a little, and it never knows",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Games do not need me-facts",
    "text": "Some games and sites ask for me-facts before you can play. A real game never needs your address to let you play. If a game asks, stop and tell a trusted adult.",
    "art": "screen",
    "img": "csq/would-you-rather/online-download-1b",
-   "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?"
+   "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
+   "focus": [
+    {
+     "cue": "Ask a trusted adult before every download",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or never download anything at all",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -73,7 +153,18 @@
    "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. For each choice, ask: could this point at me?",
    "art": "trophy",
    "img": "csq/would-you-rather/online-1b-first",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "focus": [
+    {
+     "cue": "Play Online: share or keep, and judge each pair",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

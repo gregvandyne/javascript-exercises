@@ -1,0 +1,205 @@
+{
+ "key": "1b-5.1",
+ "n": "5.1",
+ "band": "1b",
+ "title": "Chatting safely",
+ "topic": "Safe chats",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Chat feels like the playground",
+   "text": "Chatting in a game can feel like the playground, full of friends and jokes. But a screen hides who is really typing, so chat needs its own safety rules.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-comments-1b",
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "A class page where anyone can comment",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A class page only your class can see",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "People you know in real life",
+   "text": "Safe chat is for people you know in real life: family, classmates and friends you have met face to face. A friendly stranger online is still a stranger.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-name-1b",
+   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+   "focus": [
+    {
+     "cue": "Chat with a nickname nobody can trace",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or your real name, for strangers to find",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Never move to a private chat",
+   "text": "A safe player never moves to a private chat because someone asks. That request is a warning sign, and so is any chat that must stay secret from trusted adults.",
+   "art": "lock",
+   "img": "csq/packet-post/tricks-1b-stranger",
+   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+   "focus": [
+    {
+     "cue": "A new friend asks for your street and offers a gift",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "A new friend: an unknown sender",
+     "box": [
+      7,
+      27,
+      31,
+      7
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Spot the warning signs",
+   "text": "A new player in your game chat is very friendly, then asks two things. A Defender reads the signs before answering.",
+   "art": "magnifier",
+   "steps": [
+    "They ask which school you go to",
+    "They ask you to move to a private chat",
+    "Both are warning signs",
+    "Leave the chat and tell a trusted adult"
+   ],
+   "img": "csq/packet-post/tricks-1b-stranger",
+   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+   "focus": [
+    {
+     "cue": "Asks where you live; someone you have never met",
+     "box": [
+      54,
+      39,
+      35,
+      18
+     ]
+    },
+    {
+     "cue": "The safe move: ask a trusted adult",
+     "box": [
+      54,
+      56,
+      35,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Leaving is a lock",
+   "text": "You may leave any chat at any time, for any reason. Blocking someone who worries you is not rude. Blocking is a lock, and locks are what Defenders do.",
+   "art": "shield",
+   "img": "csq/packet-post/tricks-1b-next",
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "focus": [
+    {
+     "cue": "A message you may leave at any time",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Decide calmly: leaving a chat is always allowed",
+     "box": [
+      54,
+      56,
+      35,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "chat",
+     "means": "talking to people by typing messages"
+    },
+    {
+     "word": "stranger",
+     "means": "a person you do not know in real life"
+    },
+    {
+     "word": "block",
+     "means": "to stop someone from messaging you"
+    },
+    {
+     "word": "secret",
+     "means": "something kept hidden from others"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Would You Rather first: choose the Online topic and play Online: share or keep. Talk through each chat choice before you pick a side.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-1b-first",
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "focus": [
+    {
+     "cue": "Talk through each chat choice before you pick a side",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-1b-5.1-e1",
+  "cd-1b-5.1-e2",
+  "cd-1b-5.1-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

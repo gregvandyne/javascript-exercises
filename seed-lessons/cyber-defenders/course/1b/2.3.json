@@ -11,7 +11,27 @@
    "text": "Mina passes a plain note in class, and anyone who finds it can read every word. Some messages need more than paper to stay private.",
    "art": "envelope",
    "img": "csq/packet-post/ciphers-1b-send",
-   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5."
+   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
+   "focus": [
+    {
+     "cue": "The message to send, in plain words anyone could read",
+     "box": [
+      54,
+      35,
+      35,
+      12
+     ]
+    },
+    {
+     "cue": "The same message, scrambled three ways",
+     "box": [
+      54,
+      46,
+      35,
+      19
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -26,28 +46,108 @@
     "secret word: FDW"
    ],
    "img": "csq/packet-post/ciphers-1b-wheel",
-   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one."
+   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
+   "focus": [
+    {
+     "cue": "Turn the inner wheel until the reading makes sense",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    },
+    {
+     "cue": "The secret message, and the reading under it",
+     "box": [
+      54,
+      35,
+      35,
+      22
+     ]
+    }
+   ]
   },
   {
    "title": "Only the key can read it",
    "text": "A friend with the same shift of 3 can turn the letters back and read the note. Computers scramble messages the same way but with much bigger keys, and the padlock on a message does this too.",
    "art": "lock",
    "img": "csq/packet-post/ciphers-1b-unknown",
-   "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says."
+   "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
+   "focus": [
+    {
+     "cue": "A secret word with an unknown shift: turn one step at a time",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "The wheel turns the scramble back into a word",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    }
+   ]
   },
   {
    "title": "Codes are for privacy",
    "text": "Secret codes are for keeping messages private, not for being sneaky. Never use a code to hide an unkind message about someone else.",
    "art": "shield",
    "img": "csq/packet-post/ciphers-1b-send",
-   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5."
+   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
+   "focus": [
+    {
+     "cue": "First the plain message, out in the open",
+     "box": [
+      54,
+      35,
+      35,
+      12
+     ]
+    },
+    {
+     "cue": "The wheel scrambles it before it travels",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    }
+   ]
   },
   {
    "title": "A scrambled note",
    "text": "This morning, the post sack held a note written in a scramble. Only the Magpie can read it, and Pim wonders what shiny secret it is hiding.",
    "art": "mask",
    "img": "csq/packet-post/ciphers-1b-unknown",
-   "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says."
+   "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
+   "focus": [
+    {
+     "cue": "A note written in a scramble: DAOWQF",
+     "box": [
+      54,
+      35,
+      35,
+      22
+     ]
+    },
+    {
+     "cue": "Nobody knows its shift yet",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -79,7 +179,18 @@
    "text": "Open Packet Post at Secret Messages and crack the wheel levels. Use the key on the wheel to turn scrambled letters back into words.",
    "art": "trophy",
    "img": "csq/packet-post/ciphers-1b-wheel",
-   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one."
+   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
+   "focus": [
+    {
+     "cue": "Crack the wheel levels in Secret Messages",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    }
+   ]
   }
  ],
  "check": [

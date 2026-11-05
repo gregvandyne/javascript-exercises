@@ -1,0 +1,193 @@
+{
+ "key": "1b-5.3",
+ "n": "5.3",
+ "band": "1b",
+ "title": "Time to unplug",
+ "topic": "Unplug",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Pim roosts at dusk",
+   "text": "Pim delivers post all day, over every road in Netville. But at dusk Pim roosts, because every creature has an off-duty time, even post owls.",
+   "art": "star",
+   "img": "csq/chars/pim",
+   "alt": "Pim the owl: a round brown owl with big eyes, a cream belly and a tiny backpack.",
+   "focus": [
+    {
+     "cue": "Pim the owl, off duty at dusk",
+     "box": [
+      8,
+      2,
+      81,
+      94
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Your body sends signs",
+   "text": "Your body tells you when play stops feeling good. Sore eyes, a heavy head and grumpy feelings are signs. So is a looping thought: just one more, just one more.",
+   "art": "battery",
+   "img": "csq/would-you-rather/tech-1b-first",
+   "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides.",
+   "focus": [
+    {
+     "cue": "Computers that write songs",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Computers that only play songs people wrote",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Choose the stop before you start",
+   "text": "The Defender trick is simple: choose your stopping point before you start playing. A stop you chose early is much easier to keep than one you invent mid-game.",
+   "art": "shield",
+   "img": "csq/packet-post/home",
+   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
+   "focus": [
+    {
+     "cue": "Choose the stop before you press play",
+     "box": [
+      39,
+      45,
+      22,
+      14
+     ]
+    },
+    {
+     "cue": "Pim, at the post office, done for the day",
+     "box": [
+      62,
+      72,
+      15,
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "The Magpie's long evening",
+   "text": "Yesterday the Magpie kept tapping just one more on a shiny game until the stars came out. Read the signs the Magpie missed.",
+   "art": "mask",
+   "steps": [
+    "Eyes sore from the bright screen",
+    "Too tired to enjoy the game",
+    "Just one more, again and again",
+    "A break would have felt better"
+   ],
+   "img": "csq/would-you-rather/online-download-1b",
+   "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
+   "focus": [
+    {
+     "cue": "Ask a trusted adult before every download",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or never download anything at all",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Better breaks",
+   "text": "A break is not empty time. Drawing, building, fresh air and a snack all recharge you in ways a screen cannot. Netville keeps a Noticeboard of Better Breaks by the post office door.",
+   "art": "lightbulb",
+   "img": "csq/packet-post/packets-1b-center",
+   "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
+   "focus": [
+    {
+     "cue": "Every road meets at the center office",
+     "box": [
+      20,
+      57,
+      8,
+      12
+     ]
+    },
+    {
+     "cue": "Five packets cross here: the whole town in one map",
+     "box": [
+      8,
+      36,
+      46,
+      52
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "balance",
+     "means": "a healthy mix of screen time and other things"
+    },
+    {
+     "word": "break",
+     "means": "a pause that rests your body and mind"
+    },
+    {
+     "word": "habit",
+     "means": "something you do often, almost without thinking"
+    },
+    {
+     "word": "streak",
+     "means": "days in a row that a game counts and praises"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "There is no game this time. Add one idea to the Noticeboard of Better Breaks, and set your own one-week break plan with a stopping point you choose first.",
+   "art": "trophy",
+   "img": "csq/packet-post/packets-1b-center",
+   "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
+   "focus": [
+    {
+     "cue": "Meet at the center office and make your break plan",
+     "box": [
+      20,
+      57,
+      8,
+      12
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-1b-5.3-e1",
+  "cd-1b-5.3-e2",
+  "cd-1b-5.3-e3"
+ ],
+ "game": null,
+ "talk": "What is your favorite break when a game stops feeling good, and how do you know it is time to take it?"
+}

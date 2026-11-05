@@ -11,21 +11,81 @@
    "text": "Posters appear all over Netville overnight, promising free game gems to everyone. Pim tilts her head. Free gems for the whole town sounds too good.",
    "art": "star",
    "img": "csq/packet-post/tricks-1b-coins",
-   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them."
+   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
+   "focus": [
+    {
+     "cue": "Free coins today only: a poster in letter form",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Too good to be true has cues: free, hurry, tap now",
+     "box": [
+      54,
+      39,
+      35,
+      18
+     ]
+    }
+   ]
   },
   {
    "title": "The crown jewels",
    "text": "Real shops sell their best gems to stay open, so they do not give away the crown jewels. Too-good posters share clues: a miracle prize, a famous singer's face, or you are the millionth visitor.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "focus": [
+    {
+     "cue": "You won a tablet: a prize for a contest you never entered",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Hurry, asks for your key, says congratulations",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    }
+   ]
   },
   {
    "title": "Check the facts",
    "text": "Adverts are allowed to exaggerate to sound exciting. A fact is different: facts need a second source you can trust before you believe them.",
    "art": "magnifier",
    "img": "csq/packet-post/tricks-1b-clues",
-   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find."
+   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+   "focus": [
+    {
+     "cue": "One cue found: hurry, only ten minutes",
+     "box": [
+      54,
+      40,
+      18,
+      11
+     ]
+    },
+    {
+     "cue": "Read the letter itself before you believe a word",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -39,14 +99,54 @@
     "Believe it only if it checks out"
    ],
    "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "focus": [
+    {
+     "cue": "Tap every cue that smells like a trick, then decide",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "The pause ends in a calm choice, never a fast tap",
+     "box": [
+      54,
+      59,
+      35,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "Gems of gravel",
    "text": "Then Pim finds gravel scattered behind the posters, and one cheeky feather. The posters were the Magpie's work, and the gems were only gravel.",
    "art": "mask",
    "img": "csq/packet-post/tricks-1b-coins",
-   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them."
+   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
+   "focus": [
+    {
+     "cue": "From the Game Shop: an unknown sender",
+     "box": [
+      7,
+      27,
+      30,
+      7
+     ]
+    },
+    {
+     "cue": "The shiny promise, word for word",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Play Would You Rather first: choose the Online topic and play Online: share or keep. Then open Packet Post at Spot the Trick and check the prize cards.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-1b-first",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "focus": [
+    {
+     "cue": "Start with Online: share or keep",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

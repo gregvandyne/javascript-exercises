@@ -11,21 +11,81 @@
    "text": "Pim calls these facts PII: your full name, where you live, school, birthday, location, photos and voice. Each one points at one person: you.",
    "art": "people",
    "img": "csq/would-you-rather/online-name-2",
-   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?"
+   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+   "focus": [
+    {
+     "cue": "A nickname that nobody can trace to you",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Your real first name, out in the open",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Sharing buys real things",
    "text": "Sharing PII can buy real things: an account, a delivery at your door, or friends finding you. Posting your work can even bring kind, useful feedback.",
    "art": "globe",
    "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "focus": [
+    {
+     "cue": "Photos only on your tablet, seen by nobody else",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A copy on a service someone else runs",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Risk grows in combinations",
    "text": "One fact alone is a small risk, but combined facts can map your whole day. The wider the audience that sees them, the more people can join the dots.",
    "art": "map",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "One fact alone: a small risk",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Combined facts can map your whole day",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -39,14 +99,54 @@
     "those answers can unlock accounts"
    ],
    "img": "csq/packet-post/tricks-2-quiz",
-   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play."
+   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
+   "focus": [
+    {
+     "cue": "A fun quiz asks three little questions",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Those three facts are the ones that reset a mailbox key",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
   },
   {
    "title": "Fixing an overshare",
    "text": "Some sharing can be undone: delete the post and ask the service to remove its copies. Some cannot, so tell a trusted adult fast, and in some places the law can help too.",
    "art": "shield",
    "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?"
+   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "focus": [
+    {
+     "cue": "Delete an old post you are embarrassed by",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or leave it, and laugh it off",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Open Would You Rather and choose the Online topic: play Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Play Online: share or keep, and judge each pair",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

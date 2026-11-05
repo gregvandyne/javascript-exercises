@@ -1,0 +1,163 @@
+{
+ "id": "cd-u5-2",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 5,
+ "band": "2",
+ "title": "Cyber Defenders Unit 5 · Kind screens, safe chats (6-8)",
+ "items": [
+  {
+   "id": "cd-2-5.1-e1",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.1",
+   "topic": "Online friends",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "What may an online-only friend safely know about you?",
+   "choices": [
+    "Your live location, switched on all day",
+    "Your school and daily route",
+    "Less than a real-life friend: a nickname and your game talk",
+    "Everything a real-life friend knows"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-5.1-e2",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.1",
+   "topic": "Online friends",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "You want to post a great photo that includes two friends. What does consent require?",
+   "choices": [
+    "Post first; they can complain later",
+    "A yes from the person who took it only",
+    "A clear yes from everyone in the photo",
+    "No yes if the photo is flattering"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-5.1-e3",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "6-8.DC.PPI.1",
+   "topic": "Online friends",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "In a group chat, a friend dares you to share your live location to prove trust. What is happening?",
+   "choices": [
+    "A normal friendship test",
+    "Pressure, and leaving or refusing is a complete answer",
+    "A safety feature of the chat",
+    "A dare you must accept to stay in the group"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-5.2-e1",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "6-8.DC.CYBL",
+   "topic": "Digital drama",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Two friends fall out in a group chat and both give as good as they get. A classmate is mocked daily by a group and cannot make it stop. Which is cyberbullying?",
+   "choices": [
+    "The fall-out, because it is louder",
+    "Neither; both are jokes",
+    "Both equally",
+    "The daily mocking: a pattern with a power gap"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "cd-2-5.2-e2",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "6-8.DC.CYBL",
+   "topic": "Digital drama",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "You are a bystander while a classmate is targeted in a chat. Which move does the most good?",
+   "choices": [
+    "Save the evidence, report it, and back the target",
+    "Debate the actor for an hour",
+    "Forward the thread to another school",
+    "Watch silently so you stay safe and neutral"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-5.2-e3",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "6-8.DC.CYBL",
+   "topic": "Digital drama",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A post attacks a student for who they are. What is the Defender response to hate speech?",
+   "choices": [
+    "Debate it point by point",
+    "Ignore it completely",
+    "Report it, save it, and support the person targeted",
+    "Quote it to show friends"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-5.3-e1",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "6-8.DC.ETH",
+   "topic": "Hooked by design",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A video ends and the next one starts by itself while a red badge counts your unread alerts. Which hooks are at work?",
+   "choices": [
+    "Autoplay and notifications",
+    "Backups and updates",
+    "Passphrases and padlocks",
+    "Ciphers and checksums"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-5.3-e2",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "6-8.DC.ETH",
+   "topic": "Hooked by design",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Which setting change answers an endless-scroll feed?",
+   "choices": [
+    "A brighter screen",
+    "A time limit you chose, with autoplay off",
+    "A longer passphrase",
+    "More notifications"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-5.3-e3",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "6-8.DC.ETH",
+   "topic": "Hooked by design",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Why is just try harder the wrong frame for screen balance?",
+   "choices": [
+    "Willpower is illegal in apps",
+    "Trying harder always works instantly",
+    "The app is engineered to hold attention, so fix the design and settings",
+    "Balance does not matter at all"
+   ],
+   "answer": 2
+  }
+ ]
+}

@@ -1,0 +1,205 @@
+{
+ "key": "1b-5.2",
+ "n": "5.2",
+ "band": "1b",
+ "title": "When messages turn mean",
+ "topic": "Mean messages",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "A mean message lands",
+   "text": "One afternoon a mean message lands in the class game chat, mocking a player's drawing. It is only a few words, but everyone who reads it feels smaller.",
+   "art": "screen",
+   "img": "csq/would-you-rather/online-comments-1b",
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "Anyone can comment on this page",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Only your class can comment on this one",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Kind words help",
+   "text": "Kind words help more than you think. A kind word to the player who was mocked tells them the chat is not all against them, and it costs you nothing.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-drawing-1b",
+   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "focus": [
+    {
+     "cue": "Everyone online can see the drawing",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Only family can see it",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Be an upstander",
+   "text": "An upstander stands up for the person, kindly and safely. Never join in, never laugh along, and never forward a mean message. Forwarding spreads the hurt to new screens.",
+   "art": "shield",
+   "img": "csq/packet-post/tricks-1b-card",
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "focus": [
+    {
+     "cue": "A message card to judge before anyone replies",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Never join in: name its clues instead",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "If it was you",
+   "text": "Sometimes the mean message came from your own fingers, sent too fast. A Defender can repair it, one honest move at a time.",
+   "art": "wrench",
+   "steps": [
+    "Stop: send nothing more",
+    "Say sorry, and mean it",
+    "Delete the message if you can",
+    "Tell a trusted adult what happened"
+   ],
+   "img": "csq/would-you-rather/online-delete-1b",
+   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "focus": [
+    {
+     "cue": "Delete the message if you can",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or leave it standing for all to see",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Save it and tell",
+   "text": "The move that always works: save the message, then tell a trusted adult. Saving it means the adult can see exactly what was said, and telling is never telling tales.",
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-1b-next",
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "focus": [
+    {
+     "cue": "Save the message: a real note looks like this",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Read it carefully, then tell a trusted adult",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "kind",
+     "means": "friendly and caring toward others"
+    },
+    {
+     "word": "upstander",
+     "means": "someone who helps the person a mean message hurt"
+    },
+    {
+     "word": "tell",
+     "means": "to show a trusted adult what happened"
+    },
+    {
+     "word": "save",
+     "means": "to keep a copy of a message to show an adult"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. Your teacher may lead this one, and that is a good thing.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-comments-1b",
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "Talk through each choice before you pick a side",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-1b-5.2-e1",
+  "cd-1b-5.2-e2",
+  "cd-1b-5.2-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

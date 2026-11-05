@@ -1,0 +1,233 @@
+{
+ "key": "1b-6.3",
+ "n": "6.3",
+ "band": "1b",
+ "title": "If something goes wrong",
+ "topic": "Five moves",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "A drill, like a fire drill",
+   "text": "Defenders practice what to do when something online goes wrong, the way schools practice a fire drill. Calm, practiced moves beat panicked clever ones, every time.",
+   "art": "shield",
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "focus": [
+    {
+     "cue": "The first message card, with clues hiding in its text",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Practice the moves on cards like this one",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Stop, then save it",
+   "text": "Move one is Stop: hands off, do not reply, and do not delete in a panic. Move two is Save it: keep the message or a picture of it, because it is proof of what happened.",
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-1b-clues",
+   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+   "focus": [
+    {
+     "cue": "The first clue, marked and found",
+     "box": [
+      54,
+      40,
+      18,
+      11
+     ]
+    },
+    {
+     "cue": "Stop: hands off; save it: the letter is the proof",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Tell an adult",
+   "text": "Move three is Tell an adult: a trusted adult at home or at school. If the first adult does not act, tell another. Telling fast is protection, never shame, and never your fault.",
+   "art": "people",
+   "img": "csq/packet-post/tricks-1b-next",
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "focus": [
+    {
+     "cue": "Tell an adult: real messages get read, tricks get told",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Not every message is a trick: telling sorts them",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Block or report",
+   "text": "Move four is Block or report, using the buttons in the app, always with a trusted adult beside you in real life. Move five is Carry on: the worry is handed over, and you go back to your day.",
+   "art": "lock",
+   "img": "csq/packet-post/tricks-1b-card",
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "focus": [
+    {
+     "cue": "The message card to judge, calmly",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Block or report is a button, pressed with an adult",
+     "box": [
+      54,
+      57,
+      35,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "The five moves in order",
+   "text": "A fake page just asked for a player's mailbox key, and the player typed it. Put the Defender moves in order.",
+   "art": "loop",
+   "steps": [
+    "Stop: hands off the fake page",
+    "Save it: keep a picture of the page",
+    "Tell an adult, right away",
+    "Block or report the page",
+    "Carry on while adults change the key"
+   ],
+   "img": "csq/packet-post/tricks-1b-coins",
+   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
+   "focus": [
+    {
+     "cue": "The trick card promising free coins today only",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Run the five moves on its cues, in order",
+     "box": [
+      54,
+      39,
+      35,
+      18
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Speed is protection",
+   "text": "If you ever type something private into a trick page, telling fast is what saves you. Adults can change the key before the trickster uses it, so every minute of honesty helps.",
+   "art": "star",
+   "img": "csq/packet-post/tricks-1b-next",
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "focus": [
+    {
+     "cue": "Speed is protection: a saved message tells fast",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Ask a trusted adult: the button is right here",
+     "box": [
+      54,
+      56,
+      35,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "report",
+     "means": "to tell the app and an adult that something broke the rules"
+    },
+    {
+     "word": "block",
+     "means": "to stop someone from messaging you"
+    },
+    {
+     "word": "evidence",
+     "means": "proof of what happened, like a saved message"
+    },
+    {
+     "word": "trusted adult",
+     "means": "a grown person you know and can rely on for help"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Trick Inbox and play the Boss Round. Before each message, say the five moves quietly, then choose your response.",
+   "art": "trophy",
+   "img": "csq/trick-inbox/boss-1b",
+   "alt": "Trick Inbox, the Boss Round: a mean game-chat message waits in the inbox, one clue found in green and one still hiding.",
+   "focus": [
+    {
+     "cue": "The Boss Round message, with one clue found",
+     "box": [
+      14,
+      36,
+      72,
+      20
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-1b-6.3-e1",
+  "cd-1b-6.3-e2",
+  "cd-1b-6.3-e3"
+ ],
+ "game": {
+  "slug": "trick-inbox",
+  "chapter": "boss",
+  "params": "chapter=boss&band=1b&lock=1"
+ }
+}

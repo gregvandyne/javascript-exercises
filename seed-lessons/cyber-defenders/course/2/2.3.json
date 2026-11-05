@@ -18,35 +18,135 @@
     "scrambled word: GRJ"
    ],
    "img": "csq/packet-post/ciphers-2-shift",
-   "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code."
+   "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code.",
+   "focus": [
+    {
+     "cue": "Delivered: a scrambled word, read and sent",
+     "box": [
+      32,
+      15,
+      36,
+      66
+     ]
+    },
+    {
+     "cue": "Shift 3: the key that scrambled it",
+     "box": [
+      21,
+      84,
+      20,
+      10
+     ]
+    }
+   ]
   },
   {
    "title": "Trying every key",
    "text": "A shift cipher has only 25 possible keys, so trying them all is quick. That is brute force, and it only works because the key space is tiny.",
    "art": "chip",
    "img": "csq/packet-post/ciphers-2-brute",
-   "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher."
+   "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher.",
+   "focus": [
+    {
+     "cue": "An unknown shift: turn one step at a time",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Only 25 shifts exist: trying them all is quick",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    }
+   ]
   },
   {
    "title": "Hiding is not scrambling",
    "text": "Steganography hides a message, for example inside a picture, but anyone who finds it can read it. Encryption scrambles it, so finding it is not enough without the key.",
    "art": "pixel",
    "img": "csq/packet-post/ciphers-2-hide",
-   "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message."
+   "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message.",
+   "focus": [
+    {
+     "cue": "A key card swaps every letter for a partner",
+     "box": [
+      22,
+      52,
+      17,
+      20
+     ]
+    },
+    {
+     "cue": "The secret message only the card can read",
+     "box": [
+      54,
+      35,
+      35,
+      15
+     ]
+    }
+   ]
   },
   {
    "title": "End to end, with limits",
    "text": "With end-to-end encryption, only the sender and receiver can read a message. Even the service carrying it cannot. It still cannot protect someone who is tricked into handing over the plain words.",
    "art": "envelope",
    "img": "csq/packet-post/ciphers-2-lockbox",
-   "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it."
+   "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
+   "focus": [
+    {
+     "cue": "The two-key lockbox: only the owner holds the opening key",
+     "box": [
+      7,
+      26,
+      47,
+      15
+     ]
+    },
+    {
+     "cue": "Easy to crack, or hard to crack: sort the four ways",
+     "box": [
+      7,
+      40,
+      47,
+      15
+     ]
+    }
+   ]
   },
   {
    "title": "The Magpie scrambles too",
    "text": "The Magpie has started scrambling its own notes with a little wheel. It wishes it had not taught you how wheels work, because now you can spot its tricks.",
    "art": "mask",
    "img": "csq/packet-post/ciphers-2-crack",
-   "alt": "Crack it by counting: a scrambled message, the Caesar wheel, and a button that counts how often letters appear."
+   "alt": "Crack it by counting: a scrambled message, the Caesar wheel, and a button that counts how often letters appear.",
+   "focus": [
+    {
+     "cue": "A long scramble, and the reading it makes so far",
+     "box": [
+      54,
+      38,
+      35,
+      29
+     ]
+    },
+    {
+     "cue": "Count the letters: the commonest letter is usually E",
+     "box": [
+      12,
+      84,
+      38,
+      10
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Open Packet Post at Secret Messages and finish 4 levels. Use the wheel to unscramble each message, and think about how many keys a trickster would have to try.",
    "art": "trophy",
    "img": "csq/packet-post/ciphers-2-key",
-   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
+   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open.",
+   "focus": [
+    {
+     "cue": "Unscramble each message with the wheel",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    }
+   ]
   }
  ],
  "check": [

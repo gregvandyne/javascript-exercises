@@ -11,14 +11,54 @@
    "text": "Pim walks home through fresh snow. By morning, the whole town can see where she went. Her footprints tell the story of her walk.",
    "art": "map",
    "img": "csq/would-you-rather/online-photo-1b",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?"
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "focus": [
+    {
+     "cue": "Share one photo with the whole world",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Share ten photos with ten friends",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Posts leave footprints",
    "text": "Online, your posts, photos, scores and comments are footprints. Each one shows a small piece of where you have been. Together, they make a trail.",
    "art": "screen",
    "img": "csq/would-you-rather/online-comments-1b",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?"
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "A page where anyone can comment",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A page where only your class can",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -32,14 +72,54 @@
     "copied print: travels far"
    ],
    "img": "csq/would-you-rather/online-delete-1b",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?"
+   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "focus": [
+    {
+     "cue": "Delete an old post you are embarrassed by",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or leave it, and laugh it off",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Who follows the trail?",
    "text": "Friends follow footprints, but strangers can follow them too. The Magpie loves a clear trail, because it points to shiny secrets. Before you post, picture the whole trail.",
    "art": "people",
    "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?"
+   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "focus": [
+    {
+     "cue": "Everyone online can see your drawing",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Only your family can see it",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -71,7 +151,18 @@
    "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Before each choice, picture the footprint it would leave.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-1b-first",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "focus": [
+    {
+     "cue": "Play Online: share or keep, and judge each pair",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

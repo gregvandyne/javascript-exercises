@@ -1,0 +1,214 @@
+{
+ "id": "cd-u6-1b",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 6,
+ "band": "1B",
+ "title": "Cyber Defenders Unit 6 · The Defender's toolkit (3-5)",
+ "items": [
+  {
+   "id": "cd-1b-6.1-e1",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "3-5.CS.SOFT",
+   "topic": "Layers",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What does an update really do to a game or tablet?",
+   "choices": [
+    "It patches holes that tricksters could climb through",
+    "It makes the screen brighter",
+    "It deletes your backup",
+    "It changes your passphrase for you"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-6.1-e2",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "3-5.CS.LOSS",
+   "topic": "Layers",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Your tablet breaks and will not switch on. Which layer saves your photos?",
+   "choices": [
+    "The lock screen",
+    "A backup copy kept somewhere else",
+    "The loudest ringtone",
+    "The newest game"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-6.1-e3",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "3-5.SEC.COMP",
+   "topic": "Layers",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Why can two ordinary layers together beat one strong lock?",
+   "choices": [
+    "Two locks look nicer on a door",
+    "A trick must be lucky twice",
+    "If one layer slips, the second still guards you",
+    "Strong locks are against the rules"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-6.2-e1",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "3-5.DC.AUP",
+   "topic": "Rules",
+   "kind": "recall",
+   "secs": 15,
+   "q": "Where do a game's rules for what may be posted live?",
+   "choices": [
+    "Only in the game's music",
+    "In its agreement, which every player accepts",
+    "Nobody writes them down",
+    "On the post office roof"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-6.2-e2",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "3-5.DC.IP",
+   "topic": "Rules",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "You draw a picture and a site shares it as its own. What protects your work?",
+   "choices": [
+    "Your best friend's opinion",
+    "The weather",
+    "Nothing at all",
+    "The law, which says the drawing is yours"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "cd-1b-6.2-e3",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "3-5.DC.LAW",
+   "topic": "Rules",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Someone keeps breaking the chat rules against you, week after week. What should you do?",
+   "choices": [
+    "Break rules back at them",
+    "Tell a trusted adult; a rule broken against you is a reason to tell",
+    "Fix it all by yourself",
+    "Leave every game forever"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-6.3-e1",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "3-5.SEC.ACC",
+   "topic": "Five moves",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What are the five Defender moves, in order?",
+   "choices": [
+    "Share it, reply, delete, hide, forget",
+    "Run, shout, tap, guess, hope",
+    "Stop, save it, tell an adult, block or report, carry on",
+    "Open, read, answer, forward, close"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-6.3-e2",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "3-5.SEC.ACC",
+   "topic": "Five moves",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Why does saving a horrid message help instead of deleting it in a panic?",
+   "choices": [
+    "It makes the message funnier",
+    "It is proof an adult can act on",
+    "It sends the message back",
+    "It does not help at all"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-6.3-e3",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "3-5.DC.CYBL",
+   "topic": "Five moves",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "You typed your mailbox key into a fake page by mistake. What are your best next moves?",
+   "choices": [
+    "Tell a trusted adult fast, so the key can be changed",
+    "Wait a month to see what happens",
+    "Type it again to check",
+    "Tell nobody and hope"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-6.4-e1",
+   "lesson": "6.4",
+   "use": "exit",
+   "cat": "3-5.SEC.INFO",
+   "topic": "The Great Trick",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A letter promises a huge prize if you tap its button right now. Which trained skill spots it?",
+   "choices": [
+    "Routing a packet across the map",
+    "Spotting trick clues: hurry and a prize you never entered for",
+    "Building a longer passphrase",
+    "Sorting Share and Keep Private"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-6.4-e2",
+   "lesson": "6.4",
+   "use": "exit",
+   "cat": "3-5.DC.FOOT",
+   "topic": "The Great Trick",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Two messages claim to be from Pim. One mentions a private fact only the real post office would handle carefully. What helps you judge?",
+   "choices": [
+    "The message with the most colors",
+    "Footprint clues: what each message knows and how it asks",
+    "Always trust the first message",
+    "Ask the Magpie which is real"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-6.4-e3",
+   "lesson": "6.4",
+   "use": "exit",
+   "cat": "3-5.SEC.AUTH",
+   "topic": "The Great Trick",
+   "kind": "recall",
+   "secs": 15,
+   "q": "The Sealed Note lock needs a code only the key holder can read. Which unit trained that skill?",
+   "choices": [
+    "Unit 1, messages on the move",
+    "Unit 3, private means private",
+    "Unit 5, kind screens",
+    "Unit 2, keys and secret codes"
+   ],
+   "answer": 3
+  }
+ ]
+}

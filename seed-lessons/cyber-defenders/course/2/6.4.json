@@ -1,0 +1,205 @@
+{
+ "key": "2-6.4",
+ "n": "6.4",
+ "band": "2",
+ "title": "The Great Trick",
+ "topic": "The Great Trick",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Spark Day, every channel at once",
+   "text": "Spark Day, and the Magpie flock strikes on every channel at once: fake letters in the sacks, a prize poster on the door, and a postmark faked to look like Pim's own.",
+   "art": "mask",
+   "img": "csq/escape-the-post-office/door-2",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "focus": [
+    {
+     "cue": "Spark Day: fake letters, a prize poster, a faked postmark",
+     "box": [
+      14,
+      25,
+      72,
+      12
+     ]
+    },
+    {
+     "cue": "The six trick locks on the sorting room door",
+     "box": [
+      14,
+      35,
+      72,
+      34
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Six locks, harder contents",
+   "text": "The sorting room is locked with the same six trick locks, cut harder this year. Inside the locks wait a spoofed sender, a pressure play, and a Trick Inbox round of eight items.",
+   "art": "key",
+   "img": "csq/packet-post/packets-1b-key",
+   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "focus": [
+    {
+     "cue": "The Netville map and the first message",
+     "box": [
+      9,
+      45,
+      44,
+      27
+     ]
+    },
+    {
+     "cue": "Packet 1 waits at Pim's Post",
+     "box": [
+      9,
+      57,
+      9,
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Your stamps are the keys",
+   "text": "Pim, locked out beside you, lays out your six stamps. Each stamp proves a trained skill, and each lock tests exactly that skill. Nothing in the room is new. All of it is combined.",
+   "art": "star",
+   "img": "csq/packet-post/routes-2-sealed",
+   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "focus": [
+    {
+     "cue": "Sealed roads wear a padlock",
+     "box": [
+      27,
+      35,
+      26,
+      34
+     ]
+    },
+    {
+     "cue": "Nothing in the room is new: every road combined",
+     "box": [
+      9,
+      35,
+      44,
+      54
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Read the room first",
+   "text": "Before touching a lock, a Defender reads the room. Match each lock to the unit that trained it.",
+   "art": "magnifier",
+   "steps": [
+    "Sorting Gate and Sealed Note: Units 1 and 2",
+    "Which Pim? and the inbox round: Units 3 and 4",
+    "Five Moves under pressure: Unit 5",
+    "Layers matching: Unit 6"
+   ],
+   "img": "csq/packet-post/ciphers-2-key",
+   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open.",
+   "focus": [
+    {
+     "cue": "The cipher wheel, with a scrambled message",
+     "box": [
+      14,
+      28,
+      33,
+      57
+     ]
+    },
+    {
+     "cue": "DSSOH: turn the wheel until the reading makes sense",
+     "box": [
+      54,
+      35,
+      35,
+      22
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Fair rules, honest shield",
+   "text": "The room keeps its fair rules: no fail state, and the parade clock changes only the celebration, never the outcome. Hint feathers you spend are printed honestly on your shield.",
+   "art": "shield",
+   "img": "csq/packet-post/locks-2-sealed",
+   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
+   "focus": [
+    {
+     "cue": "A message travelling a road marked sealed",
+     "box": [
+      20,
+      59,
+      33,
+      29
+     ]
+    },
+    {
+     "cue": "Padlocks mark the sealed stretch",
+     "box": [
+      26,
+      67,
+      22,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Your Defender words",
+   "text": "No new words today. These four carried the whole course.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "defender",
+     "means": "a person who keeps people and messages safe"
+    },
+    {
+     "word": "verify",
+     "means": "to check a claim against another trusted source"
+    },
+    {
+     "word": "incident",
+     "means": "something that has gone wrong with security or safety"
+    },
+    {
+     "word": "defense in depth",
+     "means": "stacking independent layers so one failure is never the whole story"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Escape the Post Office and play Escape the Post Office. Open all six locks, earn your Defender shield, and take the debrief page to your teacher.",
+   "art": "trophy",
+   "img": "csq/escape-the-post-office/door-2",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "focus": [
+    {
+     "cue": "Open all six locks and earn your Defender shield",
+     "box": [
+      14,
+      35,
+      72,
+      34
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-2-6.4-e1",
+  "cd-2-6.4-e2",
+  "cd-2-6.4-e3"
+ ],
+ "game": {
+  "slug": "escape-the-post-office",
+  "chapter": "escape",
+  "params": "chapter=escape&band=2&lock=1"
+ }
+}

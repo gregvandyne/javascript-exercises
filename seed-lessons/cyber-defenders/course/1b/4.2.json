@@ -11,21 +11,81 @@
    "text": "Behind the post office, Pim finds four messy nests built by the Magpie. Each nest holds a trick, and each trick has a motive.",
    "art": "map",
    "img": "csq/packet-post/tricks-1b-learn",
-   "alt": "Spot the trick: the lesson card names what trick messages do. They rush you, promise prizes and fish for your key."
+   "alt": "Spot the trick: the lesson card names what trick messages do. They rush you, promise prizes and fish for your key.",
+   "focus": [
+    {
+     "cue": "Spot the trick: the chapter that trains your eye",
+     "box": [
+      27,
+      15,
+      46,
+      67
+     ]
+    },
+    {
+     "cue": "Rush, prizes, key asks, strangers: the signs of a trick",
+     "box": [
+      33,
+      53,
+      34,
+      19
+     ]
+    }
+   ]
   },
   {
    "title": "Keys and prizes",
    "text": "The key-hunter wants into your mailbox, so its letters beg for your key. The prize-faker wants you to tap and type, so it dangles a fake reward.",
    "art": "key",
    "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "focus": [
+    {
+     "cue": "The key-hunter's letter: it begs for your mailbox key",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Its cues give the motive away",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    }
+   ]
   },
   {
    "title": "Reactions and shares",
    "text": "The giggler wants a reaction, so it sends teasing tricks to make you reply fast. The forwarder wants you to share its trick with all your friends.",
    "art": "people",
    "img": "csq/packet-post/tricks-1b-card",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?"
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "focus": [
+    {
+     "cue": "The giggler's card: scary words that want a fast reply",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Scary is a trick too: act before you think is the trap",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -39,14 +99,54 @@
     "So do not tap it"
    ],
    "img": "csq/packet-post/tricks-1b-card",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?"
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "focus": [
+    {
+     "cue": "Name the motive before you judge the card",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    },
+    {
+     "cue": "Then decide: safe, trick, or ask a trusted adult",
+     "box": [
+      54,
+      57,
+      35,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "Starve the trick",
    "text": "Knowing the motive tells you the defense: starve it. Do not reply, do not tap, and do not share, and the trick gets nothing it wanted.",
    "art": "shield",
    "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult."
+   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "focus": [
+    {
+     "cue": "A safe message earns a calm read, not a fast reply",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Safe, trick, or ask a trusted adult: starve every trick",
+     "box": [
+      54,
+      56,
+      35,
+      9
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Open Packet Post at Spot the Trick and play the cards you have not checked yet. Name each card's motive before you decide if it is a trick.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "focus": [
+    {
+     "cue": "Name each card's motive in Spot the Trick",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    }
+   ]
   }
  ],
  "check": [

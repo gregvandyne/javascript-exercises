@@ -1,0 +1,204 @@
+{
+ "key": "1b-6.2",
+ "n": "6.2",
+ "band": "1b",
+ "title": "Rules that protect us",
+ "topic": "Rules",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Rules on the wall",
+   "text": "Inside the post office door hangs a board of rules anyone may read. The rules say what post staff may open, what they must never open, and who to tell when something is wrong.",
+   "art": "table",
+   "img": "csq/packet-post/protocols-1b-key",
+   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+   "focus": [
+    {
+     "cue": "Three packets on the road to Grandma's House",
+     "box": [
+      10,
+      46,
+      42,
+      26
+     ]
+    },
+    {
+     "cue": "The rules say what staff may open, and what they must never open",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
+  },
+  {
+   "title": "School rules and app rules",
+   "text": "Your school has internet rules, and every app has rules too, called its agreement. Agreements say what may be posted, what is never allowed, and what happens when a rule is broken.",
+   "art": "pencil",
+   "img": "csq/packet-post/locks-1b-sort",
+   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
+   "focus": [
+    {
+     "cue": "Where you live: a fact with rules around it",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "Share, or keep private? Agreements draw the line",
+     "box": [
+      54,
+      43,
+      23,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The law protects your work",
+   "text": "Your drawing is yours, and the law protects it, just like it protects your private facts. Rules and laws are not only limits. They are layers that guard people and their work.",
+   "art": "shield",
+   "img": "csq/would-you-rather/online-credit-1b",
+   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
+   "focus": [
+    {
+     "cue": "Use a picture someone else made, and credit them",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Draw your own, even if it is worse",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Whose rule is it?",
+   "text": "Three problems land on Pim's desk in one morning. Match each one to the rule that covers it.",
+   "art": "magnifier",
+   "steps": [
+    "A drawing shared without a yes: the law protects its maker",
+    "Mean posts in a class app: the agreement and school rules",
+    "A stranger reading private post: the post office wall rules"
+   ],
+   "img": "csq/packet-post/protocols-1b-twice",
+   "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
+   "focus": [
+    {
+     "cue": "Extra copies wait in the inbox, then are binned",
+     "box": [
+      54,
+      53,
+      22,
+      11
+     ]
+    },
+    {
+     "cue": "Four packets were sent; the slots keep count",
+     "box": [
+      54,
+      41,
+      22,
+      11
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A rule broken against you",
+   "text": "If someone breaks the rules against you, that is never your fault and never yours to fix alone. A broken rule is a reason to tell a trusted adult, who must act.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-1b-first",
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "focus": [
+    {
+     "cue": "A page where anyone can comment",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A page where only your class can",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "rule",
+     "means": "an agreed way of behaving that keeps people safe"
+    },
+    {
+     "word": "agreement",
+     "means": "the rules you accept when you use an app or site"
+    },
+    {
+     "word": "law",
+     "means": "the rules a whole country makes and enforces"
+    },
+    {
+     "word": "protect",
+     "means": "to keep people and things safe from harm"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. For each choice, name the rule that helps you decide.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-credit-1b",
+   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
+   "focus": [
+    {
+     "cue": "Name the rule that helps you decide",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-1b-6.2-e1",
+  "cd-1b-6.2-e2",
+  "cd-1b-6.2-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}
