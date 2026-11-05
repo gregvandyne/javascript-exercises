@@ -14,7 +14,7 @@
    "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
    "focus": [
     {
-     "cue": "One choice: a nickname nobody can trace to you",
+     "cue": "A nickname nobody can trace",
      "box": [
       7.2,
       17.1,
@@ -23,7 +23,7 @@
      ]
     },
     {
-     "cue": "The other: your real first name, for all to see",
+     "cue": "Your real name, for all to see",
      "box": [
       51.9,
       17.1,
@@ -156,7 +156,7 @@
    "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
    "focus": [
     {
-     "cue": "Play Online: share or keep, and judge each pair",
+     "cue": "Play Online: judge each pair",
      "box": [
       7.2,
       17.1,
