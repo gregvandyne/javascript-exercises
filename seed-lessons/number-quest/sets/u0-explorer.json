@@ -1,0 +1,79 @@
+{
+ "id": "nq-u0-explorer",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 0,
+ "band": "Explorer",
+ "title": "Number Quest Unit 0 · Welcome (Explorer)",
+ "items": [
+  {
+   "id": "nq-explorer-0.1-e1",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "framing",
+   "topic": "Welcome",
+   "kind": "recall",
+   "secs": 20,
+   "q": "What does Tally keep at the Numberworks?",
+   "choices": [
+    "The workshops where Netville does its counting",
+    "A racing track for karts",
+    "A post office for letters",
+    "A bakery for cakes"
+   ],
+   "answer": 0,
+   "misconceptions": [
+    "correct",
+    "a place from another course",
+    "a place from another course",
+    "a place from another course"
+   ]
+  },
+  {
+   "id": "nq-explorer-0.1-e2",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "framing",
+   "topic": "Welcome",
+   "kind": "recall",
+   "secs": 20,
+   "q": "What is a digit?",
+   "choices": [
+    "A number with three places",
+    "One of the ten symbols 0 to 9",
+    "A friendly rounded number",
+    "A bar in a bar model"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "confuses a digit with a whole number",
+    "correct",
+    "confuses a digit with rounding",
+    "confuses a digit with a drawing tool"
+   ]
+  },
+  {
+   "id": "nq-explorer-0.1-e3",
+   "lesson": "0.1",
+   "use": "exit",
+   "cat": "framing",
+   "topic": "Welcome",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Which of these is a job for a number?",
+   "choices": [
+    "Dreaming about cake",
+    "Singing a song",
+    "Measuring how long a ribbon is",
+    "Giggling behind a shutter"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "not a number job",
+    "not a number job",
+    "correct",
+    "that is the Jumble, not a number"
+   ]
+  }
+ ]
+}

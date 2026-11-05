@@ -1,0 +1,155 @@
+{
+ "key": "explorer-4.2",
+ "n": "4.2",
+ "band": "explorer",
+ "title": "Same value, new clothes",
+ "topic": "New clothes",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Cut it finer",
+   "text": "A customer wants half a cake, but the tray only holds fourths. Tally cuts each half into two fourths, and the share has not changed at all.",
+   "art": "grid",
+   "visual": {
+    "type": "fraction",
+    "label": "Half a cake re-sliced: 1/2 and 2/4 cover exactly the same share",
+    "rows": [
+     {
+      "label": "1/2: one of two parts",
+      "cuts": 2,
+      "shaded": 1
+     },
+     {
+      "label": "2/4: the same share, cut finer",
+      "cuts": 4,
+      "shaded": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Half a cake: 1 of 2 equal parts.",
+     "box": [
+      5,
+      20.5,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Cut each part in two: 2 of 4 parts. The share has not moved.",
+     "box": [
+      5,
+      50.7,
+      90,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Re-slicing keeps value",
+   "text": "Cutting every piece into 2 smaller pieces doubles both numbers: 1/2 becomes 2/4. The pieces shrink, the count grows, the share stays the same.",
+   "art": "gears"
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then compare",
+   "text": "Rough first: 5/8 is a little more than 1/2. Compare it with 3/4 using the halfway mark as your referee.",
+   "art": "chart",
+   "steps": [
+    "1/2 sits at the halfway mark",
+    "5/8 is one eighth past halfway",
+    "3/4 is two eighths past halfway",
+    "so 3/4 is greater than 5/8"
+   ],
+   "visual": {
+    "type": "fraction",
+    "label": "Comparing 5/8 and 3/4 on the same whole: 3/4 is 6/8, one eighth more",
+    "half": true,
+    "rows": [
+     {
+      "label": "5/8: one eighth past halfway",
+      "cuts": 8,
+      "shaded": 5
+     },
+     {
+      "label": "3/4 = 6/8: two eighths past halfway",
+      "cuts": 8,
+      "shaded": 6
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "5/8 sits one eighth past the halfway line.",
+     "box": [
+      5,
+      20.5,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "3/4 is 6/8: one eighth more, so 3/4 is greater.",
+     "box": [
+      5,
+      50.7,
+      90,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Same whole, or no contest",
+   "text": "A fraction only has a size inside its whole. Half of a tiny cake can be less cake than a fourth of a huge one. Compare shares of the same whole.",
+   "art": "shield"
+  },
+  {
+   "title": "Stretch: Any number of cuts",
+   "text": "Re-slicing works with any count. Cut each third into 3 and 2/3 becomes 6/9: same share, three times the pieces, three times the count.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "equivalent",
+     "means": "different fractions that name the same share"
+    },
+    {
+     "word": "benchmark",
+     "means": "a known share, like 1/2, used to judge other shares"
+    },
+    {
+     "word": "compare",
+     "means": "to decide which of two amounts is greater, or if they match"
+    },
+    {
+     "word": "whole",
+     "means": "the one full thing a fraction is a share of"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Fraction Factory at Re-Slice, then serve the orders. Re-slice a share before you decide if two orders match.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-4.2-e1",
+  "nq-explorer-4.2-e2",
+  "nq-explorer-4.2-e3"
+ ],
+ "game": {
+  "slug": "fraction-factory",
+  "chapter": "Re-Slice",
+  "params": "chapter=re-slice&band=1b&lock=1"
+ }
+}

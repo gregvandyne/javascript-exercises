@@ -1,0 +1,142 @@
+{
+ "key": "explorer-1.3",
+ "n": "1.3",
+ "band": "explorer",
+ "title": "Patterns and number tricks",
+ "topic": "Patterns",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Patterns are promises",
+   "text": "A pattern is a promise about what comes next. Break the promise and the pattern stops working. Keep it, and you can predict far ahead.",
+   "art": "loop"
+  },
+  {
+   "title": "The Jumble swaps a tile",
+   "text": "The Counting House tiles read 4, 9, 14, 20, 24. One tile breaks the add-5 promise. The Jumble swapped it. The tile should be 19, not 20.",
+   "art": "bug",
+   "visual": {
+    "type": "tiles",
+    "label": "Tiles 4, 9, 14, 20, 24: 20 breaks the pattern",
+    "values": [
+     "4",
+     "9",
+     "14",
+     "20",
+     "24"
+    ],
+    "bad": 3
+   },
+   "focus": [
+    {
+     "cue": "4, 9, 14: each tile adds 5, just as promised.",
+     "box": [
+      5,
+      28.4,
+      52,
+      33.8
+     ]
+    },
+    {
+     "cue": "This tile should be 19. The Jumble swapped it for 20.",
+     "box": [
+      59.5,
+      28.4,
+      17.0,
+      46.2
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Predict the tenth tile",
+   "text": "Rough first: adding 5 ten times adds about 50. Follow the promise from 3, step by step.",
+   "art": "loop",
+   "steps": [
+    "start at 3, the rule is add 5",
+    "tile 2 is 8, tile 3 is 13",
+    "each tile adds one more 5",
+    "tile 10 is 3 + 9 jumps of 5 = 48"
+   ],
+   "visual": {
+    "type": "tiles",
+    "label": "Add-5 pattern from 3 to the tenth tile, 48",
+    "values": [
+     "3",
+     "8",
+     "13",
+     "...",
+     "38",
+     "43",
+     "48"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start at 3. The rule is add 5, every time.",
+     "box": [
+      5.5,
+      28.4,
+      11.9,
+      33.8
+     ]
+    },
+    {
+     "cue": "Tile 10 is 48: 3 plus 9 jumps of 5.",
+     "box": [
+      82.6,
+      28.4,
+      11.9,
+      33.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Stretch: Even plus even",
+   "text": "Add any two even numbers and the answer is always even. Odd plus odd is even too. Patterns hide inside the tables, waiting to be spotted.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "pattern",
+     "means": "a set of numbers or shapes that follows a rule"
+    },
+    {
+     "word": "rule",
+     "means": "the promise a pattern keeps, like add 5"
+    },
+    {
+     "word": "predict",
+     "means": "to say what comes next, using the rule"
+    },
+    {
+     "word": "even",
+     "means": "a number that pairs up with nothing left over"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on pattern questions, with no picking first. Call out the rule of each pattern before you answer, every single time.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-1.3-e1",
+  "nq-explorer-1.3-e2",
+  "nq-explorer-1.3-e3"
+ ],
+ "game": {
+  "slug": "quest-race",
+  "chapter": "Practice Race",
+  "params": "mode=nq-1-3&lock=1"
+ }
+}

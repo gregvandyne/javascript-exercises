@@ -1,0 +1,174 @@
+{
+ "key": "explorer-1.1",
+ "n": "1.1",
+ "band": "explorer",
+ "title": "Big numbers, small digits",
+ "topic": "Big numbers",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "The Counting House",
+   "text": "Welcome to the Counting House, where big numbers are built from small digits. The same digit can do very different jobs in different places.",
+   "art": "grid"
+  },
+  {
+   "title": "Where a digit sits",
+   "text": "In 352, the 3 is not worth 3. It sits in the hundreds place, so it is worth 300. The 5 is worth 50, and the 2 is worth just 2.",
+   "art": "table",
+   "visual": {
+    "type": "places",
+    "label": "352 in place value cards: 3 hundreds, 5 tens, 2 ones",
+    "cols": [
+     {
+      "d": "3",
+      "place": "hundreds",
+      "value": "300"
+     },
+     {
+      "d": "5",
+      "place": "tens",
+      "value": "50"
+     },
+     {
+      "d": "2",
+      "place": "ones",
+      "value": "2"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The 3 sits in the hundreds place, so it is worth 300.",
+     "box": [
+      6.5,
+      12.4,
+      28.3,
+      51.6
+     ]
+    },
+    {
+     "cue": "The 5 is worth 50, and the 2 is worth just 2.",
+     "box": [
+      65.2,
+      12.4,
+      28.3,
+      51.6
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then build",
+   "text": "Rough first: 2,463 is about 2,500, so our build should land near there. Now build it place by place.",
+   "art": "grid",
+   "steps": [
+    "2 thousands = 2,000",
+    "4 hundreds = 400",
+    "6 tens = 60",
+    "3 ones = 3",
+    "2,463 = 2,000 + 400 + 60 + 3"
+   ],
+   "visual": {
+    "type": "places",
+    "label": "2,463 built place by place: 2 thousands, 4 hundreds, 6 tens, 3 ones",
+    "cols": [
+     {
+      "d": "2",
+      "place": "thousands",
+      "value": "2,000"
+     },
+     {
+      "d": "4",
+      "place": "hundreds",
+      "value": "400"
+     },
+     {
+      "d": "6",
+      "place": "tens",
+      "value": "60"
+     },
+     {
+      "d": "3",
+      "place": "ones",
+      "value": "3"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "2 thousands = 2,000. The build starts here.",
+     "box": [
+      6.5,
+      12.4,
+      21.0,
+      51.6
+     ]
+    },
+    {
+     "cue": "4 hundreds = 400, then 6 tens = 60.",
+     "box": [
+      28.5,
+      12.4,
+      21.0,
+      51.6
+     ]
+    },
+    {
+     "cue": "3 ones finish it: 2,463 = 2,000 + 400 + 60 + 3.",
+     "box": [
+      72.5,
+      12.4,
+      21.0,
+      51.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Stretch: Ten times the place",
+   "text": "In 55, the left 5 is worth ten times the right 5. Every step one place left makes a digit worth ten times more. Try it with 777.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "digit",
+     "means": "one of the ten symbols 0 to 9 that build numbers"
+    },
+    {
+     "word": "place value",
+     "means": "what a digit is worth because of where it sits"
+    },
+    {
+     "word": "hundreds",
+     "means": "the place worth one hundred for each digit in it"
+    },
+    {
+     "word": "expanded form",
+     "means": "a number written out as the sum of its place values"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Brain Board at Practice Board and finish the whole board, every tile. It opens straight on your place value board, with no picking first. When a big number appears, read it out in its place values before you answer.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-1.1-e1",
+  "nq-explorer-1.1-e2",
+  "nq-explorer-1.1-e3"
+ ],
+ "game": {
+  "slug": "brain-board",
+  "chapter": "Practice Board",
+  "params": "mode=nq-1-1&lock=1"
+ }
+}

@@ -1,0 +1,172 @@
+{
+ "key": "explorer-1.2",
+ "n": "1.2",
+ "band": "explorer",
+ "title": "Round it!",
+ "topic": "Round it",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Friendly numbers",
+   "text": "Some numbers are friendly to work with: 50, 300, 1,000. Rounding swaps a number for the nearest friendly one, so your head can hold it.",
+   "art": "chart"
+  },
+  {
+   "title": "Look at the next digit",
+   "text": "To round 347 to the nearest hundred, look at the tens digit. It is 4, so 347 stays closer to 300. If that digit were 5 or more, up it would go.",
+   "art": "magnifier",
+   "visual": {
+    "type": "numberline",
+    "label": "347 on a number line from 300 to 400, nearer to 300",
+    "min": 300,
+    "max": 400,
+    "marks": [
+     {
+      "at": 300,
+      "label": "300"
+     },
+     {
+      "at": 350,
+      "label": "350"
+     },
+     {
+      "at": 400,
+      "label": "400"
+     }
+    ],
+    "point": {
+     "at": 347,
+     "label": "347"
+    }
+   },
+   "focus": [
+    {
+     "cue": "347 sits between 300 and 400, just left of halfway.",
+     "box": [
+      41.4,
+      42.7,
+      12,
+      35.6
+     ]
+    },
+    {
+     "cue": "It is nearer 300, so 347 rounds to 300.",
+     "box": [
+      3,
+      42.7,
+      14,
+      35.6
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then round",
+   "text": "Rough first: 268 is a bit under 300. Round it to the nearest ten, step by step.",
+   "art": "chart",
+   "steps": [
+    "268 sits between 260 and 270",
+    "the ones digit is 8, so round up",
+    "268 rounds to 270",
+    "check: 270 is 2 away, 260 is 8 away"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "268 on a number line from 260 to 270, two away from 270",
+    "min": 260,
+    "max": 270,
+    "marks": [
+     {
+      "at": 260,
+      "label": "260"
+     },
+     {
+      "at": 265,
+      "label": "265"
+     },
+     {
+      "at": 270,
+      "label": "270"
+     }
+    ],
+    "point": {
+     "at": 268,
+     "label": "268"
+    },
+    "hops": [
+     {
+      "from": 268,
+      "to": 270,
+      "label": "2 away"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "268 sits between 260 and 270.",
+     "box": [
+      70.4,
+      42.7,
+      12,
+      35.6
+     ]
+    },
+    {
+     "cue": "The hop to 270 is only 2. The hop back to 260 is 8.",
+     "box": [
+      74.4,
+      21.3,
+      22,
+      39.1
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Stretch: Any place you like",
+   "text": "Big numbers can round to any place. Round 12,648 to the nearest thousand: the hundreds digit is 6, so it climbs to 13,000.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "round",
+     "means": "to swap a number for the nearest friendly one"
+    },
+    {
+     "word": "nearest",
+     "means": "closest in value, with less distance than any other"
+    },
+    {
+     "word": "estimate",
+     "means": "a smart rough answer, found on purpose"
+    },
+    {
+     "word": "digit",
+     "means": "one of the ten symbols 0 to 9 that build numbers"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sum Racer. It opens on the Rounding Run track, a track of nothing but rounding questions, and it stays there. Win the race: say each number out loud, rounded, before your kart moves.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-1.2-e1",
+  "nq-explorer-1.2-e2",
+  "nq-explorer-1.2-e3"
+ ],
+ "game": {
+  "slug": "sum-racer",
+  "chapter": "Rounding Run",
+  "params": "level=9&lock=1"
+ }
+}

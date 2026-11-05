@@ -1,0 +1,134 @@
+{
+ "key": "explorer-3.1",
+ "n": "3.1",
+ "band": "explorer",
+ "title": "Groups of groups",
+ "topic": "Groups",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Trays in the workshop",
+   "text": "The workshops are open again, and the first job is packing. Rolls, seeds and tiles all travel in trays, and every tray holds the same number.",
+   "art": "box"
+  },
+  {
+   "title": "Equal groups multiply",
+   "text": "When groups are equal, adding again and again is slow. Multiplication is the shortcut: count the groups, count what is in each group, and multiply.",
+   "art": "grid",
+   "visual": {
+    "type": "array",
+    "label": "4 trays of 5 rolls drawn as an array: 4 rows of 5",
+    "rows": 4,
+    "cols": 5
+   },
+   "focus": [
+    {
+     "cue": "One row is one tray: 5 rolls.",
+     "box": [
+      12,
+      12.4,
+      76,
+      16.0
+     ]
+    },
+    {
+     "cue": "4 trays of 5 is 20 rolls in all.",
+     "box": [
+      12,
+      12.4,
+      76,
+      71.1
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then group",
+   "text": "Rough first: 6 trays of 7 rolls is a bit under 50. Count the rolls tray by tray, then take the shortcut.",
+   "art": "box",
+   "steps": [
+    "6 trays, 7 rolls on each tray",
+    "skip-count by 7: 7, 14, 21, 28, 35, 42",
+    "6 x 7 = 42 rolls in all",
+    "the array shows 6 rows of 7"
+   ],
+   "visual": {
+    "type": "array",
+    "label": "6 trays of 7 rolls drawn as an array: 6 rows of 7 is 42",
+    "rows": 6,
+    "cols": 7
+   },
+   "focus": [
+    {
+     "cue": "Each row is a tray of 7. Skip-count: 7, 14, 21...",
+     "box": [
+      12,
+      12.4,
+      76,
+      12.4
+     ]
+    },
+    {
+     "cue": "Six rows of 7: 6 x 7 = 42 rolls in all.",
+     "box": [
+      12,
+      12.4,
+      76,
+      64.0
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Arrays are groups drawn",
+   "text": "Draw the groups as rows and the picture does the counting. Six rows of seven is the same total turned either way: 7 rows of six works too.",
+   "art": "grid"
+  },
+  {
+   "title": "Stretch: Bigger groups",
+   "text": "The shortcut scales up. For 23 x 4, split 23 into 20 and 3. Then 20 x 4 = 80 and 3 x 4 = 12, so 23 x 4 = 92.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "multiplication",
+     "means": "joining equal groups into one total, the fast way"
+    },
+    {
+     "word": "group",
+     "means": "a set of things counted together"
+    },
+    {
+     "word": "array",
+     "means": "things set out in equal rows and columns"
+    },
+    {
+     "word": "factor",
+     "means": "one of the numbers you multiply together"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sum Racer. It opens on the 2, 5 and 10 times tables track, and it stays there. Win the race: picture the trays of groups before you answer each fact.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-3.1-e1",
+  "nq-explorer-3.1-e2",
+  "nq-explorer-3.1-e3"
+ ],
+ "game": {
+  "slug": "sum-racer",
+  "chapter": "Times Tables 2, 5 and 10",
+  "params": "level=4&lock=1"
+ }
+}

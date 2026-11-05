@@ -1,0 +1,164 @@
+{
+ "key": "explorer-4.3",
+ "n": "4.3",
+ "band": "explorer",
+ "title": "Adding slices",
+ "topic": "Adding slices",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Recipes add shares",
+   "text": "The Bakery recipe book adds shares all day: half a cup of flour, then a fourth more. Adding fractions starts with one question: are the pieces the same size?",
+   "art": "pencil"
+  },
+  {
+   "title": "Same size pieces add",
+   "text": "When pieces match, adding is counting. Two eighths plus three eighths is five eighths: you count the pieces, and the piece size stays eighths.",
+   "art": "grid",
+   "visual": {
+    "type": "fraction",
+    "label": "Adding eighths: 2/8 plus 3/8 is 5/8, the piece size stays eighths",
+    "rows": [
+     {
+      "label": "2/8",
+      "cuts": 8,
+      "shaded": 2
+     },
+     {
+      "label": "3/8",
+      "cuts": 8,
+      "shaded": 3
+     },
+     {
+      "label": "2/8 + 3/8 = 5/8",
+      "cuts": 8,
+      "shaded": 5
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The pieces match: both are eighths, so adding is counting.",
+     "box": [
+      5,
+      41.8,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Count the pieces: 2 + 3 = 5 eighths. The size stays eighths.",
+     "box": [
+      5,
+      72.0,
+      90,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then re-slice",
+   "text": "Rough first: 1/2 + 1/4 lands between 1/2 and 1 whole. The pieces do not match, so re-slice the half first.",
+   "art": "box",
+   "steps": [
+    "cut the half into fourths: 1/2 = 2/4",
+    "now the pieces match: fourths",
+    "2/4 + 1/4 = 3/4",
+    "3/4 sits where our rough guess said"
+   ],
+   "visual": {
+    "type": "fraction",
+    "label": "Re-slice before adding: 1/2 becomes 2/4, then 2/4 plus 1/4 is 3/4",
+    "rows": [
+     {
+      "label": "1/2: too big a piece to add to fourths",
+      "cuts": 2,
+      "shaded": 1
+     },
+     {
+      "label": "Re-sliced: 1/2 = 2/4",
+      "cuts": 4,
+      "shaded": 2
+     },
+     {
+      "label": "2/4 + 1/4 = 3/4",
+      "cuts": 4,
+      "shaded": 3
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Re-slice the half into fourths: 1/2 = 2/4.",
+     "box": [
+      5,
+      41.8,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Now the pieces match: 2/4 + 1/4 = 3/4.",
+     "box": [
+      5,
+      72.0,
+      90,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The Jumble adds the bottoms",
+   "text": "The Jumble added 1/2 + 1/4 and wrote 2/6. It counted the pieces and the cuts. A mistake is a clue: the bottom number names the piece size, and sizes do not add.",
+   "art": "bug"
+  },
+  {
+   "title": "Stretch: Mixed numbers",
+   "text": "Big shares join in two piles. For 1 1/4 + 2 1/4, add the wholes (3), then the fourths (2/4), and the answer is 3 2/4.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "like denominators",
+     "means": "fractions whose pieces are the same size, ready to add"
+    },
+    {
+     "word": "unlike denominators",
+     "means": "fractions whose pieces differ in size, needing a re-slice"
+    },
+    {
+     "word": "mixed number",
+     "means": "a whole number and a fraction together, like 2 1/2"
+    },
+    {
+     "word": "sum",
+     "means": "the total when amounts are added together"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Fraction Factory at Recipe Maths, then serve the orders. Re-slice until the pieces match before you add any two shares.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-4.3-e1",
+  "nq-explorer-4.3-e2",
+  "nq-explorer-4.3-e3"
+ ],
+ "game": {
+  "slug": "fraction-factory",
+  "chapter": "Recipe Maths",
+  "params": "chapter=recipe&band=1b&lock=1"
+ }
+}

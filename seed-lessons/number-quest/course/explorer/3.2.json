@@ -1,0 +1,140 @@
+{
+ "key": "explorer-3.2",
+ "n": "3.2",
+ "band": "explorer",
+ "title": "Sharing fairly",
+ "topic": "Sharing",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Sharing is dividing",
+   "text": "A sack of plums lands on the workbench and four friends are waiting. Sharing it fairly, so everyone gets the same, is division.",
+   "art": "people"
+  },
+  {
+   "title": "Two sharing questions",
+   "text": "Division answers two questions. How many in each share, if you know the groups? Or how many groups, if you know the share size?",
+   "art": "branch",
+   "visual": {
+    "type": "tiles",
+    "label": "Sharing in one strip: 29 plums, 4 friends, 7 each, 1 left over",
+    "values": [
+     "29 plums",
+     "4 friends",
+     "7 each",
+     "1 left"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "29 plums, shared by 4 friends.",
+     "box": [
+      5.5,
+      28.4,
+      21.5,
+      33.8
+     ]
+    },
+    {
+     "cue": "Each friend gets 7, and 1 plum is left over.",
+     "box": [
+      73.0,
+      28.4,
+      21.5,
+      33.8
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then share",
+   "text": "Rough first: 29 plums shared by 4 friends is about 7 each. Share them out one by one and see what is left.",
+   "art": "people",
+   "steps": [
+    "29 plums, 4 friends",
+    "each friend gets 7 plums: 4 x 7 = 28",
+    "1 plum is left over",
+    "29 shared by 4 is 7 remainder 1"
+   ],
+   "visual": {
+    "type": "array",
+    "label": "29 plums shared by 4 friends: 4 rows of 7, with 1 plum left over",
+    "rows": 4,
+    "cols": 7,
+    "extra": 1,
+    "extraLabel": "1 left over"
+   },
+   "focus": [
+    {
+     "cue": "One row for each friend: 7 plums each.",
+     "box": [
+      12,
+      12.4,
+      76,
+      16.0
+     ]
+    },
+    {
+     "cue": "After fair shares of 7, 1 plum is left over.",
+     "box": [
+      44,
+      78.2,
+      30,
+      17.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Leftovers need a decision",
+   "text": "A remainder is not a mistake. It is a leftover that needs a decision: one more van, a shared last slice, or a plum saved for later.",
+   "art": "lightbulb"
+  },
+  {
+   "title": "Stretch: Big shares",
+   "text": "Long sharing works in chunks. For 96 shared by 4, share 80 first (20 each), then 16 (4 each). Each share is 24.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "division",
+     "means": "splitting an amount into equal shares or groups"
+    },
+    {
+     "word": "share",
+     "means": "one equal part that each person or group gets"
+    },
+    {
+     "word": "remainder",
+     "means": "what is left over after equal sharing"
+    },
+    {
+     "word": "quotient",
+     "means": "the answer to a division: how many in each share"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sum Racer. It opens on the Sharing (division) track, division questions only, and it stays there. Win the race: picture the fair shares before you answer.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-3.2-e1",
+  "nq-explorer-3.2-e2",
+  "nq-explorer-3.2-e3"
+ ],
+ "game": {
+  "slug": "sum-racer",
+  "chapter": "Sharing (Division)",
+  "params": "level=6&lock=1"
+ }
+}

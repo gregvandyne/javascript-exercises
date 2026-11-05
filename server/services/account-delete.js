@@ -75,7 +75,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // 6. the child's rows on other games
     for (const r of q.all('SELECT game_id FROM likes WHERE user_id=?', u.id)) q.run('UPDATE games SET likes=MAX(0, likes-1) WHERE id=?', r.game_id);
     for (const r of q.all('SELECT game_id, stars FROM ratings WHERE user_id=?', u.id)) q.run('UPDATE games SET rating_sum=MAX(0, rating_sum-?), rating_count=MAX(0, rating_count-1) WHERE id=?', r.stars, r.game_id);
-    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
+    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands', 'course_pending_wins', 'nq_xp_events', 'nq_daily_goals', 'nq_daily_activity', 'nq_laps', 'nq_placement', 'nq_sort_runs', 'nq_testout']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
     q.run('UPDATE plays SET user_id=NULL WHERE user_id=?', u.id);
     q.run('UPDATE reports SET user_id=NULL WHERE user_id=?', u.id);
     // 7. Builder turns: totals only
