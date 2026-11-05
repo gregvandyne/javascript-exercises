@@ -89,12 +89,53 @@
   {
    "title": "Leftovers need a decision",
    "text": "A remainder is not a mistake. It is a leftover that needs a decision: one more van, a shared last slice, or a plum saved for later.",
-   "art": "lightbulb"
+   "art": "branch"
   },
   {
    "title": "Stretch: Big shares",
    "text": "Long sharing works in chunks. For 96 shared by 4, share 80 first (20 each), then 16 (4 each). Each share is 24.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "bars",
+    "label": "Sharing 96 by 4 in chunks: 80 first, then 16, and each share is 24",
+    "rows": [
+     {
+      "label": "96 shared by 4, in two chunks: 80 first, then 16",
+      "parts": [
+       {
+        "w": 0.83,
+        "label": "80: 20 each",
+        "tone": 0
+       },
+       {
+        "w": 0.17,
+        "label": "16: 4 each",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Share 80 first: that is 20 for each of the 4.",
+     "box": [
+      5,
+      34.7,
+      73.5,
+      19.6
+     ]
+    },
+    {
+     "cue": "Then share 16: 4 more each. Each share is 24.",
+     "box": [
+      78.5,
+      34.7,
+      16,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
