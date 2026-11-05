@@ -16,19 +16,19 @@
     {
      "cue": "Photos only on your tablet, seen by nobody",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "A copy on a service someone else runs",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "A message feels private inside the chat",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "One screenshot carries it out to everyone",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "Their photo, shared with the whole world",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Their photo, shared with ten friends",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -97,19 +97,19 @@
     {
      "cue": "Free, if it sees where you are, live",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Costs a little, and never knows",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "Anyone can comment: pressure travels fast",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Only your class: a smaller, safer room",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -158,19 +158,19 @@
     {
      "cue": "A nickname nobody can trace to you",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Your real first name, online for all",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -210,10 +210,10 @@
     {
      "cue": "Judge each dilemma by consent, not by popularity",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

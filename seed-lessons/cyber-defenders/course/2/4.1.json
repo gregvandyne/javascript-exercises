@@ -16,19 +16,19 @@
     {
      "cue": "The name says Your bank; the badge says unknown sender",
      "box": [
-      7,
-      26.5,
-      40,
-      7.5
+      13.0,
+      29.8,
+      22.4,
+      3.4
      ]
     },
     {
      "cue": "A claimed sender is a costume: read the whole card",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
@@ -50,19 +50,19 @@
     {
      "cue": "A sender can write any name on an envelope",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "Says the bank, but the badge says unknown sender",
      "box": [
-      54,
-      40,
-      18,
-      14
+      54.0,
+      42.5,
+      17.4,
+      11.0
      ]
     }
    ]
@@ -77,19 +77,19 @@
     {
      "cue": "Built for one person: it knows your dog's name",
      "box": [
-      7,
-      25,
-      47,
-      30
+      8.0,
+      27.9,
+      45.2,
+      26.0
      ]
     },
     {
      "cue": "Knows things from your public profile",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      42.5,
+      34.4,
+      16.6
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "An unexpected parcel, with a pay-now button",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Asks for money, two hours to act",
      "box": [
-      54,
-      39,
-      35,
-      18
+      54.0,
+      40.2,
+      34.4,
+      16.5
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "The badge shows whether the post office really knows them",
      "box": [
-      28,
-      26.5,
-      18.5,
-      7.5
+      22.7,
+      29.8,
+      12.7,
+      3.4
      ]
     },
     {
      "cue": "Safe, trick, or ask a trusted adult: report it",
      "box": [
-      54,
-      61,
-      35,
-      11
+      54.0,
+      63.6,
+      34.4,
+      6.6
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Check the real sender before you judge each card",
      "box": [
-      7,
-      26.5,
-      40,
-      7.5
+      13.0,
+      29.8,
+      22.4,
+      3.4
      ]
     }
    ]

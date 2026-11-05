@@ -16,19 +16,19 @@
     {
      "cue": "A picture's journey, in five rule cards",
      "box": [
-      51,
-      42,
-      38,
-      21
+      40.7,
+      42.9,
+      47.6,
+      20.0
      ]
     },
     {
      "cue": "Put them in the order they happen",
      "box": [
-      50,
-      34,
-      39,
-      9
+      40.7,
+      37.5,
+      47.6,
+      4.1
      ]
     }
    ]
@@ -50,19 +50,19 @@
     {
      "cue": "In transit: the picture travels a sealed road",
      "box": [
-      30,
-      33,
-      23,
-      34
+      28.9,
+      37.7,
+      23.4,
+      30.3
      ]
     },
     {
      "cue": "The padlock streets keep readers out",
      "box": [
-      24.5,
-      34,
-      22.5,
-      10.5
+      28.9,
+      37.7,
+      23.4,
+      30.3
      ]
     }
    ]
@@ -77,19 +77,19 @@
     {
      "cue": "A copy in another place: the borrowed vault",
      "box": [
-      51.5,
-      50.5,
-      20.5,
-      10
+      40.6,
+      52.0,
+      15.4,
+      8.2
      ]
     },
     {
      "cue": "The line runs from Pim's Post to Grandma's House",
      "box": [
-      9.5,
-      58,
-      40,
-      13
+      9.3,
+      62.9,
+      28.0,
+      6.3
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "Photos only on your tablet",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Or a copy on a service someone else runs",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "The Magpie watches the roads between offices",
      "box": [
-      8,
-      33,
-      46,
-      57
+      8.4,
+      36.1,
+      45.5,
+      54.8
      ]
     },
     {
      "cue": "Every room and every road needs its check",
      "box": [
-      54,
-      25,
-      35,
-      11
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Play Many Roads: name the room before each run",
      "box": [
-      8,
-      34,
-      46,
-      56
+      10.0,
+      37.8,
+      41.9,
+      51.9
      ]
     }
    ]

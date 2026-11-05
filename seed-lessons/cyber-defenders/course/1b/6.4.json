@@ -16,19 +16,19 @@
     {
      "cue": "Spark Day: the Magpie locked the real post inside",
      "box": [
-      14,
-      25,
-      72,
-      12
+      15.1,
+      27.4,
+      73.8,
+      8.1
      ]
     },
     {
      "cue": "The six trick locks on the sorting room door",
      "box": [
-      14,
-      35,
-      72,
-      34
+      15.3,
+      36.0,
+      72.7,
+      33.0
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "A photo waits at Pim's Post, ready to travel",
      "box": [
-      9,
-      57,
-      9,
-      14
+      11.1,
+      61.4,
+      3.9,
+      7.8
      ]
     },
     {
      "cue": "Your stamps are keys: each lock tests one unit",
      "box": [
-      9,
-      45,
-      44,
-      27
+      10.6,
+      48.5,
+      39.6,
+      22.7
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "The town map, with more than one road",
      "box": [
-      9,
-      36,
-      44,
-      53
+      10.0,
+      37.8,
+      41.9,
+      51.9
      ]
     },
     {
      "cue": "Cookies for the school: one road is about to close",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -106,19 +106,19 @@
     {
      "cue": "The cipher wheel, for the Sealed Note lock",
      "box": [
-      13.5,
-      24.5,
-      34.5,
-      61.5
+      15.4,
+      31.3,
+      30.5,
+      54.5
      ]
     },
     {
      "cue": "A secret word, and the reading it makes",
      "box": [
-      53.5,
-      34.5,
-      35.5,
-      24
+      54.0,
+      38.0,
+      34.3,
+      17.9
      ]
     }
    ]
@@ -133,19 +133,19 @@
     {
      "cue": "There is no fail here: build, try, and learn",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "Lock it in when you are ready: no timer watches",
      "box": [
-      54,
-      69,
-      15,
-      10
+      54.5,
+      71.3,
+      16.8,
+      6.9
      ]
     }
    ]
@@ -185,10 +185,10 @@
     {
      "cue": "Open all six locks and earn your Defender shield",
      "box": [
-      14,
-      35,
-      72,
-      34
+      15.3,
+      36.0,
+      72.7,
+      33.0
      ]
     }
    ]

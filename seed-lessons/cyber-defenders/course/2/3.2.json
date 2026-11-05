@@ -16,19 +16,19 @@
     {
      "cue": "Share one photo with the whole world",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Share ten photos with ten friends",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -49,19 +49,19 @@
     {
      "cue": "A page where anyone can comment",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Only your class can comment there",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -76,19 +76,19 @@
     {
      "cue": "Deleting asks nicely for a post to go",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Copies and screenshots can keep it alive",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -103,19 +103,19 @@
     {
      "cue": "Your post, written for today's friends",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "A copy that future readers may meet years later",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -130,19 +130,19 @@
     {
      "cue": "Public gets you seen and found",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Private keeps you safe",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -182,10 +182,10 @@
     {
      "cue": "Play Online: share or keep, and judge each pair",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

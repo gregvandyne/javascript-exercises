@@ -276,22 +276,28 @@ test('Explorer decks read at a grade 3-5 level: short sentences', () => {
 
 test('guided focus geometry: the reported slide and the shared road maps cover the elements their cues name', () => {
   // Regression for the 2026-11-04 live report: on 1b-1.1 slide 1 ("Pim sorts the post", packets-1b-key) the tour's
-  // second ring framed blank panel instead of the route to Grandma's House. The extents below were measured on the
-  // shipped 1280x720 captures with a drawn coordinate grid (see scripts/focus-sheet.js, which renders every focus
-  // box onto its picture for eyeball verification): the L1 route incl. labels spans x 10-52, y 46-69; the packet
-  // icon + number badge at Pim's Post spans x 10.5-16, y 58-69. Boxes must COVER their element, not just sit near it.
+  // second ring framed blank panel instead of the route to Grandma's House. Boxes must COVER their element, not
+  // just sit near it. The extents below were re-measured by the 2026-11-05 perfection pass (component/band/grid
+  // measurement on the shipped captures; the 2026-11-04 grid extents were coarser and halo-inclusive): the packet
+  // icon + number badge at Pim's Post spans x 11.1-15.0, y 61.4-69.2 (halo excluded by design); the L1 route incl.
+  // labels spans x 10.6-50.2, y 48.5-71.2. The guided-focus test pins every box to its measured bounds exactly.
   const covers = (box, [x0, y0, x1, y1]) => box[0] <= x0 && box[1] <= y0 && box[0] + box[2] >= x1 && box[1] + box[3] >= y1;
   const deck = (band, n) => decks.find(d => d.band === band && d.step.n === n).deck;
   const gregs = deck('1b', '1.1').slides[0];
   assert.equal(gregs.img, 'csq/packet-post/packets-1b-key');
-  assert.ok(covers(gregs.focus[0].box, [10.5, 58, 16, 69]), `the packet at Pim's Post sits inside step 1's box: ${gregs.focus[0].box}`);
-  assert.ok(covers(gregs.focus[1].box, [10, 46, 52, 69]), `the whole route sits inside step 2's box: ${gregs.focus[1].box}`);
-  for (const [px, py] of gregs.focus[1].path || []) assert.ok(px >= 9 && px <= 53 && py >= 43 && py <= 70, `step 2's path stays on the route: ${px},${py}`);
-  // The Rules of the Road road (protocols-*-key / protocols-2-rules captures) spans x 10-41, y 46-70 incl. labels;
-  // every step that sends the eye to that road must cover it (the parity pass shipped boxes floating above it).
-  const roadAt = [[ '1b', '1.2', 0, 0 ], [ '1b', '1.2', 6, 0 ], [ '2', '1.1', 6, 0 ], [ '2', '1.2', 6, 0 ]];
-  for (const [band, n, si, fi] of roadAt) {
+  assert.ok(covers(gregs.focus[0].box, [11.1, 61.4, 15.0, 69.2]), `the packet at Pim's Post sits inside step 1's box: ${gregs.focus[0].box}`);
+  assert.ok(covers(gregs.focus[1].box, [10.6, 48.5, 50.2, 71.2]), `the whole route sits inside step 2's box: ${gregs.focus[1].box}`);
+  for (const [px, py] of gregs.focus[1].path || []) assert.ok(px >= 9 && px <= 53 && py >= 43 && py <= 72, `step 2's path stays on the route: ${px},${py}`);
+  // The Rules of the Road diagram incl. labels, per capture (perfection-pass measurements): the
+  // protocols-*-key diagram spans x 11.1-50.2, y 48.6-71.2; the protocols-2-rules diagram sits
+  // slightly higher and narrower, x 9.8-49.5, y 46.9-70.3. Every step that sends the eye to a
+  // diagram must cover its own capture's diagram.
+  const roadAt = [
+    [ '1b', '1.2', 0, 0, [11.1, 48.6, 50.2, 71.2] ], [ '1b', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
+    [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ], [ '2', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
+  ];
+  for (const [band, n, si, fi, extent] of roadAt) {
     const s = deck(band, n).slides[si];
-    assert.ok(covers(s.focus[fi].box, [10, 46, 41, 70]), `${band}-${n} slide ${si + 1}: the road sits inside the box: ${s.focus[fi].box}`);
+    assert.ok(covers(s.focus[fi].box, extent), `${band}-${n} slide ${si + 1}: the road sits inside the box: ${s.focus[fi].box}`);
   }
 });

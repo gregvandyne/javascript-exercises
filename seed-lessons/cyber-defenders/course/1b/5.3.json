@@ -34,19 +34,19 @@
     {
      "cue": "Computers that write songs",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Computers that only play songs people wrote",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -61,19 +61,19 @@
     {
      "cue": "Choose the stop before you press play",
      "box": [
-      39,
-      45,
-      22,
-      14
+      39.4,
+      46.7,
+      20.5,
+      12.1
      ]
     },
     {
      "cue": "Pim, at the post office, done for the day",
      "box": [
-      62,
-      72,
-      15,
-      24
+      61.3,
+      71.3,
+      15.5,
+      24.0
      ]
     }
    ]
@@ -95,19 +95,19 @@
     {
      "cue": "Ask a trusted adult before every download",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Or never download anything at all",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -122,19 +122,19 @@
     {
      "cue": "Every road meets at the center office",
      "box": [
-      21.5,
-      49,
-      10,
-      14
+      21.3,
+      59.3,
+      8.0,
+      8.6
      ]
     },
     {
      "cue": "Five packets cross here: the whole town in one map",
      "box": [
-      8,
-      36,
-      46,
-      52
+      8.6,
+      37.8,
+      45.2,
+      51.9
      ]
     }
    ]
@@ -174,10 +174,10 @@
     {
      "cue": "Meet at the center office and make your break plan",
      "box": [
-      21.5,
-      49,
-      10,
-      14
+      21.3,
+      59.3,
+      8.0,
+      8.6
      ]
     }
    ]

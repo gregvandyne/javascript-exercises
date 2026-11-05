@@ -23,19 +23,19 @@
     {
      "cue": "A fan club that knows your dog and your birthday",
      "box": [
-      7,
-      25,
-      47,
-      30
+      8.0,
+      27.9,
+      45.2,
+      26.0
      ]
     },
     {
      "cue": "Anything on a public profile is a gift to a trickster",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     }
    ]
@@ -50,19 +50,19 @@
     {
      "cue": "A faked sender: your account is locked",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Its levers: threats, key asks, an unknown badge, today",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      40.2,
+      34.4,
+      17.4
      ]
     }
    ]
@@ -77,19 +77,19 @@
     {
      "cue": "Your parcel is waiting: a reason invented to rush you",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "A parcel you never ordered is a favorite trick",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "Not every message is a trick: read carefully first",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     },
     {
      "cue": "A real one, from a sender the office knows",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "Friendly questions that fish for private facts",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Asks the very things used to reset a mailbox key",
      "box": [
-      54,
-      40,
-      35,
-      22
+      54.0,
+      42.6,
+      34.4,
+      20.0
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Name the pressure lever on each Pro card",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
