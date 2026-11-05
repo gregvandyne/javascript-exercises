@@ -175,7 +175,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It and finish 4 levels. Your passphrase there is called your mailbox key, and you only tap tiles, so nothing real is ever shared.",
+   "text": "Open Packet Post at Lock It and finish all 7 levels. Your passphrase there is called your mailbox key, and you only tap tiles, so nothing real is ever shared.",
    "art": "trophy",
    "img": "csq/packet-post/locks-2-key",
    "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",

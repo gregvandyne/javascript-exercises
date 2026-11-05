@@ -184,7 +184,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road and play the levels you have not played yet. After each level, name one thing its padlock would certify, and one it would not.",
+   "text": "Open Packet Post at Rules of the Road: the same levels you finished in step 1.1, so this step is already earned when the game opens. After each level, name one thing its padlock would certify, and one it would not.",
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-key",
    "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",

@@ -342,7 +342,7 @@ if (form) {
     if (right) right.closest('.qchoice').classList.add('is-right');
     if (!r.right) radio.closest('.qchoice').classList.add('is-wrong');
     f.classList.add(r.right ? 'is-right' : 'is-wrong');
-    f.querySelector('.qq-fb').textContent = r.right ? t('js.course.right') : t('js.course.wrong', { answer: r.text });
+    f.querySelector('.qq-fb').textContent = r.right ? t('js.course.right') : (r.why ? t('js.course.wrongWhy', { answer: r.text, why: r.why }) : t('js.course.wrong', { answer: r.text }));
     const last = qi === qs.length - 1;
     const go = document.createElement('button');
     go.type = 'button'; go.className = 'btn btn-primary btn-big qq-go'; go.textContent = last ? t('js.course.finish') : t('js.course.next');

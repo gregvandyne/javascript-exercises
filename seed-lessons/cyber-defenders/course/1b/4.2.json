@@ -14,7 +14,7 @@
    "alt": "Spot the trick: the lesson card names what trick messages do. They rush you, promise prizes and fish for your key.",
    "focus": [
     {
-     "cue": "Spot the trick: train your eye",
+     "cue": "Spot the trick: the chapter that trains your eye",
      "box": [
       28.1,
       16.0,
@@ -175,7 +175,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Spot the Trick and play the cards you have not checked yet. Name each card's motive before you decide if it is a trick.",
+   "text": "Open Packet Post at Spot the Trick: the same cards you checked in step 4.1, so this step is already earned when the game opens. Name each card's motive before you decide if it is a trick.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-1b-key",
    "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",

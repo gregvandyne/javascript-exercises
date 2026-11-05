@@ -148,7 +148,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It and play the levels you have not played yet. Notice each check: is it proving who you are, or checking what you may open?",
+   "text": "Open Packet Post at Lock It: the same levels you finished in step 2.1, so this step is already earned when the game opens. Notice each check: is it proving who you are, or checking what you may open?",
    "art": "trophy",
    "img": "csq/packet-post/locks-2-key",
    "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",

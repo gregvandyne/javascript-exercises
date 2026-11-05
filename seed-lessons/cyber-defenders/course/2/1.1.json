@@ -184,7 +184,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road and finish 4 levels. Each time a packet is resent, say why: missing, or damaged?",
+   "text": "Open Packet Post at Rules of the Road and finish all 6 levels, then play the 2 Many Roads levels the game sends you to. Each time a packet is resent, say why: missing, or damaged?",
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-rules",
    "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",

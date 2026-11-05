@@ -175,7 +175,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Spot the Trick and check 4 cards. Tap every clue you find, then decide if each card is a trick or safe.",
+   "text": "Open Packet Post at Spot the Trick and check all 6 cards. Tap every clue you find, then decide if each card is a trick or safe. After that, the game sends you to Secret Messages: crack the 2 messages there.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-1b-key",
    "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
