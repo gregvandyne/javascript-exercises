@@ -50,28 +50,28 @@
     {
      "cue": "Said got it: arrived packets turn their slot green",
      "box": [
-      54,
-      36,
-      38,
-      14
+      53.5,
+      41.5,
+      26.5,
+      10
      ]
     },
     {
      "cue": "Slot 3 stayed empty: ask for that packet again",
      "box": [
-      67,
-      38,
-      9,
-      13
+      64.5,
+      41.5,
+      5.5,
+      10
      ]
     },
     {
      "cue": "Extra copies wait in the inbox, then are binned",
      "box": [
-      54,
-      49,
-      30,
-      11
+      53.5,
+      50.5,
+      29,
+      13.5
      ]
     }
    ]

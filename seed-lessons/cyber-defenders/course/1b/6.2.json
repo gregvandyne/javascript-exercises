@@ -103,19 +103,19 @@
     {
      "cue": "Extra copies wait in the inbox, then are binned",
      "box": [
-      54,
-      53,
-      22,
-      11
+      53.5,
+      52.5,
+      29,
+      11.5
      ]
     },
     {
      "cue": "Four packets were sent; the slots keep count",
      "box": [
-      54,
-      41,
-      22,
-      11
+      53.5,
+      40.5,
+      27,
+      11.5
      ]
     }
    ]

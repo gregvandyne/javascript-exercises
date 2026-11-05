@@ -122,10 +122,10 @@
     {
      "cue": "Every road meets at the center office",
      "box": [
-      20,
-      57,
-      8,
-      12
+      21.5,
+      49,
+      10,
+      14
      ]
     },
     {
@@ -174,10 +174,10 @@
     {
      "cue": "Meet at the center office and make your break plan",
      "box": [
-      20,
-      57,
-      8,
-      12
+      21.5,
+      49,
+      10,
+      14
      ]
     }
    ]

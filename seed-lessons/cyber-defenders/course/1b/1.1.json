@@ -144,10 +144,10 @@
     {
      "cue": "The far end rebuilds the photo from the numbers",
      "box": [
-      46,
-      55,
-      9,
-      13
+      45.5,
+      51,
+      10.5,
+      14
      ]
     }
    ]
@@ -162,10 +162,10 @@
     {
      "cue": "Every road here meets at the center office",
      "box": [
-      21,
-      55,
-      8,
-      12
+      21.5,
+      49,
+      10,
+      14
      ]
     },
     {

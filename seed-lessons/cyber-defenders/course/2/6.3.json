@@ -52,10 +52,10 @@
     {
      "cue": "The badge says unknown sender: contain it there",
      "box": [
-      22,
-      27,
-      15,
-      7
+      28,
+      26.5,
+      18.5,
+      7.5
      ]
     }
    ]
@@ -71,9 +71,9 @@
      "cue": "The faked sender name on the card",
      "box": [
       7,
-      27,
-      30,
-      7
+      26.5,
+      40,
+      7.5
      ]
     },
     {
@@ -109,7 +109,7 @@
       54,
       56,
       35,
-      9
+      10.5
      ]
     }
    ]

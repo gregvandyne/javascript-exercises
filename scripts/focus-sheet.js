@@ -6,12 +6,18 @@
 // the re-audit that followed: boxes had been authored from coarse region templates, and several sat on empty
 // panel or the wrong element entirely while every schema test passed.
 //
-// Usage: node scripts/focus-sheet.js [--out <dir>] [course ...]
+// Usage: node scripts/focus-sheet.js [--out <dir>] [--form-factors] [course ...]
 //   course: cs-quest | cyber-defenders (default: both). PNGs go to --out (default scripts/focus-sheets),
 //   one per pictured focus slide, named <course>-<band>-<step>-s<slide>.png, boxes drawn in step order
 //   (red, blue, green, orange) with a numbered tab, plus the step's dotted path where one is authored.
 //   Steps whose box is >90% one flat colour are also listed as REVIEW suspects on stdout: a ring around
 //   mostly-blank panel is the failure this tool hunts (thin roads on cream can false-positive — judge the PNG).
+//   --form-factors additionally writes <name>-ff.png per slide: the SAME boxes rendered at the real figure
+//   geometry — the 326px figure a 390px phone shows and the 720px figure tablet (834px) and desktop show —
+//   with the visible ring drawn at its true size (the box expanded by the ring outset: 1.15cqw of the figure
+//   width under the container-query rule in app.css, ~8px at 720px and ~4px at 326px). A box only passes if
+//   the RING, not the authored rectangle, contains the cued element at phone size too: the 2026-11-05 audit
+//   found boxes that were right in % but whose fixed 8px ring swallowed neighbouring elements on phones.
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
@@ -22,6 +28,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const EXE = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const args = process.argv.slice(2);
 const outDir = path.resolve(ROOT, args.includes('--out') ? args[args.indexOf('--out') + 1] : 'scripts/focus-sheets');
+const FORM_FACTORS = args.includes('--form-factors');
 const wanted = args.filter(a => ['cs-quest', 'cyber-defenders'].includes(a));
 const COURSES = wanted.length ? wanted : ['cs-quest', 'cyber-defenders'];
 const COLOURS = ['#e53935', '#1e6fe8', '#1f9d63', '#ef7d00'];
@@ -77,6 +84,28 @@ for (const job of jobs) {
   await page.waitForFunction(() => { const i = document.querySelector('img'); return i && i.complete && i.naturalWidth > 0; });
   const name = `${job.course}-${job.band}-${job.step}-s${job.i}.png`;
   await page.screenshot({ path: path.join(outDir, name) });
+  if (FORM_FACTORS) {
+    // The real figures: 326px wide on a 390px phone viewport, 720px on tablet/desktop (the deck column
+    // caps at 720px). The ring outset is 1.15cqw of the figure width (app.css), the ring border 3px Spark.
+    const stages = [[326, 'phone figure 326px (390px viewport)'], [720, 'tablet/desktop figure 720px (834px+ viewport)']];
+    const stageHtml = stages.map(([fw, label]) => {
+      const fh = Math.round(fw * 9 / 16);
+      const outset = +(fw * 0.0115).toFixed(1);
+      const rings = job.focus.map((f, j) => {
+        const [x, y, w, h] = f.box;
+        const left = x / 100 * fw - outset, top = y / 100 * fh - outset;
+        const width = w / 100 * fw + outset * 2, height = h / 100 * fh + outset * 2;
+        return `<div style="position:absolute;left:${left}px;top:${top}px;width:${width}px;height:${height}px;border:3px solid #FFD23F;border-radius:18px;box-sizing:border-box">
+          <span style="position:absolute;left:-3px;top:-24px;background:#FFD23F;color:#141414;font:bold 13px sans-serif;padding:1px 6px">${j + 1}</span></div>
+          <div style="position:absolute;left:${x / 100 * fw}px;top:${y / 100 * fh}px;width:${w / 100 * fw}px;height:${h / 100 * fh}px;border:1px dashed ${COLOURS[j % COLOURS.length]};box-sizing:border-box"></div>`;
+      }).join('');
+      return `<div style="font:12px sans-serif;color:#333;margin:10px 0 4px">${label} — ring outset ${outset}px</div>
+        <div style="position:relative;width:${fw}px;height:${fh}px"><img src="${src}" crossorigin="anonymous" style="width:${fw}px;height:${fh}px;display:block">${rings}</div>`;
+    }).join('');
+    await page.setContent(`<body style="margin:0;padding-left:8px;background:#fff">${stageHtml}</body>`);
+    await page.waitForFunction(() => [...document.querySelectorAll('img')].every(i => i.complete && i.naturalWidth > 0));
+    await page.screenshot({ path: path.join(outDir, name.replace('.png', '-ff.png')), fullPage: true });
+  }
   const blanks = await page.evaluate(boxes => {
     const img = document.querySelector('img');
     const cv = document.createElement('canvas'); cv.width = img.naturalWidth; cv.height = img.naturalHeight;

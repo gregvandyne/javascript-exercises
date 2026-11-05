@@ -17,9 +17,9 @@
      "cue": "The name says Your bank; the badge says unknown sender",
      "box": [
       7,
-      27,
-      30,
-      7
+      26.5,
+      40,
+      7.5
      ]
     },
     {
@@ -131,10 +131,10 @@
     {
      "cue": "The badge shows whether the post office really knows them",
      "box": [
-      22,
-      27,
-      15,
-      7
+      28,
+      26.5,
+      18.5,
+      7.5
      ]
     },
     {
@@ -184,9 +184,9 @@
      "cue": "Check the real sender before you judge each card",
      "box": [
       7,
-      27,
-      30,
-      7
+      26.5,
+      40,
+      7.5
      ]
     }
    ]
