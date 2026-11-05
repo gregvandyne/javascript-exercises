@@ -1,14 +1,17 @@
 // Cyber Defenders capture spec (scripts/cyber-shots-spec.json): every shot the parity pass took, checked
 // against the games it claims to show. Packet Post entries must name a real chapter for their band and a
 // level inside it (games.json is the chapter table); Would You Rather entries must name a real dilemma in
-// the game's "online" bank (the runner plays through the round until that dilemma is on screen). Every
-// state must be registered in the shared manifest with the spec's alt, its WebP must exist, and at least
-// one Cyber Defenders deck slide must use it — a capture nothing uses is drift.
+// the game's "online" bank (the runner plays through the round until that dilemma is on screen); Trick
+// Inbox entries must name a real set that runs for their band (the game's own SETS table); Escape the
+// Post Office entries name its single "escape" chapter. Every state must be registered in the shared
+// manifest with the spec's alt, its WebP must exist, and at least one Cyber Defenders deck slide must
+// use it — a capture nothing uses is drift.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -17,6 +20,10 @@ const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'img', 'cs
 const manifestByKey = new Map(manifest.images.map(e => [e.key, e]));
 const ppChapters = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons', 'cs-quest', 'games.json'), 'utf8')).games['packet-post'].chapters;
 const wyrBank = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'would-you-rather', 'en.json'), 'utf8')).items;
+const tiHtml = fs.readFileSync(path.join(ROOT, 'seed-games', 'trick-inbox.html'), 'utf8');
+const tiCtx = vm.createContext({});
+for (const m of tiHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], tiCtx);
+const tiSets = tiCtx.TrickInbox.SETS;
 const usedByDecks = new Set();
 for (const band of ['1b', '2']) for (const f of fs.readdirSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band))) {
   const deck = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band, f), 'utf8'));
@@ -28,7 +35,7 @@ test('the spec: unique states, real chapters and levels, real online dilemmas', 
   const seen = new Set();
   for (const s of spec) {
     assert.ok(!seen.has(s.state), `${s.state} twice`); seen.add(s.state);
-    assert.ok(['packet-post', 'would-you-rather'].includes(s.game), `${s.state}: a Cyber game`);
+    assert.ok(['packet-post', 'would-you-rather', 'trick-inbox', 'escape-the-post-office'].includes(s.game), `${s.state}: a Cyber game`);
     assert.ok(typeof s.alt === 'string' && s.alt.length >= 1 && s.alt.length <= 160, `${s.state}: alt 1-160 chars`);
     assert.ok(typeof s.concept === 'string' && s.concept.length >= 3, `${s.state}: a concept line`);
     if (s.game === 'packet-post') {
@@ -37,11 +44,18 @@ test('the spec: unique states, real chapters and levels, real online dilemmas', 
       assert.ok(ch, `${s.state}: ${s.chapter} is a Packet Post chapter for band ${s.band}`);
       assert.ok(Number.isInteger(s.level) && s.level >= 1 && s.level <= ch.levels, `${s.state}: level ${s.level} inside ${s.chapter} (${ch.levels} levels)`);
       for (const a of s.actions) assert.ok(a.acts || a.solve || a.closeCards, `${s.state}: only acts/solve/closeCards actions drive Packet Post`);
-    } else {
+    } else if (s.game === 'would-you-rather') {
       const item = wyrBank.find(x => x.id === s.dilemma);
       assert.ok(item, `${s.state}: ${s.dilemma} is a real Would You Rather dilemma`);
       assert.equal(item.cat, 'online', `${s.state}: ${s.dilemma} is in the online bank`);
       assert.equal(s.chapter, 'online', `${s.state}: the online chapter`);
+    } else if (s.game === 'trick-inbox') {
+      const set = tiSets.find(x => x.id === s.chapter);
+      assert.ok(set, `${s.state}: ${s.chapter} is a Trick Inbox set`);
+      assert.ok(set.bands.includes(s.band), `${s.state}: the ${s.chapter} set runs for band ${s.band}`);
+    } else {
+      assert.equal(s.game, 'escape-the-post-office');
+      assert.equal(s.chapter, 'escape', `${s.state}: the escape chapter`);
     }
   }
 });

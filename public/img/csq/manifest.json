@@ -333,6 +333,28 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/escape-the-post-office/door-1b",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "1b",
+   "state": "door-1b",
+   "concept": "the locked sorting room door",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "capturedAt": "2026-11-04",
+   "commit": "c6b79da"
+  },
+  {
+   "key": "csq/escape-the-post-office/door-2",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "2",
+   "state": "door-2",
+   "concept": "the locked sorting room door (Pro)",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "capturedAt": "2026-11-04",
+   "commit": "c6b79da"
+  },
+  {
    "key": "csq/inside-the-machine/bits-1b-five",
    "game": "inside-the-machine",
    "chapter": "bits",
@@ -2014,6 +2036,28 @@
    "alt": "The watch strip reads steps = 4 after two changes: the plan set steps to 6, and each change steps by -1 brings it down.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/trick-inbox/boss-1b",
+   "game": "trick-inbox",
+   "chapter": "boss",
+   "band": "1b",
+   "state": "boss-1b",
+   "concept": "the boss round, first message",
+   "alt": "Trick Inbox, the Boss Round: a mean game-chat message waits in the inbox, one clue found in green and one still hiding.",
+   "capturedAt": "2026-11-04",
+   "commit": "c6b79da"
+  },
+  {
+   "key": "csq/trick-inbox/boss-2",
+   "game": "trick-inbox",
+   "chapter": "boss",
+   "band": "2",
+   "state": "boss-2",
+   "concept": "the boss round, first message (Pro)",
+   "alt": "Trick Inbox, the Boss Round at Pro: a letter claiming an account will be deleted waits in the inbox, one clue found and one still hiding.",
+   "capturedAt": "2026-11-04",
+   "commit": "c6b79da"
   },
   {
    "key": "csq/would-you-rather/online-1b-first",

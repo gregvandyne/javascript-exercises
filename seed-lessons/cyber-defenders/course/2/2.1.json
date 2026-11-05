@@ -11,28 +11,108 @@
    "text": "A passphrase of four random words is long and hard to guess, beating a short word with a number added. Use a different one for every account.",
    "art": "key",
    "img": "csq/packet-post/locks-2-pass",
-   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key."
+   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key.",
+   "focus": [
+    {
+     "cue": "Build a mailbox key for Pim from four word tiles",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Four random words beat one short word with a number",
+     "box": [
+      54,
+      37,
+      35,
+      34
+     ]
+    }
+   ]
   },
   {
    "title": "When lists leak",
    "text": "In a breach, a service is broken into and its passphrases are copied. Stolen lists are traded, then tried on other accounts to find people who reused a key.",
    "art": "network",
    "img": "csq/packet-post/locks-2-shield",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private."
+   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "focus": [
+    {
+     "cue": "Your mailbox key: the good side, none; the risk, everything",
+     "box": [
+      7,
+      26,
+      47,
+      16
+     ]
+    },
+    {
+     "cue": "Public or private? A leaked key must stay private",
+     "box": [
+      54,
+      43,
+      25,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "Real keys stay secret",
    "text": "Your real passphrase is never for practice. In Packet Post it is called your mailbox key, and you build it by tapping tiles, so nothing real is shared.",
    "art": "lock",
    "img": "csq/packet-post/locks-2-router",
-   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles."
+   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles.",
+   "focus": [
+    {
+     "cue": "The router's sticker key is public: build it a new one",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "One tile is the word on the router sticker: never pick it",
+     "box": [
+      71,
+      37,
+      18,
+      10
+     ]
+    }
+   ]
   },
   {
    "title": "One safe drawer",
    "text": "A password manager is the spare-key drawer done properly. It stores a different strong passphrase for each account, so a trusted adult only has to remember one main key.",
    "art": "box",
    "img": "csq/packet-post/locks-2-backup",
-   "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh."
+   "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
+   "focus": [
+    {
+     "cue": "The backup rule in four steps, in order",
+     "box": [
+      40,
+      25,
+      49,
+      10
+     ]
+    },
+    {
+     "cue": "Update it, copy it again, check it opens, keep it elsewhere",
+     "box": [
+      40,
+      42,
+      49,
+      18
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -46,7 +126,27 @@
     "a passphrase for an account: digital"
    ],
    "img": "csq/packet-post/locks-2-sort",
-   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls."
+   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls.",
+   "focus": [
+    {
+     "cue": "Netville Post protects its mail two ways",
+     "box": [
+      54,
+      25,
+      35,
+      14
+     ]
+    },
+    {
+     "cue": "Physical you can touch; digital lives in the computers",
+     "box": [
+      54,
+      46,
+      26,
+      9
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Open Packet Post at Lock It and finish 4 levels. Your passphrase there is called your mailbox key, and you only tap tiles, so nothing real is ever shared.",
    "art": "trophy",
    "img": "csq/packet-post/locks-2-key",
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "focus": [
+    {
+     "cue": "Sort what may be shared and what stays private",
+     "box": [
+      54,
+      43,
+      23,
+      9
+     ]
+    }
+   ]
   }
  ],
  "check": [

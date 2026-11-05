@@ -1,0 +1,232 @@
+{
+ "key": "2-5.1",
+ "n": "5.1",
+ "band": "2",
+ "title": "Relationships online",
+ "topic": "Online friends",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "A category of their own",
+   "text": "Online-only friends can be real fun and real company. They are still a category of their own: people you have never met in real life do not get real-life-friend information.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Photos only on your tablet, seen by nobody",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A copy on a service someone else runs",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Screenshots escape",
+   "text": "Group chats feel private because the door looks closed. It is not. One screenshot carries any message out of the chat and into the whole school, forever out of your control.",
+   "art": "screen",
+   "img": "csq/would-you-rather/online-2-second",
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "focus": [
+    {
+     "cue": "A message feels private inside the chat",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "One screenshot carries it out to everyone",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Their photo, their yes",
+   "text": "A photo of someone else is their image, not your content. Posting it needs their yes, every time. The same respect covers their private facts, their location and their bad days.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-photo-2",
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "focus": [
+    {
+     "cue": "Their photo, shared with the whole world",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Their photo, shared with ten friends",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Location is a live fact",
+   "text": "Location sharing shows where you are while you are there. Check who can see it, and turn it off when nobody needs it. A live location is the most private fact a screen can carry.",
+   "art": "map",
+   "img": "csq/would-you-rather/online-location-1b",
+   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+   "focus": [
+    {
+     "cue": "Free, if it sees where you are, live",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Costs a little, and never knows",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Pressure is not friendship",
+   "text": "A chat friend dares you to share your location and prove you trust them. A Defender names what is happening before answering.",
+   "art": "magnifier",
+   "steps": [
+    "The dare is pressure, not friendship",
+    "Trust never needs a live location as proof",
+    "Refuse, leave the chat, or block",
+    "Tell a trusted adult if it continues"
+   ],
+   "img": "csq/would-you-rather/online-comments-2",
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "Anyone can comment: pressure travels fast",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Only your class: a smaller, safer room",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Leaving is allowed",
+   "text": "Pressure and dares have one clean answer: leaving is allowed, always. A friend who punishes you for leaving has told you what the friendship was worth to them.",
+   "art": "shield",
+   "img": "csq/would-you-rather/online-name-2",
+   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+   "focus": [
+    {
+     "cue": "A nickname nobody can trace to you",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Your real first name, online for all",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "consent",
+     "means": "a clear yes from the person a photo or fact belongs to"
+    },
+    {
+     "word": "online-only",
+     "means": "describing a friend you know only through a screen"
+    },
+    {
+     "word": "location",
+     "means": "where someone is, shown by a device"
+    },
+    {
+     "word": "pressure",
+     "means": "pushing someone to do what they do not want to do"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. Judge each dilemma by consent, not by popularity.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Judge each dilemma by consent, not by popularity",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-2-5.1-e1",
+  "cd-2-5.1-e2",
+  "cd-2-5.1-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

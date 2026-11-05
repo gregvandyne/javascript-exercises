@@ -1,0 +1,205 @@
+{
+ "key": "1b-6.1",
+ "n": "6.1",
+ "band": "1b",
+ "title": "Layers keep us safe",
+ "topic": "Layers",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Not one lock, but layers",
+   "text": "The post office never trusts a single lock. A strong door guards the hall, a safe guards the parcels, and only Pim's key opens the safe. Three layers, one job.",
+   "art": "lock",
+   "img": "csq/packet-post/home",
+   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
+   "focus": [
+    {
+     "cue": "Packet Post: the post office and its locks",
+     "box": [
+      33,
+      3,
+      32,
+      34
+     ]
+    },
+    {
+     "cue": "Pim keeps the keys",
+     "box": [
+      62,
+      72,
+      15,
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Updates patch holes",
+   "text": "When a game or tablet asks to update, it is patching holes. A hole is a small flaw a trickster could climb through, and the update sews it shut.",
+   "art": "wrench",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
+   "focus": [
+    {
+     "cue": "The mailbox key builder, where one layer is made",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "The meter: how long a guessing computer would need",
+     "box": [
+      7,
+      63,
+      47,
+      5
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Backups beat accidents",
+   "text": "A backup is a spare copy of your things, kept somewhere else. If a tablet breaks or gets locked by a trick, a safe copy elsewhere means nothing precious is lost.",
+   "art": "box",
+   "img": "csq/packet-post/locks-1b-backup",
+   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
+   "focus": [
+    {
+     "cue": "A copy in the family's online folder",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "If the tablet breaks, which copies would save the day?",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Build your layer stack",
+   "text": "Pim is checking a home tablet before Spark Day. Tick each layer that should be guarding it.",
+   "art": "shield",
+   "steps": [
+    "A lock screen that asks for a key",
+    "A passphrase only its owner knows",
+    "Updates installed, not postponed",
+    "A backup copy kept somewhere else"
+   ],
+   "img": "csq/packet-post/locks-1b-built",
+   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
+   "focus": [
+    {
+     "cue": "Picked words turn green as the stack grows",
+     "box": [
+      71,
+      45,
+      18,
+      18
+     ]
+    },
+    {
+     "cue": "Picked words land in your passphrase",
+     "box": [
+      7,
+      55,
+      47,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Two weak layers can win",
+   "text": "No single layer is perfect, and that is fine. Two ordinary layers together can beat one strong one, because a trick that slips past the first still meets the second.",
+   "art": "shield",
+   "img": "csq/packet-post/locks-1b-protect",
+   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
+   "focus": [
+    {
+     "cue": "Signing out on a shared computer: one ordinary layer",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "A second layer still stands behind the first",
+     "box": [
+      54,
+      43,
+      27,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "update",
+     "means": "new software that fixes holes and adds repairs"
+    },
+    {
+     "word": "layer",
+     "means": "one guard in a stack of guards"
+    },
+    {
+     "word": "patch",
+     "means": "to fix a hole so it cannot be used"
+    },
+    {
+     "word": "protect",
+     "means": "to keep people and things safe from harm"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and play the levels again at your best. This time, name the layer each level is teaching before you play it.",
+   "art": "trophy",
+   "img": "csq/packet-post/locks-1b-key",
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
+   "focus": [
+    {
+     "cue": "Name the layer each level teaches before you play it",
+     "box": [
+      54,
+      37,
+      35,
+      34
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-1b-6.1-e1",
+  "cd-1b-6.1-e2",
+  "cd-1b-6.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=1b&lock=1"
+ }
+}

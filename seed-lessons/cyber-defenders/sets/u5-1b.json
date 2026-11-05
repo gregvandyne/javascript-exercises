@@ -1,0 +1,163 @@
+{
+ "id": "cd-u5-1b",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 5,
+ "band": "1B",
+ "title": "Cyber Defenders Unit 5 · Kind screens, safe chats (3-5)",
+ "items": [
+  {
+   "id": "cd-1b-5.1-e1",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Safe chats",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A player you have never met in real life is friendly in a game chat. What is true about them?",
+   "choices": [
+    "They are a friend because they are kind",
+    "They are still a stranger, however friendly they seem",
+    "They may know your school already",
+    "They can be trusted after one game"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-5.1-e2",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "3-5.DC.PPI",
+   "topic": "Safe chats",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A chat friend says: 'Let's move to a private chat, and keep it secret from your parents.' What is this?",
+   "choices": [
+    "A normal way to make friends",
+    "A prize for playing well",
+    "A warning sign: leave the chat and tell a trusted adult",
+    "A rule of the game you must follow"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-5.1-e3",
+   "lesson": "5.1",
+   "use": "exit",
+   "cat": "3-5.SEC.INFO",
+   "topic": "Safe chats",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Someone in a chat asks which school you go to. What should you do?",
+   "choices": [
+    "Answer, because it is only a small fact",
+    "Ask where they go first",
+    "Leave the chat; blocking is a lock, not rudeness",
+    "Move to a private chat to answer"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-5.2-e1",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "3-5.DC.CYBL",
+   "topic": "Mean messages",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A mean message about a classmate lands in the class game chat. What should you do first?",
+   "choices": [
+    "Forward it so others can judge",
+    "Join in with a joke",
+    "Save the message and tell a trusted adult",
+    "Reply with something meaner"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-5.2-e2",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "3-5.DC.CYBL",
+   "topic": "Mean messages",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What does an upstander do when a message turns mean?",
+   "choices": [
+    "Says a kind word to the person it hurt",
+    "Laughs along quietly",
+    "Sends the message to more people",
+    "Waits to see who wins"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-5.2-e3",
+   "lesson": "5.2",
+   "use": "exit",
+   "cat": "3-5.DC.CYBL",
+   "topic": "Mean messages",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "You sent a mean message too fast and now feel bad about it. What is the Defender repair path?",
+   "choices": [
+    "Delete your account and say nothing",
+    "Hope nobody saved it",
+    "Stop, say sorry, delete it, and tell a trusted adult",
+    "Send another message blaming a friend"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-1b-5.3-e1",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "3-5.DC.ETH",
+   "topic": "Unplug",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "After a long game your eyes are sore and you feel grumpy. What are these?",
+   "choices": [
+    "Signs your body sends that it is break time",
+    "Proof the game is badly made",
+    "A reason to play faster",
+    "Badges you earned in the game"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-1b-5.3-e2",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "3-5.DC.ETH",
+   "topic": "Unplug",
+   "kind": "recall",
+   "secs": 15,
+   "q": "When is the best moment to choose your stopping point for a game?",
+   "choices": [
+    "When you feel too tired to stop",
+    "Before you start playing",
+    "After the third just-one-more",
+    "Never; stopping ruins the fun"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-1b-5.3-e3",
+   "lesson": "5.3",
+   "use": "exit",
+   "cat": "3-5.DC.ETH",
+   "topic": "Unplug",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A game praises your seven-day streak and warns you will lose it if you stop tonight. What is the streak doing?",
+   "choices": [
+    "Teaching you a safety rule",
+    "Counting for your teacher",
+    "Trying to keep you playing with just-one-more pressure",
+    "Nothing; streaks cannot affect choices"
+   ],
+   "answer": 2
+  }
+ ]
+}

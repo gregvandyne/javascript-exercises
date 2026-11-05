@@ -53,8 +53,41 @@ function mapAndNotes(req, cat) {
     ${cat.units.map(u => html`<article class="panel"><h3 lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</h3>${V.enList(u.teacherNotes)}</article>`)}</section>`;
 }
 
+/** The Spot-the-Trick printable pack (?print=tricks): the Trick Inbox game's own messages as cut-out
+ *  cards (brand-styled: Leaf header band, Spark card numbers, Cream cards on white), then the teacher
+ *  answer key. Card text, clues, right moves and explanations are the game's data verbatim
+ *  (seed-lessons/cyber-defenders/trick-pack.json) — nothing is re-written for print. */
+const TRICK_CSS = `<style>
+.cdt-head{background:#1F9D63;color:#FFFDF2;border-radius:12px;padding:14px 18px;margin-bottom:14px}
+.cdt-head h1{margin:0 0 4px}.cdt-head p{margin:0}
+.cdt-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cdt-card{border:2px solid #141414;border-radius:12px;padding:12px 14px;background:#FFFDF2;break-inside:avoid}
+.cdt-card h3{margin:0 0 6px;font-size:15px}.cdt-num{background:#FFD23F;border-radius:999px;padding:1px 8px;font-weight:700}
+.cdt-meta{font-size:13px;margin:0 0 6px}.cdt-body{margin:0 0 8px}.cdt-btn{display:inline-block;border:1.5px solid #141414;border-radius:8px;padding:2px 10px;font-weight:600}
+.cdt-moves{font-size:13px;border-top:1px dashed #141414;padding-top:6px;margin:0}
+.cdt-key{break-before:page}.cdt-key li{margin-bottom:8px}
+@media print{.cdt-card-grid{grid-template-columns:1fr 1fr}}
+</style>`;
+function trickPackBody(req, cat) {
+  const t = req.t, pack = cat.trickPack || { cards: [], moves: [] };
+  const card = c => html`<article class="cdt-card"><h3><span class="cdt-num" dir="ltr">${c.n}</span> ${c.kind === 'chat' ? '💬 Chat message' : c.kind === 'post' ? '📣 Post' : '✉️ Letter'}</h3>
+    <p class="cdt-meta" lang="en" dir="ltr"><b>From:</b> ${c.from}${c.subject ? html`<br><b>Subject:</b> ${c.subject}` : ''}</p>
+    <p class="cdt-body" lang="en" dir="ltr">${c.body}</p>
+    ${c.button ? html`<p><span class="cdt-btn" lang="en" dir="ltr">${c.button}</span></p>` : ''}
+    <p class="cdt-moves">✂️ What should a Defender do? ${(pack.moves || []).join(' · ')}</p></article>`;
+  const key = (pack.cards || []).map(c => html`<li lang="en" dir="ltr"><b>Card ${c.n} — ${c.from}:</b> <b>${c.answer.move}</b>${c.answer.alsoFine && c.answer.alsoFine.length ? html` (also fine: ${c.answer.alsoFine.join(', ')})` : ''}. ${c.answer.clues && c.answer.clues.length ? html`Clues: ${c.answer.clues.join('; ')}. ` : 'No hidden clues — this one is safe. '}${c.answer.why}</li>`).join('');
+  return html`<div class="printdoc csq-print"><div class="cdt-head"><h1 lang="en" dir="ltr">🔍 Spot the Trick — printable cards</h1>
+    <p>Cyber Defenders · the offline Trick Inbox. Cut out the cards, mix them up, and sort them as a class: which are tricks, which are safe, and what is the right move for each? The answers are on the last page — teachers only.</p></div>
+    <div class="cdt-card-grid">${raw((pack.cards || []).map(card).join(''))}</div>
+    <section class="cdt-key"><h2>🔑 Answer key (teachers only)</h2><ol>${raw(key)}</ol>
+    <p class="small muted" lang="en" dir="ltr">The calm routine for every trick: do not reply, do not tap, tell a trusted adult. Cards are the Trick Inbox game's own messages — the same ones students meet in Unit 4 and the boss round.</p></section></div>`;
+}
+
 router.get('/teachers/cyber-defenders', (req, res) => {
   const t = req.t, cat = C.cyberCatalogue();
+  if (req.query.print === 'tricks') {
+    return page(req, res, { title: `${t(`${K}.title`)} — Spot the Trick pack`, body: trickPackBody(req, cat), head: V.CSS + TRICK_CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
+  }
   if (req.query.print === '1') {
     const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🦉 ${esc(cat.program.name)} — ${t(`${K}.print.h`)}</h1>
       <p class="muted" lang="en" dir="ltr">${esc(cat.program.standards)}</p>${mapAndNotes(req, cat)}</div>`;
@@ -64,10 +97,12 @@ router.get('/teachers/cyber-defenders', (req, res) => {
   const crew = [
     { slug: 'packet-post', key: 'packetPost', emoji: '📮', title: 'Packet Post' },
     { slug: 'would-you-rather', key: 'wouldYouRather', emoji: '🤔', title: 'Would You Rather?' },
+    { slug: 'trick-inbox', key: 'trickInbox', emoji: '📥', title: 'Trick Inbox' },
+    { slug: 'escape-the-post-office', key: 'escape', emoji: '🔐', title: 'Escape the Post Office' },
   ].map(c => ({ ...c, live: launchGame(c.slug) }));
   const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {})['1b'] || s.n}${(s.titles || {})['2'] && s.titles['2'] !== s.titles['1b'] ? html` <span class="small muted">(Pro: ${s.titles['2']})</span>` : ''}</li>`)}</ol></li>`;
-  const faqPairs = [1, 2, 3, 4, 5].map(n => [`${K}.faq.q${n}`, `${K}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
+  const faqPairs = [1, 2, 3, 4, 5, 6].map(n => [`${K}.faq.q${n}`, `${K}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
   const faq = faqBlock(req, faqPairs, `${K}.faq.h`, { teachers: lp(req, '/teachers') });
   const path = '/teachers/cyber-defenders';
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t(`${K}.crumb`), path]];
@@ -89,13 +124,16 @@ router.get('/teachers/cyber-defenders', (req, res) => {
       <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/cyber-defenders')}">🦉 ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
   <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${K}.units.h`, {}, ' id="units-h"')}${el(t, 'p', `${K}.units.p`)}
     <ul class="csq-public-units">${cat.units.map(unitItem)}</ul></section>
+  <section class="lp-sec" id="finale" aria-labelledby="finale-h">${el(t, 'h2', `${K}.finale.h`, {}, ' id="finale-h"')}${el(t, 'p', `${K}.finale.p`)}
+    <ul class="lp-list">${[1, 2, 3, 4, 5, 6].map(n => el(t, 'li', `${K}.finale.li${n}`))}</ul>
+    ${el(t, 'p', `${K}.finale.fair`)}</section>
   ${mapAndNotes(req, cat)}
   <div class="lp-cols">
     <section class="panel" id="safety" aria-labelledby="safety-h">${el(t, 'h2', `${K}.safety.h`, {}, ' id="safety-h"')}
       <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `${K}.safety.li${n}`))}</ul></section>
     <section class="panel" id="print" aria-labelledby="print-h">${el(t, 'h2', `${K}.print.h`, {}, ' id="print-h"')}
       ${el(t, 'p', `${K}.print.p`)}
-      <p><a class="btn" href="${path}?print=1" target="_blank" rel="noopener">🖨️ ${t(`${K}.print.button`)}</a></p></section>
+      <p class="row"><a class="btn" href="${path}?print=1" target="_blank" rel="noopener">🖨️ ${t(`${K}.print.button`)}</a><a class="btn" href="${path}?print=tricks" target="_blank" rel="noopener">🔍 ${t(`${K}.print.tricks`)}</a><a class="btn" href="/teachers/spot-the-trick-pack.pdf" download>⬇️ ${t(`${K}.print.pdf`)}</a></p></section>
   </div>
   ${faq.markup}
   <section class="panel lp-start" id="start" aria-labelledby="start-h">${el(t, 'h2', `${K}.start.h`, {}, ' id="start-h"')}${el(t, 'p', staff ? `${K}.start.staff` : `${K}.start.p`)}
@@ -103,7 +141,7 @@ router.get('/teachers/cyber-defenders', (req, res) => {
   </div>`;
   const course = {
     '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'Cyber Defenders', description: t(`${K}.description`),
-    provider: { '@id': seo.orgId(req) }, educationalLevel: 'Grades 3-8', inLanguage: 'en', isAccessibleForFree: true, learningResourceType: 'Lesson plan', timeRequired: 'PT3H',
+    provider: { '@id': seo.orgId(req) }, educationalLevel: 'Grades 3-8', inLanguage: 'en', isAccessibleForFree: true, learningResourceType: 'Lesson plan', timeRequired: 'PT5H',
     teaches: [...new Set(cat.units.flatMap(u => (u.steps || []).map(s => (s.titles || {})['1b'])))], audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' },
     educationalAlignment: [
       ...codes.map(code => ({ '@type': 'AlignmentObject', alignmentType: 'teaches', educationalFramework: 'CYBER.ORG K-12 Cybersecurity Learning Standards v1.0', targetName: code })),

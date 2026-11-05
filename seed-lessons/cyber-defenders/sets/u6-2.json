@@ -1,0 +1,214 @@
+{
+ "id": "cd-u6-2",
+ "program": "cyber-defenders",
+ "kind": "quiz",
+ "unit": 6,
+ "band": "2",
+ "title": "Cyber Defenders Unit 6 · The Defender's toolkit (6-8)",
+ "items": [
+  {
+   "id": "cd-2-6.1-e1",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "6-8.SEC.COMP",
+   "topic": "Defense in depth",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "An account's passphrase is phished in a fake page. Which layer is designed to stop the attacker next?",
+   "choices": [
+    "The backup copy",
+    "Two-step sign-in, which the fake page does not have",
+    "The update history",
+    "The account's profile photo"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-6.1-e2",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "6-8.SEC.CTRL",
+   "topic": "Defense in depth",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What is the difference between a vulnerability and a threat?",
+   "choices": [
+    "They are the same thing",
+    "A vulnerability is a flaw that can be used; a threat is who or what might use it",
+    "A threat is a kind of update",
+    "A vulnerability only exists on paper"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-6.1-e3",
+   "lesson": "6.1",
+   "use": "exit",
+   "cat": "6-8.CS.SOFT",
+   "topic": "Defense in depth",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Build the stack for a scenario account used for school projects. Which setup is defense in depth?",
+   "choices": [
+    "One very long passphrase and nothing else",
+    "Updates on, a unique passphrase, two-step sign-in, and a backup",
+    "A passphrase written on a sticker for safety",
+    "Backups only, with no sign-in at all"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-6.2-e1",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "6-8.SEC.CIA",
+   "topic": "Three promises",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A delivery note is secretly edited in transit, so the parcel goes to the wrong house. Which promise broke?",
+   "choices": [
+    "Confidentiality",
+    "Availability",
+    "Integrity: the information did not stay correct",
+    "None; editing is harmless"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-6.2-e2",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "6-8.DC.AUP",
+   "topic": "Three promises",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Who enforces a school's acceptable use policy, and who enforces the law?",
+   "choices": [
+    "The school enforces its policy; the law is enforced by the legal system",
+    "Students enforce both",
+    "The app company enforces both",
+    "Nobody enforces either"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-6.2-e3",
+   "lesson": "6.2",
+   "use": "exit",
+   "cat": "6-8.DC.IP",
+   "topic": "Three promises",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Which part of an app's terms is doing a job that protects the user?",
+   "choices": [
+    "The clause promising an appeal route when content is removed",
+    "The clause with the longest words",
+    "The logo at the top",
+    "The list of office addresses"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-6.3-e1",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "6-8.SEC.INFO",
+   "topic": "Incident drill",
+   "kind": "recall",
+   "secs": 15,
+   "q": "What is the professional incident drill, in order?",
+   "choices": [
+    "Recover, report, preserve, contain",
+    "Contain, preserve, report, recover",
+    "Report, delete, contain, forget",
+    "Contain, delete, hope, recover"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-6.3-e2",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "6-8.SEC.DATA",
+   "topic": "Incident drill",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Why preserve screenshots and times instead of deleting the message in embarrassment?",
+   "choices": [
+    "Evidence lets adults and the platform act; deletion destroys the proof",
+    "Screenshots make the incident funnier",
+    "Deletion is a report by itself",
+    "Preserving is only for teachers"
+   ],
+   "answer": 0
+  },
+  {
+   "id": "cd-2-6.3-e3",
+   "lesson": "6.3",
+   "use": "exit",
+   "cat": "6-8.SEC.INFO",
+   "topic": "Incident drill",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "You clicked a faked sender's link and typed your passphrase, then realized. Run the whole drill: what comes first and last?",
+   "choices": [
+    "First recover, last contain",
+    "First report to the whole internet, last preserve",
+    "First contain from a clean device, last recover with new passphrases everywhere the old one was reused",
+    "First delete everything, last say nothing"
+   ],
+   "answer": 2
+  },
+  {
+   "id": "cd-2-6.4-e1",
+   "lesson": "6.4",
+   "use": "exit",
+   "cat": "6-8.SEC.AUTH",
+   "topic": "The Great Trick",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "Inside the escape room, one lock offers a second proof of who you are before it opens. Which idea is that?",
+   "choices": [
+    "Social engineering",
+    "Two-step sign-in: a second, different proof",
+    "A reused passphrase",
+    "An endless scroll"
+   ],
+   "answer": 1
+  },
+  {
+   "id": "cd-2-6.4-e2",
+   "lesson": "6.4",
+   "use": "exit",
+   "cat": "6-8.SEC.INFO",
+   "topic": "The Great Trick",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "A lock's message wears Pim's name, but its real address is a stranger's and it begs for your key. What is it?",
+   "choices": [
+    "A genuine urgent notice",
+    "A hoax about the festival",
+    "Rage-bait wanting shares",
+    "Spoofing: a claimed sender in costume"
+   ],
+   "answer": 3
+  },
+  {
+   "id": "cd-2-6.4-e3",
+   "lesson": "6.4",
+   "use": "exit",
+   "cat": "6-8.DC.FOOT.2",
+   "topic": "The Great Trick",
+   "kind": "scenario",
+   "secs": 15,
+   "q": "The Which Pim? lock shows two messages. One repeats a public post word for word; the other answers a private delivery question correctly. Which clue matters?",
+   "choices": [
+    "The longer message wins",
+    "What each sender could only know if the footprint and the facts line up",
+    "The message with the festival poster",
+    "Neither; postmarks never matter"
+   ],
+   "answer": 1
+  }
+ ]
+}

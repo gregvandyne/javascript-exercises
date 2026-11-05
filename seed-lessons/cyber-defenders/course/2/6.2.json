@@ -1,0 +1,231 @@
+{
+ "key": "2-6.2",
+ "n": "6.2",
+ "band": "2",
+ "title": "Secret, correct, working",
+ "topic": "Three promises",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Three promises",
+   "text": "Security work protects three promises about information. It stays secret, it stays correct, and it stays reachable when its owner needs it. Professionals shorten that to confidentiality, integrity and availability.",
+   "art": "shield",
+   "img": "csq/packet-post/protocols-2-key",
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
+   "focus": [
+    {
+     "cue": "Arrived packets wait in the inbox, numbered",
+     "box": [
+      54,
+      54,
+      17,
+      10
+     ]
+    },
+    {
+     "cue": "Mail slots for every packet that was sent",
+     "box": [
+      54,
+      41,
+      27,
+      11
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A read letter",
+   "text": "Confidentiality breaks first in our story: a sealed letter is steamed open and read on its journey. The words arrive unchanged, but the secret is gone, and the promise with it.",
+   "art": "envelope",
+   "img": "csq/packet-post/routes-2-sealed",
+   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "focus": [
+    {
+     "cue": "Sealed roads wear a padlock",
+     "box": [
+      27,
+      35,
+      26,
+      34
+     ]
+    },
+    {
+     "cue": "Open roads have a snoopy cat who reads every packet",
+     "box": [
+      54,
+      25,
+      35,
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "title": "A changed address",
+   "text": "Integrity breaks differently: the letter is never read, but its address is altered, so the parcel goes to the wrong house. Availability breaks loudest of all: the sorting office itself burns down.",
+   "art": "mask",
+   "img": "csq/packet-post/protocols-2-design",
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+   "focus": [
+    {
+     "cue": "The rule cards that catch what goes wrong",
+     "box": [
+      40,
+      52,
+      49,
+      27
+     ]
+    },
+    {
+     "cue": "Three things go wrong on this road",
+     "box": [
+      40,
+      38,
+      18,
+      15
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Rules stack too",
+   "text": "Society stacks its own layers: house rules, your school's acceptable use policy, the app's terms, then copyright and privacy law. Each layer is enforced by different people, with different tools.",
+   "art": "table",
+   "img": "csq/packet-post/protocols-2-rules",
+   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",
+   "focus": [
+    {
+     "cue": "Every router on the road follows the same rules",
+     "box": [
+      10,
+      46,
+      42,
+      26
+     ]
+    },
+    {
+     "cue": "Extra copies pile up in the inbox",
+     "box": [
+      54,
+      54,
+      28,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Which promise broke?",
+   "text": "Three failures reached Pim this week. Name the promise each one broke.",
+   "art": "magnifier",
+   "steps": [
+    "A private photo shown to strangers: confidentiality",
+    "A delivery note edited in transit: integrity",
+    "The whole message service down all day: availability"
+   ],
+   "img": "csq/packet-post/protocols-2-journey",
+   "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
+   "focus": [
+    {
+     "cue": "The five rule cards for the whole journey",
+     "box": [
+      40,
+      42,
+      49,
+      23
+     ]
+    },
+    {
+     "cue": "Put them in the order they happen",
+     "box": [
+      40,
+      25,
+      49,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Agreements protect users too",
+   "text": "Agreements are not only the owner's shield. Terms also promise users things: notice before changes, a way to appeal, a route to complain. When rules are broken against you, the rulebook names who must act.",
+   "art": "people",
+   "img": "csq/packet-post/locks-2-sort",
+   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls.",
+   "focus": [
+    {
+     "cue": "The Physical or Digital sort",
+     "box": [
+      54,
+      46,
+      26,
+      9
+     ]
+    },
+    {
+     "cue": "Netville Post protects its mail two ways",
+     "box": [
+      54,
+      25,
+      35,
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "confidentiality",
+     "means": "information stays secret from everyone but its audience"
+    },
+    {
+     "word": "integrity",
+     "means": "information stays correct and unchanged"
+    },
+    {
+     "word": "availability",
+     "means": "information and services stay reachable when needed"
+    },
+    {
+     "word": "agreement",
+     "means": "the terms both sides accept, which can protect users too"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. For each dilemma, name which of the three promises is at stake.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Name the promise at stake in each dilemma",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-2-6.2-e1",
+  "cd-2-6.2-e2",
+  "cd-2-6.2-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

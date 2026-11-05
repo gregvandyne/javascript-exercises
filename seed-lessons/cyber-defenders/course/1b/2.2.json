@@ -11,14 +11,54 @@
    "text": "At the post office, some doors only staff may open. That rule decides who can get to the letters inside, and who must stay out.",
    "art": "lock",
    "img": "csq/packet-post/locks-1b-tell",
-   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share."
+   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share.",
+   "focus": [
+    {
+     "cue": "Who gets to hear the key? Permission decides",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Okay to tell, or keep it to yourself",
+     "box": [
+      54,
+      43,
+      21,
+      17
+     ]
+    }
+   ]
   },
   {
    "title": "Your tablet does it too",
    "text": "A tablet lock screen does the same job at home. Only a person with permission, and the right key or code, can open it and see inside.",
    "art": "screen",
    "img": "csq/packet-post/locks-1b-protect",
-   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?"
+   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
+   "focus": [
+    {
+     "cue": "A tablet holds your messages and pictures: sort what protects it",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Protects it, or risky? You decide for each habit",
+     "box": [
+      54,
+      43,
+      27,
+      9
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -33,21 +73,81 @@
     "the mailbox stays shut"
    ],
    "img": "csq/packet-post/locks-1b-built",
-   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess."
+   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
+   "focus": [
+    {
+     "cue": "A passphrase is one lock: the words picked so far",
+     "box": [
+      7,
+      50,
+      47,
+      18
+     ]
+    },
+    {
+     "cue": "The meter shows how strong that one lock is",
+     "box": [
+      7,
+      63,
+      47,
+      5
+     ]
+    }
+   ]
   },
   {
    "title": "A spare copy, kept elsewhere",
    "text": "A backup is a spare copy of your things, kept somewhere else, like photos saved in another place. A backup is for your things, never for your secrets.",
    "art": "box",
    "img": "csq/packet-post/locks-1b-backup",
-   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not."
+   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
+   "focus": [
+    {
+     "cue": "A copy in the family's online folder: a spare kept elsewhere",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "A good spare copy, or not a spare copy?",
+     "box": [
+      54,
+      43,
+      21,
+      17
+     ]
+    }
+   ]
   },
   {
    "title": "The wrong person",
    "text": "Finding a tablet on a bench does not make it yours to open. Borrowing a friend's game account is the same: no permission means hands off.",
    "art": "people",
    "img": "csq/packet-post/locks-1b-habits",
-   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky."
+   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
+   "focus": [
+    {
+     "cue": "If one key opens every door, losing it opens them all",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Safe habit or risky habit: sort them",
+     "box": [
+      54,
+      41,
+      30,
+      10
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -79,7 +179,18 @@
    "text": "Open Packet Post at Lock It and play the levels you have not played yet. Look for the doors, locks and spare copies Pim shows you.",
    "art": "trophy",
    "img": "csq/packet-post/locks-1b-key",
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
+   "focus": [
+    {
+     "cue": "Play the Lock It levels you have not played yet",
+     "box": [
+      54,
+      37,
+      35,
+      34
+     ]
+    }
+   ]
   }
  ],
  "check": [

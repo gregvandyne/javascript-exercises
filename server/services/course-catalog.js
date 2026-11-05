@@ -17,10 +17,14 @@ export const COURSES = Object.freeze([
   },
   {
     slug: 'cyber-defenders', emoji: '🦉', key: 'courses.cd', teacherPath: '/teachers/cyber-defenders',
-    // The order the units teach them in (units 1-2 and 4 play Packet Post; unit 3 plays Would You Rather).
+    // The order the units teach them in (units 1-2 and 4 play Packet Post; unit 3 plays Would You Rather;
+    // unit 4's response missions and 6.3 play Trick Inbox; the 6.4 finale plays Escape the Post Office —
+    // both Phase 2 games are Cyber Defenders games shared like the other two).
     games: [
       { slug: 'packet-post', topic: 'networks', shared: true },
       { slug: 'would-you-rather', topic: 'choices', shared: true },
+      { slug: 'trick-inbox', topic: 'cybersecurity', shared: true },
+      { slug: 'escape-the-post-office', topic: 'cybersecurity', shared: true },
     ],
   },
 ]);

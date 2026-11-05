@@ -1,0 +1,232 @@
+{
+ "key": "2-6.3",
+ "n": "6.3",
+ "band": "2",
+ "title": "Incident drill",
+ "topic": "Incident drill",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Professionals run a drill",
+   "text": "When an incident lands, professionals do not improvise. They run a drill with four moves: contain, preserve, report, recover. Your hand-sized version of it starts now.",
+   "art": "shield",
+   "img": "csq/packet-post/tricks-2-learn",
+   "alt": "Spot the trick, Pro style: the lesson card names the levers. Rush, prizes, and asking for your mailbox key.",
+   "focus": [
+    {
+     "cue": "Spot the trick: where the drill gets its cards",
+     "box": [
+      27,
+      15,
+      46,
+      67
+     ]
+    },
+    {
+     "cue": "Rush, prizes, key asks, strangers: know the signs",
+     "box": [
+      33,
+      53,
+      34,
+      19
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Contain the damage",
+   "text": "Contain means stop the bleeding first. Leave the fake page, and change the key from a clean device you trust, not from the screen that may have tricked you.",
+   "art": "lock",
+   "img": "csq/packet-post/tricks-2-bank",
+   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+   "focus": [
+    {
+     "cue": "The trick card wearing a bank's name",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "The badge says unknown sender: contain it there",
+     "box": [
+      22,
+      27,
+      15,
+      7
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Preserve the evidence",
+   "text": "Preserve means keep the proof: screenshots, the message, the time it arrived. Do not delete in embarrassment. Evidence is what lets adults and platforms act, and speed beats embarrassment, twice over.",
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "focus": [
+    {
+     "cue": "The faked sender name on the card",
+     "box": [
+      7,
+      27,
+      30,
+      7
+     ]
+    },
+    {
+     "cue": "Preserve it: the whole card is the evidence",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Report, then recover",
+   "text": "Report to a trusted adult, your school and the platform. Then recover: a fresh passphrase on the hit account, and everywhere it was reused. That is the separate-keys lesson from Unit 2, paying off.",
+   "art": "people",
+   "img": "csq/packet-post/tricks-2-safe",
+   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+   "focus": [
+    {
+     "cue": "The real message from a sender you know",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Report, then recover: the buttons wait below",
+     "box": [
+      54,
+      56,
+      35,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Run the whole drill",
+   "text": "You tapped a faked sender's link and typed your passphrase before the doubt arrived. Run the drill in order.",
+   "art": "loop",
+   "steps": [
+    "Contain: leave the page, change the key from a clean device",
+    "Preserve: screenshot the page and note the time",
+    "Report: trusted adult, school, platform",
+    "Recover: new passphrase everywhere it was reused"
+   ],
+   "img": "csq/packet-post/tricks-2-parcel",
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "focus": [
+    {
+     "cue": "The parcel trick card",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Asks for money, two hours to act: run the drill",
+     "box": [
+      54,
+      39,
+      35,
+      18
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The one-line log",
+   "text": "Afterwards, Defenders write one line: what happened, what the drill caught, what changes. Incidents are tuition. The log is how the next Defender pays less for the same lesson.",
+   "art": "pencil",
+   "img": "csq/packet-post/tricks-2-profile",
+   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile.",
+   "focus": [
+    {
+     "cue": "The fan club card that knows too much",
+     "box": [
+      7,
+      25,
+      47,
+      30
+     ]
+    },
+    {
+     "cue": "They know your dog and your birthday: log that",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "incident",
+     "means": "something that has gone wrong with security or safety"
+    },
+    {
+     "word": "contain",
+     "means": "to stop an incident spreading or doing more harm"
+    },
+    {
+     "word": "preserve",
+     "means": "to keep evidence safe and unchanged"
+    },
+    {
+     "word": "recover",
+     "means": "to restore accounts and services to safe working order"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Trick Inbox and play the Boss Round. Treat every message as a live incident: contain, preserve, report, recover.",
+   "art": "trophy",
+   "img": "csq/trick-inbox/boss-2",
+   "alt": "Trick Inbox, the Boss Round at Pro: a letter claiming an account will be deleted waits in the inbox, one clue found and one still hiding.",
+   "focus": [
+    {
+     "cue": "The Boss Round message, with one clue found",
+     "box": [
+      14,
+      36,
+      72,
+      24
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-2-6.3-e1",
+  "cd-2-6.3-e2",
+  "cd-2-6.3-e3"
+ ],
+ "game": {
+  "slug": "trick-inbox",
+  "chapter": "boss",
+  "params": "chapter=boss&band=2&lock=1"
+ }
+}

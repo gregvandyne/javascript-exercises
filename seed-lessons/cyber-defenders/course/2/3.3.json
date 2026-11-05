@@ -18,35 +18,135 @@
     "request: share the secret"
    ],
    "img": "csq/packet-post/tricks-2-profile",
-   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile."
+   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile.",
+   "focus": [
+    {
+     "cue": "A fan club that knows your dog and your birthday",
+     "box": [
+      7,
+      25,
+      47,
+      30
+     ]
+    },
+    {
+     "cue": "Anything on a public profile is a gift to a trickster",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
   },
   {
    "title": "Four pressure levers",
    "text": "A faked sender name can carry all four levers: authority, urgency, kindness and fear. Each lever pushes you to act before you stop and think.",
    "art": "mask",
    "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "focus": [
+    {
+     "cue": "A faked sender: your account is locked",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Its levers: threats, key asks, an unknown badge, today",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    }
+   ]
   },
   {
    "title": "A made-up reason",
    "text": "A pretext is a made-up reason that makes a strange request sound normal. It might borrow a real event, like a lost bag, to explain why help is needed fast.",
    "art": "envelope",
    "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "focus": [
+    {
+     "cue": "Your parcel is waiting: a reason invented to rush you",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "A parcel you never ordered is a favorite trick",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    }
+   ]
   },
   {
    "title": "Check another way",
    "text": "One move defeats every lever: verify through a different channel. Ask the person in real life, or type the real address yourself instead of tapping the link you were sent.",
    "art": "shield",
    "img": "csq/packet-post/tricks-2-safe",
-   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush."
+   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+   "focus": [
+    {
+     "cue": "Not every message is a trick: read carefully first",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    },
+    {
+     "cue": "A real one, from a sender the office knows",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    }
+   ]
   },
   {
    "title": "The Magpie asks nicely",
    "text": "Last week the Magpie tried a new trick: no fake letters, just friendly questions about Pim's route. The clue was the pattern: every question fished for a private fact.",
    "art": "magnifier",
    "img": "csq/packet-post/tricks-2-quiz",
-   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play."
+   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
+   "focus": [
+    {
+     "cue": "Friendly questions that fish for private facts",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Asks the very things used to reset a mailbox key",
+     "box": [
+      54,
+      40,
+      35,
+      22
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Open Packet Post at Spot the Trick and play the Pro trick cards. For each card, name the pressure lever pushing you before you choose.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "focus": [
+    {
+     "cue": "Name the pressure lever on each Pro card",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    }
+   ]
   }
  ],
  "check": [

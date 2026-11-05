@@ -2286,3 +2286,16 @@ it). Because a step's game can now belong to another course, /play resolves the 
 ?course= (the step's own course), not only against the game's owner: the gate, the played_at mark, the back link
 and the "game n of m" badge all follow the step's course. A blocked attempt returns to the step's course map when
 one was named, else the owner's.
+Phase 2 adds the course's own finale game, Escape the Post Office (seed-games/escape-the-post-office.html, step
+6.4's mission in both bands), and lists it the same way — "shared", not owned — so it keeps its own page and its
+place in the open lists like the course's other two games, and no course-game slug joins COURSE_GAME_SLUGS. Its
+Lock 4 is a compact, self-contained round in the Trick Inbox idiom (the four responses and the missed-clue
+debrief); the round's data shape (from/subject/body/badge/action/accept/missed) is the documented interface for
+swapping in the standalone Trick Inbox engine when that game ships.
+Phase 2 also adds Trick Inbox (seed-games/trick-inbox.html), the course's response-choosing game, listed
+"shared" in the Cyber catalogue exactly like Packet Post, Would You Rather and Escape the Post Office, so no
+course-game slug joins COURSE_GAME_SLUGS. Its sets are its chapters, and these chapter ids are the contract
+the decks wire to: letters (step 4.3, both bands), senders (Pro 4.1), media (Pro 4.3), boss (6.3 both bands —
+and the round Escape the Post Office's Lock 4 mirrors: Explorer 6 messages, Pro 8 with faked senders among
+them). A round is hunt (tap every hidden clue) → choose (Deliver / Bin it / Show Pim / Report & block) →
+debrief (the missed clues named); BRB.gameOver fires only when a set is finished, never on open or mid-round.

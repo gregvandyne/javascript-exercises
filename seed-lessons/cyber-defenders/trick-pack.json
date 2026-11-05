@@ -1,0 +1,344 @@
+{
+ "about": "The printable Spot-the-Trick pack for Cyber Defenders (the offline companion to Unit 4 and the Trick Inbox game): printable trick-message cards plus a teacher answer key. GENERATED from seed-games/trick-inbox.html by the Phase 2 pack build — the messages, clues, right moves and explanations are the game's own words, never re-written. Only the messages both bands share (Explorer and Pro) are printed, so one pack serves the whole class. Regenerate by re-running the extraction against the game file and reviewing the diff.",
+ "title": "Spot the Trick — printable card pack",
+ "moves": [
+  "Deliver",
+  "Bin it",
+  "Show Pim",
+  "Report & block"
+ ],
+ "cards": [
+  {
+   "n": 1,
+   "id": "lt-1",
+   "kind": "letter",
+   "from": "Prize Team",
+   "subject": "You won a tablet!",
+   "body": "Congratulations! You are our lucky winner. Send us your mailbox key in the next ten minutes to claim your prize.",
+   "button": "Claim now",
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It promises a prize",
+     "It asks for a key or a secret code",
+     "It rushes you"
+    ],
+    "why": "Nobody gives a tablet to a stranger. The prize is the bait, the rush is the hook, and your key is what it really wants. Bin it and it gets nothing."
+   }
+  },
+  {
+   "n": 2,
+   "id": "lt-2",
+   "kind": "letter",
+   "from": "The Library",
+   "subject": "Your book is ready",
+   "body": "The dinosaur book you asked for is ready at the desk. Bring your library card any time this week.",
+   "button": null,
+   "answer": {
+    "move": "Deliver",
+    "alsoFine": [],
+    "clues": [],
+    "why": "This one is safe to deliver. The library is a sender you know, it asks for nothing private, and nothing in it rushes you."
+   }
+  },
+  {
+   "n": 3,
+   "id": "lt-3",
+   "kind": "letter",
+   "from": "Post Office Team",
+   "subject": "Your mailbox will close",
+   "body": "We found a problem with your mailbox. Send us your mailbox key today, or your mailbox will be closed and your letters thrown away.",
+   "button": "Fix it now",
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It asks for a key or a secret code",
+     "It rushes you"
+    ],
+    "why": "The real post office never asks for your key by letter. A threat and a rush are there to stop you thinking. Bin it, and tell a trusted adult if you feel worried."
+   }
+  },
+  {
+   "n": 4,
+   "id": "lt-4",
+   "kind": "letter",
+   "from": "Your Teacher",
+   "subject": "Field trip on Friday",
+   "body": "Bring a packed lunch and a raincoat. The bus leaves at nine. See you there!",
+   "button": null,
+   "answer": {
+    "move": "Deliver",
+    "alsoFine": [],
+    "clues": [],
+    "why": "Safe to deliver. It comes from your teacher, tells you something ordinary, and asks for nothing back."
+   }
+  },
+  {
+   "n": 5,
+   "id": "lt-5",
+   "kind": "letter",
+   "from": "Game Shop",
+   "subject": "Free coins today only!",
+   "body": "Tap the button to get a thousand free coins. Hurry, the offer ends in one hour!",
+   "button": "Get coins",
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It sounds too good to be true",
+     "It rushes you"
+    ],
+    "why": "A thousand free coins, gone in an hour? Real shops do not hand out treasure like that. Too good to be true, and rushed: bin it."
+   }
+  },
+  {
+   "n": 6,
+   "id": "lt-6",
+   "kind": "letter",
+   "from": "A Friend of a Friend",
+   "subject": "Pass it on!",
+   "body": "Send this letter to ten friends before midnight, or your luck will run out. Everyone is doing it!",
+   "button": null,
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It begs you to pass it on",
+     "It rushes you"
+    ],
+    "why": "Luck does not travel by letter. This trick only works if you pass it on, so the kindest move for everyone is to bin it and break the chain."
+   }
+  },
+  {
+   "n": 7,
+   "id": "ch-1",
+   "kind": "chat",
+   "from": "CoolGamer99",
+   "subject": "Game chat",
+   "body": "Hi! Great game today. Do not tell your parents we chat, okay? Meet me at the park gate and I will bring you a present.",
+   "button": null,
+   "answer": {
+    "move": "Show Pim",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It asks you to keep a secret from adults",
+     "It comes from a stranger"
+    ],
+    "why": "Chat is for people you know in real life. A stranger who asks for secrets from adults and wants to meet is the biggest red flag there is. Show Pim — ask a trusted adult — every time."
+   }
+  },
+  {
+   "n": 8,
+   "id": "ch-2",
+   "kind": "chat",
+   "from": "Mia from Class",
+   "subject": "Game chat",
+   "body": "Great game! Your tower at the end was amazing. See you at school tomorrow!",
+   "button": null,
+   "answer": {
+    "move": "Deliver",
+    "alsoFine": [],
+    "clues": [],
+    "why": "Safe to deliver. Mia is someone you know in real life, and the message is just kind words about the game."
+   }
+  },
+  {
+   "n": 9,
+   "id": "ch-3",
+   "kind": "chat",
+   "from": "JokerJay",
+   "subject": "Game chat",
+   "body": "Everyone laugh at Pip, he plays like a baby! Share this so the whole school sees.",
+   "button": null,
+   "answer": {
+    "move": "Report & block",
+    "alsoFine": [
+     "Show Pim"
+    ],
+    "clues": [
+     "It is mean about someone",
+     "It begs you to pass it on"
+    ],
+    "why": "Mean messages want an audience. Do not join in and never pass them on. A kind word to Pip helps more than any reply, and reporting tells the game to stop it. If it worries you, save it and tell a trusted adult."
+   }
+  },
+  {
+   "n": 10,
+   "id": "ch-4",
+   "kind": "chat",
+   "from": "NewFriend",
+   "subject": "Game chat",
+   "body": "You seem nice. I can send you a rare game skin, free. Just keep this our secret and send me your game key.",
+   "button": null,
+   "answer": {
+    "move": "Show Pim",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It promises a prize",
+     "It asks you to keep a secret from adults"
+    ],
+    "why": "A free skin from a stranger, wrapped in a secret. Real friends never ask you to hide things from adults. Show Pim before you do anything else."
+   }
+  },
+  {
+   "n": 11,
+   "id": "ch-5",
+   "kind": "chat",
+   "from": "Coach Rana",
+   "subject": "Team chat",
+   "body": "Practice is at four on Saturday. Bring water and your boots. Well played today, everyone!",
+   "button": null,
+   "answer": {
+    "move": "Deliver",
+    "alsoFine": [],
+    "clues": [],
+    "why": "Safe to deliver. Your coach, a normal plan, and nothing private asked for."
+   }
+  },
+  {
+   "n": 12,
+   "id": "ch-6",
+   "kind": "chat",
+   "from": "Fun Quiz",
+   "subject": "Game chat",
+   "body": "Answer three questions to find your dragon: your first pet, the street you grew up on, and your birthday. Then share your result with everyone!",
+   "button": "Start quiz",
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It fishes for private facts",
+     "It begs you to pass it on"
+    ],
+    "why": "Those are not quiz questions, they are the answers to security questions. A trickster collects them to sneak into accounts. Bin it."
+   }
+  },
+  {
+   "n": 13,
+   "id": "mx-1",
+   "kind": "letter",
+   "from": "Lucky Letters",
+   "subject": "The shiny chain",
+   "body": "Pass this letter to ten friends and a shiny surprise will find you tonight. Do not break the chain!",
+   "button": null,
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It begs you to pass it on",
+     "It promises a prize",
+     "It rushes you"
+    ],
+    "why": "The Magpie loves a chain: the trick does its own traveling. Bin it, and the chain ends with you — that protects ten friends at once."
+   }
+  },
+  {
+   "n": 14,
+   "id": "mx-2",
+   "kind": "letter",
+   "from": "Grandma Rose",
+   "subject": "Thank you!",
+   "body": "Thank you for the drawing of the post office, dear. It is on my fridge. Come for soup on Sunday!",
+   "button": null,
+   "answer": {
+    "move": "Deliver",
+    "alsoFine": [],
+    "clues": [],
+    "why": "Safe to deliver. A thank-you from someone you love, asking for nothing but soup."
+   }
+  },
+  {
+   "n": 15,
+   "id": "mx-3",
+   "kind": "letter",
+   "from": "Account Team",
+   "subject": "Check your account",
+   "body": "Someone may have used your account. Send us your mailbox key before Friday so we can check it for you.",
+   "button": "Check now",
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It asks for a key or a secret code",
+     "It rushes you"
+    ],
+    "why": "Checking an account never needs your key sent in a letter. That request is the trick itself. Bin it."
+   }
+  },
+  {
+   "n": 16,
+   "id": "mx-4",
+   "kind": "post",
+   "from": "News Flash",
+   "subject": "School is closing forever!",
+   "body": "Big news: school is closing forever and there will be free sweets for everyone on Monday! Tell everyone you know!",
+   "button": null,
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Show Pim"
+    ],
+    "clues": [
+     "It sounds too good to be true",
+     "It begs you to pass it on"
+    ],
+    "why": "Huge news from a sender nobody knows, with sweets on top. This one just wants a reaction and a crowd. Bin it — and if a story ever worries you, check it with a trusted adult."
+   }
+  },
+  {
+   "n": 17,
+   "id": "mx-5",
+   "kind": "letter",
+   "from": "Post Office Notice",
+   "subject": "Spark Day hours",
+   "body": "The post office closes early on Spark Day, at two o clock. Letters posted before noon still travel the same day.",
+   "button": null,
+   "answer": {
+    "move": "Deliver",
+    "alsoFine": [],
+    "clues": [],
+    "why": "Safe to deliver. An ordinary notice from the post office, with no links, no asks and no rush."
+   }
+  },
+  {
+   "n": 18,
+   "id": "mx-6",
+   "kind": "letter",
+   "from": "Prize Team",
+   "subject": "Visitor number 1000!",
+   "body": "You are visitor number 1000! Claim your free games console by tapping the button before someone else does.",
+   "button": "Claim prize",
+   "answer": {
+    "move": "Bin it",
+    "alsoFine": [
+     "Report & block"
+    ],
+    "clues": [
+     "It sounds too good to be true",
+     "It promises a prize"
+    ],
+    "why": "You did not enter anything, so you cannot have won anything. Visitor-number prizes are an old costume on the same trick. Bin it."
+   }
+  }
+ ]
+}

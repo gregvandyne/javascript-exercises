@@ -11,7 +11,27 @@
    "text": "When you collect a parcel, Pim checks two different things. Authentication proves it is really you. Authorization checks the list to see if this parcel is yours to open.",
    "art": "envelope",
    "img": "csq/packet-post/locks-2-shield",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private."
+   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "focus": [
+    {
+     "cue": "Share or Shield: decide public or private, then the reason",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "One fact at a time, with its good side and its risk",
+     "box": [
+      7,
+      26,
+      47,
+      16
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -25,21 +45,81 @@
     "know + have beats know + know"
    ],
    "img": "csq/packet-post/locks-2-pass",
-   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key."
+   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key.",
+   "focus": [
+    {
+     "cue": "Something you know: the passphrase you build here",
+     "box": [
+      7,
+      55,
+      47,
+      10
+     ]
+    },
+    {
+     "cue": "Words nobody could guess about you",
+     "box": [
+      54,
+      37,
+      35,
+      34
+     ]
+    }
+   ]
   },
   {
    "title": "Passkeys, honestly",
    "text": "A passkey lives on your device, which proves it is you without sharing a copyable secret. A fake page cannot trick you into handing it over, because there is nothing to hand over.",
    "art": "lock",
    "img": "csq/packet-post/locks-2-router",
-   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles."
+   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles.",
+   "focus": [
+    {
+     "cue": "The old way: a key on a sticker, readable by any visitor",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Build the device its own new key from word tiles",
+     "box": [
+      54,
+      37,
+      35,
+      34
+     ]
+    }
+   ]
   },
   {
    "title": "Shared screens, separate doors",
    "text": "On a shared tablet or class account, profiles and permissions matter. Your profile keeps your work, messages and settings separate from everyone else who uses the same screen.",
    "art": "people",
    "img": "csq/packet-post/locks-1b-protect",
-   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?"
+   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
+   "focus": [
+    {
+     "cue": "Signing out on a shared computer: the habit that separates you",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "Protects it, or risky? Profiles keep people apart",
+     "box": [
+      54,
+      43,
+      27,
+      9
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -71,7 +151,18 @@
    "text": "Open Packet Post at Lock It and play the levels you have not played yet. Notice each check: is it proving who you are, or checking what you may open?",
    "art": "trophy",
    "img": "csq/packet-post/locks-2-key",
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "focus": [
+    {
+     "cue": "Notice each check as you play the new levels",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
   }
  ],
  "check": [

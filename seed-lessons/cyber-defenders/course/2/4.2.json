@@ -11,14 +11,54 @@
    "text": "Some tricks are not accidents. Behind each one is a threat actor: a person or group trying to get something they should not have.",
    "art": "mask",
    "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "focus": [
+    {
+     "cue": "Behind this fake is a person who wants something",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Scary is a trick too: it wants you to act before you think",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
   },
   {
    "title": "Four kinds of actor",
    "text": "Meet the gallery in plain words: the scammer wants money, the account thief wants in, the vandal wants damage, and the spy wants secrets. None of them is glamorous. Each is simply trying to take what is not theirs.",
    "art": "people",
    "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "focus": [
+    {
+     "cue": "The scammer's parcel: pay a small fee, fast",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Asks for money; two hours to act; a parcel never ordered",
+     "box": [
+      54,
+      39,
+      35,
+      18
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -33,21 +73,81 @@
     "Guard: do not reply; report it"
    ],
    "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "focus": [
+    {
+     "cue": "Sender name looks official; the badge gives it away",
+     "box": [
+      7,
+      27,
+      30,
+      7
+     ]
+    },
+    {
+     "cue": "Threatens, asks for the key, hides behind today",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    }
+   ]
   },
   {
    "title": "Permission is the whole difference",
    "text": "Testing a network's locks can be ethical or malicious, and permission is the whole difference. With permission it is defense work. Without it, it is breaking in, whatever the reason given.",
    "art": "key",
    "img": "csq/packet-post/locks-2-shield",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private."
+   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "focus": [
+    {
+     "cue": "Your mailbox key: nobody else needs it, ever",
+     "box": [
+      7,
+      26,
+      47,
+      16
+     ]
+    },
+    {
+     "cue": "Private is the Defender answer here",
+     "box": [
+      54,
+      43,
+      25,
+      9
+     ]
+    }
+   ]
   },
   {
    "title": "Not like the films",
    "text": "Films dress hacking up as instant magic, which is a costume too. Real defense is slow, careful and lawful, and it is a real job people are paid to do well.",
    "art": "screen",
    "img": "csq/packet-post/protocols-2-design",
-   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them."
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+   "focus": [
+    {
+     "cue": "What goes wrong on this road, in plain sight",
+     "box": [
+      40,
+      38,
+      18,
+      15
+     ]
+    },
+    {
+     "cue": "Real defense: slow, careful rules that catch the failures",
+     "box": [
+      40,
+      52,
+      49,
+      27
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -79,7 +179,18 @@
    "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Then replay Packet Post at Spot the Trick on Pro, and name the actor behind each trick.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Start with Online: share or keep",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

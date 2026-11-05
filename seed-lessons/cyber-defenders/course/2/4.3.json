@@ -11,28 +11,108 @@
    "text": "Some false posts want different things. A scam wants your tap, a hoax wants your belief, and rage-bait wants your reaction and your share.",
    "art": "mask",
    "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "focus": [
+    {
+     "cue": "A false post in letter form: your parcel is waiting",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Did you order anything? A scam wants your tap",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    }
+   ]
   },
   {
    "title": "Adverts wear costumes too",
    "text": "Not every friendly post is a friend talking. Sponsored posts are paid adverts in a costume, and a glowing plug may be paid for too. Ask who benefits if you tap or buy.",
    "art": "star",
    "img": "csq/packet-post/tricks-2-quiz",
-   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play."
+   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
+   "focus": [
+    {
+     "cue": "A friendly quiz that is not a friend talking",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Dressed up as a fun quiz",
+     "box": [
+      54,
+      40,
+      35,
+      22
+     ]
+    }
+   ]
   },
   {
    "title": "Check the source, not the pixels",
    "text": "Edited and AI-made pictures can look perfect now, because fakes are cheap to make. So do not judge by the pixels. Judge by the source: who posted it, and can anyone else confirm it?",
    "art": "magnifier",
    "img": "csq/packet-post/ciphers-2-pixels",
-   "alt": "Hide a heart in the open: a grid of squares where a heart appears when the brightness numbers are typed in."
+   "alt": "Hide a heart in the open: a grid of squares where a heart appears when the brightness numbers are typed in.",
+   "focus": [
+    {
+     "cue": "Every pixel is a number: fakes are made of these",
+     "box": [
+      20,
+      42,
+      22,
+      38
+     ]
+    },
+    {
+     "cue": "Do not judge by the pixels: judge by the source",
+     "box": [
+      54,
+      25,
+      35,
+      14
+     ]
+    }
+   ]
   },
   {
    "title": "Stop before you share",
    "text": "Use three moves on anything shocking: Stop. Find another source. Decide before sharing. A post you do not pass on cannot use you to travel.",
    "art": "shield",
    "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "focus": [
+    {
+     "cue": "Stop: a post you do not pass on cannot travel",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Find another source before you decide",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -46,7 +126,27 @@
     "Decide: do not share; tell Pim"
    ],
    "img": "csq/packet-post/tricks-2-safe",
-   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush."
+   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+   "focus": [
+    {
+     "cue": "The fake claim would wear a friendly face like this one",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Read carefully before you decide: that is the check",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Before you would share any post, run the three moves: stop, find another source, then decide.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Play Online: share or keep, and judge each pair",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

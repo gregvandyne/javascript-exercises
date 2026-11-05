@@ -1,0 +1,232 @@
+{
+ "key": "2-5.2",
+ "n": "5.2",
+ "band": "2",
+ "title": "Cyberbullying and digital drama",
+ "topic": "Digital drama",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "A pattern with a power gap",
+   "text": "Cyberbullying is not one cross message. It is a pattern: repeated harm, aimed at someone who cannot easily make it stop. That power gap is what makes it bullying.",
+   "art": "screen",
+   "img": "csq/would-you-rather/online-comments-2",
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "A page where anyone can pile in",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Only your class can comment here",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Drama is different",
+   "text": "Digital drama is conflict that escalates online: friends fall out, screenshots fly, and an audience piles in. Drama involves equals. Bullying involves a gap, and the response differs.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-delete-2",
+   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "focus": [
+    {
+     "cue": "Delete it, and the drama loses its fuel",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Leave it, and the audience keeps it alive",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Four roles in the round",
+   "text": "Every incident has roles: the target, the actor, the bystanders and the upstander. Most people are bystanders, which is exactly why bystanders decide how these stories end.",
+   "art": "people",
+   "img": "csq/would-you-rather/online-2-second",
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "focus": [
+    {
+     "cue": "Your words, inside the chat for now",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A copy outside it, beyond your control",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Hate speech: report, don't debate",
+   "text": "Hate speech attacks who someone is, and it crosses a line no joke can excuse. The Defender move is never to debate it. Save it, report it, and support the person it targeted.",
+   "art": "shield",
+   "img": "csq/packet-post/tricks-2-safe",
+   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+   "focus": [
+    {
+     "cue": "Evidence first: a message you can save and show",
+     "box": [
+      7,
+      25,
+      47,
+      22
+     ]
+    },
+    {
+     "cue": "Read carefully, then report: never debate it",
+     "box": [
+      54,
+      25,
+      35,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "The bystander move",
+   "text": "A mocking post about a classmate is gathering laughs in a group chat. Rank the bystander moves by the good they do.",
+   "art": "loop",
+   "steps": [
+    "Weakest: laugh along and add a joke",
+    "Passive: read it and say nothing",
+    "Strong: a kind word to the target",
+    "Strongest: save it, report it, back the target"
+   ],
+   "img": "csq/would-you-rather/online-comments-2",
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "Laugh along, and the pile-on grows",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A kind word to the target changes the ending",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Evidence, reporting, repair",
+   "text": "Keep the evidence, use the report tools, and tell a trusted adult; serious harassment can be a legal matter for adults to handle. If you were the actor: stop, delete, apologize, and accept the consequences.",
+   "art": "envelope",
+   "img": "csq/packet-post/tricks-2-learn",
+   "alt": "Spot the trick, Pro style: the lesson card names the levers. Rush, prizes, and asking for your mailbox key.",
+   "focus": [
+    {
+     "cue": "Spot the trick: the chapter that trains your eye",
+     "box": [
+      27,
+      15,
+      46,
+      67
+     ]
+    },
+    {
+     "cue": "Rush, prizes, key asks, strangers: the evidence list",
+     "box": [
+      33,
+      53,
+      34,
+      19
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "cyberbullying",
+     "means": "repeated online harm aimed at someone who cannot easily stop it"
+    },
+    {
+     "word": "digital drama",
+     "means": "conflict between equals that escalates online"
+    },
+    {
+     "word": "upstander",
+     "means": "a bystander who acts to help the target"
+    },
+    {
+     "word": "hate speech",
+     "means": "words attacking who someone is, to be reported, not debated"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. Your teacher may lead this one; know your school reporting route before you start.",
+   "art": "trophy",
+   "img": "csq/would-you-rather/online-2-first",
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Play Online: share or keep, and judge each pair",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-2-5.2-e1",
+  "cd-2-5.2-e2",
+  "cd-2-5.2-e3"
+ ],
+ "game": {
+  "slug": "would-you-rather",
+  "chapter": "online",
+  "params": ""
+ }
+}

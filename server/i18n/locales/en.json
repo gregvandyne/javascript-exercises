@@ -3921,15 +3921,15 @@
     },
     "cd": {
       "title": "Cyber Defenders: cybersecurity lessons for grades 3-8",
-      "description": "Cyber Defenders is a free cybersecurity and online-safety course for grades 3-8: 13 short steps in two bands, played through Packet Post and Would You Rather, mapped to CYBER.ORG v1.0 and Common Sense Education.",
+      "description": "Cyber Defenders is a free cybersecurity and online-safety course for grades 3-8: 20 short steps in two bands, played through Packet Post, Would You Rather, Trick Inbox and an escape-room finale, mapped to CYBER.ORG v1.0 and Common Sense Education.",
       "crumb": "Cyber Defenders",
       "kicker": "For teachers · grades 3-8",
       "h1": "Cyber Defenders: online safety you can teach tomorrow",
       "lead": "A short course about how messages travel, how keys and codes protect them, what stays private, and how to spot a trick. Students join Pim the owl at the Netville post office, play real game missions, and earn a Defender stamp for every unit.",
       "badges": {
-        "steps": "13 steps in each band",
-        "units": "An intro and 4 units",
-        "games": "Two games",
+        "steps": "20 steps in each band",
+        "units": "An intro, 6 units and a finale",
+        "games": "Four games",
         "minutes": "About 15 minutes a step",
         "free": "Free · no ads"
       },
@@ -3944,23 +3944,25 @@
         "li6": "A teacher note for every unit: what to say first, what to watch for, and the lines that keep the hard topics calm."
       },
       "crew": {
-        "h": "Two games carry the course",
-        "p": "Packet Post is the post-office game the story lives in. Would You Rather carries the judgement calls of unit 3, where there are no right answers and the learning is in the talking afterwards.",
+        "h": "Four games carry the course",
+        "p": "Packet Post is the post-office game the story lives in. Would You Rather carries the judgement calls, where there are no right answers and the learning is in the talking afterwards. Trick Inbox and the escape room join them in the second half of the course.",
         "packetPost": "Deliver packets across Netville: how messages travel, what a seal promises, strong passphrases built by tapping word tiles, simple ciphers, and spotting trick messages.",
-        "wouldYouRather": "Short dilemmas about sharing, photos, footprints and credit. The Online: share or keep set carries unit 3.",
+        "wouldYouRather": "Short dilemmas about sharing, photos, footprints and credit. The Online: share or keep set carries units 3, 5 and 6.",
+        "trickInbox": "Sort a pretend inbox planted by the Magpie: hunt each message's hidden clues, then choose the move — deliver it, bin it, show Pim, or report and block. Its boss round is the incident drill in step 6.3.",
+        "escape": "Escape the Post Office: the escape-room finale. The Magpie locks the sorting room with six trick locks, one per unit, and the class's six Defender stamps are the key set. No fail state, no outcome-changing timer.",
         "try": "Try it",
         "inCourse": "Play it in the course"
       },
       "units": {
-        "h": "The intro and four units",
-        "p": "Thirteen steps in each band, in order. When the Pro title differs from the Explorer one, it is shown after it.",
+        "h": "The intro, six units and the finale",
+        "p": "Twenty steps in each band, in order. When the Pro title differs from the Explorer one, it is shown after it.",
         "stamp": "{stamp} stamp"
       },
       "map": {
         "h": "The standards map",
         "p": "Every step, mapped. CYBER.ORG codes are shown per band; each step also carries its Common Sense Education topic, and an inherited CSTA code where the step re-frames a CS Quest lesson.",
         "cols": { "step": "Step", "title": "Title", "cyberorg": "CYBER.ORG v1.0", "cs": "Common Sense topic", "csta": "CSTA (inherited)" },
-        "v1": "This map is published on CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 (August 2021), the version CYBER.ORG publishes. If the course is re-mapped to a newer version, this page will say so.",
+        "v1": "This map is published on CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 (August 2021). CYBER.ORG has since released a Version 2.0 (the National K-12 Cybersecurity and AI Learning Standards, September 2026); this course has not been re-mapped to it, and this page will say so plainly if that changes.",
         "rename": "Common Sense Education's newer Digital Literacy & Well-Being Curriculum renames the same six areas: Healthy Habits; Privacy & Safety; Digital Footprint; Relationships & Communication; Cyberbullying & Online Harm; Information & Media Literacy. The map uses the classic six names; each matches the new name in the same order."
       },
       "standards": { "b1": "CYBER.ORG codes · Explorer (3-5)", "b2": "CYBER.ORG codes · Pro (6-8)", "topics": "Common Sense topics" },
@@ -3975,10 +3977,23 @@
         "li3": "The course collects nothing new. Progress and checks use the same kid-safe machinery as the rest of Oomba Academy: no chat, no ads, no third parties.",
         "li4": "The Magpie is a comic bird, never a person, and every trick is shown after the fact with its clues named. The aim is clue-spotting, never fear."
       },
+      "finale": {
+        "h": "The finale: Escape the Post Office",
+        "p": "The course ends in an escape room. On Spark Day the Magpie locks the sorting room with six trick locks, one for each unit, and the six Defender stamps the class has earned are the keys — each stamp proves the skill its lock tests. Students read the room first, match every lock to the unit that trained them for it, then open the locks in any order.",
+        "li1": "Sorting Gate — routing: send the golden letter along the right roads (Unit 1).",
+        "li2": "Sealed Note — the cipher wheel: unscramble a sealed message (Unit 2).",
+        "li3": "Which Pim? — footprint clues: pick the real Pim from the trails each one left (Unit 3).",
+        "li4": "Trick Inbox — a round of trick-spotting under pressure (Unit 4).",
+        "li5": "Five Moves — the incident drill, in the right order (Unit 5).",
+        "li6": "Layers — defense in depth: match each layer of protection to what it stops (Unit 6).",
+        "fair": "The room keeps fair rules: there is no fail state and no timer that can change the outcome. Three hint feathers are there to be used, and the completion shield says honestly how many were used. In Pro, the parade clock only changes the celebration, never the result, and the locks are cut harder — a spoofed sender to catch, defense spelled the US way."
+      },
       "print": {
         "h": "Printed materials",
-        "p": "The standards map and the teacher notes are the printed pack for this course: one map to file with your planning, and one short note per unit to read before the lesson. They print on their own page, without the site around them.",
-        "button": "Print the map and notes"
+        "p": "Two printed packs. The standards map and the teacher notes: one map to file with your planning, and one short note per unit to read before the lesson. And the Spot-the-Trick pack: 18 printable message cards — the Trick Inbox game's own messages, tricks and safe ones mixed — with a teacher answer key naming each card's clues and right move. Print the cards for an offline lesson, a classroom wall, or a class with no devices that day.",
+        "button": "Print the map and notes",
+        "tricks": "Print the Spot-the-Trick cards",
+        "pdf": "Download the Spot-the-Trick pack (PDF)"
       },
       "faq": {
         "h": "Questions teachers ask",
@@ -3987,11 +4002,13 @@
         "q2": "Does it need a school account?",
         "a2": "No. Cyber Defenders stands alone: no CS Quest knowledge and no school setup needed. Students open the course, pick the Explorer or Pro band, and start; signing in just keeps their progress.",
         "q3": "How long does a step take?",
-        "a3": "About 15 minutes: a short deck, a three-question check, and one game chapter. The intro and the four units make 13 steps per band, so the whole course fits in about three hours, or one step a week for a term.",
+        "a3": "About 15 minutes: a short deck, a three-question check, and one game chapter. The intro, the six units and the finale make 20 steps per band, so the whole course fits in about five hours, or one step a week across two terms.",
         "q4": "Which standards does it teach?",
         "a4": "CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 for grades 3-5 and 6-8, with each step also tagged to a Common Sense Education digital citizenship topic. The full map is on this page.",
         "q5": "Is it really free?",
-        "a5": "Yes: free for classrooms, with no ads and nothing to install. It runs in the browser on any device, including Chromebooks."
+        "a5": "Yes: free for classrooms, with no ads and nothing to install. It runs in the browser on any device, including Chromebooks.",
+        "q6": "What is the escape-room finale?",
+        "a6": "Step 6.4, Escape the Post Office: the Magpie locks the sorting room with six trick locks, one per unit, and the class's six stamps are the keys. There is no fail state and no timer that can change the outcome; three hint feathers are there to be used, and the completion shield says how many were used."
       },
       "start": {
         "h": "Start when you are ready",

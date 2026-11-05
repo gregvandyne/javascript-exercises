@@ -284,7 +284,7 @@ function loadCyber(items) {
       return { ...base, ...fromCyberDeck(key, s, band, deck, game, items, problems[band]) };
     });
   }
-  return { steps, problems, groups, catalogue: { program: reg.program, units: reg.units || [], registry } };
+  return { steps, problems, groups, catalogue: { program: reg.program, units: reg.units || [], registry, trickPack: fs.existsSync(path.join(CD, 'trick-pack.json')) ? readJson(path.join(CD, 'trick-pack.json')) : { cards: [], moves: [] } } };
 }
 /** One Cyber Defenders deck, cleaned and checked against its units.json entry (the same rules as fromDeck). */
 function fromCyberDeck(key, s, band, d, game, items, problems) {
@@ -294,7 +294,7 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
   if (d.key !== key) say(`key is ${JSON.stringify(d.key)}, expected "${key}"`);
   if (d.n !== s.n) say(`n is ${JSON.stringify(d.n)}`);
   if (d.band !== band) say(`band is ${JSON.stringify(d.band)}`);
-  if (slides.length < 5 || slides.length > 7) say(`${slides.length} slides (5-7 expected)`);
+  if (slides.length < 5 || slides.length > 8) say(`${slides.length} slides (5-8 expected)`);
   if (slides.filter(x => x.kind === 'example').length !== 1) say('needs exactly one example slide');
   if (slides.filter(x => x.kind === 'words').length !== 1) say('needs exactly one words slide');
   if (!slides.length || slides[slides.length - 1].kind !== 'mission') say('the last slide must be the mission');

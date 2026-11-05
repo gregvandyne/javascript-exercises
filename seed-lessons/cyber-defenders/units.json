@@ -1,5 +1,5 @@
 {
- "about": "Cyber Defenders catalogue index: the units and steps of Oomba Academy's cybersecurity and online-safety course (grades 3-5 = band 1b, \"Explorer\"; grades 6-8 = band 2, \"Pro\"), each step's standards (CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 and Common Sense Education digital citizenship topics, plus CSTA 2017 codes inherited where a step re-frames a CS Quest deck), its game module, and the teacher notes. Schema in README.md; checked by tests/unit/cyber-defenders-course-content.test.js. Phase 1: the intro and units 1-4 (13 steps per band). Units 5-6 and the finale are specced in the course spec, not built yet. Kids never see a standard code or a framework name; teachers see 'Cyber Defenders · CYBER.ORG v1.0'.",
+ "about": "Cyber Defenders catalogue index: the units and steps of Oomba Academy's cybersecurity and online-safety course (grades 3-5 = band 1b, \"Explorer\"; grades 6-8 = band 2, \"Pro\"), each step's standards (CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 and Common Sense Education digital citizenship topics, plus CSTA 2017 codes inherited where a step re-frames a CS Quest deck), its game module, and the teacher notes. Schema in README.md; checked by tests/unit/cyber-defenders-course-content.test.js. The full course: the intro, units 1-6 and the finale (20 steps per band). Kids never see a standard code or a framework name; teachers see 'Cyber Defenders · CYBER.ORG v1.0'.",
  "bands": {
   "1b": {
    "grade": "Grades 3-5",
@@ -680,6 +680,337 @@
     "Every trick in this unit is shown after the fact, with its clues named. The aim is clue-spotting, never fear, and the correct response is always the same calm routine: do not reply, do not tap, tell a trusted adult."
    ],
    "title": "Tricks and tricksters",
+   "tool": "packet-post"
+  },
+  {
+   "emoji": "💬",
+   "group": "unit-5",
+   "n": 5,
+   "stamp": "Kind Screen",
+   "steps": [
+    {
+     "game": {
+      "1b": {
+       "slug": "would-you-rather",
+       "chapter": "online",
+       "params": "",
+       "chapterTitle": "Online: share or keep"
+      },
+      "2": {
+       "slug": "would-you-rather",
+       "chapter": "online",
+       "params": "",
+       "chapterTitle": "Online: share or keep"
+      }
+     },
+     "n": "5.1",
+     "order": 14,
+     "shorts": {
+      "1b": "Safe chats",
+      "2": "Online friends"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Relationships & Communication",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.PPI",
+        "3-5.SEC.INFO"
+       ]
+      },
+      "2": {
+       "commonSense": "Relationships & Communication",
+       "csta": [],
+       "cyberorg": [
+        "6-8.DC.PPI.1"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Chatting safely",
+      "2": "Relationships online"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "slug": "would-you-rather",
+       "chapter": "online",
+       "params": "",
+       "chapterTitle": "Online: share or keep"
+      },
+      "2": {
+       "slug": "would-you-rather",
+       "chapter": "online",
+       "params": "",
+       "chapterTitle": "Online: share or keep"
+      }
+     },
+     "n": "5.2",
+     "order": 15,
+     "shorts": {
+      "1b": "Mean messages",
+      "2": "Digital drama"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Cyberbullying, Digital Drama & Hate Speech",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.CYBL"
+       ]
+      },
+      "2": {
+       "commonSense": "Cyberbullying, Digital Drama & Hate Speech",
+       "csta": [],
+       "cyberorg": [
+        "6-8.DC.CYBL"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "When messages turn mean",
+      "2": "Cyberbullying and digital drama"
+     }
+    },
+    {
+     "game": {
+      "1b": null,
+      "2": null
+     },
+     "n": "5.3",
+     "order": 16,
+     "shorts": {
+      "1b": "Unplug",
+      "2": "Hooked by design"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Media Balance & Well-Being",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.ETH"
+       ]
+      },
+      "2": {
+       "commonSense": "Media Balance & Well-Being",
+       "csta": [],
+       "cyberorg": [
+        "6-8.DC.ETH"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Time to unplug",
+      "2": "Designed to hook you"
+     }
+    }
+   ],
+   "sub": "Kind screens, safe chats",
+   "teacherNotes": [
+    "Step 5.2 is host-led where possible: align it with your school's anti-bullying policy before the lesson, and know your local reporting route so a disclosure in class can be acted on the same day.",
+    "Explorer 5.2 is deliberately slim (kindness and tell a trusted adult only); the word cyberbullying and the full response drill are Pro-only. Step 5.3's settings work uses pretend screens only; no real device data is collected."
+   ],
+   "title": "Kind screens, safe chats",
+   "tool": "would-you-rather"
+  },
+  {
+   "emoji": "🛡️",
+   "group": "unit-6",
+   "n": 6,
+   "stamp": "Shield",
+   "steps": [
+    {
+     "game": {
+      "1b": {
+       "chapter": "locks",
+       "chapterTitle": "Lock It",
+       "params": "chapter=locks&band=1b&lock=1",
+       "slug": "packet-post"
+      },
+      "2": {
+       "chapter": "locks",
+       "chapterTitle": "Lock It",
+       "params": "chapter=locks&band=2&lock=1",
+       "slug": "packet-post"
+      }
+     },
+     "n": "6.1",
+     "order": 17,
+     "shorts": {
+      "1b": "Layers",
+      "2": "Defense in depth"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "3-5.CS.SOFT",
+        "3-5.CS.LOSS",
+        "3-5.SEC.COMP"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "6-8.SEC.COMP",
+        "6-8.SEC.CTRL",
+        "6-8.CS.SOFT",
+        "6-8.CS.APPS"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Layers keep us safe",
+      "2": "Defense in depth"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "slug": "would-you-rather",
+       "chapter": "online",
+       "params": "",
+       "chapterTitle": "Online: share or keep"
+      },
+      "2": {
+       "slug": "would-you-rather",
+       "chapter": "online",
+       "params": "",
+       "chapterTitle": "Online: share or keep"
+      }
+     },
+     "n": "6.2",
+     "order": 18,
+     "shorts": {
+      "1b": "Rules",
+      "2": "Three promises"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Digital Footprint & Identity",
+       "csta": [],
+       "cyberorg": [
+        "3-5.DC.LAW",
+        "3-5.DC.AUP",
+        "3-5.DC.IP"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "6-8.SEC.CIA",
+        "6-8.DC.LAW",
+        "6-8.DC.AUP",
+        "6-8.DC.IP"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "Rules that protect us",
+      "2": "Secret, correct, working"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "boss",
+       "chapterTitle": "Boss Round",
+       "params": "chapter=boss&band=1b&lock=1",
+       "slug": "trick-inbox"
+      },
+      "2": {
+       "chapter": "boss",
+       "chapterTitle": "Boss Round",
+       "params": "chapter=boss&band=2&lock=1",
+       "slug": "trick-inbox"
+      }
+     },
+     "n": "6.3",
+     "order": 19,
+     "shorts": {
+      "1b": "Five moves",
+      "2": "Incident drill"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "3-5.SEC.ACC",
+        "3-5.DC.CYBL"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "6-8.SEC.INFO",
+        "6-8.SEC.DATA"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "If something goes wrong",
+      "2": "Incident drill"
+     }
+    },
+    {
+     "game": {
+      "1b": {
+       "chapter": "escape",
+       "chapterTitle": "Escape the Post Office",
+       "params": "chapter=escape&band=1b&lock=1",
+       "slug": "escape-the-post-office"
+      },
+      "2": {
+       "chapter": "escape",
+       "chapterTitle": "Escape the Post Office",
+       "params": "chapter=escape&band=2&lock=1",
+       "slug": "escape-the-post-office"
+      }
+     },
+     "n": "6.4",
+     "order": 20,
+     "shorts": {
+      "1b": "The Great Trick",
+      "2": "The Great Trick"
+     },
+     "standards": {
+      "1b": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "3-5.SEC.INFO",
+        "3-5.SEC.AUTH",
+        "3-5.DC.FOOT"
+       ]
+      },
+      "2": {
+       "commonSense": "Privacy & Security",
+       "csta": [],
+       "cyberorg": [
+        "6-8.SEC.AUTH",
+        "6-8.SEC.INFO",
+        "6-8.DC.FOOT.2"
+       ]
+      }
+     },
+     "titles": {
+      "1b": "The Great Trick",
+      "2": "The Great Trick"
+     }
+    }
+   ],
+   "sub": "The Defender's toolkit",
+   "teacherNotes": [
+    "Before Unit 6, pin the school's actual named adults and reporting routes beside the generic drill in 6.3, so a child who needs the moves knows exactly who to tell in this building.",
+    "The finale (6.4) has no fail state and no outcome-changing timer by design; the completion shield records honestly how many of the three hint feathers were used."
+   ],
+   "title": "The Defender's toolkit",
    "tool": "packet-post"
   }
  ]

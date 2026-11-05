@@ -11,7 +11,27 @@
    "text": "A drawing you make is yours, because you made it. Finding something online does not make it yours. The maker decides how their work may be used.",
    "art": "pencil",
    "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?"
+   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "focus": [
+    {
+     "cue": "Your drawing, shown to everyone online",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Your drawing, kept to family only",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -24,28 +44,108 @@
     "public domain: free for anyone"
    ],
    "img": "csq/would-you-rather/online-credit-1b",
-   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?"
+   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
+   "focus": [
+    {
+     "cue": "Use a picture someone else made, and credit them",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Or draw your own, even if it is worse",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Photos need a yes",
    "text": "Sharing a photo of someone else needs their yes, always. If a friend posts a photo of you that you do not like, ask them to take it down. If it stays up, tell a trusted adult, who can help report it.",
    "art": "people",
    "img": "csq/would-you-rather/online-photo-1b",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?"
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "focus": [
+    {
+     "cue": "One photo, shared with the whole world",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Ten photos, shared with ten friends",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "My keep-private rule",
    "text": "Some things stay private, always: your address, your school and your passphrase. Say your own rule out loud. These are mine to keep.",
    "art": "lock",
    "img": "csq/packet-post/locks-1b-key",
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
+   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
+   "focus": [
+    {
+     "cue": "In the game, your passphrase is your mailbox key",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Words nobody could guess about you",
+     "box": [
+      8,
+      68,
+      45,
+      5
+     ]
+    }
+   ]
   },
   {
    "title": "The Magpie's nest",
    "text": "The Magpie pins photos of other birds in its nest without asking. Now the other birds have stopped visiting. Asking first is how sharers keep their friends.",
    "art": "mask",
    "img": "csq/would-you-rather/online-photo-1b",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?"
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "focus": [
+    {
+     "cue": "One photo, shared with the whole world",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Ten photos, shared with ten friends",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -77,7 +177,18 @@
    "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Then write the credit line for a game you might make. Last, name one thing you keep private.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-1b-first",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
+   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "focus": [
+    {
+     "cue": "Play Online: share or keep, and judge each pair",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

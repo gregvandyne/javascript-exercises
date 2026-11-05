@@ -33,14 +33,14 @@ const course = C.getCourse('cyber-defenders');
 const csq = C.getCourse('cs-quest');
 const right = id => C.item(id).answer;
 const allRight = step => Object.fromEntries(step.check.map(id => [id, right(id)]));
-const ORDER = ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3'];
+const ORDER = ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '6.4'];
 /** Mark a step fully done by hand (as courses.test.js does for CS Quest). */
 const doneByHand = (kid, step) => q.run('INSERT OR REPLACE INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?,?,?,?,?,?,3,?,?)', kid.id, 'cyber-defenders', step.key, step.band, now(), now(), now(), now());
 
-test('13 steps per band from units.json, decks clean, games as catalogued', () => {
+test('20 steps per band from units.json, decks clean, games as catalogued', () => {
   for (const band of C.BANDS) {
     const s = C.steps(course, band);
-    assert.equal(s.length, 13, band);
+    assert.equal(s.length, 20, band);
     assert.deepEqual(s.map(x => x.n), ORDER);
     assert.deepEqual(C.deckProblems(band, 'cyber-defenders'), [], band);
     for (const x of s) {
@@ -59,11 +59,11 @@ test('13 steps per band from units.json, decks clean, games as catalogued', () =
   // CS Quest is untouched by Cyber: 21 steps (19 lessons + story intro/finale from extras), no problems, its own decks.
   assert.equal(C.steps(csq, '1b').length, 21);
   assert.deepEqual(C.deckProblems('1b'), []);
-  assert.deepEqual(C.groupsFor(course).map(g => g.id), ['post-office', 'unit-1', 'unit-2', 'unit-3', 'unit-4']);
+  assert.deepEqual(C.groupsFor(course).map(g => g.id), ['post-office', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'unit-6']);
   assert.deepEqual(C.groupsFor(csq).map(g => g.id), ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'tech-choices']);
 });
 
-test('the course page: band picker first, then the map with unit groups and 13 steps', async () => {
+test('the course page: band picker first, then the map with unit groups and 20 steps', async () => {
   const anon = await get('/courses/cyber-defenders');
   assert.equal(anon.status, 200);
   assert.match(anon.text, /Cyber Defenders/);
@@ -76,13 +76,13 @@ test('the course page: band picker first, then the map with unit groups and 13 s
   assert.equal(map.status, 200);
   const ids = [...map.text.matchAll(/id="step-(1b-\d\.\d)"/g)].map(m => m[1]);
   assert.deepEqual(ids, ORDER.map(n => `1b-${n}`));
-  for (const g of ['post-office', 'unit-1', 'unit-2', 'unit-3', 'unit-4']) assert.match(map.text, new RegExp(`<section class="cmap-group" id="${g}"`));
+  for (const g of ['post-office', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'unit-6']) assert.match(map.text, new RegExp(`<section class="cmap-group" id="${g}"`));
   assert.match(map.text, /Welcome to the Post Office/);
   assert.match(map.text, /Messages on the move/);
   assert.match(map.text, /Tricks and tricksters/);
   assert.match(map.text, /class="cmap-step is-next" id="step-1b-0\.1"/);
   assert.match(map.text, /class="cmap-step is-locked" id="step-1b-1\.1"/);
-  assert.match(map.text, /0 of 13 steps done/);
+  assert.match(map.text, /0 of 20 steps done/);
 });
 
 test('the intro step has no game: read, check, done — and the next step opens', async () => {

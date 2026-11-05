@@ -6,8 +6,8 @@
 // the game module is the one units.json names (a Packet Post chapter with canonical params, or Would You Rather's
 // "online" topic), and the mission names the game and chapter as the game shows them; every slide but the words
 // slides is pictured from the shared manifest — CS Quest shots reused where the state matches, plus Cyber's own
-// captures (scripts/cyber-shots-spec.json) — always with the manifest's alt, and guided focus covers unit 1 with
-// CS Quest's schema; kid-safe text (the real game
+// captures (scripts/cyber-shots-spec.json) — always with the manifest's alt, and guided focus covers every
+// pictured slide in units 1-6 with CS Quest's schema (the intro carries none yet); kid-safe text (the real game
 // scanner and the free-text filter over every string, no links, handles, long digit runs, brands, framework names,
 // standard codes or the program name); US spelling; the Magpie beat in the intro and in each unit's last step;
 // teacher notes on the intro and units 1-4.
@@ -39,7 +39,7 @@ const reg = JSON.parse(fs.readFileSync(path.join(CD, 'units.json'), 'utf8'));
 const registry = JSON.parse(fs.readFileSync(path.join(CD, 'standards.json'), 'utf8'));
 const UNITS = reg.units;
 const STEPS = UNITS.flatMap(u => u.steps.map(s => ({ ...s, unit: u.n, unitTitle: u.title })));
-const GAME_TITLE = { 'packet-post': 'Packet Post', 'would-you-rather': 'Would You Rather' };
+const GAME_TITLE = { 'packet-post': 'Packet Post', 'would-you-rather': 'Would You Rather', 'trick-inbox': 'Trick Inbox', 'escape-the-post-office': 'Escape the Post Office' };
 const ppChapters = JSON.parse(fs.readFileSync(path.join(CS, 'games.json'), 'utf8')).games['packet-post'].chapters;
 const wyrUi = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/would-you-rather/ui.json'), 'utf8')).en;
 const banks = new Map();
@@ -59,11 +59,11 @@ const MANIFEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'img', 'cs
 const manifestByKey = new Map((MANIFEST.images || []).map(e => [e.key, e]));
 const sentences = t => t.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).filter(Boolean).length;
 
-test('the catalogue: intro + units 1-4, 13 steps per band in order, stamps and teacher notes', () => {
-  assert.deepEqual(UNITS.map(u => u.n), [0, 1, 2, 3, 4]);
-  assert.deepEqual(STEPS.map(s => s.n), ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3']);
-  assert.deepEqual(STEPS.map(s => s.order), [...Array(13).keys()].map(i => i + 1));
-  assert.deepEqual(UNITS.slice(1).map(u => u.stamp), ['Roadwise', 'Keykeeper', 'Private', 'Trickspotter']);
+test('the catalogue: intro + units 1-6, 20 steps per band in order, stamps and teacher notes', () => {
+  assert.deepEqual(UNITS.map(u => u.n), [0, 1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(STEPS.map(s => s.n), ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '6.4']);
+  assert.deepEqual(STEPS.map(s => s.order), [...Array(20).keys()].map(i => i + 1));
+  assert.deepEqual(UNITS.slice(1).map(u => u.stamp), ['Roadwise', 'Keykeeper', 'Private', 'Trickspotter', 'Kind Screen', 'Shield']);
   for (const u of UNITS) {
     assert.ok(Array.isArray(u.teacherNotes) && u.teacherNotes.length >= 1, `unit ${u.n} carries teacher notes`);
     for (const note of u.teacherNotes) assert.ok(typeof note === 'string' && note.length >= 40, `unit ${u.n}: a real teacher note`);
@@ -91,14 +91,14 @@ test('the standards map: CYBER.ORG codes from the registry, a real Common Sense 
   }
 });
 
-test('13 steps in two bands: 26 deck files, nothing else in the course folder; one bank file per unit and band', () => {
+test('20 steps in two bands: 40 deck files, nothing else in the course folder; one bank file per unit and band', () => {
   for (const d of decks) assert.ok(d.deck, `${path.relative(ROOT, d.file)} exists`);
   for (const band of BANDS) {
-    assert.deepEqual(fs.readdirSync(path.join(CD, 'course', band)).sort(), STEPS.map(s => `${s.n}.json`).sort(), `course/${band} holds exactly the 13 step files`);
+    assert.deepEqual(fs.readdirSync(path.join(CD, 'course', band)).sort(), STEPS.map(s => `${s.n}.json`).sort(), `course/${band} holds exactly the 20 step files`);
   }
   assert.deepEqual(fs.readdirSync(path.join(CD, 'course')).sort(), BANDS);
   for (const u of UNITS) for (const band of BANDS) assert.ok(banks.has(`cd-u${u.n}-${band}`), `sets/u${u.n}-${band}.json exists`);
-  assert.equal(itemById.size, 26 * 3, 'three check items per deck');
+  assert.equal(itemById.size, 40 * 3, 'three check items per deck');
 });
 
 test('every deck matches the schema: key, n, band, title, topic, minutes, slides, check, game / talk', () => {
@@ -115,10 +115,10 @@ test('every deck matches the schema: key, n, band, title, topic, minutes, slides
   }
 });
 
-test('5-7 slides: one worked example with chips, one words slide with four words, the mission last; art and lengths', () => {
+test('5-8 slides: one worked example with chips, one words slide with four words, the mission last; art and lengths', () => {
   for (const { band, step, deck: d } of decks) {
     const where = `${band}-${step.n}`;
-    assert.ok(Array.isArray(d.slides) && d.slides.length >= 5 && d.slides.length <= 7, `${where}: 5-7 slides (${d.slides.length})`);
+    assert.ok(Array.isArray(d.slides) && d.slides.length >= 5 && d.slides.length <= 8, `${where}: 5-8 slides (${d.slides.length})`);
     const kinds = d.slides.map(s => s.kind || 'text');
     assert.equal(kinds.filter(k => k === 'example').length, 1, `${where}: one example slide`);
     assert.equal(kinds.filter(k => k === 'words').length, 1, `${where}: one words slide`);
@@ -181,18 +181,18 @@ test('5-7 slides: one worked example with chips, one words slide with four words
   }
 });
 
-test('parity: every slide is pictured except the words slides, and guided focus covers unit 1 like CS Quest', () => {
+test('parity: every slide is pictured except the words slides, and guided focus covers every pictured slide like CS Quest', () => {
   for (const { band, step, deck: d } of decks) {
     const where = `${band}-${step.n}`;
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
       if (s.kind === 'words') assert.equal(s.img, undefined, `${at}: words slides stay typographic, as in CS Quest`);
       else assert.ok(s.img && s.alt, `${at}: a pictured slide (the Phase 1.5 captures landed)`);
-      if (['1.1', '1.2', '1.3'].includes(step.n)) {
-        assert.ok(s.img ? Array.isArray(s.focus) : true, `${at}: unit 1's pictured slides carry guided focus`);
-        if (s.kind === 'mission') assert.equal((s.focus || []).length, 1, `${at}: a mission slide gets exactly one focus step`);
+      if (step.n === '0.1') {
+        assert.equal(s.focus, undefined, `${at}: the intro carries no guided focus yet`);
       } else {
-        assert.equal(s.focus, undefined, `${at}: guided focus is unit 1 only for now (units 2-4 are future work)`);
+        assert.ok(s.img ? Array.isArray(s.focus) : true, `${at}: pictured slides carry guided focus`);
+        if (s.kind === 'mission') assert.equal((s.focus || []).length, 1, `${at}: a mission slide gets exactly one focus step`);
       }
     }
   }
@@ -231,8 +231,7 @@ test('the game module is the catalogue game: a real Packet Post chapter with can
       const ch = ppChapters.find(c => c.id === spec.chapter && c.band === (band === '1b' ? '1B' : '2'));
       assert.ok(ch, `${where}: ${spec.chapter} is a Packet Post chapter for the band`);
       assert.equal(ch.title, spec.chapterTitle, `${where}: ${spec.chapterTitle} is the game's own chapter name`);
-    } else {
-      assert.equal(spec.slug, 'would-you-rather');
+    } else if (spec.slug === 'would-you-rather') {
       assert.equal(spec.params, '', `${where}: the solo game takes no lesson params`);
       assert.equal(wyrUi['cat.online'], spec.chapterTitle, `${where}: the chapter is the game's own online topic name`);
     }

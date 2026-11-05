@@ -1,0 +1,232 @@
+{
+ "key": "2-6.1",
+ "n": "6.1",
+ "band": "2",
+ "title": "Defense in depth",
+ "topic": "Defense in depth",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Assume every layer can fail",
+   "text": "Professionals never ask whether a layer is perfect. They assume any single layer can fail, and stack independent layers so one failure is never the whole story. That is defense in depth.",
+   "art": "shield",
+   "img": "csq/packet-post/locks-2-key",
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "focus": [
+    {
+     "cue": "The sharing sort that opens Lock It in Pro",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "Share, or keep private: the first layer is a decision",
+     "box": [
+      54,
+      43,
+      23,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The personal layer stack",
+   "text": "For your own accounts the stack is short: updates, a unique passphrase per account, two-step sign-in, and backups. Each layer covers a failure the others cannot.",
+   "art": "lock",
+   "img": "csq/packet-post/locks-2-pass",
+   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key.",
+   "focus": [
+    {
+     "cue": "The Pro mailbox key builder",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "A unique passphrase per account starts here",
+     "box": [
+      7,
+      55,
+      47,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Each layer covers another",
+   "text": "A phished passphrase meets the second step and stops. A stolen tablet meets encryption and a backup, and the loss shrinks to hardware. Layers earn their keep on each other's worst days.",
+   "art": "shield",
+   "img": "csq/packet-post/locks-2-shield",
+   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "focus": [
+    {
+     "cue": "The card about your mailbox key",
+     "box": [
+      7,
+      26,
+      47,
+      16
+     ]
+    },
+    {
+     "cue": "Share or Shield: every fact has a good side and a risk",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Updates patch real holes",
+   "text": "Software ships with small flaws, and attackers collect the ones that get found. Updates are how those vulnerabilities get closed, which is why postponing them leaves a known door open.",
+   "art": "wrench",
+   "img": "csq/packet-post/locks-2-router",
+   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles.",
+   "focus": [
+    {
+     "cue": "The home router, with its key on a sticker",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "The sticker word itself, offered as a tile",
+     "box": [
+      71,
+      37,
+      18,
+      10
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Audit a scenario account",
+   "text": "One account, four facts. Audit it against the stack and name the missing layer.",
+   "art": "magnifier",
+   "steps": [
+    "Passphrase reused from another site: unique layer missing",
+    "No second step at sign-in: two-step layer missing",
+    "Photos exist nowhere else: backup layer missing",
+    "Updates postponed for months: patch layer missing"
+   ],
+   "img": "csq/packet-post/locks-2-sort",
+   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls.",
+   "focus": [
+    {
+     "cue": "A privacy screen on the monitor: physical or digital?",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    },
+    {
+     "cue": "The Physical or Digital sort",
+     "box": [
+      54,
+      46,
+      26,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Score your own setup",
+   "text": "Your layer audit needs no real account details: score the shape, not the secrets. Four layers present is a strong stack. Two is a plan for this week, written down.",
+   "art": "table",
+   "img": "csq/packet-post/locks-2-post",
+   "alt": "The last Lock It sort in Pro: judging what is safe to do, the habit of naming a risk before you act.",
+   "focus": [
+    {
+     "cue": "The last Lock It sort in Pro: your mailbox key",
+     "box": [
+      7,
+      26,
+      47,
+      16
+     ]
+    },
+    {
+     "cue": "Score the shape, not the secrets: nothing sorted yet",
+     "box": [
+      7,
+      41,
+      47,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "defense in depth",
+     "means": "stacking independent layers so one failure is never the whole story"
+    },
+    {
+     "word": "layer",
+     "means": "one guard in a stack of guards"
+    },
+    {
+     "word": "vulnerability",
+     "means": "a flaw in software or a setup that an attacker can use"
+    },
+    {
+     "word": "audit",
+     "means": "a careful check of a setup against a standard"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Packet Post at Lock It and play the Pro levels again. For each level, name which layer of the stack it is training.",
+   "art": "trophy",
+   "img": "csq/packet-post/locks-2-key",
+   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "focus": [
+    {
+     "cue": "Play the Pro levels again, naming each layer",
+     "box": [
+      7,
+      26,
+      47,
+      9
+     ]
+    }
+   ]
+  }
+ ],
+ "check": [
+  "cd-2-6.1-e1",
+  "cd-2-6.1-e2",
+  "cd-2-6.1-e3"
+ ],
+ "game": {
+  "slug": "packet-post",
+  "chapter": "locks",
+  "params": "chapter=locks&band=2&lock=1"
+ }
+}

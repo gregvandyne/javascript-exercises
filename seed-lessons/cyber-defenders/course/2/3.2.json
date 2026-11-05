@@ -11,7 +11,27 @@
    "text": "Your footprint is written by three authors: you, in your own posts; other people, in posts about you; and services, collecting scores, locations and likes.",
    "art": "map",
    "img": "csq/would-you-rather/online-photo-2",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?"
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "focus": [
+    {
+     "cue": "Share one photo with the whole world",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Share ten photos with ten friends",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -24,28 +44,108 @@
     "a game saves your top score: a service"
    ],
    "img": "csq/would-you-rather/online-comments-2",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?"
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "focus": [
+    {
+     "cue": "A page where anyone can comment",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Only your class can comment there",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Delete is not erase",
    "text": "Deleting a post is asking nicely for it to go. Copies, screenshots and shares can keep it alive long after your own copy is gone.",
    "art": "shield",
    "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?"
+   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "focus": [
+    {
+     "cue": "Deleting asks nicely for a post to go",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Copies and screenshots can keep it alive",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Future readers",
    "text": "That drawing you posted for feedback stays in your trail. Years later, teammates, schools and employers may read old posts as part of who you are.",
    "art": "people",
    "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
+   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "focus": [
+    {
+     "cue": "Your post, written for today's friends",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "A copy that future readers may meet years later",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "title": "Ask before you post",
    "text": "Public gets you seen and found; private keeps you safe. Before you post, ask the Cyber Defender question: what could someone do with this?",
    "art": "globe",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Public gets you seen and found",
+     "box": [
+      6,
+      14,
+      43,
+      69
+     ]
+    },
+    {
+     "cue": "Private keeps you safe",
+     "box": [
+      51,
+      14,
+      43,
+      69
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -77,7 +177,18 @@
    "text": "Open Would You Rather and choose the Online topic: play Online: share or keep. For one dilemma, say how a future audience might read that post.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "focus": [
+    {
+     "cue": "Play Online: share or keep, and judge each pair",
+     "box": [
+      6,
+      14,
+      88,
+      69
+     ]
+    }
+   ]
   }
  ],
  "check": [

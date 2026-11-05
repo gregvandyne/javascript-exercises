@@ -11,7 +11,27 @@
    "text": "Pim sorts a message that claims to be from the school office. The name on it looks right, but a claimed sender is a costume. That faking is called spoofing, and the real address tells the truth.",
    "art": "mask",
    "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "focus": [
+    {
+     "cue": "The name says Your bank; the badge says unknown sender",
+     "box": [
+      7,
+      27,
+      30,
+      7
+     ]
+    },
+    {
+     "cue": "A claimed sender is a costume: read the whole card",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -25,28 +45,108 @@
     "Do not tap; verify another way"
    ],
    "img": "csq/packet-post/tricks-2-bank",
-   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday."
+   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+   "focus": [
+    {
+     "cue": "A sender can write any name on an envelope",
+     "box": [
+      54,
+      25,
+      35,
+      13
+     ]
+    },
+    {
+     "cue": "Says the bank, but the badge says unknown sender",
+     "box": [
+      54,
+      40,
+      18,
+      14
+     ]
+    }
+   ]
   },
   {
    "title": "Aimed at one person",
    "text": "Spear phishing uses the same trick recipe, but built for one person. It may use your name, your club or a recent post, then add a rush and a request.",
    "art": "people",
    "img": "csq/packet-post/tricks-2-profile",
-   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile."
+   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile.",
+   "focus": [
+    {
+     "cue": "Built for one person: it knows your dog's name",
+     "box": [
+      7,
+      25,
+      47,
+      30
+     ]
+    },
+    {
+     "cue": "Knows things from your public profile",
+     "box": [
+      54,
+      40,
+      35,
+      19
+     ]
+    }
+   ]
   },
   {
    "title": "The attachment rule",
    "text": "An unexpected file is not opened, even if the message begs you to hurry. Verify first through a different door: ask the real sender in person, or tell a trusted adult.",
    "art": "envelope",
    "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours."
+   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "focus": [
+    {
+     "cue": "An unexpected parcel, with a pay-now button",
+     "box": [
+      7,
+      25,
+      47,
+      27
+     ]
+    },
+    {
+     "cue": "Asks for money, two hours to act",
+     "box": [
+      54,
+      39,
+      35,
+      18
+     ]
+    }
+   ]
   },
   {
    "title": "Reporting protects everyone",
    "text": "Reporting a phishing message is a Defender act. One report can warn the whole school and stop the same costume reaching your friends.",
    "art": "shield",
    "img": "csq/packet-post/tricks-2-bank",
-   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday."
+   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+   "focus": [
+    {
+     "cue": "The badge shows whether the post office really knows them",
+     "box": [
+      22,
+      27,
+      15,
+      7
+     ]
+    },
+    {
+     "cue": "Safe, trick, or ask a trusted adult: report it",
+     "box": [
+      54,
+      61,
+      35,
+      11
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -78,7 +178,18 @@
    "text": "Open Packet Post at Spot the Trick and play the Pro cards. For every message, check the real sender before you judge it.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "focus": [
+    {
+     "cue": "Check the real sender before you judge each card",
+     "box": [
+      7,
+      27,
+      30,
+      7
+     ]
+    }
+   ]
   }
  ],
  "check": [
