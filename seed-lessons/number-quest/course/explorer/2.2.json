@@ -142,7 +142,68 @@
   {
    "title": "Stretch: Through the zeros",
    "text": "Gaps laugh at tricky zeros. The gap from 398 to 703 hops 398 to 400, then to 700, then to 703. The gap is 305.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "numberline",
+    "label": "The gap from 398 to 703 in three hops: 2, 300 and 3",
+    "min": 398,
+    "max": 703,
+    "marks": [
+     {
+      "at": 398,
+      "label": "398"
+     },
+     {
+      "at": 400,
+      "label": "400"
+     },
+     {
+      "at": 700,
+      "label": "700"
+     },
+     {
+      "at": 703,
+      "label": "703"
+     }
+    ],
+    "hops": [
+     {
+      "from": 398,
+      "to": 400,
+      "label": "2"
+     },
+     {
+      "from": 400,
+      "to": 700,
+      "label": "300"
+     },
+     {
+      "from": 700,
+      "to": 703,
+      "label": "3"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "First hop: 398 to 400 is 2.",
+     "box": [
+      5,
+      21.3,
+      12,
+      39.1
+     ]
+    },
+    {
+     "cue": "Then 400 to 700 is 300, and 700 to 703 is 3. The gap is 305.",
+     "box": [
+      12,
+      21.3,
+      84,
+      39.1
+     ]
+    }
+   ]
   },
   {
    "kind": "words",

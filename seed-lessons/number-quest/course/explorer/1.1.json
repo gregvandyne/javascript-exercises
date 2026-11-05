@@ -9,7 +9,36 @@
   {
    "title": "The Counting House",
    "text": "Welcome to the Counting House, where big numbers are built from small digits. The same digit can do very different jobs in different places.",
-   "art": "grid"
+   "art": "grid",
+   "visual": {
+    "type": "tiles",
+    "label": "Big numbers are built from small digits: 3, 5, 2",
+    "values": [
+     "3",
+     "5",
+     "2"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One small digit: 3.",
+     "box": [
+      5.5,
+      28.4,
+      29,
+      33.8
+     ]
+    },
+    {
+     "cue": "Joined up, the digits build a big number: 352.",
+     "box": [
+      5.5,
+      28.4,
+      89,
+      33.8
+     ]
+    }
+   ]
   },
   {
    "title": "Where a digit sits",
@@ -128,7 +157,43 @@
   {
    "title": "Stretch: Ten times the place",
    "text": "In 55, the left 5 is worth ten times the right 5. Every step one place left makes a digit worth ten times more. Try it with 777.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "places",
+    "label": "55 in place value cards: 5 tens, 5 ones",
+    "cols": [
+     {
+      "d": "5",
+      "place": "tens",
+      "value": "50"
+     },
+     {
+      "d": "5",
+      "place": "ones",
+      "value": "5"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The left 5 sits in the tens place: it is worth 50.",
+     "box": [
+      6.5,
+      12.4,
+      43.5,
+      68.5
+     ]
+    },
+    {
+     "cue": "The right 5 sits in the ones place: it is worth 5.",
+     "box": [
+      50.5,
+      12.4,
+      43.5,
+      68.5
+     ]
+    }
+   ]
   },
   {
    "kind": "words",

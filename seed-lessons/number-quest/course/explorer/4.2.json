@@ -50,7 +50,48 @@
   {
    "title": "Re-slicing keeps value",
    "text": "Cutting every piece into 2 smaller pieces doubles both numbers: 1/2 becomes 2/4. The pieces shrink, the count grows, the share stays the same.",
-   "art": "gears"
+   "art": "gears",
+   "visual": {
+    "type": "fraction",
+    "label": "Cut every piece in two: 1/2 becomes 2/4, then 4/8, and the share stays the same",
+    "rows": [
+     {
+      "label": "1/2",
+      "cuts": 2,
+      "shaded": 1
+     },
+     {
+      "label": "2/4: cut finer, same share",
+      "cuts": 4,
+      "shaded": 2
+     },
+     {
+      "label": "4/8: cut finer still, same share",
+      "cuts": 8,
+      "shaded": 4
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Cut every piece in two: 1/2 becomes 2/4.",
+     "box": [
+      5,
+      41.8,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Cut in two again: 4/8. The pieces shrink, the share stays.",
+     "box": [
+      5,
+      72,
+      90,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -104,12 +145,84 @@
   {
    "title": "Same whole, or no contest",
    "text": "A fraction only has a size inside its whole. Half of a tiny cake can be less cake than a fourth of a huge one. Compare shares of the same whole.",
-   "art": "shield"
+   "art": "shield",
+   "visual": {
+    "type": "fraction",
+    "label": "Half of a tiny cake beside a fourth of a huge one: the whole decides the size",
+    "rows": [
+     {
+      "label": "1/2 of a tiny cake",
+      "cuts": 2,
+      "shaded": 1
+     },
+     {
+      "label": "1/4 of a huge cake",
+      "cuts": 4,
+      "shaded": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Half of a tiny cake: a small whole, so a small piece.",
+     "box": [
+      5,
+      20.5,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "A fourth of a huge cake: it can be the bigger piece.",
+     "box": [
+      5,
+      50.7,
+      90,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: Any number of cuts",
    "text": "Re-slicing works with any count. Cut each third into 3 and 2/3 becomes 6/9: same share, three times the pieces, three times the count.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "fraction",
+    "label": "Re-slicing thirds: 2/3 becomes 6/9, the same share in smaller pieces",
+    "rows": [
+     {
+      "label": "2/3: two of three parts",
+      "cuts": 3,
+      "shaded": 2
+     },
+     {
+      "label": "6/9: each third cut in 3, the same share",
+      "cuts": 9,
+      "shaded": 6
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "2/3: two of three equal parts.",
+     "box": [
+      5,
+      20.5,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Cut each third into 3: 6/9. Same share, three times the pieces.",
+     "box": [
+      5,
+      50.7,
+      90,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",

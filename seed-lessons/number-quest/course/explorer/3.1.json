@@ -9,7 +9,33 @@
   {
    "title": "Trays in the workshop",
    "text": "The workshops are open again, and the first job is packing. Rolls, seeds and tiles all travel in trays, and every tray holds the same number.",
-   "art": "box"
+   "art": "box",
+   "visual": {
+    "type": "array",
+    "label": "Every tray holds the same number",
+    "rows": 3,
+    "cols": 4
+   },
+   "focus": [
+    {
+     "cue": "One row is one tray, filled the same as every other.",
+     "box": [
+      12,
+      12.4,
+      76,
+      22
+     ]
+    },
+    {
+     "cue": "Tray after tray, the count never changes.",
+     "box": [
+      12,
+      12.4,
+      76,
+      71.1
+     ]
+    }
+   ]
   },
   {
    "title": "Equal groups multiply",
@@ -83,12 +109,79 @@
   {
    "title": "Arrays are groups drawn",
    "text": "Draw the groups as rows and the picture does the counting. Six rows of seven is the same total turned either way: 7 rows of six works too.",
-   "art": "grid"
+   "art": "grid",
+   "visual": {
+    "type": "array",
+    "label": "Six rows of seven: the same total turned either way",
+    "rows": 6,
+    "cols": 7
+   },
+   "focus": [
+    {
+     "cue": "Each row holds 7. Skip-count the rows: 7, 14, 21...",
+     "box": [
+      12,
+      16.5,
+      76,
+      12.5
+     ]
+    },
+    {
+     "cue": "Six rows of seven is 42, and seven rows of six is 42 too.",
+     "box": [
+      12,
+      12.4,
+      76,
+      66.5
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: Bigger groups",
    "text": "The shortcut scales up. For 23 x 4, split 23 into 20 and 3. Then 20 x 4 = 80 and 3 x 4 = 12, so 23 x 4 = 92.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "bars",
+    "label": "Splitting 23 x 4: 20 x 4 = 80 and 3 x 4 = 12",
+    "rows": [
+     {
+      "label": "23 x 4, split into two easy parts",
+      "parts": [
+       {
+        "w": 0.87,
+        "label": "20 x 4 = 80",
+        "tone": 0
+       },
+       {
+        "w": 0.13,
+        "label": "3 x 4 = 12",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Split 23 into 20 and 3. 20 x 4 = 80.",
+     "box": [
+      5,
+      34.7,
+      76.5,
+      19.6
+     ]
+    },
+    {
+     "cue": "3 x 4 = 12. Join them: 80 + 12 = 92.",
+     "box": [
+      82,
+      34.7,
+      12.5,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",

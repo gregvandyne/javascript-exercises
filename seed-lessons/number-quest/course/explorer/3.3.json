@@ -9,7 +9,36 @@
   {
    "title": "Fast comes from tricks",
    "text": "Fast facts are not magic memory. Every fast counter uses tricks: doubling, halving, and building a hard fact from an easy one.",
-   "art": "loop"
+   "art": "loop",
+   "visual": {
+    "type": "tiles",
+    "label": "Doubling tricks: 7 x 2, 7 x 4, 7 x 8",
+    "values": [
+     "7 x 2 = 14",
+     "7 x 4 = 28",
+     "7 x 8 = 56"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start from a fact you know: 7 x 2 = 14.",
+     "box": [
+      5.5,
+      28.4,
+      29,
+      33.8
+     ]
+    },
+    {
+     "cue": "Double and double again: 7 x 8 = 56.",
+     "box": [
+      65.5,
+      28.4,
+      29,
+      33.8
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -126,7 +155,36 @@
   {
    "title": "Stretch: Doubling chains",
    "text": "Doubling is a ladder. 6 x 8 is double 6 x 4, and 6 x 4 is double 6 x 2. Climb down to a fact you know, then climb back up.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "tiles",
+    "label": "Doubling chains: 6 x 2, then double to 6 x 4, then double to 6 x 8",
+    "values": [
+     "6 x 2 = 12",
+     "6 x 4 = 24",
+     "6 x 8 = 48"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Climb down to a fact you know: 6 x 2 = 12.",
+     "box": [
+      5.5,
+      28.4,
+      29,
+      33.8
+     ]
+    },
+    {
+     "cue": "Climb back up: double 24 and 6 x 8 = 48.",
+     "box": [
+      65.5,
+      28.4,
+      29,
+      33.8
+     ]
+    }
+   ]
   },
   {
    "kind": "words",

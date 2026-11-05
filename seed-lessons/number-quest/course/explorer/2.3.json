@@ -113,7 +113,63 @@
   {
    "title": "The Jumble adds a gap",
    "text": "The Jumble read a gap story and added instead of subtracting. Its bar showed two parts joining, but the story asked for a difference. Name the mistake before you fix it.",
-   "art": "bug"
+   "art": "bug",
+   "visual": {
+    "type": "bars",
+    "label": "The Jumble joined the parts; the story asked for the gap",
+    "rows": [
+     {
+      "label": "The Jumble's bar: two parts joining",
+      "parts": [
+       {
+        "w": 0.55,
+        "label": "part",
+        "tone": 0
+       },
+       {
+        "w": 0.45,
+        "label": "part",
+        "tone": 1
+       }
+      ]
+     },
+     {
+      "label": "The story's bar: a whole with a gap to find",
+      "parts": [
+       {
+        "w": 0.7,
+        "label": "the part you know",
+        "tone": 0
+       },
+       {
+        "w": 0.3,
+        "label": "",
+        "unknown": true
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The Jumble's bar joins two parts: it added.",
+     "box": [
+      5,
+      20.5,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "The story asked for a difference: the gap is the unknown part.",
+     "box": [
+      66.5,
+      50.7,
+      28,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",

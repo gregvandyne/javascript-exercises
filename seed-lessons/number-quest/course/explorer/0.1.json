@@ -9,12 +9,12 @@
   {
    "title": "Meet Tally",
    "text": "Tally the cat keeps the Numberworks, the street of workshops where Netville does its counting. Tally knows every shelf, every scale and every stubborn drawer.",
-   "art": "star"
+   "art": "map"
   },
   {
    "title": "Workshops gone quiet",
    "text": "The workshops have gone quiet. Their shutters are shut, their tools are dusty, and the numbers inside have forgotten their jobs.",
-   "art": "map"
+   "art": "lock"
   },
   {
    "kind": "example",
@@ -61,7 +61,37 @@
   {
    "title": "A giggle in the dark",
    "text": "Somewhere behind the shutters, something giggles. A tile clatters. When Tally looks, two number tiles have swapped places. That is the Jumble, heard before it is ever seen.",
-   "art": "mask"
+   "art": "mask",
+   "visual": {
+    "type": "tiles",
+    "label": "Two number tiles have swapped places",
+    "values": [
+     "2",
+     "1",
+     "3"
+    ],
+    "bad": 0
+   },
+   "focus": [
+    {
+     "cue": "Two tiles have swapped places behind the shutters.",
+     "box": [
+      5.5,
+      28.4,
+      59,
+      33.8
+     ]
+    },
+    {
+     "cue": "This tile is flagged: it swapped with its neighbor.",
+     "box": [
+      5.5,
+      28.4,
+      29,
+      46.2
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: Numbers everywhere",

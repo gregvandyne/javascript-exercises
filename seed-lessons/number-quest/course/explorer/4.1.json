@@ -9,7 +9,38 @@
   {
    "title": "Welcome to the Bakery",
    "text": "The Bakery is Tally's own workshop, and its first rule is on the wall: a share is fair only when every piece is the same size.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "fraction",
+    "label": "The Bakery rule: a share is fair when every piece is equal",
+    "rows": [
+     {
+      "label": "One cake in 4 equal pieces",
+      "cuts": 4,
+      "shaded": 4
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One cake, cut into 4 equal pieces.",
+     "box": [
+      5,
+      34.7,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Every piece is the same size: that is what fair means.",
+     "box": [
+      5,
+      34.7,
+      23,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "title": "Parts of one whole",
@@ -106,12 +137,79 @@
   {
    "title": "Top counts, bottom cuts",
    "text": "In 5/8, the bottom number says the whole was cut into 8 equal parts. The top number counts how many of those parts you take: 5.",
-   "art": "magnifier"
+   "art": "magnifier",
+   "visual": {
+    "type": "fraction",
+    "label": "5/8: the bottom number cuts 8 parts, the top number counts 5",
+    "rows": [
+     {
+      "label": "5/8: five of eight equal parts",
+      "cuts": 8,
+      "shaded": 5
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The bottom number: the whole is cut into 8 equal parts.",
+     "box": [
+      5,
+      34.7,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "The top number counts the parts you take: 5.",
+     "box": [
+      5.5,
+      34.7,
+      56,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: Past the whole",
    "text": "The Jumble once ordered 5/4 of a cake. That is no mistake: 5 fourths is one whole cake and one more fourth.",
-   "art": "star"
+   "art": "star",
+   "visual": {
+    "type": "fraction",
+    "label": "5/4 of a cake: one whole cake and one more fourth",
+    "rows": [
+     {
+      "label": "One whole cake: 4/4",
+      "cuts": 4,
+      "shaded": 4
+     },
+     {
+      "label": "One more fourth: 1/4",
+      "cuts": 4,
+      "shaded": 1
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Four fourths make one whole cake.",
+     "box": [
+      5,
+      20.5,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "One more fourth on top: 5/4 in all.",
+     "box": [
+      5,
+      50.7,
+      90,
+      19.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
