@@ -1688,7 +1688,14 @@
       "voicesAi": "AI voices",
       "voicesDevice": "This device's voice",
       "voicesNote": "Characters in this game are voiced by a computer (AI voices from {provider}). They read only the game's own words, never anything you type and never your name.",
-      "voicesSaveData": "Data Saver is on, so this device's voice is used until you pick AI voices."
+      "voicesSaveData": "Data Saver is on, so this device's voice is used until you pick AI voices.",
+      "nqMarks": "🐱 +{marks} Tally Marks · {total} in total",
+      "nqGoal": "🌱 Daily goal done. Nice work!",
+      "nqLap": "🏅 Lap {lap} finished for this unit!",
+      "guestWinTitle": "You won! 🏆",
+      "guestWin": "That win is yours. Guests can play every game, but a course step only counts as finished with a free account — make one and we will count this win. We kept it for you.",
+      "guestWinAction": "Make my free account",
+      "guestWinLater": "Keep playing"
     },
     "friends": {
       "codeCopied": "Code copied! Give it to a friend you know.",
@@ -2325,7 +2332,12 @@
       "stop": "Stop reading",
       "again": "Try again",
       "passed": "You passed! {score} of {total} right.",
-      "failed": "{score} of {total} right. You need {pass} to pass. Try again!"
+      "failed": "{score} of {total} right. You need {pass} to pass. Try again!",
+      "nqMarks": "🐱 +{marks} Tally Marks · {total} in total",
+      "nqGoal": "🌱 Daily goal done. Nice work!",
+      "nqLap": "🏅 Lap {lap} finished for this unit!",
+      "guestSave": "You finished this step! Guests can play everything, but a finished step only counts with a free account. Make one now and we will count this finish — we kept it for you.",
+      "guestSaveAction": "Make my free account"
     }
   },
   "favorites": {
@@ -4015,6 +4027,68 @@
         "p": "Open the course, pick a band, and read the first step with your class. The teacher note for the intro is above.",
         "staff": "Open the course, pick a band, and read the first step with your class. The teacher note for the intro is above."
       }
+    },
+    "nq": {
+      "title": "Number Quest: maths lessons for grades 3–5, mapped to CCSS-M",
+      "description": "Number Quest is a free maths course for grades 3–5: 13 short steps through the Numberworks, played through Brain Board, Sum Racer, Quest Race and Fraction Factory, with every step of Units 1–4 mapped to the Common Core State Standards for Mathematics.",
+      "crumb": "Number Quest",
+      "kicker": "For teachers · grades 3–5",
+      "h1": "Number Quest: maths with a map you can show anyone",
+      "lead": "A winding path through Netville's Numberworks with Tally the cat: place value, joining and splitting, groups and shares, and fractions at the Bakery. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
+      "badges": { "steps": "13 steps", "units": "An intro and 4 units", "games": "Four games", "minutes": "About 10 minutes a step", "free": "Free · no ads" },
+      "cta": { "open": "Open the course" },
+      "promise": {
+        "h": "What you get",
+        "li1": "One street all the way through: the Numberworks, where every number has a job to do, Tally the cat counting at your side, and the Jumble mixing numbers up so students learn to spot how.",
+        "li2": "Every worked example opens with an estimate: the course's “Rough first” habit, so checking whether an answer is the right size becomes reflex.",
+        "li3": "Short reading decks, then a three-question check, then the game mission itself. A step counts as finished only when the mission is actually completed, not just opened.",
+        "li4": "Tally Marks for doing, never for being first or fastest: checks passed, missions completed, mastery laps and reviews all earn them, and they are never spent or ranked.",
+        "li5": "Mastery laps, honestly labelled: finishing a unit records its Lap 1, and the unit's ring fills. Laps 2 (the same steps with bigger numbers) and 3 (a mixed circuit with a boss round) are designed but still being built, and the course says so wherever they are named, rather than pretending a replay is new content.",
+        "li6": "The full standards map on this page: every step's primary CCSS-M statements, the statements it also covers, and the ones it builds toward, labelled as preparation and never counted as coverage."
+      },
+      "crew": {
+        "h": "Four games carry the course",
+        "p": "Three are quiz and fluency engines the school may already know from the open library; the fourth, Fraction Factory, was built for this course and is where Tally makes her home.",
+        "brainBoard": "A category quiz board, played solo as a practice board. In Number Quest it is the fluency mission for steps 1.1 and 2.3: the step's own deck and check teach the skill (place value, the bar model), and finishing the whole board, every tile, is what completes the mission.",
+        "sumRacer": "An arithmetic kart racer. Its Number Quest missions are locked to the taught skill: a Rounding Run track built for step 1.2, addition-only and subtraction-only races to 100 in Unit 2, and the 2, 5 and 10 tables, sharing and mixed Grand Prix tracks of Unit 3. The game opens on the step's track and stays there, so the win that completes the mission is a win at that skill.",
+        "questRace": "An island race, played solo as a practice race against three island racers. In Number Quest it is step 1.3's mission: the deck and check teach the patterns, and finishing the whole race, all the way to the podium, is what completes it.",
+        "fractionFactory": "Tally's Bakery production line: cut wholes into fair shares, re-slice to make sizes match, and add slices for real orders. The whole of Unit 4, and the course's flagship Jumble beat: adding the bottoms too.",
+        "try": "Try it",
+        "inCourse": "Play it in the course"
+      },
+      "units": { "h": "The intro and four units", "p": "Thirteen steps, in order, each ending in its game mission. A unit's stone is planted when its three steps are done.", "stamp": "{stamp}" },
+      "map": {
+        "h": "The standards map",
+        "p": "Every step, mapped. “Primary” is what the step teaches and its check assesses. “Also covers” is practised inside the step but taught as primary elsewhere. “Builds toward” is preparation only: the course names it so you can see the road ahead, and never counts it as coverage. The practice named is the step's Mathematical Practice spotlight.",
+        "cols": { "step": "Step", "title": "Title", "primary": "Primary (CCSS-M)", "also": "Also covers", "toward": "Builds toward", "mp": "Practice" },
+        "codes": "locked CCSS-M statements, Units 1–4",
+        "statSteps": "steps in the map",
+        "statUnits": "stones to plant",
+        "lock": "This map publishes the Phase 0 standards lock (2026-11-04): the Explorer Units 1–4 statement codes, verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Units 5–7, the Launchpad and Pro tiers are specced but not built yet, and their codes are not cited here until their own locks land."
+      },
+      "notes": { "h": "Teacher notes", "p": "One short note per unit, written to print: the habit to open with and the trap to watch for. The same notes print with the standards map." },
+      "safety": {
+        "h": "Gentle by design",
+        "li1": "No hearts and no mistake tax: a wrong answer names the mix-up kindly and the student tries again, free, as many times as they need.",
+        "li2": "No leaderboards and no ranking between children. Tally Marks are a personal total to watch grow; they buy nothing and are never spent.",
+        "li3": "The daily goal is the student's own choice of 1, 2 or 3 activities, and missing it costs nothing: there is no streak to break.",
+        "li4": "The course collects nothing new. Progress, checks and marks use the same kid-safe machinery as the rest of Oomba Academy: no chat, no ads, no third parties."
+      },
+      "print": { "h": "Printed materials", "p": "The standards map and the teacher notes are the printed pack for this course: one map to file with your planning, and one short note per unit to read before the lesson. They print on their own page, without the site around them.", "button": "Print the map and notes" },
+      "faq": {
+        "h": "Questions teachers ask",
+        "q1": "Do I need to be a maths specialist?",
+        "a1": "No. Each step teaches its own idea in plain words before the game, and the teacher note for the unit tells you the habit to open with and the trap to watch for.",
+        "q2": "Which standards does it teach?",
+        "a2": "The Common Core State Standards for Mathematics for grades 3–5. Every step of Units 1–4 lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labelled.",
+        "q3": "How long does a step take?",
+        "a3": "About ten minutes: a short deck, a three-question check, and one game chapter. The intro and the four units make 13 steps, so the built part of the course is roughly two hours of lessons, and mastery laps stretch it much further for students who finish early.",
+        "q4": "What are Tally Marks and laps?",
+        "a4": "Tally Marks are points for doing: a passed check, a finished mission, a completed lap. They are never spent and never ranked. Finishing a unit records Lap 1 of its mastery laps. Laps 2 (bigger numbers) and 3 (a mixed circuit with a boss round) are designed but still being built; the course labels them as such until they can really be played.",
+        "q5": "Is it really free?",
+        "a5": "Yes: free for classrooms, with no ads and nothing to install. It runs in the browser on any device, including Chromebooks."
+      },
+      "start": { "h": "Start when you are ready", "p": "Open the course and walk the first step with your class. The teacher note for the intro is above.", "staff": "Open the course and walk the first step with your class. The teacher note for the intro is above." }
     }
   },
   "learn": {
@@ -6151,7 +6225,9 @@
       "networks": "Networks and safety",
       "computers": "How computers work",
       "choices": "Choices and staying safe",
-      "cybersecurity": "Online safety"
+      "cybersecurity": "Online safety",
+      "numbers": "Numbers",
+      "fractions": "Fractions"
     },
     "teachers": {
       "h": "For teachers",
@@ -6168,6 +6244,12 @@
       "sub": "Cybersecurity and online safety · grades 3–8",
       "about": "Join Pim the owl at the Netville post office and learn to keep messages — and each other — safe: how messages travel, passphrases and secret codes, what stays private, and how to spot a trick. Each step is a short lesson, a quick check and then a game module.",
       "teachers": "Every step is mapped to the CYBER.ORG K-12 Cybersecurity Learning Standards and Common Sense Education's digital citizenship topics, with a teacher note for every unit."
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Maths through the Numberworks · grades 3–5",
+      "about": "Walk the Numberworks street with Tally the cat: counting, joining and splitting, groups and shares, and fractions at the Bakery. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
+      "teachers": "Every step of Explorer Units 1–4 is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
     },
     "back": "Back to {course}",
     "step": "{course} · game {n} of {total}",

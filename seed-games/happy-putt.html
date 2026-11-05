@@ -379,6 +379,7 @@ CONFIG.colors = CONFIG.ballHues.map(h => Oomba.color(h));
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
 const RTL = ((window.BRB && BRB.user && BRB.user.dir) || (/^(he|ar)\b/.test(LANG) ? 'rtl' : 'ltr')) === 'rtl';
 const NUM_LOCALE = LANG === 'ar' ? 'ar-u-nu-latn' : LANG; // Arabic with Latin digits, like the site
+// ==== I18N START ====
 const I18N = {
   en: {
     sub: "Country Club · 18 holes",
@@ -1013,6 +1014,7 @@ const I18N = {
     ]
   }
 };
+// ==== I18N END ====
 function tv(key) { // raw value by dotted path: the locale, then its base language, then English
   const path = key.split('.'), get = o => { for (const p of path) { if (o == null) return undefined; o = o[p]; } return o; };
   const L = I18N[LANG], B = I18N[LANG.split('-')[0]];
