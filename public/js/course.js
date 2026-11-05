@@ -276,6 +276,26 @@ if (storyFigs.length && !matchMedia('(prefers-reduced-motion: reduce)').matches)
   for (const fig of storyFigs) storyIO.observe(fig);
 }
 
+// ---------------------------------------------------------------------------------------------- Number Quest moments
+// When the server sends an `nq` payload (Number Quest only), show its moments as small cards that cheer and
+// leave on their own: Tally Marks for a passed check, the daily goal completing, a unit's lap landing. They
+// never block the lesson (no focus steal, they remove themselves), and a wrong answer gets Tally's line
+// under the question — the mix-up named kindly, the mistake celebrated by the Jumble, never punished.
+function nqMoments(nq, anchor) {
+  if (!nq || !anchor) return;
+  const parts = [];
+  if (nq.marks && nq.marks.awarded) parts.push(['marks', t('js.course.nqMarks', { marks: nq.marks.marks, total: nq.marks.total })]);
+  if (nq.dailyGoal && nq.dailyGoal.justMet) parts.push(['goal', t('js.course.nqGoal')]);
+  if (nq.lap) parts.push(['lap', t('js.course.nqLap', { lap: nq.lap.lap })]);
+  for (const [kind, text] of parts) {
+    const el = document.createElement('div');
+    el.className = `nq-moment nq-moment-${kind}`; el.setAttribute('role', 'status');
+    el.textContent = text;
+    anchor.after(el);
+    setTimeout(() => el.remove(), kind === 'lap' ? 6000 : 4200);
+  }
+}
+
 // ---------------------------------------------------------------------------------------------- the quick check
 const form = $('#qcheck');
 if (form) {
@@ -311,8 +331,26 @@ if (form) {
     const box = document.createElement('div');
     box.id = 'qresult'; box.className = `cl-result ${r.passed ? 'ok' : 'bad'}`; box.setAttribute('role', 'status');
     box.textContent = r.passed ? t('js.course.passed', { score: r.score, total: r.total }) : t('js.course.failed', { score: r.score, total: r.total, pass: 2 });
+    // Number Quest: Tally herself shows up on a pass — she was only a line of text before, and the
+    // passed screen read as plain green boxes. Her sprite is her own game's, never a redraw.
+    if (r.passed && d.course === 'number-quest') {
+      const img = document.createElement('img');
+      img.className = 'nq-tally-img'; img.src = '/img/csq/chars/tally.webp'; img.alt = ''; img.width = 219; img.height = 353;
+      const line = document.createElement('span'); line.textContent = ' Tally is purring: check passed!';
+      box.prepend(img); box.append(line);
+    }
     qs.forEach(f => { f.hidden = true; });
     form.after(box);
+    nqMoments(r.nq, box);
+    // A guest who passes the check of a step with no game has reached that step's completion moment —
+    // and guests cannot complete courses. The server kept the finish; this note says signing up is
+    // what counts it (the win moment of a game step gets the same prompt on the play page).
+    if (r.needAccount) {
+      const p = document.createElement('p'); p.className = 'cl-guest-save';
+      const link = document.createElement('a'); link.className = 'btn btn-primary'; link.href = r.needAccount.signup || '/signup'; link.textContent = t('js.course.guestSaveAction');
+      p.append(document.createTextNode(t('js.course.guestSave') + ' '), link);
+      box.append(document.createElement('br'), p);
+    }
     if (r.passed) {
       d.checked = true;
       form.remove();
@@ -348,6 +386,9 @@ if (form) {
     go.type = 'button'; go.className = 'btn btn-primary btn-big qq-go'; go.textContent = last ? t('js.course.finish') : t('js.course.next');
     go.addEventListener('click', () => (last ? finish() : ask(qi + 1)));
     f.append(go);
+    // Number Quest: Tally's reaction line rides under the feedback text (kept apart from the
+    // feedback assignment above so this file merges cleanly with the shared course renderer).
+    if (r.nq && r.nq.reaction) f.querySelector('.qq-fb').textContent += ` ${r.nq.reaction.text}`;
     go.focus();
   });
   ask(0);

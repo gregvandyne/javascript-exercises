@@ -19,6 +19,7 @@ import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText
 import { meFamilyPanel, nextFor } from './family.js';
 import { familiesOn } from '../services/family.js';
 import * as funnel from '../services/funnel.js';
+import * as courses from '../services/courses.js';
 import { countable } from '../services/traffic.js';
 
 export const router = Router();
@@ -227,8 +228,12 @@ router.post('/api/auth/login', (req, res) => {
     return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });
   }
   if (u.banned) return res.status(403).json({ error: req.t('auth.api.paused') });
+  // A guest who signs in to an existing account hands their pending course wins over (Greg's guest
+  // addendum): the win they earned is not stranded on the guest row they are leaving.
+  const prevGuestId = req.user && req.user.is_guest && req.user.id !== u.id ? req.user.id : null;
   if (req.user) auth.endSession(req, res);
   auth.startSession(res, u.id, req.headers['user-agent']);
+  if (prevGuestId) courses.transferPendingWins(prevGuestId, u.id);
   auth.notePasswordLength(u, password);
   // After a sign-in ended on this device, its page (?next=) is only reopened for the same person: on a shared classroom
   // device the next child goes to their own home, not to the last child's lesson.

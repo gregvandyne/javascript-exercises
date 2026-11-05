@@ -1,0 +1,956 @@
+<title>Fraction Factory</title>
+<style>
+  /* Fraction Factory: Tally's bakery production line, on the Oomba Kit. Only the game's own DOM pieces are styled
+     here, with the kit's variables (accents are set from Oomba.color at start). */
+  .ff, .ff * { box-sizing: border-box; }
+  .ff { position: fixed; left: 0; right: 0; top: var(--ok-safe-top); bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 0 10px calc(8px + env(safe-area-inset-bottom)); pointer-events: none; font-size: 1em; line-height: 1.25; }
+  .ff > * { pointer-events: auto; }
+  .ff[hidden] { display: none; }
+  .ff.ff-proj { font-size: 1.3em; }
+  .ff-bar { display: flex; align-items: center; gap: 8px; width: min(100%, 1100px); flex: none; min-height: 40px; }
+  .ff-bar .ff-sp { flex: 1; min-width: 0; }
+  .ff-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge); font-weight: 800; max-width: 100%; min-width: 0; }
+  .ff-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ff-main { display: flex; flex-direction: column; flex: 1; min-height: 0; width: min(100%, 1100px); gap: 10px; overflow: auto; padding: 2px; align-items: center; }
+  .ff-say { display: flex; align-items: center; gap: 10px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 6px 12px; min-height: 64px; width: 100%; flex: none; }
+  .ff-say svg { width: 56px; height: 56px; flex: none; }
+  .ff-say p { margin: 0; font-weight: 700; font-size: .98em; }
+  .ff-say p b { font-weight: 900; }
+  .ff-stage { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: flex-start; width: 100%; flex: none; }
+  .ff-whole { background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; padding: 10px; box-shadow: 0 5px 0 var(--ok-edge); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .ff-whole small { font-weight: 800; opacity: .85; }
+  .ff-whole svg { display: block; }
+  .ff-piece { cursor: pointer; }
+  .ff-piece:focus { outline: 4px solid var(--ff-lit); outline-offset: 2px; }
+  .ff-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; flex: none; }
+  .ff-h { margin: 0; font-weight: 800; font-size: 1.05em; background: var(--ok-card); border-radius: 10px; padding: 2px 10px; width: fit-content; max-width: 100%; }
+  .ff-tile { position: relative; min-width: 52px; min-height: 52px; padding: 6px 14px; border-radius: 14px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
+    font: inherit; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); }
+  .ff-tile:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ok-edge); }
+  .ff-tile[aria-pressed="true"] { background: var(--ff-go); }
+  .ff-tile[disabled] { cursor: default; opacity: .55; }
+  .ff-tile.ff-big { font-size: 1.3em; min-width: 76px; }
+  .ff-read { font-size: 1.5em; font-weight: 900; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 14px; padding: 4px 18px; min-height: 52px; display: inline-flex; align-items: center; }
+  .ff-read small { font-size: .55em; font-weight: 800; opacity: .8; margin-left: 8px; }
+  .ff-line { display: flex; align-items: flex-end; gap: 0; width: min(100%, 640px); padding: 18px 10px 4px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 18px; }
+  .ff-tick { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 44px; }
+  .ff-tick button { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; font-weight: 900; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); padding: 0; }
+  .ff-tick button[aria-pressed="true"] { background: var(--ff-num); }
+  .ff-tick i { width: 3px; height: 14px; background: var(--ok-edge); display: block; }
+  .ff-tick small { font-weight: 800; }
+  .ff-vs { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: 100%; }
+  .ff-choice { background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; padding: 12px; box-shadow: 0 5px 0 var(--ok-edge); cursor: pointer; font: inherit; color: var(--ok-text); display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: min(300px, 86vw); }
+  .ff-choice:active { transform: translateY(2px); }
+  .ff-choice b { font-size: 1.4em; }
+  .ff-map { width: min(100%, 900px); display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; min-height: 0; overflow: auto; padding: 2px; }
+  .ff-seg { display: inline-flex; border: 3px solid var(--ok-edge); border-radius: 999px; overflow: hidden; background: var(--ok-card); }
+  .ff-seg button { font: inherit; font-weight: 800; min-height: 48px; min-width: 104px; padding: 0 16px; border: 0; background: transparent; color: var(--ok-text); cursor: pointer; }
+  .ff-seg button[aria-pressed="true"] { background: var(--ff-go); }
+  .ff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+  @media (min-width: 700px) { .ff-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .ff-ch { display: flex; align-items: center; gap: 10px; min-height: 76px; padding: 8px 12px; border-radius: 20px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; text-align: start; box-shadow: 0 4px 0 var(--ok-edge); cursor: pointer; min-width: 0; }
+  .ff-ch canvas { width: 48px; height: 48px; flex: none; object-fit: contain; }
+  .ff-ch b { display: block; font-size: 1em; line-height: 1.15; overflow-wrap: anywhere; }
+  .ff-ch small { display: block; font-weight: 700; opacity: .85; font-size: .8em; line-height: 1.2; }
+  .ff-ch[disabled] { opacity: .55; cursor: default; }
+  .ff-strip { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .ff-lv { width: 56px; height: 56px; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; font-weight: 800; font-size: 1.1em; display: grid; place-items: center; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); padding: 0; position: relative; }
+  .ff-lv[disabled] { opacity: .45; cursor: default; }
+  .ff-lv small { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); font-size: .6em; background: var(--ff-num); color: var(--ff-ink); border-radius: 999px; padding: 0 5px; border: 2px solid var(--ok-edge); white-space: nowrap; }
+  .ff-card { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--ok-scrim); z-index: 15; }
+  .ff-card > div { background: var(--ok-card); color: var(--ok-text); border: 3px solid var(--ok-edge); border-radius: 26px; padding: 18px; width: min(560px, 100%); max-height: 100%; overflow: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  .ff-card h2 { margin: 0; font-weight: 800; font-size: 1.5em; line-height: 1.1; }
+  .ff-card p { margin: 0; font-weight: 700; }
+  .ff-stars { font-size: 2em; letter-spacing: 4px; }
+  .ff-faces { display: flex; gap: 10px; }
+  .ff-faces button { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); font-size: 1.6em; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); }
+  @media (orientation: landscape) and (max-height: 520px) { .ff-say svg { width: 40px; height: 40px; } .ff-say { min-height: 48px; } .ff-say p { font-size: .88em; } }
+  @media (max-width: 520px) { .ff-grid { grid-template-columns: 1fr; } }
+</style>
+<div id="game"></div>
+<script src="/vendor/oomba-kit/1.1.3/oomba-kit.js" integrity="sha384-C3W9aOBuSkvtAv0cHch+tzSi9h4GN4XCkR3u9iTN7D83Xx2nTtdr3zkPLu6EdBuH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-props.js" integrity="sha384-E2lAqpLj/Q6iEwoIdyK/MXu8x8WVmey7Q1Pipb398HbA6hQ9upXgTcs5Jnxe8PGB" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-animals.js" integrity="sha384-BwLptTueADpqBmgLs41pCV8UhbJxHD65ThZMuvbASFcHB9IZgxh5pa60fE5tWGwP" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-school.js" integrity="sha384-FTwR3CLpBLvzyxnwZgn3NlQmKTbLdjXWzrZQY9Mam6uQyRsWmaX0XVPnU2fizTu0" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/style-bold.js" integrity="sha384-i+2xOZkOmn/jzS9bfDkJQWAetSPYOjUsBviaQ/UWdPf98XiqTCQFZutBNQL9GwLu" crossorigin="anonymous"></script>
+<script>
+/* ===== Fraction Factory engine: fair shares, re-slicing, comparing and adding fractions by building them.
+   Plain data and functions (no DOM, no kit), so the unit test can load this block on its own. ===== */
+(function (root) {
+'use strict';
+const TWO32 = 2 ** 32;
+function rng(seed) {
+  let a = (seed >>> 0) || 1;
+  const f = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / TWO32; };
+  return { float: f, int: (lo, hi) => lo + Math.floor(f() * (hi - lo + 1)), pick: arr => arr[Math.floor(f() * arr.length)], chance: p => f() < p,
+    shuffle(arr) { const x = arr.slice(); for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(f() * (i + 1)); const t = x[i]; x[i] = x[j]; x[j] = t; } return x; } };
+}
+function seedOf(s) { let h = 0x811c9dc5; const str = String(s); for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x1000193); } return h >>> 0; }
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; };
+/** A fraction as [numerator, denominator], reduced. */
+const frac = (n, d) => { const g = gcd(n, d); return [n / g, d / g]; };
+const sameValue = (a, b) => a[0] * b[1] === b[0] * a[1];
+const cmpFrac = (a, b) => Math.sign(a[0] * b[1] - b[0] * a[1]);
+const addFrac = (a, b) => frac(a[0] * b[1] + b[0] * a[1], a[1] * b[1]);
+const fmt = f => (f[0] === 0 ? '0' : f[1] === 1 ? String(f[0]) : f[0] + '/' + f[1]);
+const MODES = { 0: 'play', 3: 'projector' };
+const CUTS = [2, 3, 4, 6, 8];
+
+/** What a level asks for, worked out once: the cut to make, how many pieces to take, and the value aimed at. */
+function goalOf(level) {
+  if (level.type === 'slice') return { denom: level.denom, take: level.target[0], value: level.target.slice(), wholes: level.wholes || 1 };
+  if (level.type === 'line') return { denom: level.denom, take: level.target[0], value: level.target.slice(), wholes: 1 };
+  if (level.type === 'equiv') return { denom: level.denom, take: level.from[0] * (level.denom / level.from[1]), value: level.from.slice(), wholes: 1 };
+  if (level.type === 'add') { const sum = addFrac(level.a, level.b); return { denom: level.denom, take: sum[0] * (level.denom / sum[1]), value: sum, wholes: sum[0] > sum[1] ? 2 : 1 }; }
+  if (level.type === 'compare') return { denom: 0, take: cmpFrac(level.a, level.b) > 0 ? 0 : 1, value: null, wholes: 1 };
+  return { denom: 0, take: 0, value: null, wholes: 1 };
+}
+
+/** One order on the production line. Actions: cut {n}, tap {i} (toggle a piece), place {i} (number line),
+ *  pick {side} (compare), serve {}. A wrong serve is never a fail: it is a clue, counted against the stars. */
+class Run {
+  constructor(level, seed) {
+    this.level = level; this.type = level.type || 'slice'; this.seed = seed == null ? 1 : seed;
+    this.goal = goalOf(level);
+    const startDenom = this.type === 'equiv' ? level.from[1] : 0;
+    const startTaken = this.type === 'equiv' ? new Set(Array.from({ length: level.from[0] }, (_, i) => i)) : new Set();
+    this.s = { phase: 'play', denom: startDenom, taken: startTaken, placed: -1, picked: -1, wrong: 0, serves: 0, done: false, failed: false, lastWhy: '' };
+  }
+  get takenCount() { return this.s.taken.size; }
+  current() { return this.s.denom ? frac(this.takenCount, this.s.denom) : null; }
+  cut(n) {
+    if (this.s.done || !CUTS.includes(n)) return { ok: false };
+    if (this.type !== 'slice' && this.type !== 'equiv' && this.type !== 'add') return { ok: false };
+    const s = this.s;
+    if (s.denom && n % s.denom === 0) { const k = n / s.denom, next = new Set(); for (const i of s.taken) for (let j = 0; j < k; j++) next.add(i * k + j); s.taken = next; }
+    else if (s.denom && s.denom % n === 0) { const k = s.denom / n, next = new Set(); for (const i of s.taken) next.add(Math.floor(i / k)); s.taken = next; }
+    else s.taken = new Set();
+    s.denom = n; return { ok: true };
+  }
+  tap(i) {
+    if (this.s.done || !this.s.denom) return { ok: false };
+    const total = this.s.denom * this.goal.wholes;
+    if (!(i >= 0 && i < total)) return { ok: false };
+    if (this.s.taken.has(i)) this.s.taken.delete(i); else this.s.taken.add(i);
+    return { ok: true };
+  }
+  place(i) { if (this.s.done || this.type !== 'line') return { ok: false }; this.s.placed = i; return { ok: true }; }
+  pick(side) {
+    if (this.s.done || this.type !== 'compare') return { ok: false };
+    this.s.picked = side;
+    if (side === this.goal.take) { this.s.done = true; this.s.phase = 'done'; return { ok: true, done: true }; }
+    this.s.wrong++; this.s.lastWhy = 'compare'; return { ok: true, wrong: true };
+  }
+  serve() {
+    if (this.s.done) return { ok: false };
+    const s = this.s, g = this.goal; s.serves++;
+    let why = '';
+    if (this.type === 'line') { if (s.placed === g.take) { s.done = true; s.phase = 'done'; return { ok: true, done: true }; } why = 'line'; }
+    else if (this.type === 'compare') { why = 'pick-first'; }
+    else {
+      if (!s.denom) why = 'no-cut';
+      else if (s.denom !== g.denom) why = this.type === 'equiv' ? 'reslice' : 'cut-size';
+      else if (this.takenCount !== g.take) why = this.takenCount < g.take ? 'too-few' : 'too-many';
+      else if (!sameValue([this.takenCount, s.denom], g.value)) why = 'value';
+      if (!why) { s.done = true; s.phase = 'done'; return { ok: true, done: true }; }
+    }
+    s.wrong++; s.lastWhy = why; return { ok: true, wrong: true, why };
+  }
+  act(a) {
+    if (!a) return { ok: false };
+    if (a.t === 'cut') return this.cut(a.n);
+    if (a.t === 'tap') return this.tap(a.i);
+    if (a.t === 'place') return this.place(a.i);
+    if (a.t === 'pick') return this.pick(a.side);
+    if (a.t === 'serve') return this.serve();
+    return { ok: false };
+  }
+  advice() {
+    const s = this.s, g = this.goal; if (s.done) return null;
+    if (this.type === 'compare') return { t: 'pick', side: g.take };
+    if (this.type === 'line') return s.placed === g.take ? { t: 'serve' } : { t: 'place', i: g.take };
+    if (s.denom !== g.denom) return { t: 'cut', n: g.denom };
+    if (this.takenCount < g.take) { for (let i = 0; i < g.denom * g.wholes; i++) if (!s.taken.has(i)) return { t: 'tap', i }; }
+    if (this.takenCount > g.take) { const it = s.taken.values().next(); return { t: 'tap', i: it.value }; }
+    return { t: 'serve' };
+  }
+  stars() { return this.s.done ? (this.s.wrong === 0 ? 3 : this.s.wrong === 1 ? 2 : 1) : 0; }
+  snapshot() { const s = this.s; return JSON.parse(JSON.stringify({ type: this.type, phase: s.phase, denom: s.denom, taken: [...s.taken].sort((a, b) => a - b), takenCount: this.takenCount, placed: s.placed, picked: s.picked, wrong: s.wrong, serves: s.serves, done: s.done, lastWhy: s.lastWhy, goal: this.goal })); }
+}
+function solve(level, seed) { const run = new Run(level, seed), out = []; let guard = 0; while (!run.s.done && guard++ < 200) { const a = run.advice(); if (!a) break; out.push(a); run.act(a); } return out; }
+function play(level, actions, seed) { const run = new Run(level, seed); for (const a of actions || []) run.act(a); return run; }
+function label(done, total, noun, stars, checks) { let s = `${done}/${total} ${noun}, ${stars} stars`; if (checks && checks.n) s += `, ${checks.ok}/${checks.n} checks`; return s; }
+const LABEL_RE = /^\d{1,2}\/\d{1,2} (levels|cases|tickets|cards|orders), \d{1,3} stars(, \d{1,2}\/\d{1,2} checks)?$/;
+/** The class quest number C B M L: chapter index (0 = the map), 1 Explorer | 2 Pro, mode, level (0 = first unfinished). */
+function questCode(digits, chapters) {
+  const s = String(digits == null ? '' : digits).replace(/\D/g, ''); if (s.length !== 4) return null;
+  const c = +s[0], b = +s[1], m = +s[2], l = +s[3];
+  const ch = c ? chapters.find(x => x.index === c) : null; if (c && !ch) return null;
+  if (b !== 1 && b !== 2) return null;
+  if (!(m in MODES)) return null;
+  if (l < 0 || l > 9) return null;
+  return { chapter: ch ? ch.id : null, band: b === 2 ? '2' : '1b', mode: MODES[m], level: l || null };
+}
+function questDigits(o, chapters) {
+  const ch = o.chapter ? chapters.find(x => x.id === o.chapter) : null;
+  const m = Object.entries(MODES).find(([, v]) => v === (o.mode || 'play'));
+  return `${ch ? ch.index : 0}${o.band === '2' ? 2 : 1}${m ? m[0] : 0}${o.level || 0}`;
+}
+function cleanParams(raw, chapters) {
+  const out = { present: false };
+  if (!raw || typeof raw !== 'object') return out;
+  const ch = chapters.find(x => x.id === raw.chapter);
+  if (ch) { out.present = true; out.chapter = ch.id; }
+  if (raw.band === '1b' || raw.band === '2' || raw.band === 1 || raw.band === 2) { out.present = true; out.band = raw.band === 2 || raw.band === '2' ? '2' : '1b'; }
+  if (raw.mode && Object.values(MODES).includes(raw.mode)) { out.present = true; out.mode = raw.mode; }
+  const lv = parseInt(raw.level, 10); if (lv >= 1 && lv <= 9) { out.present = true; out.level = lv; }
+  if (raw.lock) { out.present = true; out.lock = true; }
+  return out;
+}
+root.FractionFactory = { rng, seedOf, gcd, frac, sameValue, cmpFrac, addFrac, fmt, goalOf, Run, solve, play, label, LABEL_RE, questCode, questDigits, cleanParams, MODES, CUTS };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ===== Fraction Factory levels: the orders. First Folds is the Launchpad preview (fold and cut, no arithmetic);
+   First Cuts, Re-Slice and Recipe Maths are the Explorer Unit 4 (The Bakery) missions: 4.1 fraction meaning
+   (3.NF.A.1/2), 4.2 equivalence and comparing (3.NF.A.3, 4.NF.A.1/2), 4.3 adding slices (4.NF.B.3, 5.NF.A.1/2).
+   Every comparison keeps the same whole. Tally the cat runs the factory; the Jumble places the silly orders. ===== */
+(function (root) {
+'use strict';
+const CHAPTERS = [
+  { id: 'folds', index: 1, title: 'First Folds', noun: 'orders', sub: 'Fold, cut, share fair', emoji: '🧁' },
+  { id: 'first-cuts', index: 2, title: 'First Cuts', noun: 'orders', sub: 'Fair shares of one whole', emoji: '🍰' },
+  { id: 're-slice', index: 3, title: 'Re-Slice', noun: 'orders', sub: 'Same value, new clothes', emoji: '🔪' },
+  { id: 'recipe', index: 4, title: 'Recipe Maths', noun: 'orders', sub: 'Adding slices together', emoji: '📖' },
+];
+const L = (id, ch, type, o) => Object.assign({ id, ch, type, bands: ['1b', '2'] }, o);
+const LEVELS = [
+  /* --- First Folds: halves, fourths, thirds by folding (Launchpad 6.3 preview) --- */
+  L('fold-1', 'folds', 'slice', { denom: 2, target: [1, 2], whole: 'cake',
+    intro: 'Welcome to my factory! Fold this cake in half, then put one half on the tray.',
+    hints: ['Cut the cake into 2 equal parts.', 'Each part is one half.', 'Tap one part to put it on the tray, then Serve.'],
+    check: { q: 'What is one half?', tiles: ['One of 2 equal parts', 'One big part and one small part', 'Two whole cakes'], answer: 0 } }),
+  L('fold-2', 'folds', 'slice', { denom: 4, target: [1, 4], whole: 'cake',
+    intro: 'Fold again! Cut this cake into fourths and put one fourth on the tray.',
+    hints: ['Cut the cake into 4 equal parts.', 'Each part is one fourth.', 'Four fourths make one whole.'],
+    check: { q: 'How many fourths make a whole?', tiles: ['2', '4', '8'], answer: 1 } }),
+  L('fold-3', 'folds', 'slice', { denom: 3, target: [1, 3], whole: 'bar',
+    intro: 'This ribbon bar folds into thirds. Cut it into 3 equal parts and take one third.',
+    hints: ['Cut the bar into 3 equal parts.', 'Equal means every part is the same size.', 'One part is one third.'],
+    check: { q: 'What makes parts fair?', tiles: ['They look pretty', 'They are all the same size', 'There are lots of them'], answer: 1 } }),
+  /* --- First Cuts (step 4.1): a fraction is a fair share AND a point on the number line --- */
+  L('fc-1', 'first-cuts', 'slice', { denom: 2, target: [1, 2], whole: 'cake',
+    intro: 'First order of the day: a mouse wedding! They want 1/2 of a cake. Cut it fair and serve one half.',
+    hints: ['A fraction starts with equal parts.', 'Cut the cake into 2.', 'Tap 1 part: that is 1/2, one out of two equal parts.'],
+    check: { q: 'In 1/2, what does the 2 tell you?', tiles: ['How many parts the whole was cut into', 'How many cakes there are', 'How hungry the mouse is'], answer: 0 } }),
+  L('fc-2', 'first-cuts', 'slice', { denom: 4, target: [1, 4], whole: 'cake',
+    intro: 'A tiny cake for a tiny picnic: serve 1/4.',
+    hints: ['Cut the whole into 4 equal parts.', 'One part out of four is 1/4.', 'The top number counts the parts you take: take 1.'],
+    check: { q: 'In 1/4, what does the 1 tell you?', tiles: ['The size of the cake', 'How many parts you take', 'How many parts there are in all'], answer: 1 } }),
+  L('fc-3', 'first-cuts', 'slice', { denom: 4, target: [3, 4], whole: 'cake',
+    intro: 'The Jumble is hungry today. It wants 3/4 of this cake, please!',
+    hints: ['Cut into 4 equal parts first.', 'Count out 3 of the parts.', '3 out of 4 equal parts is 3/4.'],
+    check: { q: 'Which shows 3/4?', tiles: ['3 parts taken out of 4 equal parts', '3 cakes and 4 plates', '4 parts taken out of 3 equal parts'], answer: 0 } }),
+  L('fc-4', 'first-cuts', 'slice', { denom: 3, target: [1, 3], whole: 'bar',
+    intro: 'This fruit bar gets shared three ways. Serve 1/3 of it.',
+    hints: ['Cut the bar into 3 equal parts.', 'Thirds are bigger than fourths: fewer cuts, bigger parts.', 'Tap 1 part and serve.'],
+    check: { q: 'Which part is bigger?', tiles: ['1/3', '1/4', 'They are the same'], answer: 0 } }),
+  L('fc-5', 'first-cuts', 'slice', { denom: 8, target: [5, 8], whole: 'cake',
+    intro: 'A birthday order: 5/8 of a cake. That is a lot of cutting. You can do it!',
+    hints: ['Cut the cake into 8 equal parts.', 'Eighths are small parts.', 'Count out 5 of them, one by one.'],
+    check: { q: 'How many eighths make one whole?', tiles: ['4', '6', '8'], answer: 2 } }),
+  L('fc-6', 'first-cuts', 'line', { denom: 4, target: [3, 4], whole: 'bar',
+    intro: 'Fractions live on the number line too! Walk this share to 3/4 and serve it.',
+    hints: ['The line from 0 to 1 is one whole.', 'It is cut into 4 equal hops.', '3 hops from 0 lands on 3/4.'],
+    check: { q: 'Where does 3/4 sit?', tiles: ['Past 1', 'Between 0 and 1, three hops of a fourth', 'Right on 1'], answer: 1 } }),
+  /* --- Re-Slice (step 4.2): equivalence by re-cutting; compare by benchmark, same whole --- */
+  L('rs-1', 're-slice', 'equiv', { from: [1, 2], denom: 4, whole: 'cake',
+    intro: 'This order says 1/2, but the tray only fits fourths. Re-slice each half into 2 and serve the same amount.',
+    hints: ['Cutting each part in 2 does not change how much there is.', 'Re-slice into 4 parts.', '1/2 is the same value as 2/4.'],
+    check: { q: 'Why is 2/4 the same as 1/2?', tiles: ['The parts got smaller and there are more of them', 'Four is a bigger number', 'It is not the same'], answer: 0 } }),
+  L('rs-2', 're-slice', 'equiv', { from: [2, 3], denom: 6, whole: 'bar',
+    intro: 'Re-slice this 2/3 bar into sixths. Same bar, smaller pieces!',
+    hints: ['Each third can be cut into 2 sixths.', 'Re-slice into 6 parts.', '2/3 is the same value as 4/6.'],
+    check: { q: '2/3 re-sliced into sixths is…', tiles: ['3/6', '4/6', '2/6'], answer: 1 } }),
+  L('rs-3', 're-slice', 'compare', { a: [3, 4], b: [1, 2], whole: 'cake',
+    intro: 'Two cakes, the SAME size. Which order is more cake: 3/4 or 1/2? Tap the bigger one.',
+    hints: ['Both fractions are of the same whole cake.', '1/2 is the halfway mark.', '3/4 is past halfway.'],
+    check: { q: 'A fair comparison needs…', tiles: ['Different sized wholes', 'The same whole', 'The biggest numbers'], answer: 1 } }),
+  L('rs-4', 're-slice', 'equiv', { from: [3, 4], denom: 8, whole: 'cake',
+    intro: 'The bakery next door only sells eighths. Re-slice this 3/4 cake so it matches 6/8.',
+    hints: ['Cut every fourth into 2 eighths.', 'Re-slice into 8 parts.', '3 out of 4 becomes 6 out of 8.'],
+    check: { q: 'What happens to the top number when you re-slice 3/4 into eighths?', tiles: ['It stays 3', 'It doubles to 6', 'It becomes 8'], answer: 1 } }),
+  L('rs-5', 're-slice', 'compare', { a: [1, 4], b: [1, 3], whole: 'bar',
+    intro: 'Same ribbon bar, two orders: 1/4 or 1/3. Which share is bigger? Careful, this one tricks everyone!',
+    hints: ['The top numbers are the same, so look at the parts.', 'Cutting into more parts makes each part smaller.', 'A third is bigger than a fourth.'],
+    check: { q: 'Why is 1/3 bigger than 1/4?', tiles: ['3 is less than 4', 'Fewer cuts means bigger parts', 'It is not bigger'], answer: 1 } }),
+  L('rs-6', 're-slice', 'compare', { a: [5, 8], b: [3, 4], whole: 'cake',
+    intro: 'Last comparison: 5/8 or 3/4 of the same cake. Use the halfway mark to help you.',
+    hints: ['Half of the cake is 4/8.', '5/8 is a little past halfway. 3/4 is 6/8.', '6/8 is more than 5/8.'],
+    check: { q: '3/4 written in eighths is…', tiles: ['5/8', '6/8', '4/8'], answer: 1 } }),
+  /* --- Recipe Maths (step 4.3): add slices by making the pieces the same size --- */
+  L('rc-1', 'recipe', 'add', { a: [1, 4], b: [2, 4], denom: 4, whole: 'cake',
+    intro: 'The recipe needs 1/4 of a cake, then another 2/4. Build the total on one tray.',
+    hints: ['The pieces are already the same size: fourths.', 'Cut your tray into 4.', 'Take 1 part, then 2 more: 3 parts in all.'],
+    check: { q: '1/4 + 2/4 = ?', tiles: ['3/8', '3/4', '2/4'], answer: 1 } }),
+  L('rc-2', 'recipe', 'add', { a: [3, 8], b: [2, 8], denom: 8, whole: 'cake',
+    intro: 'Add 3/8 and 2/8 for the school fair cake.',
+    hints: ['Eighths plus eighths are still eighths.', 'Cut the tray into 8.', '3 parts and 2 more parts make 5 parts.'],
+    check: { q: 'When you add fourths, what happens to the bottom number?', tiles: ['It gets added too', 'It stays the same: the part size does not change', 'It doubles'], answer: 1 } }),
+  L('rc-3', 'recipe', 'add', { a: [1, 2], b: [1, 4], denom: 4, whole: 'cake',
+    intro: 'Tricky one: 1/2 plus 1/4. The pieces are different sizes! Re-slice the half into fourths first.',
+    hints: ['You can only count pieces that are the same size together.', 'Cut the tray into 4: the half becomes 2/4.', '2/4 and 1/4 make 3/4.'],
+    check: { q: 'Why re-slice before adding 1/2 + 1/4?', tiles: ['To make the pieces the same size so they can be counted together', 'It looks nicer', 'Halves cannot be added'], answer: 0 } }),
+  L('rc-4', 'recipe', 'add', { a: [1, 3], b: [1, 6], denom: 6, whole: 'bar',
+    intro: 'The ribbon recipe: 1/3 plus 1/6. Re-slice the third into sixths.',
+    hints: ['Cut the tray into 6.', '1/3 is the same as 2/6.', '2/6 and 1/6 make 3/6, which is one half.'],
+    check: { q: '1/3 written in sixths is…', tiles: ['1/6', '2/6', '3/6'], answer: 1 } }),
+  L('rc-5', 'recipe', 'add', { a: [1, 2], b: [1, 4], denom: 4, whole: 'cake', jumble: [2, 6],
+    intro: 'The Jumble tried this one and wrote 1/2 + 1/4 = 2/6. That adds the bottoms too! Show the right answer.',
+    hints: ['A mistake is a clue about how your brain is thinking.', 'The bottom number names the part size. Part sizes are not added.', 'Re-slice into fourths: 2/4 + 1/4 = 3/4.'],
+    check: { q: 'What went wrong in 1/2 + 1/4 = 2/6?', tiles: ['Nothing, it is right', 'The bottom numbers were added, but they name the part size', 'The top numbers were added'], answer: 1 } }),
+  L('rc-6', 'recipe', 'slice', { denom: 4, target: [5, 4], wholes: 2, whole: 'cake',
+    intro: 'The Jumble shouts: I want 5/4 of a cake! That is more than one whole. Use two cakes and serve all 5 fourths!',
+    hints: ['5/4 means 5 parts, each one fourth.', 'One cake only holds 4 fourths, so fetch a second cake.', 'Fill the first cake, then take 1 part from the second.'],
+    check: { q: 'What is 5/4?', tiles: ['Less than one whole', 'Exactly one whole', 'More than one whole: one whole and 1/4 more'], answer: 2 } }),
+];
+const THEN = { '1b': { folds: { ch: 'first-cuts' }, 'first-cuts': { ch: 're-slice' }, 're-slice': { ch: 'recipe' } }, '2': { folds: { ch: 'first-cuts' }, 'first-cuts': { ch: 're-slice' }, 're-slice': { ch: 'recipe' } } };
+root.FractionFactoryLevels = { CHAPTERS, LEVELS, THEN };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ===== Fraction Factory in the kit's other languages: English is the key; packs load per language like the sibling games. ===== */
+/* ===== Fraction Factory's spoken lines (AI voices): every line Tally says lives here, keyed, English source.
+   The warm-up (server/services/tts-lines.js) reads this block; registering the game there is one entry.
+   Speech itself goes through BRB.speak only - never the device voice. ===== */
+// ==== I18N START ====
+const I18N = {
+  en: {
+    "say.welcome": "I am Tally the cat. Pick a counter and let us get slicing!",
+    "intro.fold-1": "Welcome to my factory! Fold this cake in half, then put one half on the tray.",
+    "hint.fold-1.1": "Cut the cake into 2 equal parts.",
+    "hint.fold-1.2": "Each part is one half.",
+    "hint.fold-1.3": "Tap one part to put it on the tray, then Serve.",
+    "intro.fold-2": "Fold again! Cut this cake into fourths and put one fourth on the tray.",
+    "hint.fold-2.1": "Cut the cake into 4 equal parts.",
+    "hint.fold-2.2": "Each part is one fourth.",
+    "hint.fold-2.3": "Four fourths make one whole.",
+    "intro.fold-3": "This ribbon bar folds into thirds. Cut it into 3 equal parts and take one third.",
+    "hint.fold-3.1": "Cut the bar into 3 equal parts.",
+    "hint.fold-3.2": "Equal means every part is the same size.",
+    "hint.fold-3.3": "One part is one third.",
+    "intro.fc-1": "First order of the day: a mouse wedding! They want 1/2 of a cake. Cut it fair and serve one half.",
+    "hint.fc-1.1": "A fraction starts with equal parts.",
+    "hint.fc-1.2": "Cut the cake into 2.",
+    "hint.fc-1.3": "Tap 1 part: that is 1/2, one out of two equal parts.",
+    "intro.fc-2": "A tiny cake for a tiny picnic: serve 1/4.",
+    "hint.fc-2.1": "Cut the whole into 4 equal parts.",
+    "hint.fc-2.2": "One part out of four is 1/4.",
+    "hint.fc-2.3": "The top number counts the parts you take: take 1.",
+    "intro.fc-3": "The Jumble is hungry today. It wants 3/4 of this cake, please!",
+    "hint.fc-3.1": "Cut into 4 equal parts first.",
+    "hint.fc-3.2": "Count out 3 of the parts.",
+    "hint.fc-3.3": "3 out of 4 equal parts is 3/4.",
+    "intro.fc-4": "This fruit bar gets shared three ways. Serve 1/3 of it.",
+    "hint.fc-4.1": "Cut the bar into 3 equal parts.",
+    "hint.fc-4.2": "Thirds are bigger than fourths: fewer cuts, bigger parts.",
+    "hint.fc-4.3": "Tap 1 part and serve.",
+    "intro.fc-5": "A birthday order: 5/8 of a cake. That is a lot of cutting. You can do it!",
+    "hint.fc-5.1": "Cut the cake into 8 equal parts.",
+    "hint.fc-5.2": "Eighths are small parts.",
+    "hint.fc-5.3": "Count out 5 of them, one by one.",
+    "intro.fc-6": "Fractions live on the number line too! Walk this share to 3/4 and serve it.",
+    "hint.fc-6.1": "The line from 0 to 1 is one whole.",
+    "hint.fc-6.2": "It is cut into 4 equal hops.",
+    "hint.fc-6.3": "3 hops from 0 lands on 3/4.",
+    "intro.rs-1": "This order says 1/2, but the tray only fits fourths. Re-slice each half into 2 and serve the same amount.",
+    "hint.rs-1.1": "Cutting each part in 2 does not change how much there is.",
+    "hint.rs-1.2": "Re-slice into 4 parts.",
+    "hint.rs-1.3": "1/2 is the same value as 2/4.",
+    "intro.rs-2": "Re-slice this 2/3 bar into sixths. Same bar, smaller pieces!",
+    "hint.rs-2.1": "Each third can be cut into 2 sixths.",
+    "hint.rs-2.2": "Re-slice into 6 parts.",
+    "hint.rs-2.3": "2/3 is the same value as 4/6.",
+    "intro.rs-3": "Two cakes, the SAME size. Which order is more cake: 3/4 or 1/2? Tap the bigger one.",
+    "hint.rs-3.1": "Both fractions are of the same whole cake.",
+    "hint.rs-3.2": "1/2 is the halfway mark.",
+    "hint.rs-3.3": "3/4 is past halfway.",
+    "intro.rs-4": "The bakery next door only sells eighths. Re-slice this 3/4 cake so it matches 6/8.",
+    "hint.rs-4.1": "Cut every fourth into 2 eighths.",
+    "hint.rs-4.2": "Re-slice into 8 parts.",
+    "hint.rs-4.3": "3 out of 4 becomes 6 out of 8.",
+    "intro.rs-5": "Same ribbon bar, two orders: 1/4 or 1/3. Which share is bigger? Careful, this one tricks everyone!",
+    "hint.rs-5.1": "The top numbers are the same, so look at the parts.",
+    "hint.rs-5.2": "Cutting into more parts makes each part smaller.",
+    "hint.rs-5.3": "A third is bigger than a fourth.",
+    "intro.rs-6": "Last comparison: 5/8 or 3/4 of the same cake. Use the halfway mark to help you.",
+    "hint.rs-6.1": "Half of the cake is 4/8.",
+    "hint.rs-6.2": "5/8 is a little past halfway. 3/4 is 6/8.",
+    "hint.rs-6.3": "6/8 is more than 5/8.",
+    "intro.rc-1": "The recipe needs 1/4 of a cake, then another 2/4. Build the total on one tray.",
+    "hint.rc-1.1": "The pieces are already the same size: fourths.",
+    "hint.rc-1.2": "Cut your tray into 4.",
+    "hint.rc-1.3": "Take 1 part, then 2 more: 3 parts in all.",
+    "intro.rc-2": "Add 3/8 and 2/8 for the school fair cake.",
+    "hint.rc-2.1": "Eighths plus eighths are still eighths.",
+    "hint.rc-2.2": "Cut the tray into 8.",
+    "hint.rc-2.3": "3 parts and 2 more parts make 5 parts.",
+    "intro.rc-3": "Tricky one: 1/2 plus 1/4. The pieces are different sizes! Re-slice the half into fourths first.",
+    "hint.rc-3.1": "You can only count pieces that are the same size together.",
+    "hint.rc-3.2": "Cut the tray into 4: the half becomes 2/4.",
+    "hint.rc-3.3": "2/4 and 1/4 make 3/4.",
+    "intro.rc-4": "The ribbon recipe: 1/3 plus 1/6. Re-slice the third into sixths.",
+    "hint.rc-4.1": "Cut the tray into 6.",
+    "hint.rc-4.2": "1/3 is the same as 2/6.",
+    "hint.rc-4.3": "2/6 and 1/6 make 3/6, which is one half.",
+    "intro.rc-5": "The Jumble tried this one and wrote 1/2 + 1/4 = 2/6. That adds the bottoms too! Show the right answer.",
+    "hint.rc-5.1": "A mistake is a clue about how your brain is thinking.",
+    "hint.rc-5.2": "The bottom number names the part size. Part sizes are not added.",
+    "hint.rc-5.3": "Re-slice into fourths: 2/4 + 1/4 = 3/4.",
+    "intro.rc-6": "The Jumble shouts: I want 5/4 of a cake! That is more than one whole. Use two cakes and serve all 5 fourths!",
+    "hint.rc-6.1": "5/4 means 5 parts, each one fourth.",
+    "hint.rc-6.2": "One cake only holds 4 fourths, so fetch a second cake.",
+    "hint.rc-6.3": "Fill the first cake, then take 1 part from the second.",
+    "why.no-cut": "Cut the whole into equal parts first. Pick a slicer!",
+    "why.cut-size": "Those parts are the wrong size for this order. Try a different slicer.",
+    "why.reslice": "Re-slice finer: cut each part smaller so the tray fits the new size.",
+    "why.too-few": "Not enough on the tray yet. Count the order again.",
+    "why.too-many": "Too much on the tray! Tap a part to take it back off.",
+    "why.value": "That is not the same amount. Look at the tray and try again.",
+    "why.line": "Not that spot. Count the hops from 0.",
+    "why.compare": "Same whole, so compare the parts: which share is really bigger?",
+    "why.pick-first": "Tap the bigger share!",
+    "why.default": "A mistake is a clue about how your brain is thinking. Try again!",
+  },
+};
+(typeof window !== 'undefined' ? window : globalThis).FractionFactoryI18n = I18N;
+// ==== I18N END ====
+// ==== VOICES START ====
+// AI voices: every spoken line in this game is Tally the cat, read in the friendly voice - the same role
+// VOICE.say below asks BRB.speak for, so the warm cache always hits. server/services/tts-lines.js also reads
+// this block to take each line's role from here (never from the page).
+const VOICE_ROLES = { story: 'friendly' };
+const VOICE_KEY_ROLES = { 'say.': 'friendly', 'intro.': 'friendly', 'hint.': 'friendly', 'why.': 'friendly' };
+// ==== VOICES END ====
+</script>
+<script type="module">
+const E = window.FractionFactory, D = window.FractionFactoryLevels, O = window.Oomba;
+const CONFIG = {
+  title: 'Fraction Factory',
+  tally: { species: 'cat', wear: ['scarf'], colors: { base: 'peach', accent: 'mint' } },
+  biome: 'meadow',
+  storeKey: 'fraction-factory-v1',
+};
+const CHAPTERS = D.CHAPTERS, LEVELS = D.LEVELS, CH_BY_ID = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
+const BAND_NAME = { '1b': 'Explorer', '2': 'Pro' };
+
+/* ---------- Tally's voice (AI voices): every spoken line lives in the FractionFactoryI18n block above,
+   keyed, and is spoken through the platform's shared BRB.speak path only (never the device voice).
+   Silent when AI voices are off for the language, when sound is muted, or on an older SDK. ---------- */
+const FF_LANG = 'en';
+function line(key) { const pack = (window.FractionFactoryI18n || {})[FF_LANG] || {}; return pack[key] !== undefined ? pack[key] : key; }
+const VOICE = {
+  lastKey: '',
+  say(text, key) {
+    if (!text || !key || key === this.lastKey) return false;
+    let ok = false;
+    try {
+      const B = window.BRB;
+      if (B && typeof B.aiVoice === 'function' && B.aiVoice(FF_LANG) && !(B.sfx && B.sfx.muted) && typeof B.speak === 'function')
+        ok = !!B.speak(text, { lang: FF_LANG, voice: 'friendly' });
+    } catch (e) { ok = false; }
+    if (ok) this.lastKey = key;
+    return ok;
+  },
+};
+
+/* ---------- Tally the cat, drawn in the game's own code (her sprite source: the kit cat in this spec,
+   plus this SVG portrait the game itself draws for the factory floor) ---------- */
+function tallySVG(mood) {
+  const eye = mood === 'wow' ? '<circle cx="38" cy="52" r="5"/><circle cx="62" cy="52" r="5"/>' : '<circle cx="38" cy="52" r="4"/><circle cx="62" cy="52" r="4"/>';
+  const mouth = mood === 'sad' ? '<path d="M44 70 Q50 65 56 70" fill="none" stroke-width="2.5"/>' : '<path d="M44 66 Q50 72 56 66" fill="none" stroke-width="2.5"/>';
+  return `<svg viewBox="0 0 100 100" role="img" aria-label="Tally the cat"><g stroke="var(--ok-edge)" stroke-linejoin="round">
+    <path d="M22 38 L26 12 L44 26 Z" fill="var(--ff-fur)"/><path d="M78 38 L74 12 L56 26 Z" fill="var(--ff-fur)"/>
+    <circle cx="50" cy="55" r="34" fill="var(--ff-fur)"/></g>
+    <g stroke="var(--ok-edge)" fill="var(--ok-edge)">${eye}<path d="M46 60 L54 60 L50 66 Z" fill="var(--ff-nose)" stroke="var(--ok-edge)"/>${mouth}</g>
+    <g stroke="var(--ok-edge)" stroke-width="2"><path d="M14 56 L30 58"/><path d="M15 66 L30 64"/><path d="M86 56 L70 58"/><path d="M85 66 L70 64"/></g>
+    <path d="M24 84 Q50 96 76 84 L76 94 Q50 104 24 94 Z" fill="var(--ff-go)" stroke="var(--ok-edge)"/></svg>`;
+}
+
+/* ---------- saved progress ---------- */
+const store = { get() { try { return (window.BRB && BRB.storage.get(CONFIG.storeKey)) || {}; } catch (e) { return {}; } }, set(v) { try { if (window.BRB) BRB.storage.set(CONFIG.storeKey, v); } catch (e) { /* no save */ } } };
+const SAVE = Object.assign({ band: '1b', stars: {}, skipped: {} }, store.get());
+if (SAVE.band !== '1b' && SAVE.band !== '2') SAVE.band = '1b';
+const save = () => store.set({ band: SAVE.band, stars: SAVE.stars, skipped: SAVE.skipped });
+
+/* ---------- helpers ---------- */
+const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
+const starsOf = id => (SAVE.stars[id] && SAVE.stars[id].n) || 0;
+const chapterStars = (ch, band) => levelsFor(ch, band).reduce((a, l) => a + starsOf(l.id), 0);
+const firstUnfinished = (ch, band) => { const ls = levelsFor(ch, band); const i = ls.findIndex(l => !starsOf(l.id) && !SAVE.skipped[l.id]); return i < 0 ? 0 : i; };
+const unlocked = (ch, band, ix) => { if (ix <= 0) return true; const p = levelsFor(ch, band)[ix - 1]; return !!p && !!(starsOf(p.id) || SAVE.skipped[p.id]); };
+const reduced = () => !!O.settings.reduced;
+const $ = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const btn = (label, o) => O.ui.button(label, o);
+const announce = t => O.ui.announce(t);
+const toast = t => O.ui.toast(t);
+const sfx = (n, o) => { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* quiet */ } };
+const C = (role, step) => { try { return O.color(role, step); } catch (e) { return null; } };
+const fr = f => E.fmt(f);
+
+/* ---------- state ---------- */
+const S = {
+  params: E.cleanParams((window.BRB && BRB.params) || {}, CHAPTERS),
+  lesson: false, lock: false, mode: 'play', band: SAVE.band, projector: false,
+  chapter: null, levelIx: 0, level: null, run: null, lockedChapter: null, chained: [],
+  seed0: 1, hint: 0, checks: { ok: 0, n: 0 }, w: null, fast: false, dom: null, screen: 'none',
+  lastLabel: '', lastScore: 0, lastReport: null, pending: null, busy: false, sayText: '', sayKey: '', mood: 'happy',
+};
+S.seed0 = E.seedOf(String(O.time.now) + '|' + (window.BRB && BRB.user ? BRB.user.displayName : ''));
+if (S.params.present) { S.lesson = true; S.lock = !!S.params.lock; if (S.params.band) S.band = S.params.band; S.mode = S.params.mode || 'play'; }
+S.projector = S.mode === 'projector';
+
+/* ---------- the kit game: the world behind, the title, HUD, pause and results ---------- */
+const SET = [
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '                      ',
+  '  T   N               ',
+  '######################',
+  '######################',
+];
+let TALLY = O.char(CONFIG.tally);
+let game = null;
+game = O.game({
+  api: 1, title: CONFIG.title, subtitle: 'Cut it fair. Serve it right.', biome: CONFIG.biome,
+  controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
+  hud: ['progress', 'count:star'],
+  howTo: [{ icon: 'tap', text: 'Cut the whole into equal parts' }, { icon: 'tap', text: 'Tap parts to fill the order' }, { icon: 'check', text: 'Serve it and watch the tray' }],
+  level: O.level.grid(SET, { N: Object.assign({ kind: 'npc', tag: 'tally', flip: true, size: 2.1 }, CONFIG.tally) }),
+  update: frame,
+  testState: () => testState(),
+  on: { start: onStart, title: hideAll, results: hideAll, lose: hideAll },
+});
+function frame(w) {
+  const V = w.stage.view, Cm = w.cam, L = w.level, tall = V.vh > V.vw * 1.1, z = tall ? V.vw / (6 * w.cell) : Math.min(V.vw / (12 * w.cell), V.vh / (7 * w.cell));
+  Cm.bounds(null); Cm.zoom = z; Cm.x = L.w / 2; Cm.y = L.h - w.cell * 1.6 - V.vh / z / 2;
+  const t = w.find('tally'); if (t && w.hero) { const d = (tall ? 1.1 : 2.4) * w.cell; t.x = L.w / 2 + d; w.hero.x = L.w / 2 - d; }
+}
+
+/* ---------- the game's own DOM, inside the kit's UI layer ---------- */
+function build() {
+  if (S.dom) return S.dom;
+  const root = O.ui.root();
+  for (const [k, v] of Object.entries({ go: C('go', 'light'), bad: C('wrong', 'light'), num: C('reward'), lit: C('hot'), fur: C('reward', 'tint'), nose: C('coral') || C('hot'), ink: C('ink') })) if (v) root.style.setProperty('--ff-' + k, v);
+  const ff = $('div', 'ff'); ff.id = 'ff'; ff.hidden = true; ff.dir = O.dir; if (S.projector) ff.classList.add('ff-proj');
+  root.appendChild(ff);
+  S.dom = { ff };
+  return S.dom;
+}
+function hideAll() { if (S.dom) { S.dom.ff.hidden = true; S.dom.ff.innerHTML = ''; } S.screen = 'none'; S.run = null; closeCards(); }
+function screen(name) { const { ff } = build(); ff.innerHTML = ''; ff.hidden = false; S.screen = name; return ff; }
+let cardPause = 0;
+function openCard(name) {
+  const { ff } = build(); const c = $('div', 'ff-card ff-card-' + name); c.setAttribute('role', 'dialog'); c.setAttribute('aria-modal', 'true');
+  const inner = $('div'); c.appendChild(inner); ff.appendChild(c); O.time.pause('ff:card'); cardPause++;
+  const prev = document.activeElement;
+  const keys = e => { const bs = [...c.querySelectorAll('button:not([disabled])')]; if (!bs.length) return; const i = bs.indexOf(document.activeElement); if (e.key === 'Tab') { e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); } else if (e.key === 'Escape' && c.onEscape) { e.preventDefault(); c.onEscape(); } e.stopPropagation(); };
+  document.addEventListener('keydown', keys, true);
+  c.closeCard = () => { if (!c.parentNode) return; c.remove(); document.removeEventListener('keydown', keys, true); cardPause--; O.time.resume('ff:card'); try { prev && prev.focus && prev.focus({ preventScroll: true }); } catch (e) { /* gone */ } };
+  O.time.real.after(0, () => { const f = c.querySelector('[data-ff-focus]') || c.querySelector('button'); if (f) f.focus({ preventScroll: true }); });
+  return { card: c, inner };
+}
+function closeCards() { if (!S.dom) return; for (const c of [...S.dom.ff.querySelectorAll('.ff-card')]) if (c.closeCard) c.closeCard(); }
+const portrait = (size, mood) => O.ui.portrait(TALLY, { size, mood: mood || 'happy' });
+
+/* ---------- start, map, chapters ---------- */
+function onStart(w) {
+  S.w = w; hideAll(); S.checks = { ok: 0, n: 0 }; S.chained = [];
+  const pending = S.pending; S.pending = null;
+  if (pending) { applyStart(pending); return; }
+  if (S.lesson && S.params.chapter) { S.lockedChapter = S.params.chapter; return enterChapter(S.params.chapter, S.params.level ? S.params.level - 1 : null); }
+  showMap();
+}
+function applyStart(o) {
+  if (o.seed != null) S.seed0 = +o.seed || 1;
+  if (o.band === '1b' || o.band === '2') S.band = o.band;
+  if (o.mode) S.mode = o.mode; S.projector = S.mode === 'projector'; if (S.dom) S.dom.ff.classList.toggle('ff-proj', S.projector);
+  if (o.lesson != null) S.lesson = !!o.lesson; if (o.lock != null) { S.lock = !!o.lock; if (S.lock) S.lesson = true; }
+  if (o.chapter && CH_BY_ID[o.chapter]) { if (S.lesson) S.lockedChapter = o.chapter; return enterChapter(o.chapter, o.level ? o.level - 1 : null); }
+  showMap();
+}
+function hudSync() {
+  const w = S.w; if (!w || !w.hud) return;
+  const ls = S.chapter ? levelsFor(S.chapter, S.band) : LEVELS.filter(l => l.bands.includes(S.band));
+  const done = ls.filter(l => starsOf(l.id) > 0).length, stars = ls.reduce((a, l) => a + starsOf(l.id), 0);
+  if (w.hud.progress) w.hud.progress.set(ls.length ? done / ls.length : 0);
+  if (w.hud.count) w.hud.count.set(stars, ls.length * 3);
+}
+function showMap() {
+  S.chapter = null; S.level = null; S.run = null;
+  const ff = screen('map'), map = $('div', 'ff-map'); ff.appendChild(map);
+  const bar = $('div', 'ff-bar'); map.appendChild(bar);
+  const pill = $('div', 'ff-pill'); pill.appendChild($('span', '', '🧁 Fraction Factory')); bar.appendChild(pill);
+  bar.appendChild($('div', 'ff-sp'));
+  if (!S.lock) {
+    const seg = $('div', 'ff-seg');
+    for (const b of ['1b', '2']) { const t = $('button', '', BAND_NAME[b]); t.setAttribute('aria-pressed', String(S.band === b)); t.addEventListener('click', () => { S.band = b; SAVE.band = b; save(); sfx('select'); showMap(); }); seg.appendChild(t); }
+    bar.appendChild(seg);
+  }
+  const say = $('div', 'ff-say'); say.innerHTML = tallySVG('happy'); say.appendChild($('p', '', line('say.welcome'))); map.appendChild(say); VOICE.say(line('say.welcome'), 'say.welcome');
+  const grid = $('div', 'ff-grid'); map.appendChild(grid);
+  for (const ch of CHAPTERS) {
+    const ls = levelsFor(ch.id, S.band); if (!ls.length) continue;
+    const stars = chapterStars(ch.id, S.band);
+    const b = $('button', 'ff-ch'); b.addEventListener('click', () => { sfx('select'); enterChapter(ch.id, null); });
+    const cv = portrait(48); b.appendChild(cv);
+    const tx = $('span'); const t1 = $('b', '', ch.emoji + ' ' + ch.title); const t2 = $('small', '', ch.sub + ' · ' + stars + '/' + (ls.length * 3) + ' stars');
+    tx.append(t1, t2); b.appendChild(tx); grid.appendChild(b);
+  }
+  hudSync();
+}
+function enterChapter(ch, levelIx) {
+  S.chapter = ch;
+  const ls = levelsFor(ch, S.band); if (!ls.length) return showMap();
+  if (levelIx != null) return startLevel(ch, Math.min(Math.max(levelIx, 0), ls.length - 1));
+  showChapterStrip(ch, firstUnfinished(ch, S.band));
+}
+function showChapterStrip(ch, focusIx) {
+  const ff = screen('chapter'), map = $('div', 'ff-map'); ff.appendChild(map);
+  const bar = $('div', 'ff-bar'); map.appendChild(bar);
+  if (!S.lock) bar.appendChild(btn('Map', { kind: 'quiet', icon: 'home', onPress: () => showMap() }));
+  const pill = $('div', 'ff-pill'); pill.appendChild($('span', '', CH_BY_ID[ch].emoji + ' ' + CH_BY_ID[ch].title + ' · ' + BAND_NAME[S.band])); bar.appendChild(pill);
+  const strip = $('div', 'ff-strip'); map.appendChild(strip);
+  levelsFor(ch, S.band).forEach((l, i) => {
+    const b = $('button', 'ff-lv', String(i + 1));
+    const st = starsOf(l.id);
+    if (st) { const sm = $('small', '', '★'.repeat(st)); b.appendChild(sm); }
+    else if (SAVE.skipped[l.id]) b.appendChild($('small', '', 'skip'));
+    if (!unlocked(ch, S.band, i)) b.disabled = true;
+    b.addEventListener('click', () => startLevel(ch, i));
+    strip.appendChild(b);
+  });
+  const go = btn('Start order ' + (focusIx + 1), { onPress: () => startLevel(ch, focusIx) }); map.appendChild(go);
+  hudSync();
+}
+
+/* ---------- wholes, drawn by the game (SVG): cakes are circles, bars and ribbons are rectangles ---------- */
+function sectorPath(cx, cy, r, a0, a1) {
+  const p = a => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const [x0, y0] = p(a0), [x1, y1] = p(a1), large = a1 - a0 > Math.PI ? 1 : 0;
+  return `M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`;
+}
+function wholeSVG(level, denom, taken, wholes, interactive) {
+  const wrap = $('div', 'ff-stage');
+  for (let w = 0; w < wholes; w++) {
+    const box = $('div', 'ff-whole');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    if (level.whole === 'cake') {
+      svg.setAttribute('viewBox', '0 0 200 200'); svg.setAttribute('width', '190'); svg.setAttribute('height', '190');
+      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Cake cut into ' + denom + ' equal parts');
+      for (let i = 0; i < denom; i++) {
+        const idx = w * denom + i, a0 = -Math.PI / 2 + (i * 2 * Math.PI) / denom, a1 = -Math.PI / 2 + ((i + 1) * 2 * Math.PI) / denom;
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('d', sectorPath(100, 100, 92, a0, a1));
+        p.setAttribute('fill', taken.has(idx) ? 'var(--ff-num)' : 'var(--ok-bg2, #eee)');
+        p.setAttribute('stroke', 'var(--ok-edge)'); p.setAttribute('stroke-width', '3');
+        if (interactive) { p.setAttribute('class', 'ff-piece'); p.setAttribute('tabindex', '0'); p.setAttribute('role', 'button'); p.setAttribute('aria-label', 'Part ' + (i + 1) + ' of ' + denom); p.dataset.i = idx;
+          p.addEventListener('click', () => doAction({ t: 'tap', i: idx }));
+          p.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doAction({ t: 'tap', i: idx }); } }); }
+        svg.appendChild(p);
+      }
+    } else {
+      svg.setAttribute('viewBox', '0 0 280 110'); svg.setAttribute('width', '260'); svg.setAttribute('height', '102');
+      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Bar cut into ' + denom + ' equal parts');
+      const pw = 264 / denom;
+      for (let i = 0; i < denom; i++) {
+        const idx = w * denom + i;
+        const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        r.setAttribute('x', 8 + i * pw); r.setAttribute('y', '14'); r.setAttribute('width', pw - 3); r.setAttribute('height', '82');
+        r.setAttribute('rx', '8'); r.setAttribute('fill', taken.has(idx) ? 'var(--ff-num)' : 'var(--ok-bg2, #eee)');
+        r.setAttribute('stroke', 'var(--ok-edge)'); r.setAttribute('stroke-width', '3');
+        if (interactive) { r.setAttribute('class', 'ff-piece'); r.setAttribute('tabindex', '0'); r.setAttribute('role', 'button'); r.setAttribute('aria-label', 'Part ' + (i + 1) + ' of ' + denom); r.dataset.i = idx;
+          r.addEventListener('click', () => doAction({ t: 'tap', i: idx }));
+          r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doAction({ t: 'tap', i: idx }); } }); }
+        svg.appendChild(r);
+      }
+    }
+    box.appendChild(svg);
+    box.appendChild($('small', '', wholes > 1 ? 'Cake ' + (w + 1) : (level.whole === 'cake' ? 'One whole cake' : 'One whole bar')));
+    wrap.appendChild(box);
+  }
+  return wrap;
+}
+function miniBar(f, label) {
+  const box = $('div', 'ff-whole');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 280 80'); svg.setAttribute('width', '200'); svg.setAttribute('height', '58');
+  const pw = 264 / f[1];
+  for (let i = 0; i < f[1]; i++) {
+    const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.setAttribute('x', 8 + i * pw); r.setAttribute('y', '10'); r.setAttribute('width', pw - 3); r.setAttribute('height', '60'); r.setAttribute('rx', '7');
+    r.setAttribute('fill', i < f[0] ? 'var(--ff-go)' : 'var(--ok-bg2, #eee)'); r.setAttribute('stroke', 'var(--ok-edge)'); r.setAttribute('stroke-width', '3');
+    svg.appendChild(r);
+  }
+  box.appendChild(svg); box.appendChild($('small', '', label));
+  return box;
+}
+
+/* ---------- playing one order ---------- */
+function startLevel(ch, ix) {
+  const ls = levelsFor(ch, S.band); if (!ls[ix]) return;
+  S.chapter = ch; S.levelIx = ix; S.level = ls[ix]; S.hint = 0; S.mood = 'happy';
+  S.run = new E.Run(S.level, S.seed0 + ix * 131 + CHAPTERS.findIndex(c => c.id === ch) * 17);
+  S.sayText = S.level.intro; S.sayKey = 'intro.' + S.level.id;
+  renderLevel();
+  hudSync();
+}
+function sayEl() {
+  const say = $('div', 'ff-say'); say.innerHTML = tallySVG(S.mood);
+  const p = $('p'); p.textContent = S.sayText; say.appendChild(p);
+  VOICE.say(S.sayText, S.sayKey);
+  return say;
+}
+function orderTitle() {
+  const L = S.level;
+  if (L.type === 'slice') return 'Order: ' + fr(L.target) + (L.wholes > 1 ? ' (more than one whole!)' : '');
+  if (L.type === 'line') return 'Order: walk to ' + fr(L.target) + ' on the line';
+  if (L.type === 'equiv') return 'Order: ' + fr(L.from) + ', re-sliced into ' + L.denom + ' parts';
+  if (L.type === 'compare') return 'Order: which is more, ' + fr(L.a) + ' or ' + fr(L.b) + '?';
+  if (L.type === 'add') return 'Order: ' + fr(L.a) + ' + ' + fr(L.b) + (L.jumble ? ' · The Jumble says ' + fr(L.jumble) + '!' : '');
+  return 'Order';
+}
+function renderLevel() {
+  const ff = screen('level'), main = $('div', 'ff-main'); ff.appendChild(main);
+  const bar = $('div', 'ff-bar'); main.appendChild(bar);
+  if (!S.lock) bar.appendChild(btn('Counters', { kind: 'quiet', icon: 'home', onPress: () => showChapterStrip(S.chapter, S.levelIx) }));
+  const pill = $('div', 'ff-pill'); pill.appendChild($('span', '', CH_BY_ID[S.chapter].title + ' · Order ' + (S.levelIx + 1) + ' of ' + levelsFor(S.chapter, S.band).length)); bar.appendChild(pill);
+  main.appendChild(sayEl());
+  main.appendChild($('p', 'ff-h', orderTitle()));
+  const run = S.run, snap = run.snapshot(), L = S.level;
+  if (L.type === 'compare') {
+    const vs = $('div', 'ff-vs'); main.appendChild(vs);
+    [L.a, L.b].forEach((f, side) => {
+      const b = $('button', 'ff-choice');
+      b.appendChild(miniBar(f, 'Same whole'));
+      b.appendChild($('b', '', fr(f)));
+      b.setAttribute('aria-label', 'Choose ' + fr(f));
+      b.addEventListener('click', () => doAction({ t: 'pick', side }));
+      vs.appendChild(b);
+    });
+  } else if (L.type === 'line') {
+    const line = $('div', 'ff-line'); main.appendChild(line);
+    for (let i = 0; i <= L.denom; i++) {
+      const t = $('div', 'ff-tick');
+      const b = $('button', '', i === 0 ? '0' : i === L.denom ? '1' : String(i));
+      b.setAttribute('aria-pressed', String(snap.placed === i));
+      b.setAttribute('aria-label', 'Place at ' + (i === 0 ? '0' : i === L.denom ? '1' : i + '/' + L.denom));
+      b.addEventListener('click', () => doAction({ t: 'place', i }));
+      t.appendChild(b); t.appendChild($('i')); t.appendChild($('small', '', i === 0 ? '0' : i === L.denom ? '1' : i + '/' + L.denom));
+      line.appendChild(t);
+    }
+  } else {
+    if (L.type === 'add') { const src = $('div', 'ff-stage'); src.append(miniBar(L.a, fr(L.a)), miniBar(L.b, fr(L.b))); main.appendChild(src); }
+    if (L.type === 'equiv') { const src = $('div', 'ff-stage'); src.appendChild(miniBar(L.from, 'You start with ' + fr(L.from))); main.appendChild(src); }
+    const taken = new Set(snap.taken);
+    main.appendChild(wholeSVG(L, snap.denom || L.denom, taken, snap.denom ? run.goal.wholes : 1, !!snap.denom));
+    if (!snap.denom) main.appendChild($('p', 'ff-h', 'Pick a slicer to cut the whole into equal parts.'));
+    const read = $('div', 'ff-read');
+    read.textContent = snap.denom ? (snap.takenCount + '/' + snap.denom) : 'not cut yet';
+    if (snap.denom) { const sm = $('small', '', snap.takenCount === 0 ? 'nothing on the tray yet' : 'on the tray'); read.appendChild(sm); }
+    main.appendChild(read);
+    const cuts = $('div', 'ff-row'); main.appendChild(cuts);
+    cuts.appendChild($('span', 'ff-h', 'Slicer:'));
+    for (const n of E.CUTS) {
+      const t = $('button', 'ff-tile', 'Cut into ' + n);
+      t.setAttribute('aria-pressed', String(snap.denom === n));
+      t.addEventListener('click', () => doAction({ t: 'cut', n }));
+      cuts.appendChild(t);
+    }
+  }
+  const tools = $('div', 'ff-row'); main.appendChild(tools);
+  if (L.type !== 'compare') tools.appendChild(btn('Serve it!', { onPress: () => doAction({ t: 'serve' }) }));
+  tools.appendChild(btn('Hint', { kind: 'quiet', onPress: () => giveHint() }));
+  if (snap.wrong >= 2 && !S.lesson) tools.appendChild(btn('Skip order', { kind: 'quiet', onPress: () => skipLevel() }));
+  hudSync();
+}
+const WHY = {
+  'no-cut': 'Cut the whole into equal parts first. Pick a slicer!',
+  'cut-size': 'Those parts are the wrong size for this order. Try a different slicer.',
+  'reslice': 'Re-slice finer: cut each part smaller so the tray fits the new size.',
+  'too-few': 'Not enough on the tray yet. Count the order again.',
+  'too-many': 'Too much on the tray! Tap a part to take it back off.',
+  'value': 'That is not the same amount. Look at the tray and try again.',
+  'line': 'Not that spot. Count the hops from 0.',
+  'compare': 'Same whole, so compare the parts: which share is really bigger?',
+  'pick-first': 'Tap the bigger share!',
+};
+function doAction(a) {
+  const run = S.run; if (!run || S.busy) return { ok: false };
+  const before = run.snapshot();
+  const r = run.act(a);
+  if (!r.ok) return r;
+  if (a.t === 'cut') sfx('select');
+  if (a.t === 'tap' || a.t === 'place') sfx('tap');
+  if (r.wrong) {
+    S.mood = 'sad';
+    S.sayText = (WHY[run.s.lastWhy] || 'A mistake is a clue about how your brain is thinking. Try again!') + '';
+    S.sayKey = 'why.' + (WHY[run.s.lastWhy] ? run.s.lastWhy : 'default');
+    sfx('wrong');
+    renderLevel();
+    return r;
+  }
+  S.mood = 'happy';
+  if (run.s.done) { levelComplete(); return r; }
+  if (a.t === 'cut' || a.t === 'tap' || a.t === 'place') { S.sayText = S.level.intro; S.sayKey = 'intro.' + S.level.id; }
+  renderLevel();
+  return r;
+}
+function giveHint() {
+  const L = S.level; if (!L) return 0;
+  S.hint = Math.min(S.hint + 1, L.hints.length);
+  S.sayText = 'Hint ' + S.hint + ': ' + L.hints[S.hint - 1]; S.sayKey = 'hint.' + L.id + '.' + S.hint;
+  sfx('select');
+  const say = document.querySelector('.ff-say p'); if (say) say.textContent = S.sayText;
+  announce(S.sayText);
+  return S.hint;
+}
+function levelComplete() {
+  const level = S.level, run = S.run, stars = run.stars();
+  if (!S.projector) {
+    if (stars > starsOf(level.id)) SAVE.stars[level.id] = { n: stars, band: S.band };
+    delete SAVE.skipped[level.id]; save();
+  }
+  sfx('levelup');
+  report(level, stars, 0, 0, false);
+  hudSync();
+  if (S.lesson) return showCheck();
+  showServed(stars, false);
+}
+function showServed(stars, afterCheck) {
+  const { inner } = openCard('served');
+  inner.appendChild($('h2', '', 'Served! 🎉'));
+  const p = $('p'); p.innerHTML = ''; p.textContent = 'That order is just right. Tally is purring.';
+  inner.appendChild(p);
+  inner.appendChild($('div', 'ff-stars', '★★★'.slice(0, stars) + '☆☆☆'.slice(0, 3 - stars)));
+  const last = S.levelIx >= levelsFor(S.chapter, S.band).length - 1;
+  const b = btn(last ? 'Finish the counter' : 'Next order', { onPress: () => { closeCards(); nextLevel(); } });
+  b.setAttribute('data-ff-focus', ''); inner.appendChild(b);
+  if (afterCheck) inner.appendChild($('p', '', 'Check answered. Nice thinking!'));
+}
+function showCheck() {
+  const chk = S.level.check; if (!chk) return showServed(S.run.stars(), false);
+  const { inner } = openCard('check');
+  inner.appendChild($('h2', '', 'One quick check'));
+  inner.appendChild($('p', '', chk.q));
+  const row = $('div', 'ff-row'); inner.appendChild(row);
+  let answered = false;
+  chk.tiles.forEach((t, i) => {
+    const b = $('button', 'ff-tile', t);
+    b.addEventListener('click', () => {
+      if (answered) return; answered = true;
+      S.checks.n++; const ok = i === chk.answer; if (ok) S.checks.ok++;
+      report(S.level, S.run.stars(), ok ? 1 : 0, 0, false);
+      sfx(ok ? 'right' : 'wrong');
+      showConfidence(ok);
+    });
+    row.appendChild(b);
+  });
+}
+function showConfidence() {
+  closeCards();
+  const { inner } = openCard('confidence');
+  inner.appendChild($('h2', '', 'How sure are you?'));
+  const row = $('div', 'ff-faces'); inner.appendChild(row);
+  ['😟', '🙂', '😄'].forEach((f, i) => {
+    const b = $('button', '', f); b.setAttribute('aria-label', 'Confidence ' + (i + 1) + ' of 3');
+    b.addEventListener('click', () => {
+      report(S.level, S.run.stars(), 0, i + 1, false);
+      closeCards(); showServed(S.run.stars(), true);
+    });
+    row.appendChild(b);
+  });
+}
+function skipLevel() {
+  const level = S.level; if (!level) return;
+  SAVE.skipped[level.id] = true; save(); sfx('whoosh'); toast('Skipped. You can come back to it later.');
+  report(level, 0, 0, 0, true);
+  nextLevel();
+}
+function nextLevel() {
+  const ls = levelsFor(S.chapter, S.band);
+  if (S.levelIx < ls.length - 1) return startLevel(S.chapter, S.levelIx + 1);
+  chapterComplete();
+}
+function chapterComplete() {
+  const w = S.w;
+  const next = S.lesson ? (D.THEN[S.band] || {})[S.chapter] : null;
+  if (S.lesson && next && !S.chained.includes(next.ch) && levelsFor(next.ch, S.band).length) {
+    S.chained.push(next.ch);
+    toast('Bonus quest: ' + CH_BY_ID[next.ch].title); sfx('levelup');
+    return enterChapter(next.ch, null);
+  }
+  const ls = levelsFor(S.lockedChapter || S.chapter, S.band), score = scoreNow(), max = ls.length * 3 || 1, f = score / max;
+  hideAll();
+  // report() already sent the labelled score; BRB.gameOver fires ONLY here, at chapter completion (win-gated course credit)
+  if (w && !w.ended && !S.projector) { try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true }); } catch (e) { /* no page */ } }
+  if (w && !w.ended) w.win({ stars: f >= 0.9 ? 3 : f >= 0.55 ? 2 : 1, score: S.projector ? 0 : score, submit: false, title: 'Counter complete!', who: TALLY });
+}
+function scoreNow() {
+  const main = S.lockedChapter || S.chapter; let score = chapterStars(main, S.band);
+  for (const ch of S.chained) if (ch !== main) score += chapterStars(ch, S.band);
+  return score;
+}
+function report(level, stars, check, conf, skipped) {
+  if (S.projector || S.mode !== 'play') return;
+  const main = S.lockedChapter || S.chapter, ls = levelsFor(main, S.band), done = ls.filter(l => starsOf(l.id) > 0).length, score = scoreNow();
+  const lab = E.label(done, ls.length, CH_BY_ID[main].noun, score, S.lesson ? S.checks : null);
+  S.lastLabel = lab; S.lastScore = score;
+  try { if (window.BRB && BRB.score && !skipped) BRB.score.submit(score, lab); } catch (e) { /* no page */ }
+  const detail = { game: 'ff', chapter: level.ch, level: S.levelIx + 1, stars, band: S.band === '2' ? 2 : 1, check, confidence: conf, hint: S.hint, skipped: !!skipped };
+  S.lastReport = detail;
+  try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress(detail); } catch (e) { /* older SDK */ }
+}
+
+/* ---------- test hooks (covers, the playtest, the unit test's Chromium run) ---------- */
+function testState() {
+  const run = S.run, snap = run ? run.snapshot() : null;
+  return { ff: true, screen: S.screen, chapter: S.chapter, level: S.chapter ? S.levelIx + 1 : 0, levelId: S.level ? S.level.id : null, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
+    denom: snap ? snap.denom : 0, takenCount: snap ? snap.takenCount : 0, placed: snap ? snap.placed : -1, picked: snap ? snap.picked : -1, wrong: snap ? snap.wrong : 0, done: snap ? snap.done : false,
+    stars: S.chapter ? chapterStars(S.chapter, S.band) : 0, levelStars: S.level ? starsOf(S.level.id) : 0, ffScore: S.lastScore, label: S.lastLabel, hint: S.hint, checks: S.checks, ready: true, busy: S.busy, cards: cardPause, report: S.lastReport || null };
+}
+Object.assign(window.__brbTest, {
+  start(o = {}) { S.pending = Object.assign({}, o); S.fast = S.fast || !!o.fast; game.start(); return testState(); },
+  skipAnimations() { S.fast = true; return true; },
+  state() { return testState(); },
+  act(a) { return doAction(a); },
+  advice() { return S.run ? S.run.advice() : null; },
+  hint() { return giveHint(); },
+  run() { return S.run ? S.run.snapshot() : null; },
+  levels() { return LEVELS.map(l => ({ id: l.id, ch: l.ch, type: l.type })); },
+  chapters() { return CHAPTERS.map(c => ({ id: c.id, index: c.index, title: c.title })); },
+  code(digits) {
+    const q = E.questCode(digits, CHAPTERS); if (!q || !q.chapter) return false;
+    S.lesson = true; if (q.mode) S.mode = q.mode; S.projector = S.mode === 'projector';
+    S.lockedChapter = q.chapter; S.pending = { chapter: q.chapter, band: q.band, level: q.level || undefined, lesson: true };
+    game.start(); return true;
+  },
+  async solve() {
+    S.fast = true; let guard = 0;
+    while (S.run && !S.run.s.done && guard++ < 200) { const a = S.run.advice(); if (!a) break; doAction(a); if (cardPause) { closeCards(); } await O.time.real.wait(5); }
+    return S.run ? S.run.snapshot() : null;
+  },
+  closeCards() { closeCards(); return true; },
+  async cover() {
+    S.fast = true; S.pending = { chapter: 'first-cuts', band: '1b', level: 3, seed: 7, lesson: false }; game.start();
+    await O.time.real.wait(50); closeCards();
+    if (!S.run) return false;
+    doAction({ t: 'cut', n: 4 }); doAction({ t: 'tap', i: 0 }); doAction({ t: 'tap', i: 1 }); doAction({ t: 'tap', i: 2 });
+    return true;
+  },
+});
+</script>

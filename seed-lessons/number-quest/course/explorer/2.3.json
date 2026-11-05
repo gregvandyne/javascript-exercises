@@ -1,0 +1,210 @@
+{
+ "key": "explorer-2.3",
+ "n": "2.3",
+ "band": "explorer",
+ "title": "Story problems, drawn",
+ "topic": "Draw the story",
+ "minutes": 7,
+ "slides": [
+  {
+   "title": "Draw the story first",
+   "text": "A story problem hides its math inside words. Draw the story as a bar, and the math steps out where you can see it.",
+   "art": "pencil"
+  },
+  {
+   "title": "Bars show the pieces",
+   "text": "One long bar is the whole. Shorter bars under it are the parts. A part with no number yet gets a question mark. That mark is your job.",
+   "art": "table",
+   "visual": {
+    "type": "bars",
+    "label": "A bar model: one whole bar split into a known part and an unknown part",
+    "rows": [
+     {
+      "label": "One whole, two parts",
+      "parts": [
+       {
+        "w": 0.6,
+        "label": "the part you know",
+        "tone": 0
+       },
+       {
+        "w": 0.4,
+        "label": "",
+        "unknown": true
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The long bar is the whole story in one picture.",
+     "box": [
+      5,
+      34.7,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "The part with no number gets a question mark. That mark is your job.",
+     "box": [
+      58.3,
+      34.7,
+      36.2,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then draw",
+   "text": "Rough first: about 400 ribbons, minus about 150, leaves about 250. A shop had 386 ribbons and sold 147. Draw it.",
+   "art": "pencil",
+   "steps": [
+    "whole bar: 386 ribbons",
+    "one part: 147 sold",
+    "the other part: ? left",
+    "386 - 147 = 239 left, close to our rough 250"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "The ribbon story drawn: a whole bar of 386 ribbons, 147 sold, the rest left",
+    "rows": [
+     {
+      "label": "386 ribbons in the shop",
+      "parts": [
+       {
+        "w": 0.38082901554404147,
+        "label": "147 sold",
+        "tone": 1
+       },
+       {
+        "w": 0.6191709844559585,
+        "label": "",
+        "unknown": true
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One part is known: 147 ribbons sold.",
+     "box": [
+      5.5,
+      34.7,
+      34.5,
+      19.6
+     ]
+    },
+    {
+     "cue": "The other part is the question: how many are left?",
+     "box": [
+      39.0,
+      34.7,
+      55.5,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The Jumble adds a gap",
+   "text": "The Jumble read a gap story and added instead of subtracting. Its bar showed two parts joining, but the story asked for a difference. Name the mistake before you fix it.",
+   "art": "bug"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "bar model",
+     "means": "a drawing of a story as bars for the whole and its parts"
+    },
+    {
+     "word": "whole",
+     "means": "the full amount a story starts from"
+    },
+    {
+     "word": "part",
+     "means": "one piece of the whole"
+    },
+    {
+     "word": "difference",
+     "means": "the answer to a subtraction: the gap itself"
+    }
+   ]
+  },
+  {
+   "title": "Stretch: Two steps, two bars",
+   "text": "Some stories need two moves. Maya needs 500 points, has 275, and earns 90 more today. Draw one bar for what she still needs after today.",
+   "art": "star",
+   "visual": {
+    "type": "bars",
+    "label": "Maya's two-step story in one bar: 500 points needed, 275 already, 90 more today, the rest still to earn",
+    "rows": [
+     {
+      "label": "Maya needs 500 points",
+      "parts": [
+       {
+        "w": 0.55,
+        "label": "275 has",
+        "tone": 0
+       },
+       {
+        "w": 0.18,
+        "label": "90 today",
+        "tone": 1
+       },
+       {
+        "w": 0.27,
+        "label": "",
+        "unknown": true
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "275 points she has, and 90 more today: two known parts.",
+     "box": [
+      5.5,
+      34.7,
+      65.2,
+      19.6
+     ]
+    },
+    {
+     "cue": "What is left of the 500 is still to earn: 135 points.",
+     "box": [
+      69.7,
+      34.7,
+      24.8,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Brain Board at Practice Board and finish the whole board, every tile. It opens straight on your story board: every tile tells a story. Sketch each story as a bar before you pick an answer.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-2.3-e1",
+  "nq-explorer-2.3-e2",
+  "nq-explorer-2.3-e3"
+ ],
+ "game": {
+  "slug": "brain-board",
+  "chapter": "Practice Board",
+  "params": "mode=nq-2-3&lock=1"
+ }
+}

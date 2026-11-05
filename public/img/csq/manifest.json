@@ -47,6 +47,17 @@
    "commit": "csq-story"
   },
   {
+   "key": "csq/chars/tally",
+   "game": "fraction-factory",
+   "chapter": "characters",
+   "band": "both",
+   "state": "tally",
+   "concept": "Tally the cat, the Fraction Factory guide and Number Quest's keeper of the Numberworks: the course sprite, rendered by the kit portrait of Fraction Factory's own Tally spec.",
+   "alt": "Tally the cat: a peach-orange cat with a cream belly, big round eyes, whiskers and a mint scarf.",
+   "capturedAt": "2026-11-04",
+   "commit": "number-quest"
+  },
+  {
    "key": "csq/data-detective/claims-1b-card",
    "game": "data-detective",
    "chapter": "claims",

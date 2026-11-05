@@ -4,7 +4,13 @@
 import express, { Router } from 'express';
 import { page, notFound } from '../views/layout.js';
 import * as C from '../services/courses.js';
+// Number Quest's progress layer (Tally Marks, daily goal, laps) registers its school-account merge hook on
+// import; the course map and step APIs read it from here in the Number Quest stage that wires them up.
+import * as NQ from '../services/number-quest-progress.js';
+import * as NQP from '../services/number-quest-placement.js';
 import { coursePage, stepPage, afterSection } from '../views/courses.js';
+import { pathPage } from '../views/number-quest-path.js';
+import { CSS as NQ_CSS } from '../views/number-quest-placement.js';
 import { createGuest, startSession, isGrownup } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { isStaff } from '../services/schools.js';
@@ -13,7 +19,7 @@ import { current } from '../i18n/index.js';
 
 export const router = Router();
 const form = express.urlencoded({ extended: false, limit: '8kb', parameterLimit: 20 });
-const STEP = /^(1b|2)-\d\.\d$/;
+const STEP = /^(1b|2|explorer)-\d\.\d$/;
 
 /** A visitor without a session becomes a guest (like one tap on Play), so their course progress saves. Browsers only. */
 function ensureUser(req, res) {
@@ -30,6 +36,32 @@ router.get('/courses/:slug', (req, res) => {
   const c = C.getCourse(req.params.slug);
   if (!c) return notFound(req, res);
   const t = req.t, u = req.user;
+  // Number Quest's course page is its path home (the Numberworks street, views/number-quest-path.js): the
+  // winding path with Tally Marks, the daily goal, lap rings and the placement start, over the same states
+  // the generic map reads. A visitor without a session becomes a guest (as below, on navigation) so their
+  // street, marks and goal are theirs from the first step.
+  if (c.slug === NQ.COURSE_SLUG) {
+    if (req.headers['sec-fetch-mode'] === 'navigate' && !isGrownup(u)) ensureUser(req, res);
+    const user = req.user;
+    honourPendingWins(user); // a win earned as a guest lands before the street is drawn
+    const bandSet = !!C.getBand(user, c);
+    const ov = C.overview(user, c, 'explorer');
+    const placement = NQP.getPlacement(user);
+    // "You are here" is the placed start while it is still undone: the earlier workshops are open
+    // for laps and test-out, but the way forward begins at Tally's workshop, not at step one.
+    if (placement && placement.startNode) {
+      const startState = ov.list.find(s => s.step.key === placement.startNode);
+      if (startState && !startState.complete) ov.next = startState;
+    }
+    return page(req, res, { title: t(`${c.key}.title`), active: 'home', head: NQ_CSS,
+      body: pathPage({ course: c, ov, units: C.numberQuestCatalogue().units, marks: NQ.totalMarks(user, c),
+        daily: NQ.dailyStatus(user, c), laps: Object.fromEntries(NQ.lapsForTier(user, c, 'explorer').map(l => [l.unit, l])),
+        placement: placement && placement.startNode ? { ...placement, workshop: NQP.nodeInfo(placement.startNode).workshop } : placement,
+        testedOut: NQP.testedOutUnits(user), canPick: !isGrownup(user), bandSet,
+        hasProgress: ov.done > 0 || !!(placement && placement.startNode) }),
+      description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
+  }
+  honourPendingWins(u); // a win earned as a guest lands before the map is drawn
   page(req, res, { title: t(`${c.key}.title`), active: 'home', body: coursePage({ course: c, games: C.courseGames(u, c), ov: C.overview(u, c), canPick: !isGrownup(u) }),
     description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
 });
@@ -39,7 +71,7 @@ router.post('/courses/:slug/band', rateLimit('course-band', 30, 60e3), form, (re
   const c = C.getCourse(req.params.slug);
   if (!c) return notFound(req, res);
   const band = String((req.body && req.body.band) || '');
-  if (!C.BANDS.includes(band)) return res.redirect(303, `/courses/${c.slug}`);
+  if (!C.bandsFor(c).includes(band)) return res.redirect(303, `/courses/${c.slug}`);
   const u = isGrownup(req.user) ? null : ensureUser(req, res);
   if (u) C.setBand(u, c, band);
   res.redirect(303, `/courses/${c.slug}`);
@@ -59,6 +91,7 @@ router.get('/courses/:slug/:step', (req, res) => {
   if (isGrownup(req.user)) return res.redirect(302, `/courses/${c.slug}`);
   if (req.headers['sec-fetch-mode'] === 'navigate') ensureUser(req, res);
   const u = req.user;
+  honourPendingWins(u);
   const s = C.stateOf(u, c, step.key);
   // A locked step goes to the course map (staff and the admin may look at any step).
   if (!s.open && !preview(u)) return res.redirect(302, `/courses/${c.slug}#step-${step.key}`);
@@ -67,6 +100,7 @@ router.get('/courses/:slug/:step', (req, res) => {
   const r = /^[0-3]$/.test(String(req.query.r || '')) && !s.checked ? +req.query.r : null;
   const result = r === null ? null : { score: r, passed: r >= C.PASS, results: lastWrong(req, step) };
   page(req, res, { title: `${step.title} · ${req.t(`${c.key}.title`)}`, active: 'home', mid: true,
+    head: c.slug === NQ.COURSE_SLUG ? NQ_CSS : '',
     body: stepPage({ course: c, s, total: all.length, next: all[step.index + 1] || null, seed: seedOf(u), result, signedIn: !!u }), scripts: ['/js/course.js'] });
 });
 /** The wrong answers of a check sent without the script come back in the query (?w=<id>,<id>), as ids only. */
@@ -90,21 +124,90 @@ router.post('/api/courses/:slug/:step/read', ...api, (req, res) => {
   C.markRead(x.u, x.c, x.step);
   res.json({ ok: true });
 });
+// ------------------------------------------------------------------------------------------------- Number Quest moments
+// The Duolingo-lite layer inside a lesson (spec §6.1/§6.2): for Number Quest only, the step APIs carry an
+// `nq` payload the page script turns into quick, never-blocking moments — Tally's reaction to an answer
+// (a wrong one names the bank item's misconception tag, kindly; the Jumble made the mix-up, never the
+// child), Tally Marks when a check passes or a mission completes, the daily goal completing, and a unit's
+// Lap 1 landing when its last step finishes. No hearts, nothing spent, nothing ranked: the progress
+// service's rules, surfaced. Other courses' responses are untouched.
+const TALLY_PRAISE = ['Tally purrs: exactly right.', 'Tally nods: that is the way.', 'Tally taps her paw: counted and correct.', 'Tally smiles: you saw the pattern.', 'Tally does a little spin: yes!', 'Tally writes it in her book: right.', 'Tally\u2019s tail flicks happily: that is it.', 'Tally headbutts the page, gently: correct.'];
+/** Tally's line for one graded answer, from the item's own misconception tags (banks carry one per choice). */
+function nqReaction(step, itemId, choice, right) {
+  if (right) return { who: 'tally', text: TALLY_PRAISE[Math.abs([...String(itemId)].reduce((a, ch) => a + ch.charCodeAt(0), 0)) % TALLY_PRAISE.length] };
+  const it = C.item(itemId);
+  const misc = it && Array.isArray(it.misconceptions) && Number.isInteger(choice) ? String(it.misconceptions[choice] || '') : '';
+  if (!misc || misc === 'correct') return { who: 'tally', text: 'Tally says: have another look, slowly.' };
+  return { who: 'jumble', text: `The Jumble grins — that is its favourite mix-up: ${misc}. Tally says: watch what the numbers are really doing.` };
+}
+/** Honour a signed-in student's pending wins (services/courses.js, Greg's guest addendum): wins earned
+ *  as a guest and kept until sign-in. Each applied win also earns what a live completion earns — the
+ *  check's and the mission's Tally Marks, and any lap it lands — so the sign-up step costs the student
+ *  nothing. Called wherever the student meets their course state; a no-op for guests and for students
+ *  with nothing pending. */
+function honourPendingWins(u) {
+  if (!u || u.is_guest) return;
+  for (const w of C.applyPendingWins(u)) {
+    const c = C.getCourse(w.course); const step = c && C.getStep(c, w.step);
+    if (!step || !NQ.isNumberQuest(c)) continue;
+    NQ.awardCheckPassed(u, c, step.key);
+    if (w.via === 'win') NQ.awardMissionCompleted(u, c, step.key); // a check-honoured step has no mission to pay
+    nqLapSync(u, c, step);
+  }
+}
+/** If this step's unit is now fully done and its Lap 1 is unrecorded, record it (the unit as written is
+ *  Lap 1, spec §6.3) and return the celebration payload; laps 2 and 3 are walked from the path, not here. */
+function nqLapSync(u, c, step) {
+  if (!NQ.isNumberQuest(c) || !Number.isInteger(step.unit) || step.unit < 1) return null;
+  const unitSteps = C.steps(c, step.band).filter(s => s.unit === step.unit);
+  const states = new Map(C.states(u, c, step.band).map(s => [s.step.key, s]));
+  if (!unitSteps.length || !unitSteps.every(s => states.get(s.key) && states.get(s.key).complete)) return null;
+  const before = NQ.lapState(u, c, 'explorer', step.unit);
+  if (!before || before.completed.includes(1)) return null;
+  const out = NQ.completeLap(u, c, 'explorer', step.unit, 1);
+  return out.recorded ? { unit: step.unit, lap: 1, marks: out.marks } : null;
+}
+/** The moment payload after a check or a mission: what was awarded, the day against the goal (justMet is
+ *  true only on the award that reaches the goal), and a lap that landed with this step, if one did. */
+function nqMoments(u, c, step, awardResult) {
+  const daily = NQ.dailyStatus(u, c);
+  return { marks: awardResult && awardResult.awarded ? awardResult : null,
+    dailyGoal: daily ? { done: daily.done, goal: daily.goal, met: daily.met, justMet: daily.met && daily.done === daily.goal } : null,
+    lap: nqLapSync(u, c, step) };
+}
+
 /** One answer, graded: right or not, and the right answer (only now, after the player answered). */
 router.post('/api/courses/:slug/:step/answer', ...api, (req, res) => {
   const x = apiStep(req, res); if (!x) return;
   const b = req.body || {};
   const r = C.answerOne(x.step, String(b.item || ''), Number.isInteger(b.choice) ? b.choice : null);
   if (!r) return res.status(400).json({ error: req.t('errors.api.badRequest') });
+  if (NQ.isNumberQuest(x.c)) r.nq = { reaction: nqReaction(x.step, String(b.item || ''), b.choice, r.right) };
   res.json(r);
 });
-/** The whole check ({ answers: { id: choice } }), graded again and recorded. A pass opens the game module. */
+/** The whole check ({ answers: { id: choice } }), graded again and recorded. A pass opens the game module.
+ *  A guest's pass is recorded only as a pending fact (services/courses.js): the response is built from
+ *  the grade itself, so the sitting flows on to the module exactly as a recorded pass would, but
+ *  nothing is stored — and for a step with no game, whose pass IS the completion, the response carries
+ *  the sign-in prompt (needAccount) instead of a completion. */
 router.post('/api/courses/:slug/:step/check', ...api, (req, res) => {
   const x = apiStep(req, res); if (!x) return;
+  honourPendingWins(x.u);
   const g = C.grade(x.step, (req.body || {}).answers);
   C.recordCheck(x.u, x.c, x.step, g);
   const s = C.stateOf(x.u, x.c, x.step.key);
-  res.json({ score: g.score, total: g.results.length, passed: g.passed, results: g.results, play: s.checked ? C.playHref(x.c, x.step) : null, html: s.checked ? String(afterHtml(x.c, x.step, s)) : '' });
+  const guest = C.isGuestUser(x.u);
+  const checked = guest ? g.passed : s.checked;
+  const shown = guest && g.passed ? { ...s, read: true, checked: true, complete: !x.step.game, won: false } : s;
+  const out = { score: g.score, total: g.results.length, passed: g.passed, results: g.results, play: checked ? C.playHref(x.c, x.step) : null, html: checked ? String(afterHtml(x.c, x.step, shown)) : '' };
+  if (guest && g.passed && !x.step.game) out.needAccount = { signup: `/signup?next=${encodeURIComponent(`/courses/${x.c.slug}/${x.step.key}`)}` };
+  if (NQ.isNumberQuest(x.c) && !guest) {
+    // The soft-landing rule reads check results at the placed start (placement service §4.4), and a pass
+    // earns its Tally Marks (for doing: any attempt count, awarded once per step).
+    NQP.recordStartCheck(x.u, x.step.key, g.passed);
+    out.nq = nqMoments(x.u, x.c, x.step, g.passed ? NQ.awardCheckPassed(x.u, x.c, x.step.key) : null);
+  }
+  res.json(out);
 });
 /** The game module was finished: the play page posts this when the game itself reports its assigned chapter
  *  complete (brb:gameover, won — public/js/play.js). Opening the module only starts it (played_at, set when /play
@@ -113,9 +216,25 @@ router.post('/api/courses/:slug/:step/check', ...api, (req, res) => {
 router.post('/api/courses/:slug/:step/complete', ...api, (req, res) => {
   const x = apiStep(req, res); if (!x) return;
   if (!x.step.game) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  if (!x.s.checked || !x.s.played) return res.status(409).json({ error: req.t('errors.api.badRequest') });
+  // Guests cannot complete a course (Greg's addendum, 2026-11-04): the win the game just reported is
+  // kept as a pending fact, and the answer is the sign-in prompt — the win completes, marks and all,
+  // the moment the student signs in, so a finished game is never lost to the sign-up step. The facts
+  // demanded are the same ones a signed-in completion demands (check passed, module entered), read
+  // from the guest's pending facts instead of recorded progress.
+  if (C.isGuestUser(x.u)) {
+    const facts = C.pendingFacts(x.u, x.c, x.step);
+    if (!facts.check || !facts.played) return res.status(409).json({ error: req.t('errors.api.badRequest') });
+    C.stashPendingFact(x.u, x.c, x.step, 'win');
+    return res.status(403).json({ error: req.t('errors.api.needAccount'), needAccount: true, pendingWin: true,
+      signup: `/signup?next=${encodeURIComponent(`/courses/${x.c.slug}/${x.step.key}`)}` });
+  }
+  honourPendingWins(x.u);
+  const s = C.stateOf(x.u, x.c, x.step.key);
+  if (!s.checked || !s.played) return res.status(409).json({ error: req.t('errors.api.badRequest') });
   C.markCompleted(x.u, x.c, x.step);
-  res.json({ ok: true, complete: true });
+  const out = { ok: true, complete: true };
+  if (NQ.isNumberQuest(x.c)) out.nq = nqMoments(x.u, x.c, x.step, NQ.awardMissionCompleted(x.u, x.c, x.step.key));
+  res.json(out);
 });
 // The same check as a plain form (no page script): back to the step with the score.
 router.post('/courses/:slug/:step/check', rateLimit('course', 120, 60e3), form, (req, res) => {
@@ -126,6 +245,13 @@ router.post('/courses/:slug/:step/check', rateLimit('course', 120, 60e3), form, 
   if (!s || !s.open || isGrownup(u)) return res.redirect(303, `/courses/${c.slug}`);
   const g = C.grade(step, req.body || {});
   C.recordCheck(u, c, step, g);
+  // The plain-form flow earns the same Number Quest marks and lap as the scripted one (no moment can be
+  // shown without the script; the path home shows the new totals when the student gets there).
+  if (NQ.isNumberQuest(c)) {
+    NQP.recordStartCheck(u, step.key, g.passed);
+    if (g.passed) NQ.awardCheckPassed(u, c, step.key);
+    nqLapSync(u, c, step);
+  }
   const wrong = g.results.filter(r => !r.right).map(r => r.id).join(',');
   res.redirect(303, `/courses/${c.slug}/${step.key}?r=${g.score}${wrong && !g.passed ? `&w=${wrong}` : ''}#${g.passed ? 'play' : 'check'}`);
 });

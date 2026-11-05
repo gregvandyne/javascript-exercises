@@ -4291,6 +4291,15 @@ const I18N = {
   },
 };
 // ==== I18N END ====
+
+// ==== VOICES START ====
+// AI voices: the character voice this game's lines are read with when Oomba Academy has AI voices on for
+// this game and language. server/services/tts-lines.js reads this block to make the lines ahead of time, and
+// the server takes each line's role from it (never from the page): the longest VOICE_KEY_ROLES prefix wins,
+// else VOICE_ROLES.story. Roles: narrator, friendly, bright, deep, wise, grumpy.
+const VOICE_ROLES = { story: 'narrator' };
+const VOICE_KEY_ROLES = { 'L.': 'wise', 'les.': 'wise' };
+// ==== VOICES END ====
 const LANG = (() => {
   let l = 'en'; try { l = String((window.BRB && BRB.user && BRB.user.lang) || 'en'); } catch (e) { /* older SDK */ }
   const own = k => Object.prototype.hasOwnProperty.call(I18N, k);

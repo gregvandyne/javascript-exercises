@@ -1,0 +1,188 @@
+{
+ "key": "explorer-2.2",
+ "n": "2.2",
+ "band": "explorer",
+ "title": "Taking away, measuring gaps",
+ "topic": "Gaps",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Two ways to take away",
+   "text": "Subtraction has two faces. It can take away, like eating plums from a bowl. It can also measure the gap between two numbers.",
+   "art": "branch"
+  },
+  {
+   "title": "Counting up the gap",
+   "text": "The gap from 287 to 512 is hard to grab in one bite. Count up in friendly hops instead: first to 300, then to 500, then home to 512.",
+   "art": "map",
+   "visual": {
+    "type": "numberline",
+    "label": "Counting up the gap from 287 to 512 in three hops: 13, 200 and 12",
+    "min": 287,
+    "max": 512,
+    "marks": [
+     {
+      "at": 287,
+      "label": "287"
+     },
+     {
+      "at": 300,
+      "label": "300"
+     },
+     {
+      "at": 500,
+      "label": "500"
+     },
+     {
+      "at": 512,
+      "label": "512"
+     }
+    ],
+    "hops": [
+     {
+      "from": 287,
+      "to": 300,
+      "label": "13"
+     },
+     {
+      "from": 300,
+      "to": 500,
+      "label": "200"
+     },
+     {
+      "from": 500,
+      "to": 512,
+      "label": "12"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "First hop: 287 up to 300 is 13.",
+     "box": [
+      6.0,
+      21.3,
+      9.1,
+      39.1
+     ]
+    },
+    {
+     "cue": "The big middle hop: 300 to 500 is 200.",
+     "box": [
+      11.1,
+      21.3,
+      78.2,
+      39.1
+     ]
+    },
+    {
+     "cue": "Last hop: 500 to 512 is 12. The gap is 13 + 200 + 12 = 225.",
+     "box": [
+      78.0,
+      21.3,
+      21.0,
+      39.1
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then hop",
+   "text": "Rough first: 512 - 287 is about 500 - 300 = 200. Now hop up from 287 and add the hops.",
+   "art": "map",
+   "steps": [
+    "287 to 300 is a hop of 13",
+    "300 to 500 is a hop of 200",
+    "500 to 512 is a hop of 12",
+    "the gap is 13 + 200 + 12 = 225"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "The gap drawn as a bar: 512 is 287 plus a gap of 225",
+    "rows": [
+     {
+      "label": "The whole bar is 512",
+      "parts": [
+       {
+        "w": 0.560546875,
+        "label": "287",
+        "tone": 0
+       },
+       {
+        "w": 0.439453125,
+        "label": "gap 225",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start at 287, the number you count up from.",
+     "box": [
+      5.5,
+      34.7,
+      50.3,
+      19.6
+     ]
+    },
+    {
+     "cue": "The rest of the bar is the gap: 225.",
+     "box": [
+      54.8,
+      34.7,
+      39.7,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Stretch: Through the zeros",
+   "text": "Gaps laugh at tricky zeros. The gap from 398 to 703 hops 398 to 400, then to 700, then to 703. The gap is 305.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "subtraction",
+     "means": "taking away, or finding the gap between two numbers"
+    },
+    {
+     "word": "difference",
+     "means": "the answer to a subtraction: the gap itself"
+    },
+    {
+     "word": "gap",
+     "means": "the distance between two numbers on the number line"
+    },
+    {
+     "word": "count up",
+     "means": "to start at the smaller number and hop to the bigger one"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sum Racer. It opens on the Subtraction to 100 track, taking-away questions only, and it stays there. Win the race: for this one race, solve every gap by counting up.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-2.2-e1",
+  "nq-explorer-2.2-e2",
+  "nq-explorer-2.2-e3"
+ ],
+ "game": {
+  "slug": "sum-racer",
+  "chapter": "Subtraction to 100",
+  "params": "level=3&mode=sub&lock=1"
+ }
+}

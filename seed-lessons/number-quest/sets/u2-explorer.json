@@ -1,0 +1,217 @@
+{
+ "id": "nq-u2-explorer",
+ "program": "number-quest",
+ "kind": "quiz",
+ "unit": 2,
+ "band": "Explorer",
+ "title": "Number Quest Unit 2 · Joining & Splitting (Explorer)",
+ "items": [
+  {
+   "id": "nq-explorer-2.1-e1",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "3.NBT.A.2",
+   "topic": "Joining big",
+   "kind": "recall",
+   "secs": 20,
+   "q": "What is 356 + 287?",
+   "choices": [
+    "533",
+    "653",
+    "543",
+    "643"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "no trades were made: each column was added alone",
+    "a trade landed in the wrong column",
+    "the hundreds trade was missed",
+    "correct"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.1-e2",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "4.NBT.B.4",
+   "topic": "Joining big",
+   "kind": "recall",
+   "secs": 20,
+   "q": "What is 1,248 + 976?",
+   "choices": [
+    "2,214",
+    "1,224",
+    "2,124",
+    "2,224"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "the tens trade was missed",
+    "the new thousand was dropped",
+    "both trades were missed",
+    "correct"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.1-e3",
+   "lesson": "2.1",
+   "use": "exit",
+   "cat": "3.NBT.A.2",
+   "topic": "Joining big",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A shelf holds 425 boxes. Another 268 boxes arrive. How many boxes are there now?",
+   "choices": [
+    "157",
+    "693",
+    "683",
+    "643"
+   ],
+   "answer": 1,
+   "misconceptions": [
+    "subtracted instead of joining",
+    "correct",
+    "the ones trade was missed",
+    "the tens trade was missed"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.2-e1",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "3.NBT.A.2",
+   "topic": "Gaps",
+   "kind": "recall",
+   "secs": 20,
+   "q": "What is 703 - 458?",
+   "choices": [
+    "355",
+    "255",
+    "245",
+    "165"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "smaller-from-larger in every column, ignoring place",
+    "the gap was counted with one hop too many",
+    "correct",
+    "borrowed across the zero twice"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.2-e2",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "3.NBT.A.2",
+   "topic": "Gaps",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "How big is the gap from 289 to 500?",
+   "choices": [
+    "189",
+    "201",
+    "221",
+    "211"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "counted up from the wrong start",
+    "a hop of ten went missing",
+    "a hop of ten was counted twice",
+    "correct"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.2-e3",
+   "lesson": "2.2",
+   "use": "exit",
+   "cat": "4.NBT.B.4",
+   "topic": "Gaps",
+   "kind": "recall",
+   "secs": 20,
+   "q": "What is 634 - 278?",
+   "choices": [
+    "444",
+    "346",
+    "356",
+    "456"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "smaller-from-larger in every column, ignoring place",
+    "the ones trade was missed",
+    "correct",
+    "the hundreds were not touched by the trade"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.3-e1",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "3.OA.D.8",
+   "topic": "Draw the story",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Leo had 240 cards, gave away 85, then bought 30 more. How many cards does Leo have now?",
+   "choices": [
+    "355",
+    "125",
+    "155",
+    "185"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "added both moves: the Jumble move",
+    "took away both moves",
+    "stopped after the first step",
+    "correct"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.3-e2",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "3.OA.D.8",
+   "topic": "Draw the story",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "A bar shows a whole of 500. One part is 175. What is the other part?",
+   "choices": [
+    "675",
+    "375",
+    "325",
+    "275"
+   ],
+   "answer": 2,
+   "misconceptions": [
+    "added the part to the whole",
+    "the gap was counted with hops too big",
+    "correct",
+    "the gap was counted with hops too small"
+   ]
+  },
+  {
+   "id": "nq-explorer-2.3-e3",
+   "lesson": "2.3",
+   "use": "exit",
+   "cat": "4.OA.A.3",
+   "topic": "Draw the story",
+   "kind": "scenario",
+   "secs": 20,
+   "q": "Team A scored 412 points and Team B scored 268. How many more points did Team A score?",
+   "choices": [
+    "680",
+    "154",
+    "134",
+    "144"
+   ],
+   "answer": 3,
+   "misconceptions": [
+    "added instead of finding the difference: the Jumble move",
+    "a hop of ten was counted twice",
+    "a hop of ten went missing",
+    "correct"
+   ]
+  }
+ ]
+}

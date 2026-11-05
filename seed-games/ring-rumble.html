@@ -251,6 +251,7 @@ Oomba.settings.on('change',()=>{REDUCED=!!Oomba.settings.reduced;});
    languages (they are ring names); Japanese, Chinese, Russian, Hebrew and Arabic get them in their own script. */
 const LANG=(window.BRB&&BRB.user&&BRB.user.lang)||Oomba.lang||'en';
 const RTL=Oomba.dir==='rtl'||((window.BRB&&BRB.user&&BRB.user.dir)||(/^(he|ar)\b/.test(LANG)?'rtl':'ltr'))==='rtl';
+// ==== I18N START ====
 const I18N={
  en:{
   sub:"Championship Showdown",tag:"Two wrestlers · One ring · Three seconds",go2:"2 Players",go1:"Vs Computer",keyboard:"Keyboard",
@@ -463,6 +464,7 @@ const I18N={
   specials:["قفزة الزلزال","دوّامة الرعد 360","ضربة منتصف الليل","قنبلة المجد","صاروخ الفوضى","سقطة الانهيار الثلجي","إعصار الصاروخ","قنبلة عناق الدب"]
  }
 };
+// ==== I18N END ====
 function tv(key){ // raw value: locale, then base language, then English
   const L=I18N[LANG],B=I18N[LANG.split('-')[0]];
   if(L&&L[key]!==undefined)return L[key];if(B&&B[key]!==undefined)return B[key];return I18N.en[key];

@@ -283,6 +283,7 @@ const CONFIG = {
    ===================================================================================== */
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
 const DIR = (window.BRB && BRB.user && BRB.user.dir) === 'rtl' ? 'rtl' : 'ltr';
+// ==== I18N START ====
 const I18N = /*I18N:BEGIN*/{
 "en": {
   "pause": "Pause",
@@ -1252,6 +1253,15 @@ const I18N = /*I18N:BEGIN*/{
   "levelStats": "{level}: {w} · {l}"
 }
 }/*I18N:END*/;
+// ==== I18N END ====
+
+// ==== VOICES START ====
+// AI voices: the character voice this game's lines are read with when Oomba Academy has AI voices on for
+// this game and language. server/services/tts-lines.js reads this block to make the lines ahead of time, and
+// the server takes each line's role from it (never from the page): the longest VOICE_KEY_ROLES prefix wins,
+// else VOICE_ROLES.story. Roles: narrator, friendly, bright, deep, wise, grumpy.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
 const LANG_CHAIN = [LANG, LANG.split('-')[0], 'en'];
 /** The raw entry (a string, a plural object, a list or a map) for key, with the fallbacks above. */
 function tv(key) { for (const l of LANG_CHAIN) { const d = I18N[l]; if (d && d[key] !== undefined) return d[key]; } return key; }

@@ -1127,6 +1127,11 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
    teaching element kept in the central crop-safe zone by the capture spec. */
 .smedia{margin:0;border-radius:var(--r);overflow:hidden;background:var(--card-2);aspect-ratio:16/9}
 .simg{display:block;width:100%;height:100%;object-fit:cover}
+/* A drawn maths diagram (Number Quest visuals): an SVG on the brand Cream ground, in the slide's own
+   font, filling the same 16/9 frame a screenshot would — so a diagram slide and a photo slide sit at
+   the same size on the page, and its guided focus plays through the shared .gf rules above. */
+.vf-svg{display:block;width:100%;height:100%}
+.vf-svg text{font-family:var(--font)}
 /* Guided focus: a short played-once tour over a slide picture (steps authored per slide, played by
    public/js/course.js). The figure carries data-gf-step while a step is on show; no attribute = clean picture. */
 .smedia.gf{position:relative;container-type:inline-size}
@@ -1185,6 +1190,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 @media (prefers-reduced-motion: reduce){
   .smedia.gf{aspect-ratio:auto;overflow:visible}
   .smedia.gf .simg{height:auto;aspect-ratio:16/9;border-radius:var(--r)}
+  .smedia.gf .vf-svg{height:auto;aspect-ratio:16/9;border-radius:var(--r)}
   /* The cue list flows inside the figure in this mode, so the figure grows taller than the picture;
      the overlay layer must stay the picture's own box or every box's % top/height would map over
      figure + list and land below its target. The layer's width is the figure's, so the 16/9 ratio

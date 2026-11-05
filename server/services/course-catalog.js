@@ -30,6 +30,18 @@ export const COURSES = Object.freeze([
       { slug: 'escape-the-post-office', topic: 'cybersecurity' },
     ],
   },
+  {
+    slug: 'number-quest', emoji: '🔢', key: 'courses.nq', teacherPath: '/teachers/number-quest',
+    // The order the units teach them in (Unit 1 plays Brain Board and Quest Race, Units 2-3 Sum Racer,
+    // Unit 4 Fraction Factory). All four are shared: three are open-library engines whose maths lives in
+    // this course's banks, and Fraction Factory keeps its own page in the library too.
+    games: [
+      { slug: 'brain-board', topic: 'numbers', shared: true },
+      { slug: 'quest-race', topic: 'numbers', shared: true },
+      { slug: 'sum-racer', topic: 'numbers', shared: true },
+      { slug: 'fraction-factory', topic: 'fractions', shared: true },
+    ],
+  },
 ]);
 /** The course that owns a game (an unshared listing), or null: shared games and open games have no owner here. */
 export const courseOfSlug = slug => COURSES.find(c => c.games.some(g => g.slug === slug && !g.shared)) || null;

@@ -2271,6 +2271,17 @@ then its game module: one locked chapter of a game (6.1 and 6.3 have none and en
   "?chapter=" alone no longer opens a course game.
 - The home card shows steps done of 19 and Start / Keep going to the next open step (or the band picker); its game list
   is the unit overview and links to the map's units.
+- Guests cannot complete a course (Greg, 2026-11-04). A guest browses and plays freely, but a check pass or a game
+  win of theirs is never progress: services/courses.js keeps those earned facts in course_pending_wins (migration
+  0050: 'check' with its score, 'played', 'win') instead of course_progress, the /complete endpoint answers a
+  guest with the sign-in prompt (403, needAccount), and no Tally Marks, laps, placement or stored grade are
+  recorded for a guest in any course. The win is honoured when the student signs in — applyPendingWins, called
+  wherever course state is drawn, turns each stashed win into the step's real progress (the Number Quest awards
+  and lap land with it); signing in to another account first transfers the facts at login. A check passed on a
+  step with a game, without its win, is cleared unrecorded (the game is still owed); a check on a step with no
+  game is itself the finished step and is honoured like a win. In the guest's own views the facts stand in for
+  progress — they open the next step and fill the street the guest is looking at — but they never enter
+  course_progress, so no grown-up surface ever sees them.
 
 ## A second course: Cyber Defenders (Nov 2026)
 Cyber Defenders (seed-lessons/cyber-defenders) is a standalone cybersecurity / online-safety course on the same

@@ -1,0 +1,157 @@
+{
+ "key": "explorer-4.1",
+ "n": "4.1",
+ "band": "explorer",
+ "title": "Fair shares",
+ "topic": "Fair shares",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Welcome to the Bakery",
+   "text": "The Bakery is Tally's own workshop, and its first rule is on the wall: a share is fair only when every piece is the same size.",
+   "art": "star"
+  },
+  {
+   "title": "Parts of one whole",
+   "text": "Cut one cake into 4 equal parts and each part is one fourth of that cake. Take 3 parts and you hold 3/4: three out of four equal parts.",
+   "art": "grid",
+   "visual": {
+    "type": "fraction",
+    "label": "One cake cut into 4 equal parts, with 3 parts taken: 3/4",
+    "rows": [
+     {
+      "label": "3/4: three out of four equal parts",
+      "cuts": 4,
+      "shaded": 3
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "The whole cake, cut into 4 equal parts.",
+     "box": [
+      5,
+      34.7,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Take 3 parts: that is 3/4 of the cake.",
+     "box": [
+      5.5,
+      34.7,
+      67.0,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then place",
+   "text": "Rough first: 3/4 is more than half, so it sits past the middle of the line. Place it step by step.",
+   "art": "map",
+   "steps": [
+    "draw a line from 0 to 1 whole cake",
+    "cut the line into 4 equal parts",
+    "count 3 parts from 0",
+    "the third mark is 3/4"
+   ],
+   "visual": {
+    "type": "numberline",
+    "label": "3/4 on a number line from 0 to 1, past the halfway mark",
+    "min": 0,
+    "max": 1,
+    "marks": [
+     {
+      "at": 0,
+      "label": "0"
+     },
+     {
+      "at": 0.5,
+      "label": "1/2"
+     },
+     {
+      "at": 1,
+      "label": "1"
+     }
+    ],
+    "point": {
+     "at": 0.75,
+     "label": "3/4"
+    }
+   },
+   "focus": [
+    {
+     "cue": "Halfway sits at 1/2. 3/4 must land past it.",
+     "box": [
+      44.0,
+      42.7,
+      12,
+      35.6
+     ]
+    },
+    {
+     "cue": "Count 3 of the 4 equal parts from 0: the third mark is 3/4.",
+     "box": [
+      66.0,
+      42.7,
+      12,
+      35.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Top counts, bottom cuts",
+   "text": "In 5/8, the bottom number says the whole was cut into 8 equal parts. The top number counts how many of those parts you take: 5.",
+   "art": "magnifier"
+  },
+  {
+   "title": "Stretch: Past the whole",
+   "text": "The Jumble once ordered 5/4 of a cake. That is no mistake: 5 fourths is one whole cake and one more fourth.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "fraction",
+     "means": "a number for a fair share of one whole"
+    },
+    {
+     "word": "numerator",
+     "means": "the top number: how many parts you take"
+    },
+    {
+     "word": "denominator",
+     "means": "the bottom number: how many equal parts the whole was cut into"
+    },
+    {
+     "word": "unit fraction",
+     "means": "one single part of a whole, like 1/4 or 1/8"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Fraction Factory at First Cuts, then serve the orders. Cut every whole into equal parts before you count any pieces.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-4.1-e1",
+  "nq-explorer-4.1-e2",
+  "nq-explorer-4.1-e3"
+ ],
+ "game": {
+  "slug": "fraction-factory",
+  "chapter": "First Cuts",
+  "params": "chapter=first-cuts&band=1b&lock=1"
+ }
+}

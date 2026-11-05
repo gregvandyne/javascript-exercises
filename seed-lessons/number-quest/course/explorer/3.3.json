@@ -1,0 +1,172 @@
+{
+ "key": "explorer-3.3",
+ "n": "3.3",
+ "band": "explorer",
+ "title": "Fast facts, real tricks",
+ "topic": "Fast facts",
+ "minutes": 6,
+ "slides": [
+  {
+   "title": "Fast comes from tricks",
+   "text": "Fast facts are not magic memory. Every fast counter uses tricks: doubling, halving, and building a hard fact from an easy one.",
+   "art": "loop"
+  },
+  {
+   "kind": "example",
+   "title": "Rough first, then build",
+   "text": "Rough first: 9 x 7 is a bit under 70. Build it from the easy fact 9 x 5.",
+   "art": "loop",
+   "steps": [
+    "9 x 5 = 45, the easy part",
+    "9 x 2 = 18, the rest of the 7",
+    "45 + 18 = 63",
+    "so 9 x 7 = 63"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "Building 9 x 7 from 9 x 5: 45 plus 18 makes 63",
+    "rows": [
+     {
+      "label": "The easy part: 9 x 5 = 45",
+      "parts": [
+       {
+        "w": 0.7142857142857143,
+        "label": "45",
+        "tone": 0
+       }
+      ]
+     },
+     {
+      "label": "The rest of the 7: 9 x 2 = 18",
+      "parts": [
+       {
+        "w": 0.2857142857142857,
+        "label": "18",
+        "tone": 1
+       }
+      ]
+     },
+     {
+      "label": "Put together: 45 + 18 = 63",
+      "parts": [
+       {
+        "w": 0.7142857142857143,
+        "label": "45",
+        "tone": 0
+       },
+       {
+        "w": 0.2857142857142857,
+        "label": "18",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Start with a fact you know: 9 x 5 = 45.",
+     "box": [
+      5,
+      11.6,
+      90,
+      19.6
+     ]
+    },
+    {
+     "cue": "Add the rest: 45 + 18 = 63, so 9 x 7 = 63.",
+     "box": [
+      5,
+      72.0,
+      90,
+      19.6
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Facts travel in families",
+   "text": "Multiplication and division are one family. If 5 x 9 = 45, then 45 shared by 9 is 5, and 45 shared by 5 is 9.",
+   "art": "network",
+   "visual": {
+    "type": "tiles",
+    "label": "One fact family: 5 x 9 = 45, 45 shared by 9 is 5, 45 shared by 5 is 9",
+    "values": [
+     "5x9=45",
+     "45/9=5",
+     "45/5=9"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "One family of facts: 5 x 9 = 45.",
+     "box": [
+      5.5,
+      28.4,
+      29.0,
+      33.8
+     ]
+    },
+    {
+     "cue": "Turn it around: 45 shared by 5 is 9.",
+     "box": [
+      65.5,
+      28.4,
+      29.0,
+      33.8
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The Jumble races itself",
+   "text": "The Jumble tried to race by memorizing every fact alone. It mixed up 7 x 8 for a week, until it learned the trick: double 7 x 4.",
+   "art": "bug"
+  },
+  {
+   "title": "Stretch: Doubling chains",
+   "text": "Doubling is a ladder. 6 x 8 is double 6 x 4, and 6 x 4 is double 6 x 2. Climb down to a fact you know, then climb back up.",
+   "art": "star"
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "fluent",
+     "means": "able to answer smoothly, with a strategy that works"
+    },
+    {
+     "word": "double",
+     "means": "to make a number twice as big, or the result"
+    },
+    {
+     "word": "strategy",
+     "means": "a plan or trick you choose on purpose"
+    },
+    {
+     "word": "fact family",
+     "means": "multiplication and division facts built from the same numbers"
+    }
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "Open Sum Racer. It opens on the Mixed Grand Prix track, a mix of everything, and it stays there. Win the race against your own best, and name the trick behind each hard fact.",
+   "art": "trophy"
+  }
+ ],
+ "check": [
+  "nq-explorer-3.3-e1",
+  "nq-explorer-3.3-e2",
+  "nq-explorer-3.3-e3"
+ ],
+ "game": {
+  "slug": "sum-racer",
+  "chapter": "Galaxy Grand Prix",
+  "params": "level=7&lock=1"
+ }
+}

@@ -230,6 +230,7 @@ window.SoloBank = (function () {
 (function () {
   'use strict';
   var O = window.Oomba, L = O.live;
+  // ==== I18N START ====
   var STR = {
     en: { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
     'en-GB': { title: 'Quest Race', qnum: 'Question {n} of {total}', gems: 'Gems: {n}', locked: 'Answer locked in!', right: 'Right! +{points}', wrong: 'Not quite!', timeUp: "Time's up!", wait: 'Run around while everyone joins!', ready: 'Get ready!', go: 'Go!', finish: 'Finish!', podium: 'Winners', place: 'You came {rank} of {count}!', answers: '{n} answered', practice: 'Practice race: beat the ghosts!', ghost: 'Ghost {n}', top: 'Top racers', paused: 'Paused', skipped: 'Skipped', move: 'Move with the arrows or the stick', teams: 'Teams', teamRank: '{team}: place {rank}', teamPodium: 'Winning teams', perPlayer: 'per player', yourTeam: 'Your team: {team}' },
@@ -262,6 +263,8 @@ window.SoloBank = (function () {
   };
   MORE['en-GB'] = MORE.en;
   Object.keys(STR).forEach(function (k) { var m = MORE[k] || MORE.en; Object.keys(m).forEach(function (x) { STR[k][x] = m[x]; }); });
+  var I18N = STR;
+  // ==== I18N END ====
   O.strings(STR);
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };
@@ -648,6 +651,11 @@ window.SoloBank = (function () {
     ticker('🏆', t('podium'), 'gold');
     if (!reduced) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
     sfx('win'); buzz([60, 40, 60, 40, 120]);
+    // A finished solo practice race is a finished round: report it, so a course mission that sent the
+    // player here (Number Quest plays Quest Race solo) can complete. Solo only — a live class race
+    // ends through its host, never through this call. Won means the practice race ran to its end with
+    // the player in it: every question served, the finish line reached, which is the whole round.
+    if (solo) { try { var mine2 = R.get(mySeat); BRB.score.submit(mine2 ? mine2.gems : 0, 'race gems'); BRB.gameOver({ won: true, score: mine2 ? mine2.gems : 0 }); } catch (er) { /* none */ } }
   }
   // the countdown: 3, 2, 1, GO with big numbers
   var cdTimer = 0, cdLast = null, cdLog = [];
@@ -792,9 +800,41 @@ window.SoloBank = (function () {
     });
     return out;
   }
+  // ---- Number Quest lesson races: step 1.3 (Patterns and number tricks) sends a player here, and its
+  // race must practise patterns, not a general bank — so a lesson arrival (BRB.params carries the
+  // course and step) opens straight on eight generated pattern questions, with no subject/level
+  // picker first. Every other way in keeps the picker and the bank, unchanged.
+  var NQ_STEP = (window.BRB && BRB.params && /^nq-\d-\d$/.test(String(BRB.params.mode || ''))) ? 'explorer-' + String(BRB.params.mode).slice(3).replace('-', '.') : '';
+  function nqPatternItems(rnd) {
+    var out = [];
+    var mk = function (q, ans, wrong) {
+      var all = [ans]; wrong.forEach(function (w) { if (w >= 0 && all.indexOf(w) < 0) all.push(w); });
+      var sh = rnd.shuffle(all.slice(0, 4));
+      while (sh.length < 4) sh.push(ans + sh.length * 3 + 1);
+      out.push({ q: q, choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 });
+    };
+    var a = rnd.int(2, 9), d = [3, 4, 5, 6][rnd.int(0, 3)];
+    mk('Pattern: ' + [a, a + d, a + 2 * d, a + 3 * d].join(', ') + ', ... What comes next? Call out the rule!', a + 4 * d, [a + 4 * d + 1, a + 4 * d - 1, a + 5 * d]);
+    a = rnd.int(3, 12); d = [2, 5, 10][rnd.int(0, 2)];
+    mk('Pattern: ' + a + ', ' + (a + d) + ', ?, ' + (a + 3 * d) + ', ' + (a + 4 * d) + '. Which tile is missing?', a + 2 * d, [a + d, a + 3 * d, a + 2 * d + 2]);
+    a = rnd.int(2, 7); d = [4, 5][rnd.int(0, 1)];
+    mk('The rule is add ' + d + '. Starting at ' + a + ', what is the 8th number?', a + 7 * d, [a + 8 * d, a + 6 * d, a + 7 * d + 1]);
+    a = rnd.int(2, 6);
+    mk('Doubling pattern: ' + [a, a * 2, a * 4].join(', ') + ', ... What comes next?', a * 8, [a * 6, a * 16, a * 8 + 2]);
+    a = rnd.int(40, 80); d = [3, 5, 7][rnd.int(0, 2)];
+    mk('Pattern: ' + [a, a - d, a - 2 * d, a - 3 * d].join(', ') + ', ... What comes next?', a - 4 * d, [a - 4 * d + 1, a - 5 * d, a - 3 * d]);
+    a = rnd.int(2, 9);
+    mk('Pattern: ' + [a, a + 2, a + 7, a + 9, a + 14].join(', ') + ', ... The steps take turns: +2, +5, +2, +5. What comes next?', a + 16, [a + 19, a + 15, a + 21]);
+    a = rnd.int(3, 9);
+    mk('Trays of ' + a + ' skip-count: ' + [a, a * 2, a * 3].join(', ') + ', ... What comes next?', a * 4, [a * 4 + 1, a * 5, a * 3 + a - 1]);
+    a = rnd.int(4, 15); d = [5, 6, 9][rnd.int(0, 2)];
+    mk('The Jumble hid a tile: ' + a + ', ' + (a + d) + ', ' + (a + 2 * d) + ', ?, ' + (a + 4 * d) + '. What did it hide?', a + 3 * d, [a + 2 * d + 1, a + 4 * d, a + 3 * d - 2]);
+    return out;
+  }
   // Playing alone: choose the questions first (subject, level, how many), then race.
   function practiceStart() {
     practice.on = true; phase = 'lobby';
+    if (NQ_STEP === 'explorer-1.3') { practiceGo(nqPatternItems(practice.rnd)); return; }
     window.SoloBank.choose({}, function (items) { practiceGo(items && items.length ? items : null); });
   }
   function practiceGo(items) {

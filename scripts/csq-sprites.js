@@ -28,10 +28,12 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 //   Pim   — seed-games/packet-post.html CONFIG.pim via pimLook() with no crowns: owl, backpack, cocoa/spark.
 //   Gizmo — seed-games/inside-the-machine.html CONFIG.crew via gizmoSpec() with no crowns: mouse, glasses,
 //           stone/snow/sky, seed 5.
+//   Tally — seed-games/fraction-factory.html CONFIG.tally (her debut game): cat, scarf, peach/mint.
 const KIT_CHARS = [
   { slug: 'data-detective', name: 'dot', spec: { species: 'fox', colors: { base: 'peach', belly: 'cream', accent: 'spark' }, wear: ['glasses'], mood: 'happy' } },
   { slug: 'packet-post', name: 'pim', spec: { species: 'owl', wear: ['backpack'], colors: { base: 'cocoa', accent: 'spark' }, mood: 'happy' } },
   { slug: 'inside-the-machine', name: 'gizmo', spec: { species: 'mouse', wear: ['glasses'], colors: { base: 'stone', belly: 'snow', accent: 'sky' }, mood: 'happy', seed: 5 } },
+  { slug: 'fraction-factory', name: 'tally', spec: { species: 'cat', wear: ['scarf'], colors: { base: 'peach', accent: 'mint' }, mood: 'happy' } },
 ];
 
 async function serveGame(browser, slug, fn) {

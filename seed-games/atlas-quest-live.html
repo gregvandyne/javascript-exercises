@@ -90,6 +90,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
 (function () {
   'use strict';
   var O = window.Oomba, L = O.live, $ = function (id) { return document.getElementById(id); };
+  // ==== I18N START ====
   var STR = {
     en: { title: 'Atlas Quest', live: 'Live', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Lock in', tap: 'Tap the country on the map', locked: 'Locked in! Look at the big screen.', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', timeUp: "Time's up!", right: 'Right! +{points}', close: 'So close! +{points}', wrong: 'Not quite!', away: '{km} km away', was: 'It was {name}', top: 'Top five', more: 'and {n} more answered', podium: 'Winners', place: 'You came {rank} of {count}!', practice: 'Practice round: find the countries!', host: 'Host it live with your class to play together.', score: '⭐ {n}', again: 'Play again', zin: 'Zoom in', zout: 'Zoom out', zfit: 'Whole map', map: 'World map', nobody: 'Nobody answered', find: 'Find {name}', picked: 'Your pick' },
     'en-GB': {},
@@ -122,6 +123,8 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   };
   Object.keys(MORE).forEach(function (k) { STR[k] = Object.assign(STR[k] || {}, MORE[k]); });
   STR['en-GB'] = STR.en;
+  var I18N = STR;
+  // ==== I18N END ====
   var LANG = (O.lang || 'en'), W = STR[LANG] || STR[LANG.split('-')[0]] || STR.en;
   function t(k, v) { var s = W[k] != null ? W[k] : STR.en[k]; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
   document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
