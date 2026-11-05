@@ -2401,7 +2401,11 @@ What the platform needed, and now has:
 
 Scope: the 13 built Explorer decks (0.1-4.3). Every mission slide of a deck with a game carries that
 game's screenshot; 0.1's two opening beats carry Tally on the street (lit 1, then 0 as the workshops go
-quiet). Phase 2 decks (Units 5-7, the finale) author to this rule from the start.
+quiet). Phase 2 decks (Units 5-7, the finale) were authored in parallel, just before this platform
+landed, and their mission slides carry no captures yet: a capture sweep is owed for 5.1, 5.2, 5.3, 6.2,
+6.3, 7.1, 7.2, 7.3 and 7.4 (6.1 has no game, so the rule does not reach it), and
+scripts/nq-manifest-check.js names each owed capture on every run until it lands. The sweep also
+flips the no-img pin in tests/unit/number-quest-decks-c.test.js to this rule for those decks.
 ## Brain Board lessons complete at a points goal, and the board saves (5 Nov 2026)
 
 Owner's amendment, for **Brain Board's Number Quest lessons only** (steps 1.1 and 2.3): clearing all

@@ -12,6 +12,15 @@
 //   - the entry's game matches the key's game segment.
 // And in the other direction: every manifest entry is carried by some deck, so a stale entry cannot
 // linger after its slide is gone, and every deck with a game has its mission slide pictured.
+//
+// One named exception, kept loud on purpose: the Phase 2 decks (Units 5-7 + the Vault of Measures
+// finale, PR #202) were authored just before this imagery platform landed, so their mission slides
+// carry no captures yet. MISSION_CAPTURES_OWED below names each deck and the exact capture the
+// follow-up sweep owes it. An owed deck's missing mission picture is reported as an OWED note on
+// every run instead of a failure; every other deck (and every other check for the owed decks) still
+// fails hard. When the sweep lands a deck's capture, delete its line here — the stale-entry note at
+// the bottom will say so. 6.1 is not owed anything: it has no game (the Builder's Yard is unbuilt),
+// so the mission-picture rule does not apply to it.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,6 +29,21 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const IMG_DIR = path.join(ROOT, 'public', 'img');
 const problems = [];
 const notes = [];
+
+// Mission captures owed by the follow-up sweep for the Phase 2 decks (see the header note).
+// Key: deck file. Value: the capture owed, in the mode the deck's mission assigns.
+const MISSION_CAPTURES_OWED = new Map([
+  ['5.1.json', 'nq/brain-board: Practice Board in mode nq-5-1 (the Measures board)'],
+  ['5.2.json', 'nq/quest-race: Practice Race in mode nq-5-2 (timetable questions)'],
+  ['5.3.json', 'nq/brain-board: Practice Board in mode nq-5-3 (the Money board)'],
+  ['6.2.json', 'nq/brain-board: Practice Board in mode nq-6-2 (the Around & Inside board)'],
+  ['6.3.json', 'nq/brain-board: Practice Board in mode nq-6-3 (the Lines & Grids board)'],
+  ['7.1.json', 'nq/data-detective: the Chart It chapter (chapter=chart, band=1b) — a new game folder in the manifest'],
+  ['7.2.json', 'nq/data-detective: the My Data chapter (chapter=my-data, band=1b) — a new game folder in the manifest'],
+  ['7.3.json', 'nq/would-you-rather: the Numbers topic — a new game folder in the manifest'],
+  ['7.4.json', 'nq/quest-race: Practice Race (the Vault Run) in mode nq-7-4'],
+]);
+const owedStillMissing = new Set();
 
 const manifest = JSON.parse(fs.readFileSync(path.join(IMG_DIR, 'nq', 'manifest.json'), 'utf8'));
 const byKey = new Map();
@@ -49,8 +73,12 @@ for (const name of fs.readdirSync(deckDir).filter(n => n.endsWith('.json')).sort
     if (deck.game && e.game !== deck.game.slug) problems.push(`${name} slide ${i + 1}: ${s.img} is a ${e.game} picture on a ${deck.game.slug} step`);
   });
   const mi = deck.slides.findIndex(s => s.kind === 'mission');
-  if (deck.game && mi >= 0 && !deck.slides[mi].img) problems.push(`${name}: the mission slide carries no img, though the step has a game`);
+  if (deck.game && mi >= 0 && !deck.slides[mi].img) {
+    if (MISSION_CAPTURES_OWED.has(name)) { owedStillMissing.add(name); notes.push(`OWED ${name}: mission capture not yet taken — ${MISSION_CAPTURES_OWED.get(name)}`); }
+    else problems.push(`${name}: the mission slide carries no img, though the step has a game`);
+  }
 }
+for (const name of MISSION_CAPTURES_OWED.keys()) if (!owedStillMissing.has(name)) notes.push(`OWED list: ${name} no longer misses its mission picture (or is gone) — remove it from MISSION_CAPTURES_OWED in scripts/nq-manifest-check.js`);
 for (const key of byKey.keys()) if (!used.has(key)) problems.push(`manifest: ${key} is not carried by any deck slide`);
 
 console.log(`nq manifest: ${byKey.size} pictures, ${used.size} carried by decks`);
