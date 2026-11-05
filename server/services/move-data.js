@@ -44,6 +44,45 @@ export const CLIP_SLUGS = {
   waterfall: '06-waterfall', butterfly: '07-butterfly', boat: '08-boat', cobra: '09-cobra', rest: '10-rest',
 };
 
+/**
+ * The transition clips between neighbouring segments, in boundary order (TRANSITION_SLUGS[i]
+ * joins segments i and i + 1): t01-02.mp4 to t09-10.mp4, the names in Greg's video pack. A
+ * transition is a shot of Remy moving from one pose into the next; the player straddles it
+ * across the boundary (starting it just before the chapter change) so the assembled episode
+ * reads as one continuous video rather than ten clips. No transition file = the player
+ * crossfades the two pose clips (or stills) directly.
+ */
+export const TRANSITION_SLUGS = [
+  't01-02', 't02-03', 't03-04', 't04-05', 't05-06', 't06-07', 't07-08', 't08-09', 't09-10',
+];
+
+/**
+ * The episode as ONE narration timeline (Greg's seamless rule, 2026-11-05): every line of the
+ * episode, segment lines first and the end card lines last, each with the episode second it is
+ * due to start. Starts are planned, not measured: within a segment, lines are spaced by an
+ * estimated reading time (about 13 characters per second, scaled down if they would overrun
+ * the segment), so the lines cluster where the teaching happens and the rest of the segment is
+ * practice time. The player schedules from this single list: a line never starts before its
+ * due second, but if the real voice is still speaking when the next line (or the next pose)
+ * arrives, the line in progress simply continues across the join and the queue follows it.
+ * Nothing about narration is per segment any more; segments are only chapter markers here.
+ */
+export function narrationTimeline(e) {
+  const CHARS_PER_SEC = 13;
+  const entries = [];
+  let segStart = 0;
+  e.segments.forEach((seg, si) => {
+    const estimates = seg.lines.map(text => Math.max(1.6, text.length / CHARS_PER_SEC));
+    const total = estimates.reduce((a, b) => a + b, 0);
+    const scale = total > seg.seconds ? seg.seconds / total : 1;
+    let at = segStart;
+    seg.lines.forEach((text, li) => { entries.push({ seg: si, line: li, text, start: at }); at += estimates[li] * scale; });
+    segStart += seg.seconds;
+  });
+  e.endLines.forEach((text, li) => entries.push({ seg: e.segments.length, line: li, text, start: segStart }));
+  return entries;
+}
+
 export const EPISODES = [
   {
     id: 'mountain-morning',

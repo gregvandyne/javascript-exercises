@@ -36,6 +36,27 @@ test('Episode 1 data: the approved shape, in the approved order, totalling five 
   assert.equal(EP.segments.find(s => s.id === 'star').pose, 'star', 'Star Pose is the standing star pose');
 });
 
+test('one seamless timeline: narration is a single due-time list, transitions line the joins', () => {
+  // Greg's seamless rule: the episode is one five minute timeline. The narration plan covers
+  // every line exactly once, in episode order, each due at a planned second on the master
+  // clock: the first line of every segment is due exactly at that segment's start (the chapter
+  // marker), later lines inside their own segment's window, and the end card line at 300.
+  const tl = DATA.narrationTimeline(EP);
+  const flat = [...EP.segments.flatMap((s, si) => s.lines.map((text, li) => ({ seg: si, line: li, text }))), ...EP.endLines.map((text, li) => ({ seg: EP.segments.length, line: li, text }))];
+  assert.equal(tl.length, flat.length, 'the timeline holds every line');
+  tl.forEach((e, i) => { assert.equal(e.seg, flat[i].seg); assert.equal(e.line, flat[i].line); assert.equal(e.text, flat[i].text); });
+  let segStart = 0;
+  EP.segments.forEach((s, si) => {
+    const first = tl.find(e => e.seg === si && e.line === 0);
+    assert.equal(first.start, segStart, `${s.id} opens on its chapter second`);
+    for (const e of tl.filter(x => x.seg === si)) assert.ok(e.start >= segStart && e.start < segStart + s.seconds, `${s.id} line ${e.line} is due inside its segment`);
+    segStart += s.seconds;
+  });
+  for (let i = 1; i < tl.length; i++) assert.ok(tl[i].start >= tl[i - 1].start, 'due times never go backwards');
+  assert.equal(tl[tl.length - 1].start, 300, 'the end card line is due at the end of Rest');
+  assert.deepEqual(DATA.TRANSITION_SLUGS, ['t01-02', 't02-03', 't03-04', 't04-05', 't05-06', 't06-07', 't07-08', 't08-09', 't09-10'], 'one named transition per join');
+});
+
 test('the words follow the rules: no em dashes, no emoji, no left or right, calf never knee', () => {
   const all = DATA.allLines(EP).join('\n');
   assert.ok(!all.includes('—'), 'no em dash in any spoken or shown line');
@@ -73,7 +94,22 @@ test('the player never uses a device voice and the music is made in code', () =>
   assert.ok(/ttsBlob\(\{ ctx: 'move'/.test(player), 'narration goes through the shared TTS path with ctx move');
   assert.ok(/AudioContext/.test(player) && /MELODY/.test(player) && /CHORDS/.test(player), 'the music is an in-code WebAudio pattern');
   assert.ok(!/\.mp3|\.wav|\.ogg/.test(player), 'no recorded music files');
+  // Seamless assembly, pinned: narration is one timeline queue (pumpNarration on TIMELINE),
+  // chapter changes touch neither narration nor music, the music bed starts once, and shots
+  // join by crossfading dual video elements (plus straddled transition clips when present).
+  assert.ok(/TIMELINE/.test(player) && /pumpNarration/.test(player), 'narration runs off the single timeline');
+  const enter = player.slice(player.indexOf('function enterSegment'), player.indexOf('function finish'));
+  assert.ok(!/speak|stopNarration|Music\.start/.test(enter), 'a chapter change never restarts or cuts narration or music');
+  const tickChange = player.slice(player.indexOf('if (segElapsed >= seg.seconds)'));
+  assert.ok(!/stopNarration/.test(tickChange.slice(0, 200)), 'the clock does not stop narration at a join');
+  assert.ok(/starts\+\+/.test(player) && /starts: this\.starts/.test(player), 'the music bed counts its starts (one per run)');
+  assert.ok(/beatNow \+= \(targetBeat - this\.beatNow\)/.test(player), 'the Rest slow-down morphs instead of switching');
+  const route = read('server/routes/move.js');
+  assert.ok(route.includes('id="mv-video-a"') && route.includes('id="mv-video-b"'), 'two video elements alternate for crossfades');
+  assert.ok(/startTransition/.test(player) && /TRANSITION_LEAD_MAX/.test(player), 'transition clips straddle the joins');
+  assert.ok(/RETRY_MS = \[2000, 4000, 8000, 16000, 30000\]/.test(player) && /retriesLeft/.test(player), 'a transient voice refusal holds and retries the line instead of skipping it');
   const css = read('public/css/move.css');
+  assert.ok(/\.mv-video \{[^}]*transition: opacity \.45s/.test(css) && /\.mv-video\.on \{ opacity: 1; \}/.test(css), 'video shots join with a 0.45s crossfade, never a hard cut');
   for (const pose of ['intro', 'spark', 'mountain', 'tree', 'star', 'waterfall', 'butterfly', 'boat', 'cobra', 'rest'])
     assert.ok(css.includes(`[data-pose="${pose}"]`), `the CSS poses Remy for ${pose}`);
   assert.ok(/prefers-reduced-motion/.test(css), 'reduced motion is honoured');
@@ -103,6 +139,13 @@ test('the pages serve: index lists Episode 1, the player carries the data, a bad
     const pd = JSON.parse(play.match(/<script type="application\/json" id="page-data">(.*?)<\/script>/s)[1].replace(/\\u003c/g, '<'));
     for (const s of EP.segments) assert.ok(pd.frames[s.pose], `frame wired for ${s.id}`);
     assert.ok(pd.frames['mountain-seated'] && pd.frames['tree-seated'], 'seated frames wired');
+    // The seamless assembly data: the narration timeline ships with the page, and the nine
+    // transition slots line the joins (all empty until Greg's clips land; stills crossfade).
+    assert.equal(pd.episode.timeline.length, DATA.allLines(EP).length, 'the page carries the one narration timeline');
+    assert.equal(pd.episode.timeline[0].start, 0);
+    assert.equal(pd.episode.timeline[pd.episode.timeline.length - 1].start, 300);
+    assert.equal(pd.transitions.length, EP.segments.length - 1, 'one transition slot per join');
+    assert.ok(pd.transitions.every(u => u === null || typeof u === 'string'), 'transition slots are URLs or empty');
     const img = await fetch(base + pd.frames.mountain);
     assert.equal(img.status, 200);
     assert.match(img.headers.get('content-type') || '', /image\/jpeg/);
