@@ -3856,7 +3856,7 @@
         "minutes": "45 minutes each",
         "games": "Four games",
         "free": "No ads",
-        "note": "Why the counts differ: the 23 lessons include Unit 7, Make Your Own Game (four lessons in the AI Builder), which is not part of the student course map. The student map shows 21 steps: Units 1 to 6, plus a welcome step (0.1) and the Spark finale (6.4)."
+        "note": "Why the counts differ: the 23 lessons include Unit 7, Make Your Own Game (four lessons in the AI Builder), which is not part of the student course map. The student map shows Units 1 to 6, plus a welcome step (0.1) and the Spark finale (6.4): 21 steps for grades 3-5, and 22 for grades 6-8, whose Unit 3 adds one practice step (3.4, Fair Data) with no classroom lesson of its own."
       },
       "cta": {
         "open": "Open CS Quest"
