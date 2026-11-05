@@ -58,6 +58,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.gameOver({ won, score })` | Call at the end of each round (also submits the score). |
 | `BRB.fullscreen()` | Asks the page to go full screen. `element.requestFullscreen()` is routed here too. |
 | `BRB.retry()` | Asks the page to load the game again from scratch, for a "Try again" button when the game could not start (a reload from inside the frame would go without the sign-in). Works only right after a tap. |
+| `BRB.back()` | Asks the page to go back to where the game was launched from (a course step or a class lesson), for a "Back to class/course" button at the end of a course chapter. The frame cannot navigate the page itself. Works only right after a tap, and only when the game was launched from somewhere with a way back; in free play it does nothing. |
 | `BRB.orientation('landscape')` | Tells the page the game wants landscape (it shows a "turn your phone" hint). |
 | `BRB.fx.confetti(opts?)` | Confetti burst (skipped when the player prefers reduced motion). |
 | `BRB.fx.shake(element, strength?)` | A short shake. |
@@ -243,6 +244,7 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 | `brb:fullscreen` | `{ on }` | toggles full screen on the game area |
 | `brb:orientation` | `{ value }` | orientation hint |
 | `brb:retry` | – | the 3D card's "Try again": the page reloads the game, only right after a tap (a reload started inside the frame has no sign-in cookie, so the server refuses it) |
+| `brb:back` | – | `BRB.back()`: the page navigates back to the course step or class lesson the game was launched from, only right after a tap and only when the play page carries that back context (course step or lesson); otherwise ignored |
 | `brb:online` | – | `BRB.match.menu()`: opens the "Play online" sheet, for online games only, right after a tap |
 | `brb:tts` | `{ id, text, lang, role, rate, pre? }` | AI voices (official games, when on): fetches the line from `/api/tts` and posts the MP3's bytes back (`{ id, ok, buf }`), or `{ id, ok:false, why }`; `pre`: fetch only, no answer |
 

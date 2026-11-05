@@ -1813,7 +1813,16 @@ function questDone() {
     row.appendChild(btn(tr('Play again'), { kind: 'quiet', icon: 'restart', onPress: () => close('again') }));
     const b = btn(S.lock ? tr('Back to class') : tr('Chapter map'), { kind: 'hot', big: true, icon: 'home', onPress: () => close('home') }); b.setAttribute('data-focus', ''); row.appendChild(b);
     card.appendChild(row);
-  }).done.then(r => { if (r === 'again') startLevel(q.ch, 0, { noLearn: true }); else if (S.lock) toTitle(); else showMap(q.ch); });
+  }).done.then(r => { if (r === 'again') startLevel(q.ch, 0, { noLearn: true }); else if (S.lock) leaveToClass(); else showMap(q.ch); });
+}
+/** "Back to class" at the end of a locked lesson quest: the frame cannot navigate the page (sandboxed,
+ *  opaque origin), so ask the play page to go back to the course or lesson this quest was launched from
+ *  (BRB.back). If nobody takes the page away — a preview with no way back — fall back to the title
+ *  screen, as before, so the button is never worse than it was. */
+function leaveToClass() {
+  let asked = false;
+  try { if (window.BRB && typeof BRB.back === 'function') { BRB.back(); asked = true; } } catch (e) { /* fall through */ }
+  if (asked) later(900, () => toTitle()); else toTitle();
 }
 /* the Daily Crew Challenge: one level a day for the whole crew, picked from the day number; its own three-star card */
 const dayNumber = () => { const d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 6e4) / 864e5); };   // the local day: it rolls over at the kid's midnight

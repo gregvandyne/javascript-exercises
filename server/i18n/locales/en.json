@@ -1695,7 +1695,12 @@
       "guestWinTitle": "You won! 🏆",
       "guestWin": "That win is yours. Guests can play every game, but a course step only counts as finished with a free account — make one and we will count this win. We kept it for you.",
       "guestWinAction": "Make my free account",
-      "guestWinLater": "Keep playing"
+      "guestWinLater": "Keep playing",
+      "courseDone": "Step complete! 🎉",
+      "courseFinished": "You finished! 🎉",
+      "courseNotYet": "That finish does not complete the step yet. Win the part the step set you, and it counts.",
+      "courseSaveFailed": "That win could not be saved. Head back to the step and check it there.",
+      "courseKeepPlaying": "Keep playing"
     },
     "friends": {
       "codeCopied": "Code copied! Give it to a friend you know.",

@@ -50,6 +50,34 @@ function stopGame() {
   stage.appendChild(box);
 }
 
+// ---- the course finish bar ----
+// A game launched from a course step ends on its own screens (podium, results card), which offer only
+// Play again — the student is stranded in the game, and whether the step counted is invisible to them
+// (live finding, 2026-11-05). So when the game reports its end, the page itself — inside the stage, so
+// fullscreen shows it too — states the outcome and offers the way back to the course as the big primary
+// action. Four honest states: the completion was recorded (done), a guest's win was banked for sign-in
+// (finished), the finish did not complete the step (notyet), or the win could not be saved (failed).
+// Free play never sees it: it is driven entirely by d.cstep.
+let courseBar = null;
+function hideCourseBar() { if (courseBar) { courseBar.remove(); courseBar = null; } const box = document.getElementById('toasts'); if (box) box.style.bottom = ''; }
+function showCourseBar(kind) {
+  hideCourseBar();
+  if (!d.cstep || !d.backHref) return;
+  const text = { done: t('js.play.courseDone'), finished: t('js.play.courseFinished'), notyet: t('js.play.courseNotYet'), failed: t('js.play.courseSaveFailed') }[kind];
+  if (!text) return;
+  const bar = document.createElement('div'); bar.className = 'course-done'; bar.setAttribute('role', 'status'); bar.dir = document.documentElement.dir || 'ltr';
+  bar.innerHTML = `<p class="cd-text">${esc(text)}</p>
+    <a class="btn btn-primary btn-big" href="${esc(d.backHref)}">${esc(d.backLabel || t('layout.back'))}</a>
+    <button type="button" class="btn cd-keep">${esc(t('js.play.courseKeepPlaying'))}</button>`;
+  bar.querySelector('.cd-keep').addEventListener('click', hideCourseBar);
+  stage.appendChild(bar); courseBar = bar;
+  // The toast stack is viewport-fixed at the bottom and would land on top of the bar, hiding its text
+  // and its primary button behind the Number Quest toasts (which fire a moment earlier). Lift the stack
+  // to just above the bar so both stay readable; hideCourseBar puts it back.
+  const box = document.getElementById('toasts');
+  if (box) { const r = bar.getBoundingClientRect(); box.style.bottom = Math.max(16, Math.round(window.innerHeight - r.top + 8)) + 'px'; }
+}
+
 // ---- presence + play counting ----
 async function start() {
   try { const r = await api(`/api/games/${d.gameId}/play`, { method: 'POST', body: {} }); playId = r.playId; refreshLive(); } catch { /* ignore */ }
@@ -74,6 +102,7 @@ const TYPES = {
   'brb:fullscreen': m => typeof m.on === 'boolean',
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
   'brb:retry': m => true,
+  'brb:back': m => true,
   'brb:poll': m => typeof m.item === 'string' && /^[a-z0-9][a-z0-9-]{0,39}$/.test(m.item) && (m.choice === 0 || m.choice === 1) && Number.isInteger(m.seat) && m.seat >= 0 && m.seat <= 5 && Number.isInteger(m.n) && m.n >= 0 && m.n < 1e9,
   'brb:online': m => true,
   // AI voices (official games listed for voices, and games the admin switched on; public/js/tts.js): one line of the game's own words to read aloud.
@@ -98,7 +127,7 @@ const relay = d.match ? startRelay(d, stage) : null;
 addEventListener('message', e => {
   const m = validMessage(e, frame.contentWindow); if (!m) return;
   switch (m.type) {
-    case 'brb:ready': if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); tellMode(); break;
+    case 'brb:ready': hideCourseBar(); if (relay && m.match === 1 && e.ports && e.ports[0]) relay.attach(e.ports[0]); tellMode(); break;
     // A poll (BRB.poll, official games on the list): count the choice, hand the totals back to the frame.
     case 'brb:poll': {
       const answer = r => { try { frame.contentWindow.postMessage({ brb: 1, type: 'brb:pollResult', n: m.n, ...(r ? { a: r.a, b: r.b, total: r.total, min: r.min } : { off: true }) }, '*'); } catch { /* frame gone */ } };
@@ -118,16 +147,22 @@ addEventListener('message', e => {
     }
     case 'brb:gameover': {
       lessonEvent({ event: 'end', score: m.score });
+      // The game ended without the assigned part won (Sum Racer reports every race's end; only 1st place
+      // is a win): say so on the page, with the way back — the game's own results screen celebrates any
+      // finish, so without this the student cannot tell a counted finish from an uncounted one.
+      if (d.cstep && !m.won) showCourseBar('notyet');
       // A course step is finished only when its game reports the assigned chapter won: opening the module
       // merely started it. The endpoint checks server-side that this player passed the step's check and did
       // enter the game from the step, so this call alone completes nothing.
       if (m.won && d.cstep) api(`/api/courses/${d.cstep.course}/${d.cstep.step}/complete`, { method: 'POST', body: {} }).then(r => {
         // Number Quest moments (Tally Marks, the daily goal, a lap landing) as toasts: quick, cheerful,
         // gone on their own — the game keeps the screen.
-        if (!r || !r.nq) return;
-        if (r.nq.marks && r.nq.marks.awarded) toast(t('js.play.nqMarks', { marks: r.nq.marks.marks, total: r.nq.marks.total }));
-        if (r.nq.dailyGoal && r.nq.dailyGoal.justMet) toast(t('js.play.nqGoal'));
-        if (r.nq.lap) toast(t('js.play.nqLap', { lap: r.nq.lap.lap }));
+        if (r && r.nq) {
+          if (r.nq.marks && r.nq.marks.awarded) toast(t('js.play.nqMarks', { marks: r.nq.marks.marks, total: r.nq.marks.total }));
+          if (r.nq.dailyGoal && r.nq.dailyGoal.justMet) toast(t('js.play.nqGoal'));
+          if (r.nq.lap) toast(t('js.play.nqLap', { lap: r.nq.lap.lap }));
+        }
+        showCourseBar('done');
       }).catch(e => {
         // A guest's win is not a completion (guests cannot complete courses): the server kept the win
         // and answered with the sign-in prompt, so the student hears that signing up is what counts it.
@@ -136,10 +171,22 @@ addEventListener('message', e => {
             <p><a class="btn btn-primary btn-big" href="${esc(e.data.signup || '/signup')}">${esc(t('js.play.guestWinAction'))}</a></p>
             <p><button type="button" class="btn" id="guest-win-later">${esc(t('js.play.guestWinLater'))}</button></p>` });
           const later = s.el.querySelector('#guest-win-later'); if (later) later.addEventListener('click', s.close);
+          // The win is banked, not recorded: the bar offers the way back without claiming the step.
+          showCourseBar('finished');
+        } else {
+          // Any other refusal (a precondition the page state disagreed with, a network failure) used to
+          // vanish into this catch: the student saw a won game and an unfinished step and no reason.
+          // Show the failure where the win was shown.
+          showCourseBar('failed');
         }
       });
       break;
     }
+    // "Back to class / Back to course" inside the game (BRB.back): the frame is sandboxed with an opaque
+    // origin and cannot navigate the page itself, so the page goes back on its behalf. Only a course or
+    // lesson launch has somewhere to go back to, and only on a real tap (the retry rule): a game must
+    // never be able to yank the student out of a session on its own.
+    case 'brb:back': if ((d.cstep || d.lesson) && d.backHref && tappedJustNow()) location.href = d.backHref; break;
     case 'brb:fullscreen': m.on ? goFull() : (document.fullscreenElement && document.exitFullscreen().catch(() => {})); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) { $('#orient').classList.add('show'); orientDismissed = false; orientSync(); } break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
