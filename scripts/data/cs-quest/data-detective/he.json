@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "בחר שאלה, הכנס את הספירות, צור דיאגרמה ונעץ טענה. במקרן, הוסף כל דיאגרמה למאגר הכיתה.",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "כל זוג מקריא את הספירות שלו והמורה מאגד אותן במקרן. זו דרך…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "הדיאגרמה אומרת: תיקו במקום הראשון עם {a} לכל אחד, ל{low} הכי מעט עם {b}, {total} תשובות בסך הכול.",
-  "Kind": "סוג"
+  "Kind": "סוג",
+  "{n} more rows below": "עוד {n} שורות למטה",
+  "All {n} rows shown": "כל {n} השורות מוצגות",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "שאלה שנייה לכיתה שלך. ספור את התשובות, צור תרשים ואמור מה הכיתה שלך בחרה.",
+  "Tally your class, chart it, and pin a claim.": "ספור את הכיתה שלך, צור תרשים והצמד קביעה.",
+  "Why does a detective put one tally mark for each answer?": "למה בלש שם סימן ספירה אחד על כל תשובה?",
+  "So every answer counts the same": "כדי שכל תשובה תיספר אותו הדבר",
+  "To make the tallest chart": "כדי לעשות את התרשים הכי גבוה",
+  "To finish the case faster": "כדי לסיים את התיק יותר מהר",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "לא זה. בקביעה עם \"כולם\", המספרים הכי קטנים הם ההוכחה."
  }
 }

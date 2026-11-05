@@ -91,6 +91,7 @@
 
   /* data views */
   .tbl { overflow: auto; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); }
+  .tbl-more { position: sticky; bottom: 0; padding: 6px 10px; text-align: center; font-weight: 800; background: var(--ok-card); border-top: 2px solid var(--ok-edge); }
   table { border-collapse: collapse; width: 100%; font-size: 1em; }
   th, td { padding: 0 8px; text-align: start; white-space: nowrap; }
   th { position: sticky; top: 0; background: var(--ok-card); z-index: 1; }
@@ -465,6 +466,7 @@ const LEVELS = [
   cols: [col('name', 'Name'), col('hair', 'Hair'), col('laps', 'Laps', 'num')],
   rows: [['Gus', 'Brown', 5], ['Ida', 'Black', 3], ['Jo', 'Red', 4], ['Kai', 'Brown', 3], ['Lu', 'Blond', 6], ['Mo', 'Black', 4]],
   claim: 'Everyone ran at least 3 laps.', answer: 0, proof: ['r2', 'r4'],
+  proofHint: 'Not that one. For an "everyone" claim, the smallest numbers are the proof.',
   shows: 'The smallest number in Laps is 3, so everyone ran at least 3. Hair color does not come into it.',
   hints: ['What is the smallest number in the Laps column?', 'Ida and Kai are glowing: the smallest laps.', 'The smallest is 3, which is at least 3. Supported.'],
   glow: { row: 'r2' },
@@ -660,14 +662,17 @@ const LEVELS = [
   check: { q: 'Two kids answered. Is that enough for a claim about the class?', tiles: ['Not yet: ask more kids', 'Yes, two is plenty', 'Only if they agree'], answer: 0 },
   sol: [['tally', 'Dog', 4], ['tally', 'Cat', 3], ['tally', 'Fish', 1], ['tally', 'None', 2], ['view', 'bar'], ['claim', 0], ['show', 'c:Dog']] },
 { id: 'my-2', ch: 'my-data', n: 2, bands: ['1b', '2'], csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], title: 'Another Class', kind: 'tally',
-  story: 'A second question for your class. Pro detectives can also load another class and compare shares.',
-  q: 'Tally your class, chart it, and pin a claim. Pro: load the other class and compare by percent.',
+  story: 'A second question for your class. Count the answers, chart them, and say what your class picked.',
+  q: 'Tally your class, chart it, and pin a claim.',
+  story2: 'A second question for your class. Pro detectives can also load another class and compare shares.',
+  q2: 'Tally your class, chart it, and pin a claim. Pro: load the other class and compare by percent.',
   tally: { preset: 'colors', min: 5, other: true },
   evidence: { tally: true }, proof: [], par: null,
   shows: 'The chart says: {top} has the most with {a}, {low} the fewest with {b}, {total} answers in all.',
   hints: ['Count each color with the steppers, then make the chart.', 'The Bars button is glowing.', 'I switched to bars for you. Which bar wins? Pin that claim.'],
   glow: { tool: 'bar' }, move: ['view', 'bar'], starter: [['tally', 'Blue', 3], ['view', 'bar']],
-  check: { q: 'Two classes of different sizes are compared fairly by…', tiles: ['Percent of each class', 'Raw counts', 'Who shouted loudest'], answer: 0 },
+  check: { q: 'Why does a detective put one tally mark for each answer?', tiles: ['So every answer counts the same', 'To make the tallest chart', 'To finish the case faster'], answer: 0 },
+  check2: { q: 'Two classes of different sizes are compared fairly by…', tiles: ['Percent of each class', 'Raw counts', 'Who shouted loudest'], answer: 0 },
   sol: [['tally', 'Red', 2], ['tally', 'Blue', 6], ['tally', 'Green', 3], ['tally', 'Yellow', 1], ['view', 'bar'], ['claim', 0], ['show', 'c:Blue']] },
 { id: 'my-3', ch: 'my-data', n: 3, bands: ['1b', '2'], csta: ['1B-DA-06', '1B-DA-07'], csta2: ['2-DA-08', '2-IC-22'], title: 'Open Tally', kind: 'tally', open: true,
   story: 'Your own survey. Pick a question, tally the class, chart it, claim it. Make as many charts as you like.',
@@ -984,10 +989,11 @@ function allStrings() {
   TALLY_CLAIMS.forEach(add); COMPARE_CLAIMS.forEach(add);
   for (const p of PRESETS) { add(p.title); p.cats.forEach(add); }
   for (const l of LEVELS) {
-    [l.title, l.story, l.q, l.claim, l.shows].forEach(add);
+    [l.title, l.story, l.q, l.claim, l.shows, l.story2, l.q2, l.proofHint].forEach(add);
     if (l.learn) { add(l.learn.title); add(l.learn.text); }
     (l.hints || []).forEach(add);
     if (l.check) { add(l.check.q); l.check.tiles.forEach(add); }
+    if (l.check2) { add(l.check2.q); l.check2.tiles.forEach(add); }
     (l.claims || []).forEach(add);
     (l.cols || []).forEach(c => add(c.label));
     for (const r of l.rows || []) r.forEach(add);
@@ -1022,7 +1028,7 @@ const CONFIG = { storeKey: 'data-detective-v1', progressNoun: 'cases', maxLevels
 
 /* ---------- words: English is the key; other languages come as reviewed data packs (window.CsqPacks) ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-cec9769c', PACK_SRI = {"es":"sha384-NF5IuSuy0cLKVGuMwv0ppmsBQ3yUW+KyRRwHzRPlyC+LPcj5b0gLphl4I7UNI9eY","fr":"sha384-YPLOcvErFUPLBqie5mVTfPGDRvZ4LhOC4Yz4VcD0cklpRvBdAH7mKmyL0WtDZugA","de":"sha384-R9kHRa1fF7NSVjVK8UrXlOZWtlYfvfKU6ZwFC9Ho2zBFcfwGJBY1o7sKLr9TEmu4","it":"sha384-ygFuhqxqLg2w5jfW/MrQe7SCELFTAeVEWLFVk8k3vSDIxkEHxtkhrbT9ZZp6JIIN","pt":"sha384-fI+NOQh+wjviVtVp+ldoOkKKH8V2IqeWhFsJ78B34SjX7R4k9f+78gCi7+kbx95K","nl":"sha384-K+6M+trcJ1Njk5rYtoO1dl+OjL9rSxLLO1CYVez02lTvXavrn94iZ88sF2qgJsxz","ru":"sha384-jxZUWgXP0VuOTqziim9XDGssIhwBaJ0S2vmIlC72lM77zpmLBwpV5SbGqmJOUCGt","ja":"sha384-aB7xLHnDwR+Zo12hBeDhjhRu1+vLlKos7zCxATQPbB6d0hpTkknhAD28WFwnowxj","zh-Hant":"sha384-PPspHtUrArv2w4KY2XFA+8F7kAufixD6ILznFdJEQmmo6Z+5W+36HATkO+8i1tHq","he":"sha384-6MxSZXEU3FGHKypZ6ZFv71aEuryfyG3vcGFAVMr+cGt0U4ViVEMZuA84rS5zaNgM","ar":"sha384-YUTu1L9DxCxCCphk7/ws9DjZl4UwPrKGSokidhkUHWkiSROX9OTnkRxZetRzjSO1"};
+const PACK_VER = '1.0.0-46685af3', PACK_SRI = {"es":"sha384-8YjVBO/u2RqLDQbxc0ZtDz/K7qIamCViNBY3iGYD7K3aBewimxzKOAawoCsDi6CL","fr":"sha384-CkNv9m0WPux7njUCvefXS/QDTJGb5e3D+dRrRwi/EFgXIbw0THjh1mZ60aWwQ79r","de":"sha384-VYF99iN0pFgZWdgdlhoo50dxUMZGBcQDairy/2DRuf2EZNtRh8HP/ghrUvs5bvsJ","it":"sha384-QvLy2k7B5YVD5YQRRsHWoXWWTc8U+MpdPmUlEsw11apfnjUTMDDtnNlwVlcQwYq4","pt":"sha384-2c7Erno5CU8o9zvLqK3Va+dceVs3OuHFqZ9tMYLZ612+UCyf1FXiT85IpcOVRuHV","nl":"sha384-Bun5ZxblehydLOUUY9VcqQDuk6Q80MLoxHPv9gOlllzekWyEM3fdeRCbRZEcMu/N","ru":"sha384-KprI1RpvEyDOuKLttbxiLzvF+F647f2briWDDVPxmxwMQbOpglpZce+Nv3yhgwaX","ja":"sha384-BTTXlpmZIJklureKiE0HsPEeWhrpfY515czpChgYYd98vqgw8iltS6AanRXZ5E0F","zh-Hant":"sha384-mJBWrj1/aU9GcrksQzAYH+KnCjGTb+l8Ur4GizA4gwOtBoJjc6M0qY8VqOev+ML4","he":"sha384-SaVdOQCHP4oaASiidRIGvSIVVosgWaWi5kwUrx8IV0nlIOIWsUt6rnWVTZRsE2gI","ar":"sha384-WGVeIT+HTEUvERzGkpMqcsotycDs9ruJ0n5J8iyhZ6gPQGjrNGeFmZtdm19Kfkfj"};
 const realAfter = (ms, fn) => { try { return Oomba.time.real.after(ms, fn); } catch (e) { return null; } };
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
@@ -1246,7 +1252,12 @@ function startChapter(chId, level) {
 const isTally = () => !!(S.level && S.level.tally);
 function startLevel() {
   closeOwnModal();
-  const level = S.levels[S.idx]; S.level = level;
+  const raw = S.levels[S.idx];
+  // Band variants, the csta2 pattern: a level may carry story2/q2/check2, which replace the base texts for
+  // the Pro band (my-2's percent comparison is band-2 material; Explorer students got the Pro instruction
+  // and a check their deck never teaches — playthrough csq-explorer-15).
+  const level = (S.band === '2' && (raw.story2 || raw.q2 || raw.check2)) ? { ...raw, story: raw.story2 || raw.story, q: raw.q2 || raw.q, check: raw.check2 || raw.check } : raw;
+  S.level = level;
   S.seed = S.seedFixed != null ? S.seedFixed + S.idx : Math.floor((Oomba.time.now || 0) % 100000) + S.idx;
   S.cs = E.newCase(level, S.seed); S.claimsOpen = false; S.rowPanel = null; S.fail = 0; S.phase = 'case'; S.confidence = 0; S.poolView = false;
   $('backBtn').innerHTML = icon(S.lock ? 'home' : 'back'); $('backBtn').setAttribute('aria-label', S.lock ? tr('Title screen') : tr('Chapter map'));
@@ -1427,14 +1438,25 @@ function snapRows() {
   tbl.style.height = ''; tbl.style.marginBottom = '';
   for (const r of tbl.querySelectorAll('tbody tr')) r.style.visibility = '';
   const room = v.clientHeight - 20;   // the view's own padding
-  if (tbl.offsetHeight <= room + 1) return;
+  let sign = tbl.querySelector('.tbl-more');
+  if (tbl.offsetHeight <= room + 1) { if (sign) sign.hidden = true; return; }
   const head = tbl.querySelector('thead'), row = tbl.querySelector('tbody tr');
   if (!head || !row) return;
   const rowH = row.offsetHeight || 40, headH = head.offsetHeight, frame = tbl.offsetHeight - tbl.clientHeight;
   const gap = Math.max(0, rowH - 20);   // a hidden row never reaches the tools under the view
   const n = Math.max(2, Math.floor((room - headH - frame - gap) / rowH));
   tbl.style.height = (headH + n * rowH + frame) + 'px'; tbl.style.marginBottom = gap + 'px';
-  const sweep = () => { const top = tbl.scrollTop, bottom = top + tbl.clientHeight; for (const r of tbl.querySelectorAll('tbody tr')) { const y = r.offsetTop; r.style.visibility = (y + r.offsetHeight <= top + 1 || y >= bottom - 1) ? 'hidden' : ''; } };
+  // a cut table must SAY it is cut: a sticky strip counts the rows still below (a touch screen shows no
+  // scrollbar, and a case's proving row may be one of the hidden ones)
+  if (!sign) { sign = el('div', 'tbl-more'); tbl.appendChild(sign); }
+  sign.hidden = false;
+  const total = tbl.querySelectorAll('tbody tr').length;
+  // Measure rows by their rendered rects against the wrap's rect, never offsetTop: inside a table a row's
+  // offsetParent is not the scroll wrap, so offsetTop mixes coordinate systems and the sweep hid whichever
+  // row the mismatch landed on — a case's proving row could be invisible at every scroll position, varying
+  // between loads and sort directions (playthrough csq-explorer-14, extending csq-explorer-12).
+  const paint = () => { const wr = tbl.getBoundingClientRect(); let below = 0; for (const r of tbl.querySelectorAll('tbody tr')) if (r.getBoundingClientRect().top >= wr.bottom - 1) below++; sign.textContent = below ? tr('{n} more rows below', { n: num(below) }) : tr('All {n} rows shown', { n: num(total) }); };
+  const sweep = () => { const wr = tbl.getBoundingClientRect(); for (const r of tbl.querySelectorAll('tbody tr')) { const b = r.getBoundingClientRect(); r.style.visibility = (b.bottom <= wr.top + 1 || b.top >= wr.bottom - 1) ? 'hidden' : ''; } paint(); };
   if (!tbl.dataset.sweep) { tbl.dataset.sweep = '1'; tbl.addEventListener('scroll', sweep, { passive: true }); }
   sweep();
 }
@@ -1740,7 +1762,7 @@ function tapBar(c) {
 function prove(key) {
   const level = S.level, st = S.cs;
   const r = E.act(level, st, ['show', key]);
-  if (!r || !r.ok) { sfx('pop'); dotSay(tr('Not that one. Which row or bar shows it?')); return; }
+  if (!r || !r.ok) { sfx('pop'); dotSay(level.proofHint ? tr(level.proofHint) : tr('Not that one. Which row or bar shows it?')); return; }
   sfx('correct');
   if (st.solved) solved(); else { renderCase(); dotSay(tr('Yes! Keep going: tap the rest of the evidence.')); }
 }
@@ -1792,7 +1814,11 @@ async function finishLevel(n) {
   let v = 'next';
   if (level.open) {   // the open tally: another chart with the same question list, or finish the survey
     v = S.fast ? (S.openChoice || 'next') : await openChartDialog();
-  } else if (!S.fast) { try { v = await Oomba.ui.win(Object.assign({ stars: n, hero: DOT.spec, title: level.tally ? tr('Chart made!') : n ? tr('Case closed!') : tr('Case skipped'), next: hasNext }, S.mode === 'tally' ? { score: S.charts } : {})); } catch (e) { v = 'next'; } }
+  } else if (!S.fast) { try { v = await Oomba.ui.win(Object.assign({ stars: n, hero: DOT.spec, title: level.tally ? tr('Chart made!') : n ? tr('Case closed!') : tr('Case skipped'), next: true }, S.mode === 'tally' ? { score: S.charts } : {})); } catch (e) { v = 'next'; } }
+  // next stays true even on a chapter's last case: the kit's next:false win dialog offers ONLY "Play again",
+  // which this flow reads as a replay, so chapterEnd() (and the course's completion signal) could never fire
+  // and the student was trapped replaying the final case forever (playthrough csq-pro-11). On the last case
+  // "Next" leads to the chapter-end card below, which has its own Play again.
   if (v === 'again') { startLevel(); return; }
   if (hasNext) { S.idx++; startLevel(); } else chapterEnd();
 }

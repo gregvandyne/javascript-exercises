@@ -738,6 +738,15 @@
   "Pick a question, enter the tallies, make a chart and pin a claim. On the projector, add each chart to the class pool.": "質問を選んで、数を入れ、グラフを作って主張を決定しよう。プロジェクターでは、それぞれのグラフをクラスのまとめに追加しよう。",
   "Every pair reads its tallies out and the teacher pools them on the projector. That is a way to…": "それぞれのペアが数を読み上げ、先生がプロジェクターでまとめる。これは…",
   "The chart says: it is a tie at the top with {a} each, {low} the fewest with {b}, {total} answers in all.": "グラフによると：いちばん多いのは同点でそれぞれ{a}、いちばん少ないのは{low}で{b}、回答は全部で{total}。",
-  "Kind": "種類"
+  "Kind": "種類",
+  "{n} more rows below": "あと{n}行あります",
+  "All {n} rows shown": "全{n}行を表示中",
+  "A second question for your class. Count the answers, chart them, and say what your class picked.": "クラスへの2つ目の質問です。答えを数えてグラフにし、クラスが何を選んだか言いましょう。",
+  "Tally your class, chart it, and pin a claim.": "クラスの答えを数えてグラフにし、主張をピン留めしましょう。",
+  "Why does a detective put one tally mark for each answer?": "探偵はなぜ答え1つにつき1本ずつ数え棒を書くのでしょう？",
+  "So every answer counts the same": "どの答えも同じに数えるため",
+  "To make the tallest chart": "いちばん高いグラフにするため",
+  "To finish the case faster": "事件をもっと早く終わらせるため",
+  "Not that one. For an \"everyone\" claim, the smallest numbers are the proof.": "それではありません。「みんな」という主張では、いちばん小さい数が証拠です。"
  }
 }

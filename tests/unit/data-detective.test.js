@@ -963,3 +963,85 @@ test('data-detective: settings parity: the title cog and the HUD gear open the k
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });
+
+test('data-detective: a cut case table says so, and every row is reachable by scrolling (playthrough explorer-12)', { skip, timeout: 150_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 390, height: 844 } });
+  try {
+    await T(frame, 'start', { chapter: 'sort', band: '1b', level: 1, seed: 1, lesson: true });
+    const info = await frame.evaluate(() => {
+      const tbl = document.querySelector('.tbl'); const sign = tbl && tbl.querySelector('.tbl-more');
+      return { rows: tbl ? tbl.querySelectorAll('tbody tr').length : 0, sign: sign ? { hidden: sign.hidden, text: sign.textContent } : null };
+    });
+    assert.equal(info.rows, 10, 'all ten case rows are in the table');
+    assert.ok(info.sign && !info.sign.hidden, 'the cut is signposted, not silent');
+    assert.match(info.sign.text, /more rows below/, `the strip counts the hidden rows: ${info.sign && info.sign.text}`);
+    // at the bottom, the rows that were cut at the top (Ari, Kai) are shown and the strip says so;
+    // the proving row (Gus, 3:10) sits at the head of this dataset, so it is the row in view at the top
+    await frame.evaluate(() => { const tbl = document.querySelector('.tbl'); tbl.scrollTop = tbl.scrollHeight; });
+    await page.waitForTimeout(200);
+    const after = await frame.evaluate(() => {
+      const tbl = document.querySelector('.tbl'); const sign = tbl.querySelector('.tbl-more');
+      const vis = [...tbl.querySelectorAll('tbody tr')].map(r => r.style.visibility);
+      return { text: sign.textContent, lastTwo: vis.slice(-2), firstHidden: vis[0] };
+    });
+    assert.match(after.text, /All 10 rows shown/, 'at the bottom the strip confirms nothing is hidden');
+    assert.deepEqual(after.lastTwo, ['', ''], 'the rows cut at the top are reachable at the bottom');
+    await frame.evaluate(() => { const tbl = document.querySelector('.tbl'); tbl.scrollTop = 0; });
+    await page.waitForTimeout(200);
+    const gusVis = await frame.evaluate(() => { const g = [...document.querySelectorAll('.tbl tbody tr')].find(r => /Gus/.test(r.textContent) && /3:10/.test(r.textContent)); return g ? g.style.visibility : 'missing'; });
+    assert.equal(gusVis, '', 'the proving row (Gus, 3:10) is visible at its scroll position');
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+test('data-detective: in an 8-row case every row is visible at some scroll position (playthrough explorer-14)', { skip, timeout: 150_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 390, height: 844 } });
+  try {
+    await T(frame, 'start', { chapter: 'sort', band: '1b', level: 6, seed: 1, lesson: true });
+    const seen = await frame.evaluate(async () => {
+      const tbl = document.querySelector('.tbl'); if (!tbl) return null;
+      const rows = [...tbl.querySelectorAll('tbody tr')];
+      const vis = new Set();
+      const collect = () => rows.forEach((r, i) => { if (r.style.visibility !== 'hidden') vis.add(i); });
+      tbl.scrollTop = 0; await new Promise(r => setTimeout(r, 60)); collect();
+      for (let y = 40; y <= tbl.scrollHeight; y += 40) { tbl.scrollTop = y; await new Promise(r => setTimeout(r, 60)); collect(); }
+      tbl.scrollTop = tbl.scrollHeight; await new Promise(r => setTimeout(r, 60)); collect();
+      return { total: rows.length, seen: vis.size, texts: rows.map(r => r.textContent) };
+    });
+    assert.ok(seen, 'the case table rendered');
+    assert.equal(seen.total, 8, 'the case dataset has 8 rows');
+    assert.equal(seen.seen, seen.total, `every row is reachable: ${seen.seen}/${seen.total} seen across scroll positions`);
+    assert.ok(seen.texts.some(t => /Crackers/.test(t)), 'the Crackers row the audit found missing is in the table');
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+test('data-detective: the last case of a chapter can finish the chapter (playthrough csq-pro-11)', { skip, timeout: 240_000 }, async () => {
+  // No skipAnimations here: S.fast stays false, so the real kit win dialog shows — the path a student takes.
+  // The kit dialog on a chapter's last case used to offer only "Play again", which finishLevel reads as a
+  // replay: chapterEnd() and its BRB.gameOver could never fire, stranding Pro at step 2-3.1 forever.
+  const { ctx, page, frame, errors } = await open({ size: { width: 844, height: 390 } });
+  try {
+    await T(frame, 'start', { chapter: 'cleanup', band: '2', level: 6, seed: 1 });
+    const st0 = await T(frame, 'state');
+    assert.equal(st0.levelId, 'cleanup-6', 'the chapter\u2019s final case');
+    assert.equal(await T(frame, 'solve'), true, 'the final case solves honestly');
+    let dlg = [];
+    for (let i = 0; i < 40 && !dlg.length; i++) { await page.waitForTimeout(250); dlg = await frame.evaluate(() => [...document.querySelectorAll('.ok-win button')].map(b => b.textContent.trim())); }
+    assert.ok(dlg.some(t => /next|finish/i.test(t)), `the final case's win dialog offers a way forward, not only Play again: ${JSON.stringify(dlg)}`);
+    await frame.evaluate(() => { const b = [...document.querySelectorAll('.ok-win button')].find(x => /next|finish/i.test(x.textContent)); b.click(); });
+    let st = null;
+    for (let i = 0; i < 40; i++) { await page.waitForTimeout(250); st = await T(frame, 'state'); if (st.endCalls.length >= 1) break; }
+    assert.ok(st.endCalls.length >= 1, 'chapterEnd fired: the completion signal (BRB.gameOver) was sent');
+    assert.equal(st.phase, 'end', 'the chapter-end card is showing');
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+test('data-detective: the win dialog keeps a forward button on the last case (csq-pro-11 guard)', () => {
+  const at = HTML.indexOf('Oomba.ui.win');
+  assert.ok(at >= 0, 'finishLevel shows the kit win dialog');
+  const call = HTML.slice(at, at + 260);
+  assert.ok(!/next:\s*hasNext/.test(call), 'never next:hasNext — the kit renders only Play again for next:false, trapping the chapter (csq-pro-11)');
+  assert.ok(/next:\s*true/.test(call), 'the dialog always offers Next, so the last case can reach chapterEnd');
+});
