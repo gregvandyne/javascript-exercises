@@ -1045,3 +1045,84 @@ test('data-detective: the win dialog keeps a forward button on the last case (cs
   assert.ok(!/next:\s*hasNext/.test(call), 'never next:hasNext — the kit renders only Play again for next:false, trapping the chapter (csq-pro-11)');
   assert.ok(/next:\s*true/.test(call), 'the dialog always offers Next, so the last case can reach chapterEnd');
 });
+
+test('data-detective: Predict Day 12 guards: the model branch renders the prediction slider; a wrong prediction never rules out the pin tile (pass2-CSQP-1)', () => {
+  assert.ok(/function renderPredict\(box\)/.test(HTML), 'the prediction slider has one shared renderer');
+  const extra = HTML.slice(HTML.indexOf('function renderExtra()'), HTML.indexOf('function rowCard('));
+  const calls = extra.match(/if \(level\.predict\) renderPredict\(box\);/g) || [];
+  assert.equal(calls.length, 2, 'both renderExtra paths render the prediction slider: the plain path and the model branch');
+  const modelBranch = extra.slice(extra.indexOf('if (level.model)'), extra.indexOf('if (level.tally)'));
+  assert.ok(modelBranch.includes('if (level.predict) renderPredict(box);'), 'the model branch renders the prediction slider before its early return — a model case can also predict (models-4), and its slider used to be skipped entirely');
+  const doActBody = HTML.slice(HTML.indexOf('function doAct(a)'), HTML.indexOf('function solved()'));
+  assert.ok(doActBody.includes("if (a[0] === 'claim' && !level.predict)"), 'a wrong pin never rules out the prediction tile: its truth is the slider value, which the student can still correct');
+});
+
+test('data-detective: Model Makers finishes end to end in the frame; Predict Day 12 renders its slider and a wrong pin recovers (pass2-CSQP-1)', { skip, timeout: 240_000 }, async () => {
+  // No skipAnimations: the real kit win dialogs carry the chapter from case to case, the path a student takes.
+  // Case 4 is played through the real controls only: its prediction slider was never rendered (the model
+  // branch of renderExtra returned first), and one wrong pin ruled out the case's only claim tile forever.
+  const { ctx, page, frame, errors } = await open({ size: { width: 390, height: 844 } });
+  const winNext = async () => {
+    let dlg = [];
+    for (let i = 0; i < 40 && !dlg.length; i++) { await page.waitForTimeout(250); dlg = await frame.evaluate(() => [...document.querySelectorAll('.ok-win button')].map(b => b.textContent.trim())); }
+    assert.ok(dlg.some(t => /next|finish/i.test(t)), `the win dialog offers a way forward, not only Play again: ${JSON.stringify(dlg)}`);
+    await frame.evaluate(() => { const b = [...document.querySelectorAll('.ok-win button')].find(x => /next|finish/i.test(x.textContent)); b.click(); });
+  };
+  const setRange = (sel, v) => frame.evaluate(([s, val]) => { const r = document.querySelector(s); r.value = String(val); r.dispatchEvent(new Event('input', { bubbles: true })); }, [sel, v]);
+  // Every case opens behind its case-file dialog (the chapter's first case adds a learn card): tap through
+  // them like a student before touching the case's own controls.
+  const dismissFile = async () => {
+    for (let i = 0; i < 40; i++) {
+      const label = await frame.evaluate(() => { const b = [...document.querySelectorAll('.ok-dialog button')].find(x => /investigate|got it/i.test(x.textContent)); return b ? b.textContent.trim() : null; });
+      if (!label) return;
+      await frame.evaluate(() => { [...document.querySelectorAll('.ok-dialog button')].find(x => /investigate|got it/i.test(x.textContent)).click(); });
+      await page.waitForTimeout(200);
+    }
+    assert.fail('the case-file dialog never dismissed');
+  };
+  try {
+    await T(frame, 'start', { chapter: 'models', band: '2', level: 1, seed: 1 });
+    for (let n = 1; n <= 3; n++) {
+      await untilLevel(frame, n);
+      assert.equal((await T(frame, 'state')).levelId, 'models-' + n);
+      assert.equal(await T(frame, 'solve'), true, `case ${n} solves honestly`);
+      await winNext();
+    }
+    // Case 4, Predict Day 12, through the real controls.
+    await untilLevel(frame, 4);
+    await dismissFile();
+    let s = await T(frame, 'state');
+    assert.deepEqual([s.levelId, s.slider, s.rule], ['models-4', 30, 1], 'the prediction starts at the mid value 30, the rule at 1');
+    await setRange('#rule', 3);
+    await frame.click('#runBtn');
+    await frame.waitForFunction(() => window.__brbTest.state().fit, null, { timeout: 10_000 });
+    assert.equal(await frame.evaluate(() => !!document.querySelector('#slider')), true, 'the prediction slider is rendered for a model case that predicts');
+    assert.equal(await frame.evaluate(() => document.querySelector('#slider').value), '30', 'the slider shows the starting prediction');
+    // One wrong pin (30 is outside the fitted 33..39): counted, but it must not brick the case.
+    await frame.click('#claimBtn');
+    await frame.waitForFunction(() => window.__brbTest.state().wrong === 1, null, { timeout: 10_000 });
+    s = await T(frame, 'state');
+    assert.deepEqual([s.picked, s.solved], [null, false], 'a wrong pin pins nothing');
+    assert.equal(await T(frame, 'claimCard'), true, 'the claim card still opens');
+    const tile = await frame.evaluate(() => { const b = document.querySelector('.claimtile'); return b ? { disabled: b.disabled, bad: b.classList.contains('bad') } : null; });
+    assert.deepEqual(tile, { disabled: false, bad: false }, 'the only claim tile stays usable after a wrong pin');
+    await T(frame, 'closeDialog');
+    // Correct the value with the real slider, then pin again: the case recovers and solves.
+    await setRange('#slider', 36);
+    assert.equal((await T(frame, 'state')).slider, 36, 'the prediction slider moves the value');
+    await frame.click('#claimBtn');
+    await frame.waitForFunction(() => window.__brbTest.state().picked !== null, null, { timeout: 10_000 });
+    await frame.click('tr[data-row="r4"]'); await frame.click('tr[data-row="r5"]');
+    await frame.waitForFunction(() => window.__brbTest.state().solved, null, { timeout: 10_000 });
+    await winNext();
+    // Case 5, then the chapter end: the completion signal fires.
+    await untilLevel(frame, 5);
+    assert.equal(await T(frame, 'solve'), true, 'the final case solves honestly');
+    await winNext();
+    let st = null;
+    for (let i = 0; i < 40; i++) { await page.waitForTimeout(250); st = await T(frame, 'state'); if (st.endCalls.length >= 1) break; }
+    assert.ok(st.endCalls.length >= 1, 'chapterEnd fired: the completion signal (BRB.gameOver) was sent');
+    assert.equal(st.phase, 'end', 'the chapter-end card is showing');
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});

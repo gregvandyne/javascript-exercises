@@ -1566,6 +1566,19 @@ function renderTools() {
     if (views.includes('picto')) chip(tr('Pictures'), 'user', 'picto', st.view === 'picto', () => doAct(['view', 'picto']));
   }
 }
+/** The prediction slider: slide to a value for a case nobody measured, then pin it. Shared by the plain
+ *  prediction cases and a model case that also predicts (Predict Day 12): the model branch of renderExtra
+ *  returns early, so without this call its slider was never rendered and the case could not be finished
+ *  (playthrough pass2-CSQP-1). */
+function renderPredict(box) {
+  const level = S.level, st = S.cs, p = level.predict;
+  const s = el('div', 'slide');
+  const lab = el('label'); lab.style.fontWeight = '800'; lab.textContent = tr('My prediction for {label}', { label: tr(p.label) }); lab.htmlFor = 'slider';
+  const inp = el('input'); inp.type = 'range'; inp.id = 'slider'; inp.disabled = st.picked != null; inp.min = p.min; inp.max = p.max; inp.step = p.step || 1; inp.value = st.slider; inp.dir = 'ltr';
+  const v = el('div', 'v num'); v.dir = 'ltr'; v.textContent = num(st.slider) + ' ' + tr(level.valueLabel || '');
+  inp.addEventListener('input', () => { E.act(level, st, ['slider', +inp.value]); v.textContent = num(st.slider) + ' ' + tr(level.valueLabel || ''); });
+  s.append(lab, inp, v); box.appendChild(s);
+}
 function renderExtra() {
   const level = S.level, st = S.cs, box = $('extra'); box.innerHTML = '';
   const g = glowFor();
@@ -1593,6 +1606,7 @@ function renderExtra() {
     else note.textContent = tr('Average miss: {n}%.', { n: Math.round(cur.err * 100) }) + ' ' + (cur.fit ? tr('The model fits!') : tr('Not yet: refine the rule and run again.'));
     if (st.batches) note.textContent += ' ' + tr('Runs so far: {n}.', { n: st.batches });
     box.appendChild(note);
+    if (level.predict) renderPredict(box);   // a model case can also ask for a prediction (Predict Day 12): fit the rule, then slide to it
     return;
   }
   if (level.tally) {
@@ -1641,14 +1655,7 @@ function renderExtra() {
     }
     box.appendChild(steps);
   }
-  if (level.predict) {
-    const p = level.predict, s = el('div', 'slide');
-    const lab = el('label'); lab.style.fontWeight = '800'; lab.textContent = tr('My prediction for {label}', { label: tr(p.label) }); lab.htmlFor = 'slider';
-    const inp = el('input'); inp.type = 'range'; inp.id = 'slider'; inp.disabled = st.picked != null; inp.min = p.min; inp.max = p.max; inp.step = p.step || 1; inp.value = st.slider; inp.dir = 'ltr';
-    const v = el('div', 'v num'); v.dir = 'ltr'; v.textContent = num(st.slider) + ' ' + tr(level.valueLabel || '');
-    inp.addEventListener('input', () => { E.act(level, st, ['slider', +inp.value]); v.textContent = num(st.slider) + ' ' + tr(level.valueLabel || ''); });
-    s.append(lab, inp, v); box.appendChild(s);
-  }
+  if (level.predict) renderPredict(box);
 }
 /** Clean-up: a tapped row's card over the view: Fix to (a right spelling), Merge (a repeat), Remove (impossible), Keep. */
 function rowCard(id) {
@@ -1777,7 +1784,11 @@ function doAct(a) {
     if (r && r.why === 'tie') { sfx('select'); dotSay(tr('It is a tie. Count a few more answers, or pin the tie.')); return; }
     if (r && r.ok) { if (st.solved) { solved(); return; } sfx('correct'); renderCase(); dotSay(level.tally ? tr('Good claim! Now show me: tap the bar or row that proves it.') : tr('Good claim! Now show me: tap the evidence that proves it.')); return; }
     if (!r || r.why !== 'wrong') return;
-    sfx('wrong'); S.fail = st.wrong; if (a[0] === 'claim') (st.wrongTiles || (st.wrongTiles = {}))[a[1] | 0] = 1; renderCase(); dotSay(showsText(level, st)); try { if (!reduced()) Oomba.juice.shake(0.3, $('claims')); } catch (e) { /* ignore */ } return;
+    // A wrong claim rules its tile out for good: the tile's words ARE the claim, and they stay wrong.
+    // A prediction tile is different: its truth is the slider's current value, which the student can
+    // still correct — ruling the tile out after one wrong pin disabled the case's ONLY tile forever
+    // and stranded the case (playthrough pass2-CSQP-1). So a wrong prediction marks no tile.
+    sfx('wrong'); S.fail = st.wrong; if (a[0] === 'claim' && !level.predict) (st.wrongTiles || (st.wrongTiles = {}))[a[1] | 0] = 1; renderCase(); dotSay(showsText(level, st)); try { if (!reduced()) Oomba.juice.shake(0.3, $('claims')); } catch (e) { /* ignore */ } return;
   }
   if (a[0] === 'skip') { S.skippedIds[level.id] = 1; S.sessionStars[level.id] = 0; sfx('whoosh'); dotSay(tr('Skipped. No stars this time, but the next case is open.')); finishLevel(0); return; }
   if (r === false) return;
