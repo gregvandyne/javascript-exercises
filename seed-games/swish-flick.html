@@ -229,6 +229,7 @@ const CONFIG = {
    STRINGS. Every word the player sees. Lookup: the player's language, then its base ('en-GB' -> 'en'), then English.
    Plural strings are objects keyed by Intl.PluralRules categories. Saves never store words (ids only).
    ================================================================================================ */
+// ==== I18N START ====
 const I18N = {
   en: {
     tagline: "Flick the ball. Hear the swish!", titleDesc: "Flick the ball up toward the hoop!",
@@ -786,6 +787,7 @@ const I18N = {
     "L.behind.t": "籃板後面", "L.behind.g": "加分關：從籃板後面投進！",
   },
 };
+// ==== I18N END ====
 const LANG = (() => { try { return (window.BRB && BRB.user && BRB.user.lang) || 'en'; } catch (e) { return 'en'; } })();
 const DIR = (() => { try { return (window.BRB && BRB.user && BRB.user.dir) === 'rtl' ? 'rtl' : 'ltr'; } catch (e) { return 'ltr'; } })();
 const LBASE = LANG.split('-')[0];

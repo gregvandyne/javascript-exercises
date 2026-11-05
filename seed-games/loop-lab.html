@@ -1132,6 +1132,7 @@ function randomNameIds(rnd) { return [Math.floor(rnd() * NAME_COUNTS.adj), Math.
    nameFmt puts the words in the right order, and each language picks animals that share one grammatical gender
    so the adjective always fits.
    ===================================================================================== */
+// ==== I18N START ====
 const I18N = {
   en: {
     home: "Menu", undo: "Undo", redo: "Redo", surprise: "Surprise me", save: "Save", more: "Toolbox",
@@ -2180,6 +2181,7 @@ const I18N = {
   }
 
 };
+// ==== I18N END ====
 
 /** The player's language (from the platform; never from the URL) and helpers. Looked up once, never per frame. */
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
