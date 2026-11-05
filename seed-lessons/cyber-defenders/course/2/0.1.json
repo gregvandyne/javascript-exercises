@@ -14,6 +14,13 @@
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
   },
   {
+   "title": "Not just a story",
+   "text": "Netville is fiction, but the problem is real. Your games, group chats, photos and streams all move as data across real networks. Real attackers really do fake messages to steal accounts and secrets, and this course is practice for your real online life.",
+   "art": "network",
+   "img": "csq/packet-post/protocols-2-key",
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+  },
+  {
    "title": "The Magpie has help",
    "text": "The Magpie no longer works alone. Its flock copies real letters, fakes the postmarks, and sends them out from fake accounts. Each fake looks almost right at first glance.",
    "art": "mask",
@@ -67,16 +74,16 @@
    "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them."
   },
   {
-   "title": "Six stamps, Pro cut",
-   "text": "Six stamps wait for you, one for each unit, and every one is set at Pro level. Each step works the same way: story slides first, then words, a quick check, and a mission.",
+   "title": "Six stamps, real jobs",
+   "text": "Six stamps wait, one per unit, and each one maps to your real life. Roadwise covers data on the move; Keykeeper, passphrases and proving it is you; Private, your footprint; Trickspotter, phishing and fakes; Kind Screen, your chats; Shield, layers that hold when one fails.",
    "art": "star",
-   "img": "csq/packet-post/home",
-   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret."
+   "img": "csq/escape-the-post-office/door-2",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet."
   },
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "There is no game this time. Open the course map and study the six stamps, one for each unit. Think about which stamp you want most.",
+   "text": "There is no game this time. Every step is built the same way: story slides, then words, a quick check, and a mission. Open the course map and study the six stamps. Think about which stamp you want most.",
    "art": "trophy",
    "img": "csq/packet-post/routes-2-hops",
    "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget."

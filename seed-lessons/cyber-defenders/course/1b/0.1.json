@@ -4,7 +4,7 @@
  "band": "1b",
  "title": "Welcome to the Post Office",
  "topic": "Welcome",
- "minutes": 5,
+ "minutes": 6,
  "slides": [
   {
    "title": "Meet Pim",
@@ -14,18 +14,18 @@
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
   },
   {
-   "title": "Letters nobody wrote",
-   "text": "This morning the post sack held a surprise. Some letters inside were never written by the senders named on them. Someone had slipped in fakes when nobody was looking.",
-   "art": "envelope",
-   "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "title": "Your world too",
+   "text": "Netville is a story, but the post is real. The games you play, the photos you send and the videos you watch all travel as packets on real roads. Real tricksters send real fake messages too, and what you learn here protects the real you.",
+   "art": "globe",
+   "img": "csq/packet-post/packets-1b-order",
+   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
   },
   {
-   "title": "Meet the Magpie",
-   "text": "Meet the Magpie, the post office pest. The Magpie slips fake letters into the post and collects shiny secrets. Shiny secrets are private facts and mailbox keys.",
+   "title": "Letters nobody wrote",
+   "text": "This morning the post sack held a surprise. Some letters were never written by the senders named on them. The culprit is the Magpie, the post office pest: it slips in fakes and collects shiny secrets. Shiny secrets are private facts and mailbox keys.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-1b-stranger",
-   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on."
+   "img": "csq/packet-post/tricks-1b-key",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
   },
   {
    "kind": "example",
@@ -68,8 +68,15 @@
    ]
   },
   {
+   "title": "Six stamps, real jobs",
+   "text": "Each stamp matches your real day. Roadwise guards the packets behind your games and videos; Keykeeper guards your passphrases; Private guards what you share. Trickspotter spots fake messages, Kind Screen keeps chats kind, and Shield stacks layers of protection.",
+   "art": "star",
+   "img": "csq/escape-the-post-office/door-1b",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet."
+  },
+  {
    "title": "Your new job",
-   "text": "Pim is hiring you as a Cyber Defender. You will earn six stamps, one for each unit you finish. Every step starts with story slides, then words, a quick check, and a mission.",
+   "text": "Pim is hiring you as a Cyber Defender. Every step works the same way: story slides first, then words to know, a quick check, and a mission. Your first stamp is waiting in the next unit.",
    "art": "star",
    "img": "csq/packet-post/home",
    "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret."
@@ -89,5 +96,5 @@
   "cd-1b-0.1-e3"
  ],
  "game": null,
- "talk": "If you could write one letter that only one person may ever open, what would you put in it and who would it be for?"
+ "talk": "Think of one thing you sent, posted or played online this week. Which stamp would have guarded it, and how?"
 }
