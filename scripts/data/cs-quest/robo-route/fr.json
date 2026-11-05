@@ -301,9 +301,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "La peinture marque les coins. Que doit faire Bolt sur la peinture ?",
   "Move, then: if on paint, turn right. Keep going until the goal.": "Avancer, puis : si sur la peinture, tourner à droite. Continue jusqu'à l'arrivée.",
   "On every loop turn, the if block...": "À chaque tour de boucle, le bloc si...",
-  "checks the paint again": "vérifie à nouveau la peinture",
-  "checks only the first time": "vérifie seulement la première fois",
-  "never checks": "ne vérifie jamais",
   "Bolt is going to bump. Can a bump be useful?": "Bolt va se cogner. Un choc peut-il servir ?",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "Un bloc quand Bolt se cogne avec tourner à gauche dedans. Ensuite, il suffit d'avancer jusqu'à l'arrivée.",
   "A when bump block runs...": "Un bloc quand Bolt se cogne s'exécute...",
@@ -983,6 +980,13 @@
   "A level with a door, no key and no gems is...": "Un niveau avec une porte, sans clé et sans gemmes, c'est...",
   "Clear program": "Effacer le programme",
   "Start over": "Recommencer",
-  "Undo": "Annuler"
+  "Undo": "Annuler",
+  "asks its question again": "repose sa question",
+  "asks only on the first turn": "ne demande qu’au premier tour",
+  "never asks": "ne demande jamais",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "La porte vérifie la boîte au moment où Bolt entre. Bolt est arrivé à la porte avant que la boîte soit remplie, alors elle est restée fermée. Remplis d’abord la boîte, puis entre.",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "Bolt est à court d’énergie : la boucle ne s’est jamais arrêtée. Un capteur vérifie la case où se tient Bolt, donc la réponse ne change que lorsque Bolt passe sur une nouvelle case.",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "Un bloc « quand » ne fonctionne que tout seul, au niveau principal. Dans un autre bloc, il ne peut rien écouter. Sors-le.",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "Un « Mon bloc » ne fonctionne que tout seul, au niveau principal. Dans un autre bloc, il ne peut pas être créé. Sors-le."
  }
 }

@@ -301,9 +301,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "La pintura marca las esquinas. ¿Qué debe hacer Bolt sobre la pintura?",
   "Move, then: if on paint, turn right. Keep going until the goal.": "Avanzar y luego: si estoy sobre pintura, girar a la derecha. Seguir así hasta la meta.",
   "On every loop turn, the if block...": "En cada vuelta del bucle, el bloque si...",
-  "checks the paint again": "vuelve a revisar la pintura",
-  "checks only the first time": "revisa solo la primera vez",
-  "never checks": "nunca revisa",
   "Bolt is going to bump. Can a bump be useful?": "Bolt va a chocar. ¿Puede servir un choque?",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "Un bloque cuando choca con girar a la izquierda adentro. Después, solo seguir avanzando hasta la meta.",
   "A when bump block runs...": "Un bloque cuando choca se ejecuta...",
@@ -983,6 +980,13 @@
   "A level with a door, no key and no gems is...": "Un nivel con una puerta, sin llave y sin gemas es...",
   "Clear program": "Borrar programa",
   "Start over": "Empezar de nuevo",
-  "Undo": "Deshacer"
+  "Undo": "Deshacer",
+  "asks its question again": "vuelve a hacer su pregunta",
+  "asks only on the first turn": "pregunta solo en el primer turno",
+  "never asks": "nunca pregunta",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "La puerta revisa la caja cuando Bolt entra. Bolt llegó a la puerta antes de que la caja se llenara, así que se quedó cerrada. Llena la caja primero y luego entra.",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "A Bolt se le acabó la energía: el bucle nunca se detuvo. Un sensor revisa la casilla donde está Bolt, así que la respuesta solo cambia cuando Bolt se mueve a una casilla nueva.",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "Un bloque «cuando» solo funciona por sí solo, en el nivel superior. Dentro de otro bloque no puede escuchar nada. Sácalo fuera.",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "Un «Mi bloque» solo funciona por sí solo, en el nivel superior. Dentro de otro bloque no se puede crear. Sácalo fuera."
  }
 }

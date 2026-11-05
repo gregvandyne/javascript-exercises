@@ -301,9 +301,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "Die Farbe markiert die Ecken. Was soll Bolt auf Farbe tun?",
   "Move, then: if on paint, turn right. Keep going until the goal.": "Vorwärts, dann: falls auf Farbe, nach rechts drehen. Weiter bis zum Ziel.",
   "On every loop turn, the if block...": "Bei jeder Schleifenrunde prüft der Falls-Block...",
-  "checks the paint again": "die Farbe erneut",
-  "checks only the first time": "nur beim ersten Mal",
-  "never checks": "nie",
   "Bolt is going to bump. Can a bump be useful?": "Bolt wird gleich anstoßen. Kann Anstoßen nützlich sein?",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "Ein Block wenn Bolt stößt an mit nach links drehen darin. Dann einfach vorwärts bis zum Ziel.",
   "A when bump block runs...": "Ein Block wenn Bolt stößt an läuft...",
@@ -983,6 +980,13 @@
   "A level with a door, no key and no gems is...": "Ein Level mit einer Tür, ohne Schlüssel und ohne Edelsteine ist...",
   "Clear program": "Programm löschen",
   "Start over": "Neu anfangen",
-  "Undo": "Rückgängig"
+  "Undo": "Rückgängig",
+  "asks its question again": "stellt seine Frage noch einmal",
+  "asks only on the first turn": "fragt nur in der ersten Runde",
+  "never asks": "fragt nie",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "Die Tür prüft die Kiste, wenn Bolt eintritt. Bolt war an der Tür, bevor die Kiste gefüllt war, also blieb sie zu. Fülle zuerst die Kiste und gehe dann hinein.",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "Bolt ging die Energie aus: Die Schleife hörte nie auf. Ein Sensor prüft das Feld, auf dem Bolt steht, also ändert sich die Antwort nur, wenn Bolt auf ein neues Feld geht.",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "Ein Wenn-Block funktioniert nur allein, auf der obersten Ebene. In einem anderen Block kann er auf nichts hören. Nimm ihn heraus.",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "Ein Mein-Block funktioniert nur allein, auf der obersten Ebene. In einem anderen Block kann er nicht erstellt werden. Nimm ihn heraus."
  }
 }

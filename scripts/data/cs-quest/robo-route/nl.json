@@ -301,9 +301,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "De verf markeert de hoeken. Wat moet Bolt op verf doen?",
   "Move, then: if on paint, turn right. Keep going until the goal.": "Vooruit, dan: als op verf, draai rechts. Ga door tot het doel.",
   "On every loop turn, the if block...": "Bij elke ronde van de lus controleert het als-blok...",
-  "checks the paint again": "de verf opnieuw",
-  "checks only the first time": "alleen de eerste keer",
-  "never checks": "nooit",
   "Bolt is going to bump. Can a bump be useful?": "Bolt gaat zo botsen. Kan botsen handig zijn?",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "Een blok wanneer Bolt botst met draai links erin. Rijd daarna gewoon vooruit tot het doel.",
   "A when bump block runs...": "Een blok wanneer Bolt botst wordt uitgevoerd...",
@@ -983,6 +980,13 @@
   "A level with a door, no key and no gems is...": "Een level met een deur, zonder sleutel en zonder edelstenen is...",
   "Clear program": "Programma wissen",
   "Start over": "Opnieuw beginnen",
-  "Undo": "Ongedaan maken"
+  "Undo": "Ongedaan maken",
+  "asks its question again": "stelt zijn vraag opnieuw",
+  "asks only on the first turn": "vraagt alleen bij de eerste beurt",
+  "never asks": "vraagt nooit",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "De deur controleert de doos als Bolt binnenstapt. Bolt was bij de deur voordat de doos gevuld was, dus hij bleef dicht. Vul eerst de doos en loop dan naar binnen.",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "Bolt had geen energie meer: de lus stopte nooit. Een sensor controleert het vak waar Bolt op staat, dus het antwoord verandert alleen als Bolt naar een nieuw vak loopt.",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "Een wanneer-blok werkt alleen op zichzelf, op het hoogste niveau. In een ander blok kan hij nergens naar luisteren. Haal hem eruit.",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "Een Mijn Blok werkt alleen op zichzelf, op het hoogste niveau. In een ander blok kan hij niet worden gemaakt. Haal hem eruit."
  }
 }
