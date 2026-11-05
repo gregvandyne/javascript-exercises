@@ -30,19 +30,19 @@
     {
      "cue": "Half a cake: 1 of 2 equal parts.",
      "box": [
-      5,
-      20.5,
-      90,
-      19.6
+      6,
+      13.9,
+      88,
+      24.4
      ]
     },
     {
      "cue": "Cut each part in two: 2 of 4 parts. The share has not moved.",
      "box": [
-      5,
-      50.7,
-      90,
-      19.6
+      6,
+      44.1,
+      88,
+      24.4
      ]
     }
    ]
@@ -76,19 +76,19 @@
     {
      "cue": "Cut every piece in two: 1/2 becomes 2/4.",
      "box": [
-      5,
-      41.8,
-      90,
-      19.6
+      6,
+      35.2,
+      88,
+      24.4
      ]
     },
     {
      "cue": "Cut in two again: 4/8. The pieces shrink, the share stays.",
      "box": [
-      5,
-      72,
-      90,
-      19.6
+      6,
+      65.4,
+      88,
+      24.4
      ]
     }
    ]
@@ -125,19 +125,19 @@
     {
      "cue": "5/8 sits one eighth past the halfway line.",
      "box": [
-      5,
-      20.5,
-      90,
-      19.6
+      6,
+      13.9,
+      88,
+      24.4
      ]
     },
     {
      "cue": "3/4 is 6/8: one eighth more, so 3/4 is greater.",
      "box": [
-      5,
-      50.7,
-      90,
-      19.6
+      6,
+      44.1,
+      88,
+      24.4
      ]
     }
    ]
@@ -166,19 +166,19 @@
     {
      "cue": "Half of a tiny cake: a small whole, so a small piece.",
      "box": [
-      5,
-      20.5,
-      90,
-      19.6
+      6,
+      13.9,
+      88,
+      24.4
      ]
     },
     {
      "cue": "A fourth of a huge cake: it can be the bigger piece.",
      "box": [
-      5,
-      50.7,
-      90,
-      19.6
+      6,
+      44.1,
+      88,
+      24.4
      ]
     }
    ]
@@ -207,19 +207,19 @@
     {
      "cue": "2/3: two of three equal parts.",
      "box": [
-      5,
-      20.5,
-      90,
-      19.6
+      6,
+      13.9,
+      88,
+      24.4
      ]
     },
     {
      "cue": "Cut each third into 3: 6/9. Same share, three times the pieces.",
      "box": [
-      5,
-      50.7,
-      90,
-      19.6
+      6,
+      44.1,
+      88,
+      24.4
      ]
     }
    ]

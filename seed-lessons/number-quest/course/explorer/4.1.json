@@ -25,19 +25,19 @@
     {
      "cue": "One cake, cut into 4 equal pieces.",
      "box": [
-      5,
-      34.7,
-      90,
-      19.6
+      6,
+      28.1,
+      88,
+      24.4
      ]
     },
     {
      "cue": "Every piece is the same size: that is what fair means.",
      "box": [
-      5,
-      34.7,
-      23,
-      19.6
+      6,
+      28.1,
+      88,
+      24.4
      ]
     }
    ]
@@ -61,19 +61,19 @@
     {
      "cue": "The whole cake, cut into 4 equal parts.",
      "box": [
-      5,
-      34.7,
-      90,
-      19.6
+      6,
+      28.1,
+      88,
+      24.4
      ]
     },
     {
      "cue": "Take 3 parts: that is 3/4 of the cake.",
      "box": [
-      5.5,
-      34.7,
-      67.0,
-      19.6
+      6,
+      37.3,
+      66,
+      15.2
      ]
     }
    ]
@@ -117,19 +117,19 @@
     {
      "cue": "Halfway sits at 1/2. 3/4 must land past it.",
      "box": [
-      44.0,
-      42.7,
-      12,
-      35.6
+      47.7,
+      59.3,
+      4.6,
+      22.4
      ]
     },
     {
      "cue": "Count 3 of the 4 equal parts from 0: the third mark is 3/4.",
      "box": [
-      66.0,
-      42.7,
-      12,
-      35.6
+      68.4,
+      43,
+      7.2,
+      25.1
      ]
     }
    ]
@@ -153,19 +153,19 @@
     {
      "cue": "The bottom number: the whole is cut into 8 equal parts.",
      "box": [
-      5,
-      34.7,
-      90,
-      19.6
+      6,
+      28.1,
+      88,
+      24.4
      ]
     },
     {
      "cue": "The top number counts the parts you take: 5.",
      "box": [
-      5.5,
-      34.7,
-      56,
-      19.6
+      6,
+      37.3,
+      55,
+      15.2
      ]
     }
    ]
@@ -194,19 +194,19 @@
     {
      "cue": "Four fourths make one whole cake.",
      "box": [
-      5,
-      20.5,
-      90,
-      19.6
+      6,
+      13.9,
+      88,
+      24.4
      ]
     },
     {
      "cue": "One more fourth on top: 5/4 in all.",
      "box": [
-      5,
-      50.7,
-      90,
-      19.6
+      6,
+      44.1,
+      88,
+      24.4
      ]
     }
    ]

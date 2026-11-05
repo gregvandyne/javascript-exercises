@@ -40,19 +40,19 @@
     {
      "cue": "The long bar is the whole story in one picture.",
      "box": [
-      5,
-      34.7,
-      90,
-      19.6
+      6,
+      28.1,
+      88,
+      24.4
      ]
     },
     {
      "cue": "The part with no number gets a question mark. That mark is your job.",
      "box": [
-      58.3,
-      34.7,
-      36.2,
-      19.6
+      58.8,
+      37.3,
+      35.2,
+      15.2
      ]
     }
    ]
@@ -93,19 +93,19 @@
     {
      "cue": "One part is known: 147 ribbons sold.",
      "box": [
-      5.5,
-      34.7,
-      34.5,
-      19.6
+      6,
+      37.3,
+      33.6,
+      15.2
      ]
     },
     {
      "cue": "The other part is the question: how many are left?",
      "box": [
-      39.0,
-      34.7,
-      55.5,
-      19.6
+      39.5,
+      37.3,
+      54.5,
+      15.2
      ]
     }
    ]
@@ -154,19 +154,19 @@
     {
      "cue": "The Jumble's bar joins two parts: it added.",
      "box": [
-      5,
-      20.5,
-      90,
-      19.6
+      6,
+      13.9,
+      88,
+      24.4
      ]
     },
     {
      "cue": "The story asked for a difference: the gap is the unknown part.",
      "box": [
-      66.5,
-      50.7,
-      28,
-      19.6
+      67.6,
+      53.3,
+      26.4,
+      15.2
      ]
     }
    ]
@@ -229,19 +229,19 @@
     {
      "cue": "275 points she has, and 90 more today: two known parts.",
      "box": [
-      5.5,
-      34.7,
-      65.2,
-      19.6
+      6,
+      37.3,
+      64.3,
+      15.2
      ]
     },
     {
      "cue": "What is left of the 500 is still to earn: 135 points.",
      "box": [
-      69.7,
-      34.7,
-      24.8,
-      19.6
+      70.2,
+      37.3,
+      23.8,
+      15.2
      ]
     }
    ]
