@@ -1281,6 +1281,10 @@ function syncRoads(frozen) {
     bt.className = 'pp-link' + (closed ? ' pp-closed' : here ? ' pp-ok' : l.sealed ? ' pp-sealedb' : '');
     bt.innerHTML = closed ? icon('cross') : l.sealed ? icon('lock') : here ? icon('next') : icon('move');
     const other = I.nodes[l.a === s.at ? l.b : l.a];
+    if (here && !l.sealed) {   // the 'next' chevron is a fixed right-pointing glyph: aim it along the ride, from the packet's stop to this road's far end
+      const me = I.nodes[s.at], deg = Math.round(Math.atan2(other.y - me.y, other.x - me.x) * 180 / Math.PI), svg = bt.querySelector('svg');
+      if (svg) { svg.style.transform = `rotate(${deg}deg)`; svg.style.transformOrigin = '50% 50%'; }
+    }
     bt.setAttribute('aria-label', closed ? tr('Road closed') : (l.sealed ? tr('Sealed road to {place}, {n} hops', { place: tr(other.label), n: l.cost }) : tr('Road to {place}', { place: tr(other.label) })));
     bt.disabled = s.phase !== 'play';
   }
