@@ -91,8 +91,8 @@ export const SCREEN_CSS = `
 .ok-night .ok-switch,.ok-night .ok-seg{border-color:${CREAM}99}
 .ok-ask .ok-card{width:min(560px,100%)}
 .ok-q{font-weight:800;margin:0;font-size:clamp(1.6rem,6vmin,2.6rem);line-height:1.15;font-variant-numeric:tabular-nums;text-wrap:balance}
-.ok-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;background:#2B1F5C;padding:14px;border-radius:26px;border:3px solid ${INK}}
-.ok-tile{position:relative;font:inherit;font-weight:800;font-size:clamp(1.4rem,5vmin,2.1rem);min-height:72px;border-radius:22px;border:3px solid ${INK};background:${CREAM};color:${INK};
+.ok-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;flex:none;background:#2B1F5C;padding:14px;border-radius:26px;border:3px solid ${INK}}
+.ok-tile{position:relative;font:inherit;font-weight:800;font-size:clamp(1.4rem,5vmin,2.1rem);min-height:72px;padding:14px 18px;line-height:1.25;overflow-wrap:break-word;border-radius:22px;border:3px solid ${INK};background:${CREAM};color:${INK};
   box-shadow:inset 0 -6px 0 var(--ok-lip,${P.coral[2]}),0 5px 0 ${INK};cursor:pointer;transition:transform 80ms ease-out,box-shadow 80ms ease-out;font-variant-numeric:tabular-nums}
 /* the answer dock: deep grape behind white tiles, each with a coloured lip (the zone reads apart from the world) */
 .ok-tile:nth-child(4n+2){--ok-lip:${P.sky[2]}}.ok-tile:nth-child(4n+3){--ok-lip:${P.grape[2]}}.ok-tile:nth-child(4n){--ok-lip:${P.mint[2]}}
@@ -104,6 +104,14 @@ export const SCREEN_CSS = `
 .ok-tile.ok-bad{background:${P.coral[1]};animation:ok-shake 240ms linear}.ok-tile.ok-bad .ok-mark{background:${P.coral[2]};border-radius:6px;transform:rotate(45deg)}.ok-tile.ok-bad .ok-mark svg{transform:rotate(-45deg)}
 .ok-hint{display:flex;align-items:center;gap:8px;font-weight:700;background:${P.sky[0]};color:${INK};border-radius:16px;padding:8px 14px;animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1)}
 .ok-hint svg{width:1.3em;height:1.3em;flex-shrink:0}
+/* phones: the answer dock goes single column, so a long answer gets the full card width and as many lines as it
+   needs instead of being squeezed into half of it (the card scrolls when the whole check outgrows the screen);
+   the type steps down a notch and the tile padding starts inside the number badge's corner, so they never touch */
+@media (max-width:600px){
+  .ok-tiles{grid-template-columns:1fr;gap:10px;padding:12px}
+  .ok-tile{font-size:clamp(1.02rem,4.6vw,1.25rem);min-height:56px;padding:14px 20px}
+  .ok-q{font-size:clamp(1.45rem,6.2vw,1.85rem)}
+}
 .ok-banner{position:fixed;top:calc(74px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:10px 20px 10px 12px;border:3px solid ${INK};border-radius:999px;
   font-weight:800;font-size:1.15em;color:${INK};box-shadow:0 5px 0 ${INK};z-index:22;animation:ok-drop 420ms cubic-bezier(.34,1.56,.64,1);max-width:calc(100vw - 32px)}
 .ok-banner.ok-inline{position:relative;top:auto;left:auto;transform:none;align-self:center;font-size:1em;padding:6px 16px 6px 8px;box-shadow:0 3px 0 ${INK};animation:ok-pop 320ms cubic-bezier(.34,1.56,.64,1)}
