@@ -198,7 +198,7 @@ test('robo-route: programs are data: unknown blocks are refused, runaway loops a
   assert.equal(E.run(lvl, [{ t: 'eval' }]).verdict.failReason, 'bad');
   assert.equal(E.run(lvl, [{ t: 'move', constructor: { constructor: 'x' } }, { t: 'if', c: { s: 'constructor' }, body: [] }]).verdict.failReason, 'bad');
   assert.equal(E.run(lvl, 'move').verdict.failReason, 'empty');
-  assert.equal(E.run(lvl, [{ t: 'repeat', until: 'goal', body: [{ t: 'left' }] }]).verdict.failReason, 'limit');
+  assert.equal(E.run(lvl, [{ t: 'repeat', until: 'goal', body: [{ t: 'left' }] }]).verdict.failReason, 'limituntil', 'a sensor loop that never moves names the own-square trap, not the generic runaway (pro-6)');
   assert.equal(E.run({ rows: ['>#.G'] }, [{ t: 'repeat', until: 'goal', body: [{ t: 'move' }] }]).verdict.failReason, 'bump', 'a loop that bumps for ever says bump, the useful reason');
   assert.equal(E.run(lvl, [{ t: 'repeat', n: 999, body: [{ t: 'repeat', n: 999, body: [{ t: 'left' }] }] }]).verdict.failReason, 'limit');
   // loop turns and if tests count as work too: five nested repeat 20 round an if would be 3.2 million tests
@@ -262,7 +262,7 @@ test('robo-route: en.json lists every English string the game shows (and nothing
     if (v.predict) { want.add(v.predict.q); for (const t of v.predict.tiles) want.add(t); }
     if (v.task) want.add(v.task);
   }
-  for (const r of ['bump', 'door', 'splash', 'nothing', 'gems', 'goal', 'limit', 'deep', 'name', 'plan', 'needs', 'procs', 'chips', 'chip0', 'credit', 'remix', 'flow', 'nocall', 'empty', 'bad', 'keepcall']) for (const left of [1, 2]) { const t = E.failText({ failReason: r, failStep: 1, gemsLeft: left }); if (t) want.add(t[0]); }
+  for (const r of ['bump', 'door', 'doorvar', 'splash', 'nothing', 'gems', 'goal', 'limit', 'limituntil', 'deep', 'name', 'plan', 'needs', 'procs', 'chips', 'chip0', 'credit', 'remix', 'flow', 'nocall', 'empty', 'bad', 'keepcall', 'whenplace', 'procplace']) for (const left of [1, 2]) { const t = E.failText({ failReason: r, failStep: 1, gemsLeft: left }); if (t) want.add(t[0]); }
   const missing = [...want].filter(s => !have.has(s)), stale = en.filter(s => !want.has(s));
   assert.deepEqual(missing, [], 'strings the game shows but en.json lacks');
   assert.deepEqual(stale, [], 'strings in en.json the game no longer shows');
@@ -415,7 +415,7 @@ test('robo-route: in Chromium a phone plays level 1 of two chapters in lesson mo
     await T(frame, 'shelf', 5); await page.waitForTimeout(100);
     assert.match(await T(frame, 'verdictText'), /when block goes at the top/, 'a when block is kept out of the repeat');
     await T(frame, 'program', [{ t: 'repeat', n: 3, body: [{ t: 'when', ev: 'gem', body: [] }] }]); await T(frame, 'run'); await page.waitForTimeout(300);
-    v = await T(frame, 'verdict'); assert.equal(v.failReason, 'bad'); assert.equal((await T(frame, 'state')).fails, 1);
+    v = await T(frame, 'verdict'); assert.equal(v.failReason, 'whenplace', 'a when inside a repeat gets its own truthful reason (csq-pro-5), not the generic one'); assert.equal((await T(frame, 'state')).fails, 1);
     assert.ok((await T(frame, 'verdictText')).length > 10, 'a sentence for a program that cannot run');
     await T(frame, 'solve'); await page.waitForTimeout(500); assert.equal((await T(frame, 'verdict')).ok, true, 'the level is not half dead after a compile error');
     assert.ok((await T(frame, 'state')).bolt.x !== 0 || (await T(frame, 'state')).bolt.y !== 0, 'Bolt really moved');
@@ -691,4 +691,148 @@ test('robo-route: in Chromium French reads from its checked pack, and English ru
       assert.deepEqual(errors, []); assert.deepEqual(consoleErrors, []);
     } finally { await ctx.close(); }
   }
+});
+
+/* ---------- playthrough-audit regressions (2026-11-05): completion must be reliable and visible ---------- */
+const clickWin = async (frame, page) => { await frame.evaluate(() => { const b = document.querySelector('.ok-ui .ok-modal.ok-win .ok-row .ok-hot') || document.querySelector('.ok-ui .ok-modal.ok-win .ok-btn'); if (b) b.click(); }); await page.waitForTimeout(800); };
+const answerCheck = async (frame, page, ch, band, li) => {
+  const lv = levelsFor(ch, band)[li];
+  assert.ok(await T(frame, 'check', lv.check.answer), 'the right tile is on the card');
+  await page.waitForTimeout(150);
+  assert.ok(await T(frame, 'confidence', 3));
+  await page.waitForTimeout(900);
+};
+
+test('robo-route: leaving mid "Case closed?" flow loses nothing: the check is asked again on re-entry and the finished chapter is credited', { skip, timeout: 240_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 390, height: 844 }, lang: 'en', params: { chapter: 'sequences', band: '1b', lock: 1 } });
+  try {
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
+    await T(frame, 'closeModal'); await page.waitForTimeout(150);
+    await T(frame, 'skipAnimations');
+    // level 1: solve and answer the check the normal way
+    await T(frame, 'solve'); await page.waitForTimeout(400);
+    let s = await T(frame, 'state'); assert.equal(s.card, 'case', 'the check card follows a solve');
+    await answerCheck(frame, page, 'sequences', '1b', 0);
+    s = await T(frame, 'state'); assert.deepEqual(s.checks, { ok: 1, n: 1 });
+    await clickWin(frame, page);
+    s = await T(frame, 'state'); assert.equal(s.level, 2);
+    // level 2: solve, then LEAVE with the check card still open (the audited failure)
+    await T(frame, 'solve'); await page.waitForTimeout(400);
+    s = await T(frame, 'state'); assert.equal(s.card, 'case'); assert.equal(s.done, 2, 'the solve itself is saved at once');
+    await T(frame, 'title'); await page.waitForTimeout(300);
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(600);
+    // re-entry asks the outstanding check before play resumes
+    s = await T(frame, 'state'); assert.equal(s.card, 'case', 'the left-behind check is asked again on re-entry');
+    await answerCheck(frame, page, 'sequences', '1b', 1);
+    s = await T(frame, 'state'); assert.equal(s.level, 3, 'play resumes at the first unfinished level'); assert.deepEqual(s.checks, { ok: 2, n: 2 });
+    // finish the chapter; the win flow now runs to the results card and the label carries every check
+    for (let li = 2; li < 6; li++) {
+      await T(frame, 'solve'); await page.waitForTimeout(400);
+      await answerCheck(frame, page, 'sequences', '1b', li);
+      await clickWin(frame, page);
+    }
+    await clickWin(frame, page);
+    s = await T(frame, 'state'); assert.equal(s.screen, 'results', 'a finished lesson chapter lands on the results card'); assert.deepEqual(s.checks, { ok: 6, n: 6 }); assert.match(s.label, /6\/6 checks/);
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+test('robo-route: a chapter already finished in the save is credited on lesson entry, asking only the checks never answered', { skip, timeout: 180_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 390, height: 844 }, lang: 'en' });
+  try {
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(400);
+    await T(frame, 'unlockAll');
+    await T(frame, 'start', { chapter: 'sequences', band: '1b', lesson: true, lock: true, seed: 2 });
+    await page.waitForTimeout(400);
+    for (let li = 0; li < 6; li++) {
+      const s = await T(frame, 'state'); assert.equal(s.card, 'case', `catch-up asks level ${li + 1}'s check`);
+      await answerCheck(frame, page, 'sequences', '1b', li);
+    }
+    await clickWin(frame, page);
+    const s = await T(frame, 'state'); assert.equal(s.screen, 'results', 'no replay needed: the finished chapter is credited'); assert.deepEqual(s.checks, { ok: 6, n: 6 });
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+test('robo-route: the Debug Lab lesson check appears on a solve (playthrough regression: checks must fire in lesson mode)', { skip, timeout: 120_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 390, height: 844 }, lang: 'en', params: { chapter: 'debug', band: '1b', mode: 'debug', lock: 1 } });
+  try {
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
+    await T(frame, 'closeModal'); await page.waitForTimeout(150);
+    await T(frame, 'skipAnimations'); await T(frame, 'solve'); await page.waitForTimeout(400);
+    const s = await T(frame, 'state'); assert.equal(s.levelId, 'dbg-1'); assert.equal(s.card, 'case', 'the "Case closed?" card opens after solving dbg-1 in lesson mode');
+    await answerCheck(frame, page, 'debug', '1b', 0);
+    const s2 = await T(frame, 'state'); assert.deepEqual(s2.checks, { ok: 1, n: 1 }); assert.match(s2.label, /1\/1 checks/);
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+test('robo-route: the tester card comes back until the feedback exists, so "Improved after a test" can be earned after leaving it', { skip, timeout: 240_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 390, height: 844 }, lang: 'en', params: { chapter: 'level-maker', band: '1b', lock: 1 } });
+  try {
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(500);
+    await T(frame, 'closeModal'); await page.waitForTimeout(200);
+    await T(frame, 'skipAnimations');
+    assert.equal(await T(frame, 'tool', 'floor'), 'floor'); await T(frame, 'paint', 2, 3);
+    let res = await T(frame, 'mkCheck'); assert.equal(res.ok, true); await page.waitForTimeout(300);
+    await answerCheck(frame, page, 'level-maker', '1b', 0);
+    await clickWin(frame, page);
+    let s = await T(frame, 'state'); assert.equal(s.maker.task, 'mk-2');
+    // build a free level from the task board, then run a friend's test
+    const code = await T(frame, 'mkCode'); assert.ok(await T(frame, 'mkLoad', code));
+    res = await T(frame, 'mkCheck'); assert.equal(res.ok, true);
+    assert.equal(await T(frame, 'mkTest'), true); await page.waitForTimeout(200);
+    await T(frame, 'program', 'repeat until goal { if path { move } else { left } }'); await T(frame, 'run'); await page.waitForTimeout(500);
+    assert.equal((await T(frame, 'verdict')).ok, true);
+    await page.waitForTimeout(300); await T(frame, 'closeDialog'); await page.waitForTimeout(400);
+    s = await T(frame, 'state'); assert.equal(s.card, 'tester', 'the tester card opens after a solved test');
+    // leave it unanswered via Not now: the feedback is still owed
+    await frame.evaluate(() => [...document.querySelectorAll('#modal .ok-btn')].find(b => /Not now/.test(b.textContent)).click()); await page.waitForTimeout(200);
+    s = await T(frame, 'state'); assert.equal(s.maker.feedback, null); assert.equal(s.maker.pendingFeedback, true, 'an unanswered tester card stays owed');
+    // a second test brings the card back on return to the maker
+    assert.equal(await T(frame, 'mkTest'), true); await page.waitForTimeout(200);
+    await T(frame, 'program', 'repeat until goal { if path { move } else { left } }'); await T(frame, 'run'); await page.waitForTimeout(500);
+    await page.waitForTimeout(300); await T(frame, 'closeDialog'); await page.waitForTimeout(400);
+    s = await T(frame, 'state'); assert.equal(s.card, 'tester', 'the tester card is asked again after the next test');
+    assert.ok(await T(frame, 'tester', 1, 1)); await page.waitForTimeout(150);
+    s = await T(frame, 'state'); assert.ok(s.maker.feedback, 'feedback recorded'); assert.equal(s.maker.pendingFeedback, false);
+    await T(frame, 'paint', 1, 1); res = await T(frame, 'mkCheck');
+    s = await T(frame, 'state'); assert.equal(s.maker.improved, true, 'a change after the answered test counts as improving');
+    assert.match(await frame.evaluate(() => document.getElementById('mkResult').textContent), /Improved after a test/);
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});
+
+test('robo-route: misplaced blocks, late-filled door boxes and sensor loops get truthful failure messages (playthrough explorer-7/-9, pro-5/-6)', () => {
+  const L = (ch, band, id) => levelsFor(ch, band).find(l => l.id === id);
+  const cond5 = L('conditionals', '1b', 'cond-5');
+  // pro-5: a when block nested inside a loop or a My Block is a KNOWN block in the wrong place
+  const wInLoop = run(cond5, 'repeat until goal { when bump { left }; move }');
+  assert.equal(wInLoop.verdict.failReason, 'whenplace', 'when inside a repeat');
+  assert.equal(wInLoop.verdict.compileError, true);
+  assert.match(E.failText(wInLoop.verdict)[0], /top level/);
+  assert.doesNotMatch(E.failText(wInLoop.verdict)[0], /not a block Bolt knows/);
+  const wInProc = run(cond5, 'proc A { when bump { left } }; call A; repeat until goal { move }');
+  assert.equal(wInProc.verdict.failReason, 'whenplace', 'when inside a My Block');
+  const pInLoop = run(cond5, 'repeat 2 { proc A { move } }; call A');
+  assert.equal(pInLoop.verdict.failReason, 'procplace', 'a My Block defined inside a repeat');
+  assert.match(E.failText(pInLoop.verdict)[0], /top level/);
+  // explorer-9: var-1's door reads the count box as Bolt steps in; filling it after the bump is too late
+  const v1 = L('variables', '1b', 'var-1');
+  const late = run(v1, 'move; move; move; move; move; right; move; set count 5; move; move');
+  assert.equal(late.verdict.failReason, 'doorvar', `the box was filled, only after the bump: ${JSON.stringify(late.verdict)}`);
+  assert.match(E.failText(late.verdict)[0], /steps in/);
+  const never = run(v1, 'move; move; move; move; move; right; move');
+  assert.equal(never.verdict.failReason, 'door', 'a box never filled keeps the plain door message');
+  // pro-6: a sensor loop that never moves gives the own-square hint; a plain runaway loop does not
+  const cond4 = L('conditionals', '1b', 'cond-4');
+  const stuck = run(cond4, 'repeat until paint { right }');
+  assert.equal(stuck.verdict.failReason, 'limituntil', 'the sensor reads the square Bolt stands on');
+  assert.match(E.failText(stuck.verdict)[0], /standing on/);
+  const seq1 = L('sequences', '1b', 'seq-1');
+  const plain = run(seq1, 'repeat 99 { repeat 99 { repeat 99 { right } } }');
+  assert.equal(plain.verdict.failReason, 'limit', 'no sensor loop, no sensor hint');
+  // explorer-7: cond-4's check tiles name the if block's behaviour, not one board's sensor
+  assert.equal(JSON.stringify(cond4.check.tiles), JSON.stringify(['asks its question again', 'asks only on the first turn', 'never asks']));
+  assert.equal(cond4.check.answer, 0);
 });

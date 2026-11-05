@@ -295,9 +295,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "ペンキが角のしるし。ペンキの上でボルトは何をする？",
   "Move, then: if on paint, turn right. Keep going until the goal.": "すすむ、それから：もしペンキの上なら右を向く。ゴールまで続ける。",
   "On every loop turn, the if block...": "くりかえしが1回回るたびに、もしブロックは...",
-  "checks the paint again": "もう一度ペンキをたしかめる",
-  "checks only the first time": "さいしょの1回だけたしかめる",
-  "never checks": "一度もたしかめない",
   "Bolt is going to bump. Can a bump be useful?": "ボルトはぶつかりそう。ぶつかるのが役に立つことはある？",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "ボルトがぶつかったときブロックに左を向くを入れる。あとはゴールまですすむだけ。",
   "A when bump block runs...": "ボルトがぶつかったときブロックが動くのは...",
@@ -956,6 +953,13 @@
   "A level with a door, no key and no gems is...": "とびらがあって、かぎも宝石もないレベルは...",
   "Clear program": "プログラムをけす",
   "Start over": "やり直す",
-  "Undo": "もとにもどす"
+  "Undo": "もとにもどす",
+  "asks its question again": "もう一度質問する",
+  "asks only on the first turn": "最初のターンだけ質問する",
+  "never asks": "決して質問しない",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "ドアはボルトが入る瞬間に箱を確認します。ボルトは箱がいっぱいになる前にドアに着いたので、ドアは閉まったままでした。先に箱をいっぱいにしてから入ってください。",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "ボルトのエネルギーが切れました。ループが止まらなかったのです。センサーはボルトが立っているマスを確認するので、答えが変わるのはボルトが新しいマスに動いたときだけです。",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "「とき」ブロックは、それだけで一番上に置いたときだけ働きます。別のブロックの中では何も聞き取れません。外に出してください。",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "「マイ・ブロック」は、それだけで一番上に置いたときだけ働きます。別のブロックの中では作れません。外に出してください。"
  }
 }

@@ -309,9 +309,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "الطلاء يحدّد الزوايا. ماذا يجب أن يفعل بولت على الطلاء؟",
   "Move, then: if on paint, turn right. Keep going until the goal.": "تحرّك، ثم: إذا على طلاء، استدر يمينًا. واصل حتى الهدف.",
   "On every loop turn, the if block...": "في كل دورة من الحلقة، لبنة إذا...",
-  "checks the paint again": "تفحص الطلاء من جديد",
-  "checks only the first time": "تفحص في المرة الأولى فقط",
-  "never checks": "لا تفحص أبدًا",
   "Bolt is going to bump. Can a bump be useful?": "بولت سيصطدم. هل يمكن أن يكون الاصطدام مفيدًا؟",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "لبنة عندما اصطدام وبداخلها استدر يسارًا. ثم فقط واصل التحرّك حتى الهدف.",
   "A when bump block runs...": "لبنة عندما اصطدام تعمل...",
@@ -1019,6 +1016,13 @@
   "A level with a door, no key and no gems is...": "مستوى فيه باب، بلا مفتاح ولا جواهر، هو...",
   "Clear program": "امسح البرنامج",
   "Start over": "ابدأ من جديد",
-  "Undo": "تراجع"
+  "Undo": "تراجع",
+  "asks its question again": "يطرح سؤاله من جديد",
+  "asks only on the first turn": "يسأل في الدور الأول فقط",
+  "never asks": "لا يسأل أبدًا",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "يفحص الباب الصندوق عندما يخطو بولت إلى الداخل. وصل بولت إلى الباب قبل أن يمتلئ الصندوق، فبقي مغلقًا. املأ الصندوق أولًا ثم ادخل.",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "نفدت طاقة بولت: لم تتوقف الحلقة أبدًا. يفحص المستشعر المربع الذي يقف عليه بولت، لذا لا تتغير الإجابة إلا عندما ينتقل بولت إلى مربع جديد.",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "يعمل قالب «عندما» فقط بمفرده، في المستوى الأعلى. داخل قالب آخر لا يمكنه الاستماع إلى أي شيء. أخرجه إلى الخارج.",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "يعمل «قالبي» فقط بمفرده، في المستوى الأعلى. داخل قالب آخر لا يمكن إنشاؤه. أخرجه إلى الخارج."
  }
 }

@@ -295,9 +295,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "油漆標出角落。Bolt 在油漆上該做什麼？",
   "Move, then: if on paint, turn right. Keep going until the goal.": "前進，然後：如果在油漆上，就向右轉。一直做到終點。",
   "On every loop turn, the if block...": "迴圈每轉一圈，如果積木就會...",
-  "checks the paint again": "再檢查一次油漆",
-  "checks only the first time": "只在第一次檢查",
-  "never checks": "從來不檢查",
   "Bolt is going to bump. Can a bump be useful?": "Bolt 快要撞到了。撞到也能有用嗎？",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "一個「當 Bolt 撞到東西」積木，裡面放向左轉。然後只要一直前進到終點。",
   "A when bump block runs...": "「當 Bolt 撞到東西」積木會在...時執行",
@@ -956,6 +953,13 @@
   "A level with a door, no key and no gems is...": "一個有門、卻沒有鑰匙也沒有寶石的關卡是...",
   "Clear program": "清除程式",
   "Start over": "重新開始",
-  "Undo": "復原"
+  "Undo": "復原",
+  "asks its question again": "會再問一次它的問題",
+  "never asks": "從不發問",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "門會在博爾特踏進去時檢查箱子。博爾特在箱子裝滿之前就到了門口，所以門一直關著。先把箱子裝滿，再走進去。",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "博爾特沒電了：迴圈一直沒有停下來。感應器檢查的是博爾特站著的那一格，所以只有當博爾特走到新的一格時，答案才會改變。",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "「當…時」積木只有自己單獨放在最上層時才有用。放在另一個積木裡面，它什麼都聽不到。把它移出來。",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "「我的積木」只有自己單獨放在最上層時才有用。放在另一個積木裡面，它無法被建立。把它移出來。",
+  "asks only on the first turn": "只在第一回合發問"
  }
 }

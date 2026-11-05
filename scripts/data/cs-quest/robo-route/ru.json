@@ -305,9 +305,6 @@
   "The paint marks the corners. What should Bolt do on paint?": "Краска отмечает углы. Что Болту делать на краске?",
   "Move, then: if on paint, turn right. Keep going until the goal.": "Вперёд, потом: если на краске — повернуть направо. Продолжать до цели.",
   "On every loop turn, the if block...": "На каждом круге цикла блок если...",
-  "checks the paint again": "снова проверяет краску",
-  "checks only the first time": "проверяет только в первый раз",
-  "never checks": "никогда не проверяет",
   "Bolt is going to bump. Can a bump be useful?": "Болт сейчас врежется. Может ли удар быть полезным?",
   "A when bump block with turn left inside. Then just keep moving until the goal.": "Блок когда Болт врезается с повернуть налево внутри. Потом просто ехать вперёд до цели.",
   "A when bump block runs...": "Блок когда Болт врезается выполняется...",
@@ -1001,6 +998,13 @@
   "A level with a door, no key and no gems is...": "Уровень с дверью, без ключа и без кристаллов, — это...",
   "Clear program": "Очистить программу",
   "Start over": "Начать заново",
-  "Undo": "Отменить"
+  "Undo": "Отменить",
+  "asks its question again": "задаёт свой вопрос снова",
+  "asks only on the first turn": "спрашивает только в первый ход",
+  "never asks": "никогда не спрашивает",
+  "The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.": "Дверь проверяет ящик, когда Болт входит. Болт дошёл до двери раньше, чем ящик наполнился, поэтому она осталась закрытой. Сначала наполни ящик, а потом входи.",
+  "Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.": "У Болта закончилась энергия: цикл так и не остановился. Датчик проверяет клетку, на которой стоит Болт, поэтому ответ меняется только когда Болт переходит на новую клетку.",
+  "A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.": "Блок «когда» работает только сам по себе, на верхнем уровне. Внутри другого блока он ничего не может услышать. Вынеси его наружу.",
+  "A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.": "Блок «Мой блок» работает только сам по себе, на верхнем уровне. Внутри другого блока его нельзя создать. Вынеси его наружу."
  }
 }

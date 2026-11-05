@@ -379,7 +379,8 @@ function compile(blocks) {
     }
     if (b.t === 'if') { out.c = cond(b.c); out.body = walk(b.body || [], id + '.', inProc); if (b.else) out.else = walk(b.else, id + ':', inProc); if (out.body.length || (out.else && out.else.length)) types.add('if'); return out; }
     if (b.t === 'when') {
-      if (!EVENTS.includes(b.ev) || inProc || path !== '') throw new CompileError('bad');
+      if (!EVENTS.includes(b.ev)) throw new CompileError('bad');
+      if (inProc || path !== '') throw new CompileError('whenplace');   // a known block in the wrong place is not an unknown block
       out.ev = b.ev; out.body = walk(b.body || [], id + '.', inProc); when[b.ev] = out; if (out.body.length) types.add('when'); return out;
     }
     if (b.t === 'set' || b.t === 'change') {
@@ -393,7 +394,8 @@ function compile(blocks) {
       return out;
     }
     if (b.t === 'proc') {
-      if (typeof b.name !== 'string' || !/^[A-Za-z][A-Za-z0-9]{0,15}$/.test(b.name) || inProc || path !== '') throw new CompileError('bad');
+      if (typeof b.name !== 'string' || !/^[A-Za-z][A-Za-z0-9]{0,15}$/.test(b.name)) throw new CompileError('bad');
+      if (inProc || path !== '') throw new CompileError('procplace');
       out.name = b.name; out.params = (b.params || []).slice(0, 2).map(String); out.chip = b.chip == null ? null : String(b.chip); out.credit = b.credit == null ? null : String(b.credit);
       out.body = walk(b.body || [], id + '.', true); procs[b.name] = out; types.add('proc'); return out;
     }
@@ -571,12 +573,15 @@ function judge(level, ast, r, opt) {
   const badCredit = level.credits ? procs.find(p => level.credits[p.name] && p.credit !== level.credits[p.name]) : null;
   const remixed = level.remix ? Object.keys(level.remix).some(n => ast.procs[n] && calledNames.has(n) && shape(ast.procs[n].body) !== shape(level.remix[n])) : true;
   const noChip = level.chips ? procs.find(p => !p.chip) : null;
+  // a variable door the program DID satisfy, only too late: the box is read as Bolt steps in, so the
+  // generic door message would hide the one fixable mistake (fill the box before the move, not after)
+  const doorLate = (() => { const rule = level.door; if (!rule || !rule.var || !st.bumpDoor) return false; if (rule.andKey && !st.hasKey) return false; const val = st.vars[rule.var]; if (rule.word != null) return val === rule.word; if (rule.flag != null) return !!val === rule.flag; return val === (rule.n === 'all' ? r.total : rule.n); })();
   if (r.stop === 'deep') v.failReason = 'deep';
   else if (st.splash) v.failReason = 'splash';
-  else if (st.bumps > 0 && !level.allowBumps) v.failReason = st.bumpDoor ? 'door' : 'bump';
+  else if (st.bumps > 0 && !level.allowBumps) v.failReason = st.bumpDoor ? (doorLate ? 'doorvar' : 'door') : 'bump';
   else if (st.handled > 0 && level.noBump) v.failReason = 'bump';
   else if (st.fumbles > 0 && !level.allowFumble) v.failReason = 'nothing';
-  else if (r.stop === 'limit' || r.stop === 'loop') v.failReason = 'limit';
+  else if (r.stop === 'limit' || r.stop === 'loop') v.failReason = ast.usesUntil ? 'limituntil' : 'limit';
   else if (badName) { v.failReason = 'name'; v.badName = badName; }
   else if (need.length) { v.failReason = 'needs'; v.needBlock = need[0]; }
   else if (level.minProcs && Object.keys(ast.procs).length < level.minProcs) v.failReason = 'procs';
@@ -729,6 +734,10 @@ function failText(verdict) {
     case 'gems': return verdict.gemsLeft === 1 ? ['One gem is still out there.', {}] : ['{n} gems are still out there.', { n: verdict.gemsLeft }];
     case 'goal': return ['Bolt stopped, but not on the goal.', {}];
     case 'limit': return ['Bolt ran out of energy: the program goes on and on. Is a loop going round and round?', {}];
+    case 'limituntil': return ['Bolt ran out of energy: the loop never stopped. A sensor checks the square Bolt is standing on, so the answer only changes when Bolt moves to a new square.', {}];
+    case 'doorvar': return ['The door checks the box as Bolt steps in. Bolt reached the door before the box was filled, so it stayed shut. Fill the box first, then walk in.', {}];
+    case 'whenplace': return ['A when block only works on its own, at the top level. Inside another block it cannot listen for anything. Move it out.', {}];
+    case 'procplace': return ['A My Block only works on its own, at the top level. Inside another block it cannot be made. Move it out.', {}];
     case 'deep': return ['The blocks call each other too deeply.', {}];
     case 'name': return ['{name} is not a clear name. A partner could not tell what is in that box.', { name: verdict.badName || '?' }];
     case 'plan': return ['Put the plan lines in order first.', {}];
@@ -1038,7 +1047,7 @@ const LEVELS = [
   sol: 'repeat until goal { move; if paint { right } }',
   fixed: 'move; move; move; move; move; right; move; move; move; move; move; right; move; move',
   hints: ['The paint marks the corners. What should Bolt do on paint?', 'Move, then: if on paint, turn right. Keep going until the goal.', 'Inside the loop: move first, then an if on paint block.'],
-  check: { q: 'On every loop turn, the if block...', tiles: ['checks the paint again', 'checks only the first time', 'never checks'], answer: 0 },
+  check: { q: 'On every loop turn, the if block...', tiles: ['asks its question again', 'asks only on the first turn', 'never asks'], answer: 0 },
 },
 { id: 'cond-5', ch: 'conditionals', bands: ['1b'], csta: ['1B-AP-10'], shelf: ['move', 'left', 'right', 'until', 'when'], random: true, gen: G.bumpSpiral(6), defaultEvent: 'bump', par: 4,
   sol: 'when bump { left }; repeat until goal { move }',
@@ -1462,7 +1471,7 @@ const SAVE_KEY = 'robo-route-v1';
 /* ---------- Words: English is the key; the player's language is a reviewed data pack on the site (loaded with its
    checksum, 9 s then English), handed to the kit's Oomba.strings. The game runs without the pack. ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-61a52251', PACK_SRI = {"es":"sha384-PoMyRpJr0SexpB9odgVX+ZCTJUBIQEEtyf+07bWPB2eeBP6VavaMOkGEUoQvFCae","fr":"sha384-xuq5Eg4m+3DyJTBw6cR4X2sucHe5Dyaf0fxnOkYmvAiM69JyB6XygK2f1YxGMMPT","de":"sha384-mxLBHvwnylZCz7scBrHhDHG55CtuGRS7NhrkfCWxthhsswV5M6MpIsKsnW/EYaty","it":"sha384-Th/LIxWClqEuPICK1PmDY8TvfwGQvju5K8s4M0ybpYQw9qn3PABG0n8hvF8ogK4n","pt":"sha384-1Ax6tXxzJw59ipcLmbET7rIrB2pm49VB0w761bRMJNWzRtRfrE3UWfs6esH2lBqQ","nl":"sha384-jii2OalVpicRMb2YFlkLuXVXisiVVBF5RFAG4/o4fGz4ssuqkr92TBn/FMtes3jJ","ru":"sha384-briE3qjOMkf3sFnokW+dZTB2EIZlKqmLoX12WwgSjBRiyrxd7A9WOs0x9Bof5473","ja":"sha384-8Z6LC7G51hqBydNL+S5t0VcctUc8DK2ywdBMXB80QJ4BnvZ8r7ys1bMa2GcbxNkN","zh-Hant":"sha384-oL64abfHQ/eToPveJtH4+cdtrEgLtIjYPB66ODIbNxa2IhIi/3bdQ0DkuSeluAEv","he":"sha384-Y+LZNqtGyZIZUcRj7lb+3zmbs8glzkP9VgGm6Dha89Ri/YJuKe7qmXqlBCnepPQY","ar":"sha384-4OsLRT2hTqBx0o0uuukBsr2soD1XQG8JunehuAoIJy0Z7GYnktH4pb28mXZ+FO7+"};
+const PACK_VER = '1.0.0-7217c3fb', PACK_SRI = {"es":"sha384-6oCi/fIX8KUjKET70nb9uMph+uFYZJr7fu3jJ31RfJXUJyScSkwdTrYgRKopupLz","fr":"sha384-FKNJmsxmic1DCxNF79Sv0g1DO/GY3UXoVVFoH3HM52pPr4jz3bHUj72u+zwwLrI+","de":"sha384-cVm2H9RU13gIPeEEb5hNYcJXXuz4PrilrzCMCYTOOPz+l0sEdM/okC8JY0SNxm86","it":"sha384-/TRPqXryC5V1tW4fvhG5VxXQucwi/yfzIgpsjigWNxftbgzNC8uxN69q527qcIxK","pt":"sha384-PiyB9SeYRczchz/JgiSS+zo66znK23KqUP7Gqm45aot8Vusi39egPf3taOtr0DVF","nl":"sha384-OUW/B8my3j6RXr/dvE6jXkH+kB/r8lIAw6w65MoSyAOwjvFWeVhErgPq3rAIA3qz","ru":"sha384-+cB5609bmxhJ1/uV02bKEfPmElLdfRzFS7JVYWyhnnTQDjcJ5KJiqEVrUSnswtyM","ja":"sha384-HtZRB/Uo40Mx5FPIq4ICUfISlKFlhO1F7TlVYMEnTSnN0Qd9z2+JnDvhzlBwEu3O","zh-Hant":"sha384-uvUr4FA2PodH9cFq3fyRtcd8DYrKdFyBQP4FIMcxCQB7sjUJTC0m7pBoLueAasMS","he":"sha384-r6suHRr57NEgoqH4azwQU3WCTO39P0W5hgpHak3aJgfTvXpNjZBizrtNCLW1iEv1","ar":"sha384-hT4qIiD1neatfhz7y2LbFizTohTCkTg+rd7Bb6uUMcbeBiMudEWTOiIHVknXMfct"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1539,6 +1548,12 @@ const chapterStars = (band = S.band, ch = S.chapter) => { const r = rec(band, ch
 const chapterDone = (band = S.band, ch = S.chapter) => rec(band, ch.id).d.filter(Boolean).length;
 const nextOpen = () => { const r = rec(S.band, S.chapter.id); const i = S.levels.findIndex((l, i) => !r.d[i]); return i < 0 ? 0 : i; };
 const levelOpen = i => i === 0 || !!rec(S.band, S.chapter.id).d[i - 1];
+/* Check answers live in the save too (r.c per level: 1 right, 0 wrong), not only in the session: a student who
+   leaves mid "Case closed?" flow, or closes the game on a finished chapter, must still be credited. The session
+   counters derive from the save on entry, and a lesson re-entry asks any checks a finished level never got. */
+const checksFromSave = ch => { const c = rec(S.band, ch.id).c; return Array.isArray(c) ? { ok: c.filter(x => x === 1).length, n: c.filter(x => x != null).length } : { ok: 0, n: 0 }; };
+function recordCheck(band, chId, li, ok) { const r = rec(band, chId); if (!Array.isArray(r.c)) r.c = []; if (r.c[li] == null) { r.c[li] = ok ? 1 : 0; save(); } }
+const checkRecorded = (band, chId, li) => { const c = rec(band, chId).c; return Array.isArray(c) && c[li] != null; };
 
 /* ---------- screens ---------- */
 const SCREENS = ['map', 'rr', 'mk'];
@@ -1612,15 +1627,30 @@ function startDaily() {
 /* ---------- a chapter and its levels ---------- */
 function startChapter(id, o = {}) {
   const ch = CHAPTERS.find(c => c.id === id) || CHAPTERS[0];
-  if (S.lesson && !o.chain && !o.replay && (!S.chapter || S.chapter.id !== ch.id || o.level === 1)) { S.checks = { ok: 0, n: 0 }; S.chained = 0; S.locked = null; }
+  if (S.lesson && !o.chain && !o.replay && (!S.chapter || S.chapter.id !== ch.id || o.level === 1)) { S.checks = checksFromSave(ch); S.chained = 0; S.locked = null; }
+  if (o.chain) { const cc = checksFromSave(ch); S.checks.ok += cc.ok; S.checks.n += cc.n; }
   S.chapter = ch; S.levels = levelsFor(ch.id, S.band); S.testing = null;
   if (!S.levels.length) return goMap();
   if (!S.hud) { S.hud = Oomba.ui.hud(['progress', 'count:star'], { onPause: v => { if (v === 'restart') { if (S.screen === 'maker') startMaker(M.free ? 'free' : M.ti); else startLevel(S.li); } if (v === 'quit') { S.quest = null; goTitle(); } } }); }
   // a level asked for by name (a teacher's level param, a quest code's last digit, a test) opens even when the ones
   // before it are not done; otherwise the chapter's first unfinished level
-  if (ch.mode === 'maker') { const r = rec(S.band, ch.id); const allDone = S.levels.every((_, i) => r.d[i]); return startMaker(o.level ? Math.min(S.levels.length, o.level) - 1 : allDone ? 'free' : nextOpen()); }
+  if (ch.mode === 'maker') { const r = rec(S.band, ch.id); const allDone = S.levels.every((_, i) => r.d[i]); const target = () => startMaker(o.level ? Math.min(S.levels.length, o.level) - 1 : allDone ? 'free' : nextOpen()); if (S.lesson && S.lock && !o.level && !o.replay) { const missing = S.levels.map((l, ix) => (l.check && r.d[ix] && !checkRecorded(S.band, ch.id, ix)) ? ix : -1).filter(x => x >= 0); if (missing.length) return lessonCatchUp(ch, missing, allDone ? () => { try { if (HAS_BRB) BRB.gameOver({ won: true, score: Math.min(999, chapterStars() + S.chained) }); } catch (e) { /* fine */ } startMaker('free'); } : target); if (allDone) { try { if (HAS_BRB) BRB.gameOver({ won: true, score: Math.min(999, chapterStars() + S.chained) }); } catch (e) { /* fine */ } } } return target(); }
   const i = o.level ? Math.min(S.levels.length, o.level) - 1 : nextOpen();
+  if (S.lesson && S.lock && !o.level && !o.chain && !o.replay) {
+    const r = rec(S.band, ch.id), allDone = S.levels.every((_, ix) => r.d[ix]);
+    const missing = S.levels.map((l, ix) => (l.check && r.d[ix] && !checkRecorded(S.band, ch.id, ix)) ? ix : -1).filter(x => x >= 0);
+    if (missing.length || allDone) return lessonCatchUp(ch, missing, allDone ? () => chapterEnd() : () => startLevel(nextOpen()));
+  }
   startLevel(i);
+}
+/* A lesson re-entry with finished-but-unchecked levels: ask the outstanding "Case closed?" checks now (each
+   answer is saved at once), then continue where the student actually is. This is what credits a chapter that
+   was finished in an earlier session whose win flow was left halfway. */
+function lessonCatchUp(ch, missing, after) {
+  const ix = missing.shift();
+  if (ix == null) { after(); return; }
+  if (ch.mode === 'maker') startMaker(ix); else startLevel(ix);
+  caseClosedFor(S.levels[ix], ok => { recordCheck(S.band, ch.id, ix, ok); S.checks.n++; if (ok) S.checks.ok++; lessonCatchUp(ch, missing, after); });
 }
 function startLevel(i, record) {
   closeCard(); S.winStamp++; S.li = i; S.level = record || S.levels[i]; S.screen = 'play'; Oomba.scene = 'play'; showOnly('rr');
@@ -2124,7 +2154,7 @@ function onSolved(v) {
     const stamp = ++S.winStamp; const stale = () => S.winStamp !== stamp || S.screen !== 'play';
     after(400, async () => {
       if (stale()) return;
-      if (S.testing) { await Oomba.ui.win({ stars, score: Object.keys(M.tested).length, hero: false, title: tr('Level tested!'), next: false }); if (stale()) return null; startMaker(M.free ? 'free' : M.ti, { keep: true }); return openTesterCard(); }
+      if (S.testing) { await Oomba.ui.win({ stars, score: Object.keys(M.tested).length, hero: false, title: tr('Level tested!'), next: false }); if (stale()) return null; M.pendingFeedback = true; startMaker(M.free ? 'free' : M.ti, { keep: true }); return null; }
       if (daily) { await Oomba.ui.win({ stars, score: stars, hero: false, title: tr('Daily Crew Challenge done!'), next: false }); return stale() ? null : goMap(); }
       const last = S.li >= S.levels.length - 1;
       const miss = stars < 3 ? (stars === 1 || (stars === 2 && !S.hint3) ? (S.level.maxEdits != null ? tr('Fix it in {n} edits or fewer for the next star.', { n: Oomba.num(S.level.maxEdits) }) : tr('Use {n} blocks or fewer for the next star.', { n: Oomba.num(E.parOf(S.level, S.band)) })) : tr('Solve it without the third hint for the next star.')) : '';
@@ -2136,7 +2166,7 @@ function onSolved(v) {
       else startLevel(S.li);
     });
   };
-  if (S.lesson && S.level.check && !S.testing) caseClosed(finish); else finish(null, null);
+  if (S.lesson && S.level.check && !S.testing && !checkRecorded(S.band, S.chapter.id, S.li)) caseClosed(finish); else finish(null, null);
 }
 function skipLevel() {
   if (S.screen === 'maker') return skipTask();
@@ -2181,6 +2211,7 @@ function reportProgress({ stars, check, confidence, skipped, maker }) {
   // under a lesson chain the label keeps the locked chapter's totals; chained chapters only add stars to the score
   const done = S.locked ? S.locked.done : chapterDone(), total = S.locked ? S.locked.total : S.levels.length, sc = Math.min(999, chapterStars() + S.chained);
   if (check != null && S.checks.n < 99) { S.checks.n++; if (check) S.checks.ok++; }
+  if (check != null && S.chapter && CHAPTERS.some(c => c.id === S.chapter.id)) recordCheck(S.band, S.chapter.id, S.li, !!check);
   let label = `${done}/${total} levels, ${sc} stars`;
   if (S.lesson) label += `, ${S.checks.ok}/${S.checks.n} checks`;
   if (maker) reportMaker(); else { try { if (HAS_BRB) BRB.score.submit(sc, label); } catch (e) { /* fine */ } S.lastLabel = label; }
@@ -2269,8 +2300,9 @@ function hintBlock() {
   const count = (list, k) => (list || []).reduce((n, b) => n + (shelfKinds([b]).has(k) && !b.body ? 1 : 0) + count(b.body, k) + count(b.else, k), 0);
   return want.find(k => count(S.prog, k) !== count(sol, k)) || want[0] || null;
 }
-function caseClosed(done) {
-  const ck = S.level.check; let first = null;
+function caseClosed(done) { caseClosedFor(S.level, done); }
+function caseClosedFor(level, done) {
+  const ck = level.check; let first = null;
   S.caseDone = done;
   openCard(m => {
     m.appendChild(el('h2', '', esc(tr('Case closed?'))));
@@ -2339,7 +2371,7 @@ function applyQuestCode(digits) {
 
 /* ---------- the Level Maker: paint a board, Check (the engine's search proves it solvable and gives par), a level code
    on a symbol pad, Test with a friend, remix stamps. Three fix-this-level tasks first, then free building. ---------- */
-const M = { rows: [], tool: 'wall', base: null, task: null, ti: 0, free: false, made: {}, tested: {}, checks: 0, result: null, page: 0, typed: '' };
+const M = { rows: [], tool: 'wall', base: null, task: null, ti: 0, free: false, made: {}, tested: {}, checks: 0, result: null, page: 0, typed: '', pendingFeedback: false };
 const blankRows = n => Array.from({ length: n }, () => '.'.repeat(n));
 const putCh = (rows, x, y, ch) => { rows[y] = rows[y].slice(0, x) + ch + rows[y].slice(x + 1); };
 const codeOf = rows => E.encode({ rows, door: doorRuleOf(rows) });
@@ -2356,7 +2388,7 @@ function startMaker(i, o = {}) {
     M.free = free; M.task = free ? null : S.levels[i]; M.ti = free ? S.levels.length - 1 : i;
     M.rows = M.task ? M.task.rows.slice() : blankRows(isPro() ? 8 : 6);
     M.base = M.task && M.task.remixBase ? codeOf(M.task.rows) : null;
-    M.result = null; M.checks = 0; S.hint = 0; S.hint3 = false; S.fails = 0; S.runs = 0; M.feedback = null; M.improved = false;
+    M.result = null; M.checks = 0; S.hint = 0; S.hint3 = false; S.fails = 0; S.runs = 0; M.feedback = null; M.improved = false; M.pendingFeedback = false;
     M.tool = M.task ? (M.task.shelf[1] || 'floor') : 'wall';
   }
   setVerdict('');
@@ -2367,6 +2399,9 @@ function startMaker(i, o = {}) {
   layoutClass(); renderMaker(); updateHud(); after(0, fitGrid);
   announce($('#mkPill').textContent + '. ' + $('#mkTask').textContent);
   if (M.task && M.task.learn && !SAVE.learned[M.task.id + ':' + S.band]) openLearn();
+  // a test was solved but its tester card was never answered (left via the runbar, or "Not now"): ask again on
+  // every return to the maker until the feedback exists, so "Improved after a test" can actually be earned
+  if (o.keep && M.pendingFeedback && !M.feedback) openTesterCard();
 }
 function renderMaker() { renderMakerGrid(); renderPalette(); renderMakerActions(); renderMakerResult(); }
 function renderMakerGrid() {
@@ -2417,7 +2452,8 @@ function openTesterCard() {
     const ask = (label, opts, set) => { m.appendChild(el('p', '', esc(label))); const row = el('div', 'row'); m.appendChild(row); const bs = opts.map(([v, text]) => { const x = btn(text, { kind: 'quiet', onPress: () => { set(v); for (const y of bs) y.setAttribute('aria-pressed', String(y === x)); } }); x.setAttribute('aria-pressed', 'false'); row.appendChild(x); return x; }); return bs; };
     ask(tr('One fun thing:'), [['route', tr('The route')], ['gems', tr('The gems')], ['corner', tr('The tricky corner')], ['door', tr('The door')]], v => { fun = v; })[0].setAttribute('data-focus', '');
     ask(tr('One confusing thing:'), [['easy', tr('Too easy')], ['hard', tr('Too hard')], ['deadend', tr('A dead end')], ['nothing', tr('Nothing')]], v => { hard = v; });
-    m.appendChild(btn(tr('Change one thing, then press Check again'), { kind: 'hot', icon: 'pencil', big: true, onPress: () => { M.feedback = { fun, hard }; closeCard(); renderMakerResult(); announce(tr('Change one thing, then press Check again')); } }));
+    m.appendChild(btn(tr('Change one thing, then press Check again'), { kind: 'hot', icon: 'pencil', big: true, onPress: () => { M.feedback = { fun, hard }; M.pendingFeedback = false; closeCard(); renderMakerResult(); announce(tr('Change one thing, then press Check again')); } }));
+    m.appendChild(btn(tr('Not now'), { kind: 'quiet', onPress: () => { closeCard(); } }));
   }, 'tester');
 }
 /* the maker's second row of actions lives in a card, so it fits a phone held sideways too */
@@ -2477,7 +2513,7 @@ function mkCheck() {
       if (what === 'next') startMaker(M.ti + 1); else startMaker(M.ti);
     });
   };
-  if (S.lesson && M.task.check) caseClosed(finish); else finish(null, null);
+  if (S.lesson && M.task.check && !checkRecorded(S.band, S.chapter.id, M.ti)) caseClosed(finish); else finish(null, null);
 }
 function mkTest() {
   const res = M.result && M.result.check && M.result.check.solvable ? M.result : null;
@@ -2554,7 +2590,7 @@ Oomba.fonts.ready.then(() => { goTitle(); });
 const stateObj = () => ({ screen: S.screen, chapter: S.chapter ? S.chapter.id : null, level: S.li + 1, levelId: S.level ? S.level.id : null, stars: S.chapter ? chapterStars() : 0, band: S.band, mode: S.mode, lesson: S.lesson, lock: S.lock,
   phase: S.playing ? 'running' : cardOpen ? 'card' : S.screen, card: cardOpen, blocks: E.blocks(S.prog), runs: S.runs, fails: S.fails, hint: S.hint, done: S.chapter ? chapterDone() : 0, total: S.levels.length, label: S.lastLabel || null, checks: Object.assign({}, S.checks), layout: S.layout, bolt: Object.assign({}, BOLT), planDone: S.planDone,
   edits: S.starter0 ? E.edits(S.starter0, S.prog) : 0, compare: S.compare ? S.compare.picked : null, testing: !!S.testing, pair: !!SAVE.pair, driver: S.driver, crowns: crownCount(), tabs: $('#tabs').hidden ? 0 : $('#tabs').children.length,
-  maker: S.screen === 'maker' ? { task: M.task ? M.task.id : null, free: M.free, tool: M.tool, rows: M.rows.slice(), result: M.result ? { ok: M.result.ok, why: M.result.why, n: M.result.n } : null, base: M.base, made: Object.keys(M.made).length, tested: Object.keys(M.tested).length, feedback: M.feedback || null, improved: !!M.improved } : null, locked: S.locked ? S.locked.chapter.id : null, ready: true });
+  maker: S.screen === 'maker' ? { task: M.task ? M.task.id : null, free: M.free, tool: M.tool, rows: M.rows.slice(), result: M.result ? { ok: M.result.ok, why: M.result.why, n: M.result.n } : null, base: M.base, made: Object.keys(M.made).length, tested: Object.keys(M.tested).length, feedback: M.feedback || null, improved: !!M.improved, pendingFeedback: !!M.pendingFeedback } : null, locked: S.locked ? S.locked.chapter.id : null, ready: true });
 Oomba.test({ state: stateObj, start: () => { closeKitScreens(); closeCard(); S.lesson = false; S.lock = false; startChapter('sequences'); } });
 Object.assign(window.__brbTest, {
   start: (o = {}) => {
