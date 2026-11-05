@@ -44,9 +44,9 @@ test('the switch: admin only (404 for anyone else), audited, by slug, id or link
   }
   assert.equal((await call('/admin/voices', { user: teacher })).status, 404);
   assert.equal(TG.isOn(teacherGame.id), false);
-  // Official games: never through this switch (their known lines, or the device's voice by design for word games).
+  // Official games: never through this switch (they are all registered for AI voices in tts-lines already).
   const off1 = await sw(boss, 'quest-race', true);
-  assert.equal(off1.status, 400); assert.match(off1.json.error, /Official games not on the AI voices list/);
+  assert.equal(off1.status, 400); assert.match(off1.json.error, /already has AI voices/);
   const r = await sw(boss, 'https://oomba.ai/es/g/haberle-quiz?x=1', true);
   assert.equal(r.status, 200, r.text); assert.equal(r.json.game.id, teacherGame.id); assert.equal(r.json.game.on, true);
   assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='admin.tts.game.on' AND target=? AND actor_id=?", teacherGame.id, boss.id));

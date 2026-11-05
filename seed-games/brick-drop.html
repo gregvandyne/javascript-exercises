@@ -316,7 +316,7 @@ const CONFIG = {
    missing keys fall back to the base language (en-GB -> en), then to English.
    A value can be a plural set ({ one, few, many, other, ... }) picked with Intl.PluralRules for {n}.
    ===================================================================================== */
-/* ==== I18N START ==== */
+// ==== I18N START ====
 const I18N = {
   en: {
     pause: "Pause", soundOff: "Turn sound off", soundOn: "Turn sound on",
@@ -704,7 +704,7 @@ const I18N = {
     bLevel: "Level {n}!", bGo: "Start!", bWhoosh: "Wiesj! Meer ruimte!", bReady: "Klaar?", bReadySprint: "Klaar? {n} rijen!", bReadyZen: "Rustig stapelen"
   }
 };
-/* ==== I18N END ==== */
+// ==== I18N END ====
 
 /** The player's language (from the platform; never from the URL) and helpers. Looked up once, never per frame. */
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';

@@ -180,15 +180,22 @@ test('online voices: after on-device natural voices, before plain on-device ones
   assert.equal(pick([V('Daniel', 'en-GB'), G('Google français', 'fr-FR')], 'en-US'), 'Daniel');
 });
 
-// ---- The games' standalone copies agree with the SDK --------------------------------------------
+// ---- The word games speak through BRB.speak only (owner's rule, 5 Nov 2026) -------------------------
+// Word Peek and Shark Plank used to carry a standalone copy of the voice pick for playing the file on its
+// own. That copy is gone: every official game speaks through the shared path (the AI voice when it is on
+// for the game and language; the SDK's device-voice fallback otherwise), so the SDK's pick is the only one.
 const GAMES = ['seed-games/word-peek.html', 'seed-games/shark-plank.html'];
 for (const file of GAMES) {
-  test(`${file}: its standalone voice pick agrees with BRB.voice`, () => {
+  test(`${file}: no standalone voice pick; speech goes through BRB.speak only`, () => {
     const src = fs.readFileSync(file, 'utf8');
-    const pick = new Function(between(src, '/* voice-pick:start', '/* voice-pick:end */') + '\nreturn pickVoice;')();
-    for (const list of Object.values(LISTS)) {
-      for (const lang of [...LANGS, 'en', 'ar', 'ru', 'it', 'nl', 'zh-TW', 'zh-HK', 'es-MX', 'en-IN', 'iw']) assert.equal(pick(list, lang), sdkPick(list, lang), `${file} ${lang}`);
-    }
+    assert.ok(!src.includes('voice-pick:start'), 'the standalone copy is gone');
+    assert.ok(!src.includes('speechSynthesis'), 'the game never calls the device speech API itself');
+    const make = win => new Function('window', between(src, '/** Speaks text through BRB.speak only', '\nfunction say') + '\nreturn speakWith;')(win);
+    const calls = [];
+    const speakWith = make({ BRB: { speak: (text, opts) => { calls.push([text, opts]); return true; } } });
+    assert.equal(speakWith('cat', 'en-US', 0.9, false), true);
+    assert.deepEqual(calls, [['cat', { lang: 'en-US', rate: 0.9, queue: false }]]);
+    assert.equal(make({})('cat', 'en-US', 1, false), false, 'no SDK: nothing is said, and nothing throws');
   });
 }
 
@@ -290,41 +297,8 @@ test('long text is spoken a sentence at a time, onend once at the end; a paused 
   f.api.stopSpeaking(); assert.deepEqual(f.log.at(-1), ['cancel']);
 });
 
-// ---- The games' standalone fallback (no SDK): the best voice, always set explicitly -------------------
-for (const file of GAMES) {
-  test(`${file}: standalone speech never lets the browser choose the voice`, () => {
-    const src = fs.readFileSync(file, 'utf8');
-    const code = between(src, '/* voice-pick:start', '\nfunction say(');
-    const run = voices => {
-      const log = [], listeners = {}, timers = [];
-      const ss = { list: voices, getVoices() { return this.list; }, speak(u) { log.push(u); }, cancel() {},
-        addEventListener(n, f) { (listeners[n] = listeners[n] || []).push(f); } };
-      class Utter { constructor(text) { this.text = text; } }
-      const win = { speechSynthesis: ss, SpeechSynthesisUtterance: Utter };
-      const speakWith = new Function('window', 'SpeechSynthesisUtterance', 'setTimeout', code + '\nreturn speakWith;')(win, Utter, f => timers.push(f));
-      return { speakWith, ss, log, fire: n => (listeners[n] || []).forEach(f => f()), runTimers: () => timers.splice(0).forEach(f => f()) };
-    };
-    // Voices listed: the best one (Google's online voices beat David on Windows Chrome).
-    let f = run(LISTS.chromeWindows);
-    assert.equal(f.speakWith('cat', 'en-US', 0.9, false), true);
-    assert.equal(f.log[0].voice.name, 'Google US English'); assert.equal(f.log[0].rate, 0.9);
-    assert.equal(f.speakWith('Bonjour', 'fr', 1, false), true);
-    assert.equal(f.log[1].voice.name, 'Google français');
-    assert.equal(f.speakWith('Shalom', 'he', 1, false), false);   // no Hebrew voice at all
-    assert.equal(f.log.length, 2);
-    // Voices not listed yet (Chrome on first load): wait for them, then speak with an explicit voice.
-    f = run([]);
-    assert.equal(f.speakWith('cat', 'en-US', 1, false), true);
-    assert.equal(f.log.length, 0, 'no lang-only utterance');
-    f.ss.list = LISTS.iosSafari; f.fire('voiceschanged'); f.runTimers();
-    assert.equal(f.log.length, 1); assert.equal(f.log[0].voice.name, 'Samantha (Enhanced)');
-    // The list arrives with no voice for the language, or never: say nothing.
-    f = run([]); f.speakWith('Shalom', 'he', 1, false); f.ss.list = GOOGLE_NET; f.fire('voiceschanged');
-    assert.equal(f.log.length, 0);
-    f = run([]); f.speakWith('cat', 'en-US', 1, false); f.runTimers();
-    assert.equal(f.log.length, 0);
-  });
-}
+// (The standalone-fallback behaviour tests that used to live here went with the copies: with no SDK the
+// two word games now simply stay silent — asserted in the BRB.speak-only tests above.)
 
 // ---- Old games that call speechSynthesis.speak themselves get the better voices too (owner, 29 Oct 2026) -------------
 // The SDK wraps window.speechSynthesis.speak: a missing voice gets the best one, a robotic voice the game picked is

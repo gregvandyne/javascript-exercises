@@ -433,6 +433,7 @@ const START_MONEY=1000, PASS_GO=200, WIN=3, SINBIN=9;
 const LANG=(window.BRB&&BRB.user&&BRB.user.lang)||'en';
 const DIR=(window.BRB&&BRB.user&&BRB.user.dir)==='rtl'?'rtl':'ltr';
 const LOCALE=LANG==='ar'?'ar-u-nu-latn':LANG;   // Arabic with Latin digits, like the site
+// ==== I18N START ====
 const I18N=/*I18N:BEGIN*/{
 "en": {
   "howPlay": "How to play",
@@ -5132,6 +5133,7 @@ const I18N=/*I18N:BEGIN*/{
   "noDeal": "{name} zegt: ‘Geen deal! Bied me meer.’"
 }
 }/*I18N:END*/;
+// ==== I18N END ====
 const LANG_CHAIN=[LANG,LANG.split('-')[0],'en'];
 function tv(key){for(const l of LANG_CHAIN){const d=I18N[l];if(d&&d[key]!==undefined)return d[key];}return key;}
 let PLURALS,NUMBERS,MONEY;

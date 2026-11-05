@@ -2299,3 +2299,18 @@ the decks wire to: letters (step 4.3, both bands), senders (Pro 4.1), media (Pro
 and the round Escape the Post Office's Lock 4 mirrors: Explorer 6 messages, Pro 8 with faked senders among
 them). A round is hunt (tap every hidden clue) → choose (Deliver / Bin it / Show Pim / Report & block) →
 debrief (the missed clues named); BRB.gameOver fires only when a set is finished, never on open or mid-round.
+
+## AI voices for every official game (5 Nov 2026)
+
+Owner's rule: **every official game uses the AI voice**, and **every game built for a course ships registered
+for AI voices from day one**. This supersedes the word-game carve-out in the AI-voices entries above.
+- All 30 official seed games are listed in `services/tts-lines.js` GAMES. A game's lines come from the marked
+  I18N block in its own file (the CS Quest games from their language packs), read with its host's or
+  character's role, narrator where it has none.
+- Games speak only through the shared path (BRB.speak, `public/js/tts.js`): no game calls the device speech
+  API itself any more. The device voice remains, as the shared fallback inside the SDK and tts.js only.
+- A coverage test (`tests/unit/tts-coverage.test.js`) enumerates the seed games and every game named in
+  `services/course-catalog.js`, and fails until each one is registered — a future course game cannot ship on
+  the device voice by accident.
+- A word game's dictionary still never becomes a sentence kit: only the game's own scripted lines are read.
+  A word or letter a player types is never spoken by the AI voice.

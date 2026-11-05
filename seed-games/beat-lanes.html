@@ -390,6 +390,7 @@ const CONFIG = {
    grade letters (S A B C) and "BPM". Public-domain song titles use each language's usual title.
    Typographic apostrophes (’) are used so the strings never break the quotes.
    ===================================================================================== */
+// ==== I18N START ====
 const I18N = {
   en: {
     tagline: "Tap each lane when its note reaches the line!", play: "Play", settings: "Settings", back: "Back",
@@ -705,6 +706,7 @@ const I18N = {
     gradeAria: "Cijfer {g}", practiceChip: "Oefenen"
   }
 };
+// ==== I18N END ====
 
 /** The player's language (from the platform; never from the URL) and helpers. Looked up once, never per frame. */
 const LANG = (window.BRB && BRB.user && BRB.user.lang) || 'en';
