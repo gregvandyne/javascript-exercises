@@ -12,8 +12,9 @@
 //     the player has answered (grade(), answerOne()).
 // Cyber Defenders (seed-lessons/cyber-defenders) is a second, deck-native course on the same machinery: its
 // units.json is the source of truth for the order, the game module and the standards of each step, its decks and
-// check banks live beside it, and its steps play games it shares with CS Quest and the open catalogue
-// (course-catalog.js "shared"), so nothing about it is read from CS Quest's lesson files.
+// check banks live beside it, and its steps play two games it borrows (course-catalog.js "shared": CS Quest's
+// Packet Post and the open Would You Rather) plus two of its own course-only games (Trick Inbox, Escape the
+// Post Office), so nothing about it is read from CS Quest's lesson files.
 // Progress (course_progress, course_bands) is per player, guests included.
 import fs from 'node:fs';
 import path from 'node:path';
