@@ -16,19 +16,19 @@
     {
      "cue": "The sharing sort that opens Lock It in Pro",
      "box": [
-      7,
-      26,
-      47,
-      9
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     },
     {
      "cue": "Share, or keep private: the first layer is a decision",
      "box": [
-      54,
-      43,
-      23,
-      9
+      54.0,
+      44.6,
+      25.9,
+      6.6
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "The Pro mailbox key builder",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "A unique passphrase per account starts here",
      "box": [
-      7,
-      55,
-      47,
-      10
+      8.2,
+      57.7,
+      44.8,
+      6.0
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "The card about your mailbox key",
      "box": [
-      7,
-      26,
-      47,
-      16
+      8.0,
+      27.9,
+      45.2,
+      13.2
      ]
     },
     {
      "cue": "Share or Shield: every fact has a good side and a risk",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     }
    ]
@@ -97,19 +97,19 @@
     {
      "cue": "The home router, with its key on a sticker",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "The sticker word itself, offered as a tile",
      "box": [
-      71,
-      37,
-      18,
-      10
+      72.2,
+      38.0,
+      16.2,
+      7.4
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "A privacy screen on the monitor: physical or digital?",
      "box": [
-      7,
-      26,
-      47,
-      9
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     },
     {
      "cue": "The Physical or Digital sort",
      "box": [
-      54,
-      46,
-      26,
-      9
+      54.0,
+      47.4,
+      28.5,
+      6.7
      ]
     }
    ]
@@ -158,19 +158,19 @@
     {
      "cue": "The last Lock It sort in Pro: your mailbox key",
      "box": [
-      7,
-      26,
-      47,
-      16
+      8.0,
+      27.9,
+      45.2,
+      13.2
      ]
     },
     {
      "cue": "Score the shape, not the secrets: nothing sorted yet",
      "box": [
-      7,
-      41,
-      47,
-      9
+      8.2,
+      42.5,
+      44.8,
+      6.0
      ]
     }
    ]
@@ -210,10 +210,10 @@
     {
      "cue": "Play the Pro levels again, naming each layer",
      "box": [
-      7,
-      26,
-      47,
-      9
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     }
    ]

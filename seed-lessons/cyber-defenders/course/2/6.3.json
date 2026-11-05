@@ -16,19 +16,19 @@
     {
      "cue": "Spot the trick: where the drill gets its cards",
      "box": [
-      27,
-      15,
-      46,
-      67
+      28.1,
+      16.0,
+      43.8,
+      68.0
      ]
     },
     {
      "cue": "Rush, prizes, key asks, strangers: know the signs",
      "box": [
-      33,
-      53,
-      34,
-      19
+      34.7,
+      52.8,
+      30.5,
+      17.8
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "The trick card wearing a bank's name",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "The badge says unknown sender: contain it there",
      "box": [
-      28,
-      26.5,
-      18.5,
-      7.5
+      22.7,
+      29.8,
+      12.7,
+      3.4
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "The faked sender name on the card",
      "box": [
-      7,
-      26.5,
-      40,
-      7.5
+      13.0,
+      29.8,
+      22.4,
+      3.4
      ]
     },
     {
      "cue": "Preserve it: the whole card is the evidence",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
@@ -97,19 +97,19 @@
     {
      "cue": "The real message from a sender you know",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "Report, then recover: the buttons wait below",
      "box": [
-      54,
-      56,
-      35,
-      10.5
+      54.0,
+      57.7,
+      34.4,
+      6.8
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "The parcel trick card",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Asks for money, two hours to act: run the drill",
      "box": [
-      54,
-      39,
-      35,
-      18
+      54.0,
+      40.2,
+      34.4,
+      16.5
      ]
     }
    ]
@@ -158,19 +158,19 @@
     {
      "cue": "The fan club card that knows too much",
      "box": [
-      7,
-      25,
-      47,
-      30
+      8.0,
+      27.9,
+      45.2,
+      26.0
      ]
     },
     {
      "cue": "They know your dog and your birthday: log that",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     }
    ]
@@ -210,10 +210,10 @@
     {
      "cue": "The Boss Round message, with one clue found",
      "box": [
-      14,
-      36,
-      72,
-      24
+      15.1,
+      37.8,
+      70.0,
+      21.8
      ]
     }
    ]

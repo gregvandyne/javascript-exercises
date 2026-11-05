@@ -16,19 +16,19 @@
     {
      "cue": "Who gets to hear the key? Permission decides",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "Okay to tell, or keep it to yourself",
      "box": [
-      54,
-      43,
-      21,
-      17
+      54.1,
+      44.6,
+      20.5,
+      14.4
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "A tablet holds your messages and pictures: sort what protects it",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "Protects it, or risky? You decide for each habit",
      "box": [
-      54,
-      43,
-      27,
-      9
+      54.1,
+      44.6,
+      30.2,
+      6.6
      ]
     }
    ]
@@ -78,19 +78,19 @@
     {
      "cue": "A passphrase is one lock: the words picked so far",
      "box": [
-      7,
-      50,
-      47,
-      18
+      8.0,
+      52.3,
+      45.2,
+      14.9
      ]
     },
     {
      "cue": "The meter shows how strong that one lock is",
      "box": [
-      7,
-      63,
-      47,
-      5
+      8.0,
+      64.9,
+      45.2,
+      2.3
      ]
     }
    ]
@@ -105,19 +105,19 @@
     {
      "cue": "A copy in the family's online folder: a spare kept elsewhere",
      "box": [
-      7,
-      26,
-      47,
-      9
+      8.0,
+      27.9,
+      45.2,
+      6.8
      ]
     },
     {
      "cue": "A good spare copy, or not a spare copy?",
      "box": [
-      54,
-      43,
-      21,
-      17
+      54.1,
+      44.6,
+      21.2,
+      14.4
      ]
     }
    ]
@@ -132,19 +132,19 @@
     {
      "cue": "If one key opens every door, losing it opens them all",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     },
     {
      "cue": "Safe habit or risky habit: sort them",
      "box": [
-      54,
-      41,
-      30,
-      10
+      54.1,
+      42.4,
+      32.5,
+      6.7
      ]
     }
    ]
@@ -184,10 +184,10 @@
     {
      "cue": "Play the Lock It levels you have not played yet",
      "box": [
-      54,
-      37,
-      35,
-      34
+      54.0,
+      38.0,
+      34.4,
+      32.4
      ]
     }
    ]

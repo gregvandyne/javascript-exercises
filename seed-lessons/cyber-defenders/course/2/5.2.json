@@ -16,19 +16,19 @@
     {
      "cue": "A page where anyone can pile in",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Only your class can comment here",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Delete it, and the drama loses its fuel",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Leave it, and the audience keeps it alive",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "Your words, inside the chat for now",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "A copy outside it, beyond your control",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -97,19 +97,19 @@
     {
      "cue": "Evidence first: a message you can save and show",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "Read carefully, then report: never debate it",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "Laugh along, and the pile-on grows",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "A kind word to the target changes the ending",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -158,19 +158,19 @@
     {
      "cue": "Spot the trick: the chapter that trains your eye",
      "box": [
-      27,
-      15,
-      46,
-      67
+      28.1,
+      16.0,
+      43.8,
+      68.0
      ]
     },
     {
      "cue": "Rush, prizes, key asks, strangers: the evidence list",
      "box": [
-      33,
-      53,
-      34,
-      19
+      34.7,
+      52.8,
+      30.5,
+      17.8
      ]
     }
    ]
@@ -210,10 +210,10 @@
     {
      "cue": "Play Online: share or keep, and judge each pair",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

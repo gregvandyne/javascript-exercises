@@ -16,19 +16,19 @@
     {
      "cue": "The first letter: big, exciting words",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Tap every cue that smells like a trick",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      42.6,
+      34.4,
+      17.4
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Clue one, found: hurry, only ten minutes",
      "box": [
-      54,
-      40,
-      18,
-      11
+      54.0,
+      42.6,
+      17.4,
+      8.2
      ]
     },
     {
      "cue": "The letter itself begs: reply in the next ten minutes",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "Free coins today only, from the Game Shop",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Its cues: free coins, hurry, a button begging a tap",
      "box": [
-      54,
-      39,
-      35,
-      18
+      54.0,
+      40.2,
+      34.4,
+      16.5
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "One more letter: your account is locked",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Count its clues: threats, key asks, unknown sender",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      40.2,
+      34.4,
+      17.4
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "Not every message is a trick: read carefully first",
      "box": [
-      54,
-      25,
-      35,
-      10
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     },
     {
      "cue": "A real one: a field trip note from your teacher",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Check four cards in Spot the Trick",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]

@@ -16,19 +16,19 @@
     {
      "cue": "A class page where anyone can comment",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "A class page only your class can see",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "Chat with a nickname nobody can trace",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Or your real name, for strangers to find",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "A new friend asks for your street and offers a gift",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "A new friend: an unknown sender",
      "box": [
-      7,
-      26.5,
-      40.5,
-      7.5
+      13.0,
+      29.8,
+      23.6,
+      3.4
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "Asks where you live; someone you have never met",
      "box": [
-      54,
-      39,
-      35,
-      18
+      54.0,
+      40.2,
+      34.4,
+      16.5
      ]
     },
     {
      "cue": "The safe move: ask a trusted adult",
      "box": [
-      54,
-      56,
-      35,
-      10.5
+      54.0,
+      57.7,
+      34.4,
+      6.8
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "A message you may leave at any time",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "Decide calmly: leaving a chat is always allowed",
      "box": [
-      54,
-      56,
-      35,
-      10.5
+      54.0,
+      57.7,
+      34.4,
+      6.8
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Talk through each chat choice before you pick a side",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

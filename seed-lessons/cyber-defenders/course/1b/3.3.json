@@ -16,19 +16,19 @@
     {
      "cue": "Your drawing, shown to everyone online",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Your drawing, kept to family only",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -49,19 +49,19 @@
     {
      "cue": "Use a picture someone else made, and credit them",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Or draw your own, even if it is worse",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -76,19 +76,19 @@
     {
      "cue": "One photo, shared with the whole world",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Ten photos, shared with ten friends",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -103,19 +103,19 @@
     {
      "cue": "In the game, your passphrase is your mailbox key",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      10.3
      ]
     },
     {
      "cue": "Words nobody could guess about you",
      "box": [
-      8,
-      68,
-      45,
-      5
+      8.5,
+      69.3,
+      43.8,
+      3.3
      ]
     }
    ]
@@ -130,19 +130,19 @@
     {
      "cue": "One photo, shared with the whole world",
      "box": [
-      6,
-      14,
-      43,
-      69
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
      "cue": "Ten photos, shared with ten friends",
      "box": [
-      51,
-      14,
-      43,
-      69
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -182,10 +182,10 @@
     {
      "cue": "Play Online: share or keep, and judge each pair",
      "box": [
-      6,
-      14,
-      88,
-      69
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

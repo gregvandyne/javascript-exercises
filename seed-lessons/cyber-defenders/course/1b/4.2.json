@@ -16,19 +16,19 @@
     {
      "cue": "Spot the trick: the chapter that trains your eye",
      "box": [
-      27,
-      15,
-      46,
-      67
+      28.1,
+      16.0,
+      43.8,
+      68.0
      ]
     },
     {
      "cue": "Rush, prizes, key asks, strangers: the signs of a trick",
      "box": [
-      33,
-      53,
-      34,
-      19
+      34.7,
+      52.8,
+      30.5,
+      17.8
      ]
     }
    ]
@@ -43,19 +43,19 @@
     {
      "cue": "The key-hunter's letter: it begs for your mailbox key",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Its cues give the motive away",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      42.6,
+      34.4,
+      17.4
      ]
     }
    ]
@@ -70,19 +70,19 @@
     {
      "cue": "The giggler's card: scary words that want a fast reply",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     },
     {
      "cue": "Scary is a trick too: act before you think is the trap",
      "box": [
-      54,
-      25,
-      35,
-      13
+      54.0,
+      26.5,
+      34.3,
+      7.9
      ]
     }
    ]
@@ -104,19 +104,19 @@
     {
      "cue": "Name the motive before you judge the card",
      "box": [
-      54,
-      40,
-      35,
-      19
+      54.0,
+      40.2,
+      34.4,
+      17.4
      ]
     },
     {
      "cue": "Then decide: safe, trick, or ask a trusted adult",
      "box": [
-      54,
-      57,
-      35,
-      9
+      54.0,
+      58.5,
+      34.4,
+      6.6
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "A safe message earns a calm read, not a fast reply",
      "box": [
-      7,
-      25,
-      47,
-      22
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
      "cue": "Safe, trick, or ask a trusted adult: starve every trick",
      "box": [
-      54,
-      56,
-      35,
-      10.5
+      54.0,
+      57.7,
+      34.4,
+      6.8
      ]
     }
    ]
@@ -183,10 +183,10 @@
     {
      "cue": "Name each card's motive in Spot the Trick",
      "box": [
-      7,
-      25,
-      47,
-      27
+      8.0,
+      27.9,
+      45.2,
+      22.9
      ]
     }
    ]
