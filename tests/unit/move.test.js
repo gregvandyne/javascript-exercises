@@ -16,6 +16,8 @@ const { createApp } = await import('../../server/app.js');
 const MOVE = await import('../../server/services/move.js');
 const DATA = await import('../../server/services/move-data.js');
 const lines = await import('../../server/services/tts-lines.js');
+const tts = await import('../../server/services/tts.js');
+const V = await import('../../server/services/tts-voices.js');
 
 const EP = DATA.episodeById('mountain-morning');
 
@@ -76,7 +78,10 @@ test('every narration line is registered in tts-lines, word for word, in the nar
   EP.segments.forEach((s, si) => s.lines.forEach((text, li) => {
     const got = lines.moveLine(EP.id, si, li);
     assert.ok(got, `segment ${si} line ${li} is registered`);
-    assert.equal(got.text, text); assert.equal(got.role, 'narrator'); n++;
+    assert.equal(got.text, text); assert.equal(got.role, 'narrator');
+    assert.equal(got.voice, 'fable', 'every line carries the pinned British narrator voice');
+    assert.equal(got.accent, 'en-GB', 'every line carries the matching British accent hint');
+    n++;
   }));
   EP.endLines.forEach((text, li) => {
     const got = lines.moveLine(EP.id, EP.segments.length, li);
@@ -146,6 +151,15 @@ test('the pages serve: index lists Episode 1, the player carries the data, a bad
     assert.equal(pd.episode.timeline[pd.episode.timeline.length - 1].start, 300);
     assert.equal(pd.transitions.length, EP.segments.length - 1, 'one transition slot per join');
     assert.ok(pd.transitions.every(u => u === null || typeof u === 'string'), 'transition slots are URLs or empty');
+    // The logo intro card (Greg, 2026-11-05): wired into page-data, present in the page, and
+    // served as the real composed PNG (the primary logo, never AI-generated).
+    assert.equal(pd.introCard, '/move-intro/logo-intro.png', 'the logo intro card is wired (base64-stored, like the frames)');
+    assert.ok(play.includes('id="mv-introcard"'), 'the player page carries the intro card element');
+    const card = await fetch(base + pd.introCard);
+    assert.equal(card.status, 200);
+    assert.match(card.headers.get('content-type') || '', /image\/png/);
+    const cbytes = Buffer.from(await card.arrayBuffer());
+    assert.ok(cbytes.length > 10000 && cbytes[0] === 0x89 && cbytes[1] === 0x50 && cbytes[2] === 0x4e && cbytes[3] === 0x47, 'a real PNG comes back');
     const img = await fetch(base + pd.frames.mountain);
     assert.equal(img.status, 200);
     assert.match(img.headers.get('content-type') || '', /image\/jpeg/);
@@ -173,6 +187,43 @@ test('completion: a guest stores nothing, a signed-in user stores once, mid-epis
     assert.equal(r.status, 200); assert.equal(d.stored, false, 'an anonymous post stores nothing (a guest in class)');
     assert.equal((await fetch(base + '/api/move/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ episode: 'nope' }) })).status, 404);
   } finally { await close(); }
+});
+
+test('the logo pre-roll and the kind British narrator are pinned (Greg, 2026-11-05)', () => {
+  // Pre-roll mechanics, pinned in the player source: the card shows before the master clock
+  // moves, the music bed starts underneath it, narration never pumps over it, and the hold
+  // is about 3.5s (1.5s under reduced motion). The behaviour itself is played in e2e.
+  const player = read('public/js/move.js');
+  assert.ok(/const PREROLL_S = reduced \? 1\.5 : 3\.5;/.test(player), 'the pre-roll holds about 3.5s, shorter under reduced motion');
+  assert.ok(/prerollDone = !INTRO_CARD/.test(player), 'no card served, no pre-roll');
+  const tick = player.slice(player.indexOf('function tick()'), player.indexOf('function startClock'));
+  assert.ok(tick.indexOf('prerollActive') >= 0 && tick.indexOf('prerollActive') < tick.indexOf('segElapsed += dt'), 'the pre-roll runs before the master clock advances');
+  assert.ok(/if \(prerollActive \|\| !narrationLive\(\)/.test(player), 'narration never pumps over the card');
+  const play = player.slice(player.indexOf('function play()'), player.indexOf('function pause()'));
+  assert.ok(play.indexOf('Music.start()') >= 0 && play.indexOf('Music.start()') < play.indexOf('showIntroCard()'), 'the music bed starts underneath the card');
+  const route = read('server/routes/move.js');
+  assert.ok(route.includes('id="mv-introcard"') && route.includes('introCard: introCardUrl()'), 'the route serves the card and wires it into page-data');
+  assert.ok(fs.existsSync(path.join(ROOT, 'public/img/move/logo-intro.png.b64')), 'the composed card is in the repo (base64-stored, like the frames)');
+  const css = read('public/css/move.css');
+  assert.ok(/\.mv-introcard \{[^}]*transition: opacity \.45s/.test(css) && /\.mv-introcard img \{[^}]*object-fit: contain/.test(css), 'the card crossfades like a join and is never cropped');
+
+  // The narrator: fable, the British-accented voice in the platform's set, pinned for the
+  // yoga context only. plan() proves the wiring end to end: the voice lands on the plan and
+  // the steering accent matches it, while a plain narrator plan (every other context) keeps
+  // the admin/default voice and its own accent.
+  assert.equal(lines.MOVE_TTS_VOICE, 'fable');
+  assert.ok(V.VOICES.includes(lines.MOVE_TTS_VOICE), 'the pinned voice is a real platform voice');
+  assert.equal(lines.MOVE_TTS_ACCENT, 'en-GB');
+  const ttsRoute = read('server/routes/tts.js');
+  const moveCtx = ttsRoute.slice(ttsRoute.indexOf("b.ctx === 'move'"), ttsRoute.indexOf("return { error: [400, 'ctx'] }"));
+  assert.ok(moveCtx.includes('voice: line.voice') && moveCtx.includes('accent: line.accent'), 'ctx move passes the pinned voice and accent through resolve');
+  const line = lines.moveLine(EP.id, 0, 0);
+  const p = tts.plan({ text: line.text, locale: 'en', role: line.role, voice: line.voice, accent: line.accent });
+  assert.equal(p.voice, 'fable', 'a move line plans in fable');
+  assert.ok(p.instructions.includes('British') && !p.instructions.includes('American'), 'the steering matches the voice: British, not American');
+  const plain = tts.plan({ text: 'Hello.', locale: 'en', role: 'narrator' });
+  assert.equal(plain.voice, V.voiceFor('narrator', 'en'), 'every other context keeps the admin/default narrator voice');
+  assert.ok(plain.instructions.includes('American English'), 'every other context keeps its own accent steering');
 });
 
 test('ctx move on the TTS route is not an unknown context', async () => {

@@ -3,7 +3,9 @@
 // versions. The episode plays as ONE continuous timeline (Greg's seamless rule): the segments are
 // chapter markers on a single five minute master clock, the narration is one queue scheduled on
 // that clock (a line in progress is never cut at a chapter join; it finishes across it), the music
-// is one bed started once and never restarted, and the shots are joined by transition clips
+// is one bed started once and never restarted, and the shots are joined by transition clips.
+// Before that clock starts, a logo intro pre-roll (the composed Oomba Academy card, about 3.5s)
+// opens the episode with the music bed already running underneath it, outside the master clock.
 // straddling the joins or, without one, a 0.45s crossfade. This file holds the three engines:
 //   1. The clock: walks the segments, poses Remy (data-pose on the stage), shows the seated version
 //      in the corner for standing poses, and pauses Tree and Boat on a 10 second "Your turn" ring.
@@ -33,6 +35,7 @@ const CROSSFADE_MS = 450;
 const captionEl = $('mv-caption'), segNameEl = $('mv-segname'), barEl = $('mv-bar'), timeEl = $('mv-time');
 const playBtn = $('mv-play'), statusEl = $('mv-status'), yourTurnEl = $('mv-yourturn'), ringEl = $('mv-ring');
 const endCard = $('mv-endcard'), doneStatus = $('mv-done-status');
+const introCardEl = $('mv-introcard');
 const TOTAL = EP.segments.reduce((a, s) => a + s.seconds, 0);
 const FAST = Math.max(1, Math.min(60, Number(new URLSearchParams(location.search).get('fast')) || 1));
 const STANDING = new Set(['mountain', 'tree', 'star', 'waterfall']);
@@ -42,6 +45,17 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (reduced) { stage.dataset.motion = 'reduced'; mini.dataset.motion = 'reduced'; framesEl.dataset.motion = 'reduced'; }
 
 let playing = false, segIdx = -1, segElapsed = 0, lastTick = 0, timer = null;
+// The logo intro pre-roll (Greg, 2026-11-05): the composed Oomba Academy card
+// (data.introCard, served by routes/move.js when the file is there) opens the episode for
+// about 3.5 seconds BEFORE the master timeline starts. It sits outside the 300 second
+// clock entirely: no chapter due-time, narration due second or completion moves, the
+// music bed starts underneath the card (its single start counts from here), no narration
+// line or caption plays over it, and it crossfades into the intro shot with the same
+// 0.45s fade as the shot joins. Pausing freezes the hold; reduced motion keeps the card
+// but shortens the hold to 1.5s and drops the fade (CSS). No card file, no pre-roll.
+const INTRO_CARD = data.introCard || null;
+const PREROLL_S = reduced ? 1.5 : 3.5;
+let prerollActive = false, prerollDone = !INTRO_CARD, prerollElapsed = 0;
 let captionsOn = true, narrationOn = true, seatedMode = false, completed = false;
 let narrating = false;
 const elapsedBefore = () => EP.segments.slice(0, Math.max(0, segIdx)).reduce((a, s) => a + s.seconds, 0);
@@ -144,7 +158,7 @@ const entryIndexAt = at => { let idx = -1; for (let i = 0; i < TIMELINE.length; 
 function logLine(entry, via) { narrationLog.push({ seg: entry.seg, line: entry.line, via, at: Math.round(episodeElapsed() * 10) / 10, due: entry.start }); }
 function prefetch(entry) { if (entry && aiReady() && narrationOn) ttsBlob({ ctx: 'move', episode: EP.id, seg: entry.seg, line: entry.line }, { pre: true }).catch(() => {}); }
 function pumpNarration() {
-  if (!narrationLive() || !narrationOn || !aiReady() || narrActive || narrFetching) return;
+  if (prerollActive || !narrationLive() || !narrationOn || !aiReady() || narrActive || narrFetching) return;
   const entry = TIMELINE[narrIndex];
   if (!entry || episodeElapsed() < entry.start) return;
   narrFetching = true; Music.level = 'duck';
@@ -187,7 +201,7 @@ function pumpNarration() {
 /** The caption track when no voice is speaking (AI off, or narration muted for music-only):
  * follows the same due seconds on the same master clock, one line at a time, in order. */
 function syncCaptions() {
-  if (narrActive || (narrationOn && aiReady())) return;
+  if (prerollActive || narrActive || (narrationOn && aiReady())) return;
   const idx = entryIndexAt(episodeElapsed());
   if (idx !== captionIndex) {
     captionIndex = idx;
@@ -341,6 +355,14 @@ function finish() {
 function tick() {
   const now = performance.now(); const dt = Math.min(0.5, (now - lastTick) / 1000) * FAST; lastTick = now;
   if (!playing) return;
+  if (prerollActive) {
+    // The pre-roll runs on this same tick but outside the master clock: segElapsed and the
+    // episode elapsed stay at zero under the card, so no line comes due, no caption shows
+    // and no chapter moves until the card hands over to the intro shot.
+    prerollElapsed += dt;
+    if (prerollElapsed >= PREROLL_S) endPreroll();
+    return;
+  }
   segElapsed += dt;
   const seg = EP.segments[segIdx];
   const win = yourTurnWindow(seg);
@@ -372,9 +394,30 @@ function tick() {
   }
 }
 function startClock() { lastTick = performance.now(); if (!timer) timer = setInterval(tick, 100); }
+function showIntroCard() {
+  if (!INTRO_CARD || !introCardEl) { prerollDone = true; return; }
+  prerollActive = true; prerollElapsed = 0;
+  introCardEl.hidden = false; void introCardEl.offsetWidth; introCardEl.classList.add('on');
+}
+function endPreroll() {
+  prerollActive = false; prerollDone = true;
+  enterSegment(0);
+  if (introCardEl) {
+    introCardEl.classList.remove('on'); // the 0.45s crossfade into the intro shot, like every join
+    setTimeout(() => { if (prerollDone && !prerollActive) introCardEl.hidden = true; }, CROSSFADE_MS + 60);
+  }
+  pumpNarration();
+}
 function play() {
   if (completed && endCard.classList.contains('on')) return;
   Music.start();
+  if (!prerollDone) {
+    // The bed is already running (started just above, underneath the card); the master
+    // clock itself starts only when the pre-roll hands over in endPreroll.
+    if (!prerollActive) showIntroCard();
+    playing = true; playBtn.textContent = UI.pause; startClock();
+    return;
+  }
   if (segIdx < 0) enterSegment(0);
   playing = true; playBtn.textContent = UI.pause; startClock();
   const av = activeVideo(); if (av.classList.contains('on')) playVideo(av);
@@ -388,6 +431,8 @@ function pause() {
 }
 function restart() {
   pause(); stopNarration();
+  prerollActive = false; prerollDone = !INTRO_CARD; prerollElapsed = 0;
+  if (introCardEl) { introCardEl.classList.remove('on'); introCardEl.hidden = true; }
   narrIndex = 0; captionIndex = -1;
   transActive = false; transBoundary = -1; transStartedFor = -1; transPreparedFor = -1;
   for (const el of videoEls) { el.classList.remove('on'); el.hidden = true; el.removeAttribute('src'); delete el.dataset.src; }
@@ -410,7 +455,7 @@ for (const group of document.querySelectorAll('.mv-calm')) group.addEventListene
 });
 
 window.__moveTest = {
-  state: () => ({ segIdx, seg: segIdx >= 0 && EP.segments[segIdx] ? EP.segments[segIdx].id : null, pose: stage.dataset.pose, frame: currentFrame, clip: currentClip, media: currentClip ? 'clip' : currentFrame ? 'still' : 'svg', elapsed: Math.round(episodeElapsed()), playing, completed, caption: captionEl.textContent, aiReady: aiReady(), fast: FAST }),
+  state: () => ({ segIdx, seg: segIdx >= 0 && EP.segments[segIdx] ? EP.segments[segIdx].id : null, pose: stage.dataset.pose, frame: currentFrame, clip: currentClip, media: currentClip ? 'clip' : currentFrame ? 'still' : 'svg', elapsed: Math.round(episodeElapsed()), playing, completed, caption: captionEl.textContent, aiReady: aiReady(), fast: FAST, preroll: prerollActive, phase: prerollActive ? 'preroll' : endCard.classList.contains('on') ? 'end' : segIdx < 0 ? 'ready' : 'playing' }),
   narration: narrationLog,
   music: () => Music.stats(),
   // The seamless-timeline evidence: the music bed's start count (1 for a whole run), where the
@@ -418,7 +463,8 @@ window.__moveTest = {
   // crossfade the player uses between shots.
   timeline: () => ({ musicStarts: Music.starts, narrationIndex: narrIndex, narrationEntries: TIMELINE.length,
     narrationActive: narrActive ? { seg: narrActive.seg, line: narrActive.line } : null,
-    transitionBoundary: transActive ? transBoundary : null, crossfadeMs: CROSSFADE_MS }),
+    transitionBoundary: transActive ? transBoundary : null, crossfadeMs: CROSSFADE_MS,
+    prerollDone, prerollSeconds: INTRO_CARD ? PREROLL_S : 0 }),
   play, pause, restart,
 };
 segNameEl.textContent = EP.segments[0].name;

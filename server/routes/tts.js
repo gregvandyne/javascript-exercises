@@ -21,7 +21,8 @@
 //                  page's language.
 //     ctx 'move'   { episode, seg, line }  one narration line of a Brain Break (Oomba Breathe & Bend, /move), by its
 //                  numbers only: the server reads the registered line (services/tts-lines.js MOVE_LINES, from
-//                  services/move-data.js) in English with the narrator's voice. The page never sends text.
+//                  services/move-data.js) in English, in the narrator role with the series' pinned voice
+//                  (fable, the kind British male voice, and its British accent hint). The page never sends text.
 
 //   GET /tts/<sha256>.mp3   the cached audio (same-origin only; immutable).
 //   Admin (role admin): GET /admin/voices, POST /api/admin/tts/sample, POST /api/admin/tts/settings,
@@ -162,10 +163,12 @@ function resolve(req, b) {
   if (b.ctx === 'move') {
     // A Brain Break is public (guests play free in class), so no account is needed; the words are ours
     // alone, picked by number from the registry, never sent by the page. Narration is English first:
-    // read with the English voice, in the narrator's voice, like a course lesson.
+    // read under the English switch, in the narrator role, but with the voice the registry pins for
+    // the series (Greg, 2026-11-05: a kind British male voice, fable, with the matching British
+    // accent hint) rather than the admin's narrator pick, which serves every other context.
     const line = lines.moveLine(String(b.episode || ''), b.seg, b.line);
     if (!line) return { error: [404, 'off'] };
-    return { text: line.text, locale: 'en', role: line.role, rate: 'normal' };
+    return { text: line.text, locale: 'en', role: line.role, rate: 'normal', voice: line.voice, accent: line.accent };
   }
   return { error: [400, 'ctx'] };
 }

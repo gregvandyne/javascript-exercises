@@ -132,12 +132,12 @@ export const urlOf = hash => `/tts/${hash}.mp3`;
 export const HASH_RE = /^[0-9a-f]{64}$/;
 
 /** Everything that changes the sound, for one request: the provider, model, voice, instructions (or speed), locale. */
-export function plan({ text, locale, role = 'narrator', rate = 'normal', voice = null }) {
+export function plan({ text, locale, role = 'narrator', rate = 'normal', voice = null, accent = null }) {
   const r = V.ROLES.includes(role) ? role : 'narrator';
   const bucket = V.RATES.includes(rate) ? rate : V.rateBucket(rate);
   const provider = config.ttsProvider, model = modelOf();
   const v = voice && V.VOICES.includes(voice) ? voice : V.voiceFor(r, locale);
-  const instructions = isGptModel(model) ? V.instructionsFor(r, locale, bucket) : '';
+  const instructions = isGptModel(model) ? V.instructionsFor(r, locale, bucket, accent) : '';
   const speed = isGptModel(model) ? null : V.SPEED[bucket];
   const s = spokenText(text);
   return { text: s, locale, role: r, rate: bucket, provider, model, voice: v, instructions, speed, hash: cacheKey({ provider, model, voice: v, instructions, speed, locale, rate: bucket, text: s }) };
@@ -174,9 +174,9 @@ export const _inflight = () => inflight.size;
  *   pin: keep this line through cache clean-ups (warm-up and admin samples).
  *   ctx: a label for the log line ('game', 'live', 'lesson', 'admin', 'warm').
  */
-export async function synthesize({ text, locale, role = 'narrator', rate = 'normal', voice = null, ctx = 'game', pin = false, gate = null, signal = null }) {
+export async function synthesize({ text, locale, role = 'narrator', rate = 'normal', voice = null, accent = null, ctx = 'game', pin = false, gate = null, signal = null }) {
   if (!ttsEnabled()) throw new TtsError('off');
-  const p = plan({ text, locale, role, rate, voice });
+  const p = plan({ text, locale, role, rate, voice, accent });
   if (!p.text || p.text.length > config.ttsMaxChars) throw new TtsError('long');
   const hit = cached(p.hash);
   if (hit) {

@@ -82,15 +82,24 @@ export const TTS_GAMES = new Set(Object.keys(GAMES));
 // tests/unit/move.test.js: every line in move-data must resolve here, word for word.
 import { EPISODES as MOVE_EPISODES, lineAt as moveLineAt } from './move-data.js';
 export const MOVE_TTS_ROLE = 'narrator';
-/** Every registered Brain Break narration line: [{ episode, seg, line, text, role }] in spoken order. */
+// Greg (2026-11-05): the yoga narrator is "a kind British male voice". Of the platform's
+// voices, fable is the British-accented one: an expressive, warm storytelling voice, the
+// narrator-style British voice the set offers. It is pinned per line below (the same
+// explicit-voice mechanism the admin sample path uses), so an admin's narrator pick for
+// other contexts never changes the yoga narrator, and the accent hint matches the voice
+// (ACCENT['en-GB'], passed through by ctx 'move'). Voice selection only: the lines, the
+// shared speak path and every other context's voice are untouched.
+export const MOVE_TTS_VOICE = 'fable';
+export const MOVE_TTS_ACCENT = 'en-GB';
+/** Every registered Brain Break narration line: [{ episode, seg, line, text, role, voice, accent }] in spoken order. */
 export const MOVE_LINES = MOVE_EPISODES.flatMap(e => [
-  ...e.segments.flatMap((s, si) => s.lines.map((text, li) => ({ episode: e.id, seg: si, line: li, text, role: MOVE_TTS_ROLE }))),
-  ...e.endLines.map((text, li) => ({ episode: e.id, seg: e.segments.length, line: li, text, role: MOVE_TTS_ROLE })),
+  ...e.segments.flatMap((s, si) => s.lines.map((text, li) => ({ episode: e.id, seg: si, line: li, text, role: MOVE_TTS_ROLE, voice: MOVE_TTS_VOICE, accent: MOVE_TTS_ACCENT }))),
+  ...e.endLines.map((text, li) => ({ episode: e.id, seg: e.segments.length, line: li, text, role: MOVE_TTS_ROLE, voice: MOVE_TTS_VOICE, accent: MOVE_TTS_ACCENT })),
 ]);
 /** The registered line for (episode, segment index, line index), or null: routes/tts.js ctx 'move'. */
 export const moveLine = (episodeId, seg, line) => {
   const text = moveLineAt(episodeId, seg, line);
-  return text == null ? null : { text, role: MOVE_TTS_ROLE };
+  return text == null ? null : { text, role: MOVE_TTS_ROLE, voice: MOVE_TTS_VOICE, accent: MOVE_TTS_ACCENT };
 };
 /** Lines said under another character's key (used until the game has its own VOICE_KEY_ROLES). hint.* lines are read
  *  by the narrator in every character's card. */

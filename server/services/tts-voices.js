@@ -46,8 +46,11 @@ export const ACCENT = {
   nl: 'Language and accent: Dutch from the Netherlands.',
 };
 const RATE_TEXT = { slow: 'Pace: a little slower than usual.', normal: '', fast: 'Pace: a little quicker than usual.' };
-/** The reading instructions for gpt-4o-mini-tts (English, like the provider's own examples). */
-export const instructionsFor = (role, locale, rate = 'normal') => [BASE, ROLE_TEXT[role] || ROLE_TEXT.narrator, ACCENT[locale] || ACCENT.en, RATE_TEXT[rate] || ''].filter(Boolean).join(' ');
+/** The reading instructions for gpt-4o-mini-tts (English, like the provider's own examples).
+ *  accentLocale, when given, picks the accent line instead of the reading locale's own: a
+ *  context that pins a voice from another accent (the yoga narrator's British fable, read
+ *  under the 'en' language switch) must not be steered with a conflicting accent. */
+export const instructionsFor = (role, locale, rate = 'normal', accentLocale = null) => [BASE, ROLE_TEXT[role] || ROLE_TEXT.narrator, ACCENT[accentLocale] || ACCENT[locale] || ACCENT.en, RATE_TEXT[rate] || ''].filter(Boolean).join(' ');
 
 /** The admin's fixed sample sentence, in the voice's own language (server/i18n/locales/<locale>.json tts.sample). */
 export const sampleFor = locale => tFor(locale)('tts.sample');
