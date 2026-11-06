@@ -1124,10 +1124,13 @@ export function eyes(s, on) {
  *  (everyone). Kept apart from the score: leaderboards show score + bonus; the gradebook the score alone. */
 export function bonus(s, { n = null, k = null, r = 0 } = {}) {
   if (!['lobby', 'loading', 'countdown', 'playing', 'paused', 'between'].includes(s.phase) || !Number.isInteger(r) || r < 0 || r >= P.BONUS_REASONS.length) return false;
+  // Tug of Math Live: the rope alone decides the match, so a bonus never moves a team's score (no team bonus; a
+  // player's bonus is theirs, kept off their team's average)
+  if (s.tug && !n) return false;
   if (n) {
     const seat = s.seats.get(n);
     if (!seat) return false;
-    T.bonusSeat(s, seat);
+    if (s.tug) seat.bonus = (seat.bonus || 0) + T.BONUS_POINTS; else T.bonusSeat(s, seat);
     const msg = JSON.stringify({ t: 'bn', n, r, p: T.BONUS_POINTS });
     sendTo(seat.conn, msg); toHosts(s, msg);
   } else {

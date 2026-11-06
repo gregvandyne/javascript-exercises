@@ -83,6 +83,15 @@ test('the curriculum: grade 1 within 20, grade 2 within 100, grade 3 facts to 10
   assert.equal(G.text({ e: ['sqrt', 144] }), '√144');
 });
 
+/** A question's form with its numbers masked (the number of digits kept for numbers that size the work: m1's 2 or 3
+ *  digits, pow's base); signs and small differences in size do not count. */
+const shape = q => q.e.map((t, i) => {
+  if (typeof t !== 'number') return /^(eq1|eq2|iops)$/.test(q.k) && (t === 'add' || t === 'sub') ? '±' : t;   // "x + −5" is written "x − 5"
+  if (q.k === 'm1' && i === 0) return 'n' + String(Math.abs(t)).length;
+  if (q.k === 'pow' && i === 0) return 'b' + (t === 2 && q.e[1] === 'pow' ? '2' : '');
+  if (q.k === 'pct' && i === 0) return 'p' + t;
+  return 'n';
+}).join(' ');
 test('never the same question twice in a row; both teams get the same kind of question at the same point', () => {
   for (const g of G.GRADES) for (let seed = 1; seed <= 20; seed++) {
     const d = G.deck(g, seed), A = [], R = [];
@@ -90,6 +99,8 @@ test('never the same question twice in a row; both teams get the same kind of qu
     for (const side of [A, R]) for (let i = 1; i < side.length; i++) assert.notEqual(G.text(side[i]), G.text(side[i - 1]), `G${g} seed ${seed}: repeat`);
     for (let i = 0; i < R.length; i++) {
       assert.equal(A[i].k, R[i].k, `G${g} seed ${seed} question ${i}: same kind`);
+      // the same form too (2-digit × 1-digit against 2-digit × 1-digit, not against 3-digit; the same equation shape)
+      assert.equal(shape(A[i]), shape(R[i]), `G${g} seed ${seed} question ${i}: ${G.text(A[i])} | ${G.text(R[i])}`);
       assert.equal(A[i].n, i); assert.equal(R[i].n, i);
       assert.equal(G.kindAt(g, seed, i), A[i].k);
     }

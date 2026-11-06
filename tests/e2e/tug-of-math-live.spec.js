@@ -49,14 +49,15 @@ async function player(browser, code, viewport = { width: 390, height: 844 }) {
 /** The open question, once it shows and is not waiting for a result. */
 async function openQ(f) {
   let q = null;
-  await expect.poll(async () => { const s = await state(f); q = s.question; return !!(q && !q.locked && s.phase === 'playing'); }, { timeout: 20_000 }).toBe(true);
+  await expect.poll(async () => { const s = await state(f); q = s.question; return !!(q && !q.locked && s.phase === 'playing' && s.tug && s.tug.win == null); }, { timeout: 20_000 }).toBe(true);
   return q;
 }
 /** Tap the answer on the keypad, then the check key. */
-async function tap(f, v) {
-  if (v < 0) await f.locator('.arow .key[data-k="pm"]').tap();
-  for (const d of String(Math.abs(v))) await f.locator(`.keys .key[data-k="${d}"]`).tap();
-  await f.locator('.keys .key[data-k="ok"]').tap();
+async function tap(f, v, timeout) {
+  const o = timeout ? { timeout } : {};
+  if (v < 0) await f.locator('.arow .key[data-k="pm"]').tap(o);
+  for (const d of String(Math.abs(v))) await f.locator(`.keys .key[data-k="${d}"]`).tap(o);
+  await f.locator('.keys .key[data-k="ok"]').tap(o);
 }
 
 test('a live room: host and four players on phones, two teams, keypads and keyboard, the rope to the line, the results', async ({ browser }) => {
@@ -91,6 +92,7 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   await expect(hf.locator('.tlh .col.b li canvas')).toHaveCount(2);
   await expect(hf.locator('.tlh .col.r li canvas')).toHaveCount(2);
   await expect(hf.locator('.tlh .foot')).toContainText('Grade 2');
+  await expect(fs[0].locator('.tl-wait .big canvas')).toHaveCount(1);   // the team's mascot, not a plain shape
   await expect(fs[0].locator('.tl-wait h2')).toContainText(/Your team: (Blue Whales|Red Foxes)/);
   await shot(host, 'lobby-host'); await shot(ps[0], 'lobby-phone');
   // start: everyone gets a question of their own; the clock runs on the projector
@@ -109,7 +111,8 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   // a wrong answer (keypad taps): the right one shows, then the next question
   const wrong = qs[0].e; const right0 = solve(wrong);
   await tap(fs[0], right0 + 1);
-  await expect(fs[0].locator('.play .say')).toContainText(`It was ${right0}`);
+  // (the number is in an isolate, which keeps a minus sign on its left in Arabic and Hebrew)
+  await expect(fs[0].locator('.play .say')).toContainText(`It was \u2066${right0}\u2069`);
   await expect(fs[0].locator('.qcard')).toHaveClass(/wrong/);
   await expect.poll(async () => (await state(fs[0])).question && (await state(fs[0])).question.i).toBe(1);
   // a right answer by keyboard (digits, then Enter)
@@ -124,7 +127,13 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   for (let k = 0; k < 40; k++) {
     const h = await state(hf);
     if (h.tug && h.tug.win != null) break;
-    for (const i of blueIx) { const q = await openQ(fs[i]); await tap(fs[i], solve(q.e)); }
+    for (const i of blueIx) {
+      // a team of two pulls half a step a right answer: the line can be crossed after the first player's answer
+      if ((await state(hf)).tug.win != null) break;
+      const q = await openQ(fs[i]);
+      // (the win can still be on its way to this phone: then its keypad goes away mid-answer)
+      try { await tap(fs[i], solve(q.e), 5_000); } catch (e) { if ((await state(hf)).tug.win == null) throw e; break; }
+    }
   }
   await expect.poll(async () => (await state(hf)).tug.win, { timeout: 20_000 }).toBe(1);
   await expect(hf.locator('.scene .banner')).toHaveText('Winner: Blue Whales');

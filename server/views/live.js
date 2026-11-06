@@ -508,7 +508,7 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
       <p class="small muted">${t('live.atlasUi.hint')}</p>
     </fieldset>` : ''}
     ${tug ? html`<fieldset class="lv-group lv-own" id="lv-tug-opts" data-own-mode="tug" data-preset="${tg ? '1' : ''}" hidden><legend>${t('live.tugUi.legend')}</legend>
-      <div class="field"><label for="lv-tug-grade">${t('live.tugUi.grade')}</label><select id="lv-tug-grade" name="tugGrade">${tug.grades.map(g => html`<option value="${g}"${g === (tg ? tg.grade : 3) ? raw(' selected') : ''}>${t('live.tugUi.gradeN', { n: g })}</option>`)}</select></div>
+      <div class="field"><label for="lv-tug-grade">${t('live.tugUi.grade')}</label><select id="lv-tug-grade" name="tugGrade">${tug.grades.map(g => html`<option value="${g}"${g === (tg ? tg.grade : 3) ? raw(' selected') : ''}>${tug.names[g]}</option>`)}</select></div>
       <p class="small muted" id="lv-tug-like" dir="auto">${t('live.tugUi.like')} <span id="lv-tug-sample" dir="ltr">${tug.samples[tg ? tg.grade : 3]}</span></p>
       <div class="field"><label for="lv-tug-len">${t('live.tugUi.len')}</label><select id="lv-tug-len" name="tugLen">${tug.lens.map(n => html`<option value="${n}"${n === (tg ? tg.len : 90) ? raw(' selected') : ''}>${n ? t('live.tugUi.secsN', { n }) : t('live.tugUi.toLine')}</option>`)}</select></div>
       <p class="small muted">${t('live.tugUi.hint')}</p>

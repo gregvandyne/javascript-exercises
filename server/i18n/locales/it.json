@@ -5393,11 +5393,11 @@
     "tugUi": {
       "legend": "Tug of Math (Dal vivo)",
       "grade": "Classe",
-      "gradeN": "Classe {n}",
+      "grades": "Classe 1|Classe 2|Classe 3|Classe 4|Classe 5|Classe 6|Classe 7|Classe 8",
       "like": "Domande come:",
       "len": "Durata",
       "secsN": "{n} secondi",
-      "toLine": "Fino alla linea (al massimo 3 minuti)",
+      "toLine": "Finché qualcuno vince (al massimo 3 minuti)",
       "of": "di",
       "hint": "I giocatori vengono divisi per te in due squadre uguali. Ognuno ha le sue domande, così nessuno copia, e una squadra più piccola tira con la stessa forza.",
       "teamsAuto": "Due squadre fatte per te: Balene Blu e Volpi Rosse. Puoi bilanciare, mescolare o spostare i giocatori."

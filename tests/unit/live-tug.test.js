@@ -72,6 +72,7 @@ test('two even teams made for the room; each player gets only their own question
   assert.equal(h.msgs.filter(m => m.t === 'ev').length, 0, 'the projector gets no questions');
   // every player's first question is the same kind (fair), with its own numbers (no copying)
   const kinds = new Set(ps.map(p => qOf(s, p).k)); assert.equal(kinds.size, 1);
+  const forms = new Set(ps.map(p => qOf(s, p).e.map(t => (typeof t === 'number' ? 'n' : t)).join(' '))); assert.equal(forms.size, 1, 'the same form too');
   for (const p of ps) assert.equal(G.check(qOf(s, p), answerOf(s, p)), true);
   // the state: the clock runs on the server
   const st = (await h.next('st', m => m.d.tug && m.d.tug.run === 1)).d.tug;
@@ -147,7 +148,13 @@ test('the line wins at once, then the winner shows and the session ends with tea
   const h = await hostSocket(s, teacher);
   const a = await player(s), b = await player(s);
   await started(s, h, [a, b]);
-  const blue = s.seats.get(seatOf(a)).team === 1 ? a : b;
+  const blue = s.seats.get(seatOf(a)).team === 1 ? a : b, red = blue === a ? b : a;
+  // a bonus never moves a team in this mode (the rope alone decides): no team bonus; a player's bonus stays theirs
+  assert.equal(LS.bonus(s, { k: 2, r: 0 }), false, 'no team bonus');
+  h.send({ t: 'h', a: 'bonus', n: seatOf(red), r: 0 });
+  await red.next('bn');
+  assert.equal(s.seats.get(seatOf(red)).bonus, 100);
+  assert.equal(s.teams.list.find(t => t.k === 2).avg, 0); assert.equal(s.teams.list.find(t => t.k === 2).bonus, 0);
   for (let k = 0; k < TUG.LINE - 1; k++) await right(s, blue);
   assert.equal(s.tug.done, false);
   const q = qOf(s, blue); ans(blue, q.n, q.a);
@@ -161,6 +168,7 @@ test('the line wins at once, then the winner shows and the session ends with tea
   assert.equal(sum.mode, 'tug'); assert.equal(sum.scoredBy, 'server');
   assert.equal(sum.teams[0].k, 1); assert.equal(sum.teams[0].rank, 1);
   assert.equal(sum.teams[0].avg, TUG.LINE * TUG.POINTS);
+  assert.deepEqual(sum.teams.map(t => [t.k, t.rank]), [[1, 1], [2, 2]], 'the podium follows the rope');
   assert.equal(sum.players[0].correct, TUG.LINE); assert.equal(sum.players[0].score, TUG.LINE * TUG.POINTS);
   assert.equal(sum.settings.tug, 'tug:2:0', 'the grade and length stay with the run (play again)');
   assert.equal(sum.items.length, 0, 'no question review: every player had their own');
@@ -179,6 +187,9 @@ test('the clock: pause and resume move it, time up decides by the rope (or a dra
   assert.ok(ps.d.tug.left > 55e3 && ps.d.tug.left <= 60e3);
   const q = qOf(s, a); ans(a, q.n, q.a); await sleep(150);
   assert.equal(s.seats.get(seatOf(a)).answered, 0, 'no answers while paused');
+  // no questions while paused either (a player who comes back asks again on resume)
+  const n0 = b.msgs.length; b.send({ t: 'ev', k: 'need', d: null, to: 'host' }); await sleep(60);
+  assert.ok(b.msgs.slice(n0).every(m => !(m.t === 'ev' && m.k === 'tq')));
   h.send({ t: 'h', a: 'resume' });
   const rs = await h.next('st', m => m.d.tug && m.d.tug.run === 1 && m.d.tug.end > end0);
   assert.ok(rs.d.tug.end - end0 >= 140, 'the end moved by the paused time');
@@ -187,6 +198,7 @@ test('the clock: pause and resume move it, time up decides by the rope (or a dra
   const st = await h.next('st', m => m.d.tug && m.d.tug.win != null);
   assert.equal(st.d.tug.win, 0);
   await h.next('ph', m => m.phase === 'ended');
+  assert.deepEqual(R.summary(s).teams.map(t => t.rank), [1, 1], 'a draw: both teams first');
   for (const c of [h, a, b]) c.ws.close();
 });
 
@@ -236,7 +248,7 @@ test('with teams switched off on the server, Tug of Math Live is not offered and
 test('the landing offers it with a grade and a length; the form makes the right room; play again keeps them', async () => {
   reset();
   const page = await call('/live', { user: teacher });
-  for (const re of [/value="mode:tug"/, /id="lv-tug-opts"/, /name="tugGrade"/, /<option value="7">Grade 7<\/option>/, /name="tugLen"/, /<option value="0">To the line/, /id="lv-tug-samples"/, /id="lv-teams-landing"/]) assert.match(page.text, re);
+  for (const re of [/value="mode:tug"/, /id="lv-tug-opts"/, /name="tugGrade"/, /<option value="7">Grade 7<\/option>/, /name="tugLen"/, /<option value="0">Until someone wins/, /id="lv-tug-samples"/, /id="lv-teams-landing"/]) assert.match(page.text, re);
   const r = await call('/api/live/sessions', { method: 'POST', user: teacher, body: { pick: 'mode:tug', tugGrade: '7', tugLen: '0', audience: 'open', set: 'bank', teams: '0' } });
   assert.equal(r.status, 200, r.text);
   const s = LS.get(r.json.sid);

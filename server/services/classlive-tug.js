@@ -62,7 +62,8 @@ function stream(s, seat) {
 }
 function nextQuestion(s, seat) {
   const G = gen().TugGen, p = stream(s, seat);
-  const q = G.make(s.tug.g, p.r, p.prev, G.kindAt(s.tug.g, s.tug.seed, p.n));
+  // the kind and its form (TugGen.variantSeed) come from the room's seed: every player's n-th question is equally hard
+  const q = G.make(s.tug.g, p.r, p.prev, G.kindAt(s.tug.g, s.tug.seed, p.n), null, G.variantSeed(s.tug.seed, p.n));
   q.n = p.n++; p.prev = q; p.q = q;
   return q;
 }
@@ -100,7 +101,8 @@ export function resume(s, io) {
 /** A player's game event: 'ans' { i, v } (an answer to their question i) or 'need' (send my question again). Anything
  *  else is dropped. Never relayed. -> true when it did something. */
 export function fromPlayer(s, io, seat, m) {
-  if (m.k === 'need') return s.phase === 'playing' || s.phase === 'paused' ? sendQuestion(s, io, seat) : false;
+  // (not while paused: the question waits for the clock; the player asks again on resume)
+  if (m.k === 'need') return s.phase === 'playing' ? sendQuestion(s, io, seat) : false;
   if (m.k !== 'ans') return false;
   const d = m.d;
   if (!d || typeof d !== 'object' || Array.isArray(d) || !Number.isInteger(d.i) || !Number.isInteger(d.v) || Math.abs(d.v) > 99999) return false;

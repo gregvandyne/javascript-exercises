@@ -390,6 +390,10 @@
       "subject": {
         "math": "Maths"
       }
+    },
+    "tugUi": {
+      "grade": "Year",
+      "grades": "Year 2|Year 3|Year 4|Year 5|Year 6|Year 7|Year 8|Year 9"
     }
   },
   "match": {

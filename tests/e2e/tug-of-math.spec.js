@@ -103,7 +103,7 @@ test('two players on one screen: a keypad each, the rope moves both ways, Blue p
   const a = await T(f, 'answerOf', 0);
   await page.keyboard.type(String(a)); await page.keyboard.press('Enter');
   await expect.poll(async () => (await state(f)).rope).toBe(0);
-  await expect.poll(async () => (await state(f)).typed[1]).toBe('');
+  await expect.poll(async () => (await state(f)).typed.join('|')).toBe('|');   // both sides' next questions are up
   const r2 = await T(f, 'answerOf', 1);
   for (const d of String(r2)) await page.keyboard.press('Numpad' + d);
   expect((await state(f)).typed).toEqual(['', String(r2)]);

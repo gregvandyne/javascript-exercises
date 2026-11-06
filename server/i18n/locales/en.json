@@ -5701,11 +5701,11 @@
     "tugUi": {
       "legend": "Tug of Math (Live)",
       "grade": "Grade",
-      "gradeN": "Grade {n}",
+      "grades": "Grade 1|Grade 2|Grade 3|Grade 4|Grade 5|Grade 6|Grade 7|Grade 8",
       "like": "Questions like:",
       "len": "How long",
       "secsN": "{n} seconds",
-      "toLine": "To the line (3 minutes at most)",
+      "toLine": "Until someone wins (3 minutes at most)",
       "of": "of",
       "hint": "Players are split into two even teams for you. Each player gets their own questions, so nobody can copy, and a smaller team pulls just as hard.",
       "teamsAuto": "Two teams, made for you: Blue Whales and Red Foxes. You can balance, shuffle or move players."

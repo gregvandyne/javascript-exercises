@@ -5392,11 +5392,11 @@
     "tugUi": {
       "legend": "Tug of Math (En direct)",
       "grade": "Niveau",
-      "gradeN": "Niveau {n}",
+      "grades": "Niveau 1|Niveau 2|Niveau 3|Niveau 4|Niveau 5|Niveau 6|Niveau 7|Niveau 8",
       "like": "Des questions comme :",
       "len": "Durée",
       "secsN": "{n} secondes",
-      "toLine": "Jusqu’à la ligne (3 minutes au plus)",
+      "toLine": "Jusqu’à la victoire (3 minutes au plus)",
       "of": "de",
       "hint": "Les joueurs sont répartis pour toi en deux équipes égales. Chacun a ses propres questions, donc personne ne copie, et une équipe plus petite tire aussi fort.",
       "teamsAuto": "Deux équipes faites pour toi : les Baleines Bleues et les Renards Rouges. Tu peux équilibrer, mélanger ou déplacer des joueurs."

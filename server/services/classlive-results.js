@@ -64,6 +64,11 @@ export function summary(s) {
   }));
   // Teams that ever had a member (E11), in rank order; preset numbers only (each page names them in its language).
   const teams = T.isOn(s) ? T.ranked(s).filter(r => r.ever).map(r => ({ k: r.k, p: r.p, score: r.score, sum: r.sum, avg: r.avg, bonus: r.bonus, size: r.size || seats.filter(x => x.team === r.k).length, rank: r.rank })) : [];
+  // Tug of Math Live: the rope decided the match (the same winner as the banner on every screen; a draw shares 1st)
+  if (s.tug && s.tug.win != null) {
+    for (const r of teams) r.rank = s.tug.win === 0 || r.k === s.tug.win ? 1 : 2;
+    teams.sort((a, b) => a.rank - b.rank || b.score - a.score || a.k - b.k);
+  }
   const out = {
     id: s.id, title: s.title, mode: s.mode, audience: s.audience, nameMode: s.nameMode, startedAt: s.startedAt, endedAt: s.endedAt,
     scoredBy: s.quiz || s.tug ? 'server' : 'game', players: rows, items, teams, scoring: T.isOn(s) ? s.teams.scoring : null,

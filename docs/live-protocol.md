@@ -349,7 +349,7 @@ is ignored for these modes.
 
 A built-in **game** mode (`A.GAME_MODES`: no question set, no `q`/`an`/`rv`; `server/live/tug.js`,
 `server/services/classlive-tug.js`). `POST /api/live/sessions` with `pick: 'mode:tug'` takes `tugGrade` (1-8) and
-`tugLen` (60, 90, 120, or 0 for "to the line", 180 s at most), or `starter: 'tug:<grade>:<len>'`; sets, items and the
+`tugLen` (60, 90, 120, or 0 for "until someone wins": the line, 180 s at most), or `starter: 'tug:<grade>:<len>'`; sets, items and the
 landing's teams row are ignored. Refused with `tugTeams` while `LIVE_TEAMS` is off.
 
 - Teams are always on: `n: 2`, presets `[0, 6]`, scoring `avg`. `tm` takes only `balance`, `shuffle`, `lock`, `unlock`
@@ -360,7 +360,9 @@ landing's teams row are ignored. Refused with `tugTeams` while `LIVE_TEAMS` is o
   only. The player answers `ev { k: 'ans', d: { i, v }, to: 'host' }` (`v` a whole number, at most 5 digits); the
   server checks it and sends that seat `ev { f: 0, k: 'tr', d: { i, ok, a? } }` (`a`, the right answer, only after a
   wrong one), then the next `tq`. `ev { k: 'need', to: 'host' }` asks for the open question again (a reloaded frame;
-  a frame that says `rdy` during play gets it anyway). Answers to an old `i`, while paused, after the end, or sooner than
+  a frame that says `rdy` during play gets it anyway); only while `playing` (a player who comes back during a pause
+  asks again on resume). Every player's n-th question is the same kind and the same form within it
+  (`TugGen.kindAt`, `TugGen.variantSeed` from the room's seed), with that player's own numbers. Answers to an old `i`, while paused, after the end, or sooner than
   300 ms after a right answer (1 s after a wrong one) are dropped. None of these events is relayed to anyone; `sc` and
   `it` from devices are ignored in this mode.
 - Shared state `tug` (to every device and the projector, and in `wel.state`), sent when it changes, about 5 times a
@@ -370,4 +372,7 @@ landing's teams row are ignored. Refused with `tugTeams` while `LIVE_TEAMS` is o
   clock stops, and the session ends 3 s later (`ph ended`, the podium, the results).
 - `pause` / eyes up stop the clock (`run: 0`, `left`); `resume` starts it again (`end` moves). `next` and `skip` do
   nothing in this mode. Scores: 100 a right answer (`seat.score`), banked to the team as a rise (team `avg` = 100 ×
-  pulls); `scoredBy: 'server'`. The run's settings keep `tug: '<starter id>'` for play again.
+  pulls, the number the projector and the phones show for each team: points per player, a whole number);
+  `scoredBy: 'server'`. No team bonus in this mode (`bonus {k}` is refused; a seat's bonus stays the seat's and is not
+  banked to its team), and the results rank the teams by `win` (the winner 1st, a draw both 1st), so the podium always
+  agrees with the rope. The run's settings keep `tug: '<starter id>'` for play again.

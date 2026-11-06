@@ -226,7 +226,9 @@ const tugPicker = req => {
   const line = q => G.text(q, of) + (G.form(q) === 'value' ? ' = ?' : '');
   // three sample questions per grade (the game's own setup card shows the same ones)
   const samples = Object.fromEntries(TUG.GRADES.map(g => [g, [0, 1, 2].map(i => line(G.sample(g, i))).join(' · ')]));
-  return { grades: TUG.GRADES, lens: TUG.LENS, samples };
+  // each grade's name in the page's language ("Grade 3", "Groep 5", "Year 4", "כיתה ג׳": not every school counts the same)
+  const names = req.t('live.tugUi.grades').split('|');
+  return { grades: TUG.GRADES, lens: TUG.LENS, samples, names: Object.fromEntries(TUG.GRADES.map(g => [g, names[g - 1] || String(g)])) };
 };
 const many = v => [].concat(v ?? []).map(String);
 /** The landing form's Would You Rather Live / Atlas Quest Live fields -> their starter id. */

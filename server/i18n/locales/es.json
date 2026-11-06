@@ -5392,11 +5392,11 @@
     "tugUi": {
       "legend": "Tug of Math (En vivo)",
       "grade": "Curso",
-      "gradeN": "Curso {n}",
+      "grades": "Curso 1|Curso 2|Curso 3|Curso 4|Curso 5|Curso 6|Curso 7|Curso 8",
       "like": "Preguntas como:",
       "len": "Duración",
       "secsN": "{n} segundos",
-      "toLine": "Hasta la línea (3 minutos como máximo)",
+      "toLine": "Hasta que alguien gane (3 minutos como máximo)",
       "of": "de",
       "hint": "Los jugadores se reparten solos en dos equipos iguales. Cada uno recibe sus propias preguntas, así nadie copia, y un equipo más pequeño tira igual de fuerte.",
       "teamsAuto": "Dos equipos hechos para ti: Ballenas Azules y Zorros Rojos. Puedes equilibrar, mezclar o mover jugadores."

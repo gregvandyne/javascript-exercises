@@ -5393,11 +5393,11 @@
     "tugUi": {
       "legend": "Tug of Math (Live)",
       "grade": "Klasse",
-      "gradeN": "Klasse {n}",
+      "grades": "Klasse 1|Klasse 2|Klasse 3|Klasse 4|Klasse 5|Klasse 6|Klasse 7|Klasse 8",
       "like": "Aufgaben wie:",
       "len": "Wie lange",
       "secsN": "{n} Sekunden",
-      "toLine": "Bis zur Linie (höchstens 3 Minuten)",
+      "toLine": "Bis einer gewinnt (höchstens 3 Minuten)",
       "of": "von",
       "hint": "Die Spieler werden für dich auf zwei gleich große Teams verteilt. Alle bekommen eigene Aufgaben, also kann niemand abschreiben, und ein kleineres Team zieht genauso stark.",
       "teamsAuto": "Zwei Teams, für dich gebildet: Blaue Wale und Rote Füchse. Du kannst ausgleichen, mischen oder Spieler verschieben."
