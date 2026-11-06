@@ -11,42 +11,54 @@
    "text": "In a maze you have never seen, a fixed list of moves fails. An if asks a question about right now, and an if inside a loop asks it again at every step.",
    "art": "branch",
    "img": "csq/robo-route/conditionals-2-decide",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "The maze program checks at every step: repeat until goal, if path ahead move, else turn left, on a water board.",
    "focus": [
     {
-     "cue": "The loop keeps asking until the goal.",
+     "cue": "Path ahead clear? Move. Again and again along the bottom.",
      "box": [
-      54.1,
-      43.8,
-      16.8,
-      5.9
+      5.7,
+      88.2,
+      31.1,
+      9.7
+     ],
+     "path": [
+      [
+       8.6,
+       93
+      ],
+      [
+       33.8,
+       93
+      ]
      ]
     },
     {
-     "cue": "At every step, the if decides: move, or turn.",
+     "cue": "Water ahead: no path, so the else turns Bolt left.",
      "box": [
-      56.4,
-      51.0,
-      11.0,
-      34.8
+      30.8,
+      88.2,
+      5.9,
+      9.7
      ]
     },
     {
      "cue": "So one program steers up a channel it has never seen.",
      "box": [
+      30.8,
+      43.4,
       5.9,
-      43.6,
-      35.4,
-      54.2
+      54.5
      ],
      "path": [
       [
-       8.5,
-       93.2
-      ],
-      [
        33.8,
-       93.2
+       93
       ],
       [
        33.8,
@@ -61,33 +73,39 @@
    "text": "An if checks a condition now. A when block waits for an event, like a gem being picked up, and runs right then.",
    "art": "lightbulb",
    "img": "csq/robo-route/conditionals-2-when-if",
+   "view": [
+    52.2,
+    40.5,
+    34,
+    48.8
+   ],
    "alt": "The Pro event program: a when block for picking up a gem, over a repeat loop whose if block picks up gems Bolt stands on.",
    "focus": [
     {
      "cue": "The when listens for a gem being picked up.",
      "box": [
-      54.1,
-      43.8,
-      17.6,
-      13.1
+      53.4,
+      43,
+      18.9,
+      14.9
      ]
     },
     {
      "cue": "The if asks a question: is Bolt on a gem right now?",
      "box": [
-      56.4,
-      79.9,
-      9.7,
-      5.9
+      55.8,
+      79.1,
+      11,
+      7.7
      ]
     },
     {
      "cue": "Underneath, the loop keeps Bolt driving meanwhile.",
      "box": [
-      54.1,
-      65.4,
-      11.6,
-      13.2
+      53.4,
+      64.6,
+      13,
+      14.9
      ]
     }
    ]
@@ -97,24 +115,30 @@
    "text": "AND is true only when both parts are true. OR is true when at least one is. NOT flips an answer: NOT wall ahead means the way is clear.",
    "art": "gears",
    "img": "csq/robo-route/conditionals-2-and",
+   "view": [
+    52.2,
+    34.8,
+    43.4,
+    38.6
+   ],
    "alt": "A two-question check in the tray: if wall ahead AND on a gem, pick up and turn; the spiral maze waits on the board.",
    "focus": [
     {
      "cue": "One check, two questions: wall ahead AND on a gem.",
      "box": [
-      55.0,
-      51.0,
-      18.9,
-      5.9
+      54.4,
+      50.2,
+      20,
+      7.7
      ]
     },
     {
      "cue": "Only when both are true: pick up and turn.",
      "box": [
-      75.5,
-      51.0,
-      16.8,
-      5.9
+      74.7,
+      50.2,
+      18.1,
+      7.7
      ]
     }
    ]
@@ -125,6 +149,12 @@
    "text": "This program never needs to know the maze. It checks the path at every step until Bolt reaches the goal.",
    "art": "grid",
    "img": "csq/robo-route/conditionals-2-any-maze",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "The short sense-and-steer program beside the maze: repeat until goal, if path ahead move, else turn right.",
    "steps": [
     "repeat until goal:",
@@ -133,42 +163,48 @@
    ],
    "focus": [
     {
-     "cue": "Four blocks: that is the whole maze-solving program.",
+     "cue": "Path ahead? Move. No path? Turn right. Bolt follows the edge round.",
      "box": [
-      54.1,
-      43.8,
-      16.8,
-      42.0
-     ]
-    },
-    {
-     "cue": "It works on this maze too: Bolt checks at every square.",
-     "box": [
-      5.9,
-      25.4,
-      40.7,
+      5.7,
+      25.5,
+      41.2,
       72.4
      ],
      "path": [
       [
-       8.5,
-       30.1
+       8.6,
+       30.3
       ],
       [
-       44.0,
-       30.1
+       43.9,
+       30.3
       ],
       [
-       44.0,
-       93.2
+       43.9,
+       93
+      ]
+     ]
+    },
+    {
+     "cue": "It keeps checking at every square, all the way to the flag.",
+     "box": [
+      5.7,
+      61.3,
+      41.2,
+      36.6
+     ],
+     "path": [
+      [
+       43.9,
+       93
       ],
       [
-       8.5,
-       93.2
+       8.6,
+       93
       ],
       [
-       8.5,
-       66.2
+       8.6,
+       66.1
       ]
      ]
     }
@@ -179,33 +215,39 @@
    "text": "A porch light turns on if it is dark AND someone is outside: AND needs both at the same moment. The pictured check is if NOT path ahead OR on paint, turn right. On paint reads the square under Bolt, so turning cannot change its answer: move first.",
    "art": "table",
    "img": "csq/robo-route/conditionals-2-or-not",
+   "view": [
+    52.2,
+    46.1,
+    34,
+    30.2
+   ],
    "alt": "The check reads if NOT path ahead OR on paint, turn right: one block asking two questions at once.",
    "focus": [
     {
      "cue": "One block, flipped questions: NOT path ahead, OR on paint.",
      "box": [
-      56.4,
-      58.2,
-      20.2,
-      6.0
+      55.8,
+      57.4,
+      21.1,
+      7.7
      ]
     },
     {
      "cue": "If either one is true, Bolt turns right.",
      "box": [
-      58.8,
-      65.4,
-      8.6,
-      6.0
+      58.1,
+      64.6,
+      10,
+      7.7
      ]
     },
     {
-     "cue": "The purple squares are paint: driving on one counts too.",
+     "cue": "Move comes first, so the check reads the square Bolt just drove onto.",
      "box": [
-      41.3,
-      25.4,
-      5.3,
-      9.3
+      55.8,
+      50.2,
+      7.7,
+      7.7
      ]
     }
    ]
@@ -214,7 +256,7 @@
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "branch",
    "words": [
     {
      "word": "condition",
@@ -240,14 +282,20 @@
    "text": "Open Robo Route at Conditionals & events and finish all 7 levels, including one rule built with AND. Say each rule as a sentence before you build it.",
    "art": "trophy",
    "img": "csq/robo-route/conditionals-2-key",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "A big walled maze with Bolt penned in one corner and the flag far away: no fixed route can be written for this.",
    "focus": [
     {
      "cue": "Your turn: one program, built on an AND rule.",
      "box": [
-      5.9,
-      25.4,
-      40.7,
+      5.7,
+      25.5,
+      41.2,
       72.4
      ]
     }

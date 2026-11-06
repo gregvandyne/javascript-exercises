@@ -19,7 +19,7 @@
   {
    "title": "Worked example: the Heavy Sack",
    "text": "Rough first: the sack should be a bit over 3,000 grams, because of the extra 400. The fifth lock shows a sack marked 3 kilograms 400 grams, and its dial reads only grams. Convert, then add.",
-   "art": "gears",
+   "art": "scale",
    "kind": "example",
    "steps": [
     "3 kilograms = 3 x 1,000 = 3,000 grams",
@@ -58,28 +58,28 @@
     {
      "cue": "One sack, two names: 3 kilograms 400 grams.",
      "box": [
-      5.8,
-      13.7,
-      88.4,
-      24.7
+      5,
+      12.3,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "The kilograms become 3,000 grams.",
      "box": [
-      5.8,
-      53.1,
-      78.0,
-      15.5
+      5.6,
+      51.7,
+      78.5,
+      18.4
      ]
     },
     {
      "cue": "The extra 400 grams ride at the end.",
      "box": [
-      83.4,
-      53.1,
-      10.8,
-      15.5
+      83.2,
+      51.7,
+      11.3,
+      18.4
      ]
     }
    ]
@@ -131,28 +131,28 @@
     {
      "cue": "The tour starts at 10:40.",
      "box": [
-      45.2,
-      59.2,
-      9.6,
-      22.6
+      44.4,
+      57.8,
+      11.3,
+      25.5
      ]
     },
     {
      "cue": "The tour lasts 35 minutes: one long hop.",
      "box": [
-      49.8,
-      24.4,
-      38.9,
-      36.2
+      49,
+      23.2,
+      45.1,
+      46.5
      ]
     },
     {
      "cue": "It ends at 11:15, between two marks. Times can land between.",
      "box": [
-      84.0,
-      42.8,
-      9.0,
-      25.5
+      83,
+      41.4,
+      11.1,
+      28.3
      ]
     }
    ]
@@ -192,7 +192,13 @@
    "art": "trophy",
    "img": "nq/quest-race/vault-run",
    "alt": "Quest Race on the island course: a Vault Run lock question on screen, four answers to pick from, the runners on the track below.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    20,
+    54,
+    60,
+    44
+   ]
   }
  ],
  "check": [

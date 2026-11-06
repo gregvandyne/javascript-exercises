@@ -4,7 +4,10 @@ The content of Oomba Academy's cybersecurity and online-safety course (grades 3-
 grades 6-8 = band **2**, "Pro"), set in Pim the owl's Netville post office. It is a standalone course beside
 CS Quest: it reuses CS Quest's student-course machinery (`server/services/courses.js`), its deck format, its
 check rules (three questions, pass 2 of 3) and its games (Packet Post, Would You Rather), but none of its
-content files. Everything in this folder is data. Lesson text is English and shows verbatim in every UI
+content files. Its own games carry the trick, chat and kindness units: Trick Inbox rounds (`chapter=<set>&band=..&lock=1`)
+and Escape the Post Office practice locks (`chapter=<lock id>&band=..&lock=1` opens one lock alone; `chapter=escape` is
+the whole room). Packet Post keeps the network, key and cipher units (1-2); Would You Rather is locked to its online
+topic (`topic=online&lock=1`). Everything in this folder is data. Lesson text is English and shows verbatim in every UI
 language; only the chrome around it is translated (`courses.*` keys). US spelling throughout.
 
 | File | What |
@@ -22,9 +25,12 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
 
 - 20 steps per band (0.1, 1.1-6.4), in `units.json` order; a deck for every step and nothing else in
   `course/<band>`.
-- A deck's game module is exactly the one `units.json` names for that band (Packet Post chapter and
-  canonical params, or Would You Rather's "Online: share or keep" topic), and its mission slide names the
-  game and the chapter as the game shows them.
+- A deck's game module is exactly the one `units.json` names for that band (a Packet Post chapter, a Trick
+  Inbox set or an escape-room lock with canonical params, or Would You Rather locked to "Online: share or keep"),
+  and its mission slide names the game and the chapter as the game shows them. Units 1-2 play Packet Post,
+  units 4-6 the course's own games, and steps 4.3, 5.1 and 5.2 open three different modules.
+- The Pro intro (`course/2/0.1.json`) also carries `slides_first_time` (same schema as `slides`): the welcome a
+  kid sees who never finished an Explorer step, so it never says "welcome back".
 - A deck's check is its own step's three bank items; an item's `cat` is one of the step's CYBER.ORG codes
   from `units.json`, and every code in `units.json` is in the `standards.json` registry; inherited CSTA
   codes must be real CSTA 2017 ids of the right level (`server/standards/csta-2017.json`).
@@ -34,9 +40,13 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
   is a Cyber Defender (singular), which is a job, not the program name.
 - The last step of each unit carries a Magpie beat (the course's comic trickster, introduced in the intro),
   and each unit carries teacher notes.
-- A slide picture (`img`) may only reuse a CS Quest manifest key (`public/img/csq/manifest.json`) whose
-  game state genuinely matches the slide, with the manifest's alt copied verbatim. New Cyber Defenders
-  captures are a later phase; slides without a genuine match keep their emoji `art`.
+- A slide picture (`img`) is a manifest key (`public/img/csq/manifest.json`) whose game state genuinely matches
+  the slide, with the manifest's alt copied verbatim, used at most twice per band. Cyber Defenders' own captures
+  come from `scripts/cyber-shots.js` (table: `scripts/cyber-shots-spec.json`); its Trick Inbox and Escape shots
+  render the game at 800x450 with a 1.6 scale and record the game's real element boxes in
+  `scripts/cyber-shots-rects.json`, which every highlight box on those pictures is taken from.
+- Every screenshot slide with guided focus carries a `view` [x, y, w, h] (% of the picture): the crop a phone
+  shows, holding every focus box (boxes stay in % of the whole picture).
 
 ## Changing the catalogue
 

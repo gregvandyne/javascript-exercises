@@ -11,13 +11,25 @@
    "text": "Today you are the designer. Real teams plan, build, test with someone else, improve the work and document it.",
    "art": "pencil",
    "img": "csq/robo-route/maker-2-key",
-   "alt": "The Pro Level Maker opens its first task: a blank canvas and the tools to build a level for someone else."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board."
   },
   {
    "title": "Keep a timeline",
    "text": "Split the work and set times: build by minute 6, test by 12, fix by 18. Write who does each part.",
    "art": "chart",
    "img": "csq/robo-route/maker-2-task",
+   "view": [
+    51,
+    9.4,
+    49,
+    43.6
+   ],
    "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when."
   },
   {
@@ -25,7 +37,13 @@
    "text": "Feedback is not a grade. It shows where a player got stuck. A level is done when that feedback changed something and you tested it again.",
    "art": "people",
    "img": "csq/robo-route/maker-2-feedback",
-   "alt": "After the test play, the maker rates the level: the feedback card records how fun and how hard the tester found it."
+   "view": [
+    28.5,
+    12,
+    43,
+    76.4
+   ],
+   "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type."
   },
   {
    "kind": "example",
@@ -42,20 +60,32 @@
     "write the note (on paper)"
    ],
    "img": "csq/robo-route/maker-2-built",
-   "alt": "A Pro maker level built and checked: the board holds a full design and Check has judged whether it can be solved."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "A Pro maker level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23."
   },
   {
    "title": "Write the level note",
    "text": "A good note helps the next person play or remix it, like: Level 2: count the gems before the door. The game saves your level and its code, so write the note on paper with the code at the top. Remixed levels keep their based-on stamp.",
    "art": "envelope",
    "img": "csq/robo-route/maker-2-task",
+   "view": [
+    51,
+    9.4,
+    49,
+    43.6
+   ],
    "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "map",
    "words": [
     {
      "word": "iteration",
@@ -93,7 +123,13 @@
    "text": "Open Robo Route at Level Maker and do the three maker tasks to finish this step. Then, as a stretch, build your own level from a plan, let someone test it in silence, and change one thing. Write its level note on paper, with the level code at the top.",
    "art": "trophy",
    "img": "csq/robo-route/maker-2-key",
-   "alt": "The Pro Level Maker opens its first task: a blank canvas and the tools to build a level for someone else."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board."
   }
  ],
  "check": [

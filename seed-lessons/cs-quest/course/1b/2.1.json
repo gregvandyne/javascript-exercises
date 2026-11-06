@@ -11,6 +11,12 @@
    "text": "Every programmer makes mistakes. A mistake in a program is called a bug. Finding and fixing it is called debugging.",
    "art": "bug",
    "img": "csq/robo-route/debug-1b-key",
+   "view": [
+    52.2,
+    16.4,
+    44.6,
+    39.6
+   ],
    "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
   },
   {
@@ -18,6 +24,12 @@
    "text": "Ask two questions. What did I expect Bolt to do? What did Bolt actually do? The bug is where those two first split apart.",
    "art": "magnifier",
    "img": "csq/robo-route/debug-1b-midrun",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised."
   },
   {
@@ -33,6 +45,12 @@
     "run it again"
    ],
    "img": "csq/robo-route/debug-1b-step",
+   "view": [
+    52.2,
+    16.4,
+    44.6,
+    39.6
+   ],
    "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square."
   },
   {
@@ -40,20 +58,43 @@
    "text": "Bolt goes one square too far? Look at the numbers. A repeat count that is one too big is a very common bug.",
    "art": "loop",
    "img": "csq/robo-route/debug-1b-count",
-   "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many.",
+   "focus": [
+    {
+     "cue": "The flag is 5 squares away, but the program repeats 6 times: one too many.",
+     "box": [
+      12.4,
+      49.4,
+      34.4,
+      12.7
+     ]
+    }
+   ]
   },
   {
    "title": "Done means tested",
    "text": "A fix is not done when it looks right. It is done when you run it again and Bolt does what you expected.",
    "art": "star",
    "img": "csq/robo-route/debug-1b-fixed",
+   "view": [
+    52.2,
+    22.8,
+    45.4,
+    40.3
+   ],
    "alt": "The fixed program sits in the tray: the wrong turn left has become turn right, ready to run again and be tested."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "bug",
    "words": [
     {
      "word": "bug",
@@ -79,6 +120,12 @@
    "text": "Open Robo Route at Debug Lab and fix all 7 programs. Use Step, change as few blocks as you can, and run it again to test.",
    "art": "trophy",
    "img": "csq/robo-route/debug-1b-key",
+   "view": [
+    52.2,
+    16.4,
+    44.6,
+    39.6
+   ],
    "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
   }
  ],

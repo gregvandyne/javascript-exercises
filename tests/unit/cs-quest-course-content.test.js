@@ -21,7 +21,7 @@ const DIR = path.join(CS, 'course');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { cleanText } = await import('../../server/services/textfilter.js');
 
-const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy'];
+const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy', 'ruler', 'clock', 'coins', 'scale', 'cake', 'shapes', 'angle', 'dice', 'cat'];
 const BANDS = ['1b', '2'];
 const NO_GAME = ['6.1', '6.3'];
 const GAME_TITLE = { 'robo-route': 'Robo Route', 'data-detective': 'Data Detective', 'packet-post': 'Packet Post', 'inside-the-machine': 'Inside the Machine' };
@@ -47,6 +47,8 @@ const stringsOf = d => [d.title, d.topic, d.talk, ...d.slides.flatMap(sl => [sl.
 // the register of captured in-game shots; the file lives at public/img/<key>.webp.
 const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MANIFEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'img', 'csq', 'manifest.json'), 'utf8'));
+const EXTRAS = JSON.parse(fs.readFileSync(path.join(DIR, 'extras.json'), 'utf8'));
+const EXTRA_STEPS = EXTRAS.steps.filter(x => /^after-/.test(x.pos));
 const manifestByKey = new Map((MANIFEST.images || []).map(e => [e.key, e]));
 const sentences = t => t.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).filter(Boolean).length;
 
@@ -55,7 +57,9 @@ test('19 steps (lessons 1.1-6.3) in two bands: 38 files, plus the two story step
   for (const d of decks) assert.ok(d.deck, `${path.relative(ROOT, d.file)} exists`);
   for (const band of BANDS) {
     const files = fs.readdirSync(path.join(DIR, band)).sort();
-    assert.deepEqual(files, STEPS.map(s => `${s.n}.json`).concat(['0.1.json', '6.4.json']).sort(), `course/${band} holds the 19 step files and the two story steps`);
+    // Course-only practice steps (extras.json, pos "after-<n>") add a file in the bands they name: Pro 3.4 Fair Data.
+    const extra = EXTRA_STEPS.filter(x => x.bands.includes(band)).map(x => `${x.n}.json`);
+    assert.deepEqual(files, STEPS.map(s => `${s.n}.json`).concat(['0.1.json', '6.4.json'], extra).sort(), `course/${band} holds the 19 step files, the two story steps and its practice steps`);
   }
   assert.deepEqual(fs.readdirSync(DIR).sort(), BANDS.concat(['extras.json']).sort());
 });
@@ -90,7 +94,8 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'view', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'view', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'] }[s.kind || 'text'];
+      if (s.view !== undefined) assert.ok(s.img && Array.isArray(s.view) && s.view.length === 4 && s.view.every(n => typeof n === 'number'), `${at}: view is [x, y, w, h] in % of its img`);
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
@@ -117,7 +122,7 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
           const [x, y, w, h] = f.box;
           assert.ok(x >= 0 && y >= 0 && w >= 2 && h >= 2 && x + w <= 100 && y + h <= 100, `${fat}: box inside the frame, at least 2% wide/tall`);
           if (f.path != null) {
-            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 8, `${fat}: path of 2-8 points`);
+            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 16, `${fat}: path of 2-16 points`);
             for (const p of f.path) assert.ok(Array.isArray(p) && p.length === 2 && p.every(v => typeof v === 'number' && v >= 0 && v <= 100), `${fat}: path points in % inside the frame`);
           }
         }
@@ -253,30 +258,35 @@ function checkStory(st, at) {
   if (st.fly != null) assert.equal(CHAR_IDS[st.lit - 1], st.fly, `${at}: the flown piece is the one this scene lights`);
 }
 test('story scope: beats only in the five unit decks, before the mission, with the pack\'s piece counts', () => {
-  for (const { band, step, deck: d } of decks) {
+  // A practice step that follows a beat step (Pro 3.4 after 3.3) takes over its beat: the handoff closes the unit.
+  const all = decks.map(d => ({ band: d.band, step: d.step, deck: d.deck }));
+  for (const x of EXTRA_STEPS) for (const band of x.bands) all.push({ band, step: { n: x.n }, deck: JSON.parse(fs.readFileSync(path.join(DIR, band, `${x.n}.json`), 'utf8')), after: x.pos.slice(6) });
+  const movedFrom = new Set(all.filter(a => a.after && a.after in BEAT_LIT).map(a => `${a.band}-${a.after}`));
+  for (const { band, step, deck: d, after } of all) {
     const where = `${band}-${step.n}`;
     const withStory = d.slides.map((s, i) => [s, i]).filter(([s]) => s.story != null);
-    if (!(step.n in BEAT_LIT)) { assert.equal(withStory.length, 0, `${where}: no story slides outside the story steps and beats`); continue; }
+    const beatN = after && after in BEAT_LIT ? after : step.n;
+    if (!(beatN in BEAT_LIT) || movedFrom.has(where)) { assert.equal(withStory.length, 0, `${where}: no story slides outside the story steps and beats`); continue; }
     assert.equal(withStory.length, 1, `${where}: exactly one beat slide`);
     const [beat, i] = withStory[0];
     assert.equal(i, d.slides.length - 2, `${where}: the beat sits right before the mission`);
     checkStory(beat.story, `${where} beat`);
     assert.equal(beat.story.scene, 'handoff', `${where}: the beat is a handoff`);
     assert.ok(beat.story.out, `${where}: the beat names the outgoing character`);
-    assert.equal(beat.story.lit, BEAT_LIT[step.n], `${where}: ${BEAT_LIT[step.n]} piece(s) lit after this beat`);
+    assert.equal(beat.story.lit, BEAT_LIT[beatN], `${where}: ${BEAT_LIT[beatN]} piece(s) lit after this beat`);
   }
 });
 
 test('the story steps (0.1, 6.4): extras.json defines them, the decks match it, the items are sound and kid-safe', () => {
   const extras = JSON.parse(fs.readFileSync(path.join(DIR, 'extras.json'), 'utf8'));
-  assert.deepEqual(extras.steps.map(x => [x.n, x.pos, x.unit]), [['0.1', 'first', 1], ['6.4', 'last', 6]], 'the intro opens the course, the finale closes it');
+  assert.deepEqual(extras.steps.filter(x => !/^after-/.test(x.pos)).map(x => [x.n, x.pos, x.unit]), [['0.1', 'first', 1], ['6.4', 'last', 6]], 'the intro opens the course, the finale closes it');
   const kidSafe = (s, at) => {
     for (const [re, why] of BAD) assert.ok(!re.test(s), `${at} has ${why}: ${s}`);
     assert.ok(!UK.test(s), `${at}: US spelling please: ${s}`);
     assert.ok(!BRAND.test(s), `${at}: no brand names: ${s}`);
     const c = cleanText(s, 1000); assert.ok(c.ok && c.value === s, `${at}: the text filter refuses: ${s}`);
   };
-  for (const x of extras.steps) {
+  for (const x of extras.steps.filter(x => !/^after-/.test(x.pos))) {
     for (const band of BANDS) {
       const where = `${band}-${x.n}`;
       const items = x.items[band];

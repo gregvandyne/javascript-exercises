@@ -40,19 +40,19 @@
     {
      "cue": "The long bar is the whole story in one picture.",
      "box": [
-      6,
-      28.1,
-      88,
-      24.4
+      5,
+      26.5,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "The part with no number gets a question mark. That mark is your job.",
      "box": [
-      58.8,
-      37.3,
-      35.2,
-      15.2
+      58.4,
+      35.7,
+      36.1,
+      18.4
      ]
     }
    ]
@@ -93,19 +93,19 @@
     {
      "cue": "One part is known: 147 ribbons sold.",
      "box": [
-      6,
-      37.3,
-      33.6,
-      15.2
+      5.6,
+      35.7,
+      34.4,
+      18.4
      ]
     },
     {
      "cue": "The other part is the question: how many are left?",
      "box": [
-      39.5,
-      37.3,
-      54.5,
-      15.2
+      39.1,
+      35.7,
+      55.4,
+      18.4
      ]
     }
    ]
@@ -154,19 +154,19 @@
     {
      "cue": "The Jumble's bar joins two parts: it added.",
      "box": [
-      6,
-      13.9,
-      88,
-      24.4
+      5,
+      12.3,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "The story asked for a difference: the gap is the unknown part.",
      "box": [
-      67.6,
-      53.3,
-      26.4,
-      15.2
+      67.1,
+      51.7,
+      27.4,
+      18.4
      ]
     }
    ]
@@ -229,19 +229,19 @@
     {
      "cue": "275 points she has, and 90 more today: two known parts.",
      "box": [
-      6,
-      37.3,
-      64.3,
-      15.2
+      5.6,
+      35.7,
+      65.1,
+      18.4
      ]
     },
     {
      "cue": "What is left of the 500 is still to earn: 135 points.",
      "box": [
-      70.2,
-      37.3,
-      23.8,
-      15.2
+      69.8,
+      35.7,
+      24.7,
+      18.4
      ]
     }
    ]
@@ -252,7 +252,13 @@
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your story board: every tile tells a story, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Sketch each story as a bar before you pick an answer.",
    "art": "trophy",
    "img": "nq/brain-board/story-board",
-   "alt": "Brain Board in play: the story board, categories Draw the story, Joining stories, Gap stories, Two steps and Estimate first, a story question open."
+   "alt": "Brain Board in play: the story board, categories Draw the story, Joining stories, Gap stories, Two steps and Estimate first, a story question open.",
+   "view": [
+    8.5,
+    26.5,
+    83,
+    41.5
+   ]
   }
  ],
  "check": [

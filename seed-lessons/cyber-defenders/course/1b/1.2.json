@@ -12,6 +12,12 @@
    "art": "envelope",
    "img": "csq/packet-post/protocols-1b-key",
    "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+   "view": [
+    8.1,
+    24.3,
+    68.1,
+    60.5
+   ],
    "focus": [
     {
      "cue": "Three packets were sent on this road",
@@ -39,9 +45,15 @@
    "art": "network",
    "img": "csq/packet-post/protocols-1b-twice",
    "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
+   "view": [
+    8.1,
+    30.2,
+    66.8,
+    59.4
+   ],
    "focus": [
     {
-     "cue": "Four packets this time, travelling one road",
+     "cue": "Four packets this time, traveling one road",
      "box": [
       11.1,
       48.6,
@@ -72,6 +84,12 @@
    ],
    "img": "csq/packet-post/routes-2-sealed",
    "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "view": [
+    25.9,
+    18.2,
+    65.4,
+    58.1
+   ],
    "focus": [
     {
      "cue": "Sealed roads wear a padlock",
@@ -99,6 +117,12 @@
    "art": "shield",
    "img": "csq/packet-post/tricks-1b-card",
    "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "view": [
+    4.2,
+    13.7,
+    40.0,
+    35.6
+   ],
    "focus": [
     {
      "cue": "This message wears a bank's name",
@@ -126,6 +150,12 @@
    "art": "globe",
    "img": "csq/packet-post/routes-1b-town",
    "alt": "The big town map: roadworks all over town, and Pim warns that two roads will close.",
+   "view": [
+    5.4,
+    20.5,
+    85.9,
+    76.4
+   ],
    "focus": [
     {
      "cue": "The whole town's roads, open to everyone",
@@ -178,6 +208,12 @@
    "art": "trophy",
    "img": "csq/packet-post/protocols-1b-key",
    "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+   "view": [
+    8.1,
+    39.9,
+    45.1,
+    40.1
+   ],
    "focus": [
     {
      "cue": "Play Rules of the Road: arrivals and resends",

@@ -11,6 +11,12 @@
    "text": "A claim is something you say is true, like: the plant grows every day. Evidence is the data that backs it up.",
    "art": "magnifier",
    "img": "csq/data-detective/claims-1b-key",
+   "view": [
+    0.8,
+    9,
+    54,
+    89
+   ],
    "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it."
   },
   {
@@ -18,6 +24,12 @@
    "text": "Two bars are a hunch, not a case. When there is too little data, the honest answer is: we can not tell yet.",
    "art": "chart",
    "img": "csq/data-detective/claims-1b-small",
+   "view": [
+    0.8,
+    9,
+    54,
+    89
+   ],
    "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we can not tell yet."
   },
   {
@@ -34,6 +46,12 @@
     "day 6: ?"
    ],
    "img": "csq/data-detective/claims-1b-plant",
+   "view": [
+    0.8,
+    9,
+    54,
+    89
+   ],
    "alt": "Predict Day 6: the plant chart climbs the same amount every day, so the next bar can be predicted from the pattern."
   },
   {
@@ -41,13 +59,19 @@
    "text": "If Saturday has the tallest bar in a chart of park visitors, the chart supports: most visitors came on Saturday. It does not say why.",
    "art": "star",
    "img": "csq/data-detective/claims-1b-card",
+   "view": [
+    26,
+    23,
+    48,
+    54
+   ],
    "alt": "The claim card beside the plant chart: each claim must match what the bars actually show, nothing more."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Three words for today.",
-   "art": "pencil",
+   "art": "chart",
    "words": [
     {
      "word": "claim",
@@ -69,6 +93,12 @@
    "text": "Open Data Detective at Clues & Claims and solve all 6 cases. Before you pin a claim, ask: does the chart really show it, or can we not tell yet?",
    "art": "trophy",
    "img": "csq/data-detective/claims-1b-key",
+   "view": [
+    0.8,
+    9,
+    54,
+    89
+   ],
    "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it."
   }
  ],

@@ -843,13 +843,16 @@ window.SoloBank = (function () {
       out.push({ q: q, choices: sh, answer: sh.indexOf(ans), secs: 25 });
     };
     var fmt = function (mins) { var h = Math.floor(mins / 60), m = mins % 60; return h + ':' + (m < 10 ? '0' : '') + m; };
-    var raw = function (mins) { var h = Math.floor(mins / 60), m = mins % 60; return h + ':' + m; }; // the no-trade error: minutes past 60 left raw
+    // The no-trade error, written the way a kid writes it: the hour is never moved on, so the minutes run past 60 on the
+    // start's hour ("9:40 + 25 minutes" -> "9:65", like the bank's "9:60"). Only for a ride that crosses the hour and lands
+    // at most 19 minutes past it, so the wrong minutes read 60-79 (never "9:100"); null otherwise (the caller picks another).
+    var noTrade = function (from, to) { var h = Math.floor(to / 60), m = to % 60; return h > Math.floor(from / 60) && m < 20 ? (h - 1) + ':' + (m + 60) : null; };
     var start, dur, end, i;
     for (i = 0; i < 3; i++) { // End times: hop forward from the start.
       start = (rnd.int(8, 10)) * 60 + [5, 15, 25, 35, 40, 50][rnd.int(0, 5)];
       dur = [35, 40, 45, 50, 25, 30][rnd.int(0, 5)]; end = start + dur;
       mkS('A bus leaves at ' + fmt(start) + '. The ride takes ' + dur + ' minutes. When does it arrive?',
-        fmt(end), [raw(end) !== fmt(end) ? raw(end) : fmt(end + 20), fmt(end + 10), fmt(end - 10)]);
+        fmt(end), [noTrade(start, end) || fmt(end + 20), fmt(end + 10), fmt(end - 10)]);
     }
     for (i = 0; i < 2; i++) { // Elapsed: the distance between two times.
       start = rnd.int(8, 10) * 60 + [10, 20, 30, 40, 50][rnd.int(0, 4)];
@@ -865,8 +868,8 @@ window.SoloBank = (function () {
     }
     // One swap: minutes named as hours and minutes.
     var tot = [75, 90, 105, 120, 135][rnd.int(0, 4)], hh = Math.floor(tot / 60), mm = tot % 60;
-    mkS('How long is ' + tot + ' minutes, in hours and minutes?', hh + (hh === 1 ? ' hour ' : ' hours ') + mm + ' minutes',
-      [hh + (hh === 1 ? ' hour ' : ' hours ') + (mm + 10) + ' minutes', (hh + 1) + ' hours ' + mm + ' minutes', tot + ' hours']);
+    var hm = function (h, m) { return h + (h === 1 ? ' hour' : ' hours') + (m ? ' ' + m + ' minutes' : ''); }; // "2 hours", never "2 hours 0 minutes"
+    mkS('How long is ' + tot + ' minutes, in hours and minutes?', hm(hh, mm), [hm(hh, mm + 10), hm(hh + 1, mm), tot + ' hours']);
     return out;
   }
   // ---- Number Quest lesson race, step 7.4 (the Vault of Measures): the sequenced mixed mission that
@@ -876,8 +879,14 @@ window.SoloBank = (function () {
     var out = [];
     var mkS = function (q, ans, wrong) {
       var all = [String(ans)]; wrong.map(String).forEach(function (w) { if (all.indexOf(w) < 0) all.push(w); });
+      // Distractors that collide (3 trays of 3: 3 + 3 and 9 - 3 are both 6) are topped up with nearby real
+      // values written the same way as the answer (its number, commas and unit kept), never a filler.
+      var m = /^([\d,]+)(.*)$/.exec(String(ans));
+      if (m) {
+        var n = +m[1].replace(/,/g, ''), fmtN = function (v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + m[2]; };
+        for (var k = 1; all.length < 4 && k < 50; k++) [n + k, n - k].forEach(function (v) { var t = fmtN(v); if (v > 0 && all.length < 4 && all.indexOf(t) < 0) all.push(t); });
+      }
       var sh = rnd.shuffle(all.slice(0, 4));
-      while (sh.length < 4) sh.push(String(ans) + ' x' + sh.length);
       out.push({ q: q, choices: sh, answer: sh.indexOf(String(ans)), secs: 25 });
     };
     var fmt = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
@@ -889,7 +898,9 @@ window.SoloBank = (function () {
     do { digs = [rnd.int(2, 9), rnd.int(1, 9), rnd.int(1, 9), rnd.int(1, 9)]; pos = rnd.int(0, 3); guard++; }
     while (digs.filter(function (d) { return d === digs[pos]; }).length > 1 && guard < 60);
     var num = digs[0] * 1000 + digs[1] * 100 + digs[2] * 10 + digs[3], place = Math.pow(10, 3 - pos), val = digs[pos] * place;
-    mkS('LOCK 1 · In ' + fmt(num) + ', what is the value of the ' + digs[pos] + '?', fmt(val), [fmt(digs[pos]), fmt(val * 10), fmt(Math.max(1, val / 10))]);
+    // Distractors: the same digit at the other three places (6 / 60 / 600 / 6,000), so a ones-place digit
+    // never collapses two choices into the answer or into a nonsense 1.
+    mkS('LOCK 1 · In ' + fmt(num) + ', what is the value of the ' + digs[pos] + '?', fmt(val), [1, 10, 100, 1000].map(function (p) { return digs[pos] * p; }).filter(function (v) { return v !== val; }).map(fmt));
     // Lock 2 (Unit 2, the ledger gap): how many more to reach the whole?
     a = rnd.int(320, 640); b = rnd.int(120, a - 120);
     mkS('LOCK 2 · The ledger needs ' + a + ' stamps and holds ' + b + '. How many more stamps are needed?', a - b, [a + b, a - b + 20, a - b - 20]);

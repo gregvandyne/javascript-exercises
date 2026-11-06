@@ -8,46 +8,70 @@
  "slides": [
   {
    "title": "Rules that predict",
-   "text": "A model is a rule that predicts what will happen, like: distance = 2 \u00d7 height. A simulation runs the rule so you can check it.",
+   "text": "A model is a rule that predicts what will happen, like: distance = 2 × height. A simulation runs the rule so you can check it.",
    "art": "chart",
    "say": "A model is a rule that predicts what will happen, like: distance is 2 times the height. A simulation runs the rule so you can check it.",
    "img": "csq/data-detective/models-2-key",
+   "view": [
+    55,
+    9,
+    45,
+    60
+   ],
    "alt": "The Ramp Rule case: a rule that predicts how far a car rolls, with the ramp and the trials waiting."
   },
   {
    "title": "Predict, compare, refine",
    "text": "Predict with the model. Run real trials. Compare. If they disagree, change the model, not the data, and test again.",
    "art": "gears",
-   "img": "csq/data-detective/models-2-run",
-   "alt": "The model has run: predicted distances sit beside the real trials, so the rule can be compared and refined."
+   "img": "csq/data-detective/models-2-ramp",
+   "view": [
+    0.8,
+    9,
+    54,
+    48
+   ],
+   "alt": "The ramp trials ran farther than the first rule predicted, so the rule was raised and run again: the error shrinks."
   },
   {
    "kind": "example",
    "title": "The ramp",
-   "text": "Every trial went farther than predicted, so the rule is too low. Refine it, and the error gets smaller.",
+   "text": "Every trial went farther than predicted, so the rule is too low. Raise it, run again, and the error gets smaller.",
    "art": "chart",
    "steps": [
-    "rule: distance = 2 \u00d7 height",
+    "rule: distance = 2 × height",
     "predict: 20 cm",
     "trials: 27, 25, 26, 28, 24",
     "change the rule",
     "test again"
    ],
-   "img": "csq/data-detective/models-2-ramp",
-   "alt": "The ramp trials ran farther than the first rule predicted, so the rule was raised and run again: the error shrinks."
+   "img": "csq/data-detective/models-2-run",
+   "view": [
+    0.8,
+    9,
+    54,
+    48
+   ],
+   "alt": "The model has run: predicted distances sit beside the real trials, so the rule can be compared and refined."
   },
   {
    "title": "One trial is not proof",
    "text": "One lucky trial proves nothing. Compare the model with many results. To balance a game, test 20 runs, not one.",
    "art": "magnifier",
    "img": "csq/data-detective/models-2-trials",
+   "view": [
+    0.8,
+    9,
+    54,
+    48
+   ],
    "alt": "Bounce Back: another model case with its own trials, because one lucky trial never proves a rule."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "chart",
    "words": [
     {
      "word": "model",
@@ -73,6 +97,12 @@
    "text": "Open Data Detective at Model Makers and solve all 5 cases. Watch the error number: your job is to make it smaller.",
    "art": "trophy",
    "img": "csq/data-detective/models-2-key",
+   "view": [
+    55,
+    9,
+    45,
+    60
+   ],
    "alt": "The Ramp Rule case: a rule that predicts how far a car rolls, with the ramp and the trials waiting."
   }
  ],

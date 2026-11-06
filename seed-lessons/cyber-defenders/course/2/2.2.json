@@ -8,10 +8,16 @@
  "slides": [
   {
    "title": "Two questions at the counter",
-   "text": "When you collect a parcel, Pim checks two different things. Authentication proves it is really you. Authorization checks the list to see if this parcel is yours to open.",
+   "text": "When you collect a package, Pim checks two different things. Authentication proves it is really you. Authorization checks the list to see if this package is yours to open.",
    "art": "envelope",
    "img": "csq/packet-post/locks-2-shield",
    "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "view": [
+    5.0,
+    0.0,
+    86.3,
+    76.7
+   ],
    "focus": [
     {
      "cue": "Share or Shield: decide public or private, then the reason",
@@ -46,6 +52,12 @@
    ],
    "img": "csq/packet-post/locks-2-pass",
    "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key.",
+   "view": [
+    5.2,
+    15.9,
+    86.2,
+    76.6
+   ],
    "focus": [
     {
      "cue": "Something you know: the passphrase you build here",
@@ -73,6 +85,12 @@
    "art": "lock",
    "img": "csq/packet-post/locks-2-router",
    "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles.",
+   "view": [
+    51.0,
+    21.5,
+    40.4,
+    53.9
+   ],
    "focus": [
     {
      "cue": "The old way: a key on a sticker, readable by any visitor",
@@ -100,6 +118,12 @@
    "art": "people",
    "img": "csq/packet-post/locks-1b-protect",
    "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
+   "view": [
+    5.0,
+    3.0,
+    82.3,
+    73.2
+   ],
    "focus": [
     {
      "cue": "Signing out on a shared computer: the habit that separates you",
@@ -152,6 +176,12 @@
    "art": "trophy",
    "img": "csq/packet-post/locks-2-key",
    "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "view": [
+    51.0,
+    13.7,
+    40.3,
+    35.8
+   ],
    "focus": [
     {
      "cue": "Notice each check as you play the new levels",

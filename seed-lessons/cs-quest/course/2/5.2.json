@@ -11,6 +11,12 @@
    "text": "When something breaks, good fixers follow a flowchart: a chain of yes/no questions, cheapest check first.",
    "art": "wrench",
    "img": "csq/inside-the-machine/fixit-2-key",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first."
   },
   {
@@ -18,6 +24,12 @@
    "text": "Change three things and it works? Now you do not know which change fixed it. Change one thing, then test again.",
    "art": "gears",
    "img": "csq/inside-the-machine/fixit-2-flow",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "A second Pro ticket: the flowchart way means one change, one test, and knowing what fixed it."
   },
   {
@@ -33,6 +45,12 @@
     "swap the cable"
    ],
    "img": "csq/inside-the-machine/fixit-2-third",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "A third Pro ticket at the desk: its story hides the clue, and the cheap checks come before the slow ones."
   },
   {
@@ -40,13 +58,19 @@
    "text": "Swap a part for one you know works. If the problem moves with the part, you found the fault. One laptop prints and another does not? Look at the one that fails.",
    "art": "magnifier",
    "img": "csq/inside-the-machine/fixit-2-swap",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "A later Pro ticket: the kind where swapping in a known-good part tells you where the fault lives."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "wrench",
    "words": [
     {
      "word": "isolate",
@@ -72,6 +96,12 @@
    "text": "Open Inside the Machine at Fix-It Desk and solve all 7 tickets. Build the flowchart first, with the cheapest check at the top.",
    "art": "trophy",
    "img": "csq/inside-the-machine/fixit-2-key",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first."
   }
  ],

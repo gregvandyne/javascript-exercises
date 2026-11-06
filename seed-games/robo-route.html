@@ -36,6 +36,8 @@ body{margin:0;touch-action:manipulation}
 .rr-play.landscape{flex-direction:row}
 .rr-board{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
 .rr-play.landscape .rr-board{flex:0 0 52%}
+/* a laptop or desktop: the board takes the room the program panel does not need (the panel keeps 340px or more) */
+.rr-play.landscape:not(.short) .rr-board{flex:0 1 min(62%, calc(100% - 340px))}
 .rr-play.portrait .rr-board{flex:0 0 46%}
 .rr-play.short.landscape .rr-board{flex:0 0 40%}
 /* the verdict line: the last run's sentence stays under the board after the kit banner has gone */
@@ -234,9 +236,9 @@ body{margin:0;touch-action:manipulation}
    program scrolls inside the panel, so the shelf and the run bar never cover it */
 .rr-play.narrow.portrait{gap:6px}
 .rr-play.narrow.portrait .rr-board{flex:0 20 calc(min(100vw - 20px, 100vh - 400px) + 40px);min-height:max(210px,min(62vw,40vh));gap:5px}
-.rr-play.narrow.portrait .rr-top{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:5px}
-.rr-play.narrow.portrait .rr-top::-webkit-scrollbar{display:none}
-.rr-play.narrow.portrait .rr-top .rr-pill{min-height:30px;padding:0 10px;font-size:.84em;flex:none}
+/* the pills wrap onto a second line rather than run off the right edge ("Class q…"); a pill longer than the line wraps its words */
+.rr-play.narrow.portrait .rr-top{flex-wrap:wrap;gap:4px 5px}
+.rr-play.narrow.portrait .rr-top .rr-pill{min-height:28px;padding:1px 10px;font-size:.84em;flex:none;max-width:100%;box-sizing:border-box;white-space:normal;line-height:1.2}
 .rr-play.narrow.portrait .rr-top .quest{order:5}
 .rr-play.narrow.portrait .rr-gridwrap{flex:1 1 0;min-height:0}
 .rr-play.narrow.portrait .rr-verdict{font-size:.86em;padding:3px 8px}
@@ -1706,8 +1708,9 @@ function layoutClass() {
   const land = innerWidth > innerHeight * 1.15, short = innerHeight < 500, narrow = innerWidth < 560;
   for (const p of [$('#rr'), $('#mk')]) {
     p.classList.toggle('landscape', land); p.classList.toggle('portrait', !land); p.classList.toggle('short', short); p.classList.toggle('narrow', narrow);
-    // on a phone held sideways the kit's safe band would leave no room: the panel starts right under the HUD instead
-    if (short || (narrow && !land)) { const parts = [...document.querySelectorAll('.ok-ui .ok-hud .ok-pill, .ok-ui .ok-hud .ok-btn')]; const b = Math.max(50, ...parts.map(e => e.getBoundingClientRect().bottom)); p.style.top = Math.min(140, Math.round(b + 6)) + 'px'; } else p.style.top = '';
+    // on a phone held sideways the kit's safe band would leave no room, and on a laptop it left a band of sky over a
+    // board held small by the height: the play area starts right under the HUD instead
+    if (short || land || (narrow && !land)) { const parts = [...document.querySelectorAll('.ok-ui .ok-hud .ok-pill, .ok-ui .ok-hud .ok-btn')]; const b = Math.max(50, ...parts.map(e => e.getBoundingClientRect().bottom)); p.style.top = Math.min(140, Math.round(b + 6)) + 'px'; } else p.style.top = '';
   }
   fitGrid();
 }
@@ -2250,6 +2253,17 @@ document.addEventListener('keydown', e => {
     const all = [...document.querySelectorAll('.rr-blk[data-id]')], i = all.indexOf(document.activeElement), n = all[i + (e.key === 'ArrowDown' ? 1 : -1)]; if (n) { e.preventDefault(); n.focus(); }
   }
 });
+/* Speech for text a card already shows in full (the learn card, a hint): read aloud when read-aloud is on, but never
+   also printed in the kit's caption strip. With captions on (a class quest) the strip repeated the card's words behind
+   it, cut off at the top by the bottom bar, and stayed on screen for many seconds after the card closed. */
+const NO_CAPTION = new Set();
+try {
+  new MutationObserver(() => {
+    const c = document.querySelector('.ok-caption');
+    if (c && c.classList.contains('on') && NO_CAPTION.has(c.textContent)) c.classList.remove('on');
+  }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class'] });
+} catch (e) { /* ignore */ }
+function sayShown(text) { NO_CAPTION.add(String(text)); try { Oomba.say(text); } catch (e) { /* ignore */ } }
 function openLearn(again) {
   const learn = again ? learnFor() : S.level.learn; if (!learn) return;
   SAVE.learned[S.level.id + ':' + S.band] = 1; save();
@@ -2261,7 +2275,7 @@ function openLearn(again) {
     m.appendChild(pic);
     m.appendChild(el('p', '', esc(tr(learn.text))));
     const go = btn(tr("Let's go!"), { kind: 'hot', icon: 'play', big: true, onPress: () => { closeCard(); if (S.screen === 'play' && S.level.plan && !S.planDone) openPlan(); } }); go.setAttribute('data-focus', ''); m.appendChild(go);
-    try { Oomba.say(tr(learn.title) + '. ' + tr(learn.text)); } catch (e) { /* ignore */ }
+    sayShown(tr(learn.title) + '. ' + tr(learn.text));
   }, 'learn');
 }
 function openPlan() {
@@ -2293,7 +2307,7 @@ function openHint() {
     m.appendChild(el('p', '', esc(text)));
     if (tier === 3) m.appendChild(el('p', '', esc(tr('This hint shows a move, so the third star stays in the box this time.'))));
     const ok = btn(tr('Got it'), { kind: 'go', icon: 'check', big: true, onPress: closeCard }); ok.setAttribute('data-focus', ''); m.appendChild(ok);
-    try { Oomba.say(text); } catch (e) { /* ignore */ }
+    sayShown(text);
   });
   announce(text);
 }
@@ -2642,9 +2656,12 @@ Object.assign(window.__brbTest, {
   mkLoad: code => mkLoad(code),
   mkTest: async () => { mkTest(); await Oomba.time.real.wait(80); const b = [...document.querySelectorAll('.ok-ui .ok-modal:not(#scrim) .ok-hot')].pop(); if (b) b.click(); await Oomba.time.real.wait(80); return !!S.testing; },
   mkSave: () => { mkSave(); return SAVE.levels.slice(); },
-  maker: i => { closeKitScreens(); closeCard(); if (!S.chapter || S.chapter.id !== 'level-maker') { S.chapter = CHAPTERS.find(c => c.id === 'level-maker'); S.levels = levelsFor('level-maker', S.band); if (!S.hud) S.hud = Oomba.ui.hud(['progress', 'count:star'], {}); } startMaker(i == null ? 'free' : i); return stateObj(); },
+  maker: i => { closeKitScreens(); closeCard(); if (!S.chapter || S.chapter.id !== 'level-maker' || !S.levels || !S.levels[0] || S.levels[0].band !== S.band) { S.chapter = CHAPTERS.find(c => c.id === 'level-maker'); S.levels = levelsFor('level-maker', S.band); if (!S.hud) S.hud = Oomba.ui.hud(['progress', 'count:star'], {}); } startMaker(i == null ? 'free' : i); return stateObj(); },
   route: i => { useRoute(i); return S.compare ? S.compare.picked : null; },
   previewRoute: i => previewRoute(i),
+  // the facing check (tests/unit/robo-route.test.js): show board i of the level, and read where Bolt is and faces
+  layout: i => { if (S.playing) return false; S.layout = i | 0; S.stepEvents = null; buildBoard(); renderTabs(); return S.layout; },
+  board: () => ({ layout: S.layout, layouts: E.layoutsOf(S.level).length, start: S.grid && Object.assign({}, S.grid.start), goal: S.grid && S.grid.goal && Object.assign({}, S.grid.goal), w: S.grid && S.grid.w, h: S.grid && S.grid.h, bolt: Object.assign({}, BOLT) }),
   test: i => { const b = document.querySelectorAll('#tabs .ok-btn')[i]; if (b) b.click(); return S.layout; },
   daily: day => { if (day != null) S.dayOverride = day | 0; closeKitScreens(); closeCard(); startDaily(); return stateObj(); },
   pair: on => { SAVE.pair = !!on; renderPairBtn(); renderPair(); return SAVE.pair; },

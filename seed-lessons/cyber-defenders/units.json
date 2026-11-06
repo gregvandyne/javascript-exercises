@@ -36,7 +36,7 @@
      "order": 1,
      "shorts": {
       "1b": "Welcome",
-      "2": "Welcome back"
+      "2": "Welcome"
      },
      "standards": {
       "1b": {
@@ -56,7 +56,7 @@
      },
      "titles": {
       "1b": "Welcome to the Post Office",
-      "2": "Welcome back to the Post Office"
+      "2": "Welcome to the Post Office, Pro"
      }
     }
    ],
@@ -390,13 +390,13 @@
       "1b": {
        "chapter": "online",
        "chapterTitle": "Online: share or keep",
-       "params": "",
+       "params": "topic=online&lock=1",
        "slug": "would-you-rather"
       },
       "2": {
        "chapter": "online",
        "chapterTitle": "Online: share or keep",
-       "params": "",
+       "params": "topic=online&lock=1",
        "slug": "would-you-rather"
       }
      },
@@ -436,16 +436,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "",
-       "slug": "would-you-rather"
+       "chapter": "which-pim",
+       "chapterTitle": "Lock 3: Which Pim?",
+       "params": "chapter=which-pim&band=1b&lock=1",
+       "slug": "escape-the-post-office"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "",
-       "slug": "would-you-rather"
+       "chapter": "which-pim",
+       "chapterTitle": "Lock 3: Which Pim?",
+       "params": "chapter=which-pim&band=2&lock=1",
+       "slug": "escape-the-post-office"
       }
      },
      "n": "3.2",
@@ -483,14 +483,14 @@
       "1b": {
        "chapter": "online",
        "chapterTitle": "Online: share or keep",
-       "params": "",
+       "params": "topic=online&lock=1",
        "slug": "would-you-rather"
       },
       "2": {
-       "chapter": "tricks",
-       "chapterTitle": "Spot the Trick",
-       "params": "chapter=tricks&band=2&lock=1",
-       "slug": "packet-post"
+       "chapter": "pressure",
+       "chapterTitle": "Pressure",
+       "params": "chapter=pressure&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "3.3",
@@ -543,16 +543,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "tricks",
-       "chapterTitle": "Spot the Trick",
-       "params": "chapter=tricks&band=1b&lock=1",
-       "slug": "packet-post"
+       "chapter": "letters",
+       "chapterTitle": "Prize Letters",
+       "params": "chapter=letters&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "tricks",
-       "chapterTitle": "Spot the Trick",
-       "params": "chapter=tricks&band=2&lock=1",
-       "slug": "packet-post"
+       "chapter": "senders",
+       "chapterTitle": "Faked Senders",
+       "params": "chapter=senders&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "4.1",
@@ -591,16 +591,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "tricks",
-       "chapterTitle": "Spot the Trick",
-       "params": "chapter=tricks&band=1b&lock=1",
-       "slug": "packet-post"
+       "chapter": "mix",
+       "chapterTitle": "Magpie Mix",
+       "params": "chapter=mix&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "",
-       "slug": "would-you-rather"
+       "chapter": "mix",
+       "chapterTitle": "Magpie Mix",
+       "params": "chapter=mix&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "4.2",
@@ -634,16 +634,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "",
-       "slug": "would-you-rather"
+       "chapter": "trick-inbox",
+       "chapterTitle": "Lock 4: Trick Inbox",
+       "params": "chapter=trick-inbox&band=1b&lock=1",
+       "slug": "escape-the-post-office"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "",
-       "slug": "would-you-rather"
+       "chapter": "media",
+       "chapterTitle": "Fake or Fact?",
+       "params": "chapter=media&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "4.3",
@@ -680,7 +680,7 @@
     "Every trick in this unit is shown after the fact, with its clues named. The aim is clue-spotting, never fear, and the correct response is always the same calm routine: do not reply, do not tap, tell a trusted adult."
    ],
    "title": "Tricks and tricksters",
-   "tool": "packet-post"
+   "tool": "trick-inbox"
   },
   {
    "emoji": "💬",
@@ -691,16 +691,16 @@
     {
      "game": {
       "1b": {
-       "slug": "would-you-rather",
-       "chapter": "online",
-       "params": "",
-       "chapterTitle": "Online: share or keep"
+       "chapter": "chat",
+       "chapterTitle": "Chat Careful",
+       "params": "chapter=chat&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
-       "slug": "would-you-rather",
        "chapter": "online",
-       "params": "",
-       "chapterTitle": "Online: share or keep"
+       "chapterTitle": "Online: share or keep",
+       "params": "topic=online&lock=1",
+       "slug": "would-you-rather"
       }
      },
      "n": "5.1",
@@ -734,16 +734,16 @@
     {
      "game": {
       "1b": {
-       "slug": "would-you-rather",
-       "chapter": "online",
-       "params": "",
-       "chapterTitle": "Online: share or keep"
+       "chapter": "five-moves",
+       "chapterTitle": "Lock 5: Five Moves",
+       "params": "chapter=five-moves&band=1b&lock=1",
+       "slug": "escape-the-post-office"
       },
       "2": {
-       "slug": "would-you-rather",
-       "chapter": "online",
-       "params": "",
-       "chapterTitle": "Online: share or keep"
+       "chapter": "chat",
+       "chapterTitle": "Chat Careful",
+       "params": "chapter=chat&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "5.2",
@@ -812,7 +812,7 @@
     "Explorer 5.2 is deliberately slim (kindness and tell a trusted adult only); the word cyberbullying and the full response drill are Pro-only. Step 5.3's settings work uses pretend screens only; no real device data is collected."
    ],
    "title": "Kind screens, safe chats",
-   "tool": "would-you-rather"
+   "tool": "trick-inbox"
   },
   {
    "emoji": "🛡️",
@@ -823,16 +823,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "locks",
-       "chapterTitle": "Lock It",
-       "params": "chapter=locks&band=1b&lock=1",
-       "slug": "packet-post"
+       "chapter": "layers",
+       "chapterTitle": "Lock 6: Layers",
+       "params": "chapter=layers&band=1b&lock=1",
+       "slug": "escape-the-post-office"
       },
       "2": {
-       "chapter": "locks",
-       "chapterTitle": "Lock It",
-       "params": "chapter=locks&band=2&lock=1",
-       "slug": "packet-post"
+       "chapter": "layers",
+       "chapterTitle": "Lock 6: Layers",
+       "params": "chapter=layers&band=2&lock=1",
+       "slug": "escape-the-post-office"
       }
      },
      "n": "6.1",
@@ -870,16 +870,16 @@
     {
      "game": {
       "1b": {
-       "slug": "would-you-rather",
        "chapter": "online",
-       "params": "",
-       "chapterTitle": "Online: share or keep"
+       "chapterTitle": "Online: share or keep",
+       "params": "topic=online&lock=1",
+       "slug": "would-you-rather"
       },
       "2": {
-       "slug": "would-you-rather",
        "chapter": "online",
-       "params": "",
-       "chapterTitle": "Online: share or keep"
+       "chapterTitle": "Online: share or keep",
+       "params": "topic=online&lock=1",
+       "slug": "would-you-rather"
       }
      },
      "n": "6.2",
@@ -923,10 +923,10 @@
        "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "boss",
-       "chapterTitle": "Boss Round",
-       "params": "chapter=boss&band=2&lock=1",
-       "slug": "trick-inbox"
+       "chapter": "five-moves",
+       "chapterTitle": "Lock 5: Five Moves",
+       "params": "chapter=five-moves&band=2&lock=1",
+       "slug": "escape-the-post-office"
       }
      },
      "n": "6.3",
@@ -1011,7 +1011,7 @@
     "The finale (6.4) has no fail state and no outcome-changing timer by design; the completion shield records honestly how many of the three hint feathers were used."
    ],
    "title": "The Defender's toolkit",
-   "tool": "packet-post"
+   "tool": "escape-the-post-office"
   }
  ]
 }

@@ -11,6 +11,12 @@
    "text": "Technology is neither all good nor all bad. Every advance has a benefit for someone and a cost for someone else.",
    "art": "globe",
    "img": "csq/would-you-rather/tech-2-first",
+   "view": [
+    6.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else."
   },
   {
@@ -18,6 +24,12 @@
    "text": "Automation means a machine does a task people used to do. It changes jobs more than it erases them.",
    "art": "robot",
    "img": "csq/would-you-rather/tech-2-second",
+   "view": [
+    6.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do."
   },
   {
@@ -36,13 +48,19 @@
    "text": "A map app saves time, but you may stop learning your way around. Driverless cars might prevent some crashes and change drivers' jobs.",
    "art": "map",
    "img": "csq/would-you-rather/tech-2-second",
+   "view": [
+    52.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "lightbulb",
    "words": [
     {
      "word": "tradeoff",
@@ -68,6 +86,12 @@
    "text": "Pick one technology you used today. Name one benefit for everyday life and one cost for someone's job or privacy. Then talk about it.",
    "art": "trophy",
    "img": "csq/would-you-rather/tech-2-first",
+   "view": [
+    52.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else."
   }
  ],

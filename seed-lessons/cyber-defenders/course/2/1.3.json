@@ -12,6 +12,12 @@
    "art": "box",
    "img": "csq/packet-post/protocols-2-journey",
    "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
+   "view": [
+    37.7,
+    26.4,
+    53.6,
+    47.6
+   ],
    "focus": [
     {
      "cue": "A picture's journey, in five rule cards",
@@ -44,25 +50,31 @@
     "in the vault, at rest: lock the storage",
     "same photo, three different locks"
    ],
-   "img": "csq/packet-post/routes-2-sealed",
-   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "img": "csq/packet-post/locks-2-sealed",
+   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
+   "view": [
+    19.3,
+    21.5,
+    72.0,
+    70.6
+   ],
    "focus": [
     {
-     "cue": "In transit: the picture travels a sealed road",
+     "cue": "In transit: the van on a sealed road",
      "box": [
-      28.9,
-      37.7,
-      23.4,
-      30.3
+      22.3,
+      60.2,
+      30.0,
+      26.9
      ]
     },
     {
-     "cue": "The padlock streets keep readers out",
+     "cue": "Each room needs its own lock",
      "box": [
-      28.9,
-      37.7,
-      23.4,
-      30.3
+      54.0,
+      26.5,
+      34.3,
+      12.9
      ]
     }
    ]
@@ -73,6 +85,12 @@
    "art": "globe",
    "img": "csq/packet-post/locks-2-backup",
    "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
+   "view": [
+    6.3,
+    37.2,
+    52.7,
+    46.8
+   ],
    "focus": [
     {
      "cue": "A copy kept in another place",
@@ -100,6 +118,12 @@
    "art": "screen",
    "img": "csq/would-you-rather/online-cloud-2",
    "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Photos only on your tablet",
@@ -127,6 +151,12 @@
    "art": "mask",
    "img": "csq/packet-post/routes-2-budget",
    "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
+   "view": [
+    5.4,
+    20.5,
+    85.9,
+    76.4
+   ],
    "focus": [
     {
      "cue": "The Magpie watches the roads between offices",
@@ -179,6 +209,12 @@
    "art": "trophy",
    "img": "csq/packet-post/routes-2-hops",
    "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget.",
+   "view": [
+    7.0,
+    32.8,
+    47.9,
+    61.9
+   ],
    "focus": [
     {
      "cue": "Play Many Roads: name the room before each run",

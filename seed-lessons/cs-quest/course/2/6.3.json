@@ -11,13 +11,25 @@
    "text": "Public gets you seen and found. Private keeps you safe. A good choice names the tradeoff.",
    "art": "globe",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe \u2014 a real tradeoff."
+   "view": [
+    6.8,
+    30,
+    40.5,
+    40
+   ],
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
   },
   {
    "title": "Tricks start with public facts",
    "text": "Most tricks start with facts that are already public: a name, a school, a daily route. Fooling people into giving away more is social engineering.",
    "art": "mask",
    "img": "csq/packet-post/tricks-2-fake",
+   "view": [
+    6.5,
+    25.5,
+    48,
+    28
+   ],
    "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
   },
   {
@@ -31,6 +43,12 @@
     "risk: a school logo in the photo shows where you are"
    ],
    "img": "csq/would-you-rather/online-2-second",
+   "view": [
+    52.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
   },
   {
@@ -38,6 +56,12 @@
    "text": "Real programs reuse other people's code, art and sound. The license says what you may do. Attribution is credit written the way the license asks.",
    "art": "pencil",
    "img": "csq/robo-route/functions-2-notes-credit",
+   "view": [
+    52.2,
+    41,
+    41,
+    55
+   ],
    "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal."
   },
   {
@@ -45,13 +69,19 @@
    "text": "Everything you post adds to your digital footprint. Before you post, ask: what could someone do with this?",
    "art": "map",
    "img": "csq/packet-post/locks-2-key",
+   "view": [
+    54.5,
+    25,
+    45,
+    45
+   ],
    "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "shield",
    "words": [
     {
      "word": "social engineering",
@@ -77,7 +107,13 @@
    "text": "Write the credit line for a game that reuses a template, some art and a free sound. Then name one thing you keep private online and the tradeoff of keeping it private.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe \u2014 a real tradeoff."
+   "view": [
+    52.8,
+    30,
+    40.5,
+    40
+   ],
+   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
   }
  ],
  "check": [

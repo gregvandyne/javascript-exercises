@@ -17,7 +17,7 @@
 //   costs nothing: there is no streak table and no "broken" state anywhere in this layer.
 // - Laps (§6.3) are per unit and in order: Lap 1 is the unit as written, Lap 2 the same steps with the
 //   numbers scaled up a rung (Launchpad: the next lane up), Lap 3 a mixed circuit of the unit's skills with
-//   its neighbours plus the unit's boss round. A lap can only be recorded after the one before it, laps are
+//   its neighbors plus the unit's boss round. A lap can only be recorded after the one before it, laps are
 //   optional forever, and nothing in the course gates on them.
 // - Guests earn nothing here (Greg's addendum, 2026-11-04: guests cannot complete courses): award,
 //   recordActivity and completeLap write nothing for a guest account. A win a guest earns is kept as a
@@ -49,7 +49,7 @@ export const LAP_DEFS = Object.freeze([
   // ever called for Lap 1 by the step APIs (routes/courses.js nqLapSync). When they are built, this
   // text is where the promise changes back.
   Object.freeze({ lap: 2, mode: 'scaled', title: 'Lap 2', text: 'Being built: the same steps with bigger numbers (the stretch examples move into the check, missions use harder level sets; in Launchpad, the next lane up). Not playable yet: replaying a step today replays Lap 1\u2019s content.' }),
-  Object.freeze({ lap: 3, mode: 'boss-circuit', title: 'Lap 3', text: 'Being built: a mixed circuit of this unit\u2019s skills interleaved with its neighbours\u2019, plus the unit\u2019s boss round at full strength. Not playable yet.' }),
+  Object.freeze({ lap: 3, mode: 'boss-circuit', title: 'Lap 3', text: 'Being built: a mixed circuit of this unit\u2019s skills interleaved with its neighbors\u2019, plus the unit\u2019s boss round at full strength. Not playable yet.' }),
 ]);
 export const lapDef = lap => LAP_DEFS.find(d => d.lap === lap) || null;
 

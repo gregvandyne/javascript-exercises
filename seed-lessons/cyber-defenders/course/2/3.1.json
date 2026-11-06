@@ -12,6 +12,12 @@
    "art": "people",
    "img": "csq/would-you-rather/online-name-2",
    "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "A nickname that nobody can trace to you",
@@ -37,11 +43,17 @@
    "title": "Sharing buys real things",
    "text": "Sharing PII can buy real things: an account, a delivery at your door, or friends finding you. Posting your work can even bring kind, useful feedback.",
    "art": "globe",
-   "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "img": "csq/would-you-rather/online-drawing-1b",
+   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
-     "cue": "On your tablet, seen by nobody",
+     "cue": "Share your drawing with everyone: feedback, and risk",
      "box": [
       7.2,
       17.1,
@@ -50,7 +62,7 @@
      ]
     },
     {
-     "cue": "A copy on a service someone else runs",
+     "cue": "Or show it only to your family",
      "box": [
       51.9,
       17.1,
@@ -64,11 +76,17 @@
    "title": "Risk grows in combinations",
    "text": "One fact alone is a small risk, but combined facts can map your whole day. The wider the audience that sees them, the more people can join the dots.",
    "art": "map",
-   "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "img": "csq/would-you-rather/online-location-1b",
+   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
-     "cue": "One fact alone: a small risk",
+     "cue": "Free, if the app can see where you are",
      "box": [
       7.2,
       17.1,
@@ -77,7 +95,7 @@
      ]
     },
     {
-     "cue": "Combined facts can map your whole day",
+     "cue": "Location joins the other facts: risk grows",
      "box": [
       51.9,
       17.1,
@@ -98,25 +116,31 @@
     "asks the street you live on",
     "those answers can unlock accounts"
    ],
-   "img": "csq/packet-post/tricks-2-quiz",
-   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
+   "img": "csq/trick-inbox/media-2-md-5-all",
+   "alt": "A Which Dragon Are You quiz asks for your first pet, your mother's first name and your birthday.",
+   "view": [
+    0.0,
+    11.6,
+    99.4,
+    88.4
+   ],
    "focus": [
     {
-     "cue": "A fun quiz asks three little questions",
+     "cue": "A fun quiz asks for three facts",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.8,
+      61.8,
+      62.6,
+      7.1
      ]
     },
     {
-     "cue": "Those three facts are the ones that reset a mailbox key",
+     "cue": "Each answer is a piece of PII",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      3.6,
+      49.6,
+      92.8,
+      5.0
      ]
     }
    ]
@@ -127,6 +151,12 @@
    "art": "shield",
    "img": "csq/would-you-rather/online-delete-2",
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Delete an old post you are embarrassed by",
@@ -175,13 +205,19 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather and choose the Online topic: play Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
+   "text": "Open Would You Rather at Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "img": "csq/would-you-rather/online-cloud-2",
+   "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
-     "cue": "Play Online: judge each pair",
+     "cue": "Play Online: name the price in PII",
      "box": [
       7.2,
       17.1,
@@ -200,6 +236,6 @@
  "game": {
   "slug": "would-you-rather",
   "chapter": "online",
-  "params": ""
+  "params": "topic=online&lock=1"
  }
 }

@@ -26,13 +26,12 @@ const CHAIN_PHRASE = {
   'cs-quest 2 4.1': 'two Many Roads levels',
   'cs-quest 2 4.3': 'the 4 trick cards',
   'cyber-defenders 1b 1.1': 'all 4 levels of Many Roads',
-  'cyber-defenders 1b 4.1': 'the 2 messages there',
   'cyber-defenders 2 1.1': 'the 2 Many Roads levels',
   'cyber-defenders 2 2.3': 'check the 4 cards there',
 };
 // Steps whose game chapter was already required in full by an earlier step: the mission must say the
 // step is already earned instead of pretending there are unplayed levels.
-const HONEST_DUP = ['cyber-defenders 1b 2.2', 'cyber-defenders 1b 4.2', 'cyber-defenders 2 1.2', 'cyber-defenders 2 2.2', 'cyber-defenders 2 4.1'];
+const HONEST_DUP = ['cyber-defenders 1b 2.2', 'cyber-defenders 2 1.2', 'cyber-defenders 2 2.2'];
 
 function decks(course) {
   const out = [];

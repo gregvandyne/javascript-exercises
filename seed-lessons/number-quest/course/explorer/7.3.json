@@ -9,7 +9,7 @@
   {
    "title": "The spinner stall",
    "text": "One Fairground stall runs a spinner with 6 equal parts, and only 1 part is red. Yesterday the stall keeper called red a sure thing. Tally spun it 30 times, and red landed just 4 times.",
-   "art": "star"
+   "art": "dice"
   },
   {
    "title": "Words for maybes",
@@ -30,28 +30,28 @@
     {
      "cue": "One red part out of 6 equal parts.",
      "box": [
-      5.8,
-      37.1,
-      15.1,
-      15.5
+      5.6,
+      35.7,
+      15.6,
+      18.4
      ]
     },
     {
      "cue": "Every other part is not red: 5 of the 6.",
      "box": [
-      20.5,
-      37.1,
-      73.7,
-      15.5
+      20.2,
+      35.7,
+      74.3,
+      18.4
      ]
     },
     {
      "cue": "Six equal parts in all. Equal parts make the chance fair to judge.",
      "box": [
-      5.8,
-      27.9,
-      88.4,
-      24.7
+      5,
+      26.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -59,7 +59,7 @@
   {
    "title": "Worked example: sorting the words",
    "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, half an even chance, one of 6 unlikely, none impossible.",
-   "art": "gears",
+   "art": "dice",
    "kind": "example",
    "steps": [
     "All 6 parts red: certain",
@@ -81,19 +81,19 @@
     {
      "cue": "Certain: it happens every single time.",
      "box": [
-      5.8,
-      31.8,
-      20.9,
-      27.1
+      5,
+      30.4,
+      22.6,
+      29.9
      ]
     },
     {
      "cue": "Unlikely: it can happen, but it probably will not.",
      "box": [
-      50.8,
-      31.8,
-      20.9,
-      27.1
+      50,
+      30.4,
+      22.6,
+      29.9
      ]
     }
    ]
@@ -134,11 +134,17 @@
   },
   {
    "title": "Your mission",
-   "text": "Open Would You Rather, choose the Numbers topic, and play one whole run to its end card. Before each pick, say how sure you are: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
+   "text": "Open Would You Rather. It opens straight on the Numbers topic: play one whole run to its end card. Before each pick, say how sure you are: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
    "art": "trophy",
    "img": "nq/would-you-rather/numbers",
    "alt": "Would You Rather, the Numbers topic: a numbers choice on screen, two big cards to pick from, at the start of a run.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    6.5,
+    6,
+    87,
+    80
+   ]
   }
  ],
  "check": [
@@ -149,6 +155,6 @@
  "game": {
   "slug": "would-you-rather",
   "chapter": "numbers",
-  "params": ""
+  "params": "topic=numbers&lock=1"
  }
 }

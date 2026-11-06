@@ -11,13 +11,25 @@
    "text": "Today you build a level for someone else to play. Real games are made this way: plan, build, test, fix and explain.",
    "art": "pencil",
    "img": "csq/robo-route/maker-1b-key",
-   "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board."
   },
   {
    "title": "Plan it first",
    "text": "Sketch your level on paper first. Where does Bolt start? Where is the goal? What is the one tricky part?",
    "art": "map",
    "img": "csq/robo-route/maker-1b-task",
+   "view": [
+    51,
+    9.4,
+    49,
+    43.6
+   ],
    "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted."
   },
   {
@@ -34,27 +46,45 @@
     "explain"
    ],
    "img": "csq/robo-route/maker-1b-built",
-   "alt": "A level built in the maker: walls, start, goal, key and door placed on the board, with Check run on the design."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "A level built in the maker: Bolt, a gem, a key, a door and the goal on the board, and Check says it can be solved: par 17."
   },
   {
    "title": "The designer stays quiet",
    "text": "While your tester plays, do not help. Watch quietly and take notes. A tester who gets help is not really testing the level.",
    "art": "people",
    "img": "csq/robo-route/maker-1b-test",
-   "alt": "The built level handed to a tester: Bolt plays the design while its maker watches without helping."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "The built level handed to a tester: the tester builds a program and Bolt drives it, while the maker watches without helping."
   },
   {
    "title": "Explain your choice",
    "text": "Say why you made one choice. For example: I put the key behind the water so you have to plan a path.",
    "art": "lightbulb",
    "img": "csq/robo-route/maker-1b-task",
+   "view": [
+    51,
+    9.4,
+    49,
+    43.6
+   ],
    "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "map",
    "words": [
     {
      "word": "plan",
@@ -92,7 +122,13 @@
    "text": "Open Robo Route at Level Maker and do the three maker tasks to finish this step. Then, as a stretch, build your own level from your plan, let a friend or someone at home test it, and fix one thing.",
    "art": "trophy",
    "img": "csq/robo-route/maker-1b-key",
-   "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board."
   }
  ],
  "check": [

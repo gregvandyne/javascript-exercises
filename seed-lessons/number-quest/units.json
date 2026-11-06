@@ -1,5 +1,5 @@
 {
- "about": "Number Quest catalogue index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'.",
+ "about": "Number Quest catalog index - Phase 0 standards lock slice. Scope of THIS file: the Explorer intro (0.1) and Units 1-7 (22 steps) plus the Vault of Measures finale (7.4) - the complete Explorer street, 23 steps. Phase 0/1 covered Units 1-4; Phase 2 (2026-11-05) added Units 5-7 and the finale on the same terms, each step's LOCKED CCSS-M statement codes (primary / also / buildsToward, following the CS Quest units.json idiom), its Mathematical Practice spotlight, its stone and its teacher notes. Every ccss code cited here must appear in standards.json explorerCodes; buildsToward codes are preparation, never coverage, and the teacher page must label them so. Explorer Units 5-7, the Explorer finale, the whole Launchpad tier and the whole Pro tier are specced in math-course-spec.md sections 2.2/2.4/5 but are NOT built and NOT locked here - their statement locks land in their phases (see standards.json deferredClusters and placement.json deferred). Kids never see a standard code or a framework name; teachers see 'Number Quest - CCSS-M'.",
  "program": {
   "name": "Number Quest",
   "slug": "number-quest",
@@ -182,7 +182,7 @@
      "game": {
       "explorer": {
        "chapter": "Addition to 100",
-       "chapterTitle": "Addition to 100 track",
+       "chapterTitle": "Desert Dash track",
        "params": "level=3&mode=add&lock=1",
        "slug": "sum-racer"
       }
@@ -213,7 +213,7 @@
      "game": {
       "explorer": {
        "chapter": "Subtraction to 100",
-       "chapterTitle": "Subtraction to 100 track",
+       "chapterTitle": "Desert Dash track",
        "params": "level=3&mode=sub&lock=1",
        "slug": "sum-racer"
       }
@@ -291,7 +291,7 @@
      "game": {
       "explorer": {
        "chapter": "Times Tables 2, 5 and 10",
-       "chapterTitle": "2, 5 and 10 times tables track",
+       "chapterTitle": "Snowy Summit track",
        "params": "level=4&lock=1",
        "slug": "sum-racer"
       }
@@ -327,7 +327,7 @@
      "game": {
       "explorer": {
        "chapter": "Sharing (Division)",
-       "chapterTitle": "Sharing (division) track",
+       "chapterTitle": "Volcano Valley track",
        "params": "level=6&lock=1",
        "slug": "sum-racer"
       }
@@ -361,7 +361,7 @@
      "game": {
       "explorer": {
        "chapter": "Galaxy Grand Prix",
-       "chapterTitle": "Mixed Grand Prix track",
+       "chapterTitle": "Galaxy Grand Prix track",
        "params": "level=7&lock=1",
        "slug": "sum-racer"
       }
@@ -468,8 +468,8 @@
     {
      "game": {
       "explorer": {
-       "chapter": "Recipe Maths",
-       "chapterTitle": "Recipe Maths",
+       "chapter": "Recipe Math",
+       "chapterTitle": "Recipe Math",
        "params": "chapter=recipe&band=1b&lock=1",
        "slug": "fraction-factory"
       }
@@ -807,7 +807,7 @@
       "explorer": {
        "chapter": "numbers",
        "chapterTitle": "Numbers",
-       "params": "",
+       "params": "topic=numbers&lock=1",
        "slug": "would-you-rather"
       }
      },

@@ -10,25 +10,22 @@
    "title": "Four messy nests",
    "text": "Behind the post office, Pim finds four messy nests built by the Magpie. Each nest holds a trick, and each trick has a motive.",
    "art": "map",
-   "img": "csq/packet-post/tricks-1b-learn",
-   "alt": "Spot the trick: the lesson card names what trick messages do. They rush you, promise prizes and fish for your key.",
+   "img": "csq/trick-inbox/mix-1b-mx-1-debrief",
+   "alt": "The chain letter, binned: the debrief names the forwarder, who wants you to share the trick with everyone.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Spot the trick: the chapter that trains your eye",
+     "cue": "Every trick has a motive behind it",
      "box": [
-      28.1,
-      16.0,
-      43.8,
-      68.0
-     ]
-    },
-    {
-     "cue": "Rush, prizes, key asks, strangers: the signs of a trick",
-     "box": [
-      34.7,
-      52.8,
-      30.5,
-      17.8
+      3.4,
+      79.1,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -37,25 +34,31 @@
    "title": "Keys and prizes",
    "text": "The key-hunter wants into your mailbox, so its letters beg for your key. The prize-faker wants you to tap and type, so it dangles a fake reward.",
    "art": "key",
-   "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "img": "csq/trick-inbox/mix-1b-mx-3-debrief",
+   "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "The key-hunter's letter: it begs for your mailbox key",
+     "cue": "A letter that begs for your mailbox key",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      51.0,
+      43.7,
+      21.8,
+      7.1
      ]
     },
     {
-     "cue": "Its cues give the motive away",
+     "cue": "The key-hunter wants into your mailbox",
      "box": [
-      54.0,
-      42.6,
-      34.4,
-      17.4
+      3.4,
+      84.1,
+      93.3,
+      5.0
      ]
     }
    ]
@@ -64,25 +67,31 @@
    "title": "Reactions and shares",
    "text": "The giggler wants a reaction, so it sends teasing tricks to make you reply fast. The forwarder wants you to share its trick with all your friends.",
    "art": "people",
-   "img": "csq/packet-post/tricks-1b-card",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "img": "csq/trick-inbox/mix-1b-mx-4-debrief",
+   "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "The giggler's card: scary words that want a fast reply",
+     "cue": "Big news to make you react and share",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.8,
+      45.1,
+      91.4,
+      14.2
      ]
     },
     {
-     "cue": "Scary is a trick too: act before you think is the trap",
+     "cue": "The giggler wants a big reaction",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      3.4,
+      84.1,
+      93.3,
+      5.0
      ]
     }
    ]
@@ -98,25 +107,31 @@
     "Its motive: the prize-faker",
     "So do not tap it"
    ],
-   "img": "csq/packet-post/tricks-1b-card",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "img": "csq/trick-inbox/mix-1b-mx-6-all",
+   "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
+   "view": [
+    0.0,
+    19.6,
+    75.6,
+    67.2
+   ],
    "focus": [
     {
-     "cue": "Name the motive before you judge the card",
+     "cue": "A prize to claim with one tap",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      17.4
+      11.5,
+      56.4,
+      61.1,
+      7.1
      ]
     },
     {
-     "cue": "Then decide: safe, trick, or ask a trusted adult",
+     "cue": "Name the motive before you choose",
      "box": [
-      54.0,
-      58.5,
-      34.4,
-      6.6
+      15.5,
+      42.9,
+      15.6,
+      4.1
      ]
     }
    ]
@@ -125,25 +140,31 @@
    "title": "Starve the trick",
    "text": "Knowing the motive tells you the defense: starve it. Do not reply, do not tap, and do not share, and the trick gets nothing it wanted.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "img": "csq/trick-inbox/mix-1b-mx-1-all",
+   "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
+   "view": [
+    0.0,
+    25.1,
+    78.5,
+    69.8
+   ],
    "focus": [
     {
-     "cue": "A safe message earns a calm read, not a fast reply",
+     "cue": "A chain only works if you pass it on",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
+      3.8,
+      56.4,
+      33.5,
+      7.1
      ]
     },
     {
-     "cue": "Safe, trick, or ask a trusted adult: starve every trick",
+     "cue": "Do not share: the chain ends with you",
      "box": [
-      54.0,
-      57.7,
-      34.4,
-      6.8
+      42.2,
+      56.4,
+      33.3,
+      7.1
      ]
     }
    ]
@@ -175,18 +196,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Spot the Trick: the same cards you checked in step 4.1, so this step is already earned when the game opens. Name each card's motive before you decide if it is a trick.",
+   "text": "Open Trick Inbox at Magpie Mix and sort all 6 messages. Before you choose, name the motive: key-hunter, prize-faker, giggler or forwarder.",
    "art": "trophy",
-   "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "img": "csq/trick-inbox/mix-1b-mx-6-debrief",
+   "alt": "The visitor prize, binned: you did not enter anything, so you cannot have won. The prize-faker sent it.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Name each card's motive in Spot the Trick",
+     "cue": "Play Magpie Mix: name the motive behind each",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.4,
+      79.1,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -198,8 +225,8 @@
   "cd-1b-4.2-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "tricks",
-  "params": "chapter=tricks&band=1b&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "mix",
+  "params": "chapter=mix&band=1b&lock=1"
  }
 }

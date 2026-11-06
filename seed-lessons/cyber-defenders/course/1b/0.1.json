@@ -10,8 +10,8 @@
    "title": "Meet Pim",
    "text": "Pim the owl runs the post office in Netville. Every day Pim carries letters and messages between the houses. Keeping them safe is Pim's whole job.",
    "art": "map",
-   "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+   "img": "csq/chars/pim",
+   "alt": "Pim the owl: a round brown owl with big eyes, a cream belly and a tiny backpack."
   },
   {
    "title": "Your world too",
@@ -24,8 +24,14 @@
    "title": "Letters nobody wrote",
    "text": "This morning the post sack held a surprise. Some letters were never written by the senders named on them. The culprit is the Magpie, the post office pest: it slips in fakes and collects shiny secrets. Shiny secrets are private facts and mailbox keys.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "img": "csq/trick-inbox/letters-1b-lt-3-all",
+   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
   },
   {
    "kind": "example",
@@ -41,7 +47,13 @@
     "a hello card for a friend: safe post"
    ],
    "img": "csq/packet-post/locks-1b-sort",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
+   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
+   "view": [
+    3.0,
+    13.0,
+    46.0,
+    40.0
+   ]
   },
   {
    "kind": "words",
@@ -71,8 +83,14 @@
    "title": "Six stamps, real jobs",
    "text": "Each stamp matches your real day. Roadwise guards the packets behind your games and videos; Keykeeper guards your passphrases; Private guards what you share. Trickspotter spots fake messages, Kind Screen keeps chats kind, and Shield stacks layers of protection.",
    "art": "star",
-   "img": "csq/escape-the-post-office/door-1b",
-   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet."
+   "img": "csq/escape-the-post-office/door-1b-new",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
   },
   {
    "title": "Your new job",
@@ -86,8 +104,14 @@
    "title": "Your mission",
    "text": "There is no game this time. Open the course map, find the six stamps, and say hello to each one. Your first stamp is waiting in the next unit.",
    "art": "trophy",
-   "img": "csq/packet-post/routes-1b-roads",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
+   "img": "csq/escape-the-post-office/door-1b-two",
+   "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
   }
  ],
  "check": [

@@ -35,7 +35,7 @@
       "state": "pattern-race"
     },
     {
-      "alt": "Sum Racer on the Addition to 100 track: an addition question on screen, four answers to pick from, the race under way.",
+      "alt": "Sum Racer on the Desert Dash track, adding: an addition question on screen, four answers to pick from, the race under way.",
       "band": "explorer",
       "capturedAt": "2026-11-05",
       "chapter": "2.1",
@@ -46,7 +46,7 @@
       "state": "addition-track"
     },
     {
-      "alt": "Sum Racer on the Subtraction to 100 track: a subtraction question on screen, four answers to pick from, the race under way.",
+      "alt": "Sum Racer on the Desert Dash track, taking away: a subtraction question on screen, four answers to pick from, the race under way.",
       "band": "explorer",
       "capturedAt": "2026-11-05",
       "chapter": "2.2",
@@ -68,7 +68,7 @@
       "state": "story-board"
     },
     {
-      "alt": "Sum Racer on the times tables track: a multiplication question on screen, four answers to pick from, the race under way.",
+      "alt": "Sum Racer on the Snowy Summit times tables track: a multiplication question on screen, four answers to pick from, the race under way.",
       "band": "explorer",
       "capturedAt": "2026-11-05",
       "chapter": "3.1",
@@ -79,7 +79,7 @@
       "state": "times-tables-track"
     },
     {
-      "alt": "Sum Racer on the Sharing (division) track: a division question on screen, four answers to pick from, the race under way.",
+      "alt": "Sum Racer on the Volcano Valley sharing track: a division question on screen, four answers to pick from, the race under way.",
       "band": "explorer",
       "capturedAt": "2026-11-05",
       "chapter": "3.2",
@@ -90,7 +90,7 @@
       "state": "sharing-track"
     },
     {
-      "alt": "Sum Racer on the Mixed Grand Prix track: a mixed question on screen, four answers to pick from, the race under way.",
+      "alt": "Sum Racer on the Galaxy Grand Prix track: a mixed question on screen, four answers to pick from, the race under way.",
       "band": "explorer",
       "capturedAt": "2026-11-05",
       "chapter": "3.3",
@@ -123,15 +123,15 @@
       "state": "re-slice"
     },
     {
-      "alt": "Fraction Factory, Recipe Maths: the recipe order adds two fractions of a cake, shown as fraction bars over the whole cake, on one tray.",
+      "alt": "Fraction Factory, Recipe Math: the recipe order adds two fractions of a cake, shown as fraction bars over the whole cake, on one tray.",
       "band": "explorer",
-      "capturedAt": "2026-11-05",
+      "capturedAt": "2026-11-06",
       "chapter": "4.3",
       "commit": "e25cf83",
-      "concept": "Recipe Maths, order 1: 1/4 + 2/4 to build on one tray",
+      "concept": "Recipe Math, order 1: 1/4 + 2/4 to build on one tray",
       "game": "fraction-factory",
-      "key": "nq/fraction-factory/recipe-maths",
-      "state": "recipe-maths"
+      "key": "nq/fraction-factory/recipe-math",
+      "state": "recipe-math"
     },
     {
       "alt": "Brain Board in play: the Measures board, categories Centimeters, Kilograms, Liters, Add the measure and Which is longer, a centimeters question open.",

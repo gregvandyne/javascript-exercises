@@ -100,7 +100,7 @@ test('course topics: tech (20), online (10) and numbers (12) in the bank, named 
   const ver = /WYR_PACK_VER = "([^"]+)"/.exec(game)[1];
   assert.equal(/WYR_PACK_VER = "([^"]+)"/.exec(live)[1], ver, 'both games pin the same pack version');
   assert.ok(fs.existsSync(path.join(ROOT, 'public/vendor/data/would-you-rather', ver, 'fr.js')), `packs on disk for ${ver}`);
-  assert.match(game, /cats: \[[^\]]*'tech', 'online'\]/); assert.match(game, /"cat\.online":"Online: share or keep"/); assert.match(game, /\["tech-1","tech",/);
+  assert.match(game, /cats: \[[^\]]*'tech', 'online', 'numbers'\]/); assert.match(game, /"cat\.online":"Online: share or keep"/); assert.match(game, /\["tech-1","tech",/);
 });
 
 test('Atlas questions: the region, the level and the kinds; choices are every country in one order', () => {

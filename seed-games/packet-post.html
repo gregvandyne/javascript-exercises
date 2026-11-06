@@ -115,7 +115,9 @@
   .pp-lv { width: 56px; height: 56px; border-radius: 16px; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text); font: inherit; font-weight: 800; font-size: 1.1em; display: grid; place-items: center; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); padding: 0; position: relative; }
   .pp-lv[disabled] { opacity: .45; cursor: default; }
   .pp-lv small { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); font-size: .6em; background: var(--pp-num); color: var(--pp-ink); border-radius: 999px; padding: 0 5px; border: 2px solid var(--ok-edge); white-space: nowrap; }
-  .pp-card { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--ok-scrim); z-index: 15; }
+  .pp-card { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--ok-scrim); z-index: 15;
+    /* the controls under a card are dimmed and blurred like the kit's own screens, so none peeks out looking pressable */
+    box-shadow: inset 0 0 0 100vmax rgba(10, 12, 20, .2); -webkit-backdrop-filter: saturate(.7) blur(4px); backdrop-filter: saturate(.7) blur(4px); }
   .pp-card > div { background: var(--ok-card); color: var(--ok-text); border: 3px solid var(--ok-edge); border-radius: 26px; padding: 18px; width: min(560px, 100%); max-height: 100%; overflow: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
   .pp-card h2 { margin: 0; font-weight: 800; font-size: 1.5em; line-height: 1.1; }
   .pp-card p { margin: 0; font-weight: 600; font-size: 1.05em; line-height: 1.4; max-width: 36ch; }
@@ -1061,13 +1063,15 @@ function build() {
 function hideAll() { if (S.dom) { S.dom.pp.hidden = true; S.dom.pp.innerHTML = ''; } S.screen = 'none'; S.run = null; closeCards(); }
 function screen(name) { const { pp } = build(); pp.innerHTML = ''; pp.hidden = false; S.screen = name; S.flow++; return pp; }
 let cardPause = 0;
+// While a card is open the screen under it is inert: no tap, focus or screen reader reaches the dimmed controls.
+function syncInert() { if (!S.dom) return; const pp = S.dom.pp, open = !!pp.querySelector(':scope > .pp-card'); for (const k of pp.children) if (!k.classList.contains('pp-card')) k.inert = open; }
 function openCard(name) {
   const { pp } = build(); const c = $('div', 'pp-card pp-card-' + name); c.setAttribute('role', 'dialog'); c.setAttribute('aria-modal', 'true');
-  const inner = $('div'); c.appendChild(inner); pp.appendChild(c); O.time.pause('pp:card'); cardPause++;
+  const inner = $('div'); c.appendChild(inner); pp.appendChild(c); syncInert(); O.time.pause('pp:card'); cardPause++;
   const prev = document.activeElement;
   const keys = e => { const bs = [...c.querySelectorAll('button:not([disabled])')]; if (!bs.length) return; const i = bs.indexOf(document.activeElement); if (e.key === 'Tab') { e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); } else if (e.key === 'Escape' && c.onEscape) { e.preventDefault(); c.onEscape(); } e.stopPropagation(); };
   document.addEventListener('keydown', keys, true);
-  c.closeCard = () => { if (!c.parentNode) return; c.remove(); document.removeEventListener('keydown', keys, true); cardPause--; O.time.resume('pp:card'); try { prev && prev.focus && prev.focus({ preventScroll: true }); } catch (e) { /* gone */ } };
+  c.closeCard = () => { if (!c.parentNode) return; c.remove(); syncInert(); document.removeEventListener('keydown', keys, true); cardPause--; O.time.resume('pp:card'); try { prev && prev.focus && prev.focus({ preventScroll: true }); } catch (e) { /* gone */ } };
   O.time.real.after(0, () => { const f = c.querySelector('[data-pp-focus]') || c.querySelector('button'); if (f) f.focus({ preventScroll: true }); });
   return { card: c, inner };
 }
@@ -1294,6 +1298,7 @@ const MAP_TYPES = ['route', 'ack', 'check', 'order', 'rules'];
 const pct = v => (v * 100).toFixed(2) + '%';
 function renderBoard(I) {
   const board = UI.board; board.innerHTML = ''; UI.links = {}; UI.nodes = {}; UI.lines = {};
+  if (!board.ppAim && window.ResizeObserver) { board.ppAim = new ResizeObserver(() => aimChevrons()); board.ppAim.observe(board); }
   const roads = ['<svg class="pp-roads" aria-hidden="true">'];
   for (const id of I.linkOrder) { const l = I.links[id], a = I.nodes[l.a], b = I.nodes[l.b]; roads.push(`<line x1="${pct(a.x)}" y1="${pct(a.y)}" x2="${pct(b.x)}" y2="${pct(b.y)}" data-link="${id}"${l.sealed ? ' class="pp-sealed"' : ''}></line>`); }
   roads.push('</svg>'); board.insertAdjacentHTML('beforeend', roads.join(''));
@@ -1302,7 +1307,7 @@ function renderBoard(I) {
     const nd = I.nodes[id], el = $('div', 'pp-node' + (nd.kind === 'house' ? ' pp-house' : '') + (nd.x < 0.2 ? ' pp-start' : nd.x > 0.8 ? ' pp-end' : '')); el.style.left = pct(nd.x); el.style.top = pct(nd.y);
     const ic = $('div', 'pp-ico'); ic.innerHTML = nd.kind === 'house' ? icon('home') : OFFICE_SVG; if (nd.busy) { const bz = $('span', 'pp-busy'); bz.innerHTML = icon('clock'); bz.title = tr('Busy office'); ic.appendChild(bz); } el.appendChild(ic);
     const lab = $('small', '', tr(nd.label) + (nd.busy ? ' · ' + tr('busy') : '')); lab.dir = 'auto'; el.appendChild(lab);
-    board.appendChild(el); UI.nodes[id] = el;
+    el.dataset.node = id; board.appendChild(el); UI.nodes[id] = el;
   }
   if (I.type === 'route') for (const id of I.linkOrder) {
     const l = I.links[id], a = I.nodes[l.a], b = I.nodes[l.b];
@@ -1323,14 +1328,24 @@ function syncRoads(frozen) {
     bt.className = 'pp-link' + (closed ? ' pp-closed' : here ? ' pp-ok' : l.sealed ? ' pp-sealedb' : '');
     bt.innerHTML = closed ? icon('cross') : l.sealed ? icon('lock') : here ? icon('next') : icon('move');
     const other = I.nodes[l.a === s.at ? l.b : l.a];
-    if (here && !l.sealed) {   // the 'next' chevron is a fixed right-pointing glyph: aim it along the ride, from the packet's stop to this road's far end
-      const me = I.nodes[s.at], deg = Math.round(Math.atan2(other.y - me.y, other.x - me.x) * 180 / Math.PI), svg = bt.querySelector('svg');
-      if (svg) { svg.style.transform = `rotate(${deg}deg)`; svg.style.transformOrigin = '50% 50%'; }
-    }
+    if (here && !l.sealed) bt.dataset.aim = l.a === s.at ? l.b : l.a; else delete bt.dataset.aim;
     bt.setAttribute('aria-label', closed ? tr('Road closed') : (l.sealed ? tr('Sealed road to {place}, {n} hops', { place: tr(other.label), n: l.cost }) : tr('Road to {place}', { place: tr(other.label) })));
     bt.disabled = s.phase !== 'play';
   }
   for (const id of I.nodeOrder) UI.nodes[id].classList.toggle('pp-here', s.phase === 'play' && id === s.at);
+  aimChevrons();
+}
+/** The 'next' chevron is a fixed right-pointing glyph: aim it along the ride, from the packet's stop to the road's far end.
+ *  Spots are fractions of the board, which is rarely square, so the angle is taken on the board as drawn (in pixels),
+ *  the same space the road's line is drawn in; again whenever the board changes size. */
+function aimChevrons() {
+  const run = S.run; if (!run || run.type !== 'route' || !UI.board) return;
+  const I = run.inst, me = I.nodes[run.s.at], W = UI.board.clientWidth || 1, H = UI.board.clientHeight || 1;
+  for (const id of I.linkOrder) {
+    const bt = UI.links[id], svg = bt && bt.querySelector('svg'); if (!svg || !bt.dataset.aim || !me) continue;
+    const other = I.nodes[bt.dataset.aim], deg = Math.round(Math.atan2((other.y - me.y) * H, (other.x - me.x) * W) * 180 / Math.PI);
+    svg.style.transform = `rotate(${deg}deg)`; svg.style.transformOrigin = '50% 50%';
+  }
 }
 
 /* ---------- Pim's line and the work panel ---------- */
@@ -1924,6 +1939,15 @@ Object.assign(window.__brbTest, {
     game.start(); return testState();
   },
   run() { return S.run ? S.run.snapshot() : null; },
+  /** The roads as drawn (the arrow check): each road's ends, whether it is lit, its chevron's turn, and screen centers. */
+  roads() {
+    const run = S.run; if (!run || run.type !== 'route') return null; const I = run.inst;
+    const mid = el => { const r = el.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; };
+    const nodes = {}; for (const id of I.nodeOrder) nodes[id] = mid(UI.nodes[id].querySelector('.pp-ico') || UI.nodes[id]);
+    const links = I.linkOrder.map(id => { const bt = UI.links[id], svg = bt.querySelector('svg'), m = svg && /rotate\((-?\d+)deg\)/.exec(svg.style.transform || '');
+      return { id, a: I.links[id].a, b: I.links[id].b, sealed: !!I.links[id].sealed, lit: UI.lines[id].classList.contains('pp-lit'), arrow: bt.classList.contains('pp-ok'), aim: bt.dataset.aim || null, deg: m ? +m[1] : null, glyph: svg ? svg.outerHTML : '' }; });
+    return { at: run.s.at, from: I.from, to: I.to, phase: run.s.phase, nodes, links };
+  },
   async solve() { S.fast = true; let guard = 0; while (S.run && !S.run.done && !S.run.failed && guard++ < 300) { while (S.busy) await O.time.real.wait(16); const a = S.run.advice(); if (!a) break; if (S.run.type === 'ack' && UI.sel == null) { /* the UI needs no selection for act() */ } await doAction(a); } return S.run ? S.run.snapshot() : null; },
   closeCards() { if (S.dom) for (const c of [...S.dom.pp.querySelectorAll('.pp-card')]) { if (c.onEscape) c.onEscape(); else if (c.closeCard) c.closeCard(); } return true; },   // Escape: a learn card's promise resolves too
   async cover() {

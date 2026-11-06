@@ -9,7 +9,7 @@
   {
    "title": "Meet Tally",
    "text": "Tally the cat keeps the Numberworks, the street of workshops where Netville does its counting. Tally knows every shelf, every scale and every stubborn drawer.",
-   "art": "map",
+   "art": "cat",
    "story": {
     "scene": "street",
     "lit": 1,
@@ -38,36 +38,36 @@
    "steps": [
     "counting: how many seeds in the sack",
     "measuring: how long is the ribbon",
-    "sharing: how much cake for each friend",
+    "sharing: how much pie for each friend",
     "paying: how much change is due"
    ],
    "visual": {
     "type": "tiles",
-    "label": "Numbers at work: seeds, ribbon, cake, snack",
+    "label": "Numbers at work: seeds, ribbon, pie, change",
     "values": [
-     "12 seeds",
-     "2 meters",
-     "3/4 cake",
-     "35 cents"
+     "8 seeds",
+     "2 yards",
+     "3/4 pie",
+     "5 cents"
     ]
    },
    "focus": [
     {
      "cue": "Counting: how many seeds are in the sack.",
      "box": [
-      6,
-      32,
-      20.5,
-      26.7
+      5,
+      30.4,
+      22.6,
+      29.9
      ]
     },
     {
-     "cue": "Sharing: how much cake for each friend.",
+     "cue": "Sharing: how much pie for each friend.",
      "box": [
-      51,
-      32,
-      20.5,
-      26.7
+      50,
+      30.4,
+      22.6,
+      29.9
      ]
     }
    ]
@@ -78,31 +78,34 @@
    "art": "mask",
    "visual": {
     "type": "tiles",
-    "label": "Two number tiles have swapped places",
+    "label": "Two number tiles have swapped places: 2 and 1",
     "values": [
      "2",
      "1",
      "3"
     ],
-    "bad": 0
+    "bad": [
+     0,
+     1
+    ]
    },
    "focus": [
     {
-     "cue": "Two tiles have swapped places behind the shutters.",
+     "cue": "These two tiles have swapped places: the 2 and the 1.",
      "box": [
-      6,
-      32,
-      58,
-      40.8
+      5,
+      30.4,
+      60.1,
+      44
      ]
     },
     {
-     "cue": "This tile is flagged: it swapped with its neighbor.",
+     "cue": "Swap them back and the tiles count 1, 2, 3 again.",
      "box": [
-      6,
-      32,
-      28,
-      40.8
+      5,
+      30.4,
+      90.1,
+      44
      ]
     }
    ]
@@ -115,28 +118,28 @@
     "type": "tiles",
     "label": "Numbers everywhere: score, time, page",
     "values": [
-     "3 points",
+     "score 3",
      "9:05",
      "page 12"
     ]
    },
    "focus": [
     {
-     "cue": "Numbers keep scores: 3 points.",
+     "cue": "Numbers keep scores: a score of 3.",
      "box": [
-      6,
-      32,
-      28,
-      26.7
+      5,
+      30.4,
+      30.1,
+      29.9
      ]
     },
     {
      "cue": "Numbers tell the time: 9:05.",
      "box": [
-      36,
-      32,
-      28,
-      26.7
+      35,
+      30.4,
+      30.1,
+      29.9
      ]
     }
    ]
