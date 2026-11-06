@@ -28,9 +28,9 @@ const tags = f => f.evaluate(() => [...document.querySelectorAll('script[src]')]
 test('Inside the Machine runs on the kit: pinned tags, the chapter map, a lesson chapter with Case-closed cards, the Pro flowchart desk, the keypad and the daily challenge', async ({ page }) => {
   const { f, errors } = await open(page);
   const t = await tags(f);
-  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', '/vendor/oomba-kit/1.1.3/packs/art-school.js', '/vendor/oomba-kit/1.1.3/packs/art-props.js', '/vendor/oomba-kit/1.1.3/packs/art-animals.js', '/vendor/oomba-kit/1.1.3/packs/dress.js', '/vendor/oomba-kit/1.1.3/packs/style-bold.js']);
+  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/art-school.js', '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/art-animals.js', '/vendor/oomba-kit/1.1.4/packs/dress.js', '/vendor/oomba-kit/1.1.4/packs/style-bold.js']);
   for (const x of t) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), typeof __brbTest.step])).toEqual(['1.1.3', true, 'function']);
+  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), typeof __brbTest.step])).toEqual(['1.1.4', true, 'function']);
   // the kit title, then the chapter map in free play: six chapters for Explorer, the band toggle, the daily tile
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   await f.locator('.ok-title-screen .ok-hot').click();

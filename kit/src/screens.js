@@ -63,7 +63,7 @@ export const SCREEN_CSS = `
 .ok-sparks .ok-slot svg{width:100%;height:100%;stroke-width:1.5}
 .ok-night .ok-sparks .ok-slot{--ok-fill:#3A3933}
 .ok-sparks .ok-slot:nth-child(2){transform:translateY(-10px) scale(1.12)}
-.ok-sparks .ok-on{--ok-fill:${P.spark[2]};animation:ok-land 420ms cubic-bezier(.34,1.56,.64,1)}
+.ok-sparks .ok-on,.ok-night .ok-sparks .ok-on{--ok-fill:${P.spark[2]};animation:ok-land 420ms cubic-bezier(.34,1.56,.64,1)}
 .ok-win .ok-card{z-index:1}
 .ok-sparks{position:relative;isolation:isolate}
 .ok-sparks::before{content:"";position:absolute;inset:-34% -18%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,63,.55),rgba(255,210,63,0));opacity:0;transition:opacity 500ms ease-out;pointer-events:none}

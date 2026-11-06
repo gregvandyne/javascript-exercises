@@ -25,9 +25,9 @@ const T = (f, fn, ...a) => f.evaluate(([n, args]) => window.__brbTest[n](...args
 test('Robo Route runs on the kit: pinned tags, a quest code, a solved level with a gradebook label, the Debug Lab, the Level Maker', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', '/vendor/oomba-kit/1.1.3/packs/art-props.js', '/vendor/oomba-kit/1.1.3/packs/style-bold.js']);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/style-bold.js']);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.3', 'art-props,style-bold', 'function']);
+  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.4', 'art-props,style-bold', 'function']);
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   await f.locator('.ok-title-screen .ok-hot').click();
   await expect(f.locator('#tiles .rr-tile')).toHaveCount(10); // eight chapters, the daily and the quest code

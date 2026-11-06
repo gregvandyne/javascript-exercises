@@ -24,9 +24,9 @@ test('Happy Putt runs on the kit: title, hole card, a drag putt, pass the phone,
   await page.setViewportSize({ width: 390, height: 844 });
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', '/vendor/oomba-kit/1.1.3/packs/dress.js', '/vendor/oomba-kit/1.1.3/packs/art-animals.js', '/vendor/oomba-kit/1.1.3/packs/art-props.js', '/vendor/oomba-kit/1.1.3/packs/art-biomes-2.js']);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/dress.js', '/vendor/oomba-kit/1.1.4/packs/art-animals.js', '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/art-biomes-2.js']);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), __brbTest.state().screen, typeof __brbTest.setTheme])).toEqual(['1.1.3', true, 'title', 'function']);
+  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), __brbTest.state().screen, typeof __brbTest.setTheme])).toEqual(['1.1.4', true, 'title', 'function']);
 
   // the kit's title: Play 18 and Quick 9 in the players card, the player's character in the corner
   await expect(f.locator('.ok-title-screen #play18')).toBeVisible();
