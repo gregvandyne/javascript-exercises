@@ -79,11 +79,20 @@
   "level": 1,
   "actions": [
    {
-    "test": 1
+    "program": "repeat 5 { move }; left; repeat until goal { move }"
+   },
+   {
+    "run": true
+   },
+   {
+    "closeModal": true
+   },
+   {
+    "test": 2
    }
   ],
   "concept": "One board can hide a bug: the same program on a second test board",
-  "alt": "The same program on a different test board: the board changed, the program did not, and a hidden bug can show here."
+  "alt": "The same program on Test 3, a longer hallway: Test 1 and Test 2 show a check, Test 3 a cross, and Bolt splashed into the water."
  },
  {
   "game": "robo-route",
@@ -103,11 +112,20 @@
   "level": 1,
   "actions": [
    {
-    "program": "repeat until goal { if path { move } else { left } }"
+    "program": "repeat 5 { move }; left; repeat until goal { move }"
+   },
+   {
+    "run": true
+   },
+   {
+    "closeModal": true
+   },
+   {
+    "test": 0
    }
   ],
   "concept": "The debug loop: a fix is done only when every test passes",
-  "alt": "The fixed Pro program under its test tabs: one program, three boards, and the fix counts only when all three pass."
+  "alt": "After a run, every test tab shows a mark: Test 1 and Test 2 pass, Test 3 fails, so this fix is not done yet."
  },
  {
   "game": "robo-route",
@@ -117,7 +135,7 @@
   "level": 1,
   "actions": [],
   "concept": "Be the game designer: plan, build, test, fix, explain",
-  "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed."
+  "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board."
  },
  {
   "game": "robo-route",
@@ -137,24 +155,24 @@
   "level": 2,
   "actions": [
    {
+    "makerFree": true
+   },
+   {
     "mkRows": [
      "######",
-     "######",
-     "#>...#",
+     "#>.*.#",
      "#.##.#",
-     "#...G#",
+     "#K##D#",
+     "####G#",
      "######"
     ]
    },
    {
     "mkCheck": true
-   },
-   {
-    "closeModal": true
    }
   ],
   "concept": "The maker loop: Check proves a level can be solved and shows its par",
-  "alt": "A level built in the maker: walls, start, goal, key and door placed on the board, with Check run on the design."
+  "alt": "A level built in the maker: Bolt, a gem, a key, a door and the goal on the board, and Check says it can be solved: par 17."
  },
  {
   "game": "robo-route",
@@ -164,24 +182,33 @@
   "level": 2,
   "actions": [
    {
+    "makerFree": true
+   },
+   {
     "mkRows": [
      "######",
-     "######",
-     "#>...#",
+     "#>.*.#",
      "#.##.#",
-     "#...G#",
+     "#K##D#",
+     "####G#",
      "######"
     ]
+   },
+   {
+    "mkCheck": true
    },
    {
     "mkTest": true
    },
    {
-    "closeModal": true
+    "program": "right; move; move; pick"
+   },
+   {
+    "steps": 3
    }
   ],
   "concept": "The designer stays quiet: a tester plays while the designer watches",
-  "alt": "The built level handed to a tester: Bolt plays the design while its maker watches without helping."
+  "alt": "The built level handed to a tester: the tester builds a program and Bolt drives it, while the maker watches without helping."
  },
  {
   "game": "robo-route",
@@ -191,7 +218,7 @@
   "level": 1,
   "actions": [],
   "concept": "Design for someone else: plan, build, test, improve, document",
-  "alt": "The Pro Level Maker opens its first task: a blank canvas and the tools to build a level for someone else."
+  "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board."
  },
  {
   "game": "robo-route",
@@ -211,24 +238,26 @@
   "level": 2,
   "actions": [
    {
+    "makerFree": true
+   },
+   {
     "mkRows": [
-     "######",
-     "######",
-     "#>...#",
-     "#.##.#",
-     "#...G#",
-     "######"
+     "########",
+     "#>..*..#",
+     "#.####.#",
+     "#.####.#",
+     "#K####D#",
+     "######.#",
+     "######G#",
+     "########"
     ]
    },
    {
     "mkCheck": true
-   },
-   {
-    "closeModal": true
    }
   ],
   "concept": "Iterate: plan, build, Check, test, change, test again",
-  "alt": "A Pro maker level built and checked: the board holds a full design and Check has judged whether it can be solved."
+  "alt": "A Pro maker level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23."
  },
  {
   "game": "robo-route",
@@ -237,6 +266,9 @@
   "band": "2",
   "level": 2,
   "actions": [
+   {
+    "makerFree": true
+   },
    {
     "mkRows": [
      "########",
@@ -250,20 +282,29 @@
     ]
    },
    {
+    "mkCheck": true
+   },
+   {
     "mkTest": true
    },
    {
-    "tester": [
-     1,
-     1
-    ]
+    "program": "move; move; move; move; move; right; move; move; right; move; move; move; move; move; left; move"
+   },
+   {
+    "run": true
    },
    {
     "closeModal": true
+   },
+   {
+    "testerPick": [
+     0,
+     1
+    ]
    }
   ],
   "concept": "Feedback is information: it shows where a player got stuck",
-  "alt": "After the test play, the maker rates the level: the feedback card records how fun and how hard the tester found it."
+  "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type."
  },
  {
   "game": "data-detective",
@@ -273,7 +314,7 @@
   "level": 1,
   "actions": [],
   "concept": "Meet Dot: a detective solves cases with facts, not guesses",
-  "alt": "Dot opens the first case: a table of lunchroom facts in rows and columns, with the case question at the top."
+  "alt": "Dot opens the first case: a table of who, where and when facts in rows and columns, and the question: who was last in the hall?"
  },
  {
   "game": "data-detective",
@@ -317,7 +358,7 @@
    }
   ],
   "concept": "Who was in the lunchroom last? Sort by the column the question asks about",
-  "alt": "The lunchbox case sorted by time: the rows now run in time order, so the last row answers the question."
+  "alt": "The case sorted by time: the Hall rows now run in time order, so the last Hall row answers the question."
  },
  {
   "game": "data-detective",
@@ -796,7 +837,7 @@
   "band": "1b",
   "level": 2,
   "actions": [],
-  "concept": "Trick or safe? This one has a prize, a rush and a key request",
+  "concept": "Trick or safe? A threat, a rush and a key request",
   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?"
  },
  {
@@ -807,7 +848,7 @@
   "level": 3,
   "actions": [],
   "concept": "What to do: do not reply, do not tap, tell a trusted adult",
-  "alt": "A third trick card: the safe move is always the same \u2014 stop, do not reply, and tell a trusted adult."
+  "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult."
  },
  {
   "game": "packet-post",
@@ -815,8 +856,12 @@
   "chapter": "ciphers",
   "band": "1b",
   "level": 1,
-  "actions": [],
-  "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key",
+  "actions": [
+   {
+    "acts": 1
+   }
+  ],
+  "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key (shift 3)",
   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one."
  },
  {
@@ -941,7 +986,7 @@
   "level": 1,
   "actions": [
    {
-    "acts": 2
+    "acts": 1
    }
   ],
   "concept": "A shift of 3: every letter moves the same number of places",
@@ -955,7 +1000,7 @@
   "level": 3,
   "actions": [],
   "concept": "Brute force: a shift has only 25 keys, so you can try them all",
-  "alt": "A later cipher level: with so few keys, trying every one is a real way in \u2014 for a shift cipher."
+  "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher."
  },
  {
   "game": "packet-post",
@@ -966,6 +1011,20 @@
   "actions": [],
   "concept": "Hiding is not scrambling: a found hidden message can be read at once",
   "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message."
+ },
+ {
+  "game": "packet-post",
+  "state": "ciphers-2-stego",
+  "chapter": "ciphers",
+  "band": "2",
+  "level": 5,
+  "actions": [
+   {
+    "acts": 8
+   }
+  ],
+  "concept": "Hiding is not scrambling: steganography hides a message in a picture's pixels",
+  "alt": "Steganography: a heart hidden in a picture. Each pixel is a number, and its last bit says dot or blank, so the picture looks the same."
  },
  {
   "game": "packet-post",
@@ -1044,7 +1103,7 @@
   "band": "1b",
   "level": 2,
   "actions": [],
-  "concept": "Quick checks first: on, plugged in, muted \u2014 restart comes later",
+  "concept": "Quick checks first: on, plugged in, muted — restart comes later",
   "alt": "A second ticket waits at the desk: the quick, cheap checks are the ones a good fixer tries first."
  },
  {
@@ -1071,7 +1130,7 @@
   "band": "1b",
   "level": 4,
   "actions": [],
-  "concept": "Small clues: caps lock, a frozen app \u2014 the clue points at the fix",
+  "concept": "Small clues: caps lock, a frozen app — the clue points at the fix",
   "alt": "A fourth ticket with a small clue in its story: reading the clue closely points straight at the fix."
  },
  {
@@ -1138,8 +1197,8 @@
   "band": "2",
   "level": 1,
   "actions": [],
-  "concept": "What makes a gadget: sensors, processor, outputs, power",
-  "alt": "Design a Gadget opens its first brief: an empty build tray and the parts shelf, with cost and battery meters."
+  "concept": "A step counter: small, cheap, lasts all day — pick only what it needs",
+  "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters."
  },
  {
   "game": "inside-the-machine",
@@ -1148,7 +1207,7 @@
   "band": "2",
   "level": 2,
   "actions": [],
-  "concept": "Sensors: a sensor measures the world \u2014 light, motion, sound",
+  "concept": "Sensors: a sensor measures the world — light, motion, sound",
   "alt": "A second gadget brief: choosing parts starts with the sensor that measures what the gadget must notice."
  },
  {
@@ -1168,8 +1227,8 @@
   "band": "2",
   "level": 4,
   "actions": [],
-  "concept": "A step counter: small, cheap, lasts all day \u2014 pick only what it needs",
-  "alt": "A later brief at the bench: the art of a good gadget is picking only the parts the job truly needs."
+  "concept": "What makes a gadget: sensors, a processor, outputs, a connection and power",
+  "alt": "A Noise meter brief: it must hear the room, show the loudness, send a log to the laptop and run on wall power."
  },
  {
   "game": "inside-the-machine",
@@ -1293,7 +1352,7 @@
   "level": 3,
   "actions": [],
   "concept": "Every switch is for someone: captions, read-aloud, text size, contrast",
-  "alt": "The audit round: a real game is checked setting by setting \u2014 captions, text size, contrast \u2014 for who each helps."
+  "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps."
  },
  {
   "game": "inside-the-machine",
@@ -1447,7 +1506,7 @@
    }
   ],
   "concept": "Public or private? Public gets you seen, private keeps you safe",
-  "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe \u2014 a real tradeoff."
+  "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
  },
  {
   "game": "would-you-rather",

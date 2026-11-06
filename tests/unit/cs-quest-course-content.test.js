@@ -90,7 +90,8 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'view', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'view', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'] }[s.kind || 'text'];
+      if (s.view !== undefined) assert.ok(s.img && Array.isArray(s.view) && s.view.length === 4 && s.view.every(n => typeof n === 'number'), `${at}: view is [x, y, w, h] in % of its img`);
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());

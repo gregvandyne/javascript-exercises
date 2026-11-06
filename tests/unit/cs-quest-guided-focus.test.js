@@ -89,8 +89,8 @@ test('the step page renders the overlay: boxes in %, the dotted path, cues and t
   const f0 = SEED_DECK.slides[0].focus;
   assert.match(page.text, new RegExp(`class="gf-box" style="--bx:${f0[0].box[0]};--by:${f0[0].box[1]};left:${f0[0].box[0]}%;top:${f0[0].box[1]}%;width:${f0[0].box[2]}%;height:${f0[0].box[3]}%"`), 'step 1 box geometry in % (plus its --bx/--by badge-anchor vars)');
   assert.match(page.text, /<span class="gf-badge">1<\/span>/, 'numbered badge');
-  // Slide 2's second step draws the path from Bolt to the flag: y is scaled into the 100x56.25 viewBox.
-  const path = SEED_DECK.slides[1].focus[1].path;
+  // The first drawn path in the deck (Bolt's route to the flag): y is scaled into the 100x56.25 viewBox.
+  const path = SEED_DECK.slides.flatMap(s => s.focus || []).find(f => f.path).path;
   const points = path.map(p => `${p[0]},${p[1] * 0.5625}`).join(' ');
   assert.ok(page.text.includes(`points="${points}"`), `the polyline points: ${points}`);
   f0.forEach((st, i) => {

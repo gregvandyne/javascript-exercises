@@ -11,6 +11,12 @@
    "text": "Pim the owl runs the post office in Netville. Pim's job is to get every message to the right house.",
    "art": "envelope",
    "img": "csq/packet-post/packets-1b-key",
+   "view": [
+    6.5,
+    30,
+    48,
+    62
+   ],
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
   },
   {
@@ -18,6 +24,12 @@
    "text": "A picture is too big to send in one piece. The network cuts it into small pieces called packets and gives each one a number.",
    "art": "pixel",
    "img": "csq/packet-post/packets-1b-split",
+   "view": [
+    54.5,
+    25,
+    45,
+    45
+   ],
    "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office."
   },
   {
@@ -25,6 +37,12 @@
    "text": "Each packet can take a different road through many post offices, called routers. If a road closes, a packet just takes another one.",
    "art": "network",
    "img": "csq/packet-post/routes-1b-roads",
+   "view": [
+    6.5,
+    30,
+    48,
+    62
+   ],
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
   },
   {
@@ -39,13 +57,19 @@
     "put back: 1, 2, 3"
    ],
    "img": "csq/packet-post/packets-1b-order",
+   "view": [
+    54.5,
+    25,
+    45,
+    45
+   ],
    "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "network",
    "words": [
     {
      "word": "packet",
@@ -71,6 +95,12 @@
    "text": "Open Packet Post at Break It Up and finish all 5 levels, then play all 4 levels of Many Roads. Watch the number on every packet.",
    "art": "trophy",
    "img": "csq/packet-post/packets-1b-key",
+   "view": [
+    6.5,
+    30,
+    48,
+    62
+   ],
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
   }
  ],

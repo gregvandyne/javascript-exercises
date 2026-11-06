@@ -11,6 +11,12 @@
    "text": "Encryption scrambles a message so only someone with the key can read it. Decrypting turns it back.",
    "art": "cipher",
    "img": "csq/packet-post/ciphers-2-key",
+   "view": [
+    7,
+    28,
+    47,
+    68
+   ],
    "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
   },
   {
@@ -25,6 +31,12 @@
     "CAT → FDW"
    ],
    "img": "csq/packet-post/ciphers-2-shift",
+   "view": [
+    7,
+    28,
+    47,
+    68
+   ],
    "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code."
   },
   {
@@ -32,27 +44,45 @@
    "text": "A shift has only 25 keys, so you can try them all. That is brute force. A keyed substitution has so many keys that trying them all takes far too long.",
    "art": "chip",
    "img": "csq/packet-post/ciphers-2-brute",
+   "view": [
+    7,
+    28,
+    47,
+    68
+   ],
    "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher."
   },
   {
    "title": "Hiding is not scrambling",
    "text": "Steganography hides a message, for example in a picture's pixels. Anyone who finds it can read it. Encryption makes it unreadable without the key.",
    "art": "pixel",
-   "img": "csq/packet-post/ciphers-2-hide",
-   "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message."
+   "img": "csq/packet-post/ciphers-2-stego",
+   "view": [
+    16,
+    41,
+    30,
+    42
+   ],
+   "alt": "Steganography: a heart hidden in a picture. Each pixel is a number, and its last bit says dot or blank, so the picture looks the same."
   },
   {
    "title": "Faked senders",
    "text": "A trick message can fake its sender name. That is spoofing. It may also use facts from a public profile to seem friendly.",
    "art": "mask",
    "img": "csq/packet-post/tricks-2-fake",
+   "view": [
+    6.5,
+    25.5,
+    48,
+    28
+   ],
    "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "cipher",
    "words": [
     {
      "word": "encryption",
@@ -91,6 +121,12 @@
    "text": "Open Packet Post at Secret Messages and finish all 7 levels with the key wheel. Then the game sends you to Spot the Trick: check the 4 trick cards there for faked senders.",
    "art": "trophy",
    "img": "csq/packet-post/ciphers-2-key",
+   "view": [
+    7,
+    28,
+    47,
+    68
+   ],
    "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
   }
  ],

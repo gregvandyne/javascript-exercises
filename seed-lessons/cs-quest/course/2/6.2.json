@@ -11,6 +11,12 @@
    "text": "Good design starts with how real people use a thing, including people who see, hear, read or move differently.",
    "art": "people",
    "img": "csq/inside-the-machine/design-2-key",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "Design Lab in Pro opens with a real user and their words: design starts from what people actually say."
   },
   {
@@ -18,6 +24,12 @@
    "text": "A high-contrast mode made for low vision is the mode everyone uses in bright sun. Designing for people at the edges makes things better for everyone.",
    "art": "star",
    "img": "csq/inside-the-machine/design-2-edges",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "A Pro brief about designing at the edges: a mode made for low vision is the mode everyone uses in sun."
   },
   {
@@ -25,6 +37,12 @@
    "text": "Bias is when technology works worse for some people because of how it was built or tested. It usually comes from who was missing from the testing group.",
    "art": "magnifier",
    "img": "csq/inside-the-machine/design-2-bias",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "A Pro brief about bias: when a product fails some people, the testing group is the first place to look."
   },
   {
@@ -38,13 +56,19 @@
     "fix: test with many kinds of people"
    ],
    "img": "csq/inside-the-machine/design-2-missing",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "The last Pro brief: find who was missing from the testers, then widen the group until nobody is."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "people",
    "words": [
     {
      "word": "accessible",
@@ -70,6 +94,12 @@
    "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve all five briefs. Base each recommendation on what the user said.",
    "art": "trophy",
    "img": "csq/inside-the-machine/design-2-key",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "Design Lab in Pro opens with a real user and their words: design starts from what people actually say."
   }
  ],

@@ -11,6 +11,12 @@
    "text": "Technology is anything people invent to solve a problem. A pencil, a bike and a tablet are all technology.",
    "art": "lightbulb",
    "img": "csq/would-you-rather/tech-1b-first",
+   "view": [
+    6.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides."
   },
   {
@@ -18,6 +24,12 @@
    "text": "The telephone let people talk from far away. Video calls let families see each other every day. Maps on a device changed how people find their way.",
    "art": "globe",
    "img": "csq/would-you-rather/tech-1b-second",
+   "view": [
+    52.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "A second technology dilemma: a new choice about how an invention changes the way people live."
   },
   {
@@ -36,13 +48,19 @@
    "text": "People change technology right back. Captions were added to videos because viewers asked for them.",
    "art": "people",
    "img": "csq/inside-the-machine/design-1b-audit",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Three words for today.",
-   "art": "pencil",
+   "art": "lightbulb",
    "words": [
     {
      "word": "technology",
@@ -64,6 +82,12 @@
    "text": "Pick one invention you use every day. Think of one way it changed how people live, and one thing it made harder. Then talk about it.",
    "art": "trophy",
    "img": "csq/would-you-rather/tech-1b-first",
+   "view": [
+    6.8,
+    30,
+    40.5,
+    40
+   ],
    "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides."
   }
  ],

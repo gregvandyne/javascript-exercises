@@ -11,6 +11,12 @@
    "text": "Every message on the internet is cut into numbered packets. They travel through routers and are rebuilt at the other end.",
    "art": "envelope",
    "img": "csq/packet-post/protocols-2-key",
+   "view": [
+    54.5,
+    25,
+    45,
+    45
+   ],
    "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
   },
   {
@@ -18,6 +24,12 @@
    "text": "A protocol is a set of rules every computer on the network agrees on. Without the same rules everywhere, a packet could not be passed on or rebuilt.",
    "art": "network",
    "img": "csq/packet-post/protocols-2-rules",
+   "view": [
+    54.5,
+    25,
+    45,
+    45
+   ],
    "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on."
   },
   {
@@ -33,6 +45,12 @@
     "got 3"
    ],
    "img": "csq/packet-post/protocols-2-ack",
+   "view": [
+    54.5,
+    25,
+    45,
+    45
+   ],
    "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap."
   },
   {
@@ -40,6 +58,12 @@
    "text": "A checksum is a count sent along with a packet. If the count does not match when it arrives, the packet was damaged, so it is sent again.",
    "art": "magnifier",
    "img": "csq/packet-post/protocols-2-check",
+   "view": [
+    54.5,
+    25,
+    45,
+    62
+   ],
    "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again."
   },
   {
@@ -47,13 +71,19 @@
    "text": "Each jump from one router to the next is a hop. If a router is busy, pick another path that still fits the hop budget.",
    "art": "map",
    "img": "csq/packet-post/routes-2-hops",
+   "view": [
+    6.5,
+    30,
+    48,
+    62
+   ],
    "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "network",
    "words": [
     {
      "word": "protocol",
@@ -79,6 +109,12 @@
    "text": "Open Packet Post at Rules of the Road and finish all 6 levels, then two Many Roads levels with a hop budget.",
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-key",
+   "view": [
+    54.5,
+    25,
+    45,
+    45
+   ],
    "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
   }
  ],

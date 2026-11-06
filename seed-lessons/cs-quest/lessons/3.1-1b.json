@@ -55,8 +55,8 @@
   "minutes": 6,
   "demo": {"chapter": "sort", "level": 1},
   "do": [
-   "Open Data Detective at Sort & Group on the projector (Open game at this chapter). Case 1 is The Missing Lunchbox: a table of 10 rows, who, where and when. Read the question out loud: who was in the lunchroom last?",
-   "Ask the class which column to sort by. Try their first idea, even if it is the name column. Then sort by the time column: the answer is the bottom row. Tap Show me, then pin the claim."
+   "Open Data Detective at Sort & Group on the projector (Open game at this chapter). Case 1 is The Missing Lunchbox: a table of 10 rows, who, where and when. Read the question out loud: who was last in the hall?",
+   "Ask the class which column to sort by. Try their first idea, even if it is the name column. Then sort by the time column and read up from the bottom to the last Hall row: Gus at 3:10. Tap Show me, then pin the claim."
   ],
   "say": [
    "Data is facts in rows. A table full of facts does not answer anything until we sort it or group it.",

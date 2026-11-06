@@ -10,14 +10,26 @@
    "title": "What makes a gadget",
    "text": "A gadget has sensors and inputs that collect data, a processor, outputs, maybe storage and a connection, and power.",
    "art": "lightbulb",
-   "img": "csq/inside-the-machine/gadget-2-key",
-   "alt": "Design a Gadget opens its first brief: an empty build tray and the parts shelf, with cost and battery meters."
+   "img": "csq/inside-the-machine/gadget-2-step",
+   "view": [
+    45.3,
+    25,
+    54,
+    72
+   ],
+   "alt": "A Noise meter brief: it must hear the room, show the loudness, send a log to the laptop and run on wall power."
   },
   {
    "title": "Sensors",
    "text": "A sensor measures the world: light, motion, sound, moisture. A plant waterer needs a moisture sensor to know when the soil is dry.",
    "art": "chip",
    "img": "csq/inside-the-machine/gadget-2-sensors",
+   "view": [
+    0.8,
+    40,
+    44.5,
+    44
+   ],
    "alt": "A second gadget brief: choosing parts starts with the sensor that measures what the gadget must notice."
   },
   {
@@ -25,6 +37,12 @@
    "text": "Every part costs money, battery and space. Wireless lets a gadget move freely but uses more battery than a cable. That is a tradeoff.",
    "art": "battery",
    "img": "csq/inside-the-machine/gadget-2-trade",
+   "view": [
+    0.8,
+    40,
+    44.5,
+    44
+   ],
    "alt": "A third brief with tighter limits: every part added moves the cost, battery and size meters."
   },
   {
@@ -39,21 +57,33 @@
     "coin battery",
     "no cable"
    ],
-   "img": "csq/inside-the-machine/gadget-2-step",
-   "alt": "A later brief at the bench: the art of a good gadget is picking only the parts the job truly needs."
+   "img": "csq/inside-the-machine/gadget-2-key",
+   "view": [
+    0.8,
+    40,
+    44.5,
+    44
+   ],
+   "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters."
   },
   {
    "title": "Users decide what is next",
    "text": "A gadget is finished when people can use it. Read what users say, and make that your next improvement.",
    "art": "people",
    "img": "csq/inside-the-machine/gadget-2-trade",
+   "view": [
+    0.8,
+    40,
+    44.5,
+    44
+   ],
    "alt": "A third brief with tighter limits: every part added moves the cost, battery and size meters."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "chip",
    "words": [
     {
      "word": "sensor",
@@ -79,7 +109,13 @@
    "text": "Open Inside the Machine at Design a Gadget and complete all 5 briefs. Watch the cost, battery and size meters as you add each part.",
    "art": "trophy",
    "img": "csq/inside-the-machine/gadget-2-key",
-   "alt": "Design a Gadget opens its first brief: an empty build tray and the parts shelf, with cost and battery meters."
+   "view": [
+    0.8,
+    40,
+    44.5,
+    44
+   ],
+   "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters."
   }
  ],
  "check": [

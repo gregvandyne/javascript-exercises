@@ -11,6 +11,12 @@
    "text": "A survey asks people questions. The answers can only be fair if the questions are fair.",
    "art": "people",
    "img": "csq/data-detective/mydata-2-key",
+   "view": [
+    55,
+    9,
+    45,
+    67
+   ],
    "alt": "My Data in Pro: a survey question and its answer rows, where fairness starts with how the question is asked."
   },
   {
@@ -18,6 +24,12 @@
    "text": "A question that pushes people toward one answer is a leading question. It builds bias into the data before anyone counts.",
    "art": "mask",
    "img": "csq/data-detective/mydata-2-second",
+   "view": [
+    55,
+    9,
+    45,
+    67
+   ],
    "alt": "A second Pro survey question: its wording matters, because a pushing question bends the data before counting."
   },
   {
@@ -30,6 +42,12 @@
     "fair: Is homework too long, about right or too short?"
    ],
    "img": "csq/data-detective/fair-2-questions",
+   "view": [
+    0.8,
+    9,
+    54,
+    55
+   ],
    "alt": "One Grade Asked: a fairness case about who a survey asked, and who it never reached."
   },
   {
@@ -37,6 +55,12 @@
    "text": "More answers from more kinds of people make a fairer sample. Even a few missing answers can change a close result.",
    "art": "chart",
    "img": "csq/data-detective/fair-2-sample",
+   "view": [
+    0.8,
+    9,
+    54,
+    66
+   ],
    "alt": "Who Is Missing? The fairness case that asks which people a sample left out before trusting its answer."
   },
   {
@@ -44,13 +68,19 @@
    "text": "Your class: 18 of 25 walk to school. Another class: 20 of 40. Compare 72% with 50%, not 18 with 20.",
    "art": "table",
    "img": "csq/data-detective/mydata-2-percent",
+   "view": [
+    55,
+    8,
+    45,
+    58
+   ],
    "alt": "A third survey question in My Data: the case for comparing classes by percent instead of raw counts."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "chart",
    "words": [
     {
      "word": "sample",
@@ -76,6 +106,12 @@
    "text": "Open Data Detective at My Data. Chart one survey question, clean it, and compare it with another class by percent.",
    "art": "trophy",
    "img": "csq/data-detective/mydata-2-key",
+   "view": [
+    55,
+    9,
+    45,
+    67
+   ],
    "alt": "My Data in Pro: a survey question and its answer rows, where fairness starts with how the question is asked."
   }
  ],

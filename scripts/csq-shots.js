@@ -16,9 +16,35 @@ import { chromium } from '@playwright/test';
 import { frameDocument, frameCsp, SANDBOX } from '../server/services/frame.js';
 import { vendorFile } from '../server/services/snapshot.js';
 
+// --geometry <file>: also record each Robo Route shot's board as it stands in the picture (cell grid in % of the
+// 1280x720 frame, the cells, start, goal, items and Bolt) so slide paths can be generated and checked
+// (scripts/csq-route-check.js). Merged into the file by image key.
+const BOARD_GEOMETRY = () => {
+  const pct = r => [r.left / 12.8, r.top / 7.2, r.width / 12.8, r.height / 7.2].map(v => +v.toFixed(2));
+  const shown = e => { const r = e.getBoundingClientRect(); return e.offsetParent && r.width > 0 && r.bottom > 0 && r.top < 720 && !e.closest('[hidden]'); };
+  // the parts a slide's focus box can name: program blocks, shelf, pills, watch strip, test tabs, buttons
+  const ui = [...document.querySelectorAll('#game .rr-blk, #game .rr-pill, #game .rr-watch > *, #game .ok-btn, #game .rr-task, #game .rr-verdict, #modal .rr-tile2, .ok-ui .ok-banner')]
+    .filter(shown).map(e => ({ t: (e.getAttribute('aria-label') || e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60), c: e.className.split(' ').filter(c => /^rr-|^ok-(btn|hot|go|quiet)$/.test(c)).slice(0, 3).join('.'), r: pct(e.getBoundingClientRect()) }));
+  const grid = document.querySelector('#grid');
+  if (!grid || !shown(grid) || !grid.children.length) return { ui };
+  const kids = [...grid.children], w = Math.max(...kids.map(c => +c.dataset.x)) + 1, h = Math.max(...kids.map(c => +c.dataset.y)) + 1;
+  const a = pct(kids[0].getBoundingClientRect()), z = pct(kids[kids.length - 1].getBoundingClientRect());
+  const code = c => (c.classList.contains('goal') ? 'G' : c.classList.contains('wall') ? '#' : c.classList.contains('water') ? '~' : c.classList.contains('paint') ? 'P' : c.classList.contains('plate') ? 'B' : c.classList.contains('door') ? 'D' : c.querySelector('.it[data-item]:not(.gone)') ? '*' : '.');
+  const rows = []; for (let y = 0; y < h; y++) rows.push(kids.filter(c => +c.dataset.y === y).sort((p, q) => p.dataset.x - q.dataset.x).map(code).join(''));
+  const st = window.__brbTest.state();
+  return { level: st.levelId, band: st.band, layout: st.layout, w, h, rows, bolt: st.bolt,
+    cell: { x0: a[0], y0: a[1], w: a[2], h: a[3], dx: w > 1 ? +((z[0] - a[0]) / (w - 1)).toFixed(3) : a[2], dy: h > 1 ? +((z[1] - a[1]) / (h - 1)).toFixed(3) : a[3] }, ui };
+};
+function saveGeometry(file, all) {
+  const old = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+  Object.assign(old, all);
+  const sorted = Object.fromEntries(Object.keys(old).sort().map(k => [k, old[k]]));
+  fs.writeFileSync(file, JSON.stringify(sorted, null, 1) + '\n');
+}
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SLUG = 'robo-route';
-const EXE = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const EXE = process.env.CHROMIUM || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 // The pilot shot table: one row per unique capture. Decks point at these keys; mission slides reuse their
@@ -29,7 +55,7 @@ const SHOTS = [
   // ---- 1.1 Sequences, Explorer (chapter sequences, levels seq-1..seq-6)
   { key: 'sequences-1b-key', chapter: 'sequences', band: '1b', level: 1 },
   { key: 'sequences-1b-program-order', chapter: 'sequences', band: '1b', level: 1, program: 'move; move; move; move' },
-  { key: 'sequences-1b-turn-then-move', chapter: 'sequences', band: '1b', level: 5, program: 'right; move; move' },
+  { key: 'sequences-1b-turn-then-move', chapter: 'sequences', band: '1b', level: 5, program: 'right; move; move; move; move; left; move; move; move' },
   { key: 'sequences-1b-turn-in-place', chapter: 'sequences', band: '1b', level: 2, program: 'move; move; move; move; left; move; move', steps: 5 },
   { key: 'sequences-1b-better-route', chapter: 'best-route', band: '1b', level: 1, route: 0 },
   // ---- 1.1 Sequences, Pro (seq-1 pro, seq-2 pro, seq-3p, seq-4p, seq-5 pro, seq-6 pro)
@@ -40,7 +66,7 @@ const SHOTS = [
   // ---- 1.2 Loops, Explorer (loop-1..loop-7)
   { key: 'loops-1b-five-moves', chapter: 'loops', band: '1b', level: 1, program: 'move; move; move; move; move' },
   { key: 'loops-1b-repeat-bracket', chapter: 'loops', band: '1b', level: 1, program: 'repeat 5 { move }' },
-  { key: 'loops-1b-repeat-number', chapter: 'loops', band: '1b', level: 3, program: 'repeat 3 { move; move }' },
+  { key: 'loops-1b-repeat-number', chapter: 'loops', band: '1b', level: 3, program: 'repeat 2 { move; move; pick }; move' },
   { key: 'loops-1b-turn-inside', chapter: 'loops', band: '1b', level: 1, program: 'repeat 5 { right }' },
   // ---- 1.2 Loops, Pro (loop-1 pro, loop-2p, loop-3 pro, loop-4 pro, loop-5p..loop-8p)
   { key: 'loops-2-key', chapter: 'loops', band: '2', level: 1, program: 'repeat 7 { move }' },
@@ -87,7 +113,10 @@ const args = process.argv.slice(2);
 const outIdx = args.indexOf('--out');
 const OUT = outIdx >= 0 ? path.resolve(args[outIdx + 1]) : path.join(ROOT, 'scripts', 'csq-masters', SLUG);
 const WEBP = args.includes('--webp');
-const wanted = args.filter(a => !a.startsWith('--') && a !== (outIdx >= 0 ? args[outIdx + 1] : null));
+const geoIdx = args.indexOf('--geometry');
+const GEOFILE = geoIdx >= 0 ? path.resolve(args[geoIdx + 1]) : null;
+const geometry = {};
+const wanted = args.filter(a => !a.startsWith('--') && a !== (outIdx >= 0 ? args[outIdx + 1] : null) && a !== (geoIdx >= 0 ? args[geoIdx + 1] : null));
 const shots = wanted.length ? SHOTS.filter(s => wanted.includes(s.key)) : SHOTS;
 if (!shots.length) { console.error('no shots matched'); process.exit(1); }
 
@@ -140,6 +169,7 @@ for (const s of shots) {
     }
     await wait(400);
     const st = await f.evaluate(() => window.__brbTest.state());
+    if (GEOFILE) geometry[`csq/${SLUG}/${s.key}`] = Object.assign({ shot: { chapter: s.chapter, band: s.band, level: s.level, program: s.program || null, steps: s.steps || 0 } }, await f.evaluate(`(${BOARD_GEOMETRY})()`));
     const file = path.join(OUT, `${s.key}.png`);
     await frameEl.screenshot({ path: file });
     let extra = '';
@@ -154,5 +184,6 @@ for (const s of shots) {
     console.log(`✗ ${s.key}: ${e.message.split('\n')[0]}`);
   }
 }
+if (GEOFILE) saveGeometry(GEOFILE, geometry);
 if (errors.length) console.log('page errors:', [...new Set(errors)].join('; '));
 await browser.close(); srv.close();
