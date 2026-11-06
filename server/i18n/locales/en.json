@@ -2346,7 +2346,12 @@
       "nqLap": "🏅 Lap {lap} finished for this unit!",
       "guestSave": "You finished this step! Guests can play everything, but a finished step only counts with a free account. Make one now and we will count this finish — we kept it for you.",
       "guestSaveAction": "Make my free account"
-    }
+    },
+  "loudness": {
+    "listening": "Listening",
+    "stop": "Stop",
+    "tap": "Tap to start listening"
+  }
   },
   "favorites": {
     "title": "My favorites",
@@ -4142,7 +4147,8 @@
       "dataDetective": "Sort, chart and clean data, then make claims the evidence supports.",
       "packetPost": "Send packets across a network, pick strong passphrases and spot online tricks.",
       "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone.",
-      "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen."
+      "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen.",
+      "remisQuietMeadow": "A classroom noise meter: keep the room calm so Remi the red panda can nap, and count up the quiet time together."
     },
     "hubs": {
       "math": {

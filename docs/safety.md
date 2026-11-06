@@ -169,7 +169,21 @@ most 60 seconds; the clip goes to our server (signed in, the game's owner, 8 a m
 types checked by their first bytes) and on to the speech-to-text provider. The words come back with rude words
 starred and land in the chat box for the child to check; they are only sent when the child presses Send, and then they
 are screened like typed text. The clip lives in memory for that one request and is never stored or logged. The
-microphone is allowed on the Studio page only (`Permissions-Policy`), never in the game frame.
+microphone is allowed on the Studio page and on the play page of one official classroom game (below), never in a game
+frame.
+
+**Loudness** (Remi's Quiet Meadow only; `server/services/mic-games.js`, `public/js/loudness.js`; off with
+`MIC_GAMES=0`). The game is a classroom noise meter. Its play page, and only that page (the slug, an official seed game
+owned by the official account, published, not hidden, not in an online match), sends `microphone=(self)`. After a
+real tap, the page opens the microphone with the browser's own prompt (no echo cancelling, noise suppression or
+automatic gain), measures the level on the device with an AnalyserNode that is connected to nothing else, and posts
+one dBFS number to the game about 20 times a second. Audio is never recorded (no MediaRecorder), stored, uploaded or
+sent anywhere, and the numbers are not stored either. The page shows its own "🎤 Listening · Stop" pill while it
+listens and stops every microphone track on Stop, pause, a hidden page, leaving, a frame reload or when the game goes
+quiet for 6 s. The game frame itself is unchanged: opaque, `microphone=()`, the same sandbox and CSP as every game;
+browsers refuse the microphone in opaque frames anyway. Every other game's page answers `off`, and the scanner still
+fails any game that asks for the microphone (no exemption). Tests: `tests/unit/mic-scope.test.js`,
+`tests/unit/loudness.test.js`, `tests/e2e/remis-quiet-meadow.spec.js`.
 
 *Live mode* (`server/services/stt-live.js`; off with `STT_LIVE=0`): the words show in the box while the child speaks.
 The page streams the mic as 16-bit PCM over a same-origin WebSocket to our server, which relays it to the provider's

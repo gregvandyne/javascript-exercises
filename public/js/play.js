@@ -25,6 +25,7 @@ const playing = () => Date.now() - lastInput < ACTIVE_FOR;
 const frameSrc = frame.dataset.src;
 let frameSettled = false, framePins = 0, pinnedAt = [], stopped = false;
 frame.addEventListener('load', () => {
+  stopLoud();   // a (re)loaded game starts with the microphone off
   if (stopped) return;
   if (framePins > 0) { framePins--; return; }   // a reload we triggered below
   if (!frameSettled) { frameSettled = true; return; }   // the game's own first load
@@ -43,7 +44,7 @@ frame.src = frameSrc;
 const fsb = stage.querySelector('.fsback');
 if (fsb) fsb.after(frame); else stage.prepend(frame);
 function stopGame() {
-  stopped = true; frame.src = 'about:blank';
+  stopped = true; stopLoud(); frame.src = 'about:blank';
   const box = document.createElement('div'); box.className = 'game-stopped'; box.setAttribute('role', 'alert'); box.dir = document.documentElement.dir || 'ltr';
   box.innerHTML = `<div><p>${esc(t('js.play.stopped'))}</p><button class="btn btn-primary" type="button">${esc(t('js.play.restart'))}</button></div>`;
   box.querySelector('button').addEventListener('click', () => location.reload());
@@ -108,7 +109,10 @@ const TYPES = {
   // AI voices (official games listed for voices, and games the admin switched on; public/js/tts.js): one line of the game's own words to read aloud.
   'brb:tts': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.text === 'string' && m.text.length > 0 && m.text.length <= 600 && typeof m.lang === 'string' && m.lang.length <= 16
     && TTS_ROLES.includes(m.role) && Number.isFinite(m.rate) && m.rate >= 0.5 && m.rate <= 2 && (m.pre === undefined || m.pre === true),
+  // Loudness (BRB.loudness; only page-data.mic pages ever listen, public/js/loudness.js): hello / start / keep / stop.
+  'brb:loud': m => LOUD_OPS.includes(m.op),
 };
+const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];
 const TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
 export function validMessage(e, frameWin) {
   if (e.source !== frameWin) return null;            // only our game frame
@@ -136,6 +140,9 @@ addEventListener('message', e => {
       break;
     }
     case 'brb:tts': gameLine(m); break;
+    // Loudness: any other game's page answers 'off' and never touches the microphone (its header also says
+    // microphone=()). Remi's page hands the op to loudness.js, which opens the mic only after a real tap.
+    case 'brb:loud': if (!d.mic) toFrame({ type: 'brb:loudState', state: 'off' }); else loudMessage(m); break;
     // "Play online" in a game that can be played online: the site's own sheet (friends, family, codes).
     case 'brb:online': if (d.online && !d.match && tappedJustNow()) openLobby(d); break;
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
@@ -236,6 +243,17 @@ $('#p-rate') && $('#p-rate').addEventListener('click', () => {
     try { await api(`/api/games/${d.gameId}/rate`, { method: 'POST', body: { stars: +b.dataset.stars } }); d.myStars = +b.dataset.stars; toast(t('js.play.thanksRating')); s.close(); } catch (err) { toast(err.message, { bad: true }); }
   });
 });
+
+// ---- Loudness (one official classroom game: page-data.mic; docs/safety.md "Loudness") ----
+// The page, never the game frame, opens the microphone, and only after a real tap; the game gets one number at a time.
+let loudBridge = null, loudLoading = null;
+function loudMessage(m) {
+  if (!loudLoading) loudLoading = import('/js/loudness.js').then(mod => { loudBridge = mod.bridge({ toFrame, stage, t, tapped: tappedJustNow }); return loudBridge; });
+  // the tap is checked now, while it is fresh, not after the module has loaded
+  const tap = m.op === 'start' ? tappedJustNow() : false;
+  loudLoading.then(b => b.message({ op: m.op }, tap)).catch(() => toFrame({ type: 'brb:loudState', state: 'unavailable' }));
+}
+function stopLoud() { if (loudBridge) loudBridge.stop('stopped'); }
 
 // ---- AI voices (docs/tts-design.md): the game frame can't fetch, so its lines come through here ----
 // Only official games listed for voices and games the admin switched on get d.tts (a token bound to this player and

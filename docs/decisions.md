@@ -2496,3 +2496,38 @@ same game file draws the live view when `Oomba.live.active` (its kit `live` pack
   a small rope, its own question, the keypad (a 6 × 2 keypad on short screens; side by side on a phone or tablet held
   sideways). Pause, eyes up, Next and Skip: pause and eyes up stop the clock; Next and Skip are not shown (the match runs
   on its clock). Capacity 60 (`CAPACITY.tug`, docs/live-capacity.md).
+
+## Remi's Quiet Meadow (6 Nov 2026)
+
+The owner asked for a classroom noise meter "with Remi": the class is measured, and the animation wakes up when it gets
+too noisy. Plan and evidence: `docs/remi-quiet-meadow-plan.md`.
+
+- **The microphone runs on the play page, never in the frame.** Every game frame is opaque-origin (no
+  `allow-same-origin`, ever). Tested in Chromium 1194 with the fake-device flags: `getUserMedia` in such a frame fails
+  with `SecurityError: Invalid security origin` even with `microphone=*` on the page and `allow="microphone *"` on the
+  iframe. A tap in the frame does activate the parent page, so the page can open the mic itself. Only
+  `/play/remis-quiet-meadow` sends `microphone=(self)` and `page-data.mic` (`server/services/mic-games.js`: slug + official
+  seed game + published + not hidden; never in an online match; `MIC_GAMES=0` turns it off). The frame, its CSP, its
+  `microphone=()` and the iframe's `allow` are unchanged. `public/js/loudness.js` measures RMS with an AnalyserNode wired
+  to nothing else and posts one dBFS number 20 times a second (`BRB.loudness` in the SDK, kept out of the Builder's
+  API). No MediaRecorder, nothing stored or sent. The page shows its own Listening/Stop pill and stops on pause, hide,
+  leave, reload and a missed keep-alive. Other pages answer `off`. The scanner keeps failing `getUserMedia` for every game
+  (no slug exemption); Remi never calls it.
+- **Original art.** The owner's reference pictures resemble a film character; we copied nothing. Remi is our own red
+  panda in the Oomba ink style (thick outlines, flat fills), with generic red-panda traits (orange fur, cream face and
+  belly, white-rimmed ears, a ringed tail) and his own green leaf scarf: an inline SVG rig whose parts are placed from
+  pose numbers (asleep on his side, sit, stretch and yawn, grumpy with arms crossed, paws to his head when it is loud,
+  standing with arms wide), blended with easing plus springy ears, tail and scarf and breathing. No image files.
+- **Levels and moods** (`window.RemiCore`, unit-tested): -70…-10 dBFS maps to 0…100; smoothing up 0.12 s, down 0.5 s;
+  the line is the calibrated room quiet (median of 3 s, else 30) + Whisper 10 / Quiet work 18 / Group work 30 ± 25.
+  Asleep → stirring near the line → waking after 1.5 s over it (leaky, so a clap only stirs him) → yawn, grumble,
+  grumpy → 4 s of calm → lies down. The quiet clock runs only while he sleeps; a goal (2–30 min or none) ends happily;
+  stars 3/2/1 for 0–1/2–3/more wake-ups. His WebAudio sounds hold the measuring while they play (+400 ms) so the
+  speakers never wake him.
+- **No mic?** A card explains blocked / none / busy / old browser / "this page can't listen", with Try again and a demo
+  (noise slider, clap, class chatter). Kit 1.1.3 shell, no packs, own rAF loop (the kit's loop pauses on blur).
+- **Child safety:** no recording, no accounts or data needed, no score submitted (`gameOver({won:true, score:null})`),
+  settings saved as numbers only, no text input. AI voices may read only the title, setup, privacy note and end lines.
+- **Open:** iPad Safari may not pass the tap to the page; the page then shows its own "Tap to start listening" button,
+  which needs a check on a real iPad.
+

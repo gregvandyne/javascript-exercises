@@ -2328,7 +2328,12 @@
       "again": "Probeer opnieuw",
       "passed": "Gehaald! {score} van de {total} goed.",
       "failed": "{score} van de {total} goed. Je hebt er {pass} nodig. Probeer het opnieuw!"
-    }
+    },
+  "loudness": {
+    "listening": "Luistert",
+    "stop": "Stop",
+    "tap": "Tik om te beginnen met luisteren"
+  }
   },
   "favorites": {
     "title": "Mijn favorieten",
@@ -3853,7 +3858,8 @@
       "dataDetective": "Sorteer, teken en schoon data op, en doe alleen beweringen die het bewijs steunt.",
       "packetPost": "Stuur pakketjes door een netwerk, kies sterke wachtzinnen en herken trucs online.",
       "insideTheMachine": "Bouw en repareer computers: onderdelen, invoer en uitvoer, bits en pixels, ontwerpen voor iedereen.",
-      "tugOfMath": "Rekenvragen voor elke groep, van optellen tot 20 tot vergelijkingen, als touwtrekwedstrijd. Tegen de computer of met z’n tweeën op één scherm."
+      "tugOfMath": "Rekenvragen voor elke groep, van optellen tot 20 tot vergelijkingen, als touwtrekwedstrijd. Tegen de computer of met z’n tweeën op één scherm.",
+      "remisQuietMeadow": "Een geluidsmeter voor de klas: houd het rustig zodat Remi de rode panda kan slapen, en tel samen de stille tijd."
     },
     "hubs": {
       "math": {

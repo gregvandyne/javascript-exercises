@@ -1,0 +1,1438 @@
+<title>Remi’s Quiet Meadow</title>
+<style>
+/* Remi's Quiet Meadow on the Oomba Kit: a classroom noise meter. A red panda, Remi (our own character), naps in a meadow
+   at sunset while the class keeps quiet. The play page measures how loud the room is and passes the game one number at
+   a time (BRB.loudness); nothing is recorded. Screens: the kit's title (Remi already asleep behind it) -> the setup
+   card (how quiet, the goal, the room's quiet, the privacy note) -> the meadow with the gauge and the quiet-time clock ->
+   the kit's results card. Layout: landscape (projector, laptop, tablet on its side) puts the gauge on the right edge;
+   portrait puts it along the bottom. Colour is never the only cue: each zone has an icon and the loud zone stripes. */
+html,body{height:100%}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+.ok-hud{display:none!important}
+.rq,.rq *,.rqs,.rqs *{box-sizing:border-box}
+.rq{position:fixed;inset:0;overflow:hidden;color:var(--ok-text);font-family:var(--ok-font,system-ui,sans-serif);--top:110px;
+  --ink:#2A1B22;--calm:#4CB860;--near:#F2C230;--loud:#E8483C;--card:#FFFDF5}
+.rq button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.rq-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+.rq-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* the meadow at sunset (light) and at dusk (dark) */
+.rq-svg .sk0{stop-color:#7E6BB8}.rq-svg .sk1{stop-color:#E98AA0}.rq-svg .sk2{stop-color:#FFB37E}.rq-svg .sk3{stop-color:#FFE0A3}
+.rq-svg .gl0{stop-color:#FFF1B8;stop-opacity:.85}.rq-svg .gl1{stop-color:#FFD39A;stop-opacity:0}
+.rq-svg .sun{fill:#FFE7A0;stroke:#FFF6D6;stroke-width:6}
+.rq-svg .stars{fill:#FFF6D6;opacity:0}
+.rq-svg .cl path{fill:#FFD3D0;opacity:.92}
+.rq-svg .h1{fill:#B58BB8}.rq-svg .h2{fill:#8BB565}.rq-svg .h3{fill:#77B24E}
+.rq-svg .tuft path{fill:#5E9E3C;stroke:#2A1B22;stroke-width:4;stroke-linejoin:round}
+.rq-svg .flies{opacity:0}
+.rq-svg .z{font-family:var(--ok-font,system-ui,sans-serif);font-weight:900;fill:#FFFDF5;stroke:#2A1B22;stroke-width:5;paint-order:stroke;opacity:0}
+.ok-night .rq-svg .sk0{stop-color:#141A3C}.ok-night .rq-svg .sk1{stop-color:#2E2A63}.ok-night .rq-svg .sk2{stop-color:#7A4675}.ok-night .rq-svg .sk3{stop-color:#D7786A}
+.ok-night .rq-svg .gl0{stop-color:#F6A57A;stop-opacity:.55}
+.ok-night .rq-svg .sun{fill:#F5A77E;stroke:#FFD3B0}
+.ok-night .rq-svg .stars{opacity:.9}
+.ok-night .rq-svg .cl path{fill:#6B5A8F;opacity:.8}
+.ok-night .rq-svg .h1{fill:#4C3E73}.ok-night .rq-svg .h2{fill:#2F6A4A}.ok-night .rq-svg .h3{fill:#2C6B3F}
+.ok-night .rq-svg .tuft path{fill:#245437}
+.ok-night .rq-svg .flies{opacity:1}
+.ok-night .rq-svg .fly{fill:#FFF3A0}
+/* gentle motion: swaying grass and flowers, drifting clouds, blinking fireflies (none with less motion) */
+.rq-svg .tuft path,.rq-svg .fl{transform-box:fill-box;transform-origin:50% 100%;animation:rqSway 4.6s ease-in-out infinite;animation-delay:var(--d,0s)}
+.rq-svg .cl{animation:rqDrift 38s ease-in-out infinite alternate}.rq-svg .c2{animation-duration:46s}
+.rq-svg .fly{animation:rqFly 3.6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes rqSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3.5deg)}}
+@keyframes rqDrift{from{transform:translateX(-40px)}to{transform:translateX(60px)}}
+@keyframes rqFly{0%,100%{opacity:.15;transform:translate(0,0)}50%{opacity:1;transform:translate(12px,-14px)}}
+.ok-rm .rq-svg *{animation:none!important}
+@media (prefers-reduced-motion:reduce){.rq-svg *{animation:none!important}}
+
+/* the top bar: the quiet-time clock in the middle, pause and teacher settings at the end */
+.rq-top{position:absolute;inset-inline:0;top:0;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;gap:10px;
+  padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 0 calc(12px + env(safe-area-inset-left));pointer-events:none}
+.rq-top>*{pointer-events:auto}
+.rq-spacer{pointer-events:none}
+.rq-clock{justify-self:center;display:flex;flex-direction:column;align-items:center;padding:6px 22px 8px;border-radius:24px;background:var(--card);color:var(--ink);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);min-width:min(300px,48vw)}
+.rq-clock .lab{font-weight:800;font-size:clamp(.95rem,min(2.2vw,2.6vh),1.7rem);line-height:1.1;display:flex;align-items:center;gap:6px}
+.rq-clock .lab::before{content:'🌙';font-size:.95em}
+.rq-clock .time{font-weight:900;font-size:clamp(34px,min(8vw,8.4vh),118px);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.rq-clock .sub{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font-weight:700;font-size:clamp(.85rem,min(1.8vw,2.2vh),1.5rem);opacity:.85}
+.rq-clock .wakes::before{content:'😮 '}
+.rq-clock.run .time{color:#2E8B4A}
+.rq-btns{justify-self:end;display:flex;gap:8px}
+.rq-ib{width:clamp(48px,min(6vw,7vh),76px);height:clamp(48px,min(6vw,7vh),76px);border-radius:18px;border:3px solid var(--ink);background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--ink);
+  display:flex;align-items:center;justify-content:center;padding:0}
+.rq-ib svg{width:55%;height:55%}
+.rq-ib:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.rq button:focus-visible,.rq input:focus-visible{outline:4px solid var(--ok-focus,#2E7CF6);outline-offset:3px}
+.rq:not(.playing) .rq-top,.rq:not(.playing) .rq-gauge,.rq:not(.playing) .rq-demo{visibility:hidden}
+
+/* the gauge (landscape: up the right edge) */
+.rq-gauge{position:absolute;right:calc(18px + env(safe-area-inset-right));top:calc(var(--top) + 30px);bottom:calc(40px + env(safe-area-inset-bottom));width:clamp(52px,4.4vw,84px);
+  display:flex;flex-direction:column;align-items:center;gap:8px}
+.g-track{position:relative;flex:1;width:100%;border-radius:999px;border:4px solid var(--ink);background:#FFFDF5;overflow:hidden;box-shadow:0 5px 0 var(--ink)}
+.g-zone{position:absolute;left:0;right:0;bottom:0;opacity:.38}
+.g-calm{background:var(--calm)}.g-near{background:var(--near)}
+.g-loud{background:var(--loud);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.55) 0 8px,transparent 8px 16px)}
+.g-fill{position:absolute;left:0;right:0;bottom:0;transition:background-color .2s}
+.g-fill.calm{background:var(--calm)}.g-fill.near{background:var(--near)}
+.g-fill.loud{background:var(--loud);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 8px,transparent 8px 16px)}
+.g-peak{position:absolute;left:0;right:0;height:5px;margin-bottom:-2px;background:var(--ink);opacity:.6}
+.g-line{position:absolute;left:-4px;right:-4px;height:8px;margin-bottom:-4px;background:var(--ink)}
+.g-ic{font-size:clamp(26px,min(3vw,4vh),48px);line-height:1}
+.g-tag{position:absolute;right:calc(100% + 8px);transform:translateY(-50%);display:flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 12px;border-radius:999px;
+  background:var(--loud);color:#fff;border:3px solid var(--ink);font-weight:800;font-size:clamp(.9rem,min(1.6vw,2.4vh),1.5rem);box-shadow:0 3px 0 var(--ink)}
+.g-held{position:absolute;right:calc(100% + 8px);bottom:0;white-space:nowrap;padding:4px 10px;border-radius:12px;background:var(--card);color:var(--ink);border:3px solid var(--ink);font-weight:700;font-size:.95rem}
+.rq-gauge.held .g-track{opacity:.55}
+.rq-gauge.loud .g-track{animation:rqThrob .8s ease-in-out infinite}
+@keyframes rqThrob{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.ok-rm .rq-gauge.loud .g-track{animation:none}
+
+/* portrait: the gauge lies along the bottom */
+.rq.portrait .rq-gauge{left:calc(16px + env(safe-area-inset-left));right:calc(16px + env(safe-area-inset-right));top:auto;bottom:calc(64px + env(safe-area-inset-bottom));width:auto;height:58px;flex-direction:row}
+.rq.portrait .g-track{height:100%;flex:1;width:auto}
+.rq.portrait .g-zone,.rq.portrait .g-fill{top:0;bottom:0;left:0}
+.rq.portrait .g-peak{top:0;bottom:0;width:5px;height:auto;margin:0 -2px}
+.rq.portrait .g-line{top:-4px;bottom:-4px;width:8px;height:auto;margin:0 -4px}
+.rq.portrait .g-tag{right:auto;bottom:calc(100% + 8px);transform:translateX(-50%)}
+.rq.portrait .g-held{right:auto;left:0;bottom:calc(100% + 8px)}
+.rq.portrait .g-icbot{order:-1}.rq.portrait .g-ictop{order:3}
+.rq.portrait.demo .rq-gauge{bottom:calc(158px + env(safe-area-inset-bottom))}
+
+/* "Too loud!" and the little "!" of a stir, over the meadow */
+.rq-bubble{position:absolute;transform:translate(-50%,-100%);padding:10px 22px;border-radius:26px;background:var(--card);color:var(--ink);border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);
+  font-weight:900;font-size:clamp(1.3rem,min(3.4vw,5vh),3.4rem);white-space:nowrap;pointer-events:none}
+.rq-bubble::after{content:'';position:absolute;left:24%;bottom:-18px;border:14px solid transparent;border-top:18px solid var(--ink);border-bottom:0}
+.rq-bubble.pop{animation:rqPop .42s cubic-bezier(.34,1.56,.64,1) both}
+.rq-mark{position:absolute;transform:translate(-50%,-100%);font-weight:900;font-size:clamp(1.6rem,4vh,3rem);color:#FFFDF5;-webkit-text-stroke:2px var(--ink);pointer-events:none}
+.rq-mark.pop{animation:rqPop .35s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes rqPop{from{transform:translate(-50%,-100%) scale(.2);opacity:0}to{transform:translate(-50%,-100%) scale(1);opacity:1}}
+.ok-rm .rq-bubble.pop,.ok-rm .rq-mark.pop{animation:none}
+
+/* demo mode: the stand-in for the room */
+.rq-demo{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  padding:10px 14px;border-radius:24px;background:var(--card);color:var(--ink);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);max-width:calc(100vw - 32px);width:max-content}
+.rq-ribbon{font-weight:900;padding:4px 12px;border-radius:999px;background:#B27CF0;color:#fff;border:3px solid var(--ink);text-transform:uppercase;letter-spacing:.05em;font-size:.9rem}
+.rq-noise{display:flex;align-items:center;gap:8px;font-weight:800}
+.rq-noise input{width:clamp(140px,22vw,320px);height:44px;accent-color:#E8483C;margin:0}
+.rq-db{min-height:48px;padding:4px 16px;border-radius:16px;border:3px solid var(--ink);background:#FFE7A0;color:var(--ink);font-weight:800;font-size:1rem;display:flex;align-items:center;gap:6px;box-shadow:0 3px 0 var(--ink)}
+.rq-db[aria-pressed="true"]{background:#5DB548;color:#fff}
+.rq-db .em{font-size:1.3em}
+.rq.portrait .rq-demo{width:calc(100vw - 32px);max-width:560px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;padding:8px 10px}
+.rq.portrait .rq-noise .tx{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rq.portrait .rq-noise input{width:100%}
+.rq.portrait .rq-demo .rq-db{justify-content:center}
+.rq.portrait .rq-ribbon{align-self:center}
+/* a narrow screen: a smaller clock, the two buttons stacked at the end */
+@media (max-width:600px){
+  .rq-clock{min-width:0;padding:4px 12px 6px;border-radius:18px}
+  .rq-clock .sub{gap:2px 8px;font-size:.8rem}
+  .rq-btns{flex-direction:column}
+}
+
+/* the setup card and the no-mic card */
+.rqs{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));background:var(--ok-scrim)}
+.rqs-card{width:min(860px,100%);max-height:100%;overflow:auto;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ok-edge);border-radius:28px;box-shadow:0 6px 0 var(--ok-edge);
+  padding:16px 18px;display:grid;gap:12px 18px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"h h" "l r" "f f"}
+.rqs h2{grid-area:h;margin:0;text-align:center;font-size:clamp(1.4rem,4vmin,2.2rem);line-height:1.1}
+.rqs .left{grid-area:l}.rqs .right{grid-area:r}.rqs .foot{grid-area:f}
+.rqs .left,.rqs .right,.rqs .foot{display:flex;flex-direction:column;gap:10px;min-width:0}
+.rqs fieldset{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.rqs legend{padding:0;font-weight:800;font-size:1rem;margin-bottom:4px}
+.rqs .row{display:grid;gap:6px;grid-template-columns:repeat(var(--n,3),minmax(0,1fr))}
+.rqs .goals{grid-template-columns:repeat(4,minmax(0,1fr))}
+.rqs .opt{min-height:48px;min-width:0;border:3px solid var(--ok-edge);border-radius:16px;background:var(--ok-bg2);color:var(--ok-text);font-weight:800;font-size:1rem;padding:4px 6px;line-height:1.1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+.rqs .opt .em{font-size:1.3em}
+.rqs .opt[aria-checked="true"]{background:#FFC83D;color:#1D2340;box-shadow:0 3px 0 var(--ok-edge)}
+.rqs .opt:focus-visible,.rqs button:focus-visible,.rqs input:focus-visible{outline:4px solid var(--ok-focus);outline-offset:2px}
+.rqs .frow{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem}
+.rqs .frow .end{flex:0 0 auto;max-width:28%;line-height:1.1;text-align:center}
+.rqs .frow input{flex:1;min-width:0;height:44px;margin:0;accent-color:#E0662A}
+.rqs .mini{position:relative;height:14px;border-radius:999px;border:2.5px solid var(--ok-edge);background:linear-gradient(90deg,#4CB86066,#F2C23066,#E8483C66);overflow:hidden}
+.rqs .mini .mf{position:absolute;left:0;top:0;bottom:0;background:#4CB860;width:0}
+.rqs .mini .ml{position:absolute;top:-3px;bottom:-3px;width:5px;margin-left:-2px;background:var(--ok-edge)}
+.rqs .linetx,.rqs .calt{margin:0;font-weight:700;font-size:.9rem;opacity:.85;min-height:1.2em}
+.rqs .calb{min-height:52px;border:3px solid var(--ok-edge);border-radius:16px;background:#D9F1FF;color:#1D2340;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 12px;box-shadow:0 3px 0 var(--ok-edge)}
+.rqs .calb[disabled]{opacity:.6}
+.rqs .privacy{margin:0;text-align:center;font-weight:700;font-size:.95rem;padding:8px 12px;border-radius:14px;background:var(--ok-bg2)}
+.rqs .go{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.rqs .go .ok-btn{min-width:min(300px,100%)}
+.rqs .go .em{margin-inline-end:6px}
+.rqn .rqs-card{width:min(640px,100%);display:flex;flex-direction:column;align-items:stretch;text-align:center}
+.rqn h2{font-size:clamp(1.4rem,4vmin,2.4rem)}
+.rqn .big{font-size:3rem;line-height:1}
+.rqn .why{margin:0;font-weight:600;font-size:1.1rem;line-height:1.35}
+.rq-stats{margin:4px 0 6px;text-align:center;font-weight:700;font-size:1.05rem;line-height:1.4}
+html.rq-ended .ok-win .ok-score,html.rq-ended .ok-win .ok-best{display:none}
+@media (orientation:portrait),(max-width:640px){
+  .rqs-card{grid-template-columns:1fr;grid-template-areas:"h" "l" "r" "f";gap:10px}
+}
+@media (orientation:landscape) and (max-height:560px){
+  .rqs-card{padding:10px 12px;gap:6px 12px}
+  .rqs h2{font-size:1.2rem}
+  .rqs .opt{min-height:44px;font-size:.92rem;flex-direction:row}
+  .rqs .calt,.rqs .linetx{font-size:.8rem}
+  .rqs .privacy{font-size:.82rem;padding:4px 8px}
+  .rqs .goals{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .rqs .goals .opt{font-size:.82rem;padding:2px}
+  .rqs legend{font-size:.9rem;margin-bottom:0}
+  .rqs .calb{min-height:44px}
+}
+@media (min-width:1400px) and (min-height:860px){
+  .rqs-card{width:min(1180px,92vw);padding:28px 34px;gap:22px 34px}
+  .rqs h2{font-size:clamp(2rem,4.4vmin,3.4rem)}
+  .rqs legend{font-size:clamp(1rem,2.4vmin,1.9rem)}
+  .rqs .opt{min-height:clamp(48px,7vmin,96px);font-size:clamp(1.05rem,2.4vmin,2rem);border-radius:22px}
+  .rqs .frow{font-size:clamp(.9rem,1.8vmin,1.4rem)}
+  .rqs .linetx,.rqs .calt,.rqs .privacy{font-size:clamp(1rem,2vmin,1.5rem)}
+  .rqs .calb{min-height:clamp(52px,7vmin,92px);font-size:clamp(1.05rem,2.4vmin,1.9rem)}
+  .rqs .go .ok-btn{min-width:min(460px,100%);font-size:clamp(1.3rem,3vmin,2.4rem)}
+  .rqn .why{font-size:clamp(1.1rem,2.4vmin,1.9rem)}
+}
+@media (orientation:landscape) and (max-height:430px){ .rq-clock{flex-direction:row;gap:10px;align-items:center;padding:4px 14px}.rq-clock .lab::before{content:none} .rq-clock .sub{flex-direction:column;gap:0} }
+</style>
+<script src="/vendor/oomba-kit/1.1.3/oomba-kit.js" integrity="sha384-C3W9aOBuSkvtAv0cHch+tzSi9h4GN4XCkR3u9iTN7D83Xx2nTtdr3zkPLu6EdBuH" crossorigin="anonymous"></script>
+<script>
+/* remi-core:begin */
+/* RemiCore: the level maths, the room calibration and Remi's moods, with no DOM (tests/unit/remis-quiet-meadow.test.js
+   runs this block with node:vm). Every step is deterministic: the same inputs always give the same Remi. */
+window.RemiCore = (function () {
+  'use strict';
+  var DB_LO = -70, DB_HI = -10;                       // -70 dBFS is 0 on the gauge, -10 dBFS is 100
+  var ATTACK = 0.12, RELEASE = 0.5;                   // seconds: the gauge jumps up fast and settles slowly
+  var PRESETS = { whisper: 10, quiet: 18, group: 30 }; // how far above the room's own quiet the "too loud" line sits
+  var PRESET_IDS = ['whisper', 'quiet', 'group'];
+  var BASE = 30, FINE = 25, LINE_MIN = 15, LINE_MAX = 95;
+  var GOALS = [120, 300, 600, 900, 1200, 1800, 0];   // seconds of quiet time; 0 = no goal
+  var T = {
+    near: 10,        // a level within this of the line counts as "getting loud"
+    stirIn: 0.3,     // seconds of near-the-line before Remi stirs
+    stirOut: 1.2,    // seconds below the near band before a stirring Remi settles again
+    stirCool: 2.5,   // seconds between two stirs (ear, tail, a peek, a murmur)
+    wake: 1.5,       // seconds over the line (leaky) that wake him
+    leak: 0.5,       // how fast the over-the-line count drains while it is quieter (x dt)
+    seq: 2.8,        // the waking sequence: sit up 0.6, stretch and yawn to 2.0, then "Too loud!"
+    sitUp: 0.6, grumble: 2.0,
+    calmBand: 5,     // grumpy Remi calms while the level is this far under the line
+    calm: 4,         // seconds of calm before he lies back down
+    settle: 2.0,     // lying down takes this long
+    reGrump: 0.6,    // noise this long while lying down makes him grumpy again (no extra wake)
+  };
+  var STIRS = ['ear', 'tail', 'peek', 'murmur'];
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  /** dBFS (from the play page) -> 0..100, linear in dB. */
+  function levelOf(db) { if (typeof db !== 'number' || db !== db) return 0; return clamp((db - DB_LO) / (DB_HI - DB_LO) * 100, 0, 100); }
+  /** One smoothing step: fast up (attack), slow down (release), using the real dt so any frame rate behaves the same. */
+  function smooth(prev, x, dt) {
+    var tau = x > prev ? ATTACK : RELEASE, a = 1 - Math.exp(-Math.max(0, dt) / tau);
+    return prev + (x - prev) * a;
+  }
+  function presetOf(id) { return PRESETS.hasOwnProperty(id) ? id : 'quiet'; }
+  /** The "too loud" line: the room's quiet + the preset's margin + the fine slider, kept on the gauge. */
+  function line(base, preset, fine) {
+    var b = typeof base === 'number' && base === base ? base : BASE;
+    return Math.round(clamp(b + PRESETS[presetOf(preset)] + clamp(+fine || 0, -FINE, FINE), LINE_MIN, LINE_MAX));
+  }
+  function median(xs) {
+    var a = xs.filter(function (x) { return typeof x === 'number' && x === x; }).sort(function (p, q) { return p - q; });
+    if (!a.length) return null;
+    var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+  }
+  /** samples: smoothed levels over ~3 s. -> { ok, base, why: 'noInput' | 'tooLoud' } */
+  function calibrate(samples) {
+    var m = median(samples || []);
+    if (m === null || (samples || []).length < 5) return { ok: false, why: 'noInput' };
+    if (m > 70) return { ok: false, why: 'tooLoud', room: Math.round(m) };
+    return { ok: true, base: Math.round(m), room: Math.round(m) };
+  }
+  /** Stars for a finished session: 3 for 0-1 wake-ups, 2 for 2-3, 1 for more. */
+  function stars(wakes) { return wakes <= 1 ? 3 : wakes <= 3 ? 2 : 1; }
+  /** A fresh session. opts: { goal: seconds of quiet time (0 = none) } */
+  function make(opts) {
+    opts = opts || {};
+    return { state: 'asleep', t: 0, over: 0, nearT: 0, lowT: 0, cool: 0, calm: 0, over2: 0, quiet: 0, wakes: 0, stirs: 0,
+      goal: Math.max(0, +opts.goal || 0), loud: false, done: false, act: null };
+  }
+  function go(s, st, ev, events) { s.state = st; s.t = 0; if (ev) events.push(ev); }
+  /**
+   * One step. inp: { level (smoothed, 0..100), line, held (Remi's own sound is playing: the room is not listened to),
+   * dt (seconds), rnd (0..1, for the stir he picks) }. -> { s, events: [{ type, ... }] }
+   * Events: stir {act}, wake, yawn, grumble, grumpy, settle, regrump, asleep, goal.
+   */
+  function step(s, inp) {
+    var ev = [], dt = Math.max(0, Math.min(0.25, +inp.dt || 0)), L = clamp(+inp.level || 0, 0, 100), line0 = +inp.line || 50;
+    var held = !!inp.held, rnd = typeof inp.rnd === 'number' ? inp.rnd : 0.5;
+    var prevT = s.t; s.t += dt;
+    if (s.done) return { s: s, events: ev };
+    s.loud = !held && L > line0;
+    var st = s.state;
+    if (st === 'asleep' || st === 'stirring') {
+      s.quiet += dt;   // he is asleep (stirring is still asleep): the quiet clock runs
+      if (s.goal > 0 && s.quiet >= s.goal) { s.quiet = s.goal; s.done = true; go(s, 'celebrate', { type: 'goal' }, ev); return { s: s, events: ev }; }
+      if (!held) {
+        if (L > line0) s.over += dt; else s.over = Math.max(0, s.over - T.leak * dt);
+        if (L > line0 - T.near) { s.nearT += dt; s.lowT = 0; } else { s.nearT = 0; s.lowT += dt; }
+      }
+      s.cool = Math.max(0, s.cool - dt);
+      if (s.over >= T.wake) { s.wakes++; s.over = 0; s.nearT = 0; s.act = null; go(s, 'waking', { type: 'wake', wakes: s.wakes }, ev); return { s: s, events: ev }; }
+      if (st === 'asleep') {
+        if (!held && (s.nearT >= T.stirIn || s.over > 0)) { go(s, 'stirring', null, ev); s.lowT = 0; st = 'stirring'; }
+      }
+      if (st === 'stirring') {
+        if (s.cool <= 0 && !held && (s.nearT > 0 || s.over > 0)) {
+          var act = STIRS[Math.min(STIRS.length - 1, Math.floor(rnd * STIRS.length))];
+          s.act = act; s.stirs++; s.cool = T.stirCool; ev.push({ type: 'stir', act: act });
+        }
+        if (s.lowT >= T.stirOut && s.over === 0) { s.act = null; go(s, 'asleep', null, ev); }
+      }
+      return { s: s, events: ev };
+    }
+    if (st === 'waking') {   // a fixed sequence the room cannot interrupt
+      if (prevT < T.sitUp && s.t >= T.sitUp) ev.push({ type: 'yawn' });
+      if (prevT < T.grumble && s.t >= T.grumble) ev.push({ type: 'grumble' });
+      if (s.t >= T.seq) { s.calm = 0; go(s, 'grumpy', { type: 'grumpy' }, ev); }
+      return { s: s, events: ev };
+    }
+    if (st === 'grumpy') {
+      if (!held) { if (L < line0 - T.calmBand) s.calm += dt; else s.calm = 0; }
+      if (s.calm >= T.calm) { s.over2 = 0; go(s, 'settling', { type: 'settle' }, ev); }
+      return { s: s, events: ev };
+    }
+    if (st === 'settling') {
+      if (!held) { if (L > line0) s.over2 += dt; else s.over2 = Math.max(0, s.over2 - dt); }
+      if (s.over2 >= T.reGrump) { s.calm = 0; s.over2 = 0; go(s, 'grumpy', { type: 'regrump' }, ev); return { s: s, events: ev }; }
+      if (s.t >= T.settle) { s.over = 0; s.nearT = 0; s.lowT = 0; s.cool = T.stirCool; go(s, 'asleep', { type: 'asleep' }, ev); }
+      return { s: s, events: ev };
+    }
+    return { s: s, events: ev };
+  }
+  return { levelOf: levelOf, smooth: smooth, line: line, median: median, calibrate: calibrate, stars: stars, make: make, step: step,
+    PRESETS: PRESETS, PRESET_IDS: PRESET_IDS, GOALS: GOALS, BASE: BASE, FINE: FINE, T: T, STIRS: STIRS, ATTACK: ATTACK, RELEASE: RELEASE, presetOf: presetOf };
+})();
+/* remi-core:end */
+</script>
+<script>
+/* The game: the setup card, the meadow, Remi's rig and animator, his sounds, the gauge, the demo and the test hooks. */
+// ==== I18N START ====
+// Remi is Remi in every language (a name, in Latin letters). {placeholders} are numbers or a clock ("03:12").
+var I18N = {
+  en: {
+    title: 'Remi’s Quiet Meadow', tag: 'Shh… let Remi nap!',
+    setupH: 'Quiet time with Remi', howQuiet: 'How quiet?', whisper: 'Whisper', quietWork: 'Quiet work', groupWork: 'Group work',
+    fine: 'Fine tune', touchier: 'Wakes easily', calmer: 'Sleeps deeply',
+    goalH: 'Quiet time goal', min: '{n} min', noGoal: 'No goal',
+    calib: 'Set to the room’s quiet', calibHint: 'Press it while the room is quiet. Remi listens for 3 seconds.', calibListen: 'Shh… listening to the room ({n})',
+    calibDone: 'Room: {room} · Wakes above: {line}', calibLoud: 'The room was too loud to measure. Try again when it is quiet.', calibNoMic: 'This needs the microphone.',
+    privacy: 'Remi only listens for how loud it is. Nothing is recorded or saved.',
+    startMic: 'Start listening', tryDemo: 'Try it without a mic', backToRemi: 'Back to Remi', startOver: 'Start over',
+    quietTime: 'Quiet time', of: 'of {goal}', woke: 'Woke up: {n}',
+    tooLoud: 'Too loud', bubble: 'Too loud!', talking: 'Remi is talking', meterLine: 'Noise level {n}. Remi wakes up above {line}.',
+    remiAsleep: 'Remi is asleep. Shh…', remiStir: 'Remi is stirring…', remiWoke: 'Remi woke up! Too loud!', remiBack: 'Remi is asleep again.', quietMin: 'Quiet time: {n} min',
+    pause: 'Pause', paused: 'Paused', settings: 'Teacher settings',
+    demo: 'Demo', noise: 'Noise', clap: 'Clap', chatter: 'Class chatter',
+    noMic_denied: 'The microphone is blocked', noMic_denied_p: 'Tap the 🔒 or 🎤 next to the web address, choose Allow for the microphone, then press Try again.',
+    noMic_nodevice: 'No microphone found', noMic_nodevice_p: 'Plug in or turn on a microphone, then press Try again.',
+    noMic_busy: 'The microphone is busy', noMic_busy_p: 'Another app or tab is using it. Close that, then press Try again.',
+    noMic_unavailable: 'This browser can’t listen', noMic_unavailable_p: 'Try Chrome, Edge, Firefox or Safari. Or try it without a mic.',
+    noMic_off: 'No microphone here', noMic_off_p: 'Open Remi’s Quiet Meadow on Oomba Academy to use a microphone. You can still try it without one.',
+    retry: 'Try again',
+    endTitle: 'You let Remi nap!', endSub: 'Great quiet work!', endStats: 'Quiet time {time} · Wake-ups: {n}',
+  },
+  'en-GB': {},
+  es: {
+    title: 'La pradera tranquila de Remi', tag: 'Shh… ¡deja que Remi duerma!',
+    setupH: 'Tiempo de silencio con Remi', howQuiet: '¿Cuánto silencio?', whisper: 'Susurros', quietWork: 'Trabajo en silencio', groupWork: 'Trabajo en grupo',
+    fine: 'Ajuste fino', touchier: 'Se despierta fácil', calmer: 'Duerme profundo',
+    goalH: 'Meta de silencio', min: '{n} min', noGoal: 'Sin meta',
+    calib: 'Ajustar al silencio de la clase', calibHint: 'Púlsalo cuando la clase esté en silencio. Remi escucha 3 segundos.', calibListen: 'Shh… escuchando la clase ({n})',
+    calibDone: 'Clase: {room} · Se despierta por encima de: {line}', calibLoud: 'Había demasiado ruido para medir. Prueba otra vez en silencio.', calibNoMic: 'Esto necesita el micrófono.',
+    privacy: 'Remi solo escucha cuánto ruido hay. No se graba ni se guarda nada.',
+    startMic: 'Empezar a escuchar', tryDemo: 'Probar sin micrófono', backToRemi: 'Volver con Remi', startOver: 'Empezar de nuevo',
+    quietTime: 'Tiempo de silencio', of: 'de {goal}', woke: 'Despertares: {n}',
+    tooLoud: 'Demasiado ruido', bubble: '¡Demasiado ruido!', talking: 'Remi está hablando', meterLine: 'Nivel de ruido {n}. Remi se despierta por encima de {line}.',
+    remiAsleep: 'Remi está dormido. Shh…', remiStir: 'Remi se mueve…', remiWoke: '¡Remi se despertó! ¡Demasiado ruido!', remiBack: 'Remi se volvió a dormir.', quietMin: 'Tiempo de silencio: {n} min',
+    pause: 'Pausa', paused: 'En pausa', settings: 'Ajustes del docente',
+    demo: 'Demo', noise: 'Ruido', clap: 'Aplauso', chatter: 'Charla de la clase',
+    noMic_denied: 'El micrófono está bloqueado', noMic_denied_p: 'Toca el 🔒 o el 🎤 junto a la dirección web, elige Permitir para el micrófono y pulsa Probar otra vez.',
+    noMic_nodevice: 'No se encontró ningún micrófono', noMic_nodevice_p: 'Conecta o enciende un micrófono y pulsa Probar otra vez.',
+    noMic_busy: 'El micrófono está ocupado', noMic_busy_p: 'Otra aplicación o pestaña lo está usando. Ciérrala y pulsa Probar otra vez.',
+    noMic_unavailable: 'Este navegador no puede escuchar', noMic_unavailable_p: 'Prueba con Chrome, Edge, Firefox o Safari. O pruébalo sin micrófono.',
+    noMic_off: 'Aquí no hay micrófono', noMic_off_p: 'Abre La pradera tranquila de Remi en Oomba Academy para usar un micrófono. También puedes probarlo sin él.',
+    retry: 'Probar otra vez',
+    endTitle: '¡Dejaste dormir a Remi!', endSub: '¡Gran trabajo en silencio!', endStats: 'Tiempo de silencio {time} · Despertares: {n}',
+  },
+  fr: {
+    title: 'La prairie calme de Remi', tag: 'Chut… laissez Remi dormir !',
+    setupH: 'Moment calme avec Remi', howQuiet: 'Quel calme ?', whisper: 'Chuchoter', quietWork: 'Travail calme', groupWork: 'Travail en groupe',
+    fine: 'Réglage fin', touchier: 'Se réveille vite', calmer: 'Dort profondément',
+    goalH: 'Objectif de calme', min: '{n} min', noGoal: 'Sans objectif',
+    calib: 'Régler sur le calme de la classe', calibHint: 'Appuie quand la classe est calme. Remi écoute 3 secondes.', calibListen: 'Chut… Remi écoute la classe ({n})',
+    calibDone: 'Classe : {room} · Se réveille au-dessus de : {line}', calibLoud: 'Il y avait trop de bruit pour mesurer. Réessaie dans le calme.', calibNoMic: 'Il faut le micro pour ça.',
+    privacy: 'Remi écoute seulement le niveau de bruit. Rien n’est enregistré ni gardé.',
+    startMic: 'Commencer à écouter', tryDemo: 'Essayer sans micro', backToRemi: 'Retour à Remi', startOver: 'Recommencer',
+    quietTime: 'Temps calme', of: 'sur {goal}', woke: 'Réveils : {n}',
+    tooLoud: 'Trop de bruit', bubble: 'Trop de bruit !', talking: 'Remi parle', meterLine: 'Niveau de bruit {n}. Remi se réveille au-dessus de {line}.',
+    remiAsleep: 'Remi dort. Chut…', remiStir: 'Remi bouge…', remiWoke: 'Remi s’est réveillé ! Trop de bruit !', remiBack: 'Remi s’est rendormi.', quietMin: 'Temps calme : {n} min',
+    pause: 'Pause', paused: 'En pause', settings: 'Réglages enseignant',
+    demo: 'Démo', noise: 'Bruit', clap: 'Applaudir', chatter: 'Bavardages',
+    noMic_denied: 'Le micro est bloqué', noMic_denied_p: 'Touche le 🔒 ou le 🎤 à côté de l’adresse web, choisis Autoriser pour le micro, puis appuie sur Réessayer.',
+    noMic_nodevice: 'Aucun micro trouvé', noMic_nodevice_p: 'Branche ou allume un micro, puis appuie sur Réessayer.',
+    noMic_busy: 'Le micro est occupé', noMic_busy_p: 'Une autre appli ou un autre onglet l’utilise. Ferme-le, puis appuie sur Réessayer.',
+    noMic_unavailable: 'Ce navigateur ne peut pas écouter', noMic_unavailable_p: 'Essaie Chrome, Edge, Firefox ou Safari. Ou essaie sans micro.',
+    noMic_off: 'Pas de micro ici', noMic_off_p: 'Ouvre La prairie calme de Remi sur Oomba Academy pour utiliser un micro. Tu peux aussi essayer sans.',
+    retry: 'Réessayer',
+    endTitle: 'Vous avez laissé Remi dormir !', endSub: 'Super travail dans le calme !', endStats: 'Temps calme {time} · Réveils : {n}',
+  },
+  de: {
+    title: 'Remis stille Wiese', tag: 'Pssst… lasst Remi schlafen!',
+    setupH: 'Leise Zeit mit Remi', howQuiet: 'Wie leise?', whisper: 'Flüstern', quietWork: 'Stillarbeit', groupWork: 'Gruppenarbeit',
+    fine: 'Feinabstimmung', touchier: 'Wacht leicht auf', calmer: 'Schläft tief',
+    goalH: 'Ziel für leise Zeit', min: '{n} Min.', noGoal: 'Kein Ziel',
+    calib: 'Auf die Ruhe im Raum einstellen', calibHint: 'Drücken, wenn es im Raum still ist. Remi hört 3 Sekunden lang zu.', calibListen: 'Pssst… Remi hört in den Raum ({n})',
+    calibDone: 'Raum: {room} · Wacht auf über: {line}', calibLoud: 'Es war zu laut zum Messen. Versucht es noch einmal, wenn es still ist.', calibNoMic: 'Dafür braucht es das Mikrofon.',
+    privacy: 'Remi hört nur, wie laut es ist. Nichts wird aufgenommen oder gespeichert.',
+    startMic: 'Zuhören starten', tryDemo: 'Ohne Mikrofon ausprobieren', backToRemi: 'Zurück zu Remi', startOver: 'Neu beginnen',
+    quietTime: 'Leise Zeit', of: 'von {goal}', woke: 'Aufgewacht: {n}',
+    tooLoud: 'Zu laut', bubble: 'Zu laut!', talking: 'Remi spricht', meterLine: 'Lautstärke {n}. Remi wacht über {line} auf.',
+    remiAsleep: 'Remi schläft. Pssst…', remiStir: 'Remi regt sich…', remiWoke: 'Remi ist aufgewacht! Zu laut!', remiBack: 'Remi schläft wieder.', quietMin: 'Leise Zeit: {n} Min.',
+    pause: 'Pause', paused: 'Pausiert', settings: 'Einstellungen für Lehrkräfte',
+    demo: 'Demo', noise: 'Lautstärke', clap: 'Klatschen', chatter: 'Klassengemurmel',
+    noMic_denied: 'Das Mikrofon ist blockiert', noMic_denied_p: 'Tippe auf 🔒 oder 🎤 neben der Webadresse, wähle Zulassen für das Mikrofon und drücke dann Nochmal.',
+    noMic_nodevice: 'Kein Mikrofon gefunden', noMic_nodevice_p: 'Schließe ein Mikrofon an oder schalte es ein und drücke dann Nochmal.',
+    noMic_busy: 'Das Mikrofon ist belegt', noMic_busy_p: 'Eine andere App oder ein anderer Tab benutzt es. Schließe sie und drücke dann Nochmal.',
+    noMic_unavailable: 'Dieser Browser kann nicht zuhören', noMic_unavailable_p: 'Probiere Chrome, Edge, Firefox oder Safari. Oder probiere es ohne Mikrofon.',
+    noMic_off: 'Hier gibt es kein Mikrofon', noMic_off_p: 'Öffne Remis stille Wiese auf Oomba Academy, um ein Mikrofon zu nutzen. Ohne geht es auch.',
+    retry: 'Nochmal',
+    endTitle: 'Ihr habt Remi schlafen lassen!', endSub: 'Super leise gearbeitet!', endStats: 'Leise Zeit {time} · Aufgewacht: {n}',
+  },
+  it: {
+    title: 'Il prato tranquillo di Remi', tag: 'Shh… lasciate dormire Remi!',
+    setupH: 'Momento di silenzio con Remi', howQuiet: 'Quanto silenzio?', whisper: 'Sussurri', quietWork: 'Lavoro in silenzio', groupWork: 'Lavoro di gruppo',
+    fine: 'Regolazione fine', touchier: 'Si sveglia facilmente', calmer: 'Dorme profondamente',
+    goalH: 'Obiettivo di silenzio', min: '{n} min', noGoal: 'Nessun obiettivo',
+    calib: 'Regola sul silenzio della classe', calibHint: 'Premilo quando la classe è in silenzio. Remi ascolta per 3 secondi.', calibListen: 'Shh… Remi ascolta la classe ({n})',
+    calibDone: 'Classe: {room} · Si sveglia sopra: {line}', calibLoud: 'C’era troppo rumore per misurare. Riprova quando c’è silenzio.', calibNoMic: 'Serve il microfono.',
+    privacy: 'Remi ascolta solo quanto rumore c’è. Niente viene registrato o salvato.',
+    startMic: 'Inizia ad ascoltare', tryDemo: 'Prova senza microfono', backToRemi: 'Torna da Remi', startOver: 'Ricomincia',
+    quietTime: 'Tempo di silenzio', of: 'su {goal}', woke: 'Risvegli: {n}',
+    tooLoud: 'Troppo rumore', bubble: 'Troppo rumore!', talking: 'Remi sta parlando', meterLine: 'Livello di rumore {n}. Remi si sveglia sopra {line}.',
+    remiAsleep: 'Remi dorme. Shh…', remiStir: 'Remi si muove…', remiWoke: 'Remi si è svegliato! Troppo rumore!', remiBack: 'Remi si è riaddormentato.', quietMin: 'Tempo di silenzio: {n} min',
+    pause: 'Pausa', paused: 'In pausa', settings: 'Impostazioni docente',
+    demo: 'Demo', noise: 'Rumore', clap: 'Applauso', chatter: 'Chiacchiere',
+    noMic_denied: 'Il microfono è bloccato', noMic_denied_p: 'Tocca il 🔒 o il 🎤 accanto all’indirizzo web, scegli Consenti per il microfono, poi premi Riprova.',
+    noMic_nodevice: 'Nessun microfono trovato', noMic_nodevice_p: 'Collega o accendi un microfono, poi premi Riprova.',
+    noMic_busy: 'Il microfono è occupato', noMic_busy_p: 'Un’altra app o scheda lo sta usando. Chiudila, poi premi Riprova.',
+    noMic_unavailable: 'Questo browser non può ascoltare', noMic_unavailable_p: 'Prova Chrome, Edge, Firefox o Safari. Oppure prova senza microfono.',
+    noMic_off: 'Qui non c’è un microfono', noMic_off_p: 'Apri Il prato tranquillo di Remi su Oomba Academy per usare un microfono. Puoi anche provarlo senza.',
+    retry: 'Riprova',
+    endTitle: 'Avete lasciato dormire Remi!', endSub: 'Ottimo lavoro in silenzio!', endStats: 'Tempo di silenzio {time} · Risvegli: {n}',
+  },
+  pt: {
+    title: 'O prado tranquilo do Remi', tag: 'Psiu… deixem o Remi dormir!',
+    setupH: 'Hora do silêncio com o Remi', howQuiet: 'Quanto silêncio?', whisper: 'Cochichos', quietWork: 'Trabalho em silêncio', groupWork: 'Trabalho em grupo',
+    fine: 'Ajuste fino', touchier: 'Acorda fácil', calmer: 'Dorme pesado',
+    goalH: 'Meta de silêncio', min: '{n} min', noGoal: 'Sem meta',
+    calib: 'Ajustar ao silêncio da sala', calibHint: 'Toque quando a sala estiver em silêncio. O Remi escuta por 3 segundos.', calibListen: 'Psiu… escutando a sala ({n})',
+    calibDone: 'Sala: {room} · Acorda acima de: {line}', calibLoud: 'Estava barulhento demais para medir. Tente de novo em silêncio.', calibNoMic: 'Isso precisa do microfone.',
+    privacy: 'O Remi só escuta o volume do barulho. Nada é gravado nem salvo.',
+    startMic: 'Começar a escutar', tryDemo: 'Testar sem microfone', backToRemi: 'Voltar ao Remi', startOver: 'Recomeçar',
+    quietTime: 'Tempo de silêncio', of: 'de {goal}', woke: 'Acordou: {n}',
+    tooLoud: 'Barulho demais', bubble: 'Barulho demais!', talking: 'O Remi está falando', meterLine: 'Nível de barulho {n}. O Remi acorda acima de {line}.',
+    remiAsleep: 'O Remi está dormindo. Psiu…', remiStir: 'O Remi está se mexendo…', remiWoke: 'O Remi acordou! Barulho demais!', remiBack: 'O Remi dormiu de novo.', quietMin: 'Tempo de silêncio: {n} min',
+    pause: 'Pausa', paused: 'Pausado', settings: 'Ajustes do professor',
+    demo: 'Demo', noise: 'Barulho', clap: 'Palma', chatter: 'Conversa da turma',
+    noMic_denied: 'O microfone está bloqueado', noMic_denied_p: 'Toque no 🔒 ou no 🎤 ao lado do endereço do site, escolha Permitir para o microfone e toque em Tentar de novo.',
+    noMic_nodevice: 'Nenhum microfone encontrado', noMic_nodevice_p: 'Conecte ou ligue um microfone e toque em Tentar de novo.',
+    noMic_busy: 'O microfone está ocupado', noMic_busy_p: 'Outro app ou aba está usando. Feche e toque em Tentar de novo.',
+    noMic_unavailable: 'Este navegador não consegue escutar', noMic_unavailable_p: 'Tente o Chrome, Edge, Firefox ou Safari. Ou teste sem microfone.',
+    noMic_off: 'Aqui não há microfone', noMic_off_p: 'Abra O prado tranquilo do Remi na Oomba Academy para usar um microfone. Também dá para testar sem.',
+    retry: 'Tentar de novo',
+    endTitle: 'Vocês deixaram o Remi dormir!', endSub: 'Ótimo trabalho em silêncio!', endStats: 'Tempo de silêncio {time} · Acordou: {n}',
+  },
+  nl: {
+    title: 'Remi’s stille weide', tag: 'Ssst… laat Remi slapen!',
+    setupH: 'Stille tijd met Remi', howQuiet: 'Hoe stil?', whisper: 'Fluisteren', quietWork: 'Stil werken', groupWork: 'Groepswerk',
+    fine: 'Fijn afstellen', touchier: 'Wordt snel wakker', calmer: 'Slaapt diep',
+    goalH: 'Doel voor stille tijd', min: '{n} min', noGoal: 'Geen doel',
+    calib: 'Afstellen op de stilte in de klas', calibHint: 'Druk erop als het stil is in de klas. Remi luistert 3 seconden.', calibListen: 'Ssst… Remi luistert naar de klas ({n})',
+    calibDone: 'Klas: {room} · Wordt wakker boven: {line}', calibLoud: 'Het was te druk om te meten. Probeer het opnieuw als het stil is.', calibNoMic: 'Hiervoor is de microfoon nodig.',
+    privacy: 'Remi luistert alleen hoe hard het is. Er wordt niets opgenomen of bewaard.',
+    startMic: 'Begin met luisteren', tryDemo: 'Probeer zonder microfoon', backToRemi: 'Terug naar Remi', startOver: 'Opnieuw beginnen',
+    quietTime: 'Stille tijd', of: 'van {goal}', woke: 'Wakker geworden: {n}',
+    tooLoud: 'Te druk', bubble: 'Te druk!', talking: 'Remi praat', meterLine: 'Geluid {n}. Remi wordt wakker boven {line}.',
+    remiAsleep: 'Remi slaapt. Ssst…', remiStir: 'Remi beweegt…', remiWoke: 'Remi is wakker! Te druk!', remiBack: 'Remi slaapt weer.', quietMin: 'Stille tijd: {n} min',
+    pause: 'Pauze', paused: 'Gepauzeerd', settings: 'Instellingen leerkracht',
+    demo: 'Demo', noise: 'Geluid', clap: 'Klappen', chatter: 'Geklets',
+    noMic_denied: 'De microfoon is geblokkeerd', noMic_denied_p: 'Tik op het 🔒 of 🎤 naast het webadres, kies Toestaan voor de microfoon en druk dan op Opnieuw.',
+    noMic_nodevice: 'Geen microfoon gevonden', noMic_nodevice_p: 'Sluit een microfoon aan of zet hem aan en druk dan op Opnieuw.',
+    noMic_busy: 'De microfoon is bezet', noMic_busy_p: 'Een andere app of tab gebruikt hem. Sluit die en druk dan op Opnieuw.',
+    noMic_unavailable: 'Deze browser kan niet luisteren', noMic_unavailable_p: 'Probeer Chrome, Edge, Firefox of Safari. Of probeer het zonder microfoon.',
+    noMic_off: 'Hier is geen microfoon', noMic_off_p: 'Open Remi’s stille weide op Oomba Academy om een microfoon te gebruiken. Zonder kan ook.',
+    retry: 'Opnieuw',
+    endTitle: 'Jullie lieten Remi slapen!', endSub: 'Super stil gewerkt!', endStats: 'Stille tijd {time} · Wakker geworden: {n}',
+  },
+  ru: {
+    title: 'Тихий луг Remi', tag: 'Тсс… пусть Remi поспит!',
+    setupH: 'Тихое время с Remi', howQuiet: 'Насколько тихо?', whisper: 'Шёпот', quietWork: 'Тихая работа', groupWork: 'Работа в группах',
+    fine: 'Точная настройка', touchier: 'Просыпается легко', calmer: 'Спит крепко',
+    goalH: 'Цель тихого времени', min: '{n} мин', noGoal: 'Без цели',
+    calib: 'Настроить по тишине в классе', calibHint: 'Нажмите, когда в классе тихо. Remi слушает 3 секунды.', calibListen: 'Тсс… Remi слушает класс ({n})',
+    calibDone: 'Класс: {room} · Просыпается выше: {line}', calibLoud: 'Было слишком шумно, чтобы измерить. Попробуйте снова в тишине.', calibNoMic: 'Для этого нужен микрофон.',
+    privacy: 'Remi слушает только, насколько громко. Ничего не записывается и не сохраняется.',
+    startMic: 'Начать слушать', tryDemo: 'Попробовать без микрофона', backToRemi: 'Назад к Remi', startOver: 'Начать заново',
+    quietTime: 'Тихое время', of: 'из {goal}', woke: 'Просыпался: {n}',
+    tooLoud: 'Слишком шумно', bubble: 'Слишком шумно!', talking: 'Remi говорит', meterLine: 'Уровень шума {n}. Remi просыпается выше {line}.',
+    remiAsleep: 'Remi спит. Тсс…', remiStir: 'Remi ворочается…', remiWoke: 'Remi проснулся! Слишком шумно!', remiBack: 'Remi снова спит.', quietMin: 'Тихое время: {n} мин',
+    pause: 'Пауза', paused: 'Пауза', settings: 'Настройки учителя',
+    demo: 'Демо', noise: 'Шум', clap: 'Хлопок', chatter: 'Болтовня в классе',
+    noMic_denied: 'Микрофон заблокирован', noMic_denied_p: 'Нажмите 🔒 или 🎤 рядом с адресом сайта, разрешите микрофон и нажмите «Попробовать снова».',
+    noMic_nodevice: 'Микрофон не найден', noMic_nodevice_p: 'Подключите или включите микрофон и нажмите «Попробовать снова».',
+    noMic_busy: 'Микрофон занят', noMic_busy_p: 'Его использует другое приложение или вкладка. Закройте их и нажмите «Попробовать снова».',
+    noMic_unavailable: 'Этот браузер не может слушать', noMic_unavailable_p: 'Попробуйте Chrome, Edge, Firefox или Safari. Или попробуйте без микрофона.',
+    noMic_off: 'Здесь нет микрофона', noMic_off_p: 'Откройте «Тихий луг Remi» на Oomba Academy, чтобы использовать микрофон. Можно попробовать и без него.',
+    retry: 'Попробовать снова',
+    endTitle: 'Вы дали Remi поспать!', endSub: 'Отличная тихая работа!', endStats: 'Тихое время {time} · Просыпался: {n}',
+  },
+  ja: {
+    title: 'Remiのしずかな草原', tag: 'しーっ… Remiをねかせてあげよう！',
+    setupH: 'Remiとしずかな時間', howQuiet: 'どのくらいしずかに？', whisper: 'ひそひそ', quietWork: 'しずかに作業', groupWork: 'グループ活動',
+    fine: 'こまかく調整', touchier: 'すぐ起きる', calmer: 'ぐっすり眠る',
+    goalH: 'しずかな時間の目標', min: '{n}分', noGoal: '目標なし',
+    calib: '教室のしずかさに合わせる', calibHint: '教室がしずかなときに押してね。Remiが3秒きくよ。', calibListen: 'しーっ… 教室の音をきいているよ（{n}）',
+    calibDone: '教室：{room}・起きるライン：{line}', calibLoud: 'うるさくて測れませんでした。しずかなときにもう一度ためしてね。', calibNoMic: 'これにはマイクが必要です。',
+    privacy: 'Remiは音の大きさだけをきいています。録音も保存もしません。',
+    startMic: 'きき始める', tryDemo: 'マイクなしでためす', backToRemi: 'Remiにもどる', startOver: 'さいしょから',
+    quietTime: 'しずかな時間', of: '目標 {goal}', woke: '起きた回数：{n}',
+    tooLoud: 'うるさすぎ', bubble: 'うるさすぎ！', talking: 'Remiが話しているよ', meterLine: '音の大きさ {n}。{line}をこえるとRemiが起きます。',
+    remiAsleep: 'Remiはねているよ。しーっ…', remiStir: 'Remiがもぞもぞしているよ…', remiWoke: 'Remiが起きちゃった！うるさすぎ！', remiBack: 'Remiがまたねむったよ。', quietMin: 'しずかな時間：{n}分',
+    pause: '一時停止', paused: '一時停止中', settings: '先生の設定',
+    demo: 'デモ', noise: '音', clap: '拍手', chatter: 'クラスのおしゃべり',
+    noMic_denied: 'マイクがブロックされています', noMic_denied_p: 'アドレスのとなりの🔒か🎤をタップして、マイクを「許可」にしてから「もう一度」を押してね。',
+    noMic_nodevice: 'マイクが見つかりません', noMic_nodevice_p: 'マイクをつなぐか電源を入れてから「もう一度」を押してね。',
+    noMic_busy: 'マイクが使用中です', noMic_busy_p: 'ほかのアプリやタブが使っています。それをとじてから「もう一度」を押してね。',
+    noMic_unavailable: 'このブラウザでは音をきけません', noMic_unavailable_p: 'Chrome、Edge、Firefox、Safariでためしてね。マイクなしでもためせます。',
+    noMic_off: 'ここではマイクが使えません', noMic_off_p: 'マイクを使うには、Oomba AcademyでRemiのしずかな草原をひらいてね。マイクなしでもためせます。',
+    retry: 'もう一度',
+    endTitle: 'Remiをねかせてあげられたね！', endSub: 'しずかにがんばったね！', endStats: 'しずかな時間 {time}・起きた回数：{n}',
+  },
+  'zh-Hant': {
+    title: 'Remi的安靜草原', tag: '噓……讓Remi睡個午覺！',
+    setupH: '和Remi一起安靜', howQuiet: '要多安靜？', whisper: '悄悄話', quietWork: '安靜作業', groupWork: '小組活動',
+    fine: '微調', touchier: '容易醒', calmer: '睡得很熟',
+    goalH: '安靜時間目標', min: '{n}分鐘', noGoal: '不設目標',
+    calib: '依教室的安靜程度設定', calibHint: '教室安靜時按下。Remi會聽3秒。', calibListen: '噓……正在聽教室的聲音（{n}）',
+    calibDone: '教室：{room}・超過這裡會醒：{line}', calibLoud: '太吵了，量不出來。安靜時再試一次。', calibNoMic: '這需要麥克風。',
+    privacy: 'Remi只聽聲音有多大。不會錄音，也不會儲存。',
+    startMic: '開始聆聽', tryDemo: '不用麥克風試試看', backToRemi: '回到Remi', startOver: '重新開始',
+    quietTime: '安靜時間', of: '目標 {goal}', woke: '醒來次數：{n}',
+    tooLoud: '太吵了', bubble: '太吵了！', talking: 'Remi正在說話', meterLine: '音量 {n}。超過{line}，Remi就會醒來。',
+    remiAsleep: 'Remi睡著了。噓……', remiStir: 'Remi動了一下……', remiWoke: 'Remi醒了！太吵了！', remiBack: 'Remi又睡著了。', quietMin: '安靜時間：{n}分鐘',
+    pause: '暫停', paused: '已暫停', settings: '老師設定',
+    demo: '示範', noise: '音量', clap: '拍手', chatter: '全班聊天',
+    noMic_denied: '麥克風被封鎖了', noMic_denied_p: '點網址旁的🔒或🎤，把麥克風設為「允許」，再按「再試一次」。',
+    noMic_nodevice: '找不到麥克風', noMic_nodevice_p: '接上或開啟麥克風，再按「再試一次」。',
+    noMic_busy: '麥克風正在使用中', noMic_busy_p: '有其他應用程式或分頁在使用。關掉後再按「再試一次」。',
+    noMic_unavailable: '這個瀏覽器無法聆聽', noMic_unavailable_p: '試試Chrome、Edge、Firefox或Safari。也可以不用麥克風試試看。',
+    noMic_off: '這裡沒有麥克風', noMic_off_p: '在Oomba Academy開啟Remi的安靜草原才能使用麥克風。不用麥克風也能試試看。',
+    retry: '再試一次',
+    endTitle: '你們讓Remi好好睡了一覺！', endSub: '安靜得很棒！', endStats: '安靜時間 {time}・醒來次數：{n}',
+  },
+  ar: {
+    title: 'مرج Remi الهادئ', tag: 'هُسّ… دعوا Remi ينام!',
+    setupH: 'وقت هادئ مع Remi', howQuiet: 'ما مقدار الهدوء؟', whisper: 'همس', quietWork: 'عمل بهدوء', groupWork: 'عمل جماعي',
+    fine: 'ضبط دقيق', touchier: 'يستيقظ بسهولة', calmer: 'ينام بعمق',
+    goalH: 'هدف الوقت الهادئ', min: '{n} دقيقة', noGoal: 'بلا هدف',
+    calib: 'اضبط على هدوء الصف', calibHint: 'اضغط عندما يكون الصف هادئًا. يستمع Remi لمدة 3 ثوانٍ.', calibListen: 'هُسّ… Remi يستمع إلى الصف ({n})',
+    calibDone: 'الصف: {room} · يستيقظ فوق: {line}', calibLoud: 'كان الصوت عاليًا جدًا للقياس. حاولوا مرة أخرى في الهدوء.', calibNoMic: 'يحتاج هذا إلى الميكروفون.',
+    privacy: 'Remi يستمع فقط إلى مدى ارتفاع الصوت. لا يُسجَّل أي شيء ولا يُحفَظ.',
+    startMic: 'ابدأ الاستماع', tryDemo: 'جرّب بدون ميكروفون', backToRemi: 'عودة إلى Remi', startOver: 'ابدأ من جديد',
+    quietTime: 'الوقت الهادئ', of: 'من {goal}', woke: 'مرات الاستيقاظ: {n}',
+    tooLoud: 'صوت عالٍ جدًا', bubble: 'صوت عالٍ جدًا!', talking: 'Remi يتكلم', meterLine: 'مستوى الضجيج {n}. يستيقظ Remi فوق {line}.',
+    remiAsleep: 'Remi نائم. هُسّ…', remiStir: 'Remi يتحرك…', remiWoke: 'استيقظ Remi! الصوت عالٍ جدًا!', remiBack: 'عاد Remi إلى النوم.', quietMin: 'الوقت الهادئ: {n} دقيقة',
+    pause: 'إيقاف مؤقت', paused: 'متوقف مؤقتًا', settings: 'إعدادات المعلم',
+    demo: 'تجربة', noise: 'الضجيج', clap: 'تصفيق', chatter: 'ثرثرة الصف',
+    noMic_denied: 'الميكروفون محظور', noMic_denied_p: 'اضغط على 🔒 أو 🎤 بجانب عنوان الموقع، واختر السماح للميكروفون، ثم اضغط حاول مرة أخرى.',
+    noMic_nodevice: 'لم يُعثر على ميكروفون', noMic_nodevice_p: 'وصّل ميكروفونًا أو شغّله، ثم اضغط حاول مرة أخرى.',
+    noMic_busy: 'الميكروفون مشغول', noMic_busy_p: 'يستخدمه تطبيق أو تبويب آخر. أغلقه، ثم اضغط حاول مرة أخرى.',
+    noMic_unavailable: 'لا يستطيع هذا المتصفح الاستماع', noMic_unavailable_p: 'جرّب Chrome أو Edge أو Firefox أو Safari. أو جرّب بدون ميكروفون.',
+    noMic_off: 'لا يوجد ميكروفون هنا', noMic_off_p: 'افتح مرج Remi الهادئ على Oomba Academy لاستخدام الميكروفون. ويمكنك التجربة بدونه أيضًا.',
+    retry: 'حاول مرة أخرى',
+    endTitle: 'تركتم Remi ينام!', endSub: 'عمل هادئ رائع!', endStats: 'الوقت الهادئ {time} · مرات الاستيقاظ: {n}',
+  },
+  he: {
+    title: 'האחו השקט של Remi', tag: 'ששש… תנו ל-Remi לישון!',
+    setupH: 'זמן שקט עם Remi', howQuiet: 'כמה שקט?', whisper: 'לחישות', quietWork: 'עבודה שקטה', groupWork: 'עבודה בקבוצות',
+    fine: 'כוונון עדין', touchier: 'מתעורר בקלות', calmer: 'ישן עמוק',
+    goalH: 'יעד זמן שקט', min: '{n} דק׳', noGoal: 'בלי יעד',
+    calib: 'כוונון לפי השקט בכיתה', calibHint: 'לחצו כשהכיתה שקטה. Remi מקשיב 3 שניות.', calibListen: 'ששש… Remi מקשיב לכיתה ({n})',
+    calibDone: 'כיתה: {room} · מתעורר מעל: {line}', calibLoud: 'היה רועש מדי למדידה. נסו שוב כשיהיה שקט.', calibNoMic: 'בשביל זה צריך מיקרופון.',
+    privacy: 'Remi מקשיב רק לכמה רועש. שום דבר לא מוקלט ולא נשמר.',
+    startMic: 'להתחיל להקשיב', tryDemo: 'לנסות בלי מיקרופון', backToRemi: 'חזרה ל-Remi', startOver: 'להתחיל מחדש',
+    quietTime: 'זמן שקט', of: 'מתוך {goal}', woke: 'התעורר: {n}',
+    tooLoud: 'רועש מדי', bubble: 'רועש מדי!', talking: 'Remi מדבר', meterLine: 'רמת רעש {n}. Remi מתעורר מעל {line}.',
+    remiAsleep: 'Remi ישן. ששש…', remiStir: 'Remi זז…', remiWoke: 'Remi התעורר! רועש מדי!', remiBack: 'Remi נרדם שוב.', quietMin: 'זמן שקט: {n} דק׳',
+    pause: 'השהיה', paused: 'מושהה', settings: 'הגדרות למורה',
+    demo: 'הדגמה', noise: 'רעש', clap: 'מחיאת כף', chatter: 'פטפוט בכיתה',
+    noMic_denied: 'המיקרופון חסום', noMic_denied_p: 'הקישו על 🔒 או 🎤 ליד כתובת האתר, בחרו לאפשר את המיקרופון, ואז לחצו לנסות שוב.',
+    noMic_nodevice: 'לא נמצא מיקרופון', noMic_nodevice_p: 'חברו או הפעילו מיקרופון, ואז לחצו לנסות שוב.',
+    noMic_busy: 'המיקרופון תפוס', noMic_busy_p: 'אפליקציה או לשונית אחרת משתמשת בו. סגרו אותה ואז לחצו לנסות שוב.',
+    noMic_unavailable: 'הדפדפן הזה לא יכול להקשיב', noMic_unavailable_p: 'נסו Chrome, Edge, Firefox או Safari. או נסו בלי מיקרופון.',
+    noMic_off: 'אין כאן מיקרופון', noMic_off_p: 'פתחו את האחו השקט של Remi ב-Oomba Academy כדי להשתמש במיקרופון. אפשר לנסות גם בלעדיו.',
+    retry: 'לנסות שוב',
+    endTitle: 'נתתם ל-Remi לישון!', endSub: 'עבודה שקטה מעולה!', endStats: 'זמן שקט {time} · התעורר: {n}',
+  },
+};
+I18N['en-GB'] = I18N.en;
+// ==== I18N END ====
+/* remi-art:begin */
+/* RemiArt: the meadow and Remi, our own red panda, drawn as one inline SVG in the Oomba ink style (thick dark outlines,
+   flat fills, one shade tone; no gradients on the character). Remi is a rig of parts (body, belly, head, ears, arms,
+   legs, a ringed tail, a leaf scarf) placed from a pose: a plain set of numbers. The animator blends poses, so he
+   moves; he is never swapped for another picture. No kit here: the game wires it up. */
+window.RemiArt = (function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  var C = { ink: '#2A1B22', fur: '#E0662A', furD: '#B8471D', ring: '#8E3517', cream: '#FCEBCF', creamD: '#EBCFA6', limb: '#55291B', limbL: '#7A4430',
+    leaf: '#5DB548', leafD: '#3E8E3A', leafL: '#8FD46B', nose: '#2A1B22', mouth: '#7A2A2C', tongue: '#F07C86', blush: '#F28B82', earIn: '#6E2A14' };
+  var W = 7;   // outline width (scene units: the scene is 1600 x 900)
+  function f(n) { return Math.round(n * 10) / 10; }
+  function rad(d) { return d * Math.PI / 180; }
+
+  /* ---------- the meadow at sunset (layers back to front) ---------- */
+  function scene() {
+    var s = '';
+    s += '<defs><linearGradient id="rqSky" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" class="sk0"/><stop offset=".45" class="sk1"/><stop offset=".78" class="sk2"/><stop offset="1" class="sk3"/></linearGradient>' +
+      '<radialGradient id="rqGlow" cx=".5" cy=".5" r=".5"><stop offset="0" class="gl0"/><stop offset="1" class="gl1"/></radialGradient>' +
+      '<pattern id="rqStripe" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="14" fill="rgba(255,255,255,.28)"/></pattern></defs>';
+    s += '<rect class="sky" x="-1200" y="-200" width="4000" height="1300" fill="url(#rqSky)"/>';
+    // stars (shown at night) and the low sun with its glow
+    s += '<g class="stars">';
+    var st = [[180, 90], [340, 170], [520, 70], [700, 140], [910, 60], [1080, 150], [1260, 90], [1430, 170], [1540, 60], [60, 200], [1350, 260], [260, 280]];
+    st.forEach(function (p, i) { s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (i % 3 ? 2.5 : 3.6) + '"/>'; });
+    s += '</g>';
+    s += '<circle class="glow" cx="1180" cy="520" r="330" fill="url(#rqGlow)"/>';
+    s += '<circle class="sun" cx="1180" cy="520" r="96"/>';
+    // two soft clouds
+    s += '<g class="clouds"><g class="cl c1"><path d="M220 230c-40 0-60-34-30-52 6-36 60-46 84-20 26-30 90-22 96 18 36 0 46 50 6 54Z"/></g>' +
+      '<g class="cl c2"><path d="M980 160c-34 0-50-28-24-44 6-30 52-38 72-16 22-26 78-18 82 16 30 0 40 44 4 44Z"/></g></g>';
+    // three hill bands
+    s += '<path class="h1" d="M-1200,560 L-200,520 C0,470 220,420 420,470 C620,520 760,440 960,430 C1160,420 1300,500 1520,470 C1700,450 2000,470 2800,500 L2800,1100 L-1200,1100Z"/>';
+    s += '<path class="h2" d="M-1200,640 L-100,600 C120,560 300,560 520,610 C700,650 860,590 1080,580 C1300,570 1460,640 1700,620 L2800,600 L2800,1100 L-1200,1100Z"/>';
+    s += '<path class="h3" d="M-1200,720 L-60,700 C200,670 420,690 640,712 C860,734 1060,690 1300,690 C1500,690 1660,720 2800,708 L2800,1100 L-1200,1100Z" stroke="' + C.ink + '" stroke-width="5"/>';
+    // swaying grass tufts and flowers on the near meadow
+    s += '<g class="tufts">';
+    var tf = [[-260, 760], [-120, 830], [40, 742], [170, 860], [300, 778], [450, 846], [560, 730], [690, 880], [1010, 870], [1120, 740], [1240, 850], [1380, 770], [1500, 860], [1640, 760], [1780, 840], [1900, 750]];
+    tf.forEach(function (p, i) {
+      s += '<g class="tuft" style="--d:' + (i % 5) * -0.7 + 's" transform="translate(' + p[0] + ' ' + p[1] + ') scale(.78)"><path d="M-22 0 C-24 -24 -30 -36 -38 -48 C-20 -40 -10 -26 -6 -10 C-6 -34 -2 -52 6 -66 C10 -46 8 -28 6 -8 C14 -26 26 -38 40 -44 C30 -30 22 -16 22 0Z"/></g>';
+    });
+    s += '</g><g class="flowers">';
+    var fl = [[-180, 800, 'd'], [90, 790, 'p'], [250, 835, 'd'], [380, 760, 'd'], [520, 870, 'p'], [640, 780, 'd'], [1060, 800, 'd'], [1180, 880, 'p'], [1300, 790, 'd'], [1440, 830, 'p'], [1580, 790, 'd'], [1720, 860, 'p'], [1860, 800, 'd']];
+    fl.forEach(function (p, i) {
+      var k = p[2] === 'd';
+      s += '<g transform="translate(' + p[0] + ' ' + p[1] + ')"><g class="fl" style="--d:' + (i % 4) * -0.9 + 's"><path class="stem" d="M0 0 C2 -14 -2 -26 0 -38" fill="none" stroke="' + C.leafD + '" stroke-width="5" stroke-linecap="round"/>';
+      if (k) {
+        for (var a = 0; a < 8; a++) s += '<ellipse cx="0" cy="-52" rx="6" ry="13" transform="rotate(' + a * 45 + ' 0 -38)" fill="#FFFDF5" stroke="' + C.ink + '" stroke-width="3"/>';
+        s += '<circle cx="0" cy="-38" r="8" fill="#FFC83D" stroke="' + C.ink + '" stroke-width="3"/>';
+      } else {
+        s += '<path d="M0 -38 C-22 -40 -24 -66 -6 -64 C-4 -76 14 -74 12 -62 C28 -62 24 -38 0 -38Z" fill="#E8483C" stroke="' + C.ink + '" stroke-width="3.5"/><circle cx="1" cy="-52" r="5" fill="' + C.ink + '"/>';
+      }
+      s += '</g></g>';
+    });
+    s += '</g>';
+    s += '<g class="flies">';
+    [[300, 560], [520, 480], [760, 600], [1040, 520], [1320, 600], [140, 640], [1500, 540]].forEach(function (p, i) { s += '<circle class="fly" style="--d:' + (-i * 1.3) + 's" cx="' + p[0] + '" cy="' + p[1] + '" r="5"/>'; });
+    s += '</g>';
+    return s;
+  }
+
+  /* ---------- Remi (one <g>; the rig fills it in) ---------- */
+  var EAR = 'M-36 10 C-42 -26 -22 -66 0 -76 C22 -66 42 -26 36 10 Z';
+  var EAR_IN = 'M-21 6 C-24 -18 -12 -46 0 -54 C12 -46 24 -18 21 6 Z';
+  var LEAF = 'M0 0 C18 -10 46 -8 64 6 C46 22 18 22 0 0 Z';
+  var MOUTHS = {
+    sleep: '<path d="M-15 0 Q-7.5 9 0 1 Q7.5 9 15 0" fill="none" stroke-width="5"/>',
+    o: '<ellipse cx="0" cy="6" rx="7" ry="8" fill="' + C.mouth + '" stroke-width="4"/>',
+    yawn: '<g class="jaw"><ellipse cx="0" cy="16" rx="19" ry="22" fill="' + C.mouth + '" stroke-width="5"/><ellipse cx="0" cy="28" rx="12" ry="8" fill="' + C.tongue + '" stroke="none"/></g>',
+    smile: '<path d="M-24 -1 Q0 32 24 -1 Q0 6 -24 -1Z" fill="' + C.mouth + '" stroke-width="5" stroke-linejoin="round"/><path d="M-11 13 Q0 22 11 13 Q0 9 -11 13Z" fill="' + C.tongue + '" stroke="none"/>',
+    frown: '<path d="M-17 12 Q0 0 17 12" fill="none" stroke-width="5.5"/>',
+    grr: '<path d="M-22 10 Q-16 0 -10 9 Q-4 0 2 9 Q8 0 14 9 Q19 2 22 8" fill="none" stroke-width="5"/>',
+    hum: '<path d="M-9 4 Q0 9 9 4" fill="none" stroke-width="5"/>',
+  };
+  function remi() {
+    var s = '<g class="rm-tail"><g class="o"></g><g class="f"></g><g class="r"></g></g>';
+    s += '<g class="rm-legs"><g class="o"></g><g class="f"></g><g class="p"></g></g>';
+    s += '<ellipse class="rm-body" fill="' + C.fur + '" stroke="' + C.ink + '" stroke-width="' + W + '"/>';
+    s += '<ellipse class="rm-bodyS" fill="' + C.furD + '" opacity=".55"/>';
+    s += '<ellipse class="rm-belly" fill="' + C.cream + '"/>';
+    // the leaf scarf: a dark band, three leaves knotted at the front and two loose leaf ends that flutter
+    s += '<g class="rm-scarf"><path class="band" d="M-64 -8 Q0 20 64 -8 L60 12 Q0 40 -60 12 Z" fill="' + C.leafD + '" stroke="' + C.ink + '" stroke-width="' + W + '" stroke-linejoin="round"/>' +
+      '<g class="tails" transform="translate(26 18)"><g class="t1"><path d="' + LEAF + '" transform="rotate(70)" fill="' + C.leaf + '" stroke="' + C.ink + '" stroke-width="6" stroke-linejoin="round"/><path d="M0 0 Q20 22 21 56" fill="none" stroke="' + C.leafD + '" stroke-width="3"/></g>' +
+      '<g class="t2"><path d="' + LEAF + '" transform="rotate(105) scale(.85)" fill="' + C.leafL + '" stroke="' + C.ink + '" stroke-width="6" stroke-linejoin="round"/></g></g>' +
+      '<path d="' + LEAF + '" transform="translate(-6 16) rotate(196) scale(.95)" fill="' + C.leaf + '" stroke="' + C.ink + '" stroke-width="6" stroke-linejoin="round"/>' +
+      '<path d="' + LEAF + '" transform="translate(4 16) rotate(-16) scale(.95)" fill="' + C.leafL + '" stroke="' + C.ink + '" stroke-width="6" stroke-linejoin="round"/>' +
+      '<path d="' + LEAF + '" transform="translate(0 18) rotate(84) scale(.8)" fill="' + C.leaf + '" stroke="' + C.ink + '" stroke-width="6" stroke-linejoin="round"/>' +
+      '<circle cx="0" cy="18" r="11" fill="' + C.leafD + '" stroke="' + C.ink + '" stroke-width="6"/></g>';
+    s += '<g class="rm-arms"><g class="o"></g><g class="f"></g><g class="p"></g></g>';
+    // the head: cheek fluff, ears, the round face, the cream mask, eyes, brows, nose, mouths, blush
+    s += '<g class="rm-head">' +
+      '<path class="cheekL" d="M-96 -88 C-120 -70 -136 -46 -128 -18 C-112 -26 -100 -22 -92 -14 C-90 -30 -80 -40 -70 -46Z" fill="' + C.cream + '" stroke="' + C.ink + '" stroke-width="' + W + '" stroke-linejoin="round"/>' +
+      '<path class="cheekR" d="M96 -88 C120 -70 136 -46 128 -18 C112 -26 100 -22 92 -14 C90 -30 80 -40 70 -46Z" fill="' + C.cream + '" stroke="' + C.ink + '" stroke-width="' + W + '" stroke-linejoin="round"/>' +
+      '<g class="earL"><path d="' + EAR + '" fill="' + C.cream + '" stroke="' + C.ink + '" stroke-width="' + W + '" stroke-linejoin="round"/><path d="' + EAR_IN + '" fill="' + C.earIn + '"/><path d="M-14 8 C-10 -6 -2 -12 2 -20 C4 -8 10 0 14 8Z" fill="' + C.cream + '"/></g>' +
+      '<g class="earR"><path d="' + EAR + '" fill="' + C.cream + '" stroke="' + C.ink + '" stroke-width="' + W + '" stroke-linejoin="round"/><path d="' + EAR_IN + '" fill="' + C.earIn + '"/><path d="M-14 8 C-10 -6 -2 -12 2 -20 C4 -8 10 0 14 8Z" fill="' + C.cream + '"/></g>' +
+      '<ellipse cx="0" cy="-84" rx="112" ry="92" fill="' + C.fur + '" stroke="' + C.ink + '" stroke-width="' + W + '"/>' +
+      // the cream mask: muzzle, cheek patches and the brow spots; the darker "tear" marks from the eyes
+      '<path d="M-52 -44 C-58 -70 -30 -82 0 -78 C30 -82 58 -70 52 -44 C46 -16 22 -6 0 -6 C-22 -6 -46 -16 -52 -44Z" fill="' + C.cream + '"/>' +
+      '<ellipse cx="-74" cy="-56" rx="28" ry="24" fill="' + C.cream + '"/><ellipse cx="74" cy="-56" rx="28" ry="24" fill="' + C.cream + '"/>' +
+      '<ellipse cx="-44" cy="-128" rx="19" ry="12" transform="rotate(-14 -44 -128)" fill="' + C.cream + '"/><ellipse cx="44" cy="-128" rx="19" ry="12" transform="rotate(14 44 -128)" fill="' + C.cream + '"/>' +
+      '<path d="M-48 -78 C-56 -62 -58 -48 -54 -34 C-48 -46 -42 -60 -36 -72Z" fill="' + C.furD + '"/><path d="M48 -78 C56 -62 58 -48 54 -34 C48 -46 42 -60 36 -72Z" fill="' + C.furD + '"/>' +
+      '<ellipse class="blushL" cx="-70" cy="-46" rx="17" ry="9" fill="' + C.blush + '"/><ellipse class="blushR" cx="70" cy="-46" rx="17" ry="9" fill="' + C.blush + '"/>' +
+      '<g class="eyeL" transform="translate(-40 -90)"><ellipse class="open" rx="11.5" ry="13.5" fill="' + C.ink + '"/><circle class="glint" cx="3.5" cy="-5" r="3.6" fill="#FFFDF5"/>' +
+        '<path class="shut" d="M-14 -2 Q0 9 14 -2" fill="none" stroke="' + C.ink + '" stroke-width="5.5" stroke-linecap="round"/>' +
+        '<path class="sq" d="M-13 -9 L6 0 L-13 7" fill="none" stroke="' + C.ink + '" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path class="hap" d="M-14 5 Q0 -12 14 5" fill="none" stroke="' + C.ink + '" stroke-width="5.5" stroke-linecap="round"/></g>' +
+      '<g class="eyeR" transform="translate(40 -90)"><ellipse class="open" rx="11.5" ry="13.5" fill="' + C.ink + '"/><circle class="glint" cx="3.5" cy="-5" r="3.6" fill="#FFFDF5"/>' +
+        '<path class="shut" d="M-14 -2 Q0 9 14 -2" fill="none" stroke="' + C.ink + '" stroke-width="5.5" stroke-linecap="round"/>' +
+        '<path class="sq" d="M13 -9 L-6 0 L13 7" fill="none" stroke="' + C.ink + '" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path class="hap" d="M-14 5 Q0 -12 14 5" fill="none" stroke="' + C.ink + '" stroke-width="5.5" stroke-linecap="round"/></g>' +
+      '<g class="brows" stroke="' + C.ring + '" stroke-width="8" stroke-linecap="round"><path d="M-62 -118 L-26 -108"/><path d="M62 -118 L26 -108"/></g>' +
+      '<path d="M-15 -60 Q0 -67 15 -60 Q10 -46 0 -43 Q-10 -46 -15 -60Z" fill="' + C.nose + '" stroke="' + C.ink + '" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M0 -43 L0 -34" stroke="' + C.ink + '" stroke-width="4" stroke-linecap="round"/>' +
+      '<g class="mouths" transform="translate(0 -34)" stroke="' + C.ink + '" stroke-linecap="round" stroke-linejoin="round">';
+    Object.keys(MOUTHS).forEach(function (k) { s += '<g class="m-' + k + '">' + MOUTHS[k] + '</g>'; });
+    s += '</g></g>';
+    return s;
+  }
+
+  /* ---------- the rig: pose numbers -> attributes ---------- */
+  // A pose: rot (deg, the whole body around its seat), px/py (offset), bsx/bsy (body width/height), hx/hy/hr (head
+  // offset and tilt), eL/eR (ears), aL/aR (arm angle from hanging, + = out and up), lL/lR (arm length), gL/gR (leg angle),
+  // gS (leg length), tb/tc (tail base angle and curl), lidL/lidR (0 shut .. 1 open), eye ('open' | 'shut' | 'sq' | 'hap'),
+  // brow, blush (0..1), mouth (a MOUTHS key), jaw (yawn opening), sx (scarf flutter).
+  var NUM = ['rot', 'px', 'py', 'bsx', 'bsy', 'hx', 'hy', 'hr', 'eL', 'eR', 'aL', 'aR', 'lL', 'lR', 'gL', 'gR', 'gS', 'tb', 'tc', 'lidL', 'lidR', 'brow', 'blush', 'jaw', 'sx'];
+  var BASE = { rot: 0, px: 0, py: 0, bsx: 1, bsy: 1, hx: 0, hy: 0, hr: 0, eL: -18, eR: 18, aL: 14, aR: 14, lL: 78, lR: 78, gL: 0, gR: 0, gS: 1, tb: -18, tc: -12,
+    lidL: 1, lidR: 1, eye: 'open', brow: 0, blush: 0.5, mouth: 'smile', jaw: 0, sx: 0 };
+  function pose(o) { var p = {}; for (var k in BASE) p[k] = BASE[k]; for (var j in o) p[j] = o[j]; return p; }
+  var POSES = {
+    // asleep: lying on his side in the grass, head on one paw, the other paw on his tummy, tail wrapped round
+    sleep: pose({ rot: -72, px: 60, py: -34, bsx: 1.06, bsy: 0.96, hx: -4, hy: 16, hr: 30, eL: -44, eR: 2, aL: 160, aR: -50, lL: 84, lR: 70, gL: -22, gR: 34, gS: 0.95, tb: 64, tc: 17,
+      lidL: 0, lidR: 0, eye: 'shut', blush: 0.9, mouth: 'sleep' }),
+    sit: pose({ eye: 'open', lidL: 0.45, lidR: 0.45, mouth: 'o', eL: -24, eR: 24, aL: 18, aR: 18, hr: 0, blush: 0.5 }),
+    stretch: pose({ py: -8, bsx: 0.9, bsy: 1.14, hy: -12, hr: -6, eL: -6, eR: 6, aL: 132, aR: 132, lL: 112, lR: 112, gL: -12, gR: 12, tb: -40, tc: -6,
+      eye: 'shut', lidL: 0, lidR: 0, mouth: 'yawn', jaw: 1, blush: 0.6 }),
+    grumpy: pose({ bsx: 1.02, eL: -34, eR: 34, aL: -64, aR: -64, lL: 76, lR: 76, hr: 4, eye: 'open', lidL: 0.55, lidR: 0.55, brow: 1, blush: 0.2, mouth: 'frown', tb: -10, tc: -16 }),
+    covering: pose({ bsy: 0.96, eL: -64, eR: 64, aL: 150, aR: 150, lL: 70, lR: 70, hr: 0, hy: 6, eye: 'sq', lidL: 1, lidR: 1, brow: 1, blush: 0.3, mouth: 'grr', tb: 4, tc: -20 }),
+    yawnSmall: pose({ eL: -26, eR: 26, aL: 30, aR: 18, hr: -4, eye: 'shut', lidL: 0, lidR: 0, mouth: 'yawn', jaw: 0.55, blush: 0.6 }),
+    stand: pose({ py: -46, gS: 1.7, bsy: 1.04, aL: 120, aR: 120, lL: 84, lR: 84, hy: -4, eL: -12, eR: 12, eye: 'hap', lidL: 1, lidR: 1, mouth: 'smile', blush: 1, tb: -50, tc: -9 }),
+    cheer: pose({ py: -46, gS: 1.7, bsy: 1.06, aL: 132, aR: 132, lL: 88, lR: 88, hy: -8, hr: -3, eL: -8, eR: 8, eye: 'hap', lidL: 1, lidR: 1, mouth: 'smile', blush: 1, tb: -58, tc: -7 }),
+  };
+  var TAIL_W = [40, 50, 58, 62, 62, 58, 50, 36], TAIL_L = 25;
+
+  function Rig(g) {
+    g.innerHTML = remi();
+    function q(sel) { return g.querySelector(sel); }
+    function mk(parent, tag, attrs) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+    var tail = q('.rm-tail'), tO = [], tF = [], tR = [];
+    TAIL_W.forEach(function (w, i) {
+      tO.push(mk(tail.children[0], 'line', { stroke: C.ink, 'stroke-width': w + 2 * W, 'stroke-linecap': 'round' }));
+      tF.push(mk(tail.children[1], 'line', { stroke: i === TAIL_W.length - 1 ? C.ring : C.fur, 'stroke-width': w, 'stroke-linecap': 'round' }));
+      tR.push(i % 2 && i < TAIL_W.length - 1 ? mk(tail.children[2], 'line', { stroke: C.ring, 'stroke-width': w - 2, 'stroke-linecap': 'butt' }) : null);
+    });
+    function limbSet(root, color) {
+      var o = root.children[0], fl = root.children[1], pd = root.children[2], out = {};
+      ['L', 'R'].forEach(function (s) {
+        out[s] = { o: mk(o, 'line', { stroke: C.ink, 'stroke-linecap': 'round' }), f: mk(fl, 'line', { stroke: color, 'stroke-linecap': 'round' }),
+          po: mk(o, 'ellipse', { fill: C.ink }), pf: mk(fl, 'ellipse', { fill: color }), pad: mk(pd, 'ellipse', { fill: C.limbL }) };
+      });
+      return out;
+    }
+    var arms = limbSet(q('.rm-arms'), C.limb), legs = limbSet(q('.rm-legs'), C.limb);
+    var body = q('.rm-body'), bodyS = q('.rm-bodyS'), belly = q('.rm-belly'), head = q('.rm-head'), scarf = q('.rm-scarf'), st1 = q('.tails .t1'), st2 = q('.tails .t2');
+    var earL = q('.earL'), earR = q('.earR'), eyes = [q('.eyeL'), q('.eyeR')], brows = q('.brows'), blushL = q('.blushL'), blushR = q('.blushR');
+    var mouths = {}; Object.keys(MOUTHS).forEach(function (k) { mouths[k] = q('.m-' + k); });
+    var jaw = q('.m-yawn .jaw');
+    function line(el, x1, y1, x2, y2, w) { el.setAttribute('x1', f(x1)); el.setAttribute('y1', f(y1)); el.setAttribute('x2', f(x2)); el.setAttribute('y2', f(y2)); if (w != null) el.setAttribute('stroke-width', w); }
+    function ell(el, cx, cy, rx, ry, rot) { el.setAttribute('cx', f(cx)); el.setAttribute('cy', f(cy)); el.setAttribute('rx', f(rx)); el.setAttribute('ry', f(ry)); if (rot != null) el.setAttribute('transform', 'rotate(' + f(rot) + ' ' + f(cx) + ' ' + f(cy) + ')'); }
+    function limb(L, x0, y0, ang, len, w, pr, isLeg) {
+      var x1 = x0 + Math.sin(rad(ang)) * len, y1 = y0 + Math.cos(rad(ang)) * len;
+      line(L.o, x0, y0, x1, y1, w + 2 * W); line(L.f, x0, y0, x1, y1, w);
+      var rx = isLeg ? pr * 1.45 : pr, ry = isLeg ? pr * 0.92 : pr, rot = isLeg ? 0 : ang;
+      ell(L.po, x1, y1 + (isLeg ? 2 : 0), rx + W, ry + W, isLeg ? -ang * 0.4 : -rot); ell(L.pf, x1, y1 + (isLeg ? 2 : 0), rx, ry, isLeg ? -ang * 0.4 : -rot);
+      ell(L.pad, x1, y1 + (isLeg ? 5 : 3), rx * 0.55, ry * 0.42, isLeg ? -ang * 0.4 : -rot);
+    }
+    var lastMouth = null, lastEye = null;
+    /** p: a pose (numbers plus eye and mouth). x, y: where he sits in the scene; k: his size. */
+    function apply(p, x, y, k) {
+      var rx = 96 * p.bsx, ry = 108 * p.bsy, cy = -6 - ry;
+      g.setAttribute('transform', 'translate(' + f(x + p.px * k) + ' ' + f(y + p.py * k) + ') scale(' + f(k * 100) / 100 + ') rotate(' + f(p.rot) + ' 0 -60)');
+      ell(body, 0, cy, rx, ry); ell(bodyS, rx * 0.32, cy + ry * 0.25, rx * 0.55, ry * 0.6);
+      ell(belly, 0, cy + 18 * p.bsy, 60 * p.bsx, 72 * p.bsy);
+      var nx = 0, ny = cy - ry * 0.8;
+      head.setAttribute('transform', 'translate(' + f(nx + p.hx) + ' ' + f(ny + p.hy) + ') rotate(' + f(p.hr) + ')');
+      earL.setAttribute('transform', 'translate(-80 -146) rotate(' + f(p.eL) + ')');
+      earR.setAttribute('transform', 'translate(80 -146) rotate(' + f(p.eR) + ')');
+      scarf.setAttribute('transform', 'translate(' + f(nx + p.hx * 0.4) + ' ' + f(ny + 6 + p.hy * 0.3) + ')');
+      st1.setAttribute('transform', 'rotate(' + f(p.sx) + ')'); st2.setAttribute('transform', 'rotate(' + f(p.sx * 1.4 + 4) + ')');
+      // shoulders and hips follow the body's size
+      var sy = cy - ry * 0.42, sxo = rx * 0.74, hy = -30;
+      limb(arms.L, -sxo, sy, -p.aL, p.lL, 32, 21, false); limb(arms.R, sxo, sy, p.aR, p.lR, 32, 21, false);
+      limb(legs.L, -50 * p.bsx, hy, -p.gL, 30 * p.gS, 40, 21, true); limb(legs.R, 50 * p.bsx, hy, p.gR, 30 * p.gS, 40, 21, true);
+      // the tail: a chain of segments from behind the right hip (one outline pass, one fur pass, then the rings)
+      var a = p.tb, tx = 64 * p.bsx, ty = -34;
+      for (var i = 0; i < TAIL_W.length; i++) {
+        var nx2 = tx + Math.cos(rad(a)) * TAIL_L, ny2 = ty + Math.sin(rad(a)) * TAIL_L;
+        line(tO[i], tx, ty, nx2, ny2); line(tF[i], tx, ty, nx2, ny2);
+        if (tR[i]) line(tR[i], tx + (nx2 - tx) * 0.2, ty + (ny2 - ty) * 0.2, tx + (nx2 - tx) * 0.95, ty + (ny2 - ty) * 0.95);
+        tx = nx2; ty = ny2; a += p.tc;
+      }
+      // the face
+      if (p.eye !== lastEye) {
+        lastEye = p.eye;
+        eyes.forEach(function (e) { ['open', 'glint', 'shut', 'sq', 'hap'].forEach(function (c) { var n = e.querySelector('.' + c); n.style.display = (c === 'glint' ? 'open' : c) === (p.eye === 'open' ? 'open' : p.eye) ? '' : 'none'; }); });
+      }
+      if (p.eye === 'open') {
+        [p.lidL, p.lidR].forEach(function (lid, i) {
+          var e = eyes[i], o = e.querySelector('.open'), sh = e.querySelector('.shut'), gl = e.querySelector('.glint'), shut = lid < 0.14;
+          o.setAttribute('ry', f(13.5 * Math.max(0.14, lid))); o.style.display = shut ? 'none' : ''; sh.style.display = shut ? '' : 'none'; gl.style.display = lid > 0.6 ? '' : 'none';
+        });
+      }
+      brows.setAttribute('opacity', f(p.brow)); blushL.setAttribute('opacity', f(p.blush * 0.8)); blushR.setAttribute('opacity', f(p.blush * 0.8));
+      if (p.mouth !== lastMouth) { lastMouth = p.mouth; for (var m in mouths) mouths[m].style.display = m === p.mouth ? '' : 'none'; }
+      if (p.mouth === 'yawn') jaw.setAttribute('transform', 'translate(0 -4) scale(' + f(0.5 + 0.5 * p.jaw) + ' ' + f(0.3 + 0.7 * p.jaw) + ')');
+    }
+    return { apply: apply, el: g };
+  }
+  /** a blend of two poses (numbers eased; eyes and mouth switch halfway). */
+  function mix(a, b, k) {
+    var p = {};
+    for (var i = 0; i < NUM.length; i++) { var n = NUM[i]; p[n] = a[n] + (b[n] - a[n]) * k; }
+    p.eye = k < 0.5 ? a.eye : b.eye; p.mouth = k < 0.5 ? a.mouth : b.mouth;
+    return p;
+  }
+  function copy(p) { var o = {}; for (var k in p) o[k] = p[k]; return o; }
+  return { scene: scene, Rig: Rig, POSES: POSES, NUM: NUM, mix: mix, copy: copy, C: C, pose: pose };
+})();
+/* remi-art:end */
+(function () {
+  'use strict';
+  var O = window.Oomba, CORE = window.RemiCore, ART = window.RemiArt;
+  var LANG = O.lang || 'en', W = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en, RTL = O.dir === 'rtl';
+  function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
+  document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
+  var reduced = function () { return !!O.settings.reduced; };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
+  var now = function () { return performance.now(); };
+  var LD = window.BRB && window.BRB.loudness ? window.BRB.loudness : null;
+
+  /* ---------- the teacher's settings, remembered (numbers and ids only) ---------- */
+  var KEY = 'remis-quiet-meadow-v1';
+  function load() { try { return (window.BRB && BRB.storage && BRB.storage.get(KEY)) || {}; } catch (e) { return {}; } }
+  var saved = load();
+  var CFG = {
+    preset: CORE.PRESET_IDS.indexOf(saved.preset) >= 0 ? saved.preset : 'quiet',
+    fine: typeof saved.fine === 'number' ? Math.max(-CORE.FINE, Math.min(CORE.FINE, Math.round(saved.fine))) : 0,
+    goal: CORE.GOALS.indexOf(saved.goal) >= 0 ? saved.goal : 300,
+    base: typeof saved.base === 'number' && saved.base >= 0 && saved.base <= 70 ? Math.round(saved.base) : CORE.BASE,
+  };
+  function save() { try { if (window.BRB && BRB.storage) BRB.storage.set(KEY, { preset: CFG.preset, fine: CFG.fine, goal: CFG.goal, base: CFG.base }); } catch (e) { /* no save */ } }
+  function lineNow() { return CORE.line(CFG.base, CFG.preset, CFG.fine); }
+  function clock(sec) {
+    sec = Math.max(0, Math.floor(sec)); var m = Math.floor(sec / 60), s = sec % 60;
+    return O.num(m, { minimumIntegerDigits: 2 }) + ':' + O.num(s, { minimumIntegerDigits: 2 });
+  }
+
+  /* ---------- the session ---------- */
+  var S = {
+    screen: 'title', core: null, mic: 'idle', demo: false, paused: false,
+    raw: 0, level: 0, peak: 0, db: -100, dbAt: 0, forced: null, heldUntil: 0,
+    demoLevel: 18, clapUntil: 0, chatter: false, celebrateAt: 0, ended: false, sounds: [], calib: null, lastAnnounce: 0,
+  };
+
+  /* ---------- the stage: the meadow, Remi, the gauge, the top bar ---------- */
+  var R = {};
+  function build() {
+    if (R.root) return;
+    var root = el('div', 'rq'); root.id = 'rq';
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'rq-svg'); svg.setAttribute('viewBox', '0 0 1600 900'); svg.setAttribute('preserveAspectRatio', 'xMidYMax slice');
+    svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+    svg.innerHTML = ART.scene() + '<g class="rq-remi"></g><g class="rq-zzz"></g><g class="rq-conf"></g>';
+    root.appendChild(svg);
+    var rig = ART.Rig(svg.querySelector('.rq-remi'));
+    var zzz = svg.querySelector('.rq-zzz'), Z = [];
+    for (var i = 0; i < 4; i++) { var z = document.createElementNS('http://www.w3.org/2000/svg', 'text'); z.textContent = 'z'; z.setAttribute('class', 'z'); zzz.appendChild(z); Z.push({ el: z, t: -1 }); }
+    var bubble = el('div', 'rq-bubble'); bubble.setAttribute('aria-hidden', 'true'); bubble.hidden = true; bubble.appendChild(el('span', '', t('bubble')));
+    var mark = el('div', 'rq-mark', '!'); mark.setAttribute('aria-hidden', 'true'); mark.hidden = true;
+    root.append(bubble, mark);
+
+    // top bar: the quiet-time clock in the middle; pause and teacher settings at the end (the start corner stays clear
+    // for the site's fullscreen Back link)
+    var top = el('div', 'rq-top'); top.dir = 'ltr';   // the buttons stay at the right in every language: the site's fullscreen Back link is at the left
+    var card = el('div', 'rq-clock'); card.dir = O.dir || 'ltr'; card.setAttribute('role', 'timer'); card.setAttribute('aria-live', 'off');
+    var lab = el('div', 'lab', t('quietTime')), time = el('div', 'time', clock(0)), sub = el('div', 'sub');
+    var goalT = el('span', 'goal'), wakes = el('span', 'wakes'); sub.append(goalT, wakes);
+    time.dir = 'ltr'; card.append(lab, time, sub);
+    var btns = el('div', 'rq-btns');
+    var pause = el('button', 'rq-ib'); pause.type = 'button'; pause.innerHTML = O.icon('pause'); pause.setAttribute('aria-label', t('pause'));
+    pause.addEventListener('click', function (e) { if (e.detail) pause.blur(); pauseGame('button'); });
+    var gear = el('button', 'rq-ib'); gear.type = 'button'; gear.innerHTML = O.icon('settings'); gear.setAttribute('aria-label', t('settings'));
+    gear.addEventListener('click', function (e) { if (e.detail) gear.blur(); teacherSettings(); });
+    btns.append(pause, gear);
+    top.append(el('div', 'rq-spacer'), card, btns);
+    root.appendChild(top);
+
+    // the gauge: calm (green, 😴), getting loud (yellow), too loud (red, striped, 🙉) and the line Remi wakes above
+    var g = el('div', 'rq-gauge'); g.dir = 'ltr'; g.setAttribute('role', 'meter');   // the gauge reads left to right (or upwards) in every language
+    g.setAttribute('aria-valuemin', '0'); g.setAttribute('aria-valuemax', '100');
+    var track = el('div', 'g-track'), zg = el('div', 'g-zone g-calm'), zy = el('div', 'g-zone g-near'), zr = el('div', 'g-zone g-loud');
+    var fill = el('div', 'g-fill'), peak = el('div', 'g-peak'), ln = el('div', 'g-line'), tag = el('div', 'g-tag');
+    tag.appendChild(el('span', 'ic', '🔔')); tag.appendChild(el('span', 'tx', t('tooLoud')));
+    track.append(zg, zy, zr, fill, peak, ln);
+    var icTop = el('div', 'g-ic g-ictop', '🙉'), icBot = el('div', 'g-ic g-icbot', '😴'); icTop.setAttribute('aria-hidden', 'true'); icBot.setAttribute('aria-hidden', 'true');
+    var held = el('div', 'g-held'); held.appendChild(el('span', '', '🔇 ' + t('talking'))); held.hidden = true;
+    g.append(icTop, track, icBot, tag, held);
+    root.appendChild(g);
+
+    // demo mode: a noise slider, a clap and class chatter stand in for the room
+    var demo = el('div', 'rq-demo'); demo.hidden = true; demo.dir = O.dir || 'ltr';
+    var rib = el('div', 'rq-ribbon', t('demo'));
+    var sl = el('label', 'rq-noise'); var slT = el('span', 'tx', t('noise'));
+    var range = el('input'); range.dir = 'ltr'; range.type = 'range'; range.min = '0'; range.max = '100'; range.step = '1'; range.value = String(S.demoLevel); range.setAttribute('aria-label', t('noise'));
+    range.addEventListener('input', function () { S.demoLevel = +range.value || 0; });
+    sl.append(slT, range);
+    var clap = el('button', 'rq-db'); clap.type = 'button'; clap.appendChild(el('span', 'em', '👏')); clap.appendChild(el('span', '', t('clap')));
+    clap.addEventListener('click', function (e) { if (e.detail) clap.blur(); S.clapUntil = now() + 400; });
+    var chat = el('button', 'rq-db'); chat.type = 'button'; chat.setAttribute('aria-pressed', 'false'); chat.appendChild(el('span', 'em', '🗣️')); chat.appendChild(el('span', '', t('chatter')));
+    chat.addEventListener('click', function (e) { if (e.detail) chat.blur(); S.chatter = !S.chatter; chat.setAttribute('aria-pressed', String(S.chatter)); });
+    demo.append(rib, sl, clap, chat);
+    root.appendChild(demo);
+
+    var status = el('p', 'rq-sr'); status.setAttribute('role', 'status'); root.appendChild(status);
+    O.ui.root().appendChild(root);
+    R = { root: root, svg: svg, rig: rig, Z: Z, bubble: bubble, mark: mark, time: time, goalT: goalT, wakes: wakes, card: card, top: top, g: g, track: track,
+      zg: zg, zy: zy, zr: zr, fill: fill, peak: peak, ln: ln, tag: tag, held: held, demo: demo, range: range, chat: chat, status: status, conf: svg.querySelector('.rq-conf'), pauseBtn: pause };
+    layout();
+    window.addEventListener('resize', layout);
+  }
+  function announce(text, force) {
+    var n = now(); if (!force && n - S.lastAnnounce < 2500) return; S.lastAnnounce = n;
+    try { O.ui.announce(text); } catch (e) { if (R.status) R.status.textContent = text; }
+  }
+
+  /* ---------- where Remi lies: in the free part of the meadow, as big as it allows ---------- */
+  var POS = { x: 800, y: 780, k: 1, portrait: false };
+  function layout() {
+    if (!R.root) return;
+    var vw = window.innerWidth || 800, vh = window.innerHeight || 600, s = Math.max(vw / 1600, vh / 900);
+    var x0 = 800 - vw / s / 2, visW = vw / s, visH = vh / s;
+    var portrait = vh > vw * 1.05; POS.portrait = portrait;
+    R.root.classList.toggle('portrait', portrait);
+    var topPx = Math.min(200, Math.max(96, vh * 0.17)), botPx = portrait ? (S.demo ? 250 : 150) : (S.demo ? (vh < 500 ? 80 : 120) : 40), rightPx = portrait ? 0 : Math.min(170, Math.max(104, vw * 0.09));
+    var left = x0 + 24 / s, right = x0 + (vw - rightPx - 24) / s;
+    var ground = Math.min(800, 900 - botPx / s);
+    var room = (vh - topPx - botPx) / s;
+    POS.k = Math.max(0.3, Math.min(1, (right - left) / 560, room / (vh < 500 ? 400 : 520)));
+    POS.x = (left + right) / 2 + 18 * POS.k; POS.y = ground;
+    R.root.style.setProperty('--top', topPx + 'px');
+  }
+
+  /* ---------- the animator: poses blended with ease, plus springs and breathing ---------- */
+  var A = { cur: ART.copy(ART.POSES.sleep), from: null, to: 'sleep', t: 0, dur: 0, time: 0,
+    ear: [{ x: 0, v: 0 }, { x: 0, v: 0 }], tail: { x: 0, v: 0 }, scarf: { x: 0, v: 0 }, peekUntil: 0, humUntil: 0, lastRot: -72, forced: null, skip: false, celebrate: null };
+  var BLEND = { sleep: 1100, sit: 520, stretch: 640, grumpy: 420, covering: 220, yawnSmall: 560, stand: 620, cheer: 380 };
+  function ease(k) { return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }
+  function want() {
+    if (A.forced) return A.forced;
+    var c = S.core;
+    if (A.celebrate != null) { var ct = (now() - A.celebrate) / 1000; return ct < 0.7 ? 'sit' : ct < 1.4 ? 'stand' : Math.floor((ct - 1.4) / 0.45) % 2 ? 'stand' : 'cheer'; }
+    if (!c) return 'sleep';
+    switch (c.state) {
+      case 'waking': return c.t < CORE.T.sitUp ? 'sit' : c.t < CORE.T.grumble ? 'stretch' : c.loud ? 'covering' : 'grumpy';
+      case 'grumpy': return c.loud ? 'covering' : 'grumpy';
+      case 'settling': return c.t < 0.75 ? 'yawnSmall' : 'sleep';
+      default: return 'sleep';
+    }
+  }
+  function spring(sp, dt, k, d) { sp.v += (-k * sp.x - d * sp.v) * dt; sp.x += sp.v * dt; }
+  function animate(dt) {
+    A.time += dt;
+    var w = want(), rm = reduced();
+    if (w !== A.to) { A.from = ART.copy(A.cur); A.to = w; A.t = 0; A.dur = rm || A.skip ? (A.skip ? 0 : 300) : (BLEND[w] || 500) / 1000 * 1000; }
+    var target = ART.POSES[A.to], p;
+    if (A.dur > 0 && A.t < A.dur) { A.t += dt * 1000; p = ART.mix(A.from, target, ease(Math.min(1, A.t / A.dur))); } else p = ART.copy(target);
+    A.cur = ART.copy(p);
+    var c = S.core, st = c ? c.state : 'asleep', sleeping = A.to === 'sleep' && (st === 'asleep' || st === 'stirring' || !c) && A.celebrate == null;
+    // overlays (none with less motion, apart from the face)
+    if (!rm) {
+      var dRot = (p.rot - A.lastRot) / Math.max(1e-3, dt); A.lastRot = p.rot;
+      A.ear[0].v += dRot * 0.06; A.ear[1].v -= dRot * 0.05; A.tail.v -= dRot * 0.08; A.scarf.v += dRot * 0.05;
+      spring(A.ear[0], dt, 140, 9); spring(A.ear[1], dt, 140, 9); spring(A.tail, dt, 60, 6); spring(A.scarf, dt, 90, 7);
+      p.eL += A.ear[0].x; p.eR += A.ear[1].x; p.tb += A.tail.x; p.tc += A.tail.x * 0.12; p.sx += A.scarf.x + Math.sin(A.time * 1.7) * 3;
+      if (sleeping) {
+        var br = Math.sin(A.time * Math.PI * 2 / 4.2);
+        p.bsy *= 1 + 0.035 * br; p.bsx *= 1 - 0.012 * br; p.hx += br * -2.5; p.tc += br * 0.6;
+      } else if (A.to === 'grumpy') {
+        p.gR += Math.max(0, Math.sin(A.time * 9)) * 12;   // a tapping foot
+        p.hr += Math.sin(A.time * 2.3) * 2;
+      } else if (A.to === 'covering') {
+        p.hr += Math.sin(A.time * 23) * 1.6; p.px += Math.sin(A.time * 31) * 1.2;   // a little shudder
+      } else if (A.to === 'cheer' || A.to === 'stand') {
+        p.py -= Math.abs(Math.sin(A.time * 6.5)) * 22;
+      }
+    }
+    // the class sees him getting sleepy again while it stays calm
+    if (c && st === 'grumpy' && !c.loud && A.to === 'grumpy') { var k = Math.min(1, c.calm / CORE.T.calm); p.lidL = p.lidR = 0.55 - 0.42 * k; p.brow = 1 - 0.7 * k; }
+    if (sleeping && now() < A.peekUntil) { p.eye = 'open'; p.lidL = 0; p.lidR = 0.42; }
+    if (sleeping && now() < A.humUntil) p.mouth = 'hum';
+    R.rig.apply(p, POS.x, POS.y, POS.k);
+    zzzStep(dt, sleeping && !rm);
+    bubbleStep();
+    confStep(dt);
+  }
+  /** a stir: an ear twitch, a tail flick, one eye peeks, or a sleepy murmur */
+  function stir(act) {
+    if (act === 'ear') { A.ear[1].v += reduced() ? 0 : 420; A.ear[0].v -= reduced() ? 0 : 160; }
+    else if (act === 'tail') A.tail.v += reduced() ? 0 : 260;
+    else if (act === 'peek') A.peekUntil = now() + 900;
+    else if (act === 'murmur') { A.humUntil = now() + 600; snd('murmur'); }
+    showMark();
+  }
+  function showMark() {
+    if (!R.mark) return; R.mark.hidden = false; R.mark.classList.remove('pop'); void R.mark.offsetWidth; R.mark.classList.add('pop');
+    clearTimeout(showMark.t); showMark.t = setTimeout(function () { R.mark.hidden = true; }, 900);
+  }
+  /** a point of Remi's (scene units, relative to where he lies) on the screen */
+  function screenAt(dx, dy) {
+    var m = R.svg.getScreenCTM(); if (!m) return { x: 0, y: 0 };
+    var x = POS.x + dx * POS.k, y = POS.y + dy * POS.k;
+    return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f };
+  }
+  function bubbleStep() {
+    var c = S.core, on = !!c && ((c.state === 'waking' && c.t >= CORE.T.grumble) || (c.state === 'grumpy' && (c.loud || c.t < 2.4)));
+    if (on !== !R.bubble.hidden) { R.bubble.hidden = !on; if (on) { R.bubble.classList.remove('pop'); void R.bubble.offsetWidth; R.bubble.classList.add('pop'); } }
+    if (on) {
+      // above his head, but never under the top bar: on a short screen it moves beside his head instead
+      var p = screenAt(120, -470), tb = R.top.getBoundingClientRect().bottom + R.bubble.offsetHeight + 14, x = p.x;
+      if (p.y < tb) { x = screenAt(330, 0).x + R.bubble.offsetWidth / 2 - 40; p.y = Math.max(tb, screenAt(0, -330).y); }
+      x = Math.min(window.innerWidth - R.bubble.offsetWidth / 2 - 8, Math.max(R.bubble.offsetWidth / 2 + 8, x));
+      R.bubble.style.left = Math.round(x) + 'px'; R.bubble.style.top = Math.round(p.y) + 'px';
+    }
+    if (!R.mark.hidden) { var q = screenAt(-40, -300); R.mark.style.left = Math.round(q.x) + 'px'; R.mark.style.top = Math.round(q.y) + 'px'; }
+  }
+  var zT = 0, zN = 0;
+  function zzzStep(dt, on) {
+    zT += dt;
+    if (on && zT > 1.25) { zT = 0; var z = R.Z[zN++ % R.Z.length]; z.t = 0; }
+    R.Z.forEach(function (z, i) {
+      if (z.t < 0) { z.el.style.opacity = '0'; return; }
+      z.t += dt; var k = z.t / 3.4;
+      if (k >= 1 || (!on && k > 0.2)) { z.t = -1; z.el.style.opacity = '0'; return; }
+      var x = POS.x + (-110 + 90 * k + Math.sin(z.t * 2.4 + i) * 12) * POS.k, y = POS.y + (-330 - 170 * k) * POS.k, sz = (34 + 36 * k) * POS.k;
+      z.el.setAttribute('x', Math.round(x)); z.el.setAttribute('y', Math.round(y)); z.el.setAttribute('font-size', Math.round(sz));
+      z.el.style.opacity = String(Math.min(1, k * 5) * (1 - k));
+    });
+    if (reduced() && S.screen !== 'end') { var z0 = R.Z[0]; var sleepNow = A.to === 'sleep' && A.celebrate == null;   // one still "z"
+      z0.t = -1; z0.el.style.opacity = sleepNow ? '0.9' : '0'; z0.el.setAttribute('x', Math.round(POS.x - 120 * POS.k)); z0.el.setAttribute('y', Math.round(POS.y - 300 * POS.k)); z0.el.setAttribute('font-size', Math.round(54 * POS.k)); }
+  }
+  /* confetti and stars for the happy ending (none with less motion) */
+  var CONF = [];
+  function confetti() {
+    if (reduced()) return;
+    var cols = ['#FFC83D', '#5DB548', '#E8483C', '#5BB5F0', '#B27CF0', '#FFFDF5'];
+    for (var i = 0; i < 70; i++) {
+      var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); r.setAttribute('width', '16'); r.setAttribute('height', '10'); r.setAttribute('rx', '2'); r.setAttribute('fill', cols[i % cols.length]);
+      R.conf.appendChild(r);
+      CONF.push({ el: r, x: POS.x + (Math.random() - 0.5) * 300, y: POS.y - 420 * POS.k, vx: (Math.random() - 0.5) * 900, vy: -500 - Math.random() * 700, a: Math.random() * 360, va: (Math.random() - 0.5) * 720, life: 3.2 });
+    }
+  }
+  function confStep(dt) {
+    for (var i = CONF.length - 1; i >= 0; i--) {
+      var c = CONF[i]; c.vy += 900 * dt; c.vx *= 1 - 0.6 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.a += c.va * dt; c.life -= dt;
+      if (c.life <= 0) { c.el.remove(); CONF.splice(i, 1); continue; }
+      c.el.setAttribute('transform', 'translate(' + Math.round(c.x) + ' ' + Math.round(c.y) + ') rotate(' + Math.round(c.a) + ')');
+    }
+  }
+
+  /* ---------- Remi's own sounds, made here (WebAudio) and never listened to: the room is not measured while they play ---------- */
+  var AC = null;
+  function ac() {
+    if (!AC) { try { var K = window.AudioContext || window.webkitAudioContext; AC = K ? new K() : null; } catch (e) { AC = null; } }
+    if (AC && AC.state === 'suspended') { try { AC.resume(); } catch (e) { /* later */ } }
+    return AC;
+  }
+  function muted() { return !!(window.BRB && BRB.sfx && BRB.sfx.muted); }
+  var LEN = { yawn: 1.35, grumble: 0.85, murmur: 0.4, sigh: 0.8, chirp: 0.5 };
+  function noise(ctx, sec) { var n = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; var s = ctx.createBufferSource(); s.buffer = b; return s; }
+  function snd(name) {
+    S.sounds.push(name);
+    S.heldUntil = Math.max(S.heldUntil, now() + (LEN[name] || 0.5) * 1000 + 400);   // and 400 ms after it
+    if (muted()) return;
+    var ctx = ac(); if (!ctx) return;
+    try {
+      var t0 = ctx.currentTime + 0.02, out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination);
+      if (name === 'yawn') {
+        var d = LEN.yawn, o = ctx.createOscillator(); o.type = 'sawtooth';
+        o.frequency.setValueAtTime(340, t0); o.frequency.linearRampToValueAtTime(390, t0 + 0.25); o.frequency.exponentialRampToValueAtTime(205, t0 + d);
+        var f1 = ctx.createBiquadFilter(); f1.type = 'bandpass'; f1.Q.value = 6; f1.frequency.setValueAtTime(820, t0); f1.frequency.linearRampToValueAtTime(520, t0 + d);
+        var f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.Q.value = 7; f2.frequency.setValueAtTime(1250, t0); f2.frequency.linearRampToValueAtTime(880, t0 + d);
+        var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.5, t0 + 0.3); g.gain.setValueAtTime(0.5, t0 + d - 0.45); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+        o.connect(f1); o.connect(f2); f1.connect(g); f2.connect(g); g.connect(out);
+        var nz = noise(ctx, d), nf = ctx.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = 1500; nf.Q.value = 0.8;
+        var ng = ctx.createGain(); ng.gain.setValueAtTime(0.0001, t0); ng.gain.exponentialRampToValueAtTime(0.08, t0 + 0.4); ng.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+        nz.connect(nf); nf.connect(ng); ng.connect(out);
+        o.start(t0); o.stop(t0 + d + 0.05); nz.start(t0); nz.stop(t0 + d);
+      } else if (name === 'grumble') {
+        [0, 0.4].forEach(function (off, i) {
+          var a = t0 + off, o2 = ctx.createOscillator(); o2.type = 'sawtooth'; o2.frequency.setValueAtTime(i ? 150 : 178, a); o2.frequency.linearRampToValueAtTime(i ? 128 : 150, a + 0.32);
+          var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900; lp.Q.value = 2;
+          var g2 = ctx.createGain(); g2.gain.setValueAtTime(0.0001, a); g2.gain.exponentialRampToValueAtTime(0.45, a + 0.05); g2.gain.exponentialRampToValueAtTime(0.0001, a + 0.34);
+          var trem = ctx.createOscillator(), tg = ctx.createGain(); trem.frequency.value = 18; tg.gain.value = 0.18; trem.connect(tg); tg.connect(g2.gain);
+          o2.connect(lp); lp.connect(g2); g2.connect(out); o2.start(a); o2.stop(a + 0.36); trem.start(a); trem.stop(a + 0.36);
+        });
+      } else if (name === 'murmur') {
+        var o3 = ctx.createOscillator(); o3.type = 'sine'; o3.frequency.setValueAtTime(262, t0); o3.frequency.linearRampToValueAtTime(228, t0 + 0.35);
+        var g3 = ctx.createGain(); g3.gain.setValueAtTime(0.0001, t0); g3.gain.exponentialRampToValueAtTime(0.16, t0 + 0.06); g3.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.36);
+        o3.connect(g3); g3.connect(out); o3.start(t0); o3.stop(t0 + 0.4);
+      } else if (name === 'sigh') {
+        var n4 = noise(ctx, 0.8), lp4 = ctx.createBiquadFilter(); lp4.type = 'lowpass'; lp4.frequency.setValueAtTime(1400, t0); lp4.frequency.exponentialRampToValueAtTime(300, t0 + 0.75);
+        var g4 = ctx.createGain(); g4.gain.setValueAtTime(0.0001, t0); g4.gain.exponentialRampToValueAtTime(0.22, t0 + 0.18); g4.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.78);
+        n4.connect(lp4); lp4.connect(g4); g4.connect(out); n4.start(t0); n4.stop(t0 + 0.8);
+      } else if (name === 'chirp') {
+        [[660, 990, 0], [880, 1320, 0.16]].forEach(function (c) {
+          var o5 = ctx.createOscillator(); o5.type = 'triangle'; o5.frequency.setValueAtTime(c[0], t0 + c[2]); o5.frequency.exponentialRampToValueAtTime(c[1], t0 + c[2] + 0.12);
+          var g5 = ctx.createGain(); g5.gain.setValueAtTime(0.0001, t0 + c[2]); g5.gain.exponentialRampToValueAtTime(0.25, t0 + c[2] + 0.02); g5.gain.exponentialRampToValueAtTime(0.0001, t0 + c[2] + 0.2);
+          o5.connect(g5); g5.connect(out); o5.start(t0 + c[2]); o5.stop(t0 + c[2] + 0.22);
+        });
+      }
+    } catch (e) { /* no sound */ }
+  }
+  function heldNow() { return now() < S.heldUntil; }
+
+  /* ---------- the room: the page's number, the demo, or a test ---------- */
+  function rawLevel(dtMs) {
+    if (S.forced != null) return S.forced;
+    if (S.demo) {
+      var v = S.demoLevel;
+      if (S.chatter) v = Math.max(v, 52 + 12 * Math.sin(A.time * 3.1) + 9 * Math.sin(A.time * 7.7 + 1) + (Math.random() - 0.5) * 10);
+      if (now() < S.clapUntil) v = Math.max(v, 94);
+      return Math.max(0, Math.min(100, v));
+    }
+    if (S.mic === 'on') return CORE.levelOf(S.db);
+    return 0;
+  }
+  if (LD) {
+    LD.on(function (db) { S.db = db; S.dbAt = now(); });
+    LD.onState(function (st) {
+      if (st === 'stopped' || st === 'idle') { var was = S.mic === 'on'; S.mic = 'idle'; if (was && S.screen === 'play' && !S.demo && !S.paused) pauseGame('mic'); }
+      else if (st === 'on') S.mic = 'on';
+    });
+  }
+  function micStart() { return LD ? LD.start().then(function (st) { S.mic = st === 'on' ? 'on' : st; return st; }, function () { S.mic = 'unavailable'; return 'unavailable'; }) : Promise.resolve('off'); }
+  function micStop() { if (LD && S.mic === 'on') LD.stop(); if (S.mic === 'on') S.mic = 'idle'; }
+
+  /* ---------- the loop (our own: the kit's loop pauses when the teacher clicks the page around the game) ---------- */
+  var last = 0;
+  function frame(ts) {
+    var dt = last ? Math.min(0.1, (ts - last) / 1000) : 0.016; last = ts;
+    tick(dt);
+    requestAnimationFrame(frame);
+  }
+  function tick(dt) {
+    if (!R.root) return;
+    var raw = rawLevel(dt * 1000);
+    S.raw = raw; S.level = CORE.smooth(S.level, raw, dt);
+    S.peak = Math.max(S.level, S.peak - 25 * dt);
+    if (S.calib) { S.calib.samples.push(S.level); S.calib.left -= dt; if (S.calib.left <= 0) calibDone(); else if (S.calib.onTick) S.calib.onTick(Math.ceil(S.calib.left)); }
+    if (S.screen === 'play' && !S.paused && S.core && !S.ended) {
+      var r = CORE.step(S.core, { level: S.level, line: lineNow(), held: heldNow(), dt: dt, rnd: Math.random() });
+      r.events.forEach(onEvent);
+    }
+    animate(dt);
+    meter();
+  }
+  function onEvent(e) {
+    if (e.type === 'stir') { stir(e.act); if (S.core.stirs === 1 || S.core.stirs % 4 === 0) announce(t('remiStir')); }
+    else if (e.type === 'wake') { announce(t('remiWoke'), true); }
+    else if (e.type === 'yawn') snd('yawn');
+    else if (e.type === 'grumble') { snd('grumble'); if (!reduced()) O.juice && O.juice.shake && O.juice.shake(0.2, R.bubble); }
+    else if (e.type === 'regrump') snd('grumble');
+    else if (e.type === 'settle') snd('sigh');
+    else if (e.type === 'asleep') announce(t('remiBack'), true);
+    else if (e.type === 'goal') celebrate();
+  }
+
+  /* ---------- the gauge and the clock ---------- */
+  var lastMin = 0;
+  function meter() {
+    if (!R.g) return;
+    var line = lineNow(), lv = Math.round(S.level), near = Math.max(0, line - CORE.T.near), vert = !POS.portrait, dim = vert ? 'height' : 'width', pos = vert ? 'bottom' : 'left';
+    R.zg.style[dim] = near + '%'; R.zy.style[dim] = (line - near) + '%'; R.zy.style[pos] = near + '%'; R.zr.style[dim] = (100 - line) + '%'; R.zr.style[pos] = line + '%';
+    ['zg', 'zy', 'zr', 'fill', 'peak', 'ln'].forEach(function (k) { var o = R[k].style; if (vert) { o.left = o.right = ''; o.width = ''; } else { o.bottom = ''; o.height = ''; if (pos === 'left') o.right = ''; else o.left = ''; } });
+    R.zg.style[pos] = '0';
+    R.fill.style[dim] = Math.max(2, S.level) + '%'; R.fill.style[pos] = '0';
+    R.fill.className = 'g-fill ' + (S.level > line ? 'loud' : S.level > near ? 'near' : 'calm');
+    R.peak.style[pos] = S.peak + '%'; R.ln.style[pos] = line + '%';
+    var tr = R.track.getBoundingClientRect(), gr = R.g.getBoundingClientRect();
+    if (vert) { R.tag.style.top = Math.round(tr.bottom - gr.top - tr.height * line / 100) + 'px'; R.tag.style.left = ''; }
+    else { var lx = tr.left + tr.width * line / 100; R.tag.style.left = Math.round(lx - gr.left) + 'px'; R.tag.style.top = ''; }
+    var h = heldNow() && S.screen === 'play'; R.held.hidden = !h; R.g.classList.toggle('held', h);
+    R.g.setAttribute('aria-valuenow', String(lv)); R.g.setAttribute('aria-label', t('meterLine', { n: lv, line: line }));
+    R.g.classList.toggle('loud', S.level > line);
+    var c = S.core, q = c ? c.quiet : 0;
+    R.time.textContent = clock(q);
+    R.goalT.textContent = CFG.goal ? t('of', { goal: clock(CFG.goal) }) : t('noGoal');
+    R.wakes.textContent = t('woke', { n: c ? c.wakes : 0 });
+    R.card.classList.toggle('run', !!c && (c.state === 'asleep' || c.state === 'stirring') && !S.paused && S.screen === 'play');
+    var mins = Math.floor(q / 60); if (c && mins > lastMin && S.screen === 'play') { lastMin = mins; announce(t('quietMin', { n: mins }), true); }
+  }
+
+  /* ---------- screens ---------- */
+  function setScreen(s) { S.screen = s; document.documentElement.dataset.rq = s; R.root && R.root.classList.toggle('playing', s === 'play'); }
+  function newSession() {
+    S.core = CORE.make({ goal: CFG.goal }); S.ended = false; S.paused = false; A.celebrate = null; lastMin = 0; S.heldUntil = 0;
+    document.documentElement.classList.remove('rq-ended');
+  }
+  /** the first Start, from the kit's flow (title -> setup card -> here) */
+  var startP = null;
+  function begin() {
+    build(); newSession(); setScreen('play');
+    var p = startP || Promise.resolve(S.demo ? 'demo' : 'off'); startP = null;
+    S.paused = true;
+    p.then(function (st) {
+      if (st === 'demo') { setDemo(true); S.paused = false; return; }
+      if (st === 'on') { setDemo(false); S.paused = false; announce(t('remiAsleep'), true); return; }
+      noMic(st);
+    });
+  }
+  function setDemo(on) {
+    S.demo = !!on; R.demo.hidden = !S.demo; R.root.classList.toggle('demo', S.demo); if (S.demo) micStop(); layout();
+  }
+
+  /* the setup card: how quiet, the fine slider, the goal, the room's quiet, the privacy note, Start */
+  var setupOpen = false, setupApi = null;
+  function setupCard(opt) {
+    opt = opt || {};
+    build(); setScreen('setup');
+    return new Promise(function (resolve) {
+      setupOpen = true;
+      var wrap = el('div', 'rqs'); wrap.dir = O.dir || 'ltr';
+      var card = el('div', 'rqs-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'rqsH');
+      wrap.appendChild(card);
+      var h = el('h2', '', t('setupH')); h.id = 'rqsH'; card.appendChild(h);
+      var left = el('div', 'left'), right = el('div', 'right'); card.append(left, right);
+      function group(label, cls, opts, get, set, into) {
+        var fs = el('fieldset'), lg = el('legend', '', label); fs.appendChild(lg);
+        var row = el('div', 'row ' + (cls || '')); row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', label); row.style.setProperty('--n', opts.length);
+        var bs = opts.map(function (o) {
+          var b = el('button', 'opt'); b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.v = String(o.v);
+          if (o.em) b.appendChild(el('span', 'em', o.em)); b.appendChild(el('span', '', o.label));
+          b.addEventListener('click', function () { set(o.v); sync(); sfx('select'); });
+          b.addEventListener('keydown', function (e) {
+            var i = bs.indexOf(b), d = { ArrowRight: RTL ? -1 : 1, ArrowDown: 1, ArrowLeft: RTL ? 1 : -1, ArrowUp: -1 }[e.key];
+            if (!d) return; e.preventDefault(); e.stopPropagation(); var n = bs[(i + d + bs.length) % bs.length]; n.click(); n.focus();
+          });
+          row.appendChild(b); return b;
+        });
+        function sync() { bs.forEach(function (b) { var on = String(get()) === b.dataset.v; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); }
+        sync(); fs.appendChild(row); into.appendChild(fs);
+        return { fs: fs, sync: sync };
+      }
+      group(t('howQuiet'), 'presets', [{ v: 'whisper', label: t('whisper'), em: '🤫' }, { v: 'quiet', label: t('quietWork'), em: '📚' }, { v: 'group', label: t('groupWork'), em: '💬' }],
+        function () { return CFG.preset; }, function (v) { CFG.preset = v; showLine(); }, left);
+      // the fine slider: the line moves on the little gauge as it slides
+      var fs2 = el('fieldset', 'fine'); fs2.appendChild(el('legend', '', t('fine')));
+      var frow = el('div', 'frow'); frow.dir = 'ltr';
+      var fr = el('input'); fr.type = 'range'; fr.min = String(-CORE.FINE); fr.max = String(CORE.FINE); fr.step = '1'; fr.value = String(CFG.fine); fr.setAttribute('aria-label', t('fine'));
+      fr.addEventListener('input', function () { CFG.fine = +fr.value || 0; showLine(); });
+      var lo = el('span', 'end', t('touchier')), hi = el('span', 'end', t('calmer'));
+      frow.append(lo, fr, hi); fs2.appendChild(frow);
+      var mini = el('div', 'mini'); mini.dir = 'ltr'; var mfill = el('i', 'mf'), mline = el('b', 'ml'); mini.append(mfill, mline); fs2.appendChild(mini);
+      var lineTx = el('p', 'linetx'); fs2.appendChild(lineTx);
+      left.appendChild(fs2);
+      function showLine() { var l = lineNow(); mline.style.left = l + '%'; mfill.style.width = Math.round(S.level) + '%'; lineTx.textContent = t('calibDone', { room: CFG.base, line: l }); }
+      showLine(); var lineT = setInterval(function () { mfill.style.width = Math.round(S.level) + '%'; }, 120);
+      group(t('goalH'), 'goals', CORE.GOALS.map(function (g) { return { v: g, label: g ? t('min', { n: g / 60 }) : t('noGoal') }; }),
+        function () { return CFG.goal; }, function (v) { CFG.goal = +v; }, right);
+      // "Set to the room's quiet": 3 seconds of the room, then the line sits above it
+      var cal = el('div', 'cal');
+      var cb = el('button', 'calb'); cb.type = 'button'; cb.appendChild(el('span', 'em', '🎚️')); cb.appendChild(el('span', '', t('calib')));
+      var ct = el('p', 'calt', t('calibHint')); ct.setAttribute('role', 'status');
+      cb.addEventListener('click', function () {
+        if (S.calib) return;
+        cb.disabled = true; ct.textContent = t('calibListen', { n: 3 });
+        var go = function () { startCalib(function (n) { ct.textContent = t('calibListen', { n: n }); }, function (r) {
+          cb.disabled = false;
+          if (r.ok) { CFG.base = r.base; save(); showLine(); ct.textContent = t('calibDone', { room: r.room, line: lineNow() }); }
+          else ct.textContent = r.why === 'tooLoud' ? t('calibLoud') : t('calibNoMic');
+        }); };
+        if (S.demo || S.forced != null) go();
+        else micStart().then(function (st) { if (st === 'on') go(); else { cb.disabled = false; ct.textContent = t('calibNoMic'); } });
+      });
+      cal.append(cb, ct); right.appendChild(cal);
+      var foot = el('div', 'foot'); card.appendChild(foot);
+      foot.appendChild(el('p', 'privacy', '🔒 ' + t('privacy')));
+      var go = el('div', 'go'); foot.appendChild(go);
+      function close(how) {
+        if (!setupOpen) return; setupOpen = false; save(); clearInterval(lineT); wrap.remove(); document.removeEventListener('keydown', keys, true);
+        if (S.calib) { S.calib = null; }
+        resolve(how);
+      }
+      var start = O.ui.button(opt.edit ? t('backToRemi') : t('startMic'), { kind: 'hot', big: true, icon: opt.edit ? 'play' : undefined, onPress: function () {
+        // the tap that lets the page open the microphone: asked for right now, inside the tap
+        if (!(opt.edit && S.demo)) startP = micStart();
+        close('start');
+      } });
+      if (!opt.edit) start.insertBefore(el('span', 'em', '🎤'), start.firstChild);
+      start.id = 'rqStart'; start.setAttribute('data-start', ''); go.appendChild(start);
+      var demoB = O.ui.button(opt.edit ? t('startOver') : t('tryDemo'), { kind: 'quiet', onPress: function () { if (!opt.edit) { S.demo = true; startP = Promise.resolve('demo'); } close(opt.edit ? 'restart' : 'demo'); } });
+      demoB.id = opt.edit ? 'rqRestart' : 'rqDemo'; go.appendChild(demoB);
+      function keys(e) {
+        if (e.key === 'Tab') { var f = [].slice.call(card.querySelectorAll('button:not([tabindex="-1"]),input')).filter(function (b) { return b.offsetParent; }), i = f.indexOf(document.activeElement); e.preventDefault(); (f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length] || start).focus(); }
+        if (e.key === ' ' || e.key === 'Escape' || e.key === 'p' || e.key === 'P') e.stopPropagation();
+      }
+      document.addEventListener('keydown', keys, true);
+      O.ui.root().appendChild(wrap);
+      setTimeout(function () { try { start.focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 30);
+      setupApi = { close: function () { if (setupOpen) start.click(); }, demo: function () { if (setupOpen) demoB.click(); } };
+    });
+  }
+  function startCalib(onTick, onDone) { S.calib = { samples: [], left: 3, onTick: onTick, onDone: onDone }; }
+  function calibDone() {
+    var c = S.calib; S.calib = null; if (!c) return;
+    var r = CORE.calibrate(c.samples);
+    if (!S.demo && S.screen === 'setup') micStop();
+    if (c.onDone) c.onDone(r);
+  }
+
+  /* the no-mic card: why, how to fix it, and the demo */
+  function noMic(st) {
+    setScreen('nomic'); S.paused = true;
+    var k = ['denied', 'nodevice', 'busy', 'unavailable', 'off', 'needsTap'].indexOf(st) >= 0 ? st : 'unavailable';
+    if (k === 'needsTap') k = 'denied';
+    var wrap = el('div', 'rqs rqn'); wrap.dir = O.dir || 'ltr';
+    var card = el('div', 'rqs-card'); wrap.appendChild(card); card.setAttribute('role', 'alertdialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'rqnH'); card.setAttribute('aria-describedby', 'rqnP');
+    card.appendChild(el('div', 'big', k === 'off' ? '🎧' : '🎤'));
+    var h = el('h2', '', t('noMic_' + k)); h.id = 'rqnH'; card.appendChild(h);
+    var p = el('p', 'why', t('noMic_' + k + '_p')); p.id = 'rqnP'; card.appendChild(p);
+    card.appendChild(el('p', 'privacy', '🔒 ' + t('privacy')));
+    var go = el('div', 'go'); card.appendChild(go);
+    function done() { wrap.remove(); }
+    var again = O.ui.button(t('retry'), { kind: 'hot', big: true, icon: 'restart', onPress: function () {
+      done(); setScreen('play'); micStart().then(function (s2) { if (s2 === 'on') { setDemo(false); S.paused = false; announce(t('remiAsleep'), true); } else noMic(s2); });
+    } });
+    again.id = 'rqRetry';
+    var demo = O.ui.button(t('tryDemo'), { kind: 'go', big: k === 'off', onPress: function () { done(); setScreen('play'); setDemo(true); S.paused = false; announce(t('remiAsleep'), true); } });
+    demo.id = 'rqDemo';
+    if (k !== 'off') go.appendChild(again);
+    go.appendChild(demo);
+    O.ui.root().appendChild(wrap);
+    setTimeout(function () { try { (k === 'off' ? demo : again).focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 30);
+  }
+
+  /* pause: our button, Space, P or Esc, a hidden page, or the page's Stop. The microphone is off while paused. */
+  var pauseOpen = false;
+  function pauseGame(why) {
+    if (S.screen !== 'play' || S.paused || S.ended) return;
+    S.paused = true; micStop(); setScreen('play'); R.root.classList.add('paused');
+    pauseOpen = true;
+    announce(t('paused'), true);
+    O.ui.pause().then(function (r) {
+      pauseOpen = false; R.root.classList.remove('paused');
+      if (r === 'restart') { newSession(); resume(); }
+      else if (r === 'quit') teacherSettings(true);
+      else resume();
+    });
+  }
+  function resume() {
+    if (S.demo) { S.paused = false; return; }
+    // Resume is a tap: the page may open the microphone again
+    micStart().then(function (st) { if (st === 'on') S.paused = false; else noMic(st); });
+  }
+  function teacherSettings(fromPause) {
+    if (S.screen !== 'play' || S.ended) return;
+    S.paused = true; micStop();
+    setupCard({ edit: true }).then(function (how) {
+      setScreen('play');
+      if (how === 'restart') newSession();
+      if (S.core) S.core.goal = CFG.goal;
+      var p = startP; startP = null;
+      if (S.demo) { S.paused = false; return; }
+      (p || micStart()).then(function (st) { if (st === 'on') S.paused = false; else noMic(st); });
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (setupOpen || pauseOpen || S.screen !== 'play' || S.ended) return;
+    if (O.ui.open) return;
+    var tg = e.target && e.target.tagName;
+    if (e.code === 'Space' && (tg === 'BUTTON' || tg === 'INPUT')) return;
+    if (e.code === 'Space' || e.key === 'p' || e.key === 'P' || e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); pauseGame('key'); }
+  }, true);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) pauseGame('hidden'); });
+
+  /* the happy ending: Remi wakes gently, stands with his arms wide, stars and confetti, then the results card */
+  function celebrate() {
+    S.ended = true; micStop(); setScreen('end'); A.celebrate = now();
+    R.bubble.hidden = true;
+    announce(t('endTitle'), true);
+    setTimeout(function () { snd('chirp'); sfx('win'); confetti(); }, 900);
+    try { if (window.BRB) BRB.gameOver({ won: true, score: null }); } catch (e) { /* offline */ }
+    setTimeout(results, A.skip ? 50 : 3000);
+  }
+  function results() {
+    document.documentElement.classList.add('rq-ended');
+    var c = S.core, stars = CORE.stars(c ? c.wakes : 0);
+    var done = O.ui.win({ stars: stars, title: t('endTitle'), next: false, hero: false });
+    setTimeout(function () {
+      var card = document.querySelector('.ok-win .ok-card');
+      if (card && !card.querySelector('.rq-stats')) {
+        var sub = el('p', 'rq-stats');
+        sub.appendChild(el('b', '', t('endSub'))); sub.appendChild(el('br'));
+        sub.appendChild(document.createTextNode(t('endStats', { time: clock(c ? c.quiet : 0), n: c ? c.wakes : 0 })));
+        var sp = card.querySelector('.ok-sparks'); if (sp && sp.nextSibling) card.insertBefore(sub, sp.nextSibling); else card.appendChild(sub);
+      }
+    }, 0);
+    Promise.resolve(done).then(function () {
+      document.documentElement.classList.remove('rq-ended');
+      A.celebrate = null; S.core = null; setScreen('setup');
+      setupCard().then(function (how) { begin(); });
+    });
+  }
+
+  /* ---------- the kit game: the title over our sleeping meadow, then the setup card ---------- */
+  var SET = ['          ', '          ', '          ', '          ', 'P         ', '##########'];
+  var game = O.game({
+    api: 1, title: t('title'), subtitle: t('tag'), titleHue: 'coral',
+    controls: 'none', camera: 'fixed', hero: 'me', hud: [], countdown: 0,
+    level: O.level.grid(SET, {}),
+    intro: function () { return setupCard(); },
+    setup: function () { build(); },
+    testState: function () { return testState(); },
+    on: { start: function () { begin(); }, title: function () { build(); setScreen('title'); } },
+  });
+  build();
+  requestAnimationFrame(frame);
+
+  /* ---------- test hooks (the covers, the e2e tests, the playtest) ---------- */
+  function testState() {
+    var c = S.core;
+    return { remi: true, screen: S.screen, state: c ? c.state : 'asleep', pose: A.to, wakes: c ? c.wakes : 0, quiet: c ? Math.round(c.quiet * 10) / 10 : 0, goal: CFG.goal,
+      line: lineNow(), level: Math.round(S.level * 10) / 10, held: heldNow(), mic: S.mic, demo: S.demo, preset: CFG.preset, fine: CFG.fine, base: CFG.base,
+      paused: S.paused, stars: c ? CORE.stars(c.wakes) : 3, bubble: !!R.bubble && !R.bubble.hidden, saved: load() };
+  }
+  Object.assign(window.__brbTest, {
+    state: function () { return testState(); },
+    setup: function (o) { o = o || {}; if (CORE.PRESET_IDS.indexOf(o.preset) >= 0) CFG.preset = o.preset; if (o.fine != null) CFG.fine = Math.max(-25, Math.min(25, +o.fine || 0)); if (o.goal != null) CFG.goal = Math.max(0, +o.goal || 0); if (o.base != null) CFG.base = +o.base; return testState(); },
+    closeSetup: function () { if (setupApi) setupApi.close(); return true; },
+    demoStart: function () { if (setupApi) setupApi.demo(); return true; },
+    demo: function (on) { if (S.screen === 'play' || S.screen === 'nomic') { var n = document.querySelector('.rqn'); if (n) n.remove(); setScreen('play'); setDemo(on !== false); S.paused = false; } else S.demo = on !== false; return testState(); },
+    level: function (v) { S.forced = v == null ? null : Math.max(0, Math.min(100, +v)); if (v != null) { S.level = S.forced; S.peak = S.forced; } return testState(); },
+    setGoal: function (sec) { CFG.goal = Math.max(0, +sec || 0); if (S.core) S.core.goal = CFG.goal; return testState(); },
+    step: function (ms) { var n = Math.ceil((+ms || 0) / 50); for (var i = 0; i < n; i++) { if (S.heldUntil > now()) S.heldUntil -= 50; tick(0.05); } return testState(); },
+    pose: function (name) { A.forced = name && ART.POSES[name] ? name : null; return testState(); },
+    skipAnimations: function () { A.skip = true; return true; },
+    calibrate: function (samples) { var r = CORE.calibrate(samples || []); if (r.ok) { CFG.base = r.base; save(); } return Object.assign({ line: lineNow() }, r); },
+    sounds: function () { return S.sounds.slice(); },
+    pause: function () { pauseGame('test'); return testState(); },
+  });
+})();
+</script>
