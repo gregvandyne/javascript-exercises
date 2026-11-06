@@ -31,6 +31,9 @@ function ensureUser(req, res) {
 /** School staff and the platform admin can open any step (to preview it); everyone else only open steps. */
 const preview = u => !!u && (u.role === 'admin' || isStaff(u));
 
+/** The step a locked redirect came from (?locked=<step key>): the map says which step to finish first. */
+const lockedKey = req => (STEP.test(String(req.query.locked || '')) ? String(req.query.locked) : '');
+
 router.get('/courses', (req, res) => res.redirect(302, `/courses/${C.COURSES[0].slug}`));
 router.get('/courses/:slug', (req, res) => {
   const c = C.getCourse(req.params.slug);
@@ -57,12 +60,12 @@ router.get('/courses/:slug', (req, res) => {
       body: pathPage({ course: c, ov, units: C.numberQuestCatalogue().units, marks: NQ.totalMarks(user, c),
         daily: NQ.dailyStatus(user, c), laps: Object.fromEntries(NQ.lapsForTier(user, c, 'explorer').map(l => [l.unit, l])),
         placement: placement && placement.startNode ? { ...placement, workshop: NQP.nodeInfo(placement.startNode).workshop } : placement,
-        testedOut: NQP.testedOutUnits(user), canPick: !isGrownup(user), bandSet,
+        testedOut: NQP.testedOutUnits(user), canPick: !isGrownup(user), bandSet, locked: lockedKey(req),
         hasProgress: ov.done > 0 || !!(placement && placement.startNode) }),
       description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
   }
   honourPendingWins(u); // a win earned as a guest lands before the map is drawn
-  page(req, res, { title: t(`${c.key}.title`), active: 'home', body: coursePage({ course: c, games: C.courseGames(u, c), ov: C.overview(u, c), canPick: !isGrownup(u) }),
+  page(req, res, { title: t(`${c.key}.title`), active: 'home', body: coursePage({ course: c, games: C.courseGames(u, c), ov: C.overview(u, c), canPick: !isGrownup(u), preview: preview(u), locked: lockedKey(req) }),
     description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
 });
 
@@ -94,14 +97,14 @@ router.get('/courses/:slug/:step', (req, res) => {
   honourPendingWins(u);
   const s = C.stateOf(u, c, step.key);
   // A locked step goes to the course map (staff and the admin may look at any step).
-  if (!s.open && !preview(u)) return res.redirect(302, `/courses/${c.slug}#step-${step.key}`);
+  if (!s.open && !preview(u)) return res.redirect(302, `/courses/${c.slug}?locked=${step.key}#step-${step.key}`);
   const all = C.steps(c, step.band);
   // The result of a check sent without the page script (?r=<score>).
   const r = /^[0-3]$/.test(String(req.query.r || '')) && !s.checked ? +req.query.r : null;
   const result = r === null ? null : { score: r, passed: r >= C.PASS, results: lastWrong(req, step) };
   page(req, res, { title: `${step.title} · ${req.t(`${c.key}.title`)}`, active: 'home', mid: true,
     head: c.slug === NQ.COURSE_SLUG ? NQ_CSS : '',
-    body: stepPage({ course: c, s, total: all.length, next: all[step.index + 1] || null, seed: seedOf(u), result, signedIn: !!u }), scripts: ['/js/course.js'] });
+    body: stepPage({ course: c, s, total: all.length, next: all[step.index + 1] || null, seed: seedOf(u), result, signedIn: !!u, slides: C.slidesFor(u, c, step) }), scripts: ['/js/course.js'] });
 });
 /** The wrong answers of a check sent without the script come back in the query (?w=<id>,<id>), as ids only. */
 const lastWrong = (req, step) => String(req.query.w || '').split(',').filter(id => step.check.includes(id)).map(id => ({ id, ...C.answerOne(step, id, null) }));
@@ -132,13 +135,38 @@ router.post('/api/courses/:slug/:step/read', ...api, (req, res) => {
 // Lap 1 landing when its last step finishes. No hearts, nothing spent, nothing ranked: the progress
 // service's rules, surfaced. Other courses' responses are untouched.
 const TALLY_PRAISE = ['Tally purrs: exactly right.', 'Tally nods: that is the way.', 'Tally taps her paw: counted and correct.', 'Tally smiles: you saw the pattern.', 'Tally does a little spin: yes!', 'Tally writes it in her book: right.', 'Tally\u2019s tail flicks happily: that is it.', 'Tally headbutts the page, gently: correct.'];
-/** Tally's line for one graded answer, from the item's own misconception tags (banks carry one per choice). */
+/** The frames Tally's wrong-answer line puts a misconception phrase in. A phrase is a kid-readable verb
+ *  phrase about the mix-up ("added the sides instead of multiplying"), so it reads after "the Jumble ...". */
+const JUMBLE_FRAMES = [
+  m => `The Jumble ${m}! Tally says: let's look again, slowly.`,
+  m => `The Jumble grins: that is its favorite mix-up. It ${m}. Tally says: watch what the numbers are really doing.`,
+  m => `Oops, the Jumble ${m}. Tally says: try it step by step.`,
+];
+const TALLY_PLAIN = ['Tally says: have another look, slowly.', 'Tally says: that one is tricky. Read the question once more.', 'Tally says: mix-ups help us learn. Look at the right answer.'];
+/** Does a misconception tag read as a kid sentence that fits the frames? A short lowercase verb phrase of
+ *  plain words ("added the sides instead of multiplying"); not a raw tag ("place-from-other-course",
+ *  "off_by_one", "units?"), not "correct", not a full sentence of its own. */
+export function kidPhrase(tag) {
+  const m = String(tag || '').trim();
+  if (!m || m === 'correct' || m.length > 90 || m.length < 8) return '';
+  if (!/^[a-z]/.test(m) || !/[a-z0-9)]$/i.test(m) || /[_<>{}\[\]]|--|\b[a-z]+-[a-z]+-[a-z]+\b/.test(m)) return '';
+  const words = m.split(/\s+/);
+  if (words.length < 2 || words.length > 14) return '';
+  // The frames need a past-tense verb first ("added", "forgot", "counted", "took", "read", "mixed").
+  return /^([a-z]+ed|forgot|did|took|read|put|left|made|got|thought|swapped|split|wrote|drew|chose|gave|kept|lost|saw|went|ran|said|told|began|broke|threw|stuck|spun|found|mixed|cut|never|let|shrank|sank|hid|bent|flipped|skipped|dropped|stopped|counted|used)$/.test(words[0]) ? m : '';
+}
+/** Tally's line for one graded answer, from the item's own misconception tags (banks carry one per choice).
+ *  A wrong answer whose tag reads as a kid phrase gets the Jumble's line, in one of a few frames (picked by
+ *  the item and the choice, so the same miss reads the same way and different misses vary); any other wrong
+ *  answer gets Tally's plain line. */
 function nqReaction(step, itemId, choice, right) {
-  if (right) return { who: 'tally', text: TALLY_PRAISE[Math.abs([...String(itemId)].reduce((a, ch) => a + ch.charCodeAt(0), 0)) % TALLY_PRAISE.length] };
+  const h = [...String(itemId)].reduce((a, ch) => a + ch.charCodeAt(0), 0);
+  if (right) return { who: 'tally', text: TALLY_PRAISE[h % TALLY_PRAISE.length] };
   const it = C.item(itemId);
-  const misc = it && Array.isArray(it.misconceptions) && Number.isInteger(choice) ? String(it.misconceptions[choice] || '') : '';
-  if (!misc || misc === 'correct') return { who: 'tally', text: 'Tally says: have another look, slowly.' };
-  return { who: 'jumble', text: `The Jumble grins — that is its favourite mix-up: ${misc}. Tally says: watch what the numbers are really doing.` };
+  const misc = it && Array.isArray(it.misconceptions) && Number.isInteger(choice) ? kidPhrase(it.misconceptions[choice]) : '';
+  const k = h + (Number.isInteger(choice) ? choice : 0);
+  if (!misc) return { who: 'tally', text: TALLY_PLAIN[k % TALLY_PLAIN.length] };
+  return { who: 'jumble', text: JUMBLE_FRAMES[k % JUMBLE_FRAMES.length](misc) };
 }
 /** Honour a signed-in student's pending wins (services/courses.js, Greg's guest addendum): wins earned
  *  as a guest and kept until sign-in. Each applied win also earns what a live completion earns — the

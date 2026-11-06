@@ -134,7 +134,7 @@ function resolve(req, b) {
     const st = COURSES.stateOf(req.user, c, step.key);
     const preview = req.user.role === 'admin' || isStaff(req.user);
     if (!preview && !(st && st.open)) return { error: [404, 'off'] };
-    const slide = Number.isInteger(b.i) ? (step.slides || [])[b.i] : null;
+    const slide = Number.isInteger(b.i) ? (COURSES.slidesFor(req.user, c, step) || [])[b.i] : null;
     if (!slide) return { error: [404, 'off'] };
     const g = step.game && lines.GAMES[step.game.slug];
     // Lesson slides are English (the course content is English first): read with the English voice.

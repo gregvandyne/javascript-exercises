@@ -21,7 +21,7 @@ const DIR = path.join(CS, 'course');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { cleanText } = await import('../../server/services/textfilter.js');
 
-const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy'];
+const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy', 'ruler', 'clock', 'coins', 'scale', 'cake', 'shapes', 'angle', 'dice', 'cat'];
 const BANDS = ['1b', '2'];
 const NO_GAME = ['6.1', '6.3'];
 const GAME_TITLE = { 'robo-route': 'Robo Route', 'data-detective': 'Data Detective', 'packet-post': 'Packet Post', 'inside-the-machine': 'Inside the Machine' };
@@ -90,7 +90,8 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'focus', 'story'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'view', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'view', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'] }[s.kind || 'text'];
+      if (s.view !== undefined) assert.ok(s.img && Array.isArray(s.view) && s.view.length === 4 && s.view.every(n => typeof n === 'number'), `${at}: view is [x, y, w, h] in % of its img`);
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
@@ -117,7 +118,7 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
           const [x, y, w, h] = f.box;
           assert.ok(x >= 0 && y >= 0 && w >= 2 && h >= 2 && x + w <= 100 && y + h <= 100, `${fat}: box inside the frame, at least 2% wide/tall`);
           if (f.path != null) {
-            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 8, `${fat}: path of 2-8 points`);
+            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 16, `${fat}: path of 2-16 points`);
             for (const p of f.path) assert.ok(Array.isArray(p) && p.length === 2 && p.every(v => typeof v === 'number' && v >= 0 && v <= 100), `${fat}: path points in % inside the frame`);
           }
         }

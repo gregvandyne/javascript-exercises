@@ -2319,6 +2319,8 @@
     "course": {
       "right": "Richtig!",
       "wrong": "Nicht ganz. Richtig ist: {answer}",
+      "notQuite": "Nicht ganz.",
+      "rightIs": "Richtig ist: {answer}",
       "next": "Nächste Frage",
       "finish": "Mein Ergebnis",
       "listen": "Vorlesen",
@@ -5968,6 +5970,8 @@
       "done": "Fertig",
       "next": "Weiter",
       "locked": "Gesperrt",
+      "preview": "Vorschau",
+      "lockedNote": "Dieser Schritt ist noch gesperrt. Schließ zuerst Schritt {n} ab:",
       "unit": "Einheit {n}",
       "units": "Einheiten {from}–{to}",
       "build": {
@@ -5977,7 +5981,8 @@
       }
     },
     "groups": {
-      "techChoices": "Technik und wir"
+      "techChoices": "Technik und wir",
+      "start": "Hier starten"
     },
     "lesson": {
       "of": "Schritt {n} von {total}",
@@ -5992,7 +5997,9 @@
       "talk": "Sprecht darüber",
       "complete": "Schritt geschafft",
       "playToFinish": "Spiel es, um diesen Schritt abzuschließen.",
-      "nextStep": "Nächster Schritt"
+      "nextStep": "Nächster Schritt",
+      "wholePicture": "Ganzes Bild ansehen",
+      "close": "Schließen"
     },
     "check": {
       "h": "Kurzer Test",
