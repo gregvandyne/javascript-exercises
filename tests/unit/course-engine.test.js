@@ -25,6 +25,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'engine-decks-'));
 for (const b of ['1b', '2']) fs.mkdirSync(path.join(tmp, b), { recursive: true });
 function writeDeck(mutate) {
   const d = JSON.parse(JSON.stringify(SEED_DECK));
+  for (const sl of d.slides) delete sl.view; // the shipped crops are content; each case sets its own
   mutate(d);
   fs.writeFileSync(path.join(tmp, '1b', '1.1.json'), JSON.stringify(d));
   C.reload();
