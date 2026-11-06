@@ -41,6 +41,7 @@ import { pickerFor, parseBankId, SUBJECTS as BANK_SUBJECTS, LEVELS as BANK_LEVEL
 import * as WYR from '../live/wyr.js';
 import * as ATL from '../live/atlas.js';
 import * as TUG from '../live/tug.js';
+import * as DOO from '../live/doodle.js';
 import { tug as tugGen } from '../live/tug-gen.js';
 import { familyOfOwner, familiesOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
@@ -164,6 +165,7 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
     { id: 'atlas', icon: '🌍', title: t('live.mode.atlas'), text: t('live.mode.atlasText'), own: true },
     // Tug of Math Live is two teams: not offered while teams are switched off (LIVE_TEAMS=0)
     ...(LS.teamsOn() ? [{ id: 'tug', icon: '🪢', title: t('live.mode.tug'), text: t('live.mode.tugText'), own: true }] : []),
+    { id: 'doodle', icon: '🦉', title: t('live.mode.doodle'), text: t('live.mode.doodleText'), own: true },
   ].map(m => ({ ...m, cap: A.capacityFor({ mode: m.id }) }));
   const starters = STARTERS.map(id => ({ id, title: t(`live.starter.title.${id.replace('-', '')}`) }));
   const q = req.query;
@@ -181,7 +183,7 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   noStore(res);
   page(req, res, { title: t('live.landing.title'), active: 'classes', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
     body: V.landingBody(req, { modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
-      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req), tug: LS.teamsOn() ? tugPicker(req) : null,
+      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req), tug: LS.teamsOn() ? tugPicker(req) : null, doodle: doodlePicker(req),
       cohost: { invites: CH.invitesFor(u).map(x => ({ sid: x.s.id, title: x.s.title, from: x.from })), on: CH.cohostingFor(u).map(x => ({ sid: x.id, title: x.title })) } }) });
 });
 
@@ -199,6 +201,7 @@ export function starterPre(id) {
   if (s.startsWith('wyr:')) { const p = WYR.parseId(s); return p ? { id: s, kind: 'wyr', mode: 'wyr', wyr: p } : null; }
   if (s.startsWith('atlas:')) { const p = ATL.parseId(s); return p ? { id: s, kind: 'atlas', mode: 'atlas', atlas: p } : null; }
   if (s.startsWith('tug:')) { const p = TUG.parseId(s); return p ? { id: s, kind: 'tug', mode: 'tug', tug: p } : null; }
+  if (s.startsWith('doodle:')) { const p = DOO.parseId(s); return p ? { id: s, kind: 'doodle', mode: 'doodle', doodle: p } : null; }
   if (s.startsWith('bank:')) { const p = parseBankId(s); return p ? { id: s, kind: 'bank', mode: p.board ? 'board' : null, bank: p } : null; }
   return STARTERS.includes(s) ? { id: s, kind: 'fixed', mode: s === 'board' ? 'board' : null } : null;
 }
@@ -229,6 +232,15 @@ const tugPicker = req => {
   // each grade's name in the page's language ("Grade 3", "Groep 5", "Year 4", "כיתה ג׳": not every school counts the same)
   const names = req.t('live.tugUi.grades').split('|');
   return { grades: TUG.GRADES, lens: TUG.LENS, samples, names: Object.fromEntries(TUG.GRADES.map(g => [g, names[g - 1] || String(g)])) };
+};
+/** Doodle Hoot Live's options on the landing: the word language (each named in its own language), the level with
+ *  three sample words, the rounds and the drawing time. */
+const LANG_NAMES = { en: 'English (US)', 'en-GB': 'English (UK)', es: 'Español', fr: 'Français', de: 'Deutsch', it: 'Italiano', pt: 'Português', nl: 'Nederlands', ru: 'Русский', ja: '日本語', 'zh-Hant': '繁體中文', ar: 'العربية', he: 'עברית' };
+const doodlePicker = req => {
+  const names = req.t('live.doodleUi.levels').split('|');
+  const samples = Object.fromEntries(DOO.LANGS.map(l => [l, Object.fromEntries(DOO.LEVELS.map(v => [v, DOO.samples(l, v).join(' · ')]))]));
+  return { langs: DOO.LANGS.map(id => ({ id, name: LANG_NAMES[id] || id })), lang: DOO.langFor(req.locale), levels: DOO.LEVELS.map(v => ({ v, name: names[v - 1] || String(v) })),
+    rounds: DOO.ROUNDS, secs: DOO.SECS, samples };
 };
 const many = v => [].concat(v ?? []).map(String);
 /** The landing form's Would You Rather Live / Atlas Quest Live fields -> their starter id. */
@@ -261,6 +273,12 @@ function sessionOpts(b, req) {
   // Tug of Math Live: its grade and length (the landing's fields, or a starter id); the server makes the questions.
   if (o.mode === 'tug') {
     o.starter = b.starter && TUG.parseId(String(b.starter)) ? String(b.starter) : TUG.makeId({ grade: +b.tugGrade || 3, len: b.tugLen === undefined || b.tugLen === '' ? 90 : +b.tugLen });
+    delete o.setId; delete o.items;
+  }
+  // Doodle Hoot Live: the word language, level, rounds and drawing time (the landing's fields, or a starter id).
+  if (o.mode === 'doodle') {
+    o.starter = b.starter && DOO.parseId(String(b.starter)) ? String(b.starter)
+      : DOO.makeId({ lang: DOO.LANGS.includes(String(b.doodleLang)) ? String(b.doodleLang) : DOO.langFor(req.locale), lvl: +b.doodleLevel || 1, rounds: +b.doodleRounds || 2, secs: +b.doodleSecs || 80 });
     delete o.setId; delete o.items;
   }
   // Game settings: a JSON object, or the landing form's flat fields (classlive-settings checks every value).
@@ -305,6 +323,8 @@ function fromRunOpts(req, b) {
   if (b.fromRun && (A.OWN_QUESTIONS.has(run.mode) || A.GAME_MODES.has(run.mode))) return { ok: false, status: 400, code: 'noMissed' };
   // Tug of Math Live: the same grade and length (kept with the run's settings).
   if (run.mode === 'tug') o.starter = (mine && mine.tug && mine.tug.id) || (settings && TUG.parseId(settings.tug) ? settings.tug : TUG.DEFAULT_ID);
+  // Doodle Hoot Live: the same language, level, rounds and time.
+  if (run.mode === 'doodle') { o.starter = (mine && mine.doodle && mine.doodle.id) || (settings && DOO.parseId(settings.doodle) ? settings.doodle : DOO.DEFAULT_ID); delete o.teams; }
   if (A.OWN_QUESTIONS.has(run.mode) && mine && mine.allItems) o.trusted = mine.allItems.map(it => ({ ...it, secs: it.own || it.secs }));
   if (b.fromRun) {
     const m = R.missedOf(mine ? mine.summary.items : saved.items);

@@ -72,6 +72,9 @@ export const GAMES = {
   'word-peek': { title: 'Word Peek', role: 'narrator', spoken: /./ },
   'would-you-rather': { title: 'Would You Rather?', role: 'narrator', spoken: /./ },
   'would-you-rather-live': { title: 'Would You Rather? (Live)', role: 'narrator', spoken: /./ },
+  // Doodle Hoot: the game's own lines; the secret words are never in its I18N block (and never spoken: a word read
+  // aloud would tell the room the answer)
+  'doodle-hoot': { title: 'Doodle Hoot', role: 'bright', spoken: /./ },
 };
 /** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose
  *  spoken lines the server knows. Every official game is listed (the coverage test in tests/unit/tts-coverage.test.js

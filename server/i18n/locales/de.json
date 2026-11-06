@@ -3859,6 +3859,7 @@
       "packetPost": "Schicke Pakete durchs Netz, wähle starke Passphrasen und erkenne Tricks im Netz.",
       "insideTheMachine": "Baue und repariere Computer: Bauteile, Ein- und Ausgaben, Bits und Pixel, Design für alle.",
       "tugOfMath": "Matheaufgaben für jede Klasse von 1 bis 8, vom Plus im Zahlenraum bis 20 bis zu Gleichungen, als Tauziehen. Gegen den Computer oder zu zweit an einem Bildschirm.",
+      "doodleHoot": "Male ein Wort für die anderen oder setze ihres aus Buchstabenkärtchen zusammen. Leichte, mittlere oder knifflige Wörter in 13 Sprachen, live mit Familie und Freunden oder auf einem Gerät.",
       "remisQuietMeadow": "Eine Lärmampel für die Klasse: Bleibt leise, damit Remi, der Rote Panda, schlafen kann, und zählt gemeinsam die leise Zeit."
     },
     "hubs": {
@@ -4079,7 +4080,8 @@
           "loopLab": "Kästchen antippen, einen Beat bauen und ihn sofort in Dauerschleife hören. Noten lesen ist nicht nötig.",
           "beatLanes": "Im Takt zu bekannten Liedern tippen, zum Anfang mit „Funkel, funkel, kleiner Stern“.",
           "munchMaze": "Eine Jagd durchs Labyrinth mit leichtem Modus: einen Weg planen und alle Kügelchen sammeln.",
-          "tugOfMath": "Klasse 2 oder 3 wählen: Plus, Minus und Einmaleins, mit dem Computer auf Leicht, bis sie ihn schlagen."
+          "tugOfMath": "Klasse 2 oder 3 wählen: Plus, Minus und Einmaleins, mit dem Computer auf Leicht, bis sie ihn schlagen.",
+          "doodleHoot": "Bilderwörter und Buchstabenkärtchen: Rechtschreibung wie bei einem Partyspiel."
         },
         "faq": {
           "q2": "Sind die Spiele zu schwer für 8-Jährige?",
@@ -4109,7 +4111,8 @@
           "loopLab": "Alt genug, um einen ganzen Song zu planen: Beats verbinden und die 10 Musik-Challenges schaffen.",
           "heroOfSunvale": "Mehr als ein schnelles Spiel: Missionen zum Lesen und Befolgen und ein 3D-Königreich, das sie in ihrem eigenen Tempo erkunden.",
           "swishFlick": "Eine kurze Pause mit etwas Physik: Die Richtung des Wischs zielt, und das Tempo bestimmt, wie weit der Ball fliegt.",
-          "tugOfMath": "Klasse 4 und 5 bringen größere Malaufgaben und Punkt vor Strich; zu zweit an einem Tablet oder einer digitalen Tafel."
+          "tugOfMath": "Klasse 4 und 5 bringen größere Malaufgaben und Punkt vor Strich; zu zweit an einem Tablet oder einer digitalen Tafel.",
+          "doodleHoot": "Knifflige Wörter, Antworten aus zwei Wörtern und ein Wettlauf, wer sie zuerst legt."
         },
         "faq": {
           "q2": "Sind die Spiele zu leicht für 10-Jährige?",
@@ -4555,6 +4558,13 @@
       "locked": "Raum geschlossen",
       "autoLock": "Der Raum schließt sich, wenn das Spiel startet.",
       "end": "Spiel beenden",
+      "skipTurn": "Zug überspringen",
+      "clear": "Bild löschen",
+      "clearConfirm": "Das Bild auf allen Bildschirmen löschen?",
+      "copyLink": "Link zum Mitspielen kopieren",
+      "copied": "Link kopiert. Schick ihn deinen Spielern.",
+      "playToo": "Selbst mitspielen",
+      "hidCount": "Spieler, die dieses Bild ausblenden: {count}",
       "endConfirm": "Das Spiel für alle beenden?",
       "remove": "Entfernen",
       "removeConfirm": "Diese Person aus dem Spiel nehmen?",
@@ -4618,7 +4628,9 @@
       "atlas": "Atlas Quest (Live)",
       "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte.",
       "tug": "Tug of Math (Live)",
-      "tugText": "Die Klasse teilt sich in zwei Teams. Alle lösen Matheaufgaben für ihre Klasse auf ihrem eigenen Ziffernblock, und jede richtige Antwort zieht am Seil."
+      "tugText": "Die Klasse teilt sich in zwei Teams. Alle lösen Matheaufgaben für ihre Klasse auf ihrem eigenen Ziffernblock, und jede richtige Antwort zieht am Seil.",
+      "doodle": "Doodle Hoot (Live)",
+      "doodleText": "Eine Person malt, alle anderen setzen das Wort aus Buchstabenkärtchen zusammen. Für Familie oder Freunde, egal wo, jeder auf dem eigenen Gerät."
     },
     "starter": {
       "title": {
@@ -4867,6 +4879,7 @@
         "cat": "Die Kategorie in Frage {n} ist nicht erlaubt."
       },
       "noMissed": "Alle haben alles richtig, es gibt nichts zu wiederholen.",
+      "needTwo": "Zum Start braucht es zwei Spieler.",
       "tugTeams": "Tug of Math braucht zwei Teams, und Teams sind auf dieser Seite ausgeschaltet.",
       "teamsOff": "Dieses Spiel hatte keine Teams.",
       "againGone": "Die Spieler sind gegangen. Starten Sie lieber ein neues Spiel.",
@@ -5317,6 +5330,7 @@
         "resume": "{name} hat das Spiel fortgesetzt",
         "next": "{name} ist weitergegangen",
         "skip": "{name} hat die Frage übersprungen",
+        "clear": "{name} hat das Bild gelöscht",
         "lock": "{name} hat den Raum gesperrt",
         "unlock": "{name} hat den Raum geöffnet",
         "kick": "{name} hat {player} entfernt",
@@ -5409,6 +5423,20 @@
       "of": "von",
       "hint": "Die Spieler werden für dich auf zwei gleich große Teams verteilt. Alle bekommen eigene Aufgaben, also kann niemand abschreiben, und ein kleineres Team zieht genauso stark.",
       "teamsAuto": "Zwei Teams, für dich gebildet: Blaue Wale und Rote Füchse. Du kannst ausgleichen, mischen oder Spieler verschieben."
+    },
+    "doodleUi": {
+      "legend": "Doodle Hoot (Live)",
+      "lang": "Sprache der Wörter",
+      "level": "Wörter",
+      "levels": "Leicht|Mittel|Knifflig",
+      "like": "Wörter wie:",
+      "rounds": "Runden",
+      "roundsList": "1 Runde (jeder malt einmal)|2 Runden|3 Runden",
+      "secs": "Zeit zum Malen",
+      "secsN": "{n} Sekunden",
+      "hint": "Alle malen der Reihe nach. Die Spieler kommen mit dem Code auf ihrem eigenen Gerät dazu, egal wo sie sind. Niemand tippt: geraten wird mit Buchstabenkärtchen, und es gibt keinen Chat.",
+      "bigRoom": "Eine große Gruppe? Eine Runde reicht: Jeder malt einmal.",
+      "play": "Üben oder auf einem Gerät spielen"
     },
     "atlasUi": {
       "legend": "Atlas Quest (Live)",
@@ -5534,6 +5562,10 @@
       "wyr": {
         "h": "Was wäre dir lieber? (Live)",
         "p": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: ein fertiger Gesprächsanlass."
+      },
+      "doodle": {
+        "h": "Doodle Hoot (Live)",
+        "p": "Eine Person malt, die anderen setzen das Wort aus Buchstabenkärtchen zusammen: Rechtschreibung und Wortschatz in 13 Sprachen. Am besten für kleine Gruppen (bis 16); du kannst jederzeit ein Bild löschen oder einen Zug überspringen."
       },
       "tug": {
         "h": "Tug of Math (Live)",

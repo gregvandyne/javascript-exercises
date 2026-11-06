@@ -1,0 +1,1461 @@
+<title>Doodle Hoot</title>
+<style>
+/* Doodle Hoot on the Oomba Kit: one player draws, the others spell the word with letter tiles (never typed text).
+   Live (Oomba Live, mode 'doodle'): each player on their own device, anywhere; the host's screen shows the drawing, the
+   scores and the podium. On its own: "Guess Pip's doodles" (Pip draws, you spell) or pass-and-play on one device.
+   The board is a fixed 4:3 grid drawn on paper white in both themes, so a drawing looks the same on every screen.
+   Layout: portrait stacks the top bar, the board and the tools or tiles; landscape puts the board left and the tools,
+   tiles or scores right. Every control is at least 44px; colour is never the only cue (swatches have names, ticks have
+   a mark). */
+html,body{height:100%}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html.dh-play .ok-hud{display:none!important}
+html.dh-live .ok-row{display:none!important}
+.dh,.dh *{box-sizing:border-box}
+.dh{--ink:#1D2340;--paper:#FFFFFF;--good:#2FA866;--goodTint:#D8F5E4;--bad:#E8604C;--badTint:#FBE0DC;--hint:#7E57D9;--hintTint:#ECE4FF;--chip:#FFF6D6;
+  position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;gap:8px;padding:calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left));
+  background:var(--ok-bg2);color:var(--ok-text);font-family:var(--ok-font,system-ui,sans-serif)}
+.dh.dh-dark{--goodTint:#164A33;--badTint:#55221E;--hintTint:#3A2D63;--chip:#3A3420}
+.dh button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;color:inherit}
+.dh-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* the top bar: round, who is drawing, the clock */
+.dh-top{flex:none;display:flex;align-items:center;gap:8px;min-height:48px}
+.dh-chip{flex:none;display:flex;align-items:center;gap:6px;min-height:40px;padding:2px 12px;border-radius:999px;background:var(--ok-card);border:3px solid var(--ok-edge);font-weight:800;font-size:clamp(13px,1.6vh + .4vw,20px);white-space:nowrap}
+.dh-who{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font-weight:800;font-size:clamp(14px,1.8vh + .5vw,26px);overflow:hidden}
+.dh-who canvas{flex:none;width:40px;height:40px}
+.dh-who span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dh-who.has-word>span:last-child{background:var(--chip);border:3px solid var(--ok-edge);border-radius:14px;padding:2px 10px}
+.dh-who small{font-size:.65em;font-weight:700;opacity:.8}
+.dh-theword{font-weight:900}
+.dh-clock{flex:none;position:relative;width:48px;height:48px;border-radius:50%;background:conic-gradient(var(--good) calc(var(--p,1) * 360deg),var(--ok-card) 0);border:3px solid var(--ok-edge);display:grid;place-items:center}
+.dh-clock b{width:36px;height:36px;border-radius:50%;background:var(--ok-card);display:grid;place-items:center;font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
+.dh-clock.low{background:conic-gradient(var(--bad) calc(var(--p,1) * 360deg),var(--ok-card) 0)}
+/* the word the drawer draws (or a guesser who got it) */
+.dh-word{flex:none;display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:4px 14px;border-radius:16px;background:var(--chip);border:3px solid var(--ok-edge);font-weight:900;font-size:clamp(18px,2.4vh + .8vw,34px);text-align:center}
+.dh-word small{font-size:.55em;font-weight:700;opacity:.8}
+.dh-word.got{background:var(--goodTint)}
+/* the board and the side */
+.dh-main{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+.dh-boardbox{flex:1 1 auto;min-height:120px;container-type:size;display:grid;place-items:center}
+.dh-board{position:relative;width:min(100cqw,133.33cqh);aspect-ratio:4/3;border-radius:18px;background:var(--paper);border:4px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge);overflow:hidden}
+.dh-board canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.dh-board.can-draw canvas{cursor:crosshair}
+.dh-board.is-hidden canvas{filter:blur(22px) grayscale(1);opacity:.35}
+.dh-veil{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;text-align:center;color:#1D2340;font-weight:800;font-size:clamp(15px,2.2vh + .5vw,30px);pointer-events:none}
+.dh-veil canvas{width:auto;height:min(40%,180px)}
+.dh-veil .big{font-size:1.5em}
+.dh-veil .emo{font-size:2.6em;line-height:1}
+.dh-veil.rv{background:rgba(255,255,255,.86)}
+.dh-side{flex:none;display:flex;flex-direction:column;gap:8px;min-height:0}
+/* drawing tools */
+.dh-tools{display:flex;flex-direction:column;gap:8px}
+.dh-sw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.dh-sw button{min-height:44px;border-radius:14px;border:3px solid var(--ok-edge);padding:0;position:relative}
+.dh-sw button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ok-card),0 0 0 6px var(--ok-edge);transform:translateY(-2px)}
+.dh-sw button[aria-pressed="true"]::after{content:'';position:absolute;inset:30%;border-radius:50%;background:currentColor}
+.dh-row{display:flex;gap:6px;flex-wrap:wrap}
+.dh-btn{flex:1 1 0;min-width:44px;min-height:44px;border-radius:14px;border:3px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 3px 0 var(--ok-edge);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:15px;padding:2px 8px;white-space:nowrap}
+.dh-btn svg{width:22px;height:22px;flex:none}
+.dh-btn[aria-pressed="true"]{background:var(--chip);box-shadow:inset 0 3px 0 rgba(0,0,0,.18)}
+.dh-btn:disabled{opacity:.45;cursor:default}
+.dh-btn.hot{background:#FFC83D;color:#1D2340}
+.dh-btn.warn{background:var(--badTint)}
+.dh-size i{display:block;border-radius:50%;background:currentColor}
+.dh-tools{position:relative}
+.dh-cur i{display:block;border-radius:50%;border:2px solid var(--ok-edge)}
+.dh-cur.dh-size i{border:0}
+.dh-szs{display:contents}
+/* a phone held upright: the colours and sizes fold into two buttons, each opening a small tray over the board */
+@media (orientation:portrait){
+  .dh-tools .dh-sw{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 6px);z-index:3;padding:8px;border-radius:18px;background:var(--ok-card);border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge)}
+  .dh-tools.pal-open .dh-sw{display:grid}
+  .dh-szs{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 6px);z-index:3;gap:6px;padding:8px;border-radius:18px;background:var(--ok-card);border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge)}
+  .dh-tools.size-open .dh-szs{display:flex}
+  .dh-tools .dh-note{display:none}
+}
+@media (orientation:landscape){ .dh-cur{display:none!important} }
+.dh-note{margin:0;font-size:13px;font-weight:700;opacity:.8;text-align:center}
+/* slots and tiles */
+.dh-guess{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.dh-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;min-height:44px}
+.dh-wd{display:flex;gap:4px}
+.dh-slot{width:clamp(30px,8.4vw,48px);height:44px;border-radius:10px;border:3px solid var(--ok-edge);border-style:dashed;background:transparent;font-weight:900;font-size:22px;display:grid;place-items:center;padding:0}
+.dh-slot.full{border-style:solid;background:var(--ok-card)}
+.dh-slot.lock{border-style:solid;background:var(--hintTint);cursor:default}
+.dh-guess.ok .dh-slot{background:var(--goodTint);border-style:solid}
+.dh-guess.no .dh-slots{animation:dhShake .35s ease}
+.dh-preview{margin:0;text-align:center;font-size:24px;font-weight:800;min-height:1.3em}
+.dh-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}
+.dh-tile{min-height:48px;border-radius:12px;border:3px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 4px 0 var(--ok-edge);font-weight:900;font-size:24px;padding:0;transition:transform 70ms ease-out}
+.dh-tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ok-edge)}
+.dh-tile.used{opacity:.25;box-shadow:none}
+.dh-tile.gone{visibility:hidden}
+.dh-say{margin:0;min-height:1.3em;text-align:center;font-weight:800}
+.dh-say.good{color:var(--good)}
+/* scores */
+.dh-scores{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;overflow:hidden;min-height:0}
+.dh-scores li{display:flex;align-items:center;gap:8px;min-height:44px;padding:2px 10px;border-radius:14px;background:var(--ok-card);border:3px solid var(--ok-edge);font-weight:800}
+.dh-scores li canvas{width:36px;height:36px;flex:none}
+.dh-scores li .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dh-scores li .s{font-variant-numeric:tabular-nums}
+.dh-scores li.got{background:var(--goodTint)}
+.dh-scores li.dr{background:var(--chip)}
+.dh-scores li .m{width:26px;text-align:center}
+.dh-strip{flex:none;display:flex;gap:6px;overflow:hidden;min-height:0}
+.dh-strip span{flex:none;display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:var(--ok-card);border:2px solid var(--ok-edge);font-weight:800;font-size:13px;white-space:nowrap;min-height:30px}
+.dh-strip span.got{background:var(--goodTint)}
+.dh-strip span.me{outline:3px solid var(--ok-edge)}
+.dh-strip canvas{width:22px;height:22px}
+/* full-screen panels: the lobby, a pick, waiting, the podium, pass-and-play covers */
+.dh-screen{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center;background:var(--ok-bg2);overflow:hidden}
+.dh-screen.below{top:calc(64px + env(safe-area-inset-top))}
+.dh-screen h2{margin:0;font-size:clamp(22px,3vh + 1.2vw,52px);font-weight:900}
+.dh-screen p{margin:0;font-weight:700;font-size:clamp(15px,1.6vh + .6vw,26px);max-width:44em}
+.dh-screen .pip{height:min(28vh,220px);width:auto}
+.dh-people{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:min(96vw,1400px);overflow:hidden}
+.dh-people li{display:flex;flex-direction:column;align-items:center;gap:2px;width:var(--cell,110px);font-weight:800;font-size:clamp(12px,calc(var(--cell,110px) * .13),20px)}
+.dh-people li canvas{width:calc(var(--cell,110px) * .7);height:auto}
+.dh-people li span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--ok-card);border-radius:999px;padding:0 8px}
+.dh-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(96vw,900px)}
+.dh-card{min-height:clamp(96px,22vh,200px);border-radius:20px;border:4px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 6px 0 var(--ok-edge);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;font-weight:900;font-size:clamp(16px,2vh + 1vw,32px);overflow-wrap:anywhere}
+.dh-card .emo{font-size:2em;line-height:1}
+.dh-card:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ok-edge)}
+.dh-podium{display:flex;align-items:flex-end;justify-content:center;gap:clamp(8px,2vw,30px);width:min(96vw,1000px)}
+.dh-podium>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:900;min-width:0}
+.dh-podium canvas{width:min(100%,180px);height:auto}
+.dh-podium .blk{width:100%;border-radius:16px 16px 0 0;border:4px solid var(--ok-edge);background:var(--chip);display:flex;align-items:flex-start;justify-content:center;font-size:clamp(28px,5vh,64px);padding-top:6px}
+.dh-podium .p1 .blk{height:22vh}.dh-podium .p2 .blk{height:15vh}.dh-podium .p3 .blk{height:10vh}
+.dh-podium .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(14px,2vh + .6vw,30px)}
+.dh-big{min-height:56px;min-width:min(80vw,280px);border-radius:18px;border:4px solid var(--ok-edge);background:#FFC83D;color:#1D2340;box-shadow:0 6px 0 var(--ok-edge);font-weight:900;font-size:22px;padding:6px 20px}
+.dh-who-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.dh-who-btns button{min-width:110px;min-height:56px;border-radius:16px;border:3px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 4px 0 var(--ok-edge);display:flex;align-items:center;gap:6px;padding:4px 12px;font-weight:800;font-size:17px}
+.dh-who-btns canvas{width:40px;height:40px}
+.dh-over{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:var(--ok-scrim);pointer-events:none}
+.dh-over b{background:var(--ok-card);color:var(--ok-text);border:4px solid var(--ok-edge);border-radius:24px;box-shadow:0 5px 0 var(--ok-edge);padding:10px 24px;font-size:clamp(28px,min(9vw,8vh),96px);font-weight:900;text-align:center;max-width:90%}
+.dh-toast{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:7;background:var(--ok-card);border:3px solid var(--ok-edge);border-radius:16px;padding:8px 16px;font-weight:800;max-width:90vw;text-align:center}
+/* the setup card (on its own) */
+.dhs{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:12px;background:var(--ok-scrim)}
+.dhs-card{width:min(96vw,560px);max-height:96vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:24px;background:var(--ok-card);color:var(--ok-text);border:4px solid var(--ok-edge);box-shadow:0 6px 0 var(--ok-edge)}
+.dhs-card h2{margin:0;text-align:center;font-size:26px;font-weight:900}
+.dhs-card fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.dhs-card legend{font-weight:800;margin-bottom:4px}
+.dhs-card .opts{display:flex;gap:6px;flex-wrap:wrap}
+.dhs-card .opt{flex:1 1 0;min-width:44px;min-height:48px;border-radius:14px;border:3px solid var(--ok-edge);background:var(--ok-bg2);font-weight:800;font-size:16px;padding:4px 10px}
+.dhs-card .opt[aria-checked="true"]{background:#FFC83D;color:#1D2340}
+.dhs-card p{margin:0;font-size:14px;font-weight:700;opacity:.85;text-align:center}
+/* landscape: the board left, the side right */
+@media (orientation:landscape){
+  .dh-main{flex-direction:row}
+  .dh-side{flex:0 0 clamp(250px,36vw,460px);justify-content:center;overflow:hidden}
+  .dh-host .dh-side{flex-basis:clamp(260px,26vw,440px);justify-content:flex-start}
+  .dh-sw{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (orientation:landscape) and (min-width:1100px) and (min-height:700px){
+  .dh-tile{min-height:60px;font-size:30px}.dh-tray{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
+  .dh-slot{width:52px;height:56px;font-size:28px}
+}
+@media (orientation:landscape) and (max-height:500px){
+  .dh{gap:4px;padding-top:calc(4px + env(safe-area-inset-top));padding-bottom:calc(4px + env(safe-area-inset-bottom))}
+  .dh-top{min-height:40px}.dh-clock{width:42px;height:42px}.dh-clock b{width:30px;height:30px;font-size:13px}
+  .dh-sw{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .dh-sw button,.dh-btn{min-height:40px}
+  .dh-word{min-height:36px;font-size:18px}
+  .dh-tile{min-height:42px;font-size:20px}.dh-slot{height:40px}
+  .dh-tray{grid-template-columns:repeat(auto-fill,minmax(42px,1fr))}
+  .dh-note{display:none}
+}
+.dh.rm *,.rm .dh-guess.no .dh-slots{animation:none!important;transition:none!important}
+@keyframes dhShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+</style>
+<script src="/vendor/oomba-kit/1.1.4/oomba-kit.js" integrity="sha384-zeLmUxnF20GLI7VC6XfgOcb9DiFTxC7mSAc0QTkXllv6zvdzzEFtrAWb6TsmeAIY" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.4/packs/art-animals.js" integrity="sha384-GntsshX3KJc7NNGcJsefnPEcYLfY5lHGL5ow+tGUPHbiwbiLKzdYKFp9uciiblsG" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.4/packs/dress.js" integrity="sha384-lGMyixBO/dQI5mVlIYp2m9rQk1Qiejkp7f7tcNxKKlSew+i0VKx3Soojbns6sDRo" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.4/packs/live.js" integrity="sha384-V/WZAt4Rt7htCl5SRMF8bKpJwS6/1ijg3qNaqdnbhovlXPMbC2Oy6TYc5XrjXx1V" crossorigin="anonymous"></script>
+<script>
+/* doodle-core:begin */
+/* DoodleCore: Doodle Hoot's rules. Pure ES5 plus Intl.Segmenter where there is one; no DOM and no globals but
+   window.DoodleCore. The game, server/live/doodle-core.js (Oomba Live: the server makes the trays and checks every
+   guess) and the unit tests run this same code.
+   - The board is a fixed 1000 x 750 grid (4:3), so a drawing looks the same on every screen. A stroke is
+     { s: id, c: colour 0-11, w: size 0-3, e: 0|1 (eraser), pts: [x, y, x, y, ...] } in whole board units.
+   - An answer is a word (or two) from the reviewed list; a tile is one grapheme (spaces are never tiles). The tray is
+     the answer's tiles plus a few decoys, shuffled; a guess is a list of tray positions, never text. */
+(function (root) {
+  'use strict';
+  var W = 1000, H = 750;
+  /** 12 colours (names are I18N keys c_<name>) and 4 sizes (board units). The paper is always white, even in the dark
+   *  theme, so every screen shows the same drawing; the eraser draws paper. */
+  var PALETTE = ['#1D2340', '#FFFFFF', '#8C93A8', '#E23D3D', '#F28C28', '#FFD23F', '#2FA866', '#14A3A8', '#2F6FDE', '#7E57D9', '#F27BB6', '#8B5A2B'];
+  var COLORS = ['black', 'white', 'grey', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'brown'];
+  var PAPER = '#FFFFFF';
+  var SIZES = [4, 10, 20, 36];
+  /** One stroke message carries at most 60 numbers (30 points); a step between two points is at most 127 units. */
+  var MAX_NUMS = 60, MAX_STEP = 127;
+  /** A tray holds at most 20 tiles; an answer at most 14 (12 a word, 2 words). */
+  var MAX_TILES = 20, MAX_LETTERS = 14, MAX_WORD = 12;
+  var LEVELS = [1, 2, 3];
+  var RTL = { ar: 1, he: 1 };
+  /** When the hints come, as a share of the drawing time: two decoys go, then letters lock into their slots (never more
+   *  than half the word; the last one only for words of 8 or more). */
+  var HINTS = [{ at: 0.40, k: 'decoys', n: 2 }, { at: 0.55, k: 'letter' }, { at: 0.75, k: 'letter' }, { at: 0.85, k: 'letter', min: 8 }];
+  /** Each language's letters for decoys, the common ones more often (ja and zh-Hant take theirs from the word list). */
+  var ALPHA = {
+    en: 'eeeeeeetttttaaaaaooooiiiinnnnsssshhhrrrrdddlllcccuummwwffggyyppbbvkjxqz',
+    es: 'eeeeeeaaaaaaoooooossssrrrrnnnniiiiddddllllccttuummppbbggyvqhfzjñxáéíóú',
+    fr: 'eeeeeeeesssssaaaaaiiiiittttnnnnrrrruuuullllooooddccmmppévqfbghjàxyzèêçâîôû',
+    de: 'eeeeeeeennnnniiiiisssssrrrrraaaaattttddddhhhuuullcccggmmoobbwwffkkzzppvääöüßjyxq',
+    it: 'eeeeeaaaaaiiiiiooooonnnnllllrrrrtttssssccddppuummvvggzzffbbhqàèéìòù',
+    pt: 'aaaaaeeeeeooooosssssrrrriiiinnnndddmmmuuuttcclllppvvggqbfhzjxçãáéíóúâêôõ',
+    nl: 'eeeeeeeennnnnaaaaattttiiiirrrroooodddsssslllgggvvkkhhmmuujjbbzzwppcffëïé',
+    ru: 'оооооеееееааааииииннннттттссссрррвввлллкккммдддппуууяяыыьгзбчйхжшюцщэфъё',
+    ar: 'ااااللللييييممممووووننننررررتتتببعععددسسهفقكحجشصطزخضظغثذءأإآةى',
+    he: 'ייייווווההההממממללללאאאררררבבבתתתששדדעעננככקקפפחחססטטגגזזצצםםןןךךףץ',
+  };
+  /** Letters that look alike or differ by a mark (É and E, Ё and Е, a Hebrew final and its plain letter, the alef
+   *  forms): an easy tray never puts one next to its twin. */
+  var TWIN = { 'ё': 'е', 'й': 'и', 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ة': 'ه', 'ى': 'ي' };
+
+  /** A small seeded random source (mulberry32). */
+  function rng(seed) {
+    var a = (seed >>> 0) || 1;
+    function f() { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+    return {
+      float: f,
+      int: function (n) { return Math.floor(f() * n); },
+      shuffle: function (arr) { for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(f() * (i + 1)), x = arr[i]; arr[i] = arr[j]; arr[j] = x; } return arr; },
+    };
+  }
+
+  /** A string's graphemes (what a reader sees as one letter): Intl.Segmenter where there is one, else code points with
+   *  their combining marks. Always NFC (é is one letter whether it was typed as one code point or two). */
+  function graphemes(str, lang) {
+    str = String(str == null ? '' : str).normalize('NFC');
+    try {
+      if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+        var out = [], it = new Intl.Segmenter(lang || 'en', { granularity: 'grapheme' }).segment(str);
+        Array.from(it, function (x) { out.push(x.segment); });
+        return out;
+      }
+    } catch (e) { /* fall back */ }
+    var cps = Array.from(str), res = [];
+    for (var i = 0; i < cps.length; i++) { if (res.length && /\p{M}/u.test(cps[i])) res[res.length - 1] += cps[i]; else res.push(cps[i]); }
+    return res;
+  }
+  /** An answer's tiles and its words: { g: [graphemes, no spaces], groups: [letters per word] }. */
+  function parts(word, lang) {
+    var ws = String(word || '').normalize('NFC').trim().split(/\s+/).filter(Boolean), g = [], groups = [];
+    ws.forEach(function (w) { var x = graphemes(w, lang); groups.push(x.length); g = g.concat(x); });
+    return { g: g, groups: groups };
+  }
+  /** A tile as shown: capitals where the script has them (ß stays ß; a letter that becomes two stays as it is). */
+  function shown(g, lang) {
+    if (g === 'ß') return g;
+    var u = String(g).toLocaleUpperCase(lang === 'zh-Hant' ? 'zh' : lang || 'en');
+    return graphemes(u).length === 1 ? u : g;
+  }
+  /** A letter's family (its twin key): the letter without its marks, or the listed twin. */
+  function twinKey(g) {
+    if (TWIN[g]) return TWIN[g];
+    var b = String(g).normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return b ? b.normalize('NFC') : g;
+  }
+  var isKata = function (g) { return /[゠-ヿ]/.test(g); };
+  /** How many decoys a tray gets for an answer of n letters at a level. */
+  function decoyCount(n, lvl) {
+    var c = function (v, lo, hi) { return Math.max(lo, Math.min(hi, v)); };
+    var d = lvl === 3 ? c(Math.round(n * 0.6), 4, 7) : lvl === 2 ? c(Math.round(n * 0.5), 3, 5) : c(Math.round(n * 0.4), 2, 4);
+    return Math.max(Math.min(d, MAX_TILES - n), Math.min(2, Math.max(0, MAX_TILES - n)));
+  }
+  /**
+   * The tray for an answer: its tiles plus decoys, shuffled. opts.pool: graphemes to draw decoys from (else the
+   * language's ALPHA); opts.bad(text) -> true when this order of tiles must not be shown (a rude word). Decoys are never
+   * a letter of the answer and never repeat; an easy tray has no twin of an answer letter, a harder one at most one. The
+   * tiles are never in the answer's order. -> { tray: [graphemes], decoys: [tray positions of the decoys], g, groups }
+   */
+  function buildTray(word, lang, lvl, r, opts) {
+    opts = opts || {};
+    var P = parts(word, lang), ans = P.g, inAns = {}, fam = {};
+    ans.forEach(function (g) { inAns[g] = 1; fam[twinKey(g)] = 1; });
+    var pool = opts.pool && opts.pool.length ? opts.pool : graphemes(ALPHA[lang] || ALPHA[String(lang).split('-')[0]] || ALPHA.en, lang);
+    // kana answers draw kana of the same script (hiragana with hiragana, katakana with katakana)
+    if (lang === 'ja') { var k = ans.some(isKata); var same = pool.filter(function (g) { return isKata(g) === k; }); if (same.length >= 8) pool = same; }
+    var want = decoyCount(ans.length, lvl), decoys = [], twins = 0;
+    for (var tries = 0; decoys.length < want && tries < 600; tries++) {
+      var c = pool[r.int(pool.length)];
+      if (!c || /\s/.test(c) || inAns[c] || decoys.indexOf(c) >= 0) continue;
+      if (fam[twinKey(c)]) { if (lvl === 1 || twins >= 1) continue; twins++; }
+      decoys.push(c);
+    }
+    var tiles = ans.concat(decoys), order = tiles.map(function (x, i) { return i; }), joined = ans.join('');
+    for (var a = 0; a < 40; a++) {
+      r.shuffle(order);
+      var text = order.map(function (i) { return tiles[i]; }).join('');
+      if (ans.length > 1 && text.indexOf(joined) >= 0) continue;
+      if (opts.bad && opts.bad(text)) continue;
+      break;
+    }
+    var tray = order.map(function (i) { return tiles[i]; }), dpos = [];
+    order.forEach(function (i, p) { if (i >= ans.length) dpos.push(p); });
+    return { tray: tray, decoys: dpos, g: ans, groups: P.groups };
+  }
+  /** Is this guess right? picks: tray positions in slot order (every slot, hint slots included); locks: { slot: tray
+   *  position } the hints placed. Tiles with the same letter stand in for each other. */
+  function check(tray, ans, picks, locks) {
+    if (!Array.isArray(picks) || !Array.isArray(ans) || picks.length !== ans.length) return false;
+    var seen = {};
+    for (var i = 0; i < picks.length; i++) {
+      var p = picks[i];
+      if (typeof p !== 'number' || p % 1 !== 0 || p < 0 || p >= tray.length || seen[p]) return false;
+      seen[p] = 1;
+      if (locks && locks[i] != null && locks[i] !== p) return false;
+    }
+    for (var j = 0; j < picks.length; j++) if (tray[picks[j]] !== ans[j]) return false;
+    return true;
+  }
+  /** The slots letter hints fill, in order: at most half the word (rounded down), so there is always spelling left. */
+  function hintPlan(len, r) {
+    var s = []; for (var i = 0; i < len; i++) s.push(i);
+    return r.shuffle(s).slice(0, Math.floor(len / 2));
+  }
+  /** A guesser's points: 50-100 by the time left, +20 for the first right guess and +10 for the second, -10 for each
+   *  letter hint already shown, never below 30. */
+  function guessPoints(left, total, order, hints) {
+    var p = Math.round(50 + 50 * Math.max(0, Math.min(1, total ? left / total : 0))) + (order === 0 ? 20 : order === 1 ? 10 : 0) - 10 * (hints || 0);
+    return Math.max(30, p);
+  }
+  /** The drawer's points: 120 shared by the share of the room that guessed it (fair for 2 players or 16). */
+  function drawPoints(solved, eligible) { return eligible > 0 ? Math.round(120 * Math.min(1, solved / eligible)) : 0; }
+
+  var clampX = function (v) { return Math.max(0, Math.min(W, Math.round(v))); };
+  var clampY = function (v) { return Math.max(0, Math.min(H, Math.round(v))); };
+  /** Points as the drawer's device keeps them: whole board units, a point only when it is at least min units from the
+   *  last one kept (the last point of a stroke is always kept by the caller). */
+  function keep(last, x, y, min) {
+    x = clampX(x); y = clampY(y);
+    if (!last) return [x, y];
+    var dx = x - last[0], dy = y - last[1];
+    return dx * dx + dy * dy >= (min || 3) * (min || 3) ? [x, y] : null;
+  }
+  /** The steps between kept points as a message carries them: a long step is cut into steps of at most 127 units. */
+  function steps(from, pts) {
+    var out = [], cx = from[0], cy = from[1];
+    for (var i = 0; i < pts.length; i += 2) {
+      var x0 = cx, y0 = cy, dx = pts[i] - x0, dy = pts[i + 1] - y0, n = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / MAX_STEP));
+      for (var k = 1; k <= n; k++) { var nx = Math.round(x0 + dx * k / n), ny = Math.round(y0 + dy * k / n); out.push(nx - cx, ny - cy); cx = nx; cy = ny; }
+    }
+    return out;
+  }
+
+  /** Draw strokes on a 2D context whose board is scale pixels per unit (a straight line through every point, round
+   *  ends: the same on every device). from: draw only from this point index of the last stroke (live drawing). */
+  function line(ctx, st, scale, from) {
+    var p = st.pts; if (!p || p.length < 2) return;
+    ctx.strokeStyle = st.e ? PAPER : PALETTE[st.c] || PALETTE[0]; ctx.fillStyle = ctx.strokeStyle;
+    ctx.lineWidth = (SIZES[st.w] || SIZES[1]) * scale; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    var i0 = Math.max(0, (from || 0) - 1) * 2;
+    if (p.length === 2 || (p.length - i0) < 4) {
+      if (p.length === 2) { ctx.beginPath(); ctx.arc(p[0] * scale, p[1] * scale, ctx.lineWidth / 2, 0, Math.PI * 2); ctx.fill(); }
+      return;
+    }
+    ctx.beginPath(); ctx.moveTo(p[i0] * scale, p[i0 + 1] * scale);
+    for (var i = i0 + 2; i < p.length; i += 2) ctx.lineTo(p[i] * scale, p[i + 1] * scale);
+    ctx.stroke();
+  }
+  function render(ctx, strokes, scale) {
+    ctx.save(); ctx.fillStyle = PAPER; ctx.fillRect(0, 0, W * scale, H * scale);
+    for (var i = 0; i < strokes.length; i++) line(ctx, strokes[i], scale, 0);
+    ctx.restore();
+  }
+
+  /** The words of one language and level: [{ id, lvl, cat, e (emoji), w }] (a concept with no word there is left out;
+   *  en-GB is English with its own words where they differ). lvl 0: every level. */
+  function words(data, lang, lvl) {
+    if (!data || !data.rows) return [];
+    var col = data.langs.indexOf(lang === 'en-GB' ? 'en' : lang), gb = lang === 'en-GB' ? data.gb || {} : {};
+    if (col < 0) col = 0;
+    var out = [];
+    data.rows.forEach(function (r) {
+      if (lvl && r[1] !== lvl) return;
+      var w = gb[r[0]] || String(r[4]).split('|')[col] || '';
+      if (w) out.push({ id: r[0], lvl: r[1], cat: r[2], e: r[3], w: w.normalize('NFC') });
+    });
+    return out;
+  }
+  /** Decoy pool for a language whose letters come from its own words (ja kana, zh-Hant characters). */
+  function wordPool(data, lang) {
+    if (lang !== 'ja' && lang !== 'zh-Hant') return null;
+    var seen = {}, out = [];
+    words(data, lang, 0).forEach(function (x) { parts(x.w, lang).g.forEach(function (g) { if (!seen[g]) { seen[g] = 1; out.push(g); } }); });
+    return out;
+  }
+
+  root.DoodleCore = {
+    W: W, H: H, PALETTE: PALETTE, COLORS: COLORS, PAPER: PAPER, SIZES: SIZES, MAX_NUMS: MAX_NUMS, MAX_STEP: MAX_STEP,
+    MAX_TILES: MAX_TILES, MAX_LETTERS: MAX_LETTERS, MAX_WORD: MAX_WORD, LEVELS: LEVELS, RTL: RTL, HINTS: HINTS, ALPHA: ALPHA, TWIN: TWIN,
+    rng: rng, graphemes: graphemes, parts: parts, shown: shown, twinKey: twinKey, decoyCount: decoyCount, buildTray: buildTray,
+    check: check, hintPlan: hintPlan, guessPoints: guessPoints, drawPoints: drawPoints, keep: keep, steps: steps,
+    line: line, render: render, words: words, wordPool: wordPool, dir: function (lang) { return RTL[lang] ? 'rtl' : 'ltr'; },
+  };
+})(window);
+/* doodle-core:end */
+/* doodle-words:begin */
+/* DoodleWords: the reviewed word list, one row per thing to draw: [id, level 1-3, category, emoji, words]. The words
+   are in the order of langs, joined with |; an empty one leaves that thing out of that language (no good short word,
+   or more than 2 words, 12 letters a word or 14 in all). Every word is a picture a child can draw without letters:
+   nothing scary, rude, branded or about people's names, flags or faith. tests/unit/doodle-words.test.js checks every
+   word against all 13 rude-word lists and the scripts each language may use. Latin and Cyrillic words are kept in
+   lower case (tiles show capitals); Japanese is kana as children write it (hiragana, katakana for loanwords); Arabic
+   has no vowel marks and Hebrew no niqqud. The server reads this block too (server/live/doodle-core.js). */
+window.DoodleWords = {
+  langs: ['en', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he'],
+  gb: { cookie: 'biscuit', firetruck: 'fire engine', backpack: 'rucksack', ferriswheel: 'big wheel'},
+  rows: [
+    ['cat', 1, 'animals', '🐱', 'cat|gato|chat|katze|gatto|gato|kat|кошка|ねこ|小貓|قطة|חתול'],
+    ['dog', 1, 'animals', '🐶', 'dog|perro|chien|hund|cane|cachorro|hond|собака|いぬ|小狗|كلب|כלב'],
+    ['fish', 1, 'animals', '🐟', 'fish|pez|poisson|fisch|pesce|peixe|vis|рыба|さかな|小魚|سمكة|דג'],
+    ['bird', 1, 'animals', '🐦', 'bird|pájaro|oiseau|vogel|uccello|pássaro|vogel|птица|とり|小鳥|طائر|ציפור'],
+    ['sun', 1, 'nature', '☀️', 'sun|sol|soleil|sonne|sole|sol|zon|солнце|たいよう|太陽|شمس|שמש'],
+    ['moon', 1, 'space', '🌙', 'moon|luna|lune|mond|luna|lua|maan|луна|つき|月亮|قمر|ירח'],
+    ['star', 1, 'space', '⭐', 'star|estrella|étoile|stern|stella|estrela|ster|звезда|ほし|星星|نجمة|כוכב'],
+    ['tree', 1, 'nature', '🌳', 'tree|árbol|arbre|baum|albero|árvore|boom|дерево||樹木|شجرة|עץ'],
+    ['flower', 1, 'nature', '🌸', 'flower|flor|fleur|blume|fiore|flor|bloem|цветок|はな|花朵|زهرة|פרח'],
+    ['house', 1, 'home', '🏠', 'house|casa|maison|haus|casa|casa|huis|дом|いえ|房子|بيت|בית'],
+    ['car', 1, 'vehicles', '🚗', 'car|coche|voiture|auto|macchina|carro|auto|машина|くるま|汽車|سيارة|מכונית'],
+    ['ball', 1, 'toys', '⚽', 'ball|pelota|balle|ball|palla|bola|bal|мяч|ボール|皮球|كرة|כדור'],
+    ['apple', 1, 'food', '🍎', 'apple|manzana|pomme|apfel|mela|maçã|appel|яблоко|りんご|蘋果|تفاحة|תפוח'],
+    ['banana', 1, 'food', '🍌', 'banana|plátano|banane|banane|banana|banana|banaan|банан|バナナ|香蕉|موزة|בננה'],
+    ['cake', 1, 'food', '🎂', 'cake|pastel|gâteau|kuchen|torta|bolo|taart|торт|ケーキ|蛋糕|كعكة|עוגה'],
+    ['hat', 1, 'clothes', '🎩', 'hat|sombrero|chapeau|hut|cappello|chapéu|hoed|шляпа|ぼうし|帽子|قبعة|כובע'],
+    ['shoe', 1, 'clothes', '👟', 'shoe|zapato|chaussure|schuh|scarpa|sapato|schoen|ботинок|くつ|鞋子|حذاء|נעל'],
+    ['book', 1, 'school', '📖', 'book|libro|livre|buch|libro|livro|boek|книга|ほん|書本|كتاب|ספר'],
+    ['cup', 1, 'home', '☕', 'cup|taza|tasse|tasse|tazza|xícara|kopje|чашка|カップ|杯子|كوب|ספל'],
+    ['egg', 1, 'food', '🥚', 'egg|huevo|œuf|ei|uovo|ovo|ei|яйцо|たまご|雞蛋|بيضة|ביצה'],
+    ['boat', 1, 'vehicles', '⛵', 'boat|barco|bateau|boot|barca|barco|boot|лодка|ふね|小船|قارب|סירה'],
+    ['bus', 1, 'vehicles', '🚌', 'bus|autobús|bus|bus|autobus|ônibus|bus|автобус|バス|公車|حافلة|אוטובוס'],
+    ['cloud', 1, 'weather', '☁️', 'cloud|nube|nuage|wolke|nuvola|nuvem|wolk|облако|くも|雲朵|غيمة|ענן'],
+    ['snake', 1, 'animals', '🐍', 'snake|serpiente|serpent|schlange|serpente|cobra|slang|змея|へび|小蛇|أفعى|נחש'],
+    ['duck', 1, 'animals', '🦆', 'duck|pato|canard|ente|anatra|pato|eend|утка|アヒル|鴨子|بطة|ברווז'],
+    ['pig', 1, 'animals', '🐷', 'pig|cerdo|cochon|schwein|maiale|porco|varken|свинья|ぶた|小豬||'],
+    ['cow', 1, 'animals', '🐮', 'cow|vaca|vache|kuh|mucca|vaca|koe|корова|うし|乳牛|بقرة|פרה'],
+    ['frog', 1, 'animals', '🐸', 'frog|rana|grenouille|frosch|rana|sapo|kikker|лягушка|かえる|青蛙|ضفدع|צפרדע'],
+    ['bee', 1, 'animals', '🐝', 'bee|abeja|abeille|biene|ape|abelha|bij|пчела|はち|蜜蜂|نحلة|דבורה'],
+    ['mouse', 1, 'animals', '🐭', 'mouse|ratón|souris|maus|topo|rato|muis|мышь|ねずみ|老鼠|فأر|עכבר'],
+    ['rabbit', 1, 'animals', '🐰', 'rabbit|conejo|lapin|hase|coniglio|coelho|konijn|кролик|うさぎ|兔子|أرنب|ארנב'],
+    ['bear', 1, 'animals', '🐻', 'bear|oso|ours|bär|orso|urso|beer|медведь|くま|小熊|دب|דוב'],
+    ['lion', 1, 'animals', '🦁', 'lion|león|lion|löwe|leone|leão|leeuw|лев|ライオン|獅子|أسد|אריה'],
+    ['horse', 1, 'animals', '🐴', 'horse|caballo|cheval|pferd|cavallo|cavalo|paard|лошадь|うま|小馬|حصان|סוס'],
+    ['sheep', 1, 'animals', '🐑', 'sheep|oveja|mouton|schaf|pecora|ovelha|schaap|овца|ひつじ|綿羊|خروف|כבשה'],
+    ['owl', 1, 'animals', '🦉', 'owl|búho|hibou|eule|gufo|coruja|uil|сова|ふくろう|貓頭鷹|بومة|ינשוף'],
+    ['turtle', 1, 'animals', '🐢', 'turtle|tortuga|tortue|schildkröte|tartaruga|tartaruga|schildpad|черепаха|かめ|烏龜|سلحفاة|צב'],
+    ['snail', 1, 'animals', '🐌', 'snail|caracol|escargot|schnecke|lumaca|caracol|slak|улитка|かたつむり|蝸牛|حلزون|חילזון'],
+    ['eye', 1, 'body', '👁️', 'eye|ojo|œil|auge|occhio|olho|oog|глаз||眼睛|عين|עין'],
+    ['hand', 1, 'body', '✋', 'hand|mano|main|hand|mano|mão|hand|рука||手掌|يد|יד'],
+    ['nose', 1, 'body', '👃', 'nose|nariz|nez|nase|naso|nariz|neus|нос||鼻子|أنف|אף'],
+    ['ear', 1, 'body', '👂', 'ear|oreja|oreille|ohr|orecchio|orelha|oor|ухо|みみ|耳朵|أذن|אוזן'],
+    ['tooth', 1, 'body', '🦷', 'tooth|diente|dent|zahn|dente|dente|tand|зуб||牙齒|سن|שן'],
+    ['door', 1, 'home', '🚪', 'door|puerta|porte|tür|porta|porta|deur|дверь|ドア|大門|باب|דלת'],
+    ['bed', 1, 'home', '🛏️', 'bed|cama|lit|bett|letto|cama|bed|кровать|ベッド|床鋪|سرير|מיטה'],
+    ['chair', 1, 'home', '🪑', 'chair|silla|chaise|stuhl|sedia|cadeira|stoel|стул|いす|椅子|كرسي|כיסא'],
+    ['key', 1, 'home', '🔑', 'key|llave|clé|schlüssel|chiave|chave|sleutel|ключ|かぎ|鑰匙|مفتاح|מפתח'],
+    ['clock', 1, 'home', '⏰', 'clock|reloj|horloge|uhr|orologio|relógio|klok|часы|とけい|時鐘|ساعة|שעון'],
+    ['bell', 1, 'music', '🔔', 'bell|campana|cloche|glocke|campana|sino|bel|колокол|ベル|鈴鐺|جرس|פעמון'],
+    ['kite', 1, 'toys', '🪁', 'kite|cometa||drachen|aquilone|pipa|vlieger|воздушный змей||風箏|طائرة ورقية|עפיפון'],
+    ['balloon', 1, 'toys', '🎈', 'balloon|globo|ballon|ballon|palloncino|balão|ballon|шарик|ふうせん|氣球|بالون|בלון'],
+    ['pizza', 1, 'food', '🍕', 'pizza|pizza|pizza|pizza|pizza|pizza|pizza|пицца|ピザ|披薩|بيتزا|פיצה'],
+    ['carrot', 1, 'food', '🥕', 'carrot|zanahoria|carotte|karotte|carota|cenoura|wortel|морковь|にんじん|紅蘿蔔|جزرة|גזר'],
+    ['bread', 1, 'food', '🍞', 'bread|pan|pain|brot|pane|pão|brood|хлеб|パン|麵包|خبز|לחם'],
+    ['cheese', 1, 'food', '🧀', 'cheese|queso|fromage|käse|formaggio|queijo|kaas|сыр|チーズ|起司|جبن|גבינה'],
+    ['grapes', 1, 'food', '🍇', 'grapes|uvas|raisin|trauben|uva|uva|druiven|виноград|ぶどう|葡萄|عنب|ענבים'],
+    ['pear', 1, 'food', '🍐', 'pear|pera|poire|birne|pera|pera|peer|груша|なし|梨子|كمثرى|אגס'],
+    ['lemon', 1, 'food', '🍋', 'lemon|limón|citron|zitrone|limone|limão|citroen|лимон|レモン|檸檬|ليمون|לימון'],
+    ['heart', 1, 'things', '❤️', 'heart|corazón|cœur|herz|cuore|coração|hart|сердце|ハート|愛心|قلب|לב'],
+    ['pencil', 1, 'school', '✏️', 'pencil|lápiz|crayon|stift|matita|lápis|potlood|карандаш|えんぴつ|鉛筆|قلم|עיפרון'],
+    ['leaf', 1, 'nature', '🍃', 'leaf|hoja|feuille|blatt|foglia|folha|blad|лист|はっぱ|葉子|ورقة|עלה'],
+    ['sock', 1, 'clothes', '🧦', 'sock|calcetín|chaussette|socke|calzino|meia|sok|носок|くつした|襪子|جورب|גרב'],
+    ['train', 1, 'vehicles', '🚆', 'train|tren|train|zug|treno|trem|trein|поезд|でんしゃ|火車|قطار|רכבת'],
+    ['plane', 1, 'vehicles', '✈️', 'plane|avión|avion|flugzeug|aereo|avião|vliegtuig|самолёт|ひこうき|飛機|طائرة|מטוס'],
+    ['bike', 1, 'vehicles', '🚲', 'bike|bicicleta|vélo|fahrrad|bici|bicicleta|fiets|велосипед|じてんしゃ|腳踏車|دراجة|אופניים'],
+
+    ['rainbow', 2, 'weather', '🌈', 'rainbow|arcoíris||regenbogen|arcobaleno||regenboog|радуга|にじ|彩虹|قوس قزح|קשת'],
+    ['castle', 2, 'places', '🏰', 'castle|castillo|château|burg|castello|castelo|kasteel|замок|おしろ|城堡|قلعة|טירה'],
+    ['rocket', 2, 'space', '🚀', 'rocket|cohete|fusée|rakete|razzo|foguete|raket|ракета|ロケット|火箭|صاروخ|רקטה'],
+    ['octopus', 2, 'animals', '🐙', 'octopus|pulpo|pieuvre|krake|polpo|polvo|octopus|осьминог|たこ|章魚|أخطبوط|תמנון'],
+    ['umbrella', 2, 'weather', '☂️', 'umbrella|paraguas|parapluie|regenschirm|ombrello||paraplu|зонт|かさ|雨傘|مظلة|מטרייה'],
+    ['snowman', 2, 'weather', '⛄', 'snowman||||||sneeuwpop|снеговик|ゆきだるま|雪人|رجل الثلج|איש שלג'],
+    ['robot', 2, 'toys', '🤖', 'robot|robot|robot|roboter|robot|robô|robot|робот|ロボット|機器人|روبوت|רובוט'],
+    ['dragon', 2, 'fantasy', '🐉', 'dragon|dragón|dragon|drache|drago|dragão|draak|дракон|ドラゴン|巨龍|تنين|דרקון'],
+    ['crown', 2, 'things', '👑', 'crown|corona|couronne|krone|corona|coroa|kroon|корона|おうかん|皇冠|تاج|כתר'],
+    ['guitar', 2, 'music', '🎸', 'guitar|guitarra|guitare|gitarre|chitarra|violão|gitaar|гитара|ギター|吉他|جيتار|גיטרה'],
+    ['drum', 2, 'music', '🥁', 'drum|tambor|tambour|trommel|tamburo|tambor|trommel|барабан|たいこ|大鼓|طبل|תוף'],
+    ['piano', 2, 'music', '🎹', 'piano|piano|piano|klavier|piano|piano|piano|пианино|ピアノ|鋼琴|بيانو|פסנתר'],
+    ['camera', 2, 'things', '📷', 'camera|cámara|appareil photo|kamera||câmera|camera|фотоаппарат|カメラ|相機|كاميرا|מצלמה'],
+    ['glasses', 2, 'clothes', '👓', 'glasses|gafas|lunettes|brille|occhiali|óculos|bril|очки|めがね|眼鏡|نظارة|משקפיים'],
+    ['scissors', 2, 'school', '✂️', 'scissors|tijeras|ciseaux|schere|forbici|tesoura|schaar|ножницы|はさみ|剪刀|مقص|מספריים'],
+    ['ladder', 2, 'home', '🪜', 'ladder|escalera|échelle|leiter|scala|escada|ladder|лестница|はしご|梯子|سلم|סולם'],
+    ['bridge', 2, 'places', '🌉', 'bridge|puente|pont|brücke|ponte|ponte|brug|мост|はし|大橋|جسر|גשר'],
+    ['tent', 2, 'places', '⛺', 'tent|carpa|tente|zelt|tenda|barraca|tent|палатка|テント|帳篷|خيمة|אוהל'],
+    ['volcano', 2, 'nature', '🌋', 'volcano|volcán|volcan|vulkan|vulcano|vulcão|vulkaan|вулкан|かざん|火山|بركان|הר געש'],
+    ['island', 2, 'nature', '🏝️', 'island|isla|île|insel|isola|ilha|eiland|остров|しま|小島|جزيرة|אי'],
+    ['whale', 2, 'animals', '🐳', 'whale|ballena|baleine|wal|balena|baleia|walvis|кит|くじら|鯨魚|حوت|לוויתן'],
+    ['shark', 2, 'animals', '🦈', 'shark|tiburón|requin|hai|squalo|tubarão|haai|акула|サメ|鯊魚|قرش|כריש'],
+    ['penguin', 2, 'animals', '🐧', 'penguin|pingüino|pingouin|pinguin|pinguino|pinguim|pinguïn|пингвин|ペンギン|企鵝|بطريق|פינגווין'],
+    ['giraffe', 2, 'animals', '🦒', 'giraffe|jirafa|girafe|giraffe|giraffa|girafa|giraf|жираф|キリン|長頸鹿|زرافة|'],
+    ['elephant', 2, 'animals', '🐘', 'elephant|elefante|éléphant|elefant|elefante|elefante|olifant|слон|ぞう|大象|فيل|פיל'],
+    ['monkey', 2, 'animals', '🐒', 'monkey|mono|singe|affe|scimmia|macaco|aap|обезьяна|さる|猴子|قرد|קוף'],
+    ['zebra', 2, 'animals', '🦓', 'zebra|cebra|zèbre|zebra|zebra|zebra|zebra|зебра|シマウマ|斑馬|حمار وحشي|זברה'],
+    ['crab', 2, 'animals', '🦀', 'crab|cangrejo|crabe|krabbe|granchio|caranguejo|krab|краб|かに|螃蟹|سلطعون|סרטן'],
+    ['butterfly', 2, 'animals', '🦋', 'butterfly|mariposa|papillon||farfalla|borboleta|vlinder|бабочка|ちょうちょ|蝴蝶|فراشة|פרפר'],
+    ['dinosaur', 2, 'animals', '🦕', 'dinosaur|dinosaurio|dinosaure|dinosaurier|dinosauro|dinossauro|dinosaurus|динозавр|きょうりゅう|恐龍|ديناصور|דינוזאור'],
+    ['mushroom', 2, 'nature', '🍄', 'mushroom|seta|champignon|pilz|fungo|cogumelo|paddenstoel|гриб|きのこ|蘑菇|فطر|פטרייה'],
+    ['cactus', 2, 'nature', '🌵', 'cactus|cactus|cactus|kaktus|cactus|cacto|cactus|кактус|サボテン|仙人掌|صبار|קקטוס'],
+    ['pumpkin', 2, 'food', '🎃', 'pumpkin|calabaza|citrouille|kürbis|zucca|abóbora|pompoen|тыква|かぼちゃ|南瓜|يقطين|דלעת'],
+    ['strawberry', 2, 'food', '🍓', 'strawberry|fresa|fraise|erdbeere|fragola|morango|aardbei|клубника|いちご|草莓|فراولة|תות'],
+    ['watermelon', 2, 'food', '🍉', 'watermelon|sandía|pastèque|wassermelone|anguria|melancia|watermeloen|арбуз|すいか|西瓜|بطيخ|אבטיח'],
+    ['pineapple', 2, 'food', '🍍', 'pineapple|piña|ananas|ananas|ananas|abacaxi|ananas|ананас|パイナップル|鳳梨|أناناس|אננס'],
+    ['sandwich', 2, 'food', '🥪', 'sandwich|sándwich|sandwich|sandwich|panino|sanduíche|boterham|бутерброд|サンドイッチ|三明治|شطيرة|כריך'],
+    ['cookie', 2, 'food', '🍪', 'cookie|galleta|biscuit|keks|biscotto|biscoito|koekje|печенье|クッキー|餅乾|بسكويت|עוגייה'],
+    ['lollipop', 2, 'food', '🍭', 'lollipop|piruleta|sucette|lutscher||pirulito|lolly|леденец|キャンディ|棒棒糖|مصاصة|סוכרייה'],
+    ['unicorn', 2, 'fantasy', '🦄', 'unicorn|unicornio|licorne|einhorn|unicorno|unicórnio|eenhoorn|единорог|ユニコーン|獨角獸||חד קרן'],
+    ['mermaid', 2, 'fantasy', '🧜', 'mermaid|sirena|sirène|meerjungfrau|sirena|sereia|zeemeermin|русалка|にんぎょ|美人魚|حورية البحر|בת ים'],
+    ['helicopter', 2, 'vehicles', '🚁', 'helicopter|helicóptero|hélicoptère|hubschrauber|elicottero|helicóptero|helikopter|вертолёт|ヘリコプター|直升機|مروحية|מסוק'],
+    ['tractor', 2, 'vehicles', '🚜', 'tractor|tractor|tracteur|traktor|trattore|trator|tractor|трактор|トラクター|拖拉機|جرار|טרקטור'],
+    ['anchor', 2, 'things', '⚓', 'anchor|ancla|ancre|anker|ancora|âncora|anker|якорь|いかり|船錨|مرساة|עוגן'],
+    ['planet', 2, 'space', '🪐', 'planet|planeta|planète|planet|pianeta|planeta|planeet|планета|わくせい|行星|كوكب|כוכב לכת'],
+    ['telescope', 2, 'space', '🔭', 'telescope|telescopio|télescope|teleskop|telescopio|telescópio|telescoop|телескоп|ぼうえんきょう|望遠鏡|تلسكوب|טלסקופ'],
+    ['magnet', 2, 'school', '🧲', 'magnet|imán|aimant|magnet|calamita|ímã|magneet|магнит|じしゃく|磁鐵|مغناطيس|מגנט'],
+    ['toothbrush', 2, 'home', '🪥', 'toothbrush|||zahnbürste|spazzolino|||зубная щётка|はぶらし|牙刷|فرشاة أسنان|מברשת שיניים'],
+    ['hammer', 2, 'things', '🔨', 'hammer|martillo|marteau|hammer|martello|martelo|hamer|молоток|かなづち|鐵鎚|مطرقة|פטיש'],
+    ['spoon', 2, 'home', '🥄', 'spoon|cuchara|cuillère|löffel|cucchiaio|colher|lepel|ложка|スプーン|湯匙|ملعقة|כפית'],
+    ['teapot', 2, 'home', '🫖', 'teapot|tetera|théière|teekanne|teiera|bule|theepot|чайник|きゅうす|茶壺|إبريق|קומקום'],
+    ['trophy', 2, 'sports', '🏆', 'trophy|trofeo|trophée|pokal|trofeo|troféu|beker|кубок|トロフィー|獎盃|كأس|גביע'],
+    ['medal', 2, 'sports', '🏅', 'medal|medalla|médaille|medaille|medaglia|medalha|medaille|медаль|メダル|獎牌|ميدالية|מדליה'],
+    ['glove', 2, 'clothes', '🧤', 'glove|guante|gant|handschuh|guanto|luva|handschoen|перчатка|てぶくろ|手套|قفاز|כפפה'],
+    ['scarf', 2, 'clothes', '🧣', 'scarf|bufanda|écharpe|schal|sciarpa|cachecol|sjaal|шарф|マフラー|圍巾|وشاح|צעיף'],
+    ['backpack', 2, 'school', '🎒', 'backpack|mochila|cartable|rucksack|zaino|mochila|rugzak|рюкзак|リュック|背包|حقيبة ظهر|תרמיל'],
+    ['envelope', 2, 'things', '✉️', 'envelope|sobre|enveloppe|umschlag|busta|envelope|envelop|конверт|ふうとう|信封|ظرف|מעטפה'],
+    ['map', 2, 'school', '🗺️', 'map|mapa|carte|karte|mappa|mapa|kaart|карта|ちず|地圖|خريطة|מפה'],
+    ['feather', 2, 'nature', '🪶', 'feather|pluma|plume|feder|piuma|pena|veer|перо|はね|羽毛|ريشة|נוצה'],
+    ['snowflake', 2, 'weather', '❄️', 'snowflake||flocon|schneeflocke|||sneeuwvlok|снежинка||雪花|ندفة ثلج|פתית שלג'],
+
+    ['icecream', 3, 'food', '🍦', 'ice cream|helado|glace|eis|gelato|sorvete|ijsje|мороженое|アイス|冰淇淋|مثلجات|גלידה'],
+    ['swimming', 3, 'actions', '🏊', 'swimming|nadar|nager|schwimmen|nuotare|nadar|zwemmen|плавать|すいえい|游泳|سباحة|שחייה'],
+    ['juggling', 3, 'actions', '🤹', 'juggling|malabares|jongler|jonglieren|giocoleria|malabarismo|jongleren|жонглировать|ジャグリング|雜耍||להטוטים'],
+    ['sleeping', 3, 'actions', '😴', 'sleeping|dormir|dormir|schlafen|dormire|dormir|slapen|спать|ねる|睡覺|نوم|שינה'],
+    ['dancing', 3, 'actions', '💃', 'dancing|bailar|danser|tanzen|ballare|dançar|dansen|танцевать|ダンス|跳舞|رقص|ריקוד'],
+    ['running', 3, 'actions', '🏃', 'running|correr|courir|rennen|correre|correr|rennen|бегать|はしる|跑步|جري|ריצה'],
+    ['fishing', 3, 'actions', '🎣', 'fishing|pescar|pêcher|angeln|pescare|pescar|vissen|рыбалка|つり|釣魚|صيد|דיג'],
+    ['painting', 3, 'actions', '🎨', 'painting|pintar|peindre|malen|dipingere|pintar|schilderen|рисовать|おえかき|畫畫|رسم|ציור'],
+    ['skiing', 3, 'sports', '⛷️', 'skiing|esquiar|ski|skifahren|sciare|esquiar|skiën|лыжи|スキー|滑雪|تزلج|סקי'],
+    ['surfing', 3, 'sports', '🏄', 'surfing|surf|surf|surfen|surf|surfe|surfen|серфинг|サーフィン|衝浪|ركوب الأمواج|גלישה'],
+    ['singing', 3, 'actions', '🎤', 'singing|cantar|chanter|singen|cantare|cantar|zingen|петь|うたう|唱歌|غناء|שירה'],
+    ['cooking', 3, 'actions', '🍳', 'cooking|cocinar|cuisiner|kochen|cucinare|cozinhar|koken|готовить|りょうり|煮飯|طبخ|בישול'],
+    ['laughing', 3, 'actions', '😂', 'laughing|reír|rire|lachen|ridere|rir|lachen|смеяться|わらう|大笑|ضحك|צחוק'],
+    ['climbing', 3, 'sports', '🧗', 'climbing|escalar|grimper|klettern|arrampicare|escalar|klimmen|лазать|やまのぼり|攀岩|تسلق|טיפוס'],
+    ['astronaut', 3, 'jobs', '🧑‍🚀', 'astronaut|astronauta|astronaute|astronaut|astronauta|astronauta|astronaut|космонавт|うちゅうひこうし|太空人|رائد فضاء|אסטרונאוט'],
+    ['waterfall', 3, 'nature', '🏞️', 'waterfall|cascada|cascade|wasserfall|cascata|cachoeira|waterval|водопад|たき|瀑布|شلال|מפל'],
+    ['firetruck', 3, 'vehicles', '🚒', 'fire truck|||feuerwehr|autopompa|||пожарная машина|しょうぼうしゃ|消防車|سيارة إطفاء|כבאית'],
+    ['sandcastle', 3, 'places', '🏖️', 'sandcastle|||sandburg|||zandkasteel||すなのおしろ|沙堡|قلعة رملية|ארמון חול'],
+    ['scarecrow', 3, 'places', '🌾', 'scarecrow||épouvantail|||espantalho||пугало|かかし|稻草人|فزاعة|דחליל'],
+    ['skateboard', 3, 'sports', '🛹', 'skateboard|patineta|skateboard|skateboard|skateboard|skate|skateboard|скейтборд|スケボー|滑板|لوح تزلج|סקייטבורד'],
+    ['rollercoaster', 3, 'places', '🎢', 'roller coaster|montaña rusa||achterbahn|montagne russe|montanha russa|achtbaan||ジェットコースター|雲霄飛車|أفعوانية|רכבת הרים'],
+    ['ferriswheel', 3, 'places', '🎡', 'ferris wheel|noria|grande roue|riesenrad||roda gigante|reuzenrad||かんらんしゃ|摩天輪||גלגל ענק'],
+    ['magicwand', 3, 'fantasy', '🪄', 'magic wand|varita mágica||zauberstab||varinha mágica|toverstaf||まほうのつえ|魔杖|عصا سحرية|שרביט קסמים'],
+    ['sunflower', 3, 'nature', '🌻', 'sunflower|girasol|tournesol|sonnenblume|girasole|girassol|zonnebloem|подсолнух|ひまわり|向日葵|دوار الشمس|חמנייה'],
+    ['palmtree', 3, 'nature', '🌴', 'palm tree|palmera|palmier|palme|palma|palmeira|palmboom|пальма|やしのき|椰子樹|نخلة|עץ דקל'],
+    ['igloo', 3, 'places', '🧊', 'igloo|iglú|igloo|iglu|igloo|iglu|iglo|иглу|かまくら|冰屋|كوخ ثلجي|איגלו'],
+    ['windmill', 3, 'places', '🌬️', 'windmill|molino|moulin|windmühle|mulino|moinho|molen|мельница|ふうしゃ|風車|طاحونة|טחנת רוח'],
+    ['parachute', 3, 'sports', '🪂', 'parachute|paracaídas|parachute|fallschirm|paracadute|paraquedas|parachute|парашют|パラシュート|降落傘|مظلة هبوط|מצנח'],
+    ['submarine', 3, 'vehicles', '🌊', 'submarine|submarino||||submarino|duikboot|подводная лодка|せんすいかん|潛水艇|غواصة|צוללת'],
+    ['trafficlight', 3, 'places', '🚦', 'traffic light|semáforo|feu rouge|ampel|semaforo|semáforo|stoplicht|светофор|しんごう|紅綠燈|إشارة مرور|רמזור'],
+    ['campfire', 3, 'places', '🔥', 'campfire|fogata||lagerfeuer|falò|fogueira|kampvuur|костёр|たきび|營火|نار المخيم|מדורה'],
+    ['doctor', 3, 'jobs', '🧑‍⚕️', 'doctor|médico|médecin|arzt|medico|médico|dokter|врач|いしゃ|醫生|طبيب|רופא'],
+    ['chef', 3, 'jobs', '🧑‍🍳', 'chef|cocinero|cuisinier|koch|cuoco|cozinheiro|kok|повар|コック|廚師|طباخ|שף'],
+    ['farmer', 3, 'jobs', '🧑‍🌾', 'farmer|granjero|fermier|bauer|contadino|fazendeiro|boer|фермер|のうか|農夫|مزارع|חקלאי'],
+    ['superhero', 3, 'fantasy', '🦸', 'superhero|superhéroe|super héros|superheld|supereroe|super herói|superheld|супергерой|ヒーロー|超級英雄|بطل خارق|גיבור על'],
+    ['bubbles', 3, 'toys', '🫧', 'bubbles|burbujas|bulles||bolle|bolhas|bellen|пузыри|しゃぼんだま|泡泡|فقاعات|בועות'],
+    ['wizard', 3, 'fantasy', '🧙', 'wizard|mago|magicien|zauberer|mago|mago|tovenaar|волшебник|まほうつかい|巫師|ساحر|קוסם'],
+  ],
+};
+/* doodle-words:end */
+</script>
+<script>
+/* doodle-art:begin */
+/* DoodleArt: Pip's own doodles for "Guess Pip's doodles", by word id, in the same stroke format as live drawing
+   ({ c: colour, w: size, pts: [x, y, ...] } on the 1000 x 750 board). Made from a few shapes, so each is simple line
+   art Pip "draws" stroke by stroke. Colours: 0 black 2 grey 3 red 4 orange 5 yellow 6 green 7 teal 8 blue 9 purple
+   10 pink 11 brown. */
+(function (root) {
+  'use strict';
+  var R = function (v) { return Math.round(v); };
+  function arc(cx, cy, rx, ry, a0, a1, n) { var p = []; n = n || 40; for (var i = 0; i <= n; i++) { var a = a0 + (a1 - a0) * i / n; p.push(R(cx + Math.cos(a) * rx), R(cy + Math.sin(a) * ry)); } return p; }
+  function ring(cx, cy, r, ry) { return arc(cx, cy, r, ry || r, 0, Math.PI * 2, 48); }
+  function poly() { var p = []; for (var i = 0; i < arguments.length; i++) p.push(R(arguments[i])); return p; }
+  function rect(x, y, w, h) { return poly(x, y, x + w, y, x + w, y + h, x, y + h, x, y); }
+  function S(c, w, pts) { return { c: c, w: w, e: 0, pts: pts }; }
+  var T = Math.PI * 2, A = {};
+  A.sun = [S(5, 2, ring(500, 375, 120))].concat([0, 1, 2, 3, 4, 5, 6, 7].map(function (i) { var a = i * T / 8; return S(4, 2, poly(500 + Math.cos(a) * 160, 375 + Math.sin(a) * 160, 500 + Math.cos(a) * 235, 375 + Math.sin(a) * 235)); }));
+  A.moon = [S(5, 2, arc(500, 375, 200, 200, -2.2, 2.2, 40).concat(arc(590, 375, 150, 165, 1.9, -1.9, 36)))];
+  A.star = [S(5, 2, (function () { var p = []; for (var i = 0; i <= 10; i++) { var a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 105 : 250; p.push(R(500 + Math.cos(a) * r), R(390 + Math.sin(a) * r)); } return p; })())];
+  A.tree = [S(11, 3, rect(455, 440, 90, 230)), S(6, 3, arc(500, 300, 210, 170, 0, T, 50)), S(6, 1, poly(250, 680, 750, 680))];
+  A.flower = [S(6, 3, poly(500, 420, 500, 690)), S(6, 2, arc(445, 590, 55, 25, 0, T, 24)), S(5, 3, ring(500, 300, 45))]
+    .concat([0, 1, 2, 3, 4, 5].map(function (i) { var a = i * T / 6; return S(10, 2, ring(500 + Math.cos(a) * 105, 300 + Math.sin(a) * 105, 58)); }));
+  A.house = [S(0, 2, rect(320, 360, 360, 320)), S(3, 2, poly(290, 370, 500, 170, 710, 370)), S(11, 2, rect(460, 520, 85, 160)), S(8, 2, rect(360, 420, 80, 70)), S(8, 2, rect(570, 420, 80, 70))];
+  A.car = [S(3, 2, poly(170, 520, 190, 430, 330, 420, 400, 330, 620, 330, 700, 420, 830, 440, 840, 520, 170, 520)), S(8, 2, poly(420, 350, 600, 350, 660, 420, 380, 420, 420, 350)), S(0, 3, ring(320, 540, 60)), S(0, 3, ring(690, 540, 60))];
+  A.ball = [S(0, 2, ring(500, 375, 230)), S(0, 2, poly(500, 300, 572, 352, 545, 436, 455, 436, 428, 352, 500, 300)), S(0, 1, poly(500, 300, 500, 150)), S(0, 1, poly(572, 352, 715, 310)), S(0, 1, poly(545, 436, 630, 570)), S(0, 1, poly(455, 436, 370, 570)), S(0, 1, poly(428, 352, 285, 310))];
+  A.apple = [S(3, 3, arc(500, 410, 200, 210, -1.35, 4.5, 50)), S(11, 3, poly(500, 230, 520, 140)), S(6, 2, arc(580, 160, 60, 28, 0, T, 24))];
+  A.cake = [S(10, 2, rect(280, 430, 440, 230)), S(11, 2, poly(280, 520, 340, 500, 400, 525, 460, 500, 520, 525, 580, 500, 640, 525, 720, 500)), S(8, 2, rect(480, 300, 40, 130)), S(4, 3, arc(500, 260, 22, 40, 0, T, 20))];
+  A.hat = [S(0, 3, arc(500, 560, 270, 55, 0, T, 50)), S(0, 3, poly(370, 555, 370, 240, 630, 240, 630, 555)), S(3, 3, poly(372, 480, 628, 480))];
+  A.cup = [S(8, 3, poly(300, 330, 330, 620, 640, 620, 670, 330, 300, 330)), S(8, 3, arc(700, 460, 80, 90, -1.4, 1.5, 24)), S(2, 2, poly(420, 280, 400, 230, 430, 180, 410, 130)), S(2, 2, poly(540, 280, 520, 230, 550, 180, 530, 130))];
+  A.egg = [S(11, 3, arc(500, 395, 160, 225, 0, T, 50))];
+  A.boat = [S(11, 3, poly(220, 470, 780, 470, 680, 600, 320, 600, 220, 470)), S(0, 2, poly(500, 470, 500, 140)), S(3, 2, poly(500, 160, 700, 420, 500, 420)), S(8, 2, poly(140, 660, 220, 630, 300, 660, 380, 630, 460, 660, 540, 630, 620, 660, 700, 630, 780, 660, 860, 630))];
+  A.cloud = [S(8, 3, arc(380, 420, 110, 100, Math.PI * 0.5, Math.PI * 1.55, 18).concat(arc(500, 330, 140, 130, Math.PI * 1.05, Math.PI * 1.95, 20), arc(640, 400, 120, 115, Math.PI * 1.35, Math.PI * 2.5, 20), poly(640, 515, 380, 520)))];
+  A.snake = [S(6, 3, (function () { var p = []; for (var i = 0; i <= 40; i++) { var x = 160 + i * 15; p.push(R(x), R(430 + Math.sin(i / 40 * T * 1.5) * 90)); } return p; })()), S(6, 3, ring(790, 340, 45)), S(3, 1, poly(830, 340, 880, 330, 900, 310)), S(0, 2, ring(800, 330, 6))];
+  A.fish = [S(4, 3, arc(470, 375, 210, 130, 0, T, 50)), S(4, 3, poly(680, 375, 820, 260, 820, 490, 680, 375)), S(0, 3, ring(360, 340, 18)), S(4, 1, arc(420, 375, 60, 80, -0.8, 0.8, 12))];
+  A.cat = [S(0, 3, ring(500, 400, 190)), S(0, 3, poly(345, 300, 360, 150, 450, 225)), S(0, 3, poly(655, 300, 640, 150, 550, 225)), S(0, 3, ring(430, 380, 20)), S(0, 3, ring(570, 380, 20)), S(10, 2, poly(485, 440, 515, 440, 500, 460, 485, 440)),
+    S(0, 1, poly(300, 440, 450, 455)), S(0, 1, poly(310, 490, 450, 470)), S(0, 1, poly(700, 440, 550, 455)), S(0, 1, poly(690, 490, 550, 470))];
+  A.bird = [S(8, 3, arc(470, 400, 170, 130, 0, T, 50)), S(8, 3, arc(560, 260, 85, 85, 0, T, 30)), S(4, 3, poly(640, 250, 720, 270, 640, 290)), S(0, 3, ring(585, 245, 10)), S(8, 2, arc(450, 400, 90, 55, 0.2, 3.0, 20)), S(4, 2, poly(440, 525, 430, 610)), S(4, 2, poly(510, 525, 520, 610))];
+  A.heart = [S(3, 3, (function () { var p = []; for (var i = 0; i <= 60; i++) { var a = i / 60 * T, x = 16 * Math.pow(Math.sin(a), 3), y = 13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a); p.push(R(500 + x * 15), R(360 - y * 15)); } return p; })())];
+  A.key = [S(5, 3, ring(330, 375, 95)), S(5, 3, poly(425, 375, 780, 375)), S(5, 3, poly(700, 375, 700, 450)), S(5, 3, poly(760, 375, 760, 440))];
+  A.kite = [S(9, 3, poly(500, 120, 640, 320, 500, 520, 360, 320, 500, 120)), S(9, 1, poly(500, 120, 500, 520)), S(9, 1, poly(360, 320, 640, 320)), S(0, 1, poly(500, 520, 470, 580, 520, 640, 480, 700)), S(3, 2, poly(470, 580, 445, 560, 445, 600, 495, 600, 495, 560, 470, 580))];
+  A.balloon = [S(3, 3, arc(500, 290, 150, 190, 0, T, 50)), S(3, 2, poly(480, 500, 520, 500, 500, 478, 480, 500)), S(0, 1, poly(500, 500, 470, 560, 530, 620, 480, 690))];
+  A.pear = [S(6, 3, arc(500, 260, 85, 95, Math.PI * 1.15, Math.PI * 1.85, 16).concat(arc(500, 470, 175, 185, -0.95, Math.PI + 0.95, 40), [R(500 - Math.cos(Math.PI * 0.15) * 85), R(260 - Math.sin(Math.PI * 0.15) * 95)])), S(11, 3, poly(500, 165, 515, 100))];
+  A.lemon = [S(5, 3, arc(500, 375, 230, 150, 0, T, 50)), S(5, 2, poly(270, 375, 230, 375)), S(5, 2, poly(730, 375, 770, 375))];
+  A.snail = [S(11, 3, (function () { var p = []; for (var i = 0; i <= 70; i++) { var a = i / 70 * T * 2.6, r = 12 + i * 2.4; p.push(R(470 + Math.cos(a) * r), R(380 + Math.sin(a) * r)); } return p; })()), S(6, 3, poly(250, 560, 800, 560, 820, 470)), S(6, 2, poly(790, 480, 810, 380)), S(6, 2, poly(810, 480, 860, 400))];
+  A.clock = [S(0, 3, ring(500, 375, 220)), S(0, 3, poly(500, 375, 500, 225)), S(3, 2, poly(500, 375, 610, 430))].concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (i) { var a = i * T / 12; return S(0, 1, poly(500 + Math.cos(a) * 185, 375 + Math.sin(a) * 185, 500 + Math.cos(a) * 205, 375 + Math.sin(a) * 205)); }));
+  A.umbrella = [S(9, 3, arc(500, 380, 300, 220, Math.PI, T, 40).concat(arc(750, 380, 50, 30, 0, Math.PI, 8), arc(650, 380, 50, 30, 0, Math.PI, 8), arc(550, 380, 50, 30, 0, Math.PI, 8), arc(450, 380, 50, 30, 0, Math.PI, 8), arc(350, 380, 50, 30, 0, Math.PI, 8), arc(250, 380, 50, 30, 0, Math.PI, 8))), S(0, 3, poly(500, 160, 500, 600).concat(arc(450, 600, 50, 50, 0, Math.PI, 12)))];
+  A.rocket = [S(2, 3, poly(500, 110, 590, 250, 590, 520, 410, 520, 410, 250, 500, 110)), S(8, 3, ring(500, 320, 45)), S(3, 3, poly(410, 420, 330, 540, 410, 520)), S(3, 3, poly(590, 420, 670, 540, 590, 520)), S(4, 3, poly(440, 530, 470, 640, 500, 560, 530, 650, 560, 530))];
+  A.rainbow = [[3, 280], [4, 245], [5, 210], [6, 175], [8, 140]].map(function (b) { return S(b[0], 3, arc(500, 600, b[1] * 1.35, b[1] * 1.35, Math.PI, T, 40)); });
+  A.snowman = [S(8, 3, ring(500, 560, 145)), S(8, 3, ring(500, 330, 105)), S(0, 3, rect(445, 165, 110, 80)), S(0, 3, poly(410, 245, 590, 245)), S(0, 3, ring(465, 315, 9)), S(0, 3, ring(535, 315, 9)), S(4, 3, poly(500, 340, 560, 355, 500, 360)), S(11, 2, poly(395, 470, 290, 400)), S(11, 2, poly(605, 470, 710, 400))];
+  A.glasses = [S(0, 3, ring(370, 380, 110)), S(0, 3, ring(630, 380, 110)), S(0, 3, arc(500, 380, 40, 30, Math.PI * 1.1, Math.PI * 1.9, 10)), S(0, 3, poly(260, 370, 150, 320)), S(0, 3, poly(740, 370, 850, 320))];
+  A.crown = [S(5, 3, poly(250, 560, 250, 260, 375, 400, 500, 220, 625, 400, 750, 260, 750, 560, 250, 560)), S(3, 3, ring(500, 470, 30)), S(8, 3, ring(360, 480, 22)), S(6, 3, ring(640, 480, 22))];
+  A.mushroom = [S(3, 3, arc(500, 380, 260, 200, Math.PI, T, 40).concat([240, 380])), S(11, 3, poly(430, 380, 420, 640, 580, 640, 570, 380)), S(3, 2, ring(420, 290, 30)), S(3, 2, ring(560, 260, 35)), S(3, 2, ring(650, 340, 25))];
+  A.cactus = [S(6, 3, poly(440, 660, 440, 190, 500, 140, 560, 190, 560, 660)), S(6, 3, poly(440, 430, 330, 430, 330, 300)), S(6, 3, poly(560, 360, 670, 360, 670, 250)), S(11, 2, poly(330, 660, 670, 660))];
+  A.ladder = [S(11, 3, poly(390, 110, 390, 660)), S(11, 3, poly(610, 110, 610, 660))].concat([0, 1, 2, 3, 4, 5].map(function (i) { return S(11, 3, poly(390, 170 + i * 90, 610, 170 + i * 90)); }));
+  A.tent = [S(6, 3, poly(220, 620, 500, 180, 780, 620, 220, 620)), S(6, 2, poly(500, 180, 440, 620)), S(6, 2, poly(500, 180, 560, 620)), S(11, 2, poly(500, 180, 500, 120))];
+  A.envelope = [S(0, 3, rect(250, 220, 500, 330)), S(0, 3, poly(250, 220, 500, 420, 750, 220))];
+  A.planet = [S(9, 3, ring(500, 375, 150)), S(4, 3, arc(500, 390, 300, 70, -0.25, Math.PI + 0.25, 36))];
+  A.drum = [S(3, 3, arc(500, 300, 200, 60, 0, T, 40)), S(3, 3, poly(300, 300, 300, 560).concat(arc(500, 560, 200, 60, Math.PI, 0, 30), [700, 300])), S(11, 3, poly(420, 120, 520, 280)), S(11, 3, poly(640, 130, 540, 280))];
+  root.DoodleArt = A;
+})(window);
+/* doodle-art:end */
+</script>
+<script>
+/* The game's words in 13 languages (never the secret words: those are the reviewed list above, and a word is never read
+   aloud, so the room never hears the answer). */
+// ==== I18N START ====
+var I18N = {
+  en: {
+    title: 'Doodle Hoot', tag: 'Draw it. Spell it. Hoot!', board: 'Drawing board',
+    setup: 'Get ready to doodle!', howPlay: 'How to play', practice: 'Guess Pip’s doodles', pass: 'Pass and play', level: 'Words', easy: 'Easy', medium: 'Medium', tricky: 'Tricky', playersN: 'Players', start: 'Start',
+    practiceNote: 'Pip draws, and you spell the word with the letter tiles.', passNote: 'Take turns on this device: one player draws, the others spell the word.',
+    round: 'Round {n} of {of}', doodleN: 'Doodle {n} of {of}', turnN: 'Turn {n} of {of}', pipDraws: 'Pip is drawing…',
+    drawing: '{name} is drawing', choosing: '{name} is choosing a word…', youDraw: 'Your turn to draw!', pickWord: 'Pick a word to draw', drawThis: 'Draw:', getReady: 'Pick a word in a moment.', spellSoon: 'Get ready to spell!',
+    notLetters: 'Draw pictures, not letters.', colours: 'Colours', sizes: 'Sizes', size: 'Size {n}', eraser: 'Eraser', undo: 'Undo', clear: 'Clear', clearAsk: 'Clear all?', full: 'The page is full: undo or clear to draw more.',
+    c_black: 'Black', c_white: 'White', c_grey: 'Grey', c_red: 'Red', c_orange: 'Orange', c_yellow: 'Yellow', c_green: 'Green', c_teal: 'Teal', c_blue: 'Blue', c_purple: 'Purple', c_pink: 'Pink', c_brown: 'Brown',
+    spell: 'Spell the word with the tiles', back: 'Back', empty: 'Empty', hint: 'A hint!', hints: '{n} hints',
+    gotIt: 'You got it!', gotPts: '+{n} points', notQuite: 'Not quite. Try again!', keepWatching: 'Keep watching!', gotItName: '{name} got it!',
+    hide: 'Hide drawing', show: 'Show drawing', hidden: 'Drawing hidden', hidCount: '{n} hid this drawing',
+    itWas: 'It was…', timeUp: 'Time’s up!', allGot: 'Everyone got it!', skipped: 'Turn skipped', hiddenTurn: 'This drawing was skipped', drawerLeft: 'The drawer left',
+    waitHost: 'Waiting for the host to start…', waitPlayers: 'Waiting for players…', waitMore: 'The game goes on when there are two players again.', needTwo: 'Two players are needed to play.', players: '{n} players are here', hostHow: 'Everyone joins with the code on their own device, wherever they are.',
+    secsLeft: '{n} seconds left', left10: '10 seconds left', paused: 'Paused', go: 'Go!', you: 'You', points: '{n} points',
+    podium: 'Final scores', place1: '1st place!', place2: '2nd place!', place3: '3rd place!', wellPlayed: 'Well played!', superSpeller: 'Super speller!',
+    player: 'Player {n}', passTo: 'Pass to {name}', passDraw: 'Your turn to draw. No peeking, everyone else!', imReady: 'I’m ready', done: 'Done', passGuess: 'Pass to the guessers', passGuessP: 'Spell the word together. Who gets it first?', whoGot: 'Who spelled it?', wins: '{name} wins!', tie: 'It’s a tie!',
+  },
+  'en-GB': {},
+};
+I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
+// ==== I18N END ====
+(function () {
+  'use strict';
+  var O = window.Oomba, C = window.DoodleCore, DW = window.DoodleWords, ART = window.DoodleArt || {};
+  // Oomba Live (players on their own devices, anywhere): liveGame() draws it instead of the solo game.
+  var L = O.live, LIVE = !!(L && L.active);
+  var LANG = O.lang || 'en', TX = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en, RTL = O.dir === 'rtl';
+  function t(k, v) { var s = TX[k] != null ? TX[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
+  document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
+  if (LIVE) document.documentElement.classList.add('dh-live');
+  var reduced = function () { return !!O.settings.reduced; };
+  function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function btn(cls, label, icon, fn) {
+    var b = el('button', cls); b.type = 'button';
+    if (icon) b.innerHTML = icon.charAt(0) === '<' ? icon : O.icon(icon);
+    if (label != null) b.appendChild(el('span', '', label));
+    if (fn) b.addEventListener('click', fn);
+    return b;
+  }
+  /** Pip, the kit's owl, hosts the game and draws the practice doodles. */
+  var PIP = O.char({ species: 'owl', wear: ['scarf'] });
+  function figure(spec, px) { try { var c = O.art.toCanvas(spec, px); c.setAttribute('aria-hidden', 'true'); return c; } catch (e) { return el('canvas'); } }
+  /** A word as the tiles show it (capitals where the script has them), words apart. */
+  function caps(w, lang) { return String(w || '').split(/\s+/).map(function (x) { return C.graphemes(x, lang).map(function (g) { return C.shown(g, lang); }).join(''); }).join(' '); }
+  function clockText(ms) { return O.num(Math.max(0, Math.ceil(ms / 1000))); }
+
+  /* ---------- the board: a 4:3 canvas on paper white, the same picture at any size ---------- */
+  function Board(box) {
+    var wrap = el('div', 'dh-board'), cv = el('canvas'), veil = el('div', 'dh-veil');
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', t('board'));
+    wrap.append(cv, veil); box.appendChild(wrap);
+    var ctx = cv.getContext('2d');
+    var B = { el: wrap, cv: cv, veil: veil, strokes: [], scale: 1 };
+    function size() {
+      var w = cv.clientWidth; if (!w) return;
+      var d = Math.min(2.5, window.devicePixelRatio || 1), pw = Math.max(1, Math.round(w * d)), ph = Math.round(pw * C.H / C.W);
+      if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; }
+      B.scale = pw / C.W; B.redraw();
+    }
+    B.redraw = function () { C.render(ctx, B.strokes, B.scale); };
+    B.clear = function () { B.strokes = []; B.redraw(); };
+    B.add = function (st) { B.strokes.push(st); C.line(ctx, st, B.scale, 0); return st; };
+    B.find = function (id) { for (var i = B.strokes.length - 1; i >= 0; i--) if (B.strokes[i].s === id) return B.strokes[i]; return null; };
+    B.append = function (id, pts) { var st = B.find(id); if (!st) return; var from = st.pts.length / 2; for (var i = 0; i < pts.length; i++) st.pts.push(pts[i]); C.line(ctx, st, B.scale, from); };
+    B.remove = function (id) { for (var i = B.strokes.length - 1; i >= 0; i--) if (B.strokes[i].s === id) { B.strokes.splice(i, 1); break; } B.redraw(); };
+    B.point = function (e) { var r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / Math.max(1, r.width) * C.W, (e.clientY - r.top) / Math.max(1, r.height) * C.H]; };
+    B.points = function () { var n = 0; B.strokes.forEach(function (s) { n += s.pts.length / 2; }); return n; };
+    B.hide = function (on) { wrap.classList.toggle('is-hidden', !!on); };
+    B.veilShow = function (nodes, cls) { veil.className = 'dh-veil' + (cls ? ' ' + cls : ''); veil.textContent = ''; (nodes || []).forEach(function (n) { veil.appendChild(typeof n === 'string' ? el('div', '', n) : n); }); veil.hidden = !(nodes && nodes.length); };
+    veil.hidden = true;
+    if (typeof ResizeObserver === 'function') new ResizeObserver(size).observe(wrap); else window.addEventListener('resize', size);
+    B.size = size;
+    return B;
+  }
+
+  /* ---------- drawing with touch, a pen or a mouse (the primary pointer only) ---------- */
+  function Pad(board, out) {
+    var P = { on: false, c: 0, w: 1, e: 0, id: 0, min: 3, cur: null, ptr: null, kept: null, raw: null };
+    var cv = board.cv;
+    function begin(e) {
+      if (!P.on || P.cur || !e.isPrimary || (e.button != null && e.button > 0)) return;
+      e.preventDefault();
+      try { cv.setPointerCapture(e.pointerId); } catch (x) { /* fine */ }
+      P.ptr = e.pointerId;
+      var p = board.point(e), k = C.keep(null, p[0], p[1]);
+      P.kept = k; P.raw = k;
+      P.cur = board.add({ s: P.id++, c: P.c, w: P.w, e: P.e, pts: k.slice() });
+      out.start(P.cur);
+    }
+    function move(e) {
+      if (!P.cur || e.pointerId !== P.ptr) return;
+      var list = e.getCoalescedEvents ? e.getCoalescedEvents() : []; if (!list || !list.length) list = [e];
+      var add = [];
+      list.forEach(function (ev) { var p = board.point(ev); P.raw = [Math.round(Math.max(0, Math.min(C.W, p[0]))), Math.round(Math.max(0, Math.min(C.H, p[1])))]; var k = C.keep(P.kept, p[0], p[1], P.min); if (k) { add.push(k[0], k[1]); P.kept = k; } });
+      if (add.length) { board.append(P.cur.s, add); out.more(P.cur, add); }
+    }
+    function end(e) {
+      if (!P.cur || (e && e.pointerId !== P.ptr)) return;
+      if (P.raw && (P.raw[0] !== P.kept[0] || P.raw[1] !== P.kept[1])) { var a = [P.raw[0], P.raw[1]]; board.append(P.cur.s, a); out.more(P.cur, a); }
+      var st = P.cur; P.cur = null; P.ptr = null;
+      out.end(st);
+    }
+    cv.addEventListener('pointerdown', begin);
+    cv.addEventListener('pointermove', move);
+    cv.addEventListener('pointerup', end);
+    cv.addEventListener('pointercancel', end);
+    cv.addEventListener('lostpointercapture', function (e) { if (P.cur && e.pointerId === P.ptr) end(e); });
+    P.set = function (on) { P.on = !!on; board.el.classList.toggle('can-draw', P.on); if (!P.on && P.cur) end(); };
+    P.reset = function (s0) { P.id = s0 || 0; P.cur = null; P.ptr = null; };
+    /** The test hook: a stroke through these board points, through the same path a finger takes. */
+    P.feed = function (pts) {
+      if (!P.on || !pts || pts.length < 2) return false;
+      var r = board.cv.getBoundingClientRect(), ev = function (i) { return { isPrimary: true, button: 0, pointerId: 77, clientX: r.left + pts[i] / C.W * r.width, clientY: r.top + pts[i + 1] / C.H * r.height, preventDefault: function () {} }; };
+      begin(ev(0)); for (var i = 2; i < pts.length; i += 2) move(ev(i)); end(ev(pts.length - 2));
+      return true;
+    };
+    return P;
+  }
+
+  /* ---------- the drawer's tools: 12 colours, 4 sizes, the eraser, undo and clear ---------- */
+  function ink(hex) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? '#1D2340' : '#FFFFFF'; }
+  function Tools(pad, on) {
+    var box = el('div', 'dh-tools'), sw = el('div', 'dh-sw'), row = el('div', 'dh-row'), szs = el('span', 'dh-szs'), note = el('p', 'dh-note', t('notLetters'));
+    // on a phone held upright the colours and sizes fold into two buttons (each opens its own little tray)
+    var curC = btn('dh-btn dh-cur', null, null, function () { box.classList.toggle('pal-open'); box.classList.remove('size-open'); }), curDot = el('i');
+    curC.appendChild(curDot); curC.setAttribute('aria-label', t('colours')); curC.title = t('colours');
+    var curS = btn('dh-btn dh-cur dh-size', null, null, function () { box.classList.toggle('size-open'); box.classList.remove('pal-open'); }), curSz = el('i');
+    curS.appendChild(curSz); curS.setAttribute('aria-label', t('sizes')); curS.title = t('sizes');
+    function fold() { box.classList.remove('pal-open', 'size-open'); }
+    sw.setAttribute('role', 'group'); sw.setAttribute('aria-label', t('colours'));
+    var cols = C.PALETTE.map(function (col, i) {
+      var b = btn('', null, null, function () { pad.c = i; pad.e = 0; sync(); fold(); sfx('select', { volume: 0.3 }); });
+      b.style.background = col; b.style.color = ink(col); b.setAttribute('aria-label', t('c_' + C.COLORS[i])); b.title = t('c_' + C.COLORS[i]); sw.appendChild(b); return b;
+    });
+    var sizes = C.SIZES.map(function (px, i) {
+      var b = btn('dh-btn dh-size', null, null, function () { pad.w = i; sync(); fold(); sfx('select', { volume: 0.3 }); });
+      var dot = el('i'); dot.style.width = dot.style.height = Math.max(5, Math.round(px * 0.7)) + 'px'; b.appendChild(dot);
+      b.setAttribute('aria-label', t('size', { n: i + 1 })); b.title = t('size', { n: i + 1 }); szs.appendChild(b); return b;
+    });
+    var eraser = btn('dh-btn', null, '<span aria-hidden="true">🧽</span>', function () { pad.e = pad.e ? 0 : 1; sync(); fold(); });
+    eraser.setAttribute('aria-label', t('eraser')); eraser.title = t('eraser');
+    var undo = btn('dh-btn', null, 'restart', function () { fold(); on.undo(); }); undo.setAttribute('aria-label', t('undo')); undo.title = t('undo');
+    var asking = 0, clr = btn('dh-btn', null, 'cross', function () {
+      fold();
+      if (!asking) { asking = setTimeout(function () { asking = 0; clr.classList.remove('warn'); clr.lastChild.textContent = ''; }, 2500); clr.classList.add('warn'); clr.lastChild.textContent = t('clearAsk'); return; }
+      clearTimeout(asking); asking = 0; clr.classList.remove('warn'); clr.lastChild.textContent = ''; on.clear();
+    });
+    clr.appendChild(el('span')); clr.setAttribute('aria-label', t('clear')); clr.title = t('clear');
+    row.append(curC, curS, szs, eraser, undo, clr);
+    box.append(sw, row, note);
+    function sync() {
+      cols.forEach(function (b, i) { b.setAttribute('aria-pressed', String(!pad.e && pad.c === i)); });
+      sizes.forEach(function (b, i) { b.setAttribute('aria-pressed', String(pad.w === i)); b.style.color = pad.e ? '#8C93A8' : C.PALETTE[pad.c] === '#FFFFFF' ? '#8C93A8' : C.PALETTE[pad.c]; });
+      eraser.setAttribute('aria-pressed', String(!!pad.e));
+      curDot.style.background = pad.e ? '#FFFFFF' : C.PALETTE[pad.c]; curDot.style.width = curDot.style.height = '24px';
+      var px = Math.max(5, Math.round(C.SIZES[pad.w] * 0.7)); curSz.style.width = curSz.style.height = px + 'px'; curS.style.color = sizes[pad.w].style.color;
+    }
+    sync();
+    // keys: 1-9 and 0, -, = pick colours, [ and ] the size, E the eraser, Ctrl/Cmd+Z undo
+    window.addEventListener('keydown', function (e) {
+      if (box.hidden || !pad.on) return;
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); on.undo(); return; }
+      var k = e.key, i = /^[1-9]$/.test(k) ? +k - 1 : k === '0' ? 9 : k === '-' ? 10 : k === '=' ? 11 : -1;
+      if (i >= 0) { pad.c = i; pad.e = 0; sync(); return; }
+      if (e.key === '[') { pad.w = Math.max(0, pad.w - 1); sync(); } else if (e.key === ']') { pad.w = Math.min(3, pad.w + 1); sync(); } else if (e.code === 'KeyE') { pad.e = pad.e ? 0 : 1; sync(); }
+    });
+    return { el: box, sync: sync, fold: fold };
+  }
+
+  /* ---------- the letter tiles: slots (one per letter, a gap between words) and the tray ---------- */
+  function Tiles(onGuess, lang) {
+    var T = { tray: [], groups: [], dir: 'ltr', rm: {}, locks: {}, slots: [], order: [], busy: false, solved: false, lang: lang || 'en', n: 0 };
+    var box = el('div', 'dh-guess'), slotsEl = el('div', 'dh-slots'), prev = el('p', 'dh-preview'), trayEl = el('div', 'dh-tray'), row = el('div', 'dh-row'), say = el('p', 'dh-say');
+    slotsEl.setAttribute('aria-label', t('spell')); say.setAttribute('role', 'status');
+    var back = btn('dh-btn', t('back'), 'back', function () { T.back(); });
+    row.appendChild(back);
+    box.append(slotsEl, prev, trayEl, row, say);
+    T.el = box; T.row = row; T.sayEl = say;
+    T.set = function (d, lng) {
+      T.n = d.n || 0; T.tray = d.t.slice(); T.groups = d.g.slice(); T.dir = d.dir || 'ltr'; T.lang = lng || T.lang; T.rm = {}; T.locks = {}; T.busy = false; T.solved = !!d.ok; T.order = [];
+      var len = T.groups.reduce(function (a, b) { return a + b; }, 0); T.slots = []; for (var i = 0; i < len; i++) T.slots.push(null);
+      (d.rm || []).forEach(function (i) { T.rm[i] = 1; });
+      (d.hn || []).forEach(function (h) { T.locks[h[0]] = h[1]; T.slots[h[0]] = h[1]; });
+      box.classList.remove('ok', 'no'); say.textContent = ''; say.className = 'dh-say';
+      T.render();
+    };
+    T.used = function (i) { return T.slots.indexOf(i) >= 0; };
+    T.render = function () {
+      slotsEl.textContent = ''; slotsEl.dir = T.dir;
+      var k = 0;
+      T.groups.forEach(function (n) {
+        var wd = el('span', 'dh-wd');
+        for (var j = 0; j < n; j++, k++) (function (i) {
+          var tIdx = T.slots[i], s = btn('dh-slot' + (tIdx != null ? ' full' : '') + (T.locks[i] != null ? ' lock' : ''), null, null, function () { T.unslot(i); });
+          s.textContent = tIdx != null ? C.shown(T.tray[tIdx], T.lang) : '';
+          s.setAttribute('aria-label', tIdx != null ? s.textContent : t('empty'));
+          if (T.locks[i] != null) s.disabled = true;
+          wd.appendChild(s);
+        })(k);
+        slotsEl.appendChild(wd);
+      });
+      // Arabic: the letters placed so far, joined as the word is really written
+      prev.hidden = T.lang !== 'ar'; prev.dir = T.dir;
+      if (T.lang === 'ar') { var w = [], i0 = 0; T.groups.forEach(function (n) { w.push(T.slots.slice(i0, i0 + n).map(function (i) { return i != null ? T.tray[i] : ''; }).join('')); i0 += n; }); prev.textContent = w.join(' ').trim(); }
+      trayEl.textContent = '';
+      T.tray.forEach(function (g, i) {
+        var b = btn('dh-tile' + (T.rm[i] ? ' gone' : '') + (T.used(i) ? ' used' : ''), null, null, function () { T.tap(i); });
+        b.textContent = C.shown(g, T.lang); b.lang = T.lang; b.dataset.i = i;
+        if (T.rm[i] || T.used(i) || T.solved) b.disabled = true;
+        trayEl.appendChild(b);
+      });
+      back.disabled = T.solved || !T.order.length;
+    };
+    T.tap = function (i) {
+      if (T.busy || T.solved || T.rm[i] || T.used(i) || i < 0 || i >= T.tray.length) return false;
+      var j = T.slots.indexOf(null); if (j < 0) return false;
+      T.slots[j] = i; T.order.push(j); sfx('click', { volume: 0.3 });
+      T.render();
+      if (T.slots.indexOf(null) < 0) { T.busy = true; onGuess(T.slots.slice()); }
+      return true;
+    };
+    T.unslot = function (j) { if (T.busy || T.solved || T.locks[j] != null || T.slots[j] == null) return; T.slots[j] = null; T.order = T.order.filter(function (x) { return x !== j; }); T.render(); };
+    T.back = function () { var j = T.order.pop(); if (j != null) T.unslot(j); else T.render(); };
+    T.result = function (ok, text) {
+      T.busy = false; box.classList.remove('ok', 'no'); void box.offsetWidth;
+      if (ok) { T.solved = true; box.classList.add('ok'); say.className = 'dh-say good'; }
+      else { box.classList.add('no'); for (var j = 0; j < T.slots.length; j++) if (T.locks[j] == null) T.slots[j] = null; T.order = []; }
+      say.textContent = text || ''; T.render();
+    };
+    T.hint = function (i, tIdx) {
+      if (T.solved || i < 0 || i >= T.slots.length) return;
+      var at = T.slots.indexOf(tIdx); if (at >= 0 && at !== i) T.slots[at] = null;
+      if (T.slots[i] != null && T.slots[i] !== tIdx) T.order = T.order.filter(function (x) { return x !== i; });
+      T.locks[i] = tIdx; T.slots[i] = tIdx; T.order = T.order.filter(function (x) { return x !== i; }); T.render();
+    };
+    T.removeDecoys = function (list) { list.forEach(function (i) { T.rm[i] = 1; var at = T.slots.indexOf(i); if (at >= 0 && T.locks[at] == null) { T.slots[at] = null; T.order = T.order.filter(function (x) { return x !== at; }); } }); T.render(); };
+    /** A physical key: the first free tile with that letter (Backspace takes the last one back). */
+    T.key = function (e) {
+      if (box.hidden || T.solved) return false;
+      if (e.key === 'Backspace') { T.back(); return true; }
+      if (!e.key || e.key.length > 2) return false;
+      var k = e.key.toLocaleUpperCase(T.lang === 'zh-Hant' ? 'zh' : T.lang);
+      for (var i = 0; i < T.tray.length; i++) if (!T.rm[i] && !T.used(i) && (C.shown(T.tray[i], T.lang) === k || T.tray[i] === e.key)) return T.tap(i);
+      return false;
+    };
+    /** The test hook: tap the tiles that spell this word (in slot order). */
+    T.spell = function (word) {
+      var g = C.parts(word, T.lang).g, picks = [], taken = {};
+      for (var j = 0; j < g.length; j++) {
+        if (T.locks[j] != null) { picks.push(T.locks[j]); taken[T.locks[j]] = 1; continue; }
+        var i = -1; for (var q = 0; q < T.tray.length; q++) if (!taken[q] && !T.rm[q] && T.tray[q] === g[j] && Object.keys(T.locks).every(function (s) { return T.locks[s] !== q; })) { i = q; break; }
+        if (i < 0) return false; picks.push(i); taken[i] = 1;
+      }
+      for (var s = 0; s < T.slots.length; s++) if (T.locks[s] == null) T.slots[s] = null;
+      T.order = [];
+      for (var k2 = 0; k2 < picks.length; k2++) if (T.locks[k2] == null) T.tap(picks[k2]);
+      return true;
+    };
+    window.addEventListener('keydown', function (e) { if (e.ctrlKey || e.metaKey || e.altKey) return; if (T.key(e)) e.preventDefault(); });
+    return T;
+  }
+
+  /* ---------- the clock ring ---------- */
+  function Clock() {
+    var c = el('div', 'dh-clock'), n = el('b'); c.appendChild(n); c.setAttribute('role', 'timer');
+    var shown = -1;
+    return { el: c, set: function (ms, total) {
+      var s = Math.ceil(Math.max(0, ms) / 1000);
+      c.style.setProperty('--p', String(total ? Math.max(0, Math.min(1, ms / total)) : 0));
+      if (s !== shown) { shown = s; n.textContent = clockText(ms); c.classList.toggle('low', s <= 10 && total > 0); c.setAttribute('aria-label', t('secsLeft', { n: s })); }
+    } };
+  }
+
+  /* ---------- the frame both modes share ---------- */
+  function Shell(kind) {
+    var U = { root: el('div', 'dh dh-' + kind) };
+    U.root.dir = O.dir || 'ltr';
+    U.top = el('header', 'dh-top'); U.chip = el('span', 'dh-chip'); U.who = el('div', 'dh-who'); U.whoPic = el('span'); U.whoTxt = el('span'); U.who.append(U.whoPic, U.whoTxt);
+    U.clock = Clock(); U.top.append(U.chip, U.who, U.clock.el);
+    U.word = el('div', 'dh-word'); U.word.hidden = true; U.word.setAttribute('aria-live', 'polite');
+    U.strip = el('div', 'dh-strip'); U.strip.hidden = true;
+    U.main = el('div', 'dh-main'); U.boardBox = el('div', 'dh-boardbox'); U.side = el('aside', 'dh-side');
+    U.main.append(U.boardBox, U.side);
+    U.board = Board(U.boardBox);
+    U.screen = el('div', 'dh-screen'); U.screen.hidden = true;
+    U.over = el('div', 'dh-over'); U.over.hidden = true; U.overB = el('b'); U.over.appendChild(U.overB);
+    U.toast = el('div', 'dh-toast'); U.toast.hidden = true; U.toast.setAttribute('role', 'status');
+    U.sr = el('p', 'dh-sr'); U.sr.setAttribute('role', 'status'); U.sr.setAttribute('aria-live', 'polite');
+    U.root.append(U.top, U.word, U.strip, U.main, U.screen, U.over, U.toast, U.sr);
+    // inside the kit's UI root: its colours (light and dark) and its type
+    O.ui.root().appendChild(U.root);
+    function theme() { U.root.classList.toggle('dh-dark', !!(O.theme && O.theme.mode === 'dark')); U.root.classList.toggle('rm', reduced()); }
+    theme(); if (O.theme && O.theme.on) O.theme.on('change', theme); O.settings.on('change', theme);
+    U.announce = function (x) { U.sr.textContent = ''; setTimeout(function () { U.sr.textContent = x; }, 30); };
+    var tt = 0; U.say = function (x, ms) { U.toast.textContent = x; U.toast.hidden = false; clearTimeout(tt); tt = setTimeout(function () { U.toast.hidden = true; }, ms || 2600); U.announce(x); };
+    U.overlay = function (x) { U.over.hidden = !x; U.overB.textContent = x || ''; };
+    U.whoIs = function (spec, text) { U.whoPic.textContent = ''; if (spec) { var c = figure(spec, 80); U.whoPic.appendChild(c); } U.whoTxt.textContent = text || ''; };
+    /** A full-screen panel: nodes in it, or nothing to close it. */
+    U.panel = function (nodes, below) { U.screen.textContent = ''; U.screen.classList.toggle('below', !!below); (nodes || []).forEach(function (n) { if (n) U.screen.appendChild(n); }); U.screen.hidden = !(nodes && nodes.length); };
+    return U;
+  }
+  function pipPic(px) { var c = figure(PIP, px || 260); c.classList.add('pip'); return c; }
+  function cards(words, emoji, onPick) {
+    var g = el('div', 'dh-cards');
+    words.forEach(function (w, i) { var b = btn('dh-card', null, null, function () { onPick(i); }); b.appendChild(el('span', 'emo', emoji[i] || '')); b.appendChild(el('span', '', caps(w, WL()))); b.lang = WL(); b.dataset.i = i; g.appendChild(b); });
+    return g;
+  }
+  var wordLang = LANG;
+  function WL() { return wordLang; }
+
+  /* ---------- Doodle Hoot Live (Oomba Live, built-in mode 'doodle'; docs/live-protocol.md "Doodle Hoot Live") ----------
+     The server runs every turn. The drawer gets three words (ch), picks one (pk), and draws: strokes go out in small
+     batches (ln, at most 8 messages a second) and the server relays them to everyone else. Guessers get a tray of
+     tiles (tray) and spell the word with taps (gs: tray positions, never text); the result comes back to them alone
+     (gr). Hints (hd: decoys go, hn: a letter locks) come from the server. Shared state dd says whose turn it is, the
+     clock and who got it; the word only shows in the reveal. The host's screen shows the drawing, the scores and the
+     podium. Nobody types anything: there is no chat. */
+  function liveGame() {
+    var host = L.role === 'host', phase = L.phase, U = Shell(host ? 'host' : 'player');
+    var S = { tn: 0, dd: null, word: null, choices: null, solved: false, myPts: 0, hid: 0, hidden: false, myScore: 0, results: false, lastRv: 0, said: {} };
+    var pad = null, tools = null, tiles = null, Q = null;
+    function dd() { var x = L.state && L.state.dd; return x && typeof x === 'object' ? x : null; }
+    function me() { return host ? 0 : (L.me && L.me.seat) || 0; }
+    function nameOf(seat) { return L.nameOf(seat) || ''; }
+    function avatarOf(seat) { return L.avatarOf(seat) || O.char({ species: 'oomba' }); }
+    if (!host) {
+      pad = Pad(U.board, { start: function (st) { Q.start(st); }, more: function (st, pts) { Q.more(st, pts); }, end: function () { Q.end(); } });
+      tools = Tools(pad, { undo: undo, clear: clearMine });
+      tiles = Tiles(function (picks) { if (!L.send('gs', { n: S.tn, t: picks }, { toHost: true })) tiles.result(false); }, LANG);
+      var hideB = btn('dh-btn', t('hide'), 'eye', function () { setHidden(!S.hidden); });
+      hideB.id = 'dhHide'; tiles.row.appendChild(hideB); S.hideB = hideB;
+      U.side.append(tools.el, tiles.el);
+      Q = Sender();
+    }
+    var scores = el('ol', 'dh-scores'); U.side.appendChild(scores);
+
+    /* the stroke sender: batches every 100 ms (or 30 points), at most 8 messages a second (burst 12), so a drawer stays
+       under the server's limits; a backlog over a second makes the drawing coarser until it catches up */
+    function Sender() {
+      var q = [], pend = null, last = null, tokens = 12, at = Date.now();
+      function flush() {
+        if (!pend || !pend.pts.length) return;
+        var nums;
+        if (pend.isNew) { var first = [pend.pts[0], pend.pts[1]]; nums = first.concat(C.steps(first, pend.pts.slice(2))); pend.isNew = false; }
+        else nums = C.steps(last, pend.pts);
+        last = [pend.pts[pend.pts.length - 2], pend.pts[pend.pts.length - 1]];
+        pend.pts = [];
+        for (var i = 0; i < nums.length; i += C.MAX_NUMS) q.push(['ln', { s: pend.s, c: pend.c, w: pend.w, e: pend.e, p: nums.slice(i, i + C.MAX_NUMS) }]);
+      }
+      function pump() {
+        var now = Date.now(); tokens = Math.min(12, tokens + (now - at) / 1000 * 8); at = now;
+        while (tokens >= 1 && q.length) { var m = q.shift(); L.send(m[0], m[1], { toHost: true }); tokens--; }
+        if (pad) pad.min = q.length > 20 ? 10 : q.length > 8 ? 6 : 3;
+      }
+      setInterval(function () { flush(); pump(); }, 100);
+      setInterval(pump, 50);
+      return {
+        start: function (st) { flush(); pend = { s: st.s, c: st.c, w: st.w, e: st.e, isNew: true, pts: st.pts.slice() }; },
+        more: function (st, pts) { if (!pend || pend.s !== st.s) return; for (var i = 0; i < pts.length; i++) pend.pts.push(pts[i]); if (pend.pts.length >= C.MAX_NUMS) flush(); },
+        end: function () { flush(); pump(); },
+        push: function (k, d) { flush(); q.push([k, d]); pump(); },
+        reset: function () { q = []; pend = null; last = null; },
+        size: function () { return q.length; },
+      };
+    }
+    function undo() { if (!drawerNow()) return; var st = U.board.strokes[U.board.strokes.length - 1]; if (!st) return; U.board.remove(st.s); Q.push('un', { n: S.tn, s: st.s }); }
+    function clearMine() { if (!drawerNow()) return; U.board.clear(); Q.push('cl', { n: S.tn }); }
+    function drawerNow() { var x = dd(); return !host && !!x && x.ph === 'draw' && x.dr === me() && phase === 'playing'; }
+    function setHidden(on) {
+      var x = dd(); S.hidden = !!on; U.board.hide(S.hidden);
+      if (S.hideB) { S.hideB.setAttribute('aria-pressed', String(S.hidden)); S.hideB.lastChild.textContent = S.hidden ? t('show') : t('hide'); }
+      if (S.hidden && x && !S.sentHide && x.dr !== me()) { S.sentHide = true; L.send('hide', { n: S.tn }, { toHost: true }); }
+      draw();
+    }
+    /** A new turn: a clean page, no word, no tray. */
+    function turn(n) {
+      if (n <= S.tn) return;
+      S.tn = n; S.word = null; S.choices = null; S.solved = false; S.myPts = 0; S.hid = 0; S.sentHide = false; S.hidden = false;
+      U.board.clear(); U.board.hide(false);
+      if (S.hideB) { S.hideB.setAttribute('aria-pressed', 'false'); S.hideB.lastChild.textContent = t('hide'); }
+      if (pad) { pad.reset(0); pad.set(false); }
+      if (Q) Q.reset();
+      if (tiles) tiles.set({ n: n, t: [], g: [] });
+    }
+    function onEvent(ev) {
+      var d = ev.data || {}, x = dd();
+      if (ev.from === 0) {
+        if (typeof d.n === 'number' && d.n > S.tn) turn(d.n);
+        if (typeof d.n === 'number' && d.n < S.tn) return;
+        switch (ev.kind) {
+          case 'ch': S.choices = d; sfx('levelup', { volume: 0.4 }); U.announce(t('youDraw')); break;
+          case 'wd': S.word = d; if (x && x.dr === me() && pad) { pad.reset(d.s0 || 0); } if (d.s0 == null && !S.solved) { S.solved = true; } break;
+          case 'tray': if (tiles) { tiles.set(d, x ? x.lang : LANG); S.solved = !!d.ok; } break;
+          case 'hn': if (tiles) { tiles.hint(d.i, d.t); U.announce(t('hint')); sfx('select', { volume: 0.4 }); } break;
+          case 'hd': if (tiles) tiles.removeDecoys(d.t || []); break;
+          case 'gr':
+            if (!tiles) break;
+            if (d.ok) { S.solved = true; S.myPts = d.p || 0; tiles.result(true, t('gotIt') + ' ' + t('gotPts', { n: d.p || 0 })); sfx('correct'); U.announce(t('gotIt')); }
+            else { tiles.result(false, d.left > 0 ? t('notQuite') : t('keepWatching')); sfx('wrong', { volume: 0.5 }); if (!(d.left > 0)) tiles.busy = true; }
+            break;
+          case 'full': U.say(t('full')); break;
+          case 'cl': U.board.clear(); break;
+          case 'cv': if (d.k === 0) U.board.strokes = []; (d.l || []).forEach(function (r) { U.board.strokes.push({ s: r[0], c: r[1], w: r[2], e: r[3], pts: r.slice(4) }); }); U.board.redraw(); break;
+          case 'hid': S.hid = d.k || 0; break;
+          default: break;
+        }
+        draw(); return;
+      }
+      if (!x || ev.from !== x.dr) return;
+      if (ev.kind === 'ln') { if (d.k) U.board.append(d.s, d.a); else U.board.add({ s: d.s, c: d.c, w: d.w, e: d.e, pts: d.a.slice() }); }
+      else if (ev.kind === 'un') U.board.remove(d.s);
+      else if (ev.kind === 'cl') U.board.clear();
+    }
+
+    /* --- what each screen shows --- */
+    function scoreRows() {
+      var ps = L.players(), x = dd();
+      return ps.map(function (p) { return { seat: p.seat, name: p.name || nameOf(p.seat), avatar: p.avatar || avatarOf(p.seat), score: p.score || 0, got: !!(x && x.got && x.got.indexOf(p.seat) >= 0), dr: !!(x && x.dr === p.seat), me: p.seat === me(), on: p.connected !== false }; })
+        .sort(function (a, b) { return b.score - a.score || a.seat - b.seat; });
+    }
+    var scoreKey = '';
+    function drawScores() {
+      var rows = scoreRows(), key = JSON.stringify(rows.map(function (r) { return [r.seat, r.score, r.got, r.dr, r.name]; }));
+      if (key !== scoreKey) {
+        scoreKey = key; scores.textContent = '';
+        rows.slice(0, host ? 16 : 8).forEach(function (r) {
+          var li = el('li', (r.got ? 'got' : '') + (r.dr ? ' dr' : '')); li.appendChild(figure(r.avatar, 72));
+          li.appendChild(el('span', 'n', r.me ? t('you') : r.name)); li.appendChild(el('span', 'm', r.got ? '✓' : r.dr ? '✏️' : ''));
+          li.appendChild(el('span', 's', O.num(r.score))); scores.appendChild(li);
+        });
+        U.strip.textContent = '';
+        rows.slice(0, 5).forEach(function (r) { var s = el('span', (r.got ? 'got' : '') + (r.me ? ' me' : '')); s.appendChild(figure(r.avatar, 44)); s.appendChild(document.createTextNode((r.got ? '✓ ' : r.dr ? '✏️ ' : '') + O.num(r.score))); s.title = r.me ? t('you') : r.name; U.strip.appendChild(s); });
+      }
+    }
+    function lobby() {
+      var ps = L.players(), ul = el('ul', 'dh-people');
+      var cell = ps.length > 10 ? 120 : 170; ul.style.setProperty('--cell', cell + 'px');
+      ps.forEach(function (p) { var li = el('li'); li.appendChild(figure(p.avatar || avatarOf(p.seat), 160)); li.appendChild(el('span', '', p.seat === me() ? t('you') : p.name || nameOf(p.seat))); ul.appendChild(li); });
+      return [pipPic(host ? 240 : 200), el('h2', '', t('title')), el('p', '', host ? (ps.length < 2 ? t('needTwo') : t('players', { n: ps.length })) : t('waitHost')), ul, host ? el('p', '', t('hostHow')) : null];
+    }
+    function podium(x) {
+      var box = el('div', 'dh-podium'), top = (x.top || []).slice(0, 3), order = [1, 0, 2];
+      order.forEach(function (i) { var r = top[i]; if (!r) return; var d = el('div', 'p' + (i + 1)); d.appendChild(figure(avatarOf(r[0]), 220)); d.appendChild(el('span', 'nm', r[0] === me() ? t('you') : nameOf(r[0]))); d.appendChild(el('span', '', t('points', { n: r[1] }))); d.appendChild(el('div', 'blk', ['🥇', '🥈', '🥉'][i])); box.appendChild(d); });
+      return [el('h2', '', t('podium')), box, pipPic(140)];
+    }
+    function results(x) {
+      if (S.results || host) return;
+      S.results = true;
+      var top = x.top || [], rank = 0; top.forEach(function (r, i) { if (r[0] === me()) rank = i + 1; });
+      var mine = 0; L.players().forEach(function (p) { if (p.seat === me()) mine = p.score || 0; }); if (S.myScore) mine = S.myScore;
+      top.forEach(function (r) { if (r[0] === me()) mine = r[1]; });
+      // the results card animates on the kit's clock, which a live frame doesn't otherwise run
+      try { O.time.start(); } catch (e) { /* the card still shows */ }
+      document.documentElement.classList.add('dh-play');
+      // (the platform's live contract: a game reports its score; the server scores this mode itself and ignores it)
+      L.score(mine);
+      try { O.ui.win({ title: rank ? t('place' + rank) : t('wellPlayed'), score: mine, stars: rank === 1 ? 3 : rank ? 2 : 1, hero: L.me ? L.me.avatar : O.avatar(), next: false, pause: false }); } catch (e) { /* the podium shows anyway */ }
+      sfx('win');
+    }
+    function revealVeil(x) {
+      var rv = x.rv || {}, nodes = [];
+      if (rv.why === 'hid') nodes.push(el('div', 'big', t('hiddenTurn')));
+      else if (!rv.w) nodes.push(el('div', 'big', rv.why === 'skip' ? t('skipped') : t('drawerLeft')));
+      else { nodes.push(el('div', '', t('itWas'))); nodes.push(el('div', 'emo', rv.e || '')); var w = el('div', 'big', caps(rv.w, x.lang)); w.lang = x.lang; nodes.push(w); }
+      if (rv.why === 'all') nodes.push(el('div', '', t('allGot')));
+      var mine = (rv.pts || []).filter(function (r) { return r[0] === me(); })[0];
+      if (mine && mine[1]) nodes.push(el('div', '', t('gotPts', { n: mine[1] })));
+      U.board.veilShow(nodes, 'rv');
+    }
+    function draw() {
+      var x = dd(), started = L.started || phase === 'playing' || phase === 'paused';
+      if (x && x.tn > S.tn) turn(x.tn);
+      wordLang = x ? x.lang : LANG;
+      U.root.dataset.ph = x ? x.ph : 'lobby';
+      var meDraw = !!x && x.dr === me() && !host;
+      if (!x || !started || phase === 'lobby' || phase === 'loading' || (phase === 'countdown' && !x.rd)) {
+        U.panel(lobby()); U.main.hidden = true; U.top.hidden = true; U.word.hidden = true; U.strip.hidden = true; return;
+      }
+      U.top.hidden = false;
+      U.chip.textContent = x.ph === 'done' ? t('podium') : t('round', { n: Math.max(1, x.rd), of: x.rds });
+      var dr = x.dr;
+      if (x.ph === 'done') {
+        U.panel(podium(x)); U.main.hidden = true; U.word.hidden = true; U.strip.hidden = true; U.whoIs(null, '');
+        results(x); return;
+      }
+      if (x.ph === 'wait') { U.panel([pipPic(200), el('h2', '', t('waitPlayers')), el('p', '', t('waitMore'))], true); U.main.hidden = true; return; }
+      if (x.ph === 'pick') {
+        U.whoIs(avatarOf(dr), meDraw ? t('youDraw') : t('choosing', { name: nameOf(dr) }));
+        U.top.hidden = false;
+        if (meDraw && S.choices) U.panel([el('h2', '', t('pickWord')), cards(S.choices.w, S.choices.e, function (i) { if (L.send('pk', { n: S.tn, i: i }, { toHost: true })) { S.choices = null; sfx('select'); draw(); } }), el('p', '', t('notLetters'))], true);
+        else U.panel([pipPic(200), el('h2', '', meDraw ? t('youDraw') : t('choosing', { name: nameOf(dr) })), el('p', '', meDraw ? t('getReady') : t('spellSoon'))], true);
+        U.main.hidden = true; U.word.hidden = true; U.strip.hidden = true; return;
+      }
+      U.panel(null); U.main.hidden = false;
+      // the word, in the top bar: the drawer's, or a guesser's once they got it
+      var showWord = (meDraw || S.solved) && S.word && x.ph === 'draw';
+      if (showWord) { U.whoIs(avatarOf(dr), ''); U.whoTxt.textContent = ''; U.whoTxt.appendChild(el('small', '', meDraw ? t('drawThis') + ' ' : '✓ ')); var ws = el('b', 'dh-theword', (S.word.e || '') + ' ' + caps(S.word.w, x.lang)); ws.lang = x.lang; U.whoTxt.appendChild(ws); U.who.classList.add('has-word'); }
+      else { U.whoIs(avatarOf(dr), meDraw ? t('youDraw') : t('drawing', { name: nameOf(dr) })); U.who.classList.remove('has-word'); }
+      U.word.hidden = true;
+      var wide = window.innerWidth > window.innerHeight && window.innerWidth >= 900;
+      U.strip.hidden = host || wide || (meDraw && x.ph === 'draw');
+      if (!host) {
+        tools.el.hidden = !(meDraw && x.ph === 'draw');
+        pad.set(meDraw && x.ph === 'draw' && phase === 'playing' && x.run);
+        tiles.el.hidden = meDraw || x.ph !== 'draw' || !tiles.tray.length;
+        if (S.hideB) S.hideB.hidden = meDraw;
+      }
+      scores.hidden = !host && !wide;
+      drawScores();
+      // the veil over the board: the reveal, a hidden drawing, or Pip while nobody has drawn yet
+      if (x.ph === 'reveal') revealVeil(x);
+      else if (S.hidden) U.board.veilShow([el('div', 'big', t('hidden'))]);
+      else if (host && S.hid) U.board.veilShow(null);
+      else U.board.veilShow(null);
+      if (host) { var hidEl = U.chip; if (S.hid) hidEl.textContent = t('round', { n: Math.max(1, x.rd), of: x.rds }) + ' · ' + t('hidCount', { n: S.hid }); }
+      if (host && x.g && x.ph === 'draw') { U.word.hidden = false; U.word.classList.remove('got'); U.word.textContent = x.g.map(function (n) { return new Array(n + 1).join('_ ').trim(); }).join('   ') + (x.hint ? '  · ' + t('hints', { n: x.hint }) : ''); }
+    }
+    function tick() {
+      var x = dd();
+      if (x && (x.ph === 'pick' || x.ph === 'draw' || x.ph === 'reveal')) {
+        var total = x.ph === 'pick' ? 15000 : x.ph === 'reveal' ? 5000 : x.secs * 1000;
+        var ms = x.run ? Math.max(0, x.end - L.now()) : x.left;
+        U.clock.set(ms, total);
+        if (x.ph === 'draw' && x.run) { var s = Math.ceil(ms / 1000); if (s === 10 && S.said[x.tn] !== 10) { S.said[x.tn] = 10; U.announce(t('left10')); if (host) sfx('count', { volume: 0.4 }); } }
+      } else U.clock.set(0, 0);
+      requestAnimationFrame(tick);
+    }
+    var lastGot = 0, lastPh = '';
+    function onState() {
+      var x = dd(); if (!x) { draw(); return; }
+      if (x.tn > S.tn) turn(x.tn);
+      if (x.got && x.got.length > lastGot && x.tn === S.tn) { var who = x.got[x.got.length - 1]; if (who !== me()) { U.say(t('gotItName', { name: nameOf(who) })); sfx('spark', { volume: 0.5 }); } }
+      lastGot = x.got ? x.got.length : 0;
+      if (x.ph !== lastPh) {
+        if (x.ph === 'reveal') { sfx(x.rv && x.rv.w ? 'whoosh' : 'select'); U.announce(x.rv && x.rv.w ? t('itWas') + ' ' + x.rv.w : t('skipped')); }
+        if (x.ph === 'draw' && x.dr !== me()) U.announce(t('drawing', { name: nameOf(x.dr) }));
+        if (x.ph === 'done') sfx('win');
+        lastPh = x.ph;
+      }
+      draw();
+    }
+
+    L.on('phase', function (e) { phase = e.phase; U.overlay(phase === 'paused' ? t('paused') : ''); draw(); });
+    L.on('countdown', function (e) {
+      var go = function () { var left = Math.ceil((e.at - L.now()) / 1000); if (phase !== 'countdown') { U.overlay(phase === 'paused' ? t('paused') : ''); return; } U.overlay(left > 0 ? String(left) : t('go')); if (left > 0) setTimeout(go, 200); };
+      go(); if (!host) sfx('count', { volume: 0.4 });
+    });
+    L.on('start', function () { U.overlay(''); draw(); if (!host) L.send('need', null, { toHost: true }); });
+    L.on('resume', function () { U.overlay(''); draw(); });
+    L.on('state', onState);
+    L.on('event', onEvent);
+    L.on('leaderboard', function (e) { if (e && e.you) S.myScore = e.you.score; draw(); });
+    L.on('join', draw); L.on('leave', draw); L.on('update', draw); L.on('names', draw);
+    L.on('welcome', function () { phase = L.phase; draw(); if (!host && (phase === 'playing' || phase === 'paused')) L.send('need', null, { toHost: true }); });
+    L.on('end', function (e) { phase = 'ended'; U.overlay(''); var x = dd(); if (x && x.ph === 'done') results(x); draw(); });
+    L.ready({ lobby: true, hostView: true, maxPlayers: 16, words: ['pk', 'ln', 'un', 'cl', 'gs', 'hide', 'need'] });
+    var rsz = 0; window.addEventListener('resize', function () { clearTimeout(rsz); rsz = setTimeout(draw, 120); });
+    draw(); requestAnimationFrame(tick);
+
+    O.test({
+      state: function () {
+        var x = dd();
+        return { doodleLive: true, mode: 'live', role: L.role, phase: phase, me: me(), ph: x ? x.ph : null, rd: x ? x.rd : 0, tn: x ? x.tn : 0, drawer: x ? x.dr : 0,
+          word: S.word ? S.word.w : null, choices: S.choices ? S.choices.w.slice() : null, tray: tiles ? tiles.tray.slice() : [], slots: tiles ? tiles.slots.slice() : [],
+          hintSlots: tiles ? Object.keys(tiles.locks).map(Number) : [], solved: S.solved, strokes: U.board.strokes.length, points: U.board.points(), hidden: S.hidden, hid: S.hid,
+          got: x && x.got ? x.got.slice() : [], scores: scoreRows().map(function (r) { return [r.seat, r.score]; }), rv: x ? x.rv : null, top: x ? x.top : null, ended: phase === 'ended',
+          canDraw: !!(pad && pad.on), queue: Q ? Q.size() : 0, results: S.results };
+      },
+      start: function () { return true; },
+    });
+    Object.assign(window.__brbTest, {
+      pick: function (i) { var b = U.screen.querySelector('.dh-card[data-i="' + (i | 0) + '"]'); if (!b) return false; b.click(); return true; },
+      draw: function (pts) { return !!pad && pad.feed(pts); },
+      tap: function (i) { return !!tiles && tiles.tap(i); },
+      spell: function (w) { return !!tiles && tiles.spell(w); },
+      undo: function () { undo(); return true; },
+      clear: function () { clearMine(); return true; },
+      hide: function () { setHidden(true); return true; },
+    });
+  }
+  // (the scripts run in the head: the live view goes in once there is a body)
+  if (LIVE) { if (document.body) liveGame(); else document.addEventListener('DOMContentLoaded', liveGame); }
+
+  /* ---------- on its own: Guess Pip's doodles, or pass and play on one device ---------- */
+  var KEY = 'doodle-hoot-v1';
+  function load() { try { return (window.BRB && BRB.storage && BRB.storage.get(KEY)) || {}; } catch (e) { return {}; } }
+  var saved = load();
+  var CFG = { mode: saved.mode === 'pass' ? 'pass' : 'practice', lvl: [1, 2, 3].indexOf(saved.lvl) >= 0 ? saved.lvl : 1, n: saved.n >= 2 && saved.n <= 6 ? saved.n : 2 };
+  var BEST = +saved.best || 0;
+  function save() { try { if (window.BRB && BRB.storage) BRB.storage.set(KEY, { mode: CFG.mode, lvl: CFG.lvl, n: CFG.n, best: BEST }); } catch (e) { /* no save */ } }
+  var CREW = [{ species: 'fox' }, { species: 'bunny' }, { species: 'frog' }, { species: 'bear' }, { species: 'cat' }, { species: 'penguin' }];
+  var game = null, M = null, setupApi = null, fast = false;
+  var SET = ['                    ', '                    ', '                    ', '                    ', '                    ', '   P          o     ', '####################', '####################'];
+  if (!LIVE) game = O.game({
+    api: 1, title: t('title'), subtitle: t('tag'), theme: 'meadow', titleHue: 'spark',
+    controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.6, hud: [], countdown: 0,
+    level: O.level.grid(SET, { o: { kind: 'npc', species: 'owl', wear: ['scarf'], tag: 'pip', size: 1.6, flip: true } }),
+    intro: function () { return setupCard(); },
+    testState: function () { return soloState(); },
+    on: { start: function (w) { begin(w); }, title: function () { stop(); }, results: function () { stop(); } },
+  });
+
+  /* the setup card (before every game; the last choice is remembered) */
+  var setupOpen = false;
+  function setupCard() {
+    return new Promise(function (resolve) {
+      setupOpen = true;
+      var wrap = el('div', 'dhs'); wrap.dir = O.dir || 'ltr';
+      var card = el('div', 'dhs-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'dhsH'); wrap.appendChild(card);
+      var h = el('h2', '', t('setup')); h.id = 'dhsH'; card.appendChild(h);
+      var groups = [];
+      function group(label, opts, get, set) {
+        var fs = el('fieldset'); fs.appendChild(el('legend', '', label));
+        var row = el('div', 'opts'); row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', label);
+        var bs = opts.map(function (o) { var b = btn('opt', o.label, null, function () { set(o.v); sync(); sfx('select'); }); b.setAttribute('role', 'radio'); b.dataset.v = String(o.v); row.appendChild(b); return b; });
+        fs.appendChild(row); card.appendChild(fs);
+        var g = { fs: fs, sync: function () { bs.forEach(function (b) { var on = b.dataset.v === String(get()); b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); } };
+        groups.push(g); return g;
+      }
+      function sync() { groups.forEach(function (g) { g.sync(); }); players.fs.hidden = CFG.mode !== 'pass'; note.textContent = CFG.mode === 'pass' ? t('passNote') : t('practiceNote'); if (CFG.mode === 'practice' && CFG.lvl === 3) { CFG.lvl = 2; sync(); } lv3.hidden = CFG.mode === 'practice'; }
+      group(t('howPlay'), [{ v: 'practice', label: t('practice') }, { v: 'pass', label: t('pass') }], function () { return CFG.mode; }, function (v) { CFG.mode = v; });
+      var lv = group(t('level'), [{ v: 1, label: t('easy') }, { v: 2, label: t('medium') }, { v: 3, label: t('tricky') }], function () { return CFG.lvl; }, function (v) { CFG.lvl = +v; });
+      var lv3 = lv.fs.querySelector('[data-v="3"]');
+      var players = group(t('playersN'), [2, 3, 4, 5, 6].map(function (n) { return { v: n, label: O.num(n) }; }), function () { return CFG.n; }, function (v) { CFG.n = +v; });
+      var note = el('p'); card.appendChild(note);
+      var start = O.ui.button(t('start'), { kind: 'hot', big: true, icon: 'play', onPress: function () { if (!setupOpen) return; setupOpen = false; save(); wrap.remove(); resolve(); } });
+      start.id = 'dhStart'; start.setAttribute('data-start', ''); card.appendChild(start);
+      sync();
+      O.ui.root().appendChild(wrap);
+      O.time.real.after(30, function () { try { start.focus({ preventScroll: true }); } catch (e) { /* gone */ } });
+      setupApi = { close: function () { if (setupOpen) start.click(); } };
+    });
+  }
+
+  function stop() { if (M && M.timer) clearInterval(M.timer); if (M && M.U) M.U.root.remove(); M = null; document.documentElement.classList.remove('dh-play'); }
+  function begin(w) {
+    stop();
+    document.documentElement.classList.add('dh-play');
+    var U = Shell('solo'), r = C.rng((Date.now() ^ (Math.random() * 4294967295)) >>> 0);
+    M = { w: w, U: U, r: r, mode: CFG.mode, lvl: CFG.lvl, score: 0, i: 0, ph: 'none', solvedN: 0 };
+    if (CFG.mode === 'practice') practice(); else passPlay();
+  }
+  /** A guess round on this device: the tray, the hints over time, the clock. done(ok, left, hints) when it ends. */
+  function round(word, ms, done) {
+    var U = M.U, lang = LANG, P = C.parts(word.w, lang), b = C.buildTray(word.w, lang, M.lvl, M.r, { pool: C.wordPool(DW, lang) });
+    var plan = C.hintPlan(P.g.length, M.r), hints = [], step = 0, removed = {}, t0 = O.time.now, left = ms, over = false;
+    var tiles = Tiles(function (picks) {
+      var locks = {}; hints.forEach(function (h) { locks[h.i] = h.t; });
+      if (C.check(b.tray, P.g, picks, locks)) { tiles.result(true, t('gotIt')); sfx('correct'); finish(true); }
+      else { tiles.result(false, t('notQuite')); sfx('wrong', { volume: 0.5 }); }
+    }, lang);
+    tiles.set({ t: b.tray, g: P.groups, dir: C.dir(lang) }, lang);
+    M.tiles = tiles; M.word = word; M.tray = b.tray;
+    U.side.textContent = ''; U.side.appendChild(tiles.el);
+    function finish(ok) { if (over) return; over = true; clearInterval(M.timer); M.timer = 0; done(ok, left, hints.length); }
+    M.timer = setInterval(function () {
+      if (over) return;
+      if (O.time.paused) { t0 = O.time.now - (ms - left); return; }
+      left = Math.max(0, ms - (O.time.now - t0)); if (fast) left = 0;
+      U.clock.set(left, ms);
+      while (step < C.HINTS.length && ms - left >= ms * C.HINTS[step].at) {
+        var h = C.HINTS[step++];
+        if (h.min && P.g.length < h.min) continue;
+        if (h.k === 'decoys') { var gone = b.decoys.filter(function (i) { return !removed[i]; }).slice(0, h.n); gone.forEach(function (i) { removed[i] = 1; }); tiles.removeDecoys(gone); }
+        else { var slot = plan.filter(function (i) { return !hints.some(function (q) { return q.i === i; }); })[0]; if (slot == null) continue; var used = hints.map(function (q) { return q.t; }); var ti = b.tray.findIndex(function (g, i) { return g === P.g[slot] && used.indexOf(i) < 0 && b.decoys.indexOf(i) < 0; }); if (ti < 0) continue; hints.push({ i: slot, t: ti }); tiles.hint(slot, ti); U.announce(t('hint')); }
+      }
+      if (left <= 0) finish(false);
+    }, 100);
+    return tiles;
+  }
+  function reveal(word, extra, then) {
+    var U = M.U, nodes = [el('div', '', t('itWas')), el('div', 'emo', word.e), el('div', 'big', caps(word.w, LANG))];
+    if (extra) nodes.push(el('div', '', extra));
+    U.board.veilShow(nodes, 'rv');
+    O.time.real.after(fast ? 10 : 2200, then);
+  }
+
+  /* Guess Pip's doodles: 8 doodles; Pip draws each stroke by stroke, the player spells it */
+  var PRACTICE_N = 8, PRACTICE_MS = 45000;
+  function practice() {
+    var U = M.U, ws = C.words(DW, LANG, 0).filter(function (x) { return ART[x.id] && x.lvl <= Math.max(1, M.lvl) && (M.lvl === 1 ? x.lvl === 1 : true); });
+    M.list = M.r.shuffle(ws).slice(0, PRACTICE_N); M.i = -1;
+    U.whoIs(PIP, t('pipDraws'));
+    next();
+    function next() {
+      M.i++;
+      if (M.i >= M.list.length) return end();
+      var word = M.list[M.i]; M.ph = 'guess';
+      U.chip.textContent = t('doodleN', { n: M.i + 1, of: M.list.length });
+      U.board.veilShow(null); U.board.clear();
+      animate(ART[word.id]);
+      round(word, PRACTICE_MS, function (ok, left, hints) {
+        M.ph = 'reveal';
+        var p = ok ? C.guessPoints(left, PRACTICE_MS, 2, hints) : 0;
+        if (ok) { M.score += p; M.solvedN++; }
+        if (M.anim) { M.anim(); }
+        U.board.strokes = ART[word.id].map(function (s, i) { return { s: i, c: s.c, w: s.w, e: 0, pts: s.pts.slice() }; }); U.board.redraw();
+        reveal(word, ok ? t('gotPts', { n: p }) : t('timeUp'), next);
+      });
+    }
+    function animate(strokes) {
+      var i = 0, k = 0, alive = true, per = Math.max(2, Math.round(strokes.reduce(function (a, s) { return a + s.pts.length / 2; }, 0) / 120));
+      var cur = null, id = setInterval(function () {
+        if (!alive || O.time.paused) return;
+        for (var n = 0; n < per && i < strokes.length; n++) {
+          var s = strokes[i];
+          if (!cur) { cur = U.board.add({ s: i, c: s.c, w: s.w, e: 0, pts: [s.pts[0], s.pts[1]] }); k = 2; continue; }
+          if (k < s.pts.length) { U.board.append(i, [s.pts[k], s.pts[k + 1]]); k += 2; } else { cur = null; i++; }
+        }
+        if (i >= strokes.length) clearInterval(id);
+      }, fast ? 1 : 33);
+      M.anim = function () { alive = false; clearInterval(id); M.anim = null; };
+    }
+    function end() {
+      var stars = M.score >= 600 ? 3 : M.score >= 350 ? 2 : M.score > 0 ? 1 : 0, best = BEST;
+      if (M.score > BEST) { BEST = M.score; save(); }
+      M.ph = 'end';
+      M.w.win({ score: M.score, stars: stars, title: stars === 3 ? t('superSpeller') : t('wellPlayed'), best: best });
+    }
+  }
+
+  /* Pass and play: each player draws once a round on this device while the others look away, then they guess */
+  var PASS_DRAW_MS = 60000, PASS_GUESS_MS = 60000;
+  function passPlay() {
+    var U = M.U, n = CFG.n;
+    M.players = []; for (var i = 0; i < n; i++) M.players.push({ i: i, name: t('player', { n: i + 1 }), spec: O.char(CREW[i]), score: 0 });
+    M.turn = -1; M.used = {};
+    var pad = Pad(U.board, { start: function () {}, more: function () {}, end: function () {} });
+    var tools = Tools(pad, { undo: function () { var st = U.board.strokes[U.board.strokes.length - 1]; if (st) U.board.remove(st.s); }, clear: function () { U.board.clear(); } });
+    M.pad = pad;
+    nextTurn();
+    function nextTurn() {
+      M.turn++;
+      if (M.turn >= M.players.length) return end();
+      var p = M.players[M.turn]; M.ph = 'cover';
+      U.board.clear(); U.board.veilShow(null); pad.set(false); pad.reset(0);
+      U.chip.textContent = t('turnN', { n: M.turn + 1, of: M.players.length });
+      U.whoIs(p.spec, t('drawing', { name: p.name }));
+      var go = el('button', 'dh-big', t('imReady')); go.type = 'button'; go.addEventListener('click', pick);
+      U.panel([figure(p.spec, 220), el('h2', '', t('passTo', { name: p.name })), el('p', '', t('passDraw')), go]);
+      M.go = go;
+    }
+    function pick() {
+      var p = M.players[M.turn], all = C.words(DW, LANG, M.lvl).filter(function (x) { return !M.used[x.id]; });
+      var ch = M.r.shuffle(all).slice(0, 3); M.choices = ch; M.ph = 'pick';
+      U.panel([el('h2', '', t('pickWord')), cards(ch.map(function (x) { return x.w; }), ch.map(function (x) { return x.e; }), function (i) { drawTurn(ch[i]); }), el('p', '', t('notLetters'))]);
+      M.cards = true; void p;
+    }
+    function drawTurn(word) {
+      M.used[word.id] = 1; M.word = word; M.ph = 'draw';
+      U.panel(null);
+      U.word.hidden = false; U.word.textContent = ''; U.word.appendChild(el('small', '', t('drawThis'))); U.word.appendChild(el('span', '', word.e)); U.word.appendChild(el('span', '', caps(word.w, LANG)));
+      U.side.textContent = ''; U.side.appendChild(tools.el); var done = el('button', 'dh-btn hot', t('done')); done.type = 'button'; U.side.appendChild(done);
+      pad.set(true);
+      var t0 = O.time.now, over = false;
+      function stopDraw() { if (over) return; over = true; clearInterval(M.timer); pad.set(false); U.word.hidden = true; toGuessers(); }
+      done.addEventListener('click', stopDraw); M.doneBtn = done;
+      M.timer = setInterval(function () { var left = Math.max(0, PASS_DRAW_MS - (O.time.now - t0)); if (fast) left = 0; U.clock.set(left, PASS_DRAW_MS); if (left <= 0) stopDraw(); }, 100);
+    }
+    function toGuessers() {
+      M.ph = 'cover2';
+      var go = el('button', 'dh-big', t('imReady')); go.type = 'button';
+      go.addEventListener('click', function () { U.panel(null); guess(); });
+      U.panel([pipPic(180), el('h2', '', t('passGuess')), el('p', '', t('passGuessP')), go]); M.go = go;
+    }
+    function guess() {
+      M.ph = 'guess';
+      var drawer = M.players[M.turn];
+      U.whoIs(drawer.spec, t('drawing', { name: drawer.name }));
+      round(M.word, PASS_GUESS_MS, function (ok, left, hints) {
+        if (!ok) { M.ph = 'reveal'; reveal(M.word, t('timeUp'), nextTurn); return; }
+        // who spelled it? (a tap on their picture: no names typed)
+        M.ph = 'who';
+        var row = el('div', 'dh-who-btns');
+        M.players.forEach(function (p) {
+          if (p === drawer) return;
+          var b = btn('', p.name, null, function () {
+            var pts = C.guessPoints(left, PASS_GUESS_MS, 2, hints); p.score += pts; drawer.score += C.drawPoints(1, 1); U.panel(null);
+            M.ph = 'reveal'; reveal(M.word, t('gotItName', { name: p.name }), nextTurn);
+          });
+          b.insertBefore(figure(p.spec, 80), b.firstChild); row.appendChild(b);
+        });
+        U.panel([el('h2', '', t('whoGot')), row]);
+      });
+    }
+    function end() {
+      var best = M.players.slice().sort(function (a, b) { return b.score - a.score; }), top = best[0], tie = best[1] && best[1].score === top.score;
+      M.ph = 'end';
+      M.w.win({ title: tie ? t('tie') : t('wins', { name: top.name }), who: tie ? null : top.spec, score: top.score, stars: 3, submit: false });
+    }
+  }
+
+  function soloState() {
+    return { doodle: true, mode: CFG.mode, screen: setupOpen ? 'setup' : M ? M.ph : 'none', lvl: CFG.lvl, players: CFG.n, score: M ? M.score : 0, i: M ? M.i : 0, turn: M ? M.turn : null,
+      word: M && M.word ? M.word.w : null, tray: M && M.tiles ? M.tiles.tray.slice() : [], slots: M && M.tiles ? M.tiles.slots.slice() : [], strokes: M ? M.U.board.strokes.length : 0,
+      points: M ? M.U.board.points() : 0, choices: M && M.choices ? M.choices.map(function (x) { return x.w; }) : null,
+      scores: M && M.players ? M.players.map(function (p) { return p.score; }) : null, best: BEST, saved: load() };
+  }
+  if (!LIVE) Object.assign(window.__brbTest, {
+    setup: function (o) { o = o || {}; if (o.mode) CFG.mode = o.mode === 'pass' ? 'pass' : 'practice'; if ([1, 2, 3].indexOf(+o.lvl) >= 0) CFG.lvl = +o.lvl; if (o.players) CFG.n = Math.max(2, Math.min(6, +o.players)); return soloState(); },
+    start: function (o) { if (o) window.__brbTest.setup(o); if (o && o.seed != null) { /* fixed rounds */ } if (setupApi) setupApi.close(); game.start(); return soloState(); },
+    state: function () { return soloState(); },
+    pick: function (i) { var b = M && M.U.screen.querySelector('.dh-card[data-i="' + (i | 0) + '"]'); if (!b) return false; b.click(); return true; },
+    draw: function (pts) { return !!(M && M.pad) && M.pad.feed(pts); },
+    ready: function () { if (M && M.go && M.go.isConnected) { M.go.click(); return true; } return false; },
+    done: function () { if (M && M.doneBtn && M.doneBtn.isConnected) { M.doneBtn.click(); return true; } return false; },
+    tap: function (i) { return !!(M && M.tiles) && M.tiles.tap(i); },
+    spell: function (w) { return !!(M && M.tiles) && M.tiles.spell(w || (M.word && M.word.w)); },
+    who: function (k) { var b = M && M.U.screen.querySelectorAll('.dh-who-btns button')[k | 0]; if (!b) return false; b.click(); return true; },
+    skipAnimations: function () { fast = true; return true; },
+  });
+})();
+</script>

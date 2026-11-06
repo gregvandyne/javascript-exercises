@@ -3858,6 +3858,7 @@
       "packetPost": "Envía paquetes por una red, elige contraseñas fuertes y detecta trampas en línea.",
       "insideTheMachine": "Monta y repara ordenadores: piezas, entradas y salidas, bits y píxeles, diseño para todos.",
       "tugOfMath": "Preguntas de matemáticas para cada curso del 1 al 8, desde sumas hasta 20 hasta ecuaciones, en un juego de tirar de la cuerda. Contra la compu o contra un amigo en la misma pantalla.",
+      "doodleHoot": "Dibuja una palabra para los demás o deletrea la suya con fichas de letras. Palabras fáciles, medias o difíciles en 13 idiomas, en vivo con familia y amigos o en un dispositivo.",
       "remisQuietMeadow": "Un medidor de ruido para la clase: mantengan la calma para que Remi, el panda rojo, pueda dormir, y cuenten juntos el tiempo de silencio."
     },
     "hubs": {
@@ -4078,7 +4079,8 @@
           "loopLab": "Tocan cuadros para crear un ritmo y lo oyen repetirse al instante. No hace falta saber leer música.",
           "beatLanes": "Tocan al ritmo de canciones que conocen, empezando por Estrellita, ¿dónde estás?",
           "munchMaze": "Una persecución en un laberinto con modo Fácil: planear una ruta y comer todos los puntitos.",
-          "tugOfMath": "Elige el curso 2 o 3: sumas, restas y tablas de multiplicar, con la compu en Fácil hasta que le ganen."
+          "tugOfMath": "Elige el curso 2 o 3: sumas, restas y tablas de multiplicar, con la compu en Fácil hasta que le ganen.",
+          "doodleHoot": "Palabras con dibujo y fichas de letras: practicar ortografía como en un juego de fiesta."
         },
         "faq": {
           "q2": "¿Son demasiado difíciles los juegos para un niño de 8 años?",
@@ -4108,7 +4110,8 @@
           "loopLab": "Ya tienen edad para planear una canción entera: unir ritmos y superar los 10 retos musicales.",
           "heroOfSunvale": "Más que un juego rápido: misiones que leer y seguir, y un reino en 3D para explorar a su propio ritmo.",
           "swishFlick": "Una pausa rápida con un poco de física: la dirección del deslizamiento apunta la pelota y su velocidad decide hasta dónde vuela.",
-          "tugOfMath": "Los cursos 4 y 5 traen multiplicaciones más grandes y el orden de las operaciones; dos jugadores pueden tirar en una tableta o pizarra digital."
+          "tugOfMath": "Los cursos 4 y 5 traen multiplicaciones más grandes y el orden de las operaciones; dos jugadores pueden tirar en una tableta o pizarra digital.",
+          "doodleHoot": "Palabras difíciles, respuestas de dos palabras y una carrera por deletrearlas primero."
         },
         "faq": {
           "q2": "¿Son demasiado fáciles los juegos para un niño de 10 años?",
@@ -4554,6 +4557,13 @@
       "locked": "Sala cerrada",
       "autoLock": "La sala se cierra cuando empieza el juego.",
       "end": "Terminar juego",
+      "skipTurn": "Saltar turno",
+      "clear": "Borrar dibujo",
+      "clearConfirm": "¿Borrar el dibujo en todas las pantallas?",
+      "copyLink": "Copiar enlace para unirse",
+      "copied": "Enlace copiado. Envíalo a tus jugadores.",
+      "playToo": "Jugar yo también",
+      "hidCount": "Jugadores que ocultan este dibujo: {count}",
       "endConfirm": "¿Terminar el juego para todos?",
       "remove": "Quitar",
       "removeConfirm": "¿Quitar a este jugador del juego?",
@@ -4617,7 +4627,9 @@
       "atlas": "Atlas Quest (En vivo)",
       "atlasText": "Todos tocan el país en su propio mapa del mundo: encuéntralo, su bandera, su capital o por qué es famoso. Acercarse también suma un poco.",
       "tug": "Tug of Math (En vivo)",
-      "tugText": "La clase se divide en dos equipos. Cada uno responde preguntas de matemáticas de su curso en su propio teclado, y cada respuesta correcta tira de la cuerda."
+      "tugText": "La clase se divide en dos equipos. Cada uno responde preguntas de matemáticas de su curso en su propio teclado, y cada respuesta correcta tira de la cuerda.",
+      "doodle": "Doodle Hoot (En vivo)",
+      "doodleText": "Un jugador dibuja y los demás deletrean la palabra con fichas de letras. Para la familia o los amigos, estén donde estén, cada uno en su dispositivo."
     },
     "starter": {
       "title": {
@@ -4866,6 +4878,7 @@
         "cat": "La categoría de la pregunta {n} no está permitida."
       },
       "noMissed": "Todos acertaron todas las preguntas, así que no hay nada que repetir.",
+      "needTwo": "Hacen falta dos jugadores para empezar.",
       "tugTeams": "Tug of Math necesita dos equipos, y los equipos están desactivados en este sitio.",
       "teamsOff": "Este juego no tenía equipos.",
       "againGone": "Los jugadores se fueron. Empieza un juego nuevo.",
@@ -5316,6 +5329,7 @@
         "resume": "{name} reanudó el juego",
         "next": "{name} pasó a lo siguiente",
         "skip": "{name} saltó la pregunta",
+        "clear": "{name} borró el dibujo",
         "lock": "{name} cerró la sala",
         "unlock": "{name} abrió la sala",
         "kick": "{name} quitó a {player}",
@@ -5408,6 +5422,20 @@
       "of": "de",
       "hint": "Los jugadores se reparten solos en dos equipos iguales. Cada uno recibe sus propias preguntas, así nadie copia, y un equipo más pequeño tira igual de fuerte.",
       "teamsAuto": "Dos equipos hechos para ti: Ballenas Azules y Zorros Rojos. Puedes equilibrar, mezclar o mover jugadores."
+    },
+    "doodleUi": {
+      "legend": "Doodle Hoot (En vivo)",
+      "lang": "Idioma de las palabras",
+      "level": "Palabras",
+      "levels": "Fáciles|Medias|Difíciles",
+      "like": "Palabras como:",
+      "rounds": "Rondas",
+      "roundsList": "1 ronda (cada uno dibuja una vez)|2 rondas|3 rondas",
+      "secs": "Tiempo para dibujar",
+      "secsN": "{n} segundos",
+      "hint": "Todos dibujan por turnos. Los jugadores entran con el código en su propio dispositivo, estén donde estén. Nadie escribe: se adivina con fichas de letras y no hay chat.",
+      "bigRoom": "¿Un grupo grande? Con una ronda basta: cada uno dibuja una vez.",
+      "play": "Practicar o jugar en un dispositivo"
     },
     "atlasUi": {
       "legend": "Atlas Quest (En vivo)",
@@ -5533,6 +5561,10 @@
       "wyr": {
         "h": "¿Qué prefieres? (En vivo)",
         "p": "La clase vota dilemas divertidos y ve cómo se reparte, y qué eligió todo el mundo en Oomba. Sin respuestas correctas ni puntos: una conversación lista para empezar."
+      },
+      "doodle": {
+        "h": "Doodle Hoot (En vivo)",
+        "p": "Un jugador dibuja y los demás deletrean la palabra con fichas de letras: ortografía y vocabulario en 13 idiomas. Ideal para grupos pequeños (hasta 16); puedes borrar un dibujo o saltar un turno cuando quieras."
       },
       "tug": {
         "h": "Tug of Math (En vivo)",

@@ -22,7 +22,12 @@ if (form) {
     if (sets) sets.hidden = !quiz || own;
     for (const box of form.querySelectorAll('.lv-own')) box.hidden = pick !== `mode:${box.dataset.ownMode}`;
     // Tug of Math Live splits the players into its own two teams: no teams row; its grade shows sample questions.
-    const tr = $('lv-teams-landing'); if (tr) tr.hidden = pick === 'mode:tug';
+    // Doodle Hoot Live takes turns, one drawer at a time: no teams either.
+    const tr = $('lv-teams-landing'); if (tr) tr.hidden = pick === 'mode:tug' || pick === 'mode:doodle';
+    // Doodle Hoot Live: three sample words for the language and level, and a note for a big room (1 round is enough)
+    const dl = $('lv-doodle-lang'), dv = $('lv-doodle-level'), ds = $('lv-doodle-sample');
+    if (dl && dv && ds) { try { ds.textContent = (JSON.parse($('lv-doodle-samples').textContent)[dl.value] || {})[dv.value] || ''; ds.lang = dl.value; } catch { /* keep */ } }
+    const big = $('lv-doodle-big'), mxv = $('lv-max'), rds = $('lv-doodle-rounds'); if (big && mxv && rds) big.hidden = !(+mxv.value > 8 && +rds.value > 1);
     const tg = $('lv-tug-grade'), sample = $('lv-tug-sample');
     if (tg && sample) { try { sample.textContent = JSON.parse($('lv-tug-samples').textContent)[tg.value] || ''; } catch { /* keep */ } }
     // at least one topic / question kind stays ticked (unticking the last one ticks it again)
@@ -74,6 +79,14 @@ if (form) {
       if (last) for (const [id, v] of [['lv-tug-grade', last.g], ['lv-tug-len', last.l]]) { const el = $(id); if (el && [...el.options].some(o => o.value === String(v))) el.value = String(v); }
     } catch { /* private mode */ }
   }
+  // Doodle Hoot Live: the word language, level, rounds and time this browser picked last.
+  const DOODLE_KEY = 'lv-doodle', ddBox = $('lv-doodle-opts');
+  if (ddBox && !ddBox.dataset.preset) {
+    try {
+      const last = JSON.parse(localStorage.getItem(DOODLE_KEY) || 'null');
+      if (last) for (const [id, v] of [['lv-doodle-lang', last.l], ['lv-doodle-level', last.v], ['lv-doodle-rounds', last.r], ['lv-doodle-secs', last.s]]) { const el = $(id); if (el && [...el.options].some(o => o.value === String(v))) el.value = String(v); }
+    } catch { /* private mode */ }
+  }
   form.addEventListener('change', sync); sync();
   // Our own submit (before app.js's): a second open game asks first.
   document.addEventListener('submit', async e => {
@@ -82,6 +95,7 @@ if (form) {
     // ticked boxes of one name (wyrTopic, bankBoard, atlasKind) go as a list, as app.js posts forms
     const body = {}; for (const [k, v] of new FormData(form).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
     if (body.pick === 'mode:tug') { try { localStorage.setItem(TUG_KEY, JSON.stringify({ g: body.tugGrade, l: body.tugLen })); } catch { /* private mode */ } }
+    if (body.pick === 'mode:doodle') { try { localStorage.setItem(DOODLE_KEY, JSON.stringify({ l: body.doodleLang, v: body.doodleLevel, r: body.doodleRounds, s: body.doodleSecs })); } catch { /* private mode */ } }
     const btn = form.querySelector('[type=submit]'), err = form.querySelector('.form-err');
     btn.disabled = true; err.textContent = '';
     const go = async replace => {

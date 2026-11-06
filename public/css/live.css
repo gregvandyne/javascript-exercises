@@ -39,6 +39,11 @@
 .lv-joinbox.is-small .lv-bigcode { font-size: 2.2rem; }
 .lv-joinbox.is-hidden .lv-bigcode, .lv-joinbox.is-hidden .lv-qr { visibility: hidden; }
 .lv-label, .lv-joinat, .lv-count { margin: 0; }
+/* Copy join link and Play too (every mode); Doodle Hoot Live's "2 players needed" and "N hid this drawing" */
+.lv-joinlinks { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-block-start: 4px; }
+.lv-joinbox.is-small .lv-joinlinks { display: none; }
+#lv-copied, #lv-need-two { margin: 0; }
+.lv-hid { margin: 0; font-weight: 700; color: var(--warn-ink); }
 .lv-count { font-weight: 800; font-size: 1.2rem; }
 .lv-stage { position: relative; inline-size: 100%; min-block-size: 50vh; border-radius: 16px; overflow: hidden; background: #bfe8ff; }
 .lv-stage iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }

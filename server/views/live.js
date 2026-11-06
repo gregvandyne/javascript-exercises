@@ -231,8 +231,10 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   const st = settingsView(s.settings);
   const joinUrl = `${origin}/join#${s.code}`;
   const shown = `${origin.replace(/^https?:\/\//, '')}/join`;
-  const keys = { start: 'S', pause: 'P', resume: 'P', next: 'N', skip: 'K', lock: 'L', unlock: 'L', end: 'E' };
-  const control = a => html`<button class="btn lv-act lv-act-${a}" type="button" data-lv-act="${a}" aria-keyshortcuts="${keys[a]}"${['resume', 'unlock', 'pause', 'next', 'skip'].includes(a) ? raw(' hidden') : ''}${a === 'end' ? raw(` data-confirm="${t(me.role === 'cohost' ? 'live.cohost.endConfirm' : 'live.host.endConfirm')}"`) : ''}>${t(`live.host.${a}`)}</button>`;
+  const keys = { start: 'S', pause: 'P', resume: 'P', next: 'N', skip: 'K', clear: 'C', lock: 'L', unlock: 'L', end: 'E' };
+  // Doodle Hoot Live: Skip is "Skip turn" and Clear drawing asks first
+  const label = a => (s.doodle && a === 'skip' ? t('live.host.skipTurn') : t(`live.host.${a}`));
+  const control = a => html`<button class="btn lv-act lv-act-${a}" type="button" data-lv-act="${a}" aria-keyshortcuts="${keys[a]}"${['resume', 'unlock', 'pause', 'next', 'skip', 'clear'].includes(a) ? raw(' hidden') : ''}${a === 'end' ? raw(` data-confirm="${t(me.role === 'cohost' ? 'live.cohost.endConfirm' : 'live.host.endConfirm')}"`) : ''}${a === 'clear' ? raw(` data-confirm="${t('live.host.clearConfirm')}"`) : ''}>${label(a)}</button>`;
   return html`<div class="lv lv-host" data-lv-page="host" data-sid="${s.id}">
   <header class="lv-bar"><a class="btn btn-sm" href="/live"><span class="flip" aria-hidden="true">←</span> ${t('layout.back')}</a><span class="lv-title">${s.title}</span></header>
   <section class="lv-joinbox" id="lv-joinbox">
@@ -244,11 +246,15 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       ${classSignIn ? html`<p class="lv-joinat small">${t('live.host.signInFirst')}</p>` : ''}
       <p class="lv-count" id="lv-count" aria-live="polite">${t('live.host.count', { count: 0, max: s.settings.maxPlayers })}</p>
       <button class="btn btn-sm" type="button" id="lv-hide-code" aria-pressed="false">${t('live.host.hideCode')}</button>
+      <span class="lv-joinlinks"><button class="btn btn-sm" type="button" id="lv-copy-link" data-url="${joinUrl}">🔗 ${t('live.host.copyLink')}</button>
+      <a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">🎮 ${t('live.host.playToo')}</a></span>
+      <p class="small muted" id="lv-copied" role="status" hidden>${t('live.host.copied')}</p>
+      ${s.doodle ? html`<p class="small muted" id="lv-need-two" hidden>${t('live.api.needTwo')}</p><p class="small lv-hid" id="lv-hid" role="status" hidden></p>` : ''}
     </div>
   </section>
   <div class="lv-stage lv-hoststage" id="lv-stage" dir="ltr"></div>
   <section class="lv-controls" id="lv-controls" aria-label="${t('live.host.controls')}">
-    ${['start', 'pause', 'resume', ...(s.tug ? [] : ['next', 'skip']), 'lock', 'unlock', 'end'].map(control)}
+    ${['start', 'pause', 'resume', ...(s.tug ? [] : s.doodle ? ['skip', 'clear'] : ['next', 'skip']), 'lock', 'unlock', 'end'].map(control)}
     <button class="btn lv-act lv-act-eyes" type="button" data-lv-act="eyes" aria-pressed="false" aria-keyshortcuts="Y">👀 ${t('live.host.eyes')}</button>
     ${s.quiz ? html`<span class="lv-time" id="lv-time" hidden>${ADD_SECS.map(x => html`<button class="btn btn-sm" type="button" data-lv-time="${x}">${t('live.time.add', { s: x })}</button>`)}</span>` : ''}
     <details class="lv-say" id="lv-say"><summary class="btn">💬 ${t('live.say.menu')}</summary><div class="lv-say-list" role="group" aria-label="${t('live.say.menu')}">${sayList(t).map((x, i) => html`<button class="btn btn-sm" type="button" data-lv-say="${i}">${x}</button>`)}</div></details>
@@ -263,7 +269,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   <p class="lv-eyes-banner" id="lv-eyes-banner" role="status" hidden>👀 ${t('live.eyes.banner')}</p>
   <p class="lv-say-banner lv-say-big" id="lv-say-banner" role="status" hidden></p>
   <p class="lv-toast" id="lv-bonus-toast" role="status" hidden></p>
-  ${teamsOn ? html`<section class="lv-teamsbox" id="lv-teamsbox" aria-labelledby="lv-teams-h">
+  ${teamsOn && !s.doodle ? html`<section class="lv-teamsbox" id="lv-teamsbox" aria-labelledby="lv-teams-h">
     <h2 class="lv-h2" id="lv-teams-h">${t('live.team.heading')}</h2>
     ${s.tug ? html`<p class="small muted" id="lv-teams-tug">${t('live.tugUi.teamsAuto')}</p><div hidden>${teamsRow(t, { n: 2, name: 'lv-teams', withScoring: false })}</div>`
     : teamsRow(t, { n: s.teams && s.teams.on ? s.teams.n : 0, name: 'lv-teams', withScoring: false })}
@@ -340,7 +346,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     quiz: !!s.quiz, teamsOn, hasLast, presets, say: sayList(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY, dashUrl, podiumHoldMs: 6000,
     ctl: { role: me.role, tier: me.tier, cohosts: !!me.cohosts }, ...(me.cohosts || me.role === 'cohost' ? { cohost: cohostText(t) } : {}),
     text: { removeConfirm: rawT(t)('live.host.removeConfirm'), ready: rawT(t)('live.host.ready'), late: rawT(t)('live.host.late'), watching: rawT(t)('live.host.watching'), offline: rawT(t)('live.host.offline'), showCode: rawT(t)('live.host.showCode'), hideCode: rawT(t)('live.host.hideCode'), locked: rawT(t)('live.host.locked'), count: rawT(t)('live.host.count'), answers: rawT(t)('live.host.answers'), phases: phaseText(t),
-      revealNow: rawT(t)('live.time.revealNow'), waiting: rawT(t)('live.time.waiting'), eyesOn: rawT(t)('live.eyes.on'), eyesOff: rawT(t)('live.eyes.off'), soundOn: rawT(t)('live.host.soundOn'), soundOff: rawT(t)('live.host.soundOff'), toastTeam: rawT(t)('live.bonus.toastTeam'), toastSeat: rawT(t)('live.bonus.toastSeat'), team: teamText(t), settings: settingsText(t) },
+      revealNow: rawT(t)('live.time.revealNow'), waiting: rawT(t)('live.time.waiting'), eyesOn: rawT(t)('live.eyes.on'), eyesOff: rawT(t)('live.eyes.off'), soundOn: rawT(t)('live.host.soundOn'), soundOff: rawT(t)('live.host.soundOff'), toastTeam: rawT(t)('live.bonus.toastTeam'), toastSeat: rawT(t)('live.bonus.toastSeat'), team: teamText(t), settings: settingsText(t), copied: rawT(t)('live.host.copied'), hidCount: rawT(t)('live.host.hidCount') },
   })}
 </div>`;
 }
@@ -362,7 +368,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
     <span class="lv-phase" id="lv-dash-phase" role="status" aria-live="polite"></span>
     <div class="lv-dash-acts" role="toolbar" aria-label="${t('live.host.controls')}">
       ${act('start', t('live.host.start'))}${act('pause', t('live.host.pause'), ' hidden')}${act('resume', t('live.host.resume'), ' hidden')}
-      ${s.tug ? '' : html`${act('next', s.quiz ? t('live.time.revealNow') : t('live.host.next'), ' hidden')}${act('skip', t('live.host.skip'), ' hidden')}`}
+      ${s.tug ? '' : s.doodle ? html`${act('skip', t('live.host.skipTurn'), ' hidden')}${act('clear', t('live.host.clear'), ` hidden data-confirm="${t('live.host.clearConfirm')}"`)}` : html`${act('next', s.quiz ? t('live.time.revealNow') : t('live.host.next'), ' hidden')}${act('skip', t('live.host.skip'), ' hidden')}`}
       ${s.quiz ? html`<button class="btn btn-sm" type="button" data-lv-time="10" hidden>${t('live.time.add', { s: 10 })}</button>` : ''}
       ${act('eyes', `👀 ${t('live.host.eyes')}`, ' aria-pressed="false"')}
       ${act('lock', t('live.host.lock'))}${act('unlock', t('live.host.unlock'), ' hidden')}
@@ -440,7 +446,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
 
 /** /live: pick a game or mode, a question set, who can join, then open the room (a data-api form: works without the
  *  page script). */
-export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null, wyr = null, atlas = null, tug = null }) {
+export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null, wyr = null, atlas = null, tug = null, doodle = null }) {
   const t = req.t;
   // part 4: invites to co-host and games this account co-hosts (only inside Oomba: no email, no push)
   const ch = cohost || { invites: [], on: [] };
@@ -478,6 +484,9 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   const atlasSel = (k, dflt) => (at ? at[k] : dflt);
   // Tug of Math Live: the starter's grade and length, else grade 3 for 90 seconds (the page may fill in the last choice).
   const tg = st && st.kind === 'tug' ? st.tug : null;
+  // Doodle Hoot Live: the starter's language, level, rounds and time, else the page's language, Easy, 2 rounds, 80 s.
+  const dd = st && st.kind === 'doodle' ? st.doodle : null;
+  const ddLang = dd ? dd.lang : doodle ? doodle.lang : 'en', ddLvl = dd ? dd.lvl : 1;
   const audiences = [classes.length ? 'class' : null, family ? 'family' : null, 'open'].filter(Boolean);
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
   return html`<div class="lv lv-landing" data-lv-page="landing">
@@ -513,6 +522,16 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
       <div class="field"><label for="lv-tug-len">${t('live.tugUi.len')}</label><select id="lv-tug-len" name="tugLen">${tug.lens.map(n => html`<option value="${n}"${n === (tg ? tg.len : 90) ? raw(' selected') : ''}>${n ? t('live.tugUi.secsN', { n }) : t('live.tugUi.toLine')}</option>`)}</select></div>
       <p class="small muted">${t('live.tugUi.hint')}</p>
       ${jsonData('lv-tug-samples', tug.samples)}
+    </fieldset>` : ''}
+    ${doodle ? html`<fieldset class="lv-group lv-own" id="lv-doodle-opts" data-own-mode="doodle" data-preset="${dd ? '1' : ''}" hidden><legend>${t('live.doodleUi.legend')}</legend>
+      <div class="field"><label for="lv-doodle-lang">${t('live.doodleUi.lang')}</label><select id="lv-doodle-lang" name="doodleLang">${doodle.langs.map(x => html`<option value="${x.id}"${x.id === ddLang ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      <div class="field"><label for="lv-doodle-level">${t('live.doodleUi.level')}</label><select id="lv-doodle-level" name="doodleLevel">${doodle.levels.map(x => html`<option value="${x.v}"${x.v === ddLvl ? raw(' selected') : ''}>${x.name}</option>`)}</select></div>
+      <p class="small muted" id="lv-doodle-like">${t('live.doodleUi.like')} <span id="lv-doodle-sample" dir="auto">${(doodle.samples[ddLang] || {})[ddLvl] || ''}</span></p>
+      <div class="field"><label for="lv-doodle-rounds">${t('live.doodleUi.rounds')}</label><select id="lv-doodle-rounds" name="doodleRounds">${doodle.rounds.map(n => html`<option value="${n}"${n === (dd ? dd.rounds : 2) ? raw(' selected') : ''}>${t('live.doodleUi.roundsList').split('|')[n - 1] || n}</option>`)}</select></div>
+      <div class="field"><label for="lv-doodle-secs">${t('live.doodleUi.secs')}</label><select id="lv-doodle-secs" name="doodleSecs">${doodle.secs.map(n => html`<option value="${n}"${n === (dd ? dd.secs : 80) ? raw(' selected') : ''}>${t('live.doodleUi.secsN', { n })}</option>`)}</select></div>
+      <p class="small muted">${t('live.doodleUi.hint')}</p>
+      <p class="small muted" id="lv-doodle-big" hidden>${t('live.doodleUi.bigRoom')}</p>
+      ${jsonData('lv-doodle-samples', doodle.samples)}
     </fieldset>` : ''}
     ${groups.filter(g => g.games.length || !modes.length).map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams, x.cap))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
     <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>

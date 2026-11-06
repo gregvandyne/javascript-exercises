@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { gameFrame } from './helpers.js';
 
-const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['packet-post', 'Packet Post'], ['inside-the-machine', 'Inside the Machine'], ['data-detective', 'Data Detective'], ['robo-route', 'Robo Route'], ['tug-of-math', 'Tug of Math'], ['remis-quiet-meadow', "Remi's Quiet Meadow"]];
+const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['packet-post', 'Packet Post'], ['inside-the-machine', 'Inside the Machine'], ['data-detective', 'Data Detective'], ['robo-route', 'Robo Route'], ['tug-of-math', 'Tug of Math'], ['remis-quiet-meadow', "Remi's Quiet Meadow"], ['doodle-hoot', 'Doodle Hoot']];
 
 for (const [slug, title] of SEEDS) {
   test(`${slug} loads in the sandbox and shows up on Home`, async ({ page }) => {

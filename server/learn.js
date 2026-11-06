@@ -29,6 +29,8 @@ export const LEARNING = {
   'data-detective': { key: 'dataDetective', teaches: ['Organizing data', 'Charts', 'Claims from data', 'Cleaning data', 'Fairness in data'], level: 'Grades 3-8' },
   'packet-post': { key: 'packetPost', teaches: ['Packets', 'Routing', 'Protocols', 'Passphrases', 'Spotting tricks', 'Ciphers'], level: 'Grades 3-8' },
   'inside-the-machine': { key: 'insideTheMachine', teaches: ['Computer parts', 'Hardware and software', 'Troubleshooting', 'Bits and pixels', 'Designing for everyone'], level: 'Grades 3-8' },
+  // Doodle Hoot: draw a word, or spell one with letter tiles; Easy, Medium or Tricky words in 13 languages.
+  'doodle-hoot': { key: 'doodleHoot', teaches: ['Spelling', 'Vocabulary', 'Drawing', 'Languages'], level: 'Grades 1-8' },
 };
 /** The grade band of some launch games, for the visible "Grades 1–5" line: { from, to } ('K' or a number), or null. */
 export function gradeBand(slugs) {
@@ -46,7 +48,7 @@ export const isLearningGame = slug => !!LEARNING[slug] && !LEARNING[slug].fun;
 /** The subject pages, in menu order. path: /learn/<slug>; key: locale key under learn.hubs.*; games: launch-game slugs. */
 export const HUBS = [
   { slug: 'math-games', key: 'math', emoji: '➗', games: ['sum-racer', 'tug-of-math'], extra: 'tracks' },
-  { slug: 'word-games', key: 'words', emoji: '🔤', games: ['shark-plank', 'word-hunt', 'word-peek'] },
+  { slug: 'word-games', key: 'words', emoji: '🔤', games: ['shark-plank', 'word-hunt', 'word-peek', 'doodle-hoot'] },
   { slug: 'strategy-games', key: 'strategy', emoji: '♟️', games: ['castle-clash', 'connect-four', 'brick-drop'] },
   { slug: 'music-games', key: 'music', emoji: '🎵', games: ['loop-lab', 'beat-lanes'] },
   // The four CS Quest games; the page also points teachers at the program (/teachers/cs-quest).
@@ -56,7 +58,7 @@ export const HUBS = [
 ];
 export const hubBySlug = slug => HUBS.find(h => h.slug === slug) || null;
 /** The teacher page's "Play to learn" cards, in order. */
-export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'remis-quiet-meadow'];
+export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'remis-quiet-meadow', 'doodle-hoot'];
 /** Questions on each page (learn.hubs.<key>.faq.q<n> / a<n>, teachers.faq.q<n> / a<n>). */
 export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainBreaks: 2, makeAGame: 7 };
 /** Subject pages with an "At home" paragraph for parents (learn.hubs.<key>.home). */
@@ -80,8 +82,8 @@ export const TWO_PLAYER = ['sum-racer', 'castle-clash', 'connect-four', 'tug-of-
  *  (learn.ages.<key>.fit.<gameKey>); make: where the "make your own game" panel goes ('first' before the games). Grouped
  *  by two or three years, not one page per age: with 15 launch games, single-age pages would be thin. */
 export const AGES = [
-  { slug: 'games-for-8-and-9-year-olds', key: 'a8', min: 8, max: 9, emoji: '🎈', games: ['sum-racer', 'word-hunt', 'shark-plank', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'munch-maze', 'tug-of-math'], faq: 4 },
-  { slug: 'games-for-10-and-11-year-olds', key: 'a10', min: 10, max: 11, emoji: '🚀', games: ['sum-racer', 'word-peek', 'castle-clash', 'brick-drop', 'loop-lab', 'hero-of-sunvale', 'swish-flick', 'tug-of-math'], make: 'after', faq: 4 },
+  { slug: 'games-for-8-and-9-year-olds', key: 'a8', min: 8, max: 9, emoji: '🎈', games: ['sum-racer', 'word-hunt', 'shark-plank', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'munch-maze', 'tug-of-math', 'doodle-hoot'], faq: 4 },
+  { slug: 'games-for-10-and-11-year-olds', key: 'a10', min: 10, max: 11, emoji: '🚀', games: ['sum-racer', 'word-peek', 'castle-clash', 'brick-drop', 'loop-lab', 'hero-of-sunvale', 'swish-flick', 'tug-of-math', 'doodle-hoot'], make: 'after', faq: 4 },
   { slug: 'games-for-12-to-14-year-olds', key: 'a12', min: 12, max: 14, emoji: '🎧', games: ['castle-clash', 'word-peek', 'brick-drop', 'loop-lab', 'beat-lanes', 'hero-of-sunvale', 'tug-of-math'], make: 'first', faq: 4 },
 ];
 export const ageBySlug = slug => AGES.find(a => a.slug === slug) || null;
