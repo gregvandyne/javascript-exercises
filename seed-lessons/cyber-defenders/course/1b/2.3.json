@@ -14,27 +14,27 @@
    "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
    "view": [
     51.0,
-    30.8,
+    27.0,
     40.3,
-    38.1
+    41.9
    ],
    "focus": [
     {
      "cue": "The message to send, in plain words anyone could read",
      "box": [
-      54.0,
-      35.8,
-      34.3,
-      10.5
+      55.4,
+      36.7,
+      12.4,
+      9.2
      ]
     },
     {
      "cue": "The same message, scrambled three ways",
      "box": [
-      54.0,
-      48.7,
-      34.3,
-      15.2
+      55.3,
+      49.3,
+      25.2,
+      14.0
      ]
     }
    ]
@@ -87,18 +87,18 @@
    "img": "csq/packet-post/ciphers-1b-unknown",
    "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
    "view": [
-    12.4,
-    21.1,
-    78.9,
-    70.1
+    9.7,
+    20.0,
+    83.0,
+    73.3
    ],
    "focus": [
     {
      "cue": "A secret word with an unknown shift: turn one step at a time",
      "box": [
-      54.0,
+      58.4,
       26.5,
-      34.3,
+      28.6,
       10.3
      ]
     },
@@ -120,19 +120,19 @@
    "img": "csq/packet-post/ciphers-1b-send",
    "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
    "view": [
-    12.4,
-    23.5,
-    78.9,
-    70.1
+    9.7,
+    19.6,
+    83.0,
+    74.0
    ],
    "focus": [
     {
      "cue": "First the plain message, out in the open",
      "box": [
-      54.0,
-      35.8,
-      34.3,
-      10.5
+      55.4,
+      36.7,
+      12.4,
+      9.2
      ]
     },
     {
@@ -153,10 +153,10 @@
    "img": "csq/escape-the-post-office/note-1b",
    "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
    "view": [
-    33.0,
-    37.5,
-    35.0,
-    24.9
+    1.9,
+    15.0,
+    95.8,
+    74.1
    ],
    "focus": [
     {

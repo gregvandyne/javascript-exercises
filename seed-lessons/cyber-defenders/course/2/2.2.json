@@ -63,28 +63,28 @@
    "img": "csq/packet-post/locks-1b-protect",
    "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
    "view": [
-    5.0,
-    3.0,
-    82.3,
-    73.2
+    0.0,
+    0.0,
+    92.6,
+    76.2
    ],
    "focus": [
     {
      "cue": "Signing out on a shared computer: the habit that separates you",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      8.2,
+      28.2,
+      26.7,
+      6.2
      ]
     },
     {
      "cue": "Protects it, or risky? Profiles keep people apart",
      "box": [
-      54.1,
-      44.6,
-      30.2,
-      6.6
+      58.7,
+      44.9,
+      19.7,
+      5.9
      ]
     }
    ]
@@ -122,9 +122,9 @@
    "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
    "view": [
     0.0,
-    19.6,
-    75.6,
-    67.2
+    16.3,
+    92.8,
+    74.2
    ],
    "focus": [
     {

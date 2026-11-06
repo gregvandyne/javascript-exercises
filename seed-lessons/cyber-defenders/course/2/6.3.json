@@ -14,9 +14,9 @@
    "alt": "Lock 5 at Pro: someone has a classmate's mailbox key, and a second message pressures you. Six drill tiles wait.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -38,9 +38,9 @@
    "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
    "view": [
     0.0,
-    33.5,
-    58.2,
-    51.7
+    22.4,
+    96.5,
+    77.6
    ],
    "focus": [
     {
@@ -62,9 +62,9 @@
    "alt": "Three drill moves in order: stop and disconnect, save the evidence, tell a trusted adult, fast.",
    "view": [
     0.0,
-    39.3,
-    61.0,
-    54.2
+    25.2,
+    96.5,
+    74.8
    ],
    "focus": [
     {
@@ -86,9 +86,9 @@
    "alt": "Five drill moves in order, up to change the key from a clean device. Only the one-line log is left.",
    "view": [
     0.0,
-    33.4,
-    74.9,
-    66.6
+    25.2,
+    96.5,
+    74.8
    ],
    "focus": [
     {
@@ -117,9 +117,9 @@
    "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -141,9 +141,9 @@
    "alt": "Lock 5 open: the drill ran in order, start to finish. Calm work, and the skill it trained.",
    "view": [
     0.0,
-    8.3,
-    52.0,
-    46.2
+    0.0,
+    100.0,
+    72.6
    ],
    "focus": [
     {
@@ -190,9 +190,9 @@
    "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {

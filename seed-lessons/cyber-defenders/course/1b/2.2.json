@@ -19,27 +19,27 @@
    "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
    "view": [
     51.0,
-    20.9,
-    40.3,
-    35.8
+    20.0,
+    41.6,
+    36.7
    ],
    "focus": [
     {
      "cue": "A tablet holds your messages and pictures: sort what protects it",
      "box": [
-      54.0,
+      58.4,
       26.5,
-      34.3,
+      29.7,
       10.3
      ]
     },
     {
      "cue": "Protects it, or risky? You decide for each habit",
      "box": [
-      54.1,
-      44.6,
-      30.2,
-      6.6
+      58.7,
+      44.9,
+      19.7,
+      5.9
      ]
     }
    ]
@@ -60,27 +60,27 @@
    "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "A guesser tries key after key on a mailbox",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      44.5,
+      7.7
      ]
     },
     {
      "cue": "A second lock, the key checker, still stands",
      "box": [
-      26.0,
-      54.7,
-      23.5,
-      12.9
+      26.9,
+      55.2,
+      20.0,
+      11.6
      ]
     }
    ]
@@ -126,9 +126,9 @@
    "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
    "view": [
     0.0,
-    37.0,
-    84.0,
-    60.0
+    28.2,
+    92.8,
+    71.8
    ],
    "focus": [
     {

@@ -1,16 +1,6 @@
 [
  {
   "actions": [],
-  "alt": "Spot the Trick, card 4: a Game Shop offers a thousand free coins if you tap, and the offer ends in one hour.",
-  "band": "1b",
-  "chapter": "tricks",
-  "concept": "the free coins card",
-  "game": "packet-post",
-  "level": 4,
-  "state": "tricks-1b-coins"
- },
- {
-  "actions": [],
   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
   "band": "1b",
   "chapter": "title",
@@ -133,6 +123,16 @@
   "game": "packet-post",
   "level": 3,
   "state": "ciphers-1b-unknown"
+ },
+ {
+  "actions": [],
+  "alt": "Spot the Trick, card 4: a Game Shop offers a thousand free coins if you tap, and the offer ends in one hour.",
+  "band": "1b",
+  "chapter": "tricks",
+  "concept": "the free coins card",
+  "game": "packet-post",
+  "level": 4,
+  "state": "tricks-1b-coins"
  },
  {
   "actions": [

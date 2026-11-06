@@ -1268,6 +1268,8 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .gfz .gf-step{transition:opacity .3s ease .55s}
 .gfz:not([data-gf-step]) .gf-step{transition:opacity .3s ease}
 .gfz.gfz-now .simg,.gfz.gfz-now .gf-step{transition:none}
+.gfz .szoom{transition:opacity .3s ease}
+.gfz.gfz-in .szoom{opacity:0;pointer-events:none} /* the corner button would sit on the zoomed words; it is back at rest */
 @media (prefers-reduced-motion: reduce){
   .gfz .simg,.gfz .gf-step{transition:none}
   .gf-js.gfz[data-gf-step] .gf-step{opacity:0}

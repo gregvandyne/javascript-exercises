@@ -56,6 +56,12 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
   `scripts/cyber-shots-rects.json`, which every highlight box on those pictures is taken from.
 - Every screenshot slide with guided focus carries a `view` [x, y, w, h] (% of the picture): the crop a phone
   shows, holding every focus box (boxes stay in % of the whole picture).
+- A crop never cuts a line of the game's text, and on a phone each tour step zooms to its box (zoom-to-cue,
+  `public/js/course-zoom.js`) without cutting one either. Every capture run records the game's text size and word
+  boxes (`scripts/cyber-shots-rects.json`); `node scripts/cyber-zoom-data.mjs` turns them into the engine's data
+  (`public/js/course-zoom-data.js`, `public/img/zoom/`). `tests/unit/cyber-shots.test.js` checks every step at a
+  390 px phone: no cut line, every line the box touches shown whole, and 11 px words wherever the game's layout
+  allows (the steps whose boxes hold lines too wide for that are counted and pinned).
 
 ## Changing the catalogue
 

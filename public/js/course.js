@@ -439,6 +439,7 @@ function gfLayout(fig) {
     img.addEventListener('load', () => gfLayout(fig), { once: true });
     img.addEventListener('error', () => { gfInk.set(fig, false); fig.dataset.gfInk = '0'; gfLayout(fig); }, { once: true });
   }
+  fig.dispatchEvent(new Event('gf:prelayout')); // a zoomed picture (course-zoom.js) goes back to rest first
   fig.classList.remove('gf--strip');
   const n = fig.querySelectorAll('.gf-step').length;
   let fits = true;

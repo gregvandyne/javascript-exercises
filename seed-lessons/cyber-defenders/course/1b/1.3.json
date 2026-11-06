@@ -80,9 +80,9 @@
    "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
    "view": [
     0.0,
-    25.1,
-    78.5,
-    69.8
+    25.0,
+    96.5,
+    70.0
    ],
    "focus": [
     {
@@ -110,27 +110,27 @@
    "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Share a drawing so everyone can see it",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      9.9,
+      38.5,
+      35.5,
+      20.4
      ]
     },
     {
      "cue": "Or show it only to your family",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.2,
+      41.0,
+      32.2,
+      15.3
      ]
     }
    ]
@@ -142,10 +142,10 @@
    "img": "csq/packet-post/tricks-1b-stranger",
    "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
    "view": [
-    5.0,
-    14.0,
-    51.2,
-    45.5
+    0.0,
+    0.0,
+    92.6,
+    69.1
    ],
    "focus": [
     {

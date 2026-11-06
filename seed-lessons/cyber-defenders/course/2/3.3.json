@@ -55,7 +55,7 @@
    "view": [
     0.0,
     15.7,
-    94.8,
+    96.5,
     84.3
    ],
    "focus": [
@@ -106,8 +106,8 @@
      "box": [
       38.4,
       56.4,
-      41.7,
-      7.1
+      39.3,
+      7.0
      ]
     }
    ]
@@ -120,9 +120,9 @@
    "alt": "The head teacher letter, reported: authority is a costume here, and do not ask questions is the loudest clue.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -145,8 +145,8 @@
    "view": [
     0.0,
     34.1,
-    70.2,
-    62.4
+    74.5,
+    63.1
    ],
    "focus": [
     {
@@ -193,9 +193,9 @@
    "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
    "view": [
     0.0,
-    29.0,
-    69.7,
-    62.0
+    27.9,
+    88.5,
+    64.2
    ],
    "focus": [
     {

@@ -14,9 +14,9 @@
    "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
    "view": [
     0.0,
-    4.0,
+    0.0,
     99.4,
-    88.4
+    92.4
    ],
    "focus": [
     {
@@ -33,7 +33,7 @@
      "box": [
       3.6,
       49.6,
-      92.8,
+      33.0,
       3.8
      ]
     }
@@ -62,19 +62,19 @@
     {
      "cue": "The button says one name",
      "box": [
-      3.6,
-      74.2,
-      92.8,
-      10.7
+      5.3,
+      76.0,
+      25.9,
+      7.0
      ]
     },
     {
      "cue": "The real address goes somewhere else",
      "box": [
       3.8,
-      49.6,
-      92.5,
-      7.1
+      49.8,
+      34.9,
+      6.8
      ]
     }
    ]
@@ -87,9 +87,9 @@
    "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
    "view": [
     0.0,
-    20.0,
-    90.0,
-    80.0
+    16.3,
+    94.5,
+    83.7
    ],
    "focus": [
     {
@@ -119,10 +119,10 @@
    "img": "csq/packet-post/tricks-2-parcel",
    "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
    "view": [
-    5.0,
-    3.9,
-    86.4,
-    76.8
+    0.0,
+    0.0,
+    92.7,
+    80.7
    ],
    "focus": [
     {
@@ -137,10 +137,10 @@
     {
      "cue": "Asks for money, two hours to act",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      16.5
+      55.3,
+      40.9,
+      29.8,
+      15.7
      ]
     }
    ]
@@ -153,9 +153,9 @@
    "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -202,9 +202,9 @@
    "alt": "Trick Inbox, Faked Senders: a letter from Post Office says your key expired. Its real address is a freemail box.",
    "view": [
     0.0,
-    5.7,
+    0.0,
     99.3,
-    88.3
+    98.4
    ],
    "focus": [
     {
@@ -212,8 +212,8 @@
      "box": [
       3.8,
       42.9,
-      92.5,
-      13.8
+      34.9,
+      13.7
      ]
     }
    ]

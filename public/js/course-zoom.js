@@ -13,6 +13,18 @@
 
 export const MIN_PX = 11, READ_PX = 15, MAX_Z = 4;
 const MX = 1.6, MY = 2.8; // the margin round a box, % of the picture's width / height
+// A frame edge must clear every line by this much (% of the picture): a glyph's ink runs past its text box a little.
+const CLEAR_X = 0.6, CLEAR_Y = 0.8;
+/** The lines a region [x, y, w, h] cuts: crossed by one of its edges, or with an end too close inside it. */
+export function cutLines(d, lines) {
+  const [x0, y0, x1, y1] = [d[0], d[1], d[0] + d[2], d[1] + d[3]];
+  return lines.filter(l => {
+    const lx1 = l[0] + l[2], ly1 = l[1] + l[3];
+    const inY = Math.min(ly1, y1) - Math.max(l[1], y0) > 0.05, inX = Math.min(lx1, x1) - Math.max(l[0], x0) > 0.05;
+    const sx = e => l[0] < e + CLEAR_X && lx1 > e - CLEAR_X, sy = e => l[1] < e + CLEAR_Y && ly1 > e - CLEAR_Y;
+    return (inY && ((sx(x0) && x0 > 0.05) || (sx(x1) && x1 < 99.95))) || (inX && ((sy(y0) && y0 > 0.05) || (sy(y1) && y1 < 99.95)));
+  });
+}
 
 const ov = (a0, a1, b0, b1) => Math.min(a1, b1) - Math.max(a0, b0) > 0.05;
 /** The game's body text size (px) when the picture's region `vw` % wide is drawn `frameW` px wide. */
@@ -22,12 +34,36 @@ export const textPx = (font, vw, frameW) => font * frameW / (vw * 12.8);
  *  1280-wide master; words: its word boxes (% of the picture); frameW: the frame's width in px.
  *  -> null when the words already read at rest, else { d: [x, y, w, h] the region shown, z, px: the words' size,
  *  fits: the box fits at MIN_PX or more, cut: the word boxes the region's edges cross }. */
+/** The picture's lines of text: its words joined where they sit on one line with a word space between them. A zoom
+ *  never shows part of a line (half a sentence reads as wrong as half a word). */
+const LINES = new WeakMap();
+export function linesOf(words) {
+  if (LINES.has(words)) return LINES.get(words);
+  // rows: words whose heights overlap by half; each row, left to right, split only where the gap is wider than 5%
+  // (a chip's padding and tick mark inside a sentence keep the sentence one line)
+  const rows = [];
+  for (const w of [...words].sort((p, q) => p[1] - q[1])) {
+    const row = rows.find(r => Math.min(r.b, w[1] + w[3]) - Math.max(r.t, w[1]) > 0.5 * Math.min(r.b - r.t, w[3]));
+    if (row) { row.ws.push(w); row.t = Math.min(row.t, w[1]); row.b = Math.max(row.b, w[1] + w[3]); } else rows.push({ t: w[1], b: w[1] + w[3], ws: [w] });
+  }
+  const out = [];
+  for (const row of rows) {
+    let cur = null;
+    for (const w of row.ws.sort((p, q) => p[0] - q[0])) {
+      if (cur && w[0] - (cur[0] + cur[2]) < 5) { const x1 = Math.max(cur[0] + cur[2], w[0] + w[2]), y0 = Math.min(cur[1], w[1]), y1 = Math.max(cur[1] + cur[3], w[1] + w[3]); cur[1] = y0; cur[2] = x1 - cur[0]; cur[3] = y1 - y0; }
+      else { cur = [...w]; out.push(cur); }
+    }
+  }
+  LINES.set(words, out);
+  return out;
+}
 export function zoomFor(view, box, font, words, frameW) {
+  words = linesOf(words);
   const [vx, vy, vw, vh] = view;
   const base = textPx(font, vw, frameW);
   if (base >= MIN_PX - 0.05) return null;
   const k = vh / vw;
-  // the box and its margin, grown to hold whole every word the box touches
+  // the box and its margin, grown to hold whole every line the box touches
   let r = [box[0] - MX, box[1] - MY, box[0] + box[2] + MX, box[1] + box[3] + MY];
   for (const w of words) if (ov(w[0], w[0] + w[2], box[0], box[0] + box[2]) && ov(w[1], w[1] + w[3], box[1], box[1] + box[3])) {
     r = [Math.min(r[0], w[0] - 0.4), Math.min(r[1], w[1] - 0.6), Math.max(r[2], w[0] + w[2] + 0.4), Math.max(r[3], w[1] + w[3] + 0.6)];
@@ -38,8 +74,8 @@ export function zoomFor(view, box, font, words, frameW) {
   const need = MIN_PX / base;
   const zTop = Math.max(1, Math.min(zFit, MAX_Z, Math.max(need, READ_PX / base)));
   // the words an edge at x (or y) would cut, each kept with its extent on the other axis
-  const atX = x => words.filter(w => w[0] < x - 0.05 && w[0] + w[2] > x + 0.05);
-  const atY = y => words.filter(w => w[1] < y - 0.05 && w[1] + w[3] > y + 0.05);
+  const atX = x => (x <= 0.05 || x >= 99.95 ? [] : words.filter(w => w[0] < x + CLEAR_X && w[0] + w[2] > x - CLEAR_X));
+  const atY = y => (y <= 0.05 || y >= 99.95 ? [] : words.filter(w => w[1] < y + CLEAR_Y && w[1] + w[3] > y - CLEAR_Y));
   const place = z => {
     const dw = Math.min(100, vw / z), dh = Math.min(100, dw * k);
     const span = (a0, a1, len) => [Math.max(0, a1 - len), Math.min(100 - len, a0)];
@@ -72,6 +108,7 @@ export function zoomFor(view, box, font, words, frameW) {
     if (!p.c.length) break;
   }
   const z = vw / pick.d[2];
+  if (z < 1.05 || pick.c.length) return { d: null, z: 1, px: base, fits: zFit * base >= MIN_PX - 0.05, cut: [] }; // no zoom worth the motion
   return { d: pick.d.map(v => Math.round(v * 100) / 100), z, px: z * base, fits: zFit * base >= MIN_PX - 0.05, cut: pick.c };
 }
 
@@ -130,21 +167,26 @@ function setup(fig, img, font, words, placeStep, reduced) {
     fig.classList.add('gfz-in');
   };
   const layout = () => {
+    const done = () => requestAnimationFrame(() => fig.classList.remove('gfz-now'));
     const fw = fig.querySelector('.sframe').getBoundingClientRect().width;
-    if (!fw) return;
-    zooms = boxes.map(b => zoomFor(view, b.pic, font, words, fw));
+    if (!fw) return done();
+    const raw = boxes.map(b => zoomFor(view, b.pic, font, words, fw));
+    zooms = raw.map(z => (z && z.d ? z : null));
     const on = zooms.some(Boolean);
     fig.classList.toggle('gfz', on);
-    fig.gfz = { view, zooms, font, fw };
-    if (!on) return;
+    fig.gfz = { view, raw, zooms, font, fw, restPx: textPx(font, view[2], fw), boxes };
+    if (!on) return done();
+    if (reduced) stepButton(fig, boxes.length);
     fig.classList.add('gf--strip'); // the step's words go under the picture while it zooms
+    const rb = fig.querySelector('.gf-replay'), strip = fig.querySelector('.gf-strip');
+    if (rb && strip) strip.after(rb); // and the Replay button with them, as course.js does for a strip figure
     fig.classList.add('gfz-now'); // lay each step out at its own zoom, without animation
     boxes.forEach(b => { b.badgeRest = badgeGet(b); });
     boxes.forEach((b, i) => { if (!zooms[i]) return; show(i); placeStep(fig, i); b.zoomed = b.el.getAttribute('style'); b.badgeZoom = badgeGet(b); });
     show(null);
-    const cur = fig.getAttribute('data-gf-step');
-    if (cur !== null) apply(+cur);
-    requestAnimationFrame(() => fig.classList.remove('gfz-now'));
+    const cur = state();
+    if (cur !== null) apply(cur);
+    done();
   };
   const apply = i => {
     if (i == null || !zooms[i]) return show(null);
@@ -152,24 +194,27 @@ function setup(fig, img, font, words, placeStep, reduced) {
     if (boxes[i].zoomed) boxes[i].el.setAttribute('style', boxes[i].zoomed);
     if (boxes[i].badgeZoom) badgeSet(boxes[i], boxes[i].badgeZoom);
   };
-  new MutationObserver(() => { const s = fig.getAttribute('data-gf-step'); apply(s === null ? null : +s); })
-    .observe(fig, { attributes: true, attributeFilter: ['data-gf-step'] });
+  // data-gfz-pin (tests and capture tools) holds one step's zoom, or 'rest', whatever the tour is doing
+  const state = () => { const s = fig.getAttribute('data-gfz-pin') ?? fig.getAttribute('data-gf-step'); return s === null || s === 'rest' ? null : +s; };
+  new MutationObserver(() => apply(state())).observe(fig, { attributes: true, attributeFilter: ['data-gf-step', 'data-gfz-pin'] });
+  // course.js lays its badges out on the picture at rest: back there at once (no glide), measured, then zoomed again
+  fig.addEventListener('gf:prelayout', () => { fig.classList.add('gfz-now'); show(null); });
   fig.addEventListener('gf:layout', layout);
   layout();
-  if (reduced && fig.classList.contains('gfz')) stepThrough(fig, boxes.length);
+
 }
 
-/** Reduced motion: course.js plays no tour, so a zooming figure steps through its zooms itself (no animation),
- *  once each time it comes into view, then rests on the whole picture with every box. */
-function stepThrough(fig, n) {
+/** Reduced motion: course.js plays no tour and shows every box at once on the whole picture. A zooming figure
+ *  offers its Replay button: a tap steps through the zooms (no animation, ~2.6 s a step) and comes back to rest. */
+function stepButton(fig, n) {
+  const btn = fig.querySelector('.gf-replay');
+  if (!btn || btn.dataset.gfz) return;
+  btn.dataset.gfz = '1'; btn.hidden = false;
   let timers = [];
-  const stop = () => { timers.forEach(clearTimeout); timers = []; fig.removeAttribute('data-gf-step'); };
-  new IntersectionObserver(es => {
-    for (const e of es) {
-      if (!e.isIntersecting) { stop(); continue; }
-      if (timers.length) continue;
-      for (let i = 0; i < n; i++) timers.push(setTimeout(() => fig.setAttribute('data-gf-step', String(i)), 400 + i * 2600));
-      timers.push(setTimeout(stop, 400 + n * 2600));
-    }
-  }, { threshold: 0.35 }).observe(fig);
+  btn.addEventListener('click', () => {
+    timers.forEach(clearTimeout); timers = [];
+    btn.hidden = true; // its place is the strip's while a step's words show there
+    for (let i = 0; i < n; i++) timers.push(setTimeout(() => fig.setAttribute('data-gf-step', String(i)), i * 2600));
+    timers.push(setTimeout(() => { fig.removeAttribute('data-gf-step'); btn.hidden = false; btn.focus({ preventScroll: true }); }, n * 2600));
+  });
 }

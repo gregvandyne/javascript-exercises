@@ -24,8 +24,8 @@
      "box": [
       3.8,
       56.4,
-      47.3,
-      7.1
+      44.8,
+      7.0
      ]
     },
     {
@@ -47,9 +47,9 @@
    "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -71,9 +71,9 @@
    "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -88,10 +88,10 @@
     {
      "cue": "Never forward it: stop, do not pass it on",
      "box": [
-      75.0,
-      66.0,
-      23.5,
-      12.9
+      75.9,
+      66.5,
+      20.8,
+      11.6
      ]
     }
    ]
@@ -111,27 +111,27 @@
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Delete the message if you can",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.9,
+      38.5,
+      31.6,
+      20.4
      ]
     },
     {
      "cue": "Or leave it standing for all to see",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      61.1,
+      41.0,
+      22.4,
+      15.3
      ]
     }
    ]
@@ -144,9 +144,9 @@
    "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
    "view": [
     0.0,
-    36.2,
-    68.9,
-    61.2
+    25.2,
+    96.6,
+    74.8
    ],
    "focus": [
     {
@@ -202,9 +202,9 @@
    "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {

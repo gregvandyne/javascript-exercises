@@ -14,18 +14,18 @@
    "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "One trouble card: a snooper peeks",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      56.6,
+      7.7
      ]
     },
     {
@@ -47,18 +47,18 @@
    "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "An old lock has a known hole",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      52.5,
+      7.7
      ]
     },
     {
@@ -80,27 +80,27 @@
    "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "A flood soaks the only copy",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      40.4,
+      7.7
      ]
     },
     {
      "cue": "A spare kept somewhere else saves it",
      "box": [
-      75.0,
-      54.7,
-      23.5,
-      12.9
+      75.9,
+      55.2,
+      12.6,
+      11.6
      ]
     }
    ]
@@ -120,9 +120,9 @@
    "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -137,10 +137,10 @@
     {
      "cue": "Check which trouble each layer stops",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      56.6,
+      7.7
      ]
     }
    ]
@@ -153,27 +153,27 @@
    "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "A guesser tries key after key",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      44.5,
+      7.7
      ]
     },
     {
      "cue": "A second layer, the key checker, still stands",
      "box": [
-      26.0,
-      54.7,
-      23.5,
-      12.9
+      26.9,
+      55.2,
+      20.0,
+      11.6
      ]
     }
    ]
@@ -211,9 +211,9 @@
    "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {

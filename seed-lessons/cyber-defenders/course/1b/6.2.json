@@ -24,27 +24,27 @@
    "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Use a picture, credit its maker",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.0,
+      38.5,
+      33.4,
+      20.4
      ]
     },
     {
      "cue": "Draw your own, even if it is worse",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.1,
+      38.5,
+      32.4,
+      20.4
      ]
     }
    ]
@@ -68,9 +68,9 @@
    "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -78,8 +78,8 @@
      "box": [
       3.8,
       47.1,
-      47.3,
-      7.1
+      44.8,
+      6.9
      ]
     },
     {
@@ -126,9 +126,9 @@
    "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {

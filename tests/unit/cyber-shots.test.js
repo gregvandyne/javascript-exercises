@@ -80,23 +80,57 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
   }
 });
 
-// Phone legibility (2026-11-06): a compact capture's crop is scaled to the slide's picture frame, 326 px wide on a
-// 390 px phone. The game's body text ('~bodyFont' in the rects, master px of the 1280-wide capture, recorded by the
-// capture run) must land at 11 px or more there, so a slide's view may be at most bodyFont * 326 / (11 * 12.8) % wide.
-test('compact captures: every slide crop keeps the game text at 11 px or more on a 390 px phone', () => {
-  const FRAME = 326, MIN = 11;
+// Phone legibility (2026-11-06, zoom-to-cue): every capture's run records the game's body text size ('~bodyFont',
+// px of the 1280-wide master) and its word boxes ('~words'); public/js/course-zoom.js zooms each tour step so the
+// step's box fills the 390 px phone's picture frame (326 px wide). Checked here at that size, for every Cyber
+// screenshot step with recorded words (Trick Inbox, Escape, Would You Rather, Cyber's Packet Post shots):
+//   - neither the picture at rest (its crop) nor a zoom cuts a line of the game's text: every line shown is whole;
+//   - every line the step's box touches is shown whole;
+//   - the step's words read at 11 px or more, except where they cannot without reflowing the game: the box touches
+//     a line wider than an 11 px frame holds (WIDE), or a whole line next to it caps the zoom (CAPPED). Those are
+//     pinned below (no new ones, none smaller) until the captures are re-shot in a narrower layout.
+const Z = await import('../../public/js/course-zoom.js');
+const ZOOM_DATA = (await import('../../public/js/course-zoom-data.js')).default;
+const FRAME_390 = 326;
+const SHORT = { WIDE: 128, CAPPED: 69 };
+test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever the layout allows', () => {
   let n = 0;
+  const short = { WIDE: 0, CAPPED: 0 }, problems = [];
   for (const band of ['1b', '2']) for (const f of fs.readdirSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band))) {
     const deck = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band, f), 'utf8'));
     for (const key of ['slides', 'slides_first_time']) (deck[key] || []).forEach((s, i) => {
       const r = s.img && rects[s.img];
-      if (!r) return;
-      assert.equal(typeof r['~bodyFont'], 'number', `${s.img}: the capture run recorded its body text size`);
-      const w = s.view ? s.view[2] : 100;
-      const px = r['~bodyFont'] * FRAME / (w / 100 * 1280);
-      assert.ok(px >= MIN - 0.05, `${band}/${f} ${key}[${i}] ${s.img}: a ${w}%-wide crop sets the game's text at ${px.toFixed(1)} px on a phone (needs ${MIN}); tighten the view`);
-      n++;
+      if (!r || !s.focus || typeof r['~bodyFont'] !== 'number') return;
+      assert.equal(ZOOM_DATA[s.img], r['~bodyFont'], `${s.img}: public/js/course-zoom-data.js is current (node scripts/cyber-zoom-data.mjs)`);
+      const wf = path.join(ROOT, 'public', 'img', 'zoom', `${s.img}.json`);
+      assert.deepEqual(JSON.parse(fs.readFileSync(wf, 'utf8')), r['~words'], `${s.img}: its word file is current`);
+      const lines = Z.linesOf(r['~words']), view = s.view || [0, 0, 100, 100];
+      // the picture at rest (its authored crop) cuts no line either
+      const restCut = Z.cutLines(view, lines);
+      assert.equal(restCut.length, 0, `${band}/${f} ${key}[${i}] (${s.img}): the crop [${view}] cuts a line of the game's text at [${restCut[0]}]`);
+      s.focus.forEach((fo, fi) => {
+        n++;
+        const at = `${band}/${f} ${key}[${i}] step ${fi + 1} (${s.img})`;
+        const z = Z.zoomFor(view, fo.box, r['~bodyFont'], r['~words'], FRAME_390);
+        if (z && z.d) {
+          assert.equal(z.cut.length, 0, `${at}: the zoom cuts ${z.cut.length} line(s) of the game's text`);
+          const [x0, y0, w, h] = z.d, b = fo.box;
+          for (const l of lines) {
+            const touches = l[0] < b[0] + b[2] && l[0] + l[2] > b[0] && l[1] < b[1] + b[3] && l[1] + l[3] > b[1];
+            if (touches) assert.ok(l[0] >= x0 - 0.05 && l[0] + l[2] <= x0 + w + 0.05 && l[1] >= y0 - 0.05 && l[1] + l[3] <= y0 + h + 0.05, `${at}: a line the box touches is not shown whole`);
+          }
+        }
+        const px = z ? z.px : Z.textPx(r['~bodyFont'], view[2], FRAME_390);
+        if (px >= Z.MIN_PX - 0.05) return;
+        const maxW = r['~bodyFont'] * FRAME_390 / (Z.MIN_PX * 12.8);
+        const b = fo.box, touch = lines.filter(l => l[0] < b[0] + b[2] && l[0] + l[2] > b[0] && l[1] < b[1] + b[3] && l[1] + l[3] > b[1]);
+        const wide = Math.max(b[0] + b[2], ...touch.map(l => l[0] + l[2])) - Math.min(b[0], ...touch.map(l => l[0])) > maxW - 3.2;
+        short[wide ? 'WIDE' : 'CAPPED']++;
+        if (px < 5) problems.push(`${at}: ${px.toFixed(1)} px`);
+      });
     });
   }
-  assert.ok(n >= 100, `${n} compact-capture slides checked`);
+  assert.ok(n >= 250, `${n} toured steps checked`);
+  assert.deepEqual(problems, [], 'no step reads under 5 px');
+  assert.ok(short.WIDE <= SHORT.WIDE && short.CAPPED <= SHORT.CAPPED, `steps under 11 px: ${JSON.stringify(short)} (pinned ${JSON.stringify(SHORT)}): a new or wider box where a zoom cannot reach 11 px`);
 });

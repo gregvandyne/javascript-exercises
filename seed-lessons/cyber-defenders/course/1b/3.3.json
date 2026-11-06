@@ -14,27 +14,27 @@
    "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Your drawing, shown to everyone online",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      9.9,
+      38.5,
+      35.5,
+      20.4
      ]
     },
     {
      "cue": "Your drawing, kept to family only",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.2,
+      41.0,
+      32.2,
+      15.3
      ]
     }
    ]
@@ -53,27 +53,27 @@
    "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Use a picture, credit its maker",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.0,
+      38.5,
+      33.4,
+      20.4
      ]
     },
     {
      "cue": "Or draw your own, even if it is worse",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.1,
+      38.5,
+      32.4,
+      20.4
      ]
     }
    ]
@@ -86,9 +86,9 @@
    "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
    "view": [
     0.0,
-    21.1,
+    16.3,
     87.5,
-    77.8
+    82.6
    ],
    "focus": [
     {
@@ -119,9 +119,9 @@
    "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -129,17 +129,17 @@
      "box": [
       3.8,
       61.8,
-      63.4,
-      7.1
+      60.8,
+      7.0
      ]
     },
     {
      "cue": "These stay private: mine to keep",
      "box": [
-      1.5,
-      38.7,
-      97.0,
-      48.7
+      2.6,
+      41.4,
+      71.4,
+      43.0
      ]
     }
    ]
@@ -182,9 +182,9 @@
    "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {

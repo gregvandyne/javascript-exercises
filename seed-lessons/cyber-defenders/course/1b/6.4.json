@@ -14,9 +14,9 @@
    "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
@@ -47,27 +47,27 @@
    "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
      "cue": "Each lock names the stamp that opens it",
      "box": [
-      67.0,
-      37.8,
-      31.5,
-      34.5
+      67.9,
+      39.2,
+      29.5,
+      31.7
      ]
     },
     {
      "cue": "Locks open one by one, in stamp order",
      "box": [
-      1.5,
-      37.8,
-      64.3,
-      34.5
+      2.4,
+      39.2,
+      56.6,
+      16.6
      ]
     }
    ]
@@ -80,9 +80,9 @@
    "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
    "view": [
     0.0,
-    17.9,
-    92.4,
-    82.1
+    15.0,
+    97.7,
+    85.0
    ],
    "focus": [
     {
@@ -122,18 +122,18 @@
    "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "The Sealed Note: a code from Unit 2",
      "box": [
-      1.5,
-      36.9,
-      97.0,
-      21.5
+      2.4,
+      38.3,
+      51.6,
+      18.2
      ]
     },
     {
@@ -155,18 +155,18 @@
    "alt": "A wrong try on Lock 4 only wobbles it: Pim shows the missed clue, and the lock waits for another try.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "A wrong try only wobbles the lock",
      "box": [
-      1.5,
-      66.4,
-      97.0,
-      15.9
+      2.4,
+      67.8,
+      72.4,
+      12.8
      ]
     },
     {
@@ -213,9 +213,9 @@
    "alt": "Five of the six locks are open in green. Only Lock 6, Layers, still guards the sorting room door.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {

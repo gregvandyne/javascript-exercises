@@ -14,9 +14,9 @@
    "alt": "A Game Shop letter offers a thousand free coins, but the offer ends in one hour. Both clues are found.",
    "view": [
     0.0,
-    18.3,
+    16.3,
     91.9,
-    81.7
+    83.7
    ],
    "focus": [
     {
@@ -47,9 +47,9 @@
    "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
    "view": [
     0.0,
-    26.4,
-    75.6,
-    67.2
+    25.3,
+    95.6,
+    69.4
    ],
    "focus": [
     {
@@ -80,9 +80,9 @@
    "alt": "A post from News Flash says school is closing forever with free candy for everyone, and begs you to tell everyone.",
    "view": [
     0.0,
-    9.0,
+    0.0,
     99.4,
-    88.4
+    97.4
    ],
    "focus": [
     {
@@ -120,9 +120,9 @@
    "alt": "Lock 4, message 2 of 6: a Prize Parrot says you won a shiny prize you never tried to win. Tap fast!",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
@@ -130,7 +130,7 @@
      "box": [
       3.4,
       56.8,
-      93.3,
+      65.4,
       4.6
      ]
     },
@@ -153,9 +153,9 @@
    "alt": "The free coins letter, binned: Pim explains it was too good to be true, from the prize-faker.",
    "view": [
     0.0,
-    11.4,
+    10.9,
     99.7,
-    88.6
+    89.1
    ],
    "focus": [
     {
@@ -202,9 +202,9 @@
    "alt": "Lock 4, Trick Inbox: the first of six messages, a library book, with four moves to choose from.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
