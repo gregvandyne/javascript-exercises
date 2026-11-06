@@ -1642,6 +1642,12 @@
     }
   },
   "js": {
+    "stories": {
+      "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
+      "failed": "Etwas ist schiefgegangen. Versuch es noch einmal.",
+      "copied": "Link kopiert!",
+      "deleteConfirm": "Diese Geschichte löschen? Das kann man nicht rückgängig machen."
+    },
     "app": {
       "wentWrong": "Etwas ist schiefgelaufen. Bitte versuch es noch mal.",
       "signedOut": "Du wurdest abgemeldet. Bitte melde dich wieder an.",
@@ -6041,5 +6047,76 @@
       "failed": "{score} von {total} richtig. Schau dir die richtigen Antworten an und versuch es noch mal."
     },
     "play": "Spielen: {game} · {chapter}"
+  },
+  "stories": {
+    "title": "Geschichtenmacher",
+    "h": "Gute-Nacht-Geschichtenmacher",
+    "sub": "Schreib eine Idee und bekomm ein gemütliches Gute-Nacht-Video: eine Welt aus Filz und Papier, eine ruhige Stimme, Spieluhrmusik und die Wörter im Bild.",
+    "new": "Neue Geschichte machen",
+    "mine": "Meine Geschichten",
+    "empty": "Noch keine Geschichten. Mach deine erste!",
+    "waitingH": "Wartet auf dein OK",
+    "waitingP": "Geschichten von Kindern, um die Sie sich kümmern. Schauen Sie sie an und entscheiden Sie dann, ob andere sie sehen dürfen.",
+    "form": {
+      "idea": "Deine Idee für die Geschichte",
+      "ideaHint": "Wer kommt vor und was passiert? Zum Beispiel: eine kleine Maus, die dem Leuchtturmwärter hilft, die verlorenen Sterne zu finden.",
+      "age": "Für wen ist sie?",
+      "ageAll": "Für alle",
+      "age35": "3 bis 5 Jahre",
+      "age68": "6 bis 8 Jahre",
+      "age912": "9 bis 12 Jahre",
+      "length": "Wie lang?",
+      "seconds": "{n} Sekunden",
+      "make": "Meine Geschichte machen",
+      "left": "{count, plural, one {Du kannst heute noch # Geschichte machen.} other {Du kannst heute noch # Geschichten machen.}}",
+      "none": "Du hast heute schon alle deine Geschichten gemacht. Komm morgen wieder!",
+      "safety": "Die Geschichten sind immer sanft und freundlich. Jede Idee und jede Geschichte wird geprüft, bevor sie gemacht wird.",
+      "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen)."
+    },
+    "status": {
+      "queued": "Wartet in der Schlange…",
+      "writing": "Die Geschichte wird geschrieben…",
+      "voicing": "Die Stimme wird aufgenommen…",
+      "rendering": "Die Filzwelt wird gebaut und jede Szene gefilmt…",
+      "assembling": "Musik und Wörter kommen dazu…",
+      "done": "Deine Geschichte ist fertig!",
+      "failed": "Oh nein, die Geschichte konnte nicht gemacht werden."
+    },
+    "progress": "Ein Video zu machen dauert eine Weile: etwa {mins} Minuten. Du kannst diese Seite verlassen und später wiederkommen.",
+    "progressLabel": "Wie viel von der Geschichte fertig ist",
+    "error": {
+      "aiOff": "Der Geschichtenschreiber ruht sich gerade aus. Versuch es später noch einmal.",
+      "refused": "Aus dieser Idee kann hier keine Geschichte werden. Probier eine andere, sanfte Idee.",
+      "unsafe": "Aus dieser Idee konnten wir keine sanfte Geschichte machen. Probier eine andere.",
+      "invalid": "Die Geschichte ist nicht richtig geworden. Versuch es noch einmal.",
+      "aiFailed": "Der Geschichtenschreiber hat nicht geantwortet. Versuch es noch einmal.",
+      "voice": "Die Stimme konnte nicht aufgenommen werden. Versuch es noch einmal.",
+      "render": "Die Bilder konnten nicht gemacht werden. Versuch es noch einmal.",
+      "assemble": "Das Video konnte nicht zusammengesetzt werden. Versuch es noch einmal.",
+      "stalled": "Die Geschichte ist hängen geblieben. Versuch es noch einmal.",
+      "other": "Etwas ist schiefgegangen. Versuch es noch einmal."
+    },
+    "retry": "Noch einmal versuchen",
+    "delete": "Löschen",
+    "captions": "Wörter",
+    "words": "Die Geschichte lesen",
+    "by": "Nach der Idee: {idea}",
+    "busy": "Gerade werden sehr viele Geschichten gemacht. Versuch es gleich noch einmal.",
+    "share": {
+      "private": "Nur du kannst diese Geschichte sehen.",
+      "pending": "Wartet darauf, dass ein Erwachsener oder deine Lehrkraft OK sagt.",
+      "shared": "Alle mit dem Link können diese Geschichte anschauen.",
+      "privateShort": "Nur ich",
+      "pendingShort": "Wartet auf OK",
+      "sharedShort": "Geteilt",
+      "btnAdult": "Teilen",
+      "btnKid": "Fragen, ob ich teilen darf",
+      "stop": "Nicht mehr teilen",
+      "copy": "Link kopieren",
+      "askNote": "Ein Erwachsener, der sich um dein Konto kümmert, oder deine Lehrkraft schaut sie zuerst an.",
+      "decideP": "Ein Kind, um das Sie sich kümmern, hat diese Geschichte gemacht und möchte sie teilen. Dürfen andere sie anschauen?",
+      "approve": "Ja, teilen",
+      "decline": "Diese nicht"
+    }
   }
 }

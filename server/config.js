@@ -200,6 +200,12 @@ export const config = {
   builderModel: process.env.BUILDER_MODEL || 'claude-sonnet-5-5',
   builderProModel: process.env.BUILDER_PRO_MODEL || 'claude-opus-5-5',
   builderDailyTurns: num(process.env.BUILDER_DAILY_TURNS, 60),
+  // Story Builder (docs/story-builder.md): STORY_BUILDER=1 opens /stories (off by default: it needs a story worker,
+  // scripts/story-worker.js, running beside the site). STORY_DAILY_LIMIT: new stories a day per kid account (grown-ups
+  // and staff get twice as many); STORY_QUEUE_MAX: stories waiting site-wide before new ones are turned away.
+  storyBuilder: parseFlag(process.env.STORY_BUILDER, 'STORY_BUILDER').on,
+  storyDailyLimit: Math.max(0, Math.floor(num(process.env.STORY_DAILY_LIMIT, 2))),
+  storyQueueMax: Math.max(1, Math.floor(num(process.env.STORY_QUEUE_MAX, 20))),
   // BUILDER_WEB_SEARCH=1: the Builder may look facts up on the web (server/builder/search.js: blocked sites, a cap per
   // build, screening, an admin log). Off when unset. The Anthropic Console's own web search setting is a second switch.
   builderWebSearch: builderWebSearch.on,

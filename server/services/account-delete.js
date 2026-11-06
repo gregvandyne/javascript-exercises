@@ -32,6 +32,7 @@ import * as photos from './photos.js';
 import * as shots from './shots.js';
 import { uploadDir } from '../builder/uploads.js';
 import { forgetUser as forgetLive } from './classlive-results.js';
+import { storyDir } from './story-jobs.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -48,6 +49,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
   if (inSchoolOrClass(u)) return { ok: false, code: 'inSchool' };
   const t = now();
   const gameIds = q.all('SELECT id FROM games WHERE owner_id=?', u.id).map(r => r.id);
+  const storyIds = q.all('SELECT id FROM stories WHERE owner_id=?', u.id).map(r => r.id);
   const versionIds = gameIds.length ? q.all(`SELECT id FROM game_versions WHERE game_id IN (${gameIds.map(() => '?').join(',')})`, ...gameIds).map(r => r.id) : [];
   tx(() => {
     // 1. sessions
@@ -76,6 +78,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     for (const r of q.all('SELECT game_id FROM likes WHERE user_id=?', u.id)) q.run('UPDATE games SET likes=MAX(0, likes-1) WHERE id=?', r.game_id);
     for (const r of q.all('SELECT game_id, stars FROM ratings WHERE user_id=?', u.id)) q.run('UPDATE games SET rating_sum=MAX(0, rating_sum-?), rating_count=MAX(0, rating_count-1) WHERE id=?', r.stars, r.game_id);
     for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands', 'course_pending_wins', 'nq_xp_events', 'nq_daily_goals', 'nq_daily_activity', 'nq_laps', 'nq_placement', 'nq_sort_runs', 'nq_testout']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
+    q.run('DELETE FROM stories WHERE owner_id=?', u.id);   // Story Builder videos (their files go after the commit)
     q.run('UPDATE plays SET user_id=NULL WHERE user_id=?', u.id);
     q.run('UPDATE reports SET user_id=NULL WHERE user_id=?', u.id);
     // 7. Builder turns: totals only
@@ -94,5 +97,6 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
   photos.removePhoto(u.id, actor ? actor.id : u.id);
   for (const g of gameIds) { try { fs.rmSync(uploadDir(g), { recursive: true, force: true }); } catch { /* already gone */ } }
   for (const v of versionIds) { try { fs.unlinkSync(shots.fileFor(v)); } catch { /* no screenshot */ } }
+  for (const id of storyIds) { try { fs.rmSync(storyDir(id), { recursive: true, force: true }); } catch { /* already gone */ } }
   return { ok: true, games: gameIds };
 }
