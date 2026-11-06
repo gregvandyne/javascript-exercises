@@ -10,25 +10,31 @@
    "title": "Assume every layer can fail",
    "text": "Professionals never ask whether a layer is perfect. They assume any single layer can fail, and stack independent layers so one failure is never the whole story. That is defense in depth.",
    "art": "shield",
-   "img": "csq/packet-post/locks-2-key",
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "img": "csq/escape-the-post-office/layers-2",
+   "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The sharing sort that opens Lock It in Pro",
+     "cue": "One threat: an interceptor reads a note",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      1.5,
+      42.9,
+      97.0,
+      10.4
      ]
     },
     {
-     "cue": "Share, or keep private: the first layer is a decision",
+     "cue": "Stack layers, so one failure is not the story",
      "box": [
-      54.0,
-      44.6,
-      25.9,
-      6.6
+      1.5,
+      54.7,
+      97.0,
+      27.5
      ]
     }
    ]
@@ -37,25 +43,22 @@
    "title": "The personal layer stack",
    "text": "For your own accounts the stack is short: updates, a unique passphrase per account, two-step sign-in, and backups. Each layer covers a failure the others cannot.",
    "art": "lock",
-   "img": "csq/packet-post/locks-2-pass",
-   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key.",
+   "img": "csq/escape-the-post-office/layers-2-5",
+   "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The Pro mailbox key builder",
+     "cue": "The personal stack: updates, key, two-step, backups",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
-     ]
-    },
-    {
-     "cue": "A unique passphrase per account starts here",
-     "box": [
-      8.2,
-      57.7,
-      44.8,
-      6.0
+      26.0,
+      54.7,
+      72.5,
+      27.5
      ]
     }
    ]
@@ -64,25 +67,31 @@
    "title": "Each layer covers another",
    "text": "A phished passphrase meets the second step and stops. A stolen tablet meets encryption and a backup, and the loss shrinks to hardware. Layers earn their keep on each other's worst days.",
    "art": "shield",
-   "img": "csq/packet-post/locks-2-shield",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "img": "csq/escape-the-post-office/layers-2-2",
+   "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The card about your mailbox key",
+     "cue": "A stolen key, tried from a new device",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      13.2
+      1.5,
+      42.9,
+      97.0,
+      10.4
      ]
     },
     {
-     "cue": "Share or Shield: every fact has a good side and a risk",
+     "cue": "It meets the second step and stops",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      26.0,
+      54.7,
+      23.5,
+      12.9
      ]
     }
    ]
@@ -91,25 +100,31 @@
    "title": "Updates patch real holes",
    "text": "Software ships with small flaws, and attackers collect the ones that get found. Updates are how those vulnerabilities get closed, which is why postponing them leaves a known door open.",
    "art": "wrench",
-   "img": "csq/packet-post/locks-2-router",
-   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles.",
+   "img": "csq/escape-the-post-office/layers-2-3",
+   "alt": "Threat 3 of 6: a known hole in old software lets a trick letter slip in. The Patch Crew closes it.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The home router, with its key on a sticker",
+     "cue": "A known hole in old software",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      1.5,
+      42.9,
+      97.0,
+      10.4
      ]
     },
     {
-     "cue": "The sticker word itself, offered as a tile",
+     "cue": "Updates close it: the Patch Crew",
      "box": [
-      72.2,
-      38.0,
-      16.2,
-      7.4
+      50.5,
+      54.7,
+      23.5,
+      12.9
      ]
     }
    ]
@@ -125,25 +140,31 @@
     "Photos exist nowhere else: backup layer missing",
     "Updates postponed for months: patch layer missing"
    ],
-   "img": "csq/packet-post/locks-2-sort",
-   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls.",
+   "img": "csq/escape-the-post-office/layers-2-2",
+   "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "A privacy screen on the monitor: physical or digital?",
+     "cue": "One account, one threat at a time",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      1.5,
+      36.0,
+      15.5,
+      5.6
      ]
     },
     {
-     "cue": "The Physical or Digital sort",
+     "cue": "Which layer is missing?",
      "box": [
-      54.0,
-      47.4,
-      28.5,
-      6.7
+      1.5,
+      54.7,
+      97.0,
+      27.5
      ]
     }
    ]
@@ -154,6 +175,12 @@
    "art": "table",
    "img": "csq/packet-post/locks-2-post",
    "alt": "The last Lock It sort in Pro: judging what is safe to do, the habit of naming a risk before you act.",
+   "view": [
+    5.0,
+    15.4,
+    51.2,
+    45.5
+   ],
    "focus": [
     {
      "cue": "The last Lock It sort in Pro: your mailbox key",
@@ -202,18 +229,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It and play the Pro levels again. For each level, name which layer of the stack it is training.",
+   "text": "Open Escape the Post Office at Lock 6: Layers and match all 6 threats. For each one, name the layer of the stack that stops it.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-2-key",
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "img": "csq/escape-the-post-office/layers-2-5",
+   "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Play the Pro levels again, naming each layer",
+     "cue": "Play Layers: match each threat to its layer",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      1.5,
+      42.9,
+      97.0,
+      39.3
      ]
     }
    ]
@@ -225,8 +258,8 @@
   "cd-2-6.1-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "locks",
-  "params": "chapter=locks&band=2&lock=1"
+  "slug": "escape-the-post-office",
+  "chapter": "layers",
+  "params": "chapter=layers&band=2&lock=1"
  }
 }

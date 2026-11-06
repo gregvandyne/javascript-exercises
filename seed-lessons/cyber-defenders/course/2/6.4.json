@@ -10,25 +10,31 @@
    "title": "Spark Day, every channel at once",
    "text": "Spark Day, and the Magpie flock strikes on every channel at once: fake letters in the sacks, a prize poster on the door, and a postmark faked to look like Pim's own.",
    "art": "mask",
-   "img": "csq/escape-the-post-office/door-2",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "img": "csq/escape-the-post-office/door-2-new",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Spark Day: fake letters, a prize poster, a faked postmark",
+     "cue": "Spark Day: every channel at once",
      "box": [
-      15.1,
-      27.4,
-      73.8,
-      8.1
+      1.5,
+      26.7,
+      97.0,
+      10.7
      ]
     },
     {
-     "cue": "The six trick locks on the sorting room door",
+     "cue": "The same six locks, cut harder",
      "box": [
-      15.3,
-      36.8,
-      72.7,
-      32.8
+      1.5,
+      38.7,
+      97.0,
+      57.9
      ]
     }
    ]
@@ -37,25 +43,31 @@
    "title": "Six locks, harder contents",
    "text": "The sorting room is locked with the same six trick locks, cut harder this year. Inside the locks wait a spoofed sender, a pressure play, and a Trick Inbox round of eight items.",
    "art": "key",
-   "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "img": "csq/escape-the-post-office/inbox-2-5",
+   "alt": "Lock 4 at Pro, message 5 of 8: Post Office asks you to confirm your key, but the postmark is a far-town hand stamp.",
+   "view": [
+    0.0,
+    7.7,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The Netville map and the first message",
+     "cue": "Inside a lock: a spoofed sender",
      "box": [
-      10.6,
-      48.5,
-      39.6,
-      22.7
+      1.5,
+      42.9,
+      97.0,
+      26.8
      ]
     },
     {
-     "cue": "Packet 1 waits at Pim's Post",
+     "cue": "Eight messages to judge",
      "box": [
-      11.1,
-      61.4,
-      3.9,
-      7.8
+      1.5,
+      36.0,
+      18.0,
+      5.6
      ]
     }
    ]
@@ -64,25 +76,31 @@
    "title": "Your stamps are the keys",
    "text": "Pim, locked out beside you, lays out your six stamps. Each stamp proves a trained skill, and each lock tests exactly that skill. Nothing in the room is new. All of it is combined.",
    "art": "star",
-   "img": "csq/packet-post/routes-2-sealed",
-   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "img": "csq/escape-the-post-office/door-2-two",
+   "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Sealed roads wear a padlock",
+     "cue": "Each lock names the stamp that opens it",
      "box": [
-      28.9,
-      37.7,
-      23.4,
-      30.3
+      67.0,
+      37.8,
+      31.5,
+      34.5
      ]
     },
     {
-     "cue": "Nothing in the room is new: every road combined",
+     "cue": "Two locks open: the first two skills",
      "box": [
-      10.2,
-      37.7,
-      42.1,
-      51.3
+      1.5,
+      37.8,
+      64.3,
+      34.5
      ]
     }
    ]
@@ -98,25 +116,22 @@
     "Five Moves under pressure: Unit 5",
     "Layers matching: Unit 6"
    ],
-   "img": "csq/packet-post/ciphers-2-key",
-   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open.",
+   "img": "csq/escape-the-post-office/door-2-five",
+   "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The cipher wheel, with a scrambled message",
+     "cue": "Six locks, six units: match each one",
      "box": [
-      15.4,
-      31.3,
-      30.5,
-      54.5
-     ]
-    },
-    {
-     "cue": "DSSOH: turn the wheel until the reading makes sense",
-     "box": [
-      54.0,
-      38.0,
-      34.3,
-      17.9
+      1.5,
+      37.8,
+      97.0,
+      50.4
      ]
     }
    ]
@@ -125,25 +140,31 @@
    "title": "Fair rules, honest shield",
    "text": "The room keeps its fair rules: no fail state, and the parade clock changes only the celebration, never the outcome. Hint feathers you spend are printed honestly on your shield.",
    "art": "shield",
-   "img": "csq/packet-post/locks-2-sealed",
-   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
+   "img": "csq/escape-the-post-office/inbox-2",
+   "alt": "Lock 4 at Pro: the first of eight messages, with four moves to choose from and a hint feather below.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "A message travelling a road marked sealed",
+     "cue": "No fail state: try, wobble, try again",
      "box": [
-      20.4,
-      59.3,
-      32.5,
-      29.7
+      1.5,
+      66.4,
+      97.0,
+      11.6
      ]
     },
     {
-     "cue": "Padlocks mark the sealed stretch",
+     "cue": "Hint feathers are counted honestly",
      "box": [
-      29.9,
-      69.9,
-      19.0,
-      17.4
+      1.5,
+      79.3,
+      29.4,
+      10.7
      ]
     }
    ]
@@ -177,16 +198,22 @@
    "title": "Your mission",
    "text": "Open Escape the Post Office and play Escape the Post Office. Open all six locks, earn your Defender shield, and take the debrief page to your teacher.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/door-2",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
+   "img": "csq/escape-the-post-office/door-2-five",
+   "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Open all six locks and earn your Defender shield",
+     "cue": "Open all six locks and take the debrief to class",
      "box": [
-      15.3,
-      36.8,
-      72.7,
-      32.8
+      1.5,
+      37.8,
+      97.0,
+      50.4
      ]
     }
    ]

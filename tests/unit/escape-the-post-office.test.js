@@ -132,10 +132,15 @@ test('escape: kid text follows the course rules in both bands', () => {
   assert.doesNotMatch(all, /defence/i, 'no British spelling anywhere in the game data');
 });
 
-test('escape: completion is win-gated — BRB.gameOver is called once, from the shield', () => {
+test('escape: completion is win-gated — BRB.gameOver is called once, from reportWin, which only the shield and a practice lock call', () => {
   const mod = HTML.slice(HTML.indexOf('<script type="module">'));
   assert.equal((mod.match(/BRB\.gameOver\(\{/g) || []).length, 1, 'exactly one gameOver call site');
-  assert.ok(mod.indexOf('BRB.gameOver({') > mod.indexOf('function showShield'), 'the only call sits in the shield, which needs all six locks');
+  const fn = mod.slice(mod.indexOf('function reportWin'));
+  assert.ok(fn.indexOf('BRB.gameOver({') > 0 && fn.indexOf('BRB.gameOver({') < fn.indexOf('\n}'), 'the only call sits in reportWin');
+  assert.equal((mod.match(/reportWin\(/g) || []).length, 3, 'reportWin is defined once and called twice');
+  assert.ok(mod.slice(mod.indexOf('function showShield'), mod.indexOf('function showPracticeDone')).includes('reportWin(6'), 'the shield reports after all six locks');
+  assert.ok(mod.slice(mod.indexOf('function showPracticeDone'), mod.indexOf('function reportWin')).includes('reportWin(1'), 'a practice lock reports once that lock is open');
+  assert.ok(mod.includes('if (S.practice) return showPracticeDone(lock, note);'), 'only a practice room ends at its one lock');
   assert.ok(mod.includes("storeKey: 'escape-the-post-office-v1'"), 'per-lock progress saves under its own key');
   assert.ok(mod.includes("species: 'owl'") && mod.includes("wear: ['backpack']") && mod.includes("base: 'cocoa'"), "Pim keeps Packet Post's own look: extracted, never redrawn");
 });

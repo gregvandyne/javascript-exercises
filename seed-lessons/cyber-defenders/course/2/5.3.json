@@ -12,6 +12,12 @@
    "art": "star",
    "img": "csq/would-you-rather/tech-2-first",
    "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else.",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Video-call a relative far away, every day",
@@ -39,6 +45,12 @@
    "art": "gears",
    "img": "csq/would-you-rather/tech-2-second",
    "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do.",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "A watch that counts your steps",
@@ -64,25 +76,22 @@
    "title": "A design problem, not willpower",
    "text": "If an app is engineered by hundreds of designers to hold you, staying is not a character test you failed. Balance is a design problem, so fix the design, not just your intentions.",
    "art": "shield",
-   "img": "csq/would-you-rather/online-cloud-2",
-   "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
+   "img": "csq/trick-inbox/pressure-2-pr-2-all",
+   "alt": "A System letter says your account will be deleted in one hour unless you send your key right now.",
+   "view": [
+    0.0,
+    36.8,
+    52.0,
+    46.2
+   ],
    "focus": [
     {
-     "cue": "Photos only on your tablet, by design",
+     "cue": "A countdown built to keep you tapping",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "A copy on a service someone else runs",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      56.4,
+      44.5,
+      7.1
      ]
     }
    ]
@@ -98,25 +107,31 @@
     "Streaks: let one lapse on purpose",
     "Endless scroll: set a time limit you chose"
    ],
-   "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "img": "csq/trick-inbox/pressure-2-pr-6-all",
+   "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
+   "view": [
+    0.0,
+    29.0,
+    69.7,
+    62.0
+   ],
    "focus": [
     {
-     "cue": "Set the limit while you are calm",
+     "cue": "A hook: only two left",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      56.4,
+      17.3,
+      7.1
      ]
     },
     {
-     "cue": "Let the setting hold it when you are not",
+     "cue": "Another hook: a countdown",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      34.4,
+      56.4,
+      32.3,
+      7.1
      ]
     }
    ]
@@ -127,6 +142,12 @@
    "art": "lock",
    "img": "csq/would-you-rather/tech-2-first",
    "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else.",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Run the audit on pretend screens like these",
@@ -170,6 +191,12 @@
    "art": "trophy",
    "img": "csq/would-you-rather/tech-2-second",
    "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do.",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Audit settings on pretend screens",

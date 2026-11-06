@@ -12,9 +12,15 @@
    "art": "network",
    "img": "csq/packet-post/protocols-2-key",
    "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
+   "view": [
+    8.1,
+    21.5,
+    74.5,
+    66.2
+   ],
    "focus": [
     {
-     "cue": "A handshake opens the trip: hello, are you there?",
+     "cue": "Pim's Post to Grandma's House, through Mill Office",
      "box": [
       11.1,
       48.6,
@@ -46,6 +52,12 @@
    ],
    "img": "csq/packet-post/protocols-2-ack",
    "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap.",
+   "view": [
+    46.8,
+    31.8,
+    40.0,
+    35.6
+   ],
    "focus": [
     {
      "cue": "Said got it: arrived packets turn their slot green",
@@ -82,6 +94,12 @@
    "art": "mask",
    "img": "csq/packet-post/routes-2-sealed",
    "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "view": [
+    7.2,
+    20.4,
+    84.1,
+    74.8
+   ],
    "focus": [
     {
      "cue": "On an open road, a packet can be read",
@@ -109,6 +127,12 @@
    "art": "magnifier",
    "img": "csq/packet-post/protocols-2-check",
    "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again.",
+   "view": [
+    50.2,
+    41.9,
+    40.0,
+    39.0
+   ],
    "focus": [
     {
      "cue": "Every packet carries a dot count",
@@ -136,13 +160,19 @@
    "art": "globe",
    "img": "csq/packet-post/protocols-2-design",
    "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+   "view": [
+    37.6,
+    30.3,
+    53.7,
+    54.7
+   ],
    "focus": [
     {
      "cue": "Three things go wrong on this road",
      "box": [
-      51.3,
+      41.0,
       35.3,
-      24.6,
+      20.6,
       16.5
      ]
     },
@@ -188,6 +218,12 @@
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-rules",
    "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",
+   "view": [
+    6.8,
+    38.3,
+    45.7,
+    40.6
+   ],
    "focus": [
     {
      "cue": "Play Rules of the Road: name why a packet is resent",

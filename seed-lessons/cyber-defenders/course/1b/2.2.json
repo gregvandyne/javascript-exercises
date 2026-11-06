@@ -12,6 +12,12 @@
    "art": "lock",
    "img": "csq/packet-post/locks-1b-tell",
    "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share.",
+   "view": [
+    51.0,
+    21.5,
+    40.3,
+    42.5
+   ],
    "focus": [
     {
      "cue": "Who gets to hear the key? Permission decides",
@@ -39,6 +45,12 @@
    "art": "screen",
    "img": "csq/packet-post/locks-1b-protect",
    "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
+   "view": [
+    51.0,
+    20.9,
+    40.3,
+    35.8
+   ],
    "focus": [
     {
      "cue": "A tablet holds your messages and pictures: sort what protects it",
@@ -72,25 +84,31 @@
     "a code arrives on a phone at home",
     "the mailbox stays shut"
    ],
-   "img": "csq/packet-post/locks-1b-built",
-   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
+   "img": "csq/escape-the-post-office/layers-1b-2",
+   "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "A passphrase is one lock: the words picked so far",
+     "cue": "A guesser tries key after key on a mailbox",
      "box": [
-      8.0,
-      52.3,
-      45.2,
-      14.9
+      1.5,
+      42.9,
+      97.0,
+      10.4
      ]
     },
     {
-     "cue": "The meter shows how strong that one lock is",
+     "cue": "A second lock, the key checker, still stands",
      "box": [
-      8.0,
-      64.9,
-      45.2,
-      2.3
+      26.0,
+      54.7,
+      23.5,
+      12.9
      ]
     }
    ]
@@ -101,6 +119,12 @@
    "art": "box",
    "img": "csq/packet-post/locks-1b-backup",
    "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
+   "view": [
+    5.0,
+    10.9,
+    73.3,
+    65.2
+   ],
    "focus": [
     {
      "cue": "A copy in the family's online folder: a spare kept elsewhere",
@@ -128,6 +152,12 @@
    "art": "people",
    "img": "csq/packet-post/locks-1b-habits",
    "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
+   "view": [
+    51.0,
+    19.9,
+    40.3,
+    35.8
+   ],
    "focus": [
     {
      "cue": "If one key opens every door, losing it opens them all",
@@ -178,16 +208,22 @@
    "title": "Your mission",
    "text": "Open Packet Post at Lock It: the same levels you finished in step 2.1, so this step is already earned when the game opens. Look again for the doors, locks and spare copies Pim shows you.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-1b-key",
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
+   "img": "csq/packet-post/locks-1b-built",
+   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
+   "view": [
+    5.2,
+    38.1,
+    50.8,
+    45.2
+   ],
    "focus": [
     {
-     "cue": "Play the Lock It levels you have not played yet",
+     "cue": "Play Lock It: build keys, then guard the doors",
      "box": [
-      54.0,
-      38.0,
-      34.4,
-      32.4
+      8.2,
+      57.7,
+      44.8,
+      6.0
      ]
     }
    ]

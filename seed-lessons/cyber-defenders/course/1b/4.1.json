@@ -10,25 +10,31 @@
    "title": "A letter that sparkles",
    "text": "A letter lands in the Netville post with big, exciting words. Pim reads it slowly. Exciting does not always mean true, says Pim.",
    "art": "envelope",
-   "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "img": "csq/trick-inbox/letters-1b-lt-1-new",
+   "alt": "Trick Inbox, Prize Letters: a letter from the Prize Team says you won a tablet. Its three clues are still hiding.",
+   "view": [
+    0.0,
+    11.6,
+    99.4,
+    88.4
+   ],
    "focus": [
     {
-     "cue": "The first letter: big, exciting words",
+     "cue": "A letter with big, exciting words",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.6,
+      49.6,
+      92.8,
+      5.0
      ]
     },
     {
-     "cue": "Tap every cue that smells like a trick",
+     "cue": "Clues hide in its friendly text",
      "box": [
-      54.0,
-      42.6,
-      34.4,
-      17.4
+      3.6,
+      56.4,
+      92.8,
+      14.2
      ]
     }
    ]
@@ -37,25 +43,31 @@
    "title": "Clues one and two",
    "text": "Clue one is a rush: reply in ten minutes or lose it! Clue two is a prize for a contest you never entered.",
    "art": "magnifier",
-   "img": "csq/packet-post/tricks-1b-clues",
-   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+   "img": "csq/trick-inbox/letters-1b-lt-1-all",
+   "alt": "The tablet letter with all three clues found: you are our lucky winner, mailbox key, in the next ten minutes.",
+   "view": [
+    0.0,
+    39.8,
+    53.3,
+    47.4
+   ],
    "focus": [
     {
-     "cue": "Clue one, found: hurry, only ten minutes",
+     "cue": "Clue one, the rush: in the next ten minutes",
      "box": [
-      54.0,
-      42.6,
-      17.4,
-      8.2
+      3.8,
+      63.5,
+      27.6,
+      7.1
      ]
     },
     {
-     "cue": "The letter itself begs: reply in the next ten minutes",
+     "cue": "Clue two, a prize you never entered for",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      20.6,
+      56.4,
+      29.7,
+      7.1
      ]
     }
    ]
@@ -64,25 +76,31 @@
    "title": "Clues three and four",
    "text": "Clue three: it comes from someone you do not know. Clue four asks for your key. Real companies and real games never ask for your passphrase.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-1b-coins",
-   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
+   "img": "csq/trick-inbox/letters-1b-lt-3-all",
+   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
+   "view": [
+    0.0,
+    19.6,
+    75.6,
+    67.2
+   ],
    "focus": [
     {
-     "cue": "Free coins today only, from the Game Shop",
+     "cue": "Clue three: who really sent it?",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      15.5,
+      42.9,
+      21.0,
+      4.1
      ]
     },
     {
-     "cue": "Its cues: free coins, hurry, a button begging a tap",
+     "cue": "Clue four: it asks for your mailbox key",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      16.5
+      50.8,
+      56.4,
+      21.8,
+      7.1
      ]
     }
    ]
@@ -98,25 +116,31 @@
     "A sender you do not know",
     "Please send your key"
    ],
-   "img": "csq/packet-post/tricks-1b-card",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "img": "csq/trick-inbox/letters-1b-lt-5-all",
+   "alt": "A Game Shop letter offers a thousand free coins, but the offer ends in one hour. Both clues are found.",
+   "view": [
+    0.0,
+    18.3,
+    91.9,
+    81.7
+   ],
    "focus": [
     {
-     "cue": "One more letter: your account is locked",
+     "cue": "Free coins, and a rush: two clues",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      24.6,
+      56.4,
+      64.3,
+      7.1
      ]
     },
     {
-     "cue": "Count its clues: threats, key asks, unknown sender",
+     "cue": "Count them before you choose",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      17.4
+      23.2,
+      77.1,
+      22.4,
+      8.9
      ]
     }
    ]
@@ -125,25 +149,31 @@
    "title": "What to do",
    "text": "When you spot a trick, do not reply and do not tap anything. Show it to a trusted adult. A trick that fishes for secrets is called phishing.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "img": "csq/trick-inbox/letters-1b-lt-1-decide",
+   "alt": "Every clue found, the four moves wait under the letter: Deliver, Bin it, Show Pim, or Report and block.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Not every message is a trick: read carefully first",
+     "cue": "Four moves: deliver, bin it, show Pim, report",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      1.5,
+      83.3,
+      97.0,
+      10.7
      ]
     },
     {
-     "cue": "A real one: a field trip note from your teacher",
+     "cue": "Show Pim means show a trusted adult",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
+      50.5,
+      83.3,
+      23.5,
+      10.7
      ]
     }
    ]
@@ -175,18 +205,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Spot the Trick and check all 6 cards. Tap every clue you find, then decide if each card is a trick or safe. After that, the game sends you to Secret Messages: crack the 2 messages there.",
+   "text": "Open Trick Inbox at Prize Letters and sort all 6 messages. Tap every clue you find, then choose: deliver it, bin it, show Pim, or report and block.",
    "art": "trophy",
-   "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "img": "csq/trick-inbox/letters-1b-lt-1-f1",
+   "alt": "The tablet letter mid-hunt: one clue found, two still hiding, and the button to choose what to do.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Check four cards in Spot the Trick",
+     "cue": "Play Prize Letters: find every clue, then choose",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      1.5,
+      38.7,
+      97.0,
+      43.3
      ]
     }
    ]
@@ -198,8 +234,8 @@
   "cd-1b-4.1-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "tricks",
-  "params": "chapter=tricks&band=1b&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "letters",
+  "params": "chapter=letters&band=1b&lock=1"
  }
 }

@@ -30,6 +30,12 @@
    "art": "battery",
    "img": "csq/would-you-rather/tech-1b-first",
    "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides.",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Computers that write songs",
@@ -57,6 +63,12 @@
    "art": "shield",
    "img": "csq/packet-post/home",
    "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
+   "view": [
+    36.4,
+    41.4,
+    43.4,
+    58.6
+   ],
    "focus": [
     {
      "cue": "Choose the stop before you press play",
@@ -91,6 +103,12 @@
    ],
    "img": "csq/would-you-rather/online-download-1b",
    "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Ask a trusted adult before every download",
@@ -118,6 +136,12 @@
    "art": "lightbulb",
    "img": "csq/packet-post/packets-1b-center",
    "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
+   "view": [
+    5.6,
+    32.8,
+    51.2,
+    61.9
+   ],
    "focus": [
     {
      "cue": "Every road meets at the center office",
@@ -168,16 +192,22 @@
    "title": "Your mission",
    "text": "There is no game this time. Add one idea to the Noticeboard of Better Breaks, and set your own one-week break plan with a stopping point you choose first.",
    "art": "trophy",
-   "img": "csq/packet-post/packets-1b-center",
-   "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
+   "img": "csq/would-you-rather/tech-1b-second",
+   "alt": "A second technology dilemma: a new choice about how an invention changes the way people live.",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
-     "cue": "Meet at the center office and make your break plan",
+     "cue": "Pick a stop, then make your break plan",
      "box": [
-      21.3,
-      59.3,
-      8.0,
-      8.6
+      7.2,
+      17.1,
+      85.6,
+      66.6
      ]
     }
    ]

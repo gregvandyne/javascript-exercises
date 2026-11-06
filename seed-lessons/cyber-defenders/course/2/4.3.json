@@ -10,52 +10,64 @@
    "title": "Three kinds of false",
    "text": "Some false posts want different things. A scam wants your tap, a hoax wants your belief, and rage-bait wants your reaction and your share.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "img": "csq/trick-inbox/media-2-md-1-all",
+   "alt": "Trick Inbox, Fake or Fact?: a news flash says school closes forever with free candy for a year. Share before they delete this!",
+   "view": [
+    0.0,
+    21.4,
+    88.4,
+    78.6
+   ],
    "focus": [
     {
-     "cue": "A false post in letter form: your parcel is waiting",
+     "cue": "A hoax wants your belief",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      40.7,
+      56.4,
+      44.7,
+      7.1
      ]
     },
     {
-     "cue": "Did you order anything? A scam wants your tap",
+     "cue": "And it begs for your share",
      "box": [
-      54.0,
-      26.5,
+      3.8,
+      63.5,
       34.3,
-      7.9
+      7.1
      ]
     }
    ]
   },
   {
-   "title": "Adverts wear costumes too",
-   "text": "Not every friendly post is a friend talking. Sponsored posts are paid adverts in a costume, and a glowing plug may be paid for too. Ask who benefits if you tap or buy.",
+   "title": "Ads wear costumes too",
+   "text": "Not every friendly post is a friend talking. Sponsored posts are paid ads in a costume, and a glowing plug may be paid for too. Ask who benefits if you tap or buy.",
    "art": "star",
-   "img": "csq/packet-post/tricks-2-quiz",
-   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
+   "img": "csq/trick-inbox/media-2-md-2-all",
+   "alt": "A Prize Ad says tap to claim your free phone, but only the first fifty people get one.",
+   "view": [
+    0.0,
+    21.9,
+    70.4,
+    62.6
+   ],
    "focus": [
     {
-     "cue": "A friendly quiz that is not a friend talking",
+     "cue": "An ad dressed up as a prize",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      14.2,
+      42.9,
+      13.2,
+      4.1
      ]
     },
     {
-     "cue": "Dressed up as a fun quiz",
+     "cue": "Who benefits if you tap?",
      "box": [
-      54.0,
-      42.6,
-      34.4,
-      20.0
+      15.9,
+      56.4,
+      51.5,
+      7.1
      ]
     }
    ]
@@ -64,25 +76,31 @@
    "title": "Check the source, not the pixels",
    "text": "Edited and AI-made pictures can look perfect now, because fakes are cheap to make. So do not judge by the pixels. Judge by the source: who posted it, and can anyone else confirm it?",
    "art": "magnifier",
-   "img": "csq/packet-post/ciphers-2-pixels",
-   "alt": "Hide a heart in the open: a grid of squares where a heart appears when the brightness numbers are typed in.",
+   "img": "csq/trick-inbox/media-2-md-3-all",
+   "alt": "A video clip shows the mayor singing in a fountain, but his mouth moves after the words end.",
+   "view": [
+    0.0,
+    11.6,
+    99.4,
+    88.4
+   ],
    "focus": [
     {
-     "cue": "Every pixel is a number: fakes are made of these",
+     "cue": "A clip that looks real",
      "box": [
-      20.7,
-      44.9,
-      19.9,
-      35.2
+      3.6,
+      49.6,
+      92.8,
+      5.0
      ]
     },
     {
-     "cue": "Do not judge by the pixels: judge by the source",
+     "cue": "The clue is in the details",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      12.9
+      3.8,
+      61.8,
+      42.0,
+      7.1
      ]
     }
    ]
@@ -91,25 +109,22 @@
    "title": "Stop before you share",
    "text": "Use three moves on anything shocking: Stop. Find another source. Decide before sharing. A post you do not pass on cannot use you to travel.",
    "art": "shield",
-   "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "img": "csq/trick-inbox/media-2-md-1-debrief",
+   "alt": "The school closing post, binned: real news does not beg to be shared, so check big stories first.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Stop: a post you do not pass on cannot travel",
+     "cue": "Stop: real news does not beg to be shared",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Find another source before you decide",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.4,
+      72.8,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -125,25 +140,22 @@
     "No other source backs it up",
     "Decide: do not share; tell Pim"
    ],
-   "img": "csq/packet-post/tricks-2-safe",
-   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+   "img": "csq/trick-inbox/media-2-md-3-debrief",
+   "alt": "The fountain video, shown to Pim: some videos are made by computers to look real. Check a real news page first.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "The fake claim would wear a friendly face like this one",
+     "cue": "Show Pim, and check a real news page",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
-     ]
-    },
-    {
-     "cue": "Read carefully before you decide: that is the check",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      3.4,
+      72.7,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -160,7 +172,7 @@
     },
     {
      "word": "sponsored",
-     "means": "paid for, so a post or plug is really an advert"
+     "means": "paid for, so a post or plug is really an ad"
     },
     {
      "word": "source",
@@ -175,18 +187,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Before you would share any post, run the three moves: stop, find another source, then decide.",
+   "text": "Open Trick Inbox at Fake or Fact? and sort all 6 posts. Run the three moves on each one: stop, find another source, then decide.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "img": "csq/trick-inbox/media-2-md-4-new",
+   "alt": "Netville News: the library opens its new reading room on Saturday. Ordinary news, no prizes and no panic.",
+   "view": [
+    0.0,
+    9.5,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Play Online: judge each pair",
+     "cue": "Play Fake or Fact?: stop, check, then decide",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      1.5,
+      38.7,
+      97.0,
+      31.9
      ]
     }
    ]
@@ -198,8 +216,8 @@
   "cd-2-4.3-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": ""
+  "slug": "trick-inbox",
+  "chapter": "media",
+  "params": "chapter=media&band=2&lock=1"
  }
 }
