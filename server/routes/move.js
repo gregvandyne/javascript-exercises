@@ -41,6 +41,30 @@ const moveTts = () => { const langs = tts.onLocales().filter(l => l === 'en'); r
  * below. A real .jpg file always wins over its .b64 twin, so the cleanup is: commit the real
  * JPGs with ordinary git and delete the .b64 files; no code change needed.
  */
+/**
+ * The logo intro card (public/img/move/logo-intro.png): the composed Oomba Academy logo
+ * card (primary logo on Cream, "Breathe & Bend", the episode title, Remy waving), drawn
+ * as a graphic, never AI-generated, so the logo stays exact. The player shows it as a
+ * short pre-roll before the master timeline starts (public/js/move.js); absent, no
+ * pre-roll. Storage follows the frames' note below: the card is stored as base64 text
+ * (logo-intro.png.b64) and served decoded by the /move-intro route; a real .png file
+ * wins over the .b64 twin when one is committed with ordinary git.
+ */
+const INTRO_CARD_FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'img', 'move', 'logo-intro.png');
+const INTRO_CARD_B64 = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'img', 'move', 'logo-intro.png.b64');
+const introCardUrl = () => (fs.existsSync(INTRO_CARD_FILE)
+  ? '/img/move/logo-intro.png'
+  : fs.existsSync(INTRO_CARD_B64) ? '/move-intro/logo-intro.png' : null);
+
+/** Serves the base64-stored intro card (see the note above) as a real PNG. */
+router.get('/move-intro/logo-intro.png', (req, res) => {
+  fs.readFile(INTRO_CARD_B64, 'utf8', (err, b64) => {
+    if (err) return res.status(404).end();
+    const bytes = Buffer.from(b64.replace(/\s+/g, ''), 'base64');
+    res.set({ 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' }).send(bytes);
+  });
+});
+
 const FRAME_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'img', 'move', 'frames');
 const frameUrl = key => (fs.existsSync(path.join(FRAME_DIR, `${key}.jpg`))
   ? `/img/move/frames/${key}.jpg`
@@ -150,6 +174,7 @@ router.get('/move/:episode', (req, res) => {
         <img class="mv-mini-img" id="mv-mini-img" alt="" hidden>
         <p><b ${fb(t, 'move.seatedLabel')}>${t('move.seatedLabel')}</b><br><span id="mv-mini-text"></span></p>
       </div>
+      ${introCardUrl() ? html`<div class="mv-introcard" id="mv-introcard" hidden><img src="${introCardUrl()}" alt="Oomba Academy" draggable="false"></div>` : ''}
       <div class="mv-yourturn" id="mv-yourturn" aria-hidden="true">
         <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52" fill="rgba(255,253,242,.92)" stroke-width="10"/>
         <circle class="ring-fg" id="mv-ring" cx="60" cy="60" r="52" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
@@ -187,6 +212,7 @@ router.get('/move/:episode', (req, res) => {
   ${jsonData('page-data', {
     episode: { id: ep.id, title: ep.title, endLines: ep.endLines, timeline: MOVE.narrationTimeline(ep), segments: ep.segments.map(s => ({ id: s.id, name: s.name, pose: s.pose, seconds: s.seconds, lines: s.lines, seated: s.seated || null, yourTurn: !!s.yourTurn })) },
     frames: framesFor(ep),
+    introCard: introCardUrl(),
     clips: clipsFor(ep),
     transitions: transitionsFor(ep),
     tts: moveTts(), signedIn: !!u && !u.is_guest, alreadyDone: !!done[ep.id],

@@ -69,6 +69,16 @@
 .mv-yourturn .ring-fg { stroke: #1F9D63; transform: rotate(-90deg); transform-origin: center; }
 .mv-yourturn p { font-weight: 800; font-size: 1.15rem; margin: 0; background: rgba(255,253,242,.9); padding: .2rem .8rem; border-radius: 999px; }
 
+/* The logo intro pre-roll (Greg, 2026-11-05): the composed Oomba Academy card over the stage
+   before the master timeline starts, crossfading out into the intro shot with the same 0.45s
+   fade as the shot joins. The card is 16:9 in the stage's 3:2 box and its ground is the same
+   Cream, so it sits letterboxed on its own colour: uncropped and fully legible at any width. */
+.mv-introcard { position: absolute; inset: 0; z-index: 3; background: #FFFDF2; opacity: 0; transition: opacity .45s ease; pointer-events: none; }
+.mv-introcard[hidden] { display: none; }
+.mv-introcard.on { opacity: 1; }
+.mv-introcard img { display: block; width: 100%; height: 100%; object-fit: contain; }
+@media (prefers-reduced-motion: reduce) { .mv-introcard { transition: none; } }
+
 .mv-endcard { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; gap: .6rem; background: rgba(255,253,242,.88); text-align: center; padding: 1rem; }
 .mv-endcard.on { display: flex; }
 .mv-endcard h2 { margin: 0; }

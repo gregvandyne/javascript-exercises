@@ -113,6 +113,35 @@ test('one timeline across the joins: the music starts once and the narration que
   expect(samples[samples.length - 1].narrationEntries).toBe(23);
 });
 
+test('the logo intro opens the episode: card before the timeline, music under it, no narration over it', async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(EP_URL);
+  await expect(page.locator('#mv-introcard')).toBeHidden();
+  await page.click('#mv-play');
+  // Catch the pre-roll while it holds (3.5 episode seconds, ~0.3s at this sped-up clock):
+  // the card is up, the master clock has not started (no segment, elapsed 0), the music bed
+  // has started exactly once underneath the card, and no narration line has played or shown.
+  await page.waitForFunction(() => window.__moveTest && window.__moveTest.state().preroll === true, null, { polling: 'raf', timeout: 5_000 });
+  const during = await state(page);
+  expect(during.phase).toBe('preroll');
+  expect(during.segIdx, 'the master timeline has not started under the card').toBe(-1);
+  expect(during.elapsed).toBe(0);
+  expect(during.caption).toBe('');
+  await expect(page.locator('#mv-introcard')).toBeVisible();
+  expect((await music(page)).starts, 'the music bed started once, underneath the card').toBe(1);
+  expect(await narration(page), 'no narration line plays over the card').toHaveLength(0);
+  // The card hands over to the intro shot: segment 0 begins, the card goes, the bed's single
+  // start still stands, and the first line is still the timeline's first line.
+  await expect.poll(async () => (await state(page)).segIdx, { timeout: 10_000 }).toBe(0);
+  await expect(page.locator('#mv-introcard')).toBeHidden();
+  expect((await music(page)).starts).toBe(1);
+  const tl = await page.evaluate(() => window.__moveTest.timeline());
+  expect(tl.prerollDone).toBe(true);
+  expect(tl.prerollSeconds).toBe(3.5);
+  expect(tl.narrationEntries).toBe(23);
+});
+
 test('music and narration mute independently; music-only keeps music and captions', async ({ page }) => {
   test.setTimeout(120_000);
   await page.goto(EP_URL);
