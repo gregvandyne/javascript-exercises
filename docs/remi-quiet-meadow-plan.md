@@ -76,8 +76,8 @@ ringed tail. We add one thing of our own, a green leaf scarf. See section C.
   `DANGER_NAMES` also catches it when it is built from pieces. AudioContext is allowed: the SDK's sfx use it.
 
 ### A.2 What we tested (Chromium 1194 headless shell, fake media flags)
-Test harness: `/tmp/claude-0/-home-user-javascript-exercises/7e93eb31-0e54-51a2-86cc-b45e55b43821/scratchpad/mic/`
-(`srv.cjs`/`run.cjs` and `srv2.cjs`/`run2.cjs`).
+Test harness: two throwaway local scripts (a tiny server with the site's headers and a Playwright runner), not
+kept in the repo.
 
 | Setup | Result in the sandboxed frame |
 |---|---|
