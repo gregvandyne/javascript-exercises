@@ -316,7 +316,14 @@ function show(i, focus = false) {
     // the sticky top bar — bring it back to just below the bar (the deck's scroll-margin-top is the bar's
     // height plus a gap). A deck top already on screen stays where it is: no jump.
     const bar = (parseFloat(getComputedStyle(deck).scrollMarginTop) || 0) - 12;
-    if (deck.getBoundingClientRect().top < bar) deck.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' });
+    // The step line above the deck comes along when the header, the slide and the slide buttons all fit on
+    // the screen together; a step line half under the bar is never left behind.
+    const head = document.querySelector('.cl-head'), top = deck.getBoundingClientRect().top;
+    const fits = head && nav.getBoundingClientRect().bottom - head.getBoundingClientRect().top <= innerHeight - bar - 24;
+    const hr = head && head.getBoundingClientRect();
+    const cut = hr && hr.top < bar && hr.bottom > bar; // the step line half under the bar
+    const target = (cut || top < bar) ? (fits ? head : deck) : null;
+    if (target) target.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' });
     slides[at].querySelector('.slide-h').focus({ preventScroll: true });
   }
 }

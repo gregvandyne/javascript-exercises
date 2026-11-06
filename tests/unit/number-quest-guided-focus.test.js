@@ -315,9 +315,12 @@ function stepRects(page, si, fi) {
     const fig = sl.querySelector('.smedia.gf');
     fig.setAttribute('data-gf-step', String(fi));
     return new Promise(res => setTimeout(() => {
-      const F = fig.getBoundingClientRect();
-      const rel = r => [+(100 * (r.left - F.left) / F.width).toFixed(2), +(100 * (r.top - F.top) / F.height).toFixed(2),
-        +(100 * r.width / F.width).toFixed(2), +(100 * r.height / F.height).toFixed(2)];
+      // Everything in % of the ORIGINAL 100 x 56.25 drawing, the space the boxes are authored in: the frame
+      // (.sframe) shows only the drawing's content band (the SVG viewBox), so rects are mapped back through it.
+      const F = fig.querySelector('.sframe').getBoundingClientRect();
+      const vb = fig.querySelector('svg.vf-svg').viewBox.baseVal;
+      const rel = r => [+(100 * (r.left - F.left) / F.width).toFixed(2), +((vb.y + (r.top - F.top) / F.height * vb.height) / 0.5625).toFixed(2),
+        +(100 * r.width / F.width).toFixed(2), +(r.height / F.height * vb.height / 0.5625).toFixed(2)];
       const stepEl = fig.querySelectorAll('.gf-step')[fi];
       const box = stepEl.querySelector('.gf-box');
       const insetRaw = getComputedStyle(box, '::after').inset.split(' ')[0];
@@ -327,32 +330,38 @@ function stepRects(page, si, fi) {
         outsetPx = num ? F.width * parseFloat(num[0]) / 100 : 8;
       }
       const br = box.getBoundingClientRect();
-      const ring = [+(100 * (br.left - outsetPx - F.left) / F.width).toFixed(2), +(100 * (br.top - outsetPx - F.top) / F.height).toFixed(2),
-        +(100 * (br.width + 2 * outsetPx) / F.width).toFixed(2), +(100 * (br.height + 2 * outsetPx) / F.height).toFixed(2)];
+      const ring = rel({ left: br.left - outsetPx, top: br.top - outsetPx, width: br.width + 2 * outsetPx, height: br.height + 2 * outsetPx });
       const els = [...fig.querySelectorAll('svg.vf-svg *')].map(el => ({ tag: el.tagName, text: el.tagName === 'text' ? el.textContent : undefined, rect: rel(el.getBoundingClientRect()) }));
-      res({ box: rel(br), ring, badge: rel(stepEl.querySelector('.gf-badge').getBoundingClientRect()), cue: rel(stepEl.querySelector('.gf-cue').getBoundingClientRect()), els });
+      const badgeEl = stepEl.querySelector('.gf-badge');
+      res({ box: rel(br), ring, badge: getComputedStyle(badgeEl).display === 'none' ? null : rel(badgeEl.getBoundingClientRect()), cueOnPicture: !!stepEl.querySelector('.gf-cue'), els });
     }, 340));
   }, { si, fi });
 }
 const inter = (a, b) => Math.max(0, Math.min(a[0] + a[2], b[0] + b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[1] + a[3], b[1] + b[3]) - Math.max(a[1], b[1]));
 
-test("Greg's slide renders the same box % at 390/834/1280, the ring contains its target, and the cue clears ring and badge", async () => {
+test("Greg's slide renders the same box % at 390/834/1280, the ring contains its target, and the cue is under the picture", async () => {
   const browser = await launch();
   try {
     // Measured target bounds at 390px: step 1 = the 347 label + point; step 2 = the 300 tick + label.
     const targets = [[43.22, 43.03, 51.5, 68.09], [2.47, 59.38, 9.53, 81.63]];
     const authored = [[43.2, 43, 8.3, 25.1], [2.4, 59.3, 7.2, 22.4]];
+    const first = [];
     for (const w of [390, 834, 1280]) {
       const page = await openDeck(browser, w, '1.2');
       await gotoSlide(page, 1);
       for (let fi = 0; fi < 2; fi++) {
         const m = await stepRects(page, 1, fi);
-        m.box.forEach((v, i) => assert.ok(Math.abs(v - authored[fi][i]) <= 0.6, `width ${w} step ${fi + 1}: rendered box % ${m.box} ≈ authored ${authored[fi]}`));
+        // The engine pads a diagram box outward until no label is cut by its edge: the rendered box holds
+        // the authored one, and lands at the same % at every width.
+        const a = authored[fi];
+        assert.ok(m.box[0] <= a[0] + 0.6 && m.box[1] <= a[1] + 0.6 && m.box[0] + m.box[2] >= a[0] + a[2] - 0.6 && m.box[1] + m.box[3] >= a[1] + a[3] - 0.6, `width ${w} step ${fi + 1}: rendered box % ${m.box} holds authored ${a}`);
+        if (w === 390) first[fi] = m.box; else m.box.forEach((v, i) => assert.ok(Math.abs(v - first[fi][i]) <= 0.6, `width ${w} step ${fi + 1}: box % ${m.box} ≈ at 390 ${first[fi]}`));
         const t = targets[fi];
         assert.ok(m.ring[0] <= t[0] && m.ring[1] <= t[1] && m.ring[0] + m.ring[2] >= t[2] && m.ring[1] + m.ring[3] >= t[3],
           `width ${w} step ${fi + 1}: ring ${m.ring} contains measured target ${t}`);
-        assert.equal(inter(m.cue, m.ring), 0, `width ${w} step ${fi + 1}: cue ∩ ring`);
-        assert.equal(inter(m.cue, m.badge), 0, `width ${w} step ${fi + 1}: cue ∩ badge`);
+        // A diagram's cue is the caption strip under the picture, never on it; its badge sits on no text.
+        assert.equal(m.cueOnPicture, false, `width ${w} step ${fi + 1}: no cue chip on the diagram`);
+        if (m.badge) for (const e of m.els.filter(e => e.tag === 'text')) assert.equal(inter(m.badge, e.rect), 0, `width ${w} step ${fi + 1}: badge ∩ "${e.text}"`);
       }
       await page.close();
     }
@@ -367,7 +376,8 @@ test('the art-pass residual slide (1.2 slide 3): the ring around 12,648 clears t
     const m = await stepRects(page, 3, 0);
     const label = m.els.find(e => e.tag === 'text' && e.text === '12,500');
     assert.ok(label, '12,500 label rendered');
-    assert.equal(inter(m.ring, label.rect), 0, `ring ∩ 12,500 label = ${inter(m.ring, label.rect)}%² (was 13.7%² with the authored box)`);
+    const held = inter(m.ring, label.rect) >= label.rect[2] * label.rect[3] - 0.05;
+    assert.ok(inter(m.ring, label.rect) === 0 || held, `ring ∩ 12,500 label = ${inter(m.ring, label.rect)}%²: the ring never cuts the label (was 13.7%² with the authored box)`);
     await page.close();
   } finally { await browser.close(); }
 });

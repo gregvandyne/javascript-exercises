@@ -183,18 +183,8 @@ function art(id) {
   const [main, a, b, tone] = ART[id] || ART.lightbulb;
   return html`<div class="sart sart-${tone}" aria-hidden="true"><span class="sart-shape"></span><span class="sart-a">${a}</span><span class="sart-main">${main}</span><span class="sart-b">${b}</span></div>`;
 }
-/** A slide's picture: the in-game screenshot when the slide carries one (img = manifest key, file at
- *  /img/<key>.webp), else the emoji art above, which stays as every slide's fallback. A slide with guided
- *  focus steps also gets the overlay layer (boxes, dotted paths, cue chips — public/js/course.js plays them
- *  once per view; the CSS static mode serves reduced motion), a replay button, and its cues as a real list
- *  inside the figure (visually hidden while the animation can run, visible in the static mode) so the cue
- *  text is never animation-only. The overlay layer itself is aria-hidden decoration. A step whose box
- *  centre sits in the picture's bottom third (centre y > 66%) gets its cue chip at the top of the
- *  picture instead (gf-cue--top) as a first guess; public/js/course.js then settles the placement
- *  with measured geometry each time a step activates, flipping the chip to whichever side leaves
- *  the ring and badge uncovered (a wrapped two-line chip on a phone figure outgrows this static
- *  rule). The box also carries its own % position as --bx/--by so the CSS can keep the corner
- *  badge inside the frame at the edges. */
+/** A slide's picture: the in-game screenshot (img: manifest key, file at /img/<key>.webp; its `view` crop), a drawn
+ *  diagram (visual) or the story stage, else the emoji art above, every slide's fallback. See "pictures" below. */
 /** The story layer's cast, in course order: name and piece colour (sprites extracted from their own games —
  *  scripts/csq-sprites.js — at /img/csq/chars/<id>.webp). */
 const CHAR_META = {
