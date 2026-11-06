@@ -65,10 +65,10 @@
     "a drawing of Bolt",
     "a photo of the grid",
     "Drive to the first gem and pick it up",
-    "IF on a gem THEN pick up"
+    "a list of last week's scores"
    ],
    "answer": 2,
-   "why": "Pseudocode is a plan in plain words a person can read. Code symbols like IF and THEN belong to the real program."
+   "why": "Pseudocode is a plan written as steps in plain words a person can read. A drawing, a photo or a list of scores is not a plan of steps."
   },
   {
    "id": "2-1.1-e2",

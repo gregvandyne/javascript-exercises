@@ -85,31 +85,22 @@
    "title": "Small facts can join up",
    "text": "One fact alone may look harmless. Add two more, and the three together can point at one child. That is why me-facts stay private online.",
    "art": "magnifier",
-   "img": "csq/would-you-rather/online-location-1b",
-   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+   "img": "csq/trick-inbox/chat-1b-ch-6-all",
+   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
    "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
+    0.0,
+    34.1,
+    70.2,
+    62.4
    ],
    "focus": [
     {
-     "cue": "Free, if the app can see where you are",
+     "cue": "Three small facts asked together: first pet, street, birthday",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Or pay a little, and it never knows",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      61.8,
+      63.4,
+      7.1
      ]
     }
    ]
@@ -118,31 +109,31 @@
    "title": "Games do not need me-facts",
    "text": "Some games and sites ask for me-facts before you can play. A real game never needs your address to let you play. If a game asks, stop and tell a trusted adult.",
    "art": "screen",
-   "img": "csq/would-you-rather/online-download-1b",
-   "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
+   "img": "csq/packet-post/tricks-1b-stranger",
+   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
    "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
+    6.0,
+    24.0,
+    68.0,
+    50.0
    ],
    "focus": [
     {
-     "cue": "Ask a trusted adult before every download",
+     "cue": "Someone from the game asks for your street",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      8.0,
+      27.9,
+      45.2,
+      17.7
      ]
     },
     {
-     "cue": "Or never download anything at all",
+     "cue": "A real game never needs to know where you live",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      55.3,
+      40.4,
+      16.0,
+      7.5
      ]
     }
    ]

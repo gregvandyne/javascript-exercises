@@ -130,34 +130,6 @@
     "Passive: read it and say nothing",
     "Strong: a kind word to the target",
     "Strongest: save it, report it, back the target"
-   ],
-   "img": "csq/would-you-rather/online-comments-2",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "A page where anyone can pile in",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "A page only your class can see",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
    ]
   },
   {
@@ -211,7 +183,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Trick Inbox at Chat Careful and sort all 7 chat messages. Your teacher may lead this one; know your school reporting route before you start.",
+   "text": "Open Trick Inbox at Chat Careful and sort all 7 chat messages. Before you start, know your reporting route: the trusted adult at home or at school you would tell.",
    "art": "trophy",
    "img": "csq/trick-inbox/chat-2-ch-1-debrief",
    "alt": "A stranger's game chat, shown to Pim: someone who asks for secrets from adults and wants to meet is the biggest red flag.",

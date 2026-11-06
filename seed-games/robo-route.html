@@ -1473,7 +1473,7 @@ const SAVE_KEY = 'robo-route-v1';
 /* ---------- Words: English is the key; the player's language is a reviewed data pack on the site (loaded with its
    checksum, 9 s then English), handed to the kit's Oomba.strings. The game runs without the pack. ---------- */
 const LANG0 = String(Oomba.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-7217c3fb', PACK_SRI = {"es":"sha384-6oCi/fIX8KUjKET70nb9uMph+uFYZJr7fu3jJ31RfJXUJyScSkwdTrYgRKopupLz","fr":"sha384-FKNJmsxmic1DCxNF79Sv0g1DO/GY3UXoVVFoH3HM52pPr4jz3bHUj72u+zwwLrI+","de":"sha384-cVm2H9RU13gIPeEEb5hNYcJXXuz4PrilrzCMCYTOOPz+l0sEdM/okC8JY0SNxm86","it":"sha384-/TRPqXryC5V1tW4fvhG5VxXQucwi/yfzIgpsjigWNxftbgzNC8uxN69q527qcIxK","pt":"sha384-PiyB9SeYRczchz/JgiSS+zo66znK23KqUP7Gqm45aot8Vusi39egPf3taOtr0DVF","nl":"sha384-OUW/B8my3j6RXr/dvE6jXkH+kB/r8lIAw6w65MoSyAOwjvFWeVhErgPq3rAIA3qz","ru":"sha384-+cB5609bmxhJ1/uV02bKEfPmElLdfRzFS7JVYWyhnnTQDjcJ5KJiqEVrUSnswtyM","ja":"sha384-HtZRB/Uo40Mx5FPIq4ICUfISlKFlhO1F7TlVYMEnTSnN0Qd9z2+JnDvhzlBwEu3O","zh-Hant":"sha384-uvUr4FA2PodH9cFq3fyRtcd8DYrKdFyBQP4FIMcxCQB7sjUJTC0m7pBoLueAasMS","he":"sha384-r6suHRr57NEgoqH4azwQU3WCTO39P0W5hgpHak3aJgfTvXpNjZBizrtNCLW1iEv1","ar":"sha384-hT4qIiD1neatfhz7y2LbFizTohTCkTg+rd7Bb6uUMcbeBiMudEWTOiIHVknXMfct"};
+const PACK_VER = '1.0.0-f0ec7cb6', PACK_SRI = {"es":"sha384-3wwlqKboLk9THCPVRmkSJ+g2eg+gy/MX7YhvslEOuY9I2uTFSIR/4wLKaYcsEYnu","fr":"sha384-2OLJK/3QgXhUePBqKpIFECZ5DLKNCtw4y3OHh6xAVx4dB2rrZpx4qMfMDiJC0iPa","de":"sha384-pBJ3nzZsCdQdX373IiYAcSlNuaBKua+2+YCBa/XSgBrJNlah57LcLtQKy3tIEpk6","it":"sha384-EPeDFZsTW5RR+XEn6z7rISMNmLYHgS+NkatQnOAPgABdLPdc+MsV4vKGxpNTXjaa","pt":"sha384-Q36+N24Bd1Peo5Ft+CvYCfTXcy6Hd75GAnu824BAThb5/ICOsY4sOKjg4XQPdaPx","nl":"sha384-CLv92Ive6rARYwte1WGRoKY8mNlNVGqgzI7cetAymE+ihPqZYAXvbG5HLxbFblZY","ru":"sha384-feKOuqXdA0tCvFbF1YqbRnVNoMVuApAaXPbWFY0+kg3hg5EnM3r2gWAzegWHgr9V","ja":"sha384-AtvaILWnVG6SLMpVD6cfpbFavbCJxAF/LTyxXKEE2zRL/AzEYqPRhh7M0/UK0rpU","zh-Hant":"sha384-NIuP52/E2NV7Cu6B7NcX07jXmX3OciYC8FYUU5ogpr1SdYE9gWJIuKh4Yn+uW2kv","he":"sha384-tALCczIkplM9SLqN+fWDcOD+qI5po3ZH7w3vgBNj0AL7+yPcpm25UCXWhLgb81NE","ar":"sha384-4wdBOOuM5zfKBEotU8FWLuHTvaJ9ZO+UeSI6ccsKKQaHZJaNY1wlFtWTY2yxQK4/"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1551,7 +1551,7 @@ const chapterDone = (band = S.band, ch = S.chapter) => rec(band, ch.id).d.filter
 const nextOpen = () => { const r = rec(S.band, S.chapter.id); const i = S.levels.findIndex((l, i) => !r.d[i]); return i < 0 ? 0 : i; };
 const levelOpen = i => i === 0 || !!rec(S.band, S.chapter.id).d[i - 1];
 /* Check answers live in the save too (r.c per level: 1 right, 0 wrong), not only in the session: a student who
-   leaves mid "Case closed?" flow, or closes the game on a finished chapter, must still be credited. The session
+   leaves mid "Route check" flow, or closes the game on a finished chapter, must still be credited. The session
    counters derive from the save on entry, and a lesson re-entry asks any checks a finished level never got. */
 const checksFromSave = ch => { const c = rec(S.band, ch.id).c; return Array.isArray(c) ? { ok: c.filter(x => x === 1).length, n: c.filter(x => x != null).length } : { ok: 0, n: 0 }; };
 function recordCheck(band, chId, li, ok) { const r = rec(band, chId); if (!Array.isArray(r.c)) r.c = []; if (r.c[li] == null) { r.c[li] = ok ? 1 : 0; save(); } }
@@ -1645,7 +1645,7 @@ function startChapter(id, o = {}) {
   }
   startLevel(i);
 }
-/* A lesson re-entry with finished-but-unchecked levels: ask the outstanding "Case closed?" checks now (each
+/* A lesson re-entry with finished-but-unchecked levels: ask the outstanding "Route check" checks now (each
    answer is saved at once), then continue where the student actually is. This is what credits a chapter that
    was finished in an earlier session whose win flow was left halfway. */
 function lessonCatchUp(ch, missing, after) {
@@ -2328,7 +2328,7 @@ function caseClosedFor(level, done) {
   const ck = level.check; let first = null;
   S.caseDone = done;
   openCard(m => {
-    m.appendChild(el('h2', '', esc(tr('Case closed?'))));
+    m.appendChild(el('h2', '', esc(tr('Route check'))));
     m.appendChild(el('p', '', esc(tr(ck.q))));
     const col = el('div', 'col'); m.appendChild(col);
     const faces = el('div', 'rr-faces'); faces.hidden = true;

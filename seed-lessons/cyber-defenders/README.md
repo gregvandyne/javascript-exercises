@@ -27,8 +27,11 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
   `course/<band>`.
 - A deck's game module is exactly the one `units.json` names for that band (a Packet Post chapter, a Trick
   Inbox set or an escape-room lock with canonical params, or Would You Rather locked to "Online: share or keep"),
-  and its mission slide names the game and the chapter as the game shows them. Units 1-2 play Packet Post,
-  units 4-6 the course's own games, and steps 4.3, 5.1 and 5.2 open three different modules.
+  and its mission slide names the game and the chapter as the game shows them. Units 1-2 play Packet Post
+  (except 1b-2.2, Escape's Layers lock, and 2-2.2, Trick Inbox's Prize Letters, so no step reopens a chapter an
+  earlier step finished), units 4-6 the course's own games, and steps 4.3, 5.1 and 5.2 open three different modules.
+- A slide is pictured only when the capture shows what the slide teaches, and its tour cues name what is on it;
+  otherwise the slide draws its topic art (`art`) with no picture and no tour.
 - The Pro intro (`course/2/0.1.json`) also carries `slides_first_time` (same schema as `slides`): the welcome a
   kid sees who never finished an Explorer step, so it never says "welcome back".
 - A deck's check is its own step's three bank items; an item's `cat` is one of the step's CYBER.ORG codes

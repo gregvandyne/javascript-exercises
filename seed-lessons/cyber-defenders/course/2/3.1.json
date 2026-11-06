@@ -76,31 +76,22 @@
    "title": "Risk grows in combinations",
    "text": "One fact alone is a small risk, but combined facts can map your whole day. The wider the audience that sees them, the more people can join the dots.",
    "art": "map",
-   "img": "csq/would-you-rather/online-location-1b",
-   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+   "img": "csq/trick-inbox/chat-2-ch-6-all",
+   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
    "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
+    0.0,
+    34.1,
+    70.2,
+    62.4
    ],
    "focus": [
     {
-     "cue": "Free, if the app can see where you are",
+     "cue": "Three facts together: a first pet, a street, a birthday",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Location joins the other facts: risk grows",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      61.8,
+      63.4,
+      7.1
      ]
     }
    ]
@@ -207,8 +198,8 @@
    "title": "Your mission",
    "text": "Open Would You Rather at Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-cloud-2",
-   "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
+   "img": "csq/would-you-rather/online-photo-2",
+   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
    "view": [
     4.2,
     9.7,

@@ -35,24 +35,24 @@
    "lesson": "6.1",
    "use": "exit",
    "cat": "4.G.A.2",
-   "topic": "Parallel sides",
+   "topic": "Angles as turns",
    "kind": "recall",
    "secs": 20,
-   "q": "Which shape has no parallel sides at all?",
+   "q": "You face the door, then make a quarter turn. How big an angle did you turn?",
    "choices": [
-    "Rectangle",
-    "Square",
-    "Parallelogram",
-    "Triangle"
+    "No angle at all",
+    "A whole turn",
+    "Half a square corner",
+    "One square corner"
    ],
    "answer": 3,
    "misconceptions": [
-    "missed the parallel sides of a rectangle",
-    "missed the parallel sides of a square",
-    "missed the clue in the name parallelogram",
+    "thought a turn is not an angle",
+    "mixed up a quarter turn with a whole turn",
+    "thought a quarter turn is smaller than a square corner",
     "correct"
    ],
-   "why": "Rectangles, squares and parallelograms all have parallel sides. A triangle's sides all meet, so none of them run parallel."
+   "why": "An angle is an amount of turn. A quarter turn is exactly one square corner, the turn at every corner of a rectangle."
   },
   {
    "id": "nq-explorer-6.1-e3",

@@ -161,7 +161,7 @@
   },
   {
    "title": "Your mission",
-   "text": "There is no game this time: the Builder's Yard game is still being built. When you pass the check, the Shape Hunt talk below is your mission. Hunt well, and test every shape before you name its family.",
+   "text": "There is no game this time. When you pass the check, the Shape Hunt below is your mission. Hunt well, and test every shape before you name its family.",
    "art": "trophy",
    "kind": "mission"
   }
@@ -172,5 +172,5 @@
   "nq-explorer-6.1-e3"
  ],
  "game": null,
- "talk": "Hunt your classroom: find one shape with 4 equal sides, one shape with no square corners, and one shape with a pair of parallel sides. What family is each one in, and how do you know?"
+ "talk": "Hunt the room you are in, at home or at school: find one shape with 4 equal sides, one shape with no square corners, and one shape with 4 square corners. What family is each one in, and how do you know?"
 }

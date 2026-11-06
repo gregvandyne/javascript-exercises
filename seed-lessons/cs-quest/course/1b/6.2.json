@@ -34,7 +34,7 @@
   },
   {
    "title": "Help one, help many",
-   "text": "Captions were made for people who can not hear. They also help anyone in a noisy room. A change for one person usually helps many.",
+   "text": "Captions were made for people who cannot hear. They also help anyone in a noisy room. A change for one person usually helps many.",
    "art": "star",
    "img": "csq/inside-the-machine/design-1b-second",
    "view": [
@@ -51,7 +51,7 @@
    "text": "Match each change to the people it helps. Most changes help more than one group.",
    "art": "people",
    "steps": [
-    "captions: can not hear, noisy room",
+    "captions: cannot hear, noisy room",
     "big text: hard to see, bright sun",
     "one-hand buttons: one hand free"
    ],

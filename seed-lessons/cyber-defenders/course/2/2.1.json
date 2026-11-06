@@ -43,31 +43,22 @@
    "title": "When lists leak",
    "text": "In a breach, a service is broken into and its passphrases are copied. Stolen lists are traded, then tried on other accounts to find people who reused a key.",
    "art": "network",
-   "img": "csq/packet-post/locks-2-shield",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "img": "csq/packet-post/locks-1b-habits",
+   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
    "view": [
-    5.0,
-    5.9,
-    75.8,
-    67.4
+    6.0,
+    22.0,
+    50.0,
+    40.0
    ],
    "focus": [
     {
-     "cue": "Your mailbox key: the good side, none; the risk, everything",
+     "cue": "A leaked key: change it everywhere it was used",
      "box": [
-      8.0,
-      27.9,
+      8.1,
+      28.1,
       45.2,
-      13.2
-     ]
-    },
-    {
-     "cue": "Public or private? A leaked key must stay private",
-     "box": [
-      54.0,
-      44.7,
-      23.8,
-      6.6
+      6.5
      ]
     }
    ]
@@ -108,35 +99,7 @@
   {
    "title": "One safe drawer",
    "text": "A password manager is the spare-key drawer done properly. It stores a different strong passphrase for each account, so a trusted adult only has to remember one main key.",
-   "art": "box",
-   "img": "csq/packet-post/locks-2-backup",
-   "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
-   "view": [
-    37.0,
-    21.3,
-    54.9,
-    48.8
-   ],
-   "focus": [
-    {
-     "cue": "The backup rule in four steps, in order",
-     "box": [
-      40.7,
-      26.5,
-      47.6,
-      7.9
-     ]
-    },
-    {
-     "cue": "Update it, copy it again, check it opens, keep it elsewhere",
-     "box": [
-      40.0,
-      43.0,
-      48.9,
-      21.9
-     ]
-    }
-   ]
+   "art": "box"
   },
   {
    "kind": "example",

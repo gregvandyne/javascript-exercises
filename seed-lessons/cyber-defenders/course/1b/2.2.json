@@ -9,35 +9,7 @@
   {
    "title": "Doors only staff may open",
    "text": "At the post office, some doors only staff may open. That rule decides who can get to the letters inside, and who must stay out.",
-   "art": "lock",
-   "img": "csq/packet-post/locks-1b-tell",
-   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share.",
-   "view": [
-    51.0,
-    21.5,
-    40.3,
-    42.5
-   ],
-   "focus": [
-    {
-     "cue": "Who gets to hear the key? Permission decides",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
-     ]
-    },
-    {
-     "cue": "Okay to tell, or keep it to yourself",
-     "box": [
-      54.1,
-      44.6,
-      20.5,
-      14.4
-     ]
-    }
-   ]
+   "art": "lock"
   },
   {
    "title": "Your tablet does it too",
@@ -149,35 +121,7 @@
   {
    "title": "The wrong person",
    "text": "Finding a tablet on a bench does not make it yours to open. Borrowing a friend's game account is the same: no permission means hands off.",
-   "art": "people",
-   "img": "csq/packet-post/locks-1b-habits",
-   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
-   "view": [
-    51.0,
-    19.9,
-    40.3,
-    35.8
-   ],
-   "focus": [
-    {
-     "cue": "If one key opens every door, losing it opens them all",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
-     ]
-    },
-    {
-     "cue": "Safe habit or risky habit: sort them",
-     "box": [
-      54.1,
-      42.4,
-      32.5,
-      6.7
-     ]
-    }
-   ]
+   "art": "people"
   },
   {
    "kind": "words",
@@ -206,24 +150,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It: the same levels you finished in step 2.1, so this step is already earned when the game opens. Look again for the doors, locks and spare copies Pim shows you.",
+   "text": "Open Escape the Post Office at Lock 6: Layers and match all 4 trouble cards. Find the second lock that stops a key guesser, and the spare copy that beats a flood.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-1b-built",
-   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
+   "img": "csq/escape-the-post-office/layers-1b-4",
+   "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
    "view": [
-    5.2,
-    38.1,
-    50.8,
-    45.2
+    0.0,
+    9.8,
+    100.0,
+    90.2
    ],
    "focus": [
     {
-     "cue": "Play Lock It: build keys, then guard the doors",
+     "cue": "Play Layers: find the second lock and the spare copy",
      "box": [
-      8.2,
-      57.7,
-      44.8,
-      6.0
+      1.5,
+      54.7,
+      97.0,
+      12.9
      ]
     }
    ]
@@ -235,8 +179,8 @@
   "cd-1b-2.2-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "locks",
-  "params": "chapter=locks&band=1b&lock=1"
+  "slug": "escape-the-post-office",
+  "chapter": "layers",
+  "params": "chapter=layers&band=1b&lock=1"
  }
 }

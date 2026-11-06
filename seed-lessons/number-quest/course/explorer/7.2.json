@@ -12,8 +12,8 @@
    "art": "people"
   },
   {
-   "title": "Our class, charted",
-   "text": "We asked our class one question: how do you get to school? The answers tallied into three bars. Bus is the tallest, and the chart can already answer questions nobody has asked yet.",
+   "title": "One class, charted",
+   "text": "One Netville class answered one question: how do you get to school? The answers tallied into three bars. Bus is the tallest, and the chart can already answer questions nobody has asked yet.",
    "art": "table",
    "visual": {
     "type": "bars",
@@ -50,7 +50,7 @@
    },
    "focus": [
     {
-     "cue": "Walk: 9 students, counted from our own class.",
+     "cue": "Walk: 9 students, counted from that one class.",
      "box": [
       5,
       3.4,
@@ -158,7 +158,7 @@
   },
   {
    "title": "Claims the data can carry",
-   "text": "A chart earns its keep when someone makes a claim from it. Most of our class rides the bus is a claim this chart can carry. Everyone hates walking is not: the chart never asked about liking. Claim only what you counted.",
+   "text": "A chart earns its keep when someone makes a claim from it. More children in this class ride the bus than walk is a claim this chart can carry. Everyone hates walking is not: the chart never asked about liking. Claim only what you counted.",
    "art": "shield"
   },
   {

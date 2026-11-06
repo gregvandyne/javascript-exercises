@@ -9,59 +9,12 @@
   {
    "title": "Rules on the wall",
    "text": "Inside the post office door hangs a board of rules anyone may read. The rules say what post staff may open, what they must never open, and who to tell when something is wrong.",
-   "art": "table",
-   "img": "csq/packet-post/locks-1b-habits",
-   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
-   "view": [
-    50.3,
-    28.0,
-    40.0,
-    35.6
-   ],
-   "focus": [
-    {
-     "cue": "Rules on the wall: safe habit or risky habit?",
-     "box": [
-      54.1,
-      42.4,
-      32.5,
-      6.7
-     ]
-    }
-   ]
+   "art": "table"
   },
   {
    "title": "School rules and app rules",
    "text": "Your school has internet rules, and every app has rules too, called its agreement. Agreements say what may be posted, what is never allowed, and what happens when a rule is broken.",
-   "art": "pencil",
-   "img": "csq/would-you-rather/online-location-1b",
-   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "A free game that always sees where you are",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Its agreement says what it may collect",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
-   ]
+   "art": "pencil"
   },
   {
    "title": "The law protects your work",
@@ -105,65 +58,37 @@
     "A drawing shared without a yes: the law protects its maker",
     "Mean posts in a class app: the agreement and school rules",
     "A stranger reading private post: the post office wall rules"
-   ],
-   "img": "csq/packet-post/protocols-1b-twice",
-   "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
-   "view": [
-    46.9,
-    31.3,
-    40.0,
-    35.6
-   ],
-   "focus": [
-    {
-     "cue": "Extra copies wait in the inbox, then are binned",
-     "box": [
-      54.1,
-      52.3,
-      24.7,
-      7.9
-     ]
-    },
-    {
-     "cue": "Four packets were sent; the slots keep count",
-     "box": [
-      54.1,
-      38.0,
-      25.6,
-      12.3
-     ]
-    }
    ]
   },
   {
    "title": "A rule broken against you",
    "text": "If someone breaks the rules against you, that is never your fault and never yours to fix alone. A broken rule is a reason to tell a trusted adult, who must act.",
    "art": "people",
-   "img": "csq/would-you-rather/online-comments-1b",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "img": "csq/trick-inbox/chat-1b-ch-3-debrief",
+   "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
    "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
+    0.0,
+    11.4,
+    99.7,
+    88.6
    ],
    "focus": [
     {
-     "cue": "A page where anyone can comment",
+     "cue": "A mean message breaks the chat rules",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      47.1,
+      47.3,
+      7.1
      ]
     },
     {
-     "cue": "A rule broken here is never yours to fix alone",
+     "cue": "Not yours to fix alone: save it and tell an adult",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.4,
+      67.7,
+      93.3,
+      14.9
      ]
     }
    ]
