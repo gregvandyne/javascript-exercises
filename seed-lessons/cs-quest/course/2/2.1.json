@@ -11,6 +11,12 @@
    "text": "Programs break, and good programmers test on purpose. A test case is one board with a known right answer.",
    "art": "bug",
    "img": "csq/robo-route/debug-2-key",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one."
   },
   {
@@ -18,13 +24,45 @@
    "text": "A program can pass one board and fail another. Three test boards catch what one board misses.",
    "art": "grid",
    "img": "csq/robo-route/debug-2-tabs",
-   "alt": "The same program on a different test board: the board changed, the program did not, and a hidden bug can show here."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "The same program on Test 3, a longer hallway: Test 1 and Test 2 show a check, Test 3 a cross, and Bolt splashed into the water.",
+   "focus": [
+    {
+     "cue": "Test 1 and Test 2: passed.",
+     "box": [
+      0,
+      24.5,
+      16.4,
+      7.7
+     ]
+    },
+    {
+     "cue": "Test 3, a longer hallway: failed. One board hid the bug.",
+     "box": [
+      15.9,
+      24.5,
+      8.7,
+      7.7
+     ]
+    }
+   ]
   },
   {
    "title": "Edge cases",
    "text": "An edge case is an unusual input: a maze with no gems, a longer hallway, a goal right before a wall. It breaks assumptions you did not know you made.",
    "art": "magnifier",
    "img": "csq/robo-route/debug-2-edge",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "A later Debug Lab board with an unusual layout: goals and walls sit where a program that assumes too much will fail."
   },
   {
@@ -40,13 +78,39 @@
     "run all tests again"
    ],
    "img": "csq/robo-route/debug-2-tested",
-   "alt": "The fixed Pro program under its test tabs: one program, three boards, and the fix counts only when all three pass."
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "After a run, every test tab shows a mark: Test 1 and Test 2 pass, Test 3 fails, so this fix is not done yet.",
+   "focus": [
+    {
+     "cue": "After a run, every tab shows a check or a cross.",
+     "box": [
+      0,
+      24.5,
+      24.5,
+      7.7
+     ]
+    },
+    {
+     "cue": "One cross left: the fix is not done until every tab passes.",
+     "box": [
+      15.9,
+      24.5,
+      8.7,
+      7.7
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "bug",
    "words": [
     {
      "word": "test case",
@@ -72,6 +136,12 @@
    "text": "Open Robo Route at Debug Lab and fix all 7 levels. After every change, run all the test boards again, and keep your edits few.",
    "art": "trophy",
    "img": "csq/robo-route/debug-2-key",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one."
   }
  ],

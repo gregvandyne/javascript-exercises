@@ -317,7 +317,7 @@
    "band": "1b",
    "state": "sort-1b-key",
    "concept": "Meet Dot: a detective solves cases with facts, not guesses",
-   "alt": "Dot opens the first case: a table of lunchroom facts in rows and columns, with the case question at the top.",
+   "alt": "Dot opens the first case: a table of who, where and when facts in rows and columns, and the question: who was last in the hall?",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },
@@ -635,9 +635,9 @@
    "chapter": "gadget",
    "band": "2",
    "state": "gadget-2-key",
-   "concept": "What makes a gadget: sensors, processor, outputs, power",
-   "alt": "Design a Gadget opens its first brief: an empty build tray and the parts shelf, with cost and battery meters.",
-   "capturedAt": "2026-11-04",
+   "concept": "A step counter: small, cheap, lasts all day — pick only what it needs",
+   "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters.",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -657,9 +657,9 @@
    "chapter": "gadget",
    "band": "2",
    "state": "gadget-2-step",
-   "concept": "A step counter: small, cheap, lasts all day — pick only what it needs",
-   "alt": "A later brief at the bench: the art of a good gadget is picking only the parts the job truly needs.",
-   "capturedAt": "2026-11-04",
+   "concept": "What makes a gadget: sensors, a processor, outputs, a connection and power",
+   "alt": "A Noise meter brief: it must hear the room, show the loudness, send a log to the laptop and run on wall power.",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -756,9 +756,9 @@
    "chapter": "ciphers",
    "band": "1b",
    "state": "ciphers-1b-wheel",
-   "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key",
+   "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key (shift 3)",
    "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
-   "capturedAt": "2026-11-04",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -793,6 +793,17 @@
    "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/ciphers-2-stego",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "2",
+   "state": "ciphers-2-stego",
+   "concept": "Hiding is not scrambling: steganography hides a message in a picture's pixels",
+   "alt": "Steganography: a heart hidden in a picture. Each pixel is a number, and its last bit says dot or blank, so the picture looks the same.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/packet-post/ciphers-2-key",
@@ -835,7 +846,7 @@
    "state": "ciphers-2-shift",
    "concept": "A shift of 3: every letter moves the same number of places",
    "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code.",
-   "capturedAt": "2026-11-04",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -1218,9 +1229,9 @@
    "chapter": "tricks",
    "band": "1b",
    "state": "tricks-1b-card",
-   "concept": "Trick or safe? This one has a prize, a rush and a key request",
+   "concept": "Trick or safe? A threat, a rush and a key request",
    "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
-   "capturedAt": "2026-11-04",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -1374,8 +1385,8 @@
    "state": "conditionals-1b-fog",
    "concept": "Bolt in the fog",
    "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-1b-fog-proof",
@@ -1385,8 +1396,8 @@
    "state": "conditionals-1b-fog-proof",
    "concept": "Worked example: the fog-proof program",
    "alt": "The repeat until goal program with the if / else inside it, feeling its way along the dry path across a board of water.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-1b-if-else",
@@ -1396,8 +1407,8 @@
    "state": "conditionals-1b-if-else",
    "concept": "If, else: two ways",
    "alt": "One if / else block in the tray: if path ahead, move; else, turn left. Bolt checks and picks a side every time it runs.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-1b-when",
@@ -1407,8 +1418,8 @@
    "state": "conditionals-1b-when",
    "concept": "When: things that happen",
    "alt": "A when block waits at the top of the program: when a gem is picked up, turn right, with the driving loop underneath it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-and",
@@ -1418,8 +1429,8 @@
    "state": "conditionals-2-and",
    "concept": "Two questions at once: AND",
    "alt": "A two-question check in the tray: if wall ahead AND on a gem, pick up and turn; the spiral maze waits on the board.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-any-maze",
@@ -1429,8 +1440,8 @@
    "state": "conditionals-2-any-maze",
    "concept": "Worked example: one program, any maze",
    "alt": "The short sense-and-steer program beside the maze: repeat until goal, if path ahead move, else turn right.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-decide",
@@ -1440,8 +1451,8 @@
    "state": "conditionals-2-decide",
    "concept": "Decide at every step",
    "alt": "The maze program checks at every step: repeat until goal, if path ahead move, else turn left, on a water board.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-key",
@@ -1451,8 +1462,8 @@
    "state": "conditionals-2-key",
    "concept": "Mission board: the big maze start",
    "alt": "A big walled maze with Bolt penned in one corner and the flag far away: no fixed route can be written for this.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-or-not",
@@ -1462,8 +1473,8 @@
    "state": "conditionals-2-or-not",
    "concept": "OR and NOT",
    "alt": "The check reads if NOT path ahead OR on paint, turn right: one block asking two questions at once.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-when-if",
@@ -1473,8 +1484,8 @@
    "state": "conditionals-2-when-if",
    "concept": "When meets if",
    "alt": "The Pro event program: a when block for picking up a gem, over a repeat loop whose if block picks up gems Bolt stands on.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-count",
@@ -1484,8 +1495,8 @@
    "state": "debug-1b-count",
    "concept": "One too many: a repeat count one too big is a common bug",
    "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-fixed",
@@ -1495,8 +1506,8 @@
    "state": "debug-1b-fixed",
    "concept": "Done means tested: a fix is done when you run it again",
    "alt": "The fixed program sits in the tray: the wrong turn left has become turn right, ready to run again and be tested.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-key",
@@ -1506,8 +1517,8 @@
    "state": "debug-1b-key",
    "concept": "Programs break: a bug is a mistake in a program",
    "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-midrun",
@@ -1517,8 +1528,8 @@
    "state": "debug-1b-midrun",
    "concept": "Expected and actual: compare what Bolt did with what you expected",
    "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-step",
@@ -1528,8 +1539,8 @@
    "state": "debug-1b-step",
    "concept": "Step, stop, fix: step one block at a time and stop at the first surprise",
    "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-edge",
@@ -1539,8 +1550,8 @@
    "state": "debug-2-edge",
    "concept": "Edge cases: unusual boards break quiet assumptions",
    "alt": "A later Debug Lab board with an unusual layout: goals and walls sit where a program that assumes too much will fail.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-key",
@@ -1550,8 +1561,8 @@
    "state": "debug-2-key",
    "concept": "Expect bugs: a test case is one board with a known right answer",
    "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-tabs",
@@ -1560,9 +1571,9 @@
    "band": "2",
    "state": "debug-2-tabs",
    "concept": "One board can hide a bug: the same program on a second test board",
-   "alt": "The same program on a different test board: the board changed, the program did not, and a hidden bug can show here.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The same program on Test 3, a longer hallway: Test 1 and Test 2 show a check, Test 3 a cross, and Bolt splashed into the water.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-tested",
@@ -1571,9 +1582,9 @@
    "band": "2",
    "state": "debug-2-tested",
    "concept": "The debug loop: a fix is done only when every test passes",
-   "alt": "The fixed Pro program under its test tabs: one program, three boards, and the fix counts only when all three pass.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "After a run, every test tab shows a mark: Test 1 and Test 2 pass, Test 3 fails, so this fix is not done yet.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-defined-not-called",
@@ -1583,8 +1594,8 @@
    "state": "functions-1b-defined-not-called",
    "concept": "Defined is not called",
    "alt": "The My Block named Side is defined in the tray, but nothing calls it, and Bolt has not moved: a definition alone does nothing.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-key",
@@ -1594,8 +1605,8 @@
    "state": "functions-1b-key",
    "concept": "Stairs, stairs, stairs",
    "alt": "Three gem steps climb like stairs to the flag, and Bolt's program tray is empty: climbing all three the long way takes a lot of blocks.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-my-block",
@@ -1605,8 +1616,8 @@
    "state": "functions-1b-my-block",
    "concept": "Make your own block",
    "alt": "The My Block named Stair is built in the tray: move, pick up, turn right, move, turn left: one named packet of blocks.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-remix-credit",
@@ -1616,8 +1627,8 @@
    "state": "functions-1b-remix-credit",
    "concept": "Notes and credit",
    "alt": "Two My Blocks named Zig sit in the tray, and the second carries a based-on Starter blocks stamp: a remix keeps its credit.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-three-stairs",
@@ -1627,8 +1638,8 @@
    "state": "functions-1b-three-stairs",
    "concept": "Call it three times",
    "alt": "The Stair block is defined once, then called three times in a row at the bottom of the tray: call Stair, call Stair, call Stair.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-key",
@@ -1638,8 +1649,8 @@
    "state": "functions-2-key",
    "concept": "Blocks built by others",
    "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-notes-credit",
@@ -1649,8 +1660,8 @@
    "state": "functions-2-notes-credit",
    "concept": "Notes and credit (Pro)",
    "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-parameter",
@@ -1660,8 +1671,8 @@
    "state": "functions-2-parameter",
    "concept": "A block with a number slot",
    "alt": "My Block Dash (n) repeats n moves, and the calls underneath feed it different numbers: call Dash (7), (6), (5), (4), (3).",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-subgoals",
@@ -1671,8 +1682,8 @@
    "state": "functions-2-subgoals",
    "concept": "One block per job",
    "alt": "Three named My Blocks split the job: GetGems, Climb and Cross, each defined in the tray and called in turn below.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-three-rooms",
@@ -1682,8 +1693,8 @@
    "state": "functions-2-three-rooms",
    "concept": "Worked example: three rooms, one block",
    "alt": "Room (steps) is defined once with steps inside it, then called three ways: call Room (1), call Room (3), call Room (2).",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-five-moves",
@@ -1693,8 +1704,8 @@
    "state": "loops-1b-five-moves",
    "concept": "Loops save work",
    "alt": "Five separate move blocks stacked in the tray do the same job as one repeat block, but take five times the room.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-repeat-bracket",
@@ -1704,8 +1715,8 @@
    "state": "loops-1b-repeat-bracket",
    "concept": "The repeat bracket",
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-repeat-number",
@@ -1714,9 +1725,9 @@
    "band": "1b",
    "state": "loops-1b-repeat-number",
    "concept": "The number matters",
-   "alt": "A repeat 3 times bracket holds two move blocks, so Bolt drives six squares in all: the number times the blocks inside.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "A repeat 2 times bracket holds move, move, pick up, and one more move follows it: Bolt drives five squares and picks up both gems.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-turn-inside",
@@ -1726,8 +1737,8 @@
    "state": "loops-1b-turn-inside",
    "concept": "Any block can go inside",
    "alt": "The repeat bracket holds turn right instead of move, so Bolt would spin on one square instead of driving anywhere.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-key",
@@ -1737,8 +1748,8 @@
    "state": "loops-2-key",
    "concept": "Loops save work (Pro board)",
    "alt": "A repeat 7 times block with one move inside crosses Bolt's whole row; written out longhand it would take seven blocks.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-nested",
@@ -1748,8 +1759,8 @@
    "state": "loops-2-nested",
    "concept": "A loop inside a loop",
    "alt": "A repeat 3 times bracket holds a second repeat 3 times bracket with move inside it, then turn right: a loop in a loop.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-predict",
@@ -1759,8 +1770,8 @@
    "state": "loops-2-predict",
    "concept": "Predict the count",
    "alt": "A nested repeat program next to a staircase of gems: repeat 3 times outside, repeat 2 times with move and pick up inside.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-staircase",
@@ -1770,8 +1781,8 @@
    "state": "loops-2-staircase",
    "concept": "Nested loops climb stairs",
    "alt": "The nested-loop program beside a walled staircase board: the inner repeat climbs, the turn starts the next step up.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-built",
@@ -1780,9 +1791,9 @@
    "band": "1b",
    "state": "maker-1b-built",
    "concept": "The maker loop: Check proves a level can be solved and shows its par",
-   "alt": "A level built in the maker: walls, start, goal, key and door placed on the board, with Check run on the design.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "A level built in the maker: Bolt, a gem, a key, a door and the goal on the board, and Check says it can be solved: par 17.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-key",
@@ -1791,9 +1802,9 @@
    "band": "1b",
    "state": "maker-1b-key",
    "concept": "Be the game designer: plan, build, test, fix, explain",
-   "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-task",
@@ -1803,8 +1814,8 @@
    "state": "maker-1b-task",
    "concept": "Plan it first: start, goal and one tricky part",
    "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-test",
@@ -1813,9 +1824,9 @@
    "band": "1b",
    "state": "maker-1b-test",
    "concept": "The designer stays quiet: a tester plays while the designer watches",
-   "alt": "The built level handed to a tester: Bolt plays the design while its maker watches without helping.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The built level handed to a tester: the tester builds a program and Bolt drives it, while the maker watches without helping.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-built",
@@ -1824,9 +1835,9 @@
    "band": "2",
    "state": "maker-2-built",
    "concept": "Iterate: plan, build, Check, test, change, test again",
-   "alt": "A Pro maker level built and checked: the board holds a full design and Check has judged whether it can be solved.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "A Pro maker level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-feedback",
@@ -1835,9 +1846,9 @@
    "band": "2",
    "state": "maker-2-feedback",
    "concept": "Feedback is information: it shows where a player got stuck",
-   "alt": "After the test play, the maker rates the level: the feedback card records how fun and how hard the tester found it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-key",
@@ -1846,9 +1857,9 @@
    "band": "2",
    "state": "maker-2-key",
    "concept": "Design for someone else: plan, build, test, improve, document",
-   "alt": "The Pro Level Maker opens its first task: a blank canvas and the tools to build a level for someone else.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-task",
@@ -1858,8 +1869,8 @@
    "state": "maker-2-task",
    "concept": "Keep a timeline: split the work and set times",
    "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-better-route",
@@ -1869,8 +1880,8 @@
    "state": "sequences-1b-better-route",
    "concept": "Pick the better route",
    "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-key",
@@ -1880,8 +1891,8 @@
    "state": "sequences-1b-key",
    "concept": "Meet Bolt: a program is a list of steps",
    "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-program-order",
@@ -1891,8 +1902,8 @@
    "state": "sequences-1b-program-order",
    "concept": "Steps run in order, first to last",
    "alt": "Bolt's program tray holds four move blocks stacked in order, matching the four dotted squares between Bolt and the flag.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-turn-in-place",
@@ -1902,8 +1913,8 @@
    "state": "sequences-1b-turn-in-place",
    "concept": "A turn spins Bolt in its square",
    "alt": "Bolt has driven four squares, then turned left in the same square to face the flag; the turn block is lit in the tray.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-turn-then-move",
@@ -1912,9 +1923,9 @@
    "band": "1b",
    "state": "sequences-1b-turn-then-move",
    "concept": "Worked example: turn right, move, move",
-   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom right, and a tray that starts turn right, move, move.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom, and a program: turn right, four moves, turn left, three moves.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-compare-routes",
@@ -1924,8 +1935,8 @@
    "state": "sequences-2-compare-routes",
    "concept": "Compare routes",
    "alt": "A walled maze with two ways around the walls to the flag, one shorter than the other.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-key",
@@ -1935,8 +1946,8 @@
    "state": "sequences-2-key",
    "concept": "Plan before you build",
    "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-plan-lines",
@@ -1946,8 +1957,8 @@
    "state": "sequences-2-plan-lines",
    "concept": "A plan is the steps in plain words",
    "alt": "A plan card lists three plain-language plan lines for the level, waiting to be tapped into the order Bolt should do them.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-plan-to-blocks",
@@ -1957,8 +1968,8 @@
    "state": "sequences-2-plan-to-blocks",
    "concept": "Turn each plan line into blocks",
    "alt": "The finished program for the plan level fills the tray: twenty-one blocks that follow the plan lines in order.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-counting-gems",
@@ -1968,8 +1979,8 @@
    "state": "variables-1b-counting-gems",
    "concept": "Worked example: counting gems",
    "alt": "Halfway up the gem column, Bolt's counter pill reads count = 2: two gems picked up, two counted, and the change block is lit.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-key",
@@ -1979,8 +1990,8 @@
    "state": "variables-1b-key",
    "concept": "The counting door",
    "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-named-box",
@@ -1990,8 +2001,8 @@
    "state": "variables-1b-named-box",
    "concept": "A named box",
    "alt": "The program names its box: set count to 0, then repeat 5 times move, pick up, and change count by 1, beside the gem column.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-set-change",
@@ -2001,8 +2012,8 @@
    "state": "variables-1b-set-change",
    "concept": "Set and change",
    "alt": "Bolt stands by the door with the counter strip reading steps = 2: set steps to 4 started it, and change steps by -1 ticks it down.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-key",
@@ -2012,8 +2023,8 @@
    "state": "variables-2-key",
    "concept": "Hold a value (the starter names it x)",
    "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-names",
@@ -2023,8 +2034,8 @@
    "state": "variables-2-names",
    "concept": "Names are for people",
    "alt": "The same counting program with the box named count: set count to 0 and change count by 1 read like a sentence.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-types",
@@ -2034,8 +2045,8 @@
    "state": "variables-2-types",
    "concept": "Kinds of values",
    "alt": "A flag variable in the tray: set hasKey to Off at the start, and set hasKey to On inside the if block that picks the key up.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-watch-value",
@@ -2044,9 +2055,9 @@
    "band": "2",
    "state": "variables-2-watch-value",
    "concept": "Watch the value",
-   "alt": "The watch strip reads steps = 4 after two changes: the plan set steps to 6, and each change steps by -1 brings it down.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "Two rounds into repeat 6, the watch strip reads steps = 4: set steps to 6 started it, and each change steps by -1 brings it down.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/trick-inbox/boss-1b",

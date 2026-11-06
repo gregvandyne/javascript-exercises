@@ -11,24 +11,30 @@
    "text": "Bolt is a robot. Bolt does exactly what you tell it, one step at a time. It never guesses what you meant.",
    "art": "robot",
    "img": "csq/robo-route/sequences-1b-key",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray.",
    "focus": [
     {
      "cue": "This is Bolt. It only does what you tell it.",
      "box": [
-      5.9,
-      49.7,
-      6.9,
-      12.0
+      5.7,
+      49.4,
+      7.6,
+      12.7
      ]
     },
     {
      "cue": "The flag is four squares away.",
      "box": [
-      33.0,
-      49.7,
-      6.7,
-      12.0
+      5.7,
+      49.4,
+      34.4,
+      12.7
      ],
      "path": [
       [
@@ -36,19 +42,7 @@
        55.7
       ],
       [
-       16.2,
-       55.7
-      ],
-      [
-       22.9,
-       55.7
-      ],
-      [
-       29.6,
-       55.7
-      ],
-      [
-       36.4,
+       36.3,
        55.7
       ]
      ]
@@ -60,46 +54,30 @@
    "text": "A list of steps in order is called an algorithm. When you join blocks together for Bolt, you write a program: the algorithm in blocks.",
    "art": "map",
    "img": "csq/robo-route/sequences-1b-program-order",
+   "view": [
+    52.2,
+    33,
+    37.7,
+    67
+   ],
    "alt": "Bolt's program tray holds four move blocks stacked in order, matching the four dotted squares between Bolt and the flag.",
    "focus": [
     {
      "cue": "Four move blocks, joined in order: that is the program.",
      "box": [
-      54.1,
-      36.2,
-      7.1,
-      27.7
+      53.4,
+      35.5,
+      8.4,
+      29.3
      ]
     },
     {
-     "cue": "The blocks run first to last, walking Bolt to the flag.",
+     "cue": "Press Run: the blocks go first to last, walking Bolt to the flag.",
      "box": [
-      5.9,
-      49.7,
-      40.7,
-      12.0
-     ],
-     "path": [
-      [
-       9.4,
-       55.7
-      ],
-      [
-       16.2,
-       55.7
-      ],
-      [
-       22.9,
-       55.7
-      ],
-      [
-       29.6,
-       55.7
-      ],
-      [
-       36.4,
-       55.7
-      ]
+      53,
+      90.5,
+      9.6,
+      7.7
      ]
     }
    ]
@@ -110,38 +88,65 @@
    "text": "Bolt faces along the top row, but the flag waits at the bottom of the board. First Bolt turns right to aim down the left side, then it moves.",
    "art": "grid",
    "img": "csq/robo-route/sequences-1b-turn-then-move",
-   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom right, and a tray that starts turn right, move, move.",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
+   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom, and a program: turn right, four moves, turn left, three moves.",
    "steps": [
     "turn right",
-    "move",
-    "move"
+    "move, move, move, move",
+    "turn left",
+    "move, move, move"
    ],
    "focus": [
     {
-     "cue": "First: turn right. The turn aims Bolt before any step.",
+     "cue": "Bolt faces along the top row. Turn right first: now it aims down the left side.",
      "box": [
-      54.1,
-      36.2,
-      9.3,
-      6.0
+      5.7,
+      25.5,
+      7.6,
+      12.7
      ]
     },
     {
-     "cue": "Then move, move: two squares.",
+     "cue": "Then four moves drive down the left side.",
      "box": [
-      54.1,
-      43.5,
-      7.1,
-      13.2
+      5.7,
+      25.5,
+      7.6,
+      60.4
+     ],
+     "path": [
+      [
+       9.4,
+       31.8
+      ],
+      [
+       9.4,
+       79.6
+      ]
      ]
     },
     {
-     "cue": "The flag waits below: every block has to aim Bolt right.",
+     "cue": "Turn left, then three moves: Bolt reaches the flag.",
      "box": [
-      26.3,
-      73.6,
-      6.7,
-      12.0
+      5.7,
+      73.2,
+      27.7,
+      12.7
+     ],
+     "path": [
+      [
+       9.4,
+       79.6
+      ],
+      [
+       29.6,
+       79.6
+      ]
      ]
     }
    ]
@@ -151,54 +156,58 @@
    "text": "A turn block spins Bolt in place to face a new way. Only a move block takes Bolt to the next square.",
    "art": "gears",
    "img": "csq/robo-route/sequences-1b-turn-in-place",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "Bolt has driven four squares, then turned left in the same square to face the flag; the turn block is lit in the tray.",
    "focus": [
     {
-     "cue": "Bolt turned in this same square: it did not move.",
+     "cue": "Four move blocks carried Bolt along this trail.",
      "box": [
-      33.0,
-      61.7,
-      6.7,
-      11.9
-     ]
-    },
-    {
-     "cue": "The turn block, lit up, is the one that just ran.",
-     "box": [
-      85.2,
-      36.2,
-      8.3,
-      6.0
-     ]
-    },
-    {
-     "cue": "Only the move blocks carried Bolt along this trail.",
-     "box": [
-      5.9,
-      61.7,
-      33.8,
-      11.9
+      5.7,
+      61.3,
+      34.4,
+      12.7
      ],
      "path": [
       [
        9.4,
-       67.7
+       67.6
       ],
       [
-       16.2,
-       67.7
+       36.3,
+       67.6
+      ]
+     ]
+    },
+    {
+     "cue": "Turn left just ran: Bolt spun in this square to face the flag. It did not move.",
+     "box": [
+      32.5,
+      61.3,
+      7.6,
+      12.7
+     ]
+    },
+    {
+     "cue": "Only the next two moves will carry Bolt up to the flag.",
+     "box": [
+      32.5,
+      37.4,
+      7.6,
+      36.6
+     ],
+     "path": [
+      [
+       36.3,
+       67.6
       ],
       [
-       22.9,
-       67.7
-      ],
-      [
-       29.6,
-       67.7
-      ],
-      [
-       36.4,
-       67.7
+       36.3,
+       43.7
       ]
      ]
     }
@@ -209,33 +218,39 @@
    "text": "Two routes can both reach the flag. The better one is shorter, safer or easier to get right. A long dry route beats a short wet one! Split a long route into legs.",
    "art": "star",
    "img": "csq/robo-route/sequences-1b-better-route",
+   "view": [
+    51.1,
+    13.3,
+    48.9,
+    43.5
+   ],
    "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
    "focus": [
     {
      "cue": "Route A: 7 blocks.",
      "box": [
-      53.9,
-      20.8,
-      21.8,
-      26.3
+      53.6,
+      21.5,
+      22.4,
+      27
      ]
     },
     {
      "cue": "Route B: 8 blocks. One more chance to go wrong.",
      "box": [
-      76.4,
-      20.8,
-      21.7,
-      26.3
+      76.1,
+      21.5,
+      22.4,
+      27
      ]
     },
     {
-     "cue": "Tap Use under a route to load it into the tray.",
+     "cue": "Tap Use to load a route into the tray.",
      "box": [
-      64.5,
-      26.7,
-      9.2,
-      6.8
+      63.8,
+      25.9,
+      10.7,
+      7.7
      ]
     }
    ]
@@ -244,7 +259,7 @@
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "grid",
    "words": [
     {
      "word": "algorithm",
@@ -270,15 +285,21 @@
    "text": "Open Robo Route at Sequences and finish all 6 levels. Before you press Run, point at each block and say what Bolt will do.",
    "art": "trophy",
    "img": "csq/robo-route/sequences-1b-key",
+   "view": [
+    52.2,
+    7,
+    35.1,
+    34.7
+   ],
    "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray.",
    "focus": [
     {
      "cue": "Your turn: build a program, then point at each block.",
      "box": [
-      54.1,
-      21.2,
-      28.2,
-      6.0
+      53,
+      20.5,
+      30.1,
+      7.7
      ]
     }
    ]

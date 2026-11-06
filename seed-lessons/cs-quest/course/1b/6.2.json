@@ -11,6 +11,12 @@
    "text": "People see, hear, read and move in different ways. A good game works for all of them.",
    "art": "people",
    "img": "csq/inside-the-machine/design-1b-key",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "Design Lab opens with a user to design for: their needs come first, before any setting is touched."
   },
   {
@@ -18,13 +24,25 @@
    "text": "Open a game's settings: captions, read-aloud, text size, contrast. Each switch was made for someone.",
    "art": "screen",
    "img": "csq/inside-the-machine/design-1b-audit",
-   "alt": "The audit round: a real game is checked setting by setting \u2014 captions, text size, contrast \u2014 for who each helps."
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
+   "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps."
   },
   {
    "title": "Help one, help many",
    "text": "Captions were made for people who can not hear. They also help anyone in a noisy room. A change for one person usually helps many.",
    "art": "star",
    "img": "csq/inside-the-machine/design-1b-second",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "A second Design Lab user: a change made for one person usually turns out to help many more."
   },
   {
@@ -38,6 +56,12 @@
     "one-hand buttons: one hand free"
    ],
    "img": "csq/inside-the-machine/design-1b-second",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "A second Design Lab user: a change made for one person usually turns out to help many more."
   },
   {
@@ -45,13 +69,19 @@
    "text": "Ask someone else what they would change. Other people's ideas, called perspectives, spot things you did not think of.",
    "art": "lightbulb",
    "img": "csq/inside-the-machine/design-1b-audit",
-   "alt": "The audit round: a real game is checked setting by setting \u2014 captions, text size, contrast \u2014 for who each helps."
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
+   "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "people",
    "words": [
     {
      "word": "accessible",
@@ -77,6 +107,12 @@
    "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve all three briefs. Watch where the user struggles.",
    "art": "trophy",
    "img": "csq/inside-the-machine/design-1b-key",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "Design Lab opens with a user to design for: their needs come first, before any setting is touched."
   }
  ],

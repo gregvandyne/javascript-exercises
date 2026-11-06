@@ -11,6 +11,12 @@
    "text": "Gizmo the mouse fixes gadgets in a little workshop. Gizmo knows that every device is a team of parts.",
    "art": "wrench",
    "img": "csq/inside-the-machine/parts-1b-key",
+   "view": [
+    0.8,
+    42,
+    44.5,
+    40
+   ],
    "alt": "Gizmo opens the tablet: its parts are laid out as a team, and the first job asks which part does it."
   },
   {
@@ -18,6 +24,12 @@
    "text": "Inputs take things in, like the touch sensor and camera. Outputs give things out, like the screen. The processor thinks, storage remembers and the battery powers it all.",
    "art": "chip",
    "img": "csq/inside-the-machine/parts-1b-jobs",
+   "view": [
+    0.8,
+    42,
+    44.5,
+    40
+   ],
    "alt": "Inside the machine: the cutaway view where the processor, storage and battery do their jobs together."
   },
   {
@@ -33,6 +45,12 @@
     "screen"
    ],
    "img": "csq/inside-the-machine/parts-1b-tap",
+   "view": [
+    0.8,
+    40,
+    44.5,
+    42
+   ],
    "alt": "The controller pad wiring round: parts are joined in the order a signal travels from input to output."
   },
   {
@@ -40,6 +58,12 @@
    "text": "Hardware is what you can touch, like the screen. Software is the instructions, like an app. You see an app on the screen, but the app is software.",
    "art": "gears",
    "img": "csq/inside-the-machine/hwsw-1b-sort",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "The hardware and software sort: cards for screens and apps wait to be split into touchable and instructions."
   },
   {
@@ -47,13 +71,19 @@
    "text": "A photo needs the camera (hardware) and the camera app (software). And no part works without power from the battery.",
    "art": "battery",
    "img": "csq/inside-the-machine/hwsw-1b-both",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "An ordering round: the steps of one task laid out, where hardware and software take turns doing the work."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "chip",
    "words": [
     {
      "word": "input",
@@ -79,6 +109,12 @@
    "text": "Open Inside the Machine at Parts & Jobs and finish all 6 levels. Tap the part that does each job, then sort hardware from software.",
    "art": "trophy",
    "img": "csq/inside-the-machine/parts-1b-key",
+   "view": [
+    0.8,
+    42,
+    44.5,
+    40
+   ],
    "alt": "Gizmo opens the tablet: its parts are laid out as a team, and the first job asks which part does it."
   }
  ],
