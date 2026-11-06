@@ -293,7 +293,7 @@ test('robo-route: the game file and its metadata match the contract', async () =
   const r = scanVersion(HTML); assert.equal(r.status, 'pass', JSON.stringify(r.issues));
   assert.ok(Buffer.byteLength(HTML) < 2 * 1024 * 1024);
   assert.ok(HTML.startsWith('<title>Robo Route</title>'));
-  assert.match(HTML, /<script src="\/vendor\/oomba-kit\/1\.1\.3\/oomba-kit\.js" integrity="sha384-[^"]+" crossorigin="anonymous"><\/script>/);
+  assert.match(HTML, /<script src="\/vendor\/oomba-kit\/1\.1\.4\/oomba-kit\.js" integrity="sha384-[^"]+" crossorigin="anonymous"><\/script>/);
   assert.match(HTML, /packs\/art-props\.js/); assert.match(HTML, /packs\/style-bold\.js/);
   assert.match(HTML, /PACK_VER = '[\w.-]+'/); assert.match(HTML, /PACK_SRI = \{[^;]*\};/); assert.match(HTML, /CsqPacks/);
   assert.doesNotMatch(HTML, /<input|<textarea|contenteditable/i, 'tap only: no text inputs');

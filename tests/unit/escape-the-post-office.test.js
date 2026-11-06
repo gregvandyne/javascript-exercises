@@ -25,7 +25,7 @@ const J = v => JSON.parse(JSON.stringify(v));
 const REGISTRY = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/cyber-defenders/standards.json'), 'utf8'));
 const SEEDS = [1, 2, 3];
 
-test('escape: the exact kit 1.1.3 tag and its four packs, the metadata, and a clean scan', () => {
+test('escape: the exact kit 1.1.4 tag and its four packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Escape the Post Office</title>'));
   assert.ok(HTML.includes(kitTag()), 'the byte-exact kit tag');
   for (const p of ['art-props', 'art-animals', 'art-school', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `${p} pack tag`);

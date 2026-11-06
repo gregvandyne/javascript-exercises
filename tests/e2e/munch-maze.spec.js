@@ -22,10 +22,10 @@ async function open(page) {
 test('Munch Maze runs on the kit: tags, title, keys, the kit pause, a Super Snack, game over and the results card', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', '/vendor/oomba-kit/1.1.3/packs/dress.js', '/vendor/oomba-kit/1.1.3/packs/art-biomes-2.js',
-    '/vendor/oomba-kit/1.1.3/packs/art-props.js', '/vendor/oomba-kit/1.1.3/packs/art-school.js']);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/dress.js', '/vendor/oomba-kit/1.1.4/packs/art-biomes-2.js',
+    '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/art-school.js']);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.slice().sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.3', 'art-biomes-2,art-props,art-school,dress', 'function']);
+  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.slice().sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.4', 'art-biomes-2,art-props,art-school,dress', 'function']);
   // the kit's title with the game's card: pick Easy and the Mint maze, then Play
   await expect(f.locator('.ok-title-screen #playBtn')).toBeVisible();
   await f.locator('#playEasy').click();

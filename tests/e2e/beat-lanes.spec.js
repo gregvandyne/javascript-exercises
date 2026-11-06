@@ -17,9 +17,9 @@ test('Beat Lanes runs on the kit: title, songs, a judged song, the kit pause and
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.Oomba && window.__brbTest && window.__brbTest.songs, null, { timeout: 20000 });
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.3/oomba-kit.js', ...['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'dress'].map(p => `/vendor/oomba-kit/1.1.3/packs/${p}.js`)]);
+  expect(tags.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', ...['art-animals', 'art-biomes', 'art-biomes-2', 'art-props', 'dress'].map(p => `/vendor/oomba-kit/1.1.4/packs/${p}.js`)]);
   for (const x of tags) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), !!document.querySelector('.ok-ui #game #cv')])).toEqual(['1.1.3', true, true]);
+  expect(await f.evaluate(() => [Oomba.version, !!document.querySelector('.ok-stage canvas'), !!document.querySelector('.ok-ui #game #cv')])).toEqual(['1.1.4', true, true]);
 
   // the kit's title -> the song list -> a song's levels
   await expect(f.locator('.ok-title-screen #playBtn')).toBeVisible();

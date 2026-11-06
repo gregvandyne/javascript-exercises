@@ -20,7 +20,7 @@ for (const m of HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(
 const E = ctx.TrickInbox;
 const J = v => JSON.parse(JSON.stringify(v));
 
-test('trick-inbox: the exact kit 1.1.3 tag and its four packs, the metadata, and a clean scan', () => {
+test('trick-inbox: the exact kit 1.1.4 tag and its four packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Trick Inbox</title>'));
   assert.ok(HTML.includes(kitTag()), 'the byte-exact kit tag');
   for (const p of ['art-props', 'art-animals', 'art-school', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `${p} pack tag`);

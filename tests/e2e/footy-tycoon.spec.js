@@ -11,7 +11,7 @@ test('Footy Tycoon: kick off, play turns against the bot, pause and continue', a
   await page.goto('/play/footy-tycoon');
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.__brbTest && window.__brbTest.start && document.getElementById('start'));
-  expect(await f.evaluate(() => typeof Oomba === 'object' && Oomba.version)).toBe('1.1.3');
+  expect(await f.evaluate(() => typeof Oomba === 'object' && Oomba.version)).toBe('1.1.4');
   await f.fill('#name0', 'Mia');
   await f.click('#start');
   await expect(f.locator('#board .tile')).toHaveCount(36);
