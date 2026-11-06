@@ -79,3 +79,24 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
     if (s.compact) assert.ok(rects[key] && Object.keys(rects[key]).length >= 4, `${key}: its element boxes are recorded`);
   }
 });
+
+// Phone legibility (2026-11-06): a compact capture's crop is scaled to the slide's picture frame, 326 px wide on a
+// 390 px phone. The game's body text ('~bodyFont' in the rects, master px of the 1280-wide capture, recorded by the
+// capture run) must land at 11 px or more there, so a slide's view may be at most bodyFont * 326 / (11 * 12.8) % wide.
+test('compact captures: every slide crop keeps the game text at 11 px or more on a 390 px phone', () => {
+  const FRAME = 326, MIN = 11;
+  let n = 0;
+  for (const band of ['1b', '2']) for (const f of fs.readdirSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band))) {
+    const deck = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band, f), 'utf8'));
+    for (const key of ['slides', 'slides_first_time']) (deck[key] || []).forEach((s, i) => {
+      const r = s.img && rects[s.img];
+      if (!r) return;
+      assert.equal(typeof r['~bodyFont'], 'number', `${s.img}: the capture run recorded its body text size`);
+      const w = s.view ? s.view[2] : 100;
+      const px = r['~bodyFont'] * FRAME / (w / 100 * 1280);
+      assert.ok(px >= MIN - 0.05, `${band}/${f} ${key}[${i}] ${s.img}: a ${w}%-wide crop sets the game's text at ${px.toFixed(1)} px on a phone (needs ${MIN}); tighten the view`);
+      n++;
+    });
+  }
+  assert.ok(n >= 100, `${n} compact-capture slides checked`);
+});

@@ -54,6 +54,18 @@ function collectRects() {
     const x0 = Math.max(0, r.left), y0 = Math.max(0, r.top), x1 = Math.min(W, r.right), y1 = Math.min(H, r.bottom);
     if (x1 <= x0 || y1 <= y0) return;
     out[name] = [r1(x0 / W * 100), r1(y0 / H * 100), r1((x1 - x0) / W * 100), r1((y1 - y0) / H * 100), (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 60)];
+    // The element's ink: the union of its text lines (Range rects) and its pictures. A container as wide as the frame
+    // often holds a short line ("From: Pim"), and a phone crop is measured from the ink, not the container.
+    const rng = document.createRange(); rng.selectNodeContents(el);
+    let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+    for (const q of [...rng.getClientRects(), ...[...el.querySelectorAll('img, svg, canvas')].map(e => e.getBoundingClientRect())]) {
+      if (q.width < 1 || q.height < 1) continue;
+      a = Math.min(a, q.left); b = Math.min(b, q.top); c = Math.max(c, q.right); d = Math.max(d, q.bottom);
+    }
+    if (c > a) {
+      a = Math.max(a, x0); b = Math.max(b, y0); c = Math.min(c, x1); d = Math.min(d, y1);
+      if (c > a && d > b) out[`${name}~ink`] = [r1(a / W * 100), r1(b / H * 100), r1((c - a) / W * 100), r1((d - b) / H * 100)];
+    }
   };
   const SEL = [
     ['bar', '.ti-bar, .ep-bar'], ['pill', '.ti-pill, .ep-pill'], ['say', '.ti-say, .ep-say'], ['card', '#ti-msg'], ['from', '.ti-from'],
@@ -69,6 +81,17 @@ function collectRects() {
     const els = [...document.querySelectorAll(sel)].filter(e => !e.closest('[hidden]'));
     els.forEach((el, i) => add(els.length === 1 && !['clue', 'act', 'pill', 'lock', 'tile', 'slot', 'li', 'epcard', 'node', 'nodelabel', 'road', 'cardtitle', 'cardp', 'clues', 'dline', 'btn', 'trow', 'ptext', 'set', 'h', 'row'].includes(name) ? name : `${name}${i + 1}`, el));
   }
+  // The game's body text size in the 1280-wide master (px): the font most of the picture's words are set in. A slide's
+  // crop scales it to the phone (tests/unit/cyber-shots.test.js keeps it readable at 390 px).
+  const sizes = new Map();
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+    const el = t.parentElement, s = t.textContent.trim();
+    if (!s || !el || el.closest('[hidden]') || !el.getClientRects().length) continue;
+    const px = Math.round(parseFloat(getComputedStyle(el).fontSize) * 1280 / W * 10) / 10;
+    sizes.set(px, (sizes.get(px) || 0) + s.length);
+  }
+  if (sizes.size) out['~bodyFont'] = [...sizes].sort((p, q) => q[1] - p[1])[0][0];
   return out;
 }
 

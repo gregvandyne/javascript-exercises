@@ -14,18 +14,18 @@
    "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    26.2,
+    50.4,
+    72.5
    ],
    "focus": [
     {
      "cue": "Spark Day: every channel at once",
      "box": [
-      1.5,
-      26.7,
-      97.0,
-      10.7
+      2.9,
+      28.2,
+      46.5,
+      7.6
      ]
     },
     {
@@ -33,8 +33,8 @@
      "box": [
       1.5,
       38.7,
-      97.0,
-      57.9
+      47.9,
+      58.0
      ]
     }
    ]
@@ -47,18 +47,18 @@
    "alt": "Lock 4 at Pro, message 5 of 8: Post Office asks you to confirm your key, but the postmark is a far-town hand stamp.",
    "view": [
     0.0,
-    7.7,
-    100.0,
-    90.2
+    20.4,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "Inside a lock: a spoofed sender",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      26.8
+      3.4,
+      45.8,
+      54.8,
+      21.0
      ]
     },
     {
@@ -80,15 +80,15 @@
    "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    28.7,
+    50.4,
+    52.7
    ],
    "focus": [
     {
      "cue": "Each lock names the stamp that opens it",
      "box": [
-      67.0,
+      1.5,
       37.8,
       31.5,
       34.5
@@ -97,9 +97,9 @@
     {
      "cue": "Two locks open: the first two skills",
      "box": [
-      1.5,
+      34.3,
       37.8,
-      64.3,
+      15.1,
       34.5
      ]
     }
@@ -120,9 +120,9 @@
    "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    35.8,
+    50.4,
+    54.5
    ],
    "focus": [
     {
@@ -130,8 +130,8 @@
      "box": [
       1.5,
       37.8,
-      97.0,
-      50.4
+      47.9,
+      50.5
      ]
     }
    ]
@@ -144,9 +144,9 @@
    "alt": "Lock 4 at Pro: the first of eight messages, with four moves to choose from and a hint feather below.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    38.1,
+    59.2,
+    61.9
    ],
    "focus": [
     {
@@ -154,7 +154,7 @@
      "box": [
       1.5,
       66.4,
-      97.0,
+      56.7,
       11.6
      ]
     },
@@ -202,9 +202,9 @@
    "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    35.8,
+    50.4,
+    54.5
    ],
    "focus": [
     {
@@ -212,8 +212,8 @@
      "box": [
       1.5,
       37.8,
-      97.0,
-      50.4
+      47.9,
+      50.5
      ]
     }
    ]

@@ -21,9 +21,9 @@
    "alt": "The Fan Club post, binned: everything it knew came from a public profile. Flattery built from your footprint.",
    "view": [
     0.0,
-    11.4,
-    99.7,
-    88.6
+    28.5,
+    59.2,
+    61.9
    ],
    "focus": [
     {
@@ -31,7 +31,7 @@
      "box": [
       3.8,
       36.9,
-      83.2,
+      54.4,
       7.1
      ]
     },
@@ -39,9 +39,9 @@
      "cue": "The door was talked open, not broken",
      "box": [
       3.4,
-      72.7,
-      93.3,
-      10.0
+      72.9,
+      54.8,
+      9.2
      ]
     }
    ]
@@ -53,18 +53,18 @@
    "img": "csq/trick-inbox/pressure-2-pr-1-all",
    "alt": "Trick Inbox, Pressure: a letter says this is the head teacher speaking. Send your key before lunch, no questions.",
    "view": [
-    0.0,
-    15.7,
-    94.8,
-    84.3
+    32.9,
+    28.4,
+    60.4,
+    63.2
    ],
    "focus": [
     {
      "cue": "Authority: this is the head teacher speaking",
      "box": [
-      3.8,
+      33.9,
       56.4,
-      38.5,
+      8.4,
       7.1
      ]
     },
@@ -87,9 +87,9 @@
    "alt": "A Package Service letter: we could not deliver your package, pay a small fee within two hours.",
    "view": [
     0.0,
-    11.6,
-    99.4,
-    88.4
+    28.4,
+    60.4,
+    63.2
    ],
    "focus": [
     {
@@ -97,7 +97,7 @@
      "box": [
       3.6,
       56.4,
-      92.8,
+      55.8,
       7.1
      ]
     },
@@ -106,7 +106,7 @@
      "box": [
       38.4,
       56.4,
-      41.7,
+      21.0,
       7.1
      ]
     }
@@ -120,18 +120,18 @@
    "alt": "The head teacher letter, reported: authority is a costume here, and do not ask questions is the loudest clue.",
    "view": [
     0.0,
-    11.4,
-    99.7,
-    88.6
+    38.1,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "Check another way, in person",
      "box": [
       3.4,
-      72.7,
-      93.3,
-      10.0
+      72.9,
+      54.8,
+      9.2
      ]
     }
    ]
@@ -144,9 +144,9 @@
    "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
    "view": [
     0.0,
-    34.1,
-    70.2,
-    62.4
+    33.8,
+    60.4,
+    63.2
    ],
    "focus": [
     {
@@ -154,7 +154,7 @@
      "box": [
       3.8,
       61.8,
-      63.4,
+      55.6,
       7.1
      ]
     }
@@ -193,9 +193,9 @@
    "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
    "view": [
     0.0,
-    29.0,
-    69.7,
-    62.0
+    28.4,
+    60.4,
+    63.2
    ],
    "focus": [
     {
@@ -203,7 +203,7 @@
      "box": [
       3.8,
       56.4,
-      62.9,
+      55.6,
       7.1
      ]
     }

@@ -60,18 +60,18 @@
    "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    25.7,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "A guesser tries key after key on a mailbox",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      3.4,
+      45.8,
+      54.8,
+      4.7
      ]
     },
     {
@@ -125,10 +125,10 @@
    "img": "csq/trick-inbox/letters-1b-lt-3-all",
    "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
    "view": [
-    0.0,
-    37.0,
-    84.0,
-    60.0
+    13.7,
+    21.6,
+    60.4,
+    63.2
    ],
    "focus": [
     {
@@ -183,10 +183,10 @@
    "img": "csq/trick-inbox/letters-1b-lt-1-all",
    "alt": "The tablet letter with all three clues found: you are our lucky winner, mailbox key, in the next ten minutes.",
    "view": [
-    0.0,
-    37.0,
-    84.0,
-    60.0
+    22.1,
+    28.4,
+    60.4,
+    63.2
    ],
    "focus": [
     {

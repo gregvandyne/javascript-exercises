@@ -14,18 +14,18 @@
    "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    25.7,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "One trouble card: a snooper peeks",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      3.4,
+      45.8,
+      54.8,
+      4.7
      ]
     },
     {
@@ -33,7 +33,7 @@
      "box": [
       1.5,
       54.7,
-      97.0,
+      56.7,
       12.9
      ]
     }
@@ -47,18 +47,18 @@
    "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    25.7,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "An old lock has a known hole",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      3.4,
+      45.8,
+      54.8,
+      4.7
      ]
     },
     {
@@ -66,7 +66,7 @@
      "box": [
       50.5,
       54.7,
-      23.5,
+      7.7,
       12.9
      ]
     }
@@ -80,27 +80,18 @@
    "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    30.0,
+    59.2,
+    61.9
    ],
    "focus": [
     {
-     "cue": "A flood soaks the only copy",
+     "cue": "A flood soaks the only copy of a letter",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
-     ]
-    },
-    {
-     "cue": "A spare kept somewhere else saves it",
-     "box": [
-      75.0,
-      54.7,
-      23.5,
-      12.9
+      3.4,
+      45.8,
+      38.4,
+      4.7
      ]
     }
    ]
@@ -120,9 +111,9 @@
    "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    25.7,
+    59.2,
+    61.9
    ],
    "focus": [
     {
@@ -130,17 +121,17 @@
      "box": [
       1.5,
       54.7,
-      97.0,
+      56.7,
       12.9
      ]
     },
     {
      "cue": "Check which trouble each layer stops",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      3.4,
+      45.8,
+      54.8,
+      4.7
      ]
     }
    ]
@@ -153,18 +144,18 @@
    "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    25.7,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "A guesser tries key after key",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      3.4,
+      45.8,
+      54.8,
+      4.7
      ]
     },
     {
@@ -211,18 +202,18 @@
    "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    25.7,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "Play Layers: match each trouble to its layer",
      "box": [
       1.5,
-      42.9,
-      97.0,
-      24.7
+      45.8,
+      56.7,
+      21.8
      ]
     }
    ]

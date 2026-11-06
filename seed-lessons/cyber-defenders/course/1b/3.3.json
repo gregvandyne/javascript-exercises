@@ -85,18 +85,18 @@
    "img": "csq/trick-inbox/pressure-2-pr-4-all",
    "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
    "view": [
-    0.0,
-    21.1,
-    87.5,
-    77.8
+    25.6,
+    28.4,
+    60.4,
+    63.2
    ],
    "focus": [
     {
      "cue": "A dare to post a silly photo of a friend",
      "box": [
-      3.8,
+      26.6,
       56.4,
-      55.4,
+      32.6,
       7.1
      ]
     },
@@ -119,9 +119,9 @@
    "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    31.5,
+    60.4,
+    63.2
    ],
    "focus": [
     {
@@ -129,17 +129,17 @@
      "box": [
       3.8,
       61.8,
-      63.4,
+      55.6,
       7.1
      ]
     },
     {
      "cue": "These stay private: mine to keep",
      "box": [
-      1.5,
-      38.7,
-      97.0,
-      48.7
+      3.6,
+      42.0,
+      55.8,
+      42.1
      ]
     }
    ]

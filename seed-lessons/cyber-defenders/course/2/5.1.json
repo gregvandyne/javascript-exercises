@@ -13,19 +13,19 @@
    "img": "csq/trick-inbox/chat-2-ch-4-all",
    "alt": "Game chat from NewFriend: you seem nice, a rare game skin for free, just keep this our secret.",
    "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
+    35.1,
+    30.7,
+    60.4,
+    63.2
    ],
    "focus": [
     {
      "cue": "An online-only friend: kind words first",
      "box": [
-      3.6,
+      36.1,
       56.4,
-      92.8,
-      12.5
+      57.9,
+      11.8
      ]
     },
     {
@@ -79,10 +79,10 @@
    "img": "csq/trick-inbox/pressure-2-pr-4-all",
    "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
    "view": [
-    0.0,
-    21.1,
-    87.5,
-    77.8
+    0.3,
+    28.4,
+    60.4,
+    63.2
    ],
    "focus": [
     {
@@ -144,9 +144,9 @@
    "alt": "The group chat dare, reported: pressure dressed up as friendship, and leaving a chat like that is a strength.",
    "view": [
     0.0,
-    11.4,
-    99.7,
-    88.6
+    32.7,
+    59.2,
+    61.9
    ],
    "focus": [
     {
@@ -154,7 +154,7 @@
      "box": [
       3.8,
       45.1,
-      67.5,
+      54.4,
       7.1
      ]
     },
@@ -162,9 +162,9 @@
      "cue": "Pressure dressed up as friendship",
      "box": [
       3.4,
-      72.8,
-      93.3,
-      10.0
+      73.1,
+      54.8,
+      9.2
      ]
     }
    ]

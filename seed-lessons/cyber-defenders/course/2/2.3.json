@@ -201,19 +201,19 @@
    "img": "csq/escape-the-post-office/note-2",
    "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
    "view": [
-    0.0,
-    35.5,
-    82.0,
-    58.5
+    24.8,
+    38.0,
+    50.4,
+    37.0
    ],
    "focus": [
     {
      "cue": "Play Sealed Note: try shift after shift",
      "box": [
-      19.4,
-      59.7,
-      61.2,
-      10.7
+      41.4,
+      61.7,
+      13.8,
+      6.7
      ]
     }
    ]

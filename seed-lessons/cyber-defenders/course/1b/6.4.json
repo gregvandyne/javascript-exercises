@@ -14,18 +14,18 @@
    "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    26.2,
+    50.4,
+    68.7
    ],
    "focus": [
     {
      "cue": "Spark Day: the Magpie locked the real post inside",
      "box": [
-      1.5,
-      26.7,
-      97.0,
-      10.7
+      2.9,
+      28.2,
+      46.5,
+      7.6
      ]
     },
     {
@@ -33,7 +33,7 @@
      "box": [
       1.5,
       38.7,
-      97.0,
+      47.9,
       54.2
      ]
     }
@@ -47,15 +47,15 @@
    "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    28.7,
+    50.4,
+    52.7
    ],
    "focus": [
     {
      "cue": "Each lock names the stamp that opens it",
      "box": [
-      67.0,
+      1.5,
       37.8,
       31.5,
       34.5
@@ -64,9 +64,9 @@
     {
      "cue": "Locks open one by one, in stamp order",
      "box": [
-      1.5,
+      34.3,
       37.8,
-      64.3,
+      15.1,
       34.5
      ]
     }
@@ -79,10 +79,10 @@
    "img": "csq/escape-the-post-office/gate-1b",
    "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
    "view": [
-    0.0,
-    17.9,
-    92.4,
-    82.1
+    9.0,
+    37.5,
+    50.4,
+    52.7
    ],
    "focus": [
     {
@@ -90,7 +90,7 @@
      "box": [
       10.5,
       54.9,
-      78.9,
+      47.9,
       16.3
      ]
     },
@@ -121,28 +121,28 @@
    "img": "csq/escape-the-post-office/note-1b",
    "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
    "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
+    24.8,
+    38.0,
+    50.4,
+    46.0
    ],
    "focus": [
     {
      "cue": "The Sealed Note: a code from Unit 2",
      "box": [
-      1.5,
-      36.9,
-      97.0,
-      21.5
+      46.9,
+      45.5,
+      6.1,
+      9.5
      ]
     },
     {
      "cue": "Turn the wheel until it reads as words",
      "box": [
-      1.5,
-      72.6,
-      97.0,
-      10.7
+      41.4,
+      70.6,
+      13.8,
+      6.7
      ]
     }
    ]
@@ -155,18 +155,18 @@
    "alt": "A wrong try on Lock 4 only wobbles it: Pim shows the missed clue, and the lock waits for another try.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    38.1,
+    59.2,
+    61.9
    ],
    "focus": [
     {
      "cue": "A wrong try only wobbles the lock",
      "box": [
-      1.5,
-      66.4,
-      97.0,
-      15.9
+      3.4,
+      69.3,
+      54.8,
+      10.1
      ]
     },
     {
@@ -174,7 +174,7 @@
      "box": [
       1.5,
       83.7,
-      97.0,
+      56.7,
       11.6
      ]
     }
@@ -213,9 +213,9 @@
    "alt": "Five of the six locks are open in green. Only Lock 6, Layers, still guards the sorting room door.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    35.8,
+    50.4,
+    54.5
    ],
    "focus": [
     {
@@ -223,8 +223,8 @@
      "box": [
       1.5,
       37.8,
-      97.0,
-      50.4
+      47.9,
+      50.5
      ]
     }
    ]
