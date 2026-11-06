@@ -181,9 +181,9 @@
     {
      "game": {
       "explorer": {
-       "chapter": "Addition to 100",
-       "chapterTitle": "Desert Dash track",
-       "params": "level=3&mode=add&lock=1",
+       "chapter": "Adding big numbers",
+       "chapterTitle": "Trading Post track",
+       "params": "level=10&mode=add&lock=1",
        "slug": "sum-racer"
       }
      },
@@ -212,9 +212,9 @@
     {
      "game": {
       "explorer": {
-       "chapter": "Subtraction to 100",
-       "chapterTitle": "Desert Dash track",
-       "params": "level=3&mode=sub&lock=1",
+       "chapter": "Taking away big numbers",
+       "chapterTitle": "Trading Post track",
+       "params": "level=10&mode=sub&lock=1",
        "slug": "sum-racer"
       }
      },
@@ -622,7 +622,12 @@
    "steps": [
     {
      "game": {
-      "explorer": null
+      "explorer": {
+       "chapter": "Practice Board",
+       "chapterTitle": "Practice Board",
+       "params": "mode=nq-6-1&lock=1",
+       "slug": "brain-board"
+      }
      },
      "mp": "MP7",
      "n": "6.1",
@@ -805,10 +810,10 @@
     {
      "game": {
       "explorer": {
-       "chapter": "numbers",
-       "chapterTitle": "Numbers",
-       "params": "topic=numbers&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "Practice Race",
+       "chapterTitle": "Practice Race",
+       "params": "mode=nq-7-3&lock=1",
+       "slug": "quest-race"
       }
      },
      "mp": "MP1",

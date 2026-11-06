@@ -162,6 +162,11 @@
    "art": "shield"
   },
   {
+   "title": "Stretch: twenty answers",
+   "text": "Stretch: a question with twenty different answers cannot be charted kindly. Rewrite this one so it can: what is everyone's favorite food, exactly? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
    "title": "Words to know",
    "text": "Four words for asking and counting.",
    "art": "pencil",
@@ -184,11 +189,6 @@
      "means": "a statement the data can carry, and no bigger than the data"
     }
    ]
-  },
-  {
-   "title": "Stretch: twenty answers",
-   "text": "Stretch: a question with twenty different answers cannot be charted kindly. Rewrite this one so it can: what is everyone's favorite food, exactly? Stretch work is never in the check.",
-   "art": "star"
   },
   {
    "title": "Your mission",

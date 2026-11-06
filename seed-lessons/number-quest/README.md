@@ -99,10 +99,12 @@ Missions wire to the carriers named in `units.json`: Brain Board boards "Measure
 `seed-games/brain-board.html` keyed by the step's mode, in the 1.1/2.3 pattern; Quest Race
 "Timetables" (5.2) and the finale's "Vault Run" (7.4, a sequenced mixed mission: eight
 questions, one lock per workshop, standing in for the Vault game until it ships); Data
-Detective "Chart It" (7.1) and "My Data" (7.2), borrowed from CS Quest untouched; Would You
-Rather "Numbers" (7.3), a sure-thing-versus-chance bank written for this step in
-`scripts/data/would-you-rather/`. Step 6.1 ships the spec's fallback: no game yet (Builder's
-Yard is a later phase), a classroom shape-hunt TALK, and completion on its check. Jumble
+Detective "Chart It" (7.1) and "My Data" (7.2), borrowed from CS Quest untouched; Quest Race
+"Chance" (7.3, eight questions judged from a share of equal parts: spinners, bags, prize
+wheels). Step 6.1 plays Brain Board's "Shape Hunt" board (sides, square corners,
+quadrilaterals, families, turns) until Builder's Yard ships, and keeps its classroom
+shape-hunt TALK. Unit 2's missions race on Sum Racer's Trading Post track (level 10): 3- and
+4-digit adding (2.1) or taking away (2.2), every question with at least one trade. Jumble
 beats: misreads $2.05 at the till (5.3), swaps a grid address (6.3), calls a one-in-six
 chance impossible (7.3) — and is found inside the Vault in 7.4, relabeling measures it could
 not read, and hired as counter-in-training. Guarded by

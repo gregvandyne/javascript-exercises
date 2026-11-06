@@ -152,12 +152,12 @@ test('the quick check is the step own three items, tagged with a locked primary 
 
 test('hand-checked keys: the arithmetic in the checks is right', () => {
   const key = id => { const it = itemById.get(id); return it.choices[it.answer]; };
-  assert.equal(key('nq-explorer-3.1-e1'), '24'); assert.equal(key('nq-explorer-3.1-e2'), '56'); assert.equal(key('nq-explorer-3.1-e3'), '92');
+  assert.equal(key('nq-explorer-3.1-e1'), '24'); assert.equal(key('nq-explorer-3.1-e2'), '56'); assert.equal(key('nq-explorer-3.1-e3'), '72');
   assert.equal(key('nq-explorer-3.2-e1'), '4'); assert.equal(key('nq-explorer-3.2-e2'), '23 remainder 3'); assert.equal(key('nq-explorer-3.2-e3'), '5 vans');
-  assert.equal(key('nq-explorer-3.3-e1'), '56'); assert.equal(key('nq-explorer-3.3-e2'), '6 x 8'); assert.equal(key('nq-explorer-3.3-e3'), '5');
-  assert.equal(key('nq-explorer-4.1-e1'), '3/4'); assert.equal(key('nq-explorer-4.1-e2'), 'At the third mark'); assert.equal(key('nq-explorer-4.1-e3'), 'The whole was cut into 8 equal parts');
-  assert.equal(key('nq-explorer-4.2-e1'), '2/4'); assert.equal(key('nq-explorer-4.2-e2'), '1/2'); assert.equal(key('nq-explorer-4.2-e3'), '2/3 of a cake');
-  assert.equal(key('nq-explorer-4.3-e1'), '5/8'); assert.equal(key('nq-explorer-4.3-e2'), '3/4'); assert.equal(key('nq-explorer-4.3-e3'), '1/2');
+  assert.equal(key('nq-explorer-3.3-e1'), '56'); assert.equal(key('nq-explorer-3.3-e2'), '6 x 8'); assert.equal(key('nq-explorer-3.3-e3'), '6');
+  assert.equal(key('nq-explorer-4.1-e1'), '5/6'); assert.equal(key('nq-explorer-4.1-e2'), 'At the second mark'); assert.equal(key('nq-explorer-4.1-e3'), 'The whole was cut into 6 equal parts');
+  assert.equal(key('nq-explorer-4.2-e1'), '2/6'); assert.equal(key('nq-explorer-4.2-e2'), '1/2'); assert.equal(key('nq-explorer-4.2-e3'), '2/3 of a cake');
+  assert.equal(key('nq-explorer-4.3-e1'), '5/6'); assert.equal(key('nq-explorer-4.3-e2'), '5/8'); assert.equal(key('nq-explorer-4.3-e3'), '1/2');
   // And the worked examples in the decks: 6 x 7 = 42, 29 shared by 4 is 7 remainder 1, 9 x 7 = 63,
   // the third mark is 3/4, 3/4 greater than 5/8, 2/4 + 1/4 = 3/4, and the Jumble's wrong 2/6 named as wrong.
   const all = decks.map(d => JSON.stringify(d.deck)).join(' ');

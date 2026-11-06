@@ -131,6 +131,11 @@
    "art": "angle"
   },
   {
+   "title": "Stretch: the odd one",
+   "text": "Stretch: draw a quadrilateral that is not a square, not a rectangle and not a rhombus. What properties does yours have? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
    "title": "Words to know",
    "text": "Four words for the yard's sorting shed.",
    "art": "pencil",
@@ -155,15 +160,18 @@
    ]
   },
   {
-   "title": "Stretch: the odd one",
-   "text": "Stretch: draw a quadrilateral that is not a square, not a rectangle and not a rhombus. What properties does yours have? Stretch work is never in the check.",
-   "art": "star"
-  },
-  {
    "title": "Your mission",
-   "text": "There is no game this time. When you pass the check, the Shape Hunt below is your mission. Hunt well, and test every shape before you name its family.",
+   "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Shape Hunt board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Test sides and corners before you name any family.",
    "art": "trophy",
-   "kind": "mission"
+   "kind": "mission",
+   "img": "nq/brain-board/shapes-board",
+   "alt": "Brain Board in play: the Shape Hunt board, categories Count the sides, Square corners, Quadrilateral?, Families and Turns, a question open.",
+   "view": [
+    8.5,
+    26.5,
+    83,
+    41.5
+   ]
   }
  ],
  "check": [
@@ -171,6 +179,10 @@
   "nq-explorer-6.1-e2",
   "nq-explorer-6.1-e3"
  ],
- "game": null,
+ "game": {
+  "slug": "brain-board",
+  "chapter": "Practice Board",
+  "params": "mode=nq-6-1&lock=1"
+ },
  "talk": "Hunt the room you are in, at home or at school: find one shape with 4 equal sides, one shape with no square corners, and one shape with 4 square corners. What family is each one in, and how do you know?"
 }
