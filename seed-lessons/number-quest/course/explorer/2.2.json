@@ -243,10 +243,10 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Desert Dash track, taking-away questions only, and it stays there. Win the race: for this one race, solve every gap by counting up.",
+   "text": "Open Sum Racer. It opens on the Trading Post track, taking away big numbers only, and it stays there. Every question needs a trade. Win the race: for this one race, solve every gap by counting up.",
    "art": "trophy",
    "img": "nq/sum-racer/subtraction-track",
-   "alt": "Sum Racer on the Desert Dash track, taking away: a subtraction question on screen, four answers to pick from, the race under way.",
+   "alt": "Sum Racer on the Trading Post track, taking away: a big subtraction that needs a trade, four answers to pick from, the race under way.",
    "view": [
     50,
     10.5,
@@ -262,7 +262,7 @@
  ],
  "game": {
   "slug": "sum-racer",
-  "chapter": "Subtraction to 100",
-  "params": "level=3&mode=sub&lock=1"
+  "chapter": "Taking away big numbers",
+  "params": "level=10&mode=sub&lock=1"
  }
 }

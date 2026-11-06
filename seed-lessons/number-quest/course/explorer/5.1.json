@@ -154,6 +154,11 @@
    "art": "ruler"
   },
   {
+   "title": "Stretch: tiny units",
+   "text": "Stretch: a fingernail is about 1 centimeter wide, and 10 millimeters make that centimeter. How many millimeters long is a 4-centimeter crayon? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
    "title": "Words to know",
    "text": "Four words the Measure Shop runs on.",
    "art": "pencil",
@@ -176,11 +181,6 @@
      "means": "to write the same measure with a new unit name"
     }
    ]
-  },
-  {
-   "title": "Stretch: tiny units",
-   "text": "Stretch: a fingernail is about 1 centimeter wide, and 10 millimeters make that centimeter. How many millimeters long is a 4-centimeter crayon? Stretch work is never in the check.",
-   "art": "star"
   },
   {
    "title": "Your mission",

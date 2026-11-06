@@ -130,15 +130,15 @@
    "topic": "Sequences",
    "kind": "analyze",
    "secs": 20,
-   "q": "Route A has 9 steps. Route B has 6 steps but crosses the puddle. Bolt must stay dry. Which route?",
+   "q": "Route A takes 9 blocks and keeps Bolt dry. Route B takes 6 blocks but crosses a puddle. Which route should Bolt take?",
    "choices": [
-    "Route B, it is shorter",
-    "Both routes are the same",
-    "Neither route works",
-    "Route A, it keeps Bolt dry"
+    "Route B, because it uses fewer blocks",
+    "Either one, because both reach the flag",
+    "Route B, because the puddle is only one square",
+    "Route A, because it keeps Bolt dry"
    ],
    "answer": 3,
-   "why": "Route B is shorter, but it crosses the puddle. A route only counts if Bolt stays dry, so Route A wins."
+   "why": "Route B is shorter, but it gets Bolt wet. Safe comes first: a long dry route beats a short wet one, so Route A wins."
   },
   {
    "id": "1b-1.2-r1",
@@ -203,13 +203,13 @@
    "secs": 20,
    "q": "Bolt should move 4 squares, but he spins in place 4 times and stays put. What is the bug?",
    "choices": [
-    "the repeat is around the turn, not the move",
-    "the loop count is too small",
-    "Bolt needs more gems first",
-    "the goal is in the wrong place"
+    "the turn is inside the repeat, not the move",
+    "the repeat number is too small",
+    "the move should come before the repeat",
+    "the program needs one more turn"
    ],
    "answer": 0,
-   "why": "The repeat is wrapped around a turn, so Bolt spins 4 times and never moves. The move belongs inside the repeat."
+   "why": "The turn sits inside the repeat, so Bolt spins 4 times and never moves. Put the move inside the repeat instead."
   },
   {
    "id": "1b-1.3-r1",
@@ -240,11 +240,11 @@
    "choices": [
     "move, move, move, move",
     "if path ahead: move, else: turn left",
-    "repeat 4 { move, move }",
+    "repeat until goal { move }",
     "turn left, move, move, move"
    ],
    "answer": 1,
-   "why": "Checking before each move means Bolt only steps when the way is clear, and turns when it is not."
+   "why": "Checking before each move means Bolt only steps when the way is clear, and turns when it is not. A loop of plain moves still bumps the first wall."
   },
   {
    "id": "1b-1.3-e2",

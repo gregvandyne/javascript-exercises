@@ -66,7 +66,8 @@
     "sends the whole message to everyone",
     "the receiver asks for packet 3 again"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "The receiver says got it for each packet that arrives and asks again for the missing one, so packet 3 is sent again."
   },
   {
    "id": "2-4.1-e2",
@@ -83,7 +84,8 @@
     "find the fastest road",
     "name the router"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A checksum is a count sent with the packet. If the count does not match on arrival, the packet was damaged and is sent again."
   },
   {
    "id": "2-4.1-e3",
@@ -100,7 +102,8 @@
     "so packets travel more slowly and safely",
     "so only one road is ever used"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A protocol is a set of rules every router agrees on. With the same rules everywhere, any packet can be passed on and rebuilt."
   },
   {
    "id": "2-4.2-r1",
@@ -134,7 +137,8 @@
     "HTTPS",
     "a strong network passphrase"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Physical security protects the machine itself, like a locked room. A firewall, HTTPS and a passphrase protect the data: digital security."
   },
   {
    "id": "2-4.2-e2",
@@ -151,7 +155,8 @@
     "the page loads faster than usual",
     "the shop is closed right now"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "HTTPS seals the trip, like a sealed envelope instead of a postcard. It does not say anything about prices or whether the shop is honest."
   },
   {
    "id": "2-4.2-e3",
@@ -168,7 +173,8 @@
     "nobody sees it",
     "strangers know where you will be"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A public schedule tells everyone, strangers too, where you will be and when. That is the risk to weigh against the benefit."
   },
   {
    "id": "2-4.3-r1",
@@ -202,7 +208,8 @@
     "HELLO",
     "OLLEH"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Shift each letter three along: H to K, E to H, L to O, L to O, O to R. HELLO becomes KHOOR."
   },
   {
    "id": "2-4.3-e2",
@@ -219,7 +226,8 @@
     "a keyed substitution cipher",
     "a checksum on each packet"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Steganography hides a message, for example in a picture's pixels, but anyone who finds it can read it. Ciphers scramble it instead."
   },
   {
    "id": "2-4.3-e3",
@@ -236,7 +244,8 @@
     "there are far more possible keys to try",
     "it makes the message much shorter"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A shift has only 25 keys, so brute force tries them all fast. A keyed substitution has so many keys that trying them all takes far too long."
   }
  ]
 }

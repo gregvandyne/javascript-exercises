@@ -13,7 +13,7 @@
   },
   {
    "title": "Elapsed time is a distance",
-   "text": "The time between two clock times is a distance on the line. From 9:00 to 9:30 is one hop of 30 minutes. Hop the whole hours first, then the minutes left over.",
+   "text": "The time between two clock times is a distance on the line. From 9:00 to 9:30 is a hop of 30 minutes, and 9:30 to 9:45 is a hop of 15 more. Add the hops to find how long.",
    "art": "clock",
    "visual": {
     "type": "numberline",
@@ -87,7 +87,7 @@
   },
   {
    "title": "Worked example: the late bus",
-   "text": "Rough first: 35 minutes is a bit more than half an hour, so the bus lands a bit past 10:00. It leaves at 9:25. Hop 35 minutes: 25 minutes reach 9:50, then 10 more cross the hour.",
+   "text": "Rough first: 35 minutes is a bit more than half an hour, so the bus lands close to 10:00. It leaves at 9:25. Hop 35 minutes: 25 minutes reach 9:50, then 10 more cross the hour.",
    "art": "clock",
    "kind": "example",
    "steps": [
@@ -138,7 +138,7 @@
      ]
     },
     {
-     "cue": "One hop of 35 minutes carries the whole ride.",
+     "cue": "The ride: 25 minutes reach 9:50, then 10 more cross into 10:00.",
      "box": [
       18.3,
       23.2,
@@ -163,6 +163,11 @@
    "art": "table"
   },
   {
+   "title": "Stretch: the long film",
+   "text": "Stretch: a film starts at 11:50 and lasts 100 minutes. When does it end? Split the 100 into hops that cross noon kindly. Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
    "title": "Words to know",
    "text": "Four words for telling how long.",
    "art": "pencil",
@@ -185,11 +190,6 @@
      "means": "how long something lasts, start to finish"
     }
    ]
-  },
-  {
-   "title": "Stretch: the long film",
-   "text": "Stretch: a film starts at 11:50 and lasts 100 minutes. When does it end? Split the 100 into hops that cross noon kindly. Stretch work is never in the check.",
-   "art": "star"
   },
   {
    "title": "Your mission",

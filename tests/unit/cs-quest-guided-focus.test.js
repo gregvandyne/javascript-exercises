@@ -41,14 +41,14 @@ const focusProblems = () => C.deckProblems('1b').filter(p => p.includes('focus w
 test('a valid focus passes cleaning untouched, and every Unit 1 seed slide keeps its steps', () => {
   assert.deepEqual(slide1().focus, SEED_DECK.slides[0].focus);
   assert.deepEqual(focusProblems(), []);
-  // The shipped decks: all 56 pictured Unit 1 slides carry focus (the pilot gate for this feature).
+  // The shipped decks: all 55 pictured Unit 1 slides carry focus (the pilot gate for this feature).
   C.useDeckDir('seed-lessons/cs-quest/course');
   let pictured = 0, steps = 0;
   for (const band of C.BANDS) for (const s of C.steps(course, band).filter(x => x.n.startsWith('1.'))) {
     for (const sl of s.slides) if (sl.img) { pictured++; assert.ok(sl.focus, `${s.key} "${sl.title}" keeps its focus`); steps += sl.focus.length; }
   }
-  assert.equal(pictured, 56);
-  assert.ok(steps >= 56 && steps <= 4 * 56, `${steps} focus steps`);
+  assert.equal(pictured, 55);
+  assert.ok(steps >= 55 && steps <= 4 * 55, `${steps} focus steps`);
   C.useDeckDir(tmp);
 });
 

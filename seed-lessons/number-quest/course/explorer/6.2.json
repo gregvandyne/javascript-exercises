@@ -85,7 +85,7 @@
    ],
    "visual": {
     "type": "array",
-    "label": "A garden drawn as 3 rows of 7 dots, one dot for each square unit of area: 21 square units",
+    "label": "One dot per unit square: 3 rows of 7 is 21",
     "rows": 3,
     "cols": 7
    },
@@ -116,6 +116,11 @@
    "art": "pixel"
   },
   {
+   "title": "Stretch: the biggest carpet",
+   "text": "Stretch: with exactly 20 meters of fence, what rectangle holds the most carpet? Try 9 by 1, then 8 by 2, then 5 by 5. Which wins? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
    "title": "Words to know",
    "text": "Four words the two crews shout across the yard.",
    "art": "pencil",
@@ -138,11 +143,6 @@
      "means": "a rule written once that works for every case"
     }
    ]
-  },
-  {
-   "title": "Stretch: the biggest carpet",
-   "text": "Stretch: with exactly 20 meters of fence, what rectangle holds the most carpet? Try 9 by 1, then 8 by 2, then 5 by 5. Which wins? Stretch work is never in the check.",
-   "art": "star"
   },
   {
    "title": "Your mission",

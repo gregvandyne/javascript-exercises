@@ -102,7 +102,7 @@
   },
   {
    "title": "Set or change?",
-   "text": "Set puts a new number in the box: set count to 0. Change by adds to what is already there: change count by 1 makes 3 into 4.",
+   "text": "Set puts a new number in the box: set steps to 4. Change by adds to what is already there, and a minus takes away: change steps by -1 makes 4 into 3.",
    "art": "gears",
    "img": "csq/robo-route/variables-1b-set-change",
    "view": [

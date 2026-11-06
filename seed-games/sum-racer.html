@@ -405,7 +405,10 @@ const CONFIG = {
     { id: 6, mult: 5, lap: 600, rivalSpeed: 16.0, pace: 7.5, biome: 'desert', dusk: true },
     { id: 7, mult: 6, lap: 550, rivalSpeed: 15.0, pace: 9, biome: 'moon' },
     { id: 8, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'beach' },
-    { id: 9, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'meadow' }
+    { id: 9, mult: 2, lap: 600, rivalSpeed: 16.3, pace: 7, biome: 'meadow' },
+    // Trading Post (course track, Number Quest 2.1 / 2.2): 3- and 4-digit adding and taking away where every
+    // question needs at least one trade, so a column-by-column answer takes longer: slower rivals.
+    { id: 10, mult: 3, lap: 550, rivalSpeed: 13.6, pace: 11, biome: 'desert' }
   ],
   // The cast (kit character specs) and their kart colours (kit hues). Zippy the bunny, Bolt (the robot-ish Oomba)
   // and Rex the frog; player 1 drives as their own avatar, player 2 as the fox.
@@ -433,9 +436,13 @@ function shuffled(arr, rng) { const a = arr.slice(); for (let i = a.length - 1; 
    A question is { op: '+'|'-'|'x'|'/', x, y, answer, text: '7 + 5', key: '7+5' }.
    Every answer is a whole number of 0 or more (division is built from a times fact, so it is always exact). */
 const SYM = { '+': '+', '-': '−', 'x': '×', '/': '÷' };
+/** A number as a question shows it: 4-digit numbers with a thousands comma ("3,486"), as the lessons write them. */
+const qNum = n => (n >= 1000 ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : String(n));
+/** An answer as the panel shows it: like the question's own numbers (a rounding answer keeps its plain digits). */
+const ansText = (q, n) => (q.op === 'round' ? String(n) : qNum(n));
 function makeQ(op, x, y) {
   const answer = op === '+' ? x + y : op === '-' ? x - y : op === 'x' ? x * y : x / y;
-  return { op, x, y, answer, text: x + ' ' + SYM[op] + ' ' + y, key: x + op + y };
+  return { op, x, y, answer, text: qNum(x) + ' ' + SYM[op] + ' ' + qNum(y), key: x + op + y };
 }
 /** A rounding question (track 9, the Rounding Run): round n to the nearest ten or hundred, halves up —
  *  the school rule the Number Quest step teaches. Rebuilt from (n, place) alone, so a missed rounding
@@ -447,6 +454,27 @@ function roundQ(n, place) {
 const rebuildQ = q => (q.op === 'round' ? roundQ(q.x, q.y) : makeQ(q.op, q.x, q.y));
 /** Carrying (add) or borrowing (take away) needed in the ones column? */
 function needsRegroup(op, x, y) { return op === '+' ? (x % 10) + (y % 10) >= 10 : op === '-' ? (y % 10) > (x % 10) : false; }
+/** The columns (0 = ones, 1 = tens, ...) where a written column sum needs a trade: a carry out of the column when
+ *  adding, a borrow into it when taking away. [] means the sum is done digit by digit with no trade at all. */
+function tradeColumns(op, x, y) {
+  const out = []; let carry = 0;
+  for (let c = 0, a = x, b = y; a > 0 || b > 0; c++, a = Math.floor(a / 10), b = Math.floor(b / 10)) {
+    const da = a % 10, db = b % 10;
+    if (op === '+') { carry = da + db + carry >= 10 ? 1 : 0; if (carry) out.push(c); }
+    else if (op === '-') { carry = db + carry > da ? 1 : 0; if (carry) out.push(c); }
+    else return [];
+  }
+  return out;
+}
+/** The answer a child gets who never trades: each column on its own (adding drops the carry; taking away takes the
+ *  smaller digit from the bigger). The commonest big-number slip, so it is offered as a wrong choice. */
+function noTradeAnswer(op, x, y) {
+  let out = 0;
+  for (let p = 1, a = x, b = y; a > 0 || b > 0; p *= 10, a = Math.floor(a / 10), b = Math.floor(b / 10)) {
+    const da = a % 10, db = b % 10; out += p * (op === '+' ? (da + db) % 10 : Math.abs(da - db));
+  }
+  return out;
+}
 /** Try a maker up to 300 times until test() passes (all makers pass long before that). */
 function attempt(make, test, fallback) { for (let i = 0; i < 300; i++) { const q = make(); if (test(q)) return q; } return fallback; }
 
@@ -482,6 +510,17 @@ function genQuestion(track, rng, ctx) {
       if (k === 2) return rng() < 0.7 ? makeQ('x', R(3, 12), R(3, 12)) : makeQ('x', R(11, 25), R(2, 5));
       const d = R(3, 12), q = R(3, 12); return makeQ('/', d * q, d);
     }
+    case 10: {
+      // Trading Post: 3-digit (about 6 in 10) or 4-digit adding and taking away, every question with at least one
+      // trade (the Number Quest 2.1 / 2.2 skill: "when a column passes ten, trade"). A lesson lock keeps one operation.
+      const four = rng() < 0.4, lo = four ? 1000 : 100, hi = four ? 9999 : 999;
+      if (ctx.op ? ctx.op === '+' : rng() < 0.5) {
+        return attempt(() => { const x = R(lo + 5, hi - lo - 5); return makeQ('+', x, R(lo + 5, hi - x)); },
+          q => q.y >= lo && q.answer <= hi && tradeColumns('+', q.x, q.y).length > 0, four ? makeQ('+', 3486, 2757) : makeQ('+', 268, 475));
+      }
+      return attempt(() => { const x = R(lo * 2, hi); return makeQ('-', x, R(lo + 1, x - lo)); },
+        q => q.y >= lo && q.answer >= lo / 10 && tradeColumns('-', q.x, q.y).length > 0, four ? makeQ('-', 7030, 3985) : makeQ('-', 512, 287));
+    }
     case 9: {
       // The Rounding Run: every question is a rounding question — to the nearest ten or the nearest
       // hundred — so a win here is a win at rounding and nothing else.
@@ -514,6 +553,7 @@ function makeChoices(q, rng) {
     if (a >= 10 && Math.max(q.x, q.y) >= 10) two(a + 10, a - 10);                 // carry / borrow slip
     smart.push(q.op === '+' ? Math.abs(q.x - q.y) : q.x + q.y);                     // used the other sign
     if (a >= 12 && a < 100 && a % 10 !== Math.floor(a / 10)) smart.push((a % 10) * 10 + Math.floor(a / 10)); // digits swapped
+    if (Math.max(q.x, q.y) >= 100) { smart.unshift(noTradeAnswer(q.op, q.x, q.y)); two(a + 100, a - 100); } // big numbers: no trade, a hundred slip
   } else if (q.op === 'x') {
     two(a + q.x, a - q.x); two(a + q.y, a - q.y);                                  // the neighbouring facts
     smart.push(q.x + q.y);                                                         // added instead
@@ -640,9 +680,9 @@ const I18N = {
     pr_text: "Pick the times tables you want to practice.", back: "⬅️ Back", race_go: "🏁 Race!", table_aria: "{n} times table",
     paused: "Paused", pause_text: "Take a breather. Your kart will wait.", resume: "▶ Keep racing", restart: "🔄 Start again", tracks: "🏁 Tracks",
     again: "🔄 Race again", next: "➡️ Next track", ready_label: "Get ready!", ready: "Ready…", kbhint: "Keys: type the answer, then press Enter.",
-    tn1: "Number Lane", tn2: "Sunny Speedway", tn3: "Desert Dash", tn4: "Snowy Summit", tn5: "Jungle Jam", tn6: "Volcano Valley", tn7: "Galaxy Grand Prix", tn8: "Practice Loop", tn9: "Rounding Run",
+    tn1: "Number Lane", tn2: "Sunny Speedway", tn3: "Desert Dash", tn4: "Snowy Summit", tn5: "Jungle Jam", tn6: "Volcano Valley", tn7: "Galaxy Grand Prix", tn8: "Practice Loop", tn9: "Rounding Run", tn10: "Trading Post",
     ts1: "Adding to 10", ts2: "Add and take away to 20", ts3: "Add and take away to 100", tsa2: "Adding to 20", tsa3: "Adding to 100", tss2: "Taking away to 20", tss3: "Taking away to 100", ts4: "2, 5 and 10 times tables", ts5: "All times tables to 12",
-    ts6: "Sharing (division) facts", ts7: "Mixed + − × ÷", ts8: "Pick your times tables", ts9: "Rounding to the nearest ten or hundred",
+    ts6: "Sharing (division) facts", ts7: "Mixed + − × ÷", ts8: "Pick your times tables", ts9: "Rounding to the nearest ten or hundred", ts10: "Big numbers with trades", tsa10: "Adding big numbers with trades", tss10: "Taking away big numbers with trades",
     rv_bunny: "Zippy", rv_robot: "Bolt", rv_dino: "Rex", you: "You", player: "Player {n}", pshort: "P{n}",
     g_start: "START", g_finish: "FINISH", g_lap: "LAP {n}", hud_lap: "Lap {n}/{total}", go: "GO!", meters: "{n}m",
     won_banner: "🏆 You won! 🏆", fin_place: "🏁 {place}!",
@@ -1417,7 +1457,7 @@ const SCENES = {
 // (scene 2) and track 9, the course-only Rounding Run, races through the meadow, which is Number
 // Lane's scene (1). Mapping only track 8 left SCENES[9] undefined, and the palette draw path threw
 // ("reading 'sky'") the moment the Rounding Run tried to start, freezing its countdown forever.
-const sceneOf = track => (track === 8 ? 2 : track === 9 ? 1 : track);
+const sceneOf = track => (track === 8 ? 2 : track === 9 ? 1 : track === 10 ? 3 : track);
 
 /* =====================================================================================
    Karts and drivers. A kart is drawn in "kart units": x from -50 (back) to +50 (front), y from -80 (top of the
@@ -1973,7 +2013,7 @@ function keyIn(pi, k) {
   const p = S.P[pi]; if (!p || !p.q || p.locked || S.phase !== 'racing' || S.paused) return;
   if (k === 'back') { p.typed = p.typed.slice(0, -1); sfx('select'); }
   else if (k === 'ok') { if (p.typed) answer(pi, +p.typed); return; }
-  else if (p.typed.length < 3) { p.typed = (p.typed === '0' ? '' : p.typed) + k; sfx('select'); }
+  else if (p.typed.length < (S.track >= 9 ? 5 : 3)) { p.typed = (p.typed === '0' ? '' : p.typed) + k; sfx('select'); }
   renderPanel(p);
 }
 /** A tap on the correction moves on (after a moment, so it can be read). */
@@ -2072,16 +2112,16 @@ function renderPanel(p) {
   if (!q) return;
   if (p.fb === 'right') {
     cls.add('right'); setLabel(ui, p.streak >= 3 ? t('inrow', { n: p.streak }) : pickOne(tRaw('right_words')), p.streak >= 3 ? 'spark' : 'check');
-    setMain(ui, q.text + ' = ' + q.answer, null, 'check');
+    setMain(ui, q.text + ' = ' + ansText(q, q.answer), null, 'check');
   } else if (p.fb === 'wrong') {
     cls.add('wrong'); setLabel(ui, t('remember', { kind: pickOne(tRaw('kind_words')) }), 'hint');
-    setMain(ui, t('is', { q: q.text, a: String(q.answer), n: q.answer }));   // the kind correction: "7 + 5 is 12"
+    setMain(ui, t('is', { q: q.text, a: ansText(q, q.answer), n: q.answer }));   // the kind correction: "7 + 5 is 12"
   } else {
     setLabel(ui, q.tricky ? t('tricky') : q.review ? t('again1') : p.streak >= 2 ? t('inrowGo', { n: p.streak }) : t('question', { n: q.n }), q.tricky ? 'star' : q.review ? 'restart' : p.streak >= 2 ? 'spark' : '');
     setMain(ui, q.text + ' =', p.typed || '?');
   }
   fitText(ui.qlabel, 11);
-  ui.ans.forEach((b, j) => { b.textContent = q.choices[j]; b.insertAdjacentHTML('afterbegin', '<span class="n" aria-hidden="true">' + (j + 1) + '</span>'); b.setAttribute('aria-label', t('ans_aria', { n: q.choices[j] })); });
+  ui.ans.forEach((b, j) => { b.textContent = ansText(q, q.choices[j]); b.insertAdjacentHTML('afterbegin', '<span class="n" aria-hidden="true">' + (j + 1) + '</span>'); b.setAttribute('aria-label', t('ans_aria', { n: q.choices[j] })); });
   if (p.fb) {
     ui.choices.classList.add('locked'); ui.keypad.classList.add('locked');
     ui.ans.forEach((b, j) => { const n = q.choices[j]; if (n === q.answer) { b.classList.add('isRight'); b.insertAdjacentHTML('beforeend', '<span class="mk">' + MARK.right + '</span>'); } else if (p.fb === 'wrong' && n === p.picked) { b.classList.add('isOops'); b.insertAdjacentHTML('beforeend', '<span class="mk">' + MARK.oops + '</span>'); } });

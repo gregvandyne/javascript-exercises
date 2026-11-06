@@ -83,16 +83,16 @@
    "topic": "Round it",
    "kind": "recall",
    "secs": 20,
-   "q": "What is 268 rounded to the nearest ten?",
+   "q": "What is 463 rounded to the nearest ten?",
    "choices": [
-    "260",
-    "200",
-    "300",
-    "270"
+    "470",
+    "400",
+    "500",
+    "460"
    ],
    "answer": 3,
    "misconceptions": [
-    "rounded down even though the ones digit is 8",
+    "rounded up even though the ones digit is 3",
     "rounded down to a hundred instead of to a ten",
     "rounded to the nearest hundred, not the nearest ten",
     "correct"

@@ -3,9 +3,12 @@
 // game's own test hooks (window.__brbTest.start / program / stepOnce), so every state is deterministic and
 // re-runnable when a game changes: seed 7 everywhere unless a shot says otherwise.
 //
-// Usage: node scripts/csq-shots.js [--out <masters-dir>] [--webp] [shot-key ...]
+// Usage: node scripts/csq-shots.js [--out <masters-dir>] [--webp] [--scale 2] [shot-key ...]
 //   masters (PNG, 1280x720) go to --out (default scripts/csq-masters/robo-route);
 //   --webp also converts each master to public/img/csq/robo-route/<state>.webp (WebP q80, max 1280 wide).
+//   --scale 2 photographs at device scale 2 (a 2560x1440 picture of the same 1280x720 layout): for a picture a
+//   slide crops very narrow (one panel of a split), so it stays crisp on a laptop. Views, focus boxes and the
+//   recorded geometry stay in % of the frame, so they are the same at either scale.
 // Needs the Playwright Chromium (`npx playwright install chromium`).
 import http from 'node:http';
 import fs from 'node:fs';
@@ -113,10 +116,12 @@ const args = process.argv.slice(2);
 const outIdx = args.indexOf('--out');
 const OUT = outIdx >= 0 ? path.resolve(args[outIdx + 1]) : path.join(ROOT, 'scripts', 'csq-masters', SLUG);
 const WEBP = args.includes('--webp');
+const scaleIdx = args.indexOf('--scale');
+const SCALE = scaleIdx >= 0 ? Math.max(1, Math.min(3, +args[scaleIdx + 1] || 1)) : 1;
 const geoIdx = args.indexOf('--geometry');
 const GEOFILE = geoIdx >= 0 ? path.resolve(args[geoIdx + 1]) : null;
 const geometry = {};
-const wanted = args.filter(a => !a.startsWith('--') && a !== (outIdx >= 0 ? args[outIdx + 1] : null) && a !== (geoIdx >= 0 ? args[geoIdx + 1] : null));
+const wanted = args.filter(a => !a.startsWith('--') && a !== (outIdx >= 0 ? args[outIdx + 1] : null) && a !== (geoIdx >= 0 ? args[geoIdx + 1] : null) && a !== (scaleIdx >= 0 ? args[scaleIdx + 1] : null));
 const shots = wanted.length ? SHOTS.filter(s => wanted.includes(s.key)) : SHOTS;
 if (!shots.length) { console.error('no shots matched'); process.exit(1); }
 
@@ -136,7 +141,7 @@ const srv = http.createServer((q, r) => {
 });
 await new Promise(r => srv.listen(0, r));
 const browser = await chromium.launch(fs.existsSync(EXE) ? { executablePath: EXE } : {});
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: SCALE });
 const page = await ctx.newPage();
 await page.route(/fonts\.(googleapis|gstatic)\.com/, route => {
   try {
@@ -176,7 +181,7 @@ for (const s of shots) {
     if (WEBP) {
       const dest = path.join(ROOT, 'public', 'img', 'csq', SLUG, `${s.key}.webp`);
       fs.mkdirSync(path.dirname(dest), { recursive: true });
-      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', file, '-vf', "scale='min(1280,iw)':-2", '-c:v', 'libwebp', '-quality', '80', dest]);
+      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', file, '-vf', `scale='min(${1280 * SCALE},iw)':-2`, '-c:v', 'libwebp', '-quality', SCALE > 1 ? '72' : '80', dest]);
       extra = ` -> public/img/csq/${SLUG}/${s.key}.webp (${Math.round(fs.statSync(dest).size / 1024)} KB)`;
     }
     console.log(`✓ ${s.key}: ${st.levelId} band ${st.band} blocks ${st.blocks} card ${st.card}${extra}`);
