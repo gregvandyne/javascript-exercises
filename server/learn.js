@@ -21,6 +21,9 @@ export const LEARNING = {
   'munch-maze': { key: 'munchMaze', teaches: ['Route planning'], level: 'Grades 2-8', fun: true },
   // Tug of Math: the grade picked before each game (1-8) sets the questions, from adding within 20 to equations.
   'tug-of-math': { key: 'tugOfMath', teaches: ['Addition', 'Subtraction', 'Multiplication', 'Division', 'Order of operations', 'Percentages', 'Integers', 'Equations'], level: 'Grades 1-8' },
+  // Remi's Quiet Meadow: a classroom noise meter (the play page measures how loud the room is; nothing is recorded). A
+  // class tool, so on the teacher page's "Play to learn" cards but in no subject hub or age page.
+  'remis-quiet-meadow': { key: 'remisQuietMeadow', teaches: ['Self-regulation', 'Voice levels', 'Classroom routines'], level: 'Grades K-8' },
   // The CS Quest games (docs/cs-quest.md): each chapter is a lesson of the program, grades 3-5 (Explorer) and 6-8 (Pro).
   'robo-route': { key: 'roboRoute', teaches: ['Sequences', 'Loops', 'Conditionals', 'Variables', 'Functions', 'Debugging'], level: 'Grades 3-8' },
   'data-detective': { key: 'dataDetective', teaches: ['Organizing data', 'Charts', 'Claims from data', 'Cleaning data', 'Fairness in data'], level: 'Grades 3-8' },
@@ -53,7 +56,7 @@ export const HUBS = [
 ];
 export const hubBySlug = slug => HUBS.find(h => h.slug === slug) || null;
 /** The teacher page's "Play to learn" cards, in order. */
-export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes'];
+export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'remis-quiet-meadow'];
 /** Questions on each page (learn.hubs.<key>.faq.q<n> / a<n>, teachers.faq.q<n> / a<n>). */
 export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainBreaks: 2, makeAGame: 7 };
 /** Subject pages with an "At home" paragraph for parents (learn.hubs.<key>.home). */

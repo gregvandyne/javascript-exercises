@@ -109,6 +109,7 @@ const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANE
 const builderWebSearch = parseFlag(process.env.BUILDER_WEB_SEARCH, 'BUILDER_WEB_SEARCH');
 const sttLive = parseFlag(process.env.STT_LIVE, 'STT_LIVE', true);
 const liveClassroom = parseFlag(process.env.LIVE_CLASSROOM, 'LIVE_CLASSROOM', true);
+const micGames = parseFlag(process.env.MIC_GAMES, 'MIC_GAMES', true);
 const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
 const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
@@ -172,7 +173,7 @@ export const config = {
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
-    liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error,
+    liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error,
     builderWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
@@ -211,6 +212,10 @@ export const config = {
   // provider's realtime API. On whenever speech to text is on; STT_LIVE=0 turns only the live mode off (the page then
   // records and uploads as before). STT_REALTIME_MODEL overrides the live model (stt.js has the defaults).
   sttLive: sttLive.on,
+  // Loudness on the play page of Remi's Quiet Meadow (server/services/mic-games.js): the page measures how loud the room
+  // is and passes the game a number; audio is never recorded or sent. MIC_GAMES=0 switches it off site-wide (the game
+  // then offers its demo without a mic).
+  micGames: micGames.on,
   sttRealtimeModel: process.env.STT_REALTIME_MODEL || '',
   // Oomba Live (docs/decisions.md "Oomba Live"; server/services/classlive-*.js): live class games with join codes.
   // LIVE_CLASSROOM=0 turns it off (live pages and the live socket answer 404, entry buttons hide; the class-code /join

@@ -2328,7 +2328,12 @@
       "again": "Riprova",
       "passed": "Ce l’hai fatta! {score} giuste su {total}.",
       "failed": "{score} giuste su {total}. Ne servono {pass}. Riprova!"
-    }
+    },
+  "loudness": {
+    "listening": "In ascolto",
+    "stop": "Ferma",
+    "tap": "Tocca per iniziare ad ascoltare"
+  }
   },
   "favorites": {
     "title": "I miei preferiti",
@@ -3853,7 +3858,8 @@
       "dataDetective": "Ordina, rappresenta e pulisci i dati, poi fai affermazioni che i dati sostengono.",
       "packetPost": "Invia pacchetti in rete, scegli passphrase robuste e riconosci i trucchi online.",
       "insideTheMachine": "Monta e ripara computer: componenti, input e output, bit e pixel, design per tutti.",
-      "tugOfMath": "Domande di matematica scelte per ogni classe dalla 1 alla 8, dalle addizioni entro il 20 alle equazioni, in un tiro alla fune. Contro il computer o un amico sullo stesso schermo."
+      "tugOfMath": "Domande di matematica scelte per ogni classe dalla 1 alla 8, dalle addizioni entro il 20 alle equazioni, in un tiro alla fune. Contro il computer o un amico sullo stesso schermo.",
+      "remisQuietMeadow": "Un misuratore di rumore per la classe: restate calmi così Remi, il panda rosso, può dormire, e contate insieme il tempo di silenzio."
     },
     "hubs": {
       "math": {

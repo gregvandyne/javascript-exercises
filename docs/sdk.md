@@ -296,6 +296,27 @@ and resolves to `{ a, b, total, min }` (show a percentage only when `total >= mi
 player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, seat, n}` to the page and
 `brb:pollResult {n, a, b, total, min}` (or `{n, off: true}`) back.
 
+## Loudness (`BRB.loudness`, official classroom games only)
+Not part of the Builder's API: only the play page of an official game on the list in `server/services/mic-games.js`
+(today Remi's Quiet Meadow) listens. The PAGE opens the microphone after a tap and posts one number; the frame never
+touches the microphone. Everywhere else (other games, previews, covers, Live) the answer is `off`.
+
+- `BRB.loudness.available()` → `Promise<boolean>` (false after at most 800 ms when the page cannot listen). The page
+  answers at once from its page data; only its answer is remembered (a timeout is asked again next time).
+- `BRB.loudness.start()` → `Promise<'on' | 'off' | 'denied' | 'nodevice' | 'busy' | 'unavailable' | 'needsTap' |
+  'stopped'>`. Call it from a tap (the page checks `navigator.userActivation`). `needsTap`: the page wants one more tap
+  of its own (a tablet that kept audio asleep); `stopped`: the page stopped while the browser prompt was up. Only after
+  its own `start()` does the SDK send a keep-alive (at once, then every 2 s, also while the page waits for its tap); the
+  page stops after 6 s without one (a minute while it waits for its tap). An `on` the game never asked for (a start
+  left over from before a reload) is answered with `stop`.
+- `BRB.loudness.on(fn(db))` → off: dBFS (-100…0, 0.1 steps) about 20 times a second while on.
+- `BRB.loudness.onState(fn(state))` → off: `'stopped'` when the page stopped listening (the teacher pressed Stop, the
+  page was hidden), `'idle'` after `stop()`.
+- `BRB.loudness.stop()`, `BRB.loudness.state`.
+
+Messages (validated in `public/js/play.js`): frame → page `{type:'brb:loud', op:'hello'|'start'|'keep'|'stop'}`; page →
+frame `{type:'brb:loudState', state}` and `{type:'brb:level', db}`.
+
 ## How the Builder edits games
 
 The AI Builder works with these tools: `ask_user(question, options)`, `write_game(html, notes)` (a whole new version),

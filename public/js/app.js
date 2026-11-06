@@ -11,11 +11,12 @@ export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 /** For a game's "Try again" (brb:retry): true only right after a tap or key press (one inside the game frame counts
- *  too), so a game can't reload itself over and over. A browser that can't tell gets one a minute. */
-export function tappedJustNow() {
+ *  too), so a game can't reload itself over and over. A browser that can't tell gets one a minute (key and gap: a
+ *  separate allowance, e.g. the loudness start). */
+export function tappedJustNow(key = 'brb-retry-at', gap = 60e3) {
   const ua = navigator.userActivation;
   if (ua) return ua.isActive;
-  try { const last = +sessionStorage.getItem('brb-retry-at') || 0; if (Date.now() - last < 60e3) return false; sessionStorage.setItem('brb-retry-at', String(Date.now())); return true; } catch { return false; }
+  try { const last = +sessionStorage.getItem(key) || 0; if (Date.now() - last < gap) return false; sessionStorage.setItem(key, String(Date.now())); return true; } catch { return false; }
 }
 export function pageData(id = 'page-data') { const el = document.getElementById(id); if (!el) return {}; try { return JSON.parse(el.textContent); } catch { return {}; } }
 

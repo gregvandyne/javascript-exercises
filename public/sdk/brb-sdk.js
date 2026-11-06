@@ -299,6 +299,75 @@
       send('brb:poll', { item: item, choice: choice, seat: seat, n: n });
     });
   }
+  // ---- Loudness (BRB.loudness): how loud the room is, as a number from the play page (docs/sdk.md "Loudness") ----------
+  // Only official classroom games get it (server/services/mic-games.js; today Remi's Quiet Meadow). The PAGE opens the
+  // microphone after a tap and posts one dBFS number (-100..0) about 20 times a second; this frame never touches the
+  // microphone (it can't: it is opaque-origin and its header says microphone=()). On every other page, and in previews,
+  // covers and Live frames, the answer is 'off'. Audio never exists in here, only the number.
+  var LOUD_STATES = ['ready', 'on', 'off', 'idle', 'denied', 'nodevice', 'busy', 'unavailable', 'needsTap', 'stopped'];
+  // loudWanted: this game called start() (and not stop() since). Only then does it keep the page's lease alive: an 'on'
+  // it never asked for (a start left over from before a reload) is answered with stop at once.
+  var loudSubs = [], loudStateSubs = [], loudWait = null, loudKeep = null, loudState = 'idle', loudKnown = null, loudWanted = false;
+  function loudKeepOn(on) {
+    if (!on) { if (loudKeep) { clearInterval(loudKeep); loudKeep = null; } return; }
+    if (!loudKeep) { send('brb:loud', { op: 'keep' }); loudKeep = setInterval(function () { send('brb:loud', { op: 'keep' }); }, 2000); }
+  }
+  function loudSet(st) {
+    if (st === 'on' && !loudWanted) { send('brb:loud', { op: 'stop' }); st = 'idle'; }
+    loudState = st;
+    // the lease stays alive while the page waits for its own "Tap to start listening" (needsTap) too
+    loudKeepOn(loudWanted && (st === 'on' || st === 'needsTap'));
+    if (st !== 'on' && st !== 'needsTap' && st !== 'ready') loudWanted = false;
+    loudStateSubs.slice().forEach(function (fn) { try { fn(st); } catch (err) { /* game's own */ } });
+  }
+  window.addEventListener('message', function (e) {
+    var m = e.data;
+    if (e.source !== parentWin || !m || m.brb !== 1) return;
+    if (m.type === 'brb:loudState' && LOUD_STATES.indexOf(m.state) >= 0) {
+      if (m.state === 'ready') { loudKnown = true; if (loudWait && loudWait.hello) { var h = loudWait; loudWait = null; h.done('ready'); } return; }
+      if (loudWait && loudWait.hello && m.state !== 'off') { loudKnown = true; var h2 = loudWait; loudWait = null; h2.done('ready'); return; }
+      if (m.state === 'off') loudKnown = false;
+      if (loudWait && !loudWait.hello) { var w = loudWait; loudWait = null; w.done(m.state); }
+      else if (loudWait && loudWait.hello && m.state === 'off') { var w2 = loudWait; loudWait = null; w2.done('off'); }
+      loudSet(m.state);
+    } else if (m.type === 'brb:level' && typeof m.db === 'number' && m.db >= -100 && m.db <= 0 && loudState === 'on') {
+      var db = Math.round(m.db * 10) / 10;
+      loudSubs.slice().forEach(function (fn) { try { fn(db); } catch (err) { /* game's own */ } });
+    }
+  });
+  function loudAsk(op, ms, hello) {
+    return new Promise(function (resolve) {
+      if (loudWait) loudWait.done(null);
+      var w = { hello: hello, done: function (st) { if (w.over) return; w.over = true; clearTimeout(w.t); resolve(st); } };
+      w.t = setTimeout(function () { if (loudWait === w) loudWait = null; if (!hello) loudWanted = false; w.done(hello ? 'off' : 'unavailable'); }, ms);
+      loudWait = w; send('brb:loud', { op: op });
+    });
+  }
+  var loudApi = {
+    /** Can this page listen at all? -> Promise<boolean> (false on every other page, after at most 800 ms). Only the
+     *  page's own answer is remembered: a timeout says false this time and asks again next time. */
+    available: function () {
+      if (loudKnown !== null) return Promise.resolve(loudKnown);
+      return loudAsk('hello', 800, true).then(function (st) { if (st === 'ready') loudKnown = true; return st === 'ready'; });
+    },
+    /** Ask the page to listen; call it from a tap. -> Promise<state>: 'on' | 'off' | 'denied' | 'nodevice' | 'busy' |
+     *  'unavailable' | 'needsTap'. (The browser may show its microphone prompt first, so this can take a while.) */
+    start: function () {
+      return loudApi.available().then(function (ok) {
+        if (!ok) { loudSet('off'); return 'off'; }
+        loudWanted = true;
+        return loudAsk('start', 120000, false);
+      });
+    },
+    /** Stop listening (the page stops every microphone track). */
+    stop: function () { loudWanted = false; loudKeepOn(false); loudState = 'idle'; send('brb:loud', { op: 'stop' }); },
+    /** fn(db) about 20 times a second while on; -> off(). */
+    on: function (fn) { if (typeof fn !== 'function') return function () {}; loudSubs.push(fn); return function () { var i = loudSubs.indexOf(fn); if (i >= 0) loudSubs.splice(i, 1); }; },
+    /** fn(state) when the page changes it ('stopped': the teacher pressed Stop, the page was hidden, ...); -> off(). */
+    onState: function (fn) { if (typeof fn !== 'function') return function () {}; loudStateSubs.push(fn); return function () { var i = loudStateSubs.indexOf(fn); if (i >= 0) loudStateSubs.splice(i, 1); }; },
+  };
+  Object.defineProperty(loudApi, 'state', { get: function () { return loudState; }, enumerable: true });
+
   function deepFreezeEarly(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreezeEarly(o[k]); }); Object.freeze(o); } return o; }
 
   // ---- Canvas contexts: remember which kind each canvas got -----------------------------
@@ -997,6 +1066,8 @@
     // Polls (official games on the list, e.g. Would You Rather): count a choice, get everyone's totals back.
     // BRB.poll(item, choice 0|1, seat 0-5) -> Promise<{ a, b, total, min } | null>; null when off, offline or slow (5 s).
     poll: function (item, choice, seat) { return pollAsk(item, choice, seat); },
+    // Loudness (official classroom games only; the page measures, the game gets a number): see "Loudness" above.
+    loudness: Object.freeze(loudApi),
     storage: {
       get: function (k) { var v = local.getItem(k); if (v === null) return null; try { return JSON.parse(v); } catch (e) { return v; } },
       set: function (k, v) { local.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); },
