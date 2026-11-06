@@ -1,0 +1,1032 @@
+<title>Tug of Math</title>
+<style>
+/* Tug of Math on the Oomba Kit: two teams answer maths questions on their own keypads; every right answer pulls the
+   rope one step to that side. Screens: the kit's title (the two crews already tugging behind it) -> the setup card
+   (grade, players, the computer's level, time) -> 3, 2, 1 -> the match -> the kit's results card.
+   Layout: landscape (smartboard, tablet on its side, desktop, a phone on its side) is Blue | tug | Red; a portrait
+   phone or tablet stacks them, with Red's half turned round for the player across the table (two players) or a small
+   card for the computer (vs Computer). Every key is at least 48px; colours come from the kit (--ok-*) plus the two
+   team colours, and each team also has a shape and a name, so colour is never the only cue. */
+html,body{height:100%}
+html.tm-play .ok-hud{display:none!important}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+.tm,.tm *,.tms,.tms *{box-sizing:border-box}
+.tm{--blue:#0B6BB0;--blueTint:#D7EBFA;--red:#C8372D;--redTint:#FBE0DC;--good:#2FB774;--goodTint:#D8F5E4;--bad:#E8604C;--ink:#1D2340;--key:#FFFFFF;--keyEdge:#1D2340;
+  --sky1:#BFE6FF;--sky2:#E8F6FF;--grass:#7CCB6B;--grass2:#5DAF55;--soil:#C9A36B;
+  position:fixed;inset:0;display:flex;flex-direction:column;background:var(--ok-bg2);color:var(--ok-text);font-family:var(--ok-font,system-ui,sans-serif);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.ok-night .tm{--blueTint:#173A5C;--redTint:#55221E;--goodTint:#164A33;--sky1:#26305E;--sky2:#3B3F78;--grass:#2F7445;--grass2:#245C37;--soil:#6B5235;--key:#FFFDF2}
+.tm button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tm svg{display:block}
+.tm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tm-field{flex:1;min-height:0;display:grid;gap:8px;padding:8px}
+/* landscape: Blue | tug | Red */
+.tm-field{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);grid-template-areas:"blue mid red"}
+.side{grid-area:blue;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:24px;border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge);background:var(--blueTint)}
+.side.red{grid-area:red;background:var(--redTint)}
+.mid{grid-area:mid;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px}
+.team{display:flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:2px 12px;border-radius:999px;background:var(--blue);color:#fff;font-weight:800;font-size:1.05rem;flex:none;
+  border:2.5px solid var(--ok-edge);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.red .team{background:var(--red)}
+.team .shape{width:18px;height:18px;flex:none}
+.qcard{position:relative;flex:0 1 auto;height:clamp(64px,19vh,170px);min-height:56px;border-radius:20px;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ok-edge);box-shadow:0 4px 0 var(--ok-edge);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 8px;overflow:hidden;transition:background .15s}
+.qcard .q{font-weight:800;font-size:clamp(26px,min(4.2vw,6.4vh),64px);line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center}
+.qcard .q .x{font-style:italic;font-family:Georgia,'Times New Roman',serif;font-weight:700}
+.qcard .q .box{display:inline-block;min-width:1.2em;height:1em;vertical-align:-.1em;border:3px dashed currentColor;border-radius:8px}
+.qcard .sub{font-weight:700;font-size:clamp(14px,min(2vw,2.6vh),24px);opacity:.75;line-height:1.1}
+.qcard.right{background:var(--goodTint)}
+.qcard.wrong{background:var(--redTint);animation:tmShake .35s ease}
+.arow{display:flex;gap:8px;flex:none}
+.ans{flex:1;min-width:0;height:clamp(48px,7.5vh,72px);border-radius:16px;background:var(--ok-card);border:3px solid var(--ok-edge);display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:clamp(26px,min(3.6vw,5.4vh),52px);font-variant-numeric:tabular-nums;color:var(--ok-text);overflow:hidden}
+.ans:empty::after{content:'';width:3px;height:.9em;background:currentColor;opacity:.45;animation:tmBlink 1s steps(2) infinite}
+.ans.ok{background:var(--good);color:#fff}
+.ans.no{background:var(--bad);color:#fff}
+.keys{display:grid;gap:8px;flex:1 1 auto;min-height:0;max-height:62vh;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(44px,1fr)}
+.key{position:relative;min-width:0;min-height:44px;border:3px solid var(--keyEdge);border-radius:18px;background:var(--key);color:var(--ink);font-weight:800;font-size:clamp(24px,min(3vw,4.6vh),46px);
+  box-shadow:0 5px 0 var(--keyEdge);display:flex;align-items:center;justify-content:center;padding:0;transition:transform 70ms ease-out,box-shadow 70ms ease-out;font-variant-numeric:tabular-nums}
+.key svg{width:.9em;height:.9em}
+.key.down,.key:active{transform:translateY(4px);box-shadow:0 1px 0 var(--keyEdge)}
+.key[data-k="ok"]{background:var(--good);color:#fff}
+.key[data-k="back"]{background:#EDE7D6}
+.key[data-k="pm"]{flex:none;width:clamp(56px,7vw,96px);height:auto;font-size:clamp(22px,min(2.6vw,4vh),40px)}
+.key[disabled]{opacity:.45;cursor:default}
+.ok-night .tm .key[data-k="back"]{background:#D9D2BF}
+.tm-field.done .keys,.tm-field.done .arow{opacity:.5;pointer-events:none}
+.side.lock .keys{opacity:.6}
+/* the computer's side: its question, its face and what it answers */
+.bot{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800}
+.bot canvas{width:auto;height:min(150px,90%);max-height:150px}
+.think{display:flex;gap:6px}
+.think i{width:12px;height:12px;border-radius:50%;background:var(--ok-text);opacity:.25;animation:tmDot 1.2s infinite}
+.think i:nth-child(2){animation-delay:.2s}.think i:nth-child(3){animation-delay:.4s}
+.think.off i{animation:none;opacity:.1}
+/* the middle: time and pulls, then the tug */
+.mbar{display:flex;align-items:center;gap:8px;flex:none}
+.mbtn{flex:none;width:var(--bh);height:var(--bh);border-radius:16px;border:3px solid var(--ok-edge);background:var(--ok-card);color:var(--ok-text);box-shadow:0 4px 0 var(--ok-edge);display:grid;place-items:center;padding:0}
+.mbtn svg{width:50%;height:50%}
+.mbar{--bh:clamp(46px,6.4vh,84px)}
+.mid{container-type:inline-size}
+.board{flex:1;min-width:0;display:flex;align-items:stretch;justify-content:center;gap:6px;height:var(--bh)}
+.board .pts{min-width:52px;border-radius:16px;border:3px solid var(--ok-edge);display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px;color:#fff;font-weight:900;font-size:clamp(1.3rem,3.6vh,2.6rem);font-variant-numeric:tabular-nums}
+.board .pts svg{width:.55em;height:.55em}
+.board .pb{background:var(--blue)}.board .pr{background:var(--red)}
+.clock{min-width:78px;border-radius:16px;border:3px solid var(--ok-edge);background:var(--ok-card);display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px;font-weight:900;font-size:clamp(1.3rem,3.6vh,2.6rem);font-variant-numeric:tabular-nums}
+.clock svg{width:.8em;height:.8em}
+.clock.low{background:#FFE07A;color:#1D2340}
+/* a narrow middle (a small window on its side): the score board on a row of its own, pause and new game under it */
+@container (max-width:310px){.mbar{flex-wrap:wrap;justify-content:space-between;row-gap:6px}.board{order:-1;flex-basis:100%}.board .pts{min-width:44px}.clock{min-width:0}}
+.scene{position:relative;flex:1 1 auto;min-height:96px;border-radius:24px;border:3px solid var(--ok-edge);overflow:hidden;box-shadow:0 5px 0 var(--ok-edge);container-type:size;
+  --gy:72cqh;--ch:min(54cqh,30cqw);background:var(--sky1)}
+.scene .bg{position:absolute;inset:0;background:linear-gradient(var(--sky1),var(--sky2) var(--gy),var(--grass) var(--gy),var(--grass2))}
+.scene .sun{position:absolute;right:8cqw;top:8cqh;width:min(16cqw,22cqh);aspect-ratio:1;border-radius:50%;background:#FFE07A;box-shadow:0 0 0 min(2cqw,3cqh) rgba(255,224,122,.35)}
+.ok-night .tm .scene .sun{background:#F4F1E6;box-shadow:0 0 0 min(2cqw,3cqh) rgba(244,241,230,.18)}
+.scene .cloud{position:absolute;height:min(7cqw,9cqh);aspect-ratio:3;border-radius:999px;background:rgba(255,255,255,.85);border:2px solid rgba(29,35,64,.25)}
+.ok-night .tm .scene .cloud{background:rgba(255,255,255,.18)}
+.scene .cloud.c1{left:7cqw;top:12cqh}.scene .cloud.c2{left:40cqw;top:26cqh;height:min(5cqw,7cqh)}
+.scene .mark{position:absolute;top:var(--gy);bottom:0;width:0;border-inline-start:4px dashed rgba(29,35,64,.55)}
+.scene .mark.c{left:50%;border-inline-start-style:solid;border-color:rgba(255,255,255,.8)}
+.scene .mark.lb{left:14%;border-color:var(--blue)}.scene .mark.lr{left:86%;border-color:var(--red)}
+.scene .mark.lb,.scene .mark.lr{border-inline-start-width:6px}
+.scene .mark.lb,.scene .mark.lr,.scene .mark.c{margin-inline-start:-2px}
+.tug{position:absolute;inset:0;transform:translateX(calc(var(--p,0) * -36%));transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
+.tug .rope{position:absolute;left:calc(50% - 5cqw - var(--ch) * 1.55);right:calc(50% - 5cqw - var(--ch) * 1.55);top:calc(var(--gy) - var(--ch) * .42);height:max(6px,1.4cqh);transform:translateY(-50%);border-radius:4px;
+  background:repeating-linear-gradient(60deg,#C8913E 0 6px,#E9C178 6px 12px);border:2px solid #6B4A1E}
+.tug .flag{position:absolute;left:50%;top:calc(var(--gy) - var(--ch) * .42 - var(--ch) * .36);width:4px;height:calc(var(--ch) * .38);margin-left:-2px;background:#1D2340;border-radius:2px}
+.tug .flag::after{content:'';position:absolute;left:4px;top:0;width:calc(var(--ch) * .22);height:calc(var(--ch) * .15);background:#FFC83D;border:2px solid #1D2340;border-radius:0 6px 6px 0}
+.crew{position:absolute;inset:0}
+.crew canvas{position:absolute;top:calc(var(--gy) - var(--ch) * 1.02);height:var(--ch);width:auto;transform-origin:50% 100%}
+.crew.cb canvas{transform:rotate(-8deg)}
+.crew.cr canvas{transform:scaleX(-1) rotate(-8deg)}
+/* the crews hold the rope near the flag (the losing crew is dragged over the middle, the winners walk back) */
+.crew.cb canvas:nth-child(2){left:calc(50% - 5cqw - var(--ch) * .8)}.crew.cb canvas:nth-child(1){left:calc(50% - 5cqw - var(--ch) * 1.4)}
+.crew.cr canvas:nth-child(1){right:calc(50% - 5cqw - var(--ch) * .8)}.crew.cr canvas:nth-child(2){right:calc(50% - 5cqw - var(--ch) * 1.4)}
+.crew.pull{animation:tmPullL .32s ease-out}
+.crew.cr.pull{animation-name:tmPullR}
+.say{flex:none;min-height:30px;margin:0;text-align:center;font-weight:800;font-size:clamp(15px,min(1.8vw,2.6vh),24px);line-height:1.2}
+.banner{position:absolute;left:50%;top:10%;transform:translateX(-50%);max-width:92%;background:var(--ok-card);border:3px solid var(--ok-edge);border-radius:18px;padding:6px 16px;font-weight:900;
+  font-size:clamp(18px,min(2.6vw,4vh),40px);text-align:center;box-shadow:0 4px 0 var(--ok-edge);pointer-events:none}
+@keyframes tmShake{0%,100%{transform:translateX(0)}30%{transform:translateX(-7px)}70%{transform:translateX(6px)}}
+@keyframes tmBlink{50%{opacity:0}}
+@keyframes tmDot{0%,100%{opacity:.2;transform:none}50%{opacity:.9;transform:translateY(-4px)}}
+@keyframes tmPullL{40%{transform:translateX(-4%)}}
+@keyframes tmPullR{40%{transform:translateX(4%)}}
+.tm.rm .tug{transition:transform .25s linear}
+.tm.rm .crew.pull,.tm.rm .qcard.wrong,.tm.rm .think i,.tm.rm .ans:empty::after{animation:none}
+.kbhint{display:none;text-align:center;font-size:.9rem;font-weight:700;opacity:.75;margin:0;flex:none}
+@media (hover:hover) and (pointer:fine) and (min-height:700px) and (orientation:landscape){.kbhint{display:block}}
+
+/* two players, short landscape (a phone on its side): one row less of keys */
+@media (orientation:landscape) and (max-height:560px){
+  .tm-field{gap:6px;padding:6px}
+  .side{gap:6px;padding:6px;border-radius:18px}
+  .team{min-height:28px;font-size:.92rem}
+  .qcard{min-height:56px;border-radius:16px}
+  .keys{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .key{border-radius:14px;font-size:24px}
+  .ans{height:46px}
+  .mbar{--bh:46px}
+  .board .pts,.clock{font-size:1.3rem}
+  .say{min-height:22px;font-size:15px}
+}
+/* portrait: stacked. Two players: Red's half turned round at the top; vs Computer: the computer's card on top */
+@media (orientation:portrait){
+  .tm-field{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"red" "mid" "blue";gap:6px;padding:6px}
+  .tm-field.two .side.red{transform:rotate(180deg)}
+  .tm-field.cpu{grid-template-rows:auto clamp(170px,30vh,330px) minmax(0,1fr)}
+  .key{font-size:clamp(22px,min(5vw,3.6vh),44px)}
+  .qcard .q{font-size:clamp(24px,min(7vw,4.6vh),60px)}
+  .ans{font-size:clamp(24px,min(6vw,4vh),52px)}
+  .mid{min-height:150px}
+  .scene{min-height:70px}
+  .tm-field.two .mid{height:clamp(150px,20vh,230px)}
+  .side{gap:6px;padding:6px;border-radius:20px}
+  .qcard{height:clamp(56px,9vh,120px)}
+  .tm-field.two .keys{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;max-height:240px}
+  .tm-field.cpu .side.red{flex-direction:row;align-items:stretch;flex-wrap:wrap}
+  .tm-field.cpu .side.red .team{width:100%}
+  .tm-field.cpu .side.red .qcard{flex:1 1 0;min-width:0;height:64px}
+  .tm-field.cpu .side.red .bot{flex:0 0 auto;gap:4px}
+  .tm-field.cpu .side.red .bot canvas{height:60px}
+  .tm-field.cpu .side.red .arow{flex:0 0 26%}
+  .tm-field.cpu .side.red .ans{height:64px}
+}
+@media (orientation:portrait) and (max-height:1000px){
+  .tm-field.two .keys{gap:5px}
+  .tm-field.two .key{font-size:24px;border-radius:14px}
+  .tm-field.two .qcard{min-height:58px}
+  .tm-field.two .ans{height:48px}
+  .tm-field.two .team{min-height:28px;font-size:.92rem}
+}
+@media (orientation:portrait) and (max-height:720px){
+  .tm-field.cpu .keys{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+  .tm-field.cpu .key{font-size:24px;border-radius:14px}
+  .tm-field.cpu{grid-template-rows:auto clamp(160px,34vh,330px) minmax(0,1fr)}
+  .tm-field.cpu .side.blue{flex-direction:row;flex-wrap:wrap;align-content:flex-start}
+  .tm-field.cpu .side.blue .team{width:100%}
+  .tm-field.cpu .side.blue .qcard{flex:1 1 55%;min-width:0;height:60px}
+  .tm-field.cpu .side.blue .arow{flex:1 1 30%;min-width:0}
+  .tm-field.cpu .side.blue .ans{height:60px}
+  .tm-field.cpu .side.blue .keys{width:100%;flex:1 1 auto}
+  .tm-field.cpu .say{display:none}
+}
+@media (orientation:portrait) and (max-width:379px){.tm-field.two .keys{gap:3px}.tm-field.two .side{padding:5px 4px}}
+
+/* ---------- the setup card ---------- */
+.tms{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));background:var(--ok-scrim)}
+.tms-card{width:min(760px,100%);max-height:100%;overflow:auto;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ok-edge);border-radius:28px;box-shadow:0 6px 0 var(--ok-edge);
+  padding:14px 16px 16px;display:grid;gap:10px;grid-template-columns:minmax(0,1fr);font-family:var(--ok-font,system-ui,sans-serif)}
+.tms h2{margin:0;text-align:center;font-size:clamp(1.4rem,4vmin,2rem);line-height:1.1}
+.tms fieldset{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.tms legend{padding:0;font-weight:800;font-size:1rem;margin-bottom:4px}
+.tms .row{display:grid;gap:6px;grid-template-columns:repeat(var(--n,3),minmax(0,1fr))}
+.tms .grades{--n:8}
+.tms .opt{min-height:48px;min-width:0;border:3px solid var(--ok-edge);border-radius:16px;background:var(--ok-bg2);color:var(--ok-text);font-weight:800;font-size:1.05rem;padding:4px 6px;line-height:1.1;
+  display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.tms .opt svg{width:22px;height:22px;flex:none}
+.tms .opt[aria-checked="true"]{background:#FFC83D;color:#1D2340;box-shadow:0 3px 0 var(--ok-edge)}
+.tms .opt:focus-visible{outline:4px solid var(--ok-focus);outline-offset:2px}
+.tms .sample{margin:0;font-weight:700;min-height:1.3em;text-align:center;opacity:.85}
+.tms .sample b{display:inline-block;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tms .go{display:flex;justify-content:center}
+.tms .go .ok-btn{min-width:min(320px,100%)}
+.tms .note{margin:0;text-align:center;font-size:.9rem;font-weight:600;opacity:.75}
+@media (max-width:520px){.tms .grades{--n:4}}
+@media (hover:none){.tms .note{display:none}}
+@media (orientation:landscape) and (max-height:560px){
+  .tms-card{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"h h" "l r" "g r";grid-template-rows:auto auto 1fr;gap:8px 14px;padding:10px 14px 12px;width:min(860px,100%)}
+  .tms h2{grid-area:h}.tms .left{grid-area:l}.tms .right{grid-area:r}.tms .go{grid-area:g;align-self:end}
+  .tms h2{font-size:1.3rem}
+  .tms .grades{--n:4}
+  .tms .opt{min-height:44px;font-size:.98rem}
+  .tms .note{display:none}
+  .tms .right{display:flex;flex-direction:column;gap:8px}
+}
+.tms .left,.tms .right{display:flex;flex-direction:column;gap:10px;min-width:0}
+</style>
+<script src="/vendor/oomba-kit/1.1.3/oomba-kit.js" integrity="sha384-C3W9aOBuSkvtAv0cHch+tzSi9h4GN4XCkR3u9iTN7D83Xx2nTtdr3zkPLu6EdBuH" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/art-animals.js" integrity="sha384-BwLptTueADpqBmgLs41pCV8UhbJxHD65ThZMuvbASFcHB9IZgxh5pa60fE5tWGwP" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.3/packs/dress.js" integrity="sha384-9wPjHho+viJMVdJg8L4+1ENGqI/oQT3z3YT7Y5WZ+WbBv2hGK7t0HR67J5LxaylI" crossorigin="anonymous"></script>
+<script>
+/* tug-gen:begin */
+/* TugGen: Tug of Math's questions, by grade (US grades 1-8; the same ages as UK Years 2-9). Pure ES5, no DOM, no
+   globals but window.TugGen: the game, server/live/tug-gen.js (Oomba Live) and the unit tests run this same code.
+   A question is { e: tokens, a: whole-number answer, k: kind, g: grade }. Tokens are numbers and the words
+   add sub mul div lp rp eq q (a box to fill) x (the unknown) sq cu (squared, cubed) pow (the next number is a power)
+   sqrt pct of: never text, so the same question travels in a live game event and shows in every language.
+   Each grade has its kinds; kindAt(grade, seed, n) picks the kind of a side's n-th question from a seed both sides
+   share, so both teams always get the same kind of question, the same size, at the same point in the match. */
+(function (root) {
+  'use strict';
+  function rng(seed) {
+    var a = (seed >>> 0) || 1;
+    return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function ri(r, a, b) { return a + Math.floor(r() * (b - a + 1)); }
+  function nz(r, a, b) { var v = 0; while (v === 0) v = ri(r, a, b); return v; }
+  function pm(v) { return v < 0 ? ['sub', -v] : ['add', v]; }   // "+ 5" or "− 5" (never "+ (−5)")
+  var KINDS = {
+    // kind: [weight, effort (how long it takes: the computer's thinking time), maker(r) -> [tokens, answer]]
+    1: {
+      a10: [3, 1, function (r) { var a = ri(r, 1, 9), b = ri(r, 1, 10 - a); return [[a, 'add', b], a + b]; }],
+      a20: [3, 1.15, function (r) { var a = ri(r, 3, 15), b = ri(r, Math.max(2, 11 - a), Math.min(9, 20 - a)); return [[a, 'add', b], a + b]; }],
+      s10: [2, 1, function (r) { var a = ri(r, 3, 10), b = ri(r, 1, a - 1); return [[a, 'sub', b], a - b]; }],
+      s20: [3, 1.2, function (r) { var a = ri(r, 11, 20), b = ri(r, 2, 10); return [[a, 'sub', b], a - b]; }],
+      m10: [2, 1.2, function (r) { var c = ri(r, 4, 10), a = ri(r, 1, c - 1); return [[a, 'add', 'q', 'eq', c], c - a]; }],
+    },
+    2: {
+      a100: [3, 1.35, function (r) { var a = ri(r, 11, 85), b = ri(r, 6, Math.max(6, 99 - a)); return [[a, 'add', b], a + b]; }],
+      s100: [3, 1.5, function (r) { var a = ri(r, 30, 99), b = ri(r, 6, a - 4); return [[a, 'sub', b], a - b]; }],
+      tens: [2, 1, function (r) { if (r() < 0.5) { var a = 10 * ri(r, 1, 8), b = 10 * ri(r, 1, (100 - a) / 10); return [[a, 'add', b], a + b]; } var c = 10 * ri(r, 3, 10), d = 10 * ri(r, 1, c / 10 - 1); return [[c, 'sub', d], c - d]; }],
+      m20: [2, 1.3, function (r) { var c = ri(r, 11, 20), a = ri(r, 2, c - 2); return [[a, 'add', 'q', 'eq', c], c - a]; }],
+      dbl: [1, 1.05, function (r) { var a = ri(r, 6, 25); return [[a, 'add', a], a + a]; }],
+    },
+    3: {
+      mul: [4, 1, function (r) { var a = ri(r, 2, 10), b = ri(r, 2, 10); return [[a, 'mul', b], a * b]; }],
+      div: [3, 1.15, function (r) { var b = ri(r, 2, 10), q = ri(r, 2, 10); return [[b * q, 'div', b], q]; }],
+      a1000: [2, 1.5, function (r) { var a = ri(r, 101, 800), b = ri(r, 25, 1000 - a); return [[a, 'add', b], a + b]; }],
+      s1000: [2, 1.7, function (r) { var a = ri(r, 200, 999), b = ri(r, 25, a - 10); return [[a, 'sub', b], a - b]; }],
+    },
+    4: {
+      m1: [3, 1.6, function (r) { var a = r() < 0.7 ? ri(r, 12, 99) : ri(r, 101, 250), b = ri(r, 3, 9); return [[a, 'mul', b], a * b]; }],
+      d1: [3, 1.7, function (r) { var d = ri(r, 3, 9), q = ri(r, 12, 99); return [[q * d, 'div', d], q]; }],
+      two: [3, 1.6, function (r) {
+        var f = ri(r, 0, 2), a = ri(r, 2, 9), b = ri(r, 2, 9), c;
+        if (f === 0) { c = ri(r, 2, 30); return [[a, 'mul', b, 'add', c], a * b + c]; }
+        if (f === 1) { c = ri(r, 2, a * b - 1); return [[a, 'mul', b, 'sub', c], a * b - c]; }
+        var dv = ri(r, 2, 9), q = ri(r, 2, 10), s = ri(r, 2, 20); return [['lp', dv * q + s, 'sub', s, 'rp', 'div', dv], q];
+      }],
+    },
+    5: {
+      m2: [3, 2, function (r) { var a = ri(r, 11, 39), b = ri(r, 11, 19); return [[a, 'mul', b], a * b]; }],
+      m3: [2, 1.8, function (r) { var a = ri(r, 101, 499), b = ri(r, 2, 9); return [[a, 'mul', b], a * b]; }],
+      d2: [3, 2, function (r) { var d = ri(r, 2, 12), q = ri(r, 12, 120); return [[q * d, 'div', d], q]; }],
+      ops: [3, 1.6, function (r) {
+        var a = ri(r, 2, 20), b = ri(r, 2, 10), c = ri(r, 2, 10);
+        if (r() < 0.5) return [[a, 'add', b, 'mul', c], a + b * c];
+        b = ri(r, 2, 12); c = ri(r, 2, 9); return [['lp', a, 'add', b, 'rp', 'mul', c], (a + b) * c];
+      }],
+    },
+    6: {
+      ops3: [4, 2, function (r) {
+        var f = ri(r, 0, 2), a = ri(r, 2, 12), b = ri(r, 2, 9), c = ri(r, 2, 9), d;
+        if (f === 0) { d = ri(r, 2, 9); var p = a * b, s = c * d; if (p < s) { var t = a; a = c; c = t; t = b; b = d; d = t; p = a * b; s = c * d; } return [[a, 'mul', b, 'sub', c, 'mul', d], p - s]; }
+        if (f === 1) { d = ri(r, 1, (a + b) * c - 1); return [['lp', a, 'add', b, 'rp', 'mul', c, 'sub', d], (a + b) * c - d]; }
+        d = ri(r, 1, a + b * c - 1); return [[a, 'add', b, 'mul', c, 'sub', d], a + b * c - d];
+      }],
+      pct: [3, 1.6, function (r) {
+        var P = [[10, 10, 2, 30], [20, 5, 4, 40], [25, 4, 3, 30], [50, 2, 5, 60], [75, 4, 2, 25]][ri(r, 0, 4)];
+        var base = P[1] * ri(r, P[2], P[3]); return [[P[0], 'pct', 'of', base], base * P[0] / 100];
+      }],
+      sq: [2, 1.1, function (r) { var n = ri(r, 2, 15); return [[n, 'sq'], n * n]; }],
+    },
+    7: {
+      int: [3, 1.25, function (r) {
+        var a, b, s; do { a = ri(r, -20, 20); b = nz(r, -20, 20); s = r() < 0.5 ? 1 : -1; } while (a >= 0 && b >= 0 && a + s * b >= 0);
+        return [[a, s > 0 ? 'add' : 'sub', b], a + s * b];
+      }],
+      imul: [3, 1.25, function (r) {
+        var a, b; do { a = nz(r, -12, 12); b = nz(r, -12, 12); } while ((a > 0 && b > 0) || Math.abs(a) < 2 || Math.abs(b) < 2);
+        return r() < 0.5 ? [[a, 'mul', b], a * b] : [[a * b, 'div', a], b];
+      }],
+      eq1: [4, 1.45, function (r) {
+        var f = ri(r, 0, 2), x = nz(r, -15, 20), a;
+        if (f === 0) { a = nz(r, -15, 15); return [['x'].concat(pm(a), ['eq', x + a]), x]; }
+        if (f === 1) { a = nz(r, -9, 9); if (Math.abs(a) < 2) a = a < 0 ? -2 : 2; x = nz(r, -12, 12); return [[a, 'x', 'eq', a * x], x]; }
+        a = ri(r, 2, 15); return [['x', 'sub', a, 'eq', x - a], x];
+      }],
+    },
+    8: {
+      eq2: [4, 1.8, function (r) { var a = ri(r, 2, 9), x = nz(r, -10, 12), b = nz(r, -20, 20); return [[a, 'x'].concat(pm(b), ['eq', a * x + b]), x]; }],
+      pow: [3, 1.4, function (r) {
+        var f = ri(r, 0, 2), n;
+        if (f === 0) { n = ri(r, 11, 20); return [[n, 'sq'], n * n]; }
+        if (f === 1) { n = nz(r, -5, 5); if (Math.abs(n) < 2) n = n < 0 ? -3 : 3; return [[n, 'cu'], n * n * n]; }
+        n = ri(r, 2, 10); return [[2, 'pow', n], Math.pow(2, n)];
+      }],
+      root: [2, 1.15, function (r) { var n = ri(r, 2, 20); return [['sqrt', n * n], n]; }],
+      iops: [3, 1.65, function (r) { var a = nz(r, -9, 9), b = ri(r, 2, 9), c = nz(r, -20, 20); if (Math.abs(a) < 2) a = -4; return [[a, 'mul', b].concat(pm(c)), a * b + c]; }],
+    },
+  };
+  var GRADES = [1, 2, 3, 4, 5, 6, 7, 8];
+  function grade(g) { g = Math.round(+g) || 3; return g < 1 ? 1 : g > 8 ? 8 : g; }
+  function kinds(g) { return Object.keys(KINDS[grade(g)]); }
+  function effort(k) { for (var g = 1; g <= 8; g++) if (KINDS[g][k]) return KINDS[g][k][1]; return 1.5; }
+  /** The kind of a side's n-th question (0-based): the same for both sides, from a seed they share. */
+  function kindAt(g, seed, n) {
+    var ks = kinds(g), w = 0, i, r = rng(((seed >>> 0) ^ Math.imul(n + 1, 0x9E3779B1)) >>> 0); r(); r();
+    for (i = 0; i < ks.length; i++) w += KINDS[grade(g)][ks[i]][0];
+    var x = r() * w;
+    for (i = 0; i < ks.length; i++) { x -= KINDS[grade(g)][ks[i]][0]; if (x < 0) return ks[i]; }
+    return ks[ks.length - 1];
+  }
+  function same(a, b) { return !!a && !!b && a.e.join(' ') === b.e.join(' '); }
+  /** make(grade, r, prev, kind?): a question (never the same as prev). r: a function giving 0..1 (rng(seed)). */
+  function make(g, r, prev, kind, other) {
+    g = grade(g); var K = KINDS[g], k = K[kind] ? kind : kindAt(g, Math.floor(r() * 4294967296), 0), q, tries = 0;
+    do { var m = K[k][2](r); q = { e: m[0], a: m[1], k: k, g: g }; }
+    while ((same(q, prev) || (tries < 6 && same(q, other)) || (tries < 3 && prev && q.a === prev.a)) && ++tries < 30);
+    return q;
+  }
+  /** The questions for a match: next(side) gives side 0 (Blue) or 1 (Red) its next question; both sides' n-th
+   *  questions are the same kind, and a side never gets the same question twice in a row. */
+  function deck(g, seed) {
+    seed = seed >>> 0; var n = [0, 0], prev = [null, null], rs = [rng(seed ^ 0x51ED), rng(seed ^ 0xA77E)];
+    return { grade: grade(g), seed: seed, count: n, next: function (side) {
+      side = side ? 1 : 0; var o = prev[1 - side], q = make(g, rs[side], prev[side], kindAt(g, seed, n[side]), o && o.n === n[side] ? o : null);
+      q.n = n[side]++; prev[side] = q; return q;
+    } };
+  }
+  /** Whether answers can be below zero (the keypad's minus key): grades 7 and 8 only. */
+  function needsMinus(g) { return grade(g) >= 7; }
+  /** A sample question for the setup card (seed fixed, so the card does not flicker). */
+  function sample(g, i) { return make(g, rng(97 + (i || 0) * 31 + grade(g)), null, kinds(g)[(i || 0) % kinds(g).length]); }
+  /** The question as plain characters (maths is written the same in every language; 'of' is passed in). */
+  function text(q, of) {
+    var e = q.e, out = [], SYM = { add: '+', sub: '−', mul: '×', div: '÷', eq: '=', q: '□', x: 'x', lp: '(', rp: ')' };
+    for (var i = 0; i < e.length; i++) {
+      var t = e[i], prevT = e[i - 1], nextT = e[i + 1];
+      if (typeof t === 'number') {
+        var s = t < 0 ? '−' + (-t) : String(t);
+        if (t < 0 && ((typeof prevT === 'string' && /^(add|sub|mul|div)$/.test(prevT)) || nextT === 'sq' || nextT === 'cu')) s = '(' + s + ')';
+        if (prevT === 'pow') { out[out.length - 1] += sup(t); continue; }
+        if (prevT === 'sqrt') { out[out.length - 1] += s; continue; }
+        if (nextT === 'x') { out.push(s + 'x'); i++; continue; }
+        out.push(s); continue;
+      }
+      if (t === 'sq') { out[out.length - 1] += '²'; continue; }
+      if (t === 'cu') { out[out.length - 1] += '³'; continue; }
+      if (t === 'pow') continue;
+      if (t === 'sqrt') { out.push('√'); continue; }
+      if (t === 'pct') { out[out.length - 1] += '%'; continue; }
+      if (t === 'of') { out.push(of || 'of'); continue; }
+      if (t === 'lp') { out.push('('); continue; }
+      if (t === 'rp') { out[out.length - 1] += ')'; continue; }
+      if (prevT === 'lp' && out.length) { out[out.length - 1] += SYM[t] || t; continue; }
+      out.push(SYM[t] || t);
+    }
+    // "(" sticks to what follows it
+    var s2 = out.join(' ').replace(/\( /g, '(');
+    return s2;
+  }
+  function sup(n) { var m = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' }; return String(n).split('').map(function (c) { return m[c] || c; }).join(''); }
+  /** Whether a question asks for x (an equation), a box (a missing number) or the value (then "= ?" follows). */
+  function form(q) { return q.e.indexOf('x') >= 0 ? 'x' : q.e.indexOf('q') >= 0 ? 'box' : 'value'; }
+  /** A live answer check: a whole number within reach. */
+  function check(q, v) { return typeof v === 'number' && isFinite(v) && Math.round(v) === v && v === q.a; }
+  root.TugGen = { GRADES: GRADES, rng: rng, grade: grade, kinds: kinds, effort: effort, kindAt: kindAt, make: make, deck: deck, needsMinus: needsMinus, sample: sample, text: text, form: form, check: check, MAX_DIGITS: 5 };
+})(typeof window !== 'undefined' ? window : this);
+/* tug-gen:end */
+/* tug-bot:begin */
+/* TugBot: the computer on the Red side. Easy is slow and often wrong (a slow 2nd grader beats it), Normal is a steady
+   classmate, Hard is quick and nearly always right. Its thinking time grows with how hard the question is (effort).
+   next(q) -> { ms: how long it thinks, ok: right or not, v: what it answers }. */
+(function (root) {
+  'use strict';
+  var LEVELS = { easy: { ms: 9000, acc: 0.65 }, normal: { ms: 5000, acc: 0.82 }, hard: { ms: 2600, acc: 0.94 } };
+  function make(diff, seed) {
+    var G = root.TugGen, L = LEVELS[diff] || LEVELS.normal, r = G.rng((seed >>> 0) ^ 0xB07);
+    return { diff: LEVELS[diff] ? diff : 'normal', next: function (q) {
+      var ms = L.ms * G.effort(q.k) * (0.75 + 0.5 * r()), ok = r() < L.acc, v = q.a;
+      if (!ok) { var d = Math.max(1, Math.round(Math.abs(q.a) * 0.1)); v = q.a + (r() < 0.5 ? -1 : 1) * ri(r, 1, Math.min(10, d + 1)); if (v < 0 && !G.needsMinus(q.g)) v = q.a + 1; }
+      return { ms: Math.round(ms), ok: ok, v: v };
+    } };
+  }
+  function ri(r, a, b) { return a + Math.floor(r() * (b - a + 1)); }
+  root.TugBot = { LEVELS: LEVELS, make: make, STUMBLE: 1200 };
+})(typeof window !== 'undefined' ? window : this);
+/* tug-bot:end */
+</script>
+<script>
+/* The game. Played alone (vs Computer) or by two players on one screen. Oomba Live (a class split into two teams, each
+   player on their own device) uses the same questions (TugGen above) from the server: server/live/tug-gen.js. */
+// ==== I18N START ====
+var I18N = {
+  en: {
+    title: 'Tug of Math', tag: 'Answer fast. Pull hard!',
+    setup: 'Get ready to tug!', grade: 'Grade', gradeN: 'Grade {n}', like: 'Questions like:',
+    players: 'Players', vsCpu: 'vs Computer', two: '2 players',
+    level: 'Computer', easy: 'Easy', normal: 'Normal', hard: 'Hard',
+    time: 'Time', secs: '{n} sec', min2: '2 min', toLine: 'To the line', start: 'Start',
+    keysOne: 'Keyboard: type the answer, then press Enter.', keysTwo: 'Keyboard: Blue types on the number row, Red on the number pad.',
+    blue: 'Blue team', red: 'Red team', you: 'You', cpu: 'Computer',
+    xq: 'x = ?', of: 'of', pull: 'Pull the flag past your line!',
+    right: 'Right! Pull!', cpuRight: 'The computer pulls.', wrong: 'Not quite. It was {a}.', thinking: 'Thinking',
+    left30: '30 seconds left', left10: '10 seconds left',
+    blueWins: 'Blue team wins!', redWins: 'Red team wins!', youWin: 'You win!', cpuWins: 'The computer wins this time', draw: 'It’s a draw!',
+    stats: '{right} right of {n} · best streak {streak}',
+    pause: 'Pause', newGame: 'New game', del: 'Delete', enter: 'Enter', minus: 'Plus or minus', answer: 'Answer',
+  },
+  'en-GB': {},
+  es: {
+    title: 'Tug of Math', tag: '¡Responde rápido y tira fuerte!',
+    setup: '¡A tirar de la cuerda!', grade: 'Curso', gradeN: 'Curso {n}', like: 'Preguntas como:',
+    players: 'Jugadores', vsCpu: 'Contra la compu', two: '2 jugadores',
+    level: 'Compu', easy: 'Fácil', normal: 'Normal', hard: 'Difícil',
+    time: 'Tiempo', secs: '{n} s', min2: '2 min', toLine: 'Hasta la línea', start: 'Empezar',
+    keysOne: 'Teclado: escribe la respuesta y pulsa Intro.', keysTwo: 'Teclado: el azul usa los números de arriba; el rojo, el teclado numérico.',
+    blue: 'Equipo azul', red: 'Equipo rojo', you: 'Tú', cpu: 'Compu',
+    xq: 'x = ?', of: 'de', pull: '¡Lleva la bandera más allá de tu línea!',
+    right: '¡Bien! ¡Tira!', cpuRight: 'La compu tira.', wrong: 'Casi. Era {a}.', thinking: 'Pensando',
+    left30: 'Quedan 30 segundos', left10: 'Quedan 10 segundos',
+    blueWins: '¡Gana el equipo azul!', redWins: '¡Gana el equipo rojo!', youWin: '¡Ganaste!', cpuWins: 'Esta vez gana la compu', draw: '¡Empate!',
+    stats: '{right} de {n} bien · mejor racha {streak}',
+    pause: 'Pausa', newGame: 'Juego nuevo', del: 'Borrar', enter: 'Intro', minus: 'Más o menos', answer: 'Respuesta',
+  },
+  fr: {
+    title: 'Tug of Math', tag: 'Réponds vite. Tire fort !',
+    setup: 'Prêts à tirer ?', grade: 'Niveau', gradeN: 'Niveau {n}', like: 'Des questions comme :',
+    players: 'Joueurs', vsCpu: 'Contre l’ordi', two: '2 joueurs',
+    level: 'Ordi', easy: 'Facile', normal: 'Normal', hard: 'Difficile',
+    time: 'Temps', secs: '{n} s', min2: '2 min', toLine: 'Jusqu’à la ligne', start: 'Commencer',
+    keysOne: 'Clavier : tape la réponse, puis appuie sur Entrée.', keysTwo: 'Clavier : Bleu tape sur les chiffres du haut, Rouge sur le pavé numérique.',
+    blue: 'Équipe bleue', red: 'Équipe rouge', you: 'Toi', cpu: 'Ordi',
+    xq: 'x = ?', of: 'de', pull: 'Tire le drapeau au-delà de ta ligne !',
+    right: 'Bravo ! Tire !', cpuRight: 'L’ordi tire.', wrong: 'Pas tout à fait. C’était {a}.', thinking: 'Réfléchit',
+    left30: 'Plus que 30 secondes', left10: 'Plus que 10 secondes',
+    blueWins: 'L’équipe bleue gagne !', redWins: 'L’équipe rouge gagne !', youWin: 'Tu as gagné !', cpuWins: 'L’ordi gagne cette fois', draw: 'Égalité !',
+    stats: '{right} bonnes sur {n} · meilleure série {streak}',
+    pause: 'Pause', newGame: 'Nouvelle partie', del: 'Effacer', enter: 'Entrée', minus: 'Plus ou moins', answer: 'Réponse',
+  },
+  de: {
+    title: 'Tug of Math', tag: 'Schnell rechnen. Kräftig ziehen!',
+    setup: 'Bereit zum Ziehen?', grade: 'Klasse', gradeN: 'Klasse {n}', like: 'Aufgaben wie:',
+    players: 'Spieler', vsCpu: 'Gegen den Computer', two: '2 Spieler',
+    level: 'Computer', easy: 'Leicht', normal: 'Mittel', hard: 'Schwer',
+    time: 'Zeit', secs: '{n} Sek.', min2: '2 Min.', toLine: 'Bis zur Linie', start: 'Los geht’s',
+    keysOne: 'Tastatur: Antwort tippen, dann Enter drücken.', keysTwo: 'Tastatur: Blau tippt auf der Zahlenreihe, Rot auf dem Ziffernblock.',
+    blue: 'Team Blau', red: 'Team Rot', you: 'Du', cpu: 'Computer',
+    xq: 'x = ?', of: 'von', pull: 'Zieh die Fahne über deine Linie!',
+    right: 'Richtig! Zieh!', cpuRight: 'Der Computer zieht.', wrong: 'Knapp daneben. Es war {a}.', thinking: 'Denkt nach',
+    left30: 'Noch 30 Sekunden', left10: 'Noch 10 Sekunden',
+    blueWins: 'Team Blau gewinnt!', redWins: 'Team Rot gewinnt!', youWin: 'Du hast gewonnen!', cpuWins: 'Diesmal gewinnt der Computer', draw: 'Unentschieden!',
+    stats: '{right} von {n} richtig · beste Serie {streak}',
+    pause: 'Pause', newGame: 'Neues Spiel', del: 'Löschen', enter: 'Enter', minus: 'Plus oder minus', answer: 'Antwort',
+  },
+  it: {
+    title: 'Tug of Math', tag: 'Rispondi veloce. Tira forte!',
+    setup: 'Pronti a tirare?', grade: 'Classe', gradeN: 'Classe {n}', like: 'Domande come:',
+    players: 'Giocatori', vsCpu: 'Contro il computer', two: '2 giocatori',
+    level: 'Computer', easy: 'Facile', normal: 'Normale', hard: 'Difficile',
+    time: 'Tempo', secs: '{n} s', min2: '2 min', toLine: 'Fino alla linea', start: 'Inizia',
+    keysOne: 'Tastiera: scrivi la risposta e premi Invio.', keysTwo: 'Tastiera: il Blu usa i numeri in alto, il Rosso il tastierino numerico.',
+    blue: 'Squadra blu', red: 'Squadra rossa', you: 'Tu', cpu: 'Computer',
+    xq: 'x = ?', of: 'di', pull: 'Porta la bandiera oltre la tua linea!',
+    right: 'Giusto! Tira!', cpuRight: 'Il computer tira.', wrong: 'Non proprio. Era {a}.', thinking: 'Sta pensando',
+    left30: 'Mancano 30 secondi', left10: 'Mancano 10 secondi',
+    blueWins: 'Vince la squadra blu!', redWins: 'Vince la squadra rossa!', youWin: 'Hai vinto!', cpuWins: 'Stavolta vince il computer', draw: 'Pareggio!',
+    stats: '{right} giuste su {n} · serie migliore {streak}',
+    pause: 'Pausa', newGame: 'Nuova partita', del: 'Cancella', enter: 'Invio', minus: 'Più o meno', answer: 'Risposta',
+  },
+  pt: {
+    title: 'Tug of Math', tag: 'Responda rápido. Puxe com força!',
+    setup: 'Prontos para puxar?', grade: 'Ano', gradeN: '{n}º ano', like: 'Perguntas como:',
+    players: 'Jogadores', vsCpu: 'Contra o computador', two: '2 jogadores',
+    level: 'Computador', easy: 'Fácil', normal: 'Normal', hard: 'Difícil',
+    time: 'Tempo', secs: '{n} s', min2: '2 min', toLine: 'Até a linha', start: 'Começar',
+    keysOne: 'Teclado: digite a resposta e aperte Enter.', keysTwo: 'Teclado: o Azul usa os números de cima, o Vermelho o teclado numérico.',
+    blue: 'Time azul', red: 'Time vermelho', you: 'Você', cpu: 'Computador',
+    xq: 'x = ?', of: 'de', pull: 'Puxe a bandeira para além da sua linha!',
+    right: 'Certo! Puxe!', cpuRight: 'O computador puxa.', wrong: 'Quase. Era {a}.', thinking: 'Pensando',
+    left30: 'Faltam 30 segundos', left10: 'Faltam 10 segundos',
+    blueWins: 'O time azul venceu!', redWins: 'O time vermelho venceu!', youWin: 'Você venceu!', cpuWins: 'Desta vez o computador venceu', draw: 'Empate!',
+    stats: '{right} certas de {n} · melhor sequência {streak}',
+    pause: 'Pausa', newGame: 'Novo jogo', del: 'Apagar', enter: 'Enter', minus: 'Mais ou menos', answer: 'Resposta',
+  },
+  nl: {
+    title: 'Tug of Math', tag: 'Snel rekenen. Hard trekken!',
+    setup: 'Klaar om te trekken?', grade: 'Groep', gradeN: 'Groep {n}', like: 'Vragen zoals:',
+    players: 'Spelers', vsCpu: 'Tegen de computer', two: '2 spelers',
+    level: 'Computer', easy: 'Makkelijk', normal: 'Normaal', hard: 'Moeilijk',
+    time: 'Tijd', secs: '{n} sec', min2: '2 min', toLine: 'Tot de lijn', start: 'Start',
+    keysOne: 'Toetsenbord: typ het antwoord en druk op Enter.', keysTwo: 'Toetsenbord: Blauw typt op de cijferrij, Rood op het numerieke toetsenblok.',
+    blue: 'Team Blauw', red: 'Team Rood', you: 'Jij', cpu: 'Computer',
+    xq: 'x = ?', of: 'van', pull: 'Trek de vlag over jouw lijn!',
+    right: 'Goed! Trekken!', cpuRight: 'De computer trekt.', wrong: 'Bijna. Het was {a}.', thinking: 'Denkt na',
+    left30: 'Nog 30 seconden', left10: 'Nog 10 seconden',
+    blueWins: 'Team Blauw wint!', redWins: 'Team Rood wint!', youWin: 'Jij wint!', cpuWins: 'Deze keer wint de computer', draw: 'Gelijkspel!',
+    stats: '{right} van {n} goed · beste reeks {streak}',
+    pause: 'Pauze', newGame: 'Nieuw spel', del: 'Wissen', enter: 'Enter', minus: 'Plus of min', answer: 'Antwoord',
+  },
+  ru: {
+    title: 'Tug of Math', tag: 'Отвечай быстро. Тяни сильно!',
+    setup: 'Готовы тянуть?', grade: 'Класс', gradeN: '{n} класс', like: 'Примеры заданий:',
+    players: 'Игроки', vsCpu: 'Против компьютера', two: '2 игрока',
+    level: 'Компьютер', easy: 'Легко', normal: 'Средне', hard: 'Сложно',
+    time: 'Время', secs: '{n} с', min2: '2 мин', toLine: 'До линии', start: 'Начать',
+    keysOne: 'Клавиатура: набери ответ и нажми Enter.', keysTwo: 'Клавиатура: Синие — цифры сверху, Красные — цифровой блок.',
+    blue: 'Синие', red: 'Красные', you: 'Ты', cpu: 'Компьютер',
+    xq: 'x = ?', of: 'от', pull: 'Перетяни флажок за свою линию!',
+    right: 'Верно! Тяни!', cpuRight: 'Компьютер тянет.', wrong: 'Почти. Ответ: {a}.', thinking: 'Думает',
+    left30: 'Осталось 30 секунд', left10: 'Осталось 10 секунд',
+    blueWins: 'Синие победили!', redWins: 'Красные победили!', youWin: 'Ты победил!', cpuWins: 'На этот раз победил компьютер', draw: 'Ничья!',
+    stats: 'Верно {right} из {n} · лучшая серия {streak}',
+    pause: 'Пауза', newGame: 'Новая игра', del: 'Стереть', enter: 'Ввод', minus: 'Плюс или минус', answer: 'Ответ',
+  },
+  ja: {
+    title: 'Tug of Math', tag: 'はやく答えて、つなを引こう！',
+    setup: 'つな引きのじゅんび！', grade: '学年', gradeN: '{n}年生', like: 'こんな問題：',
+    players: 'プレイヤー', vsCpu: 'コンピューターと対戦', two: '2人で',
+    level: 'コンピューター', easy: 'やさしい', normal: 'ふつう', hard: 'むずかしい',
+    time: '時間', secs: '{n}秒', min2: '2分', toLine: 'ラインまで', start: 'スタート',
+    keysOne: 'キーボード：答えを入力してEnterをおそう。', keysTwo: 'キーボード：青は上の数字キー、赤はテンキーを使おう。',
+    blue: '青チーム', red: '赤チーム', you: 'きみ', cpu: 'コンピューター',
+    xq: 'x = ?', of: 'の', pull: '旗を自分のラインの先まで引こう！',
+    right: '正解！引け！', cpuRight: 'コンピューターが引いた。', wrong: 'おしい！答えは{a}。', thinking: '考え中',
+    left30: 'のこり30秒', left10: 'のこり10秒',
+    blueWins: '青チームの勝ち！', redWins: '赤チームの勝ち！', youWin: 'きみの勝ち！', cpuWins: '今回はコンピューターの勝ち', draw: '引き分け！',
+    stats: '{n}問中{right}問正解・最高連続{streak}',
+    pause: '一時停止', newGame: '新しいゲーム', del: '消す', enter: '決定', minus: 'プラスかマイナス', answer: '答え',
+  },
+  'zh-Hant': {
+    title: 'Tug of Math', tag: '答得快，拉得猛！',
+    setup: '準備拔河囉！', grade: '年級', gradeN: '{n} 年級', like: '題目例如：',
+    players: '玩家', vsCpu: '對戰電腦', two: '雙人',
+    level: '電腦', easy: '簡單', normal: '普通', hard: '困難',
+    time: '時間', secs: '{n} 秒', min2: '2 分鐘', toLine: '拉過線為止', start: '開始',
+    keysOne: '鍵盤：輸入答案，再按 Enter。', keysTwo: '鍵盤：藍隊用上排數字鍵，紅隊用數字鍵盤。',
+    blue: '藍隊', red: '紅隊', you: '你', cpu: '電腦',
+    xq: 'x = ?', of: '的', pull: '把旗子拉過你的線！',
+    right: '答對了！用力拉！', cpuRight: '電腦拉了一下。', wrong: '差一點，答案是 {a}。', thinking: '思考中',
+    left30: '還剩 30 秒', left10: '還剩 10 秒',
+    blueWins: '藍隊獲勝！', redWins: '紅隊獲勝！', youWin: '你贏了！', cpuWins: '這次電腦贏了', draw: '平手！',
+    stats: '{n} 題答對 {right} 題・最多連對 {streak} 題',
+    pause: '暫停', newGame: '新遊戲', del: '刪除', enter: '確定', minus: '正負號', answer: '答案',
+  },
+  ar: {
+    title: 'Tug of Math', tag: 'أجب بسرعة واسحب بقوة!',
+    setup: 'استعدوا لشدّ الحبل!', grade: 'الصف', gradeN: 'الصف {n}', like: 'أسئلة مثل:',
+    players: 'اللاعبون', vsCpu: 'ضد الحاسوب', two: 'لاعبان',
+    level: 'الحاسوب', easy: 'سهل', normal: 'متوسط', hard: 'صعب',
+    time: 'الوقت', secs: '{n} ث', min2: 'دقيقتان', toLine: 'حتى الخط', start: 'ابدأ',
+    keysOne: 'لوحة المفاتيح: اكتب الإجابة ثم اضغط Enter.', keysTwo: 'لوحة المفاتيح: الأزرق يكتب بأرقام الصف العلوي، والأحمر بلوحة الأرقام.',
+    blue: 'الفريق الأزرق', red: 'الفريق الأحمر', you: 'أنت', cpu: 'الحاسوب',
+    xq: 'x = ?', of: 'من', pull: 'اسحب العلم إلى ما بعد خطك!',
+    right: 'صحيح! اسحب!', cpuRight: 'الحاسوب يسحب.', wrong: 'ليس تمامًا. الإجابة {a}.', thinking: 'يفكّر',
+    left30: 'بقيت 30 ثانية', left10: 'بقيت 10 ثوانٍ',
+    blueWins: 'فاز الفريق الأزرق!', redWins: 'فاز الفريق الأحمر!', youWin: 'لقد فزت!', cpuWins: 'فاز الحاسوب هذه المرة', draw: 'تعادل!',
+    stats: '{right} صحيحة من {n} · أفضل سلسلة {streak}',
+    pause: 'إيقاف مؤقت', newGame: 'لعبة جديدة', del: 'حذف', enter: 'إدخال', minus: 'موجب أو سالب', answer: 'الإجابة',
+  },
+  he: {
+    title: 'Tug of Math', tag: 'עונים מהר. מושכים חזק!',
+    setup: 'מוכנים למשוך?', grade: 'כיתה', gradeN: 'כיתה {n}', like: 'שאלות כמו:',
+    players: 'שחקנים', vsCpu: 'נגד המחשב', two: '2 שחקנים',
+    level: 'מחשב', easy: 'קל', normal: 'רגיל', hard: 'קשה',
+    time: 'זמן', secs: '{n} שנ׳', min2: '2 דק׳', toLine: 'עד הקו', start: 'התחלה',
+    keysOne: 'מקלדת: הקלידו את התשובה ולחצו Enter.', keysTwo: 'מקלדת: הכחולים מקלידים בשורת המספרים, האדומים במקלדת המספרים.',
+    blue: 'הקבוצה הכחולה', red: 'הקבוצה האדומה', you: 'את/ה', cpu: 'מחשב',
+    xq: 'x = ?', of: 'מתוך', pull: 'משכו את הדגל אל מעבר לקו שלכם!',
+    right: 'נכון! למשוך!', cpuRight: 'המחשב מושך.', wrong: 'כמעט. התשובה היא {a}.', thinking: 'חושב',
+    left30: 'נשארו 30 שניות', left10: 'נשארו 10 שניות',
+    blueWins: 'הקבוצה הכחולה ניצחה!', redWins: 'הקבוצה האדומה ניצחה!', youWin: 'ניצחת!', cpuWins: 'הפעם המחשב ניצח', draw: 'תיקו!',
+    stats: '{right} נכונות מתוך {n} · רצף שיא {streak}',
+    pause: 'השהיה', newGame: 'משחק חדש', del: 'מחיקה', enter: 'אישור', minus: 'פלוס או מינוס', answer: 'תשובה',
+  },
+};
+// en-GB: the same words (maths questions are numbers; "Math" in the title is the game's name)
+I18N['en-GB'] = I18N.en;
+// ==== I18N END ====
+(function () {
+  'use strict';
+  var O = window.Oomba, G = window.TugGen, BOT = window.TugBot;
+  var LANG = O.lang || 'en', W = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en, RTL = O.dir === 'rtl';
+  function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
+  document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
+  var reduced = function () { return !!O.settings.reduced; };
+  function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var SHAPE = {
+    circle: '<svg viewBox="0 0 20 20" class="shape" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="currentColor" stroke="#1D2340" stroke-width="2"/></svg>',
+    diamond: '<svg viewBox="0 0 20 20" class="shape" aria-hidden="true"><path d="M10 1.5 18.5 10 10 18.5 1.5 10Z" fill="currentColor" stroke="#1D2340" stroke-width="2"/></svg>',
+  };
+
+  /* ---------- the setup, remembered (ids only) ---------- */
+  var KEY = 'tug-of-math-v1', LENS = [60, 90, 120, 0], DIFFS = ['easy', 'normal', 'hard'];
+  function load() { try { return (window.BRB && BRB.storage && BRB.storage.get(KEY)) || {}; } catch (e) { return {}; } }
+  var saved = load();
+  var CFG = {
+    grade: G.grade(saved.grade || 3), mode: saved.mode === 'two' ? 'two' : 'cpu',
+    diff: DIFFS.indexOf(saved.diff) >= 0 ? saved.diff : 'easy', len: LENS.indexOf(saved.len) >= 0 ? saved.len : 90,
+  };
+  var BEST = saved.best && typeof saved.best === 'object' ? saved.best : {};
+  function save() { try { if (window.BRB && BRB.storage) BRB.storage.set(KEY, { grade: CFG.grade, mode: CFG.mode, diff: CFG.diff, len: CFG.len, best: BEST }); } catch (e) { /* no save */ } }
+  var LINE_TIMED = 8, LINE_RACE = 6, CAP = 180;
+
+  /* ---------- the crews: the player (or a kid), a penguin and a bunny pull for Blue; a fox, a bear (or Bolt the
+     computer, an Oomba) for Red. Kit characters, drawn once as canvases. ---------- */
+  function crewSpecs(mode) {
+    var me = mode === 'cpu' ? O.avatar() : O.char({ species: 'kid', skin: 2, hair: { style: 'curls', color: 'brown' }, outfit: { top: 'tee', color: 'sky' } });
+    var blue = [O.char({ species: 'penguin' }), me];
+    var red = mode === 'cpu' ? [O.char({ species: 'oomba', colors: { base: 'coral' } }), O.char({ species: 'fox' })] : [O.char({ species: 'fox' }), O.char({ species: 'bear' })];
+    return { blue: blue, red: red };
+  }
+  function figure(spec, px) { try { var c = O.art.toCanvas(spec, px); c.setAttribute('aria-hidden', 'true'); return c; } catch (e) { return el('canvas'); } }
+
+  /* ---------- the kit game: the title (both crews already tugging), pause, results ---------- */
+  var SET = [
+    '                    ',
+    '                    ',
+    '                    ',
+    '                    ',
+    '                    ',
+    '  u P        f b    ',
+    '####################',
+    '####################',
+  ];
+  var M = null, D = null, game = null, rope = null, ending = false;
+  game = O.game({
+    api: 1, title: t('title'), subtitle: t('tag'), theme: 'meadow', titleHue: 'sky',
+    controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.6, hud: [], countdown: 3,
+    level: O.level.grid(SET, {
+      u: { kind: 'npc', species: 'penguin', tag: 'b2', size: 1.5 },
+      f: { kind: 'npc', species: 'fox', tag: 'r1', size: 1.6, flip: true },
+      b: { kind: 'npc', species: 'bear', tag: 'r2', size: 1.7, flip: true },
+    }),
+    intro: function () { return setupCard(); },
+    setup: function (w) { titleRope(w); },
+    update: function (w, dt) { step(dt); },
+    testState: function () { return testState(); },
+    on: { start: function (w) { begin(w); }, title: function () { hide(); }, results: function () { hide(); } },
+  });
+  /** The rope between the two crews behind the title (drawn over the kit's world). */
+  function titleRope(w) {
+    if (rope) return;
+    rope = w.stage.draw(function (ctx) {
+      var ww = game.world; if (!ww || game.state !== 'title' && game.state !== 'intro' && game.state !== 'boot') return;
+      var a = ww.find('b2'), b = ww.find('r2'); if (!a || !b) return;
+      var y = (ww.hero ? ww.hero.y : a.y) - ww.cell * 0.62, x0 = a.x - ww.cell * 0.6, x1 = b.x + ww.cell * 0.6;
+      ctx.save(); ctx.lineCap = 'round';
+      ctx.strokeStyle = '#6B4A1E'; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(x0, y); ctx.quadraticCurveTo((x0 + x1) / 2, y + 6, x1, y); ctx.stroke();
+      ctx.strokeStyle = '#E9C178'; ctx.lineWidth = 5; ctx.stroke();
+      var mx = (x0 + x1) / 2; ctx.fillStyle = '#1D2340'; ctx.fillRect(mx - 2, y - 30, 4, 32);
+      ctx.fillStyle = '#FFC83D'; ctx.strokeStyle = '#1D2340'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx + 2, y - 30); ctx.lineTo(mx + 22, y - 24); ctx.lineTo(mx + 2, y - 17); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  /* ---------- the setup card (before every game; the last choice is remembered) ---------- */
+  var setupOpen = false;
+  function setupCard() {
+    return new Promise(function (resolve) {
+      setupOpen = true;
+      var wrap = el('div', 'tms'); wrap.dir = O.dir || 'ltr';
+      var card = el('div', 'tms-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'tmsH');
+      wrap.appendChild(card);
+      var h = el('h2', '', t('setup')); h.id = 'tmsH'; card.appendChild(h);
+      var left = el('div', 'left'), right = el('div', 'right'); card.append(left, right);
+      function group(label, cls, opts, get, set, into) {
+        var fs = el('fieldset'), lg = el('legend', '', label); fs.appendChild(lg);
+        var row = el('div', 'row ' + (cls || '')); row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', label); if (!cls) row.style.setProperty('--n', opts.length);
+        var btns = opts.map(function (o) {
+          var b = el('button', 'opt'); b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.v = String(o.v);
+          if (o.icon) b.innerHTML = O.icon(o.icon);
+          b.appendChild(el('span', '', o.label)); if (o.aria) b.setAttribute('aria-label', o.aria);
+          b.addEventListener('click', function () { set(o.v); sync(); sfx('select'); });
+          b.addEventListener('keydown', function (e) {
+            var i = btns.indexOf(b), d = { ArrowRight: RTL ? -1 : 1, ArrowDown: 1, ArrowLeft: RTL ? 1 : -1, ArrowUp: -1 }[e.key];
+            if (!d) return; e.preventDefault(); e.stopPropagation(); var n = btns[(i + d + btns.length) % btns.length]; n.click(); n.focus();
+          });
+          row.appendChild(b); return b;
+        });
+        function sync() { btns.forEach(function (b, i) { var on = String(get()) === b.dataset.v; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); }
+        sync(); fs.appendChild(row); (into || card).appendChild(fs);
+        return { fs: fs, sync: sync };
+      }
+      var sample = el('p', 'sample');
+      var gg = group(t('grade'), 'grades', G.GRADES.map(function (g) { return { v: g, label: O.num(g), aria: t('gradeN', { n: g }) }; }), function () { return CFG.grade; }, function (v) { CFG.grade = +v; showSample(); }, left);
+      gg.fs.appendChild(sample);
+      function showSample() {
+        sample.textContent = ''; sample.appendChild(document.createTextNode(t('like') + ' '));
+        [0, 1, 2].forEach(function (i) { var q = G.sample(CFG.grade, i); if (i) sample.appendChild(document.createTextNode(' · ')); var b = el('b', '', qText(q, true)); b.dir = 'ltr'; sample.appendChild(b); });
+      }
+      showSample();
+      var diffG;
+      group(t('players'), '', [{ v: 'cpu', label: t('vsCpu'), icon: 'gamepad' }, { v: 'two', label: t('two'), icon: 'user' }], function () { return CFG.mode; }, function (v) { CFG.mode = v; diffG.fs.hidden = v !== 'cpu'; note.textContent = keysNote(); }, right);
+      diffG = group(t('level'), '', DIFFS.map(function (d) { return { v: d, label: t(d) }; }), function () { return CFG.diff; }, function (v) { CFG.diff = v; }, right);
+      diffG.fs.hidden = CFG.mode !== 'cpu';
+      group(t('time'), '', LENS.map(function (n) { return { v: n, label: n === 0 ? t('toLine') : n === 120 ? t('min2') : t('secs', { n: n }) }; }), function () { return CFG.len; }, function (v) { CFG.len = +v; }, right);
+      var go = el('div', 'go'); card.appendChild(go);
+      var note = el('p', 'note', keysNote()); card.appendChild(note);
+      var start = O.ui.button(t('start'), { kind: 'hot', big: true, icon: 'play', onPress: function () {
+        if (!setupOpen) return; setupOpen = false; save(); wrap.remove(); document.removeEventListener('keydown', keys, true); resolve();
+      } });
+      start.id = 'tmStart'; start.setAttribute('data-start', ''); go.appendChild(start);
+      function keys(e) {
+        if (e.key === 'Tab') { var f = [].slice.call(card.querySelectorAll('button:not([tabindex="-1"])')).filter(function (b) { return b.offsetParent; }), i = f.indexOf(document.activeElement); e.preventDefault(); (f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length] || start).focus(); }
+        e.stopPropagation();
+      }
+      document.addEventListener('keydown', keys, true);
+      O.ui.root().appendChild(wrap);
+      O.time.real.after(30, function () { try { start.focus({ preventScroll: true }); } catch (e) { /* gone */ } });
+      setupApi = { close: function () { if (setupOpen) start.click(); } };
+    });
+  }
+  var setupApi = null;
+  function keysNote() { return CFG.mode === 'two' ? t('keysTwo') : t('keysOne'); }
+
+  /* ---------- questions on screen ---------- */
+  function qText(q, plain) {
+    var s = G.text(q, t('of'));
+    if (G.form(q) === 'value') s += ' = ?';
+    return s;
+  }
+  /** The question with its answer filled in ("7 × 8 = 56", "x = 9", "4 + 7 = 11"), shown after a wrong answer. */
+  function solved(q) {
+    var f = G.form(q), a = q.a < 0 ? '−' + O.num(-q.a) : O.num(q.a);
+    if (f === 'x') return 'x = ' + a;
+    if (f === 'box') return G.text(q, t('of')).replace('□', a);
+    return G.text(q, t('of')) + ' = ' + a;
+  }
+  function qHtml(q) {
+    var s = qText(q).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
+    return s.replace(/□/g, '<span class="box"></span>').replace(/(\d|\b)x\b/g, '$1<span class="x">x</span>');
+  }
+
+  /* ---------- the match ---------- */
+  function hide() { if (D) D.root.hidden = true; document.documentElement.classList.remove('tm-play'); M = null; }
+  function begin(w) {
+    hide(); ending = false;
+    var seed = (game.world && game.world.rand ? Math.floor(game.world.rand.float() * 4294967295) : Date.now()) >>> 0;
+    if (pendingSeed != null) { seed = pendingSeed >>> 0; }
+    var two = CFG.mode === 'two', line = CFG.len ? LINE_TIMED : LINE_RACE;
+    M = { w: w, seed: seed, two: two, grade: CFG.grade, diff: CFG.diff, len: CFG.len, line: line, left: CFG.len || CAP, pos: 0, running: true, said: {},
+      deck: G.deck(CFG.grade, seed), p: [side0(), side0()], bot: two ? null : { ai: BOT.make(CFG.diff, seed), q: null, phase: 'think', left: 0, res: null } };
+    build();
+    D.root.hidden = false; document.documentElement.classList.add('tm-play');
+    D.root.classList.toggle('rm', reduced());
+    layoutFor();
+    next(0); if (two) next(1); else botNext();
+    render();
+    O.ui.announce(t('pull'));
+  }
+  function side0() { return { q: null, typed: '', neg: false, lock: false, right: 0, n: 0, streak: 0, best: 0 }; }
+  var pendingSeed = null;
+
+  function build() {
+    if (D) return;
+    var root = el('div', 'tm'); root.id = 'tm'; root.hidden = true;
+    // the field never mirrors (Blue stays on the left in Arabic and Hebrew too, like the two ends of a real rope);
+    // the words on it do, and keypads and maths are always left to right
+    var field = el('div', 'tm-field'); field.dir = 'ltr'; root.appendChild(field);
+    D = { root: root, field: field, side: [] };
+    [0, 1].forEach(function (s) {
+      var sec = el('section', 'side ' + (s ? 'red' : 'blue')); sec.dataset.side = s; sec.dir = O.dir || 'ltr';
+      var team = el('div', 'team'); team.innerHTML = s ? SHAPE.diamond : SHAPE.circle; var tn = el('span', 'tn'); team.appendChild(tn); sec.appendChild(team);
+      var qc = el('div', 'qcard'); qc.setAttribute('aria-live', 'polite'); var q = el('div', 'q'); q.dir = 'ltr'; var sub = el('div', 'sub'); sub.dir = 'ltr';
+      qc.append(q, sub); sec.appendChild(qc);
+      var bot = el('div', 'bot'); var think = el('div', 'think'); think.innerHTML = '<i></i><i></i><i></i>'; think.setAttribute('aria-label', t('thinking')); bot.appendChild(think);
+      var arow = el('div', 'arow'); arow.dir = 'ltr'; var pm = key('pm', '±', t('minus')); pm.classList.add('key'); var ans = el('output', 'ans'); ans.dir = 'ltr'; ans.setAttribute('aria-label', t('answer')); arow.append(pm, ans); sec.appendChild(arow);
+      var keys = el('div', 'keys'); keys.dir = 'ltr';
+      ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'back', '0', 'ok'].forEach(function (k) { keys.appendChild(key(k)); });
+      sec.appendChild(keys); sec.appendChild(bot);
+      var status = el('p', 'tm-sr'); status.setAttribute('role', 'status'); sec.appendChild(status);
+      field.appendChild(sec);
+      D.side[s] = { sec: sec, tn: tn, qc: qc, q: q, sub: sub, bot: bot, think: think, arow: arow, pm: pm, ans: ans, keys: keys, status: status, portrait: null };
+      wireKeys(s, sec);
+    });
+    var mid = el('section', 'mid'); mid.dir = O.dir || 'ltr';
+    var bar = el('div', 'mbar');
+    var pause = el('button', 'mbtn'); pause.type = 'button'; pause.innerHTML = O.icon('pause'); pause.setAttribute('aria-label', t('pause'));
+    pause.addEventListener('click', function () { if (M && M.running) game.pause(); });
+    var board = el('div', 'board'); board.dir = 'ltr';
+    var pb = el('div', 'pts pb'), clock = el('div', 'clock'), pr = el('div', 'pts pr');
+    pb.innerHTML = SHAPE.circle; pr.innerHTML = SHAPE.diamond; var nb = el('span'), nr = el('span'), nc = el('span'); pb.appendChild(nb); pr.prepend(nr); clock.innerHTML = O.icon('timer'); clock.appendChild(nc);
+    board.append(pb, clock, pr);
+    var again = el('button', 'mbtn'); again.type = 'button'; again.innerHTML = O.icon('settings'); again.setAttribute('aria-label', t('newGame'));
+    again.addEventListener('click', function () { if (!M || !M.running) return; newGame(); });
+    bar.append(pause, board, again); mid.appendChild(bar);
+    var scene = el('div', 'scene'); scene.setAttribute('aria-hidden', 'true'); scene.dir = 'ltr';
+    ['bg', 'sun', 'cloud c1', 'cloud c2', 'mark lb', 'mark c', 'mark lr'].forEach(function (c) { scene.appendChild(el('div', c)); });
+    var tug = el('div', 'tug'); tug.appendChild(el('div', 'rope')); tug.appendChild(el('div', 'flag'));
+    var cb = el('div', 'crew cb'), cr = el('div', 'crew cr'); tug.append(cb, cr); scene.appendChild(tug);
+    var banner = el('div', 'banner'); banner.hidden = true; scene.appendChild(banner);
+    mid.appendChild(scene);
+    var say = el('p', 'say', t('pull')); mid.appendChild(say);
+    var kb = el('p', 'kbhint'); mid.appendChild(kb);
+    field.appendChild(mid);
+    D.mid = { nb: nb, nr: nr, nc: nc, clock: clock, scene: scene, tug: tug, cb: cb, cr: cr, banner: banner, say: say, kb: kb };
+    O.ui.root().appendChild(root);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('resize', layoutFor);
+    O.settings.on('change', function () { root.classList.toggle('rm', reduced()); });
+  }
+  function key(k, label, aria) {
+    var b = el('button', 'key'); b.type = 'button'; b.dataset.k = k;
+    if (k === 'back') { b.innerHTML = O.icon('back'); b.setAttribute('aria-label', t('del')); }
+    else if (k === 'ok') { b.innerHTML = O.icon('check'); b.setAttribute('aria-label', t('enter')); }
+    else { b.textContent = label || k; if (aria) b.setAttribute('aria-label', aria); }
+    return b;
+  }
+  /** Taps: pointerdown (every finger counts, so two players can tap at the same moment on a smartboard); a click with
+   *  no pointer (Enter or Space on a focused key) presses it too. */
+  function wireKeys(s, sec) {
+    sec.addEventListener('pointerdown', function (e) {
+      var b = e.target.closest && e.target.closest('button.key'); if (!b || b.disabled) return;
+      e.preventDefault(); b.classList.add('down'); press(s, b.dataset.k);
+      var up = function () { b.classList.remove('down'); b.removeEventListener('pointerup', up); b.removeEventListener('pointercancel', up); b.removeEventListener('pointerleave', up); };
+      b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', up);
+    });
+    sec.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button.key'); if (b && e.detail === 0 && !b.disabled) press(s, b.dataset.k); });
+  }
+  /** The keyboard. One player: digits, Backspace, Enter (and - in grades 7-8). Two players: Blue on the number row with
+   *  Enter and Backspace, Red on the number pad with its Enter, - and . (delete). */
+  function onKey(e) {
+    if (!M || !M.running || O.ui.open || setupOpen) return;
+    var c = e.code || '', k = e.key, side = 0, act = null;
+    var pad = /^Numpad/.test(c);
+    if (M.two && pad) side = 1;
+    if (/^(Digit|Numpad)[0-9]$/.test(c)) act = c.slice(-1);
+    else if (!c && /^[0-9]$/.test(k)) act = k;
+    else if (k === 'Enter' || c === 'NumpadEnter') { if (e.target && e.target.closest && e.target.closest('button') && !pad) return; act = 'ok'; }
+    else if (k === 'Backspace' || (M.two && c === 'NumpadDecimal')) act = 'back';
+    else if (k === '-' || c === 'Minus' || c === 'NumpadSubtract') act = 'pm';
+    if (!act) return;
+    if (!M.two) side = 0;
+    e.preventDefault(); e.stopPropagation();
+    var b = D.side[side].keys.querySelector('[data-k="' + act + '"]') || (act === 'pm' ? D.side[side].pm : null);
+    if (b && !reduced()) { b.classList.add('down'); O.time.real.after(90, function () { b.classList.remove('down'); }); }
+    press(side, act);
+  }
+  function press(s, k) {
+    if (!M || !M.running) return;
+    if (!M.two && s === 1) return;
+    var P = M.p[s]; if (P.lock || !P.q) return;
+    if (k === 'ok') return submit(s);
+    if (k === 'back') { if (P.typed) P.typed = P.typed.slice(0, -1); else P.neg = false; }
+    else if (k === 'pm') { if (!G.needsMinus(M.grade)) return; P.neg = !P.neg; }
+    else if (/^[0-9]$/.test(k)) { if (P.typed.length >= G.MAX_DIGITS) return; P.typed = P.typed === '0' ? k : P.typed + k; }
+    sfx('click', { volume: 0.35 });
+    showAnswer(s);
+  }
+  function value(P) { if (!P.typed) return null; var v = parseInt(P.typed, 10); return P.neg ? -v : v; }
+  function showAnswer(s) {
+    var P = M.p[s], a = D.side[s].ans; a.classList.remove('ok', 'no');
+    a.textContent = P.typed ? (P.neg ? '−' : '') + P.typed : P.neg ? '−' : '';
+  }
+  function submit(s) {
+    var P = M.p[s]; if (P.lock || !P.q || !P.typed) return;
+    var v = value(P); P.n++;
+    if (v === P.q.a) { P.right++; P.streak++; P.best = Math.max(P.best, P.streak); feedback(s, true, v); pull(s); }
+    else { P.streak = 0; feedback(s, false, v); }
+  }
+  /** A right answer or a wrong one: the card shows it, then the side's next question (game clock: pause stops it). */
+  function feedback(s, ok, v) {
+    var P = M.p[s], d = D.side[s], q = P.q; P.lock = true; d.sec.classList.add('lock');
+    d.qc.classList.remove('right', 'wrong'); void d.qc.offsetWidth; d.qc.classList.add(ok ? 'right' : 'wrong');
+    d.ans.classList.add(ok ? 'ok' : 'no');
+    if (!ok) { d.q.textContent = solved(q); d.sub.textContent = ''; fitQuestion(s); }   // the right answer, big, for a moment
+    say(s, ok ? t('right') : t('wrong', { a: q.a < 0 ? '−' + O.num(-q.a) : O.num(q.a) }));
+    sfx(ok ? 'correct' : 'wrong', { volume: 0.6 });
+    O.after(ok ? 350 : 1100, function () { if (!M || !M.running || M.p[s] !== P || P.q !== q) return; next(s); });
+  }
+  function say(s, text) { var st = D.side[s].status; st.textContent = text; }
+  function next(s) {
+    var P = M.p[s], d = D.side[s]; P.q = M.deck.next(s); P.typed = ''; P.neg = false; P.lock = false;
+    d.sec.classList.remove('lock'); d.qc.classList.remove('right', 'wrong');
+    d.q.innerHTML = qHtml(P.q); d.sub.textContent = G.form(P.q) === 'x' ? t('xq') : '';
+    d.qc.setAttribute('aria-label', qText(P.q)); showAnswer(s);
+    fitQuestion(s);
+  }
+  /** Long questions shrink to fit their card (never cut off). */
+  function fitQuestion(s) {
+    var d = D.side[s]; d.q.style.fontSize = '';
+    O.time.real.after(0, function () {
+      var cw = d.qc.clientWidth - 16, w = d.q.scrollWidth; if (w > cw && cw > 0) { var fs = parseFloat(getComputedStyle(d.q).fontSize); d.q.style.fontSize = Math.max(16, Math.floor(fs * cw / w)) + 'px'; }
+    });
+  }
+  /* The computer: thinks (its time grows with the question), types its answer, then pulls (or stumbles). */
+  function botNext() {
+    var B = M.bot, P = M.p[1], d = D.side[1]; next(1); B.q = P.q; B.res = B.ai.next(B.q); B.left = B.res.ms; B.phase = 'think'; B.shown = 0;
+    d.think.classList.remove('off');
+  }
+  function botStep(ms) {
+    var B = M.bot, P = M.p[1], d = D.side[1]; B.left -= ms;
+    if (B.phase === 'think') {
+      // the last moment of thinking: the digits appear one by one, as if typed
+      var txt = String(Math.abs(B.res.v)), n = B.left < 700 ? Math.min(txt.length, Math.ceil((700 - Math.max(0, B.left)) / (700 / txt.length))) : 0;
+      if (n !== B.shown) { B.shown = n; P.neg = B.res.v < 0 && n > 0; P.typed = txt.slice(0, n); showAnswer(1); }
+      if (B.left <= 0) {
+        B.phase = 'show'; d.think.classList.add('off'); P.typed = txt; P.neg = B.res.v < 0; showAnswer(1); P.n++;
+        if (B.res.ok) { P.right++; P.streak++; P.best = Math.max(P.best, P.streak); feedbackBot(true); B.left = 500; pull(1); }
+        else { P.streak = 0; feedbackBot(false); B.left = 600 + BOT.STUMBLE; }
+      }
+    } else if (B.left <= 0) botNext();
+  }
+  function feedbackBot(ok) {
+    var d = D.side[1]; d.qc.classList.remove('right', 'wrong'); void d.qc.offsetWidth; d.qc.classList.add(ok ? 'right' : 'wrong'); d.ans.classList.add(ok ? 'ok' : 'no');
+    var a = M.p[1].q.a; if (!ok) { d.q.textContent = solved(M.p[1].q); d.sub.textContent = ''; fitQuestion(1); }
+    say(1, ok ? t('cpuRight') : t('wrong', { a: a < 0 ? '−' + O.num(-a) : O.num(a) }));
+    if (ok) sfx('pop', { volume: 0.4, pitch: 0.8 });
+  }
+  /** One step of the rope toward a side; past the line wins at once. */
+  function pull(s) {
+    M.pos += s ? -1 : 1;
+    var c = s ? D.mid.cr : D.mid.cb; c.classList.remove('pull'); if (!reduced()) { void c.offsetWidth; c.classList.add('pull'); }
+    if (s === 0 || M.two) sfx('coin', { volume: 0.5 });
+    if (!M.two && s === 0 && M.w) M.w.score(1);
+    render();
+    if (Math.abs(M.pos) >= M.line) finish();
+  }
+  function step(dt) {
+    if (!M || !M.running || game.state !== 'play') return;
+    var ms = dt * 1000;
+    M.left = Math.max(0, M.left - dt);
+    if (M.bot) botStep(ms);
+    if (!M.running) return;
+    var s = Math.ceil(M.left);
+    if (s !== M.shownT) { M.shownT = s; renderClock(); }
+    if (M.len) { if (s === 30 && !M.said[30]) { M.said[30] = 1; O.ui.announce(t('left30')); } if (s === 10 && !M.said[10]) { M.said[10] = 1; O.ui.announce(t('left10')); sfx('count', { volume: 0.4 }); } }
+    if (M.left <= 0) finish();
+  }
+  function renderClock() {
+    var s = Math.max(0, Math.ceil(M.left)), m = Math.floor(s / 60), r = s % 60;
+    D.mid.nc.textContent = m ? O.num(m) + ':' + O.num(r, { minimumIntegerDigits: 2 }) : O.num(r);
+    D.mid.clock.classList.toggle('low', s <= 10);
+    D.mid.clock.setAttribute('aria-label', String(s));
+  }
+  function render() {
+    D.mid.nb.textContent = O.num(M.p[0].right); D.mid.nr.textContent = O.num(M.p[1].right);
+    D.mid.tug.style.setProperty('--p', String(Math.max(-1, Math.min(1, M.pos / M.line))));
+    renderClock();
+  }
+  function layoutFor() {
+    if (!D || !M) return;
+    var two = M.two;
+    D.field.classList.toggle('two', two); D.field.classList.toggle('cpu', !two);
+    D.side[0].tn.textContent = two ? t('blue') : t('you') + ' · ' + t('blue');
+    D.side[1].tn.textContent = two ? t('red') : t('cpu') + ' · ' + t(M.diff);
+    var minus = G.needsMinus(M.grade);
+    [0, 1].forEach(function (s) {
+      var d = D.side[s], human = s === 0 || two;
+      d.keys.hidden = !human; d.pm.hidden = !(human && minus); d.bot.hidden = human;
+    });
+    // the crews (drawn once per match: the player's own look on Blue in vs Computer)
+    var c = crewSpecs(two ? 'two' : 'cpu'), px = 240;
+    D.mid.cb.innerHTML = ''; D.mid.cr.innerHTML = '';
+    c.blue.forEach(function (sp) { D.mid.cb.appendChild(figure(sp, px)); });
+    c.red.forEach(function (sp) { D.mid.cr.appendChild(figure(sp, px)); });
+    if (!two) { var bt = D.side[1].bot; var old = bt.querySelector('canvas'); if (old) old.remove(); bt.prepend(figure(c.red[0], 200)); }
+    D.mid.kb.textContent = keysNote();
+    D.mid.say.textContent = t('pull');
+  }
+  /** The end: past the line, or time is up (the most pulls wins; the same is a draw). */
+  function finish() {
+    if (!M || !M.running) return;
+    M.running = false; D.field.classList.add('done');
+    var win = M.pos > 0 ? 0 : M.pos < 0 ? 1 : -1, P = M.p[0], two = M.two;
+    var title = win < 0 ? t('draw') : two ? (win ? t('redWins') : t('blueWins')) : win ? t('cpuWins') : t('youWin');
+    D.mid.banner.hidden = false; D.mid.banner.textContent = title; O.ui.announce(title);
+    sfx(win === 0 || (two && win === 1) ? 'win' : 'whoosh');
+    var w = M.w, m = M, acc = P.n ? P.right / P.n : 0, stats = t('stats', { right: P.right, n: P.n, streak: P.best });
+    if (!two) { var k = M.grade + ':' + M.diff; BEST[k] = Math.max(BEST[k] || 0, P.right); save(); }
+    lastResult = { winner: win, title: title, pos: m.pos, right: [m.p[0].right, m.p[1].right], n: [m.p[0].n, m.p[1].n], stats: stats };
+    O.time.real.after(fastEnd ? 10 : 1300, function () {
+      if (!w || w.ended) return;
+      var specs = crewSpecs(two ? 'two' : 'cpu');
+      if (two) w.win({ title: title, submit: false, score: Math.max(m.p[0].right, m.p[1].right), stars: win < 0 ? 1 : 3, who: win === 1 ? specs.red[0] : specs.blue[1] });
+      else if (win === 0) w.win({ title: title, score: P.right, stars: acc >= 0.9 ? 3 : acc >= 0.7 ? 2 : 1 });
+      else w.lose({ say: title });
+      addStats(stats);
+    });
+  }
+  var lastResult = null, fastEnd = false;
+  /** The results card gets the player's numbers (right answers, best streak) under the score. */
+  function addStats(text) {
+    var tries = 0;
+    (function look() {
+      var card = O.ui.root().querySelector('.ok-modal .ok-card, [class*="ok-win"] .ok-card, [class*="ok-try"] .ok-card');
+      if (card && !card.querySelector('.tm-stats')) { var p = el('p', 'ok-p tm-stats', text); var row = card.querySelector('.ok-row') || card.lastChild; card.insertBefore(p, row && row.parentNode === card ? row : null); return; }
+      if (tries++ < 60) O.time.real.after(100, look);
+    })();
+  }
+  function newGame() {
+    M.running = false; hide();
+    setupCard().then(function () { game.restart('play'); });
+  }
+
+  /* ---------- test hooks (the covers, the e2e tests, the playtest) ---------- */
+  function testState() {
+    return { tug: true, screen: setupOpen ? 'setup' : M ? (M.running ? 'play' : 'end') : 'none', mode: M ? (M.two ? 'two' : 'cpu') : CFG.mode, grade: M ? M.grade : CFG.grade, diff: CFG.diff, len: CFG.len,
+      rope: M ? M.pos : 0, line: M ? M.line : 0, scores: M ? [M.p[0].right, M.p[1].right] : [0, 0], answered: M ? [M.p[0].n, M.p[1].n] : [0, 0],
+      q: M ? { A: M.p[0].q && { text: qText(M.p[0].q), k: M.p[0].q.k }, B: M.p[1].q && { text: qText(M.p[1].q), k: M.p[1].q.k } } : null,
+      typed: M ? [M.p[0].typed, M.p[1].typed] : null, timeLeft: M ? Math.round(M.left * 10) / 10 : null, winner: lastResult ? lastResult.winner : null, result: lastResult, minusKey: !!(D && !D.side[0].pm.hidden && M), saved: load() };
+  }
+  Object.assign(window.__brbTest, {
+    setup: function (o) { o = o || {}; if (o.grade) CFG.grade = G.grade(o.grade); if (o.mode) CFG.mode = o.mode === 'two' ? 'two' : 'cpu'; if (DIFFS.indexOf(o.diff) >= 0) CFG.diff = o.diff; if (o.len != null && LENS.indexOf(+o.len) >= 0) CFG.len = +o.len; return testState(); },
+    start: function (o) { if (o) window.__brbTest.setup(o); if (o && o.seed != null) pendingSeed = +o.seed; lastResult = null; if (setupApi) setupApi.close(); game.start(); return testState(); },
+    state: function () { return Object.assign(game ? {} : {}, testState()); },
+    answer: function (side, v) { if (!M) return false; var s = side ? 1 : 0, P = M.p[s]; if (P.lock) return false; P.typed = String(Math.abs(v)); P.neg = v < 0; showAnswer(s); submit(s); return true; },
+    answerOf: function (side) { var P = M && M.p[side ? 1 : 0]; return P && P.q ? P.q.a : null; },
+    solve: function (side) { if (!M) return false; var s = side ? 1 : 0, P = M.p[s]; if (!P.q || P.lock) return false; return window.__brbTest.answer(s, P.q.a); },
+    press: function (side, k) { press(side ? 1 : 0, String(k)); return testState(); },
+    setTime: function (s) { if (M) M.left = Math.max(0, +s || 0); return testState(); },
+    skipAnimations: function () { fastEnd = true; return true; },
+    gen: function (grade, n) { var d = G.deck(grade, 7), out = []; for (var i = 0; i < (n || 10); i++) out.push(qText(d.next(i % 2))); return out; },
+    unlock: function () { if (M) [0, 1].forEach(function (s) { if (M.p[s].lock) next(s); }); return true; },
+  });
+})();
+</script>

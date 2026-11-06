@@ -4139,7 +4139,8 @@
       "roboRoute": "Guide a robot with blocks: sequences, loops, conditionals, variables and functions, then fix the bugs.",
       "dataDetective": "Sort, chart and clean data, then make claims the evidence supports.",
       "packetPost": "Send packets across a network, pick strong passphrases and spot online tricks.",
-      "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone."
+      "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone.",
+      "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen."
     },
     "hubs": {
       "math": {
@@ -4377,7 +4378,8 @@
           "connectFour": "Quick games about planning ahead, against a sibling or the robot on Easy.",
           "loopLab": "Tap squares to make a beat and hear it loop right away. No need to read music.",
           "beatLanes": "Tap in time to songs they know, starting with Twinkle Twinkle.",
-          "munchMaze": "A maze chase with an Easy mode: plan a route and collect every dot."
+          "munchMaze": "A maze chase with an Easy mode: plan a route and collect every dot.",
+          "tugOfMath": "Pick grade 2 or 3: adding, taking away and times tables, with the computer on Easy until they win it."
         },
         "faq": {
           "q2": "Are the games too hard for an 8 year old?",
@@ -4406,7 +4408,8 @@
           "brickDrop": "Speed builds quickly, which suits kids who want a real challenge and like beating their own best.",
           "loopLab": "Old enough to plan a whole song: chain beats together and clear the 10 music challenges.",
           "heroOfSunvale": "Bigger than a quick game: missions to read and follow, and a 3D kingdom to explore at their own pace.",
-          "swishFlick": "A quick break with a bit of physics: the direction of the flick aims the ball and its speed sets how far it flies."
+          "swishFlick": "A quick break with a bit of physics: the direction of the flick aims the ball and its speed sets how far it flies.",
+          "tugOfMath": "Grades 4 and 5 bring bigger times and order of operations; two players can tug on one tablet or smartboard."
         },
         "faq": {
           "q2": "Are the games too easy for a 10 year old?",
@@ -4433,7 +4436,8 @@
           "brickDrop": "Race to 40 lines in Sprint, or keep going in Marathon as it gets faster.",
           "loopLab": "Teens into music can build whole songs from drums, bass and melody, not just simple beats.",
           "beatLanes": "Nine songs and long combos for quick fingers.",
-          "heroOfSunvale": "A big 3D kingdom to explore, with missions and a dragon at the end."
+          "heroOfSunvale": "A big 3D kingdom to explore, with missions and a dragon at the end.",
+          "tugOfMath": "Grades 6 to 8: percents, negative numbers, powers and equations, against the computer on Hard."
         },
         "faq": {
           "q2": "Is Oomba Academy too young for a 13 year old?",

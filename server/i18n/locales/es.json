@@ -3849,7 +3849,8 @@
       "roboRoute": "Guía a un robot con bloques: secuencias, bucles, condicionales, variables y funciones, y arregla los errores.",
       "dataDetective": "Ordena, grafica y limpia datos, y haz afirmaciones que las pruebas respalden.",
       "packetPost": "Envía paquetes por una red, elige contraseñas fuertes y detecta trampas en línea.",
-      "insideTheMachine": "Monta y repara ordenadores: piezas, entradas y salidas, bits y píxeles, diseño para todos."
+      "insideTheMachine": "Monta y repara ordenadores: piezas, entradas y salidas, bits y píxeles, diseño para todos.",
+      "tugOfMath": "Preguntas de matemáticas para cada curso del 1 al 8, desde sumas hasta 20 hasta ecuaciones, en un juego de tirar de la cuerda. Contra la compu o contra un amigo en la misma pantalla."
     },
     "hubs": {
       "math": {
@@ -4068,7 +4069,8 @@
           "connectFour": "Partidas rápidas para aprender a planear con anticipación, contra un hermano o contra el robot en Fácil.",
           "loopLab": "Tocan cuadros para crear un ritmo y lo oyen repetirse al instante. No hace falta saber leer música.",
           "beatLanes": "Tocan al ritmo de canciones que conocen, empezando por Estrellita, ¿dónde estás?",
-          "munchMaze": "Una persecución en un laberinto con modo Fácil: planear una ruta y comer todos los puntitos."
+          "munchMaze": "Una persecución en un laberinto con modo Fácil: planear una ruta y comer todos los puntitos.",
+          "tugOfMath": "Elige el curso 2 o 3: sumas, restas y tablas de multiplicar, con la compu en Fácil hasta que le ganen."
         },
         "faq": {
           "q2": "¿Son demasiado difíciles los juegos para un niño de 8 años?",
@@ -4097,7 +4099,8 @@
           "brickDrop": "La velocidad sube rápido: ideal para niños que quieren un reto de verdad y disfrutan superando su propio récord.",
           "loopLab": "Ya tienen edad para planear una canción entera: unir ritmos y superar los 10 retos musicales.",
           "heroOfSunvale": "Más que un juego rápido: misiones que leer y seguir, y un reino en 3D para explorar a su propio ritmo.",
-          "swishFlick": "Una pausa rápida con un poco de física: la dirección del deslizamiento apunta la pelota y su velocidad decide hasta dónde vuela."
+          "swishFlick": "Una pausa rápida con un poco de física: la dirección del deslizamiento apunta la pelota y su velocidad decide hasta dónde vuela.",
+          "tugOfMath": "Los cursos 4 y 5 traen multiplicaciones más grandes y el orden de las operaciones; dos jugadores pueden tirar en una tableta o pizarra digital."
         },
         "faq": {
           "q2": "¿Son demasiado fáciles los juegos para un niño de 10 años?",
@@ -4124,7 +4127,8 @@
           "brickDrop": "Una carrera hasta 40 líneas en Sprint, o seguir en Maratón mientras todo se acelera.",
           "loopLab": "Los adolescentes a los que les gusta la música pueden crear canciones enteras con batería, bajo y melodía, no solo ritmos simples.",
           "beatLanes": "Nueve canciones y combos largos para dedos rápidos.",
-          "heroOfSunvale": "Un gran reino en 3D para explorar, con misiones y un dragón al final."
+          "heroOfSunvale": "Un gran reino en 3D para explorar, con misiones y un dragón al final.",
+          "tugOfMath": "Cursos 6 a 8: porcentajes, números negativos, potencias y ecuaciones, contra la compu en Difícil."
         },
         "faq": {
           "q2": "¿Oomba Academy es demasiado infantil para un chico de 13 años?",

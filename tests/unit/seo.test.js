@@ -337,9 +337,9 @@ test('structured data: no Software App fields without a rating; game pages show 
   const home = (await get('/')).text;
   for (const m of home.matchAll(/<a class="chip" role="listitem" href="\/search\?cat=[^"]+"([^>]*)>/g)) assert.match(m[1], /rel="nofollow"/);
   for (const h of HUBS) assert.ok(home.includes(`href="/learn/${h.slug}"`), h.slug);
-  // The math page names what teachers search for, with its grades.
+  // The math page names what teachers search for, with its grades (Sum Racer 1-5 and Tug of Math 1-8).
   const math = (await get('/learn/math-games')).text;
-  for (const w of ['addition', 'subtraction', 'multiplication', 'division', 'Grades 1–5']) assert.ok(math.toLowerCase().includes(w.toLowerCase()), w);
+  for (const w of ['addition', 'subtraction', 'multiplication', 'division', 'Grades 1–8']) assert.ok(math.toLowerCase().includes(w.toLowerCase()), w);
 });
 
 test('/teachers: honest privacy wording with Sign in with Google, and a call to action that matches what happens', async () => {

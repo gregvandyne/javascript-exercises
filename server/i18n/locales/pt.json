@@ -3851,7 +3851,8 @@
       "roboRoute": "Guie um robô com blocos: sequências, laços, condicionais, variáveis e funções, e depois corrija os bugs.",
       "dataDetective": "Ordene, faça gráficos e limpe dados, e depois faça afirmações que as evidências sustentam.",
       "packetPost": "Envie pacotes por uma rede, escolha frases-senha fortes e identifique truques online.",
-      "insideTheMachine": "Monte e conserte computadores: peças, entradas e saídas, bits e pixels, design para todos."
+      "insideTheMachine": "Monte e conserte computadores: peças, entradas e saídas, bits e pixels, design para todos.",
+      "tugOfMath": "Perguntas de matemática escolhidas para cada ano, do 1º ao 8º, de somas até 20 a equações, num cabo de guerra. Contra o computador ou um amigo na mesma tela."
     },
     "hubs": {
       "math": {
@@ -4070,7 +4071,8 @@
           "connectFour": "Partidas rápidas para pensar à frente, contra um irmão ou contra o robô no Fácil.",
           "loopLab": "Toque nos quadrados para criar uma batida e ouvi-la se repetir na hora. Não precisa saber ler partitura.",
           "beatLanes": "Toque no ritmo de músicas conhecidas, começando por Brilha, brilha, estrelinha.",
-          "munchMaze": "Uma perseguição no labirinto com modo Fácil: planeje o caminho e pegue todas as bolinhas."
+          "munchMaze": "Uma perseguição no labirinto com modo Fácil: planeje o caminho e pegue todas as bolinhas.",
+          "tugOfMath": "Escolha o 2º ou 3º ano: soma, subtração e tabuada, com o computador no Fácil até conseguirem vencer."
         },
         "faq": {
           "q2": "Os jogos são difíceis demais para uma criança de 8 anos?",
@@ -4099,7 +4101,8 @@
           "brickDrop": "A velocidade aumenta rápido, o que combina com quem quer um desafio de verdade e gosta de bater o próprio recorde.",
           "loopLab": "Já têm idade para planejar uma música inteira: juntar batidas e vencer os 10 desafios musicais.",
           "heroOfSunvale": "Maior que um jogo rápido: missões para ler e cumprir e um reino em 3D para explorar no próprio ritmo.",
-          "swishFlick": "Uma pausa rápida com um pouco de física: a direção do movimento mira a bola, e a velocidade decide até onde ela vai."
+          "swishFlick": "Uma pausa rápida com um pouco de física: a direção do movimento mira a bola, e a velocidade decide até onde ela vai.",
+          "tugOfMath": "O 4º e o 5º ano trazem multiplicações maiores e a ordem das operações; dois jogadores podem puxar num tablet ou lousa digital."
         },
         "faq": {
           "q2": "Os jogos são fáceis demais para uma criança de 10 anos?",
@@ -4126,7 +4129,8 @@
           "brickDrop": "Corra até 40 linhas no Sprint ou continue na Maratona enquanto tudo fica mais rápido.",
           "loopLab": "Adolescentes que curtem música podem criar músicas inteiras com bateria, baixo e melodia, não só batidas simples.",
           "beatLanes": "Nove músicas e combos longos para dedos rápidos.",
-          "heroOfSunvale": "Um grande reino em 3D para explorar, com missões e um dragão no final."
+          "heroOfSunvale": "Um grande reino em 3D para explorar, com missões e um dragão no final.",
+          "tugOfMath": "Do 6º ao 8º ano: porcentagens, números negativos, potências e equações, contra o computador no Difícil."
         },
         "faq": {
           "q2": "A Oomba Academy é infantil demais para quem tem 13 anos?",

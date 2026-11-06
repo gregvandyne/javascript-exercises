@@ -63,6 +63,8 @@ export const GAMES = {
   'sum-racer': { title: 'Sum Racer', role: 'bright', spoken: /./ },
   'swish-flick': { title: 'Swish Flick', role: 'narrator', spoken: /./ },
   'trick-inbox': { title: 'Trick Inbox', role: 'wise', spoken: /./ },
+  // Tug of Math reads no questions aloud (they are numbers); its words (the setup card, results) are all its own.
+  'tug-of-math': { title: 'Tug of Math', role: 'bright', spoken: /./ },
   'word-hunt': { title: 'Word Hunt', role: 'narrator', spoken: /./ },
   'word-peek': { title: 'Word Peek', role: 'narrator', spoken: /./ },
   'would-you-rather': { title: 'Would You Rather?', role: 'narrator', spoken: /./ },

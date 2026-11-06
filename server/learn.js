@@ -19,6 +19,8 @@ export const LEARNING = {
   'beat-lanes': { key: 'beatLanes', teaches: ['Rhythm', 'Timing'], level: 'Grades 1-8' },
   'swish-flick': { key: 'swishFlick', teaches: ['Aim and force', 'Hand-eye coordination'], level: 'Grades 2-8', fun: true },
   'munch-maze': { key: 'munchMaze', teaches: ['Route planning'], level: 'Grades 2-8', fun: true },
+  // Tug of Math: the grade picked before each game (1-8) sets the questions, from adding within 20 to equations.
+  'tug-of-math': { key: 'tugOfMath', teaches: ['Addition', 'Subtraction', 'Multiplication', 'Division', 'Order of operations', 'Percentages', 'Integers', 'Equations'], level: 'Grades 1-8' },
   // The CS Quest games (docs/cs-quest.md): each chapter is a lesson of the program, grades 3-5 (Explorer) and 6-8 (Pro).
   'robo-route': { key: 'roboRoute', teaches: ['Sequences', 'Loops', 'Conditionals', 'Variables', 'Functions', 'Debugging'], level: 'Grades 3-8' },
   'data-detective': { key: 'dataDetective', teaches: ['Organizing data', 'Charts', 'Claims from data', 'Cleaning data', 'Fairness in data'], level: 'Grades 3-8' },
@@ -40,7 +42,7 @@ export const isLearningGame = slug => !!LEARNING[slug] && !LEARNING[slug].fun;
 
 /** The subject pages, in menu order. path: /learn/<slug>; key: locale key under learn.hubs.*; games: launch-game slugs. */
 export const HUBS = [
-  { slug: 'math-games', key: 'math', emoji: '➗', games: ['sum-racer'], extra: 'tracks' },
+  { slug: 'math-games', key: 'math', emoji: '➗', games: ['sum-racer', 'tug-of-math'], extra: 'tracks' },
   { slug: 'word-games', key: 'words', emoji: '🔤', games: ['shark-plank', 'word-hunt', 'word-peek'] },
   { slug: 'strategy-games', key: 'strategy', emoji: '♟️', games: ['castle-clash', 'connect-four', 'brick-drop'] },
   { slug: 'music-games', key: 'music', emoji: '🎵', games: ['loop-lab', 'beat-lanes'] },
@@ -58,7 +60,7 @@ export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainB
 export const HOME_TIPS = ['math', 'words', 'strategy', 'music'];
 export const TEACHER_FAQ = 9;
 /** Last change to the teacher and subject pages' text (sitemap lastmod). Change it with the text. */
-export const CONTENT_UPDATED = '2026-11-03';
+export const CONTENT_UPDATED = '2026-11-06';
 
 // ---------------------------------------------------------------------------------------------------- parents
 // The parent pages (routes/parents.js): /parents, the guides under /parents/<guide>, and the age pages
@@ -70,14 +72,14 @@ export const gameKey = slug => (LEARNING[slug] ? LEARNING[slug].key : { 'hero-of
 /** The /parents page's "Learning that feels like play" cards, in order. */
 export const PARENT_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'loop-lab', 'beat-lanes', 'hero-of-sunvale'];
 /** Games with a two-player mode on one screen. */
-export const TWO_PLAYER = ['sum-racer', 'castle-clash', 'connect-four'];
+export const TWO_PLAYER = ['sum-racer', 'castle-clash', 'connect-four', 'tug-of-math'];
 /** Age pages: path /learn/<slug>; key: locale key under learn.ages.*; games in order, each with a "why it fits" line
  *  (learn.ages.<key>.fit.<gameKey>); make: where the "make your own game" panel goes ('first' before the games). Grouped
  *  by two or three years, not one page per age: with 15 launch games, single-age pages would be thin. */
 export const AGES = [
-  { slug: 'games-for-8-and-9-year-olds', key: 'a8', min: 8, max: 9, emoji: '🎈', games: ['sum-racer', 'word-hunt', 'shark-plank', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'munch-maze'], faq: 4 },
-  { slug: 'games-for-10-and-11-year-olds', key: 'a10', min: 10, max: 11, emoji: '🚀', games: ['sum-racer', 'word-peek', 'castle-clash', 'brick-drop', 'loop-lab', 'hero-of-sunvale', 'swish-flick'], make: 'after', faq: 4 },
-  { slug: 'games-for-12-to-14-year-olds', key: 'a12', min: 12, max: 14, emoji: '🎧', games: ['castle-clash', 'word-peek', 'brick-drop', 'loop-lab', 'beat-lanes', 'hero-of-sunvale'], make: 'first', faq: 4 },
+  { slug: 'games-for-8-and-9-year-olds', key: 'a8', min: 8, max: 9, emoji: '🎈', games: ['sum-racer', 'word-hunt', 'shark-plank', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'munch-maze', 'tug-of-math'], faq: 4 },
+  { slug: 'games-for-10-and-11-year-olds', key: 'a10', min: 10, max: 11, emoji: '🚀', games: ['sum-racer', 'word-peek', 'castle-clash', 'brick-drop', 'loop-lab', 'hero-of-sunvale', 'swish-flick', 'tug-of-math'], make: 'after', faq: 4 },
+  { slug: 'games-for-12-to-14-year-olds', key: 'a12', min: 12, max: 14, emoji: '🎧', games: ['castle-clash', 'word-peek', 'brick-drop', 'loop-lab', 'beat-lanes', 'hero-of-sunvale', 'tug-of-math'], make: 'first', faq: 4 },
 ];
 export const ageBySlug = slug => AGES.find(a => a.slug === slug) || null;
 /** Guides for parents: path /parents/<slug>; key: locale key under parents.<key>.*. */

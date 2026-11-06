@@ -2430,3 +2430,34 @@ credit here without earned points either).
   like every other game save: kept for their own view, merged into their real account on sign-in.
 - The 1.1 and 2.3 mission slides state the new requirement ("score 3,000 points to finish"), per
   the mission-truth rule.
+
+## Tug of Math (6 Nov 2026)
+
+Owner's request, from a classroom video of a two-team maths tug of war on a smartboard: an **original** official
+game, `tug-of-math`, in our own Oomba look (kit characters, our own rope scene and keypads; nothing copied from the
+video). Part A (this entry) is the game played alone or by two players on one screen; part B is Oomba Live (a class
+split into two teams, each player on their own device) and builds on the same question generator.
+
+- **The grade decides the questions.** A setup card before every game: grade 1-8, players (vs Computer or 2 players),
+  the computer's level and the time (60 s, 90 s, 2 min or "to the line", capped at 3 min). It shows sample questions
+  for the grade and remembers the last choice (`BRB.storage` key `tug-of-math-v1`, ids only). Grades: 1 add/subtract
+  within 20; 2 within 100; 3 times/division facts to 10 × 10 and add/subtract within 1000; 4 multi-digit × 1-digit,
+  exact division, two steps; 5 2-digit × 2-digit, bigger division, simple order of operations; 6 order of operations,
+  easy percents, squares; 7 integers with negatives and one-step equations; 8 two-step equations, powers, square
+  roots. Every answer is a whole number (a keypad works); the minus key appears only for grades 7-8.
+- **Fair sides.** Both teams' n-th questions are the same kind from one shared seed, with different numbers; a side
+  never gets the same question twice in a row.
+- **One source of truth.** The generator (`TugGen`) and the computer (`TugBot`) are pure ES5 blocks inside the game
+  html; `server/live/tug-gen.js` runs the same block with node:vm for Oomba Live and the unit tests, which check every
+  answer with their own evaluator.
+- **The computer.** Easy about 9 s an answer and 65% right, Normal 5 s and 82%, Hard 2.6 s and 94%, scaled by how hard
+  the question is: a slow 2nd grader (9 s, 80%) beats Easy at least 4 times in 5, and Hard beats a steady player
+  (5 s, 85%) at least 7 times in 10 (unit-tested by simulation).
+- **Layout.** Landscape (smartboard, tablet on its side, desktop, phone on its side) is Blue | tug | Red as in a
+  classroom; portrait stacks them, with Red's half turned round for the player across the table, or a small computer
+  card. The field never mirrors in Arabic or Hebrew (Blue stays left, like the two ends of a real rope); words do, and
+  maths and keypads stay left to right. Keypads take every finger at once (pointer events), so two players can tap at
+  the same moment on a smartboard; keyboard: digits, Backspace, Enter, '-' (two players: Blue on the number row, Red
+  on the number pad). Each team has a colour, a shape and a name.
+- **Scores.** vs Computer reports `BRB.gameOver({won, score: right answers})`; a two-player match on one screen submits
+  nothing. AI voices: registered like every official game; no question is read aloud (they are numbers).

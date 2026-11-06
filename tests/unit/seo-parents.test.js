@@ -267,8 +267,8 @@ test('age pages: "Playing together" names only games on the page; no repeated pr
     if (!age.games.includes('connect-four')) assert.ok(!faq.includes('Drop Four'), `${age.key}: FAQ names no unlisted game`);
     assert.ok(!h.includes('class="lp-practise"'), `${age.key}: the fit line only`);
   }
-  assert.match(text((await get('/learn/games-for-12-to-14-year-olds')).text), /Castle Clash has a two-player mode on one screen/);
-  assert.match(text((await get('/learn/games-for-8-and-9-year-olds')).text), /Sum Racer, Castle Clash and Drop Four each have a two-player mode/);
+  assert.match(text((await get('/learn/games-for-12-to-14-year-olds')).text), /Castle Clash and Tug of Math each have a two-player mode on one screen/);
+  assert.match(text((await get('/learn/games-for-8-and-9-year-olds')).text), /Sum Racer, Castle Clash, Drop Four and Tug of Math each have a two-player mode/);
   const a8 = text((await get('/learn/games-for-8-and-9-year-olds')).text);
   assert.ok(a8.includes('adding to 10 or 20') && !a8.includes('Start with adding to 20'));
   // Parent wording in shared keys.
