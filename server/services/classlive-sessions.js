@@ -42,6 +42,8 @@ import * as T from './classlive-teams.js';
 import * as ST from './classlive-settings.js';
 import * as D from './classlive-dash.js';
 import * as B from './classlive-board.js';
+import * as TG from './classlive-tug.js';
+import * as TUG from '../live/tug.js';
 import { getUser } from '../auth.js';
 import { audit } from '../db.js';
 import * as L from './lessons.js';
@@ -197,6 +199,8 @@ export function createSession(host, opts = {}) {
   if (!A.canHost(host)) return { ok: false, code: 'notHost' };
   const mode = ['game', ...Object.keys(A.MODES)].includes(opts.mode) ? opts.mode : null;
   if (!mode) return { ok: false, code: 'mode' };
+  // Tug of Math Live is two teams or nothing: with teams switched off on this server (LIVE_TEAMS=0) it can't run.
+  if (mode === 'tug' && !teamsOn()) return { ok: false, code: 'tugTeams' };
   const audience = opts.audience || 'open';
   const classId = audience === 'class' ? String(opts.classId || '') : null;
   const refusal = A.audienceRefusal(host, audience, { classId });
@@ -213,8 +217,8 @@ export function createSession(host, opts = {}) {
   if (!h.ok) return { ok: false, code: h.code };
   const check = C.liveCheck(h.versionId);
   if (!check.ready) return { ok: false, code: 'notReady', issue: check.issues[0] || null };
-  // Quiz modes, and games that declare quiz:true, need a question set.
-  const quiz = mode !== 'game' || check.quiz;
+  // Quiz modes, and games that declare quiz:true, need a question set (not the built-in game modes: Tug of Math Live).
+  const quiz = (mode !== 'game' && !A.GAME_MODES.has(mode)) || check.quiz;
   let items = null, setId = null;
   if (quiz) {
     // Would You Rather Live and Atlas Quest Live: the platform's own questions (a starter of their kind; a default one
@@ -261,7 +265,9 @@ export function createSession(host, opts = {}) {
   s.capacity = A.capacityFor({ mode: mode === 'game' ? null : mode, slug: game.slug, declared: check.maxPlayers });
   s.settings = ST.initial({ maxPlayers: A.maxPlayersFor(host, audience, opts.maxPlayers, s.capacity), locked: false, autoLock: audience === 'open' }, audience, s.nameMode, opts.settings);
   // A team setup carried in (the landing's teams row, play again) and a plan (a rematch, a saved class run).
-  if (teamsOn() && opts.teams && opts.teams.on !== false) T.fromSetup(s, opts.teams, opts.plan || null);
+  // Tug of Math Live: always Blue Whales against Red Foxes by average (a plan still places a class's players).
+  if (mode === 'tug') { TG.init(s, opts.starter); T.fromSetup(s, TUG.TEAMS, opts.plan || null); }
+  else if (teamsOn() && opts.teams && opts.teams.on !== false) T.fromSetup(s, opts.teams, opts.plan || null);
   sessions.set(s.id, s); byCode.set(s.code, s.id); hostOpen.set(host.id, s.id);
   startTimers();
   hooks.log('info', 'live session opened', { sid: s.id, mode, audience, players: s.settings.maxPlayers });
@@ -366,7 +372,7 @@ export function join(s, user, { asGuest = false, useMine = false, lang = 'en' } 
     no, nonce: crypto.randomBytes(12).toString('base64url'), userId: u ? u.id : null, kind: ok.kind, nick,
     name: s.nameMode === 'accounts' && u ? String(u.display_name || u.username).slice(0, 40) : '',
     avatar: own || N.randomAvatar(), ownAvatar: !!own, team: 0, lang,
-    score: 0, bonus: 0, scoredBy: s.quiz ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
+    score: 0, bonus: 0, scoredBy: s.quiz || s.tug ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
     pos: null, lastMoveAt: 0, lastJumpAt: 0, conn: null, everConnected: false, leftAt: t, rtt: 0, ready: false, late: s.phase !== 'lobby', view: '3d',
     buckets: null, acc: null,
   };
@@ -811,7 +817,7 @@ export function controllerFor(s, tok, u) {
 
 // The way the quiz module talks to devices (no import cycle).
 const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s),
-  publish: (s, patch) => publish(s, patch), projectorState: (s, patch) => projectorState(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
+  leaderboard: s => leaderboard(s), publish: (s, patch) => publish(s, patch), projectorState: (s, patch) => projectorState(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
 
 /** Platform-made shared state (Atlas Quest Live's flag and region, Would You Rather Live's all-time split): merged into
  *  s.state and sent to every device and the projector, like the Brain Board. Only fixed codes and numbers. */
@@ -904,7 +910,7 @@ function play(s) {
   // Brain Board: the picked tile's question; with nothing picked (the first countdown), the board.
   if (s.board) { const i = B.opening(s); if (i >= 0) Q.ask(s, io, i); else { setPhase(s, 'between'); publishBoard(s); } }
   else if (s.quiz) Q.ask(s, io, s.qz ? s.qz.i + 1 : 0);
-  else setPhase(s, 'playing', { at: now() });
+  else { setPhase(s, 'playing', { at: now() }); if (s.tug) TG.start(s, io); }
   // Eyes up while the game moved into play (raised in the lobby, loading, the countdown or between questions): the
   // round opens paused, so no clock runs behind the cover; lowering eyes (or Resume) starts it.
   if (s.eyes && s.phase === 'playing') { pauseNow(s); s.eyesPaused = true; }
@@ -912,6 +918,7 @@ function play(s) {
 function pauseNow(s) {
   s.pausedAt = now(); s.eyesPaused = false;
   if (s.quiz) Q.pause(s);
+  if (s.tug) TG.pause(s, io);
   setPhase(s, 'paused');
 }
 
@@ -1034,7 +1041,8 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       if (s.mode === 'board') { const turns = !!(s.settings && s.settings.turns); B.build(s); B.setTurns(s, turns); s.state = { ...s.state, bb: B.publicState(s) }; }
       if (T.isOn(s)) { for (const seat of s.seats.values()) if (!seat.team) T.place(s, seat); broadcast(s, T.tmsMsg(s)); }
       // Only the host's own start saves remembered defaults, to their own profile (a co-host's start saves nothing).
-      if (!who || who.role === 'host') try { ST.savePrefs(s.host.userId, { settings: ST.view(s.settings), teams: T.isOn(s) ? { on: true, ...T.setupOf(s) } : { on: false } }); } catch (e) { hooks.log('warn', 'live prefs not saved', { sid: s.id, error: e.message }); }
+      // Tug of Math Live's two teams are the game's own: the host's remembered teams stay as they were.
+      if (!who || who.role === 'host') try { ST.savePrefs(s.host.userId, { settings: ST.view(s.settings), teams: s.tug ? ((ST.loadPrefs(s.host.userId) || {}).teams || { on: false }) : T.isOn(s) ? { on: true, ...T.setupOf(s) } : { on: false } }); } catch (e) { hooks.log('warn', 'live prefs not saved', { sid: s.id, error: e.message }); }
       if (s.settings.autoLock) s.settings.locked = true;
       for (const seat of s.seats.values()) seat.ready = false;
       setPhase(s, 'loading', { at: now(), locked: s.settings.locked });
@@ -1043,7 +1051,7 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       return true;
     }
     case 'pause': {
-      if (s.phase !== 'playing') return false;
+      if (s.phase !== 'playing' || (s.tug && s.tug.done)) return false;
       pauseNow(s);
       return true;
     }
@@ -1057,10 +1065,12 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       if (s.quiz) return Q.resume(s, io, shift), true;
       s.at += shift;
       setPhase(s, 'playing');
+      if (s.tug) TG.resume(s, io);
       return true;
     }
     case 'next': case 'skip': {
-      if (at !== s.seq) return false;
+      // Tug of Math Live runs on its own clock: there is nothing to move on to.
+      if (at !== s.seq || s.tug) return false;
       if (s.quiz) {
         if (s.phase === 'playing') return a === 'skip' ? Q.skip(s, io) : Q.reveal(s, io), true;
         // Brain Board: between questions the board waits for a pick; Next only ends a cleared board.
@@ -1114,10 +1124,13 @@ export function eyes(s, on) {
  *  (everyone). Kept apart from the score: leaderboards show score + bonus; the gradebook the score alone. */
 export function bonus(s, { n = null, k = null, r = 0 } = {}) {
   if (!['lobby', 'loading', 'countdown', 'playing', 'paused', 'between'].includes(s.phase) || !Number.isInteger(r) || r < 0 || r >= P.BONUS_REASONS.length) return false;
+  // Tug of Math Live: the rope alone decides the match, so a bonus never moves a team's score (no team bonus; a
+  // player's bonus is theirs, kept off their team's average)
+  if (s.tug && !n) return false;
   if (n) {
     const seat = s.seats.get(n);
     if (!seat) return false;
-    T.bonusSeat(s, seat);
+    if (s.tug) seat.bonus = (seat.bonus || 0) + T.BONUS_POINTS; else T.bonusSeat(s, seat);
     const msg = JSON.stringify({ t: 'bn', n, r, p: T.BONUS_POINTS });
     sendTo(seat.conn, msg); toHosts(s, msg);
   } else {
@@ -1161,6 +1174,8 @@ export function setSettings(s, d, actor = null) {
  *  lobby; balance in the lobby or between; move any time (to no team only in the lobby); lock any time. -> bool */
 export function teamAction(s, m, actor = null) {
   if (!open(s) || !teamsOn()) return false;
+  // Tug of Math Live: always two teams by average; the host may balance, shuffle, move and lock, nothing else.
+  if (s.tug && !TG.teamActionOk(m)) return false;
   const lobby = s.phase === 'lobby';
   const ts = s.teams;
   let ok = false, extra = null;
@@ -1204,6 +1219,8 @@ export function pickTeam(s, seat, k) {
 export function ready(s, seat, view) {
   if (!seat.ready || seat.view !== view) { seat.ready = true; seat.view = view; broadcastSeat(s, 'pu', seat); }
   checkBarrier(s);
+  // Tug of Math Live: a frame that loads during the match (a late joiner, a reload) gets its question.
+  if (s.tug && (s.phase === 'playing' || s.phase === 'paused')) TG.sendQuestion(s, io, seat);
 }
 /** The host's frame said it is ready, with the game's live settings (Oomba.live.ready(opts)). */
 export function hostReady(s, cfg) {
@@ -1239,6 +1256,8 @@ export function emote(s, seat, e) {
 /** A game event: to everyone else (and the hosts), the hosts only, or the sender's own team (and the hosts). From the
  *  host: to every player, one seat, or one team. */
 export function event(s, from, m) {
+  // Tug of Math Live: a player's answer (or "my question again") goes to the server only, never to anyone else.
+  if (s.tug) { if (from && ['playing', 'paused'].includes(s.phase)) TG.fromPlayer(s, io, from, m); return; }
   if (!['lobby', 'loading', 'countdown', 'playing', 'between'].includes(s.phase)) return;
   // Brain Board: a tile pick (the projector's game, or the player whose turn it is), and the host's "players pick" switch.
   if (s.board && m.k === 'pick' && m.d && typeof m.d === 'object') { boardPick(s, m.d.c, m.d.r, from ? from.no : 0); return; }
@@ -1264,7 +1283,8 @@ export function event(s, from, m) {
 }
 /** A score the game reported. It can only rise as fast as the game's maxScorePerSec allows. */
 export function score(s, seat, n) {
-  if (s.quiz || !['playing', 'between', 'paused'].includes(s.phase)) return;
+  // Quiz modes and Tug of Math Live are scored by the server alone: a score a device reports is ignored.
+  if (s.quiz || s.tug || !['playing', 'between', 'paused'].includes(s.phase)) return;
   // Only time spent playing counts: the lobby, loading, countdown, pauses and the gaps between rounds bank nothing
   // (lastScoreAt is reset when play starts and shifted over a pause; after play stops, time is counted up to then).
   const t = s.phase === 'playing' ? now() : Math.max(seat.lastScoreAt, Math.min(now(), s.playEndAt || 0));
@@ -1276,7 +1296,7 @@ export function score(s, seat, n) {
 }
 /** An item result the game reported (once per item). */
 export function item(s, seat, i, ok) {
-  if (s.quiz || !['playing', 'between', 'paused'].includes(s.phase) || seat.items.has(i)) return;
+  if (s.quiz || s.tug || !['playing', 'between', 'paused'].includes(s.phase) || seat.items.has(i)) return;
   seat.items.set(i, ok); seat.answered++; if (ok) seat.correct++;
   s.dpDirty = true;
   const st = s.itemStats.get(i) || { right: 0, answered: 0 };
@@ -1325,7 +1345,7 @@ export function endSession(sid, why = 'ended') {
   s.invites.clear();
   let summary = null;
   try { summary = R.summary(s); s.summary = summary; if (s.startedAt) R.save(s, summary); } catch (e) { hooks.log('error', 'live results not saved', { sid: s.id, error: e.message }); }
-  if (s.startedAt && T.isOn(s)) { try { T.saveClassTeams(s); } catch (e) { hooks.log('error', 'live class teams not saved', { sid: s.id, error: e.message }); } }
+  if (s.startedAt && T.isOn(s) && !s.tug) { try { T.saveClassTeams(s); } catch (e) { hooks.log('error', 'live class teams not saved', { sid: s.id, error: e.message }); } }
   // Team scores first (fin), then the end. Players see the top five, or none when the host turned the leaderboard off.
   teamScores(s, { fin: true });
   const top = summary ? summary.players.slice(0, 5).map(p => [p.seat, p.total ?? p.score]) : [];
@@ -1376,7 +1396,7 @@ export function rematch(old, host, { shuffle = false } = {}) {
   const snap = old.again;
   const teams = T.setupOf(old);
   const r = createSession(host, {
-    mode: old.mode, gameId: old.gameId,
+    mode: old.mode, gameId: old.gameId, ...(old.tug ? { starter: old.tug.id } : {}),
     // Would You Rather Live and Atlas Quest Live: the platform's own questions as they were (votes, map codes).
     ...(old.allItems && (old.mode === 'wyr' || old.mode === 'atlas') ? { trusted: old.allItems.map(it => ({ ...it, secs: it.own || it.secs })) }
       : old.allItems ? { items: old.allItems.map(it => ({ q: it.q, choices: it.choices, answer: it.answer, secs: it.own || it.secs })) } : {}),
@@ -1398,7 +1418,7 @@ export function rematch(old, host, { shuffle = false } = {}) {
     const nseat = {
       no: ++ns.seatSeq, nonce: crypto.randomBytes(12).toString('base64url'), userId: u ? u.id : null, kind: chk.kind, nick: ns.nicksUsed.has(nick) ? N.pickNick(ns.nicksUsed) : nick,
       name: ns.nameMode === 'accounts' && u ? String(u.display_name || u.username).slice(0, 40) : '', avatar, ownAvatar: seat.ownAvatar, team: 0, lang: seat.lang,
-      score: 0, bonus: 0, scoredBy: ns.quiz ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
+      score: 0, bonus: 0, scoredBy: ns.quiz || ns.tug ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
       pos: null, lastMoveAt: 0, lastJumpAt: 0, conn: null, everConnected: false, leftAt: t, rtt: 0, ready: false, late: false, view: '3d', buckets: null, acc: null,
     };
     ns.nicksUsed.add(nseat.nick);
@@ -1453,6 +1473,7 @@ export function tick() {
         if (s.host.conn && (s.host.conn.bufferedAmount || 0) < MAX_BUFFERED) sendTo(s.host.conn, str);
       }
     }
+    if (s.tug && (s.phase === 'playing' || s.phase === 'paused')) TG.tick(s, io);
     if (s.scoresDirty && tickNo % 20 === 0) leaderboard(s);
     if (s.dpDirty && tickNo % 10 === 0 && dashes(s).some(d => d.tier === 'full')) { s.dpDirty = false; toDash(s, D.dpMsg(s)); }
   }

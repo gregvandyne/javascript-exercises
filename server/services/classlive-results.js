@@ -64,9 +64,14 @@ export function summary(s) {
   }));
   // Teams that ever had a member (E11), in rank order; preset numbers only (each page names them in its language).
   const teams = T.isOn(s) ? T.ranked(s).filter(r => r.ever).map(r => ({ k: r.k, p: r.p, score: r.score, sum: r.sum, avg: r.avg, bonus: r.bonus, size: r.size || seats.filter(x => x.team === r.k).length, rank: r.rank })) : [];
+  // Tug of Math Live: the rope decided the match (the same winner as the banner on every screen; a draw shares 1st)
+  if (s.tug && s.tug.win != null) {
+    for (const r of teams) r.rank = s.tug.win === 0 || r.k === s.tug.win ? 1 : 2;
+    teams.sort((a, b) => a.rank - b.rank || b.score - a.score || a.k - b.k);
+  }
   const out = {
     id: s.id, title: s.title, mode: s.mode, audience: s.audience, nameMode: s.nameMode, startedAt: s.startedAt, endedAt: s.endedAt,
-    scoredBy: s.quiz ? 'server' : 'game', players: rows, items, teams, scoring: T.isOn(s) ? s.teams.scoring : null,
+    scoredBy: s.quiz || s.tug ? 'server' : 'game', players: rows, items, teams, scoring: T.isOn(s) ? s.teams.scoring : null,
     settings: settingsOf(s), guests: seats.filter(x => x.kind === 'guest').length,
   };
   // Which account sat in which seat: for save() only, never sent anywhere (not enumerable, so not in any JSON).
@@ -77,7 +82,9 @@ export function summary(s) {
 /** The run's settings worth keeping (no maxPlayers or lock state). */
 const settingsOf = s => {
   const st = s.settings || {};
-  return { secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes };
+  return { secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes,
+    // Tug of Math Live: its grade and length (a starter id), so "Play again with these teams" plays the same match
+    ...(s.tug ? { tug: s.tug.id } : {}) };
 };
 /** A saved item: the host-written text and choices, the answer, the time, the counts and the category (never anything a
  *  player sent). P4: cat and secs survive the save, so a CS Quest run keeps each question's standard. */

@@ -3853,7 +3853,8 @@
       "roboRoute": "Guie um robô com blocos: sequências, laços, condicionais, variáveis e funções, e depois corrija os bugs.",
       "dataDetective": "Ordene, faça gráficos e limpe dados, e depois faça afirmações que as evidências sustentam.",
       "packetPost": "Envie pacotes por uma rede, escolha frases-senha fortes e identifique truques online.",
-      "insideTheMachine": "Monte e conserte computadores: peças, entradas e saídas, bits e pixels, design para todos."
+      "insideTheMachine": "Monte e conserte computadores: peças, entradas e saídas, bits e pixels, design para todos.",
+      "tugOfMath": "Perguntas de matemática escolhidas para cada ano, do 1º ao 8º, de somas até 20 a equações, num cabo de guerra. Contra o computador ou um amigo na mesma tela."
     },
     "hubs": {
       "math": {
@@ -4072,7 +4073,8 @@
           "connectFour": "Partidas rápidas para pensar à frente, contra um irmão ou contra o robô no Fácil.",
           "loopLab": "Toque nos quadrados para criar uma batida e ouvi-la se repetir na hora. Não precisa saber ler partitura.",
           "beatLanes": "Toque no ritmo de músicas conhecidas, começando por Brilha, brilha, estrelinha.",
-          "munchMaze": "Uma perseguição no labirinto com modo Fácil: planeje o caminho e pegue todas as bolinhas."
+          "munchMaze": "Uma perseguição no labirinto com modo Fácil: planeje o caminho e pegue todas as bolinhas.",
+          "tugOfMath": "Escolha o 2º ou 3º ano: soma, subtração e tabuada, com o computador no Fácil até conseguirem vencer."
         },
         "faq": {
           "q2": "Os jogos são difíceis demais para uma criança de 8 anos?",
@@ -4101,7 +4103,8 @@
           "brickDrop": "A velocidade aumenta rápido, o que combina com quem quer um desafio de verdade e gosta de bater o próprio recorde.",
           "loopLab": "Já têm idade para planejar uma música inteira: juntar batidas e vencer os 10 desafios musicais.",
           "heroOfSunvale": "Maior que um jogo rápido: missões para ler e cumprir e um reino em 3D para explorar no próprio ritmo.",
-          "swishFlick": "Uma pausa rápida com um pouco de física: a direção do movimento mira a bola, e a velocidade decide até onde ela vai."
+          "swishFlick": "Uma pausa rápida com um pouco de física: a direção do movimento mira a bola, e a velocidade decide até onde ela vai.",
+          "tugOfMath": "O 4º e o 5º ano trazem multiplicações maiores e a ordem das operações; dois jogadores podem puxar num tablet ou lousa digital."
         },
         "faq": {
           "q2": "Os jogos são fáceis demais para uma criança de 10 anos?",
@@ -4128,7 +4131,8 @@
           "brickDrop": "Corra até 40 linhas no Sprint ou continue na Maratona enquanto tudo fica mais rápido.",
           "loopLab": "Adolescentes que curtem música podem criar músicas inteiras com bateria, baixo e melodia, não só batidas simples.",
           "beatLanes": "Nove músicas e combos longos para dedos rápidos.",
-          "heroOfSunvale": "Um grande reino em 3D para explorar, com missões e um dragão no final."
+          "heroOfSunvale": "Um grande reino em 3D para explorar, com missões e um dragão no final.",
+          "tugOfMath": "Do 6º ao 8º ano: porcentagens, números negativos, potências e equações, contra o computador no Difícil."
         },
         "faq": {
           "q2": "A Oomba Academy é infantil demais para quem tem 13 anos?",
@@ -4607,7 +4611,9 @@
       "wyr": "O que você prefere? (Ao vivo)",
       "wyrText": "A turma vota em dilemas divertidos e vê como se divide, e o que todo mundo no Oomba escolheu. Sem respostas certas, sem pontos: só para conversar.",
       "atlas": "Atlas Quest (Ao vivo)",
-      "atlasText": "Todos tocam o país no seu próprio mapa-múndi: encontre o país, a bandeira, a capital ou aquilo pelo que é famoso. Chegar perto também vale um pouco."
+      "atlasText": "Todos tocam o país no seu próprio mapa-múndi: encontre o país, a bandeira, a capital ou aquilo pelo que é famoso. Chegar perto também vale um pouco.",
+      "tug": "Tug of Math (Ao vivo)",
+      "tugText": "A turma se divide em dois times. Cada um responde perguntas de matemática do seu ano no próprio teclado, e cada resposta certa puxa a corda."
     },
     "starter": {
       "title": {
@@ -4856,6 +4862,7 @@
         "cat": "A categoria da pergunta {n} não é permitida."
       },
       "noMissed": "Todo mundo acertou todas, então não há nada para jogar de novo.",
+      "tugTeams": "Tug of Math precisa de dois times, e os times estão desligados neste site.",
       "teamsOff": "Este jogo não tinha times.",
       "againGone": "Os jogadores já saíram. Comece um novo jogo.",
       "homeworkOff": "A lição de casa com conjuntos de perguntas está desligada.",
@@ -5034,6 +5041,7 @@
       "howJoin": "Seu professor mostra um código na tela. Digite aqui para entrar.",
       "teacherHost": "É professor? Comece ao vivo com sua turma",
       "solo": "Praticar sozinho",
+      "play": "Jogar contra o computador ou em 2",
       "joinGo": "Entrar"
     },
     "check": {
@@ -5385,6 +5393,18 @@
       "secsN": "{n} segundos",
       "hint": "Depois de cada votação a turma vê como se dividiu: um bom momento para perguntar a algumas crianças por que escolheram."
     },
+    "tugUi": {
+      "legend": "Tug of Math (Ao vivo)",
+      "grade": "Ano",
+      "grades": "1º ano|2º ano|3º ano|4º ano|5º ano|6º ano|7º ano|8º ano",
+      "like": "Perguntas como:",
+      "len": "Duração",
+      "secsN": "{n} segundos",
+      "toLine": "Até alguém vencer (no máximo 3 minutos)",
+      "of": "de",
+      "hint": "Os jogadores são divididos para você em dois times iguais. Cada um recebe suas próprias perguntas, então ninguém cola, e um time menor puxa com a mesma força.",
+      "teamsAuto": "Dois times feitos para você: Baleias Azuis e Raposas Vermelhas. Você pode equilibrar, embaralhar ou mudar jogadores."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (Ao vivo)",
       "region": "Onde no mundo",
@@ -5509,6 +5529,10 @@
       "wyr": {
         "h": "O que você prefere? (Ao vivo)",
         "p": "A turma vota em dilemas divertidos e vê como se divide, e o que todo mundo no Oomba escolheu. Sem respostas certas nem pontos: uma conversa pronta para começar."
+      },
+      "tug": {
+        "h": "Tug of Math (Ao vivo)",
+        "p": "Dois times puxam uma corda com respostas certas. Escolha um ano de 1 a 8; cada jogador responde às próprias perguntas num teclado, e times desiguais puxam de forma justa."
       },
       "atlas": {
         "h": "Atlas Quest (Ao vivo)",

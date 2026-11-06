@@ -3852,7 +3852,8 @@
       "roboRoute": "Steuere einen Roboter mit Blöcken: Abfolgen, Schleifen, Bedingungen, Variablen und Funktionen, dann Fehler finden.",
       "dataDetective": "Sortiere, zeichne und bereinige Daten und triff nur Aussagen, die die Daten stützen.",
       "packetPost": "Schicke Pakete durchs Netz, wähle starke Passphrasen und erkenne Tricks im Netz.",
-      "insideTheMachine": "Baue und repariere Computer: Bauteile, Ein- und Ausgaben, Bits und Pixel, Design für alle."
+      "insideTheMachine": "Baue und repariere Computer: Bauteile, Ein- und Ausgaben, Bits und Pixel, Design für alle.",
+      "tugOfMath": "Matheaufgaben für jede Klasse von 1 bis 8, vom Plus im Zahlenraum bis 20 bis zu Gleichungen, als Tauziehen. Gegen den Computer oder zu zweit an einem Bildschirm."
     },
     "hubs": {
       "math": {
@@ -4071,7 +4072,8 @@
           "connectFour": "Schnelle Partien, in denen man vorausplant, gegen Geschwister oder den Roboter auf „Leicht“.",
           "loopLab": "Kästchen antippen, einen Beat bauen und ihn sofort in Dauerschleife hören. Noten lesen ist nicht nötig.",
           "beatLanes": "Im Takt zu bekannten Liedern tippen, zum Anfang mit „Funkel, funkel, kleiner Stern“.",
-          "munchMaze": "Eine Jagd durchs Labyrinth mit leichtem Modus: einen Weg planen und alle Kügelchen sammeln."
+          "munchMaze": "Eine Jagd durchs Labyrinth mit leichtem Modus: einen Weg planen und alle Kügelchen sammeln.",
+          "tugOfMath": "Klasse 2 oder 3 wählen: Plus, Minus und Einmaleins, mit dem Computer auf Leicht, bis sie ihn schlagen."
         },
         "faq": {
           "q2": "Sind die Spiele zu schwer für 8-Jährige?",
@@ -4100,7 +4102,8 @@
           "brickDrop": "Das Tempo zieht schnell an: ideal für Kinder, die eine echte Herausforderung suchen und gern ihren eigenen Rekord schlagen.",
           "loopLab": "Alt genug, um einen ganzen Song zu planen: Beats verbinden und die 10 Musik-Challenges schaffen.",
           "heroOfSunvale": "Mehr als ein schnelles Spiel: Missionen zum Lesen und Befolgen und ein 3D-Königreich, das sie in ihrem eigenen Tempo erkunden.",
-          "swishFlick": "Eine kurze Pause mit etwas Physik: Die Richtung des Wischs zielt, und das Tempo bestimmt, wie weit der Ball fliegt."
+          "swishFlick": "Eine kurze Pause mit etwas Physik: Die Richtung des Wischs zielt, und das Tempo bestimmt, wie weit der Ball fliegt.",
+          "tugOfMath": "Klasse 4 und 5 bringen größere Malaufgaben und Punkt vor Strich; zu zweit an einem Tablet oder einer digitalen Tafel."
         },
         "faq": {
           "q2": "Sind die Spiele zu leicht für 10-Jährige?",
@@ -4127,7 +4130,8 @@
           "brickDrop": "Im Sprint auf 40 Reihen rasen oder im Marathon weiterspielen, während es immer schneller wird.",
           "loopLab": "Musikbegeisterte Jugendliche bauen ganze Songs aus Schlagzeug, Bass und Melodie, nicht nur einfache Beats.",
           "beatLanes": "Neun Lieder und lange Combos für flinke Finger.",
-          "heroOfSunvale": "Ein großes 3D-Königreich zum Erkunden, mit Missionen und einem Drachen am Ende."
+          "heroOfSunvale": "Ein großes 3D-Königreich zum Erkunden, mit Missionen und einem Drachen am Ende.",
+          "tugOfMath": "Klasse 6 bis 8: Prozente, negative Zahlen, Potenzen und Gleichungen, gegen den Computer auf Schwer."
         },
         "faq": {
           "q2": "Ist Oomba Academy zu kindisch für 13-Jährige?",
@@ -4606,7 +4610,9 @@
       "wyr": "Was wäre dir lieber? (Live)",
       "wyrText": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: einfach darüber reden.",
       "atlas": "Atlas Quest (Live)",
-      "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte."
+      "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte.",
+      "tug": "Tug of Math (Live)",
+      "tugText": "Die Klasse teilt sich in zwei Teams. Alle lösen Matheaufgaben für ihre Klasse auf ihrem eigenen Ziffernblock, und jede richtige Antwort zieht am Seil."
     },
     "starter": {
       "title": {
@@ -4855,6 +4861,7 @@
         "cat": "Die Kategorie in Frage {n} ist nicht erlaubt."
       },
       "noMissed": "Alle haben alles richtig, es gibt nichts zu wiederholen.",
+      "tugTeams": "Tug of Math braucht zwei Teams, und Teams sind auf dieser Seite ausgeschaltet.",
       "teamsOff": "Dieses Spiel hatte keine Teams.",
       "againGone": "Die Spieler sind gegangen. Starten Sie lieber ein neues Spiel.",
       "homeworkOff": "Hausaufgaben aus Fragensets sind ausgeschaltet.",
@@ -5033,6 +5040,7 @@
       "howJoin": "Deine Lehrkraft zeigt einen Code an der Tafel. Tippe ihn hier ein, um mitzuspielen.",
       "teacherHost": "Lehrkraft? Starte es live mit deiner Klasse",
       "solo": "Allein üben",
+      "play": "Gegen den Computer oder zu zweit spielen",
       "joinGo": "Beitreten"
     },
     "check": {
@@ -5384,6 +5392,18 @@
       "secsN": "{n} Sekunden",
       "hint": "Nach jeder Abstimmung sieht die Klasse die Aufteilung: ein guter Moment, ein paar Kinder zu fragen, warum sie so gewählt haben."
     },
+    "tugUi": {
+      "legend": "Tug of Math (Live)",
+      "grade": "Klasse",
+      "grades": "Klasse 1|Klasse 2|Klasse 3|Klasse 4|Klasse 5|Klasse 6|Klasse 7|Klasse 8",
+      "like": "Aufgaben wie:",
+      "len": "Wie lange",
+      "secsN": "{n} Sekunden",
+      "toLine": "Bis einer gewinnt (höchstens 3 Minuten)",
+      "of": "von",
+      "hint": "Die Spieler werden für dich auf zwei gleich große Teams verteilt. Alle bekommen eigene Aufgaben, also kann niemand abschreiben, und ein kleineres Team zieht genauso stark.",
+      "teamsAuto": "Zwei Teams, für dich gebildet: Blaue Wale und Rote Füchse. Du kannst ausgleichen, mischen oder Spieler verschieben."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (Live)",
       "region": "Wo auf der Welt",
@@ -5508,6 +5528,10 @@
       "wyr": {
         "h": "Was wäre dir lieber? (Live)",
         "p": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: ein fertiger Gesprächsanlass."
+      },
+      "tug": {
+        "h": "Tug of Math (Live)",
+        "p": "Zwei Teams ziehen mit richtigen Antworten an einem Seil. Wähle eine Klasse von 1 bis 8; alle lösen eigene Aufgaben auf einem Ziffernblock, und ungleiche Teams ziehen fair."
       },
       "atlas": {
         "h": "Atlas Quest (Live)",

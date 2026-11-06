@@ -287,7 +287,8 @@
       "roboRoute": "Guide a robot with blocks: sequences, loops, conditionals, variables and functions, then fix the bugs.",
       "dataDetective": "Sort, chart and clean data, then make claims the evidence supports.",
       "packetPost": "Send packets across a network, pick strong passphrases and spot online tricks.",
-      "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone."
+      "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone.",
+      "tugOfMath": "Maths questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen."
     },
     "hubs": {
       "math": {
@@ -336,6 +337,11 @@
       },
       "a10": {
         "abcya": "Outgrowing ABCya? Its games are for nursery to Year 7. Oomba Academy is made for ages 8 to 14."
+      },
+      "a8": {
+        "fit": {
+          "tugOfMath": "Pick grade 2 or 3: adding, taking away and times tables, with the computer on Easy until they beat it."
+        }
       }
     },
     "index": {
@@ -391,6 +397,10 @@
       "subject": {
         "math": "Maths"
       }
+    },
+    "tugUi": {
+      "grade": "Year",
+      "grades": "Year 2|Year 3|Year 4|Year 5|Year 6|Year 7|Year 8|Year 9"
     }
   },
   "match": {

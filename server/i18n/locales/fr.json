@@ -3851,7 +3851,8 @@
       "roboRoute": "Guidez un robot avec des blocs : séquences, boucles, conditions, variables et fonctions, puis corrigez les bugs.",
       "dataDetective": "Triez, représentez et nettoyez des données, puis faites des affirmations que les preuves soutiennent.",
       "packetPost": "Envoyez des paquets sur un réseau, choisissez des phrases de passe solides et repérez les pièges en ligne.",
-      "insideTheMachine": "Montez et réparez des ordinateurs : composants, entrées et sorties, bits et pixels, conception pour tous."
+      "insideTheMachine": "Montez et réparez des ordinateurs : composants, entrées et sorties, bits et pixels, conception pour tous.",
+      "tugOfMath": "Des questions de maths choisies pour chaque niveau de 1 à 8, des additions jusqu’à 20 aux équations, en partie de tir à la corde. Contre l’ordi ou un ami sur le même écran."
     },
     "hubs": {
       "math": {
@@ -4070,7 +4071,8 @@
           "connectFour": "Des parties rapides pour apprendre à anticiper, contre un frère, une sœur ou le robot en mode Facile.",
           "loopLab": "On touche des cases pour créer un rythme et on l’entend tourner en boucle tout de suite. Pas besoin de savoir lire la musique.",
           "beatLanes": "Taper en rythme sur des chansons connues, en commençant par Ah ! vous dirai-je, maman.",
-          "munchMaze": "Une course-poursuite dans un labyrinthe avec un mode Facile : prévoir un trajet et manger toutes les pastilles."
+          "munchMaze": "Une course-poursuite dans un labyrinthe avec un mode Facile : prévoir un trajet et manger toutes les pastilles.",
+          "tugOfMath": "Choisis le niveau 2 ou 3 : additions, soustractions et tables de multiplication, avec l’ordi en Facile jusqu’à la victoire."
         },
         "faq": {
           "q2": "Les jeux sont-ils trop difficiles pour un enfant de 8 ans ?",
@@ -4099,7 +4101,8 @@
           "brickDrop": "La vitesse augmente vite : parfait pour les enfants qui veulent un vrai défi et aiment battre leur propre record.",
           "loopLab": "Assez grands pour imaginer une chanson entière : enchaîner des rythmes et réussir les 10 défis musicaux.",
           "heroOfSunvale": "Plus qu’un jeu rapide : des missions à lire et à suivre, et un royaume en 3D à explorer à leur rythme.",
-          "swishFlick": "Une pause rapide avec un peu de physique : la direction du geste vise et sa vitesse décide jusqu’où la balle vole."
+          "swishFlick": "Une pause rapide avec un peu de physique : la direction du geste vise et sa vitesse décide jusqu’où la balle vole.",
+          "tugOfMath": "Les niveaux 4 et 5 ajoutent de plus grandes multiplications et les priorités opératoires ; on peut jouer à deux sur une tablette ou un tableau interactif."
         },
         "faq": {
           "q2": "Les jeux sont-ils trop faciles pour un enfant de 10 ans ?",
@@ -4126,7 +4129,8 @@
           "brickDrop": "Une course jusqu’à 40 lignes en Sprint, ou continuer en Marathon pendant que ça accélère.",
           "loopLab": "Les ados passionnés de musique peuvent construire des chansons entières avec batterie, basse et mélodie, pas seulement des rythmes simples.",
           "beatLanes": "Neuf chansons et de longs combos pour les doigts rapides.",
-          "heroOfSunvale": "Un grand royaume en 3D à explorer, avec des missions et un dragon à la fin."
+          "heroOfSunvale": "Un grand royaume en 3D à explorer, avec des missions et un dragon à la fin.",
+          "tugOfMath": "Niveaux 6 à 8 : pourcentages, nombres négatifs, puissances et équations, contre l’ordi en Difficile."
         },
         "faq": {
           "q2": "Oomba Academy est-il trop enfantin pour un ado de 13 ans ?",
@@ -4605,7 +4609,9 @@
       "wyr": "Tu préfères ? (En direct)",
       "wyrText": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse, pas de points : on discute.",
       "atlas": "Atlas Quest (En direct)",
-      "atlasText": "Chacun touche le pays sur sa propre carte du monde : trouve-le, son drapeau, sa capitale ou ce qui le rend célèbre. Viser juste à côté rapporte un peu aussi."
+      "atlasText": "Chacun touche le pays sur sa propre carte du monde : trouve-le, son drapeau, sa capitale ou ce qui le rend célèbre. Viser juste à côté rapporte un peu aussi.",
+      "tug": "Tug of Math (En direct)",
+      "tugText": "La classe se partage en deux équipes. Chacun répond à des questions de maths de son niveau sur son propre pavé, et chaque bonne réponse tire la corde."
     },
     "starter": {
       "title": {
@@ -4854,6 +4860,7 @@
         "cat": "La catégorie de la question {n} n’est pas autorisée."
       },
       "noMissed": "Tout le monde a tout juste : il n'y a rien à rejouer.",
+      "tugTeams": "Tug of Math a besoin de deux équipes, et les équipes sont désactivées sur ce site.",
       "teamsOff": "Ce jeu n'avait pas d'équipes.",
       "againGone": "Les joueurs sont partis. Lancez plutôt un nouveau jeu.",
       "homeworkOff": "Les devoirs à partir de séries de questions sont désactivés.",
@@ -5032,6 +5039,7 @@
       "howJoin": "Ton enseignant affiche un code au tableau. Tape-le ici pour rejoindre.",
       "teacherHost": "Enseignant ? Lancez-le en direct avec votre classe",
       "solo": "S’entraîner seul",
+      "play": "Jouer contre l’ordi ou à 2",
       "joinGo": "Rejoindre"
     },
     "check": {
@@ -5383,6 +5391,18 @@
       "secsN": "{n} secondes",
       "hint": "Après chaque vote, la classe voit le partage : un bon moment pour demander à quelques enfants pourquoi ils ont choisi."
     },
+    "tugUi": {
+      "legend": "Tug of Math (En direct)",
+      "grade": "Niveau",
+      "grades": "Niveau 1|Niveau 2|Niveau 3|Niveau 4|Niveau 5|Niveau 6|Niveau 7|Niveau 8",
+      "like": "Des questions comme :",
+      "len": "Durée",
+      "secsN": "{n} secondes",
+      "toLine": "Jusqu’à la victoire (3 minutes au plus)",
+      "of": "de",
+      "hint": "Les joueurs sont répartis pour toi en deux équipes égales. Chacun a ses propres questions, donc personne ne copie, et une équipe plus petite tire aussi fort.",
+      "teamsAuto": "Deux équipes faites pour toi : les Baleines Bleues et les Renards Rouges. Tu peux équilibrer, mélanger ou déplacer des joueurs."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (En direct)",
       "region": "Où dans le monde",
@@ -5507,6 +5527,10 @@
       "wyr": {
         "h": "Tu préfères ? (En direct)",
         "p": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse ni de points : une discussion toute prête."
+      },
+      "tug": {
+        "h": "Tug of Math (En direct)",
+        "p": "Deux équipes tirent une corde avec de bonnes réponses. Choisis un niveau de 1 à 8 ; chaque joueur répond à ses propres questions sur un pavé, et des équipes inégales tirent à armes égales."
       },
       "atlas": {
         "h": "Atlas Quest (En direct)",

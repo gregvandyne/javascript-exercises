@@ -12,7 +12,7 @@ scripts (`public/js/live-*.js`), the SDK transport (`public/sdk/brb-sdk.js`) and
 | `POST /api/live/join` | anyone (same-origin) | `{ code, asGuest?, useMine? }` | 200 `{ sid, tok, seat, nick, name, avatar, audience, nameMode, title, again, canReroll, play }` · 400 `badCode` · 401 `signIn` (+`login`) · 403 `notMember`/`removed` · 404 `notFound`/`takenDown` · 409 `locked`/`full` · 410 `ended` · 429 `slowDown`. Errors are `{ error (translated), code }`. Never sets a cookie. At least 150 ms. |
 | `POST /api/live/reroll` | seat token | `{ tok }` | `{ seat, nick, name, avatar }`; 429 after 10 a minute or once the seat has connected. |
 | `POST /api/live/report` | seat token | `{ tok, reason: 'scary'|'mean'|'personal'|'other' }` | `{ ok, toast }`; 3 an hour per seat. The host gets `rp`. |
-| `GET /live` | hosts (others → `/join`) | `?game=`, `?mode=`, `?class=`, `?cl=&step=`, `?set=`, `?starter=` preselect | Landing (a `data-api` form). `?starter=` takes a platform starter id (`wyr:<topics>:<count>:<secs>`, `bank:<subject|mixed>:<level>:<count>`, `bank:board:<level>:<subj>+<subj>`, `atlas:…`, or `science`/`geo`/`board`/`math-8`…) and fills the form with it (the mode too, when none is given); an unknown id is ignored. Lesson plans use it (`routes/live.js starterPre`). |
+| `GET /live` | hosts (others → `/join`) | `?game=`, `?mode=`, `?class=`, `?cl=&step=`, `?set=`, `?starter=` preselect | Landing (a `data-api` form). `?starter=` takes a platform starter id (`wyr:<topics>:<count>:<secs>`, `bank:<subject|mixed>:<level>:<count>`, `bank:board:<level>:<subj>+<subj>`, `atlas:…`, `tug:<grade>:<len>`, or `science`/`geo`/`board`/`math-8`…) and fills the form with it (the mode too, when none is given); an unknown id is ignored. Lesson plans use it (`routes/live.js starterPre`). |
 | `POST /api/live/sessions` | hosts, 30/hour | `{ pick: 'mode:quest-race'|'mode:battle'|'game:<id>', set: 'starter:<id>'|'set:<id>', audience: 'class'|'family'|'open', classId?, maxPlayers?, clId?, stepId?, replace? }` (or JSON `mode`, `gameId`, `setId`, `starter`, `items`) | `{ sid, redirect: '/live/host/<sid>' }` · 409 `{ code: 'hasOpen', sid, host }` · 400/404/503 `{ code }` with codes `off notHost mode audience notTeacher noFamily notFound notPublished notPublic notShared notReady noSet setIncomplete busy`. |
 | `GET /api/live/mine` | hosts | | `{ sid, title, host }` of their open session, or `{}`. |
 | `GET /live/host/:sid` | that host | | Projector page (bare). Ended → `/live/results/:sid`. |
@@ -344,3 +344,35 @@ is ignored for these modes.
 - `atlas`: `q.choices` is every country's code (195, Atlas Quest's order); `an.c` is the tapped country's index;
   `rv.counts` has 195 entries. Before each `q`: state `atl: { i, k: 'find'|'capital'|'flag'|'famous', reg }`; the projector alone also gets `atlf: { i, fl }` (a flag question's flag, or null).
   `you.points` may be above 0 with `ok: false` (a near miss).
+
+### Tug of Math Live (`tug`)
+
+A built-in **game** mode (`A.GAME_MODES`: no question set, no `q`/`an`/`rv`; `server/live/tug.js`,
+`server/services/classlive-tug.js`). `POST /api/live/sessions` with `pick: 'mode:tug'` takes `tugGrade` (1-8) and
+`tugLen` (60, 90, 120, or 0 for "until someone wins": the line, 180 s at most), or `starter: 'tug:<grade>:<len>'`; sets, items and the
+landing's teams row are ignored. Refused with `tugTeams` while `LIVE_TEAMS` is off.
+
+- Teams are always on: `n: 2`, presets `[0, 6]`, scoring `avg`. `tm` takes only `balance`, `shuffle`, `lock`, `unlock`
+  and `move` to team 1 or 2; anything else is ignored.
+- After the countdown the phase is `playing` with the server's clock. Each player gets its own question as a game event
+  from the server: `ev { f: 0, k: 'tq', d: { i, e } }` (`i` counts that player's questions from 0; `e` is the
+  generator's tokens: numbers and the words `add sub mul div lp rp eq q x sq cu pow sqrt pct of`), sent to that seat
+  only. The player answers `ev { k: 'ans', d: { i, v }, to: 'host' }` (`v` a whole number, at most 5 digits); the
+  server checks it and sends that seat `ev { f: 0, k: 'tr', d: { i, ok, a? } }` (`a`, the right answer, only after a
+  wrong one), then the next `tq`. `ev { k: 'need', to: 'host' }` asks for the open question again (a reloaded frame;
+  a frame that says `rdy` during play gets it anyway); only while `playing` (a player who comes back during a pause
+  asks again on resume). Every player's n-th question is the same kind and the same form within it
+  (`TugGen.kindAt`, `TugGen.variantSeed` from the room's seed), with that player's own numbers. Answers to an old `i`, while paused, after the end, or sooner than
+  300 ms after a right answer (1 s after a wrong one) are dropped. None of these events is relayed to anyone; `sc` and
+  `it` from devices are ignored in this mode.
+- Shared state `tug` (to every device and the projector, and in `wel.state`), sent when it changes, about 5 times a
+  second at most: `{ g, len, line, run: 0|1, end: server ms (while running), left: ms, pos, pull: [blue, red], right:
+  [blue, red], n: [blue, red], win: null | 0 (draw) | 1 | 2 }`. `pos` = `pull[0] - pull[1]`; each right answer adds
+  `1 / players on the team` to its team's pull. `|pos| >= line` (5) wins at once; else time decides. `win` is set, the
+  clock stops, and the session ends 3 s later (`ph ended`, the podium, the results).
+- `pause` / eyes up stop the clock (`run: 0`, `left`); `resume` starts it again (`end` moves). `next` and `skip` do
+  nothing in this mode. Scores: 100 a right answer (`seat.score`), banked to the team as a rise (team `avg` = 100 ×
+  pulls, the number the projector and the phones show for each team: points per player, a whole number);
+  `scoredBy: 'server'`. No team bonus in this mode (`bonus {k}` is refused; a seat's bonus stays the seat's and is not
+  banked to its team), and the results rank the teams by `win` (the winner 1st, a draw both 1st), so the podium always
+  agrees with the rope. The run's settings keep `tug: '<starter id>'` for play again.

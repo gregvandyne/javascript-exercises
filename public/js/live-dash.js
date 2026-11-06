@@ -292,7 +292,8 @@ function drawTeams() {
   teamBars($('lv-dash-teams'), teams.on ? teams.list.map(t => ({ k: t.k, p: t.p, size: sizeOf(t.k), ...(scores.get(t.k) || { score: 0, rank: 0 }) })) : [], presets, { scoring: teams.scoring, text: { perPlayer: TT.perPlayer } });
   // team bonus: a menu of the fixed reasons per team
   bonusRow.textContent = '';
-  if (teams.on && phase !== 'ended') for (const t of teams.list) {
+  // (Tug of Math Live: none; the rope alone decides the match)
+  if (teams.on && phase !== 'ended' && mode !== 'tug') for (const t of teams.list) {
     const pr = presets[t.p]; if (!pr) continue;
     const d = document.createElement('details'); d.className = 'lv-dash-tb';
     const s = document.createElement('summary'); s.className = 'btn btn-sm'; s.append(teamChip(pr, t.k), ` · ${TX.bonusGive || '+100'}`); d.append(s);

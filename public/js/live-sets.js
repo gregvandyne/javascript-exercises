@@ -21,6 +21,10 @@ if (form) {
     const own = !!(card && card.closest('.lv-pick') && card.closest('.lv-pick').dataset.own === '1');
     if (sets) sets.hidden = !quiz || own;
     for (const box of form.querySelectorAll('.lv-own')) box.hidden = pick !== `mode:${box.dataset.ownMode}`;
+    // Tug of Math Live splits the players into its own two teams: no teams row; its grade shows sample questions.
+    const tr = $('lv-teams-landing'); if (tr) tr.hidden = pick === 'mode:tug';
+    const tg = $('lv-tug-grade'), sample = $('lv-tug-sample');
+    if (tg && sample) { try { sample.textContent = JSON.parse($('lv-tug-samples').textContent)[tg.value] || ''; } catch { /* keep */ } }
     // at least one topic / question kind stays ticked (unticking the last one ticks it again)
     for (const name of ['wyrTopic', 'atlasKind']) {
       const boxes = [...form.querySelectorAll(`input[name="${name}"]`)];
@@ -62,6 +66,14 @@ if (form) {
     reset.disabled = true;
     try { await api(reset.dataset.href, { method: 'DELETE' }); location.reload(); } catch (er) { toast(er.message, { bad: true }); reset.disabled = false; }
   });
+  // Tug of Math Live: the grade and length this browser picked last (not when a lesson's link chose them).
+  const TUG_KEY = 'lv-tug', tugBox = $('lv-tug-opts');
+  if (tugBox && !tugBox.dataset.preset) {
+    try {
+      const last = JSON.parse(localStorage.getItem(TUG_KEY) || 'null');
+      if (last) for (const [id, v] of [['lv-tug-grade', last.g], ['lv-tug-len', last.l]]) { const el = $(id); if (el && [...el.options].some(o => o.value === String(v))) el.value = String(v); }
+    } catch { /* private mode */ }
+  }
   form.addEventListener('change', sync); sync();
   // Our own submit (before app.js's): a second open game asks first.
   document.addEventListener('submit', async e => {
@@ -69,6 +81,7 @@ if (form) {
     e.preventDefault(); e.stopImmediatePropagation();
     // ticked boxes of one name (wyrTopic, bankBoard, atlasKind) go as a list, as app.js posts forms
     const body = {}; for (const [k, v] of new FormData(form).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
+    if (body.pick === 'mode:tug') { try { localStorage.setItem(TUG_KEY, JSON.stringify({ g: body.tugGrade, l: body.tugLen })); } catch { /* private mode */ } }
     const btn = form.querySelector('[type=submit]'), err = form.querySelector('.form-err');
     btn.disabled = true; err.textContent = '';
     const go = async replace => {
