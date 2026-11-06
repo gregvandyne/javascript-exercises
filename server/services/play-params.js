@@ -6,7 +6,16 @@
 //   in the game:             BRB.params = Object.freeze({ chapter, band, mode, level, lock }) ({} when absent)
 // Only these five keys exist; values are [a-z0-9-]{1,16}; band is 1b or 2; level 1-30; lock 0 or 1. Unknown keys and bad
 // values are dropped on the way in (a game must never see anything else), so the frame gets exactly what the grammar allows.
+// One alias: topic=<id> is another name for chapter=<id> (Would You Rather's topics, e.g. topic=online&lock=1); it arrives
+// in the game as BRB.params.chapter. When both are given, chapter wins.
 export const KEYS = Object.freeze(['chapter', 'band', 'mode', 'level', 'lock']);
+/** Other names a step may use for a key (written the readable way in course files), folded into the key on the way in. */
+export const ALIASES = Object.freeze({ topic: 'chapter' });
+const unalias = src => {
+  const o = { ...src };
+  for (const [a, k] of Object.entries(ALIASES)) { if (o[k] === undefined && o[a] !== undefined) o[k] = o[a]; delete o[a]; }
+  return o;
+};
 export const VALUE = /^[a-z0-9-]{1,16}$/;
 export const BANDS = Object.freeze(['1b', '2']);
 export const MAX_LEVEL = 30;
@@ -27,7 +36,7 @@ export function cleanValue(key, raw) {
 }
 /** From a query object (req.query) or a URLSearchParams / query string: the clean, allow-listed params ({} when none). */
 export function parseParams(query) {
-  const src = typeof query === 'string' || query instanceof URLSearchParams ? Object.fromEntries(new URLSearchParams(query)) : (query || {});
+  const src = unalias(typeof query === 'string' || query instanceof URLSearchParams ? Object.fromEntries(new URLSearchParams(query)) : (query || {}));
   const out = {};
   for (const k of KEYS) { const v = cleanValue(k, src[k]); if (v !== undefined) out[k] = v; }
   return out;
@@ -67,6 +76,6 @@ export function cleanOptions(text) {
   if (!s) return '';
   if (s.length > 200) return null;
   const sp = new URLSearchParams(s);
-  for (const [k, v] of sp) { if (!KEYS.includes(k) || cleanValue(k, v) === undefined) return null; }
+  for (const [k, v] of sp) { const key = ALIASES[k] || k; if (!KEYS.includes(key) || cleanValue(key, v) === undefined) return null; }
   return toQuery(Object.fromEntries(sp));
 }

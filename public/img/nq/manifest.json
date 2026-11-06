@@ -123,12 +123,12 @@
       "state": "re-slice"
     },
     {
-      "alt": "Fraction Factory, Recipe Maths: the recipe order adds two fractions of a cake, shown as fraction bars over the whole cake, on one tray.",
+      "alt": "Fraction Factory, Recipe Math: the recipe order adds two fractions of a cake, shown as fraction bars over the whole cake, on one tray.",
       "band": "explorer",
-      "capturedAt": "2026-11-05",
+      "capturedAt": "2026-11-06",
       "chapter": "4.3",
       "commit": "e25cf83",
-      "concept": "Recipe Maths, order 1: 1/4 + 2/4 to build on one tray",
+      "concept": "Recipe Math, order 1: 1/4 + 2/4 to build on one tray",
       "game": "fraction-factory",
       "key": "nq/fraction-factory/recipe-maths",
       "state": "recipe-maths"

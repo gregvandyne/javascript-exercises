@@ -911,7 +911,19 @@ const announce = s => { try { Oomba.ui.announce(s); } catch (e) { /* ignore */ }
 const sfx = (n, o) => { try { Oomba.sfx(n, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } };
 const icon = (n, o) => { try { return Oomba.icon(n, o); } catch (e) { return ''; } };
 const reduced = () => { try { return !!Oomba.settings.reduced; } catch (e) { return false; } };
-const say = (text) => { try { Oomba.say(text, { who: GIZMO && GIZMO.state ? GIZMO : null }); } catch (e) { /* ignore */ } };
+// say(text, { caption: false }): spoken (when read-aloud is on) without the kit's caption strip, for text a card already
+// shows in full (the learn card, the case-closed question). Otherwise a lesson (captions forced on) prints the same words
+// a second time in a dark strip behind the card, which stays on screen for many seconds after the card has closed.
+const NO_CAPTION = new Set();
+const capCheck = () => {
+  const c = document.querySelector('.ok-caption');
+  if (c && c.classList.contains('on') && NO_CAPTION.has(c.textContent)) c.classList.remove('on');
+};
+try { new MutationObserver(capCheck).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class'] }); } catch (e) { /* ignore */ }
+const say = (text, o) => {
+  if (o && o.caption === false) NO_CAPTION.add(String(text));
+  try { Oomba.say(text, { who: GIZMO && GIZMO.state ? GIZMO : null }); } catch (e) { /* ignore */ }
+};
 
 /* ---------- the platform's options for this play (a lesson's Play link): read defensively ---------- */
 const P0 = (window.BRB && BRB.params) || {}, PR = {};
@@ -1242,7 +1254,7 @@ function startLevel(chId, idx, o = {}) {
   const seenKey = chId + ':' + S.band;
   // the chapter's learn card opens the first time the kid enters the chapter (level 1 in order; a daily may land deeper)
   if (learn && !SAVE.seen[seenKey] && !o.noLearn) { SAVE.seen[seenKey] = 1; save(); openLearn(learn, true); }
-  else if (S.view.intro) { announce(S.view.intro); say(S.view.intro); }
+  else if (S.view.intro) { announce(S.view.intro); say(S.view.intro, { caption: false }); } // the intro is on screen already
 }
 /* the work panel's fixed pieces: the prompt, a note line, the hint line, the tray and the action row */
 function shell(panel, promptText) {
@@ -1771,7 +1783,7 @@ function caseClosed(l, stars) {
       });
       tiles.appendChild(b);
     });
-    announce(tr('Case closed!') + ' ' + tr(c.q)); say(tr(c.q));
+    announce(tr('Case closed!') + ' ' + tr(c.q)); say(tr(c.q), { caption: false });
   }).done.then(() => { if (S.level !== l || !S.done) return; report(l, stars, { check: !!right, confidence: conf || 1 }); showWin(stars); });
 }
 function showWin(stars) {
@@ -1859,7 +1871,7 @@ function openLearn(learn, first) {
     const pics = el('div', 'im-pic'); pics.appendChild(portrait(84, 'happy')); pics.appendChild(propCanvas(L.chapter(S.chapter).pic, 72)); card.appendChild(pics);
     card.appendChild(el('h2', '', esc(tr(learn.title)))); card.appendChild(el('p', '', esc(tr(learn.text))));
     const b = btn(first ? tr("Let's go") : tr('Close'), { kind: 'hot', big: true, icon: first ? 'play' : 'check', onPress: () => close(true) }); b.setAttribute('data-focus', ''); card.appendChild(b);
-    announce(tr(learn.title) + '. ' + tr(learn.text)); say(tr(learn.title) + '. ' + tr(learn.text));
+    announce(tr(learn.title) + '. ' + tr(learn.text)); say(tr(learn.title) + '. ' + tr(learn.text), { caption: false });
   }, { onEscape: closeCard }).done.then(() => { if (first && S.view && S.view.intro) { announce(S.view.intro); } });
 }
 /* the Quest Card: band, read-aloud, music, settings and the 4-digit quest keypad (never in a live frame) */
