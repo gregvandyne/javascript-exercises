@@ -180,7 +180,13 @@ test('tiles: bad-tile index breaks the pattern, sequences and sharing strips add
     const v = s.visual; if (!v || v.type !== 'tiles') return;
     const where = `${file} slide ${i + 1}`;
     const nums = (v.values || []).map(x => (/^-?\d+$/.test(x) ? Number(x) : null));
-    if (v.bad != null) {
+    if (Array.isArray(v.bad)) {
+      // Two tiles marked as a swap (0.1: "2, 1, 3"): swapping them back must give a clean +1/+d run.
+      assert.equal(v.bad.length, 2, `${where}: a swap marks two tiles`);
+      const back = [...nums]; [back[v.bad[0]], back[v.bad[1]]] = [back[v.bad[1]], back[v.bad[0]]];
+      assert.ok(back.every(n => n != null) && back.every((n, j) => n === back[0] + j * (back[1] - back[0])), `${where}: swapping the marked tiles back gives the pattern`);
+      assert.ok(!nums.every((n, j) => n === nums[0] + j * (nums[1] - nums[0])), `${where}: the marked tiles really are out of place`);
+    } else if (v.bad != null) {
       assert.ok(nums[v.bad] != null, `${where}: bad tile not numeric`);
       // The bad tile REPLACED the right one: the others must fit one arithmetic pattern at their
       // own positions, and the bad tile must not fit it.

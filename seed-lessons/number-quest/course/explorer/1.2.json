@@ -9,7 +9,7 @@
   {
    "title": "Friendly numbers",
    "text": "Some numbers are friendly to work with: 50, 300, 1,000. Rounding swaps a number for the nearest friendly one, so your head can hold it.",
-   "art": "chart",
+   "art": "table",
    "visual": {
     "type": "tiles",
     "label": "Friendly numbers: 50, 300 and 1,000",
@@ -43,7 +43,7 @@
   {
    "title": "Look at the next digit",
    "text": "To round 347 to the nearest hundred, look at the tens digit. It is 4, so 347 stays closer to 300. If that digit were 5 or more, up it would go.",
-   "art": "magnifier",
+   "art": "table",
    "visual": {
     "type": "numberline",
     "label": "347 on a number line from 300 to 400, nearer to 300",
@@ -93,7 +93,7 @@
    "kind": "example",
    "title": "Rough first, then round",
    "text": "Rough first: 268 is a bit under 300. Round it to the nearest ten, step by step.",
-   "art": "chart",
+   "art": "ruler",
    "steps": [
     "268 sits between 260 and 270",
     "the ones digit is 8, so round up",

@@ -9,7 +9,7 @@
   {
    "title": "Welcome to the Bakery",
    "text": "The Bakery is Tally's own workshop, and its first rule is on the wall: a share is fair only when every piece is the same size.",
-   "art": "star",
+   "art": "cake",
    "visual": {
     "type": "fraction",
     "label": "The Bakery rule: a share is fair when every piece is equal",
@@ -141,7 +141,7 @@
   {
    "title": "Top counts, bottom cuts",
    "text": "In 5/8, the bottom number says the whole was cut into 8 equal parts. The top number counts how many of those parts you take: 5.",
-   "art": "magnifier",
+   "art": "cake",
    "visual": {
     "type": "fraction",
     "label": "5/8: the bottom number cuts 8 parts, the top number counts 5",

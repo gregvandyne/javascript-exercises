@@ -9,48 +9,61 @@
   {
    "title": "The Building Yard",
    "text": "The street climbs to the Building Yard, where every beam must be the right shape before it can hold anything up. Tally sorts the shapes the way the yard does: by their properties, never by their looks.",
-   "art": "pixel"
+   "art": "shapes"
   },
   {
    "title": "Sort by properties",
    "text": "A property is something you can test: count the sides, feel for square corners, check whether sides run side by side. These four shapes differ by their counts. Test each one before you name it.",
-   "art": "magnifier",
+   "art": "shapes",
    "visual": {
-    "type": "tiles",
-    "label": "Four shapes told apart by their side counts: 3, 4, 5 and 6 sides",
-    "values": [
-     "3 sides",
-     "4 sides",
-     "5 sides",
-     "6 sides"
+    "type": "shapes",
+    "label": "Four drawn shapes told apart by their side counts: a triangle, a square, a pentagon and a hexagon",
+    "items": [
+     {
+      "shape": "triangle",
+      "name": "triangle"
+     },
+     {
+      "shape": "square",
+      "name": "square",
+      "corners": true
+     },
+     {
+      "shape": "pentagon",
+      "name": "pentagon"
+     },
+     {
+      "shape": "hexagon",
+      "name": "hexagon"
+     }
     ]
    },
    "focus": [
     {
      "cue": "Triangle: only 3 sides, so it is no quadrilateral.",
      "box": [
-      5,
-      30.4,
-      22.6,
-      29.9
+      8.8,
+      32.2,
+      16.5,
+      56.7
      ]
     },
     {
      "cue": "Square: 4 sides and 4 square corners.",
      "box": [
-      27.5,
-      30.4,
-      22.6,
-      29.9
+      31.5,
+      31.8,
+      15,
+      57.1
      ]
     },
     {
      "cue": "Hexagon: 6 sides, every one of them straight.",
      "box": [
-      72.5,
-      30.4,
-      22.6,
-      29.9
+      74,
+      30.5,
+      18.1,
+      58.4
      ]
     }
    ]
@@ -58,7 +71,7 @@
   {
    "title": "Worked example: a family matter",
    "text": "Rough first: the square probably belongs with the rectangles, because their corners match. Test the properties, not the look. A square has 4 sides and 4 square corners, and so does every rectangle.",
-   "art": "gears",
+   "art": "shapes",
    "kind": "example",
    "steps": [
     "Square: 4 sides, 4 square corners",
@@ -67,34 +80,18 @@
     "A square is a kind of rectangle"
    ],
    "visual": {
-    "type": "bars",
-    "label": "Two property bars, one for a square and one for a rectangle, each split into 4 sides and 4 square corners",
-    "rows": [
+    "type": "shapes",
+    "label": "A square and a rectangle side by side, each with 4 sides and 4 square corners marked",
+    "items": [
      {
-      "label": "Square",
-      "parts": [
-       {
-        "w": 0.5,
-        "label": "4 sides"
-       },
-       {
-        "w": 0.5,
-        "label": "4 square corners"
-       }
-      ]
+      "shape": "square",
+      "name": "square",
+      "corners": true
      },
      {
-      "label": "Rectangle",
-      "parts": [
-       {
-        "w": 0.5,
-        "label": "4 sides"
-       },
-       {
-        "w": 0.5,
-        "label": "4 square corners"
-       }
-      ]
+      "shape": "rectangle",
+      "name": "rectangle",
+      "corners": true
      }
     ]
    },
@@ -102,28 +99,28 @@
     {
      "cue": "A square has 4 square corners.",
      "box": [
-      49.6,
-      21.5,
-      44.9,
-      18.4
+      16.9,
+      24.8,
+      22.3,
+      64.1
      ]
     },
     {
      "cue": "A rectangle has the same 4 square corners.",
      "box": [
-      49.6,
-      51.7,
-      44.9,
-      18.4
+      58,
+      29,
+      28.1,
+      59.9
      ]
     },
     {
      "cue": "Same properties, same family: a square is a rectangle.",
      "box": [
-      5,
-      12.3,
-      90.1,
-      57.8
+      16.9,
+      24.8,
+      69.1,
+      64.1
      ]
     }
    ]
@@ -131,7 +128,7 @@
   {
    "title": "Angle is a turn",
    "text": "Stand and face the door. Turn a quarter turn and you face the side wall. That amount of turn is an angle, and a square corner is exactly one quarter turn. Shapes carry their turns at every corner.",
-   "art": "loop"
+   "art": "angle"
   },
   {
    "title": "Words to know",

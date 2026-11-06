@@ -50,7 +50,7 @@
   {
    "title": "Re-slicing keeps value",
    "text": "Cutting every piece into 2 smaller pieces doubles both numbers: 1/2 becomes 2/4. The pieces shrink, the count grows, the share stays the same.",
-   "art": "gears",
+   "art": "cake",
    "visual": {
     "type": "fraction",
     "label": "Cut every piece in two: 1/2 becomes 2/4, then 4/8, and the share stays the same",
@@ -97,7 +97,7 @@
    "kind": "example",
    "title": "Rough first, then compare",
    "text": "Rough first: 5/8 is a little more than 1/2. Compare it with 3/4 using the halfway mark as your referee.",
-   "art": "chart",
+   "art": "cake",
    "steps": [
     "1/2 sits at the halfway mark",
     "5/8 is one eighth past halfway",

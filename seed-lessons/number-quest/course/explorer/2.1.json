@@ -14,7 +14,7 @@
   {
    "title": "Trading up",
    "text": "Ten loose ones fill one box, so they trade up for one ten. That trade is regrouping. Nothing is lost. The value just moves house.",
-   "art": "gears",
+   "art": "box",
    "visual": {
     "type": "bars",
     "label": "Trading up: 8 ones and 5 ones make 13 ones, which trade for 1 ten and 3 ones",

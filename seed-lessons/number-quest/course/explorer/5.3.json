@@ -9,7 +9,7 @@
   {
    "title": "The shop till",
    "text": "At the till, money is measured like everything else in this shop. A dollar is a whole, and the coins are its parts. Four quarters fill it exactly, the way four quarters filled a cake in Unit 4.",
-   "art": "box"
+   "art": "coins"
   },
   {
    "title": "One dollar, four quarters",
@@ -75,7 +75,7 @@
   {
    "title": "Worked example: change for a toy",
    "text": "Rough first: the toy costs more than half a dollar, so the change is less than 50 cents. You pay 100 cents for a 65-cent toy. The change is the gap between 65 and 100 on the bar.",
-   "art": "gears",
+   "art": "coins",
    "kind": "example",
    "steps": [
     "Count up from 65 to 70: that is 5 cents",

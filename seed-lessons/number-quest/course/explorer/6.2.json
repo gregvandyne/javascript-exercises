@@ -75,7 +75,7 @@
   {
    "title": "Worked example: carpet the garden",
    "text": "Rough first: the garden holds about twenty squares, so an answer like 10 or 40 smells wrong. Cover it with unit squares: 3 rows of 7. Area counts the covering squares, not the edge.",
-   "art": "gears",
+   "art": "grid",
    "kind": "example",
    "steps": [
     "One row holds 7 squares",

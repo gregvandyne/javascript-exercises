@@ -9,12 +9,12 @@
   {
    "title": "The timetable wall",
    "text": "The Measure Shop keeps every bus, train and lesson on one big timetable wall. Tally's rule is painted over it: a time tells where, but a duration tells how long.",
-   "art": "table"
+   "art": "clock"
   },
   {
    "title": "Elapsed time is a distance",
    "text": "The time between two clock times is a distance on the line. From 9:00 to 9:30 is one hop of 30 minutes. Hop the whole hours first, then the minutes left over.",
-   "art": "loop",
+   "art": "clock",
    "visual": {
     "type": "numberline",
     "label": "One hour drawn as a number line from 9:00 to 10:00, with a 30 minute hop and a 15 minute hop",
@@ -88,7 +88,7 @@
   {
    "title": "Worked example: the late bus",
    "text": "Rough first: 35 minutes is a bit more than half an hour, so the bus lands a bit past 10:00. It leaves at 9:25. Hop 35 minutes: 25 minutes reach 9:50, then 10 more cross the hour.",
-   "art": "gears",
+   "art": "clock",
    "kind": "example",
    "steps": [
     "Start at 9:25",

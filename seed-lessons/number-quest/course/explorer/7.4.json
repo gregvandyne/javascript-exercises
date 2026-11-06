@@ -19,7 +19,7 @@
   {
    "title": "Worked example: the Heavy Sack",
    "text": "Rough first: the sack should be a bit over 3,000 grams, because of the extra 400. The fifth lock shows a sack marked 3 kilograms 400 grams, and its dial reads only grams. Convert, then add.",
-   "art": "gears",
+   "art": "scale",
    "kind": "example",
    "steps": [
     "3 kilograms = 3 x 1,000 = 3,000 grams",

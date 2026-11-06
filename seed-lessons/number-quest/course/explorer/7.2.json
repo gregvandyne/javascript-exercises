@@ -14,7 +14,7 @@
   {
    "title": "Our class, charted",
    "text": "We asked our class one question: how do you get to school? The answers tallied into three bars. Bus is the tallest, and the chart can already answer questions nobody has asked yet.",
-   "art": "chart",
+   "art": "table",
    "visual": {
     "type": "bars",
     "label": "A bar graph of how a class gets to school: walk 9, bus 12, bike 4; the longest bar makes 12",
@@ -81,7 +81,7 @@
   {
    "title": "Worked example: pencil lengths",
    "text": "Rough first: the pencils are all near 6 inches, so the marks should crowd there. We measured five pencils: 6, 7, 6, 8 and 6 inches. On the line plot, the 6 collects a stack of three marks.",
-   "art": "gears",
+   "art": "ruler",
    "kind": "example",
    "steps": [
     "Measure every pencil the same way, from the very end",
@@ -90,7 +90,7 @@
    ],
    "visual": {
     "type": "numberline",
-    "label": "A line plot of five pencil lengths from 5 to 8 inches, with three x marks stacked over the 6 inch mark",
+    "label": "A line plot of five pencil lengths from 5 to 8 inches: three x marks over 6, one over 7 and one over 8",
     "min": 5,
     "max": 8,
     "marks": [
@@ -111,10 +111,20 @@
       "label": "8"
      }
     ],
-    "point": {
-     "at": 6,
-     "label": "x x x"
-    }
+    "stacks": [
+     {
+      "at": 6,
+      "n": 3
+     },
+     {
+      "at": 7,
+      "n": 1
+     },
+     {
+      "at": 8,
+      "n": 1
+     }
+    ]
    },
    "focus": [
     {
@@ -127,21 +137,21 @@
      ]
     },
     {
-     "cue": "Three pencils measure exactly 6 inches: three x marks over the 6.",
+     "cue": "Three pencils measure exactly 6 inches: three x marks stack here.",
      "box": [
-      29.3,
-      41.4,
-      12.2,
-      28.3
+      33.1,
+      39.6,
+      4.5,
+      43.7
      ]
     },
     {
      "cue": "The longest pencil: 8 inches.",
      "box": [
       91.8,
-      57.8,
-      4.4,
-      25.5
+      51.6,
+      4.5,
+      31.7
      ]
     }
    ]

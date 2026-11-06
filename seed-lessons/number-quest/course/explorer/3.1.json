@@ -112,27 +112,28 @@
    "art": "grid",
    "visual": {
     "type": "array",
-    "label": "The 6 x 7 array turned on its side: 7 rows of 6 is still 42",
-    "rows": 7,
-    "cols": 6
+    "label": "6 rows of 7 beside 7 rows of 6: the same 42, turned",
+    "rows": 6,
+    "cols": 7,
+    "turn": true
    },
    "focus": [
     {
-     "cue": "Turned on its side, each row now holds 6.",
+     "cue": "6 rows of 7: skip-count 7, 14, 21... to 42.",
      "box": [
-      17,
-      18,
-      66.1,
-      8.2
+      7,
+      17.6,
+      40.1,
+      60.9
      ]
     },
     {
-     "cue": "7 rows of 6 is 42, the same as 6 rows of 7.",
+     "cue": "Turned on its side: 7 rows of 6, and still 42.",
      "box": [
-      17,
-      16.9,
-      66.1,
-      62.3
+      58.1,
+      17.4,
+      29.8,
+      61.3
      ]
     }
    ]

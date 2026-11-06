@@ -9,12 +9,12 @@
   {
    "title": "The Measure Shop",
    "text": "Past the Bakery, the street turns into the Measure Shop. Everything here is weighed, poured and measured twice. Small backwards footprints cross the floor, and each one is exactly 10 centimeters long.",
-   "art": "box"
+   "art": "scale"
   },
   {
    "title": "Measuring is counting units",
    "text": "A measure counts how many units fit. This stick is one meter long, and it holds exactly 100 centimeters. Count the marks: measuring length is counting, just like Unit 1.",
-   "art": "magnifier",
+   "art": "ruler",
    "visual": {
     "type": "numberline",
     "label": "A meter stick drawn as a number line from 0 to 100 centimeters, with a hop showing 100 centimeters equals 1 meter",
@@ -151,7 +151,7 @@
   {
    "title": "New name, same measure",
    "text": "Changing units never changes the thing itself. A ribbon stays the same ribbon in meters or in centimeters. Only the count changes: smaller units need a bigger count.",
-   "art": "table"
+   "art": "ruler"
   },
   {
    "title": "Words to know",

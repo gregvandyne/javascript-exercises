@@ -9,7 +9,7 @@
   {
    "title": "Patterns are promises",
    "text": "A pattern is a promise about what comes next. Break the promise and the pattern stops working. Keep it, and you can predict far ahead.",
-   "art": "loop",
+   "art": "pixel",
    "visual": {
     "type": "tiles",
     "label": "An add-5 pattern: 4, 9, 14, 19, and what comes next?",
@@ -83,7 +83,7 @@
    "kind": "example",
    "title": "Predict the tenth tile",
    "text": "Rough first: adding 5 ten times adds about 50. Follow the promise from 3, step by step.",
-   "art": "loop",
+   "art": "pixel",
    "steps": [
     "start at 3, the rule is add 5",
     "tile 2 is 8, tile 3 is 13",

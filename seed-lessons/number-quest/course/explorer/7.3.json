@@ -9,7 +9,7 @@
   {
    "title": "The spinner stall",
    "text": "One Fairground stall runs a spinner with 6 equal parts, and only 1 part is red. Yesterday the stall keeper called red a sure thing. Tally spun it 30 times, and red landed just 4 times.",
-   "art": "branch"
+   "art": "dice"
   },
   {
    "title": "Words for maybes",
@@ -59,7 +59,7 @@
   {
    "title": "Worked example: sorting the words",
    "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, half an even chance, one of 6 unlikely, none impossible.",
-   "art": "gears",
+   "art": "dice",
    "kind": "example",
    "steps": [
     "All 6 parts red: certain",

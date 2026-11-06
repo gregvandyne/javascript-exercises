@@ -9,7 +9,7 @@
   {
    "title": "Fast comes from tricks",
    "text": "Fast facts are not magic memory. Every fast counter uses tricks: doubling, halving, and building a hard fact from an easy one.",
-   "art": "loop",
+   "art": "lightbulb",
    "visual": {
     "type": "tiles",
     "label": "Doubling tricks: 7 x 2, 7 x 4, 7 x 8",
@@ -44,7 +44,7 @@
    "kind": "example",
    "title": "Rough first, then build",
    "text": "Rough first: 9 x 7 is a bit under 70. Build it from the easy fact 9 x 5.",
-   "art": "loop",
+   "art": "lightbulb",
    "steps": [
     "9 x 5 = 45, the easy part",
     "9 x 2 = 18, the rest of the 7",
@@ -116,7 +116,7 @@
   {
    "title": "Facts travel in families",
    "text": "Multiplication and division are one family. If 5 x 9 = 45, then 45 shared by 9 is 5, and 45 shared by 5 is 9.",
-   "art": "network",
+   "art": "people",
    "visual": {
     "type": "tiles",
     "label": "One fact family: 5 x 9 = 45, 45 shared by 9 is 5, 45 shared by 5 is 9",

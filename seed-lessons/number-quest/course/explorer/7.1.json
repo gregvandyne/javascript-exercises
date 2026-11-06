@@ -9,12 +9,12 @@
   {
    "title": "The Fairground",
    "text": "The last workshop on the street is the Fairground, where every stall keeps a chart. A good chart answers a question before anyone asks it. A bad chart just stands there looking busy.",
-   "art": "chart"
+   "art": "dice"
   },
   {
    "title": "Bars that speak",
    "text": "Each bar's length is its count. Bananas sold 20, the longest bar on the chart. Read a bar by running your finger to the end of it, then down to its number. The scale tells you how much each step is worth.",
-   "art": "chart",
+   "art": "table",
    "visual": {
     "type": "bars",
     "label": "A bar graph of fruit sold at a stall: apples 12, bananas 20, pears 16; the longest bar makes 20",
@@ -81,7 +81,7 @@
   {
    "title": "Worked example: ribbons end to end",
    "text": "Rough first: four short ribbons should make a bit more than a yard. Lay them on the line: a half, another half, then two quarters. The halves make a whole yard, and the quarters make another half.",
-   "art": "gears",
+   "art": "ruler",
    "kind": "example",
    "steps": [
     "First ribbon: 1/2 yard, landing at the 1/2 mark",
@@ -167,7 +167,7 @@
   {
    "title": "How many more?",
    "text": "The question charts answer best is a comparison. Tuesday sold 20 lunches and Monday sold 12. How many more is a subtraction wearing a chart's clothes: 20 - 12 = 8. Always ask which two bars the question compares.",
-   "art": "chart"
+   "art": "table"
   },
   {
    "title": "Words to know",

@@ -68,7 +68,7 @@
   {
    "title": "Worked example: the treasure grid",
    "text": "Rough first: the first number is probably the sideways walk, because addresses are read left to right. The treasure sits at (3, 2). Walk 3 steps right, then climb 2 steps up, in that order.",
-   "art": "gears",
+   "art": "map",
    "kind": "example",
    "steps": [
     "First number: 3 steps right",
