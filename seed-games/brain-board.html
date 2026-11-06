@@ -26,7 +26,8 @@
   .bb-cat.sym { font-size: clamp(22px, 4vw, 40px); padding: 2px 4px; }
   .bb-grid.short .bb-cat { min-height: 0; padding: 2px 4px; box-shadow: 0 2px 0 #0b0e26; }
   .bb-grid.short .bb-cat.sym { font-size: 20px; }
-  .bb-cat { display: grid; place-items: center; text-align: center; padding: 6px 4px; border-radius: 14px; border: 3px solid #0b0e26; box-shadow: 0 4px 0 #0b0e26; font-weight: 800; font-size: clamp(11px, 1.9vw, 22px); line-height: 1.1; color: #1d2340; overflow-wrap: anywhere; min-height: 2.6em; }
+  .bb-cat { display: grid; place-items: center; text-align: center; padding: 6px 4px; border-radius: 14px; border: 3px solid #0b0e26; box-shadow: 0 4px 0 #0b0e26; font-weight: 800; font-size: clamp(11px, 1.9vw, 22px); line-height: 1.1; color: #1d2340; overflow-wrap: normal; word-break: normal; hyphens: manual; min-width: 0; min-height: 2.6em; }
+  .bb-cat.squeeze { overflow-wrap: anywhere; } /* last resort: a single word wider than its column even at the smallest size */
   .k0 { background: #ff8fa3; } .k1 { background: #8fd3ff; } .k2 { background: #b6f08a; } .k3 { background: #ffcf6e; } .k4 { background: #c9a8ff; } .k5 { background: #7ff0d6; }
   .bb-tile { position: relative; perspective: 900px; border: 0; padding: 0; background: none; min-height: 0; cursor: default; font: inherit; }
   .bb-tile .in { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,1.4,.5,1); }
@@ -92,6 +93,10 @@
   @keyframes bb-glow { 50% { box-shadow: inset 0 -6px 0 rgba(0,0,0,.25), 0 4px 0 #0b0e26, 0 0 18px #ffd24a; } }
   @keyframes bb-tw { 50% { transform: rotate(18deg) scale(1.2); } }
   @keyframes bb-star { 0% { transform: scale(.2) rotate(-40deg); opacity: 0; } 25% { transform: scale(1.15) rotate(8deg); opacity: 1; } 70% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+  /* phones in portrait: the board sits right under the score, not in the middle of an empty band */
+  @media (max-width: 700px) and (orientation: portrait) { .bb-grid { align-content: start; } }
+  /* phones: a little more width for the five columns, so a long word ("Centimeters") fits its header whole */
+  @media (max-width: 480px) { .bb { padding-left: 8px; padding-right: 8px; } .bb-cat { padding: 4px 1px; border-width: 2px; letter-spacing: -.01em; } }
   @media (max-width: 700px) { .bb-side { display: none; } .bb-a { min-height: 54px; gap: 8px; } }
   /* very narrow phones: answers stay two by two (all four in view), with less room around them */
   @media (max-width: 380px) { .bb-a { padding: 6px 8px; } .bb-card { padding: 6px; } .bb-ring { width: 46px; height: 46px; } }
@@ -277,8 +282,34 @@ window.SoloBank = (function () {
     grid.classList.toggle('short', short);
     var head = grid.querySelector('.bb-cat'), headH = head ? head.offsetHeight : 40;
     var byHeight = grid.clientHeight > 0 ? Math.floor((grid.clientHeight - headH - gap * 5) / 5) : 999;
-    var rowH = Math.max(40, Math.min(Math.round(colW * 0.66), byHeight));
+    // a phone in portrait has height to spare: squarer tiles there (still never taller than they are wide)
+    var portraitPhone = innerWidth <= 700 && innerHeight > innerWidth;
+    var rowH = Math.max(40, Math.min(Math.round(colW * (portraitPhone ? 0.9 : 0.66)), byHeight));
     grid.style.gridTemplateRows = 'auto repeat(5, minmax(40px, ' + rowH + 'px))';
+    fitHeads();
+  }
+  // Category headers wrap between words only ("Centimeters", never "Centimet-ers"): one font size for the whole row,
+  // the largest (up to the CSS size) at which every header's longest word fits its column, never under 10 px. Only a
+  // word that cannot fit even at 10 px may break inside (.squeeze).
+  var HEAD_MIN = 10;
+  function fitHeads() {
+    var heads = Array.prototype.slice.call(document.querySelectorAll('#grid .bb-cat:not(.sym)'));
+    if (!heads.length) return;
+    heads.forEach(function (h) { h.style.fontSize = ''; h.classList.remove('squeeze'); });
+    var size = parseFloat(getComputedStyle(heads[0]).fontSize) || 16;
+    var fits = function () {
+      return heads.every(function (h) {
+        var cs = getComputedStyle(h), room = h.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        var probe = fitHeads.probe || (fitHeads.probe = document.createElement('span'));
+        probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:' + cs.font;
+        document.body.appendChild(probe);
+        var ok = String(h.textContent).split(/\s+/).every(function (w) { probe.textContent = w; return probe.getBoundingClientRect().width <= room + 0.5; });
+        probe.remove();
+        return ok;
+      });
+    };
+    while (size > HEAD_MIN && !fits()) { size -= 1; heads.forEach(function (h) { h.style.fontSize = size + 'px'; }); }
+    if (!fits()) heads.forEach(function (h) { h.classList.add('squeeze'); });
   }
   if (window.ResizeObserver) new ResizeObserver(fitBoard).observe(document.documentElement); else addEventListener('resize', fitBoard);
   function renderBoard() {
@@ -290,6 +321,7 @@ window.SoloBank = (function () {
     grid.textContent = '';
     fitBoard();
     b.t.forEach(function (col, ci) { var h = document.createElement('div'); h.className = 'bb-cat k' + (ci % 6); h.setAttribute('role', 'columnheader'); h.dir = 'auto'; h.textContent = catName(b, ci); if (h.textContent.length <= 2) h.classList.add('sym'); h.style.gridColumn = String(ci + 1); h.style.gridRow = '1'; grid.appendChild(h); });
+    fitHeads();
     b.t.forEach(function (col, ci) {
       col.forEach(function (tile, r) {
         var v = tile[0], st = tile[1];

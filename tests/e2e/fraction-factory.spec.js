@@ -56,7 +56,7 @@ test('Fraction Factory runs on the kit: pinned tags, Tally, a First Cuts order s
   expect(s.checks).toEqual({ ok: 1, n: 1 });
   // win-gating: one order served must NOT have ended the game (no chapter completion yet)
   expect(await f.evaluate(() => window.__brbTest.state().done)).toBe(true);
-  // the quest code: chapter 4 (Recipe Maths), Explorer, play, first unfinished
+  // the quest code: chapter 4 (Recipe Math), Explorer, play, first unfinished
   await T(f, 'closeCards');
   expect(await T(f, 'code', '4100')).toBe(true);
   s = await T(f, 'state');

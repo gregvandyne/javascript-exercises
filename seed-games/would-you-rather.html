@@ -37,6 +37,8 @@
   #home .card { width: min(640px, 100%); max-height: 100%; overflow: auto; padding: clamp(14px, 3vh, 28px) clamp(14px, 3vw, 28px); display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 14px); text-align: center; }
   .logo { margin: 0; font-size: clamp(30px, min(7vw, 7vh), 60px); line-height: 1.05; font-weight: 900; letter-spacing: .01em; }
   .logo .a { color: var(--wyr-a-ink); } .logo .b { color: var(--wyr-b-ink); }
+  .topic-lock { margin: 0; white-space: normal; text-align: center; justify-content: center; }
+  .chip.locked { cursor: default; }
   .tagline { margin: 0; font-size: clamp(15px, min(2.6vw, 3vh), 20px); font-weight: 700; opacity: .85; }
   .duo { display: flex; gap: 10px; justify-content: center; font-size: clamp(34px, min(8vw, 8vh), 64px); line-height: 1; }
   .duo span { display: inline-block; animation: wyr-bob 2.4s ease-in-out infinite; }
@@ -166,6 +168,7 @@
       <div class="duo" aria-hidden="true"><span>🤔</span><span>⚖️</span><span>🤩</span></div>
       <h1 class="logo" id="logo"></h1>
       <p class="tagline" data-t="tagline"></p>
+      <p class="pill topic-lock" id="lockTopic" hidden></p>
       <div class="modes">
         <button class="mode m-alone" type="button" id="play" data-mode="alone"><span class="em" aria-hidden="true">🙋</span><span><b data-t="alone"></b><small data-t="aloneSub"></small></span></button>
         <button class="mode m-friends" type="button" data-mode="friends"><span class="em" aria-hidden="true">👫</span><span><b data-t="friends"></b><small data-t="friendsSub"></small></span></button>
@@ -240,8 +243,8 @@ const CONFIG = {
   hues: ['coral', 'sky', 'mint', 'grape', 'spark', 'peach'],
   traitOrder: ['brave', 'think', 'make', 'animal', 'food', 'fast', 'kind', 'calm', 'fun', 'nature', 'tech', 'social'],
   traitIcon: { brave: '🧭', think: '💡', make: '🎨', animal: '🐾', food: '🍕', fast: '⚡', kind: '💛', calm: '☁️', fun: '😄', nature: '🌿', tech: '🤖', social: '🤝' },
-  catIcon: { mix: '🎲', animals: '🐾', food: '🍕', powers: '🦸', school: '📚', travel: '🧭', silly: '🤪', sports: '⚽', space: '🪐', future: '🚀', family: '💛', deep: '💭', tech: '🤖', online: '🌐' },
-  cats: ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep', 'tech', 'online'],
+  catIcon: { mix: '🎲', animals: '🐾', food: '🍕', powers: '🦸', school: '📚', travel: '🧭', silly: '🤪', sports: '⚽', space: '🪐', future: '🚀', family: '💛', deep: '💭', tech: '🤖', online: '🌐', numbers: '🔢' },
+  cats: ['animals', 'food', 'powers', 'school', 'travel', 'silly', 'sports', 'space', 'future', 'family', 'deep', 'tech', 'online', 'numbers'],
 };
 
 /* ---------------- words: the game's table under 'wyr.' keys, English as the fallback ---------------- */
@@ -303,8 +306,21 @@ $('logo').innerHTML = '';
 { const words = t('title'); $('logo').textContent = words; }
 paint();
 
+/* ---------------- a lesson's topic lock ----------------
+   A course step opens the game on one topic with params topic=<id>&lock=1 (the play page carries topic as BRB.params.chapter;
+   chapter=<id>&lock=1 works the same). Locked: no topic picker and no way to switch; playing alone starts straight away. */
+const LOCKED = (() => {
+  const p = (window.BRB && BRB.params) || {};
+  const id = String(p.topic || p.chapter || '');
+  return p.lock && CONFIG.cats.includes(id) ? id : null;
+})();
+if (LOCKED) {
+  const el = $('lockTopic'); el.hidden = false;
+  el.innerHTML = '<span aria-hidden="true">' + CONFIG.catIcon[LOCKED] + '</span>'; el.appendChild(document.createTextNode(t('cat.' + LOCKED)));
+}
+
 /* ---------------- state ---------------- */
-const S = { screen: 'home', mode: 'alone', topics: SAVE.topics.slice(), count: SAVE.count, players: SAVE.players,
+const S = { screen: 'home', mode: 'alone', topics: LOCKED ? [LOCKED] : SAVE.topics.slice(), count: SAVE.count, players: SAVE.players,
   queue: [], cur: null, n: 0, picks: [], people: [], turn: 0, round: [], picker: 0, guesses: {}, busy: false, timer: 0, gameOverSent: false };
 function toast(text) { const el = $('toast'); el.textContent = text; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 2600); }
 function show(id) {
@@ -317,14 +333,19 @@ const person = i => ({ face: CONFIG.faces[i], name: t('player', { n: i + 1 }), c
 function faceEl(i, cls) { const p = person(i), el = document.createElement('span'); el.className = 'face' + (cls ? ' ' + cls : ''); el.style.background = p.color; el.textContent = p.face; el.setAttribute('aria-label', p.name); el.title = p.name; return el; }
 
 /* ---------------- home and setup ---------------- */
-for (const b of document.querySelectorAll('.mode')) b.addEventListener('click', () => { sfx('select'); openSetup(b.dataset.mode); });
+for (const b of document.querySelectorAll('.mode')) b.addEventListener('click', () => {
+  sfx('select');
+  // a lesson locked to a topic: playing alone has nothing left to set up, so it starts at once (a 10-question run)
+  if (LOCKED && b.dataset.mode === 'alone') { S.mode = 'alone'; if (!S.count) S.count = CONFIG.counts[0]; return begin(); }
+  openSetup(b.dataset.mode);
+});
 function openSetup(mode) {
   S.mode = mode;
   const topics = $('topics'); topics.textContent = '';
-  for (const c of ['mix', ...CONFIG.cats]) {
+  for (const c of LOCKED ? [LOCKED] : ['mix', ...CONFIG.cats]) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.dataset.cat = c;
     b.innerHTML = '<span aria-hidden="true">' + CONFIG.catIcon[c] + '</span>'; b.appendChild(document.createTextNode(t(c === 'mix' ? 'mix' : 'cat.' + c)));
-    b.addEventListener('click', () => { sfx('pop'); toggleTopic(c); });
+    if (LOCKED) { b.classList.add('locked'); b.setAttribute('aria-disabled', 'true'); } else b.addEventListener('click', () => { sfx('pop'); toggleTopic(c); });
     topics.appendChild(b);
   }
   const counts = $('counts'); counts.textContent = '';
@@ -337,6 +358,7 @@ function openSetup(mode) {
   syncSetup(); show('setup');
 }
 function toggleTopic(c) {
+  if (LOCKED) { S.topics = [LOCKED]; return syncSetup(); }
   if (c === 'mix') S.topics = ['mix'];
   else {
     let list = S.topics.filter(x => x !== 'mix');
@@ -369,7 +391,9 @@ function fillQueue() {
 }
 function nextItem() { if (!S.queue.length) fillQueue(); return S.queue.shift(); }
 function begin() {
-  SAVE.topics = S.topics.slice(); SAVE.count = S.count; SAVE.players = S.players; save();
+  if (LOCKED) S.topics = [LOCKED];
+  else SAVE.topics = S.topics.slice();
+  SAVE.count = S.count; SAVE.players = S.players; save();
   S.n = 0; S.picks = []; S.queue = []; S.round = []; S.gameOverSent = false;
   S.people = S.mode === 'alone' ? [0] : Array.from({ length: S.players }, (_, i) => i);
   S.picker = 0;
@@ -619,8 +643,8 @@ document.addEventListener('keydown', e => {
 
 /* ---------------- test hooks ---------------- */
 window.__brbTest = {
-  state: () => ({ screen: S.screen, mode: S.mode, n: S.n, total: total(), cur: S.cur && S.cur.id, picks: S.picks.length, players: S.people.length, topics: S.topics.slice(), bank: ITEMS.length, seen: SAVE.seen.length, gameOver: S.gameOverSent }),
-  start: (mode, opts) => { openSetup(mode || 'alone'); if (opts) { if (opts.count != null) S.count = opts.count; if (opts.players) S.players = opts.players; if (opts.topics) S.topics = opts.topics; } begin(); },
+  state: () => ({ locked: LOCKED, screen: S.screen, mode: S.mode, n: S.n, total: total(), cur: S.cur && S.cur.id, picks: S.picks.length, players: S.people.length, topics: S.topics.slice(), bank: ITEMS.length, seen: SAVE.seen.length, gameOver: S.gameOverSent }),
+  start: (mode, opts) => { openSetup(mode || 'alone'); if (opts) { if (opts.count != null) S.count = opts.count; if (opts.players) S.players = opts.players; if (opts.topics && !LOCKED) S.topics = opts.topics; } begin(); },
   pick: side => choose(side === 1 || side === 'b' ? 'b' : 'a'),
   ready: () => $('readyBtn').click(),
   next: () => $('nextBtn').click(),

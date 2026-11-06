@@ -67,6 +67,21 @@
   .ff-faces button { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); font-size: 1.6em; cursor: pointer; box-shadow: 0 3px 0 var(--ok-edge); }
   @media (orientation: landscape) and (max-height: 520px) { .ff-say svg { width: 40px; height: 40px; } .ff-say { min-height: 48px; } .ff-say p { font-size: .88em; } }
   @media (max-width: 520px) { .ff-grid { grid-template-columns: 1fr; } }
+  /* the chapter's order picker: a card with the chapter's line, the orders in even rows (3 + 3, never 5 + a lone 6) */
+  .ff-pick { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(100%, 560px); margin: 12px 0 auto; padding: 18px 16px 20px; flex: none;
+    background: var(--ok-card); color: var(--ok-text); border: 3px solid var(--ok-edge); border-radius: 26px; box-shadow: 0 5px 0 var(--ok-edge); text-align: center; }
+  .ff-pick h2 { margin: 0; font-size: 1.35em; font-weight: 900; line-height: 1.15; }
+  .ff-pick > p { margin: -6px 0 0; font-weight: 700; opacity: .85; }
+  .ff-pick .ff-strip { display: grid; grid-template-columns: repeat(var(--ff-cols, 6), auto); gap: 12px 10px; padding-bottom: 6px; }
+  /* a laptop or a big screen: the game sits right under the HUD (no band of empty sky) and everything scales up with
+     the frame, so the controls are not tiny in a huge sky */
+  @media (min-width: 900px) and (min-height: 600px) {
+    .ff { top: min(var(--ok-safe-top), 122px); }
+    .ff[data-screen="map"], .ff[data-screen="chapter"] { font-size: clamp(1em, calc(.4em + 1.7vh), 1.5em); }
+    .ff-lv { width: 3.6em; height: 3.6em; border-radius: 18px; font-size: 1.25em; }
+    .ff-pick { width: min(100%, 720px); padding: 26px 28px 30px; gap: 18px; }
+    .ff-pick .ok-btn { font-size: 1.25em; min-height: 58px; padding: 0 32px; }
+  }
 </style>
 <div id="game"></div>
 <script src="/vendor/oomba-kit/1.1.3/oomba-kit.js" integrity="sha384-C3W9aOBuSkvtAv0cHch+tzSi9h4GN4XCkR3u9iTN7D83Xx2nTtdr3zkPLu6EdBuH" crossorigin="anonymous"></script>
@@ -213,7 +228,7 @@ root.FractionFactory = { rng, seedOf, gcd, frac, sameValue, cmpFrac, addFrac, fm
 </script>
 <script>
 /* ===== Fraction Factory levels: the orders. First Folds is the Launchpad preview (fold and cut, no arithmetic);
-   First Cuts, Re-Slice and Recipe Maths are the Explorer Unit 4 (The Bakery) missions: 4.1 fraction meaning
+   First Cuts, Re-Slice and Recipe Math are the Explorer Unit 4 (The Bakery) missions: 4.1 fraction meaning
    (3.NF.A.1/2), 4.2 equivalence and comparing (3.NF.A.3, 4.NF.A.1/2), 4.3 adding slices (4.NF.B.3, 5.NF.A.1/2).
    Every comparison keeps the same whole. Tally the cat runs the factory; the Jumble places the silly orders. ===== */
 (function (root) {
@@ -222,7 +237,7 @@ const CHAPTERS = [
   { id: 'folds', index: 1, title: 'First Folds', noun: 'orders', sub: 'Fold, cut, share fair', emoji: '🧁' },
   { id: 'first-cuts', index: 2, title: 'First Cuts', noun: 'orders', sub: 'Fair shares of one whole', emoji: '🍰' },
   { id: 're-slice', index: 3, title: 'Re-Slice', noun: 'orders', sub: 'Same value, new clothes', emoji: '🔪' },
-  { id: 'recipe', index: 4, title: 'Recipe Maths', noun: 'orders', sub: 'Adding slices together', emoji: '📖' },
+  { id: 'recipe', index: 4, title: 'Recipe Math', noun: 'orders', sub: 'Adding slices together', emoji: '📖' },
 ];
 const L = (id, ch, type, o) => Object.assign({ id, ch, type, bands: ['1b', '2'] }, o);
 const LEVELS = [
@@ -289,7 +304,7 @@ const LEVELS = [
     intro: 'Last comparison: 5/8 or 3/4 of the same cake. Use the halfway mark to help you.',
     hints: ['Half of the cake is 4/8.', '5/8 is a little past halfway. 3/4 is 6/8.', '6/8 is more than 5/8.'],
     check: { q: '3/4 written in eighths is…', tiles: ['5/8', '6/8', '4/8'], answer: 1 } }),
-  /* --- Recipe Maths (step 4.3): add slices by making the pieces the same size --- */
+  /* --- Recipe Math (step 4.3): add slices by making the pieces the same size --- */
   L('rc-1', 'recipe', 'add', { a: [1, 4], b: [2, 4], denom: 4, whole: 'cake',
     intro: 'The recipe needs 1/4 of a cake, then another 2/4. Build the total on one tray.',
     hints: ['The pieces are already the same size: fourths.', 'Cut your tray into 4.', 'Take 1 part, then 2 more: 3 parts in all.'],
@@ -552,7 +567,7 @@ function build() {
   return S.dom;
 }
 function hideAll() { if (S.dom) { S.dom.ff.hidden = true; S.dom.ff.innerHTML = ''; } S.screen = 'none'; S.run = null; closeCards(); }
-function screen(name) { const { ff } = build(); ff.innerHTML = ''; ff.hidden = false; S.screen = name; return ff; }
+function screen(name) { const { ff } = build(); ff.innerHTML = ''; ff.hidden = false; S.screen = name; ff.dataset.screen = name; return ff; }
 let cardPause = 0;
 function openCard(name) {
   const { ff } = build(); const c = $('div', 'ff-card ff-card-' + name); c.setAttribute('role', 'dialog'); c.setAttribute('aria-modal', 'true');
@@ -624,7 +639,9 @@ function showChapterStrip(ch, focusIx) {
   const bar = $('div', 'ff-bar'); map.appendChild(bar);
   if (!S.lock) bar.appendChild(btn('Map', { kind: 'quiet', icon: 'home', onPress: () => showMap() }));
   const pill = $('div', 'ff-pill'); pill.appendChild($('span', '', CH_BY_ID[ch].emoji + ' ' + CH_BY_ID[ch].title + ' · ' + BAND_NAME[S.band])); bar.appendChild(pill);
-  const strip = $('div', 'ff-strip'); map.appendChild(strip);
+  const card = $('div', 'ff-pick'); map.appendChild(card);
+  card.appendChild($('h2', '', CH_BY_ID[ch].emoji + ' ' + CH_BY_ID[ch].title)); card.appendChild($('p', '', CH_BY_ID[ch].sub));
+  const strip = $('div', 'ff-strip'); card.appendChild(strip);
   levelsFor(ch, S.band).forEach((l, i) => {
     const b = $('button', 'ff-lv', String(i + 1));
     const st = starsOf(l.id);
@@ -634,8 +651,22 @@ function showChapterStrip(ch, focusIx) {
     b.addEventListener('click', () => startLevel(ch, i));
     strip.appendChild(b);
   });
-  const go = btn('Start order ' + (focusIx + 1), { onPress: () => startLevel(ch, focusIx) }); map.appendChild(go);
+  const go = btn('Start order ' + (focusIx + 1), { onPress: () => startLevel(ch, focusIx) }); card.appendChild(go);
+  evenRows(strip);
   hudSync();
+}
+/** Lays the order buttons out in even rows: as many per row as fit, then spread so no row is left with one or two
+ *  (6 orders on a phone: 3 + 3, not 5 + 1). Again when the screen changes size. */
+function evenRows(strip) {
+  const fit = () => {
+    if (!strip.isConnected) return;
+    const n = strip.children.length, b = strip.children[0]; if (!n || !b) return;
+    const gap = parseFloat(getComputedStyle(strip).columnGap) || 10, room = strip.parentElement.clientWidth - 32;
+    const per = Math.max(1, Math.floor((room + gap) / (b.offsetWidth + gap))), rows = Math.ceil(n / per);
+    strip.style.setProperty('--ff-cols', String(Math.ceil(n / rows)));
+  };
+  fit();
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (!strip.isConnected) return ro.disconnect(); fit(); }); ro.observe(strip.parentElement); }
 }
 
 /* ---------- wholes, drawn by the game (SVG): cakes are circles, bars and ribbons are rectangles ---------- */

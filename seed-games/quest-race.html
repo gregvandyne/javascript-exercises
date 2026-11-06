@@ -843,13 +843,16 @@ window.SoloBank = (function () {
       out.push({ q: q, choices: sh, answer: sh.indexOf(ans), secs: 25 });
     };
     var fmt = function (mins) { var h = Math.floor(mins / 60), m = mins % 60; return h + ':' + (m < 10 ? '0' : '') + m; };
-    var raw = function (mins) { var h = Math.floor(mins / 60), m = mins % 60; return h + ':' + m; }; // the no-trade error: minutes past 60 left raw
+    // The no-trade error, written the way a kid writes it: the hour is never moved on, so the minutes run past 60 on the
+    // start's hour ("9:40 + 25 minutes" -> "9:65", like the bank's "9:60"). Only for a ride that crosses the hour and lands
+    // at most 19 minutes past it, so the wrong minutes read 60-79 (never "9:100"); null otherwise (the caller picks another).
+    var noTrade = function (from, to) { var h = Math.floor(to / 60), m = to % 60; return h > Math.floor(from / 60) && m < 20 ? (h - 1) + ':' + (m + 60) : null; };
     var start, dur, end, i;
     for (i = 0; i < 3; i++) { // End times: hop forward from the start.
       start = (rnd.int(8, 10)) * 60 + [5, 15, 25, 35, 40, 50][rnd.int(0, 5)];
       dur = [35, 40, 45, 50, 25, 30][rnd.int(0, 5)]; end = start + dur;
       mkS('A bus leaves at ' + fmt(start) + '. The ride takes ' + dur + ' minutes. When does it arrive?',
-        fmt(end), [raw(end) !== fmt(end) ? raw(end) : fmt(end + 20), fmt(end + 10), fmt(end - 10)]);
+        fmt(end), [noTrade(start, end) || fmt(end + 20), fmt(end + 10), fmt(end - 10)]);
     }
     for (i = 0; i < 2; i++) { // Elapsed: the distance between two times.
       start = rnd.int(8, 10) * 60 + [10, 20, 30, 40, 50][rnd.int(0, 4)];
@@ -865,8 +868,8 @@ window.SoloBank = (function () {
     }
     // One swap: minutes named as hours and minutes.
     var tot = [75, 90, 105, 120, 135][rnd.int(0, 4)], hh = Math.floor(tot / 60), mm = tot % 60;
-    mkS('How long is ' + tot + ' minutes, in hours and minutes?', hh + (hh === 1 ? ' hour ' : ' hours ') + mm + ' minutes',
-      [hh + (hh === 1 ? ' hour ' : ' hours ') + (mm + 10) + ' minutes', (hh + 1) + ' hours ' + mm + ' minutes', tot + ' hours']);
+    var hm = function (h, m) { return h + (h === 1 ? ' hour' : ' hours') + (m ? ' ' + m + ' minutes' : ''); }; // "2 hours", never "2 hours 0 minutes"
+    mkS('How long is ' + tot + ' minutes, in hours and minutes?', hm(hh, mm), [hm(hh, mm + 10), hm(hh + 1, mm), tot + ' hours']);
     return out;
   }
   // ---- Number Quest lesson race, step 7.4 (the Vault of Measures): the sequenced mixed mission that

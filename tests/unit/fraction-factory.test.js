@@ -57,7 +57,7 @@ test('fraction-factory: the chapters and the Unit 4 mission contract', () => {
   // the course catalogue (standards lock) names this game for steps 4.1, 4.2 and 4.3 with these chapter titles
   const units = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/number-quest/units.json'), 'utf8'));
   const u4 = units.units.find(u => u.n === 4);
-  const want = { '4.1': 'First Cuts', '4.2': 'Re-Slice', '4.3': 'Recipe Maths' };
+  const want = { '4.1': 'First Cuts', '4.2': 'Re-Slice', '4.3': 'Recipe Math' };
   for (const s of u4.steps) {
     const g = s.game.explorer;
     assert.equal(g.slug, 'fraction-factory', `${s.n} is a Fraction Factory mission`);
