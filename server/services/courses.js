@@ -231,7 +231,7 @@ function cleanSlide(s) {
   }
   // Guided focus: optional animation steps over the picture (only alongside a valid img or a valid drawn
   // visual). Each step is a short cue (<= 80 chars), a target box in % of the frame (inside it, at least
-  // 2% wide/tall) and an optional dotted path of 2-8 points in %. 1-4 steps. Anything malformed drops the
+  // 2% wide/tall) and an optional dotted path of 2-16 points in %. 1-4 steps. Anything malformed drops the
   // whole focus and the slide keeps its plain picture (fromDeck reports the loss, like a dropped img).
   if ((out.img || out.visual) && Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4) {
     const num = v => typeof v === 'number' && Number.isFinite(v);
@@ -246,7 +246,7 @@ function cleanSlide(s) {
         && b[0] >= 0 && b[1] >= 0 && b[2] >= 2 && b[3] >= 2 && b[0] + b[2] <= 100 && b[1] + b[3] <= 100;
       let path;
       if (st && st.path != null) {
-        if (Array.isArray(st.path) && st.path.length >= 2 && st.path.length <= 8 && st.path.every(p => Array.isArray(p) && p.length === 2 && p.every(pct))) path = st.path.map(p => [r1(p[0]), r1(p[1])]);
+        if (Array.isArray(st.path) && st.path.length >= 2 && st.path.length <= 16 && st.path.every(p => Array.isArray(p) && p.length === 2 && p.every(pct))) path = st.path.map(p => [r1(p[0]), r1(p[1])]);
         else ok = false;
       }
       if (!ok || !cue || cue !== cue.trim() || cue.length > 80 || !boxOk) { ok = false; break; }
@@ -306,7 +306,7 @@ function fromDeck(key, l, d, game, items, problems) {
     for (const m of viewMisses(slides[i])) say(`slide ${i + 1} ${m}`);
     if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (s && s.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
-    if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-16 points in %`);
     if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
   }
@@ -423,7 +423,7 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
     for (const m of viewMisses(slides[i])) say(`slide ${i + 1} ${m}`);
     if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (sl && sl.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
-    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-16 points in %`);
     if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
@@ -499,7 +499,7 @@ function fromNqDeck(key, s, d, game, items, problems) {
     if (sl && sl.view != null && slides[i].img && !slides[i].view) say(`slide ${i + 1} view was dropped: it needs [x, y, w, h] in % of the picture, inside it, w and h at least 15`);
     for (const m of viewMisses(slides[i])) say(`slide ${i + 1} ${m}`);
     if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: Number Quest decks carry no character art until a sprite is extracted from its own game`);
-    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-16 points in %`);
     if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);

@@ -153,7 +153,7 @@ test('5-8 slides: one worked example with chips, one words slide with four words
           const [x, y, w, h] = f.box;
           assert.ok(x >= 0 && y >= 0 && w >= 2 && h >= 2 && x + w <= 100 && y + h <= 100, `${fat}: box inside the frame, at least 2% wide/tall`);
           if (f.path != null) {
-            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 8, `${fat}: path of 2-8 points`);
+            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 16, `${fat}: path of 2-16 points`);
             for (const p of f.path) assert.ok(Array.isArray(p) && p.length === 2 && p.every(v => typeof v === 'number' && v >= 0 && v <= 100), `${fat}: path points in % inside the frame`);
           }
         }
