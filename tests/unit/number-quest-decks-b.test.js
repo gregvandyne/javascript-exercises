@@ -13,7 +13,7 @@
 // scripts/nq-shots.js); a STORY slide may carry the story stage (slide.story). No other slide carries
 // img or story, and neither ever displaces a drawn diagram or its focus. Unit 4 missions wire to
 // Fraction Factory, which IS present in seed-games (built in parallel): the chapter names in units.json
-// (First Cuts, Re-Slice, Recipe Maths) must be real chapters in the game file.
+// (First Cuts, Re-Slice, Recipe Math) must be real chapters in the game file.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -182,7 +182,7 @@ test('kid-safe text: no links, brands, framework names or codes in decks or item
       assert.ok(!BRAND.test(s), `${where}: no brand names: ${s}`);
     }
   };
-  // One exemption, documented: 'Recipe Maths' is the LOCKED chapter title in units.json and in
+  // One exemption, documented: 'Recipe Math' is the LOCKED chapter title in units.json and in
   // Fraction Factory itself - a proper name the mission must quote verbatim, not prose spelling.
   for (const { step, deck: d } of decks) check(stringsOf(d).map(s => s.split(step.game.explorer.chapterTitle).join('CHAPTER')), `explorer-${step.n}`);
   for (const n of ['3.1', '3.2', '3.3', '4.1', '4.2', '4.3']) {
