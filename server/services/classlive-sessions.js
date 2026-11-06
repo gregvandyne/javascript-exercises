@@ -817,7 +817,7 @@ export function controllerFor(s, tok, u) {
 
 // The way the quiz module talks to devices (no import cycle).
 const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s),
-  publish: (s, patch) => publish(s, patch), projectorState: (s, patch) => projectorState(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
+  leaderboard: s => leaderboard(s), publish: (s, patch) => publish(s, patch), projectorState: (s, patch) => projectorState(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
 
 /** Platform-made shared state (Atlas Quest Live's flag and region, Would You Rather Live's all-time split): merged into
  *  s.state and sent to every device and the projector, like the Brain Board. Only fixed codes and numbers. */

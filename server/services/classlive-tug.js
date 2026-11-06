@@ -147,6 +147,8 @@ export function finish(s, io) {
   x.win = Math.abs(d) < 1e-9 ? 0 : d > 0 ? 1 : 2; x.doneAt = now;
   for (const p of x.per.values()) p.q = null;
   send(s, io, now);
+  // the team board matches the winning screen at once (it otherwise refreshes every 2 s)
+  if (s.scoresDirty && io.leaderboard) io.leaderboard(s);
 }
 
 /** Every tick (100 ms): the clock, the shared state when it changed, the end of the hold. */
