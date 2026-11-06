@@ -37,7 +37,7 @@ html.dh-live .ok-row{display:none!important}
 .dh-word.got{background:var(--goodTint)}
 /* the board and the side */
 .dh-main{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
-.dh-boardbox{flex:1 1 auto;min-height:120px;container-type:size;display:grid;place-items:center}
+.dh-boardbox{flex:1 1 auto;min-height:max(120px,46%);container-type:size;display:grid;place-items:center}
 .dh-board{position:relative;width:min(100cqw,133.33cqh);aspect-ratio:4/3;border-radius:18px;background:var(--paper);border:4px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge);overflow:hidden}
 .dh-board canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .dh-board.can-draw canvas{cursor:crosshair}
@@ -47,7 +47,7 @@ html.dh-live .ok-row{display:none!important}
 .dh-veil .big{font-size:1.5em}
 .dh-veil .emo{font-size:2.6em;line-height:1}
 .dh-veil.rv{background:rgba(255,255,255,.86)}
-.dh-side{flex:none;display:flex;flex-direction:column;gap:8px;min-height:0}
+.dh-side{flex:0 1 auto;display:flex;flex-direction:column;gap:8px;min-height:0;container-type:inline-size}
 /* drawing tools */
 .dh-tools{display:flex;flex-direction:column;gap:8px}
 .dh-sw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
@@ -74,27 +74,28 @@ html.dh-live .ok-row{display:none!important}
   .dh-tools.size-open .dh-szs{display:flex}
   .dh-tools .dh-note{display:none}
 }
-@media (orientation:landscape){ .dh-cur{display:none!important} }
+@media (orientation:landscape) and (min-height:501px){ .dh-cur{display:none!important} }
 .dh-note{margin:0;font-size:13px;font-weight:700;opacity:.8;text-align:center}
 /* slots and tiles */
-.dh-guess{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.dh-guess{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-height:0;flex:0 1 auto;overflow-x:hidden;overflow-y:auto}
 .dh-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;min-height:44px}
-.dh-wd{display:flex;gap:4px}
-.dh-slot{width:clamp(40px,8.4vw,48px);height:44px;border-radius:10px;border:3px solid var(--ok-edge);border-style:dashed;background:transparent;font-weight:900;font-size:22px;display:grid;place-items:center;padding:0}
+.dh-wd{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.dh-slot{width:clamp(44px,11cqw,64px);height:clamp(44px,12cqw,68px);border-radius:10px;border:3px solid var(--ok-edge);border-style:dashed;background:transparent;font-weight:900;font-size:clamp(20px,5cqw,30px);display:grid;place-items:center;padding:0}
 .dh-slot.full{border-style:solid;background:var(--ok-card)}
 .dh-slot.lock{border-style:solid;background:var(--hintTint);cursor:default}
 .dh-guess.ok .dh-slot{background:var(--goodTint);border-style:solid}
 .dh-guess.no .dh-slots{animation:dhShake .35s ease}
 .dh-preview{margin:0;text-align:center;font-size:24px;font-weight:800;min-height:1.3em}
-.dh-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}
-.dh-tile{min-height:48px;border-radius:12px;border:3px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 4px 0 var(--ok-edge);font-weight:900;font-size:24px;padding:0;transition:transform 70ms ease-out}
+.dh-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(44px,14cqw,76px),1fr));gap:6px}
+.dh-guess.ok .dh-tray{display:none}
+.dh-tile{min-height:clamp(48px,14cqw,76px);font-size:clamp(22px,7cqw,36px);border-radius:12px;border:3px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 4px 0 var(--ok-edge);font-weight:900;padding:0;transition:transform 70ms ease-out}
 .dh-tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ok-edge)}
 .dh-tile.used{opacity:.25;box-shadow:none}
 .dh-tile.gone{visibility:hidden}
 .dh-say{margin:0;min-height:1.3em;text-align:center;font-weight:800}
 .dh-say.good{color:var(--good)}
 /* scores */
-.dh-scores{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;overflow:hidden;min-height:0}
+.dh-scores{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;overflow-x:hidden;overflow-y:auto;min-height:0;flex:0 1 auto}
 .dh-scores li{display:flex;align-items:center;gap:8px;min-height:44px;padding:2px 10px;border-radius:14px;background:var(--ok-card);border:3px solid var(--ok-edge);font-weight:800}
 .dh-scores li canvas{width:36px;height:36px;flex:none}
 .dh-scores li .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -102,18 +103,20 @@ html.dh-live .ok-row{display:none!important}
 .dh-scores li.got{background:var(--goodTint)}
 .dh-scores li.dr{background:var(--chip)}
 .dh-scores li .m{width:26px;text-align:center}
-.dh-strip{flex:none;display:flex;gap:6px;overflow:hidden;min-height:0}
+.dh-strip{flex:none;display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;min-height:0;scrollbar-width:none}
+.dh-strip b{font-weight:800;max-width:7em;overflow:hidden;text-overflow:ellipsis}
 .dh-strip span{flex:none;display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:var(--ok-card);border:2px solid var(--ok-edge);font-weight:800;font-size:13px;white-space:nowrap;min-height:30px}
 .dh-strip span.got{background:var(--goodTint)}
 .dh-strip span.me{outline:3px solid var(--ok-edge)}
 .dh-strip canvas{width:22px;height:22px}
 /* full-screen panels: the lobby, a pick, waiting, the podium, pass-and-play covers */
-.dh-screen{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center;background:var(--ok-bg2);overflow:hidden}
+.dh-screen{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;justify-content:safe center;gap:12px;padding:16px;text-align:center;background:var(--ok-bg2);overflow-x:hidden;overflow-y:auto}
 .dh-screen.below{top:calc(64px + env(safe-area-inset-top))}
 .dh-screen h2{margin:0;font-size:clamp(22px,3vh + 1.2vw,52px);font-weight:900}
 .dh-screen p{margin:0;font-weight:700;font-size:clamp(15px,1.6vh + .6vw,26px);max-width:44em}
 .dh-screen .pip{height:min(28vh,220px);width:auto}
-.dh-people{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:min(96vw,1400px);overflow:hidden}
+.dh-people{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:min(96vw,1400px);overflow-x:hidden;overflow-y:auto;min-height:0;flex:0 1 auto}
+.dh-screen>*{flex-shrink:0}.dh-screen>.dh-people{flex-shrink:1}.dh-screen>.pip{flex-shrink:1;min-height:56px;object-fit:contain}
 .dh-people li{display:flex;flex-direction:column;align-items:center;gap:2px;width:var(--cell,110px);font-weight:800;font-size:clamp(12px,calc(var(--cell,110px) * .13),20px)}
 .dh-people li canvas{width:calc(var(--cell,110px) * .7);height:auto}
 .dh-people li span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--ok-card);border-radius:999px;padding:0 8px}
@@ -126,6 +129,13 @@ html.dh-live .ok-row{display:none!important}
 .dh-podium canvas{width:min(100%,180px);height:auto}
 .dh-podium .blk{width:100%;border-radius:16px 16px 0 0;border:4px solid var(--ok-edge);background:var(--chip);display:flex;align-items:flex-start;justify-content:center;font-size:clamp(28px,5vh,64px);padding-top:6px}
 .dh-podium .p1 .blk{height:22vh}.dh-podium .p2 .blk{height:15vh}.dh-podium .p3 .blk{height:10vh}
+.dh-podium canvas{max-height:24vh;width:auto}
+/* the blocks rise 3rd, 2nd, then 1st (not with reduced motion) */
+.dh-podium>div{animation:dhRise .6s cubic-bezier(.2,1.4,.4,1) both}.dh-podium .p3{animation-delay:.2s}.dh-podium .p2{animation-delay:.9s}.dh-podium .p1{animation-delay:1.6s}
+@keyframes dhRise{from{transform:translateY(60%);opacity:0}to{transform:none;opacity:1}}
+.dh-hint{position:absolute;inset-inline-end:10px;top:10px;z-index:2;background:var(--hint);color:#fff;border:3px solid var(--ok-edge);border-radius:999px;padding:4px 14px;font-weight:900;font-size:clamp(16px,2vh + .5vw,26px);animation:dhPop 1.6s ease-out both;pointer-events:none}
+@keyframes dhPop{0%{transform:scale(.4);opacity:0}15%{transform:scale(1.15);opacity:1}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
+.rm .dh-podium>div,.rm .dh-hint{animation:none!important}
 .dh-podium .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(14px,2vh + .6vw,30px)}
 .dh-big{min-height:56px;min-width:min(80vw,280px);border-radius:18px;border:4px solid var(--ok-edge);background:#FFC83D;color:#1D2340;box-shadow:0 6px 0 var(--ok-edge);font-weight:900;font-size:22px;padding:6px 20px}
 .dh-who-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
@@ -147,24 +157,46 @@ html.dh-live .ok-row{display:none!important}
 /* landscape: the board left, the side right */
 @media (orientation:landscape){
   .dh-main{flex-direction:row}
-  .dh-side{flex:0 0 clamp(250px,36vw,460px);justify-content:center;overflow:hidden}
+  .dh-side{flex:0 0 clamp(250px,36vw,460px);justify-content:flex-start;justify-content:safe center;overflow-x:hidden;overflow-y:auto}
   .dh-host .dh-side{flex-basis:clamp(260px,26vw,440px);justify-content:flex-start}
   .dh-sw{grid-template-columns:repeat(4,minmax(0,1fr))}
-}
-@media (orientation:landscape) and (min-width:1100px) and (min-height:700px){
-  .dh-tile{min-height:60px;font-size:30px}.dh-tray{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
-  .dh-slot{width:52px;height:56px;font-size:28px}
 }
 @media (orientation:landscape) and (max-height:500px){
   .dh{gap:4px;padding-top:calc(4px + env(safe-area-inset-top));padding-bottom:calc(4px + env(safe-area-inset-bottom))}
   .dh-top{min-height:40px}.dh-clock{width:42px;height:42px}.dh-clock b{width:30px;height:30px;font-size:13px}
-  .dh-sw{grid-template-columns:repeat(6,minmax(0,1fr))}
-  .dh-sw button,.dh-btn{min-height:40px}
   .dh-word{min-height:36px;font-size:18px}
-  .dh-tile{min-height:42px;font-size:20px}.dh-slot{height:40px}
-  .dh-tray{grid-template-columns:repeat(auto-fill,minmax(42px,1fr))}
+  .dh-tile{min-height:44px;font-size:22px}.dh-slot{height:44px;width:44px;font-size:22px}
+  .dh-tray{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}
   .dh-note{display:none}
+  .dh-guess{gap:6px}.dh-say{min-height:0}
+  /* a phone on its side: the colours and sizes fold into two buttons, as upright; their trays open over the board */
+  .dh-cur{display:flex!important}
+  .dh-tools .dh-sw{display:none;position:fixed;inset-inline-start:calc(8px + env(safe-area-inset-left));top:56px;width:min(340px,58vw);z-index:8;padding:8px;border-radius:18px;background:var(--ok-card);border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge);grid-template-columns:repeat(6,minmax(0,1fr))}
+  .dh-tools.pal-open .dh-sw{display:grid}
+  .dh-szs{display:none;position:fixed;inset-inline-start:calc(8px + env(safe-area-inset-left));top:56px;z-index:8;gap:6px;padding:8px;border-radius:18px;background:var(--ok-card);border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge)}
+  .dh-tools.size-open .dh-szs{display:flex}
+  .dh-szs .dh-btn{min-width:48px}
+  /* Back and Hide drawing as icons (their names stay for screen readers) */
+  .dh-guess .dh-row .dh-btn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .dh-screen .pip{height:min(22vh,120px)}
+  .dh-podium canvas{max-height:18vh}.dh-podium .p1 .blk{height:14vh}.dh-podium .p2 .blk{height:10vh}.dh-podium .p3 .blk{height:7vh}
+  .dh-podium .blk{font-size:clamp(20px,5vh,40px)}
+  html.dh-live .ok-modal.ok-win .ok-card{max-height:calc(100vh - 16px);overflow-y:auto}
+  html.dh-live .ok-modal.ok-win .ok-portrait{display:none}
+  html.dh-live .ok-modal.ok-win .ok-card{padding-block:10px;gap:4px}
+  html.dh-live .ok-modal.ok-win .ok-h2{font-size:24px;margin:0}
+  html.dh-live .ok-modal.ok-win .ok-sparks{transform:scale(.7);margin-block:-10px}
+  html.dh-live .ok-modal.ok-win .ok-score{font-size:28px;line-height:1.1}
+  .dh-seepod{min-height:48px;font-size:18px}
 }
+/* a narrow phone: the word in the top bar gets the room */
+@media (max-width:420px){
+  .dh-chip{padding:2px 8px;font-size:13px}
+  .dh-who.has-word canvas,.dh-who.has-word small{display:none}
+  .dh-who{font-size:clamp(14px,4.4vw,20px)}
+}
+/* the results card's own way back to the podium */
+.dh-seepod{margin-top:6px}
 .dh.rm *,.rm .dh-guess.no .dh-slots{animation:none!important;transition:none!important}
 @keyframes dhShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
@@ -216,6 +248,23 @@ html.dh-live .ok-row{display:none!important}
    *  forms): an easy tray never puts one next to its twin. */
   var TWIN = { 'ё': 'е', 'й': 'и', 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ة': 'ه', 'ى': 'ي' };
 
+  /** The rude-word check for a tray the game makes itself (on its own; in Oomba Live the server checks every tray with
+   *  the site's lists). BAD: a hash of every entry of the site's rude-word lists (scripts/doodle-bad.mjs writes it), so
+   *  no rude word is written here. rude(text): does any run of 2-24 letters of text, folded as the lists are, hash to one? */
+  /* doodle-bad:begin */
+  /* (written by scripts/doodle-bad.mjs) */
+  var BAD = '101drae 10683kv 10hzsuy 10i5dor 10kzu95 10p7m41 10qer3i 10qrpnr 10s9s10 10w411u 10went2 10xihbf 10yzs8e 10zetl 1173kic 11a64sq 11gwlt 11k11rc 11myu10 11nf1yo 11ovye2 11p5dba 11pqshj 11r8tpk 11s16qh 11wb91u 11wuret 126mh61 126q3ue 1297f92 129dlmf 12cr0my 12d2yk5 12e0uy4 12ehn81 12hd1o8 12iknma 12k1lo2 12kjkj5 12n15v7 12puiis 12u26c1 12u80nm 12xg1yy 12xm7jc 12xmz9 131pqu2 136s4po 138kqrt 139sa8o 139yxdt 13aoima 13b2l98 13g2tnm 13ig1zx 13jeztl 13nlxwm 13sasos 13sz5zk 13w8xl3 13xiz9c 13xpm8h 13zqwd8 142xwzd 146nw1y 1493awo 14fkbtf 14h9oi0 14ioxhv 14mr22w 14nsu42 14t1o75 14vqzm9 1505nlu 152fpzw 157bpup 157hg6k 15845tn 15aaqzf 15ajtv3 15am0sm 15jhte7 15qs005 15r4zbv 15wv286 15zhxa5 16dnyit 16ntmb1 16oc66y 16r1wn7 16vdew 16xg07 16yueuz 16zyrvj 1702lgs 1721a3e 172h7hf 178j8nf 17adv9g 17ba8vy 17bq0i6 17cb2b0 17expxq 17kfwbo 17pimdb 17q8yj5 17qqfo 17r6zbp 17saql8 17sjq2t 17uzogh 17uzvih 1819jql 184hw74 186ygm8 1896g64 18b9z6a 18dds8g 18f92hz 18hq61y 18kg7af 18mfrl2 18nnohl 18nzakn 18qbkkk 18veiea 18wwfhh 18z3p8a 18zfmbk 195soli 196vn81 198a2k1 199hmdq 19db2jv 19ggd13 19jgylo 19ma9xk 19o6l49 19qndgo 19xq81j 19xxsyq 19yr74e 1a2g22p 1aa0xqj 1acy6i2 1ad3co1 1afmm6i 1aitxag 1aja5p 1akxnxk 1ap2qr8 1ap956p 1apcqvs 1aphvlf 1apwpjg 1aqa3kt 1aqvv77 1awl41l 1axpymh 1b08wvy 1b1oss7 1b1tk5q 1b2ubtf 1b5na4u 1b7asqh 1b8yf0m 1bgcbbx 1binbgb 1bl35sb 1bnb5tq 1bnpdrx 1bnt4xd 1bpvs4w 1bq7o9k 1bvdd1c 1bvp14e 1bwpzum 1bxkom4 1c2x2ce 1c3fk66 1c4399n 1c443qp 1c8wda0 1c9brhl 1c9jszj 1cb51zg 1ccws00 1ciqsgs 1cnm73c 1cxptlw 1cz52mr 1cz7siu 1d1onrt 1d3ucei 1d580la 1ddge0a 1ddoja5 1ddrmw4 1djgiy3 1dkteyz 1dmk1ia 1do2ijw 1dujeo4 1dzj3pf 1e2uqsq 1e30knb 1e7sp77 1e84k5o 1eaqa9n 1eaueq 1eey7tv 1egjov3 1ehb4um 1ejvqnw 1emgqt4 1es18dm 1ev6nzy 1evg9a2 1ez7yz8 1f0nsh0 1f1avsg 1f4fdrz 1f6803z 1fa10rj 1fc3q8l 1fc7sx1 1fcbu2d 1fd3cio 1fhauet 1fhzz46 1fmnh6k 1fr6coj 1frp2cz 1ft5j7c 1g0owtg 1g1ad82 1g1hetl 1g2gkbe 1g854dz 1g9hlte 1gpkjs9 1gtzhzo 1gv4d00 1gvs4bw 1gz3yal 1h8ix8g 1ha3qju 1hcckj 1hdtwys 1hgwlxf 1hkktt8 1hlfewq 1hmz4af 1hopktd 1htv1pc 1hwt8mk 1hymp7g 1i095rn 1i3ifk9 1ibfe8v 1icvw2u 1iea8tl 1iefmcy 1ifg9xd 1ihhxdj 1iipuvn 1ipcla7 1iu2w9o 1iw295p 1j0y2qz 1j8nxa8 1ja9ge9 1jd4xpp 1jgbavf 1jgde5v 1jowqjo 1jvc8nb 1k86h43 1k8pkec 1k9whie 1kcbvff 1kcet3h 1kf2xlv 1kkj0d4 1kkua5p 1kmcocs 1kwbn8s 1kwfcq4 1kxfdrz 1kzrwz6 1l1f2bc 1l5oi4a 1l9n3pe 1lh2fsv 1ligr0x 1lixzdm 1lkt7vh 1lkvmx5 1lpxdne 1lw7lsq 1lzq7kk 1mb5nmv 1mchugr 1mg2sv7 1micxdq 1mjcvd4 1ml798f 1modrk7 1msoj6w 1mymjiu 1n0b4gy 1n0khwk 1n3ccjq 1n6l11l 1n773ht 1n9b5cm 1nc7md9 1nef8at 1nhptva 1nhzbne 1nm7t3e 1nnjvyy 1np05at 1npkzk5 1nqnnun 1nungnz 1nvsrp0 1nwvla7 1o1ka92 1o2z4ea 1o79lic 1o7cjlp 1o7u10e 1o8tgxt 1ob5fz3 1ohagc1 1opd5e8 1os2wyf 1ov99uv 1ovi1xg 1owv5f1 1oxtwb7 1oysilk 1p3zm3i 1p59lh5 1pb9iqe 1pbqt8x 1pe98ze 1pgwj92 1po3oda 1po8yn0 1pomt9u 1pox7vk 1pwm1ei 1py4clw 1py54ae 1q29aab 1q9hs5f 1qbnnkr 1qcwxu7 1qe90v8 1qfw8yr 1qi9ao2 1qlkhj5 1qlz9sn 1qn6bp7 1qp8t09 1qwvyeb 1r0brl 1r1q36p 1r4cw83 1rcfkdg 1rfezdz 1rfh349 1rjz844 1roxpx7 1rsrgfv 1rsslp6 1rswz3g 1rtedpi 1rtuf5p 1ry26ve 1rybc9m 1rzpjqy 1s06808 1s0bz2k 1s7rita 1s9lag0 1s9xzln 1sab7fz 1scme1q 1shchcq 1sk5spu 1slmsio 1sr1x58 1stwfu2 1sxdq2u 1t2m7li 1t970wa 1tcexm7 1tdj3cl 1teclc8 1tfezki 1thmu4x 1tjv1hh 1tmuutg 1tpx73z 1tqh9y9 1tqijm7 1ts7xzf 1ttpen6 1tuoqs8 1tv4xz9 1tv8vbz 1txgkca 1tyi80d 1u0pty 1u38b4c 1u4guim 1u5gly1 1u824aq 1u8fnjw 1uboiha 1ufk39h 1ul1uk4 1uqyvpl 1us1boo 1usbnvy 1uu9bdf 1uuuwj3 1v52u0c 1v605rs 1vclwlq 1vhajsy 1vplue9 1vtswo 1vv6kgm 1vvymb 1vwsise 1w9hjy2 1wj3om6 1wkcbgq 1wnkni3 1wnmtye 1wokpf2 1woooqd 1wqu9p8 1x3isxk 1x4h5lc 1x4jhxr 1x5uff6 1xd4eyb 1xifnkp 1xijdig 1xns6oj 1xnxfup 1xts2mf 1y2hwt9 1y4aim3 1y8v4hj 1y9wfg4 1ya1s92 1ycakk 1yee3nv 1yftv22 1yo3rrx 1yskq7e 1ysr6zd 1yzo0mm 2du97o 2oey29 2q5bi9 2w1uaa 30dee1 37b8in 37fn66 39turs 3gf84e 3iaf33 3lk5y6 3mp001 3qw5vd 3r8taz 3x3lg0 40f4ra 41bnmy 458qpd 47rydc 4cb9h2 4cg5na 4dfkx5 4ksqmn 4l7q4f 4npua 4qxcr1 4rs1he 4sfcy7 4sl96i 4t06t3 4t38a5 4tzfxe 4w8etp 4w98wg 50gnei 5417uk 54evvi 54ic9l 56hdt9 58vafh 5a9h8l 5do8l1 5ebnt0 5jor4r 5ltm1f 5lzufr 5mouaw 5opegk 5p7iim 5sl7po 5ta8q1 5u7qhi 5xkc1g 5ydoyf 648grk 694jnj 6f9s97 6girek 6kbsel 6lxu1i 703f91 70z7p2 71nu3n 75crlb 75zxo4 76rlnv 7a5yau 7eajtx 7f8gta 7hi2va 7i1t5t 7nkw9f 7o6qag 7swmif 7ufw9s 7uhme8 7ww9mk 7zmozo 81g1wz 81q8rh 82g7ql 83mkwp 85fxd0 8ai0jc 8ayj7a 8co470 8h22ts 8o7346 8potcj 8rq7i0 8s63y2 8tabs4 8txsmf 94e4qo 9at6oh 9i1i9g 9iat14 9jzjae 9nod9b 9o1464 9po5vb 9rc5ys 9vttir 9xjsia 9y1fov a1y2su a56g1l a9vh3v a9xyrl aa9mkh ac484m ago45d ahn6c8 ai75mz aizz8w akn75r ar4lhw atx65j azf3k5 b1ebjo b1r3ss b6om39 b86xun b9blng bjtuol bl6ehi bl6h4 brfqc8 bs08mq bs1m8p bvbk91 bw6trn bwatwf byepwv c1k6v6 c29e9f c3kwgx c40jvu cb909m cg8i8b cikrs8 cjybg8 ckmr77 ckteot clje94 csj5hv cu748w cxm83l d5s9zt d7a3r8 da4rcz danuln dfnuv7 dk39oj dkfehe dn85c5 dpll4q dt6rve dxs8dz dzzt2u e31535 e4iz3o ecwmn6 edof ee390e eeboeu eerk5c ekkt9n en1zj7 ennen0 eocbm2 eqjb8c esure8 euoh9 evpogh f1js89 fc5j2p fdajea fdod9c flimij flty2x fq5ed4 fwqh1r g1kjvt g2qpu6 gav817 gcrkdl gdknf7 ge2g1z gh8y66 go8xlz gow0x3 gpd7io gpl9c0 gq2t5t gr03xe h67pck h79vsi h7gwzx hbauiq hbll45 hhv7pc hktyol hl3vp6 hmxbzu hn7ukb htl29 hzttn9 i39vid i9p77q id0657 ig5gue igg2zb imzbo9 issrr4 iwzhde j1g1ac j2sksb j7099u jcgnz3 jf0cvl jlhfpw jnka28 jqo1a5 jqxuf5 jshrqv ju3i5o jvcm71 jvzufh jyg210 jzgwuo k3diew k3ixao kdbaxn kdg4h3 ke8esw kjq4ui kpz5np krrvlc kv5kjw l3qun l6j80d lb8lz4 lchlpz lggk4y lglq08 lkmkw0 lkspaz lnzlu3 logtnq lqo7ph lrqfpg ls4dp9 lz7hy9 m0oedx m1cv2d m8qfc6 m9xbwd may9qx mlc2gb mlp8sd mpse0f mstvbw mvhb7p n0y50q n2rauk n3ctlb n5ny0z n9jhc6 neby5v ngd4e0 nhvwbf nkar84 nkjxtf nxyjzc o0etz2 o1msk1 o5m9uh o6k0e5 o7ia2q oc56mk ojr39h okahja okaqro okpiwy omz6on oqq3z or8u2m osan6z ot5e8b ouclqk oxf6fe oyf546 p0t3zi p2cbm0 p6ao8f p6u9z7 p8gz3n pb9n53 pc1mej pdfa6d pdtmt1 pepeue pieyax pkjqb3 plnba1 ppytcn pqrzwa pxrrqn q3mt7g q4xjoy q5wrp2 q64mcv qawojg qfcty1 qowl39 qu4b04 qxvxpb r034u2 r1ktqa r348mm r7tpx7 rakbuu rbkff9 rhcy8m rl6af1 rq14r4 ry7ab6 rzttli s31e38 s5qr5q s6chch s6uqe9 sbqtjc sdjc7r sdvy7n sj128o slm28j sqpac3 srhr74 ss1jbv sw3mki sy22o1 t0mo9y t25yta t37704 tcmlcs tewzx5 tg06pa tgc6k2 tgo6sc tihcoe tjbrzl toru19 ttefe7 ttk60e ttxu1c ttz9mo twlw3p tyoebv tzh9t7 tzl4t2 u0jrb8 u2ye6n u3ggcz u5jjez u6ja60 u6zath u74m7v ub58zf ucr1qv uf6j42 uk6jsy umtue7 unkym7 upml7z uqqtk3 ur03h urhuj9 uv73mj uvto9z uwqybg uwtprv v1tdw2 v1xdry v4j63n v4zpbr v5sgpp vcznyl vde1zp vily3p vm7u20 vo7ipn vph41m vtjytr vy23mc vyd5im vyevkk w0waa3 w1vj88 w2yxv1 w44bqz w6wgq0 wfeqrg wky16o wok461 wq7c6b wshqki wsw7jq wvppz8 wz0r88 wzduxh x1gwtw x1o2zr x1pano x5c2zo x82flj x9boin xape4i xhsual xqre34 xsr2qd xtyvc6 xuvnms xyf0xi y3nc3d y41fsj y4jmfn y7fr6n y9wj56 yamta6 yaufcw yfj9s4 ygz05r yi03qm ykn2fz ykn8e7 ysbvzc ysi8qk yvgng1 yxggt yy6i0g z1td2w z4446r z9ie3g zh8i2f zj3tc7 zk9ty6 zm4vj6 zmlmab zpgajc zpjzl7 zq8pxd zrmlsj zsp2h0 zv9rm3 zwanhs zyfl79';
+  /* doodle-bad:end */
+  var BADSET = null;
+  function hash(str) { var x = 0x811c9dc5; for (var i = 0; i < str.length; i++) { x ^= str.charCodeAt(i); x = Math.imul(x, 0x01000193) >>> 0; } return x.toString(36); }
+  function fold(str) { return String(str).normalize('NFKC').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f\u0591-\u05c7\u064b-\u065f\u0670\u0640]/g, '').normalize('NFC').replace(/\s+/g, ''); }
+  function rude(text) {
+    if (!BADSET) { BADSET = {}; BAD.split(' ').forEach(function (h) { if (h) BADSET[h] = 1; }); }
+    var t = fold(text);
+    for (var i = 0; i < t.length; i++) for (var j = i + 2; j <= Math.min(t.length, i + 24); j++) if (BADSET[hash(t.slice(i, j))]) return true;
+    return false;
+  }
+
   /** A small seeded random source (mulberry32). */
   function rng(seed) {
     var a = (seed >>> 0) || 1;
@@ -265,42 +314,59 @@ html.dh-live .ok-row{display:none!important}
   function decoyCount(n, lvl) {
     var c = function (v, lo, hi) { return Math.max(lo, Math.min(hi, v)); };
     var d = lvl === 3 ? c(Math.round(n * 0.6), 4, 7) : lvl === 2 ? c(Math.round(n * 0.5), 3, 5) : c(Math.round(n * 0.4), 2, 4);
+    // a short word gets 4 at least: once the hint takes two away, its tiles are still more than an anagram
+    if (n <= 4) d = Math.max(d, 4);
     return Math.max(Math.min(d, MAX_TILES - n), Math.min(2, Math.max(0, MAX_TILES - n)));
   }
   /**
    * The tray for an answer: its tiles plus decoys, shuffled. opts.pool: graphemes to draw decoys from (else the
-   * language's ALPHA); opts.bad(text) -> true when this order of tiles must not be shown (a rude word). Decoys are never
-   * a letter of the answer and never repeat; an easy tray has no twin of an answer letter, a harder one at most one. The
-   * tiles are never in the answer's order. -> { tray: [graphemes], decoys: [tray positions of the decoys], g, groups }
+   * language's ALPHA); opts.bad(text) -> true when this order of tiles must not be shown (a rude word; else the game's
+   * own check, rude()). Decoys are never a letter of the answer and never repeat; an easy tray has no twin of an answer
+   * letter, a harder one at most one. The tiles are never in the answer's order. When 40 orders all fail, new decoys
+   * are drawn (10 times), then the answer's tiles alone are tried: a failed order is never used.
+   * -> { tray: [graphemes], decoys: [tray positions of the decoys], g, groups }
    */
   function buildTray(word, lang, lvl, r, opts) {
     opts = opts || {};
+    var bad = opts.bad || rude;
     var P = parts(word, lang), ans = P.g, inAns = {}, fam = {};
     ans.forEach(function (g) { inAns[g] = 1; fam[twinKey(g)] = 1; });
     var pool = opts.pool && opts.pool.length ? opts.pool : graphemes(ALPHA[lang] || ALPHA[String(lang).split('-')[0]] || ALPHA.en, lang);
     // kana answers draw kana of the same script (hiragana with hiragana, katakana with katakana)
     if (lang === 'ja') { var k = ans.some(isKata); var same = pool.filter(function (g) { return isKata(g) === k; }); if (same.length >= 8) pool = same; }
-    var want = decoyCount(ans.length, lvl), decoys = [], twins = 0;
-    for (var tries = 0; decoys.length < want && tries < 600; tries++) {
-      var c = pool[r.int(pool.length)];
-      if (!c || /\s/.test(c) || inAns[c] || decoys.indexOf(c) >= 0) continue;
-      if (fam[twinKey(c)]) { if (lvl === 1 || twins >= 1) continue; twins++; }
-      decoys.push(c);
+    var joined = ans.join('');
+    function pickDecoys() {
+      var want = decoyCount(ans.length, lvl), out = [], twins = 0;
+      for (var tries = 0; out.length < want && tries < 600; tries++) {
+        var c = pool[r.int(pool.length)];
+        if (!c || /\s/.test(c) || inAns[c] || out.indexOf(c) >= 0) continue;
+        if (fam[twinKey(c)]) { if (lvl === 1 || twins >= 1) continue; twins++; }
+        out.push(c);
+      }
+      return out;
     }
-    var tiles = ans.concat(decoys), order = tiles.map(function (x, i) { return i; }), joined = ans.join('');
-    for (var a = 0; a < 40; a++) {
-      r.shuffle(order);
-      var text = order.map(function (i) { return tiles[i]; }).join('');
-      if (ans.length > 1 && text.indexOf(joined) >= 0) continue;
-      if (opts.bad && opts.bad(text)) continue;
-      break;
+    /** A good order of these tiles in at most n shuffles, or null. */
+    function orderOf(tiles, n) {
+      var order = tiles.map(function (x, i) { return i; });
+      for (var a = 0; a < n; a++) {
+        r.shuffle(order);
+        var text = order.map(function (i) { return tiles[i]; }).join('');
+        if (ans.length > 1 && text.indexOf(joined) >= 0) continue;
+        if (bad(text)) continue;
+        return order;
+      }
+      return null;
     }
+    var decoys = [], tiles = ans, order = null;
+    for (var round = 0; round < 10 && !order; round++) { decoys = pickDecoys(); tiles = ans.concat(decoys); order = orderOf(tiles, 40); }
+    if (!order) { decoys = []; tiles = ans.slice(); order = orderOf(tiles, 200) || tiles.map(function (x, i) { return i; }).reverse(); }
     var tray = order.map(function (i) { return tiles[i]; }), dpos = [];
     order.forEach(function (i, p) { if (i >= ans.length) dpos.push(p); });
     return { tray: tray, decoys: dpos, g: ans, groups: P.groups };
   }
   /** Is this guess right? picks: tray positions in slot order (every slot, hint slots included); locks: { slot: tray
-   *  position } the hints placed. Tiles with the same letter stand in for each other. */
+   *  position } the hints placed. Tiles with the same letter stand in for each other, in a hint slot too (a hint that
+   *  lands while a right guess is on its way never makes it wrong). */
   function check(tray, ans, picks, locks) {
     if (!Array.isArray(picks) || !Array.isArray(ans) || picks.length !== ans.length) return false;
     var seen = {};
@@ -308,7 +374,7 @@ html.dh-live .ok-row{display:none!important}
       var p = picks[i];
       if (typeof p !== 'number' || p % 1 !== 0 || p < 0 || p >= tray.length || seen[p]) return false;
       seen[p] = 1;
-      if (locks && locks[i] != null && locks[i] !== p) return false;
+      if (locks && locks[i] != null && tray[locks[i]] !== tray[p]) return false;
     }
     for (var j = 0; j < picks.length; j++) if (tray[picks[j]] !== ans[j]) return false;
     return true;
@@ -393,7 +459,7 @@ html.dh-live .ok-row{display:none!important}
   root.DoodleCore = {
     W: W, H: H, PALETTE: PALETTE, COLORS: COLORS, PAPER: PAPER, SIZES: SIZES, MAX_NUMS: MAX_NUMS, MAX_STEP: MAX_STEP,
     MAX_TILES: MAX_TILES, MAX_LETTERS: MAX_LETTERS, MAX_WORD: MAX_WORD, LEVELS: LEVELS, RTL: RTL, HINTS: HINTS, ALPHA: ALPHA, TWIN: TWIN,
-    rng: rng, graphemes: graphemes, parts: parts, shown: shown, twinKey: twinKey, decoyCount: decoyCount, buildTray: buildTray,
+    rng: rng, rude: rude, hash: hash, graphemes: graphemes, parts: parts, shown: shown, twinKey: twinKey, decoyCount: decoyCount, buildTray: buildTray,
     check: check, hintPlan: hintPlan, guessPoints: guessPoints, drawPoints: drawPoints, keep: keep, steps: steps,
     line: line, render: render, words: words, wordPool: wordPool, dir: function (lang) { return RTL[lang] ? 'rtl' : 'ltr'; },
   };
@@ -567,12 +633,12 @@ window.DoodleWords = {
     ['windmill', 3, 'places', '🌬️', 'windmill|molino|moulin|windmühle|mulino|moinho|molen|мельница|ふうしゃ|風車|طاحونة|טחנת רוח'],
     ['parachute', 3, 'sports', '🪂', 'parachute|paracaídas|parachute|fallschirm|paracadute|paraquedas|parachute|парашют|パラシュート|降落傘|مظلة هبوط|מצנח'],
     ['submarine', 3, 'vehicles', '🌊', 'submarine|submarino||||submarino|duikboot|подводная лодка|せんすいかん|潛水艇|غواصة|צוללת'],
-    ['trafficlight', 3, 'places', '🚦', 'traffic light|semáforo|feu rouge|ampel|semaforo|semáforo|stoplicht|светофор|しんごう|紅綠燈|إشارة مرور|רמזור'],
+    ['trafficlight', 3, 'places', '🚦', 'traffic light|semáforo|feu tricolore|ampel|semaforo|semáforo|stoplicht|светофор|しんごう|紅綠燈|إشارة مرور|רמזור'],
     ['campfire', 3, 'places', '🔥', 'campfire|fogata||lagerfeuer|falò|fogueira|kampvuur|костёр|たきび|營火|نار المخيم|מדורה'],
     ['doctor', 3, 'jobs', '🧑‍⚕️', 'doctor|médico|médecin|arzt|medico|médico|dokter|врач|いしゃ|醫生|طبيب|רופא'],
     ['chef', 3, 'jobs', '🧑‍🍳', 'chef|cocinero|cuisinier|koch|cuoco|cozinheiro|kok|повар|コック|廚師|طباخ|שף'],
     ['farmer', 3, 'jobs', '🧑‍🌾', 'farmer|granjero|fermier|bauer|contadino|fazendeiro|boer|фермер|のうか|農夫|مزارع|חקלאי'],
-    ['superhero', 3, 'fantasy', '🦸', 'superhero|superhéroe|super héros|superheld|supereroe|super herói|superheld|супергерой|ヒーロー|超級英雄|بطل خارق|גיבור על'],
+    ['superhero', 3, 'fantasy', '🦸', 'superhero|superhéroe|superhéros|superheld|supereroe|super herói|superheld|супергерой|ヒーロー|超級英雄|بطل خارق|גיבור על'],
     ['bubbles', 3, 'toys', '🫧', 'bubbles|burbujas|bulles||bolle|bolhas|bellen|пузыри|しゃぼんだま|泡泡|فقاعات|בועות'],
     ['wizard', 3, 'fantasy', '🧙', 'wizard|mago|magicien|zauberer|mago|mago|tovenaar|волшебник|まほうつかい|巫師|ساحر|קוסם'],
   ],
@@ -653,12 +719,12 @@ var I18N = {
     drawing: '{name} is drawing', choosing: '{name} is choosing a word…', youDraw: 'Your turn to draw!', pickWord: 'Pick a word to draw', drawThis: 'Draw:', getReady: 'Pick a word in a moment.', spellSoon: 'Get ready to spell!',
     notLetters: 'Draw pictures, not letters.', colours: 'Colours', sizes: 'Sizes', size: 'Size {n}', eraser: 'Eraser', undo: 'Undo', clear: 'Clear', clearAsk: 'Clear all?', full: 'The page is full: undo or clear to draw more.',
     c_black: 'Black', c_white: 'White', c_grey: 'Grey', c_red: 'Red', c_orange: 'Orange', c_yellow: 'Yellow', c_green: 'Green', c_teal: 'Teal', c_blue: 'Blue', c_purple: 'Purple', c_pink: 'Pink', c_brown: 'Brown',
-    spell: 'Spell the word with the tiles', back: 'Back', empty: 'Empty', hint: 'A hint!', hints: '{n} hints',
+    spell: 'Spell the word with the tiles', back: 'Back', empty: 'Empty', hint: 'A hint!', hints: 'Hints: {n}', drawnBy: 'Drawing by {name}', yourDrawing: 'Your drawing', seePodium: 'See the podium',
     gotIt: 'You got it!', gotPts: '+{n} points', notQuite: 'Not quite. Try again!', keepWatching: 'Keep watching!', gotItName: '{name} got it!',
     hide: 'Hide drawing', show: 'Show drawing', hidden: 'Drawing hidden', hidCount: '{n} hid this drawing',
     itWas: 'It was…', timeUp: 'Time’s up!', allGot: 'Everyone got it!', skipped: 'Turn skipped', hiddenTurn: 'This drawing was skipped', drawerLeft: 'The drawer left',
     waitHost: 'Waiting for the host to start…', waitPlayers: 'Waiting for players…', waitMore: 'The game goes on when there are two players again.', needTwo: 'Two players are needed to play.', players: '{n} players are here', hostHow: 'Everyone joins with the code on their own device, wherever they are.',
-    secsLeft: '{n} seconds left', left10: '10 seconds left', paused: 'Paused', go: 'Go!', you: 'You', points: '{n} points',
+    secsLeft: 'Seconds left: {n}', left10: '10 seconds left', paused: 'Paused', go: 'Go!', you: 'You', points: '{n} points',
     podium: 'Final scores', place1: '1st place!', place2: '2nd place!', place3: '3rd place!', wellPlayed: 'Well played!', superSpeller: 'Super speller!',
     player: 'Player {n}', passTo: 'Pass to {name}', passDraw: 'Your turn to draw. No peeking, everyone else!', imReady: 'I’m ready', done: 'Done', passGuess: 'Pass to the guessers', passGuessP: 'Spell the word together. Who gets it first?', whoGot: 'Who spelled it?', wins: '{name} wins!', tie: 'It’s a tie!',
   },
@@ -671,12 +737,12 @@ var I18N = {
     drawing: '{name} está dibujando', choosing: '{name} está eligiendo una palabra…', youDraw: '¡Te toca dibujar!', pickWord: 'Elige una palabra para dibujar', drawThis: 'Dibuja:', getReady: 'Enseguida eliges una palabra.', spellSoon: '¡Prepárate para deletrear!',
     notLetters: 'Dibuja imágenes, no letras.', colours: 'Colores', sizes: 'Grosores', size: 'Grosor {n}', eraser: 'Goma', undo: 'Deshacer', clear: 'Borrar', clearAsk: '¿Borrar todo?', full: 'La hoja está llena: deshaz o borra para seguir dibujando.',
     c_black: 'Negro', c_white: 'Blanco', c_grey: 'Gris', c_red: 'Rojo', c_orange: 'Naranja', c_yellow: 'Amarillo', c_green: 'Verde', c_teal: 'Turquesa', c_blue: 'Azul', c_purple: 'Morado', c_pink: 'Rosa', c_brown: 'Marrón',
-    spell: 'Deletrea la palabra con las fichas', back: 'Atrás', empty: 'Vacío', hint: '¡Una pista!', hints: 'Pistas: {n}',
+    spell: 'Deletrea la palabra con las fichas', back: 'Atrás', empty: 'Vacío', hint: '¡Una pista!', hints: 'Pistas: {n}', drawnBy: 'Dibujo de {name}', yourDrawing: 'Tu dibujo', seePodium: 'Ver el podio',
     gotIt: '¡Acertaste!', gotPts: '+{n} puntos', notQuite: 'Casi. ¡Prueba otra vez!', keepWatching: '¡Sigue mirando!', gotItName: '¡{name} acertó!',
     hide: 'Ocultar dibujo', show: 'Mostrar dibujo', hidden: 'Dibujo oculto', hidCount: 'Lo ocultan: {n}',
     itWas: 'Era…', timeUp: '¡Se acabó el tiempo!', allGot: '¡Todos acertaron!', skipped: 'Turno saltado', hiddenTurn: 'Se saltó este dibujo', drawerLeft: 'Quien dibujaba se fue',
     waitHost: 'Esperando a que el anfitrión empiece…', waitPlayers: 'Esperando jugadores…', waitMore: 'El juego sigue cuando vuelva a haber dos jugadores.', needTwo: 'Hacen falta dos jugadores.', players: 'Jugadores aquí: {n}', hostHow: 'Cada uno entra con el código en su dispositivo, esté donde esté.',
-    secsLeft: 'Quedan {n} segundos', left10: 'Quedan 10 segundos', paused: 'En pausa', go: '¡Ya!', you: 'Tú', points: '{n} puntos',
+    secsLeft: 'Segundos restantes: {n}', left10: 'Quedan 10 segundos', paused: 'En pausa', go: '¡Ya!', you: 'Tú', points: '{n} puntos',
     podium: 'Puntuación final', place1: '¡1.er puesto!', place2: '¡2.º puesto!', place3: '¡3.er puesto!', wellPlayed: '¡Bien jugado!', superSpeller: '¡Súper deletreo!',
     player: 'Jugador {n}', passTo: 'Pásalo a {name}', passDraw: 'Te toca dibujar. ¡Que nadie mire!', imReady: 'Estoy listo', done: 'Listo', passGuess: 'Pásalo a los que adivinan', passGuessP: 'Deletread la palabra juntos. ¿Quién acierta primero?', whoGot: '¿Quién la deletreó?', wins: '¡Gana {name}!', tie: '¡Empate!',
   },
@@ -688,12 +754,12 @@ var I18N = {
     drawing: '{name} dessine', choosing: '{name} choisit un mot…', youDraw: 'À toi de dessiner !', pickWord: 'Choisis un mot à dessiner', drawThis: 'Dessine :', getReady: 'Tu choisis un mot dans un instant.', spellSoon: 'Prépare-toi à épeler !',
     notLetters: 'Dessine des images, pas des lettres.', colours: 'Couleurs', sizes: 'Épaisseurs', size: 'Épaisseur {n}', eraser: 'Gomme', undo: 'Annuler', clear: 'Effacer', clearAsk: 'Tout effacer ?', full: 'La feuille est pleine : annule ou efface pour continuer.',
     c_black: 'Noir', c_white: 'Blanc', c_grey: 'Gris', c_red: 'Rouge', c_orange: 'Orange', c_yellow: 'Jaune', c_green: 'Vert', c_teal: 'Turquoise', c_blue: 'Bleu', c_purple: 'Violet', c_pink: 'Rose', c_brown: 'Marron',
-    spell: 'Épelle le mot avec les tuiles', back: 'Retour', empty: 'Vide', hint: 'Un indice !', hints: 'Indices : {n}',
+    spell: 'Épelle le mot avec les tuiles', back: 'Retour', empty: 'Vide', hint: 'Un indice !', hints: 'Indices : {n}', drawnBy: 'Dessin de {name}', yourDrawing: 'Ton dessin', seePodium: 'Voir le podium',
     gotIt: 'Trouvé !', gotPts: '+{n} points', notQuite: 'Pas tout à fait. Essaie encore !', keepWatching: 'Continue de regarder !', gotItName: '{name} a trouvé !',
     hide: 'Masquer le dessin', show: 'Montrer le dessin', hidden: 'Dessin masqué', hidCount: 'Masqué par : {n}',
     itWas: 'C’était…', timeUp: 'Temps écoulé !', allGot: 'Tout le monde a trouvé !', skipped: 'Tour passé', hiddenTurn: 'Ce dessin a été passé', drawerLeft: 'Le dessinateur est parti',
     waitHost: 'On attend que l’hôte lance la partie…', waitPlayers: 'On attend des joueurs…', waitMore: 'La partie reprend dès qu’il y a de nouveau deux joueurs.', needTwo: 'Il faut deux joueurs.', players: 'Joueurs présents : {n}', hostHow: 'Chacun rejoint avec le code sur son appareil, où qu’il soit.',
-    secsLeft: 'Plus que {n} secondes', left10: 'Plus que 10 secondes', paused: 'En pause', go: 'C’est parti !', you: 'Toi', points: '{n} points',
+    secsLeft: 'Secondes restantes : {n}', left10: 'Plus que 10 secondes', paused: 'En pause', go: 'C’est parti !', you: 'Toi', points: '{n} points',
     podium: 'Scores finaux', place1: '1re place !', place2: '2e place !', place3: '3e place !', wellPlayed: 'Bien joué !', superSpeller: 'Champion de l’orthographe !',
     player: 'Joueur {n}', passTo: 'Passe à {name}', passDraw: 'À toi de dessiner. Les autres, on ne regarde pas !', imReady: 'Je suis prêt', done: 'Fini', passGuess: 'Passe aux devineurs', passGuessP: 'Épelez le mot ensemble. Qui trouve en premier ?', whoGot: 'Qui l’a épelé ?', wins: '{name} gagne !', tie: 'Égalité !',
   },
@@ -705,12 +771,12 @@ var I18N = {
     drawing: '{name} malt', choosing: '{name} wählt ein Wort…', youDraw: 'Du bist dran mit Malen!', pickWord: 'Wähle ein Wort zum Malen', drawThis: 'Male:', getReady: 'Gleich wählst du ein Wort.', spellSoon: 'Mach dich bereit zum Buchstabieren!',
     notLetters: 'Male Bilder, keine Buchstaben.', colours: 'Farben', sizes: 'Stiftgrößen', size: 'Größe {n}', eraser: 'Radiergummi', undo: 'Rückgängig', clear: 'Löschen', clearAsk: 'Alles löschen?', full: 'Das Blatt ist voll: Mach etwas rückgängig oder lösche, um weiterzumalen.',
     c_black: 'Schwarz', c_white: 'Weiß', c_grey: 'Grau', c_red: 'Rot', c_orange: 'Orange', c_yellow: 'Gelb', c_green: 'Grün', c_teal: 'Türkis', c_blue: 'Blau', c_purple: 'Lila', c_pink: 'Rosa', c_brown: 'Braun',
-    spell: 'Lege das Wort mit den Kärtchen', back: 'Zurück', empty: 'Leer', hint: 'Ein Tipp!', hints: 'Tipps: {n}',
+    spell: 'Lege das Wort mit den Kärtchen', back: 'Zurück', empty: 'Leer', hint: 'Ein Tipp!', hints: 'Tipps: {n}', drawnBy: 'Bild von {name}', yourDrawing: 'Dein Bild', seePodium: 'Zum Siegertreppchen',
     gotIt: 'Richtig!', gotPts: '+{n} Punkte', notQuite: 'Nicht ganz. Versuch’s noch mal!', keepWatching: 'Schau weiter zu!', gotItName: '{name} hat es!',
     hide: 'Bild ausblenden', show: 'Bild zeigen', hidden: 'Bild ausgeblendet', hidCount: 'Ausgeblendet von: {n}',
     itWas: 'Es war…', timeUp: 'Die Zeit ist um!', allGot: 'Alle haben es erraten!', skipped: 'Zug übersprungen', hiddenTurn: 'Dieses Bild wurde übersprungen', drawerLeft: 'Der Maler ist gegangen',
     waitHost: 'Warten, bis der Gastgeber startet…', waitPlayers: 'Warten auf Spieler…', waitMore: 'Es geht weiter, sobald wieder zwei Spieler da sind.', needTwo: 'Es braucht zwei Spieler.', players: 'Spieler da: {n}', hostHow: 'Alle kommen mit dem Code auf ihrem eigenen Gerät dazu, egal wo sie sind.',
-    secsLeft: 'Noch {n} Sekunden', left10: 'Noch 10 Sekunden', paused: 'Pause', go: 'Los!', you: 'Du', points: '{n} Punkte',
+    secsLeft: 'Sekunden übrig: {n}', left10: 'Noch 10 Sekunden', paused: 'Pause', go: 'Los!', you: 'Du', points: '{n} Punkte',
     podium: 'Endstand', place1: '1. Platz!', place2: '2. Platz!', place3: '3. Platz!', wellPlayed: 'Gut gespielt!', superSpeller: 'Rechtschreib-Profi!',
     player: 'Spieler {n}', passTo: 'Gib weiter an {name}', passDraw: 'Du malst. Alle anderen: nicht hingucken!', imReady: 'Ich bin bereit', done: 'Fertig', passGuess: 'Gib weiter an die Rater', passGuessP: 'Legt das Wort zusammen. Wer hat es zuerst?', whoGot: 'Wer hat es gelegt?', wins: '{name} gewinnt!', tie: 'Unentschieden!',
   },
@@ -722,12 +788,12 @@ var I18N = {
     drawing: '{name} sta disegnando', choosing: '{name} sta scegliendo una parola…', youDraw: 'Tocca a te disegnare!', pickWord: 'Scegli una parola da disegnare', drawThis: 'Disegna:', getReady: 'Tra poco scegli una parola.', spellSoon: 'Preparati a comporre la parola!',
     notLetters: 'Disegna figure, non lettere.', colours: 'Colori', sizes: 'Spessori', size: 'Spessore {n}', eraser: 'Gomma', undo: 'Annulla', clear: 'Cancella', clearAsk: 'Cancellare tutto?', full: 'Il foglio è pieno: annulla o cancella per disegnare ancora.',
     c_black: 'Nero', c_white: 'Bianco', c_grey: 'Grigio', c_red: 'Rosso', c_orange: 'Arancione', c_yellow: 'Giallo', c_green: 'Verde', c_teal: 'Turchese', c_blue: 'Blu', c_purple: 'Viola', c_pink: 'Rosa', c_brown: 'Marrone',
-    spell: 'Componi la parola con le tessere', back: 'Indietro', empty: 'Vuoto', hint: 'Un aiuto!', hints: 'Aiuti: {n}',
+    spell: 'Componi la parola con le tessere', back: 'Indietro', empty: 'Vuoto', hint: 'Un aiuto!', hints: 'Aiuti: {n}', drawnBy: 'Disegno di {name}', yourDrawing: 'Il tuo disegno', seePodium: 'Vedi il podio',
     gotIt: 'Indovinato!', gotPts: '+{n} punti', notQuite: 'Non proprio. Riprova!', keepWatching: 'Continua a guardare!', gotItName: '{name} ha indovinato!',
     hide: 'Nascondi il disegno', show: 'Mostra il disegno', hidden: 'Disegno nascosto', hidCount: 'Lo nascondono: {n}',
     itWas: 'Era…', timeUp: 'Tempo scaduto!', allGot: 'Tutti hanno indovinato!', skipped: 'Turno saltato', hiddenTurn: 'Questo disegno è stato saltato', drawerLeft: 'Chi disegnava è uscito',
     waitHost: 'In attesa che l’host inizi…', waitPlayers: 'In attesa di giocatori…', waitMore: 'Il gioco riprende quando ci sono di nuovo due giocatori.', needTwo: 'Servono due giocatori.', players: 'Giocatori presenti: {n}', hostHow: 'Ognuno entra con il codice dal proprio dispositivo, ovunque sia.',
-    secsLeft: 'Mancano {n} secondi', left10: 'Mancano 10 secondi', paused: 'In pausa', go: 'Via!', you: 'Tu', points: '{n} punti',
+    secsLeft: 'Secondi rimasti: {n}', left10: 'Mancano 10 secondi', paused: 'In pausa', go: 'Via!', you: 'Tu', points: '{n} punti',
     podium: 'Punteggi finali', place1: '1° posto!', place2: '2° posto!', place3: '3° posto!', wellPlayed: 'Ben giocato!', superSpeller: 'Campione di ortografia!',
     player: 'Giocatore {n}', passTo: 'Passa a {name}', passDraw: 'Tocca a te disegnare. Gli altri non guardano!', imReady: 'Sono pronto', done: 'Fatto', passGuess: 'Passa a chi indovina', passGuessP: 'Componete la parola insieme. Chi indovina per primo?', whoGot: 'Chi l’ha composta?', wins: 'Vince {name}!', tie: 'Pareggio!',
   },
@@ -739,12 +805,12 @@ var I18N = {
     drawing: '{name} está desenhando', choosing: '{name} está escolhendo uma palavra…', youDraw: 'Sua vez de desenhar!', pickWord: 'Escolha uma palavra para desenhar', drawThis: 'Desenhe:', getReady: 'Já já você escolhe uma palavra.', spellSoon: 'Prepare-se para soletrar!',
     notLetters: 'Desenhe figuras, não letras.', colours: 'Cores', sizes: 'Espessuras', size: 'Espessura {n}', eraser: 'Borracha', undo: 'Desfazer', clear: 'Apagar', clearAsk: 'Apagar tudo?', full: 'A folha está cheia: desfaça ou apague para continuar.',
     c_black: 'Preto', c_white: 'Branco', c_grey: 'Cinza', c_red: 'Vermelho', c_orange: 'Laranja', c_yellow: 'Amarelo', c_green: 'Verde', c_teal: 'Turquesa', c_blue: 'Azul', c_purple: 'Roxo', c_pink: 'Rosa', c_brown: 'Marrom',
-    spell: 'Soletre a palavra com as peças', back: 'Voltar', empty: 'Vazio', hint: 'Uma dica!', hints: 'Dicas: {n}',
+    spell: 'Soletre a palavra com as peças', back: 'Voltar', empty: 'Vazio', hint: 'Uma dica!', hints: 'Dicas: {n}', drawnBy: 'Desenho de {name}', yourDrawing: 'Seu desenho', seePodium: 'Ver o pódio',
     gotIt: 'Acertou!', gotPts: '+{n} pontos', notQuite: 'Quase. Tente de novo!', keepWatching: 'Continue olhando!', gotItName: '{name} acertou!',
     hide: 'Esconder desenho', show: 'Mostrar desenho', hidden: 'Desenho escondido', hidCount: 'Escondido por: {n}',
     itWas: 'Era…', timeUp: 'Acabou o tempo!', allGot: 'Todos acertaram!', skipped: 'Vez pulada', hiddenTurn: 'Este desenho foi pulado', drawerLeft: 'Quem desenhava saiu',
     waitHost: 'Esperando o anfitrião começar…', waitPlayers: 'Esperando jogadores…', waitMore: 'O jogo continua quando houver dois jogadores de novo.', needTwo: 'São necessários dois jogadores.', players: 'Jogadores aqui: {n}', hostHow: 'Cada um entra com o código no próprio aparelho, onde estiver.',
-    secsLeft: 'Faltam {n} segundos', left10: 'Faltam 10 segundos', paused: 'Pausado', go: 'Já!', you: 'Você', points: '{n} pontos',
+    secsLeft: 'Segundos restantes: {n}', left10: 'Faltam 10 segundos', paused: 'Pausado', go: 'Já!', you: 'Você', points: '{n} pontos',
     podium: 'Placar final', place1: '1º lugar!', place2: '2º lugar!', place3: '3º lugar!', wellPlayed: 'Mandou bem!', superSpeller: 'Craque da ortografia!',
     player: 'Jogador {n}', passTo: 'Passe para {name}', passDraw: 'Sua vez de desenhar. Ninguém espia!', imReady: 'Estou pronto', done: 'Pronto', passGuess: 'Passe para quem adivinha', passGuessP: 'Soletrem a palavra juntos. Quem acerta primeiro?', whoGot: 'Quem soletrou?', wins: '{name} venceu!', tie: 'Empate!',
   },
@@ -756,12 +822,12 @@ var I18N = {
     drawing: '{name} tekent', choosing: '{name} kiest een woord…', youDraw: 'Jij mag tekenen!', pickWord: 'Kies een woord om te tekenen', drawThis: 'Teken:', getReady: 'Zo meteen kies je een woord.', spellSoon: 'Maak je klaar om te spellen!',
     notLetters: 'Teken plaatjes, geen letters.', colours: 'Kleuren', sizes: 'Diktes', size: 'Dikte {n}', eraser: 'Gum', undo: 'Ongedaan maken', clear: 'Wissen', clearAsk: 'Alles wissen?', full: 'Het blad is vol: maak iets ongedaan of wis om verder te tekenen.',
     c_black: 'Zwart', c_white: 'Wit', c_grey: 'Grijs', c_red: 'Rood', c_orange: 'Oranje', c_yellow: 'Geel', c_green: 'Groen', c_teal: 'Turquoise', c_blue: 'Blauw', c_purple: 'Paars', c_pink: 'Roze', c_brown: 'Bruin',
-    spell: 'Leg het woord met de tegels', back: 'Terug', empty: 'Leeg', hint: 'Een hint!', hints: 'Hints: {n}',
+    spell: 'Leg het woord met de tegels', back: 'Terug', empty: 'Leeg', hint: 'Een hint!', hints: 'Hints: {n}', drawnBy: 'Tekening van {name}', yourDrawing: 'Jouw tekening', seePodium: 'Naar het podium',
     gotIt: 'Geraden!', gotPts: '+{n} punten', notQuite: 'Net niet. Probeer het nog eens!', keepWatching: 'Blijf kijken!', gotItName: '{name} heeft het!',
     hide: 'Tekening verbergen', show: 'Tekening tonen', hidden: 'Tekening verborgen', hidCount: 'Verborgen door: {n}',
     itWas: 'Het was…', timeUp: 'De tijd is om!', allGot: 'Iedereen heeft het geraden!', skipped: 'Beurt overgeslagen', hiddenTurn: 'Deze tekening is overgeslagen', drawerLeft: 'De tekenaar is weg',
     waitHost: 'Wachten tot de host begint…', waitPlayers: 'Wachten op spelers…', waitMore: 'Het spel gaat verder zodra er weer twee spelers zijn.', needTwo: 'Er zijn twee spelers nodig.', players: 'Spelers hier: {n}', hostHow: 'Iedereen doet mee met de code op een eigen apparaat, waar ze ook zijn.',
-    secsLeft: 'Nog {n} seconden', left10: 'Nog 10 seconden', paused: 'Gepauzeerd', go: 'Start!', you: 'Jij', points: '{n} punten',
+    secsLeft: 'Seconden over: {n}', left10: 'Nog 10 seconden', paused: 'Gepauzeerd', go: 'Start!', you: 'Jij', points: '{n} punten',
     podium: 'Eindstand', place1: '1e plaats!', place2: '2e plaats!', place3: '3e plaats!', wellPlayed: 'Goed gespeeld!', superSpeller: 'Spelkampioen!',
     player: 'Speler {n}', passTo: 'Geef door aan {name}', passDraw: 'Jij tekent. De rest: niet kijken!', imReady: 'Ik ben klaar', done: 'Klaar', passGuess: 'Geef door aan de raders', passGuessP: 'Leg het woord samen. Wie heeft het als eerste?', whoGot: 'Wie heeft het gelegd?', wins: '{name} wint!', tie: 'Gelijkspel!',
   },
@@ -773,11 +839,11 @@ var I18N = {
     drawing: 'Рисует: {name}', choosing: '{name} выбирает слово…', youDraw: 'Твоя очередь рисовать!', pickWord: 'Выбери слово для рисунка', drawThis: 'Нарисуй:', getReady: 'Сейчас ты выберешь слово.', spellSoon: 'Приготовься собирать слово!',
     notLetters: 'Рисуй картинки, а не буквы.', colours: 'Цвета', sizes: 'Толщина', size: 'Толщина {n}', eraser: 'Ластик', undo: 'Отменить', clear: 'Стереть', clearAsk: 'Стереть всё?', full: 'Лист заполнен: отмени или сотри, чтобы рисовать дальше.',
     c_black: 'Чёрный', c_white: 'Белый', c_grey: 'Серый', c_red: 'Красный', c_orange: 'Оранжевый', c_yellow: 'Жёлтый', c_green: 'Зелёный', c_teal: 'Бирюзовый', c_blue: 'Синий', c_purple: 'Фиолетовый', c_pink: 'Розовый', c_brown: 'Коричневый',
-    spell: 'Собери слово из плиток', back: 'Назад', empty: 'Пусто', hint: 'Подсказка!', hints: 'Подсказки: {n}',
+    spell: 'Собери слово из плиток', back: 'Назад', empty: 'Пусто', hint: 'Подсказка!', hints: 'Подсказки: {n}', drawnBy: 'Рисунок: {name}', yourDrawing: 'Твой рисунок', seePodium: 'К пьедесталу',
     gotIt: 'Угадал!', gotPts: '+{n} очков', notQuite: 'Не совсем. Попробуй ещё!', keepWatching: 'Смотри дальше!', gotItName: '{name} угадывает!',
     hide: 'Скрыть рисунок', show: 'Показать рисунок', hidden: 'Рисунок скрыт', hidCount: 'Скрыли: {n}',
     itWas: 'Это было…', timeUp: 'Время вышло!', allGot: 'Все угадали!', skipped: 'Ход пропущен', hiddenTurn: 'Этот рисунок пропущен', drawerLeft: 'Художник вышел',
-    waitHost: 'Ждём, когда ведущий начнёт…', waitPlayers: 'Ждём игроков…', waitMore: 'Игра продолжится, когда снова будет два игрока.', needTwo: 'Нужно два игрока.', players: 'Игроков здесь: {n}', hostHow: 'Каждый входит по коду со своего устройства, где бы он ни был.',
+    waitHost: 'Ждём, когда ведущий начнёт…', waitPlayers: 'Ждём игроков…', waitMore: 'Игра продолжится, когда снова будут два игрока.', needTwo: 'Нужны два игрока.', players: 'Игроков здесь: {n}', hostHow: 'Каждый входит по коду со своего устройства, где бы он ни был.',
     secsLeft: 'Осталось секунд: {n}', left10: 'Осталось 10 секунд', paused: 'Пауза', go: 'Вперёд!', you: 'Ты', points: 'Очки: {n}',
     podium: 'Итоговый счёт', place1: '1-е место!', place2: '2-е место!', place3: '3-е место!', wellPlayed: 'Отличная игра!', superSpeller: 'Мастер правописания!',
     player: 'Игрок {n}', passTo: 'Передай: {name}', passDraw: 'Ты рисуешь. Остальные — не подглядывать!', imReady: 'Я готов', done: 'Готово', passGuess: 'Передай отгадчикам', passGuessP: 'Соберите слово вместе. Кто первым?', whoGot: 'Кто собрал слово?', wins: 'Победа: {name}!', tie: 'Ничья!',
@@ -790,7 +856,7 @@ var I18N = {
     drawing: '{name}がかいています', choosing: '{name}が言葉をえらんでいます…', youDraw: 'あなたがかく番です！', pickWord: 'かく言葉をえらぼう', drawThis: 'かくもの：', getReady: 'もうすぐ言葉をえらびます。', spellSoon: 'つづる準備をしよう！',
     notLetters: '文字ではなく絵をかこう。', colours: '色', sizes: '太さ', size: '太さ {n}', eraser: 'けしゴム', undo: 'もどす', clear: 'ぜんぶけす', clearAsk: 'ぜんぶけす？', full: 'もうかけません。もどすか、けしてください。',
     c_black: 'くろ', c_white: 'しろ', c_grey: 'はいいろ', c_red: 'あか', c_orange: 'オレンジ', c_yellow: 'きいろ', c_green: 'みどり', c_teal: 'あおみどり', c_blue: 'あお', c_purple: 'むらさき', c_pink: 'ピンク', c_brown: 'ちゃいろ',
-    spell: 'タイルで言葉をつづろう', back: 'もどる', empty: 'から', hint: 'ヒント！', hints: 'ヒント {n}',
+    spell: 'タイルで言葉をつづろう', back: 'もどる', empty: 'あき', hint: 'ヒント！', hints: 'ヒント {n}', drawnBy: '{name}さんの絵', yourDrawing: 'あなたの絵', seePodium: 'ひょうしょうだいを見る',
     gotIt: 'せいかい！', gotPts: '+{n}点', notQuite: 'おしい！もういちど！', keepWatching: 'よく見ていてね！', gotItName: '{name}がせいかい！',
     hide: '絵をかくす', show: '絵を見せる', hidden: '絵をかくしています', hidCount: 'かくした人：{n}',
     itWas: 'こたえは…', timeUp: '時間ぎれ！', allGot: 'みんなせいかい！', skipped: 'この番はとばしました', hiddenTurn: 'この絵はとばしました', drawerLeft: 'かく人がぬけました',
@@ -807,7 +873,7 @@ var I18N = {
     drawing: '{name} 正在畫', choosing: '{name} 正在選詞…', youDraw: '輪到你畫了！', pickWord: '選一個詞來畫', drawThis: '要畫：', getReady: '等一下就要選詞了。', spellSoon: '準備好來拼！',
     notLetters: '畫圖，不要寫字。', colours: '顏色', sizes: '粗細', size: '粗細 {n}', eraser: '橡皮擦', undo: '復原', clear: '清除', clearAsk: '全部清除？', full: '畫紙滿了：復原或清除後再畫。',
     c_black: '黑色', c_white: '白色', c_grey: '灰色', c_red: '紅色', c_orange: '橘色', c_yellow: '黃色', c_green: '綠色', c_teal: '青綠色', c_blue: '藍色', c_purple: '紫色', c_pink: '粉紅色', c_brown: '咖啡色',
-    spell: '用方塊拼出詞語', back: '返回', empty: '空格', hint: '提示！', hints: '提示：{n}',
+    spell: '用方塊拼出詞語', back: '返回', empty: '空格', hint: '提示！', hints: '提示：{n}', drawnBy: '{name} 的畫', yourDrawing: '你的畫', seePodium: '看頒獎台',
     gotIt: '答對了！', gotPts: '+{n} 分', notQuite: '差一點，再試一次！', keepWatching: '繼續看！', gotItName: '{name} 答對了！',
     hide: '隱藏圖畫', show: '顯示圖畫', hidden: '圖畫已隱藏', hidCount: '隱藏的人：{n}',
     itWas: '答案是…', timeUp: '時間到！', allGot: '大家都答對了！', skipped: '已跳過這一輪', hiddenTurn: '這張圖已跳過', drawerLeft: '畫圖的人離開了',
@@ -824,12 +890,12 @@ var I18N = {
     drawing: 'يرسم الآن: {name}', choosing: '{name} يختار كلمة…', youDraw: 'دورك في الرسم!', pickWord: 'اختر كلمة لترسمها', drawThis: 'ارسم:', getReady: 'ستختار كلمة بعد قليل.', spellSoon: 'استعد للتهجئة!',
     notLetters: 'ارسم صورًا لا حروفًا.', colours: 'الألوان', sizes: 'السُمك', size: 'السُمك {n}', eraser: 'ممحاة', undo: 'تراجع', clear: 'امسح', clearAsk: 'تمسح الكل؟', full: 'امتلأت الورقة: تراجع أو امسح لتكمل الرسم.',
     c_black: 'أسود', c_white: 'أبيض', c_grey: 'رمادي', c_red: 'أحمر', c_orange: 'برتقالي', c_yellow: 'أصفر', c_green: 'أخضر', c_teal: 'فيروزي', c_blue: 'أزرق', c_purple: 'بنفسجي', c_pink: 'وردي', c_brown: 'بني',
-    spell: 'هجِّئ الكلمة بالبطاقات', back: 'رجوع', empty: 'فارغ', hint: 'تلميح!', hints: 'تلميحات: {n}',
+    spell: 'هجِّئ الكلمة بالبطاقات', back: 'رجوع', empty: 'فارغ', hint: 'تلميح!', hints: 'تلميحات: {n}', drawnBy: 'رسمة {name}', yourDrawing: 'رسمتك', seePodium: 'شاهد منصة الفائزين',
     gotIt: 'أصبت!', gotPts: '+{n} نقطة', notQuite: 'ليس تمامًا. حاول مرة أخرى!', keepWatching: 'تابع المشاهدة!', gotItName: 'أصاب {name}!',
     hide: 'إخفاء الرسم', show: 'إظهار الرسم', hidden: 'الرسم مخفي', hidCount: 'أخفاه: {n}',
     itWas: 'كانت…', timeUp: 'انتهى الوقت!', allGot: 'أصاب الجميع!', skipped: 'تم تخطي الدور', hiddenTurn: 'تم تخطي هذا الرسم', drawerLeft: 'غادر الرسّام',
     waitHost: 'بانتظار أن يبدأ المضيف…', waitPlayers: 'بانتظار اللاعبين…', waitMore: 'تستمر اللعبة عندما يصبح هناك لاعبان من جديد.', needTwo: 'يلزم لاعبان.', players: 'اللاعبون هنا: {n}', hostHow: 'ينضم الجميع بالرمز من أجهزتهم أينما كانوا.',
-    secsLeft: 'بقي {n} ثانية', left10: 'بقيت 10 ثوانٍ', paused: 'متوقف مؤقتًا', go: 'انطلق!', you: 'أنت', points: '{n} نقطة',
+    secsLeft: 'الثواني المتبقية: {n}', left10: 'بقيت 10 ثوانٍ', paused: 'متوقف مؤقتًا', go: 'انطلق!', you: 'أنت', points: '{n} نقطة',
     podium: 'النتائج النهائية', place1: 'المركز الأول!', place2: 'المركز الثاني!', place3: 'المركز الثالث!', wellPlayed: 'أحسنت اللعب!', superSpeller: 'بطل التهجئة!',
     player: 'اللاعب {n}', passTo: 'أعطِ الجهاز إلى {name}', passDraw: 'دورك في الرسم. لا يختلس أحد النظر!', imReady: 'أنا مستعد', done: 'تم', passGuess: 'أعطِ الجهاز للمخمّنين', passGuessP: 'هجّئوا الكلمة معًا. من يعرفها أولًا؟', whoGot: 'من هجّأها؟', wins: 'فاز {name}!', tie: 'تعادل!',
   },
@@ -841,12 +907,12 @@ var I18N = {
     drawing: 'מצייר/ת עכשיו: {name}', choosing: '{name} בוחר/ת מילה…', youDraw: 'תורך לצייר!', pickWord: 'בחרו מילה לציור', drawThis: 'ציירו:', getReady: 'עוד רגע בוחרים מילה.', spellSoon: 'מתכוננים לאיית!',
     notLetters: 'ציירו תמונות, לא אותיות.', colours: 'צבעים', sizes: 'עוביים', size: 'עובי {n}', eraser: 'מחק', undo: 'ביטול', clear: 'ניקוי', clearAsk: 'לנקות הכול?', full: 'הדף מלא: בטלו או נקו כדי להמשיך לצייר.',
     c_black: 'שחור', c_white: 'לבן', c_grey: 'אפור', c_red: 'אדום', c_orange: 'כתום', c_yellow: 'צהוב', c_green: 'ירוק', c_teal: 'טורקיז', c_blue: 'כחול', c_purple: 'סגול', c_pink: 'ורוד', c_brown: 'חום',
-    spell: 'אייתו את המילה באריחים', back: 'חזרה', empty: 'ריק', hint: 'רמז!', hints: 'רמזים: {n}',
+    spell: 'אייתו את המילה באריחים', back: 'חזרה', empty: 'ריק', hint: 'רמז!', hints: 'רמזים: {n}', drawnBy: 'הציור של {name}', yourDrawing: 'הציור שלך', seePodium: 'לבמת המנצחים',
     gotIt: 'צדקתם!', gotPts: '+{n} נקודות', notQuite: 'לא בדיוק. נסו שוב!', keepWatching: 'המשיכו להסתכל!', gotItName: '{name} ניחש/ה!',
     hide: 'הסתרת הציור', show: 'הצגת הציור', hidden: 'הציור מוסתר', hidCount: 'הסתירו: {n}',
     itWas: 'זה היה…', timeUp: 'הזמן נגמר!', allGot: 'כולם ניחשו!', skipped: 'דילגנו על התור', hiddenTurn: 'דילגנו על הציור הזה', drawerLeft: 'המצייר/ת יצא/ה',
     waitHost: 'מחכים שהמארח יתחיל…', waitPlayers: 'מחכים לשחקנים…', waitMore: 'המשחק ימשיך כשיהיו שוב שני שחקנים.', needTwo: 'צריך שני שחקנים.', players: 'שחקנים כאן: {n}', hostHow: 'כולם מצטרפים עם הקוד מהמכשיר שלהם, איפה שהם.',
-    secsLeft: 'נשארו {n} שניות', left10: 'נשארו 10 שניות', paused: 'בהשהיה', go: 'צאו!', you: 'את/ה', points: '{n} נקודות',
+    secsLeft: 'שניות שנותרו: {n}', left10: 'נשארו 10 שניות', paused: 'בהשהיה', go: 'צאו!', you: 'את/ה', points: '{n} נקודות',
     podium: 'התוצאות הסופיות', place1: 'מקום 1!', place2: 'מקום 2!', place3: 'מקום 3!', wellPlayed: 'כל הכבוד!', superSpeller: 'אלופי האיות!',
     player: 'שחקן {n}', passTo: 'העבירו אל {name}', passDraw: 'תורך לצייר. כל השאר: לא מציצים!', imReady: 'מוכן/ה', done: 'סיימתי', passGuess: 'העבירו למנחשים', passGuessP: 'אייתו את המילה יחד. מי מנחש ראשון?', whoGot: 'מי איית?', wins: '{name} ניצח/ה!', tie: 'תיקו!',
   },
@@ -1136,7 +1202,15 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     function theme() { U.root.classList.toggle('dh-dark', !!(O.theme && O.theme.mode === 'dark')); U.root.classList.toggle('rm', reduced()); }
     theme(); if (O.theme && O.theme.on) O.theme.on('change', theme); O.settings.on('change', theme);
     U.announce = function (x) { U.sr.textContent = ''; setTimeout(function () { U.sr.textContent = x; }, 30); };
-    var tt = 0; U.say = function (x, ms) { U.toast.textContent = x; U.toast.hidden = false; clearTimeout(tt); tt = setTimeout(function () { U.toast.hidden = true; }, ms || 2600); U.announce(x); };
+    // (a toast sits over the top of the board, never over the tiles, the slots or the scores)
+    var tt = 0; U.say = function (x, ms) {
+      U.toast.textContent = x; U.toast.hidden = false;
+      var r = !U.main.hidden && U.board.el.getBoundingClientRect(), top = U.root.getBoundingClientRect().top;
+      U.toast.style.top = r && r.height ? Math.max(4, r.top - top + 10) + 'px' : ''; U.toast.style.left = r && r.width ? (r.left + r.width / 2) + 'px' : '';
+      clearTimeout(tt); tt = setTimeout(function () { U.toast.hidden = true; }, ms || 2600); U.announce(x);
+    };
+    /** "A hint!" popping up on the board for a moment (and read out). */
+    U.hintPop = function () { var b = el('div', 'dh-hint', t('hint')); b.setAttribute('aria-hidden', 'true'); U.board.el.appendChild(b); setTimeout(function () { b.remove(); }, 1700); U.announce(t('hint')); };
     U.overlay = function (x) { U.over.hidden = !x; U.overB.textContent = x || ''; };
     U.whoIs = function (spec, text) { U.whoPic.textContent = ''; if (spec) { var c = figure(spec, 80); U.whoPic.appendChild(c); } U.whoTxt.textContent = text || ''; };
     /** A full-screen panel: nodes in it, or nothing to close it. */
@@ -1242,8 +1316,8 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
           case 'ch': S.choices = d; sfx('levelup', { volume: 0.4 }); U.announce(t('youDraw')); break;
           case 'wd': S.word = d; if (x && x.dr === me() && pad) { pad.reset(d.s0 || 0); } if (d.s0 == null && !S.solved) { S.solved = true; } break;
           case 'tray': if (tiles) { tiles.set(d, x ? x.lang : LANG); S.solved = !!d.ok; } break;
-          case 'hn': if (tiles) { tiles.hint(d.i, d.t); U.announce(t('hint')); sfx('select', { volume: 0.4 }); } break;
-          case 'hd': if (tiles) tiles.removeDecoys(d.t || []); break;
+          case 'hn': if (tiles) { tiles.hint(d.i, d.t); if (!tiles.solved) U.hintPop(); sfx('select', { volume: 0.4 }); } break;
+          case 'hd': if (tiles) { tiles.removeDecoys(d.t || []); if (!tiles.solved) U.hintPop(); } break;
           case 'gr':
             if (!tiles) break;
             if (d.ok) { S.solved = true; S.myPts = d.p || 0; tiles.result(true, t('gotIt') + ' ' + t('gotPts', { n: d.p || 0 })); sfx('correct'); U.announce(t('gotIt')); }
@@ -1280,12 +1354,13 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
           li.appendChild(el('span', 's', O.num(r.score))); scores.appendChild(li);
         });
         U.strip.textContent = '';
-        rows.slice(0, 5).forEach(function (r) { var s = el('span', (r.got ? 'got' : '') + (r.me ? ' me' : '')); s.appendChild(figure(r.avatar, 44)); s.appendChild(document.createTextNode((r.got ? '✓ ' : r.dr ? '✏️ ' : '') + O.num(r.score))); s.title = r.me ? t('you') : r.name; U.strip.appendChild(s); });
+        // every player: picture, name (two players can have the same picture) and points; it scrolls sideways
+        rows.forEach(function (r) { var s = el('span', (r.got ? 'got' : '') + (r.me ? ' me' : '')); s.appendChild(figure(r.avatar, 44)); s.appendChild(el('b', '', r.me ? t('you') : r.name)); s.appendChild(document.createTextNode((r.got ? ' ✓ ' : r.dr ? ' ✏️ ' : ' ') + O.num(r.score))); U.strip.appendChild(s); });
       }
     }
     function lobby() {
       var ps = L.players(), ul = el('ul', 'dh-people');
-      var cell = ps.length > 10 ? 120 : 170; ul.style.setProperty('--cell', cell + 'px');
+      ul.style.setProperty('--cell', ps.length > 10 ? 'min(120px, 22vw)' : 'min(170px, 28vw)');
       ps.forEach(function (p) { var li = el('li'); li.appendChild(figure(p.avatar || avatarOf(p.seat), 160)); li.appendChild(el('span', '', p.seat === me() ? t('you') : p.name || nameOf(p.seat))); ul.appendChild(li); });
       return [pipPic(host ? 240 : 200), el('h2', '', t('title')), el('p', '', host ? (ps.length < 2 ? t('needTwo') : t('players', { n: ps.length })) : t('waitHost')), ul, host ? el('p', '', t('hostHow')) : null];
     }
@@ -1306,6 +1381,13 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       // (the platform's live contract: a game reports its score; the server scores this mode itself and ignores it)
       L.score(mine);
       try { O.ui.win({ title: rank ? t('place' + rank) : t('wellPlayed'), score: mine, stars: rank === 1 ? 3 : rank ? 2 : 1, hero: L.me ? L.me.avatar : O.avatar(), next: false, pause: false }); } catch (e) { /* the podium shows anyway */ }
+      // the card covers the podium: its own button closes it (the kit's Play again is hidden in a live game) so every
+      // player can see who won
+      var card = document.querySelector('.ok-modal.ok-win .ok-card');
+      if (card) {
+        var see = btn('dh-big dh-seepod', t('seePodium'), null, function () { var b = card.querySelector('.ok-row button'); if (b) b.click(); else if (card.parentNode) card.parentNode.remove(); });
+        see.id = 'dhSeePodium'; card.appendChild(see);
+      }
       sfx('win');
     }
     function revealVeil(x) {
@@ -1331,10 +1413,11 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       U.chip.textContent = x.ph === 'done' ? t('podium') : t('round', { n: Math.max(1, x.rd), of: x.rds });
       var dr = x.dr;
       if (x.ph === 'done') {
-        U.panel(function () { return podium(x); }, false, 'done:' + x.tn); U.main.hidden = true; U.word.hidden = true; U.strip.hidden = true; U.whoIs(null, '');
+        U.panel(function () { return podium(x); }, false, 'done:' + x.tn);
+        if (host && !S.cheered) { S.cheered = true; try { O.time.start(); if (!reduced() && O.celebrate) setTimeout(function () { O.celebrate(U.screen); }, 1700); } catch (e) { /* the podium shows anyway */ } } U.main.hidden = true; U.word.hidden = true; U.strip.hidden = true; U.whoIs(null, '');
         results(x); return;
       }
-      if (x.ph === 'wait') { U.panel(function () { return [pipPic(200), el('h2', '', t('waitPlayers')), el('p', '', t('waitMore'))]; }, true, 'wait'); U.main.hidden = true; return; }
+      if (x.ph === 'wait') { U.whoIs(null, t('waitPlayers')); U.panel(function () { return [pipPic(200), el('h2', '', t('waitPlayers')), el('p', '', t('waitMore'))]; }, true, 'wait'); U.main.hidden = true; return; }
       if (x.ph === 'pick') {
         U.whoIs(avatarOf(dr), meDraw ? t('youDraw') : t('choosing', { name: nameOf(dr) }));
         U.top.hidden = false;
@@ -1346,6 +1429,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       // the word, in the top bar: the drawer's, or a guesser's once they got it
       var showWord = (meDraw || S.solved) && S.word && x.ph === 'draw';
       if (showWord) { U.whoIs(avatarOf(dr), ''); U.whoTxt.textContent = ''; U.whoTxt.appendChild(el('small', '', meDraw ? t('drawThis') + ' ' : '✓ ')); var ws = el('b', 'dh-theword', (S.word.e || '') + ' ' + caps(S.word.w, x.lang)); ws.lang = x.lang; U.whoTxt.appendChild(ws); U.who.classList.add('has-word'); }
+      else if (x.ph === 'reveal') { U.whoIs(avatarOf(dr), meDraw ? t('yourDrawing') : t('drawnBy', { name: nameOf(dr) })); U.who.classList.remove('has-word'); }
       else { U.whoIs(avatarOf(dr), meDraw ? t('youDraw') : t('drawing', { name: nameOf(dr) })); U.who.classList.remove('has-word'); }
       U.word.hidden = true;
       var wide = window.innerWidth > window.innerHeight && window.innerWidth >= 900;
@@ -1434,6 +1518,10 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
 
   /* ---------- on its own: Guess Pip's doodles, or pass and play on one device ---------- */
   var KEY = 'doodle-hoot-v1';
+  /** The word languages offered (server/live/doodle.js LANGS): Japanese and Traditional Chinese words wait for a native
+   *  speaker's review, so those pages play with English words for now. */
+  var WORD_LANGS = ['en', 'en-GB', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'ru', 'ar', 'he'];
+  var WLANG = WORD_LANGS.indexOf(LANG) >= 0 ? LANG : 'en';
   function load() { try { return (window.BRB && BRB.storage && BRB.storage.get(KEY)) || {}; } catch (e) { return {}; } }
   var saved = load();
   var CFG = { mode: saved.mode === 'pass' ? 'pass' : 'practice', lvl: [1, 2, 3].indexOf(saved.lvl) >= 0 ? saved.lvl : 1, n: saved.n >= 2 && saved.n <= 6 ? saved.n : 2 };
@@ -1487,13 +1575,14 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   function begin(w) {
     stop();
     document.documentElement.classList.add('dh-play');
+    wordLang = WLANG;
     var U = Shell('solo'), r = C.rng((Date.now() ^ (Math.random() * 4294967295)) >>> 0);
     M = { w: w, U: U, r: r, mode: CFG.mode, lvl: CFG.lvl, score: 0, i: 0, ph: 'none', solvedN: 0 };
     if (CFG.mode === 'practice') practice(); else passPlay();
   }
   /** A guess round on this device: the tray, the hints over time, the clock. done(ok, left, hints) when it ends. */
   function round(word, ms, done) {
-    var U = M.U, lang = LANG, P = C.parts(word.w, lang), b = C.buildTray(word.w, lang, M.lvl, M.r, { pool: C.wordPool(DW, lang) });
+    var U = M.U, lang = WLANG, P = C.parts(word.w, lang), b = C.buildTray(word.w, lang, M.lvl, M.r, { pool: C.wordPool(DW, lang) });
     var plan = C.hintPlan(P.g.length, M.r), hints = [], step = 0, removed = {}, t0 = O.time.now, left = ms, over = false;
     var tiles = Tiles(function (picks) {
       var locks = {}; hints.forEach(function (h) { locks[h.i] = h.t; });
@@ -1512,15 +1601,15 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       while (step < C.HINTS.length && ms - left >= ms * C.HINTS[step].at) {
         var h = C.HINTS[step++];
         if (h.min && P.g.length < h.min) continue;
-        if (h.k === 'decoys') { var gone = b.decoys.filter(function (i) { return !removed[i]; }).slice(0, h.n); gone.forEach(function (i) { removed[i] = 1; }); tiles.removeDecoys(gone); }
-        else { var slot = plan.filter(function (i) { return !hints.some(function (q) { return q.i === i; }); })[0]; if (slot == null) continue; var used = hints.map(function (q) { return q.t; }); var ti = b.tray.findIndex(function (g, i) { return g === P.g[slot] && used.indexOf(i) < 0 && b.decoys.indexOf(i) < 0; }); if (ti < 0) continue; hints.push({ i: slot, t: ti }); tiles.hint(slot, ti); U.announce(t('hint')); }
+        if (h.k === 'decoys') { var gone = b.decoys.filter(function (i) { return !removed[i]; }).slice(0, h.n); gone.forEach(function (i) { removed[i] = 1; }); tiles.removeDecoys(gone); if (gone.length) U.hintPop(); }
+        else { var slot = plan.filter(function (i) { return !hints.some(function (q) { return q.i === i; }); })[0]; if (slot == null) continue; var used = hints.map(function (q) { return q.t; }); var ti = b.tray.findIndex(function (g, i) { return g === P.g[slot] && used.indexOf(i) < 0 && b.decoys.indexOf(i) < 0; }); if (ti < 0) continue; hints.push({ i: slot, t: ti }); tiles.hint(slot, ti); U.hintPop(); }
       }
       if (left <= 0) finish(false);
     }, 100);
     return tiles;
   }
   function reveal(word, extra, then) {
-    var U = M.U, nodes = [el('div', '', t('itWas')), el('div', 'emo', word.e), el('div', 'big', caps(word.w, LANG))];
+    var U = M.U, nodes = [el('div', '', t('itWas')), el('div', 'emo', word.e), el('div', 'big', caps(word.w, WLANG))];
     if (extra) nodes.push(el('div', '', extra));
     U.board.veilShow(nodes, 'rv');
     O.time.real.after(fast ? 10 : 2200, then);
@@ -1529,7 +1618,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   /* Guess Pip's doodles: 8 doodles; Pip draws each stroke by stroke, the player spells it */
   var PRACTICE_N = 8, PRACTICE_MS = 45000;
   function practice() {
-    var U = M.U, ws = C.words(DW, LANG, 0).filter(function (x) { return ART[x.id] && x.lvl <= Math.max(1, M.lvl) && (M.lvl === 1 ? x.lvl === 1 : true); });
+    var U = M.U, ws = C.words(DW, WLANG, 0).filter(function (x) { return ART[x.id] && x.lvl <= Math.max(1, M.lvl) && (M.lvl === 1 ? x.lvl === 1 : true); });
     M.list = M.r.shuffle(ws).slice(0, PRACTICE_N); M.i = -1;
     U.whoIs(PIP, t('pipDraws'));
     next();
@@ -1592,7 +1681,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       M.go = go;
     }
     function pick() {
-      var p = M.players[M.turn], all = C.words(DW, LANG, M.lvl).filter(function (x) { return !M.used[x.id]; });
+      var p = M.players[M.turn], all = C.words(DW, WLANG, M.lvl).filter(function (x) { return !M.used[x.id]; });
       var ch = M.r.shuffle(all).slice(0, 3); M.choices = ch; M.ph = 'pick';
       U.panel([el('h2', '', t('pickWord')), cards(ch.map(function (x) { return x.w; }), ch.map(function (x) { return x.e; }), function (i) { drawTurn(ch[i]); }), el('p', '', t('notLetters'))]);
       M.cards = true; void p;
@@ -1600,7 +1689,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     function drawTurn(word) {
       M.used[word.id] = 1; M.word = word; M.ph = 'draw';
       U.panel(null);
-      U.word.hidden = false; U.word.textContent = ''; U.word.appendChild(el('small', '', t('drawThis'))); U.word.appendChild(el('span', '', word.e)); U.word.appendChild(el('span', '', caps(word.w, LANG)));
+      U.word.hidden = false; U.word.textContent = ''; U.word.appendChild(el('small', '', t('drawThis'))); U.word.appendChild(el('span', '', word.e)); U.word.appendChild(el('span', '', caps(word.w, WLANG)));
       U.side.textContent = ''; U.side.appendChild(tools.el); var done = el('button', 'dh-btn hot', t('done')); done.type = 'button'; U.side.appendChild(done);
       pad.set(true);
       var t0 = O.time.now, over = false;

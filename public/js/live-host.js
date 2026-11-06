@@ -160,6 +160,8 @@ function doodleState(d) {
   const was = dd ? dd.tn : 0;
   dd = { ...(dd || {}), ...d };
   if (dd.tn !== was) { const h = $('lv-hid'); if (h) h.hidden = true; }
+  // the final podium: nothing left to pause, skip or clear
+  const c = $('lv-controls'); if (c) c.classList.toggle('lv-dd-done', dd.ph === 'done');
 }
 function hidCount(d) {
   const h = $('lv-hid'); if (!h || !dd || d.n !== dd.tn) return;

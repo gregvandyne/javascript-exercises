@@ -48,7 +48,7 @@ test('a tray: every answer letter (with its count), decoys by level, at most 20 
       deq(C.buildTray(w, lang, lvl, C.rng(7), { pool: C.wordPool(D, lang) }).tray, t.tray, 'a seed makes the same tray');
     }
   }
-  deq([C.decoyCount(3, 1), C.decoyCount(10, 1), C.decoyCount(4, 2), C.decoyCount(14, 3)], [2, 4, 3, 6]);
+  deq([C.decoyCount(3, 1), C.decoyCount(10, 1), C.decoyCount(4, 2), C.decoyCount(14, 3), C.decoyCount(5, 1), C.decoyCount(2, 1)], [4, 4, 4, 6, 2, 4], 'a short word gets 4 at least');
 });
 
 test('an easy tray never sets a letter beside its twin (É/E, Ё/Е, final and plain Hebrew, the alef forms)', () => {
@@ -68,11 +68,32 @@ test('an easy tray never sets a letter beside its twin (É/E, Ё/Е, final and p
   assert.equal(C.twinKey('é'), 'e'); assert.equal(C.twinKey('ё'), 'е'); assert.equal(C.twinKey('ם'), 'מ'); assert.equal(C.twinKey('أ'), 'ا');
 });
 
-test('a tray that would spell a rude word is shuffled again', () => {
+test('a tray that would spell a rude word is shuffled again, then gets new decoys; a failed order is never used', () => {
   let calls = 0;
   const t = C.buildTray('cat', 'en', 1, C.rng(3), { bad: () => ++calls < 3 });
   assert.ok(calls >= 3, 'asked again until it passed');
   assert.equal(t.tray.length, 3 + C.decoyCount(3, 1));
+  // 40 bad orders: new decoys, and the tray it uses is one that passed
+  const seen = []; calls = 0;
+  const t2 = C.buildTray('banana', 'en', 2, C.rng(5), { bad: text => { seen.push(text); return ++calls <= 45; } });
+  assert.equal(seen.at(-1), t2.tray.join('')); assert.ok(calls > 45);
+  // every order of every decoy set bad: the answer's own tiles, in an order that passed
+  calls = 0;
+  const t3 = C.buildTray('banana', 'en', 2, C.rng(5), { bad: () => ++calls <= 400 });
+  assert.equal(t3.decoys.length, 0); assert.equal(t3.tray.length, 6); assert.notEqual(t3.tray.join(''), 'banana');
+});
+
+test('the game\'s own rude-word check (on its own, with no server): the site\'s lists hashed, anywhere in the tiles', async () => {
+  for (const x of ['porneais', 'fagqnrmfdie', 'cumlieb', 'xxSHITxx', 'ちんこあ']) assert.equal(C.rude(x), true, x);
+  for (const x of ['cat', 'banana', 'schildkröte', 'черепаха', 'ענבים']) assert.equal(C.rude(x), false, x);
+  // a tray made with no bad() of its own uses it
+  for (let seed = 1; seed <= 200; seed++) assert.equal(C.rude(C.buildTray('cucumber', 'en', 3, C.rng(seed)).tray.join('')), false);
+  // the hashes in the game are the site's lists as they are now (node scripts/doodle-bad.mjs writes them)
+  const B = await import('../../scripts/doodle-bad.mjs');
+  const html = (await import('node:fs')).readFileSync('seed-games/doodle-hoot.html', 'utf8');
+  assert.ok(html.includes(B.block()), 'doodle-hoot.html: the rude-word hashes are out of date: node scripts/doodle-bad.mjs');
+  assert.equal(B.hash('abc'), C.hash('abc'));
+  assert.ok(!/\b(fuck|shit|porn)\b/i.test(html), 'no rude word is written in the game file');
 });
 
 test('the guess check: tray positions in slot order; twins of one letter stand in for each other', () => {
@@ -83,8 +104,10 @@ test('the guess check: tray positions in slot order; twins of one letter stand i
   assert.equal(C.check(tray, ans, [2, 1, 0, 4, 5, 5]), false, 'a tile used twice');
   assert.equal(C.check(tray, ans, [2, 1, 0, 4, 5, 9]), false, 'out of range');
   assert.equal(C.check(tray, ans, [2, 1, 0, 4, 5, 1.5]), false);
-  assert.equal(C.check(tray, ans, [2, 1, 0, 4, 5, 6], { 0: 8 }), false, 'a hint slot must hold its hint tile');
+  assert.equal(C.check(tray, ans, [2, 1, 0, 4, 5, 6], { 0: 8 }), true, 'a hint slot takes any tile with its letter (a hint landing mid-guess)');
   assert.equal(C.check(tray, ans, [8, 1, 0, 4, 5, 6], { 0: 8 }), true);
+  assert.equal(C.check(tray, ans, [2, 1, 0, 4, 5, 6], { 1: 6 }), true);
+  assert.equal(C.check(tray, ans, [8, 1, 0, 4, 5, 6], { 0: 1 }), false, 'a hint slot still needs its letter');
   assert.equal(C.check(tray, ans, [2, 1, 0, 4, 7, 6]), false, 'wrong letter');
 });
 

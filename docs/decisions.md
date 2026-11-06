@@ -2579,4 +2579,20 @@ as **Doodle Hoot** (slug `doodle-hoot`, live mode `doodle`), hosted by Pip, the 
   Drawers are told "Draw pictures, not letters".
 - **On its own:** "Guess Pip's doodles" (Pip draws 8 of his own 40 doodles stroke by stroke; Easy or Medium) and pass
   and play for 2-6 on one device (nothing leaves the device; nothing is submitted for a shared screen).
+- **After the reviews (6 Nov 2026):**
+  - *Japanese and Traditional Chinese words are held back* (`DOODLE.LANGS`, the game's `WORD_LANGS`): they have no
+    native review yet, and the rude-word lists for those scripts are short, so a tray there can't be checked as well.
+    Those pages play with English words until a native speaker has reviewed both lists; the words stay in the game.
+  - *A grown-up must be watching.* Drawings go out only while the host's page (which shows every drawing live) is open:
+    12 s without it, the game pauses itself, and it goes on when the page is back. A dashboard alone doesn't count (it
+    shows no drawing). This replaces "the room ends 10 minutes after the host leaves" as the protection for drawings.
+  - *Remove locks the room*, so a removed guest can't come straight back under a new nickname. Not a ban by address:
+    a family on one home network shares it, and a sibling would be locked out.
+  - *Every tray is checked anywhere in its run of tiles*: the server adds the game's hashed copy of the site's lists to
+    `profanityMatch` (which looks at word starts); on its own the game uses the hashed copy (no rude word is written in
+    the game file; `scripts/doodle-bad.mjs` writes it and a unit test keeps it in step with the lists).
+  - *Short words are no anagram puzzle*: an answer of 4 tiles or fewer gets 4 decoys at least, and wrong guesses a turn
+    are 3 for 3 tiles or fewer, 5 for 4-5 (else 12).
+  - *A blip never ends a game*: a reloading seat (8 s) is still in the game for the turn order, "everyone got it" and the
+    hide vote; a seat that joined but never connected stops counting after 8 s.
 

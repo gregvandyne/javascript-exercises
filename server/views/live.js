@@ -247,7 +247,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       <p class="lv-count" id="lv-count" aria-live="polite">${t('live.host.count', { count: 0, max: s.settings.maxPlayers })}</p>
       <button class="btn btn-sm" type="button" id="lv-hide-code" aria-pressed="false">${t('live.host.hideCode')}</button>
       <span class="lv-joinlinks"><button class="btn btn-sm" type="button" id="lv-copy-link" data-url="${joinUrl}">🔗 ${t('live.host.copyLink')}</button>
-      <a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">🎮 ${t('live.host.playToo')}</a></span>
+      ${s.audience === 'class' ? '' : html`<a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">🎮 ${t('live.host.playToo')}</a>`}</span>
       <p class="small muted" id="lv-copied" role="status" hidden>${t('live.host.copied')}</p>
       ${s.doodle ? html`<p class="small muted" id="lv-need-two" hidden>${t('live.api.needTwo')}</p><p class="small lv-hid" id="lv-hid" role="status" hidden></p>` : ''}
     </div>
@@ -497,7 +497,7 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   <form class="stack" id="lv-new" data-api="/api/live/sessions" novalidate>
     ${st ? html`<p class="notice lv-preset" id="lv-preset" data-starter="${st.id}">${t('live.cs.preset')}</p>` : ''}
     <fieldset class="lv-group"><legend>${t('live.landing.modes')}</legend><div class="lv-picks">
-      ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, true, m.cap, !!m.own))}
+      ${modes.map((m, i) => card(`mode:${m.id}`, m.icon, m.title, m.text, pre.pick ? pre.pick === `mode:${m.id}` : i === 0 && !anyPicked, true, m.id !== 'doodle', m.cap, !!m.own))}
     </div></fieldset>
     ${wyr ? html`<fieldset class="lv-group lv-own" id="lv-wyr-opts" data-own-mode="wyr" hidden><legend>${t('live.wyrUi.legend')}</legend>
       <fieldset class="lv-bank-board"><legend>${t('live.wyrUi.topics')}</legend><div class="lv-bank-subs">

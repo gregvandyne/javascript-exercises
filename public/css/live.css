@@ -44,6 +44,17 @@
 .lv-joinbox.is-small .lv-joinlinks { display: none; }
 #lv-copied, #lv-need-two { margin: 0; }
 .lv-hid { margin: 0; font-weight: 700; color: var(--warn-ink); }
+.lv-dd-done [data-lv-act="pause"], .lv-dd-done [data-lv-act="resume"], .lv-dd-done [data-lv-act="skip"], .lv-dd-done [data-lv-act="clear"] { display: none !important; }
+/* the player's page: no empty status line; Doodle Hoot Live on a phone gets a slim one-row header while it runs, so the
+   drawing gets the room */
+.lv-play .lv-phase:empty { display: none; }
+@media (max-width: 600px), (max-height: 500px) {
+  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play { gap: 6px; padding-block: 4px; block-size: 100dvh; min-block-size: 0; }
+  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar { flex-wrap: nowrap; gap: 6px; padding-block: 4px; }
+  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar :is(.lv-title, #lv-me-name) { display: none; }
+  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar .btn { min-block-size: 36px; padding-block: 2px; }
+  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play .lv-stage { min-block-size: 0; }
+}
 .lv-count { font-weight: 800; font-size: 1.2rem; }
 .lv-stage { position: relative; inline-size: 100%; min-block-size: 50vh; border-radius: 16px; overflow: hidden; background: #bfe8ff; }
 .lv-stage iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }

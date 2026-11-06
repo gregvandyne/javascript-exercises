@@ -20,16 +20,21 @@ import { profanityMatch } from './textfilter.js';
 
 /** Tests shorten the waits. drawMs: a fixed drawing time instead of the room's seconds; reloadMs: a seat still counts
  *  as in the game this long after its connection drops (a reload), so the game doesn't stop to wait for it. */
-export const hooks = { pickMs: DD.PICK_MS, revealMs: DD.REVEAL_MS, holdMs: DD.HOLD_MS, graceMs: DD.DROP_GRACE_MS, waitMs: DD.WAIT_MAX_MS, gapMs: DD.GUESS_GAP_MS, drawMs: 0, reloadMs: 8000 };
+export const hooks = { pickMs: DD.PICK_MS, revealMs: DD.REVEAL_MS, holdMs: DD.HOLD_MS, graceMs: DD.DROP_GRACE_MS, waitMs: DD.WAIT_MAX_MS, gapMs: DD.GUESS_GAP_MS, drawMs: 0, reloadMs: 8000, replayMs: DD.REPLAY_GAP_MS };
 /** A connection with more than this waiting stops getting strokes; it gets the whole canvas again once it drains. */
 export const MAX_BUFFERED = 64 * 1024;
 const C = () => doodle().DoodleCore;
 /** The most numbers one stroke message carries (30 points). */
 const DD_MAX_NUMS = 60;
 const W = () => doodle().DoodleWords;
+/** Decoy pools for the languages that take theirs from the word list, worked out once per language. */
+const pools = new Map();
+const poolFor = lang => { if (!pools.has(lang)) pools.set(lang, C().wordPool(W(), lang)); return pools.get(lang); };
 const int = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
 const plain = (d, keys) => !!d && typeof d === 'object' && !Array.isArray(d) && Object.keys(d).every(k => keys.includes(k));
-const here = (seat, now) => !!seat && (!!seat.conn || !seat.everConnected || (!!seat.leftAt && now - seat.leftAt < hooks.reloadMs));
+// (a seat that never connected counts only for reloadMs after it joined, from its leftAt: join calls alone never fill
+// the room, block the hide vote or keep the game out of "waiting for players")
+const here = (seat, now) => !!seat && (!!seat.conn || (!!seat.leftAt && now - seat.leftAt < hooks.reloadMs));
 
 /** Set up a new room's game from its starter id (or the default). -> the parsed starter. */
 export function init(s, id) {
@@ -41,7 +46,7 @@ export function init(s, id) {
     endAt: 0, left: 0, running: false, drawMs: 0, waitFrom: 0, waitWas: null, waitLeft: 0,
     got: [], pts: new Map(), guess: new Map(), hid: new Set(),
     canvas: [], points: 0, last: null, maxId: -1, rate: [], full: false, dropAt: 0, stale: new Set(), staleHost: false, drops: 0,
-    rv: null, top: null, doneAt: 0, dirty: false, sentAt: 0, done: false,
+    rv: null, top: null, doneAt: 0, dirty: false, sentAt: 0, done: false, replays: new Map(),
   };
   s.state = { ...s.state, dd: publicState(s, 0) };
   s.stateBytes = JSON.stringify(s.state).length;
@@ -103,6 +108,9 @@ function choose(s) {
 function nextTurn(s, io, now) {
   const x = s.doodle;
   if (x.done) return;
+  // fewer than two players here (a reload counts): wait for them instead of running through the turns
+  // (the wait goes back to an ended reveal, so the next turn starts as soon as there are two)
+  if (present(s, now).length < 2) { x.ph = 'reveal'; x.endAt = now; x.left = 0; enterWait(s, io, now); return; }
   wipeTurn(x);
   for (;;) {
     x.oi++;
@@ -112,10 +120,11 @@ function nextTurn(s, io, now) {
       if (!x.order.length) { finish(s, io); return; }
       continue;
     }
+    // the next drawer: anyone still here, a reload included (a drawer who doesn't come back has the pick's grace)
     const seat = s.seats.get(x.order[x.oi]);
-    if (seat && seat.conn) break;
+    if (here(seat, now)) break;
   }
-  x.tn++; x.dr = x.order[x.oi]; x.ph = 'pick'; x.rv = null;
+  x.tn++; x.dr = x.order[x.oi]; x.ph = 'pick'; x.rv = null; x.waitWas = null;
   x.choices = choose(s);
   x.endAt = now + hooks.pickMs; x.left = hooks.pickMs; x.running = s.phase === 'playing';
   if (!x.running) x.left = hooks.pickMs;
@@ -126,7 +135,7 @@ function nextTurn(s, io, now) {
 function sendChoices(s, io, now) {
   const x = s.doodle;
   if (x.ph !== 'pick' || !x.choices) return;
-  toSeat(s, io, x.dr, 'ch', { n: x.tn, w: x.choices.map(c => c.w), e: x.choices.map(c => c.e), ms: Math.max(0, Math.round(x.running ? x.endAt - now : x.left)) });
+  toSeat(s, io, x.dr, 'ch', { v: 1, n: x.tn, w: x.choices.map(c => c.w), e: x.choices.map(c => c.e), ms: Math.max(0, Math.round(x.running ? x.endAt - now : x.left)) });
 }
 function wipeTurn(x) {
   x.choices = null; x.word = null; x.tray = null; x.decoys = []; x.removed = new Set(); x.plan = []; x.hints = []; x.step = 0; x.trayTo = new Set();
@@ -146,7 +155,8 @@ function beginDraw(s, io, i) {
   if (!c) return false;
   x.used.add(c.id); x.cats = [c.cat, ...x.cats].slice(0, 2);
   const P = core.parts(c.w, x.lang);
-  const built = core.buildTray(c.w, x.lang, x.lvl, core.rng(crypto.randomInt(2 ** 32)), { pool: core.wordPool(W(), x.lang), bad: text => !!profanityMatch(text) });
+  // (profanityMatch looks at word starts; core.rude, the same lists hashed, looks anywhere in the run of tiles)
+  const built = core.buildTray(c.w, x.lang, x.lvl, core.rng(crypto.randomInt(2 ** 32)), { pool: poolFor(x.lang), bad: text => !!profanityMatch(text) || core.rude(text) });
   // (copied out of the game's vm context into plain arrays)
   x.word = { id: c.id, w: c.w, e: c.e, g: [...P.g], groups: [...P.groups] };
   x.tray = [...built.tray]; x.decoys = [...built.decoys]; x.plan = [...core.hintPlan(P.g.length, core.rng(crypto.randomInt(2 ** 32)))];
@@ -162,7 +172,7 @@ function sendTray(s, io, seat) {
   const x = s.doodle;
   if (!x.tray || seat.no === x.dr) return false;
   x.trayTo.add(seat.no);
-  return toSeat(s, io, seat.no, 'tray', { n: x.tn, t: x.tray.slice(), g: x.word.groups.slice(), dir: x.dir, rm: [...x.removed], hn: x.hints.map(h => [h.i, h.t]), ok: x.got.includes(seat.no) });
+  return toSeat(s, io, seat.no, 'tray', { v: 1, n: x.tn, t: x.tray.slice(), g: x.word.groups.slice(), dir: x.dir, rm: [...x.removed], hn: x.hints.map(h => [h.i, h.t]), ok: x.got.includes(seat.no) });
 }
 
 /** The end of a turn: why 'time' | 'all' (everyone guessed) | 'skip' (the host) | 'gone' (the drawer left) | 'hid'
@@ -177,14 +187,15 @@ function endTurn(s, io, why) {
     // who could have guessed: the guessers here now, and anyone who guessed it and then left
     const eligible = new Set(x.got);
     for (const seat of s.seats.values()) if (seat.no !== x.dr && here(seat, now) && x.trayTo.has(seat.no)) eligible.add(seat.no);
-    for (const no of x.trayTo) { const seat = s.seats.get(no); if (seat) { seat.answered++; s.dpDirty = true; } }
+    for (const no of x.trayTo) { const seat = s.seats.get(no); if (seat && (here(seat, now) || x.got.includes(no))) { seat.answered++; s.dpDirty = true; } }
     if (drawer && why !== 'skip' && why !== 'hid') {
       const p = C().drawPoints(x.got.length, eligible.size);
       if (p) { drawer.score += p; s.scoresDirty = true; }
       x.pts.set(x.dr, p);
     }
   }
-  if (why === 'hid' || why === 'gone') clearAll(s, io);
+  // a drawing the host skipped, the room hid or whose drawer left is wiped at once, never shown in the reveal
+  if (why === 'hid' || why === 'gone' || why === 'skip') clearAll(s, io);
   const w = x.word || (x.choices && x.choices[0]) || null;
   x.rv = { w: was === 'draw' && x.word ? x.word.w : '', e: was === 'draw' && x.word ? x.word.e : '', pts: [...x.pts].map(([no, p]) => [no, p]), why };
   if (!w) x.rv.w = '';
@@ -199,7 +210,8 @@ function endTurn(s, io, why) {
 export function finish(s, io) {
   const x = s.doodle, now = io.now();
   if (x.done) return;
-  const rows = [...s.seats.values(), ...(s.gone || [])].map(seat => [seat.no, (seat.score || 0) + (seat.bonus || 0)]).sort((a, b) => b[1] - a[1] || a[0] - b[0]);
+  // (a player the host removed never stands on the podium)
+  const rows = [...s.seats.values(), ...(s.gone || []).filter(seat => !seat.removed)].map(seat => [seat.no, (seat.score || 0) + (seat.bonus || 0)]).sort((a, b) => b[1] - a[1] || a[0] - b[0]);
   wipeTurn(x);
   x.done = true; x.ph = 'done'; x.top = rows.slice(0, 3); x.rv = null; x.doneAt = now; x.running = s.phase === 'playing';
   send(s, io, now);
@@ -259,6 +271,8 @@ export function tick(s, io) {
   } else if (x.ph === 'draw') {
     if (!drawer || (!drawer.conn && now - (drawer.leftAt || now) >= hooks.graceMs)) { endTurn(s, io, 'gone'); return; }
     hints(s, io, now);
+    // (a guesser whose reload grace ran out no longer holds the turn open)
+    if (allSolved(s, now)) { endTurn(s, io, 'all'); return; }
     if (now >= x.endAt) endTurn(s, io, 'time');
   } else if (x.ph === 'reveal') {
     if (now >= x.endAt) nextTurn(s, io, now);
@@ -368,7 +382,7 @@ export function drawerClear(s, io, seat, d) {
 /** The host's Clear drawing: the page is wiped on every screen, the drawer's too. -> bool */
 export function hostClear(s, io) {
   const x = s.doodle;
-  if (!x || (x.ph !== 'draw' && x.ph !== 'reveal' && !(x.ph === 'wait' && x.waitWas === 'draw'))) return false;
+  if (!x || (x.ph !== 'draw' && x.ph !== 'reveal' && !(x.ph === 'wait' && (x.waitWas === 'draw' || x.waitWas === 'reveal')))) return false;
   clearAll(s, io);
   return true;
 }
@@ -431,13 +445,14 @@ export function guess(s, io, seat, d) {
   if (s.phase !== 'playing' || x.ph !== 'draw' || !x.running || seat.no === x.dr || !x.trayTo.has(seat.no) || x.got.includes(seat.no)) return drop(x);
   if (!plain(d, ['n', 't']) || d.n !== x.tn || !Array.isArray(d.t) || d.t.length !== x.word.g.length) return drop(x);
   const g = x.guess.get(seat.no) || { wrong: 0, at: 0 };
-  if (now - g.at < hooks.gapMs || g.wrong >= DD.GUESS_MAX) return drop(x);
+  const most = DD.guessMax(x.word.g.length);
+  if (now - g.at < hooks.gapMs || g.wrong >= most) return drop(x);
   g.at = now; x.guess.set(seat.no, g);
   const locks = {}; for (const h of x.hints) locks[h.i] = h.t;
   const ok = C().check(x.tray, x.word.g, d.t, locks);
   if (!ok) {
     g.wrong++;
-    toSeat(s, io, seat.no, 'gr', { n: x.tn, ok: false, left: DD.GUESS_MAX - g.wrong });
+    toSeat(s, io, seat.no, 'gr', { n: x.tn, ok: false, left: most - g.wrong });
     return true;
   }
   const p = C().guessPoints(Math.max(0, x.endAt - now), x.drawMs, x.got.length, x.hints.length);
@@ -453,7 +468,8 @@ export function guess(s, io, seat, d) {
 /** Has every guesser here now guessed it? */
 function allSolved(s, now) {
   const x = s.doodle;
-  const left = [...s.seats.values()].filter(seat => seat.no !== x.dr && seat.conn && x.trayTo.has(seat.no) && !x.got.includes(seat.no));
+  // a guesser who is reloading still counts: their chance isn't taken away by a blip
+  const left = [...s.seats.values()].filter(seat => seat.no !== x.dr && here(seat, now) && x.trayTo.has(seat.no) && !x.got.includes(seat.no));
   return x.got.length > 0 && !left.length;
 }
 
@@ -462,11 +478,14 @@ function allSolved(s, now) {
  *  drawer is never told who. */
 export function hide(s, io, seat, d) {
   const x = s.doodle, now = io.now();
-  if (!plain(d, ['n']) || d.n !== x.tn || seat.no === x.dr || (x.ph !== 'draw' && x.ph !== 'reveal') || x.hid.has(seat.no)) return drop(x);
+  const ph = x.ph === 'wait' ? x.waitWas : x.ph;
+  if (!plain(d, ['n']) || d.n !== x.tn || seat.no === x.dr || (ph !== 'draw' && ph !== 'reveal') || x.hid.has(seat.no)) return drop(x);
   x.hid.add(seat.no);
   io.toHosts(s, { t: 'ev', f: 0, k: 'hid', d: { n: x.tn, k: x.hid.size } });
-  const guessers = [...s.seats.values()].filter(q => q.no !== x.dr && here(q, now)).length;
-  if (x.ph === 'draw' && x.hid.size >= 2 && x.hid.size * 2 >= guessers) endTurn(s, io, 'hid');
+  // (only the guessers here now, and only their own hides: one who hid and then left counts no more)
+  const guessers = [...s.seats.values()].filter(q => q.no !== x.dr && here(q, now));
+  const hidNow = guessers.filter(q => x.hid.has(q.no)).length;
+  if (x.ph === 'draw' && hidNow >= 2 && hidNow * 2 >= guessers.length) endTurn(s, io, 'hid');
   return true;
 }
 
@@ -474,7 +493,10 @@ export function hide(s, io, seat, d) {
 export function skip(s, io, at) {
   const x = s.doodle;
   if (!x || at !== x.tn || x.done) return false;
-  if (x.ph === 'reveal') { nextTurn(s, io, io.now()); return true; }
+  if (x.ph === 'reveal' || (x.ph === 'wait' && x.waitWas === 'reveal')) {
+    if (x.ph === 'wait') { x.ph = 'reveal'; x.waitWas = null; }
+    clearAll(s, io); nextTurn(s, io, io.now()); return true;
+  }
   return endTurn(s, io, 'skip');
 }
 
@@ -483,6 +505,11 @@ export function skip(s, io, at) {
 export function resync(s, io, seat) {
   const x = s.doodle, now = io.now();
   if (!x.rd || x.done || !seat.conn) return false;
+  // At most one replay a turn per connection every replayMs (a new connection, a reload, always gets one): asking again
+  // and again never makes the server resend the page.
+  const last = x.replays.get(seat.no);
+  if (last && last.conn === seat.conn && last.tn === x.tn && now - last.at < hooks.replayMs) return drop(x);
+  x.replays.set(seat.no, { conn: seat.conn, tn: x.tn, at: now });
   if (!x.order.includes(seat.no)) x.order.push(seat.no);
   const ph = x.ph === 'wait' ? x.waitWas : x.ph;
   if (ph === 'pick' && seat.no === x.dr) sendChoices(s, io, now);
@@ -490,7 +517,11 @@ export function resync(s, io, seat) {
     if (seat.no === x.dr) toSeat(s, io, seat.no, 'wd', { n: x.tn, w: x.word.w, e: x.word.e, s0: x.maxId + 1 });
     else { sendTray(s, io, seat); if (x.got.includes(seat.no)) toSeat(s, io, seat.no, 'wd', { n: x.tn, w: x.word.w, e: x.word.e }); }
   }
-  if (ph === 'draw' || ph === 'reveal') { x.stale.delete(seat.no); sendCanvas(s, io, seat); }
+  if (ph === 'draw' || ph === 'reveal') {
+    // a connection that is behind gets the page once it has caught up (catchUp), never on top of its backlog
+    if ((seat.conn.bufferedAmount || 0) > MAX_BUFFERED / 2) x.stale.add(seat.no);
+    else { x.stale.delete(seat.no); sendCanvas(s, io, seat); }
+  }
   return true;
 }
 /** The projector's frame is ready: the page so far. */
@@ -513,6 +544,7 @@ export function left(s, io, seat) {
   if (!x || !x.rd || x.done) return;
   x.stale.delete(seat.no);
   const ph = x.ph === 'wait' ? x.waitWas : x.ph;
+  x.replays.delete(seat.no);
   if (seat.no === x.dr && (ph === 'pick' || ph === 'draw')) { endTurn(s, io, 'gone'); return; }
   if (ph === 'draw' && allSolved(s, now)) endTurn(s, io, 'all');
 }

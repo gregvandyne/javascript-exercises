@@ -103,10 +103,11 @@ test('pass and play for two: cover, word cards, drawing, the guessers, who got i
   expect(errors).toEqual([]);
 });
 
-test('Arabic slots run right to left; Japanese spells with kana; a desktop fits', async ({ page }) => {
+test('Arabic slots run right to left; a Japanese page spells English words for now; a desktop fits', async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  for (const [lang, re] of [['ar', /^[ء-ي]$/], ['ja', /^[ぁ-ー]$/]]) {
+  // (Japanese and Traditional Chinese words wait for a native speaker's review: those pages play with English words)
+  for (const [lang, re] of [['ar', /^[ء-ي]$/], ['ja', /^[a-z]$/]]) {
     const { f } = await open(page, `/play/doodle-hoot?lang=${lang}`);
     await T(f, 'start', { mode: 'practice', lvl: 1 });
     const s = await until(f, x => x.screen === 'guess' && x.tray.length);
@@ -114,7 +115,7 @@ test('Arabic slots run right to left; Japanese spells with kana; a desktop fits'
     await expect(f.locator('.dh-slots')).toHaveAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     if (lang === 'ar') await expect(f.locator('.dh-preview')).toBeVisible();
     expect(await frameProblems(f)).toEqual([]);
-    await spell(f, lang);
+    await spell(f, lang === 'ja' ? 'en' : lang);
     await until(f, x => x.screen === 'reveal' || x.i > 0);
   }
 });

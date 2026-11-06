@@ -25,6 +25,8 @@ Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300,
 // (a long turn, so no hint lands between working out a guess and sending it; the hints test sets a short one)
 
 const seatOf = c => c.wel.seat;
+/** Wait (up to 3 s) until fn() is true. */
+async function until(fn, ms = 3000) { const t0 = Date.now(); while (!fn()) { if (Date.now() - t0 > ms) throw new Error(`timed out: ${fn}`); await sleep(20); } }
 const ev = (c, k, d) => c.send({ t: 'ev', k, d, to: 'host' });
 const evs = (c, k) => c.msgs.filter(m => m.t === 'ev' && m.k === k);
 const dd = s => s.doodle;
@@ -346,6 +348,93 @@ test('start needs two players; no teams; a 16-player room relays each stroke fas
   const m = evs(ps[1], 'ln')[0];
   assert.ok(JSON.stringify(m).length < 600);
   for (const p of [...ps, h]) p.ws.close();
+});
+
+test('blips: a reload at the end of a reveal never ends the game; a reloading guesser keeps the turn open', async (tt) => {
+  reset();
+  Object.assign(DG.hooks, { reloadMs: 3000, graceMs: 3000 });
+  tt.after(() => Object.assign(DG.hooks, { reloadMs: 80, graceMs: 300 }));
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:2:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s), c = await player(s);
+  await started(s, h, [a, b, c]);
+  await picked(s, a, [b, c]);
+  // b gets it, then c's page reloads: the turn waits for c (it doesn't end as "everyone got it")
+  ev(b, 'gs', { n: 1, t: spell(s, b) });
+  await b.next('ev', m => m.k === 'gr' && m.d.ok);
+  c.ws.close(); await sleep(150);
+  assert.equal(dd(s).ph, 'draw', 'still drawing while c reloads');
+  const c2 = socket(); await c2.hello(c.join.tok); c2.send({ t: 'rdy', view: '2d' });
+  await c2.next('ev', m => m.k === 'tray');
+  ev(c2, 'gs', { n: 1, t: spell(s, c2) });
+  assert.equal((await h.next('st', m => m.d.dd && m.d.dd.ph === 'reveal')).d.dd.rv.why, 'all');
+  // everyone's connection drops just as the reveal ends: the game goes on with the next drawer, not to the podium
+  for (const p of [a, b, c2]) p.ws.close();
+  await h.next('st', m => m.d.dd && m.d.dd.tn === 2, 3000);
+  assert.equal(dd(s).done, false); assert.equal(dd(s).rd, 1); assert.equal(dd(s).dr, seatOf(b), 'b draws next, though reloading');
+  const b2 = socket(); await b2.hello(b.join.tok); b2.send({ t: 'rdy', view: '2d' });
+  assert.equal((await b2.next('ev', m => m.k === 'ch')).d.n, 2, 'the drawer gets their words back');
+  h.ws.close(); b2.ws.close();
+});
+
+test('the host: Skip wipes the drawing; Remove locks the room and a removed player never stands on the podium', async () => {
+  reset();
+  const s = open(mum, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, mum);
+  const a = await player(s), b = await player(s), c = await player(s);
+  await started(s, h, [a, b, c]);
+  await picked(s, a, [b, c]);
+  ev(a, 'ln', { s: 0, c: 0, w: 0, e: 0, p: [10, 10, 1, 1] }); await b.next('ev', m => m.k === 'ln');
+  // c gets it (the only points so far), then the host removes c: the room locks, nobody new gets in
+  ev(c, 'gs', { n: 1, t: spell(s, c) }); await c.next('ev', m => m.k === 'gr' && m.d.ok);
+  h.send({ t: 'h', a: 'unlock' }); await h.next('lk', m => m.locked === false);
+  h.send({ t: 'h', a: 'kick', n: seatOf(c) });
+  assert.equal((await h.next('lk')).locked, true); assert.equal(s.settings.locked, true);
+  assert.notEqual((await call('/api/live/join', { method: 'POST', body: { code: s.code } })).status, 200, 'no rejoin under a new nickname');
+  // Skip: the page is wiped everywhere at once (never shown in the reveal)
+  h.send({ t: 'h', a: 'skip', at: 1 });
+  for (const p of [b, h]) await p.next('ev', m => m.k === 'cl' && m.f === 0);
+  assert.equal(dd(s).canvas.length, 0); assert.equal(dd(s).rv.why, 'skip');
+  // the rest of the round, skipped: the podium has a and b, never c
+  await h.next('st', m => m.d.dd && m.d.dd.tn === 2);
+  h.send({ t: 'h', a: 'skip', at: 2 });
+  const done = await h.next('st', m => m.d.dd && m.d.dd.ph === 'done', 3000);
+  assert.ok(!done.d.dd.top.some(r => r[0] === seatOf(c)), JSON.stringify(done.d.dd.top));
+  for (const p of [a, b, h]) p.ws.close();
+});
+
+test('nobody watching: with no host page the game pauses itself, and goes on when it is back; replays are limited', async (tt) => {
+  reset();
+  const was = { u: LS.hooks.unwatchedMs, r: DG.hooks.replayMs };
+  LS.hooks.unwatchedMs = 300; DG.hooks.replayMs = 400;
+  tt.after(() => { LS.hooks.unwatchedMs = was.u; DG.hooks.replayMs = was.r; });
+  const s = open(mum, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, mum);
+  const a = await player(s), b = await player(s);
+  await started(s, h, [a, b]);
+  await picked(s, a, [b]);
+  ev(a, 'ln', { s: 0, c: 0, w: 0, e: 0, p: [10, 10, 1, 1] }); await b.next('ev', m => m.k === 'ln');
+  // a guesser asking for the page again and again gets it once a while, not every time
+  await sleep(450);
+  const before = evs(b, 'cv').length;
+  for (let i = 0; i < 6; i++) ev(b, 'need', null);
+  await sleep(150);
+  assert.equal(evs(b, 'cv').length - before, 1, 'one replay for six asks');
+  // the host page closes (a dashboard alone doesn't show the drawing): the game pauses itself, strokes stop
+  h.ws.close();
+  await until(() => s.phase === 'paused');
+  assert.equal(s.ddAutoPaused, true);
+  ev(a, 'ln', { s: 1, c: 0, w: 0, e: 0, p: [20, 20] }); await sleep(50);
+  assert.equal(dd(s).canvas.length, 1, 'no stroke goes out while nobody is watching');
+  // the host page is back: it goes on by itself
+  const h2 = await hostSocket(s, mum);
+  await until(() => s.phase === 'playing');
+  assert.equal(s.ddAutoPaused, false);
+  // a pause the host made stays (the page coming back doesn't undo it)
+  h2.send({ t: 'h', a: 'pause' }); await until(() => s.phase === 'paused');
+  await sleep(250); assert.equal(s.phase, 'paused');
+  assert.equal(DD.guessMax(2), 3); assert.equal(DD.guessMax(5), 5); assert.equal(DD.guessMax(9), DD.GUESS_MAX);
+  for (const p of [a, b, h2]) p.ws.close();
 });
 
 test('static: the room code imports no AI, moderation, screenshot or voice service', () => {

@@ -54,7 +54,7 @@ import * as POLLS from './polls.js';
 import { POLL_SLUG } from '../live/wyr.js';
 import { countryName } from '../live/atlas.js';
 
-export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3, lingerMs: 120e3,
+export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, unwatchedMs: 12e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3, lingerMs: 120e3,
   // part 4: the host's grace before the longest-standing co-host takes over; another controller's toggle within
   // conflictMs of the last change is refused (no flapping); invites last inviteMs
   handoffMs: (config.liveHandoffSecs || 120) * 1000, conflictMs: 1000, inviteMs: 15 * 60e3 };
@@ -453,6 +453,7 @@ export function kick(s, no) {
   if (!seat) return false;
   s.banned.add(seat.nonce);
   if (seat.userId) s.banned.add(seat.userId);
+  seat.removed = true;
   if (seat.conn) { sendTo(seat.conn, { t: 'bye', why: 'removed' }); closeConn(seat.conn, 4403); seat.conn = null; }
   freeSeat(s, seat, { keepSummary: true });
   hooks.log('info', 'live seat removed', { sid: s.id, seat: no });
@@ -1100,7 +1101,13 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       broadcast(s, { t: 'lk', locked: s.settings.locked }, { players: false });
       return true;
     }
-    case 'kick': return kick(s, n);
+    case 'kick': {
+      if (!kick(s, n)) return false;
+      // Doodle Hoot Live: a removed guest could join again at once under a new nickname and draw again, so a Remove also
+      // locks the room (the host sees it locked and can let people in again). Not by address: a family shares one.
+      if (s.doodle && !s.settings.locked) { s.settings.locked = true; s.settings.autoLock = false; broadcast(s, { t: 'lk', locked: true }, { players: false }); }
+      return true;
+    }
     // Doodle Hoot Live: the host wipes the drawing on every screen
     case 'clear': return !!s.doodle && (s.phase === 'playing' || s.phase === 'paused') && DG.hostClear(s, io);
     case 'end': endSession(s.id, 'ended'); return true;
@@ -1497,10 +1504,26 @@ export function tick() {
       }
     }
     if (s.tug && (s.phase === 'playing' || s.phase === 'paused')) TG.tick(s, io);
-    if (s.doodle && (s.phase === 'playing' || s.phase === 'paused')) DG.tick(s, io);
+    if (s.doodle && (s.phase === 'playing' || s.phase === 'paused')) { DG.tick(s, io); watchDoodle(s); }
     if (s.scoresDirty && tickNo % 20 === 0) leaderboard(s);
     if (s.dpDirty && tickNo % 10 === 0 && dashes(s).some(d => d.tier === 'full')) { s.dpDirty = false; toDash(s, D.dpMsg(s)); }
   }
+}
+/**
+ * Doodle Hoot Live: drawings go out only while a grown-up has the host's page (the projector, which shows every drawing
+ * live) open. A dashboard alone doesn't show the drawing, so it doesn't count. With no host page for unwatchedMs the
+ * game pauses itself (strokes and guesses stop); it goes on by itself when the page is back, unless the host paused it.
+ */
+function watchDoodle(s) {
+  const t = now();
+  if (s.host.conn) {
+    s.ddAway = 0;
+    if (s.ddAutoPaused && s.phase === 'paused') { s.ddAutoPaused = false; doAction(s, 'resume'); }
+    return;
+  }
+  if (s.phase !== 'playing') { if (s.phase !== 'paused') s.ddAutoPaused = false; return; }
+  if (!s.ddAway) s.ddAway = t;
+  if (t - s.ddAway >= hooks.unwatchedMs && !s.doodle.done) { s.ddAutoPaused = doAction(s, 'pause') === true || s.phase === 'paused'; }
 }
 /** The top ten to the hosts; players get the top ten, the top five or nothing (the host's leaderboard setting) and
  *  their own rank (none when the leaderboard is off). Then the team scores. score = score + bonus. */

@@ -10,7 +10,8 @@ import * as DD from '../../server/live/doodle.js';
 import { profanityMatch, cleanText, personalInfo } from '../../server/services/textfilter.js';
 
 const { DoodleCore: C, DoodleWords: D } = doodle();
-const LANGS = DD.LANGS;
+// (every language in the list is checked, ja and zh-Hant too, though those two aren't offered yet: DD.LANGS)
+const LANGS = ['en-GB', ...D.langs];
 /** The letters each language may use (Latin with that language's accents, Cyrillic, Arabic, Hebrew, kana, Han). */
 const SCRIPT = {
   en: /^[a-z ]+$/, 'en-GB': /^[a-z ]+$/, es: /^[a-záéíóúüñ ]+$/, fr: /^[a-zàâæçéèêëîïôœùûüÿ ]+$/, de: /^[a-zäöüß ]+$/, it: /^[a-zàèéìíòóù ]+$/,
@@ -85,11 +86,15 @@ test('Pip\'s doodles: valid strokes on the board, each for a word in the list, e
 
 test('the starter id and the landing samples', () => {
   assert.deepEqual(DD.parseId('doodle:fr:2:3:100'), { lang: 'fr', lvl: 2, rounds: 3, secs: 100 });
-  assert.deepEqual(DD.parseId('doodle:zh-Hant:1:1:60'), { lang: 'zh-Hant', lvl: 1, rounds: 1, secs: 60 });
+  // Japanese and Traditional Chinese words wait for a native speaker's review: not offered, and those pages play in English
+  assert.ok(!DD.LANGS.includes('ja') && !DD.LANGS.includes('zh-Hant'));
+  assert.equal(DD.parseId('doodle:zh-Hant:1:1:60'), null); assert.equal(DD.langFor('ja'), 'en');
+  const game = fs.readFileSync(GAME_FILE, 'utf8');
+  assert.equal(game.match(/var WORD_LANGS = (\[[^\]]*\])/)[1], JSON.stringify(DD.LANGS).replace(/"/g, "'").replace(/,/g, ', '), 'the game offers the same word languages');
   for (const bad of ['doodle:xx:1:2:80', 'doodle:en:4:2:80', 'doodle:en:1:4:80', 'doodle:en:1:2:90', 'doodle:en:1:2', 'tug:3:90', '', null]) assert.equal(DD.parseId(bad), null, String(bad));
   assert.equal(DD.makeId({ lang: 'he', lvl: 3, rounds: 1, secs: 60 }), 'doodle:he:3:1:60');
   assert.equal(DD.makeId({ lang: 'klingon', lvl: 9, rounds: 0, secs: 5 }), 'doodle:en:1:2:80');
   assert.equal(DD.makeId(), DD.DEFAULT_ID);
-  for (const l of LANGS) for (const v of DD.LEVELS) assert.equal(DD.samples(l, v).length, 3);
+  for (const l of DD.LANGS) for (const v of DD.LEVELS) assert.equal(DD.samples(l, v).length, 3);
   assert.equal(DD.langFor('pt'), 'pt'); assert.equal(DD.langFor('xx'), 'en');
 });
