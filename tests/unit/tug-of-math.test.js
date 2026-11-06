@@ -168,7 +168,7 @@ test('the game\'s words: every key in all 13 languages, the same placeholders, a
 test('the scan passes, the kit is pinned, and the json describes the game in every language', () => {
   const r = scanVersion(html);
   assert.equal(r.status, 'pass', JSON.stringify(r).slice(0, 400));
-  assert.match(html, /<script src="\/vendor\/oomba-kit\/1\.1\.3\/oomba-kit\.js" integrity="sha384-[^"]+" crossorigin="anonymous"><\/script>/);
+  assert.match(html, /<script src="\/vendor\/oomba-kit\/1\.1\.4\/oomba-kit\.js" integrity="sha384-[^"]+" crossorigin="anonymous"><\/script>/);
   assert.ok(!/BRB\.poll|fetch\(|<input/.test(html), 'no poll, no network, no typing boxes (live frames are read-only)');
   const j = JSON.parse(fs.readFileSync('seed-games/tug-of-math.json', 'utf8'));
   assert.equal(j.slug, 'tug-of-math'); assert.equal(j.category, 'learning'); assert.equal(j.featured, true); assert.equal(j.age_rating, 'everyone');
