@@ -14,18 +14,18 @@
    "alt": "The chain letter, binned: the debrief names the forwarder, who wants you to share the trick with everyone.",
    "view": [
     0.0,
-    38.1,
-    59.2,
-    61.9
+    11.4,
+    99.7,
+    88.6
    ],
    "focus": [
     {
      "cue": "Every trick has a motive behind it",
      "box": [
       3.4,
-      79.3,
-      54.8,
-      9.2
+      79.1,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -38,9 +38,9 @@
    "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
    "view": [
     0.0,
-    35.4,
-    59.2,
-    61.9
+    11.4,
+    99.7,
+    88.6
    ],
    "focus": [
     {
@@ -48,7 +48,7 @@
      "box": [
       51.0,
       43.7,
-      7.2,
+      21.8,
       7.1
      ]
     },
@@ -57,7 +57,7 @@
      "box": [
       3.4,
       84.1,
-      54.8,
+      93.3,
       5.0
      ]
     }
@@ -71,9 +71,9 @@
    "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction.",
    "view": [
     0.0,
-    35.8,
-    59.2,
-    61.9
+    11.4,
+    99.7,
+    88.6
    ],
    "focus": [
     {
@@ -81,7 +81,7 @@
      "box": [
       3.8,
       45.1,
-      54.4,
+      91.4,
       14.2
      ]
     },
@@ -89,9 +89,9 @@
      "cue": "The giggler wants a big reaction",
      "box": [
       3.4,
-      84.3,
-      54.8,
-      4.2
+      84.1,
+      93.3,
+      5.0
      ]
     }
    ]
@@ -110,10 +110,10 @@
    "img": "csq/trick-inbox/mix-1b-mx-6-all",
    "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
    "view": [
-    10.0,
-    21.6,
-    60.4,
-    63.2
+    0.0,
+    19.6,
+    75.6,
+    67.2
    ],
    "focus": [
     {
@@ -121,7 +121,7 @@
      "box": [
       11.5,
       56.4,
-      57.9,
+      61.1,
       7.1
      ]
     },
@@ -144,9 +144,9 @@
    "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
    "view": [
     0.0,
-    28.4,
-    60.4,
-    63.2
+    25.1,
+    78.5,
+    69.8
    ],
    "focus": [
     {
@@ -163,7 +163,7 @@
      "box": [
       42.2,
       56.4,
-      17.2,
+      33.3,
       7.1
      ]
     }
@@ -202,18 +202,18 @@
    "alt": "The visitor prize, binned: you did not enter anything, so you cannot have won. The prize-faker sent it.",
    "view": [
     0.0,
-    38.1,
-    59.2,
-    61.9
+    11.4,
+    99.7,
+    88.6
    ],
    "focus": [
     {
      "cue": "Play Magpie Mix: name the motive behind each",
      "box": [
       3.4,
-      79.3,
-      54.8,
-      9.2
+      79.1,
+      93.3,
+      10.0
      ]
     }
    ]

@@ -18,19 +18,19 @@
    "img": "csq/escape-the-post-office/note-2",
    "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
    "view": [
-    24.8,
-    38.0,
-    50.4,
-    37.0
+    0.0,
+    2.5,
+    100.0,
+    90.2
    ],
    "focus": [
     {
      "cue": "A sealed note keeps its words secret",
      "box": [
-      45.2,
-      45.5,
-      9.5,
-      9.5
+      1.5,
+      36.9,
+      97.0,
+      21.5
      ]
     }
    ]
@@ -43,9 +43,9 @@
    "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
    "view": [
     0.0,
-    34.9,
-    50.4,
-    56.0
+    9.8,
+    100.0,
+    90.2
    ],
    "focus": [
     {
@@ -53,7 +53,7 @@
      "box": [
       1.5,
       36.9,
-      47.9,
+      97.0,
       52.0
      ]
     }

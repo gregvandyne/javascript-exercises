@@ -25,9 +25,9 @@
    "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
    "view": [
     0.0,
-    38.1,
-    59.2,
-    61.9
+    40.5,
+    66.9,
+    59.5
    ],
    "focus": [
     {
@@ -35,7 +35,7 @@
      "box": [
       38.5,
       60.3,
-      19.7,
+      25.4,
       8.9
      ]
     },
@@ -44,7 +44,7 @@
      "box": [
       38.5,
       69.2,
-      19.7,
+      25.4,
       13.3
      ]
     },
@@ -135,9 +135,9 @@
    "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
    "view": [
     0.0,
-    36.8,
-    60.4,
-    63.2
+    20.0,
+    90.0,
+    80.0
    ],
    "focus": [
     {
@@ -145,7 +145,7 @@
      "box": [
       3.8,
       61.8,
-      55.6,
+      83.2,
       7.1
      ]
     },
@@ -192,10 +192,10 @@
    "img": "csq/escape-the-post-office/pim-2-pick",
    "alt": "The real Pim is picked at Pro: the office stamp, the worn left-edge footprint, help asked in the open.",
    "view": [
-    8.2,
-    32.9,
-    59.2,
-    67.1
+    0.0,
+    26.9,
+    68.9,
+    73.1
    ],
    "focus": [
     {

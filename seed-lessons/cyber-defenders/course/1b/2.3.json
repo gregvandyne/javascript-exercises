@@ -202,19 +202,19 @@
    "img": "csq/escape-the-post-office/note-1b-open",
    "alt": "Lock 2 turned to shift 3: the Magpie's note RSHQ now reads OPEN, and the lock is ready to open.",
    "view": [
-    24.8,
-    38.0,
-    50.4,
-    46.0
+    0.0,
+    36.0,
+    82.0,
+    58.6
    ],
    "focus": [
     {
      "cue": "Play Sealed Note: turn until the note reads",
      "box": [
-      41.4,
-      45.5,
-      13.8,
-      31.8
+      19.4,
+      68.6,
+      61.2,
+      10.7
      ]
     }
    ]

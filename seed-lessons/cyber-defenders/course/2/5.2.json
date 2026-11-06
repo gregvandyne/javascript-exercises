@@ -14,9 +14,9 @@
    "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
    "view": [
     0.0,
-    28.4,
-    60.4,
-    63.2
+    15.1,
+    95.5,
+    84.9
    ],
    "focus": [
     {
@@ -33,7 +33,7 @@
      "box": [
       51.8,
       56.4,
-      7.6,
+      40.7,
       7.1
      ]
     }
@@ -46,18 +46,18 @@
    "img": "csq/trick-inbox/pressure-2-pr-4-all",
    "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
    "view": [
-    25.6,
-    28.4,
-    60.4,
-    63.2
+    0.0,
+    21.1,
+    87.5,
+    77.8
    ],
    "focus": [
     {
      "cue": "A group falls out over a dare",
      "box": [
-      26.6,
+      3.8,
       56.4,
-      32.6,
+      55.4,
       7.1
      ]
     },
@@ -80,9 +80,9 @@
    "alt": "The mean message, reported: do not join in, never pass it on, and a kind word to Pip helps more than any reply.",
    "view": [
     0.0,
-    38.1,
-    59.2,
-    61.9
+    11.4,
+    99.7,
+    88.6
    ],
    "focus": [
     {
@@ -90,7 +90,7 @@
      "box": [
       3.4,
       67.7,
-      54.8,
+      93.3,
       14.9
      ]
     }
@@ -110,11 +110,11 @@
    ],
    "focus": [
     {
-     "cue": "Stop, then save it: keep the evidence",
+     "cue": "Save it: keep the evidence",
      "box": [
-      2.6,
+      27.5,
       56.0,
-      52.3,
+      27.4,
       5.8
      ]
     },
@@ -149,9 +149,9 @@
    "alt": "Three drill moves in order: stop and disconnect, save the evidence, tell a trusted adult, fast.",
    "view": [
     0.0,
-    35.5,
-    59.2,
-    61.9
+    22.6,
+    87.1,
+    77.4
    ],
    "focus": [
     {
@@ -159,7 +159,7 @@
      "box": [
       2.6,
       63.1,
-      55.6,
+      81.5,
       6.7
      ]
     }
@@ -198,18 +198,18 @@
    "alt": "A stranger's game chat, shown to Pim: someone who asks for secrets from adults and wants to meet is the biggest red flag.",
    "view": [
     0.0,
-    38.1,
-    59.2,
-    61.9
+    9.8,
+    100.0,
+    90.2
    ],
    "focus": [
     {
      "cue": "Play Chat Careful: know your reporting route",
      "box": [
-      3.4,
-      66.8,
-      54.8,
-      28.6
+      1.5,
+      64.0,
+      97.0,
+      34.3
      ]
     }
    ]

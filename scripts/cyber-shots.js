@@ -92,6 +92,24 @@ function collectRects() {
     sizes.set(px, (sizes.get(px) || 0) + s.length);
   }
   if (sizes.size) out['~bodyFont'] = [...sizes].sort((p, q) => q[1] - p[1])[0][0];
+  // Every visible word (and emoji or icon glyph run), as [x, y, w, h] in % of the frame: the course engine's
+  // zoom-to-cue (public/js/course-zoom.js) moves a zoom's edges into the gaps between words, so it never cuts one.
+  const words = [];
+  const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let t = tw.nextNode(); t; t = tw.nextNode()) {
+    const el = t.parentElement, s = t.textContent;
+    if (!s.trim() || !el || el.closest('[hidden]')) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+    for (const m of s.matchAll(/\S+/g)) {
+      const rg = document.createRange(); rg.setStart(t, m.index); rg.setEnd(t, m.index + m[0].length);
+      for (const q of rg.getClientRects()) {
+        if (q.width < 1 || q.height < 4 || q.right <= 0 || q.bottom <= 0 || q.left >= W || q.top >= H) continue;
+        words.push([r1(Math.max(0, q.left) / W * 100), r1(Math.max(0, q.top) / H * 100), r1((Math.min(W, q.right) - Math.max(0, q.left)) / W * 100), r1((Math.min(H, q.bottom) - Math.max(0, q.top)) / H * 100)]);
+      }
+    }
+  }
+  out['~words'] = words;
   return out;
 }
 
@@ -190,7 +208,7 @@ async function runGame(browser, slug, list) {
         const st = T.state(); return { levelId: st.levelId, chapter: st.chapter, screen: st.screen };
       }, s);
       await wait(400);
-      if (s.compact) { const r = await f.evaluate(collectRects); RECTS[`csq/${slug}/${s.state}`] = r; }
+      { const r = await f.evaluate(collectRects); RECTS[`csq/${slug}/${s.state}`] = r; }   // every shot: its text lines (zoom-to-cue)
       const file = path.join(outDir, `${s.state}.png`);
       await frameEl.screenshot({ path: file });
       let extra = '';
