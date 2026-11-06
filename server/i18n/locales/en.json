@@ -4916,7 +4916,9 @@
       "wyr": "Would You Rather? (Live)",
       "wyrText": "The class votes on fun dilemmas and sees how it splits, and how everyone on Oomba chose. No right answers, no points: just talking.",
       "atlas": "Atlas Quest (Live)",
-      "atlasText": "Everyone taps the country on their own world map: find it, its flag, its capital or what it is famous for. Close guesses still score a little."
+      "atlasText": "Everyone taps the country on their own world map: find it, its flag, its capital or what it is famous for. Close guesses still score a little.",
+      "tug": "Tug of Math (Live)",
+      "tugText": "The class splits into two teams. Everyone answers math questions for their grade on their own keypad, and every right answer pulls the rope."
     },
     "starter": {
       "title": {
@@ -5165,6 +5167,7 @@
         "cat": "The category in question {n} is not allowed."
       },
       "noMissed": "Everyone got every question right, so there is nothing to play again.",
+      "tugTeams": "Tug of Math needs two teams, and teams are switched off on this site.",
       "teamsOff": "This game had no teams.",
       "againGone": "The players have left. Start a new game instead.",
       "homeworkOff": "Homework from question sets is switched off.",
@@ -5343,6 +5346,7 @@
       "howJoin": "Your teacher shows a code on the board. Type it here to join.",
       "teacherHost": "Teacher? Host it live for your class",
       "solo": "Practice solo",
+      "play": "Play vs the computer or 2 players",
       "joinGo": "Join"
     },
     "check": {
@@ -5694,6 +5698,18 @@
       "secsN": "{n} seconds",
       "hint": "After each vote the class sees its split: a good moment to ask a few children why they chose it."
     },
+    "tugUi": {
+      "legend": "Tug of Math (Live)",
+      "grade": "Grade",
+      "gradeN": "Grade {n}",
+      "like": "Questions like:",
+      "len": "How long",
+      "secsN": "{n} seconds",
+      "toLine": "To the line (3 minutes at most)",
+      "of": "of",
+      "hint": "Players are split into two even teams for you. Each player gets their own questions, so nobody can copy, and a smaller team pulls just as hard.",
+      "teamsAuto": "Two teams, made for you: Blue Whales and Red Foxes. You can balance, shuffle or move players."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (Live)",
       "region": "Where in the world",
@@ -5818,6 +5834,10 @@
       "wyr": {
         "h": "Would You Rather? (Live)",
         "p": "The class votes on fun dilemmas and sees how it splits, and how everyone on Oomba chose. No right answers and no points: a ready-made conversation starter."
+      },
+      "tug": {
+        "h": "Tug of Math (Live)",
+        "p": "Two teams pull a rope with right answers. Pick a grade from 1 to 8; every player answers their own questions on a keypad, and uneven teams pull fairly."
       },
       "atlas": {
         "h": "Atlas Quest (Live)",

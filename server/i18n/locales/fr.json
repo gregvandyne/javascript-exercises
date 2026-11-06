@@ -4607,7 +4607,9 @@
       "wyr": "Tu préfères ? (En direct)",
       "wyrText": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse, pas de points : on discute.",
       "atlas": "Atlas Quest (En direct)",
-      "atlasText": "Chacun touche le pays sur sa propre carte du monde : trouve-le, son drapeau, sa capitale ou ce qui le rend célèbre. Viser juste à côté rapporte un peu aussi."
+      "atlasText": "Chacun touche le pays sur sa propre carte du monde : trouve-le, son drapeau, sa capitale ou ce qui le rend célèbre. Viser juste à côté rapporte un peu aussi.",
+      "tug": "Tug of Math (En direct)",
+      "tugText": "La classe se partage en deux équipes. Chacun répond à des questions de maths de son niveau sur son propre pavé, et chaque bonne réponse tire la corde."
     },
     "starter": {
       "title": {
@@ -4856,6 +4858,7 @@
         "cat": "La catégorie de la question {n} n’est pas autorisée."
       },
       "noMissed": "Tout le monde a tout juste : il n'y a rien à rejouer.",
+      "tugTeams": "Tug of Math a besoin de deux équipes, et les équipes sont désactivées sur ce site.",
       "teamsOff": "Ce jeu n'avait pas d'équipes.",
       "againGone": "Les joueurs sont partis. Lancez plutôt un nouveau jeu.",
       "homeworkOff": "Les devoirs à partir de séries de questions sont désactivés.",
@@ -5034,6 +5037,7 @@
       "howJoin": "Ton enseignant affiche un code au tableau. Tape-le ici pour rejoindre.",
       "teacherHost": "Enseignant ? Lancez-le en direct avec votre classe",
       "solo": "S’entraîner seul",
+      "play": "Jouer contre l’ordi ou à 2",
       "joinGo": "Rejoindre"
     },
     "check": {
@@ -5385,6 +5389,18 @@
       "secsN": "{n} secondes",
       "hint": "Après chaque vote, la classe voit le partage : un bon moment pour demander à quelques enfants pourquoi ils ont choisi."
     },
+    "tugUi": {
+      "legend": "Tug of Math (En direct)",
+      "grade": "Niveau",
+      "gradeN": "Niveau {n}",
+      "like": "Des questions comme :",
+      "len": "Durée",
+      "secsN": "{n} secondes",
+      "toLine": "Jusqu’à la ligne (3 minutes au plus)",
+      "of": "de",
+      "hint": "Les joueurs sont répartis pour toi en deux équipes égales. Chacun a ses propres questions, donc personne ne copie, et une équipe plus petite tire aussi fort.",
+      "teamsAuto": "Deux équipes faites pour toi : les Baleines Bleues et les Renards Rouges. Tu peux équilibrer, mélanger ou déplacer des joueurs."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (En direct)",
       "region": "Où dans le monde",
@@ -5509,6 +5525,10 @@
       "wyr": {
         "h": "Tu préfères ? (En direct)",
         "p": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse ni de points : une discussion toute prête."
+      },
+      "tug": {
+        "h": "Tug of Math (En direct)",
+        "p": "Deux équipes tirent une corde avec de bonnes réponses. Choisis un niveau de 1 à 8 ; chaque joueur répond à ses propres questions sur un pavé, et des équipes inégales tirent à armes égales."
       },
       "atlas": {
         "h": "Atlas Quest (En direct)",

@@ -4,7 +4,7 @@
 // looks for text or controls off the screen, text cut off, things on top of each other and squashed buttons
 // (tests/e2e/frame-fit.js), and on the page for sideways scrolling. Saves a screenshot of every check.
 //
-//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... OUT=/tmp/live-layout [MODES=board,battle,quest-race,wyr,atlas] [PLAYERS=3] \
+//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... OUT=/tmp/live-layout [MODES=board,battle,quest-race,wyr,atlas,tug] [PLAYERS=3] \
 //   node scripts/live-layout-audit.js        exit code 1 when anything is wrong (tests/e2e/live-layout.spec.js runs it too)
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
@@ -12,9 +12,10 @@ import { frameProblems, pageScrollsSideways } from '../tests/e2e/frame-fit.js';
 const B = (process.env.BASE || 'http://localhost:3000').replace(/\/$/, ''), OUT = process.env.OUT || '/tmp/live-layout';
 fs.mkdirSync(OUT, { recursive: true });
 const SIZES = { phone: [390, 844], 'small-phone': [360, 640], 'tablet-portrait': [820, 1180], 'tablet-landscape': [1180, 820], desktop: [1280, 800], projector: [1920, 1080] };
-const MODES = (process.env.MODES || 'board,battle,quest-race,wyr,atlas').split(',');
-// Would You Rather Live and Atlas Quest Live make their own questions (the longest time each allows).
-const OWN = { wyr: 'wyr:mix:5:30', atlas: 'atlas:world:easy:find+flag:5:30' };
+const MODES = (process.env.MODES || 'board,battle,quest-race,wyr,atlas,tug').split(',');
+// Would You Rather Live, Atlas Quest Live and Tug of Math Live make their own questions (the longest time each allows;
+// Tug of Math at grade 6, whose questions are the longest).
+const OWN = { wyr: 'wyr:mix:5:30', atlas: 'atlas:world:easy:find+flag:5:30', tug: 'tug:6:120' };
 const PLAYERS = Math.max(1, Math.min(40, +process.env.PLAYERS || 3));
 // Our own questions with 2 minutes each, so a question stays open while every size is checked. Long ones too, and
 // categories for the board.
@@ -32,7 +33,7 @@ const st = async p => { try { return await frameOf(p).evaluate(() => window.__br
 async function until(fn, ms = 40000) { const t0 = Date.now(); for (;;) { const v = await fn(); if (v) return v; if (Date.now() - t0 > ms) throw new Error('timeout'); await sleep(250); } }
 const report = [];
 (async () => {
-  const br = await chromium.launch();
+  const br = await chromium.launch(process.env.BRB_CHROMIUM ? { executablePath: process.env.BRB_CHROMIUM } : {});   // BRB_CHROMIUM: a Chromium of its own
   for (const mode of MODES) {
     const hc = await br.newContext({ viewport: { width: 1280, height: 800 } }); const host = await hc.newPage();
     await host.request.post(B + '/api/auth/login', { data: { username: process.env.ADMIN_USER || 'admin', password: process.env.ADMIN_PASS || '' }, headers: { 'sec-fetch-site': 'same-origin' } });

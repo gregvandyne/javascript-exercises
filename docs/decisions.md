@@ -2461,3 +2461,38 @@ split into two teams, each player on their own device) and builds on the same qu
   on the number pad). Each team has a colour, a shape and a name.
 - **Scores.** vs Computer reports `BRB.gameOver({won, score: right answers})`; a two-player match on one screen submits
   nothing. AI voices: registered like every official game; no question is read aloud (they are numbers).
+
+## Tug of Math goes live (6 Nov 2026)
+
+Part B of Tug of Math: **Tug of Math (Live)**, the built-in Oomba Live mode `tug` (`MODES.tug = 'tug-of-math'`). The
+same game file draws the live view when `Oomba.live.active` (its kit `live` pack is loaded; the solo game is unchanged).
+
+- **The teacher picks the grade and the length** when opening the room on `/live` (grade 1-8, shown with three sample
+  questions; 60 s, 90 s, 2 min or "to the line", capped at 3 min). The browser remembers the last pick (a per-viewer
+  convenience); a lesson can preselect it with `?starter=tug:<grade>:<len>`. Play again keeps them (in memory, and in
+  the saved run's settings as `tug`).
+- **Two teams, made by the platform.** Teams are always on, Blue Whales (preset 0, a circle) against Red Foxes (preset 6,
+  a diamond), ranked by the average per player; players are split evenly as they join and late joiners go to the
+  smaller team. The host may balance, shuffle, move a player and lock teams; never change the count, presets, scoring or
+  let players choose (refused on the server). The class's saved teams are never overwritten by this game's two. With
+  `LIVE_TEAMS=0` the mode is not offered and a room is refused (`tugTeams`).
+- **The server decides everything.** Each player gets their own questions from the game's own generator
+  (`server/live/tug-gen.js`): the n-th question of every player is the same kind (one seed for the room), with that
+  player's own numbers, so the teams are equally challenged and nobody can copy a neighbour. A question goes to its
+  player only, as number and word tokens (never text); the answer is a number (`ans { i, v }`), checked on the server
+  and answered to that player only, then the next question. A device's score or item reports are ignored in this mode.
+  At most one answer every 300 ms after a right one and 1 s after a wrong one (the game shows the right answer for a
+  moment), so a held key or a script gains nothing.
+- **Fair for uneven teams.** A right answer pulls the rope `1 / (players on the team now)` toward that team: the rope
+  is the difference of the two teams' average right answers. A lead of 5 (per player) wins at once; otherwise the team
+  ahead when time is up wins, or it is a draw. The winner shows on every screen for 3 s, then the usual podium and
+  results (team podium by average; each player's right answers in "Student details"; no question review or "play the
+  missed ones", since every player had their own questions).
+- **No free text, no chat.** Players only tap digits (or type them on a keyboard); nothing a player sends reaches any
+  other player. Names follow the room's rules (generated nicknames, or the class roster; hidden on the projector when
+  the teacher hides them).
+- **Screens.** The projector: both team panels (pulls per player, right answers, players), the clock and the big tug
+  with up to two of each team's own characters; in the lobby, both teams with everyone's character. A phone: its team,
+  a small rope, its own question, the keypad (a 6 × 2 keypad on short screens; side by side on a phone or tablet held
+  sideways). Pause, eyes up, Next and Skip: pause and eyes up stop the clock; Next and Skip are not shown (the match runs
+  on its clock). Capacity 60 (`CAPACITY.tug`, docs/live-capacity.md).

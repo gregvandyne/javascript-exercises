@@ -4609,7 +4609,9 @@
       "wyr": "O que você prefere? (Ao vivo)",
       "wyrText": "A turma vota em dilemas divertidos e vê como se divide, e o que todo mundo no Oomba escolheu. Sem respostas certas, sem pontos: só para conversar.",
       "atlas": "Atlas Quest (Ao vivo)",
-      "atlasText": "Todos tocam o país no seu próprio mapa-múndi: encontre o país, a bandeira, a capital ou aquilo pelo que é famoso. Chegar perto também vale um pouco."
+      "atlasText": "Todos tocam o país no seu próprio mapa-múndi: encontre o país, a bandeira, a capital ou aquilo pelo que é famoso. Chegar perto também vale um pouco.",
+      "tug": "Tug of Math (Ao vivo)",
+      "tugText": "A turma se divide em dois times. Cada um responde perguntas de matemática do seu ano no próprio teclado, e cada resposta certa puxa a corda."
     },
     "starter": {
       "title": {
@@ -4858,6 +4860,7 @@
         "cat": "A categoria da pergunta {n} não é permitida."
       },
       "noMissed": "Todo mundo acertou todas, então não há nada para jogar de novo.",
+      "tugTeams": "Tug of Math precisa de dois times, e os times estão desligados neste site.",
       "teamsOff": "Este jogo não tinha times.",
       "againGone": "Os jogadores já saíram. Comece um novo jogo.",
       "homeworkOff": "A lição de casa com conjuntos de perguntas está desligada.",
@@ -5036,6 +5039,7 @@
       "howJoin": "Seu professor mostra um código na tela. Digite aqui para entrar.",
       "teacherHost": "É professor? Comece ao vivo com sua turma",
       "solo": "Praticar sozinho",
+      "play": "Jogar contra o computador ou em 2",
       "joinGo": "Entrar"
     },
     "check": {
@@ -5387,6 +5391,18 @@
       "secsN": "{n} segundos",
       "hint": "Depois de cada votação a turma vê como se dividiu: um bom momento para perguntar a algumas crianças por que escolheram."
     },
+    "tugUi": {
+      "legend": "Tug of Math (Ao vivo)",
+      "grade": "Ano",
+      "gradeN": "{n}º ano",
+      "like": "Perguntas como:",
+      "len": "Duração",
+      "secsN": "{n} segundos",
+      "toLine": "Até a linha (no máximo 3 minutos)",
+      "of": "de",
+      "hint": "Os jogadores são divididos para você em dois times iguais. Cada um recebe suas próprias perguntas, então ninguém cola, e um time menor puxa com a mesma força.",
+      "teamsAuto": "Dois times feitos para você: Baleias Azuis e Raposas Vermelhas. Você pode equilibrar, embaralhar ou mudar jogadores."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (Ao vivo)",
       "region": "Onde no mundo",
@@ -5511,6 +5527,10 @@
       "wyr": {
         "h": "O que você prefere? (Ao vivo)",
         "p": "A turma vota em dilemas divertidos e vê como se divide, e o que todo mundo no Oomba escolheu. Sem respostas certas nem pontos: uma conversa pronta para começar."
+      },
+      "tug": {
+        "h": "Tug of Math (Ao vivo)",
+        "p": "Dois times puxam uma corda com respostas certas. Escolha um ano de 1 a 8; cada jogador responde às próprias perguntas num teclado, e times desiguais puxam de forma justa."
       },
       "atlas": {
         "h": "Atlas Quest (Ao vivo)",

@@ -4608,7 +4608,9 @@
       "wyr": "Was wäre dir lieber? (Live)",
       "wyrText": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: einfach darüber reden.",
       "atlas": "Atlas Quest (Live)",
-      "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte."
+      "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte.",
+      "tug": "Tug of Math (Live)",
+      "tugText": "Die Klasse teilt sich in zwei Teams. Alle lösen Matheaufgaben für ihre Klasse auf ihrem eigenen Ziffernblock, und jede richtige Antwort zieht am Seil."
     },
     "starter": {
       "title": {
@@ -4857,6 +4859,7 @@
         "cat": "Die Kategorie in Frage {n} ist nicht erlaubt."
       },
       "noMissed": "Alle haben alles richtig, es gibt nichts zu wiederholen.",
+      "tugTeams": "Tug of Math braucht zwei Teams, und Teams sind auf dieser Seite ausgeschaltet.",
       "teamsOff": "Dieses Spiel hatte keine Teams.",
       "againGone": "Die Spieler sind gegangen. Starten Sie lieber ein neues Spiel.",
       "homeworkOff": "Hausaufgaben aus Fragensets sind ausgeschaltet.",
@@ -5035,6 +5038,7 @@
       "howJoin": "Deine Lehrkraft zeigt einen Code an der Tafel. Tippe ihn hier ein, um mitzuspielen.",
       "teacherHost": "Lehrkraft? Starte es live mit deiner Klasse",
       "solo": "Allein üben",
+      "play": "Gegen den Computer oder zu zweit spielen",
       "joinGo": "Beitreten"
     },
     "check": {
@@ -5386,6 +5390,18 @@
       "secsN": "{n} Sekunden",
       "hint": "Nach jeder Abstimmung sieht die Klasse die Aufteilung: ein guter Moment, ein paar Kinder zu fragen, warum sie so gewählt haben."
     },
+    "tugUi": {
+      "legend": "Tug of Math (Live)",
+      "grade": "Klasse",
+      "gradeN": "Klasse {n}",
+      "like": "Aufgaben wie:",
+      "len": "Wie lange",
+      "secsN": "{n} Sekunden",
+      "toLine": "Bis zur Linie (höchstens 3 Minuten)",
+      "of": "von",
+      "hint": "Die Spieler werden für dich auf zwei gleich große Teams verteilt. Alle bekommen eigene Aufgaben, also kann niemand abschreiben, und ein kleineres Team zieht genauso stark.",
+      "teamsAuto": "Zwei Teams, für dich gebildet: Blaue Wale und Rote Füchse. Du kannst ausgleichen, mischen oder Spieler verschieben."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (Live)",
       "region": "Wo auf der Welt",
@@ -5510,6 +5526,10 @@
       "wyr": {
         "h": "Was wäre dir lieber? (Live)",
         "p": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: ein fertiger Gesprächsanlass."
+      },
+      "tug": {
+        "h": "Tug of Math (Live)",
+        "p": "Zwei Teams ziehen mit richtigen Antworten an einem Seil. Wähle eine Klasse von 1 bis 8; alle lösen eigene Aufgaben auf einem Ziffernblock, und ungleiche Teams ziehen fair."
       },
       "atlas": {
         "h": "Atlas Quest (Live)",

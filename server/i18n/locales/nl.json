@@ -4608,7 +4608,9 @@
       "wyr": "Wat heb je liever? (Live)",
       "wyrText": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden, geen punten: gewoon praten.",
       "atlas": "Atlas Quest (Live)",
-      "atlasText": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land zelf, de vlag, de hoofdstad of waar het beroemd om is. Er net naast levert ook een beetje op."
+      "atlasText": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land zelf, de vlag, de hoofdstad of waar het beroemd om is. Er net naast levert ook een beetje op.",
+      "tug": "Tug of Math (Live)",
+      "tugText": "De klas wordt verdeeld in twee teams. Iedereen beantwoordt rekenvragen voor zijn groep op een eigen toetsenblok, en elk goed antwoord trekt aan het touw."
     },
     "starter": {
       "title": {
@@ -4857,6 +4859,7 @@
         "cat": "De categorie bij vraag {n} is niet toegestaan."
       },
       "noMissed": "Iedereen had alles goed, dus er is niets om nog eens te spelen.",
+      "tugTeams": "Tug of Math heeft twee teams nodig, en teams staan uit op deze site.",
       "teamsOff": "Dit spel had geen teams.",
       "againGone": "De spelers zijn weg. Start liever een nieuw spel.",
       "homeworkOff": "Huiswerk uit vragensets staat uit.",
@@ -5035,6 +5038,7 @@
       "howJoin": "Je leraar laat een code op het bord zien. Typ hem hier om mee te doen.",
       "teacherHost": "Leraar? Start het live met je klas",
       "solo": "Alleen oefenen",
+      "play": "Tegen de computer of met z’n tweeën",
       "joinGo": "Meedoen"
     },
     "check": {
@@ -5386,6 +5390,18 @@
       "secsN": "{n} seconden",
       "hint": "Na elke stemming ziet de klas de verdeling: een goed moment om een paar kinderen te vragen waarom ze dat kozen."
     },
+    "tugUi": {
+      "legend": "Tug of Math (Live)",
+      "grade": "Groep",
+      "gradeN": "Groep {n}",
+      "like": "Vragen zoals:",
+      "len": "Hoe lang",
+      "secsN": "{n} seconden",
+      "toLine": "Tot de lijn (hooguit 3 minuten)",
+      "of": "van",
+      "hint": "De spelers worden voor je verdeeld in twee gelijke teams. Iedereen krijgt eigen vragen, dus niemand kan spieken, en een kleiner team trekt net zo hard.",
+      "teamsAuto": "Twee teams, voor je gemaakt: Blauwe Walvissen en Rode Vossen. Je kunt teams gelijk maken, husselen of spelers verplaatsen."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (Live)",
       "region": "Waar op de wereld",
@@ -5510,6 +5526,10 @@
       "wyr": {
         "h": "Wat heb je liever? (Live)",
         "p": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden en geen punten: een kant-en-klaar gespreksonderwerp."
+      },
+      "tug": {
+        "h": "Tug of Math (Live)",
+        "p": "Twee teams trekken met goede antwoorden aan een touw. Kies een groep van 1 tot 8; iedereen beantwoordt eigen vragen op een toetsenblok, en ongelijke teams trekken eerlijk."
       },
       "atlas": {
         "h": "Atlas Quest (Live)",

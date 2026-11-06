@@ -248,7 +248,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   </section>
   <div class="lv-stage lv-hoststage" id="lv-stage" dir="ltr"></div>
   <section class="lv-controls" id="lv-controls" aria-label="${t('live.host.controls')}">
-    ${['start', 'pause', 'resume', 'next', 'skip', 'lock', 'unlock', 'end'].map(control)}
+    ${['start', 'pause', 'resume', ...(s.tug ? [] : ['next', 'skip']), 'lock', 'unlock', 'end'].map(control)}
     <button class="btn lv-act lv-act-eyes" type="button" data-lv-act="eyes" aria-pressed="false" aria-keyshortcuts="Y">👀 ${t('live.host.eyes')}</button>
     ${s.quiz ? html`<span class="lv-time" id="lv-time" hidden>${ADD_SECS.map(x => html`<button class="btn btn-sm" type="button" data-lv-time="${x}">${t('live.time.add', { s: x })}</button>`)}</span>` : ''}
     <details class="lv-say" id="lv-say"><summary class="btn">💬 ${t('live.say.menu')}</summary><div class="lv-say-list" role="group" aria-label="${t('live.say.menu')}">${sayList(t).map((x, i) => html`<button class="btn btn-sm" type="button" data-lv-say="${i}">${x}</button>`)}</div></details>
@@ -265,7 +265,8 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   <p class="lv-toast" id="lv-bonus-toast" role="status" hidden></p>
   ${teamsOn ? html`<section class="lv-teamsbox" id="lv-teamsbox" aria-labelledby="lv-teams-h">
     <h2 class="lv-h2" id="lv-teams-h">${t('live.team.heading')}</h2>
-    ${teamsRow(t, { n: s.teams && s.teams.on ? s.teams.n : 0, name: 'lv-teams', withScoring: false })}
+    ${s.tug ? html`<p class="small muted" id="lv-teams-tug">${t('live.tugUi.teamsAuto')}</p><div hidden>${teamsRow(t, { n: 2, name: 'lv-teams', withScoring: false })}</div>`
+    : teamsRow(t, { n: s.teams && s.teams.on ? s.teams.n : 0, name: 'lv-teams', withScoring: false })}
     <ul class="lv-teams-summary" id="lv-teams-summary"></ul>
     <button class="btn btn-sm" type="button" id="lv-teams-edit" aria-haspopup="dialog" hidden>${t('live.team.edit')}</button>
     <ol class="lv-team-board" id="lv-team-board" hidden aria-label="${t('live.team.board')}"></ol>
@@ -275,13 +276,13 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     <div class="lv-sheet-tools" role="toolbar" aria-label="${t('live.team.heading')}">
       <button class="btn" type="button" data-lv-tm="balance">⚖️ ${t('live.team.balance')}</button>
       <button class="btn" type="button" data-lv-tm="shuffle">🔀 ${t('live.team.shuffle')}</button>
-      ${hasLast ? html`<button class="btn" type="button" data-lv-tm="last">${t('live.team.useLast')}</button>` : ''}
+      ${hasLast && !s.tug ? html`<button class="btn" type="button" data-lv-tm="last">${t('live.team.useLast')}</button>` : ''}
       <details class="lv-teams-more" id="lv-teams-more"><summary class="btn">${t('live.team.more')}</summary>
-        <div id="lv-teams-presets" class="lv-teams-presets"></div>
-        <fieldset class="lv-team-scoring"><legend>${t('live.team.scoring')}</legend>
+        <div id="lv-teams-presets" class="lv-teams-presets"${s.tug ? raw(' hidden') : ''}></div>
+        <fieldset class="lv-team-scoring"${s.tug ? raw(' hidden') : ''}><legend>${t('live.team.scoring')}</legend>
           <label class="lv-radio"><input type="radio" name="lv-scoring" value="avg" checked> ${t('live.team.scoringAvg')}</label> <span class="small muted">${t('live.team.scoringAvgHint')}</span>
           <label class="lv-radio"><input type="radio" name="lv-scoring" value="sum"> ${t('live.team.scoringSum')}</label></fieldset>
-        <label class="lv-check"><input type="checkbox" id="lv-teams-choose"> ${t('live.team.choose')}</label> <span class="small muted">${t('live.team.chooseHint')}</span>
+        <span${s.tug ? raw(' hidden') : ''}><label class="lv-check"><input type="checkbox" id="lv-teams-choose"> ${t('live.team.choose')}</label> <span class="small muted">${t('live.team.chooseHint')}</span></span>
         <p><button class="btn btn-sm" type="button" data-lv-tm="lock">🔒 ${t('live.team.lock')}</button> <button class="btn btn-sm" type="button" data-lv-tm="unlock" hidden>${t('live.team.unlock')}</button></p>
       </details>
     </div>
@@ -361,7 +362,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
     <span class="lv-phase" id="lv-dash-phase" role="status" aria-live="polite"></span>
     <div class="lv-dash-acts" role="toolbar" aria-label="${t('live.host.controls')}">
       ${act('start', t('live.host.start'))}${act('pause', t('live.host.pause'), ' hidden')}${act('resume', t('live.host.resume'), ' hidden')}
-      ${act('next', s.quiz ? t('live.time.revealNow') : t('live.host.next'), ' hidden')}${act('skip', t('live.host.skip'), ' hidden')}
+      ${s.tug ? '' : html`${act('next', s.quiz ? t('live.time.revealNow') : t('live.host.next'), ' hidden')}${act('skip', t('live.host.skip'), ' hidden')}`}
       ${s.quiz ? html`<button class="btn btn-sm" type="button" data-lv-time="10" hidden>${t('live.time.add', { s: 10 })}</button>` : ''}
       ${act('eyes', `👀 ${t('live.host.eyes')}`, ' aria-pressed="false"')}
       ${act('lock', t('live.host.lock'))}${act('unlock', t('live.host.unlock'), ' hidden')}
@@ -439,7 +440,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
 
 /** /live: pick a game or mode, a question set, who can join, then open the room (a data-api form: works without the
  *  page script). */
-export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null, wyr = null, atlas = null }) {
+export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null, wyr = null, atlas = null, tug = null }) {
   const t = req.t;
   // part 4: invites to co-host and games this account co-hosts (only inside Oomba: no email, no push)
   const ch = cohost || { invites: [], on: [] };
@@ -475,6 +476,8 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   const wyrCount = wy ? wy.count : 10, wyrSecs = wy ? wy.secs : 15;
   const atlasOn = (id, i) => (at ? at.kinds.includes(id) : i < 3);
   const atlasSel = (k, dflt) => (at ? at[k] : dflt);
+  // Tug of Math Live: the starter's grade and length, else grade 3 for 90 seconds (the page may fill in the last choice).
+  const tg = st && st.kind === 'tug' ? st.tug : null;
   const audiences = [classes.length ? 'class' : null, family ? 'family' : null, 'open'].filter(Boolean);
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
   return html`<div class="lv lv-landing" data-lv-page="landing">
@@ -503,6 +506,13 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
       <div class="field"><label for="lv-atlas-count">${t('live.atlasUi.count')}</label><select id="lv-atlas-count" name="atlasCount">${atlas.counts.map(n => html`<option value="${n}"${n === atlasSel('count', 10) ? raw(' selected') : ''}>${n}</option>`)}</select></div>
       <div class="field"><label for="lv-atlas-secs">${t('live.atlasUi.secs')}</label><select id="lv-atlas-secs" name="atlasSecs">${atlas.secs.map(n => html`<option value="${n}"${n === atlasSel('secs', 20) ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
       <p class="small muted">${t('live.atlasUi.hint')}</p>
+    </fieldset>` : ''}
+    ${tug ? html`<fieldset class="lv-group lv-own" id="lv-tug-opts" data-own-mode="tug" data-preset="${tg ? '1' : ''}" hidden><legend>${t('live.tugUi.legend')}</legend>
+      <div class="field"><label for="lv-tug-grade">${t('live.tugUi.grade')}</label><select id="lv-tug-grade" name="tugGrade">${tug.grades.map(g => html`<option value="${g}"${g === (tg ? tg.grade : 3) ? raw(' selected') : ''}>${t('live.tugUi.gradeN', { n: g })}</option>`)}</select></div>
+      <p class="small muted" id="lv-tug-like" dir="auto">${t('live.tugUi.like')} <span id="lv-tug-sample" dir="ltr">${tug.samples[tg ? tg.grade : 3]}</span></p>
+      <div class="field"><label for="lv-tug-len">${t('live.tugUi.len')}</label><select id="lv-tug-len" name="tugLen">${tug.lens.map(n => html`<option value="${n}"${n === (tg ? tg.len : 90) ? raw(' selected') : ''}>${n ? t('live.tugUi.secsN', { n }) : t('live.tugUi.toLine')}</option>`)}</select></div>
+      <p class="small muted">${t('live.tugUi.hint')}</p>
+      ${jsonData('lv-tug-samples', tug.samples)}
     </fieldset>` : ''}
     ${groups.filter(g => g.games.length || !modes.length).map(g => html`<fieldset class="lv-group"><legend>${t(`live.landing.${g.key}`)}</legend>${g.games.length ? html`<div class="lv-picks">${g.games.map(x => card(`game:${x.id}`, x.icon, x.title, x.quiz ? t('live.landing.usesQuestions') : '', pre.pick === `game:${x.id}`, x.quiz, x.teams, x.cap))}</div>` : html`<p class="small muted">${t('live.landing.none')}</p>`}</fieldset>`)}
     <fieldset class="lv-group" id="lv-sets"><legend>${t('live.landing.questions')}</legend>
@@ -533,7 +543,7 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
       <div class="field"><label for="lv-max">${t('live.landing.maxPlayers')}</label><input id="lv-max" name="maxPlayers" type="number" inputmode="numeric" min="2" max="${maxPlayers}" value="${maxPlayers}" data-ceiling="${maxPlayers}" aria-describedby="lv-max-hint"><p class="small muted" id="lv-max-hint" data-tpl="${t('live.landing.maxHint', { max: '{max}' })}"></p></div>
       <p class="small muted">${t('live.landing.openHint')}</p>
     </fieldset>
-    ${teamsOn ? html`<div class="lv-group">${teamsRow(t, { n: prefs && prefs.teams && prefs.teams.on ? prefs.teams.n : 0, scoring: prefs && prefs.teams ? prefs.teams.scoring : 'avg' })}</div>` : ''}
+    ${teamsOn ? html`<div class="lv-group" id="lv-teams-landing">${teamsRow(t, { n: prefs && prefs.teams && prefs.teams.on ? prefs.teams.n : 0, scoring: prefs && prefs.teams ? prefs.teams.scoring : 'avg' })}</div>` : ''}
     <details class="lv-group lv-settings-landing" id="lv-settings-landing"><summary>⚙️ ${t('live.settings.title')}</summary>
       ${settingsFields(t, { values, quiz: true, accounts: classes.length > 0, idp: 'lv-ls' })}
       <p class="small muted">${t('live.settings.remembered')}${prefs ? html` <button class="btn btn-sm" type="button" id="lv-prefs-reset" data-href="/api/live/prefs">${t('live.settings.reset')}</button>` : ''}</p>

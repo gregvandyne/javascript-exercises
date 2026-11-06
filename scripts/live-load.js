@@ -9,7 +9,10 @@
 //   - the projector: frames per second of the host's game frame while N players play.
 // Screenshots of the projector at a question go to OUT (live<N>-<mode>.png). Exit code 1 when a check fails.
 //
-//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... [MODES=quest-race,battle,board,wyr,atlas] [SIZES=10,20,30]
+// Tug of Math Live (MODES=tug): every bot answers its own questions on the keypad (about 80% right, one every 1.5-5 s)
+// for TUG_SECS seconds (default 30); every answer must come back checked, and the rope keeps up.
+//
+//   BASE=http://localhost:3000 ADMIN_USER=admin ADMIN_PASS=... [MODES=quest-race,battle,board,wyr,atlas,tug] [SIZES=10,20,30]
 //   [QUESTIONS=3] [SECS=12] [STARTER=atlas:eu:easy:flag:3:20 (the platform's own questions for that mode)] [PHONE=1 (one real phone among the bots, with screenshots)] [LAYOUT=1] [SERVER_PID=1234] [OUT=/tmp/live-load] node scripts/live-load.js
 import WebSocket from 'ws';
 import fs from 'node:fs';
@@ -25,6 +28,18 @@ const PID = +process.env.SERVER_PID || 0;
 const SECS = +process.env.SECS || 12;
 fs.mkdirSync(OUT, { recursive: true });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const TUG_SECS = +process.env.TUG_SECS || 30;
+/** A Tug of Math question's answer from its tokens (the bots work it out like a player would). */
+function tugSolve(e) {
+  const OP = { add: '+', sub: '-', mul: '*', div: '/', lp: '(', rp: ')', sq: '**2', cu: '**3', pow: '**', pct: '/100', of: '*', x: '(x)', q: '(x)', sqrt: 'Math.sqrt' };
+  const f = toks => Function('x', `return ${toks.map((t, i) => (typeof t === 'number' ? `(${t})${toks[i + 1] === 'x' || toks[i + 1] === 'q' ? '*' : ''}` : OP[t])).join('')}`);
+  const eq = e.indexOf('eq');
+  if (eq < 0) return f(e)(0);
+  const L = f(e.slice(0, eq)), R = f(e.slice(eq + 1));
+  for (let x = -3000; x <= 3000; x++) if (Math.abs(L(x) - R(x)) < 1e-9) return x;
+  return 0;
+}
+async function until(fn, ms = 40000) { const t0 = Date.now(); for (;;) { const v = await fn(); if (v) return v; if (Date.now() - t0 > ms) throw new Error('timeout'); await sleep(250); } }
 // LAYOUT=1: the projector page is also checked for layout problems (tests/e2e/frame-fit.js) at these sizes, with
 // everyone in the room, in the lobby and during a question.
 const LAYOUT = process.env.LAYOUT === '1';
@@ -54,7 +69,7 @@ async function bot(code, i, tag) {
   const join = await j.json();
   if (!j.ok) return { ok: false, code: join.code, status: j.status };
   const ws = new WebSocket(B.replace(/^http/, 'ws') + '/api/live/ws', { headers: { origin: B, 'x-forwarded-for': ip } });
-  const b = { ok: true, ws, seat: null, msgs: 0, bytes: 0, qs: new Set(), answered: new Set(), byType: {}, lbN: 0, closed: null, pos: [0, 0, 0] };
+  const b = { ok: true, ws, seat: null, msgs: 0, bytes: 0, qs: new Set(), answered: new Set(), byType: {}, lbN: 0, closed: null, pos: [0, 0, 0], tq: 0, sent: 0, tr: 0 };
   ws.on('message', d => {
     b.msgs++; b.bytes += d.length;
     let m; try { m = JSON.parse(String(d)); } catch { return; }
@@ -67,6 +82,13 @@ async function bot(code, i, tag) {
       setTimeout(() => { if (ws.readyState === 1) { ws.send(JSON.stringify({ t: 'an', i: m.i, c: right ? 0 : 1 + Math.floor(Math.random() * Math.min(3, (m.choices || []).length - 1)), e: Math.round(wait) })); b.answered.add(m.i); } }, wait);
     }
     if (m.t === 'lb') b.lbN = Math.max(b.lbN, m.n || 0);
+    // Tug of Math Live: this bot's own question, then its checked answer
+    if (m.t === 'ev' && m.f === 0 && m.k === 'tq' && m.d && !b.qs.has(`t${m.d.i}`)) {
+      b.qs.add(`t${m.d.i}`); b.tq++;
+      const wait = 1500 + Math.random() * 3500, v = tugSolve(m.d.e) + (Math.random() < 0.8 ? 0 : 1);
+      setTimeout(() => { if (ws.readyState === 1) { ws.send(JSON.stringify({ t: 'ev', k: 'ans', d: { i: m.d.i, v }, to: 'host' })); b.sent++; } }, wait);
+    }
+    if (m.t === 'ev' && m.f === 0 && m.k === 'tr') b.tr++;
   });
   ws.on('close', c => { b.closed = c; });
   await new Promise((res, rej) => { ws.once('open', res); ws.once('error', rej); });
@@ -75,7 +97,7 @@ async function bot(code, i, tag) {
 }
 
 async function run(browser, cookie, mode, n, tag) {
-  const r = await fetch(B + '/api/live/sessions', { method: 'POST', headers: { 'content-type': 'application/json', cookie, origin: B }, body: JSON.stringify({ pick: mode.startsWith('game:') ? mode : `mode:${mode}`, items: ITEMS.slice(0, mode === 'board' ? 30 : Math.max(QUESTIONS, 3)), audience: 'open', replace: true, maxPlayers: 100, settings: { count: mode === 'board' ? 30 : QUESTIONS }, ...(STARTER && STARTER.split(':')[0] === mode ? { starter: STARTER } : {}) }) });
+  const r = await fetch(B + '/api/live/sessions', { method: 'POST', headers: { 'content-type': 'application/json', cookie, origin: B }, body: JSON.stringify({ pick: mode.startsWith('game:') ? mode : `mode:${mode}`, items: ITEMS.slice(0, mode === 'board' ? 30 : Math.max(QUESTIONS, 3)), audience: 'open', replace: true, maxPlayers: 100, settings: { count: mode === 'board' ? 30 : QUESTIONS }, ...(STARTER && STARTER.split(':')[0] === mode ? { starter: STARTER } : mode === 'tug' ? { starter: 'tug:4:120' } : {}) }) });
   const made = await r.json();
   if (!r.ok) throw new Error(`session ${r.status} ${JSON.stringify(made)}`);
   let page = null, ctx = null, code = null;
@@ -136,8 +158,18 @@ async function run(browser, cookie, mode, n, tag) {
     if (phone) await phone.screenshot({ path: `${OUT}/live${n}-game-phone.png` }).catch(() => {});
     await sleep(12000); clearInterval(scorer); clearInterval(walk);
   }
+  if (mode === 'tug') {
+    // everyone answers on their own keypad for TUG_SECS seconds
+    await until(async () => { const s = await st(); return s && s.phase === 'playing'; });
+    await sleep(Math.min(8000, TUG_SECS * 500)); playFps = await fps();
+    await page.screenshot({ path: `${OUT}/live${n}-${mode}.png` }).catch(() => {});
+    await checkLayout('question');
+    if (phone) await phone.screenshot({ path: `${OUT}/live${n}-${mode}-phone.png` }).catch(() => {});
+    shot = true;
+    await sleep(Math.max(0, TUG_SECS * 1000 - Math.min(8000, TUG_SECS * 500)));
+  }
   const deadline = Date.now() + 60000 + wantRv * (SECS + 15) * 1000;
-  while (hostMsgs.length < wantRv && Date.now() < deadline) {
+  while (mode !== 'tug' && hostMsgs.length < wantRv && Date.now() < deadline) {
     const s = await st();
     if (mode === 'board' && s && s.phase === 'between') await frameOf().evaluate(() => { const b = document.querySelector('.bb-tile.can'); b && b.click(); }).catch(() => {});
     if (s && s.phase === 'playing' && s.question && !shot) {
@@ -177,7 +209,12 @@ async function run(browser, cookie, mode, n, tag) {
     kbPerSecPerPlayer: +(ok.reduce((k, b) => k + b.bytes, 0) / ok.length / secs / 1024).toFixed(2),
     hostFpsLobby: lobbyFps, hostFpsPlaying: playFps, secs: Math.round(secs), ...(LAYOUT ? { layout } : {}),
   };
-  res.pass = (!LAYOUT || !layout.length) && res.seated === n + (phone ? 1 : 0) && res.everyBotGotEveryQuestion && res.answersCounted >= res.answersSent - n * 0.05 && res.questions >= wantRv && (mode === 'board' || res.leaderboardCounts === 0 || res.leaderboardCounts >= n);
+  if (mode === 'tug') {
+    // every bot got questions of its own, and (all but the last few in flight) every answer came back checked
+    const sent = ok.reduce((k, b) => k + b.sent, 0), back = ok.reduce((k, b) => k + b.tr, 0);
+    Object.assign(res, { everyBotGotEveryQuestion: ok.every(b => b.tq >= 2), answersSent: sent, answersCounted: back, tugQuestions: ok.reduce((k, b) => k + b.tq, 0) });
+    res.pass = (!LAYOUT || !layout.length) && res.seated === n + (phone ? 1 : 0) && res.everyBotGotEveryQuestion && back >= sent - n;
+  } else res.pass = (!LAYOUT || !layout.length) && res.seated === n + (phone ? 1 : 0) && res.everyBotGotEveryQuestion && res.answersCounted >= res.answersSent - n * 0.05 && res.questions >= wantRv && (mode === 'board' || res.leaderboardCounts === 0 || res.leaderboardCounts >= n);
   await page.locator('[data-lv-act="end"]:not([hidden])').click().catch(() => {});
   await page.locator('.lv-confirm button, [data-lv-confirm]').first().click({ timeout: 2000 }).catch(() => {});
   for (const b of ok) try { b.ws.close(); } catch { /* gone */ }
@@ -189,7 +226,7 @@ async function run(browser, cookie, mode, n, tag) {
 
 (async () => {
   let browser = null;
-  { const { chromium } = await import('@playwright/test'); browser = await chromium.launch(); }
+  { const { chromium } = await import('@playwright/test'); browser = await chromium.launch(process.env.BRB_CHROMIUM ? { executablePath: process.env.BRB_CHROMIUM } : {}); }
   const cookie = await login();
   const results = []; let tag = 0;
   for (const mode of MODES) for (const n of SIZES) {

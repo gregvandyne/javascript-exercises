@@ -4607,7 +4607,9 @@
       "wyr": "¿Qué prefieres? (En vivo)",
       "wyrText": "La clase vota dilemas divertidos y ve cómo se reparte, y qué eligió todo el mundo en Oomba. Sin respuestas correctas ni puntos: solo para conversar.",
       "atlas": "Atlas Quest (En vivo)",
-      "atlasText": "Todos tocan el país en su propio mapa del mundo: encuéntralo, su bandera, su capital o por qué es famoso. Acercarse también suma un poco."
+      "atlasText": "Todos tocan el país en su propio mapa del mundo: encuéntralo, su bandera, su capital o por qué es famoso. Acercarse también suma un poco.",
+      "tug": "Tug of Math (En vivo)",
+      "tugText": "La clase se divide en dos equipos. Cada uno responde preguntas de matemáticas de su curso en su propio teclado, y cada respuesta correcta tira de la cuerda."
     },
     "starter": {
       "title": {
@@ -4856,6 +4858,7 @@
         "cat": "La categoría de la pregunta {n} no está permitida."
       },
       "noMissed": "Todos acertaron todas las preguntas, así que no hay nada que repetir.",
+      "tugTeams": "Tug of Math necesita dos equipos, y los equipos están desactivados en este sitio.",
       "teamsOff": "Este juego no tenía equipos.",
       "againGone": "Los jugadores se fueron. Empieza un juego nuevo.",
       "homeworkOff": "Las tareas con conjuntos de preguntas están desactivadas.",
@@ -5034,6 +5037,7 @@
       "howJoin": "Tu profe muestra un código en la pantalla. Escríbelo aquí para unirte.",
       "teacherHost": "¿Eres docente? Organízalo en vivo con tu clase",
       "solo": "Practicar solo",
+      "play": "Jugar contra la compu o 2 jugadores",
       "joinGo": "Unirme"
     },
     "check": {
@@ -5385,6 +5389,18 @@
       "secsN": "{n} segundos",
       "hint": "Después de cada votación la clase ve el resultado: buen momento para preguntar a algunos niños por qué lo eligieron."
     },
+    "tugUi": {
+      "legend": "Tug of Math (En vivo)",
+      "grade": "Curso",
+      "gradeN": "Curso {n}",
+      "like": "Preguntas como:",
+      "len": "Duración",
+      "secsN": "{n} segundos",
+      "toLine": "Hasta la línea (3 minutos como máximo)",
+      "of": "de",
+      "hint": "Los jugadores se reparten solos en dos equipos iguales. Cada uno recibe sus propias preguntas, así nadie copia, y un equipo más pequeño tira igual de fuerte.",
+      "teamsAuto": "Dos equipos hechos para ti: Ballenas Azules y Zorros Rojos. Puedes equilibrar, mezclar o mover jugadores."
+    },
     "atlasUi": {
       "legend": "Atlas Quest (En vivo)",
       "region": "En qué parte del mundo",
@@ -5509,6 +5525,10 @@
       "wyr": {
         "h": "¿Qué prefieres? (En vivo)",
         "p": "La clase vota dilemas divertidos y ve cómo se reparte, y qué eligió todo el mundo en Oomba. Sin respuestas correctas ni puntos: una conversación lista para empezar."
+      },
+      "tug": {
+        "h": "Tug of Math (En vivo)",
+        "p": "Dos equipos tiran de una cuerda con respuestas correctas. Elige un curso del 1 al 8; cada jugador responde sus propias preguntas en un teclado, y los equipos desiguales tiran en igualdad."
       },
       "atlas": {
         "h": "Atlas Quest (En vivo)",
