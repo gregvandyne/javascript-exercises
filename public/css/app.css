@@ -1044,6 +1044,7 @@ ol.steps li{margin-bottom:var(--s2)}
 .course-hero .lead{font-weight:700;margin:4px 0}
 .course-teach{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px}
 .course-teach h2{margin:0 0 6px;font-size:1.15rem}
+.course-teach p{margin:0 0 12px}
 .ptitle .pcourse{font-size:.8em;font-weight:700;margin-inline-start:8px;padding:6px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);text-decoration:none;white-space:nowrap}
 @media (max-width:520px){.ptitle .pcourse{display:none}}
 /* Course progress bar (home card and course map) */
@@ -1089,11 +1090,32 @@ a.cmap-row:hover{background:var(--hover);text-decoration:none}
 a.cmap-row:hover .cmap-k{text-decoration:underline}
 .cmap-k{font-weight:700;min-width:0}
 .cmap-gm{font-weight:500;color:var(--text-2)}
+/* The game module row: the small "Game module" label, and the chapter's name on its own line under it. */
+.cmap-k2{display:grid;gap:1px}
+.cmap-k2 .cmap-kl{font-size:.85rem;font-weight:700;color:var(--text-2)}
+.cmap-k2 .cmap-gm{font-weight:700;color:var(--text);line-height:1.25}
 .cmap-talk{color:var(--text-2)}
 .cstate{flex:none;font-size:.9rem;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap}
 .cstate-done{background:var(--ok-bg);color:var(--ok)}
 .cstate-next{background:var(--current);color:var(--on-current)}
 .cstate-locked{color:var(--muted)}
+.cstate-preview{background:var(--card);color:var(--text-2);box-shadow:inset 0 0 0 2px var(--line)}
+.nobr{white-space:nowrap}
+.sub-b{white-space:nowrap}
+.course-ht .sub-b{display:block} .course-ht .sub-dot{display:none}
+@media (max-width:639px){.sub-b{display:block} .sub-dot{display:none}}
+/* The map's two columns on a laptop: the steps on the left, and the progress, the Studio card and the
+   teachers' box riding beside them. One column (progress first, then the steps) on phones and tablets. */
+.cmap-layout{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+.cmap-side{display:contents}
+.cmap-side>.cmap-top{order:0} .cmap-main{order:1;display:grid;gap:18px;min-width:0} .cmap-side>.cmap-build{order:2} .cmap-side>.course-teach{order:3}
+.cmap-locked{margin:0}
+@media (min-width:1100px){
+  .course-page:has(.cmap-layout){max-width:1180px}
+  .cmap-layout{grid-template-columns:minmax(0,1fr) 340px;align-items:start;gap:24px}
+  .cmap-side{display:grid;gap:16px;grid-column:2;grid-row:1;position:sticky;top:calc(var(--top) + 12px)}
+  .cmap-main{grid-column:1;grid-row:1}
+}
 .cmap-build{display:flex;gap:14px;align-items:flex-start;background:var(--spark-soft);border-radius:var(--r);padding:16px}
 .cmap-build h3{margin:0 0 4px}
 .cmap-build-e{font-size:2.2rem;line-height:1}
@@ -1123,66 +1145,104 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .slide-wordlist>div{padding:10px 14px;border-radius:var(--r-sm);background:var(--card-2)}
 .slide-wordlist dt{font-weight:800;font-size:1.15rem}
 .slide-wordlist dd{margin:2px 0 0;color:var(--text-2)}
-/* The pictures: one big emoji on a soft shape, two small ones around it */
+/* The pictures: one big emoji on a soft shape, two small ones around it. The soft shape is sized off the
+   panel's own height (never a fixed size bigger than the panel), so its round backdrop is never cut off. */
 .sart{position:relative;height:150px;border-radius:var(--r);overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--card-2)}
 .sart-mint{background:var(--accent-soft)} .sart-spark{background:var(--spark-soft)} .sart-rose{background:var(--bad-bg)}
 .sart-sky{background:color-mix(in srgb,var(--accent-soft) 45%,var(--card-2))}
-.sart-shape{position:absolute;width:150px;height:150px;border-radius:42% 58% 55% 45%/50% 45% 55% 50%;background:var(--card);opacity:.7}
+.sart-shape{position:absolute;top:50%;left:50%;height:calc(100% - 16px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:42% 58% 55% 45%/50% 45% 55% 50%;background:var(--card);opacity:.7}
 .sart-main{position:relative;font-size:84px;line-height:1}
 .sart-a,.sart-b{position:relative;font-size:34px;line-height:1}
 .sart-a{align-self:flex-start;margin-top:22px} .sart-b{align-self:flex-end;margin-bottom:22px}
-/* A slide's in-game picture (replaces the emoji art when the slide carries one): a 16/9 media frame, the shot's
-   teaching element kept in the central crop-safe zone by the capture spec. */
-.smedia{margin:0;border-radius:var(--r);overflow:hidden;background:var(--card-2);aspect-ratio:16/9}
+/* A slide's picture (an in-game screenshot or a drawn diagram; views/courses.js slideArt). The figure holds
+   the picture's frame (.sframe) and, for a guided tour, the caption strip and the cue list under it. The
+   frame takes the aspect of the region it shows (--ar: width / height, set by the renderer): a screenshot's
+   `view` crop or the whole 16:9 picture, a diagram's content band. The frame is the size container the
+   tour's ring and badge measure against (cqw), so a capped laptop frame keeps its tour in proportion. */
+.smedia{margin:0 auto;width:100%;display:grid;grid-template-columns:minmax(0,1fr);min-width:0;justify-self:center}
+.smedia.story{aspect-ratio:16/9;overflow:hidden;border-radius:var(--r);background:var(--card-2)}
+.sframe{position:relative;width:100%;margin-inline:auto;aspect-ratio:var(--ar,16/9);border-radius:var(--r);overflow:hidden;background:var(--card-2);container-type:inline-size}
 .simg{display:block;width:100%;height:100%;object-fit:cover}
-/* A drawn maths diagram (Number Quest visuals): an SVG on the brand Cream ground, in the slide's own
-   font, filling the same 16/9 frame a screenshot would — so a diagram slide and a photo slide sit at
-   the same size on the page, and its guided focus plays through the shared .gf rules above. */
+/* A cropped screenshot: the whole picture, scaled and shifted so the view region fills the frame. */
+.simg--crop{position:absolute;max-width:none;object-fit:fill}
+/* A drawn math diagram (Number Quest visuals): an SVG on the brand Cream ground, in the slide's own font,
+   cropped to its content (no empty band) and never wider than 640px. */
 .vf-svg{display:block;width:100%;height:100%}
 .vf-svg text{font-family:var(--font)}
+.smedia.vf{max-width:640px}
+/* A cropped picture opens whole: the corner button (a plain link to the picture without the script) and a
+   tap anywhere on the frame open it in the viewer dialog. */
+.crop .sframe{cursor:zoom-in}
+.szoom{position:absolute;top:2px;right:2px;z-index:3;width:44px;height:44px;display:grid;place-items:center;text-decoration:none;color:#FFFDF2}
+.szoom span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(20,20,20,.72);border:1px solid rgba(255,253,242,.35);font-size:16px;font-weight:800;line-height:1}
+.szoom:hover span{background:rgba(20,20,20,.9)}
+.szoom:hover{text-decoration:none}
+.szoom:focus-visible{outline:none}
+.szoom:focus-visible span{outline:3px solid var(--brand-spark);outline-offset:2px;box-shadow:0 0 0 5px rgba(20,20,20,.85)}
+.szoom-dlg{padding:0;border:0;background:transparent;width:min(96vw,1280px);max-width:none;max-height:none;overflow:visible}
+.szoom-dlg::backdrop{background:rgba(8,14,10,.82)}
+.szoom-dlg img{display:block;width:100%;height:auto;max-height:calc(100svh - 90px);object-fit:contain;border-radius:var(--r);background:#141414}
+.szoom-x{display:flex;margin:0 0 8px auto;min-height:44px}
 /* Guided focus: a short played-once tour over a slide picture (steps authored per slide, played by
    public/js/course.js). The figure carries data-gf-step while a step is on show; no attribute = clean picture. */
-.smedia.gf{position:relative;container-type:inline-size}
 .gf-layer{position:absolute;inset:0;pointer-events:none}
 .gf-step{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
 .gf[data-gf-step="0"] .gf-step[data-i="0"],.gf[data-gf-step="1"] .gf-step[data-i="1"],.gf[data-gf-step="2"] .gf-step[data-i="2"],.gf[data-gf-step="3"] .gf-step[data-i="3"]{opacity:1}
 .gf-box{position:absolute;border-radius:10px;box-shadow:0 0 0 999px rgba(8,14,10,.42)}
-/* The visible ring is the box's ::after, outset 8px on every side: its 3px border then runs 5-8px
-   OUTSIDE the target's own pixels, so the outline frames the teaching element instead of tracing over
-   it (on a phone a small block is only ~23px wide — a border drawn on the box itself covered the very
-   thing it pointed at). The box element itself stays invisible: its box-shadow keeps the dim hole
-   aligned to the true box, and the pulse plays on the ring, expanding outward from it. */
+/* The visible ring is the box's ::after, outset on every side: its 3px border then runs OUTSIDE the
+   target's own pixels, so the outline frames the teaching element instead of tracing over it. The box
+   element itself stays invisible: its box-shadow keeps the dim hole aligned to the true box, and the pulse
+   plays on the ring, expanding outward from it. The outset scales with the frame (a size container):
+   1.15cqw is ~8px on a 720px frame and ~4px on a phone's. */
 .gf-box::after{content:"";position:absolute;inset:-8px;border:3px solid #FFD23F;border-radius:18px;animation:gfPulse 1s ease-in-out infinite alternate}
 @keyframes gfPulse{from{outline:3px solid rgba(255,210,63,.0);outline-offset:0}to{outline:3px solid rgba(255,210,63,.45);outline-offset:5px}}
-/* The ring's outset scales with the figure (a size container) wherever container queries are
-   available: a fixed 8px outset is proportionally twice as fat on a phone-sized figure as on the
-   desktop one, so a box authored tight on a small element read as swallowing its neighbours on
-   phones. 1.15cqw is ~8px at the full 720px figure width (desktop unchanged) and ~4px at 350px. */
 @supports (width:1cqw){
   .gf-box::after{inset:calc(-1.15cqw)}
   @keyframes gfPulse{from{outline:3px solid rgba(255,210,63,.0);outline-offset:0}to{outline:3px solid rgba(255,210,63,.45);outline-offset:.7cqw}}
 }
-/* The badge parks fully OUTSIDE the ring's top-left corner — its bottom-right corner touching the
-   ring's top-left corner — so it never sits on the target or the ring either. Where container queries
-   are available it is sized off the figure (the figure is a size container): 5.6cqw of the figure's
-   width, clamped 15-22px, so a phone-sized box keeps a phone-sized badge. --bx/--by are the box's own
-   % position (set inline by the renderer); they clamp the parked position on all four sides so a box
-   touching the frame's edge slides its badge along the outside of the ring instead of clipping it. */
+/* On a diagram the box is grown by the script to hold every label its edge touched (no edge on text), so
+   the ring sits close and thin and the dim is lighter: the drawing stays readable around the target. */
+.vf .gf-box{box-shadow:0 0 0 999px rgba(8,14,10,.22)}
+.vf .gf-box::after{inset:-3px;border-width:2.5px;border-radius:12px}
+/* The badge parks OUTSIDE the ring's top-left corner by default — its bottom-right corner touching the
+   ring's corner — so it never sits on the target or the ring. Sized off the frame (5.6cqw, 15-22px). --bx/--by
+   are the box's own % position in the frame (set inline by the renderer) and --fhr the frame's height as a
+   fraction of its width: they clamp the parked position on all four sides, so a box touching the frame's edge
+   slides its badge along the outside of the ring instead of clipping it. On a diagram the script then moves
+   the badge to the first corner clear of every label (gf-badge--at). */
 .gf-badge{position:absolute;top:-30px;left:-30px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#FFD23F;color:#141414;font-size:13px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.35)}
-@supports (width:1cqw){.gf-badge{--r:calc(clamp(15px,5.6cqw,22px)/2);width:calc(var(--r)*2);height:calc(var(--r)*2);font-size:clamp(10px,3.8cqw,13px);left:max(calc(var(--bx,0)*-1cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--bx,0))*1cqw - var(--r)*2)));top:max(calc(var(--by,0)*-.5625cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--by,0))*.5625cqw - var(--r)*2)))}}
+@supports (width:1cqw){.gf-badge{--r:calc(clamp(15px,5.6cqw,22px)/2);width:calc(var(--r)*2);height:calc(var(--r)*2);font-size:clamp(10px,3.8cqw,13px);left:max(calc(var(--bx,0)*-1cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--bx,0))*1cqw - var(--r)*2)));top:max(calc(var(--by,0)*var(--fhr,.5625)*-1cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--by,0))*var(--fhr,.5625)*1cqw - var(--r)*2)))}}
+.gf-badge.gf-badge--at{left:var(--gx);top:var(--gy)}
+.gf-badge.gf-badge--off{display:none}
 .gf-path{position:absolute;inset:0;width:100%;height:100%}
 .gf-path polyline{fill:none;stroke:#FFD23F;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3 2.2;filter:drop-shadow(0 1px 1px rgba(20,20,20,.55));animation:gfMarch 1s linear infinite}
 @keyframes gfMarch{to{stroke-dashoffset:-10.4}}
+/* A screenshot's cue chip on the picture: the script parks it clear of the step's ring and badge, or sends
+   the whole figure's cues to the caption strip (.gf--strip) when some step has no clear spot. */
 .gf-cue{position:absolute;left:10px;bottom:10px;max-width:calc(100% - 120px);display:flex;align-items:center;gap:7px;background:rgba(20,20,20,.88);color:#FFFDF2;border:1px solid rgba(255,253,242,.25);border-radius:999px;padding:6px 11px;font-size:14px;font-weight:600;line-height:1.25}
-/* A step whose target sits in the picture's bottom third gets its cue at the top instead, so the chip
-   never hides the thing it is pointing at. The cue always carries the step number in its own bubble. */
 .gf-cue--top{top:10px;bottom:auto;max-width:calc(100% - 20px)}
 .gf-cue-n{flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:#FFD23F;color:#141414;font-size:12px;font-weight:800}
+.gf--strip .gf-cue{display:none}
+/* The caption strip under the picture: the active step's numbered cue, never over the picture. All cues
+   share one grid cell, so the strip keeps the height of the longest and never jumps between steps. Shown
+   only once the script runs the tour (.gf-js): a diagram always uses it, a screenshot when its chips do not
+   fit (.gf--strip). */
+.gf-strip{display:none;grid-row:2;grid-column:1;margin-top:8px;padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);min-height:44px;align-items:center}
+.gf-js.vf .gf-strip,.gf-js.gf--strip .gf-strip{display:grid}
+.gf-sc{grid-area:1/1;margin:0;display:flex;align-items:flex-start;gap:8px;font-size:1rem;font-weight:600;line-height:1.35;color:var(--text);visibility:hidden;opacity:0;transition:opacity .3s ease}
+.gf-sc .gf-cue-n{margin-top:1px}
+.gf[data-gf-step="0"] .gf-sc[data-i="0"],.gf[data-gf-step="1"] .gf-sc[data-i="1"],.gf[data-gf-step="2"] .gf-sc[data-i="2"],.gf[data-gf-step="3"] .gf-sc[data-i="3"]{visibility:visible;opacity:1}
 .gf-replay{position:absolute;right:8px;bottom:8px;z-index:2;display:inline-flex;align-items:center;gap:6px;min-height:44px;border:1px solid rgba(255,253,242,.35);background:rgba(20,20,20,.72);color:#FFFDF2;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer}
 .gf-replay:hover{background:rgba(20,20,20,.9)}
 /* Focus on the picture: a Spark ring with a dark halo, so it reads on bright and dark frames of a screenshot
    alike (the global Ink ring can vanish on a dark game scene). */
 .gf-replay:focus-visible{outline:3px solid var(--brand-spark);outline-offset:2px;box-shadow:0 0 0 5px rgba(20,20,20,.85)}
+/* A screenshot's Replay rides in the strip when its cues do; a diagram's always sits in the strip's place
+   (the strip is empty once the tour is over), as an ordinary page button. */
+.gf--strip .sframe .gf-replay{display:none}
+.smedia>.gf-replay{position:static;grid-row:2;grid-column:1;justify-self:end;align-self:center;margin:8px 6px 0 0;background:var(--card);color:var(--text);border:2px solid var(--line)}
+.smedia>.gf-replay:hover{background:var(--hover)}
+.smedia>.gf-replay[hidden]{display:none}
 .gf-cues{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 /* Small screens: at phone size the desktop dim greys out nearly the whole picture, so it fades right
    back and the active box gets a glow to carry the highlight instead; the cue chip shrinks a step too.
@@ -1190,27 +1250,42 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 @media (max-width:639px){
   .gf-box{box-shadow:0 0 0 999px rgba(8,14,10,.28)}
   .gf-box::after{box-shadow:0 0 18px 5px rgba(255,210,63,.5)}
+  .vf .gf-box{box-shadow:0 0 0 999px rgba(8,14,10,.16)}
+  .vf .gf-box::after{box-shadow:0 0 10px 2px rgba(255,210,63,.45)}
   .gf-cue{font-size:13px;padding:5px 10px}
   .gf-cue-n{width:17px;height:17px;font-size:11px}
+  .gf-sc{font-size:.98rem}
 }
 /* Reduced motion (and the no-JS static mode the script adds): no tour — every step's box stays on the
    picture with its number badge, the paths sit still, and the cues become a plain list under the picture. */
 @media (prefers-reduced-motion: reduce){
-  .smedia.gf{aspect-ratio:auto;overflow:visible}
-  .smedia.gf .simg{height:auto;aspect-ratio:16/9;border-radius:var(--r)}
-  .smedia.gf .vf-svg{height:auto;aspect-ratio:16/9;border-radius:var(--r)}
-  /* The cue list flows inside the figure in this mode, so the figure grows taller than the picture;
-     the overlay layer must stay the picture's own box or every box's % top/height would map over
-     figure + list and land below its target. The layer's width is the figure's, so the 16/9 ratio
-     gives it exactly the image's height (the badge's cqw clamps assume the same geometry). */
-  .gf-layer{bottom:auto;aspect-ratio:16/9}
   .gf-step{opacity:1;transition:none}
   .gf-box{box-shadow:none}
+  .vf .gf-box{box-shadow:none}
   .gf-box::after{animation:none;box-shadow:none}
   .gf-path polyline{animation:none}
   .gf-cue{display:none}
+  .gf-js.vf .gf-strip,.gf-js.gf--strip .gf-strip{display:none}
   .gf-cues{position:static;width:auto;height:auto;margin:8px 2px 0;overflow:visible;clip-path:none;white-space:normal}
   .gf-cues ol{margin:0;padding-left:22px;display:grid;gap:2px}
+}
+/* Tablet: the picture never taller than half the screen. Laptop and desktop (1000px and up): picture and
+   words side by side, the picture capped at 45% of the screen's height, so a whole slide — words, Back and
+   Next — fits on one screen. */
+@media (min-width:640px){ .smedia:not(.story){max-width:min(100%,calc(52vh * var(--ar,1.78)))} .smedia.vf{max-width:min(640px,calc(52vh * var(--ar,1.78)))} }
+@media (min-width:1000px){
+  .cl-page{max-width:1120px}
+  .slide{grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:28px;align-items:start}
+  .slide>.smedia,.slide>.sart{grid-column:1;grid-row:1 / span 2}
+  .slide>.slide-body,.slide>.slide-say{grid-column:2}
+  .slide>.slide-say{align-self:start}
+  .deck-js .slide{min-height:min(400px,calc(100svh - var(--top) - 330px))}
+  .slide:not(:has(>.smedia,>.sart)){grid-template-columns:minmax(0,1fr)}
+  .slide:not(:has(>.smedia,>.sart))>*{grid-column:1}
+  .smedia:not(.story){max-width:min(100%,calc(45vh * var(--ar,1.78)))}
+  .smedia.vf{max-width:min(640px,calc(45vh * var(--ar,1.78)))}
+  .sart{height:240px}
+  .smedia.story{width:min(100%,calc(45vh * 16 / 9));justify-self:center}
 }
 /* Story layer (the story & intro pack): an animated stage on the intro step, the five unit transition beats
    and the finale — the Spark, its four pieces and the characters (sprites from their own games). The unarmed
@@ -1429,6 +1504,8 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .dot{width:44px;height:44px;border:0;background:none;cursor:pointer;padding:0;display:grid;place-items:center}
 .dot::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--edge)}
 .dot[aria-current]::before{width:14px;height:14px;background:var(--accent-line)}
+/* Laptop: Back, the dots and Next on one row (one row less to scroll past). */
+@media (min-width:1000px){ .deck-nav{flex-wrap:nowrap;padding:8px} .deck-dots{order:0;flex:1 1 auto} }
 .cl-check,.cl-after{display:grid;gap:12px;background:var(--card);border:2px solid var(--line);border-radius:var(--r-lg);padding:18px;scroll-margin-top:calc(var(--top) + 12px)}
 .cl-check h2,.cl-after h2{margin:0}
 .cl-check>p{margin:0}
@@ -1449,7 +1526,12 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .qchoice.is-wrong{border-color:var(--danger);background:var(--bad-bg)}
 .qchoice.is-wrong::after{content:"✗";margin-inline-start:auto;font-weight:800;color:var(--bad-ink)}
 .qq-fb{margin:0;font-weight:700}
-.qq.is-right .qq-fb{color:var(--ok)} .qq.is-wrong .qq-fb{color:var(--bad-ink)}
+.qq.is-right .qq-fb{color:var(--ok)}
+/* A wrong answer: "Not quite" in the error colour, then the right answer (bold) and the why in the page's
+   own text colour — calm and easy to scan, not a wall of red. */
+.qq.is-wrong .qq-fb{color:var(--text);font-weight:500;line-height:1.45}
+.qq-fb-no{color:var(--bad-ink);font-weight:800}
+.qq-fb b{font-weight:800}
 .qq-go,#qagain{justify-self:start;margin-top:4px}
 .cl-result{padding:14px 16px;border-radius:var(--r-sm);font-weight:700}
 .cl-result.ok{background:var(--ok-bg);color:var(--text)} .cl-result.bad{background:var(--bad-bg);color:var(--text)}

@@ -11,6 +11,14 @@ export const bandName = (t, band) => t(`courses.band.${BAND_INFO[band].key}`);
 const bandGrades = (t, band) => t(`courses.band.${BAND_INFO[band].key}Sub`);
 /** Text still in English on this language's page is marked so. */
 const en = raw(' lang="en" dir="ltr"');
+/** A course subtitle ("Computer science in four games · grades 3–8"): the part after the last " · " never
+ *  breaks inside itself, and where the line is narrow (phones, the home page's course cards) it takes its
+ *  own line without the dot — never a line that starts with a dangling "·". */
+export function subLine(text) {
+  const at = String(text).lastIndexOf(' · ');
+  if (at < 0) return text;
+  return html`<span class="sub-a">${text.slice(0, at)}</span> <span class="sub-b"><span class="sub-dot">· </span>${text.slice(at + 3)}</span>`;
+}
 
 /** The home page's "Courses" row: the wide course cards side by side in one snap-scrolled rail (the shared .rail-track,
  *  at course-card width), each card's games nested in order as the unit overview (links to the course map's units),
@@ -31,7 +39,7 @@ export function courseRow(items) {
       return html`<article class="course-card" aria-labelledby="course-${c.slug}-h">
         <div class="course-head">
           <span class="course-emo" aria-hidden="true">${c.emoji}</span>
-          <div class="course-ht"><h3 id="course-${c.slug}-h"><a href="/courses/${c.slug}">${t(`${c.key}.title`)}</a></h3><p>${t(`${c.key}.sub`)}</p></div>
+          <div class="course-ht"><h3 id="course-${c.slug}-h"><a href="/courses/${c.slug}">${t(`${c.key}.title`)}</a></h3><p>${subLine(t(`${c.key}.sub`))}</p></div>
         </div>
         <ol class="course-steps">${games.map(g => html`<li class="course-step"><a href="/courses/${c.slug}#${g.slug}" class="course-game">
           <span class="course-n" aria-hidden="true">${g.step}</span>
@@ -54,12 +62,12 @@ export function courseRow(items) {
 function hero(t, c, short = false) {
   return html`<header class="course-hero">
       <span class="course-emo big" aria-hidden="true">${c.emoji}</span>
-      <div><h1>${t(`${c.key}.title`)}</h1><p class="lead">${t(`${c.key}.sub`)}</p>${short ? '' : html`<p>${t(`${c.key}.about`)}</p>`}</div>
+      <div><h1>${t(`${c.key}.title`)}</h1><p class="lead">${subLine(t(`${c.key}.sub`))}</p>${short ? '' : html`<p>${t(`${c.key}.about`)}</p>`}</div>
     </header>`;
 }
 function teachersBox(t, c) {
   return html`<aside class="course-teach"><h2>🍎 ${t('courses.teachers.h')}</h2><p>${t(`${c.key}.teachers`)}</p>
-      <a class="btn btn-ghost" href="${c.teacherPath}">${t('courses.teachers.link')}</a></aside>`;
+      <a class="btn course-teach-go" href="${c.teacherPath}">${t('courses.teachers.link')}</a></aside>`;
 }
 /** The two band cards (a form: works without the page script). */
 function bandPicker(t, c) {
@@ -76,14 +84,18 @@ function bandPicker(t, c) {
   </section>`;
 }
 
-const STATE_ICON = { done: '✓', next: '▶', locked: '🔒' };
+const STATE_ICON = { done: '✓', next: '▶', locked: '🔒', preview: '👁' };
 function stateTag(t, state) {
   return html`<span class="cstate cstate-${state}"><span aria-hidden="true">${STATE_ICON[state]}</span> ${t(`courses.map.${state}`)}</span>`;
 }
-/** One step on the map: its lesson row and its game module row (or "talk about it"). */
-function mapStep(t, c, s, total) {
+/** One step on the map: its lesson row and its game module row (or "talk about it"). Staff and the admin
+ *  (preview) may open any lesson to look at it: their not-yet-done lessons read "Preview", not "Next" on
+ *  every row (which looked like a broken lock). The game module row is two lines: the small "Game module"
+ *  label, and the chapter's name under it. */
+function mapStep(t, c, s, total, preview = false) {
   const { step } = s;
-  const lesson = !s.open ? 'locked' : s.checked ? 'done' : 'next';
+  const lesson = s.checked ? 'done' : preview ? 'preview' : !s.open ? 'locked' : 'next';
+  const gameK = () => html`<span class="cmap-k cmap-k2"><span class="cmap-kl">🎮 ${t('courses.map.game')}</span><span class="cmap-gm"${en}>${step.game.chapterTitle}</span></span>`;
   const game = !step.game ? null : s.won ? 'done' : s.open && s.checked ? 'next' : 'locked';
   const href = `/courses/${c.slug}/${step.key}`;
   const cls = s.complete ? 'is-done' : s.open ? 'is-next' : 'is-locked';
@@ -91,17 +103,24 @@ function mapStep(t, c, s, total) {
     <span class="cmap-n" aria-hidden="true">${s.complete ? '✓' : step.index + 1}</span>
     <div class="cmap-body">
       <h4 class="cmap-title"><span class="sr-only">${t('courses.lesson.of', { n: step.index + 1, total })}: </span><span${en}>${step.title}</span></h4>
-      ${s.open ? html`<a class="cmap-row" href="${href}"><span class="cmap-k">📖 ${t('courses.map.lesson')}</span>${stateTag(t, lesson)}</a>`
+      ${s.open || preview ? html`<a class="cmap-row" href="${href}"><span class="cmap-k">📖 ${t('courses.map.lesson')}</span>${stateTag(t, lesson)}</a>`
         : html`<span class="cmap-row"><span class="cmap-k">📖 ${t('courses.map.lesson')}</span>${stateTag(t, lesson)}</span>`}
-      ${step.game ? (game === 'locked' ? html`<span class="cmap-row"><span class="cmap-k">🎮 ${t('courses.map.game')} <span class="cmap-gm"${en}>· ${step.game.chapterTitle}</span></span>${stateTag(t, game)}</span>`
-        : html`<a class="cmap-row" href="${href}#play"><span class="cmap-k">🎮 ${t('courses.map.game')} <span class="cmap-gm"${en}>· ${step.game.chapterTitle}</span></span>${stateTag(t, game)}</a>`)
+      ${step.game ? (game === 'locked' ? html`<span class="cmap-row">${gameK()}${stateTag(t, game)}</span>`
+        : html`<a class="cmap-row" href="${href}#play">${gameK()}${stateTag(t, game)}</a>`)
         : html`<span class="cmap-row cmap-talk"><span class="cmap-k">💬 ${t('courses.map.talk')}</span></span>`}
     </div>
   </li>`;
 }
 
-/** The course page: the band picker (first time), then the course map. */
-export function coursePage({ course: c, games, ov, canPick }) {
+/** The note a kid sees on the map after a locked step sent them back (?locked=<step key>): which step to
+ *  finish first (the first open step not done yet). */
+export function lockedNote(t, ov, key) {
+  if (!key || !ov.next || !ov.list.some(s => s.step.key === key && !s.open)) return '';
+  return html`<p class="notice cmap-locked" role="status" id="cmap-locked"><span aria-hidden="true">🔒</span> ${t('courses.map.lockedNote', { n: ov.next.step.index + 1 })} <a href="#step-${ov.next.step.key}"${en}>${ov.next.step.title}</a></p>`;
+}
+/** The course page: the band picker (first time), then the course map. On a laptop the map runs in the
+ *  main column and the progress, the Studio card and the teachers' box ride beside it (.cmap-side). */
+export function coursePage({ course: c, games, ov, canPick, preview = false, locked = '' }) {
   const { t } = current();
   const bySlug = new Map(games.map(g => [g.slug, g]));
   const other = ov.band && C.bandsFor(c).find(b => b !== ov.band);
@@ -109,7 +128,9 @@ export function coursePage({ course: c, games, ov, canPick }) {
   return html`<section class="course-page">
     <a class="back small" href="/">← ${t('courses.home')}</a>
     ${hero(t, c, !!ov.band)}
-    ${!ov.band ? (canPick ? bandPicker(t, c) : '') : html`
+    ${!ov.band ? html`${canPick ? bandPicker(t, c) : ''}${teachersBox(t, c)}` : html`
+    <div class="cmap-layout">
+    <div class="cmap-side">
     <section class="cmap-top" aria-labelledby="cmap-h">
       <h2 id="cmap-h" class="sr-only">${t('courses.map.h')}</h2>
       <div class="cmap-band"><span>${BAND_INFO[ov.band].emoji} <b>${bandName(t, ov.band)}</b> · ${bandGrades(t, ov.band)}</span>
@@ -118,21 +139,27 @@ export function coursePage({ course: c, games, ov, canPick }) {
       <p class="cmap-count">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</p>
       ${ov.next ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
+    <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
+      <a class="btn" href="/build">${t('courses.map.build.go')}</a></div></aside>
+    ${teachersBox(t, c)}
+    </div>
+    <div class="cmap-main">
+    ${lockedNote(t, ov, locked)}
     ${C.groupsFor(c).map(gr => {
       const list = ov.list.filter(s => s.step.group === gr.id);
       if (!list.length) return '';
       const g = gr.game && bySlug.get(gr.game);
+      const sub = gr.sub ? html`<span${en}>${gr.sub}</span>` : gr.units.length ? unitsLabel(gr.units) : '';
       return html`<section class="cmap-group" id="${gr.id}" aria-labelledby="${gr.id}-h">
         <header class="cmap-gh">
-          ${g ? html`<span class="cmap-cover">${coverArt(g)}</span>` : html`<span class="cmap-cover cmap-cover-e" aria-hidden="true">${gr.emoji || '💡'}</span>`}
-          <div><h3 id="${gr.id}-h">${gr.title ? html`<span${en}>${gr.title}</span>` : g ? g.title : t('courses.groups.techChoices')}</h3><p class="muted small">${gr.sub ? html`<span${en}>${gr.sub}</span>` : unitsLabel(gr.units)}</p></div>
+          <span class="cmap-cover cmap-cover-e" aria-hidden="true">${gr.emoji || '💡'}</span>
+          <div><h3 id="${gr.id}-h">${gr.title ? html`<span${en}>${gr.title}</span>` : gr.titleKey ? t(gr.titleKey) : g ? g.title : gr.id}</h3>${sub ? html`<p class="muted small">${sub}</p>` : ''}</div>
         </header>
-        <ol class="cmap-steps">${list.map(s => mapStep(t, c, s, ov.total))}</ol>
+        <ol class="cmap-steps">${list.map(s => mapStep(t, c, s, ov.total, preview))}</ol>
       </section>`;
     })}
-    <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
-      <a class="btn" href="/build">${t('courses.map.build.go')}</a></div></aside>`}
-    ${teachersBox(t, c)}
+    </div>
+    </div>`}
   </section>`;
 }
 
@@ -147,6 +174,10 @@ const ART = {
   battery: ['🔋', '⚡', '🔌', 'mint'], screen: ['🖥️', '🖱️', '⌨️', 'sky'], wrench: ['🔧', '🐭', '🔩', 'spark'], bits: ['🔢', '0️⃣', '1️⃣', 'sky'],
   pixel: ['🟥', '🟩', '🟦', 'spark'], people: ['🧑‍🤝‍🧑', '💬', '💡', 'rose'], globe: ['🌍', '📡', '✨', 'mint'], lightbulb: ['💡', '✨', '🧠', 'spark'],
   star: ['⭐', '✨', '🏅', 'spark'], trophy: ['🏆', '⭐', '🎉', 'spark'],
+  // Number Quest's topics: measuring, time, money, weighing, fractions, shapes, angles, chance, Tally.
+  ruler: ['📏', '📐', '🔢', 'sky'], clock: ['🕒', '⏱️', '📅', 'sky'], coins: ['🪙', '💵', '🧾', 'spark'], scale: ['⚖️', '📦', '🔢', 'mint'],
+  cake: ['🍰', '🔪', '🍽️', 'rose'], shapes: ['🔺', '🟦', '📐', 'sky'], angle: ['📐', '↪️', '🧭', 'mint'], dice: ['🎲', '🎡', '❓', 'spark'],
+  cat: ['🐱', '🔢', '✨', 'mint'],
 };
 function art(id) {
   const [main, a, b, tone] = ART[id] || ART.lightbulb;
@@ -266,25 +297,68 @@ function storyArt(t, s) {
     </div>
   </figure>`;
 }
-/** The guided-focus overlay layer, shared by screenshot slides (img) and drawn-diagram slides (visual):
- *  numbered boxes + cue chips over the picture, played by public/js/course.js exactly the same way. */
-function gfLayer(t, s) {
-  return html`<div class="gf-layer" aria-hidden="true">${s.focus.map((st, i) => html`
-      <div class="gf-step" data-i="${i}">
-        ${st.path ? html`<svg class="gf-path" viewBox="0 0 100 56.25" preserveAspectRatio="none"><polyline points="${st.path.map(p => `${p[0]},${p[1] * 0.5625}`).join(' ')}" pathLength="100" vector-effect="non-scaling-stroke"></polyline></svg>` : ''}
-        <div class="gf-box" style="--bx:${st.box[0]};--by:${st.box[1]};left:${st.box[0]}%;top:${st.box[1]}%;width:${st.box[2]}%;height:${st.box[3]}%"><span class="gf-badge">${i + 1}</span></div>
-        <div class="gf-cue${st.box[1] + st.box[3] / 2 > 66 ? ' gf-cue--top' : ''}"><span class="gf-cue-n">${i + 1}</span>${st.cue}</div>
-      </div>`)}
-    </div>
-    <button class="gf-replay" type="button" hidden><span aria-hidden="true">↻</span> ${t('courses.lesson.replayFocus')}</button>
-    <figcaption class="gf-cues"><ol>${s.focus.map(st => html`<li>${st.cue}</li>`)}</ol></figcaption>`;
+// ------------------------------------------------------------------------------------------------- pictures
+// Every slide picture sits in a frame (.sframe) whose aspect is the region it shows:
+//   - a screenshot (img) shows its `view` [x, y, w, h] (% of the original 1280x720 picture; the whole picture
+//     without one), scaled to the frame's width, so a phone can read the part the slide is about. A cropped
+//     picture opens whole in a small viewer on a tap (the frame's .szoom link: the image itself without script);
+//   - a drawn diagram (visual) shows the drawing's own content band (visualFit): no empty band above or below.
+// Focus boxes and paths stay authored in % of the ORIGINAL picture (diagrams: of the 100 x 56.25 drawing) and
+// are remapped into the frame here. The overlay's SVG space is 100 wide and `fh` tall (the frame's height for a
+// width of 100), so a path is drawn at the frame's own aspect and its stroke and dashes stay even.
+const r2 = v => Math.round(v * 100) / 100;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+/** The region a slide's frame shows: { vx, vy, vw, vh } in % of the original picture, fh (frame height per
+ *  100 of width) and, for a diagram, its viewBox top y0. */
+export function frameOf(s) {
+  if (s.visual) {
+    const [y0, y1] = visualFit(s.visual, s.focus);
+    return { vx: 0, vy: y0 / 0.5625, vw: 100, vh: (y1 - y0) / 0.5625, fh: r2(y1 - y0), y0: r2(y0) };
+  }
+  const [vx, vy, vw, vh] = s.view || [0, 0, 100, 100];
+  return { vx, vy, vw, vh, fh: r2(56.25 * vh / vw), y0: 0 };
 }
-/** A drawn maths diagram (Number Quest's CPA pictorial step): the slide's `visual` data rendered as one
- *  SVG in the same 100 x 56.25 space the guided-focus boxes use, on the brand Cream ground so it reads
- *  the same in light and dark themes. These are the lesson's own worked numbers drawn — place-value
+/** A focus box, from % of the original picture to % of the frame (clamped inside it). */
+export function boxIn(f, b) {
+  const x1 = clamp((b[0] - f.vx) / f.vw * 100, 0, 100), y1 = clamp((b[1] - f.vy) / f.vh * 100, 0, 100);
+  const x2 = clamp((b[0] + b[2] - f.vx) / f.vw * 100, 0, 100), y2 = clamp((b[1] + b[3] - f.vy) / f.vh * 100, 0, 100);
+  return [r2(x1), r2(y1), r2(Math.max(1, x2 - x1)), r2(Math.max(1, y2 - y1))];
+}
+/** A path point, from % of the original picture to the overlay's SVG space (100 x fh). */
+const ptIn = (f, p) => [r2((p[0] - f.vx) / f.vw * 100), r2((p[1] - f.vy) / f.vh * f.fh)];
+/** The guided-focus layer, shared by screenshot slides (img) and drawn-diagram slides (visual): one numbered
+ *  box (and dotted path) per step, played by public/js/course.js. A screenshot's cue rides on the picture as a
+ *  chip the script parks clear of the step's box and badge (falling back to the caption strip under the
+ *  picture when no spot is clear); a diagram's cue always goes in the strip, never over the drawing. */
+function gfLayer(t, s, f) {
+  const vf = !!s.visual;
+  return html`<div class="gf-layer" aria-hidden="true">${s.focus.map((st, i) => {
+    const b = boxIn(f, st.box);
+    return html`
+      <div class="gf-step" data-i="${i}">
+        ${st.path ? html`<svg class="gf-path" viewBox="0 0 100 ${f.fh}" preserveAspectRatio="none"><polyline points="${st.path.map(p => ptIn(f, p).join(',')).join(' ')}" pathLength="100" vector-effect="non-scaling-stroke"></polyline></svg>` : ''}
+        <div class="gf-box" style="--bx:${b[0]};--by:${b[1]};left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%"><span class="gf-badge">${i + 1}</span></div>
+        ${vf ? '' : html`<div class="gf-cue${b[1] + b[3] / 2 > 66 ? ' gf-cue--top' : ''}"><span class="gf-cue-n">${i + 1}</span>${st.cue}</div>`}
+      </div>`;
+  })}
+    </div>`;
+}
+/** The caption strip under a toured picture: the active step's numbered cue (a diagram's always; a
+ *  screenshot's only when its chip finds no clear spot on the picture). The cells share one grid cell, so the
+ *  strip is as tall as its longest cue and never jumps between steps. Decoration (aria-hidden): the cue list
+ *  in the figcaption carries the words for assistive tech, and is the visible list in the static mode. */
+function gfStrip(t, s) {
+  return html`<div class="gf-strip" aria-hidden="true">${s.focus.map((st, i) => html`<p class="gf-sc" data-i="${i}"><span class="gf-cue-n">${i + 1}</span><span>${st.cue}</span></p>`)}</div>`;
+}
+const gfReplay = t => html`<button class="gf-replay" type="button" hidden><span aria-hidden="true">↻</span> ${t('courses.lesson.replayFocus')}</button>`;
+const gfCues = s => html`<figcaption class="gf-cues"><ol>${s.focus.map(st => html`<li>${st.cue}</li>`)}</ol></figcaption>`;
+/** A drawn math diagram (Number Quest's CPA pictorial step): the slide's `visual` data rendered as one
+ *  SVG in the same 100 x 56.25 space the guided-focus boxes are written in, on the brand Cream ground so it
+ *  reads the same in light and dark themes. These are the lesson's own worked numbers drawn — place-value
  *  cards, a number line with hops, bar models, fraction bars, an array, a tile strip — never decoration:
  *  every label is a number or word the slide's text teaches. Layouts are fixed per type so the authored
- *  focus boxes (percent space) land on the part they name. Tones cycle the brand palette. */
+ *  focus boxes land on the part they name; the frame then shows only the drawing's content band (visualFit).
+ *  Tones cycle the brand palette. */
 const VF_TONES = ['#66C792', '#FFD23F', '#8FC1F5', '#F2A65A'];
 /** The one drawn caption a diagram carries (tiles and array visuals) is centred over the frame, so
  *  at the standard 3.8 units a long caption overflows the 100-wide frame and clips at both edges —
@@ -292,7 +366,79 @@ const VF_TONES = ['#66C792', '#FFD23F', '#8FC1F5', '#F2A65A'];
  *  below comes from the measured per-character width of the slide font at weight 700 (worst observed
  *  0.52em across every caption in the decks, with headroom); short captions keep the standard size. */
 const labelFs = s => Math.min(3.8, 168 / String(s).length);
-function visualSvg(v) {
+/** Shape names a tile strip draws as real shapes (the geometry steps): a polygon's corner count (0: circle). */
+const SHAPES = { triangle: 3, square: 4, rectangle: 4, rhombus: 4, pentagon: 5, hexagon: 6, octagon: 8, circle: 0 };
+const isShapeStrip = v => v.type === 'tiles' && v.values.every(x => Object.hasOwn(SHAPES, String(x).toLowerCase()));
+/** The top and bottom of a text line drawn at baseline y with this font size (the slide font's ascent and
+ *  descent, with a little room). */
+const tTop = (y, size) => y - 0.84 * size, tBot = (y, size) => y + 0.28 * size;
+/** Where a diagram's drawing sits, top to bottom, in the 100 x 56.25 space: [a, b]. The same numbers
+ *  visualSvg draws with (the two must change together). */
+function visualExtent(v) {
+  if (v.type === 'places') return [9, tBot(43, 4.2)];
+  if (v.type === 'numberline') {
+    const tallest = Math.max(0, ...(v.stacks || []).map(k => k.n));
+    const a = Math.min(33.4, v.point ? tTop(28.5, 4.6) : 99, v.hops && v.hops.length ? tTop(17.5, 3.8) : 99, tallest ? 33 - tallest * 3.4 - 1.2 : 99);
+    return [a, tBot(numberlineLabels(v).some(m => m.y > 45) ? 52.3 : 45, 3.6)];
+  }
+  if (v.type === 'bars' || v.type === 'fraction') {
+    const n = v.rows.length, yOff = n === 1 ? 13 : n === 2 ? 5 : 0;
+    return [v.half ? tTop(3.4 + yOff, 3.2) : tTop(8 + yOff - 1.8, 3.7), 8 + yOff + (n - 1) * 17 + 8.5];
+  }
+  if (v.type === 'array') {
+    const a = v.label ? tTop(6.5, labelFs(v.label)) : 10 + 17 / v.rows - 2.3;
+    return [a, v.extra ? 53 : 10 + (v.rows - 0.5) * 34 / v.rows + 2.3];
+  }
+  if (v.type === 'tiles') {
+    const shapes = isShapeStrip(v);
+    return [v.label ? tTop(10, labelFs(v.label)) : shapes ? 14 : 18, shapes ? 44 : v.bad != null ? tBot(40, 3.4) : 33];
+  }
+  if (v.type === 'shapes') return [9, tBot(48, shapeNameFs(v))];
+  return [0, 56.25];
+}
+/** The diagram's content band [y0, y1] in the 100 x 56.25 space: the drawing with a margin, grown to hold
+ *  every focus box (and its ring), never flatter than 4.4 : 1. */
+export function visualFit(v, focus) {
+  let [a, b] = visualExtent(v);
+  a -= 4; b += 4;
+  for (const st of focus || []) { a = Math.min(a, st.box[1] * 0.5625 - 4); b = Math.max(b, (st.box[1] + st.box[3]) * 0.5625 + 4); }
+  a = Math.max(0, a); b = Math.min(56.25, b);
+  if (b - a < 22.7) { const m = (22.7 - (b - a)) / 2; a = Math.max(0, a - m); b = Math.min(56.25, a + 22.7); a = Math.max(0, b - 22.7); }
+  return [r2(a), r2(b)];
+}
+/** A number line's mark labels, placed (see visualSvg): { at, label, cx, hw, y }. */
+function numberlineLabels(v) {
+  const X = at => 6 + ((at - v.min) / (v.max - v.min)) * 88;
+  // Mark labels are centred on their ticks; where two ticks sit close together (287 and 300 on the
+  // counting-up line) the centred labels print over each other — measured overlap 1.7 units — so
+  // label centres are nudged apart until they clear. The ticks stay at their true positions;
+  // only the words move, and only on lines whose labels actually collide.
+  const mlabels = (v.marks || []).map(m => ({ at: m.at, label: m.label, cx: X(m.at), hw: Math.max(1.7, String(m.label).length * 1.12), y: 45 }));
+  const byX = [...mlabels].sort((a, b) => a.cx - b.cx);
+  const trueCx = byX.map(c => c.cx);
+  for (let i = 1; i < byX.length; i++) { const p = byX[i - 1], c = byX[i]; const min = p.cx + p.hw + 1.2 + c.hw; if (c.cx < min) c.cx = min; }
+  for (let i = byX.length - 1; i >= 0; i--) {
+    const c = byX[i];
+    if (c.cx > 99.3 - c.hw) c.cx = 99.3 - c.hw;
+    if (i > 0) { const p = byX[i - 1]; const maxP = c.cx - c.hw - 1.2 - p.hw; if (p.cx > maxP) p.cx = maxP; }
+  }
+  for (const c of byX) if (c.cx < 0.7 + c.hw) c.cx = 0.7 + c.hw;
+  // A cluster of ticks so close that nudging would shove a label more than 4 units off its own
+  // tick (398 and 400 on the 398–703 line: centres 0.6 apart, labels 6.7 wide, measured print
+  // overlap 49 units²) reads worse than the collision it fixes — the word ends up nearer the
+  // neighbour's tick than its own. Those clusters keep their true centres and take turns on a
+  // second row instead, the way textbooks stagger crowded axis labels.
+  for (let i = 0; i < byX.length; i++) {
+    let j = i;
+    while (j + 1 < byX.length && trueCx[j + 1] - byX[j + 1].hw < trueCx[j] + byX[j].hw) j++;
+    if (j > i && Math.max(...byX.slice(i, j + 1).map((c, k) => Math.abs(c.cx - trueCx[i + k]))) > 4) {
+      byX.slice(i, j + 1).forEach((c, k) => { c.cx = trueCx[i + k]; c.y = k % 2 ? 52.3 : 45; });
+    }
+    i = j;
+  }
+  return mlabels;
+}
+function visualSvg(v, f) {
   const ink = '#141414', leaf = '#1F9D63';
   const tx = (x, y, str, size, anchor = 'middle', weight = 700, fill = ink) =>
     raw(`<text x="${x}" y="${y}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" fill="${fill}">${String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`);
@@ -307,33 +453,7 @@ function visualSvg(v) {
     }).join('');
   } else if (v.type === 'numberline') {
     const X = at => 6 + ((at - v.min) / (v.max - v.min)) * 88;
-    // Mark labels are centred on their ticks; where two ticks sit close together (287 and 300 on the
-    // counting-up line) the centred labels print over each other — measured overlap 1.7 units — so
-    // label centres are nudged apart until they clear. The ticks stay at their true positions;
-    // only the words move, and only on lines whose labels actually collide.
-    const mlabels = (v.marks || []).map(m => ({ at: m.at, label: m.label, cx: X(m.at), hw: Math.max(1.7, String(m.label).length * 1.12), y: 45 }));
-    const byX = [...mlabels].sort((a, b) => a.cx - b.cx);
-    const trueCx = byX.map(c => c.cx);
-    for (let i = 1; i < byX.length; i++) { const p = byX[i - 1], c = byX[i]; const min = p.cx + p.hw + 1.2 + c.hw; if (c.cx < min) c.cx = min; }
-    for (let i = byX.length - 1; i >= 0; i--) {
-      const c = byX[i];
-      if (c.cx > 99.3 - c.hw) c.cx = 99.3 - c.hw;
-      if (i > 0) { const p = byX[i - 1]; const maxP = c.cx - c.hw - 1.2 - p.hw; if (p.cx > maxP) p.cx = maxP; }
-    }
-    for (const c of byX) if (c.cx < 0.7 + c.hw) c.cx = 0.7 + c.hw;
-    // A cluster of ticks so close that nudging would shove a label more than 4 units off its own
-    // tick (398 and 400 on the 398–703 line: centres 0.6 apart, labels 6.7 wide, measured print
-    // overlap 49 units²) reads worse than the collision it fixes — the word ends up nearer the
-    // neighbour's tick than its own. Those clusters keep their true centres and take turns on a
-    // second row instead, the way textbooks stagger crowded axis labels.
-    for (let i = 0; i < byX.length; i++) {
-      let j = i;
-      while (j + 1 < byX.length && trueCx[j + 1] - byX[j + 1].hw < trueCx[j] + byX[j].hw) j++;
-      if (j > i && Math.max(...byX.slice(i, j + 1).map((c, k) => Math.abs(c.cx - trueCx[i + k]))) > 4) {
-        byX.slice(i, j + 1).forEach((c, k) => { c.cx = trueCx[i + k]; c.y = k % 2 ? 52.3 : 45; });
-      }
-      i = j;
-    }
+    const mlabels = numberlineLabels(v);
     body = raw(`<line x1="6" y1="36" x2="94" y2="36" stroke="${ink}" stroke-width="0.8"/><path d="M94 36 l-3 -1.8 v3.6 z" fill="${ink}"/>`)
       + (v.hops || []).map(h => {
         const x1 = X(h.from), x2 = X(h.to), mid = (x1 + x2) / 2;
@@ -342,6 +462,11 @@ function visualSvg(v) {
       }).join('')
       + mlabels.map(m => raw(`<line x1="${X(m.at).toFixed(2)}" y1="33.4" x2="${X(m.at).toFixed(2)}" y2="38.6" stroke="${ink}" stroke-width="0.7"/>`)
         + tx(m.cx, m.y, m.label, 3.6, 'middle', 700)).join('')
+      + (v.stacks || []).map(k => Array.from({ length: k.n }, (_, j) => {
+        // A line plot's stack: one x per data point, piled up above its mark.
+        const cx = X(k.at), cy = 31.2 - j * 3.4, d = 1.25;
+        return raw(`<path d="M${r2(cx - d)} ${r2(cy - d)} L${r2(cx + d)} ${r2(cy + d)} M${r2(cx + d)} ${r2(cy - d)} L${r2(cx - d)} ${r2(cy + d)}" stroke="${leaf}" stroke-width="0.8" stroke-linecap="round"/>`);
+      }).join('')).join('')
       + (v.point ? raw(`<circle cx="${X(v.point.at).toFixed(2)}" cy="36" r="2.3" fill="#FFD23F" stroke="${ink}" stroke-width="0.7"/>`)
         + tx(X(v.point.at), 28.5, v.point.label, 4.6, 'middle', 800) : '');
   } else if (v.type === 'bars' || v.type === 'fraction') {
@@ -365,36 +490,106 @@ function visualSvg(v) {
   } else if (v.type === 'array') {
     const R = v.rows, C = v.cols;
     let dots = '';
-    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
-      const cx = 14 + (c + 0.5) * (72 / C), cy = 10 + (r + 0.5) * (34 / R);
-      dots += raw(`<circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="2.05" fill="${VF_TONES[0]}" stroke="${ink}" stroke-width="0.45"/>`);
+    // One array across the middle; or, turned (`turn`), the R x C array and its C x R twin side by side.
+    const grids = v.turn ? [[R, C, 6, 42], [C, R, 52, 42]] : [[R, C, 14, 72]];
+    for (const [gr, gc, x0, gw] of grids) {
+      const step = Math.min(gw / gc, 34 / gr), w = step * gc, h = step * gr, left = x0 + (gw - w) / 2, top = 10 + (34 - h) / 2;
+      const rad = Math.min(2.05, step * 0.36);
+      for (let r = 0; r < gr; r++) for (let c = 0; c < gc; c++) {
+        const cx = left + (c + 0.5) * step, cy = v.turn ? top + (r + 0.5) * step : 10 + (r + 0.5) * (34 / gr);
+        const cxx = v.turn ? cx : 14 + (c + 0.5) * (72 / gc);
+        dots += raw(`<circle cx="${cxx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${v.turn ? r2(rad) : 2.05}" fill="${VF_TONES[0]}" stroke="${ink}" stroke-width="0.45"/>`);
+      }
     }
     if (v.extra) dots += raw(`<circle cx="50" cy="50.5" r="2.05" fill="#FFD23F" stroke="${ink}" stroke-width="0.6"/>`) + tx(55, 52, v.extraLabel || '1 left over', 3.6, 'start', 800, leaf);
     body = dots + (v.label ? tx(50, 6.5, v.label, labelFs(v.label), 'middle', 700) : '');
   } else if (v.type === 'tiles') {
     const n = v.values.length, bw = (88 - (n - 1) * 2) / n;
+    // One text size for the whole row (the longest value sets it): "12 seeds" and "9:05" side by side read
+    // as one strip, not as a big tile and a small one.
+    const fs = r2(Math.min(...v.values.map(x => Math.min(3.8, (bw - 3) / (String(x).length * 0.56)))));
+    const shapes = isShapeStrip(v);
     body = v.values.map((val, i) => {
-      const x = 6 + i * (bw + 2), bad = v.bad === i;
+      const x = 6 + i * (bw + 2), bad = [].concat(v.bad ?? []).includes(i), cx = x + bw / 2;
+      if (shapes) {
+        const name = String(val).toLowerCase(), k = SHAPES[name], cy = 25.5, rr = Math.min(7.2, bw / 2 - 2.5);
+        let shape;
+        if (!k) shape = `<circle cx="${r2(cx)}" cy="${cy}" r="${r2(rr)}"`;
+        else if (name === 'rectangle') shape = `<rect x="${r2(cx - rr * 1.25)}" y="${r2(cy - rr * 0.7)}" width="${r2(rr * 2.5)}" height="${r2(rr * 1.4)}"`;
+        else {
+          const rot = name === 'rhombus' ? 0 : k === 4 ? Math.PI / 4 : -Math.PI / 2;
+          const sy = name === 'rhombus' ? 1.25 : 1, dy = k === 3 ? rr * 0.18 : 0;
+          const pts = Array.from({ length: k }, (_, j) => { const a = rot + j * 2 * Math.PI / k; return `${r2(cx + rr * Math.cos(a))},${r2(cy + dy + rr * sy * Math.sin(a))}`; }).join(' ');
+          shape = `<polygon points="${pts}"`;
+        }
+        return raw(`<rect x="${x.toFixed(2)}" y="14" width="${bw.toFixed(2)}" height="30" rx="1.8" fill="#FFFFFF" stroke="${ink}" stroke-width="0.7"/>`)
+          + raw(`${shape} fill="${VF_TONES[i % VF_TONES.length]}" stroke="${ink}" stroke-width="0.7"/>`)
+          + tx(cx, 40.2, val, fs);
+      }
       return raw(`<rect x="${x.toFixed(2)}" y="18" width="${bw.toFixed(2)}" height="15" rx="1.8" fill="${bad ? '#FFE1D6' : '#FFFFFF'}" stroke="${bad ? '#C2431F' : ink}" stroke-width="${bad ? 1 : 0.7}"${bad ? ' stroke-dasharray="2 1.4"' : ''}/>`)
-        + tx(x + bw / 2, 28, val, String(val).length > 7 ? 2.9 : 3.8)
-        + (bad ? tx(x + bw / 2, 40, 'swapped!', 3.4, 'middle', 800, '#C2431F') : '');
+        + tx(cx, r2(25.5 + fs * 0.36), val, fs)
+        + (bad ? tx(cx, 40, 'swapped!', 3.4, 'middle', 800, '#C2431F') : '');
     }).join('') + (v.label ? tx(50, 10, v.label, labelFs(v.label), 'middle', 700) : '');
   }
-  return raw(`<svg class="vf-svg" viewBox="0 0 100 56.25" role="img" aria-label="${String(v.label || '').replace(/"/g, '&quot;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
+  else if (v.type === 'shapes') body = shapesBody(v, tx, ink);
+  return raw(`<svg class="vf-svg" viewBox="0 ${f.y0} 100 ${f.fh}" role="img" aria-label="${String(v.label || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
+}
+/** A shapes diagram's one name size: the longest name sets it (one text size per row). */
+function shapeNameFs(v) {
+  const cw = 88 / v.items.length;
+  return r2(Math.min(...v.items.map(it => Math.min(3.8, (cw - 3) / (it.name.length * 0.56)))));
+}
+/** Real drawn shapes: n equal cells across 6-94, each a regular outline centred in the band y 10-40 and its
+ *  name under it at y 48; `corners` marks the right angles with small squares. */
+function shapesBody(v, tx, ink) {
+  const n = v.items.length, cw = 88 / n, fs = shapeNameFs(v);
+  return v.items.map((it, i) => {
+    const cx = 6 + cw * (i + 0.5), cy = 25, R = Math.min(13, cw / 2 - 3);
+    let pts;
+    const poly = (k, rot) => Array.from({ length: k }, (_, j) => { const a = rot + j * 2 * Math.PI / k; return [cx + R * Math.cos(a), cy + R * Math.sin(a)]; });
+    if (it.shape === 'triangle') pts = poly(3, -Math.PI / 2).map(([x, y]) => [x, y + R * 0.25]);
+    else if (it.shape === 'square') { const h = R * 0.78; pts = [[cx - h, cy - h], [cx + h, cy - h], [cx + h, cy + h], [cx - h, cy + h]]; }
+    else if (it.shape === 'rectangle') { const w = R, h = R * 0.6; pts = [[cx - w, cy - h], [cx + w, cy - h], [cx + w, cy + h], [cx - w, cy + h]]; }
+    else if (it.shape === 'pentagon') pts = poly(5, -Math.PI / 2).map(([x, y]) => [x, y + R * 0.1]);
+    else if (it.shape === 'hexagon') pts = poly(6, 0);
+    else if (it.shape === 'rhombus') pts = [[cx, cy - R], [cx + R * 0.72, cy], [cx, cy + R], [cx - R * 0.72, cy]];
+    else if (it.shape === 'parallelogram') { const w = R * 0.75, h = R * 0.55, k = R * 0.32; pts = [[cx - w + k, cy - h], [cx + w + k, cy - h], [cx + w - k, cy + h], [cx - w - k, cy + h]]; }
+    else { const h = R * 0.6; pts = [[cx - R * 0.5, cy - h], [cx + R * 0.5, cy - h], [cx + R, cy + h], [cx - R, cy + h]]; } // trapezoid
+    let marks = '';
+    if (it.corners) {
+      // A right-angle mark in every square corner (the corner's two sides meet at 90 degrees).
+      const m = Math.min(2.2, R * 0.2);
+      pts.forEach((p, j) => {
+        const a = pts[(j + pts.length - 1) % pts.length], b = pts[(j + 1) % pts.length];
+        const u = [a[0] - p[0], a[1] - p[1]], w = [b[0] - p[0], b[1] - p[1]];
+        const lu = Math.hypot(...u), lw = Math.hypot(...w);
+        if (Math.abs((u[0] * w[0] + u[1] * w[1]) / (lu * lw)) > 0.02) return;
+        const q1 = [p[0] + u[0] / lu * m, p[1] + u[1] / lu * m], q2 = [p[0] + w[0] / lw * m, p[1] + w[1] / lw * m];
+        const c = [q1[0] + w[0] / lw * m, q1[1] + w[1] / lw * m];
+        marks += `<path d="M${r2(q1[0])} ${r2(q1[1])} L${r2(c[0])} ${r2(c[1])} L${r2(q2[0])} ${r2(q2[1])}" fill="none" stroke="${ink}" stroke-width="0.5"/>`;
+      });
+    }
+    return raw(`<polygon points="${pts.map(([x, y]) => `${r2(x)},${r2(y)}`).join(' ')}" fill="${VF_TONES[i % VF_TONES.length]}" stroke="${ink}" stroke-width="0.7" stroke-linejoin="round"/>${marks}`)
+      + tx(r2(cx), 48, it.name, fs);
+  }).join('');
+}
+/** A screenshot in its frame: the whole picture, or its `view` region scaled to the frame's width. */
+function shotImg(s, f) {
+  const crop = !!s.view;
+  const style = crop ? `width:${r2(10000 / f.vw)}%;height:${r2(10000 / f.vh)}%;left:${r2(-f.vx / f.vw * 100)}%;top:${r2(-f.vy / f.vh * 100)}%` : '';
+  return html`<img class="simg${crop ? ' simg--crop' : ''}" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async"${style ? raw(` style="${style}"`) : ''}>`;
 }
 function slideArt(t, s) {
   if (s.story) return storyArt(t, s);
-  if (s.visual) {
-    const fig = visualSvg(s.visual);
-    if (!s.focus) return html`<figure class="smedia vf">${fig}</figure>`;
-    return html`<figure class="smedia gf vf" data-gf>${fig}${gfLayer(t, s)}</figure>`;
-  }
-  if (!s.img) return art(s.art);
-  const img = html`<img class="simg" src="/img/${s.img}.webp" alt="${s.alt || ''}" width="1280" height="720" loading="lazy" decoding="async">`;
-  if (!s.focus) return html`<figure class="smedia">${img}</figure>`;
-  return html`<figure class="smedia gf" data-gf>
-    ${img}
-    ${gfLayer(t, s)}
+  if (!s.visual && !s.img) return art(s.art);
+  const f = frameOf(s);
+  const gf = !!s.focus, vf = !!s.visual, crop = !vf && !!s.view;
+  // --ar: the frame's width / height; --fhr: its height as a fraction of its width (the badge's clamps).
+  const style = `--ar:${r2(100 / f.fh)};--fhr:${r2(f.fh / 100)}`;
+  const pic = vf ? visualSvg(s.visual, f) : shotImg(s, f);
+  return html`<figure class="smedia${gf ? ' gf' : ''}${vf ? ' vf' : ''}${crop ? ' crop' : ''}" style="${style}"${gf ? raw(' data-gf') : ''}>
+    <div class="sframe">${pic}${gf ? gfLayer(t, s, f) : ''}${crop ? html`<a class="szoom" href="/img/${s.img}.webp" data-zoom aria-label="${t('courses.lesson.wholePicture')}"><span aria-hidden="true">⤢</span></a>` : ''}${gf && !vf ? gfReplay(t) : ''}</div>
+    ${gf ? html`${gfStrip(t, s)}${vf ? gfReplay(t) : ''}${gfCues(s)}` : ''}
   </figure>`;
 }
 /** What read-aloud says for a slide: its own line if it has one, else its title and text (and the words). */
@@ -445,11 +640,12 @@ export function afterSection(t, c, step, s, next) {
 }
 
 /** A course step: the slides, the quick check and the game module. */
-export function stepPage({ course: c, s, total, next, seed, result, signedIn }) {
+export function stepPage({ course: c, s, total, next, seed, result, signedIn, slides: deckSlides }) {
   const { t } = current();
   const { step } = s;
   const qs = C.questions(step, seed);
-  const n = step.slides.length;
+  const slides = deckSlides || step.slides;
+  const n = slides.length;
   return html`<article class="cl-page" data-step="${step.key}">
     <a class="back small" href="/courses/${c.slug}#step-${step.key}">← ${t('courses.lesson.map')}</a>
     <header class="cl-head">
@@ -457,11 +653,11 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn }) 
       <h1${en}>${step.title}</h1>
     </header>
     <div class="deck" id="deck" lang="en" dir="ltr" role="region" aria-roledescription="carousel" aria-label="${step.title}">
-      ${step.slides.map((sl, i) => slide(t, sl, i, n, step))}
+      ${slides.map((sl, i) => slide(t, sl, i, n, step))}
     </div>
     <nav class="deck-nav" id="deck-nav" hidden aria-label="${t('courses.lesson.slides')}">
       <button class="btn" type="button" id="deck-back">‹ ${t('courses.lesson.back')}</button>
-      <div class="deck-dots" id="deck-dots">${step.slides.map((_, i) => html`<button type="button" class="dot" data-i="${i}" aria-label="${t('courses.lesson.slide', { n: i + 1, total: n })}"></button>`)}</div>
+      <div class="deck-dots" id="deck-dots">${slides.map((_, i) => html`<button type="button" class="dot" data-i="${i}" aria-label="${t('courses.lesson.slide', { n: i + 1, total: n })}"></button>`)}</div>
       <button class="btn btn-primary" type="button" id="deck-next" data-next="${t('courses.lesson.next')} ›" data-check="${t('courses.lesson.toCheck')} ›">${t('courses.lesson.next')} ›</button>
     </nav>
     <section class="cl-check" id="check" aria-labelledby="check-h" data-done="${s.checked ? '1' : ''}" data-read="${s.read ? '1' : ''}">
@@ -474,6 +670,10 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn }) 
         ${signedIn ? checkForm(t, c, step, qs) : html`<p class="notice">${t('errors.api.signInFirst')}</p>`}`}
     </section>
     ${s.checked ? afterSection(t, c, step, s, next) : html`<div id="play-slot"></div>`}
+    ${slides.some(sl => sl.img && sl.view) ? html`<dialog class="szoom-dlg" id="szoom" aria-label="${t('courses.lesson.wholePicture')}">
+      <button class="btn szoom-x" type="button" id="szoom-x"><span aria-hidden="true">✕</span> ${t('courses.lesson.close')}</button>
+      <img id="szoom-img" alt="" width="1280" height="720">
+    </dialog>` : ''}
     ${jsonData('page-data', { course: c.slug, step: step.key, slides: n, checked: s.checked, read: s.read })}
   </article>`;
 }

@@ -588,7 +588,7 @@ test("Greg's slide renders the same box % at 390/834/1280, contains slot 3, and 
       seen[w] = await page.evaluate(() => {
         const fig = document.querySelector('.slide:not([hidden]) .smedia.gf');
         fig.setAttribute('data-gf-step', '1');
-        const fr = fig.getBoundingClientRect();
+        const fr = fig.querySelector('.sframe').getBoundingClientRect(); // the picture's frame (the figure also holds the caption strip)
         const box = fig.querySelectorAll('.gf-step')[1].querySelector('.gf-box');
         const br = box.getBoundingClientRect();
         const outset = Math.abs(parseFloat(getComputedStyle(box, '::after').inset.split(' ')[0])); // inset is negative (the ring sits OUTSIDE the box)
@@ -611,8 +611,9 @@ test("Greg's slide renders the same box % at 390/834/1280, contains slot 3, and 
       assert.ok(!(72.9 > bx - ox && 72.9 < bx + bw + ox && 45.8 > by - oy && 45.8 < by + bh + oy), `width ${w}: ring excludes slot 4's centre`);
     }
     assert.ok(seen[390].outset <= 5, `phone ring outset ${seen[390].outset}px ≤ 5px (figure-scaled, was a fixed 8px)`);
-    assert.ok(seen[1280].outset >= 7, `desktop ring outset ${seen[1280].outset}px ≥ 7px (unchanged at full figure width)`);
-    assert.ok(seen[834].outset === seen[1280].outset, 'tablet figure is the same 720px as desktop, so the outset matches');
+    // The ring scales with the frame at every size (1.15% of its width): the laptop's side-by-side frame is
+    // narrower than the old full-width one, so its ring is too.
+    for (const w of [390, 834, 1280]) assert.ok(Math.abs(seen[w].outset / seen[w].figW * 100 - 1.15) < 0.05, `width ${w}: ring outset ${seen[w].outset}px is 1.15% of the ${seen[w].figW}px frame`);
   } finally {
     await browser.close();
   }

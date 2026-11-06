@@ -84,14 +84,15 @@ test('the step page renders the overlay: boxes in %, the dotted path, cues and t
   const kid = newKid(); C.setBand(kid, course, '1b');
   const page = await get('/courses/cs-quest/1b-1.1', kid);
   assert.equal(page.status, 200);
-  assert.match(page.text, /<figure class="smedia gf" data-gf>/, 'a guided-focus figure');
+  assert.match(page.text, /<figure class="smedia gf" style="--ar:1.78;--fhr:0.56" data-gf>\s*<div class="sframe">/, 'a guided-focus figure: a 16:9 frame (no crop)');
   assert.match(page.text, /<div class="gf-layer" aria-hidden="true">/, 'the overlay layer is decoration for AT');
   const f0 = SEED_DECK.slides[0].focus;
   assert.match(page.text, new RegExp(`class="gf-box" style="--bx:${f0[0].box[0]};--by:${f0[0].box[1]};left:${f0[0].box[0]}%;top:${f0[0].box[1]}%;width:${f0[0].box[2]}%;height:${f0[0].box[3]}%"`), 'step 1 box geometry in % (plus its --bx/--by badge-anchor vars)');
   assert.match(page.text, /<span class="gf-badge">1<\/span>/, 'numbered badge');
   // Slide 2's second step draws the path from Bolt to the flag: y is scaled into the 100x56.25 viewBox.
   const path = SEED_DECK.slides[1].focus[1].path;
-  const points = path.map(p => `${p[0]},${p[1] * 0.5625}`).join(' ');
+  const r2 = v => Math.round(v * 100) / 100;
+  const points = path.map(p => `${r2(p[0])},${r2(p[1] * 0.5625)}`).join(' ');
   assert.ok(page.text.includes(`points="${points}"`), `the polyline points: ${points}`);
   f0.forEach((st, i) => {
     assert.ok(page.text.includes(`<div class="gf-cue"><span class="gf-cue-n">${i + 1}</span>${st.cue}</div>`), `cue chip with its step number: ${st.cue}`);
@@ -115,7 +116,7 @@ test('a pictured slide without focus renders the plain figure, no overlay', asyn
   const kid = newKid(); C.setBand(kid, course, '1b');
   const page = await get('/courses/cs-quest/1b-1.1', kid);
   assert.equal(page.status, 200);
-  assert.match(page.text, /<figure class="smedia"><img class="simg"/);
+  assert.match(page.text, /<figure class="smedia" style="--ar:1.78;--fhr:0.56">\s*<div class="sframe"><img class="simg"/);
   assert.doesNotMatch(page.text, /gf-layer|gf-replay/);
   writeDeck(() => {});
 });

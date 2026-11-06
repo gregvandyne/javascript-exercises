@@ -69,6 +69,12 @@
 .nqpath { max-width: 860px; margin: 0 auto; }
 .nqp-tally-img { height: 96px; width: auto; flex: none; align-self: center; }
 @media (max-width: 480px) { .nqp-tally-img { height: 72px; } }
+/* The street's header: Tally beside the title and subtitle (she is the course's icon, like the emoji on the
+   other two courses), and the welcome line under both at full width — no wide indent beside her. */
+.nqp-hero { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 16px; }
+.nqp-hero .nqp-tally-img { align-self: center; }
+.nqp-hero .lead { margin: 4px 0 0; }
+.nqp-hero-p { grid-column: 1 / -1; margin: 0; }
 .nqp-hud { margin: 18px 0 6px; }
 .nqp-hud-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; margin-bottom: 10px; }
 @media (max-width: 560px) { .nqp-hud-row { grid-template-columns: 1fr; } }

@@ -50,6 +50,255 @@ slides.forEach((s, i) => {
   b.addEventListener('click', () => speak(b, i, s.dataset.say));
 });
 
+// ---------------------------------------------------------------------------------------------- guided focus
+// A slide picture with focus steps plays a short tour once per view: the clean picture first (~1s), then each
+// step's box, dotted path and cue in order (~1.9s each), then the clean picture again — and only then does
+// the figure's Replay button appear (scrolling away mid-tour ends the tour the same way). An
+// IntersectionObserver starts it when the figure scrolls (or pages, in the deck above) into view and
+// resets it when it leaves, so the same code serves the paged deck and the plain scrolling page. Reduced
+// motion: no tour at all — the CSS static mode shows every step's box with its badge and the cues as a
+// list under the picture.
+//
+// Where the words go (views/courses.js gfLayer): a drawn diagram's cue is always the caption strip under the
+// picture, never on it. A screenshot's cue is a chip on the picture, parked clear of the step's ring, its
+// badge and the zoom button; when some step of the figure has no clear spot, the whole figure's cues go to
+// the strip instead (.gf--strip). On a diagram the script also grows each box to hold every label its ring
+// would touch (so no box edge ever sits on text: "5/8" never reads "/8") and parks each badge at the first
+// corner outside the ring that is clear of every label.
+const gfTimers = new WeakMap();
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function gfStop(fig) {
+  for (const id of gfTimers.get(fig) || []) clearTimeout(id);
+  gfTimers.delete(fig);
+  fig.removeAttribute('data-gf-step');
+}
+function gfFinish(fig) {
+  gfStop(fig);
+  const btn = fig.querySelector('.gf-replay');
+  if (btn) btn.hidden = false;
+}
+function gfPlay(fig) {
+  gfStop(fig);
+  gfLayout(fig);
+  const btn = fig.querySelector('.gf-replay');
+  if (btn) btn.hidden = true;
+  const n = fig.querySelectorAll('.gf-step').length;
+  if (!n) return;
+  const ids = [];
+  let at = 1000;
+  for (let i = 0; i < n; i++) { ids.push(setTimeout(() => fig.setAttribute('data-gf-step', String(i)), at)); at += 1900; }
+  ids.push(setTimeout(() => gfFinish(fig), at));
+  gfTimers.set(fig, ids);
+}
+const gfFigs = $$('.smedia.gf');
+const rectOf = el => { const r = el.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom }; };
+const grow = (r, d) => ({ left: r.left - d, top: r.top - d, right: r.right + d, bottom: r.bottom + d });
+const area = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+/** The ring's outset in px (the box's ::after inset, negative) plus its border. */
+function ringOut(box) {
+  const cs = getComputedStyle(box, '::after');
+  return (Math.abs(parseFloat(cs.top)) || 0) + 0.5;
+}
+
+// --- diagrams: boxes off the text, badges off the text
+/** Grow each box of a diagram so that no label is cut by its edge or by its ring. Works in the drawing's own
+ *  units (the SVG viewBox), so the result is the same at every size: done once per figure. A label is held
+ *  whole when it comes within RING units of the box — the ring's reach on the narrowest phone frame (~1.7
+ *  units: 5.5px of outset and border at ~3.3px a unit) — and the box keeps PAD units of room around it. */
+function gfFitVf(fig) {
+  if (fig.dataset.gfFit) return;
+  const svg = fig.querySelector('.vf-svg');
+  if (!svg || !svg.getBoundingClientRect().width) return;
+  const vb = svg.viewBox.baseVal, RING = 1.9, PAD = 0.7;
+  const texts = [];
+  for (const t of svg.querySelectorAll('text')) {
+    try { const b = t.getBBox(); if (b.width > 0) texts.push({ l: b.x, t: b.y, r: b.x + b.width, b: b.y + b.height }); } catch (e) { /* not rendered */ }
+  }
+  const hit = (a, b) => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+  for (const box of fig.querySelectorAll('.gf-box')) {
+    let r = { l: vb.x + parseFloat(box.style.left) / 100 * vb.width, t: vb.y + parseFloat(box.style.top) / 100 * vb.height };
+    r.r = r.l + parseFloat(box.style.width) / 100 * vb.width; r.b = r.t + parseFloat(box.style.height) / 100 * vb.height;
+    const w0 = r.r - r.l, h0 = r.b - r.t;
+    for (let pass = 0; pass < 8; pass++) {
+      let changed = false;
+      for (const x of texts) {
+        const reach = { l: r.l - RING, t: r.t - RING, r: r.r + RING, b: r.b + RING };
+        if (!hit(reach, x)) continue;
+        const grown = { l: Math.min(r.l, x.l - PAD), t: Math.min(r.t, x.t - PAD), r: Math.max(r.r, x.r + PAD), b: Math.max(r.b, x.b + PAD) };
+        const cx = (x.l + x.r) / 2, cy = (x.t + x.b) / 2;
+        let want = grown;
+        // A label whose middle is outside the box (the bar's title just above it, a neighbour's number) is
+        // left out: the box's edge on that side pulls back until its ring clears the label — as long as the
+        // box keeps at least half its size that way. A label whose middle is inside is taken in whole.
+        if (!(cx > r.l && cx < r.r && cy > r.t && cy < r.b)) {
+          const cuts = [];
+          if (cy <= r.t) cuts.push({ ...r, t: x.b + RING });
+          if (cy >= r.b) cuts.push({ ...r, b: x.t - RING });
+          if (cx <= r.l) cuts.push({ ...r, l: x.r + RING });
+          if (cx >= r.r) cuts.push({ ...r, r: x.l - RING });
+          const ok = cuts.filter(c => c.r - c.l >= w0 / 2 && c.b - c.t >= h0 / 2).sort((a, b) => (b.r - b.l) * (b.b - b.t) - (a.r - a.l) * (a.b - a.t));
+          if (ok.length) want = ok[0];
+        }
+        if (Math.abs(want.l - r.l) + Math.abs(want.t - r.t) + Math.abs(want.r - r.r) + Math.abs(want.b - r.b) > 1e-6) { r = want; changed = true; }
+      }
+      if (!changed) break;
+    }
+    r = { l: Math.max(vb.x, r.l), t: Math.max(vb.y, r.t), r: Math.min(vb.x + vb.width, r.r), b: Math.min(vb.y + vb.height, r.b) };
+    const pct = v => Math.round(v * 100) / 100;
+    const x = pct((r.l - vb.x) / vb.width * 100), y = pct((r.t - vb.y) / vb.height * 100);
+    box.style.left = x + '%'; box.style.top = y + '%';
+    box.style.width = pct((r.r - r.l) / vb.width * 100) + '%'; box.style.height = pct((r.b - r.t) / vb.height * 100) + '%';
+    box.style.setProperty('--bx', x); box.style.setProperty('--by', y);
+  }
+  fig.dataset.gfFit = '1';
+}
+/** Park each diagram badge at the first spot outside its ring that is inside the frame and clear of every
+ *  label (and of the ring). No clear spot: the badge stays off (the strip carries the step's number); in the
+ *  static mode, where every box shows at once, it takes the spot that covers the least. */
+function gfBadgesVf(fig) {
+  const frame = fig.querySelector('.sframe');
+  const fr = rectOf(frame);
+  const texts = [...fig.querySelectorAll('.vf-svg text')].map(t => grow(rectOf(t), 1));
+  for (const box of fig.querySelectorAll('.gf-box')) {
+    const badge = box.querySelector('.gf-badge');
+    if (!badge) continue;
+    badge.classList.remove('gf-badge--at', 'gf-badge--off');
+    const d = badge.offsetWidth || 20, o = ringOut(box) + 2;
+    const b = rectOf(box), w = b.right - b.left, h = b.bottom - b.top;
+    const ring = grow(b, o);
+    const spots = [[-o - d, -o - d], [w + o, -o - d], [-o - d, h + o], [w + o, h + o], [0, -o - d], [w - d, -o - d], [0, h + o], [w - d, h + o],
+      [-o - d, (h - d) / 2], [w + o, (h - d) / 2], [(w - d) / 2, -o - d], [(w - d) / 2, h + o]];
+    let best = null, bestA = Infinity;
+    for (const [x, y] of spots) {
+      const r = { left: b.left + x, top: b.top + y, right: b.left + x + d, bottom: b.top + y + d };
+      if (r.left < fr.left || r.top < fr.top || r.right > fr.right || r.bottom > fr.bottom) continue;
+      const a = texts.reduce((s, t) => s + area(r, t), 0) + area(r, ring);
+      if (a < bestA) { bestA = a; best = [x, y]; }
+      if (!a) break;
+    }
+    if (best && (!bestA || reduced)) {
+      badge.style.setProperty('--gx', best[0] + 'px'); badge.style.setProperty('--gy', best[1] + 'px');
+      badge.classList.add('gf-badge--at');
+    } else badge.classList.add('gf-badge--off');
+  }
+}
+
+// --- screenshots: the cue chip clear of the ring, the badge and the zoom button
+// Each step's chip is measured against its ring (the box plus its outset), its badge and the zoom button,
+// and settled on the first placement that clears them, trying in order: the server's side as styled; the
+// same side at full width (a wider chip wraps less); the other side both ways; the same placements anchored
+// to the opposite corner; the chip slid sideways past the badge; the chip pulled tighter into its corner
+// (2px from the edge); and the chip slightly smaller. -> true when a clear placement was found.
+function gfCueOverlap(cue, box, badge, zoom) {
+  const cr = rectOf(cue);
+  if (cr.right - cr.left <= 0) return 0;
+  const targets = [grow(rectOf(box), ringOut(box)), rectOf(badge)];
+  if (zoom) targets.push(rectOf(zoom));
+  return targets.reduce((s, r) => s + area(cr, r), 0);
+}
+function gfPlaceCue(fig, i) {
+  const step = fig.querySelector(`.gf-step[data-i="${i}"]`);
+  if (!step) return true;
+  const cue = step.querySelector('.gf-cue'), box = step.querySelector('.gf-box'), badge = step.querySelector('.gf-badge');
+  if (!cue || !box || !badge) return true;
+  const zoom = fig.querySelector('.szoom');
+  if (cue.dataset.gfTop === undefined) cue.dataset.gfTop = cue.classList.contains('gf-cue--top') ? '1' : '';
+  const serverTop = cue.dataset.gfTop === '1';
+  const chip = cue.querySelector('.gf-cue-n');
+  const apply = (top, anchor, wide, shiftPx, tight, compact) => {
+    cue.classList.toggle('gf-cue--top', top);
+    cue.style.left = anchor === 'right' ? 'auto' : (shiftPx ? shiftPx + 'px' : '');
+    cue.style.right = anchor === 'right' ? '10px' : '';
+    cue.style.maxWidth = wide || shiftPx ? 'calc(100% - 20px)' : '';
+    cue.style.top = top && tight ? '2px' : '';
+    cue.style.bottom = !top && tight ? '2px' : '';
+    cue.style.fontSize = compact ? '12px' : '';
+    cue.style.lineHeight = compact ? '1.2' : '';
+    cue.style.padding = compact ? '3px 9px' : '';
+    if (chip) {
+      chip.style.width = compact ? '14px' : '';
+      chip.style.height = compact ? '14px' : '';
+      chip.style.fontSize = compact ? '10px' : '';
+    }
+  };
+  const tries = [];
+  for (const top of [serverTop, !serverTop]) for (const [anchor, wide] of [['left', false], ['left', true], ['right', false], ['right', true]]) tries.push([top, anchor, wide, 0]);
+  const shift = () => Math.ceil(badge.getBoundingClientRect().right - fig.querySelector('.sframe').getBoundingClientRect().left) + 6;
+  for (const top of [serverTop, !serverTop]) tries.push([top, 'left', true, 'shift']);
+  for (const top of [serverTop, !serverTop]) for (const anchor of ['left', 'right']) tries.push([top, anchor, true, 0, true]);
+  for (const top of [serverTop, !serverTop]) for (const anchor of ['left', 'right']) tries.push([top, anchor, true, 0, true, true]);
+  for (const top of [serverTop, !serverTop]) for (const tight of [false, true]) tries.push([top, 'left', true, 'shift', tight, true]);
+  let best = null, bestArea = Infinity;
+  for (const t of tries) {
+    const args = t.map(v => (v === 'shift' ? shift() : v));
+    apply(...args);
+    const a = gfCueOverlap(cue, box, badge, zoom);
+    if (!a) return true; // first fully clear placement, in preference order
+    if (a < bestArea) { bestArea = a; best = args; }
+  }
+  if (best) apply(...best);
+  return false;
+}
+/** Settle a figure's tour for its current size: diagram boxes and badges, or screenshot chips (and the strip
+ *  fallback). Only a figure on show can be measured; the deck calls this when a slide is shown. */
+function gfLayout(fig) {
+  if (!fig.querySelector('.sframe').getBoundingClientRect().width) return;
+  if (fig.classList.contains('vf')) { gfFitVf(fig); gfBadgesVf(fig); return; }
+  fig.classList.remove('gf--strip');
+  const n = fig.querySelectorAll('.gf-step').length;
+  let fits = true;
+  for (let i = 0; i < n; i++) if (!gfPlaceCue(fig, i)) fits = false;
+  fig.classList.toggle('gf--strip', !fits);
+  // The Replay button follows the cues: on the picture with the chips, under it with the strip.
+  const btn = fig.querySelector('.gf-replay');
+  if (btn) { if (fits) fig.querySelector('.sframe').append(btn); else fig.querySelector('.gf-strip').after(btn); }
+}
+for (const fig of gfFigs) fig.classList.add('gf-js');
+if (gfFigs.length) {
+  let rt = 0;
+  addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { for (const fig of gfFigs) gfLayout(fig); }, 120); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const fig of gfFigs) gfLayout(fig); });
+  for (const fig of gfFigs) gfLayout(fig);
+}
+if (gfFigs.length && !reduced) {
+  const gfIO = new IntersectionObserver(es => {
+    for (const e of es) {
+      if (e.isIntersecting) { if (!e.target.dataset.gfPlayed) { e.target.dataset.gfPlayed = '1'; gfPlay(e.target); } }
+      else if (e.target.dataset.gfPlayed) { delete e.target.dataset.gfPlayed; gfFinish(e.target); }
+      else gfStop(e.target);
+    }
+  }, { threshold: 0.35 });
+  for (const fig of gfFigs) {
+    gfIO.observe(fig);
+    const btn = fig.querySelector('.gf-replay');
+    if (btn) btn.addEventListener('click', () => { fig.dataset.gfPlayed = '1'; gfPlay(fig); });
+  }
+}
+/** Lay out the pictures of the slide just shown (they could not be measured while hidden). */
+function gfShown(slide) { for (const fig of $$('.smedia.gf', slide)) gfLayout(fig); }
+
+// ---------------------------------------------------------------------------------------------- whole picture
+// A cropped screenshot (slide `view`) shows only the part the slide is about; a tap on it, or its corner
+// button, opens the whole picture in a modal dialog (Esc, the Close button or a tap outside closes it, and
+// focus returns where it was). Without the script the corner button is a plain link to the picture.
+const zoomDlg = $('#szoom');
+if (zoomDlg && typeof zoomDlg.showModal === 'function') {
+  const zimg = $('#szoom-img');
+  const open = fig => {
+    const img = fig.querySelector('.simg');
+    zimg.src = img.currentSrc || img.src; zimg.alt = img.alt;
+    zoomDlg.showModal();
+  };
+  for (const fig of $$('.smedia.crop')) {
+    const frame = fig.querySelector('.sframe'), link = fig.querySelector('.szoom');
+    if (link) link.addEventListener('click', e => { e.preventDefault(); open(fig); });
+    frame.addEventListener('click', e => { if (!e.target.closest('button, a')) open(fig); });
+  }
+  $('#szoom-x').addEventListener('click', () => zoomDlg.close());
+  zoomDlg.addEventListener('click', e => { if (e.target === zoomDlg) zoomDlg.close(); });
+  zoomDlg.addEventListener('close', () => { zimg.removeAttribute('src'); });
+}
+
 // ---------------------------------------------------------------------------------------------- the slides
 const dots = $$('.dot', nav), back = $('#deck-back'), next = $('#deck-next');
 function show(i, focus = false) {
@@ -61,9 +310,13 @@ function show(i, focus = false) {
   const last = at === slides.length - 1;
   next.textContent = last ? next.dataset.check : next.dataset.next;
   next.classList.toggle('btn-hot', last && !d.checked);
+  gfShown(slides[at]);
   if (focus) {
-    // The new slide starts at its top: scroll back up if the page was scrolled down past it.
-    if (deck.getBoundingClientRect().top < 0) deck.scrollIntoView({ block: 'start' });
+    // The new slide starts at its top: when the deck's top has gone off screen — above the window or under
+    // the sticky top bar — bring it back to just below the bar (the deck's scroll-margin-top is the bar's
+    // height plus a gap). A deck top already on screen stays where it is: no jump.
+    const bar = (parseFloat(getComputedStyle(deck).scrollMarginTop) || 0) - 12;
+    if (deck.getBoundingClientRect().top < bar) deck.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' });
     slides[at].querySelector('.slide-h').focus({ preventScroll: true });
   }
 }
@@ -97,164 +350,6 @@ if (deck && slides.length) {
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) show(at + (dx < 0 ? 1 : -1));
   }, { passive: true });
   deck.addEventListener('pointercancel', () => { x0 = null; });
-}
-
-// ---------------------------------------------------------------------------------------------- guided focus
-// A slide picture with focus steps plays a short tour once per view: the clean picture first (~1s), then each
-// step's box, dotted path and cue in order (~1.9s each), then the clean picture again — and only then does
-// the figure's Replay button appear (scrolling away mid-tour ends the tour the same way). An
-// IntersectionObserver starts it when the figure scrolls (or pages, in the deck above) into view and
-// resets it when it leaves, so the same code serves the paged deck and the plain scrolling page. Reduced
-// motion: no tour at all — the CSS static mode shows every step's box with its badge and the cues as a
-// list under the picture.
-const gfTimers = new WeakMap();
-function gfStop(fig) {
-  for (const id of gfTimers.get(fig) || []) clearTimeout(id);
-  gfTimers.delete(fig);
-  fig.removeAttribute('data-gf-step');
-}
-function gfFinish(fig) {
-  gfStop(fig);
-  const btn = fig.querySelector('.gf-replay');
-  if (btn) btn.hidden = false;
-}
-function gfPlay(fig) {
-  gfStop(fig);
-  const btn = fig.querySelector('.gf-replay');
-  if (btn) btn.hidden = true;
-  const n = fig.querySelectorAll('.gf-step').length;
-  if (!n) return;
-  const ids = [];
-  let at = 1000;
-  for (let i = 0; i < n; i++) { ids.push(setTimeout(() => fig.setAttribute('data-gf-step', String(i)), at)); at += 1900; }
-  ids.push(setTimeout(() => gfFinish(fig), at));
-  gfTimers.set(fig, ids);
-}
-const gfFigs = $$('.smedia.gf');
-// Cue placement, settled with real geometry. The server parks each cue chip at the bottom of the
-// picture (the top when the box centre sits in the bottom third), but that static rule cannot know
-// the chip's rendered height: on a phone figure the chip wraps to two lines and grows up over the
-// ring it must never cover (measured on deck 1b/1.1 slide 0 at a 390px viewport: step 1's chip
-// overlapped its ring by ~47px², step 2's by ~1,040px², while the same steps were clear at 720px).
-// So each time a step activates, measure the chip against its ring (the box plus its outset) and
-// its badge, and settle it on the first placement that clears both, trying in order: the server's
-// side as styled; the same side at full width (a wider chip wraps less and sits lower-profile —
-// the bottom chip's CSS reserves 120px for the replay button, but that button is hidden whenever
-// a step is active, so the width is safe to use); the other side both ways; the same placements
-// anchored to the opposite corner; the chip slid sideways past the badge, which hugs the box's
-// top-left corner; the chip pulled tighter into its corner (2px from the edge); and the
-// chip slightly smaller.
-// If nothing clears, keep whichever placement overlaps least.
-function gfCueOverlap(cue, box, badge) {
-  const cr = cue.getBoundingClientRect();
-  if (!cr.width) return 0;
-  const out = Math.abs(parseFloat(getComputedStyle(box, '::after').inset.split(' ')[0])) || 0;
-  const br = box.getBoundingClientRect();
-  const gr = badge.getBoundingClientRect();
-  const targets = [
-    { left: br.left - out, top: br.top - out, right: br.right + out, bottom: br.bottom + out },
-    { left: gr.left, top: gr.top, right: gr.right, bottom: gr.bottom },
-  ];
-  let area = 0;
-  for (const r of targets) {
-    area += Math.max(0, Math.min(cr.right, r.right) - Math.max(cr.left, r.left)) *
-            Math.max(0, Math.min(cr.bottom, r.bottom) - Math.max(cr.top, r.top));
-  }
-  return area;
-}
-function gfPlaceCue(fig) {
-  const i = fig.getAttribute('data-gf-step');
-  if (i === null) return;
-  const step = fig.querySelector(`.gf-step[data-i="${i}"]`);
-  if (!step) return;
-  const cue = step.querySelector('.gf-cue'), box = step.querySelector('.gf-box'), badge = step.querySelector('.gf-badge');
-  if (!cue || !box || !badge) return;
-  if (cue.dataset.gfTop === undefined) cue.dataset.gfTop = cue.classList.contains('gf-cue--top') ? '1' : '';
-  const serverTop = cue.dataset.gfTop === '1';
-  const chip = cue.querySelector('.gf-cue-n');
-  const apply = (top, anchor, wide, shiftPx, tight, compact) => {
-    cue.classList.toggle('gf-cue--top', top);
-    cue.style.left = anchor === 'right' ? 'auto' : (shiftPx ? shiftPx + 'px' : '');
-    cue.style.right = anchor === 'right' ? '10px' : '';
-    cue.style.maxWidth = wide || shiftPx ? 'calc(100% - 20px)' : '';
-    cue.style.top = top && tight ? '2px' : '';
-    cue.style.bottom = !top && tight ? '2px' : '';
-    // Compact: a slightly smaller chip (only ever set when nothing else clears — the steps
-    // whose box leaves a free strip shorter than the standard chip is tall).
-    cue.style.fontSize = compact ? '12px' : '';
-    cue.style.lineHeight = compact ? '1.2' : '';
-    cue.style.padding = compact ? '3px 9px' : '';
-    if (chip) {
-      chip.style.width = compact ? '14px' : '';
-      chip.style.height = compact ? '14px' : '';
-      chip.style.fontSize = compact ? '10px' : '';
-    }
-  };
-  let best = null, bestArea = Infinity;
-  for (const top of [serverTop, !serverTop]) {
-    for (const [anchor, wide] of [['left', false], ['left', true], ['right', false], ['right', true]]) {
-      apply(top, anchor, wide, 0);
-      const a = gfCueOverlap(cue, box, badge);
-      if (!a) return; // first fully clear placement, in preference order
-      if (a < bestArea) { bestArea = a; best = [top, anchor, wide, 0]; }
-    }
-  }
-  // Badge dodge: slide the chip sideways past the badge (measured from the badge's live rect).
-  const shift = Math.ceil(badge.getBoundingClientRect().right - fig.getBoundingClientRect().left) + 6;
-  for (const top of [serverTop, !serverTop]) {
-    apply(top, 'left', true, shift);
-    const a = gfCueOverlap(cue, box, badge);
-    if (!a) return;
-    if (a < bestArea) { bestArea = a; best = [top, 'left', true, shift]; }
-  }
-  // Last resorts: pull the chip tighter into its corner (2px, from the styled 10px), then the
-  // same placements with a slightly smaller chip — the few steps whose box leaves a free strip
-  // only a few px taller than the chip need exactly that.
-  for (const top of [serverTop, !serverTop]) {
-    for (const anchor of ['left', 'right']) {
-      apply(top, anchor, true, 0, true);
-      const a = gfCueOverlap(cue, box, badge);
-      if (!a) return;
-      if (a < bestArea) { bestArea = a; best = [top, anchor, true, 0, true]; }
-    }
-  }
-  for (const top of [serverTop, !serverTop]) {
-    for (const anchor of ['left', 'right']) {
-      apply(top, anchor, true, 0, true, true);
-      const a = gfCueOverlap(cue, box, badge);
-      if (!a) return;
-      if (a < bestArea) { bestArea = a; best = [top, anchor, true, 0, true, true]; }
-    }
-  }
-  for (const top of [serverTop, !serverTop]) {
-    for (const tight of [false, true]) {
-      apply(top, 'left', true, shift, tight, true);
-      const a = gfCueOverlap(cue, box, badge);
-      if (!a) return;
-      if (a < bestArea) { bestArea = a; best = [top, 'left', true, shift, tight, true]; }
-    }
-  }
-  if (best) apply(...best);
-}
-if (gfFigs.length) {
-  const gfCueMO = new MutationObserver(ms => { for (const m of ms) if (m.attributeName === 'data-gf-step') gfPlaceCue(m.target); });
-  for (const fig of gfFigs) gfCueMO.observe(fig, { attributes: true, attributeFilter: ['data-gf-step'] });
-  addEventListener('resize', () => { for (const fig of gfFigs) gfPlaceCue(fig); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const fig of gfFigs) gfPlaceCue(fig); });
-}
-if (gfFigs.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const gfIO = new IntersectionObserver(es => {
-    for (const e of es) {
-      if (e.isIntersecting) { if (!e.target.dataset.gfPlayed) { e.target.dataset.gfPlayed = '1'; gfPlay(e.target); } }
-      else if (e.target.dataset.gfPlayed) { delete e.target.dataset.gfPlayed; gfFinish(e.target); }
-      else gfStop(e.target);
-    }
-  }, { threshold: 0.35 });
-  for (const fig of gfFigs) {
-    gfIO.observe(fig);
-    const btn = fig.querySelector('.gf-replay');
-    if (btn) btn.addEventListener('click', () => { fig.dataset.gfPlayed = '1'; gfPlay(fig); });
-  }
 }
 
 // ---------------------------------------------------------------------------------------------- story layer
@@ -305,16 +400,35 @@ if (form) {
   let qi = 0, tries = 0;
   send.hidden = true;
   form.addEventListener('submit', e => e.preventDefault());
+  /** The sticky top bar's height (the check's scroll-margin-top is the bar plus a 12px gap). */
+  const barH = () => (parseFloat(getComputedStyle(check).scrollMarginTop) || 12) - 12;
+  /** The bottom tab bar's height on a phone (0 where there is none). */
+  const tabH = () => { const tb = document.querySelector('.tabbar'); return tb && getComputedStyle(tb).position === 'fixed' ? tb.getBoundingClientRect().height : 0; };
   function ask(i) {
     qi = i;
     qs.forEach((f, k) => { f.hidden = k !== i; });
-    const legend = qs[i].querySelector('legend'); legend.tabIndex = -1; if (i || tries) legend.focus();
+    const legend = qs[i].querySelector('legend'); legend.tabIndex = -1;
+    if (i || tries) {
+      legend.focus({ preventScroll: true });
+      // The new question from its top, just below the top bar — only when its top is off screen.
+      const top = qs[i].getBoundingClientRect().top;
+      if (top < barH() + 8 || top > innerHeight - tabH() - 80) scrollBy({ top: top - barH() - 16, behavior: reduced ? 'auto' : 'smooth' });
+    }
+  }
+  /** After an answer: show the feedback and the Next button, scrolling only as far as needed, and never so
+   *  far that the question's own text leaves the top of the screen. */
+  function reveal(f, go) {
+    const need = go.getBoundingClientRect().bottom + 12 - (innerHeight - tabH());
+    if (need <= 0) return;
+    const room = f.querySelector('legend').getBoundingClientRect().top - barH() - 8;
+    const by = Math.min(need, Math.max(0, room));
+    if (by > 0) scrollBy({ top: by, behavior: reduced ? 'auto' : 'smooth' });
   }
   function reset() {
     tries++;
     for (const f of qs) {
       f.classList.remove('is-right', 'is-wrong');
-      f.querySelector('.qq-fb').textContent = '';
+      f.querySelector('.qq-fb').replaceChildren();
       const go = f.querySelector('.qq-go'); if (go) go.remove();
       const box = f.querySelector('.qq-choices');
       const labels = $$('.qchoice', box);
@@ -380,7 +494,16 @@ if (form) {
     if (right) right.closest('.qchoice').classList.add('is-right');
     if (!r.right) radio.closest('.qchoice').classList.add('is-wrong');
     f.classList.add(r.right ? 'is-right' : 'is-wrong');
-    f.querySelector('.qq-fb').textContent = r.right ? t('js.course.right') : (r.why ? t('js.course.wrongWhy', { answer: r.text, why: r.why }) : t('js.course.wrong', { answer: r.text }));
+    const fb = f.querySelector('.qq-fb');
+    if (r.right) fb.textContent = t('js.course.right');
+    else {
+      // "Not quite." in the error colour, then the right answer in bold and the why in plain text.
+      const no = document.createElement('span'); no.className = 'qq-fb-no'; no.textContent = t('js.course.notQuite');
+      const mark = '\u0001', [pre, post = ''] = t('js.course.rightIs', { answer: mark }).split(mark);
+      const ans = document.createElement('b'); ans.textContent = r.text;
+      const end = /[.!?…。！？:]$/.test(r.text + post) ? '' : '.';
+      fb.replaceChildren(no, ' ', pre, ans, post + end + (r.why ? ' ' : ''), r.why || '');
+    }
     const last = qi === qs.length - 1;
     const go = document.createElement('button');
     go.type = 'button'; go.className = 'btn btn-primary btn-big qq-go'; go.textContent = last ? t('js.course.finish') : t('js.course.next');
@@ -388,8 +511,9 @@ if (form) {
     f.append(go);
     // Number Quest: Tally's reaction line rides under the feedback text (kept apart from the
     // feedback assignment above so this file merges cleanly with the shared course renderer).
-    if (r.nq && r.nq.reaction) f.querySelector('.qq-fb').textContent += ` ${r.nq.reaction.text}`;
-    go.focus();
+    if (r.nq && r.nq.reaction) fb.append(` ${r.nq.reaction.text}`);
+    go.focus({ preventScroll: true });
+    reveal(f, go);
   });
   ask(0);
 }

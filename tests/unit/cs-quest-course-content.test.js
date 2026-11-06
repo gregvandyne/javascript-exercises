@@ -21,7 +21,7 @@ const DIR = path.join(CS, 'course');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { cleanText } = await import('../../server/services/textfilter.js');
 
-const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy'];
+const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy', 'ruler', 'clock', 'coins', 'scale', 'cake', 'shapes', 'angle', 'dice', 'cat'];
 const BANDS = ['1b', '2'];
 const NO_GAME = ['6.1', '6.3'];
 const GAME_TITLE = { 'robo-route': 'Robo Route', 'data-detective': 'Data Detective', 'packet-post': 'Packet Post', 'inside-the-machine': 'Inside the Machine' };
