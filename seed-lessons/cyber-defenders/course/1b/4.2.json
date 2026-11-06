@@ -12,20 +12,14 @@
    "art": "map",
    "img": "csq/trick-inbox/mix-1b-mx-1-debrief",
    "alt": "The chain letter, binned: the debrief names the forwarder, who wants you to share the trick with everyone.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "Every trick has a motive behind it",
      "box": [
-      3.4,
-      79.1,
-      93.3,
-      10.0
+      6.4,
+      32.5,
+      87.1,
+      28.4
      ]
     }
    ]
@@ -36,29 +30,14 @@
    "art": "key",
    "img": "csq/trick-inbox/mix-1b-mx-3-debrief",
    "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
-    {
-     "cue": "A letter that begs for your mailbox key",
-     "box": [
-      51.0,
-      43.7,
-      21.8,
-      7.1
-     ]
-    },
     {
      "cue": "The key-hunter wants into your mailbox",
      "box": [
-      3.4,
-      84.1,
-      93.3,
-      5.0
+      6.4,
+      32.4,
+      87.1,
+      28.4
      ]
     }
    ]
@@ -69,29 +48,14 @@
    "art": "people",
    "img": "csq/trick-inbox/mix-1b-mx-4-debrief",
    "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
-    {
-     "cue": "Big news to make you react and share",
-     "box": [
-      3.8,
-      45.1,
-      91.4,
-      14.2
-     ]
-    },
     {
      "cue": "The giggler wants a big reaction",
      "box": [
-      3.4,
-      84.1,
-      93.3,
-      5.0
+      6.4,
+      40.9,
+      87.1,
+      19.0
      ]
     }
    ]
@@ -109,29 +73,23 @@
    ],
    "img": "csq/trick-inbox/mix-1b-mx-6-all",
    "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
-   "view": [
-    0.0,
-    16.3,
-    95.6,
-    74.2
-   ],
    "focus": [
     {
      "cue": "A prize to claim with one tap",
      "box": [
-      11.5,
-      56.4,
-      61.1,
-      7.1
+      7.1,
+      40.9,
+      61.7,
+      27.0
      ]
     },
     {
      "cue": "Name the motive before you choose",
      "box": [
-      15.5,
-      42.9,
-      15.6,
-      4.1
+      29.6,
+      15.1,
+      29.7,
+      7.8
      ]
     }
    ]
@@ -142,29 +100,23 @@
    "art": "shield",
    "img": "csq/trick-inbox/mix-1b-mx-1-all",
    "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
-   "view": [
-    0.0,
-    25.0,
-    96.5,
-    70.0
-   ],
    "focus": [
     {
      "cue": "A chain only works if you pass it on",
      "box": [
-      3.8,
-      56.4,
-      33.5,
-      7.1
+      7.1,
+      36.2,
+      63.9,
+      13.5
      ]
     },
     {
      "cue": "Do not share: the chain ends with you",
      "box": [
-      42.2,
-      56.4,
-      33.3,
-      7.1
+      7.1,
+      49.8,
+      63.4,
+      13.5
      ]
     }
    ]
@@ -200,20 +152,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/mix-1b-mx-6-debrief",
    "alt": "The visitor prize, binned: you did not enter anything, so you cannot have won. The prize-faker sent it.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "Play Magpie Mix: name the motive behind each",
      "box": [
-      3.4,
-      79.1,
-      93.3,
-      10.0
+      6.4,
+      32.7,
+      87.1,
+      28.4
      ]
     }
    ]

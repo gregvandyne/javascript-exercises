@@ -87,20 +87,14 @@
    "art": "magnifier",
    "img": "csq/trick-inbox/chat-1b-ch-6-all",
    "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
-   "view": [
-    0.0,
-    34.1,
-    74.5,
-    63.1
-   ],
    "focus": [
     {
      "cue": "Three small facts asked together: first pet, street, birthday",
      "box": [
-      3.8,
-      61.8,
-      63.4,
-      7.1
+      7.1,
+      44.9,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -109,31 +103,25 @@
    "title": "Games do not need me-facts",
    "text": "Some games and sites ask for me-facts before you can play. A real game never needs your address to let you play. If a game asks, stop and tell a trusted adult.",
    "art": "screen",
-   "img": "csq/packet-post/tricks-1b-stranger",
+   "img": "csq/packet-post/tricks-1b-stranger-n1",
    "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
-   "view": [
-    6.0,
-    17.6,
-    86.6,
-    62.8
-   ],
    "focus": [
     {
      "cue": "Someone from the game asks for your street",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
+      2.9,
+      2.5,
+      94.3,
+      54.3
      ]
     },
     {
      "cue": "A real game never needs to know where you live",
      "box": [
-      55.3,
-      40.4,
-      16.0,
-      7.5
+      2.9,
+      74.1,
+      46.2,
+      24.6
      ]
     }
    ]

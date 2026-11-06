@@ -19,29 +19,14 @@
    ],
    "img": "csq/trick-inbox/pressure-2-pr-3-debrief",
    "alt": "The Fan Club post, binned: everything it knew came from a public profile. Flattery built from your footprint.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
-    {
-     "cue": "Facts made public: skateboards, a dog, a birthday",
-     "box": [
-      3.8,
-      36.9,
-      83.2,
-      7.1
-     ]
-    },
     {
      "cue": "The door was talked open, not broken",
      "box": [
-      3.4,
-      72.7,
-      93.3,
-      10.0
+      6.4,
+      19.3,
+      87.1,
+      37.9
      ]
     }
    ]
@@ -52,29 +37,23 @@
    "art": "mask",
    "img": "csq/trick-inbox/pressure-2-pr-1-all",
    "alt": "Trick Inbox, Pressure: a letter says this is the head teacher speaking. Send your key before lunch, no questions.",
-   "view": [
-    0.0,
-    15.7,
-    96.5,
-    84.3
-   ],
    "focus": [
     {
      "cue": "Authority: this is the head teacher speaking",
      "box": [
-      3.8,
-      56.4,
-      38.5,
-      7.1
+      7.1,
+      36.3,
+      73.4,
+      13.5
      ]
     },
     {
      "cue": "Urgency: before lunch",
      "box": [
-      74.5,
-      56.4,
-      17.3,
-      7.1
+      56.7,
+      49.9,
+      32.9,
+      13.5
      ]
     }
    ]
@@ -85,29 +64,23 @@
    "art": "envelope",
    "img": "csq/trick-inbox/letters-2-lt-7-all",
    "alt": "A Package Service letter: we could not deliver your package, pay a small fee within two hours.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "A made-up reason: a package that never arrived",
      "box": [
-      3.6,
-      56.4,
-      92.8,
-      7.1
+      6.9,
+      37.1,
+      86.2,
+      34.3
      ]
     },
     {
      "cue": "Then the ask: a fee, fast",
      "box": [
-      38.4,
-      56.4,
-      39.3,
-      7.0
+      7.1,
+      47.4,
+      37.1,
+      13.5
      ]
     }
    ]
@@ -118,20 +91,14 @@
    "art": "shield",
    "img": "csq/trick-inbox/pressure-2-pr-1-debrief",
    "alt": "The head teacher letter, reported: authority is a costume here, and do not ask questions is the loudest clue.",
-   "view": [
-    0.0,
-    0.0,
-    99.7,
-    100.0
-   ],
    "focus": [
     {
      "cue": "Check another way, in person",
      "box": [
-      3.4,
-      72.7,
-      93.3,
-      10.0
+      6.4,
+      19.1,
+      87.1,
+      37.9
      ]
     }
    ]
@@ -142,20 +109,14 @@
    "art": "magnifier",
    "img": "csq/trick-inbox/chat-2-ch-6-all",
    "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
-   "view": [
-    0.0,
-    34.1,
-    74.5,
-    63.1
-   ],
    "focus": [
     {
      "cue": "Friendly questions that fish for private facts",
      "box": [
-      3.8,
-      61.8,
-      63.4,
-      7.1
+      7.1,
+      39.0,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -191,20 +152,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/pressure-2-pr-6-all",
    "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
-   "view": [
-    0.0,
-    27.9,
-    88.5,
-    64.2
-   ],
    "focus": [
     {
      "cue": "Play Pressure: name the lever before you choose",
      "box": [
-      3.8,
-      56.4,
-      62.9,
-      7.1
+      7.1,
+      36.3,
+      61.5,
+      27.1
      ]
     }
    ]

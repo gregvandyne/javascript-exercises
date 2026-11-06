@@ -133,29 +133,23 @@
    "art": "globe",
    "img": "csq/trick-inbox/pressure-2-pr-3-all",
    "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
-   "view": [
-    0.0,
-    16.3,
-    94.5,
-    83.7
-   ],
    "focus": [
     {
      "cue": "A post built from someone's public profile",
      "box": [
-      3.8,
-      61.8,
-      83.2,
-      7.1
+      7.1,
+      27.6,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "What could someone do with this?",
      "box": [
-      8.5,
-      68.9,
-      21.8,
-      7.1
+      29.5,
+      50.0,
+      41.4,
+      13.5
      ]
     }
    ]

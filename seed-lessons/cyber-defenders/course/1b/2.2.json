@@ -58,29 +58,23 @@
    ],
    "img": "csq/escape-the-post-office/layers-1b-2",
    "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "A guesser tries key after key on a mailbox",
      "box": [
-      2.4,
-      44.3,
-      44.5,
-      7.7
+      5.2,
+      28.5,
+      83.4,
+      12.9
      ]
     },
     {
      "cue": "A second lock, the key checker, still stands",
      "box": [
-      26.9,
-      55.2,
-      20.0,
-      11.6
+      53.3,
+      50.9,
+      36.7,
+      20.5
      ]
     }
    ]
@@ -124,29 +118,23 @@
    "art": "people",
    "img": "csq/trick-inbox/letters-1b-lt-3-all",
    "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
-   "view": [
-    0.0,
-    28.2,
-    92.8,
-    71.8
-   ],
    "focus": [
     {
      "cue": "Anyone can type \"Post Office Team\" on a letter",
      "box": [
-      15.5,
-      42.9,
-      21.0,
-      4.1
+      29.6,
+      15.1,
+      40.0,
+      7.8
      ]
     },
     {
      "cue": "It asks for your mailbox key: no permission",
      "box": [
-      50.8,
-      56.4,
-      21.8,
-      7.1
+      12.5,
+      51.2,
+      41.4,
+      13.5
      ]
     }
    ]
@@ -182,20 +170,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/letters-1b-lt-1-all",
    "alt": "The tablet letter with all three clues found: you are our lucky winner, mailbox key, in the next ten minutes.",
-   "view": [
-    0.0,
-    37.0,
-    84.0,
-    60.0
-   ],
    "focus": [
     {
      "cue": "Play Prize Letters: who may have your key?",
      "box": [
-      64.4,
-      56.4,
-      16.6,
-      7.1
+      7.1,
+      37.7,
+      31.7,
+      13.5
      ]
     }
    ]

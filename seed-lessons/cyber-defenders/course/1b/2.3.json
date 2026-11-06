@@ -152,20 +152,14 @@
    "art": "mask",
    "img": "csq/escape-the-post-office/note-1b",
    "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
-   "view": [
-    1.9,
-    15.0,
-    95.8,
-    74.1
-   ],
    "focus": [
     {
      "cue": "The Magpie's note: RSHQ, a scramble",
      "box": [
-      47.1,
-      46.4,
-      5.6,
-      8.2
+      43.0,
+      32.5,
+      14.1,
+      11.6
      ]
     }
    ]
@@ -201,20 +195,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/note-1b-open",
    "alt": "Lock 2 turned to shift 3: the Magpie's note RSHQ now reads OPEN, and the lock is ready to open.",
-   "view": [
-    0.0,
-    36.0,
-    82.0,
-    58.6
-   ],
    "focus": [
     {
      "cue": "Play Sealed Note: turn until the note reads",
      "box": [
-      19.4,
-      68.6,
-      61.2,
-      10.7
+      16.0,
+      27.8,
+      68.1,
+      44.0
      ]
     }
    ]

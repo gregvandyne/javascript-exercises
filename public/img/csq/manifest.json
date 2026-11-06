@@ -366,6 +366,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/door-1b-new-n2",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "1b",
+   "state": "door-1b-new-n2",
+   "concept": "the locked door",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
    "key": "csq/escape-the-post-office/door-1b-two",
    "game": "escape-the-post-office",
    "chapter": "escape",
@@ -399,6 +410,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/door-2-new-n2",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "2",
+   "state": "door-2-new-n2",
+   "concept": "the locked door (Pro)",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
    "key": "csq/escape-the-post-office/door-2-two",
    "game": "escape-the-post-office",
    "chapter": "escape",
@@ -430,6 +452,17 @@
    "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/gate-2-n1",
+   "game": "escape-the-post-office",
+   "chapter": "sorting-gate",
+   "band": "2",
+   "state": "gate-2-n1",
+   "concept": "the sorting gate (Pro)",
+   "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/escape-the-post-office/inbox-1b",
@@ -542,6 +575,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/layers-2-2-n2",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-2-n2",
+   "concept": "a stolen key",
+   "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
    "key": "csq/escape-the-post-office/layers-2-2",
    "game": "escape-the-post-office",
    "chapter": "layers",
@@ -597,6 +641,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/moves-1b-n2",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-n2",
+   "concept": "the five moves",
+   "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
    "key": "csq/escape-the-post-office/moves-1b-four",
    "game": "escape-the-post-office",
    "chapter": "five-moves",
@@ -628,6 +683,17 @@
    "alt": "Lock 5 at Pro: someone has a classmate's mailbox key, and a second message pressures you. Six drill tiles wait.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-2-one-n1",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "2",
+   "state": "moves-2-one-n1",
+   "concept": "contain first",
+   "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/escape-the-post-office/moves-2-done",
@@ -683,6 +749,17 @@
    "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/note-1b-n2",
+   "game": "escape-the-post-office",
+   "chapter": "sealed-note",
+   "band": "1b",
+   "state": "note-1b-n2",
+   "concept": "the sealed note",
+   "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/escape-the-post-office/note-1b-open",
@@ -1543,6 +1620,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/tricks-1b-card-n1",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-card-n1",
+   "concept": "Trick or safe? A threat, a rush and a key request",
+   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
    "key": "csq/packet-post/tricks-1b-clues",
    "game": "packet-post",
    "chapter": "tricks",
@@ -1552,6 +1640,17 @@
    "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/tricks-1b-clues-n1",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-clues-n1",
+   "concept": "Clues of a trick: hurry, a prize, a request for your passphrase",
+   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/packet-post/tricks-1b-key",
@@ -1565,6 +1664,28 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/tricks-1b-key-n1",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-key-n1",
+   "concept": "Some messages are tricks: they want you to hurry or give things away",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
+   "key": "csq/packet-post/tricks-1b-key-n2",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-key-n2",
+   "concept": "Some messages are tricks: they want you to hurry or give things away",
+   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
    "key": "csq/packet-post/tricks-1b-next",
    "game": "packet-post",
    "chapter": "tricks",
@@ -1574,17 +1695,6 @@
    "alt": "Card 3 of 6 is safe: a field trip note from your teacher, a known sender who asks for nothing.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
-  },
-  {
-   "key": "csq/packet-post/tricks-1b-stranger",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "1b",
-   "state": "tricks-1b-stranger",
-   "concept": "a stranger asks for your street",
-   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
   },
   {
    "key": "csq/packet-post/tricks-2-bank",
@@ -2830,6 +2940,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/trick-inbox/senders-2-sd-1-all-n2",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-all-n2",
+   "concept": "a faked sender, every clue found",
+   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
    "key": "csq/trick-inbox/senders-2-sd-1-debrief",
    "game": "trick-inbox",
    "chapter": "senders",
@@ -2839,6 +2960,17 @@
    "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/senders-2-sd-1-debrief-n1",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-debrief-n1",
+   "concept": "spoofing, the debrief",
+   "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/trick-inbox/senders-2-sd-1-new",
@@ -3072,15 +3204,26 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/tricks-1b-coins",
+   "key": "csq/packet-post/tricks-1b-stranger-n1",
    "game": "packet-post",
    "chapter": "tricks",
    "band": "1b",
-   "state": "tricks-1b-coins",
+   "state": "tricks-1b-stranger-n1",
+   "concept": "a stranger asks for your street",
+   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
+  },
+  {
+   "key": "csq/packet-post/tricks-1b-coins-n1",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-coins-n1",
    "concept": "the free coins card",
    "alt": "Spot the Trick, card 4: a Game Shop offers a thousand free coins if you tap, and the offer ends in one hour.",
    "capturedAt": "2026-11-06",
-   "commit": "698b834"
+   "commit": "ddca4eb"
   }
  ]
 }

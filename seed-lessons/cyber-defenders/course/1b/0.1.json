@@ -52,29 +52,23 @@
    "art": "mask",
    "img": "csq/trick-inbox/letters-1b-lt-3-all",
    "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
-   "view": [
-    0.0,
-    28.2,
-    92.8,
-    71.8
-   ],
    "focus": [
     {
      "cue": "Signed \"Post Office Team\", but they never wrote it",
      "box": [
-      15.5,
-      42.9,
-      21.0,
-      4.1
+      29.6,
+      15.1,
+      40.0,
+      7.8
      ]
     },
     {
      "cue": "A shiny secret it wants: your mailbox key",
      "box": [
-      50.8,
-      56.4,
-      21.8,
-      7.1
+      12.5,
+      51.2,
+      41.4,
+      13.5
      ]
     }
    ]
@@ -261,20 +255,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-1b-new",
    "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    14.1,
-    96.1,
-    75.2
-   ],
    "focus": [
     {
      "cue": "Lock 1 waits for your first stamp: Roadwise",
      "box": [
-      1.5,
-      38.7,
-      31.5,
-      30.7
+      2.6,
+      31.0,
+      46.4,
+      52.2
      ]
     }
    ]

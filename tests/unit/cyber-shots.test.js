@@ -88,11 +88,12 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
 //   - every line the step's box touches is shown whole;
 //   - the step's words read at 11 px or more, except where they cannot without reflowing the game: the box touches
 //     a line wider than an 11 px frame holds (WIDE), or a whole line next to it caps the zoom (CAPPED). Those are
-//     pinned below (no new ones, none smaller) until the captures are re-shot in a narrower layout.
+//     pinned below (no new ones). Trick Inbox and Escape are shot narrow (phone-width layout, a 16:9 slice); the
+//     holdouts are Escape screens whose parts do not fit one slice, Packet Post boards and Would You Rather cards.
 const Z = await import('../../public/js/course-zoom.js');
 const ZOOM_DATA = (await import('../../public/js/course-zoom-data.js')).default;
 const FRAME_390 = 326;
-const SHORT = { WIDE: 128, CAPPED: 69 };
+const SHORT = { WIDE: 25, CAPPED: 36 };
 test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever the layout allows', () => {
   let n = 0;
   const short = { WIDE: 0, CAPPED: 0 }, problems = [];

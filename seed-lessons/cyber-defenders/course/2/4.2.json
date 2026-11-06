@@ -12,20 +12,14 @@
    "art": "mask",
    "img": "csq/trick-inbox/mix-2-mx-3-debrief",
    "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "Behind each trick: someone who wants something",
      "box": [
-      3.4,
-      84.1,
-      93.3,
-      5.0
+      6.4,
+      32.4,
+      87.1,
+      28.4
      ]
     }
    ]
@@ -36,29 +30,14 @@
    "art": "people",
    "img": "csq/trick-inbox/mix-2-mx-6-debrief",
    "alt": "The visitor 1000 prize, binned: the debrief names the prize-faker, who wants you to tap and type.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
-    {
-     "cue": "A prize that costs a tap: the scammer's want",
-     "box": [
-      35.3,
-      33.7,
-      34.9,
-      7.0
-     ]
-    },
     {
      "cue": "The debrief names the actor",
      "box": [
-      3.4,
-      79.1,
-      93.3,
-      10.0
+      6.4,
+      32.7,
+      87.1,
+      28.4
      ]
     }
    ]
@@ -77,29 +56,23 @@
    ],
    "img": "csq/trick-inbox/senders-2-sd-3-all",
    "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "A fake school message asks for account details",
      "box": [
-      3.8,
-      67.4,
-      46.0,
-      7.1
+      7.1,
+      67.9,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "Who sent it? Check the real address",
      "box": [
-      3.6,
-      49.6,
-      33.0,
-      3.8
+      5.7,
+      21.8,
+      63.4,
+      11.2
      ]
     }
    ]
@@ -110,29 +83,23 @@
    "art": "key",
    "img": "csq/escape-the-post-office/layers-2-6",
    "alt": "Threat 6 of 6: a one-word key is guessed in an afternoon. The Long Passphrase layer stops it.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "A one-word key, guessed in an afternoon",
      "box": [
-      2.4,
-      44.3,
-      45.3,
-      7.7
+      5.2,
+      0.5,
+      85.0,
+      12.9
      ]
     },
     {
      "cue": "With permission, testing this layer is defense work",
      "box": [
-      26.9,
-      69.8,
-      18.7,
-      11.7
+      53.3,
+      78.8,
+      34.3,
+      20.5
      ]
     }
    ]
@@ -143,20 +110,14 @@
    "art": "screen",
    "img": "csq/escape-the-post-office/layers-2",
    "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "Real defense: one careful layer at a time",
      "box": [
-      1.5,
-      54.7,
-      97.0,
-      27.5
+      2.6,
+      22.3,
+      94.9,
+      69.6
      ]
     }
    ]
@@ -192,20 +153,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/mix-2-mx-4-debrief",
    "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction and a crowd.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "Play Magpie Mix: name the actor behind each",
      "box": [
-      3.4,
-      84.1,
-      93.3,
-      5.0
+      6.4,
+      40.9,
+      87.1,
+      19.0
      ]
     }
    ]

@@ -120,20 +120,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/letters-1b-lt-3-all",
    "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
-   "view": [
-    0.0,
-    16.3,
-    92.8,
-    74.2
-   ],
    "focus": [
     {
      "cue": "Play Prize Letters: a letter fishing for your mailbox key",
      "box": [
-      50.8,
-      56.4,
-      21.8,
-      7.1
+      12.5,
+      51.2,
+      41.4,
+      13.5
      ]
     }
    ]

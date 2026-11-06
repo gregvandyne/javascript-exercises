@@ -142,22 +142,16 @@
    "title": "Your mission",
    "text": "Open Escape the Post Office at Lock 1: Sorting Gate and route the golden letter to the sorting room door. That trip is data in transit. Then name the lock each room needs: the van, the vault and the reading desk.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/gate-2",
+   "img": "csq/escape-the-post-office/gate-2-n1",
    "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
-   "view": [
-    0.0,
-    37.5,
-    52.0,
-    52.0
-   ],
    "focus": [
     {
      "cue": "Play Sorting Gate: the letter is data in transit",
      "box": [
-      20.5,
-      49.9,
-      6.0,
-      25.9
+      18.8,
+      19.8,
+      11.4,
+      60.2
      ]
     }
    ]
