@@ -190,8 +190,11 @@ function gfBadgesVf(fig) {
 // a fair share of ink of either polarity, and strokes crossing it both ways (a long panel edge or a flat
 // fill crosses only one way, so outlines do not count). Each word cell's eight neighbors are marked too: that
 // closes the gaps between words and keeps a chip from hugging a line of text. The map is the image's own, so it
-// serves every crop and size alike.
-const gfInk = new WeakMap();
+// serves every crop and size alike. Two levels: 2 where the strokes cross the cell at least six times each
+// way (what a chip must avoid), 1 where they cross it twice in two rows and two columns (a single small
+// letter, an icon's edge). The badge, a small dot that should sit on clean picture, steers clear of both
+// levels but reads the map before the neighbors are marked (gfInkRaw): it fits in a gap between lines.
+const gfInk = new WeakMap(), gfInkRaw = new WeakMap();
 const INK_W = 80, INK_H = 45, INK_C = 8;
 function gfTextMap(fig) {
   if (gfInk.has(fig)) return gfInk.get(fig);
@@ -219,13 +222,15 @@ function gfTextMap(fig) {
       let hT = 0, vT = 0, rows = 0, cols = 0;
       for (let y = 0; y < INK_C; y++) { let n = 0; for (let x = 1; x < INK_C; x++) if (b[y * INK_C + x] !== b[y * INK_C + x - 1]) n++; hT += n; if (n >= 2) rows++; }
       for (let x = 0; x < INK_C; x++) { let n = 0; for (let y = 1; y < INK_C; y++) if (b[y * INK_C + x] !== b[(y - 1) * INK_C + x]) n++; vT += n; if (n >= 2) cols++; }
-      if (rows >= 2 && cols >= 2 && hT >= 6 && vT >= 6) raw[gy * INK_W + gx] = 1;
+      if (rows >= 2 && cols >= 2) raw[gy * INK_W + gx] = hT >= 6 && vT >= 6 ? 2 : 1;
     }
+    gfInkRaw.set(fig, raw);
     map = new Uint8Array(INK_W * INK_H);
     for (let i = 0; i < raw.length; i++) if (raw[i]) {
       for (const j of [i, i - INK_W, i + INK_W]) {
         if (j < 0 || j >= raw.length) continue;
-        map[j] = 1; if (j % INK_W) map[j - 1] = 1; if ((j + 1) % INK_W) map[j + 1] = 1;
+        const v = raw[i];
+        map[j] = Math.max(map[j], v); if (j % INK_W) map[j - 1] = Math.max(map[j - 1], v); if ((j + 1) % INK_W) map[j + 1] = Math.max(map[j + 1], v);
       }
     }
   } catch (e) { map = false; /* an unreadable picture: no text map, the chip rules alone */ }
@@ -233,10 +238,11 @@ function gfTextMap(fig) {
   fig.dataset.gfInk = map ? '1' : '0';
   return map;
 }
-/** The share (0..1) of a chip's area that sits on the picture's lettering. */
-function gfOnText(fig, cue, map) {
+/** The share (0..1) of an element's area (a chip, a badge) that sits on the picture's lettering. */
+function gfOnText(fig, el, map) { return gfTextShare(fig, rectOf(el), map, 2); }
+function gfTextShare(fig, cr, map, level) {
   if (!map) return 0;
-  const img = fig.querySelector('.simg'), ir = rectOf(img), cr = rectOf(cue);
+  const img = fig.querySelector('.simg'), ir = rectOf(img);
   const fr = rectOf(fig.querySelector('.sframe'));
   const c = { left: Math.max(cr.left, fr.left), top: Math.max(cr.top, fr.top), right: Math.min(cr.right, fr.right), bottom: Math.min(cr.bottom, fr.bottom) };
   const all = (cr.right - cr.left) * (cr.bottom - cr.top);
@@ -246,7 +252,7 @@ function gfOnText(fig, cue, map) {
   const y0 = Math.max(0, Math.floor((c.top - ir.top) / sy)), y1 = Math.min(INK_H - 1, Math.floor((c.bottom - ir.top) / sy));
   let a = 0;
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
-    if (!map[y * INK_W + x]) continue;
+    if (map[y * INK_W + x] < level) continue;
     const l = ir.left + x * sx, t = ir.top + y * sy;
     a += area(c, { left: l, top: t, right: l + sx, bottom: t + sy });
   }
@@ -318,8 +324,75 @@ function gfPlaceCue(fig, i) {
   if (best) apply(...best);
   return false;
 }
-/** Settle a figure's tour for its current size: diagram boxes and badges, or screenshot chips (and the strip
- *  fallback). Only a figure on show can be measured; the deck calls this when a slide is shown. */
+// --- screenshots: the numbered badge off the picture's text
+// A screenshot's badge starts where the CSS parks it (outside the ring's top-left corner, slid inside the
+// frame). The script then weighs that spot, the twelve around the box that the diagrams use (each corner
+// outside the ring, both ends of each side and each side's middle) and more slid along each side, all
+// touching the ring, inside the frame and clear of the zoom button (and, only when all of those are on
+// words, spots just inside the box's edge), and takes the one on the least of the picture's lettering (the
+// earliest on a tie, so a clear default stays put). -> the spots that tie for least text, best first: the cue
+// chip is placed after the badge (it steers clear of it), and gfLayout tries the next one when the chip finds
+// no room. A badge that cannot avoid every word gets a dark rim (gf-badge--ink) so its number still reads.
+function gfBadgeSpots(fig, box, badge, map) {
+  badge.classList.remove('gf-badge--at', 'gf-badge--ink');
+  const fr = rectOf(fig.querySelector('.sframe'));
+  const zs = fig.querySelector('.szoom span');
+  const zoom = zs ? grow(rectOf(zs), 3) : null;
+  const b = rectOf(box), w = b.right - b.left, h = b.bottom - b.top;
+  const d0 = rectOf(badge), d = d0.right - d0.left || 20, o = ringOut(box) + 2;
+  const ring = grow(b, o - 2);
+  const spots = [null, [-o - d, -o - d], [w + o, -o - d], [-o - d, h + o], [w + o, h + o], [0, -o - d], [w - d, -o - d], [0, h + o], [w - d, h + o],
+    [-o - d, (h - d) / 2], [w + o, (h - d) / 2], [(w - d) / 2, -o - d], [(w - d) / 2, h + o],
+    [-o - d, 0], [w + o, 0], [-o - d, h - d], [w + o, h - d]];
+  // then further spots slid along each side, still touching the ring
+  for (let k = 1; k < 16; k++) {
+    const fx = -o - d + (w + 2 * o + d) * k / 16, fy = -o - d + (h + 2 * o + d) * k / 16;
+    spots.push([fx, -o - d], [fx, h + o], [-o - d, fy], [w + o, fy]);
+  }
+  // last, when every spot outside the ring is on words: inside the box, just within its edge (a box drawn
+  // around a whole line of text keeps some margin round the words), at the corners and slid along each side
+  const inner = spots.length, m = 2;
+  if (w > 2 * d + 2 * m && h > d + 2 * m) {
+    for (let k = 0; k <= 16; k++) {
+      const fx = m + (w - d - 2 * m) * k / 16, fy = m + (h - d - 2 * m) * k / 16;
+      spots.push([fx, m], [fx, h - d - m], [m, fy], [w - d - m, fy]);
+    }
+  }
+  const out = [];
+  spots.forEach((p, k) => {
+    const r = p ? { left: b.left + p[0], top: b.top + p[1], right: b.left + p[0] + d, bottom: b.top + p[1] + d } : d0;
+    if (p) {
+      if (r.left < fr.left + 1 || r.top < fr.top + 1 || r.right > fr.right - 1 || r.bottom > fr.bottom - 1) return;
+      if ((k < inner && area(r, ring)) || (zoom && area(r, zoom))) return;
+    }
+    out.push({ p, k, tx: gfTextShare(fig, r, map, 1) });
+  });
+  out.sort((a, c) => a.tx - c.tx || a.k - c.k);
+  return out.filter(c => c.tx <= out[0].tx + 0.005);
+}
+function gfSetBadge(badge, spot) {
+  badge.classList.remove('gf-badge--at', 'gf-badge--ink');
+  if (spot.p) { badge.style.setProperty('--gx', spot.p[0] + 'px'); badge.style.setProperty('--gy', spot.p[1] + 'px'); badge.classList.add('gf-badge--at'); }
+  if (spot.tx > 0) badge.classList.add('gf-badge--ink');
+}
+/** Place one screenshot step: its badge on the least text, then its chip clear of the badge (another
+ *  equally clear badge spot when the chip finds no room). -> what gfPlaceCue says. */
+function gfPlaceStep(fig, i) {
+  const step = fig.querySelector(`.gf-step[data-i="${i}"]`);
+  const box = step && step.querySelector('.gf-box'), badge = box && box.querySelector('.gf-badge');
+  if (!badge) return gfPlaceCue(fig, i);
+  gfTextMap(fig);
+  const spots = gfBadgeSpots(fig, box, badge, gfInkRaw.get(fig) || null);
+  if (!spots.length) return gfPlaceCue(fig, i);
+  for (const sp of spots.slice(0, 6)) {
+    gfSetBadge(badge, sp);
+    if (gfPlaceCue(fig, i)) return true;
+  }
+  gfSetBadge(badge, spots[0]);
+  return gfPlaceCue(fig, i);
+}
+/** Settle a figure's tour for its current size: diagram boxes and badges, or screenshot badges and chips (and
+ *  the strip fallback). Only a figure on show can be measured; the deck calls this when a slide is shown. */
 function gfLayout(fig) {
   if (!fig.querySelector('.sframe').getBoundingClientRect().width) return;
   if (fig.classList.contains('vf')) { gfFitVf(fig); gfBadgesVf(fig); return; }
@@ -333,7 +406,7 @@ function gfLayout(fig) {
   fig.classList.remove('gf--strip');
   const n = fig.querySelectorAll('.gf-step').length;
   let fits = true;
-  for (let i = 0; i < n; i++) if (!gfPlaceCue(fig, i)) fits = false;
+  for (let i = 0; i < n; i++) if (!gfPlaceStep(fig, i)) fits = false;
   fig.classList.toggle('gf--strip', !fits);
   // The Replay button follows the cues: on the picture with the chips, under it with the strip.
   const btn = fig.querySelector('.gf-replay');
