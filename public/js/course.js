@@ -153,12 +153,16 @@ function gfFitVf(fig) {
   fig.dataset.gfFit = '1';
 }
 /** Park each diagram badge at the first spot outside its ring that is inside the frame and clear of every
- *  label (and of the ring). No clear spot: the badge stays off (the strip carries the step's number); in the
- *  static mode, where every box shows at once, it takes the spot that covers the least. */
+ *  label (and of the ring). No clear spot: the badge stays off (the strip carries the step's number). In the
+ *  static mode (reduced motion), where every box and badge shows at once, a badge must show: it takes the spot
+ *  that covers the least, where a label counts far more than a ring (a badge may sit on the box's own corner,
+ *  never on the words), and the badges already placed count like labels, so two badges never stack. */
 function gfBadgesVf(fig) {
   const frame = fig.querySelector('.sframe');
-  const fr = rectOf(frame);
+  // The still view keeps badges off the frame's rounded corners (they would be clipped): an inset frame.
+  const fr = reduced ? grow(rectOf(frame), -8) : rectOf(frame);
   const texts = [...fig.querySelectorAll('.vf-svg text')].map(t => grow(rectOf(t), 1));
+  const placed = [];
   for (const box of fig.querySelectorAll('.gf-box')) {
     const badge = box.querySelector('.gf-badge');
     if (!badge) continue;
@@ -168,17 +172,26 @@ function gfBadgesVf(fig) {
     const ring = grow(b, o);
     const spots = [[-o - d, -o - d], [w + o, -o - d], [-o - d, h + o], [w + o, h + o], [0, -o - d], [w - d, -o - d], [0, h + o], [w - d, h + o],
       [-o - d, (h - d) / 2], [w + o, (h - d) / 2], [(w - d) / 2, -o - d], [(w - d) / 2, h + o]];
+    // The static mode's last resorts: astride the box's edges and corners, then its own inside corners (on the
+    // shape, off its words).
+    if (reduced) {
+      const m = d / 2;
+      spots.push([-m, (h - d) / 2], [w - m, (h - d) / 2], [-m, -m], [w - m, -m], [-m, h - m], [w - m, h - m],
+        [2, 2], [w - d - 2, 2], [2, h - d - 2], [w - d - 2, h - d - 2]);
+    }
+    const TEXT = reduced ? 50 : 1;
     let best = null, bestA = Infinity;
     for (const [x, y] of spots) {
       const r = { left: b.left + x, top: b.top + y, right: b.left + x + d, bottom: b.top + y + d };
       if (r.left < fr.left || r.top < fr.top || r.right > fr.right || r.bottom > fr.bottom) continue;
-      const a = texts.reduce((s, t) => s + area(r, t), 0) + area(r, ring);
+      const a = TEXT * (texts.reduce((s, t) => s + area(r, t), 0) + placed.reduce((s, t) => s + area(r, t), 0)) + area(r, ring);
       if (a < bestA) { bestA = a; best = [x, y]; }
       if (!a) break;
     }
     if (best && (!bestA || reduced)) {
       badge.style.setProperty('--gx', best[0] + 'px'); badge.style.setProperty('--gy', best[1] + 'px');
       badge.classList.add('gf-badge--at');
+      placed.push(grow({ left: b.left + best[0], top: b.top + best[1], right: b.left + best[0] + d, bottom: b.top + best[1] + d }, 1));
     } else badge.classList.add('gf-badge--off');
   }
 }
@@ -339,7 +352,13 @@ function gfBadgeSpots(fig, box, badge, map) {
   const zs = fig.querySelector('.szoom span');
   const zoom = zs ? grow(rectOf(zs), 3) : null;
   const b = rectOf(box), w = b.right - b.left, h = b.bottom - b.top;
-  const d0 = rectOf(badge), d = d0.right - d0.left || 20, o = ringOut(box) + 2;
+  // The default spot (where the CSS parks the badge) is measured on a fresh copy: the badge itself, read
+  // straight after its class changes, can still report the spot it had before.
+  const probe = badge.cloneNode(true);
+  probe.removeAttribute('style'); probe.style.visibility = 'hidden';
+  box.append(probe);
+  const d0 = rectOf(probe), d = d0.right - d0.left || 20, o = ringOut(box) + 2;
+  probe.remove();
   const ring = grow(b, o - 2);
   const spots = [null, [-o - d, -o - d], [w + o, -o - d], [-o - d, h + o], [w + o, h + o], [0, -o - d], [w - d, -o - d], [0, h + o], [w - d, h + o],
     [-o - d, (h - d) / 2], [w + o, (h - d) / 2], [(w - d) / 2, -o - d], [(w - d) / 2, h + o],
@@ -358,20 +377,37 @@ function gfBadgeSpots(fig, box, badge, map) {
       spots.push([fx, m], [fx, h - d - m], [m, fy], [w - d - m, fy]);
     }
   }
-  const out = [];
+  // The still view (reduced motion) shows every badge at once: a spot on an earlier step's badge is left out
+  // (two boxes sharing a corner would otherwise stack their numbers), unless no other spot is left.
+  // Each earlier badge is taken where it was put (its box plus the spot it got), not measured back: a badge's
+  // rect read straight after its spot changes can still be the old one.
+  const me = box.closest('.gf-step'), taken = [];
+  if (reduced && me) for (const st of fig.querySelectorAll('.gf-step')) {
+    const g = +st.dataset.i < +me.dataset.i && st.querySelector('.gf-badge'), sp = g && gfSpotOf.get(g);
+    if (!sp) continue;
+    const bx = rectOf(st.querySelector('.gf-box'));
+    taken.push(grow({ left: bx.left + sp[0], top: bx.top + sp[1], right: bx.left + sp[0] + d, bottom: bx.top + sp[1] + d }, 2));
+  }
+  let out = [];
+  const all = [];
   spots.forEach((p, k) => {
     const r = p ? { left: b.left + p[0], top: b.top + p[1], right: b.left + p[0] + d, bottom: b.top + p[1] + d } : d0;
     if (p) {
       if (r.left < fr.left + 1 || r.top < fr.top + 1 || r.right > fr.right - 1 || r.bottom > fr.bottom - 1) return;
       if ((k < inner && area(r, ring)) || (zoom && area(r, zoom))) return;
     }
-    out.push({ p, k, tx: gfTextShare(fig, r, map, 1) });
+    const c = { p, k, tx: gfTextShare(fig, r, map, 1), rel: p || [d0.left - b.left, d0.top - b.top] };
+    all.push(c);
+    if (!taken.some(t => area(r, t))) out.push(c);
   });
+  if (!out.length) out = all;
   out.sort((a, c) => a.tx - c.tx || a.k - c.k);
   return out.filter(c => c.tx <= out[0].tx + 0.005);
 }
+const gfSpotOf = new WeakMap();
 function gfSetBadge(badge, spot) {
   badge.classList.remove('gf-badge--at', 'gf-badge--ink');
+  if (spot.rel) gfSpotOf.set(badge, spot.rel); else gfSpotOf.delete(badge);
   if (spot.p) { badge.style.setProperty('--gx', spot.p[0] + 'px'); badge.style.setProperty('--gy', spot.p[1] + 'px'); badge.classList.add('gf-badge--at'); }
   if (spot.tx > 0) badge.classList.add('gf-badge--ink');
 }

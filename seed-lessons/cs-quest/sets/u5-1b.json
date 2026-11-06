@@ -65,7 +65,8 @@
     "the speaker",
     "the touch sensor"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Storage is the part that remembers, even when the power is off. The processor, speaker and touch sensor forget or do other jobs."
   },
   {
    "id": "1b-5.1-e2",
@@ -100,7 +101,8 @@
     "the camera app (software)",
     "a passphrase for the photo"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A photo needs the camera, which is hardware, and the camera app, which is the software that tells it what to do."
   },
   {
    "id": "1b-5.2-r1",
@@ -134,7 +136,8 @@
     "is the volume up, are headphones plugged in?",
     "reset the network passphrase"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Start with the quick, likely checks: is the volume up, and is the sound going to plugged-in headphones? Buying or deleting comes nowhere near first."
   },
   {
    "id": "1b-5.2-e2",
@@ -151,7 +154,8 @@
     "whether the speaker works",
     "whether the battery is full"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Caps lock turns every letter into a capital, so a passphrase you know still fails. It is the small clue to check first."
   },
   {
    "id": "1b-5.2-e3",
@@ -168,7 +172,8 @@
     "change the wallpaper",
     "unplug the printer"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Closing a frozen app and opening it again is quick and often fixes it. The other choices have nothing to do with the app."
   },
   {
    "id": "1b-5.3-r1",
@@ -202,7 +207,8 @@
     "in storage, as on/off switches",
     "nowhere, it is gone"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The screen only shows a photo while the tablet is on. The photo itself is kept in storage as bits, tiny on/off switches."
   },
   {
    "id": "1b-5.3-e2",
@@ -219,7 +225,8 @@
     "loops",
     "pixels"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A screen picture is made of tiny dots called pixels. Packets, routers and loops are words from other worlds of the course."
   },
   {
    "id": "1b-5.3-e3",
@@ -236,7 +243,8 @@
     "storage, screen, sensor, processor",
     "processor, sensor, screen, storage"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "The touch sensor feels the tap, the processor gets the photo from storage, and the screen lights the pixels: in that order."
   }
  ]
 }

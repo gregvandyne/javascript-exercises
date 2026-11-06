@@ -170,6 +170,11 @@
    "art": "table"
   },
   {
+   "title": "Stretch: the sneaky scale",
+   "text": "Stretch: a picture graph uses one picture for every 5 points. A row shows 7 pictures. How many points is that, and why does the scale matter more than the pictures? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
    "title": "Words to know",
    "text": "Four words for the chart stalls.",
    "art": "pencil",
@@ -192,11 +197,6 @@
      "means": "a chart that stacks marks over a number line at each value"
     }
    ]
-  },
-  {
-   "title": "Stretch: the sneaky scale",
-   "text": "Stretch: a picture graph uses one picture for every 5 points. A row shows 7 pictures. How many points is that, and why does the scale matter more than the pictures? Stretch work is never in the check.",
-   "art": "star"
   },
   {
    "title": "Your mission",

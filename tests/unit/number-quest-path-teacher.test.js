@@ -31,7 +31,7 @@ test('the course is registered: one Explorer band, 23 steps, no deck problems, o
   assert.deepEqual(C.deckProblems('explorer', 'number-quest'), []);
   assert.equal(C.getStep(course, 'explorer-4.3').game.slug, 'fraction-factory');
   assert.equal(C.getStep(course, 'explorer-7.4').game.slug, 'quest-race', 'the finale rides the Vault Run');
-  assert.equal(C.getStep(course, 'explorer-6.1').game, null, '6.1 is the TALK step until Builders Yard ships');
+  assert.equal(C.getStep(course, 'explorer-6.1').game.params, 'mode=nq-6-1&lock=1', '6.1 plays the Shape Hunt board until Builders Yard ships');
   assert.equal(C.getStep(course, '2-4.3'), null, 'no Pro band exists yet');
   // Cyber Defenders was completed by Phase 2 on main (Units 5-6 + finale): 20 steps per band, not the 13 of its Phase 1.
   assert.equal(C.steps(C.getCourse('cyber-defenders'), '1b').length, 20);

@@ -102,7 +102,8 @@
        "Debug it: find and fix the mistake",
        "Change every line"
       ],
-      "answer": 2
+      "answer": 2,
+      "why": "A program that almost works is worth keeping. Debugging finds the one mistake and fixes it, instead of starting over."
      },
      {
       "id": "2-6.4-e2",
@@ -113,7 +114,8 @@
        "A kind of password",
        "A game level"
       ],
-      "answer": 1
+      "answer": 1,
+      "why": "A packet is one small, numbered piece of a message. The pieces travel across the network and are rebuilt at the other end."
      },
      {
       "id": "2-6.4-e3",
@@ -124,7 +126,8 @@
        "Guess and hope",
        "Ask the computer to guess"
       ],
-      "answer": 0
+      "answer": 0,
+      "why": "Decomposing splits a big problem into smaller parts you can solve and test one at a time."
      }
     ],
     "1b": [
@@ -137,7 +140,8 @@
        "Three",
        "Four"
       ],
-      "answer": 3
+      "answer": 3,
+      "why": "The Spark had four pieces, one for each world: Robo Route, Data Detective, Packet Post and Inside the Machine. You lit all four."
      },
      {
       "id": "1b-6.4-e2",
@@ -148,7 +152,8 @@
        "You did",
        "The games coded themselves"
       ],
-      "answer": 2
+      "answer": 2,
+      "why": "Bolt, Dot, Pim and Gizmo know their worlds, but none of them can code. Every game that lit the Spark was coded by you."
      },
      {
       "id": "1b-6.4-e3",
@@ -159,7 +164,8 @@
        "Start the course over",
        "Hide the Spark"
       ],
-      "answer": 0
+      "answer": 0,
+      "why": "Coders do not only play games, they build them. The Builder is ready for your own game."
      }
     ]
    }

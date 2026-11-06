@@ -172,30 +172,6 @@
    ]
   },
   {
-   "kind": "words",
-   "title": "Words to know",
-   "text": "Four words for today.",
-   "art": "pencil",
-   "words": [
-    {
-     "word": "bar model",
-     "means": "a drawing of a story as bars for the whole and its parts"
-    },
-    {
-     "word": "whole",
-     "means": "the full amount a story starts from"
-    },
-    {
-     "word": "part",
-     "means": "one piece of the whole"
-    },
-    {
-     "word": "difference",
-     "means": "the answer to a subtraction: the gap itself"
-    }
-   ]
-  },
-  {
    "title": "Stretch: Two steps, two bars",
    "text": "Some stories need two moves. Maya needs 500 points, has 275, and earns 90 more today. Draw one bar for what she still needs after today.",
    "art": "star",
@@ -243,6 +219,30 @@
       24.7,
       18.4
      ]
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "bar model",
+     "means": "a drawing of a story as bars for the whole and its parts"
+    },
+    {
+     "word": "whole",
+     "means": "the full amount a story starts from"
+    },
+    {
+     "word": "part",
+     "means": "one piece of the whole"
+    },
+    {
+     "word": "difference",
+     "means": "the answer to a subtraction: the gap itself"
     }
    ]
   },

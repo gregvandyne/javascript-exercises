@@ -104,6 +104,11 @@
    "art": "bug"
   },
   {
+   "title": "Stretch: build a likely spinner",
+   "text": "Stretch: design a spinner where landing on red is likely but not certain. How many of its 8 parts are red, and why not all 8? Stretch work is never in the check.",
+   "art": "star"
+  },
+  {
    "title": "Words to know",
    "text": "Four words for maybes, in order.",
    "art": "pencil",
@@ -128,22 +133,17 @@
    ]
   },
   {
-   "title": "Stretch: build a likely spinner",
-   "text": "Stretch: design a spinner where landing on red is likely but not certain. How many of its 8 parts are red, and why not all 8? Stretch work is never in the check.",
-   "art": "star"
-  },
-  {
    "title": "Your mission",
-   "text": "Open Would You Rather. It opens straight on the Numbers topic: play one whole run to its end card. Before each pick, say how likely each choice is in real life: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
+   "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on chance questions, with no picking first. Before each answer, count the parts: how many match, and how many in all? Then tally 20 real spins and compare.",
    "art": "trophy",
-   "img": "nq/would-you-rather/numbers",
-   "alt": "Would You Rather, the Numbers topic: a numbers choice on screen, two big cards to pick from, at the start of a run.",
+   "img": "nq/quest-race/chance-race",
+   "alt": "Quest Race on the island course: a chance question about a spinner on screen, four chance words to pick from, the runners below.",
    "kind": "mission",
    "view": [
-    6.5,
-    6,
-    87,
-    80
+    20,
+    54,
+    60,
+    44
    ]
   }
  ],
@@ -153,8 +153,8 @@
   "nq-explorer-7.3-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "numbers",
-  "params": "topic=numbers&lock=1"
+  "slug": "quest-race",
+  "chapter": "Practice Race",
+  "params": "mode=nq-7-3&lock=1"
  }
 }
