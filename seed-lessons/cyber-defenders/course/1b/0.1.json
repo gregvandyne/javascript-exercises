@@ -18,7 +18,33 @@
    "text": "Netville is a story, but the post is real. The games you play, the photos you send and the videos you watch all travel as packets on real roads. Real tricksters send real fake messages too, and what you learn here protects the real you.",
    "art": "globe",
    "img": "csq/packet-post/packets-1b-order",
-   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
+   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order.",
+   "view": [
+    5.4,
+    30.4,
+    64.0,
+    65.5
+   ],
+   "focus": [
+    {
+     "cue": "Your photos and games travel as packets",
+     "box": [
+      8.4,
+      35.4,
+      45.5,
+      55.5
+     ]
+    },
+    {
+     "cue": "Each packet carries its number",
+     "box": [
+      55.6,
+      42.6,
+      10.8,
+      12.8
+     ]
+    }
+   ]
   },
   {
    "title": "Letters nobody wrote",
@@ -28,9 +54,29 @@
    "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    37.0,
+    84.0,
+    60.0
+   ],
+   "focus": [
+    {
+     "cue": "Signed \"Post Office Team\", but they never wrote it",
+     "box": [
+      15.5,
+      42.9,
+      21.0,
+      4.1
+     ]
+    },
+    {
+     "cue": "A shiny secret it wants: your mailbox key",
+     "box": [
+      50.8,
+      56.4,
+      21.8,
+      7.1
+     ]
+    }
    ]
   },
   {
@@ -51,8 +97,19 @@
    "view": [
     3.0,
     13.0,
-    46.0,
-    40.0
+    52.0,
+    37.0
+   ],
+   "focus": [
+    {
+     "cue": "Where you live: a shiny secret to keep",
+     "box": [
+      8.0,
+      27.9,
+      45.2,
+      6.8
+     ]
+    }
    ]
   },
   {
@@ -83,13 +140,85 @@
    "title": "Six stamps, real jobs",
    "text": "Each stamp matches your real day. Roadwise guards the packets behind your games and videos; Keykeeper guards your passphrases; Private guards what you share. Trickspotter spots fake messages, Kind Screen keeps chats kind, and Shield stacks layers of protection.",
    "art": "star",
-   "img": "csq/escape-the-post-office/door-1b-new",
-   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
+   "visual": {
+    "type": "bars",
+    "label": "Six stamps, one for each unit",
+    "rows": [
+     {
+      "label": "Units 1 and 2",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Roadwise",
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "label": "Keykeeper",
+        "tone": 1
+       }
+      ]
+     },
+     {
+      "label": "Units 3 and 4",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Private",
+        "tone": 2
+       },
+       {
+        "w": 0.5,
+        "label": "Trickspotter",
+        "tone": 3
+       }
+      ]
+     },
+     {
+      "label": "Units 5 and 6",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Kind Screen",
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "label": "Shield",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Roadwise guards packets; Keykeeper guards keys",
+     "box": [
+      5.0,
+      5.5,
+      90.0,
+      23.8
+     ]
+    },
+    {
+     "cue": "Private guards what you share; Trickspotter spots fakes",
+     "box": [
+      5.0,
+      35.7,
+      90.0,
+      23.8
+     ]
+    },
+    {
+     "cue": "Kind Screen keeps chats kind; Shield stacks layers",
+     "box": [
+      5.0,
+      66.0,
+      90.0,
+      23.8
+     ]
+    }
    ]
   },
   {
@@ -97,20 +226,57 @@
    "text": "Pim is hiring you as a Cyber Defender. Every step works the same way: story slides first, then words to know, a quick check, and a mission.",
    "art": "star",
    "img": "csq/packet-post/home",
-   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret."
+   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
+   "view": [
+    20.0,
+    25.0,
+    60.0,
+    73.0
+   ],
+   "focus": [
+    {
+     "cue": "Pim's post office motto: keep every secret",
+     "box": [
+      34.4,
+      37.4,
+      31.6,
+      7.9
+     ]
+    },
+    {
+     "cue": "Pim is hiring you as a Cyber Defender",
+     "box": [
+      62.9,
+      72.6,
+      12.7,
+      22.9
+     ]
+    }
+   ]
   },
   {
    "kind": "mission",
    "title": "Your mission",
    "text": "There is no game this time. Open the course map, find the six stamps, and say hello to each one. Your first stamp is waiting in the next unit.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/door-1b-two",
-   "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
+   "img": "csq/escape-the-post-office/door-1b-new",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    36.0,
+    34.0,
+    35.0
+   ],
+   "focus": [
+    {
+     "cue": "Lock 1 waits for your first stamp: Roadwise",
+     "box": [
+      1.5,
+      38.7,
+      31.5,
+      30.7
+     ]
+    }
    ]
   }
  ],

@@ -1,6 +1,16 @@
 [
  {
   "actions": [],
+  "alt": "Spot the Trick, card 4: a Game Shop offers a thousand free coins if you tap, and the offer ends in one hour.",
+  "band": "1b",
+  "chapter": "tricks",
+  "concept": "the free coins card",
+  "game": "packet-post",
+  "level": 4,
+  "state": "tricks-1b-coins"
+ },
+ {
+  "actions": [],
   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
   "band": "1b",
   "chapter": "title",
@@ -614,6 +624,16 @@
   "state": "note-1b"
  },
  {
+  "acts": 1,
+  "alt": "Lock 2 turned to shift 3: the Magpie's note RSHQ now reads OPEN, and the lock is ready to open.",
+  "band": "1b",
+  "chapter": "sealed-note",
+  "compact": true,
+  "concept": "the sealed note, read",
+  "game": "escape-the-post-office",
+  "state": "note-1b-open"
+ },
+ {
   "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
   "band": "2",
   "chapter": "sealed-note",
@@ -885,42 +905,6 @@
   "msg": "lt-1",
   "phase": "hunt",
   "state": "letters-1b-lt-1-all"
- },
- {
-  "alt": "Every clue found, the four moves wait under the letter: Deliver, Bin it, Show Pim, or Report and block.",
-  "band": "1b",
-  "chapter": "letters",
-  "compact": true,
-  "concept": "choosing the move",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "lt-1",
-  "phase": "decide",
-  "state": "letters-1b-lt-1-decide"
- },
- {
-  "alt": "The tablet letter mid-hunt: one clue found, two still hiding, and the button to choose what to do.",
-  "band": "1b",
-  "chapter": "letters",
-  "compact": true,
-  "concept": "the prize letter, one clue found",
-  "found": 1,
-  "game": "trick-inbox",
-  "msg": "lt-1",
-  "phase": "hunt",
-  "state": "letters-1b-lt-1-f1"
- },
- {
-  "alt": "Trick Inbox, Prize Letters: a letter from the Prize Team says you won a tablet. Its three clues are still hiding.",
-  "band": "1b",
-  "chapter": "letters",
-  "compact": true,
-  "concept": "a prize letter, before the hunt",
-  "found": 0,
-  "game": "trick-inbox",
-  "msg": "lt-1",
-  "phase": "hunt",
-  "state": "letters-1b-lt-1-new"
  },
  {
   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",

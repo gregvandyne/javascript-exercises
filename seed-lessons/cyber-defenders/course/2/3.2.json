@@ -95,7 +95,37 @@
   {
    "title": "Future readers",
    "text": "That drawing you posted for feedback stays in your trail. Years later, teammates, schools and employers may read old posts as part of who you are.",
-   "art": "people"
+   "art": "people",
+   "visual": {
+    "type": "tiles",
+    "label": "Years later, who reads the drawing you posted?",
+    "values": [
+     "you post",
+     "teammates",
+     "schools",
+     "employers"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Today: you post a drawing for feedback",
+     "box": [
+      5.5,
+      32.0,
+      21.5,
+      26.7
+     ]
+    },
+    {
+     "cue": "Years later: teammates, schools, employers",
+     "box": [
+      28.0,
+      32.0,
+      66.5,
+      26.7
+     ]
+    }
+   ]
   },
   {
    "title": "Ask before you post",

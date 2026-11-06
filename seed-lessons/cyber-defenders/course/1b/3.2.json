@@ -42,7 +42,28 @@
   {
    "title": "Posts leave footprints",
    "text": "Online, your posts, photos, scores and comments are footprints. Each one shows a small piece of where you have been. Together, they make a trail.",
-   "art": "screen"
+   "art": "screen",
+   "visual": {
+    "type": "tiles",
+    "label": "Each one is a footprint. Together, they make a trail.",
+    "values": [
+     "a post",
+     "a photo",
+     "a score",
+     "a comment"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A post, a photo, a score, a comment: footprints",
+     "box": [
+      5.5,
+      32.0,
+      89.0,
+      26.7
+     ]
+    }
+   ]
   },
   {
    "kind": "example",

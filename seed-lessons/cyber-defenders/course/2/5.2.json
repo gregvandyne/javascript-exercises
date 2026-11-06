@@ -99,7 +99,35 @@
   {
    "title": "Hate speech: report, don't debate",
    "text": "Hate speech attacks who someone is, and it crosses a line no joke can excuse. The Defender move is never to debate it. Save it, report it, and support the person it targeted.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/escape-the-post-office/moves-1b-four",
+   "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
+   "view": [
+    0.0,
+    53.5,
+    55.5,
+    39.5
+   ],
+   "focus": [
+    {
+     "cue": "Save it: keep the evidence",
+     "box": [
+      27.5,
+      56.0,
+      27.4,
+      5.8
+     ]
+    },
+    {
+     "cue": "Report it, never debate it",
+     "box": [
+      2.6,
+      63.1,
+      28.7,
+      6.7
+     ]
+    }
+   ]
   },
   {
    "kind": "example",

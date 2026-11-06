@@ -3743,6 +3743,134 @@
    "Use a hint feather"
   ]
  },
+ "csq/escape-the-post-office/note-1b-open": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 2: Sealed Note🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   26.4,
+   8.9,
+   "🔒 Lock 2: Sealed Note"
+  ],
+  "pill2": [
+   28.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "The Magpie sealed a note with the cipher wheel. Turn the whe"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   21.5,
+   "The Magpie's sealed noteRSHQOPEN"
+  ],
+  "cardtitle1": [
+   3.4,
+   39.8,
+   93.3,
+   4.7,
+   "The Magpie's sealed note"
+  ],
+  "cardp1": [
+   3.4,
+   45.3,
+   93.3,
+   4.6,
+   "RSHQ"
+  ],
+  "cardp2": [
+   3.4,
+   50.8,
+   93.3,
+   4.7,
+   "OPEN"
+  ],
+  "cipher": [
+   3.4,
+   45.3,
+   93.3,
+   4.6,
+   "RSHQ"
+  ],
+  "decoded": [
+   3.4,
+   50.8,
+   93.3,
+   4.7,
+   "OPEN"
+  ],
+  "shift": [
+   41.4,
+   75.1,
+   13.8,
+   5.8,
+   "Shift 3"
+  ],
+  "row1": [
+   1.5,
+   72.6,
+   97,
+   10.7,
+   "Turn backShift 3Turn forward"
+  ],
+  "row2": [
+   1.5,
+   96.6,
+   97,
+   3.4,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   19.4,
+   72.6,
+   21,
+   10.7,
+   "Turn back"
+  ],
+  "btn2": [
+   56.1,
+   72.6,
+   24.5,
+   10.7,
+   "Turn forward"
+  ],
+  "btn3": [
+   1.5,
+   84.6,
+   97,
+   10.7,
+   "Open the lock"
+  ],
+  "btn4": [
+   1.5,
+   96.6,
+   29.4,
+   3.4,
+   "Use a hint feather"
+  ]
+ },
  "csq/escape-the-post-office/note-2": {
   "bar": [
    1.3,
@@ -7023,404 +7151,6 @@
    22.4,
    8.9,
    "Clues found: 3 of 3"
-  ],
-  "choose": [
-   46.6,
-   83.3,
-   30.3,
-   10.7,
-   "Choose what to do"
-  ]
- },
- "csq/trick-inbox/letters-1b-lt-1-decide": {
-  "bar": [
-   1.5,
-   14.7,
-   97,
-   9.3,
-   "Prize Letters · ExplorerMessage 1 of 6"
-  ],
-  "pill1": [
-   1.5,
-   14.7,
-   30.8,
-   9.3,
-   "Prize Letters · Explorer"
-  ],
-  "pill2": [
-   66,
-   14.9,
-   18.5,
-   8.9,
-   "Message 1 of 6"
-  ],
-  "pill3": [
-   85.5,
-   14.8,
-   13,
-   9.1,
-   ""
-  ],
-  "say": [
-   1.5,
-   25.3,
-   97,
-   12,
-   "Now choose the move. Think about what this message really wa"
-  ],
-  "card": [
-   1.5,
-   38.7,
-   97,
-   43.3,
-   "LetterFrom: Prize TeamYou won a tablet!Congratulations! You "
-  ],
-  "from": [
-   3.6,
-   42,
-   92.8,
-   5.9,
-   "LetterFrom: Prize Team"
-  ],
-  "kind1": [
-   3.6,
-   42,
-   11.2,
-   5.9,
-   "Letter"
-  ],
-  "kind2": [
-   3.6,
-   72.4,
-   92.8,
-   6.2,
-   "Claim now"
-  ],
-  "fromtext": [
-   15.5,
-   42.9,
-   15.6,
-   4.1,
-   "From: Prize Team"
-  ],
-  "subject": [
-   3.6,
-   49.6,
-   92.8,
-   5,
-   "You won a tablet!"
-  ],
-  "body": [
-   3.6,
-   56.4,
-   92.8,
-   14.2,
-   "Congratulations! You are our lucky winner. Send us your mail"
-  ],
-  "clue1": [
-   20.6,
-   56.4,
-   29.7,
-   7.1,
-   "You are our lucky winner."
-  ],
-  "clue2": [
-   64.4,
-   56.4,
-   16.6,
-   7.1,
-   "mailbox key"
-  ],
-  "clue3": [
-   3.8,
-   63.5,
-   27.6,
-   7.1,
-   "in the next ten minutes"
-  ],
-  "actions": [
-   1.5,
-   83.3,
-   97,
-   10.7,
-   "DeliverBin itShow PimReport & block"
-  ],
-  "act1": [
-   1.5,
-   83.3,
-   23.5,
-   10.7,
-   "Deliver"
-  ],
-  "act2": [
-   26,
-   83.3,
-   23.5,
-   10.7,
-   "Bin it"
-  ],
-  "act3": [
-   50.5,
-   83.3,
-   23.5,
-   10.7,
-   "Show Pim"
-  ],
-  "act4": [
-   75,
-   83.3,
-   23.5,
-   10.7,
-   "Report & block"
-  ]
- },
- "csq/trick-inbox/letters-1b-lt-1-f1": {
-  "bar": [
-   1.5,
-   14.7,
-   97,
-   9.3,
-   "Prize Letters · ExplorerMessage 1 of 6"
-  ],
-  "pill1": [
-   1.5,
-   14.7,
-   30.8,
-   9.3,
-   "Prize Letters · Explorer"
-  ],
-  "pill2": [
-   66,
-   14.9,
-   18.5,
-   8.9,
-   "Message 1 of 6"
-  ],
-  "pill3": [
-   85.5,
-   14.8,
-   13,
-   9.1,
-   ""
-  ],
-  "pill4": [
-   23.4,
-   84.2,
-   21.9,
-   8.9,
-   "Clues found: 1 of 3"
-  ],
-  "say": [
-   1.5,
-   25.3,
-   97,
-   12,
-   "A new message. Tap every clue you can find — then choose wha"
-  ],
-  "card": [
-   1.5,
-   38.7,
-   97,
-   43.3,
-   "LetterFrom: Prize TeamYou won a tablet!Congratulations! You "
-  ],
-  "from": [
-   3.6,
-   42,
-   92.8,
-   5.9,
-   "LetterFrom: Prize Team"
-  ],
-  "kind1": [
-   3.6,
-   42,
-   11.2,
-   5.9,
-   "Letter"
-  ],
-  "kind2": [
-   3.6,
-   72.4,
-   92.8,
-   6.2,
-   "Claim now"
-  ],
-  "fromtext": [
-   15.5,
-   42.9,
-   15.6,
-   4.1,
-   "From: Prize Team"
-  ],
-  "subject": [
-   3.6,
-   49.6,
-   92.8,
-   5,
-   "You won a tablet!"
-  ],
-  "body": [
-   3.6,
-   56.4,
-   92.8,
-   14.2,
-   "Congratulations! You are our lucky winner. Send us your mail"
-  ],
-  "clue1": [
-   20.6,
-   56.4,
-   29.7,
-   7.1,
-   "You are our lucky winner."
-  ],
-  "clue2": [
-   64.4,
-   56.4,
-   14.1,
-   7.1,
-   "mailbox key"
-  ],
-  "clue3": [
-   3.8,
-   63.5,
-   25.1,
-   7.1,
-   "in the next ten minutes"
-  ],
-  "count": [
-   23.4,
-   84.2,
-   21.9,
-   8.9,
-   "Clues found: 1 of 3"
-  ],
-  "choose": [
-   46.3,
-   83.3,
-   30.3,
-   10.7,
-   "Choose what to do"
-  ]
- },
- "csq/trick-inbox/letters-1b-lt-1-new": {
-  "bar": [
-   1.5,
-   14.7,
-   97,
-   9.3,
-   "Prize Letters · ExplorerMessage 1 of 6"
-  ],
-  "pill1": [
-   1.5,
-   14.7,
-   30.8,
-   9.3,
-   "Prize Letters · Explorer"
-  ],
-  "pill2": [
-   66,
-   14.9,
-   18.5,
-   8.9,
-   "Message 1 of 6"
-  ],
-  "pill3": [
-   85.5,
-   14.8,
-   13,
-   9.1,
-   ""
-  ],
-  "pill4": [
-   23.1,
-   84.2,
-   22.5,
-   8.9,
-   "Clues found: 0 of 3"
-  ],
-  "say": [
-   1.5,
-   25.3,
-   97,
-   12,
-   "A new message. Tap every clue you can find — then choose wha"
-  ],
-  "card": [
-   1.5,
-   38.7,
-   97,
-   43.3,
-   "LetterFrom: Prize TeamYou won a tablet!Congratulations! You "
-  ],
-  "from": [
-   3.6,
-   42,
-   92.8,
-   5.9,
-   "LetterFrom: Prize Team"
-  ],
-  "kind1": [
-   3.6,
-   42,
-   11.2,
-   5.9,
-   "Letter"
-  ],
-  "kind2": [
-   3.6,
-   72.4,
-   92.8,
-   6.2,
-   "Claim now"
-  ],
-  "fromtext": [
-   15.5,
-   42.9,
-   15.6,
-   4.1,
-   "From: Prize Team"
-  ],
-  "subject": [
-   3.6,
-   49.6,
-   92.8,
-   5,
-   "You won a tablet!"
-  ],
-  "body": [
-   3.6,
-   56.4,
-   92.8,
-   14.2,
-   "Congratulations! You are our lucky winner. Send us your mail"
-  ],
-  "clue1": [
-   20.6,
-   56.4,
-   27.2,
-   7.1,
-   "You are our lucky winner."
-  ],
-  "clue2": [
-   61.9,
-   56.4,
-   14.1,
-   7.1,
-   "mailbox key"
-  ],
-  "clue3": [
-   3.8,
-   63.5,
-   25.1,
-   7.1,
-   "in the next ten minutes"
-  ],
-  "count": [
-   23.1,
-   84.2,
-   22.5,
-   8.9,
-   "Clues found: 0 of 3"
   ],
   "choose": [
    46.6,
