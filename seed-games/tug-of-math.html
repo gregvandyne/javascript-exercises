@@ -102,17 +102,15 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .scene .mark.lb,.scene .mark.lr{border-inline-start-width:6px}
 .scene .mark.lb,.scene .mark.lr,.scene .mark.c{margin-inline-start:-2px}
 .tug{position:absolute;inset:0;transform:translateX(calc(var(--p,0) * -1 * var(--S)));transition:transform .35s cubic-bezier(.3,1.25,.5,1)}
-.tug .rope{position:absolute;left:calc(50% - var(--gap) - var(--cw) * var(--rs));right:calc(50% - var(--gap) - var(--cw) * var(--rs));top:calc(var(--gy) - var(--ch) * .42);height:max(6px,1.4cqh);transform:translateY(-50%);border-radius:999px;
-  background:repeating-linear-gradient(60deg,#B07A30 0 3px,#E9C178 3px 7px,#D3A257 7px 10px);border:2px solid #6B4A1E;box-shadow:inset 0 -2px 0 rgba(107,74,30,.35)}
-/* the loose ends: past the last puller on each side the rope hangs down and lies on the grass, like a real rope */
-.tug .tail{position:absolute;top:calc(var(--gy) - var(--ch) * .42);width:min(calc(var(--ch) * .36),calc(50% - var(--gap) - var(--cw) * var(--rs) - 2cqw));height:calc(var(--ch) * .4);overflow:visible;pointer-events:none}
-.tug .tail.l{right:calc(50% + var(--gap) + var(--cw) * var(--rs) - 3px)}
-.tug .tail.r{left:calc(50% + var(--gap) + var(--cw) * var(--rs) - 3px);transform:scaleX(-1)}
-.tug .tail path{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-.tug .tail .o{stroke:#6B4A1E;stroke-width:calc(max(6px,1.4cqh) + 4px)}
-.tug .tail .i{stroke:#E9C178;stroke-width:max(6px,1.4cqh)}
-.tug .tail .s{stroke:#B07A30;stroke-width:max(6px,1.4cqh);stroke-dasharray:3 6;stroke-linecap:butt}
-.tug .tail .k{stroke:#6B4A1E;stroke-width:calc(max(6px,1.4cqh) + 6px);stroke-linecap:round}
+.tug .rope{position:absolute;left:calc(50% - var(--gap) - var(--cw) * var(--rs));right:calc(50% - var(--gap) - var(--cw) * var(--rs));top:calc(var(--gy) - var(--ch) * .42);height:max(6px,1.4cqh);transform:translateY(-50%);visibility:hidden}
+/* the loose ends' room: past the last puller on each side the rope hangs down and lies on the grass, like a real rope */
+.tug .tail{position:absolute;top:calc(var(--gy) - var(--ch) * .42);width:min(calc(var(--ch) * .36),calc(50% - var(--gap) - var(--cw) * var(--rs) - 2cqw));height:calc(var(--ch) * .4);visibility:hidden}
+.tug .tail.l{right:calc(50% + var(--gap) + var(--cw) * var(--rs))}
+.tug .tail.r{left:calc(50% + var(--gap) + var(--cw) * var(--rs))}
+/* the rope itself: one line (the middle and both loose ends), so there is no seam where it starts to droop */
+.tug .ropeline{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.tug .ropeline path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tug .ropeline .o{stroke:#6B4A1E}.tug .ropeline .i{stroke:#E9C178}.tug .ropeline .s{stroke:#B07A30;stroke-linecap:butt}
 .tug .flag{position:absolute;left:50%;top:calc(var(--gy) - var(--ch) * .42 - var(--ch) * .36);width:4px;height:calc(var(--ch) * .38);margin-left:-2px;background:#1D2340;border-radius:2px}
 .tug .flag::after{content:'';position:absolute;left:4px;top:0;width:calc(var(--ch) * .22);height:calc(var(--ch) * .15);background:#FFC83D;border:2px solid #1D2340;border-radius:0 6px 6px 0}
 .crew{position:absolute;inset:0}
@@ -830,12 +828,29 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     testState: function () { return testState(); },
     on: { start: function (w) { begin(w); }, title: function () { hide(); }, results: function () { hide(); } },
   });
-  /** The rope's two loose ends: from where the last puller holds it, it droops to the grass and lies there a little. */
-  var TAIL = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">' +
-    '<path class="o" d="M100 0C70 0 52 6 42 30S30 96 6 98"/><path class="i" d="M100 0C70 0 52 6 42 30S30 96 6 98"/>' +
-    '<path class="s" d="M100 0C70 0 52 6 42 30S30 96 6 98"/><path class="k" d="M10 98L4 98"/></svg>';
+  /** The rope: the hidden .rope box says where the pullers hold it, the hidden .tail boxes how far each loose end
+   *  reaches and drops. One path draws it all (taut middle, then each end drooping to the grass and lying there). */
   function ropeEnds(tug) {
-    ['l', 'r'].forEach(function (side) { var t = el('div', 'tail ' + side); t.innerHTML = TAIL; tug.appendChild(t); });
+    ['l', 'r'].forEach(function (side) { tug.appendChild(el('div', 'tail ' + side)); });
+    var NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg'), parts = {};
+    svg.setAttribute('class', 'ropeline'); svg.setAttribute('aria-hidden', 'true');
+    ['o', 'i', 's'].forEach(function (k) { var p = document.createElementNS(NS, 'path'); p.setAttribute('class', k); svg.appendChild(p); parts[k] = p; });
+    tug.insertBefore(svg, tug.firstChild);
+    function draw() {
+      var box = tug.getBoundingClientRect(), r = tug.querySelector('.rope').getBoundingClientRect(), t = tug.querySelector('.tail.l').getBoundingClientRect();
+      if (!box.width || !r.width) return;
+      var y = r.top + r.height / 2 - box.top, xl = r.left - box.left, xr = r.right - box.left, w = Math.max(8, t.width), h = Math.max(8, t.height), th = r.height;
+      function end(x, dir) { // from the hand outward: level at first, then down in a soft curve, then along the grass
+        var f = function (a, b) { return (x + dir * a * w).toFixed(1) + ' ' + (y + b * h).toFixed(1); };
+        return 'M' + f(0, 0) + 'C' + f(0.3, 0) + ' ' + f(0.48, 0.06) + ' ' + f(0.58, 0.3) + 'S' + f(0.7, 0.96) + ' ' + f(0.94, 0.98);
+      }
+      var d = 'M' + xl.toFixed(1) + ' ' + y.toFixed(1) + 'L' + xr.toFixed(1) + ' ' + y.toFixed(1) + end(xl, -1) + end(xr, 1);
+      for (var k in parts) parts[k].setAttribute('d', d);
+      parts.o.setAttribute('stroke-width', th.toFixed(1)); parts.i.setAttribute('stroke-width', Math.max(2, th - 4).toFixed(1));
+      parts.s.setAttribute('stroke-width', Math.max(2, th - 4).toFixed(1)); parts.s.setAttribute('stroke-dasharray', Math.max(2, th * 0.35).toFixed(1) + ' ' + Math.max(3, th * 0.6).toFixed(1));
+    }
+    if (typeof ResizeObserver === 'function') new ResizeObserver(draw).observe(tug);
+    requestAnimationFrame(draw);
   }
   /** The rope between the two crews behind the title (drawn over the kit's world). */
   function titleRope(w) {
