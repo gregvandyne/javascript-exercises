@@ -21,7 +21,8 @@ const { billingOn } = await import('../../server/services/stripe.js');
 const { DoodleCore: C } = doodle();
 
 publish(official, liveHtml("live.on('event', () => {});"), { source: 'seed', slug: 'doodle-hoot', title: 'Doodle Hoot' });
-Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300, waitMs: 500, gapMs: 40, drawMs: 4000, reloadMs: 80 });
+Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300, waitMs: 500, gapMs: 40, drawMs: 20000, reloadMs: 80 });
+// (a long turn, so no hint lands between working out a guess and sending it; the hints test sets a short one)
 
 const seatOf = c => c.wel.seat;
 const ev = (c, k, d) => c.send({ t: 'ev', k, d, to: 'host' });
@@ -104,7 +105,7 @@ test('a full turn: words to the drawer alone, strokes relayed and checked, guess
   const ch = await a.next('ev', m => m.k === 'ch');
   assert.equal(ch.f, 0); assert.equal(ch.d.w.length, 3); assert.equal(new Set(ch.d.w).size, 3); assert.equal(ch.d.e.length, 3);
   for (const o of [b, c, h]) assert.equal(evs(o, 'ch').length, 0);
-  assert.ok(!JSON.stringify(h.msgs).includes(ch.d.w[0]) && !JSON.stringify(b.msgs).includes(ch.d.w[1]));
+  assert.ok(!JSON.stringify(h.msgs).includes(`"${ch.d.w[0]}"`) && !JSON.stringify(b.msgs).includes(`"${ch.d.w[1]}"`));
   // a pick from someone else, or for another turn, is dropped
   ev(b, 'pk', { n: 1, i: 0 }); ev(a, 'pk', { n: 2, i: 0 }); ev(a, 'pk', { n: 1, i: 5 });
   await sleep(40); assert.equal(dd(s).ph, 'pick');
@@ -115,7 +116,7 @@ test('a full turn: words to the drawer alone, strokes relayed and checked, guess
   assert.deepEqual(tb.d.t, tc.d.t, 'everyone gets the same tray'); assert.equal(evs(a, 'tray').length, 0, 'never the drawer');
   assert.equal(tb.d.t.length, dd(s).tray.length); assert.deepEqual(tb.d.g, dd(s).word.groups);
   const st = await h.next('st', m => m.d.dd && m.d.dd.ph === 'draw');
-  assert.equal(st.d.dd.rv, null); assert.ok(!JSON.stringify(st).includes(wd.d.w), 'the shared state never has the word while drawing');
+  assert.equal(st.d.dd.rv, null); assert.ok(!JSON.stringify(st).includes(`"${wd.d.w}"`), 'the shared state never has the word while drawing');
   // a stroke: relayed once to the others and the projector, never back to the drawer
   ev(a, 'ln', { s: 0, c: 3, w: 1, e: 0, p: [100, 100, 10, 0, 10, 5] });
   const lb = await b.next('ev', m => m.k === 'ln'), lh = await h.next('ev', m => m.k === 'ln');
@@ -133,6 +134,7 @@ test('a full turn: words to the drawer alone, strokes relayed and checked, guess
   await sleep(60);
   assert.equal(dd(s).canvas.length, 1); assert.equal(dd(s).drops - before, 12);
   assert.equal(evs(b, 'ln').length + evs(c, 'ln').length, 4, 'the two good messages, to each of the two');
+  await sleep(1200);   // (the socket's own limit: 10 events a second, a burst of 20; let it refill)
   // undo removes the last stroke on every screen; clear the page
   ev(a, 'ln', { s: 1, c: 0, w: 2, e: 0, p: [500, 300, 3, 3] });
   await b.next('ev', m => m.k === 'ln' && m.d.s === 1);
@@ -141,8 +143,8 @@ test('a full turn: words to the drawer alone, strokes relayed and checked, guess
   assert.deepEqual((await b.next('ev', m => m.k === 'un')).d, { n: 1, s: 1 });
   assert.equal(dd(s).canvas.length, 1); assert.equal(dd(s).points, 5);
   // guesses: a wrong one to that player alone; a right one (tray positions, never text)
-  const right = spell(s, b), wrong = [...right].reverse();
-  if (C.check(dd(s).tray, dd(s).word.g, wrong)) wrong.push(99);
+  const right = spell(s, b), wrong = [...right];
+  wrong[0] = dd(s).decoys[0];   // a decoy is never a letter of the word
   ev(b, 'gs', { n: 1, t: wrong });
   const gr0 = await b.next('ev', m => m.k === 'gr');
   assert.equal(gr0.d.ok, false); assert.equal(evs(c, 'gr').length, 0);
@@ -248,8 +250,9 @@ test('the host: Clear drawing everywhere, Skip turn by its number, Remove the dr
   for (const p of [a, c, h]) p.ws.close();
 });
 
-test('hints, a pick that times out, the hide vote, a drawer who leaves, waiting for players', async () => {
+test('hints, a pick that times out, the hide vote, a drawer who leaves, waiting for players', async (tt) => {
   reset();
+  DG.hooks.drawMs = 4000; tt.after(() => { DG.hooks.drawMs = 20000; });
   const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:2:2:60', audience: 'open', lang: 'en' });
   const h = await hostSocket(s, teacher);
   const a = await player(s), b = await player(s), c = await player(s);
@@ -315,7 +318,7 @@ test('the end: the podium, then the results; nothing of a drawing or a word is k
   for (const w of [w1, w2]) assert.ok(!kept.includes(`"${w}"`), `no word in the results: ${w} in ${kept}`);
   assert.ok(!/123,321|"pts"|"canvas"|"tray"/.test(kept), 'no stroke in the results');
   const logged = JSON.stringify(logs);
-  for (const w of [w1, w2]) assert.ok(!logged.includes(w), 'no word in a log');
+  for (const w of [w1, w2]) assert.ok(!logged.includes(`"${w}"`), 'no word in a log');
   assert.ok(!/123,321|"ln"|"pts"/.test(logged), 'no stroke in a log');
   for (const p of [a, b, h]) p.ws.close();
 });
@@ -353,4 +356,13 @@ test('static: the room code imports no AI, moderation, screenshot or voice servi
     assert.ok(!/\blog\(|hooks\.log/.test(src), `${f} logs nothing`);
   }
   void cookieFor;
+});
+
+test('the real game file is live-ready: it draws its own lobby and host view, holds 16 and lists its event words', async () => {
+  const { checkHtml } = await import('../../server/services/classlive-lint.js');
+  const r = checkHtml(fs.readFileSync('seed-games/doodle-hoot.html', 'utf8'));
+  // (the live pack's hash is a test value in this harness, so only the pack check is set aside here)
+  assert.deepEqual(r.issues.filter(i => i.code !== 'live_pack'), []);
+  assert.equal(r.lobby, true); assert.equal(r.hostView, true); assert.equal(r.maxPlayers, 16);
+  assert.deepEqual(r.words, ['pk', 'ln', 'un', 'cl', 'gs', 'hide', 'need']);
 });

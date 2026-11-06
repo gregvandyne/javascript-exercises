@@ -80,7 +80,7 @@ html.dh-live .ok-row{display:none!important}
 .dh-guess{display:flex;flex-direction:column;gap:8px;align-items:stretch}
 .dh-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;min-height:44px}
 .dh-wd{display:flex;gap:4px}
-.dh-slot{width:clamp(30px,8.4vw,48px);height:44px;border-radius:10px;border:3px solid var(--ok-edge);border-style:dashed;background:transparent;font-weight:900;font-size:22px;display:grid;place-items:center;padding:0}
+.dh-slot{width:clamp(40px,8.4vw,48px);height:44px;border-radius:10px;border:3px solid var(--ok-edge);border-style:dashed;background:transparent;font-weight:900;font-size:22px;display:grid;place-items:center;padding:0}
 .dh-slot.full{border-style:solid;background:var(--ok-card)}
 .dh-slot.lock{border-style:solid;background:var(--hintTint);cursor:default}
 .dh-guess.ok .dh-slot{background:var(--goodTint);border-style:solid}
@@ -663,6 +663,193 @@ var I18N = {
     player: 'Player {n}', passTo: 'Pass to {name}', passDraw: 'Your turn to draw. No peeking, everyone else!', imReady: 'I’m ready', done: 'Done', passGuess: 'Pass to the guessers', passGuessP: 'Spell the word together. Who gets it first?', whoGot: 'Who spelled it?', wins: '{name} wins!', tie: 'It’s a tie!',
   },
   'en-GB': {},
+  es: {
+    title: 'Doodle Hoot', tag: 'Dibújalo. Deletréalo. ¡Uh-uh!', board: 'Tablero de dibujo',
+    setup: '¡A dibujar!', howPlay: 'Cómo jugar', practice: 'Adivina los dibujos de Pip', pass: 'Pasar y jugar', level: 'Palabras', easy: 'Fáciles', medium: 'Medias', tricky: 'Difíciles', playersN: 'Jugadores', start: 'Empezar',
+    practiceNote: 'Pip dibuja y tú deletreas la palabra con las fichas de letras.', passNote: 'Turnaos en este dispositivo: uno dibuja y los demás deletrean la palabra.',
+    round: 'Ronda {n} de {of}', doodleN: 'Dibujo {n} de {of}', turnN: 'Turno {n} de {of}', pipDraws: 'Pip está dibujando…',
+    drawing: '{name} está dibujando', choosing: '{name} está eligiendo una palabra…', youDraw: '¡Te toca dibujar!', pickWord: 'Elige una palabra para dibujar', drawThis: 'Dibuja:', getReady: 'Enseguida eliges una palabra.', spellSoon: '¡Prepárate para deletrear!',
+    notLetters: 'Dibuja imágenes, no letras.', colours: 'Colores', sizes: 'Grosores', size: 'Grosor {n}', eraser: 'Goma', undo: 'Deshacer', clear: 'Borrar', clearAsk: '¿Borrar todo?', full: 'La hoja está llena: deshaz o borra para seguir dibujando.',
+    c_black: 'Negro', c_white: 'Blanco', c_grey: 'Gris', c_red: 'Rojo', c_orange: 'Naranja', c_yellow: 'Amarillo', c_green: 'Verde', c_teal: 'Turquesa', c_blue: 'Azul', c_purple: 'Morado', c_pink: 'Rosa', c_brown: 'Marrón',
+    spell: 'Deletrea la palabra con las fichas', back: 'Atrás', empty: 'Vacío', hint: '¡Una pista!', hints: 'Pistas: {n}',
+    gotIt: '¡Acertaste!', gotPts: '+{n} puntos', notQuite: 'Casi. ¡Prueba otra vez!', keepWatching: '¡Sigue mirando!', gotItName: '¡{name} acertó!',
+    hide: 'Ocultar dibujo', show: 'Mostrar dibujo', hidden: 'Dibujo oculto', hidCount: 'Lo ocultan: {n}',
+    itWas: 'Era…', timeUp: '¡Se acabó el tiempo!', allGot: '¡Todos acertaron!', skipped: 'Turno saltado', hiddenTurn: 'Se saltó este dibujo', drawerLeft: 'Quien dibujaba se fue',
+    waitHost: 'Esperando a que el anfitrión empiece…', waitPlayers: 'Esperando jugadores…', waitMore: 'El juego sigue cuando vuelva a haber dos jugadores.', needTwo: 'Hacen falta dos jugadores.', players: 'Jugadores aquí: {n}', hostHow: 'Cada uno entra con el código en su dispositivo, esté donde esté.',
+    secsLeft: 'Quedan {n} segundos', left10: 'Quedan 10 segundos', paused: 'En pausa', go: '¡Ya!', you: 'Tú', points: '{n} puntos',
+    podium: 'Puntuación final', place1: '¡1.er puesto!', place2: '¡2.º puesto!', place3: '¡3.er puesto!', wellPlayed: '¡Bien jugado!', superSpeller: '¡Súper deletreo!',
+    player: 'Jugador {n}', passTo: 'Pásalo a {name}', passDraw: 'Te toca dibujar. ¡Que nadie mire!', imReady: 'Estoy listo', done: 'Listo', passGuess: 'Pásalo a los que adivinan', passGuessP: 'Deletread la palabra juntos. ¿Quién acierta primero?', whoGot: '¿Quién la deletreó?', wins: '¡Gana {name}!', tie: '¡Empate!',
+  },
+  fr: {
+    title: 'Doodle Hoot', tag: 'Dessine. Épelle. Hou hou !', board: 'Planche à dessin',
+    setup: 'Prêts à dessiner ?', howPlay: 'Comment jouer', practice: 'Devine les dessins de Pip', pass: 'Chacun son tour', level: 'Mots', easy: 'Faciles', medium: 'Moyens', tricky: 'Difficiles', playersN: 'Joueurs', start: 'Commencer',
+    practiceNote: 'Pip dessine, et tu épelles le mot avec les tuiles de lettres.', passNote: 'Jouez à tour de rôle sur cet appareil : un joueur dessine, les autres épellent le mot.',
+    round: 'Manche {n} sur {of}', doodleN: 'Dessin {n} sur {of}', turnN: 'Tour {n} sur {of}', pipDraws: 'Pip dessine…',
+    drawing: '{name} dessine', choosing: '{name} choisit un mot…', youDraw: 'À toi de dessiner !', pickWord: 'Choisis un mot à dessiner', drawThis: 'Dessine :', getReady: 'Tu choisis un mot dans un instant.', spellSoon: 'Prépare-toi à épeler !',
+    notLetters: 'Dessine des images, pas des lettres.', colours: 'Couleurs', sizes: 'Épaisseurs', size: 'Épaisseur {n}', eraser: 'Gomme', undo: 'Annuler', clear: 'Effacer', clearAsk: 'Tout effacer ?', full: 'La feuille est pleine : annule ou efface pour continuer.',
+    c_black: 'Noir', c_white: 'Blanc', c_grey: 'Gris', c_red: 'Rouge', c_orange: 'Orange', c_yellow: 'Jaune', c_green: 'Vert', c_teal: 'Turquoise', c_blue: 'Bleu', c_purple: 'Violet', c_pink: 'Rose', c_brown: 'Marron',
+    spell: 'Épelle le mot avec les tuiles', back: 'Retour', empty: 'Vide', hint: 'Un indice !', hints: 'Indices : {n}',
+    gotIt: 'Trouvé !', gotPts: '+{n} points', notQuite: 'Pas tout à fait. Essaie encore !', keepWatching: 'Continue de regarder !', gotItName: '{name} a trouvé !',
+    hide: 'Masquer le dessin', show: 'Montrer le dessin', hidden: 'Dessin masqué', hidCount: 'Masqué par : {n}',
+    itWas: 'C’était…', timeUp: 'Temps écoulé !', allGot: 'Tout le monde a trouvé !', skipped: 'Tour passé', hiddenTurn: 'Ce dessin a été passé', drawerLeft: 'Le dessinateur est parti',
+    waitHost: 'On attend que l’hôte lance la partie…', waitPlayers: 'On attend des joueurs…', waitMore: 'La partie reprend dès qu’il y a de nouveau deux joueurs.', needTwo: 'Il faut deux joueurs.', players: 'Joueurs présents : {n}', hostHow: 'Chacun rejoint avec le code sur son appareil, où qu’il soit.',
+    secsLeft: 'Plus que {n} secondes', left10: 'Plus que 10 secondes', paused: 'En pause', go: 'C’est parti !', you: 'Toi', points: '{n} points',
+    podium: 'Scores finaux', place1: '1re place !', place2: '2e place !', place3: '3e place !', wellPlayed: 'Bien joué !', superSpeller: 'Champion de l’orthographe !',
+    player: 'Joueur {n}', passTo: 'Passe à {name}', passDraw: 'À toi de dessiner. Les autres, on ne regarde pas !', imReady: 'Je suis prêt', done: 'Fini', passGuess: 'Passe aux devineurs', passGuessP: 'Épelez le mot ensemble. Qui trouve en premier ?', whoGot: 'Qui l’a épelé ?', wins: '{name} gagne !', tie: 'Égalité !',
+  },
+  de: {
+    title: 'Doodle Hoot', tag: 'Malen. Buchstabieren. Huhu!', board: 'Zeichenbrett',
+    setup: 'Bereit zum Kritzeln?', howPlay: 'So wird gespielt', practice: 'Rate Pips Bilder', pass: 'Reihum spielen', level: 'Wörter', easy: 'Leicht', medium: 'Mittel', tricky: 'Knifflig', playersN: 'Spieler', start: 'Los geht’s',
+    practiceNote: 'Pip malt, und du legst das Wort mit den Buchstabenkärtchen.', passNote: 'Reihum auf diesem Gerät: Einer malt, die anderen legen das Wort.',
+    round: 'Runde {n} von {of}', doodleN: 'Bild {n} von {of}', turnN: 'Zug {n} von {of}', pipDraws: 'Pip malt…',
+    drawing: '{name} malt', choosing: '{name} wählt ein Wort…', youDraw: 'Du bist dran mit Malen!', pickWord: 'Wähle ein Wort zum Malen', drawThis: 'Male:', getReady: 'Gleich wählst du ein Wort.', spellSoon: 'Mach dich bereit zum Buchstabieren!',
+    notLetters: 'Male Bilder, keine Buchstaben.', colours: 'Farben', sizes: 'Stiftgrößen', size: 'Größe {n}', eraser: 'Radiergummi', undo: 'Rückgängig', clear: 'Löschen', clearAsk: 'Alles löschen?', full: 'Das Blatt ist voll: Mach etwas rückgängig oder lösche, um weiterzumalen.',
+    c_black: 'Schwarz', c_white: 'Weiß', c_grey: 'Grau', c_red: 'Rot', c_orange: 'Orange', c_yellow: 'Gelb', c_green: 'Grün', c_teal: 'Türkis', c_blue: 'Blau', c_purple: 'Lila', c_pink: 'Rosa', c_brown: 'Braun',
+    spell: 'Lege das Wort mit den Kärtchen', back: 'Zurück', empty: 'Leer', hint: 'Ein Tipp!', hints: 'Tipps: {n}',
+    gotIt: 'Richtig!', gotPts: '+{n} Punkte', notQuite: 'Nicht ganz. Versuch’s noch mal!', keepWatching: 'Schau weiter zu!', gotItName: '{name} hat es!',
+    hide: 'Bild ausblenden', show: 'Bild zeigen', hidden: 'Bild ausgeblendet', hidCount: 'Ausgeblendet von: {n}',
+    itWas: 'Es war…', timeUp: 'Die Zeit ist um!', allGot: 'Alle haben es erraten!', skipped: 'Zug übersprungen', hiddenTurn: 'Dieses Bild wurde übersprungen', drawerLeft: 'Der Maler ist gegangen',
+    waitHost: 'Warten, bis der Gastgeber startet…', waitPlayers: 'Warten auf Spieler…', waitMore: 'Es geht weiter, sobald wieder zwei Spieler da sind.', needTwo: 'Es braucht zwei Spieler.', players: 'Spieler da: {n}', hostHow: 'Alle kommen mit dem Code auf ihrem eigenen Gerät dazu, egal wo sie sind.',
+    secsLeft: 'Noch {n} Sekunden', left10: 'Noch 10 Sekunden', paused: 'Pause', go: 'Los!', you: 'Du', points: '{n} Punkte',
+    podium: 'Endstand', place1: '1. Platz!', place2: '2. Platz!', place3: '3. Platz!', wellPlayed: 'Gut gespielt!', superSpeller: 'Rechtschreib-Profi!',
+    player: 'Spieler {n}', passTo: 'Gib weiter an {name}', passDraw: 'Du malst. Alle anderen: nicht hingucken!', imReady: 'Ich bin bereit', done: 'Fertig', passGuess: 'Gib weiter an die Rater', passGuessP: 'Legt das Wort zusammen. Wer hat es zuerst?', whoGot: 'Wer hat es gelegt?', wins: '{name} gewinnt!', tie: 'Unentschieden!',
+  },
+  it: {
+    title: 'Doodle Hoot', tag: 'Disegna. Componi. Uh uh!', board: 'Lavagna da disegno',
+    setup: 'Pronti a scarabocchiare?', howPlay: 'Come si gioca', practice: 'Indovina i disegni di Pip', pass: 'A turno', level: 'Parole', easy: 'Facili', medium: 'Medie', tricky: 'Difficili', playersN: 'Giocatori', start: 'Inizia',
+    practiceNote: 'Pip disegna e tu componi la parola con le tessere delle lettere.', passNote: 'A turno su questo dispositivo: uno disegna, gli altri compongono la parola.',
+    round: 'Giro {n} di {of}', doodleN: 'Disegno {n} di {of}', turnN: 'Turno {n} di {of}', pipDraws: 'Pip sta disegnando…',
+    drawing: '{name} sta disegnando', choosing: '{name} sta scegliendo una parola…', youDraw: 'Tocca a te disegnare!', pickWord: 'Scegli una parola da disegnare', drawThis: 'Disegna:', getReady: 'Tra poco scegli una parola.', spellSoon: 'Preparati a comporre la parola!',
+    notLetters: 'Disegna figure, non lettere.', colours: 'Colori', sizes: 'Spessori', size: 'Spessore {n}', eraser: 'Gomma', undo: 'Annulla', clear: 'Cancella', clearAsk: 'Cancellare tutto?', full: 'Il foglio è pieno: annulla o cancella per disegnare ancora.',
+    c_black: 'Nero', c_white: 'Bianco', c_grey: 'Grigio', c_red: 'Rosso', c_orange: 'Arancione', c_yellow: 'Giallo', c_green: 'Verde', c_teal: 'Turchese', c_blue: 'Blu', c_purple: 'Viola', c_pink: 'Rosa', c_brown: 'Marrone',
+    spell: 'Componi la parola con le tessere', back: 'Indietro', empty: 'Vuoto', hint: 'Un aiuto!', hints: 'Aiuti: {n}',
+    gotIt: 'Indovinato!', gotPts: '+{n} punti', notQuite: 'Non proprio. Riprova!', keepWatching: 'Continua a guardare!', gotItName: '{name} ha indovinato!',
+    hide: 'Nascondi il disegno', show: 'Mostra il disegno', hidden: 'Disegno nascosto', hidCount: 'Lo nascondono: {n}',
+    itWas: 'Era…', timeUp: 'Tempo scaduto!', allGot: 'Tutti hanno indovinato!', skipped: 'Turno saltato', hiddenTurn: 'Questo disegno è stato saltato', drawerLeft: 'Chi disegnava è uscito',
+    waitHost: 'In attesa che l’host inizi…', waitPlayers: 'In attesa di giocatori…', waitMore: 'Il gioco riprende quando ci sono di nuovo due giocatori.', needTwo: 'Servono due giocatori.', players: 'Giocatori presenti: {n}', hostHow: 'Ognuno entra con il codice dal proprio dispositivo, ovunque sia.',
+    secsLeft: 'Mancano {n} secondi', left10: 'Mancano 10 secondi', paused: 'In pausa', go: 'Via!', you: 'Tu', points: '{n} punti',
+    podium: 'Punteggi finali', place1: '1° posto!', place2: '2° posto!', place3: '3° posto!', wellPlayed: 'Ben giocato!', superSpeller: 'Campione di ortografia!',
+    player: 'Giocatore {n}', passTo: 'Passa a {name}', passDraw: 'Tocca a te disegnare. Gli altri non guardano!', imReady: 'Sono pronto', done: 'Fatto', passGuess: 'Passa a chi indovina', passGuessP: 'Componete la parola insieme. Chi indovina per primo?', whoGot: 'Chi l’ha composta?', wins: 'Vince {name}!', tie: 'Pareggio!',
+  },
+  pt: {
+    title: 'Doodle Hoot', tag: 'Desenhe. Soletre. Uh-uh!', board: 'Quadro de desenho',
+    setup: 'Prontos para rabiscar?', howPlay: 'Como jogar', practice: 'Adivinhe os desenhos do Pip', pass: 'Passe e jogue', level: 'Palavras', easy: 'Fáceis', medium: 'Médias', tricky: 'Difíceis', playersN: 'Jogadores', start: 'Começar',
+    practiceNote: 'O Pip desenha e você soletra a palavra com as peças de letras.', passNote: 'Revezem-se neste aparelho: um desenha e os outros soletram a palavra.',
+    round: 'Rodada {n} de {of}', doodleN: 'Desenho {n} de {of}', turnN: 'Vez {n} de {of}', pipDraws: 'O Pip está desenhando…',
+    drawing: '{name} está desenhando', choosing: '{name} está escolhendo uma palavra…', youDraw: 'Sua vez de desenhar!', pickWord: 'Escolha uma palavra para desenhar', drawThis: 'Desenhe:', getReady: 'Já já você escolhe uma palavra.', spellSoon: 'Prepare-se para soletrar!',
+    notLetters: 'Desenhe figuras, não letras.', colours: 'Cores', sizes: 'Espessuras', size: 'Espessura {n}', eraser: 'Borracha', undo: 'Desfazer', clear: 'Apagar', clearAsk: 'Apagar tudo?', full: 'A folha está cheia: desfaça ou apague para continuar.',
+    c_black: 'Preto', c_white: 'Branco', c_grey: 'Cinza', c_red: 'Vermelho', c_orange: 'Laranja', c_yellow: 'Amarelo', c_green: 'Verde', c_teal: 'Turquesa', c_blue: 'Azul', c_purple: 'Roxo', c_pink: 'Rosa', c_brown: 'Marrom',
+    spell: 'Soletre a palavra com as peças', back: 'Voltar', empty: 'Vazio', hint: 'Uma dica!', hints: 'Dicas: {n}',
+    gotIt: 'Acertou!', gotPts: '+{n} pontos', notQuite: 'Quase. Tente de novo!', keepWatching: 'Continue olhando!', gotItName: '{name} acertou!',
+    hide: 'Esconder desenho', show: 'Mostrar desenho', hidden: 'Desenho escondido', hidCount: 'Escondido por: {n}',
+    itWas: 'Era…', timeUp: 'Acabou o tempo!', allGot: 'Todos acertaram!', skipped: 'Vez pulada', hiddenTurn: 'Este desenho foi pulado', drawerLeft: 'Quem desenhava saiu',
+    waitHost: 'Esperando o anfitrião começar…', waitPlayers: 'Esperando jogadores…', waitMore: 'O jogo continua quando houver dois jogadores de novo.', needTwo: 'São necessários dois jogadores.', players: 'Jogadores aqui: {n}', hostHow: 'Cada um entra com o código no próprio aparelho, onde estiver.',
+    secsLeft: 'Faltam {n} segundos', left10: 'Faltam 10 segundos', paused: 'Pausado', go: 'Já!', you: 'Você', points: '{n} pontos',
+    podium: 'Placar final', place1: '1º lugar!', place2: '2º lugar!', place3: '3º lugar!', wellPlayed: 'Mandou bem!', superSpeller: 'Craque da ortografia!',
+    player: 'Jogador {n}', passTo: 'Passe para {name}', passDraw: 'Sua vez de desenhar. Ninguém espia!', imReady: 'Estou pronto', done: 'Pronto', passGuess: 'Passe para quem adivinha', passGuessP: 'Soletrem a palavra juntos. Quem acerta primeiro?', whoGot: 'Quem soletrou?', wins: '{name} venceu!', tie: 'Empate!',
+  },
+  nl: {
+    title: 'Doodle Hoot', tag: 'Teken het. Spel het. Oehoe!', board: 'Tekenbord',
+    setup: 'Klaar om te krabbelen?', howPlay: 'Zo speel je', practice: 'Raad Pips tekeningen', pass: 'Om de beurt', level: 'Woorden', easy: 'Makkelijk', medium: 'Gemiddeld', tricky: 'Lastig', playersN: 'Spelers', start: 'Start',
+    practiceNote: 'Pip tekent, en jij legt het woord met de lettertegels.', passNote: 'Om de beurt op dit apparaat: één speler tekent, de anderen leggen het woord.',
+    round: 'Ronde {n} van {of}', doodleN: 'Tekening {n} van {of}', turnN: 'Beurt {n} van {of}', pipDraws: 'Pip tekent…',
+    drawing: '{name} tekent', choosing: '{name} kiest een woord…', youDraw: 'Jij mag tekenen!', pickWord: 'Kies een woord om te tekenen', drawThis: 'Teken:', getReady: 'Zo meteen kies je een woord.', spellSoon: 'Maak je klaar om te spellen!',
+    notLetters: 'Teken plaatjes, geen letters.', colours: 'Kleuren', sizes: 'Diktes', size: 'Dikte {n}', eraser: 'Gum', undo: 'Ongedaan maken', clear: 'Wissen', clearAsk: 'Alles wissen?', full: 'Het blad is vol: maak iets ongedaan of wis om verder te tekenen.',
+    c_black: 'Zwart', c_white: 'Wit', c_grey: 'Grijs', c_red: 'Rood', c_orange: 'Oranje', c_yellow: 'Geel', c_green: 'Groen', c_teal: 'Turquoise', c_blue: 'Blauw', c_purple: 'Paars', c_pink: 'Roze', c_brown: 'Bruin',
+    spell: 'Leg het woord met de tegels', back: 'Terug', empty: 'Leeg', hint: 'Een hint!', hints: 'Hints: {n}',
+    gotIt: 'Geraden!', gotPts: '+{n} punten', notQuite: 'Net niet. Probeer het nog eens!', keepWatching: 'Blijf kijken!', gotItName: '{name} heeft het!',
+    hide: 'Tekening verbergen', show: 'Tekening tonen', hidden: 'Tekening verborgen', hidCount: 'Verborgen door: {n}',
+    itWas: 'Het was…', timeUp: 'De tijd is om!', allGot: 'Iedereen heeft het geraden!', skipped: 'Beurt overgeslagen', hiddenTurn: 'Deze tekening is overgeslagen', drawerLeft: 'De tekenaar is weg',
+    waitHost: 'Wachten tot de host begint…', waitPlayers: 'Wachten op spelers…', waitMore: 'Het spel gaat verder zodra er weer twee spelers zijn.', needTwo: 'Er zijn twee spelers nodig.', players: 'Spelers hier: {n}', hostHow: 'Iedereen doet mee met de code op een eigen apparaat, waar ze ook zijn.',
+    secsLeft: 'Nog {n} seconden', left10: 'Nog 10 seconden', paused: 'Gepauzeerd', go: 'Start!', you: 'Jij', points: '{n} punten',
+    podium: 'Eindstand', place1: '1e plaats!', place2: '2e plaats!', place3: '3e plaats!', wellPlayed: 'Goed gespeeld!', superSpeller: 'Spelkampioen!',
+    player: 'Speler {n}', passTo: 'Geef door aan {name}', passDraw: 'Jij tekent. De rest: niet kijken!', imReady: 'Ik ben klaar', done: 'Klaar', passGuess: 'Geef door aan de raders', passGuessP: 'Leg het woord samen. Wie heeft het als eerste?', whoGot: 'Wie heeft het gelegd?', wins: '{name} wint!', tie: 'Gelijkspel!',
+  },
+  ru: {
+    title: 'Doodle Hoot', tag: 'Нарисуй. Составь слово. Угу!', board: 'Доска для рисования',
+    setup: 'Готовы рисовать?', howPlay: 'Как играть', practice: 'Угадай рисунки Пипа', pass: 'По очереди', level: 'Слова', easy: 'Лёгкие', medium: 'Средние', tricky: 'Трудные', playersN: 'Игроки', start: 'Начать',
+    practiceNote: 'Пип рисует, а ты собираешь слово из плиток с буквами.', passNote: 'По очереди на этом устройстве: один рисует, остальные собирают слово.',
+    round: 'Раунд {n} из {of}', doodleN: 'Рисунок {n} из {of}', turnN: 'Ход {n} из {of}', pipDraws: 'Пип рисует…',
+    drawing: 'Рисует: {name}', choosing: '{name} выбирает слово…', youDraw: 'Твоя очередь рисовать!', pickWord: 'Выбери слово для рисунка', drawThis: 'Нарисуй:', getReady: 'Сейчас ты выберешь слово.', spellSoon: 'Приготовься собирать слово!',
+    notLetters: 'Рисуй картинки, а не буквы.', colours: 'Цвета', sizes: 'Толщина', size: 'Толщина {n}', eraser: 'Ластик', undo: 'Отменить', clear: 'Стереть', clearAsk: 'Стереть всё?', full: 'Лист заполнен: отмени или сотри, чтобы рисовать дальше.',
+    c_black: 'Чёрный', c_white: 'Белый', c_grey: 'Серый', c_red: 'Красный', c_orange: 'Оранжевый', c_yellow: 'Жёлтый', c_green: 'Зелёный', c_teal: 'Бирюзовый', c_blue: 'Синий', c_purple: 'Фиолетовый', c_pink: 'Розовый', c_brown: 'Коричневый',
+    spell: 'Собери слово из плиток', back: 'Назад', empty: 'Пусто', hint: 'Подсказка!', hints: 'Подсказки: {n}',
+    gotIt: 'Угадал!', gotPts: '+{n} очков', notQuite: 'Не совсем. Попробуй ещё!', keepWatching: 'Смотри дальше!', gotItName: '{name} угадывает!',
+    hide: 'Скрыть рисунок', show: 'Показать рисунок', hidden: 'Рисунок скрыт', hidCount: 'Скрыли: {n}',
+    itWas: 'Это было…', timeUp: 'Время вышло!', allGot: 'Все угадали!', skipped: 'Ход пропущен', hiddenTurn: 'Этот рисунок пропущен', drawerLeft: 'Художник вышел',
+    waitHost: 'Ждём, когда ведущий начнёт…', waitPlayers: 'Ждём игроков…', waitMore: 'Игра продолжится, когда снова будет два игрока.', needTwo: 'Нужно два игрока.', players: 'Игроков здесь: {n}', hostHow: 'Каждый входит по коду со своего устройства, где бы он ни был.',
+    secsLeft: 'Осталось секунд: {n}', left10: 'Осталось 10 секунд', paused: 'Пауза', go: 'Вперёд!', you: 'Ты', points: 'Очки: {n}',
+    podium: 'Итоговый счёт', place1: '1-е место!', place2: '2-е место!', place3: '3-е место!', wellPlayed: 'Отличная игра!', superSpeller: 'Мастер правописания!',
+    player: 'Игрок {n}', passTo: 'Передай: {name}', passDraw: 'Ты рисуешь. Остальные — не подглядывать!', imReady: 'Я готов', done: 'Готово', passGuess: 'Передай отгадчикам', passGuessP: 'Соберите слово вместе. Кто первым?', whoGot: 'Кто собрал слово?', wins: 'Победа: {name}!', tie: 'Ничья!',
+  },
+  ja: {
+    title: 'Doodle Hoot', tag: 'かいて、つづって、ホーホー！', board: 'おえかきボード',
+    setup: 'おえかきの準備はいい？', howPlay: 'あそびかた', practice: 'ピップの絵をあてよう', pass: 'じゅんばんにまわす', level: '言葉', easy: 'やさしい', medium: 'ふつう', tricky: 'むずかしい', playersN: 'プレイヤー', start: 'スタート',
+    practiceNote: 'ピップが絵をかくよ。文字タイルで言葉をつづろう。', passNote: 'この端末をじゅんばんに使います。1人がかいて、ほかの人がつづります。',
+    round: 'ラウンド {n}/{of}', doodleN: '絵 {n}/{of}', turnN: 'ばん {n}/{of}', pipDraws: 'ピップがかいています…',
+    drawing: '{name}がかいています', choosing: '{name}が言葉をえらんでいます…', youDraw: 'あなたがかく番です！', pickWord: 'かく言葉をえらぼう', drawThis: 'かくもの：', getReady: 'もうすぐ言葉をえらびます。', spellSoon: 'つづる準備をしよう！',
+    notLetters: '文字ではなく絵をかこう。', colours: '色', sizes: '太さ', size: '太さ {n}', eraser: 'けしゴム', undo: 'もどす', clear: 'ぜんぶけす', clearAsk: 'ぜんぶけす？', full: 'もうかけません。もどすか、けしてください。',
+    c_black: 'くろ', c_white: 'しろ', c_grey: 'はいいろ', c_red: 'あか', c_orange: 'オレンジ', c_yellow: 'きいろ', c_green: 'みどり', c_teal: 'あおみどり', c_blue: 'あお', c_purple: 'むらさき', c_pink: 'ピンク', c_brown: 'ちゃいろ',
+    spell: 'タイルで言葉をつづろう', back: 'もどる', empty: 'から', hint: 'ヒント！', hints: 'ヒント {n}',
+    gotIt: 'せいかい！', gotPts: '+{n}点', notQuite: 'おしい！もういちど！', keepWatching: 'よく見ていてね！', gotItName: '{name}がせいかい！',
+    hide: '絵をかくす', show: '絵を見せる', hidden: '絵をかくしています', hidCount: 'かくした人：{n}',
+    itWas: 'こたえは…', timeUp: '時間ぎれ！', allGot: 'みんなせいかい！', skipped: 'この番はとばしました', hiddenTurn: 'この絵はとばしました', drawerLeft: 'かく人がぬけました',
+    waitHost: 'ホストがはじめるのを待っています…', waitPlayers: 'プレイヤーを待っています…', waitMore: 'また2人そろったら続きます。', needTwo: '2人必要です。', players: 'いる人：{n}人', hostHow: 'みんな、どこにいても自分の端末でコードを入れて参加します。',
+    secsLeft: 'のこり{n}秒', left10: 'のこり10秒', paused: '一時停止', go: 'スタート！', you: 'あなた', points: '{n}点',
+    podium: 'さいしゅう結果', place1: '1位！', place2: '2位！', place3: '3位！', wellPlayed: 'よくできました！', superSpeller: 'つづりの名人！',
+    player: 'プレイヤー{n}', passTo: '{name}にわたしてね', passDraw: 'あなたがかく番。ほかの人は見ないでね！', imReady: '準備できた', done: 'できた', passGuess: 'あてる人にわたしてね', passGuessP: 'みんなで言葉をつづろう。だれが先にわかるかな？', whoGot: 'だれがつづった？', wins: '{name}の勝ち！', tie: '引き分け！',
+  },
+  'zh-Hant': {
+    title: 'Doodle Hoot', tag: '畫出來，拼出來，呼呼！', board: '畫板',
+    setup: '準備好塗鴉了嗎？', howPlay: '怎麼玩', practice: '猜猜 Pip 的畫', pass: '輪流玩', level: '詞語', easy: '簡單', medium: '中等', tricky: '困難', playersN: '玩家', start: '開始',
+    practiceNote: 'Pip 畫圖，你用字母方塊拼出詞語。', passNote: '在這台裝置上輪流：一人畫圖，其他人拼出詞語。',
+    round: '第 {n}/{of} 回合', doodleN: '第 {n}/{of} 張畫', turnN: '第 {n}/{of} 輪', pipDraws: 'Pip 正在畫…',
+    drawing: '{name} 正在畫', choosing: '{name} 正在選詞…', youDraw: '輪到你畫了！', pickWord: '選一個詞來畫', drawThis: '要畫：', getReady: '等一下就要選詞了。', spellSoon: '準備好來拼！',
+    notLetters: '畫圖，不要寫字。', colours: '顏色', sizes: '粗細', size: '粗細 {n}', eraser: '橡皮擦', undo: '復原', clear: '清除', clearAsk: '全部清除？', full: '畫紙滿了：復原或清除後再畫。',
+    c_black: '黑色', c_white: '白色', c_grey: '灰色', c_red: '紅色', c_orange: '橘色', c_yellow: '黃色', c_green: '綠色', c_teal: '青綠色', c_blue: '藍色', c_purple: '紫色', c_pink: '粉紅色', c_brown: '咖啡色',
+    spell: '用方塊拼出詞語', back: '返回', empty: '空格', hint: '提示！', hints: '提示：{n}',
+    gotIt: '答對了！', gotPts: '+{n} 分', notQuite: '差一點，再試一次！', keepWatching: '繼續看！', gotItName: '{name} 答對了！',
+    hide: '隱藏圖畫', show: '顯示圖畫', hidden: '圖畫已隱藏', hidCount: '隱藏的人：{n}',
+    itWas: '答案是…', timeUp: '時間到！', allGot: '大家都答對了！', skipped: '已跳過這一輪', hiddenTurn: '這張圖已跳過', drawerLeft: '畫圖的人離開了',
+    waitHost: '等待主持人開始…', waitPlayers: '等待玩家…', waitMore: '再有兩位玩家時遊戲會繼續。', needTwo: '需要兩位玩家。', players: '目前玩家：{n}', hostHow: '每個人不論在哪裡，都用自己的裝置輸入代碼加入。',
+    secsLeft: '還剩 {n} 秒', left10: '還剩 10 秒', paused: '已暫停', go: '開始！', you: '你', points: '{n} 分',
+    podium: '最終分數', place1: '第 1 名！', place2: '第 2 名！', place3: '第 3 名！', wellPlayed: '玩得好！', superSpeller: '拼字高手！',
+    player: '玩家 {n}', passTo: '交給 {name}', passDraw: '輪到你畫。其他人不要偷看！', imReady: '我準備好了', done: '完成', passGuess: '交給猜的人', passGuessP: '一起拼出詞語。誰最先拼出來？', whoGot: '誰拼出來的？', wins: '{name} 獲勝！', tie: '平手！',
+  },
+  ar: {
+    title: 'Doodle Hoot', tag: 'ارسمها. هجّئها. هوو هوو!', board: 'لوحة الرسم',
+    setup: 'مستعدون للرسم؟', howPlay: 'طريقة اللعب', practice: 'خمّن رسومات بِب', pass: 'بالدور على جهاز واحد', level: 'الكلمات', easy: 'سهلة', medium: 'متوسطة', tricky: 'صعبة', playersN: 'اللاعبون', start: 'ابدأ',
+    practiceNote: 'بِب يرسم، وأنت تهجّئ الكلمة ببطاقات الحروف.', passNote: 'تبادلوا الأدوار على هذا الجهاز: لاعب يرسم والآخرون يهجّئون الكلمة.',
+    round: 'الجولة {n} من {of}', doodleN: 'الرسمة {n} من {of}', turnN: 'الدور {n} من {of}', pipDraws: 'بِب يرسم…',
+    drawing: 'يرسم الآن: {name}', choosing: '{name} يختار كلمة…', youDraw: 'دورك في الرسم!', pickWord: 'اختر كلمة لترسمها', drawThis: 'ارسم:', getReady: 'ستختار كلمة بعد قليل.', spellSoon: 'استعد للتهجئة!',
+    notLetters: 'ارسم صورًا لا حروفًا.', colours: 'الألوان', sizes: 'السُمك', size: 'السُمك {n}', eraser: 'ممحاة', undo: 'تراجع', clear: 'امسح', clearAsk: 'تمسح الكل؟', full: 'امتلأت الورقة: تراجع أو امسح لتكمل الرسم.',
+    c_black: 'أسود', c_white: 'أبيض', c_grey: 'رمادي', c_red: 'أحمر', c_orange: 'برتقالي', c_yellow: 'أصفر', c_green: 'أخضر', c_teal: 'فيروزي', c_blue: 'أزرق', c_purple: 'بنفسجي', c_pink: 'وردي', c_brown: 'بني',
+    spell: 'هجِّئ الكلمة بالبطاقات', back: 'رجوع', empty: 'فارغ', hint: 'تلميح!', hints: 'تلميحات: {n}',
+    gotIt: 'أصبت!', gotPts: '+{n} نقطة', notQuite: 'ليس تمامًا. حاول مرة أخرى!', keepWatching: 'تابع المشاهدة!', gotItName: 'أصاب {name}!',
+    hide: 'إخفاء الرسم', show: 'إظهار الرسم', hidden: 'الرسم مخفي', hidCount: 'أخفاه: {n}',
+    itWas: 'كانت…', timeUp: 'انتهى الوقت!', allGot: 'أصاب الجميع!', skipped: 'تم تخطي الدور', hiddenTurn: 'تم تخطي هذا الرسم', drawerLeft: 'غادر الرسّام',
+    waitHost: 'بانتظار أن يبدأ المضيف…', waitPlayers: 'بانتظار اللاعبين…', waitMore: 'تستمر اللعبة عندما يصبح هناك لاعبان من جديد.', needTwo: 'يلزم لاعبان.', players: 'اللاعبون هنا: {n}', hostHow: 'ينضم الجميع بالرمز من أجهزتهم أينما كانوا.',
+    secsLeft: 'بقي {n} ثانية', left10: 'بقيت 10 ثوانٍ', paused: 'متوقف مؤقتًا', go: 'انطلق!', you: 'أنت', points: '{n} نقطة',
+    podium: 'النتائج النهائية', place1: 'المركز الأول!', place2: 'المركز الثاني!', place3: 'المركز الثالث!', wellPlayed: 'أحسنت اللعب!', superSpeller: 'بطل التهجئة!',
+    player: 'اللاعب {n}', passTo: 'أعطِ الجهاز إلى {name}', passDraw: 'دورك في الرسم. لا يختلس أحد النظر!', imReady: 'أنا مستعد', done: 'تم', passGuess: 'أعطِ الجهاز للمخمّنين', passGuessP: 'هجّئوا الكلمة معًا. من يعرفها أولًا؟', whoGot: 'من هجّأها؟', wins: 'فاز {name}!', tie: 'تعادل!',
+  },
+  he: {
+    title: 'Doodle Hoot', tag: 'ציירו. אייתו. הו־הו!', board: 'לוח ציור',
+    setup: 'מוכנים לשרבט?', howPlay: 'איך משחקים', practice: 'נחשו את הציורים של פיפ', pass: 'מעבירים מיד ליד', level: 'מילים', easy: 'קלות', medium: 'בינוניות', tricky: 'מאתגרות', playersN: 'שחקנים', start: 'מתחילים',
+    practiceNote: 'פיפ מצייר, ואתם מאייתים את המילה באריחי אותיות.', passNote: 'בתורות על המכשיר הזה: אחד מצייר, והשאר מאייתים את המילה.',
+    round: 'סבב {n} מתוך {of}', doodleN: 'ציור {n} מתוך {of}', turnN: 'תור {n} מתוך {of}', pipDraws: 'פיפ מצייר…',
+    drawing: 'מצייר/ת עכשיו: {name}', choosing: '{name} בוחר/ת מילה…', youDraw: 'תורך לצייר!', pickWord: 'בחרו מילה לציור', drawThis: 'ציירו:', getReady: 'עוד רגע בוחרים מילה.', spellSoon: 'מתכוננים לאיית!',
+    notLetters: 'ציירו תמונות, לא אותיות.', colours: 'צבעים', sizes: 'עוביים', size: 'עובי {n}', eraser: 'מחק', undo: 'ביטול', clear: 'ניקוי', clearAsk: 'לנקות הכול?', full: 'הדף מלא: בטלו או נקו כדי להמשיך לצייר.',
+    c_black: 'שחור', c_white: 'לבן', c_grey: 'אפור', c_red: 'אדום', c_orange: 'כתום', c_yellow: 'צהוב', c_green: 'ירוק', c_teal: 'טורקיז', c_blue: 'כחול', c_purple: 'סגול', c_pink: 'ורוד', c_brown: 'חום',
+    spell: 'אייתו את המילה באריחים', back: 'חזרה', empty: 'ריק', hint: 'רמז!', hints: 'רמזים: {n}',
+    gotIt: 'צדקתם!', gotPts: '+{n} נקודות', notQuite: 'לא בדיוק. נסו שוב!', keepWatching: 'המשיכו להסתכל!', gotItName: '{name} ניחש/ה!',
+    hide: 'הסתרת הציור', show: 'הצגת הציור', hidden: 'הציור מוסתר', hidCount: 'הסתירו: {n}',
+    itWas: 'זה היה…', timeUp: 'הזמן נגמר!', allGot: 'כולם ניחשו!', skipped: 'דילגנו על התור', hiddenTurn: 'דילגנו על הציור הזה', drawerLeft: 'המצייר/ת יצא/ה',
+    waitHost: 'מחכים שהמארח יתחיל…', waitPlayers: 'מחכים לשחקנים…', waitMore: 'המשחק ימשיך כשיהיו שוב שני שחקנים.', needTwo: 'צריך שני שחקנים.', players: 'שחקנים כאן: {n}', hostHow: 'כולם מצטרפים עם הקוד מהמכשיר שלהם, איפה שהם.',
+    secsLeft: 'נשארו {n} שניות', left10: 'נשארו 10 שניות', paused: 'בהשהיה', go: 'צאו!', you: 'את/ה', points: '{n} נקודות',
+    podium: 'התוצאות הסופיות', place1: 'מקום 1!', place2: 'מקום 2!', place3: 'מקום 3!', wellPlayed: 'כל הכבוד!', superSpeller: 'אלופי האיות!',
+    player: 'שחקן {n}', passTo: 'העבירו אל {name}', passDraw: 'תורך לצייר. כל השאר: לא מציצים!', imReady: 'מוכן/ה', done: 'סיימתי', passGuess: 'העבירו למנחשים', passGuessP: 'אייתו את המילה יחד. מי מנחש ראשון?', whoGot: 'מי איית?', wins: '{name} ניצח/ה!', tie: 'תיקו!',
+  },
 };
 I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
 // ==== I18N END ====
@@ -678,11 +865,20 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   var reduced = function () { return !!O.settings.reduced; };
   function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  /** A button that acts on a finger lifted on it (the press it began), or on Enter / Space: a tap never lands on what
+   *  moved under the finger meanwhile (a pressed card moves down a little). */
+  function press(b, fn) {
+    var down = null;
+    b.addEventListener('pointerdown', function (e) { if (e.isPrimary !== false && (e.button == null || e.button === 0)) down = e.pointerId; });
+    b.addEventListener('pointerup', function (e) { if (down === e.pointerId && !b.disabled) { down = null; e.preventDefault(); fn(e); } });
+    b.addEventListener('pointercancel', function () { down = null; });
+    b.addEventListener('click', function (e) { if (e.detail === 0 && !b.disabled) fn(e); });
+  }
   function btn(cls, label, icon, fn) {
     var b = el('button', cls); b.type = 'button';
     if (icon) b.innerHTML = icon.charAt(0) === '<' ? icon : O.icon(icon);
     if (label != null) b.appendChild(el('span', '', label));
-    if (fn) b.addEventListener('click', fn);
+    if (fn) press(b, fn);
     return b;
   }
   /** Pip, the kit's owl, hosts the game and draws the practice doodles. */
@@ -944,7 +1140,14 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     U.overlay = function (x) { U.over.hidden = !x; U.overB.textContent = x || ''; };
     U.whoIs = function (spec, text) { U.whoPic.textContent = ''; if (spec) { var c = figure(spec, 80); U.whoPic.appendChild(c); } U.whoTxt.textContent = text || ''; };
     /** A full-screen panel: nodes in it, or nothing to close it. */
-    U.panel = function (nodes, below) { U.screen.textContent = ''; U.screen.classList.toggle('below', !!below); (nodes || []).forEach(function (n) { if (n) U.screen.appendChild(n); }); U.screen.hidden = !(nodes && nodes.length); };
+    // key: the panel is built again only when what it shows changes (a tap never lands on a card being replaced)
+    var panelKey = null;
+    U.panel = function (nodes, below, key) {
+      if (key != null && key === panelKey && !U.screen.hidden) return;
+      panelKey = key == null ? null : key;
+      if (typeof nodes === 'function') nodes = nodes();
+      U.screen.textContent = ''; U.screen.classList.toggle('below', !!below); (nodes || []).forEach(function (n) { if (n) U.screen.appendChild(n); }); U.screen.hidden = !(nodes && nodes.length);
+    };
     return U;
   }
   function pipPic(px) { var c = figure(PIP, px || 260); c.classList.add('pip'); return c; }
@@ -1122,21 +1325,21 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       U.root.dataset.ph = x ? x.ph : 'lobby';
       var meDraw = !!x && x.dr === me() && !host;
       if (!x || !started || phase === 'lobby' || phase === 'loading' || (phase === 'countdown' && !x.rd)) {
-        U.panel(lobby()); U.main.hidden = true; U.top.hidden = true; U.word.hidden = true; U.strip.hidden = true; return;
+        U.panel(lobby, false, 'lobby:' + L.players().map(function (p) { return p.seat + p.name; }).join(',')); U.main.hidden = true; U.top.hidden = true; U.word.hidden = true; U.strip.hidden = true; return;
       }
       U.top.hidden = false;
       U.chip.textContent = x.ph === 'done' ? t('podium') : t('round', { n: Math.max(1, x.rd), of: x.rds });
       var dr = x.dr;
       if (x.ph === 'done') {
-        U.panel(podium(x)); U.main.hidden = true; U.word.hidden = true; U.strip.hidden = true; U.whoIs(null, '');
+        U.panel(function () { return podium(x); }, false, 'done:' + x.tn); U.main.hidden = true; U.word.hidden = true; U.strip.hidden = true; U.whoIs(null, '');
         results(x); return;
       }
-      if (x.ph === 'wait') { U.panel([pipPic(200), el('h2', '', t('waitPlayers')), el('p', '', t('waitMore'))], true); U.main.hidden = true; return; }
+      if (x.ph === 'wait') { U.panel(function () { return [pipPic(200), el('h2', '', t('waitPlayers')), el('p', '', t('waitMore'))]; }, true, 'wait'); U.main.hidden = true; return; }
       if (x.ph === 'pick') {
         U.whoIs(avatarOf(dr), meDraw ? t('youDraw') : t('choosing', { name: nameOf(dr) }));
         U.top.hidden = false;
-        if (meDraw && S.choices) U.panel([el('h2', '', t('pickWord')), cards(S.choices.w, S.choices.e, function (i) { if (L.send('pk', { n: S.tn, i: i }, { toHost: true })) { S.choices = null; sfx('select'); draw(); } }), el('p', '', t('notLetters'))], true);
-        else U.panel([pipPic(200), el('h2', '', meDraw ? t('youDraw') : t('choosing', { name: nameOf(dr) })), el('p', '', meDraw ? t('getReady') : t('spellSoon'))], true);
+        if (meDraw && S.choices) U.panel(function () { return [el('h2', '', t('pickWord')), cards(S.choices.w, S.choices.e, function (i) { if (L.send('pk', { n: S.tn, i: i }, { toHost: true })) { S.choices = null; sfx('select'); draw(); } }), el('p', '', t('notLetters'))]; }, true, 'pick:' + S.tn);
+        else U.panel(function () { return [pipPic(200), el('h2', '', meDraw ? t('youDraw') : t('choosing', { name: nameOf(dr) })), el('p', '', meDraw ? t('getReady') : t('spellSoon'))]; }, true, 'choosing:' + S.tn + ':' + nameOf(dr));
         U.main.hidden = true; U.word.hidden = true; U.strip.hidden = true; return;
       }
       U.panel(null); U.main.hidden = false;
@@ -1257,8 +1460,8 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       var card = el('div', 'dhs-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'dhsH'); wrap.appendChild(card);
       var h = el('h2', '', t('setup')); h.id = 'dhsH'; card.appendChild(h);
       var groups = [];
-      function group(label, opts, get, set) {
-        var fs = el('fieldset'); fs.appendChild(el('legend', '', label));
+      function group(key, label, opts, get, set) {
+        var fs = el('fieldset'); fs.dataset.k = key; fs.appendChild(el('legend', '', label));
         var row = el('div', 'opts'); row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', label);
         var bs = opts.map(function (o) { var b = btn('opt', o.label, null, function () { set(o.v); sync(); sfx('select'); }); b.setAttribute('role', 'radio'); b.dataset.v = String(o.v); row.appendChild(b); return b; });
         fs.appendChild(row); card.appendChild(fs);
@@ -1266,10 +1469,10 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
         groups.push(g); return g;
       }
       function sync() { groups.forEach(function (g) { g.sync(); }); players.fs.hidden = CFG.mode !== 'pass'; note.textContent = CFG.mode === 'pass' ? t('passNote') : t('practiceNote'); if (CFG.mode === 'practice' && CFG.lvl === 3) { CFG.lvl = 2; sync(); } lv3.hidden = CFG.mode === 'practice'; }
-      group(t('howPlay'), [{ v: 'practice', label: t('practice') }, { v: 'pass', label: t('pass') }], function () { return CFG.mode; }, function (v) { CFG.mode = v; });
-      var lv = group(t('level'), [{ v: 1, label: t('easy') }, { v: 2, label: t('medium') }, { v: 3, label: t('tricky') }], function () { return CFG.lvl; }, function (v) { CFG.lvl = +v; });
+      group('mode', t('howPlay'), [{ v: 'practice', label: t('practice') }, { v: 'pass', label: t('pass') }], function () { return CFG.mode; }, function (v) { CFG.mode = v; });
+      var lv = group('lvl', t('level'), [{ v: 1, label: t('easy') }, { v: 2, label: t('medium') }, { v: 3, label: t('tricky') }], function () { return CFG.lvl; }, function (v) { CFG.lvl = +v; });
       var lv3 = lv.fs.querySelector('[data-v="3"]');
-      var players = group(t('playersN'), [2, 3, 4, 5, 6].map(function (n) { return { v: n, label: O.num(n) }; }), function () { return CFG.n; }, function (v) { CFG.n = +v; });
+      var players = group('n', t('playersN'), [2, 3, 4, 5, 6].map(function (n) { return { v: n, label: O.num(n) }; }), function () { return CFG.n; }, function (v) { CFG.n = +v; });
       var note = el('p'); card.appendChild(note);
       var start = O.ui.button(t('start'), { kind: 'hot', big: true, icon: 'play', onPress: function () { if (!setupOpen) return; setupOpen = false; save(); wrap.remove(); resolve(); } });
       start.id = 'dhStart'; start.setAttribute('data-start', ''); card.appendChild(start);
@@ -1304,7 +1507,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     M.timer = setInterval(function () {
       if (over) return;
       if (O.time.paused) { t0 = O.time.now - (ms - left); return; }
-      left = Math.max(0, ms - (O.time.now - t0)); if (fast) left = 0;
+      left = Math.max(0, ms - (O.time.now - t0));
       U.clock.set(left, ms);
       while (step < C.HINTS.length && ms - left >= ms * C.HINTS[step].at) {
         var h = C.HINTS[step++];
@@ -1335,7 +1538,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       if (M.i >= M.list.length) return end();
       var word = M.list[M.i]; M.ph = 'guess';
       U.chip.textContent = t('doodleN', { n: M.i + 1, of: M.list.length });
-      U.board.veilShow(null); U.board.clear();
+      U.board.veilShow(null); U.board.clear(); U.whoIs(PIP, t('pipDraws'));
       animate(ART[word.id]);
       round(word, PRACTICE_MS, function (ok, left, hints) {
         M.ph = 'reveal';
@@ -1355,7 +1558,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
           if (!cur) { cur = U.board.add({ s: i, c: s.c, w: s.w, e: 0, pts: [s.pts[0], s.pts[1]] }); k = 2; continue; }
           if (k < s.pts.length) { U.board.append(i, [s.pts[k], s.pts[k + 1]]); k += 2; } else { cur = null; i++; }
         }
-        if (i >= strokes.length) clearInterval(id);
+        if (i >= strokes.length) { clearInterval(id); U.whoIs(PIP, t('spell')); }
       }, fast ? 1 : 33);
       M.anim = function () { alive = false; clearInterval(id); M.anim = null; };
     }
@@ -1384,7 +1587,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       U.board.clear(); U.board.veilShow(null); pad.set(false); pad.reset(0);
       U.chip.textContent = t('turnN', { n: M.turn + 1, of: M.players.length });
       U.whoIs(p.spec, t('drawing', { name: p.name }));
-      var go = el('button', 'dh-big', t('imReady')); go.type = 'button'; go.addEventListener('click', pick);
+      var go = el('button', 'dh-big', t('imReady')); go.type = 'button'; press(go, pick);
       U.panel([figure(p.spec, 220), el('h2', '', t('passTo', { name: p.name })), el('p', '', t('passDraw')), go]);
       M.go = go;
     }
@@ -1402,13 +1605,13 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       pad.set(true);
       var t0 = O.time.now, over = false;
       function stopDraw() { if (over) return; over = true; clearInterval(M.timer); pad.set(false); U.word.hidden = true; toGuessers(); }
-      done.addEventListener('click', stopDraw); M.doneBtn = done;
-      M.timer = setInterval(function () { var left = Math.max(0, PASS_DRAW_MS - (O.time.now - t0)); if (fast) left = 0; U.clock.set(left, PASS_DRAW_MS); if (left <= 0) stopDraw(); }, 100);
+      press(done, stopDraw); M.doneBtn = done;
+      M.timer = setInterval(function () { var left = Math.max(0, PASS_DRAW_MS - (O.time.now - t0)); U.clock.set(left, PASS_DRAW_MS); if (left <= 0) stopDraw(); }, 100);
     }
     function toGuessers() {
       M.ph = 'cover2';
       var go = el('button', 'dh-big', t('imReady')); go.type = 'button';
-      go.addEventListener('click', function () { U.panel(null); guess(); });
+      press(go, function () { U.panel(null); guess(); });
       U.panel([pipPic(180), el('h2', '', t('passGuess')), el('p', '', t('passGuessP')), go]); M.go = go;
     }
     function guess() {
