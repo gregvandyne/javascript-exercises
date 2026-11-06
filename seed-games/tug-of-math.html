@@ -183,19 +183,50 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   .tm-field.two .ans{height:48px}
   .tm-field.two .team{min-height:28px;font-size:.92rem}
 }
-@media (orientation:portrait) and (max-height:720px){
+@media (orientation:portrait) and (max-height:800px){
   .tm-field.cpu .keys{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
   .tm-field.cpu .key{font-size:24px;border-radius:14px}
   .tm-field.cpu{grid-template-rows:auto clamp(160px,34vh,330px) minmax(0,1fr)}
-  .tm-field.cpu .side.blue{flex-direction:row;flex-wrap:wrap;align-content:flex-start}
-  .tm-field.cpu .side.blue .team{width:100%}
-  .tm-field.cpu .side.blue .qcard{flex:1 1 55%;min-width:0;height:60px}
-  .tm-field.cpu .side.blue .arow{flex:1 1 30%;min-width:0}
+  /* question and answer side by side, then the keys fill all the height that is left (up to a comfortable size) */
+  .tm-field.cpu .side.blue{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);align-content:start}
+  .tm-field.cpu .side.blue>*{grid-column:1/-1}
+  .tm-field.cpu .side.blue .qcard{grid-column:1;min-width:0;height:60px}
+  .tm-field.cpu .side.blue .arow{grid-column:2;min-width:0}
   .tm-field.cpu .side.blue .ans{height:60px}
-  .tm-field.cpu .side.blue .keys{width:100%;flex:1 1 auto}
+  .tm-field.cpu .side.blue .keys{height:100%;max-height:200px;align-self:start}
   .tm-field.cpu .say{display:none}
 }
 @media (orientation:portrait) and (max-width:379px){.tm-field.two .keys{gap:3px}.tm-field.two .side{padding:5px 4px}}
+/* portrait: the keypad always fits above the bottom edge, with room for the keys' shadow; on short screens the
+   keys and the rope scene give up height first (keys stay at least 36px, a comfortable tap) */
+@media (orientation:portrait){
+  .tm-field{padding-bottom:14px}
+  .tm-field .keys{grid-auto-rows:minmax(36px,1fr);max-height:none}
+  .tm-field .key{min-height:36px}
+}
+@media (orientation:portrait) and (max-height:740px){
+  .tm-field.two .mid{height:clamp(110px,17vh,150px);min-height:0}
+  .tm-field.two .qcard{height:52px;min-height:0}
+  .tm-field.two .ans{height:42px}
+  .tm-field.two .side{gap:5px}
+}
+@media (orientation:portrait) and (max-height:600px){
+  .tm-field.cpu{grid-template-rows:auto clamp(110px,24vh,170px) minmax(0,1fr)}
+  .tm-field .mid{min-height:0}
+  .tm-field.cpu .side.red .qcard,.tm-field.cpu .side.red .ans{height:50px}
+  .tm-field.cpu .side.red .bot canvas{height:46px}
+  .tm-field.cpu .side.blue .qcard,.tm-field.cpu .side.blue .ans{height:50px}
+  .tm-field .team{min-height:26px;font-size:.9rem}
+  .tm-field.two .mid{height:clamp(84px,15vh,110px)}
+  .tm-field.two .qcard{height:42px}
+  .tm-field.two .qcard .q{font-size:24px}
+  .tm-field.two .ans{height:36px;font-size:24px}
+  .tm-field.two .team{min-height:24px}
+  .tm-field.two .side{gap:4px;padding:4px}
+  .tm-field.two .keys{gap:4px}
+  .tm-field.two{gap:4px}
+}
+@media (orientation:portrait) and (max-height:520px){.tm-field.two .keys{grid-auto-rows:minmax(30px,1fr)}.tm-field.two .key{min-height:30px;font-size:20px}.tm-field.two .mid{height:76px}}
 
 /* ---------- the setup card ---------- */
 .tms{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));background:var(--ok-scrim)}
