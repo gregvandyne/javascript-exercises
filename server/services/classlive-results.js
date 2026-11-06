@@ -71,7 +71,7 @@ export function summary(s) {
   }
   const out = {
     id: s.id, title: s.title, mode: s.mode, audience: s.audience, nameMode: s.nameMode, startedAt: s.startedAt, endedAt: s.endedAt,
-    scoredBy: s.quiz || s.tug ? 'server' : 'game', players: rows, items, teams, scoring: T.isOn(s) ? s.teams.scoring : null,
+    scoredBy: s.quiz || s.tug || s.doodle ? 'server' : 'game', players: rows, items, teams, scoring: T.isOn(s) ? s.teams.scoring : null,
     settings: settingsOf(s), guests: seats.filter(x => x.kind === 'guest').length,
   };
   // Which account sat in which seat: for save() only, never sent anywhere (not enumerable, so not in any JSON).
@@ -84,7 +84,9 @@ const settingsOf = s => {
   const st = s.settings || {};
   return { secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes,
     // Tug of Math Live: its grade and length (a starter id), so "Play again with these teams" plays the same match
-    ...(s.tug ? { tug: s.tug.id } : {}) };
+    ...(s.tug ? { tug: s.tug.id } : {}),
+    // Doodle Hoot Live: its word language, level, rounds and time (a starter id; never a word or a drawing)
+    ...(s.doodle ? { doodle: s.doodle.id } : {}) };
 };
 /** A saved item: the host-written text and choices, the answer, the time, the counts and the category (never anything a
  *  player sent). P4: cat and secs survive the save, so a CS Quest run keeps each question's standard. */

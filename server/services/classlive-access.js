@@ -15,13 +15,17 @@ import { config } from '../config.js';
 
 export const AUDIENCES = ['open', 'class', 'family'];
 /** Built-in modes, and the official game each one runs as (seed-games/<slug>.html). */
-export const MODES = { 'quest-race': 'quest-race', battle: 'question-battle', board: 'brain-board', wyr: 'would-you-rather-live', atlas: 'atlas-quest-live', tug: 'tug-of-math' };
+export const MODES = { 'quest-race': 'quest-race', battle: 'question-battle', board: 'brain-board', wyr: 'would-you-rather-live', atlas: 'atlas-quest-live', tug: 'tug-of-math', doodle: 'doodle-hoot' };
 /** Built-in modes whose questions the platform makes (not a question set): Would You Rather Live (the class votes on
  *  dilemmas) and Atlas Quest Live (everyone taps the country on a world map). */
 export const OWN_QUESTIONS = new Set(['wyr', 'atlas']);
 /** Built-in modes that are games, not quizzes: Tug of Math Live (each player answers their own maths questions on a
- *  keypad; the server makes and checks them, services/classlive-tug.js). No question set, no shared question. */
-export const GAME_MODES = new Set(['tug']);
+ *  keypad; the server makes and checks them, services/classlive-tug.js) and Doodle Hoot Live (one player draws, the
+ *  others spell the word with letter tiles; services/classlive-doodle.js). No question set, no shared question. */
+export const GAME_MODES = new Set(['tug', 'doodle']);
+/** Built-in modes played in turns (Doodle Hoot Live: one drawer at a time): made for a family or a small group, not a
+ *  class of 30 (16 at most; docs/live-capacity.md). */
+export const TURN_MODES = new Set(['doodle']);
 /** Official games made for fun, not for class: never hosted for a class room, and left out of a teacher's live picker
  *  (a parent may still host them for their family or an open room). */
 export const NOT_FOR_CLASS = new Set(['hero-of-sunvale']);
@@ -106,6 +110,8 @@ export const CAPACITY = {
   // two teams on keypads: each player gets only their own question and right/wrong; the rope is one small shared state
   // about 5 times a second, whatever the class size (docs/live-capacity.md)
   tug: { max: 60, best: [2, 60] },
+  // turns: each player draws once a round, so 16 players is about 25 minutes a round at 80 s (docs/live-capacity.md)
+  doodle: { max: 16, best: [3, 10] },
 };
 export const BUILDER_DEFAULT_MAX = 30;
 /** The capacity of a game: by mode (built-in), by slug (official), else declared by the game (2-60), else 30. */

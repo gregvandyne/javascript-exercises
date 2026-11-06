@@ -17,7 +17,11 @@ test('each built-in game has its number; LIVE_MAX_PLAYERS stays the ceiling', ()
   assert.equal(A.capacityFor({ mode: 'board' }).max, Math.min(40, config.liveMaxPlayers));
   assert.equal(A.capacityFor({ mode: 'board' }).teamsAbove, 16);
   assert.equal(A.capacityFor({ slug: 'hero-of-sunvale' }).max, 30);
-  for (const k of Object.keys(A.MODES)) assert.ok(A.capacityFor({ mode: k }).max >= 30, `${k} holds a full class`);
+  // Every mode holds a full class, except the ones played in turns (A.TURN_MODES: Doodle Hoot Live, one drawer at a
+  // time, holds 16: 30 turns of 80 s would be 40 minutes a round; docs/decisions.md "Doodle Hoot", docs/live-capacity.md)
+  for (const k of Object.keys(A.MODES)) if (!A.TURN_MODES.has(k)) assert.ok(A.capacityFor({ mode: k }).max >= 30, `${k} holds a full class`);
+  assert.deepEqual([...A.TURN_MODES], ['doodle'], 'the only exception, written down');
+  assert.equal(A.capacityFor({ mode: 'doodle' }).max, Math.min(16, config.liveMaxPlayers));
   const was = config.liveMaxPlayers; config.liveMaxPlayers = 25;
   try { assert.equal(A.capacityFor({ mode: 'battle' }).max, 25); assert.deepEqual(A.capacityFor({ mode: 'battle' }).best, [2, 25]); } finally { config.liveMaxPlayers = was; }
 });
