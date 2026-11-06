@@ -2319,6 +2319,8 @@
     "course": {
       "right": "Giusto!",
       "wrong": "Quasi. La risposta giusta è: {answer}",
+      "notQuite": "Quasi.",
+      "rightIs": "La risposta giusta è: {answer}",
       "next": "Prossima domanda",
       "finish": "Vedi il punteggio",
       "listen": "Leggi ad alta voce",
@@ -5992,6 +5994,8 @@
       "done": "Fatto",
       "next": "Prossimo",
       "locked": "Bloccato",
+      "preview": "Anteprima",
+      "lockedNote": "Quel passo è ancora bloccato. Prima finisci il passo {n}:",
       "unit": "Unità {n}",
       "units": "Unità {from}–{to}",
       "build": {
@@ -6001,7 +6005,8 @@
       }
     },
     "groups": {
-      "techChoices": "Scelte tecnologiche"
+      "techChoices": "Scelte tecnologiche",
+      "start": "Inizia da qui"
     },
     "lesson": {
       "of": "Passo {n} di {total}",
@@ -6016,7 +6021,9 @@
       "talk": "Parliamone",
       "complete": "Passo completato",
       "playToFinish": "Giocalo per finire questo passo.",
-      "nextStep": "Passo successivo"
+      "nextStep": "Passo successivo",
+      "wholePicture": "Vedi l’immagine intera",
+      "close": "Chiudi"
     },
     "check": {
       "h": "Mini quiz",

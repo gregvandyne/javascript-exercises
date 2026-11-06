@@ -258,7 +258,7 @@ export const ARCHETYPES = {
   },
   perimeter(rng, g, c) {
     const l = ri(rng, g.lo, g.hi), w = ri(rng, 2, 12);
-    return { prompt: `A garden is ${l} metres long and ${w} metres wide. How many metres of fence go all the way around it?`, answer: 2 * (l + w),
+    return { prompt: `A garden is ${l} meters long and ${w} meters wide. How many meters of fence go all the way around it?`, answer: 2 * (l + w),
       distractors: [{ value: l * w, misconception: 'found-the-area' }, { value: l + w, misconception: 'counted-only-two-sides' }, { value: 2 * (l + w) + 2, misconception: 'off-by-one-side' }] };
   },
   volume(rng, g, c) {
@@ -272,7 +272,7 @@ export const ARCHETYPES = {
       distractors: [{ value: 90 - (a % 90), misconception: 'used-a-right-angle-total' }, { value: a, misconception: 'copied-the-given-angle' }, { value: 180 - a + 10, misconception: 'place-value-slip' }] };
   },
   convert(rng, g, c) {
-    const conv = pickOne(rng, g.convs || [['metres', 'centimetres', 100], ['kilograms', 'grams', 1000], ['litres', 'millilitres', 1000], ['hours', 'minutes', 60]]);
+    const conv = pickOne(rng, g.convs || [['meters', 'centimeters', 100], ['kilograms', 'grams', 1000], ['liters', 'milliliters', 1000], ['hours', 'minutes', 60]]);
     const n = ri(rng, 2, 9);
     return { prompt: `How many ${conv[1]} are in ${n} ${conv[0]}?`, answer: n * conv[2],
       distractors: [{ value: n * 10, misconception: 'used-ten-as-the-factor' }, { value: n + conv[2], misconception: 'added-the-factor' }, { value: conv[2], misconception: 'gave-the-factor-only' }] };

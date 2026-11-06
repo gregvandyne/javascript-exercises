@@ -12,6 +12,12 @@
    "art": "envelope",
    "img": "csq/packet-post/locks-2-sealed",
    "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
+   "view": [
+    19.3,
+    21.5,
+    72.0,
+    70.6
+   ],
    "focus": [
     {
      "cue": "The sealed route: padlocks guard the road",
@@ -39,6 +45,12 @@
    "art": "lock",
    "img": "csq/packet-post/routes-2-sealed",
    "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
+   "view": [
+    20.6,
+    32.7,
+    40.0,
+    40.3
+   ],
    "focus": [
     {
      "cue": "The padlock certifies the trip is sealed",
@@ -50,12 +62,12 @@
      ]
     },
     {
-     "cue": "And that the office at the end is who it claims",
+     "cue": "And that Birthday House is who it claims",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      12.9
+      43.9,
+      59.0,
+      7.4,
+      8.8
      ]
     }
    ]
@@ -73,6 +85,12 @@
    ],
    "img": "csq/packet-post/ciphers-2-lockbox",
    "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
+   "view": [
+    5.3,
+    0.0,
+    86.3,
+    76.7
+   ],
    "focus": [
     {
      "cue": "The two-key lockbox: anyone can click it shut",
@@ -109,6 +127,12 @@
    "art": "mask",
    "img": "csq/packet-post/tricks-2-bank",
    "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+   "view": [
+    4.2,
+    13.7,
+    40.0,
+    35.6
+   ],
    "focus": [
     {
      "cue": "The sender wears a bank's name",
@@ -136,6 +160,12 @@
    "art": "globe",
    "img": "csq/packet-post/routes-2-budget",
    "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
+   "view": [
+    5.4,
+    29.5,
+    76.5,
+    68.0
+   ],
    "focus": [
     {
      "cue": "A town full of roads you do not control",
@@ -186,16 +216,22 @@
    "title": "Your mission",
    "text": "Open Packet Post at Rules of the Road: the same levels you finished in step 1.1, so this step is already earned when the game opens. After each level, name one thing its padlock would certify, and one it would not.",
    "art": "trophy",
-   "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
+   "img": "csq/packet-post/protocols-2-rules",
+   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",
+   "view": [
+    6.8,
+    38.3,
+    45.7,
+    40.6
+   ],
    "focus": [
     {
-     "cue": "Play Rules of the Road: name what its padlock certifies",
+     "cue": "Play Rules of the Road: name what a padlock covers",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
+      9.8,
+      46.9,
+      39.7,
+      23.4
      ]
     }
    ]

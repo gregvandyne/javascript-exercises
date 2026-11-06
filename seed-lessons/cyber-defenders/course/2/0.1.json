@@ -2,16 +2,16 @@
  "key": "2-0.1",
  "n": "0.1",
  "band": "2",
- "title": "Welcome back to the Post Office",
- "topic": "Welcome back",
+ "title": "Welcome to the Post Office, Pro",
+ "topic": "Welcome",
  "minutes": 6,
  "slides": [
   {
    "title": "One year on",
    "text": "Welcome back to Pim's post office in Netville. A year has passed, and the post is bigger than ever. So are the tricks hiding inside it.",
    "art": "map",
-   "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+   "img": "csq/chars/pim",
+   "alt": "Pim the owl: a round brown owl with big eyes, a cream belly and a tiny backpack."
   },
   {
    "title": "Not just a story",
@@ -24,8 +24,14 @@
    "title": "The Magpie has help",
    "text": "The Magpie no longer works alone. Its flock copies real letters, fakes the postmarks, and sends them out from fake accounts. Each fake looks almost right at first glance.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-2-bank",
-   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday."
+   "img": "csq/trick-inbox/senders-2-sd-1-all",
+   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
   },
   {
    "kind": "example",
@@ -39,8 +45,14 @@
     "the reply is meant to leak a secret",
     "the clue: the postmark date is wrong"
    ],
-   "img": "csq/packet-post/tricks-2-learn",
-   "alt": "Spot the trick, Pro style: the lesson card names the levers. Rush, prizes, and asking for your mailbox key."
+   "img": "csq/escape-the-post-office/pim-2",
+   "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
+   "view": [
+    0.0,
+    26.9,
+    52.0,
+    73.1
+   ]
   },
   {
    "kind": "words",
@@ -77,16 +89,136 @@
    "title": "Six stamps, real jobs",
    "text": "Six stamps wait, one per unit, and each one maps to your real life. Roadwise covers data on the move; Keykeeper, passphrases and proving it is you; Private, your footprint; Trickspotter, phishing and fakes; Kind Screen, your chats; Shield, layers that hold when one fails.",
    "art": "star",
-   "img": "csq/escape-the-post-office/door-2",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet."
+   "img": "csq/escape-the-post-office/door-2-new",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
   },
   {
    "kind": "mission",
    "title": "Your mission",
    "text": "There is no game this time. Every step is built the same way: story slides, then words, a quick check, and a mission. Open the course map and study the six stamps. Think about which stamp you want most.",
    "art": "trophy",
-   "img": "csq/packet-post/routes-2-hops",
-   "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget."
+   "img": "csq/escape-the-post-office/door-2-two",
+   "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
+  }
+ ],
+ "slides_first_time": [
+  {
+   "title": "Welcome to the Post Office",
+   "text": "Welcome to Pim's post office in Netville. Pim the owl carries the town's messages, and keeping them safe is the whole job. The post is busy, and so are the tricks hiding inside it.",
+   "art": "map",
+   "img": "csq/chars/pim",
+   "alt": "Pim the owl: a round brown owl with big eyes, a cream belly and a tiny backpack."
+  },
+  {
+   "title": "Not just a story",
+   "text": "Netville is fiction, but the problem is real. Your games, group chats, photos and streams all move as data across real networks. Real attackers really do fake messages to steal accounts and secrets, and this course is practice for your real online life.",
+   "art": "network",
+   "img": "csq/packet-post/protocols-2-key",
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+  },
+  {
+   "title": "Meet the Magpie and its flock",
+   "text": "The Magpie is the post office pest. It slips fake letters into the sacks to collect shiny secrets, and now a whole flock helps it copy real letters and fake the postmarks. Each fake looks almost right at first glance.",
+   "art": "mask",
+   "img": "csq/trick-inbox/senders-2-sd-1-all",
+   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
+  },
+  {
+   "kind": "example",
+   "title": "Anatomy of a trick",
+   "text": "Here is one of the flock's tricks, taken apart after it failed. Every step of it left a small clue behind.",
+   "art": "magnifier",
+   "steps": [
+    "a real letter is copied word for word",
+    "the postmark is faked to match it",
+    "a fake account sends the copy on",
+    "the reply is meant to leak a secret",
+    "the clue: the postmark date is wrong"
+   ],
+   "img": "csq/escape-the-post-office/pim-2",
+   "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
+   "view": [
+    0.0,
+    26.9,
+    52.0,
+    73.1
+   ]
+  },
+  {
+   "kind": "words",
+   "title": "Words to know",
+   "text": "Four words for today.",
+   "art": "pencil",
+   "words": [
+    {
+     "word": "threat",
+     "means": "something that could harm people, messages or accounts"
+    },
+    {
+     "word": "system",
+     "means": "joined parts that work together, like the whole post network"
+    },
+    {
+     "word": "attack",
+     "means": "a planned move to harm people, messages or accounts"
+    },
+    {
+     "word": "defense",
+     "means": "the plan and tools used to keep something safe"
+    }
+   ]
+  },
+  {
+   "title": "Think in systems",
+   "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
+   "art": "gears",
+   "img": "csq/packet-post/protocols-2-design",
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them."
+  },
+  {
+   "title": "Six stamps, real jobs",
+   "text": "Six stamps wait, one per unit, and each one maps to your real life. Roadwise covers data on the move; Keykeeper, passphrases and proving it is you; Private, your footprint; Trickspotter, phishing and fakes; Kind Screen, your chats; Shield, layers that hold when one fails.",
+   "art": "star",
+   "img": "csq/escape-the-post-office/door-2-new",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
+  },
+  {
+   "kind": "mission",
+   "title": "Your mission",
+   "text": "There is no game this time. Every step is built the same way: story slides, then words, a quick check, and a mission. Open the course map and study the six stamps. Think about which stamp you want most.",
+   "art": "trophy",
+   "img": "csq/escape-the-post-office/door-2-two",
+   "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ]
   }
  ],
  "check": [

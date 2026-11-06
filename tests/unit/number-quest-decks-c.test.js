@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const NQ = path.join(ROOT, 'seed-lessons/number-quest');
-const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy'];
+const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy', 'ruler', 'clock', 'coins', 'scale', 'cake', 'shapes', 'angle', 'dice', 'cat'];
 const UK = /\b(colours?|coloured|colouring|favourites?|grey|labelled|licence|organis(e|ed|ing)|practis(e|ed|ing)|neighbours?|recognis(e|ed|ing)|maths|centre|metres?|behaviours?|honour|catalogue|analys(e|ed|ing)|defence|travelled|modelling|cancelled|jewellery|tyres?|whilst|learnt|spelt|programme)\b/i;
 const BRAND = /\b(Bluetooth|Wi-?Fi|iPad|iPhone|Android|Chromebook|Windows|Google|YouTube|TikTok|Minecraft|Roblox|Fortnite|Lego|Nintendo|Xbox|PlayStation|Alexa|Siri|Duolingo)\b/i;
 const BAD = [[/\d{7,}/, 'a 7+ digit run'], [/@/, 'an @'], [/\/\/\w[\w.-]*\.\w{2,}/, 'a //host.tld link'], [/https?:/i, 'a URL scheme'], [/\bwww\./i, 'a www. link'],
@@ -245,7 +245,7 @@ test('visual strings respect the deck loader caps (server/services/courses.js cl
 });
 
 test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with guided focus on the parts', () => {
-  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles'];
+  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes'];
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     const drawn = d.slides.filter(s => s.visual);
@@ -265,7 +265,7 @@ test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with 
   assert.ok(vis('5.1').includes('numberline') && vis('5.1').includes('bars'), '5.1 draws the meter stick AND the conversion bar');
   assert.ok(vis('5.2').filter(t => t === 'numberline').length === 2, '5.2 draws time on the line twice (concept and bus)');
   assert.ok(vis('5.3').filter(t => t === 'bars').length === 2, '5.3 draws the dollar bar AND the change bar');
-  assert.ok(vis('6.1').includes('tiles') && vis('6.1').includes('bars'), '6.1 draws the shape strip AND the property bars');
+  assert.ok(vis('6.1').filter(t => t === 'shapes').length === 2, '6.1 draws the shapes it sorts AND the square beside the rectangle (real drawn shapes, corners marked)');
   assert.ok(vis('6.2').includes('bars') && vis('6.2').includes('array'), '6.2 draws the fence bar AND the carpet array');
   assert.ok(vis('6.3').includes('bars') && vis('6.3').includes('array'), '6.3 draws the fold AND the grid');
   assert.ok(vis('7.1').includes('bars') && vis('7.1').includes('numberline'), '7.1 draws the bar graph AND the line plot');

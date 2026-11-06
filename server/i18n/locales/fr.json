@@ -2318,6 +2318,8 @@
     "course": {
       "right": "Bravo !",
       "wrong": "Presque. La bonne réponse est : {answer}",
+      "notQuite": "Presque.",
+      "rightIs": "La bonne réponse est : {answer}",
       "next": "Question suivante",
       "finish": "Voir mon score",
       "listen": "Lire à voix haute",
@@ -5991,6 +5993,8 @@
       "done": "Fini",
       "next": "Suivant",
       "locked": "Verrouillé",
+      "preview": "Aperçu",
+      "lockedNote": "Cette étape est encore verrouillée. Termine d’abord l’étape {n} :",
       "unit": "Unité {n}",
       "units": "Unités {from} à {to}",
       "build": {
@@ -6000,7 +6004,8 @@
       }
     },
     "groups": {
-      "techChoices": "Nos choix numériques"
+      "techChoices": "Nos choix numériques",
+      "start": "Commence ici"
     },
     "lesson": {
       "of": "Étape {n} sur {total}",
@@ -6015,7 +6020,9 @@
       "talk": "Parlons-en",
       "complete": "Étape finie",
       "playToFinish": "Joue-le pour finir cette étape.",
-      "nextStep": "Étape suivante"
+      "nextStep": "Étape suivante",
+      "wholePicture": "Voir toute l’image",
+      "close": "Fermer"
     },
     "check": {
       "h": "Petit quiz",

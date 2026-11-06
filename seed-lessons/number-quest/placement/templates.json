@@ -3449,13 +3449,13 @@
    "gen": {
     "convs": [
      [
-      "metres",
-      "centimetres",
+      "meters",
+      "centimeters",
       100
      ],
      [
-      "litres",
-      "millilitres",
+      "liters",
+      "milliliters",
       1000
      ]
     ]
@@ -3528,13 +3528,13 @@
    "gen": {
     "convs": [
      [
-      "metres",
-      "centimetres",
+      "meters",
+      "centimeters",
       100
      ],
      [
-      "litres",
-      "millilitres",
+      "liters",
+      "milliliters",
       1000
      ]
     ]
@@ -3654,8 +3654,8 @@
       1000
      ],
      [
-      "metres",
-      "centimetres",
+      "meters",
+      "centimeters",
       100
      ]
     ]
@@ -3730,8 +3730,8 @@
       1000
      ],
      [
-      "metres",
-      "centimetres",
+      "meters",
+      "centimeters",
       100
      ]
     ]

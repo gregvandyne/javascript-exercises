@@ -54,7 +54,9 @@ test('20 steps per band from units.json, decks clean, games as catalogued', () =
   assert.deepEqual(C.getStep(course, '1b-1.1').game, { slug: 'packet-post', chapter: 'packets', chapterTitle: 'Break It Up', params: 'chapter=packets&band=1b&lock=1', title: 'Packet Post' });
   assert.equal(C.getStep(course, '1b-3.1').game.slug, 'would-you-rather');
   assert.equal(C.getStep(course, '1b-3.1').game.title, 'Would You Rather?');
-  assert.equal(C.getStep(course, '2-3.3').game.chapter, 'tricks');
+  assert.equal(C.getStep(course, '2-3.3').game.slug, 'trick-inbox');
+  assert.equal(C.getStep(course, '2-3.3').game.chapter, 'pressure');
+  assert.equal(C.getStep(course, '1b-3.2').game.params, 'chapter=which-pim&band=1b&lock=1', 'a practice lock of the escape room');
   assert.equal(C.getStep(course, '1b-9.9'), null);
   // CS Quest is untouched by Cyber: 21 steps in 1b (19 lessons + story intro/finale from extras) and 22 in
   // band 2 (the Pro-only 3.4 Fair Data practice step rides along), no problems, its own decks.
@@ -62,7 +64,7 @@ test('20 steps per band from units.json, decks clean, games as catalogued', () =
   assert.equal(C.steps(csq, '2').length, 22);
   assert.deepEqual(C.deckProblems('1b'), []);
   assert.deepEqual(C.groupsFor(course).map(g => g.id), ['post-office', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'unit-6']);
-  assert.deepEqual(C.groupsFor(csq).map(g => g.id), ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'tech-choices']);
+  assert.deepEqual(C.groupsFor(csq).map(g => g.id), ['start', 'robo-route', 'data-detective', 'packet-post', 'inside-the-machine', 'tech-choices']);
 });
 
 test('the course page: band picker first, then the map with unit groups and 20 steps', async () => {
@@ -94,7 +96,7 @@ test('the intro step has no game: read, check, done — and the next step opens'
   assert.equal(page.status, 200);
   assert.equal((page.text.match(/<section class="slide /g) || []).length, s0.slides.length);
   for (const id of s0.check) assert.match(page.text, new RegExp(`data-q="${id}"`));
-  assert.equal((await get('/courses/cyber-defenders/1b-1.1', kid)).location, '/courses/cyber-defenders#step-1b-1.1', 'the next step is locked');
+  assert.equal((await get('/courses/cyber-defenders/1b-1.1', kid)).location, '/courses/cyber-defenders?locked=1b-1.1#step-1b-1.1', 'the next step is locked');
   const r = await post('/api/courses/cyber-defenders/1b-0.1/check', kid, { answers: allRight(s0) });
   assert.equal(r.json.passed, true);
   assert.equal(r.json.play, null, 'no game module to open');
@@ -135,11 +137,11 @@ test('a Would You Rather mission: an open game, no gate, but the step context st
   const s31 = C.getStep(course, '1b-3.1');
   assert.equal(C.stateOf(kid, course, '1b-3.1').open, true);
   const r = await post('/api/courses/cyber-defenders/1b-3.1/check', kid, { answers: allRight(s31) });
-  assert.equal(r.json.play, '/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1');
+  assert.equal(r.json.play, '/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1&topic=online&lock=1', 'the module opens the game locked to its online topic');
   // Without the step context the open game just plays — for anyone, signed in or not.
   assert.equal((await get('/play/would-you-rather', kid)).status, 200);
   assert.equal((await get('/g/would-you-rather', kid)).status, 200, 'the game keeps its own page');
-  const play = await get('/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1', kid);
+  const play = await get('/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1&topic=online&lock=1', kid);
   assert.equal(play.status, 200);
   assert.match(play.text, /href="\/courses\/cyber-defenders\/1b-3\.1#play"/, 'back goes to the Defender step');
   const started = C.stateOf(kid, course, '1b-3.1');
@@ -183,7 +185,7 @@ test('guided focus renders on a Cyber Defenders unit 1 step page (shared rendere
   doneByHand(kid, C.getStep(course, '1b-0.1'));
   const page = await get('/courses/cyber-defenders/1b-1.1', kid);
   assert.equal(page.status, 200);
-  assert.match(page.text, /<figure class="smedia gf" data-gf>/, 'a guided-focus figure');
+  assert.match(page.text, /<figure class="smedia gf(?: crop)?" style="--ar:[\d.]+;--fhr:[\d.]+" data-gf>/, 'a guided-focus figure');
   assert.match(page.text, /<div class="gf-layer" aria-hidden="true">/, 'the overlay layer');
   assert.ok(page.text.includes('A photo waits at Pim&#39;s Post, ready to travel') || page.text.includes("A photo waits at Pim's Post, ready to travel"), 'the first cue is on the page');
   assert.match(page.text, /<button class="gf-replay" type="button" hidden>/, 'the replay button');

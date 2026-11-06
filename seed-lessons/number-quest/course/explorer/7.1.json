@@ -9,12 +9,12 @@
   {
    "title": "The Fairground",
    "text": "The last workshop on the street is the Fairground, where every stall keeps a chart. A good chart answers a question before anyone asks it. A bad chart just stands there looking busy.",
-   "art": "chart"
+   "art": "dice"
   },
   {
    "title": "Bars that speak",
    "text": "Each bar's length is its count. Bananas sold 20, the longest bar on the chart. Read a bar by running your finger to the end of it, then down to its number. The scale tells you how much each step is worth.",
-   "art": "chart",
+   "art": "table",
    "visual": {
     "type": "bars",
     "label": "A bar graph of fruit sold at a stall: apples 12, bananas 20, pears 16; the longest bar makes 20",
@@ -52,28 +52,28 @@
     {
      "cue": "Apples: the bar stops at 12 on the scale.",
      "box": [
-      5.8,
-      4.8,
-      53.2,
-      24.7
+      5,
+      3.4,
+      54.9,
+      27.6
      ]
     },
     {
      "cue": "The longest bar: bananas, 20 sold.",
      "box": [
-      5.8,
-      35.0,
-      88.4,
-      24.8
+      5,
+      33.6,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "Pears: 16 sold, between apples and bananas.",
      "box": [
-      5.8,
-      65.3,
-      70.8,
-      24.7
+      5,
+      63.9,
+      72.5,
+      27.5
      ]
     }
    ]
@@ -81,7 +81,7 @@
   {
    "title": "Worked example: ribbons end to end",
    "text": "Rough first: four short ribbons should make a bit more than a yard. Lay them on the line: a half, another half, then two quarters. The halves make a whole yard, and the quarters make another half.",
-   "art": "gears",
+   "art": "ruler",
    "kind": "example",
    "steps": [
     "First ribbon: 1/2 yard, landing at the 1/2 mark",
@@ -130,7 +130,7 @@
      {
       "from": 1,
       "to": 1.5,
-      "label": "+1/2"
+      "label": "+1/4+1/4"
      }
     ]
    },
@@ -138,28 +138,28 @@
     {
      "cue": "Lay the first ribbon: it reaches the 1/2 mark.",
      "box": [
-      5.8,
-      24.4,
-      22.4,
-      36.2
+      3.8,
+      23.2,
+      27.6,
+      60.1
      ]
     },
     {
      "cue": "Two quarter ribbons in a row: another half yard.",
      "box": [
-      49.8,
-      24.4,
-      22.4,
-      36.2
+      49,
+      23.2,
+      24.1,
+      38.9
      ]
     },
     {
      "cue": "The ribbons end at 1 1/2 yards in all.",
      "box": [
-      68.4,
-      59.2,
-      7.2,
-      22.6
+      67.6,
+      57.8,
+      8.8,
+      25.5
      ]
     }
    ]
@@ -167,7 +167,7 @@
   {
    "title": "How many more?",
    "text": "The question charts answer best is a comparison. Tuesday sold 20 lunches and Monday sold 12. How many more is a subtraction wearing a chart's clothes: 20 - 12 = 8. Always ask which two bars the question compares.",
-   "art": "magnifier"
+   "art": "table"
   },
   {
    "title": "Words to know",
@@ -204,7 +204,13 @@
    "art": "trophy",
    "img": "nq/data-detective/chart-it",
    "alt": "Data Detective, Chart It: a case's counts shown as a bar chart, the Bars view picked, a claim ready to pin.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    1.5,
+    10,
+    53,
+    88
+   ]
   }
  ],
  "check": [

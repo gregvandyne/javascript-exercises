@@ -10,25 +10,31 @@
    "title": "One drawing, many copies",
    "text": "You send one drawing to a friend. It passes through many hands on the way, and every stop could keep a copy, like stamps in Pim's sorting book. A copy sent out cannot be called back.",
    "art": "map",
-   "img": "csq/packet-post/routes-1b-roads",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "img": "csq/escape-the-post-office/gate-1b",
+   "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
+   "view": [
+    0.0,
+    39.2,
+    52.0,
+    52.2
+   ],
    "focus": [
     {
-     "cue": "One drawing sets off across the roads",
+     "cue": "One letter sets off from the Post Office",
      "box": [
-      10.0,
-      37.8,
-      41.9,
-      51.9
+      8.7,
+      54.9,
+      9.4,
+      18.8
      ]
     },
     {
-     "cue": "Every stop could keep a copy along the way",
+     "cue": "Every stop on the way could keep a copy",
      "box": [
-      10.0,
-      37.8,
-      41.9,
-      51.9
+      39.0,
+      44.2,
+      6.7,
+      42.2
      ]
     }
    ]
@@ -39,6 +45,12 @@
    "art": "box",
    "img": "csq/packet-post/locks-1b-backup",
    "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
+   "view": [
+    5.0,
+    0.0,
+    86.3,
+    76.7
+   ],
    "focus": [
     {
      "cue": "Sorting spare copies: which way keeps them safe?",
@@ -66,6 +78,12 @@
    "art": "people",
    "img": "csq/packet-post/routes-1b-journey",
    "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
+   "view": [
+    24.3,
+    21.0,
+    43.6,
+    38.8
+   ],
    "focus": [
     {
      "cue": "Packet 2 waits at Hill Office, two hops done",
@@ -99,6 +117,12 @@
    ],
    "img": "csq/would-you-rather/online-drawing-1b",
    "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Share a drawing so everyone can see it",
@@ -126,6 +150,12 @@
    "art": "mask",
    "img": "csq/packet-post/tricks-1b-stranger",
    "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+   "view": [
+    5.0,
+    14.0,
+    51.2,
+    45.5
+   ],
    "focus": [
     {
      "cue": "A stranger's card, fishing for a shiny secret",
@@ -178,6 +208,12 @@
    "art": "trophy",
    "img": "csq/packet-post/routes-1b-roads",
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "view": [
+    7.0,
+    32.8,
+    47.9,
+    61.9
+   ],
    "focus": [
     {
      "cue": "Play Many Roads: trace every copy's journey",

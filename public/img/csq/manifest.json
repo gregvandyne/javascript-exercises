@@ -317,7 +317,7 @@
    "band": "1b",
    "state": "sort-1b-key",
    "concept": "Meet Dot: a detective solves cases with facts, not guesses",
-   "alt": "Dot opens the first case: a table of lunchroom facts in rows and columns, with the case question at the top.",
+   "alt": "Dot opens the first case: a table of who, where and when facts in rows and columns, and the question: who was last in the hall?",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },
@@ -344,26 +344,400 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/escape-the-post-office/door-1b",
+   "key": "csq/escape-the-post-office/door-1b-five",
    "game": "escape-the-post-office",
    "chapter": "escape",
    "band": "1b",
-   "state": "door-1b",
-   "concept": "the locked sorting room door",
-   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
-   "capturedAt": "2026-11-04",
-   "commit": "c6b79da"
+   "state": "door-1b-five",
+   "concept": "one lock to go",
+   "alt": "Five of the six locks are open in green. Only Lock 6, Layers, still guards the sorting room door.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
   },
   {
-   "key": "csq/escape-the-post-office/door-2",
+   "key": "csq/escape-the-post-office/door-1b-new",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "1b",
+   "state": "door-1b-new",
+   "concept": "the locked door",
+   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/door-1b-two",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "1b",
+   "state": "door-1b-two",
+   "concept": "two locks open",
+   "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/door-2-five",
    "game": "escape-the-post-office",
    "chapter": "escape",
    "band": "2",
-   "state": "door-2",
-   "concept": "the locked sorting room door (Pro)",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp, and none is open yet.",
-   "capturedAt": "2026-11-04",
-   "commit": "c6b79da"
+   "state": "door-2-five",
+   "concept": "one lock to go (Pro)",
+   "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/door-2-new",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "2",
+   "state": "door-2-new",
+   "concept": "the locked door (Pro)",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/door-2-two",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "2",
+   "state": "door-2-two",
+   "concept": "two locks open (Pro)",
+   "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/gate-1b",
+   "game": "escape-the-post-office",
+   "chapter": "sorting-gate",
+   "band": "1b",
+   "state": "gate-1b",
+   "concept": "the sorting gate",
+   "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/gate-2",
+   "game": "escape-the-post-office",
+   "chapter": "sorting-gate",
+   "band": "2",
+   "state": "gate-2",
+   "concept": "the sorting gate (Pro)",
+   "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/inbox-1b",
+   "game": "escape-the-post-office",
+   "chapter": "trick-inbox",
+   "band": "1b",
+   "state": "inbox-1b",
+   "concept": "the inbox lock",
+   "alt": "Lock 4, Trick Inbox: the first of six messages, a library book, with four moves to choose from.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/inbox-1b-2",
+   "game": "escape-the-post-office",
+   "chapter": "trick-inbox",
+   "band": "1b",
+   "state": "inbox-1b-2",
+   "concept": "a prize you never entered",
+   "alt": "Lock 4, message 2 of 6: a Prize Parrot says you won a shiny prize you never tried to win. Tap fast!",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/inbox-1b-wrong",
+   "game": "escape-the-post-office",
+   "chapter": "trick-inbox",
+   "band": "1b",
+   "state": "inbox-1b-wrong",
+   "concept": "a wobble, not a fail",
+   "alt": "A wrong try on Lock 4 only wobbles it: Pim shows the missed clue, and the lock waits for another try.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/inbox-2",
+   "game": "escape-the-post-office",
+   "chapter": "trick-inbox",
+   "band": "2",
+   "state": "inbox-2",
+   "concept": "the inbox lock (Pro)",
+   "alt": "Lock 4 at Pro: the first of eight messages, with four moves to choose from and a hint feather below.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/inbox-2-5",
+   "game": "escape-the-post-office",
+   "chapter": "trick-inbox",
+   "band": "2",
+   "state": "inbox-2-5",
+   "concept": "a spoofed sender in the lock",
+   "alt": "Lock 4 at Pro, message 5 of 8: Post Office asks you to confirm your key, but the postmark is a far-town hand stamp.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-1b",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "1b",
+   "state": "layers-1b",
+   "concept": "the layers lock",
+   "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-1b-2",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "1b",
+   "state": "layers-1b-2",
+   "concept": "a guesser at the mailbox",
+   "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-1b-3",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "1b",
+   "state": "layers-1b-3",
+   "concept": "a known hole",
+   "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-1b-4",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "1b",
+   "state": "layers-1b-4",
+   "concept": "the only copy",
+   "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-2",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2",
+   "concept": "defense in depth",
+   "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-2-2",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-2",
+   "concept": "a stolen key",
+   "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-2-3",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-3",
+   "concept": "a known hole (Pro)",
+   "alt": "Threat 3 of 6: a known hole in old software lets a trick letter slip in. The Patch Crew closes it.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-2-5",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-5",
+   "concept": "six layers",
+   "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-2-6",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-6",
+   "concept": "a guessed key",
+   "alt": "Threat 6 of 6: a one-word key is guessed in an afternoon. The Long Passphrase layer stops it.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b",
+   "concept": "the five moves",
+   "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b-four",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-four",
+   "concept": "four moves placed",
+   "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b-two",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-two",
+   "concept": "stop, then save",
+   "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-2",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "2",
+   "state": "moves-2",
+   "concept": "the incident drill",
+   "alt": "Lock 5 at Pro: someone has a classmate's mailbox key, and a second message pressures you. Six drill tiles wait.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-2-done",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "2",
+   "state": "moves-2-done",
+   "concept": "the drill, done",
+   "alt": "Lock 5 open: the drill ran in order, start to finish. Calm work, and the skill it trained.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-2-five",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "2",
+   "state": "moves-2-five",
+   "concept": "report and recover",
+   "alt": "Five drill moves in order, up to change the key from a clean device. Only the one-line log is left.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-2-one",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "2",
+   "state": "moves-2-one",
+   "concept": "contain first",
+   "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-2-three",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "2",
+   "state": "moves-2-three",
+   "concept": "preserve and tell",
+   "alt": "Three drill moves in order: stop and disconnect, save the evidence, tell a trusted adult, fast.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/note-1b",
+   "game": "escape-the-post-office",
+   "chapter": "sealed-note",
+   "band": "1b",
+   "state": "note-1b",
+   "concept": "the sealed note",
+   "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/note-2",
+   "game": "escape-the-post-office",
+   "chapter": "sealed-note",
+   "band": "2",
+   "state": "note-2",
+   "concept": "the sealed note (Pro)",
+   "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/pim-1b",
+   "game": "escape-the-post-office",
+   "chapter": "which-pim",
+   "band": "1b",
+   "state": "pim-1b",
+   "concept": "which Pim is real",
+   "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/pim-1b-pick",
+   "game": "escape-the-post-office",
+   "chapter": "which-pim",
+   "band": "1b",
+   "state": "pim-1b-pick",
+   "concept": "the real Pim, picked",
+   "alt": "The real Pim is picked: a Netville postmark, owl footprints, and a request for help in the open.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/pim-2",
+   "game": "escape-the-post-office",
+   "chapter": "which-pim",
+   "band": "2",
+   "state": "pim-2",
+   "concept": "which Pim is real (Pro)",
+   "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/pim-2-pick",
+   "game": "escape-the-post-office",
+   "chapter": "which-pim",
+   "band": "2",
+   "state": "pim-2-pick",
+   "concept": "the real Pim, picked (Pro)",
+   "alt": "The real Pim is picked at Pro: the office stamp, the worn left-edge footprint, help asked in the open.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
   },
   {
    "key": "csq/inside-the-machine/bits-1b-five",
@@ -635,9 +1009,9 @@
    "chapter": "gadget",
    "band": "2",
    "state": "gadget-2-key",
-   "concept": "What makes a gadget: sensors, processor, outputs, power",
-   "alt": "Design a Gadget opens its first brief: an empty build tray and the parts shelf, with cost and battery meters.",
-   "capturedAt": "2026-11-04",
+   "concept": "A step counter: small, cheap, lasts all day — pick only what it needs",
+   "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters.",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -657,9 +1031,9 @@
    "chapter": "gadget",
    "band": "2",
    "state": "gadget-2-step",
-   "concept": "A step counter: small, cheap, lasts all day — pick only what it needs",
-   "alt": "A later brief at the bench: the art of a good gadget is picking only the parts the job truly needs.",
-   "capturedAt": "2026-11-04",
+   "concept": "What makes a gadget: sensors, a processor, outputs, a connection and power",
+   "alt": "A Noise meter brief: it must hear the room, show the loudness, send a log to the laptop and run on wall power.",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -756,9 +1130,9 @@
    "chapter": "ciphers",
    "band": "1b",
    "state": "ciphers-1b-wheel",
-   "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key",
+   "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key (shift 3)",
    "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
-   "capturedAt": "2026-11-04",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -793,6 +1167,17 @@
    "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/ciphers-2-stego",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "2",
+   "state": "ciphers-2-stego",
+   "concept": "Hiding is not scrambling: steganography hides a message in a picture's pixels",
+   "alt": "Steganography: a heart hidden in a picture. Each pixel is a number, and its last bit says dot or blank, so the picture looks the same.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/packet-post/ciphers-2-key",
@@ -835,7 +1220,7 @@
    "state": "ciphers-2-shift",
    "concept": "A shift of 3: every letter moves the same number of places",
    "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code.",
-   "capturedAt": "2026-11-04",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -1218,9 +1603,9 @@
    "chapter": "tricks",
    "band": "1b",
    "state": "tricks-1b-card",
-   "concept": "Trick or safe? This one has a prize, a rush and a key request",
+   "concept": "Trick or safe? A threat, a rush and a key request",
    "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
-   "capturedAt": "2026-11-04",
+   "capturedAt": "2026-11-06",
    "commit": "2f3e745"
   },
   {
@@ -1374,8 +1759,8 @@
    "state": "conditionals-1b-fog",
    "concept": "Bolt in the fog",
    "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-1b-fog-proof",
@@ -1385,8 +1770,8 @@
    "state": "conditionals-1b-fog-proof",
    "concept": "Worked example: the fog-proof program",
    "alt": "The repeat until goal program with the if / else inside it, feeling its way along the dry path across a board of water.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-1b-if-else",
@@ -1396,8 +1781,8 @@
    "state": "conditionals-1b-if-else",
    "concept": "If, else: two ways",
    "alt": "One if / else block in the tray: if path ahead, move; else, turn left. Bolt checks and picks a side every time it runs.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-1b-when",
@@ -1407,8 +1792,8 @@
    "state": "conditionals-1b-when",
    "concept": "When: things that happen",
    "alt": "A when block waits at the top of the program: when a gem is picked up, turn right, with the driving loop underneath it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-and",
@@ -1418,8 +1803,8 @@
    "state": "conditionals-2-and",
    "concept": "Two questions at once: AND",
    "alt": "A two-question check in the tray: if wall ahead AND on a gem, pick up and turn; the spiral maze waits on the board.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-any-maze",
@@ -1429,8 +1814,8 @@
    "state": "conditionals-2-any-maze",
    "concept": "Worked example: one program, any maze",
    "alt": "The short sense-and-steer program beside the maze: repeat until goal, if path ahead move, else turn right.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-decide",
@@ -1440,8 +1825,8 @@
    "state": "conditionals-2-decide",
    "concept": "Decide at every step",
    "alt": "The maze program checks at every step: repeat until goal, if path ahead move, else turn left, on a water board.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-key",
@@ -1451,8 +1836,8 @@
    "state": "conditionals-2-key",
    "concept": "Mission board: the big maze start",
    "alt": "A big walled maze with Bolt penned in one corner and the flag far away: no fixed route can be written for this.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-or-not",
@@ -1462,8 +1847,8 @@
    "state": "conditionals-2-or-not",
    "concept": "OR and NOT",
    "alt": "The check reads if NOT path ahead OR on paint, turn right: one block asking two questions at once.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/conditionals-2-when-if",
@@ -1473,8 +1858,8 @@
    "state": "conditionals-2-when-if",
    "concept": "When meets if",
    "alt": "The Pro event program: a when block for picking up a gem, over a repeat loop whose if block picks up gems Bolt stands on.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-count",
@@ -1484,8 +1869,8 @@
    "state": "debug-1b-count",
    "concept": "One too many: a repeat count one too big is a common bug",
    "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-fixed",
@@ -1495,8 +1880,8 @@
    "state": "debug-1b-fixed",
    "concept": "Done means tested: a fix is done when you run it again",
    "alt": "The fixed program sits in the tray: the wrong turn left has become turn right, ready to run again and be tested.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-key",
@@ -1506,8 +1891,8 @@
    "state": "debug-1b-key",
    "concept": "Programs break: a bug is a mistake in a program",
    "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-midrun",
@@ -1517,8 +1902,8 @@
    "state": "debug-1b-midrun",
    "concept": "Expected and actual: compare what Bolt did with what you expected",
    "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-1b-step",
@@ -1528,8 +1913,8 @@
    "state": "debug-1b-step",
    "concept": "Step, stop, fix: step one block at a time and stop at the first surprise",
    "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-edge",
@@ -1539,8 +1924,8 @@
    "state": "debug-2-edge",
    "concept": "Edge cases: unusual boards break quiet assumptions",
    "alt": "A later Debug Lab board with an unusual layout: goals and walls sit where a program that assumes too much will fail.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-key",
@@ -1550,8 +1935,8 @@
    "state": "debug-2-key",
    "concept": "Expect bugs: a test case is one board with a known right answer",
    "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-tabs",
@@ -1560,9 +1945,9 @@
    "band": "2",
    "state": "debug-2-tabs",
    "concept": "One board can hide a bug: the same program on a second test board",
-   "alt": "The same program on a different test board: the board changed, the program did not, and a hidden bug can show here.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The same program on Test 3, a longer hallway: Test 1 and Test 2 show a check, Test 3 a cross, and Bolt splashed into the water.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/debug-2-tested",
@@ -1571,9 +1956,9 @@
    "band": "2",
    "state": "debug-2-tested",
    "concept": "The debug loop: a fix is done only when every test passes",
-   "alt": "The fixed Pro program under its test tabs: one program, three boards, and the fix counts only when all three pass.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "After a run, every test tab shows a mark: Test 1 and Test 2 pass, Test 3 fails, so this fix is not done yet.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-defined-not-called",
@@ -1583,8 +1968,8 @@
    "state": "functions-1b-defined-not-called",
    "concept": "Defined is not called",
    "alt": "The My Block named Side is defined in the tray, but nothing calls it, and Bolt has not moved: a definition alone does nothing.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-key",
@@ -1594,8 +1979,8 @@
    "state": "functions-1b-key",
    "concept": "Stairs, stairs, stairs",
    "alt": "Three gem steps climb like stairs to the flag, and Bolt's program tray is empty: climbing all three the long way takes a lot of blocks.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-my-block",
@@ -1605,8 +1990,8 @@
    "state": "functions-1b-my-block",
    "concept": "Make your own block",
    "alt": "The My Block named Stair is built in the tray: move, pick up, turn right, move, turn left: one named packet of blocks.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-remix-credit",
@@ -1616,8 +2001,8 @@
    "state": "functions-1b-remix-credit",
    "concept": "Notes and credit",
    "alt": "Two My Blocks named Zig sit in the tray, and the second carries a based-on Starter blocks stamp: a remix keeps its credit.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-1b-three-stairs",
@@ -1627,8 +2012,8 @@
    "state": "functions-1b-three-stairs",
    "concept": "Call it three times",
    "alt": "The Stair block is defined once, then called three times in a row at the bottom of the tray: call Stair, call Stair, call Stair.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-key",
@@ -1638,8 +2023,8 @@
    "state": "functions-2-key",
    "concept": "Blocks built by others",
    "alt": "The team's My Block Zigzag (n) heads the program, with its note: By the Robo Route team. It climbs the zigzag staircase on the board.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-notes-credit",
@@ -1649,8 +2034,8 @@
    "state": "functions-2-notes-credit",
    "concept": "Notes and credit (Pro)",
    "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-parameter",
@@ -1660,8 +2045,8 @@
    "state": "functions-2-parameter",
    "concept": "A block with a number slot",
    "alt": "My Block Dash (n) repeats n moves, and the calls underneath feed it different numbers: call Dash (7), (6), (5), (4), (3).",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-subgoals",
@@ -1671,8 +2056,8 @@
    "state": "functions-2-subgoals",
    "concept": "One block per job",
    "alt": "Three named My Blocks split the job: GetGems, Climb and Cross, each defined in the tray and called in turn below.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/functions-2-three-rooms",
@@ -1682,8 +2067,8 @@
    "state": "functions-2-three-rooms",
    "concept": "Worked example: three rooms, one block",
    "alt": "Room (steps) is defined once with steps inside it, then called three ways: call Room (1), call Room (3), call Room (2).",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-five-moves",
@@ -1693,8 +2078,8 @@
    "state": "loops-1b-five-moves",
    "concept": "Loops save work",
    "alt": "Five separate move blocks stacked in the tray do the same job as one repeat block, but take five times the room.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-repeat-bracket",
@@ -1704,8 +2089,8 @@
    "state": "loops-1b-repeat-bracket",
    "concept": "The repeat bracket",
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-repeat-number",
@@ -1714,9 +2099,9 @@
    "band": "1b",
    "state": "loops-1b-repeat-number",
    "concept": "The number matters",
-   "alt": "A repeat 3 times bracket holds two move blocks, so Bolt drives six squares in all: the number times the blocks inside.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "A repeat 2 times bracket holds move, move, pick up, and one more move follows it: Bolt drives five squares and picks up both gems.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-1b-turn-inside",
@@ -1726,8 +2111,8 @@
    "state": "loops-1b-turn-inside",
    "concept": "Any block can go inside",
    "alt": "The repeat bracket holds turn right instead of move, so Bolt would spin on one square instead of driving anywhere.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-key",
@@ -1737,8 +2122,8 @@
    "state": "loops-2-key",
    "concept": "Loops save work (Pro board)",
    "alt": "A repeat 7 times block with one move inside crosses Bolt's whole row; written out longhand it would take seven blocks.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-nested",
@@ -1748,8 +2133,8 @@
    "state": "loops-2-nested",
    "concept": "A loop inside a loop",
    "alt": "A repeat 3 times bracket holds a second repeat 3 times bracket with move inside it, then turn right: a loop in a loop.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-predict",
@@ -1759,8 +2144,8 @@
    "state": "loops-2-predict",
    "concept": "Predict the count",
    "alt": "A nested repeat program next to a staircase of gems: repeat 3 times outside, repeat 2 times with move and pick up inside.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/loops-2-staircase",
@@ -1770,8 +2155,8 @@
    "state": "loops-2-staircase",
    "concept": "Nested loops climb stairs",
    "alt": "The nested-loop program beside a walled staircase board: the inner repeat climbs, the turn starts the next step up.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-built",
@@ -1780,9 +2165,9 @@
    "band": "1b",
    "state": "maker-1b-built",
    "concept": "The maker loop: Check proves a level can be solved and shows its par",
-   "alt": "A level built in the maker: walls, start, goal, key and door placed on the board, with Check run on the design.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "A level built in the maker: Bolt, a gem, a key, a door and the goal on the board, and Check says it can be solved: par 17.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-key",
@@ -1791,9 +2176,9 @@
    "band": "1b",
    "state": "maker-1b-key",
    "concept": "Be the game designer: plan, build, test, fix, explain",
-   "alt": "The Level Maker canvas with its first task: an empty board, the building tools, and Bolt waiting to be placed.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-task",
@@ -1803,8 +2188,8 @@
    "state": "maker-1b-task",
    "concept": "Plan it first: start, goal and one tricky part",
    "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-1b-test",
@@ -1813,9 +2198,9 @@
    "band": "1b",
    "state": "maker-1b-test",
    "concept": "The designer stays quiet: a tester plays while the designer watches",
-   "alt": "The built level handed to a tester: Bolt plays the design while its maker watches without helping.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The built level handed to a tester: the tester builds a program and Bolt drives it, while the maker watches without helping.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-built",
@@ -1824,9 +2209,9 @@
    "band": "2",
    "state": "maker-2-built",
    "concept": "Iterate: plan, build, Check, test, change, test again",
-   "alt": "A Pro maker level built and checked: the board holds a full design and Check has judged whether it can be solved.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "A Pro maker level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-feedback",
@@ -1835,9 +2220,9 @@
    "band": "2",
    "state": "maker-2-feedback",
    "concept": "Feedback is information: it shows where a player got stuck",
-   "alt": "After the test play, the maker rates the level: the feedback card records how fun and how hard the tester found it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-key",
@@ -1846,9 +2231,9 @@
    "band": "2",
    "state": "maker-2-key",
    "concept": "Design for someone else: plan, build, test, improve, document",
-   "alt": "The Pro Level Maker opens its first task: a blank canvas and the tools to build a level for someone else.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/maker-2-task",
@@ -1858,8 +2243,8 @@
    "state": "maker-2-task",
    "concept": "Keep a timeline: split the work and set times",
    "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-better-route",
@@ -1869,8 +2254,8 @@
    "state": "sequences-1b-better-route",
    "concept": "Pick the better route",
    "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-key",
@@ -1880,8 +2265,8 @@
    "state": "sequences-1b-key",
    "concept": "Meet Bolt: a program is a list of steps",
    "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-program-order",
@@ -1891,8 +2276,8 @@
    "state": "sequences-1b-program-order",
    "concept": "Steps run in order, first to last",
    "alt": "Bolt's program tray holds four move blocks stacked in order, matching the four dotted squares between Bolt and the flag.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-turn-in-place",
@@ -1902,8 +2287,8 @@
    "state": "sequences-1b-turn-in-place",
    "concept": "A turn spins Bolt in its square",
    "alt": "Bolt has driven four squares, then turned left in the same square to face the flag; the turn block is lit in the tray.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-1b-turn-then-move",
@@ -1912,9 +2297,9 @@
    "band": "1b",
    "state": "sequences-1b-turn-then-move",
    "concept": "Worked example: turn right, move, move",
-   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom right, and a tray that starts turn right, move, move.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "Bolt at the top left, facing along the top row, the flag at the bottom, and a program: turn right, four moves, turn left, three moves.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-compare-routes",
@@ -1924,8 +2309,8 @@
    "state": "sequences-2-compare-routes",
    "concept": "Compare routes",
    "alt": "A walled maze with two ways around the walls to the flag, one shorter than the other.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-key",
@@ -1935,8 +2320,8 @@
    "state": "sequences-2-key",
    "concept": "Plan before you build",
    "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-plan-lines",
@@ -1946,8 +2331,8 @@
    "state": "sequences-2-plan-lines",
    "concept": "A plan is the steps in plain words",
    "alt": "A plan card lists three plain-language plan lines for the level, waiting to be tapped into the order Bolt should do them.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/sequences-2-plan-to-blocks",
@@ -1957,8 +2342,8 @@
    "state": "sequences-2-plan-to-blocks",
    "concept": "Turn each plan line into blocks",
    "alt": "The finished program for the plan level fills the tray: twenty-one blocks that follow the plan lines in order.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-counting-gems",
@@ -1968,8 +2353,8 @@
    "state": "variables-1b-counting-gems",
    "concept": "Worked example: counting gems",
    "alt": "Halfway up the gem column, Bolt's counter pill reads count = 2: two gems picked up, two counted, and the change block is lit.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-key",
@@ -1979,8 +2364,8 @@
    "state": "variables-1b-key",
    "concept": "The counting door",
    "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-named-box",
@@ -1990,8 +2375,8 @@
    "state": "variables-1b-named-box",
    "concept": "A named box",
    "alt": "The program names its box: set count to 0, then repeat 5 times move, pick up, and change count by 1, beside the gem column.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-1b-set-change",
@@ -2001,8 +2386,8 @@
    "state": "variables-1b-set-change",
    "concept": "Set and change",
    "alt": "Bolt stands by the door with the counter strip reading steps = 2: set steps to 4 started it, and change steps by -1 ticks it down.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-key",
@@ -2012,8 +2397,8 @@
    "state": "variables-2-key",
    "concept": "Hold a value (the starter names it x)",
    "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-names",
@@ -2023,8 +2408,8 @@
    "state": "variables-2-names",
    "concept": "Names are for people",
    "alt": "The same counting program with the box named count: set count to 0 and change count by 1 read like a sentence.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-types",
@@ -2034,8 +2419,8 @@
    "state": "variables-2-types",
    "concept": "Kinds of values",
    "alt": "A flag variable in the tray: set hasKey to Off at the start, and set hasKey to On inside the if block that picks the key up.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
    "key": "csq/robo-route/variables-2-watch-value",
@@ -2044,31 +2429,614 @@
    "band": "2",
    "state": "variables-2-watch-value",
    "concept": "Watch the value",
-   "alt": "The watch strip reads steps = 4 after two changes: the plan set steps to 6, and each change steps by -1 brings it down.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "alt": "Two rounds into repeat 6, the watch strip reads steps = 4: set steps to 6 started it, and each change steps by -1 brings it down.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
   },
   {
-   "key": "csq/trick-inbox/boss-1b",
+   "key": "csq/trick-inbox/boss-1b-c1",
    "game": "trick-inbox",
    "chapter": "boss",
    "band": "1b",
-   "state": "boss-1b",
-   "concept": "the boss round, first message",
-   "alt": "Trick Inbox, the Boss Round: a mean game-chat message waits in the inbox, one clue found in green and one still hiding.",
-   "capturedAt": "2026-11-04",
-   "commit": "c6b79da"
+   "state": "boss-1b-c1",
+   "concept": "the boss round",
+   "alt": "Trick Inbox, the Boss Round: a stranger's game chat waits in the inbox, one clue found in green and one still hiding.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/boss-2",
+   "key": "csq/trick-inbox/chat-1b-ch-1-all",
    "game": "trick-inbox",
-   "chapter": "boss",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-1-all",
+   "concept": "a stranger in game chat",
+   "alt": "Game chat from a player nobody knows: keep our chat secret from your parents, and a plan to meet. Both clues found.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-1-debrief",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-1-debrief",
+   "concept": "show Pim, the debrief",
+   "alt": "The stranger's chat, shown to Pim: chat is for people you know in real life, so show a trusted adult.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-2-debrief",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-2-debrief",
+   "concept": "safe to deliver",
+   "alt": "Mia's message, delivered: safe, because Mia is someone you know in real life and she asks for nothing.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-2-new",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-2-new",
+   "concept": "a kind chat from a classmate",
+   "alt": "Game chat from Mia from Class: great game, your tower was amazing, see you at school tomorrow.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-3-all",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-3-all",
+   "concept": "a mean message",
+   "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-3-debrief",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-3-debrief",
+   "concept": "the mean message, the debrief",
+   "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-4-all",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-4-all",
+   "concept": "a free gift and a secret",
+   "alt": "Game chat from NewFriend: a rare game skin, free, if you keep it our secret and send your game key.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-4-decide",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-4-decide",
+   "concept": "choosing the move in chat",
+   "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-6-all",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-6-all",
+   "concept": "a quiz that collects private facts",
+   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-1-debrief",
+   "game": "trick-inbox",
+   "chapter": "chat",
    "band": "2",
-   "state": "boss-2",
-   "concept": "the boss round, first message (Pro)",
-   "alt": "Trick Inbox, the Boss Round at Pro: a letter claiming an account will be deleted waits in the inbox, one clue found and one still hiding.",
-   "capturedAt": "2026-11-04",
-   "commit": "c6b79da"
+   "state": "chat-2-ch-1-debrief",
+   "concept": "show Pim, the debrief",
+   "alt": "A stranger's game chat, shown to Pim: someone who asks for secrets from adults and wants to meet is the biggest red flag.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-3-all",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "2",
+   "state": "chat-2-ch-3-all",
+   "concept": "a mean message with an audience",
+   "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-3-debrief",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "2",
+   "state": "chat-2-ch-3-debrief",
+   "concept": "the bystander move",
+   "alt": "The mean message, reported: do not join in, never pass it on, and a kind word to Pip helps more than any reply.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-4-all",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "2",
+   "state": "chat-2-ch-4-all",
+   "concept": "an online-only friend",
+   "alt": "Game chat from NewFriend: you seem nice, a rare game skin for free, just keep this our secret.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-4-decide",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "2",
+   "state": "chat-2-ch-4-decide",
+   "concept": "leaving is a move",
+   "alt": "NewFriend's chat with both clues found, and the four moves below: Deliver, Bin it, Show Pim, Report and block.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-6-all",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "2",
+   "state": "chat-2-ch-6-all",
+   "concept": "friendly questions that collect facts",
+   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-7-all",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "2",
+   "state": "chat-2-ch-7-all",
+   "concept": "a group chat dare",
+   "alt": "Group chat: everyone is doing it, post the photo or you are out, and do not show any adult this chat.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/chat-2-ch-7-debrief",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "2",
+   "state": "chat-2-ch-7-debrief",
+   "concept": "pressure, the debrief",
+   "alt": "The group chat dare, reported: pressure dressed up as friendship, and leaving a chat like that is a strength.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-1-all",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-1-all",
+   "concept": "the prize letter, every clue found",
+   "alt": "The tablet letter with all three clues found: you are our lucky winner, mailbox key, in the next ten minutes.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-1-decide",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-1-decide",
+   "concept": "choosing the move",
+   "alt": "Every clue found, the four moves wait under the letter: Deliver, Bin it, Show Pim, or Report and block.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-1-f1",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-1-f1",
+   "concept": "the prize letter, one clue found",
+   "alt": "The tablet letter mid-hunt: one clue found, two still hiding, and the button to choose what to do.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-1-new",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-1-new",
+   "concept": "a prize letter, before the hunt",
+   "alt": "Trick Inbox, Prize Letters: a letter from the Prize Team says you won a tablet. Its three clues are still hiding.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-3-all",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-3-all",
+   "concept": "a faked Post Office letter",
+   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-5-all",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-5-all",
+   "concept": "free coins, too good to be true",
+   "alt": "A Game Shop letter offers a thousand free coins, but the offer ends in one hour. Both clues are found.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-5-debrief",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-5-debrief",
+   "concept": "free coins, the debrief",
+   "alt": "The free coins letter, binned: Pim explains it was too good to be true, from the prize-faker.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-2-lt-7-all",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "2",
+   "state": "letters-2-lt-7-all",
+   "concept": "a package you never ordered",
+   "alt": "A Package Service letter: we could not deliver your package, pay a small fee within two hours.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/media-2-md-1-all",
+   "game": "trick-inbox",
+   "chapter": "media",
+   "band": "2",
+   "state": "media-2-md-1-all",
+   "concept": "a hoax that begs to be shared",
+   "alt": "Trick Inbox, Fake or Fact?: a news flash says school closes forever with free candy for a year. Share before they delete this!",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/media-2-md-1-debrief",
+   "game": "trick-inbox",
+   "chapter": "media",
+   "band": "2",
+   "state": "media-2-md-1-debrief",
+   "concept": "the hoax, the debrief",
+   "alt": "The school closing post, binned: real news does not beg to be shared, so check big stories first.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/media-2-md-2-all",
+   "game": "trick-inbox",
+   "chapter": "media",
+   "band": "2",
+   "state": "media-2-md-2-all",
+   "concept": "an ad in a prize costume",
+   "alt": "A Prize Ad says tap to claim your free phone, but only the first fifty people get one.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/media-2-md-3-all",
+   "game": "trick-inbox",
+   "chapter": "media",
+   "band": "2",
+   "state": "media-2-md-3-all",
+   "concept": "an AI fake",
+   "alt": "A video clip shows the mayor singing in a fountain, but his mouth moves after the words end.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/media-2-md-3-debrief",
+   "game": "trick-inbox",
+   "chapter": "media",
+   "band": "2",
+   "state": "media-2-md-3-debrief",
+   "concept": "the AI fake, the debrief",
+   "alt": "The fountain video, shown to Pim: some videos are made by computers to look real. Check a real news page first.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/media-2-md-4-new",
+   "game": "trick-inbox",
+   "chapter": "media",
+   "band": "2",
+   "state": "media-2-md-4-new",
+   "concept": "real news",
+   "alt": "Netville News: the library opens its new reading room on Saturday. Ordinary news, no prizes and no panic.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/media-2-md-5-all",
+   "game": "trick-inbox",
+   "chapter": "media",
+   "band": "2",
+   "state": "media-2-md-5-all",
+   "concept": "a quiz that harvests answers",
+   "alt": "A Which Dragon Are You quiz asks for your first pet, your mother's first name and your birthday.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-1-all",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-1-all",
+   "concept": "a chain letter",
+   "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-1-debrief",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-1-debrief",
+   "concept": "the forwarder",
+   "alt": "The chain letter, binned: the debrief names the forwarder, who wants you to share the trick with everyone.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-3-debrief",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-3-debrief",
+   "concept": "the key-hunter",
+   "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-4-all",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-4-all",
+   "concept": "fake news with candy on top",
+   "alt": "A post from News Flash says school is closing forever with free candy for everyone, and begs you to tell everyone.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-4-debrief",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-4-debrief",
+   "concept": "the giggler",
+   "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-6-all",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-6-all",
+   "concept": "visitor number 1000",
+   "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-6-debrief",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-6-debrief",
+   "concept": "the prize-faker",
+   "alt": "The visitor prize, binned: you did not enter anything, so you cannot have won. The prize-faker sent it.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-2-mx-3-debrief",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "2",
+   "state": "mix-2-mx-3-debrief",
+   "concept": "the account thief",
+   "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-2-mx-4-debrief",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "2",
+   "state": "mix-2-mx-4-debrief",
+   "concept": "the giggler",
+   "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction and a crowd.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-2-mx-6-debrief",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "2",
+   "state": "mix-2-mx-6-debrief",
+   "concept": "the prize-faker",
+   "alt": "The visitor 1000 prize, binned: the debrief names the prize-faker, who wants you to tap and type.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-1-all",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-1-all",
+   "concept": "authority and a rush",
+   "alt": "Trick Inbox, Pressure: a letter says this is the head teacher speaking. Send your key before lunch, no questions.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-1-debrief",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-1-debrief",
+   "concept": "authority, the debrief",
+   "alt": "The head teacher letter, reported: authority is a costume here, and do not ask questions is the loudest clue.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-2-all",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-2-all",
+   "concept": "fear and a countdown",
+   "alt": "A System letter says your account will be deleted in one hour unless you send your key right now.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-3-all",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-3-all",
+   "concept": "flattery from a public profile",
+   "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-3-debrief",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-3-debrief",
+   "concept": "the footprint, the debrief",
+   "alt": "The Fan Club post, binned: everything it knew came from a public profile. Flattery built from your footprint.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-4-all",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-4-all",
+   "concept": "a dare that spends a friend",
+   "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-4-debrief",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-4-debrief",
+   "concept": "the dare, the debrief",
+   "alt": "The Cool Group dare, reported: a dare that spends a friend is never a fair price for a group.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/pressure-2-pr-6-all",
+   "game": "trick-inbox",
+   "chapter": "pressure",
+   "band": "2",
+   "state": "pressure-2-pr-6-all",
+   "concept": "a countdown hook",
+   "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/senders-2-sd-1-all",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-all",
+   "concept": "a faked sender, every clue found",
+   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/senders-2-sd-1-debrief",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-debrief",
+   "concept": "spoofing, the debrief",
+   "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/senders-2-sd-1-new",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-new",
+   "concept": "a faked sender, before the hunt",
+   "alt": "Trick Inbox, Faked Senders: a letter from Post Office says your key expired. Its real address is a freemail box.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/senders-2-sd-3-all",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-3-all",
+   "concept": "a teacher in costume",
+   "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
   },
   {
    "key": "csq/would-you-rather/online-1b-first",

@@ -2318,6 +2318,8 @@
     "course": {
       "right": "答對了！",
       "wrong": "差一點。正確答案是：{answer}",
+      "notQuite": "差一點。",
+      "rightIs": "正確答案是：{answer}",
       "next": "下一題",
       "finish": "看我的分數",
       "listen": "朗讀",
@@ -5991,6 +5993,8 @@
       "done": "完成",
       "next": "下一個",
       "locked": "未解鎖",
+      "preview": "預覽",
+      "lockedNote": "這一步還沒解鎖。請先完成第 {n} 步：",
       "unit": "第 {n} 單元",
       "units": "第 {from}–{to} 單元",
       "build": {
@@ -6000,7 +6004,8 @@
       }
     },
     "groups": {
-      "techChoices": "科技與選擇"
+      "techChoices": "科技與選擇",
+      "start": "從這裡開始"
     },
     "lesson": {
       "of": "第 {n} 步，共 {total} 步",
@@ -6015,7 +6020,9 @@
       "talk": "一起討論",
       "complete": "這一步完成了",
       "playToFinish": "玩過就能完成這一步。",
-      "nextStep": "下一步"
+      "nextStep": "下一步",
+      "wholePicture": "查看完整圖片",
+      "close": "關閉"
     },
     "check": {
       "h": "小測驗",

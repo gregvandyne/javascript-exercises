@@ -11,6 +11,12 @@
    "text": "Netville is a friendly town where the houses are small computers and the roads are wires. Messages zoom from house to house, and everyone talks to everyone.",
    "art": "map",
    "img": "csq/packet-post/packets-1b-key",
+   "view": [
+    6.5,
+    30,
+    48,
+    62
+   ],
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
    "story": {
     "scene": "dim",
@@ -95,6 +101,12 @@
    "text": "Say hello to Bolt. He is waiting at the start of Robo Route, and his first road is ready. Show him what a coder does.",
    "art": "robot",
    "img": "csq/robo-route/sequences-1b-key",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray."
   }
  ],

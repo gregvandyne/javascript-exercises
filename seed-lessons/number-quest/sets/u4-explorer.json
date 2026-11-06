@@ -23,10 +23,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "flipped the fraction: the cutting number goes on the bottom",
-    "counted only one part instead of the three taken",
+    "flipped the fraction upside down",
+    "counted one part instead of three",
     "correct",
-    "named the count of parts with no whole behind it"
+    "counted the parts but forgot the whole"
    ]
   },
   {
@@ -46,9 +46,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "counted the end of the line as a part: the fourth mark is the whole",
-    "placed it by feel: halfway is 2/4, not 3/4",
-    "read the top number as bigger than the whole",
+    "went one mark too far, all the way to 1",
+    "placed it by feel: halfway is only 2/4",
+    "thought 3/4 is bigger than one whole",
     "correct"
    ]
   },
@@ -69,10 +69,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "swapped the jobs: the top number counts what you take",
-    "turned the cutting number into a count of wholes",
+    "swapped the jobs of the top and bottom numbers",
+    "read the bottom number as a count of cakes",
     "correct",
-    "grew the part bigger than the whole it came from"
+    "made a part bigger than its whole"
    ]
   },
   {
@@ -93,9 +93,9 @@
    "answer": 2,
    "misconceptions": [
     "kept the top number and changed the share",
-    "that is a whole one, not a half",
+    "picked a whole instead of a half",
     "correct",
-    "changed both numbers without re-slicing evenly"
+    "changed the numbers without re-slicing evenly"
    ]
   },
   {
@@ -115,9 +115,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "picked the bigger digits: 3 and 8 look bigger than 1 and 2",
-    "stopped at the counts without checking piece sizes",
-    "gave up before using the halfway benchmark",
+    "picked the fraction with bigger digits",
+    "checked the counts but not the piece sizes",
+    "gave up before using the halfway mark",
     "correct"
    ]
   },
@@ -138,10 +138,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "picked the bigger bottom number: fourths are smaller pieces than thirds",
-    "matched the top numbers and stopped: same count, different piece sizes",
+    "thought a bigger bottom number means bigger pieces",
+    "matched the top numbers and stopped",
     "correct",
-    "let the cutting order decide instead of the piece sizes"
+    "let the cutting order decide"
    ]
   },
   {
@@ -161,9 +161,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "added the bottoms too: piece sizes do not add",
-    "dropped the piece size and kept only the count",
-    "added the top number twice instead of the two shares",
+    "added the bottom numbers too",
+    "dropped the piece size",
+    "added 3 eighths twice",
     "correct"
    ]
   },
@@ -184,10 +184,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "the Jumble answer: added the tops and the bottoms",
+    "added the tops and the bottoms",
     "added the tops but never re-sliced the half",
     "correct",
-    "shrunk both shares to the smaller piece count"
+    "shrank both shares into sixths"
    ]
   },
   {
@@ -207,8 +207,8 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "added the tops and the bottoms: the Jumble move",
-    "added the tops and kept one bottom: no re-slicing happened",
+    "added the tops and the bottoms",
+    "added the tops without re-slicing the third",
     "multiplied the bottoms and guessed the top",
     "correct"
    ]

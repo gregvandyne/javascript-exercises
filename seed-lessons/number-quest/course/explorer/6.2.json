@@ -9,7 +9,7 @@
   {
    "title": "Fences and carpets",
    "text": "The yard's oldest argument starts every morning. The fence crew measures around a garden. The carpet crew measures inside it. Both crews are right, and they are never measuring the same thing.",
-   "art": "wrench"
+   "art": "grid"
   },
   {
    "title": "Around: add the sides",
@@ -46,28 +46,28 @@
     {
      "cue": "Start along the long side: 6 meters.",
      "box": [
-      5.8,
-      37.1,
-      26.8,
-      15.5
+      5.6,
+      35.7,
+      27.3,
+      18.4
      ]
     },
     {
      "cue": "The side opposite matches it: another 6 meters.",
      "box": [
-      49.8,
-      37.1,
-      26.8,
-      15.5
+      49.6,
+      35.7,
+      27.3,
+      18.4
      ]
     },
     {
      "cue": "All four sides joined: 6 + 4 + 6 + 4 = 20 meters around.",
      "box": [
-      5.8,
-      27.9,
-      88.4,
-      24.7
+      5,
+      26.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -75,7 +75,7 @@
   {
    "title": "Worked example: carpet the garden",
    "text": "Rough first: the garden holds about twenty squares, so an answer like 10 or 40 smells wrong. Cover it with unit squares: 3 rows of 7. Area counts the covering squares, not the edge.",
-   "art": "gears",
+   "art": "grid",
    "kind": "example",
    "steps": [
     "One row holds 7 squares",
@@ -93,19 +93,19 @@
     {
      "cue": "One row holds 7 squares.",
      "box": [
-      16.9,
-      24.0,
-      66.2,
-      7.7
+      16.1,
+      22.6,
+      67.9,
+      10.6
      ]
     },
     {
      "cue": "Three rows of 7: 3 x 7 = 21 squares cover the garden.",
      "box": [
-      16.9,
-      24.0,
-      66.2,
-      48.0
+      16.1,
+      22.6,
+      67.9,
+      50.8
      ]
     }
    ]
@@ -113,7 +113,7 @@
   {
    "title": "Same fence, new shape",
    "text": "Two gardens can share one fence and hold different carpets. A long thin garden and a square garden can both take 20 meters of fence. The square one always holds more carpet. Test it on grid paper.",
-   "art": "loop"
+   "art": "pixel"
   },
   {
    "title": "Words to know",
@@ -150,7 +150,13 @@
    "art": "trophy",
    "img": "nq/brain-board/around-inside-board",
    "alt": "Brain Board in play: the Around & Inside board, categories Fence it, Carpet it, Count the squares, Missing side and Same fence, a fence question open.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    8.5,
+    26.5,
+    83,
+    41.5
+   ]
   }
  ],
  "check": [

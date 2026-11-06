@@ -9,12 +9,12 @@
   {
    "title": "The timetable wall",
    "text": "The Measure Shop keeps every bus, train and lesson on one big timetable wall. Tally's rule is painted over it: a time tells where, but a duration tells how long.",
-   "art": "map"
+   "art": "clock"
   },
   {
    "title": "Elapsed time is a distance",
    "text": "The time between two clock times is a distance on the line. From 9:00 to 9:30 is one hop of 30 minutes. Hop the whole hours first, then the minutes left over.",
-   "art": "loop",
+   "art": "clock",
    "visual": {
     "type": "numberline",
     "label": "One hour drawn as a number line from 9:00 to 10:00, with a 30 minute hop and a 15 minute hop",
@@ -59,28 +59,28 @@
     {
      "cue": "The long hop: 30 minutes from 9:00 to 9:30.",
      "box": [
-      5.8,
-      24.4,
-      44.4,
-      36.2
+      5,
+      23.2,
+      46.1,
+      38.9
      ]
     },
     {
      "cue": "Half past nine sits halfway along the hour.",
      "box": [
-      45.8,
-      59.2,
-      8.4,
-      22.6
+      45.1,
+      57.8,
+      9.9,
+      25.5
      ]
     },
     {
      "cue": "A short hop of 15 minutes: a quarter of an hour.",
      "box": [
-      49.8,
-      24.4,
-      22.4,
-      36.2
+      49,
+      23.2,
+      24.1,
+      38.9
      ]
     }
    ]
@@ -88,7 +88,7 @@
   {
    "title": "Worked example: the late bus",
    "text": "Rough first: 35 minutes is a bit more than half an hour, so the bus lands a bit past 10:00. It leaves at 9:25. Hop 35 minutes: 25 minutes reach 9:50, then 10 more cross the hour.",
-   "art": "gears",
+   "art": "clock",
    "kind": "example",
    "steps": [
     "Start at 9:25",
@@ -131,28 +131,28 @@
     {
      "cue": "The start: the bus leaves at 9:25.",
      "box": [
-      19.2,
-      42.8,
-      10.2,
-      25.5
+      18.3,
+      41.4,
+      12.1,
+      28.3
      ]
     },
     {
      "cue": "One hop of 35 minutes carries the whole ride.",
      "box": [
-      24.1,
-      24.4,
-      26.1,
-      36.2
+      18.3,
+      23.2,
+      32.8,
+      46.5
      ]
     },
     {
      "cue": "The landing: 10:00 exactly.",
      "box": [
-      45.0,
-      59.2,
-      10.0,
-      22.6
+      44.3,
+      57.8,
+      11.5,
+      25.5
      ]
     }
    ]
@@ -197,7 +197,13 @@
    "art": "trophy",
    "img": "nq/quest-race/timetable-race",
    "alt": "Quest Race on the island course: a timetable question on screen, four answers to pick from, the runners on the track below.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    20,
+    54,
+    60,
+    44
+   ]
   }
  ],
  "check": [

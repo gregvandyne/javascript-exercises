@@ -10,25 +10,22 @@
    "title": "A drill, like a fire drill",
    "text": "Defenders practice what to do when something online goes wrong, the way schools practice a fire drill. Calm, practiced moves beat panicked clever ones, every time.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-1b-key",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "img": "csq/escape-the-post-office/moves-1b",
+   "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The first message card, with clues hiding in its text",
+     "cue": "The five moves, like a fire drill",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
-     ]
-    },
-    {
-     "cue": "Practice the moves on cards like this one",
-     "box": [
-      54.0,
-      42.6,
-      34.4,
-      17.4
+      1.5,
+      66.0,
+      97.0,
+      27.6
      ]
     }
    ]
@@ -37,25 +34,31 @@
    "title": "Stop, then save it",
    "text": "Move one is Stop: hands off, do not reply, and do not delete in a panic. Move two is Save it: keep the message or a picture of it, because it is proof of what happened.",
    "art": "envelope",
-   "img": "csq/packet-post/tricks-1b-clues",
-   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+   "img": "csq/escape-the-post-office/moves-1b-two",
+   "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
+   "view": [
+    0.0,
+    33.6,
+    57.9,
+    51.5
+   ],
    "focus": [
     {
-     "cue": "The first clue, marked and found",
+     "cue": "Move one: Stop",
      "box": [
-      54.0,
-      42.6,
-      17.4,
-      8.2
+      2.6,
+      56.0,
+      24.1,
+      6.7
      ]
     },
     {
-     "cue": "Stop: hands off; save it: the letter is the proof",
+     "cue": "Move two: Save it",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      27.5,
+      56.0,
+      27.4,
+      6.7
      ]
     }
    ]
@@ -64,25 +67,22 @@
    "title": "Tell an adult",
    "text": "Move three is Tell an adult: a trusted adult at home or at school. If the first adult does not act, tell another. Telling fast is protection, never shame, and never your fault.",
    "art": "people",
-   "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "img": "csq/escape-the-post-office/moves-1b-four",
+   "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
+   "view": [
+    0.0,
+    23.5,
+    79.7,
+    70.8
+   ],
    "focus": [
     {
-     "cue": "Tell an adult: real messages get read, tricks get told",
+     "cue": "Move three: Tell a trusted adult",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
-     ]
-    },
-    {
-     "cue": "Not every message is a trick: telling sorts them",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      55.7,
+      56.0,
+      21.0,
+      5.8
      ]
     }
    ]
@@ -91,25 +91,22 @@
    "title": "Block or report",
    "text": "Move four is Block or report, using the buttons in the app, always with a trusted adult beside you in real life. Move five is Carry on: the worry is handed over, and you go back to your day.",
    "art": "lock",
-   "img": "csq/packet-post/tricks-1b-card",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "img": "csq/trick-inbox/chat-1b-ch-4-decide",
+   "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
+   "view": [
+    48.0,
+    53.8,
+    52.0,
+    46.2
+   ],
    "focus": [
     {
-     "cue": "The message card to judge, calmly",
+     "cue": "Block or report: a button, pressed with an adult",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
-     ]
-    },
-    {
-     "cue": "Block or report is a button, pressed with an adult",
-     "box": [
-      54.0,
-      58.5,
-      34.4,
-      6.6
+      75.0,
+      73.6,
+      23.5,
+      10.7
      ]
     }
    ]
@@ -128,6 +125,12 @@
    ],
    "img": "csq/packet-post/tricks-1b-coins",
    "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
+   "view": [
+    5.0,
+    3.9,
+    86.4,
+    76.8
+   ],
    "focus": [
     {
      "cue": "The trick card promising free coins today only",
@@ -155,6 +158,12 @@
    "art": "star",
    "img": "csq/packet-post/tricks-1b-next",
    "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "view": [
+    5.0,
+    7.8,
+    86.4,
+    76.8
+   ],
    "focus": [
     {
      "cue": "Speed is protection: a saved message tells fast",
@@ -205,16 +214,22 @@
    "title": "Your mission",
    "text": "Open Trick Inbox and play the Boss Round. Before each message, say the five moves quietly, then choose your response.",
    "art": "trophy",
-   "img": "csq/trick-inbox/boss-1b",
-   "alt": "Trick Inbox, the Boss Round: a mean game-chat message waits in the inbox, one clue found in green and one still hiding.",
+   "img": "csq/trick-inbox/boss-1b-c1",
+   "alt": "Trick Inbox, the Boss Round: a stranger's game chat waits in the inbox, one clue found in green and one still hiding.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "The Boss Round message, with one clue found",
+     "cue": "Play the Boss Round: say the five moves first",
      "box": [
-      15.1,
-      37.8,
-      70.0,
-      16.8
+      1.5,
+      38.7,
+      97.0,
+      33.6
      ]
     }
    ]

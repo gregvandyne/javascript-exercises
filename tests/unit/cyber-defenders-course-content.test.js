@@ -3,8 +3,10 @@
 // Quest's decks. Checked here: the catalogue (units.json) and its standards registry (standards.json), the deck
 // schema (5-7 slides, exactly one worked example, one words slide with the step's four words, the mission last);
 // the quick check is three exit items of the step's own bank file whose cat is one of the step's CYBER.ORG codes;
-// the game module is the one units.json names (a Packet Post chapter with canonical params, or Would You Rather's
-// "online" topic), and the mission names the game and chapter as the game shows them; every slide but the words
+// the game module is the one units.json names (a Packet Post chapter, a Trick Inbox set or an Escape the Post Office
+// practice lock with canonical params, or Would You Rather locked to its "online" topic), the mission names the game and
+// chapter as the game shows them, the trick, chat and kindness units play the course's own games, and no picture is
+// used more than twice per band; a screenshot with focus carries a view (the phone crop) that holds every box; every slide but the words
 // slides is pictured from the shared manifest — CS Quest shots reused where the state matches, plus Cyber's own
 // captures (scripts/cyber-shots-spec.json) — always with the manifest's alt, and guided focus covers every
 // pictured slide in units 1-6 with CS Quest's schema (the intro carries none yet); kid-safe text (the real game
@@ -16,6 +18,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -26,7 +29,7 @@ const { cleanText } = await import('../../server/services/textfilter.js');
 const { cleanOptions } = await import('../../server/services/play-params.js');
 const CSTA = await import('../../server/standards/csta.js');
 
-const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy'];
+const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy', 'ruler', 'clock', 'coins', 'scale', 'cake', 'shapes', 'angle', 'dice', 'cat'];
 const BANDS = ['1b', '2'];
 const UK = /\b(colours?|coloured|colouring|favourites?|grey|labelled|licence|organis(e|ed|ing)|practis(e|ed|ing)|neighbours?|recognis(e|ed|ing)|maths|centre|metres?|behaviours?|honour|catalogue|analys(e|ed|ing)|defence|travelled|modelling|cancelled|jewellery|tyres?|whilst|learnt|spelt|programme)\b/i;
 const BRAND = /\b(Bluetooth|Wi-?Fi|iPad|iPhone|Android|Chromebook|Windows|Google|YouTube|TikTok|Minecraft|Roblox|Fortnite|Lego|Nintendo|Xbox|PlayStation|Alexa|Siri)\b/i;
@@ -40,6 +43,11 @@ const registry = JSON.parse(fs.readFileSync(path.join(CD, 'standards.json'), 'ut
 const UNITS = reg.units;
 const STEPS = UNITS.flatMap(u => u.steps.map(s => ({ ...s, unit: u.n, unitTitle: u.title })));
 const GAME_TITLE = { 'packet-post': 'Packet Post', 'would-you-rather': 'Would You Rather', 'trick-inbox': 'Trick Inbox', 'escape-the-post-office': 'Escape the Post Office' };
+const tiCtx = vm.createContext({});
+for (const m of fs.readFileSync(path.join(ROOT, 'seed-games/trick-inbox.html'), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], tiCtx);
+const epCtx = vm.createContext({});
+for (const m of fs.readFileSync(path.join(ROOT, 'seed-games/escape-the-post-office.html'), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], epCtx);
+const TI_SETS = tiCtx.TrickInbox.SETS, EP_LOCKS = epCtx.EscapePostOffice.LOCKS;
 const ppChapters = JSON.parse(fs.readFileSync(path.join(CS, 'games.json'), 'utf8')).games['packet-post'].chapters;
 const wyrUi = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/would-you-rather/ui.json'), 'utf8')).en;
 const banks = new Map();
@@ -53,7 +61,8 @@ for (const band of BANDS) for (const s of STEPS) {
   const file = path.join(CD, 'course', band, `${s.n}.json`);
   decks.push({ band, step: s, file, deck: fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null });
 }
-const stringsOf = d => [d.title, d.topic, d.talk, ...d.slides.flatMap(sl => [sl.title, sl.text, sl.say, sl.alt, ...(sl.steps || []), ...(sl.focus || []).map(f => f.cue), ...(sl.words || []).flatMap(w => [w.word, w.means])])].filter(s => s != null);
+const slidesOf = d => [...d.slides, ...(d.slides_first_time || [])];
+const stringsOf = d => [d.title, d.topic, d.talk, ...slidesOf(d).flatMap(sl => [sl.title, sl.text, sl.say, sl.alt, ...(sl.steps || []), ...(sl.focus || []).map(f => f.cue), ...(sl.words || []).flatMap(w => [w.word, w.means])])].filter(s => s != null);
 const IMG_KEY = /^csq\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MANIFEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'img', 'csq', 'manifest.json'), 'utf8'));
 const manifestByKey = new Map((MANIFEST.images || []).map(e => [e.key, e]));
@@ -104,7 +113,9 @@ test('20 steps in two bands: 40 deck files, nothing else in the course folder; o
 test('every deck matches the schema: key, n, band, title, topic, minutes, slides, check, game / talk', () => {
   for (const { band, step, deck: d } of decks) {
     const where = `${band}-${step.n}`;
-    const keys = ['key', 'n', 'band', 'title', 'topic', 'minutes', 'slides', 'check', 'game'].concat(!step.game[band] ? ['talk'] : []);
+    // The Pro intro also carries slides_first_time (same schema as slides): the welcome for a kid who never played
+    // Explorer, so it never says "welcome back".
+    const keys = ['key', 'n', 'band', 'title', 'topic', 'minutes', 'slides', ...(band === '2' && step.n === '0.1' ? ['slides_first_time'] : []), 'check', 'game'].concat(!step.game[band] ? ['talk'] : []);
     assert.deepEqual(Object.keys(d), keys, `${where}: fields in order`);
     assert.equal(d.key, `${band}-${step.n}`); assert.equal(d.n, step.n); assert.equal(d.band, band);
     assert.equal(d.title, step.titles[band], `${where}: the catalogue's title for the band`);
@@ -116,8 +127,10 @@ test('every deck matches the schema: key, n, band, title, topic, minutes, slides
 });
 
 test('5-8 slides: one worked example with chips, one words slide with four words, the mission last; art and lengths', () => {
-  for (const { band, step, deck: d } of decks) {
-    const where = `${band}-${step.n}`;
+  for (const { band, step, deck: dd } of decks) for (const variant of ['slides', 'slides_first_time']) {
+    if (!dd[variant]) continue;
+    const d = { ...dd, slides: dd[variant] };
+    const where = `${band}-${step.n}${variant === 'slides' ? '' : ' (first time)'}`;
     assert.ok(Array.isArray(d.slides) && d.slides.length >= 5 && d.slides.length <= 8, `${where}: 5-8 slides (${d.slides.length})`);
     const kinds = d.slides.map(s => s.kind || 'text');
     assert.equal(kinds.filter(k => k === 'example').length, 1, `${where}: one example slide`);
@@ -128,7 +141,7 @@ test('5-8 slides: one worked example with chips, one words slide with four words
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'focus'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'focus'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'focus'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'focus'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'view', 'focus'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'view', 'focus'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'view', 'focus'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'view', 'focus'] }[s.kind || 'text'];
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
@@ -140,6 +153,21 @@ test('5-8 slides: one worked example with chips, one words slide with four words
         assert.ok(entry, `${at}: img ${s.img} is registered in public/img/csq/manifest.json`);
         assert.equal(s.alt, entry.alt, `${at}: a reused shot keeps the manifest's alt, verbatim`);
         assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${s.img}.webp`)), `${at}: public/img/${s.img}.webp exists`);
+      }
+      if (s.view != null) {
+        // Picture crop (the engine shows only this region, % of the original screenshot; boxes stay in original %).
+        assert.ok(s.img && !s.img.startsWith('csq/chars/'), `${at}: a view crops a screenshot`);
+        assert.ok(Array.isArray(s.view) && s.view.length === 4 && s.view.every(v => typeof v === 'number' && Number.isFinite(v)), `${at}: view is 4 numbers`);
+        const [vx, vy, vw, vh] = s.view;
+        assert.ok(vx >= 0 && vy >= 0 && vx + vw <= 100.05 && vy + vh <= 100.05 && vw >= 25 && vh >= 15, `${at}: view inside the picture and not a sliver (${s.view})`);
+        const aspect = (vw * 1280) / (vh * 720);
+        assert.ok(aspect >= 1.1 && aspect <= 2.5, `${at}: view keeps a picture-like shape (${aspect.toFixed(2)})`);
+        for (const f of s.focus || []) {
+          const [x, y, w, h] = f.box;
+          assert.ok(x >= vx - 0.05 && y >= vy - 0.05 && x + w <= vx + vw + 0.05 && y + h <= vy + vh + 0.05, `${at}: focus "${f.cue}" sits inside the view`);
+        }
+      } else if (s.img && !s.img.startsWith('csq/chars/') && s.focus) {
+        assert.fail(`${at}: a screenshot with focus carries a view, so the part it names is legible on a phone`);
       }
       if (s.focus != null) {
         // Guided focus: animation steps over the slide's picture, same schema as CS Quest's (cleanSlide's rules).
@@ -153,7 +181,7 @@ test('5-8 slides: one worked example with chips, one words slide with four words
           const [x, y, w, h] = f.box;
           assert.ok(x >= 0 && y >= 0 && w >= 2 && h >= 2 && x + w <= 100 && y + h <= 100, `${fat}: box inside the frame, at least 2% wide/tall`);
           if (f.path != null) {
-            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 8, `${fat}: path of 2-8 points`);
+            assert.ok(Array.isArray(f.path) && f.path.length >= 2 && f.path.length <= 16, `${fat}: path of 2-16 points`);
             for (const p of f.path) assert.ok(Array.isArray(p) && p.length === 2 && p.every(v => typeof v === 'number' && v >= 0 && v <= 100), `${fat}: path points in % inside the frame`);
           }
         }
@@ -216,7 +244,7 @@ test('the quick check is the step own three bank items, each tagged with one of 
   }
 });
 
-test('the game module is the catalogue game: a real Packet Post chapter with canonical params, or the WYR online topic', () => {
+test('the game module is the catalogue game: a real Packet Post chapter, Trick Inbox set or escape lock with canonical params, or the locked WYR online topic', () => {
   for (const { band, step, deck: d } of decks) {
     const where = `${band}-${step.n}`;
     const spec = step.game[band];
@@ -232,9 +260,50 @@ test('the game module is the catalogue game: a real Packet Post chapter with can
       assert.ok(ch, `${where}: ${spec.chapter} is a Packet Post chapter for the band`);
       assert.equal(ch.title, spec.chapterTitle, `${where}: ${spec.chapterTitle} is the game's own chapter name`);
     } else if (spec.slug === 'would-you-rather') {
-      assert.equal(spec.params, '', `${where}: the solo game takes no lesson params`);
+      // The topic lock (contract 2): the game opens straight on the online topic, no topic picker.
+      assert.equal(spec.params, 'topic=online&lock=1', `${where}: the module locks Would You Rather to its online topic`);
+      assert.equal(spec.chapter, 'online');
       assert.equal(wyrUi['cat.online'], spec.chapterTitle, `${where}: the chapter is the game's own online topic name`);
+    } else if (spec.slug === 'trick-inbox') {
+      const set = TI_SETS.find(x => x.id === spec.chapter);
+      assert.ok(set && set.bands.includes(band), `${where}: ${spec.chapter} is a Trick Inbox set for the band`);
+      assert.equal(set.title, spec.chapterTitle, `${where}: the game's own set name`);
+      assert.equal(spec.params, `chapter=${spec.chapter}&band=${band}&lock=1`, `${where}: canonical lesson params`);
+    } else {
+      assert.equal(spec.slug, 'escape-the-post-office');
+      assert.equal(spec.params, `chapter=${spec.chapter}&band=${band}&lock=1`, `${where}: canonical lesson params`);
+      if (spec.chapter === 'escape') assert.equal(spec.chapterTitle, 'Escape the Post Office');
+      else {
+        const lock = EP_LOCKS.find(l => l.id === spec.chapter);
+        assert.ok(lock, `${where}: ${spec.chapter} is one of the escape room's locks (a practice lock)`);
+        assert.equal(spec.chapterTitle, `Lock ${lock.n}: ${lock.name}`, `${where}: the lock as the game names it`);
+      }
     }
+  }
+});
+
+test('course design: each unit plays the game that teaches it, and no step repeats its neighbor\'s module', () => {
+  // Packet Post carries the network, key and cipher units; the trick, chat and kindness units play Trick Inbox
+  // rounds and Escape the Post Office's practice locks; Would You Rather (topic-locked) carries the privacy dilemmas.
+  for (const band of BANDS) {
+    const mods = STEPS.filter(s => s.game[band]).map(s => ({ n: s.n, unit: s.unit, ...s.game[band] }));
+    for (const m of mods) {
+      if (m.unit <= 2) assert.equal(m.slug, 'packet-post', `${band}-${m.n}: units 1-2 play Packet Post`);
+      if (m.unit >= 4) assert.ok(['trick-inbox', 'escape-the-post-office', 'would-you-rather'].includes(m.slug), `${band}-${m.n}: units 4-6 play Cyber Defenders' own games`);
+    }
+    const counts = mods.reduce((a, m) => ({ ...a, [m.slug]: (a[m.slug] || 0) + 1 }), {});
+    assert.ok((counts['trick-inbox'] || 0) + (counts['escape-the-post-office'] || 0) >= 8, `${band}: the course's own games carry at least 8 modules (${JSON.stringify(counts)})`);
+    assert.ok((counts['packet-post'] || 0) <= 6, `${band}: Packet Post only for units 1-2`);
+    const key = n => { const m = mods.find(x => x.n === n); return m ? `${m.slug}?${m.params}` : null; };
+    assert.equal(new Set(['4.3', '5.1', '5.2'].map(key)).size, 3, `${band}: steps 4.3, 5.1 and 5.2 open three different modules`);
+  }
+});
+
+test('pictures: at most two uses of the same picture per band', () => {
+  for (const band of BANDS) {
+    const uses = new Map();
+    for (const { deck: d } of decks.filter(x => x.band === band)) for (const s of d.slides) if (s.img) uses.set(s.img, (uses.get(s.img) || 0) + 1);
+    for (const [img, n] of uses) assert.ok(n <= 2, `${band}: ${img} is used ${n} times`);
   }
 });
 
@@ -294,7 +363,7 @@ test('guided focus geometry: the reported slide and the shared road maps cover t
   // diagram must cover its own capture's diagram.
   const roadAt = [
     [ '1b', '1.2', 0, 0, [11.1, 48.6, 50.2, 71.2] ], [ '1b', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
-    [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ], [ '2', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
+    [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ], [ '2', '1.2', 6, 0, [9.8, 46.9, 49.5, 70.3] ],
   ];
   for (const [band, n, si, fi, extent] of roadAt) {
     const s = deck(band, n).slides[si];

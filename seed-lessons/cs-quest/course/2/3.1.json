@@ -11,6 +11,12 @@
    "text": "People make typos, answer twice or write numbers that can not be true. Chart messy data and the chart tells the wrong story.",
    "art": "magnifier",
    "img": "csq/data-detective/cleanup-2-key",
+   "view": [
+    0.8,
+    9,
+    54,
+    76
+   ],
    "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings."
   },
   {
@@ -18,6 +24,12 @@
    "text": "Fix typos, merge true repeats and remove values that can not be true. Never remove a row just because you do not like its answer.",
    "art": "wrench",
    "img": "csq/data-detective/cleanup-2-edit",
+   "view": [
+    0.8,
+    9,
+    54,
+    64
+   ],
    "alt": "Double Trouble: a second messy case, where the same student answered twice and one row must go."
   },
   {
@@ -32,6 +44,12 @@
     "then chart"
    ],
    "img": "csq/data-detective/cleanup-2-pets",
+   "view": [
+    0.8,
+    9,
+    54,
+    89
+   ],
    "alt": "The cleaned pet chart: the three misspelled dogs are fixed to one spelling, and the Dog bar counts all seven."
   },
   {
@@ -39,13 +57,19 @@
    "text": "Class A: 9 of 20 like chess. Class B: 12 of 40. B has more, but A is 45% and B is 30%. Percent is part divided by whole, times 100.",
    "art": "chart",
    "img": "csq/data-detective/cleanup-2-percent",
+   "view": [
+    0.8,
+    9,
+    54,
+    48
+   ],
    "alt": "Tidy, Then Compare: two cleaned sets side by side, the case where comparing fairly means comparing percents."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "table",
    "words": [
     {
      "word": "clean",
@@ -71,6 +95,12 @@
    "text": "Open Data Detective at Clean-Up Crew and solve all 6 cases. Chart the data as it is first, then clean it and chart it again. What changed?",
    "art": "trophy",
    "img": "csq/data-detective/cleanup-2-key",
+   "view": [
+    0.8,
+    9,
+    54,
+    76
+   ],
    "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings."
   }
  ],

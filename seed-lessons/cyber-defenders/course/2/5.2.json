@@ -10,25 +10,31 @@
    "title": "A pattern with a power gap",
    "text": "Cyberbullying is not one cross message. It is a pattern: repeated harm, aimed at someone who cannot easily make it stop. That power gap is what makes it bullying.",
    "art": "screen",
-   "img": "csq/would-you-rather/online-comments-2",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "img": "csq/trick-inbox/chat-2-ch-3-all",
+   "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
+   "view": [
+    0.0,
+    15.1,
+    95.5,
+    84.9
+   ],
    "focus": [
     {
-     "cue": "A page where anyone can pile in",
+     "cue": "Harm aimed at one player",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      56.4,
+      47.3,
+      7.1
      ]
     },
     {
-     "cue": "Only your class can comment here",
+     "cue": "And an audience to pile in",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      51.8,
+      56.4,
+      40.7,
+      7.1
      ]
     }
    ]
@@ -37,25 +43,31 @@
    "title": "Drama is different",
    "text": "Digital drama is conflict that escalates online: friends fall out, screenshots fly, and an audience piles in. Drama involves equals. Bullying involves a gap, and the response differs.",
    "art": "people",
-   "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "img": "csq/trick-inbox/pressure-2-pr-4-all",
+   "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
+   "view": [
+    0.0,
+    21.1,
+    87.5,
+    77.8
+   ],
    "focus": [
     {
-     "cue": "Delete it, and the drama loses its fuel",
+     "cue": "A group falls out over a dare",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      56.4,
+      55.4,
+      7.1
      ]
     },
     {
-     "cue": "Leave it, and the audience keeps it alive",
+     "cue": "Everyone will laugh: drama with an audience",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      59.9,
+      56.4,
+      24.6,
+      7.1
      ]
     }
    ]
@@ -64,25 +76,22 @@
    "title": "Four roles in the round",
    "text": "Every incident has roles: the target, the actor, the bystanders and the upstander. Most people are bystanders, which is exactly why bystanders decide how these stories end.",
    "art": "people",
-   "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "img": "csq/trick-inbox/chat-2-ch-3-debrief",
+   "alt": "The mean message, reported: do not join in, never pass it on, and a kind word to Pip helps more than any reply.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Your words, inside the chat for now",
+     "cue": "Bystanders decide: never join in, never pass it on",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "A copy outside it, beyond your control",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.4,
+      67.7,
+      93.3,
+      14.9
      ]
     }
    ]
@@ -91,25 +100,22 @@
    "title": "Hate speech: report, don't debate",
    "text": "Hate speech attacks who someone is, and it crosses a line no joke can excuse. The Defender move is never to debate it. Save it, report it, and support the person it targeted.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-2-safe",
-   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+   "img": "csq/trick-inbox/pressure-2-pr-4-debrief",
+   "alt": "The Cool Group dare, reported: a dare that spends a friend is never a fair price for a group.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Evidence first: a message you can save and show",
+     "cue": "Do not debate it: report it",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
-     ]
-    },
-    {
-     "cue": "Read carefully, then report: never debate it",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      3.4,
+      72.8,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -127,9 +133,15 @@
    ],
    "img": "csq/would-you-rather/online-comments-2",
    "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
-     "cue": "Laugh along, and the pile-on grows",
+     "cue": "A page where anyone can pile in",
      "box": [
       7.2,
       17.1,
@@ -138,7 +150,7 @@
      ]
     },
     {
-     "cue": "A kind word to the target changes the ending",
+     "cue": "A page only your class can see",
      "box": [
       51.9,
       17.1,
@@ -152,25 +164,22 @@
    "title": "Evidence, reporting, repair",
    "text": "Keep the evidence, use the report tools, and tell a trusted adult; serious harassment can be a legal matter for adults to handle. If you were the actor: stop, delete, apologize, and accept the consequences.",
    "art": "envelope",
-   "img": "csq/packet-post/tricks-2-learn",
-   "alt": "Spot the trick, Pro style: the lesson card names the levers. Rush, prizes, and asking for your mailbox key.",
+   "img": "csq/escape-the-post-office/moves-2-three",
+   "alt": "Three drill moves in order: stop and disconnect, save the evidence, tell a trusted adult, fast.",
+   "view": [
+    0.0,
+    22.6,
+    87.1,
+    77.4
+   ],
    "focus": [
     {
-     "cue": "Spot the trick: the chapter that trains your eye",
+     "cue": "Keep the evidence, then tell an adult",
      "box": [
-      28.1,
-      16.0,
-      43.8,
-      68.0
-     ]
-    },
-    {
-     "cue": "Rush, prizes, key asks, strangers: the evidence list",
-     "box": [
-      34.7,
-      52.8,
-      30.5,
-      17.8
+      2.6,
+      63.1,
+      81.5,
+      6.7
      ]
     }
    ]
@@ -202,18 +211,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. Your teacher may lead this one; know your school reporting route before you start.",
+   "text": "Open Trick Inbox at Chat Careful and sort all 7 chat messages. Your teacher may lead this one; know your school reporting route before you start.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "img": "csq/trick-inbox/chat-2-ch-1-debrief",
+   "alt": "A stranger's game chat, shown to Pim: someone who asks for secrets from adults and wants to meet is the biggest red flag.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Play Online: share or keep, and judge each pair",
+     "cue": "Play Chat Careful: know your reporting route",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      1.5,
+      64.0,
+      97.0,
+      34.3
      ]
     }
    ]
@@ -225,8 +240,8 @@
   "cd-2-5.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": ""
+  "slug": "trick-inbox",
+  "chapter": "chat",
+  "params": "chapter=chat&band=2&lock=1"
  }
 }

@@ -13,7 +13,7 @@
 // scripts/nq-shots.js); a STORY slide may carry the story stage (slide.story). No other slide carries
 // img or story, and neither ever displaces a drawn diagram or its focus. Unit 4 missions wire to
 // Fraction Factory, which IS present in seed-games (built in parallel): the chapter names in units.json
-// (First Cuts, Re-Slice, Recipe Maths) must be real chapters in the game file.
+// (First Cuts, Re-Slice, Recipe Math) must be real chapters in the game file.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const NQ = path.join(ROOT, 'seed-lessons/number-quest');
-const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy'];
+const ART = ['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy', 'ruler', 'clock', 'coins', 'scale', 'cake', 'shapes', 'angle', 'dice', 'cat'];
 const UK = /\b(colours?|coloured|colouring|favourites?|grey|labelled|licence|organis(e|ed|ing)|practis(e|ed|ing)|neighbours?|recognis(e|ed|ing)|maths|centre|metres?|behaviours?|honour|catalogue|analys(e|ed|ing)|defence|travelled|modelling|cancelled|jewellery|tyres?|whilst|learnt|spelt|programme)\b/i;
 const BRAND = /\b(Bluetooth|Wi-?Fi|iPad|iPhone|Android|Chromebook|Windows|Google|YouTube|TikTok|Minecraft|Roblox|Fortnite|Lego|Nintendo|Xbox|PlayStation|Alexa|Siri|Duolingo)\b/i;
 const BAD = [[/\d{7,}/, 'a 7+ digit run'], [/@/, 'an @'], [/\/\/\w[\w.-]*\.\w{2,}/, 'a //host.tld link'], [/https?:/i, 'a URL scheme'], [/\bwww\./i, 'a www. link'],
@@ -182,7 +182,7 @@ test('kid-safe text: no links, brands, framework names or codes in decks or item
       assert.ok(!BRAND.test(s), `${where}: no brand names: ${s}`);
     }
   };
-  // One exemption, documented: 'Recipe Maths' is the LOCKED chapter title in units.json and in
+  // One exemption, documented: 'Recipe Math' is the LOCKED chapter title in units.json and in
   // Fraction Factory itself - a proper name the mission must quote verbatim, not prose spelling.
   for (const { step, deck: d } of decks) check(stringsOf(d).map(s => s.split(step.game.explorer.chapterTitle).join('CHAPTER')), `explorer-${step.n}`);
   for (const n of ['3.1', '3.2', '3.3', '4.1', '4.2', '4.3']) {
@@ -191,7 +191,7 @@ test('kid-safe text: no links, brands, framework names or codes in decks or item
 });
 
 test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with guided focus on the parts', () => {
-  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles'];
+  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes'];
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     const drawn = d.slides.filter(s => s.visual);

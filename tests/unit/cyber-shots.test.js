@@ -24,6 +24,10 @@ const tiHtml = fs.readFileSync(path.join(ROOT, 'seed-games', 'trick-inbox.html')
 const tiCtx = vm.createContext({});
 for (const m of tiHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], tiCtx);
 const tiSets = tiCtx.TrickInbox.SETS;
+const epCtx = vm.createContext({});
+for (const m of fs.readFileSync(path.join(ROOT, 'seed-games', 'escape-the-post-office.html'), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(m[1], epCtx);
+// Compact captures record the game's real element boxes, which the slide highlights are measured from.
+const rects = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'cyber-shots-rects.json'), 'utf8'));
 const usedByDecks = new Set();
 for (const band of ['1b', '2']) for (const f of fs.readdirSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band))) {
   const deck = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band, f), 'utf8'));
@@ -53,9 +57,11 @@ test('the spec: unique states, real chapters and levels, real online dilemmas', 
       const set = tiSets.find(x => x.id === s.chapter);
       assert.ok(set, `${s.state}: ${s.chapter} is a Trick Inbox set`);
       assert.ok(set.bands.includes(s.band), `${s.state}: the ${s.chapter} set runs for band ${s.band}`);
+      if (s.msg) assert.ok(tiCtx.TrickInbox.round(s.chapter, s.band, 7).some(m => m.id === s.msg), `${s.state}: ${s.msg} is a ${s.chapter} message for band ${s.band}`);
+      if (s.phase) assert.ok(['hunt', 'decide', 'debrief'].includes(s.phase), `${s.state}: a real phase`);
     } else {
       assert.equal(s.game, 'escape-the-post-office');
-      assert.equal(s.chapter, 'escape', `${s.state}: the escape chapter`);
+      assert.ok(s.chapter === 'escape' || epCtx.EscapePostOffice.LOCKS.some(l => l.id === s.chapter), `${s.state}: the escape door or one of its locks`);
     }
   }
 });
@@ -69,5 +75,6 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
     assert.equal(entry.band, s.band, `${key}: manifest band matches the spec`);
     assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${key}.webp`)), `${key}.webp exists`);
     assert.ok(usedByDecks.has(key), `${key} is used by at least one Cyber Defenders slide`);
+    if (s.compact) assert.ok(rects[key] && Object.keys(rects[key]).length >= 4, `${key}: its element boxes are recorded`);
   }
 });

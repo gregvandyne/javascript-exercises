@@ -2332,6 +2332,8 @@
       "right": "Right!",
       "wrong": "Not quite. The right answer is: {answer}",
       "wrongWhy": "Not quite. The right answer is: {answer}. {why}",
+      "notQuite": "Not quite.",
+      "rightIs": "The right answer is: {answer}",
       "next": "Next question",
       "finish": "See my score",
       "listen": "Read aloud",
@@ -4047,11 +4049,11 @@
       }
     },
     "nq": {
-      "title": "Number Quest: maths lessons for grades 3–5, mapped to CCSS-M",
-      "description": "Number Quest is a free maths course for grades 3–5: 23 short steps through the Numberworks, played through Brain Board, Sum Racer, Quest Race, Fraction Factory, Data Detective and Would You Rather, with every step of Units 1–7 and the finale mapped to the Common Core State Standards for Mathematics. One step (7.3, chance language) is flagged enrichment and maps to no standard, and the map says so.",
+      "title": "Number Quest: math lessons for grades 3–5, mapped to CCSS-M",
+      "description": "Number Quest is a free math course for grades 3–5: 23 short steps through the Numberworks, played through Brain Board, Sum Racer, Quest Race, Fraction Factory, Data Detective and Would You Rather, with every step of Units 1–7 and the finale mapped to the Common Core State Standards for Mathematics. One step (7.3, chance language) is flagged enrichment and maps to no standard, and the map says so.",
       "crumb": "Number Quest",
       "kicker": "For teachers · grades 3–5",
-      "h1": "Number Quest: maths with a map you can show anyone",
+      "h1": "Number Quest: math with a map you can show anyone",
       "lead": "A winding path through Netville's Numberworks with Tally the cat: place value, joining and splitting, groups and shares, fractions at the Bakery, measuring at the Measure Shop, shapes at the Building Yard, data at the Fairground, and the Vault of Measures at the street's end. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
       "badges": { "steps": "23 steps", "units": "An intro and 7 units", "games": "Six games", "minutes": "About 10 minutes a step", "free": "Free · no ads" },
       "cta": { "open": "Open the course" },
@@ -4061,8 +4063,8 @@
         "li2": "Every worked example opens with an estimate: the course's “Rough first” habit, so checking whether an answer is the right size becomes reflex.",
         "li3": "Short reading decks, then a three-question check, then the game mission itself. A step counts as finished only when the mission is actually completed, not just opened.",
         "li4": "Tally Marks for doing, never for being first or fastest: checks passed, missions completed, mastery laps and reviews all earn them, and they are never spent or ranked.",
-        "li5": "Mastery laps, honestly labelled: finishing a unit records its Lap 1, and the unit's ring fills. Laps 2 (the same steps with bigger numbers) and 3 (a mixed circuit with a boss round) are designed but still being built, and the course says so wherever they are named, rather than pretending a replay is new content.",
-        "li6": "The full standards map on this page: every step's primary CCSS-M statements, the statements it also covers, and the ones it builds toward, labelled as preparation and never counted as coverage."
+        "li5": "Mastery laps, honestly labeled: finishing a unit records its Lap 1, and the unit's ring fills. Laps 2 (the same steps with bigger numbers) and 3 (a mixed circuit with a boss round) are designed but still being built, and the course says so wherever they are named, rather than pretending a replay is new content.",
+        "li6": "The full standards map on this page: every step's primary CCSS-M statements, the statements it also covers, and the ones it builds toward, labeled as preparation and never counted as coverage."
       },
       "crew": {
         "h": "Six games carry the course",
@@ -4079,7 +4081,7 @@
       "units": { "h": "The intro and seven units", "p": "Twenty-three steps, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done, and the street ends inside Unit 7, at the Vault of Measures finale.", "stamp": "{stamp}" },
       "map": {
         "h": "The standards map",
-        "p": "Every step, mapped. “Primary” is what the step teaches and its check assesses. “Also covers” is practised inside the step but taught as primary elsewhere. “Builds toward” is preparation only: the course names it so you can see the road ahead, and never counts it as coverage. The practice named is the step's Mathematical Practice spotlight.",
+        "p": "Every step, mapped. “Primary” is what the step teaches and its check assesses. “Also covers” is practiced inside the step but taught as primary elsewhere. “Builds toward” is preparation only: the course names it so you can see the road ahead, and never counts it as coverage. The practice named is the step's Mathematical Practice spotlight.",
         "cols": { "step": "Step", "title": "Title", "primary": "Primary (CCSS-M)", "also": "Also covers", "toward": "Builds toward", "mp": "Practice" },
         "codes": "locked CCSS-M statements, Units 1–7 + the finale",
         "statSteps": "steps in the map",
@@ -4097,10 +4099,10 @@
       "print": { "h": "Printed materials", "p": "The standards map and the teacher notes are the printed pack for this course: one map to file with your planning, and one short note per unit to read before the lesson. They print on their own page, without the site around them.", "button": "Print the map and notes" },
       "faq": {
         "h": "Questions teachers ask",
-        "q1": "Do I need to be a maths specialist?",
+        "q1": "Do I need to be a math specialist?",
         "a1": "No. Each step teaches its own idea in plain words before the game, and the teacher note for the unit tells you the habit to open with and the trap to watch for.",
         "q2": "Which standards does it teach?",
-        "a2": "The Common Core State Standards for Mathematics for grades 3–5. Every step of Units 1–7 and the finale lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labelled. One step lists none: 7.3 teaches chance language, which has no standard before grade 6, and it is flagged as enrichment so no one mistakes it for coverage.",
+        "a2": "The Common Core State Standards for Mathematics for grades 3–5. Every step of Units 1–7 and the finale lists its primary statements on this page, with the statements it also covers and the ones it builds toward kept separate and labeled. One step lists none: 7.3 teaches chance language, which has no standard before grade 6, and it is flagged as enrichment so no one mistakes it for coverage.",
         "q3": "How long does a step take?",
         "a3": "About ten minutes: a short deck, a three-question check, and one game chapter. The intro and the seven units make 23 steps, so the course is just under four hours of lessons, and mastery laps stretch it much further for students who finish early.",
         "q4": "What are Tally Marks and laps?",
@@ -6310,7 +6312,7 @@
     },
     "nq": {
       "title": "Number Quest",
-      "sub": "Maths through the Numberworks · grades 3–5",
+      "sub": "Math through the Numberworks · grades 3–5",
       "about": "Walk the Numberworks street with Tally the cat: counting, joining and splitting, groups and shares, and fractions at the Bakery. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
       "teachers": "Every step of Explorer Units 1–4 is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
     },
@@ -6334,6 +6336,8 @@
       "done": "Done",
       "next": "Next",
       "locked": "Locked",
+      "preview": "Preview",
+      "lockedNote": "That step is locked for now. Finish step {n} first:",
       "unit": "Unit {n}",
       "units": "Units {from}–{to}",
       "build": {
@@ -6343,7 +6347,8 @@
       }
     },
     "groups": {
-      "techChoices": "Tech choices"
+      "techChoices": "Tech choices",
+      "start": "Start here"
     },
     "lesson": {
       "of": "Step {n} of {total}",
@@ -6355,6 +6360,8 @@
       "toCheck": "Quick check",
       "listen": "Read aloud",
       "replayFocus": "Replay",
+      "wholePicture": "See the whole picture",
+      "close": "Close",
       "unlocked": "Game module open!",
       "talk": "Talk about it",
       "complete": "Step done",

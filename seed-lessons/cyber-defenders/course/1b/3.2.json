@@ -10,25 +10,31 @@
    "title": "A trail in the snow",
    "text": "Pim walks home through fresh snow. By morning, the whole town can see where she went. Her footprints tell the story of her walk.",
    "art": "map",
-   "img": "csq/would-you-rather/online-photo-1b",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "img": "csq/escape-the-post-office/pim-1b",
+   "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
+   "view": [
+    0.0,
+    46.1,
+    52.0,
+    46.2
+   ],
    "focus": [
     {
-     "cue": "Share one photo with the whole world",
+     "cue": "A trail of small owl prints: Pim's footprint",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      5.9,
+      64.8,
+      25.4,
+      13.3
      ]
     },
     {
-     "cue": "Share ten photos with ten friends",
+     "cue": "The trail tells the story: Netville, today",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      5.9,
+      60.3,
+      25.4,
+      4.4
      ]
     }
    ]
@@ -39,6 +45,12 @@
    "art": "screen",
    "img": "csq/would-you-rather/online-comments-1b",
    "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "A page where anyone can comment",
@@ -73,6 +85,12 @@
    ],
    "img": "csq/would-you-rather/online-delete-1b",
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Delete an old post you are embarrassed by",
@@ -98,25 +116,31 @@
    "title": "Who follows the trail?",
    "text": "Friends follow footprints, but strangers can follow them too. The Magpie loves a clear trail, because it points to shiny secrets. Before you post, picture the whole trail.",
    "art": "people",
-   "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "img": "csq/escape-the-post-office/pim-1b",
+   "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
+   "view": [
+    0.0,
+    40.5,
+    66.9,
+    59.5
+   ],
    "focus": [
     {
-     "cue": "Everyone online can see your drawing",
+     "cue": "This trail is not an owl's: big round prints",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      38.5,
+      64.8,
+      25.4,
+      8.9
      ]
     },
     {
-     "cue": "Only your family can see it",
+     "cue": "And it fishes for a shiny secret",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      38.5,
+      73.7,
+      25.4,
+      8.9
      ]
     }
    ]
@@ -148,18 +172,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Before each choice, picture the footprint it would leave.",
+   "text": "Open Escape the Post Office at Lock 3: Which Pim? Three cards say they are from Pim. Read each trail of footprints and postmarks, then pick the real Pim.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-1b-first",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "img": "csq/escape-the-post-office/pim-1b-pick",
+   "alt": "The real Pim is picked: a Netville postmark, owl footprints, and a request for help in the open.",
+   "view": [
+    0.0,
+    26.9,
+    52.0,
+    73.1
+   ],
    "focus": [
     {
-     "cue": "Play Online: judge each pair",
+     "cue": "Play Which Pim?: read every trail, then pick",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      1.5,
+      36.9,
+      31.7,
+      63.1
      ]
     }
    ]
@@ -171,8 +201,8 @@
   "cd-1b-3.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": ""
+  "slug": "escape-the-post-office",
+  "chapter": "which-pim",
+  "params": "chapter=which-pim&band=1b&lock=1"
  }
 }

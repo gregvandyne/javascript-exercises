@@ -114,7 +114,8 @@ function loadCsq(items) {
         else game = { slug: x.game.slug, chapter: x.game.chapter, chapterTitle: ch.title || x.game.chapter, params: x.game.params || '', title: info.title || x.game.slug };
       }
       const step = fromExtra(key, x, deck, ((x.items || {})[band] || []).map(it => it.id), items, problems[band], game);
-      const full = { ...step, key, n: x.n, unit: x.unit, band, index: -1, game, lesson: null, group: groupOf(x.unit), extra: true };
+      // The intro (pos "first") is the course's own "Start here" group on the map, never a unit's game world.
+      const full = { ...step, key, n: x.n, unit: x.unit, band, index: -1, game, lesson: null, group: x.pos === 'first' ? 'start' : groupOf(x.unit), extra: true };
       if (x.pos === 'first') steps[band].unshift(full);
       else if (typeof x.pos === 'string' && x.pos.startsWith('after-')) {
         const at = steps[band].findIndex(s => s.n === x.pos.slice('after-'.length));
@@ -128,7 +129,8 @@ function loadCsq(items) {
   return { steps, problems };
 }
 
-const ART = new Set(['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy']);
+const ART = new Set(['robot', 'grid', 'loop', 'branch', 'box', 'gears', 'bug', 'map', 'chart', 'table', 'magnifier', 'pencil', 'envelope', 'network', 'lock', 'shield', 'mask', 'key', 'cipher', 'chip', 'battery', 'screen', 'wrench', 'bits', 'pixel', 'people', 'globe', 'lightbulb', 'star', 'trophy',
+  'ruler', 'clock', 'coins', 'scale', 'cake', 'shapes', 'angle', 'dice', 'cat']);
 export const ART_IDS = Object.freeze([...ART]);
 /** The story layer (the course's story & intro pack): the four characters, in course order, and the scenes a
  *  slide's `story` stage can play. Sprites are extracted from the characters' own games (scripts/csq-sprites.js)
@@ -144,6 +146,23 @@ const str = (v, max = 600) => (typeof v === 'string' ? v.trim().slice(0, max) : 
  *  public/img/csq/manifest.json), or "nq/<game>/<state>" -> public/img/nq/<game>/<state>.webp for Number
  *  Quest's own games (see public/img/nq/manifest.json; captures by scripts/nq-shots.js). */
 export const IMG_KEY = /^(?:csq|nq)\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+/** What a slide's crop hides of its own tour: each focus box (and path point) must sit inside the view, since
+ *  the viewer can only draw what it shows (boxes stay in % of the original picture). -> problem strings. */
+export function viewMisses(sl) {
+  if (!sl || !sl.view || !sl.focus) return [];
+  const [vx, vy, vw, vh] = sl.view, out = [];
+  const inside = (x, y) => x >= vx - 0.5 && x <= vx + vw + 0.5 && y >= vy - 0.5 && y <= vy + vh + 0.5;
+  sl.focus.forEach((st, k) => {
+    const [x, y, w, h] = st.box;
+    if (!inside(x, y) || !inside(x + w, y + h)) out.push(`focus step ${k + 1} box [${st.box.join(', ')}] is not inside the view [${sl.view.join(', ')}]`);
+    if (st.path && !st.path.every(p => inside(p[0], p[1]))) out.push(`focus step ${k + 1} path leaves the view [${sl.view.join(', ')}]`);
+  });
+  return out;
+}
+/** The shapes a `shapes` diagram draws. */
+export const SHAPE_KINDS = Object.freeze(['triangle', 'square', 'rectangle', 'pentagon', 'hexagon', 'rhombus', 'parallelogram', 'trapezoid']);
+/** The drawn diagram types a slide's `visual` may be. */
+export const VISUAL_TYPES = Object.freeze(['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes']);
 /** One slide, cleaned: only the fields the viewer draws. */
 function cleanSlide(s) {
   const kind = ['example', 'words', 'mission'].includes(s && s.kind) ? s.kind : 'text';
@@ -153,6 +172,18 @@ function cleanSlide(s) {
   const img = typeof s.img === 'string' ? s.img.trim() : '';
   const alt = str(s.alt, 160);
   if (IMG_KEY.test(img) && alt && alt === (typeof s.alt === 'string' ? s.alt.trim() : '')) { out.img = img; out.alt = alt; }
+  // The picture's crop (the cross-team picture contract): `view` [x, y, w, h] in % of the ORIGINAL 1280x720
+  // screenshot. The viewer shows only that region, scaled to the frame's width (frame aspect = w*1280 : h*720),
+  // and remaps the focus boxes and paths, which stay written in % of the original picture. At least 15% each
+  // way (a smaller region is a blur on a laptop), inside the picture. A malformed view is dropped (the whole
+  // picture shows; fromDeck reports the loss).
+  if (out.img && s.view != null) {
+    const v = s.view, n = x => typeof x === 'number' && Number.isFinite(x);
+    if (Array.isArray(v) && v.length === 4 && v.every(n) && v[0] >= 0 && v[1] >= 0 && v[2] >= 15 && v[3] >= 15
+      && v[0] + v[2] <= 100.001 && v[1] + v[3] <= 100.001) {
+      out.view = v.map(x => Math.round(x * 100) / 100);
+    }
+  }
   // A drawn maths diagram (Number Quest's pictorial step): the slide's own numbers drawn as place-value
   // cards, a number line, a bar model, fraction bars, an array or a tile strip — data the view renders
   // as SVG (views/courses.js visualSvg), in the same frame a picture would fill. Strictly shaped per
@@ -168,10 +199,12 @@ function cleanSlide(s) {
       } else if (v.type === 'numberline' && num(v.min) && num(v.max) && v.min < v.max
         && Array.isArray(v.marks) && v.marks.length <= 6 && v.marks.every(m => m && num(m.at) && m.at >= v.min && m.at <= v.max && str(m.label, 6))
         && (v.point == null || (num(v.point.at) && v.point.at >= v.min && v.point.at <= v.max && str(v.point.label, 6)))
-        && (v.hops == null || (Array.isArray(v.hops) && v.hops.length <= 3 && v.hops.every(h => h && num(h.from) && num(h.to) && h.from >= v.min && h.to <= v.max && str(h.label, 8))))) {
+        && (v.hops == null || (Array.isArray(v.hops) && v.hops.length <= 3 && v.hops.every(h => h && num(h.from) && num(h.to) && h.from >= v.min && h.to <= v.max && str(h.label, 8))))
+        && (v.stacks == null || (Array.isArray(v.stacks) && v.stacks.length <= 12 && v.stacks.every(k => k && num(k.at) && k.at >= v.min && k.at <= v.max && Number.isInteger(k.n) && k.n >= 1 && k.n <= 6)))) {
         vis = { type: 'numberline', label, min: v.min, max: v.max, marks: v.marks.map(m => ({ at: m.at, label: str(m.label, 6) })),
           ...(v.point ? { point: { at: v.point.at, label: str(v.point.label, 6) } } : {}),
-          ...(v.hops ? { hops: v.hops.map(h => ({ from: h.from, to: h.to, label: str(h.label, 8) })) } : {}) };
+          ...(v.hops ? { hops: v.hops.map(h => ({ from: h.from, to: h.to, label: str(h.label, 8) })) } : {}),
+          ...(v.stacks ? { stacks: v.stacks.map(k => ({ at: k.at, n: k.n })) } : {}) };
       } else if (v.type === 'bars' && Array.isArray(v.rows) && v.rows.length >= 1 && v.rows.length <= 3
         && v.rows.every(r => r && str(r.label, 60) && Array.isArray(r.parts) && r.parts.length >= 1 && r.parts.length <= 4
           && r.parts.every(p => p && num(p.w) && p.w > 0 && p.w <= 1 && (p.tone == null || (Number.isInteger(p.tone) && p.tone >= -1 && p.tone <= 3)))
@@ -181,17 +214,24 @@ function cleanSlide(s) {
         && v.rows.every(r => r && str(r.label, 60) && Number.isInteger(r.cuts) && r.cuts >= 2 && r.cuts <= 12 && Number.isInteger(r.shaded) && r.shaded >= 0 && r.shaded <= r.cuts)) {
         vis = { type: 'fraction', label, ...(v.half ? { half: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), cuts: r.cuts, shaded: r.shaded })) };
       } else if (v.type === 'array' && Number.isInteger(v.rows) && v.rows >= 1 && v.rows <= 8 && Number.isInteger(v.cols) && v.cols >= 1 && v.cols <= 10) {
-        vis = { type: 'array', label, rows: v.rows, cols: v.cols, ...(v.extra ? { extra: 1, extraLabel: str(v.extraLabel, 20) } : {}) };
+        vis = { type: 'array', label, rows: v.rows, cols: v.cols, ...(v.extra ? { extra: 1, extraLabel: str(v.extraLabel, 20) } : {}), ...(v.turn && !v.extra ? { turn: true } : {}) };
       } else if (v.type === 'tiles' && Array.isArray(v.values) && v.values.length >= 3 && v.values.length <= 7
-        && v.values.every(x => str(String(x), 10)) && (v.bad == null || (Number.isInteger(v.bad) && v.bad >= 0 && v.bad < v.values.length))) {
-        vis = { type: 'tiles', label, values: v.values.map(x => str(String(x), 10)), ...(v.bad != null ? { bad: v.bad } : {}) };
+        && v.values.every(x => str(String(x), 10))
+        && (v.bad == null || [].concat(v.bad).every(b => Number.isInteger(b) && b >= 0 && b < v.values.length) && [].concat(v.bad).length >= 1)) {
+        // `bad`: one swapped tile's index, or several ([0, 1]: both tiles of a swap marked).
+        vis = { type: 'tiles', label, values: v.values.map(x => str(String(x), 10)), ...(v.bad != null ? { bad: [...new Set([].concat(v.bad))] } : {}) };
+      } else if (v.type === 'shapes' && Array.isArray(v.items) && v.items.length >= 2 && v.items.length <= 4
+        && v.items.every(it => it && SHAPE_KINDS.includes(it.shape) && str(it.name, 14) && (it.corners == null || typeof it.corners === 'boolean'))) {
+        // Real drawn shapes (the geometry steps): each a regular outline with its name under it, and
+        // optional right-angle marks in its corners.
+        vis = { type: 'shapes', label, items: v.items.map(it => ({ shape: it.shape, name: str(it.name, 14), ...(it.corners ? { corners: true } : {}) })) };
       }
     }
     if (vis) out.visual = vis;
   }
   // Guided focus: optional animation steps over the picture (only alongside a valid img or a valid drawn
   // visual). Each step is a short cue (<= 80 chars), a target box in % of the frame (inside it, at least
-  // 2% wide/tall) and an optional dotted path of 2-8 points in %. 1-4 steps. Anything malformed drops the
+  // 2% wide/tall) and an optional dotted path of 2-16 points in %. 1-4 steps. Anything malformed drops the
   // whole focus and the slide keeps its plain picture (fromDeck reports the loss, like a dropped img).
   if ((out.img || out.visual) && Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4) {
     const num = v => typeof v === 'number' && Number.isFinite(v);
@@ -206,7 +246,7 @@ function cleanSlide(s) {
         && b[0] >= 0 && b[1] >= 0 && b[2] >= 2 && b[3] >= 2 && b[0] + b[2] <= 100 && b[1] + b[3] <= 100;
       let path;
       if (st && st.path != null) {
-        if (Array.isArray(st.path) && st.path.length >= 2 && st.path.length <= 8 && st.path.every(p => Array.isArray(p) && p.length === 2 && p.every(pct))) path = st.path.map(p => [r1(p[0]), r1(p[1])]);
+        if (Array.isArray(st.path) && st.path.length >= 2 && st.path.length <= 16 && st.path.every(p => Array.isArray(p) && p.length === 2 && p.every(pct))) path = st.path.map(p => [r1(p[0]), r1(p[1])]);
         else ok = false;
       }
       if (!ok || !cue || cue !== cue.trim() || cue.length > 80 || !boxOk) { ok = false; break; }
@@ -262,9 +302,11 @@ function fromDeck(key, l, d, game, items, problems) {
   for (const [i, s] of (d.slides || []).entries()) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
+    if (s && s.view != null && slides[i].img && !slides[i].view) say(`slide ${i + 1} view was dropped: it needs [x, y, w, h] in % of the picture, inside it, w and h at least 15`);
+    for (const m of viewMisses(slides[i])) say(`slide ${i + 1} ${m}`);
     if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (s && s.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
-    if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (s && s.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-16 points in %`);
     if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
     if (s && s.kind === 'example' && !Array.isArray(s.steps) && !Array.isArray(s.rows) && !Array.isArray(s.table)) say(`slide ${i + 1} example has no steps`);
   }
@@ -297,6 +339,8 @@ function fromExtra(key, x, d, wantIds, items, problems, game) {
   for (const [i, s] of (d.slides || []).entries()) {
     if (!s || !s.title || !s.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(s.art)) say(`slide ${i + 1} art ${JSON.stringify(s.art)} is not a known art id`);
+    if (s && s.view != null && slides[i].img && !slides[i].view) say(`slide ${i + 1} view was dropped: it needs [x, y, w, h] in % of the picture, inside it, w and h at least 15`);
+    for (const m of viewMisses(slides[i])) say(`slide ${i + 1} ${m}`);
     if (s && s.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(s.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (s && s.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
     if (s && s.story != null && !slides[i].story) say(`slide ${i + 1} story was dropped: it needs a known scene, a lit count of 0-4, up to 4 known character ids in chars, and out/in/fly naming known characters`);
@@ -375,9 +419,11 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
   for (const [i, sl] of (d.slides || []).entries()) {
     if (!sl || !sl.title || !sl.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(sl.art)) say(`slide ${i + 1} art ${JSON.stringify(sl.art)} is not a known art id`);
+    if (sl && sl.view != null && slides[i].img && !slides[i].view) say(`slide ${i + 1} view was dropped: it needs [x, y, w, h] in % of the picture, inside it, w and h at least 15`);
+    for (const m of viewMisses(slides[i])) say(`slide ${i + 1} ${m}`);
     if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: it needs a csq/<game>/<state> or nq/<game>/<state> key and an alt of 1-160 chars`);
     if (sl && sl.visual != null && !slides[i].visual) say(`slide ${i + 1} visual was dropped: it needs a known type, a label of 1-160 chars and the type's own well-formed data`);
-    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-16 points in %`);
     if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
@@ -386,7 +432,19 @@ function fromCyberDeck(key, s, band, d, game, items, problems) {
   const got = d.game ? { slug: d.game.slug, chapter: d.game.chapter, params: d.game.params } : null;
   if (JSON.stringify(want) !== JSON.stringify(got)) say(`game ${JSON.stringify(d.game)} does not match units.json (${JSON.stringify(want)})`);
   if (!game && !str(d.talk)) say('a step without a game needs "talk"');
-  return { title: str(d.title, 80) || (s.titles || {})[band] || s.n, topic: str(d.topic, 40) || (s.shorts || {})[band] || '', minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
+  // An optional alternate deck for a kid meeting the course for the first time in this band (the Pro
+  // welcome, 2-0.1: "a year has passed" only reads right to a kid who walked Explorer). `slides_first_time`
+  // follows the same slide rules as `slides` (same count, one example, one words slide, mission last) and
+  // is shown instead of `slides` when the kid has finished no step of the other band (slidesFor below).
+  let first = null;
+  if (d.slides_first_time != null) {
+    const alt = Array.isArray(d.slides_first_time) ? d.slides_first_time.filter(x => x && typeof x === 'object').map(cleanSlide) : [];
+    const bad = alt.length < 5 || alt.length > 8 || alt.filter(x => x.kind === 'example').length !== 1 || alt.filter(x => x.kind === 'words').length !== 1
+      || alt[alt.length - 1].kind !== 'mission' || d.slides_first_time.some(x => !x || !x.title || !x.text || !ART.has(x.art));
+    if (bad) say('slides_first_time needs 5-8 slides with a title, text and known art each, exactly one example and one words slide, and the mission last');
+    else first = alt;
+  }
+  return { title: str(d.title, 80) || (s.titles || {})[band] || s.n, topic: str(d.topic, 40) || (s.shorts || {})[band] || '', minutes: +d.minutes || 6, slides, ...(first ? { slidesFirstTime: first } : {}), check, talk: str(d.talk, 400), deck: true };
 }
 
 /** Number Quest: a third, deck-native course on the same machinery, with one difference of shape — a single
@@ -438,8 +496,10 @@ function fromNqDeck(key, s, d, game, items, problems) {
   for (const [i, sl] of (d.slides || []).entries()) {
     if (!sl || !sl.title || !sl.text) say(`slide ${i + 1} has no title or text`);
     else if (!ART.has(sl.art)) say(`slide ${i + 1} art ${JSON.stringify(sl.art)} is not a known art id`);
+    if (sl && sl.view != null && slides[i].img && !slides[i].view) say(`slide ${i + 1} view was dropped: it needs [x, y, w, h] in % of the picture, inside it, w and h at least 15`);
+    for (const m of viewMisses(slides[i])) say(`slide ${i + 1} ${m}`);
     if (sl && sl.img != null && !slides[i].img) say(`slide ${i + 1} img ${JSON.stringify(sl.img)} was dropped: Number Quest decks carry no character art until a sprite is extracted from its own game`);
-    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-8 points in %`);
+    if (sl && sl.focus != null && !slides[i].focus) say(`slide ${i + 1} focus was dropped: it needs a valid img or drawn visual and 1-4 steps, each a cue of 1-80 chars, a box [x, y, w, h] in % inside the frame (w, h >= 2), and an optional path of 2-16 points in %`);
     if (sl && sl.kind === 'example' && !Array.isArray(sl.steps) && !Array.isArray(sl.rows) && !Array.isArray(sl.table)) say(`slide ${i + 1} example has no steps`);
   }
   if (!check.length) say(`check ${JSON.stringify(d.check)} is not 3 known item ids`);
@@ -451,15 +511,18 @@ function fromNqDeck(key, s, d, game, items, problems) {
   return { title: str(d.title, 80) || (s.titles || {}).explorer || s.n, topic: str(d.topic, 40) || (s.shorts || {}).explorer || '', minutes: +d.minutes || 6, slides, check, talk: str(d.talk, 400), deck: true };
 }
 
-/** The unit groups on the course map, each headed by its game (unit 6 by its theme). */
+/** The unit groups on the course map, each headed by its game (unit 6 by its theme), after the course's own
+ *  "Start here" group (the intro step, course-only: it belongs to no game world). Every header carries one
+ *  emoji tile (the map draws one icon style for every unit header, in every course). */
 export const GROUPS = Object.freeze([
-  { id: 'robo-route', units: [1, 2], game: 'robo-route' },
-  { id: 'data-detective', units: [3], game: 'data-detective' },
-  { id: 'packet-post', units: [4], game: 'packet-post' },
-  { id: 'inside-the-machine', units: [5], game: 'inside-the-machine' },
-  { id: 'tech-choices', units: [6], game: null },
+  { id: 'start', units: [], game: null, emoji: '🧭', titleKey: 'courses.groups.start' },
+  { id: 'robo-route', units: [1, 2], game: 'robo-route', emoji: '🤖' },
+  { id: 'data-detective', units: [3], game: 'data-detective', emoji: '🔍' },
+  { id: 'packet-post', units: [4], game: 'packet-post', emoji: '✉️' },
+  { id: 'inside-the-machine', units: [5], game: 'inside-the-machine', emoji: '🖥️' },
+  { id: 'tech-choices', units: [6], game: null, emoji: '💡', titleKey: 'courses.groups.techChoices' },
 ]);
-const groupOf = unit => (GROUPS.find(g => g.units.includes(unit)) || GROUPS[0]).id;
+const groupOf = unit => (GROUPS.find(g => g.units.includes(unit)) || GROUPS[1]).id;
 /** The course map's groups for a course: CS Quest's game worlds, Cyber Defenders' units from its units.json. */
 export function groupsFor(course) {
   if (course && course.slug === 'cyber-defenders') return load().cyber.groups;
@@ -587,6 +650,15 @@ export function classCourseProgress(students, course) {
     const maxScore = list.reduce((n, s) => n + (s.step.check && s.step.check.length ? 3 : 0), 0);
     return { user, band, status: !started ? 'not-started' : done >= list.length ? 'completed' : 'in-progress', done, total: list.length, score, maxScore, list };
   });
+}
+/** The slides this player reads on a step: the step's own deck, or its first-time deck (`slides_first_time`,
+ *  Cyber Defenders) when the step has one and the player has finished no step of the course's other band —
+ *  a Pro kid who never walked Explorer gets a welcome written for a first visit. Read-aloud uses the same pick. */
+export function slidesFor(user, course, step) {
+  if (!step || !step.slidesFirstTime) return step ? step.slides : [];
+  const other = bandsFor(course).find(b => b !== step.band);
+  const veteran = !!other && !!user && states(user, course, other).some(s => s.complete);
+  return veteran ? step.slides : step.slidesFirstTime;
 }
 /** One step's state for this player (open, read, checked...), or null when the key is unknown. */
 export function stateOf(user, course, key) {

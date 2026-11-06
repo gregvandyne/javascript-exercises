@@ -2319,6 +2319,8 @@
     "course": {
       "right": "Goed zo!",
       "wrong": "Bijna. Het goede antwoord is: {answer}",
+      "notQuite": "Bijna.",
+      "rightIs": "Het goede antwoord is: {answer}",
       "next": "Volgende vraag",
       "finish": "Bekijk mijn score",
       "listen": "Voorlezen",
@@ -5992,6 +5994,8 @@
       "done": "Klaar",
       "next": "Volgende",
       "locked": "Op slot",
+      "preview": "Voorbeeld",
+      "lockedNote": "Die stap is nog op slot. Maak eerst stap {n} af:",
       "unit": "Unit {n}",
       "units": "Units {from}–{to}",
       "build": {
@@ -6001,7 +6005,8 @@
       }
     },
     "groups": {
-      "techChoices": "Keuzes over techniek"
+      "techChoices": "Keuzes over techniek",
+      "start": "Begin hier"
     },
     "lesson": {
       "of": "Stap {n} van {total}",
@@ -6016,7 +6021,9 @@
       "talk": "Praat erover",
       "complete": "Stap klaar",
       "playToFinish": "Speel het om deze stap af te ronden.",
-      "nextStep": "Volgende stap"
+      "nextStep": "Volgende stap",
+      "wholePicture": "Bekijk de hele afbeelding",
+      "close": "Sluiten"
     },
     "check": {
       "h": "Snelle check",

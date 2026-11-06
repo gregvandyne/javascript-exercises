@@ -93,6 +93,12 @@
    "text": "Bolt is waiting at the start of Robo Route. His roads, loops and decisions are the first piece of the Spark. Go and light it.",
    "art": "robot",
    "img": "csq/robo-route/sequences-2-key",
+   "view": [
+    0,
+    17.5,
+    48.6,
+    82.5
+   ],
    "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time."
   }
  ],

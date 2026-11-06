@@ -46,7 +46,7 @@ const SHOTS = [
   { step: '3.3', state: 'grand-prix', slug: 'sum-racer', params: 'level=7&lock=1', prep: sumRacer },
   { step: '4.1', state: 'first-cuts', slug: 'fraction-factory', params: 'chapter=first-cuts&band=1b&lock=1', prep: fractionFactory },
   { step: '4.2', state: 're-slice', slug: 'fraction-factory', params: 'chapter=re-slice&band=1b&lock=1', prep: fractionFactory },
-  { step: '4.3', state: 'recipe-maths', slug: 'fraction-factory', params: 'chapter=recipe&band=1b&lock=1', prep: fractionFactory },
+  { step: '4.3', state: 'recipe-math', slug: 'fraction-factory', params: 'chapter=recipe&band=1b&lock=1', prep: fractionFactory },
   // The Phase 2 sweep (Units 5-7 + the Vault of Measures finale): the same discipline, the decks' own
   // game.params. Data Detective and Would You Rather join the pipeline here, in the chapters and topic
   // their missions assign.

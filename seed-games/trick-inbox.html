@@ -8,12 +8,17 @@
   .ti > * { pointer-events: auto; }
   .ti[hidden] { display: none; }
   .ti.ti-proj { font-size: 1.3em; }
-  .ti-bar { display: flex; align-items: center; gap: 8px; width: min(100%, 900px); flex: none; min-height: 40px; }
-  .ti-bar .ti-sp { flex: 1; min-width: 0; }
-  .ti-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge); font-weight: 800; max-width: 100%; min-width: 0; flex: 0 1 auto; }
-  .ti-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ti-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; width: min(100%, 900px); flex: none; min-height: 40px; }
+  .ti-bar .ti-sp { flex: 1 0 0px; min-width: 0; }
+  /* Pills keep their words whole: the bar wraps to a second row instead of cutting a pill to "Messa…". Only the
+     set-title pill may wrap its own text, and it takes the room left beside the Sets button. */
+  .ti-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 14px; border-radius: 999px; background: var(--ok-card); border: 3px solid var(--ok-edge); font-weight: 800; max-width: 100%; min-width: 0; flex: none; }
+  .ti-pill span { white-space: nowrap; }
   .ti-pill svg { width: 22px; height: 22px; flex: none; }
-  .ti-pill.ti-wrap span { white-space: normal; line-height: 1.15; }
+  .ti-pill canvas { flex: none; }
+  .ti-pill.ti-wrap { flex: 0 1 auto; border-radius: 20px; }
+  .ti-pill.ti-wrap span { white-space: normal; line-height: 1.15; overflow-wrap: break-word; }
+  @media (max-width: 520px) { .ti-pill.ti-wrap { flex: 1 1 140px; } }
   .ok-toast { top: calc(72px + env(safe-area-inset-top)); max-width: calc(100vw - 32px); }
   .ti-ic { display: inline-flex; flex: none; }
   .ti-panel { flex: 1; min-height: 0; width: min(100%, 900px); display: flex; flex-direction: column; gap: 8px; overflow: auto; padding: 2px; }
@@ -166,10 +171,10 @@ const MESSAGES = [
     body: [{ t: 'Send this letter to ten friends', clue: 'chain' }, ' ', { t: 'before midnight', clue: 'rush' }, ', or your luck will run out. Everyone is doing it!'],
     action: 'bin', accept: ['report'], motive: 'forwarder',
     why: 'Luck does not travel by letter. This trick only works if you pass it on, so the kindest move for everyone is to bin it and break the chain.' },
-  { id: 'lt-7', set: 'letters', bands: PRO, kind: 'letter', from: 'Parcel Service', badge: 'odd', subject: 'Your parcel is waiting',
-    body: ['We could not deliver your parcel. ', { t: 'Pay a small fee', clue: 'money' }, ' ', { t: 'within two hours', clue: 'rush' }, ' to get it back.'],
+  { id: 'lt-7', set: 'letters', bands: PRO, kind: 'letter', from: 'Package Service', badge: 'odd', subject: 'Your package is waiting',
+    body: ['We could not deliver your package. ', { t: 'Pay a small fee', clue: 'money' }, ' ', { t: 'within two hours', clue: 'rush' }, ' to get it back.'],
     button: 'Pay now', action: 'report', accept: ['bin'], motive: 'key-hunter',
-    why: 'A parcel you never ordered, a fee, and a two-hour rush: that is a defense problem, not a delivery. Report it so the sender gets blocked for everyone.' },
+    why: 'A package you never ordered, a fee, and a two-hour rush: that is a defense problem, not a delivery. Report it so the sender gets blocked for everyone.' },
   /* ---- Chat (Explorer + Pro) ---- */
   { id: 'ch-1', set: 'chat', bands: BOTH, kind: 'chat', from: 'CoolGamer99', badge: 'odd', subject: 'Game chat',
     body: ['Hi! Great game today. ', { t: 'Do not tell your parents we chat, okay?', clue: 'secret' }, ' ', { t: 'Meet me at the park gate', clue: 'stranger' }, ' and I will bring you a present.'],
@@ -213,9 +218,9 @@ const MESSAGES = [
     button: 'Check now', action: 'bin', accept: ['report'], motive: 'key-hunter',
     why: 'Checking an account never needs your key sent in a letter. That request is the trick itself. Bin it.' },
   { id: 'mx-4', set: 'mix', bands: BOTH, kind: 'post', from: 'News Flash', badge: 'odd', subject: 'School is closing forever!',
-    body: ['Big news: school is closing forever and ', { t: 'there will be free sweets for everyone on Monday', clue: 'toogood' }, '! ', { t: 'Tell everyone you know!', clue: 'chain' }],
+    body: ['Big news: school is closing forever and ', { t: 'there will be free candy for everyone on Monday', clue: 'toogood' }, '! ', { t: 'Tell everyone you know!', clue: 'chain' }],
     action: 'bin', accept: ['show'], motive: 'giggler',
-    why: 'Huge news from a sender nobody knows, with sweets on top. This one just wants a reaction and a crowd. Bin it — and if a story ever worries you, check it with a trusted adult.' },
+    why: 'Huge news from a sender nobody knows, with candy on top. This one just wants a reaction and a crowd. Bin it — and if a story ever worries you, check it with a trusted adult.' },
   { id: 'mx-5', set: 'mix', bands: BOTH, kind: 'letter', from: 'Post Office Notice', badge: 'known', subject: 'Spark Day hours',
     body: ['The post office closes early on Spark Day, at two o clock. Letters posted before noon still travel the same day.'],
     action: 'deliver', accept: [], motive: null,
@@ -276,9 +281,9 @@ const MESSAGES = [
     why: '"Only two left" and a five-minute clock are levers, not facts. Shops that rush you are spending your thinking time on purpose. Bin it.' },
   /* ---- Fake or Fact? (Pro) ---- */
   { id: 'md-1', set: 'media', bands: PRO, kind: 'post', from: 'Netville News Flash', badge: 'odd', subject: 'School to close forever!',
-    body: ['BREAKING: school closes forever and ', { t: 'every student gets free sweets for a year', clue: 'toogood' }, '. ', { t: 'Share before they delete this!', clue: 'chain' }],
+    body: ['BREAKING: school closes forever and ', { t: 'every student gets free candy for a year', clue: 'toogood' }, '. ', { t: 'Share before they delete this!', clue: 'chain' }],
     action: 'bin', accept: ['show'], motive: 'giggler',
-    why: 'Real news does not beg to be shared before deletion, and it does not come with free sweets. Check big stories with a trusted adult or a real news page first.' },
+    why: 'Real news does not beg to be shared before deletion, and it does not come with free candy. Check big stories with a trusted adult or a real news page first.' },
   { id: 'md-2', set: 'media', bands: PRO, kind: 'post', from: 'Prize Ad', badge: 'odd', subject: 'You won a phone!',
     body: ['Tap to claim ', { t: 'your free phone', clue: 'prize' }, '. ', { t: 'Only the first fifty people', clue: 'rush' }, ' get one!'],
     button: 'Claim', action: 'bin', accept: ['report'], motive: 'prize-faker',
@@ -530,7 +535,7 @@ function renderMessage() {
   const ti = screen('round'), panel = $('div', 'ti-panel'); ti.appendChild(panel);
   const bar = $('div', 'ti-bar'); panel.appendChild(bar);
   if (!S.lock) bar.appendChild(btn(tr('Sets'), { kind: 'quiet', icon: 'back', onPress: () => { sfx('select'); showMap(); } }));
-  const pill = $('div', 'ti-pill ti-wrap'); pill.appendChild(pic(set.pic, 28)); pill.appendChild($('span', '', tr(set.title) + ' · ' + tr(BAND_NAME[S.band]))); bar.appendChild(pill);
+  const pill = $('div', 'ti-pill ti-wrap'); pill.appendChild(pic(set.pic, 28)); pill.appendChild($('span', '', tr(set.title) + '\u00a0· ' + tr(BAND_NAME[S.band]))); bar.appendChild(pill);
   bar.appendChild($('div', 'ti-sp'));
   const prog = $('div', 'ti-pill'); prog.appendChild($('span', '', tr('Message {a} of {b}', { a: run.i + 1, b: run.msgs.length }))); bar.appendChild(prog);
   const sp = $('div', 'ti-pill'); sp.appendChild(starsEl(run.stampStars, 3)); bar.appendChild(sp);
@@ -619,7 +624,7 @@ function doAct(a) {
   if (a.t === 'next') { if (run.phase !== 'debrief') return false; run.i++; sfx('select'); if (run.i >= run.msgs.length) setComplete(); else showMessage(); return true; }
   return false;
 }
-/** A finished round: the stars are saved, the labelled score reported, and — only here, at genuine
+/** A finished round: the stars are saved, the labeled score reported, and — only here, at genuine
  *  completion — the win signal fires (win-gated course credit). */
 function setComplete() {
   const run = S.run; if (!run) return;

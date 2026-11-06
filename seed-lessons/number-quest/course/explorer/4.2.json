@@ -30,19 +30,19 @@
     {
      "cue": "Half a cake: 1 of 2 equal parts.",
      "box": [
-      6,
-      13.9,
-      88,
-      24.4
+      5,
+      12.3,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "Cut each part in two: 2 of 4 parts. The share has not moved.",
      "box": [
-      6,
-      44.1,
-      88,
-      24.4
+      5,
+      42.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -50,7 +50,7 @@
   {
    "title": "Re-slicing keeps value",
    "text": "Cutting every piece into 2 smaller pieces doubles both numbers: 1/2 becomes 2/4. The pieces shrink, the count grows, the share stays the same.",
-   "art": "gears",
+   "art": "cake",
    "visual": {
     "type": "fraction",
     "label": "Cut every piece in two: 1/2 becomes 2/4, then 4/8, and the share stays the same",
@@ -76,19 +76,19 @@
     {
      "cue": "Cut every piece in two: 1/2 becomes 2/4.",
      "box": [
-      6,
-      35.2,
-      88,
-      24.4
+      5,
+      33.6,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "Cut in two again: 4/8. The pieces shrink, the share stays.",
      "box": [
-      6,
-      65.4,
-      88,
-      24.4
+      5,
+      63.9,
+      90.1,
+      27.5
      ]
     }
    ]
@@ -97,7 +97,7 @@
    "kind": "example",
    "title": "Rough first, then compare",
    "text": "Rough first: 5/8 is a little more than 1/2. Compare it with 3/4 using the halfway mark as your referee.",
-   "art": "chart",
+   "art": "cake",
    "steps": [
     "1/2 sits at the halfway mark",
     "5/8 is one eighth past halfway",
@@ -110,12 +110,12 @@
     "half": true,
     "rows": [
      {
-      "label": "5/8: one eighth past halfway",
+      "label": "5/8: 1/8 past half",
       "cuts": 8,
       "shaded": 5
      },
      {
-      "label": "3/4 = 6/8: two eighths past halfway",
+      "label": "3/4 = 6/8: 2/8 past half",
       "cuts": 8,
       "shaded": 6
      }
@@ -125,19 +125,19 @@
     {
      "cue": "5/8 sits one eighth past the halfway line.",
      "box": [
-      6,
-      13.9,
-      88,
-      24.4
+      5,
+      8.1,
+      90.1,
+      31.8
      ]
     },
     {
      "cue": "3/4 is 6/8: one eighth more, so 3/4 is greater.",
      "box": [
-      6,
-      44.1,
-      88,
-      24.4
+      5,
+      42.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -147,18 +147,49 @@
    "text": "A fraction only has a size inside its whole. Half of a tiny cake can be less cake than a fourth of a huge one. Compare shares of the same whole.",
    "art": "shield",
    "visual": {
-    "type": "fraction",
-    "label": "Half of a tiny cake beside a fourth of a huge one: the whole decides the size",
+    "type": "bars",
+    "label": "Half of a tiny cake beside a fourth of a huge one: the whole decides the size of the piece",
+    "sizedWholes": true,
     "rows": [
      {
       "label": "1/2 of a tiny cake",
-      "cuts": 2,
-      "shaded": 1
+      "parts": [
+       {
+        "w": 0.15,
+        "label": "1/2",
+        "tone": 0
+       },
+       {
+        "w": 0.15,
+        "label": "",
+        "tone": -1
+       }
+      ]
      },
      {
       "label": "1/4 of a huge cake",
-      "cuts": 4,
-      "shaded": 1
+      "parts": [
+       {
+        "w": 0.25,
+        "label": "1/4",
+        "tone": 0
+       },
+       {
+        "w": 0.25,
+        "label": "",
+        "tone": -1
+       },
+       {
+        "w": 0.25,
+        "label": "",
+        "tone": -1
+       },
+       {
+        "w": 0.25,
+        "label": "",
+        "tone": -1
+       }
+      ]
      }
     ]
    },
@@ -166,19 +197,19 @@
     {
      "cue": "Half of a tiny cake: a small whole, so a small piece.",
      "box": [
-      6,
-      13.9,
-      88,
-      24.4
+      5,
+      12.3,
+      31.9,
+      27.6
      ]
     },
     {
-     "cue": "A fourth of a huge cake: it can be the bigger piece.",
+     "cue": "A fourth of a huge cake: the bigger piece, from the bigger whole.",
      "box": [
-      6,
-      44.1,
-      88,
-      24.4
+      5,
+      42.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -207,19 +238,19 @@
     {
      "cue": "2/3: two of three equal parts.",
      "box": [
-      6,
-      13.9,
-      88,
-      24.4
+      5,
+      12.3,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "Cut each third into 3: 6/9. Same share, three times the pieces.",
      "box": [
-      6,
-      44.1,
-      88,
-      24.4
+      5,
+      42.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -254,7 +285,13 @@
    "text": "Open Fraction Factory at Re-Slice, then serve the orders. Re-slice a share before you decide if two orders match.",
    "art": "trophy",
    "img": "nq/fraction-factory/re-slice",
-   "alt": "Fraction Factory, Re-Slice: the order says one half but the tray only fits fourths, each half re-sliced into two, parts on the tray."
+   "alt": "Fraction Factory, Re-Slice: the order says one half but the tray only fits fourths, each half re-sliced into two, parts on the tray.",
+   "view": [
+    28,
+    37,
+    44,
+    62
+   ]
   }
  ],
  "check": [

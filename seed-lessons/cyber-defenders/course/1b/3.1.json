@@ -12,6 +12,12 @@
    "art": "shield",
    "img": "csq/would-you-rather/online-name-1b",
    "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "A nickname nobody can trace",
@@ -48,6 +54,12 @@
    ],
    "img": "csq/packet-post/locks-1b-sort",
    "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
+   "view": [
+    5.0,
+    4.9,
+    77.9,
+    69.2
+   ],
    "focus": [
     {
      "cue": "The first card to sort: where you live",
@@ -75,6 +87,12 @@
    "art": "magnifier",
    "img": "csq/would-you-rather/online-location-1b",
    "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Free, if the app can see where you are",
@@ -102,6 +120,12 @@
    "art": "screen",
    "img": "csq/would-you-rather/online-download-1b",
    "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Ask a trusted adult before every download",
@@ -150,10 +174,16 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. For each choice, ask: could this point at me?",
+   "text": "Open Would You Rather at Online: share or keep. For each choice, ask: could this point at me?",
    "art": "trophy",
    "img": "csq/would-you-rather/online-1b-first",
    "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Play Online: judge each pair",
@@ -175,6 +205,6 @@
  "game": {
   "slug": "would-you-rather",
   "chapter": "online",
-  "params": ""
+  "params": "topic=online&lock=1"
  }
 }

@@ -23,10 +23,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "a square has 4 sides, so it is a quadrilateral",
+    "forgot that a square has 4 sides",
     "correct",
-    "a rectangle has 4 sides, so it is a quadrilateral",
-    "a rhombus has 4 sides, so it is a quadrilateral"
+    "forgot that a rectangle has 4 sides",
+    "forgot that a rhombus has 4 sides"
    ],
    "why": "Quadrilateral means four sides. A square, a rectangle and a rhombus all have 4 sides; a triangle has only 3."
   },
@@ -47,9 +47,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "both pairs of sides are parallel in a rectangle",
-    "both pairs of sides are parallel in a square",
-    "parallel is in its name: both pairs run side by side",
+    "missed the parallel sides of a rectangle",
+    "missed the parallel sides of a square",
+    "missed the clue in the name parallelogram",
     "correct"
    ],
    "why": "Rectangles, squares and parallelograms all have parallel sides. A triangle's sides all meet, so none of them run parallel."
@@ -71,10 +71,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "size is not what makes a shape family",
+    "sorted by size instead of by properties",
     "correct",
-    "a square itself is a rectangle with 4 equal sides, so rectangles can",
-    "names do not decide families; properties do"
+    "thought a rectangle can never have 4 equal sides",
+    "sorted by names instead of by properties"
    ],
    "why": "A family is decided by properties. Every rectangle has 4 sides and 4 square corners, and a square has both, so a square belongs in the rectangle family."
   },
@@ -95,10 +95,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "that is the perimeter: the fence, not the carpet",
-    "added the sides instead of multiplying them",
+    "found the fence instead of the carpet",
+    "added the sides instead of multiplying",
     "correct",
-    "multiplied and then added the sides as well"
+    "multiplied and then added the sides too"
    ],
    "why": "Area is the carpet: multiply the sides. 6 x 4 = 24 square meters. (Adding around the edge, 20, would give the perimeter.)"
   },
@@ -121,7 +121,7 @@
    "misconceptions": [
     "counted only two of the four sides",
     "counted only three of the four sides",
-    "that is the area: 5 x 5 counts the squares inside",
+    "found the carpet instead of the fence",
     "correct"
    ],
    "why": "Perimeter walks all the way around: 5 + 5 + 5 + 5 = 20 inches. (25 would be the area, the squares inside.)"
@@ -143,10 +143,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "swapped the two answers: 24 is the area, not the fence",
-    "11 is one length plus one width, only half the fence",
+    "swapped the fence and the carpet",
+    "counted only half the fence",
     "correct",
-    "11 is the half-way measure, not the count of squares inside"
+    "added the sides for the carpet instead of multiplying"
    ],
    "why": "Fence first: 8 + 3 + 8 + 3 = 22 feet of perimeter. Carpet second: 8 x 3 = 24 square feet of area."
   },
@@ -167,10 +167,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "perpendicular lines cross at a square corner",
+    "mixed up parallel and perpendicular",
     "correct",
-    "a ray is a part of a line with one end, not a way two lines sit",
-    "these roads are straight, not curved"
+    "mixed up a ray with a pair of lines",
+    "missed that the roads are straight"
    ],
    "why": "Lines that run side by side and never meet are parallel. Perpendicular lines are the ones that cross at a square corner."
   },
@@ -191,10 +191,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "the top and bottom arms differ, so F cannot fold onto itself",
-    "the open side has no matching part",
+    "missed that the arms of F point one way only",
+    "missed that the open side of G has no match",
     "correct",
-    "the hook has no matching side"
+    "missed that the hook of J has no match"
    ],
    "why": "The letter A folds along a line down its middle: the two halves match exactly. F, G and J have parts with nothing to fold onto."
   },
@@ -215,10 +215,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "swapped the pair: the first number always names the rightward walk",
+    "swapped the two numbers in the address",
     "correct",
-    "the second number counts steps up, never down",
-    "added the pair together instead of walking each part"
+    "walked down instead of up",
+    "added the two numbers together"
    ],
    "why": "In a grid address, the first number counts steps right and the second counts steps up: (4, 2) is 4 right, then 2 up."
   }

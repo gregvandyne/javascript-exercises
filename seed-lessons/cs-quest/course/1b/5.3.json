@@ -11,6 +11,12 @@
    "text": "Inside a computer, everything is kept as tiny switches that are on or off. Each switch is called a bit.",
    "art": "bits",
    "img": "csq/inside-the-machine/bits-1b-key",
+   "view": [
+    0.8,
+    45,
+    44.5,
+    38.5
+   ],
    "alt": "Five bit switches, all off, with their cards: 16, 8, 4, 2 and 1. One switch on adds its card."
   },
   {
@@ -18,6 +24,12 @@
    "text": "Counting with bits is called binary. Five switches worth 16, 8, 4, 2 and 1 can make any number from 0 to 31.",
    "art": "bits",
    "img": "csq/inside-the-machine/bits-1b-pick",
+   "view": [
+    0.8,
+    42,
+    44.5,
+    40
+   ],
    "alt": "A reading round: some switches are already on, and the question is what number their cards add up to."
   },
   {
@@ -33,6 +45,12 @@
     "1: on"
    ],
    "img": "csq/inside-the-machine/bits-1b-five",
+   "view": [
+    0.8,
+    45,
+    44.5,
+    38.5
+   ],
    "alt": "The 4 card and the 1 card are switched on: 4 and 1 make 5, the number this round asked for."
   },
   {
@@ -40,6 +58,12 @@
    "text": "A picture on a screen is made of tiny dots called pixels. The software tells the screen which pixels to light, and in which color.",
    "art": "pixel",
    "img": "csq/inside-the-machine/bits-1b-pixels",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "The pixel grid: a picture drawn one dot at a time, each cell lit or dark like a bit."
   },
   {
@@ -47,13 +71,19 @@
    "text": "The screen only shows a photo. The photo is kept in storage as bits, so it is still there when the tablet is off. Tap it: the touch sensor feels it, the processor gets the bits from storage, the screen lights the pixels.",
    "art": "chip",
    "img": "csq/inside-the-machine/bits-1b-photo",
+   "view": [
+    45.3,
+    25,
+    54,
+    48
+   ],
    "alt": "The photo question: where is a photo when the tablet is off? The answer the game teaches is storage, as bits."
   },
   {
    "kind": "words",
    "title": "Words to know",
    "text": "Four words for today.",
-   "art": "pencil",
+   "art": "bits",
    "words": [
     {
      "word": "bit",
@@ -91,6 +121,12 @@
    "text": "Open Inside the Machine at Bits & Pixels and finish all 5 levels. Flip the switches to make each number or letter.",
    "art": "trophy",
    "img": "csq/inside-the-machine/bits-1b-key",
+   "view": [
+    0.8,
+    45,
+    44.5,
+    38.5
+   ],
    "alt": "Five bit switches, all off, with their cards: 16, 8, 4, 2 and 1. One switch on adds its card."
   }
  ],

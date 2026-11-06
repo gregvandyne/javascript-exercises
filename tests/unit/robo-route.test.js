@@ -836,3 +836,131 @@ test('robo-route: misplaced blocks, late-filled door boxes and sensor loops get 
   assert.equal(JSON.stringify(cond4.check.tiles), JSON.stringify(['asks its question again', 'asks only on the first turn', 'never asks']));
   assert.equal(cond4.check.answer, 0);
 });
+
+// ---------- facing and arrows: what the board draws must agree with where the program goes ----------
+test('robo-route: facing in the data: every board starts Bolt facing N/E/S/W, every move of every answer steps one square the way Bolt faces, every turn is a quarter turn, the answer ends on the flag', () => {
+  assert.deepEqual(JSON.parse(JSON.stringify(E.DIRS)), [[0, -1], [1, 0], [0, 1], [-1, 0]], 'd 0..3 = north, east, south, west, y growing down');
+  let moves = 0;
+  for (const [ch, band, l] of everyLevel()) {
+    const progs = [l.sol, ...(l.programs || [])].filter(p => typeof p === 'string');
+    for (const text of progs) {
+      const r = E.run(l, parse(text), { planMatch: true, starter: l.starter ? parse(l.starter) : null });
+      r.results.forEach((res, li) => {
+        const g = res.grid, where = `${ch}/${band}/${l.id} board ${li + 1} "${text}"`;
+        assert.ok([0, 1, 2, 3].includes(g.start.d), `${where}: start facing`);
+        let x = g.start.x, y = g.start.y, d = g.start.d;
+        for (const e of res.events) {
+          if (e.k === 'move') {
+            moves++;
+            assert.equal(e.d, d, `${where}: a move keeps the facing (${d} -> ${e.d})`);
+            assert.deepEqual([e.x - x, e.y - y], [...E.DIRS[d]], `${where}: a move from ${x},${y} facing ${d} lands one square ahead, not at ${e.x},${e.y}`);
+            x = e.x; y = e.y;
+          } else if (e.k === 'turn') {
+            assert.ok(e.d === (d + 1) % 4 || e.d === (d + 3) % 4, `${where}: a turn is a quarter turn (${d} -> ${e.d})`);
+            assert.deepEqual([e.x, e.y], [x, y], `${where}: a turn stays on its square`);
+            d = e.d;
+          }
+        }
+        if (text === l.sol && g.goal) assert.deepEqual([x, y], [g.goal.x, g.goal.y], `${where}: the answer ends on the flag`);
+      });
+    }
+  }
+  assert.ok(moves > 500, `${moves} moves checked`);
+});
+
+test('robo-route: in Chromium Bolt is drawn facing its start direction on every board of every level, every drawn step of the answer goes the way the drawn Bolt faces and ends on the flag, the floor numbers count ahead of Bolt, the path dots are the answer\'s squares, and the Level Maker\'s Bolt arrows point the way their symbol says', { skip, timeout: 900_000 }, async () => {
+  const { ctx, page, frame, errors } = await open({ size: { width: 1280, height: 800 }, lang: 'en' });
+  // the drawn facing: from the middle of Bolt to the tip of its antenna (its CSS rotation included)
+  const drawn = () => frame.evaluate(() => {
+    const b = document.getElementById('bolt'), r = b.getBoundingClientRect(), a = b.querySelector('circle[cy="2"]').getBoundingClientRect();
+    const dx = (a.x + a.width / 2) - (r.x + r.width / 2), dy = (a.y + a.height / 2) - (r.y + r.height / 2);
+    return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0);
+  });
+  try {
+    await frame.evaluate(() => document.querySelector('.ok-title-screen .ok-hot').click()); await page.waitForTimeout(300); await T(frame, 'skipAnimations');
+    const bad = []; let boards = 0, steps = 0;
+    for (const ch of CHAPTERS) for (const band of ['1b', '2']) {
+      const levels = levelsFor(ch.id, band);
+      for (let i = 0; i < levels.length; i++) {
+        const l = levels[i]; if (l.maker) continue;
+        const n = E.layoutsOf(l).length;
+        for (let li = 0; li < n; li++) {
+          await T(frame, 'start', { chapter: ch.id, band, level: i + 1, seed: 1 }); await T(frame, 'closeModal'); await page.waitForTimeout(30);
+          if (l.plan) { await T(frame, 'plan'); await page.waitForTimeout(600); await T(frame, 'closeModal'); }
+          await T(frame, 'layout', li);
+          const b = await T(frame, 'board'), where = `${l.id}/${band} board ${li + 1}`; boards++;
+          const face = await drawn();
+          if (face !== b.start.d || b.bolt.d !== b.start.d) bad.push(`${where}: start facing ${b.start.d}, drawn ${face}, state ${b.bolt.d}`);
+          // the floor numbers: only straight ahead of Bolt, counting 1, 2, 3 away from it
+          const nums = await frame.evaluate(() => [...document.querySelectorAll('#grid .rr-cell .num')].map(s => { const c = s.closest('.rr-cell'); return [+c.dataset.x, +c.dataset.y, +s.textContent]; }));
+          for (const [x, y, k] of nums) { const [dx, dy] = E.DIRS[b.start.d]; if (x !== b.start.x + dx * k || y !== b.start.y + dy * k) bad.push(`${where}: floor number ${k} at ${x},${y} is not ${k} ahead of Bolt`); }
+          // the path dots (Explorer's first levels): exactly the squares the answer moves through on this board
+          const dots = await frame.evaluate(() => [...document.querySelectorAll('#grid .rr-cell.ghost')].map(c => c.dataset.x + ',' + c.dataset.y).sort());
+          if (dots.length) {
+            const r = E.run(l, parse(l.sol), { planMatch: true });
+            const want = [...new Set(r.results[li].events.filter(e => e.k === 'move').map(e => e.x + ',' + e.y))].sort();
+            if (JSON.stringify(dots) !== JSON.stringify(want)) bad.push(`${where}: path dots ${dots} are not the answer's squares ${want}`);
+          }
+          if (l.programs) await T(frame, 'route', 0);
+          // run the answer, recording every drawn state of Bolt: each step goes one square the way Bolt is drawn facing
+          const trace = await frame.evaluate(async () => {
+            const bolt = document.getElementById('bolt'), svg = bolt.querySelector('svg'), { w, h } = window.__brbTest.board();
+            const probe = document.createElement('div');
+            const state = (bs, ss) => {
+              probe.setAttribute('style', bs || ''); const x = Math.round(parseFloat(probe.style.left) * w / 100), y = Math.round(parseFloat(probe.style.top) * h / 100);
+              probe.setAttribute('style', ss || ''); const m = /rotate\((-?\d+)deg\)/.exec(probe.style.transform || '');
+              return [x, y, m ? (((+m[1] / 90) % 4) + 4) % 4 : 0];
+            };
+            // every style change is recorded with its old value, so a whole run applied in one go (no animations) still
+            // replays one change at a time: the value after a record is the next record's old value, or the final value
+            const recs = [], mo = new MutationObserver(rs => recs.push(...rs));
+            mo.observe(bolt, { attributes: true, subtree: true, attributeFilter: ['style'], attributeOldValue: true });
+            await window.__brbTest.solve(); recs.push(...mo.takeRecords()); mo.disconnect();
+            const after = new Map();
+            for (let k = recs.length - 1; k >= 0; k--) { const t = recs[k].target; after.set(recs[k], after.has(t) ? after.get(t) : t.getAttribute('style')); after.set(t, recs[k].oldValue); }
+            let bs = recs.find(r => r.target === bolt), ss = recs.find(r => r.target === svg);
+            bs = bs ? bs.oldValue : bolt.getAttribute('style'); ss = ss ? ss.oldValue : svg.getAttribute('style');
+            const out = [state(bs, ss)];
+            for (const r of recs) {
+              if (r.target === bolt) bs = after.get(r); else if (r.target === svg) ss = after.get(r); else continue;
+              const p = state(bs, ss), last = out[out.length - 1]; if (p.join() !== last.join()) out.push(p);
+            }
+            return { out, end: window.__brbTest.board() };
+          });
+          const pts = trace.out;
+          for (let k = 1; k < pts.length; k++) {
+            const [x0, y0, d0] = pts[k - 1], [x1, y1, d1] = pts[k];
+            if (x0 === x1 && y0 === y1) continue;
+            steps++;
+            const [dx, dy] = E.DIRS[d1];
+            if (x1 - x0 !== dx || y1 - y0 !== dy) bad.push(`${where}: Bolt drawn facing ${d1} (was ${d0}) moved ${x0},${y0} -> ${x1},${y1}`);
+          }
+          const fin = trace.end;
+          if (fin.goal && (fin.bolt.x !== fin.goal.x || fin.bolt.y !== fin.goal.y)) bad.push(`${where}: the answer ends at ${fin.bolt.x},${fin.bolt.y}, not on the flag ${fin.goal.x},${fin.goal.y}`);
+          const endFace = await drawn();
+          if (endFace !== fin.bolt.d) bad.push(`${where}: Bolt ends facing ${fin.bolt.d} but is drawn facing ${endFace}`);
+          await T(frame, 'closeModal'); await T(frame, 'closeDialog');
+        }
+      }
+    }
+    // the Level Maker: a Bolt square's arrow points the way its symbol (^ > v <) says
+    for (const band of ['1b', '2']) {
+      await T(frame, 'band', band);
+      const tasks = levelsFor('level-maker', band);
+      for (let i = 0; i < tasks.length; i++) {
+        await T(frame, 'maker', i); await T(frame, 'closeModal'); await page.waitForTimeout(40);
+        const marks = await frame.evaluate(() => [...document.querySelectorAll('#mgrid .rr-cell .bt')].map(s => {
+          const c = s.closest('.rr-cell'), path = [...s.querySelectorAll('path')].find(p => /\dl/.test(p.getAttribute('d') || ''));
+          const len = path.getTotalLength(), a = path.getPointAtLength(0), m = path.getPointAtLength(len / 2), e = path.getPointAtLength(len);
+          const dx = m.x - (a.x + e.x) / 2, dy = m.y - (a.y + e.y) / 2;
+          return [+c.dataset.x, +c.dataset.y, Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0)];
+        }));
+        if (!marks.length) bad.push(`maker ${band} ${i + 1}: no Bolt square drawn`);
+        for (const [x, y, d] of marks) { const sym = tasks[i].rows[y][x]; if ('^>v<'.indexOf(sym) !== d) bad.push(`maker ${band} ${i + 1}: "${sym}" at ${x},${y} drawn pointing ${d}`); }
+      }
+    }
+    assert.deepEqual(bad, []);
+    assert.ok(boards >= 100 && steps >= 300, `checked ${boards} boards and ${steps} drawn steps`);
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});

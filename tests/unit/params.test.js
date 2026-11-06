@@ -39,6 +39,16 @@ test('grammar: five keys, [a-z0-9-]{1,16}, band 1b|2, level 1-30, lock 0|1; unkn
   assert.deepEqual(PP.parseParams(undefined), {}); assert.deepEqual(PP.parseParams(''), {});
 });
 
+test('alias: topic=<id> is chapter=<id> (Would You Rather topic lock); chapter wins when both are given', () => {
+  assert.deepEqual(PP.parseParams('topic=online&lock=1'), { chapter: 'online', lock: 1 });
+  assert.deepEqual(PP.parseParams({ topic: 'numbers', lock: '1' }), { chapter: 'numbers', lock: 1 });
+  assert.deepEqual(PP.parseParams('chapter=loops&topic=online'), { chapter: 'loops' });
+  assert.deepEqual(PP.parseParams('topic=has space&lock=1'), { lock: 1 }, 'a bad topic is dropped like a bad chapter');
+  assert.equal(PP.cleanOptions('topic=online&lock=1'), 'chapter=online&lock=1', 'a step may write topic=');
+  assert.equal(PP.cleanOptions('topic=Online Now'), null);
+  assert.equal(PP.packParams(PP.parseParams('topic=online&lock=1')), 'online....1');
+});
+
 test('packing: o = chapter.band.mode.level.lock with empty parts, at most 40 characters, round-trips', () => {
   assert.equal(PP.packParams({ chapter: 'loops', band: '1b', lock: 1 }), 'loops.1b...1');
   assert.equal(PP.packParams({ level: 7 }), '...7.');

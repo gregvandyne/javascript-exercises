@@ -12,6 +12,12 @@
    "art": "map",
    "img": "csq/would-you-rather/online-photo-2",
    "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Share one photo with the whole world",
@@ -43,25 +49,40 @@
     "a friend tags you in theirs: a friend",
     "a game saves your top score: a service"
    ],
-   "img": "csq/would-you-rather/online-comments-2",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "img": "csq/escape-the-post-office/pim-2",
+   "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
+   "view": [
+    0.0,
+    40.5,
+    66.9,
+    59.5
+   ],
    "focus": [
     {
-     "cue": "A page where anyone can comment",
+     "cue": "Postmark: written by a service",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      38.5,
+      60.3,
+      25.4,
+      8.9
      ]
     },
     {
-     "cue": "Only your class can comment there",
+     "cue": "Footprint: written by you, step by step",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      38.5,
+      69.2,
+      25.4,
+      13.3
+     ]
+    },
+    {
+     "cue": "A card written to fake the trail",
+     "box": [
+      5.9,
+      60.3,
+      25.4,
+      13.3
      ]
     }
    ]
@@ -72,6 +93,12 @@
    "art": "shield",
    "img": "csq/would-you-rather/online-delete-2",
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Deleting asks nicely for a post to go",
@@ -97,25 +124,22 @@
    "title": "Future readers",
    "text": "That drawing you posted for feedback stays in your trail. Years later, teammates, schools and employers may read old posts as part of who you are.",
    "art": "people",
-   "img": "csq/would-you-rather/online-2-second",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
+   "img": "csq/trick-inbox/pressure-2-pr-3-debrief",
+   "alt": "The Fan Club post, binned: everything it knew came from a public profile. Flattery built from your footprint.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Your post, written for today's friends",
+     "cue": "Old posts stay in your trail for later readers",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "A copy readers meet years later",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.4,
+      72.7,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -124,25 +148,31 @@
    "title": "Ask before you post",
    "text": "Public gets you seen and found; private keeps you safe. Before you post, ask the Cyber Defender question: what could someone do with this?",
    "art": "globe",
-   "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "img": "csq/trick-inbox/pressure-2-pr-3-all",
+   "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
+   "view": [
+    0.0,
+    20.0,
+    90.0,
+    80.0
+   ],
    "focus": [
     {
-     "cue": "Public gets you seen and found",
+     "cue": "A post built from someone's public profile",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      61.8,
+      83.2,
+      7.1
      ]
     },
     {
-     "cue": "Private keeps you safe",
+     "cue": "What could someone do with this?",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      8.5,
+      68.9,
+      21.8,
+      7.1
      ]
     }
    ]
@@ -174,18 +204,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather and choose the Online topic: play Online: share or keep. For one dilemma, say how a future audience might read that post.",
+   "text": "Open Escape the Post Office at Lock 3: Which Pim? One card wears a faked postmark. Check every clue in each trail, then pick the real Pim.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "img": "csq/escape-the-post-office/pim-2-pick",
+   "alt": "The real Pim is picked at Pro: the office stamp, the worn left-edge footprint, help asked in the open.",
+   "view": [
+    0.0,
+    26.9,
+    68.9,
+    73.1
+   ],
    "focus": [
     {
-     "cue": "Play Online: judge each pair",
+     "cue": "Play Which Pim?: trust the trail, not the name",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      34.2,
+      36.9,
+      31.7,
+      63.1
      ]
     }
    ]
@@ -197,8 +233,8 @@
   "cd-2-3.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": ""
+  "slug": "escape-the-post-office",
+  "chapter": "which-pim",
+  "params": "chapter=which-pim&band=2&lock=1"
  }
 }

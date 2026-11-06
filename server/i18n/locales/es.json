@@ -2318,6 +2318,8 @@
     "course": {
       "right": "¡Correcto!",
       "wrong": "Casi. La respuesta correcta es: {answer}",
+      "notQuite": "Casi.",
+      "rightIs": "La respuesta correcta es: {answer}",
       "next": "Siguiente pregunta",
       "finish": "Ver mi resultado",
       "listen": "Leer en voz alta",
@@ -5991,6 +5993,8 @@
       "done": "Hecho",
       "next": "Siguiente",
       "locked": "Bloqueado",
+      "preview": "Vista previa",
+      "lockedNote": "Ese paso aún está bloqueado. Primero termina el paso {n}:",
       "unit": "Unidad {n}",
       "units": "Unidades {from}–{to}",
       "build": {
@@ -6000,7 +6004,8 @@
       }
     },
     "groups": {
-      "techChoices": "Decisiones sobre la tecnología"
+      "techChoices": "Decisiones sobre la tecnología",
+      "start": "Empieza aquí"
     },
     "lesson": {
       "of": "Paso {n} de {total}",
@@ -6015,7 +6020,9 @@
       "talk": "Hablen de esto",
       "complete": "Paso hecho",
       "playToFinish": "Juégalo para terminar este paso.",
-      "nextStep": "Siguiente paso"
+      "nextStep": "Siguiente paso",
+      "wholePicture": "Ver la imagen completa",
+      "close": "Cerrar"
     },
     "check": {
       "h": "Prueba rápida",

@@ -1,6 +1,6 @@
-# Number Quest catalogue — Phase 0 standards lock
+# Number Quest catalog — Phase 0 standards lock
 
-The content registry of Oomba Academy's maths course (grades K–8, three tiers on one path:
+The content registry of Oomba Academy's math course (grades K–8, three tiers on one path:
 **Launchpad** K–2 · **Explorer** 3–5 · **Pro** 6–8), set in Netville's Numberworks with
 Tally the cat as guide. Spec: `goals/oomba-academy-leading-interactive-educational-app/files/math-course-spec.md` (v2);
 build brief in the same folder. This folder follows the Cyber Defenders pattern
@@ -15,7 +15,7 @@ end of this file.
 | File | What |
 |---|---|
 | `standards.json` | the registry: CCSS-M framework facts, the eight Mathematical Practices, every verified grades K–5 cluster heading, the LOCKED statement-level code set for Explorer Units 1–7 + the finale (`explorerCodes`; Units 1–4 locked in Phase 0, Units 5–7 + finale in Phase 2), the grades 6–8 cluster headings flagged DEFERRED (`deferredClusters`), and the corrections this lock makes to the spec's shorthand |
-| `units.json` | the catalogue slice: Explorer intro 0.1 + Units 1–7 + the Vault finale (23 steps), each step's locked codes as `primary` / `also` / `buildsToward` (the CS Quest idiom), its MP spotlight, its Measure Stone, the game mission named in spec §5.2, and per-unit teacher notes |
+| `units.json` | the catalog slice: Explorer intro 0.1 + Units 1–7 + the Vault finale (23 steps), each step's locked codes as `primary` / `also` / `buildsToward` (the CS Quest idiom), its MP spotlight, its Measure Stone, the game mission named in spec §5.2, and per-unit teacher notes |
 | `placement.json` | Tally's Sorting Game strand lock: the four strands, the half-grade rung convention, LOCKED rungs K.0–5.5 at cluster level, DEFERRED rungs 6.0–8.0, and the strand→unit crosswalk with per-unit entry profiles and the soft-landing rule |
 | `placement/templates.json` | the placement item bank (spec §4.3): 240 item templates, 60 per strand across rungs K.0–8.0 (3–4 per strand × rung cell). Each template carries strand + `strandLabel` (the `placement.json` strand name), rung, `ccssClusterCode` + cluster heading for locked rungs (`lockStatus: "locked"`, 168 templates), `ccssClusterCode: null` + a DEFERRED orientation heading for rungs 6.0–8.0 (`lockStatus: "deferred-pro-phase"`, 72 templates — authored now, not taggable as coverage until the Pro lock), the misconception its main distractor diagnoses, response type (`pick`/`numeric`/`count-out`/`drag`/`build`), reading load (`none`/`low`/`standard`), `audioFirst`/`launchpadSafe` flags, and a `gen` block of randomised-number constraints |
 | `placement/generator.js` | turns a template into one concrete item (seeded, reproducible): pick items get 4 choices — the key plus three misconception-tagged distractors; other response types return the worked key plus distractor misconceptions. The worked answer key is the generator output (`answer`, plus `answerIndex` for pick); items never exist as files |
@@ -24,7 +24,7 @@ end of this file.
 
 - A code may appear in `units.json` (or later, in a deck, check bank, placement tag or the
   teacher page) **only** if it is in `standards.json` `explorerCodes`. `buildsToward` codes are
-  preparation, never coverage, and must be labelled so wherever a teacher sees them.
+  preparation, never coverage, and must be labeled so wherever a teacher sees them.
 - Every cluster named in `placement.json` locked rungs exists in `standards.json` `clusters`.
   Deferred rungs name no taggable cluster — their headings live only in `deferredClusters`.
 - Explorer 7.3 chance language and all pre-grade-6 chance content is **enrichment, no code**
@@ -80,7 +80,7 @@ redrawn), Tally's sprite was extracted from Fraction Factory
 (`public/img/csq/chars/tally.webp`, master `scripts/csq-masters/chars/tally.png`) and
 appears on the course path, the placement Sorting Game and the passed-check state —
 never inside these decks' slides. The decks themselves carry **no `img`**: no
-screenshot of these steps' games teaches the maths, so the CPA pictorial step is a
+screenshot of these steps' games teaches the math, so the CPA pictorial step is a
 **drawn diagram** (`slide.visual`: place-value cards, a number line, a bar model, a
 tile strip — the lesson's own numbers, rendered by `server/views/courses.js`) with
 **guided focus** (`slide.focus`, 2–3 steps) over it. Focus boxes are verified on
@@ -92,7 +92,7 @@ box at once).
 | File | What |
 |---|---|
 | `course/explorer/<step>.json` | one slide deck per step for steps 5.1–5.3, 6.1–6.3, 7.1–7.3 and the finale 7.4, in the Phase 1 idiom: story, one "Rough first" worked example, one flagged Stretch slide, one words slide (four words), mission last, drawn diagrams with guided focus, no `img` |
-| `sets/u<unit>-explorer.json` | the check banks for units 5–7 (unit 7's bank also carries the finale's three items): ids `nq-explorer-<step>-e<1..3>`, `cat` one of the step's LOCKED primary codes (7.3's items are `cat: "enrichment"` — chance has no CCSS home before grade 6, flagged in the lock, the catalogue and the teacher map), every choice misconception-tagged, and every item carrying a `why` so a miss teaches the path to the answer |
+| `sets/u<unit>-explorer.json` | the check banks for units 5–7 (unit 7's bank also carries the finale's three items): ids `nq-explorer-<step>-e<1..3>`, `cat` one of the step's LOCKED primary codes (7.3's items are `cat: "enrichment"` — chance has no CCSS home before grade 6, flagged in the lock, the catalog and the teacher map), every choice misconception-tagged, and every item carrying a `why` so a miss teaches the path to the answer |
 
 Missions wire to the carriers named in `units.json`: Brain Board boards "Measures" (5.1),
 "Money" (5.3), "Around & Inside" (6.2) and "Lines & Grids" (6.3) — item generators in

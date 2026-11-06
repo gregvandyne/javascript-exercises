@@ -271,6 +271,13 @@
     },
     "cs": {
       "cstaNote": "Standards: CSTA K-12 Computer Science Standards (2017), levels 1B and 2. This programme is not made, reviewed or endorsed by CSTA."
+    },
+    "nq": {
+      "title": "Number Quest: maths lessons for grades 3–5, mapped to CCSS-M",
+      "h1": "Number Quest: maths with a map you can show anyone",
+      "faq": {
+        "q1": "Do I need to be a maths specialist?"
+      }
     }
   },
   "learn": {
@@ -683,6 +690,11 @@
       "reportH": {
         "note": "Practised means the activity was done, not mastery. Accuracy is right answers out of answered exit-ticket items tagged with the standard."
       }
+    }
+  },
+  "courses": {
+    "nq": {
+      "sub": "Maths through the Numberworks · grades 3–5"
     }
   }
 }

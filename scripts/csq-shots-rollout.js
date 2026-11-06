@@ -1,7 +1,7 @@
 // CS Quest slide pictures — rollout captures (all worlds beyond the Robo Route Unit 1 pilot).
 // Companion to scripts/csq-shots.js: same sandbox-frame + __brbTest pattern, generalised to every
 // CS Quest game. Shot table lives in scripts/csq-rollout-spec.json (state, chapter, band, level, actions).
-// Usage: node scripts/csq-shots-rollout.js [--out <masters-root>] [--webp] [game ...]
+// Usage: node scripts/csq-shots-rollout.js [--out <masters-root>] [--webp] [--geometry <json>] [game|state ...]
 //   masters (PNG 1280x720) go to <masters-root>/<game>/<state>.png; --webp also writes
 //   public/img/csq/<game>/<state>.webp (WebP q80, max 1280 wide). Seed 7 everywhere.
 import http from 'node:http';
@@ -13,16 +13,45 @@ import { chromium } from '@playwright/test';
 import { frameDocument, frameCsp, SANDBOX } from '../server/services/frame.js';
 import { vendorFile } from '../server/services/snapshot.js';
 
+// --geometry <file>: also record each Robo Route shot's board as it stands in the picture (cell grid in % of the
+// 1280x720 frame, the cells, start, goal, items and Bolt) so slide paths can be generated and checked
+// (scripts/csq-route-check.js). Merged into the file by image key.
+const BOARD_GEOMETRY = () => {
+  const pct = r => [r.left / 12.8, r.top / 7.2, r.width / 12.8, r.height / 7.2].map(v => +v.toFixed(2));
+  const shown = e => { const r = e.getBoundingClientRect(); return e.offsetParent && r.width > 0 && r.bottom > 0 && r.top < 720 && !e.closest('[hidden]'); };
+  // the parts a slide's focus box can name: program blocks, shelf, pills, watch strip, test tabs, buttons
+  const ui = [...document.querySelectorAll('#game .rr-blk, #game .rr-pill, #game .rr-watch > *, #game .ok-btn, #game .rr-task, #game .rr-verdict, #modal .rr-tile2, .ok-ui .ok-banner')]
+    .filter(shown).map(e => ({ t: (e.getAttribute('aria-label') || e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60), c: e.className.split(' ').filter(c => /^rr-|^ok-(btn|hot|go|quiet)$/.test(c)).slice(0, 3).join('.'), r: pct(e.getBoundingClientRect()) }));
+  const grid = document.querySelector('#grid');
+  if (!grid || !shown(grid) || !grid.children.length) return { ui };
+  const kids = [...grid.children], w = Math.max(...kids.map(c => +c.dataset.x)) + 1, h = Math.max(...kids.map(c => +c.dataset.y)) + 1;
+  const a = pct(kids[0].getBoundingClientRect()), z = pct(kids[kids.length - 1].getBoundingClientRect());
+  const code = c => (c.classList.contains('goal') ? 'G' : c.classList.contains('wall') ? '#' : c.classList.contains('water') ? '~' : c.classList.contains('paint') ? 'P' : c.classList.contains('plate') ? 'B' : c.classList.contains('door') ? 'D' : c.querySelector('.it[data-item]:not(.gone)') ? '*' : '.');
+  const rows = []; for (let y = 0; y < h; y++) rows.push(kids.filter(c => +c.dataset.y === y).sort((p, q) => p.dataset.x - q.dataset.x).map(code).join(''));
+  const st = window.__brbTest.state();
+  return { level: st.levelId, band: st.band, layout: st.layout, w, h, rows, bolt: st.bolt,
+    cell: { x0: a[0], y0: a[1], w: a[2], h: a[3], dx: w > 1 ? +((z[0] - a[0]) / (w - 1)).toFixed(3) : a[2], dy: h > 1 ? +((z[1] - a[1]) / (h - 1)).toFixed(3) : a[3] }, ui };
+};
+function saveGeometry(file, all) {
+  const old = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+  Object.assign(old, all);
+  const sorted = Object.fromEntries(Object.keys(old).sort().map(k => [k, old[k]]));
+  fs.writeFileSync(file, JSON.stringify(sorted, null, 1) + '\n');
+}
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const EXE = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const EXE = process.env.CHROMIUM || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const args = process.argv.slice(2);
 const outIdx = args.indexOf('--out');
 const OUTROOT = outIdx >= 0 ? path.resolve(args[outIdx + 1]) : path.join(ROOT, 'scripts', 'csq-masters');
 const WEBP = args.includes('--webp');
-const gamesWanted = args.filter(a => !a.startsWith('--') && a !== (outIdx >= 0 ? args[outIdx + 1] : null));
+const geoIdx = args.indexOf('--geometry');
+const GEOFILE = geoIdx >= 0 ? path.resolve(args[geoIdx + 1]) : null;
+const geometry = {};
+const gamesWanted = args.filter(a => !a.startsWith('--') && a !== (outIdx >= 0 ? args[outIdx + 1] : null) && a !== (geoIdx >= 0 ? args[geoIdx + 1] : null));
 const ALL = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'csq-rollout-spec.json'), 'utf8'));
-const shots = ALL.filter(s => !gamesWanted.length || gamesWanted.includes(s.game));
+const shots = ALL.filter(s => !gamesWanted.length || gamesWanted.includes(s.game) || gamesWanted.includes(s.state));
 if (!shots.length) { console.error('no shots matched'); process.exit(1); }
 
 async function runGame(browser, slug, list) {
@@ -89,6 +118,10 @@ async function runGame(browser, slug, list) {
           else if (a.mkCheck) { T.mkCheck(); await wait(300); }
           else if (a.mkTest) { await T.mkTest(); await wait(400); }
           else if (a.tester) { T.tester(a.tester[0], a.tester[1]); await wait(400); }
+          // the tester card with its two answers picked but not sent (the feedback IS the picture)
+          else if (a.testerPick) { const bs = [...document.querySelectorAll('#modal .row .ok-btn')]; const f = bs[a.testerPick[0]], h = bs[4 + a.testerPick[1]]; if (f) f.click(); if (h) h.click(); await wait(400); }
+          else if (a.makerFree) { T.maker(); await wait(400); }
+          else if (a.run) { await T.run(); await wait(600); }
           else if (a.act) { T.act(a.act); await wait(400); }
           else if (a.acts && s.game === 'data-detective') { for (const x of a.acts) { T.act(x); await wait(350); } }
           else if (a.acts && s.game === 'packet-post') { for (let i = 0; i < a.acts; i++) { const adv = T.advice(); if (!adv) break; await T.act(adv); await wait(350); } }
@@ -103,6 +136,7 @@ async function runGame(browser, slug, list) {
       }, s);
       await wait(400);
       const st = await f.evaluate(() => { const x = window.__brbTest.state(); return { levelId: x.levelId, chapter: x.chapter, screen: x.screen }; }).catch(() => ({}));
+      if (GEOFILE && slug === 'robo-route') geometry[`csq/${slug}/${s.state}`] = Object.assign({ shot: { chapter: s.chapter, band: s.band, level: s.level, program: (s.actions.find(a => a.program) || {}).program || null, steps: s.actions.reduce((n, a) => n + (a.steps || 0), 0) } }, await f.evaluate(`(${BOARD_GEOMETRY})()`));
       const file = path.join(outDir, `${s.state}.png`);
       await frameEl.screenshot({ path: file });
       let extra = '';
@@ -123,3 +157,4 @@ const browser = await chromium.launch(fs.existsSync(EXE) ? { executablePath: EXE
 const byGame = {}; for (const s of shots) (byGame[s.game] = byGame[s.game] || []).push(s);
 for (const [slug, list] of Object.entries(byGame)) await runGame(browser, slug, list);
 await browser.close();
+if (GEOFILE) saveGeometry(GEOFILE, geometry);

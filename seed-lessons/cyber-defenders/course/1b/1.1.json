@@ -12,6 +12,12 @@
    "art": "envelope",
    "img": "csq/packet-post/packets-1b-key",
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "view": [
+    7.6,
+    39.6,
+    45.6,
+    40.5
+   ],
    "focus": [
     {
      "cue": "A photo waits at Pim's Post, ready to travel",
@@ -61,6 +67,12 @@
    "art": "pixel",
    "img": "csq/packet-post/packets-1b-split",
    "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office.",
+   "view": [
+    7.0,
+    30.7,
+    60.9,
+    64.0
+   ],
    "focus": [
     {
      "cue": "One photo, three packets: each takes its own road",
@@ -88,6 +100,12 @@
    "art": "network",
    "img": "csq/packet-post/routes-1b-roads",
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "view": [
+    7.0,
+    20.6,
+    84.3,
+    74.9
+   ],
    "focus": [
     {
      "cue": "Packets travel the roads from office to office",
@@ -122,6 +140,12 @@
    ],
    "img": "csq/packet-post/packets-1b-order",
    "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order.",
+   "view": [
+    5.4,
+    30.4,
+    64.0,
+    65.5
+   ],
    "focus": [
     {
      "cue": "Packets can arrive mixed up at the far end",
@@ -158,6 +182,12 @@
    "art": "lock",
    "img": "csq/packet-post/packets-1b-center",
    "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
+   "view": [
+    5.6,
+    32.8,
+    51.2,
+    61.9
+   ],
    "focus": [
     {
      "cue": "Every road here meets at the center office",
@@ -210,6 +240,12 @@
    "art": "trophy",
    "img": "csq/packet-post/packets-1b-key",
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "view": [
+    7.6,
+    39.6,
+    45.6,
+    40.5
+   ],
    "focus": [
     {
      "cue": "Play Break It Up: watch the number on every packet",

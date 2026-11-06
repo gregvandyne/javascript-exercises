@@ -2318,6 +2318,8 @@
     "course": {
       "right": "正解！",
       "wrong": "おしい。正しい答えは：{answer}",
+      "notQuite": "おしい。",
+      "rightIs": "正しい答えは：{answer}",
       "next": "つぎの問題",
       "finish": "結果を見る",
       "listen": "読み上げる",
@@ -5991,6 +5993,8 @@
       "done": "完了",
       "next": "つぎ",
       "locked": "ロック中",
+      "preview": "プレビュー",
+      "lockedNote": "そのステップはまだロック中です。先にステップ{n}を終わらせよう：",
       "unit": "ユニット{n}",
       "units": "ユニット{from}〜{to}",
       "build": {
@@ -6000,7 +6004,8 @@
       }
     },
     "groups": {
-      "techChoices": "テクノロジーとわたしたち"
+      "techChoices": "テクノロジーとわたしたち",
+      "start": "ここからスタート"
     },
     "lesson": {
       "of": "ステップ{n}／{total}",
@@ -6015,7 +6020,9 @@
       "talk": "話し合ってみよう",
       "complete": "ステップ完了",
       "playToFinish": "プレイするとこのステップが完了します。",
-      "nextStep": "つぎのステップ"
+      "nextStep": "つぎのステップ",
+      "wholePicture": "画像全体を見る",
+      "close": "閉じる"
     },
     "check": {
       "h": "ミニテスト",
