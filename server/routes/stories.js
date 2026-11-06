@@ -70,11 +70,11 @@ router.get('/stories/new', requireBuilder, (req, res) => {
     <p class="lead">${t('stories.sub')}</p>
     <form class="panel sb-form" id="sb-form" novalidate>
       <div class="field"><label for="sb-idea">${t('stories.form.idea')}</label>
-        <textarea class="input" id="sb-idea" name="idea" maxlength="${LIMITS.idea}" rows="4" required placeholder="${t('stories.form.ideaHint')}"></textarea>
-        <span class="hint">${t('stories.form.ideaHint')}</span><span class="err" id="sb-err" role="alert"></span></div>
+        <textarea class="input" id="sb-idea" name="idea" maxlength="${LIMITS.idea}" rows="4" required aria-describedby="sb-hint"></textarea>
+        <span class="hint" id="sb-hint">${t('stories.form.ideaHint')}</span><span class="err" id="sb-err" role="alert"></span></div>
       <div class="row sb-opts">
         <div class="field"><label for="sb-age">${t('stories.form.age')}</label>
-          <select class="input" id="sb-age" name="ageBand">${AGE_BANDS.map(a => html`<option value="${a}">${t(AGE_KEYS[a])}</option>`)}</select></div>
+          <select class="input" id="sb-age" name="ageBand">${['all', ...AGE_BANDS.filter(a => a !== 'all')].map(a => html`<option value="${a}">${t(AGE_KEYS[a])}</option>`)}</select></div>
         <div class="field"><label for="sb-len">${t('stories.form.length')}</label>
           <select class="input" id="sb-len" name="seconds">${LENGTHS.map(n => html`<option value="${n}"${n === 60 ? raw(' selected') : ''}>${t('stories.form.seconds', { n })}</option>`)}</select></div>
       </div>

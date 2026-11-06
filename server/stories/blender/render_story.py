@@ -54,7 +54,8 @@ def setup_render(spec, tod):
     if engine == 'cycles':
         sc.render.engine = 'CYCLES'
         sc.cycles.device = 'CPU'
-        sc.cycles.samples = int(spec.get('samples', 16))
+        # a path tracer needs more samples than EEVEE's anti-aliasing passes; the denoiser cleans up the rest
+        sc.cycles.samples = max(16, int(spec.get('samples', 16))) if spec.get('width', 0) >= 640 else max(4, int(spec.get('samples', 4)))
         sc.cycles.use_denoising = True
         sc.cycles.max_bounces = 4
         sc.cycles.diffuse_bounces = 2
@@ -274,10 +275,11 @@ def camera(move, frames, fps, focus_obj, lens=45):
         a.update(x=-1.8)
         b.update(x=1.8)
     elif move == 'tilt_up':
+        # a crane up and back while the camera tilts: the sky opens up and the characters' faces stay in the shot
         a.update(rx=87.0)
-        b.update(rx=94.5, z=2.3)
+        b.update(rx=91.5, z=2.4, y=-11.6)
     elif move == 'tilt_down':
-        a.update(rx=94.5, z=2.3)
+        a.update(rx=91.5, z=2.4, y=-11.6)
         b.update(rx=87.0)
     else:  # 'drift' / 'static': a slow float
         b.update(x=0.35, y=-10.0)
