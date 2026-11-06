@@ -107,7 +107,7 @@ test('read -> check (graded on the server) -> game module -> the next step opens
   const kid = newKid(); C.setBand(kid, course, '1b');
   const s1 = C.getStep(course, '1b-1.1'), s2 = C.getStep(course, '1b-1.2');
   // Locked steps go to the map; unknown ones are 404.
-  assert.equal((await get('/courses/cs-quest/1b-1.2', kid)).location, '/courses/cs-quest#step-1b-1.2');
+  assert.equal((await get('/courses/cs-quest/1b-1.2', kid)).location, '/courses/cs-quest?locked=1b-1.2#step-1b-1.2');
   assert.equal((await get('/courses/cs-quest/1b-7.1', kid)).status, 404);
   assert.equal((await post('/api/courses/cs-quest/1b-1.2/read', kid, {})).status, 403, 'no API on a locked step');
 
@@ -311,7 +311,7 @@ test('the admin account: every step of every course open, and opening completes 
   // Direct entry: the admin opens a late step's page; the student is sent back to the map.
   C.setBand(kid, course, '2');
   assert.equal((await get('/courses/cs-quest/2-5.3', admin)).status, 200);
-  assert.equal((await get('/courses/cs-quest/2-5.3', kid)).location, '/courses/cs-quest#step-2-5.3');
+  assert.equal((await get('/courses/cs-quest/2-5.3', kid)).location, '/courses/cs-quest?locked=2-5.3#step-2-5.3');
   // The step APIs answer the admin on that step and refuse the student.
   assert.equal((await post('/api/courses/cs-quest/2-5.3/read', kid, {})).status, 403);
   assert.equal((await post('/api/courses/cs-quest/2-5.3/read', admin, {})).status, 200);

@@ -12,6 +12,7 @@
 import { html, raw } from './html.js';
 import { current } from '../i18n/index.js';
 import * as NQ from '../services/number-quest-progress.js';
+import { subLine, lockedNote } from './courses.js';
 
 /** Tally Marks as tally bundles (spec §6.1: five-bar gates, legible to a five-year-old): full bundles of
  *  five, then the loose marks, then the number in words for anyone counting along. */
@@ -76,11 +77,12 @@ export function pathPage(d) {
   const units = d.units;
   return html`<section class="course-page nqpath">
     <a class="back small" href="/">← ${t('courses.home')}</a>
-    <header class="course-hero">
-      <span class="course-emo big" aria-hidden="true">${c.emoji}</span>
+    <header class="course-hero nqp-hero">
       <img class="nqp-tally-img" src="/img/csq/chars/tally.webp" alt="Tally the cat, keeper of the Numberworks" width="219" height="353">
-      <div><h1>${t(`${c.key}.title`)}</h1><p class="lead">${t(`${c.key}.sub`)}</p><p lang="en" dir="ltr">Every number has a job to do. Walk the street, finish each workshop's steps, and plant its stone.</p></div>
+      <div><h1>${t(`${c.key}.title`)}</h1><p class="lead">${subLine(t(`${c.key}.sub`))}</p></div>
+      <p class="nqp-hero-p" lang="en" dir="ltr">Every number has a job to do. Walk the street, finish each workshop's steps, and plant its stone.</p>
     </header>
+    ${lockedNote(t, ov, d.locked)}
 
     ${!d.bandSet && d.canPick && !d.hasProgress ? html`<section class="bandpick" aria-labelledby="bandpick-h">
       <h2 id="bandpick-h">${t('courses.band.h')}</h2>
@@ -99,7 +101,7 @@ export function pathPage(d) {
       <div class="nqp-hud-row">
         <div class="nqp-hud-cell"><span class="nqp-hud-k">🐱 Tally Marks</span>${tallyBundles(d.marks)}</div>
         <div class="nqp-hud-cell"><span class="nqp-hud-k">🌱 Today's goal</span>
-          ${daily ? html`<span class="nqp-dots" aria-hidden="true">${Array.from({ length: daily.goal }, (_, i) => raw(`<span class="nqp-dot${i < daily.done ? ' is-done' : ''}"></span>`))}</span> <b>${Math.min(daily.done, daily.goal)} of ${daily.goal}</b> ${daily.met ? '· goal done! 🎉' : 'activities done'}
+          ${daily ? html`<span class="nqp-dots" aria-hidden="true">${Array.from({ length: daily.goal }, (_, i) => raw(`<span class="nqp-dot${i < daily.done ? ' is-done' : ''}"></span>`))}</span> <b>${Math.min(daily.done, daily.goal)} of ${daily.goal}</b> ${daily.met ? '· goal done! 🎉' : daily.goal === 1 ? 'activity done' : 'activities done'}
           ${d.canPick ? html`<form method="post" action="/api/number-quest/daily-goal" class="nqp-goalpick"><span class="small muted">My goal:</span>${NQ.DAILY_GOAL_CHOICES.map(g => html`<button type="submit" name="goal" value="${g}" class="nqp-goalbtn ${g === daily.goal ? 'is-on' : ''}" aria-pressed="${g === daily.goal ? 'true' : 'false'}">${g}</button>`)}<input type="hidden" name="back" value="/courses/number-quest"></form>` : ''}` : html`<span class="muted">Sign in to keep your marks and goal.</span>`}
         </div>
       </div>
@@ -117,6 +119,6 @@ export function pathPage(d) {
     <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
       <a class="btn" href="/build">${t('courses.map.build.go')}</a></div></aside>
     <aside class="course-teach"><h2>🍎 ${t('courses.teachers.h')}</h2><p>${t(`${c.key}.teachers`)}</p>
-      <a class="btn btn-ghost" href="${c.teacherPath}">${t('courses.teachers.link')}</a></aside>
+      <a class="btn course-teach-go" href="${c.teacherPath}">${t('courses.teachers.link')}</a></aside>
   </section>`;
 }
