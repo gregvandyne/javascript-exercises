@@ -193,7 +193,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   .tm-field.cpu .side.blue .qcard{grid-column:1;min-width:0;height:60px}
   .tm-field.cpu .side.blue .arow{grid-column:2;min-width:0}
   .tm-field.cpu .side.blue .ans{height:60px}
-  .tm-field.cpu .side.blue .keys{height:100%;max-height:200px;align-self:start}
+  .tm-field.cpu .side.blue .keys{height:100%;max-height:min(200px,calc((100vw - 40px) * .45));align-self:start}
   .tm-field.cpu .say{display:none}
 }
 @media (orientation:portrait) and (max-width:379px){.tm-field.two .keys{gap:3px}.tm-field.two .side{padding:5px 4px}}
