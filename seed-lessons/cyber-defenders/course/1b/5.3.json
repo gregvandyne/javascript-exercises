@@ -16,10 +16,10 @@
     {
      "cue": "Pim the owl, off duty at dusk",
      "box": [
-      8,
-      2,
-      81,
-      94
+      8.0,
+      2.0,
+      81.0,
+      94.0
      ]
     }
    ]
@@ -27,35 +27,7 @@
   {
    "title": "Your body sends signs",
    "text": "Your body tells you when play stops feeling good. Sore eyes, a heavy head and grumpy feelings are signs. So is a looping thought: just one more, just one more.",
-   "art": "battery",
-   "img": "csq/would-you-rather/tech-1b-first",
-   "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides.",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "Computers that write songs",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Computers that only play songs people wrote",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
-   ]
+   "art": "battery"
   },
   {
    "title": "Choose the stop before you start",
@@ -100,68 +72,12 @@
     "Too tired to enjoy the game",
     "Just one more, again and again",
     "A break would have felt better"
-   ],
-   "img": "csq/would-you-rather/online-download-1b",
-   "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "Ask a trusted adult before every download",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Or never download anything at all",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
    ]
   },
   {
    "title": "Better breaks",
    "text": "A break is not empty time. Drawing, building, fresh air and a snack all recharge you in ways a screen cannot. Netville keeps a Noticeboard of Better Breaks by the post office door.",
-   "art": "lightbulb",
-   "img": "csq/packet-post/packets-1b-center",
-   "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
-   "view": [
-    5.6,
-    32.8,
-    51.2,
-    61.9
-   ],
-   "focus": [
-    {
-     "cue": "Every road meets at the center office",
-     "box": [
-      21.3,
-      59.3,
-      8.0,
-      8.6
-     ]
-    },
-    {
-     "cue": "Five packets cross here: the whole town in one map",
-     "box": [
-      8.6,
-      37.8,
-      45.2,
-      51.9
-     ]
-    }
-   ]
+   "art": "lightbulb"
   },
   {
    "kind": "words",
@@ -191,26 +107,7 @@
    "kind": "mission",
    "title": "Your mission",
    "text": "There is no game this time. Add one idea to the Noticeboard of Better Breaks, and set your own one-week break plan with a stopping point you choose first.",
-   "art": "trophy",
-   "img": "csq/would-you-rather/tech-1b-second",
-   "alt": "A second technology dilemma: a new choice about how an invention changes the way people live.",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "Pick a stop, then make your break plan",
-     "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
-     ]
-    }
-   ]
+   "art": "trophy"
   }
  ],
  "check": [

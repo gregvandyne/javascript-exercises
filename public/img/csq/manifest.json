@@ -97,7 +97,7 @@
    "band": "1b",
    "state": "claims-1b-small",
    "concept": "Enough data? Two bars are a hunch, not a case",
-   "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we can not tell yet.",
+   "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we cannot tell yet.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },

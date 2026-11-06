@@ -9,35 +9,7 @@
   {
    "title": "Two questions at the counter",
    "text": "When you collect a package, Pim checks two different things. Authentication proves it is really you. Authorization checks the list to see if this package is yours to open.",
-   "art": "envelope",
-   "img": "csq/packet-post/locks-2-shield",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
-   "view": [
-    5.0,
-    0.0,
-    86.3,
-    76.7
-   ],
-   "focus": [
-    {
-     "cue": "Share or Shield: decide public or private, then the reason",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
-     ]
-    },
-    {
-     "cue": "One fact at a time, with its good side and its risk",
-     "box": [
-      8.0,
-      27.9,
-      45.2,
-      13.2
-     ]
-    }
-   ]
+   "art": "envelope"
   },
   {
    "kind": "example",
@@ -82,35 +54,7 @@
   {
    "title": "Passkeys, honestly",
    "text": "A passkey lives on your device, which proves it is you without sharing a copyable secret. A fake page cannot trick you into handing it over, because there is nothing to hand over.",
-   "art": "lock",
-   "img": "csq/packet-post/locks-2-router",
-   "alt": "The home router still has its key on a sticker anyone can read. Build a new passphrase from four word tiles.",
-   "view": [
-    51.0,
-    21.5,
-    40.4,
-    53.9
-   ],
-   "focus": [
-    {
-     "cue": "The old way: a key on a sticker, readable by any visitor",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
-     ]
-    },
-    {
-     "cue": "Build the device its own new key from word tiles",
-     "box": [
-      54.0,
-      38.0,
-      34.4,
-      32.4
-     ]
-    }
-   ]
+   "art": "lock"
   },
   {
    "title": "Shared screens, separate doors",
@@ -172,24 +116,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Lock It: the same levels you finished in step 2.1, so this step is already earned when the game opens. Notice each check: is it proving who you are, or checking what you may open?",
+   "text": "Open Trick Inbox at Prize Letters and sort all 7 messages. When a letter fishes for your mailbox key, name the check that would still stop a thief: something you have, or something you are.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-2-key",
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected.",
+   "img": "csq/trick-inbox/letters-1b-lt-3-all",
+   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
    "view": [
-    51.0,
-    13.7,
-    40.3,
-    35.8
+    0.0,
+    19.6,
+    75.6,
+    67.2
    ],
    "focus": [
     {
-     "cue": "Notice each check as you play the new levels",
+     "cue": "Play Prize Letters: a letter fishing for your mailbox key",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      50.8,
+      56.4,
+      21.8,
+      7.1
      ]
     }
    ]
@@ -201,8 +145,8 @@
   "cd-2-2.2-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "locks",
-  "params": "chapter=locks&band=2&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "letters",
+  "params": "chapter=letters&band=2&lock=1"
  }
 }

@@ -172,35 +172,7 @@
   {
    "title": "Score your own setup",
    "text": "Your layer audit needs no real account details: score the shape, not the secrets. Four layers present is a strong stack. Two is a plan for this week, written down.",
-   "art": "table",
-   "img": "csq/packet-post/locks-2-post",
-   "alt": "The last Lock It sort in Pro: judging what is safe to do, the habit of naming a risk before you act.",
-   "view": [
-    5.0,
-    15.4,
-    51.2,
-    45.5
-   ],
-   "focus": [
-    {
-     "cue": "The last Lock It sort in Pro: your mailbox key",
-     "box": [
-      8.0,
-      27.9,
-      45.2,
-      13.2
-     ]
-    },
-    {
-     "cue": "Score the shape, not the secrets: nothing sorted yet",
-     "box": [
-      8.2,
-      42.5,
-      44.8,
-      6.0
-     ]
-    }
-   ]
+   "art": "table"
   },
   {
    "kind": "words",

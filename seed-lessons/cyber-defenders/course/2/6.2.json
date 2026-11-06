@@ -9,35 +9,7 @@
   {
    "title": "Three promises",
    "text": "Security work protects three promises about information. It stays secret, it stays correct, and it stays reachable when its owner needs it. Professionals shorten that to confidentiality, integrity and availability.",
-   "art": "shield",
-   "img": "csq/packet-post/protocols-2-check",
-   "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again.",
-   "view": [
-    50.2,
-    41.9,
-    40.0,
-    39.0
-   ],
-   "focus": [
-    {
-     "cue": "Correct: every packet carries a dot count",
-     "box": [
-      54.1,
-      46.9,
-      32.2,
-      23.8
-     ]
-    },
-    {
-     "cue": "A match at the far end means it is whole",
-     "box": [
-      54.4,
-      70.0,
-      18.5,
-      5.9
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "title": "A read letter",
@@ -90,35 +62,7 @@
   {
    "title": "Rules stack too",
    "text": "Society stacks its own layers: house rules, your school's acceptable use policy, the app's terms, then copyright and privacy law. Each layer is enforced by different people, with different tools.",
-   "art": "table",
-   "img": "csq/would-you-rather/online-name-2",
-   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "An app's rules decide what may be posted",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "And the law protects what is yours",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
-   ]
+   "art": "table"
   },
   {
    "kind": "example",
@@ -129,34 +73,6 @@
     "A private photo shown to strangers: confidentiality",
     "A delivery note edited in transit: integrity",
     "The whole message service down all day: availability"
-   ],
-   "img": "csq/packet-post/protocols-2-journey",
-   "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
-   "view": [
-    37.2,
-    20.7,
-    54.1,
-    48.1
-   ],
-   "focus": [
-    {
-     "cue": "The five rule cards for the whole journey",
-     "box": [
-      40.7,
-      42.9,
-      47.6,
-      20.0
-     ]
-    },
-    {
-     "cue": "Put them in the order they happen",
-     "box": [
-      40.2,
-      26.5,
-      48.1,
-      7.9
-     ]
-    }
    ]
   },
   {

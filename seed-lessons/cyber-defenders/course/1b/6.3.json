@@ -122,68 +122,12 @@
     "Tell an adult, right away",
     "Block or report the page",
     "Carry on while adults change the key"
-   ],
-   "img": "csq/packet-post/tricks-1b-coins",
-   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
-   "view": [
-    5.0,
-    3.9,
-    86.4,
-    76.8
-   ],
-   "focus": [
-    {
-     "cue": "The trick card promising free coins today only",
-     "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
-     ]
-    },
-    {
-     "cue": "Run the five moves on its cues, in order",
-     "box": [
-      54.0,
-      40.2,
-      34.4,
-      16.5
-     ]
-    }
    ]
   },
   {
    "title": "Speed is protection",
    "text": "If you ever type something private into a trick page, telling fast is what saves you. Adults can change the key before the trickster uses it, so every minute of honesty helps.",
-   "art": "star",
-   "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
-   "view": [
-    5.0,
-    7.8,
-    86.4,
-    76.8
-   ],
-   "focus": [
-    {
-     "cue": "Speed is protection: a saved message tells fast",
-     "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
-     ]
-    },
-    {
-     "cue": "Ask a trusted adult: the button is right here",
-     "box": [
-      54.0,
-      57.7,
-      34.4,
-      6.8
-     ]
-    }
-   ]
+   "art": "star"
   },
   {
    "kind": "words",

@@ -196,7 +196,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Escape the Post Office and play Escape the Post Office. Open all six locks, earn your Defender shield, and take the debrief page to your teacher.",
+   "text": "Open Escape the Post Office and play the full escape. Open all six locks, earn your Defender shield, and share the debrief page with a trusted adult or your class.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-2-five",
    "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
@@ -208,7 +208,7 @@
    ],
    "focus": [
     {
-     "cue": "Open all six locks and take the debrief to class",
+     "cue": "Open all six locks, then share the debrief",
      "box": [
       1.5,
       37.8,

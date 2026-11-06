@@ -20,7 +20,7 @@
    "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",
    "focus": [
     {
-     "cue": "Bolt can only see the squares right around it.",
+     "cue": "Bolt can only see the squares right around him.",
      "box": [
       5.7,
       73.2,
@@ -75,7 +75,7 @@
   {
    "kind": "example",
    "title": "A fog-proof program",
-   "text": "Put an if / else inside a repeat. Bolt checks again at every square, so it turns by itself when the way ahead is blocked.",
+   "text": "Put an if / else inside a repeat. Bolt checks again at every square, so he turns by himself when the way ahead is blocked.",
    "art": "grid",
    "img": "csq/robo-route/conditionals-1b-fog-proof",
    "view": [

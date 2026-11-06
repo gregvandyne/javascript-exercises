@@ -218,11 +218,11 @@
    "topic": "Surveys",
    "kind": "analyze",
    "secs": 20,
-   "q": "Why pool every pair's results on the projector?",
+   "q": "Why put everyone's survey answers together in one chart?",
    "choices": [
     "many contributors make a bigger, fairer sample",
-    "one pair's data is always enough",
-    "to find the fastest pair",
+    "one person's answers are always enough",
+    "to find out who answered fastest",
     "because charts need color"
    ],
    "answer": 0,

@@ -236,15 +236,15 @@
    "topic": "Surveys",
    "kind": "analyze",
    "secs": 20,
-   "q": "Why ask another pair whether your claim is fair?",
+   "q": "Why ask someone else whether your claim is fair?",
    "choices": [
     "so they can copy your work",
     "because the game needs it",
     "to finish faster",
-    "they may see something your pair missed"
+    "they may see something you missed"
    ],
    "answer": 3,
-   "why": "Fresh eyes catch slips and unfair jumps that the pair who made the claim may miss."
+   "why": "Fresh eyes, like a family member or a classmate, catch slips and unfair jumps that the person who made the claim may miss."
   }
  ]
 }

@@ -10,31 +10,31 @@
    "title": "On Pim's counter",
    "text": "On Pim's counter sit a postcard and a sealed envelope. Anyone can read the postcard, but the envelope keeps its words hidden.",
    "art": "envelope",
-   "img": "csq/packet-post/protocols-1b-key",
-   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+   "img": "csq/packet-post/locks-2-sealed",
+   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
    "view": [
-    8.1,
-    24.3,
-    68.1,
-    60.5
+    8.0,
+    24.0,
+    84.0,
+    72.0
    ],
    "focus": [
     {
-     "cue": "Three packets were sent on this road",
+     "cue": "The open street: anyone on it can read the post, like a postcard",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
+      18.0,
+      37.8,
+      23.4,
+      17.5
      ]
     },
     {
-     "cue": "Each packet gets its own mail slot",
+     "cue": "The padlock street is sealed, like an envelope",
      "box": [
-      54.1,
-      38.0,
-      19.1,
-      12.3
+      15.2,
+      70.1,
+      30.9,
+      19.2
      ]
     }
    ]
@@ -43,31 +43,22 @@
    "title": "Open like a postcard",
    "text": "An open network is like a postcard. Anyone nearby could read what travels on it, so it is not a place for private things.",
    "art": "network",
-   "img": "csq/packet-post/protocols-1b-twice",
-   "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
+   "img": "csq/packet-post/locks-2-sealed",
+   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
    "view": [
-    8.1,
-    30.2,
-    66.8,
-    59.4
+    52.0,
+    22.0,
+    40.0,
+    32.0
    ],
    "focus": [
     {
-     "cue": "Four packets this time, traveling one road",
+     "cue": "Pim: the snoopy cat reads everything on the open street",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
-     ]
-    },
-    {
-     "cue": "One arrived twice: the extra copy goes in the bin",
-     "box": [
-      60.4,
-      52.3,
-      11.5,
-      7.9
+      55.3,
+      26.4,
+      32.9,
+      12.9
      ]
     }
    ]
@@ -147,35 +138,7 @@
   {
    "title": "The most open road",
    "text": "Public networks in cafés and trains are the most open road of all. Save private things for your home network instead.",
-   "art": "globe",
-   "img": "csq/packet-post/routes-1b-town",
-   "alt": "The big town map: roadworks all over town, and Pim warns that two roads will close.",
-   "view": [
-    5.4,
-    20.5,
-    85.9,
-    76.4
-   ],
-   "focus": [
-    {
-     "cue": "The whole town's roads, open to everyone",
-     "box": [
-      8.4,
-      36.1,
-      45.5,
-      54.8
-     ]
-    },
-    {
-     "cue": "Roadworks close two roads while you play",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
-     ]
-    }
-   ]
+   "art": "globe"
   },
   {
    "kind": "words",
