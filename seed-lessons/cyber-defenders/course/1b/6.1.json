@@ -12,29 +12,23 @@
    "art": "lock",
    "img": "csq/escape-the-post-office/layers-1b",
    "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "One trouble card: a snooper peeks",
      "box": [
-      2.4,
-      44.3,
-      56.6,
-      7.7
+      4.5,
+      6.7,
+      88.2,
+      19.9
      ]
     },
     {
      "cue": "Four layers, each stops a different trick",
      "box": [
-      1.5,
-      54.7,
-      97.0,
-      12.9
+      2.6,
+      33.3,
+      94.9,
+      42.4
      ]
     }
    ]
@@ -45,29 +39,23 @@
    "art": "wrench",
    "img": "csq/escape-the-post-office/layers-1b-3",
    "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "An old lock has a known hole",
      "box": [
-      2.4,
-      44.3,
-      52.5,
-      7.7
+      4.5,
+      19.6,
+      88.3,
+      11.9
      ]
     },
     {
      "cue": "Updates, the Patch Crew, sew it shut",
      "box": [
-      50.5,
-      54.7,
-      23.5,
-      12.9
+      2.6,
+      60.9,
+      46.6,
+      19.7
      ]
     }
    ]
@@ -78,29 +66,23 @@
    "art": "box",
    "img": "csq/escape-the-post-office/layers-1b-4",
    "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "A flood soaks the only copy",
      "box": [
-      2.4,
-      44.3,
-      40.4,
-      7.7
+      5.2,
+      18.3,
+      75.5,
+      12.9
      ]
     },
     {
      "cue": "A spare kept somewhere else saves it",
      "box": [
-      75.9,
-      55.2,
-      12.6,
-      11.6
+      53.3,
+      68.7,
+      22.6,
+      20.5
      ]
     }
    ]
@@ -118,29 +100,23 @@
    ],
    "img": "csq/escape-the-post-office/layers-1b",
    "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "Padlock, key checker, patches, spare copies",
      "box": [
-      1.5,
-      54.7,
-      97.0,
-      12.9
+      2.6,
+      33.3,
+      94.9,
+      42.4
      ]
     },
     {
      "cue": "Check which trouble each layer stops",
      "box": [
-      2.4,
-      44.3,
-      56.6,
-      7.7
+      4.5,
+      6.7,
+      88.2,
+      19.9
      ]
     }
    ]
@@ -151,29 +127,23 @@
    "art": "shield",
    "img": "csq/escape-the-post-office/layers-1b-2",
    "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "A guesser tries key after key",
      "box": [
-      2.4,
-      44.3,
-      44.5,
-      7.7
+      5.2,
+      28.5,
+      83.4,
+      12.9
      ]
     },
     {
      "cue": "A second layer, the key checker, still stands",
      "box": [
-      26.9,
-      55.2,
-      20.0,
-      11.6
+      53.3,
+      50.9,
+      36.7,
+      20.5
      ]
     }
    ]
@@ -209,20 +179,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/layers-1b-3",
    "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "Play Layers: match each trouble to its layer",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      24.7
+      2.6,
+      16.6,
+      94.9,
+      64.0
      ]
     }
    ]

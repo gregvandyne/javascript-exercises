@@ -23,6 +23,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const NARROW = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'cyber-shots-spec.json'), 'utf8')).filter(x => x.narrow).map(x => `csq/${x.game}/${x.state}`));
 const CD = path.join(ROOT, 'seed-lessons/cyber-defenders');
 const CS = path.join(ROOT, 'seed-lessons/cs-quest');
 const { scanVersion } = await import('../../server/services/scanner.js');
@@ -167,7 +168,8 @@ test('5-8 slides: one worked example with chips, one words slide with four words
           const [x, y, w, h] = f.box;
           assert.ok(x >= vx - 0.05 && y >= vy - 0.05 && x + w <= vx + vw + 0.05 && y + h <= vy + vh + 0.05, `${at}: focus "${f.cue}" sits inside the view`);
         }
-      } else if (s.img && !s.img.startsWith('csq/chars/') && s.focus) {
+      } else if (s.img && !s.img.startsWith('csq/chars/') && s.focus && !NARROW.has(s.img)) {
+        // A narrow shot (the game laid out at phone width, a 16:9 slice of it) is legible whole: no crop needed.
         assert.fail(`${at}: a screenshot with focus carries a view, so the part it names is legible on a phone`);
       }
       if (s.focus != null) {

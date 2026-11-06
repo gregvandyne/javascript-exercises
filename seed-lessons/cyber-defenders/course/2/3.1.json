@@ -78,20 +78,14 @@
    "art": "map",
    "img": "csq/trick-inbox/chat-2-ch-6-all",
    "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
-   "view": [
-    0.0,
-    34.1,
-    74.5,
-    63.1
-   ],
    "focus": [
     {
      "cue": "Three facts together: a first pet, a street, a birthday",
      "box": [
-      3.8,
-      61.8,
-      63.4,
-      7.1
+      7.1,
+      39.0,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -109,29 +103,23 @@
    ],
    "img": "csq/trick-inbox/media-2-md-5-all",
    "alt": "A Which Dragon Are You quiz asks for your first pet, your mother's first name and your birthday.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "A fun quiz asks for three facts",
      "box": [
-      3.8,
-      61.8,
-      62.6,
-      7.1
+      7.1,
+      53.1,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "Each answer is a piece of PII",
      "box": [
-      3.6,
-      49.6,
-      10.2,
-      5.0
+      5.7,
+      17.5,
+      19.9,
+      13.3
      ]
     }
    ]

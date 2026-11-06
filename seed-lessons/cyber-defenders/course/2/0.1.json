@@ -52,29 +52,23 @@
    "art": "mask",
    "img": "csq/trick-inbox/senders-2-sd-1-all",
    "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
-   "view": [
-    0.0,
-    28.0,
-    92.9,
-    70.4
-   ],
    "focus": [
     {
      "cue": "The name says Post Office",
      "box": [
-      15.5,
-      42.9,
-      15.7,
-      4.1
+      29.6,
+      35.5,
+      29.9,
+      7.8
      ]
     },
     {
      "cue": "The real address is a fake account",
      "box": [
-      4.9,
-      51.9,
-      35.0,
-      2.6
+      7.8,
+      49.5,
+      70.0,
+      11.2
      ]
     }
    ]
@@ -269,20 +263,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-2-new",
    "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    15.9,
-    96.1,
-    77.2
-   ],
    "focus": [
     {
      "cue": "Lock 1 waits for your first stamp: Roadwise",
      "box": [
-      1.5,
-      38.7,
-      31.5,
-      34.5
+      2.6,
+      29.5,
+      46.4,
+      65.1
      ]
     }
    ]
@@ -335,29 +323,23 @@
    "art": "mask",
    "img": "csq/trick-inbox/senders-2-sd-1-all",
    "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
-   "view": [
-    0.0,
-    28.0,
-    92.9,
-    70.4
-   ],
    "focus": [
     {
      "cue": "The name says Post Office",
      "box": [
-      15.5,
-      42.9,
-      15.7,
-      4.1
+      29.6,
+      35.5,
+      29.9,
+      7.8
      ]
     },
     {
      "cue": "The real address is a fake account",
      "box": [
-      4.9,
-      51.9,
-      35.0,
-      2.6
+      7.8,
+      49.5,
+      70.0,
+      11.2
      ]
     }
    ]
@@ -552,20 +534,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-2-new",
    "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    15.9,
-    96.1,
-    77.2
-   ],
    "focus": [
     {
      "cue": "Lock 1 waits for your first stamp: Roadwise",
      "box": [
-      1.5,
-      38.7,
-      31.5,
-      34.5
+      2.6,
+      29.5,
+      46.4,
+      65.1
      ]
     }
    ]

@@ -10,22 +10,16 @@
    "title": "A drill, like a fire drill",
    "text": "Defenders practice what to do when something online goes wrong, the way schools practice a fire drill. Calm, practiced moves beat panicked clever ones, every time.",
    "art": "shield",
-   "img": "csq/escape-the-post-office/moves-1b",
+   "img": "csq/escape-the-post-office/moves-1b-n2",
    "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "The five moves, like a fire drill",
      "box": [
-      1.5,
-      66.0,
-      97.0,
-      27.6
+      2.6,
+      8.9,
+      94.9,
+      71.9
      ]
     }
    ]
@@ -36,29 +30,23 @@
    "art": "envelope",
    "img": "csq/escape-the-post-office/moves-1b-two",
    "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
-   "view": [
-    0.0,
-    23.3,
-    96.6,
-    70.1
-   ],
    "focus": [
     {
      "cue": "Move one: Stop",
      "box": [
-      2.6,
-      56.0,
-      24.1,
-      6.7
+      5.0,
+      13.4,
+      45.9,
+      11.0
      ]
     },
     {
      "cue": "Move two: Save it",
      "box": [
-      27.5,
-      56.0,
-      27.4,
-      6.7
+      5.0,
+      26.9,
+      52.2,
+      12.7
      ]
     }
    ]
@@ -69,20 +57,14 @@
    "art": "people",
    "img": "csq/escape-the-post-office/moves-1b-four",
    "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
-   "view": [
-    0.0,
-    23.5,
-    95.1,
-    71.4
-   ],
    "focus": [
     {
      "cue": "Move three: Tell a trusted adult",
      "box": [
-      55.7,
-      56.0,
-      21.0,
-      5.8
+      5.0,
+      40.4,
+      40.0,
+      11.0
      ]
     }
    ]
@@ -93,20 +75,14 @@
    "art": "lock",
    "img": "csq/trick-inbox/chat-1b-ch-4-decide",
    "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
-   "view": [
-    2.6,
-    28.2,
-    97.4,
-    71.8
-   ],
    "focus": [
     {
      "cue": "Block or report: a button, pressed with an adult",
      "box": [
-      75.0,
-      73.6,
-      23.5,
-      10.7
+      51.0,
+      43.8,
+      46.2,
+      20.3
      ]
     }
    ]
@@ -160,20 +136,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/boss-1b-c1",
    "alt": "Trick Inbox, the Boss Round: a stranger's game chat waits in the inbox, one clue found in green and one still hiding.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "Play the Boss Round: say the five moves first",
      "box": [
-      1.5,
-      38.7,
-      97.0,
-      33.6
+      2.9,
+      5.8,
+      94.3,
+      87.9
      ]
     }
    ]

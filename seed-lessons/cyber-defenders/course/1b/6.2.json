@@ -66,29 +66,14 @@
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-3-debrief",
    "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
-   "view": [
-    0.0,
-    0.0,
-    99.7,
-    100.0
-   ],
    "focus": [
-    {
-     "cue": "A mean message breaks the chat rules",
-     "box": [
-      3.8,
-      47.1,
-      44.8,
-      6.9
-     ]
-    },
     {
      "cue": "Not yours to fix alone: save it and tell an adult",
      "box": [
-      3.4,
-      67.7,
-      93.3,
-      14.9
+      6.4,
+      29.0,
+      87.1,
+      47.4
      ]
     }
    ]

@@ -46,11 +46,14 @@ if (!shots.length) { console.error('no shots matched'); process.exit(1); }
 const RECTS_FILE = path.join(ROOT, 'scripts', 'cyber-shots-rects.json');
 const RECTS = fs.existsSync(RECTS_FILE) ? JSON.parse(fs.readFileSync(RECTS_FILE, 'utf8')) : {};
 /** Collected in the frame: the named elements of Trick Inbox and Escape, as [x, y, w, h] in % of the viewport. */
-function collectRects() {
-  const W = innerWidth, H = innerHeight, out = {};
+function collectRects(clip) {
+  // clip { top, height } (CSS px): a narrow shot's 16:9 slice of the page; boxes are then % of the slice
+  const T = clip ? clip.top : 0, W = innerWidth, H = clip ? clip.height : innerHeight, out = {};
+  const sh = q => ({ left: q.left, right: q.right, top: q.top - T, bottom: q.bottom - T, width: q.width, height: q.height });
+  const R = el => sh(el.getBoundingClientRect());
   const r1 = v => Math.round(v * 10) / 10;
   const add = (name, el) => {
-    const r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
+    const r = R(el); if (!r.width || !r.height) return;
     const x0 = Math.max(0, r.left), y0 = Math.max(0, r.top), x1 = Math.min(W, r.right), y1 = Math.min(H, r.bottom);
     if (x1 <= x0 || y1 <= y0) return;
     out[name] = [r1(x0 / W * 100), r1(y0 / H * 100), r1((x1 - x0) / W * 100), r1((y1 - y0) / H * 100), (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 60)];
@@ -58,7 +61,7 @@ function collectRects() {
     // often holds a short line ("From: Pim"), and a phone crop is measured from the ink, not the container.
     const rng = document.createRange(); rng.selectNodeContents(el);
     let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
-    for (const q of [...rng.getClientRects(), ...[...el.querySelectorAll('img, svg, canvas')].map(e => e.getBoundingClientRect())]) {
+    for (const q of [...[...rng.getClientRects()].map(sh), ...[...el.querySelectorAll('img, svg, canvas')].map(R)]) {
       if (q.width < 1 || q.height < 1) continue;
       a = Math.min(a, q.left); b = Math.min(b, q.top); c = Math.max(c, q.right); d = Math.max(d, q.bottom);
     }
@@ -76,10 +79,13 @@ function collectRects() {
     ['li', '.ep-card li'], ['tiles', '.ep-tiles'], ['tile', '.ep-tile'], ['seq', '.ep-seq'], ['slot', '.ep-seq span'], ['h', '.ep-h'], ['cipher', '.ep-cipher'],
     ['decoded', '.ep-decoded'], ['shift', '.ep-shift'], ['row', '.ep-row'], ['btn', '.ep-main .ok-btn, .ep-practice .ok-btn, .ep-shield .ok-btn'],
     ['shield', '.ep-shield'], ['table', '.ep-tbl'], ['trow', '.ep-tbl tr'], ['practice', '.ep-practice'], ['ptext', '.ep-practice > *'],
+    // Packet Post's trick cards (Spot the Trick)
+    ['ppsay', '.pp-say'], ['pph', '.pp-panel > .pp-h'], ['ppletter', '.pp-letter'], ['ppfrom', '.pp-letter .pp-from'], ['ppbadge', '.pp-letter .pp-badge'],
+    ['ppsubj', '.pp-letter b'], ['ppbody', '.pp-letter p'], ['pptile', '.pp-tile'], ['ppverdict', '.pp-verdicts .ok-btn'],
   ];
   for (const [name, sel] of SEL) {
     const els = [...document.querySelectorAll(sel)].filter(e => !e.closest('[hidden]'));
-    els.forEach((el, i) => add(els.length === 1 && !['clue', 'act', 'pill', 'lock', 'tile', 'slot', 'li', 'epcard', 'node', 'nodelabel', 'road', 'cardtitle', 'cardp', 'clues', 'dline', 'btn', 'trow', 'ptext', 'set', 'h', 'row'].includes(name) ? name : `${name}${i + 1}`, el));
+    els.forEach((el, i) => add(els.length === 1 && !['clue', 'act', 'pill', 'lock', 'tile', 'slot', 'li', 'epcard', 'node', 'nodelabel', 'road', 'cardtitle', 'cardp', 'clues', 'dline', 'btn', 'trow', 'ptext', 'set', 'h', 'row', 'pptile', 'ppverdict', 'ppbadge'].includes(name) ? name : `${name}${i + 1}`, el));
   }
   // The game's body text size in the 1280-wide master (px): the font most of the picture's words are set in. A slide's
   // crop scales it to the phone (tests/unit/cyber-shots.test.js keeps it readable at 390 px).
@@ -103,7 +109,7 @@ function collectRects() {
     if (cs.visibility === 'hidden' || +cs.opacity === 0) continue;
     for (const m of s.matchAll(/\S+/g)) {
       const rg = document.createRange(); rg.setStart(t, m.index); rg.setEnd(t, m.index + m[0].length);
-      for (const q of rg.getClientRects()) {
+      for (const q of [...rg.getClientRects()].map(sh)) {
         if (q.width < 1 || q.height < 4 || q.right <= 0 || q.bottom <= 0 || q.left >= W || q.top >= H) continue;
         words.push([r1(Math.max(0, q.left) / W * 100), r1(Math.max(0, q.top) / H * 100), r1((Math.min(W, q.right) - Math.max(0, q.left)) / W * 100), r1((Math.min(H, q.bottom) - Math.max(0, q.top)) / H * 100)]);
       }
@@ -129,10 +135,16 @@ async function runGame(browser, slug, list) {
     r.end(`<!doctype html><style>html,body{margin:0;height:100%;background:#000}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="/g"></iframe>`);
   });
   await new Promise(r => srv.listen(0, r));
-  for (const compact of [false, true]) {
-  const group = list.filter(s => !!s.compact === compact);
-  if (!group.length) continue;
-  const page = await (await browser.newContext(compact ? { viewport: { width: 800, height: 450 }, deviceScaleFactor: 1.6 } : { viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 })).newPage();
+  // Three ways to shoot: the wide game (1280 x 720), compact (800 x 450 at 1.6) and narrow: the game laid out as on
+  // a phone (narrow.width CSS px wide, narrow.height tall, so its lines wrap short), and a 16:9 slice of it from
+  // narrow.top, shot at 1280 px wide, so a phone shows the game's words at their own size. Without a top, the whole
+  // narrow page is shot (a survey, to choose the slice).
+  const modeOf = s => (s.narrow ? `n${s.narrow.width}x${s.narrow.height}` : s.compact ? 'compact' : 'wide');
+  for (const mode of [...new Set(list.map(modeOf))]) {
+  const group = list.filter(s => modeOf(s) === mode);
+  const nw = group[0].narrow;
+  const page = await (await browser.newContext(nw ? { viewport: { width: nw.width, height: nw.height }, deviceScaleFactor: 1280 / nw.width }
+    : mode === 'compact' ? { viewport: { width: 800, height: 450 }, deviceScaleFactor: 1.6 } : { viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 })).newPage();
   await page.route(/fonts\.(googleapis|gstatic)\.com/, route => {
     try { const body = execFileSync('curl', ['-s', '-L', '-A', 'Mozilla/5.0 Chrome/140', route.request().url()], { maxBuffer: 8e6 }); route.fulfill({ status: 200, body, headers: { 'content-type': /gstatic/.test(route.request().url()) ? 'font/woff2' : 'text/css', 'access-control-allow-origin': '*' } }); } catch { route.abort(); }
   });
@@ -208,9 +220,11 @@ async function runGame(browser, slug, list) {
         const st = T.state(); return { levelId: st.levelId, chapter: st.chapter, screen: st.screen };
       }, s);
       await wait(400);
-      { const r = await f.evaluate(collectRects); RECTS[`csq/${slug}/${s.state}`] = r; }   // every shot: its text lines (zoom-to-cue)
+      const clip = s.narrow && s.narrow.top != null ? { top: s.narrow.top, height: s.narrow.width * 9 / 16 } : null;
+      { const r = await f.evaluate(collectRects, clip); RECTS[`csq/${slug}/${s.state}`] = r; }   // every shot: its words (zoom-to-cue)
       const file = path.join(outDir, `${s.state}.png`);
-      await frameEl.screenshot({ path: file });
+      if (clip) await page.screenshot({ path: file, clip: { x: 0, y: clip.top, width: s.narrow.width, height: clip.height } });
+      else await frameEl.screenshot({ path: file });
       let extra = '';
       if (WEBP) {
         const dest = path.join(ROOT, 'public', 'img', 'csq', slug, `${s.state}.webp`);

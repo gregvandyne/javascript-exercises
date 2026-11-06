@@ -12,29 +12,23 @@
    "art": "map",
    "img": "csq/escape-the-post-office/pim-1b",
    "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
-   "view": [
-    0.0,
-    38.6,
-    63.6,
-    56.9
-   ],
    "focus": [
     {
      "cue": "A trail of small owl prints: Pim's footprint",
      "box": [
-      5.9,
-      64.8,
-      25.4,
-      13.3
+      11.2,
+      19.1,
+      34.3,
+      25.4
      ]
     },
     {
      "cue": "The trail tells the story: Netville, today",
      "box": [
-      5.9,
-      60.3,
-      25.4,
-      4.4
+      11.2,
+      2.1,
+      34.3,
+      16.9
      ]
     }
    ]
@@ -111,29 +105,23 @@
    "art": "people",
    "img": "csq/escape-the-post-office/pim-1b",
    "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
-   "view": [
-    0.0,
-    39.0,
-    66.9,
-    61.0
-   ],
    "focus": [
     {
      "cue": "This trail is not an owl's: big round prints",
      "box": [
-      38.5,
-      64.8,
-      25.4,
-      8.9
+      59.3,
+      19.1,
+      34.3,
+      25.4
      ]
     },
     {
      "cue": "And it fishes for a shiny secret",
      "box": [
-      38.5,
-      73.7,
-      25.4,
-      8.9
+      59.3,
+      44.5,
+      34.3,
+      25.4
      ]
     }
    ]

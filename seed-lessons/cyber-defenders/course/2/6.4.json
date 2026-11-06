@@ -10,31 +10,16 @@
    "title": "Spark Day, every channel at once",
    "text": "Spark Day, and the Magpie flock strikes on every channel at once: fake letters in the sacks, a prize poster on the door, and a postmark faked to look like Pim's own.",
    "art": "mask",
-   "img": "csq/escape-the-post-office/door-2-new",
+   "img": "csq/escape-the-post-office/door-2-new-n2",
    "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    3.7,
-    100.0,
-    96.3
-   ],
    "focus": [
     {
      "cue": "Spark Day: every channel at once",
      "box": [
-      1.5,
-      26.7,
-      97.0,
-      10.7
-     ]
-    },
-    {
-     "cue": "The same six locks, cut harder",
-     "box": [
-      1.5,
-      38.7,
-      97.0,
-      57.9
+      2.9,
+      61.8,
+      94.3,
+      31.7
      ]
     }
    ]
@@ -45,29 +30,23 @@
    "art": "key",
    "img": "csq/escape-the-post-office/inbox-2-5",
    "alt": "Lock 4 at Pro, message 5 of 8: Post Office asks you to confirm your key, but the postmark is a far-town hand stamp.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    97.9
-   ],
    "focus": [
     {
      "cue": "Inside a lock: a spoofed sender",
      "box": [
-      2.4,
-      44.3,
-      72.0,
-      23.6
+      5.2,
+      29.3,
+      86.5,
+      60.8
      ]
     },
     {
      "cue": "Eight messages to judge",
      "box": [
-      1.5,
-      36.0,
-      18.0,
-      5.6
+      2.9,
+      11.0,
+      34.2,
+      10.6
      ]
     }
    ]
@@ -78,29 +57,23 @@
    "art": "star",
    "img": "csq/escape-the-post-office/door-2-two",
    "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
-   "view": [
-    0.0,
-    3.7,
-    100.0,
-    96.3
-   ],
    "focus": [
     {
      "cue": "Each lock names the stamp that opens it",
      "box": [
-      67.9,
-      39.2,
-      26.1,
-      31.7
+      5.7,
+      42.4,
+      40.0,
+      55.3
      ]
     },
     {
      "cue": "Two locks open: the first two skills",
      "box": [
-      2.4,
-      39.2,
-      56.6,
-      16.6
+      4.5,
+      0.3,
+      42.4,
+      27.1
      ]
     }
    ]
@@ -142,29 +115,23 @@
    "art": "shield",
    "img": "csq/escape-the-post-office/inbox-2",
    "alt": "Lock 4 at Pro: the first of eight messages, with four moves to choose from and a hint feather below.",
-   "view": [
-    0.0,
-    0.0,
-    100.0,
-    100.0
-   ],
    "focus": [
     {
      "cue": "No fail state: try, wobble, try again",
      "box": [
-      1.5,
-      66.4,
-      97.0,
-      11.6
+      2.9,
+      9.5,
+      94.3,
+      47.4
      ]
     },
     {
      "cue": "Hint feathers are counted honestly",
      "box": [
-      1.5,
-      79.3,
-      29.4,
-      10.7
+      2.9,
+      61.2,
+      55.9,
+      20.3
      ]
     }
    ]

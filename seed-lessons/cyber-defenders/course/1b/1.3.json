@@ -78,20 +78,14 @@
    "art": "people",
    "img": "csq/trick-inbox/mix-1b-mx-1-all",
    "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
-   "view": [
-    0.0,
-    25.0,
-    96.5,
-    70.0
-   ],
    "focus": [
     {
      "cue": "Pass it to ten friends: each copy travels on without you",
      "box": [
-      3.8,
-      56.4,
-      33.5,
-      7.1
+      7.1,
+      36.2,
+      63.9,
+      13.5
      ]
     }
    ]
@@ -139,31 +133,25 @@
    "title": "The Magpie's nest",
    "text": "Pim warns that the Magpie keeps a copy of every shiny secret it finds. In its nest, those copies stay pinned up, forever.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-1b-stranger",
+   "img": "csq/packet-post/tricks-1b-stranger-n1",
    "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
-   "view": [
-    0.0,
-    0.0,
-    92.6,
-    69.1
-   ],
    "focus": [
     {
      "cue": "A stranger's card, fishing for a shiny secret",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
+      2.9,
+      2.5,
+      94.3,
+      54.3
      ]
     },
     {
      "cue": "It asks where you live: a fact to keep private",
      "box": [
-      9.3,
-      34.6,
-      42.7,
-      10.8
+      6.4,
+      21.6,
+      87.1,
+      29.7
      ]
     }
    ]
@@ -199,20 +187,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/gate-1b",
    "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
-   "view": [
-    0.0,
-    39.2,
-    52.0,
-    52.2
-   ],
    "focus": [
     {
      "cue": "Play Sorting Gate: pick an open road for the letter",
      "box": [
-      24.9,
-      51.6,
-      6.0,
-      24.6
+      22.9,
+      18.9,
+      11.4,
+      56.8
      ]
     }
    ]

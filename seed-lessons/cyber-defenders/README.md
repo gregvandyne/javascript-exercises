@@ -62,6 +62,11 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
   (`public/js/course-zoom-data.js`, `public/img/zoom/`). `tests/unit/cyber-shots.test.js` checks every step at a
   390 px phone: no cut line, every line the box touches shown whole, and 11 px words wherever the game's layout
   allows (the steps whose boxes hold lines too wide for that are counted and pinned).
+- Trick Inbox, Escape the Post Office and the Spot the Trick cards are shot **narrow**: the game laid out at a
+  phone's width (420 or 470 CSS px, so its lines wrap short) and a 16:9 slice of it taken at 1280 px (spec
+  `narrow: { width, height, top }`), so a phone shows the game's words at their own size with no crop. A narrow
+  slide carries no `view`. One game state may give several slices (`<state>-n2`, ...), one per slide that needs a
+  different part of it.
 
 ## Changing the catalogue
 
