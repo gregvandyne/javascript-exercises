@@ -6,6 +6,8 @@
 //     never hides the game's own text next to it: the text boxes recorded when the picture was captured
 //     (scripts/cyber-shots-rects.json, the leaf rects; scripts/csq-route-geometry.json, the ui rects) where the
 //     picture has them, else lettering found in its pixels (strong contrast, strokes crossing both ways);
+//   - a screenshot's numbered badge never hides the game's text either (the same detection as for the chip),
+//     unless every spot touching its box does (then it must wear its dark rim);
 //   - a diagram never carries a cue on the picture at all (its cues are the caption strip under it);
 //   - a diagram's badge never sits on any of the diagram's text;
 //   - no edge of a diagram's focus box (or of its ring) crosses a text: every label is wholly inside or outside.
@@ -84,7 +86,7 @@ function figureProblems(fig, rects) {
   // kept, where the picture has recorded text boxes, only inside them (a recorded box spans its whole line,
   // its padding and the empty end of a short line too, so the pixels say where in it the words are).
   const img = fig.querySelector('.simg'), frame = R(fig.querySelector('.sframe'));
-  let words = [];
+  let words = [], lettering = [];
   if (!vf && img) {
     const ir = R(img), sx = ir.width / 100, sy = ir.height / 100;
     const boxes = rects && rects.map(([x, y, w, h]) => ({ left: ir.left + x * sx, right: ir.left + (x + w) * sx, top: ir.top + y * sy, bottom: ir.top + (y + h) * sy }));
@@ -104,10 +106,12 @@ function figureProblems(fig, rects) {
       if (rows < 2 || cols < 2) continue;
       const cw = ir.width / (W / C), ch = ir.height / (H / C);
       const cell = { left: ir.left + gx * cw, right: ir.left + (gx + 1) * cw, top: ir.top + gy * ch, bottom: ir.top + (gy + 1) * ch };
+      lettering.push(cell);
       if (!boxes || boxes.some(r => hit(r, cell))) words.push(cell);
     }
-    words = words.map(w => ({ left: Math.max(w.left, frame.left), right: Math.min(w.right, frame.right), top: Math.max(w.top, frame.top), bottom: Math.min(w.bottom, frame.bottom) }))
+    const inFrame = cells => cells.map(w => ({ left: Math.max(w.left, frame.left), right: Math.min(w.right, frame.right), top: Math.max(w.top, frame.top), bottom: Math.min(w.bottom, frame.bottom) }))
       .filter(w => w.right > w.left && w.bottom > w.top);
+    words = inFrame(words); lettering = inFrame(lettering);
   }
   const over = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
   fig.querySelectorAll('.gf-step').forEach((st, i) => {
@@ -123,8 +127,31 @@ function figureProblems(fig, rects) {
       const c = R(cue), share = words.reduce((a, w) => a + over(c, w), 0) / (c.width * c.height);
       if (share > 0.07) out.push(`${n}: the cue chip hides the picture's text (${Math.round(share * 100)}% of the chip${rects ? ', in its recorded text boxes' : ''})`);
     }
-    if (!vf) return;
     const badge = st.querySelector('.gf-badge');
+    if (!vf && shown(badge) && words.length) {
+      const g = R(badge), d = g.width, on = cells => r => cells.reduce((a, w) => a + over(r, w), 0) / (d * d);
+      const share = on(words)(g);
+      if (share > 0.07) {
+        // Some boxes have words on every side (a line of a letter, a grid of cards that fills the picture): the
+        // badge may sit on text only when no spot touching its box does better — outside the ring along each
+        // side, or just inside the box's edge, clear of every bit of lettering in the picture (recorded text
+        // box or not: the script cannot tell them apart) — and then it wears its dark rim so its number reads.
+        const zs = fig.querySelector('.szoom span'), zr = zs && R(zs), oo = o + 2;
+        const at = (x, y) => ({ left: b.left + x, top: b.top + y, right: b.left + x + d, bottom: b.top + y + d });
+        const spots = [];
+        for (let k = 0; k <= 16; k++) {
+          const fx = -oo - d + (b.width + 2 * oo + d) * k / 16, fy = -oo - d + (b.height + 2 * oo + d) * k / 16;
+          spots.push(at(fx, -oo - d), at(fx, b.height + oo), at(-oo - d, fy), at(b.width + oo, fy));
+          const ix = 2 + (b.width - d - 4) * k / 16, iy = 2 + (b.height - d - 4) * k / 16;
+          if (b.width > 2 * d + 4 && b.height > d + 4) spots.push(at(ix, 2), at(ix, b.height - d - 2), at(2, iy), at(b.width - d - 2, iy));
+        }
+        const better = spots.filter(r => r.left >= frame.left + 1 && r.top >= frame.top + 1 && r.right <= frame.right - 1 && r.bottom <= frame.bottom - 1)
+          .filter(r => !(zr && hit(r, zr))).map(on(lettering)).filter(v => v <= 0.07 || v < share - 0.1);
+        if (better.length) out.push(`${n}: the badge hides the picture's text (${Math.round(share * 100)}% of the badge${rects ? ', in its recorded text boxes' : ''}) where a spot by its box has ${Math.round(Math.min(...better) * 100)}%`);
+        else if (!badge.classList.contains('gf-badge--ink')) out.push(`${n}: the badge sits on the picture's text without its dark rim`);
+      }
+    }
+    if (!vf) return;
     if (shown(badge)) for (const t of texts) if (hit(R(badge), t.r)) out.push(`${n}: the badge sits on "${t.s}"`);
     for (const t of texts) {
       if (hit(b, t.r) && !holds(b, t.r)) out.push(`${n}: the box edge crosses "${t.s}"`);

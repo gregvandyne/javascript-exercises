@@ -1209,12 +1209,16 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
    ring's corner — so it never sits on the target or the ring. Sized off the frame (5.6cqw, 15-22px). --bx/--by
    are the box's own % position in the frame (set inline by the renderer) and --fhr the frame's height as a
    fraction of its width: they clamp the parked position on all four sides, so a box touching the frame's edge
-   slides its badge along the outside of the ring instead of clipping it. On a diagram the script then moves
-   the badge to the first corner clear of every label (gf-badge--at). */
+   slides its badge along the outside of the ring instead of clipping it. The script then moves the badge
+   (gf-badge--at): on a diagram to the first corner clear of every label, on a screenshot to the spot around
+   the box on the least of the picture's lettering. */
 .gf-badge{position:absolute;top:-30px;left:-30px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#FFD23F;color:#141414;font-size:13px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.35)}
 @supports (width:1cqw){.gf-badge{--r:calc(clamp(15px,5.6cqw,22px)/2);width:calc(var(--r)*2);height:calc(var(--r)*2);font-size:clamp(10px,3.8cqw,13px);left:max(calc(var(--bx,0)*-1cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--bx,0))*1cqw - var(--r)*2)));top:max(calc(var(--by,0)*var(--fhr,.5625)*-1cqw),min(calc(-8px - var(--r)*2),calc((100 - var(--by,0))*var(--fhr,.5625)*1cqw - var(--r)*2)))}}
 .gf-badge.gf-badge--at{left:var(--gx);top:var(--gy)}
 .gf-badge.gf-badge--off{display:none}
+/* A screenshot's badge the script could not park off every word (gfBadgeSpots): a dark rim keeps its number
+   apart from the game's lettering under it. */
+.gf-badge.gf-badge--ink{box-shadow:0 0 0 2px #141414,0 1px 4px rgba(0,0,0,.35)}
 .gf-path{position:absolute;inset:0;width:100%;height:100%}
 .gf-path polyline{fill:none;stroke:#FFD23F;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3 2.2;filter:drop-shadow(0 1px 1px rgba(20,20,20,.55));animation:gfMarch 1s linear infinite}
 @keyframes gfMarch{to{stroke-dashoffset:-10.4}}

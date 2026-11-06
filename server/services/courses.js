@@ -282,6 +282,15 @@ function cleanSlide(s) {
   if (kind === 'words') out.words = (Array.isArray(s.words) ? s.words : []).filter(w => w && w.word).slice(0, 6).map(w => ({ word: str(w.word, 40), means: str(w.means, 160) }));
   return out;
 }
+/** How many pairs of slides in a row show the same picture, each through its own crop (`view`). */
+export function splitPictures(slides) {
+  let n = 0;
+  for (let i = 1; i < slides.length; i++) {
+    const a = slides[i - 1], b = slides[i];
+    if (a.img && a.img === b.img && a.view && b.view && a.view.join() !== b.view.join()) n++;
+  }
+  return n;
+}
 function fromDeck(key, l, d, game, items, problems) {
   const slides = (Array.isArray(d.slides) ? d.slides : []).filter(s => s && typeof s === 'object').map(cleanSlide);
   const check = Array.isArray(d.check) && d.check.length === 3 && d.check.every(id => items.has(id)) ? d.check : l.exit.items;
@@ -293,8 +302,10 @@ function fromDeck(key, l, d, game, items, problems) {
   if (slides.length < 5 || slides.length > 7) {
     // A deck carrying a story transition beat (the story pack) gets one extra slide: the beat is a story
     // moment inserted before the mission, not a teaching slide.
+    // So does a deck that splits one wide picture across two slides in a row, each showing its own crop (two
+    // side-by-side panels too small on a phone together): one teaching point, told in two legible halves.
     const beats = slides.filter(s => s.story && s.story.scene === 'handoff').length;
-    if (!(slides.length === 8 && beats === 1)) say(`${slides.length} slides (5-7 expected)`);
+    if (!(slides.length === 8 && (beats === 1 || splitPictures(slides) === 1))) say(`${slides.length} slides (5-7 expected)`);
   }
   if (slides.filter(s => s.kind === 'example').length !== 1) say('needs exactly one example slide');
   if (slides.filter(s => s.kind === 'words').length !== 1) say('needs exactly one words slide');
