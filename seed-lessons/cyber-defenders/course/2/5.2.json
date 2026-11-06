@@ -99,26 +99,7 @@
   {
    "title": "Hate speech: report, don't debate",
    "text": "Hate speech attacks who someone is, and it crosses a line no joke can excuse. The Defender move is never to debate it. Save it, report it, and support the person it targeted.",
-   "art": "shield",
-   "img": "csq/trick-inbox/pressure-2-pr-4-debrief",
-   "alt": "The Cool Group dare, reported: a dare that spends a friend is never a fair price for a group.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
-   "focus": [
-    {
-     "cue": "Do not debate it: report it",
-     "box": [
-      3.4,
-      72.8,
-      93.3,
-      10.0
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "kind": "example",

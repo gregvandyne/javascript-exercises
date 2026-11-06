@@ -106,10 +106,10 @@
    "art": "gears",
    "img": "csq/robo-route/variables-1b-set-change",
    "view": [
-    52.2,
-    33,
-    34,
-    34.3
+    51.8,
+    32.9,
+    30.0,
+    34.5
    ],
    "alt": "Bolt stands by the door with the counter strip reading steps = 2: set steps to 4 started it, and change steps by -1 ticks it down.",
    "focus": [

@@ -121,10 +121,10 @@
    "art": "box",
    "img": "csq/robo-route/variables-2-watch-value",
    "view": [
-    52.2,
-    33,
-    34,
-    34.3
+    51.8,
+    32.9,
+    30.0,
+    34.5
    ],
    "alt": "Two rounds into repeat 6, the watch strip reads steps = 4: set steps to 6 started it, and each change steps by -1 brings it down.",
    "steps": [

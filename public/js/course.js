@@ -183,12 +183,86 @@ function gfBadgesVf(fig) {
   }
 }
 
-// --- screenshots: the cue chip clear of the ring, the badge and the zoom button
+// --- screenshots: where the picture's own words are
+// A chip parked on the picture must not hide the game's text next to the box either (a debrief's lines, a
+// lock's title). The script reads the screenshot once (same-origin, so a canvas may read it) at 640 x 360 and
+// marks each 8 x 8 cell (16 x 16 px of the 1280 x 720 original) that looks like lettering: strong contrast,
+// a fair share of ink of either polarity, and strokes crossing it both ways (a long panel edge or a flat
+// fill crosses only one way, so outlines do not count). Each word cell's eight neighbors are marked too: that
+// closes the gaps between words and keeps a chip from hugging a line of text. The map is the image's own, so it
+// serves every crop and size alike.
+const gfInk = new WeakMap();
+const INK_W = 80, INK_H = 45, INK_C = 8;
+function gfTextMap(fig) {
+  if (gfInk.has(fig)) return gfInk.get(fig);
+  const img = fig.querySelector('.simg');
+  if (!img || !img.complete || !img.naturalWidth) return null;
+  let map = false;
+  try {
+    const W = INK_W * INK_C, H = INK_H * INK_C;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    cx.drawImage(img, 0, 0, W, H);
+    const px = cx.getImageData(0, 0, W, H).data;
+    const L = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) L[i] = (px[4 * i] * 299 + px[4 * i + 1] * 587 + px[4 * i + 2] * 114) / 1000;
+    const raw = new Uint8Array(INK_W * INK_H), b = new Uint8Array(INK_C * INK_C);
+    for (let gy = 0; gy < INK_H; gy++) for (let gx = 0; gx < INK_W; gx++) {
+      let lo = 255, hi = 0;
+      for (let y = 0; y < INK_C; y++) for (let x = 0; x < INK_C; x++) { const v = L[(gy * INK_C + y) * W + gx * INK_C + x]; if (v < lo) lo = v; if (v > hi) hi = v; }
+      if (hi - lo < 90) continue;
+      const mid = (lo + hi) / 2;
+      let on = 0;
+      for (let y = 0; y < INK_C; y++) for (let x = 0; x < INK_C; x++) { const v = L[(gy * INK_C + y) * W + gx * INK_C + x] > mid ? 1 : 0; b[y * INK_C + x] = v; on += v; }
+      const ink = Math.min(on, INK_C * INK_C - on) / (INK_C * INK_C);
+      if (ink < 0.06) continue;
+      let hT = 0, vT = 0, rows = 0, cols = 0;
+      for (let y = 0; y < INK_C; y++) { let n = 0; for (let x = 1; x < INK_C; x++) if (b[y * INK_C + x] !== b[y * INK_C + x - 1]) n++; hT += n; if (n >= 2) rows++; }
+      for (let x = 0; x < INK_C; x++) { let n = 0; for (let y = 1; y < INK_C; y++) if (b[y * INK_C + x] !== b[(y - 1) * INK_C + x]) n++; vT += n; if (n >= 2) cols++; }
+      if (rows >= 2 && cols >= 2 && hT >= 6 && vT >= 6) raw[gy * INK_W + gx] = 1;
+    }
+    map = new Uint8Array(INK_W * INK_H);
+    for (let i = 0; i < raw.length; i++) if (raw[i]) {
+      for (const j of [i, i - INK_W, i + INK_W]) {
+        if (j < 0 || j >= raw.length) continue;
+        map[j] = 1; if (j % INK_W) map[j - 1] = 1; if ((j + 1) % INK_W) map[j + 1] = 1;
+      }
+    }
+  } catch (e) { map = false; /* an unreadable picture: no text map, the chip rules alone */ }
+  gfInk.set(fig, map);
+  fig.dataset.gfInk = map ? '1' : '0';
+  return map;
+}
+/** The share (0..1) of a chip's area that sits on the picture's lettering. */
+function gfOnText(fig, cue, map) {
+  if (!map) return 0;
+  const img = fig.querySelector('.simg'), ir = rectOf(img), cr = rectOf(cue);
+  const fr = rectOf(fig.querySelector('.sframe'));
+  const c = { left: Math.max(cr.left, fr.left), top: Math.max(cr.top, fr.top), right: Math.min(cr.right, fr.right), bottom: Math.min(cr.bottom, fr.bottom) };
+  const all = (cr.right - cr.left) * (cr.bottom - cr.top);
+  if (all <= 0 || ir.right <= ir.left) return 0;
+  const sx = (ir.right - ir.left) / INK_W, sy = (ir.bottom - ir.top) / INK_H;
+  const x0 = Math.max(0, Math.floor((c.left - ir.left) / sx)), x1 = Math.min(INK_W - 1, Math.floor((c.right - ir.left) / sx));
+  const y0 = Math.max(0, Math.floor((c.top - ir.top) / sy)), y1 = Math.min(INK_H - 1, Math.floor((c.bottom - ir.top) / sy));
+  let a = 0;
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    if (!map[y * INK_W + x]) continue;
+    const l = ir.left + x * sx, t = ir.top + y * sy;
+    a += area(c, { left: l, top: t, right: l + sx, bottom: t + sy });
+  }
+  return a / all;
+}
+/** A chip may cover this much of the picture's lettering (a stray stroke of a word under its edge). */
+const TEXT_MAX = 0.03;
+
+// --- screenshots: the cue chip clear of the ring, the badge, the zoom button and the picture's text
 // Each step's chip is measured against its ring (the box plus its outset), its badge and the zoom button,
-// and settled on the first placement that clears them, trying in order: the server's side as styled; the
+// and against the picture's lettering (gfTextMap). Of the placements that clear the ring, badge and button it
+// takes the one on the least text (the earliest on a tie), trying in order: the server's side as styled; the
 // same side at full width (a wider chip wraps less); the other side both ways; the same placements anchored
 // to the opposite corner; the chip slid sideways past the badge; the chip pulled tighter into its corner
-// (2px from the edge); and the chip slightly smaller. -> true when a clear placement was found.
+// (2px from the edge); and the chip slightly smaller. -> true when a clear placement was found that covers
+// at most TEXT_MAX of text; false sends the whole figure's cues to the strip under the picture.
 function gfCueOverlap(cue, box, badge, zoom) {
   const cr = rectOf(cue);
   if (cr.right - cr.left <= 0) return 0;
@@ -228,14 +302,19 @@ function gfPlaceCue(fig, i) {
   for (const top of [serverTop, !serverTop]) for (const anchor of ['left', 'right']) tries.push([top, anchor, true, 0, true]);
   for (const top of [serverTop, !serverTop]) for (const anchor of ['left', 'right']) tries.push([top, anchor, true, 0, true, true]);
   for (const top of [serverTop, !serverTop]) for (const tight of [false, true]) tries.push([top, 'left', true, 'shift', tight, true]);
-  let best = null, bestArea = Infinity;
+  const map = gfTextMap(fig);
+  let best = null, bestArea = Infinity, clear = null, clearText = Infinity;
   for (const t of tries) {
     const args = t.map(v => (v === 'shift' ? shift() : v));
     apply(...args);
     const a = gfCueOverlap(cue, box, badge, zoom);
-    if (!a) return true; // first fully clear placement, in preference order
-    if (a < bestArea) { bestArea = a; best = args; }
+    if (!a) {
+      const tx = gfOnText(fig, cue, map);
+      if (tx < clearText) { clearText = tx; clear = args; }
+      if (!tx) break; // clear of everything, in preference order
+    } else if (a < bestArea) { bestArea = a; best = args; }
   }
+  if (clear) { apply(...clear); return clearText <= TEXT_MAX; }
   if (best) apply(...best);
   return false;
 }
@@ -244,6 +323,13 @@ function gfPlaceCue(fig, i) {
 function gfLayout(fig) {
   if (!fig.querySelector('.sframe').getBoundingClientRect().width) return;
   if (fig.classList.contains('vf')) { gfFitVf(fig); gfBadgesVf(fig); return; }
+  // The text map needs the picture itself: a lazy picture not in yet lays the figure out again when it is.
+  const img = fig.querySelector('.simg');
+  if (img && !gfInk.has(fig) && !(img.complete && img.naturalWidth) && !fig.dataset.gfWait) {
+    fig.dataset.gfWait = '1';
+    img.addEventListener('load', () => gfLayout(fig), { once: true });
+    img.addEventListener('error', () => { gfInk.set(fig, false); fig.dataset.gfInk = '0'; gfLayout(fig); }, { once: true });
+  }
   fig.classList.remove('gf--strip');
   const n = fig.querySelectorAll('.gf-step').length;
   let fits = true;

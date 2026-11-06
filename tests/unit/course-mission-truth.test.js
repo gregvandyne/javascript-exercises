@@ -27,7 +27,6 @@ const CHAIN_PHRASE = {
   'cs-quest 2 4.3': 'the 4 trick cards',
   'cyber-defenders 1b 1.1': 'all 4 levels of Many Roads',
   'cyber-defenders 2 1.1': 'the 2 Many Roads levels',
-  'cyber-defenders 2 2.3': 'check the 4 cards there',
 };
 // Steps whose game chapter was already required in full by an earlier step: the mission must say the
 // step is already earned instead of pretending there are unplayed levels. None left: since the
@@ -103,13 +102,46 @@ test('every quick-check item in the audited units carries a why, and a miss retu
   assert.equal(checked, 108, 'the audited units hold 108 deck-check items');
 });
 
-test('cyber defenders: no step reopens a Packet Post chapter an earlier step already required', () => {
+// Packet Post's lesson chains, read from the game itself (PacketPostLevels.THEN, seed-games/packet-post.html).
+import vm from 'node:vm';
+const ppCtx = vm.createContext({});
+for (const m of fs.readFileSync(path.join(ROOT, 'seed-games/packet-post.html'), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)) {
+  if (m[1].includes('PacketPostLevels')) vm.runInContext(m[1], ppCtx);
+}
+const PP = ppCtx.PacketPostLevels;
+
+test('cyber defenders: no step replays work an earlier step already required (chained chapters and escape locks too)', () => {
+  assert.ok(PP && PP.THEN && PP.LEVELS, 'Packet Post exposes its chains');
   for (const band of ['1b', '2']) {
-    const seen = new Map();
-    for (const { course, band: b, deck: d } of ALL) {
-      if (course !== 'cyber-defenders' || b !== band || !d.game || d.game.slug !== 'packet-post') continue;
-      assert.ok(!seen.has(d.game.chapter), `cyber-defenders ${band} ${d.n}: ${d.game.chapter} was already the module of step ${seen.get(d.game.chapter)}`);
-      seen.set(d.game.chapter, d.n);
+    // What a step's module makes the player do: its own chapter, all of it, plus the chapter Packet Post chains
+    // into at the end (all of it, or the levels THEN names); an escape lock (the whole escape counts as its own
+    // finale module); a Trick Inbox set. Would You Rather is a free topic, not a finished chapter: not counted.
+    const work = d => {
+      const g = d.game;
+      if (!g || g.slug === 'would-you-rather') return [];
+      if (g.slug !== 'packet-post') return [{ id: `${g.slug}:${g.chapter}`, levels: null }];
+      const out = [{ id: `packet-post:${g.chapter}`, levels: null }];
+      const then = (PP.THEN[band] || {})[g.chapter];
+      if (then) out.push({ id: `packet-post:${then.ch}`, levels: then.levels || null });
+      return out;
+    };
+    const levelsOf = (id, lv) => {
+      if (!id.startsWith('packet-post:')) return null;
+      const all = PP.LEVELS.filter(l => l.ch === id.slice(12) && l.bands.includes(band)).map((_, i) => i + 1);
+      return lv ? all.filter(n => n >= lv[0] && n <= lv[1]) : all;
+    };
+    const seen = new Map(); // id -> [{ n, levels }]
+    const decksOf = ALL.filter(x => x.course === 'cyber-defenders' && x.band === band).sort((a, b) => parseFloat(a.deck.n) - parseFloat(b.deck.n));
+    for (const { deck: d } of decksOf) {
+      for (const w of work(d)) {
+        const mine = levelsOf(w.id, w.levels);
+        for (const before of seen.get(w.id) || []) {
+          const overlap = mine ? mine.filter(n => before.levels.includes(n)) : [];
+          assert.ok(mine ? !overlap.length : false, `cyber-defenders ${band} ${d.n}: ${w.id}${mine ? ` levels ${overlap.join(', ')}` : ''} already required by step ${before.n}`);
+        }
+        if (!seen.has(w.id)) seen.set(w.id, []);
+        seen.get(w.id).push({ n: d.n, levels: mine });
+      }
     }
   }
 });

@@ -1158,17 +1158,6 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/ciphers-2-hide",
-   "game": "packet-post",
-   "chapter": "ciphers",
-   "band": "2",
-   "state": "ciphers-2-hide",
-   "concept": "Hiding is not scrambling: a found hidden message can be read at once",
-   "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
    "key": "csq/packet-post/ciphers-2-stego",
    "game": "packet-post",
    "chapter": "ciphers",
@@ -1198,17 +1187,6 @@
    "state": "ciphers-2-lockbox",
    "concept": "the two-key lockbox card",
    "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/ciphers-2-pixels",
-   "game": "packet-post",
-   "chapter": "ciphers",
-   "band": "2",
-   "state": "ciphers-2-pixels",
-   "concept": "hide a heart in the pixels",
-   "alt": "Hide a heart in the open: a grid of squares where a heart appears when the brightness numbers are typed in.",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
   },
@@ -1378,17 +1356,6 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/locks-2-shield",
-   "game": "packet-post",
-   "chapter": "locks",
-   "band": "2",
-   "state": "locks-2-shield",
-   "concept": "share or shield: the mailbox key",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/packet-post/locks-2-sort",
    "game": "packet-post",
    "chapter": "locks",
@@ -1455,17 +1422,6 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/protocols-1b-twice",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "1b",
-   "state": "protocols-1b-twice",
-   "concept": "one lost, one arrived twice",
-   "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/packet-post/protocols-2-ack",
    "game": "packet-post",
    "chapter": "protocols",
@@ -1495,17 +1451,6 @@
    "state": "protocols-2-design",
    "concept": "design the rule set",
    "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/protocols-2-journey",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "2",
-   "state": "protocols-2-journey",
-   "concept": "the whole journey of a picture",
-   "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
   },
@@ -1554,28 +1499,6 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/routes-1b-town",
-   "game": "packet-post",
-   "chapter": "routes",
-   "band": "1b",
-   "state": "routes-1b-town",
-   "concept": "the big town map",
-   "alt": "The big town map: roadworks all over town, and Pim warns that two roads will close.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/routes-2-budget",
-   "game": "packet-post",
-   "chapter": "routes",
-   "band": "2",
-   "state": "routes-2-budget",
-   "concept": "a town map with a hop budget",
-   "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/packet-post/routes-2-hops",
    "game": "packet-post",
    "chapter": "routes",
@@ -1620,17 +1543,6 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/tricks-1b-coins",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "1b",
-   "state": "tricks-1b-coins",
-   "concept": "free coins today only",
-   "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/packet-post/tricks-1b-key",
    "game": "packet-post",
    "chapter": "tricks",
@@ -1640,17 +1552,6 @@
    "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
-  },
-  {
-   "key": "csq/packet-post/tricks-1b-learn",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "1b",
-   "state": "tricks-1b-learn",
-   "concept": "what trick messages do",
-   "alt": "Spot the trick: the lesson card names what trick messages do. They rush you, promise prizes and fish for your key.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
   },
   {
    "key": "csq/packet-post/tricks-1b-next",
@@ -1697,17 +1598,6 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/tricks-2-learn",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "2",
-   "state": "tricks-2-learn",
-   "concept": "the levers every trick pulls",
-   "alt": "Spot the trick, Pro style: the lesson card names the levers. Rush, prizes, and asking for your mailbox key.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/packet-post/tricks-2-parcel",
    "game": "packet-post",
    "chapter": "tricks",
@@ -1715,39 +1605,6 @@
    "state": "tricks-2-parcel",
    "concept": "a parcel you never ordered",
    "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/tricks-2-profile",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "2",
-   "state": "tricks-2-profile",
-   "concept": "it knows your dog and your birthday",
-   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/tricks-2-quiz",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "2",
-   "state": "tricks-2-quiz",
-   "concept": "a quiz that harvests facts",
-   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/tricks-2-safe",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "2",
-   "state": "tricks-2-safe",
-   "concept": "a real message from your teacher",
-   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
   },
@@ -2973,17 +2830,6 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/pressure-2-pr-4-debrief",
-   "game": "trick-inbox",
-   "chapter": "pressure",
-   "band": "2",
-   "state": "pressure-2-pr-4-debrief",
-   "concept": "the dare, the debrief",
-   "alt": "The Cool Group dare, reported: a dare that spends a friend is never a fair price for a group.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
    "key": "csq/trick-inbox/pressure-2-pr-6-all",
    "game": "trick-inbox",
    "chapter": "pressure",
@@ -3079,17 +2925,6 @@
    "state": "online-cloud-2",
    "concept": "photos on your tablet, or a copy elsewhere",
    "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-comments-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-comments-1b",
-   "concept": "a page anyone can comment on",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
   },

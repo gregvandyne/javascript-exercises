@@ -68,6 +68,11 @@ for (const { label, dir: COURSE } of COURSES) {
     }
   }
 }
+// The story cast (csq/chars/<id>) is drawn by the engine's story layer (server/views/courses.js CHAR_META), not
+// only by slides: those sprites are in use whether or not a slide names them.
+const views = fs.readFileSync(path.join(ROOT, 'server', 'views', 'courses.js'), 'utf8');
+const cast = (views.match(/const CHAR_META = \{([\s\S]*?)\n\};/) || [, ''])[1];
+for (const m of cast.matchAll(/(\w+): \{ name:/g)) used.add(`csq/chars/${m[1]}`);
 for (const key of byKey.keys()) if (!used.has(key)) warn(`${key}: in the manifest but no slide uses it yet`);
 
 for (const w of warnings) console.log(`! ${w}`);

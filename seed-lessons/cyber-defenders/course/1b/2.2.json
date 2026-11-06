@@ -150,24 +150,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Escape the Post Office at Lock 6: Layers and match all 4 trouble cards. Find the second lock that stops a key guesser, and the spare copy that beats a flood.",
+   "text": "Open Escape the Post Office at Lock 2: Sealed Note. Turn the cipher wheel until the note reads as real words, then open the lock. Only someone with the key may read it. Who may open your tablet at home?",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/layers-1b-4",
-   "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
+   "img": "csq/escape-the-post-office/note-1b",
+   "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    35.5,
+    82.0,
+    58.5
    ],
    "focus": [
     {
-     "cue": "Play Layers: find the second lock and the spare copy",
+     "cue": "Play Sealed Note: turn the wheel until it reads",
      "box": [
-      1.5,
-      54.7,
-      97.0,
-      12.9
+      19.4,
+      72.6,
+      61.2,
+      10.7
      ]
     }
    ]
@@ -180,7 +180,7 @@
  ],
  "game": {
   "slug": "escape-the-post-office",
-  "chapter": "layers",
-  "params": "chapter=layers&band=1b&lock=1"
+  "chapter": "sealed-note",
+  "params": "chapter=sealed-note&band=1b&lock=1"
  }
 }

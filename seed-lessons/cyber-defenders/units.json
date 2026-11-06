@@ -173,16 +173,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "routes",
-       "chapterTitle": "Many Roads",
-       "params": "chapter=routes&band=1b&lock=1",
-       "slug": "packet-post"
+       "chapter": "sorting-gate",
+       "chapterTitle": "Lock 1: Sorting Gate",
+       "params": "chapter=sorting-gate&band=1b&lock=1",
+       "slug": "escape-the-post-office"
       },
       "2": {
-       "chapter": "routes",
-       "chapterTitle": "Many Roads",
-       "params": "chapter=routes&band=2&lock=1",
-       "slug": "packet-post"
+       "chapter": "sorting-gate",
+       "chapterTitle": "Lock 1: Sorting Gate",
+       "params": "chapter=sorting-gate&band=2&lock=1",
+       "slug": "escape-the-post-office"
       }
      },
      "n": "1.3",
@@ -279,9 +279,9 @@
     {
      "game": {
       "1b": {
-       "chapter": "layers",
-       "chapterTitle": "Lock 6: Layers",
-       "params": "chapter=layers&band=1b&lock=1",
+       "chapter": "sealed-note",
+       "chapterTitle": "Lock 2: Sealed Note",
+       "params": "chapter=sealed-note&band=1b&lock=1",
        "slug": "escape-the-post-office"
       },
       "2": {
@@ -334,10 +334,10 @@
        "slug": "packet-post"
       },
       "2": {
-       "chapter": "ciphers",
-       "chapterTitle": "Secret Messages",
-       "params": "chapter=ciphers&band=2&lock=1",
-       "slug": "packet-post"
+       "chapter": "sealed-note",
+       "chapterTitle": "Lock 2: Sealed Note",
+       "params": "chapter=sealed-note&band=2&lock=1",
+       "slug": "escape-the-post-office"
       }
      },
      "n": "2.3",

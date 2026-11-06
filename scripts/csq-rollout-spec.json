@@ -1004,16 +1004,6 @@
  },
  {
   "game": "packet-post",
-  "state": "ciphers-2-hide",
-  "chapter": "ciphers",
-  "band": "2",
-  "level": 4,
-  "actions": [],
-  "concept": "Hiding is not scrambling: a found hidden message can be read at once",
-  "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message."
- },
- {
-  "game": "packet-post",
   "state": "ciphers-2-stego",
   "chapter": "ciphers",
   "band": "2",

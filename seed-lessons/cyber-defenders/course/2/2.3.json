@@ -196,24 +196,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Secret Messages and finish all 7 levels. Use the wheel to unscramble each message, and think about how many keys a trickster would have to try. Then the game sends you to Spot the Trick: check the 4 cards there.",
+   "text": "Open Escape the Post Office at Lock 2: Sealed Note. No first letter is given at Pro: turn the wheel one shift at a time until the note reads as real words. Count your turns, and say why a tiny key space falls to brute force.",
    "art": "trophy",
-   "img": "csq/packet-post/ciphers-2-key",
-   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open.",
+   "img": "csq/escape-the-post-office/note-2",
+   "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
    "view": [
-    8.0,
-    26.3,
-    45.4,
-    64.5
+    0.0,
+    35.5,
+    82.0,
+    58.5
    ],
    "focus": [
     {
-     "cue": "Unscramble each message with the wheel",
+     "cue": "Play Sealed Note: try shift after shift",
      "box": [
-      15.4,
-      31.3,
-      30.5,
-      54.5
+      19.4,
+      59.7,
+      61.2,
+      10.7
      ]
     }
    ]
@@ -225,8 +225,8 @@
   "cd-2-2.3-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "ciphers",
-  "params": "chapter=ciphers&band=2&lock=1"
+  "slug": "escape-the-post-office",
+  "chapter": "sealed-note",
+  "params": "chapter=sealed-note&band=2&lock=1"
  }
 }

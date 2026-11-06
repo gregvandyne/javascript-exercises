@@ -55,10 +55,10 @@
    "art": "loop",
    "img": "csq/robo-route/loops-2-nested",
    "view": [
-    52.2,
-    33,
-    34,
-    41.6
+    51.8,
+    32.9,
+    30.0,
+    41.8
    ],
    "alt": "A repeat 3 times bracket holds a second repeat 3 times bracket with move inside it, then turn right: a loop in a loop.",
    "focus": [
@@ -249,10 +249,10 @@
    "art": "trophy",
    "img": "csq/robo-route/loops-2-key",
    "view": [
-    52.2,
-    27.8,
-    34,
-    30.2
+    51.8,
+    32.9,
+    30.0,
+    20.1
    ],
    "alt": "A repeat 7 times block with one move inside crosses Bolt's whole row; written out longhand it would take seven blocks.",
    "focus": [
