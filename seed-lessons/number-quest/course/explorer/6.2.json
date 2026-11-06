@@ -85,7 +85,7 @@
    ],
    "visual": {
     "type": "array",
-    "label": "A garden drawn as 3 rows of 7 dots, one dot for each square unit of area: 21 square units",
+    "label": "One dot per unit square: 3 rows of 7 is 21",
     "rows": 3,
     "cols": 7
    },

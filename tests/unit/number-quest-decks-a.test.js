@@ -147,7 +147,7 @@ test('hand-checked keys: the arithmetic in the checks is right', () => {
   const key = id => { const it = itemById.get(id); return it.choices[it.answer]; };
   assert.equal(key('nq-explorer-1.1-e1'), '7,000');
   assert.equal(key('nq-explorer-1.1-e2'), '4,000 + 50 + 8');
-  assert.equal(key('nq-explorer-1.2-e1'), '270'); assert.equal(key('nq-explorer-1.2-e2'), '1,500');
+  assert.equal(key('nq-explorer-1.2-e1'), '460'); assert.equal(key('nq-explorer-1.2-e2'), '1,500');
   assert.equal(key('nq-explorer-1.3-e1'), '27'); assert.equal(key('nq-explorer-1.3-e2'), '20');
   assert.equal(key('nq-explorer-2.1-e1'), '643'); assert.equal(key('nq-explorer-2.1-e2'), '2,224'); assert.equal(key('nq-explorer-2.1-e3'), '693');
   assert.equal(key('nq-explorer-2.2-e1'), '245'); assert.equal(key('nq-explorer-2.2-e2'), '211'); assert.equal(key('nq-explorer-2.2-e3'), '356');

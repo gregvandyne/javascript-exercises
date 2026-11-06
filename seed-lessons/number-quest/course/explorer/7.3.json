@@ -13,7 +13,7 @@
   },
   {
    "title": "Words for maybes",
-   "text": "Chance has its own words, and each one is a promise about the parts. Certain means every part, impossible means no part, and unlikely means a small share. This spinner gives red 1 part of 6.",
+   "text": "Chance has its own words, and each one is a promise about the parts. Certain means every part, an even chance means half, unlikely means a small share, and impossible means no part. This spinner gives red 1 part of 6.",
    "art": "grid",
    "visual": {
     "type": "fraction",
@@ -58,18 +58,18 @@
   },
   {
    "title": "Worked example: sorting the words",
-   "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, half an even chance, one of 6 unlikely, none impossible.",
+   "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, most red likely, one of 6 unlikely, none impossible.",
    "art": "dice",
    "kind": "example",
    "steps": [
     "All 6 parts red: certain",
-    "3 parts of 6 red: an even chance",
+    "5 parts of 6 red: likely",
     "1 part of 6 red: unlikely",
     "0 parts red: impossible"
    ],
    "visual": {
     "type": "tiles",
-    "label": "A strip of four chance-word tiles in order: certain, likely, unlikely, impossible",
+    "label": "Four chance words, most likely to least",
     "values": [
      "certain",
      "likely",
@@ -100,7 +100,7 @@
   },
   {
    "title": "The Jumble calls it impossible",
-   "text": "The Jumble watched the spinner miss red five times and called red impossible. Then it landed on the very next spin. Unlikely things happen; that is what unlikely means. Impossible is a promise the parts can actually keep.",
+   "text": "The Jumble watched the spinner miss red five times and called red impossible. Then it landed on the very next spin. Unlikely things happen; that is what unlikely means. Impossible means no part is red at all.",
    "art": "bug"
   },
   {
@@ -134,7 +134,7 @@
   },
   {
    "title": "Your mission",
-   "text": "Open Would You Rather. It opens straight on the Numbers topic: play one whole run to its end card. Before each pick, say how sure you are: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
+   "text": "Open Would You Rather. It opens straight on the Numbers topic: play one whole run to its end card. Before each pick, say how likely each choice is in real life: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
    "art": "trophy",
    "img": "nq/would-you-rather/numbers",
    "alt": "Would You Rather, the Numbers topic: a numbers choice on screen, two big cards to pick from, at the start of a run.",

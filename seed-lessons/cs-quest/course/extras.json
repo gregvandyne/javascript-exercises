@@ -194,15 +194,15 @@
      },
      {
       "id": "2-3.4-e2",
-      "q": "A voice helper worked for 9 of 10 deep voices and 3 of 6 high voices. Which comparison is fair?",
+      "q": "A reading app worked for 18 of 20 adults and 6 of 12 kids. Which comparison is fair?",
       "choices": [
-       "90% worked for deep voices, 50% for high voices",
-       "9 worked and 3 worked, so deep voices win by 6",
-       "High voices worked better than deep voices",
+       "90% worked for adults, 50% for kids",
+       "18 worked and 6 worked, so adults win by 12",
+       "The app worked better for kids than for adults",
        "Both groups did just as well"
       ],
       "answer": 0,
-      "why": "The groups are different sizes, so compare percents: 9 of 10 is 90%, and 3 of 6 is 50%. The helper works far better for deep voices."
+      "why": "The groups are different sizes, so compare percents: 18 of 20 is 90%, and 6 of 12 is 50%. The app works far better for adults."
      },
      {
       "id": "2-3.4-e3",

@@ -60,15 +60,15 @@
    "topic": "Sequences",
    "kind": "apply",
    "secs": 20,
-   "q": "Which is pseudocode?",
+   "q": "Which of these is pseudocode?",
    "choices": [
-    "a drawing of Bolt",
-    "a photo of the grid",
+    "repeat 4 { move }, then turn left",
+    "Bolt is a small blue robot on a grid",
     "Drive to the first gem and pick it up",
-    "a list of last week's scores"
+    "The counter says Blocks: 21"
    ],
    "answer": 2,
-   "why": "Pseudocode is a plan written as steps in plain words a person can read. A drawing, a photo or a list of scores is not a plan of steps."
+   "why": "Pseudocode is one step of a plan, in plain words. The repeat is already blocks, the counter is a count, and the line about Bolt describes him without saying what to do."
   },
   {
    "id": "2-1.1-e2",
@@ -352,7 +352,7 @@
     "a bug"
    ],
    "answer": 2,
-   "why": "A value you hand to a procedure when you call it is a parameter: here, how many steps to take."
+   "why": "steps is the slot inside Room that each call fills: a parameter. The 3 and the 5 the calls hand it are the arguments."
   },
   {
    "id": "2-1.5-e2",

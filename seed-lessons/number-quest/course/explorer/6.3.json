@@ -77,7 +77,7 @@
    ],
    "visual": {
     "type": "array",
-    "label": "A grid of dots in 5 columns and 4 rows, for reading the grid address (3, 2): 3 steps right, 2 steps up",
+    "label": "Grid address (3, 2): 3 right, then 2 up",
     "rows": 4,
     "cols": 5
    },

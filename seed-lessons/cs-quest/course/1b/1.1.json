@@ -214,76 +214,43 @@
    ]
   },
   {
-   "title": "Two routes, one flag",
-   "text": "Two routes can both reach the flag. Route A takes 7 blocks: six moves and just one turn.",
-   "art": "map",
-   "img": "csq/robo-route/sequences-1b-better-route",
-   "view": [
-    53.0,
-    21.5,
-    22.8,
-    27
-   ],
-   "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
-   "focus": [
-    {
-     "cue": "Route A: 7 blocks, with one turn.",
-     "box": [
-      54.2,
-      33.4,
-      19.7,
-      14.6
-     ]
-    },
-    {
-     "cue": "Tap Use to load a route into the tray.",
-     "box": [
-      63.8,
-      25.9,
-      10.7,
-      7.7
-     ]
-    }
-   ]
-  },
-  {
    "title": "Pick the better route",
-   "text": "Route B takes 8 blocks, with two turns: one more chance to go wrong. The better route is shorter, safer or easier to get right. A long dry route beats a short wet one! Split a long route into legs.",
+   "text": "Both routes reach the flag. Route A takes 7 blocks with one turn; Route B takes 8 blocks with two turns, one more chance to go wrong. The better route is shorter, safer or easier to get right, and safe comes first: a long dry route beats a short wet one.",
    "art": "star",
    "img": "csq/robo-route/sequences-1b-better-route",
    "view": [
-    76.0,
-    21.5,
-    23.1,
-    27
+    63.4,
+    11.4,
+    35.2,
+    38.2
    ],
-   "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
+   "alt": "The compare screen: Route A takes 7 blocks with one turn, Route B takes 8 blocks with two turns, and a green Use button sits in each panel.",
    "focus": [
     {
-     "cue": "Route B: 8 blocks. One more chance to go wrong.",
+     "cue": "Route A: 7 blocks, and only one turn.",
      "box": [
-      76.7,
-      33.4,
-      20.9,
-      14.6
+      64.0,
+      29.4,
+      15.6,
+      19.5
      ]
     },
     {
-     "cue": "Route B turns right here...",
+     "cue": "Route B: 8 blocks, and two turns. One more chance to go wrong.",
      "box": [
-      76.7,
-      33.6,
-      8.8,
-      4.8
+      81.5,
+      29.4,
+      15.6,
+      19.5
      ]
     },
     {
-     "cue": "...and turns left here. Route A turns only once.",
+     "cue": "Route A wins. Tap Use A to load it into your program.",
      "box": [
-      89.5,
-      38.3,
-      8.1,
-      4.8
+      64.0,
+      22.0,
+      10.7,
+      7.7
      ]
     }
    ]

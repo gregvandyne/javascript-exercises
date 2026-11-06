@@ -14,7 +14,7 @@
   {
    "title": "Seven locks, and a surprise",
    "art": "key",
-   "text": "Seven locks, seven questions, one per workshop: placing, ledger gaps, grouping, sharing, weighing, fencing, charting. Inside, among the sacks, you find the Jumble, rewriting measures it could not read. Tally hands it a pencil and a job: counter-in-training, Tally as teacher."
+   "text": "Seven locks, seven questions, one per workshop: placing, ledger gaps, grouping, sharing, weighing, fencing, charting. Inside, among the sacks, you find the Jumble, rewriting measures it could not read. Tally hands it a pencil and a new job: counter-in-training."
   },
   {
    "title": "Worked example: the Heavy Sack",
@@ -86,7 +86,7 @@
   },
   {
    "title": "The first tour of the day",
-   "text": "The Vault's first tour leaves when the street's clock reaches the start time, and it lasts 35 minutes. Times can land between the marks on a line, and this tour's end does exactly that.",
+   "text": "The Vault's first tour starts at 10:40 and lasts 35 minutes. Hop 20 minutes to 11:00, then 15 more. The tour ends at 11:15, between two marks on the line.",
    "art": "map",
    "visual": {
     "type": "numberline",
@@ -172,8 +172,8 @@
      "means": "a fastener that opens only to the right key or answer"
     },
     {
-     "word": "circuit",
-     "means": "a route that visits every stop and comes back to the start"
+     "word": "convert",
+     "means": "to write the same measure with a new unit name, like kilograms as grams"
     },
     {
      "word": "stone",

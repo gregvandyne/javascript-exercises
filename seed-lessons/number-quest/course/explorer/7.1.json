@@ -13,7 +13,7 @@
   },
   {
    "title": "Bars that speak",
-   "text": "Each bar's length is its count. Bananas sold 20, the longest bar on the chart. Read a bar by running your finger to the end of it, then down to its number. The scale tells you how much each step is worth.",
+   "text": "Each bar's length is its count. Bananas sold 20, the longest bar on the chart. Compare the lengths first, then read the numbers to say exactly how many.",
    "art": "table",
    "visual": {
     "type": "bars",
@@ -50,7 +50,7 @@
    },
    "focus": [
     {
-     "cue": "Apples: the bar stops at 12 on the scale.",
+     "cue": "Apples: a bar of 12.",
      "box": [
       5,
       3.4,
@@ -68,7 +68,7 @@
      ]
     },
     {
-     "cue": "Pears: 16 sold, between apples and bananas.",
+     "cue": "Pears: 16 sold, longer than apples, shorter than bananas.",
      "box": [
       5,
       63.9,
@@ -200,7 +200,7 @@
   },
   {
    "title": "Your mission",
-   "text": "Open Data Detective at Chart It and finish all 5 cases. Each case hands you a messy stall and asks for the chart that answers. Read the scale before you read any bar.",
+   "text": "Open Data Detective at Chart It and finish all 5 cases. Each case hands you a messy stall and asks for the chart that answers. Say what each bar counts before you compare any two.",
    "art": "trophy",
    "img": "nq/data-detective/chart-it",
    "alt": "Data Detective, Chart It: a case's counts shown as a bar chart, the Bars view picked, a claim ready to pin.",

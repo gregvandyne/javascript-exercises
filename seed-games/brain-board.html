@@ -752,7 +752,7 @@ window.SoloBank = (function () {
       for (i = 0; i < 5; i++) { // Coin values: quarters counted in cents.
         var qn = coinQs[i][0];
         out.push(nqItem('How many cents is ' + qn + (qn === 1 ? ' quarter?' : ' quarters?'), coinQs[i][1] + ' cents',
-          [(qn * 10) + ' cents', (coinQs[i][1] - 15) + ' cents', (coinQs[i][1] + 25) + ' cents'], 'Coin values'));
+          [(qn * 10) + ' cents', (coinQs[i][1] - 5) + ' cents', (coinQs[i][1] + 25) + ' cents'], 'Coin values'));
       }
       for (i = 0; i < 5; i++) { // Make the price: count a handful of coins.
         var cq = ri(1, 3), cd = ri(0, 2), cn = ri(0, 2), cp = ri(0, 4), tot = cq * 25 + cd * 10 + cn * 5 + cp;

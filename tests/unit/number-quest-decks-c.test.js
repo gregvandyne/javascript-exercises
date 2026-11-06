@@ -176,16 +176,16 @@ test('the quick check is the step own three items, tagged with a locked primary 
 
 test('hand-checked keys: the arithmetic in the checks is right', () => {
   const key = id => { const it = itemById.get(id); return it.choices[it.answer]; };
-  assert.equal(key('nq-explorer-5.1-e1'), '2,000 grams'); assert.equal(key('nq-explorer-5.1-e2'), '300 centimeters'); assert.equal(key('nq-explorer-5.1-e3'), '2 meters');
-  assert.equal(key('nq-explorer-5.2-e1'), '5:05'); assert.equal(key('nq-explorer-5.2-e2'), '1 hour 30 minutes'); assert.equal(key('nq-explorer-5.2-e3'), '10:00');
-  assert.equal(key('nq-explorer-5.3-e1'), '35 cents'); assert.equal(key('nq-explorer-5.3-e2'), '75 cents'); assert.equal(key('nq-explorer-5.3-e3'), '235 cents');
+  assert.equal(key('nq-explorer-5.1-e1'), '4,000 grams'); assert.equal(key('nq-explorer-5.1-e2'), '300 centimeters'); assert.equal(key('nq-explorer-5.1-e3'), '2 meters');
+  assert.equal(key('nq-explorer-5.2-e1'), '5:05'); assert.equal(key('nq-explorer-5.2-e2'), '1 hour 30 minutes'); assert.equal(key('nq-explorer-5.2-e3'), '9:15');
+  assert.equal(key('nq-explorer-5.3-e1'), '55 cents'); assert.equal(key('nq-explorer-5.3-e2'), '75 cents'); assert.equal(key('nq-explorer-5.3-e3'), '235 cents');
   assert.equal(key('nq-explorer-6.1-e1'), 'Triangle'); assert.equal(key('nq-explorer-6.1-e2'), 'One square corner'); assert.equal(key('nq-explorer-6.1-e3'), 'It has 4 sides and 4 square corners, like every rectangle');
   assert.equal(key('nq-explorer-6.2-e1'), '24 square meters'); assert.equal(key('nq-explorer-6.2-e2'), '20 inches'); assert.equal(key('nq-explorer-6.2-e3'), 'Perimeter 22 feet, area 24 square feet');
   assert.equal(key('nq-explorer-6.3-e1'), 'Parallel lines'); assert.equal(key('nq-explorer-6.3-e2'), 'A'); assert.equal(key('nq-explorer-6.3-e3'), '4 steps right, then 2 steps up');
-  assert.equal(key('nq-explorer-7.1-e1'), '8'); assert.equal(key('nq-explorer-7.1-e2'), '10'); assert.equal(key('nq-explorer-7.1-e3'), '1 1/2 yards');
-  assert.equal(key('nq-explorer-7.2-e1'), 'What is your favorite fruit: apple, banana, grape or pear?'); assert.equal(key('nq-explorer-7.2-e2'), '3'); assert.equal(key('nq-explorer-7.2-e3'), 'How do you get to school: walk, bus, car or bike?');
+  assert.equal(key('nq-explorer-7.1-e1'), '12'); assert.equal(key('nq-explorer-7.1-e2'), '10'); assert.equal(key('nq-explorer-7.1-e3'), '1 yard');
+  assert.equal(key('nq-explorer-7.2-e1'), 'What is your favorite fruit: apple, banana, grape or pear?'); assert.equal(key('nq-explorer-7.2-e2'), '3'); assert.equal(key('nq-explorer-7.2-e3'), 'Measure each one the same way, from the very end');
   assert.equal(key('nq-explorer-7.3-e1'), 'Unlikely'); assert.equal(key('nq-explorer-7.3-e2'), 'Certain'); assert.equal(key('nq-explorer-7.3-e3'), 'An even chance');
-  assert.equal(key('nq-explorer-7.4-e1'), '2,600 grams'); assert.equal(key('nq-explorer-7.4-e2'), '75 centimeters'); assert.equal(key('nq-explorer-7.4-e3'), '11:15');
+  assert.equal(key('nq-explorer-7.4-e1'), '2,600 grams'); assert.equal(key('nq-explorer-7.4-e2'), '75 centimeters'); assert.equal(key('nq-explorer-7.4-e3'), '4:15');
   // And the worked examples in the decks: 2 kg counted twice to 2,000 g, change 5 + 30 = 35 cents,
   // area 3 x 7 = 21, the treasure at (3, 2), 20 - 12 = 8, ribbons to 1 1/2, the sack at 3,400 grams.
   const all = decks.map(d => JSON.stringify(d.deck)).join(' ');

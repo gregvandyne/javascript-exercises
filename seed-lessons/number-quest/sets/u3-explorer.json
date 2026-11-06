@@ -60,19 +60,19 @@
    "topic": "Groups",
    "kind": "recall",
    "secs": 20,
-   "q": "What is 23 x 4?",
+   "q": "What is 24 x 3?",
    "choices": [
-    "92",
-    "812",
+    "72",
+    "612",
     "27",
-    "84"
+    "66"
    ],
    "answer": 0,
    "misconceptions": [
     "correct",
     "wrote the two part answers side by side instead of adding",
-    "added 23 and 4 instead of multiplying",
-    "multiplied 21 by 4 instead of 23"
+    "added 24 and 3 instead of multiplying",
+    "multiplied 22 by 3 instead of 24"
    ]
   },
   {
@@ -198,18 +198,18 @@
    "topic": "Fast facts",
    "kind": "scenario",
    "secs": 20,
-   "q": "Mia knows 5 x 9 = 45. What is 45 divided by 9?",
+   "q": "Mia knows 6 x 8 = 48. What is 48 divided by 8?",
    "choices": [
-    "9",
-    "45",
+    "8",
+    "48",
     "4",
-    "5"
+    "6"
    ],
    "answer": 3,
    "misconceptions": [
-    "repeated the 9 instead of finding the missing factor",
-    "kept the whole 45 and shared nothing",
-    "grabbed a near fact: 4 x 9 is 36",
+    "repeated the 8 instead of finding the missing factor",
+    "kept the whole 48 and shared nothing",
+    "grabbed a far fact: 4 x 8 is only 32",
     "correct"
    ]
   }

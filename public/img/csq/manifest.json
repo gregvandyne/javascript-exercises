@@ -1,5 +1,5 @@
 {
- "about": "Every CS Quest slide picture, keyed. A slide names a key (img); the picture lives at public/img/<key>.webp (1280x720 WebP). Decks and this manifest are checked by `npm run csq:check`; captures are made by scripts/csq-shots.js.",
+ "about": "Every CS Quest slide picture, keyed. A slide names a key (img); the picture lives at public/img/<key>.webp (1280x720 WebP; a picture a slide crops very narrow is captured at 2x, 2560x1440, the same layout). Decks and this manifest are checked by `npm run csq:check`; captures are made by scripts/csq-shots.js.",
  "version": 1,
  "images": [
   {
@@ -2110,7 +2110,7 @@
    "band": "1b",
    "state": "sequences-1b-better-route",
    "concept": "Pick the better route",
-   "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
+   "alt": "The compare screen: Route A takes 7 blocks with one turn, Route B takes 8 blocks with two turns, and a green Use button sits in each panel.",
    "capturedAt": "2026-11-06",
    "commit": "csq-content-fix"
   },

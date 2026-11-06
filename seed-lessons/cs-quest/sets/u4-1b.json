@@ -93,7 +93,7 @@
    "secs": 20,
    "q": "A road in the network closes while a message is being sent. What happens?",
    "choices": [
-    "the message is lost for ever",
+    "the message is lost forever",
     "the packets take another road",
     "the internet stops",
     "the picture changes color"
@@ -214,7 +214,7 @@
    "choices": [
     "it comes from your class page",
     "it has no pictures",
-    "it says hurry and asks for your password",
+    "it says hurry and asks for your passphrase",
     "it is short"
    ],
    "answer": 2

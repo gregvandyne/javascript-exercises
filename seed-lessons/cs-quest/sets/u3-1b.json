@@ -129,15 +129,15 @@
    "topic": "Predictions",
    "kind": "apply",
    "secs": 20,
-   "q": "The plant grew 2 cm each day for 5 days. On day 6 it will most likely be…",
+   "q": "A puppy gained 1 kg every week for 4 weeks. Next week it will most likely be…",
    "choices": [
-    "2 cm taller than day 5",
-    "the same height as day 1",
-    "10 cm shorter",
-    "impossible to say"
+    "1 kg heavier than this week",
+    "the same as in week 1",
+    "4 kg lighter",
+    "twice as heavy"
    ],
    "answer": 0,
-   "why": "The pattern adds 2 cm every day, so the best guess for day 6 is day 5 plus 2 cm more."
+   "why": "The pattern adds 1 kg every week, so the best guess for next week is this week plus 1 kg more."
   },
   {
    "id": "1b-3.2-e2",
@@ -165,7 +165,7 @@
    "topic": "Predictions",
    "kind": "analyze",
    "secs": 20,
-   "q": "The chart shows Tuesday is the tallest bar. Which claim is supported?",
+   "q": "A chart shows lunches sold each day, and Tuesday has the tallest bar. Which claim does it support?",
    "choices": [
     "Friday had the most lunches",
     "nobody ate on Tuesday",
@@ -218,15 +218,15 @@
    "topic": "Surveys",
    "kind": "analyze",
    "secs": 20,
-   "q": "12 kids said dog, 3 said cat. Which claim is fair?",
+   "q": "In our class, 9 kids chose soccer and 4 chose tennis. Which claim is fair?",
    "choices": [
-    "everyone in the world prefers dogs",
-    "cats are the favorite",
-    "dogs are the favorite pet in our class",
-    "nobody likes cats"
+    "everyone in the world prefers soccer",
+    "tennis is the favorite",
+    "soccer is the favorite sport in our class",
+    "nobody likes tennis"
    ],
    "answer": 2,
-   "why": "The claim stays inside what the data covers: this class. It does not speak for the whole world."
+   "why": "The claim stays inside what the data covers: this class. It does not speak for the whole world, and 4 kids do like tennis."
   },
   {
    "id": "1b-3.3-e3",
