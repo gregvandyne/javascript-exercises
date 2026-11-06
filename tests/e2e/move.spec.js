@@ -2,8 +2,10 @@
 // mock provider, a silent MP3 per line, so what is verified is the real path: the player asks
 // /api/tts with ctx 'move', the server serves the registered line's audio, the page plays it).
 // What this pins, segment by segment (Greg's acceptance rules, 2026-11-05):
-//   - narration actually plays via the AI voice in EVERY segment, and the caption showing at that
-//     moment is that segment's own line, word for word;
+//   - narration actually plays via the AI voice in EVERY segment, and the captions are the
+//     transcript of the line being spoken at that moment (the queue speaks the one timeline
+//     in order, so a caption can be a chapter's line just after the clock crosses into the
+//     next chapter, while that line finishes across the join);
 //   - background music is playing in EVERY segment, ducks under narration, and the two mutes are
 //     independent (music off leaves narration; narration off, the music-only mode, leaves music
 //     and captions);
@@ -36,12 +38,13 @@ const music = page => page.evaluate(() => window.__moveTest.music());
 const narration = page => page.evaluate(() => window.__moveTest.narration);
 const epData = page => page.evaluate(() => JSON.parse(document.getElementById('page-data').textContent).episode);
 
-async function playToEnd(page, onSegment) {
+async function playToEnd(page, onSegment, onPoll) {
   const seen = new Map();
   let last = -1;
   await page.click('#mv-play');
   for (let i = 0; i < 240; i++) {
     const s = await state(page);
+    if (onPoll) await onPoll(s);
     if (s.segIdx !== last && s.segIdx >= 0) { last = s.segIdx; seen.set(s.segIdx, { ...s }); if (onSegment) await onSegment(s); }
     if (await page.locator('#mv-endcard.on').count()) break;
     await page.waitForTimeout(250);
@@ -56,18 +59,55 @@ test('a guest hears narration and music in every segment, captions match, and th
   page.on('response', async r => { if (r.url().includes('/api/move/complete')) { try { completes.push(await r.json()); } catch { /* ignore */ } } });
   await page.goto(EP_URL);
   const ep = await epData(page);
-  const perSegMusic = {}, perSegCaption = {};
+  const perSegMusic = {};
+  // Caption evidence: on every poll, one atomic read of the caption together with the
+  // narration log, so the pairing the assertions below check is never a race between reads.
+  const captionSamples = [];
   const seen = await playToEnd(page, async s => {
-    perSegCaption[s.segIdx] = s.caption;
     const m = await music(page);
     perSegMusic[s.segIdx] = m.perSegment[ep.segments[s.segIdx].id] ? m.perSegment[ep.segments[s.segIdx].id].notes : 0;
+  }, async () => {
+    captionSamples.push(await page.evaluate(() => ({
+      caption: window.__moveTest.state().caption,
+      log: window.__moveTest.narration.map(e => `${e.seg}:${e.line}`),
+    })));
   });
   expect(seen.size, 'every segment was entered').toBe(ep.segments.length);
   const log = await narration(page);
   for (let i = 0; i < ep.segments.length; i++) {
     const seg = ep.segments[i];
     expect(log.some(e => e.seg === i && e.via === 'ai'), `segment ${seg.id} had a narration line played via the AI voice`).toBe(true);
-    expect(ep.segments[i].lines).toContain(perSegCaption[i]);
+  }
+  // Captions are the transcript of the line being spoken, and the one timeline queue speaks
+  // in order: a line starts only once the previous line has finished, so at this sped-up
+  // clock the queue can still be speaking a chapter's line just after the clock has crossed
+  // into the next chapter, and the caption rightly stays with the voice (Greg's seamless
+  // rule: a line in progress continues across a join). An earlier version of this test
+  // asserted that the caption at the first sight of a chapter was that chapter's own line;
+  // that contradicts the seamless rule and failed exactly when the queue, not the caption,
+  // was behind the clock. What the player actually guarantees, asserted here from the
+  // atomic samples: every caption shown is a real timeline line; at any moment it is the
+  // line the queue most recently started or the very next one (the caption lands when a
+  // line's fetch begins, its log entry when playback starts, so it can sit one entry ahead
+  // of the log, never behind it and never further ahead); captions move only forward
+  // through the timeline; and every chapter's own lines are captioned while they are the
+  // ones being spoken.
+  const textPos = new Map(ep.timeline.map((e, i) => [e.text, i]));
+  const keyPos = new Map(ep.timeline.map((e, i) => [`${e.seg}:${e.line}`, i]));
+  let trailMax = -1;
+  const captionedSegs = new Set();
+  for (const c of captionSamples) {
+    if (!c.caption) continue;
+    const p = textPos.get(c.caption);
+    expect(p, `caption shown was a real narration line: ${c.caption}`).not.toBeUndefined();
+    expect(p, 'captions only move forward through the timeline').toBeGreaterThanOrEqual(trailMax);
+    trailMax = Math.max(trailMax, p);
+    captionedSegs.add(ep.timeline[p].seg);
+    const lastLogged = c.log.length ? keyPos.get(c.log[c.log.length - 1]) : -1;
+    expect(p === lastLogged || p === lastLogged + 1, `caption (timeline line ${p}) matched the line being spoken (last started line ${lastLogged})`).toBe(true);
+  }
+  for (let i = 0; i < ep.segments.length; i++) {
+    expect(captionedSegs.has(i), `segment ${ep.segments[i].id} had its own line captioned while it was spoken`).toBe(true);
   }
   const m = await music(page);
   for (const seg of ep.segments) expect(m.perSegment[seg.id].notes, `music played during ${seg.id}`).toBeGreaterThan(0);
