@@ -23,8 +23,10 @@ const deckFile = path.join(tmp, '1b', '1.1.json');
 function writeDeck(mutate) {
   const d = JSON.parse(JSON.stringify(SEED_DECK));
   // The whole pictures (no `view` crops): this file pins the overlay markup in the picture's own %; the
-  // crop's remap is pinned in course-engine.test.js.
-  for (const s of d.slides) delete s.view;
+  // crop's remap is pinned in course-engine.test.js. A picture split across two slides keeps its two crops
+  // (they are what lets the deck carry its eighth slide).
+  const split = (s, i, all) => [all[i - 1], all[i + 1]].some(o => o && o.img === s.img);
+  d.slides.forEach((s, i, all) => { if (!split(s, i, all)) delete s.view; });
   mutate(d);
   fs.writeFileSync(deckFile, JSON.stringify(d));
   C.reload();
@@ -39,14 +41,14 @@ const focusProblems = () => C.deckProblems('1b').filter(p => p.includes('focus w
 test('a valid focus passes cleaning untouched, and every Unit 1 seed slide keeps its steps', () => {
   assert.deepEqual(slide1().focus, SEED_DECK.slides[0].focus);
   assert.deepEqual(focusProblems(), []);
-  // The shipped decks: all 55 pictured Unit 1 slides carry focus (the pilot gate for this feature).
+  // The shipped decks: all 56 pictured Unit 1 slides carry focus (the pilot gate for this feature).
   C.useDeckDir('seed-lessons/cs-quest/course');
   let pictured = 0, steps = 0;
   for (const band of C.BANDS) for (const s of C.steps(course, band).filter(x => x.n.startsWith('1.'))) {
     for (const sl of s.slides) if (sl.img) { pictured++; assert.ok(sl.focus, `${s.key} "${sl.title}" keeps its focus`); steps += sl.focus.length; }
   }
-  assert.equal(pictured, 55);
-  assert.ok(steps >= 55 && steps <= 4 * 55, `${steps} focus steps`);
+  assert.equal(pictured, 56);
+  assert.ok(steps >= 56 && steps <= 4 * 56, `${steps} focus steps`);
   C.useDeckDir(tmp);
 });
 

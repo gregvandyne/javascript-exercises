@@ -83,7 +83,9 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
     const where = `${band}-${step.n}`;
     // A deck with a story transition beat carries one extra slide (the beat sits before the mission).
     const beats = d.slides.filter(s => s.story && s.story.scene === 'handoff').length;
-    assert.ok(Array.isArray(d.slides) && d.slides.length >= 5 && (d.slides.length <= 7 || (d.slides.length === 8 && beats === 1)), `${where}: 5-7 slides, 8 with a story beat (${d.slides.length})`);
+    // or with one wide picture split across two slides in a row, each through its own crop
+    const split = d.slides.filter((s, i) => i && s.img && s.img === d.slides[i - 1].img && s.view && d.slides[i - 1].view && String(s.view) !== String(d.slides[i - 1].view)).length;
+    assert.ok(Array.isArray(d.slides) && d.slides.length >= 5 && (d.slides.length <= 7 || (d.slides.length === 8 && (beats === 1 || split === 1))), `${where}: 5-7 slides, 8 with a story beat or a split picture (${d.slides.length})`);
     const kinds = d.slides.map(s => s.kind || 'text');
     assert.equal(kinds.filter(k => k === 'example').length, 1, `${where}: one example slide`);
     assert.equal(kinds.filter(k => k === 'words').length, 1, `${where}: one words slide`);
