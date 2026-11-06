@@ -54,7 +54,9 @@ test('20 steps per band from units.json, decks clean, games as catalogued', () =
   assert.deepEqual(C.getStep(course, '1b-1.1').game, { slug: 'packet-post', chapter: 'packets', chapterTitle: 'Break It Up', params: 'chapter=packets&band=1b&lock=1', title: 'Packet Post' });
   assert.equal(C.getStep(course, '1b-3.1').game.slug, 'would-you-rather');
   assert.equal(C.getStep(course, '1b-3.1').game.title, 'Would You Rather?');
-  assert.equal(C.getStep(course, '2-3.3').game.chapter, 'tricks');
+  assert.equal(C.getStep(course, '2-3.3').game.slug, 'trick-inbox');
+  assert.equal(C.getStep(course, '2-3.3').game.chapter, 'pressure');
+  assert.equal(C.getStep(course, '1b-3.2').game.params, 'chapter=which-pim&band=1b&lock=1', 'a practice lock of the escape room');
   assert.equal(C.getStep(course, '1b-9.9'), null);
   // CS Quest is untouched by Cyber: 21 steps in 1b (19 lessons + story intro/finale from extras) and 22 in
   // band 2 (the Pro-only 3.4 Fair Data practice step rides along), no problems, its own decks.
@@ -135,11 +137,11 @@ test('a Would You Rather mission: an open game, no gate, but the step context st
   const s31 = C.getStep(course, '1b-3.1');
   assert.equal(C.stateOf(kid, course, '1b-3.1').open, true);
   const r = await post('/api/courses/cyber-defenders/1b-3.1/check', kid, { answers: allRight(s31) });
-  assert.equal(r.json.play, '/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1');
+  assert.equal(r.json.play, '/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1&topic=online&lock=1', 'the module opens the game locked to its online topic');
   // Without the step context the open game just plays — for anyone, signed in or not.
   assert.equal((await get('/play/would-you-rather', kid)).status, 200);
   assert.equal((await get('/g/would-you-rather', kid)).status, 200, 'the game keeps its own page');
-  const play = await get('/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1', kid);
+  const play = await get('/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1&topic=online&lock=1', kid);
   assert.equal(play.status, 200);
   assert.match(play.text, /href="\/courses\/cyber-defenders\/1b-3\.1#play"/, 'back goes to the Defender step');
   const started = C.stateOf(kid, course, '1b-3.1');

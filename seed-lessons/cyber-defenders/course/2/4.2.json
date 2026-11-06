@@ -10,25 +10,22 @@
    "title": "Pim's notebook of tricksters",
    "text": "Some tricks are not accidents. Behind each one is a threat actor: a person or group trying to get something they should not have.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "img": "csq/trick-inbox/mix-2-mx-3-debrief",
+   "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Behind this fake is a person who wants something",
+     "cue": "Behind each trick: someone who wants something",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
-     ]
-    },
-    {
-     "cue": "Scary is a trick too: it wants you to act before you think",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      3.4,
+      84.1,
+      93.3,
+      5.0
      ]
     }
    ]
@@ -37,25 +34,31 @@
    "title": "Four kinds of actor",
    "text": "Meet the gallery in plain words: the scammer wants money, the account thief wants in, the vandal wants damage, and the spy wants secrets. None of them is glamorous. Each is simply trying to take what is not theirs.",
    "art": "people",
-   "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "img": "csq/trick-inbox/mix-2-mx-6-debrief",
+   "alt": "The visitor 1000 prize, binned: the debrief names the prize-faker, who wants you to tap and type.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "The scammer's parcel: pay a small fee, fast",
+     "cue": "A prize that costs a tap: the scammer's want",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      11.5,
+      33.7,
+      61.1,
+      7.1
      ]
     },
     {
-     "cue": "Asks for money; two hours to act; a parcel never ordered",
+     "cue": "The debrief names the actor",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      16.5
+      3.4,
+      79.1,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -72,25 +75,31 @@
     "Want: a way into accounts",
     "Guard: do not reply; report it"
    ],
-   "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "img": "csq/trick-inbox/senders-2-sd-3-all",
+   "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
+   "view": [
+    0.0,
+    11.6,
+    99.4,
+    88.4
+   ],
    "focus": [
     {
-     "cue": "Sender name looks official; the badge gives it away",
+     "cue": "A fake school message asks for account details",
      "box": [
-      13.0,
-      29.8,
-      22.4,
-      3.4
+      3.8,
+      67.4,
+      46.0,
+      7.1
      ]
     },
     {
-     "cue": "Threatens, asks for the key, hides behind today",
+     "cue": "Who sent it? Check the real address",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      17.4
+      3.6,
+      49.6,
+      92.8,
+      3.8
      ]
     }
    ]
@@ -99,25 +108,31 @@
    "title": "Permission is the whole difference",
    "text": "Testing a network's locks can be ethical or malicious, and permission is the whole difference. With permission it is defense work. Without it, it is breaking in, whatever the reason given.",
    "art": "key",
-   "img": "csq/packet-post/locks-2-shield",
-   "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
+   "img": "csq/escape-the-post-office/layers-2-6",
+   "alt": "Threat 6 of 6: a one-word key is guessed in an afternoon. The Long Passphrase layer stops it.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Your mailbox key: nobody else needs it, ever",
+     "cue": "A one-word key, guessed in an afternoon",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      13.2
+      1.5,
+      42.9,
+      97.0,
+      10.4
      ]
     },
     {
-     "cue": "Private is the Defender answer here",
+     "cue": "With permission, testing this layer is defense work",
      "box": [
-      54.0,
-      44.7,
-      23.8,
-      6.6
+      26.0,
+      69.3,
+      23.5,
+      12.9
      ]
     }
    ]
@@ -126,25 +141,22 @@
    "title": "Not like the films",
    "text": "Films dress hacking up as instant magic, which is a costume too. Real defense is slow, careful and lawful, and it is a real job people are paid to do well.",
    "art": "screen",
-   "img": "csq/packet-post/protocols-2-design",
-   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+   "img": "csq/escape-the-post-office/layers-2",
+   "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "What goes wrong on this road, in plain sight",
+     "cue": "Real defense: one careful layer at a time",
      "box": [
-      51.3,
-      35.3,
-      24.6,
-      16.5
-     ]
-    },
-    {
-     "cue": "Real defense: slow, careful rules that catch the failures",
-     "box": [
-      40.6,
-      53.7,
-      47.7,
-      26.3
+      1.5,
+      54.7,
+      97.0,
+      27.5
      ]
     }
    ]
@@ -176,18 +188,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather, choose the Online topic, and play Online: share or keep. Then replay Packet Post at Spot the Trick on Pro, and name the actor behind each trick.",
+   "text": "Open Trick Inbox at Magpie Mix and sort all 6 messages. Name the actor behind each trick and what it wants.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-2-first",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
+   "img": "csq/trick-inbox/mix-2-mx-4-debrief",
+   "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction and a crowd.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Start with Online: share or keep",
+     "cue": "Play Magpie Mix: name the actor behind each",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      3.4,
+      84.1,
+      93.3,
+      5.0
      ]
     }
    ]
@@ -199,8 +217,8 @@
   "cd-2-4.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": ""
+  "slug": "trick-inbox",
+  "chapter": "mix",
+  "params": "chapter=mix&band=2&lock=1"
  }
 }

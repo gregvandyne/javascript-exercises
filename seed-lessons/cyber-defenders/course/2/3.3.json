@@ -17,25 +17,31 @@
     "urgency: act right now",
     "request: share the secret"
    ],
-   "img": "csq/packet-post/tricks-2-profile",
-   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile.",
+   "img": "csq/trick-inbox/pressure-2-pr-3-debrief",
+   "alt": "The Fan Club post, binned: everything it knew came from a public profile. Flattery built from your footprint.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "A fan club that knows your dog and your birthday",
+     "cue": "Facts made public: skateboards, a dog, a birthday",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      26.0
+      3.8,
+      36.9,
+      83.2,
+      7.1
      ]
     },
     {
-     "cue": "Anything on a public profile is a gift to a trickster",
+     "cue": "The door was talked open, not broken",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      3.4,
+      72.7,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -44,25 +50,31 @@
    "title": "Four pressure levers",
    "text": "A faked sender name can carry all four levers: authority, urgency, kindness and fear. Each lever pushes you to act before you stop and think.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "img": "csq/trick-inbox/pressure-2-pr-1-all",
+   "alt": "Trick Inbox, Pressure: a letter says this is the head teacher speaking. Send your key before lunch, no questions.",
+   "view": [
+    0.0,
+    15.7,
+    94.8,
+    84.3
+   ],
    "focus": [
     {
-     "cue": "A faked sender: your account is locked",
+     "cue": "Authority: this is the head teacher speaking",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.8,
+      56.4,
+      38.5,
+      7.1
      ]
     },
     {
-     "cue": "Its levers: threats, key asks, an unknown badge, today",
+     "cue": "Urgency: before lunch",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      17.4
+      74.5,
+      56.4,
+      17.3,
+      7.1
      ]
     }
    ]
@@ -71,25 +83,31 @@
    "title": "A made-up reason",
    "text": "A pretext is a made-up reason that makes a strange request sound normal. It might borrow a real event, like a lost bag, to explain why help is needed fast.",
    "art": "envelope",
-   "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "img": "csq/trick-inbox/letters-2-lt-7-all",
+   "alt": "A Package Service letter: we could not deliver your package, pay a small fee within two hours.",
+   "view": [
+    0.0,
+    11.6,
+    99.4,
+    88.4
+   ],
    "focus": [
     {
-     "cue": "Your parcel is waiting: a reason invented to rush you",
+     "cue": "A made-up reason: a package that never arrived",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.6,
+      56.4,
+      92.8,
+      7.1
      ]
     },
     {
-     "cue": "A parcel you never ordered is a favorite trick",
+     "cue": "Then the ask: a fee, fast",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      38.4,
+      56.4,
+      41.7,
+      7.1
      ]
     }
    ]
@@ -98,25 +116,22 @@
    "title": "Check another way",
    "text": "One move defeats every lever: verify through a different channel. Ask the person in real life, or type the real address yourself instead of tapping the link you were sent.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-2-safe",
-   "alt": "A real message for once: your teacher, a sender you know, about the field trip forms. Nothing to tap, no rush.",
+   "img": "csq/trick-inbox/pressure-2-pr-1-debrief",
+   "alt": "The head teacher letter, reported: authority is a costume here, and do not ask questions is the loudest clue.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Not every message is a trick: read carefully first",
+     "cue": "Check another way, in person",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
-     ]
-    },
-    {
-     "cue": "A real one, from a sender the office knows",
-     "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
+      3.4,
+      72.7,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -125,25 +140,22 @@
    "title": "The Magpie asks nicely",
    "text": "Last week the Magpie tried a new trick: no fake letters, just friendly questions about Pim's route. The clue was the pattern: every question fished for a private fact.",
    "art": "magnifier",
-   "img": "csq/packet-post/tricks-2-quiz",
-   "alt": "A fun quiz in costume: which dragon are you? It asks for a first pet, a street and a birth month to play.",
+   "img": "csq/trick-inbox/chat-2-ch-6-all",
+   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
+   "view": [
+    0.0,
+    34.1,
+    70.2,
+    62.4
+   ],
    "focus": [
     {
      "cue": "Friendly questions that fish for private facts",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
-     ]
-    },
-    {
-     "cue": "Asks the very things used to reset a mailbox key",
-     "box": [
-      54.0,
-      42.6,
-      34.4,
-      20.0
+      3.8,
+      61.8,
+      63.4,
+      7.1
      ]
     }
    ]
@@ -175,18 +187,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Spot the Trick and play the Pro trick cards. For each card, name the pressure lever pushing you before you choose.",
+   "text": "Open Trick Inbox at Pressure and sort all 6 messages. For each one, name the pressure lever pushing you before you choose.",
    "art": "trophy",
-   "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "img": "csq/trick-inbox/pressure-2-pr-6-all",
+   "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
+   "view": [
+    0.0,
+    29.0,
+    69.7,
+    62.0
+   ],
    "focus": [
     {
-     "cue": "Name the pressure lever on each Pro card",
+     "cue": "Play Pressure: name the lever before you choose",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.8,
+      56.4,
+      62.9,
+      7.1
      ]
     }
    ]
@@ -198,8 +216,8 @@
   "cd-2-3.3-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "tricks",
-  "params": "chapter=tricks&band=2&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "pressure",
+  "params": "chapter=pressure&band=2&lock=1"
  }
 }

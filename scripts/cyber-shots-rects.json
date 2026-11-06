@@ -1,0 +1,11622 @@
+{
+ "csq/escape-the-post-office/door-1b-five": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   10.7,
+   "🔒 5 of 6 locks open🪶🪶🪶hint feathersExplorerPlay as Pro"
+  ],
+  "pill1": [
+   1.3,
+   15.1,
+   23.8,
+   8.9,
+   "🔒 5 of 6 locks open"
+  ],
+  "pill2": [
+   26,
+   15.1,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   66.8,
+   15.1,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   26.7,
+   97,
+   9.8,
+   "Lock open!"
+  ],
+  "grid": [
+   1.5,
+   37.8,
+   97,
+   50.5,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen🔓 Lock 2: "
+  ],
+  "lock1": [
+   1.5,
+   37.8,
+   31.5,
+   21.3,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen"
+  ],
+  "lock2": [
+   34.3,
+   37.8,
+   31.5,
+   21.3,
+   "🔓 Lock 2: Sealed NoteUnit 2 stamp: KeykeeperOpen"
+  ],
+  "lock3": [
+   67,
+   37.8,
+   31.5,
+   21.3,
+   "🔓 Lock 3: Which Pim?Unit 3 stamp: PrivateOpen"
+  ],
+  "lock4": [
+   1.5,
+   61.3,
+   31.5,
+   26.9,
+   "🔓 Lock 4: Trick InboxUnit 4 stamp: TrickspotterOpen"
+  ],
+  "lock5": [
+   34.3,
+   61.3,
+   31.5,
+   26.9,
+   "🔓 Lock 5: Five MovesUnit 5 stamp: Kind ScreenOpen"
+  ],
+  "lock6": [
+   67,
+   61.3,
+   31.5,
+   26.9,
+   "🔒 Lock 6: LayersUnit 6 stamp: ShieldNo single lock stops ev"
+  ]
+ },
+ "csq/escape-the-post-office/door-1b-new": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   10.7,
+   "🔒 0 of 6 locks open🪶🪶🪶hint feathersExplorerPlay as Pro"
+  ],
+  "pill1": [
+   1.3,
+   15.1,
+   23.9,
+   8.9,
+   "🔒 0 of 6 locks open"
+  ],
+  "pill2": [
+   26.1,
+   15.1,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   66.8,
+   15.1,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   26.7,
+   97,
+   10.7,
+   "Spark Day! The Magpie locked the sorting room with six trick"
+  ],
+  "grid": [
+   1.5,
+   38.7,
+   97,
+   54.2,
+   "🔒 Lock 1: Sorting GateUnit 1 stamp: RoadwiseThe golden lett"
+  ],
+  "lock1": [
+   1.5,
+   38.7,
+   31.5,
+   30.7,
+   "🔒 Lock 1: Sorting GateUnit 1 stamp: RoadwiseThe golden lett"
+  ],
+  "lock2": [
+   34.3,
+   38.7,
+   31.5,
+   30.7,
+   "🔒 Lock 2: Sealed NoteUnit 2 stamp: KeykeeperOpens after the"
+  ],
+  "lock3": [
+   67,
+   38.7,
+   31.5,
+   30.7,
+   "🔒 Lock 3: Which Pim?Unit 3 stamp: PrivateOpens after the lo"
+  ],
+  "lock4": [
+   1.5,
+   71.6,
+   31.5,
+   21.3,
+   "🔒 Lock 4: Trick InboxUnit 4 stamp: TrickspotterOpens after "
+  ],
+  "lock5": [
+   34.3,
+   71.6,
+   31.5,
+   21.3,
+   "🔒 Lock 5: Five MovesUnit 5 stamp: Kind ScreenOpens after th"
+  ],
+  "lock6": [
+   67,
+   71.6,
+   31.5,
+   21.3,
+   "🔒 Lock 6: LayersUnit 6 stamp: ShieldOpens after the locks b"
+  ]
+ },
+ "csq/escape-the-post-office/door-1b-two": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   10.7,
+   "🔒 2 of 6 locks open🪶🪶🪶hint feathersExplorerPlay as Pro"
+  ],
+  "pill1": [
+   1.3,
+   15.1,
+   23.7,
+   8.9,
+   "🔒 2 of 6 locks open"
+  ],
+  "pill2": [
+   26,
+   15.1,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   66.8,
+   15.1,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   26.7,
+   97,
+   9.8,
+   "Lock open!"
+  ],
+  "grid": [
+   1.5,
+   37.8,
+   97,
+   58,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen🔓 Lock 2: "
+  ],
+  "lock1": [
+   1.5,
+   37.8,
+   31.5,
+   34.5,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen"
+  ],
+  "lock2": [
+   34.3,
+   37.8,
+   31.5,
+   34.5,
+   "🔓 Lock 2: Sealed NoteUnit 2 stamp: KeykeeperOpen"
+  ],
+  "lock3": [
+   67,
+   37.8,
+   31.5,
+   34.5,
+   "🔒 Lock 3: Which Pim?Unit 3 stamp: PrivateThree messages say"
+  ],
+  "lock4": [
+   1.5,
+   74.5,
+   31.5,
+   21.3,
+   "🔒 Lock 4: Trick InboxUnit 4 stamp: TrickspotterOpens after "
+  ],
+  "lock5": [
+   34.3,
+   74.5,
+   31.5,
+   21.3,
+   "🔒 Lock 5: Five MovesUnit 5 stamp: Kind ScreenOpens after th"
+  ],
+  "lock6": [
+   67,
+   74.5,
+   31.5,
+   21.3,
+   "🔒 Lock 6: LayersUnit 6 stamp: ShieldOpens after the locks b"
+  ]
+ },
+ "csq/escape-the-post-office/door-2-five": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   10.7,
+   "🔒 5 of 6 locks open🪶🪶🪶hint feathersProPlay as Explorer"
+  ],
+  "pill1": [
+   1.3,
+   15.1,
+   23.8,
+   8.9,
+   "🔒 5 of 6 locks open"
+  ],
+  "pill2": [
+   26,
+   15.1,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   66.4,
+   15.1,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   26.7,
+   97,
+   9.8,
+   "Lock open!"
+  ],
+  "grid": [
+   1.5,
+   37.8,
+   97,
+   50.5,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen🔓 Lock 2: "
+  ],
+  "lock1": [
+   1.5,
+   37.8,
+   31.5,
+   21.3,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen"
+  ],
+  "lock2": [
+   34.3,
+   37.8,
+   31.5,
+   21.3,
+   "🔓 Lock 2: Sealed NoteUnit 2 stamp: KeykeeperOpen"
+  ],
+  "lock3": [
+   67,
+   37.8,
+   31.5,
+   21.3,
+   "🔓 Lock 3: Which Pim?Unit 3 stamp: PrivateOpen"
+  ],
+  "lock4": [
+   1.5,
+   61.3,
+   31.5,
+   26.9,
+   "🔓 Lock 4: Trick InboxUnit 4 stamp: TrickspotterOpen"
+  ],
+  "lock5": [
+   34.3,
+   61.3,
+   31.5,
+   26.9,
+   "🔓 Lock 5: Five MovesUnit 5 stamp: Kind ScreenOpen"
+  ],
+  "lock6": [
+   67,
+   61.3,
+   31.5,
+   26.9,
+   "🔒 Lock 6: LayersUnit 6 stamp: ShieldDefense in depth: no si"
+  ]
+ },
+ "csq/escape-the-post-office/door-2-new": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   10.7,
+   "🔒 0 of 6 locks open🪶🪶🪶hint feathersProPlay as Explorer"
+  ],
+  "pill1": [
+   1.3,
+   15.1,
+   23.9,
+   8.9,
+   "🔒 0 of 6 locks open"
+  ],
+  "pill2": [
+   26.1,
+   15.1,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   66.4,
+   15.1,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   26.7,
+   97,
+   10.7,
+   "Spark Day! The Magpie locked the sorting room with six trick"
+  ],
+  "grid": [
+   1.5,
+   38.7,
+   97,
+   58,
+   "🔒 Lock 1: Sorting GateUnit 1 stamp: RoadwiseThe golden lett"
+  ],
+  "lock1": [
+   1.5,
+   38.7,
+   31.5,
+   34.5,
+   "🔒 Lock 1: Sorting GateUnit 1 stamp: RoadwiseThe golden lett"
+  ],
+  "lock2": [
+   34.3,
+   38.7,
+   31.5,
+   34.5,
+   "🔒 Lock 2: Sealed NoteUnit 2 stamp: KeykeeperOpens after the"
+  ],
+  "lock3": [
+   67,
+   38.7,
+   31.5,
+   34.5,
+   "🔒 Lock 3: Which Pim?Unit 3 stamp: PrivateOpens after the lo"
+  ],
+  "lock4": [
+   1.5,
+   75.3,
+   31.5,
+   21.3,
+   "🔒 Lock 4: Trick InboxUnit 4 stamp: TrickspotterOpens after "
+  ],
+  "lock5": [
+   34.3,
+   75.3,
+   31.5,
+   21.3,
+   "🔒 Lock 5: Five MovesUnit 5 stamp: Kind ScreenOpens after th"
+  ],
+  "lock6": [
+   67,
+   75.3,
+   31.5,
+   21.3,
+   "🔒 Lock 6: LayersUnit 6 stamp: ShieldOpens after the locks b"
+  ]
+ },
+ "csq/escape-the-post-office/door-2-two": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   10.7,
+   "🔒 2 of 6 locks open🪶🪶🪶hint feathersProPlay as Explorer"
+  ],
+  "pill1": [
+   1.3,
+   15.1,
+   23.7,
+   8.9,
+   "🔒 2 of 6 locks open"
+  ],
+  "pill2": [
+   26,
+   15.1,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   66.4,
+   15.1,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   26.7,
+   97,
+   9.8,
+   "Lock open!"
+  ],
+  "grid": [
+   1.5,
+   37.8,
+   97,
+   58,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen🔓 Lock 2: "
+  ],
+  "lock1": [
+   1.5,
+   37.8,
+   31.5,
+   34.5,
+   "🔓 Lock 1: Sorting GateUnit 1 stamp: RoadwiseOpen"
+  ],
+  "lock2": [
+   34.3,
+   37.8,
+   31.5,
+   34.5,
+   "🔓 Lock 2: Sealed NoteUnit 2 stamp: KeykeeperOpen"
+  ],
+  "lock3": [
+   67,
+   37.8,
+   31.5,
+   34.5,
+   "🔒 Lock 3: Which Pim?Unit 3 stamp: PrivateThree messages say"
+  ],
+  "lock4": [
+   1.5,
+   74.5,
+   31.5,
+   21.3,
+   "🔒 Lock 4: Trick InboxUnit 4 stamp: TrickspotterOpens after "
+  ],
+  "lock5": [
+   34.3,
+   74.5,
+   31.5,
+   21.3,
+   "🔒 Lock 5: Five MovesUnit 5 stamp: Kind ScreenOpens after th"
+  ],
+  "lock6": [
+   67,
+   74.5,
+   31.5,
+   21.3,
+   "🔒 Lock 6: LayersUnit 6 stamp: ShieldOpens after the locks b"
+  ]
+ },
+ "csq/escape-the-post-office/gate-1b": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 1: Sorting Gate🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   26.3,
+   8.9,
+   "🔒 Lock 1: Sorting Gate"
+  ],
+  "pill2": [
+   28.5,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "The golden letter must cross Netville to the sorting room do"
+  ],
+  "board": [
+   1.5,
+   36,
+   97,
+   52,
+   "🏤Post Office🏠Market🏠Library🚪Sorting Room✉️➜➜"
+  ],
+  "node1": [
+   10.5,
+   59.4,
+   5.8,
+   10.2,
+   "🏤"
+  ],
+  "node2": [
+   39.4,
+   44.2,
+   5.8,
+   10.2,
+   "🏠"
+  ],
+  "node3": [
+   39.4,
+   72.1,
+   5.8,
+   10.2,
+   "🏠"
+  ],
+  "node4": [
+   80.8,
+   56.9,
+   5.8,
+   10.2,
+   "🚪"
+  ],
+  "node5": [
+   10.5,
+   54.9,
+   5.8,
+   10.2,
+   "✉️"
+  ],
+  "nodelabel1": [
+   8.7,
+   70.1,
+   9.4,
+   3.6,
+   "Post Office"
+  ],
+  "nodelabel2": [
+   39,
+   54.9,
+   6.7,
+   3.6,
+   "Market"
+  ],
+  "nodelabel3": [
+   39,
+   82.8,
+   6.6,
+   3.6,
+   "Library"
+  ],
+  "nodelabel4": [
+   78.1,
+   67.6,
+   11.3,
+   3.6,
+   "Sorting Room"
+  ],
+  "road1": [
+   24.9,
+   51.6,
+   6,
+   10.7,
+   "➜"
+  ],
+  "road2": [
+   24.9,
+   65.5,
+   6,
+   10.7,
+   "➜"
+  ],
+  "row1": [
+   1.5,
+   89.3,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   89.3,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/gate-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 1: Sorting Gate🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   26.3,
+   8.9,
+   "🔒 Lock 1: Sorting Gate"
+  ],
+  "pill2": [
+   28.5,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "The golden letter must cross Netville to the sorting room do"
+  ],
+  "board": [
+   1.5,
+   36.9,
+   97,
+   52,
+   "🏤Post Office🏠Market🏠Library🏠School🚪Sorting Room✉️➜➜"
+  ],
+  "node1": [
+   8.6,
+   57.8,
+   5.8,
+   10.2,
+   "🏤"
+  ],
+  "node2": [
+   32.7,
+   42.6,
+   5.8,
+   10.2,
+   "🏠"
+  ],
+  "node3": [
+   32.7,
+   73,
+   5.8,
+   10.2,
+   "🏠"
+  ],
+  "node4": [
+   58.7,
+   55.2,
+   5.8,
+   10.2,
+   "🏠"
+  ],
+  "node5": [
+   83.7,
+   57.8,
+   5.8,
+   10.2,
+   "🚪"
+  ],
+  "node6": [
+   8.6,
+   53.2,
+   5.8,
+   10.2,
+   "✉️"
+  ],
+  "nodelabel1": [
+   6.8,
+   68.4,
+   9.4,
+   3.6,
+   "Post Office"
+  ],
+  "nodelabel2": [
+   32.2,
+   53.2,
+   6.7,
+   3.6,
+   "Market"
+  ],
+  "nodelabel3": [
+   32.3,
+   83.6,
+   6.6,
+   3.6,
+   "Library"
+  ],
+  "nodelabel4": [
+   58.4,
+   65.9,
+   6.4,
+   3.6,
+   "School"
+  ],
+  "nodelabel5": [
+   80.9,
+   68.4,
+   11.3,
+   3.6,
+   "Sorting Room"
+  ],
+  "road1": [
+   20.5,
+   49.9,
+   6,
+   10.7,
+   "➜"
+  ],
+  "road2": [
+   20.5,
+   65.1,
+   6,
+   10.7,
+   "➜"
+  ],
+  "row1": [
+   1.5,
+   90.2,
+   97,
+   9.8,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   90.2,
+   29.4,
+   9.8,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/inbox-1b": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 4: Trick Inbox🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.4,
+   8.9,
+   "🔒 Lock 4: Trick Inbox"
+  ],
+  "pill2": [
+   27.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "The trick inbox is full. For each message, choose what a Def"
+  ],
+  "epcard1": [
+   1.5,
+   43.8,
+   97,
+   21.3,
+   "Your book is readyFrom: Library deskThe book you asked for i"
+  ],
+  "cardtitle1": [
+   3.4,
+   46.7,
+   93.3,
+   4.7,
+   "Your book is ready"
+  ],
+  "cardp1": [
+   3.4,
+   52.2,
+   93.3,
+   4.6,
+   "From: Library desk"
+  ],
+  "cardp2": [
+   3.4,
+   57.7,
+   93.3,
+   4.6,
+   "The book you asked for is on the desk. Pick it up any time t"
+  ],
+  "tiles": [
+   1.5,
+   66.4,
+   97,
+   11.6,
+   "Deliver itBin itShow PimReport and block"
+  ],
+  "tile1": [
+   1.5,
+   66.4,
+   23.5,
+   11.6,
+   "Deliver it"
+  ],
+  "tile2": [
+   26,
+   66.4,
+   23.5,
+   11.6,
+   "Bin it"
+  ],
+  "tile3": [
+   50.5,
+   66.4,
+   23.5,
+   11.6,
+   "Show Pim"
+  ],
+  "tile4": [
+   75,
+   66.4,
+   23.5,
+   11.6,
+   "Report and block"
+  ],
+  "h1": [
+   1.5,
+   36.9,
+   17.4,
+   5.6,
+   "Message 1 of 6"
+  ],
+  "h2": [
+   1.5,
+   91.3,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   79.3,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   79.3,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/inbox-1b-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 4: Trick Inbox🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.4,
+   8.9,
+   "🔒 Lock 4: Trick Inbox"
+  ],
+  "pill2": [
+   27.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "Right call."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   21.3,
+   "You won a prize!From: Prize ParrotHurry! You won a shiny pri"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "You won a prize!"
+  ],
+  "cardp1": [
+   3.4,
+   51.3,
+   93.3,
+   4.6,
+   "From: Prize Parrot"
+  ],
+  "cardp2": [
+   3.4,
+   56.8,
+   93.3,
+   4.6,
+   "Hurry! You won a shiny prize you never tried to win. Tap fas"
+  ],
+  "tiles": [
+   1.5,
+   65.6,
+   97,
+   11.6,
+   "Deliver itBin itShow PimReport and block"
+  ],
+  "tile1": [
+   1.5,
+   65.6,
+   23.5,
+   11.6,
+   "Deliver it"
+  ],
+  "tile2": [
+   26,
+   65.6,
+   23.5,
+   11.6,
+   "Bin it"
+  ],
+  "tile3": [
+   50.5,
+   65.6,
+   23.5,
+   11.6,
+   "Show Pim"
+  ],
+  "tile4": [
+   75,
+   65.6,
+   23.5,
+   11.6,
+   "Report and block"
+  ],
+  "h1": [
+   1.5,
+   36,
+   18,
+   5.6,
+   "Message 2 of 6"
+  ],
+  "h2": [
+   1.5,
+   90.4,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   78.4,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   78.4,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/inbox-1b-wrong": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 4: Trick Inbox🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.4,
+   8.9,
+   "🔒 Lock 4: Trick Inbox"
+  ],
+  "pill2": [
+   27.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "The missed clue: a prize you never tried to win, plus a rush"
+  ],
+  "epcard1": [
+   1.5,
+   43.8,
+   97,
+   21.3,
+   "You won a prize!From: Prize ParrotHurry! You won a shiny pri"
+  ],
+  "epcard2": [
+   1.5,
+   66.4,
+   97,
+   15.9,
+   "Pim shows you the missed clueThe missed clue: a prize you ne"
+  ],
+  "cardtitle1": [
+   3.4,
+   46.7,
+   93.3,
+   4.7,
+   "You won a prize!"
+  ],
+  "cardtitle2": [
+   3.4,
+   69.3,
+   93.3,
+   4.7,
+   "Pim shows you the missed clue"
+  ],
+  "cardp1": [
+   3.4,
+   52.2,
+   93.3,
+   4.6,
+   "From: Prize Parrot"
+  ],
+  "cardp2": [
+   3.4,
+   57.7,
+   93.3,
+   4.6,
+   "Hurry! You won a shiny prize you never tried to win. Tap fas"
+  ],
+  "cardp3": [
+   3.4,
+   74.9,
+   93.3,
+   4.6,
+   "The missed clue: a prize you never tried to win, plus a rush"
+  ],
+  "tiles": [
+   1.5,
+   83.7,
+   97,
+   11.6,
+   "Deliver itBin itShow PimReport and block"
+  ],
+  "tile1": [
+   1.5,
+   83.7,
+   23.5,
+   11.6,
+   "Deliver it"
+  ],
+  "tile2": [
+   26,
+   83.7,
+   23.5,
+   11.6,
+   "Bin it"
+  ],
+  "tile3": [
+   50.5,
+   83.7,
+   23.5,
+   11.6,
+   "Show Pim"
+  ],
+  "tile4": [
+   75,
+   83.7,
+   23.5,
+   11.6,
+   "Report and block"
+  ],
+  "h1": [
+   1.5,
+   36.9,
+   18,
+   5.6,
+   "Message 2 of 6"
+  ],
+  "row1": [
+   1.5,
+   96.5,
+   97,
+   3.5,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   96.5,
+   29.4,
+   3.5,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/inbox-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 4: Trick Inbox🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.4,
+   8.9,
+   "🔒 Lock 4: Trick Inbox"
+  ],
+  "pill2": [
+   27.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "The trick inbox is full, and one sender is faked. For each m"
+  ],
+  "epcard1": [
+   1.5,
+   43.8,
+   97,
+   21.3,
+   "Your book is readyFrom: Library deskThe book you asked for i"
+  ],
+  "cardtitle1": [
+   3.4,
+   46.7,
+   93.3,
+   4.7,
+   "Your book is ready"
+  ],
+  "cardp1": [
+   3.4,
+   52.2,
+   93.3,
+   4.6,
+   "From: Library desk"
+  ],
+  "cardp2": [
+   3.4,
+   57.7,
+   93.3,
+   4.6,
+   "The book you asked for is on the desk. Pick it up any time t"
+  ],
+  "tiles": [
+   1.5,
+   66.4,
+   97,
+   11.6,
+   "Deliver itBin itShow PimReport and block"
+  ],
+  "tile1": [
+   1.5,
+   66.4,
+   23.5,
+   11.6,
+   "Deliver it"
+  ],
+  "tile2": [
+   26,
+   66.4,
+   23.5,
+   11.6,
+   "Bin it"
+  ],
+  "tile3": [
+   50.5,
+   66.4,
+   23.5,
+   11.6,
+   "Show Pim"
+  ],
+  "tile4": [
+   75,
+   66.4,
+   23.5,
+   11.6,
+   "Report and block"
+  ],
+  "h1": [
+   1.5,
+   36.9,
+   17.4,
+   5.6,
+   "Message 1 of 8"
+  ],
+  "h2": [
+   1.5,
+   91.3,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   79.3,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   79.3,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/inbox-2-5": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 4: Trick Inbox🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.4,
+   8.9,
+   "🔒 Lock 4: Trick Inbox"
+  ],
+  "pill2": [
+   27.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "Right call."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   26.8,
+   "Key checkFrom: Post OfficeSender name says Post Office; the "
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "Key check"
+  ],
+  "cardp1": [
+   3.4,
+   51.3,
+   93.3,
+   4.6,
+   "From: Post Office"
+  ],
+  "cardp2": [
+   3.4,
+   56.8,
+   93.3,
+   4.6,
+   "Sender name says Post Office; the postmark is a hand stamp f"
+  ],
+  "cardp3": [
+   3.4,
+   62.2,
+   93.3,
+   4.6,
+   "This is the Post Office. Confirm your mailbox key now or los"
+  ],
+  "tiles": [
+   1.5,
+   71,
+   97,
+   11.6,
+   "Deliver itBin itShow PimReport and block"
+  ],
+  "tile1": [
+   1.5,
+   71,
+   23.5,
+   11.6,
+   "Deliver it"
+  ],
+  "tile2": [
+   26,
+   71,
+   23.5,
+   11.6,
+   "Bin it"
+  ],
+  "tile3": [
+   50.5,
+   71,
+   23.5,
+   11.6,
+   "Show Pim"
+  ],
+  "tile4": [
+   75,
+   71,
+   23.5,
+   11.6,
+   "Report and block"
+  ],
+  "h1": [
+   1.5,
+   36,
+   18,
+   5.6,
+   "Message 5 of 8"
+  ],
+  "h2": [
+   1.5,
+   95.9,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   83.9,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   83.9,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-1b": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "No single lock stops every trick. Match each trouble card to"
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "A snooper tries to peek inside a sealed note on its trip"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "A snooper tries to peek inside a sealed note on its trip"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   12.9,
+   "Padlock Gate (sealing)Key Checker (two-step)Patch Crew (upda"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (sealing)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   14.9,
+   5.6,
+   "Threat 1 of 4"
+  ],
+  "h2": [
+   1.5,
+   80.9,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   68.9,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   68.9,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-1b-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "That layer stops it."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "A guesser tries key after key on a mailbox"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "A guesser tries key after key on a mailbox"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   12.9,
+   "Padlock Gate (sealing)Key Checker (two-step)Patch Crew (upda"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (sealing)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15.5,
+   5.6,
+   "Threat 2 of 4"
+  ],
+  "h2": [
+   1.5,
+   80.9,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   68.9,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   68.9,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-1b-3": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "That layer stops it."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "An old lock has a known hole that anyone can use"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "An old lock has a known hole that anyone can use"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   12.9,
+   "Padlock Gate (sealing)Key Checker (two-step)Patch Crew (upda"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (sealing)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15.4,
+   5.6,
+   "Threat 3 of 4"
+  ],
+  "h2": [
+   1.5,
+   80.9,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   68.9,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   68.9,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-1b-4": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "That layer stops it."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "A flood soaks the only copy of a letter"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "A flood soaks the only copy of a letter"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   12.9,
+   "Padlock Gate (sealing)Key Checker (two-step)Patch Crew (upda"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (sealing)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15.5,
+   5.6,
+   "Threat 4 of 4"
+  ],
+  "h2": [
+   1.5,
+   80.9,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   68.9,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   68.9,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "Defense in depth: no single layer stops every threat. Match "
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "An interceptor reads a note while it travels"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "An interceptor reads a note while it travels"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   27.6,
+   "Padlock Gate (encryption)Key Checker (two-step sign-in)Patch"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (encryption)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step sign-in)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "tile5": [
+   1.5,
+   69.3,
+   23.5,
+   12.9,
+   "Pim's Stamp (verification)"
+  ],
+  "tile6": [
+   26,
+   69.3,
+   23.5,
+   12.9,
+   "Long Passphrase (strong key)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15,
+   5.6,
+   "Threat 1 of 6"
+  ],
+  "h2": [
+   1.5,
+   95.5,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   83.5,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   83.5,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-2-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "That layer stops it."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "A stolen key is tried on the mailbox from a new device"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "A stolen key is tried on the mailbox from a new device"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   27.6,
+   "Padlock Gate (encryption)Key Checker (two-step sign-in)Patch"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (encryption)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step sign-in)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "tile5": [
+   1.5,
+   69.3,
+   23.5,
+   12.9,
+   "Pim's Stamp (verification)"
+  ],
+  "tile6": [
+   26,
+   69.3,
+   23.5,
+   12.9,
+   "Long Passphrase (strong key)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15.5,
+   5.6,
+   "Threat 2 of 6"
+  ],
+  "h2": [
+   1.5,
+   95.5,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   83.5,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   83.5,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-2-3": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "That layer stops it."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "A known hole in old software lets a trick letter slip in"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "A known hole in old software lets a trick letter slip in"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   27.6,
+   "Padlock Gate (encryption)Key Checker (two-step sign-in)Patch"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (encryption)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step sign-in)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "tile5": [
+   1.5,
+   69.3,
+   23.5,
+   12.9,
+   "Pim's Stamp (verification)"
+  ],
+  "tile6": [
+   26,
+   69.3,
+   23.5,
+   12.9,
+   "Long Passphrase (strong key)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15.5,
+   5.6,
+   "Threat 3 of 6"
+  ],
+  "h2": [
+   1.5,
+   95.5,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   83.5,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   83.5,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-2-5": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "That layer stops it."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "A faked postmark fools the front desk"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "A faked postmark fools the front desk"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   27.6,
+   "Padlock Gate (encryption)Key Checker (two-step sign-in)Patch"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (encryption)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step sign-in)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "tile5": [
+   1.5,
+   69.3,
+   23.5,
+   12.9,
+   "Pim's Stamp (verification)"
+  ],
+  "tile6": [
+   26,
+   69.3,
+   23.5,
+   12.9,
+   "Long Passphrase (strong key)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15.5,
+   5.6,
+   "Threat 5 of 6"
+  ],
+  "h2": [
+   1.5,
+   95.5,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   83.5,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   83.5,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/layers-2-6": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 6: Layers🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   21.1,
+   8.9,
+   "🔒 Lock 6: Layers"
+  ],
+  "pill2": [
+   23.3,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   9.8,
+   "That layer stops it."
+  ],
+  "epcard1": [
+   1.5,
+   42.9,
+   97,
+   10.4,
+   "A one-word key is guessed in an afternoon"
+  ],
+  "cardtitle1": [
+   3.4,
+   45.8,
+   93.3,
+   4.7,
+   "A one-word key is guessed in an afternoon"
+  ],
+  "tiles": [
+   1.5,
+   54.7,
+   97,
+   27.6,
+   "Padlock Gate (encryption)Key Checker (two-step sign-in)Patch"
+  ],
+  "tile1": [
+   1.5,
+   54.7,
+   23.5,
+   12.9,
+   "Padlock Gate (encryption)"
+  ],
+  "tile2": [
+   26,
+   54.7,
+   23.5,
+   12.9,
+   "Key Checker (two-step sign-in)"
+  ],
+  "tile3": [
+   50.5,
+   54.7,
+   23.5,
+   12.9,
+   "Patch Crew (updates)"
+  ],
+  "tile4": [
+   75,
+   54.7,
+   23.5,
+   12.9,
+   "Copy Vault (backups)"
+  ],
+  "tile5": [
+   1.5,
+   69.3,
+   23.5,
+   12.9,
+   "Pim's Stamp (verification)"
+  ],
+  "tile6": [
+   26,
+   69.3,
+   23.5,
+   12.9,
+   "Long Passphrase (strong key)"
+  ],
+  "h1": [
+   1.5,
+   36,
+   15.6,
+   5.6,
+   "Threat 6 of 6"
+  ],
+  "h2": [
+   1.5,
+   95.5,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   83.5,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   83.5,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/moves-1b": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Something has gone wrong in the class chat. Do the five move"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   15.8,
+   "In the class chat, a message is unkind to Sam, and it is bei"
+  ],
+  "cardp1": [
+   3.4,
+   40.7,
+   93.3,
+   9.1,
+   "In the class chat, a message is unkind to Sam, and it is bei"
+  ],
+  "tiles": [
+   1.5,
+   66,
+   97,
+   27.6,
+   "Carry on: be kind to SamTell a trusted adultSave it: keep th"
+  ],
+  "tile1": [
+   1.5,
+   66,
+   23.5,
+   12.9,
+   "Carry on: be kind to Sam"
+  ],
+  "tile2": [
+   26,
+   66,
+   23.5,
+   12.9,
+   "Tell a trusted adult"
+  ],
+  "tile3": [
+   50.5,
+   66,
+   23.5,
+   12.9,
+   "Save it: keep the message"
+  ],
+  "tile4": [
+   75,
+   66,
+   23.5,
+   12.9,
+   "Stop: do not pass it on"
+  ],
+  "tile5": [
+   1.5,
+   80.7,
+   23.5,
+   12.9,
+   "Block or report it in the app"
+  ],
+  "seq": [
+   1.5,
+   54,
+   97,
+   10.7,
+   "?????"
+  ],
+  "slot1": [
+   2.6,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot2": [
+   7.1,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot3": [
+   11.7,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot4": [
+   16.2,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot5": [
+   20.7,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "row1": [
+   1.5,
+   94.9,
+   97,
+   5.1,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   94.9,
+   29.4,
+   5.1,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/moves-1b-four": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Something has gone wrong in the class chat. Do the five move"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   15.8,
+   "In the class chat, a message is unkind to Sam, and it is bei"
+  ],
+  "cardp1": [
+   3.4,
+   40.7,
+   93.3,
+   9.1,
+   "In the class chat, a message is unkind to Sam, and it is bei"
+  ],
+  "tiles": [
+   1.5,
+   73.1,
+   97,
+   11.6,
+   "Carry on: be kind to Sam"
+  ],
+  "tile1": [
+   1.5,
+   73.1,
+   97,
+   11.6,
+   "Carry on: be kind to Sam"
+  ],
+  "seq": [
+   1.5,
+   54,
+   97,
+   17.8,
+   "✓ Stop: do not pass it on✓ Save it: keep the message✓ Tell a"
+  ],
+  "slot1": [
+   2.6,
+   56,
+   24.1,
+   5.8,
+   "✓ Stop: do not pass it on"
+  ],
+  "slot2": [
+   27.5,
+   56,
+   27.4,
+   5.8,
+   "✓ Save it: keep the message"
+  ],
+  "slot3": [
+   55.7,
+   56,
+   21,
+   5.8,
+   "✓ Tell a trusted adult"
+  ],
+  "slot4": [
+   2.6,
+   63.1,
+   28.7,
+   6.7,
+   "✓ Block or report it in the app"
+  ],
+  "slot5": [
+   32.1,
+   63.1,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "h1": [
+   1.5,
+   98,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   86,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   86,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/moves-1b-two": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Something has gone wrong in the class chat. Do the five move"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   15.8,
+   "In the class chat, a message is unkind to Sam, and it is bei"
+  ],
+  "cardp1": [
+   3.4,
+   40.7,
+   93.3,
+   9.1,
+   "In the class chat, a message is unkind to Sam, and it is bei"
+  ],
+  "tiles": [
+   1.5,
+   66,
+   97,
+   11.6,
+   "Carry on: be kind to SamTell a trusted adultBlock or report "
+  ],
+  "tile1": [
+   1.5,
+   66,
+   31.7,
+   11.6,
+   "Carry on: be kind to Sam"
+  ],
+  "tile2": [
+   34.2,
+   66,
+   31.7,
+   11.6,
+   "Tell a trusted adult"
+  ],
+  "tile3": [
+   66.8,
+   66,
+   31.7,
+   11.6,
+   "Block or report it in the app"
+  ],
+  "seq": [
+   1.5,
+   54,
+   97,
+   10.7,
+   "✓ Stop: do not pass it on✓ Save it: keep the message???"
+  ],
+  "slot1": [
+   2.6,
+   56,
+   24.1,
+   6.7,
+   "✓ Stop: do not pass it on"
+  ],
+  "slot2": [
+   27.5,
+   56,
+   27.4,
+   6.7,
+   "✓ Save it: keep the message"
+  ],
+  "slot3": [
+   55.7,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot4": [
+   60.2,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot5": [
+   64.7,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "h1": [
+   1.5,
+   90.9,
+   2.5,
+   0.9,
+   ""
+  ],
+  "row1": [
+   1.5,
+   78.9,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   78.9,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/moves-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Something has gone wrong, and a second message is pressuring"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   15.8,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "cardp1": [
+   3.4,
+   40.7,
+   93.3,
+   9.1,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "tiles": [
+   1.5,
+   66,
+   97,
+   34,
+   "Change the key from a clean deviceTell a trusted adult, fast"
+  ],
+  "tile1": [
+   1.5,
+   66,
+   23.5,
+   21.8,
+   "Change the key from a clean device"
+  ],
+  "tile2": [
+   26,
+   66,
+   23.5,
+   21.8,
+   "Tell a trusted adult, fast"
+  ],
+  "tile3": [
+   50.5,
+   66,
+   23.5,
+   21.8,
+   "Carry on: write a one-line log of what happened"
+  ],
+  "tile4": [
+   75,
+   66,
+   23.5,
+   21.8,
+   "Save the evidence: screenshots and times, delete nothing"
+  ],
+  "tile5": [
+   1.5,
+   89.6,
+   23.5,
+   10.4,
+   "Stop and disconnect: end the session, pass nothing on"
+  ],
+  "tile6": [
+   26,
+   89.6,
+   23.5,
+   10.4,
+   "Report and block on the service"
+  ],
+  "seq": [
+   1.5,
+   54,
+   97,
+   10.7,
+   "??????"
+  ],
+  "slot1": [
+   2.6,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot2": [
+   7.1,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot3": [
+   11.7,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot4": [
+   16.2,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot5": [
+   20.7,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot6": [
+   25.2,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ]
+ },
+ "csq/escape-the-post-office/moves-2-done": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "btn1": [
+   3.6,
+   58,
+   17.5,
+   10.7,
+   "Play again"
+  ],
+  "practice": [
+   1.5,
+   24.9,
+   97,
+   47.6,
+   "🔓 Lock 5: Five Moves — open!The drill, in order, start to f"
+  ],
+  "ptext1": [
+   3.6,
+   28.7,
+   37.5,
+   5.5,
+   "🔓 Lock 5: Five Moves — open!"
+  ],
+  "ptext2": [
+   3.6,
+   36.4,
+   41.3,
+   5,
+   "The drill, in order, start to finish. Calm work."
+  ],
+  "ptext3": [
+   3.6,
+   43.6,
+   67.4,
+   5,
+   "Skill trained: Run the five moves in order when something go"
+  ],
+  "ptext4": [
+   3.6,
+   50.8,
+   67.7,
+   5,
+   "On Spark Day this lock waits on the sorting room door with f"
+  ],
+  "ptext5": [
+   3.6,
+   58,
+   17.5,
+   10.7,
+   "Play again"
+  ]
+ },
+ "csq/escape-the-post-office/moves-2-five": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Something has gone wrong, and a second message is pressuring"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   15.8,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "cardp1": [
+   3.4,
+   40.7,
+   93.3,
+   9.1,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "tiles": [
+   1.5,
+   80.2,
+   97,
+   11.6,
+   "Carry on: write a one-line log of what happened"
+  ],
+  "tile1": [
+   1.5,
+   80.2,
+   97,
+   11.6,
+   "Carry on: write a one-line log of what happened"
+  ],
+  "seq": [
+   1.5,
+   54,
+   97,
+   24.9,
+   "✓ Stop and disconnect: end the session, pass nothing on✓ Sav"
+  ],
+  "slot1": [
+   2.6,
+   56,
+   52.6,
+   5.8,
+   "✓ Stop and disconnect: end the session, pass nothing on"
+  ],
+  "slot2": [
+   2.6,
+   63.1,
+   55.4,
+   5.8,
+   "✓ Save the evidence: screenshots and times, delete nothing"
+  ],
+  "slot3": [
+   58.8,
+   63.1,
+   25.3,
+   5.8,
+   "✓ Tell a trusted adult, fast"
+  ],
+  "slot4": [
+   2.6,
+   70.2,
+   32.6,
+   6.7,
+   "✓ Report and block on the service"
+  ],
+  "slot5": [
+   36,
+   70.2,
+   35.9,
+   6.7,
+   "✓ Change the key from a clean device"
+  ],
+  "slot6": [
+   72.6,
+   70.2,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "row1": [
+   1.5,
+   93.1,
+   97,
+   6.9,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   93.1,
+   29.4,
+   6.9,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/moves-2-one": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Something has gone wrong, and a second message is pressuring"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   15.8,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "cardp1": [
+   3.4,
+   40.7,
+   93.3,
+   9.1,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "tiles": [
+   1.5,
+   66,
+   97,
+   34,
+   "Change the key from a clean deviceTell a trusted adult, fast"
+  ],
+  "tile1": [
+   1.5,
+   66,
+   23.5,
+   21.8,
+   "Change the key from a clean device"
+  ],
+  "tile2": [
+   26,
+   66,
+   23.5,
+   21.8,
+   "Tell a trusted adult, fast"
+  ],
+  "tile3": [
+   50.5,
+   66,
+   23.5,
+   21.8,
+   "Carry on: write a one-line log of what happened"
+  ],
+  "tile4": [
+   75,
+   66,
+   23.5,
+   21.8,
+   "Save the evidence: screenshots and times, delete nothing"
+  ],
+  "tile5": [
+   1.5,
+   89.6,
+   23.5,
+   10.4,
+   "Report and block on the service"
+  ],
+  "seq": [
+   1.5,
+   54,
+   97,
+   10.7,
+   "✓ Stop and disconnect: end the session, pass nothing on?????"
+  ],
+  "slot1": [
+   2.6,
+   56,
+   52.6,
+   6.7,
+   "✓ Stop and disconnect: end the session, pass nothing on"
+  ],
+  "slot2": [
+   56,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot3": [
+   60.5,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot4": [
+   65,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot5": [
+   69.5,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot6": [
+   74.1,
+   56,
+   3.8,
+   6.7,
+   "?"
+  ]
+ },
+ "csq/escape-the-post-office/moves-2-three": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 5: Five Moves🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.5,
+   8.9,
+   "🔒 Lock 5: Five Moves"
+  ],
+  "pill2": [
+   27.7,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Something has gone wrong, and a second message is pressuring"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   15.8,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "cardp1": [
+   3.4,
+   40.7,
+   93.3,
+   9.1,
+   "A classmate hands you a screenshot: someone has their mailbo"
+  ],
+  "tiles": [
+   1.5,
+   81.1,
+   97,
+   12.9,
+   "Change the key from a clean deviceCarry on: write a one-line"
+  ],
+  "tile1": [
+   1.5,
+   81.1,
+   31.7,
+   12.9,
+   "Change the key from a clean device"
+  ],
+  "tile2": [
+   34.2,
+   81.1,
+   31.7,
+   12.9,
+   "Carry on: write a one-line log of what happened"
+  ],
+  "tile3": [
+   66.8,
+   81.1,
+   31.7,
+   12.9,
+   "Report and block on the service"
+  ],
+  "seq": [
+   1.5,
+   54,
+   97,
+   25.8,
+   "✓ Stop and disconnect: end the session, pass nothing on✓ Sav"
+  ],
+  "slot1": [
+   2.6,
+   56,
+   52.6,
+   5.8,
+   "✓ Stop and disconnect: end the session, pass nothing on"
+  ],
+  "slot2": [
+   2.6,
+   63.1,
+   55.4,
+   6.7,
+   "✓ Save the evidence: screenshots and times, delete nothing"
+  ],
+  "slot3": [
+   58.8,
+   63.1,
+   25.3,
+   6.7,
+   "✓ Tell a trusted adult, fast"
+  ],
+  "slot4": [
+   84.9,
+   63.1,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot5": [
+   89.4,
+   63.1,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "slot6": [
+   2.6,
+   71.1,
+   3.8,
+   6.7,
+   "?"
+  ],
+  "row1": [
+   1.5,
+   95.3,
+   97,
+   4.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   1.5,
+   95.3,
+   29.4,
+   4.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/note-1b": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 2: Sealed Note🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   26.4,
+   8.9,
+   "🔒 Lock 2: Sealed Note"
+  ],
+  "pill2": [
+   28.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "The Magpie sealed a note with the cipher wheel. Turn the whe"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   21.5,
+   "The Magpie's sealed noteRSHQRSHQ"
+  ],
+  "cardtitle1": [
+   3.4,
+   39.8,
+   93.3,
+   4.7,
+   "The Magpie's sealed note"
+  ],
+  "cardp1": [
+   3.4,
+   45.3,
+   93.3,
+   4.6,
+   "RSHQ"
+  ],
+  "cardp2": [
+   3.4,
+   50.8,
+   93.3,
+   4.7,
+   "RSHQ"
+  ],
+  "cipher": [
+   3.4,
+   45.3,
+   93.3,
+   4.6,
+   "RSHQ"
+  ],
+  "decoded": [
+   3.4,
+   50.8,
+   93.3,
+   4.7,
+   "RSHQ"
+  ],
+  "shift": [
+   41.4,
+   75.1,
+   13.8,
+   5.8,
+   "Shift 0"
+  ],
+  "row1": [
+   1.5,
+   72.6,
+   97,
+   10.7,
+   "Turn backShift 0Turn forward"
+  ],
+  "row2": [
+   1.5,
+   96.6,
+   97,
+   3.4,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   19.4,
+   72.6,
+   21,
+   10.7,
+   "Turn back"
+  ],
+  "btn2": [
+   56.1,
+   72.6,
+   24.5,
+   10.7,
+   "Turn forward"
+  ],
+  "btn3": [
+   1.5,
+   84.6,
+   97,
+   10.7,
+   "Open the lock"
+  ],
+  "btn4": [
+   1.5,
+   96.6,
+   29.4,
+   3.4,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/note-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 2: Sealed Note🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   26.4,
+   8.9,
+   "🔒 Lock 2: Sealed Note"
+  ],
+  "pill2": [
+   28.6,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "The Magpie sealed a note with the cipher wheel. Turn the whe"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   97,
+   21.5,
+   "The Magpie's sealed noteIJQNAJWIJQNAJW"
+  ],
+  "cardtitle1": [
+   3.4,
+   39.8,
+   93.3,
+   4.7,
+   "The Magpie's sealed note"
+  ],
+  "cardp1": [
+   3.4,
+   45.3,
+   93.3,
+   4.6,
+   "IJQNAJW"
+  ],
+  "cardp2": [
+   3.4,
+   50.8,
+   93.3,
+   4.7,
+   "IJQNAJW"
+  ],
+  "h1": [
+   1.5,
+   95.7,
+   2.5,
+   0.9,
+   ""
+  ],
+  "cipher": [
+   3.4,
+   45.3,
+   93.3,
+   4.6,
+   "IJQNAJW"
+  ],
+  "decoded": [
+   3.4,
+   50.8,
+   93.3,
+   4.7,
+   "IJQNAJW"
+  ],
+  "shift": [
+   41.4,
+   62.2,
+   13.8,
+   5.8,
+   "Shift 0"
+  ],
+  "row1": [
+   1.5,
+   59.7,
+   97,
+   10.7,
+   "Turn backShift 0Turn forward"
+  ],
+  "row2": [
+   1.5,
+   83.7,
+   97,
+   10.7,
+   "Use a hint feather"
+  ],
+  "btn1": [
+   19.4,
+   59.7,
+   21,
+   10.7,
+   "Turn back"
+  ],
+  "btn2": [
+   56.1,
+   59.7,
+   24.5,
+   10.7,
+   "Turn forward"
+  ],
+  "btn3": [
+   1.5,
+   71.7,
+   97,
+   10.7,
+   "Open the lock"
+  ],
+  "btn4": [
+   1.5,
+   83.7,
+   29.4,
+   10.7,
+   "Use a hint feather"
+  ]
+ },
+ "csq/escape-the-post-office/pim-1b": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 3: Which Pim?🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.7,
+   8.9,
+   "🔒 Lock 3: Which Pim?"
+  ],
+  "pill2": [
+   28,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Three messages say they are from Pim. Only one really is. Re"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimSorting help needed at the post office after lunch."
+  ],
+  "epcard2": [
+   34.2,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimQuick! Tell me your mailbox key so I can check your"
+  ],
+  "epcard3": [
+   66.8,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimMeet me at the far dock at dark. Tell nobody.Postma"
+  ],
+  "cardtitle1": [
+   3.4,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle2": [
+   36,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle3": [
+   68.7,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardp1": [
+   3.4,
+   45.3,
+   27.9,
+   13.7,
+   "Sorting help needed at the post office after lunch. Come to "
+  ],
+  "cardp2": [
+   36,
+   45.3,
+   27.9,
+   13.7,
+   "Quick! Tell me your mailbox key so I can check your box from"
+  ],
+  "cardp3": [
+   68.7,
+   45.3,
+   27.9,
+   9.1,
+   "Meet me at the far dock at dark. Tell nobody."
+  ],
+  "clues1": [
+   3.4,
+   60.3,
+   27.9,
+   26.7,
+   "Postmark: Netville, todayFootprint: small owl prints, the tr"
+  ],
+  "clues2": [
+   36,
+   60.3,
+   27.9,
+   22.2,
+   "Postmark: Netville, todayFootprint: big round prints, not ow"
+  ],
+  "clues3": [
+   68.7,
+   55.8,
+   27.9,
+   26.7,
+   "Postmark: a far town, last weekFootprint: small owl printsAs"
+  ],
+  "li1": [
+   5.9,
+   60.3,
+   25.4,
+   4.4,
+   "Postmark: Netville, today"
+  ],
+  "li2": [
+   5.9,
+   64.8,
+   25.4,
+   13.3,
+   "Footprint: small owl prints, the trail Pim always leaves"
+  ],
+  "li3": [
+   5.9,
+   78.1,
+   25.4,
+   8.9,
+   "Asks for: help at the post office, in the open"
+  ],
+  "li4": [
+   38.5,
+   60.3,
+   25.4,
+   4.4,
+   "Postmark: Netville, today"
+  ],
+  "li5": [
+   38.5,
+   64.8,
+   25.4,
+   8.9,
+   "Footprint: big round prints, not owl prints"
+  ],
+  "li6": [
+   38.5,
+   73.7,
+   25.4,
+   8.9,
+   "Asks for: your mailbox key, a shiny secret"
+  ],
+  "li7": [
+   71.2,
+   55.8,
+   25.4,
+   8.9,
+   "Postmark: a far town, last week"
+  ],
+  "li8": [
+   71.2,
+   64.7,
+   25.4,
+   4.4,
+   "Footprint: small owl prints"
+  ],
+  "li9": [
+   71.2,
+   69.1,
+   25.4,
+   13.3,
+   "Asks for: a secret meeting, away from trusted adults"
+  ],
+  "tiles": [
+   1.5,
+   36.9,
+   97,
+   63.1,
+   "From: PimSorting help needed at the post office after lunch."
+  ],
+  "btn1": [
+   3.4,
+   87,
+   21,
+   10.7,
+   "Pick this card"
+  ],
+  "btn2": [
+   36,
+   82.6,
+   21,
+   10.7,
+   "Pick this card"
+  ],
+  "btn3": [
+   68.7,
+   82.4,
+   21,
+   10.7,
+   "Pick this card"
+  ]
+ },
+ "csq/escape-the-post-office/pim-1b-pick": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 3: Which Pim?🪶🪶🪶hint feathersExplorer"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.7,
+   8.9,
+   "🔒 Lock 3: Which Pim?"
+  ],
+  "pill2": [
+   28,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   86,
+   14.2,
+   12.7,
+   8.9,
+   "Explorer"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Three messages say they are from Pim. Only one really is. Re"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimSorting help needed at the post office after lunch."
+  ],
+  "epcard2": [
+   34.2,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimQuick! Tell me your mailbox key so I can check your"
+  ],
+  "epcard3": [
+   66.8,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimMeet me at the far dock at dark. Tell nobody.Postma"
+  ],
+  "cardtitle1": [
+   3.4,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle2": [
+   36,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle3": [
+   68.7,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardp1": [
+   3.4,
+   45.3,
+   27.9,
+   13.7,
+   "Sorting help needed at the post office after lunch. Come to "
+  ],
+  "cardp2": [
+   36,
+   45.3,
+   27.9,
+   13.7,
+   "Quick! Tell me your mailbox key so I can check your box from"
+  ],
+  "cardp3": [
+   68.7,
+   45.3,
+   27.9,
+   9.1,
+   "Meet me at the far dock at dark. Tell nobody."
+  ],
+  "clues1": [
+   3.4,
+   60.3,
+   27.9,
+   26.7,
+   "Postmark: Netville, todayFootprint: small owl prints, the tr"
+  ],
+  "clues2": [
+   36,
+   60.3,
+   27.9,
+   22.2,
+   "Postmark: Netville, todayFootprint: big round prints, not ow"
+  ],
+  "clues3": [
+   68.7,
+   55.8,
+   27.9,
+   26.7,
+   "Postmark: a far town, last weekFootprint: small owl printsAs"
+  ],
+  "li1": [
+   5.9,
+   60.3,
+   25.4,
+   4.4,
+   "Postmark: Netville, today"
+  ],
+  "li2": [
+   5.9,
+   64.8,
+   25.4,
+   13.3,
+   "Footprint: small owl prints, the trail Pim always leaves"
+  ],
+  "li3": [
+   5.9,
+   78.1,
+   25.4,
+   8.9,
+   "Asks for: help at the post office, in the open"
+  ],
+  "li4": [
+   38.5,
+   60.3,
+   25.4,
+   4.4,
+   "Postmark: Netville, today"
+  ],
+  "li5": [
+   38.5,
+   64.8,
+   25.4,
+   8.9,
+   "Footprint: big round prints, not owl prints"
+  ],
+  "li6": [
+   38.5,
+   73.7,
+   25.4,
+   8.9,
+   "Asks for: your mailbox key, a shiny secret"
+  ],
+  "li7": [
+   71.2,
+   55.8,
+   25.4,
+   8.9,
+   "Postmark: a far town, last week"
+  ],
+  "li8": [
+   71.2,
+   64.7,
+   25.4,
+   4.4,
+   "Footprint: small owl prints"
+  ],
+  "li9": [
+   71.2,
+   69.1,
+   25.4,
+   13.3,
+   "Asks for: a secret meeting, away from trusted adults"
+  ],
+  "tiles": [
+   1.5,
+   36.9,
+   97,
+   63.1,
+   "From: PimSorting help needed at the post office after lunch."
+  ],
+  "btn1": [
+   3.4,
+   87,
+   27.9,
+   10.7,
+   "This is the real Pim ✓"
+  ],
+  "btn2": [
+   36,
+   82.6,
+   21,
+   10.7,
+   "Pick this card"
+  ],
+  "btn3": [
+   68.7,
+   82.4,
+   21,
+   10.7,
+   "Pick this card"
+  ]
+ },
+ "csq/escape-the-post-office/pim-2": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 3: Which Pim?🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.7,
+   8.9,
+   "🔒 Lock 3: Which Pim?"
+  ],
+  "pill2": [
+   28,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Three messages say they are from Pim. One wears a faked post"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimSorting help needed. Bring your mailbox key to the "
+  ],
+  "epcard2": [
+   34.2,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimSorting help needed at the post office after lunch."
+  ],
+  "epcard3": [
+   66.8,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimKind words! You are my best helper. Keep our chat s"
+  ],
+  "cardtitle1": [
+   3.4,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle2": [
+   36,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle3": [
+   68.7,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardp1": [
+   3.4,
+   45.3,
+   27.9,
+   13.7,
+   "Sorting help needed. Bring your mailbox key to the side gate"
+  ],
+  "cardp2": [
+   36,
+   45.3,
+   27.9,
+   13.7,
+   "Sorting help needed at the post office after lunch. Front de"
+  ],
+  "cardp3": [
+   68.7,
+   45.3,
+   27.9,
+   13.7,
+   "Kind words! You are my best helper. Keep our chat secret fro"
+  ],
+  "clues1": [
+   3.4,
+   60.3,
+   27.9,
+   35.6,
+   "Postmark: stamped by a hand press, not the office stampFootp"
+  ],
+  "clues2": [
+   36,
+   60.3,
+   27.9,
+   31.1,
+   "Postmark: Netville office stamp, todayFootprint: small owl p"
+  ],
+  "clues3": [
+   68.7,
+   60.3,
+   27.9,
+   17.8,
+   "Postmark: Netville, todayFootprint: small owl printsAsks for"
+  ],
+  "li1": [
+   5.9,
+   60.3,
+   25.4,
+   13.3,
+   "Postmark: stamped by a hand press, not the office stamp"
+  ],
+  "li2": [
+   5.9,
+   73.7,
+   25.4,
+   13.3,
+   "Footprint: owl-shaped prints, pressed too evenly, like a sta"
+  ],
+  "li3": [
+   5.9,
+   87,
+   25.4,
+   8.9,
+   "Asks for: your mailbox key, at a side gate"
+  ],
+  "li4": [
+   38.5,
+   60.3,
+   25.4,
+   8.9,
+   "Postmark: Netville office stamp, today"
+  ],
+  "li5": [
+   38.5,
+   69.2,
+   25.4,
+   13.3,
+   "Footprint: small owl prints with the worn left edge Pim alwa"
+  ],
+  "li6": [
+   38.5,
+   82.6,
+   25.4,
+   8.9,
+   "Asks for: help at the front desk, in the open"
+  ],
+  "li7": [
+   71.2,
+   60.3,
+   25.4,
+   4.4,
+   "Postmark: Netville, today"
+  ],
+  "li8": [
+   71.2,
+   64.8,
+   25.4,
+   4.4,
+   "Footprint: small owl prints"
+  ],
+  "li9": [
+   71.2,
+   69.2,
+   25.4,
+   8.9,
+   "Asks for: a secret kept from other trusted adults"
+  ],
+  "tiles": [
+   1.5,
+   36.9,
+   97,
+   63.1,
+   "From: PimSorting help needed. Bring your mailbox key to the "
+  ],
+  "btn1": [
+   3.4,
+   95.9,
+   21,
+   4.1,
+   "Pick this card"
+  ],
+  "btn2": [
+   36,
+   91.4,
+   21,
+   8.6,
+   "Pick this card"
+  ],
+  "btn3": [
+   68.7,
+   78.1,
+   21,
+   10.7,
+   "Pick this card"
+  ]
+ },
+ "csq/escape-the-post-office/pim-2-pick": {
+  "bar": [
+   1.3,
+   14.2,
+   97.5,
+   8.9,
+   "🔒 Lock 3: Which Pim?🪶🪶🪶hint feathersPro"
+  ],
+  "pill1": [
+   1.3,
+   14.2,
+   25.7,
+   8.9,
+   "🔒 Lock 3: Which Pim?"
+  ],
+  "pill2": [
+   28,
+   14.2,
+   26.8,
+   8.9,
+   "🪶🪶🪶hint feathers"
+  ],
+  "pill3": [
+   91.1,
+   14.2,
+   7.7,
+   8.9,
+   "Pro"
+  ],
+  "say": [
+   1.5,
+   24.9,
+   97,
+   10.7,
+   "Three messages say they are from Pim. One wears a faked post"
+  ],
+  "epcard1": [
+   1.5,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimSorting help needed. Bring your mailbox key to the "
+  ],
+  "epcard2": [
+   34.2,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimSorting help needed at the post office after lunch."
+  ],
+  "epcard3": [
+   66.8,
+   36.9,
+   31.7,
+   63.1,
+   "From: PimKind words! You are my best helper. Keep our chat s"
+  ],
+  "cardtitle1": [
+   3.4,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle2": [
+   36,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardtitle3": [
+   68.7,
+   39.8,
+   27.9,
+   4.7,
+   "From: Pim"
+  ],
+  "cardp1": [
+   3.4,
+   45.3,
+   27.9,
+   13.7,
+   "Sorting help needed. Bring your mailbox key to the side gate"
+  ],
+  "cardp2": [
+   36,
+   45.3,
+   27.9,
+   13.7,
+   "Sorting help needed at the post office after lunch. Front de"
+  ],
+  "cardp3": [
+   68.7,
+   45.3,
+   27.9,
+   13.7,
+   "Kind words! You are my best helper. Keep our chat secret fro"
+  ],
+  "clues1": [
+   3.4,
+   60.3,
+   27.9,
+   35.6,
+   "Postmark: stamped by a hand press, not the office stampFootp"
+  ],
+  "clues2": [
+   36,
+   60.3,
+   27.9,
+   31.1,
+   "Postmark: Netville office stamp, todayFootprint: small owl p"
+  ],
+  "clues3": [
+   68.7,
+   60.3,
+   27.9,
+   17.8,
+   "Postmark: Netville, todayFootprint: small owl printsAsks for"
+  ],
+  "li1": [
+   5.9,
+   60.3,
+   25.4,
+   13.3,
+   "Postmark: stamped by a hand press, not the office stamp"
+  ],
+  "li2": [
+   5.9,
+   73.7,
+   25.4,
+   13.3,
+   "Footprint: owl-shaped prints, pressed too evenly, like a sta"
+  ],
+  "li3": [
+   5.9,
+   87,
+   25.4,
+   8.9,
+   "Asks for: your mailbox key, at a side gate"
+  ],
+  "li4": [
+   38.5,
+   60.3,
+   25.4,
+   8.9,
+   "Postmark: Netville office stamp, today"
+  ],
+  "li5": [
+   38.5,
+   69.2,
+   25.4,
+   13.3,
+   "Footprint: small owl prints with the worn left edge Pim alwa"
+  ],
+  "li6": [
+   38.5,
+   82.6,
+   25.4,
+   8.9,
+   "Asks for: help at the front desk, in the open"
+  ],
+  "li7": [
+   71.2,
+   60.3,
+   25.4,
+   4.4,
+   "Postmark: Netville, today"
+  ],
+  "li8": [
+   71.2,
+   64.8,
+   25.4,
+   4.4,
+   "Footprint: small owl prints"
+  ],
+  "li9": [
+   71.2,
+   69.2,
+   25.4,
+   8.9,
+   "Asks for: a secret kept from other trusted adults"
+  ],
+  "tiles": [
+   1.5,
+   36.9,
+   97,
+   63.1,
+   "From: PimSorting help needed. Bring your mailbox key to the "
+  ],
+  "btn1": [
+   3.4,
+   95.9,
+   21,
+   4.1,
+   "Pick this card"
+  ],
+  "btn2": [
+   36,
+   91.4,
+   27.9,
+   8.6,
+   "This is the real Pim ✓"
+  ],
+  "btn3": [
+   68.7,
+   78.1,
+   21,
+   10.7,
+   "Pick this card"
+  ]
+ },
+ "csq/trick-inbox/boss-1b-c1": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Boss Round · ExplorerMessage 2 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   30,
+   9.3,
+   "Boss Round · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 2 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.4,
+   74.5,
+   21.9,
+   8.9,
+   "Clues found: 1 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "ChatFrom: CoolGamer99Game chatHi! Great game today. Do not t"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: CoolGamer99"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   18.2,
+   4.1,
+   "From: CoolGamer99"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "Hi! Great game today. Do not tell your parents we chat, okay"
+  ],
+  "clue1": [
+   25.2,
+   56.4,
+   43.2,
+   7.1,
+   "Do not tell your parents we chat, okay?"
+  ],
+  "clue2": [
+   69.1,
+   56.4,
+   27.1,
+   7.1,
+   "Meet me at the park gate"
+  ],
+  "count": [
+   23.4,
+   74.5,
+   21.9,
+   8.9,
+   "Clues found: 1 of 2"
+  ],
+  "choose": [
+   46.3,
+   73.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-1-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 5 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 5 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   35.3,
+   "ChatFrom: CoolGamer99Game chatHi! Great game today. Do not t"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: CoolGamer99"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   18.2,
+   4.1,
+   "From: CoolGamer99"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "Hi! Great game today. Do not tell your parents we chat, okay"
+  ],
+  "clue1": [
+   25.2,
+   56.4,
+   43.2,
+   7.1,
+   "Do not tell your parents we chat, okay?"
+  ],
+  "clue2": [
+   3.8,
+   63.5,
+   29.6,
+   7.1,
+   "Meet me at the park gate"
+  ],
+  "count": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   75.3,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-1-debrief": {
+  "bar": [
+   1.5,
+   3.3,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 5 of 6"
+  ],
+  "pill1": [
+   1.5,
+   3.3,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   3.6,
+   19,
+   8.9,
+   "Message 5 of 6"
+  ],
+  "pill3": [
+   85.5,
+   3.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   14,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   27.3,
+   97,
+   35.3,
+   "ChatFrom: CoolGamer99Game chatHi! Great game today. Do not t"
+  ],
+  "from": [
+   3.6,
+   30.7,
+   92.8,
+   5.9,
+   "ChatFrom: CoolGamer99"
+  ],
+  "kind": [
+   3.6,
+   30.7,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   31.6,
+   18.2,
+   4.1,
+   "From: CoolGamer99"
+  ],
+  "subject": [
+   3.6,
+   38.3,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   45.1,
+   92.8,
+   14.2,
+   "Hi! Great game today. Do not tell your parents we chat, okay"
+  ],
+  "clue1": [
+   25.2,
+   45.1,
+   43.2,
+   7.1,
+   "Do not tell your parents we chat, okay?"
+  ],
+  "clue2": [
+   3.8,
+   52.2,
+   29.6,
+   7.1,
+   "Meet me at the park gate"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   64,
+   97,
+   34.3,
+   "That is the move!Chat is for people you know in real life. A"
+  ],
+  "dline1": [
+   3.4,
+   66.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.8,
+   93.3,
+   10,
+   "Chat is for people you know in real life. A stranger who ask"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the key-hunter, who wants into your mailbox"
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-2-debrief": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   26.5,
+   "ChatFrom: Mia from ClassGame chatGreat game! Your tower at t"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: Mia from Class"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   19.3,
+   4.1,
+   "From: Mia from Class"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   5.4,
+   "Great game! Your tower at the end was amazing. See you at sc"
+  ],
+  "choose": [
+   37.2,
+   89.6,
+   25.6,
+   10.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   66.5,
+   97,
+   21.7,
+   "That is the move!Safe to deliver. Mia is someone you know in"
+  ],
+  "dline1": [
+   3.4,
+   69.4,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   75.4,
+   93.3,
+   10,
+   "Safe to deliver. Mia is someone you know in real life, and t"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-2-new": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   22.2,
+   67.4,
+   24.3,
+   8.9,
+   "No clues hiding here"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. If it hides no clues and asks for nothing, it"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   26.5,
+   "ChatFrom: Mia from ClassGame chatGreat game! Your tower at t"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: Mia from Class"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   19.3,
+   4.1,
+   "From: Mia from Class"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   5.4,
+   "Great game! Your tower at the end was amazing. See you at sc"
+  ],
+  "count": [
+   22.2,
+   67.4,
+   24.3,
+   8.9,
+   "No clues hiding here"
+  ],
+  "choose": [
+   47.5,
+   66.5,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-3-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 2 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 2 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   69.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   28.2,
+   "ChatFrom: JokerJayGame chatEveryone laugh at Pip, he plays l"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: JokerJay"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   13.3,
+   4.1,
+   "From: JokerJay"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby! Share this so t"
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   47.3,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby!"
+  ],
+  "clue2": [
+   51.8,
+   56.4,
+   40.7,
+   7.1,
+   "Share this so the whole school sees."
+  ],
+  "count": [
+   23.2,
+   69.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   68.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-3-debrief": {
+  "bar": [
+   1.5,
+   5.3,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 2 of 6"
+  ],
+  "pill1": [
+   1.5,
+   5.3,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   5.6,
+   19,
+   8.9,
+   "Message 2 of 6"
+  ],
+  "pill3": [
+   85.5,
+   5.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   16,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   29.3,
+   97,
+   28.2,
+   "ChatFrom: JokerJayGame chatEveryone laugh at Pip, he plays l"
+  ],
+  "from": [
+   3.6,
+   32.7,
+   92.8,
+   5.9,
+   "ChatFrom: JokerJay"
+  ],
+  "kind": [
+   3.6,
+   32.7,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   33.6,
+   13.3,
+   4.1,
+   "From: JokerJay"
+  ],
+  "subject": [
+   3.6,
+   40.3,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   47.1,
+   92.8,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby! Share this so t"
+  ],
+  "clue1": [
+   3.8,
+   47.1,
+   47.3,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby!"
+  ],
+  "clue2": [
+   51.8,
+   47.1,
+   40.7,
+   7.1,
+   "Share this so the whole school sees."
+  ],
+  "choose": [
+   37.2,
+   99.5,
+   25.6,
+   0.5,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   58.8,
+   97,
+   39.3,
+   "That is the move!Mean messages want an audience. Do not join"
+  ],
+  "dline1": [
+   3.4,
+   61.7,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   67.7,
+   93.3,
+   14.9,
+   "Mean messages want an audience. Do not join in and never pas"
+  ],
+  "dline3": [
+   3.4,
+   84,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.3,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-4-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "ChatFrom: NewFriendGame chatYou seem nice. I can send you a "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: NewFriend"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   15.7,
+   4.1,
+   "From: NewFriend"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "You seem nice. I can send you a rare game skin, free. Just k"
+  ],
+  "clue1": [
+   18.7,
+   56.4,
+   41.5,
+   7.1,
+   "I can send you a rare game skin, free."
+  ],
+  "clue2": [
+   65.3,
+   56.4,
+   24.5,
+   7.1,
+   "keep this our secret"
+  ],
+  "count": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   73.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-4-decide": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "Now choose the move. Think about what this message really wa"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "ChatFrom: NewFriendGame chatYou seem nice. I can send you a "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: NewFriend"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   15.7,
+   4.1,
+   "From: NewFriend"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "You seem nice. I can send you a rare game skin, free. Just k"
+  ],
+  "clue1": [
+   18.7,
+   56.4,
+   41.5,
+   7.1,
+   "I can send you a rare game skin, free."
+  ],
+  "clue2": [
+   65.3,
+   56.4,
+   24.5,
+   7.1,
+   "keep this our secret"
+  ],
+  "actions": [
+   1.5,
+   73.6,
+   97,
+   10.7,
+   "DeliverBin itShow PimReport & block"
+  ],
+  "act1": [
+   1.5,
+   73.6,
+   23.5,
+   10.7,
+   "Deliver"
+  ],
+  "act2": [
+   26,
+   73.6,
+   23.5,
+   10.7,
+   "Bin it"
+  ],
+  "act3": [
+   50.5,
+   73.6,
+   23.5,
+   10.7,
+   "Show Pim"
+  ],
+  "act4": [
+   75,
+   73.6,
+   23.5,
+   10.7,
+   "Report & block"
+  ]
+ },
+ "csq/trick-inbox/chat-1b-ch-6-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ExplorerMessage 6 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   31.4,
+   9.3,
+   "Chat Careful · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 6 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   89.6,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   48.7,
+   "ChatFrom: Fun QuizGame chatAnswer three questions to find yo"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: Fun Quiz"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "kind2": [
+   3.6,
+   77.8,
+   92.8,
+   6.2,
+   "Start quiz"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   13.6,
+   4.1,
+   "From: Fun Quiz"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   19.7,
+   "Answer three questions to find your dragon: your first pet, "
+  ],
+  "clue1": [
+   3.8,
+   61.8,
+   63.4,
+   7.1,
+   "your first pet, the street you grew up on, and your birthday"
+  ],
+  "clue2": [
+   3.8,
+   68.9,
+   37.2,
+   7.1,
+   "share your result with everyone!"
+  ],
+  "count": [
+   23.2,
+   89.6,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   88.7,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-1-debrief": {
+  "bar": [
+   1.5,
+   3.3,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 1 of 7"
+  ],
+  "pill1": [
+   1.5,
+   3.3,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   66.3,
+   3.6,
+   18.2,
+   8.9,
+   "Message 1 of 7"
+  ],
+  "pill3": [
+   85.5,
+   3.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   14,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   27.3,
+   97,
+   35.3,
+   "ChatFrom: CoolGamer99Game chatHi! Great game today. Do not t"
+  ],
+  "from": [
+   3.6,
+   30.7,
+   92.8,
+   5.9,
+   "ChatFrom: CoolGamer99"
+  ],
+  "kind": [
+   3.6,
+   30.7,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   31.6,
+   18.2,
+   4.1,
+   "From: CoolGamer99"
+  ],
+  "subject": [
+   3.6,
+   38.3,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   45.1,
+   92.8,
+   14.2,
+   "Hi! Great game today. Do not tell your parents we chat, okay"
+  ],
+  "clue1": [
+   25.2,
+   45.1,
+   43.2,
+   7.1,
+   "Do not tell your parents we chat, okay?"
+  ],
+  "clue2": [
+   3.8,
+   52.2,
+   29.6,
+   7.1,
+   "Meet me at the park gate"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   64,
+   97,
+   34.3,
+   "That is the move!Chat is for people you know in real life. A"
+  ],
+  "dline1": [
+   3.4,
+   66.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.8,
+   93.3,
+   10,
+   "Chat is for people you know in real life. A stranger who ask"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the key-hunter, who wants into your mailbox"
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-3-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 7 of 7"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   66,
+   14.9,
+   18.5,
+   8.9,
+   "Message 7 of 7"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   69.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   28.2,
+   "ChatFrom: JokerJayGame chatEveryone laugh at Pip, he plays l"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: JokerJay"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   13.3,
+   4.1,
+   "From: JokerJay"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby! Share this so t"
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   47.3,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby!"
+  ],
+  "clue2": [
+   51.8,
+   56.4,
+   40.7,
+   7.1,
+   "Share this so the whole school sees."
+  ],
+  "count": [
+   23.2,
+   69.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   68.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-3-debrief": {
+  "bar": [
+   1.5,
+   5.3,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 7 of 7"
+  ],
+  "pill1": [
+   1.5,
+   5.3,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   66,
+   5.6,
+   18.5,
+   8.9,
+   "Message 7 of 7"
+  ],
+  "pill3": [
+   85.5,
+   5.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   16,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   29.3,
+   97,
+   28.2,
+   "ChatFrom: JokerJayGame chatEveryone laugh at Pip, he plays l"
+  ],
+  "from": [
+   3.6,
+   32.7,
+   92.8,
+   5.9,
+   "ChatFrom: JokerJay"
+  ],
+  "kind": [
+   3.6,
+   32.7,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   33.6,
+   13.3,
+   4.1,
+   "From: JokerJay"
+  ],
+  "subject": [
+   3.6,
+   40.3,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   47.1,
+   92.8,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby! Share this so t"
+  ],
+  "clue1": [
+   3.8,
+   47.1,
+   47.3,
+   7.1,
+   "Everyone laugh at Pip, he plays like a baby!"
+  ],
+  "clue2": [
+   51.8,
+   47.1,
+   40.7,
+   7.1,
+   "Share this so the whole school sees."
+  ],
+  "choose": [
+   41.6,
+   99.5,
+   16.8,
+   0.5,
+   "Finish"
+  ],
+  "debrief": [
+   1.5,
+   58.8,
+   97,
+   39.3,
+   "That is the move!Mean messages want an audience. Do not join"
+  ],
+  "dline1": [
+   3.4,
+   61.7,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   67.7,
+   93.3,
+   14.9,
+   "Mean messages want an audience. Do not join in and never pas"
+  ],
+  "dline3": [
+   3.4,
+   84,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.3,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-4-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 2 of 7"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   65.8,
+   14.9,
+   18.7,
+   8.9,
+   "Message 2 of 7"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "ChatFrom: NewFriendGame chatYou seem nice. I can send you a "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: NewFriend"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   15.7,
+   4.1,
+   "From: NewFriend"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "You seem nice. I can send you a rare game skin, free. Just k"
+  ],
+  "clue1": [
+   18.7,
+   56.4,
+   41.5,
+   7.1,
+   "I can send you a rare game skin, free."
+  ],
+  "clue2": [
+   65.3,
+   56.4,
+   24.5,
+   7.1,
+   "keep this our secret"
+  ],
+  "count": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   73.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-4-decide": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 2 of 7"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   65.8,
+   14.9,
+   18.7,
+   8.9,
+   "Message 2 of 7"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "Now choose the move. Think about what this message really wa"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "ChatFrom: NewFriendGame chatYou seem nice. I can send you a "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: NewFriend"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   15.7,
+   4.1,
+   "From: NewFriend"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "You seem nice. I can send you a rare game skin, free. Just k"
+  ],
+  "clue1": [
+   18.7,
+   56.4,
+   41.5,
+   7.1,
+   "I can send you a rare game skin, free."
+  ],
+  "clue2": [
+   65.3,
+   56.4,
+   24.5,
+   7.1,
+   "keep this our secret"
+  ],
+  "actions": [
+   1.5,
+   73.6,
+   97,
+   10.7,
+   "DeliverBin itShow PimReport & block"
+  ],
+  "act1": [
+   1.5,
+   73.6,
+   23.5,
+   10.7,
+   "Deliver"
+  ],
+  "act2": [
+   26,
+   73.6,
+   23.5,
+   10.7,
+   "Bin it"
+  ],
+  "act3": [
+   50.5,
+   73.6,
+   23.5,
+   10.7,
+   "Show Pim"
+  ],
+  "act4": [
+   75,
+   73.6,
+   23.5,
+   10.7,
+   "Report & block"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-6-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 6 of 7"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   65.7,
+   14.9,
+   18.8,
+   8.9,
+   "Message 6 of 7"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   89.6,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   48.7,
+   "ChatFrom: Fun QuizGame chatAnswer three questions to find yo"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: Fun Quiz"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "kind2": [
+   3.6,
+   77.8,
+   92.8,
+   6.2,
+   "Start quiz"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   13.6,
+   4.1,
+   "From: Fun Quiz"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Game chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   19.7,
+   "Answer three questions to find your dragon: your first pet, "
+  ],
+  "clue1": [
+   3.8,
+   61.8,
+   63.4,
+   7.1,
+   "your first pet, the street you grew up on, and your birthday"
+  ],
+  "clue2": [
+   3.8,
+   68.9,
+   37.2,
+   7.1,
+   "share your result with everyone!"
+  ],
+  "count": [
+   23.2,
+   89.6,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   88.7,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-7-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 3 of 7"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   65.8,
+   14.9,
+   18.7,
+   8.9,
+   "Message 3 of 7"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   35.3,
+   "ChatFrom: Group ChatGroup chatEveryone is doing it. Post the"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: Group Chat"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   16,
+   4.1,
+   "From: Group Chat"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Group chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "Everyone is doing it. Post the photo or you are out of the g"
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   67.5,
+   7.1,
+   "Everyone is doing it. Post the photo or you are out of the g"
+  ],
+  "clue2": [
+   3.8,
+   63.5,
+   36.5,
+   7.1,
+   "do not show any adult this chat."
+  ],
+  "count": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   75.3,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/chat-2-ch-7-debrief": {
+  "bar": [
+   1.5,
+   3.3,
+   97,
+   9.3,
+   "Chat Careful · ProMessage 3 of 7"
+  ],
+  "pill1": [
+   1.5,
+   3.3,
+   26.4,
+   9.3,
+   "Chat Careful · Pro"
+  ],
+  "pill2": [
+   65.8,
+   3.6,
+   18.7,
+   8.9,
+   "Message 3 of 7"
+  ],
+  "pill3": [
+   85.5,
+   3.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   14,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   27.3,
+   97,
+   35.3,
+   "ChatFrom: Group ChatGroup chatEveryone is doing it. Post the"
+  ],
+  "from": [
+   3.6,
+   30.7,
+   92.8,
+   5.9,
+   "ChatFrom: Group Chat"
+  ],
+  "kind": [
+   3.6,
+   30.7,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   31.6,
+   16,
+   4.1,
+   "From: Group Chat"
+  ],
+  "subject": [
+   3.6,
+   38.3,
+   92.8,
+   5,
+   "Group chat"
+  ],
+  "body": [
+   3.6,
+   45.1,
+   92.8,
+   14.2,
+   "Everyone is doing it. Post the photo or you are out of the g"
+  ],
+  "clue1": [
+   3.8,
+   45.1,
+   67.5,
+   7.1,
+   "Everyone is doing it. Post the photo or you are out of the g"
+  ],
+  "clue2": [
+   3.8,
+   52.2,
+   36.5,
+   7.1,
+   "do not show any adult this chat."
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   64,
+   97,
+   34.3,
+   "That is the move!Pressure dressed up as friendship. A group "
+  ],
+  "dline1": [
+   3.4,
+   66.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.8,
+   93.3,
+   10,
+   "Pressure dressed up as friendship. A group that dares you an"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/letters-1b-lt-1-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Prize Letters · ExplorerMessage 1 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   30.8,
+   9.3,
+   "Prize Letters · Explorer"
+  ],
+  "pill2": [
+   66,
+   14.9,
+   18.5,
+   8.9,
+   "Message 1 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   84.2,
+   22.4,
+   8.9,
+   "Clues found: 3 of 3"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   43.3,
+   "LetterFrom: Prize TeamYou won a tablet!Congratulations! You "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Prize Team"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   72.4,
+   92.8,
+   6.2,
+   "Claim now"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   15.6,
+   4.1,
+   "From: Prize Team"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "You won a tablet!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "Congratulations! You are our lucky winner. Send us your mail"
+  ],
+  "clue1": [
+   20.6,
+   56.4,
+   29.7,
+   7.1,
+   "You are our lucky winner."
+  ],
+  "clue2": [
+   64.4,
+   56.4,
+   16.6,
+   7.1,
+   "mailbox key"
+  ],
+  "clue3": [
+   3.8,
+   63.5,
+   27.6,
+   7.1,
+   "in the next ten minutes"
+  ],
+  "count": [
+   23.2,
+   84.2,
+   22.4,
+   8.9,
+   "Clues found: 3 of 3"
+  ],
+  "choose": [
+   46.6,
+   83.3,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/letters-1b-lt-1-decide": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Prize Letters · ExplorerMessage 1 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   30.8,
+   9.3,
+   "Prize Letters · Explorer"
+  ],
+  "pill2": [
+   66,
+   14.9,
+   18.5,
+   8.9,
+   "Message 1 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "Now choose the move. Think about what this message really wa"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   43.3,
+   "LetterFrom: Prize TeamYou won a tablet!Congratulations! You "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Prize Team"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   72.4,
+   92.8,
+   6.2,
+   "Claim now"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   15.6,
+   4.1,
+   "From: Prize Team"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "You won a tablet!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "Congratulations! You are our lucky winner. Send us your mail"
+  ],
+  "clue1": [
+   20.6,
+   56.4,
+   29.7,
+   7.1,
+   "You are our lucky winner."
+  ],
+  "clue2": [
+   64.4,
+   56.4,
+   16.6,
+   7.1,
+   "mailbox key"
+  ],
+  "clue3": [
+   3.8,
+   63.5,
+   27.6,
+   7.1,
+   "in the next ten minutes"
+  ],
+  "actions": [
+   1.5,
+   83.3,
+   97,
+   10.7,
+   "DeliverBin itShow PimReport & block"
+  ],
+  "act1": [
+   1.5,
+   83.3,
+   23.5,
+   10.7,
+   "Deliver"
+  ],
+  "act2": [
+   26,
+   83.3,
+   23.5,
+   10.7,
+   "Bin it"
+  ],
+  "act3": [
+   50.5,
+   83.3,
+   23.5,
+   10.7,
+   "Show Pim"
+  ],
+  "act4": [
+   75,
+   83.3,
+   23.5,
+   10.7,
+   "Report & block"
+  ]
+ },
+ "csq/trick-inbox/letters-1b-lt-1-f1": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Prize Letters · ExplorerMessage 1 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   30.8,
+   9.3,
+   "Prize Letters · Explorer"
+  ],
+  "pill2": [
+   66,
+   14.9,
+   18.5,
+   8.9,
+   "Message 1 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.4,
+   84.2,
+   21.9,
+   8.9,
+   "Clues found: 1 of 3"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   43.3,
+   "LetterFrom: Prize TeamYou won a tablet!Congratulations! You "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Prize Team"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   72.4,
+   92.8,
+   6.2,
+   "Claim now"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   15.6,
+   4.1,
+   "From: Prize Team"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "You won a tablet!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "Congratulations! You are our lucky winner. Send us your mail"
+  ],
+  "clue1": [
+   20.6,
+   56.4,
+   29.7,
+   7.1,
+   "You are our lucky winner."
+  ],
+  "clue2": [
+   64.4,
+   56.4,
+   14.1,
+   7.1,
+   "mailbox key"
+  ],
+  "clue3": [
+   3.8,
+   63.5,
+   25.1,
+   7.1,
+   "in the next ten minutes"
+  ],
+  "count": [
+   23.4,
+   84.2,
+   21.9,
+   8.9,
+   "Clues found: 1 of 3"
+  ],
+  "choose": [
+   46.3,
+   83.3,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/letters-1b-lt-1-new": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Prize Letters · ExplorerMessage 1 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   30.8,
+   9.3,
+   "Prize Letters · Explorer"
+  ],
+  "pill2": [
+   66,
+   14.9,
+   18.5,
+   8.9,
+   "Message 1 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.1,
+   84.2,
+   22.5,
+   8.9,
+   "Clues found: 0 of 3"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   43.3,
+   "LetterFrom: Prize TeamYou won a tablet!Congratulations! You "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Prize Team"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   72.4,
+   92.8,
+   6.2,
+   "Claim now"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   15.6,
+   4.1,
+   "From: Prize Team"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "You won a tablet!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "Congratulations! You are our lucky winner. Send us your mail"
+  ],
+  "clue1": [
+   20.6,
+   56.4,
+   27.2,
+   7.1,
+   "You are our lucky winner."
+  ],
+  "clue2": [
+   61.9,
+   56.4,
+   14.1,
+   7.1,
+   "mailbox key"
+  ],
+  "clue3": [
+   3.8,
+   63.5,
+   25.1,
+   7.1,
+   "in the next ten minutes"
+  ],
+  "count": [
+   23.1,
+   84.2,
+   22.5,
+   8.9,
+   "Clues found: 0 of 3"
+  ],
+  "choose": [
+   46.6,
+   83.3,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/letters-1b-lt-3-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Prize Letters · ExplorerMessage 6 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   30.8,
+   9.3,
+   "Prize Letters · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 6 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   82.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   41.6,
+   "LetterFrom: Post Office TeamYour mailbox will closeWe found "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Post Office Team"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   70.7,
+   92.8,
+   6.2,
+   "Fix it now"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   21,
+   4.1,
+   "From: Post Office Team"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Your mailbox will close"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "We found a problem with your mailbox. Send us your mailbox k"
+  ],
+  "clue1": [
+   50.8,
+   56.4,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue2": [
+   73.3,
+   56.4,
+   10.3,
+   7.1,
+   "today"
+  ],
+  "count": [
+   23.2,
+   82.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   81.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/letters-1b-lt-5-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Prize Letters · ExplorerMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   30.8,
+   9.3,
+   "Prize Letters · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   36.2,
+   "LetterFrom: Game ShopFree coins today only!Tap the button to"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Game Shop"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   65.3,
+   92.8,
+   6.2,
+   "Get coins"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   16.1,
+   4.1,
+   "From: Game Shop"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Free coins today only!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "Tap the button to get a thousand free coins. Hurry, the offe"
+  ],
+  "clue1": [
+   24.6,
+   56.4,
+   26.2,
+   7.1,
+   "a thousand free coins"
+  ],
+  "clue2": [
+   58.5,
+   56.4,
+   30.4,
+   7.1,
+   "the offer ends in one hour"
+  ],
+  "count": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   76.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/letters-1b-lt-5-debrief": {
+  "bar": [
+   1.5,
+   0,
+   97,
+   6.7,
+   "Prize Letters · ExplorerMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   0,
+   30.8,
+   6.7,
+   "Prize Letters · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   0,
+   19,
+   6.4,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   0,
+   13,
+   6.6,
+   ""
+  ],
+  "say": [
+   1.5,
+   8,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   21.3,
+   97,
+   36.2,
+   "LetterFrom: Game ShopFree coins today only!Tap the button to"
+  ],
+  "from": [
+   3.6,
+   24.7,
+   92.8,
+   5.9,
+   "LetterFrom: Game Shop"
+  ],
+  "kind1": [
+   3.6,
+   24.7,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   48,
+   92.8,
+   6.2,
+   "Get coins"
+  ],
+  "fromtext": [
+   15.5,
+   25.6,
+   16.1,
+   4.1,
+   "From: Game Shop"
+  ],
+  "subject": [
+   3.6,
+   32.3,
+   92.8,
+   5,
+   "Free coins today only!"
+  ],
+  "body": [
+   3.6,
+   39.1,
+   92.8,
+   7.1,
+   "Tap the button to get a thousand free coins. Hurry, the offe"
+  ],
+  "clue1": [
+   24.6,
+   39.1,
+   26.2,
+   7.1,
+   "a thousand free coins"
+  ],
+  "clue2": [
+   58.5,
+   39.1,
+   30.4,
+   7.1,
+   "the offer ends in one hour"
+  ],
+  "choose": [
+   37.2,
+   99.5,
+   25.6,
+   0.5,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   58.8,
+   97,
+   39.3,
+   "That is the move!A thousand free coins, gone in an hour? Rea"
+  ],
+  "dline1": [
+   3.4,
+   61.7,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   67.7,
+   93.3,
+   10,
+   "A thousand free coins, gone in an hour? Real shops do not ha"
+  ],
+  "dline3": [
+   3.4,
+   79,
+   93.3,
+   10,
+   "Behind this one: the prize-faker, who wants you to tap and t"
+  ],
+  "dline4": [
+   3.4,
+   90.3,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/letters-2-lt-7-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Prize Letters · ProMessage 2 of 7"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   25.7,
+   9.3,
+   "Prize Letters · Pro"
+  ],
+  "pill2": [
+   65.8,
+   14.9,
+   18.7,
+   8.9,
+   "Message 2 of 7"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   36.2,
+   "LetterFrom: Package ServiceYour package is waitingWe could n"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Package Service"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   65.3,
+   92.8,
+   6.2,
+   "Pay now"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   20.7,
+   4.1,
+   "From: Package Service"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Your package is waiting"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "We could not deliver your package. Pay a small fee within tw"
+  ],
+  "clue1": [
+   38.4,
+   56.4,
+   19.5,
+   7.1,
+   "Pay a small fee"
+  ],
+  "clue2": [
+   58.6,
+   56.4,
+   21.5,
+   7.1,
+   "within two hours"
+  ],
+  "count": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   76.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/media-2-md-1-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Fake or Fact? · ProMessage 6 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   25.6,
+   9.3,
+   "Fake or Fact? · Pro"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 6 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   35.3,
+   "PostFrom: Netville News FlashSchool to close forever!BREAKIN"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "PostFrom: Netville News Flash"
+  ],
+  "kind": [
+   3.6,
+   42,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   42.9,
+   23.6,
+   4.1,
+   "From: Netville News Flash"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "School to close forever!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "BREAKING: school closes forever and every student gets free "
+  ],
+  "clue1": [
+   40.7,
+   56.4,
+   44.7,
+   7.1,
+   "every student gets free candy for a year"
+  ],
+  "clue2": [
+   3.8,
+   63.5,
+   34.3,
+   7.1,
+   "Share before they delete this!"
+  ],
+  "count": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   75.3,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/media-2-md-1-debrief": {
+  "bar": [
+   1.5,
+   3.3,
+   97,
+   9.3,
+   "Fake or Fact? · ProMessage 6 of 6"
+  ],
+  "pill1": [
+   1.5,
+   3.3,
+   25.6,
+   9.3,
+   "Fake or Fact? · Pro"
+  ],
+  "pill2": [
+   65.4,
+   3.6,
+   19.1,
+   8.9,
+   "Message 6 of 6"
+  ],
+  "pill3": [
+   85.5,
+   3.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   14,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   27.3,
+   97,
+   35.3,
+   "PostFrom: Netville News FlashSchool to close forever!BREAKIN"
+  ],
+  "from": [
+   3.6,
+   30.7,
+   92.8,
+   5.9,
+   "PostFrom: Netville News Flash"
+  ],
+  "kind": [
+   3.6,
+   30.7,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   31.6,
+   23.6,
+   4.1,
+   "From: Netville News Flash"
+  ],
+  "subject": [
+   3.6,
+   38.3,
+   92.8,
+   5,
+   "School to close forever!"
+  ],
+  "body": [
+   3.6,
+   45.1,
+   92.8,
+   14.2,
+   "BREAKING: school closes forever and every student gets free "
+  ],
+  "clue1": [
+   40.7,
+   45.1,
+   44.7,
+   7.1,
+   "every student gets free candy for a year"
+  ],
+  "clue2": [
+   3.8,
+   52.2,
+   34.3,
+   7.1,
+   "Share before they delete this!"
+  ],
+  "choose": [
+   41.6,
+   99.6,
+   16.8,
+   0.4,
+   "Finish"
+  ],
+  "debrief": [
+   1.5,
+   64,
+   97,
+   34.3,
+   "That is the move!Real news does not beg to be shared before "
+  ],
+  "dline1": [
+   3.4,
+   66.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.8,
+   93.3,
+   10,
+   "Real news does not beg to be shared before deletion, and it "
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/media-2-md-2-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Fake or Fact? · ProMessage 2 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   25.6,
+   9.3,
+   "Fake or Fact? · Pro"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 2 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   36.2,
+   "PostFrom: Prize AdYou won a phone!Tap to claim your free pho"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "PostFrom: Prize Ad"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "kind2": [
+   3.6,
+   65.3,
+   92.8,
+   6.2,
+   "Claim"
+  ],
+  "fromtext": [
+   14.2,
+   42.9,
+   13.2,
+   4.1,
+   "From: Prize Ad"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "You won a phone!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "Tap to claim your free phone. Only the first fifty people ge"
+  ],
+  "clue1": [
+   15.9,
+   56.4,
+   20.6,
+   7.1,
+   "your free phone"
+  ],
+  "clue2": [
+   37.7,
+   56.4,
+   29.7,
+   7.1,
+   "Only the first fifty people"
+  ],
+  "count": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   76.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/media-2-md-3-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Fake or Fact? · ProMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   25.6,
+   9.3,
+   "Fake or Fact? · Pro"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.7,
+   74.5,
+   21.4,
+   8.9,
+   "Clues found: 1 of 1"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "PostFrom: Video ClipThe mayor sings in a fountain!A video sh"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "PostFrom: Video Clip"
+  ],
+  "kind": [
+   3.6,
+   42,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   42.9,
+   14.8,
+   4.1,
+   "From: Video Clip"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "The mayor sings in a fountain!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "A video shows the mayor singing in the fountain. Look closel"
+  ],
+  "clue1": [
+   3.8,
+   61.8,
+   42,
+   7.1,
+   "his mouth moves after the words end"
+  ],
+  "count": [
+   23.7,
+   74.5,
+   21.4,
+   8.9,
+   "Clues found: 1 of 1"
+  ],
+  "choose": [
+   46.1,
+   73.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/media-2-md-3-debrief": {
+  "bar": [
+   1.5,
+   4.9,
+   97,
+   9.3,
+   "Fake or Fact? · ProMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   4.9,
+   25.6,
+   9.3,
+   "Fake or Fact? · Pro"
+  ],
+  "pill2": [
+   65.5,
+   5.1,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   5,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   15.6,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   28.9,
+   97,
+   33.6,
+   "PostFrom: Video ClipThe mayor sings in a fountain!A video sh"
+  ],
+  "from": [
+   3.6,
+   32.2,
+   92.8,
+   5.9,
+   "PostFrom: Video Clip"
+  ],
+  "kind": [
+   3.6,
+   32.2,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   33.1,
+   14.8,
+   4.1,
+   "From: Video Clip"
+  ],
+  "subject": [
+   3.6,
+   39.9,
+   92.8,
+   5,
+   "The mayor sings in a fountain!"
+  ],
+  "body": [
+   3.6,
+   46.6,
+   92.8,
+   12.5,
+   "A video shows the mayor singing in the fountain. Look closel"
+  ],
+  "clue1": [
+   3.8,
+   52.1,
+   42,
+   7.1,
+   "his mouth moves after the words end"
+  ],
+  "choose": [
+   37.2,
+   99.5,
+   25.6,
+   0.5,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   63.8,
+   97,
+   34.3,
+   "That is the move!Some videos are made by computers to look r"
+  ],
+  "dline1": [
+   3.4,
+   66.7,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.7,
+   93.3,
+   10,
+   "Some videos are made by computers to look real — AI fakes. C"
+  ],
+  "dline3": [
+   3.4,
+   84,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.3,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/media-2-md-4-new": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Fake or Fact? · ProMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   25.6,
+   9.3,
+   "Fake or Fact? · Pro"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   22.2,
+   72.8,
+   24.3,
+   8.9,
+   "No clues hiding here"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. If it hides no clues and asks for nothing, it"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   31.9,
+   "PostFrom: Netville NewsNew reading roomThe library opens its"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "PostFrom: Netville News"
+  ],
+  "kind": [
+   3.6,
+   42,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   42.9,
+   18.3,
+   4.1,
+   "From: Netville News"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "New reading room"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   10.9,
+   "The library opens its new reading room on Saturday. The mayo"
+  ],
+  "count": [
+   22.2,
+   72.8,
+   24.3,
+   8.9,
+   "No clues hiding here"
+  ],
+  "choose": [
+   47.5,
+   71.9,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/media-2-md-5-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Fake or Fact? · ProMessage 5 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   25.6,
+   9.3,
+   "Fake or Fact? · Pro"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 5 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.7,
+   82.5,
+   21.4,
+   8.9,
+   "Clues found: 1 of 1"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   41.6,
+   "PostFrom: Which Dragon Are You?Fun quizThree questions and w"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "PostFrom: Which Dragon Are You?"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "kind2": [
+   3.6,
+   70.7,
+   92.8,
+   6.2,
+   "Start quiz"
+  ],
+  "fromtext": [
+   14.2,
+   42.9,
+   26.6,
+   4.1,
+   "From: Which Dragon Are You?"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Fun quiz"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "Three questions and we will name your dragon: your first pet"
+  ],
+  "clue1": [
+   3.8,
+   61.8,
+   62.6,
+   7.1,
+   "your first pet, your mother's first name, and your birthday"
+  ],
+  "count": [
+   23.7,
+   82.5,
+   21.4,
+   8.9,
+   "Clues found: 1 of 1"
+  ],
+  "choose": [
+   46.1,
+   81.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/mix-1b-mx-1-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Magpie Mix · ExplorerMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   29.8,
+   9.3,
+   "Magpie Mix · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 3 of 3"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "LetterFrom: Lucky LettersThe shiny chainPass this letter to "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Lucky Letters"
+  ],
+  "kind": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   17.9,
+   4.1,
+   "From: Lucky Letters"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "The shiny chain"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "Pass this letter to ten friends and a shiny surprise will fi"
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   33.5,
+   7.1,
+   "Pass this letter to ten friends"
+  ],
+  "clue2": [
+   42.2,
+   56.4,
+   33.3,
+   7.1,
+   "a shiny surprise will find you"
+  ],
+  "clue3": [
+   76.2,
+   56.4,
+   11.8,
+   7.1,
+   "tonight"
+  ],
+  "count": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 3 of 3"
+  ],
+  "choose": [
+   46.6,
+   73.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/mix-1b-mx-1-debrief": {
+  "bar": [
+   1.5,
+   0,
+   97,
+   9.3,
+   "Magpie Mix · ExplorerMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   0,
+   29.8,
+   9.3,
+   "Magpie Mix · Explorer"
+  ],
+  "pill2": [
+   65.5,
+   0.2,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   0.1,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   10.7,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   24,
+   97,
+   33.6,
+   "LetterFrom: Lucky LettersThe shiny chainPass this letter to "
+  ],
+  "from": [
+   3.6,
+   27.3,
+   92.8,
+   5.9,
+   "LetterFrom: Lucky Letters"
+  ],
+  "kind": [
+   3.6,
+   27.3,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   28.2,
+   17.9,
+   4.1,
+   "From: Lucky Letters"
+  ],
+  "subject": [
+   3.6,
+   35,
+   92.8,
+   5,
+   "The shiny chain"
+  ],
+  "body": [
+   3.6,
+   41.7,
+   92.8,
+   12.5,
+   "Pass this letter to ten friends and a shiny surprise will fi"
+  ],
+  "clue1": [
+   3.8,
+   41.7,
+   33.5,
+   7.1,
+   "Pass this letter to ten friends"
+  ],
+  "clue2": [
+   42.2,
+   41.7,
+   33.3,
+   7.1,
+   "a shiny surprise will find you"
+  ],
+  "clue3": [
+   76.2,
+   41.7,
+   11.8,
+   7.1,
+   "tonight"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   58.9,
+   97,
+   39.3,
+   "That is the move!The Magpie loves a chain: the trick does it"
+  ],
+  "dline1": [
+   3.4,
+   61.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   67.8,
+   93.3,
+   10,
+   "The Magpie loves a chain: the trick does its own traveling. "
+  ],
+  "dline3": [
+   3.4,
+   79.1,
+   93.3,
+   10,
+   "Behind this one: the forwarder, who wants you to share the t"
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/mix-1b-mx-3-debrief": {
+  "bar": [
+   1.5,
+   2,
+   97,
+   9.3,
+   "Magpie Mix · ExplorerMessage 1 of 6"
+  ],
+  "pill1": [
+   1.5,
+   2,
+   29.8,
+   9.3,
+   "Magpie Mix · Explorer"
+  ],
+  "pill2": [
+   66,
+   2.2,
+   18.5,
+   8.9,
+   "Message 1 of 6"
+  ],
+  "pill3": [
+   85.5,
+   2.1,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   12.7,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   26,
+   97,
+   41.6,
+   "LetterFrom: Account TeamCheck your accountSomeone may have u"
+  ],
+  "from": [
+   3.6,
+   29.3,
+   92.8,
+   5.9,
+   "LetterFrom: Account Team"
+  ],
+  "kind1": [
+   3.6,
+   29.3,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   58.1,
+   92.8,
+   6.2,
+   "Check now"
+  ],
+  "fromtext": [
+   15.5,
+   30.2,
+   18.6,
+   4.1,
+   "From: Account Team"
+  ],
+  "subject": [
+   3.6,
+   37,
+   92.8,
+   5,
+   "Check your account"
+  ],
+  "body": [
+   3.6,
+   43.7,
+   92.8,
+   12.5,
+   "Someone may have used your account. Send us your mailbox key"
+  ],
+  "clue1": [
+   51,
+   43.7,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue2": [
+   73.5,
+   43.7,
+   18.1,
+   7.1,
+   "before Friday"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   68.9,
+   97,
+   29.4,
+   "That is the move!Checking an account never needs your key se"
+  ],
+  "dline1": [
+   3.4,
+   71.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   77.8,
+   93.3,
+   5,
+   "Checking an account never needs your key sent in a letter. T"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the key-hunter, who wants into your mailbox"
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/mix-1b-mx-4-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Magpie Mix · ExplorerMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   29.8,
+   9.3,
+   "Magpie Mix · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   35.3,
+   "PostFrom: News FlashSchool is closing forever!Big news: scho"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "PostFrom: News Flash"
+  ],
+  "kind": [
+   3.6,
+   42,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   42.9,
+   16.2,
+   4.1,
+   "From: News Flash"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "School is closing forever!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   14.2,
+   "Big news: school is closing forever and there will be free c"
+  ],
+  "clue1": [
+   42,
+   56.4,
+   53.2,
+   7.1,
+   "there will be free candy for everyone on Monday"
+  ],
+  "clue2": [
+   3.8,
+   63.5,
+   28.6,
+   7.1,
+   "Tell everyone you know!"
+  ],
+  "count": [
+   23.2,
+   76.2,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   75.3,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/mix-1b-mx-4-debrief": {
+  "bar": [
+   1.5,
+   3.3,
+   97,
+   9.3,
+   "Magpie Mix · ExplorerMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   3.3,
+   29.8,
+   9.3,
+   "Magpie Mix · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   3.6,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   3.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   14,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   27.3,
+   97,
+   35.3,
+   "PostFrom: News FlashSchool is closing forever!Big news: scho"
+  ],
+  "from": [
+   3.6,
+   30.7,
+   92.8,
+   5.9,
+   "PostFrom: News Flash"
+  ],
+  "kind": [
+   3.6,
+   30.7,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   31.6,
+   16.2,
+   4.1,
+   "From: News Flash"
+  ],
+  "subject": [
+   3.6,
+   38.3,
+   92.8,
+   5,
+   "School is closing forever!"
+  ],
+  "body": [
+   3.6,
+   45.1,
+   92.8,
+   14.2,
+   "Big news: school is closing forever and there will be free c"
+  ],
+  "clue1": [
+   42,
+   45.1,
+   53.2,
+   7.1,
+   "there will be free candy for everyone on Monday"
+  ],
+  "clue2": [
+   3.8,
+   52.2,
+   28.6,
+   7.1,
+   "Tell everyone you know!"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   64,
+   97,
+   34.3,
+   "That is the move!Huge news from a sender nobody knows, with "
+  ],
+  "dline1": [
+   3.4,
+   66.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.8,
+   93.3,
+   10,
+   "Huge news from a sender nobody knows, with candy on top. Thi"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/mix-1b-mx-6-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Magpie Mix · ExplorerMessage 6 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   29.8,
+   9.3,
+   "Magpie Mix · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 6 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   82.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   41.6,
+   "LetterFrom: Prize TeamVisitor number 1000!You are visitor nu"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Prize Team"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   70.7,
+   92.8,
+   6.2,
+   "Claim prize"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   15.6,
+   4.1,
+   "From: Prize Team"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Visitor number 1000!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "You are visitor number 1000! Claim your free games console b"
+  ],
+  "clue1": [
+   11.5,
+   56.4,
+   24.6,
+   7.1,
+   "visitor number 1000"
+  ],
+  "clue2": [
+   43.4,
+   56.4,
+   29.2,
+   7.1,
+   "your free games console"
+  ],
+  "count": [
+   23.2,
+   82.5,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   81.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/mix-1b-mx-6-debrief": {
+  "bar": [
+   1.5,
+   0,
+   97,
+   1.3,
+   "Magpie Mix · ExplorerMessage 6 of 6"
+  ],
+  "pill1": [
+   1.5,
+   0,
+   29.8,
+   1.3,
+   "Magpie Mix · Explorer"
+  ],
+  "pill2": [
+   65.4,
+   0,
+   19.1,
+   1.1,
+   "Message 6 of 6"
+  ],
+  "pill3": [
+   85.5,
+   0,
+   13,
+   1.2,
+   ""
+  ],
+  "say": [
+   1.5,
+   2.7,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   16,
+   97,
+   41.6,
+   "LetterFrom: Prize TeamVisitor number 1000!You are visitor nu"
+  ],
+  "from": [
+   3.6,
+   19.3,
+   92.8,
+   5.9,
+   "LetterFrom: Prize Team"
+  ],
+  "kind1": [
+   3.6,
+   19.3,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   48.1,
+   92.8,
+   6.2,
+   "Claim prize"
+  ],
+  "fromtext": [
+   15.5,
+   20.2,
+   15.6,
+   4.1,
+   "From: Prize Team"
+  ],
+  "subject": [
+   3.6,
+   27,
+   92.8,
+   5,
+   "Visitor number 1000!"
+  ],
+  "body": [
+   3.6,
+   33.7,
+   92.8,
+   12.5,
+   "You are visitor number 1000! Claim your free games console b"
+  ],
+  "clue1": [
+   11.5,
+   33.7,
+   24.6,
+   7.1,
+   "visitor number 1000"
+  ],
+  "clue2": [
+   43.4,
+   33.7,
+   29.2,
+   7.1,
+   "your free games console"
+  ],
+  "choose": [
+   41.6,
+   99.6,
+   16.8,
+   0.4,
+   "Finish"
+  ],
+  "debrief": [
+   1.5,
+   58.9,
+   97,
+   39.3,
+   "That is the move!You did not enter anything, so you cannot h"
+  ],
+  "dline1": [
+   3.4,
+   61.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   67.8,
+   93.3,
+   10,
+   "You did not enter anything, so you cannot have won anything."
+  ],
+  "dline3": [
+   3.4,
+   79.1,
+   93.3,
+   10,
+   "Behind this one: the prize-faker, who wants you to tap and t"
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/mix-2-mx-3-debrief": {
+  "bar": [
+   1.5,
+   2,
+   97,
+   9.3,
+   "Magpie Mix · ProMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   2,
+   24.7,
+   9.3,
+   "Magpie Mix · Pro"
+  ],
+  "pill2": [
+   65.5,
+   2.2,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   2.1,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   12.7,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   26,
+   97,
+   41.6,
+   "LetterFrom: Account TeamCheck your accountSomeone may have u"
+  ],
+  "from": [
+   3.6,
+   29.3,
+   92.8,
+   5.9,
+   "LetterFrom: Account Team"
+  ],
+  "kind1": [
+   3.6,
+   29.3,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   58.1,
+   92.8,
+   6.2,
+   "Check now"
+  ],
+  "fromtext": [
+   15.5,
+   30.2,
+   18.6,
+   4.1,
+   "From: Account Team"
+  ],
+  "subject": [
+   3.6,
+   37,
+   92.8,
+   5,
+   "Check your account"
+  ],
+  "body": [
+   3.6,
+   43.7,
+   92.8,
+   12.5,
+   "Someone may have used your account. Send us your mailbox key"
+  ],
+  "clue1": [
+   51,
+   43.7,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue2": [
+   73.5,
+   43.7,
+   18.1,
+   7.1,
+   "before Friday"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   68.9,
+   97,
+   29.4,
+   "That is the move!Checking an account never needs your key se"
+  ],
+  "dline1": [
+   3.4,
+   71.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   77.8,
+   93.3,
+   5,
+   "Checking an account never needs your key sent in a letter. T"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the key-hunter, who wants into your mailbox"
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/mix-2-mx-4-debrief": {
+  "bar": [
+   1.5,
+   3.3,
+   97,
+   9.3,
+   "Magpie Mix · ProMessage 2 of 6"
+  ],
+  "pill1": [
+   1.5,
+   3.3,
+   24.7,
+   9.3,
+   "Magpie Mix · Pro"
+  ],
+  "pill2": [
+   65.5,
+   3.6,
+   19,
+   8.9,
+   "Message 2 of 6"
+  ],
+  "pill3": [
+   85.5,
+   3.4,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   14,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   27.3,
+   97,
+   35.3,
+   "PostFrom: News FlashSchool is closing forever!Big news: scho"
+  ],
+  "from": [
+   3.6,
+   30.7,
+   92.8,
+   5.9,
+   "PostFrom: News Flash"
+  ],
+  "kind": [
+   3.6,
+   30.7,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "fromtext": [
+   14.2,
+   31.6,
+   16.2,
+   4.1,
+   "From: News Flash"
+  ],
+  "subject": [
+   3.6,
+   38.3,
+   92.8,
+   5,
+   "School is closing forever!"
+  ],
+  "body": [
+   3.6,
+   45.1,
+   92.8,
+   14.2,
+   "Big news: school is closing forever and there will be free c"
+  ],
+  "clue1": [
+   42,
+   45.1,
+   53.2,
+   7.1,
+   "there will be free candy for everyone on Monday"
+  ],
+  "clue2": [
+   3.8,
+   52.2,
+   28.6,
+   7.1,
+   "Tell everyone you know!"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   64,
+   97,
+   34.3,
+   "That is the move!Huge news from a sender nobody knows, with "
+  ],
+  "dline1": [
+   3.4,
+   66.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.8,
+   93.3,
+   10,
+   "Huge news from a sender nobody knows, with candy on top. Thi"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/mix-2-mx-6-debrief": {
+  "bar": [
+   1.5,
+   0,
+   97,
+   1.3,
+   "Magpie Mix · ProMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   0,
+   24.7,
+   1.3,
+   "Magpie Mix · Pro"
+  ],
+  "pill2": [
+   65.4,
+   0,
+   19.1,
+   1.1,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   0,
+   13,
+   1.2,
+   ""
+  ],
+  "say": [
+   1.5,
+   2.7,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   16,
+   97,
+   41.6,
+   "LetterFrom: Prize TeamVisitor number 1000!You are visitor nu"
+  ],
+  "from": [
+   3.6,
+   19.3,
+   92.8,
+   5.9,
+   "LetterFrom: Prize Team"
+  ],
+  "kind1": [
+   3.6,
+   19.3,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   48.1,
+   92.8,
+   6.2,
+   "Claim prize"
+  ],
+  "fromtext": [
+   15.5,
+   20.2,
+   15.6,
+   4.1,
+   "From: Prize Team"
+  ],
+  "subject": [
+   3.6,
+   27,
+   92.8,
+   5,
+   "Visitor number 1000!"
+  ],
+  "body": [
+   3.6,
+   33.7,
+   92.8,
+   12.5,
+   "You are visitor number 1000! Claim your free games console b"
+  ],
+  "clue1": [
+   11.5,
+   33.7,
+   24.6,
+   7.1,
+   "visitor number 1000"
+  ],
+  "clue2": [
+   43.4,
+   33.7,
+   29.2,
+   7.1,
+   "your free games console"
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   58.9,
+   97,
+   39.3,
+   "That is the move!You did not enter anything, so you cannot h"
+  ],
+  "dline1": [
+   3.4,
+   61.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   67.8,
+   93.3,
+   10,
+   "You did not enter anything, so you cannot have won anything."
+  ],
+  "dline3": [
+   3.4,
+   79.1,
+   93.3,
+   10,
+   "Behind this one: the prize-faker, who wants you to tap and t"
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-1-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Pressure · ProMessage 1 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   22.2,
+   9.3,
+   "Pressure · Pro"
+  ],
+  "pill2": [
+   66,
+   14.9,
+   18.5,
+   8.9,
+   "Message 1 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 3 of 3"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   33.6,
+   "LetterFrom: The Head TeacherAt onceThis is the head teacher "
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: The Head Teacher"
+  ],
+  "kind": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   21.8,
+   4.1,
+   "From: The Head Teacher"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "At once"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   12.5,
+   "This is the head teacher speaking. Send me your mailbox key "
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   38.5,
+   7.1,
+   "This is the head teacher speaking."
+  ],
+  "clue2": [
+   52.1,
+   56.4,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue3": [
+   74.5,
+   56.4,
+   17.3,
+   7.1,
+   "before lunch"
+  ],
+  "count": [
+   23.2,
+   74.5,
+   22.4,
+   8.9,
+   "Clues found: 3 of 3"
+  ],
+  "choose": [
+   46.6,
+   73.6,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-1-debrief": {
+  "bar": [
+   1.5,
+   4.9,
+   97,
+   9.3,
+   "Pressure · ProMessage 1 of 6"
+  ],
+  "pill1": [
+   1.5,
+   4.9,
+   22.2,
+   9.3,
+   "Pressure · Pro"
+  ],
+  "pill2": [
+   66,
+   5.1,
+   18.5,
+   8.9,
+   "Message 1 of 6"
+  ],
+  "pill3": [
+   85.5,
+   5,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   15.6,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   28.9,
+   97,
+   33.6,
+   "LetterFrom: The Head TeacherAt onceThis is the head teacher "
+  ],
+  "from": [
+   3.6,
+   32.2,
+   92.8,
+   5.9,
+   "LetterFrom: The Head Teacher"
+  ],
+  "kind": [
+   3.6,
+   32.2,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   33.1,
+   21.8,
+   4.1,
+   "From: The Head Teacher"
+  ],
+  "subject": [
+   3.6,
+   39.9,
+   92.8,
+   5,
+   "At once"
+  ],
+  "body": [
+   3.6,
+   46.6,
+   92.8,
+   12.5,
+   "This is the head teacher speaking. Send me your mailbox key "
+  ],
+  "clue1": [
+   3.8,
+   46.6,
+   38.5,
+   7.1,
+   "This is the head teacher speaking."
+  ],
+  "clue2": [
+   52.1,
+   46.6,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue3": [
+   74.5,
+   46.6,
+   17.3,
+   7.1,
+   "before lunch"
+  ],
+  "choose": [
+   37.2,
+   99.5,
+   25.6,
+   0.5,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   63.8,
+   97,
+   34.3,
+   "That is the move!Authority is a costume here: a real head te"
+  ],
+  "dline1": [
+   3.4,
+   66.7,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.7,
+   93.3,
+   10,
+   "Authority is a costume here: a real head teacher never deman"
+  ],
+  "dline3": [
+   3.4,
+   84,
+   93.3,
+   5,
+   "Behind this one: the key-hunter, who wants into your mailbox"
+  ],
+  "dline4": [
+   3.4,
+   90.3,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-2-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Pressure · ProMessage 5 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   22.2,
+   9.3,
+   "Pressure · Pro"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 5 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   36.2,
+   "LetterFrom: SystemDeleted in one hourYour account will be de"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: System"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   65.3,
+   92.8,
+   6.2,
+   "Save my account"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   12.6,
+   4.1,
+   "From: System"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Deleted in one hour"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "Your account will be deleted in one hour unless you send you"
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   44.5,
+   7.1,
+   "Your account will be deleted in one hour"
+  ],
+  "clue2": [
+   60.1,
+   56.4,
+   18.7,
+   7.1,
+   "send your key"
+  ],
+  "count": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   76.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-3-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Pressure · ProMessage 6 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   22.2,
+   9.3,
+   "Pressure · Pro"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 6 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   89.6,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   48.7,
+   "PostFrom: Fan ClubHello, skateboard star!We saw your profile"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "PostFrom: Fan Club"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "kind2": [
+   3.6,
+   77.8,
+   92.8,
+   6.2,
+   "Get prize"
+  ],
+  "fromtext": [
+   14.2,
+   42.9,
+   13.6,
+   4.1,
+   "From: Fan Club"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Hello, skateboard star!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   19.7,
+   "We saw your profile: you love skateboards, your dog is calle"
+  ],
+  "clue1": [
+   3.8,
+   61.8,
+   83.2,
+   7.1,
+   "you love skateboards, your dog is called Biscuit and you tur"
+  ],
+  "clue2": [
+   8.5,
+   68.9,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "count": [
+   23.2,
+   89.6,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   88.7,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-3-debrief": {
+  "say": [
+   1.5,
+   0.4,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   13.8,
+   97,
+   48.7,
+   "PostFrom: Fan ClubHello, skateboard star!We saw your profile"
+  ],
+  "from": [
+   3.6,
+   17.1,
+   92.8,
+   5.9,
+   "PostFrom: Fan Club"
+  ],
+  "kind1": [
+   3.6,
+   17.1,
+   9.8,
+   5.9,
+   "Post"
+  ],
+  "kind2": [
+   3.6,
+   52.9,
+   92.8,
+   6.2,
+   "Get prize"
+  ],
+  "fromtext": [
+   14.2,
+   18,
+   13.6,
+   4.1,
+   "From: Fan Club"
+  ],
+  "subject": [
+   3.6,
+   24.8,
+   92.8,
+   5,
+   "Hello, skateboard star!"
+  ],
+  "body": [
+   3.6,
+   31.5,
+   92.8,
+   19.7,
+   "We saw your profile: you love skateboards, your dog is calle"
+  ],
+  "clue1": [
+   3.8,
+   36.9,
+   83.2,
+   7.1,
+   "you love skateboards, your dog is called Biscuit and you tur"
+  ],
+  "clue2": [
+   8.5,
+   44.1,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "choose": [
+   41.6,
+   99.5,
+   16.8,
+   0.5,
+   "Finish"
+  ],
+  "debrief": [
+   1.5,
+   63.8,
+   97,
+   34.3,
+   "That is the move!Everything it \"knows\" came from a public pr"
+  ],
+  "dline1": [
+   3.4,
+   66.7,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.7,
+   93.3,
+   10,
+   "Everything it \"knows\" came from a public profile. Flattery b"
+  ],
+  "dline3": [
+   3.4,
+   84,
+   93.3,
+   5,
+   "Behind this one: the key-hunter, who wants into your mailbox"
+  ],
+  "dline4": [
+   3.4,
+   90.3,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-4-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Pressure · ProMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   22.2,
+   9.3,
+   "Pressure · Pro"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   69.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   28.2,
+   "ChatFrom: The Cool GroupGroup chatPost a silly photo of your"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "ChatFrom: The Cool Group"
+  ],
+  "kind": [
+   3.6,
+   42,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   42.9,
+   19.5,
+   4.1,
+   "From: The Cool Group"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Group chat"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "Post a silly photo of your friend, or leave the group. Every"
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   55.4,
+   7.1,
+   "Post a silly photo of your friend, or leave the group."
+  ],
+  "clue2": [
+   59.9,
+   56.4,
+   24.6,
+   7.1,
+   "Everyone will laugh."
+  ],
+  "count": [
+   23.2,
+   69.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   68.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-4-debrief": {
+  "bar": [
+   1.5,
+   10.4,
+   97,
+   9.3,
+   "Pressure · ProMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   10.4,
+   22.2,
+   9.3,
+   "Pressure · Pro"
+  ],
+  "pill2": [
+   65.4,
+   10.7,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   10.6,
+   13,
+   9.1,
+   ""
+  ],
+  "say": [
+   1.5,
+   21.1,
+   97,
+   12,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   34.4,
+   97,
+   28.2,
+   "ChatFrom: The Cool GroupGroup chatPost a silly photo of your"
+  ],
+  "from": [
+   3.6,
+   37.8,
+   92.8,
+   5.9,
+   "ChatFrom: The Cool Group"
+  ],
+  "kind": [
+   3.6,
+   37.8,
+   10,
+   5.9,
+   "Chat"
+  ],
+  "fromtext": [
+   14.4,
+   38.7,
+   19.5,
+   4.1,
+   "From: The Cool Group"
+  ],
+  "subject": [
+   3.6,
+   45.4,
+   92.8,
+   5,
+   "Group chat"
+  ],
+  "body": [
+   3.6,
+   52.2,
+   92.8,
+   7.1,
+   "Post a silly photo of your friend, or leave the group. Every"
+  ],
+  "clue1": [
+   3.8,
+   52.2,
+   55.4,
+   7.1,
+   "Post a silly photo of your friend, or leave the group."
+  ],
+  "clue2": [
+   59.9,
+   52.2,
+   24.6,
+   7.1,
+   "Everyone will laugh."
+  ],
+  "choose": [
+   37.2,
+   99.6,
+   25.6,
+   0.4,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   64,
+   97,
+   34.3,
+   "That is the move!A dare that spends a friend is never a fair"
+  ],
+  "dline1": [
+   3.4,
+   66.8,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   72.8,
+   93.3,
+   10,
+   "A dare that spends a friend is never a fair price for a grou"
+  ],
+  "dline3": [
+   3.4,
+   84.1,
+   93.3,
+   5,
+   "Behind this one: the giggler, who wants a big reaction. The "
+  ],
+  "dline4": [
+   3.4,
+   90.4,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/pressure-2-pr-6-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Pressure · ProMessage 3 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   22.2,
+   9.3,
+   "Pressure · Pro"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 3 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   36.2,
+   "LetterFrom: Shop BotOnly two left!Only two left at this pric"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Shop Bot"
+  ],
+  "kind1": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "kind2": [
+   3.6,
+   65.3,
+   92.8,
+   6.2,
+   "Pay now"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   14,
+   4.1,
+   "From: Shop Bot"
+  ],
+  "subject": [
+   3.6,
+   49.6,
+   92.8,
+   5,
+   "Only two left!"
+  ],
+  "body": [
+   3.6,
+   56.4,
+   92.8,
+   7.1,
+   "Only two left at this price! Pay in the next five minutes or"
+  ],
+  "clue1": [
+   3.8,
+   56.4,
+   17.3,
+   7.1,
+   "Only two left"
+  ],
+  "clue2": [
+   34.4,
+   56.4,
+   32.3,
+   7.1,
+   "Pay in the next five minutes"
+  ],
+  "count": [
+   23.2,
+   77.1,
+   22.4,
+   8.9,
+   "Clues found: 2 of 2"
+  ],
+  "choose": [
+   46.6,
+   76.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/senders-2-sd-1-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Faked Senders · ProMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   27.6,
+   9.3,
+   "Faked Senders · Pro"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.1,
+   90.4,
+   22.5,
+   8.9,
+   "Clues found: 4 of 4"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   49.5,
+   "LetterFrom: Post OfficeReal address: post-office@freemail-bo"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Post Office"
+  ],
+  "kind": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   15.7,
+   4.1,
+   "From: Post Office"
+  ],
+  "addr": [
+   3.8,
+   49.6,
+   92.5,
+   7.1,
+   "Real address: post-office@freemail-box"
+  ],
+  "subject": [
+   3.6,
+   58.5,
+   92.8,
+   5,
+   "Your mailbox key expired"
+  ],
+  "body": [
+   3.6,
+   65.3,
+   92.8,
+   7.1,
+   "Your mailbox key has expired. Send us your mailbox key using"
+  ],
+  "clue1": [
+   3.8,
+   49.6,
+   92.5,
+   7.1,
+   "Real address: post-office@freemail-box"
+  ],
+  "clue2": [
+   41.6,
+   65.3,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue3": [
+   81.1,
+   65.3,
+   10.3,
+   7.1,
+   "today"
+  ],
+  "clue4": [
+   5.3,
+   76,
+   28.5,
+   7.1,
+   "Renew key → netville-post"
+  ],
+  "link": [
+   3.6,
+   74.2,
+   92.8,
+   10.7,
+   "Renew key → netville-post"
+  ],
+  "count": [
+   23.1,
+   90.4,
+   22.5,
+   8.9,
+   "Clues found: 4 of 4"
+  ],
+  "choose": [
+   46.6,
+   89.5,
+   30.3,
+   10.5,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/senders-2-sd-1-debrief": {
+  "say": [
+   1.5,
+   0,
+   97,
+   5.3,
+   "Here is what that message was doing."
+  ],
+  "card": [
+   1.5,
+   6.7,
+   97,
+   49.5,
+   "LetterFrom: Post OfficeReal address: post-office@freemail-bo"
+  ],
+  "from": [
+   3.6,
+   10,
+   92.8,
+   5.9,
+   "LetterFrom: Post Office"
+  ],
+  "kind": [
+   3.6,
+   10,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   10.9,
+   15.7,
+   4.1,
+   "From: Post Office"
+  ],
+  "addr": [
+   3.8,
+   17.6,
+   92.5,
+   7.1,
+   "Real address: post-office@freemail-box"
+  ],
+  "subject": [
+   3.6,
+   26.5,
+   92.8,
+   5,
+   "Your mailbox key expired"
+  ],
+  "body": [
+   3.6,
+   33.3,
+   92.8,
+   7.1,
+   "Your mailbox key has expired. Send us your mailbox key using"
+  ],
+  "clue1": [
+   3.8,
+   17.6,
+   92.5,
+   7.1,
+   "Real address: post-office@freemail-box"
+  ],
+  "clue2": [
+   41.6,
+   33.3,
+   21.8,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue3": [
+   81.1,
+   33.3,
+   10.3,
+   7.1,
+   "today"
+  ],
+  "clue4": [
+   5.3,
+   44,
+   28.5,
+   7.1,
+   "Renew key → netville-post"
+  ],
+  "link": [
+   3.6,
+   42.2,
+   92.8,
+   10.7,
+   "Renew key → netville-post"
+  ],
+  "choose": [
+   37.2,
+   99.5,
+   25.6,
+   0.5,
+   "Next message"
+  ],
+  "debrief": [
+   1.5,
+   57.5,
+   97,
+   40.7,
+   "That is the move!The name says Post Office, but the real add"
+  ],
+  "dline1": [
+   3.4,
+   60.4,
+   93.3,
+   4.7,
+   "That is the move!"
+  ],
+  "dline2": [
+   3.4,
+   66.4,
+   93.3,
+   10,
+   "The name says Post Office, but the real address is a freemai"
+  ],
+  "dline3": [
+   3.4,
+   77.7,
+   93.3,
+   5,
+   "Behind this one: the key-hunter, who wants into your mailbox"
+  ],
+  "dline4": [
+   3.4,
+   84,
+   93.3,
+   5,
+   "The button said netville-post, but it really went to shiny-t"
+  ],
+  "dline5": [
+   3.4,
+   90.3,
+   93.3,
+   5,
+   "You found every clue. Sharp eyes!"
+  ]
+ },
+ "csq/trick-inbox/senders-2-sd-1-new": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Faked Senders · ProMessage 4 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   27.6,
+   9.3,
+   "Faked Senders · Pro"
+  ],
+  "pill2": [
+   65.4,
+   14.9,
+   19.1,
+   8.9,
+   "Message 4 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.1,
+   90.4,
+   22.5,
+   8.9,
+   "Clues found: 0 of 4"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   49.5,
+   "LetterFrom: Post OfficeReal address: post-office@freemail-bo"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Post Office"
+  ],
+  "kind": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   15.7,
+   4.1,
+   "From: Post Office"
+  ],
+  "addr": [
+   3.8,
+   49.6,
+   92.5,
+   7.1,
+   "Real address: post-office@freemail-box"
+  ],
+  "subject": [
+   3.6,
+   58.5,
+   92.8,
+   5,
+   "Your mailbox key expired"
+  ],
+  "body": [
+   3.6,
+   65.3,
+   92.8,
+   7.1,
+   "Your mailbox key has expired. Send us your mailbox key using"
+  ],
+  "clue1": [
+   3.8,
+   49.6,
+   92.5,
+   7.1,
+   "Real address: post-office@freemail-box"
+  ],
+  "clue2": [
+   41.6,
+   65.3,
+   19.3,
+   7.1,
+   "your mailbox key"
+  ],
+  "clue3": [
+   78.6,
+   65.3,
+   7.8,
+   7.1,
+   "today"
+  ],
+  "clue4": [
+   5.3,
+   76,
+   26,
+   7.1,
+   "Renew key → netville-post"
+  ],
+  "link": [
+   3.6,
+   74.2,
+   92.8,
+   10.7,
+   "Renew key → netville-post"
+  ],
+  "count": [
+   23.1,
+   90.4,
+   22.5,
+   8.9,
+   "Clues found: 0 of 4"
+  ],
+  "choose": [
+   46.6,
+   89.5,
+   30.3,
+   10.5,
+   "Choose what to do"
+  ]
+ },
+ "csq/trick-inbox/senders-2-sd-3-all": {
+  "bar": [
+   1.5,
+   14.7,
+   97,
+   9.3,
+   "Faked Senders · ProMessage 2 of 6"
+  ],
+  "pill1": [
+   1.5,
+   14.7,
+   27.6,
+   9.3,
+   "Faked Senders · Pro"
+  ],
+  "pill2": [
+   65.5,
+   14.9,
+   19,
+   8.9,
+   "Message 2 of 6"
+  ],
+  "pill3": [
+   85.5,
+   14.8,
+   13,
+   9.1,
+   ""
+  ],
+  "pill4": [
+   23.7,
+   80.1,
+   21.4,
+   8.9,
+   "Clues found: 1 of 1"
+  ],
+  "say": [
+   1.5,
+   25.3,
+   97,
+   12,
+   "A new message. Tap every clue you can find — then choose wha"
+  ],
+  "card": [
+   1.5,
+   38.7,
+   97,
+   39.2,
+   "LetterFrom: Your TeacherReal address: teacher@shiny-mail-box"
+  ],
+  "from": [
+   3.6,
+   42,
+   92.8,
+   5.9,
+   "LetterFrom: Your Teacher"
+  ],
+  "kind": [
+   3.6,
+   42,
+   11.2,
+   5.9,
+   "Letter"
+  ],
+  "fromtext": [
+   15.5,
+   42.9,
+   17.5,
+   4.1,
+   "From: Your Teacher"
+  ],
+  "addr": [
+   3.6,
+   49.6,
+   92.8,
+   3.8,
+   "Real address: teacher@shiny-mail-box"
+  ],
+  "subject": [
+   3.6,
+   55.2,
+   92.8,
+   5,
+   "Homework check"
+  ],
+  "body": [
+   3.6,
+   61.9,
+   92.8,
+   12.5,
+   "This is your teacher. For the class record, reply with your "
+  ],
+  "clue1": [
+   3.8,
+   67.4,
+   46,
+   7.1,
+   "your home address and your mailbox key"
+  ],
+  "count": [
+   23.7,
+   80.1,
+   21.4,
+   8.9,
+   "Clues found: 1 of 1"
+  ],
+  "choose": [
+   46.1,
+   79.2,
+   30.3,
+   10.7,
+   "Choose what to do"
+  ]
+ }
+}

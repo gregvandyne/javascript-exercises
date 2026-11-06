@@ -10,25 +10,31 @@
    "title": "A sender in a costume",
    "text": "Pim sorts a message that claims to be from the school office. The name on it looks right, but a claimed sender is a costume. That faking is called spoofing, and the real address tells the truth.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "img": "csq/trick-inbox/senders-2-sd-3-all",
+   "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
+   "view": [
+    0.0,
+    4.0,
+    99.4,
+    88.4
+   ],
    "focus": [
     {
-     "cue": "The name says Your bank; the badge says unknown sender",
+     "cue": "The name says Your Teacher",
      "box": [
-      13.0,
-      29.8,
-      22.4,
-      3.4
+      15.5,
+      42.9,
+      17.5,
+      4.1
      ]
     },
     {
-     "cue": "A claimed sender is a costume: read the whole card",
+     "cue": "The real address tells the truth",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.6,
+      49.6,
+      92.8,
+      3.8
      ]
     }
    ]
@@ -44,25 +50,31 @@
     "The two do not match",
     "Do not tap; verify another way"
    ],
-   "img": "csq/packet-post/tricks-2-bank",
-   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+   "img": "csq/trick-inbox/senders-2-sd-1-all",
+   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "view": [
+    0.0,
+    11.6,
+    99.4,
+    88.4
+   ],
    "focus": [
     {
-     "cue": "A sender can write any name on an envelope",
+     "cue": "The button says one name",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      3.6,
+      74.2,
+      92.8,
+      10.7
      ]
     },
     {
-     "cue": "Says the bank, but the badge says unknown sender",
+     "cue": "The real address goes somewhere else",
      "box": [
-      54.0,
-      42.5,
-      17.4,
-      11.0
+      3.8,
+      49.6,
+      92.5,
+      7.1
      ]
     }
    ]
@@ -71,25 +83,31 @@
    "title": "Aimed at one person",
    "text": "Spear phishing uses the same trick recipe, but built for one person. It may use your name, your club or a recent post, then add a rush and a request.",
    "art": "people",
-   "img": "csq/packet-post/tricks-2-profile",
-   "alt": "A fan club card that knows too much: your dog's name and your birthday, learned from your public profile.",
+   "img": "csq/trick-inbox/pressure-2-pr-3-all",
+   "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
+   "view": [
+    0.0,
+    20.0,
+    90.0,
+    80.0
+   ],
    "focus": [
     {
-     "cue": "Built for one person: it knows your dog's name",
+     "cue": "Built for one person, from their own posts",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      26.0
+      3.8,
+      61.8,
+      83.2,
+      7.1
      ]
     },
     {
-     "cue": "Knows things from your public profile",
+     "cue": "Then the request: your key",
      "box": [
-      54.0,
-      42.5,
-      34.4,
-      16.6
+      8.5,
+      68.9,
+      21.8,
+      7.1
      ]
     }
    ]
@@ -100,9 +118,15 @@
    "art": "envelope",
    "img": "csq/packet-post/tricks-2-parcel",
    "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+   "view": [
+    5.0,
+    3.9,
+    86.4,
+    76.8
+   ],
    "focus": [
     {
-     "cue": "An unexpected parcel, with a pay-now button",
+     "cue": "An unexpected package, with a pay-now button",
      "box": [
       8.0,
       27.9,
@@ -125,25 +149,22 @@
    "title": "Reporting protects everyone",
    "text": "Reporting a phishing message is a Defender act. One report can warn the whole school and stop the same costume reaching your friends.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-2-bank",
-   "alt": "A trick wearing a bank's name: for your safety, it says, confirm your mailbox key and your birthday.",
+   "img": "csq/trick-inbox/senders-2-sd-1-debrief",
+   "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "The badge shows whether the post office really knows them",
+     "cue": "Report it, and the faked sender is blocked",
      "box": [
-      22.7,
-      29.8,
-      12.7,
-      3.4
-     ]
-    },
-    {
-     "cue": "Safe, trick, or ask a trusted adult: report it",
-     "box": [
-      54.0,
-      63.6,
-      34.4,
-      6.6
+      3.4,
+      66.4,
+      93.3,
+      10.0
      ]
     }
    ]
@@ -175,18 +196,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Spot the Trick: the same Pro cards you checked in step 3.3, so this step is already earned when the game opens. For every message, check the real sender before you judge it.",
+   "text": "Open Trick Inbox at Faked Senders and sort all 6 messages. For every message, check the real sender before you judge it.",
    "art": "trophy",
-   "img": "csq/packet-post/tricks-2-fake",
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
+   "img": "csq/trick-inbox/senders-2-sd-1-new",
+   "alt": "Trick Inbox, Faked Senders: a letter from Post Office says your key expired. Its real address is a freemail box.",
+   "view": [
+    0.0,
+    5.7,
+    99.3,
+    88.3
+   ],
    "focus": [
     {
-     "cue": "Check the real sender before you judge each card",
+     "cue": "Play Faked Senders: check the real address first",
      "box": [
-      13.0,
-      29.8,
-      22.4,
-      3.4
+      3.8,
+      42.9,
+      92.5,
+      13.8
      ]
     }
    ]
@@ -198,8 +225,8 @@
   "cd-2-4.1-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "tricks",
-  "params": "chapter=tricks&band=2&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "senders",
+  "params": "chapter=senders&band=2&lock=1"
  }
 }

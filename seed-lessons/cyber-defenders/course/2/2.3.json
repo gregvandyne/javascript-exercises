@@ -19,14 +19,20 @@
    ],
    "img": "csq/packet-post/ciphers-2-shift",
    "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code.",
+   "view": [
+    19.0,
+    33.1,
+    72.3,
+    66.5
+   ],
    "focus": [
     {
-     "cue": "Delivered: a scrambled word, read and sent",
+     "cue": "A scrambled word, DSSOH, and its reading, APPLE",
      "box": [
-      32.8,
-      17.0,
-      34.4,
-      61.2
+      55.3,
+      38.1,
+      33.0,
+      18.9
      ]
     },
     {
@@ -46,6 +52,12 @@
    "art": "chip",
    "img": "csq/packet-post/ciphers-2-brute",
    "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher.",
+   "view": [
+    12.4,
+    21.1,
+    78.9,
+    70.1
+   ],
    "focus": [
     {
      "cue": "An unknown shift: turn one step at a time",
@@ -73,6 +85,12 @@
    "art": "pixel",
    "img": "csq/packet-post/ciphers-2-hide",
    "alt": "Another cipher level on the wheel: scrambling with a key, which is stronger than merely hiding a message.",
+   "view": [
+    19.9,
+    22.4,
+    71.4,
+    63.5
+   ],
    "focus": [
     {
      "cue": "A key card swaps every letter for a partner",
@@ -100,6 +118,12 @@
    "art": "envelope",
    "img": "csq/packet-post/ciphers-2-lockbox",
    "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
+   "view": [
+    5.3,
+    17.3,
+    51.5,
+    45.8
+   ],
    "focus": [
     {
      "cue": "The two-key lockbox: only the owner holds the opening key",
@@ -127,6 +151,12 @@
    "art": "mask",
    "img": "csq/packet-post/ciphers-2-crack",
    "alt": "Crack it by counting: a scrambled message, the Caesar wheel, and a button that counts how often letters appear.",
+   "view": [
+    27.8,
+    35.6,
+    63.5,
+    64.0
+   ],
    "focus": [
     {
      "cue": "A long scramble, and the reading it makes so far",
@@ -179,6 +209,12 @@
    "art": "trophy",
    "img": "csq/packet-post/ciphers-2-key",
    "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open.",
+   "view": [
+    8.0,
+    26.3,
+    45.4,
+    64.5
+   ],
    "focus": [
     {
      "cue": "Unscramble each message with the wheel",

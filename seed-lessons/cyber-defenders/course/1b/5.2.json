@@ -10,25 +10,31 @@
    "title": "A mean message lands",
    "text": "One afternoon a mean message lands in the class game chat, mocking a player's drawing. It is only a few words, but everyone who reads it feels smaller.",
    "art": "screen",
-   "img": "csq/would-you-rather/online-comments-1b",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "img": "csq/trick-inbox/chat-1b-ch-3-all",
+   "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
+   "view": [
+    0.0,
+    15.1,
+    95.5,
+    84.9
+   ],
    "focus": [
     {
-     "cue": "Anyone can comment on this page",
+     "cue": "A mean message mocks a player",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      56.4,
+      47.3,
+      7.1
      ]
     },
     {
-     "cue": "Only your class can comment on this one",
+     "cue": "And it wants the whole school to see",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      51.8,
+      56.4,
+      40.7,
+      7.1
      ]
     }
    ]
@@ -37,25 +43,22 @@
    "title": "Kind words help",
    "text": "Kind words help more than you think. A kind word to the player who was mocked tells them the chat is not all against them, and it costs you nothing.",
    "art": "people",
-   "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+   "img": "csq/trick-inbox/chat-1b-ch-3-debrief",
+   "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
+   "view": [
+    0.0,
+    11.4,
+    99.7,
+    88.6
+   ],
    "focus": [
     {
-     "cue": "Everyone online can see the drawing",
+     "cue": "A kind word to Pip helps more than any reply",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Only family can see it",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.4,
+      67.7,
+      93.3,
+      14.9
      ]
     }
    ]
@@ -64,25 +67,31 @@
    "title": "Be an upstander",
    "text": "An upstander stands up for the person, kindly and safely. Never join in, never laugh along, and never forward a mean message. Forwarding spreads the hurt to new screens.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-1b-card",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "img": "csq/escape-the-post-office/moves-1b",
+   "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "A message card to judge before anyone replies",
+     "cue": "An unkind message is being passed along",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      3.4,
+      40.7,
+      93.3,
+      9.1
      ]
     },
     {
-     "cue": "Never join in: name its clues instead",
+     "cue": "Never forward it: stop, do not pass it on",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      17.4
+      75.0,
+      66.0,
+      23.5,
+      12.9
      ]
     }
    ]
@@ -100,6 +109,12 @@
    ],
    "img": "csq/would-you-rather/online-delete-1b",
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Delete the message if you can",
@@ -125,25 +140,31 @@
    "title": "Save it and tell",
    "text": "The move that always works: save the message, then tell a trusted adult. Saving it means the adult can see exactly what was said, and telling is never telling tales.",
    "art": "envelope",
-   "img": "csq/packet-post/tricks-1b-next",
-   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "img": "csq/escape-the-post-office/moves-1b-two",
+   "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
+   "view": [
+    0.0,
+    36.2,
+    68.9,
+    61.2
+   ],
    "focus": [
     {
-     "cue": "Save the message: a real note looks like this",
+     "cue": "Stop, then save it: keep the message",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
+      2.6,
+      56.0,
+      52.3,
+      6.7
      ]
     },
     {
-     "cue": "Read it carefully, then tell a trusted adult",
+     "cue": "Then tell a trusted adult",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      34.2,
+      66.0,
+      31.7,
+      11.6
      ]
     }
    ]
@@ -175,18 +196,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. Your teacher may lead this one, and that is a good thing.",
+   "text": "Open Escape the Post Office at Lock 5: Five Moves. A mean message is going around the class chat: put the five moves in order. Your teacher may lead this one.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-comments-1b",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "img": "csq/escape-the-post-office/moves-1b-four",
+   "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
+   "view": [
+    0.0,
+    9.8,
+    100.0,
+    90.2
+   ],
    "focus": [
     {
-     "cue": "Talk through each choice first",
+     "cue": "Play Five Moves: put the moves in order",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      1.5,
+      54.0,
+      97.0,
+      17.8
      ]
     }
    ]
@@ -198,8 +225,8 @@
   "cd-1b-5.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": ""
+  "slug": "escape-the-post-office",
+  "chapter": "five-moves",
+  "params": "chapter=five-moves&band=1b&lock=1"
  }
 }

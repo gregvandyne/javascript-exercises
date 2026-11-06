@@ -10,25 +10,22 @@
    "title": "Rules on the wall",
    "text": "Inside the post office door hangs a board of rules anyone may read. The rules say what post staff may open, what they must never open, and who to tell when something is wrong.",
    "art": "table",
-   "img": "csq/packet-post/protocols-1b-key",
-   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
+   "img": "csq/packet-post/locks-1b-habits",
+   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
+   "view": [
+    50.3,
+    28.0,
+    40.0,
+    35.6
+   ],
    "focus": [
     {
-     "cue": "Three packets on the road to Grandma's House",
+     "cue": "Rules on the wall: safe habit or risky habit?",
      "box": [
-      9.8,
-      46.9,
-      39.7,
-      23.4
-     ]
-    },
-    {
-     "cue": "The rules say what staff may open, and what they must never open",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      54.1,
+      42.4,
+      32.5,
+      6.7
      ]
     }
    ]
@@ -37,25 +34,31 @@
    "title": "School rules and app rules",
    "text": "Your school has internet rules, and every app has rules too, called its agreement. Agreements say what may be posted, what is never allowed, and what happens when a rule is broken.",
    "art": "pencil",
-   "img": "csq/packet-post/locks-1b-sort",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
+   "img": "csq/would-you-rather/online-location-1b",
+   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
-     "cue": "Where you live: a fact with rules around it",
+     "cue": "A free game that always sees where you are",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      7.2,
+      17.1,
+      40.9,
+      66.6
      ]
     },
     {
-     "cue": "Share, or keep private? Agreements draw the line",
+     "cue": "Its agreement says what it may collect",
      "box": [
-      54.1,
-      44.5,
-      25.8,
-      6.6
+      51.9,
+      17.1,
+      40.9,
+      66.6
      ]
     }
    ]
@@ -66,6 +69,12 @@
    "art": "shield",
    "img": "csq/would-you-rather/online-credit-1b",
    "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "Use a picture, credit its maker",
@@ -99,6 +108,12 @@
    ],
    "img": "csq/packet-post/protocols-1b-twice",
    "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
+   "view": [
+    46.9,
+    31.3,
+    40.0,
+    35.6
+   ],
    "focus": [
     {
      "cue": "Extra copies wait in the inbox, then are binned",
@@ -124,8 +139,14 @@
    "title": "A rule broken against you",
    "text": "If someone breaks the rules against you, that is never your fault and never yours to fix alone. A broken rule is a reason to tell a trusted adult, who must act.",
    "art": "people",
-   "img": "csq/would-you-rather/online-1b-first",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
+   "img": "csq/would-you-rather/online-comments-1b",
+   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
      "cue": "A page where anyone can comment",
@@ -137,7 +158,7 @@
      ]
     },
     {
-     "cue": "A page where only your class can",
+     "cue": "A rule broken here is never yours to fix alone",
      "box": [
       51.9,
       17.1,
@@ -174,13 +195,19 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Play Would You Rather: choose the Online topic and play Online: share or keep. For each choice, name the rule that helps you decide.",
+   "text": "Open Would You Rather at Online: share or keep. For each choice, name the rule that helps you decide.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-credit-1b",
-   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
+   "img": "csq/would-you-rather/online-name-1b",
+   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+   "view": [
+    4.2,
+    9.7,
+    91.6,
+    81.4
+   ],
    "focus": [
     {
-     "cue": "Name the rule that helps you decide",
+     "cue": "Play Online: name the rule for each choice",
      "box": [
       7.2,
       17.1,
@@ -199,6 +226,6 @@
  "game": {
   "slug": "would-you-rather",
   "chapter": "online",
-  "params": ""
+  "params": "topic=online&lock=1"
  }
 }
