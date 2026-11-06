@@ -102,8 +102,17 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .scene .mark.lb,.scene .mark.lr{border-inline-start-width:6px}
 .scene .mark.lb,.scene .mark.lr,.scene .mark.c{margin-inline-start:-2px}
 .tug{position:absolute;inset:0;transform:translateX(calc(var(--p,0) * -1 * var(--S)));transition:transform .35s cubic-bezier(.3,1.25,.5,1)}
-.tug .rope{position:absolute;left:calc(50% - var(--gap) - var(--cw) * var(--rs));right:calc(50% - var(--gap) - var(--cw) * var(--rs));top:calc(var(--gy) - var(--ch) * .42);height:max(6px,1.4cqh);transform:translateY(-50%);border-radius:4px;
-  background:repeating-linear-gradient(60deg,#C8913E 0 6px,#E9C178 6px 12px);border:2px solid #6B4A1E}
+.tug .rope{position:absolute;left:calc(50% - var(--gap) - var(--cw) * var(--rs));right:calc(50% - var(--gap) - var(--cw) * var(--rs));top:calc(var(--gy) - var(--ch) * .42);height:max(6px,1.4cqh);transform:translateY(-50%);border-radius:999px;
+  background:repeating-linear-gradient(60deg,#B07A30 0 3px,#E9C178 3px 7px,#D3A257 7px 10px);border:2px solid #6B4A1E;box-shadow:inset 0 -2px 0 rgba(107,74,30,.35)}
+/* the loose ends: past the last puller on each side the rope hangs down and lies on the grass, like a real rope */
+.tug .tail{position:absolute;top:calc(var(--gy) - var(--ch) * .42);width:min(calc(var(--ch) * .36),calc(50% - var(--gap) - var(--cw) * var(--rs) - 2cqw));height:calc(var(--ch) * .4);overflow:visible;pointer-events:none}
+.tug .tail.l{right:calc(50% + var(--gap) + var(--cw) * var(--rs) - 3px)}
+.tug .tail.r{left:calc(50% + var(--gap) + var(--cw) * var(--rs) - 3px);transform:scaleX(-1)}
+.tug .tail path{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.tug .tail .o{stroke:#6B4A1E;stroke-width:calc(max(6px,1.4cqh) + 4px)}
+.tug .tail .i{stroke:#E9C178;stroke-width:max(6px,1.4cqh)}
+.tug .tail .s{stroke:#B07A30;stroke-width:max(6px,1.4cqh);stroke-dasharray:3 6;stroke-linecap:butt}
+.tug .tail .k{stroke:#6B4A1E;stroke-width:calc(max(6px,1.4cqh) + 6px);stroke-linecap:round}
 .tug .flag{position:absolute;left:50%;top:calc(var(--gy) - var(--ch) * .42 - var(--ch) * .36);width:4px;height:calc(var(--ch) * .38);margin-left:-2px;background:#1D2340;border-radius:2px}
 .tug .flag::after{content:'';position:absolute;left:4px;top:0;width:calc(var(--ch) * .22);height:calc(var(--ch) * .15);background:#FFC83D;border:2px solid #1D2340;border-radius:0 6px 6px 0}
 .crew{position:absolute;inset:0}
@@ -821,6 +830,13 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     testState: function () { return testState(); },
     on: { start: function (w) { begin(w); }, title: function () { hide(); }, results: function () { hide(); } },
   });
+  /** The rope's two loose ends: from where the last puller holds it, it droops to the grass and lies there a little. */
+  var TAIL = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">' +
+    '<path class="o" d="M100 0C70 0 52 6 42 30S30 96 6 98"/><path class="i" d="M100 0C70 0 52 6 42 30S30 96 6 98"/>' +
+    '<path class="s" d="M100 0C70 0 52 6 42 30S30 96 6 98"/><path class="k" d="M10 98L4 98"/></svg>';
+  function ropeEnds(tug) {
+    ['l', 'r'].forEach(function (side) { var t = el('div', 'tail ' + side); t.innerHTML = TAIL; tug.appendChild(t); });
+  }
   /** The rope between the two crews behind the title (drawn over the kit's world). */
   function titleRope(w) {
     if (rope) return;
@@ -829,7 +845,12 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
       var a = ww.find('b2'), b = ww.find('r2'); if (!a || !b) return;
       var y = (ww.hero ? ww.hero.y : a.y) - ww.cell * 0.62, x0 = a.x - ww.cell * 0.6, x1 = b.x + ww.cell * 0.6;
       ctx.save(); ctx.lineCap = 'round';
-      ctx.strokeStyle = '#6B4A1E'; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(x0, y); ctx.quadraticCurveTo((x0 + x1) / 2, y + 6, x1, y); ctx.stroke();
+      // the taut middle, then each loose end drooping to the ground (gy) and lying there a little
+      var gy = (ww.hero ? ww.hero.y : a.y) - ww.cell * 0.04, d = ww.cell * 0.62;
+      ctx.beginPath(); ctx.moveTo(x0, y); ctx.quadraticCurveTo((x0 + x1) / 2, y + 6, x1, y);
+      ctx.moveTo(x0, y); ctx.bezierCurveTo(x0 - d * 0.3, y, x0 - d * 0.5, y + (gy - y) * 0.3, x0 - d * 0.58, gy - (gy - y) * 0.3); ctx.quadraticCurveTo(x0 - d * 0.66, gy, x0 - d, gy);
+      ctx.moveTo(x1, y); ctx.bezierCurveTo(x1 + d * 0.3, y, x1 + d * 0.5, y + (gy - y) * 0.3, x1 + d * 0.58, gy - (gy - y) * 0.3); ctx.quadraticCurveTo(x1 + d * 0.66, gy, x1 + d, gy);
+      ctx.strokeStyle = '#6B4A1E'; ctx.lineWidth = 9; ctx.stroke();
       ctx.strokeStyle = '#E9C178'; ctx.lineWidth = 5; ctx.stroke();
       var mx = (x0 + x1) / 2; ctx.fillStyle = '#1D2340'; ctx.fillRect(mx - 2, y - 30, 4, 32);
       ctx.fillStyle = '#FFC83D'; ctx.strokeStyle = '#1D2340'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx + 2, y - 30); ctx.lineTo(mx + 22, y - 24); ctx.lineTo(mx + 2, y - 17); ctx.closePath(); ctx.fill(); ctx.stroke();
@@ -971,7 +992,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     bar.append(pause, board, again); mid.appendChild(bar);
     var scene = el('div', 'scene'); scene.setAttribute('aria-hidden', 'true'); scene.dir = 'ltr';
     ['bg', 'sun', 'cloud c1', 'cloud c2', 'mark lb', 'mark c', 'mark lr'].forEach(function (c) { scene.appendChild(el('div', c)); });
-    var tug = el('div', 'tug'); tug.appendChild(el('div', 'rope')); tug.appendChild(el('div', 'flag'));
+    var tug = el('div', 'tug'); tug.appendChild(el('div', 'rope')); ropeEnds(tug); tug.appendChild(el('div', 'flag'));
     var cb = el('div', 'crew cb'), cr = el('div', 'crew cr'); tug.append(cb, cr); scene.appendChild(tug);
     var banner = el('div', 'banner'); banner.hidden = true; scene.appendChild(banner);
     mid.appendChild(scene);
@@ -1245,7 +1266,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
       root.appendChild(lobby); H.lobby = lobby;
       var scene = el('div', 'scene'); scene.setAttribute('aria-hidden', 'true'); scene.dir = 'ltr';
       ['bg', 'sun', 'cloud c1', 'cloud c2', 'mark lb', 'mark c', 'mark lr'].forEach(function (c) { scene.appendChild(el('div', c)); });
-      var tg = el('div', 'tug'); tg.appendChild(el('div', 'rope')); tg.appendChild(el('div', 'flag'));
+      var tg = el('div', 'tug'); tg.appendChild(el('div', 'rope')); ropeEnds(tg); tg.appendChild(el('div', 'flag'));
       var cb = el('div', 'crew cb'), cr = el('div', 'crew cr'); tg.append(cb, cr); scene.appendChild(tg);
       var banner = el('div', 'banner'); banner.hidden = true; scene.appendChild(banner);
       root.appendChild(scene);
