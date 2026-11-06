@@ -879,8 +879,14 @@ window.SoloBank = (function () {
     var out = [];
     var mkS = function (q, ans, wrong) {
       var all = [String(ans)]; wrong.map(String).forEach(function (w) { if (all.indexOf(w) < 0) all.push(w); });
+      // Distractors that collide (3 trays of 3: 3 + 3 and 9 - 3 are both 6) are topped up with nearby real
+      // values written the same way as the answer (its number, commas and unit kept), never a filler.
+      var m = /^([\d,]+)(.*)$/.exec(String(ans));
+      if (m) {
+        var n = +m[1].replace(/,/g, ''), fmtN = function (v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + m[2]; };
+        for (var k = 1; all.length < 4 && k < 50; k++) [n + k, n - k].forEach(function (v) { var t = fmtN(v); if (v > 0 && all.length < 4 && all.indexOf(t) < 0) all.push(t); });
+      }
       var sh = rnd.shuffle(all.slice(0, 4));
-      while (sh.length < 4) sh.push(String(ans) + ' x' + sh.length);
       out.push({ q: q, choices: sh, answer: sh.indexOf(String(ans)), secs: 25 });
     };
     var fmt = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
@@ -892,7 +898,9 @@ window.SoloBank = (function () {
     do { digs = [rnd.int(2, 9), rnd.int(1, 9), rnd.int(1, 9), rnd.int(1, 9)]; pos = rnd.int(0, 3); guard++; }
     while (digs.filter(function (d) { return d === digs[pos]; }).length > 1 && guard < 60);
     var num = digs[0] * 1000 + digs[1] * 100 + digs[2] * 10 + digs[3], place = Math.pow(10, 3 - pos), val = digs[pos] * place;
-    mkS('LOCK 1 · In ' + fmt(num) + ', what is the value of the ' + digs[pos] + '?', fmt(val), [fmt(digs[pos]), fmt(val * 10), fmt(Math.max(1, val / 10))]);
+    // Distractors: the same digit at the other three places (6 / 60 / 600 / 6,000), so a ones-place digit
+    // never collapses two choices into the answer or into a nonsense 1.
+    mkS('LOCK 1 · In ' + fmt(num) + ', what is the value of the ' + digs[pos] + '?', fmt(val), [1, 10, 100, 1000].map(function (p) { return digs[pos] * p; }).filter(function (v) { return v !== val; }).map(fmt));
     // Lock 2 (Unit 2, the ledger gap): how many more to reach the whole?
     a = rnd.int(320, 640); b = rnd.int(120, a - 120);
     mkS('LOCK 2 · The ledger needs ' + a + ' stamps and holds ' + b + '. How many more stamps are needed?', a - b, [a + b, a - b + 20, a - b - 20]);

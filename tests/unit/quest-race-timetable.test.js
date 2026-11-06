@@ -85,3 +85,23 @@ test('Quest Race 5.2: the minutes-to-hours swap never says "0 minutes"', () => {
     }
   }
 });
+
+// The Vault Run (Number Quest 7.4): every lock offers four distinct, real choices — never the " x<n>" filler the
+// generator pads with when distractors collapse. Lock 1 used to collapse for a ones-place digit ("6 | 60 | 1 | 6 x3").
+test('Quest Race 7.4: every Vault lock has four distinct real choices, and Lock 1 offers the digit at the other three places', () => {
+  const gen = lift('nqVaultItems');
+  for (let seed = 1; seed <= 3000; seed++) {
+    const items = gen(rand(seed));
+    for (const it of items) {
+      const where = `seed ${seed}: "${it.q}" [${it.choices.join(' | ')}]`;
+      assert.equal(new Set(it.choices).size, 4, `${where}: four distinct choices`);
+      assert.ok(it.choices.every(c => !/ x\d$/.test(String(c))), `${where}: no filler choice`);
+      assert.ok(it.answer >= 0 && it.answer < 4, `${where}: the answer is one of the choices`);
+      const m = /^LOCK 1 · In ([\d,]+), what is the value of the (\d)\?$/.exec(it.q);
+      if (m) {
+        const d = +m[2];
+        assert.deepEqual([...it.choices].map(c => +String(c).replace(/,/g, '')).sort((a, b) => a - b), [d, d * 10, d * 100, d * 1000], `${where}: the digit at each place`);
+      }
+    }
+  }
+});
