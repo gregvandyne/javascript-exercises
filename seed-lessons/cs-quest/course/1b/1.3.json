@@ -45,10 +45,10 @@
    "art": "branch",
    "img": "csq/robo-route/conditionals-1b-if-else",
    "view": [
-    52.2,
-    40.5,
-    34,
-    41.5
+    51.8,
+    40.4,
+    30.0,
+    41.7
    ],
    "alt": "One if / else block in the tray: if path ahead, move; else, turn left. Bolt checks and picks a side every time it runs.",
    "focus": [
@@ -146,10 +146,10 @@
    "art": "lightbulb",
    "img": "csq/robo-route/conditionals-1b-when",
    "view": [
-    52.2,
-    40.5,
-    34,
-    48.8
+    51.8,
+    40.4,
+    30.0,
+    46.4
    ],
    "alt": "A when block waits at the top of the program: when a gem is picked up, turn right, with the driving loop underneath it.",
    "focus": [
@@ -213,10 +213,10 @@
    "art": "trophy",
    "img": "csq/robo-route/conditionals-1b-fog",
    "view": [
-    52.2,
-    15.1,
-    34,
-    33.6
+    51.4,
+    16.2,
+    31.1,
+    24.2
    ],
    "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",
    "focus": [

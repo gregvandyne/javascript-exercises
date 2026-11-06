@@ -95,26 +95,7 @@
   {
    "title": "Future readers",
    "text": "That drawing you posted for feedback stays in your trail. Years later, teammates, schools and employers may read old posts as part of who you are.",
-   "art": "people",
-   "img": "csq/trick-inbox/pressure-2-pr-3-debrief",
-   "alt": "The Fan Club post, binned: everything it knew came from a public profile. Flattery built from your footprint.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
-   "focus": [
-    {
-     "cue": "Old posts stay in your trail for later readers",
-     "box": [
-      3.4,
-      72.7,
-      93.3,
-      10.0
-     ]
-    }
-   ]
+   "art": "people"
   },
   {
    "title": "Ask before you post",

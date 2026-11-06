@@ -76,49 +76,12 @@
    "kind": "example",
    "title": "Covered, or not covered?",
    "text": "Sort these four claims. Which ones does a padlock actually cover?",
-   "art": "shield",
+   "art": "scale",
    "steps": [
     "the trip is scrambled: covered",
     "the site controls its name: covered",
     "the site is honest: not covered",
     "what it sells is safe: not covered"
-   ],
-   "img": "csq/packet-post/ciphers-2-lockbox",
-   "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
-   "view": [
-    5.3,
-    0.0,
-    86.3,
-    76.7
-   ],
-   "focus": [
-    {
-     "cue": "The two-key lockbox: anyone can click it shut",
-     "box": [
-      8.3,
-      25.6,
-      45.5,
-      15.2
-     ]
-    },
-    {
-     "cue": "Only the owner holds the key that opens it",
-     "box": [
-      8.3,
-      30.3,
-      45.5,
-      10.5
-     ]
-    },
-    {
-     "cue": "Real sealed roads work the two-key way",
-     "box": [
-      55.0,
-      25.3,
-      33.6,
-      12.0
-     ]
-    }
    ]
   },
   {

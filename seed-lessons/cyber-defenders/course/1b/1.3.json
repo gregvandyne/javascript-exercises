@@ -10,31 +10,31 @@
    "title": "One drawing, many copies",
    "text": "You send one drawing to a friend. It passes through many hands on the way, and every stop could keep a copy, like stamps in Pim's sorting book. A copy sent out cannot be called back.",
    "art": "map",
-   "img": "csq/escape-the-post-office/gate-1b",
-   "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
+   "img": "csq/packet-post/routes-1b-journey",
+   "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
    "view": [
-    0.0,
-    39.2,
-    52.0,
-    52.2
+    7.5,
+    33.0,
+    47.0,
+    60.0
    ],
    "focus": [
     {
-     "cue": "One letter sets off from the Post Office",
+     "cue": "One drawing travels as numbered packets",
      "box": [
-      8.7,
-      54.9,
-      9.4,
-      18.8
+      28.6,
+      36.9,
+      4.2,
+      7.0
      ]
     },
     {
-     "cue": "Every stop on the way could keep a copy",
+     "cue": "It passes stop after stop on the way",
      "box": [
-      39.0,
-      44.2,
-      6.7,
-      42.2
+      10.0,
+      36.5,
+      41.6,
+      31.6
      ]
     }
    ]
@@ -195,24 +195,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Play Many Roads in Packet Post for all 4 levels, tracing every message's journey. Name one thing you would never send, because copies cannot come back.",
+   "text": "Open Escape the Post Office at Lock 1: Sorting Gate and send the golden letter around the closed road. Count the stops it passes: each one could keep a copy. Then name one thing you would never send.",
    "art": "trophy",
-   "img": "csq/packet-post/routes-1b-journey",
-   "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
+   "img": "csq/escape-the-post-office/gate-1b",
+   "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
    "view": [
-    24.3,
-    21.0,
-    43.6,
-    38.8
+    0.0,
+    39.2,
+    52.0,
+    52.2
    ],
    "focus": [
     {
-     "cue": "Play Many Roads: follow each packet's journey, hop by hop",
+     "cue": "Play Sorting Gate: pick an open road for the letter",
      "box": [
-      27.3,
-      36.2,
-      5.4,
-      8.8
+      24.9,
+      51.6,
+      6.0,
+      24.6
      ]
     }
    ]
@@ -224,8 +224,8 @@
   "cd-1b-1.3-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "routes",
-  "params": "chapter=routes&band=1b&lock=1"
+  "slug": "escape-the-post-office",
+  "chapter": "sorting-gate",
+  "params": "chapter=sorting-gate&band=1b&lock=1"
  }
 }

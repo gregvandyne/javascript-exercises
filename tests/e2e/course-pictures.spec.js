@@ -2,7 +2,10 @@
 // slide with focus steps in all three courses (CS Quest and Cyber Defenders in both bands, Number Quest), each
 // step's words must never cover what the step points at, and a drawn diagram's boxes and badges must never sit on
 // its text (views/courses.js gfLayer, public/js/course.js gfLayout):
-//   - a screenshot's cue chip, when it rides on the picture, never overlaps its step's focus box or ring;
+//   - a screenshot's cue chip, when it rides on the picture, never overlaps its step's focus box or ring, and
+//     never hides the game's own text next to it: the text boxes recorded when the picture was captured
+//     (scripts/cyber-shots-rects.json, the leaf rects; scripts/csq-route-geometry.json, the ui rects) where the
+//     picture has them, else lettering found in its pixels (strong contrast, strokes crossing both ways);
 //   - a diagram never carries a cue on the picture at all (its cues are the caption strip under it);
 //   - a diagram's badge never sits on any of the diagram's text;
 //   - no edge of a diagram's focus box (or of its ring) crosses a text: every label is wholly inside or outside.
@@ -49,9 +52,25 @@ function stepsWithFocus(course, band) {
     .map(f => `${band}-${f.replace('.json', '')}`);
 }
 
+/** The text boxes recorded for each screenshot, [x, y, w, h] in % of the 1280x720 picture: Cyber Defenders'
+ *  named rects that hold words and no other rect (a card's lines, not the card's grid), CS Quest's ui rects. */
+function recordedText() {
+  const out = {};
+  const cyber = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/cyber-shots-rects.json'), 'utf8'));
+  for (const [key, named] of Object.entries(cyber)) {
+    const rs = Object.values(named).filter(r => Array.isArray(r) && String(r[4] || '').trim());
+    const holdsOther = a => rs.some(b => b !== a && b[0] >= a[0] - 0.2 && b[1] >= a[1] - 0.2 && b[0] + b[2] <= a[0] + a[2] + 0.2 && b[1] + b[3] <= a[1] + a[3] + 0.2 && b[2] * b[3] < a[2] * a[3] * 0.95);
+    out[key] = rs.filter(r => !holdsOther(r)).map(r => r.slice(0, 4));
+  }
+  const geo = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/csq-route-geometry.json'), 'utf8'));
+  for (const [key, g] of Object.entries(geo)) out[key] = (g.ui || []).filter(u => String(u.t || '').trim()).map(u => u.r);
+  return out;
+}
+const TEXT_RECTS = recordedText();
+
 /** In the page: every problem of one figure's tour, as laid out now (all steps are laid out at once; the
- *  inactive ones are only transparent). */
-function figureProblems(fig) {
+ *  inactive ones are only transparent). `rects`: the picture's recorded text boxes, or null. */
+function figureProblems(fig, rects) {
   const out = [];
   const R = el => el.getBoundingClientRect();
   const hit = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 0.5 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 0.5;
@@ -60,6 +79,37 @@ function figureProblems(fig) {
   const vf = fig.classList.contains('vf');
   const strip = fig.classList.contains('gf--strip');
   const texts = vf ? [...fig.querySelectorAll('.vf-svg text')].map(t => ({ r: R(t), s: t.textContent })).filter(t => t.r.width > 0) : [];
+  // A screenshot's own words, on screen: the 16 px cells of the picture that read as lettering (strong
+  // contrast, a fair share of ink, strokes crossing both ways: a panel's edge or a flat fill crosses one way),
+  // kept, where the picture has recorded text boxes, only inside them (a recorded box spans its whole line,
+  // its padding and the empty end of a short line too, so the pixels say where in it the words are).
+  const img = fig.querySelector('.simg'), frame = R(fig.querySelector('.sframe'));
+  let words = [];
+  if (!vf && img) {
+    const ir = R(img), sx = ir.width / 100, sy = ir.height / 100;
+    const boxes = rects && rects.map(([x, y, w, h]) => ({ left: ir.left + x * sx, right: ir.left + (x + w) * sx, top: ir.top + y * sy, bottom: ir.top + (y + h) * sy }));
+    const W = 640, H = 360, C = 8;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, W, H);
+    const px = cx.getImageData(0, 0, W, H).data, lum = i => (px[4 * i] * 299 + px[4 * i + 1] * 587 + px[4 * i + 2] * 114) / 1000;
+    for (let gy = 0; gy < H / C; gy++) for (let gx = 0; gx < W / C; gx++) {
+      const v = []; for (let y = 0; y < C; y++) for (let x = 0; x < C; x++) v.push(lum((gy * C + y) * W + gx * C + x));
+      const lo = Math.min(...v), hi = Math.max(...v);
+      if (hi - lo < 90) continue;
+      const b = v.map(q => q > (lo + hi) / 2);
+      const on = b.filter(Boolean).length; if (Math.min(on, C * C - on) / (C * C) < 0.06) continue;
+      let rows = 0, cols = 0;
+      for (let y = 0; y < C; y++) { let n = 0; for (let x = 1; x < C; x++) n += b[y * C + x] !== b[y * C + x - 1]; rows += n >= 2; }
+      for (let x = 0; x < C; x++) { let n = 0; for (let y = 1; y < C; y++) n += b[y * C + x] !== b[(y - 1) * C + x]; cols += n >= 2; }
+      if (rows < 2 || cols < 2) continue;
+      const cw = ir.width / (W / C), ch = ir.height / (H / C);
+      const cell = { left: ir.left + gx * cw, right: ir.left + (gx + 1) * cw, top: ir.top + gy * ch, bottom: ir.top + (gy + 1) * ch };
+      if (!boxes || boxes.some(r => hit(r, cell))) words.push(cell);
+    }
+    words = words.map(w => ({ left: Math.max(w.left, frame.left), right: Math.min(w.right, frame.right), top: Math.max(w.top, frame.top), bottom: Math.min(w.bottom, frame.bottom) }))
+      .filter(w => w.right > w.left && w.bottom > w.top);
+  }
+  const over = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
   fig.querySelectorAll('.gf-step').forEach((st, i) => {
     const n = `step ${i + 1}`;
     const box = st.querySelector('.gf-box'), b = R(box);
@@ -69,6 +119,10 @@ function figureProblems(fig) {
     const cue = st.querySelector('.gf-cue');
     if (vf && cue) out.push(`${n}: a diagram's cue is drawn on the picture`);
     if (cue && !strip && shown(cue) && hit(R(cue), ring)) out.push(`${n}: the cue chip overlaps its focus box`);
+    if (cue && !strip && shown(cue) && words.length) {
+      const c = R(cue), share = words.reduce((a, w) => a + over(c, w), 0) / (c.width * c.height);
+      if (share > 0.07) out.push(`${n}: the cue chip hides the picture's text (${Math.round(share * 100)}% of the chip${rects ? ', in its recorded text boxes' : ''})`);
+    }
     if (!vf) return;
     const badge = st.querySelector('.gf-badge');
     if (shown(badge)) for (const t of texts) if (hit(R(badge), t.r)) out.push(`${n}: the badge sits on "${t.s}"`);
@@ -100,7 +154,12 @@ for (const [W, H] of [[390, 844], [1280, 800]]) {
           if (!(await page.locator(`#slide-${i} .smedia.gf`).count())) continue;
           await page.locator(`#deck-dots .dot[data-i="${i - 1}"]`).click();
           await expect(page.locator(`#slide-${i}`)).toBeVisible();
-          for (const p of await page.locator(`#slide-${i} .smedia.gf`).first().evaluate(figureProblems)) problems.push(`${key} slide ${i}: ${p}`);
+          const fig = page.locator(`#slide-${i} .smedia.gf`).first();
+          // A screenshot is laid out again once its picture is in and read (its text map: data-gf-ink).
+          if (!(await fig.evaluate(f => f.classList.contains('vf')))) await expect(fig).toHaveAttribute('data-gf-ink', /[01]/);
+          const src = await fig.evaluate(f => { const im = f.querySelector('.simg'); return im ? new URL(im.src).pathname : ''; });
+          const rects = TEXT_RECTS[src.replace(/^\/img\//, '').replace(/\.webp$/, '')] || null;
+          for (const p of await fig.evaluate(figureProblems, rects)) problems.push(`${key} slide ${i}: ${p}`);
         }
       }
       await ctx.close();

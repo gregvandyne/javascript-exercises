@@ -291,10 +291,12 @@ test('course design: each unit plays the game that teaches it, and no step repea
   for (const band of BANDS) {
     const mods = STEPS.filter(s => s.game[band]).map(s => ({ n: s.n, unit: s.unit, ...s.game[band] }));
     for (const m of mods) {
-      // Units 1-2 play Packet Post, except where a step's own skill is trained by one of the course's own games
-      // (2026-11-06: 1b-2.2's second lock and spare copy in Escape's Layers lock, 2-2.2's key-fishing letters in
-      // Trick Inbox), so no step reopens a chapter an earlier step already finished.
-      const OWN = { '1b-2.2': 'escape-the-post-office', '2-2.2': 'trick-inbox' };
+      // Units 1-2 play Packet Post, except where a step's own skill is trained by one of the course's own games,
+      // so no step reopens a chapter (or a chained chapter) an earlier step already required: 1.3's journey in
+      // Escape's Lock 1: Sorting Gate (Packet Post's Many Roads is already chained from 1.1), 1b-2.2's key-only
+      // note in Lock 2: Sealed Note (Layers is 6.1's), 2-2.2's key-fishing letters in Trick Inbox, and 2-2.3's
+      // brute-force wheel in Lock 2: Sealed Note (Secret Messages chains into Spot the Trick, 2-1.2's module).
+      const OWN = { '1b-1.3': 'escape-the-post-office', '1b-2.2': 'escape-the-post-office', '2-1.3': 'escape-the-post-office', '2-2.2': 'trick-inbox', '2-2.3': 'escape-the-post-office' };
       if (m.unit <= 2) assert.equal(m.slug, OWN[`${band}-${m.n}`] || 'packet-post', `${band}-${m.n}: units 1-2 play Packet Post`);
       if (m.unit >= 4) assert.ok(['trick-inbox', 'escape-the-post-office', 'would-you-rather'].includes(m.slug), `${band}-${m.n}: units 4-6 play Cyber Defenders' own games`);
     }

@@ -55,10 +55,10 @@
    "art": "loop",
    "img": "csq/robo-route/loops-1b-repeat-bracket",
    "view": [
-    52.2,
-    27.8,
-    34,
-    30.2
+    51.8,
+    32.9,
+    30.0,
+    20.1
    ],
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
    "focus": [
@@ -136,10 +136,10 @@
    "art": "star",
    "img": "csq/robo-route/loops-1b-repeat-number",
    "view": [
-    52.2,
-    33,
-    34,
-    48.8
+    51.8,
+    32.9,
+    30.0,
+    49.0
    ],
    "alt": "A repeat 2 times bracket holds move, move, pick up, and one more move follows it: Bolt drives five squares and picks up both gems.",
    "focus": [
@@ -178,10 +178,10 @@
    "art": "bug",
    "img": "csq/robo-route/loops-1b-turn-inside",
    "view": [
-    52.2,
-    27.8,
-    34,
-    30.2
+    51.8,
+    32.9,
+    30.0,
+    20.1
    ],
    "alt": "The repeat bracket holds turn right instead of move, so Bolt would spin on one square instead of driving anywhere.",
    "focus": [
@@ -236,10 +236,10 @@
    "art": "trophy",
    "img": "csq/robo-route/loops-1b-repeat-bracket",
    "view": [
-    52.2,
-    27.8,
-    34,
-    30.2
+    51.8,
+    32.9,
+    30.0,
+    20.1
    ],
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
    "focus": [

@@ -42,35 +42,7 @@
   {
    "title": "Posts leave footprints",
    "text": "Online, your posts, photos, scores and comments are footprints. Each one shows a small piece of where you have been. Together, they make a trail.",
-   "art": "screen",
-   "img": "csq/would-you-rather/online-comments-1b",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "A page where anyone can comment",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "A page where only your class can",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
-   ]
+   "art": "screen"
   },
   {
    "kind": "example",

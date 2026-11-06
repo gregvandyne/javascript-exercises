@@ -28,8 +28,11 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
 - A deck's game module is exactly the one `units.json` names for that band (a Packet Post chapter, a Trick
   Inbox set or an escape-room lock with canonical params, or Would You Rather locked to "Online: share or keep"),
   and its mission slide names the game and the chapter as the game shows them. Units 1-2 play Packet Post
-  (except 1b-2.2, Escape's Layers lock, and 2-2.2, Trick Inbox's Prize Letters, so no step reopens a chapter an
-  earlier step finished), units 4-6 the course's own games, and steps 4.3, 5.1 and 5.2 open three different modules.
+  (except 1.3, Escape's Lock 1: Sorting Gate; 1b-2.2 and 2-2.3, Escape's Lock 2: Sealed Note; and 2-2.2, Trick
+  Inbox's Prize Letters), units 4-6 the course's own games, and steps 4.3, 5.1 and 5.2 open three different modules.
+  No step replays work an earlier step already required: not its chapter, not the chapter Packet Post chains
+  into at the end (Break It Up into Many Roads, Rules of the Road into Many Roads, Secret Messages into Spot the
+  Trick), and not an escape lock (no lock is a band's module twice; the finale plays the whole escape).
 - A slide is pictured only when the capture shows what the slide teaches, and its tour cues name what is on it;
   otherwise the slide draws its topic art (`art`) with no picture and no tour.
 - The Pro intro (`course/2/0.1.json`) also carries `slides_first_time` (same schema as `slides`): the welcome a

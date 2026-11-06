@@ -13,9 +13,9 @@
    "img": "csq/robo-route/debug-1b-key",
    "view": [
     52.2,
-    16.4,
-    44.6,
-    39.6
+    18.0,
+    43.0,
+    30.6
    ],
    "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
   },
@@ -47,9 +47,9 @@
    "img": "csq/robo-route/debug-1b-step",
    "view": [
     52.2,
-    16.4,
-    44.6,
-    39.6
+    18.0,
+    43.0,
+    30.6
    ],
    "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square."
   },
@@ -84,9 +84,9 @@
    "img": "csq/robo-route/debug-1b-fixed",
    "view": [
     52.2,
-    22.8,
-    45.4,
-    40.3
+    18.6,
+    46.6,
+    33.6
    ],
    "alt": "The fixed program sits in the tray: the wrong turn left has become turn right, ready to run again and be tested."
   },
@@ -122,9 +122,9 @@
    "img": "csq/robo-route/debug-1b-key",
    "view": [
     52.2,
-    16.4,
-    44.6,
-    39.6
+    18.0,
+    43.0,
+    30.6
    ],
    "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
   }

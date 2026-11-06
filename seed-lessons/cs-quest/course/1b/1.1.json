@@ -219,10 +219,10 @@
    "art": "star",
    "img": "csq/robo-route/sequences-1b-better-route",
    "view": [
-    51.1,
-    13.3,
-    48.9,
-    43.5
+    52.0,
+    17.2,
+    48.0,
+    35.6
    ],
    "alt": "The compare screen before a route is picked: Route A takes 7 blocks, Route B takes 8, and a green Use button sits under each one.",
    "focus": [
@@ -286,10 +286,10 @@
    "art": "trophy",
    "img": "csq/robo-route/sequences-1b-key",
    "view": [
-    52.2,
-    7,
-    35.1,
-    34.7
+    51.4,
+    12.0,
+    33.3,
+    24.7
    ],
    "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray.",
    "focus": [

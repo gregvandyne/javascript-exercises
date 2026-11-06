@@ -22,16 +22,6 @@
  },
  {
   "actions": [],
-  "alt": "Four packets this time: one copy fell off the van and one arrived twice, so the extra copy waits by the road.",
-  "band": "1b",
-  "chapter": "protocols",
-  "concept": "one lost, one arrived twice",
-  "game": "packet-post",
-  "level": 2,
-  "state": "protocols-1b-twice"
- },
- {
-  "actions": [],
   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
   "band": "2",
   "chapter": "protocols",
@@ -39,26 +29,6 @@
   "game": "packet-post",
   "level": 5,
   "state": "protocols-2-design"
- },
- {
-  "actions": [],
-  "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
-  "band": "2",
-  "chapter": "protocols",
-  "concept": "the whole journey of a picture",
-  "game": "packet-post",
-  "level": 6,
-  "state": "protocols-2-journey"
- },
- {
-  "actions": [],
-  "alt": "The big town map: roadworks all over town, and Pim warns that two roads will close.",
-  "band": "1b",
-  "chapter": "routes",
-  "concept": "the big town map",
-  "game": "packet-post",
-  "level": 3,
-  "state": "routes-1b-town"
  },
  {
   "actions": [
@@ -73,16 +43,6 @@
   "game": "packet-post",
   "level": 1,
   "state": "routes-1b-journey"
- },
- {
-  "actions": [],
-  "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
-  "band": "2",
-  "chapter": "routes",
-  "concept": "a town map with a hop budget",
-  "game": "packet-post",
-  "level": 5,
-  "state": "routes-2-budget"
  },
  {
   "actions": [],
@@ -146,16 +106,6 @@
  },
  {
   "actions": [],
-  "alt": "Share or Shield: your mailbox key. Anyone who has it can read your post and send as you, so it stays private.",
-  "band": "2",
-  "chapter": "locks",
-  "concept": "share or shield: the mailbox key",
-  "game": "packet-post",
-  "level": 7,
-  "state": "locks-2-shield"
- },
- {
-  "actions": [],
   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
   "band": "1b",
   "chapter": "ciphers",
@@ -197,16 +147,6 @@
   "game": "packet-post",
   "level": 6,
   "state": "ciphers-2-crack"
- },
- {
-  "actions": [],
-  "alt": "A trick card from the Game Shop, a sender nobody knows: free coins today only, tap the button to claim them.",
-  "band": "1b",
-  "chapter": "tricks",
-  "concept": "free coins today only",
-  "game": "packet-post",
-  "level": 4,
-  "state": "tricks-1b-coins"
  },
  {
   "actions": [],
@@ -281,17 +221,6 @@
   "game": "would-you-rather",
   "level": 0,
   "state": "online-photo-2"
- },
- {
-  "actions": [],
-  "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
-  "band": "1b",
-  "chapter": "online",
-  "concept": "a page anyone can comment on",
-  "dilemma": "online-9",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-comments-1b"
  },
  {
   "actions": [],
@@ -1315,18 +1244,6 @@
   "msg": "pr-4",
   "phase": "hunt",
   "state": "pressure-2-pr-4-all"
- },
- {
-  "alt": "The Cool Group dare, reported: a dare that spends a friend is never a fair price for a group.",
-  "band": "2",
-  "chapter": "pressure",
-  "compact": true,
-  "concept": "the dare, the debrief",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "pr-4",
-  "phase": "debrief",
-  "state": "pressure-2-pr-4-debrief"
  },
  {
   "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",

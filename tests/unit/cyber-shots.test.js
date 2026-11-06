@@ -66,7 +66,6 @@ test('the spec: unique states, real chapters and levels, real online dilemmas', 
   }
 });
 
-const SPARE = new Set(['protocols-1b-twice', 'protocols-2-journey', 'routes-1b-town', 'routes-2-budget', 'locks-2-shield', 'tricks-1b-coins'].map(s => `csq/packet-post/${s}`));
 test('every spec state is in the manifest with the same alt, its WebP exists, and a deck slide uses it', () => {
   for (const s of spec) {
     const key = `csq/${s.game}/${s.state}`;
@@ -75,10 +74,8 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
     assert.equal(entry.alt, s.alt, `${key}: manifest alt matches the spec`);
     assert.equal(entry.band, s.band, `${key}: manifest band matches the spec`);
     assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${key}.webp`)), `${key}.webp exists`);
-    // Spare captures: their slides moved to pictures that show what the slide teaches (2026-11-06 student pass),
-    // and no other slide's lesson matches them yet. Kept for a future slide; never shown with another slide's tour.
-    if (!SPARE.has(key)) assert.ok(usedByDecks.has(key), `${key} is used by at least one Cyber Defenders slide`);
-    else assert.ok(!usedByDecks.has(key), `${key} is in use again: take it off the spare list`);
+    // No spare captures: a capture no slide uses is deleted with its spec entry (2026-11-06 tidy-up).
+    assert.ok(usedByDecks.has(key), `${key} is used by at least one Cyber Defenders slide`);
     if (s.compact) assert.ok(rects[key] && Object.keys(rects[key]).length >= 4, `${key}: its element boxes are recorded`);
   }
 });
