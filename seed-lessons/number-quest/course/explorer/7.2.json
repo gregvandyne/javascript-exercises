@@ -52,28 +52,28 @@
     {
      "cue": "Walk: 9 students, counted from our own class.",
      "box": [
-      5.8,
-      4.8,
-      66.4,
-      24.7
+      5,
+      3.4,
+      68.1,
+      27.6
      ]
     },
     {
      "cue": "Bus is the tallest bar: 12 students.",
      "box": [
-      5.8,
-      35.0,
-      88.4,
-      24.8
+      5,
+      33.6,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "Bike: only 4. Small bars still count.",
      "box": [
-      5.8,
-      65.3,
-      29.7,
-      24.7
+      5,
+      63.9,
+      31.4,
+      27.5
      ]
     }
    ]
@@ -90,7 +90,7 @@
    ],
    "visual": {
     "type": "numberline",
-    "label": "A line plot of five pencil lengths from 5 to 8 inches, with three pencils stacked at the 6 inch mark",
+    "label": "A line plot of five pencil lengths from 5 to 8 inches, with three x marks stacked over the 6 inch mark",
     "min": 5,
     "max": 8,
     "marks": [
@@ -113,35 +113,35 @@
     ],
     "point": {
      "at": 6,
-     "label": "6"
+     "label": "x x x"
     }
    },
    "focus": [
     {
      "cue": "No pencil is 5 inches long: the marks start at 6.",
      "box": [
-      4.7,
-      59.2,
-      2.6,
-      22.6
+      3.9,
+      57.8,
+      4.3,
+      25.5
      ]
     },
     {
-     "cue": "Three pencils measure exactly 6 inches: the marks stack here.",
+     "cue": "Three pencils measure exactly 6 inches: three x marks over the 6.",
      "box": [
-      29.0,
-      42.8,
-      12.7,
-      25.5
+      29.3,
+      41.4,
+      12.2,
+      28.3
      ]
     },
     {
      "cue": "The longest pencil: 8 inches.",
      "box": [
-      92.6,
-      59.2,
-      2.8,
-      22.6
+      91.8,
+      57.8,
+      4.4,
+      25.5
      ]
     }
    ]
@@ -186,7 +186,13 @@
    "art": "trophy",
    "img": "nq/data-detective/my-data",
    "alt": "Data Detective, My Data: a class survey tallied with the steppers and built into a bar chart, a claim ready to pin.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    1.5,
+    9.5,
+    53,
+    86
+   ]
   }
  ],
  "check": [

@@ -24,9 +24,9 @@
    "answer": 0,
    "misconceptions": [
     "correct",
-    "a place from another course",
-    "a place from another course",
-    "a place from another course"
+    "mixed up the Numberworks with a racetrack",
+    "mixed up the Numberworks with a post office",
+    "picked one workshop instead of the whole street"
    ]
   },
   {
@@ -46,10 +46,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "confuses a digit with a whole number",
+    "mixed up one digit with a whole number",
     "correct",
-    "confuses a digit with rounding",
-    "confuses a digit with a drawing tool"
+    "mixed up a digit with a rounded number",
+    "mixed up a digit with a drawing"
    ]
   },
   {
@@ -69,10 +69,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "not a number job",
-    "not a number job",
+    "picked a job that needs no number",
+    "picked a job with no counting in it",
     "correct",
-    "that is the Jumble, not a number"
+    "picked the Jumble's own job, not a number's"
    ]
   }
  ]

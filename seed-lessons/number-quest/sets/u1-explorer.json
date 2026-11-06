@@ -24,9 +24,9 @@
    "answer": 0,
    "misconceptions": [
     "correct",
-    "one place too small: read the digit, not its face value",
-    "two places too small",
-    "face value only: the place was ignored"
+    "read the 7 one place too small",
+    "read the 7 two places too small",
+    "read the 7 as just 7 and forgot its place"
    ]
   },
   {
@@ -46,9 +46,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "the tens digit was read as hundreds",
-    "digits were given face value, not place value",
-    "a whole place was dropped",
+    "read the tens digit as hundreds",
+    "wrote the digits without their place values",
+    "dropped the whole thousands place",
     "correct"
    ]
   },
@@ -69,8 +69,8 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "stopped comparing too early",
-    "compared only the tens digit and stopped",
+    "called two different numbers equal",
+    "compared the ones digits instead of the tens",
     "correct",
     "gave up before comparing place by place"
    ]
@@ -92,9 +92,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "rounded down: the ones digit 8 was ignored",
-    "rounded to the nearest hundred by mistake",
-    "rounded to the nearest hundred by mistake",
+    "rounded down even though the ones digit is 8",
+    "rounded down to a hundred instead of to a ten",
+    "rounded to the nearest hundred, not the nearest ten",
     "correct"
    ]
   },
@@ -115,10 +115,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "rounded down at the halfway point: 5 rounds up",
-    "rounded to the nearest thousand by mistake",
+    "rounded down when the tens digit was 5",
+    "rounded to the nearest thousand, not hundred",
     "correct",
-    "did not round at all"
+    "kept the number and forgot to round"
    ]
   },
   {
@@ -140,7 +140,7 @@
    "misconceptions": [
     "rounded both numbers down",
     "rounded both numbers up",
-    "that is the exact sum, not an estimate",
+    "worked out the exact sum instead of an estimate",
     "correct"
    ]
   },
@@ -161,10 +161,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "added the wrong jump",
-    "added 5 twice",
+    "added 3 instead of the pattern's 5",
+    "jumped 5 twice",
     "correct",
-    "added 1: no rule was used"
+    "added 1 instead of following the rule"
    ]
   },
   {
@@ -184,9 +184,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "stopped one jump early: that is the third number",
-    "added one jump too many",
-    "only one jump was made",
+    "stopped one jump too early",
+    "made one jump too many",
+    "made only one jump",
     "correct"
    ]
   },
@@ -207,10 +207,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "both numbers are odd, not even",
-    "one number is odd, so the sum is odd",
+    "picked two odd numbers",
+    "picked an even and an odd number",
     "correct",
-    "both numbers are odd, not even"
+    "picked two odd numbers"
    ]
   }
  ]

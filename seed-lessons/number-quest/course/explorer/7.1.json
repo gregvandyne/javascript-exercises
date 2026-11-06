@@ -52,28 +52,28 @@
     {
      "cue": "Apples: the bar stops at 12 on the scale.",
      "box": [
-      5.8,
-      4.8,
-      53.2,
-      24.7
+      5,
+      3.4,
+      54.9,
+      27.6
      ]
     },
     {
      "cue": "The longest bar: bananas, 20 sold.",
      "box": [
-      5.8,
-      35.0,
-      88.4,
-      24.8
+      5,
+      33.6,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "Pears: 16 sold, between apples and bananas.",
      "box": [
-      5.8,
-      65.3,
-      70.8,
-      24.7
+      5,
+      63.9,
+      72.5,
+      27.5
      ]
     }
    ]
@@ -130,7 +130,7 @@
      {
       "from": 1,
       "to": 1.5,
-      "label": "+1/2"
+      "label": "+1/4+1/4"
      }
     ]
    },
@@ -138,28 +138,28 @@
     {
      "cue": "Lay the first ribbon: it reaches the 1/2 mark.",
      "box": [
-      5.8,
-      24.4,
-      22.4,
-      36.2
+      3.8,
+      23.2,
+      27.6,
+      60.1
      ]
     },
     {
      "cue": "Two quarter ribbons in a row: another half yard.",
      "box": [
-      49.8,
-      24.4,
-      22.4,
-      36.2
+      49,
+      23.2,
+      24.1,
+      38.9
      ]
     },
     {
      "cue": "The ribbons end at 1 1/2 yards in all.",
      "box": [
-      68.4,
-      59.2,
-      7.2,
-      22.6
+      67.6,
+      57.8,
+      8.8,
+      25.5
      ]
     }
    ]
@@ -167,7 +167,7 @@
   {
    "title": "How many more?",
    "text": "The question charts answer best is a comparison. Tuesday sold 20 lunches and Monday sold 12. How many more is a subtraction wearing a chart's clothes: 20 - 12 = 8. Always ask which two bars the question compares.",
-   "art": "magnifier"
+   "art": "chart"
   },
   {
    "title": "Words to know",
@@ -204,7 +204,13 @@
    "art": "trophy",
    "img": "nq/data-detective/chart-it",
    "alt": "Data Detective, Chart It: a case's counts shown as a bar chart, the Bars view picked, a claim ready to pin.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    1.5,
+    10,
+    53,
+    88
+   ]
   }
  ],
  "check": [

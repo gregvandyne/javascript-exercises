@@ -29,19 +29,19 @@
     {
      "cue": "29 plums, shared by 4 friends.",
      "box": [
-      6,
-      32,
-      20.5,
-      26.7
+      5,
+      30.4,
+      45.1,
+      29.9
      ]
     },
     {
      "cue": "Each friend gets 7, and 1 plum is left over.",
      "box": [
-      51,
-      32,
-      43,
-      26.7
+      50,
+      30.4,
+      45.1,
+      29.9
      ]
     }
    ]
@@ -69,19 +69,19 @@
     {
      "cue": "One row for each friend: 7 plums each.",
      "box": [
-      17,
-      21.6,
-      66,
-      7.4
+      16.1,
+      20.1,
+      67.9,
+      10.5
      ]
     },
     {
      "cue": "After fair shares of 7, 1 plum is left over.",
      "box": [
-      47.9,
-      86.1,
-      24.6,
-      8
+      47,
+      84.5,
+      26.1,
+      11.2
      ]
     }
    ]
@@ -120,19 +120,19 @@
     {
      "cue": "Share 80 first: that is 20 for each of the 4.",
      "box": [
-      6,
-      37.3,
-      73.1,
-      15.2
+      5.6,
+      35.7,
+      73.9,
+      18.4
      ]
     },
     {
      "cue": "Then share 16: 4 more each. Each share is 24.",
      "box": [
-      79,
-      37.3,
-      15,
-      15.2
+      78.6,
+      35.7,
+      15.9,
+      18.4
      ]
     }
    ]
@@ -164,10 +164,16 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Sharing (division) track, division questions only, and it stays there. Win the race: picture the fair shares before you answer.",
+   "text": "Open Sum Racer. It opens on the Volcano Valley track, division questions only, and it stays there. Win the race: picture the fair shares before you answer.",
    "art": "trophy",
    "img": "nq/sum-racer/sharing-track",
-   "alt": "Sum Racer on the Sharing (division) track: a division question on screen, four answers to pick from, the race under way."
+   "alt": "Sum Racer on the Volcano Valley sharing track: a division question on screen, four answers to pick from, the race under way.",
+   "view": [
+    50,
+    10.5,
+    49.5,
+    83
+   ]
   }
  ],
  "check": [

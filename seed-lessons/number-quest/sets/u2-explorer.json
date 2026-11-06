@@ -23,9 +23,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "no trades were made: each column was added alone",
-    "a trade landed in the wrong column",
-    "the hundreds trade was missed",
+    "added each column alone and made no trades",
+    "traded into the wrong column",
+    "missed the trade into the hundreds",
     "correct"
    ]
   },
@@ -46,9 +46,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "the tens trade was missed",
-    "the new thousand was dropped",
-    "both trades were missed",
+    "forgot the trade from the ones into the tens",
+    "dropped the new thousand",
+    "forgot the trade from the tens into the hundreds",
     "correct"
    ]
   },
@@ -69,10 +69,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "subtracted instead of joining",
+    "took away instead of joining",
     "correct",
-    "the ones trade was missed",
-    "the tens trade was missed"
+    "forgot the trade from the ones into the tens",
+    "slipped in the tens column"
    ]
   },
   {
@@ -92,10 +92,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "smaller-from-larger in every column, ignoring place",
-    "the gap was counted with one hop too many",
+    "took the small digit from the big one in every column",
+    "made one hop of ten too many",
     "correct",
-    "borrowed across the zero twice"
+    "traded across the zero twice"
    ]
   },
   {
@@ -115,9 +115,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "counted up from the wrong start",
-    "a hop of ten went missing",
-    "a hop of ten was counted twice",
+    "started counting up from the wrong number",
+    "lost a hop of ten",
+    "counted a hop of ten twice",
     "correct"
    ]
   },
@@ -138,10 +138,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "smaller-from-larger in every column, ignoring place",
-    "the ones trade was missed",
+    "took the small digit from the big one in every column",
+    "forgot the trade in the ones",
     "correct",
-    "the hundreds were not touched by the trade"
+    "forgot to take the traded hundred away"
    ]
   },
   {
@@ -161,7 +161,7 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "added both moves: the Jumble move",
+    "added both moves instead of taking one away",
     "took away both moves",
     "stopped after the first step",
     "correct"
@@ -185,9 +185,9 @@
    "answer": 2,
    "misconceptions": [
     "added the part to the whole",
-    "the gap was counted with hops too big",
+    "counted the gap with hops too big",
     "correct",
-    "the gap was counted with hops too small"
+    "counted the gap with hops too small"
    ]
   },
   {
@@ -207,9 +207,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "added instead of finding the difference: the Jumble move",
-    "a hop of ten was counted twice",
-    "a hop of ten went missing",
+    "added instead of finding the difference",
+    "counted a hop of ten twice",
+    "lost a hop of ten",
     "correct"
    ]
   }

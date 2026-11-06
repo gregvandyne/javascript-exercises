@@ -17,42 +17,43 @@
    "art": "map",
    "visual": {
     "type": "numberline",
-    "label": "Counting up the gap from 287 to 512 in three hops: 13, 200 and 12",
-    "min": 287,
-    "max": 512,
+    "label": "Counting up the gap from 287 to 512 on an open number line, in three hops: 13, 200 and 12",
+    "open": true,
+    "min": 0,
+    "max": 100,
     "marks": [
      {
-      "at": 287,
+      "at": 0,
       "label": "287"
      },
      {
-      "at": 300,
+      "at": 20,
       "label": "300"
      },
      {
-      "at": 500,
+      "at": 80,
       "label": "500"
      },
      {
-      "at": 512,
+      "at": 100,
       "label": "512"
      }
     ],
     "hops": [
      {
-      "from": 287,
-      "to": 300,
-      "label": "13"
+      "from": 0,
+      "to": 20,
+      "label": "+13"
      },
      {
-      "from": 300,
-      "to": 500,
-      "label": "200"
+      "from": 20,
+      "to": 80,
+      "label": "+200"
      },
      {
-      "from": 500,
-      "to": 512,
-      "label": "12"
+      "from": 80,
+      "to": 100,
+      "label": "+12"
      }
     ]
    },
@@ -60,28 +61,28 @@
     {
      "cue": "First hop: 287 up to 300 is 13.",
      "box": [
-      6,
-      24.5,
-      5.1,
-      36
+      1.8,
+      23.2,
+      26.4,
+      60.1
      ]
     },
     {
      "cue": "The big middle hop: 300 to 500 is 200.",
      "box": [
-      11,
-      24.5,
-      78.4,
-      36
+      19.1,
+      23.2,
+      61.9,
+      60.1
      ]
     },
     {
      "cue": "Last hop: 500 to 512 is 12. The gap is 13 + 200 + 12 = 225.",
      "box": [
-      89.3,
-      24.5,
-      4.7,
-      36
+      71.9,
+      23.2,
+      25.9,
+      60.1
      ]
     }
    ]
@@ -122,19 +123,19 @@
     {
      "cue": "Start at 287, the number you count up from.",
      "box": [
-      6,
-      37.3,
-      49.4,
-      15.2
+      5.6,
+      35.7,
+      50.2,
+      18.4
      ]
     },
     {
      "cue": "The rest of the bar is the gap: 225.",
      "box": [
-      55.3,
-      37.3,
-      38.7,
-      15.2
+      54.9,
+      35.7,
+      39.6,
+      18.4
      ]
     }
    ]
@@ -145,62 +146,72 @@
    "art": "star",
    "visual": {
     "type": "numberline",
-    "label": "The gap from 398 to 703 in three hops: 2, 300 and 3",
-    "min": 398,
-    "max": 703,
+    "label": "The gap from 398 to 703 on an open number line, in three hops: 2, 300 and 3",
+    "open": true,
+    "min": 0,
+    "max": 100,
     "marks": [
      {
-      "at": 398,
+      "at": 0,
       "label": "398"
      },
      {
-      "at": 400,
+      "at": 20,
       "label": "400"
      },
      {
-      "at": 700,
+      "at": 80,
       "label": "700"
      },
      {
-      "at": 703,
+      "at": 100,
       "label": "703"
      }
     ],
     "hops": [
      {
-      "from": 398,
-      "to": 400,
-      "label": "2"
+      "from": 0,
+      "to": 20,
+      "label": "+2"
      },
      {
-      "from": 400,
-      "to": 700,
-      "label": "300"
+      "from": 20,
+      "to": 80,
+      "label": "+300"
      },
      {
-      "from": 700,
-      "to": 703,
-      "label": "3"
+      "from": 80,
+      "to": 100,
+      "label": "+3"
      }
     ]
    },
    "focus": [
     {
-     "cue": "First hop: 398 to 400 is 2.",
+     "cue": "First hop: 398 up to 400 is 2.",
      "box": [
-      5,
-      24.5,
-      2.6,
-      36
+      1.5,
+      23.2,
+      26.7,
+      60.1
      ]
     },
     {
-     "cue": "Then 400 to 700 is 300, and 700 to 703 is 3. The gap is 305.",
+     "cue": "The big hop: 400 up to 700 is 300.",
      "box": [
-      6.5,
-      24.5,
-      88.3,
-      36
+      19.1,
+      23.2,
+      61.6,
+      60.1
+     ]
+    },
+    {
+     "cue": "Last hop: 700 to 703 is 3. The gap is 2 + 300 + 3 = 305.",
+     "box": [
+      72.1,
+      23.2,
+      26.1,
+      60.1
      ]
     }
    ]
@@ -232,10 +243,16 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Subtraction to 100 track, taking-away questions only, and it stays there. Win the race: for this one race, solve every gap by counting up.",
+   "text": "Open Sum Racer. It opens on the Desert Dash track, taking-away questions only, and it stays there. Win the race: for this one race, solve every gap by counting up.",
    "art": "trophy",
    "img": "nq/sum-racer/subtraction-track",
-   "alt": "Sum Racer on the Subtraction to 100 track: a subtraction question on screen, four answers to pick from, the race under way."
+   "alt": "Sum Racer on the Desert Dash track, taking away: a subtraction question on screen, four answers to pick from, the race under way.",
+   "view": [
+    50,
+    10.5,
+    49.5,
+    83
+   ]
   }
  ],
  "check": [

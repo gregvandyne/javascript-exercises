@@ -23,10 +23,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "added the groups and the rolls instead of multiplying",
-    "counted only 3 trays of 6",
+    "added the trays and the rolls instead of multiplying",
+    "counted only 3 trays",
     "correct",
-    "counted 5 trays of 6: one tray too many"
+    "counted one tray too many"
    ]
   },
   {
@@ -47,8 +47,8 @@
    "answer": 3,
    "misconceptions": [
     "added the rows and the seeds instead of multiplying",
-    "multiplied 6 rows of 8: one row went missing",
-    "multiplied 8 by 8: the rows were miscounted",
+    "counted one row too few",
+    "counted 8 rows instead of 7",
     "correct"
    ]
   },
@@ -70,9 +70,9 @@
    "answer": 0,
    "misconceptions": [
     "correct",
-    "wrote the two part-answers side by side instead of adding them",
+    "wrote the two part answers side by side instead of adding",
     "added 23 and 4 instead of multiplying",
-    "multiplied 21 x 4: the ones digit was dropped"
+    "multiplied 21 by 4 instead of 23"
    ]
   },
   {
@@ -92,9 +92,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "added instead of sharing out",
-    "subtracted the friends from the cookies",
-    "counted 5 for each friend without sharing the cookies out",
+    "added instead of sharing",
+    "took the friends away from the cookies",
+    "guessed a share without sharing the cookies out",
     "correct"
    ]
   },
@@ -116,9 +116,9 @@
    "answer": 2,
    "misconceptions": [
     "rounded the share up and lost the leftover",
-    "the share is too small, so the remainder grew bigger than the divisor",
+    "kept a leftover big enough for another round",
     "correct",
-    "the leftover plum was quietly dropped"
+    "dropped the leftover"
    ]
   },
   {
@@ -138,9 +138,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "ignored the remainder: 3 students would be left behind",
-    "counted one van for every seat number, not per full van",
-    "added the students and the seats instead of grouping",
+    "forgot the 3 students left over",
+    "counted the seats, not the vans",
+    "added the students and seats instead of grouping",
     "correct"
    ]
   },
@@ -161,10 +161,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "a near fact: that is 6 x 9, close but not this fact",
+    "grabbed a near fact: 6 x 9",
     "correct",
-    "multiplied 6 x 8: the wrong neighbor fact",
-    "multiplied 8 x 8: the wrong neighbor fact"
+    "grabbed the neighbor fact 6 x 8",
+    "grabbed the neighbor fact 8 x 8"
    ]
   },
   {
@@ -184,7 +184,7 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "swapped multiplication for addition",
+    "swapped times for plus",
     "dropped one group of 8",
     "correct",
     "counted only three groups of 6"
@@ -207,9 +207,9 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "repeated the divisor instead of finding the missing factor",
-    "repeated the whole amount: nothing was shared",
-    "a near fact: 4 x 9 is 36, not 45",
+    "repeated the 9 instead of finding the missing factor",
+    "kept the whole 45 and shared nothing",
+    "grabbed a near fact: 4 x 9 is 36",
     "correct"
    ]
   }

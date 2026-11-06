@@ -9,7 +9,7 @@
   {
    "title": "Shelves that stack",
    "text": "The Counting House stores its stock on shelves. Joining two shelf counts is addition: stack them in columns, place over place, and add each stack.",
-   "art": "table"
+   "art": "box"
   },
   {
    "title": "Trading up",
@@ -55,19 +55,19 @@
     {
      "cue": "8 ones and 5 ones join on the shelf: 13 ones.",
      "box": [
-      6,
-      13.9,
-      88,
-      24.4
+      5,
+      12.3,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "Ten of them trade up for 1 ten. 3 ones stay loose.",
      "box": [
-      6,
-      44.1,
-      88,
-      24.4
+      5,
+      42.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -97,19 +97,19 @@
     {
      "cue": "Ones: 8 + 5 = 13. Write 3, trade 1 ten.",
      "box": [
-      6,
-      32,
-      20.5,
-      26.7
+      5,
+      30.4,
+      22.6,
+      29.9
      ]
     },
     {
      "cue": "Hundreds: 2 + 4 + 1 = 7. The join is 743.",
      "box": [
-      51,
-      32,
-      43,
-      26.7
+      50,
+      30.4,
+      45.1,
+      29.9
      ]
     }
    ]
@@ -131,19 +131,19 @@
     {
      "cue": "3,486 joins 2,757, trading at the ones, tens and hundreds.",
      "box": [
-      6,
-      32,
-      58,
-      26.7
+      5,
+      30.4,
+      60.1,
+      29.9
      ]
     },
     {
      "cue": "The join is 6,243.",
      "box": [
-      66,
-      32,
-      28,
-      26.7
+      65,
+      30.4,
+      30.1,
+      29.9
      ]
     }
    ]
@@ -175,10 +175,16 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Addition to 100 track, adding questions only, and it stays there. Win the race: when a column passes ten, say the trade out loud.",
+   "text": "Open Sum Racer. It opens on the Desert Dash track, adding questions only, and it stays there. Win the race: when a column passes ten, say the trade out loud.",
    "art": "trophy",
    "img": "nq/sum-racer/addition-track",
-   "alt": "Sum Racer on the Addition to 100 track: an addition question on screen, four answers to pick from, the race under way."
+   "alt": "Sum Racer on the Desert Dash track, adding: an addition question on screen, four answers to pick from, the race under way.",
+   "view": [
+    50,
+    10.5,
+    49.5,
+    83
+   ]
   }
  ],
  "check": [

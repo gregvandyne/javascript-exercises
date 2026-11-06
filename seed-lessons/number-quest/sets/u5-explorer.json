@@ -24,9 +24,9 @@
    "answer": 0,
    "misconceptions": [
     "correct",
-    "one zero short: a kilogram is 1,000 grams, not 100",
-    "two zeros short: the unit name changed, so the count must grow a lot",
-    "kept the same number and only swapped the unit's name"
+    "used 100 grams in a kilogram, not 1,000",
+    "used 10 grams in a kilogram, not 1,000",
+    "changed the unit's name but not the number"
    ],
    "why": "One kilogram is 1,000 grams, so 2 kilograms is 2 x 1,000 = 2,000 grams. A bigger count goes with the smaller unit."
   },
@@ -47,9 +47,9 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "one zero short: a meter is 100 centimeters, not 10",
+    "used 10 centimeters in a meter, not 100",
     "correct",
-    "one zero too many: that would be 30 meters of ribbon",
+    "added one zero too many",
     "glued the numbers together instead of multiplying"
    ],
    "why": "One meter is 100 centimeters, so 3 meters is 3 x 100 = 300 centimeters."
@@ -71,10 +71,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "compared the numbers without changing the units first",
+    "compared the numbers before changing the units",
     "correct",
-    "1 meter 20 centimeters is 120 centimeters, shorter than 200",
-    "the smallest count, but centimeters are small units next to meters"
+    "thought 1 meter 20 centimeters beats 2 meters",
+    "trusted the number and forgot the unit"
    ],
    "why": "Change everything to centimeters first: 150, 200, 120 and 90. The 2-meter ribbon, at 200 centimeters, is the longest."
   },
@@ -95,10 +95,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "added the minutes but never traded 60 minutes for an hour",
-    "added an hour and kept all 50 minutes too",
+    "never traded 60 minutes for an hour",
+    "added an hour and all 50 minutes too",
     "correct",
-    "stopped 10 minutes early: 15 + 50 is 65 minutes, not 55"
+    "added 40 minutes instead of 50"
    ],
    "why": "Hop on the number line: 4:15 plus 45 minutes reaches 5:00, and 5 minutes more lands on 5:05."
   },
@@ -120,8 +120,8 @@
    "answer": 3,
    "misconceptions": [
     "lost 10 minutes crossing the hour",
-    "counted only the minutes past 5:00",
-    "added the hour twice",
+    "took the minutes away and forgot the hour",
+    "counted an extra hour",
     "correct"
    ],
    "why": "From 3:40 to 4:40 is one hour, and from 4:40 to 5:10 is 30 minutes more: 1 hour 30 minutes in all."
@@ -167,9 +167,9 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "counted up from 65 but stopped at the wrong ten",
+    "stopped at the wrong ten while counting up",
     "correct",
-    "found the gap to 90, not to 100",
+    "counted up to 90, not to 100",
     "added the price to the money instead of finding the gap"
    ],
    "why": "Change is the gap between 65 and 100. Count up: 65 to 70 is 5, and 70 to 100 is 30, so the change is 35 cents."
@@ -192,9 +192,9 @@
    "answer": 2,
    "misconceptions": [
     "counted each quarter as a dime",
-    "counted only two of the three quarters",
+    "counted each quarter as 20 cents",
     "correct",
-    "rounded the coins up to a whole dollar"
+    "rounded up to a whole dollar"
    ],
    "why": "A quarter is worth 25 cents, so 3 quarters are 25 + 25 + 25 = 75 cents."
   },
@@ -215,10 +215,10 @@
    ],
    "answer": 2,
    "misconceptions": [
-    "read the price as two dollars and five cents, dropping the tens of cents",
-    "moved every digit one place too far",
+    "dropped the tens of cents",
+    "added a zero that does not belong",
     "correct",
-    "lost the second dollar on the way"
+    "lost a dollar on the way"
    ],
    "why": "One dollar is 100 cents, so $2.35 is 200 + 35 = 235 cents. The 3 names the tens of cents and the 5 the ones."
   }

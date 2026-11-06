@@ -46,28 +46,28 @@
     {
      "cue": "One quarter: 25 of the 100 cents.",
      "box": [
-      5.8,
-      37.1,
-      22.4,
-      15.5
+      5.6,
+      35.7,
+      22.9,
+      18.4
      ]
     },
     {
      "cue": "Two quarters: half the dollar, 50 cents.",
      "box": [
-      5.8,
-      37.1,
-      44.4,
-      15.5
+      5.6,
+      35.7,
+      44.9,
+      18.4
      ]
     },
     {
      "cue": "Four quarters fill the dollar: 100 cents.",
      "box": [
-      5.8,
-      27.9,
-      88.4,
-      24.7
+      5,
+      26.5,
+      90.1,
+      27.6
      ]
     }
    ]
@@ -114,28 +114,28 @@
     {
      "cue": "You hand over one whole dollar: 100 cents.",
      "box": [
-      5.8,
-      13.7,
-      88.4,
-      24.7
+      5,
+      12.3,
+      90.1,
+      27.6
      ]
     },
     {
      "cue": "The price takes 65 of the 100 cents.",
      "box": [
-      5.8,
-      53.1,
-      57.6,
-      15.5
+      5.6,
+      51.7,
+      58.1,
+      18.4
      ]
     },
     {
      "cue": "The empty part is the change. Count up from 65 to find it.",
      "box": [
-      63.0,
-      53.1,
-      31.2,
-      15.5
+      62.8,
+      51.7,
+      31.7,
+      18.4
      ]
     }
    ]
@@ -180,7 +180,13 @@
    "art": "trophy",
    "img": "nq/brain-board/money-board",
    "alt": "Brain Board in play: the Money board, categories Coin values, Make the price, Change back, Add the prices and Dollars and cents, a coin values question open.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    8.5,
+    26.5,
+    83,
+    41.5
+   ]
   }
  ],
  "check": [

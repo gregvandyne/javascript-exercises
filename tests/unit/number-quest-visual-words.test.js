@@ -84,8 +84,28 @@ test('number lines: points, marks and hops sit where their labels say', () => {
     const firstClock = (v.marks || []).find(m => CLOCK.test(m.label || ''));
     const clockBase = firstClock ? Number(CLOCK.exec(firstClock.label)[1]) * 60 + Number(CLOCK.exec(firstClock.label)[2]) - firstClock.at : null;
     const labelVal = label => { const c = CLOCK.exec(label || ''); return c && clockBase != null ? Number(c[1]) * 60 + Number(c[2]) - clockBase : rat(label); };
+    if (v.open) {
+      // An open number line (2.2's counting-up gaps, 2026-11-06 fix round): ticks keep their order
+      // but not their scale, so a 2-hop and a 300-hop can both be read. The spec flags it (open:
+      // true, also said in its label); its marks must still climb in label order, and every hop
+      // label must equal the gap between the labels it joins.
+      assert.match(v.label, /open number line/, `${where}: an open line says so in its label`);
+      const at = new Map(v.marks.map(m => [m.at, rat(m.label)]));
+      const vals = [...v.marks].sort((a, b) => a.at - b.at).map(m => rat(m.label));
+      vals.forEach((x, j) => { if (j) assert.ok(x > vals[j - 1], `${where}: open-line marks climb in order`); });
+      (v.hops || []).forEach((h, j) => {
+        assert.ok(at.has(h.from) && at.has(h.to), `${where}: open-line hop ${j + 1} joins two marks`);
+        if (j > 0) assert.equal(h.from, v.hops[j - 1].to, `${where}: hops must chain`);
+        assert.equal(Number(/\d+/.exec(h.label)[0]), at.get(h.to) - at.get(h.from), `${where}: hop label ${h.label} vs the gap it hops`);
+      });
+      return;
+    }
     for (const m of v.marks || []) { assert.ok(m.at >= v.min && m.at <= v.max, `${where}: mark out of range`); assert.equal(labelVal(m.label), m.at, `${where}: mark label ${m.label} at ${m.at}`); }
-    if (v.point) { assert.ok(v.point.at >= v.min && v.point.at <= v.max, `${where}: point out of range`); assert.equal(labelVal(v.point.label), v.point.at, `${where}: point label`); }
+    // A line plot's stack (7.2: "x x x" over the 6) labels its point with one x per data mark;
+    // the slide's words must name that count.
+    const stack = v.point && /^x( x)*$/.test(v.point.label) ? v.point.label.split(' ').length : 0;
+    if (stack) assert.ok(new RegExp(`\\b${['', 'one', 'two', 'three', 'four', 'five', 'six'][stack]}\\b`).test(s.text), `${where}: ${stack} stacked marks named in the text`);
+    if (v.point) { assert.ok(v.point.at >= v.min && v.point.at <= v.max, `${where}: point out of range`); if (!stack) assert.equal(labelVal(v.point.label), v.point.at, `${where}: point label`); }
     const hops = v.hops || [];
     hops.forEach((h, j) => {
       assert.ok(h.from >= v.min && h.to <= v.max, `${where}: hop out of range`);
@@ -102,6 +122,15 @@ test('bar models: part widths are proportional to their stated values', () => {
     v.rows.forEach((r, ri) => {
       const where = `${file} slide ${i + 1} row ${ri + 1}`;
       const sumW = r.parts.reduce((a, p) => a + p.w, 0);
+      if (v.sizedWholes) {
+        // Wholes drawn at different sizes on purpose (4.2's tiny cake and huge cake): each row's
+        // parts are equal pieces of that row's own whole, and a part labeled a/b covers a/b of it.
+        assert.ok(sumW > 0.05 && sumW <= 1.02, `${where}: whole ${sumW}`);
+        for (const p of r.parts) assert.ok(Math.abs(p.w - r.parts[0].w) < 1e-9, `${where}: equal pieces`);
+        for (const p of r.parts) { const f = /^(\d+)\/(\d+)$/.exec(p.label || ''); if (f) assert.ok(Math.abs(p.w / sumW - f[1] / f[2]) < 0.01, `${where}: ${p.label} of its whole`); }
+        const lead = /^(\d+)\/(\d+)/.exec(r.label || ''); if (lead) assert.ok(Math.abs(r.parts.filter(p => p.tone === 0).reduce((a, p) => a + p.w, 0) / sumW - lead[1] / lead[2]) < 0.01, `${where}: shaded share`);
+        return;
+      }
       const known = r.parts.map(p => ({ w: p.w, val: p.unknown ? null : partValue(p.label) })).filter(p => p.val != null);
       // A row may draw a single part to scale against the whole (its widths then sum to less than
       // 1 by design); when a total is stated anywhere, every known part must match value/total.

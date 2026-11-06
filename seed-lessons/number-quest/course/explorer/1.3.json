@@ -25,19 +25,19 @@
     {
      "cue": "4, 9, 14: each tile adds 5, just as promised.",
      "box": [
-      6,
-      32,
-      52,
-      26.7
+      5,
+      30.4,
+      54.1,
+      29.9
      ]
     },
     {
      "cue": "The promise says what comes next: 24.",
      "box": [
-      78,
-      32,
-      16,
-      26.7
+      77,
+      30.4,
+      18.1,
+      29.9
      ]
     }
    ]
@@ -62,19 +62,19 @@
     {
      "cue": "4, 9, 14: each tile adds 5, just as promised.",
      "box": [
-      6,
-      32,
-      52,
-      26.7
+      5,
+      30.4,
+      54.1,
+      29.9
      ]
     },
     {
      "cue": "This tile should be 19. The Jumble swapped it for 20.",
      "box": [
-      59.7,
-      32,
-      16.6,
-      40.8
+      58.7,
+      30.4,
+      18.6,
+      44
      ]
     }
    ]
@@ -107,19 +107,19 @@
     {
      "cue": "Start at 3. The rule is add 5, every time.",
      "box": [
-      6,
-      32,
-      10.9,
-      26.7
+      5,
+      30.4,
+      12.9,
+      29.9
      ]
     },
     {
      "cue": "Tile 10 is 48: 3 plus 9 jumps of 5.",
      "box": [
-      83.1,
-      32,
-      10.9,
-      26.7
+      82.1,
+      30.4,
+      13,
+      29.9
      ]
     }
    ]
@@ -132,28 +132,28 @@
     "type": "tiles",
     "label": "Even plus even is even, and odd plus odd is even too",
     "values": [
-     "2 + 4 = 6",
-     "3 + 5 = 8",
-     "7 + 7 = 14"
+     "2+4=6",
+     "3+5=8",
+     "7+7=14"
     ]
    },
    "focus": [
     {
      "cue": "Even plus even: 2 + 4 = 6, an even answer.",
      "box": [
-      6,
-      32,
-      28,
-      26.7
+      5,
+      30.4,
+      30.1,
+      29.9
      ]
     },
     {
      "cue": "Odd plus odd is even too: 3 + 5 = 8.",
      "box": [
-      36,
-      32,
-      28,
-      26.7
+      35,
+      30.4,
+      30.1,
+      29.9
      ]
     }
    ]
@@ -188,7 +188,13 @@
    "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on pattern questions, with no picking first. Call out the rule of each pattern before you answer, every single time.",
    "art": "trophy",
    "img": "nq/quest-race/pattern-race",
-   "alt": "Quest Race on the island course: a number pattern question on screen, four answers to pick from, the runners on the track below."
+   "alt": "Quest Race on the island course: a number pattern question on screen, four answers to pick from, the runners on the track below.",
+   "view": [
+    20,
+    54,
+    60,
+    44
+   ]
   }
  ],
  "check": [

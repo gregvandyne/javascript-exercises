@@ -9,7 +9,7 @@
   {
    "title": "Lines that never meet",
    "text": "The yard paints two kinds of lines on every plan. Parallel lines run side by side and never meet, like rails. Perpendicular lines cross at a square corner, like the corner of a door.",
-   "art": "branch"
+   "art": "map"
   },
   {
    "title": "Symmetry is a fold",
@@ -20,7 +20,7 @@
     "label": "A bar split into two equal halves with a dashed fold line down the middle, marked halfway",
     "rows": [
      {
-      "label": "One folded shape: two matching halves",
+      "label": "Matching halves",
       "parts": [
        {
         "w": 0.5,
@@ -39,28 +39,28 @@
     {
      "cue": "Fold on the dashed line: this half lands exactly on the other.",
      "box": [
-      5.8,
-      37.1,
-      44.4,
-      15.5
+      5.6,
+      35.7,
+      44.9,
+      18.4
      ]
     },
     {
      "cue": "The fold line is the line of symmetry.",
      "box": [
-      43.5,
-      23.5,
-      13.0,
-      33.6
+      42.7,
+      22.4,
+      14.7,
+      36.1
      ]
     },
     {
      "cue": "The matching half: same size, same shape, flipped.",
      "box": [
-      49.8,
-      37.1,
-      44.4,
-      15.5
+      49.6,
+      35.7,
+      44.9,
+      18.4
      ]
     }
    ]
@@ -83,21 +83,21 @@
    },
    "focus": [
     {
-     "cue": "First number 3: walk to the third column.",
+     "cue": "First number 3: walk right to the third column.",
      "box": [
-      47.8,
-      21.5,
-      4.5,
-      53.0
+      47,
+      20.1,
+      6.1,
+      55.9
      ]
     },
     {
-     "cue": "Second number 2: climb two rows up. The treasure sits here.",
+     "cue": "Second number 2: climb up to the second row. The treasure sits here.",
      "box": [
-      47.8,
-      36.6,
-      4.5,
-      7.7
+      47,
+      50.3,
+      6.1,
+      10.5
      ]
     }
    ]
@@ -142,7 +142,13 @@
    "art": "trophy",
    "img": "nq/brain-board/lines-grids-board",
    "alt": "Brain Board in play: the Lines & Grids board, categories Parallel or not, Fold it, Grid addresses, Turns and Shape families, a parallel lines question open.",
-   "kind": "mission"
+   "kind": "mission",
+   "view": [
+    8.5,
+    26.5,
+    83,
+    41.5
+   ]
   }
  ],
  "check": [

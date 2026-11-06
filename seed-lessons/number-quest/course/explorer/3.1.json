@@ -20,19 +20,19 @@
     {
      "cue": "One row is one tray, filled the same as every other.",
      "box": [
-      20.9,
-      24.2,
-      58.2,
-      7.3
+      20,
+      22.6,
+      60.1,
+      10.6
      ]
     },
     {
      "cue": "Tray after tray, the count never changes.",
      "box": [
-      20.9,
-      24.2,
-      58.2,
-      47.6
+      20,
+      22.6,
+      60.1,
+      50.8
      ]
     }
    ]
@@ -51,19 +51,19 @@
     {
      "cue": "One row is one tray: 5 rolls.",
      "box": [
-      19.1,
-      21.6,
-      61.8,
-      7.4
+      18.2,
+      20.1,
+      63.7,
+      10.5
      ]
     },
     {
      "cue": "4 trays of 5 is 20 rolls in all.",
      "box": [
-      19.1,
-      21.6,
-      61.8,
-      52.8
+      18.2,
+      20.1,
+      63.7,
+      55.9
      ]
     }
    ]
@@ -89,19 +89,19 @@
     {
      "cue": "Each row is a tray of 7. Skip-count: 7, 14, 21...",
      "box": [
-      17,
-      19.1,
-      66,
-      7.4
+      16.1,
+      17.6,
+      67.9,
+      10.5
      ]
     },
     {
      "cue": "Six rows of 7: 6 x 7 = 42 rolls in all.",
      "box": [
-      17,
-      19.1,
-      66,
-      57.8
+      16.1,
+      17.6,
+      67.9,
+      60.9
      ]
     }
    ]
@@ -112,27 +112,27 @@
    "art": "grid",
    "visual": {
     "type": "array",
-    "label": "Six rows of seven: the same total turned either way",
-    "rows": 6,
-    "cols": 7
+    "label": "The 6 x 7 array turned on its side: 7 rows of 6 is still 42",
+    "rows": 7,
+    "cols": 6
    },
    "focus": [
     {
-     "cue": "Each row holds 7. Skip-count the rows: 7, 14, 21...",
+     "cue": "Turned on its side, each row now holds 6.",
      "box": [
       17,
-      19.1,
-      66,
-      7.4
+      18,
+      66.1,
+      8.2
      ]
     },
     {
-     "cue": "Six rows of seven is 42, and seven rows of six is 42 too.",
+     "cue": "7 rows of 6 is 42, the same as 6 rows of 7.",
      "box": [
       17,
-      19.1,
-      66,
-      57.8
+      16.9,
+      66.1,
+      62.3
      ]
     }
    ]
@@ -150,12 +150,12 @@
       "parts": [
        {
         "w": 0.87,
-        "label": "20 x 4 = 80",
+        "label": "20x4=80",
         "tone": 0
        },
        {
         "w": 0.13,
-        "label": "3 x 4 = 12",
+        "label": "3x4=12",
         "tone": 1
        }
       ]
@@ -166,19 +166,19 @@
     {
      "cue": "Split 23 into 20 and 3. 20 x 4 = 80.",
      "box": [
-      6,
-      37.3,
-      76.6,
-      15.2
+      5.6,
+      35.7,
+      77.5,
+      18.4
      ]
     },
     {
      "cue": "3 x 4 = 12. Join them: 80 + 12 = 92.",
      "box": [
-      82.5,
-      37.3,
-      11.5,
-      15.2
+      82.1,
+      35.7,
+      12.4,
+      18.4
      ]
     }
    ]
@@ -210,10 +210,16 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the 2, 5 and 10 times tables track, and it stays there. Win the race: picture the trays of groups before you answer each fact.",
+   "text": "Open Sum Racer. It opens on the Snowy Summit track, the 2, 5 and 10 times tables, and it stays there. Win the race: picture the trays of groups before you answer each fact.",
    "art": "trophy",
    "img": "nq/sum-racer/times-tables-track",
-   "alt": "Sum Racer on the times tables track: a multiplication question on screen, four answers to pick from, the race under way."
+   "alt": "Sum Racer on the Snowy Summit times tables track: a multiplication question on screen, four answers to pick from, the race under way.",
+   "view": [
+    50,
+    10.5,
+    49.5,
+    83
+   ]
   }
  ],
  "check": [

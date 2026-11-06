@@ -14,28 +14,28 @@
     "type": "tiles",
     "label": "Doubling tricks: 7 x 2, 7 x 4, 7 x 8",
     "values": [
-     "7 x 2 = 14",
-     "7 x 4 = 28",
-     "7 x 8 = 56"
+     "7x2=14",
+     "7x4=28",
+     "7x8=56"
     ]
    },
    "focus": [
     {
      "cue": "Start from a fact you know: 7 x 2 = 14.",
      "box": [
-      6,
-      32,
-      28,
-      26.7
+      5,
+      30.4,
+      30.1,
+      29.9
      ]
     },
     {
      "cue": "Double and double again: 7 x 8 = 56.",
      "box": [
-      66,
-      32,
-      28,
-      26.7
+      65,
+      30.4,
+      30.1,
+      29.9
      ]
     }
    ]
@@ -96,19 +96,19 @@
     {
      "cue": "Start with a fact you know: 9 x 5 = 45.",
      "box": [
-      6,
       5,
-      62.9,
-      24.4
+      3.4,
+      64.9,
+      27.6
      ]
     },
     {
      "cue": "Add the rest: 45 + 18 = 63, so 9 x 7 = 63.",
      "box": [
-      6,
-      65.4,
-      88,
-      24.4
+      5,
+      63.9,
+      90.1,
+      27.5
      ]
     }
    ]
@@ -130,19 +130,19 @@
     {
      "cue": "One family of facts: 5 x 9 = 45.",
      "box": [
-      6,
-      32,
-      28,
-      26.7
+      5,
+      30.4,
+      30.1,
+      29.9
      ]
     },
     {
      "cue": "Turn it around: 45 shared by 5 is 9.",
      "box": [
-      66,
-      32,
-      28,
-      26.7
+      65,
+      30.4,
+      30.1,
+      29.9
      ]
     }
    ]
@@ -160,28 +160,28 @@
     "type": "tiles",
     "label": "Doubling chains: 6 x 2, then double to 6 x 4, then double to 6 x 8",
     "values": [
-     "6 x 2 = 12",
-     "6 x 4 = 24",
-     "6 x 8 = 48"
+     "6x2=12",
+     "6x4=24",
+     "6x8=48"
     ]
    },
    "focus": [
     {
      "cue": "Climb down to a fact you know: 6 x 2 = 12.",
      "box": [
-      6,
-      32,
-      28,
-      26.7
+      5,
+      30.4,
+      30.1,
+      29.9
      ]
     },
     {
      "cue": "Climb back up: double 24 and 6 x 8 = 48.",
      "box": [
-      66,
-      32,
-      28,
-      26.7
+      65,
+      30.4,
+      30.1,
+      29.9
      ]
     }
    ]
@@ -213,10 +213,16 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Mixed Grand Prix track, a mix of everything, and it stays there. Win the race against your own best, and name the trick behind each hard fact.",
+   "text": "Open Sum Racer. It opens on the Galaxy Grand Prix track, a mix of everything, and it stays there. Win the race against your own best, and name the trick behind each hard fact.",
    "art": "trophy",
    "img": "nq/sum-racer/grand-prix",
-   "alt": "Sum Racer on the Mixed Grand Prix track: a mixed question on screen, four answers to pick from, the race under way."
+   "alt": "Sum Racer on the Galaxy Grand Prix track: a mixed question on screen, four answers to pick from, the race under way.",
+   "view": [
+    50,
+    10.5,
+    49.5,
+    83
+   ]
   }
  ],
  "check": [
