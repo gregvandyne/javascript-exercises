@@ -221,10 +221,10 @@ function cleanSlide(s) {
         // `bad`: one swapped tile's index, or several ([0, 1]: both tiles of a swap marked).
         vis = { type: 'tiles', label, values: v.values.map(x => str(String(x), 10)), ...(v.bad != null ? { bad: [...new Set([].concat(v.bad))] } : {}) };
       } else if (v.type === 'shapes' && Array.isArray(v.items) && v.items.length >= 2 && v.items.length <= 4
-        && v.items.every(it => it && SHAPE_KINDS.includes(it.shape) && str(it.name, 12) && (it.corners == null || typeof it.corners === 'boolean'))) {
+        && v.items.every(it => it && SHAPE_KINDS.includes(it.shape) && str(it.name, 14) && (it.corners == null || typeof it.corners === 'boolean'))) {
         // Real drawn shapes (the geometry steps): each a regular outline with its name under it, and
         // optional right-angle marks in its corners.
-        vis = { type: 'shapes', label, items: v.items.map(it => ({ shape: it.shape, name: str(it.name, 12), ...(it.corners ? { corners: true } : {}) })) };
+        vis = { type: 'shapes', label, items: v.items.map(it => ({ shape: it.shape, name: str(it.name, 14), ...(it.corners ? { corners: true } : {}) })) };
       }
     }
     if (vis) out.visual = vis;
