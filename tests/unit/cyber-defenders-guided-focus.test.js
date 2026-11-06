@@ -562,20 +562,24 @@ test("Greg's slide renders the same box % at 390/834/1280, contains slot 3, and 
         const br = box.getBoundingClientRect();
         const outset = Math.abs(parseFloat(getComputedStyle(box, '::after').inset.split(' ')[0])); // inset is negative (the ring sits OUTSIDE the box)
         return {
-          figW: fr.width,
+          figW: fr.width, figH: fr.height,
           boxPct: [(br.left - fr.left) / fr.width * 100, (br.top - fr.top) / fr.height * 100, br.width / fr.width * 100, br.height / fr.height * 100],
           outset,
         };
       });
       await page.close();
     }
+    // The slide shows a crop (its view, % of the picture); the engine remaps the box into the cropped frame, so the
+    // rendered frame % is converted back to picture % before comparing with the authored box.
+    const [vx, vy, vw, vh] = deck('2', '1.1').slides[1].view || [0, 0, 100, 100];
     for (const w of [390, 834, 1280]) {
       const want = [65.3, 41.3, 4.2, 9.0];
-      seen[w].boxPct.forEach((v, i) => assert.ok(Math.abs(v - want[i]) <= 0.6, `width ${w}: box % [${seen[w].boxPct.map(v => v.toFixed(2))}] ≈ authored ${want}`));
+      const p = seen[w].boxPct, img = [vx + p[0] * vw / 100, vy + p[1] * vh / 100, p[2] * vw / 100, p[3] * vh / 100];
+      img.forEach((v, i) => assert.ok(Math.abs(v - want[i]) <= 0.6, `width ${w}: box % of the picture [${img.map(v => v.toFixed(2))}] ≈ authored ${want}`));
       // The ring (box expanded by the outset on every side) must still contain slot 3's measured
       // bounds and keep slot 4's centre (72.9%, 45.8%) outside, at every size.
-      const [bx, by, bw, bh] = seen[w].boxPct;
-      const ox = seen[w].outset / seen[w].figW * 100, oy = seen[w].outset / (seen[w].figW * 9 / 16) * 100;
+      const [bx, by, bw, bh] = img;
+      const ox = seen[w].outset / seen[w].figW * vw, oy = seen[w].outset / seen[w].figH * vh;
       assert.ok(bx - ox <= 65.3 && bx + bw + ox >= 69.5 && by - oy <= 41.3 && by + bh + oy >= 50.3, `width ${w}: ring contains slot 3`);
       assert.ok(!(72.9 > bx - ox && 72.9 < bx + bw + ox && 45.8 > by - oy && 45.8 < by + bh + oy), `width ${w}: ring excludes slot 4's centre`);
     }
