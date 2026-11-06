@@ -143,19 +143,19 @@
    "img": "csq/packet-post/ciphers-2-crack",
    "alt": "Crack it by counting: a scrambled message, the Caesar wheel, and a button that counts how often letters appear.",
    "view": [
-    27.8,
-    35.6,
-    63.5,
-    64.0
+    16.1,
+    26.8,
+    75.2,
+    72.8
    ],
    "focus": [
     {
      "cue": "A long scramble, and the reading it makes so far",
      "box": [
-      54.0,
-      40.6,
-      34.3,
-      25.0
+      55.4,
+      41.7,
+      29.9,
+      23.4
      ]
     },
     {
@@ -210,10 +210,10 @@
     {
      "cue": "Play Sealed Note: try shift after shift",
      "box": [
-      19.4,
-      59.7,
-      61.2,
-      10.7
+      25.5,
+      60.7,
+      52.8,
+      8.6
      ]
     }
    ]

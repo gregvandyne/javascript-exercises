@@ -14,9 +14,9 @@
    "alt": "Trick Inbox, Fake or Fact?: a news flash says school closes forever with free candy for a year. Share before they delete this!",
    "view": [
     0.0,
-    21.4,
+    15.9,
     88.4,
-    78.6
+    84.1
    ],
    "focus": [
     {
@@ -47,9 +47,9 @@
    "alt": "A Prize Ad says tap to claim your free phone, but only the first fifty people get one.",
    "view": [
     0.0,
-    21.9,
-    70.4,
-    62.6
+    15.9,
+    83.4,
+    69.1
    ],
    "focus": [
     {
@@ -64,10 +64,10 @@
     {
      "cue": "Who benefits if you tap?",
      "box": [
-      15.9,
+      35.7,
       56.4,
-      51.5,
-      7.1
+      29.2,
+      7.0
      ]
     }
    ]
@@ -90,7 +90,7 @@
      "box": [
       3.6,
       49.6,
-      92.8,
+      33.6,
       5.0
      ]
     },
@@ -144,9 +144,9 @@
    "alt": "The fountain video, shown to Pim: some videos are made by computers to look real. Check a real news page first.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -193,9 +193,9 @@
    "alt": "Netville News: the library opens its new reading room on Saturday. Ordinary news, no prizes and no panic.",
    "view": [
     0.0,
-    9.5,
+    0.0,
     100.0,
-    90.2
+    99.7
    ],
    "focus": [
     {

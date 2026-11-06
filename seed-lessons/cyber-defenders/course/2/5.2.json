@@ -24,8 +24,8 @@
      "box": [
       3.8,
       56.4,
-      47.3,
-      7.1
+      44.8,
+      7.0
      ]
     },
     {
@@ -47,9 +47,9 @@
    "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
    "view": [
     0.0,
-    21.1,
+    16.3,
     87.5,
-    77.8
+    82.6
    ],
    "focus": [
     {
@@ -80,9 +80,9 @@
    "alt": "The mean message, reported: do not join in, never pass it on, and a kind word to Pip helps more than any reply.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -99,7 +99,35 @@
   {
    "title": "Hate speech: report, don't debate",
    "text": "Hate speech attacks who someone is, and it crosses a line no joke can excuse. The Defender move is never to debate it. Save it, report it, and support the person it targeted.",
-   "art": "shield"
+   "art": "shield",
+   "img": "csq/escape-the-post-office/moves-1b-four",
+   "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
+   "view": [
+    0.0,
+    25.2,
+    95.1,
+    74.8
+   ],
+   "focus": [
+    {
+     "cue": "Save it: keep the evidence",
+     "box": [
+      27.5,
+      56.0,
+      27.4,
+      5.8
+     ]
+    },
+    {
+     "cue": "Report it, never debate it",
+     "box": [
+      2.6,
+      63.1,
+      28.7,
+      6.7
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -122,7 +150,7 @@
    "view": [
     0.0,
     22.6,
-    87.1,
+    96.5,
     77.4
    ],
    "focus": [
@@ -170,9 +198,9 @@
    "alt": "A stranger's game chat, shown to Pim: someone who asks for secrets from adults and wants to meet is the biggest red flag.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {

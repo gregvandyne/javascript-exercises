@@ -279,10 +279,10 @@
     {
      "game": {
       "1b": {
-       "chapter": "sealed-note",
-       "chapterTitle": "Lock 2: Sealed Note",
-       "params": "chapter=sealed-note&band=1b&lock=1",
-       "slug": "escape-the-post-office"
+       "chapter": "letters",
+       "chapterTitle": "Prize Letters",
+       "params": "chapter=letters&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
        "chapter": "letters",
@@ -328,10 +328,10 @@
     {
      "game": {
       "1b": {
-       "chapter": "ciphers",
-       "chapterTitle": "Secret Messages",
-       "params": "chapter=ciphers&band=1b&lock=1",
-       "slug": "packet-post"
+       "chapter": "sealed-note",
+       "chapterTitle": "Lock 2: Sealed Note",
+       "params": "chapter=sealed-note&band=1b&lock=1",
+       "slug": "escape-the-post-office"
       },
       "2": {
        "chapter": "sealed-note",
@@ -543,10 +543,10 @@
     {
      "game": {
       "1b": {
-       "chapter": "letters",
-       "chapterTitle": "Prize Letters",
-       "params": "chapter=letters&band=1b&lock=1",
-       "slug": "trick-inbox"
+       "chapter": "tricks",
+       "chapterTitle": "Spot the Trick",
+       "params": "chapter=tricks&band=1b&lock=1",
+       "slug": "packet-post"
       },
       "2": {
        "chapter": "senders",

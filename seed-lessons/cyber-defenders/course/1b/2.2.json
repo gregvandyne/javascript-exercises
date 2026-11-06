@@ -19,27 +19,27 @@
    "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
    "view": [
     51.0,
-    20.9,
-    40.3,
-    35.8
+    20.0,
+    41.6,
+    36.7
    ],
    "focus": [
     {
      "cue": "A tablet holds your messages and pictures: sort what protects it",
      "box": [
-      54.0,
+      58.4,
       26.5,
-      34.3,
+      29.7,
       10.3
      ]
     },
     {
      "cue": "Protects it, or risky? You decide for each habit",
      "box": [
-      54.1,
-      44.6,
-      30.2,
-      6.6
+      58.7,
+      44.9,
+      19.7,
+      5.9
      ]
     }
    ]
@@ -60,27 +60,27 @@
    "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "A guesser tries key after key on a mailbox",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      44.5,
+      7.7
      ]
     },
     {
      "cue": "A second lock, the key checker, still stands",
      "box": [
-      26.0,
-      54.7,
-      23.5,
-      12.9
+      26.9,
+      55.2,
+      20.0,
+      11.6
      ]
     }
    ]
@@ -120,8 +120,36 @@
   },
   {
    "title": "The wrong person",
-   "text": "Finding a tablet on a bench does not make it yours to open. Borrowing a friend's game account is the same: no permission means hands off.",
-   "art": "people"
+   "text": "Finding a tablet on a bench does not make it yours to open. A letter that asks for your mailbox key is the wrong person too: only you and a trusted adult may know it.",
+   "art": "people",
+   "img": "csq/trick-inbox/letters-1b-lt-3-all",
+   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
+   "view": [
+    0.0,
+    28.2,
+    92.8,
+    71.8
+   ],
+   "focus": [
+    {
+     "cue": "Anyone can type \"Post Office Team\" on a letter",
+     "box": [
+      15.5,
+      42.9,
+      21.0,
+      4.1
+     ]
+    },
+    {
+     "cue": "It asks for your mailbox key: no permission",
+     "box": [
+      50.8,
+      56.4,
+      21.8,
+      7.1
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -150,24 +178,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Escape the Post Office at Lock 2: Sealed Note. Turn the cipher wheel until the note reads as real words, then open the lock. Only someone with the key may read it. Who may open your tablet at home?",
+   "text": "Open Trick Inbox at Prize Letters and sort all 6 letters. Tap every clue, then choose a move. Some letters ask for your mailbox key, but only you and a trusted adult may know it.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/note-1b",
-   "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
+   "img": "csq/trick-inbox/letters-1b-lt-1-all",
+   "alt": "The tablet letter with all three clues found: you are our lucky winner, mailbox key, in the next ten minutes.",
    "view": [
     0.0,
-    35.5,
-    82.0,
-    58.5
+    37.0,
+    84.0,
+    60.0
    ],
    "focus": [
     {
-     "cue": "Play Sealed Note: turn the wheel until it reads",
+     "cue": "Play Prize Letters: who may have your key?",
      "box": [
-      19.4,
-      72.6,
-      61.2,
-      10.7
+      64.4,
+      56.4,
+      16.6,
+      7.1
      ]
     }
    ]
@@ -179,8 +207,8 @@
   "cd-1b-2.2-e3"
  ],
  "game": {
-  "slug": "escape-the-post-office",
-  "chapter": "sealed-note",
-  "params": "chapter=sealed-note&band=1b&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "letters",
+  "params": "chapter=letters&band=1b&lock=1"
  }
 }

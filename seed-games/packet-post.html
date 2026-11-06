@@ -32,7 +32,7 @@
   @media (orientation: portrait) and (max-width: 520px) { .pp-board.pp-board-small, .pp-board.pp-board-card { display: none; } .pp-cipher { font-size: 1.05em; letter-spacing: .08em; } .pp-board.pp-board-wheel { flex: 0 0 min(38%, 360px); } .pp-say p { max-height: 6.6em; overflow-y: auto; overscroll-behavior: contain; } .pp-pxrow { display: flex; gap: 10px; align-items: center; flex: none; } .pp-pxrow .pp-h { flex: 1; min-width: 0; } }   /* a phone upright: the rule and order tiles need the room; the letter, phrase and sort cards move into the panel */
   .pp-fillcard { display: flex; flex-direction: column; gap: 8px; flex: none; }
   .pp-fillcard.pp-center { align-items: center; }
-  .pp-verdicts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; flex: none; }
+  .pp-verdicts { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, .8fr) minmax(0, 1.4fr); gap: 8px; flex: none; }
   .pp-verdicts .ok-btn { padding: 0 8px; min-width: 0; text-align: center; }
   .pp-roads { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   .pp-roads line { stroke: var(--pp-road); stroke-width: 12; stroke-linecap: round; }
@@ -238,7 +238,7 @@ function instance(level, seed) {
     I.need = level.need || 4; I.words = level.words.map(w => ({ id: w.id, text: w.text, weak: !!w.weak }));
     I.shown = r.shuffle(I.words.map(w => w.id));
   } else if (I.type === 'inbox') {
-    // a pretend message: a role as the sender, cue chips under the text, then safe / trick / ask a grown-up
+    // a pretend message: a role as the sender, cue chips under the text, then safe / trick / ask a trusted adult
     I.letter = { from: level.from, subject: level.subject, body: level.body, button: level.button || null, badge: level.badge || null };
     I.cues = level.cues.map(c => ({ id: c.id, text: c.text, trick: !!c.trick })); I.verdict = level.verdict;
     I.accept = level.accept ? level.accept.slice() : [level.verdict, 'ask'];
@@ -312,7 +312,7 @@ class Run {
     const tier = weak ? 0 : letters >= 16 ? 4 : letters >= 12 ? 3 : letters >= 8 ? 2 : letters >= 5 ? 1 : 0;
     return { tier, letters, weak, count: words.length };
   }
-  // ---- inbox levels: tap the cues, then say safe, trick or ask a grown-up
+  // ---- inbox levels: tap the cues, then say safe, trick or ask a trusted adult
   cue(id) {
     const s = this.s, I = this.inst; if (s.phase !== 'play' || this.type !== 'inbox') return { err: 'phase' }; if (!I.cues.some(c => c.id === id)) return { err: 'nocue' };
     this.actions.push({ t: 'cue', id }); s.toggles++;
@@ -781,10 +781,10 @@ const LEVELS = [
     hints: ['If the tablet was left alone for a minute, what would keep a stranger out?', 'A lock, an update and signing out keep others out. Lending the key or leaving it open lets them in.', 'Tap Protects it for the lock, the updates and signing out. The other three are Risky.'],
     check: { q: 'Which habit protects a tablet?', tiles: ['A screen lock', 'Leaving it unlocked on a bench', 'Tapping every pop-up'], answer: 0 } },
   { id: 'lk-4', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'ok', label: 'Okay to tell', icon: 'check' }, { id: 'no', label: 'Keep it to yourself', icon: 'lock' }],
-    items: [{ id: 'home', text: 'A grown-up at home who looks after your account', bin: 'ok' }, { id: 'friend', text: 'Your best friend, just this once', bin: 'no' }, { id: 'popup', text: 'A pop-up that promises free coins for it', bin: 'no' },
+    items: [{ id: 'home', text: 'A trusted adult at home who looks after your account', bin: 'ok' }, { id: 'friend', text: 'Your best friend, just this once', bin: 'no' }, { id: 'popup', text: 'A pop-up that promises free coins for it', bin: 'no' },
       { id: 'chat', text: 'A stranger in game chat who says they are a helper', bin: 'no' }, { id: 'teacher', text: 'A teacher setting up the class tablets with you', bin: 'ok' }, { id: 'knows', text: 'Someone who already knows your birthday', bin: 'no' }], sol: 'auto',
-    intro: 'Who may know your mailbox key? Only the grown-ups who look after your account. Sort who gets to hear it.',
-    hints: ['Who looks after your account, and who just wants to get in?', 'A grown-up at home and a teacher setting things up look after you. Friends, strangers and pop-ups do not need your key.', 'Tap Okay to tell for the grown-up at home and the teacher. Everyone else: Keep it to yourself.'],
+    intro: 'Who may know your mailbox key? Only the trusted adults who look after your account. Sort who gets to hear it.',
+    hints: ['Who looks after your account, and who just wants to get in?', 'A trusted adult at home and a teacher setting things up look after you. Friends, strangers and pop-ups do not need your key.', 'Tap Okay to tell for the trusted adult at home and the teacher. Everyone else: Keep it to yourself.'],
     check: { q: 'A friend asks for your mailbox key, just this once. What do you do?', tiles: ['Keep it to yourself', 'Tell them quietly', 'Write it on the board'], answer: 0 } },
   { id: 'lk-5', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'good', label: 'A good spare copy', icon: 'check' }, { id: 'bad', label: 'Not a spare copy', icon: 'cross' }],
     items: [{ id: 'drive', text: 'A second copy on a drive at home', bin: 'good' }, { id: 'only', text: 'The only copy, on one tablet', bin: 'bad' }, { id: 'cloud', text: "A copy in the family's online folder", bin: 'good' },
@@ -831,18 +831,18 @@ const LEVELS = [
     hints: ['Weigh the good side against the risk: could a stranger use this fact to find you or get into your things?', 'A name, a drawing and a favorite game say what you like. An address, a key and empty-house dates say where and how to reach you.', 'Public: the first name, the photo, the game. Private: the address, the key, the dates away. Then pick the first reason that explains the risk.'],
     check: { q: 'What makes a fact private rather than public?', tiles: ['It could help a stranger find you or get into your things', 'It is embarrassing', 'It is a number'], answer: 0 } },
 
-  // ---- Chapter 5: Spot the Trick (an inbox of pretend messages: find the cues, then safe, trick or ask a grown-up)
+  // ---- Chapter 5: Spot the Trick (an inbox of pretend messages: find the cues, then safe, trick or ask a trusted adult)
   { id: 'tk-1', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Prize Team', badge: 'odd', subject: 'You won a tablet!', body: 'Congratulations! You are our lucky winner. Reply with your mailbox key in the next ten minutes to claim your prize.', button: 'Claim now', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'hurry', text: 'Hurry: only ten minutes', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'prize', text: 'A prize for a contest you never entered', trick: true }, { id: 'congrats', text: 'Says congratulations', trick: false }], sol: 'auto',
-    learn: { title: 'Spot the trick', text: 'Some messages are tricks. They rush you, promise prizes, ask for your mailbox key, or come from a sender you do not know. Tap every cue you can find, then decide: safe, trick, or ask a grown-up.', pic: 'magnifier' },
+    learn: { title: 'Spot the trick', text: 'Some messages are tricks. They rush you, promise prizes, ask for your mailbox key, or come from a sender you do not know. Tap every cue you can find, then decide: safe, trick, or ask a trusted adult.', pic: 'magnifier' },
     intro: "A message just landed in Pim's inbox. Tap every cue that smells like a trick, then decide what it is.",
     hints: ['Who sent this, and what do they want from you?', 'Look at the clock, the key and the prize. Real prizes never need your key.', 'Tap Hurry, Asks for the mailbox key and the prize cue, then tap Trick.'],
     check: { q: 'A message offers a prize if you reply with your mailbox key. What is it?', tiles: ['A trick: nobody real asks for your key', 'A lucky day', 'A normal delivery note'], answer: 0 } },
   { id: 'tk-2', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Your bank', badge: 'odd', subject: 'Your account is locked', body: 'We noticed a problem. Send us your mailbox key today or your account will be closed.', button: 'Unlock', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'threat', text: 'Threatens to close your account', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'sender', text: 'Unknown sender badge', trick: true }, { id: 'today', text: 'Mentions today', trick: false }], sol: 'auto',
     intro: 'This one sounds scary. Scary is a trick too: it wants you to act before you think.',
-    hints: ['Would a real bank ever ask for your key in a message?', 'A threat, a key request and an unknown badge: three cues on one card.', 'Tap the threat, the key cue and the badge cue, then tap Trick or Ask a grown-up.'],
-    check: { q: 'A message threatens to close your account unless you send your key. What do you do?', tiles: ['Treat it as a trick and ask a grown-up', 'Send the key quickly', 'Reply to argue'], answer: 0 } },
+    hints: ['Would a real bank ever ask for your key in a message?', 'A threat, a key request and an unknown badge: three cues on one card.', 'Tap the threat, the key cue and the badge cue, then tap Trick or Ask a trusted adult.'],
+    check: { q: 'A message threatens to close your account unless you send your key. What do you do?', tiles: ['Treat it as a trick and ask a trusted adult', 'Send the key quickly', 'Reply to argue'], answer: 0 } },
   { id: 'tk-3', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 1, from: 'Your teacher', badge: 'known', subject: 'Field trip on Friday', body: 'Bring a packed lunch and a raincoat. The bus leaves at nine. See you there!', verdict: 'safe', starter: 'trick',
     cues: [{ id: 'lunch', text: 'Mentions lunch', trick: false }, { id: 'known', text: 'Known sender badge', trick: false }, { id: 'bus', text: 'Says what time the bus leaves', trick: false }], sol: 'auto',
     intro: 'Not every message is a trick. Read this one carefully before you decide.',
@@ -855,9 +855,9 @@ const LEVELS = [
     check: { q: 'A shiny button promises free coins if you tap it right now. Why is that a cue?', tiles: ['Tricks rush you so you do not think', 'Buttons are always safe', 'Coins are free online'], answer: 0 } },
   { id: 'tk-5', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', accept: ['ask'], par: 4, from: 'A new friend', badge: 'odd', subject: 'Meet me after school', body: 'I saw you in the game. Tell me your street and I will come over with a gift.', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'where', text: 'Asks where you live', trick: true }, { id: 'stranger', text: 'Someone you have never met', trick: true }, { id: 'gift', text: 'Offers a gift', trick: true }, { id: 'game', text: 'Mentions the game', trick: false }], sol: 'auto',
-    intro: 'A stranger from the game wants to visit. This is one to show a grown-up.',
-    hints: ['Have you ever met this person? What do they want to know?', 'A stranger, a question about where you live, and a gift to make it sound nice.', 'Tap the three cues, then tap Ask a grown-up.'],
-    check: { q: 'Someone you met in a game asks for your street. What do you do?', tiles: ['Do not answer and tell a grown-up', 'Give the street but not the number', 'Invite them over'], answer: 0 } },
+    intro: 'A stranger from the game wants to visit. This is one to show a trusted adult.',
+    hints: ['Have you ever met this person? What do they want to know?', 'A stranger, a question about where you live, and a gift to make it sound nice.', 'Tap the three cues, then tap Ask a trusted adult.'],
+    check: { q: 'Someone you met in a game asks for your street. What do you do?', tiles: ['Do not answer and tell a trusted adult', 'Give the street but not the number', 'Invite them over'], answer: 0 } },
   { id: 'tk-6', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 1, from: 'The library', badge: 'known', subject: 'Your book is due', body: 'The dinosaur book is due back on Monday. Bring it to the desk any time this week.', verdict: 'safe', starter: 'trick',
     cues: [{ id: 'due', text: 'Says a book is due', trick: false }, { id: 'known', text: 'Known sender badge', trick: false }, { id: 'calm', text: 'No rush and nothing to tap', trick: false }], sol: 'auto',
     intro: 'Last card of the day. Look carefully: is anything here a trick cue?',
@@ -948,7 +948,7 @@ const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
 
 /* ---------- words: English is the key; a language pack adds the translation (Oomba.strings) ---------- */
 const LANG0 = String(O.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-8773cf3f', PACK_SRI = {"es":"sha384-sbwqaJRST11xgfjYa79/bmPgqaLj36glCiMapA9jRBq50u+1fQoNQzMkkf2JHhTM","fr":"sha384-GeKo8EhbcZKFbvTpPcv5d3zDlF9+9wbZk3UAnj6hxKugZvy4bqnxjeX4hRk5eSdq","de":"sha384-E0vm4QARMLAHzAW/HWglBdX6fk25AJPTJu1Emw4QzTn6LTzhA14QjuB/lgqfpvGo","it":"sha384-9e5ULNjSi8qNLjtlFQ/CoUVnZKrQlVEy0VN0AOv3bmQCtroYvCGxCR4Iatlr+K0r","pt":"sha384-/FTCvMRzeSmEaDDqJJiZSAVbNEniFV6nTOR8OAfaAxAEsTYN2Ij0WzrFQb7FW3QR","nl":"sha384-ox5QNql9p/26tXXikrBqoV6+IjGLiZrHCfaScPvCUJqtGnMUbD8Gkmm/GW+AK6Tx","ru":"sha384-BahryZRSiE882ujGRUak1vQoH3yYRZjg5iJ9oWlE06BVor7MEG1ZuwHHJnjqvSgT","ja":"sha384-A7gqbWL09kqE+vxV3WsRY4h7FvPpYXugTpw+50WrWoObK7jfKpcYQOYWWCLDRp5f","zh-Hant":"sha384-4bXUVuschxGDCuTd068t4FdH4tG29rIpL7M7g5s/xV7Wt4G4wsQ0aY8Kf1cJthf1","he":"sha384-4mt2X/G5KcmRwygG53HuesR6sI4/B107uK0KgbHcCK0NiZoFVHQ0VRxe5PgclQyT","ar":"sha384-iGrqF0ZEshdAQk2Ky9Ar37qTub0O+lB4dN1ooDZsEFj3CJWbvv9BRbby1XVktCaz"};
+const PACK_VER = '1.0.0-23b9b3eb', PACK_SRI = {"es":"sha384-Qzh9kNgCc16RAGtRVpZJY0mRQIUwHEWPfkPeJpDCXbcAWfvYpZsTph60HDNdC4vL","fr":"sha384-mKYo9pNThZgafw6Gqu5o236WFI/jWZLXK3xpBwZ25RKL+2VVNXpTDRbH6ocX7R2T","de":"sha384-RZa0iB0wGIk6bARaSMqcrpslZbb7EIRnCGLMZvSxx/lNBVNb4R0iBT6ylq8ZE6dM","it":"sha384-2QWlaLgN5LvKYySeIkku0GpzYM1d9RX1VLj6bUgNYrqdbawk58WLHuIdnISxs7Hi","pt":"sha384-6exzCA8qRgzfhCrUEN3dOpYXU1mo44fIJP29KYxyI+y+r0Ix1KzolkIN+LM9oL48","nl":"sha384-3gjHQztKm2DezyB5gVvzymAR9gqYRE1ngP2p/jN3L++Y5tBNrLiZQTpU6KAsO15r","ru":"sha384-HDTx7TWMCiGZA4IHOKgy6sig3ROcR3iyNqCOImGoLTVgTvxUVQmLBz9mBm3CG2Dj","ja":"sha384-bO9Qqtr/FiM6WLCczxjBOxKFXoSUHQV9z5Bqb8EOqTq6LbTbwu39XJ0XX7yaSPwY","zh-Hant":"sha384-4vTyxkXaJZ0gZYyVsQpAW1qh1l6kbDOJym2b+MKBJmlC/Zz0pkOxHUdK/yaKxFjR","he":"sha384-BlnqzmfYfdF4t8WSD4WkymvKOvNXB5QfIjZwzpr5lKvjM7/pimvyL8mbIXwNZpDg","ar":"sha384-WwsP8ekg4lNg3Mk0llPySp3zSJDKzietP7KOj2oZP+fjx2FzDim6zb4LdrXuAQ/T"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_VER || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1444,7 +1444,7 @@ function renderInboxPanel() {
   const cues = $('div', 'pp-tiles'); panel.appendChild(cues); UI.tiles = {};
   for (const c of I.cues) { const b = $('button', 'pp-tile pp-wide'); b.type = 'button'; b.dataset.cue = c.id; b.setAttribute('aria-pressed', 'false'); b.textContent = tr(c.text); b.addEventListener('click', () => doAction({ t: 'cue', id: c.id })); cues.appendChild(b); UI.tiles[c.id] = b; }
   const row = $('div', 'pp-verdicts'); panel.appendChild(row);
-  for (const [v, label, kind, ic] of [['safe', tr('Safe'), 'go', 'check'], ['trick', tr('Trick'), 'quiet', 'cross'], ['ask', tr('Ask a grown-up'), 'quiet', 'question']]) { const b = btn(label, { kind, icon: ic, onPress: () => doAction({ t: 'verdict', v }) }); b.dataset.verdict = v; row.appendChild(b); }
+  for (const [v, label, kind, ic] of [['safe', tr('Safe'), 'go', 'check'], ['trick', tr('Trick'), 'quiet', 'cross'], ['ask', tr('Ask a trusted adult'), 'quiet', 'question']]) { const b = btn(label, { kind, icon: ic, onPress: () => doAction({ t: 'verdict', v }) }); b.dataset.verdict = v; row.appendChild(b); }
   syncInbox();
 }
 function syncInbox() { const s = S.run.s; for (const id in UI.tiles) pressed(UI.tiles[id], s.flags.includes(id)); }
@@ -1728,7 +1728,7 @@ async function doAction(a) {
       else if (r.failed) { fail(r.why === 'weak' ? tr('A word about you is easy to guess. Swap it for a random word.') : r.why === 'count' ? tr('Pick {n} words.', { n: run.inst.need }) : tr('Longer words make a stronger passphrase.'), true); return r; }
     } else if (run.type === 'inbox') {
       if (r.flags) { sfx('select'); syncInbox(); }
-      else if (r.failed) { fail(r.verdict === 'trick' && r.want === 'trick' ? tr('It is a trick, and this one needs a grown-up.') : tr('Not quite: look at the cues again.'), true); return r; }
+      else if (r.failed) { fail(r.verdict === 'trick' && r.want === 'trick' ? tr('It is a trick, and this one needs a trusted adult.') : tr('Not quite: look at the cues again.'), true); return r; }
       else if (r.done && r.verdict === 'ask' && run.inst.verdict === 'safe') toast(tr('Asking is always OK. This one was safe.'));
       else if (r.done && r.missed && r.missed.length) toast(tr('Right! Next time find every cue first.'));
     } else if (run.type === 'cipher') {

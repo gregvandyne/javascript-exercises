@@ -18,7 +18,33 @@
    "text": "Netville is fiction, but the problem is real. Your games, group chats, photos and streams all move as data across real networks. Real attackers really do fake messages to steal accounts and secrets, and this course is practice for your real online life.",
    "art": "network",
    "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
+   "view": [
+    8.1,
+    21.5,
+    74.5,
+    66.2
+   ],
+   "focus": [
+    {
+     "cue": "Pim's Post to Grandma's House: data on the move",
+     "box": [
+      11.1,
+      48.6,
+      39.1,
+      22.6
+     ]
+    },
+    {
+     "cue": "Every packet is numbered for its journey",
+     "box": [
+      54.1,
+      38.0,
+      25.5,
+      12.3
+     ]
+    }
+   ]
   },
   {
    "title": "The Magpie has help",
@@ -28,9 +54,29 @@
    "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    28.0,
+    92.9,
+    70.4
+   ],
+   "focus": [
+    {
+     "cue": "The name says Post Office",
+     "box": [
+      15.5,
+      42.9,
+      15.7,
+      4.1
+     ]
+    },
+    {
+     "cue": "The real address is a fake account",
+     "box": [
+      4.9,
+      51.9,
+      35.0,
+      2.6
+     ]
+    }
    ]
   },
   {
@@ -49,9 +95,29 @@
    "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
    "view": [
     0.0,
-    26.9,
-    52.0,
-    73.1
+    36.0,
+    64.7,
+    64.0
+   ],
+   "focus": [
+    {
+     "cue": "A real note, copied and signed Pim",
+     "box": [
+      3.4,
+      45.3,
+      27.9,
+      13.7
+     ]
+    },
+    {
+     "cue": "The clue: a faked postmark",
+     "box": [
+      5.9,
+      60.3,
+      25.4,
+      13.3
+     ]
+    }
    ]
   },
   {
@@ -83,19 +149,117 @@
    "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
    "art": "gears",
    "img": "csq/packet-post/protocols-2-design",
-   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them."
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+   "view": [
+    37.6,
+    26.6,
+    53.7,
+    60.5
+   ],
+   "focus": [
+    {
+     "cue": "Expect things to go wrong on the road",
+     "box": [
+      41.0,
+      35.3,
+      20.6,
+      16.5
+     ]
+    },
+    {
+     "cue": "Then pick the rules that catch every one",
+     "box": [
+      40.6,
+      53.7,
+      47.7,
+      26.3
+     ]
+    }
+   ]
   },
   {
    "title": "Six stamps, real jobs",
    "text": "Six stamps wait, one per unit, and each one maps to your real life. Roadwise covers data on the move; Keykeeper, passphrases and proving it is you; Private, your footprint; Trickspotter, phishing and fakes; Kind Screen, your chats; Shield, layers that hold when one fails.",
    "art": "star",
-   "img": "csq/escape-the-post-office/door-2-new",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
+   "visual": {
+    "type": "bars",
+    "label": "Six stamps, one for each unit",
+    "rows": [
+     {
+      "label": "Units 1 and 2",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Roadwise",
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "label": "Keykeeper",
+        "tone": 1
+       }
+      ]
+     },
+     {
+      "label": "Units 3 and 4",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Private",
+        "tone": 2
+       },
+       {
+        "w": 0.5,
+        "label": "Trickspotter",
+        "tone": 3
+       }
+      ]
+     },
+     {
+      "label": "Units 5 and 6",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Kind Screen",
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "label": "Shield",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Roadwise guards packets; Keykeeper guards keys",
+     "box": [
+      5.0,
+      5.5,
+      90.0,
+      23.8
+     ]
+    },
+    {
+     "cue": "Private guards what you share; Trickspotter spots fakes",
+     "box": [
+      5.0,
+      35.7,
+      90.0,
+      23.8
+     ]
+    },
+    {
+     "cue": "Kind Screen keeps chats kind; Shield stacks layers",
+     "box": [
+      5.0,
+      66.0,
+      90.0,
+      23.8
+     ]
+    }
    ]
   },
   {
@@ -103,13 +267,24 @@
    "title": "Your mission",
    "text": "There is no game this time. Every step is built the same way: story slides, then words, a quick check, and a mission. Open the course map and study the six stamps. Think about which stamp you want most.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/door-2-two",
-   "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
+   "img": "csq/escape-the-post-office/door-2-new",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    15.9,
+    96.1,
+    77.2
+   ],
+   "focus": [
+    {
+     "cue": "Lock 1 waits for your first stamp: Roadwise",
+     "box": [
+      1.5,
+      38.7,
+      31.5,
+      34.5
+     ]
+    }
    ]
   }
  ],
@@ -126,7 +301,33 @@
    "text": "Netville is fiction, but the problem is real. Your games, group chats, photos and streams all move as data across real networks. Real attackers really do fake messages to steal accounts and secrets, and this course is practice for your real online life.",
    "art": "network",
    "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
+   "view": [
+    8.1,
+    21.5,
+    74.5,
+    66.2
+   ],
+   "focus": [
+    {
+     "cue": "Pim's Post to Grandma's House: data on the move",
+     "box": [
+      11.1,
+      48.6,
+      39.1,
+      22.6
+     ]
+    },
+    {
+     "cue": "Every packet is numbered for its journey",
+     "box": [
+      54.1,
+      38.0,
+      25.5,
+      12.3
+     ]
+    }
+   ]
   },
   {
    "title": "Meet the Magpie and its flock",
@@ -136,9 +337,29 @@
    "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    28.0,
+    92.9,
+    70.4
+   ],
+   "focus": [
+    {
+     "cue": "The name says Post Office",
+     "box": [
+      15.5,
+      42.9,
+      15.7,
+      4.1
+     ]
+    },
+    {
+     "cue": "The real address is a fake account",
+     "box": [
+      4.9,
+      51.9,
+      35.0,
+      2.6
+     ]
+    }
    ]
   },
   {
@@ -157,9 +378,29 @@
    "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
    "view": [
     0.0,
-    26.9,
-    52.0,
-    73.1
+    36.0,
+    64.7,
+    64.0
+   ],
+   "focus": [
+    {
+     "cue": "A real note, copied and signed Pim",
+     "box": [
+      3.4,
+      45.3,
+      27.9,
+      13.7
+     ]
+    },
+    {
+     "cue": "The clue: a faked postmark",
+     "box": [
+      5.9,
+      60.3,
+      25.4,
+      13.3
+     ]
+    }
    ]
   },
   {
@@ -191,19 +432,117 @@
    "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
    "art": "gears",
    "img": "csq/packet-post/protocols-2-design",
-   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them."
+   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+   "view": [
+    37.6,
+    26.6,
+    53.7,
+    60.5
+   ],
+   "focus": [
+    {
+     "cue": "Expect things to go wrong on the road",
+     "box": [
+      41.0,
+      35.3,
+      20.6,
+      16.5
+     ]
+    },
+    {
+     "cue": "Then pick the rules that catch every one",
+     "box": [
+      40.6,
+      53.7,
+      47.7,
+      26.3
+     ]
+    }
+   ]
   },
   {
    "title": "Six stamps, real jobs",
    "text": "Six stamps wait, one per unit, and each one maps to your real life. Roadwise covers data on the move; Keykeeper, passphrases and proving it is you; Private, your footprint; Trickspotter, phishing and fakes; Kind Screen, your chats; Shield, layers that hold when one fails.",
    "art": "star",
-   "img": "csq/escape-the-post-office/door-2-new",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
+   "visual": {
+    "type": "bars",
+    "label": "Six stamps, one for each unit",
+    "rows": [
+     {
+      "label": "Units 1 and 2",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Roadwise",
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "label": "Keykeeper",
+        "tone": 1
+       }
+      ]
+     },
+     {
+      "label": "Units 3 and 4",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Private",
+        "tone": 2
+       },
+       {
+        "w": 0.5,
+        "label": "Trickspotter",
+        "tone": 3
+       }
+      ]
+     },
+     {
+      "label": "Units 5 and 6",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "Kind Screen",
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "label": "Shield",
+        "tone": 1
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Roadwise guards packets; Keykeeper guards keys",
+     "box": [
+      5.0,
+      5.5,
+      90.0,
+      23.8
+     ]
+    },
+    {
+     "cue": "Private guards what you share; Trickspotter spots fakes",
+     "box": [
+      5.0,
+      35.7,
+      90.0,
+      23.8
+     ]
+    },
+    {
+     "cue": "Kind Screen keeps chats kind; Shield stacks layers",
+     "box": [
+      5.0,
+      66.0,
+      90.0,
+      23.8
+     ]
+    }
    ]
   },
   {
@@ -211,13 +550,24 @@
    "title": "Your mission",
    "text": "There is no game this time. Every step is built the same way: story slides, then words, a quick check, and a mission. Open the course map and study the six stamps. Think about which stamp you want most.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/door-2-two",
-   "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
+   "img": "csq/escape-the-post-office/door-2-new",
+   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
    "view": [
     0.0,
-    9.8,
-    100.0,
-    90.2
+    15.9,
+    96.1,
+    77.2
+   ],
+   "focus": [
+    {
+     "cue": "Lock 1 waits for your first stamp: Roadwise",
+     "box": [
+      1.5,
+      38.7,
+      31.5,
+      34.5
+     ]
+    }
    ]
   }
  ],

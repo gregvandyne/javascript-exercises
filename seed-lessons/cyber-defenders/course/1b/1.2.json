@@ -78,25 +78,25 @@
    "view": [
     25.9,
     18.2,
-    65.4,
+    66.7,
     58.1
    ],
    "focus": [
     {
      "cue": "Sealed roads wear a padlock",
      "box": [
-      28.9,
-      37.7,
-      23.4,
-      30.3
+      42.9,
+      64.5,
+      8.9,
+      3.5
      ]
     },
     {
      "cue": "Open roads have a snoopy cat who reads packets",
      "box": [
-      54.0,
+      58.4,
       26.5,
-      34.3,
+      29.4,
       12.9
      ]
     }

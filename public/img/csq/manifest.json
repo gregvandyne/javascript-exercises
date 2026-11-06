@@ -685,6 +685,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/note-1b-open",
+   "game": "escape-the-post-office",
+   "chapter": "sealed-note",
+   "band": "1b",
+   "state": "note-1b-open",
+   "concept": "the sealed note, read",
+   "alt": "Lock 2 turned to shift 3: the Magpie's note RSHQ now reads OPEN, and the lock is ready to open.",
+   "capturedAt": "2026-11-06",
+   "commit": "698b834"
+  },
+  {
    "key": "csq/escape-the-post-office/note-2",
    "game": "escape-the-post-office",
    "chapter": "sealed-note",
@@ -1560,7 +1571,7 @@
    "band": "1b",
    "state": "tricks-1b-next",
    "concept": "What to do: do not reply, do not tap, tell a trusted adult",
-   "alt": "A third trick card: the safe move is always the same — stop, do not reply, and tell a trusted adult.",
+   "alt": "Card 3 of 6 is safe: a field trip note from your teacher, a known sender who asks for nothing.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
   },
@@ -2500,39 +2511,6 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/letters-1b-lt-1-decide",
-   "game": "trick-inbox",
-   "chapter": "letters",
-   "band": "1b",
-   "state": "letters-1b-lt-1-decide",
-   "concept": "choosing the move",
-   "alt": "Every clue found, the four moves wait under the letter: Deliver, Bin it, Show Pim, or Report and block.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
-   "key": "csq/trick-inbox/letters-1b-lt-1-f1",
-   "game": "trick-inbox",
-   "chapter": "letters",
-   "band": "1b",
-   "state": "letters-1b-lt-1-f1",
-   "concept": "the prize letter, one clue found",
-   "alt": "The tablet letter mid-hunt: one clue found, two still hiding, and the button to choose what to do.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
-   "key": "csq/trick-inbox/letters-1b-lt-1-new",
-   "game": "trick-inbox",
-   "chapter": "letters",
-   "band": "1b",
-   "state": "letters-1b-lt-1-new",
-   "concept": "a prize letter, before the hunt",
-   "alt": "Trick Inbox, Prize Letters: a letter from the Prize Team says you won a tablet. Its three clues are still hiding.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
    "key": "csq/trick-inbox/letters-1b-lt-3-all",
    "game": "trick-inbox",
    "chapter": "letters",
@@ -3092,6 +3070,17 @@
    "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/tricks-1b-coins",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-coins",
+   "concept": "the free coins card",
+   "alt": "Spot the Trick, card 4: a Game Shop offers a thousand free coins if you tap, and the offer ends in one hour.",
+   "capturedAt": "2026-11-06",
+   "commit": "698b834"
   }
  ]
 }

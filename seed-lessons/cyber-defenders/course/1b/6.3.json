@@ -14,9 +14,9 @@
    "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -38,9 +38,9 @@
    "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
    "view": [
     0.0,
-    33.6,
-    57.9,
-    51.5
+    23.3,
+    96.6,
+    70.1
    ],
    "focus": [
     {
@@ -72,8 +72,8 @@
    "view": [
     0.0,
     23.5,
-    79.7,
-    70.8
+    95.1,
+    71.4
    ],
    "focus": [
     {
@@ -94,10 +94,10 @@
    "img": "csq/trick-inbox/chat-1b-ch-4-decide",
    "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
    "view": [
-    48.0,
-    53.8,
-    52.0,
-    46.2
+    2.6,
+    28.2,
+    97.4,
+    71.8
    ],
    "focus": [
     {
@@ -162,9 +162,9 @@
    "alt": "Trick Inbox, the Boss Round: a stranger's game chat waits in the inbox, one clue found in green and one still hiding.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {

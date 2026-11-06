@@ -439,6 +439,7 @@ function gfLayout(fig) {
     img.addEventListener('load', () => gfLayout(fig), { once: true });
     img.addEventListener('error', () => { gfInk.set(fig, false); fig.dataset.gfInk = '0'; gfLayout(fig); }, { once: true });
   }
+  fig.dispatchEvent(new Event('gf:prelayout')); // a zoomed picture (course-zoom.js) goes back to rest first
   fig.classList.remove('gf--strip');
   const n = fig.querySelectorAll('.gf-step').length;
   let fits = true;
@@ -447,6 +448,7 @@ function gfLayout(fig) {
   // The Replay button follows the cues: on the picture with the chips, under it with the strip.
   const btn = fig.querySelector('.gf-replay');
   if (btn) { if (fits) fig.querySelector('.sframe').append(btn); else fig.querySelector('.gf-strip').after(btn); }
+  fig.dispatchEvent(new Event('gf:layout')); // zoom-to-cue (course-zoom.js) lays its zoomed steps out on top
 }
 for (const fig of gfFigs) fig.classList.add('gf-js');
 if (gfFigs.length) {
@@ -455,6 +457,9 @@ if (gfFigs.length) {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const fig of gfFigs) gfLayout(fig); });
   for (const fig of gfFigs) gfLayout(fig);
 }
+// Zoom-to-cue: a screenshot whose game words would read under 11 px zooms to each step (public/js/course-zoom.js,
+// self-contained: it only reads the figure, sets the picture's and the step's geometry, and calls gfPlaceStep).
+if (gfFigs.length) import('/js/course-zoom.js').then(m => m.init({ figs: gfFigs, placeStep: gfPlaceStep, reduced })).catch(() => { /* no zoom: the plain tour */ });
 if (gfFigs.length && !reduced) {
   const gfIO = new IntersectionObserver(es => {
     for (const e of es) {

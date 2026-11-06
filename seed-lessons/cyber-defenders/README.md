@@ -28,13 +28,16 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
 - A deck's game module is exactly the one `units.json` names for that band (a Packet Post chapter, a Trick
   Inbox set or an escape-room lock with canonical params, or Would You Rather locked to "Online: share or keep"),
   and its mission slide names the game and the chapter as the game shows them. Units 1-2 play Packet Post
-  (except 1.3, Escape's Lock 1: Sorting Gate; 1b-2.2 and 2-2.3, Escape's Lock 2: Sealed Note; and 2-2.2, Trick
-  Inbox's Prize Letters), units 4-6 the course's own games, and steps 4.3, 5.1 and 5.2 open three different modules.
+  (except 1.3, Escape's Lock 1: Sorting Gate; 2.2, Trick Inbox's Prize Letters; and 2.3, Escape's Lock 2: Sealed
+  Note), units 4-6 the course's own games (except Explorer 4.1, Packet Post's own Spot the Trick cards, which chain
+  into its 3 Secret Messages puzzles), and steps 4.3, 5.1 and 5.2 open three different modules. Neighboring steps
+  never open the same module, and never two cipher-wheel games (Secret Messages, Sealed Note) back to back.
   No step replays work an earlier step already required: not its chapter, not the chapter Packet Post chains
-  into at the end (Break It Up into Many Roads, Rules of the Road into Many Roads, Secret Messages into Spot the
-  Trick), and not an escape lock (no lock is a band's module twice; the finale plays the whole escape).
+  into at the end (Break It Up into Many Roads, Rules of the Road into Many Roads, Explorer's Spot the Trick into
+  Secret Messages, Pro's Secret Messages into Spot the Trick), and not an escape lock (no lock is a band's module twice; the finale plays the whole escape).
 - A slide is pictured only when the capture shows what the slide teaches, and its tour cues name what is on it;
-  otherwise the slide draws its topic art (`art`) with no picture and no tour.
+  otherwise it draws a diagram of the exact idea (`visual`, one of the engine's drawn types, with a tour), or its
+  topic art (`art`) with no picture and no tour.
 - The Pro intro (`course/2/0.1.json`) also carries `slides_first_time` (same schema as `slides`): the welcome a
   kid sees who never finished an Explorer step, so it never says "welcome back".
 - A deck's check is its own step's three bank items; an item's `cat` is one of the step's CYBER.ORG codes
@@ -53,6 +56,12 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
   `scripts/cyber-shots-rects.json`, which every highlight box on those pictures is taken from.
 - Every screenshot slide with guided focus carries a `view` [x, y, w, h] (% of the picture): the crop a phone
   shows, holding every focus box (boxes stay in % of the whole picture).
+- A crop never cuts a line of the game's text, and on a phone each tour step zooms to its box (zoom-to-cue,
+  `public/js/course-zoom.js`) without cutting one either. Every capture run records the game's text size and word
+  boxes (`scripts/cyber-shots-rects.json`); `node scripts/cyber-zoom-data.mjs` turns them into the engine's data
+  (`public/js/course-zoom-data.js`, `public/img/zoom/`). `tests/unit/cyber-shots.test.js` checks every step at a
+  390 px phone: no cut line, every line the box touches shown whole, and 11 px words wherever the game's layout
+  allows (the steps whose boxes hold lines too wide for that are counted and pinned).
 
 ## Changing the catalogue
 

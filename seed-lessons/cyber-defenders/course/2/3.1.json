@@ -14,27 +14,27 @@
    "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "A nickname that nobody can trace to you",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      8.9,
+      38.5,
+      37.5,
+      20.4
      ]
     },
     {
      "cue": "Your real first name, out in the open",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.3,
+      41.0,
+      32.0,
+      15.3
      ]
     }
    ]
@@ -47,27 +47,27 @@
    "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Share your drawing with everyone: feedback, and risk",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      9.9,
+      38.5,
+      35.5,
+      20.4
      ]
     },
     {
      "cue": "Or show it only to your family",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.2,
+      41.0,
+      32.2,
+      15.3
      ]
     }
    ]
@@ -81,8 +81,8 @@
    "view": [
     0.0,
     34.1,
-    70.2,
-    62.4
+    74.5,
+    63.1
    ],
    "focus": [
     {
@@ -130,7 +130,7 @@
      "box": [
       3.6,
       49.6,
-      92.8,
+      10.2,
       5.0
      ]
     }
@@ -144,27 +144,27 @@
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Delete an old post you are embarrassed by",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.9,
+      38.5,
+      31.6,
+      20.4
      ]
     },
     {
      "cue": "Or leave it, and laugh it off",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      61.1,
+      41.0,
+      22.4,
+      15.3
      ]
     }
    ]
@@ -202,9 +202,9 @@
    "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {

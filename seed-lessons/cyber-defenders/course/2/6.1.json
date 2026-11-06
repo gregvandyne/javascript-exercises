@@ -14,18 +14,18 @@
    "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "One threat: an interceptor reads a note",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      45.3,
+      7.7
      ]
     },
     {
@@ -47,9 +47,9 @@
    "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -71,27 +71,27 @@
    "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "A stolen key, tried from a new device",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      56.7,
+      7.7
      ]
     },
     {
      "cue": "It meets the second step and stops",
      "box": [
-      26.0,
-      54.7,
-      23.5,
-      12.9
+      26.9,
+      55.2,
+      20.0,
+      11.6
      ]
     }
    ]
@@ -104,18 +104,18 @@
    "alt": "Threat 3 of 6: a known hole in old software lets a trick letter slip in. The Patch Crew closes it.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
      "cue": "A known hole in old software",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      2.4,
+      44.3,
+      55.2,
+      7.7
      ]
     },
     {
@@ -144,9 +144,9 @@
    "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -207,9 +207,9 @@
    "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {

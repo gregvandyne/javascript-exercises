@@ -14,9 +14,9 @@
    "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
@@ -47,18 +47,18 @@
    "alt": "Lock 4 at Pro, message 5 of 8: Post Office asks you to confirm your key, but the postmark is a far-town hand stamp.",
    "view": [
     0.0,
-    7.7,
+    0.0,
     100.0,
-    90.2
+    97.9
    ],
    "focus": [
     {
      "cue": "Inside a lock: a spoofed sender",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      26.8
+      2.4,
+      44.3,
+      72.0,
+      23.6
      ]
     },
     {
@@ -80,27 +80,27 @@
    "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
      "cue": "Each lock names the stamp that opens it",
      "box": [
-      67.0,
-      37.8,
-      31.5,
-      34.5
+      67.9,
+      39.2,
+      26.1,
+      31.7
      ]
     },
     {
      "cue": "Two locks open: the first two skills",
      "box": [
-      1.5,
-      37.8,
-      64.3,
-      34.5
+      2.4,
+      39.2,
+      56.6,
+      16.6
      ]
     }
    ]
@@ -120,9 +120,9 @@
    "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
@@ -144,9 +144,9 @@
    "alt": "Lock 4 at Pro: the first of eight messages, with four moves to choose from and a hint feather below.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
@@ -202,9 +202,9 @@
    "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {

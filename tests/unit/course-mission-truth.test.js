@@ -26,6 +26,7 @@ const CHAIN_PHRASE = {
   'cs-quest 2 4.1': 'two Many Roads levels',
   'cs-quest 2 4.3': 'the 4 trick cards',
   'cyber-defenders 1b 1.1': 'all 4 levels of Many Roads',
+  'cyber-defenders 1b 4.1': 'Secret Messages: solve its 3 puzzles',
   'cyber-defenders 2 1.1': 'the 2 Many Roads levels',
 };
 // Steps whose game chapter was already required in full by an earlier step: the mission must say the

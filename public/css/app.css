@@ -1262,6 +1262,20 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .smedia>.gf-replay:hover{background:var(--hover)}
 .smedia>.gf-replay[hidden]{display:none}
 .gf-cues{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* Zoom-to-cue (public/js/course-zoom.js): a screenshot whose words would read too small zooms to each step. The
+   picture glides to the step's region, then the step's ring fades in; the step's words sit in the strip below. */
+.gfz .simg{transition:left .6s ease,top .6s ease,width .6s ease,height .6s ease}
+.gfz .gf-step{transition:opacity .3s ease .55s}
+.gfz:not([data-gf-step]) .gf-step{transition:opacity .3s ease}
+.gfz.gfz-now .simg,.gfz.gfz-now .gf-step{transition:none}
+.gfz .szoom{transition:opacity .3s ease}
+.gfz.gfz-in .szoom{opacity:0;pointer-events:none} /* the corner button would sit on the zoomed words; it is back at rest */
+@media (prefers-reduced-motion: reduce){
+  .gfz .simg,.gfz .gf-step{transition:none}
+  .gf-js.gfz[data-gf-step] .gf-step{opacity:0}
+  .gf-js.gfz[data-gf-step="0"] .gf-step[data-i="0"],.gf-js.gfz[data-gf-step="1"] .gf-step[data-i="1"],.gf-js.gfz[data-gf-step="2"] .gf-step[data-i="2"],.gf-js.gfz[data-gf-step="3"] .gf-step[data-i="3"]{opacity:1}
+  .gf-js.gfz[data-gf-step] .gf-strip{display:grid}
+}
 /* Small screens: at phone size the desktop dim greys out nearly the whole picture, so it fades right
    back and the active box gets a glow to carry the highlight instead; the cue chip shrinks a step too.
    (Placed before the reduced-motion block so the static mode's undimmed boxes still win when both apply.) */

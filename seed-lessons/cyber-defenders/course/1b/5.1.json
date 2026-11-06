@@ -24,7 +24,7 @@
      "box": [
       3.6,
       56.4,
-      92.8,
+      76.8,
       5.4
      ]
     }
@@ -71,9 +71,9 @@
    "alt": "Game chat from a player nobody knows: keep our chat secret from your parents, and a plan to meet. Both clues found.",
    "view": [
     0.0,
-    31.8,
-    71.4,
-    63.5
+    28.2,
+    74.5,
+    67.1
    ],
    "focus": [
     {
@@ -111,9 +111,9 @@
    "alt": "Game chat from NewFriend: a rare game skin, free, if you keep it our secret and send your game key.",
    "view": [
     0.0,
-    17.5,
-    92.8,
-    82.5
+    16.3,
+    95.0,
+    83.7
    ],
    "focus": [
     {
@@ -143,10 +143,10 @@
    "img": "csq/trick-inbox/chat-1b-ch-4-decide",
    "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
    "view": [
-    48.0,
-    53.8,
-    52.0,
-    46.2
+    2.6,
+    28.2,
+    97.4,
+    71.8
    ],
    "focus": [
     {
@@ -193,9 +193,9 @@
    "alt": "The stranger's chat, shown to Pim: chat is for people you know in real life, so show a trusted adult.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {
