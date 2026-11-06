@@ -79,28 +79,28 @@
    "img": "csq/packet-post/tricks-1b-card",
    "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
    "view": [
-    54.5,
-    25.0,
-    45.0,
-    45.0
+    6.0,
+    24.0,
+    49.0,
+    36.0
    ],
    "focus": [
     {
      "cue": "Clue three: an unknown sender",
      "box": [
-      55.2,
-      49.0,
-      16.3,
-      8.8
+      22.7,
+      29.7,
+      12.8,
+      3.6
      ]
     },
     {
      "cue": "Clue four: it asks for your mailbox key",
      "box": [
-      71.9,
-      39.9,
-      16.4,
-      8.8
+      9.3,
+      38.6,
+      37.9,
+      4.6
      ]
     }
    ]
