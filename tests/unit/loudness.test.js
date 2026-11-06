@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { rmsDb, bytesToFloat, stateOf, loudDecision, createListener } from '../../public/js/loudness.js';
+import { rmsDb, bytesToFloat, stateOf, loudDecision, createListener, bridge } from '../../public/js/loudness.js';
 
 const src = fs.readFileSync('public/js/loudness.js', 'utf8');
 
@@ -94,6 +94,46 @@ test('stopped while the browser prompt is up: the tracks it then gets are stoppe
   assert.equal(await p, 'stopped'); assert.ok(f.log.tracks[0].stopped); assert.equal(L.active(), false);
 });
 
+// ---- the page's bridge, with a fake listener, a fake clock and no DOM
+function fakeBridge() {
+  const sent = [], ui = { pill: null, tap: null, mic: null }; let h = null, active = false, clock = 0, every = null, release = null;
+  const L = { start: () => new Promise(r => { release = st => { if (st === 'on') { active = true; h.onState('on'); } r(st); }; }),   // the tracks exist only once the prompt is answered
+    stop() { active = false; }, active: () => active, resume() { h.onState('on'); return Promise.resolve(); } };
+  const b = bridge({ toFrame: m => sent.push(m.state || m.db) }, {
+    listen: x => { h = x; return L; }, now: () => clock, every: fn => { every = fn; return 1; }, clearEvery: () => { every = null; }, events: false,
+    ui: { pill: on => { ui.pill = on; }, tap: (on, fn) => { ui.tap = on ? fn : null; }, mic: on => { ui.mic = on; } } });
+  return { b, sent, ui, L, state: s => h.onState(s), level: db => h.onLevel(db), tick: ms => { clock += ms; if (every) every(); }, release: st => release(st), get active() { return active; } };
+}
+
+test('bridge: hello is ready; a start needs a tap; on, numbers flow and the keep-alive holds the lease (6 s)', async () => {
+  const f = fakeBridge();
+  await f.b.message({ op: 'hello' }, false); assert.deepEqual(f.sent, ['ready']);
+  await f.b.message({ op: 'start' }, false); assert.equal(f.sent.at(-1), 'needsTap'); assert.equal(f.active, false, 'no tap, no microphone');
+  const p = f.b.message({ op: 'start' }, true); f.release('on'); await p;
+  assert.equal(f.sent.at(-1), 'on'); assert.equal(f.ui.pill, true); assert.equal(f.ui.mic, true);
+  f.level(-40); assert.equal(f.sent.at(-1), -40);
+  f.tick(4000); await f.b.message({ op: 'keep' }); f.tick(4000); assert.equal(f.active, true, 'kept alive');
+  f.tick(2500); assert.equal(f.active, false, 'no keep-alive for 6 s: stopped'); assert.equal(f.sent.at(-1), 'stopped'); assert.equal(f.ui.pill, false);
+});
+
+test('bridge: while the page waits for its own tap the lease waits (up to a minute), no numbers go out, and the tap renews it', async () => {
+  const f = fakeBridge();
+  const p = f.b.message({ op: 'start' }, true); f.release('on'); await p;
+  f.state('needsTap'); assert.equal(f.sent.at(-1), 'needsTap'); assert.equal(typeof f.ui.tap, 'function');
+  f.level(-30); assert.notEqual(f.sent.at(-1), -30, 'nothing measured while it waits');
+  f.tick(10000); f.tick(10000); assert.equal(f.active, true, 'not stopped after 20 s without a keep-alive');
+  f.ui.tap(); assert.equal(f.sent.at(-1), 'on'); assert.equal(f.ui.tap, null);
+  f.tick(5000); assert.equal(f.active, true, 'the tap renewed the lease');
+  f.state('needsTap'); f.tick(61000); assert.equal(f.active, false, 'a minute with no tap: stopped');
+});
+
+test('bridge: stopped while the browser prompt is up, the game is told (it does not wait 2 minutes)', async () => {
+  const f = fakeBridge();
+  const p = f.b.message({ op: 'start' }, true);
+  f.b.stop('stopped'); assert.equal(f.sent.at(-1), 'stopped');
+  f.release('stopped'); await p;
+});
+
 test('the file: no recorder, no network, no storage, and the speakers are never named', () => {
   const code = src.replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
   for (const bad of ['MediaRecorder', 'fetch(', 'XMLHttpRequest', 'WebSocket', 'sendBeacon', 'localStorage', 'sessionStorage', 'indexedDB', 'destination']) assert.ok(!code.includes(bad), bad);
@@ -101,4 +141,44 @@ test('the file: no recorder, no network, no storage, and the speakers are never 
   assert.ok(!play.includes('MediaRecorder') && !play.includes('getUserMedia'), 'play.js never opens the microphone itself');
   assert.ok(/if \(!d\.mic\) toFrame\(\{ type: 'brb:loudState', state: 'off' \}\)/.test(play), 'any other game\'s page answers off');
   assert.ok(/import\('\/js\/loudness\.js'\)/.test(play), 'loudness.js is loaded only when needed');
+});
+
+// ---- the frame's side (public/sdk/brb-sdk.js "Loudness"), with a fake parent, clock and send
+function fakeSdk() {
+  const sdk = fs.readFileSync('public/sdk/brb-sdk.js', 'utf8');
+  const a = sdk.indexOf("  var LOUD_STATES"), b = sdk.indexOf('\n', sdk.indexOf("Object.defineProperty(loudApi, 'state'"));
+  const sent = [], listeners = [], timers = []; let id = 0;
+  const parent = {};
+  const win = { addEventListener: (n, f) => { if (n === 'message') listeners.push(f); } };
+  const add = (f, ms, every) => { timers.push({ id: ++id, f, ms, every, done: false }); return id; };
+  const clear = i => { const t = timers.find(x => x.id === i); if (t) t.done = true; };
+  const api = new Function('window', 'parentWin', 'send', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval',
+    sdk.slice(a, b) + '\nreturn loudApi;')(win, parent, (type, m) => sent.push(m.op), (f, ms) => add(f, ms, false), clear, (f, ms) => add(f, ms, true), clear);
+  const page = state => listeners.forEach(f => f({ source: parent, data: { brb: 1, type: 'brb:loudState', state } }));
+  const fire = ms => timers.filter(t => !t.done && t.ms === ms).forEach(t => { if (!t.every) t.done = true; t.f(); });
+  return { api, sent, page, fire, keeps: () => sent.filter(x => x === 'keep').length, flush: () => new Promise(r => setImmediate(r)) };
+}
+
+test('SDK: keep-alives only after the game\'s own start (at once, then every 2 s, also while the page waits for a tap)', async () => {
+  const f = fakeSdk();
+  f.page('on');   // an "on" the game never asked for (a start from before a reload)
+  assert.equal(f.keeps(), 0, 'no keep-alive'); assert.deepEqual(f.sent, ['stop'], 'and the page is told to stop'); assert.equal(f.api.state, 'idle');
+  const p = f.api.start(); await f.flush(); assert.equal(f.sent.at(-1), 'hello');
+  f.page('ready'); await f.flush(); assert.equal(f.sent.at(-1), 'start');
+  f.page('on'); assert.equal(await p, 'on'); assert.equal(f.keeps(), 1, 'one keep at once');
+  f.fire(2000); assert.equal(f.keeps(), 2);
+  f.page('needsTap'); f.fire(2000); assert.equal(f.keeps(), 3, 'the lease stays alive while the page waits for its tap');
+  f.page('on'); f.fire(2000); assert.equal(f.keeps(), 4);
+  f.api.stop(); f.fire(2000); assert.equal(f.keeps(), 4, 'none after stop()');
+  f.page('on'); assert.equal(f.sent.at(-1), 'stop', 'an on after stop() is refused');
+});
+
+test('SDK: a slow page does not lock the game into "no mic": a hello timeout is not remembered', async () => {
+  const f = fakeSdk();
+  const p = f.api.available(); f.fire(800); assert.equal(await p, false);
+  const q = f.api.available(); await f.flush(); assert.equal(f.sent.filter(x => x === 'hello').length, 2, 'asked again');
+  f.page('ready'); assert.equal(await q, true);
+  assert.equal(await f.api.available(), true); assert.equal(f.sent.filter(x => x === 'hello').length, 2, 'the page\'s answer is remembered');
+  const g = fakeSdk(); const r = g.api.available(); g.page('off'); assert.equal(await r, false); assert.equal(await g.api.available(), false);
+  assert.equal(g.sent.filter(x => x === 'hello').length, 1, 'a real "off" is remembered');
 });

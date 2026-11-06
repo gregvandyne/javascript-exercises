@@ -246,14 +246,23 @@ $('#p-rate') && $('#p-rate').addEventListener('click', () => {
 
 // ---- Loudness (one official classroom game: page-data.mic; docs/safety.md "Loudness") ----
 // The page, never the game frame, opens the microphone, and only after a real tap; the game gets one number at a time.
-let loudBridge = null, loudLoading = null;
+let loudBridge = null, loudLoading = null, loudGen = 0;
+// The tap check for a start has its own short limit (a browser without navigator.userActivation), apart from Retry's.
+const loudTapped = () => tappedJustNow('brb-loud-at', 3e3);
 function loudMessage(m) {
-  if (!loudLoading) loudLoading = import('/js/loudness.js').then(mod => { loudBridge = mod.bridge({ toFrame, stage, t, tapped: tappedJustNow }); return loudBridge; });
+  // hello is answered at once from page-data: the frame waits at most 800 ms, and a slow school network loading
+  // loudness.js must not read as "no microphone here".
+  if (m.op === 'hello' && !loudBridge) { toFrame({ type: 'brb:loudState', state: 'ready' }); return; }
+  if (!loudLoading) loudLoading = import('/js/loudness.js').then(mod => { loudBridge = mod.bridge({ toFrame, stage, t, tapped: loudTapped }); return loudBridge; });
   // the tap is checked now, while it is fresh, not after the module has loaded
-  const tap = m.op === 'start' ? tappedJustNow() : false;
-  loudLoading.then(b => b.message({ op: m.op }, tap)).catch(() => toFrame({ type: 'brb:loudState', state: 'unavailable' }));
+  const tap = m.op === 'start' ? loudTapped() : false, gen = loudGen;
+  loudLoading.then(b => {
+    // a start from a game that has since been reloaded or stopped is dropped: the new game never asked for it
+    if (m.op === 'start' && gen !== loudGen) return;
+    return b.message({ op: m.op }, tap);
+  }).catch(() => toFrame({ type: 'brb:loudState', state: 'unavailable' }));
 }
-function stopLoud() { if (loudBridge) loudBridge.stop('stopped'); }
+function stopLoud() { loudGen++; if (loudBridge) loudBridge.stop('stopped'); }
 
 // ---- AI voices (docs/tts-design.md): the game frame can't fetch, so its lines come through here ----
 // Only official games listed for voices and games the admin switched on get d.tts (a token bound to this player and

@@ -146,3 +146,24 @@ test('play.js: brb:loud is accepted only with a known op; a page without the fla
   assert.equal(validMessage({ source: {}, origin: 'null', data: { brb: 1, type: 'brb:loud', op: 'start' } }, frame), null, 'only our frame');
   assert.match(src, /case 'brb:loud': if \(!d\.mic\) toFrame\(\{ type: 'brb:loudState', state: 'off' \}\); else loudMessage\(m\); break;/);
 });
+
+test('play.js: a start left over from before a reload never opens the mic for the new game; hello needs no module load', async () => {
+  const src = fs.readFileSync('public/js/play.js', 'utf8');
+  const a = src.indexOf('let loudBridge = null'), b = src.indexOf("function stopLoud() {");
+  const end = src.indexOf('\n', b);
+  const sent = [], log = [];
+  let release;
+  // the module loads slowly: the frame reloads (stopLoud) before it arrives
+  const importer = () => new Promise(r => { release = () => r({ bridge: () => ({ message: (m, tap) => { log.push([m.op, tap]); }, stop: () => log.push(['stop']) }) }); });
+  const make = new Function('toFrame', 'tappedJustNow', 'stage', 't', 'importLoud',
+    src.slice(a, end).replace("import('/js/loudness.js')", 'importLoud()') + '\nreturn { loudMessage, stopLoud };');
+  const { loudMessage, stopLoud } = make(m => sent.push(m.state), () => true, {}, k => k, importer);
+  loudMessage({ op: 'hello' });
+  assert.deepEqual(sent, ['ready'], 'hello is answered at once, before loudness.js loads');
+  loudMessage({ op: 'start' });
+  stopLoud();   // the frame reloaded
+  release(); await new Promise(r => setTimeout(r, 0));
+  assert.deepEqual(log, [], 'the old start is dropped');
+  loudMessage({ op: 'start' }); await new Promise(r => setTimeout(r, 0));
+  assert.deepEqual(log, [['start', true]], 'a fresh start goes through');
+});

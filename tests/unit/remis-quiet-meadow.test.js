@@ -101,6 +101,19 @@ test('while held (Remi\'s own sound), the room is not listened to', () => {
   run(g, 6, () => 10, { held: () => true }); assert.equal(g.state, 'grumpy', 'calm while held does not count either');
 });
 
+test('feed: the gauge follows the room, and holds still while Remi\'s own sound plays (his voice can\'t wake him)', () => {
+  assert.equal(C.feed(20, 90, 0.05, false), C.smooth(20, 90, 0.05));
+  assert.equal(C.feed(20, 90, 0.05, true), 20, 'held: the level stays');
+  // his sigh from a loud speaker, at the Whisper line (40): the level he sees never crosses it
+  let lv = 22; const line = C.line(30, 'whisper', 0);
+  for (let i = 0; i < 40; i++) lv = C.feed(lv, 95, 0.05, true);
+  assert.ok(lv < line, String(lv));
+  // and the moods together with the gauge: a sound held for 2 s over a calm room, then calm: no wake, no stir
+  const s = C.make(); let level = 10;
+  for (let t = 0; t < 4; t += 0.05) { const held = t < 2; level = C.feed(level, held ? 95 : 10, 0.05, held); C.step(s, { level, line, held, dt: 0.05 }); }
+  assert.equal(s.wakes, 0); assert.equal(s.state, 'asleep');
+});
+
 test('grumpy + 4 s of calm: he lies back down and is asleep again; the clock never counts while he is awake', () => {
   const s = C.make(); run(s, 2.2, () => 90); run(s, 3, () => 90);
   assert.equal(s.state, 'grumpy'); const q = s.quiet;
@@ -136,6 +149,8 @@ test('the same steps always give the same Remi', () => {
   assert.ok(ea.length > 3, 'something happened');
 });
 
+// Remi's name in the languages not written in Latin letters (server/i18n/notes.json)
+const NAME = { ar: 'ريمي', he: 'רמי', ja: 'レミ', ru: 'Реми', 'zh-Hant': '雷米' };
 test('the words: every key in all 13 languages, the same placeholders, Remi named in each', () => {
   const blk = html.slice(html.indexOf('// ==== I18N START ===='), html.indexOf('// ==== I18N END ===='));
   const b = {}; vm.runInNewContext(blk + '\nthis.I18N = I18N;', b);
@@ -145,14 +160,21 @@ test('the words: every key in all 13 languages, the same placeholders, Remi name
   for (const l of LANGS) {
     assert.ok(I[l], l);
     for (const k of keys) { assert.ok(typeof I[l][k] === 'string' && I[l][k].length, `${l}.${k}`); assert.equal(ph(I[l][k]), ph(I.en[k]), `${l}.${k} placeholders`); }
-    assert.ok(I[l].title.includes('Remi'), `${l}: Remi stays Remi`);
+    assert.ok(I[l].title.includes(NAME[l] || 'Remi'), `${l}: Remi is named (${NAME[l] || 'Remi'})`);
+    assert.ok(!NAME[l] || !Object.values(I[l]).some(v => /Remi/.test(v)), `${l}: written in its own script, never in Latin letters`);
     assert.ok(!Object.values(I[l]).some(v => typeof v !== 'string'), `${l}: no plural objects`);
   }
   // every key the game uses exists in English
   const game = html.slice(html.indexOf('// ==== I18N END ===='));
   const used = [...new Set([...game.matchAll(/\bt\('([A-Za-z_]+)'/g)].map(m => m[1]).filter(k => !k.endsWith('_')))];
   for (const k of used) assert.ok(k in I.en, `t('${k}') is in the block`);
-  for (const st of ['denied', 'nodevice', 'busy', 'unavailable', 'off']) { assert.ok(I.en['noMic_' + st] && I.en['noMic_' + st + '_p'], st); }
+  for (const st of ['denied', 'nodevice', 'busy', 'unavailable', 'off', 'tap']) { assert.ok(I.en['noMic_' + st] && I.en['noMic_' + st + '_p'], st); }
+  // Arabic: no "2 دقيقة" (the plural differs by number), an abbreviation instead
+  assert.ok(!/\{n\} دقيقة/.test(I.ar.min + I.ar.quietMin), 'ar minutes');
+  // one form of address per language: French vous, German ihr, Italian voi
+  assert.ok(!/\b(Appuie|Touche|choisis|Branche|Ferme-le|Essaie|Ouvre|Tu peux|Réessaie)\b/.test(Object.values(I.fr).join(' ')), 'fr: vous');
+  assert.ok(!/\b(Tippe|wähle|drücke|Schließe|Probiere|Öffne|Drücken,)\b/.test(Object.values(I.de).join(' ')), 'de: ihr');
+  assert.ok(!/\b(Premilo|Tocca|scegli|premi|Collega|Chiudila|Prova|Apri|Puoi)\b/.test(Object.values(I.it).join(' ')), 'it: voi');
 });
 
 test('AI voices: registered, and only the calm lines are spoken (never while it listens)', () => {
@@ -169,13 +191,14 @@ test('the scan passes, the kit is pinned, and the json describes the game in eve
   const j = JSON.parse(fs.readFileSync('seed-games/remis-quiet-meadow.json', 'utf8'));
   assert.equal(j.slug, 'remis-quiet-meadow'); assert.equal(j.title, "Remi's Quiet Meadow"); assert.equal(j.category, 'learning'); assert.equal(j.featured, true);
   assert.equal(j.players_max, 1); assert.equal(j.age_rating, 'everyone'); assert.match(j.description, /nothing is recorded/i);
-  for (const l of LANGS.filter(x => x !== 'en' && x !== 'en-GB')) assert.ok(j.l10n[l] && j.l10n[l].title.includes('Remi') && j.l10n[l].description && j.l10n[l].tags, `l10n ${l}`);
+  for (const l of LANGS.filter(x => x !== 'en' && x !== 'en-GB')) assert.ok(j.l10n[l] && j.l10n[l].title.includes(NAME[l] || 'Remi') && j.l10n[l].description && j.l10n[l].tags, `l10n ${l}`);
 });
 
 test('child safety in the file: it never asks for the microphone, never records, never sends', () => {
   for (const bad of ['getUserMedia', 'mediaDevices', 'MediaRecorder', 'createMediaStreamSource', 'fetch(', 'XMLHttpRequest', 'WebSocket', 'sendBeacon']) assert.ok(!html.includes(bad), bad);
   assert.ok(html.includes('BRB.loudness'), 'it only reads the number the page passes');
-  assert.ok(/storage\.set\(KEY, \{ preset: CFG\.preset, fine: CFG\.fine, goal: CFG\.goal, base: CFG\.base \}\)/.test(html), 'only the teacher\'s settings are saved');
+  assert.ok(/storage\.set\(KEY, \{ preset: CFG\.preset, fine: CFG\.fine, goal: CFG\.goal \}\)/.test(html), 'only the teacher\'s settings are saved');
+  assert.ok(!/storage\.set\([^)]*base/.test(html) && /base: CORE\.BASE, calibrated: false/.test(html), 'the measured room level is never saved or read back');
   assert.ok(html.includes("BRB.gameOver({ won: true, score: null })"), 'no score is submitted');
 });
 

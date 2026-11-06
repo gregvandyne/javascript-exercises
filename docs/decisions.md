@@ -2522,12 +2522,23 @@ too noisy. Plan and evidence: `docs/remi-quiet-meadow-plan.md`.
   the line is the calibrated room quiet (median of 3 s, else 30) + Whisper 10 / Quiet work 18 / Group work 30 ± 25.
   Asleep → stirring near the line → waking after 1.5 s over it (leaky, so a clap only stirs him) → yawn, grumble,
   grumpy → 4 s of calm → lies down. The quiet clock runs only while he sleeps; a goal (2–30 min or none) ends happily;
-  stars 3/2/1 for 0–1/2–3/more wake-ups. His WebAudio sounds hold the measuring while they play (+400 ms) so the
-  speakers never wake him.
+  stars 3/2/1 for 0–1/2–3/more wake-ups. His WebAudio sounds hold the measuring while they play (+800 ms) and the
+  gauge's level is frozen meanwhile (`RemiCore.feed`), so the speakers never wake him. Moods and the clock move only
+  while the room is really measured (fresh numbers in the last 0.3 s; not while the page waits for its own tap), and a
+  calibration the microphone drops out of is thrown away.
+- **Readable from the back of the room** (review): a big "!" and a warm tint for as long as he stirs (head up, one eye
+  open for a second); paws over his ears when it is loud, held 0.9 s so a room hovering at the line doesn't flicker;
+  the Zzz twice as big with a thick outline; the gauge ~120 px wide at 1080p with "Shh / Getting loud" zone names,
+  Remi faces at both ends (no emoji) and a pulsing line near it; "Remi is talking" sits where the "Too loud" tag is;
+  a "🎤 Listening" chip next to Pause. The results card stands beside happy Remi (wide) or under him (tall), with the
+  quiet time and wake-ups as two big numbers, "Same settings" and "Another quiet time".
+- **Name:** "Remi" in Latin-letter languages, ريمي / רמי / レミ / Реми / 雷米 in the others (`server/i18n/notes.json`).
 - **No mic?** A card explains blocked / none / busy / old browser / "this page can't listen", with Try again and a demo
   (noise slider, clap, class chatter). Kit 1.1.3 shell, no packs, own rAF loop (the kit's loop pauses on blur).
 - **Child safety:** no recording, no accounts or data needed, no score submitted (`gameOver({won:true, score:null})`),
-  settings saved as numbers only, no text input. AI voices may read only the title, setup, privacy note and end lines.
-- **Open:** iPad Safari may not pass the tap to the page; the page then shows its own "Tap to start listening" button,
-  which needs a check on a real iPad.
+  settings saved as ids and the fine slider only (the room's measured quiet level stays in memory for the visit), no
+  text input. AI voices may read only the title, setup, privacy note and end lines.
+- **Open:** iPad Safari may not pass the tap to the page; the page then shows its own "Tap to start listening" button
+  (the lease waits up to a minute for it, the game hears no numbers meanwhile), which needs a check on a real iPad, as
+  does the wake-up sound on real speakers (softened: triangle voice, low filter Q, an out-breath).
 

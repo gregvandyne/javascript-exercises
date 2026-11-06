@@ -173,16 +173,19 @@ microphone is allowed on the Studio page and on the play page of one official cl
 frame.
 
 **Loudness** (Remi's Quiet Meadow only; `server/services/mic-games.js`, `public/js/loudness.js`; off with
-`MIC_GAMES=0`). The game is a classroom noise meter. Its play page, and only that page (the slug, an official seed game
-owned by the official account, published, not hidden, not in an online match), sends `microphone=(self)`. After a
+`MIC_GAMES=0`). The game is a classroom noise meter. Its play page, and only that page (the slug, an official seed
+game owned by the official account, published, not hidden, not in an online match), sends `microphone=(self)`. After a
 real tap, the page opens the microphone with the browser's own prompt (no echo cancelling, noise suppression or
 automatic gain), measures the level on the device with an AnalyserNode that is connected to nothing else, and posts
 one dBFS number to the game about 20 times a second. Audio is never recorded (no MediaRecorder), stored, uploaded or
-sent anywhere, and the numbers are not stored either. The page shows its own "🎤 Listening · Stop" pill while it
-listens and stops every microphone track on Stop, pause, a hidden page, leaving, a frame reload or when the game goes
-quiet for 6 s. The game frame itself is unchanged: opaque, `microphone=()`, the same sandbox and CSP as every game;
-browsers refuse the microphone in opaque frames anyway. Every other game's page answers `off`, and the scanner still
-fails any game that asks for the microphone (no exemption). Tests: `tests/unit/mic-scope.test.js`,
+sent anywhere, and the numbers are not stored either: the game keeps them in memory only. Even the room's quiet level
+from "Set to the room's quiet" (a whole number) stays in memory for that visit; the saved settings are the preset, the
+fine slider and the goal. The page shows its own "🎤 Listening · Stop" pill while it listens and stops every microphone
+track on Stop, pause, a hidden page, leaving, a frame reload or when the game goes quiet for 6 s (a minute while the
+page waits for its own tap). A start the game sent before a reload is dropped, and the SDK keeps the lease alive only
+after the game's own `start()`. The game frame itself is unchanged: opaque, `microphone=()`, the same sandbox and CSP
+as every game; browsers refuse the microphone in opaque frames anyway. Every other game's page answers `off`, and the
+scanner still fails any game that asks for the microphone (no exemption). Tests: `tests/unit/mic-scope.test.js`,
 `tests/unit/loudness.test.js`, `tests/e2e/remis-quiet-meadow.spec.js`.
 
 *Live mode* (`server/services/stt-live.js`; off with `STT_LIVE=0`): the words show in the box while the child speaks.

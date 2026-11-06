@@ -1390,7 +1390,7 @@
   "live.play.aiVoice": "Small note under the Read button. {provider} is the AI voice company (OpenAI), never translated. Must say the voice is made by AI.",
   "info.parents.ai.p4": "Parents page. {ttsProvider} is the AI voice company (OpenAI), never translated. \"🔊 Voices\" is the play page button (play.voices, now \"AI voices\"): use the same words.",
   "info.privacy.children.p6": "Privacy page. {ttsProvider} is the AI voice company (OpenAI), never translated. Keep the <b>…</b> tags.",
-  "learn.games.remisQuietMeadow": "The 'what it practises' line for Remi's Quiet Meadow, a classroom noise meter (game page and teacher pages), max ~140 chars. Remi is the red panda's name: keep \"Remi\" in Latin letters in every language, never translated or transliterated.",
+  "learn.games.remisQuietMeadow": "The 'what it practises' line for Remi's Quiet Meadow, a classroom noise meter (game page and teacher pages), max ~140 chars. Remi is the red panda's name (a character, a boy): keep \"Remi\" in languages written in Latin letters and write it in the other scripts as in the game (ar ريمي, he רמי, ja レミ, ru Реми, zh-Hant 雷米); never translate it.",
   "js.loudness.listening": "Pill on the play page of Remi's Quiet Meadow while the page measures how loud the room is (a number only; nothing is recorded). A short status word or two after a 🎤, max ~14 chars.",
   "js.loudness.stop": "Button in that pill that switches the microphone off at once. One short verb, max ~8 chars.",
   "js.loudness.tap": "Big button over the game when the browser needs one more tap before it can listen (some tablets). Max ~30 chars."

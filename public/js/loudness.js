@@ -6,7 +6,7 @@
 //   - Audio is never recorded: no MediaRecorder, no buffers kept, nothing stored, nothing sent over the network.
 //   - The analyser is connected to nothing: the microphone never reaches the speakers.
 //   - The microphone stops (every track) on Stop, pause, a hidden page, leaving, a frame reload, or when the game goes
-//     quiet (no keep-alive for 6 s). The page shows its own "Listening · Stop" pill the whole time it is on.
+//     quiet (no keep-alive for 6 s; a minute while it waits for the page's own tap). The page shows its own "Listening · Stop" pill the whole time it is on.
 // The game frame itself can never open the microphone (it is opaque-origin and its header says microphone=()).
 // No imports: node --test loads the pure parts (rmsDb, bytesToFloat, stateOf, loudDecision, createListener) directly.
 
@@ -107,60 +107,81 @@ export function createListener({ onLevel = () => {}, onState = () => {} } = {}, 
  * The play page's side of BRB.loudness (public/js/play.js loads this only when page-data.mic is set).
  * frame: the game iframe; toFrame(msg): post to it; stage: #stage (the pill goes inside it, so fullscreen shows it);
  * t: the page's i18n; tapped(): navigator.userActivation. -> { message(m, tap), stop(why) }
+ * deps (tests): { listen(handlers) -> a listener, ui: { pill(on), tap(on, onTap), mic(on) }, now(), every(fn, ms),
+ * clearEvery(id), events: false (no page listeners) }.
  */
-export function bridge({ toFrame, stage, t, tapped }) {
-  let lease = 0, leaseTimer = null, pill = null, tapBtn = null, on = false;
+export function bridge({ toFrame, stage, t, tapped = () => false }, deps = {}) {
+  let lease = 0, leaseTimer = null, on = false, starting = false, waitTap = false;
+  const now = deps.now || (() => Date.now());
+  const every = deps.every || ((fn, ms) => setInterval(fn, ms)), clearEvery = deps.clearEvery || (id => clearInterval(id));
+  const ui = deps.ui || domUi(stage, t);
   const tell = state => toFrame({ type: 'brb:loudState', state });
-  const listener = createListener({
-    onLevel: db => { if (on) toFrame({ type: 'brb:level', db }); },
+  const listener = (deps.listen || createListener)({
+    onLevel: db => { if (on && !waitTap) toFrame({ type: 'brb:level', db }); },
     onState: state => {
-      if (state === 'on') { on = true; hideTap(); showPill(); }
-      else if (state === 'needsTap') { showTap(); }
-      else { on = false; hidePill(); hideTap(); }
-      document.documentElement.dataset.mic = on ? 'on' : 'off';
+      if (state === 'on') { on = true; waitTap = false; renew(); ui.tap(false); ui.pill(true); }
+      else if (state === 'needsTap') { waitTap = true; ui.tap(true, () => { listener.resume(); ui.tap(false); }); }
+      else { on = false; waitTap = false; ui.pill(false); ui.tap(false); }
+      ui.mic(on);
       tell(state);
     },
   });
-  document.documentElement.dataset.mic = 'off';
-  function renew() { lease = Date.now(); }
+  ui.mic(false);
+  if (!deps.ui) ui.onStop = () => stop('stopped');
+  function renew() { lease = now(); }
   function stop(why = 'stopped') {
-    const was = listener.active() || on;
-    listener.stop(); on = false; hidePill(); hideTap();
-    if (leaseTimer) { clearInterval(leaseTimer); leaseTimer = null; }
-    document.documentElement.dataset.mic = 'off';
+    const was = listener.active() || on || starting;
+    starting = false; listener.stop(); on = false; waitTap = false; ui.pill(false); ui.tap(false);
+    if (leaseTimer) { clearEvery(leaseTimer); leaseTimer = null; }
+    ui.mic(false);
     if (was && why) tell(why);
   }
-  function showPill() {
-    if (pill) return;
-    pill = document.createElement('div'); pill.className = 'micpill'; pill.setAttribute('role', 'status'); pill.dir = document.documentElement.dir || 'ltr';
-    const label = document.createElement('span'); label.className = 'micpill-l'; label.textContent = '🎤 ' + t('js.loudness.listening');
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'micpill-stop'; b.textContent = t('js.loudness.stop');
-    b.addEventListener('click', () => { stop('stopped'); });
-    pill.append(label, b); stage.appendChild(pill);
-  }
-  function hidePill() { if (pill) { pill.remove(); pill = null; } }
-  function showTap() {
-    if (tapBtn) return;
-    tapBtn = document.createElement('button'); tapBtn.type = 'button'; tapBtn.className = 'mictap btn btn-primary btn-big'; tapBtn.textContent = '🎤 ' + t('js.loudness.tap');
-    tapBtn.addEventListener('click', () => { listener.resume(); hideTap(); });
-    stage.appendChild(tapBtn); tapBtn.focus();
-  }
-  function hideTap() { if (tapBtn) { tapBtn.remove(); tapBtn = null; } }
   /** m: a validated brb:loud message; tap: whether the player tapped just now (checked by the caller as the message
    *  arrived; the frame's own fields are never trusted for it). */
   async function message(m, tap = tapped()) {
     const what = loudDecision(true, m.op, tap === true);
-    if (what === 'ready') { tell(on ? 'on' : 'ready'); return; }
+    if (what === 'ready') { tell(on ? (waitTap ? 'needsTap' : 'on') : 'ready'); return; }
     if (what === 'needsTap') { tell('needsTap'); return; }
     if (what === 'keep') { if (on) renew(); return; }
     if (what === 'stop') { stop(null); tell('idle'); return; }
     if (what === 'start') {
       renew();
-      if (!leaseTimer) leaseTimer = setInterval(() => { if (listener.active() && Date.now() - lease > 6000) stop('stopped'); }, 1000);
-      await listener.start();
+      // The game keeps the lease with a keep-alive every 2 s; without one for 6 s the page stops listening. While the
+      // page waits for its own "Tap to start listening" (the game hears no numbers then), it waits up to a minute.
+      if (!leaseTimer) leaseTimer = every(() => { if (listener.active() && now() - lease > (waitTap ? 60000 : 6000)) stop('stopped'); }, 1000);
+      starting = true;
+      try { await listener.start(); } finally { starting = false; }
     }
   }
-  document.addEventListener('visibilitychange', () => { if (document.hidden) stop('stopped'); });
-  addEventListener('pagehide', () => stop(null));
+  if (deps.events !== false) {
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stop('stopped'); });
+    addEventListener('pagehide', () => stop(null));
+  }
   return { message, stop };
+}
+
+/** The page's own controls: the "Listening · Stop" pill and the "Tap to start listening" button, inside the stage. */
+function domUi(stage, t) {
+  let pill = null, tapBtn = null, stopFn = null;
+  return {
+    pill(show) {
+      if (!show) { if (pill) { pill.remove(); pill = null; } return; }
+      if (pill) return;
+      pill = document.createElement('div'); pill.className = 'micpill'; pill.setAttribute('role', 'status'); pill.dir = document.documentElement.dir || 'ltr';
+      const dot = document.createElement('span'); dot.className = 'micpill-dot'; dot.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span'); label.className = 'micpill-l'; label.textContent = '🎤 ' + t('js.loudness.listening');
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'micpill-stop'; b.textContent = t('js.loudness.stop');
+      b.addEventListener('click', () => { if (stopFn) stopFn(); });
+      pill.append(dot, label, b); stage.appendChild(pill);
+    },
+    tap(show, onTap) {
+      if (!show) { if (tapBtn) { tapBtn.remove(); tapBtn = null; } return; }
+      if (tapBtn) return;
+      tapBtn = document.createElement('button'); tapBtn.type = 'button'; tapBtn.className = 'mictap btn btn-primary btn-big'; tapBtn.textContent = '🎤 ' + t('js.loudness.tap');
+      tapBtn.addEventListener('click', () => onTap());
+      stage.appendChild(tapBtn); tapBtn.focus();
+    },
+    mic(isOn) { document.documentElement.dataset.mic = isOn ? 'on' : 'off'; },
+    set onStop(fn) { stopFn = fn; },
+  };
 }

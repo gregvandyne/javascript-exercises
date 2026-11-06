@@ -62,6 +62,13 @@ test('demo: no mic here, so the no-mic card; then Remi sleeps, wakes when it is 
   await T(f, 'level', 10);
   await poll(f, 'state', { timeout: 12000 }).toBe('asleep');
   expect((await state(f)).quiet).toBeLessThan(q + 2);
+  // near the line he stirs, and the big "!" stays while he does
+  await T(f, 'level', (await state(f)).line - 3);
+  await poll(f, 'state').toBe('stirring');
+  await expect(f.locator('.rq-mark')).toBeVisible();
+  await T(f, 'level', 10);
+  await poll(f, 'state', { timeout: 8000 }).toBe('asleep');
+  await expect(f.locator('.rq-mark')).toBeHidden();
   // a clap: a stir at most
   await T(f, 'level', null);
   await f.locator('.rq-demo .rq-db').first().click();
@@ -75,10 +82,18 @@ test('demo: no mic here, so the no-mic card; then Remi sleeps, wakes when it is 
   // the goal: Remi stands up happy, the results card, BRB.gameOver with no score
   await T(f, 'setGoal', Math.ceil((await state(f)).quiet + 1));
   await poll(f, 'screen').toBe('end');
-  await expect(f.locator('.ok-win .rq-stats')).toContainText('Wake-ups: 1', { timeout: 10000 });
+  await expect(f.locator('.ok-win .rq-stat').nth(1)).toContainText('Wake-ups', { timeout: 10000 });
+  await expect(f.locator('.ok-win .rq-stat').nth(1).locator('.n')).toHaveText('1');
   expect(await f.evaluate(() => window.__go)).toEqual([{ won: true, score: null }]);
   expect((await state(f)).stars).toBe(3);
-  expect(await T(f, 'state').then(x => x.saved)).toEqual({ preset: 'whisper', fine: 0, goal: 120, base: 30 });
+  // only the teacher's choices are saved: never the room's measured level
+  expect(await T(f, 'state').then(x => x.saved)).toEqual({ preset: 'whisper', fine: 0, goal: 120 });
+  // "Same settings": straight back to the meadow (no setup card), a fresh session
+  await expect(f.locator('.ok-win .ok-btn')).toHaveCount(2);
+  await f.locator('#rqSame').click();
+  await poll(f, 'screen').toBe('play');
+  s = await state(f); expect([s.wakes, s.preset, s.demo, s.state]).toEqual([0, 'whisper', true, 'asleep']);
+  await expect(f.locator('.rqs-card')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
@@ -113,7 +128,9 @@ test('the real path: the page listens after the Start tap, the number reaches Re
     await expect(page.locator('html')).toHaveAttribute('data-mic', 'on', { timeout: 15000 });
     await expect(page.locator('.micpill')).toContainText('Listening');
     await poll(f, 'mic').toBe('on');
+    await expect(f.locator('.rq-chip')).toBeVisible();   // the game says it is listening too
     await poll(f, 'level').toBeGreaterThan(5);   // numbers arrive from the page
+    await poll(f, 'measuring').toBe(true);
     // the loud tone wakes him (the file loops, so within its 19 s)
     await poll(f, 'wakes', { timeout: 30000 }).toBeGreaterThanOrEqual(1);
     // pause: the page stops listening; resume: it listens again
